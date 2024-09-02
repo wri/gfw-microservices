@@ -219,6 +219,7 @@ export function RegionChartByCountry({ listId, data, fireDownload, country }) {
           <BarChartTreeCoverLossColombia
             rawBarChartData={countryPieChartsData}
             isAllDataEmpty={isAllDataEmpty}
+            fireDownload={fireDownload}
           />
           {showClassifiedRegionOverlapPieChart && (
             <PieChart

@@ -112,11 +112,6 @@ export default class Account extends Component {
         errors.push(fieldValidations.organization_website.text);
       }
     });
-    fieldValidations.organization_website.mandatoryChecks.forEach((mandatoryCheck) => {
-      if (mandatoryCheck(this.state.org_website.trim()) === false) {
-        missing.push(fieldValidations.organization_website.text);
-      }
-    });
 
     fieldValidations.first_name.validations.forEach((validation) => {
       if (validation(this.state.user_first_name.trim()) === false) {
@@ -154,11 +149,6 @@ export default class Account extends Component {
     fieldValidations.phone.validations.forEach((validation) => {
       if (validation(this.state.user_phone.trim()) === false) {
         errors.push(fieldValidations.phone.text);
-      }
-    });
-    fieldValidations.phone.mandatoryChecks.forEach((mandatoryCheck) => {
-      if (mandatoryCheck(this.state.user_phone.trim()) === false) {
-        missing.push(fieldValidations.phone.text);
       }
     });
 

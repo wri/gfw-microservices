@@ -1,4 +1,4 @@
-import { Injectable, Logger } from '@nestjs/common';
+import { Injectable, Logger, Scope } from '@nestjs/common';
 import { AlertFieldsFileRequest, DashboardDataType } from '@wri-monorepos/sql';
 import { IPipeService } from '../pipe/i.pipe.service';
 import { PassThrough } from 'stream';
@@ -14,7 +14,9 @@ import { AlertsGetLocationOrListData } from '../transform/alerts.get.location.or
 import { ALERTS_LOCATION_LEVEL } from '../shared/constants';
 import { DATE_FORMAT_CSV } from '../shared/constants';
 
-@Injectable()
+@Injectable({
+  scope: Scope.REQUEST,
+})
 export class AlertsLocationsLevelService extends IPipeService {
   private readonly logger = new Logger(AlertsLocationsLevelService.name);
   private inputStream: PassThrough;

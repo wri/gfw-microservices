@@ -1,10 +1,12 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, Scope } from '@nestjs/common';
 import { ListFieldsFileRequest } from '@wri-monorepos/sql';
 
 import { DashboardHandleDownload } from '../pipe/dashboard.handle.download';
 import { generateCSV } from '../shared/generate.csv';
 
-@Injectable()
+@Injectable({
+  scope: Scope.REQUEST,
+})
 export class DeforestationTrendsService extends DashboardHandleDownload {
   start(filters: ListFieldsFileRequest) {
     if (this.isDeforestationTrendsFile(filters)) {

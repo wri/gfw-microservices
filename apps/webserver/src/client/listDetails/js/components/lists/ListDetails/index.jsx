@@ -80,6 +80,7 @@ import getActiveAnalysisType from '../../../../../../utils/getActiveAnalysisType
 import ListActions from './ListActions';
 import { formatDateForCurrentBrowserLanguage } from '../../../../../common/js/utils/format';
 import WrappedReactTable from './WrappedReactTable';
+import AnalysisStatusBanners from './AnalysisStatusBanners';
 
 // CONSTANTS
 import {
@@ -94,7 +95,8 @@ import getAllColumnNames from '../getAllColumnNames';
 import '../../../../../locations/css/lists.scss';
 import '../../../../../locations/css/locations.scss';
 import './ListDetails.scss';
-import ErrorBanner from './ErrorBanner';
+import AnalysisFailedMessage from './AnalysisFailedMessage';
+import AnalysisInProgressMessage from './AnalysisInProgressMessage';
 
 export default class ListDetails extends Component {
   constructor(props) {
@@ -1520,7 +1522,7 @@ export default class ListDetails extends Component {
       },
     })
       .then(() => {
-        this.handleRerunDialogState();
+        this.toggleReRunAnalysisDialog();
         this.setState({
           isLoading: false,
         });
@@ -1649,7 +1651,7 @@ export default class ListDetails extends Component {
       });
   };
 
-  handleRerunDialogState = () => {
+  toggleReRunAnalysisDialog = () => {
     const { rerunDialogState } = this.state;
     this.setState({ rerunDialogState: !rerunDialogState });
   };
@@ -1770,8 +1772,9 @@ export default class ListDetails extends Component {
     } = this.state;
 
     const selectedList = selectedLists.length > 0 ? selectedLists[0] : null;
-    const locationDataIsNotAvailable =
-      isListSubmittedForAnalysis || isLocationDataNotAvailable(selectedList);
+    const locationDataIsNotAvailable = isLocationDataNotAvailable(selectedList);
+
+    const isAnalysisInProgress = isAnalyzingStatus(selectedLists[0]?.list_status_id);
 
     const listID = selectedList?.id;
     const countries = [...new Set(filteredLocationData.map((list) => list.Country))].sort();
@@ -1870,9 +1873,12 @@ export default class ListDetails extends Component {
             isChangeTypeOfAnalysisModalOpen={this.state.isChangeTypeOfAnalysisModalOpen}
           />
         )}
-        <ErrorBanner
+        <AnalysisStatusBanners
+          isDiagnosticStatusDraft={getIsDiagnosticStatusDraft(selectedLists[0])}
           hasLocationWithErrors={hasLocationWithErrors}
           openDraftSubmitDialog={() => this.setState({ draftSubmitDialogOpen: true })}
+          toggleReRunAnalysisDialog={this.toggleReRunAnalysisDialog}
+          listAnalysesStatus={listAnalysesStatus}
         />
         {bannerContent && (
           <Banner
@@ -1984,7 +1990,7 @@ export default class ListDetails extends Component {
               {/* Shared lists view */}
               {shareView ? (
                 <>
-                  {!locationDataIsNotAvailable && (
+                  {!locationDataIsNotAvailable && !isAnalysisInProgress && (
                     <div className="section-container">
                       <ShareList
                         key={selectedList.id}
@@ -2001,7 +2007,7 @@ export default class ListDetails extends Component {
                     selectedList={selectedList}
                     viewMap={this.viewMap}
                     currentUser={currentUser}
-                    handleRerunDialogState={this.handleRerunDialogState}
+                    toggleReRunAnalysisDialog={this.toggleReRunAnalysisDialog}
                     rerunDialogState={rerunDialogState}
                     rerunList={this.rerunList}
                     isManageListFolderOpen={isManageListFolderOpen}
@@ -2048,30 +2054,37 @@ export default class ListDetails extends Component {
                     isGfwList={isGfwList}
                   />
 
-                  {!locationDataIsNotAvailable && (
-                    <>
-                      <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                        <AnalysesTabs
-                          listViewOptions={listViewOptions}
-                          listView={listView}
-                          changeListView={this.changeListView}
-                          listAnalysesStatus={listAnalysesStatus}
-                          hasLocationWithErrors={hasLocationWithErrors}
-                        />
+                  <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                    <AnalysesTabs
+                      listViewOptions={listViewOptions}
+                      listView={listView}
+                      changeListView={this.changeListView}
+                      listAnalysesStatus={listAnalysesStatus}
+                      hasLocationWithErrors={hasLocationWithErrors}
+                    />
 
-                        {!isGfwList && (
-                          <MaterialButton
-                            style={{ color: '#97bd3d', fontSize: '12px' }}
-                            onClick={() => {
-                              this.setState({ isChangeTypeOfAnalysisModalOpen: true });
-                            }}
-                          >
-                            CHANGE ANALYSES
-                          </MaterialButton>
-                        )}
-                      </div>
+                    {!isGfwList && (
+                      <MaterialButton
+                        style={{ color: '#97bd3d', fontSize: '12px' }}
+                        onClick={() => {
+                          this.setState({ isChangeTypeOfAnalysisModalOpen: true });
+                        }}
+                      >
+                        CHANGE ANALYSES
+                      </MaterialButton>
+                    )}
+                  </div>
 
-                      <Paper sx={{ padding: '12px', borderTopLeftRadius: '0px' }}>
+                  <Paper sx={{ padding: '12px', borderTopLeftRadius: '0px' }}>
+                    {locationDataIsNotAvailable && !isAnalysisInProgress && (
+                      <AnalysisFailedMessage
+                        toggleReRunAnalysisDialog={this.toggleReRunAnalysisDialog}
+                      />
+                    )}
+
+                    {isAnalysisInProgress && <AnalysisInProgressMessage />}
+                    {!locationDataIsNotAvailable && !isAnalysisInProgress && (
+                      <>
                         <div className="list-analysis-actions">
                           {!getIsDraftWithoutDiagnostic(selectedList) &&
                             listName !== 'Administrative Areas' &&
@@ -2159,9 +2172,9 @@ export default class ListDetails extends Component {
                             />
                           ) : null}
                         </section>
-                      </Paper>
-                    </>
-                  )}
+                      </>
+                    )}
+                  </Paper>
                 </>
               )}
             </section>

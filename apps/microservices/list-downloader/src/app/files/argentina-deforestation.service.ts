@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, Scope } from '@nestjs/common';
 import { ListFieldsFileRequest } from '@wri-monorepos/sql';
 
 import { DashboardHandleDownload } from '../pipe/dashboard.handle.download';
@@ -8,7 +8,9 @@ import { EXCEL_TEMPLATES, EXCEL_TEMPLATE_HEADERS } from '../shared/constants';
 
 const VALID_TYPES = ['argentinaDeforestation', 'everything'];
 
-@Injectable()
+@Injectable({
+  scope: Scope.REQUEST,
+})
 export class ArgentinaDeforestationService extends DashboardHandleDownload {
   start(filters: ListFieldsFileRequest) {
     if (this.isForestLossFile(filters)) {

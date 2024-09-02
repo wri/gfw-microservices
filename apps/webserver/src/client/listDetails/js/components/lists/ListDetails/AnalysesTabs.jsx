@@ -1,6 +1,7 @@
 import React from 'react';
 import Tabs from '@mui/material/Tabs';
 import Tab from '@mui/material/Tab';
+import CircularProgress from '@mui/material/CircularProgress';
 import { analysisTypes } from '../../../../../../config/env/analysisTypes.constants';
 import { listStatus } from '../../../../../../config/env/listStatuses.constants';
 
@@ -15,12 +16,19 @@ function AnalysesTabs({
     ({ analysisId }) => analysisId === analysisTypes.FOREST_CHANGE_DIAGNOSTICS
   )?.status;
 
-  let icon =
-    post2020TreeCoverLossAnalysisStatus === listStatus.Inactive || hasLocationWithErrors ? (
-      <span className="status-indicator status-indicator--red" />
-    ) : (
-      <></>
-    );
+  let icon;
+
+  if (post2020TreeCoverLossAnalysisStatus === listStatus.Draft) {
+    icon = <span className="status-indicator status-indicator--blue" />;
+  }
+
+  if (post2020TreeCoverLossAnalysisStatus === listStatus.Pending) {
+    icon = <CircularProgress size={15} sx={{ color: '#97bd3d' }} />;
+  }
+
+  if (post2020TreeCoverLossAnalysisStatus === listStatus.Inactive || hasLocationWithErrors) {
+    icon = <span className="status-indicator status-indicator--red" />;
+  }
 
   return (
     <Tabs

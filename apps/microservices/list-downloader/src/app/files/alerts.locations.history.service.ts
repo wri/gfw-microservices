@@ -1,4 +1,4 @@
-import { Injectable, Logger } from '@nestjs/common';
+import { Injectable, Logger, Scope } from '@nestjs/common';
 import { AlertFieldsFileRequest, DashboardDataType } from '@wri-monorepos/sql';
 import { IPipeService } from '../pipe/i.pipe.service';
 import { EventEmitter, PassThrough, Transform } from 'stream';
@@ -50,7 +50,9 @@ class EventEmitterTransform extends Transform {
     next();
   }
 }
-@Injectable()
+@Injectable({
+  scope: Scope.REQUEST,
+})
 export class AlertsLocationsHistoryService extends IPipeService {
   private readonly logger = new Logger(AlertsLocationsHistoryService.name);
   private inputStream: PassThrough;

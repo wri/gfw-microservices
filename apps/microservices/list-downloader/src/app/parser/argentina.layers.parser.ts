@@ -31,7 +31,7 @@ class ArgentinaLayerUtil {
   setLayerData(data) {
     let parsedData;
     try {
-      parsedData = JSON.parse(data[this.key]);
+      parsedData = JSON.parse(data[this.key] || {});
     } catch (e) {
       parsedData = {};
     }
@@ -62,7 +62,7 @@ class ArgentinaLayerUtil {
 
   /**
    * modifies the layerData array into 2 groups if limit is present,
-   * every category after the limit is aggragated into 'Other'
+   * every category after the limit is aggregated into 'Other'
    * @param limit number
    * @returns this
    */

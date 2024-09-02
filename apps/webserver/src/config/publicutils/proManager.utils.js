@@ -362,7 +362,7 @@ const updatePendingAccount = (
   return new Promise((resolve, reject) => {
     const params = [
       { field: 'orgID', type: sql.Int, value: org_id },
-      { field: 'orgName', type: sql.NVarChar(200), value: org_name.trim() },
+      { field: 'orgName', type: sql.NVarChar(200), value: org_name },
       { field: 'orgAddress', type: sql.NVarChar(200), value: org_address },
       { field: 'orgWebsite', type: sql.NVarChar(200), value: org_website },
       { field: 'isSubsidiary', type: sql.Bit, value: is_subsidiary },

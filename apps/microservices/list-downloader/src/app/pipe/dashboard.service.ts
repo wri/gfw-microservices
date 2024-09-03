@@ -1,5 +1,6 @@
 import { Injectable, Inject, Logger } from '@nestjs/common';
-import { ListFieldsFileRequest } from '@wri-monorepos/sql';
+import { ListFieldsFileRequest, FeatureFlag, Organization } from '@wri-monorepos/sql';
+import { featureFlagsService } from '@wri-monorepos/shared';
 import { IPipeService } from './i.pipe.service';
 
 import {
@@ -22,10 +23,19 @@ import {
 } from '../files';
 
 import { getAllFilesAndZip } from '../shared/file.utils';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
 
 @Injectable()
 export class DashboardService extends IPipeService {
   private readonly logger = new Logger(DashboardService.name);
+
+  constructor(
+    @InjectRepository(Organization, 'default')
+    private organizationsRepository: Repository<Organization>
+  ) {
+    super();
+  }
 
   @Inject(ForestLossService)
   private readonly forestLoos: ForestLossService;
@@ -92,11 +102,14 @@ export class DashboardService extends IPipeService {
     this.southEastAsiaTCLService.start(filters);
     this.argentinaOverlap.start(filters);
     this.argentinaDeforestation.start(filters);
-    this.colombiaOverlapService.start(filters);
-    this.colombiaDeforestationService.start(filters);
+
+    if (await this.isColombiaFeatureFlagEnabled(filters)) {
+      this.colombiaOverlapService.start(filters);
+      this.colombiaDeforestationService.start(filters);
+    }
   }
 
-  process(data, filters: ListFieldsFileRequest) {
+  async process(data, filters: ListFieldsFileRequest) {
     this.forestLoos.process(data, filters);
     this.historicPercentService.process(data, filters);
     this.forestChangeDiagnosticLocationSummaryService.process(data, filters);
@@ -111,8 +124,11 @@ export class DashboardService extends IPipeService {
     this.southEastAsiaTCLService.process(data, filters);
     this.argentinaOverlap.process(data, filters);
     this.argentinaDeforestation.process(data, filters);
-    this.colombiaOverlapService.process(data, filters);
-    this.colombiaDeforestationService.process(data, filters);
+
+    if (await this.isColombiaFeatureFlagEnabled(filters)) {
+      this.colombiaOverlapService.process(data, filters);
+      this.colombiaDeforestationService.process(data, filters);
+    }
   }
 
   async finish(filters: ListFieldsFileRequest) {
@@ -133,11 +149,29 @@ export class DashboardService extends IPipeService {
     await this.southEastAsiaTCLService.finish(filters);
     await this.argentinaOverlap.finish(filters);
     await this.argentinaDeforestation.finish(filters);
-    await this.colombiaOverlapService.finish(filters);
-    await this.colombiaDeforestationService.finish(filters);
+
+    if (await this.isColombiaFeatureFlagEnabled(filters)) {
+      await this.colombiaOverlapService.finish(filters);
+      await this.colombiaDeforestationService.finish(filters);
+    }
 
     this.logger.log(`(${key}) - Zipping files`);
     await getAllFilesAndZip(filters);
     await this.finishProcess(filters);
+  }
+
+  private async isColombiaFeatureFlagEnabled(filters: ListFieldsFileRequest) {
+    const { organizationDatabase } = filters;
+
+    const { id } = await this.organizationsRepository.findOne({
+      where: { organizationDb: organizationDatabase },
+    });
+
+    const { getFeatureFlagsForCurrentOrg } = await featureFlagsService();
+    const flags = await getFeatureFlagsForCurrentOrg(id);
+
+    const colombiaFeatureFlag = flags.find((f) => f.flagId === 'Colombia') as FeatureFlag;
+
+    return !!colombiaFeatureFlag?.flagState;
   }
 }

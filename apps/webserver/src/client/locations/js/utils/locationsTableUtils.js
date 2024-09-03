@@ -139,7 +139,8 @@ export const getBooleanValue = (data, auditData) => {
     <> {value} </>
   ) : (
     <>
-      <span className="status-indicator status-indicator--red"></span>{value}
+      <span className="status-indicator status-indicator--red"></span>
+      {value}
     </>
   );
 };

@@ -17,14 +17,6 @@ export class SQLUtils {
 
   constructor(config: sql.config) {
     this.config = config;
-    console.log(
-      'SQLUtils constructor',
-      config.user,
-      process.env.MSSQL_USERNAME,
-      config.server,
-      process.env.MSSQL_HOSTNAME,
-      new Error('fake').stack
-    );
   }
 
   async connect(database: string = this.config.database): Promise<void> {

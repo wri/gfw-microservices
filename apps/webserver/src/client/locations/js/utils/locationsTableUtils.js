@@ -133,12 +133,13 @@ export const getBooleanValue = (data, auditData) => {
   if (auditData === 0) {
     return '--';
   }
-  const isZeroValue = Object.values(JSON.parse(data)).reduce((a, b) => a + b, 0) === 0;
+  const value = formatDigit(Object.values(JSON.parse(data)).reduce((a, b) => a + b, 0));
+  const isZeroValue = value === 0;
   return isZeroValue ? (
-    <> No </>
+    <> {value} </>
   ) : (
     <>
-      <span className="status-indicator status-indicator--red"></span>Yes
+      <span className="status-indicator status-indicator--red"></span>{value}
     </>
   );
 };

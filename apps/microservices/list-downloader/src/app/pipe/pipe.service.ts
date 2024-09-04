@@ -1,9 +1,8 @@
 import { Logger, Injectable, Scope } from '@nestjs/common';
 import { AfiGeneratorService } from './afi.generator.service';
 import { ListGeneratorService } from './list.generator.service';
-import { BasicFieldsFileRequest, GFWList } from '@wri-monorepos/sql';
+import { BasicFieldsFileRequest, GFWList, ClientStoreConnection, Lists } from '@wri-monorepos/sql';
 import { MAX_NUMBER_OF_ROWS_PER_PAGE } from '../shared/constants';
-import { ClientStoreConnection, Lists } from '@wri-monorepos/sql';
 import { createDirectory } from '../shared/file.utils';
 import { AccountUsersAnalysisUsageFileService } from './account-users-usage.generator.service';
 import { AlertsGeneratorService } from './alerts.generator.service';

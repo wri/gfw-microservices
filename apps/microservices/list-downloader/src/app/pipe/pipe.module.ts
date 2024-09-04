@@ -7,7 +7,7 @@ const envModule = ConfigModule.forRoot({
 
 import { PipeService } from './pipe.service';
 import { AwsModule } from '@wri-monorepos/aws';
-import { GFWList, Organization, SqlModule } from '@wri-monorepos/sql';
+import { GFWList, SqlModule } from '@wri-monorepos/sql';
 import { ListGeneratorService } from './list.generator.service';
 import { AfiGeneratorService } from './afi.generator.service';
 import { AccountUsersAnalysisUsageFileService } from './account-users-usage.generator.service';
@@ -22,7 +22,7 @@ import { DashboardService } from './dashboard.service';
     envModule,
     AwsModule,
     SqlModule,
-    TypeOrmModule.forFeature([GFWList, Organization], 'default'),
+    TypeOrmModule.forFeature([GFWList], 'default'),
     FilesModule,
     DataModule,
   ],

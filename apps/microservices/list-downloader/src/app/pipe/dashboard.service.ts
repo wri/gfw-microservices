@@ -1,5 +1,11 @@
 import { Injectable, Inject, Logger } from '@nestjs/common';
-import { ListFieldsFileRequest, FeatureFlag, Organization } from '@wri-monorepos/sql';
+import {
+  ListFieldsFileRequest,
+  FeatureFlag,
+  Organization,
+  ClientStoreConnection,
+  systemEntities,
+} from '@wri-monorepos/sql';
 import { featureFlagsService } from '@wri-monorepos/shared';
 import { IPipeService } from './i.pipe.service';
 
@@ -23,19 +29,10 @@ import {
 } from '../files';
 
 import { getAllFilesAndZip } from '../shared/file.utils';
-import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
 
 @Injectable()
 export class DashboardService extends IPipeService {
   private readonly logger = new Logger(DashboardService.name);
-
-  constructor(
-    @InjectRepository(Organization, 'default')
-    private organizationsRepository: Repository<Organization>
-  ) {
-    super();
-  }
 
   @Inject(ForestLossService)
   private readonly forestLoos: ForestLossService;
@@ -163,7 +160,13 @@ export class DashboardService extends IPipeService {
   private async isColombiaFeatureFlagEnabled(filters: ListFieldsFileRequest) {
     const { organizationDatabase } = filters;
 
-    const { id } = await this.organizationsRepository.findOne({
+    const clientStoreConnection = new ClientStoreConnection();
+    const database = process.env.MSSQL_DATABASE || 'gfwpro';
+    const connection = await clientStoreConnection.getConnection(database, systemEntities);
+
+    const organizationsRepository = connection.getRepository(Organization);
+
+    const { id } = await organizationsRepository.findOne({
       where: { organizationDb: organizationDatabase },
     });
 

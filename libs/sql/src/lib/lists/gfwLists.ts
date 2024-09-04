@@ -56,7 +56,7 @@ export class GfwLists {
     organizationDatabase: string,
     ids: number[] = []
   ): Promise<[ListOilPalmConcessions[] | ListsPalmOilMills[] | RspoOilPalmConcessions[], number]> {
-    if (list_id != 2 && list_id != 3 && list_id != 5) {
+    if (list_id !== 2 && list_id !== 3 && list_id !== 5) {
       throw new BadRequestException('Invalid list_id, list id should be 2, 3 or 5');
     }
     try {
@@ -199,7 +199,7 @@ export class GfwLists {
   ) {
     const where: FindOptionsWhere<ListProtectedAreas | ListAdministrativeAreas> = {};
 
-    if (list_id != 1 && list_id != 4) {
+    if (list_id !== 1 && list_id !== 4) {
       throw new BadRequestException('Invalid list_id, list id should be either 1 or 4');
     }
 

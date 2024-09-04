@@ -76,7 +76,7 @@ export class ListGeneratorService extends IFileGenerator {
 
       const analysisData = await this.analysisDataService.getDataPaginated(newFilters);
 
-      service.process(analysisData, newFilters);
+      await service.process(analysisData, newFilters);
       return i;
     };
 
@@ -84,7 +84,7 @@ export class ListGeneratorService extends IFileGenerator {
       this.logger.log(`(${listId}) - Get page of number ${localPage} from database`);
     }
 
-    service.finish(filters);
+    await service.finish(filters);
   }
 
   private defineService(filters: ListFieldsFileRequest): IPipeService {

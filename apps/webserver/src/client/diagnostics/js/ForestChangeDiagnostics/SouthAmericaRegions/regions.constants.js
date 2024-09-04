@@ -261,7 +261,6 @@ export const chartDatasetConfigsColombia = {
     dateRange: { startYear: 2008, endYear: 2023 },
     chartsSelectorTitle: 'Indigenous Territories',
     infoBubbleId: 'regions_col_tcl_it',
-    preview: true,
     chartLabels: [
       {
         id: 'Indigenous Territories',
@@ -269,6 +268,7 @@ export const chartDatasetConfigsColombia = {
         legend: 'Indigenous Territories',
         color: 'rgb(146,37,100)',
         checked: true,
+        preview: true,
       },
     ],
   },

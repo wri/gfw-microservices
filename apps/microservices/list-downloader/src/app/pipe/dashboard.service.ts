@@ -36,22 +36,22 @@ export class DashboardService extends IPipeService {
   private readonly logger = new Logger(DashboardService.name);
 
   constructor(
-    private forestLoos: ForestLossService,
-    private historicPercentService: HistoricPercentService,
-    private forestChangeDiagnosticLocationSummaryService: ForestChangeDiagnosticLocationSummaryService,
-    private forestChangeDiagnosticListSummaryService: ForestChangeDiagnosticListSummaryService,
-    private commodityRiskDiagnosticLocationSummaryService: CommodityRiskDiagnosticLocationSummaryService,
-    private deforestationTrendsService: DeforestationTrendsService,
-    private millPriorityService: MillPriorityService,
-    private palmRiskAnalysisService: PalmRiskAnalysisService,
-    private southAmericaBiomesService: SouthAmericaBiomesService,
-    private southAmericaLossService: SouthAmericaLossService,
-    private southEastAsiaOverlapService: SouthEastAsiaOverlapService,
-    private southEastAsiaTCLService: SouthEastAsiaTCLService,
-    private argentinaOverlap: ArgentinaOverlapService,
-    private argentinaDeforestation: ArgentinaDeforestationService,
-    private colombiaOverlapService: ColombiaOverlapService,
-    private colombiaDeforestationService: ColombiaDeforestationService
+    private readonly forestLoos: ForestLossService,
+    private readonly historicPercentService: HistoricPercentService,
+    private readonly forestChangeDiagnosticLocationSummaryService: ForestChangeDiagnosticLocationSummaryService,
+    private readonly forestChangeDiagnosticListSummaryService: ForestChangeDiagnosticListSummaryService,
+    private readonly commodityRiskDiagnosticLocationSummaryService: CommodityRiskDiagnosticLocationSummaryService,
+    private readonly deforestationTrendsService: DeforestationTrendsService,
+    private readonly millPriorityService: MillPriorityService,
+    private readonly palmRiskAnalysisService: PalmRiskAnalysisService,
+    private readonly southAmericaBiomesService: SouthAmericaBiomesService,
+    private readonly southAmericaLossService: SouthAmericaLossService,
+    private readonly southEastAsiaOverlapService: SouthEastAsiaOverlapService,
+    private readonly southEastAsiaTCLService: SouthEastAsiaTCLService,
+    private readonly argentinaOverlap: ArgentinaOverlapService,
+    private readonly argentinaDeforestation: ArgentinaDeforestationService,
+    private readonly colombiaOverlapService: ColombiaOverlapService,
+    private readonly colombiaDeforestationService: ColombiaDeforestationService
   ) {
     super();
   }

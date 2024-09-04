@@ -20,7 +20,7 @@ export class AlertsGeneratorService extends IFileGenerator {
   private readonly logger = new Logger(AlertsGeneratorService.name);
 
   constructor(
-    private readonly alertDataService: AlertsDataService,
+    private alertDataService: AlertsDataService,
     private readonly alertsFileService: AlertsFileService
   ) {
     super();

@@ -1,4 +1,4 @@
-import { Logger, Injectable, Inject } from '@nestjs/common';
+import { Logger, Injectable } from '@nestjs/common';
 import { EmailService, S3Service } from '@wri-monorepos/aws';
 import { IFileGenerator } from './i.file.generator';
 import {
@@ -16,11 +16,9 @@ import * as path from 'path';
 export class AccountUsersAnalysisUsageFileService extends IFileGenerator {
   private readonly logger = new Logger(AccountUsersAnalysisUsageFileService.name);
 
-  @Inject(EmailService)
-  private readonly emailService: EmailService;
-
-  @Inject(S3Service)
-  private readonly s3Service: S3Service;
+  constructor(private readonly emailService: EmailService, private readonly s3Service: S3Service) {
+    super();
+  }
 
   public async makeFile(filters: AccountUsersUsageRequest) {
     const { organizationDatabase, userEmail, startDate, endDate, key: fileName } = filters;

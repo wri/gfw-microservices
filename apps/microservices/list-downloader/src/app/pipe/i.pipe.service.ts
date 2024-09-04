@@ -1,6 +1,6 @@
 import { Inject, Logger } from '@nestjs/common';
 import { EmailService, S3Service } from '@wri-monorepos/aws';
-import { ConfigService } from '@nestjs/config';
+
 import {
   BasicFieldsFileRequest,
   setS3UrlAndExpirationDate,
@@ -16,9 +16,6 @@ export abstract class IPipeService {
   private readonly loggerPipe = new Logger(IPipeService.name);
 
   private EXPIRE_IN_FIVE_DAYS = 5;
-
-  @Inject(ConfigService)
-  private readonly config: ConfigService;
 
   @Inject(EmailService)
   private readonly emailService: EmailService;

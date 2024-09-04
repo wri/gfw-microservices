@@ -1,4 +1,4 @@
-import { Injectable, Inject, Logger } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 import {
   ListFieldsFileRequest,
   FeatureFlag,
@@ -7,6 +7,7 @@ import {
   systemEntities,
 } from '@wri-monorepos/sql';
 import { featureFlagsService } from '@wri-monorepos/shared';
+
 import { IPipeService } from './i.pipe.service';
 
 import {
@@ -34,53 +35,26 @@ import { getAllFilesAndZip } from '../shared/file.utils';
 export class DashboardService extends IPipeService {
   private readonly logger = new Logger(DashboardService.name);
 
-  @Inject(ForestLossService)
-  private readonly forestLoos: ForestLossService;
-
-  @Inject(HistoricPercentService)
-  private readonly historicPercentService: HistoricPercentService;
-
-  @Inject(ForestChangeDiagnosticLocationSummaryService)
-  private readonly forestChangeDiagnosticLocationSummaryService: ForestChangeDiagnosticLocationSummaryService;
-
-  @Inject(ForestChangeDiagnosticListSummaryService)
-  private readonly forestChangeDiagnosticListSummaryService: ForestChangeDiagnosticListSummaryService;
-
-  @Inject(CommodityRiskDiagnosticLocationSummaryService)
-  private readonly commodityRiskDiagnosticLocationSummaryService: CommodityRiskDiagnosticLocationSummaryService;
-
-  @Inject(DeforestationTrendsService)
-  private readonly deforestationTrendsService: DeforestationTrendsService;
-
-  @Inject(MillPriorityService)
-  private readonly millPriorityService: MillPriorityService;
-
-  @Inject(PalmRiskAnalysisService)
-  private readonly palmRiskAnalysisService: PalmRiskAnalysisService;
-
-  @Inject(SouthAmericaBiomesService)
-  private readonly southAmericaBiomesService: SouthAmericaBiomesService;
-
-  @Inject(SouthAmericaLossService)
-  private readonly southAmericaLossService: SouthAmericaLossService;
-
-  @Inject(SouthEastAsiaOverlapService)
-  private readonly southEastAsiaOverlapService: SouthEastAsiaOverlapService;
-
-  @Inject(SouthEastAsiaTCLService)
-  private readonly southEastAsiaTCLService: SouthEastAsiaTCLService;
-
-  @Inject(ArgentinaOverlapService)
-  private readonly argentinaOverlap: ArgentinaOverlapService;
-
-  @Inject(ArgentinaDeforestationService)
-  private readonly argentinaDeforestation: ArgentinaDeforestationService;
-
-  @Inject(ColombiaOverlapService)
-  private readonly colombiaOverlapService: ColombiaOverlapService;
-
-  @Inject(ColombiaDeforestationService)
-  private readonly colombiaDeforestationService: ColombiaDeforestationService;
+  constructor(
+    private readonly forestLoos: ForestLossService,
+    private readonly historicPercentService: HistoricPercentService,
+    private readonly forestChangeDiagnosticLocationSummaryService: ForestChangeDiagnosticLocationSummaryService,
+    private readonly forestChangeDiagnosticListSummaryService: ForestChangeDiagnosticListSummaryService,
+    private readonly commodityRiskDiagnosticLocationSummaryService: CommodityRiskDiagnosticLocationSummaryService,
+    private readonly deforestationTrendsService: DeforestationTrendsService,
+    private readonly millPriorityService: MillPriorityService,
+    private readonly palmRiskAnalysisService: PalmRiskAnalysisService,
+    private readonly southAmericaBiomesService: SouthAmericaBiomesService,
+    private readonly southAmericaLossService: SouthAmericaLossService,
+    private readonly southEastAsiaOverlapService: SouthEastAsiaOverlapService,
+    private readonly southEastAsiaTCLService: SouthEastAsiaTCLService,
+    private readonly argentinaOverlap: ArgentinaOverlapService,
+    private readonly argentinaDeforestation: ArgentinaDeforestationService,
+    private readonly colombiaOverlapService: ColombiaOverlapService,
+    private readonly colombiaDeforestationService: ColombiaDeforestationService
+  ) {
+    super();
+  }
 
   async start(filters: ListFieldsFileRequest) {
     await this.startEmail(filters);

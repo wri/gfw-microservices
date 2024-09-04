@@ -3,6 +3,7 @@ import {
   FeatureFlag,
   ListsUploadStatus,
   SQLUtils,
+  getListByFilters,
 } from '@wri-monorepos/sql';
 import { BadRequestException, Logger, InternalServerErrorException } from '@nestjs/common';
 import { Injectable } from '@nestjs/common';
@@ -11,7 +12,6 @@ import { ConfigService } from '@nestjs/config';
 import * as sql from 'mssql';
 import { createListNameSchema } from '../utils/list.utils';
 import { DataSource } from 'typeorm';
-import { getListByFilters } from '@wri-monorepos/sql';
 import { RequestSaveLargeListProcessModel, CreateListInsertResultModel } from '../models';
 import { MetadataService as AWSMetadataService } from '@wri-monorepos/aws';
 import { ServerConfigType } from '../validators/server-config';

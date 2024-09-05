@@ -222,6 +222,8 @@ class Map extends Component {
       // the 'listData' prop
       transitionListData: {},
       sketchEventListener: null,
+
+      drawnCoordinates: [],
     });
 
     this.svm = null;
@@ -641,6 +643,10 @@ class Map extends Component {
       this.view.map.add(newViirsLayer);
       this.updateActiveAnalysis();
     }
+
+    if (!prevState.drawingActive && this.state.drawingActive) {
+      this.state.drawnCoordinates = [];
+    }
   }
 
   updateActiveAnalysis() {
@@ -865,6 +871,10 @@ class Map extends Component {
         view.graphics.add(graphic);
         store.dispatch(toggleDrawing());
         this.analyzeCustom(graphic);
+
+        this.state.drawnCoordinates.forEach((coordinate) => {
+          addCoordinateTextFromPoint(view, coordinate);
+        });
       }
     });
     store.dispatch(saveSketchTool(svm));
@@ -904,7 +914,10 @@ class Map extends Component {
         });
       }
 
-      addCoordinateTextFromPoint(this.mapView, evt.mapPoint);
+      if (this.state.drawingActive) {
+        this.state.drawnCoordinates.push(evt.mapPoint);
+        addCoordinateTextFromPoint(this.mapView, evt.mapPoint);
+      }
     });
   };
 

@@ -1,5 +1,4 @@
 import cloneDeep from 'lodash/cloneDeep';
-import { gfwListNames } from '../../../../common/js/constants/lists.constants';
 import columns from '../../config/columns';
 import { getListColumns } from './getListColumns';
 
@@ -13,12 +12,12 @@ const getAllColumnNames = (listView, locationData, selectedLists, getCheckboxCol
   const columnNames = {};
   const gfwColumns = [];
   const list_name = selectedLists.length && selectedLists[0].list_name;
-  const { custom_attribute_names } = selectedLists[0];
+  const { custom_attribute_names, isGlobalForestWatchList } = selectedLists[0];
 
   columnNames.list = getListColumns(locationData, custom_attribute_names, selectedLists);
   if (listView === 'forest_change') {
     columnNames.required = cloneDeep(columns.forest_change_locations);
-    if (gfwListNames.includes(list_name)) {
+    if (isGlobalForestWatchList) {
       columnNames.required.map((n) => {
         if (n.accessor === 'total_area') {
           switch (list_name) {
@@ -64,7 +63,7 @@ const getAllColumnNames = (listView, locationData, selectedLists, getCheckboxCol
       columns.forest_change_analysis[1];
 
     let notSortableColumns;
-    if (!gfwListNames.includes(list_name)) {
+    if (!isGlobalForestWatchList) {
       notSortableColumns = forestChangeAnalysisColumns.map((col) => {
         return {
           ...col,

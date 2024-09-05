@@ -35,7 +35,6 @@ import DashboardSettings from './DashboardSettings';
 import { downloadDashboard } from '../utils/dashboard.utils';
 import { numberWithCommas } from '../../../locations/js/utils/locationsTableUtils';
 import { loaderMessages } from '../../../common/js/config';
-import { gfwListNames } from '../../../common/js/constants/lists.constants';
 import { listStatus } from '../../../../config/env/listStatuses.constants';
 import ConfirmDialog from '../../../locations/js/components/lists/download/confirmDialog';
 import CircularProgress from '@mui/material/CircularProgress';
@@ -53,9 +52,10 @@ const pageOptions = {
 export default class Dashboard extends Component {
   constructor(props) {
     super(props);
+
     const { userLists, accessLevel, locationCount, gfwLists } = props;
     store.dispatch(saveUserLists(userLists));
-    store.dispatch(saveGFWLists(gfwLists.map((list) => ({ ...list, GFWList: true }))));
+    store.dispatch(saveGFWLists(gfwLists));
     store.dispatch(saveAccessLevel(accessLevel));
     store.dispatch(saveLocationCount(locationCount));
     this.state = {
@@ -150,7 +150,7 @@ export default class Dashboard extends Component {
     const newStore = {
       gfwList:
         currStore.selectedList &&
-        gfwListNames.indexOf(currStore.selectedList.list_name) > -1 &&
+        currStore.selectedList.isGlobalForestWatchList &&
         !currStore.selectedList.template_id,
       selectedAlert: currStore.selectedAlert,
       selectedTimeframe: currStore.selectedTimeframe,
@@ -181,7 +181,7 @@ export default class Dashboard extends Component {
 
   selectList = async (list) => {
     const { listCache } = this.state;
-    const { id, list_name, GFWList } = list;
+    const { id, list_name, isGlobalForestWatchList } = list;
     const key = `${list_name}-${id}`;
 
     // use cache
@@ -201,12 +201,10 @@ export default class Dashboard extends Component {
 
       //3. query DB for dashboard data
       //if list is gfw list, url is "getGFWListDashboardData"
-      const gfwListIds = [2, 3, 5];
-      const isGFWList = gfwListIds.includes(id) && GFWList;
-      const DASHBOARD_DATA_URL = isGFWList
+      const DASHBOARD_DATA_URL = isGlobalForestWatchList
         ? '/dashboard/getGFWListDashboardData'
         : '/dashboard/getDashboardData';
-      const DASHBOARD_TIMESTAMP_URL = isGFWList
+      const DASHBOARD_TIMESTAMP_URL = isGlobalForestWatchList
         ? '/dashboard/getGFWListDashboardTimestamp'
         : '/dashboard/getListDashboardTimestamp';
 

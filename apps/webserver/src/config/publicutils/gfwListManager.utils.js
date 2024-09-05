@@ -49,7 +49,7 @@ export const getGFWLists = (req) => {
       .executeSystemStoredProcedure(req, 'uspGetGfwLists')
       .then((recordsets) => {
         const gfwLists = recordsets.map((list) => {
-          list.globalForestWatchList = true;
+          list.isGlobalForestWatchList = true;
           return list;
         });
         resolve(gfwLists);

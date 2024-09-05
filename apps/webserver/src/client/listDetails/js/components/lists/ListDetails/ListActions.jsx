@@ -92,7 +92,7 @@ const ListActions = ({
     currentUser.access_level_id === userAccessLevel.ADMIN &&
     selectedList &&
     selectedList.list_status_id !== 1 &&
-    !selectedList.globalForestWatchList &&
+    !selectedList.isGlobalForestWatchList &&
     !isSearchBarOpen;
 
   const isSubmitOptionAvailable =
@@ -100,7 +100,7 @@ const ListActions = ({
       (currentUser.access_level_id !== userAccessLevel.ADMIN && userIsOwner)) &&
     selectedList?.list_status_id !== 1 &&
     getIsDiagnosticStatusDraft(selectedList) &&
-    !selectedList?.globalForestWatchList &&
+    !selectedList?.isGlobalForestWatchList &&
     !isSearchBarOpen;
 
   const isRerunListAvailable =
@@ -109,11 +109,11 @@ const ListActions = ({
         currentUser.access_level_id !== userAccessLevel.VIEWER)) &&
     selectedList?.list_status_id !== 1 &&
     !getIsDiagnosticStatusDraft(selectedList) &&
-    !selectedList?.globalForestWatchList &&
+    !selectedList?.isGlobalForestWatchList &&
     !isSearchBarOpen;
 
   const isAddToFolderOptionAvailable =
-    selectedList && !selectedList.globalForestWatchList && !isSearchBarOpen;
+    selectedList && !selectedList.isGlobalForestWatchList && !isSearchBarOpen;
   return (
     <>
       <Paper className="list-actions">

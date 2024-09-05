@@ -90,7 +90,6 @@ import {
 import { deleteAllFilteredLocations } from './deleteAllFilteredLocations';
 import LocationsTableColumnSelector from './LocationsTableColumnSelector';
 import columns from '../../config/columns';
-import { isUserList } from '../../../../common/js/utils/gfw.utils';
 import { CommodityRiskFilterDrawer, ForestChangeFilterDrawer } from './Filters';
 import LocationDataNotAvailableMessage from './LocationDataNotAvailableMessage';
 import AnalysisListChips from '../../../../locations/js/components/landing/listItem/AnalysisListChips';
@@ -98,10 +97,7 @@ import ChangeTypeOfAnalysisModal from '../../../../locations/js/components/landi
 import getActiveAnalysisType from '../../../../../utils/getActiveAnalysisType';
 
 // CONSTANTS
-import {
-  gfwListNames,
-  defaultMaximumAreaSizeForLocationsFilter,
-} from '../../../../common/js/constants/lists.constants';
+import { defaultMaximumAreaSizeForLocationsFilter } from '../../../../common/js/constants/lists.constants';
 import { listStatus } from '../../../../../config/env/listStatuses.constants';
 import { getListFilterValues } from './getListFilterValues';
 import getAllColumnNames from './getAllColumnNames';
@@ -192,7 +188,7 @@ export default class Lists extends Component {
       this.getProtectedAreasData
     );
 
-    if (isUserList(selectedLists[0])) {
+    if (!selectedLists[0].isGlobalForestWatchList) {
       getListFilterValues(selectedLists[0].id).then((filterValues) => {
         this.setState({ filterValues });
       });
@@ -247,7 +243,7 @@ export default class Lists extends Component {
       this.clearFilters();
       this.setState({ allLocationsSelected: false, filterValues: [] });
 
-      if (isUserList(selectedLists[0])) {
+      if (!selectedLists[0].isGlobalForestWatchList) {
         getListFilterValues(selectedLists[0].id).then((filterValues) => {
           this.setState({ filterValues });
         });
@@ -262,7 +258,7 @@ export default class Lists extends Component {
       previousKeys.some((key) => filters[key] !== prevProps.filters[key])
     ) {
       // if the filters changed and this is a user list, get the paginated data from the API
-      if (isUserList(selectedLists[0])) {
+      if (!selectedLists[0].isGlobalForestWatchList) {
         this.getUserLocationData(selectedLists[0].id);
       } else {
         filterListData(
@@ -686,7 +682,7 @@ export default class Lists extends Component {
     );
     const destinationListName = moveToList?.list_name || newListName;
 
-    if (!selectedList.globalForestWatchList) {
+    if (!selectedList.isGlobalForestWatchList) {
       httpRequest.fetchJSON('/locations/lockList', { list_id }).then(() => {
         const { associated_gfwlist } = moveToList || selectedList;
         const gfw_list_id =
@@ -960,7 +956,7 @@ export default class Lists extends Component {
 
   showListColumn = (column) => {
     const { selectedLists, listView } = this.props;
-    if (selectedLists.length > 0 && isUserList(selectedLists[0])) {
+    if (selectedLists.length > 0 && !selectedLists[0].isGlobalForestWatchList) {
       return (
         !(listView === 'forest_change' && checkColumnListFC(column.accessor)) &&
         !(listView === 'commodity_risk' && checkColumnListCR(column.accessor))
@@ -1257,7 +1253,7 @@ export default class Lists extends Component {
     const { selectedLists, currentUser, selectedLocations } = this.props;
     const { allLocationsSelected, numberOfPages } = this.state;
     const selectedList = selectedLists[0];
-    if (selectedList.user_id) {
+    if (!selectedList.isGlobalForestWatchList) {
       // if all locations where selected and there is more than one page
       // follow large list editing workflow
       if (allLocationsSelected && numberOfPages > 1) {
@@ -1324,7 +1320,7 @@ export default class Lists extends Component {
       userSharedLists &&
       userSharedLists.map((userSharedList) => userSharedList.id).includes(selectedLists[0].id);
 
-    const gfwList = !isUserList(selectedLists[0]) ? '&gfw=true' : '';
+    const gfwList = selectedLists[0].isGlobalForestWatchList ? '&gfw=true' : '';
     const sharedList = selectedListIsShared ? '&shared=true' : '';
     const locationId = isSingleLocation ? `&locationId=${selectedLocations[0]}` : '';
     const diagnosticsType = getActiveAnalysisType(selectedLists[0]?.listAnalysesStatus);
@@ -1345,7 +1341,7 @@ export default class Lists extends Component {
     const { filterString, combinedColumns, allLocationsSelected } = this.state;
     let locationIds = [];
 
-    const gfwList = selectedLists[0]?.globalForestWatchList ? selectedLists[0]?.list_name : false;
+    const gfwList = selectedLists[0]?.isGlobalForestWatchList ? selectedLists[0]?.list_name : false;
 
     if (selectedLocations.length > 0) {
       // If the user has checked any checkboxes, we are using
@@ -1429,7 +1425,7 @@ export default class Lists extends Component {
       // or use another property in sendData to send these
       locationIds = JSON.stringify(locationIds);
     }
-    const isGfwList = selectedLists[0].globalForestWatchList;
+    const isGfwList = selectedLists[0].isGlobalForestWatchList;
     const isSharedList =
       selectedLists &&
       userSharedLists &&
@@ -1458,7 +1454,7 @@ export default class Lists extends Component {
       filterStringInputValue: newValue,
     });
 
-    const isGfwList = !isUserList(selectedLists[0]);
+    const isGfwList = selectedLists[0].isGlobalForestWatchList;
     if (isGfwList) {
       //  gfw lists search works in the front end, so it searches as the use types
       this.setState({
@@ -1485,7 +1481,7 @@ export default class Lists extends Component {
   setSearchString = (evt) => {
     // if enter key is pressed and it's not a GFW list, filter locations by input text
     const { selectedLists } = this.props;
-    const isGfwList = !isUserList(selectedLists[0]);
+    const isGfwList = selectedLists[0].isGlobalForestWatchList;
     if (evt.keyCode === 13 && !isGfwList) {
       this.setState(
         {
@@ -1813,12 +1809,11 @@ export default class Lists extends Component {
   }
 
   loadLocationView() {
-    // If user_id is a property then this is a user list
     const { selectedLists } = this.props;
     if (selectedLists.length > 0) {
       if (selectedLists[0].list_name === 'Administrative Areas') {
         this.getAdministrativeAreasInfo();
-      } else if (Object.hasOwnProperty.call(selectedLists[0], 'user_id')) {
+      } else if (!selectedLists[0].isGlobalForestWatchList) {
         this.getUserLocationData(selectedLists[0].id);
       } else if (selectedLists[0].list_name === 'Protected Areas') {
         this.getProtectedAreasInfo();
@@ -1918,7 +1913,8 @@ export default class Lists extends Component {
     const listName = selectedList ? selectedList.list_name : '';
     const listAnalysesStatus = selectedList ? selectedList.listAnalysesStatus : [];
 
-    const isGfwList = gfwListNames.includes(listName);
+    const isGfwList = selectedList.associated_gfwlist || selectedList.isGlobalForestWatchList;
+
     // user lists are paginated in the backend, gfw lists search works in the front end
     const filteredLists = isGfwList
       ? getListFilteredLocations(filteredLocationData, combinedColumns, filterString)
@@ -2033,7 +2029,7 @@ export default class Lists extends Component {
       ],
     };
     // settings for displaying a paginated user list
-    if (isUserList(selectedLists[0])) {
+    if (!selectedLists[0].isGlobalForestWatchList) {
       reactTableOptions = {
         ...reactTableOptions,
         showPageSizeOptions: false,
@@ -2250,7 +2246,7 @@ export default class Lists extends Component {
                       toggleCountriesPopover={this.toggleCountriesPopover}
                     />
                     <div className="list-actions-container">
-                      {selectedList && !selectedList.globalForestWatchList && (
+                      {selectedList && !selectedList.isGlobalForestWatchList && (
                         <div>
                           <Button
                             label={
@@ -2297,7 +2293,7 @@ export default class Lists extends Component {
                       selectedList &&
                       selectedList.list_status_id !== 1 &&
                       !getIsDiagnosticStatusDraft(selectedList) &&
-                      !selectedList.globalForestWatchList ? (
+                      !selectedList.isGlobalForestWatchList ? (
                         <div id="RerunList" className="selected-rerun-list">
                           <Button
                             className="rerun-list__button"
@@ -2318,7 +2314,7 @@ export default class Lists extends Component {
                       {currentUser.access_level_id === userAccessLevel.ADMIN &&
                       selectedList &&
                       selectedList.list_status_id !== 1 &&
-                      !selectedList.globalForestWatchList ? (
+                      !selectedList.isGlobalForestWatchList ? (
                         <div id="ShareList">
                           <Button
                             className="ShareList__button"
@@ -2336,7 +2332,7 @@ export default class Lists extends Component {
                       selectedList &&
                       selectedList.list_status_id !== 1 &&
                       getIsDiagnosticStatusDraft(selectedList) &&
-                      !selectedList.globalForestWatchList ? (
+                      !selectedList.isGlobalForestWatchList ? (
                         <div id="ShareList">
                           <Button
                             variant="primary"

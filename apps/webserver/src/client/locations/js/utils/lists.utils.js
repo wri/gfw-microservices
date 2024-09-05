@@ -23,7 +23,7 @@ const checkValidView = (listData) => {
 // Check to see which views should be enabled
 const checkValidViewCommodity = (selectedLists, listData) => {
   if (selectedLists.length > 0 && listData.length > 0) {
-    if (selectedLists[0].hasOwnProperty('user_id')) {
+    if (!selectedLists[0].isGlobalForestWatchList) {
       // This is a user list
       const { template_id } = selectedLists[0];
       const location = listData[0];

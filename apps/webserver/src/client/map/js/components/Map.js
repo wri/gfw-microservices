@@ -80,7 +80,7 @@ import setVectorTileLayerForFilteredList, {
 import setVectorTileLayerForFullList from '../utils/setVectorTileLayerForFullList';
 import { getLocationGeometry } from '../utils/map.utils';
 import { constructLayerObject } from '../../../common/js/utils/layer.utils';
-import { isGfwList, getMapLayerIdFromGFWListName } from '../../../common/js/utils/gfw.utils';
+import { getMapLayerIdFromGFWListName } from '../../../common/js/utils/gfw.utils';
 import { updateInteractiveLayers } from '../utils/layerUpdates.utils';
 import sortMapArray from './sortMapArray';
 import getQueryParams from './getQueryParams';
@@ -101,7 +101,6 @@ import CanopyModal from './modals/CanopyModal';
 import InfoModal from './modals/InfoModal';
 import LayerModal from './modals/LayerModal';
 import SearchModal from './modals/SearchModal';
-import { gfwListNames } from '../../../common/js/constants/lists.constants';
 import { selectList } from '../../../locations/js/actions/locationActions';
 import { gfwListsLocationID } from '../../../listDetails/js/components/lists/Lists.config';
 import { FailedPopupDialog } from '../../../locations/js/components/landing/FailedPopupDialog';
@@ -2170,7 +2169,7 @@ class Map extends Component {
       }
     } else {
       // If active list is a GFW list and selected list is a user list then reset selectedLists and grab data
-      if (selectedLists.some((v) => gfwListNames.indexOf(v) >= 0)) {
+      if (selectedLists.some((selectedList) => selectedList.isGlobalForestWatchList).length) {
         store.dispatch(resetList(list));
         this.getUserLocationData([list.id], list.list_name);
       }
@@ -2440,7 +2439,7 @@ class Map extends Component {
     return (
       <Page links={pageOptions.links} active="map">
         <ModalLoader position="absolute" size={60} open={isMapLoading} />
-        {selectedList && !listVectorTileIsAvailable && !isGfwList(selectedList.list_name) && (
+        {selectedList && !listVectorTileIsAvailable && !selectedList.isGlobalForestWatchList && (
           <FailedPopupDialog
             open={!listVectorTileIsAvailable}
             title="Map view for your list is still in progress"

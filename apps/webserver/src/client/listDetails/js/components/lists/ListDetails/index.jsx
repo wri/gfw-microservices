@@ -73,7 +73,6 @@ import {
   getDialogTitle,
 } from '../../../../../locations/js/utils/dialogMessage.utils';
 import { deleteAllFilteredLocations } from '../deleteAllFilteredLocations';
-import { isUserList } from '../../../../../common/js/utils/gfw.utils';
 import ChangeTypeOfAnalysisModal from '../../../../../locations/js/components/landing/listItem/ChangeTypeOfAnalysisModal';
 import getActiveAnalysisType from '../../../../../../utils/getActiveAnalysisType';
 import ListActions from './ListActions';
@@ -85,10 +84,7 @@ import AnalysisInProgressMessage from './AnalysisInProgressMessage';
 import { isListFailedByAnalysisStatusLimit } from '../../../../../locations/js/utils/lists.utils';
 
 // CONSTANTS
-import {
-  gfwListNames,
-  defaultMaximumAreaSizeForLocationsFilter,
-} from '../../../../../common/js/constants/lists.constants';
+import { defaultMaximumAreaSizeForLocationsFilter } from '../../../../../common/js/constants/lists.constants';
 import { listStatus } from '../../../../../../config/env/listStatuses.constants';
 import { getListFilterValues } from '../getListFilterValues';
 import getAllColumnNames from '../getAllColumnNames';
@@ -150,14 +146,14 @@ export default class ListDetails extends Component {
   componentDidMount() {
     const { listData, filters, selectedLists } = this.props;
 
-    const { list_name, id, globalForestWatchList, associated_gfwlist } = selectedLists[0];
+    const { list_name, id, isGlobalForestWatchList, associated_gfwlist } = selectedLists[0];
 
     gtag('event', 'User accessed list', {
       event_category: 'List Interaction',
       event_label: 'Accessed List: ' + list_name,
       list_name,
       list_id: id,
-      is_gfw_list: !!globalForestWatchList,
+      is_gfw_list: !!isGlobalForestWatchList,
       associated_gfwlist,
     });
 
@@ -172,7 +168,7 @@ export default class ListDetails extends Component {
       this.getProtectedAreasData
     );
 
-    if (isUserList(selectedLists[0])) {
+    if (!selectedLists[0].isGlobalForestWatchList) {
       getListFilterValues(selectedLists[0].id).then((filterValues) => {
         this.setState({ filterValues });
       });
@@ -226,7 +222,7 @@ export default class ListDetails extends Component {
       this.clearFilters();
       this.setState({ isEveryRowSelected: false, filterValues: [] });
 
-      if (isUserList(selectedLists[0])) {
+      if (!selectedLists[0].isGlobalForestWatchList) {
         getListFilterValues(selectedLists[0].id).then((filterValues) => {
           this.setState({ filterValues });
         });
@@ -241,7 +237,7 @@ export default class ListDetails extends Component {
       previousKeys.some((key) => filters[key] !== prevProps.filters[key])
     ) {
       // if the filters changed and this is a user list, get the paginated data from the API
-      if (isUserList(selectedLists[0])) {
+      if (!selectedLists[0].isGlobalForestWatchList) {
         this.getUserLocationData(selectedLists[0].id);
       } else {
         filterListData(
@@ -632,7 +628,7 @@ export default class ListDetails extends Component {
     );
     const destinationListName = moveToList?.list_name || newListName;
 
-    if (!selectedList.globalForestWatchList) {
+    if (!selectedList.isGlobalForestWatchList) {
       httpRequest.fetchJSON('/locations/lockList', { list_id }).then(() => {
         const { associated_gfwlist } = moveToList || selectedList;
         const gfw_list_id =
@@ -904,7 +900,7 @@ export default class ListDetails extends Component {
 
   showListColumn = (column) => {
     const { selectedLists, listView } = this.props;
-    if (selectedLists.length > 0 && isUserList(selectedLists[0])) {
+    if (selectedLists.length > 0 && !selectedLists[0].isGlobalForestWatchList) {
       return (
         !(listView === 'forest_change' && checkColumnListFC(column.accessor)) &&
         !(listView === 'commodity_risk' && checkColumnListCR(column.accessor))
@@ -1201,7 +1197,7 @@ export default class ListDetails extends Component {
     const { selectedLists, currentUser, selectedLocations } = this.props;
     const { isEveryRowSelected, numberOfPages } = this.state;
     const selectedList = selectedLists[0];
-    if (selectedList.user_id) {
+    if (!selectedList.isGlobalForestWatchList) {
       // if all locations where selected and there is more than one page
       // follow large list editing workflow
       if (isEveryRowSelected && numberOfPages > 1) {
@@ -1268,7 +1264,7 @@ export default class ListDetails extends Component {
       userSharedLists &&
       userSharedLists.map((userSharedList) => userSharedList.id).includes(selectedLists[0].id);
 
-    const gfwList = !isUserList(selectedLists[0]) ? '&gfw=true' : '';
+    const gfwList = selectedLists[0].isGlobalForestWatchList ? '&gfw=true' : '';
     const sharedList = selectedListIsShared ? '&shared=true' : '';
     const locationIdParam = locationId ? `&locationId=${locationId}` : '';
     const diagnosticsType = getActiveAnalysisType(selectedLists[0]?.listAnalysesStatus);
@@ -1289,7 +1285,7 @@ export default class ListDetails extends Component {
     const { filterString, combinedColumns, isEveryRowSelected } = this.state;
     let locationIds = [];
 
-    const gfwList = selectedLists[0]?.globalForestWatchList ? selectedLists[0]?.list_name : false;
+    const gfwList = selectedLists[0]?.isGlobalForestWatchList ? selectedLists[0]?.list_name : false;
 
     if (selectedLocations.length > 0) {
       // If the user has checked any checkboxes, we are using
@@ -1373,7 +1369,7 @@ export default class ListDetails extends Component {
       // or use another property in sendData to send these
       locationIds = JSON.stringify(locationIds);
     }
-    const isGfwList = selectedLists[0].globalForestWatchList;
+    const isGfwList = selectedLists[0].isGlobalForestWatchList;
     const isSharedList =
       selectedLists &&
       userSharedLists &&
@@ -1401,7 +1397,7 @@ export default class ListDetails extends Component {
       searchInputValue: newValue,
     });
 
-    const isGfwList = !isUserList(selectedLists[0]);
+    const isGfwList = selectedLists[0].isGlobalForestWatchList;
     if (isGfwList) {
       //  gfw lists search works in the front end, so it searches as the use types
       this.setState({
@@ -1428,7 +1424,7 @@ export default class ListDetails extends Component {
   handleSearchInputKeyDown = (evt) => {
     // if enter key is pressed and it's not a GFW list, filter locations by input text
     const { selectedLists } = this.props;
-    const isGfwList = !isUserList(selectedLists[0]);
+    const isGfwList = selectedLists[0].isGlobalForestWatchList;
     if (evt.keyCode === 13 && !isGfwList) {
       this.setState(
         {
@@ -1689,12 +1685,11 @@ export default class ListDetails extends Component {
   }
 
   loadLocationView() {
-    // If user_id is a property then this is a user list
     const { selectedLists } = this.props;
     if (selectedLists.length > 0) {
       if (selectedLists[0].list_name === 'Administrative Areas') {
         this.getAdministrativeAreasInfo();
-      } else if (Object.hasOwnProperty.call(selectedLists[0], 'user_id')) {
+      } else if (!selectedLists[0].isGlobalForestWatchList) {
         this.getUserLocationData(selectedLists[0].id);
       } else if (selectedLists[0].list_name === 'Protected Areas') {
         this.getProtectedAreasInfo();
@@ -1787,7 +1782,8 @@ export default class ListDetails extends Component {
     const listName = selectedList ? selectedList.list_name : '';
     const listAnalysesStatus = selectedList ? selectedList.listAnalysesStatus : [];
 
-    const isGfwList = selectedList.associated_gfwlist || gfwListNames.includes(listName);
+    const isGfwList = selectedList.associated_gfwlist || selectedList.isGlobalForestWatchList;
+
     // user lists are paginated in the backend, gfw lists search works in the front end
     const filteredLists = isGfwList
       ? getListFilteredLocations(filteredLocationData, combinedColumns, filterString)
@@ -1872,14 +1868,16 @@ export default class ListDetails extends Component {
             isChangeTypeOfAnalysisModalOpen={this.state.isChangeTypeOfAnalysisModalOpen}
           />
         )}
-        <AnalysisStatusBanners
-          isDiagnosticStatusDraft={getIsDiagnosticStatusDraft(selectedLists[0])}
-          hasLocationWithErrors={hasLocationWithErrors}
-          openDraftSubmitDialog={() => this.setState({ draftSubmitDialogOpen: true })}
-          toggleReRunAnalysisDialog={this.toggleReRunAnalysisDialog}
-          listAnalysesStatus={listAnalysesStatus}
-          isListFailedByAnalysisStatusLimit={isListFailedByAnalysisStatusLimit(selectedLists[0])}
-        />
+        {!isGfwList && (
+          <AnalysisStatusBanners
+            isDiagnosticStatusDraft={getIsDiagnosticStatusDraft(selectedLists[0])}
+            hasLocationWithErrors={hasLocationWithErrors}
+            openDraftSubmitDialog={() => this.setState({ draftSubmitDialogOpen: true })}
+            toggleReRunAnalysisDialog={this.toggleReRunAnalysisDialog}
+            listAnalysesStatus={listAnalysesStatus}
+            isListFailedByAnalysisStatusLimit={isListFailedByAnalysisStatusLimit(selectedLists[0])}
+          />
+        )}
         {bannerContent && (
           <Banner
             className="lists-banner"
@@ -1976,7 +1974,6 @@ export default class ListDetails extends Component {
                 filteredLists={filteredLists}
                 filterValues={filterValues}
                 listLocationsCount={numberOfResults}
-                listName={listName}
                 openCountriesPopover={openCountriesPopover}
                 selectedList={selectedList}
                 shareView={shareView}
@@ -2055,13 +2052,15 @@ export default class ListDetails extends Component {
                   />
 
                   <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                    <AnalysesTabs
-                      listViewOptions={listViewOptions}
-                      listView={listView}
-                      changeListView={this.changeListView}
-                      listAnalysesStatus={listAnalysesStatus}
-                      hasLocationWithErrors={hasLocationWithErrors}
-                    />
+                    {!isGfwList && (
+                      <AnalysesTabs
+                        listViewOptions={listViewOptions}
+                        listView={listView}
+                        changeListView={this.changeListView}
+                        listAnalysesStatus={listAnalysesStatus}
+                        hasLocationWithErrors={hasLocationWithErrors}
+                      />
+                    )}
 
                     {!isGfwList && (
                       <MaterialButton
@@ -2141,7 +2140,7 @@ export default class ListDetails extends Component {
                               visibleColumns={visibleColumns}
                               filteredLists={filteredLists}
                               page={page}
-                              isUserList={isUserList(selectedLists[0])}
+                              isUserList={!selectedLists[0].isGlobalForestWatchList}
                               getUserLocationData={this.getUserLocationData}
                               tableSortedBy={tableSortedBy}
                               tableSortedDesc={tableSortedDesc}

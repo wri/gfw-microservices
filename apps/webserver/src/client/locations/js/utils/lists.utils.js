@@ -23,7 +23,7 @@ const checkValidView = (listData) => {
 // Check to see which views should be enabled
 const checkValidViewCommodity = (selectedLists, listData) => {
   if (selectedLists.length > 0 && listData.length > 0) {
-    if (selectedLists[0].hasOwnProperty('user_id')) {
+    if (!selectedLists[0].isGlobalForestWatchList) {
       // This is a user list
       const { template_id } = selectedLists[0];
       const location = listData[0];
@@ -220,7 +220,7 @@ const getGFWListLocationIDs = (gfwList, location) => {
 const isDownloadDisabledForThisList = (selectedList) => {
   const {
     associated_gfwlist: associatedGfwlist,
-    globalForestWatchList,
+    isGlobalForestWatchList,
     list_name: ListName,
   } = selectedList;
 
@@ -228,7 +228,7 @@ const isDownloadDisabledForThisList = (selectedList) => {
     return GFW_LISTS_WITH_DOWNLOAD_OPTION_DISABLED.includes(associatedGfwlist);
   }
 
-  if (globalForestWatchList) {
+  if (isGlobalForestWatchList) {
     return GFW_LISTS_NAMES_WITH_DOWNLOAD_OPTION_DISABLED.includes(ListName);
   }
 

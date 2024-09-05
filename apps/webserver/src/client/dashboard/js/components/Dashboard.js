@@ -52,9 +52,10 @@ const pageOptions = {
 export default class Dashboard extends Component {
   constructor(props) {
     super(props);
+
     const { userLists, accessLevel, locationCount, gfwLists } = props;
     store.dispatch(saveUserLists(userLists));
-    store.dispatch(saveGFWLists(gfwLists.map((list) => ({ ...list, GFWList: true }))));
+    store.dispatch(saveGFWLists(gfwLists));
     store.dispatch(saveAccessLevel(accessLevel));
     store.dispatch(saveLocationCount(locationCount));
     this.state = {
@@ -180,7 +181,7 @@ export default class Dashboard extends Component {
 
   selectList = async (list) => {
     const { listCache } = this.state;
-    const { id, list_name, GFWList, isGlobalForestWatchList } = list;
+    const { id, list_name, isGlobalForestWatchList } = list;
     const key = `${list_name}-${id}`;
 
     // use cache
@@ -200,11 +201,10 @@ export default class Dashboard extends Component {
 
       //3. query DB for dashboard data
       //if list is gfw list, url is "getGFWListDashboardData"
-      const isGFWList = isGlobalForestWatchList && GFWList;
-      const DASHBOARD_DATA_URL = isGFWList
+      const DASHBOARD_DATA_URL = isGlobalForestWatchList
         ? '/dashboard/getGFWListDashboardData'
         : '/dashboard/getDashboardData';
-      const DASHBOARD_TIMESTAMP_URL = isGFWList
+      const DASHBOARD_TIMESTAMP_URL = isGlobalForestWatchList
         ? '/dashboard/getGFWListDashboardTimestamp'
         : '/dashboard/getListDashboardTimestamp';
 

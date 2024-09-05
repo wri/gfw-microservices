@@ -2169,7 +2169,7 @@ class Map extends Component {
       }
     } else {
       // If active list is a GFW list and selected list is a user list then reset selectedLists and grab data
-      if (selectedLists.some((selectedList) => selectedList.isGlobalForestWatchList).length) {
+      if (selectedLists.some((selectedList) => selectedList.isGlobalForestWatchList)) {
         store.dispatch(resetList(list));
         this.getUserLocationData([list.id], list.list_name);
       }

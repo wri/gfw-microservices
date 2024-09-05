@@ -19,6 +19,8 @@ import { webMercatorToGeographic } from '@arcgis/core/geometry/support/webMercat
 import SpatialReference from '@arcgis/core/geometry/SpatialReference';
 import CustomDialog from '../../../common/js/components/CustomDialog/CustomDialog';
 
+import { addCoordinateTextFromPoint } from '../../../locations/js/components/adding/PolygonCoordinates/polygonCoordinates.utils';
+
 import store from '../store';
 import {
   addList,
@@ -901,6 +903,8 @@ class Map extends Component {
           location: evt.mapPoint,
         });
       }
+
+      addCoordinateTextFromPoint(this.mapView, evt.mapPoint);
     });
   };
 

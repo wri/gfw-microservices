@@ -872,9 +872,9 @@ class Map extends Component {
         store.dispatch(toggleDrawing());
         this.analyzeCustom(graphic);
 
-        this.state.drawnCoordinates.forEach((coordinate) => {
-          addCoordinateTextFromPoint(view, coordinate);
-        });
+        this.state.drawnCoordinates.forEach((coordinate) =>
+          addCoordinateTextFromPoint(view, coordinate)
+        );
       }
     });
     store.dispatch(saveSketchTool(svm));

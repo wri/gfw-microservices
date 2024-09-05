@@ -19,6 +19,8 @@ import { webMercatorToGeographic } from '@arcgis/core/geometry/support/webMercat
 import SpatialReference from '@arcgis/core/geometry/SpatialReference';
 import CustomDialog from '../../../common/js/components/CustomDialog/CustomDialog';
 
+import { addCoordinateTextFromPoint } from '../../../locations/js/components/adding/PolygonCoordinates/polygonCoordinates.utils';
+
 import store from '../store';
 import {
   addList,
@@ -219,6 +221,8 @@ class Map extends Component {
       // the 'listData' prop
       transitionListData: {},
       sketchEventListener: null,
+
+      drawnCoordinates: [],
     });
 
     this.svm = null;
@@ -638,6 +642,10 @@ class Map extends Component {
       this.view.map.add(newViirsLayer);
       this.updateActiveAnalysis();
     }
+
+    if (!prevState.drawingActive && this.state.drawingActive) {
+      this.state.drawnCoordinates = [];
+    }
   }
 
   updateActiveAnalysis() {
@@ -862,6 +870,10 @@ class Map extends Component {
         view.graphics.add(graphic);
         store.dispatch(toggleDrawing());
         this.analyzeCustom(graphic);
+
+        this.state.drawnCoordinates.forEach((coordinate) =>
+          addCoordinateTextFromPoint(view, coordinate)
+        );
       }
     });
     store.dispatch(saveSketchTool(svm));
@@ -899,6 +911,11 @@ class Map extends Component {
           features: popFeats,
           location: evt.mapPoint,
         });
+      }
+
+      if (this.state.drawingActive) {
+        this.state.drawnCoordinates.push(evt.mapPoint);
+        addCoordinateTextFromPoint(this.mapView, evt.mapPoint);
       }
     });
   };

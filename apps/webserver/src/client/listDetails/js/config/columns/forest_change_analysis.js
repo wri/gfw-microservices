@@ -81,8 +81,6 @@ const forest_change_analysis = [
                   ? getBooleanValue(row.value.tree_cover_loss_total_yearly)
                   : getValue(row.value.tree_cover_loss_total_yearly)}
               </span>
-            ) : isListDetailsPageRedesignAvailable ? (
-              <> No </>
             ) : (
               0
             )
@@ -129,8 +127,6 @@ const forest_change_analysis = [
                       row.value.protected_areas_area
                     )}
               </span>
-            ) : isListDetailsPageRedesignAvailable ? (
-              <> No </>
             ) : (
               0
             )
@@ -177,8 +173,6 @@ const forest_change_analysis = [
                       row.value.natural_habitat_primary
                     )}
               </span>
-            ) : isListDetailsPageRedesignAvailable ? (
-              <> No </>
             ) : (
               0
             )

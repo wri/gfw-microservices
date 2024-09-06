@@ -1,4 +1,4 @@
-conn_string = ""
+conn_string = "mssql://{USERNAME}:{PASSWORD}@{SERVER}/{DATABASE}?driver=ODBC Driver 17 for SQL Server"
 
 analysis_path = r""
 list_number = 3

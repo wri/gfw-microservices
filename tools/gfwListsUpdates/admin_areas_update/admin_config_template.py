@@ -2,7 +2,7 @@ import os
 import sqlalchemy as sal
 
 # SQLALchemy connection string
-sal_string = ""
+sal_string = "mssql://{USERNAME}:{PASSWORD}@{SERVER}/{DATABASE}?driver=ODBC Driver 17 for SQL Server"
 
 # Directory to store data exported from DB
 admin_areas_out_path = os.path.join("data", f"diced_admin_areas")

@@ -1,10 +1,9 @@
 Process Overview
 
-
 As of December 2023 the GFW Pro application began relying on the commercial version of the World Database on Protected Areas (WDPA) dataset. This dataset is the source of locations in the Protected Areas GFW List, which is stored in the database in the list-protectedAreasand analysis-protectedAreas tables.
 
 This process is similar to the one describe in the ​
- documentation, with some key modifications that were required as a result of the transition to the commercial dataset.
+documentation, with some key modifications that were required as a result of the transition to the commercial dataset.
 
 At a very high level, the steps to taken to update these tables were as follows:
 
@@ -65,8 +64,6 @@ At this point, the Geotrellis team… (Have Dan take a look)
 
 Steps for the database upload process are listed in the following section.
 
-
-
 Steps for receiving the processed data and reintegrating it to the database:
 
 The data cleaning and database update portion of this project will require several hours. When ran locally on a Blue Raster machine it took approximately 1 hours to fully execute.
@@ -91,8 +88,6 @@ The script will create a new table in the database named analysis-protectedAreas
 It requires name_conversion_dict.py to be in the same directory.
 
 Compared the new data to the previous version of the analysis table. After validating the new data, rename analysis-protectedAreas_import to analysis-protectedAreas.
-
-
 
 Steps for using Redgate SQL Data Compare to copy new data to other environments:
 

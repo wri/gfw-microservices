@@ -17,7 +17,7 @@ export const select = (req, res) => {
   res.header('Pragma', 'no-cache');
 
   const { session } = req;
-  if (session.hasOwnProperty('organization_database') && session.organization_database) {
+  if ('organization_database' in session && session.organization_database) {
     console.log('SELECT: has Organization Database');
     res.redirect('/locations');
   } else {

@@ -638,6 +638,7 @@ export const adminResetUserPassword = (req, user_email) => {
  */
 export const confirmPasswordReset = async (req, verification_code, new_password, user_email) => {
   const normalizeUsername = user_email.toLocaleLowerCase();
+  throw new Error('Testing');
   return new Promise((resolve, reject) => {
     AWSCognito.confirmForgotPassword(req, verification_code, new_password, normalizeUsername)
       .then((result) => {

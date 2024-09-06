@@ -11,13 +11,14 @@ export default class DashboardSettings extends Component {
   filterselectedLocations = () => {
     const { selectedAdmin, geoJSON } = this.props;
 
-    if(selectedAdmin !== '' && !!geoJSON) {
-      return geoJSON.features.filter((location) => location.properties.gadm_id.includes(selectedAdmin))
-      .map((location) => location.properties.location_id);
+    if (selectedAdmin !== '' && !!geoJSON) {
+      return geoJSON.features
+        .filter((location) => location.properties.gadm_id.includes(selectedAdmin))
+        .map((location) => location.properties.location_id);
     }
 
     return [];
-  }
+  };
 
   handleViewMap = () => {
     const { selectedAlert, selectedList, selectedTimeframe, zoomLevel, selectedAdmin } = this.props;
@@ -47,7 +48,7 @@ export default class DashboardSettings extends Component {
       ymax: view.extent.ymax,
     };
 
-    if(selectedAdmin !== ''){
+    if (selectedAdmin !== '') {
       sendData['selectedLocations'] = this.filterselectedLocations();
     }
 

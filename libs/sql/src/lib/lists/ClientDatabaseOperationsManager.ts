@@ -357,6 +357,21 @@ export class DeleteListTypeOrm {
             code: 603,
           });
         }
+        // Find if list belongs to folder and try to delete relationship before deleting list
+        try {
+          const folderItem = await connection.query(
+            `SELECT * FROM [FolderItems] WHERE list_id = ${list_id}`
+          );
+          if (folderItem.length > 0) {
+            await connection.query(`DELETE FROM [FolderItems] WHERE list_id = ${list_id}`);
+          }
+        } catch (error) {
+          throw new InternalServerErrorException({
+            message: `Failed to delete FolderItem with list id ${list_id}`,
+            code: 603,
+          });
+        }
+
         // Delete list
         try {
           await listRepository.delete({ id: list_id });

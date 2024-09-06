@@ -628,8 +628,16 @@ module.exports = (app, limiter) => {
       selectedOverallThreats: overallThreats,
       selectedOverallValues: overallValues,
       selectedMillPriority: millPriority,
+      analysisId = 'FCD',
     } = req.query;
-
+    const VALID_ANALYSIS_TYPES = ['FCD', 'ALERTS', 'DEFREPORT', 'AFI'];
+    // Verify if analysisId is a valid analysis type
+    if (!VALID_ANALYSIS_TYPES.includes(analysisId.toUpperCase())) {
+      return res.status(400).send({
+        message:
+          'Invalid analysisId, analysisId should be one of the following: FCD, Alerts, DefReport or AFI',
+      });
+    }
     const selectedOverallThreats = mapCommodityRiskValuesToDatabaseValues(overallThreats);
     const selectedOverallValues = mapCommodityRiskValuesToDatabaseValues(overallValues);
     const selectedMillPriority = mapCommodityRiskValuesToDatabaseValues(millPriority);
@@ -657,17 +665,54 @@ module.exports = (app, limiter) => {
     };
 
     try {
-      const listAnalyses = await AnalysisManager.getListAnalyses(req, listID);
-      const locationAttributeArray = await ListManager.getPaginatedAnalysisDataForUserList(
-        req,
-        listID,
-        filters
-      );
-      const { numberOfPages, numberOfResults, maximumAnalysisAreaInTheList } =
-        await ListManager.getNumberPagesForAnalysisDataUserList(req, listID, filters);
+      let listAnalyses = {};
+      let locationAttributeArray = {};
+      let numberOfPages = 0,
+        numberOfResults = 0,
+        maximumAnalysisAreaInTheList = 0,
+        locationAttributeList;
+      switch (analysisId.toUpperCase()) {
+        case 'AFI':
+        case 'DEFREPORT': {
+          const analysisManagerResult = await AnalysisManager.getAFIListAnalyses(
+            listID,
+            page,
+            pageSize,
+            req.session.organization_database
+          );
+          listAnalyses = analysisManagerResult.listAnalyses;
+          numberOfResults = analysisManagerResult.quantity;
+          numberOfPages =
+            numberOfResults % pageSize === 0
+              ? numberOfResults / pageSize
+              : Math.floor(numberOfResults / pageSize) + 1;
+          break;
+        }
+        case 'ALERTS':
+          return res.send({ msg: 'Alerts not implemented yet' });
+        default:
+        case 'FCD': {
+          listAnalyses = await AnalysisManager.getListAnalyses(req, listID);
+          locationAttributeArray = await ListManager.getPaginatedAnalysisDataForUserList(
+            req,
+            listID,
+            filters
+          );
+          const listManagerResult = await ListManager.getNumberPagesForAnalysisDataUserList(
+            req,
+            listID,
+            filters
+          );
+          numberOfPages = listManagerResult.numberOfPages;
+          numberOfResults = listManagerResult.numberOfResults;
+          maximumAnalysisAreaInTheList = listManagerResult.maximumAnalysisAreaInTheList;
+
+          break;
+        }
+      }
 
       if (locationAttributeArray?.length > 0) {
-        const locationAttributeList = await LocationManager.getLocationAttributesList(
+        locationAttributeList = await LocationManager.getLocationAttributesList(
           req,
           locationAttributeArray,
           false
@@ -683,14 +728,14 @@ module.exports = (app, limiter) => {
         res.send({
           list_analysis: listAnalyses,
           location_analyses: [],
-          numberOfPages: 0,
-          numberOfResults: 0,
+          numberOfPages,
+          numberOfResults,
           maximumAnalysisAreaInTheList,
         });
       }
     } catch (err) {
       console.log('Failed', err);
-      res.send(false);
+      res.status(err.status || 500).send({ msg: err.message });
     }
   });
 

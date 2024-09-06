@@ -26,6 +26,11 @@ import {
   getAnalysisDataForProtectedAreasByLocation,
   GfwLists,
   SqlParamType,
+  getPaginatedAfiAnalysisLocationLevel,
+  SQLUtils as SQLUtilsLibSql,
+  AfiAnalysisByListId,
+  getCountAfiAnalysisByListId,
+  CountAfiAnalysisByListId,
 } from '@wri-monorepos/sql';
 
 /** @function {getAnalysisDataForUserList}
@@ -441,4 +446,31 @@ export async function getPaginatedAnalysisDataForAdministrativeAreas(
     database,
     filters
   );
+}
+/** @function {getListAnalyses}
+ *   @summary Function to return list analysis.
+ *   @param  {Object}   req - Manadatory first parameter to pass the request object into the function in case session info is required.
+ *   @param  {Number}  list_id - ID of list
+ *   @return {Promise} Returns promise object. If successful, recordsets, otherwise, error object
+ */
+export async function getAFIListAnalyses(list_id, page, pageSize, clientDatabase) {
+  const parameters = [
+    { field: 'listId', type: sql.Int, value: list_id },
+    { field: 'rowsOfPage', type: sql.Int, value: pageSize },
+    { field: 'pageNumber', type: sql.Int, value: page },
+  ];
+  const listAnalyses = await SQLUtilsLibSql.queryDB<AfiAnalysisByListId[]>(
+    clientDatabase,
+    getPaginatedAfiAnalysisLocationLevel,
+    parameters
+  );
+  const { id, quantity } = await SQLUtilsLibSql.queryDBFirstRow<CountAfiAnalysisByListId>(
+    clientDatabase,
+    getCountAfiAnalysisByListId,
+    [
+      { field: 'listId', type: sql.Int, value: list_id },
+      { field: 'isListLevel', type: sql.Int, value: 0 },
+    ]
+  );
+  return { listAnalyses, quantity };
 }

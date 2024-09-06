@@ -367,7 +367,7 @@ export class DeleteListTypeOrm {
           }
         } catch (error) {
           throw new InternalServerErrorException({
-            message: `Failed to delete list in folder ${list_id}`,
+            message: `Failed to delete FolderItem with list id ${list_id}`,
             code: 603,
           });
         }

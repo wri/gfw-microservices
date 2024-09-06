@@ -82,7 +82,7 @@ export default class DashboardSettings extends Component {
 
   render() {
     const { selectedAlert } = this.props;
-    console.log(this.filterselectedLocations(), "filterselectedLocations ---------------------")
+
     return (
       <div className="flex-grid space-between dashboard-section__padding underline">
         <div id="AlertsShown" className="flex-grid align-center">

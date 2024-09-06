@@ -587,7 +587,7 @@ export const mapLayers = [
         body: {
           useCors: true,
           metadata: 'https://api.resourcewatch.org/v1/gfw-metadata/wdpa_licensed_protected_areas',
-          url: 'https://tiles.globalforestwatch.org/wdpa_licensed_protected_areas/v202411/default/root.json',
+          url: 'https://tiles.globalforestwatch.org/wdpa_licensed_protected_areas/v202408/default/root.json',
         },
       },
       legendConfig: {

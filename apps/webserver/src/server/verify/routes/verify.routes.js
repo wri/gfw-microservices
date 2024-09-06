@@ -4,6 +4,7 @@ const AuthManager = require(path.resolve('./config/publicutils/authenticationMan
 const UserManager = require(path.resolve('./config/publicutils/userManager.utils'));
 const middlewares = require(path.resolve('./config/publicutils/middlewares'));
 const rateLimiterUtil = require(path.resolve('./config/lib/limiter-util'));
+import * as logger from '../../../config/privateutils/logger.utils';
 
 /**
  * @name exports
@@ -25,14 +26,14 @@ module.exports = (app, limiter) => {
   app.get('/verify', routeMiddlewares, verify);
 
   app.post('/auth/verifyLogin', function (req, res) {
-    console.log('POST /auth/verifyLogin');
+    logger.info('POST /auth/verifyLogin');
     const { tokenID } = req.body;
 
     AuthManager.verifyLogin(req, tokenID)
       .then((result) => {
         //TODO: differentiate admin from normal user somehow! result.ispromanager ??
         //if we are a manager, res.send('something'), else res.send('something else')
-        console.log('Verify: Success');
+        logger.info('Verify: Success');
         if (UserManager.isProManager(req)) {
           res.send('Manager');
         } else if (result === 'multiple') {
@@ -42,20 +43,20 @@ module.exports = (app, limiter) => {
         }
       })
       .catch((err) => {
-        console.log('Reject', err);
+        logger.error('Reject', err);
         res.send(err);
       });
   });
 
   app.post('/auth/resendToken', function (req, res) {
-    console.log('POST /auth/resentToken');
+    logger.info('POST /auth/resentToken');
 
     AuthManager.resendVerifyToken(req)
-      .then((result) => {
+      .then(() => {
         res.send('Done');
       })
       .catch((err) => {
-        console.log('Reject', err);
+        logger.error('Reject', err);
         res.send(err);
       });
   });

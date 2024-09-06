@@ -1,5 +1,6 @@
 import config from '../../../config/config';
 const { compiledAssets } = config;
+import * as logger from '../../../config/privateutils/logger.utils';
 
 /**
  * @function verify
@@ -16,15 +17,11 @@ export const verify = (req, res) => {
   res.header('Pragma', 'no-cache');
 
   const { session } = req;
-  if (
-    session.hasOwnProperty('verified_promanager') &&
-    session.ispromanager &&
-    session.verified_promanager
-  ) {
-    console.log('Is Verified Pro Manager');
+  if ('verified_promanager' in session && session.ispromanager && session.verified_promanager) {
+    logger.info('Is Verified Pro Manager');
     res.redirect('/pro-manager-list');
-  } else if (session.hasOwnProperty('organization_database') && session.organization_database) {
-    console.log('Has Organization Database');
+  } else if ('organization_database' in session && session.organization_database) {
+    logger.info('Has Organization Database');
     res.redirect('/locations');
   } else {
     res.render('verify', {

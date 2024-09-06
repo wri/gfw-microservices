@@ -26,10 +26,16 @@ export interface ListFieldsFileRequest extends BasicFieldsFileRequest {
   fields?: Array<string>;
   geometry?: number;
   listLevelAnalysis?: {
-    country_area: string;
-    arg_otbn_area: string;
-    protected_areas_by_category_area: string;
-    landmark_by_category_area: string;
+    country_area?: string;
+    arg_otbn_area?: string;
+    protected_areas_by_category_area?: string;
+    landmark_by_category_area?: string;
+    listId?: number;
+    listName?: string;
+    key?: string;
+    type?: string;
+    listView?: string;
+    selectedLocationsList?: [];
   };
   listView?: string;
   locationIds?: string;

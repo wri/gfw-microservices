@@ -3,12 +3,12 @@ class ListDetailsPage {
     listDiagnosticsBtn: () => cy.get('[data-cy="list-diagnostics"]'),
     locationDiagnosticsBtn: () => cy.get('[data-cy="location-diagnostics"]'),
     fullListMapBtn: () => cy.contains('Full List Map'),
-    checkBoxSelectAll: () => cy.get('[for="column-checkbox-all"]'),
+    checkBoxSelectAll: () => cy.get('div.rt-table').find('label.column-checkbox:visible').eq(0),
     checkBoxSelectLocation: (name) => cy.contains(name),
     downloadBtn: () => cy.contains('Download'),
-    downloadCSVOptionBtn: () => cy.contains('CSV'),
-    downloadResultsOptionBtn: () => cy.contains('Results'),
-    downloadShapefileptionBtn: () => cy.contains('Shapefile'),
+    downloadCSVOptionListDetail: () => cy.contains('CSV'),
+    downloadResultsOptionListDetail: () => cy.contains('Results'),
+    downloadShapefileptionListDetail: () => cy.contains('Shapefile'),
     titleAlertDownloadList: () => cy.contains('List file Download'),
     moveBtn: () => cy.contains('Move'),
     deleteBtn: () => cy.contains('Delete'),
@@ -19,6 +19,7 @@ class ListDetailsPage {
     saveAsDraftBtn: () => cy.contains('Save As Draft'),
     confirmActionBtn: () => cy.contains('button', 'OK'),
     titleConfirmCopyList: () => cy.contains('h3', 'Locations Moved'),
+    applyFilters: () => cy.contains('Apply filters'),
     descriptionConfirmCopyList: () =>
       cy.contains('div', 'Location move process starts, this can take a while, please be patient.'),
     descriptionAlertDownloadList: () =>
@@ -31,6 +32,25 @@ class ListDetailsPage {
   clickOnLocationsList(name: string) {
     cy.contains(name).click();
   }
+
+  selectorCountry(location: string) {
+    cy.get('select').first().select(location);
+  }
+
+  clickOnApplyFilters() {
+    this.elements.applyFilters().click();
+  }
+  selectCheckBoxs(locations: number[]) {
+    if (locations && locations.length > 0) {
+      locations.forEach((location) => {
+        cy.get('div.rt-table')
+          .find('label.column-checkbox.column-checkbox-single:visible')
+          .eq(location - 1)
+          .click();
+      });
+    }
+  }
+
   selectLocationOnList(location: string) {
     this.elements.checkBoxSelectLocation(location).find('input').click();
   }
@@ -60,7 +80,7 @@ class ListDetailsPage {
       cy.get('ul.my-lists-list').then(($ul) => {
         if ($ul.find(`li:contains(${listName})`).length > 0) {
           this.clickOnLocationsList(listName);
-          this.clickOnCheckBoxSelectAll();
+          this.checkOnCheckBoxSelectAll();
           this.clickOnDeleteBtn();
           this.elements.confirmActionBtn().should('be.visible');
           this.clickOnConfirmActionBtn();
@@ -69,18 +89,25 @@ class ListDetailsPage {
     });
   }
 
-  copyLists(lists: string[]) {
+  copyLists(lists: string[], locations?: number[]) {
     lists.forEach((listName) => {
-      this.clickOnCheckBoxSelectAll();
+      if (locations && locations.length > 0) {
+        locations.forEach((location) => {
+          cy.get('div.rt-table')
+            .find('label.column-checkbox.column-checkbox-single:visible')
+            .eq(location - 1)
+            .click();
+        });
+      } else {
+        this.checkOnCheckBoxSelectAll();
+      }
+
       this.clickOnMoveBtn();
       this.clickOnCreateNewListRadioBtn();
       this.elements.inputCreateNewList().type(listName);
       this.clickOnSaveAsDraftBtn();
 
-      this.elements.titleConfirmCopyList().should('be.visible');
-      this.elements.descriptionConfirmCopyList().should('be.visible');
       this.elements.confirmActionBtn().should('be.visible');
-
       this.clickOnConfirmActionBtn();
     });
   }
@@ -89,7 +116,7 @@ class ListDetailsPage {
     cy.get('div.move-to-list-select select').select(list);
   }
   clickOnSaveAsDraftBtn() {
-    this.elements.saveAsDraftBtn().click();
+    this.elements.saveAsDraftBtn().should('be.visible').click();
   }
   clickOnSubmitBtn() {
     this.elements.submitBtn().click();
@@ -121,20 +148,20 @@ class ListDetailsPage {
   clickOnFullListMapBtn() {
     this.elements.fullListMapBtn().click();
   }
-  clickOnCheckBoxSelectAll() {
+  checkOnCheckBoxSelectAll() {
     this.elements.checkBoxSelectAll().click();
   }
   clickOnDownload() {
     this.elements.downloadBtn().click();
   }
   clickOnResultsOption() {
-    this.elements.downloadResultsOptionBtn().click();
+    this.elements.downloadResultsOptionListDetail().click();
   }
   clickOnCSVOption() {
-    this.elements.downloadCSVOptionBtn().click();
+    this.elements.downloadCSVOptionListDetail().click();
   }
   clickOnShapefileOption() {
-    this.elements.downloadShapefileptionBtn().click();
+    this.elements.downloadShapefileptionListDetail().click();
   }
   clickCloseAlertDownload() {
     this.elements.closeAlertDownloadBtn().click();

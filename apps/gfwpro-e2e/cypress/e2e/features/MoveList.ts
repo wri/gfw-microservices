@@ -8,8 +8,8 @@ describe('Move List', () => {
   const listDetailsPage = new ListDetailsPage();
 
   const listsToCreate = [
-    `testregresionmovelistfrom-${Date.now()}`,
-    `testregresionmovelistto-${Date.now()}`,
+    `testregressionmovelistfrom${Date.now()}`,
+    `testregressionmovelistto${Date.now()}`,
   ];
 
   When('I login in the landing page', () => {
@@ -17,7 +17,7 @@ describe('Move List', () => {
     cy.visit('/locations');
   });
 
-  When('I navigate to a list details page', () => {
+  When('I navigate to a list details page origin', () => {
     locationsPage.clickOnLocationsList('AAT Argentina Polygons Generic');
   });
 
@@ -27,6 +27,7 @@ describe('Move List', () => {
 
   Then('I should see the created lists in the locations page', () => {
     cy.visit('/locations');
+    cy.reload();
     locationsPage.verifyLists(listsToCreate, true);
   });
 
@@ -50,11 +51,13 @@ describe('Move List', () => {
 
   Then('I should be able to delete the lists from the locations page', () => {
     cy.visit('/locations');
+    cy.reload();
     locationsPage.deleteLists(listsToCreate);
   });
 
   Then('I should verify the lists are deleted from the locations page', () => {
     cy.visit('/locations');
+    cy.reload();
     locationsPage.verifyLists(listsToCreate, false);
   });
 });

@@ -7,7 +7,7 @@ describe('Delete List', () => {
   const locationsPage = new LocationsPage();
   const listDetailsPage = new ListDetailsPage();
 
-  const listToDelete = [`testregresiondeletelist-${Date.now()}`];
+  const listToDelete = [`testregressiondeletelist${Date.now()}`];
 
   When('I login in the landing page', () => {
     User.login();
@@ -24,6 +24,7 @@ describe('Delete List', () => {
 
   Then('I should see the created list in the locations page', () => {
     cy.visit('/locations');
+    cy.reload();
     locationsPage.verifyLists(listToDelete, true);
   });
 
@@ -33,6 +34,7 @@ describe('Delete List', () => {
 
   Then('I should verify the list is deleted from the locations page', () => {
     cy.visit('/locations');
+    cy.reload();
     locationsPage.verifyLists(listToDelete, false);
   });
 });

@@ -53,7 +53,7 @@ export = (app, limiter) => {
         res.send({ redirect: '/profile' });
       })
       .catch((err) => {
-        logger.error('Reject', err);
+        logger.error('POST /profile/activateUser', err);
         res.send(err);
       });
   });
@@ -66,12 +66,13 @@ export = (app, limiter) => {
         res.send({ redirect: '/profile' });
       })
       .catch((err) => {
-        logger.error('Reject', err);
+        logger.error('POST /profile/deactivateUser', err);
         res.send(err);
       });
   });
 
   app.post('/profile/updateAccount', (req, res) => {
+    logger.info('POST /profile/updateAccount');
     const {
       org_name,
       org_address,
@@ -105,7 +106,7 @@ export = (app, limiter) => {
         }
       })
       .catch((err) => {
-        logger.error('Reject', err);
+        logger.error('POST /profile/updateAccount [updateAccountProfile]', err);
         res.send(err);
       });
   });
@@ -147,7 +148,7 @@ export = (app, limiter) => {
         });
       })
       .catch((err) => {
-        logger.error('Reject', err);
+        logger.error('POST /profile/createuser', err);
         res.send(err);
       });
   });
@@ -191,12 +192,13 @@ export = (app, limiter) => {
         res.send(result);
       })
       .catch((err) => {
-        logger.error('Reject', err);
+        logger.error('POST /profile/updateuser', err);
         res.send(err);
       });
   });
 
   app.post('/profile/deletePolicy', (req, res) => {
+    logger.info('POST /profile/deletePolicy');
     const { policySelectedList } = req.body;
     PolicyManager.deletePolicies(req, policySelectedList)
       .then((result) => {
@@ -207,12 +209,13 @@ export = (app, limiter) => {
         }
       })
       .catch((err) => {
-        logger.error('Reject', err);
+        logger.error('POST /profile/deletePolicy', err);
         res.send(err);
       });
   });
 
   app.get('/profile/downloadPolicy/:policyList', (req, res) => {
+    logger.info(`GET /profile/downloadPolicy/:policyList`);
     const orgId = req.session.organization_id;
     const policy = req.params.policyList;
     PolicyManager.downloadPolicy(req, policy, orgId)
@@ -221,7 +224,7 @@ export = (app, limiter) => {
         filestream.pipe(res);
       })
       .catch((err) => {
-        logger.error('Reject', err);
+        logger.error('GET /profile/downloadPolicy/:policyList', err);
         res.send(err);
       });
   });
@@ -233,7 +236,7 @@ export = (app, limiter) => {
         res.send(secret);
       })
       .catch((err) => {
-        logger.error('Error getting secret', err);
+        logger.error('POST /userSecret', err);
       });
   });
 

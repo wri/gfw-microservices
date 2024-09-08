@@ -5,7 +5,6 @@ import IconButton from '../../../../../common/js/components/IconButton';
 import IconTimes from '../../../../../common/js/components/icon/IconTimes';
 import { locationsPage } from '../../../../../common/js/config';
 import { numberWithCommas } from '../../../../../locations/js/utils/locationsTableUtils';
-import { gfwListNames } from '../../../../../common/js/constants/lists.constants';
 
 const transifex = Transifex.live.translateText;
 
@@ -16,13 +15,12 @@ function LocationsSummary({
   filteredLists,
   filterValues,
   listLocationsCount,
-  listName,
   openCountriesPopover,
   selectedList,
   shareView,
   toggleCountriesPopover,
 }) {
-  const isGfwProList = gfwListNames.includes(listName);
+  const isGfwProList = selectedList.isGlobalForestWatchList;
 
   let listLength = 0;
   let countriesSelected = [];

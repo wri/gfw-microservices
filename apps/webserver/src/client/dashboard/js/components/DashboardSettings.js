@@ -25,7 +25,7 @@ export default class DashboardSettings extends Component {
       listId: selectedList.id,
       selectedTimeframe,
       visibleLayers,
-      isGfwList: selectedList.globalForestWatchList,
+      isGfwList: selectedList.isGlobalForestWatchList,
       isSharedList: selectedList?.is_shared,
       latitude: viewCenter.latitude,
       longitude: viewCenter.longitude,

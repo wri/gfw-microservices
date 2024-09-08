@@ -43,7 +43,7 @@ module.exports = (app, limiter) => {
         }
       })
       .catch((err) => {
-        logger.error('Reject', err);
+        logger.error('POST /auth/verifyLogin', err);
         res.send(err);
       });
   });
@@ -56,7 +56,7 @@ module.exports = (app, limiter) => {
         res.send('Done');
       })
       .catch((err) => {
-        logger.error('Reject', err);
+        logger.error('POST /auth/resentToken', err);
         res.send(err);
       });
   });

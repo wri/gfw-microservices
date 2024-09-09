@@ -120,7 +120,7 @@ const CustomRow = ({
               <Menu className="context-menu">
                 {isCopyMoveActionAvailable && (
                   <MenuItem
-                    primaryText="Copy/Move"
+                    primaryText="COPY/MOVE"
                     leftIcon={<DriveFileMoveIcon />}
                     onClick={() => {
                       store.dispatch(updateSelectedLocations([locationId]));
@@ -134,7 +134,7 @@ const CustomRow = ({
                 )}
                 {isEditActionAvailable && (
                   <MenuItem
-                    primaryText="Edit"
+                    primaryText="EDIT"
                     leftIcon={<EditIcon />}
                     onClick={() => {
                       store.dispatch(updateSelectedLocations([locationId]));
@@ -156,10 +156,11 @@ const CustomRow = ({
                   listView={listView}
                   isLoading={setIsLoading}
                   isGfwList={isGfwList}
+                  isHoverMenu
                 />
                 {isDeleteButtonAvailable && (
                   <MenuItem
-                    primaryText="Delete"
+                    primaryText="DELETE"
                     leftIcon={<DeleteIcon />}
                     style={{ color: 'red' }}
                     onClick={() => {

@@ -8,8 +8,8 @@ import Card from '@mui/material/Card';
 import CardContent from '@mui/material/CardContent';
 import BetaTag from '../../../common/js/components/BetaTag';
 import InfoBubble from '../../../common/js/components/InfoBubble';
-import { locationsPage } from '../../../common/js/config';
 import { forestLossDatasetIds } from './forestLossDatasets.constants';
+import infoBubbleConfig from '../../../common/js/infoBubbleConfig.constants';
 
 function AfiDiagnosticsTable({
   data,
@@ -32,27 +32,25 @@ function AfiDiagnosticsTable({
               <TableCell align="right">
                 <span>Natural Forest Coverage (HA)</span>
                 <BetaTag>(Beta)</BetaTag>
-                <InfoBubble infoBubbleId={locationsPage.infoBubbleConfig.naturalForestCoverage} />
+                <InfoBubble infoBubbleId={infoBubbleConfig.naturalForestCoverage} />
               </TableCell>
               <TableCell align="right">
                 <span>Natural Forest Loss (HA)</span>
                 <BetaTag>(Beta)</BetaTag>
-                <InfoBubble infoBubbleId={locationsPage.infoBubbleConfig.naturalForestLoss} />
+                <InfoBubble infoBubbleId={infoBubbleConfig.naturalForestLoss} />
               </TableCell>
               <TableCell align="right">
                 <span>Protected Area Overlap (HA)</span>
-                <InfoBubble infoBubbleId={locationsPage.infoBubbleConfig.kpisProtectedAreas} />
+                <InfoBubble infoBubbleId={infoBubbleConfig.kpisProtectedAreas} />
               </TableCell>
               <TableCell align="right">
                 <span>Indigenous Area Overlap (HA)</span>
-                <InfoBubble
-                  infoBubbleId={locationsPage.infoBubbleConfig.deforestationKpisIndigenous}
-                />
+                <InfoBubble infoBubbleId={infoBubbleConfig.deforestationKpisIndigenous} />
               </TableCell>
               {isSbtnSelected && !isLocationLevel && (
                 <TableCell align="right">
                   Negligible Risk
-                  <InfoBubble infoBubbleId={locationsPage.infoBubbleConfig.negligibleRisk} />
+                  <InfoBubble infoBubbleId={infoBubbleConfig.negligibleRisk} />
                 </TableCell>
               )}
             </TableRow>

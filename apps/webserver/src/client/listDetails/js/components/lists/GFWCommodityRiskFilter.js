@@ -16,6 +16,7 @@ import CountryStateSubStateFilter from './CountryStateSubStateFilter';
 import { checkValid, getLastValue } from '../../../../locations/js/utils/locationsTableUtils';
 import '../../../../common/css/filter-dialogs.scss';
 import { getFilterCounter } from '../../../../locations/js/utils/lists.utils';
+import { defaultFilterValues } from './defaultFilterValues';
 
 /**
  * Check Selected Filter
@@ -44,8 +45,8 @@ const checkSelectedFilter = (location, locationKey, selectedFilterValue) => {
 export default class CommodityRiskFilter extends Component {
   constructor(props) {
     super(props);
-    this.state = cloneDeep(locationsPage.defaultFilterValues);
-    this.initialState = cloneDeep(locationsPage.defaultFilterValues);
+    this.state = cloneDeep(defaultFilterValues);
+    this.initialState = cloneDeep(defaultFilterValues);
   }
 
   componentWillReceiveProps(nextProps) {
@@ -60,7 +61,7 @@ export default class CommodityRiskFilter extends Component {
       nextProps.filterCount === 0 &&
       nextProps.listView === 'commodity_risk'
     ) {
-      this.setState(cloneDeep(locationsPage.defaultFilterValues));
+      this.setState(cloneDeep(defaultFilterValues));
     }
   }
 

@@ -7,7 +7,7 @@ import {
   updateFilters,
   setFilterCount,
 } from '../../../../../locations/js/actions/locationActions';
-import { locationsPage } from '../../../../../common/js/config';
+import { defaultFilterValues } from '../defaultFilterValues';
 import Button from '../../../../../common/js/components/Button';
 import CountryStateSubStateFilter from './CountryStateSubStateFilter';
 import ColumnSelector from './ColumnSelector';
@@ -20,7 +20,7 @@ import '../../../../../common/css/filter-dialogs.scss';
 export default class Filter extends Component {
   constructor(props) {
     super(props);
-    this.state = { ...locationsPage.defaultFilterValues };
+    this.state = { ...defaultFilterValues };
     this.initialState = this.state;
   }
 

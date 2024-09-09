@@ -11,12 +11,13 @@ import { locationsPage } from '../../../../common/js/config';
 import Button from '../../../../common/js/components/Button';
 import { buildDropdownOptions } from '../../../../common/js/utils/buildDropdownOptions';
 import Select from 'react-select';
+import { defaultFilterValues } from './defaultFilterValues';
 import '../../../../common/css/filter-dialogs.scss';
 
 export default class GFWAdminForestChangeFilter extends Component {
   constructor(props) {
     super(props);
-    this.state = { ...locationsPage.defaultFilterValues };
+    this.state = { ...defaultFilterValues };
     this.initialState = this.state;
   }
 

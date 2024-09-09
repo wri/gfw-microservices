@@ -1,11 +1,10 @@
+import React from 'react';
 import { StateMock } from '@react-mock/state';
 import { render, cleanup } from '@testing-library/react';
 import getMuiTheme from 'material-ui/styles/getMuiTheme';
 import lightBaseTheme from 'material-ui/styles/baseThemes/lightBaseTheme';
 import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
-import React from 'react';
-
-import { locationsPage } from '../../common/js/config';
+import { defaultFilterValues } from '../../listDetails/js/components/lists/defaultFilterValues';
 import CommodityRiskFilter from '../../listDetails/js/components/lists/CommodityRiskFilter';
 
 import { LIST_DATA_BRAZIL } from './test-config';
@@ -47,7 +46,7 @@ describe('Test List Section Component', () => {
   });
 
   it('Should fill CommodityRiskFilter when pass variable', () => {
-    const myState = { ...locationsPage.defaultFilterValues };
+    const myState = { ...defaultFilterValues };
 
     const { getByText } = render(
       <MuiThemeProvider muiTheme={getMuiTheme(lightBaseTheme)}>
@@ -71,7 +70,7 @@ describe('Test List Section Component', () => {
   });
 
   it('Should fill CommodityRiskFilter and set state', () => {
-    const myState = { ...locationsPage.defaultFilterValues };
+    const myState = { ...defaultFilterValues };
 
     myState.selectedCountry = 'Brazil';
     myState.selectedState = 'Sumatera Utara';

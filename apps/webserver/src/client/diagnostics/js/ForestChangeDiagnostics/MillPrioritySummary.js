@@ -2,11 +2,11 @@ import React, { Component } from 'react';
 import Card from '@mui/material/Card';
 import CardContent from '@mui/material/CardContent';
 import {
-  locationsPage,
   earliestTreeCoverLossYearCommodityRisk,
   latestTreeCoverLossYearCommodityRisk,
 } from '../../../common/js/config';
 import DiagnosticsChartHeader from '../common/DiagnosticsChartHeader';
+import infoBubbleConfig from '../../../common/js/infoBubbleConfig.constants';
 
 export default class MillPrioritySummary extends Component {
   renderMillTable = () => {
@@ -177,7 +177,7 @@ export default class MillPrioritySummary extends Component {
                   <DiagnosticsChartHeader
                     title={'Mill Priority History'}
                     subtitle={'THREAT + VALUE'}
-                    informationBubbleId={locationsPage.infoBubbleConfig.millPriorityHistory}
+                    informationBubbleId={infoBubbleConfig.millPriorityHistory}
                   />
                 </div>
                 <div className="locations-diagnostics-chart">

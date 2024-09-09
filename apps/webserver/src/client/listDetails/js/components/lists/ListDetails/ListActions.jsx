@@ -1,15 +1,11 @@
 import React, { useState } from 'react';
 import InputBase from '@mui/material/InputBase';
-import Popover from 'material-ui/Popover';
-import Menu from 'material-ui/Menu';
-import MenuItem from 'material-ui/MenuItem';
 import IconButton from '@mui/material/IconButton';
 import { Stack, Button, Paper } from '@mui/material';
 import SearchIcon from '@mui/icons-material/Search';
 import ClearIcon from '@mui/icons-material/Clear';
 import PublishIcon from '@mui/icons-material/Publish';
 import PublicIcon from '@mui/icons-material/Public';
-import MoreVertIcon from '@mui/icons-material/MoreVert';
 import ReplayIcon from '@mui/icons-material/Replay';
 import DriveFileMoveIcon from '@mui/icons-material/DriveFileMove';
 import FolderSharedIcon from '@mui/icons-material/FolderShared';
@@ -80,8 +76,6 @@ const ListActions = ({
     },
   };
   const [isSearchBarOpen, setIsSearchBarOpen] = useState(false);
-  const [menuAnchorEl, setMenuAnchorEl] = useState(null);
-  const [isMenuOpen, setIsMenuOpen] = useState(false);
 
   const closeSearchBarHandler = () => {
     setIsSearchBarOpen(false);
@@ -93,6 +87,7 @@ const ListActions = ({
     selectedList &&
     selectedList.list_status_id !== 1 &&
     !selectedList.isGlobalForestWatchList &&
+    !showMultipleSelectionBulkActions &&
     !isSearchBarOpen;
 
   const isSubmitOptionAvailable =
@@ -103,17 +98,21 @@ const ListActions = ({
     !selectedList?.isGlobalForestWatchList &&
     !isSearchBarOpen;
 
-  const isRerunListAvailable =
+  const isUpdateAnalysisAvailable =
     (currentUser.access_level_id === userAccessLevel.ADMIN ||
       (currentUser.id === selectedList.user_id &&
         currentUser.access_level_id !== userAccessLevel.VIEWER)) &&
     selectedList?.list_status_id !== 1 &&
     !getIsDiagnosticStatusDraft(selectedList) &&
     !selectedList?.isGlobalForestWatchList &&
+    !showMultipleSelectionBulkActions &&
     !isSearchBarOpen;
 
   const isAddToFolderOptionAvailable =
-    selectedList && !selectedList.isGlobalForestWatchList && !isSearchBarOpen;
+    selectedList &&
+    !selectedList.isGlobalForestWatchList &&
+    !showMultipleSelectionBulkActions &&
+    !isSearchBarOpen;
   return (
     <>
       <Paper className="list-actions">
@@ -157,14 +156,15 @@ const ListActions = ({
           <Stack alignItems="center" direction="row">
             {!isSearchBarOpen && (
               <Button
-                onClick={() => viewMap({ showFullListMap: true })}
+                onClick={() => viewMap({ showFullListMap: !showMultipleSelectionBulkActions })}
                 startIcon={<PublicIcon />}
                 sx={greenButtonStyle}
               >
-                List Map
+                {showMultipleSelectionBulkActions ? <>Location(s) Map</> : <>List Map</>}
               </Button>
             )}
-            {isRerunListAvailable && (
+
+            {isUpdateAnalysisAvailable && (
               <div id="RerunList" className="selected-rerun-list">
                 <Button
                   sx={blackButtonStyle}
@@ -242,6 +242,50 @@ const ListActions = ({
                 </Button>
               </div>
             )}
+
+            {canMove && showMultipleSelectionBulkActions && !isSearchBarOpen && (
+              <Button
+                sx={blackButtonStyle}
+                startIcon={<DriveFileMoveIcon height="14px" />}
+                variant="primary"
+                onClick={promptMoveSelectedLocations}
+              >
+                Copy/Move
+              </Button>
+            )}
+
+            {showMultipleSelectionBulkActions && !isSearchBarOpen && (
+              <ListDownload
+                listID={selectedList?.id}
+                listName={selectedList?.list_name}
+                filters={filters}
+                listFilterStr={listFilterStr}
+                tableSortedBy={tableSortedBy}
+                tableSortedDesc={tableSortedDesc}
+                selectedList={selectedList}
+                combinedColumns={visibleColumns}
+                selectedLocations={selectedLocations}
+                currentUser={currentUser}
+                listView={listView}
+                isLoading={isLoading}
+                isGfwList={isGfwList}
+              />
+            )}
+
+            {isEditActionAvailable && showMultipleSelectionBulkActions && !isSearchBarOpen && (
+              <EditListBulkActionButton editList={editList} currentUser={currentUser} />
+            )}
+
+            {canDelete && showMultipleSelectionBulkActions && !isSearchBarOpen && (
+              <Button
+                sx={{ ...blackButtonStyle, color: 'red' }}
+                startIcon={<DeleteIcon height="14px" />}
+                variant="primary"
+                onClick={promptDeleteSelectedLocations}
+              >
+                Delete
+              </Button>
+            )}
           </Stack>
 
           <div>
@@ -260,66 +304,7 @@ const ListActions = ({
                 <ClearIcon sx={{ color: 'black' }} />
               </Button>
             )}
-
-            {showMultipleSelectionBulkActions && (
-              <Button
-                sx={{ minWidth: '35px', '& > svg': { margin: 0 } }}
-                onClick={(e) => {
-                  setMenuAnchorEl(e.currentTarget);
-                  setIsMenuOpen(!isMenuOpen);
-                }}
-              >
-                <MoreVertIcon sx={{ color: 'black' }} />
-              </Button>
-            )}
           </div>
-
-          <Popover
-            anchorEl={menuAnchorEl}
-            anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
-            open={isMenuOpen}
-            onRequestClose={() => setIsMenuOpen(false)}
-            targetOrigin={{ vertical: 'top', horizontal: 'right' }}
-          >
-            <Menu className="context-menu">
-              <ListDownload
-                listID={selectedList?.id}
-                listName={selectedList?.list_name}
-                filters={filters}
-                listFilterStr={listFilterStr}
-                tableSortedBy={tableSortedBy}
-                tableSortedDesc={tableSortedDesc}
-                selectedList={selectedList}
-                combinedColumns={visibleColumns}
-                selectedLocations={selectedLocations}
-                currentUser={currentUser}
-                listView={listView}
-                isLoading={isLoading}
-                isGfwList={isGfwList}
-              />
-
-              {canMove && (
-                <MenuItem
-                  primaryText="Copy/Move"
-                  leftIcon={<DriveFileMoveIcon />}
-                  onClick={promptMoveSelectedLocations}
-                />
-              )}
-
-              {isEditActionAvailable && (
-                <EditListBulkActionButton editList={editList} currentUser={currentUser} />
-              )}
-
-              {canDelete && (
-                <MenuItem
-                  primaryText="Delete"
-                  leftIcon={<DeleteIcon />}
-                  style={{ color: 'red' }}
-                  onClick={promptDeleteSelectedLocations}
-                />
-              )}
-            </Menu>
-          </Popover>
         </Stack>
       </Paper>
       <CustomDialog

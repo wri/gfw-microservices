@@ -1369,6 +1369,7 @@ export default class ListDetails extends Component {
       // or use another property in sendData to send these
       locationIds = JSON.stringify(locationIds);
     }
+
     const isGfwList = selectedLists[0].isGlobalForestWatchList;
     const isSharedList =
       selectedLists &&
@@ -1381,7 +1382,6 @@ export default class ListDetails extends Component {
       isSharedList,
       selectedLocations: isEveryRowSelected || showFullListMap ? [] : locationIds,
     };
-
     redirectToMap(sendData);
     gtag('event', 'Header button click', {
       event_category: 'Lists Click',
@@ -2088,7 +2088,8 @@ export default class ListDetails extends Component {
                           {!getIsDraftWithoutDiagnostic(selectedList) &&
                             listName !== 'Administrative Areas' &&
                             listName !== 'Protected Areas' &&
-                            (isGfwList || getActiveAnalysisType(listAnalysesStatus)) && (
+                            (isGfwList || getActiveAnalysisType(listAnalysesStatus)) &&
+                            !showMultipleSelectionBulkActions && (
                               <MaterialButton
                                 className="list-analysis-actions__diagnostic-button"
                                 sx={{

@@ -16,7 +16,5 @@
   },
   "[json]": {
     "editor.defaultFormatter": "esbenp.prettier-vscode"
-  },
-  "pieces.cloudCapabilities": "Blended",
-  "pieces.telemetry": true
+  }
 }

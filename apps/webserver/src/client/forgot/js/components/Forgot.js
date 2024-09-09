@@ -46,20 +46,14 @@ export default class Forgot extends Component {
           res = null;
         }
         if (res) {
-          if (
-            'systemMessage' in res &&
-            res.systemMessage.code === 'LimitExceededException'
-          ) {
+          if ('systemMessage' in res && res.systemMessage.code === 'LimitExceededException') {
             this.setState({
               showModalLoader: false,
               dialogOpen: true,
               dialogTitle: forgotStrings.resetLimit.title,
               dialogMessage: forgotStrings.resetLimit.message,
             });
-          } else if (
-            'systemMessage' in res &&
-            res.systemMessage === 'User does not exist'
-          ) {
+          } else if ('systemMessage' in res && res.systemMessage === 'User does not exist') {
             this.setState({
               showModalLoader: false,
               dialogOpen: true,

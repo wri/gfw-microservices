@@ -19,7 +19,7 @@ describe('Chart Component', () => {
       { id: 3, legend: 'Label 3', color: 'blue' },
     ];
 
-    const { container } = render(<Chart data={data} chartLabels={chartLabels} />);
+    render(<Chart data={data} chartLabels={chartLabels} />);
 
     expect(require('highcharts').chart).toHaveBeenCalledWith(
       expect.objectContaining({

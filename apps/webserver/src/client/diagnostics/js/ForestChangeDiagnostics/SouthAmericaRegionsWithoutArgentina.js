@@ -234,7 +234,7 @@ export default class SouthAmericaRegions extends Component {
       brazilBiomeLocations.forEach((location) => {
         Object.entries(location).forEach((pair) => {
           const [category, value] = pair;
-          if (result.hasOwnProperty(category)) {
+          if (result[category] !== undefined) {
             result[category] += value;
           } else {
             result[category] = value;
@@ -582,7 +582,6 @@ export default class SouthAmericaRegions extends Component {
 
   renderSouthAmericaTable = (totals) => {
     const {
-      soyChecked,
       prodesChecked,
       paChecked,
       pfChecked,
@@ -590,7 +589,6 @@ export default class SouthAmericaRegions extends Component {
       biomesChecked,
 
       legalAmazon,
-      cerradoBiome,
       brazilianBiomes,
       startYear,
       endYear,
@@ -599,7 +597,6 @@ export default class SouthAmericaRegions extends Component {
     let checked;
     let onChange;
     let label;
-    let legendColor;
     let child = false;
     let disabled = false;
     let dataCy = '';
@@ -609,7 +606,6 @@ export default class SouthAmericaRegions extends Component {
       switch (category) {
         case 'totalSoy':
           label = 'Soy on Tree Cover Loss';
-          legendColor = checked = soyChecked;
           child = false;
           disabled = !value;
           dataCy = 'soy-cover-loss';
@@ -630,7 +626,6 @@ export default class SouthAmericaRegions extends Component {
           break;
         case 'totalProdes':
           label = 'PRODES';
-          legendColor = undefined;
           checked = prodesChecked;
           child = true;
           disabled = !brazilianBiomes;
@@ -650,7 +645,6 @@ export default class SouthAmericaRegions extends Component {
           break;
         case 'totalPA':
           label = 'Protected Areas';
-          legendColor = PROTECTED_AREAS_COLOR;
           checked = paChecked;
           child = true;
           disabled = !(legalAmazon && value !== 0);
@@ -665,7 +659,6 @@ export default class SouthAmericaRegions extends Component {
           break;
         case 'totalPF':
           label = 'Primary Forest';
-          legendColor = PRIMARY_FOREST_COLOR;
           checked = pfChecked;
           child = true;
           disabled = !(legalAmazon && value !== 0);
@@ -679,7 +672,6 @@ export default class SouthAmericaRegions extends Component {
           break;
         case 'saTotalTCL':
           label = 'Tree Cover Loss';
-          legendColor = 'rgb(255,127,179)';
           checked = saTCLChecked;
           child = true;
           disabled = false;
@@ -701,7 +693,6 @@ export default class SouthAmericaRegions extends Component {
 
         case 'totalBiomes':
           label = 'Brazil Biomes';
-          legendColor = undefined;
           checked = biomesChecked;
           child = true;
           disabled = !brazilianBiomes;
@@ -777,7 +768,7 @@ export default class SouthAmericaRegions extends Component {
         Object.entries(location).forEach((biome) => {
           const [biomeName, yearlyData] = biome;
 
-          if (result.hasOwnProperty(biomeName)) {
+          if (result[biomeName] !== undefined) {
             Object.entries(yearlyData).forEach((year) => {
               const [yr, value] = year;
               if (yr >= startYear && yr <= endYear) {
@@ -835,7 +826,7 @@ export default class SouthAmericaRegions extends Component {
       brazilBiomeLocations.forEach((location) => {
         Object.entries(location).forEach((pair) => {
           const [category, value] = pair;
-          if (result.hasOwnProperty(category)) {
+          if (result[category] !== undefined) {
             result[category] += value;
           } else {
             result[category] = value;

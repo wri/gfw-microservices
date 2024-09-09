@@ -164,7 +164,7 @@ export function getGladMonthlyYear(feature) {
  * @param {moment.unitOfTime.StartOf} propertyFilter - Property Filter (e.g. 'day' | 'week' | 'month')
  * @return {Object | 'delete'} - List of VIIRS alerts
  */
-export function getViirsGrouped(feature, momentStart, momentEnd, propertyFilter) {
+export function getViirsGrouped(feature, momentStart, momentEnd) {
   return groupBy(feature.properties.viirs_alerts_daily, (alert) => {
     const alertMoment = moment(alert.day);
     if (alertMoment.isBefore(momentStart) || alertMoment.isAfter(momentEnd)) {

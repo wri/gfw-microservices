@@ -10,7 +10,6 @@ import {
   getGladMonthlyQuarter,
   getGladMonthlyYear,
   getGladMonthlyMonth,
-  getSelectedTimeframeStartEndGroupings,
   getViirsGrouped,
 } from './dashboard-date.utils';
 import axios from 'axios';
@@ -105,19 +104,7 @@ function calculateAlerts(
   }
 }
 
-/**
- * Sorting dates
- * @param a
- * @param b
- * @returns {number}
- */
-function momentSort(a, b) {
-  const momentA = moment(a.start, 'DD MMM YYYY');
-  const momentB = moment(b.start, 'DD MMM YYYY');
-  return momentA.diff(momentB);
-}
-
-function applyLocationFilter(geojson, locationFilters, selectedAlert, selectedTimeframe) {
+function applyLocationFilter(geojson, locationFilters, selectedAlert) {
   const { ALERTS, NOALERTS } = locationFilters;
   const selectedCoverageProperty = dictionary.alertType_featureCoverageProperty[selectedAlert];
   const selectedTimeframeProperty = dictionary.alertType_featureTimeframeProperty[selectedAlert];
@@ -160,7 +147,7 @@ function applyTimeframeFilter(geojson, selectedTimeframe) {
     // Week timeframe
     if (
       selectedTimeframe === 'WEEK' &&
-      feature.properties.hasOwnProperty('glad_alerts_daily') &&
+      feature.properties.glad_alerts_daily !== undefined &&
       feature.properties.glad_alerts_daily.length > 0
     ) {
       groupedGlad = getGladDaily(feature);
@@ -169,7 +156,7 @@ function applyTimeframeFilter(geojson, selectedTimeframe) {
     // Month timeframe
     if (
       selectedTimeframe === 'MONTH' &&
-      feature.properties.hasOwnProperty('glad_alerts_monthly') &&
+      feature.properties.glad_alerts_monthly !== undefined &&
       feature.properties.glad_alerts_monthly.length > 0
     ) {
       groupedGlad = getGladMonthlyMonth(feature);
@@ -178,7 +165,7 @@ function applyTimeframeFilter(geojson, selectedTimeframe) {
     // Quarter timeframe
     if (
       selectedTimeframe === 'QUARTER' &&
-      feature.properties.hasOwnProperty('glad_alerts_monthly') &&
+      feature.properties.glad_alerts_monthly !== undefined &&
       feature.properties.glad_alerts_monthly.length > 0
     ) {
       groupedGlad = getGladMonthlyQuarter(feature);
@@ -187,7 +174,7 @@ function applyTimeframeFilter(geojson, selectedTimeframe) {
     // Year timeframe
     if (
       selectedTimeframe === 'YEAR' &&
-      feature.properties.hasOwnProperty('glad_alerts_monthly') &&
+      feature.properties.glad_alerts_monthly !== undefined &&
       feature.properties.glad_alerts_monthly.length > 0
     ) {
       groupedGlad = getGladMonthlyYear(feature);
@@ -217,7 +204,7 @@ function applyTimeframeFilterRemix(geojson, selectedTimeframe) {
     let groupedGlad = [];
     if (
       selectedTimeframe === 'WEEK' &&
-      feature.properties.hasOwnProperty('glad_alerts_daily') &&
+      feature.properties.glad_alerts_daily !== undefined &&
       feature.properties.glad_alerts_daily.length > 0
     ) {
       groupedGlad = getGladDaily(feature);
@@ -225,7 +212,7 @@ function applyTimeframeFilterRemix(geojson, selectedTimeframe) {
 
     if (
       selectedTimeframe === 'MONTH' &&
-      feature.properties.hasOwnProperty('glad_alerts_monthly') &&
+      feature.properties.glad_alerts_monthly !== undefined &&
       feature.properties.glad_alerts_monthly.length > 0
     ) {
       groupedGlad = getGladMonthlyMonth(feature);
@@ -233,7 +220,7 @@ function applyTimeframeFilterRemix(geojson, selectedTimeframe) {
 
     if (
       selectedTimeframe === 'QUARTER' &&
-      feature.properties.hasOwnProperty('glad_alerts_monthly') &&
+      feature.properties.glad_alerts_monthly !== undefined &&
       feature.properties.glad_alerts_monthly.length > 0
     ) {
       groupedGlad = getGladMonthlyQuarter(feature);
@@ -241,7 +228,7 @@ function applyTimeframeFilterRemix(geojson, selectedTimeframe) {
 
     if (
       selectedTimeframe === 'YEAR' &&
-      feature.properties.hasOwnProperty('glad_alerts_monthly') &&
+      feature.properties.glad_alerts_monthly !== undefined &&
       feature.properties.glad_alerts_monthly.length > 0
     ) {
       groupedGlad = getGladMonthlyYear(feature);

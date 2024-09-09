@@ -47,7 +47,7 @@ export default class Forgot extends Component {
         }
         if (res) {
           if (
-            res.hasOwnProperty('systemMessage') &&
+            'systemMessage' in res &&
             res.systemMessage.code === 'LimitExceededException'
           ) {
             this.setState({
@@ -57,7 +57,7 @@ export default class Forgot extends Component {
               dialogMessage: forgotStrings.resetLimit.message,
             });
           } else if (
-            res.hasOwnProperty('systemMessage') &&
+            'systemMessage' in res &&
             res.systemMessage === 'User does not exist'
           ) {
             this.setState({
@@ -66,9 +66,9 @@ export default class Forgot extends Component {
               dialogTitle: forgotStrings.noUser.title,
               dialogMessage: forgotStrings.noUser.message,
             });
-          } else if (res.hasOwnProperty('message') && res.message === 'Success') {
+          } else if ('message' in res && res.message === 'Success') {
             window.location.href = '/reset'; // if we succeed, redirect to reset page
-          } else if (res.hasOwnProperty('message') && res.message === 'Resend') {
+          } else if ('message' in res && res.message === 'Resend') {
             this.setState({
               dialogOpen: true,
               dialogTitle: forgotStrings.passwordExpired.title,

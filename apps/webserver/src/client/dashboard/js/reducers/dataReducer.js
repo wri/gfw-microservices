@@ -82,7 +82,7 @@ function applyDataReducerTimeframeFilter(filteredLocationsObject, selectedTimefr
         // Month timeframe
         if (
           selectedTimeframe === 'MONTH' &&
-          feature.properties.hasOwnProperty('glad_alerts_monthly') &&
+          feature.properties.glad_alerts_monthly !== undefined &&
           feature.properties.glad_alerts_monthly.length > 0
         ) {
           groupedGlad = getGladMonthlyMonth(feature);
@@ -91,7 +91,7 @@ function applyDataReducerTimeframeFilter(filteredLocationsObject, selectedTimefr
         // Quarter timeframe
         if (
           selectedTimeframe === 'QUARTER' &&
-          feature.properties.hasOwnProperty('glad_alerts_monthly') &&
+          feature.properties.glad_alerts_monthly !== undefined &&
           feature.properties.glad_alerts_monthly.length > 0
         ) {
           groupedGlad = getGladMonthlyQuarter(feature);
@@ -100,7 +100,7 @@ function applyDataReducerTimeframeFilter(filteredLocationsObject, selectedTimefr
         // Year timeframe
         if (
           selectedTimeframe === 'YEAR' &&
-          feature.properties.hasOwnProperty('glad_alerts_monthly') &&
+          feature.properties.glad_alerts_monthly !== undefined &&
           feature.properties.glad_alerts_monthly.length > 0
         ) {
           groupedGlad = getGladMonthlyYear(feature);
@@ -108,11 +108,11 @@ function applyDataReducerTimeframeFilter(filteredLocationsObject, selectedTimefr
 
         const groupedViirs = getViirsGrouped(feature, momentStart, momentEnd, propertyFilter);
 
-        if (groupedGlad.hasOwnProperty('delete')) {
+        if (groupedGlad.delete !== undefined) {
           delete groupedGlad.delete;
         }
 
-        if (groupedViirs.hasOwnProperty('delete')) {
+        if (groupedViirs.delete !== undefined) {
           delete groupedViirs.delete;
         }
 
@@ -132,7 +132,7 @@ function applyDataReducerTimeframeFilter(filteredLocationsObject, selectedTimefr
       // Week timeframe
       if (
         selectedTimeframe === 'WEEK' &&
-        feature.properties.hasOwnProperty('glad_alerts_daily') &&
+        feature.properties.glad_alerts_daily !== undefined &&
         feature.properties.glad_alerts_daily.length > 0
       ) {
         groupedGlad = getGladDaily(feature);
@@ -141,7 +141,7 @@ function applyDataReducerTimeframeFilter(filteredLocationsObject, selectedTimefr
       // Month timeframe
       if (
         selectedTimeframe === 'MONTH' &&
-        feature.properties.hasOwnProperty('glad_alerts_monthly') &&
+        feature.properties.glad_alerts_monthly !== undefined &&
         feature.properties.glad_alerts_monthly.length > 0
       ) {
         groupedGlad = getGladMonthlyMonth(feature);
@@ -150,7 +150,7 @@ function applyDataReducerTimeframeFilter(filteredLocationsObject, selectedTimefr
       // Quarter timeframe
       if (
         selectedTimeframe === 'QUARTER' &&
-        feature.properties.hasOwnProperty('glad_alerts_monthly') &&
+        feature.properties.glad_alerts_monthly !== undefined &&
         feature.properties.glad_alerts_monthly.length > 0
       ) {
         groupedGlad = getGladMonthlyQuarter(feature);
@@ -159,7 +159,7 @@ function applyDataReducerTimeframeFilter(filteredLocationsObject, selectedTimefr
       // Year timeframe
       if (
         selectedTimeframe === 'YEAR' &&
-        feature.properties.hasOwnProperty('glad_alerts_monthly') &&
+        feature.properties.glad_alerts_monthly !== undefined &&
         feature.properties.glad_alerts_monthly.length > 0
       ) {
         groupedGlad = getGladMonthlyYear(feature);

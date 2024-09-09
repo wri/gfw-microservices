@@ -324,7 +324,7 @@ export default class SoutheastAsiaRegions extends Component {
       filterPropertyLocations.forEach((location) => {
         Object.entries(location).forEach((pair) => {
           const [category, value] = pair;
-          if (result.hasOwnProperty(category)) {
+          if (result[category] !== undefined) {
             result[category] += value;
           } else {
             result[category] = value;
@@ -632,7 +632,7 @@ export default class SoutheastAsiaRegions extends Component {
       filterPropertyLocations.forEach((location) => {
         Object.entries(location).forEach((pair) => {
           const [category, value] = pair;
-          if (result.hasOwnProperty(category)) {
+          if (result[category] !== undefined) {
             result[category] += value;
           } else {
             result[category] = value;
@@ -681,7 +681,6 @@ export default class SoutheastAsiaRegions extends Component {
     let checked;
     let onChange;
     let label;
-    let legendColor;
     let indent;
     let disabled = false;
     let dataCy = '';
@@ -700,7 +699,6 @@ export default class SoutheastAsiaRegions extends Component {
       switch (key) {
         case 'totalTCL':
           label = 'Tree Cover Loss';
-          legendColor = 'rgb(255,127,179)';
           dataCy = 'tree-cover-loss';
           checked = tclChecked;
           onChange = () => {
@@ -717,7 +715,6 @@ export default class SoutheastAsiaRegions extends Component {
           break;
         case 'sea':
           label = 'Southeast Asia Landcover';
-          legendColor = undefined;
           dataCy = 'southeast-asia-landcover';
           checked = seaChecked;
           onChange = () => {
@@ -738,7 +735,6 @@ export default class SoutheastAsiaRegions extends Component {
           break;
         case 'idnTCL':
           label = 'Indonesia Landcover';
-          legendColor = undefined;
           checked = idnChecked;
           dataCy = 'indonesia-landcover';
           onChange = () => {
@@ -759,7 +755,6 @@ export default class SoutheastAsiaRegions extends Component {
           break;
         case 'idnLegalTCL':
           label = 'Indonesia Legal Classification';
-          legendColor = undefined;
           checked = idnLegalChecked;
           dataCy = 'indonesia-legal-classification';
           onChange = () => {
@@ -780,7 +775,6 @@ export default class SoutheastAsiaRegions extends Component {
           break;
         case 'idnMoratoriumTCL':
           label = 'Indonesia Forest Moratorium';
-          legendColor = 'rgb(129,129,129)';
           checked = idnMoratoriumChecked;
           dataCy = 'indonesia-forest-moratorium';
           onChange = () => {
@@ -801,7 +795,6 @@ export default class SoutheastAsiaRegions extends Component {
           break;
         case 'idnPrimaryForestTCL':
           label = 'Primary Forest';
-          legendColor = 'rgb(129,129,129)';
           checked = idnPrimaryForestChecked;
           onChange = () => {
             this.setState({

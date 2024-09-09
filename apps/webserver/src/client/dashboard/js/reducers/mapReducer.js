@@ -34,7 +34,7 @@ export function selectAdmin(state = '', action) {
 
 export function updateMapTitle(state = 'Last Week', action) {
   switch (action.type) {
-    case types.SELECT_TIMEFRAME:
+    case types.SELECT_TIMEFRAME: {
       const { timeframe } = action;
       switch (timeframe) {
         case 'DAY':
@@ -50,6 +50,7 @@ export function updateMapTitle(state = 'Last Week', action) {
         default:
           return state;
       }
+    }
     default:
       return state;
   }

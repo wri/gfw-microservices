@@ -8,35 +8,54 @@ interface QueryCreateTableResult {
   query_string: string;
 }
 
-export class InsertLocationData extends AbstractHandler<ChainType> {
-  async createListTableInDatabase(
-    connection: SQLUtils,
-    listId: number,
-    tableName: string,
-    sqlQuery: string
+export class CreateLocationSchema extends AbstractHandler<ChainType> {
+  private clientStoreConnection: ClientStoreConnection;
+
+  constructor(clientStoreConnection: ClientStoreConnection) {
+    super();
+    this.clientStoreConnection = clientStoreConnection;
+  }
+
+  private createSqlParameter(
+    field: string,
+    type: sql.ISqlType | sql.ISqlTypeFactoryWithNoParams,
+    value: string | number
   ) {
+    return { field, type, value };
+  }
+
+  private async executeQueryWithParams<T>(
+    connection: SQLUtils,
+    procedureName: string,
+    parameters: {
+      field: string;
+      type: sql.ISqlType | sql.ISqlTypeFactoryWithNoParams;
+      value: string | number;
+    }[]
+  ): Promise<T> {
     try {
-      await connection.executeQuery('uspCreateListTable', [
-        {
-          field: 'table_name',
-          type: sql.NVarChar(150),
-          value: tableName,
-        },
-        {
-          field: 'query_string',
-          type: sql.NVarChar(sql.MAX),
-          value: sqlQuery,
-        },
-      ]);
+      return await connection.executeQuery<T>(procedureName, parameters);
     } catch (error) {
-      throw new Error('Failed create list table: ' + error.message);
+      throw new Error(`Failed to execute ${procedureName}: ${error.message}`);
     }
   }
 
-  async getTableStructureQuery(templateId: number): Promise<QueryCreateTableResult[]> {
+  public async createListTableInDatabase(
+    connection: SQLUtils,
+    tableName: string,
+    sqlQuery: string
+  ): Promise<void> {
+    const parameters = [
+      this.createSqlParameter('table_name', sql.NVarChar(150), tableName),
+      this.createSqlParameter('query_string', sql.NVarChar(sql.MAX), sqlQuery),
+    ];
+
+    await this.executeQueryWithParams<void>(connection, 'uspCreateListTable', parameters);
+  }
+
+  public async getTableStructureQuery(templateId: number): Promise<QueryCreateTableResult[]> {
     try {
-      const clientStoreConnection = new ClientStoreConnection();
-      const connection = await clientStoreConnection.getConnection(process.env.MSSQL_DATABASE);
+      const connection = await this.clientStoreConnection.getConnection(process.env.MSSQL_DATABASE);
       const command = connection.createQueryRunner();
       await command.connect();
       const queryCreateTableResult: QueryCreateTableResult[] = await command.query(
@@ -46,55 +65,39 @@ export class InsertLocationData extends AbstractHandler<ChainType> {
 
       return queryCreateTableResult;
     } catch (error) {
-      throw new Error('Failed get table structure query: ' + error.message);
+      throw new Error(`Failed to get table structure query: ${error.message}`);
     }
   }
 
-  async createAnalysisTableInDatabase(connection: SQLUtils, listId: number, analysisTable: string) {
-    try {
-      await connection.executeQuery('uspCreateAnalysisTable', [
-        {
-          field: 'list_analysis_table_name',
-          type: sql.NVarChar(150),
-          value: analysisTable,
-        },
-      ]);
-    } catch (error) {
-      throw new Error('Failed create analysis table: ' + error.message);
-    }
+  public async createAnalysisTableInDatabase(
+    connection: SQLUtils,
+    analysisTable: string
+  ): Promise<void> {
+    const parameters = [
+      this.createSqlParameter('list_analysis_table_name', sql.NVarChar(150), analysisTable),
+    ];
+
+    await this.executeQueryWithParams<void>(connection, 'uspCreateAnalysisTable', parameters);
   }
 
-  async createAnalysisStatusRecords(
+  public async createAnalysisStatusRecords(
     clientDatabase: string,
     listId: number,
     listStatusId: number,
-    analysisIds: Array<string>
-  ) {
+    analysisIds: string[]
+  ): Promise<void> {
     try {
-      // instead of using 'foreach', 'map' and Promise.all guarantee faster updates
       await Promise.all(
         analysisIds.map(async (analysisId) => {
           await SQLUtils.queryDB(clientDatabase, 'uspCreateListAnalysisStatus', [
-            {
-              field: 'ListID',
-              type: sql.Int,
-              value: listId,
-            },
-            {
-              field: 'AnalysisID',
-              type: sql.NVarChar(150),
-              value: analysisId,
-            },
-            {
-              field: 'Status',
-              type: sql.Int,
-              value: listStatusId,
-            },
+            this.createSqlParameter('ListID', sql.Int, listId),
+            this.createSqlParameter('AnalysisID', sql.NVarChar(150), analysisId),
+            this.createSqlParameter('Status', sql.Int, listStatusId),
           ]);
         })
       );
     } catch (error) {
-      throw new Error('Failed create analysis status records: ' + error.message);
+      throw new Error(`Failed to create analysis status records: ${error.message}`);
     }
   }
 
@@ -111,22 +114,27 @@ export class InsertLocationData extends AbstractHandler<ChainType> {
 
     const queryCreateTableResult = await this.getTableStructureQuery(templateId);
     const connection = new SQLUtils(sqlConfig);
-    await connection.connect();
 
-    await updateListsUploadStatus(connection.databaseName, listId, 'Get table query structure');
+    try {
+      await connection.connect();
 
-    await this.createListTableInDatabase(
-      connection,
-      listId,
-      listTable,
-      queryCreateTableResult[0].query_string
-    );
+      await updateListsUploadStatus(connection.databaseName, listId, 'Get table query structure');
 
-    await this.createAnalysisTableInDatabase(connection, listId, analysisTable);
-    await updateListsUploadStatus(connection.databaseName, listId, 'Create analysis table');
+      await this.createListTableInDatabase(
+        connection,
+        listTable,
+        queryCreateTableResult[0].query_string
+      );
 
-    await this.createAnalysisStatusRecords(clientDatabase, listId, listStatusId, analysisIds);
-    await updateListsUploadStatus(clientDatabase, listId, 'Create analysis status records');
-    super.handle(input);
+      await this.createAnalysisTableInDatabase(connection, analysisTable);
+      await updateListsUploadStatus(connection.databaseName, listId, 'Create analysis table');
+
+      await this.createAnalysisStatusRecords(clientDatabase, listId, listStatusId, analysisIds);
+      await updateListsUploadStatus(clientDatabase, listId, 'Create analysis status records');
+
+      await super.handle(input);
+    } finally {
+      await connection.disconnect();
+    }
   }
 }

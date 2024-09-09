@@ -1,7 +1,7 @@
-import { GeoJson } from '@wri-monorepos/geo';
+import { FeatureCollection } from '@wri-monorepos/geo';
 
 export type ChainType = {
-  geojson: GeoJson;
+  geojson?: FeatureCollection;
   request: RequestNewList;
 };
 

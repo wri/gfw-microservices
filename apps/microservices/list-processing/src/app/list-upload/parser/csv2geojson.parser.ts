@@ -1,7 +1,7 @@
 import * as Papa from 'papaparse';
 import * as sexagesimal from '@mapbox/sexagesimal';
 import { Logger } from '@nestjs/common';
-import { Geometry, GeoJson } from '@wri-monorepos/geo';
+import { Geometry, GeoJson, FeatureCollection } from '@wri-monorepos/geo';
 
 const logger = new Logger('CSV2GeoJSONParser');
 
@@ -9,7 +9,10 @@ interface LocationData {
   [key: string]: string | number | undefined | object;
 }
 
-export const csv2geojson = async (csvContent: string, includeLatLon = true): Promise<GeoJson> => {
+export const csv2geojson = async (
+  csvContent: string,
+  includeLatLon = true
+): Promise<FeatureCollection> => {
   const toCamelCase = (str: string) => {
     return str
       .toLowerCase()

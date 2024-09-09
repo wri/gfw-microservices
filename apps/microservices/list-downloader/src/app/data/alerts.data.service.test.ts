@@ -33,7 +33,7 @@ describe('[AlertsDataService] Get number of pages', () => {
 
     expect(mockedAxios.get).toBeCalledTimes(1);
     expect(mockedAxios.get).toHaveBeenCalledWith(
-      'http://localhost:3334/api/alerts/6982/countDashboardData?clientDatabase=test'
+      'http://localhost:3333/api/alerts/6982/countDashboardData?clientDatabase=test'
     );
 
     expect(value).toBe(2);
@@ -49,7 +49,7 @@ describe('[AlertsDataService] Get number of pages', () => {
 
     expect(mockedAxios.get).toBeCalledTimes(1);
     expect(mockedAxios.get).toHaveBeenCalledWith(
-      'http://localhost:3334/api/alerts/6982/countGFWDashboardData'
+      'http://localhost:3333/api/alerts/6982/countGFWDashboardData'
     );
 
     expect(value).toBe(2);
@@ -63,7 +63,7 @@ describe('[AlertsDataService] Get number of pages', () => {
 
     expect(mockedAxios.get).toBeCalledTimes(1);
     expect(mockedAxios.get).toHaveBeenCalledWith(
-      'http://localhost:3334/api/alerts/6982/countDashboardData?clientDatabase=test'
+      'http://localhost:3333/api/alerts/6982/countDashboardData?clientDatabase=test'
     );
 
     expect(value).toBe(0);
@@ -92,7 +92,7 @@ describe('[AnalysisAfiDataService] Get data', () => {
 
     expect(mockedAxios.get).toBeCalledTimes(1);
     expect(mockedAxios.get).toHaveBeenCalledWith(
-      'http://localhost:3334/api/alerts/6982/dashboardDataPaginated?rowsPerPage=100&pageNumber=2&clientDatabase=test'
+      'http://localhost:3333/api/alerts/6982/dashboardDataPaginated?rowsPerPage=100&pageNumber=2&clientDatabase=test'
     );
   });
 
@@ -107,7 +107,7 @@ describe('[AnalysisAfiDataService] Get data', () => {
 
     expect(mockedAxios.get).toBeCalledTimes(1);
     expect(mockedAxios.get).toHaveBeenCalledWith(
-      'http://localhost:3334/api/alerts/6982/dashboardGFWDataPaginated?rowsPerPage=100&pageNumber=2'
+      'http://localhost:3333/api/alerts/6982/dashboardGFWDataPaginated?rowsPerPage=100&pageNumber=2'
     );
   });
 });

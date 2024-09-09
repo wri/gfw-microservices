@@ -8,7 +8,6 @@ import Point from '@arcgis/core/geometry/Point';
 import Polygon from '@arcgis/core/geometry/Polygon';
 import SpatialReference from '@arcgis/core/geometry/SpatialReference';
 import * as geometryEngine from '@arcgis/core/geometry/geometryEngine';
-import * as webMercatorUtils from '@arcgis/core/geometry/support/webMercatorUtils';
 import { arcgisToGeoJSON, GeoJSONGeometry, geojsonToArcGIS } from './arcgis-to-geojson';
 
 const PRODUCTION_ENVIRONMENTS = ['production', 'ProdV2'];

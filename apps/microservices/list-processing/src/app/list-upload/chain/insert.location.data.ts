@@ -1,4 +1,4 @@
-import { EntitySchema } from 'typeorm';
+import { DataSource, EntitySchema } from 'typeorm';
 import { AbstractHandler, ChainType } from './types';
 import { ClientStoreConnection, ListSchema, ListSchemaType } from '@wri-monorepos/sql';
 import { FeatureCollection } from '@wri-monorepos/geo';
@@ -13,9 +13,9 @@ export class InsertLocationData extends AbstractHandler<ChainType> {
   }
 
   private async insertBatch(
-    connection: any,
+    connection: DataSource,
     ListEntity: EntitySchema<ListSchemaType>,
-    batch: any[]
+    batch: Record<string, unknown>[]
   ): Promise<void> {
     try {
       await connection
@@ -40,7 +40,6 @@ export class InsertLocationData extends AbstractHandler<ChainType> {
     const connection = await this.clientStoreConnection.getConnection(organizationDatabase, [
       ListEntity,
     ]);
-    console.log(connection);
 
     try {
       const features = (input.geojson as FeatureCollection).features;

@@ -2,7 +2,7 @@ import { ListSchema } from './list.schema';
 import { AbstractHandler, ChainType } from './types';
 import { getListByFilters } from '@wri-monorepos/sql';
 import * as sqlite3 from 'sqlite3';
-import { open } from 'sqlite';
+import { Database, open } from 'sqlite';
 
 jest.mock('@wri-monorepos/sql', () => ({
   getListByFilters: jest.fn(),
@@ -10,7 +10,7 @@ jest.mock('@wri-monorepos/sql', () => ({
 
 describe('ListSchema', () => {
   let listSchema: ListSchema;
-  let db: any;
+  let db: Database;
 
   beforeAll(async () => {
     db = await open({
@@ -37,7 +37,6 @@ describe('ListSchema', () => {
 
   it('should throw an error if list name already exists', async () => {
     const listName = 'TestList';
-    const clientDatabase = db;
 
     await db.run(`INSERT INTO lists (list_name) VALUES (?)`, [listName]);
 
@@ -50,7 +49,7 @@ describe('ListSchema', () => {
       request: {
         userId: 1,
         list_name: listName,
-        organization_database: clientDatabase,
+        organization_database: 'test-db',
         templateId: 1,
         path: 'path',
       },
@@ -61,7 +60,6 @@ describe('ListSchema', () => {
 
   it('should call super.handle with correct parameters if list name does not exist', async () => {
     const listName = 'NewList';
-    const clientDatabase = db;
 
     (getListByFilters as jest.Mock).mockImplementation(async ({ listName }) => {
       const result = await db.get(`SELECT * FROM lists WHERE list_name = ?`, [listName]);
@@ -72,7 +70,7 @@ describe('ListSchema', () => {
       request: {
         userId: 1,
         list_name: listName,
-        organization_database: clientDatabase,
+        organization_database: 'test-db',
         templateId: 1,
         path: 'path',
       },

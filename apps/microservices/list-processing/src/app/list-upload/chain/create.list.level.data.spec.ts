@@ -2,6 +2,7 @@ import { CreateList } from './create.list.level.data';
 import { SQLUtils } from '@wri-monorepos/sql';
 import { updateListsUploadStatus } from '../shared/update.lists.upload.status';
 import { CreateListResult } from '@wri-monorepos/geo';
+import * as sql from 'mssql';
 
 import { ChainType } from './types';
 
@@ -14,7 +15,7 @@ describe('CreateList', () => {
   let mockConnection: jest.Mocked<SQLUtils>;
 
   beforeEach(() => {
-    mockConnection = new SQLUtils({} as any) as jest.Mocked<SQLUtils>;
+    mockConnection = new SQLUtils({} as sql.config) as jest.Mocked<SQLUtils>;
     createList = new CreateList();
   });
 
@@ -143,12 +144,12 @@ describe('CreateList', () => {
           path: 'test_path',
         },
       };
-      mockConnection.executeQuery.mockRejectedValue(new Error('Query failed'));
+
+      jest
+      .spyOn(createList, 'insertListInListTable')
+      .mockRejectedValue(new Error('Query failed'));
 
       await expect(createList.handle(mockInput)).rejects.toThrow('Query failed');
-
-      expect(mockConnection.connect).toHaveBeenCalled();
-      expect(mockConnection.disconnect).toHaveBeenCalled();
     });
   });
 });

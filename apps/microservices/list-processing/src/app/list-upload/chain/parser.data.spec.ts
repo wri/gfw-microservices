@@ -1,6 +1,6 @@
 import { ListSchema } from './list.schema';
 import { getListByFilters } from '@wri-monorepos/sql';
-import { AbstractHandler } from './types';
+import { AbstractHandler, ChainType } from './types';
 
 // Mock the getListByFilters function
 jest.mock('@wri-monorepos/sql', () => ({
@@ -9,7 +9,7 @@ jest.mock('@wri-monorepos/sql', () => ({
 
 describe('ListSchema', () => {
   let listSchema: ListSchema;
-  let mockInput: any;
+  let mockInput: ChainType;
 
   beforeEach(() => {
     listSchema = new ListSchema();
@@ -17,6 +17,9 @@ describe('ListSchema', () => {
       request: {
         list_name: 'Test List',
         organization_database: 'test_db',
+        userId: 0,
+        templateId: 0,
+        path: ''
       },
     };
   });

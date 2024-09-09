@@ -3,6 +3,7 @@ import { ClientStoreConnection, SQLUtils } from '@wri-monorepos/sql';
 import { updateListsUploadStatus } from '../shared/update.lists.upload.status';
 import { ChainType } from './types';
 import { DataSource } from 'typeorm';
+import * as sql from 'mssql';
 
 // Mock dependencies
 jest.mock('@wri-monorepos/sql');
@@ -18,7 +19,7 @@ describe('CreateLocationSchema', () => {
       getConnection: jest.fn(),
     } as unknown as jest.Mocked<ClientStoreConnection>;
 
-    mockConnection = new SQLUtils({} as any) as jest.Mocked<SQLUtils>;
+    mockConnection = new SQLUtils({} as sql.config) as jest.Mocked<SQLUtils>;
 
     createLocationSchema = new CreateLocationSchema(mockClientStoreConnection);
   });

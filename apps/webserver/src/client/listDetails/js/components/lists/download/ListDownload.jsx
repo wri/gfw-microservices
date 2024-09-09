@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import IconMenu from 'material-ui/IconMenu';
+import { Button } from '@mui/material';
 import MenuItem from 'material-ui/MenuItem';
 import DownloadIcon from '@mui/icons-material/Download';
 import RaisedButton from 'material-ui/RaisedButton';
@@ -39,6 +40,7 @@ function ListDownload({
   listView,
   allLocationsSelected,
   isGfwList,
+  isHoverMenu,
 }) {
   const [dialogOpen, setDialogOpen] = useState(false);
 
@@ -100,14 +102,24 @@ function ListDownload({
     downloadEnabled && (
       <>
         <IconMenu
-          style={{ width: '100%' }}
+          style={{ width: isHoverMenu ? '100%' : 'auto' }}
           iconButtonElement={
             isListDetailsPageRedesignAvailable ? (
-              <MenuItem
-                data-cy="download-list"
-                primaryText="Download"
-                leftIcon={<DownloadIcon />}
-              />
+              isHoverMenu ? (
+                <MenuItem
+                  primaryText="DOWNLOAD"
+                  leftIcon={<DownloadIcon />}
+                  data-cy="download-list"
+                />
+              ) : (
+                <Button
+                  data-cy="download-list"
+                  startIcon={<DownloadIcon height="14px" />}
+                  variant="primary"
+                >
+                  Download
+                </Button>
+              )
             ) : (
               <RaisedButton
                 data-cy="download-list"

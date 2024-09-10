@@ -7,10 +7,14 @@ import { DataSourceOptions } from 'typeorm';
 import { ConfigModule } from '@nestjs/config/dist';
 import { GitController } from './git.controller';
 
+const envModule = ConfigModule.forRoot({
+  isGlobal: true,
+});
+
 @Module({
   imports: [
+    envModule,
     TerminusModule,
-    ConfigModule.forRoot({ isGlobal: true }),
     TypeOrmModule.forRootAsync({
       useFactory: () => {
         const dbConfig: DataSourceOptions = {

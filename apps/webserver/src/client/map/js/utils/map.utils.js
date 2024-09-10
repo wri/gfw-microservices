@@ -1,7 +1,6 @@
 import _isEmpty from 'lodash/isEmpty';
 
 // Utils
-import { isGfwList } from '../../../common/js/utils/gfw.utils';
 import {
   getCurrentlySelectedList,
   getSelectedPopupFeatureEsriGraphic,
@@ -17,7 +16,7 @@ import {
 export async function getLocationGeometry(props, mapView, selectedList) {
   let geometry = {};
 
-  if (selectedList && !isGfwList(selectedList?.list_name)) {
+  if (selectedList && !selectedList.isGlobalForestWatchList) {
     const { listData, userLists, gfwLists, userSharedLists } = props;
     const selectedFeaturePopup = mapView.popup.features[mapView.popup.selectedFeatureIndex];
     let listTableName;

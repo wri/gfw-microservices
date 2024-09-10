@@ -44,12 +44,6 @@ export class ListProtectedAreas {
   @Column({ name: 'globalid' })
   globalid: string;
 
-  @Column({ name: 'WDPAID' })
-  WDPAID: number;
-
-  @Column({ name: 'WDPA_PID' })
-  WDPA_PID: string;
-
   @Column({ name: 'Geometry' })
   'Geometry': string;
 

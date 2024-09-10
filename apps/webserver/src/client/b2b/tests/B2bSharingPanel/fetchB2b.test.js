@@ -5,7 +5,6 @@ import {
   acceptConnection,
   cancelConnection,
   rejectConnection,
-  resendInvitation,
   getOrgsList,
 } from './../../js/components/B2bSharingPanel/fetchB2b';
 

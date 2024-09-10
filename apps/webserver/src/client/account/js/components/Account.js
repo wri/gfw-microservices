@@ -294,15 +294,15 @@ export default class Account extends Component {
     });
   };
 
-  createClassOptions = (option, i) => {
+  createClassOptions = (option) => {
     return { label: option.classification_name, value: option.id };
   };
 
-  createGeogOptions = (option, i) => {
+  createGeogOptions = (option) => {
     return { label: option.geography_name, value: option.id };
   };
 
-  createCommOptions = (option, i) => {
+  createCommOptions = (option) => {
     return { label: option.commmodity_name, value: option.id };
   };
 

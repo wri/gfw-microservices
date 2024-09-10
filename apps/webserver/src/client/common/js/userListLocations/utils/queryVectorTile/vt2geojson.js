@@ -2,7 +2,7 @@ import PBF from 'pbf';
 import MapboxVT from '@mapbox/vector-tile';
 
 export const vt2geojson = async (args) => {
-  return new Promise((resolve, reject) => {
+  return new Promise((resolve) => {
     if (!args.uri) {
       new Error('No URI found. Please provide a valid URI to your vector tile.');
     }

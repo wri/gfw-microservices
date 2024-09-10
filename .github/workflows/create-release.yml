@@ -62,7 +62,7 @@ jobs:
             new_tag_num=$(printf "%03d" $((10#$new_tag_num + 1)))
             new_tag="LD-${env}-V$new_tag_num"
           fi
-          git tag -a -f $new_tag
+          git tag -a -F $new_tag
           git push origin $new_tag
           echo "::set-output name=tag::$new_tag"
 
@@ -91,7 +91,7 @@ jobs:
             new_tag_num=$(printf "%03d" $((10#$new_tag_num + 1)))
             new_tag="LP-${env}-V$new_tag_num"
           fi
-          git tag -a -f $new_tag
+          git tag -a -F $new_tag
           git push origin $new_tag
           echo "::set-output name=tag::$new_tag"
 
@@ -120,7 +120,7 @@ jobs:
             new_tag_num=$(printf "%03d" $((10#$new_tag_num + 1)))
             new_tag="WEB-${env}-V$new_tag_num"
           fi
-          git tag -a -f $new_tag
+          git tag -a -F $new_tag
           git push origin $new_tag
           echo "::set-output name=tag::$new_tag"
 
@@ -149,7 +149,7 @@ jobs:
             new_tag_num=$(printf "%03d" $((10#$new_tag_num + 1)))
             new_tag="EAPI-${env}-V$new_tag_num"
           fi
-          git tag -a -f $new_tag
+          git tag -a -F $new_tag
           git push origin $new_tag
           echo "::set-output name=tag::$new_tag"
 

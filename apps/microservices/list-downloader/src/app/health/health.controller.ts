@@ -20,7 +20,8 @@ export class HealthController {
   check() {
     return this.health.check([
       async () => this.db.pingCheck('database'),
-      async () => this.http.pingCheck('LP', process.env.LIST_PROCESSING_MICROSERVICE_URL),
+      async () =>
+        this.http.pingCheck('LP', `${process.env.LIST_PROCESSING_MICROSERVICE_URL}/HealthCheck`),
     ]);
   }
 }

@@ -21,7 +21,7 @@ export default class DashboardSettings extends Component {
   };
 
   handleViewMap = () => {
-    const { selectedAlert, selectedList, selectedTimeframe, zoomLevel, selectedAdmin } = this.props;
+    const { selectedAlert, selectedList, selectedTimeframe, zoomLevel, selectedAdmin, view } = this.props;
     if (!selectedList || !selectedList.id) {
       return;
     }

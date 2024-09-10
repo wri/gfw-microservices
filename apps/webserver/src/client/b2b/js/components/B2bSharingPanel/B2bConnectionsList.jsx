@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 
-import { Container, Grid } from '@mui/material';
+import { Container } from '@mui/material';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import B2BConnectionListTable from './B2BConnectionList/B2BConnectionListTable';
 import NewConnectionButton from './NewConnectionButton';

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { aboutPage } from '../../common/js/config';
+import aboutStrings from './aboutStrings';
 import Page from '../../common/js/components/Page';
 import { useQuery } from '../../common/js/hooks';
 import { useLocation, useHistory } from 'react-router-dom';
@@ -32,8 +32,8 @@ export default function About() {
         <main>
           <div className="hero__gradient" />
           <div className="page-header">
-            <h1 className="About__title page__title">{aboutPage.heroTitle}</h1>
-            <p dangerouslySetInnerHTML={{ __html: aboutPage.heroDescription }} />
+            <h1 className="About__title page__title">{aboutStrings.heroTitle}</h1>
+            <p dangerouslySetInnerHTML={{ __html: aboutStrings.heroDescription }} />
           </div>
         </main>
 
@@ -52,28 +52,28 @@ export default function About() {
           <div className="page-body__content">
             {sectionOpen === 'About GFW Pro' && (
               <section className="about-gfw-pro">
-                <h3>{aboutPage.aboutTitle}</h3>
-                <div dangerouslySetInnerHTML={{ __html: aboutPage.aboutDescription }} />
+                <h3>{aboutStrings.aboutTitle}</h3>
+                <div dangerouslySetInnerHTML={{ __html: aboutStrings.aboutDescription }} />
               </section>
             )}
             {sectionOpen === 'Fees' && (
               <section className="fees">
-                <h3>{aboutPage.feesTitle}</h3>
-                {aboutPage.feesDescription.map((paragraph) => {
+                <h3>{aboutStrings.feesTitle}</h3>
+                {aboutStrings.feesDescription.map((paragraph) => {
                   return <p dangerouslySetInnerHTML={{ __html: paragraph }} />;
                 })}
               </section>
             )}
             {sectionOpen === 'History' && (
               <section className="history">
-                <h3>{aboutPage.historyTitle}</h3>
-                <div dangerouslySetInnerHTML={{ __html: aboutPage.historyDescription }} />
+                <h3>{aboutStrings.historyTitle}</h3>
+                <div dangerouslySetInnerHTML={{ __html: aboutStrings.historyDescription }} />
               </section>
             )}
             {sectionOpen === 'Tutorials' && (
               <section className="tutorials">
-                <h3>{aboutPage.tutorialsTitle}</h3>
-                <p>{aboutPage.tutorialsDescription}</p>
+                <h3>{aboutStrings.tutorialsTitle}</h3>
+                <p>{aboutStrings.tutorialsDescription}</p>
                 <p>
                   Visit our{' '}
                   <a

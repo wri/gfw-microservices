@@ -5,7 +5,7 @@ import Button from '../../../common/js/components/Button';
 import LinkButton from '../../../common/js/components/LinkButton';
 import SubHeader from '../../../common/js/components/SubHeader';
 import httpRequest from '../../../common/js/utils/httpRequest';
-import { authMessages } from '../../../common/js/config';
+import forgotStrings from './forgotStrings';
 import '../../css/forgot.scss';
 
 const pageOptions = {
@@ -53,8 +53,8 @@ export default class Forgot extends Component {
             this.setState({
               showModalLoader: false,
               dialogOpen: true,
-              dialogTitle: authMessages.resetLimit.title,
-              dialogMessage: authMessages.resetLimit.message,
+              dialogTitle: forgotStrings.resetLimit.title,
+              dialogMessage: forgotStrings.resetLimit.message,
             });
           } else if (
             res.hasOwnProperty('systemMessage') &&
@@ -63,23 +63,23 @@ export default class Forgot extends Component {
             this.setState({
               showModalLoader: false,
               dialogOpen: true,
-              dialogTitle: authMessages.noUser.title,
-              dialogMessage: authMessages.noUser.message,
+              dialogTitle: forgotStrings.noUser.title,
+              dialogMessage: forgotStrings.noUser.message,
             });
           } else if (res.hasOwnProperty('message') && res.message === 'Success') {
             window.location.href = '/reset'; // if we succeed, redirect to reset page
           } else if (res.hasOwnProperty('message') && res.message === 'Resend') {
             this.setState({
               dialogOpen: true,
-              dialogTitle: authMessages.passwordExpired.title,
-              dialogMessage: authMessages.passwordExpired.message,
+              dialogTitle: forgotStrings.passwordExpired.title,
+              dialogMessage: forgotStrings.passwordExpired.message,
             });
           }
         } else {
           this.setState({
             dialogOpen: true,
-            dialogTitle: authMessages.resetError.title,
-            dialogMessage: authMessages.resetError.message,
+            dialogTitle: forgotStrings.resetError.title,
+            dialogMessage: forgotStrings.resetError.message,
           });
         }
       })
@@ -88,8 +88,8 @@ export default class Forgot extends Component {
         this.setState({
           loading: false,
           dialogOpen: true,
-          dialogTitle: authMessages.internalError.title,
-          dialogMessage: authMessages.internalError.message,
+          dialogTitle: forgotStrings.internalError.title,
+          dialogMessage: forgotStrings.internalError.message,
         });
       });
   };

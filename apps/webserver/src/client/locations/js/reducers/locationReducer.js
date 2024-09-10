@@ -27,8 +27,8 @@ import {
   UPDATE_BUBBLE_DATA,
   UPDATE_POPOVER_ANCHOR,
 } from '../constants/actionTypes';
-import { locationsPage } from '../../../common/js/config';
 import cloneDeep from 'lodash/cloneDeep';
+import infoBubbleConfig from '../../../common/js/infoBubbleConfig.constants';
 
 const initialLocationState = {
   localColor: 'red',
@@ -64,7 +64,7 @@ const initialLocationState = {
 };
 
 // initialize infoBubleCache keys from config
-Object.entries(locationsPage.infoBubbleConfig).forEach((entry) => {
+Object.entries(infoBubbleConfig).forEach((entry) => {
   const infoBubbleId = entry[1];
   initialLocationState.infoBubbleCache[infoBubbleId] = null;
 });

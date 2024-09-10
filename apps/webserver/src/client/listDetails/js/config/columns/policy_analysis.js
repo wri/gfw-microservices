@@ -1,5 +1,5 @@
 import React from 'react';
-import { columnHeaders } from '../../../../common/js/config';
+import { columnHeaders } from './columnHeaders.constants';
 import { checkValid, locationIsActive } from '../../../../locations/js/utils/locationsTableUtils';
 import ColumnsHeader from '../../components/columns/ColumnsHeader';
 

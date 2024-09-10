@@ -13,12 +13,13 @@ import GfwSelect from '../../../../common/js/components/GfwSelect';
 import { buildDropdownOptions } from '../../../../common/js/utils/buildDropdownOptions';
 import CountryStateSubStateFilter from './CountryStateSubStateFilter';
 import Select from 'react-select';
+import { defaultFilterValues } from './defaultFilterValues';
 import '../../../../common/css/filter-dialogs.scss';
 
 export default class GFWProtectedForestChangeFilter extends Component {
   constructor(props) {
     super(props);
-    this.state = { ...locationsPage.defaultFilterValues };
+    this.state = { ...defaultFilterValues };
     this.initialState = this.state;
   }
 

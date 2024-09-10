@@ -12,6 +12,7 @@ import Button from '../../../../common/js/components/Button';
 import GfwSelect from '../../../../common/js/components/GfwSelect';
 import { locationsPage } from '../../../../common/js/config';
 import CountryStateSubStateFilter from './CountryStateSubStateFilter';
+import { defaultFilterValues } from './defaultFilterValues';
 import '../../../../common/css/filter-dialogs.scss';
 
 /**
@@ -62,7 +63,7 @@ const multiOptionsFilterLogic = (
 export default class GFWForestChangeFilter extends Component {
   constructor(props) {
     super(props);
-    this.state = { ...locationsPage.defaultFilterValues };
+    this.state = { ...defaultFilterValues };
     this.initialState = this.state;
   }
 

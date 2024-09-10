@@ -115,3 +115,4 @@ jobs:
           git tag -a $new_tag -m "Release for EAPI"
           git push origin $new_tag
           echo "::set-output name=tag::$new_tag"
+

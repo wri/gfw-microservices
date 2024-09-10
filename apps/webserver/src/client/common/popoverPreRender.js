@@ -4,21 +4,7 @@ import PopoverAnimationDefault from 'material-ui/Popover/PopoverAnimationDefault
 
 Popover.prototype.componentWillMount = function () {
   this.renderLayer = () => {
-    const {
-      animated,
-      animation,
-      anchorEl, // eslint-disable-line no-unused-vars
-      anchorOrigin, // eslint-disable-line no-unused-vars
-      autoCloseWhenOffScreen, // eslint-disable-line no-unused-vars
-      canAutoPosition, // eslint-disable-line no-unused-vars
-      children,
-      onRequestClose, // eslint-disable-line no-unused-vars
-      style,
-      targetOrigin,
-      useLayerForClickAway, // eslint-disable-line no-unused-vars
-      scrollableContainer, // eslint-disable-line no-unused-vars
-      ...other
-    } = this.props;
+    const { animated, animation, children, style, targetOrigin, ...other } = this.props;
 
     let styleRoot = {
       ...style,

@@ -1,5 +1,3 @@
-/* eslint-disable import/no-unresolved */
-/* eslint-disable react/jsx-filename-extension */
 import { render, cleanup } from '@testing-library/react';
 import React from 'react';
 

@@ -2,14 +2,13 @@ import React from 'react';
 import { profilePage } from '../../../../../common/js/config';
 import CloseIcon from '@mui/icons-material/Close';
 import CancelIcon from '@mui/icons-material/Cancel';
-import CachedIcon from '@mui/icons-material/Cached';
 import { useCancel, useReject } from '../hooks';
 
 export default function B2BConnectionListDetails(props) {
   const { onclickDetails, row } = props;
 
-  const [isCancelling, cancelConnection] = useCancel();
-  const [isRejecting, rejectConnection] = useReject();
+  const [, cancelConnection] = useCancel();
+  const [, rejectConnection] = useReject();
 
   const status = {
     pending: {

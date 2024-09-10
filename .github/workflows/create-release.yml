@@ -1,0 +1,111 @@
+name: Manually Trigger Release
+
+on:
+  workflow_dispatch:
+    inputs:
+      branch:
+        description: 'Branch to create release from'
+        required: true
+        default: 'develop'
+      microservice:
+        description: 'Microservice to create release for'
+        required: true
+        default: 'ALL'
+        options:
+          - LD
+          - LP
+          - WEB
+          - EAPI
+          - ALL
+      environment:
+        description: 'Environment to create release for'
+        required: true
+        default: 'STG'
+        options:
+          - QA
+          - STG
+          - PROD
+
+jobs:
+  create-release:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+        with:
+          ref: ${{ github.event.inputs.branch }}
+          fetch-depth: 0
+          ssh-key: '${{ secrets.DEPLOY_KEY }}'
+
+      - name: Set up Git
+        run: |
+          git config --global user.name 'github-actions[bot]'
+          git config --global user.email 'github-actions[bot]@users.noreply.github.com'
+
+      - name: Create Release for LD
+        if: ${{ github.event.inputs.microservice == 'LD' || github.event.inputs.microservice == 'ALL' }}
+        id: ld_release
+        run: |
+          env=${{ github.event.inputs.environment }}
+          latest_tag=$(git tag -l "LD-${env}-V*" | sort -V | tail -n 1)
+          if [ -z "$latest_tag" ]; then
+            new_tag="LD-${env}-V001"
+          else
+            new_tag_num=$(echo $latest_tag | sed 's/[^0-9]*//g')
+            new_tag_num=$(printf "%03d" $((10#$new_tag_num + 1)))
+            new_tag="LD-${env}-V$new_tag_num"
+          fi
+          git tag -a $new_tag -m "Release for LD"
+          git push origin $new_tag
+          echo "::set-output name=tag::$new_tag"
+
+      - name: Create Release for LP
+        if: ${{ github.event.inputs.microservice == 'LP' || github.event.inputs.microservice == 'ALL' }}
+        id: lp_release
+        run: |
+          env=${{ github.event.inputs.environment }}
+          latest_tag=$(git tag -l "LP-${env}-V*" | sort -V | tail -n 1)
+          if [ -z "$latest_tag" ]; then
+            new_tag="LP-${env}-V001"
+          else
+            new_tag_num=$(echo $latest_tag | sed 's/[^0-9]*//g')
+            new_tag_num=$(printf "%03d" $((10#$new_tag_num + 1)))
+            new_tag="LP-${env}-V$new_tag_num"
+          fi
+          git tag -a $new_tag -m "Release for LP"
+          git push origin $new_tag
+          echo "::set-output name=tag::$new_tag"
+
+      - name: Create Release for WEB
+        if: ${{ github.event.inputs.microservice == 'WEB' || github.event.inputs.microservice == 'ALL' }}
+        id: web_release
+        run: |
+          env=${{ github.event.inputs.environment }}
+          latest_tag=$(git tag -l "WEB-${env}-V*" | sort -V | tail -n 1)
+          if [ -z "$latest_tag" ]; then
+            new_tag="WEB-${env}-V001"
+          else
+            new_tag_num=$(echo $latest_tag | sed 's/[^0-9]*//g')
+            new_tag_num=$(printf "%03d" $((10#$new_tag_num + 1)))
+            new_tag="WEB-${env}-V$new_tag_num"
+          fi
+          git tag -a $new_tag -m "Release for WEB"
+          git push origin $new_tag
+          echo "::set-output name=tag::$new_tag"
+
+      - name: Create Release for EAPI
+        if: ${{ github.event.inputs.microservice == 'EAPI' || github.event.inputs.microservice == 'ALL' }}
+        id: eapi_release
+        run: |
+          env=${{ github.event.inputs.environment }}
+          latest_tag=$(git tag -l "EAPI-${env}-V*" | sort -V | tail -n 1)
+          if [ -z "$latest_tag" ]; then
+            new_tag="EAPI-${env}-V001"
+          else
+            new_tag_num=$(echo $latest_tag | sed 's/[^0-9]*//g')
+            new_tag_num=$(printf "%03d" $((10#$new_tag_num + 1)))
+            new_tag="EAPI-${env}-V$new_tag_num"
+          fi
+          git tag -a $new_tag -m "Release for EAPI"
+          git push origin $new_tag
+          echo "::set-output name=tag::$new_tag"

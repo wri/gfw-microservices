@@ -237,18 +237,6 @@ function flattenMultiPolygonRings(rings) {
   return output;
 }
 
-// shallow object clone for feature properties and attributes
-// from http://jsperf.com/cloning-an-object/2
-function shallowClone(obj) {
-  var target = {};
-  for (var i in obj) {
-    if (obj.hasOwnProperty(i)) {
-      target[i] = obj[i];
-    }
-  }
-  return target;
-}
-
 function arcgisToGeoJSON(arcgis, idAttribute) {
   var geojson = {};
 
@@ -279,7 +267,7 @@ function arcgisToGeoJSON(arcgis, idAttribute) {
   if (arcgis.geometry || arcgis.attributes) {
     geojson.type = 'Feature';
     geojson.geometry = arcgis.geometry ? arcgisToGeoJSON(arcgis.geometry) : null;
-    geojson.properties = arcgis.attributes ? shallowClone(arcgis.attributes) : null;
+    geojson.properties = arcgis.attributes ? { ...arcgis.attributes } : null;
     if (arcgis.attributes) {
       geojson.id =
         arcgis.attributes[idAttribute] || arcgis.attributes.OBJECTID || arcgis.attributes.FID;
@@ -327,7 +315,7 @@ function geojsonToArcGIS(geojson, idAttribute) {
       if (geojson.geometry) {
         result.geometry = geojsonToArcGIS(geojson.geometry, idAttribute);
       }
-      result.attributes = geojson.properties ? shallowClone(geojson.properties) : {};
+      result.attributes = geojson.properties ? { ...geojson.properties } : {};
       if (geojson.id) {
         result.attributes[idAttribute] = geojson.id;
       }

@@ -15,7 +15,10 @@
     "fetch": "readonly",
     "Request": "readonly",
     "global": "readonly",
-    "Buffer": "readonly"
+    "Buffer": "readonly",
+    "organizationId": "readonly",
+    "userInfo": "readonly",
+    "userEmail": "readonly"
   },
   "plugins": ["@nrwl/nx"],
   "overrides": [

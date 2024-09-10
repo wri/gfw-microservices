@@ -33,8 +33,12 @@ class ListDetailsPage {
     cy.contains(name).click();
   }
 
-  selectorCountry(location: string) {
+  selectorCountryProtectedAreas(location: string) {
     cy.get('select').first().select(location);
+  }
+  selectorCountryAdminAreas(location: string) {
+    cy.contains('Select...').click();
+    cy.contains(location).click();
   }
 
   clickOnApplyFilters() {
@@ -63,8 +67,8 @@ class ListDetailsPage {
     }
   }
 
-  moveList(list: string, location: string) {
-    this.selectLocationOnList(location);
+  moveList(list: string, location: number[]) {
+    this.selectCheckBoxs(location);
     this.clickOnMoveBtn();
     this.clickOnMoveSectionRadioBtn();
     this.selectList(list);

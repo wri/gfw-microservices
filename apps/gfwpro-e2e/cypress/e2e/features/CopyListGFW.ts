@@ -32,8 +32,12 @@ describe('Copy List', () => {
     locationsPage.clickOnLocationsList('Administrative Areas');
   });
 
-  Then('I should be able to select country a list GFW', () => {
-    listDetailsPage.selectorCountry('Argentina');
+  Then('I should be able to select country a Protected Areas list GFW', () => {
+    listDetailsPage.selectorCountryProtectedAreas('Argentina');
+    listDetailsPage.clickOnApplyFilters();
+  });
+  Then('I should be able to select country a Administrative Areas list GFW', () => {
+    listDetailsPage.selectorCountryAdminAreas('Argentina');
     listDetailsPage.clickOnApplyFilters();
   });
 
@@ -43,8 +47,7 @@ describe('Copy List', () => {
   });
 
   Then('I should see the created list in the locations page', () => {
-    cy.visit('/locations');
-    cy.reload();
+    cy.visit('/locations').reload();
     locationsPage.verifyLists(listsToCreate, true);
   });
 
@@ -53,8 +56,7 @@ describe('Copy List', () => {
   });
 
   Then('I should verify the list is deleted from the locations page', () => {
-    cy.visit('/locations');
-    cy.reload();
+    cy.visit('/locations').reload();
     locationsPage.verifyLists(listsToCreate, false);
   });
 });

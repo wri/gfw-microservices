@@ -17,7 +17,7 @@ export const verify = (req, res) => {
   res.header('Pragma', 'no-cache');
 
   const { session } = req;
-  if ('verified_promanager' in session && session.ispromanager && session.verified_promanager) {
+  if (session.ispromanager && session.verified_promanager) {
     logger.info('Is Verified Pro Manager');
     res.redirect('/pro-manager-list');
   } else if (session.organization_database) {

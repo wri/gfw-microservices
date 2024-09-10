@@ -1,4 +1,4 @@
-name: Create Release
+name: Manually Trigger Release
 
 on:
   workflow_dispatch:
@@ -35,9 +35,6 @@ jobs:
         with:
           ref: ${{ github.event.inputs.branch }}
 
-      - name: Fetch tags
-        run: git fetch --prune --unshallow --tags
-
       - name: Set up Git
         run: |
           git config --global user.name 'github-actions[bot]'
@@ -69,8 +66,9 @@ jobs:
       - name: Create GitHub Release for LD
         if: ${{ github.event.inputs.microservice == 'LD' || github.event.inputs.microservice == 'ALL' }}
         uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          token: ${{ secrets.GITHUB_TOKEN }}
           tag_name: ${{ steps.ld_release.outputs.tag }}
           release_name: ${{ steps.ld_release.outputs.tag }}
           body: "Release for LD"
@@ -97,8 +95,9 @@ jobs:
       - name: Create GitHub Release for LP
         if: ${{ github.event.inputs.microservice == 'LP' || github.event.inputs.microservice == 'ALL' }}
         uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          token: ${{ secrets.GITHUB_TOKEN }}
           tag_name: ${{ steps.lp_release.outputs.tag }}
           release_name: ${{ steps.lp_release.outputs.tag }}
           body: "Release for LP"
@@ -125,8 +124,9 @@ jobs:
       - name: Create GitHub Release for WEB
         if: ${{ github.event.inputs.microservice == 'WEB' || github.event.inputs.microservice == 'ALL' }}
         uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          token: ${{ secrets.GITHUB_TOKEN }}
           tag_name: ${{ steps.web_release.outputs.tag }}
           release_name: ${{ steps.web_release.outputs.tag }}
           body: "Release for WEB"
@@ -153,8 +153,9 @@ jobs:
       - name: Create GitHub Release for EAPI
         if: ${{ github.event.inputs.microservice == 'EAPI' || github.event.inputs.microservice == 'ALL' }}
         uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          token: ${{ secrets.GITHUB_TOKEN }}
           tag_name: ${{ steps.eapi_release.outputs.tag }}
           release_name: ${{ steps.eapi_release.outputs.tag }}
           body: "Release for EAPI"

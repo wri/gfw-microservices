@@ -70,7 +70,10 @@ jobs:
         if: ${{ github.event.inputs.microservice == 'LD' || github.event.inputs.microservice == 'ALL' }}
         uses: actions/create-release@v1
         with:
+<<<<<<< HEAD
           token: ${{ secrets.GITHUB_TOKEN }}
+=======
+>>>>>>> develop
           tag_name: ${{ steps.ld_release.outputs.tag }}
           release_name: ${{ steps.ld_release.outputs.tag }}
           body: "Release for LD"
@@ -98,7 +101,10 @@ jobs:
         if: ${{ github.event.inputs.microservice == 'LP' || github.event.inputs.microservice == 'ALL' }}
         uses: actions/create-release@v1
         with:
+<<<<<<< HEAD
           token: ${{ secrets.GITHUB_TOKEN }}
+=======
+>>>>>>> develop
           tag_name: ${{ steps.lp_release.outputs.tag }}
           release_name: ${{ steps.lp_release.outputs.tag }}
           body: "Release for LP"
@@ -126,7 +132,10 @@ jobs:
         if: ${{ github.event.inputs.microservice == 'WEB' || github.event.inputs.microservice == 'ALL' }}
         uses: actions/create-release@v1
         with:
+<<<<<<< HEAD
           token: ${{ secrets.GITHUB_TOKEN }}
+=======
+>>>>>>> develop
           tag_name: ${{ steps.web_release.outputs.tag }}
           release_name: ${{ steps.web_release.outputs.tag }}
           body: "Release for WEB"
@@ -154,7 +163,10 @@ jobs:
         if: ${{ github.event.inputs.microservice == 'EAPI' || github.event.inputs.microservice == 'ALL' }}
         uses: actions/create-release@v1
         with:
+<<<<<<< HEAD
           token: ${{ secrets.GITHUB_TOKEN }}
+=======
+>>>>>>> develop
           tag_name: ${{ steps.eapi_release.outputs.tag }}
           release_name: ${{ steps.eapi_release.outputs.tag }}
           body: "Release for EAPI"

@@ -1,5 +1,5 @@
 import React from 'react';
-import { columnHeaders } from '../../../../common/js/config';
+import { columnHeaders } from './columnHeaders.constants';
 import ColumnsHeader from '../../components/columns/ColumnsHeader';
 
 const location_id = [

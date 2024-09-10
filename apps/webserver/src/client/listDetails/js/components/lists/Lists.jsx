@@ -100,6 +100,7 @@ import getActiveAnalysisType from '../../../../../utils/getActiveAnalysisType';
 import { defaultMaximumAreaSizeForLocationsFilter } from '../../../../common/js/constants/lists.constants';
 import { listStatus } from '../../../../../config/env/listStatuses.constants';
 import { getListFilterValues } from './getListFilterValues';
+import { defaultFilterValues } from './defaultFilterValues';
 import getAllColumnNames from './getAllColumnNames';
 import { formatDateForCurrentBrowserLanguage } from '../../../../common/js/utils/format';
 
@@ -283,9 +284,9 @@ export default class Lists extends Component {
   isFilterValueDifferentThanDefault = ([filterName, val]) => {
     // It's the case that [] !== [], so we need special handling for arrays.
     if (Array.isArray(val)) {
-      return val.toString() !== locationsPage.defaultFilterValues[filterName].toString();
+      return val.toString() !== defaultFilterValues[filterName].toString();
     }
-    return val !== locationsPage.defaultFilterValues[filterName];
+    return val !== defaultFilterValues[filterName];
   };
 
   // Create Flag component to add/remove flags for a location

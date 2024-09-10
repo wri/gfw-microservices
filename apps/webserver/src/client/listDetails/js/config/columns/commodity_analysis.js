@@ -1,6 +1,6 @@
 import React from 'react';
 import InfoBubble from '../../../../common/js/components/InfoBubble';
-import { columnHeaders, locationsPage } from '../../../../common/js/config';
+import { columnHeaders } from './columnHeaders.constants';
 import ColumnsHeader from '../../components/columns/ColumnsHeader';
 import {
   checkValid,
@@ -10,6 +10,7 @@ import {
   locationIsActive,
   getColorByLevelClasse,
 } from '../../../../locations/js/utils/locationsTableUtils';
+import infoBubbleConfig from '../../../../common/js/infoBubbleConfig.constants';
 
 const transifex = Transifex.live.translateText;
 
@@ -47,7 +48,7 @@ const commodity_analysis = [
       <div className="react-table-commodity-risk">
         <span className="title-text" title={transifex(columnHeaders.threatsAndValues)}>
           {transifex(columnHeaders.threatsAndValuesAbbr)}{' '}
-          <InfoBubble infoBubbleId={locationsPage.infoBubbleConfig.threatsAndValues} />
+          <InfoBubble infoBubbleId={infoBubbleConfig.threatsAndValues} />
         </span>
       </div>
     ),
@@ -91,8 +92,7 @@ const commodity_analysis = [
     Header: () => (
       <div className="react-table-commodity-risk">
         <span className="title-text" title={transifex(columnHeaders.threats)}>
-          {transifex(columnHeaders.threats)}{' '}
-          <InfoBubble infoBubbleId={locationsPage.infoBubbleConfig.threats} />
+          {transifex(columnHeaders.threats)} <InfoBubble infoBubbleId={infoBubbleConfig.threats} />
         </span>
       </div>
     ),
@@ -235,8 +235,7 @@ const commodity_analysis = [
     Header: () => (
       <div className="react-table-commodity-risk">
         <span className="title-text" title={transifex(columnHeaders.values)}>
-          {transifex(columnHeaders.values)}{' '}
-          <InfoBubble infoBubbleId={locationsPage.infoBubbleConfig.values} />
+          {transifex(columnHeaders.values)} <InfoBubble infoBubbleId={infoBubbleConfig.values} />
         </span>
       </div>
     ),

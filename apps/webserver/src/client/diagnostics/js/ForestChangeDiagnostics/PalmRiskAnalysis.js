@@ -1,9 +1,10 @@
 import React, { Component } from 'react';
 import Card from '@mui/material/Card';
 import CardContent from '@mui/material/CardContent';
-import { locationsPage, latestTreeCoverLossYearCommodityRisk } from '../../../common/js/config';
+import { latestTreeCoverLossYearCommodityRisk } from '../../../common/js/config';
 import { formatNum, prettifyNum } from '../../../common/js/utils/diagnostics.utils';
 import DiagnosticsChartHeader from '../common/DiagnosticsChartHeader';
+import infoBubbleConfig from '../../../common/js/infoBubbleConfig.constants';
 
 const lastYear = latestTreeCoverLossYearCommodityRisk;
 
@@ -78,7 +79,7 @@ export default class PalmRiskAnalysis extends Component {
       >
         <DiagnosticsChartHeader
           title={'Palm Risk Analysis'}
-          informationBubbleId={locationsPage.infoBubbleConfig.crPalmRisk}
+          informationBubbleId={infoBubbleConfig.crPalmRisk}
           fireDownload={this.props.fireDownload}
           downloadId={'palmRiskAnalysis'}
         />

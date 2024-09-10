@@ -11,7 +11,7 @@ import DiagnosticsMenuBar from '../common/DiagnosticsMenuBar';
 import DiagnosticsBreadCrums from '../common/DiagnosticsBreadCrums';
 import { analysisTypes } from '../../../../config/env/analysisTypes.constants';
 import ConfirmDialog from '../../../locations/js/components/lists/download/confirmDialog';
-import { locationsPage } from '../../../common/js/config';
+import infoBubbleConfig from '../../../common/js/infoBubbleConfig.constants';
 import InfoBubble from '../../../common/js/components/InfoBubble';
 import getAnalysisAvailabilityMessage from '../common/getAnalysisAvailabilityMessage';
 import { forestLossDatasetIds, forestLossDatasets } from './forestLossDatasets.constants';
@@ -148,7 +148,7 @@ function AfiDiagnostics() {
             <div className="locations-diagnostics__body">
               <h2 className="locations-diagnostics__subtitle">
                 {list_name}
-                <InfoBubble infoBubbleId={locationsPage.infoBubbleConfig.analysisOverview} />
+                <InfoBubble infoBubbleId={infoBubbleConfig.analysisOverview} />
               </h2>
 
               <div style={{ display: 'flex', alignItems: 'center' }}>
@@ -176,7 +176,7 @@ function AfiDiagnostics() {
                 <>
                   <h2 className="locations-diagnostics__subtitle">
                     Negligible Risk Overlap
-                    <InfoBubble infoBubbleId={locationsPage.infoBubbleConfig.landcoverCalc} />
+                    <InfoBubble infoBubbleId={infoBubbleConfig.landcoverCalc} />
                   </h2>
                   <Card>
                     <CardContent>

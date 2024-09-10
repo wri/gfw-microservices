@@ -15,6 +15,7 @@ import {
 } from '../../../common/js/utils/diagnostics.utils';
 import { latestTreeCoverLossYearForTclDataInMap, locationsPage } from '../../../common/js/config';
 import { PRODES_HIGHCHARTS_BAR_CONFIGS } from './SouthAmericaRegions/SouthAmericaRegions.config';
+import infoBubbleConfig from '../../../common/js/infoBubbleConfig.constants';
 import '../../../common/css/_irsBase.scss';
 import '../../../common/css/_irsStyle.scss';
 
@@ -938,11 +939,11 @@ export default class SouthAmericaRegions extends Component {
 
     let informationBubbleId;
     if (prodesChecked || paChecked || pfChecked) {
-      informationBubbleId = locationsPage.infoBubbleConfig.regionsProdesAnnual;
+      informationBubbleId = infoBubbleConfig.regionsProdesAnnual;
     } else if (saTCLChecked || biomesChecked) {
-      informationBubbleId = locationsPage.infoBubbleConfig.regionsSaAnnual;
+      informationBubbleId = infoBubbleConfig.regionsSaAnnual;
     } else {
-      informationBubbleId = locationsPage.infoBubbleConfig.regionsSoyAnnual;
+      informationBubbleId = infoBubbleConfig.regionsSoyAnnual;
     }
 
     return (
@@ -987,7 +988,7 @@ export default class SouthAmericaRegions extends Component {
                 <div className="locations-diagnostics__flex-center subsection-subtitle__container">
                   <DiagnosticsChartHeader
                     title={'Brazil Biomes Percent Overlap'}
-                    informationBubbleId={locationsPage.infoBubbleConfig.regionsSaBiomes}
+                    informationBubbleId={infoBubbleConfig.regionsSaBiomes}
                     fireDownload={this.props.fireDownload}
                     downloadId={'southAmericaOverlap'}
                   />

@@ -20,7 +20,7 @@ export const verify = (req, res) => {
   if ('verified_promanager' in session && session.ispromanager && session.verified_promanager) {
     logger.info('Is Verified Pro Manager');
     res.redirect('/pro-manager-list');
-  } else if ('organization_database' in session && session.organization_database) {
+  } else if (session.organization_database) {
     logger.info('Has Organization Database');
     res.redirect('/locations');
   } else {

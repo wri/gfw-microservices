@@ -74,7 +74,7 @@ jobs:
         with:
           tag_name: ${{ steps.ld_release.outputs.tag }}
           release_name: ${{ steps.ld_release.outputs.tag }}
-          body: "Release for LD"
+          body: 'Release for LD'
           draft: false
           prerelease: false
 
@@ -103,7 +103,7 @@ jobs:
         with:
           tag_name: ${{ steps.lp_release.outputs.tag }}
           release_name: ${{ steps.lp_release.outputs.tag }}
-          body: "Release for LP"
+          body: 'Release for LP'
           draft: false
           prerelease: false
 
@@ -132,7 +132,7 @@ jobs:
         with:
           tag_name: ${{ steps.web_release.outputs.tag }}
           release_name: ${{ steps.web_release.outputs.tag }}
-          body: "Release for WEB"
+          body: 'Release for WEB'
           draft: false
           prerelease: false
 
@@ -161,6 +161,6 @@ jobs:
         with:
           tag_name: ${{ steps.eapi_release.outputs.tag }}
           release_name: ${{ steps.eapi_release.outputs.tag }}
-          body: "Release for EAPI"
+          body: 'Release for EAPI'
           draft: false
           prerelease: false

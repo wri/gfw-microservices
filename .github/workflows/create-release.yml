@@ -37,9 +37,6 @@ jobs:
           fetch-depth: 0
           ssh-key: '${{ secrets.DEPLOY_KEY }}'
 
-      - name: Fetch tags
-        run: git fetch --prune --unshallow --tags
-
       - name: Set up Git
         run: |
           git config --global user.name 'github-actions[bot]'

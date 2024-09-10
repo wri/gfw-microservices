@@ -73,7 +73,7 @@ function applyDataReducerTimeframeFilter(filteredLocationsObject, selectedTimefr
         // Week timeframe
         if (
           selectedTimeframe === 'WEEK' &&
-          feature.properties.hasOwnProperty('glad_alerts_daily') &&
+          feature.properties.glad_alerts_daily !== undefined &&
           feature.properties.glad_alerts_daily.length > 0
         ) {
           groupedGlad = getGladDaily(feature);

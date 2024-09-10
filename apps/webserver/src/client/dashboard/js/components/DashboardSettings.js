@@ -31,7 +31,7 @@ export default class DashboardSettings extends Component {
         ? [proLayers.integratedDeforestationAlertsID]
         : [proLayers.viirsActiveFiresID];
 
-    const viewCenter = mapUtils.getExtent();
+    const viewCenter = mapUtils.getExtent(view);
 
     const sendData = {
       listId: selectedList.id,

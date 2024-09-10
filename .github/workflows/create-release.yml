@@ -34,6 +34,8 @@ jobs:
         uses: actions/checkout@v2
         with:
           ref: ${{ github.event.inputs.branch }}
+          fetch-depth: 0
+          ssh-key: '${{ secrets.DEPLOY_KEY }}'
 
       - name: Fetch tags
         run: git fetch --prune --unshallow --tags

@@ -6,8 +6,11 @@ import * as User from '../../app-api/User';
 describe('Move List', () => {
   const locationsPage = new LocationsPage();
   const listDetailsPage = new ListDetailsPage();
-
-  const listsToCreate = [`testregressionmovelistfrom`, `testregressionmovelistto`];
+  const timestamp = Date.now();
+  const listsToCreate = [
+    `testregressionmovelistfrom${timestamp}`,
+    `testregressionmovelistto${timestamp}`,
+  ];
 
   When('I login in the landing page', () => {
     User.login();

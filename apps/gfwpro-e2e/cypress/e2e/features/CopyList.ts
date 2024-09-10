@@ -6,8 +6,8 @@ import * as User from '../../app-api/User';
 describe('Copy List', () => {
   const locationsPage = new LocationsPage();
   const listDetailsPage = new ListDetailsPage();
-
-  const listsToCreate = [`testregressioncopylist`];
+  const timestamp = Date.now();
+  const listsToCreate = [`testregressioncopylist${timestamp}`];
 
   When('I login in the landing page', () => {
     User.login();

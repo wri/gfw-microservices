@@ -6,8 +6,8 @@ import * as User from '../../app-api/User';
 describe('Delete List', () => {
   const locationsPage = new LocationsPage();
   const listDetailsPage = new ListDetailsPage();
-
-  const listToDelete = [`testregressiondeletelist`];
+  const timestamp = Date.now();
+  const listToDelete = [`testregressiondeletelist${timestamp}`];
 
   When('I login in the landing page', () => {
     User.login();

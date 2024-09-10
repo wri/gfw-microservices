@@ -15,19 +15,11 @@ function ProfileSideBar({
   selectedTab,
   setSelectedTab,
   userAccessLevel,
-  accountSubscriptionStatus,
   tabOptions,
 }) {
-  let filteredTabsByPermission = Object.values(tabOptions).filter((item) =>
+  const filteredTabsByPermission = Object.values(tabOptions).filter((item) =>
     item.userAccessLevel.includes(userAccessLevel)
   );
-
-  /* ensure this prop is present */
-  if (accountSubscriptionStatus) {
-    filteredTabsBySubscriptionStatus = Object.values(tabOptions).filter((item) => {
-      item.suscriptionStatus.includes(accountSubscriptionStatus);
-    });
-  }
 
   const showBillingInfo = selectedTab === 'account-usage';
 

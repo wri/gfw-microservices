@@ -1,9 +1,8 @@
-import React, { useState } from 'react';
+import React from 'react';
 import Card from '@material-ui/core/Card';
 import CardContent from '@material-ui/core/CardContent';
 import CardActions from '@mui/material/CardActions';
 import Backdrop from '@mui/material/Backdrop';
-import ClickAwayListener from '@mui/base/ClickAwayListener';
 import Button from '../../../../../common/js/components/Button';
 import IconButton from '../../../../../common/js/components/IconButton';
 import IconTimes from '../../../../../common/js/components/icon/IconTimes';

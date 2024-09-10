@@ -45,6 +45,7 @@ jobs:
 
       - name: Create Release for LD
         if: ${{ github.event.inputs.microservice == 'LD' || github.event.inputs.microservice == 'ALL' }}
+        id: ld_release
         run: |
           env=${{ github.event.inputs.environment }}
           latest_tag=$(git tag -l "LD-${env}-V*" | sort -V | tail -n 1)
@@ -55,11 +56,23 @@ jobs:
             new_tag_num=$(printf "%03d" $((10#$new_tag_num + 1)))
             new_tag="LD-${env}-V$new_tag_num"
           fi
-          git tag -a $new_tag -m "Release for LD in $env"
+          git tag -a $new_tag -m "Release for LD"
           git push origin $new_tag
+          echo "::set-output name=tag::$new_tag"
+
+      - name: Create GitHub Release for LD
+        if: ${{ github.event.inputs.microservice == 'LD' || github.event.inputs.microservice == 'ALL' }}
+        uses: actions/create-release@v1
+        with:
+          tag_name: ${{ steps.ld_release.outputs.tag }}
+          release_name: ${{ steps.ld_release.outputs.tag }}
+          body: "Release for LD"
+          draft: false
+          prerelease: false
 
       - name: Create Release for LP
         if: ${{ github.event.inputs.microservice == 'LP' || github.event.inputs.microservice == 'ALL' }}
+        id: lp_release
         run: |
           env=${{ github.event.inputs.environment }}
           latest_tag=$(git tag -l "LP-${env}-V*" | sort -V | tail -n 1)
@@ -70,11 +83,23 @@ jobs:
             new_tag_num=$(printf "%03d" $((10#$new_tag_num + 1)))
             new_tag="LP-${env}-V$new_tag_num"
           fi
-          git tag -a $new_tag -m "Release for LP in $env"
+          git tag -a $new_tag -m "Release for LP"
           git push origin $new_tag
+          echo "::set-output name=tag::$new_tag"
+
+      - name: Create GitHub Release for LP
+        if: ${{ github.event.inputs.microservice == 'LP' || github.event.inputs.microservice == 'ALL' }}
+        uses: actions/create-release@v1
+        with:
+          tag_name: ${{ steps.lp_release.outputs.tag }}
+          release_name: ${{ steps.lp_release.outputs.tag }}
+          body: "Release for LP"
+          draft: false
+          prerelease: false
 
       - name: Create Release for WEB
         if: ${{ github.event.inputs.microservice == 'WEB' || github.event.inputs.microservice == 'ALL' }}
+        id: web_release
         run: |
           env=${{ github.event.inputs.environment }}
           latest_tag=$(git tag -l "WEB-${env}-V*" | sort -V | tail -n 1)
@@ -85,11 +110,23 @@ jobs:
             new_tag_num=$(printf "%03d" $((10#$new_tag_num + 1)))
             new_tag="WEB-${env}-V$new_tag_num"
           fi
-          git tag -a $new_tag -m "Release for WEB in $env"
+          git tag -a $new_tag -m "Release for WEB"
           git push origin $new_tag
+          echo "::set-output name=tag::$new_tag"
+
+      - name: Create GitHub Release for WEB
+        if: ${{ github.event.inputs.microservice == 'WEB' || github.event.inputs.microservice == 'ALL' }}
+        uses: actions/create-release@v1
+        with:
+          tag_name: ${{ steps.web_release.outputs.tag }}
+          release_name: ${{ steps.web_release.outputs.tag }}
+          body: "Release for WEB"
+          draft: false
+          prerelease: false
 
       - name: Create Release for EAPI
         if: ${{ github.event.inputs.microservice == 'EAPI' || github.event.inputs.microservice == 'ALL' }}
+        id: eapi_release
         run: |
           env=${{ github.event.inputs.environment }}
           latest_tag=$(git tag -l "EAPI-${env}-V*" | sort -V | tail -n 1)
@@ -100,5 +137,16 @@ jobs:
             new_tag_num=$(printf "%03d" $((10#$new_tag_num + 1)))
             new_tag="EAPI-${env}-V$new_tag_num"
           fi
-          git tag -a $new_tag -m "Release for EAPI in $env"
+          git tag -a $new_tag -m "Release for EAPI"
           git push origin $new_tag
+          echo "::set-output name=tag::$new_tag"
+
+      - name: Create GitHub Release for EAPI
+        if: ${{ github.event.inputs.microservice == 'EAPI' || github.event.inputs.microservice == 'ALL' }}
+        uses: actions/create-release@v1
+        with:
+          tag_name: ${{ steps.eapi_release.outputs.tag }}
+          release_name: ${{ steps.eapi_release.outputs.tag }}
+          body: "Release for EAPI"
+          draft: false
+          prerelease: false

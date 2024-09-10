@@ -15,10 +15,11 @@ import store from './js/store';
 // this issue will not be fixed for material ui v<1 since v1 is a complete rebuild
 // and addresses this.
 // more info here https://github.com/mui-org/material-ui/issues/8040
+
 import '../common/popoverPreRender';
 
 lightBaseTheme.fontFamily = 'Fira Sans, sans-serif';
-
+/* eslint-disable no-undef */
 const App = () => (
   <MuiThemeProvider muiTheme={getMuiTheme(lightBaseTheme)}>
     <Provider store={store}>

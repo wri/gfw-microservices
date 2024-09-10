@@ -268,6 +268,7 @@ export const chartDatasetConfigsColombia = {
         legend: 'Indigenous Territories',
         color: 'rgb(146,37,100)',
         checked: true,
+        preview: true,
       },
     ],
   },

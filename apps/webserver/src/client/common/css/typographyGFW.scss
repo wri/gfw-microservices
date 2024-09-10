@@ -129,3 +129,9 @@ $heading-settings: (
     line-height: 1.2,
   ),
 );
+
+.MuiTypography-root,
+.MuiTabs-root,
+.MuiTableCell-root {
+  font-family: $gfw-font-family !important;
+}

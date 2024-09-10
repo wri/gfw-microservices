@@ -19,6 +19,8 @@ import { webMercatorToGeographic } from '@arcgis/core/geometry/support/webMercat
 import SpatialReference from '@arcgis/core/geometry/SpatialReference';
 import CustomDialog from '../../../common/js/components/CustomDialog/CustomDialog';
 
+import { addCoordinateTextFromPoint } from '../../../locations/js/components/adding/PolygonCoordinates/polygonCoordinates.utils';
+
 import store from '../store';
 import {
   addList,
@@ -80,7 +82,7 @@ import setVectorTileLayerForFilteredList, {
 import setVectorTileLayerForFullList from '../utils/setVectorTileLayerForFullList';
 import { getLocationGeometry } from '../utils/map.utils';
 import { constructLayerObject } from '../../../common/js/utils/layer.utils';
-import { isGfwList, getMapLayerIdFromGFWListName } from '../../../common/js/utils/gfw.utils';
+import { getMapLayerIdFromGFWListName } from '../../../common/js/utils/gfw.utils';
 import { updateInteractiveLayers } from '../utils/layerUpdates.utils';
 import sortMapArray from './sortMapArray';
 import getQueryParams from './getQueryParams';
@@ -101,7 +103,6 @@ import CanopyModal from './modals/CanopyModal';
 import InfoModal from './modals/InfoModal';
 import LayerModal from './modals/LayerModal';
 import SearchModal from './modals/SearchModal';
-import { gfwListNames } from '../../../common/js/constants/lists.constants';
 import { selectList } from '../../../locations/js/actions/locationActions';
 import { gfwListsLocationID } from '../../../listDetails/js/components/lists/Lists.config';
 import { FailedPopupDialog } from '../../../locations/js/components/landing/FailedPopupDialog';
@@ -220,6 +221,8 @@ class Map extends Component {
       // the 'listData' prop
       transitionListData: {},
       sketchEventListener: null,
+
+      drawnCoordinates: [],
     });
 
     this.svm = null;
@@ -639,6 +642,10 @@ class Map extends Component {
       this.view.map.add(newViirsLayer);
       this.updateActiveAnalysis();
     }
+
+    if (!prevState.drawingActive && this.state.drawingActive) {
+      this.state.drawnCoordinates = [];
+    }
   }
 
   updateActiveAnalysis() {
@@ -863,6 +870,10 @@ class Map extends Component {
         view.graphics.add(graphic);
         store.dispatch(toggleDrawing());
         this.analyzeCustom(graphic);
+
+        this.state.drawnCoordinates.forEach((coordinate) =>
+          addCoordinateTextFromPoint(view, coordinate)
+        );
       }
     });
     store.dispatch(saveSketchTool(svm));
@@ -900,6 +911,11 @@ class Map extends Component {
           features: popFeats,
           location: evt.mapPoint,
         });
+      }
+
+      if (this.state.drawingActive) {
+        this.state.drawnCoordinates.push(evt.mapPoint);
+        addCoordinateTextFromPoint(this.mapView, evt.mapPoint);
       }
     });
   };
@@ -2170,7 +2186,7 @@ class Map extends Component {
       }
     } else {
       // If active list is a GFW list and selected list is a user list then reset selectedLists and grab data
-      if (selectedLists.some((v) => gfwListNames.indexOf(v) >= 0)) {
+      if (selectedLists.some((selectedList) => selectedList.isGlobalForestWatchList)) {
         store.dispatch(resetList(list));
         this.getUserLocationData([list.id], list.list_name);
       }
@@ -2440,7 +2456,7 @@ class Map extends Component {
     return (
       <Page links={pageOptions.links} active="map">
         <ModalLoader position="absolute" size={60} open={isMapLoading} />
-        {selectedList && !listVectorTileIsAvailable && !isGfwList(selectedList.list_name) && (
+        {selectedList && !listVectorTileIsAvailable && !selectedList.isGlobalForestWatchList && (
           <FailedPopupDialog
             open={!listVectorTileIsAvailable}
             title="Map view for your list is still in progress"

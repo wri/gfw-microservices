@@ -3,17 +3,7 @@ import { fetchGfwProLayers } from '../service/gfw.service';
 import {
   GFW_LISTS_NAMES_TO_MAP_LAYER_IDS,
   MAP_LAYER_IDS_TO_GFW_LISTS_NAMES,
-  gfwListNames,
 } from '../constants/lists.constants';
-
-/**
- * @description - Check if the list is a GFW list
- * @param {string} listName - List name
- * @return {boolean} - True if the list is a GFW list
- */
-export function isGfwList(listName) {
-  return gfwListNames.includes(listName);
-}
 
 export const getMapLayerIdFromGFWListName = (gfwListName) =>
   GFW_LISTS_NAMES_TO_MAP_LAYER_IDS?.[gfwListName];
@@ -24,14 +14,6 @@ export const getGFWListNameFromMapLayerId = (mapLayerId) => {
 
   return MAP_LAYER_IDS_TO_GFW_LISTS_NAMES?.[mapLayerId];
 };
-
-/**
- * @description - Check if the list is a user list
- * @param {object} selectedList - List object
- * @return {boolean} - True if the list is a user list
- */
-export const isUserList = (selectedList) =>
-  Object.prototype.hasOwnProperty.call(selectedList, 'user_id');
 
 /**
  * @description - Get the layer name from the list name

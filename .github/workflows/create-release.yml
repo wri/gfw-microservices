@@ -55,7 +55,7 @@ jobs:
             new_tag_num=$(printf "%03d" $((10#$new_tag_num + 1)))
             new_tag="LD-${env}-V$new_tag_num"
           fi
-          git tag -a $new_tag -m "Release for LD"
+          git tag -a $new_tag -m "Release for LD in $env"
           git push origin $new_tag
 
       - name: Create Release for LP
@@ -70,7 +70,7 @@ jobs:
             new_tag_num=$(printf "%03d" $((10#$new_tag_num + 1)))
             new_tag="LP-${env}-V$new_tag_num"
           fi
-          git tag -a $new_tag -m "Release for LP"
+          git tag -a $new_tag -m "Release for LP in $env"
           git push origin $new_tag
 
       - name: Create Release for WEB
@@ -85,7 +85,7 @@ jobs:
             new_tag_num=$(printf "%03d" $((10#$new_tag_num + 1)))
             new_tag="WEB-${env}-V$new_tag_num"
           fi
-          git tag -a $new_tag -m "Release for WEB"
+          git tag -a $new_tag -m "Release for WEB in $env"
           git push origin $new_tag
 
       - name: Create Release for EAPI
@@ -100,5 +100,5 @@ jobs:
             new_tag_num=$(printf "%03d" $((10#$new_tag_num + 1)))
             new_tag="EAPI-${env}-V$new_tag_num"
           fi
-          git tag -a $new_tag -m "Release for EAPI"
+          git tag -a $new_tag -m "Release for EAPI in $env"
           git push origin $new_tag

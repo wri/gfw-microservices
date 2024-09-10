@@ -1,6 +1,7 @@
 const path = require('path');
 const controller = require('../controllers/reset.controller');
 const AuthManager = require(path.resolve('./config/publicutils/authenticationManager.utils'));
+import * as logger from '../../../config/privateutils/logger.utils';
 
 /**
  * @name exports
@@ -23,6 +24,7 @@ module.exports = (app) => {
         res.send(result);
       })
       .catch((err) => {
+        logger.error(`POST /reset/verify`, err);
         res.send('Account signup failed');
       });
   });

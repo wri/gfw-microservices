@@ -85,13 +85,6 @@ export class AppService {
     return result;
   }
 
-  /**
-   * Healthcheck for fargate
-   */
-  getHealthCheck(): string {
-    return 'Healthy';
-  }
-
   //Deletes a list from Lists table, and list's attribute and analysis table
   async deleteList(
     list_id: number,

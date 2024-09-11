@@ -119,8 +119,7 @@ export default class GFWAdminForestChangeFilter extends Component {
 
   render() {
     const { adminAreas } = this.props;
-    const { selectedCountry, selectedStates, selectedSubStates, filterState, filterSubstate } =
-      this.state;
+    const { selectedCountry, selectedStates, selectedSubStates, filterState } = this.state;
 
     const countryOptions = [
       ...new Set(
@@ -142,24 +141,7 @@ export default class GFWAdminForestChangeFilter extends Component {
       ),
     ].sort((a, b) => a.toLowerCase().localeCompare(b.toLowerCase()));
     const selectStateOptions = stateOptions.map(this.makeOption);
-    const subStateOptions = [
-      ...new Set(
-        adminAreas
-          .filter(
-            (location) =>
-              location['Sub State'] &&
-              location['Sub State'] !== '' &&
-              location['Sub State'] !== ' ' &&
-              location['Sub State'].toLowerCase().includes(filterSubstate.toLowerCase()) &&
-              location.Country === selectedCountry &&
-              // if there are NO selected states then show all
-              (selectedStates.length === 0 ||
-                // If there ARE selected states then filter by the selected state
-                (selectedStates.length !== 0 && selectedStates.indexOf(location.State) !== -1))
-          )
-          .map((list) => list['Sub State'])
-      ),
-    ].sort((a, b) => a.toLowerCase().localeCompare(b.toLowerCase()));
+
     const selectSubStateOptions = adminAreas
       .filter(
         (area) =>

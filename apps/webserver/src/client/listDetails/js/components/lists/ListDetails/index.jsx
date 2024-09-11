@@ -1938,7 +1938,6 @@ export default class ListDetails extends Component {
               </p>
             }
             onRequestClose={() => this.setState({ listNotAccessible: !listNotAccessible })}
-            // eslint-disable-next-line no-return-assign
             onOkButtonPress={() => (window.location = '/locations')}
           />
         )}

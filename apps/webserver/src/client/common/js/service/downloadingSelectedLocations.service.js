@@ -12,7 +12,6 @@ const EXCLUDED_COLUMNS = ['gadmid', 'checkbox', 'tree_cover_extent_total'];
 export function getListColumnsNames(tableColumns) {
   const columnsList = tableColumns
     .filter((tableColumn) => {
-      // eslint-disable-next-line valid-typeof
       if (typeof tableColumn.accessor === 'string') {
         return !EXCLUDED_COLUMNS.includes(tableColumn.accessor);
       }

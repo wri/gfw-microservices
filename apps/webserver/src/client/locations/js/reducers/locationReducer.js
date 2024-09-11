@@ -1,4 +1,3 @@
-//updateCriteria
 import {
   CURRENT_VIEW,
   CURRENT_LIST_VIEW,
@@ -26,6 +25,7 @@ import {
   UPDATE_LOADING_ICON_ID,
   UPDATE_BUBBLE_DATA,
   UPDATE_POPOVER_ANCHOR,
+  UPDATE_SELECTED_LIST,
 } from '../constants/actionTypes';
 import cloneDeep from 'lodash/cloneDeep';
 import infoBubbleConfig from '../../../common/js/infoBubbleConfig.constants';

@@ -100,7 +100,7 @@ function ChangeTypeOfAnalysisModal({
       .then((results) => {
         console.log(`updateSelectedAnalysis results`, results);
       })
-      .catch(() => {
+      .catch((error) => {
         console.warn(error);
         setIsLoading(false);
       })

@@ -283,11 +283,6 @@ export default class DescribeLocation extends Component {
             .map(this.createMultiOptions)
         : [];
 
-    let defaultVal;
-    if (template.hasOwnProperty('template_datum_field_value')) {
-      defaultVal = template.template_datum_field_value;
-    }
-
     return (
       <tr key={template.template_datum_field_name + '-template-row' + j}>
         <td
@@ -312,7 +307,7 @@ export default class DescribeLocation extends Component {
               </div>
             ) : template.ui_type === 'multi-dropdown' && this.props.contentEditable ? (
               <Select
-                defaultValue={defaultVal}
+                defaultValue={template?.template_datum_field_value}
                 className="edge-multi-select addLocation"
                 options={multiOptions}
                 isMulti={true}
@@ -370,7 +365,6 @@ export default class DescribeLocation extends Component {
   };
 
   render() {
-    const templateOptions = locationsPage.upload.templateOptions;
     const templateBodies =
       this.props.addType === 'commodity'
         ? [this.createLocationTemplate(this.props.templateData)]

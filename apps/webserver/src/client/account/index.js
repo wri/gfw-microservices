@@ -1,3 +1,5 @@
+/* global classificationsData, commoditiesData, geographiesData, titlesData */
+
 import lightBaseTheme from 'material-ui/styles/baseThemes/lightBaseTheme';
 import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
 import getMuiTheme from 'material-ui/styles/getMuiTheme';
@@ -8,7 +10,6 @@ import React from 'react';
 lightBaseTheme.fontFamily = 'Fira Sans, sans-serif';
 
 const App = () => (
-  /*eslint-disable */
   <MuiThemeProvider muiTheme={getMuiTheme(lightBaseTheme)}>
     <Account
       classificationsData={classificationsData}
@@ -17,7 +18,6 @@ const App = () => (
       titlesData={titlesData}
     />
   </MuiThemeProvider>
-  /*eslint-enable */
 );
 
 render(<App />, document.getElementById('account-mount'));

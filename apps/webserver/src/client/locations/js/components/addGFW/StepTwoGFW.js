@@ -1,4 +1,3 @@
-/* eslint-disable no-loop-func */
 import { fieldValidations } from '../../utils/validations';
 import { locationsPage } from '../../../../common/js/config';
 import downloaders from '../../../../common/js/utils/downloaders';
@@ -922,7 +921,7 @@ export default class StepTwoGFW extends Component {
 
   render() {
     const { selectedLists } = this.props;
-    const headerFields = this.createHeaders();
+
     const { isSaving } = this.state;
     const isListExcluded = isDownloadDisabledForThisList(selectedLists[0]);
 

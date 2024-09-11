@@ -1,6 +1,10 @@
 import React from 'react';
 import { columnHeaders } from './columnHeaders.constants';
-import { checkValid, sortAlphaNum } from '../../../../locations/js/utils/locationsTableUtils';
+import {
+  checkValid,
+  formatDigit,
+  sortAlphaNum,
+} from '../../../../locations/js/utils/locationsTableUtils';
 import ColumnsHeader from '../../components/columns/ColumnsHeader';
 
 const transifex = Transifex.live.translateText;

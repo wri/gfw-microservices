@@ -17,6 +17,6 @@
     }
   ],
   "globals": {
-    "window": true
+    "window": "readonly"
   }
 }

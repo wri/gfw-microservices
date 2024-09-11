@@ -6,7 +6,7 @@ import { ConfigService } from '@nestjs/config';
 export class GitController {
   constructor(private readonly config: ConfigService) {}
 
-  @Get('last-commit')
+  @Get('latest_commit')
   async getLastCommit() {
     return this.config.get('NODE_ENV', { infer: true }) === 'development'
       ? 'dev'

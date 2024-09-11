@@ -18,8 +18,12 @@ create_release() {
   git tag -a $new_tag -m "Release for $service"
   git push origin $new_tag
 
-  # Create a release using GitHub CLI
-  gh release create $new_tag --title "Release $new_tag" --notes "Release for $service in $env environment"
+  # Create a release using GitHub CLI with error handling
+  if ! gh release create $new_tag --title "Release $new_tag" --notes "Release for $service in $env environment"; then
+    echo "Error: Failed to create GitHub release for $new_tag."
+    exit 1
+  fi
+
   echo "Created release: $new_tag"
 }
 
@@ -31,6 +35,8 @@ environment=${3:-QA}
 # Checkout the repository
 git clone --branch $branch --depth 1 git@github.com:wri/gfw-microservices.git gfw-microservices-release
 cd gfw-microservices-release
+
+git pull --tags
 
 # Create releases based on the microservice input
 if [[ "$microservice" == "LD" || "$microservice" == "ALL" ]]; then

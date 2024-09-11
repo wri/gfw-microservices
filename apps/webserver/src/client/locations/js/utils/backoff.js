@@ -3,7 +3,7 @@ const jitter = (delay = 200) => delay * (0.5 + Math.random());
 const deduceAdminBackoff = (promise, max, delay, resolve, reject) => {
   promise
     .then((response) => {
-      if (response.hasOwnProperty('features') && response.features.length) {
+      if (response?.features?.length) {
         const [feature] = response.features;
         const { name_0, name_1, name_2, gadmid } = feature.attributes;
         resolve({

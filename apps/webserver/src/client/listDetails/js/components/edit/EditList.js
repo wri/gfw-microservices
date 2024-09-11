@@ -56,7 +56,7 @@ export default class EditList extends Component {
         const { history } = this.props;
         history.push('/lists');
       })
-      .catch((err) => {
+      .catch(() => {
         this.setState({
           dialogOpen: true,
           dialogTitle: 'Error in Locations',
@@ -155,7 +155,6 @@ export default class EditList extends Component {
       });
       return true;
     }
-    return false;
   };
 
   updateLocations = () => {

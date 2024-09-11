@@ -1,4 +1,3 @@
-/* eslint-disable no-undef */
 import React, { Component } from 'react';
 import ModalWrapper from '../modals/ModalWrapper';
 import { buildDropdownOptions } from '../../../../common/js/utils/buildDropdownOptions';

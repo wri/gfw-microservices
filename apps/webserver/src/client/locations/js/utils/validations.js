@@ -278,16 +278,6 @@ const accuracyOptions = (str) => {
   return returnValue;
 };
 
-const iDCheck = (str) => {
-  let returnValue = true;
-  if (!str) {
-    returnValue = false;
-  } else if (str.length === 0) {
-    returnValue = false;
-  }
-  return returnValue;
-};
-
 const mandatoryLocationName = (str) => {
   let returnValue = true;
   if (str === '') {
@@ -320,14 +310,14 @@ const alphanumericSpaceTest = (str) => {
   // return true;
 };
 
-const alphanumericSpace = (str) => {
+const alphanumericSpace = () => {
   // const regCheck = /^[a-zA-Z0-9\s]*$/;
   // return regCheck.test(str) || str === '';
   // temporarily disable
   return true;
 };
 
-const alphanumeric = (str) => {
+const alphanumeric = () => {
   // const regCheck = /^[a-zA-Z0-9]*$/;
   // return regCheck.test(str) || str === '';
   // temporarily disable
@@ -336,18 +326,8 @@ const alphanumeric = (str) => {
 
 export const validEmail = (str) => {
   const regCheck =
-    /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+    /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
   return regCheck.test(str) || str === '';
-};
-
-const validPhone = (str) => {
-  const regCheck = /^\+*(?:[0-9]●?){6,14}[0-9]$/;
-  return regCheck.test(str);
-};
-
-const greaterThanZero = (value) => {
-  const regCheck = /^[1-9][0-9]*$/;
-  return regCheck.test(value) || value === '';
 };
 
 const volumeIsDecimalOrEmpty = (value) => {
@@ -359,12 +339,6 @@ const greaterThanZeroFloats = (value) => {
   const val = typeof value === 'string' && value !== '' && value !== null ? Number(value) : value;
   const regCheck = /^(0*[1-9][0-9]*(\.[0-9]+)?|0+\.[0-9]*[1-9][0-9]*)$/;
   return regCheck.test(val) || val === 0 || val === '' || val === null;
-};
-
-const anyFloats = (value) => {
-  // const regCheck = /^(0*[1-9][0-9]*(\.[0-9]+)?|0+\.[0-9]*[1-9][0-9]*)$/;
-  // return regCheck.test(value);
-  return typeof value === 'number';
 };
 
 const onlyNumber = (value) => {

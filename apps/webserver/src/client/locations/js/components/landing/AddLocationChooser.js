@@ -1,10 +1,5 @@
-/* eslint-disable no-undef */
-/* eslint-disable camelcase */
-/* eslint-disable jsx-a11y/no-static-element-interactions */
-/* eslint-disable jsx-a11y/click-events-have-key-events */
-/* eslint-disable react/jsx-filename-extension */
-/* eslint-disable no-underscore-dangle */
-/* eslint-disable no-case-declarations */
+/* global subscription_status_id */
+
 import React, { useState, useRef } from 'react';
 import LocationOn from '@mui/icons-material/LocationOn';
 import TableChart from '@mui/icons-material/TableChart';
@@ -48,7 +43,7 @@ function AddLocationChooser({ onCancel, onChoice, userLists }) {
   const [largeListFile, setLargeListFile] = useState(undefined);
   const [stringDate, setStringDate] = useState('');
   const [fileBytesUploaded, setFileBytesUploaded] = useState('');
-  const [uploadedPercentaje, setUploadedPercentaje] = useState(0);
+  const [uploadedPercentage, setUploadedPercentage] = useState(0);
   const [dialogTitle, setDialogTitle] = useState('');
   const [dialogMessage, setDialogMessage] = useState('');
   const [listName, setListName] = useState('');
@@ -80,7 +75,7 @@ function AddLocationChooser({ onCancel, onChoice, userLists }) {
     return new Promise((resolve) => {
       xhr.upload.addEventListener('progress', (event) => {
         if (event.lengthComputable) {
-          setUploadedPercentaje(calculatePercentaje(event.loaded, event.total));
+          setUploadedPercentage(calculatePercentaje(event.loaded, event.total));
           setFileBytesUploaded(formatBytes(event.loaded));
         }
       });
@@ -168,7 +163,7 @@ function AddLocationChooser({ onCancel, onChoice, userLists }) {
       case 'zip':
       case 'xlsx':
       case 'kml':
-      case 'kmz':
+      case 'kmz': {
         setLlpStep1(false);
         setLlpStep2(true);
         setLargeListFile(file);
@@ -183,6 +178,7 @@ function AddLocationChooser({ onCancel, onChoice, userLists }) {
         setStringDate(`${formatDate} at ${formatHour}`);
         setFileBytesUploaded(formatBytes(0));
         break;
+      }
       default:
         setDialogTitle(locationsPage.add.errors.fileExtensionNotSupported.title);
         setDialogMessage(locationsPage.add.errors.fileExtensionNotSupported.message);
@@ -327,7 +323,7 @@ function AddLocationChooser({ onCancel, onChoice, userLists }) {
               {stringDate} • {fileBytesUploaded} /{' '}
               {formatBytes(largeListFile ? largeListFile.size : 0)}
             </div>
-            <CircularProgressWithLabel value={uploadedPercentaje} />
+            <CircularProgressWithLabel value={uploadedPercentage} />
           </section>
           <hr className="section-divisor" />
           <section

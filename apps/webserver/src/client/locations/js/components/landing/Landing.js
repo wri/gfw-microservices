@@ -1,4 +1,3 @@
-/* eslint-disable no-underscore-dangle */
 import React, { Component } from 'react';
 import Dialog from 'material-ui/Dialog';
 import { withRouter } from 'react-router-dom';

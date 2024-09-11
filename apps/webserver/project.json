@@ -63,8 +63,10 @@
       "outputs": ["{options.outputFile}"],
       "options": {
         "lintFilePatterns": [
-          "apps/webserver/src/client/[a-c]*/**/*.{ts,js,tsx,jsx}",
-          "apps/webserver/src/server/[a-s]*/**/*.{ts,js}"
+          // The goal is to lint all the files in the project, but starting with the above
+          // "apps/webserver/src/**/*.ts",
+          // "apps/webserver/src/**/*.js"
+          "apps/webserver/src/server/**/*.{ts,js}"
         ]
       }
     },

@@ -1,29 +1,11 @@
-const middlewares = require('../../../config/publicutils/middlewares');
-const rateLimiterUtil = require('../../../config/lib/limiter-util');
 const arcgisController = require('../controllers/arcgis.controller');
 
-module.exports = (app, limiter) => {
+module.exports = (app) => {
   /**
    * @name /arcgis
    * @see arcgis.controller
    * @memberof Router
    */
-
-  // All methods under /arcgis must pass through middleware
-  // TODO: check if this is needed
-  const routeMiddlewares = [
-    middlewares.checkAuthentication,
-    middlewares.checkOrganization,
-    middlewares.checkActive,
-    middlewares.checkInactivity,
-  ];
-
-  // if (rateLimiterUtil.useRateLimiter()) {
-  //   routeMiddlewares.push(limiter(middlewares.rateLimitAuthenticated));
-  // }
-
-  // Implement middlewares check
-  // app.use('/arcgis', routeMiddlewares);
 
   app.get(
     '/arcgis/rest/services/services/VectorTileServer/',

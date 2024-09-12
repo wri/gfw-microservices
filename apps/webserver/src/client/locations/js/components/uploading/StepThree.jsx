@@ -433,7 +433,6 @@ export default class StepThree extends Component {
     });
 
     setUploading(false);
-    // eslint-disable-next-line react/no-string-refs
     this.refs.upload.setAttribute('value', '');
   };
 
@@ -1337,7 +1336,6 @@ export default class StepThree extends Component {
         newFeaturesState[index][singleKey] = value;
         newFeaturesState[index].invalidFields = [];
 
-        // eslint-disable-next-line no-unused-vars
         for (const key in feature) {
           if (key === 'Analysis Radius' || key === 'Analysis Area') {
             analysisFieldsEditing[key] = feature[key];
@@ -1415,7 +1413,7 @@ export default class StepThree extends Component {
     const { addType } = this.props;
     const { showValidated } = this.state;
     const csvData = [[]];
-    // eslint-disable-next-line no-unused-vars
+
     for (const key in features[0]) {
       if (
         key !== 'valid' &&
@@ -1451,7 +1449,7 @@ export default class StepThree extends Component {
 
     features.forEach((feature) => {
       const dataRow = [];
-      // eslint-disable-next-line no-unused-vars
+
       for (const key in feature) {
         if (
           key !== 'valid' &&

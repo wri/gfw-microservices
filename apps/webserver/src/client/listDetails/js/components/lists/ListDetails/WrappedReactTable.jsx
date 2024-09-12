@@ -146,7 +146,7 @@ const WrappedReactTable = ({
       onPageChange: (pageIndex) => {
         getUserLocationData(listId, pageIndex);
       },
-      onSortedChange: (newSorted, _column, _shiftKey) => {
+      onSortedChange: (newSorted) => {
         setSortedBy(newSorted[0].id, newSorted[0].desc);
       },
     };

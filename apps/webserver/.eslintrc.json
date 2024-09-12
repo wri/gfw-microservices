@@ -18,5 +18,6 @@
   ],
   "globals": {
     "window": "readonly"
+    "$": "readonly"
   }
 }

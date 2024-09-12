@@ -36,11 +36,6 @@ export default class DescribeInvestment extends Component {
   };
 
   createRow = (template, j) => {
-    let defaultVal;
-    if (template.hasOwnProperty('template_datum_field_value')) {
-      defaultVal = template.template_datum_field_value;
-    }
-
     const multiOptions =
       template.ui_type === 'multi-dropdown' && this.props.contentEditable
         ? this.filterDropdowns(template)
@@ -61,7 +56,7 @@ export default class DescribeInvestment extends Component {
             {template.ui_type === 'single-dropdown' && this.props.contentEditable ? (
               <div className="dropdown-group">
                 <GfwSelect
-                  value={defaultVal}
+                  value={template?.template_datum_field_value}
                   options={this.filterDropdowns(template)}
                   placeholder="Select..."
                   onChange={(evt) => this.props.editTemplate(evt, template)}
@@ -74,7 +69,7 @@ export default class DescribeInvestment extends Component {
                 isMulti={true}
                 isSearchable={true}
                 maxMenuHeight={150}
-                defaultValue={defaultVal}
+                defaultValue={template?.template_datum_field_value}
                 onChange={(evt) => this.props.editTemplate(evt, template, true)}
               />
             ) : (
@@ -83,7 +78,7 @@ export default class DescribeInvestment extends Component {
                 maxLength="150"
                 title={template.template_datum_field_description}
                 placeholder={template.template_datum_field_description}
-                value={defaultVal}
+                value={template?.template_datum_field_value}
                 onChange={(evt) => this.props.editTemplate(evt, template)}
                 className={`location-input-field value ${
                   !this.props.contentEditable ? 'read-only-input' : ''

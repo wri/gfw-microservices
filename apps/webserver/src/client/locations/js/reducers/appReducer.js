@@ -1,4 +1,3 @@
-// @flow
 import {
   changeView,
   changeListView,
@@ -46,18 +45,15 @@ const appReducer = combineReducers({
   popover: updatePopoverState,
 });
 
-function crossSliceReducer(intermediateState, previousState, action) {
-  return {
-    ...intermediateState,
-  };
-}
-
 const rootReducer = (state, action) => {
   if (action.type === 'RESET_APP') {
     state = undefined;
   }
   const intermediateState = appReducer(state, action);
-  return crossSliceReducer(intermediateState, state, action);
+
+  return {
+    ...intermediateState,
+  };
 };
 
 export default rootReducer;

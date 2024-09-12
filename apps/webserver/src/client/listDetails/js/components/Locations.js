@@ -34,20 +34,12 @@ class Locations extends Component {
   }
 
   componentDidMount() {
-    const {
-      location,
-      userLists,
-      gfwLists,
-      canopyModalVisible,
-      locationName,
-      fromMap,
-      userSharedLists,
-    } = this.props;
+    const { location, userLists, gfwLists, canopyModalVisible, userSharedLists } = this.props;
 
     this.unsubscribe = store.subscribe(this.storeDidUpdate);
 
     let listToRedirect;
-    const redirectedFromMap = fromMap && locationName;
+
     const locationIdSearch = parseInt(new URLSearchParams(location.search).get('id'));
     const isGfwList = JSON.parse(new URLSearchParams(location.search).get('gfw'));
     const isSharedList = JSON.parse(new URLSearchParams(location.search).get('shared'));
@@ -55,10 +47,6 @@ class Locations extends Component {
     if (locationIdSearch) {
       const listToSearch = isGfwList ? gfwLists : isSharedList ? userSharedLists : userLists;
       listToRedirect = listToSearch?.find((listData) => listData.id === locationIdSearch);
-    } else if (redirectedFromMap) {
-      const userList = userLists.find((userList) => userList.list_name === locationName);
-      listToRedirect =
-        userList || (dashList = gfwLists.find((gfwList) => gfwList.list_name === locationName));
     }
 
     if (listToRedirect) {

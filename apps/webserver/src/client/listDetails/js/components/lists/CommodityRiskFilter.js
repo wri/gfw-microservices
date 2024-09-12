@@ -211,14 +211,7 @@ export default class CommodityRiskFilter extends Component {
       this.state.selectedParentCompany
     );
 
-    const {
-      selectedCountry,
-      selectedParentCompany,
-      selectedSecondSupplier,
-      selectedState,
-      selectedSubState,
-      selectedSupplier,
-    } = this.state;
+    const { selectedCountry, selectedState, selectedSubState } = this.state;
     return (
       <div>
         <ModalWrapper

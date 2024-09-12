@@ -31,7 +31,7 @@ const FieldLabel = styled(InputLabel)({
 });
 
 /**
- * @summary {[subscription_status_id]: defaulFields}
+ * @summary {[subscription_status_id]: defaultFields}
  */
 const generateGlobalLimitsFormDataObject = (subscriptionOptions) => {
   const defaultFields = {

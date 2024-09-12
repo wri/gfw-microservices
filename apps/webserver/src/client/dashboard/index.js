@@ -1,3 +1,4 @@
+/* global userLists, locationCount, accessLevel, subscription_status_id, gfwLists, userSharedLists, fromMap, userInfo */
 import React from 'react';
 import { render } from 'react-dom';
 import { Provider } from 'react-redux';
@@ -19,7 +20,7 @@ import store from './js/store';
 import '../common/popoverPreRender';
 
 lightBaseTheme.fontFamily = 'Fira Sans, sans-serif';
-/* eslint-disable no-undef */
+
 const App = () => (
   <MuiThemeProvider muiTheme={getMuiTheme(lightBaseTheme)}>
     <Provider store={store}>

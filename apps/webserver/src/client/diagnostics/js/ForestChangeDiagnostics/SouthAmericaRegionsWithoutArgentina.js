@@ -768,7 +768,7 @@ export default class SouthAmericaRegions extends Component {
         Object.entries(location).forEach((biome) => {
           const [biomeName, yearlyData] = biome;
 
-          if (result[biomeName] !== undefined) {
+          if (result[biomeName]) {
             Object.entries(yearlyData).forEach((year) => {
               const [yr, value] = year;
               if (yr >= startYear && yr <= endYear) {
@@ -826,7 +826,7 @@ export default class SouthAmericaRegions extends Component {
       brazilBiomeLocations.forEach((location) => {
         Object.entries(location).forEach((pair) => {
           const [category, value] = pair;
-          if (result[category] !== undefined) {
+          if (result[category]) {
             result[category] += value;
           } else {
             result[category] = value;

@@ -46,23 +46,23 @@ export default class Forgot extends Component {
           res = null;
         }
         if (res) {
-          if ('systemMessage' in res && res.systemMessage.code === 'LimitExceededException') {
+          if (res.systemMessage?.code === 'LimitExceededException') {
             this.setState({
               showModalLoader: false,
               dialogOpen: true,
               dialogTitle: forgotStrings.resetLimit.title,
               dialogMessage: forgotStrings.resetLimit.message,
             });
-          } else if ('systemMessage' in res && res.systemMessage === 'User does not exist') {
+          } else if (res.systemMessage === 'User does not exist') {
             this.setState({
               showModalLoader: false,
               dialogOpen: true,
               dialogTitle: forgotStrings.noUser.title,
               dialogMessage: forgotStrings.noUser.message,
             });
-          } else if ('message' in res && res.message === 'Success') {
+          } else if (res.message === 'Success') {
             window.location.href = '/reset'; // if we succeed, redirect to reset page
-          } else if ('message' in res && res.message === 'Resend') {
+          } else if (res.message === 'Resend') {
             this.setState({
               dialogOpen: true,
               dialogTitle: forgotStrings.passwordExpired.title,

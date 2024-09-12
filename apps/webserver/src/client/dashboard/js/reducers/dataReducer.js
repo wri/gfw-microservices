@@ -73,8 +73,7 @@ function applyDataReducerTimeframeFilter(filteredLocationsObject, selectedTimefr
         // Week timeframe
         if (
           selectedTimeframe === 'WEEK' &&
-          feature.properties.glad_alerts_daily !== undefined &&
-          feature.properties.glad_alerts_daily.length > 0
+          feature.properties.glad_alerts_daily?.length > 0
         ) {
           groupedGlad = getGladDaily(feature);
         }
@@ -82,8 +81,7 @@ function applyDataReducerTimeframeFilter(filteredLocationsObject, selectedTimefr
         // Month timeframe
         if (
           selectedTimeframe === 'MONTH' &&
-          feature.properties.glad_alerts_monthly !== undefined &&
-          feature.properties.glad_alerts_monthly.length > 0
+          feature.properties.glad_alerts_monthly?.length > 0
         ) {
           groupedGlad = getGladMonthlyMonth(feature);
         }
@@ -91,8 +89,7 @@ function applyDataReducerTimeframeFilter(filteredLocationsObject, selectedTimefr
         // Quarter timeframe
         if (
           selectedTimeframe === 'QUARTER' &&
-          feature.properties.glad_alerts_monthly !== undefined &&
-          feature.properties.glad_alerts_monthly.length > 0
+          feature.properties.glad_alerts_monthly?.length > 0
         ) {
           groupedGlad = getGladMonthlyQuarter(feature);
         }
@@ -100,21 +97,15 @@ function applyDataReducerTimeframeFilter(filteredLocationsObject, selectedTimefr
         // Year timeframe
         if (
           selectedTimeframe === 'YEAR' &&
-          feature.properties.glad_alerts_monthly !== undefined &&
-          feature.properties.glad_alerts_monthly.length > 0
+          feature.properties.glad_alerts_monthly?.length > 0
         ) {
           groupedGlad = getGladMonthlyYear(feature);
         }
 
         const groupedViirs = getViirsGrouped(feature, momentStart, momentEnd, propertyFilter);
 
-        if (groupedGlad.delete !== undefined) {
-          delete groupedGlad.delete;
-        }
-
-        if (groupedViirs.delete !== undefined) {
-          delete groupedViirs.delete;
-        }
+        delete groupedGlad.delete;
+        delete groupedViirs.delete;
 
         // Extract the items that are within the timeframe selected.
         feature.properties.gladTimeframe = groupedGlad;
@@ -132,35 +123,31 @@ function applyDataReducerTimeframeFilter(filteredLocationsObject, selectedTimefr
       // Week timeframe
       if (
         selectedTimeframe === 'WEEK' &&
-        feature.properties.glad_alerts_daily !== undefined &&
-        feature.properties.glad_alerts_daily.length > 0
+        feature.properties.glad_alerts_daily?.length > 0
       ) {
         groupedGlad = getGladDaily(feature);
       }
 
       // Month timeframe
       if (
-        selectedTimeframe === 'MONTH' &&
-        feature.properties.glad_alerts_monthly !== undefined &&
-        feature.properties.glad_alerts_monthly.length > 0
+        selectedTimeframe === 'MONTH' &
+        feature.properties.glad_alerts_monthly?.length > 0
       ) {
         groupedGlad = getGladMonthlyMonth(feature);
       }
 
       // Quarter timeframe
       if (
-        selectedTimeframe === 'QUARTER' &&
-        feature.properties.glad_alerts_monthly !== undefined &&
-        feature.properties.glad_alerts_monthly.length > 0
+        selectedTimeframe === 'QUARTER' &
+        feature.properties.glad_alerts_monthly?.length > 0
       ) {
         groupedGlad = getGladMonthlyQuarter(feature);
       }
 
       // Year timeframe
       if (
-        selectedTimeframe === 'YEAR' &&
-        feature.properties.glad_alerts_monthly !== undefined &&
-        feature.properties.glad_alerts_monthly.length > 0
+        selectedTimeframe === 'YEAR' &
+        feature.properties.glad_alerts_monthly?.length > 0
       ) {
         groupedGlad = getGladMonthlyYear(feature);
       }

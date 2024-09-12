@@ -147,8 +147,7 @@ function applyTimeframeFilter(geojson, selectedTimeframe) {
     // Week timeframe
     if (
       selectedTimeframe === 'WEEK' &&
-      feature.properties.glad_alerts_daily !== undefined &&
-      feature.properties.glad_alerts_daily.length > 0
+      feature.properties.glad_alerts_daily?.length > 0
     ) {
       groupedGlad = getGladDaily(feature);
     }
@@ -156,8 +155,7 @@ function applyTimeframeFilter(geojson, selectedTimeframe) {
     // Month timeframe
     if (
       selectedTimeframe === 'MONTH' &&
-      feature.properties.glad_alerts_monthly !== undefined &&
-      feature.properties.glad_alerts_monthly.length > 0
+      feature.properties.glad_alerts_monthly?.length > 0
     ) {
       groupedGlad = getGladMonthlyMonth(feature);
     }
@@ -165,8 +163,7 @@ function applyTimeframeFilter(geojson, selectedTimeframe) {
     // Quarter timeframe
     if (
       selectedTimeframe === 'QUARTER' &&
-      feature.properties.glad_alerts_monthly !== undefined &&
-      feature.properties.glad_alerts_monthly.length > 0
+      feature.properties.glad_alerts_monthly?.length > 0
     ) {
       groupedGlad = getGladMonthlyQuarter(feature);
     }
@@ -174,8 +171,7 @@ function applyTimeframeFilter(geojson, selectedTimeframe) {
     // Year timeframe
     if (
       selectedTimeframe === 'YEAR' &&
-      feature.properties.glad_alerts_monthly !== undefined &&
-      feature.properties.glad_alerts_monthly.length > 0
+      feature.properties.glad_alerts_monthly?.length > 0
     ) {
       groupedGlad = getGladMonthlyYear(feature);
     }
@@ -204,32 +200,28 @@ function applyTimeframeFilterRemix(geojson, selectedTimeframe) {
     let groupedGlad = [];
     if (
       selectedTimeframe === 'WEEK' &&
-      feature.properties.glad_alerts_daily !== undefined &&
-      feature.properties.glad_alerts_daily.length > 0
+      feature.properties.glad_alerts_daily?.length > 0
     ) {
       groupedGlad = getGladDaily(feature);
     }
 
     if (
       selectedTimeframe === 'MONTH' &&
-      feature.properties.glad_alerts_monthly !== undefined &&
-      feature.properties.glad_alerts_monthly.length > 0
+      feature.properties.glad_alerts_monthly?.length > 0
     ) {
       groupedGlad = getGladMonthlyMonth(feature);
     }
 
     if (
       selectedTimeframe === 'QUARTER' &&
-      feature.properties.glad_alerts_monthly !== undefined &&
-      feature.properties.glad_alerts_monthly.length > 0
+      feature.properties.glad_alerts_monthly?.length > 0
     ) {
       groupedGlad = getGladMonthlyQuarter(feature);
     }
 
     if (
       selectedTimeframe === 'YEAR' &&
-      feature.properties.glad_alerts_monthly !== undefined &&
-      feature.properties.glad_alerts_monthly.length > 0
+      feature.properties.glad_alerts_monthly?.length > 0
     ) {
       groupedGlad = getGladMonthlyYear(feature);
     }

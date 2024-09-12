@@ -76,9 +76,7 @@ import layerInfoCache from '../utils/layerInfoCache';
 import { layerFactory } from '../utils/LayerFactory';
 import { identifyPoints, queryAdmin, queryExtent } from '../utils/LayerUtils';
 import { getBBoxAndGeostoreIDs, getVectorTileStyle } from '../utils/gfw-api.utils';
-import setVectorTileLayerForFilteredList, {
-  goToFilteredListMapView,
-} from '../utils/setVectorTileLayerForFilteredList';
+import setVectorTileLayerForFilteredList from '../utils/setVectorTileLayerForFilteredList';
 import setVectorTileLayerForFullList from '../utils/setVectorTileLayerForFullList';
 import { getLocationGeometry } from '../utils/map.utils';
 import { constructLayerObject } from '../../../common/js/utils/layer.utils';

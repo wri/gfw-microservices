@@ -17,6 +17,8 @@
     }
   ],
   "globals": {
-    "$": "readonly"
+    "window": "readonly",
+    "$": "readonly",
+    "XMLHttpRequest": "readonly"
   }
 }

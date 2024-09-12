@@ -15,6 +15,7 @@ function ListSection({
   listContext,
   currentUser,
 }) {
+  const redirectToAlerts = !!transitionListData?.alertsMapExtent;
   return (
     <div className="list-section__subnavigation">
       <div className="list-section-show-container">
@@ -31,9 +32,9 @@ function ListSection({
         />
         <SelectedListDescription
           totalNumberOfLocationsInAccount={locationCount?.TotalCount}
-          selectedLists={selectedLists}
-          transitionListData={transitionListData}
           userSharedLists={userSharedLists}
+          redirectToAlerts={redirectToAlerts}
+          listContext={listContext}
         />
       </div>
     </div>

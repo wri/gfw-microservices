@@ -71,34 +71,22 @@ function applyDataReducerTimeframeFilter(filteredLocationsObject, selectedTimefr
         let groupedGlad = [];
 
         // Week timeframe
-        if (
-          selectedTimeframe === 'WEEK' &&
-          feature.properties.glad_alerts_daily?.length > 0
-        ) {
+        if (selectedTimeframe === 'WEEK' && feature.properties.glad_alerts_daily?.length > 0) {
           groupedGlad = getGladDaily(feature);
         }
 
         // Month timeframe
-        if (
-          selectedTimeframe === 'MONTH' &&
-          feature.properties.glad_alerts_monthly?.length > 0
-        ) {
+        if (selectedTimeframe === 'MONTH' && feature.properties.glad_alerts_monthly?.length > 0) {
           groupedGlad = getGladMonthlyMonth(feature);
         }
 
         // Quarter timeframe
-        if (
-          selectedTimeframe === 'QUARTER' &&
-          feature.properties.glad_alerts_monthly?.length > 0
-        ) {
+        if (selectedTimeframe === 'QUARTER' && feature.properties.glad_alerts_monthly?.length > 0) {
           groupedGlad = getGladMonthlyQuarter(feature);
         }
 
         // Year timeframe
-        if (
-          selectedTimeframe === 'YEAR' &&
-          feature.properties.glad_alerts_monthly?.length > 0
-        ) {
+        if (selectedTimeframe === 'YEAR' && feature.properties.glad_alerts_monthly?.length > 0) {
           groupedGlad = getGladMonthlyYear(feature);
         }
 
@@ -121,34 +109,25 @@ function applyDataReducerTimeframeFilter(filteredLocationsObject, selectedTimefr
       let groupedGlad = [];
 
       // Week timeframe
-      if (
-        selectedTimeframe === 'WEEK' &&
-        feature.properties.glad_alerts_daily?.length > 0
-      ) {
+      if (selectedTimeframe === 'WEEK' && feature.properties.glad_alerts_daily?.length > 0) {
         groupedGlad = getGladDaily(feature);
       }
 
       // Month timeframe
-      if (
-        selectedTimeframe === 'MONTH' &
-        feature.properties.glad_alerts_monthly?.length > 0
-      ) {
+      if ((selectedTimeframe === 'MONTH') & (feature.properties.glad_alerts_monthly?.length > 0)) {
         groupedGlad = getGladMonthlyMonth(feature);
       }
 
       // Quarter timeframe
       if (
-        selectedTimeframe === 'QUARTER' &
-        feature.properties.glad_alerts_monthly?.length > 0
+        (selectedTimeframe === 'QUARTER') &
+        (feature.properties.glad_alerts_monthly?.length > 0)
       ) {
         groupedGlad = getGladMonthlyQuarter(feature);
       }
 
       // Year timeframe
-      if (
-        selectedTimeframe === 'YEAR' &
-        feature.properties.glad_alerts_monthly?.length > 0
-      ) {
+      if ((selectedTimeframe === 'YEAR') & (feature.properties.glad_alerts_monthly?.length > 0)) {
         groupedGlad = getGladMonthlyYear(feature);
       }
 

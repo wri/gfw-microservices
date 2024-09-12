@@ -1,11 +1,3 @@
-/* eslint-disable camelcase */
-/* eslint-disable guard-for-in */
-/* eslint-disable import/no-unresolved */
-/* eslint-disable no-loop-func */
-/* eslint-disable no-param-reassign */
-/* eslint-disable no-restricted-globals */
-/* eslint-disable no-restricted-syntax */
-/* eslint-disable no-underscore-dangle */
 import React, { Component } from 'react';
 import Papa from 'papaparse';
 import * as XLSX from 'xlsx';
@@ -25,7 +17,6 @@ import * as geometryEngine from '@arcgis/core/geometry/geometryEngine';
 import * as projection from '@arcgis/core/geometry/projection';
 
 import { fieldValidations } from '../../utils/validations';
-import { locationsPage, convertURL } from '../../../../common/js/config';
 import downloaders from '../../../../common/js/utils/downloaders';
 import geojsonUtil from '../../../../common/js/utils/arcgis-to-geojson';
 import {
@@ -42,16 +33,16 @@ import IconBadgeCheck from '../../../../common/js/components/icon/IconBadgeCheck
 import IconExclamationTriangle from '../../../../common/js/components/icon/IconExclamationTriangle';
 import InlineLoader from '../../../../common/js/components/Loaders/InlineLoader';
 import MultiGridTable from '../../../../listDetails/js/components/edit/table/MultiGridTable';
-// eslint-disable-next-line camelcase
 import {
   _getFeatures,
   prepUploadFeatures_AddLocationID,
 } from '../../../../listDetails/js/components/edit/table/MultiGridTable.util';
 import { messageIncorrectFileTypeUpload } from './Uploading.config';
+import { locationsPage, convertURL } from '../../../../common/js/config';
 import {
   excelLocationClassificationExcluded,
   excelLocationClassificationMandatory,
-} from '../../../../common/js/config';
+} from './excelLocationClassification.constants';
 
 /**
  * Get Template Headers list
@@ -442,7 +433,6 @@ export default class StepThree extends Component {
     });
 
     setUploading(false);
-    // eslint-disable-next-line react/no-string-refs
     this.refs.upload.setAttribute('value', '');
   };
 
@@ -1346,7 +1336,6 @@ export default class StepThree extends Component {
         newFeaturesState[index][singleKey] = value;
         newFeaturesState[index].invalidFields = [];
 
-        // eslint-disable-next-line no-unused-vars
         for (const key in feature) {
           if (key === 'Analysis Radius' || key === 'Analysis Area') {
             analysisFieldsEditing[key] = feature[key];
@@ -1424,7 +1413,7 @@ export default class StepThree extends Component {
     const { addType } = this.props;
     const { showValidated } = this.state;
     const csvData = [[]];
-    // eslint-disable-next-line no-unused-vars
+
     for (const key in features[0]) {
       if (
         key !== 'valid' &&
@@ -1460,7 +1449,7 @@ export default class StepThree extends Component {
 
     features.forEach((feature) => {
       const dataRow = [];
-      // eslint-disable-next-line no-unused-vars
+
       for (const key in feature) {
         if (
           key !== 'valid' &&

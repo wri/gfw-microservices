@@ -1,6 +1,5 @@
 import React, { Component } from 'react';
 import Dialog from 'material-ui/Dialog';
-import MenuItem from 'material-ui/MenuItem';
 import * as httpRequest from '../../../../common/js/utils/httpRequest';
 import Button from '../../../../common/js/components/Button';
 import LinkButton from '../../../../common/js/components/LinkButton';
@@ -83,10 +82,10 @@ export default class DeleteListDialog extends Component {
   _deleteList = (list_id) => {
     httpRequest
       .fetchJSON('/locations/lockList', { list_id: list_id })
-      .then((response) => {
+      .then(() => {
         httpRequest
           .fetchJSON('/locations/deleteList', { list_id: list_id })
-          .then((responseDelete) => {
+          .then(() => {
             window.location = '/locations';
           })
           .catch((err) => {

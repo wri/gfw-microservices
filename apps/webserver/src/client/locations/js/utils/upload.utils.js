@@ -44,7 +44,7 @@ export const discernProjection = (file) => {
                 }
                 resolve([errMessage, geogCS]);
               })
-              .catch((ex) => {
+              .catch(() => {
                 errMessage = locationsPage.upload.errors.zipfile;
                 console.warn(errMessage);
                 resolve([errMessage, null]);
@@ -58,7 +58,7 @@ export const discernProjection = (file) => {
           resolve([errMessage, null]);
         }
       },
-      function (e) {
+      function () {
         resolve([locationsPage.upload.errors.zipfile, null]);
       }
     );

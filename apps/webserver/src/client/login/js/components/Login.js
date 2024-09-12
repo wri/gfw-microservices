@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { Carousel } from 'react-responsive-carousel';
 import Dialog from 'material-ui/Dialog';
-import { loginPage } from '../../../common/js/config';
+import loginStrings from './loginStrings';
 import { PrivacyPolicyBanner } from './PrivacyPolicyBanner';
 import Button from '../../../common/js/components/Button';
 import httpRequest from '../../../common/js/utils/httpRequest';
@@ -11,19 +11,6 @@ import gfwInAction from '../../images/gfw_pro_in_action.mp4';
 import gfwInActionEs from '../../images/gfw_pro_in_action_es_test.mp4';
 import gwfInActionPoster from '../../images/gfw_pro_in_action_poster.jpg';
 import iconArrowRight from '../../images/shape-arrow-right.svg';
-import gwfHeroPoster from '../../images/gfw_pro_hero_poster.jpg';
-import iconCompliance from '../../images/icon-lg-compliance.svg';
-import iconMonitor from '../../images/icon-lg-monitor.svg';
-import iconShare from '../../images/icon-lg-share.svg';
-import photoAlexandra from '../../images/headshot_alexandra_experton.jpg';
-import photoBanker from '../../images/banker.jpg';
-import photoConsumerGoods from '../../images/consumer-goods.jpg';
-import photoKarimah from '../../images/headshot_karimah_hudda.jpg';
-import photoLuiz from '../../images/headshot_luiz_gabriel_todt_de_azevedo.jpg';
-import photoMoray from '../../images/headshot_moray_mcleish.jpg';
-import photoPlaceholder from '../../images/testimonial-placeholder.svg';
-import photoProducer from '../../images/producer.jpg';
-import photoTrader from '../../images/trader.jpg';
 import LinkedInIcon from '@mui/icons-material/LinkedIn';
 import 'react-responsive-carousel/lib/styles/carousel.min.css';
 
@@ -104,7 +91,7 @@ export default class Login extends Component {
   };
 
   requestDemo = () => {
-    window.open(loginPage.moreInfo.help.link, '_blank');
+    window.open(loginStrings.moreInfo.help.link, '_blank');
   };
 
   requestMoreInfo = () => {
@@ -248,22 +235,10 @@ export default class Login extends Component {
   };
 
   render() {
-    const {
-      dialogOpen,
-      dialogTitle,
-      dialogMessage,
-      videoHidden,
-      activeRole,
-      rememberMe,
-      loginError,
-      username,
-      password,
-      moreOpen,
-      myGfwOpen,
-    } = this.state;
-    const feats = this.createFeats(loginPage.appFeatures.features);
-    const actions = this.createActions(loginPage.actions);
-    const { subsections } = loginPage.monitorSection;
+    const { dialogOpen, dialogTitle, dialogMessage, videoHidden, activeRole } = this.state;
+    const feats = this.createFeats(loginStrings.appFeatures.features);
+    const actions = this.createActions(loginStrings.actions);
+    const { subsections } = loginStrings.monitorSection;
     const { languageCode } = this.state;
     const activeSection = subsections.filter((section) => section.id === activeRole)[0];
     const isEnglishLanguage = languageCode === 'en';
@@ -297,16 +272,16 @@ export default class Login extends Component {
               <h1
                 className="hero__title__text"
                 style={{ fontSize: '3rem' }}
-                dangerouslySetInnerHTML={{ __html: loginPage.appTitleText }}
+                dangerouslySetInnerHTML={{ __html: loginStrings.appTitleText }}
               />
             </div>
             <div className="hero__buttons">
               <div className="button-group">
                 <button onClick={this.signUpForPro} className="button button--primary">
-                  {loginPage.appRequestAccount}
+                  {loginStrings.appRequestAccount}
                 </button>
                 <button onClick={() => this.requestDemo()} className="button button--secondary">
-                  {loginPage.appLearnMore}
+                  {loginStrings.appLearnMore}
                 </button>
               </div>
               <button
@@ -330,8 +305,8 @@ export default class Login extends Component {
             <div className="login__why__section__left">
               <div className="split">
                 <div className="split__left">
-                  <h2 className="login__why__title">{loginPage.whyGfwPro.title}</h2>
-                  <p className="login__why__header">{loginPage.appFeatures.title}</p>
+                  <h2 className="login__why__title">{loginStrings.whyGfwPro.title}</h2>
+                  <p className="login__why__header">{loginStrings.appFeatures.title}</p>
                 </div>
               </div>
               <div className="application-features__container split">
@@ -339,7 +314,7 @@ export default class Login extends Component {
                   {feats}
                   <div className="button-group button-group--second-schedule">
                     <button onClick={() => this.requestDemo()} className="button">
-                      {loginPage.appLearnMore}
+                      {loginStrings.appLearnMore}
                     </button>
                   </div>
                 </div>
@@ -370,7 +345,7 @@ export default class Login extends Component {
             </div>
           </section>
           <section className="login__user__section">
-            <h2 className="main-description">{loginPage.monitorSectionTitle}</h2>
+            <h2 className="main-description">{loginStrings.monitorSectionTitle}</h2>
           </section>
         </div>
 
@@ -444,9 +419,9 @@ export default class Login extends Component {
         </section>
 
         <section id="LoginCarousel" className="quote__section">
-          <h2 className="main-description">{loginPage.quoteTitle}</h2>
+          <h2 className="main-description">{loginStrings.quoteTitle}</h2>
           <Carousel showStatus={false} showThumbs={false} centerMode infiniteLoop swipeable={false}>
-            {loginPage.quotes.map((item) => (
+            {loginStrings.quotes.map((item) => (
               <div className="quote" key={item.image}>
                 <div className="quote__container">
                   <div className="quote__image-container">
@@ -470,23 +445,23 @@ export default class Login extends Component {
         <section className="more-info__section">
           <div className="split">
             <div className="split__left">
-              <p>{loginPage.moreInfo.help.paragraphText}</p>
+              <p>{loginStrings.moreInfo.help.paragraphText}</p>
               <button
                 type="button"
                 onClick={() => this.requestMoreInfo()}
                 className="button button--secondary"
               >
-                {loginPage.moreInfo.help.buttonText}
+                {loginStrings.moreInfo.help.buttonText}
               </button>
             </div>
             <div className="split__right">
-              <p>{loginPage.moreInfo.subscribe.paragraphText}</p>
+              <p>{loginStrings.moreInfo.subscribe.paragraphText}</p>
               <a
-                href={loginPage.moreInfo.subscribe.link}
+                href={loginStrings.moreInfo.subscribe.link}
                 target="_blank"
                 className="button button--secondary"
               >
-                <LinkedInIcon /> {loginPage.moreInfo.subscribe.buttonText}
+                <LinkedInIcon /> {loginStrings.moreInfo.subscribe.buttonText}
               </a>
             </div>
           </div>

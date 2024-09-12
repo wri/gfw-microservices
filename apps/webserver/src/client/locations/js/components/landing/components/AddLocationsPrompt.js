@@ -6,11 +6,10 @@ import { GFW_PRO_HELP_CENTER__LINK } from '../../../../../common/js/config';
  *
  * ### Original location of content is in config.locationsPage.landing.addLocationsPrompt
  *
- * @param {String} languageCode - Language string ['en', 'es', 'es_MX'] in combined with GFW_PRO_USER_GUIDE gives PDF link for selected language
  * @return {JSX.Element}
  * @constructor
  */
-const AddLocationsPrompt = ({ languageCode }) => {
+const AddLocationsPrompt = () => {
   return (
     <div className="no-lists__prompt">
       <p>

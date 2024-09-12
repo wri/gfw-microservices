@@ -88,6 +88,7 @@ import { defaultMaximumAreaSizeForLocationsFilter } from '../../../../../common/
 import { listStatus } from '../../../../../../config/env/listStatuses.constants';
 import { getListFilterValues } from '../getListFilterValues';
 import getAllColumnNames from '../getAllColumnNames';
+import { defaultFilterValues } from '../defaultFilterValues';
 
 // STYLE
 import '../../../../../locations/css/lists.scss';
@@ -256,9 +257,9 @@ export default class ListDetails extends Component {
   isFilterValueDifferentThanDefault = ([filterName, val]) => {
     // It's the case that [] !== [], so we need special handling for arrays.
     if (Array.isArray(val)) {
-      return val.toString() !== locationsPage.defaultFilterValues[filterName].toString();
+      return val.toString() !== defaultFilterValues[filterName].toString();
     }
-    return val !== locationsPage.defaultFilterValues[filterName];
+    return val !== defaultFilterValues[filterName];
   };
 
   showDialogEdit = () => {
@@ -1937,7 +1938,6 @@ export default class ListDetails extends Component {
               </p>
             }
             onRequestClose={() => this.setState({ listNotAccessible: !listNotAccessible })}
-            // eslint-disable-next-line no-return-assign
             onOkButtonPress={() => (window.location = '/locations')}
           />
         )}

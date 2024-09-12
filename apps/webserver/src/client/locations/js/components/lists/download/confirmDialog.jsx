@@ -1,4 +1,3 @@
-/* eslint-disable no-undef */
 import React from 'react';
 import Dialog from 'material-ui/Dialog';
 import IconTimes from 'common/js/components/icon/IconTimes';

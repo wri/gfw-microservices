@@ -1,4 +1,4 @@
-import axios, { AxiosPromise } from 'axios';
+import axios from 'axios';
 
 import { GEO_TRELLIS_ANALYZE_LIST } from '../../../../config/config/locations.config';
 

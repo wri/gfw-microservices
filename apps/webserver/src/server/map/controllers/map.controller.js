@@ -86,6 +86,7 @@ const removeUnusedKeysFromUserList = (userList) => {
     'listAnalysesStatus',
     'vector_tiles_storage_path',
     'list_table_name',
+    'isGlobalForestWatchList',
   ];
 
   return userList.map((user) =>

@@ -15,5 +15,10 @@
       "files": ["*.js", "*.jsx"],
       "rules": {}
     }
-  ]
+  ],
+  "globals": {
+    "window": "readonly",
+    "$": "readonly",
+    "XMLHttpRequest": "readonly"
+  }
 }

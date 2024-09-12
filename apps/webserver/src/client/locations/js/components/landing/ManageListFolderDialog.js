@@ -38,7 +38,7 @@ export default class ManageListFolderDialog extends Component {
   }
 
   render() {
-    const { isOpen, folders, list, onCancel, onComplete } = this.props;
+    const { isOpen, folders, list, onCancel } = this.props;
     const { error, existingFolder, folderName, option } = this.state;
 
     const strings = locationsPage.lists.manageFolderDialog;

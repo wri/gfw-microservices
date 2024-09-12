@@ -1,4 +1,3 @@
-import React from 'react';
 import forest_change_locations from './columns/forest_change_locations';
 import forest_change_analysis from './columns/forest_change_analysis';
 import policy_locations from './columns/policy_locations';

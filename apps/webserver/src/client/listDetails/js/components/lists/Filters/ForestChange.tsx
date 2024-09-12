@@ -18,7 +18,7 @@ interface ForestChangeFilterProps {
   adminAreas: [];
   history: [];
   protectedAreas: [];
-  filterValues: {};
+  filterValues: unknown;
   maximumAnalysisAreaInTheList: number;
   clearFilters: () => void;
 }

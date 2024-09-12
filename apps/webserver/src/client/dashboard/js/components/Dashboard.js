@@ -25,7 +25,6 @@ import {
   updateLocationFilter,
 } from '../actions/dashboardActions';
 
-import Button from '../../../common/js/components/Button';
 import ModalLoader from '../../../common/js/components/Loaders/ModalLoader';
 import SubHeader from '../../../common/js/components/SubHeader';
 import ListSection from '../../../common/js/components/listPanel/ListSection';
@@ -376,6 +375,7 @@ export default class Dashboard extends Component {
               failedGeoJSON={rawData.failedGeoJSON}
               filteredLocationGeoJSON={timeframeGeojson}
               filteredDissolvedGeoJSON={timeframeDissolved}
+              selectedAdmin={selectedAdmin}
             />
             <DashboardMap
               map={map}

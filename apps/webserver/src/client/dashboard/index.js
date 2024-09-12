@@ -1,9 +1,11 @@
+import React from 'react';
+import { render } from 'react-dom';
+import { Provider } from 'react-redux';
 import lightBaseTheme from 'material-ui/styles/baseThemes/lightBaseTheme';
 import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
 import getMuiTheme from 'material-ui/styles/getMuiTheme';
 import Dashboard from './js/components/Dashboard';
-import { render } from 'react-dom';
-import React from 'react';
+import store from './js/store';
 
 // *** POPOVER ISSUE FIX ***
 // there is a known issue when using material ui v<1 with React Fiber (React v16).
@@ -19,16 +21,18 @@ lightBaseTheme.fontFamily = 'Fira Sans, sans-serif';
 
 const App = () => (
   <MuiThemeProvider muiTheme={getMuiTheme(lightBaseTheme)}>
-    <Dashboard
-      userLists={userLists}
-      locationCount={locationCount}
-      accessLevel={accessLevel}
-      subscription_status_id={subscription_status_id}
-      gfwLists={gfwLists}
-      userSharedLists={userSharedLists}
-      fromMap={fromMap}
-      userInfo={userInfo}
-    />
+    <Provider store={store}>
+      <Dashboard
+        userLists={userLists}
+        locationCount={locationCount}
+        accessLevel={accessLevel}
+        subscription_status_id={subscription_status_id}
+        gfwLists={gfwLists}
+        userSharedLists={userSharedLists}
+        fromMap={fromMap}
+        userInfo={userInfo}
+      />
+    </Provider>
   </MuiThemeProvider>
 );
 

@@ -45,17 +45,16 @@ import sendSlackNotification from '../../../common/js/utils/sendSlackNotificatio
 import { getSingleLocationData } from './diagnostic.utils';
 
 // Configs
+import { DATA_API_URL, locationsPage, treeCoverLossTilesUrl } from '../../../common/js/config';
 import {
-  DATA_API_URL,
   highchartColorsIndonesiaLegalClassification2020,
-  locationsPage,
-  treeCoverLossTilesUrl,
-} from '../../../common/js/config';
+  highchartColorBackup,
+} from './highchartColor.constants';
 import { proLayers } from '../../../common/js/proLayers.config';
 import { centroidSymbol, fillSymbolDefault } from '../../../common/js/map.config';
 import AnalysisListChips from '../../../locations/js/components/landing/listItem/AnalysisListChips';
 import { analysisTypes } from '../../../../config/env/analysisTypes.constants';
-
+import infoBubbleConfig from '../../../common/js/infoBubbleConfig.constants';
 import '../../css/locations.scss';
 import '../common/DiagnosticsContainer.scss';
 
@@ -118,7 +117,7 @@ export default class Diagnostics extends Component {
       bubbleData: {},
       hoverProp: '',
       highChartColorConfig: {
-        ...locationsPage.highchartColorBackup,
+        ...highchartColorBackup,
         ...highchartColorsIndonesiaLegalClassification2020,
       },
       isLoading: true,
@@ -769,9 +768,7 @@ export default class Diagnostics extends Component {
                           <span className="locations-historic-characteristics">
                             Historic Site Characteristics
                           </span>
-                          <InfoBubble
-                            infoBubbleId={locationsPage.infoBubbleConfig.bannerHistoricSite}
-                          />
+                          <InfoBubble infoBubbleId={infoBubbleConfig.bannerHistoricSite} />
                         </div>
                       </th>
                     </tr>
@@ -939,9 +936,7 @@ export default class Diagnostics extends Component {
                           <span className="locations-diagnostics-statistics__title locations-historic-characteristics">
                             List Attributes
                           </span>
-                          <InfoBubble
-                            infoBubbleId={locationsPage.infoBubbleConfig.bannerListAttributes}
-                          />
+                          <InfoBubble infoBubbleId={infoBubbleConfig.bannerListAttributes} />
                         </div>
                       </th>
                     </tr>

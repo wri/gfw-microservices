@@ -1,5 +1,6 @@
 import React from 'react';
-import { columnHeaders, locationsPage } from '../../../../common/js/config';
+import { locationsPage } from '../../../../common/js/config';
+import { columnHeaders } from './columnHeaders.constants';
 import CustomTooltip from '../../../../common/js/components/CustomTooltip/CustomTooltip';
 import FailedTooltip from '../../../../common/js/components/CustomTooltip/FailedTooltip';
 import ColumnsHeader from '../../components/columns/ColumnsHeader';

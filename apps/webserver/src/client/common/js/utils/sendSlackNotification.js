@@ -1,3 +1,5 @@
+/* global userInfo, organizationId */
+
 import httpRequest from './httpRequest';
 
 /**

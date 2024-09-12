@@ -100,6 +100,7 @@ import getActiveAnalysisType from '../../../../../utils/getActiveAnalysisType';
 import { defaultMaximumAreaSizeForLocationsFilter } from '../../../../common/js/constants/lists.constants';
 import { listStatus } from '../../../../../config/env/listStatuses.constants';
 import { getListFilterValues } from './getListFilterValues';
+import { defaultFilterValues } from './defaultFilterValues';
 import getAllColumnNames from './getAllColumnNames';
 import { formatDateForCurrentBrowserLanguage } from '../../../../common/js/utils/format';
 
@@ -283,9 +284,9 @@ export default class Lists extends Component {
   isFilterValueDifferentThanDefault = ([filterName, val]) => {
     // It's the case that [] !== [], so we need special handling for arrays.
     if (Array.isArray(val)) {
-      return val.toString() !== locationsPage.defaultFilterValues[filterName].toString();
+      return val.toString() !== defaultFilterValues[filterName].toString();
     }
-    return val !== locationsPage.defaultFilterValues[filterName];
+    return val !== defaultFilterValues[filterName];
   };
 
   // Create Flag component to add/remove flags for a location
@@ -2047,7 +2048,7 @@ export default class Lists extends Component {
         onPageChange: (pageIndex) => {
           this.getUserLocationData(selectedLists[0].id, pageIndex);
         },
-        onSortedChange: (newSorted, _column, _shiftKey) => {
+        onSortedChange: (newSorted) => {
           this.setState(
             {
               tableSortedBy: newSorted[0].id,
@@ -2141,7 +2142,6 @@ export default class Lists extends Component {
               </p>
             }
             onRequestClose={() => this.setState({ listNotAccessible: !listNotAccessible })}
-            // eslint-disable-next-line no-return-assign
             onOkButtonPress={() => (window.location = '/locations')}
           />
         )}
@@ -2426,7 +2426,6 @@ export default class Lists extends Component {
                                     ? // Display a comma-separated list of active filter values.
                                       Object.entries(filters)
                                         .filter(this.isFilterValueDifferentThanDefault)
-                                        // eslint-disable-next-line array-callback-return
                                         .map(([key, val]) => {
                                           if (val !== undefined && val !== null && val !== '') {
                                             const strValue = String(val)

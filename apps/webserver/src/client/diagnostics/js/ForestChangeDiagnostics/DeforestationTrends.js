@@ -5,10 +5,10 @@ import Highcharts from 'highcharts';
 import { formatNum, prettifyNum } from '../../../common/js/utils/diagnostics.utils';
 import DiagnosticsChartHeader from '../common/DiagnosticsChartHeader';
 import {
-  locationsPage,
   earliestTreeCoverLossYearCommodityRisk,
   latestTreeCoverLossYearCommodityRisk,
 } from '../../../common/js/config';
+import infoBubbleConfig from '../../../common/js/infoBubbleConfig.constants';
 
 const transifex = Transifex.live.translateText;
 
@@ -141,7 +141,7 @@ export default class DeforestationTrends extends Component {
               <div className="locations-diagnostics-section-title__container">
                 <DiagnosticsChartHeader
                   title={'Trends in Deforestation'}
-                  informationBubbleId={locationsPage.infoBubbleConfig.trendsDeforestation}
+                  informationBubbleId={infoBubbleConfig.trendsDeforestation}
                   fireDownload={this.props.fireDownload}
                   downloadId={'deforestationTrends'}
                 />

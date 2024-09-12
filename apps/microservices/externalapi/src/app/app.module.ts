@@ -11,7 +11,6 @@ const envModule = ConfigModule.forRoot({
 
 import { Module, MiddlewareConsumer } from '@nestjs/common';
 import { AppController } from './app.controller';
-import { AppService } from './app.service';
 import { TokenModule } from '../api-keys';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { ListsAnalysisModule } from '../list-analysis';
@@ -28,16 +27,20 @@ import {
 } from '../config';
 import { ApiKeyMiddleware } from '../middleware/api.middleware';
 import { ListAnalysisMessageModule } from '../list-analysis-message-handler';
+import { HealthModule } from '../health/health.module';
+import { HttpModule } from '@nestjs/axios';
 
 @Module({
   imports: [
     envModule,
+    HttpModule,
     createTypeOrmModule('default', [Organization, ExternalAPIKey, UserRoutes]),
     TokenModule,
     ListsAnalysisModule,
+    HealthModule,
   ],
   controllers: [AppController],
-  providers: [AppService],
+  providers: [],
 })
 export class AppModule {
   // Configure protected routes

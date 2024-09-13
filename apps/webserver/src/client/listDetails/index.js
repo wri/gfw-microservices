@@ -1,3 +1,5 @@
+/* global templateData, userLists, userSharedLists, userInfo, usersList, organizationId, locationCount, gfwLists, fromMap, listStatuses */
+
 import React from 'react';
 import { render } from 'react-dom';
 import { BrowserRouter } from 'react-router-dom';
@@ -9,7 +11,7 @@ import Locations from './js/components/Locations';
 
 // *** POPOVER ISSUE FIX ***
 // there is a known issue when using material ui v<1 with React Fiber (React v16).
-// the popoverPreReneder file is a workaround that modifies the
+// the popoverPreRender file is a workaround that modifies the
 // material ui Popover's prototype to delay the opening of the modal
 // and get rid of the flash at position 0,0 before moving to the anchor element.
 // this issue will not be fixed for material ui v<1 since v1 is a complete rebuild
@@ -53,17 +55,18 @@ if (typeof Object.assign !== 'function') {
 if (FileReader.prototype.readAsBinaryString === undefined) {
   FileReader.prototype.readAsBinaryString = function (fileData) {
     let binary = '';
-    const pt = this;
     const reader = new FileReader();
-    reader.onload = function (e) {
+
+    reader.onload = function () {
       const bytes = new Uint8Array(reader.result);
       const length = bytes.byteLength;
       for (let i = 0; i < length; i++) {
         binary += String.fromCharCode(bytes[i]);
       }
-      //pt.result  - readonly so assign content to another property
-      pt.content = binary;
-      pt.onload(); // thanks to @Denis comment
+
+      //this.result  - readonly so assign content to another property
+      this.content = binary;
+      this.onload();
     };
     reader.readAsArrayBuffer(fileData);
   };
@@ -85,10 +88,6 @@ const App = () => {
             usersList={usersList} //Contains all users
             organizationId={organizationId}
             gfwLists={gfwLists}
-            mapData={mapData}
-            gfwData={gfwData}
-            drawData={drawData}
-            locationName={locationName}
             listStatuses={listStatuses}
             fromMap={fromMap}
           />

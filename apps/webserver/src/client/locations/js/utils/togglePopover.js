@@ -19,7 +19,7 @@ export const togglePopover = (evt, infoBubbleCache) => {
   store.dispatch(updatePopoverLoadingId(infoBubbleId));
 
   const checkInfoBubbleCache = (id) => {
-    return infoBubbleCache.hasOwnProperty(id) && infoBubbleCache[id] !== null;
+    return infoBubbleCache[id] !== undefined && infoBubbleCache[id] !== null;
   };
 
   if (checkInfoBubbleCache(infoBubbleId)) {

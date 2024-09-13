@@ -1,6 +1,6 @@
 import React from 'react';
 import InfoBubble from '../../../../common/js/components/InfoBubble';
-import { columnHeaders, locationsPage } from '../../../../common/js/config';
+import { columnHeaders } from './columnHeaders.constants';
 import ColumnsHeader from '../../components/columns/ColumnsHeader';
 import {
   checkValid,
@@ -13,6 +13,7 @@ import {
   getBooleanValue,
 } from '../../../../locations/js/utils/locationsTableUtils';
 import featureFlags from '../../../../../utils/general.utils';
+import infoBubbleConfig from '../../../../common/js/infoBubbleConfig.constants';
 
 const { isListDetailsPageRedesignAvailable } = featureFlags;
 
@@ -60,7 +61,7 @@ const forest_change_analysis = [
       <div className="react-table-tree-cover-loss">
         <span className="title-text" title={transifex(columnHeaders.treeCoverLossInHa)}>
           {transifex(columnHeaders.treeCoverLoss)} <span className="title-text__units">(ha)</span>
-          <InfoBubble infoBubbleId={locationsPage.infoBubbleConfig.lossAllYears} />
+          <InfoBubble infoBubbleId={infoBubbleConfig.lossAllYears} />
         </span>
       </div>
     ),
@@ -81,8 +82,6 @@ const forest_change_analysis = [
                   ? getBooleanValue(row.value.tree_cover_loss_total_yearly)
                   : getValue(row.value.tree_cover_loss_total_yearly)}
               </span>
-            ) : isListDetailsPageRedesignAvailable ? (
-              <> No </>
             ) : (
               0
             )
@@ -129,8 +128,6 @@ const forest_change_analysis = [
                       row.value.protected_areas_area
                     )}
               </span>
-            ) : isListDetailsPageRedesignAvailable ? (
-              <> No </>
             ) : (
               0
             )
@@ -177,8 +174,6 @@ const forest_change_analysis = [
                       row.value.natural_habitat_primary
                     )}
               </span>
-            ) : isListDetailsPageRedesignAvailable ? (
-              <> No </>
             ) : (
               0
             )

@@ -1,4 +1,3 @@
-/* eslint-disable no-loop-func */
 import { fieldValidations } from '../../utils/validations';
 import { locationsPage } from '../../../../common/js/config';
 import downloaders from '../../../../common/js/utils/downloaders';
@@ -8,7 +7,7 @@ import MultiGridTable from '../../../../listDetails/js/components/edit/table/Mul
 import { _getFeatures } from '../../../../listDetails/js/components/edit/table/MultiGridTable.util';
 import ModalLoader from '../../../../common/js/components/Loaders/ModalLoader';
 import { isDownloadDisabledForThisList } from '../../utils/lists.utils';
-import { EXCLUDED_COLUMNS, gfwListNames } from '../../../../common/js/constants/lists.constants';
+import { EXCLUDED_COLUMNS } from '../../../../common/js/constants/lists.constants';
 
 const classificationObj = {
   palmPlantation: { value: 'Property', commodity: 'Palm Oil' },
@@ -384,9 +383,7 @@ export default class StepTwoGFW extends Component {
 
     const alwaysUntochable = unTouchables.shared;
     const currentlyUntouchable =
-      selectedLists &&
-      selectedLists.length > 0 &&
-      gfwListNames.indexOf(selectedLists[0].list_name) > -1
+      selectedLists && selectedLists.length > 0 && selectedLists[0].isGlobalForestWatchList
         ? unTouchables[selectedLists[0].list_name][addType]
         : [];
 
@@ -924,7 +921,7 @@ export default class StepTwoGFW extends Component {
 
   render() {
     const { selectedLists } = this.props;
-    const headerFields = this.createHeaders();
+
     const { isSaving } = this.state;
     const isListExcluded = isDownloadDisabledForThisList(selectedLists[0]);
 

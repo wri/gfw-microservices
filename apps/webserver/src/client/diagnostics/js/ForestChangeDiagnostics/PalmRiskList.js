@@ -5,6 +5,7 @@ import { locationsPage, latestTreeCoverLossYearCommodityRisk } from '../../../co
 import { formatNum, prettifyNum } from '../../../common/js/utils/diagnostics.utils';
 import { getLastValue, getLastYear } from '../../../locations/js/utils/locationsTableUtils';
 import DiagnosticsChartHeader from '../common/DiagnosticsChartHeader';
+import infoBubbleConfig from '../../../common/js/infoBubbleConfig.constants';
 
 const lastYear = latestTreeCoverLossYearCommodityRisk;
 
@@ -236,7 +237,7 @@ export default class PalmRiskList extends Component {
             >
               <DiagnosticsChartHeader
                 title={'Palm Risk Analysis'}
-                informationBubbleId={locationsPage.infoBubbleConfig.crPalmRisk}
+                informationBubbleId={infoBubbleConfig.crPalmRisk}
                 fireDownload={this.props.fireDownload}
                 downloadId={'palmRiskAnalysis'}
               />

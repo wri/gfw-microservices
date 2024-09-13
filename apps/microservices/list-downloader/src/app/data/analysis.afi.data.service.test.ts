@@ -29,7 +29,7 @@ describe('[AnalysisAfiDataService] Get number of pages', () => {
 
     expect(mockedAxios.get).toBeCalledTimes(1);
     expect(mockedAxios.get).toHaveBeenCalledWith(
-      'http://localhost:3334/api/afi/6982/number-of-pages?rowsPerPage=100&clientDatabase=test&isListLevel=0'
+      'http://localhost:3333/api/afi/6982/number-of-pages?rowsPerPage=100&clientDatabase=test&isListLevel=0'
     );
   });
 
@@ -38,7 +38,7 @@ describe('[AnalysisAfiDataService] Get number of pages', () => {
 
     expect(mockedAxios.get).toBeCalledTimes(1);
     expect(mockedAxios.get).toHaveBeenCalledWith(
-      'http://localhost:3334/api/afi/6982/number-of-pages?rowsPerPage=100&clientDatabase=test&isListLevel=1'
+      'http://localhost:3333/api/afi/6982/number-of-pages?rowsPerPage=100&clientDatabase=test&isListLevel=1'
     );
   });
 });
@@ -60,7 +60,7 @@ describe('[AnalysisAfiDataService] Get data', () => {
 
     expect(mockedAxios.get).toBeCalledTimes(1);
     expect(mockedAxios.get).toHaveBeenCalledWith(
-      'http://localhost:3334/api/afi/6982/data-per-page?rowsPerPage=100&pageNumber=undefined&clientDatabase=test&isListLevel=0'
+      'http://localhost:3333/api/afi/6982/data-per-page?rowsPerPage=100&pageNumber=undefined&clientDatabase=test&isListLevel=0'
     );
   });
 
@@ -69,7 +69,7 @@ describe('[AnalysisAfiDataService] Get data', () => {
 
     expect(mockedAxios.get).toBeCalledTimes(1);
     expect(mockedAxios.get).toHaveBeenCalledWith(
-      'http://localhost:3334/api/afi/6982/data-per-page?rowsPerPage=100&pageNumber=undefined&clientDatabase=test&isListLevel=1'
+      'http://localhost:3333/api/afi/6982/data-per-page?rowsPerPage=100&pageNumber=undefined&clientDatabase=test&isListLevel=1'
     );
   });
 });

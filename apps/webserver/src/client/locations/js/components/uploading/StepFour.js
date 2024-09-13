@@ -12,7 +12,7 @@ import {
 export default class StepFour extends Component {
   constructor(props) {
     super(props);
-    const { addType, activeTemplate, commodityType, otherCommodityType, hideSelectList } = props;
+    const { addType, activeTemplate, commodityType, otherCommodityType } = props;
 
     let locationClassification;
     if (addType === 'investment') {

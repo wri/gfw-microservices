@@ -60,6 +60,7 @@ describe('UserUseCases', () => {
       vectorTilesStoragePath: 'test',
       errorFileStoragePath: 'test',
       vectorTilesLastUpdated: undefined,
+      version: 0,
     };
 
     user = {

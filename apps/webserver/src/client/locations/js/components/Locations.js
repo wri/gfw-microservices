@@ -35,6 +35,18 @@ class Locations extends Component {
 
   constructor(props) {
     super(props);
+
+    const locationDataString = localStorage.getItem('locationDataToAddFromMap');
+    localStorage.removeItem('locationDataToAddFromMap');
+
+    let locationDataToAddFromMap = null;
+    if (locationDataString) {
+      locationDataToAddFromMap = JSON.parse(locationDataString);
+    }
+
+    const isAddingLocationFromMap =
+      locationDataToAddFromMap && Object.keys(locationDataToAddFromMap).length > 0;
+
     this.state = {
       isLoading: false,
       geomFromMap: false,
@@ -44,15 +56,19 @@ class Locations extends Component {
       shareView: false,
       adminArea: false,
       B2BsharedListEnabled: false,
+      mapData: locationDataToAddFromMap?.mapData,
+      gfwData: locationDataToAddFromMap?.gfwData,
+      drawData: locationDataToAddFromMap?.drawData,
+      locationName: locationDataToAddFromMap?.locationName,
+      isAddingLocationFromMap,
       ...store.getState(),
     };
   }
 
   componentDidMount() {
-    const { goToEditList } = this.props;
     resetScroll();
     this.unsubscribe = store.subscribe(this.storeDidUpdate);
-    this.getGeomFromMap(goToEditList);
+    this.getGeomFromMap(this.state.isAddingLocationFromMap);
     const { history } = this.props;
 
     this.unloadHistory = history.listen((location, action) => {
@@ -83,18 +99,18 @@ class Locations extends Component {
     return this.state.selectedLists;
   };
 
-  getGeomFromMap = (goToEditList) => {
-    const { gfwData, mapData, drawData } = this.props;
+  getGeomFromMap = (isAddingLocationFromMap) => {
+    const { gfwData, mapData, drawData } = this.state;
 
     // Handle the case where mapData is present
     if (mapData && mapData.listID && mapData.locationID) {
-      this.handleMapData(goToEditList);
+      this.handleMapData(isAddingLocationFromMap);
       return;
     }
 
     // Handle the case where gfwData is present
     if (gfwData && gfwData.listName) {
-      this.handleGFWData(goToEditList);
+      this.handleGFWData(isAddingLocationFromMap);
       return;
     }
 
@@ -107,10 +123,11 @@ class Locations extends Component {
     console.warn('Insufficient data to process getGeomFromMap');
   };
 
-  handleMapData = (goToEditList) => {
-    const { mapData, userLists, locationName, drawData, history } = this.props;
+  handleMapData = (isAddingLocationFromMap) => {
+    const { userLists, history } = this.props;
+    const { mapData, locationName, drawData, gfwData } = this.state;
     const userListInfoFromMap = {
-      ...this.props.gfwData,
+      ...gfwData,
       locationName,
       listAlias: '',
       listID: mapData.listID,
@@ -119,7 +136,7 @@ class Locations extends Component {
 
     this.setState({ isLoading: true, userListInfoFromMap });
 
-    if (goToEditList) {
+    if (isAddingLocationFromMap) {
       const list = userLists?.find((ul) => ul.id === mapData.listID);
       if (list) {
         this.handleDrawData(drawData, locationName);
@@ -132,8 +149,9 @@ class Locations extends Component {
     }
   };
 
-  handleGFWData = (goToEditList) => {
-    const { gfwData, gfwLists, locationName } = this.props;
+  handleGFWData = (isAddingLocationFromMap) => {
+    const { gfwLists } = this.props;
+    const { gfwData, locationName } = this.state;
     const listName = getGFWListNameFromMapLayerId(gfwData.listName);
     const gfwInfoFromMap = {
       gfwData,
@@ -143,7 +161,7 @@ class Locations extends Component {
 
     this.setState({ isLoading: true, gfwInfoFromMap });
 
-    if (goToEditList) {
+    if (isAddingLocationFromMap) {
       const gfwList = gfwLists?.find((gfw) => gfw.list_name === listName);
       if (gfwList) {
         this.fetchGFWListData(gfwList, gfwInfoFromMap);

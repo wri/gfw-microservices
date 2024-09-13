@@ -8,8 +8,20 @@ import redirectToMap from '../../../common/js/utils/redirect';
 import { timeframeOptions, alertsShownOptions } from './alerts.constants';
 
 export default class DashboardSettings extends Component {
+  filterselectedLocations = () => {
+    const { selectedAdmin, geoJSON } = this.props;
+
+    if (selectedAdmin !== '' && !!geoJSON) {
+      return geoJSON.features
+        .filter((location) => location.properties.gadm_id.includes(selectedAdmin))
+        .map((location) => location.properties.location_id);
+    }
+
+    return [];
+  };
+
   handleViewMap = () => {
-    const { selectedAlert, selectedList, selectedTimeframe, zoomLevel } = this.props;
+    const { selectedAlert, selectedList, selectedTimeframe, zoomLevel, selectedAdmin } = this.props;
     if (!selectedList || !selectedList.id) {
       return;
     }
@@ -25,7 +37,7 @@ export default class DashboardSettings extends Component {
       listId: selectedList.id,
       selectedTimeframe,
       visibleLayers,
-      isGfwList: selectedList.globalForestWatchList,
+      isGfwList: selectedList.isGlobalForestWatchList,
       isSharedList: selectedList?.is_shared,
       latitude: viewCenter.latitude,
       longitude: viewCenter.longitude,
@@ -35,6 +47,10 @@ export default class DashboardSettings extends Component {
       xmax: view.extent.xmax,
       ymax: view.extent.ymax,
     };
+
+    if (selectedAdmin !== '') {
+      sendData['selectedLocations'] = this.filterselectedLocations();
+    }
 
     redirectToMap(sendData);
     gtag('event', 'view map clicked', {
@@ -67,6 +83,7 @@ export default class DashboardSettings extends Component {
 
   render() {
     const { selectedAlert } = this.props;
+
     return (
       <div className="flex-grid space-between dashboard-section__padding underline">
         <div id="AlertsShown" className="flex-grid align-center">

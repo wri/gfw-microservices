@@ -2,7 +2,6 @@ import Polygon from '@arcgis/core/geometry/Polygon';
 import SpatialReference from '@arcgis/core/geometry/SpatialReference';
 import * as geometryEngine from '@arcgis/core/geometry/geometryEngine';
 
-import { locationsPage } from '../../../common/js/config';
 import httpRequest from '../../../common/js/utils/httpRequest';
 import { deduceActiveId, deduceActiveName } from '../../../common/js/utils/templateUtils';
 import {

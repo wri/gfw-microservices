@@ -12,11 +12,8 @@ import {
   prettifyNum,
   validatePct,
 } from '../../../common/js/utils/diagnostics.utils';
-import {
-  locationsPage,
-  latestTreeCoverLossYearForTclDataInAnalyses,
-} from '../../../common/js/config';
-
+import { latestTreeCoverLossYearForTclDataInAnalyses } from '../../../common/js/config';
+import infoBubbleConfig from '../../../common/js/infoBubbleConfig.constants';
 import '../../../common/css/_irsBase.scss';
 import '../../../common/css/_irsStyle.scss';
 
@@ -594,7 +591,7 @@ export default class SensitiveAreas extends Component {
 
         <DiagnosticsChartHeader
           title={'Loss of Forests'}
-          informationBubbleId={locationsPage.infoBubbleConfig.saLossOfForests}
+          informationBubbleId={infoBubbleConfig.saLossOfForests}
           fireDownload={this.props.fireDownload}
           downloadId={'forestLoss'}
         />
@@ -617,7 +614,7 @@ export default class SensitiveAreas extends Component {
                       <th />
                       <th className="label loss-label right">
                         {lossTableLabel}
-                        <InfoBubble infoBubbleId={locationsPage.infoBubbleConfig.lossAllYears} />
+                        <InfoBubble infoBubbleId={infoBubbleConfig.lossAllYears} />
                       </th>
                       <th className="label percent-loss right">
                         <span className="percent-loss__label">% of TCL</span>
@@ -633,7 +630,7 @@ export default class SensitiveAreas extends Component {
 
         <DiagnosticsChartHeader
           title={'Percentage of Historic Area Lost'}
-          informationBubbleId={locationsPage.infoBubbleConfig.saHistoricAreasLoss}
+          informationBubbleId={infoBubbleConfig.saHistoricAreasLoss}
           fireDownload={this.props.fireDownload}
           downloadId={'historicPercent'}
         />

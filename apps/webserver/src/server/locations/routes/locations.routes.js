@@ -61,34 +61,13 @@ module.exports = (app, limiter) => {
 
   app.get('/locations', (req, res) => {
     const locationsData = {
-      goToEditList: Boolean(req.session.goToEditList),
-      gfwData: req.session.gfwData,
-      mapData: req.session.mapData,
-      drawData: req.session.drawData,
-      locationName: req.session.locationName,
       fromMap: app.get('from-map'),
       subscriptionStatus: req.session.subscription_status_id,
     };
 
-    req.session.goToEditList = false;
-    req.session.gfwData = '';
-    req.session.mapData = '';
-    req.session.drawData = '';
-    req.session.locationName = '';
-
     controller.locations(req, res, locationsData);
     // TODO: investigate if the variable from-map works correctly
     app.set('from-map', false);
-  });
-
-  app.post('/locations/map-locations', (req, res) => {
-    console.log('POST /locations/map-locations');
-    req.session.goToEditList = req.body.goToEditList;
-    req.session.gfwData = req.body.gfwData;
-    req.session.mapData = req.body.mapData;
-    req.session.drawData = req.body.drawData;
-    req.session.locationName = req.body.locationName;
-    res.send('submitted');
   });
 
   app.get('/getUserLists', (req, res) => {
@@ -742,32 +721,37 @@ module.exports = (app, limiter) => {
     const locationAttributeArray = [];
     const locationAnalysisArray = [];
 
-    if (pageNum && pageSize) {
-      GFWListManager.getPaginatedTable(req, pageNum, pageSize, list_id).then((response) => {
-        const [noGeomData, gfwListAnalysesData, gfwLocationsAnalysesData, count] = response;
-        locationAttributeArray.push(...noGeomData);
-        locationAnalysisArray.push(...gfwListAnalysesData);
-        listAnalyses.push(...gfwLocationsAnalysesData);
-        if (noGeomData.length === 0) {
-          res.send({
-            list_analysis: [],
-            location_analyses: [],
-            total_rows: 0,
-          });
-        }
-        LocationManager.getLocationAttributesList(req, locationAttributeArray, true)
-          .then((locationAttributeList) => {
-            res.send({
-              list_analysis: listAnalyses,
-              location_analyses: [locationAttributeList, locationAnalysisArray],
-              total_rows: count,
+    if (pageNum || pageSize) {
+      GFWListManager.getPaginatedTable(req, pageNum, pageSize, list_id)
+        .then((response) => {
+          const [noGeomData, gfwListAnalysesData, gfwLocationsAnalysesData, count] = response;
+          locationAttributeArray.push(...noGeomData);
+          locationAnalysisArray.push(...gfwListAnalysesData);
+          listAnalyses.push(...gfwLocationsAnalysesData);
+          if (noGeomData.length === 0) {
+            return res.send({
+              list_analysis: [],
+              location_analyses: [],
+              total_rows: 0,
             });
-          })
-          .catch((err) => {
-            console.log('Error /locations/getGFWListLocationData', err);
-            res.send(false);
-          });
-      });
+          }
+          LocationManager.getLocationAttributesList(req, locationAttributeArray, true)
+            .then((locationAttributeList) => {
+              return res.send({
+                list_analysis: listAnalyses,
+                location_analyses: [locationAttributeList, locationAnalysisArray],
+                total_rows: count,
+              });
+            })
+            .catch((err) => {
+              console.log('Error /locations/getGFWListLocationData', err);
+              res.status(err.status || 500).send(err.message);
+            });
+        })
+        .catch((err) => {
+          console.log('Error /locations/getGFWListLocationData', err);
+          res.status(err.status || 500).send(err.message);
+        });
     } else {
       Promise.all([
         GFWListManager.getGFWListLocationsNoGeom(req, list_id, location_ids),
@@ -863,7 +847,7 @@ module.exports = (app, limiter) => {
       count = 0,
       listDataSalted = [];
     try {
-      if (pageNum && pageSize) {
+      if (pageNum || pageSize) {
         const paginatedListResult =
           await AnalysisManager.getPaginatedAnalysisDataForAdministrativeAreas(
             listID,
@@ -902,7 +886,7 @@ module.exports = (app, limiter) => {
       res.send(messageToSend);
     } catch (error) {
       console.log('Error /getAdministrativeAreasData', error);
-      res.send(error);
+      res.status(error.status || 500).send(error.message);
     }
   });
 
@@ -928,7 +912,7 @@ module.exports = (app, limiter) => {
       selectedNames,
     };
     const { pageNum, pageSize } = req.body;
-    if (pageNum && pageSize) {
+    if (pageNum || pageSize) {
       AnalysisManager.getPaginatedAnalysisDataForProtectedAreas(
         listID,
         pageNum,
@@ -939,7 +923,7 @@ module.exports = (app, limiter) => {
         .then((result) => {
           const { listData, protectedLocationResult, count } = result;
           if (protectedLocationResult.length === 0) {
-            res.send({
+            return res.send({
               list_analysis: [],
               location_analyses: [],
               total_rows: 0,
@@ -949,7 +933,7 @@ module.exports = (app, limiter) => {
           AnalysisManager.getAnalysisDataForGFWList(req, listID, location_ids)
             .then((protectedLocationAnalysisResult) => {
               const listDataSalted = LocationManager.getLocationsAttributesSalted(listData);
-              res.send({
+              return res.send({
                 list_analysis: [],
                 location_analyses: [listDataSalted, protectedLocationAnalysisResult],
                 total_rows: count,
@@ -957,18 +941,18 @@ module.exports = (app, limiter) => {
             })
             .catch((err) => {
               console.log('Error /getProtectedAreasData', err);
-              res.send(err);
+              res.status(err.status || 500).send(err.message);
             });
         })
         .catch((err) => {
           console.log('Error /getProtectedAreasData', err);
-          res.send(err);
+          res.status(err.status || 500).send(err.message);
         });
     } else {
       AnalysisManager.getAnalysisDataForProtectedAreas(req, listID, filters)
         .then(({ listData, protectedLocationResult }) => {
           const listDataSalted = LocationManager.getLocationsAttributesSalted(listData);
-          res.send({
+          return res.send({
             list_analysis: [],
             location_analyses: [listDataSalted, protectedLocationResult],
           });

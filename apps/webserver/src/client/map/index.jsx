@@ -2,11 +2,13 @@ import React from 'react';
 import moment from 'moment';
 import { render } from 'react-dom';
 import { BrowserRouter } from 'react-router-dom';
+import { Provider } from 'react-redux';
 import lightBaseTheme from 'material-ui/styles/baseThemes/lightBaseTheme';
 import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
 import getMuiTheme from 'material-ui/styles/getMuiTheme';
 import Map from './js/components/Map';
 import AppErrorFallback from '../common/js/components/Errors/AppErrorFallback';
+import store from './js/store';
 
 // *** POPOVER ISSUE FIX ***
 // there is a known issue when using material ui v<1 with React Fiber (React v16).
@@ -46,15 +48,17 @@ function App() {
   return (
     <MuiThemeProvider muiTheme={getMuiTheme(lightBaseTheme)}>
       <AppErrorFallback>
-        <BrowserRouter>
-          <Map
-            userLists={userLists}
-            locationCount={locationCount}
-            gfwLists={gfwLists}
-            userInfo={userInfo}
-            userSharedLists={userSharedLists}
-          />
-        </BrowserRouter>
+        <Provider store={store}>
+          <BrowserRouter>
+            <Map
+              userLists={userLists}
+              locationCount={locationCount}
+              gfwLists={gfwLists}
+              userInfo={userInfo}
+              userSharedLists={userSharedLists}
+            />
+          </BrowserRouter>
+        </Provider>
       </AppErrorFallback>
     </MuiThemeProvider>
   );

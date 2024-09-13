@@ -6,13 +6,14 @@ import Table from './Table';
 import DiagnosticsChartHeader from '../../../common/DiagnosticsChartHeader';
 import { locationsPage } from '../../../../../common/js/config';
 import '../../../common/DiagnosticsChartContainer.scss';
+import infoBubbleConfig from '../../../../../common/js/infoBubbleConfig.constants';
 
 function OtbnAreaChart({ data }) {
   return (
     <>
       <DiagnosticsChartHeader
         title={locationsPage.diagnosticsTitles.ARGENTINA_OTBN_OVERLAP}
-        informationBubbleId={locationsPage.infoBubbleConfig.treeCoverLossArgOtbnYearly}
+        informationBubbleId={infoBubbleConfig.treeCoverLossArgOtbnYearly}
       />
       <Card>
         <CardContent>

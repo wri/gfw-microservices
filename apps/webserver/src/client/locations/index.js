@@ -1,3 +1,5 @@
+/* global templateData, templateDropdowns, userLists, userSharedLists, userInfo, usersList, organizationId, locationCount, orgLists, gfwLists,  fromMap, listStatuses */
+
 import React from 'react';
 import { render } from 'react-dom';
 import { BrowserRouter as Router } from 'react-router-dom';
@@ -56,17 +58,17 @@ if (typeof Object.assign !== 'function') {
 if (FileReader.prototype.readAsBinaryString === undefined) {
   FileReader.prototype.readAsBinaryString = function (fileData) {
     let binary = '';
-    const pt = this;
     const reader = new FileReader();
-    reader.onload = function (e) {
+    reader.onload = function () {
       const bytes = new Uint8Array(reader.result);
       const length = bytes.byteLength;
       for (let i = 0; i < length; i++) {
         binary += String.fromCharCode(bytes[i]);
       }
+
       //pt.result  - readonly so assign content to another property
-      pt.content = binary;
-      pt.onload(); // thanks to @Denis comment
+      this.content = binary;
+      this.onload();
     };
     reader.readAsArrayBuffer(fileData);
   };
@@ -97,11 +99,6 @@ const App = () => (
           organizationId={organizationId}
           orgLists={orgLists}
           gfwLists={gfwLists}
-          mapData={mapData}
-          gfwData={gfwData}
-          goToEditList={goToEditList}
-          drawData={drawData}
-          locationName={locationName}
           listStatuses={listStatuses}
           fromMap={fromMap}
         />

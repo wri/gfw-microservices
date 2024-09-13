@@ -2,7 +2,6 @@ import React, { useState } from 'react';
 import { DataGrid } from '@mui/x-data-grid';
 import B2BConnectionListStatus from './B2BConnectionListStatus';
 import B2bConnectionDetailsModal from '../ConnectionDetailsButton/B2bConnectionDetailsModal';
-import { profilePage } from '../../../../../common/js/config';
 import B2BConnectionListDetails from './B2BConnectionListDetails';
 
 const B2BConnectionListTable = (props) => {

@@ -137,7 +137,7 @@ export default class StepOneEdit extends Component {
     });
   };
 
-  editTableCell = (value, feature, singleKey, target) => {
+  editTableCell = (value, feature, singleKey) => {
     const { features, setEdited, activeTemplate } = this.props;
 
     features.forEach((item, index) => {

@@ -1,5 +1,10 @@
 import { ClientStoreConnection } from '../util';
-import { InternalServerErrorException, Logger, NotFoundException } from '@nestjs/common';
+import {
+  BadRequestException,
+  InternalServerErrorException,
+  Logger,
+  NotFoundException,
+} from '@nestjs/common';
 import {
   ListsPalmOilMills,
   ListGFWLists,
@@ -51,6 +56,9 @@ export class GfwLists {
     organizationDatabase: string,
     ids: number[] = []
   ): Promise<[ListOilPalmConcessions[] | ListsPalmOilMills[] | RspoOilPalmConcessions[], number]> {
+    if (list_id !== 2 && list_id !== 3 && list_id !== 5) {
+      throw new BadRequestException('Invalid list_id, list id should be 2, 3 or 5');
+    }
     try {
       const connection = await this.getConnection(organizationDatabase);
       const listRepository = connection.getRepository(this.getAttributesListEntity(list_id));
@@ -167,8 +175,8 @@ export class GfwLists {
   }
 
   async getPaginatedTable(
-    pageNum: number,
-    pageSize: number,
+    pageNum = 0,
+    pageSize = 0,
     list_id: number,
     organizationDatabase: string
   ) {
@@ -184,12 +192,17 @@ export class GfwLists {
 
   async getPaginatedAnalysisDataForProtectedAndAdministrativeAreas(
     list_id: number,
-    pageNum,
-    pageSize,
-    organizationDatabase,
+    pageNum = 0,
+    pageSize = 0,
+    organizationDatabase: string,
     filters
   ) {
     const where: FindOptionsWhere<ListProtectedAreas | ListAdministrativeAreas> = {};
+
+    if (list_id !== 1 && list_id !== 4) {
+      throw new BadRequestException('Invalid list_id, list id should be either 1 or 4');
+    }
+
     let locationNameArray = [];
     if (typeof filters != 'undefined') {
       if (filters.selectedCountry && filters.selectedCountry !== '') {

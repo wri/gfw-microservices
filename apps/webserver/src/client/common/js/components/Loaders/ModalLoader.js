@@ -3,8 +3,8 @@ import '../../../css/modal.scss';
 
 export default class ModalLoader extends Component {
   render() {
-    const { open, size, position, showMessage, showSpinner = true, header, message } = this.props;
-    const wheelSize = size || 120;
+    const { open, position, showMessage, showSpinner = true, header, message } = this.props;
+
     const stylePosition = position === 'absolute' ? 'absolute' : 'fixed';
 
     return (

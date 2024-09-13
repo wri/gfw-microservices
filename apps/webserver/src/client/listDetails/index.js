@@ -1,4 +1,4 @@
-/* global templateData, userLists, userSharedLists, userInfo, usersList, organizationId, locationCount, gfwLists, mapData, gfwData, drawData, locationName, fromMap, listStatuses */
+/* global templateData, userLists, userSharedLists, userInfo, usersList, organizationId, locationCount, gfwLists, fromMap, listStatuses */
 
 import React from 'react';
 import { render } from 'react-dom';

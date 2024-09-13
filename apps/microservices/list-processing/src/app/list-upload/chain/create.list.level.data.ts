@@ -6,14 +6,22 @@ import { updateListsUploadStatus } from '../shared/update.lists.upload.status';
 import { sqlConfig } from '../shared/config';
 
 export class CreateList extends AbstractHandler<ChainType> {
-  private createSqlParameter(field: string, type: sql.ISqlType | sql.ISqlTypeFactoryWithNoParams, value: string | number) {
+  private createSqlParameter(
+    field: string,
+    type: sql.ISqlType | sql.ISqlTypeFactoryWithNoParams,
+    value: string | number
+  ) {
     return { field, type, value };
   }
 
   private async executeQueryWithParams<T>(
     connection: SQLUtils,
     procedureName: string,
-    parameters: { field: string; type: sql.ISqlType | sql.ISqlTypeFactoryWithNoParams; value: string| number }[]
+    parameters: {
+      field: string;
+      type: sql.ISqlType | sql.ISqlTypeFactoryWithNoParams;
+      value: string | number;
+    }[]
   ): Promise<T> {
     try {
       return await connection.executeQuery<T>(procedureName, parameters);

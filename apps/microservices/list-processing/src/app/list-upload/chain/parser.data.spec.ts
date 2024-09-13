@@ -19,7 +19,7 @@ describe('ListSchema', () => {
         organization_database: 'test_db',
         userId: 0,
         templateId: 0,
-        path: ''
+        path: '',
       },
     };
   });

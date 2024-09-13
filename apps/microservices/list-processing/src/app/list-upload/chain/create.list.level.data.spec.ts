@@ -145,9 +145,7 @@ describe('CreateList', () => {
         },
       };
 
-      jest
-      .spyOn(createList, 'insertListInListTable')
-      .mockRejectedValue(new Error('Query failed'));
+      jest.spyOn(createList, 'insertListInListTable').mockRejectedValue(new Error('Query failed'));
 
       await expect(createList.handle(mockInput)).rejects.toThrow('Query failed');
     });

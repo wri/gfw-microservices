@@ -1,6 +1,5 @@
 class MapPage {
   elements = {
-    titleList: (title) => cy.contains(title),
     inputDecimalDegreesFirst: () => cy.get('[class="deg-input"]').first(),
     inputDecimalDegreesLast: () => cy.get('[class="deg-input"]').last(),
     selectNorthSouthOption: () =>

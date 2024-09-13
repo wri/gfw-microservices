@@ -2,9 +2,6 @@ class LocationsPage {
   elements = {
     addLocationsBtn: () => cy.contains('Add locations'),
     searchInput: () => cy.get('.input-search__input'),
-    downloadCSVOptionBtn: () => cy.contains('CSV'),
-    MapOptionBtn: () => cy.contains('span[role="menuitem"]', 'Map'),
-    downloadShapefileptionBtn: () => cy.contains('Shapefile'),
     downloadTypeDropdown: () => cy.get('#downloadTypeSelect'),
     downloadTemplateBtn: () => cy.contains('Download'),
     locationNameCell: () => cy.get('.rt-td.cell__Location-Name.default-cell'),
@@ -16,9 +13,7 @@ class LocationsPage {
         .get('.my-lists-list li')
         .filter(':not(:has(.failed-tooltip.failed-tooltip--default))')
         .first(),
-    optionListDraft: () =>
-      cy.get('.my-lists-list li').filter(':has(.DiagnosticStatusDraft__label)').first(),
-    listByName: (name) => cy.contains(name),
+    listByName: (name) => cy.contains('.list-item', name),
   };
 
   verifyLists(lists: string[], exist: boolean) {
@@ -27,29 +22,29 @@ class LocationsPage {
       if (exist) {
         element.should('be.visible');
       } else {
-        element.should('not.exist');
+        element.should('not.be.visible');
       }
     });
+  }
+  selectOptionDotsList(name: string) {
+    cy.contains(name).find('[title="More"]').click();
   }
 
   deleteLists(lists: string[]) {
     lists.forEach((listName) => {
-      cy.get('ul.my-lists-list')
-        .contains('li', listName)
-        .find('button[title="More"].icon-button')
-        .click();
-      this.clickOnDeleteList();
-      this.elements.confirmActionBtn().should('be.visible');
-      this.clickOnConfirmActionBtn();
+      cy.get('ul.my-lists-list').then(($ul) => {
+        if ($ul.find(`li:contains(${listName})`).length > 0) {
+          this.selectOptionDotsList(listName);
+          this.clickOnDeleteList();
+          this.elements.confirmActionBtn().should('be.visible');
+          this.clickOnConfirmActionBtn();
+        }
+      });
     });
   }
 
   clickOnConfirmActionBtn() {
     this.elements.confirmActionBtn().click();
-  }
-
-  clickOnMapBtn() {
-    this.elements.MapOptionBtn().click();
   }
   clickOnDeleteList() {
     cy.contains('Delete').click();
@@ -87,11 +82,6 @@ class LocationsPage {
   }
   clickOnMoreOptionsListOK() {
     this.elements.optionListOK().find('[title="More"]').click();
-  }
-  clickOnMoreOptionsList(list: string) {
-    cy.contains('li.locations-list', list).within(() => {
-      cy.get('button[title="More"]').click();
-    });
   }
 }
 

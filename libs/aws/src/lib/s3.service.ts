@@ -1,5 +1,10 @@
 import { Injectable } from '@nestjs/common';
-import { S3Client, PutObjectCommand, GetObjectCommand } from '@aws-sdk/client-s3';
+import {
+  S3Client,
+  PutObjectCommand,
+  GetObjectCommand,
+  DeleteObjectCommand,
+} from '@aws-sdk/client-s3';
 import { getSignedUrl } from '@aws-sdk/s3-request-presigner';
 import * as fs from 'fs';
 import { finished } from 'stream/promises';
@@ -86,5 +91,78 @@ export class S3Service {
     }
 
     return filePath;
+  }
+
+  async putObject(
+    key: string,
+    body: Buffer | Uint8Array | string,
+    bucket: string,
+    contentType: string
+  ) {
+    const params = {
+      Bucket: bucket,
+      Key: key,
+      Body: body,
+      ContentType: contentType,
+    };
+
+    const command = new PutObjectCommand(params);
+    await this.s3Client.send(command);
+  }
+
+  async deleteObject(key: string, bucket: string) {
+    const params = {
+      Bucket: bucket,
+      Key: key,
+    };
+
+    const command = new DeleteObjectCommand(params);
+    await this.s3Client.send(command);
+  }
+
+  // New method to get an object from S3, convert it to JSON, and return it
+  async getObjectAsJson(bucket: string, key: string): Promise<any> {
+    const params = {
+      Bucket: bucket,
+      Key: key,
+    };
+
+    const command = new GetObjectCommand(params);
+    const response = await this.s3Client.send(command);
+
+    if (response.Body instanceof Readable) {
+      const s3DataString = await this.streamToString(response.Body);
+      try {
+        const s3DataJson = JSON.parse(s3DataString);
+        return s3DataJson;
+      } catch (err) {
+        throw new Error(`Failed to parse JSON: ${err.message}`);
+      }
+    } else {
+      throw new Error('Response body is not a Readable stream');
+    }
+  }
+
+  // Helper method to convert a Readable stream to a string
+  private async streamToString(stream: Readable): Promise<string> {
+    return new Promise((resolve, reject) => {
+      const chunks: Uint8Array[] = [];
+      stream.on('data', (chunk) => chunks.push(chunk));
+      stream.on('error', reject);
+      stream.on('end', () => {
+        // Concatenate all Uint8Array objects into a single Uint8Array
+        const concatenatedArray = new Uint8Array(
+          chunks.reduce((acc, val) => acc.concat(Array.from(val)), [])
+        );
+
+        // Convert the concatenated Uint8Array to a Buffer
+        const buffer = Buffer.from(concatenatedArray);
+
+        // Convert the Buffer to a string
+        const resultString = buffer.toString('utf-8');
+
+        resolve(resultString);
+      });
+    });
   }
 }

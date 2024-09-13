@@ -12,6 +12,100 @@ import { arcgisToGeoJSON, GeoJSONGeometry, geojsonToArcGIS } from './arcgis-to-g
 
 const PRODUCTION_ENVIRONMENTS = ['production', 'ProdV2'];
 const POOL_SIZE = 5;
+
+import { LambdaClient, InvokeCommand, InvocationType } from '@aws-sdk/client-lambda';
+import { NodeHttpHandler } from '@smithy/node-http-handler';
+import { S3Service } from '@wri-monorepos/aws';
+
+const LAMBDA_HTTP_TIMEOUT_MS = 5 * 60 * 1000; // 5 minutes
+
+const putObject = async (objectName, object) => {
+  const s3Service = new S3Service();
+
+  const filePath = `${process.env.NODE_ENV}/${objectName}.geojson`;
+
+  await s3Service.putObject(
+    filePath,
+    JSON.stringify(object),
+    process.env.AWS_ANALYSIS_BUCKET,
+    'application/json'
+  );
+};
+
+const getObject = async (bucket, key) => {
+  const s3Service = new S3Service();
+  return await s3Service.getObjectAsJson(bucket, key);
+};
+
+const delObject = async (bucket, key) => {
+  const s3Service = new S3Service();
+
+  await s3Service.deleteObject(key, bucket);
+};
+
+const invokeLambda = async (FunctionName: string, payload: object = {}) => {
+  const client = new LambdaClient({
+    apiVersion: '2015-03-31',
+    region: 'us-east-1',
+    requestHandler: new NodeHttpHandler({
+      requestTimeout: LAMBDA_HTTP_TIMEOUT_MS,
+    }),
+  });
+
+  const functionName = `${FunctionName}-${process.env.NODE_ENV}`;
+  const payloadString = JSON.stringify(payload);
+  const parameters = {
+    FunctionName: functionName,
+    Payload: Buffer.from(payloadString), // Ensure payload is a Buffer
+    InvocationType: InvocationType.RequestResponse, // Explicitly use the enum
+  };
+  console.log('FunctionName', functionName);
+
+  const command = new InvokeCommand(parameters);
+  const { Payload: LambdaPayload } = await client.send(command);
+  const result = Buffer.from(LambdaPayload).toString();
+  return { Payload: result };
+};
+
+const getGADM = (geojson) => {
+  return new Promise((resolve, reject) => {
+    const s3ObjectsToDelete = [];
+    const objectName = `gadm-${new Date().getTime()}`;
+    putObject(objectName, { geojson: geojson })
+      .then((location_s3_info) => {
+        s3ObjectsToDelete.push(location_s3_info);
+
+        return invokeLambda('controller-admin-areas', {
+          receipt_handle: 'NOTARECEIPT',
+          s3_location_info: location_s3_info,
+          layer: 'gadm',
+          dissolve_aoi: false,
+          post_process_aoi: false,
+        });
+      })
+      .then((lambdaResult) => {
+        const { Payload } = lambdaResult;
+        const { bucket, key, errorMessage } = JSON.parse(Payload);
+
+        if (errorMessage) {
+          console.log(errorMessage);
+          throw new Error('Has error property');
+        }
+
+        s3ObjectsToDelete.push({ bucket, key });
+        return getObject(bucket, key);
+      })
+      .then((s3Object) => {
+        Promise.all(s3ObjectsToDelete.map((obj) => delObject(obj.bucket, obj.key)));
+        resolve(s3Object);
+      })
+      .catch((e) => {
+        console.log(e);
+        reject(e);
+      });
+  });
+};
+
 export class GADMService extends AbstractHandler<ChainType> {
   logger = new Logger(GADMService.name);
 
@@ -186,5 +280,7 @@ export class GADMService extends AbstractHandler<ChainType> {
     for await (const localPage of asyncPool(POOL_SIZE, features, this.composeResults)) {
       this.logger.log(`(${listId}) - Get page of number ${localPage} from database`);
     }
+
+    getGADM(geojson);
   }
 }

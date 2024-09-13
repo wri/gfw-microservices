@@ -33,10 +33,10 @@ class ListDetailsPage {
     cy.contains(name).click();
   }
 
-  selectorCountryProtectedAreas(location: string) {
+  selectCountryForProtectedAreas(location: string) {
     cy.get('select').first().select(location);
   }
-  selectorCountryAdminAreas(location: string) {
+  selectCountryForAdminAreas(location: string) {
     cy.contains('Select...').click();
     cy.contains(location).click();
   }

@@ -349,7 +349,7 @@ export default class SoutheastAsiaRegions extends Component {
 
     series[0].data = serie;
 
-    const chart = new Highcharts.chart({
+    return Highcharts.chart({
       chart: {
         renderTo: ref,
         type: 'pie',
@@ -396,7 +396,6 @@ export default class SoutheastAsiaRegions extends Component {
         enabled: false,
       },
     });
-    return chart;
   };
 
   renderBarChart = (ref, overlapCategoryNames) => {
@@ -514,7 +513,7 @@ export default class SoutheastAsiaRegions extends Component {
     }
     const chartSeries = filteredSeries ? filteredSeries : series;
 
-    const chart = new Highcharts.chart({
+    return Highcharts.chart({
       chart: {
         renderTo: ref,
         type: 'column',
@@ -570,8 +569,6 @@ export default class SoutheastAsiaRegions extends Component {
         enabled: false,
       },
     });
-
-    return chart;
   };
 
   renderSoutheastAsiaTable = () => {

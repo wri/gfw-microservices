@@ -1,4 +1,4 @@
-/* global templateData, templateDropdowns, userLists, userSharedLists, userInfo, usersList, organizationId, locationCount, orgLists, gfwLists, mapData, gfwData, goToEditList, drawData, locationName, fromMap, listStatuses */
+/* global templateData, templateDropdowns, userLists, userSharedLists, userInfo, usersList, organizationId, locationCount, orgLists, gfwLists,  fromMap, listStatuses */
 
 import React from 'react';
 import { render } from 'react-dom';
@@ -99,11 +99,6 @@ const App = () => (
           organizationId={organizationId}
           orgLists={orgLists}
           gfwLists={gfwLists}
-          mapData={mapData}
-          gfwData={gfwData}
-          goToEditList={goToEditList}
-          drawData={drawData}
-          locationName={locationName}
           listStatuses={listStatuses}
           fromMap={fromMap}
         />

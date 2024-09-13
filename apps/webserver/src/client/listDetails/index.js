@@ -88,10 +88,6 @@ const App = () => {
             usersList={usersList} //Contains all users
             organizationId={organizationId}
             gfwLists={gfwLists}
-            mapData={mapData}
-            gfwData={gfwData}
-            drawData={drawData}
-            locationName={locationName}
             listStatuses={listStatuses}
             fromMap={fromMap}
           />

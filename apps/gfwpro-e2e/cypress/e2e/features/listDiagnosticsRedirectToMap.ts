@@ -1,4 +1,4 @@
-import { When, Then } from '@badeball/cypress-cucumber-preprocessor';
+import { Given, When, Then } from '@badeball/cypress-cucumber-preprocessor';
 import LocationsPage from '../../pages/locationsPage';
 import ListDetailsPage from '../../pages/listDetailsPage';
 import DiagnosticsPage from '../../pages/diagnosticsPage';
@@ -11,46 +11,46 @@ describe('List diagnostics', () => {
   const diagnosticsPage = new DiagnosticsPage();
   const mapPage = new MapPage();
 
-  When('I login in the landing page', () => {
+  Given('I login in the landing page', () => {
     User.login();
     cy.visit('/locations');
   });
 
-  When('I navigate to a sigle list details page', () => {
+  When('I navigate to a single list details page', () => {
     locationsPage.clickOnLocationsList('AAT Argentina Points Generic');
-    listDetailsPage.selectCheckBoxs([1]);
+    listDetailsPage.selectCheckBoxes([1]);
   });
 
-  When('I navigate to a sigle list GFW details page', () => {
+  When('I navigate to a single list details page in GFW', () => {
     locationsPage.clickOnLocationsList('Palm Oil Mills');
-    listDetailsPage.selectCheckBoxs([1]);
+    listDetailsPage.selectCheckBoxes([1]);
   });
 
   When('I navigate to a multiple lists details page', () => {
     locationsPage.clickOnLocationsList('AAT Argentina Points Generic');
-    listDetailsPage.selectCheckBoxs([1, 2]);
+    listDetailsPage.selectCheckBoxes([1, 2]);
   });
 
-  When('I navigate to a multiple lists GFW details page', () => {
+  When('I navigate to a multiple lists details page in GFW', () => {
     locationsPage.clickOnLocationsList('Palm Oil Mills');
-    listDetailsPage.selectCheckBoxs([1, 2]);
+    listDetailsPage.selectCheckBoxes([1, 2]);
   });
 
-  When('I navigate to a full lists details page', () => {
+  When('I navigate to a full list details page', () => {
     locationsPage.clickOnLocationsList('AAT Argentina Points Generic');
     listDetailsPage.clickOnFullListMapBtn();
   });
 
-  When('I navigate to a full lists GFW details page', () => {
+  When('I navigate to a full list details page in GFW', () => {
     locationsPage.clickOnLocationsList('Palm Oil Mills');
     listDetailsPage.clickOnFullListMapBtn();
   });
 
-  When('I click on list diagnostic button', () => {
+  When('I click on the list diagnostics button', () => {
     listDetailsPage.clickOnListDiagnosticsBtn();
   });
 
-  Then('I should be redirected to diagnostic view and verify single location', () => {
+  Then('I should be redirected to the diagnostic view and verify single location', () => {
     diagnosticsPage.clickOnDiagnosticMap();
     cy.url().should('include', '/map');
     mapPage.elements
@@ -58,7 +58,7 @@ describe('List diagnostics', () => {
       .should('have.text', '787 - AAT Argentina Points Generic');
   });
 
-  Then('I should be redirected to diagnostic view GFW and verify single location', () => {
+  Then('I should be redirected to the diagnostic view in GFW and verify single location', () => {
     diagnosticsPage.clickOnDiagnosticMap();
     cy.url().should('include', '/map');
     mapPage.elements
@@ -66,7 +66,7 @@ describe('List diagnostics', () => {
       .should('have.text', '2,154 - Palm Oil Mills');
   });
 
-  Then('I should be redirected to diagnostic view and verify multiple locations', () => {
+  Then('I should be redirected to the diagnostic view and verify multiple locations', () => {
     diagnosticsPage.clickOnDiagnosticMap();
     cy.url().should('include', '/map');
     mapPage.elements
@@ -74,7 +74,7 @@ describe('List diagnostics', () => {
       .should('have.text', '787 - AAT Argentina Points Generic');
   });
 
-  Then('I should be redirected to diagnostic view GFW and verify multiple locations', () => {
+  Then('I should be redirected to the diagnostic view in GFW and verify multiple locations', () => {
     diagnosticsPage.clickOnDiagnosticMap();
     cy.url().should('include', '/map');
     mapPage.elements
@@ -82,17 +82,20 @@ describe('List diagnostics', () => {
       .should('have.text', '2,154 - Palm Oil Mills');
   });
 
-  Then('I should be redirected to diagnostic view and verify full list locations', () => {
+  Then('I should be redirected to the diagnostic view and verify full list locations', () => {
     cy.url().should('include', '/map');
     mapPage.elements
       .titleList('787 - AAT Argentina Points Generic')
       .should('have.text', '787 - AAT Argentina Points Generic');
   });
 
-  Then('I should be redirected to diagnostic view GFW and verify full list locations', () => {
-    cy.url().should('include', '/map');
-    mapPage.elements
-      .titleList('2,154 - Palm Oil Mills')
-      .should('have.text', '2,154 - Palm Oil Mills');
-  });
+  Then(
+    'I should be redirected to the diagnostic view in GFW and verify full list locations',
+    () => {
+      cy.url().should('include', '/map');
+      mapPage.elements
+        .titleList('2,154 - Palm Oil Mills')
+        .should('have.text', '2,154 - Palm Oil Mills');
+    }
+  );
 });

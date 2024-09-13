@@ -1,4 +1,4 @@
-import { When, Then, Given } from '@badeball/cypress-cucumber-preprocessor';
+import { Given, When, Then } from '@badeball/cypress-cucumber-preprocessor';
 import BasePage from '../../pages/basePage';
 import AlertsPage from '../../pages/alertsPage';
 import * as User from '../../app-api/User';
@@ -7,7 +7,7 @@ describe('Alerts page', () => {
   const basePage = new BasePage();
   const alertsPage = new AlertsPage();
 
-  Given('I login to the landing page', () => {
+  Given('I login in the landing page', () => {
     User.login();
     cy.visit('/locations');
   });
@@ -17,7 +17,7 @@ describe('Alerts page', () => {
     cy.url().should('include', '/dashboard');
   });
 
-  When('I select a List from the dropdown', () => {
+  When('I select a list from the dropdown', () => {
     alertsPage.selectListFromDropDown('AAT Argentina Points Generic');
   });
 

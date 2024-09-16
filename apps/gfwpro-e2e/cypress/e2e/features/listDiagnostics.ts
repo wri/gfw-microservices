@@ -28,6 +28,10 @@ describe('List diagnostics', () => {
     expect(diagnosticsPage.elements.reportBtn().should('be.visible'));
     expect(diagnosticsPage.elements.downloadBtn().should('be.visible'));
     expect(diagnosticsPage.elements.diagnosticsMap().should('be.visible'));
-    expect(diagnosticsPage.elements.headerLocationCount().should('have.text', '787 locations'));
+    expect(
+      diagnosticsPage.elements
+        .headerLocationCount('787 locations')
+        .should('have.text', '787 locations')
+    );
   });
 });

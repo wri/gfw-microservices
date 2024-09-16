@@ -13,6 +13,7 @@ declare namespace Cypress {
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   interface Chainable<Subject> {
     login(email: string, password: string, verifyToken?: string): void;
+    visitAndVerifyLoad(url: string, options?: Partial<Cypress.VisitOptions>): void;
   }
 }
 
@@ -34,6 +35,26 @@ Cypress.Commands.add('login', (email: string, password: string, verifyToken = 'u
     body: {
       tokenID: verifyToken,
     },
+  });
+});
+
+Cypress.Commands.add('visitAndVerifyLoad', (url, options: Partial<Cypress.VisitOptions> = {}) => {
+  const startTime = Date.now();
+
+  const visitOptions = {
+    timeout: options.timeout || Cypress.env('waittime'),
+    ...options,
+  };
+
+  cy.visit(url, visitOptions).then(() => {
+    cy.document()
+      .its('readyState', { timeout: visitOptions.timeout })
+      .should('eq', 'complete')
+      .then(() => {
+        const loadTime = Date.now() - startTime;
+        cy.log(`Page loaded in ${loadTime} ms`);
+        console.log(`Page loaded in ${loadTime} ms`);
+      });
   });
 });
 

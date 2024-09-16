@@ -359,7 +359,7 @@ export default class SensitiveAreas extends Component {
       });
     }
 
-    const chart = new Highcharts.chart({
+    return Highcharts.chart({
       chart: {
         renderTo: el,
         type: 'column',
@@ -418,8 +418,6 @@ export default class SensitiveAreas extends Component {
         enabled: false,
       },
     });
-
-    return chart;
   };
 
   renderTotals = (totals) => {

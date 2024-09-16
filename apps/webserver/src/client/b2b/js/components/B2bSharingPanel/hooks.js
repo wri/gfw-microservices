@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import { useState } from 'react';
 const { cancelConnection, rejectConnection, acceptConnection } = require('./fetchB2b');
 
 const useCancel = () => {

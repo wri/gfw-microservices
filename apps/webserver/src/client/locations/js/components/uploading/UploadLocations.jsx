@@ -1,13 +1,3 @@
-/* eslint-disable import/no-unresolved */
-/* eslint-disable no-promise-executor-return */
-/* eslint-disable no-template-curly-in-string */
-/* eslint-disable no-unused-vars */
-/* eslint-disable no-restricted-syntax */
-/* eslint-disable guard-for-in */
-/* eslint-disable no-nested-ternary */
-/* eslint-disable no-param-reassign */
-/* eslint-disable import/no-dynamic-require */
-/* eslint-disable global-require */
 import React, { Component } from 'react';
 import { Route, Switch, withRouter } from 'react-router-dom';
 import Dialog from 'material-ui/Dialog';
@@ -154,7 +144,7 @@ class UploadLocations extends Component {
     this.setState({ canGoNext: !nextStepError });
 
     const { history } = this.props;
-    // eslint-disable-next-line consistent-return
+
     this.historyUnblock = history.block((location, action) => {
       const { pathname } = location;
       // Close modal on transition if open

@@ -28,7 +28,7 @@ describe('[AnalysisDataService] Get Data basic query param', () => {
 
     expect(mockedAxios.get).toBeCalledTimes(1);
     expect(mockedAxios.get).toHaveBeenCalledWith(
-      'http://localhost:3334/api/pages-paginated-list-data?listId=5692&organizationDatabase=test&rowsPerPage=10'
+      'http://localhost:3333/api/pages-paginated-list-data?listId=5692&organizationDatabase=test&rowsPerPage=10'
     );
   });
 
@@ -40,7 +40,7 @@ describe('[AnalysisDataService] Get Data basic query param', () => {
 
     expect(mockedAxios.get).toBeCalledTimes(1);
     expect(mockedAxios.get).toHaveBeenCalledWith(
-      'http://localhost:3334/api/paginated-list-data?listId=5692&organizationDatabase=test&page=1&rowsPerPage=10'
+      'http://localhost:3333/api/paginated-list-data?listId=5692&organizationDatabase=test&page=1&rowsPerPage=10'
     );
   });
 });
@@ -82,7 +82,7 @@ describe('[AnalysisDataService] Get Data all query param', () => {
 
     expect(mockedAxios.get).toBeCalledTimes(1);
     expect(mockedAxios.get).toHaveBeenCalledWith(
-      'http://localhost:3334/api/pages-paginated-list-data?listId=5692&organizationDatabase=test&analysisAreaMax=10&analysisAreaMin=1&country=Brazil&geometry=0&orderType=ASC&page=1&rowsPerPage=200&sortByAttribute=analysisArea&state=Rio%20de%20Janeiro&subState=Rio%20de%20Janeiro&locationLogic=OR&locationIds=1,2,3,4&locationStatement=test&combinedColumns=test1,test2&searchString=test'
+      'http://localhost:3333/api/pages-paginated-list-data?listId=5692&organizationDatabase=test&analysisAreaMax=10&analysisAreaMin=1&country=Brazil&geometry=0&orderType=ASC&page=1&rowsPerPage=200&sortByAttribute=analysisArea&state=Rio%20de%20Janeiro&subState=Rio%20de%20Janeiro&locationLogic=OR&locationIds=1,2,3,4&locationStatement=test&combinedColumns=test1,test2&searchString=test'
     );
   });
 
@@ -91,7 +91,7 @@ describe('[AnalysisDataService] Get Data all query param', () => {
 
     expect(mockedAxios.get).toBeCalledTimes(1);
     expect(mockedAxios.get).toHaveBeenCalledWith(
-      'http://localhost:3334/api/paginated-list-data?listId=5692&organizationDatabase=test&analysisAreaMax=10&analysisAreaMin=1&country=Brazil&geometry=0&orderType=ASC&page=1&rowsPerPage=200&sortByAttribute=analysisArea&state=Rio%20de%20Janeiro&subState=Rio%20de%20Janeiro&locationLogic=OR&locationIds=1,2,3,4&locationStatement=test&combinedColumns=test1,test2&searchString=test'
+      'http://localhost:3333/api/paginated-list-data?listId=5692&organizationDatabase=test&analysisAreaMax=10&analysisAreaMin=1&country=Brazil&geometry=0&orderType=ASC&page=1&rowsPerPage=200&sortByAttribute=analysisArea&state=Rio%20de%20Janeiro&subState=Rio%20de%20Janeiro&locationLogic=OR&locationIds=1,2,3,4&locationStatement=test&combinedColumns=test1,test2&searchString=test'
     );
   });
 });

@@ -61,34 +61,13 @@ module.exports = (app, limiter) => {
 
   app.get('/locations', (req, res) => {
     const locationsData = {
-      goToEditList: Boolean(req.session.goToEditList),
-      gfwData: req.session.gfwData,
-      mapData: req.session.mapData,
-      drawData: req.session.drawData,
-      locationName: req.session.locationName,
       fromMap: app.get('from-map'),
       subscriptionStatus: req.session.subscription_status_id,
     };
 
-    req.session.goToEditList = false;
-    req.session.gfwData = '';
-    req.session.mapData = '';
-    req.session.drawData = '';
-    req.session.locationName = '';
-
     controller.locations(req, res, locationsData);
     // TODO: investigate if the variable from-map works correctly
     app.set('from-map', false);
-  });
-
-  app.post('/locations/map-locations', (req, res) => {
-    console.log('POST /locations/map-locations');
-    req.session.goToEditList = req.body.goToEditList;
-    req.session.gfwData = req.body.gfwData;
-    req.session.mapData = req.body.mapData;
-    req.session.drawData = req.body.drawData;
-    req.session.locationName = req.body.locationName;
-    res.send('submitted');
   });
 
   app.get('/getUserLists', (req, res) => {

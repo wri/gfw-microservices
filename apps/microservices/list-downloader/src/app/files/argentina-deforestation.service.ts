@@ -62,7 +62,14 @@ export class ArgentinaDeforestationService extends DashboardHandleDownload {
     }
   }
 
-  isForestLossFile({ listView, type }: ListFieldsFileRequest) {
-    return listView === 'forest_change' && VALID_TYPES.includes(type);
+  isForestLossFile({ listView, type, listLevelAnalysis }: ListFieldsFileRequest) {
+    const { arg_otbn_area, country_area } = listLevelAnalysis;
+    const argOtbnArea = JSON.parse(arg_otbn_area || '{}');
+    const countryArea = JSON.parse(country_area || '{}');
+
+    const hasProperties = (obj) => Object.keys(obj).length > 0;
+    const isArgentinaDataAvailable = hasProperties(argOtbnArea) || countryArea?.ARG > 0;
+
+    return listView === 'forest_change' && VALID_TYPES.includes(type) && isArgentinaDataAvailable;
   }
 }

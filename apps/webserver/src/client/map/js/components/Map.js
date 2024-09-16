@@ -76,9 +76,7 @@ import layerInfoCache from '../utils/layerInfoCache';
 import { layerFactory } from '../utils/LayerFactory';
 import { identifyPoints, queryAdmin, queryExtent } from '../utils/LayerUtils';
 import { getBBoxAndGeostoreIDs, getVectorTileStyle } from '../utils/gfw-api.utils';
-import setVectorTileLayerForFilteredList, {
-  goToFilteredListMapView,
-} from '../utils/setVectorTileLayerForFilteredList';
+import setVectorTileLayerForFilteredList from '../utils/setVectorTileLayerForFilteredList';
 import setVectorTileLayerForFullList from '../utils/setVectorTileLayerForFullList';
 import { getLocationGeometry } from '../utils/map.utils';
 import { constructLayerObject } from '../../../common/js/utils/layer.utils';
@@ -1601,23 +1599,10 @@ class Map extends Component {
       };
     }
 
-    fetch('/locations/map-locations', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(requestObject),
-    })
-      .then((response) => response.text())
-      .then((data) => {
-        if (data === 'submitted') {
-          window.location = '/locations';
-        }
-      })
-      .catch((error) => {
-        this.setState({ spinnerOn: false });
-        console.error('Error:', error);
-      });
+    // set location data to add to a new list
+    localStorage.setItem('locationDataToAddFromMap', JSON.stringify(requestObject));
+
+    window.location.href = '/locations';
   };
 
   getCurrentAnalysis = (type) => {

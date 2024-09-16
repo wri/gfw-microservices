@@ -1,4 +1,3 @@
-/* eslint-disable no-undef */
 import React, { Component } from 'react';
 import ModalWrapper from '../modals/ModalWrapper';
 import { buildDropdownOptions } from '../../../../common/js/utils/buildDropdownOptions';
@@ -12,10 +11,11 @@ import { locationsPage } from '../../../../common/js/config';
 import Button from '../../../../common/js/components/Button';
 import CountryStateSubStateFilter from './CountryStateSubStateFilter';
 import AreaFilterSlider from './AreaFilterSlider';
+import { filterKeys } from '../../../../common/js/constants/lists.constants';
+import { defaultFilterValues } from './defaultFilterValues';
 import '../../../../common/css/_irsBase.scss';
 import '../../../../common/css/_irsStyle.scss';
 import '../../../../common/css/filter-dialogs.scss';
-import { filterKeys } from '../../../../common/js/constants/lists.constants';
 
 const createSelectOptions = (value) => {
   return {
@@ -26,7 +26,7 @@ const createSelectOptions = (value) => {
 export default class ForestChangeFilter extends Component {
   constructor(props) {
     super(props);
-    this.state = { ...locationsPage.defaultFilterValues };
+    this.state = { ...defaultFilterValues };
     this.initialState = this.state;
   }
 

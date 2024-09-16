@@ -32,7 +32,7 @@ exports.uploadMBTileToS3Bucket = async (mbtileFileName, mbtileOutputFilePath) =>
       ContentType: 'application/x-sqlite3',
     };
 
-    s3.putObject(params, (err, data) => {
+    s3.putObject(params, (err) => {
       if (err) {
         const errorMessage = `MBTile addition to S3 bucket failed !!! ${JSON.stringify(err)}`;
         logger.error(errorMessage);
@@ -64,7 +64,7 @@ exports.deletingMBTileFromS3Bucket = async (listVectorTileS3Path) => {
       Key: mbtileFileNameS3ObjectKeyPath,
     };
 
-    s3.deleteObject(params, (err, data) => {
+    s3.deleteObject(params, (err) => {
       if (err) {
         const errorMessage = `Deleting MBTile from S3 bucket failed !!! ${JSON.stringify(err)}`;
         logger.error(errorMessage);

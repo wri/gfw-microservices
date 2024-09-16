@@ -24,7 +24,7 @@ const hasLowercase = (password) => {
 // Has special character
 const hasSpecialCharacter = (password) => {
   // Valid Cognito special characters: ^ $ * . [ ] { } ( ) ? - " ! @ # % & / \ , > < ' : ; | _ ~ `
-  const regex = /[\^\$\*\.\[\]\{\}\(\)\?\-\"\!\@\#\%\&\/\\\,\>\<\'\:\;\|\_\~\`]/;
+  const regex = /[\^$*.[\]{}()?\-"!@#%&/\\,><':;|_~`]/;
   return regex.test(password);
 };
 

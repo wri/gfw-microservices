@@ -12,7 +12,7 @@ const App = () => {
   const [userGuideLink, setUserGuideLink] = useState(GFW_PRO_USER_GUIDE);
   useEffect(() => {
     if (Transifex) {
-      Transifex.live.onReady((languages) => {
+      Transifex.live.onReady(() => {
         const selectedLanguageCode = Transifex.live.getSelectedLanguageCode();
         setLanguageCode(selectedLanguageCode);
         setUserGuideLink(GFW_PRO_USER_GUIDE);

@@ -385,7 +385,7 @@ const movePolicy = (req, pendingaccount_id, organizationId) => {
 };
 
 // Exporting the functions.
-module.exports = {
+export = {
   uploadPolicies,
   uploadPendingPolicies,
   getPolicyList,

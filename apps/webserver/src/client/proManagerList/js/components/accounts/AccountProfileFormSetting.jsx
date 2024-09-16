@@ -69,7 +69,7 @@ export default function AccountProfileFormSetting() {
     policyNames: [],
     subscription_status_id: accountData.subscription_status_id,
   });
-  const [accountClassificationsFieldValue, setAccountClassicationsFieldValue] = useState(
+  const [accountClassificationsFieldValue, setAccountClassificationsFieldValue] = useState(
     getClassificationsValuesFromArrId(accountFormData.arr_org_classification_ids)
   );
   const classificationFieldOptions = classificationsData.map(({ classification_name, id }) => ({
@@ -369,7 +369,7 @@ export default function AccountProfileFormSetting() {
               isSearchable
               maxMenuHeight={150}
               options={classificationFieldOptions}
-              onChange={setAccountClassicationsFieldValue}
+              onChange={setAccountClassificationsFieldValue}
               value={accountClassificationsFieldValue}
             />
             {/* <div className='policies-delete-download'>

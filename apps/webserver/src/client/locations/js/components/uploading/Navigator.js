@@ -32,7 +32,7 @@ export default class Navigator extends Component {
                   aria-label={stepLabel}
                   disabled={!this.rowEnabled(step, sidebarStep)}
                   className="navigator__link"
-                  onClick={(e) => this.clickedStepRow(sidebarStep)}
+                  onClick={() => this.clickedStepRow(sidebarStep)}
                 >
                   <div className="navigator__number">{sidebarStep}</div>
                   <div className="navigator__label">{stepLabel}</div>

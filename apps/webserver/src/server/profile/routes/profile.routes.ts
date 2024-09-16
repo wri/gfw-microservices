@@ -1,13 +1,14 @@
-const path = require('path');
-const controller = require('../controllers/profile.controller');
-const express = require('express');
+// import path from 'path';
+import * as controller from '../controllers/profile.controller';
+import express from 'express';
 import axios from 'axios';
 
-const middlewares = require(path.resolve('./config/publicutils/middlewares'));
-const UserManager = require(path.resolve('./config/publicutils/userManager.utils'));
-const AccountManager = require(path.resolve('./config/publicutils/accountManager.utils'));
-const PolicyManager = require(path.resolve('./config/publicutils/policyManager.utils'));
-const rateLimiterUtil = require(path.resolve('./config/lib/limiter-util'));
+import middlewares from '../../../config/publicutils/middlewares';
+import * as UserManager from '../../../config/publicutils/userManager.utils';
+import * as AccountManager from '../../../config/publicutils/accountManager.utils';
+import PolicyManager from '../../../config/publicutils/policyManager.utils';
+import rateLimiterUtil from '../../../config/lib/limiter-util';
+import * as logger from '../../../config/privateutils/logger.utils';
 
 const BASE_URL = '/profile'; // Used to compose API calls to EAPI Microservice
 const API_BASE_URL = `/api${BASE_URL}`; // Used for API calls, mostly for routes that return JSON and call the EAPI microservice
@@ -18,7 +19,7 @@ const eapiRoutes = express.Router();
  * @static
  * @summary Profile page routes
  */
-module.exports = (app, limiter) => {
+export = (app, limiter) => {
   /**
    * @name /profile
    * @see profile.controller
@@ -44,33 +45,34 @@ module.exports = (app, limiter) => {
   app.get('/profile/info', controller.profileInfo);
 
   app.post('/profile/activateUser', (req, res) => {
-    console.log('POST /profile/activateUser');
+    logger.info('POST /profile/activateUser');
     const { id, email, first_name, last_name } = req.body;
 
     UserManager.activateUser(req, id, email, first_name, last_name)
-      .then((result) => {
+      .then(() => {
         res.send({ redirect: '/profile' });
       })
       .catch((err) => {
-        console.log('Reject', err);
+        logger.error('POST /profile/activateUser', err);
         res.send(err);
       });
   });
 
   app.post('/profile/deactivateUser', (req, res) => {
-    console.log('POST /profile/deactivateUser');
-    const { name, email } = req.body;
-    UserManager.deactivateUser(req, name, email)
-      .then((result) => {
+    logger.info('POST /profile/deactivateUser');
+    const { name } = req.body;
+    UserManager.deactivateUser(req, name)
+      .then(() => {
         res.send({ redirect: '/profile' });
       })
       .catch((err) => {
-        console.log('Reject', err);
+        logger.error('POST /profile/deactivateUser', err);
         res.send(err);
       });
   });
 
   app.post('/profile/updateAccount', (req, res) => {
+    logger.info('POST /profile/updateAccount');
     const {
       org_name,
       org_address,
@@ -92,7 +94,7 @@ module.exports = (app, limiter) => {
       arr_org_classification_ids
     )
       .then((result) => {
-        console.log('updateAccountProfile: Success', result);
+        logger.info('updateAccountProfile: Success', result);
         if (policyUploadList.length > 0) {
           PolicyManager.uploadPolicies(req, policyUploadList, policyNames, overwrite).then(
             (policyResult) => {
@@ -104,13 +106,13 @@ module.exports = (app, limiter) => {
         }
       })
       .catch((err) => {
-        console.log('Reject', err);
+        logger.error('POST /profile/updateAccount [updateAccountProfile]', err);
         res.send(err);
       });
   });
 
   app.post('/profile/createuser', (req, res) => {
-    console.log('POST /profile/createuser');
+    logger.info('POST /profile/createuser');
     const {
       first_name,
       middle_initial,
@@ -146,13 +148,13 @@ module.exports = (app, limiter) => {
         });
       })
       .catch((err) => {
-        console.log('Reject', err);
+        logger.error('POST /profile/createuser', err);
         res.send(err);
       });
   });
 
   app.post('/profile/updateuser', (req, res) => {
-    console.log('POST /profile/updateuser');
+    logger.info('POST /profile/updateuser');
     const {
       id,
       first_name,
@@ -190,12 +192,13 @@ module.exports = (app, limiter) => {
         res.send(result);
       })
       .catch((err) => {
-        console.log('Reject', err);
+        logger.error('POST /profile/updateuser', err);
         res.send(err);
       });
   });
 
   app.post('/profile/deletePolicy', (req, res) => {
+    logger.info('POST /profile/deletePolicy');
     const { policySelectedList } = req.body;
     PolicyManager.deletePolicies(req, policySelectedList)
       .then((result) => {
@@ -206,19 +209,22 @@ module.exports = (app, limiter) => {
         }
       })
       .catch((err) => {
-        console.log('Reject', err);
+        logger.error('POST /profile/deletePolicy', err);
         res.send(err);
       });
   });
 
   app.get('/profile/downloadPolicy/:policyList', (req, res) => {
-    PolicyManager.downloadPolicy(req, [req.params.policyList])
+    logger.info(`GET /profile/downloadPolicy/:policyList`);
+    const orgId = req.session.organization_id;
+    const policy = req.params.policyList;
+    PolicyManager.downloadPolicy(req, policy, orgId)
       .then((filestream) => {
         res.attachment(req.params.policyList);
         filestream.pipe(res);
       })
       .catch((err) => {
-        console.log('Reject', err);
+        logger.error('GET /profile/downloadPolicy/:policyList', err);
         res.send(err);
       });
   });
@@ -230,7 +236,7 @@ module.exports = (app, limiter) => {
         res.send(secret);
       })
       .catch((err) => {
-        console.log('Error getting secret', err);
+        logger.error('POST /userSecret', err);
       });
   });
 
@@ -240,7 +246,7 @@ module.exports = (app, limiter) => {
     return EAPI_MICROSERVICE_URL;
   };
 
-  const runEAPIMicroserviceRequest = async (requestData, request, response, next) => {
+  const runEAPIMicroserviceRequest = async (requestData, request, response) => {
     const { method, url, data } = requestData;
     const requestURL = `${getEAPIMicroserviceUrl()}${url}`;
     try {

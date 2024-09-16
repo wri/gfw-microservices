@@ -38,12 +38,6 @@ const AWSSES = require(path.resolve('./config/privateutils/ses.utils'));
  */
 export const locations = (req, res, data) => {
   const isAdministrator = UserManager.isAdministrator(req);
-
-  const mapData = data && data.mapData ? data.mapData : false;
-  const gfwData = data && data.gfwData ? data.gfwData : false;
-  const goToEditList = data && data.goToEditList ? data.goToEditList : false;
-  const drawData = data && data.drawData ? data.drawData : false;
-  const locationName = data && data.locationName ? data.locationName : '';
   const fromMap = data && data.fromMap ? data.fromMap : false;
   const subscriptionStatus = data && data.subscriptionStatus ? data.subscriptionStatus : 1;
 
@@ -89,11 +83,6 @@ export const locations = (req, res, data) => {
         common: compiledAssets.js.common,
         locationsjs: compiledAssets.js.locations,
         locationscss: compiledAssets.css.locations,
-        mapData,
-        gfwData,
-        goToEditList,
-        drawData,
-        locationName,
         fromMap,
         listStatuses,
         CURRENT_ENVIRONMENT: process.env.NODE_ENV,

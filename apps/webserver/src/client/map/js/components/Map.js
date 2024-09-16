@@ -1599,23 +1599,10 @@ class Map extends Component {
       };
     }
 
-    fetch('/locations/map-locations', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(requestObject),
-    })
-      .then((response) => response.text())
-      .then((data) => {
-        if (data === 'submitted') {
-          window.location = '/locations';
-        }
-      })
-      .catch((error) => {
-        this.setState({ spinnerOn: false });
-        console.error('Error:', error);
-      });
+    // set location data to add to a new list
+    localStorage.setItem('locationDataToAddFromMap', JSON.stringify(requestObject));
+
+    window.location.href = '/locations';
   };
 
   getCurrentAnalysis = (type) => {

@@ -3,7 +3,7 @@ import * as JSONStream from 'JSONStream';
 
 import { PassThrough } from 'stream';
 import { convert } from 'geojson2shp';
-import { Logger, Injectable } from '@nestjs/common';
+import { Logger, Injectable, Scope } from '@nestjs/common';
 
 import { ListFieldsFileRequest } from '@wri-monorepos/sql';
 import { IPipeService } from '../pipe/i.pipe.service';
@@ -16,7 +16,9 @@ import { finished } from 'stream/promises';
 import { FormatNumber } from '../transform/format.number';
 import { ReplaceSpace2Underscore } from '../transform/replace.space.2.underscore';
 
-@Injectable()
+@Injectable({
+  scope: Scope.REQUEST,
+})
 export class ShapefileService extends IPipeService {
   private readonly logger = new Logger(ShapefileService.name);
   private inputStream: PassThrough;

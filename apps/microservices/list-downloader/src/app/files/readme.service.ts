@@ -1,4 +1,4 @@
-import { Injectable, Logger } from '@nestjs/common';
+import { Injectable, Logger, Scope } from '@nestjs/common';
 import {
   AlertFieldsFileRequest,
   AlertsTimeframes,
@@ -8,7 +8,9 @@ import {
 import * as fs from 'fs';
 import * as path from 'path';
 
-@Injectable()
+@Injectable({
+  scope: Scope.REQUEST,
+})
 export class ReadmeService {
   private readonly logger = new Logger(ReadmeService.name);
 

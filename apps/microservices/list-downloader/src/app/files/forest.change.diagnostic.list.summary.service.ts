@@ -1,5 +1,5 @@
 import * as fs from 'fs';
-import { Injectable, Logger } from '@nestjs/common';
+import { Injectable, Logger, Scope } from '@nestjs/common';
 import { EventEmitter, PassThrough, Transform } from 'stream';
 import { finished } from 'stream/promises';
 
@@ -43,7 +43,9 @@ class EventEmitterTransform extends Transform {
   }
 }
 
-@Injectable()
+@Injectable({
+  scope: Scope.REQUEST,
+})
 export class ForestChangeDiagnosticListSummaryService extends IPipeService {
   private readonly logger = new Logger(ForestChangeDiagnosticListSummaryService.name);
   private writeStream: PassThrough;

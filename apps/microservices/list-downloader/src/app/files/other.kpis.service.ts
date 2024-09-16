@@ -1,4 +1,4 @@
-import { Injectable, Logger } from '@nestjs/common';
+import { Injectable, Logger, Scope } from '@nestjs/common';
 import { PassThrough, Transform } from 'stream';
 import { finished } from 'stream/promises';
 import { AfiAnalysisByListId, BasicFieldsFileRequest } from '@wri-monorepos/sql';
@@ -13,7 +13,9 @@ import { FormatNumber } from '../transform/format.number';
 import { NegligibleRiskDiscretize } from '../transform/negligible.risk.discretize';
 import { OverlapPercentageColumns } from '../transform/overlap.percentage.columns';
 
-@Injectable()
+@Injectable({
+  scope: Scope.REQUEST,
+})
 export class OtherKpisService extends IPipeService {
   private readonly logger = new Logger(OtherKpisService.name);
   private inputStream: PassThrough;

@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
-import Button from '@mui/material/Button';
 import IconMenu from 'material-ui/IconMenu';
+import { Button } from '@mui/material';
 import MenuItem from 'material-ui/MenuItem';
 import DownloadIcon from '@mui/icons-material/Download';
 import RaisedButton from 'material-ui/RaisedButton';
@@ -107,12 +107,16 @@ function ListDownload({
             isListDetailsPageRedesignAvailable ? (
               isHoverMenu ? (
                 <MenuItem
-                  data-cy="download-list"
-                  primaryText="Download"
+                  primaryText="DOWNLOAD"
                   leftIcon={<DownloadIcon />}
+                  data-cy="download-list"
                 />
               ) : (
-                <Button startIcon={<DownloadIcon />} variant="primary">
+                <Button
+                  data-cy="download-list"
+                  startIcon={<DownloadIcon height="14px" />}
+                  variant="primary"
+                >
                   Download
                 </Button>
               )

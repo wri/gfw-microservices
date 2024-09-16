@@ -209,7 +209,6 @@
     &--failed {
       @include text(200, $color: $gfw-gray-2);
       font-style: italic;
-      cursor: not-allowed;
       overflow: hidden;
     }
 

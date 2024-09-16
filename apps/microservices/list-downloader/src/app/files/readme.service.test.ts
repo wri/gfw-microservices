@@ -24,7 +24,7 @@ describe('ReadmeService', () => {
       providers: [ReadmeService],
     }).compile();
 
-    service = module.get<ReadmeService>(ReadmeService);
+    service = await module.resolve<ReadmeService>(ReadmeService);
   });
 
   afterEach(() => {

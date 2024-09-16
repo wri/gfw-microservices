@@ -41,6 +41,7 @@ const CustomRow = ({
   visibleColumns,
   currentUser,
   setIsLoading,
+  style = {},
   children,
 }) => {
   const [menuAnchorEl, setMenuAnchorEl] = useState(null);
@@ -55,6 +56,7 @@ const CustomRow = ({
     isSharedList,
     selectedLocations: locationId,
   };
+  const { backgroundColor, color } = style;
 
   const isSelectedLocationActive = rowInfo?.location_status_id === listStatus.Active;
   const showLocationDiagnosticButton =
@@ -63,7 +65,7 @@ const CustomRow = ({
     <div
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
-      style={{ width: '100%', display: 'flex' }}
+      style={{ width: '100%', display: 'flex', backgroundColor, color }}
     >
       {children}
       {(isHovered || isMenuOpen) &&
@@ -118,7 +120,7 @@ const CustomRow = ({
               <Menu className="context-menu">
                 {isCopyMoveActionAvailable && (
                   <MenuItem
-                    primaryText="Copy/Move"
+                    primaryText="COPY/MOVE"
                     leftIcon={<DriveFileMoveIcon />}
                     onClick={() => {
                       store.dispatch(updateSelectedLocations([locationId]));
@@ -132,7 +134,7 @@ const CustomRow = ({
                 )}
                 {isEditActionAvailable && (
                   <MenuItem
-                    primaryText="Edit"
+                    primaryText="EDIT"
                     leftIcon={<EditIcon />}
                     onClick={() => {
                       store.dispatch(updateSelectedLocations([locationId]));
@@ -154,11 +156,11 @@ const CustomRow = ({
                   listView={listView}
                   isLoading={setIsLoading}
                   isGfwList={isGfwList}
-                  isHoverMenu={true}
+                  isHoverMenu
                 />
                 {isDeleteButtonAvailable && (
                   <MenuItem
-                    primaryText="Delete"
+                    primaryText="DELETE"
                     leftIcon={<DeleteIcon />}
                     style={{ color: 'red' }}
                     onClick={() => {

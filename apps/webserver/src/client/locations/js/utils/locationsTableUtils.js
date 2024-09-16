@@ -1,3 +1,4 @@
+import React from 'react';
 import { listStatus } from '../../../../config/env/listStatuses.constants';
 
 export const getColorByLevelClasse = {
@@ -126,6 +127,22 @@ export const getValidatedValue = (data, auditData) => {
     return '--';
   }
   return formatDigit(Object.values(JSON.parse(data)).reduce((a, b) => a + b, 0));
+};
+
+export const getBooleanValue = (data, auditData) => {
+  if (auditData === 0) {
+    return '--';
+  }
+  const value = formatDigit(Object.values(JSON.parse(data)).reduce((a, b) => a + b, 0));
+  const isZeroValue = value === 0;
+  return isZeroValue ? (
+    <> {value} </>
+  ) : (
+    <>
+      <span className="status-indicator status-indicator--red"></span>
+      {value}
+    </>
+  );
 };
 
 export const getLastValue = (data) => {

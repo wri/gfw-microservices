@@ -5,7 +5,7 @@ class DiagnosticsPage {
     reportBtn: () => cy.contains('Report'),
     downloadBtn: () => cy.get('[data-cy="download-diagnostics"]'),
     diagnosticsMap: () => cy.get('#locations-diagnostics-header-map'),
-    headerLocationCount: () => cy.get('.diagnostics-header-info__location-count'),
+    headerLocationCount: (name) => cy.contains(name),
     headerInfo: () => cy.get('div.diagnostics-header-info > div:nth-child(1)'),
     historicSiteCharacteristicsInfoBubble: () => cy.get('#historic_site_characteristics'),
     listAttributesInfoBubble: () => cy.get('#fc_list_attributes'),
@@ -20,6 +20,10 @@ class DiagnosticsPage {
     closeButton: () => cy.get('.info-bubble-content__icon'),
     infoBubbleTitle: () => cy.get('.bubble-title'),
   };
+
+  clickOnDiagnosticMap() {
+    this.elements.diagnosticsMap().click();
+  }
 
   openInfoBubble(locator) {
     locator().click();

@@ -1,8 +1,13 @@
 import React from 'react';
-import { columnHeaders, locationsPage } from '../../../../common/js/config';
+import { locationsPage } from '../../../../common/js/config';
+import { columnHeaders } from './columnHeaders.constants';
 import CustomTooltip from '../../../../common/js/components/CustomTooltip/CustomTooltip';
 import FailedTooltip from '../../../../common/js/components/CustomTooltip/FailedTooltip';
 import ColumnsHeader from '../../components/columns/ColumnsHeader';
+import featureFlags from '../../../../../utils/general.utils';
+import { listStatus } from '../../../../../config/env/listStatuses.constants';
+
+const { isListDetailsPageRedesignAvailable } = featureFlags;
 
 const react_table__location_name = [
   {
@@ -45,7 +50,7 @@ const react_table__location_name = [
           </span>
         );
       }
-      if (cellInfo.original.location_status_id === 3) {
+      if (cellInfo.original.location_status_id === listStatus.Inactive) {
         // failed location
         return (
           <span
@@ -66,11 +71,13 @@ const react_table__location_name = [
             >
               {cellInfo.original['Location Name'] || cellInfo.original['Investment Name']}
             </span>
+
             <span className="my-lists-summary__icon-container">
               <FailedTooltip
                 placement="top"
                 label=""
                 tooltipMessage={locationsPage.columns.tooltipMessage}
+                reason={isListDetailsPageRedesignAvailable ? 'failed-location' : 'default'}
               />
             </span>
           </span>

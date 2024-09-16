@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, Scope } from '@nestjs/common';
 import { ListFieldsFileRequest } from '@wri-monorepos/sql';
 
 import { DashboardHandleDownload } from '../pipe/dashboard.handle.download';
@@ -9,7 +9,9 @@ import { FormatNumber } from '../transform/format.number';
 
 const VALID_TYPES = ['argentinaOverlap', 'argentinaDeforestation', 'everything'];
 
-@Injectable()
+@Injectable({
+  scope: Scope.REQUEST,
+})
 export class ArgentinaOverlapService extends DashboardHandleDownload {
   start(filters: ListFieldsFileRequest) {
     if (this.isArgentinaOverlapFile(filters)) {
@@ -50,6 +52,7 @@ export class ArgentinaOverlapService extends DashboardHandleDownload {
 
   async finish(filters: ListFieldsFileRequest) {
     const { selectedLocationsList } = filters;
+
     if (this.isArgentinaOverlapFile(filters)) {
       this.logger.log('Argentina Overlap Service finish');
       if (selectedLocationsList.length != 1) {
@@ -64,7 +67,14 @@ export class ArgentinaOverlapService extends DashboardHandleDownload {
     }
   }
 
-  isArgentinaOverlapFile({ type, listView }: ListFieldsFileRequest) {
-    return VALID_TYPES.includes(type) && listView !== 'commodity_risk';
+  isArgentinaOverlapFile({ type, listView, listLevelAnalysis }: ListFieldsFileRequest) {
+    const { arg_otbn_area, country_area } = listLevelAnalysis;
+    const argOtbnArea = JSON.parse(arg_otbn_area || '{}');
+    const countryArea = JSON.parse(country_area || '{}');
+
+    const hasProperties = (obj) => Object.keys(obj).length > 0;
+    const isArgentinaDataAvailable = hasProperties(argOtbnArea) || countryArea?.ARG > 0;
+
+    return VALID_TYPES.includes(type) && listView !== 'commodity_risk' && isArgentinaDataAvailable;
   }
 }

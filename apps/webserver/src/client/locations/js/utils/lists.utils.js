@@ -11,6 +11,9 @@ import {
   GFW_LISTS_NAMES_WITH_DOWNLOAD_OPTION_DISABLED,
 } from '../../../common/js/constants/lists.constants';
 import { listStatus } from '../../../../config/env/listStatuses.constants';
+import featureFlags from '../../../../utils/general.utils';
+
+const { isListDetailsPageRedesignAvailable } = featureFlags;
 
 // Check to see which views should be enabled
 const checkValidView = (listData) => {
@@ -20,7 +23,7 @@ const checkValidView = (listData) => {
 // Check to see which views should be enabled
 const checkValidViewCommodity = (selectedLists, listData) => {
   if (selectedLists.length > 0 && listData.length > 0) {
-    if (selectedLists[0].hasOwnProperty('user_id')) {
+    if (!selectedLists[0].isGlobalForestWatchList) {
       // This is a user list
       const { template_id } = selectedLists[0];
       const location = listData[0];
@@ -217,7 +220,7 @@ const getGFWListLocationIDs = (gfwList, location) => {
 const isDownloadDisabledForThisList = (selectedList) => {
   const {
     associated_gfwlist: associatedGfwlist,
-    globalForestWatchList,
+    isGlobalForestWatchList,
     list_name: ListName,
   } = selectedList;
 
@@ -225,7 +228,7 @@ const isDownloadDisabledForThisList = (selectedList) => {
     return GFW_LISTS_WITH_DOWNLOAD_OPTION_DISABLED.includes(associatedGfwlist);
   }
 
-  if (globalForestWatchList) {
+  if (isGlobalForestWatchList) {
     return GFW_LISTS_NAMES_WITH_DOWNLOAD_OPTION_DISABLED.includes(ListName);
   }
 
@@ -339,7 +342,7 @@ const isLocationDataNotAvailable = (list) => {
   const isFailed = isFailedList(list);
   const isBeingAnalized = isAnalyzingStatus(list.list_status_id);
   const hasLockStatus = !!list.lock_status && !!list.lock_user_id;
-  return isFailed || isBeingAnalized || hasLockStatus;
+  return isFailed || hasLockStatus || (isBeingAnalized && !isListDetailsPageRedesignAvailable);
 };
 
 const isListFailedByAnalysisStatusLimit = ({ listAnalysesStatus }) => {

@@ -184,7 +184,7 @@ export default function CopyMoveModal(props) {
               id="new-list-name"
               ref={newListNameRef}
               defaultValue={newListName}
-              onChange={debounce((e) => {
+              onChange={debounce(() => {
                 updateNewListName(newListNameRef.current.value);
               }, 100)}
             />

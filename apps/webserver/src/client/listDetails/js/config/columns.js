@@ -1,4 +1,3 @@
-import React from 'react';
 import forest_change_locations from './columns/forest_change_locations';
 import forest_change_analysis from './columns/forest_change_analysis';
 import policy_locations from './columns/policy_locations';
@@ -11,8 +10,6 @@ import oil_palm_concession_fc from './columns/oil_palm_concession_fc';
 import protected_area_fc from './columns/protected_area_fc';
 import location_id from './columns/location_id';
 import react_table__location_name from './columns/react_table__location_name';
-
-const transifex = Transifex.live.translateText;
 
 const columns = {
   forest_change_locations,

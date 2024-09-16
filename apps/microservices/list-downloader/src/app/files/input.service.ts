@@ -2,7 +2,7 @@ import * as csvWriter from 'csv-write-stream';
 import * as fs from 'fs';
 import * as archiver from 'archiver';
 
-import { Logger, Injectable } from '@nestjs/common';
+import { Logger, Injectable, Scope } from '@nestjs/common';
 import { PassThrough } from 'stream';
 import { finished } from 'stream/promises';
 
@@ -15,7 +15,9 @@ import { FilterObject } from '../transform/filter.object';
 import { FormatNumber } from '../transform/format.number';
 import { FilterColumnRules } from '../transform/filter.column.rules';
 
-@Injectable()
+@Injectable({
+  scope: Scope.REQUEST,
+})
 export class InputService extends IPipeService {
   private readonly logger = new Logger(InputService.name);
   private inputStream: PassThrough;

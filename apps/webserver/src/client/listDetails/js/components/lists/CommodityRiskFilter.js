@@ -13,13 +13,14 @@ import Button from '../../../../common/js/components/Button';
 import GfwSelect from '../../../../common/js/components/GfwSelect';
 import CountryStateSubStateFilter from './CountryStateSubStateFilter';
 import { getFilterCounter } from '../../../../locations/js/utils/lists.utils';
+import { defaultFilterValues } from './defaultFilterValues';
 import '../../../../common/css/filter-dialogs.scss';
 
 export default class CommodityRiskFilter extends Component {
   constructor(props) {
     super(props);
-    this.state = cloneDeep(locationsPage.defaultFilterValues);
-    this.initialState = cloneDeep(locationsPage.defaultFilterValues);
+    this.state = cloneDeep(defaultFilterValues);
+    this.initialState = cloneDeep(defaultFilterValues);
   }
 
   UNSAFE_componentWillReceiveProps(nextProps) {
@@ -34,7 +35,7 @@ export default class CommodityRiskFilter extends Component {
       nextProps.filterCount === 0 &&
       nextProps.listView === 'commodity_risk'
     ) {
-      this.setState(cloneDeep(locationsPage.defaultFilterValues));
+      this.setState(cloneDeep(defaultFilterValues));
     }
   }
 
@@ -210,14 +211,7 @@ export default class CommodityRiskFilter extends Component {
       this.state.selectedParentCompany
     );
 
-    const {
-      selectedCountry,
-      selectedParentCompany,
-      selectedSecondSupplier,
-      selectedState,
-      selectedSubState,
-      selectedSupplier,
-    } = this.state;
+    const { selectedCountry, selectedState, selectedSubState } = this.state;
     return (
       <div>
         <ModalWrapper

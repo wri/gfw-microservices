@@ -112,11 +112,6 @@ export default class Account extends Component {
         errors.push(fieldValidations.organization_website.text);
       }
     });
-    fieldValidations.organization_website.mandatoryChecks.forEach((mandatoryCheck) => {
-      if (mandatoryCheck(this.state.org_website.trim()) === false) {
-        missing.push(fieldValidations.organization_website.text);
-      }
-    });
 
     fieldValidations.first_name.validations.forEach((validation) => {
       if (validation(this.state.user_first_name.trim()) === false) {
@@ -154,11 +149,6 @@ export default class Account extends Component {
     fieldValidations.phone.validations.forEach((validation) => {
       if (validation(this.state.user_phone.trim()) === false) {
         errors.push(fieldValidations.phone.text);
-      }
-    });
-    fieldValidations.phone.mandatoryChecks.forEach((mandatoryCheck) => {
-      if (mandatoryCheck(this.state.user_phone.trim()) === false) {
-        missing.push(fieldValidations.phone.text);
       }
     });
 
@@ -304,15 +294,15 @@ export default class Account extends Component {
     });
   };
 
-  createClassOptions = (option, i) => {
+  createClassOptions = (option) => {
     return { label: option.classification_name, value: option.id };
   };
 
-  createGeogOptions = (option, i) => {
+  createGeogOptions = (option) => {
     return { label: option.geography_name, value: option.id };
   };
 
-  createCommOptions = (option, i) => {
+  createCommOptions = (option) => {
     return { label: option.commmodity_name, value: option.id };
   };
 
@@ -429,10 +419,14 @@ export default class Account extends Component {
                   </div>
 
                   <div className="input-field__block-container">
-                    <label htmlFor="org_address" className="block-label profile-label">
+                    <label
+                      htmlFor="org_address"
+                      className="block-label profile-label required-param"
+                    >
                       Organization Address
                     </label>
                     <input
+                      required
                       name="org_address"
                       id="org_address"
                       value={this.state.org_address}
@@ -460,14 +454,10 @@ export default class Account extends Component {
                     />
                   </div>
                   <div className="input-field__block-container">
-                    <label
-                      htmlFor="org_website"
-                      className="block-label profile-label required-param"
-                    >
+                    <label htmlFor="org_website" className="block-label profile-label">
                       Organization Website
                     </label>
                     <input
-                      required
                       name="org_website"
                       id="org_website"
                       value={this.state.org_website}

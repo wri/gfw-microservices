@@ -16,12 +16,30 @@ function UsersTable({ userSortingCategory, userDir, usersList, sortUserTable, se
                   sortUserTable(evt);
                 }}
               >
-                User Name
+                First Name
                 <div
                   className={`sortable-carrot ${
                     userSortingCategory === 'first_name' && userDir === 'asc'
                       ? 'active-asc'
                       : userSortingCategory === 'first_name' && userDir === 'des'
+                      ? 'active-des'
+                      : ''
+                  }`}
+                />
+              </th>
+              <th
+                className="sortable-table-header"
+                title="last_name"
+                onClick={(evt) => {
+                  sortUserTable(evt);
+                }}
+              >
+                Last Name
+                <div
+                  className={`sortable-carrot ${
+                    userSortingCategory === 'last_name' && userDir === 'asc'
+                      ? 'active-asc'
+                      : userSortingCategory === 'last_name' && userDir === 'des'
                       ? 'active-des'
                       : ''
                   }`}

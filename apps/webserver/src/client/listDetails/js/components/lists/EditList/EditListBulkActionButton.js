@@ -1,7 +1,6 @@
 import React, { Component } from 'react';
 import * as PropTypes from 'prop-types';
-import Button from '@mui/material/Button';
-
+import { Button } from '@mui/material';
 import EditIcon from '@mui/icons-material/Edit';
 import { userAccessLevel } from '../../../../../common/js/config';
 import EditListDialog from './EditListDialog';
@@ -33,12 +32,15 @@ export class EditListBulkActionButton extends Component {
       <React.Fragment>
         <EditListDialog onRequestClose={this.modalClose} open={isModalOpen} />
 
-        <div id="EditList" onClick={selectedLocations.length === 0 ? () => this.modalOpen() : null}>
+        <div
+          id="EditList"
+          onClick={selectedLocations?.length === 0 ? () => this.modalOpen() : null}
+        >
           <Button
             startIcon={<EditIcon height="14px" />}
+            variant="primary"
             disabled={currentUser.access_level_id === userAccessLevel.VIEWER}
             onClick={currentUser.access_level_id === userAccessLevel.VIEWER ? null : editList}
-            variant="primary"
           >
             Edit
           </Button>

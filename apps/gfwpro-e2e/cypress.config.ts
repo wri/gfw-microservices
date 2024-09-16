@@ -7,9 +7,8 @@ async function setupNodeEvents(
   on: Cypress.PluginEvents,
   config: Cypress.PluginConfigOptions
 ): Promise<Cypress.PluginConfigOptions> {
-  // This is required for the preprocessor to be able to generate JSON reports after each run, and more,
   await addCucumberPreprocessorPlugin(on, config);
-
+  console.log('ENVIRONMENT', process.env.CYPRESS_ENV);
   on(
     'file:preprocessor',
     webpack({
@@ -42,21 +41,30 @@ async function setupNodeEvents(
       },
     })
   );
-
-  // Make sure to return the config object as it might have been modified by the plugin.
   return config;
 }
 
 export default defineConfig({
   viewportWidth: 1800,
   viewportHeight: 1080,
+  retries: {
+    runMode: 1,
+    openMode: 1,
+  },
   e2e: {
+    env: {
+      deployment: process.env.CYPRESS_ENV,
+      waittime: parseInt(process.env['CYPRESS_TIMEOUT']) || 60000,
+    },
     ...nxE2EPreset(__dirname),
     setupNodeEvents,
     supportFile: 'cypress/support/e2e.ts',
-    baseUrl: 'https://localhost:8443',
+    baseUrl:
+      process.env.CYPRESS_ENV != 'dev'
+        ? `https://pro-${process.env.CYPRESS_ENV}.globalforestwatch.org`
+        : 'https://localhost:8443',
     specPattern: '**/*.feature',
-    defaultCommandTimeout: parseInt(process.env['CYPRESS_TIMEOUT']) || 20000,
+    defaultCommandTimeout: parseInt(process.env['CYPRESS_TIMEOUT']) || 120000,
     scrollBehavior: 'center',
   },
 });

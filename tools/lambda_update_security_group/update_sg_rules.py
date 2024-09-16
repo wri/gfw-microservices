@@ -47,36 +47,43 @@ def lambda_handler(event, context):
     prod_sg_id = 'sg-0838ce5d514d6ef9c'
 
     ## Default current ports are:
-    port_1 = 3333
-    port_2 = 3334
-    port_3 = 3335
-    port_4 = 3336
+    port_LP = 3333
+    port_B2B = 3334
+    port_EAPI = 3335
+    port_LD = 3336
     port_5 = 3337
     port_6 = 3338
 
     if env_name == 'webserver-qa':
-        IpPermissions.append(add_sg(port_1, cidr_ip, desc))
-        IpPermissions.append(add_sg(port_5, cidr_ip, desc))
+        IpPermissions.append(add_sg(port_LP, cidr_ip, desc))
+        IpPermissions.append(add_sg(port_EAPI, cidr_ip, desc))
+        IpPermissions.append(add_sg(port_LD, cidr_ip, desc))
         sg_id = qa_staging_sg_id
     if env_name == 'webserver-staging':
-        IpPermissions.append(add_sg(port_2, cidr_ip, desc))
-        IpPermissions.append(add_sg(port_6, cidr_ip, desc))
+        IpPermissions.append(add_sg(port_LP, cidr_ip, desc))
+        IpPermissions.append(add_sg(port_EAPI, cidr_ip, desc))
+        IpPermissions.append(add_sg(port_LD, cidr_ip, desc))
         sg_id = qa_staging_sg_id
     if env_name == 'webserver-prod':
-        IpPermissions.append(add_sg(port_1, cidr_ip, desc))
-        IpPermissions.append(add_sg(port_3, cidr_ip, desc))
+        IpPermissions.append(add_sg(port_LP, cidr_ip, desc))
+        IpPermissions.append(add_sg(port_EAPI, cidr_ip, desc))
+        IpPermissions.append(add_sg(port_B2B, cidr_ip, desc))
+        IpPermissions.append(add_sg(port_LD, cidr_ip, desc))
         sg_id = prod_sg_id
     if env_name == 'microservices-list-downloader-qa' or env_name == 'microservices-list-processing-qa' or env_name == 'microservices-externalapi-qa':
-        IpPermissions.append(add_sg(port_1, cidr_ip, desc))
-        IpPermissions.append(add_sg(port_5, cidr_ip, desc))
+        IpPermissions.append(add_sg(port_LP, cidr_ip, desc))
+        IpPermissions.append(add_sg(port_EAPI, cidr_ip, desc))
+        IpPermissions.append(add_sg(port_LD, cidr_ip, desc))
         sg_id = qa_staging_sg_id
     if env_name == 'microservices-list-downloader-stg' or env_name == 'microservices-list-processing-stg' or env_name == 'microservices-externalapi-stg':
-        IpPermissions.append(add_sg(port_2, cidr_ip, desc))
-        IpPermissions.append(add_sg(port_6, cidr_ip, desc))
+        IpPermissions.append(add_sg(port_LP, cidr_ip, desc))
+        IpPermissions.append(add_sg(port_EAPI, cidr_ip, desc))
+        IpPermissions.append(add_sg(port_LD, cidr_ip, desc))
         sg_id = qa_staging_sg_id
     if env_name == 'microservices-list-downloader-prod' or env_name == 'microservices-list-processing-prod' or env_name == 'microservices-externalapi-prod':
-        IpPermissions.append(add_sg(port_1, cidr_ip, desc))
-        IpPermissions.append(add_sg(port_3, cidr_ip, desc))
+        IpPermissions.append(add_sg(port_LP, cidr_ip, desc))
+        IpPermissions.append(add_sg(port_EAPI, cidr_ip, desc))
+        IpPermissions.append(add_sg(port_LD, cidr_ip, desc))
         sg_id = prod_sg_id
     
     #create security group

@@ -155,10 +155,25 @@ if (config.SQLConnection.logDatabase) {
 // finally create the logger
 const logger = winston.createLogger({ transports });
 
-// add organization_user_id to req.session
+/**
+ * List of Session Variables (Not available till success of VerifyLogin):
+ * @see {@link apps/webserver/src/config/publicutils/authenticationManager.utils.js}
+ */
 declare module 'express-session' {
   interface SessionData {
+    // (Global)
+    user_email: string;
+    ispromanager: boolean;
+    user_secret: string;
+    // (For Regular Session)
+    organization_id: number;
     organization_user_id: number;
+    organization_database: string;
+    ogranization_name: string;
+    user_access_level_id: number;
+    organization_status_id: number;
+    user_first_name: string;
+    user_last_name: string;
   }
 }
 

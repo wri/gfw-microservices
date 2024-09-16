@@ -9,11 +9,8 @@ import {
   validatePct,
 } from '../../../common/js/utils/diagnostics.utils';
 import { numberWithCommas } from '../../../locations/js/utils/locationsTableUtils';
-import {
-  locationsPage,
-  mapPage,
-  latestTreeCoverLossYearForTclDataInMap,
-} from '../../../common/js/config';
+import { mapPage, latestTreeCoverLossYearForTclDataInMap } from '../../../common/js/config';
+import infoBubbleConfig from '../../../common/js/infoBubbleConfig.constants';
 import DiagnosticsChartHeader from '../common/DiagnosticsChartHeader';
 import '../../css/locations.scss';
 import '../../../common/css/_irsBase.scss';
@@ -147,13 +144,13 @@ export default class SoutheastAsiaRegions extends Component {
     let pieChartinfoBubbleConfig;
 
     if (seaChecked) {
-      pieChartinfoBubbleConfig = locationsPage.infoBubbleConfig.regionsSeaLcCalc;
+      pieChartinfoBubbleConfig = infoBubbleConfig.regionsSeaLcCalc;
     } else if (idnChecked) {
-      pieChartinfoBubbleConfig = locationsPage.infoBubbleConfig.regionsIdnLcCalc;
+      pieChartinfoBubbleConfig = infoBubbleConfig.regionsIdnLcCalc;
     } else if (idnLegalChecked) {
-      pieChartinfoBubbleConfig = locationsPage.infoBubbleConfig.regionsIdnLegal;
+      pieChartinfoBubbleConfig = infoBubbleConfig.regionsIdnLegal;
     } else if (idnMoratoriumChecked) {
-      pieChartinfoBubbleConfig = locationsPage.infoBubbleConfig.regionsIdnForestM;
+      pieChartinfoBubbleConfig = infoBubbleConfig.regionsIdnForestM;
     }
 
     return (
@@ -170,7 +167,7 @@ export default class SoutheastAsiaRegions extends Component {
 
         <DiagnosticsChartHeader
           title={'TREE COVER LOSS'}
-          informationBubbleId={locationsPage.infoBubbleConfig.regionsSeaAnnual}
+          informationBubbleId={infoBubbleConfig.regionsSeaAnnual}
           fireDownload={this.props.fireDownload}
           downloadId={'southEastAsiaTCL'}
         />
@@ -352,7 +349,7 @@ export default class SoutheastAsiaRegions extends Component {
 
     series[0].data = serie;
 
-    const chart = new Highcharts.chart({
+    return Highcharts.chart({
       chart: {
         renderTo: ref,
         type: 'pie',
@@ -399,7 +396,6 @@ export default class SoutheastAsiaRegions extends Component {
         enabled: false,
       },
     });
-    return chart;
   };
 
   renderBarChart = (ref, overlapCategoryNames) => {
@@ -517,7 +513,7 @@ export default class SoutheastAsiaRegions extends Component {
     }
     const chartSeries = filteredSeries ? filteredSeries : series;
 
-    const chart = new Highcharts.chart({
+    return Highcharts.chart({
       chart: {
         renderTo: ref,
         type: 'column',
@@ -573,8 +569,6 @@ export default class SoutheastAsiaRegions extends Component {
         enabled: false,
       },
     });
-
-    return chart;
   };
 
   renderSoutheastAsiaTable = () => {

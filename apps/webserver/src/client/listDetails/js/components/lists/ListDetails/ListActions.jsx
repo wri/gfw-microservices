@@ -9,6 +9,9 @@ import PublicIcon from '@mui/icons-material/Public';
 import ReplayIcon from '@mui/icons-material/Replay';
 import DriveFileMoveIcon from '@mui/icons-material/DriveFileMove';
 import FolderSharedIcon from '@mui/icons-material/FolderShared';
+import DeleteIcon from '@mui/icons-material/Delete';
+import ListDownload from '../download/ListDownload';
+import { EditListBulkActionButton } from '../EditList/EditListBulkActionButton';
 import CustomDialog from 'common/js/components/CustomDialog/CustomDialog';
 import ManageListFolderDialog from 'locations/js/components/landing/ManageListFolderDialog';
 import { getIsDiagnosticStatusDraft } from '../../../utils/draft.utils';
@@ -23,7 +26,7 @@ const ListActions = ({
   selectedList,
   viewMap,
   currentUser,
-  handleRerunDialogState,
+  toggleReRunAnalysisDialog,
   rerunDialogState,
   rerunList,
   isManageListFolderOpen,
@@ -41,6 +44,22 @@ const ListActions = ({
   handleSearchInputChange,
   handleSearchInputKeyDown,
   handlecSearchInputClick,
+  showMultipleSelectionBulkActions,
+  isEditActionAvailable,
+  editList,
+  canMove,
+  promptMoveSelectedLocations,
+  canDelete,
+  promptDeleteSelectedLocations,
+  filters,
+  listFilterStr,
+  tableSortedBy,
+  tableSortedDesc,
+  visibleColumns,
+  selectedLocations,
+  listView,
+  isLoading,
+  isGfwList,
 }) => {
   const blackButtonStyle = {
     color: 'black',
@@ -67,7 +86,8 @@ const ListActions = ({
     currentUser.access_level_id === userAccessLevel.ADMIN &&
     selectedList &&
     selectedList.list_status_id !== 1 &&
-    !selectedList.globalForestWatchList &&
+    !selectedList.isGlobalForestWatchList &&
+    !showMultipleSelectionBulkActions &&
     !isSearchBarOpen;
 
   const isSubmitOptionAvailable =
@@ -75,20 +95,24 @@ const ListActions = ({
       (currentUser.access_level_id !== userAccessLevel.ADMIN && userIsOwner)) &&
     selectedList?.list_status_id !== 1 &&
     getIsDiagnosticStatusDraft(selectedList) &&
-    !selectedList?.globalForestWatchList &&
+    !selectedList?.isGlobalForestWatchList &&
     !isSearchBarOpen;
 
-  const isRerunListAvailable =
+  const isUpdateAnalysisAvailable =
     (currentUser.access_level_id === userAccessLevel.ADMIN ||
       (currentUser.id === selectedList.user_id &&
         currentUser.access_level_id !== userAccessLevel.VIEWER)) &&
     selectedList?.list_status_id !== 1 &&
     !getIsDiagnosticStatusDraft(selectedList) &&
-    !selectedList?.globalForestWatchList &&
+    !selectedList?.isGlobalForestWatchList &&
+    !showMultipleSelectionBulkActions &&
     !isSearchBarOpen;
 
   const isAddToFolderOptionAvailable =
-    selectedList && !selectedList.globalForestWatchList && !isSearchBarOpen;
+    selectedList &&
+    !selectedList.isGlobalForestWatchList &&
+    !showMultipleSelectionBulkActions &&
+    !isSearchBarOpen;
   return (
     <>
       <Paper className="list-actions">
@@ -132,25 +156,26 @@ const ListActions = ({
           <Stack alignItems="center" direction="row">
             {!isSearchBarOpen && (
               <Button
-                onClick={() => viewMap({ showFullListMap: true })}
+                onClick={() => viewMap({ showFullListMap: !showMultipleSelectionBulkActions })}
                 startIcon={<PublicIcon />}
                 sx={greenButtonStyle}
               >
-                List Map
+                {showMultipleSelectionBulkActions ? <>Location(s) Map</> : <>List Map</>}
               </Button>
             )}
-            {isRerunListAvailable && (
+
+            {isUpdateAnalysisAvailable && (
               <div id="RerunList" className="selected-rerun-list">
                 <Button
                   sx={blackButtonStyle}
-                  onClick={handleRerunDialogState}
+                  onClick={toggleReRunAnalysisDialog}
                   startIcon={<ReplayIcon height="14px" />}
                 >
                   Update Analysis
                 </Button>
                 <CustomDialog
                   open={rerunDialogState}
-                  closeAction={handleRerunDialogState}
+                  closeAction={toggleReRunAnalysisDialog}
                   dialogTitle={locationsPage.lists.rerunListDialog.title}
                   dialogMessage={locationsPage.lists.rerunListDialog.text}
                   dialogActionConfirm={rerunList}
@@ -160,7 +185,7 @@ const ListActions = ({
             {isSubmitOptionAvailable && (
               <div>
                 <Button
-                  sx={blackButtonStyle}
+                  sx={greenButtonStyle}
                   startIcon={<PublishIcon height="14px" />}
                   variant="primary"
                   onClick={handleDraftSubmit}
@@ -217,23 +242,69 @@ const ListActions = ({
                 </Button>
               </div>
             )}
+
+            {canMove && showMultipleSelectionBulkActions && !isSearchBarOpen && (
+              <Button
+                sx={blackButtonStyle}
+                startIcon={<DriveFileMoveIcon height="14px" />}
+                variant="primary"
+                onClick={promptMoveSelectedLocations}
+              >
+                Copy/Move
+              </Button>
+            )}
+
+            {showMultipleSelectionBulkActions && !isSearchBarOpen && (
+              <ListDownload
+                listID={selectedList?.id}
+                listName={selectedList?.list_name}
+                filters={filters}
+                listFilterStr={listFilterStr}
+                tableSortedBy={tableSortedBy}
+                tableSortedDesc={tableSortedDesc}
+                selectedList={selectedList}
+                combinedColumns={visibleColumns}
+                selectedLocations={selectedLocations}
+                currentUser={currentUser}
+                listView={listView}
+                isLoading={isLoading}
+                isGfwList={isGfwList}
+              />
+            )}
+
+            {isEditActionAvailable && showMultipleSelectionBulkActions && !isSearchBarOpen && (
+              <EditListBulkActionButton editList={editList} currentUser={currentUser} />
+            )}
+
+            {canDelete && showMultipleSelectionBulkActions && !isSearchBarOpen && (
+              <Button
+                sx={{ ...blackButtonStyle, color: 'red' }}
+                startIcon={<DeleteIcon height="14px" />}
+                variant="primary"
+                onClick={promptDeleteSelectedLocations}
+              >
+                Delete
+              </Button>
+            )}
           </Stack>
 
-          {!isSearchBarOpen ? (
-            <Button
-              sx={{ minWidth: '35px', '& > svg': { margin: 0 } }}
-              onClick={() => setIsSearchBarOpen(true)}
-            >
-              <SearchIcon sx={{ color: 'black' }} />{' '}
-            </Button>
-          ) : (
-            <Button
-              sx={{ minWidth: '35px', '& > svg': { margin: 0 } }}
-              onClick={closeSearchBarHandler}
-            >
-              <ClearIcon sx={{ color: 'black' }} />
-            </Button>
-          )}
+          <div>
+            {!isSearchBarOpen ? (
+              <Button
+                sx={{ minWidth: '35px', '& > svg': { margin: 0 } }}
+                onClick={() => setIsSearchBarOpen(true)}
+              >
+                <SearchIcon sx={{ color: 'black' }} />{' '}
+              </Button>
+            ) : (
+              <Button
+                sx={{ minWidth: '35px', '& > svg': { margin: 0 } }}
+                onClick={closeSearchBarHandler}
+              >
+                <ClearIcon sx={{ color: 'black' }} />
+              </Button>
+            )}
+          </div>
         </Stack>
       </Paper>
       <CustomDialog

@@ -169,23 +169,6 @@ export class AppController {
     }
   }
 
-  /**
-   * Healthcheck for fargate
-   */
-  @Get('/HealthCheck')
-  getHealthCheck(): string {
-    return this.appService.getHealthCheck();
-  }
-
-  /**
-   * Latest commit hash
-   */
-  @Get('/latest_commit')
-  getLatestCommit(): string {
-    return this.config.get('NODE_ENV', { infer: true }) === 'development'
-      ? 'dev'
-      : this.config.get('LATEST_COMMIT', { infer: true });
-  }
   @ApiResponse({ status: 200, type: String })
   @ApiNotFoundResponse({ status: 404, type: BadRequestExceptionResponse })
   @ApiUnauthorizedResponse({ description: 'Unauthorized' })

@@ -1,6 +1,6 @@
 import React from 'react';
 import InfoBubble from '../../../../common/js/components/InfoBubble';
-import { columnHeaders, locationsPage } from '../../../../common/js/config';
+import { columnHeaders } from './columnHeaders.constants';
 import ColumnsHeader from '../../components/columns/ColumnsHeader';
 import {
   checkValid,
@@ -10,7 +10,12 @@ import {
   sortByStatus,
   normalizeColunmData,
   locationIsActive,
+  getBooleanValue,
 } from '../../../../locations/js/utils/locationsTableUtils';
+import featureFlags from '../../../../../utils/general.utils';
+import infoBubbleConfig from '../../../../common/js/infoBubbleConfig.constants';
+
+const { isListDetailsPageRedesignAvailable } = featureFlags;
 
 const transifex = Transifex.live.translateText;
 
@@ -56,7 +61,7 @@ const forest_change_analysis = [
       <div className="react-table-tree-cover-loss">
         <span className="title-text" title={transifex(columnHeaders.treeCoverLossInHa)}>
           {transifex(columnHeaders.treeCoverLoss)} <span className="title-text__units">(ha)</span>
-          <InfoBubble infoBubbleId={locationsPage.infoBubbleConfig.lossAllYears} />
+          <InfoBubble infoBubbleId={infoBubbleConfig.lossAllYears} />
         </span>
       </div>
     ),
@@ -73,7 +78,9 @@ const forest_change_analysis = [
           return locationIsActive(row.value) ? (
             checkValid(row.value.tree_cover_loss_total_yearly) ? (
               <span title={getValue(row.value.tree_cover_loss_total_yearly)}>
-                {getValue(row.value.tree_cover_loss_total_yearly)}
+                {isListDetailsPageRedesignAvailable
+                  ? getBooleanValue(row.value.tree_cover_loss_total_yearly)
+                  : getValue(row.value.tree_cover_loss_total_yearly)}
               </span>
             ) : (
               0
@@ -111,10 +118,15 @@ const forest_change_analysis = [
                   row.value.protected_areas_area
                 )}
               >
-                {getValidatedValue(
-                  row.value.tree_cover_loss_protected_areas_yearly,
-                  row.value.protected_areas_area
-                )}
+                {isListDetailsPageRedesignAvailable
+                  ? getBooleanValue(
+                      row.value.tree_cover_loss_protected_areas_yearly,
+                      row.value.protected_areas_area
+                    )
+                  : getValidatedValue(
+                      row.value.tree_cover_loss_protected_areas_yearly,
+                      row.value.protected_areas_area
+                    )}
               </span>
             ) : (
               0
@@ -152,10 +164,15 @@ const forest_change_analysis = [
                   row.value.natural_habitat_primary
                 )}
               >
-                {getValidatedValue(
-                  row.value.tree_cover_loss_primary_forest_yearly,
-                  row.value.natural_habitat_primary
-                )}
+                {isListDetailsPageRedesignAvailable
+                  ? getBooleanValue(
+                      row.value.tree_cover_loss_primary_forest_yearly,
+                      row.value.natural_habitat_primary
+                    )
+                  : getValidatedValue(
+                      row.value.tree_cover_loss_primary_forest_yearly,
+                      row.value.natural_habitat_primary
+                    )}
               </span>
             ) : (
               0

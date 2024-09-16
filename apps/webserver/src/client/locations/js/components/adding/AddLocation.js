@@ -1,3 +1,5 @@
+/* global field */
+
 import React, { Component } from 'react';
 import Dialog from 'material-ui/Dialog';
 import getMuiTheme from 'material-ui/styles/getMuiTheme';
@@ -94,14 +96,13 @@ const DialogDraftContent = ({ listName = 'Create New List' }) => {
       'You have successfully created a draft list in Pro. Click OKAY to close this window and be navigated back to the Locations page. Your list will be'
     );
 
-  const listContidiontalDraftMessage =
-    listName !== 'Create New List' ? ' about usage & fees' : null;
+  const listConditionalDraftMessage = listName !== 'Create New List' ? ' about usage & fees' : null;
 
   return (
     <p>
       {listConditionalText} in draft state until you choose to run analysis on it. Note that running
       analysis counts towards your account usage limits. See more information
-      {listContidiontalDraftMessage}{' '}
+      {listConditionalDraftMessage}{' '}
       <a href="/about?section=Fees" target="_blank" style={{ color: '#97bd3d' }}>
         here
       </a>
@@ -111,7 +112,7 @@ const DialogDraftContent = ({ listName = 'Create New List' }) => {
 };
 
 const generateType = (gfwInfo) => {
-  if (!gfwInfo.gfwData.hasOwnProperty('listName')) {
+  if (!gfwInfo?.gfwData?.listName) {
     return null;
   }
   let type;
@@ -187,9 +188,8 @@ const retrieveDefaultValue = (templateData, templateDropdowns, adminData) => {
         t.template_datum_field_name.includes(admin.destination)
     );
     if (matchingTemplate) {
-      let adminVal = adminData.hasOwnProperty(matchingTemplate.origin)
-        ? adminData[matchingTemplate.origin]
-        : '';
+      let adminVal = adminData[matchingTemplate.origin] ?? '';
+
       if (t.ui_type === 'multi-dropdown') {
         const multiDropDownVal = [];
         const templateDropdownsMatch = templateDropdowns.filter(
@@ -347,7 +347,7 @@ export default class AddLocation extends Component {
     }
 
     // Check for pre-selected gfw lists and default select one of the commodity/investment types
-    if (this.props.gfwInfoFromMap && this.props.gfwInfoFromMap.hasOwnProperty('gfwData')) {
+    if (this.props.gfwInfoFromMap?.gfwData) {
       const investmentTemplate = this.props.templateData.filter(
         (template) => template.location_type_name === 'Investment'
       );
@@ -356,7 +356,7 @@ export default class AddLocation extends Component {
       const investmentTemplateTypes = investmentTemplate.filter((t) => t.id == 6)[0];
       this.editInvestmentTemplates(
         {
-          value: this.state.chosenCommodity.hasOwnProperty('id')
+          value: this.state.chosenCommodity?.id
             ? this.state.chosenCommodity.id
             : this.state.chosenCommodity,
         },
@@ -1061,20 +1061,22 @@ export default class AddLocation extends Component {
                     errorMessages.push([3, 'You must enter a location name']);
                   }
                   break;
-                case 'Start Date':
+                case 'Start Date': {
                   const startDateValidation = this.validateStartDate();
                   valueFromState = startDateValidation.startDate;
                   startDateValidation.errorMessages.forEach((e) => {
                     errorMessages.push(e);
                   });
                   break;
-                case 'End Date':
+                }
+                case 'End Date': {
                   const endDateValidation = this.validateEndDate();
                   valueFromState = endDateValidation.endDate;
                   endDateValidation.errorMessages.forEach((e) => {
                     errorMessages.push(e);
                   });
                   break;
+                }
                 case 'Time Horizon':
                   valueFromState =
                     this.state.timeframe === 'Time Horizon' ? '' : this.state.timeframe;
@@ -1298,20 +1300,22 @@ export default class AddLocation extends Component {
               case 'CCY':
                 valueFromState = this.state.investmentCurrency;
                 break;
-              case 'Start Date':
+              case 'Start Date': {
                 const startDateValidation = this.validateStartDate();
                 valueFromState = startDateValidation.startDate;
                 startDateValidation.errorMessages.forEach((e) => {
                   errorMessages.push(e);
                 });
                 break;
-              case 'End Date':
+              }
+              case 'End Date': {
                 const endDateValidation = this.validateEndDate();
                 valueFromState = endDateValidation.endDate;
                 endDateValidation.errorMessages.forEach((e) => {
                   errorMessages.push(e);
                 });
                 break;
+              }
               case 'Time Horizon':
                 valueFromState =
                   this.state.timeframe === 'Time Horizon' ? '' : this.state.timeframe;
@@ -1488,10 +1492,9 @@ export default class AddLocation extends Component {
             bigObj = {
               list_name: listName,
               template_id: templateId,
-              commodity:
-                this.state.chosenCommodity && this.state.chosenCommodity.hasOwnProperty('label')
-                  ? this.state.chosenCommodity.label
-                  : null,
+              commodity: this.state.chosenCommodity?.label
+                ? this.state.chosenCommodity.label
+                : null,
               geojson: updatedGeoJSON,
               custom_attributes: customAttributes,
               location_classification: this.state.selectedLocationClassification,
@@ -1884,13 +1887,8 @@ export default class AddLocation extends Component {
       dialogEmail,
       selectedList,
       locationName,
-      startDate,
-      endDate,
       geometry,
-      lat,
-      lng,
       commodityTemplates,
-      timeframe,
       investmentCurrency,
       investmentSize,
       customList,
@@ -1949,7 +1947,7 @@ export default class AddLocation extends Component {
                 name="location-type"
                 value="investment"
                 checked={this.props.addType === 'investment'}
-                onChange={(e) => {
+                onChange={() => {
                   store.dispatch(changeAddType('investment'));
                   this.setState({ customList: 'investment' });
                 }}
@@ -1966,7 +1964,7 @@ export default class AddLocation extends Component {
               {this.props.addType === 'investment' &&
                 this.props.templateData
                   .filter((t) => t.location_type_name === 'Investment')
-                  .map((t, i) => {
+                  .map((t) => {
                     <p key="{i}">{t.location_type_name}</p>;
                   })}
             </div>
@@ -2018,7 +2016,7 @@ export default class AddLocation extends Component {
               name="location-type"
               value="commodity"
               checked={this.props.addType === 'commodity'}
-              onChange={(e) => {
+              onChange={() => {
                 store.dispatch(changeAddType('commodity'));
                 this.setState({ customList: 'commodity' });
               }}
@@ -2054,10 +2052,8 @@ export default class AddLocation extends Component {
                         name="chosen-commodity"
                         value={template.id}
                         checked={
-                          this.state.chosenCommodity &&
-                          (this.state.chosenCommodity.hasOwnProperty('id')
-                            ? this.state.chosenCommodity.id
-                            : this.state.chosenCommodity) === template.id
+                          (this.state.chosenCommodity?.id ?? this.state.chosenCommodity) ===
+                          template.id
                         }
                         onChange={() => {
                           this.updateTemplateRadioSelection(template);

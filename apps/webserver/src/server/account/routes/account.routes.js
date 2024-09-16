@@ -96,12 +96,10 @@ module.exports = (app) => {
     if (
       !org_name ||
       !org_address ||
-      !org_website ||
       !arr_org_classification_ids ||
       !user_first_name ||
       !user_last_name ||
       !userEmail ||
-      !user_phone ||
       !user_title_id
     ) {
       res.send('Account signup failed');

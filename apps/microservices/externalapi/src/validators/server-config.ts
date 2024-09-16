@@ -7,7 +7,7 @@ export const serverConfigSchema = z.object({
   MSSQL_USERNAME: z.string(),
   MSSQL_PASSWORD: z.string(),
 
-  PORT: z.coerce.number().default(3337),
+  PORT: z.coerce.number().default(3335),
 
   NODE_ENV: z.enum(['development', 'test', 'staging', 'ProdV2', 'qa']),
 
@@ -17,7 +17,7 @@ export const serverConfigSchema = z.object({
   LARGE_PROCESSING_LIST_BUCKET: z.string(),
 
   AWS_ANALYSIS_QUEUE: z.string().url(),
-  AWS_DOWNLOAD_QUEUE: z.string().url(),
+  LD_MICROSERVICE_URL: z.string().url(),
   AWS_API_USAGE_PLAN_ID: z.string(),
 
   LLP_BASE_URL: z.string().url(),

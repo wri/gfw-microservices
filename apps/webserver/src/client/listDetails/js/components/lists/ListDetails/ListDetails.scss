@@ -7,6 +7,20 @@ body:has(.list-details) {
   overflow: auto;
   margin: auto;
   width: 100%;
+
+  .status-indicator {
+    height: 7px;
+    width: 7px;
+    border-radius: 50%;
+    display: inline-block;
+    margin-right: 8px;
+    &--red {
+      background-color: #f24e1e;
+    }
+    &--blue {
+      background-color: #58a9cd;
+    }
+  }
 }
 
 .list-analysis-actions {

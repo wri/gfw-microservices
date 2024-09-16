@@ -32,23 +32,6 @@ export const regionConstants = {
 const nonOverlapAreaColor = 'rgb(200,200,200)';
 
 export const chartDatasetConfigs = {
-  argentinaOtbn: {
-    // delete when isArgentinaDeforestationAvailable feature flag is deleted
-    id: 'otbnArgentina',
-    chartsSelectorTitle: 'ARGENTINIAN DEFORESTATION',
-    dataCy: 'tree-cover-loss-OTBN',
-    legendColor: 'rgb(255,127,179)',
-    informationBubbleId: 'tree_cover_loss_arg_otbn_yearly',
-    downloadId: 'southAmericaTCL',
-    diagnosticTitle: 'OTBN Overlap',
-    chartLabels: [
-      { id: 'Category I', color: 'rgb(238,37,33)', legend: 'Category I', checked: true },
-      { id: 'Category II', color: 'rgb(255,204,51)', legend: 'Category II', checked: true },
-      { id: 'Category III', color: 'rgb(151,189,61)', legend: 'Category III', checked: true },
-    ],
-    startYear: 2008,
-    endYear: 2023,
-  },
   otbn: {
     id: 'otbn',
     chartsSelectorTitle: 'Argentinian Govt Deforestation on Argentina OTBN',
@@ -212,20 +195,20 @@ const colombianSubcategories = [
   {
     id: 'Unconditioned',
     legend: 'Non Conditioned',
-    color: '#0D642E',
-    subCategoryColor: '#299A4C',
+    color: '#A0BB51',
+    subCategoryColor: '#CFDDA8',
   },
   {
     id: 'Conditioned',
     legend: 'Conditioned',
-    color: '#DC8832',
-    subCategoryColor: '#D5A65A',
+    color: '#F7CD54',
+    subCategoryColor: '#FBE6A9',
   },
   {
     id: 'Restrictions',
     legend: 'Restrictions',
-    color: '#2438AE',
-    subCategoryColor: '#4B87D5',
+    color: '#DA3D30',
+    subCategoryColor: '#EC9E97',
   },
 ];
 
@@ -243,6 +226,7 @@ export const chartDatasetConfigsColombia = {
     id: 'colombianClassifiedRegionOverlap',
     dataCy: 'colombian-classified-region-overlap',
     chartsSelectorTitle: 'National Agricultural Frontier Overlap',
+    infoBubbleId: 'regions_col_ag_frontier_calc',
     dataPath: 'classified_region.overlap',
     subCategories: [...colombianSubcategories],
   },
@@ -284,6 +268,7 @@ export const chartDatasetConfigsColombia = {
         legend: 'Indigenous Territories',
         color: 'rgb(146,37,100)',
         checked: true,
+        preview: true,
       },
     ],
   },

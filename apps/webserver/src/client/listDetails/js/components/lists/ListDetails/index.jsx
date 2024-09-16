@@ -1,10 +1,8 @@
 import React, { Component } from 'react';
 import Paper from '@mui/material/Paper';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
-import DeleteIcon from '@mui/icons-material/Delete';
 import Button from 'common/js/components/Button';
 import MaterialButton from '@mui/material/Button';
-import FileCopyIcon from '@mui/icons-material/FileCopy';
 import QueryStatsIcon from '@mui/icons-material/QueryStats';
 import Stack from '@mui/material/Stack';
 import CustomDialog from 'common/js/components/CustomDialog/CustomDialog';
@@ -22,7 +20,6 @@ import {
 } from '../../../utils/moveLocations';
 import store from '../../../../../locations/js/store';
 import { locationsPage, userAccessLevel } from '../../../../../common/js/config';
-
 import {
   addList,
   changeListView,
@@ -37,7 +34,6 @@ import {
   updateSelectedLocations,
 } from '../../../../../locations/js/actions/locationActions';
 import LocationsSummary from './LocationsSummary';
-import ListDownload from '../download/ListDownload';
 import SaveAsDraftButton from '../../../../../common/js/components/SaveAsDraft/SaveAsDraftButton';
 import CopyMoveModal from '../../modals/CopyMoveModal';
 import fetch from '../../../../../common/js/utils/fetch';
@@ -66,7 +62,6 @@ import {
 } from '../../../utils/lists-redux.utils';
 import LargeListEditing from '../EditList/LargeListEditing/LargeListEditing';
 import ShareList from '../../../../../locations/js/components/ShareList/ShareList';
-import { EditListBulkActionButton } from '../EditList/EditListBulkActionButton';
 import redirectToMap from '../../../../../common/js/utils/redirect';
 import { FailedPopupDialog } from '../../../../../locations/js/components/landing/FailedPopupDialog';
 import {
@@ -78,27 +73,27 @@ import {
   getDialogTitle,
 } from '../../../../../locations/js/utils/dialogMessage.utils';
 import { deleteAllFilteredLocations } from '../deleteAllFilteredLocations';
-import { isUserList } from '../../../../../common/js/utils/gfw.utils';
 import ChangeTypeOfAnalysisModal from '../../../../../locations/js/components/landing/listItem/ChangeTypeOfAnalysisModal';
 import getActiveAnalysisType from '../../../../../../utils/getActiveAnalysisType';
 import ListActions from './ListActions';
 import { formatDateForCurrentBrowserLanguage } from '../../../../../common/js/utils/format';
 import WrappedReactTable from './WrappedReactTable';
+import AnalysisStatusBanners from './AnalysisStatusBanners';
+import AnalysisFailedMessage from './AnalysisFailedMessage';
+import AnalysisInProgressMessage from './AnalysisInProgressMessage';
+import { isListFailedByAnalysisStatusLimit } from '../../../../../locations/js/utils/lists.utils';
 
 // CONSTANTS
-import {
-  gfwListNames,
-  defaultMaximumAreaSizeForLocationsFilter,
-} from '../../../../../common/js/constants/lists.constants';
+import { defaultMaximumAreaSizeForLocationsFilter } from '../../../../../common/js/constants/lists.constants';
 import { listStatus } from '../../../../../../config/env/listStatuses.constants';
 import { getListFilterValues } from '../getListFilterValues';
 import getAllColumnNames from '../getAllColumnNames';
+import { defaultFilterValues } from '../defaultFilterValues';
 
 // STYLE
 import '../../../../../locations/css/lists.scss';
 import '../../../../../locations/css/locations.scss';
 import './ListDetails.scss';
-
 export default class ListDetails extends Component {
   constructor(props) {
     super(props);
@@ -152,14 +147,14 @@ export default class ListDetails extends Component {
   componentDidMount() {
     const { listData, filters, selectedLists } = this.props;
 
-    const { list_name, id, globalForestWatchList, associated_gfwlist } = selectedLists[0];
+    const { list_name, id, isGlobalForestWatchList, associated_gfwlist } = selectedLists[0];
 
     gtag('event', 'User accessed list', {
       event_category: 'List Interaction',
       event_label: 'Accessed List: ' + list_name,
       list_name,
       list_id: id,
-      is_gfw_list: !!globalForestWatchList,
+      is_gfw_list: !!isGlobalForestWatchList,
       associated_gfwlist,
     });
 
@@ -174,7 +169,7 @@ export default class ListDetails extends Component {
       this.getProtectedAreasData
     );
 
-    if (isUserList(selectedLists[0])) {
+    if (!selectedLists[0].isGlobalForestWatchList) {
       getListFilterValues(selectedLists[0].id).then((filterValues) => {
         this.setState({ filterValues });
       });
@@ -228,7 +223,7 @@ export default class ListDetails extends Component {
       this.clearFilters();
       this.setState({ isEveryRowSelected: false, filterValues: [] });
 
-      if (isUserList(selectedLists[0])) {
+      if (!selectedLists[0].isGlobalForestWatchList) {
         getListFilterValues(selectedLists[0].id).then((filterValues) => {
           this.setState({ filterValues });
         });
@@ -243,7 +238,7 @@ export default class ListDetails extends Component {
       previousKeys.some((key) => filters[key] !== prevProps.filters[key])
     ) {
       // if the filters changed and this is a user list, get the paginated data from the API
-      if (isUserList(selectedLists[0])) {
+      if (!selectedLists[0].isGlobalForestWatchList) {
         this.getUserLocationData(selectedLists[0].id);
       } else {
         filterListData(
@@ -262,9 +257,9 @@ export default class ListDetails extends Component {
   isFilterValueDifferentThanDefault = ([filterName, val]) => {
     // It's the case that [] !== [], so we need special handling for arrays.
     if (Array.isArray(val)) {
-      return val.toString() !== locationsPage.defaultFilterValues[filterName].toString();
+      return val.toString() !== defaultFilterValues[filterName].toString();
     }
-    return val !== locationsPage.defaultFilterValues[filterName];
+    return val !== defaultFilterValues[filterName];
   };
 
   showDialogEdit = () => {
@@ -634,7 +629,7 @@ export default class ListDetails extends Component {
     );
     const destinationListName = moveToList?.list_name || newListName;
 
-    if (!selectedList.globalForestWatchList) {
+    if (!selectedList.isGlobalForestWatchList) {
       httpRequest.fetchJSON('/locations/lockList', { list_id }).then(() => {
         const { associated_gfwlist } = moveToList || selectedList;
         const gfw_list_id =
@@ -906,7 +901,7 @@ export default class ListDetails extends Component {
 
   showListColumn = (column) => {
     const { selectedLists, listView } = this.props;
-    if (selectedLists.length > 0 && isUserList(selectedLists[0])) {
+    if (selectedLists.length > 0 && !selectedLists[0].isGlobalForestWatchList) {
       return (
         !(listView === 'forest_change' && checkColumnListFC(column.accessor)) &&
         !(listView === 'commodity_risk' && checkColumnListCR(column.accessor))
@@ -1203,7 +1198,7 @@ export default class ListDetails extends Component {
     const { selectedLists, currentUser, selectedLocations } = this.props;
     const { isEveryRowSelected, numberOfPages } = this.state;
     const selectedList = selectedLists[0];
-    if (selectedList.user_id) {
+    if (!selectedList.isGlobalForestWatchList) {
       // if all locations where selected and there is more than one page
       // follow large list editing workflow
       if (isEveryRowSelected && numberOfPages > 1) {
@@ -1270,7 +1265,7 @@ export default class ListDetails extends Component {
       userSharedLists &&
       userSharedLists.map((userSharedList) => userSharedList.id).includes(selectedLists[0].id);
 
-    const gfwList = !isUserList(selectedLists[0]) ? '&gfw=true' : '';
+    const gfwList = selectedLists[0].isGlobalForestWatchList ? '&gfw=true' : '';
     const sharedList = selectedListIsShared ? '&shared=true' : '';
     const locationIdParam = locationId ? `&locationId=${locationId}` : '';
     const diagnosticsType = getActiveAnalysisType(selectedLists[0]?.listAnalysesStatus);
@@ -1291,7 +1286,7 @@ export default class ListDetails extends Component {
     const { filterString, combinedColumns, isEveryRowSelected } = this.state;
     let locationIds = [];
 
-    const gfwList = selectedLists[0]?.globalForestWatchList ? selectedLists[0]?.list_name : false;
+    const gfwList = selectedLists[0]?.isGlobalForestWatchList ? selectedLists[0]?.list_name : false;
 
     if (selectedLocations.length > 0) {
       // If the user has checked any checkboxes, we are using
@@ -1375,7 +1370,8 @@ export default class ListDetails extends Component {
       // or use another property in sendData to send these
       locationIds = JSON.stringify(locationIds);
     }
-    const isGfwList = selectedLists[0].globalForestWatchList;
+
+    const isGfwList = selectedLists[0].isGlobalForestWatchList;
     const isSharedList =
       selectedLists &&
       userSharedLists &&
@@ -1387,7 +1383,6 @@ export default class ListDetails extends Component {
       isSharedList,
       selectedLocations: isEveryRowSelected || showFullListMap ? [] : locationIds,
     };
-
     redirectToMap(sendData);
     gtag('event', 'Header button click', {
       event_category: 'Lists Click',
@@ -1403,7 +1398,7 @@ export default class ListDetails extends Component {
       searchInputValue: newValue,
     });
 
-    const isGfwList = !isUserList(selectedLists[0]);
+    const isGfwList = selectedLists[0].isGlobalForestWatchList;
     if (isGfwList) {
       //  gfw lists search works in the front end, so it searches as the use types
       this.setState({
@@ -1430,7 +1425,7 @@ export default class ListDetails extends Component {
   handleSearchInputKeyDown = (evt) => {
     // if enter key is pressed and it's not a GFW list, filter locations by input text
     const { selectedLists } = this.props;
-    const isGfwList = !isUserList(selectedLists[0]);
+    const isGfwList = selectedLists[0].isGlobalForestWatchList;
     if (evt.keyCode === 13 && !isGfwList) {
       this.setState(
         {
@@ -1523,7 +1518,7 @@ export default class ListDetails extends Component {
       },
     })
       .then(() => {
-        this.handleRerunDialogState();
+        this.toggleReRunAnalysisDialog();
         this.setState({
           isLoading: false,
         });
@@ -1652,7 +1647,7 @@ export default class ListDetails extends Component {
       });
   };
 
-  handleRerunDialogState = () => {
+  toggleReRunAnalysisDialog = () => {
     const { rerunDialogState } = this.state;
     this.setState({ rerunDialogState: !rerunDialogState });
   };
@@ -1691,12 +1686,11 @@ export default class ListDetails extends Component {
   }
 
   loadLocationView() {
-    // If user_id is a property then this is a user list
     const { selectedLists } = this.props;
     if (selectedLists.length > 0) {
       if (selectedLists[0].list_name === 'Administrative Areas') {
         this.getAdministrativeAreasInfo();
-      } else if (Object.hasOwnProperty.call(selectedLists[0], 'user_id')) {
+      } else if (!selectedLists[0].isGlobalForestWatchList) {
         this.getUserLocationData(selectedLists[0].id);
       } else if (selectedLists[0].list_name === 'Protected Areas') {
         this.getProtectedAreasInfo();
@@ -1773,8 +1767,9 @@ export default class ListDetails extends Component {
     } = this.state;
 
     const selectedList = selectedLists.length > 0 ? selectedLists[0] : null;
-    const locationDataIsNotAvailable =
-      isListSubmittedForAnalysis || isLocationDataNotAvailable(selectedList);
+    const locationDataIsNotAvailable = isLocationDataNotAvailable(selectedList);
+
+    const isAnalysisInProgress = isAnalyzingStatus(selectedLists[0]?.list_status_id);
 
     const listID = selectedList?.id;
     const countries = [...new Set(filteredLocationData.map((list) => list.Country))].sort();
@@ -1788,7 +1783,8 @@ export default class ListDetails extends Component {
     const listName = selectedList ? selectedList.list_name : '';
     const listAnalysesStatus = selectedList ? selectedList.listAnalysesStatus : [];
 
-    const isGfwList = selectedList.associated_gfwlist || gfwListNames.includes(listName);
+    const isGfwList = selectedList.associated_gfwlist || selectedList.isGlobalForestWatchList;
+
     // user lists are paginated in the backend, gfw lists search works in the front end
     const filteredLists = isGfwList
       ? getListFilteredLocations(filteredLocationData, combinedColumns, filterString)
@@ -1853,7 +1849,13 @@ export default class ListDetails extends Component {
       userSharedLists &&
       userSharedLists.map((userSharedList) => userSharedList.id).includes(selectedLists[0].id);
 
-    const showMultipleSelectionBulkActions = selectedList && selectedLocations.length > 1;
+    const showMultipleSelectionBulkActions =
+      selectedList && selectedLocations.length > 1 && !locationDataIsNotAvailable;
+
+    const hasLocationWithErrors = !!listData.find(
+      ({ location_status_id }) => location_status_id === listStatus.Inactive
+    );
+
     return (
       <div className="list-details">
         {!isGfwList && (
@@ -1865,6 +1867,16 @@ export default class ListDetails extends Component {
               this.setState({ isChangeTypeOfAnalysisModalOpen: open })
             }
             isChangeTypeOfAnalysisModalOpen={this.state.isChangeTypeOfAnalysisModalOpen}
+          />
+        )}
+        {!isGfwList && (
+          <AnalysisStatusBanners
+            isDiagnosticStatusDraft={getIsDiagnosticStatusDraft(selectedLists[0])}
+            hasLocationWithErrors={hasLocationWithErrors}
+            openDraftSubmitDialog={() => this.setState({ draftSubmitDialogOpen: true })}
+            toggleReRunAnalysisDialog={this.toggleReRunAnalysisDialog}
+            listAnalysesStatus={listAnalysesStatus}
+            isListFailedByAnalysisStatusLimit={isListFailedByAnalysisStatusLimit(selectedLists[0])}
           />
         )}
         {bannerContent && (
@@ -1926,7 +1938,6 @@ export default class ListDetails extends Component {
               </p>
             }
             onRequestClose={() => this.setState({ listNotAccessible: !listNotAccessible })}
-            // eslint-disable-next-line no-return-assign
             onOkButtonPress={() => (window.location = '/locations')}
           />
         )}
@@ -1963,7 +1974,6 @@ export default class ListDetails extends Component {
                 filteredLists={filteredLists}
                 filterValues={filterValues}
                 listLocationsCount={numberOfResults}
-                listName={listName}
                 openCountriesPopover={openCountriesPopover}
                 selectedList={selectedList}
                 shareView={shareView}
@@ -1977,7 +1987,7 @@ export default class ListDetails extends Component {
               {/* Shared lists view */}
               {shareView ? (
                 <>
-                  {!locationDataIsNotAvailable && (
+                  {!locationDataIsNotAvailable && !isAnalysisInProgress && (
                     <div className="section-container">
                       <ShareList
                         key={selectedList.id}
@@ -1994,7 +2004,7 @@ export default class ListDetails extends Component {
                     selectedList={selectedList}
                     viewMap={this.viewMap}
                     currentUser={currentUser}
-                    handleRerunDialogState={this.handleRerunDialogState}
+                    toggleReRunAnalysisDialog={this.toggleReRunAnalysisDialog}
                     rerunDialogState={rerunDialogState}
                     rerunList={this.rerunList}
                     isManageListFolderOpen={isManageListFolderOpen}
@@ -2021,92 +2031,65 @@ export default class ListDetails extends Component {
                     handleSearchInputChange={this.handleSearchInputChange}
                     handleSearchInputKeyDown={this.handleSearchInputKeyDown}
                     handlecSearchInputClick={this.handlecSearchInputClick}
+                    showMultipleSelectionBulkActions={showMultipleSelectionBulkActions}
+                    isEditActionAvailable={isEditActionAvailable}
+                    editList={this.editList}
+                    canMove={canMove}
+                    promptMoveSelectedLocations={this.promptMoveSelectedLocations}
+                    canDelete={canDelete}
+                    promptDeleteSelectedLocations={this.promptDeleteSelectedLocations}
+                    filters={filters}
+                    listFilterStr={filterString}
+                    tableSortedBy={tableSortedBy}
+                    tableSortedDesc={tableSortedDesc}
+                    visibleColumns={visibleColumns}
+                    selectedLocations={selectedLocations}
+                    listView={listView}
+                    isLoading={(loading) => {
+                      this.setState({ isLoading: loading });
+                    }}
+                    isGfwList={isGfwList}
                   />
 
-                  {!locationDataIsNotAvailable && (
-                    <>
-                      {showMultipleSelectionBulkActions && (
-                        <Paper className="list-actions">
-                          <Stack
-                            sx={{
-                              width: '100%',
-                            }}
-                            alignItems="center"
-                            direction="row"
-                          >
-                            {isEditActionAvailable && (
-                              <EditListBulkActionButton
-                                editList={this.editList}
-                                currentUser={currentUser}
-                                selectedLocations={selectedLocations}
-                              />
-                            )}
-                            {canMove && (
-                              <MaterialButton
-                                startIcon={<FileCopyIcon />}
-                                onClick={this.promptMoveSelectedLocations}
-                                variant="primary"
-                              >
-                                Copy / Move
-                              </MaterialButton>
-                            )}
+                  <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                    {!isGfwList && (
+                      <AnalysesTabs
+                        listViewOptions={listViewOptions}
+                        listView={listView}
+                        changeListView={this.changeListView}
+                        listAnalysesStatus={listAnalysesStatus}
+                        hasLocationWithErrors={hasLocationWithErrors}
+                      />
+                    )}
 
-                            <ListDownload
-                              listID={listID}
-                              listName={listName}
-                              filters={filters}
-                              listFilterStr={filterString}
-                              tableSortedBy={tableSortedBy}
-                              tableSortedDesc={tableSortedDesc}
-                              selectedList={selectedList}
-                              combinedColumns={visibleColumns}
-                              selectedLocations={selectedLocations}
-                              currentUser={currentUser}
-                              listView={listView}
-                              isLoading={(loading) => {
-                                this.setState({ isLoading: loading });
-                              }}
-                              isGfwList={isGfwList}
-                            />
+                    {!isGfwList && (
+                      <MaterialButton
+                        style={{ color: '#97bd3d', fontSize: '12px' }}
+                        onClick={() => {
+                          this.setState({ isChangeTypeOfAnalysisModalOpen: true });
+                        }}
+                      >
+                        CHANGE ANALYSES
+                      </MaterialButton>
+                    )}
+                  </div>
 
-                            {canDelete && (
-                              <MaterialButton
-                                style={{ color: 'red' }}
-                                startIcon={<DeleteIcon />}
-                                onClick={this.promptDeleteSelectedLocations}
-                              >
-                                Delete
-                              </MaterialButton>
-                            )}
-                          </Stack>
-                        </Paper>
-                      )}
+                  <Paper sx={{ padding: '12px', borderTopLeftRadius: '0px' }}>
+                    {locationDataIsNotAvailable && !isAnalysisInProgress && (
+                      <AnalysisFailedMessage
+                        toggleReRunAnalysisDialog={this.toggleReRunAnalysisDialog}
+                      />
+                    )}
 
-                      <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                        <AnalysesTabs
-                          listViewOptions={listViewOptions}
-                          listView={listView}
-                          changeListView={this.changeListView}
-                        />
-
-                        {!isGfwList && (
-                          <MaterialButton
-                            style={{ color: '#97bd3d', fontSize: '12px' }}
-                            onClick={() => {
-                              this.setState({ isChangeTypeOfAnalysisModalOpen: true });
-                            }}
-                          >
-                            CHANGE ANALYSES
-                          </MaterialButton>
-                        )}
-                      </div>
-
-                      <Paper sx={{ padding: '12px', borderTopLeftRadius: '0px' }}>
+                    {isAnalysisInProgress && <AnalysisInProgressMessage />}
+                    {!locationDataIsNotAvailable && !isAnalysisInProgress && (
+                      <>
                         <div className="list-analysis-actions">
                           {!getIsDraftWithoutDiagnostic(selectedList) &&
                             listName !== 'Administrative Areas' &&
                             listName !== 'Protected Areas' &&
-                            (isGfwList || getActiveAnalysisType(listAnalysesStatus)) && (
+                            (isGfwList || getActiveAnalysisType(listAnalysesStatus)) &&
+                            !showMultipleSelectionBulkActions && (
                               <MaterialButton
                                 className="list-analysis-actions__diagnostic-button"
                                 sx={{
@@ -2158,7 +2141,7 @@ export default class ListDetails extends Component {
                               visibleColumns={visibleColumns}
                               filteredLists={filteredLists}
                               page={page}
-                              isUserList={isUserList(selectedLists[0])}
+                              isUserList={!selectedLists[0].isGlobalForestWatchList}
                               getUserLocationData={this.getUserLocationData}
                               tableSortedBy={tableSortedBy}
                               tableSortedDesc={tableSortedDesc}
@@ -2189,9 +2172,9 @@ export default class ListDetails extends Component {
                             />
                           ) : null}
                         </section>
-                      </Paper>
-                    </>
-                  )}
+                      </>
+                    )}
+                  </Paper>
                 </>
               )}
             </section>

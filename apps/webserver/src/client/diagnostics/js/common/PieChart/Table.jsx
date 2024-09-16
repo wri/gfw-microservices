@@ -1,8 +1,9 @@
 import React from 'react';
 import { prettifyNum, formatNum, formatPct } from '../../../../common/js/utils/diagnostics.utils';
 import './ChartLegendsTable.scss';
+import BetaTag from '../../../../common/js/components/BetaTag';
 
-function Table({ data, chartLabels, sumOfAreasByChartLabel }) {
+function Table({ data, chartLabels, sumOfAreasByChartLabel, preview = false }) {
   const chartLabelRows = chartLabels.map(({ id, legend, color }) => {
     const chartLabelArea = data[id] || 0;
     const chartLabelPercentage = (chartLabelArea / sumOfAreasByChartLabel) * 100;
@@ -23,7 +24,10 @@ function Table({ data, chartLabels, sumOfAreasByChartLabel }) {
       <table>
         <thead>
           <tr>
-            <th>Category</th>
+            <th>
+              Category
+              {preview && <BetaTag>(preview)</BetaTag>}
+            </th>
             <th>COVERAGE (%)</th>
             <th>TOTAL AREA (HA)</th>
           </tr>

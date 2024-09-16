@@ -1,6 +1,4 @@
-import { changeTemplate } from '../../../../locations/js/actions/locationActions';
 import { locationsPage } from '../../../../common/js/config';
-import store from '../../../../locations/js/store';
 import React, { Component } from 'react';
 
 export default class StepOne extends Component {

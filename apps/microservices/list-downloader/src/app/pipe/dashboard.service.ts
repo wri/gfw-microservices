@@ -1,5 +1,13 @@
-import { Injectable, Inject, Logger } from '@nestjs/common';
-import { ListFieldsFileRequest } from '@wri-monorepos/sql';
+import { Injectable, Logger } from '@nestjs/common';
+import {
+  ListFieldsFileRequest,
+  FeatureFlag,
+  Organization,
+  ClientStoreConnection,
+  systemEntities,
+} from '@wri-monorepos/sql';
+import { featureFlagsService } from '@wri-monorepos/shared';
+
 import { IPipeService } from './i.pipe.service';
 
 import {
@@ -17,6 +25,8 @@ import {
   SouthAmericaLossService,
   SouthEastAsiaOverlapService,
   SouthEastAsiaTCLService,
+  ColombiaOverlapService,
+  ColombiaDeforestationService,
 } from '../files';
 
 import { getAllFilesAndZip } from '../shared/file.utils';
@@ -25,47 +35,26 @@ import { getAllFilesAndZip } from '../shared/file.utils';
 export class DashboardService extends IPipeService {
   private readonly logger = new Logger(DashboardService.name);
 
-  @Inject(ForestLossService)
-  private readonly forestLoos: ForestLossService;
-
-  @Inject(HistoricPercentService)
-  private readonly historicPercentService: HistoricPercentService;
-
-  @Inject(ForestChangeDiagnosticLocationSummaryService)
-  private readonly forestChangeDiagnosticLocationSummaryService: ForestChangeDiagnosticLocationSummaryService;
-
-  @Inject(ForestChangeDiagnosticListSummaryService)
-  private readonly forestChangeDiagnosticListSummaryService: ForestChangeDiagnosticListSummaryService;
-
-  @Inject(CommodityRiskDiagnosticLocationSummaryService)
-  private readonly commodityRiskDiagnosticLocationSummaryService: CommodityRiskDiagnosticLocationSummaryService;
-
-  @Inject(DeforestationTrendsService)
-  private readonly deforestationTrendsService: DeforestationTrendsService;
-
-  @Inject(MillPriorityService)
-  private readonly millPriorityService: MillPriorityService;
-
-  @Inject(PalmRiskAnalysisService)
-  private readonly palmRiskAnalysisService: PalmRiskAnalysisService;
-
-  @Inject(SouthAmericaBiomesService)
-  private readonly southAmericaBiomesService: SouthAmericaBiomesService;
-
-  @Inject(SouthAmericaLossService)
-  private readonly southAmericaLossService: SouthAmericaLossService;
-
-  @Inject(SouthEastAsiaOverlapService)
-  private readonly southEastAsiaOverlapService: SouthEastAsiaOverlapService;
-
-  @Inject(SouthEastAsiaTCLService)
-  private readonly southEastAsiaTCLService: SouthEastAsiaTCLService;
-
-  @Inject(ArgentinaOverlapService)
-  private readonly argentinaOverlap: ArgentinaOverlapService;
-
-  @Inject(ArgentinaDeforestationService)
-  private readonly argentinaDeforestation: ArgentinaDeforestationService;
+  constructor(
+    private readonly forestLoos: ForestLossService,
+    private readonly historicPercentService: HistoricPercentService,
+    private readonly forestChangeDiagnosticLocationSummaryService: ForestChangeDiagnosticLocationSummaryService,
+    private readonly forestChangeDiagnosticListSummaryService: ForestChangeDiagnosticListSummaryService,
+    private readonly commodityRiskDiagnosticLocationSummaryService: CommodityRiskDiagnosticLocationSummaryService,
+    private readonly deforestationTrendsService: DeforestationTrendsService,
+    private readonly millPriorityService: MillPriorityService,
+    private readonly palmRiskAnalysisService: PalmRiskAnalysisService,
+    private readonly southAmericaBiomesService: SouthAmericaBiomesService,
+    private readonly southAmericaLossService: SouthAmericaLossService,
+    private readonly southEastAsiaOverlapService: SouthEastAsiaOverlapService,
+    private readonly southEastAsiaTCLService: SouthEastAsiaTCLService,
+    private readonly argentinaOverlap: ArgentinaOverlapService,
+    private readonly argentinaDeforestation: ArgentinaDeforestationService,
+    private readonly colombiaOverlapService: ColombiaOverlapService,
+    private readonly colombiaDeforestationService: ColombiaDeforestationService
+  ) {
+    super();
+  }
 
   async start(filters: ListFieldsFileRequest) {
     await this.startEmail(filters);
@@ -84,9 +73,14 @@ export class DashboardService extends IPipeService {
     this.southEastAsiaTCLService.start(filters);
     this.argentinaOverlap.start(filters);
     this.argentinaDeforestation.start(filters);
+
+    if (await this.isColombiaFeatureFlagEnabled(filters)) {
+      this.colombiaOverlapService.start(filters);
+      this.colombiaDeforestationService.start(filters);
+    }
   }
 
-  process(data, filters: ListFieldsFileRequest) {
+  async process(data, filters: ListFieldsFileRequest) {
     this.forestLoos.process(data, filters);
     this.historicPercentService.process(data, filters);
     this.forestChangeDiagnosticLocationSummaryService.process(data, filters);
@@ -101,6 +95,11 @@ export class DashboardService extends IPipeService {
     this.southEastAsiaTCLService.process(data, filters);
     this.argentinaOverlap.process(data, filters);
     this.argentinaDeforestation.process(data, filters);
+
+    if (await this.isColombiaFeatureFlagEnabled(filters)) {
+      this.colombiaOverlapService.process(data, filters);
+      this.colombiaDeforestationService.process(data, filters);
+    }
   }
 
   async finish(filters: ListFieldsFileRequest) {
@@ -122,8 +121,34 @@ export class DashboardService extends IPipeService {
     await this.argentinaOverlap.finish(filters);
     await this.argentinaDeforestation.finish(filters);
 
+    if (await this.isColombiaFeatureFlagEnabled(filters)) {
+      await this.colombiaOverlapService.finish(filters);
+      await this.colombiaDeforestationService.finish(filters);
+    }
+
     this.logger.log(`(${key}) - Zipping files`);
     await getAllFilesAndZip(filters);
     await this.finishProcess(filters);
+  }
+
+  private async isColombiaFeatureFlagEnabled(filters: ListFieldsFileRequest) {
+    const { organizationDatabase } = filters;
+
+    const clientStoreConnection = new ClientStoreConnection();
+    const database = process.env.MSSQL_DATABASE || 'gfwpro';
+    const connection = await clientStoreConnection.getConnection(database, systemEntities);
+
+    const organizationsRepository = connection.getRepository(Organization);
+
+    const { id } = await organizationsRepository.findOne({
+      where: { organizationDb: organizationDatabase },
+    });
+
+    const { getFeatureFlagsForCurrentOrg } = await featureFlagsService();
+    const flags = await getFeatureFlagsForCurrentOrg(id);
+
+    const colombiaFeatureFlag = flags.find((f) => f.flagId === 'Colombia') as FeatureFlag;
+
+    return !!colombiaFeatureFlag?.flagState;
   }
 }

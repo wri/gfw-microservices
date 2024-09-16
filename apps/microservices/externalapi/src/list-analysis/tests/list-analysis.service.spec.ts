@@ -26,8 +26,8 @@ import { listStatus } from '@wri-monorepos/constants';
 jest.mock('@wri-monorepos/shared', () => ({
   checkProcessingLimits: jest.fn(),
 }));
-jest.mock('../../shared/generate-sqs-templates', () => ({
-  generateAnalysisSqsTemplate: jest.fn().mockResolvedValue(true),
+jest.mock('../../shared/generate-templates', () => ({
+  generateAnalysisTemplate: jest.fn().mockResolvedValue(true),
 }));
 
 describe('ListAnalysisService', () => {
@@ -420,8 +420,8 @@ describe('ListAnalysisService', () => {
     const startDate = new Date('2021-09-28');
     const endDate = new Date('2021-09-28');
 
-    jest.mock('../../shared/generate-sqs-templates', () => ({
-      generateAnalysisSqsTemplate: jest.fn().mockResolvedValue(true),
+    jest.mock('../../shared/generate-templates', () => ({
+      generateAnalysisTemplate: jest.fn().mockResolvedValue(true),
     }));
     sqsService.send = jest.fn().mockResolvedValue(true);
     saveActivityLogEndpoint.saveActivityLogEndpoint = jest.fn().mockResolvedValue(true);
@@ -444,8 +444,8 @@ describe('ListAnalysisService', () => {
     const startDate = null;
     const endDate = null;
 
-    jest.mock('../../shared/generate-sqs-templates', () => ({
-      generateAnalysisSqsTemplate: jest.fn().mockResolvedValue(true),
+    jest.mock('../../shared/generate-templates', () => ({
+      generateAnalysisTemplate: jest.fn().mockResolvedValue(true),
     }));
     sqsService.send = jest.fn().mockResolvedValue(true);
     saveActivityLogEndpoint.saveActivityLogEndpoint = jest.fn().mockResolvedValue(true);
@@ -468,8 +468,8 @@ describe('ListAnalysisService', () => {
     const startDate = null;
     const endDate = null;
 
-    jest.mock('../../shared/generate-sqs-templates', () => ({
-      generateAnalysisSqsTemplate: jest.fn().mockResolvedValue(true),
+    jest.mock('../../shared/generate-templates', () => ({
+      generateAnalysisTemplate: jest.fn().mockResolvedValue(true),
     }));
     sqsService.send = jest.fn().mockResolvedValue(true);
     saveActivityLogEndpoint.saveActivityLogEndpoint = jest.fn().mockResolvedValue(true);
@@ -492,8 +492,8 @@ describe('ListAnalysisService', () => {
     const startDate = null;
     const endDate = null;
 
-    jest.mock('../../shared/generate-sqs-templates', () => ({
-      generateAnalysisSqsTemplate: jest.fn().mockResolvedValue(true),
+    jest.mock('../../shared/generate-templates', () => ({
+      generateAnalysisTemplate: jest.fn().mockResolvedValue(true),
     }));
     sqsService.send = jest.fn().mockResolvedValue(true);
     saveActivityLogEndpoint.saveActivityLogEndpoint = jest.fn().mockResolvedValue(true);
@@ -516,8 +516,8 @@ describe('ListAnalysisService', () => {
     const startDate = null;
     const endDate = null;
 
-    jest.mock('../../shared/generate-sqs-templates', () => ({
-      generateAnalysisSqsTemplate: jest.fn().mockResolvedValue(true),
+    jest.mock('../../shared/generate-templates', () => ({
+      generateAnalysisTemplate: jest.fn().mockResolvedValue(true),
     }));
     sqsService.send = jest.fn().mockResolvedValue(true);
     saveActivityLogEndpoint.saveActivityLogEndpoint = jest.fn().mockResolvedValue(true);

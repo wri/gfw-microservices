@@ -31,6 +31,7 @@ export const getDashboardData = `
    AA.[Country],
    AA.[State],
    AA.[Sub State],
+   AD.total_ha as totalHa,
    AA.[Location Name] AS name_all,
    AA.[gadmid],
    AA.gadmid AS gadmid_2,
@@ -72,6 +73,7 @@ export interface DashboardDataType {
   Country: string;
   State: string;
   'Sub State': string;
+  totalHa: number;
   name_all: string;
   gadmid: string;
   gadmid_2: string;

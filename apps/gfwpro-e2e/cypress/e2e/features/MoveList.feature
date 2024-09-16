@@ -1,7 +1,7 @@
 Feature: user can move list diagnostics
   Scenario: Create and Move list
     When I login in the landing page
-    When I navigate to a list details page origin
+    When I navigate to a list details page
     Then I should be able to create a list as a copy and save as draft
     Then I should see the created lists in the locations page
 

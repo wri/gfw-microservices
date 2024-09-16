@@ -35,7 +35,7 @@ export default class DeforestationTrends extends Component {
       showInLegend: false,
     });
 
-    const chart = new Highcharts.chart({
+    return Highcharts.chart({
       chart: {
         renderTo: el,
         type: 'column',
@@ -91,8 +91,6 @@ export default class DeforestationTrends extends Component {
         enabled: false,
       },
     });
-
-    return chart;
   };
 
   render() {

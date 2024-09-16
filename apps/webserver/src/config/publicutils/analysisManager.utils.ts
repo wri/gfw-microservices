@@ -31,6 +31,8 @@ import {
   AfiAnalysisByListId,
   getCountAfiAnalysisByListId,
   CountAfiAnalysisByListId,
+  getPaginatedAfiAnalysisByListIdSortedByFilters,
+  PaginatedAfiAnalysisByListIdSortedByFilters,
 } from '@wri-monorepos/sql';
 
 /** @function {getAnalysisDataForUserList}
@@ -453,24 +455,99 @@ export async function getPaginatedAnalysisDataForAdministrativeAreas(
  *   @param  {Number}  list_id - ID of list
  *   @return {Promise} Returns promise object. If successful, recordsets, otherwise, error object
  */
-export async function getAFIListAnalyses(list_id, page, pageSize, clientDatabase) {
+export async function getAFIListAnalyses(list_id, page, pageSize, clientDatabase, filters) {
+  const {
+    orderType,
+    sortByAttribute,
+    searchString,
+    country,
+    state,
+    subState,
+    analysisAreaMin,
+    analysisAreaMax,
+
+    // commodity risk filters:
+    selectedSupplier,
+    selectedSecondSupplier,
+    selectedParentCompany,
+    showRSPOCertified,
+    selectedOverallThreats,
+    selectedOverallValues,
+    selectedMillPriority,
+  } = filters;
   const parameters = [
     { field: 'listId', type: sql.Int, value: list_id },
     { field: 'rowsOfPage', type: sql.Int, value: pageSize },
     { field: 'pageNumber', type: sql.Int, value: page },
+    { field: 'Order', type: sql.NVarChar(255), value: orderType || 'ASC' },
+    { field: 'SubState', type: sql.NVarChar(255), value: subState || null },
+    { field: 'Country', type: sql.NVarChar(255), value: country || null },
+    { field: 'State', type: sql.NVarChar(255), value: state || null },
+    {
+      field: 'AnalysisAreaMin',
+      type: sql.Int,
+      value: analysisAreaMin || null,
+    },
+    {
+      field: 'AnalysisAreaMax',
+      type: sql.Int,
+      value: analysisAreaMax || null,
+    },
+    { field: 'selectedSupplier', type: sql.NVarChar(255), value: selectedSupplier || null },
+    {
+      field: 'selectedSecondSupplier',
+      type: sql.NVarChar(255),
+      value: selectedSecondSupplier || null,
+    },
+    {
+      field: 'selectedParentCompany',
+      type: sql.NVarChar(255),
+      value: selectedParentCompany || null,
+    },
+    { field: 'showRSPOCertified', type: sql.Bit, value: showRSPOCertified || 0 },
+    {
+      field: 'selectedOverallThreats',
+      type: sql.NVarChar(255),
+      value: selectedOverallThreats || null,
+    },
+    {
+      field: 'selectedOverallValues',
+      type: sql.NVarChar(255),
+      value: selectedOverallValues || null,
+    },
+    {
+      field: 'selectedMillPriority',
+      type: sql.NVarChar(255),
+      value: selectedMillPriority || null,
+    },
   ];
-  const listAnalyses = await SQLUtilsLibSql.queryDB<AfiAnalysisByListId[]>(
+  // Verify if the sortByAttribute is valid
+  if (filters.sortByAttribute in PaginatedAfiAnalysisByListIdSortedByFilters) {
+    parameters.push({
+      field: 'OrderByColumn',
+      type: sql.NVarChar(255),
+      value: filters.sortByAttribute || 'Location Name',
+    });
+  } else {
+    throw new Error(`Invalid sortByAttribute ${filters.sortByAttribute}`);
+  }
+  const listAnalyses = await SQLUtilsLibSql.queryDB<PaginatedAfiAnalysisByListIdSortedByFilters[]>(
     clientDatabase,
-    getPaginatedAfiAnalysisLocationLevel,
+    getPaginatedAfiAnalysisByListIdSortedByFilters,
     parameters
   );
-  const { id, quantity } = await SQLUtilsLibSql.queryDBFirstRow<CountAfiAnalysisByListId>(
-    clientDatabase,
-    getCountAfiAnalysisByListId,
-    [
-      { field: 'listId', type: sql.Int, value: list_id },
-      { field: 'isListLevel', type: sql.Int, value: 0 },
-    ]
-  );
-  return { listAnalyses, quantity };
+  const quantity = listAnalyses.length > 0 ? listAnalyses.length : 0;
+
+  const formattedListAnalyses = listAnalyses.map((analysis) => {
+    return {
+      ...analysis,
+      protectedAreasPercent: analysis.protectedAreasHA / (analysis.totalAreaHa * 100) || 0,
+      landmarkPercent: analysis.landmarkHA / (analysis.totalAreaHa * 100) || 0,
+      naturalForestLossPercent: analysis.naturalForestLossHA / (analysis.totalAreaHa * 100) || 0,
+      jrcNaturalForestLossPercent:
+        analysis.jrcNaturalForestLossHA / (analysis.totalAreaHa * 100) || 0,
+    };
+  });
+
+  return { listAnalyses: formattedListAnalyses, quantity };
 }

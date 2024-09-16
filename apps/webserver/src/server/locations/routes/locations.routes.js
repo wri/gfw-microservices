@@ -678,7 +678,8 @@ module.exports = (app, limiter) => {
             listID,
             page,
             pageSize,
-            req.session.organization_database
+            req.session.organization_database,
+            filters
           );
           listAnalyses = analysisManagerResult.listAnalyses;
           numberOfResults = analysisManagerResult.quantity;

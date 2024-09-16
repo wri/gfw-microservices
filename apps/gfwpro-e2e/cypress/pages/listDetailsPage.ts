@@ -3,6 +3,7 @@ class ListDetailsPage {
     listDiagnosticsBtn: () => cy.get('[data-cy="list-diagnostics"]'),
     locationDiagnosticsBtn: () => cy.get('[data-cy="location-diagnostics"]'),
     fullListMapBtn: () => cy.contains('Full List Map'),
+    locationMapBtn: () => cy.contains('Location(s) Map'),
     checkBoxSelectAll: () => cy.get('div.rt-table').find('label.column-checkbox:visible').eq(0),
     checkBoxSelectLocation: (name) => cy.contains(name),
     downloadBtn: () => cy.contains('Download'),
@@ -44,7 +45,7 @@ class ListDetailsPage {
   clickOnApplyFilters() {
     this.elements.applyFilters().click();
   }
-  selectCheckBoxs(locations: number[]) {
+  selectCheckBoxes(locations: number[]) {
     if (locations && locations.length > 0) {
       locations.forEach((location) => {
         cy.get('div.rt-table')
@@ -68,7 +69,7 @@ class ListDetailsPage {
   }
 
   moveList(list: string, location: number[]) {
-    this.selectCheckBoxs(location);
+    this.selectCheckBoxes(location);
     this.clickOnMoveBtn();
     this.clickOnMoveSectionRadioBtn();
     this.selectList(list);
@@ -151,6 +152,9 @@ class ListDetailsPage {
 
   clickOnFullListMapBtn() {
     this.elements.fullListMapBtn().click();
+  }
+  clickOnLocationMapBtn() {
+    this.elements.locationMapBtn().click();
   }
   checkOnCheckBoxSelectAll() {
     this.elements.checkBoxSelectAll().click();

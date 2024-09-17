@@ -33,6 +33,15 @@ export default class Forgot extends Component {
     window.location.href = '/';
   };
 
+  handleDialog = (title, message) => {
+    this.setState({
+      showModalLoader: false,
+      dialogOpen: true,
+      dialogTitle: title,
+      dialogMessage: message,
+    });
+  };
+
   submit = () => {
     console.log('Submitting reset');
     const { email } = this.state;
@@ -47,44 +56,24 @@ export default class Forgot extends Component {
         }
         if (res) {
           if (res.systemMessage?.code === 'LimitExceededException') {
-            this.setState({
-              showModalLoader: false,
-              dialogOpen: true,
-              dialogTitle: forgotStrings.resetLimit.title,
-              dialogMessage: forgotStrings.resetLimit.message,
-            });
+            this.handleDialog(forgotStrings.resetLimit.title, forgotStrings.resetLimit.message);
           } else if (res.systemMessage === 'User does not exist') {
-            this.setState({
-              showModalLoader: false,
-              dialogOpen: true,
-              dialogTitle: forgotStrings.noUser.title,
-              dialogMessage: forgotStrings.noUser.message,
-            });
+            this.handleDialog(forgotStrings.noUser.title, forgotStrings.noUser.message);
           } else if (res.message === 'Success') {
             window.location.href = '/reset'; // if we succeed, redirect to reset page
           } else if (res.message === 'Resend') {
-            this.setState({
-              dialogOpen: true,
-              dialogTitle: forgotStrings.passwordExpired.title,
-              dialogMessage: forgotStrings.passwordExpired.message,
-            });
+            this.handleDialog(
+              forgotStrings.passwordExpired.title,
+              forgotStrings.passwordExpired.message
+            );
           }
         } else {
-          this.setState({
-            dialogOpen: true,
-            dialogTitle: forgotStrings.resetError.title,
-            dialogMessage: forgotStrings.resetError.message,
-          });
+          this.handleDialog(forgotStrings.resetError.title, forgotStrings.resetError.message);
         }
       })
       .catch((err) => {
         console.log(err);
-        this.setState({
-          loading: false,
-          dialogOpen: true,
-          dialogTitle: forgotStrings.internalError.title,
-          dialogMessage: forgotStrings.internalError.message,
-        });
+        this.handleDialog(forgotStrings.internalError.title, forgotStrings.internalError.message);
       });
   };
 

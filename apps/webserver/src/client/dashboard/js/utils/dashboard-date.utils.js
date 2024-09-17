@@ -268,7 +268,7 @@ export function getGladByTimeFrame(selectedTimeframe, feature) {
     MONTH: getGladMonthlyMonth,
     QUARTER: getGladMonthlyQuarter,
     YEAR: getGladMonthlyYear,
-  }
+  };
 
   const gladAlerts =
     selectedTimeframe === 'WEEK'
@@ -279,5 +279,5 @@ export function getGladByTimeFrame(selectedTimeframe, feature) {
     return gladFunctions[selectedTimeframe](feature);
   }
 
-  return []
-};
+  return [];
+}

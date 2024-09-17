@@ -5,14 +5,7 @@ import store from '../store';
 import * as dictionary from './dictionary';
 
 import { getTimeframeBoundaries } from './dateUtils';
-import {
-  getGladDaily,
-  getGladMonthlyQuarter,
-  getGladMonthlyYear,
-  getGladMonthlyMonth,
-  getViirsGrouped,
-  getGladByTimeFrame,
-} from './dashboard-date.utils';
+import { getViirsGrouped, getGladByTimeFrame } from './dashboard-date.utils';
 import axios from 'axios';
 
 /**

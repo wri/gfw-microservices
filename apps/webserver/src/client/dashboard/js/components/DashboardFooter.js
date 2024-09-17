@@ -58,7 +58,6 @@ export default class DashboardFooter extends Component {
       } = this.props;
       const { geojson, failedGeoJSON } = rawData;
 
-      // eslint-disable-next-line react/no-did-update-set-state
       this.setState(
         {
           filteredLocationGeoJSON: filteredLocationGeoJSON,

@@ -376,6 +376,7 @@ export default class Dashboard extends Component {
               filteredLocationGeoJSON={timeframeGeojson}
               filteredDissolvedGeoJSON={timeframeDissolved}
               selectedAdmin={selectedAdmin}
+              view={view}
             />
             <DashboardMap
               map={map}

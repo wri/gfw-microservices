@@ -21,7 +21,8 @@ export default class DashboardSettings extends Component {
   };
 
   handleViewMap = () => {
-    const { selectedAlert, selectedList, selectedTimeframe, zoomLevel, selectedAdmin } = this.props;
+    const { selectedAlert, selectedList, selectedTimeframe, zoomLevel, selectedAdmin, view } =
+      this.props;
     if (!selectedList || !selectedList.id) {
       return;
     }
@@ -31,7 +32,7 @@ export default class DashboardSettings extends Component {
         ? [proLayers.integratedDeforestationAlertsID]
         : [proLayers.viirsActiveFiresID];
 
-    const viewCenter = mapUtils.getExtent();
+    const viewCenter = mapUtils.getExtent(view);
 
     const sendData = {
       listId: selectedList.id,

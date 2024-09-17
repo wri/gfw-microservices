@@ -1,8 +1,9 @@
-import { AlertsDataService } from './alerts.data.service';
-
+import { ConfigModule, ConfigService } from '@nestjs/config';
+import { Test, TestingModule } from '@nestjs/testing';
 import axios from 'axios';
 
-// Mock jest and set the type
+import { AlertsDataService } from './alerts.data.service';
+
 jest.mock('axios');
 const mockedAxios = axios as jest.Mocked<typeof axios>;
 
@@ -14,9 +15,23 @@ const filters = {
 
 describe('[AlertsDataService] Get number of pages', () => {
   let service: AlertsDataService;
+  let configService: ConfigService;
 
-  beforeEach(() => {
-    service = new AlertsDataService();
+  process.env.MSSQL_DATABASE = 'test-db';
+
+  beforeEach(async () => {
+    const module: TestingModule = await Test.createTestingModule({
+      imports: [
+        ConfigModule.forRoot({
+          envFilePath: ['.env', '.env.production'],
+          isGlobal: true,
+        }),
+      ],
+      providers: [AlertsDataService],
+    }).compile();
+
+    service = module.get<AlertsDataService>(AlertsDataService);
+    configService = module.get<ConfigService>(ConfigService);
   });
 
   afterEach(() => {
@@ -56,7 +71,7 @@ describe('[AlertsDataService] Get number of pages', () => {
   });
 
   it('When count return 0', async () => {
-    service = new AlertsDataService();
+    service = new AlertsDataService(configService);
     jest.spyOn(mockedAxios, 'get').mockResolvedValueOnce({ data: 0 });
 
     const value = await service.getNumberOfPages(filters);
@@ -73,8 +88,18 @@ describe('[AlertsDataService] Get number of pages', () => {
 describe('[AnalysisAfiDataService] Get data', () => {
   let service: AlertsDataService;
 
-  beforeEach(() => {
-    service = new AlertsDataService();
+  beforeEach(async () => {
+    const module: TestingModule = await Test.createTestingModule({
+      imports: [
+        ConfigModule.forRoot({
+          envFilePath: ['.env', '.env.production'],
+          isGlobal: true,
+        }),
+      ],
+      providers: [AlertsDataService],
+    }).compile();
+
+    service = module.get<AlertsDataService>(AlertsDataService);
   });
 
   afterEach(() => {

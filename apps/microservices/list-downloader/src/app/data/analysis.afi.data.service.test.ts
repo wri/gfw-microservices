@@ -1,8 +1,9 @@
-import { AnalysisAfiDataService } from './analysis.afi.data.service';
-
+import { ConfigModule } from '@nestjs/config';
+import { Test, TestingModule } from '@nestjs/testing';
 import axios from 'axios';
 
-// Mock jest and set the type
+import { AnalysisAfiDataService } from './analysis.afi.data.service';
+
 jest.mock('axios');
 const mockedAxios = axios as jest.Mocked<typeof axios>;
 
@@ -15,8 +16,19 @@ const filters = {
 describe('[AnalysisAfiDataService] Get number of pages', () => {
   let service: AnalysisAfiDataService;
 
-  beforeEach(() => {
-    service = new AnalysisAfiDataService();
+  beforeEach(async () => {
+    const module: TestingModule = await Test.createTestingModule({
+      imports: [
+        ConfigModule.forRoot({
+          envFilePath: ['.env', '.env.production'],
+          isGlobal: true,
+        }),
+      ],
+      providers: [AnalysisAfiDataService],
+    }).compile();
+
+    service = module.get<AnalysisAfiDataService>(AnalysisAfiDataService);
+
     jest.spyOn(mockedAxios, 'get').mockResolvedValueOnce({ data: { pages: 1 } });
   });
 
@@ -46,8 +58,19 @@ describe('[AnalysisAfiDataService] Get number of pages', () => {
 describe('[AnalysisAfiDataService] Get data', () => {
   let service: AnalysisAfiDataService;
 
-  beforeEach(() => {
-    service = new AnalysisAfiDataService();
+  beforeEach(async () => {
+    const module: TestingModule = await Test.createTestingModule({
+      imports: [
+        ConfigModule.forRoot({
+          envFilePath: ['.env', '.env.production'],
+          isGlobal: true,
+        }),
+      ],
+      providers: [AnalysisAfiDataService],
+    }).compile();
+
+    service = module.get<AnalysisAfiDataService>(AnalysisAfiDataService);
+
     jest.spyOn(mockedAxios, 'get').mockResolvedValueOnce({ data: { pages: 1 } });
   });
 

@@ -1,11 +1,12 @@
-// health.module.ts
 import { Module } from '@nestjs/common';
 import { TerminusModule } from '@nestjs/terminus';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { HealthController } from './health.controller';
+import { ConfigModule, ConfigService } from '@nestjs/config/dist';
 import { DataSourceOptions } from 'typeorm';
-import { ConfigModule } from '@nestjs/config/dist';
+
+import { HealthController } from './health.controller';
 import { GitController } from './git.controller';
+import { ServerConfigType } from '../../validators/server-config';
 
 const envModule = ConfigModule.forRoot({
   isGlobal: true,
@@ -16,20 +17,20 @@ const envModule = ConfigModule.forRoot({
     envModule,
     TerminusModule,
     TypeOrmModule.forRootAsync({
-      useFactory: () => {
-        const dbConfig: DataSourceOptions = {
+      inject: [ConfigService],
+      useFactory: (configService: ConfigService<ServerConfigType, true>) => {
+        return {
           type: 'mssql',
-          host: process.env.MSSQL_HOSTNAME,
-          port: parseInt(process.env.MSSQL_PORT, 10),
-          username: process.env.MSSQL_USERNAME,
-          password: process.env.MSSQL_PASSWORD,
-          database: process.env.MSSQL_DATABASE,
+          host: configService.get('MSSQL_HOSTNAME', { infer: true }),
+          port: configService.get('MSSQL_PORT', { infer: true }),
+          username: configService.get('MSSQL_USERNAME', { infer: true }),
+          password: configService.get('MSSQL_PASSWORD', { infer: true }),
+          database: configService.get('MSSQL_DATABASE', { infer: true }),
           entities: [],
           extra: {
             trustServerCertificate: true,
           },
-        };
-        return dbConfig;
+        } as DataSourceOptions;
       },
     }),
   ],

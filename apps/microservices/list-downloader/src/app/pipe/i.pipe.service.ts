@@ -1,16 +1,17 @@
 import { Inject, Logger } from '@nestjs/common';
 import { EmailService, S3Service } from '@wri-monorepos/aws';
+import { PassThrough } from 'stream';
+import { finished } from 'stream/promises';
+import * as moment from 'moment';
 
 import {
   BasicFieldsFileRequest,
   setS3UrlAndExpirationDate,
   toSqlParameter,
 } from '@wri-monorepos/sql';
-import { PassThrough } from 'stream';
-import { finished } from 'stream/promises';
-import * as moment from 'moment';
-
 import { SQLUtils } from '@wri-monorepos/sql';
+import { ConfigService } from '@nestjs/config';
+import { ServerConfigType } from '../../validators/server-config';
 
 export abstract class IPipeService {
   private readonly loggerPipe = new Logger(IPipeService.name);
@@ -23,6 +24,9 @@ export abstract class IPipeService {
   @Inject(S3Service)
   private readonly s3Service: S3Service;
 
+  @Inject(ConfigService)
+  readonly configService: ConfigService<ServerConfigType, true>;
+
   abstract start(filters: BasicFieldsFileRequest, table?: string, fileSuffix?: string);
   abstract process(data, filters: BasicFieldsFileRequest);
   abstract finish(filters: BasicFieldsFileRequest);
@@ -31,7 +35,7 @@ export abstract class IPipeService {
     const { listName, userEmail } = filters;
     if (userEmail) {
       await this.emailService.sendEmail<{ listName: string }>(
-        process.env.SES_SENDER_EMAIL,
+        this.configService.get('SES_SENDER_EMAIL', { infer: true }),
         [userEmail],
         `[GFW-PRO] File Generation for list ${listName}`,
         'start',
@@ -47,7 +51,7 @@ export abstract class IPipeService {
         listName: string;
         location: string;
       }>(
-        process.env.SES_SENDER_EMAIL,
+        this.configService.get('SES_SENDER_EMAIL', { infer: true }),
         [userEmail],
         `[GFW-PRO] File Generation for list ${listName}`,
         'finish',
@@ -65,7 +69,7 @@ export abstract class IPipeService {
       await this.emailService.sendEmail<{
         listName: string;
       }>(
-        process.env.SES_SENDER_EMAIL,
+        this.configService.get('SES_SENDER_EMAIL', { infer: true }),
         [userEmail],
         `[GFW-PRO] File Generation for list ${listName}`,
         'error',
@@ -78,8 +82,17 @@ export abstract class IPipeService {
 
   public async uploadFileToS3(filters: BasicFieldsFileRequest) {
     const { key } = filters;
-    await this.s3Service.sendFiletoS3(key, 'zip', 'application/zip', process.env.AWS_TMP_BUCKET);
-    return await this.s3Service.getFileSignedUrl(key, 'zip', process.env.AWS_TMP_BUCKET);
+    await this.s3Service.sendFiletoS3(
+      key,
+      'zip',
+      'application/zip',
+      this.configService.get('AWS_TMP_BUCKET', { infer: true })
+    );
+    return await this.s3Service.getFileSignedUrl(
+      key,
+      'zip',
+      this.configService.get('AWS_TMP_BUCKET', { infer: true })
+    );
   }
 
   async saveS3UrlAtDatabase(filters: BasicFieldsFileRequest, location: string) {

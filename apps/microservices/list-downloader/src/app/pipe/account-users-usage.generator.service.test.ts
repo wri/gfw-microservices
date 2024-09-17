@@ -1,7 +1,9 @@
 import { Test, TestingModule } from '@nestjs/testing';
+import { ConfigModule } from '@nestjs/config';
+import * as tsMockito from 'ts-mockito';
+
 import { AccountUsersAnalysisUsageFileService } from './account-users-usage.generator.service';
 import { EmailService, S3Service } from '@wri-monorepos/aws';
-import * as tsMockito from 'ts-mockito';
 
 describe('AccountUsersAnalysisUsageFileGenerator', () => {
   let fileGenerator: AccountUsersAnalysisUsageFileService;
@@ -12,6 +14,12 @@ describe('AccountUsersAnalysisUsageFileGenerator', () => {
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
+      imports: [
+        ConfigModule.forRoot({
+          envFilePath: ['.env', '.env.production'],
+          isGlobal: true,
+        }),
+      ],
       providers: [
         AccountUsersAnalysisUsageFileService,
         { provide: EmailService, useValue: tsMockito.mock(EmailService) },

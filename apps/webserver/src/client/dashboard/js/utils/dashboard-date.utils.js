@@ -261,3 +261,23 @@ export function getSelectedTimeframeStartEndGroupings(selectedTimeframe) {
 
   return selectedTimeframe_StartEndGroupings;
 }
+
+export function getGladByTimeFrame(selectedTimeframe, feature) {
+  const gladFunctions = {
+    WEEK: getGladDaily,
+    MONTH: getGladMonthlyMonth,
+    QUARTER: getGladMonthlyQuarter,
+    YEAR: getGladMonthlyYear,
+  }
+
+  const gladAlerts =
+    selectedTimeframe === 'WEEK'
+      ? feature.properties.glad_alerts_daily
+      : feature.properties.glad_alerts_monthly;
+
+  if (gladAlerts?.length > 0) {
+    return gladFunctions[selectedTimeframe](feature);
+  }
+
+  return []
+};

@@ -11,6 +11,7 @@ import {
   getGladMonthlyYear,
   getGladMonthlyMonth,
   getViirsGrouped,
+  getGladByTimeFrame,
 } from './dashboard-date.utils';
 import axios from 'axios';
 
@@ -142,28 +143,7 @@ function applyTimeframeFilter(geojson, selectedTimeframe) {
 
   for (let idx = 0; idx < geojson.features.length; idx++) {
     const feature = geojson.features[idx];
-    let groupedGlad = [];
-
-    // Week timeframe
-    if (selectedTimeframe === 'WEEK' && feature.properties.glad_alerts_daily?.length > 0) {
-      groupedGlad = getGladDaily(feature);
-    }
-
-    // Month timeframe
-    if (selectedTimeframe === 'MONTH' && feature.properties.glad_alerts_monthly?.length > 0) {
-      groupedGlad = getGladMonthlyMonth(feature);
-    }
-
-    // Quarter timeframe
-    if (selectedTimeframe === 'QUARTER' && feature.properties.glad_alerts_monthly?.length > 0) {
-      groupedGlad = getGladMonthlyQuarter(feature);
-    }
-
-    // Year timeframe
-    if (selectedTimeframe === 'YEAR' && feature.properties.glad_alerts_monthly?.length > 0) {
-      groupedGlad = getGladMonthlyYear(feature);
-    }
-
+    const groupedGlad = getGladByTimeFrame(selectedTimeframe, feature);
     const groupedViirs = getViirsGrouped(feature, momentStart, momentEnd, propertyFilter);
 
     delete groupedGlad.delete;
@@ -185,23 +165,7 @@ function applyTimeframeFilterRemix(geojson, selectedTimeframe) {
   const placeholderArray = [];
   for (let idx = 0; idx < geojson.features.length; idx++) {
     const feature = geojson.features[idx];
-    let groupedGlad = [];
-    if (selectedTimeframe === 'WEEK' && feature.properties.glad_alerts_daily?.length > 0) {
-      groupedGlad = getGladDaily(feature);
-    }
-
-    if (selectedTimeframe === 'MONTH' && feature.properties.glad_alerts_monthly?.length > 0) {
-      groupedGlad = getGladMonthlyMonth(feature);
-    }
-
-    if (selectedTimeframe === 'QUARTER' && feature.properties.glad_alerts_monthly?.length > 0) {
-      groupedGlad = getGladMonthlyQuarter(feature);
-    }
-
-    if (selectedTimeframe === 'YEAR' && feature.properties.glad_alerts_monthly?.length > 0) {
-      groupedGlad = getGladMonthlyYear(feature);
-    }
-
+    const groupedGlad = getGladByTimeFrame(selectedTimeframe, feature);
     const groupedViirs = getViirsGrouped(feature, momentStart, momentEnd, propertyFilter);
 
     delete groupedGlad.delete;

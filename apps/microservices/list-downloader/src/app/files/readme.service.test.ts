@@ -1,13 +1,15 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { ReadmeService } from './readme.service';
+import { ConfigModule } from '@nestjs/config';
 import * as fs from 'fs';
 import * as path from 'path';
+
 import {
   AlertFieldsFileRequest,
   AlertsTimeframes,
   BasicFieldsFileRequest,
   ListFieldsFileRequest,
 } from '@wri-monorepos/sql';
+import { ReadmeService } from './readme.service';
 
 jest.mock('fs');
 jest.mock('path', () => ({
@@ -21,6 +23,12 @@ describe('ReadmeService', () => {
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
+      imports: [
+        ConfigModule.forRoot({
+          envFilePath: ['.env', '.env.production'],
+          isGlobal: true,
+        }),
+      ],
       providers: [ReadmeService],
     }).compile();
 

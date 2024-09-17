@@ -1,20 +1,29 @@
 import { Injectable, Logger } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
+import axios from 'axios';
+
 import {
   AnalysisDataCountReturnType,
   AnalysisDataType,
   ListFieldsFileRequest,
 } from '@wri-monorepos/sql';
 import { IInputData } from './i.input.data';
-import axios from 'axios';
+import { ServerConfigType } from '../../validators/server-config';
 
 @Injectable()
 export class AnalysisDataService extends IInputData {
   private readonly logger = new Logger(AnalysisDataService.name);
 
+  constructor(private readonly configService: ConfigService<ServerConfigType, true>) {
+    super();
+  }
+
   async getNumberOfPages(filters: ListFieldsFileRequest): Promise<number> {
     const { listId } = filters;
     const queryString = this.convertToQueryFields(filters);
-    const url = `${process.env.LIST_PROCESSING_MICROSERVICE_URL}/pages-paginated-list-data?${queryString}`;
+    const url = `${this.configService.get(
+      'LIST_PROCESSING_MICROSERVICE_URL'
+    )}/pages-paginated-list-data?${queryString}`;
     try {
       const { data } = await axios.get(encodeURI(url));
       const { numberOfPages } = data as AnalysisDataCountReturnType;
@@ -28,7 +37,9 @@ export class AnalysisDataService extends IInputData {
   async getDataPaginated(filter: ListFieldsFileRequest): Promise<AnalysisDataType[]> {
     const { listId, page } = filter;
     const queryString = this.convertToQueryFields(filter);
-    const url = `${process.env.LIST_PROCESSING_MICROSERVICE_URL}/paginated-list-data?${queryString}`;
+    const url = `${this.configService.get(
+      'LIST_PROCESSING_MICROSERVICE_URL'
+    )}/paginated-list-data?${queryString}`;
     try {
       const { data } = await axios.get(encodeURI(url));
       return data as AnalysisDataType[];

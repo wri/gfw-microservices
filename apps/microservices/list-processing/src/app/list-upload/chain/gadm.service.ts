@@ -59,7 +59,7 @@ const invokeLambda = async (FunctionName: string, payload: object = {}) => {
     Payload: Buffer.from(payloadString), // Ensure payload is a Buffer
     InvocationType: InvocationType.RequestResponse, // Explicitly use the enum
   };
-  console.log('FunctionName', functionName);
+  Logger.log('FunctionName', functionName);
 
   const command = new InvokeCommand(parameters);
   const { Payload: LambdaPayload } = await client.send(command);
@@ -88,7 +88,7 @@ const getGADM = (geojson) => {
         const { bucket, key, errorMessage } = JSON.parse(Payload);
 
         if (errorMessage) {
-          console.log(errorMessage);
+          Logger.log(errorMessage);
           throw new Error('Has error property');
         }
 
@@ -100,7 +100,7 @@ const getGADM = (geojson) => {
         resolve(s3Object);
       })
       .catch((e) => {
-        console.log(e);
+        Logger.log(e);
         reject(e);
       });
   });

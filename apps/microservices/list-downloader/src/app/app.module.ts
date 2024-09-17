@@ -1,7 +1,12 @@
-import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
+import { Module } from '@nestjs/common';
+import { serverConfigSchema } from '../validators/server-config';
 
+// This needs to be at the beginning of the file to ensure that the '.env' file
+// is loaded into process.env before any code reads process.env
 const envModule = ConfigModule.forRoot({
+  envFilePath: ['.env', '.env.production'],
+  validate: (env) => serverConfigSchema.parse(env),
   isGlobal: true,
 });
 

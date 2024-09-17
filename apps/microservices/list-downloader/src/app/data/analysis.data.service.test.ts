@@ -1,7 +1,9 @@
+import { ConfigModule } from '@nestjs/config';
+import { Test, TestingModule } from '@nestjs/testing';
 import axios from 'axios';
+
 import { AnalysisDataService } from './analysis.data.service';
 
-// Mock jest and set the type
 jest.mock('axios');
 const mockedAxios = axios as jest.Mocked<typeof axios>;
 
@@ -14,8 +16,19 @@ describe('[AnalysisDataService] Get Data basic query param', () => {
     rowsPerPage: 10,
   };
 
-  beforeEach(() => {
-    service = new AnalysisDataService();
+  beforeEach(async () => {
+    const module: TestingModule = await Test.createTestingModule({
+      imports: [
+        ConfigModule.forRoot({
+          envFilePath: ['.env', '.env.production'],
+          isGlobal: true,
+        }),
+      ],
+      providers: [AnalysisDataService],
+    }).compile();
+
+    service = module.get<AnalysisDataService>(AnalysisDataService);
+
     jest.spyOn(mockedAxios, 'get').mockResolvedValueOnce({ data: { numberOfPages: 10 } });
   });
 
@@ -68,8 +81,19 @@ describe('[AnalysisDataService] Get Data all query param', () => {
     searchString: 'test',
   };
 
-  beforeEach(() => {
-    service = new AnalysisDataService();
+  beforeEach(async () => {
+    const module: TestingModule = await Test.createTestingModule({
+      imports: [
+        ConfigModule.forRoot({
+          envFilePath: ['.env', '.env.production'],
+          isGlobal: true,
+        }),
+      ],
+      providers: [AnalysisDataService],
+    }).compile();
+
+    service = module.get<AnalysisDataService>(AnalysisDataService);
+
     jest.spyOn(mockedAxios, 'get').mockResolvedValueOnce({ data: { numberOfPages: 10 } });
   });
 

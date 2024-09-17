@@ -100,7 +100,7 @@ class Locations extends Component {
   };
 
   getGeomFromMap = (isAddingLocationFromMap) => {
-    const { gfwData, mapData, drawData } = this.state;
+    const { gfwData, mapData, drawData, locationName } = this.state;
 
     // Handle the case where mapData is present
     if (mapData && mapData.listID && mapData.locationID) {
@@ -116,7 +116,7 @@ class Locations extends Component {
 
     // Handle the case where drawData is present
     if (drawData) {
-      this.handleDrawData();
+      this.handleDrawData(drawData, locationName);
       return;
     }
 
@@ -180,6 +180,8 @@ class Locations extends Component {
       };
 
       this.setState({ drawnGeom: mapData, isLoading: false });
+      store.dispatch(changeView('add'));
+      this.props.history.push('/add');
     } else {
       console.warn('Did not get draw data to use on add location page');
       this.setState({ isLoading: false });

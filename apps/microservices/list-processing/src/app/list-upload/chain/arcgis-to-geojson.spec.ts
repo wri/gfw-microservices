@@ -50,7 +50,7 @@ describe('Geometry Utils', () => {
     expect(closeRing(ring)).toEqual(ring);
   });
 
-  test('ringIsClockwise should return true for a clockwise ring', () => {
+  test('ringIsClockwise should return false for a counter-clockwise ring', () => {
     const ring: Ring = [
       [0, 0],
       [1, 0],
@@ -61,7 +61,7 @@ describe('Geometry Utils', () => {
     expect(ringIsClockwise(ring)).toBe(false); // This should be false for the given points
   });
 
-  test('ringIsClockwise should return false for a counter-clockwise ring', () => {
+  test('ringIsClockwise should return true for a clockwise ring', () => {
     const ring: Ring = [
       [0, 0],
       [0, 1],

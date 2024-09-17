@@ -1,12 +1,14 @@
-import { ListGeneratorService } from './list.generator.service';
 import { Test, TestingModule } from '@nestjs/testing';
+import { ConfigModule } from '@nestjs/config';
+import * as tsMockito from 'ts-mockito';
+
+import { UspGetListAnalysis } from '@wri-monorepos/sql';
 import { InputService } from '../files/input.service';
 import { ShapefileService } from '../files/shapefile.service';
 import { DashboardService } from './dashboard.service';
 import { ResultService } from '../files/result.service';
-import { UspGetListAnalysis } from '@wri-monorepos/sql';
 import { AnalysisDataService } from '../data/analysis.data.service';
-import * as tsMockito from 'ts-mockito';
+import { ListGeneratorService } from './list.generator.service';
 
 describe('ListGeneratorServiceTest', () => {
   let analysisDataService: AnalysisDataService;
@@ -17,6 +19,12 @@ describe('ListGeneratorServiceTest', () => {
     process.env.MSSQL_DATABASE = 'test-db';
 
     const module: TestingModule = await Test.createTestingModule({
+      imports: [
+        ConfigModule.forRoot({
+          envFilePath: ['.env', '.env.production'],
+          isGlobal: true,
+        }),
+      ],
       providers: [
         ListGeneratorService,
         { provide: InputService, useValue: tsMockito.mock(InputService) },

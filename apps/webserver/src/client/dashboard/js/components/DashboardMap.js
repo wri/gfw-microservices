@@ -25,7 +25,7 @@ import SvgLinearGradients from '../../../common/js/components/SvgLinearGradients
 import mapUtils, { getAlertsTotal } from '../utils/mapUtils';
 
 // Configs
-import { dashboardPage, DATA_API_URL } from '../../../common/js/config';
+import { dashboardPage } from '../../../common/js/config';
 
 // Styles
 import '../../css/_dashboardMap.scss';
@@ -159,11 +159,11 @@ export default class DashboardMap extends Component {
     });
   };
 
-  showLegendTooltip = (evt) => {
+  showLegendTooltip = () => {
     this.setState({ showLegendTooltip: true });
   };
 
-  hideLegendTooltip = (evt) => {
+  hideLegendTooltip = () => {
     this.setState({ showLegendTooltip: false });
   };
 
@@ -177,7 +177,7 @@ export default class DashboardMap extends Component {
 
   render() {
     const { mapTitle, locationFilters, zoomLevelTotal } = this.props;
-    const { showLegendTooltip, popoverLoading } = this.state;
+    const { showLegendTooltip } = this.state;
 
     return (
       <div className="dashboard-map-legend__container">

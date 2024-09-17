@@ -188,7 +188,8 @@ const retrieveDefaultValue = (templateData, templateDropdowns, adminData) => {
         t.template_datum_field_name.includes(admin.destination)
     );
     if (matchingTemplate) {
-      let adminVal = adminData?.matchingTemplate?.origin ? adminData[matchingTemplate.origin] : '';
+      let adminVal = adminData[matchingTemplate.origin] ?? '';
+
       if (t.ui_type === 'multi-dropdown') {
         const multiDropDownVal = [];
         const templateDropdownsMatch = templateDropdowns.filter(

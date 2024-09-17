@@ -41,7 +41,7 @@ export const getAllCommits = async () => ({
     process.env.NODE_ENV === 'development' || process.env.NODE_ENV === 'test'
       ? 'dev'
       : process.env.LATEST_COMMIT,
-  LD: await getCommitForSerivce(process.env.LIST_DOWNLOADER_URL),
+  LD: await getCommitForSerivce(process.env.LD_MICROSERVICE_URL),
   LP: await getCommitForSerivce(process.env.LISTS_MICROSERVICE_URL),
   EAPI: await getCommitForSerivce(process.env.EAPI_MICROSERVICE_URL),
 });

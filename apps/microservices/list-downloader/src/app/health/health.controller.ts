@@ -1,18 +1,21 @@
-// health.controller.ts
 import { Controller, Get } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
+
 import {
   HealthCheck,
   HealthCheckService,
   HttpHealthIndicator,
   TypeOrmHealthIndicator,
 } from '@nestjs/terminus';
+import { ServerConfigType } from '../../validators/server-config';
 
 @Controller('HealthCheck')
 export class HealthController {
   constructor(
     private health: HealthCheckService,
     private db: TypeOrmHealthIndicator,
-    private http: HttpHealthIndicator
+    private http: HttpHealthIndicator,
+    private readonly configService: ConfigService<ServerConfigType, true>
   ) {}
 
   @Get()
@@ -21,7 +24,12 @@ export class HealthController {
     return this.health.check([
       async () => this.db.pingCheck('database'),
       async () =>
-        this.http.pingCheck('LP', `${process.env.LIST_PROCESSING_MICROSERVICE_URL}/HealthCheck`),
+        this.http.pingCheck(
+          'LP',
+          `${this.configService.get('LIST_PROCESSING_MICROSERVICE_URL', {
+            infer: true,
+          })}/HealthCheck`
+        ),
     ]);
   }
 }

@@ -164,7 +164,7 @@ export function getGladMonthlyYear(feature) {
  * @param {moment.unitOfTime.StartOf} propertyFilter - Property Filter (e.g. 'day' | 'week' | 'month')
  * @return {Object | 'delete'} - List of VIIRS alerts
  */
-export function getViirsGrouped(feature, momentStart, momentEnd, propertyFilter) {
+export function getViirsGrouped(feature, momentStart, momentEnd) {
   return groupBy(feature.properties.viirs_alerts_daily, (alert) => {
     const alertMoment = moment(alert.day);
     if (alertMoment.isBefore(momentStart) || alertMoment.isAfter(momentEnd)) {
@@ -260,4 +260,24 @@ export function getSelectedTimeframeStartEndGroupings(selectedTimeframe) {
   }
 
   return selectedTimeframe_StartEndGroupings;
+}
+
+export function getGladByTimeFrame(selectedTimeframe, feature) {
+  const gladFunctions = {
+    WEEK: getGladDaily,
+    MONTH: getGladMonthlyMonth,
+    QUARTER: getGladMonthlyQuarter,
+    YEAR: getGladMonthlyYear,
+  };
+
+  const gladAlerts =
+    selectedTimeframe === 'WEEK'
+      ? feature.properties.glad_alerts_daily
+      : feature.properties.glad_alerts_monthly;
+
+  if (gladAlerts?.length > 0) {
+    return gladFunctions[selectedTimeframe](feature);
+  }
+
+  return [];
 }

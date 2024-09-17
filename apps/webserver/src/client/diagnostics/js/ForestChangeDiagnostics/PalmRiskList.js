@@ -161,7 +161,7 @@ export default class PalmRiskList extends Component {
 
   renderRisks = (mill, i) => {
     const { viewBy } = this.state;
-    const millRisks = riskValues.map((config, j) => {
+    const millRisks = riskValues.map((config) => {
       let value;
       let label;
       if (config.type === 'yearly') {

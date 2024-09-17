@@ -1,3 +1,4 @@
+/* global userLists, locationCount, accessLevel, subscription_status_id, gfwLists, userSharedLists, fromMap, userInfo */
 import React from 'react';
 import { render } from 'react-dom';
 import { Provider } from 'react-redux';
@@ -15,6 +16,7 @@ import store from './js/store';
 // this issue will not be fixed for material ui v<1 since v1 is a complete rebuild
 // and addresses this.
 // more info here https://github.com/mui-org/material-ui/issues/8040
+
 import '../common/popoverPreRender';
 
 lightBaseTheme.fontFamily = 'Fira Sans, sans-serif';

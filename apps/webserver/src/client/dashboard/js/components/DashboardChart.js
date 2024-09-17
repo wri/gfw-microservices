@@ -51,7 +51,7 @@ export default class DashboardChart extends Component {
       },
     ];
 
-    const chart = new Highcharts.chart({
+    return Highcharts.chart({
       chart: {
         renderTo: node,
         type: 'column',
@@ -118,8 +118,6 @@ export default class DashboardChart extends Component {
         enabled: false,
       },
     });
-
-    return chart;
   }
 
   getChartSeries() {

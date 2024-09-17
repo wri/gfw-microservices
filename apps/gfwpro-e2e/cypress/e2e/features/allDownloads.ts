@@ -24,8 +24,8 @@ describe('Locations View', () => {
     locationPage.clickOnMoreOptionsListOK();
     expect(locationPage.elements.downloadListBtn().should('be.visible'));
     locationPage.clickOnDownloadList();
-    expect(listDetailPage.elements.downloadCSVOptionBtn().should('be.visible'));
-    expect(listDetailPage.elements.downloadShapefileptionBtn().should('be.visible'));
+    expect(locationPage.elements.downloadCSVOptionBtn().should('be.visible'));
+    expect(locationPage.elements.downloadShapefileptionBtn().should('be.visible'));
 
     //Download CSV
     listDetailPage.clickOnCSVOption();
@@ -44,12 +44,12 @@ describe('Locations View', () => {
 
   Then('I test download list into list details', () => {
     locationPage.clickOnOptionListOK();
-    listDetailPage.clickOnCheckBoxSelectAll();
+    listDetailPage.checkOnCheckBoxSelectAll();
     expect(listDetailPage.elements.downloadBtn().should('be.visible'));
     listDetailPage.clickOnDownload();
-    expect(listDetailPage.elements.downloadCSVOptionBtn().should('be.visible'));
-    expect(listDetailPage.elements.downloadResultsOptionBtn().should('be.visible'));
-    expect(listDetailPage.elements.downloadShapefileptionBtn().should('be.visible'));
+    expect(listDetailPage.elements.downloadCSVOptionListDetail().should('be.visible'));
+    expect(listDetailPage.elements.downloadResultsOptionListDetail().should('be.visible'));
+    expect(listDetailPage.elements.downloadShapefileptionListDetail().should('be.visible'));
     //Download CSV
     listDetailPage.clickOnCSVOption();
     expect(listDetailPage.elements.titleAlertDownloadList().should('be.visible'));

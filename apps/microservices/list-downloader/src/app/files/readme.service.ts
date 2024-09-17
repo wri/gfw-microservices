@@ -1,12 +1,15 @@
 import { Injectable, Logger, Scope } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
+import * as fs from 'fs';
+import * as path from 'path';
+
 import {
   AlertFieldsFileRequest,
   AlertsTimeframes,
   BasicFieldsFileRequest,
   ListFieldsFileRequest,
 } from '@wri-monorepos/sql';
-import * as fs from 'fs';
-import * as path from 'path';
+import { ServerConfigType } from '../../validators/server-config';
 
 @Injectable({
   scope: Scope.REQUEST,
@@ -14,12 +17,14 @@ import * as path from 'path';
 export class ReadmeService {
   private readonly logger = new Logger(ReadmeService.name);
 
+  constructor(private readonly configService: ConfigService<ServerConfigType, true>) {}
+
   afiReadmeData() {
     return 'afi_readme.csv';
   }
 
   getSourceDir(fileToCopy: string): string {
-    if (process.env.NODE_ENV === 'test') {
+    if (this.configService.get('NODE_ENV', { infer: true }) === 'test') {
       return '/mock/source/dir/' + fileToCopy;
     } else {
       return path.resolve(__dirname, 'assets/readme', fileToCopy);
@@ -27,7 +32,7 @@ export class ReadmeService {
   }
 
   getDestDir(key: string): string {
-    if (process.env.NODE_ENV === 'test') {
+    if (this.configService.get('NODE_ENV', { infer: true }) === 'test') {
       return `/tmp/wri-${key}/README.csv`;
     } else {
       return path.join('/tmp', `wri-${key}`, 'README.csv');

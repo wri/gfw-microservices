@@ -1,22 +1,30 @@
 import { Logger, Injectable } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
+
+import * as csvWriter from 'csv-write-stream';
+import * as fs from 'fs';
+import * as path from 'path';
+
 import { EmailService, S3Service } from '@wri-monorepos/aws';
-import { IFileGenerator } from './i.file.generator';
 import {
   AccountUsersUsageRequest,
   OrganizationUsersAnalysisUsageExport,
   getAccountUsersAnalysisUsageExport,
 } from '@wri-monorepos/sql';
+import { IFileGenerator } from './i.file.generator';
 import { ACCOUNT_USERS_USAGE_CSV_HEADER } from '../shared/constants';
 import { analysisTypesOptions } from '@wri-monorepos/constants';
-import * as csvWriter from 'csv-write-stream';
-import * as fs from 'fs';
-import * as path from 'path';
+import { ServerConfigType } from '../../validators/server-config';
 
 @Injectable()
 export class AccountUsersAnalysisUsageFileService extends IFileGenerator {
   private readonly logger = new Logger(AccountUsersAnalysisUsageFileService.name);
 
-  constructor(private readonly emailService: EmailService, private readonly s3Service: S3Service) {
+  constructor(
+    private readonly emailService: EmailService,
+    private readonly s3Service: S3Service,
+    private readonly configService: ConfigService<ServerConfigType, true>
+  ) {
     super();
   }
 
@@ -55,7 +63,7 @@ export class AccountUsersAnalysisUsageFileService extends IFileGenerator {
 
     try {
       await this.emailService.sendEmail<unknown>(
-        process.env.SES_SENDER_EMAIL,
+        this.configService.get('SES_SENDER_EMAIL', { infer: true }),
         [receivers],
         emailSubject,
         'error',
@@ -79,7 +87,7 @@ export class AccountUsersAnalysisUsageFileService extends IFileGenerator {
 
     try {
       await this.emailService.sendEmail<{ location: string }>(
-        process.env.SES_SENDER_EMAIL,
+        this.configService.get('SES_SENDER_EMAIL', { infer: true }),
         [receivers],
         emailSubject,
         'accountUsersUsageExportSuccess',
@@ -185,12 +193,12 @@ export class AccountUsersAnalysisUsageFileService extends IFileGenerator {
         fileName.replace('/tmp/', ''),
         fileExtension,
         'text/csv',
-        process.env.AWS_TMP_BUCKET
+        this.configService.get('AWS_TMP_BUCKET', { infer: true })
       );
       return await this.s3Service.getFileSignedUrl(
         fileName.replace('/tmp/', ''),
         fileExtension,
-        process.env.AWS_TMP_BUCKET
+        this.configService.get('AWS_TMP_BUCKET', { infer: true })
       );
     } catch (error) {
       throw new Error(`[uploadFileToS3] Failed to upload file to bucket. ${error.message}`);

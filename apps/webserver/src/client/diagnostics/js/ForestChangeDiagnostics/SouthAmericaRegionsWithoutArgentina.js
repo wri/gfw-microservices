@@ -28,7 +28,7 @@ const HARVEST_YEAR = END_YEAR - 1;
 const YEARS_RANGE = _range(START_YEAR, END_YEAR + 1);
 let isMounted = false;
 const transifex = Transifex.live.translateText;
-export default class SouthAmericaRegions extends Component {
+export default class SouthAmericaRegionsWithoutArgentina extends Component {
   constructor(props) {
     super(props);
     this.state = {
@@ -277,7 +277,7 @@ export default class SouthAmericaRegions extends Component {
 
       series[0].data = serie;
 
-      const chart = new Highcharts.chart({
+      return Highcharts.chart({
         chart: {
           renderTo: ref,
           type: 'pie',
@@ -326,7 +326,6 @@ export default class SouthAmericaRegions extends Component {
           enabled: false,
         },
       });
-      return chart;
     }
     return null;
   };
@@ -493,7 +492,7 @@ export default class SouthAmericaRegions extends Component {
     }
     const chartSeries = filteredSeries || series;
 
-    const chart = new Highcharts.chart({
+    return Highcharts.chart({
       chart: {
         marginBottom: 100,
         renderTo: el,
@@ -551,7 +550,6 @@ export default class SouthAmericaRegions extends Component {
         enabled: false,
       },
     });
-    return chart;
   };
 
   handlePrimaryForestCheck = () => {

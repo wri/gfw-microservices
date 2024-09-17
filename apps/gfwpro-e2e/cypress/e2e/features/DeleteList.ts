@@ -6,8 +6,8 @@ import * as User from '../../app-api/User';
 describe('Delete List', () => {
   const locationsPage = new LocationsPage();
   const listDetailsPage = new ListDetailsPage();
-
-  const listToDelete = [`testregresiondeletelist-${Date.now()}`];
+  const timestamp = Date.now();
+  const listToDelete = [`testregressiondeletelist${timestamp}`];
 
   When('I login in the landing page', () => {
     User.login();
@@ -15,7 +15,7 @@ describe('Delete List', () => {
   });
 
   When('I navigate to a list details page', () => {
-    locationsPage.clickOnLocationsList('AAT Argentina Polygons Generic');
+    locationsPage.clickOnLocationsList('AAT Argentina Points Generic');
   });
 
   Then('I should be able to create a list as a copy and save as draft', () => {
@@ -23,7 +23,7 @@ describe('Delete List', () => {
   });
 
   Then('I should see the created list in the locations page', () => {
-    cy.visit('/locations');
+    cy.visit('/locations').reload();
     locationsPage.verifyLists(listToDelete, true);
   });
 
@@ -32,7 +32,7 @@ describe('Delete List', () => {
   });
 
   Then('I should verify the list is deleted from the locations page', () => {
-    cy.visit('/locations');
+    cy.visit('/locations').reload();
     locationsPage.verifyLists(listToDelete, false);
   });
 });

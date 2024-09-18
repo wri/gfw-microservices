@@ -1,3 +1,9 @@
+/*
+ ** TODO:
+ **  We should not be using or increment this file
+ **  This file is a copy of the file from client/common/js/utils/arcgis-to-geojson.js
+ **  JIRA CARD - https://gfw.atlassian.net/browse/GPV-3618
+ */
 export type Point = [number, number];
 export type Ring = Point[];
 export type Polygon = Ring[];

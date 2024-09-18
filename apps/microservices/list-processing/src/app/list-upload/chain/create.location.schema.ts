@@ -36,7 +36,9 @@ export class CreateLocationSchema extends AbstractHandler<ChainType> {
     try {
       return await connection.executeQuery<T>(procedureName, parameters);
     } catch (error) {
-      throw new Error(`Failed to execute ${procedureName}: ${error.message}`);
+      throw new Error(
+        `Failed to execute ${procedureName}: ${error.stack || error.message || error}`
+      );
     }
   }
 

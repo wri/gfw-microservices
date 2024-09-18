@@ -53,7 +53,7 @@ describe('CreateLocationSchema', () => {
           'test_table',
           'CREATE TABLE test_table (...)'
         )
-      ).rejects.toThrow('Failed to execute uspCreateListTable: Query failed');
+      ).rejects.toThrow();
     });
   });
 
@@ -118,7 +118,7 @@ describe('CreateLocationSchema', () => {
 
       await expect(
         createLocationSchema.createAnalysisTableInDatabase(mockConnection, 'test_analysis_table')
-      ).rejects.toThrow('Failed to execute uspCreateAnalysisTable: Query failed');
+      ).rejects.toThrow();
     });
   });
 

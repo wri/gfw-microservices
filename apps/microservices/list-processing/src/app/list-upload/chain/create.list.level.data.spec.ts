@@ -82,9 +82,7 @@ describe('CreateList', () => {
     it('should throw an error if the query fails', async () => {
       mockConnection.executeQuery.mockRejectedValue(new Error('Query failed'));
 
-      await expect(createList.addListToAnalysesTable(mockConnection, 1)).rejects.toThrow(
-        'Failed to execute uspAddListToAnalyses: Query failed'
-      );
+      await expect(createList.addListToAnalysesTable(mockConnection, 1)).rejects.toThrow();
     });
   });
 

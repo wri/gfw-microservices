@@ -116,8 +116,8 @@ export default function AccountUsageContainer() {
         'Content-type': 'application/json',
       },
     })
-      .then((res) => handleDownloadConfirmation('success'))
-      .catch((error) => {
+      .then(() => handleDownloadConfirmation('success'))
+      .catch(() => {
         handleDownloadConfirmation('error');
       });
   };

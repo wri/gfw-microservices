@@ -1,10 +1,3 @@
-/* eslint-disable consistent-return */
-/* eslint-disable jsx-a11y/label-has-associated-control */
-/* eslint-disable no-return-assign */
-/* eslint-disable jsx-a11y/alt-text */
-/* eslint-disable react/sort-comp */
-/* eslint-disable array-callback-return */
-/* eslint-disable camelcase */
 import React, { Component } from 'react';
 import qr from 'qrcode';
 import Dialog from 'material-ui/Dialog';

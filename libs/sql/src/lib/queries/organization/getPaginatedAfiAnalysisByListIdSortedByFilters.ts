@@ -12,13 +12,8 @@ DECLARE @SQL NVARCHAR(MAX)
 DECLARE @Filters NVARCHAR(MAX) = ''
 DECLARE @AnalysisFilters NVARCHAR(MAX) = '1=1'
 DECLARE @where_clauses NVARCHAR(max) = '';
-DECLARE @orderType NVARCHAR(100)
 DECLARE @listLocationTableCols NVARCHAR(MAX)
 DECLARE @listLocationTableName NVARCHAR(1000)
-DECLARE @sortByAttribute NVARCHAR(MAX)
-DECLARE @SubState NVARCHAR(MAX)
-DECLARE @State NVARCHAR(MAX)
-DECLARE @Country NVARCHAR(MAX)
 
 SELECT @list_table = list_table_name, @listName=list_Name FROM [Lists] WHERE id = @listId
 
@@ -48,21 +43,21 @@ SET @SQL = 'SELECT  ' +
 
 -- ADD Filters
 	IF @Country IS NOT NULL
-	  SET @Filters = + @Filters + ' AND Country = @Country'
+	  SET @Filters = + @Filters + ' AND lt.Country = @Country'
 
 	IF @State IS NOT NULL
-	  SET @Filters = + @Filters + ' AND State = @State'
+	  SET @Filters = + @Filters + ' AND lt.State = @State'
 
 	IF @SubState IS NOT NULL
-	  SET @Filters = + @Filters + ' AND [Sub State] = @SubState'
+	  SET @Filters = + @Filters + ' AND lt.[Sub State] = @SubState'
 	IF @selectedSupplier IS NOT NULL
-        SET @Filters = + @Filters + ' AND [Supplier Name] = @selectedSupplier'
-    IF @selectedSecondSupplier IS NOT NULL
-        SET @Filters = + @Filters + ' AND [Second Supplier Name] = @selectedSecondSupplier'
-    IF @selectedParentCompany IS NOT NULL
-        SET @Filters = + @Filters + ' AND [Parent Company] = @selectedParentCompany'
-    IF @showRSPOCertified = 1
-        SET @Filters = + @Filters + ' AND [RSPO Model] = 1'
+        SET @Filters = + @Filters + ' AND lt.[Supplier Name] = @selectedSupplier'
+  IF @selectedSecondSupplier IS NOT NULL
+      SET @Filters = + @Filters + ' AND lt.[Second Supplier Name] = @selectedSecondSupplier'
+  IF @selectedParentCompany IS NOT NULL
+      SET @Filters = + @Filters + ' AND lt.[Parent Company] = @selectedParentCompany'
+  IF @showRSPOCertified = 1
+      SET @Filters = + @Filters + ' AND lt.[RSPO Model] = 1'
 
 	IF @SearchString IS NOT NULL
 	BEGIN
@@ -87,10 +82,10 @@ SET @SQL = 'SELECT  ' +
 
 	-- END Filters
 
-PRINT @Filters
-PRINT @SQL
+
+
 if (@orderType IS NOT NULL AND @sortByAttribute IS NOT NULL)
-  SET @SQL = @SQL + ' ORDER BY '+@sortByAttribute+' '+@orderType;
+  SET @SQL = @SQL + ' ORDER BY afi.'+@sortByAttribute+' '+@orderType;
 else
   SET @SQL = @SQL +' '+ ' ORDER BY afi.negligible_risk ASC, afi.natural_land_deforested_area DESC';
 
@@ -99,8 +94,8 @@ IF @RowsOfPage > 0 AND @PageNumber > 0
     SET @SQL = @SQL +' OFFSET (@PageNumber-1)*@RowsOfPage ROWS FETCH NEXT @RowsOfPage ROWS ONLY';
 
 EXEC sp_executesql @SQL,
-     N'@listId INT, @listName NVARCHAR(150), @rowsOfPage INT, @pageNumber INT',
-     @listId=@listId, @listName=@listName,@rowsOfPage=@rowsOfPage, @pageNumber=@pageNumber;
+     N'@listId INT, @listName NVARCHAR(150), @rowsOfPage INT, @pageNumber INT, @Country NVARCHAR(255), @State NVARCHAR(255), @SubState NVARCHAR(255), @selectedSupplier NVARCHAR(255), @selectedSecondSupplier NVARCHAR(255), @selectedParentCompany NVARCHAR(255), @showRSPOCertified BIT, @SearchString NVARCHAR(255), @orderType NVARCHAR(255), @sortByAttribute NVARCHAR(255)',
+     @listId=@listId, @listName=@listName,@rowsOfPage=@rowsOfPage, @pageNumber=@pageNumber, @Country=@Country, @State=@State, @SubState=@SubState, @selectedSupplier=@selectedSupplier, @selectedSecondSupplier=@selectedSecondSupplier, @selectedParentCompany=@selectedParentCompany, @showRSPOCertified=@showRSPOCertified, @SearchString=@SearchString, @orderType=@orderType, @sortByAttribute=@sortByAttribute;
 `;
 export class PaginatedAfiAnalysisByListIdSortedByFilters {
   listId: number;

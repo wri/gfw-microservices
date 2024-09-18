@@ -458,7 +458,7 @@ export async function getPaginatedAnalysisDataForAdministrativeAreas(
 export async function getAFIListAnalyses(list_id, page, pageSize, clientDatabase, filters) {
   const {
     orderType,
-    sortByAttribute,
+    sortByAttribute = 'location_id',
     searchString,
     country,
     state,
@@ -479,7 +479,7 @@ export async function getAFIListAnalyses(list_id, page, pageSize, clientDatabase
     { field: 'listId', type: sql.Int, value: list_id },
     { field: 'rowsOfPage', type: sql.Int, value: pageSize },
     { field: 'pageNumber', type: sql.Int, value: page },
-    { field: 'Order', type: sql.NVarChar(255), value: orderType || 'ASC' },
+    { field: 'orderType', type: sql.NVarChar(255), value: orderType || 'ASC' },
     {
       field: 'AnalysisAreaMin',
       type: sql.Int,
@@ -516,11 +516,27 @@ export async function getAFIListAnalyses(list_id, page, pageSize, clientDatabase
       field: 'selectedMillPriority',
       type: sql.NVarChar(255),
       value: selectedMillPriority || null,
-    },{
+    },
+    {
       field: 'SearchString',
       type: sql.NVarChar(255),
       value: searchString || null,
-    }
+    },
+    {
+      field: 'Country',
+      type: sql.NVarChar(255),
+      value: country || null,
+    },
+    {
+      field: 'State',
+      type: sql.NVarChar(255),
+      value: state || null,
+    },
+    {
+      field: 'SubState',
+      type: sql.NVarChar(255),
+      value: subState || null,
+    },
   ];
   // Verify if the sortByAttribute is valid
   const sortedAttributes = [
@@ -541,17 +557,19 @@ export async function getAFIListAnalyses(list_id, page, pageSize, clientDatabase
     'landmark_area',
     'country',
     'state',
-    'subState'
-  ]
-  const hasFilter = (sortedAttributes).filter((key) => key === sortByAttribute);
-  if ( hasFilter.length > 0 ) {
+    'subState',
+  ];
+  const hasFilter = sortedAttributes.filter((key) => key === sortByAttribute);
+  if (hasFilter.length > 0) {
     parameters.push({
-      field: 'OrderByColumn',
+      field: 'sortByAttribute',
       type: sql.NVarChar(255),
-      value: sortByAttribute || 'location_id',
+      value: sortByAttribute,
     });
   } else {
-    throw new Error(`Invalid sortByAttribute ${filters.sortByAttribute} use one of ${sortedAttributes}`);
+    throw new Error(
+      `Invalid sortByAttribute ${filters.sortByAttribute} use one of ${sortedAttributes}`
+    );
   }
 
   const listAnalyses = await SQLUtilsLibSql.queryDB<PaginatedAfiAnalysisByListIdSortedByFilters[]>(

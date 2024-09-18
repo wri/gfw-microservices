@@ -12,7 +12,7 @@ describe('Alerts Page', () => {
     cy.visit('locations');
   });
 
-  When('I navigate to the Alerts', () => {
+  When('I navigate to the alerts page', () => {
     basePage.navigateToAlertsPage();
     cy.url().should('include', '/dashboard');
   });

@@ -1775,7 +1775,7 @@ class Map extends Component {
     // Add selected Geostore IDs GFW Vector Tile layer
     this._setCustomGfwVectorTileLayer = async (locationIDs, gfwListName, gfwLayer) => {
       let gfwVectorTileUrl = gfwLayer.url;
-      const regExpDomainName = /^.*\/\/[^\/]+/;
+      const regExpDomainName = /^.*\/\/[^/]+/;
       const gfwVectorTileStyle = gfwLayer.styleRepository;
       const vectorTileUrlChunks = gfwVectorTileUrl.replace(regExpDomainName, '').split('/');
       const GFW_LIST = vectorTileUrlChunks[1];

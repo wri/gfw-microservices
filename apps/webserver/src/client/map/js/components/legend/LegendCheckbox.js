@@ -125,7 +125,7 @@ export default class LegendCheckbox extends Component {
       store.dispatch(removeList(0));
     }
 
-    if (this.props.gfwListDef.hasOwnProperty(layerId)) {
+    if (this.props.gfwListDef[layerId]) {
       this.clearGFWFilter();
     }
   };

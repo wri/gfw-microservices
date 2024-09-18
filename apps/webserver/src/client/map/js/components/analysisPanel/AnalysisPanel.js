@@ -72,7 +72,7 @@ export default class AnalysisPanel extends Component {
     }
   }
 
-  componentDidUpdate(prevProps, prevState) {
+  componentDidUpdate(prevProps) {
     const previousForestChange = prevProps.visibleLayers.some((layer) =>
       exclusiveLayers.includes(layer)
     );
@@ -80,7 +80,6 @@ export default class AnalysisPanel extends Component {
       exclusiveLayers.includes(layer)
     );
 
-    //TODO: Remove all radd layer checks when we have OTF analysis ready
     const prevRaddLayerVisible = prevProps.visibleLayers.includes(raddAlertsID);
     const currentRaddLayerVisible = this.props.visibleLayers.includes(raddAlertsID);
 
@@ -274,13 +273,10 @@ export default class AnalysisPanel extends Component {
   };
 
   subscribeAdmin = (selectedAdmin) => {
-    const { activeAnalysis } = this.state;
 
     const country = selectedAdmin ? selectedAdmin.country : this.state.country;
     const region = selectedAdmin ? selectedAdmin.region : this.state.smallerRegion;
     const { gadmId } = selectedAdmin;
-    // Pass a null adminObj to support user-drawn shapes.
-    // Pass a populated adminObj to support user-selected administrative area bounds.
     const adminObj = gadmId
       ? {
           country: country,

@@ -483,59 +483,61 @@ export async function getAFIListAnalyses(list_id, page, pageSize, clientDatabase
     {
       field: 'AnalysisAreaMin',
       type: sql.Int,
-      value: analysisAreaMin || null,
+      value: analysisAreaMin !== '' && analysisAreaMin ? analysisAreaMin : null,
     },
     {
       field: 'AnalysisAreaMax',
       type: sql.Int,
-      value: analysisAreaMax || null,
+      value: analysisAreaMax !== '' && analysisAreaMax ? analysisAreaMax : null,
     },
     { field: 'selectedSupplier', type: sql.NVarChar(255), value: selectedSupplier || null },
     {
       field: 'selectedSecondSupplier',
       type: sql.NVarChar(255),
-      value: selectedSecondSupplier || null,
+      value:
+        selectedSecondSupplier !== '' && selectedSecondSupplier ? selectedSecondSupplier : null,
     },
     {
       field: 'selectedParentCompany',
       type: sql.NVarChar(255),
-      value: selectedParentCompany || null,
+      value: selectedParentCompany !== '' && selectedParentCompany ? selectedParentCompany : null,
     },
     { field: 'showRSPOCertified', type: sql.Bit, value: showRSPOCertified || 0 },
     {
       field: 'selectedOverallThreats',
       type: sql.NVarChar(255),
-      value: selectedOverallThreats || null,
+      value:
+        selectedOverallThreats !== '' && selectedOverallThreats ? selectedOverallThreats : null,
     },
     {
       field: 'selectedOverallValues',
       type: sql.NVarChar(255),
-      value: selectedOverallValues || null,
+      value: selectedOverallValues !== '' && selectedOverallValues ? selectedOverallValues : null,
     },
     {
       field: 'selectedMillPriority',
       type: sql.NVarChar(255),
-      value: selectedMillPriority || null,
+      value: selectedMillPriority !== '' && selectedMillPriority ? selectedMillPriority : null,
     },
     {
       field: 'SearchString',
       type: sql.NVarChar(255),
-      value: searchString || null,
+      value: searchString !== '' && searchString ? searchString : null,
     },
     {
       field: 'Country',
       type: sql.NVarChar(255),
-      value: country || null,
+      value: country !== '' && country ? country : null,
     },
     {
       field: 'State',
       type: sql.NVarChar(255),
-      value: state || null,
+      value: state !== '' && state ? state : null,
     },
     {
       field: 'SubState',
       type: sql.NVarChar(255),
-      value: subState || null,
+      value: subState !== '' && subState ? subState : null,
     },
   ];
   // Verify if the sortByAttribute is valid

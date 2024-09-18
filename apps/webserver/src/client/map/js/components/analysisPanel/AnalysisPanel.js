@@ -273,7 +273,6 @@ export default class AnalysisPanel extends Component {
   };
 
   subscribeAdmin = (selectedAdmin) => {
-
     const country = selectedAdmin ? selectedAdmin.country : this.state.country;
     const region = selectedAdmin ? selectedAdmin.region : this.state.smallerRegion;
     const { gadmId } = selectedAdmin;

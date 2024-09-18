@@ -1,4 +1,4 @@
-Feature: User can navigate to the alerts page
+Feature: User is redirected to map from the alerts page
 
   Scenario: Redirect to the map from the alerts page
     Given I log in to the application

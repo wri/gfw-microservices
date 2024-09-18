@@ -9,6 +9,7 @@ describe('Alerts Page', () => {
 
   Given('I log in to the application', () => {
     User.login();
+    cy.visit('locations');
   });
 
   When('I navigate to the Alerts', () => {

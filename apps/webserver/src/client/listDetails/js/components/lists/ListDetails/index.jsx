@@ -12,6 +12,7 @@ import ModalLoader from 'common/js/components/Loaders/ModalLoader';
 import AnalysesTabs from './AnalysesTabs';
 import getUserLocationDataFromAPI from '../getUserLocationDataFromAPI';
 import filterListData from '../filterListData';
+import { CommodityRiskFilterDrawer, ForestChangeFilterDrawer } from '../Filters';
 import Filter from './Filter';
 import {
   filterValidCustom,
@@ -1711,7 +1712,7 @@ export default class ListDetails extends Component {
     const {
       activeTemplate,
       addType,
-      canopyModalVisible,
+      canopyModalVisible: isFilterModalVisible,
       commodityType,
       currentUser,
       filterCount,
@@ -1764,6 +1765,9 @@ export default class ListDetails extends Component {
       visibleColumns,
       isEveryRowSelected,
       isListSubmittedForAnalysis,
+      currentAdminAreas,
+      pAreas,
+      maximumAnalysisAreaInTheList,
     } = this.state;
 
     const selectedList = selectedLists.length > 0 ? selectedLists[0] : null;
@@ -2113,18 +2117,20 @@ export default class ListDetails extends Component {
                           </span>
                         </div>
 
-                        <Filter
-                          filterCount={filterCount}
-                          filterValues={filterValues}
-                          clearFilters={this.clearFilters}
-                          listColumns={listColumns}
-                          setListColumns={(newVisibleColumns) =>
-                            this.setState({
-                              visibleColumns: newVisibleColumns,
-                            })
-                          }
-                          canopyModalVisible={canopyModalVisible}
-                        />
+                        {!isFilterModalVisible && (
+                          <Filter
+                            filterCount={filterCount}
+                            filterValues={filterValues}
+                            clearFilters={this.clearFilters}
+                            listColumns={listColumns}
+                            setListColumns={(newVisibleColumns) =>
+                              this.setState({
+                                visibleColumns: newVisibleColumns,
+                              })
+                            }
+                            isFilterModalVisible={isFilterModalVisible}
+                          />
+                        )}
 
                         <section>
                           {filteredLists.length > 0 &&
@@ -2180,7 +2186,40 @@ export default class ListDetails extends Component {
             </section>
           </div>
         </section>
-
+        <div
+          className={`layer-modal-container modal-wrapper ${isFilterModalVisible ? '' : 'hidden'}`}
+        >
+          {(() => {
+            if (listView === 'commodity_risk') {
+              return (
+                <CommodityRiskFilterDrawer
+                  listName={listName}
+                  listData={listData}
+                  filterCount={filterCount}
+                  listView={listView}
+                  clearFilters={this.clearFilters}
+                />
+              );
+            }
+            if (listView === 'forest_change') {
+              return (
+                <ForestChangeFilterDrawer
+                  listName={listName}
+                  listData={listData}
+                  filterCount={filterCount}
+                  listView={listView}
+                  adminAreas={currentAdminAreas}
+                  history={history}
+                  protectedAreas={pAreas}
+                  filterValues={filterValues}
+                  maximumAnalysisAreaInTheList={maximumAnalysisAreaInTheList}
+                  clearFilters={this.clearFilters}
+                />
+              );
+            }
+            return null;
+          })()}
+        </div>
         {displayLargeListEditingModal && (
           <LargeListEditing
             addType={addType}

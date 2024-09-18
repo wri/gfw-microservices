@@ -67,7 +67,7 @@ export default class Filter extends Component {
   };
 
   render() {
-    const { filterValues, canopyModalVisible, filterCount, listColumns, setListColumns } =
+    const { filterValues, isFilterModalVisible, filterCount, listColumns, setListColumns } =
       this.props;
     const { selectedCountry, selectedState, selectedSubState } = this.state;
 
@@ -87,7 +87,7 @@ export default class Filter extends Component {
         justifyContent="space-between"
         sx={{ paddingBottom: '10px' }}
       >
-        {canopyModalVisible && (
+        {isFilterModalVisible && (
           <>
             <CountryStateSubStateFilter
               countries={countryList}
@@ -112,7 +112,7 @@ export default class Filter extends Component {
             sx={{ minWidth: '35px', '& > svg': { margin: 0 } }}
             onClick={() => store.dispatch(toggleCanopyModal())}
           >
-            {!canopyModalVisible && filterCount > 0 ? (
+            {!isFilterModalVisible && filterCount > 0 ? (
               <Badge
                 sx={{
                   '& .MuiBadge-badge': {
@@ -143,7 +143,7 @@ export default class Filter extends Component {
               />
             )}
           </MaterialButton>
-          {canopyModalVisible && (
+          {isFilterModalVisible && (
             <MaterialButton
               sx={{ minWidth: '35px', '& > svg': { margin: 0 } }}
               onClick={() => store.dispatch(toggleCanopyModal())}
@@ -151,7 +151,7 @@ export default class Filter extends Component {
               <ClearIcon sx={{ color: 'black' }} />
             </MaterialButton>
           )}
-          {!canopyModalVisible && (
+          {!isFilterModalVisible && (
             <ColumnSelector listColumns={listColumns} setListColumns={setListColumns} />
           )}
         </Stack>

@@ -480,9 +480,6 @@ export async function getAFIListAnalyses(list_id, page, pageSize, clientDatabase
     { field: 'rowsOfPage', type: sql.Int, value: pageSize },
     { field: 'pageNumber', type: sql.Int, value: page },
     { field: 'Order', type: sql.NVarChar(255), value: orderType || 'ASC' },
-    { field: 'SubState', type: sql.NVarChar(255), value: subState || null },
-    { field: 'Country', type: sql.NVarChar(255), value: country || null },
-    { field: 'State', type: sql.NVarChar(255), value: state || null },
     {
       field: 'AnalysisAreaMin',
       type: sql.Int,
@@ -519,24 +516,50 @@ export async function getAFIListAnalyses(list_id, page, pageSize, clientDatabase
       field: 'selectedMillPriority',
       type: sql.NVarChar(255),
       value: selectedMillPriority || null,
-    },
+    },{
+      field: 'SearchString',
+      type: sql.NVarChar(255),
+      value: searchString || null,
+    }
   ];
   // Verify if the sortByAttribute is valid
-  if (filters.sortByAttribute in PaginatedAfiAnalysisByListIdSortedByFilters) {
+  const sortedAttributes = [
+    'list_id',
+    'location_id',
+    'gadm_id',
+    'natural_land_area',
+    'natural_land_deforested_area',
+    'total_area_ha',
+    'status_code',
+    'location_error',
+    'negligible_risk',
+    'jrc_land_area',
+    'jrc_land_deforested_area',
+    'jrc_forest_loss_by_year',
+    'natural_forest_loss_by_year',
+    'protected_areas_area',
+    'landmark_area',
+    'country',
+    'state',
+    'subState'
+  ]
+  const hasFilter = (sortedAttributes).filter((key) => key === sortByAttribute);
+  if ( hasFilter.length > 0 ) {
     parameters.push({
       field: 'OrderByColumn',
       type: sql.NVarChar(255),
-      value: filters.sortByAttribute || 'Location Name',
+      value: sortByAttribute || 'location_id',
     });
   } else {
-    throw new Error(`Invalid sortByAttribute ${filters.sortByAttribute}`);
+    throw new Error(`Invalid sortByAttribute ${filters.sortByAttribute} use one of ${sortedAttributes}`);
   }
+
   const listAnalyses = await SQLUtilsLibSql.queryDB<PaginatedAfiAnalysisByListIdSortedByFilters[]>(
     clientDatabase,
     getPaginatedAfiAnalysisByListIdSortedByFilters,
     parameters
   );
-  const quantity = listAnalyses.length > 0 ? listAnalyses.length : 0;
+  const quantity = listAnalyses?.length > 0 ? listAnalyses.length : 0;
 
   const formattedListAnalyses = listAnalyses.map((analysis) => {
     return {

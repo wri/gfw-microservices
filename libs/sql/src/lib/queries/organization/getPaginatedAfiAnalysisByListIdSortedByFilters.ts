@@ -16,7 +16,9 @@ DECLARE @orderType NVARCHAR(100)
 DECLARE @listLocationTableCols NVARCHAR(MAX)
 DECLARE @listLocationTableName NVARCHAR(1000)
 DECLARE @sortByAttribute NVARCHAR(MAX)
-DECLARE @SearchString NVARCHAR(MAX)
+DECLARE @SubState NVARCHAR(MAX)
+DECLARE @State NVARCHAR(MAX)
+DECLARE @Country NVARCHAR(MAX)
 
 SELECT @list_table = list_table_name, @listName=list_Name FROM [Lists] WHERE id = @listId
 
@@ -83,31 +85,18 @@ SET @SQL = 'SELECT  ' +
 	END
 
 
-	IF ISNUMERIC( @AnalysisAreaMin ) = 1 AND ISNUMERIC( @AnalysisAreaMax ) = 1
-	BEGIN
-		--PRINT 'Analysis Filter';
-		--PRINT 'TEST-' + CONVERT(VARCHAR(50), @AnalysisAreaMin) + ' TO ' + CONVERT(VARCHAR(50), @AnalysisAreaMax);
-		IF @AnalysisAreaMin < 0 AND @AnalysisAreaMin < @AnalysisAreaMax
-			BEGIN
-				RAISERROR ('Invalid @AnalysisAreaMin', -1, 1);
-			END
-		IF @AnalysisAreaMax < 0 AND @AnalysisAreaMax > @AnalysisAreaMin
-			BEGIN
-				RAISERROR ('Invalid @AnalysisAreaMax', -1, 1);
-			END
-		SET @AnalysisFilters = 'total_area BETWEEN {ANALYSIS_AREA_MIN} AND {ANALYSIS_AREA_MAX}';
-		SET @AnalysisFilters = REPLACE(@AnalysisFilters, '{ANALYSIS_AREA_MIN}', @AnalysisAreaMin);
-		SET @AnalysisFilters = REPLACE(@AnalysisFilters, '{ANALYSIS_AREA_MAX}', @AnalysisAreaMax);
-		--PRINT @AnalysisFilters;
-	END
-
 	-- END Filters
 
-
+PRINT @Filters
+PRINT @SQL
 if (@orderType IS NOT NULL AND @sortByAttribute IS NOT NULL)
-  SET @SQL = @SQL + ' '+@Filters+' ORDER BY ' + @sortByAttribute + ' ' + @orderType;
+  SET @SQL = @SQL + ' ORDER BY '+@sortByAttribute+' '+@orderType;
 else
-  SET @SQL = @SQL + ' '+@Filters+' ORDER BY afi.negligible_risk ASC, afi.natural_land_deforested_area DESC';
+  SET @SQL = @SQL +' '+ ' ORDER BY afi.negligible_risk ASC, afi.natural_land_deforested_area DESC';
+
+
+IF @RowsOfPage > 0 AND @PageNumber > 0
+    SET @SQL = @SQL +' OFFSET (@PageNumber-1)*@RowsOfPage ROWS FETCH NEXT @RowsOfPage ROWS ONLY';
 
 EXEC sp_executesql @SQL,
      N'@listId INT, @listName NVARCHAR(150), @rowsOfPage INT, @pageNumber INT',

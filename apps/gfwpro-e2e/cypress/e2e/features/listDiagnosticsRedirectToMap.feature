@@ -1,35 +1,44 @@
 Feature: User is redirected to map from the list diagnostics
 
-  Scenario: Viewing diagnostics for a full list in GFW
-    Given I login in the landing page
-    When I navigate to a GFW full list details page
-    Then I should be redirected to the map view in GFW and verify the full list locations
+  Scenario: View details of a single location from the GFW list
+    Given I am logged in
+    When I navigate to locations and select the GFW list
+    And I choose a location and click List Diagnostic
+    When I click on the map
+    Then I should be redirected to map with the selected location from GFW list
 
-  Scenario: Viewing diagnostics for a single location in GFW
-    Given I login in the landing page
-    When I navigate to a GFW list details page containing a single location
-    When I click on the list diagnostics button
-    Then I should be redirected to the map view in GFW and verify the single location
+  Scenario: View details of multiple locations from the GFW list
+    Given I am logged in
+    When I navigate to locations and select the GFW list
+    And I choose multiple locations and click List Diagnostic
+    When I click on the map 
+    Then I should be redirected to map with the selected location from GFW list
 
-  Scenario: Viewing diagnostics for multiple locations in GFW
-    Given I login in the landing page
-    When I navigate to a GFW list details page containing multiple locations
-    When I click on the list diagnostics button
-    Then I should be redirected to the map view in GFW and verify the multiple locations
+  Scenario: View details of all locations from the GFW list
+    Given I am logged in
+    When I navigate to locations and select the GFW list
+    And I choose all locations and click List Diagnostic
+    When I click on the map
+    Then I should be redirected to map with the selected location from GFW list
 
-  Scenario: Viewing diagnostics for a full list
-    Given I login in the landing page
-    When I navigate to a full list details page
-    Then I should be redirected to the map view and verify the full list locations
+ Scenario: View details of a single location from the list
+    Given I am logged in
+    When I navigate to locations and select a list
+    And I choose a location and click List Diagnostic
+    When I click on the map
+    Then I should be redirected to map with the selected location from the list
 
-  Scenario: Viewing diagnostics for multiple locations
-    Given I login in the landing page
-    When I navigate to a list details page containing multiple locations
-    When I click on the list diagnostics button
-    Then I should be redirected to the map view and verify the multiple locations
+  Scenario: View details of multiple locations from the list
+    Given I am logged in
+    When I navigate to locations and select a list
+    And I choose multiple locations and click List Diagnostic
+    When I click on the map
+    Then I should be redirected to map with the selected location from the list
 
-  Scenario: Viewing diagnostics for a single location
-    Given I login in the landing page
-    When I navigate to a list details page containing a single location
-    When I click on the list diagnostics button
-    Then I should be redirected to the map view and verify the single location
+  Scenario: View details of all locations from the list
+    Given I am logged in
+    When I navigate to locations and select a list
+    And I choose all locations and click List Diagnostic
+    When I click on the map
+    Then I should be redirected to map with the selected location from the list
+

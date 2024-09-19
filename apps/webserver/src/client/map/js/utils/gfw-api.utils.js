@@ -1,4 +1,4 @@
-import axios, { AxiosResponse } from 'axios';
+import axios from 'axios';
 import { DATA_API_URL } from '../../../common/js/config';
 // ###########################################################################################
 // API Documentation
@@ -15,7 +15,7 @@ import { DATA_API_URL } from '../../../common/js/config';
  * @param {String} QUERY_FIELD - Query field ['gfw_geostore_id' || 'uml_id']
  * @param {String[]} IDs - Geostore/Palm Oil Mills IDs
  * @param {String} date - Date to query ['latest', 'v202010]
- * @return {Promise<AxiosResponse<any>>}
+ * @return {Promise<any>}
  */
 export const getBBoxAndGeostoreIDs = async (GFW_LIST, QUERY_FIELD, IDs, date) => {
   const config = {

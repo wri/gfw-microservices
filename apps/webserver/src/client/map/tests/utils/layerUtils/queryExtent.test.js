@@ -1,3 +1,6 @@
+import QueryTask from '@arcgis/tasks/QueryTask';
+import { queryExtent } from '../../../js/utils/LayerUtils';
+
 describe.skip('LayerUtils#queryExtent', () => {
   describe('Integration: QueryTask#executeForExtent', () => {
     const mockAndDontCareAboutResponse = jest.fn(() => Promise.resolve());
@@ -83,7 +86,7 @@ describe.skip('LayerUtils#queryExtent', () => {
     describe('When the ArcGIS QueryTask throws an error', () => {
       const stubAndReject = jest.fn(() => Promise.reject(new Error('Something went wrong')));
       beforeAll(() => {
-        jest.spyOn(console, 'log').mockImplementation(() => {}); // silence the console output in queryAdmin
+        jest.spyOn(console, 'log').mockImplementation(jest.fn());
         QueryTask.mockImplementation(() => {
           return { executeForExtent: stubAndReject };
         });

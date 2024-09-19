@@ -18,7 +18,7 @@ async function bootstrap() {
   const port = config.get('PORT', { infer: true });
 
   if (!SWAGGER_DISABLED_ENVS.includes(config.get('NODE_ENV', { infer: true }))) {
-    console.log('Swagger enabled');
+    Logger.log('Swagger enabled');
     const config = new DocumentBuilder()
       .setTitle('List-Processing API')
       .setDescription('V1 for List-Processing API')

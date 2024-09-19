@@ -65,6 +65,7 @@
         "lintFilePatterns": [
           "apps/webserver/src/client/[a-f]*/**/*.{ts,js,tsx,jsx}",
           "apps/webserver/src/client/[l]*/**/*.{ts,js,tsx,jsx}",
+          "apps/webserver/src/client/[p-u]*/**/*.{ts,js,tsx,jsx}",
           "apps/webserver/src/server/**/*.{ts,js}"
         ]
       }

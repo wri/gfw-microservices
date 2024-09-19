@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from 'react';
-import _ from 'lodash';
 import UsersListTable from './UsersListTable';
 import '../../../css/proManagerList.scss';
 

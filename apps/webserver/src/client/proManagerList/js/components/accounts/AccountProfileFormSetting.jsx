@@ -97,53 +97,6 @@ export default function AccountProfileFormSetting() {
     );
   }, [accountClassificationsFieldValue]);
 
-  /**
-   * @deprecated
-   * @note figure out the state of affairs for policies management
-   */
-  const downloadPolicies = () => {
-    const errors = [];
-    let errorTitle;
-    if (accountFormData.accountPolicySelectedList.length > 1) {
-      errors.push('Too many files. Please select one.');
-      errorTitle = 'Multiples files!';
-    } else if (accountFormData.accountPolicySelectedList.length === 0) {
-      errors.push('No policy files are selected. Please select one.');
-      errorTitle = 'No files selected!';
-    }
-
-    if (errors.length === 0) {
-      window.location.href = `/pro-manager/downloadPolicyPro/${accountFormData.accountPolicySelectedList[0].value}/${accountFormData.organization_id}`;
-    } else {
-      /**
-       * @TODO IMPLEMENT DIALOG SERVICE
-       */
-    }
-  };
-  /**
-   * @deprecated
-   * @note figure out the state of affairs for policies management
-   */
-  const updatePolicy = (evt) => {
-    const policyList = [];
-    const policyNameList = [];
-    for (const key of Object.keys(evt.target.files)) {
-      policyNameList.push(evt.target.files[key].name);
-      const reader = new FileReader();
-      reader.readAsDataURL(evt.target.files[key]);
-      reader.onload = function () {
-        policyList.push(reader.result);
-      };
-      reader.onerror = function (error) {
-        console.log('Error: ', error);
-      };
-    }
-    setAccountFormData((preVFormData) => ({
-      ...preVFormData,
-      policyUploadList: policyList,
-      policyNames: policyNameList,
-    }));
-  };
   const validateAccountFormData = (data) => {
     let errors = [];
     let missing = [];
@@ -372,15 +325,6 @@ export default function AccountProfileFormSetting() {
               onChange={setAccountClassificationsFieldValue}
               value={accountClassificationsFieldValue}
             />
-            {/* <div className='policies-delete-download'>
-              <GfwButton
-                classNames={`btn-green ${accountData.organization_status_id === 2 ? '' : 'hidden'}`}
-                onClick={downloadPolicies}
-                value='Download'
-              />
-            </div> */}
-            {/* // ADD BACK IN IF WE NEED TO HAVE PRO MANAGER UPLOAD POLICIES!
-              // <input name='org_policy' type='file' onChange={updatePolicy} className='account-info-input' multiple/> */}
           </Grid>
         </Grid>
         <Grid item sm={6} xs={12}>

@@ -20,13 +20,7 @@ const alphanumericSpace = (str) => {
   return regCheck.test(str) || str === '';
 };
 
-const alphanumeric = (str) => {
-  const regCheck = /^[a-zA-Z0-9]*$/;
-  return regCheck.test(str) || str === '';
-};
-
 const validAddress = (str) => {
-  // const regCheck = /^[a-zA-Z0-9\s,\.\-]*$/;
   const regCheck = /.*\S.*/;
   return regCheck.test(str) || str === '';
 };
@@ -38,34 +32,13 @@ const validPhone = (str) => {
 
 const validEmail = (str) => {
   const regCheck =
-    /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+    /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
   return regCheck.test(str) || str === '';
 };
 
 const validWebsite = (str) => {
-  const regCheck = /[-a-zA-Z0-9@:%._\+~#=]{2,256}\.[a-z]{2,6}\b([-a-zA-Z0-9@:%_\+.~#?&//=]*)/;
+  const regCheck = /[-a-zA-Z0-9@:%._+~#=]{2,256}\.[a-z]{2,6}\b([-a-zA-Z0-9@:%_+.~#?&//=]*)/;
   return regCheck.test(str) || str === '';
-};
-
-const greaterThanZero = (value) => {
-  const regCheck = /^[1-9][0-9]*$/;
-  return regCheck.test(value) || value === '';
-};
-
-const greaterThanZeroFloats = (value) => {
-  const regCheck = /^(0*[1-9][0-9]*(\.[0-9]+)?|0+\.[0-9]*[1-9][0-9]*)$/;
-  return regCheck.test(value) || value === '';
-};
-
-const anyFloats = (value) => {
-  // const regCheck = /^(0*[1-9][0-9]*(\.[0-9]+)?|0+\.[0-9]*[1-9][0-9]*)$/;
-  // return regCheck.test(value);
-  return typeof value === 'number';
-};
-
-const onlyNumber = (value) => {
-  const regCheck = /[0-9]/g;
-  return regCheck.test(value) || value === '';
 };
 
 export const fieldValidations = {

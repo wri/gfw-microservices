@@ -1,3 +1,4 @@
+/* global userLists, locationCount, gfwLists, userInfo, userSharedLists */
 import React from 'react';
 import moment from 'moment';
 import { render } from 'react-dom';
@@ -23,24 +24,18 @@ import '../common/popoverPreRender';
 lightBaseTheme.fontFamily = 'Fira Sans, sans-serif';
 lightBaseTheme.palette.textColor = '#555555';
 
-// Modify the JS Date object
 Date.prototype.getJulian = function () {
-  // Convert date into moment Object
   const date = moment(this);
-  // Get the year
   const year = date.year();
-  // Create a moment object of the beginning of the year
   const startOfYear = moment(`${year}/01/01`, 'YYYY/MM/DD');
-  // Find number of days passed
   const daysPassed = date.diff(startOfYear, 'days');
-  // Append leading zeros if needed
   let daysPassedFormatted = daysPassed.toString();
+
   if (daysPassedFormatted.length < 3) {
     while (daysPassedFormatted.length < 3) {
       daysPassedFormatted = `0${daysPassedFormatted}`;
     }
   }
-  // Return the correct Julian
   return `${date.format('YY')}${daysPassedFormatted}`;
 };
 

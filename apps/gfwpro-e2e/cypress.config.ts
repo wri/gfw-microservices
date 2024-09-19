@@ -48,8 +48,8 @@ export default defineConfig({
   viewportWidth: 1800,
   viewportHeight: 1080,
   retries: {
-    runMode: 1,
-    openMode: 1,
+    runMode: 0,
+    openMode: 0,
   },
   e2e: {
     env: {
@@ -64,7 +64,7 @@ export default defineConfig({
         ? `https://pro-${process.env.CYPRESS_ENV}.globalforestwatch.org`
         : 'https://localhost:8443',
     specPattern: '**/*.feature',
-    defaultCommandTimeout: parseInt(process.env['CYPRESS_TIMEOUT']) || 120000,
+    defaultCommandTimeout: parseInt(process.env['CYPRESS_TIMEOUT']) || 60000,
     scrollBehavior: 'center',
   },
 });

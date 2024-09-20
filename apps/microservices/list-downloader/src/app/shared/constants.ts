@@ -1372,7 +1372,7 @@ export const EXCEL_TEMPLATES = {
           attribute: 'classified_region_area',
           type: 'country',
           label: 'National Agricultural Frontier',
-          limit: 4,
+          hasSecondarySubLayers: true,
         },
         {
           attribute: 'protected_areas_by_category_area',
@@ -1400,7 +1400,7 @@ export const EXCEL_TEMPLATES = {
           attribute: 'classified_region_area',
           type: 'country',
           label: 'National Agricultural Frontier',
-          limit: 4,
+          hasSecondarySubLayers: true,
         },
         {
           attribute: 'protected_areas_by_category_area',
@@ -1432,7 +1432,7 @@ export const EXCEL_TEMPLATES = {
           attribute: 'tree_cover_loss_by_country_classified_region_yearly',
           type: 'country',
           label: 'National Agricultural Frontier',
-          withSubLayers: true,
+          hasSecondarySubLayers: true,
         },
         {
           attribute: 'tree_cover_loss_by_country_wdpa_yearly',
@@ -1460,13 +1460,13 @@ export const EXCEL_TEMPLATES = {
           attribute: 'tree_cover_loss_by_country_classified_region_yearly',
           type: 'country',
           label: 'National Agricultural Frontier',
-          withSubLayers: true,
+          hasSecondarySubLayers: true,
         },
         {
           attribute: 'tree_cover_loss_by_country_wdpa_yearly',
           type: 'country',
           label: 'Protected Areas',
-          fixedLayers: [
+          constantLayers: [
             'Category VI',
             'Ramsar Site, Wetland of International Importance',
             'UNESCO-MAB Biosphere Reserve',

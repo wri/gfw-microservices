@@ -25,18 +25,7 @@ describe('List diagnostics', () => {
     locationsPage.clickOnLocationsList('Palm Oil Mills');
   });
 
-  When('I choose a location and click List Diagnostic', () => {
-    listDetailsPage.selectCheckBoxes([1]);
-    listDetailsPage.clickOnListDiagnosticsBtn();
-  });
-
-  When('I choose multiple locations and click List Diagnostic', () => {
-    listDetailsPage.selectCheckBoxes([1, 2]);
-    listDetailsPage.clickOnListDiagnosticsBtn();
-  });
-
-  When('I choose all locations and click List Diagnostic', () => {
-    listDetailsPage.checkOnCheckBoxSelectAll();
+  When('I click List Diagnostic button', () => {
     listDetailsPage.clickOnListDiagnosticsBtn();
   });
 
@@ -44,14 +33,14 @@ describe('List diagnostics', () => {
     diagnosticsPage.clickOnDiagnosticMap();
   });
 
-  Then('I should be redirected to map with the selected location from GFW list', () => {
+  Then('I should be redirected to map from List Diagnostic using a GFW list', () => {
     cy.url().should('include', '/map');
     mapPage.elements
       .titleList('2,154 - Palm Oil Mills')
       .should('have.text', '2,154 - Palm Oil Mills');
   });
 
-  Then('I should be redirected to map with the selected location from the list', () => {
+  Then('I should be redirected to map from List Diagnostic', () => {
     cy.url().should('include', '/map');
     mapPage.elements
       .titleList('787 - AAT Argentina Points Generic')

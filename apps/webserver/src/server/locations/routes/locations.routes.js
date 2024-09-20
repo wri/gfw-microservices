@@ -609,12 +609,12 @@ module.exports = (app, limiter) => {
       selectedMillPriority: millPriority,
       analysisId = 'FCD',
     } = req.query;
-    const VALID_ANALYSIS_TYPES = ['FCD', 'ALERTS', 'DEFREPORT', 'AFI'];
+    const VALID_ANALYSIS_TYPES = ['FCD', 'ALERTS', 'AFI'];
     // Verify if analysisId is a valid analysis type
     if (!VALID_ANALYSIS_TYPES.includes(analysisId.toUpperCase())) {
       return res.status(400).send({
         message:
-          'Invalid analysisId, analysisId should be one of the following: FCD, Alerts, DefReport or AFI',
+          'Invalid analysisId, analysisId should be one of the following: FCD, Alerts or AFI',
       });
     }
     const selectedOverallThreats = mapCommodityRiskValuesToDatabaseValues(overallThreats);
@@ -651,8 +651,7 @@ module.exports = (app, limiter) => {
         maximumAnalysisAreaInTheList = 0,
         locationAttributeList;
       switch (analysisId.toUpperCase()) {
-        case 'AFI':
-        case 'DEFREPORT': {
+        case 'AFI': {
           const analysisManagerResult = await AnalysisManager.getAFIListAnalyses(
             listID,
             page,

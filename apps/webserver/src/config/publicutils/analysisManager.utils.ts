@@ -480,16 +480,6 @@ export async function getAFIListAnalyses(list_id, page, pageSize, clientDatabase
     { field: 'rowsOfPage', type: sql.Int, value: pageSize },
     { field: 'pageNumber', type: sql.Int, value: page },
     { field: 'orderType', type: sql.NVarChar(255), value: orderType || 'ASC' },
-    {
-      field: 'AnalysisAreaMin',
-      type: sql.Int,
-      value: analysisAreaMin !== '' && analysisAreaMin ? analysisAreaMin : null,
-    },
-    {
-      field: 'AnalysisAreaMax',
-      type: sql.Int,
-      value: analysisAreaMax !== '' && analysisAreaMax ? analysisAreaMax : null,
-    },
     { field: 'selectedSupplier', type: sql.NVarChar(255), value: selectedSupplier || null },
     {
       field: 'selectedSecondSupplier',

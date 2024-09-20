@@ -12,102 +12,106 @@ const COVERAGE_DECIMAL_PLACES = 2;
 export const colombiaLayers = ({ operation, data, dataRow, csvData }) => {
   const { name, composites } = operation;
 
-  if (!composites) return csvData;
+  if (!composites || (name !== 'colombiaOverlap' && name !== 'colombiaDeforestation'))
+    return csvData;
 
-  if (name === 'colombiaLayers' || name === 'colombiaDeforestation') {
-    composites.forEach((composite) => {
-      const { type, label, attribute } = composite;
+  composites.forEach((composite) => {
+    const { type, label, attribute, withSubLayers } = composite;
 
-      if (type === 'country' || type === 'category') {
-        let parsedData;
-        try {
-          if (type === 'country') {
-            parsedData = JSON.parse(data[attribute])?.COL || {};
+    if (type !== 'country' && type !== 'category') return;
 
-            const categories = splitObjAndCreateNestedChildren(parsedData);
+    try {
+      if (type === 'country') {
+        let parsedData = JSON.parse(data[attribute])?.COL || {};
 
-            const totalForAllCategories = calculateTotalLossForAllCategories(categories);
+        if (withSubLayers) {
+          parsedData = splitObjAndCreateNestedChildren(parsedData);
+        }
 
-            Object.entries(categories).forEach(([categoryName, categoryValue]) => {
-              const totalPerCategory = calculateTotalLossForAllCategories(categoryValue);
+        const totalForAllCategories = calculateTotalLossForAllCategories(parsedData);
 
-              Object.entries(categoryValue).forEach(([subCategoryName, subCategoryValue]) => {
-                const totalPerSubCategory = calculateTotalLossForAllCategories(subCategoryValue);
-                const percentagePerCategory = (
-                  (totalPerCategory / totalForAllCategories) *
-                  100
-                ).toFixed(COVERAGE_DECIMAL_PLACES);
+        Object.entries(parsedData).forEach(([categoryName, categoryValue]) => {
+          const totalPerCategory = calculateTotalLossForAllCategories(categoryValue);
 
-                const percentagePerSubCategory = (
-                  (totalPerSubCategory / totalForAllCategories) *
-                  100
-                ).toFixed(COVERAGE_DECIMAL_PLACES);
+          const totalLossBySubcategoryPerYear =
+            calculateTotalLossBySubcategoryPerYear(categoryValue);
 
-                if (name === 'colombiaDeforestation') {
-                  Object.entries(subCategoryValue).forEach(([year, value]) => {
-                    csvData.push([
-                      ...dataRow,
-                      label,
-                      categoryName,
-                      subCategoryName ?? '',
-                      value,
-                      year,
-                      totalPerSubCategory,
-                      percentagePerSubCategory,
-                    ]);
-                  });
-                } else {
-                  csvData.push([
-                    ...dataRow,
-                    label,
-                    categoryName,
-                    totalPerCategory,
-                    percentagePerCategory,
-                    subCategoryName ?? '',
-                    subCategoryValue,
-                    percentagePerSubCategory,
-                  ]);
-                }
+          Object.entries(categoryValue).forEach(([subCategoryName, subCategoryValue]) => {
+            const totalPerSubCategory = calculateTotalLossForAllCategories(subCategoryValue);
+            const percentagePerCategory = (
+              (totalPerCategory / totalForAllCategories) *
+              100
+            ).toFixed(COVERAGE_DECIMAL_PLACES);
+
+            const percentagePerSubCategory = (
+              (totalPerSubCategory / totalForAllCategories) *
+              100
+            ).toFixed(COVERAGE_DECIMAL_PLACES);
+
+            if (withSubLayers) {
+              Object.entries(subCategoryValue).forEach(([year, value]) => {
+                csvData.push([
+                  ...dataRow,
+                  label,
+                  categoryName,
+                  totalLossBySubcategoryPerYear[year],
+                  year,
+                  totalPerCategory,
+                  '%',
+                  subCategoryName ?? '',
+                  value,
+                  year,
+                  totalPerSubCategory,
+                  percentagePerSubCategory,
+                ]);
               });
-            });
-          } else {
-            parsedData = JSON.parse(data[attribute]) || {};
-
-            const totalForAllCategories = calculateTotalLossForAllCategories(parsedData);
-
-            Object.entries(parsedData).forEach(([categoryName, categoryValue]) => {
-              const totalPerCategory = calculateTotalLossForAllCategories(categoryValue);
-
-              const percentagePerCategory = (
-                (totalPerCategory / totalForAllCategories) *
-                100
-              ).toFixed(COVERAGE_DECIMAL_PLACES);
-
+            } else {
               csvData.push([
                 ...dataRow,
                 label,
-                categoryName.replace(',', ' -'),
+                categoryName,
                 totalPerCategory,
                 percentagePerCategory,
-                '',
-                totalPerCategory,
-                percentagePerCategory,
+                subCategoryName ?? '',
+                subCategoryValue,
+                percentagePerSubCategory,
               ]);
-            });
-          }
-        } catch (e) {
-          /* empty */
-        }
-      }
-    });
-  }
+            }
+          });
+        });
+      } else {
+        const parsedData = JSON.parse(data[attribute]) || {};
 
-  return csvData;
+        const totalForAllCategories = calculateTotalLossForAllCategories(parsedData);
+
+        Object.entries(parsedData).forEach(([categoryName, categoryValue]) => {
+          const totalPerCategory = calculateTotalLossForAllCategories(categoryValue);
+
+          const percentagePerCategory = ((totalPerCategory / totalForAllCategories) * 100).toFixed(
+            COVERAGE_DECIMAL_PLACES
+          );
+
+          csvData.push([
+            ...dataRow,
+            label,
+            categoryName.replace(',', ' -'),
+            totalPerCategory,
+            percentagePerCategory,
+            '',
+            totalPerCategory,
+            percentagePerCategory,
+          ]);
+        });
+      }
+    } catch (e) {
+      /* empty */
+    }
+  });
 };
 
 // This function splits Colombian tree cover loss object and create nested children
 const splitObjAndCreateNestedChildren = (treeCoverLoss) => {
-  const result = {};
+  const result = {} as { Unconditioned: unknown; Conditioned: unknown; Restrictions: unknown };
 
   for (const [key, value] of Object.entries(treeCoverLoss)) {
     const [mainKey, subKeyTemp] = key.split(';').map((k) => k.trim());
@@ -121,7 +125,13 @@ const splitObjAndCreateNestedChildren = (treeCoverLoss) => {
     result[mainKey][subKey] = value;
   }
 
-  return result;
+  const orderedData = {
+    Unconditioned: result.Unconditioned ?? {},
+    Conditioned: result.Conditioned ?? {},
+    Restrictions: result.Restrictions ?? {},
+  };
+
+  return orderedData;
 };
 
 const calculateTotalLossForAllCategories = (obj) => {
@@ -145,4 +155,20 @@ const calculateTotalLossForAllCategories = (obj) => {
 
   recursiveSum(obj);
   return sum;
+};
+
+const calculateTotalLossBySubcategoryPerYear = (data) => {
+  const result = {};
+
+  for (const category in data) {
+    for (const year in data[category]) {
+      if (!result[year]) {
+        result[year] = 0;
+      }
+
+      result[year] += data[category][year];
+    }
+  }
+
+  return result;
 };

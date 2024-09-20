@@ -21,7 +21,7 @@ const overheadParser = ({ operation, listLevelAnalysis, data, dataRow, csvData }
     commodityRiskDiagnosticLocationSummary: diagnosticLocationSummaryParser,
     argentinaLayers: argentinaLayers,
     argentinaDeforestation: argentinaDeforestationParser,
-    colombiaLayers: colombiaLayers,
+    colombiaOverlap: colombiaLayers,
     colombiaDeforestation: colombiaLayers,
   };
 

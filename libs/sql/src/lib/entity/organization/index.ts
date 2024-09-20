@@ -13,6 +13,9 @@ import { ListAdministrativeAreas } from './list.AdministrativeAreas.entity';
 import { ListOilPalmConcessions } from './list.OilPalmConcessions.entity';
 import { ListProtectedAreas } from './list.protectedAreas.entity';
 import { AnalysisAdministrativesAreas } from './analysisAdministrativesAreas';
+import { AnalysisRspoOilPalmConcessions } from './analysisRspoPalmConcessions';
+import { AnalysisOilPalmConcessions } from './analysisOilPalmConcessions';
+import { AnalysisProtectedAreas } from './analysisProtectedAreas';
 
 export * from './lists.entity';
 export * from './activityLog.entity';
@@ -31,6 +34,9 @@ export * from './list.AdministrativeAreas.entity';
 export * from './list.OilPalmConcessions.entity';
 export * from './list.protectedAreas.entity';
 export * from './analysisAdministrativesAreas';
+export * from './analysisRspoPalmConcessions';
+export * from './analysisOilPalmConcessions';
+export * from './analysisProtectedAreas';
 
 export const organizationEntities = [
   Lists,
@@ -48,4 +54,7 @@ export const organizationEntities = [
   ListOilPalmConcessions,
   ListProtectedAreas,
   AnalysisAdministrativesAreas,
+  AnalysisRspoOilPalmConcessions,
+  AnalysisOilPalmConcessions,
+  AnalysisProtectedAreas,
 ];

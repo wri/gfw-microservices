@@ -9,6 +9,10 @@ import {
   ListsPalmOilMills,
   ListGFWLists,
   AnalysisPalmOilMills,
+  AnalysisAdministrativesAreas,
+  AnalysisOilPalmConcessions,
+  AnalysisProtectedAreas,
+  AnalysisRspoOilPalmConcessions,
   RspoOilPalmConcessions,
   ListOilPalmConcessions,
   ListProtectedAreas,
@@ -22,9 +26,21 @@ export class GfwLists {
   private readonly DEFAULT_PAGE_SIZE: number = 50;
   private readonly DEFAULT_PAGE_NUM: number = 0;
 
-  getAnalysisTableNameEntity(analysisTableName: string): EntityTarget<AnalysisPalmOilMills> {
+  getAnalysisTableNameEntity(
+    analysisTableName: string
+  ): EntityTarget<
+    | AnalysisPalmOilMills
+    | AnalysisProtectedAreas
+    | AnalysisProtectedAreas
+    | AnalysisOilPalmConcessions
+    | AnalysisProtectedAreas
+  > {
     const ANALYSYS_TABLE_NAMES = {
       'analysis-palmOilMills': AnalysisPalmOilMills,
+      'analysis-protectedAreas': AnalysisProtectedAreas,
+      'analysis-administrativeAreas': AnalysisAdministrativesAreas,
+      'analysis-oilPalmConcessions': AnalysisOilPalmConcessions,
+      'analysis-rspoOilPalmConcessions': AnalysisRspoOilPalmConcessions,
     };
     return ANALYSYS_TABLE_NAMES[analysisTableName];
   }
@@ -161,7 +177,10 @@ export class GfwLists {
       });
       return [itemsWithListId, count];
     } catch (error) {
-      throw new InternalServerErrorException('Error getAnalysisDataForGFWList', error.message);
+      throw new InternalServerErrorException(
+        `Error getAnalysisDataForGFWList for gfwList id ${list_id}`,
+        error.message
+      );
     }
   }
 

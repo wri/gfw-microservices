@@ -72,10 +72,10 @@ export class AnalysisPalmOilMills {
   'tree_cover_extent_intact_forest': number;
 
   @Column({ name: 'natural_habitat_primary' })
-  'natural_habitat_primary': number;
+  'natural_habitat_primary': string;
 
   @Column({ name: 'natural_habitat_intact_forest' })
-  'natural_habitat_intact_forest': number;
+  'natural_habitat_intact_forest': string;
 
   @Column({ name: 'natural_habitat_global_land_cover' })
   'natural_habitat_global_land_cover': string;
@@ -99,10 +99,10 @@ export class AnalysisPalmOilMills {
   'fires_counts_monthly': string;
 
   @Column({ name: 'soy_total_area' })
-  'soy_total_area': string;
+  'soy_total_area': number;
 
   @Column({ name: 'soy_pre2001_nonforest_area' })
-  'soy_pre2001_nonforest_area': number;
+  'soy_pre2001_nonforest_area': string;
 
   @Column({ name: 'brazil_biomes' })
   'brazil_biomes': string;
@@ -117,7 +117,7 @@ export class AnalysisPalmOilMills {
   'idn_landcover_area': string;
 
   @Column({ name: 'idn_forest_moratorium_area' })
-  'idn_forest_moratorium_area': number;
+  'idn_forest_moratorium_area': string;
 
   @Column({ name: 'south_america_presence' })
   'south_america_presence': string;
@@ -199,49 +199,4 @@ export class AnalysisPalmOilMills {
 
   @Column({ name: 'dissolved_data_location_info' })
   'dissolved_data_location_info': string;
-
-  @Column({ name: 'tree_cover_loss_arg_otbn_yearly' })
-  'tree_cover_loss_arg_otbn_yearly': string;
-
-  @Column({ name: 'arg_otbn_area' })
-  'arg_otbn_area': string;
-
-  @Column({ name: 'argentina_presence' })
-  'argentina_presence': string;
-
-  @Column({ name: 'protected_areas_by_category_area' })
-  'protected_areas_by_category_area': string;
-
-  @Column({ name: 'landmark_by_category_area' })
-  'landmark_by_category_area': string;
-
-  @Column({ name: 'country_specific_deforestation_yearly' })
-  'country_specific_deforestation_yearly': string;
-
-  @Column({ name: 'country_specific_deforestation_wdpa_yearly' })
-  'country_specific_deforestation_wdpa_yearly': string;
-
-  @Column({ name: 'country_specific_deforestation_landmark_yearly' })
-  'country_specific_deforestation_landmark_yearly': string;
-
-  @Column({ name: 'country_specific_deforestation_classified_region_yearly' })
-  'country_specific_deforestation_classified_region_yearly': string;
-
-  @Column({ name: 'tree_cover_loss_by_country_yearly' })
-  'tree_cover_loss_by_country_yearly': string;
-
-  @Column({ name: 'tree_cover_loss_by_country_wdpa_yearly' })
-  'tree_cover_loss_by_country_wdpa_yearly': string;
-
-  @Column({ name: 'tree_cover_loss_by_country_landmark_yearly' })
-  'tree_cover_loss_by_country_landmark_yearly': string;
-
-  @Column({ name: 'country_area' })
-  'country_area': string;
-
-  @Column({ name: 'classified_region_area' })
-  'classified_region_area': string;
-
-  @Column({ name: 'tree_cover_loss_by_country_classified_region_yearly' })
-  'tree_cover_loss_by_country_classified_region_yearly': string;
 }

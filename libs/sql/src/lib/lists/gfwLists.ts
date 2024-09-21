@@ -31,9 +31,9 @@ export class GfwLists {
   ): EntityTarget<
     | AnalysisPalmOilMills
     | AnalysisProtectedAreas
-    | AnalysisProtectedAreas
+    | AnalysisAdministrativesAreas
     | AnalysisOilPalmConcessions
-    | AnalysisProtectedAreas
+    | AnalysisRspoOilPalmConcessions
   > {
     const ANALYSYS_TABLE_NAMES = {
       'analysis-palmOilMills': AnalysisPalmOilMills,
@@ -141,7 +141,13 @@ export class GfwLists {
       const skip = pageNum > 0 ? (pageNum - 1) * take : this.DEFAULT_PAGE_NUM;
 
       let items, count;
-      const where: FindOptionsWhere<AnalysisPalmOilMills> = {};
+      const where: FindOptionsWhere<
+        | AnalysisPalmOilMills
+        | AnalysisAdministrativesAreas
+        | AnalysisOilPalmConcessions
+        | AnalysisProtectedAreas
+        | AnalysisRspoOilPalmConcessions
+      > = {};
       if (ids.length > 0) {
         // If ids array is not empty, apply the where clause
         [items, count] = await listRepository.findAndCount({

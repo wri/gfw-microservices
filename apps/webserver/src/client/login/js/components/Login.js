@@ -11,6 +11,22 @@ import gfwInAction from '../../images/gfw_pro_in_action.mp4';
 import gfwInActionEs from '../../images/gfw_pro_in_action_es_test.mp4';
 import gwfInActionPoster from '../../images/gfw_pro_in_action_poster.jpg';
 import iconArrowRight from '../../images/shape-arrow-right.svg';
+// The following imports for images are needed so that the images are included in the build
+/* eslint-disable no-unused-vars, @typescript-eslint/no-unused-vars */
+import gwfHeroPoster from '../../images/gfw_pro_hero_poster.jpg';
+import iconCompliance from '../../images/icon-lg-compliance.svg';
+import iconMonitor from '../../images/icon-lg-monitor.svg';
+import iconShare from '../../images/icon-lg-share.svg';
+import photoAlexandra from '../../images/headshot_alexandra_experton.jpg';
+import photoBanker from '../../images/banker.jpg';
+import photoConsumerGoods from '../../images/consumer-goods.jpg';
+import photoKarimah from '../../images/headshot_karimah_hudda.jpg';
+import photoLuiz from '../../images/headshot_luiz_gabriel_todt_de_azevedo.jpg';
+import photoMoray from '../../images/headshot_moray_mcleish.jpg';
+import photoPlaceholder from '../../images/testimonial-placeholder.svg';
+import photoProducer from '../../images/producer.jpg';
+import photoTrader from '../../images/trader.jpg';
+/* eslint-enable no-unused-vars, @typescript-eslint/no-unused-vars */
 import LinkedInIcon from '@mui/icons-material/LinkedIn';
 import 'react-responsive-carousel/lib/styles/carousel.min.css';
 

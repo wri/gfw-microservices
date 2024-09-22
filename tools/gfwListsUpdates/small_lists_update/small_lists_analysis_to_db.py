@@ -115,16 +115,15 @@ if __name__ == "__main__":
     connection = pyodbc.connect(cfg.conn_string)
     print("Connected")
 
-    match cfg.list_number:
-        case 2:
-            table_name = "analysis-oilPalmConcessions_new"
-        case 3:
-            table_name = "analysis-palmOilMills_new"
-        case 5:
-            table_name = "analysis-rspoOilPalmConcessions_new"
-        case _:
-            print("Invalid list number, failed to create temp table")
-            sys.exit(1)
+    if cfg.list_number == 2:
+        table_name = "analysis-oilPalmConcessions_new"
+    elif cfg.list_number == 3:
+        table_name = "analysis-palmOilMills_new"
+    elif cfg.list_number == 5:
+        table_name = "analysis-rspoOilPalmConcessions_new"
+    else:
+        print("Invalid list number, failed to create temp table")
+        sys.exit(1)
     
     print(f"Creating {table_name}")
     create_table(connection, table_name)

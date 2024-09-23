@@ -1766,7 +1766,6 @@ export default class ListDetails extends Component {
       isListSubmittedForAnalysis,
       currentAdminAreas,
       pAreas,
-      maximumAnalysisAreaInTheList,
     } = this.state;
 
     const selectedList = selectedLists.length > 0 ? selectedLists[0] : null;

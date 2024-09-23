@@ -8,8 +8,6 @@ import {
   setFilterCount,
 } from '../../../../../../locations/js/actions/locationActions';
 import Button from '../../../../../../common/js/components/Button';
-import GfwSelect from '../../../../../../common/js/components/GfwSelect';
-import { locationsPage } from '../../../../../../common/js/config';
 import CountryStateSubStateFilter from '../CountryStateSubStateFilter';
 import { defaultFilterValues } from '../../defaultFilterValues';
 import { boxStyle, multipleSelectStyles, selectStyle } from './filterStyles';

@@ -10,7 +10,7 @@ import Button from '../../../../../../common/js/components/Button';
 import CountryStateSubStateFilter from '../../ListDetails/CountryStateSubStateFilter';
 import { defaultFilterValues } from '../../defaultFilterValues';
 import store from '../../../../../../locations/js/store';
-import { boxStyle, selectStyle, gfwGreen } from './filterStyles';
+import { boxStyle, selectStyle, multipleSelectStyles } from './filterStyles';
 import '../../../../../../common/css/filter-dialogs.scss';
 
 export default class GFWProtectedForestChangeFilter extends Component {
@@ -221,7 +221,7 @@ export default class GFWProtectedForestChangeFilter extends Component {
             selectedSubState={selectedSubState}
             onSubStateChange={this.onSubStateChange}
           />
-          <div style={{ display: 'flex', margin: '10px 0px' }}>
+          <div style={{ display: 'flex', gap: '15px', margin: '10px 0px' }}>
             <FormControl sx={selectStyle}>
               <InputLabel id="designation-type">Designation Type</InputLabel>
               <Select
@@ -263,22 +263,9 @@ export default class GFWProtectedForestChangeFilter extends Component {
               onChange={this.onProtectedAreasChange}
               isMulti
               isSearchable
-              placeholder="Protected Areas"
+              placeholder="PROTECTED AREAS"
               value={selectedNames}
-              styles={{
-                control: (base) => ({
-                  ...base,
-                  zIndex: 9999,
-                  border: `1.5px solid ${gfwGreen}`,
-                  boxShadow: 'none !important',
-                  '*': {
-                    boxShadow: 'none !important',
-                  },
-                  '&:hover': {
-                    border: `1.5px solid ${gfwGreen} !important`,
-                  },
-                }),
-              }}
+              styles={multipleSelectStyles}
             />
           </div>
 

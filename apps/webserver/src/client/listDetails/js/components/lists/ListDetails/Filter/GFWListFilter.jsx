@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
-import Select from 'react-select';
-import { Box, Modal } from '@mui/material';
+import ReactSelect from 'react-select';
+import { Select, MenuItem, FormControl, InputLabel, Box, Modal } from '@mui/material';
 import { buildDropdownOptions } from '../../../../../../common/js/utils/buildDropdownOptions';
 import {
   toggleCanopyModal,
@@ -12,7 +12,7 @@ import GfwSelect from '../../../../../../common/js/components/GfwSelect';
 import { locationsPage } from '../../../../../../common/js/config';
 import CountryStateSubStateFilter from '../CountryStateSubStateFilter';
 import { defaultFilterValues } from '../../defaultFilterValues';
-import { boxStyle } from './filterStyles';
+import { boxStyle, multipleSelectStyles, selectStyle } from './filterStyles';
 import store from '../../../../../../locations/js/store';
 import '../../../../../../common/css/filter-dialogs.scss';
 
@@ -109,7 +109,7 @@ export default class GFWListFilter extends Component {
 
   changeParentCompany = (evt) => {
     const listNames = this.props.listData
-      .filter((location) => location['Parent Company'] === evt.value)
+      .filter((location) => location['Parent Company'] === evt.target.value)
       .map((location) => {
         return {
           value: location.location_id,
@@ -117,7 +117,7 @@ export default class GFWListFilter extends Component {
         };
       });
     this.setState({
-      selectedParentCompany: evt.value,
+      selectedParentCompany: evt.target.value,
       selectedNames: listNames,
     });
   };
@@ -259,7 +259,7 @@ export default class GFWListFilter extends Component {
     return (
       <Modal open onClose={this.close}>
         <Box sx={boxStyle}>
-          <h3>Show Adminstrative Areas for</h3>
+          <h3>Filters</h3>
           <CountryStateSubStateFilter
             countries={countries}
             selectedCountry={selectedCountry}
@@ -273,8 +273,8 @@ export default class GFWListFilter extends Component {
           />
 
           {list_name === 'Palm Oil Mills' && (
-            <>
-              <div className="col dropdown-group input-field__block-container">
+            <div style={{ display: 'flex', margin: '10px 0px' }}>
+              <div>
                 <input
                   id="show-RSPO-certified"
                   className="dropdown-group__dropdown"
@@ -284,36 +284,37 @@ export default class GFWListFilter extends Component {
                 />
                 <label htmlFor="show-RSPO-certified">Show RSPO Certified</label>
               </div>
-              <div className="col dropdown-group input-field__block-container">
-                <label htmlFor="select_parent_company" className="block-label">
-                  {locationsPage.lists.parentCompanyLabel}
-                </label>
-                <GfwSelect
-                  id="select_parent_company"
-                  className="dropdown-group__dropdown"
-                  options={dropdownOptionsMethodsParentCompany.dropdownOptions}
-                  value={dropdownOptionsMethodsParentCompany.value}
+
+              <FormControl sx={selectStyle}>
+                <InputLabel id="parent-company-select-label">PARENT COMPANY</InputLabel>
+                <Select
+                  labelId="parent-company-select-label"
+                  id="country_select"
+                  value={dropdownOptionsMethodsParentCompany.value ?? ''}
                   onChange={this.changeParentCompany}
-                  placeholder={locationsPage.lists.selectPlaceholder}
-                />
-              </div>
-            </>
+                  label="PARENT COMPANY"
+                >
+                  {dropdownOptionsMethodsParentCompany.dropdownOptions.map(({ label, value }) => (
+                    <MenuItem key={value} value={value}>
+                      {label}
+                    </MenuItem>
+                  ))}
+                </Select>
+              </FormControl>
+            </div>
           )}
 
-          <div className="col">
-            <div className="filter-section-container flex-grid-column">
-              <div className="col">
-                <Select
-                  isMulti={true}
-                  isSearchable={true}
-                  maxMenuHeight={150}
-                  className="edge-multi-select"
-                  onChange={(evt) => this.changeNames(evt)}
-                  options={multiOptions}
-                  value={selectedNames}
-                />
-              </div>
-            </div>
+          <div style={{ margin: '10px 0px' }}>
+            <ReactSelect
+              isMulti={true}
+              isSearchable={true}
+              maxMenuHeight={150}
+              className="edge-multi-select"
+              onChange={(evt) => this.changeNames(evt)}
+              options={multiOptions}
+              value={selectedNames}
+              styles={multipleSelectStyles}
+            />
           </div>
 
           <div

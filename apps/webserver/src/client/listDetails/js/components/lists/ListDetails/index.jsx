@@ -12,7 +12,6 @@ import ModalLoader from 'common/js/components/Loaders/ModalLoader';
 import AnalysesTabs from './AnalysesTabs';
 import getUserLocationDataFromAPI from '../getUserLocationDataFromAPI';
 import filterListData from '../filterListData';
-import { CommodityRiskFilterDrawer, ForestChangeFilterDrawer } from '../Filters';
 import Filter from './Filter';
 import {
   filterValidCustom,
@@ -2137,7 +2136,6 @@ export default class ListDetails extends Component {
                           listData={listData}
                           adminAreas={currentAdminAreas}
                           protectedAreas={pAreas}
-                          maximumAnalysisAreaInTheList={maximumAnalysisAreaInTheList}
                           isGfwList={selectedList.isGlobalForestWatchList}
                         />
 

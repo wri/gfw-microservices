@@ -14,7 +14,6 @@ export const boxStyle = {
 export const selectStyle = {
   minWidth: 200,
   width: '100%',
-  marginRight: '1rem',
   '& .MuiOutlinedInput-root': {
     '& fieldset': {
       borderColor: gfwGreen,

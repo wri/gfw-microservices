@@ -82,7 +82,6 @@ export default class Filter extends Component {
       listData,
       adminAreas,
       protectedAreas,
-      maximumAnalysisAreaInTheList,
       history,
       isGfwList,
       clearFilters,

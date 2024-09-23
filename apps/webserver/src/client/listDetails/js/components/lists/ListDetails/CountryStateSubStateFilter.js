@@ -15,7 +15,7 @@ const CountryStateSubStateFilter = ({
   onSubStateChange,
 }) => {
   return (
-    <div style={{ display: 'flex' }}>
+    <div style={{ display: 'flex', gap: '15px' }}>
       <FormControl sx={selectStyle}>
         <InputLabel id="country-select-label">{locationsPage.lists.selectCountry}</InputLabel>
         <Select

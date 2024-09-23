@@ -1,11 +1,9 @@
-// updateCriteria
 import {
   ADD_USER,
   CURRENT_USER,
   CURRENT_ACCOUNT,
   SAVE_USERS,
   UPDATE_USER,
-  UPDATED_USERS,
   UPDATE_CURRENT_USER,
 } from '../constants/actionTypes';
 

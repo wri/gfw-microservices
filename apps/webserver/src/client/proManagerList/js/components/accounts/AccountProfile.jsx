@@ -8,7 +8,7 @@ import AccountProfileFormSetting from './AccountProfileFormSetting';
 import AccountStatusSetting from './AccountStatusSetting';
 import AccountDetailUsage from './AccountUsage/AccountDetailUsage.jsx';
 import UserProfileManager from '../users/UserProfileManager';
-import { accountProfileStrings, subscriptionStatusOptions } from '../../../../common/js/config';
+import { accountProfileStrings } from '../../../../common/js/config';
 import AccountProfileLimitsSetting from './AccountProfileLimitsSetting';
 import { useAccountDetail } from './AccountDetailSection';
 import { ACCOUNT_ORG_STATUSES } from '../../../../common/js/constants/orgAccountStatuses';

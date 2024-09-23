@@ -37,9 +37,9 @@ export const queryAdmin = (location) => {
           const { geometry, attributes } = res.features[0];
           const country = attributes.iso;
           const countryText = attributes.name_0;
-          const region = attributes.hasOwnProperty('id_1') ? attributes.id_1 : '';
-          const stateText = attributes.hasOwnProperty('name_1') ? attributes.name_1 : '';
-          const substateText = attributes.hasOwnProperty('name_2') ? attributes.name_2 : '';
+          const region = attributes.id_1 || '';
+          const stateText = attributes.name_1 || '';
+          const substateText = attributes.name_2 || '';
 
           resolve({
             geometry,

@@ -159,7 +159,7 @@ export const mapLayers = [
           useCors: true,
           metadata:
             'https://production-api.globalforestwatch.org/v1/gfw-metadata/landmark_icls_2020',
-          url: 'https://tiles.globalforestwatch.org/landmark_indigenous_and_community_lands/v20201215/default/root.json',
+          url: 'https://tiles.globalforestwatch.org/gfw_indigenous_community_and_indicative_lands/v202408/default/root.json',
         },
       },
       legendConfig: {
@@ -587,7 +587,7 @@ export const mapLayers = [
         body: {
           useCors: true,
           metadata: 'https://api.resourcewatch.org/v1/gfw-metadata/wdpa_licensed_protected_areas',
-          url: 'https://tiles.globalforestwatch.org/wdpa_licensed_protected_areas/v202408/default/root.json',
+          url: 'https://tiles.globalforestwatch.org/wdpa_licensed_protected_areas/v202405/default/root.json',
         },
       },
       legendConfig: {

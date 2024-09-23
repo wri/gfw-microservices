@@ -1,3 +1,5 @@
+import { identifyPoints } from '../../../js/utils/LayerUtils';
+
 const mockAndDontCareAboutResponse = jest.fn(() => Promise.resolve('dummy response'));
 
 describe.skip('LayerUtils#identifyTask', () => {

@@ -1,3 +1,4 @@
+/* global userID */
 import React, { useEffect, useState } from 'react';
 import { render } from 'react-dom';
 import lightBaseTheme from 'material-ui/styles/baseThemes/lightBaseTheme';
@@ -30,7 +31,6 @@ function App() {
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    // if userID is null a new user is being created
     const url = userID ? `/user-profile-data/${userID}` : '/user-profile-data/new';
 
     fetch(url, {

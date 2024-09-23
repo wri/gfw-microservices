@@ -1,15 +1,15 @@
 Feature: User is redirected to map from the list diagnostics
 
-  Scenario: Redirected to map accessing from the GFW list
+  Scenario: Redirected to map accessing from a GFW list
     Given I am logged in
-    When I navigate to locations and select the GFW list
-    And I click List Diagnostic button
+    When I navigate to locations and select a GFW list
+    And I click on the List Diagnostic button
     When I click on the map
-    Then I should be redirected to map from List Diagnostic using a GFW list
+    Then I should be redirected to the map page and view the GFW list loaded on the map
 
-  Scenario: Redirected to map accessing from the list
+  Scenario: Redirected to map accessing from a user list
     Given I am logged in
-    When I navigate to locations and select a list
-    And I click List Diagnostic button
+    When I navigate to locations and select a user list
+    And I click on the List Diagnostic button
     When I click on the map
-    Then I should be redirected to map from List Diagnostic
+    Then I should be redirected to the map page and view the user list loaded on the map

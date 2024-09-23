@@ -15,17 +15,17 @@ describe('List diagnostics', () => {
     User.login();
   });
 
-  When('I navigate to locations and select a list', () => {
+  When('I navigate to locations and select a user list', () => {
     cy.visit('/locations');
     locationsPage.clickOnLocationsList('AAT Argentina Points Generic');
   });
 
-  When('I navigate to locations and select the GFW list', () => {
+  When('I navigate to locations and select a GFW list', () => {
     cy.visit('/locations');
     locationsPage.clickOnLocationsList('Palm Oil Mills');
   });
 
-  When('I click List Diagnostic button', () => {
+  When('I click on the List Diagnostic button', () => {
     listDetailsPage.clickOnListDiagnosticsBtn();
   });
 
@@ -33,14 +33,14 @@ describe('List diagnostics', () => {
     diagnosticsPage.clickOnDiagnosticMap();
   });
 
-  Then('I should be redirected to map from List Diagnostic using a GFW list', () => {
+  Then('I should be redirected to the map page and view the GFW list loaded on the map', () => {
     cy.url().should('include', '/map');
     mapPage.elements
       .titleList('2,154 - Palm Oil Mills')
       .should('have.text', '2,154 - Palm Oil Mills');
   });
 
-  Then('I should be redirected to map from List Diagnostic', () => {
+  Then('I should be redirected to the map page and view the user list loaded on the map', () => {
     cy.url().should('include', '/map');
     mapPage.elements
       .titleList('787 - AAT Argentina Points Generic')

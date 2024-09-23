@@ -1,4 +1,5 @@
 import { Injectable, Logger } from '@nestjs/common';
+
 import {
   ListFieldsFileRequest,
   FeatureFlag,
@@ -7,7 +8,6 @@ import {
   systemEntities,
 } from '@wri-monorepos/sql';
 import { featureFlagsService } from '@wri-monorepos/shared';
-
 import { IPipeService } from './i.pipe.service';
 
 import {
@@ -135,7 +135,7 @@ export class DashboardService extends IPipeService {
     const { organizationDatabase } = filters;
 
     const clientStoreConnection = new ClientStoreConnection();
-    const database = process.env.MSSQL_DATABASE || 'gfwpro';
+    const database = this.configService.get('MSSQL_DATABASE', { infer: true });
     const connection = await clientStoreConnection.getConnection(database, systemEntities);
 
     const organizationsRepository = connection.getRepository(Organization);

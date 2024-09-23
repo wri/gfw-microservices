@@ -1,9 +1,8 @@
 import { Logger, Injectable } from '@nestjs/common';
-
+import { ConfigService } from '@nestjs/config';
 import * as asyncPool from 'tiny-async-pool';
 
 import { ListFieldsFileRequest, UspGetListAnalysis } from '@wri-monorepos/sql';
-
 import { InputService } from '../files/input.service';
 import { ResultService } from '../files/result.service';
 import { ShapefileService } from '../files/shapefile.service';
@@ -13,6 +12,7 @@ import { IPipeService } from './i.pipe.service';
 import { AnalysisDataService } from '../data/analysis.data.service';
 import { IFileGenerator } from './i.file.generator';
 import { POOL_SIZE } from '../shared/constants';
+import { ServerConfigType } from '../../validators/server-config';
 
 @Injectable()
 export class ListGeneratorService extends IFileGenerator {
@@ -24,7 +24,8 @@ export class ListGeneratorService extends IFileGenerator {
     private readonly dashboardService: DashboardService,
     private readonly resultService: ResultService,
     private readonly uspGetListAnalysis: UspGetListAnalysis,
-    private readonly analysisDataService: AnalysisDataService
+    private readonly analysisDataService: AnalysisDataService,
+    private readonly configService: ConfigService<ServerConfigType, true>
   ) {
     super();
   }
@@ -32,7 +33,9 @@ export class ListGeneratorService extends IFileGenerator {
   public async makeFile(filters: ListFieldsFileRequest) {
     const { organizationDatabase, listId, combinedColumns, selectedLocations, file, isGFWList } =
       filters;
-    filters.organizationDatabase = isGFWList ? process.env.MSSQL_DATABASE : organizationDatabase;
+    filters.organizationDatabase = isGFWList
+      ? this.configService.get('MSSQL_DATABASE', { infer: true })
+      : organizationDatabase;
 
     const numberOfPages = await this.analysisDataService.getNumberOfPages(filters);
     this.logger.log(`(${listId}) - Number of pages: ${numberOfPages}`);

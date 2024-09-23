@@ -6,6 +6,30 @@ import { updateListsUploadStatus } from '../shared/update.lists.upload.status';
 import { sqlConfig } from '../shared/config';
 
 export class CreateList extends AbstractHandler<ChainType> {
+  private createSqlParameter(
+    field: string,
+    type: sql.ISqlType | sql.ISqlTypeFactoryWithNoParams,
+    value: string | number
+  ) {
+    return { field, type, value };
+  }
+
+  private async executeQueryWithParams<T>(
+    connection: SQLUtils,
+    procedureName: string,
+    parameters: {
+      field: string;
+      type: sql.ISqlType | sql.ISqlTypeFactoryWithNoParams;
+      value: string | number;
+    }[]
+  ): Promise<T> {
+    try {
+      return await connection.executeQuery<T>(procedureName, parameters);
+    } catch (error) {
+      throw new Error(`Failed to execute ${procedureName}: ${error.message}`);
+    }
+  }
+
   async insertListInListTable(
     connection: SQLUtils,
     userId: number,
@@ -18,67 +42,32 @@ export class CreateList extends AbstractHandler<ChainType> {
     customAttributeNames: string,
     customAttributeTypes: string,
     gfwListId: number = null
-  ) {
-    try {
-      const parameters = [
-        { field: 'user_id', type: sql.Int, value: userId },
-        { field: 'template_id', type: sql.Int, value: templateId },
-        { field: 'list_name', type: sql.NVarChar(150), value: listName },
-        {
-          field: 'list_table_name',
-          type: sql.NVarChar(150),
-          value: listTable,
-        },
-        {
-          field: 'list_analysis_table_name',
-          type: sql.NVarChar(150),
-          value: analysisTable,
-        },
-        { field: 'list_status_id', type: sql.Int, value: listStatusId },
-        {
-          field: 'location_classification',
-          type: sql.NVarChar(150),
-          value: locationClassification,
-        },
-        {
-          field: 'custom_attribute_names',
-          type: sql.NVarChar(2000),
-          value: customAttributeNames,
-        },
-        {
-          field: 'custom_attribute_types',
-          type: sql.NVarChar(2000),
-          value: customAttributeTypes,
-        },
-        { field: 'associated_gfwlist', type: sql.TinyInt, value: gfwListId },
-      ];
+  ): Promise<CreateListResult> {
+    const parameters = [
+      this.createSqlParameter('user_id', sql.Int, userId),
+      this.createSqlParameter('template_id', sql.Int, templateId),
+      this.createSqlParameter('list_name', sql.NVarChar(150), listName),
+      this.createSqlParameter('list_table_name', sql.NVarChar(150), listTable),
+      this.createSqlParameter('list_analysis_table_name', sql.NVarChar(150), analysisTable),
+      this.createSqlParameter('list_status_id', sql.Int, listStatusId),
+      this.createSqlParameter('location_classification', sql.NVarChar(150), locationClassification),
+      this.createSqlParameter('custom_attribute_names', sql.NVarChar(2000), customAttributeNames),
+      this.createSqlParameter('custom_attribute_types', sql.NVarChar(2000), customAttributeTypes),
+      this.createSqlParameter('associated_gfwlist', sql.TinyInt, gfwListId),
+    ];
 
-      const createListResult = await connection.executeQuery<CreateListResult>(
-        'uspCreateList',
-        parameters
-      );
-
-      return createListResult;
-    } catch (error) {
-      throw new Error('Failed insert row in List Table: ' + error.message);
-    }
+    const result = await this.executeQueryWithParams<CreateListResult>(
+      connection,
+      'uspCreateList',
+      parameters
+    );
+    return result;
   }
 
-  async addListToAnalysesTable(listId: number) {
-    const connection = new SQLUtils(sqlConfig);
-    await connection.connect();
+  async addListToAnalysesTable(connection: SQLUtils, listId: number): Promise<void> {
+    const parameters = [this.createSqlParameter('list_id', sql.Int, listId)];
 
-    try {
-      await connection.executeQuery('uspAddListToAnalyses', [
-        {
-          field: 'list_id',
-          type: sql.Int,
-          value: listId,
-        },
-      ]);
-    } catch (error) {
-      throw new Error('Failed add list to analysis table: ' + error.message);
-    }
+    await this.executeQueryWithParams<void>(connection, 'uspAddListToAnalyses', parameters);
   }
 
   async handle(input: ChainType): Promise<void> {
@@ -100,36 +89,44 @@ export class CreateList extends AbstractHandler<ChainType> {
       ...sqlConfig,
       database: clientDatabase,
     });
-    await connection.connect();
 
-    const createListResult = await this.insertListInListTable(
-      connection,
-      userId,
-      templateId,
-      listName,
-      listTable,
-      analysisTable,
-      listStatusId,
-      locationClassification,
-      customAttributeNames,
-      customAttributeTypes,
-      gfwListId
-    );
-    await updateListsUploadStatus(
-      connection.databaseName,
-      createListResult.list_id,
-      'Insert row in List table'
-    );
+    try {
+      await connection.connect();
 
-    createListResult.list_id;
+      const createListResult = await this.insertListInListTable(
+        connection,
+        userId,
+        templateId,
+        listName,
+        listTable,
+        analysisTable,
+        listStatusId,
+        locationClassification,
+        customAttributeNames,
+        customAttributeTypes,
+        gfwListId
+      );
 
-    super.handle({ ...input, request: { ...input.request, listId: createListResult.list_id } });
+      await updateListsUploadStatus(
+        connection.databaseName,
+        createListResult.list_id,
+        'Insert row in List table'
+      );
 
-    await this.addListToAnalysesTable(createListResult.list_id);
-    await updateListsUploadStatus(
-      connection.databaseName,
-      createListResult.list_id,
-      'Add list to analysis table'
-    );
+      await super.handle({
+        ...input,
+        request: { ...input.request, listId: createListResult.list_id },
+      });
+
+      await this.addListToAnalysesTable(connection, createListResult.list_id);
+
+      await updateListsUploadStatus(
+        connection.databaseName,
+        createListResult.list_id,
+        'Add list to analysis table'
+      );
+    } finally {
+      await connection.disconnect();
+    }
   }
 }

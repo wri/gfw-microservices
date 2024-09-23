@@ -174,7 +174,6 @@ describe('AppController', () => {
         client_database: targetDatabase,
       });
       expect(result).not.toBeUndefined();
-      console.log(result);
     });
   });
 

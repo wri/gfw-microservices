@@ -49,7 +49,7 @@ export default function AccountStatusSetting() {
             window.location = data.redirect;
           });
         }
-        if (data.hasOwnProperty('errorCode')) {
+        if (data.errorCode) {
           dialog.setDialogTitle('Error Activating Account');
           dialog.setDialogMessage(data.systemMessage.userMessage || data.systemMessage.message);
         }
@@ -110,7 +110,7 @@ export default function AccountStatusSetting() {
             dialog.setDialogMessage('Redirecting...');
             window.location = data.redirect;
           }
-          if (data.hasOwnProperty('errorCode')) {
+          if (data.errorCode) {
             dialog.setDialogTitle('Error deleting account');
             dialog.setDialogMessage(data.systemMessage.userMessage);
             dialog.disableDialogAction(true);

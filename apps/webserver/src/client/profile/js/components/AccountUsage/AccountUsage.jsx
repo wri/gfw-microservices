@@ -21,13 +21,13 @@ export default function AccountUsage({
         <p>
           Enterprises receive a free annual allotment of analyses and may purchase additional
           quantities. Free quantities are consumed before paid quantities. Any remaining free
-          quantities expire as new quantities are granted at account renewal.​
+          quantities expire as new quantities are granted at account renewal.
         </p>
         <h4>How # of Analyses is calculated</h4>
         <p>
           Each time a list is updated, GFW Pro multiplies the number of analysis types (e.g., Forest
           Change, Deforestation Reporting) by the number of locations within that list. These
-          quantities are tracked cumulatively during the account year.​
+          quantities are tracked cumulatively during the account year.
         </p>
       </>
     );
@@ -40,13 +40,13 @@ export default function AccountUsage({
         <p>
           Enterprises receive a free annual allotment of hectares and may purchase additional
           quantities. Free quantities are consumed before paid quantities. Any remaining free
-          quantities expire as new quantities are granted at account renewal.​
+          quantities expire as new quantities are granted at account renewal.
         </p>
         <h4>How Area Analyzed is calculated</h4>
         <p>
           Each time a list is updated, GFW Pro multiplies the number of analysis types (e.g., Forest
           Change, Deforestation Reporting) by the sum of the extent in hectares for locations within
-          that list. These quantities are tracked cumulatively during the account year.​
+          that list. These quantities are tracked cumulatively during the account year.
         </p>
       </>
     );

@@ -37,7 +37,7 @@ export default class RegionLegend extends Component {
     }
     const countryGroup = {};
     nextProps.regionLayers.forEach((layer) => {
-      if (!countryGroup.hasOwnProperty(layer.country)) {
+      if (!countryGroup[layer.country]) {
         countryGroup[layer.country] = [layer];
       } else {
         countryGroup[layer.country].push(layer);

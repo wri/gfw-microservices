@@ -620,7 +620,7 @@ function getLayerGraphicsJSON() {
   return [];
 }
 
-function getExtent() {
+function getExtent(view) {
   const { latitude, longitude } = view.center;
   return { latitude, longitude };
 }

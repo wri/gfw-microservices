@@ -42,7 +42,7 @@ export default class SelectAdmin extends Component {
   }
 
   // If a country was chosen (and different) - query to determine it's sub-admin area to populate sub-level dropdown
-  componentDidUpdate(prevProps, prevState) {
+  componentDidUpdate(prevProps) {
     if (prevProps.adminSelections.country !== this.props.adminSelections.country) {
       const queryUrl =
         'https://gfwpro-gis.globalforestwatch.org/arcgis/rest/services/GADM36_admin/MapServer/5';

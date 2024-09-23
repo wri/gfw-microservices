@@ -1,3 +1,6 @@
+import QueryTask from '@arcgis/tasks/QueryTask';
+import { queryAdmin } from '../../../js/utils/LayerUtils';
+
 describe.skip('LayerUtils#queryAdmin', () => {
   describe('Integration: QueryTask#execute', () => {
     const mockAndDontCareAboutResponse = jest.fn(() => Promise.resolve());
@@ -102,7 +105,7 @@ describe.skip('LayerUtils#queryAdmin', () => {
   describe('Failure', () => {
     describe('When the ArcGIS QueryTask throws an error', () => {
       beforeAll(() => {
-        jest.spyOn(console, 'log').mockImplementation(() => {}); // silence the console output in queryAdmin
+        jest.spyOn(console, 'log').mockImplementation(jest.fn()); // silence the console output in queryAdmin
         const stubThatRejects = jest.fn(() => Promise.reject(new Error('Something went wrong')));
 
         QueryTask.mockImplementation(() => {

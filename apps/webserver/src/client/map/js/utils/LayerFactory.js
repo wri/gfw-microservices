@@ -70,7 +70,7 @@ export const layerFactory = function LayersFactory(layersArray, view) {
       layerDef = defaultDefExpression;
     }
     switch (layer.type) {
-      case 'map-image':
+      case 'map-image': {
         const sublayers = [
           {
             id: layer.layerId,
@@ -95,6 +95,7 @@ export const layerFactory = function LayersFactory(layersArray, view) {
         );
 
         break;
+      }
       case 'tiled':
         options.id = layer.id;
         options.visible = layer.visible || false;
@@ -115,21 +116,13 @@ export const layerFactory = function LayersFactory(layersArray, view) {
           })
         );
         break;
-      case 'image':
+      case 'image': {
         options.id = layer.id;
         options.visible = layer.visible || false;
         options.url = layer.url;
         const imageLayer = new ImageLayer(options);
         imageLayer.order = layer.order || undefined;
         if (layer.renderingRule && layer.renderingRule.rasterFunctionArguments) {
-          // const rRule = new RasterFunction();
-          // rRule.functionName = layer.renderingRule.rasterFunction;
-          // rRule.functionArguments = {
-          //   Colormap: layer.renderingRule.rasterFunctionArguments.Colormap
-          // };
-          // rRule.Raster = layer.renderingRule.rasterFunctionArguments.Raster;
-          // imageLayer.renderingRule = rRule;
-
           var remapRF = new RasterFunction({
             functionName: 'Remap',
             functionArguments: {
@@ -159,6 +152,7 @@ export const layerFactory = function LayersFactory(layersArray, view) {
         }
         layers.push(imageLayer);
         break;
+      }
       case 'feature':
         if (layer.legendConfig.items && layer.legendConfig.items[0]) {
           options.renderer = {
@@ -307,7 +301,7 @@ export const layerFactory = function LayersFactory(layersArray, view) {
         );
         break;
 
-      case 'soy-planted':
+      case 'soy-planted': {
         const url = layer.layerConfig.body.url.replace('{year}', `${soyPlantedYearsRange[1]}`);
         layers.push(
           new WebTileLayer({
@@ -319,6 +313,7 @@ export const layerFactory = function LayersFactory(layersArray, view) {
           })
         );
         break;
+      }
       case 'loss':
         layers.push(
           new TreeCoverLossLayer({

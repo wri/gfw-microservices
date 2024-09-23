@@ -1860,6 +1860,13 @@ export default class ListDetails extends Component {
       ({ location_status_id }) => location_status_id === listStatus.Inactive
     );
 
+    const showListDiagnosticButton =
+      !getIsDraftWithoutDiagnostic(selectedList) &&
+      listName !== 'Administrative Areas' &&
+      listName !== 'Protected Areas' &&
+      (isGfwList || getActiveAnalysisType(listAnalysesStatus)) &&
+      !selectedLocations?.length;
+
     return (
       <div className="list-details">
         {!isGfwList && (
@@ -2089,48 +2096,50 @@ export default class ListDetails extends Component {
                     {!locationDataIsNotAvailable && !isAnalysisInProgress && (
                       <>
                         <div className="list-analysis-actions">
-                          {!getIsDraftWithoutDiagnostic(selectedList) &&
-                            listName !== 'Administrative Areas' &&
-                            listName !== 'Protected Areas' &&
-                            (isGfwList || getActiveAnalysisType(listAnalysesStatus)) &&
-                            !showMultipleSelectionBulkActions && (
-                              <MaterialButton
-                                className="list-analysis-actions__diagnostic-button"
-                                sx={{
-                                  color: '#97bd3d',
-                                  border: '1px solid #97bd3d',
-                                  borderRadius: '50px',
-                                  '&:hover': {
-                                    backgroundColor: 'rgba(151, 189, 61, 0.2)',
-                                  },
-                                }}
-                                data-cy="list-diagnostics"
-                                onClick={() => this.viewDiagnostic()}
-                                startIcon={<QueryStatsIcon />}
-                              >
-                                List diagnostic
-                              </MaterialButton>
-                            )}
+                          {showListDiagnosticButton && (
+                            <MaterialButton
+                              className="list-analysis-actions__diagnostic-button"
+                              sx={{
+                                color: '#97bd3d',
+                                border: '1px solid #97bd3d',
+                                borderRadius: '50px',
+                                '&:hover': {
+                                  backgroundColor: 'rgba(151, 189, 61, 0.2)',
+                                },
+                              }}
+                              data-cy="list-diagnostics"
+                              onClick={() => this.viewDiagnostic()}
+                              startIcon={<QueryStatsIcon />}
+                            >
+                              List diagnostic
+                            </MaterialButton>
+                          )}
 
                           <span className="list-analysis-actions__analysis-date">
                             {this.getAnalysisLastUpdatedDate(listAnalysesStatus)}
                           </span>
                         </div>
 
-                        {!isFilterModalVisible && (
-                          <Filter
-                            filterCount={filterCount}
-                            filterValues={filterValues}
-                            clearFilters={this.clearFilters}
-                            listColumns={listColumns}
-                            setListColumns={(newVisibleColumns) =>
-                              this.setState({
-                                visibleColumns: newVisibleColumns,
-                              })
-                            }
-                            isFilterModalVisible={isFilterModalVisible}
-                          />
-                        )}
+                        <Filter
+                          history={this.props.history}
+                          filterCount={filterCount}
+                          filterValues={filterValues}
+                          clearFilters={this.clearFilters}
+                          listColumns={listColumns}
+                          setListColumns={(newVisibleColumns) =>
+                            this.setState({
+                              visibleColumns: newVisibleColumns,
+                            })
+                          }
+                          isFilterModalVisible={isFilterModalVisible}
+                          listView={listView}
+                          listName={listName}
+                          listData={listData}
+                          adminAreas={currentAdminAreas}
+                          protectedAreas={pAreas}
+                          maximumAnalysisAreaInTheList={maximumAnalysisAreaInTheList}
+                          isGfwList={selectedList.isGlobalForestWatchList}
+                        />
 
                         <section>
                           {filteredLists.length > 0 &&
@@ -2186,40 +2195,7 @@ export default class ListDetails extends Component {
             </section>
           </div>
         </section>
-        <div
-          className={`layer-modal-container modal-wrapper ${isFilterModalVisible ? '' : 'hidden'}`}
-        >
-          {(() => {
-            if (listView === 'commodity_risk') {
-              return (
-                <CommodityRiskFilterDrawer
-                  listName={listName}
-                  listData={listData}
-                  filterCount={filterCount}
-                  listView={listView}
-                  clearFilters={this.clearFilters}
-                />
-              );
-            }
-            if (listView === 'forest_change') {
-              return (
-                <ForestChangeFilterDrawer
-                  listName={listName}
-                  listData={listData}
-                  filterCount={filterCount}
-                  listView={listView}
-                  adminAreas={currentAdminAreas}
-                  history={history}
-                  protectedAreas={pAreas}
-                  filterValues={filterValues}
-                  maximumAnalysisAreaInTheList={maximumAnalysisAreaInTheList}
-                  clearFilters={this.clearFilters}
-                />
-              );
-            }
-            return null;
-          })()}
-        </div>
+
         {displayLargeListEditingModal && (
           <LargeListEditing
             addType={addType}

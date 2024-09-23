@@ -25,6 +25,7 @@ function ListTitle({
   shareView,
   showShareList,
   toggleCountriesPopover,
+  isGfwList,
 }) {
   const userIsAdmin = currentUser.access_level_id === userAccessLevel.ADMIN;
   const userIsOwner = currentUser.id === selectedList.user_id;
@@ -33,18 +34,10 @@ function ListTitle({
 
   const TOOLTIP__MESSAGE = draftTooltipMSG;
 
-  const isGfwProList = [
-    'Oil Palm Concessions',
-    'RSPO Palm Concessions',
-    'Palm Oil Mills',
-    'Administrative Areas',
-    'Protected Areas',
-  ].includes(listName);
-
   let listLength = 0;
   let countriesSelected = [];
 
-  if (!isGfwProList) {
+  if (!isGfwList) {
     listLength = listLocationsCount ?? selectedList.list_locations_count;
     countriesSelected =
       listLocationsCount < selectedList.list_locations_count

@@ -1,6 +1,7 @@
 import React from 'react';
 import { Select, MenuItem, FormControl, InputLabel } from '@mui/material';
 import { locationsPage } from '../../../../../common/js/config';
+import { selectStyle } from './Filter/filterStyles';
 
 const CountryStateSubStateFilter = ({
   countries,
@@ -13,31 +14,8 @@ const CountryStateSubStateFilter = ({
   selectedSubState = '',
   onSubStateChange,
 }) => {
-  const gfwGreen = '#97bd3d';
-  const selectStyle = {
-    minWidth: 200,
-    marginRight: '1rem',
-    '& .MuiOutlinedInput-root': {
-      '& fieldset': {
-        borderColor: gfwGreen,
-      },
-      '&:hover fieldset': {
-        borderColor: gfwGreen,
-      },
-      '&.Mui-focused fieldset': {
-        borderColor: gfwGreen,
-      },
-    },
-    '& .MuiInputLabel-root': {
-      color: gfwGreen,
-      '&.Mui-focused': {
-        color: gfwGreen,
-      },
-    },
-  };
-
   return (
-    <div className="country-state-substate-filter" style={{ display: 'flex', gap: '1rem' }}>
+    <div style={{ display: 'flex' }}>
       <FormControl sx={selectStyle}>
         <InputLabel id="country-select-label">{locationsPage.lists.selectCountry}</InputLabel>
         <Select

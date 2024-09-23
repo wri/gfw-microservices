@@ -79,7 +79,22 @@ def create_table(conn, table_name):
             [commodity_threat_peat] [NVARCHAR](MAX) NULL,
             [commodity_threat_protected_areas] [NVARCHAR](MAX) NULL,
             [commodity_threat_fires] [NVARCHAR](MAX) NULL,
-            [dissolved_data_location_info] [NVARCHAR](300) NULL
+            [dissolved_data_location_info] [NVARCHAR](300) NULL,
+            [tree_cover_loss_arg_otbn_yearly] [NVARCHAR](MAX) NULL DEFAULT ('{}'),
+            [arg_otbn_area] [NVARCHAR](MAX) NULL DEFAULT ('{}'),
+            [argentina_presence] [NVARCHAR](50) NULL DEFAULT ('false'),
+            [protected_areas_by_category_area] [NVARCHAR](MAX) NOT NULL DEFAULT ('{}'),
+            [landmark_by_category_area] [NVARCHAR](MAX) NOT NULL DEFAULT ('{}'),
+            [country_specific_deforestation_yearly] [NVARCHAR](MAX) NULL,
+            [country_specific_deforestation_wdpa_yearly] [NVARCHAR] (MAX) NULL,
+            [country_specific_deforestation_landmark_yearly] [NVARCHAR](MAX) NULL,
+            [country_specific_deforestation_classified_region_yearly] [NVARCHAR](MAX) NULL,
+            [tree_cover_loss_by_country_yearly] [NVARCHAR](MAX) NULL,
+            [tree_cover_loss_by_country_wdpa_yearly] [NVARCHAR](MAX) NULL,
+            [tree_cover_loss_by_country_landmark_yearly] [NVARCHAR](MAX) NULL,
+            [country_area] [NVARCHAR](MAX) NULL,
+            [classified_region_area] [NVARCHAR](MAX) NULL,
+            [tree_cover_loss_by_country_classified_region_yearly] [NVARCHAR](MAX) NULL
             ) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
             """
 

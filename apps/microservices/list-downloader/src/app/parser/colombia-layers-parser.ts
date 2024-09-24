@@ -7,9 +7,10 @@
  * @param {Array<>} csvData - array that contains the final data.
  */
 
-const COVERAGE_DECIMAL_PLACES = 2;
-const START_YEAR = 2001;
-const END_YEAR = 2023;
+import {
+  DIAGNOSTIC_COVERAGE_DECIMAL_PLACES,
+  DIAGNOSTIC_ANALYSIS_PERIOD,
+} from '@wri-monorepos/constants';
 
 export const colombiaLayers = ({ operation, data, dataRow, csvData }) => {
   const { name, composites } = operation;
@@ -40,7 +41,7 @@ export const colombiaLayers = ({ operation, data, dataRow, csvData }) => {
           const totalPerSubLayer = calculateTotalLossForAllCategories(subLayerValue);
 
           const percentagePerSubLayer = ((totalPerSubLayer / totalForAllSubLayers) * 100).toFixed(
-            COVERAGE_DECIMAL_PLACES
+            DIAGNOSTIC_COVERAGE_DECIMAL_PLACES
           );
 
           const totalLossBySecondarySubLayerPerYear =
@@ -54,7 +55,7 @@ export const colombiaLayers = ({ operation, data, dataRow, csvData }) => {
               const percentagePerSecondarySubLayer = (
                 (totalPerSecondarySubLayer / totalForAllSubLayers) *
                 100
-              ).toFixed(COVERAGE_DECIMAL_PLACES);
+              ).toFixed(DIAGNOSTIC_COVERAGE_DECIMAL_PLACES);
 
               if (name === 'colombiaDeforestation') {
                 if (hasSecondarySubLayers) {
@@ -109,7 +110,7 @@ export const colombiaLayers = ({ operation, data, dataRow, csvData }) => {
           const totalPerSubLayer = calculateTotalLossForAllCategories(subLayerValue);
 
           const percentagePerSubLayer = ((totalPerSubLayer / totalForAllSubLayers) * 100).toFixed(
-            COVERAGE_DECIMAL_PLACES
+            DIAGNOSTIC_COVERAGE_DECIMAL_PLACES
           );
 
           csvData.push([
@@ -200,7 +201,11 @@ const createObjWithEmptyYears = (data, constantLayers) => {
       newObj[layer] = (() => {
         const obj = {};
 
-        for (let year = START_YEAR; year <= END_YEAR; year++) {
+        for (
+          let year = DIAGNOSTIC_ANALYSIS_PERIOD.START_YEAR;
+          year <= DIAGNOSTIC_ANALYSIS_PERIOD.END_YEAR;
+          year++
+        ) {
           obj[year] = 0;
         }
         return obj;

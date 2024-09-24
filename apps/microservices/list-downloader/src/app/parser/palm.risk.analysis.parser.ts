@@ -1,8 +1,9 @@
 import { cloneRow } from '../shared/functions';
+import { DIAGNOSTIC_ANALYSIS_PERIOD } from '@wri-monorepos/constants';
 
-const filterBelow2023 = (ax) =>
+const filterBelowEndYear = (ax) =>
   Object.entries(ax).reduce((acc, [key, value]) => {
-    if (parseInt(key, 10) < 2023) {
+    if (parseInt(key, 10) < DIAGNOSTIC_ANALYSIS_PERIOD.END_YEAR) {
       acc[key] = value;
     }
     return acc;
@@ -38,7 +39,7 @@ const palmRiskAnalysisParser = ({ operation, data, dataRow, csvData }) => {
     if (field.type === 'yearly') {
       let totalProp = data[field.attribute] ? JSON.parse(data[field.attribute]) : {};
 
-      totalProp = filterBelow2023(totalProp);
+      totalProp = filterBelowEndYear(totalProp);
       const val = Object.entries(totalProp).reduce((acc, [, value]) => {
         if (typeof value === 'number') {
           return acc + value;
@@ -56,7 +57,7 @@ const palmRiskAnalysisParser = ({ operation, data, dataRow, csvData }) => {
     } else if (field.type === 'lastYear') {
       const rowValue = data[field.attribute];
       let rowObj = JSON.parse(rowValue);
-      rowObj = filterBelow2023(rowObj);
+      rowObj = filterBelowEndYear(rowObj);
 
       const years = Object.keys(rowObj);
       const value = rowObj[years[years.length - 1]];

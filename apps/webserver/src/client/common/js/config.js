@@ -274,6 +274,7 @@ export const locationsPage = {
     moveLocationsDialogHeader: 'Move selection',
     moveToNewListLabel: 'List name',
     moveToNewListDuplicate: 'A list with this name already exists',
+    moveToNewNameInvalid: 'The list name chosen contains punctuation. Please choose a list name with only letters, numbers, and/or spaces.',
     existing: 'Existing list',
     new: 'Create new',
     diagnostic: 'Diagnostic',

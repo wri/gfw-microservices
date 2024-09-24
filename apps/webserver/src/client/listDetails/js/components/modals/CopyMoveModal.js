@@ -26,6 +26,7 @@ export default function CopyMoveModal(props) {
     selectedNewOrExisting,
     newListName,
     isNewListNameDuplicate,
+    isNewListNameValid,
     selectedLists,
     locationsCount,
     setMoveOrCopy,
@@ -189,6 +190,7 @@ export default function CopyMoveModal(props) {
               }, 100)}
             />
             {isNewListNameDuplicate && <div>{locationsPage.lists.moveToNewListDuplicate}</div>}
+            {isNewListNameValid && <div>{locationsPage.lists.moveToNewNameInvalid}</div>}
           </div>
         )}
       </div>

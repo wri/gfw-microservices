@@ -1,4 +1,3 @@
-// import path from 'path';
 import * as controller from '../controllers/profile.controller';
 import express from 'express';
 import axios from 'axios';
@@ -246,7 +245,9 @@ export = (app, limiter) => {
     return EAPI_MICROSERVICE_URL;
   };
 
-  const runEAPIMicroserviceRequest = async (requestData, request, response) => {
+  // express behaves differently depending on number of arguments, so need to have "next" argument
+  // eslint-disable-next-line  @typescript-eslint/no-unused-vars
+  const runEAPIMicroserviceRequest = async (requestData, request, response, next) => {
     const { method, url, data } = requestData;
     const requestURL = `${getEAPIMicroserviceUrl()}${url}`;
     try {

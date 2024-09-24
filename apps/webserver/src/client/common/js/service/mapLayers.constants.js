@@ -159,7 +159,7 @@ export const mapLayers = [
           useCors: true,
           metadata:
             'https://production-api.globalforestwatch.org/v1/gfw-metadata/landmark_icls_2020',
-          url: 'https://tiles.globalforestwatch.org/landmark_indigenous_and_community_lands/v20201215/default/root.json',
+          url: 'https://tiles.globalforestwatch.org/gfw_indigenous_community_and_indicative_lands/v202408/default/root.json',
         },
       },
       legendConfig: {

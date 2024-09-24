@@ -181,7 +181,7 @@ export function RegionChartByCountry({ listId, data, fireDownload, country }) {
                   {selectedOptionId === argentinaTreeCoverLoss.id && !isAllDataEmpty && (
                     <div style={{ display: 'flex', alignItems: 'center' }}>
                       <InfoIcon color="gray" />
-                      Bars with lower opacity indicate that the year is approximate.
+                      Bars with a lighter green hue indicate that the year is approximate.
                     </div>
                   )}
                 </div>

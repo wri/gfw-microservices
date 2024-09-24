@@ -1711,7 +1711,7 @@ export default class ListDetails extends Component {
     const {
       activeTemplate,
       addType,
-      canopyModalVisible,
+      canopyModalVisible: isFilterModalVisible,
       commodityType,
       currentUser,
       filterCount,
@@ -1764,6 +1764,8 @@ export default class ListDetails extends Component {
       visibleColumns,
       isEveryRowSelected,
       isListSubmittedForAnalysis,
+      currentAdminAreas,
+      pAreas,
     } = this.state;
 
     const selectedList = selectedLists.length > 0 ? selectedLists[0] : null;
@@ -2117,6 +2119,7 @@ export default class ListDetails extends Component {
                         </div>
 
                         <Filter
+                          history={this.props.history}
                           filterCount={filterCount}
                           filterValues={filterValues}
                           clearFilters={this.clearFilters}
@@ -2126,7 +2129,13 @@ export default class ListDetails extends Component {
                               visibleColumns: newVisibleColumns,
                             })
                           }
-                          canopyModalVisible={canopyModalVisible}
+                          isFilterModalVisible={isFilterModalVisible}
+                          listView={listView}
+                          listName={listName}
+                          listData={listData}
+                          adminAreas={currentAdminAreas}
+                          protectedAreas={pAreas}
+                          isGfwList={selectedList.isGlobalForestWatchList}
                         />
 
                         <section>

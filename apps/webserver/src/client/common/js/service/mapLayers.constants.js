@@ -644,7 +644,7 @@ export const mapLayers = [
       interactionConfig: {
         type: 'info',
         config: {
-          url: 'https://data-api.globalforestwatch.org/dataset/wdpa_protected_areas/v202408.1/features',
+          url: 'https://data-api.globalforestwatch.org/dataset/wdpa_licensed_protected_areas/v202408.1/features',
         },
       },
       applicationConfig: {},

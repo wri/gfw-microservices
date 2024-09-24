@@ -1365,14 +1365,14 @@ export const EXCEL_TEMPLATES = {
       parsed: 'overhead',
     },
     {
-      name: 'colombiaLayers',
+      name: 'colombiaOverlap',
       parsed: 'overhead',
       composites: [
         {
           attribute: 'classified_region_area',
           type: 'country',
           label: 'National Agricultural Frontier',
-          limit: 4,
+          hasSecondarySubLayers: true,
         },
         {
           attribute: 'protected_areas_by_category_area',
@@ -1393,14 +1393,14 @@ export const EXCEL_TEMPLATES = {
       parsed: 'overhead',
     },
     {
-      name: 'colombiaLayers',
+      name: 'colombiaOverlap',
       parsed: 'overhead',
       composites: [
         {
           attribute: 'classified_region_area',
           type: 'country',
           label: 'National Agricultural Frontier',
-          limit: 4,
+          hasSecondarySubLayers: true,
         },
         {
           attribute: 'protected_areas_by_category_area',
@@ -1432,6 +1432,7 @@ export const EXCEL_TEMPLATES = {
           attribute: 'tree_cover_loss_by_country_classified_region_yearly',
           type: 'country',
           label: 'National Agricultural Frontier',
+          hasSecondarySubLayers: true,
         },
         {
           attribute: 'tree_cover_loss_by_country_wdpa_yearly',
@@ -1459,11 +1460,22 @@ export const EXCEL_TEMPLATES = {
           attribute: 'tree_cover_loss_by_country_classified_region_yearly',
           type: 'country',
           label: 'National Agricultural Frontier',
+          hasSecondarySubLayers: true,
         },
         {
           attribute: 'tree_cover_loss_by_country_wdpa_yearly',
           type: 'country',
           label: 'Protected Areas',
+          constantLayers: [
+            'Category VI',
+            'Ramsar Site, Wetland of International Importance',
+            'UNESCO-MAB Biosphere Reserve',
+            'Category II',
+            'Category Ia',
+            'Category IV',
+            'Category Ib',
+            'Category III',
+          ],
         },
         {
           attribute: 'tree_cover_loss_by_country_landmark_yearly',
@@ -1743,6 +1755,10 @@ export const EXCEL_TEMPLATE_HEADERS = {
     'Location Name',
     'Data Layer Name',
     'Sub-Layer',
+    'Forest Loss (ha)',
+    'Year',
+    'Loss (all years) (Ha)',
+    '% of Forest Loss',
     'Secondary Sub-Layer',
     'Forest Loss (ha)',
     'Year',
@@ -1753,6 +1769,10 @@ export const EXCEL_TEMPLATE_HEADERS = {
     'List Name',
     'Data Layer Name',
     'Sub-Layer',
+    'Forest Loss (ha)',
+    'Year',
+    'Loss (all years) (Ha)',
+    '% of Forest Loss',
     'Secondary Sub-Layer',
     'Forest Loss (ha)',
     'Year',

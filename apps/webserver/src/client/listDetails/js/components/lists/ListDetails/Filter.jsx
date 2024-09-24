@@ -11,6 +11,10 @@ import { defaultFilterValues } from '../defaultFilterValues';
 import Button from '../../../../../common/js/components/Button';
 import CountryStateSubStateFilter from './CountryStateSubStateFilter';
 import ColumnSelector from './ColumnSelector';
+import { CommodityRiskFilterDrawer } from '../Filters';
+import ProtectedAreasGFWList from './Filter/ProtectedAreasGFWListFilter';
+import AdministrativeAreasGFWListFilter from './Filter/AdministrativeAreasGFWListFilter';
+import GFWListFilter from './Filter/GFWListFilter';
 import { filterKeys } from '../../../../../common/js/constants/lists.constants';
 import store from '../../../../../locations/js/store';
 import '../../../../../common/css/_irsBase.scss';
@@ -67,8 +71,21 @@ export default class Filter extends Component {
   };
 
   render() {
-    const { filterValues, canopyModalVisible, filterCount, listColumns, setListColumns } =
-      this.props;
+    const {
+      filterValues,
+      isFilterModalVisible,
+      filterCount,
+      listColumns,
+      setListColumns,
+      listView,
+      listName,
+      listData,
+      adminAreas,
+      protectedAreas,
+      history,
+      isGfwList,
+      clearFilters,
+    } = this.props;
     const { selectedCountry, selectedState, selectedSubState } = this.state;
 
     const countryList = Object.keys(filterValues).filter((name) => name !== 'null');
@@ -80,49 +97,109 @@ export default class Filter extends Component {
 
     const subStateList = selectedState ? filterValues[selectedCountry][selectedState] : [];
 
-    return (
-      <Stack
-        alignItems="center"
-        direction="row"
-        justifyContent="space-between"
-        sx={{ paddingBottom: '10px' }}
-      >
-        {canopyModalVisible && (
-          <>
-            <CountryStateSubStateFilter
-              countries={countryList}
-              selectedCountry={selectedCountry}
-              onCountryChange={this.changeCountry}
-              states={stateList}
-              selectedState={selectedState}
-              onStateChange={this.changeState}
-              subStates={subStateList}
-              selectedSubState={selectedSubState}
-              onSubStateChange={this.changeSubState}
-            />
+    const isProtectedAreasGFWList = listName === 'Protected Areas' && isGfwList;
+    const isAdministrativeAreasGFWList = listName === 'Administrative Areas' && isGfwList;
 
-            <Button variant="primary" onClick={() => this.updateValues(this.state)} label="APPLY" />
-            <Button variant="secondary" onClick={this.resetFilters} label="CLEAR" />
+    const isGFWListOtherThanProtectedOrAdministrativeAreas =
+      isGfwList && !isProtectedAreasGFWList && !isAdministrativeAreasGFWList;
+
+    return (
+      <>
+        {isFilterModalVisible && (
+          <>
+            {isProtectedAreasGFWList && (
+              <ProtectedAreasGFWList
+                filterCount={filterCount}
+                protectedAreas={protectedAreas}
+                history={history}
+                clearFilters={clearFilters}
+              />
+            )}
+
+            {isAdministrativeAreasGFWList && (
+              <AdministrativeAreasGFWListFilter
+                filterCount={filterCount}
+                adminAreas={adminAreas}
+                history={history}
+              />
+            )}
+
+            {isGFWListOtherThanProtectedOrAdministrativeAreas && (
+              <GFWListFilter
+                listData={listData}
+                filterCount={filterCount}
+                list_name={listName}
+                clearFilters={clearFilters}
+              />
+            )}
+
+            {listView === 'commodity_risk' && (
+              <CommodityRiskFilterDrawer
+                listName={listName}
+                listData={listData}
+                filterCount={filterCount}
+                listView={listView}
+                clearFilters={clearFilters}
+              />
+            )}
           </>
         )}
+        <Stack
+          alignItems="center"
+          direction="row"
+          justifyContent="space-between"
+          sx={{ paddingBottom: '10px' }}
+        >
+          {isFilterModalVisible && !isGfwList && (
+            <>
+              <CountryStateSubStateFilter
+                countries={countryList}
+                selectedCountry={selectedCountry}
+                onCountryChange={this.changeCountry}
+                states={stateList}
+                selectedState={selectedState}
+                onStateChange={this.changeState}
+                subStates={subStateList}
+                selectedSubState={selectedSubState}
+                onSubStateChange={this.changeSubState}
+              />
 
-        <Box flexGrow={1} />
-        <Stack alignItems="center" direction="row">
-          <MaterialButton
-            sx={{ minWidth: '35px', '& > svg': { margin: 0 } }}
-            onClick={() => store.dispatch(toggleCanopyModal())}
-          >
-            {!canopyModalVisible && filterCount > 0 ? (
-              <Badge
-                sx={{
-                  '& .MuiBadge-badge': {
-                    backgroundColor: '#97bd3d',
-                    color: 'white',
-                  },
-                }}
-                badgeContent={filterCount}
-                overlap="circular"
-              >
+              <Button
+                variant="primary"
+                onClick={() => this.updateValues(this.state)}
+                label="APPLY"
+              />
+              <Button variant="secondary" onClick={this.resetFilters} label="CLEAR" />
+            </>
+          )}
+
+          <Box flexGrow={1} />
+          <Stack alignItems="center" direction="row">
+            <MaterialButton
+              sx={{ minWidth: '35px', '& > svg': { margin: 0 } }}
+              onClick={() => store.dispatch(toggleCanopyModal())}
+            >
+              {!isFilterModalVisible && filterCount > 0 ? (
+                <Badge
+                  sx={{
+                    '& .MuiBadge-badge': {
+                      backgroundColor: '#97bd3d',
+                      color: 'white',
+                    },
+                  }}
+                  badgeContent={filterCount}
+                  overlap="circular"
+                >
+                  <FilterAltIcon
+                    sx={{
+                      color: 'black',
+                      marginRight: '10px',
+                      fontSize: '25px',
+                      marginTop: '3px',
+                    }}
+                  />
+                </Badge>
+              ) : (
                 <FilterAltIcon
                   sx={{
                     color: 'black',
@@ -131,31 +208,22 @@ export default class Filter extends Component {
                     marginTop: '3px',
                   }}
                 />
-              </Badge>
-            ) : (
-              <FilterAltIcon
-                sx={{
-                  color: 'black',
-                  marginRight: '10px',
-                  fontSize: '25px',
-                  marginTop: '3px',
-                }}
-              />
-            )}
-          </MaterialButton>
-          {canopyModalVisible && (
-            <MaterialButton
-              sx={{ minWidth: '35px', '& > svg': { margin: 0 } }}
-              onClick={() => store.dispatch(toggleCanopyModal())}
-            >
-              <ClearIcon sx={{ color: 'black' }} />
+              )}
             </MaterialButton>
-          )}
-          {!canopyModalVisible && (
-            <ColumnSelector listColumns={listColumns} setListColumns={setListColumns} />
-          )}
+            {isFilterModalVisible && (
+              <MaterialButton
+                sx={{ minWidth: '35px', '& > svg': { margin: 0 } }}
+                onClick={() => store.dispatch(toggleCanopyModal())}
+              >
+                <ClearIcon sx={{ color: 'black' }} />
+              </MaterialButton>
+            )}
+            {!isFilterModalVisible && (
+              <ColumnSelector listColumns={listColumns} setListColumns={setListColumns} />
+            )}
+          </Stack>
         </Stack>
-      </Stack>
+      </>
     );
   }
 }

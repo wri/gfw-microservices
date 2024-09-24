@@ -190,7 +190,7 @@ export default function CopyMoveModal(props) {
               }, 100)}
             />
             {isNewListNameDuplicate && <div>{locationsPage.lists.moveToNewListDuplicate}</div>}
-            {isNewListNameValid && <div>{locationsPage.lists.moveToNewNameInvalid}</div>}
+            {isNewListNameValid && <div>{locationsPage.lists.moveToNewListNameInvalid}</div>}
           </div>
         )}
       </div>

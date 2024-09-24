@@ -2214,6 +2214,7 @@ export default class Lists extends Component {
                       shareView={shareView}
                       showShareList={showShareList}
                       toggleCountriesPopover={this.toggleCountriesPopover}
+                      isGfwList={isGfwList}
                     />
                   </div>
                   {!locationDataIsNotAvailable && (
@@ -2244,6 +2245,7 @@ export default class Lists extends Component {
                       shareView={shareView}
                       showShareList={showShareList}
                       toggleCountriesPopover={this.toggleCountriesPopover}
+                      isGfwList={isGfwList}
                     />
                     <div className="list-actions-container">
                       {selectedList && !selectedList.isGlobalForestWatchList && (

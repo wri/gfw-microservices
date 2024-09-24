@@ -1856,7 +1856,7 @@ export default class ListDetails extends Component {
       ({ location_status_id }) => location_status_id === listStatus.Inactive
     );
 
-    const showListDiagnosticButton =
+    const isListDiagnosticButtonVisible =
       !getIsDraftWithoutDiagnostic(selectedList) &&
       listName !== 'Administrative Areas' &&
       listName !== 'Protected Areas' &&
@@ -2092,7 +2092,7 @@ export default class ListDetails extends Component {
                     {!locationDataIsNotAvailable && !isAnalysisInProgress && (
                       <>
                         <div className="list-analysis-actions">
-                          {showListDiagnosticButton && (
+                          {isListDiagnosticButtonVisible && (
                             <MaterialButton
                               className="list-analysis-actions__diagnostic-button"
                               sx={{

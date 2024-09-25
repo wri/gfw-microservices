@@ -25,6 +25,8 @@ export const convertURL = 'https://production-api.globalforestwatch.org/v2/ogr/c
 
 export const oversizedUploadText =
   'Lists are limited to a maximum of 1,500 locations. Please cancel this edit and ensure your final list will contain no more than 1,500 locations.';
+
+// IF YOU ARE CHANGING THE YEAR, CONSIDER SYNCING WITH libs/constants/src/lib/diagnostic-constants.ts
 export const latestTreeCoverLossYearForTclDataInMap = 2023;
 export const latestTreeCoverLossYearCommodityRisk = 2022;
 export const earliestTreeCoverLossYearCommodityRisk = 2002;
@@ -274,6 +276,8 @@ export const locationsPage = {
     moveLocationsDialogHeader: 'Move selection',
     moveToNewListLabel: 'List name',
     moveToNewListDuplicate: 'A list with this name already exists',
+    moveToNewListNameInvalid:
+      'The list name chosen contains punctuation. Please choose a list name with only letters, numbers, and/or spaces.',
     existing: 'Existing list',
     new: 'Create new',
     diagnostic: 'Diagnostic',

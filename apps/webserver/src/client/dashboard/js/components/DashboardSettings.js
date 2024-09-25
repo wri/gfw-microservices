@@ -21,7 +21,7 @@ export default class DashboardSettings extends Component {
   };
 
   handleViewMap = () => {
-    const { selectedAlert, selectedList, selectedTimeframe, zoomLevel, selectedAdmin, view } =
+    const { selectedAlert, selectedList, selectedTimeframe, selectedAdmin, view } =
       this.props;
     if (!selectedList || !selectedList.id) {
       return;
@@ -42,11 +42,7 @@ export default class DashboardSettings extends Component {
       isSharedList: selectedList?.is_shared,
       latitude: viewCenter.latitude,
       longitude: viewCenter.longitude,
-      zoom: zoomLevel,
-      xmin: view.extent.xmin,
-      ymin: view.extent.ymin,
-      xmax: view.extent.xmax,
-      ymax: view.extent.ymax,
+      zoom: view.zoom,
     };
 
     if (selectedAdmin !== '') {

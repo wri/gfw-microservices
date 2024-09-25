@@ -1,7 +1,7 @@
 import React from 'react';
 import { Select, MenuItem, FormControl, InputLabel } from '@mui/material';
-import { locationsPage } from '../../../../../common/js/config';
-import { selectStyle } from './Filter/filterStyles';
+import { locationsPage } from '../../../../../../common/js/config';
+import { selectStyle } from './filterStyles';
 
 const CountryStateSubStateFilter = ({
   countries,

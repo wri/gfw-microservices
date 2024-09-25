@@ -6,20 +6,27 @@ import {
   toggleCanopyModal,
   updateFilters,
   setFilterCount,
-} from '../../../../../locations/js/actions/locationActions';
-import { defaultFilterValues } from '../defaultFilterValues';
-import Button from '../../../../../common/js/components/Button';
+} from '../../../../../../locations/js/actions/locationActions';
+import { defaultFilterValues } from '../../defaultFilterValues';
+import Button from '../../../../../../common/js/components/Button';
 import CountryStateSubStateFilter from './CountryStateSubStateFilter';
-import ColumnSelector from './ColumnSelector';
-import { CommodityRiskFilterDrawer } from '../Filters';
-import ProtectedAreasGFWList from './Filter/ProtectedAreasGFWListFilter';
-import AdministrativeAreasGFWListFilter from './Filter/AdministrativeAreasGFWListFilter';
-import GFWListFilter from './Filter/GFWListFilter';
-import { filterKeys } from '../../../../../common/js/constants/lists.constants';
-import store from '../../../../../locations/js/store';
-import '../../../../../common/css/_irsBase.scss';
-import '../../../../../common/css/_irsStyle.scss';
-import '../../../../../common/css/filter-dialogs.scss';
+import ColumnSelector from '../ColumnSelector';
+import GFWListCommodityRiskFilter from './GFWListCommodityRiskFilter';
+import UserListCommodityRiskFilter from './UserListCommodityRiskFilter';
+import ProtectedAreasGFWList from './ProtectedAreasGFWListFilter';
+import AdministrativeAreasGFWListFilter from './AdministrativeAreasGFWListFilter';
+import GFWListFilter from './GFWListFilter';
+import {
+  filterKeys,
+  gfwListNames,
+  ADMINISTRATIVE_AREAS_LIST_INDEX,
+  PALM_OIL_MILLS_LIST_INDEX,
+  PROTECTED_AREAS_LIST_INDEX,
+} from '../../../../../../common/js/constants/lists.constants';
+import store from '../../../../../../locations/js/store';
+import '../../../../../../common/css/_irsBase.scss';
+import '../../../../../../common/css/_irsStyle.scss';
+import '../../../../../../common/css/filter-dialogs.scss';
 
 export default class Filter extends Component {
   constructor(props) {
@@ -97,17 +104,35 @@ export default class Filter extends Component {
 
     const subStateList = selectedState ? filterValues[selectedCountry][selectedState] : [];
 
-    const isProtectedAreasGFWList = listName === 'Protected Areas' && isGfwList;
-    const isAdministrativeAreasGFWList = listName === 'Administrative Areas' && isGfwList;
+    const isCommodityRiskFilterVisible = listView === 'commodity_risk';
+    const isForestChangeFilterVisible = listView === 'forest_change';
+
+    const isUserListCommodityRiskFilterVisible = isCommodityRiskFilterVisible && !isGfwList;
+    const isGFWListCommodityRiskFilterVisible =
+      isCommodityRiskFilterVisible &&
+      isGfwList &&
+      listName === gfwListNames[PALM_OIL_MILLS_LIST_INDEX];
+
+    const isProtectedAreasFilterVisible =
+      isForestChangeFilterVisible &&
+      listName === gfwListNames[PROTECTED_AREAS_LIST_INDEX] &&
+      isGfwList;
+    const isAdministrativeAreasFilterVisible =
+      isForestChangeFilterVisible &&
+      listName === gfwListNames[ADMINISTRATIVE_AREAS_LIST_INDEX] &&
+      isGfwList;
 
     const isGFWListOtherThanProtectedOrAdministrativeAreas =
-      isGfwList && !isProtectedAreasGFWList && !isAdministrativeAreasGFWList;
+      isForestChangeFilterVisible &&
+      isGfwList &&
+      !isProtectedAreasFilterVisible &&
+      !isAdministrativeAreasFilterVisible;
 
     return (
       <>
         {isFilterModalVisible && (
           <>
-            {isProtectedAreasGFWList && (
+            {isProtectedAreasFilterVisible && (
               <ProtectedAreasGFWList
                 filterCount={filterCount}
                 protectedAreas={protectedAreas}
@@ -116,7 +141,7 @@ export default class Filter extends Component {
               />
             )}
 
-            {isAdministrativeAreasGFWList && (
+            {isAdministrativeAreasFilterVisible && (
               <AdministrativeAreasGFWListFilter
                 filterCount={filterCount}
                 adminAreas={adminAreas}
@@ -133,8 +158,17 @@ export default class Filter extends Component {
               />
             )}
 
-            {listView === 'commodity_risk' && (
-              <CommodityRiskFilterDrawer
+            {isUserListCommodityRiskFilterVisible && (
+              <UserListCommodityRiskFilter
+                listName={listName}
+                listData={listData}
+                filterCount={filterCount}
+                listView={listView}
+                clearFilters={clearFilters}
+              />
+            )}
+            {isGFWListCommodityRiskFilterVisible && (
+              <GFWListCommodityRiskFilter
                 listName={listName}
                 listData={listData}
                 filterCount={filterCount}

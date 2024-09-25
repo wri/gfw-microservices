@@ -15,6 +15,11 @@ const GFW_LISTS_NAMES_TO_MAP_LAYER_IDS = {
   'Protected Areas': protectedAreas,
   'RSPO Palm Concessions': rspoConcessions,
 };
+
+export const ADMINISTRATIVE_AREAS_LIST_INDEX = 0;
+export const PALM_OIL_MILLS_LIST_INDEX = 2;
+export const PROTECTED_AREAS_LIST_INDEX = 3;
+
 export const MAP_LAYER_IDS_TO_GFW_LISTS_NAMES = Object.fromEntries(
   Object.entries(GFW_LISTS_NAMES_TO_MAP_LAYER_IDS).map(([name, id]) => [id, name])
 );

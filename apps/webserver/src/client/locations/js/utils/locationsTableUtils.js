@@ -145,6 +145,32 @@ export const getBooleanValue = (data, auditData) => {
   );
 };
 
+/**
+ * Check Selected Filter
+ * @param {Object} location - Location object
+ * @param {String} locationKey - Location object key
+ * @param {String} selectedFilterValue -
+ *  - Selected filter Value for ['selectedMillPriority', 'selectedOverallValues', 'selectedOverallThreats']
+ *  - It can be ['low', 'medium', 'high']
+ * @return {boolean|boolean} - Is location matching
+ */
+export const checkSelectedFilter = (location, locationKey, selectedFilterValue) => {
+  console.log({ location, locationKey, selectedFilterValue });
+  const value = location[locationKey];
+  console.log({ value });
+
+  if (checkValid(value)) {
+    const lastValue = getLastValue(value);
+    const foundMatch =
+      (selectedFilterValue === 'low' && lastValue === 0) ||
+      (selectedFilterValue === 'medium' && lastValue === 1) ||
+      (selectedFilterValue === 'high' && lastValue === 2);
+    return foundMatch;
+  } else {
+    return false;
+  }
+};
+
 export const getLastValue = (data) => {
   const values = Object.values(JSON.parse(data));
   const formattedValue = formatDigit(values.pop());

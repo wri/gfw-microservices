@@ -8,7 +8,7 @@ import {
   setFilterCount,
 } from '../../../../../../locations/js/actions/locationActions';
 import Button from '../../../../../../common/js/components/Button';
-import CountryStateSubStateFilter from '../CountryStateSubStateFilter';
+import CountryStateSubStateFilter from './CountryStateSubStateFilter';
 import { defaultFilterValues } from '../../defaultFilterValues';
 import { boxStyle, multipleSelectStyles, selectStyle } from './filterStyles';
 import store from '../../../../../../locations/js/store';

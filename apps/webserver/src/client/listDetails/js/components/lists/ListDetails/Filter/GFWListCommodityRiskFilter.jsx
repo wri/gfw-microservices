@@ -476,7 +476,7 @@ export default class GFWListCommodityRiskFilter extends Component {
           >
             <Button variant="secondary" onClick={this.close} label="Cancel" />
 
-            <Button variant="primary" onClick={this.updateValues} label="Apply" />
+            <Button style={{ marginLeft: '10px' }} variant="primary" onClick={this.updateValues} label="Apply" />
           </div>
         </Box>
       </Modal>

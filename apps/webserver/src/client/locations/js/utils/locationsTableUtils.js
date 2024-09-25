@@ -157,7 +157,6 @@ export const getBooleanValue = (data, auditData) => {
 export const checkSelectedFilter = (location, locationKey, selectedFilterValue) => {
   console.log({ location, locationKey, selectedFilterValue });
   const value = location[locationKey];
-  console.log({ value });
 
   if (checkValid(value)) {
     const lastValue = getLastValue(value);

@@ -1,9 +1,9 @@
-const cloneRow = (row) => {
+export const cloneRow = (row) => {
   if (Array.isArray(row) === false) return [];
   return [...row];
 };
 
-const formatPct = (value) => {
+export const formatPct = (value) => {
   if (value === undefined) {
     return undefined;
   } else if (typeof value === 'string') {
@@ -14,9 +14,9 @@ const formatPct = (value) => {
 };
 
 // Formats number with commas
-const prettifyNum = (value) => value?.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+export const prettifyNum = (value) => value?.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
 
-const validatePct = (percentage) => {
+export const validatePct = (percentage) => {
   if (percentage > 100) {
     return 100;
   } else if (isNaN(percentage) || !isFinite(percentage) || Math.sign(percentage) === -1) {
@@ -26,7 +26,7 @@ const validatePct = (percentage) => {
   }
 };
 
-const parseListData = (property, listLevelAnalysis) => {
+export const parseListData = (property, listLevelAnalysis) => {
   let total = 0;
 
   const listAnalysisData = listLevelAnalysis[0];
@@ -71,7 +71,7 @@ const parseListData = (property, listLevelAnalysis) => {
   return total;
 };
 
-const parseListTotals = (property, listLevelAnalysis) => {
+export const parseListTotals = (property, listLevelAnalysis) => {
   let total = Object.prototype.hasOwnProperty.call(listLevelAnalysis ?? {}, property)
     ? listLevelAnalysis[property]
     : 0;
@@ -79,7 +79,7 @@ const parseListTotals = (property, listLevelAnalysis) => {
   return Math.round(total * 100) / 100;
 };
 
-const isJSON = (text: unknown) => {
+export const isJSON = (text: unknown) => {
   if (typeof text !== 'string') {
     return false;
   }
@@ -91,17 +91,10 @@ const isJSON = (text: unknown) => {
   }
 };
 
-const isEmptyObject = (obj: object): boolean => {
+export const isEmptyObject = (obj: object): boolean => {
   return Object.keys(obj).length === 0;
 };
 
-export {
-  cloneRow,
-  formatPct,
-  prettifyNum,
-  validatePct,
-  parseListData,
-  parseListTotals,
-  isJSON,
-  isEmptyObject,
+export const isObjInCountryFormat = (data) => {
+  return Object.keys(data).every((x) => x.length === 3);
 };

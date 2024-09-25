@@ -1,4 +1,5 @@
 import { checkAndFormatStringWithComma } from '../transform/treat.string.with.comma';
+import { isObjInCountryFormat } from '../shared/functions';
 
 /**
  * Argentina Layers Key Columns
@@ -24,16 +25,22 @@ const ENTRY_VALUE_INDEX = 1;
 class ArgentinaLayerUtil {
   private layerData = [];
 
-  constructor(private key: keyof typeof LayersKeys, private data) {
-    this.setLayerData(data);
+  constructor(private key: keyof typeof LayersKeys, private data, private type: string) {
+    this.setLayerData(data, type);
   }
 
-  setLayerData(data) {
-    let parsedData;
+  setLayerData(data, type) {
+    let parsedData = {};
+
     try {
-      parsedData = JSON.parse(data[this.key] || {});
+      const tempParsedData = JSON.parse(data[this.key] || '{}');
+
+      parsedData =
+        type === 'country' && isObjInCountryFormat(tempParsedData)
+          ? tempParsedData?.ARG || {}
+          : tempParsedData;
     } catch (e) {
-      parsedData = {};
+      // parsedData remains an empty object if JSON parsing fails
     }
 
     this.layerData = Object.entries(parsedData);
@@ -137,11 +144,11 @@ class ArgentinaLayerUtil {
   }
 }
 
-const parseArgentinaLayer = (operation, data, dataRow, csvData) => {
+const parseArgentinaLayer = (operation, data, dataRow, csvData, type) => {
   const { attribute, limit, label } = operation;
 
   // parse property from the data source
-  const layer = new ArgentinaLayerUtil(attribute, data);
+  const layer = new ArgentinaLayerUtil(attribute, data, type);
 
   // generate rows from parsed data
   const layerGeneratedRows = layer
@@ -169,8 +176,8 @@ const argentinaLayers = ({ operation, data, dataRow, csvData }) => {
   if (name === 'argentinaLayers' && composites) {
     composites.forEach((composite) => {
       const { type } = composite;
-      if (type === 'category') {
-        parseArgentinaLayer(composite, data, dataRow, csvData);
+      if (type === 'category' || type === 'country') {
+        parseArgentinaLayer(composite, data, dataRow, csvData, type);
       }
     });
   }

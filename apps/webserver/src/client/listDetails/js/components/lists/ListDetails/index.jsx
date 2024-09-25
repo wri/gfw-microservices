@@ -53,6 +53,7 @@ import {
   getTemplateData,
   isLocationDataNotAvailable,
   isAnalyzingStatus,
+  containsPunctuation,
 } from '../../../../../locations/js/utils/lists.utils';
 
 import {
@@ -125,6 +126,7 @@ export default class ListDetails extends Component {
       selectedNewOrExisting: 'existing',
       newListName: '',
       isNewListNameDuplicate: false,
+      isNewListNameValid: false,
       refreshPage: false,
       draftSubmitDialogOpen: false,
       isSaveAsDraft: false,
@@ -776,14 +778,26 @@ export default class ListDetails extends Component {
     const { userLists } = this.props;
     const isNewListNameDuplicate =
       userLists.filter((list) => list.list_name === newListName).length > 0;
-    this.setState({ newListName, isNewListNameDuplicate, dialogChildren: true });
-    this.promptMoveSelectedLocations({ ...this.state, newListName, isNewListNameDuplicate });
+    const isNewListNameValid = containsPunctuation(newListName);
+    this.setState({
+      newListName,
+      isNewListNameDuplicate,
+      isNewListNameValid,
+      dialogChildren: true,
+    });
+    this.promptMoveSelectedLocations({
+      ...this.state,
+      newListName,
+      isNewListNameDuplicate,
+      isNewListNameValid,
+    });
   };
 
   // Prompt to move the locations currently selected in the list
   promptMoveSelectedLocations = ({
     newListName,
     isNewListNameDuplicate,
+    isNewListNameValid,
     selectedNewOrExisting,
   }) => {
     const { selectedLocations, selectedMoveOrCopy } = this.props;
@@ -818,7 +832,10 @@ export default class ListDetails extends Component {
                   this.moveSelectedLocations();
                 });
               }}
-              disabled={selectedNewOrExisting === 'new' && (!newListName || isNewListNameDuplicate)}
+              disabled={
+                selectedNewOrExisting === 'new' &&
+                (!newListName || isNewListNameDuplicate || isNewListNameValid)
+              }
             />
             <Button
               className="dialog__primary-action"
@@ -838,7 +855,10 @@ export default class ListDetails extends Component {
                 }
                 this.setState({ isSaveAsDraft: false, showSubmitModal: true });
               }}
-              disabled={selectedNewOrExisting === 'new' && (!newListName || isNewListNameDuplicate)}
+              disabled={
+                selectedNewOrExisting === 'new' &&
+                (!newListName || isNewListNameDuplicate || isNewListNameValid)
+              }
             />
 
             <LinkButton onClick={this.cancelDialog} label={locationsPage.lists.cancel} />
@@ -1745,6 +1765,7 @@ export default class ListDetails extends Component {
       isLoading,
       isManageListFolderOpen,
       isNewListNameDuplicate,
+      isNewListNameValid,
       listColumns,
       searchInputValue,
       filterString,
@@ -1907,6 +1928,7 @@ export default class ListDetails extends Component {
                 isGfwList={isGfwList}
                 newListName={newListName}
                 isNewListNameDuplicate={isNewListNameDuplicate}
+                isNewListNameValid={isNewListNameValid}
                 selectedLists={selectedLists}
                 locationsCount={isEveryRowSelected ? numberOfResults : selectedLocations.length}
                 selectedMoveOrCopy={selectedMoveOrCopy}

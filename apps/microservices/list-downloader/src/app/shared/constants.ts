@@ -1262,12 +1262,12 @@ export const EXCEL_TEMPLATES = {
         },
         {
           attribute: 'protected_areas_by_category_area',
-          type: 'category',
+          type: 'country',
           label: 'Argentina Protected Areas',
         },
         {
           attribute: 'landmark_by_category_area',
-          type: 'category',
+          type: 'country',
           label: 'Argentina Indigenous Territories',
         },
       ],
@@ -1290,12 +1290,12 @@ export const EXCEL_TEMPLATES = {
         },
         {
           attribute: 'protected_areas_by_category_area',
-          type: 'category',
+          type: 'country',
           label: 'Argentina Protected Areas',
         },
         {
           attribute: 'landmark_by_category_area',
-          type: 'category',
+          type: 'country',
           label: 'Argentina Indigenous Territories',
         },
       ],
@@ -1370,7 +1370,7 @@ export const EXCEL_TEMPLATES = {
       composites: [
         {
           attribute: 'classified_region_area',
-          type: 'country',
+          type: 'yearly',
           label: 'National Agricultural Frontier',
           hasSecondarySubLayers: true,
         },
@@ -1398,7 +1398,7 @@ export const EXCEL_TEMPLATES = {
       composites: [
         {
           attribute: 'classified_region_area',
-          type: 'country',
+          type: 'yearly',
           label: 'National Agricultural Frontier',
           hasSecondarySubLayers: true,
         },
@@ -1430,18 +1430,18 @@ export const EXCEL_TEMPLATES = {
       composites: [
         {
           attribute: 'tree_cover_loss_by_country_classified_region_yearly',
-          type: 'country',
+          type: 'yearly',
           label: 'National Agricultural Frontier',
           hasSecondarySubLayers: true,
         },
         {
           attribute: 'tree_cover_loss_by_country_wdpa_yearly',
-          type: 'country',
+          type: 'yearly',
           label: 'Protected Areas',
         },
         {
           attribute: 'tree_cover_loss_by_country_landmark_yearly',
-          type: 'country',
+          type: 'yearly',
           label: 'Indigenous territories',
         },
       ],
@@ -1458,13 +1458,13 @@ export const EXCEL_TEMPLATES = {
       composites: [
         {
           attribute: 'tree_cover_loss_by_country_classified_region_yearly',
-          type: 'country',
+          type: 'yearly',
           label: 'National Agricultural Frontier',
           hasSecondarySubLayers: true,
         },
         {
           attribute: 'tree_cover_loss_by_country_wdpa_yearly',
-          type: 'country',
+          type: 'yearly',
           label: 'Protected Areas',
           constantLayers: [
             'Category VI',
@@ -1479,7 +1479,7 @@ export const EXCEL_TEMPLATES = {
         },
         {
           attribute: 'tree_cover_loss_by_country_landmark_yearly',
-          type: 'country',
+          type: 'yearly',
           label: 'Indigenous territories',
         },
       ],

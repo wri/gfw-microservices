@@ -25,7 +25,7 @@ const ENTRY_VALUE_INDEX = 1;
 class ArgentinaLayerUtil {
   private layerData = [];
 
-  constructor(private key: keyof typeof LayersKeys, private data, private type) {
+  constructor(private key: keyof typeof LayersKeys, private data, private type: string) {
     this.setLayerData(data, type);
   }
 

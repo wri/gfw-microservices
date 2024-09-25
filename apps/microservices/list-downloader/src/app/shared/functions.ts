@@ -96,6 +96,5 @@ export const isEmptyObject = (obj: object): boolean => {
 };
 
 export const isObjInCountryFormat = (data) => {
-  const keys = Object.keys(data);
-  return keys.includes('ARG') || keys.includes('COL');
+  return Object.keys(data).every((x) => x.length === 3);
 };

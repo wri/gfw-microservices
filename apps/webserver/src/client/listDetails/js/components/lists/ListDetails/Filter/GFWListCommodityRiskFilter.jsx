@@ -1,18 +1,7 @@
 import React, { Component } from 'react';
 import cloneDeep from 'lodash/cloneDeep';
 import ReactSelect from 'react-select';
-import {
-  Select,
-  Box,
-  MenuItem,
-  FormControl,
-  InputLabel,
-  Modal,
-  Grid,
-  FormControlLabel,
-  Checkbox,
-  Typography,
-} from '@mui/material';
+import { Select, Box, MenuItem, FormControl, InputLabel, Modal, Grid } from '@mui/material';
 import {
   setFilterCount,
   toggleCanopyModal,

@@ -21,8 +21,7 @@ export default class DashboardSettings extends Component {
   };
 
   handleViewMap = () => {
-    const { selectedAlert, selectedList, selectedTimeframe, selectedAdmin, view } =
-      this.props;
+    const { selectedAlert, selectedList, selectedTimeframe, selectedAdmin, view } = this.props;
     if (!selectedList || !selectedList.id) {
       return;
     }
@@ -46,8 +45,8 @@ export default class DashboardSettings extends Component {
     if (selectedAdmin !== '') {
       sendData['selectedLocations'] = this.filterselectedLocations();
     }
-
-    redirectToMap(sendData);
+    console.log(view);
+    //redirectToMap(sendData);
     gtag('event', 'view map clicked', {
       event_category: 'Dashboard Click',
       event_label: 'user is re-directed to the map page via a Dashboard View Map click',

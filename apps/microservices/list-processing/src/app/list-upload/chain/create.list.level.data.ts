@@ -70,7 +70,7 @@ export class CreateList extends AbstractHandler<ChainType> {
     await this.executeQueryWithParams<void>(connection, 'uspAddListToAnalyses', parameters);
   }
 
-  async handle(input: ChainType): Promise<void> {
+  async handle(input: ChainType): Promise<ChainType> {
     const {
       list_name: listName,
       organization_database: clientDatabase,
@@ -113,11 +113,6 @@ export class CreateList extends AbstractHandler<ChainType> {
         'Insert row in List table'
       );
 
-      await super.handle({
-        ...input,
-        request: { ...input.request, listId: createListResult.list_id },
-      });
-
       await this.addListToAnalysesTable(connection, createListResult.list_id);
 
       await updateListsUploadStatus(
@@ -125,6 +120,11 @@ export class CreateList extends AbstractHandler<ChainType> {
         createListResult.list_id,
         'Add list to analysis table'
       );
+
+      return await super.handle({
+        ...input,
+        request: { ...input.request, listId: createListResult.list_id },
+      });
     } finally {
       await connection.disconnect();
     }

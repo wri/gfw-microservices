@@ -31,12 +31,13 @@ export const requestLargeListProcessSchema = z.object({
   organization_id: z.number(),
   subscription_status_id: z.number(),
   organization_database: z.string(),
-  list_id: z.number(),
+  list_id: z.number().optional(),
   path: z.string(),
-  template_type: z.string(),
-  user_id: z.number(),
-  startAnalysis: z.boolean(),
+  template_type: z.string().optional(),
+  user_id: z.number().optional(),
+  startAnalysis: z.boolean().optional(),
   isExternalAPIProcess: z.boolean().optional(),
+  list_name: z.string(),
 });
 
 export const requestTriggerProcessLargeListSchema = z.object({

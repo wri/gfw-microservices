@@ -6,7 +6,7 @@ export type ChainType = {
 };
 
 export type RequestNewList = {
-  list_name: string;
+  list_name?: string;
   organization_database: string;
   listTable?: string;
   analysisTable?: string;
@@ -15,16 +15,17 @@ export type RequestNewList = {
   customAttributeNames?: string;
   customAttributeTypes?: string;
   gfwListId?: number;
-  userId: number;
-  templateId: number;
+  userId?: number;
+  templateId?: number;
   path: string;
   listId?: number;
   analysisIds?: Array<string>;
+  fileDownloadedPath?: string;
 };
 
 interface Handler<T> {
   setNext(handler: Handler<T>): Handler<T>;
-  handle(request: T): Promise<void>;
+  handle(request: T): Promise<T>;
 }
 
 export abstract class AbstractHandler<T> implements Handler<T> {
@@ -33,10 +34,10 @@ export abstract class AbstractHandler<T> implements Handler<T> {
     this.nextHandler = handler;
     return handler;
   }
-  public async handle(request: T): Promise<void> {
+  public async handle(request: T): Promise<T> {
     if (this.nextHandler) {
       return await this.nextHandler.handle(request);
     }
-    return null;
+    return request;
   }
 }

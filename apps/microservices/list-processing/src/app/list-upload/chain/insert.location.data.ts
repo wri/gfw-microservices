@@ -30,7 +30,7 @@ export class InsertLocationData extends AbstractHandler<ChainType> {
     }
   }
 
-  async handle(input: ChainType): Promise<void> {
+  async handle(input: ChainType): Promise<ChainType> {
     const { organization_database: organizationDatabase, listTable } = input.request;
     const ListEntity = new EntitySchema<ListSchemaType>({
       ...ListSchema,
@@ -51,6 +51,8 @@ export class InsertLocationData extends AbstractHandler<ChainType> {
         const batch = values.slice(i, i + BATCH_SIZE);
         await this.insertBatch(connection, ListEntity, batch);
       }
+
+      return super.handle(input);
     } catch (error) {
       throw new Error(`Failed to handle input: ${error.message}`);
     }

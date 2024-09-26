@@ -272,7 +272,7 @@ export class GADMService extends AbstractHandler<ChainType> {
     this.getGeoReferenceData(feature);
   };
 
-  async handle(input: ChainType): Promise<void> {
+  async handle(input: ChainType): Promise<ChainType> {
     const { geojson } = input;
     const { listId } = input.request;
     const { features } = geojson as FeatureCollection;
@@ -282,5 +282,7 @@ export class GADMService extends AbstractHandler<ChainType> {
     }
 
     getGADM(geojson);
+
+    return super.handle(input);
   }
 }

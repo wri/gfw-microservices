@@ -1,4 +1,4 @@
-import { ClientStoreConnection, SQLUtils } from '@wri-monorepos/sql';
+import { SQLUtils } from '@wri-monorepos/sql';
 import { updateListsUploadStatus } from '../shared/update.lists.upload.status';
 import { AbstractHandler, ChainType } from './types';
 import * as sql from 'mssql';
@@ -9,9 +9,9 @@ interface QueryCreateTableResult {
 }
 
 export class CreateLocationSchema extends AbstractHandler<ChainType> {
-  private clientStoreConnection: ClientStoreConnection;
+  private clientStoreConnection: SQLUtils;
 
-  constructor(clientStoreConnection: ClientStoreConnection) {
+  constructor(clientStoreConnection: SQLUtils) {
     super();
     this.clientStoreConnection = clientStoreConnection;
   }
@@ -55,19 +55,53 @@ export class CreateLocationSchema extends AbstractHandler<ChainType> {
     await this.executeQueryWithParams<void>(connection, 'uspCreateListTable', parameters);
   }
 
-  public async getTableStructureQuery(templateId: number): Promise<QueryCreateTableResult[]> {
+  public async getTableStructureQuery(templateId: number): Promise<QueryCreateTableResult> {
     try {
-      const connection = await this.clientStoreConnection.getConnection(process.env.MSSQL_DATABASE);
-      const command = connection.createQueryRunner();
-      await command.connect();
-      const queryCreateTableResult: QueryCreateTableResult[] = await command.query(
-        'uspGetTableQueryString @0',
-        [templateId]
-      );
+      const queryCreateTableResult =
+        await this.clientStoreConnection.executeQuery<QueryCreateTableResult>(
+          'uspGetTableQueryString',
+          [
+            {
+              field: 'template_id',
+              type: sql.Int,
+              value: templateId,
+            },
+            {
+              field: 'custom_attribute_1',
+              type: sql.NVarChar(50),
+              value: null,
+            },
+            {
+              field: 'custom_attribute_1_type',
+              type: sql.NVarChar(50),
+              value: null,
+            },
+            {
+              field: 'custom_attribute_2',
+              type: sql.NVarChar(50),
+              value: null,
+            },
+            {
+              field: 'custom_attribute_2_type',
+              type: sql.NVarChar(50),
+              value: null,
+            },
+            {
+              field: 'custom_attribute_3',
+              type: sql.NVarChar(50),
+              value: null,
+            },
+            {
+              field: 'custom_attribute_3_type',
+              type: sql.NVarChar(50),
+              value: null,
+            },
+          ]
+        );
 
       return queryCreateTableResult;
     } catch (error) {
-      throw new Error(`Failed to get table structure query: ${error.message}`);
+      throw new Error(`Failed to get table structure query: ${error.stack}`);
     }
   }
 
@@ -103,7 +137,7 @@ export class CreateLocationSchema extends AbstractHandler<ChainType> {
     }
   }
 
-  async handle(input: ChainType): Promise<void> {
+  async handle(input: ChainType): Promise<ChainType> {
     const {
       templateId,
       listId,
@@ -134,7 +168,7 @@ export class CreateLocationSchema extends AbstractHandler<ChainType> {
       await this.createAnalysisStatusRecords(clientDatabase, listId, listStatusId, analysisIds);
       await updateListsUploadStatus(clientDatabase, listId, 'Create analysis status records');
 
-      await super.handle(input);
+      return await super.handle(input);
     } finally {
       await connection.disconnect();
     }

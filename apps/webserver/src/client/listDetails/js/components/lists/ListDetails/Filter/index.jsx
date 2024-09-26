@@ -1,0 +1,269 @@
+import React, { Component } from 'react';
+import { Stack, Button as MaterialButton, Badge, Box, Grid } from '@mui/material';
+import FilterAltIcon from '@mui/icons-material/FilterAlt';
+import ClearIcon from '@mui/icons-material/Clear';
+import {
+  toggleCanopyModal,
+  updateFilters,
+  setFilterCount,
+} from '../../../../../../locations/js/actions/locationActions';
+import { defaultFilterValues } from '../../defaultFilterValues';
+import Button from '../../../../../../common/js/components/Button';
+import CountryStateSubStateFilter from './CountryStateSubStateFilter';
+import ColumnSelector from '../ColumnSelector';
+import GFWListCommodityRiskFilter from './GFWListCommodityRiskFilter';
+import UserListCommodityRiskFilter from './UserListCommodityRiskFilter';
+import ProtectedAreasGFWList from './ProtectedAreasGFWListFilter';
+import AdministrativeAreasGFWListFilter from './AdministrativeAreasGFWListFilter';
+import GFWListFilter from './GFWListFilter';
+import { filterKeys, gfwListNames } from '../../../../../../common/js/constants/lists.constants';
+import { GFW_LISTS_NUMBER_CONSTANTS } from '../../../../../../../config/env/gfwLists.constants';
+import store from '../../../../../../locations/js/store';
+import '../../../../../../common/css/_irsBase.scss';
+import '../../../../../../common/css/_irsStyle.scss';
+import '../../../../../../common/css/filter-dialogs.scss';
+
+export default class Filter extends Component {
+  constructor(props) {
+    super(props);
+    this.state = { ...defaultFilterValues };
+    this.initialState = this.state;
+  }
+
+  changeCountry = (evt) => {
+    this.setState({
+      selectedCountry: evt.target.value,
+      selectedState: '',
+      selectedSubState: '',
+    });
+  };
+
+  changeState = (evt) => {
+    this.setState({ selectedState: evt.target.value, selectedSubState: '' });
+  };
+
+  changeSubState = (evt) => {
+    this.setState({ selectedSubState: evt.target.value });
+  };
+
+  updateValues = (state) => {
+    let filterCount = 0;
+    Object.keys(state).forEach((key) => {
+      if (filterKeys.includes(key) && !!state[key]) {
+        filterCount += 1;
+      }
+    });
+
+    store.dispatch(toggleCanopyModal());
+    store.dispatch(updateFilters(state));
+    store.dispatch(setFilterCount(filterCount));
+
+    gtag('event', 'list table filter', {
+      event_category: 'Lists Click',
+      event_label: 'user filtered the lists table',
+    });
+  };
+
+  resetFilters = () => {
+    this.setState(this.initialState, () => {
+      store.dispatch(toggleCanopyModal());
+      store.dispatch(updateFilters(this.initialState));
+      store.dispatch(setFilterCount(0));
+    });
+  };
+
+  render() {
+    const {
+      filterValues,
+      isFilterModalVisible,
+      filterCount,
+      listColumns,
+      setListColumns,
+      listView,
+      listName,
+      listData,
+      adminAreas,
+      protectedAreas,
+      history,
+      isGfwList,
+      clearFilters,
+    } = this.props;
+    const { selectedCountry, selectedState, selectedSubState } = this.state;
+
+    const countryList = Object.keys(filterValues).filter((name) => name !== 'null');
+
+    const stateList =
+      selectedCountry && selectedCountry in filterValues
+        ? Object.keys(filterValues[selectedCountry])
+        : [];
+
+    const subStateList = selectedState ? filterValues[selectedCountry][selectedState] : [];
+
+    const isCommodityRiskFilterVisible = listView === 'commodity_risk';
+    const isForestChangeFilterVisible = listView === 'forest_change';
+
+    const { PALM_OIL_MILLS, PROTECTED_AREAS, ADMINISTRATIVE_AREAS } = GFW_LISTS_NUMBER_CONSTANTS;
+
+    const isUserListCommodityRiskFilterVisible = isCommodityRiskFilterVisible && !isGfwList;
+    const isGFWListCommodityRiskFilterVisible =
+      isCommodityRiskFilterVisible && isGfwList && listName === gfwListNames[PALM_OIL_MILLS - 1];
+
+    const isProtectedAreasFilterVisible =
+      isForestChangeFilterVisible && listName === gfwListNames[PROTECTED_AREAS - 1] && isGfwList;
+    const isAdministrativeAreasFilterVisible =
+      isForestChangeFilterVisible &&
+      listName === gfwListNames[ADMINISTRATIVE_AREAS - 1] &&
+      isGfwList;
+
+    const isGFWListOtherThanProtectedOrAdministrativeAreas =
+      isForestChangeFilterVisible &&
+      isGfwList &&
+      !isProtectedAreasFilterVisible &&
+      !isAdministrativeAreasFilterVisible;
+
+    return (
+      <>
+        {isFilterModalVisible && (
+          <>
+            {isProtectedAreasFilterVisible && (
+              <ProtectedAreasGFWList
+                filterCount={filterCount}
+                protectedAreas={protectedAreas}
+                history={history}
+                clearFilters={clearFilters}
+              />
+            )}
+
+            {isAdministrativeAreasFilterVisible && (
+              <AdministrativeAreasGFWListFilter
+                filterCount={filterCount}
+                adminAreas={adminAreas}
+                history={history}
+              />
+            )}
+
+            {isGFWListOtherThanProtectedOrAdministrativeAreas && (
+              <GFWListFilter
+                listData={listData}
+                filterCount={filterCount}
+                list_name={listName}
+                clearFilters={clearFilters}
+              />
+            )}
+
+            {isUserListCommodityRiskFilterVisible && (
+              <UserListCommodityRiskFilter
+                listName={listName}
+                listData={listData}
+                filterCount={filterCount}
+                listView={listView}
+                clearFilters={clearFilters}
+              />
+            )}
+            {isGFWListCommodityRiskFilterVisible && (
+              <GFWListCommodityRiskFilter
+                listName={listName}
+                listData={listData}
+                filterCount={filterCount}
+                listView={listView}
+                clearFilters={clearFilters}
+              />
+            )}
+          </>
+        )}
+        <Stack
+          alignItems="center"
+          direction="row"
+          justifyContent="space-between"
+          sx={{ paddingBottom: '10px' }}
+        >
+          <Grid container spacing={3}>
+            {isFilterModalVisible && !isGfwList ? (
+              <>
+                <Grid container item xs={8} spacing={3}>
+                  <CountryStateSubStateFilter
+                    countries={countryList}
+                    selectedCountry={selectedCountry}
+                    onCountryChange={this.changeCountry}
+                    states={stateList}
+                    selectedState={selectedState}
+                    onStateChange={this.changeState}
+                    subStates={subStateList}
+                    selectedSubState={selectedSubState}
+                    onSubStateChange={this.changeSubState}
+                  />
+                </Grid>
+                <Grid item xs={3} sx={{ alignSelf: 'center' }}>
+                  <Button
+                    variant="primary"
+                    onClick={() => this.updateValues(this.state)}
+                    label="APPLY"
+                  />
+                  <Button
+                    style={{ marginLeft: '10px' }}
+                    variant="secondary"
+                    onClick={this.resetFilters}
+                    label="CLEAR"
+                  />
+                </Grid>
+              </>
+            ) : (
+              <Grid item xs={11}></Grid>
+            )}
+            <Grid item xs={1} sx={{ alignSelf: 'center' }}>
+              <Box flexGrow={1} />
+              <Stack alignItems="center" direction="row">
+                <MaterialButton
+                  sx={{ minWidth: '35px', '& > svg': { margin: 0 } }}
+                  onClick={() => store.dispatch(toggleCanopyModal())}
+                >
+                  {!isFilterModalVisible && filterCount > 0 ? (
+                    <Badge
+                      sx={{
+                        '& .MuiBadge-badge': {
+                          backgroundColor: '#97bd3d',
+                          color: 'white',
+                        },
+                      }}
+                      badgeContent={filterCount}
+                      overlap="circular"
+                    >
+                      <FilterAltIcon
+                        sx={{
+                          color: 'black',
+                          marginRight: '10px',
+                          fontSize: '25px',
+                          marginTop: '3px',
+                        }}
+                      />
+                    </Badge>
+                  ) : (
+                    <FilterAltIcon
+                      sx={{
+                        color: 'black',
+                        marginRight: '10px',
+                        fontSize: '25px',
+                        marginTop: '3px',
+                      }}
+                    />
+                  )}
+                </MaterialButton>
+                {isFilterModalVisible && (
+                  <MaterialButton
+                    sx={{ minWidth: '35px', '& > svg': { margin: 0 } }}
+                    onClick={() => store.dispatch(toggleCanopyModal())}
+                  >
+                    <ClearIcon sx={{ color: 'black' }} />
+                  </MaterialButton>
+                )}
+                {!isFilterModalVisible && (
+                  <ColumnSelector listColumns={listColumns} setListColumns={setListColumns} />
+                )}
+              </Stack>
+            </Grid>
+          </Grid>
+        </Stack>
+      </>
+    );
+  }
+}

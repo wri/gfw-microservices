@@ -1,3 +1,10 @@
+import {
+  DIAGNOSTIC_COVERAGE_DECIMAL_PLACES,
+  DIAGNOSTIC_ANALYSIS_PERIOD,
+} from '@wri-monorepos/constants';
+
+import { isObjInCountryFormat } from '../shared/functions';
+
 /**
  * Calculate the data for each Colombia layer.
  *
@@ -7,107 +14,121 @@
  * @param {Array<>} csvData - array that contains the final data.
  */
 
-const COVERAGE_DECIMAL_PLACES = 2;
-
 export const colombiaLayers = ({ operation, data, dataRow, csvData }) => {
   const { name, composites } = operation;
 
-  if (!composites) return csvData;
+  if (!composites || (name !== 'colombiaOverlap' && name !== 'colombiaDeforestation'))
+    return csvData;
 
-  if (name === 'colombiaLayers' || name === 'colombiaDeforestation') {
-    composites.forEach((composite) => {
-      const { type, label, attribute } = composite;
+  composites.forEach((composite) => {
+    const { type, label, attribute, hasSecondarySubLayers, constantLayers } = composite;
 
-      if (type === 'country' || type === 'category') {
-        let parsedData;
-        try {
-          if (type === 'country') {
-            parsedData = JSON.parse(data[attribute])?.COL || {};
+    if (type !== 'yearly' && type !== 'category') return;
 
-            const categories = splitObjAndCreateNestedChildren(parsedData);
+    let parsedData = {};
 
-            const totalForAllCategories = calculateTotalLossForAllCategories(categories);
+    try {
+      const tempParsedData = JSON.parse(data[attribute] || '{}');
+      parsedData = tempParsedData?.COL || {};
 
-            Object.entries(categories).forEach(([categoryName, categoryValue]) => {
-              const totalPerCategory = calculateTotalLossForAllCategories(categoryValue);
+      if (type === 'category' && !isObjInCountryFormat(tempParsedData)) {
+        parsedData = tempParsedData;
+      }
 
-              Object.entries(categoryValue).forEach(([subCategoryName, subCategoryValue]) => {
-                const totalPerSubCategory = calculateTotalLossForAllCategories(subCategoryValue);
-                const percentagePerCategory = (
-                  (totalPerCategory / totalForAllCategories) *
-                  100
-                ).toFixed(COVERAGE_DECIMAL_PLACES);
+      if (hasSecondarySubLayers) {
+        parsedData = splitObjAndCreateNestedChildren(parsedData);
+      }
 
-                const percentagePerSubCategory = (
-                  (totalPerSubCategory / totalForAllCategories) *
-                  100
-                ).toFixed(COVERAGE_DECIMAL_PLACES);
+      if (constantLayers) {
+        parsedData = createObjWithEmptyYears(parsedData, constantLayers);
+      }
 
-                if (name === 'colombiaDeforestation') {
-                  Object.entries(subCategoryValue).forEach(([year, value]) => {
-                    csvData.push([
-                      ...dataRow,
-                      label,
-                      categoryName,
-                      subCategoryName ?? '',
-                      value,
-                      year,
-                      totalPerSubCategory,
-                      percentagePerSubCategory,
-                    ]);
-                  });
-                } else {
-                  csvData.push([
-                    ...dataRow,
-                    label,
-                    categoryName,
-                    totalPerCategory,
-                    percentagePerCategory,
-                    subCategoryName ?? '',
-                    subCategoryValue,
-                    percentagePerSubCategory,
-                  ]);
-                }
+      const totalForAllSubLayers = calculateTotalLossForAllCategories(parsedData);
+
+      Object.entries(parsedData).forEach(([subLayerName, subLayerValue]) => {
+        const totalPerSubLayer = calculateTotalLossForAllCategories(subLayerValue);
+
+        const percentagePerSubLayer = ((totalPerSubLayer / totalForAllSubLayers) * 100).toFixed(
+          DIAGNOSTIC_COVERAGE_DECIMAL_PLACES
+        );
+
+        if (type === 'category') {
+          csvData.push([
+            ...dataRow,
+            label,
+            subLayerName.replace(',', ' -'),
+            totalPerSubLayer,
+            percentagePerSubLayer,
+          ]);
+
+          return;
+        }
+
+        const totalLossBySecondarySubLayerPerYear =
+          calculateTotalLossBySecondarySubLayerPerYear(subLayerValue);
+
+        Object.entries(subLayerValue).forEach(([secondarySubLayerName, secondarySubLayerValue]) => {
+          const totalPerSecondarySubLayer =
+            calculateTotalLossForAllCategories(secondarySubLayerValue);
+
+          const percentagePerSecondarySubLayer = (
+            (totalPerSecondarySubLayer / totalForAllSubLayers) *
+            100
+          ).toFixed(DIAGNOSTIC_COVERAGE_DECIMAL_PLACES);
+
+          if (name === 'colombiaDeforestation') {
+            if (hasSecondarySubLayers) {
+              Object.entries(secondarySubLayerValue).forEach(([year, value]) => {
+                csvData.push([
+                  ...dataRow,
+                  label,
+                  subLayerName,
+                  totalLossBySecondarySubLayerPerYear[year],
+                  year,
+                  totalPerSubLayer,
+                  percentagePerSubLayer,
+                  secondarySubLayerName ?? '',
+                  value,
+                  year,
+                  totalPerSecondarySubLayer,
+                  percentagePerSecondarySubLayer,
+                ]);
               });
-            });
-          } else {
-            parsedData = JSON.parse(data[attribute]) || {};
-
-            const totalForAllCategories = calculateTotalLossForAllCategories(parsedData);
-
-            Object.entries(parsedData).forEach(([categoryName, categoryValue]) => {
-              const totalPerCategory = calculateTotalLossForAllCategories(categoryValue);
-
-              const percentagePerCategory = (
-                (totalPerCategory / totalForAllCategories) *
-                100
-              ).toFixed(COVERAGE_DECIMAL_PLACES);
-
+            } else {
               csvData.push([
                 ...dataRow,
                 label,
-                categoryName.replace(',', ' -'),
-                totalPerCategory,
-                percentagePerCategory,
-                '',
-                totalPerCategory,
-                percentagePerCategory,
+                subLayerName.replace(',', ' -'),
+                secondarySubLayerValue,
+                secondarySubLayerName ?? '',
+                totalPerSubLayer,
+                percentagePerSubLayer,
               ]);
-            });
+            }
+          } else {
+            // colombiaOverlap
+            csvData.push([
+              ...dataRow,
+              label,
+              subLayerName,
+              totalPerSubLayer,
+              percentagePerSubLayer,
+              secondarySubLayerName ?? '',
+              secondarySubLayerValue,
+              percentagePerSecondarySubLayer,
+            ]);
           }
-        } catch (e) {
-          /* empty */
-        }
-      }
-    });
-  }
-
-  return csvData;
+        });
+      });
+    } catch (e) {
+      /* empty */
+    }
+  });
 };
 
 // This function splits Colombian tree cover loss object and create nested children
 const splitObjAndCreateNestedChildren = (treeCoverLoss) => {
-  const result = {};
+  const result = {} as { Unconditioned: unknown; Conditioned: unknown; Restrictions: unknown };
 
   for (const [key, value] of Object.entries(treeCoverLoss)) {
     const [mainKey, subKeyTemp] = key.split(';').map((k) => k.trim());
@@ -121,7 +142,13 @@ const splitObjAndCreateNestedChildren = (treeCoverLoss) => {
     result[mainKey][subKey] = value;
   }
 
-  return result;
+  const orderedData = {
+    Unconditioned: result.Unconditioned ?? {},
+    Conditioned: result.Conditioned ?? {},
+    Restrictions: result.Restrictions ?? {},
+  };
+
+  return orderedData;
 };
 
 const calculateTotalLossForAllCategories = (obj) => {
@@ -145,4 +172,44 @@ const calculateTotalLossForAllCategories = (obj) => {
 
   recursiveSum(obj);
   return sum;
+};
+
+const calculateTotalLossBySecondarySubLayerPerYear = (data) => {
+  const result = {};
+
+  for (const subLayer in data) {
+    for (const year in data[subLayer]) {
+      if (!result[year]) {
+        result[year] = 0;
+      }
+
+      result[year] += data[subLayer][year];
+    }
+  }
+
+  return result;
+};
+
+const createObjWithEmptyYears = (data, constantLayers) => {
+  const newObj = { ...data };
+  const keys = Object.keys(data);
+
+  for (const layer of constantLayers) {
+    if (!keys.includes(layer)) {
+      newObj[layer] = (() => {
+        const obj = {};
+
+        for (
+          let year = DIAGNOSTIC_ANALYSIS_PERIOD.START_YEAR;
+          year <= DIAGNOSTIC_ANALYSIS_PERIOD.END_YEAR;
+          year++
+        ) {
+          obj[year] = 0;
+        }
+        return obj;
+      })();
+    }
+  }
+
+  return newObj;
 };

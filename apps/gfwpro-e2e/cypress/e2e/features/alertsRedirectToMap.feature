@@ -1,7 +1,10 @@
-Feature: User can navigate to the alerts page
+Feature: User is redirected to map from the alerts page
 
-  Scenario: Navigating to the alerts page and viewing alerts
-    Given I login in the landing page
+  Scenario: Redirect to the map from the alerts page
+    Given I log in to the application
     When I navigate to the alerts page
-    When I select a list from the dropdown
-    Then I should be able to view the alerts on the map and interact with the features
+    And I select a list from the dropdown menu
+    Then I should see the locations displayed on the map
+    When I navigate to the map page
+    Then I should see the locations from the selected list on the map
+

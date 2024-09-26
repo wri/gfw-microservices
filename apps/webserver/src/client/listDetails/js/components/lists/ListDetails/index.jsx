@@ -53,6 +53,7 @@ import {
   getTemplateData,
   isLocationDataNotAvailable,
   isAnalyzingStatus,
+  containsPunctuation,
 } from '../../../../../locations/js/utils/lists.utils';
 
 import {
@@ -125,6 +126,7 @@ export default class ListDetails extends Component {
       selectedNewOrExisting: 'existing',
       newListName: '',
       isNewListNameDuplicate: false,
+      isNewListNameValid: false,
       refreshPage: false,
       draftSubmitDialogOpen: false,
       isSaveAsDraft: false,
@@ -776,14 +778,26 @@ export default class ListDetails extends Component {
     const { userLists } = this.props;
     const isNewListNameDuplicate =
       userLists.filter((list) => list.list_name === newListName).length > 0;
-    this.setState({ newListName, isNewListNameDuplicate, dialogChildren: true });
-    this.promptMoveSelectedLocations({ ...this.state, newListName, isNewListNameDuplicate });
+    const isNewListNameValid = containsPunctuation(newListName);
+    this.setState({
+      newListName,
+      isNewListNameDuplicate,
+      isNewListNameValid,
+      dialogChildren: true,
+    });
+    this.promptMoveSelectedLocations({
+      ...this.state,
+      newListName,
+      isNewListNameDuplicate,
+      isNewListNameValid,
+    });
   };
 
   // Prompt to move the locations currently selected in the list
   promptMoveSelectedLocations = ({
     newListName,
     isNewListNameDuplicate,
+    isNewListNameValid,
     selectedNewOrExisting,
   }) => {
     const { selectedLocations, selectedMoveOrCopy } = this.props;
@@ -818,7 +832,10 @@ export default class ListDetails extends Component {
                   this.moveSelectedLocations();
                 });
               }}
-              disabled={selectedNewOrExisting === 'new' && (!newListName || isNewListNameDuplicate)}
+              disabled={
+                selectedNewOrExisting === 'new' &&
+                (!newListName || isNewListNameDuplicate || isNewListNameValid)
+              }
             />
             <Button
               className="dialog__primary-action"
@@ -838,7 +855,10 @@ export default class ListDetails extends Component {
                 }
                 this.setState({ isSaveAsDraft: false, showSubmitModal: true });
               }}
-              disabled={selectedNewOrExisting === 'new' && (!newListName || isNewListNameDuplicate)}
+              disabled={
+                selectedNewOrExisting === 'new' &&
+                (!newListName || isNewListNameDuplicate || isNewListNameValid)
+              }
             />
 
             <LinkButton onClick={this.cancelDialog} label={locationsPage.lists.cancel} />
@@ -1711,7 +1731,7 @@ export default class ListDetails extends Component {
     const {
       activeTemplate,
       addType,
-      canopyModalVisible,
+      canopyModalVisible: isFilterModalVisible,
       commodityType,
       currentUser,
       filterCount,
@@ -1745,6 +1765,7 @@ export default class ListDetails extends Component {
       isLoading,
       isManageListFolderOpen,
       isNewListNameDuplicate,
+      isNewListNameValid,
       listColumns,
       searchInputValue,
       filterString,
@@ -1764,6 +1785,8 @@ export default class ListDetails extends Component {
       visibleColumns,
       isEveryRowSelected,
       isListSubmittedForAnalysis,
+      currentAdminAreas,
+      pAreas,
     } = this.state;
 
     const selectedList = selectedLists.length > 0 ? selectedLists[0] : null;
@@ -1856,6 +1879,13 @@ export default class ListDetails extends Component {
       ({ location_status_id }) => location_status_id === listStatus.Inactive
     );
 
+    const isListDiagnosticButtonVisible =
+      !getIsDraftWithoutDiagnostic(selectedList) &&
+      listName !== 'Administrative Areas' &&
+      listName !== 'Protected Areas' &&
+      (isGfwList || getActiveAnalysisType(listAnalysesStatus)) &&
+      !selectedLocations?.length;
+
     return (
       <div className="list-details">
         {!isGfwList && (
@@ -1898,6 +1928,7 @@ export default class ListDetails extends Component {
                 isGfwList={isGfwList}
                 newListName={newListName}
                 isNewListNameDuplicate={isNewListNameDuplicate}
+                isNewListNameValid={isNewListNameValid}
                 selectedLists={selectedLists}
                 locationsCount={isEveryRowSelected ? numberOfResults : selectedLocations.length}
                 selectedMoveOrCopy={selectedMoveOrCopy}
@@ -2052,15 +2083,13 @@ export default class ListDetails extends Component {
                   />
 
                   <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                    {!isGfwList && (
-                      <AnalysesTabs
-                        listViewOptions={listViewOptions}
-                        listView={listView}
-                        changeListView={this.changeListView}
-                        listAnalysesStatus={listAnalysesStatus}
-                        hasLocationWithErrors={hasLocationWithErrors}
-                      />
-                    )}
+                    <AnalysesTabs
+                      listViewOptions={listViewOptions}
+                      listView={listView}
+                      changeListView={this.changeListView}
+                      listAnalysesStatus={listAnalysesStatus}
+                      hasLocationWithErrors={hasLocationWithErrors}
+                    />
 
                     {!isGfwList && (
                       <MaterialButton
@@ -2085,28 +2114,24 @@ export default class ListDetails extends Component {
                     {!locationDataIsNotAvailable && !isAnalysisInProgress && (
                       <>
                         <div className="list-analysis-actions">
-                          {!getIsDraftWithoutDiagnostic(selectedList) &&
-                            listName !== 'Administrative Areas' &&
-                            listName !== 'Protected Areas' &&
-                            (isGfwList || getActiveAnalysisType(listAnalysesStatus)) &&
-                            !showMultipleSelectionBulkActions && (
-                              <MaterialButton
-                                className="list-analysis-actions__diagnostic-button"
-                                sx={{
-                                  color: '#97bd3d',
-                                  border: '1px solid #97bd3d',
-                                  borderRadius: '50px',
-                                  '&:hover': {
-                                    backgroundColor: 'rgba(151, 189, 61, 0.2)',
-                                  },
-                                }}
-                                data-cy="list-diagnostics"
-                                onClick={() => this.viewDiagnostic()}
-                                startIcon={<QueryStatsIcon />}
-                              >
-                                List diagnostic
-                              </MaterialButton>
-                            )}
+                          {isListDiagnosticButtonVisible && (
+                            <MaterialButton
+                              className="list-analysis-actions__diagnostic-button"
+                              sx={{
+                                color: '#97bd3d',
+                                border: '1px solid #97bd3d',
+                                borderRadius: '50px',
+                                '&:hover': {
+                                  backgroundColor: 'rgba(151, 189, 61, 0.2)',
+                                },
+                              }}
+                              data-cy="list-diagnostics"
+                              onClick={() => this.viewDiagnostic()}
+                              startIcon={<QueryStatsIcon />}
+                            >
+                              List diagnostic
+                            </MaterialButton>
+                          )}
 
                           <span className="list-analysis-actions__analysis-date">
                             {this.getAnalysisLastUpdatedDate(listAnalysesStatus)}
@@ -2114,6 +2139,7 @@ export default class ListDetails extends Component {
                         </div>
 
                         <Filter
+                          history={this.props.history}
                           filterCount={filterCount}
                           filterValues={filterValues}
                           clearFilters={this.clearFilters}
@@ -2123,7 +2149,13 @@ export default class ListDetails extends Component {
                               visibleColumns: newVisibleColumns,
                             })
                           }
-                          canopyModalVisible={canopyModalVisible}
+                          isFilterModalVisible={isFilterModalVisible}
+                          listView={listView}
+                          listName={listName}
+                          listData={listData}
+                          adminAreas={currentAdminAreas}
+                          protectedAreas={pAreas}
+                          isGfwList={selectedList.isGlobalForestWatchList}
                         />
 
                         <section>

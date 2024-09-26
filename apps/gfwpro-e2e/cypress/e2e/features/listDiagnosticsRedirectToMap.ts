@@ -11,91 +11,39 @@ describe('List diagnostics', () => {
   const diagnosticsPage = new DiagnosticsPage();
   const mapPage = new MapPage();
 
-  Given('I login in the landing page', () => {
+  Given('I am logged in', () => {
     User.login();
+  });
+
+  When('I navigate to locations and select a user list', () => {
     cy.visit('/locations');
-  });
-
-  When('I navigate to a single list details page', () => {
     locationsPage.clickOnLocationsList('AAT Argentina Points Generic');
-    listDetailsPage.selectCheckBoxes([1]);
   });
 
-  When('I navigate to a single list details page in GFW', () => {
+  When('I navigate to locations and select a GFW list', () => {
+    cy.visit('/locations');
     locationsPage.clickOnLocationsList('Palm Oil Mills');
-    listDetailsPage.selectCheckBoxes([1]);
   });
 
-  When('I navigate to a multiple lists details page', () => {
-    locationsPage.clickOnLocationsList('AAT Argentina Points Generic');
-    listDetailsPage.selectCheckBoxes([1, 2]);
-  });
-
-  When('I navigate to a multiple lists details page in GFW', () => {
-    locationsPage.clickOnLocationsList('Palm Oil Mills');
-    listDetailsPage.selectCheckBoxes([1, 2]);
-  });
-
-  When('I navigate to a full list details page', () => {
-    locationsPage.clickOnLocationsList('AAT Argentina Points Generic');
-    listDetailsPage.clickOnFullListMapBtn();
-  });
-
-  When('I navigate to a full list details page in GFW', () => {
-    locationsPage.clickOnLocationsList('Palm Oil Mills');
-    listDetailsPage.clickOnFullListMapBtn();
-  });
-
-  When('I click on the list diagnostics button', () => {
+  When('I click on the List Diagnostic button', () => {
     listDetailsPage.clickOnListDiagnosticsBtn();
   });
 
-  Then('I should be redirected to the diagnostic view and verify single location', () => {
+  When('I click on the map', () => {
     diagnosticsPage.clickOnDiagnosticMap();
-    cy.url().should('include', '/map');
-    mapPage.elements
-      .titleList('787 - AAT Argentina Points Generic')
-      .should('have.text', '787 - AAT Argentina Points Generic');
   });
 
-  Then('I should be redirected to the diagnostic view in GFW and verify single location', () => {
-    diagnosticsPage.clickOnDiagnosticMap();
+  Then('I should be redirected to the map page and view the GFW list loaded on the map', () => {
     cy.url().should('include', '/map');
     mapPage.elements
       .titleList('2,154 - Palm Oil Mills')
       .should('have.text', '2,154 - Palm Oil Mills');
   });
 
-  Then('I should be redirected to the diagnostic view and verify multiple locations', () => {
-    diagnosticsPage.clickOnDiagnosticMap();
+  Then('I should be redirected to the map page and view the user list loaded on the map', () => {
     cy.url().should('include', '/map');
     mapPage.elements
       .titleList('787 - AAT Argentina Points Generic')
       .should('have.text', '787 - AAT Argentina Points Generic');
   });
-
-  Then('I should be redirected to the diagnostic view in GFW and verify multiple locations', () => {
-    diagnosticsPage.clickOnDiagnosticMap();
-    cy.url().should('include', '/map');
-    mapPage.elements
-      .titleList('2,154 - Palm Oil Mills')
-      .should('have.text', '2,154 - Palm Oil Mills');
-  });
-
-  Then('I should be redirected to the diagnostic view and verify full list locations', () => {
-    cy.url().should('include', '/map');
-    mapPage.elements
-      .titleList('787 - AAT Argentina Points Generic')
-      .should('have.text', '787 - AAT Argentina Points Generic');
-  });
-
-  Then(
-    'I should be redirected to the diagnostic view in GFW and verify full list locations',
-    () => {
-      cy.url().should('include', '/map');
-      mapPage.elements
-        .titleList('2,154 - Palm Oil Mills')
-        .should('have.text', '2,154 - Palm Oil Mills');
-    }
-  );
 });

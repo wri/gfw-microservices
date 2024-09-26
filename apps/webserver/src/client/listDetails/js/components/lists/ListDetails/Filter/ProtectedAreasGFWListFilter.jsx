@@ -1,13 +1,13 @@
 import React, { Component } from 'react';
 import ReactSelect from 'react-select';
-import { Select, Box, MenuItem, FormControl, InputLabel, Modal } from '@mui/material';
+import { Select, Box, MenuItem, FormControl, InputLabel, Modal, Grid } from '@mui/material';
 import {
   toggleCanopyModal,
   updateFilters,
   setFilterCount,
 } from '../../../../../../locations/js/actions/locationActions';
 import Button from '../../../../../../common/js/components/Button';
-import CountryStateSubStateFilter from '../../ListDetails/CountryStateSubStateFilter';
+import CountryStateSubStateFilter from './CountryStateSubStateFilter';
 import { defaultFilterValues } from '../../defaultFilterValues';
 import store from '../../../../../../locations/js/store';
 import { boxStyle, selectStyle, multipleSelectStyles } from './filterStyles';
@@ -210,89 +210,95 @@ export default class GFWProtectedForestChangeFilter extends Component {
       <Modal open onClose={this.close}>
         <Box sx={boxStyle}>
           <h3>Show Protected Areas for</h3>
-          <CountryStateSubStateFilter
-            countries={countries}
-            selectedCountry={selectedCountry}
-            onCountryChange={this.onCountryChange}
-            states={states}
-            selectedState={selectedState}
-            onStateChange={this.onStateChange}
-            subStates={subStates}
-            selectedSubState={selectedSubState}
-            onSubStateChange={this.onSubStateChange}
-          />
-          <div style={{ display: 'flex', gap: '15px', margin: '10px 0px' }}>
-            <FormControl sx={selectStyle}>
-              <InputLabel id="designation-type">Designation Type</InputLabel>
-              <Select
-                id="designation-type"
-                labelId="designation-type"
-                value={selectedDesignationType}
-                onChange={this.onDesignationTypeChange}
-                label="Designation Type"
-              >
-                {designationTypeOptions.map((option) => (
-                  <MenuItem key={option} value={option}>
-                    {option}
-                  </MenuItem>
-                ))}
-              </Select>
-            </FormControl>
-
-            <FormControl sx={selectStyle}>
-              <InputLabel id="designation">Designation</InputLabel>
-
-              <Select
-                id="designation"
-                labelId="designation"
-                value={selectedDesignation}
-                onChange={this.onDesignationChange}
-                label="Designation"
-              >
-                {designationOptions.map((option) => (
-                  <MenuItem key={option} value={option}>
-                    {option}
-                  </MenuItem>
-                ))}
-              </Select>
-            </FormControl>
-          </div>
-          <div style={{ margin: '10px 0px' }}>
-            <ReactSelect
-              options={protectedAreasOptions}
-              onChange={this.onProtectedAreasChange}
-              isMulti
-              isSearchable
-              placeholder="PROTECTED AREAS"
-              value={selectedNames}
-              styles={multipleSelectStyles}
+          <Grid container spacing={3}>
+            <CountryStateSubStateFilter
+              countries={countries}
+              selectedCountry={selectedCountry}
+              onCountryChange={this.onCountryChange}
+              states={states}
+              selectedState={selectedState}
+              onStateChange={this.onStateChange}
+              subStates={subStates}
+              selectedSubState={selectedSubState}
+              onSubStateChange={this.onSubStateChange}
             />
-          </div>
 
-          <div
-            style={{
-              display: 'flex',
-              justifyContent: 'flex-end',
-              alignItems: 'center',
-            }}
-          >
-            <Button variant="secondary" onClick={this.close} label="Clear" />
-            <Button
-              style={{ marginLeft: '10px' }}
-              variant="primary"
-              disabled={
-                selectedCountry !== '' || selectedState !== '' || selectedSubState !== ''
-                  ? false
-                  : true
-              }
-              onClick={() => {
-                selectedCountry !== '' || selectedState !== '' || selectedSubState !== ''
-                  ? this.updateValues()
-                  : null;
+            <Grid item xs={6}>
+              <FormControl sx={selectStyle}>
+                <InputLabel id="designation-type">Designation Type</InputLabel>
+                <Select
+                  id="designation-type"
+                  labelId="designation-type"
+                  value={selectedDesignationType}
+                  onChange={this.onDesignationTypeChange}
+                  label="Designation Type"
+                >
+                  {designationTypeOptions.map((option) => (
+                    <MenuItem key={option} value={option}>
+                      {option}
+                    </MenuItem>
+                  ))}
+                </Select>
+              </FormControl>
+            </Grid>
+            <Grid item xs={6}>
+              <FormControl sx={selectStyle}>
+                <InputLabel id="designation">Designation</InputLabel>
+
+                <Select
+                  id="designation"
+                  labelId="designation"
+                  value={selectedDesignation}
+                  onChange={this.onDesignationChange}
+                  label="Designation"
+                >
+                  {designationOptions.map((option) => (
+                    <MenuItem key={option} value={option}>
+                      {option}
+                    </MenuItem>
+                  ))}
+                </Select>
+              </FormControl>
+            </Grid>
+            <Grid item xs={12}>
+              <ReactSelect
+                options={protectedAreasOptions}
+                onChange={this.onProtectedAreasChange}
+                isMulti
+                isSearchable
+                placeholder="PROTECTED AREAS"
+                value={selectedNames}
+                styles={multipleSelectStyles}
+              />
+            </Grid>
+
+            <Grid
+              item
+              xs={12}
+              sx={{
+                justifyContent: 'flex-end',
+                alignItems: 'center',
+                display: 'flex',
               }}
-              label="Apply"
-            />
-          </div>
+            >
+              <Button variant="secondary" onClick={this.close} label="Clear" />
+              <Button
+                style={{ marginLeft: '10px' }}
+                variant="primary"
+                disabled={
+                  selectedCountry !== '' || selectedState !== '' || selectedSubState !== ''
+                    ? false
+                    : true
+                }
+                onClick={() => {
+                  selectedCountry !== '' || selectedState !== '' || selectedSubState !== ''
+                    ? this.updateValues()
+                    : null;
+                }}
+                label="Apply"
+              />
+            </Grid>
+          </Grid>
         </Box>
       </Modal>
     );

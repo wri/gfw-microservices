@@ -2083,15 +2083,13 @@ export default class ListDetails extends Component {
                   />
 
                   <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                    {!isGfwList && (
-                      <AnalysesTabs
-                        listViewOptions={listViewOptions}
-                        listView={listView}
-                        changeListView={this.changeListView}
-                        listAnalysesStatus={listAnalysesStatus}
-                        hasLocationWithErrors={hasLocationWithErrors}
-                      />
-                    )}
+                    <AnalysesTabs
+                      listViewOptions={listViewOptions}
+                      listView={listView}
+                      changeListView={this.changeListView}
+                      listAnalysesStatus={listAnalysesStatus}
+                      hasLocationWithErrors={hasLocationWithErrors}
+                    />
 
                     {!isGfwList && (
                       <MaterialButton

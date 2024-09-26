@@ -4,14 +4,14 @@ import useHookWithRefCallback from '../useHookWithRefCallback';
 
 const transifex = Transifex.live.translateText;
 
-function Chart({ data, chartLabels, hasSubcategories }) {
+function Chart({ data, chartLabels, hasSubLayers }) {
   const pieChartsData = [];
 
   let dataLabels = {
     format: '<b>{point.name}</b>:<br>{point.percentage:.2f} %',
   };
 
-  if (hasSubcategories) {
+  if (hasSubLayers) {
     dataLabels = {
       distance: -50,
       format: '<b>{point.name}</b>:<br>{point.percentage:.2f} %',
@@ -27,11 +27,11 @@ function Chart({ data, chartLabels, hasSubcategories }) {
   const categoriesData = {
     colorByPoint: true,
     data: [],
-    size: hasSubcategories ? '60%' : null,
+    size: hasSubLayers ? '60%' : null,
   };
 
-  const subCategoriesData = {
-    name: 'subCategories',
+  const subLayersData = {
+    name: 'subLayers',
     data: [],
     size: '100%',
     innerSize: '60%',
@@ -49,25 +49,25 @@ function Chart({ data, chartLabels, hasSubcategories }) {
     id: 'versions',
   };
 
-  chartLabels.forEach(({ id, legend, color, subCategoryColor }) => {
+  chartLabels.forEach(({ id, legend, color, subLayerColor }) => {
     let category;
-    let sumOfSubcategories = 0;
+    let sumOfSubLayers = 0;
 
-    if (hasSubcategories && data[id]) {
+    if (hasSubLayers && data[id]) {
       Object.entries(data[id]).forEach(([key, value]) => {
-        sumOfSubcategories += value;
+        sumOfSubLayers += value;
 
-        subCategoriesData.data.push({
+        subLayersData.data.push({
           name: transifex(key),
           y: value,
-          color: subCategoryColor,
+          color: subLayerColor,
         });
       });
     }
 
     category = {
       name: transifex(legend),
-      y: hasSubcategories ? sumOfSubcategories : data[id],
+      y: hasSubLayers ? sumOfSubLayers : data[id],
       color,
     };
 
@@ -76,8 +76,8 @@ function Chart({ data, chartLabels, hasSubcategories }) {
 
   pieChartsData.push(categoriesData);
 
-  if (hasSubcategories) {
-    pieChartsData.push(subCategoriesData);
+  if (hasSubLayers) {
+    pieChartsData.push(subLayersData);
   }
 
   const renderChart = (divRef) => {
@@ -101,7 +101,7 @@ function Chart({ data, chartLabels, hasSubcategories }) {
       },
       plotOptions: {
         pie: {
-          allowPointSelect: !hasSubcategories,
+          allowPointSelect: !hasSubLayers,
           cursor: 'pointer',
           dataLabels,
         },

@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Select, Box, MenuItem, FormControl, InputLabel, Modal } from '@mui/material';
+import { Select, Box, MenuItem, FormControl, InputLabel, Modal, Grid } from '@mui/material';
 import cloneDeep from 'lodash/cloneDeep';
 import {
   toggleCanopyModal,
@@ -188,8 +188,7 @@ export default class UserListCommodityRiskFilter extends Component {
       <Modal open onClose={this.close}>
         <Box sx={boxStyle}>
           <h3>Filters</h3>
-
-          <div className="flex-grid-column">
+          <Grid container spacing={3}>
             <CountryStateSubStateFilter
               countries={countries}
               selectedCountry={selectedCountry}
@@ -201,226 +200,232 @@ export default class UserListCommodityRiskFilter extends Component {
               selectedSubState={selectedSubState}
               onSubStateChange={this.onSubStateChange}
             />
-          </div>
 
-          <hr />
+            <Grid item xs={12}>
+              <FormControl sx={selectStyle}>
+                <InputLabel id="supplier-select">Supplier</InputLabel>
+                <Select
+                  id="supplier-select"
+                  labelId="supplier-select"
+                  value={selectedSupplier}
+                  onChange={this.changeSupplier}
+                  label="Supplier"
+                >
+                  {suppliersList.map((option) => (
+                    <MenuItem key={option} value={option}>
+                      {option}
+                    </MenuItem>
+                  ))}
+                </Select>
+              </FormControl>
+            </Grid>
 
-          <div style={{ display: 'flex', gap: '15px', margin: '10px 0px' }}>
-            <FormControl sx={selectStyle}>
-              <InputLabel id="supplier-select">Supplier</InputLabel>
-              <Select
-                id="supplier-select"
-                labelId="supplier-select"
-                value={selectedSupplier}
-                onChange={this.changeSupplier}
-                label="Supplier"
-              >
-                {suppliersList.map((option) => (
-                  <MenuItem key={option} value={option}>
-                    {option}
-                  </MenuItem>
-                ))}
-              </Select>
-            </FormControl>
-          </div>
+            <Grid item xs={12}>
+              <FormControl sx={selectStyle}>
+                <InputLabel id="second-supplier-select">Second Supplier</InputLabel>
+                <Select
+                  id="second-supplier-select"
+                  labelId="second-supplier-select"
+                  value={selectedSecondSupplier}
+                  onChange={this.changeSecondSupplier}
+                  label="Second Supplier"
+                >
+                  {secondSuppliersList.map((option) => (
+                    <MenuItem key={option} value={option}>
+                      {option}
+                    </MenuItem>
+                  ))}
+                </Select>
+              </FormControl>
+            </Grid>
 
-          <div style={{ display: 'flex', gap: '15px', margin: '10px 0px' }}>
-            <FormControl sx={selectStyle}>
-              <InputLabel id="second-supplier-select">Second Supplier</InputLabel>
-              <Select
-                id="second-supplier-select"
-                labelId="second-supplier-select"
-                value={selectedSecondSupplier}
-                onChange={this.changeSecondSupplier}
-                label="Second Supplier"
-              >
-                {secondSuppliersList.map((option) => (
-                  <MenuItem key={option} value={option}>
-                    {option}
-                  </MenuItem>
-                ))}
-              </Select>
-            </FormControl>
-          </div>
-
-          <div style={{ display: 'flex', gap: '15px', margin: '10px 0px' }}>
-            <div>
-              <input
-                id="show-RSPO-certified"
-                checked={this.state.showRSPOCertified}
-                onChange={this.changeShowRSPOCertified}
-                type="checkbox"
-              />
-              <label htmlFor="show-RSPO-certified">Show RSPO Certified</label>
-            </div>
-            <FormControl sx={selectStyle}>
-              <InputLabel id="parent-company-select">Parent Company</InputLabel>
-              <Select
-                id="parent-company-select"
-                labelId="parent-company-select"
-                value={selectedParentCompany}
-                onChange={this.onParentCompanyChange}
-                label="Parent Company"
-              >
-                {parentCompaniesList.map((option) => (
-                  <MenuItem key={option} value={option}>
-                    {option}
-                  </MenuItem>
-                ))}
-              </Select>
-            </FormControl>
-          </div>
-
-          <hr />
-
-          <div className="flex-grid-column">
-            <div className="col flex-grid align-center space-between filter-spacer input-field__block-container">
-              <span className="label">Overall Threats</span>
-              <div className="flex-grid space-between">
-                <div>
-                  <input
-                    type="checkbox"
-                    id="overall-threats-high"
-                    name="overall-threats-selection"
-                    value="high"
-                    checked={this.state.selectedOverallThreats.includes('high')}
-                    onChange={this.changeOverallThreats}
-                  />
-                  <label className="filter-label" htmlFor="overall-threats-high">
-                    {' '}
-                    High{' '}
-                  </label>
-                </div>
-                <div>
-                  <input
-                    type="checkbox"
-                    id="overall-threats-medium"
-                    name="overall-threats-selection"
-                    value="medium"
-                    checked={this.state.selectedOverallThreats.includes('medium')}
-                    onChange={this.changeOverallThreats}
-                  />
-                  <label className="filter-label" htmlFor="overall-threats-medium">
-                    {' '}
-                    Medium{' '}
-                  </label>
-                </div>
-                <div>
-                  <input
-                    type="checkbox"
-                    id="overall-threats-low"
-                    name="overall-threats-selection"
-                    value="low"
-                    checked={this.state.selectedOverallThreats.includes('low')}
-                    onChange={this.changeOverallThreats}
-                  />
-                  <label className="filter-label" htmlFor="overall-threats-low">
-                    {' '}
-                    Low{' '}
-                  </label>
-                </div>
-              </div>
-            </div>
-            <div className="col flex-grid align-center space-between filter-spacer input-field__block-container">
-              <span className="label">Overall Values</span>
-              <div className="flex-grid space-between">
-                <div>
-                  <input
-                    type="checkbox"
-                    id="overall-values-high"
-                    name="overall-values-selection"
-                    value="high"
-                    checked={this.state.selectedOverallValues.includes('high')}
-                    onChange={this.changeOverallValues}
-                  />
-                  <label htmlFor="overall-values-high" className="filter-label">
-                    {' '}
-                    High{' '}
-                  </label>
-                </div>
-                <div>
-                  <input
-                    type="checkbox"
-                    id="overall-values-medium"
-                    name="overall-values-selection"
-                    value="medium"
-                    checked={this.state.selectedOverallValues.includes('medium')}
-                    onChange={this.changeOverallValues}
-                  />
-                  <label htmlFor="overall-values-medium" className="filter-label">
-                    {' '}
-                    Medium{' '}
-                  </label>
-                </div>
-                <div>
-                  <input
-                    type="checkbox"
-                    id="overall-values-low"
-                    name="overall-values-selection"
-                    value="low"
-                    checked={this.state.selectedOverallValues.includes('low')}
-                    onChange={this.changeOverallValues}
-                  />
-                  <label htmlFor="overall-values-low" className="filter-label">
-                    {' '}
-                    Low{' '}
-                  </label>
-                </div>
-              </div>
-            </div>
-            <div className="col flex-grid align-center space-between filter-spacer input-field__block-container">
-              <span className="label">Mill Priority</span>
-              <div className="flex-grid space-between">
-                <div>
-                  <input
-                    type="checkbox"
-                    id="mill-priority-high"
-                    name="mill-priority-selection"
-                    value="high"
-                    checked={this.state.selectedMillPriority.includes('high')}
-                    onChange={this.changeMillPriority}
-                  />
-                  <label htmlFor="mill-priority-high" className="filter-label">
-                    {' '}
-                    High{' '}
-                  </label>
-                </div>
-                <div>
-                  <input
-                    type="checkbox"
-                    id="mill-priority-medium"
-                    name="mill-priority-selection"
-                    value="medium"
-                    checked={this.state.selectedMillPriority.includes('medium')}
-                    onChange={this.changeMillPriority}
-                  />
-                  <label htmlFor="mill-priority-medium" className="filter-label">
-                    {' '}
-                    Medium{' '}
-                  </label>
-                </div>
-                <div>
-                  <input
-                    type="checkbox"
-                    id="mill-priority-low"
-                    name="mill-priority-selection"
-                    value="low"
-                    checked={this.state.selectedMillPriority.includes('low')}
-                    onChange={this.changeMillPriority}
-                  />
-                  <label htmlFor="mill-priority-low" className="filter-label">
-                    {' '}
-                    Low{' '}
-                  </label>
-                </div>
-              </div>
-            </div>
-
-            <div
-              style={{
-                display: 'flex',
+            <Grid
+              item
+              xs={12}
+              sx={{
                 justifyContent: 'flex-end',
                 alignItems: 'center',
+                display: 'flex',
+              }}
+            >
+              <div>
+                <input
+                  id="show-RSPO-certified"
+                  checked={this.state.showRSPOCertified}
+                  onChange={this.changeShowRSPOCertified}
+                  type="checkbox"
+                />
+                <label htmlFor="show-RSPO-certified">Show RSPO Certified</label>
+              </div>
+              <FormControl sx={selectStyle}>
+                <InputLabel id="parent-company-select">Parent Company</InputLabel>
+                <Select
+                  id="parent-company-select"
+                  labelId="parent-company-select"
+                  value={selectedParentCompany}
+                  onChange={this.onParentCompanyChange}
+                  label="Parent Company"
+                >
+                  {parentCompaniesList.map((option) => (
+                    <MenuItem key={option} value={option}>
+                      {option}
+                    </MenuItem>
+                  ))}
+                </Select>
+              </FormControl>
+            </Grid>
+
+            <Grid item xs={12} sx={{ alignItems: 'center' }}>
+              <div className="col flex-grid align-center space-between filter-spacer input-field__block-container">
+                <span className="label">Overall Threats</span>
+                <div className="flex-grid space-between">
+                  <div>
+                    <input
+                      type="checkbox"
+                      id="overall-threats-high"
+                      name="overall-threats-selection"
+                      value="high"
+                      checked={this.state.selectedOverallThreats.includes('high')}
+                      onChange={this.changeOverallThreats}
+                    />
+                    <label className="filter-label" htmlFor="overall-threats-high">
+                      {' '}
+                      High{' '}
+                    </label>
+                  </div>
+                  <div>
+                    <input
+                      type="checkbox"
+                      id="overall-threats-medium"
+                      name="overall-threats-selection"
+                      value="medium"
+                      checked={this.state.selectedOverallThreats.includes('medium')}
+                      onChange={this.changeOverallThreats}
+                    />
+                    <label className="filter-label" htmlFor="overall-threats-medium">
+                      {' '}
+                      Medium{' '}
+                    </label>
+                  </div>
+                  <div>
+                    <input
+                      type="checkbox"
+                      id="overall-threats-low"
+                      name="overall-threats-selection"
+                      value="low"
+                      checked={this.state.selectedOverallThreats.includes('low')}
+                      onChange={this.changeOverallThreats}
+                    />
+                    <label className="filter-label" htmlFor="overall-threats-low">
+                      {' '}
+                      Low{' '}
+                    </label>
+                  </div>
+                </div>
+              </div>
+              <div className="col flex-grid align-center space-between filter-spacer input-field__block-container">
+                <span className="label">Overall Values</span>
+                <div className="flex-grid space-between">
+                  <div>
+                    <input
+                      type="checkbox"
+                      id="overall-values-high"
+                      name="overall-values-selection"
+                      value="high"
+                      checked={this.state.selectedOverallValues.includes('high')}
+                      onChange={this.changeOverallValues}
+                    />
+                    <label htmlFor="overall-values-high" className="filter-label">
+                      {' '}
+                      High{' '}
+                    </label>
+                  </div>
+                  <div>
+                    <input
+                      type="checkbox"
+                      id="overall-values-medium"
+                      name="overall-values-selection"
+                      value="medium"
+                      checked={this.state.selectedOverallValues.includes('medium')}
+                      onChange={this.changeOverallValues}
+                    />
+                    <label htmlFor="overall-values-medium" className="filter-label">
+                      {' '}
+                      Medium{' '}
+                    </label>
+                  </div>
+                  <div>
+                    <input
+                      type="checkbox"
+                      id="overall-values-low"
+                      name="overall-values-selection"
+                      value="low"
+                      checked={this.state.selectedOverallValues.includes('low')}
+                      onChange={this.changeOverallValues}
+                    />
+                    <label htmlFor="overall-values-low" className="filter-label">
+                      {' '}
+                      Low{' '}
+                    </label>
+                  </div>
+                </div>
+              </div>
+              <div className="col flex-grid align-center space-between filter-spacer input-field__block-container">
+                <span className="label">Mill Priority</span>
+                <div className="flex-grid space-between">
+                  <div>
+                    <input
+                      type="checkbox"
+                      id="mill-priority-high"
+                      name="mill-priority-selection"
+                      value="high"
+                      checked={this.state.selectedMillPriority.includes('high')}
+                      onChange={this.changeMillPriority}
+                    />
+                    <label htmlFor="mill-priority-high" className="filter-label">
+                      {' '}
+                      High{' '}
+                    </label>
+                  </div>
+                  <div>
+                    <input
+                      type="checkbox"
+                      id="mill-priority-medium"
+                      name="mill-priority-selection"
+                      value="medium"
+                      checked={this.state.selectedMillPriority.includes('medium')}
+                      onChange={this.changeMillPriority}
+                    />
+                    <label htmlFor="mill-priority-medium" className="filter-label">
+                      {' '}
+                      Medium{' '}
+                    </label>
+                  </div>
+                  <div>
+                    <input
+                      type="checkbox"
+                      id="mill-priority-low"
+                      name="mill-priority-selection"
+                      value="low"
+                      checked={this.state.selectedMillPriority.includes('low')}
+                      onChange={this.changeMillPriority}
+                    />
+                    <label htmlFor="mill-priority-low" className="filter-label">
+                      {' '}
+                      Low{' '}
+                    </label>
+                  </div>
+                </div>{' '}
+              </div>
+            </Grid>
+
+            <Grid
+              item
+              xs={12}
+              sx={{
+                justifyContent: 'flex-end',
+                alignItems: 'center',
+                display: 'flex',
               }}
             >
               <Button variant="secondary" onClick={this.close} label="Cancel" />
@@ -430,8 +435,8 @@ export default class UserListCommodityRiskFilter extends Component {
                 onClick={this.updateValues}
                 label="Apply"
               />
-            </div>
-          </div>
+            </Grid>
+          </Grid>
         </Box>
       </Modal>
     );

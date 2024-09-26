@@ -59,6 +59,7 @@ function AnalysesTabs({
 
         <Tab
           icon={icon}
+          iconPosition="start"
           label="COMMODITY RISK"
           value="commodity_risk"
           sx={{

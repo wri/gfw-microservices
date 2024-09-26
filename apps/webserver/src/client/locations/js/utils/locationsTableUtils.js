@@ -155,7 +155,6 @@ export const getBooleanValue = (data, auditData) => {
  * @return {boolean|boolean} - Is location matching
  */
 export const checkSelectedFilter = (location, locationKey, selectedFilterValue) => {
-  console.log({ location, locationKey, selectedFilterValue });
   const value = location[locationKey];
 
   if (checkValid(value)) {

@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Stack, Button as MaterialButton, Badge, Box } from '@mui/material';
+import { Stack, Button as MaterialButton, Badge, Box, Grid } from '@mui/material';
 import FilterAltIcon from '@mui/icons-material/FilterAlt';
 import ClearIcon from '@mui/icons-material/Clear';
 import {
@@ -16,13 +16,8 @@ import UserListCommodityRiskFilter from './UserListCommodityRiskFilter';
 import ProtectedAreasGFWList from './ProtectedAreasGFWListFilter';
 import AdministrativeAreasGFWListFilter from './AdministrativeAreasGFWListFilter';
 import GFWListFilter from './GFWListFilter';
-import {
-  filterKeys,
-  gfwListNames,
-  ADMINISTRATIVE_AREAS_LIST_INDEX,
-  PALM_OIL_MILLS_LIST_INDEX,
-  PROTECTED_AREAS_LIST_INDEX,
-} from '../../../../../../common/js/constants/lists.constants';
+import { filterKeys, gfwListNames } from '../../../../../../common/js/constants/lists.constants';
+import { GFW_LISTS_NUMBER_CONSTANTS } from '../../../../../../../config/env/gfwLists.constants';
 import store from '../../../../../../locations/js/store';
 import '../../../../../../common/css/_irsBase.scss';
 import '../../../../../../common/css/_irsStyle.scss';
@@ -107,19 +102,17 @@ export default class Filter extends Component {
     const isCommodityRiskFilterVisible = listView === 'commodity_risk';
     const isForestChangeFilterVisible = listView === 'forest_change';
 
+    const { PALM_OIL_MILLS, PROTECTED_AREAS, ADMINISTRATIVE_AREAS } = GFW_LISTS_NUMBER_CONSTANTS;
+
     const isUserListCommodityRiskFilterVisible = isCommodityRiskFilterVisible && !isGfwList;
     const isGFWListCommodityRiskFilterVisible =
-      isCommodityRiskFilterVisible &&
-      isGfwList &&
-      listName === gfwListNames[PALM_OIL_MILLS_LIST_INDEX];
+      isCommodityRiskFilterVisible && isGfwList && listName === gfwListNames[PALM_OIL_MILLS - 1];
 
     const isProtectedAreasFilterVisible =
-      isForestChangeFilterVisible &&
-      listName === gfwListNames[PROTECTED_AREAS_LIST_INDEX] &&
-      isGfwList;
+      isForestChangeFilterVisible && listName === gfwListNames[PROTECTED_AREAS - 1] && isGfwList;
     const isAdministrativeAreasFilterVisible =
       isForestChangeFilterVisible &&
-      listName === gfwListNames[ADMINISTRATIVE_AREAS_LIST_INDEX] &&
+      listName === gfwListNames[ADMINISTRATIVE_AREAS - 1] &&
       isGfwList;
 
     const isGFWListOtherThanProtectedOrAdministrativeAreas =
@@ -184,78 +177,91 @@ export default class Filter extends Component {
           justifyContent="space-between"
           sx={{ paddingBottom: '10px' }}
         >
-          {isFilterModalVisible && !isGfwList && (
-            <>
-              <CountryStateSubStateFilter
-                countries={countryList}
-                selectedCountry={selectedCountry}
-                onCountryChange={this.changeCountry}
-                states={stateList}
-                selectedState={selectedState}
-                onStateChange={this.changeState}
-                subStates={subStateList}
-                selectedSubState={selectedSubState}
-                onSubStateChange={this.changeSubState}
-              />
-
-              <Button
-                variant="primary"
-                onClick={() => this.updateValues(this.state)}
-                label="APPLY"
-              />
-              <Button variant="secondary" onClick={this.resetFilters} label="CLEAR" />
-            </>
-          )}
-
-          <Box flexGrow={1} />
-          <Stack alignItems="center" direction="row">
-            <MaterialButton
-              sx={{ minWidth: '35px', '& > svg': { margin: 0 } }}
-              onClick={() => store.dispatch(toggleCanopyModal())}
-            >
-              {!isFilterModalVisible && filterCount > 0 ? (
-                <Badge
-                  sx={{
-                    '& .MuiBadge-badge': {
-                      backgroundColor: '#97bd3d',
-                      color: 'white',
-                    },
-                  }}
-                  badgeContent={filterCount}
-                  overlap="circular"
-                >
-                  <FilterAltIcon
-                    sx={{
-                      color: 'black',
-                      marginRight: '10px',
-                      fontSize: '25px',
-                      marginTop: '3px',
-                    }}
+          <Grid container spacing={3}>
+            {isFilterModalVisible && !isGfwList ? (
+              <>
+                <Grid container item xs={8} spacing={3}>
+                  <CountryStateSubStateFilter
+                    countries={countryList}
+                    selectedCountry={selectedCountry}
+                    onCountryChange={this.changeCountry}
+                    states={stateList}
+                    selectedState={selectedState}
+                    onStateChange={this.changeState}
+                    subStates={subStateList}
+                    selectedSubState={selectedSubState}
+                    onSubStateChange={this.changeSubState}
                   />
-                </Badge>
-              ) : (
-                <FilterAltIcon
-                  sx={{
-                    color: 'black',
-                    marginRight: '10px',
-                    fontSize: '25px',
-                    marginTop: '3px',
-                  }}
-                />
-              )}
-            </MaterialButton>
-            {isFilterModalVisible && (
-              <MaterialButton
-                sx={{ minWidth: '35px', '& > svg': { margin: 0 } }}
-                onClick={() => store.dispatch(toggleCanopyModal())}
-              >
-                <ClearIcon sx={{ color: 'black' }} />
-              </MaterialButton>
+                </Grid>
+                <Grid item xs={3} sx={{ alignSelf: 'center' }}>
+                  <Button
+                    variant="primary"
+                    onClick={() => this.updateValues(this.state)}
+                    label="APPLY"
+                  />
+                  <Button
+                    style={{ marginLeft: '10px' }}
+                    variant="secondary"
+                    onClick={this.resetFilters}
+                    label="CLEAR"
+                  />
+                </Grid>
+              </>
+            ) : (
+              <Grid item xs={11}></Grid>
             )}
-            {!isFilterModalVisible && (
-              <ColumnSelector listColumns={listColumns} setListColumns={setListColumns} />
-            )}
-          </Stack>
+            <Grid item xs={1} sx={{ alignSelf: 'center' }}>
+              <Box flexGrow={1} />
+              <Stack alignItems="center" direction="row">
+                <MaterialButton
+                  sx={{ minWidth: '35px', '& > svg': { margin: 0 } }}
+                  onClick={() => store.dispatch(toggleCanopyModal())}
+                >
+                  {!isFilterModalVisible && filterCount > 0 ? (
+                    <Badge
+                      sx={{
+                        '& .MuiBadge-badge': {
+                          backgroundColor: '#97bd3d',
+                          color: 'white',
+                        },
+                      }}
+                      badgeContent={filterCount}
+                      overlap="circular"
+                    >
+                      <FilterAltIcon
+                        sx={{
+                          color: 'black',
+                          marginRight: '10px',
+                          fontSize: '25px',
+                          marginTop: '3px',
+                        }}
+                      />
+                    </Badge>
+                  ) : (
+                    <FilterAltIcon
+                      sx={{
+                        color: 'black',
+                        marginRight: '10px',
+                        fontSize: '25px',
+                        marginTop: '3px',
+                      }}
+                    />
+                  )}
+                </MaterialButton>
+                {isFilterModalVisible && (
+                  <MaterialButton
+                    sx={{ minWidth: '35px', '& > svg': { margin: 0 } }}
+                    onClick={() => store.dispatch(toggleCanopyModal())}
+                  >
+                    <ClearIcon sx={{ color: 'black' }} />
+                  </MaterialButton>
+                )}
+                {!isFilterModalVisible && (
+                  <ColumnSelector listColumns={listColumns} setListColumns={setListColumns} />
+                )}
+              </Stack>
+            </Grid>
+          </Grid>
         </Stack>
       </>
     );

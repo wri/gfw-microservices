@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import ReactSelect from 'react-select';
-import { Select, MenuItem, FormControl, InputLabel, Box, Modal } from '@mui/material';
+import { Select, MenuItem, FormControl, InputLabel, Box, Modal, Grid } from '@mui/material';
 import { buildDropdownOptions } from '../../../../../../common/js/utils/buildDropdownOptions';
 import {
   toggleCanopyModal,
@@ -258,74 +258,90 @@ export default class GFWListFilter extends Component {
       <Modal open onClose={this.close}>
         <Box sx={boxStyle}>
           <h3>Filters</h3>
-          <CountryStateSubStateFilter
-            countries={countries}
-            selectedCountry={selectedCountry}
-            onCountryChange={this.onCountryChange}
-            states={states}
-            selectedState={selectedState}
-            onStateChange={this.onStateChange}
-            subStates={subStates}
-            selectedSubState={selectedSubState}
-            onSubStateChange={this.onSubStateChange}
-          />
 
-          {list_name === 'Palm Oil Mills' && (
-            <div style={{ display: 'flex', margin: '10px 0px' }}>
-              <div>
-                <input
-                  id="show-RSPO-certified"
-                  className="dropdown-group__dropdown"
-                  checked={showRSPOCertified}
-                  onChange={this.changeShowRSPOCertified}
-                  type="checkbox"
-                />
-                <label htmlFor="show-RSPO-certified">Show RSPO Certified</label>
-              </div>
-
-              <FormControl sx={selectStyle}>
-                <InputLabel id="parent-company-select-label">PARENT COMPANY</InputLabel>
-                <Select
-                  labelId="parent-company-select-label"
-                  id="country_select"
-                  value={dropdownOptionsMethodsParentCompany.value ?? ''}
-                  onChange={this.changeParentCompany}
-                  label="PARENT COMPANY"
-                >
-                  {dropdownOptionsMethodsParentCompany.dropdownOptions.map(({ label, value }) => (
-                    <MenuItem key={value} value={value}>
-                      {label}
-                    </MenuItem>
-                  ))}
-                </Select>
-              </FormControl>
-            </div>
-          )}
-
-          <div style={{ margin: '10px 0px' }}>
-            <ReactSelect
-              isMulti={true}
-              isSearchable={true}
-              maxMenuHeight={150}
-              className="edge-multi-select"
-              onChange={(evt) => this.changeNames(evt)}
-              options={multiOptions}
-              value={selectedNames}
-              styles={multipleSelectStyles}
+          <Grid container spacing={3}>
+            <CountryStateSubStateFilter
+              countries={countries}
+              selectedCountry={selectedCountry}
+              onCountryChange={this.onCountryChange}
+              states={states}
+              selectedState={selectedState}
+              onStateChange={this.onStateChange}
+              subStates={subStates}
+              selectedSubState={selectedSubState}
+              onSubStateChange={this.onSubStateChange}
             />
-          </div>
 
-          <div
-            style={{
-              display: 'flex',
-              justifyContent: 'flex-end',
-              alignItems: 'center',
-              margin: '10px 0px',
-            }}
-          >
-            <Button variant="secondary" onClick={this.close} label="Cancel" />
-            <Button variant="primary" onClick={this.updateValues} label="Apply" />
-          </div>
+            {list_name === 'Palm Oil Mills' && (
+              <Grid
+                item
+                xs={12}
+                sx={{
+                  justifyContent: 'flex-end',
+                  alignItems: 'center',
+                  display: 'flex',
+                }}
+              >
+                <div>
+                  <input
+                    id="show-RSPO-certified"
+                    className="dropdown-group__dropdown"
+                    checked={showRSPOCertified}
+                    onChange={this.changeShowRSPOCertified}
+                    type="checkbox"
+                  />
+                  <label htmlFor="show-RSPO-certified">Show RSPO Certified</label>
+                </div>
+
+                <FormControl sx={selectStyle}>
+                  <InputLabel id="parent-company-select-label">PARENT COMPANY</InputLabel>
+                  <Select
+                    labelId="parent-company-select-label"
+                    id="country_select"
+                    value={dropdownOptionsMethodsParentCompany.value ?? ''}
+                    onChange={this.changeParentCompany}
+                    label="PARENT COMPANY"
+                  >
+                    {dropdownOptionsMethodsParentCompany.dropdownOptions.map(({ label, value }) => (
+                      <MenuItem key={value} value={value}>
+                        {label}
+                      </MenuItem>
+                    ))}
+                  </Select>
+                </FormControl>
+              </Grid>
+            )}
+
+            <Grid item xs={12}>
+              <ReactSelect
+                isMulti={true}
+                isSearchable={true}
+                maxMenuHeight={150}
+                className="edge-multi-select"
+                onChange={(evt) => this.changeNames(evt)}
+                options={multiOptions}
+                value={selectedNames}
+                styles={multipleSelectStyles}
+              />
+            </Grid>
+            <Grid
+              item
+              xs={12}
+              sx={{
+                justifyContent: 'flex-end',
+                alignItems: 'center',
+                display: 'flex',
+              }}
+            >
+              <Button variant="secondary" onClick={this.close} label="Cancel" />
+              <Button
+                style={{ marginLeft: '10px' }}
+                variant="primary"
+                onClick={this.updateValues}
+                label="Apply"
+              />
+            </Grid>
+          </Grid>
         </Box>
       </Modal>
     );

@@ -1,7 +1,18 @@
 import React, { Component } from 'react';
 import cloneDeep from 'lodash/cloneDeep';
 import ReactSelect from 'react-select';
-import { Select, Box, MenuItem, FormControl, InputLabel, Modal } from '@mui/material';
+import {
+  Select,
+  Box,
+  MenuItem,
+  FormControl,
+  InputLabel,
+  Modal,
+  Grid,
+  FormControlLabel,
+  Checkbox,
+  Typography,
+} from '@mui/material';
 import {
   setFilterCount,
   toggleCanopyModal,
@@ -110,6 +121,7 @@ export default class GFWListCommodityRiskFilter extends Component {
   };
 
   changeMillPriority = (evt) => {
+    console.log({ evt });
     const myList = this.state.selectedMillPriority;
     let elemIndex = myList.findIndex((item) => item === evt.value);
     if (elemIndex === -1) {
@@ -268,21 +280,20 @@ export default class GFWListCommodityRiskFilter extends Component {
       <Modal open onClose={this.close}>
         <Box sx={boxStyle}>
           <h3>Filters</h3>
+          <Grid container spacing={3}>
+            <CountryStateSubStateFilter
+              countries={countries}
+              selectedCountry={selectedCountry}
+              onCountryChange={this.onCountryChange}
+              states={states}
+              selectedState={selectedState}
+              onStateChange={this.onStateChange}
+              subStates={subStates}
+              selectedSubState={selectedSubState}
+              onSubStateChange={this.onSubStateChange}
+            />
 
-          <CountryStateSubStateFilter
-            countries={countries}
-            selectedCountry={selectedCountry}
-            onCountryChange={this.onCountryChange}
-            states={states}
-            selectedState={selectedState}
-            onStateChange={this.onStateChange}
-            subStates={subStates}
-            selectedSubState={selectedSubState}
-            onSubStateChange={this.onSubStateChange}
-          />
-
-          <div style={{ display: 'flex', gap: '15px', margin: '10px 0px' }}>
-            <div>
+            <Grid item xs={4} sx={{ alignItems: 'center', display: 'flex' }}>
               <input
                 id="show-RSPO-certified"
                 checked={showRSPOCertified}
@@ -290,199 +301,201 @@ export default class GFWListCommodityRiskFilter extends Component {
                 type="checkbox"
               />
               <label htmlFor="show-RSPO-certified">Show RSPO Certified</label>
-            </div>
+            </Grid>
+            <Grid item xs={8}>
+              <FormControl sx={selectStyle}>
+                <InputLabel id="parent-company-select">Parent company</InputLabel>
+                <Select
+                  id="parent-company-select"
+                  labelId="parent-company-select"
+                  value={selectedParentCompany}
+                  onChange={this.onParentCompanyChange}
+                  label="Parent company"
+                >
+                  {parentCompaniesList.map((option) => (
+                    <MenuItem key={option} value={option}>
+                      {option}
+                    </MenuItem>
+                  ))}
+                </Select>
+              </FormControl>
+            </Grid>
 
-            <FormControl sx={selectStyle}>
-              <InputLabel id="parent-company-select">Parent company</InputLabel>
-              <Select
-                id="parent-company-select"
-                labelId="parent-company-select"
-                value={selectedParentCompany}
-                onChange={this.onParentCompanyChange}
-                label="Parent company"
-              >
-                {parentCompaniesList.map((option) => (
-                  <MenuItem key={option} value={option}>
-                    {option}
-                  </MenuItem>
-                ))}
-              </Select>
-            </FormControl>
-          </div>
-
-          <div className="flex-grid-column">
-            <div className="col flex-grid align-center space-between filter-spacer input-field__block-container">
-              <span className="label">Overall Threats</span>
-              <div className="flex-grid space-between">
-                <div>
-                  <input
-                    type="checkbox"
-                    id="overall-threats-high"
-                    name="overall-threats-selection"
-                    value="high"
-                    checked={selectedOverallThreats.includes('high')}
-                    onChange={this.changeOverallThreats}
-                  />
-                  <label className="filter-label" htmlFor="overall-threats-high">
-                    {' '}
-                    High{' '}
-                  </label>
-                </div>
-                <div>
-                  <input
-                    type="checkbox"
-                    id="overall-threats-medium"
-                    name="overall-threats-selection"
-                    value="medium"
-                    checked={selectedOverallThreats.includes('medium')}
-                    onChange={this.changeOverallThreats}
-                  />
-                  <label className="filter-label" htmlFor="overall-threats-medium">
-                    {' '}
-                    Medium{' '}
-                  </label>
-                </div>
-                <div>
-                  <input
-                    type="checkbox"
-                    id="overall-threats-low"
-                    name="overall-threats-selection"
-                    value="low"
-                    checked={selectedOverallThreats.includes('low')}
-                    onChange={this.changeOverallThreats}
-                  />
-                  <label className="filter-label" htmlFor="overall-threats-low">
-                    {' '}
-                    Low{' '}
-                  </label>
+            <Grid item xs={12} sx={{ alignItems: 'center' }}>
+              <div className="col flex-grid align-center space-between filter-spacer input-field__block-container">
+                <span className="label">Overall Threats</span>
+                <div className="flex-grid space-between">
+                  <div>
+                    <input
+                      type="checkbox"
+                      id="overall-threats-high"
+                      name="overall-threats-selection"
+                      value="high"
+                      checked={selectedOverallThreats.includes('high')}
+                      onChange={this.changeOverallThreats}
+                    />
+                    <label className="filter-label" htmlFor="overall-threats-high">
+                      {' '}
+                      High{' '}
+                    </label>
+                  </div>
+                  <div>
+                    <input
+                      type="checkbox"
+                      id="overall-threats-medium"
+                      name="overall-threats-selection"
+                      value="medium"
+                      checked={selectedOverallThreats.includes('medium')}
+                      onChange={this.changeOverallThreats}
+                    />
+                    <label className="filter-label" htmlFor="overall-threats-medium">
+                      {' '}
+                      Medium{' '}
+                    </label>
+                  </div>
+                  <div>
+                    <input
+                      type="checkbox"
+                      id="overall-threats-low"
+                      name="overall-threats-selection"
+                      value="low"
+                      checked={selectedOverallThreats.includes('low')}
+                      onChange={this.changeOverallThreats}
+                    />
+                    <label className="filter-label" htmlFor="overall-threats-low">
+                      {' '}
+                      Low{' '}
+                    </label>
+                  </div>
                 </div>
               </div>
-            </div>
-            <div className="col flex-grid align-center space-between filter-spacer input-field__block-container">
-              <span className="label">Overall Values</span>
-              <div className="flex-grid space-between">
-                <div>
-                  <input
-                    type="checkbox"
-                    id="overall-values-high"
-                    name="overall-values-selection"
-                    value="high"
-                    checked={selectedOverallValues.includes('high')}
-                    onChange={this.changeOverallValues}
-                  />
-                  <label htmlFor="overall-values-high" className="filter-label">
-                    {' '}
-                    High{' '}
-                  </label>
-                </div>
-                <div>
-                  <input
-                    type="checkbox"
-                    id="overall-values-medium"
-                    name="overall-values-selection"
-                    value="medium"
-                    checked={selectedOverallValues.includes('medium')}
-                    onChange={this.changeOverallValues}
-                  />
-                  <label htmlFor="overall-values-medium" className="filter-label">
-                    {' '}
-                    Medium{' '}
-                  </label>
-                </div>
-                <div>
-                  <input
-                    type="checkbox"
-                    id="overall-values-low"
-                    name="overall-values-selection"
-                    value="low"
-                    checked={selectedOverallValues.includes('low')}
-                    onChange={this.changeOverallValues}
-                  />
-                  <label htmlFor="overall-values-low" className="filter-label">
-                    {' '}
-                    Low{' '}
-                  </label>
-                </div>
-              </div>
-            </div>
-            <div className="col flex-grid align-center space-between filter-spacer input-field__block-container">
-              <span className="label">Mill Priority</span>
-              <div className="flex-grid space-between">
-                <div>
-                  <input
-                    type="checkbox"
-                    id="mill-priority-high"
-                    name="mill-priority-selection"
-                    value="high"
-                    checked={selectedMillPriority.includes('high')}
-                    onChange={this.changeMillPriority}
-                  />
-                  <label htmlFor="mill-priority-high" className="filter-label">
-                    {' '}
-                    High{' '}
-                  </label>
-                </div>
-                <div>
-                  <input
-                    type="checkbox"
-                    id="mill-priority-medium"
-                    name="mill-priority-selection"
-                    value="medium"
-                    checked={selectedMillPriority.includes('medium')}
-                    onChange={this.changeMillPriority}
-                  />
-                  <label htmlFor="mill-priority-medium" className="filter-label">
-                    {' '}
-                    Medium{' '}
-                  </label>
-                </div>
-                <div>
-                  <input
-                    type="checkbox"
-                    id="mill-priority-low"
-                    name="mill-priority-selection"
-                    value="low"
-                    checked={selectedMillPriority.includes('low')}
-                    onChange={this.changeMillPriority}
-                  />
-                  <label htmlFor="mill-priority-low" className="filter-label">
-                    {' '}
-                    Low{' '}
-                  </label>
+              <div className="col flex-grid align-center space-between filter-spacer input-field__block-container">
+                <span className="label">Overall Values</span>
+                <div className="flex-grid space-between">
+                  <div>
+                    <input
+                      type="checkbox"
+                      id="overall-values-high"
+                      name="overall-values-selection"
+                      value="high"
+                      checked={selectedOverallValues.includes('high')}
+                      onChange={this.changeOverallValues}
+                    />
+                    <label htmlFor="overall-values-high" className="filter-label">
+                      {' '}
+                      High{' '}
+                    </label>
+                  </div>
+                  <div>
+                    <input
+                      type="checkbox"
+                      id="overall-values-medium"
+                      name="overall-values-selection"
+                      value="medium"
+                      checked={selectedOverallValues.includes('medium')}
+                      onChange={this.changeOverallValues}
+                    />
+                    <label htmlFor="overall-values-medium" className="filter-label">
+                      {' '}
+                      Medium{' '}
+                    </label>
+                  </div>
+                  <div>
+                    <input
+                      type="checkbox"
+                      id="overall-values-low"
+                      name="overall-values-selection"
+                      value="low"
+                      checked={selectedOverallValues.includes('low')}
+                      onChange={this.changeOverallValues}
+                    />
+                    <label htmlFor="overall-values-low" className="filter-label">
+                      {' '}
+                      Low{' '}
+                    </label>
+                  </div>
                 </div>
               </div>
-            </div>
-          </div>
+              <div className="col flex-grid align-center space-between filter-spacer input-field__block-container">
+                <span className="label">Mill Priority</span>
+                <div className="flex-grid space-between">
+                  <div>
+                    <input
+                      type="checkbox"
+                      id="mill-priority-high"
+                      name="mill-priority-selection"
+                      value="high"
+                      checked={selectedMillPriority.includes('high')}
+                      onChange={this.changeMillPriority}
+                    />
+                    <label htmlFor="mill-priority-high" className="filter-label">
+                      {' '}
+                      High{' '}
+                    </label>
+                  </div>
+                  <div>
+                    <input
+                      type="checkbox"
+                      id="mill-priority-medium"
+                      name="mill-priority-selection"
+                      value="medium"
+                      checked={selectedMillPriority.includes('medium')}
+                      onChange={this.changeMillPriority}
+                    />
+                    <label htmlFor="mill-priority-medium" className="filter-label">
+                      {' '}
+                      Medium{' '}
+                    </label>
+                  </div>
+                  <div>
+                    <input
+                      type="checkbox"
+                      id="mill-priority-low"
+                      name="mill-priority-selection"
+                      value="low"
+                      checked={selectedMillPriority.includes('low')}
+                      onChange={this.changeMillPriority}
+                    />
+                    <label htmlFor="mill-priority-low" className="filter-label">
+                      {' '}
+                      Low{' '}
+                    </label>
+                  </div>
+                </div>
+              </div>
+            </Grid>
 
-          <hr />
+            <Grid item xs={12}>
+              <ReactSelect
+                options={millList}
+                onChange={this.changeNames}
+                isMulti
+                isSearchable
+                placeholder="Select"
+                value={selectedNames}
+                styles={multipleSelectStyles}
+              />
+            </Grid>
 
-          <div style={{ margin: '10px 0px' }}>
-            <ReactSelect
-              options={millList}
-              onChange={this.changeNames}
-              isMulti
-              isSearchable
-              placeholder="Select"
-              value={selectedNames}
-              styles={multipleSelectStyles}
-            />
-          </div>
-          <div
-            style={{
-              display: 'flex',
-              justifyContent: 'flex-end',
-              alignItems: 'center',
-            }}
-          >
-            <Button variant="secondary" onClick={this.close} label="Cancel" />
+            <Grid
+              item
+              xs={12}
+              sx={{
+                justifyContent: 'flex-end',
+                alignItems: 'center',
+                display: 'flex',
+              }}
+            >
+              <Button variant="secondary" onClick={this.close} label="Cancel" />
 
-            <Button
-              style={{ marginLeft: '10px' }}
-              variant="primary"
-              onClick={this.updateValues}
-              label="Apply"
-            />
-          </div>
+              <Button
+                style={{ marginLeft: '10px' }}
+                variant="primary"
+                onClick={this.updateValues}
+                label="Apply"
+              />
+            </Grid>
+          </Grid>
         </Box>
       </Modal>
     );

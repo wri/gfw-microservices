@@ -120,6 +120,7 @@ def data_cleaning(df):
     df['location_status_id'] = 2
     df['id'] = df.index
 
+    # Reoder columns to match DB schema
     df = df[cfg.small_lists_columns]
 
     return df

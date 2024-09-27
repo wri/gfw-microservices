@@ -181,7 +181,8 @@ export class GfwLists {
       const itemsWithListId = items.map((item) => {
         return { ...item, list_id: list_id };
       });
-      return [itemsWithListId, count];
+      const number_of_pages = Math.ceil(count / take);
+      return [itemsWithListId, count, number_of_pages];
     } catch (error) {
       throw new InternalServerErrorException(
         `Error getAnalysisDataForGFWList for gfwList id ${list_id}`,

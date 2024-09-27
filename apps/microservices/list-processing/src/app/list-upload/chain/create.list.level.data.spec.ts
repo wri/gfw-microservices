@@ -1,4 +1,4 @@
-import { CreateList } from './create.list.level.data';
+import { CreateListLevelData } from './create.list.level.data';
 import { SQLUtils } from '@wri-monorepos/sql';
 import { updateListsUploadStatus } from '../shared/update.lists.upload.status';
 import { CreateListResult } from '@wri-monorepos/geo';
@@ -11,12 +11,12 @@ jest.mock('@wri-monorepos/sql');
 jest.mock('../shared/update.lists.upload.status');
 
 describe('CreateList', () => {
-  let createList: CreateList;
+  let createList: CreateListLevelData;
   let mockConnection: jest.Mocked<SQLUtils>;
 
   beforeEach(() => {
     mockConnection = new SQLUtils({} as sql.config) as jest.Mocked<SQLUtils>;
-    createList = new CreateList();
+    createList = new CreateListLevelData();
   });
 
   afterEach(() => {

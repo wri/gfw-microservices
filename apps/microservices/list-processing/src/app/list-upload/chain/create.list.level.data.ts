@@ -5,7 +5,7 @@ import * as sql from 'mssql';
 import { updateListsUploadStatus } from '../shared/update.lists.upload.status';
 import { sqlConfig } from '../shared/config';
 
-export class CreateList extends AbstractHandler<ChainType> {
+export class CreateListLevelData extends AbstractHandler<ChainType> {
   private createSqlParameter(
     field: string,
     type: sql.ISqlType | sql.ISqlTypeFactoryWithNoParams,

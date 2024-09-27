@@ -2,7 +2,7 @@ import * as asyncPool from 'tiny-async-pool';
 import { Feature, FeatureCollection } from '@wri-monorepos/geo';
 import { AbstractHandler, ChainType } from './types';
 import { Logger } from '@nestjs/common';
-import { executeQueryJSON } from '@arcgis/core/rest/query';
+import * as arcgis from '@arcgis/core/rest/query';
 import Query from '@arcgis/core/rest/support/Query';
 import Point from '@arcgis/core/geometry/Point';
 import Polygon from '@arcgis/core/geometry/Polygon';
@@ -117,7 +117,7 @@ export class GADMService extends AbstractHandler<ChainType> {
 
   esriQuery = (url = '', queryProperties = {}) => {
     const query = new Query(queryProperties);
-    return executeQueryJSON(url, query);
+    return arcgis.executeQueryJSON(url, query);
   };
 
   getGeoReferenceData = async (feature: Feature) => {

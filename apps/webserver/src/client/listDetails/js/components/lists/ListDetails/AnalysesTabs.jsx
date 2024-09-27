@@ -12,7 +12,7 @@ function AnalysesTabs({
   listAnalysesStatus,
   hasLocationWithErrors,
 }) {
-  const post2020TreeCoverLossAnalysisStatus = listAnalysesStatus.find(
+  const post2020TreeCoverLossAnalysisStatus = listAnalysesStatus?.find(
     ({ analysisId }) => analysisId === analysisTypes.FOREST_CHANGE_DIAGNOSTICS
   )?.status;
 
@@ -59,6 +59,7 @@ function AnalysesTabs({
 
         <Tab
           icon={icon}
+          iconPosition="start"
           label="COMMODITY RISK"
           value="commodity_risk"
           sx={{

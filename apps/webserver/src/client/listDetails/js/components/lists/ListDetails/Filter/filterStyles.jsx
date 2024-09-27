@@ -13,6 +13,7 @@ export const boxStyle = {
 
 export const selectStyle = {
   minWidth: 200,
+  flexGrow: 1,
   width: '100%',
   '& .MuiOutlinedInput-root': {
     '& fieldset': {

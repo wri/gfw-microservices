@@ -1,7 +1,7 @@
 import { argentinaLayers } from './argentina.layers.parser';
 
 describe('Argentina Layers Parser', () => {
-  test('When all input parameters is empty', () => {
+  it('should all input parameters is empty', () => {
     const csvData = [];
 
     argentinaLayers({
@@ -13,7 +13,7 @@ describe('Argentina Layers Parser', () => {
     expect(csvData).toStrictEqual([]);
   });
 
-  test('When composites inside  operation is empty', () => {
+  it('should composites inside  operation is empty', () => {
     const csvData = [];
 
     argentinaLayers({
@@ -29,7 +29,7 @@ describe('Argentina Layers Parser', () => {
     expect(csvData).toStrictEqual([]);
   });
 
-  test('When layer has more than 5 category ', () => {
+  it('should layer has more than 5 category ', () => {
     const csvData = [];
 
     argentinaLayers({
@@ -61,7 +61,7 @@ describe('Argentina Layers Parser', () => {
     ]);
   });
 
-  test('When arg_otbn_area have more than 5 category  and limit to 3', () => {
+  it('should arg_otbn_area have more than 5 category  and limit to 3', () => {
     const csvData = [];
 
     argentinaLayers({
@@ -92,7 +92,7 @@ describe('Argentina Layers Parser', () => {
     ]);
   });
 
-  test('When pass data for more than one layer', () => {
+  it('should pass data for more than one layer', () => {
     const csvData = [];
 
     argentinaLayers({
@@ -108,12 +108,12 @@ describe('Argentina Layers Parser', () => {
           },
           {
             attribute: 'protected_areas_by_category_area',
-            type: 'category',
+            type: 'country',
             label: 'Argentina Protected Areas',
           },
           {
             attribute: 'landmark_by_category_area',
-            type: 'category',
+            type: 'country',
             label: 'Argentina Indigenous Territories',
           },
         ],
@@ -139,7 +139,7 @@ describe('Argentina Layers Parser', () => {
     ]);
   });
 
-  test('When pass data for more than one layer', () => {
+  it('should pass data for more than one layer', () => {
     const csvData = [];
 
     argentinaLayers({
@@ -155,12 +155,12 @@ describe('Argentina Layers Parser', () => {
           },
           {
             attribute: 'protected_areas_by_category_area',
-            type: 'category',
+            type: 'country',
             label: 'Argentina Protected Areas',
           },
           {
             attribute: 'landmark_by_category_area',
-            type: 'category',
+            type: 'country',
             label: 'Argentina Indigenous Territories',
           },
         ],
@@ -186,7 +186,7 @@ describe('Argentina Layers Parser', () => {
     ]);
   });
 
-  test('When receive data inside dataRow parameter', () => {
+  it('should receive data inside dataRow parameter', () => {
     const csvData = [];
 
     argentinaLayers({
@@ -217,7 +217,7 @@ describe('Argentina Layers Parser', () => {
     ]);
   });
 
-  test('When receive all data equals to 0', () => {
+  it('should receive all data equals to 0', () => {
     const csvData = [];
 
     argentinaLayers({
@@ -248,6 +248,49 @@ describe('Argentina Layers Parser', () => {
       ['wri', 1, 'Argentina OTBN', 'cat2', 0, 0],
       ['wri', 1, 'Argentina OTBN', 'Other', 0, 0],
       ['wri', 1, 'Argentina OTBN', 'Non-Overlap', 0, 0],
+    ]);
+  });
+
+  it('should return data from ARG obj when fields are in country format', () => {
+    const csvData = [];
+
+    argentinaLayers({
+      operation: {
+        name: 'argentinaLayers',
+        parsed: 'overhead',
+        composites: [
+          {
+            attribute: 'protected_areas_by_category_area',
+            type: 'country',
+            label: 'Argentina Protected Areas',
+          },
+          {
+            attribute: 'landmark_by_category_area',
+            type: 'country',
+            label: 'Argentina Indigenous Territories',
+          },
+        ],
+      },
+      data: {
+        protected_areas_by_category_area:
+          '{ "ARG": { "cat1": 10, "cat2": 35, "cat3": 5 }, "COL": { "cat1": 1, "cat2": 2, "cat3": 3 } }',
+        landmark_by_category_area:
+          '{ "ARG": { "dog1": 30, "dog2": 5, "dog3": 15 }, "COL": { "dog1": 1, "dog2": 2, "dog3": 3 } }',
+        total_area: 50,
+      },
+      dataRow: ['wri', 1],
+      csvData,
+    });
+
+    expect(csvData).toStrictEqual([
+      ['wri', 1, 'Argentina Protected Areas', 'cat1', 10, 20],
+      ['wri', 1, 'Argentina Protected Areas', 'cat2', 35, 70],
+      ['wri', 1, 'Argentina Protected Areas', 'cat3', 5, 10],
+      ['wri', 1, 'Argentina Protected Areas', 'Non-Overlap', 0, 0],
+      ['wri', 1, 'Argentina Indigenous Territories', 'dog1', 30, 60],
+      ['wri', 1, 'Argentina Indigenous Territories', 'dog2', 5, 10],
+      ['wri', 1, 'Argentina Indigenous Territories', 'dog3', 15, 30],
+      ['wri', 1, 'Argentina Indigenous Territories', 'Non-Overlap', 0, 0],
     ]);
   });
 });

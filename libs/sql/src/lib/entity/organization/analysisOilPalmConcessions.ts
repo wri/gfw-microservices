@@ -1,4 +1,4 @@
-import { Column, Entity } from 'typeorm';
+import { Entity } from 'typeorm';
 import { BaseGfwAnalysis } from './BaseGfwAnalysis';
 
 @Entity({ name: 'analysis-oilPalmConcessions' })

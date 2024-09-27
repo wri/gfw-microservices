@@ -1,4 +1,4 @@
-import { Entity, Column } from 'typeorm';
+import { Entity } from 'typeorm';
 import { BaseGfwAnalysis } from './BaseGfwAnalysis';
 
 @Entity({ name: 'analysis-protectedAreas' })

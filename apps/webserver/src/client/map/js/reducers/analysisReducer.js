@@ -6,7 +6,7 @@ const initialAnalysisState = {
   activeAnalysis: 'draw',
   adminArea: {},
   gladDates: {
-    start: new Date(`${latestTreeCoverLossYearForTclDataInMap+1}-01-01 00:00:00`),
+    start: new Date(`${latestTreeCoverLossYearForTclDataInMap + 1}-01-01 00:00:00`),
     sliderDate: new Date('2021-01-01 00:00:00'),
     end: new Date(),
   },

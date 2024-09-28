@@ -494,22 +494,6 @@ export async function getAFIListAnalyses(list_id, page, pageSize, clientDatabase
     },
     { field: 'showRSPOCertified', type: sql.Bit, value: showRSPOCertified || 0 },
     {
-      field: 'selectedOverallThreats',
-      type: sql.NVarChar(255),
-      value:
-        selectedOverallThreats !== '' && selectedOverallThreats ? selectedOverallThreats : null,
-    },
-    {
-      field: 'selectedOverallValues',
-      type: sql.NVarChar(255),
-      value: selectedOverallValues !== '' && selectedOverallValues ? selectedOverallValues : null,
-    },
-    {
-      field: 'selectedMillPriority',
-      type: sql.NVarChar(255),
-      value: selectedMillPriority !== '' && selectedMillPriority ? selectedMillPriority : null,
-    },
-    {
       field: 'SearchString',
       type: sql.NVarChar(255),
       value: searchString !== '' && searchString ? searchString : null,

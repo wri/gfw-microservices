@@ -11,7 +11,7 @@ import { AppService } from './app.service';
 import { ConfigModule } from '@nestjs/config';
 import { ListService } from '../services/list.service';
 import { INestApplication } from '@nestjs/common';
-import * as request from 'supertest';
+import request from 'supertest';
 import {
   ClientStoreConnection,
   SqlModule,

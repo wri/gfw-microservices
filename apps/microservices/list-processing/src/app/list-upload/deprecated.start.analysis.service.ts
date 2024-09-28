@@ -10,7 +10,7 @@ import { ConfigService } from '@nestjs/config';
 import { ServerConfigType } from '../../validators/server-config';
 import { MARK_IS_TEST_LIST, MARK_IS_TEST_USER } from '../../services/constants';
 import { extractAnalysisTypes, getListAnalysisStatus } from '@wri-monorepos/geo';
-import * as moment from 'moment';
+import moment from 'moment';
 import { ClientStoreConnection, Lists, updateListsAnalysisStatus, User } from '@wri-monorepos/sql';
 import { checkProcessingLimits } from '@wri-monorepos/shared';
 import { ProcessingLimitException } from '../app.exceptions';

@@ -89,19 +89,20 @@ if __name__ == "__main__":
     conn = engine.connect()
     print("Connected to DB")
 
-    # Create df with all original location ids from db
-    loc_id_sql = "SELECT [location_id] FROM [gfwpro].[dbo].[list-protectedAreas_import]"
-    loc_id_df = pd.read_sql(loc_id_sql, conn)
-    print("Retrieved location_id data from database")
+    # # Create df with all original location ids from db
+    # loc_id_sql = "SELECT [location_id] FROM [gfwpro].[dbo].[list-protectedAreas_import]"
+    # loc_id_df = pd.read_sql(loc_id_sql, conn)
+    # print("Retrieved location_id data from database")
 
     # Read csv to df
     file_path = cfg.processed_csv
     input_df = pd.read_csv(file_path, sep="\t")
     print("Read input data")
 
-    # Merge dataframes
-    merged_df = pd.merge(loc_id_df, input_df, on="location_id", how="outer")
-    print("Created merged dataframe")
+    # # Merge dataframes
+    # merged_df = pd.merge(loc_id_df, input_df, on="location_id", how="outer")
+    # print("Created merged dataframe")
+    merged_df = input_df
 
     # Clean input_df
     merged_df = cleanData(merged_df)

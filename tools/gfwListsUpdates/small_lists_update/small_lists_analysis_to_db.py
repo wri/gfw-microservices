@@ -79,7 +79,22 @@ def create_table(conn, table_name):
             [commodity_threat_peat] [NVARCHAR](MAX) NULL,
             [commodity_threat_protected_areas] [NVARCHAR](MAX) NULL,
             [commodity_threat_fires] [NVARCHAR](MAX) NULL,
-            [dissolved_data_location_info] [NVARCHAR](300) NULL
+            [dissolved_data_location_info] [NVARCHAR](300) NULL,
+            [tree_cover_loss_arg_otbn_yearly] [NVARCHAR](MAX) NULL DEFAULT ('{{}}'),
+            [arg_otbn_area] [NVARCHAR](MAX) NULL DEFAULT ('{{}}'),
+            [argentina_presence] [NVARCHAR](50) NULL DEFAULT ('false'),
+            [protected_areas_by_category_area] [NVARCHAR](MAX) NOT NULL DEFAULT ('{{}}'),
+            [landmark_by_category_area] [NVARCHAR](MAX) NOT NULL DEFAULT ('{{}}'),
+            [country_specific_deforestation_yearly] [NVARCHAR](MAX) NULL,
+            [country_specific_deforestation_wdpa_yearly] [NVARCHAR] (MAX) NULL,
+            [country_specific_deforestation_landmark_yearly] [NVARCHAR](MAX) NULL,
+            [country_specific_deforestation_classified_region_yearly] [NVARCHAR](MAX) NULL,
+            [tree_cover_loss_by_country_yearly] [NVARCHAR](MAX) NULL,
+            [tree_cover_loss_by_country_wdpa_yearly] [NVARCHAR](MAX) NULL,
+            [tree_cover_loss_by_country_landmark_yearly] [NVARCHAR](MAX) NULL,
+            [country_area] [NVARCHAR](MAX) NULL,
+            [classified_region_area] [NVARCHAR](MAX) NULL,
+            [tree_cover_loss_by_country_classified_region_yearly] [NVARCHAR](MAX) NULL
             ) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
             """
 
@@ -105,6 +120,7 @@ def data_cleaning(df):
     df['location_status_id'] = 2
     df['id'] = df.index
 
+    # Reoder columns to match DB schema
     df = df[cfg.small_lists_columns]
 
     return df
@@ -115,16 +131,15 @@ if __name__ == "__main__":
     connection = pyodbc.connect(cfg.conn_string)
     print("Connected")
 
-    match cfg.list_number:
-        case 2:
-            table_name = "analysis-oilPalmConcessions_new"
-        case 3:
-            table_name = "analysis-palmOilMills_new"
-        case 5:
-            table_name = "analysis-rspoOilPalmConcessions_new"
-        case _:
-            print("Invalid list number, failed to create temp table")
-            sys.exit(1)
+    if cfg.list_number == 2:
+        table_name = "analysis-oilPalmConcessions_new"
+    elif cfg.list_number == 3:
+        table_name = "analysis-palmOilMills_new"
+    elif cfg.list_number == 5:
+        table_name = "analysis-rspoOilPalmConcessions_new"
+    else:
+        print("Invalid list number, failed to create temp table")
+        sys.exit(1)
     
     print(f"Creating {table_name}")
     create_table(connection, table_name)

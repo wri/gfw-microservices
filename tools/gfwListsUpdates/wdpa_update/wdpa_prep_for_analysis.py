@@ -41,7 +41,7 @@ def createGrid(degrees=1.0):
 
     return df
 
-def main(path_to_fgdb, list_id, poly_lyr):
+def main(path_to_fgdb, list_id):
     """
     Loads data and calls helper functions. Saves output to .txt
 
@@ -51,7 +51,7 @@ def main(path_to_fgdb, list_id, poly_lyr):
     """
     # Load data
     print(f"loading {path_to_fgdb}")
-    gdf = gpd.read_file(path_to_fgdb, driver="FileGDB", layer=poly_lyr).set_crs(4326)
+    gdf = gpd.read_file(path_to_fgdb, driver="FileGDB", layer="poly_gadm").set_crs(4326)
     print("loaded location_id dataframe")
 
     gdf["list_id"] = list_id
@@ -87,8 +87,7 @@ if __name__ == "__main__":
     """This is executed when run from the command line"""
 
     main(path_to_fgdb = cfg.fgdb_path,
-         list_id = 4,
-         poly_lyr = cfg.fc_name
+         list_id = 4
          )
 
     print("done")

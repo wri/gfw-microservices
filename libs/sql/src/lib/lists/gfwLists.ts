@@ -82,7 +82,7 @@ export class GfwLists {
       const connection = await this.getConnection(organizationDatabase);
       const listRepository = connection.getRepository(this.getAttributesListEntity(list_id));
       const take = pageSize === 0 ? this.DEFAULT_PAGE_SIZE : pageSize;
-      const skip = pageNum > 0 ? (pageNum - 1) * take : this.DEFAULT_PAGE_NUM;
+      const skip = pageNum > 0 ? pageNum * take : this.DEFAULT_PAGE_NUM;
 
       let items, count;
 
@@ -118,7 +118,7 @@ export class GfwLists {
       });
       return [itemsWithListId, count];
     } catch (error) {
-      throw new InternalServerErrorException('Error deleting list', error.message);
+      throw new InternalServerErrorException('Error getting paginated list data', error.message);
     }
   }
 
@@ -138,7 +138,7 @@ export class GfwLists {
       );
 
       const take = pageSize === 0 ? this.DEFAULT_PAGE_SIZE : pageSize;
-      const skip = pageNum > 0 ? (pageNum - 1) * take : this.DEFAULT_PAGE_NUM;
+      const skip = pageNum > 0 ? pageNum * take : this.DEFAULT_PAGE_NUM;
 
       let items, count;
       const where: FindOptionsWhere<
@@ -258,7 +258,7 @@ export class GfwLists {
         locationNameArray = filters.selectedNames;
       }
     }
-    const skip = pageNum > 0 ? (pageNum - 1) * pageSize : this.DEFAULT_PAGE_NUM;
+    const skip = pageNum > 0 ? pageNum * pageSize : this.DEFAULT_PAGE_NUM;
     const take = pageSize === 0 ? this.DEFAULT_PAGE_SIZE : pageSize;
     try {
       const connection = await this.getConnection(organizationDatabase);

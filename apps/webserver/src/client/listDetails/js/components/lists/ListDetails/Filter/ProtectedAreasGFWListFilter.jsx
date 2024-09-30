@@ -128,7 +128,7 @@ export default class GFWProtectedForestChangeFilter extends Component {
       ...new Set(
         protectedAreas.filter((location) => location.Country !== '').map((list) => list.Country)
       ),
-    ];
+    ].sort();
 
     const states = [
       ...new Set(
@@ -136,7 +136,7 @@ export default class GFWProtectedForestChangeFilter extends Component {
           .filter((location) => location.Country === selectedCountry && location.State !== '')
           .map((list) => list.State)
       ),
-    ];
+    ].sort();
 
     const subStates = [
       ...new Set(
@@ -150,7 +150,7 @@ export default class GFWProtectedForestChangeFilter extends Component {
           )
           .map((list) => list['Sub State'])
       ),
-    ];
+    ].sort();
     const designationTypeOptions = [
       ...new Set(
         protectedAreas
@@ -163,7 +163,7 @@ export default class GFWProtectedForestChangeFilter extends Component {
           )
           .map((list) => list['Designation Type'])
       ),
-    ];
+    ].sort();
 
     const designationOptions = [
       ...new Set(
@@ -177,7 +177,7 @@ export default class GFWProtectedForestChangeFilter extends Component {
           )
           .map((list) => list.Designation)
       ),
-    ];
+    ].sort();
 
     const protectedAreasOptions = [
       ...new Set(
@@ -202,9 +202,11 @@ export default class GFWProtectedForestChangeFilter extends Component {
           )
           .map((list) => list['Location Name'])
       ),
-    ].map((v) => {
-      return { label: v, value: v };
-    });
+    ]
+      .sort()
+      .map((v) => {
+        return { label: v, value: v };
+      });
 
     return (
       <Modal open onClose={this.close}>

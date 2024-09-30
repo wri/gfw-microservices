@@ -42,3 +42,4 @@ export * from './getOrganizationYearlyUsageSinceOrgActivatedTime';
 export * from './getAnnualLossFcdData';
 export * from './updateListAnalysisStatus';
 export * from './getSharedListByUser';
+export * from './getPaginatedAfiAnalysisByListIdSortedByFilters';

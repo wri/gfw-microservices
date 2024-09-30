@@ -486,7 +486,7 @@ export default class ListDetails extends Component {
     const { id: listId, list_name: listName, associated_gfwlist: gwfListId } = selectedList;
 
     // Ensure list is unlocked before attempting to delete locations from it
-    httpRequest.fetchJSON('/locations/lockList', { list_id: listId }).then((result) => {
+    httpRequest.fetchJSON('/locations/lockList', { list_id: listId }).then(() => {
       httpRequest
         .fetchJSON('/locations/deleteLocations', {
           list_id: listId,

@@ -36,9 +36,10 @@ export default class DashboardSettings extends Component {
       visibleLayers,
       isGfwList: selectedList.isGlobalForestWatchList,
       isSharedList: selectedList?.is_shared,
-      latitude: view.extent.latitude,
-      longitude: view.extent.longitude,
-      zoom: view.zoom,
+      xmin: view.extent.xmin,
+      ymin: view.extent.ymin,
+      xmax: view.extent.xmax,
+      ymax: view.extent.ymax,
     };
 
     if (selectedAdmin !== '') {

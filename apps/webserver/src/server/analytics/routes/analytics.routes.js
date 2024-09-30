@@ -3,6 +3,7 @@ const path = require('path');
 const controller = require('../controllers/analytics.controller');
 const middlewares = require(path.resolve('./config/publicutils/middlewares'));
 const rateLimiterUtil = require(path.resolve('./config/lib/limiter-util'));
+const lastModifiedController = require('../controllers/analysesLastModifiedTime.controller');
 
 const analyticsRouter = express.Router();
 const myOrgAnalyticsRouter = express.Router();
@@ -36,8 +37,9 @@ module.exports = (app, limiter) => {
 
   app.use('/analytics/myorg', [...routeMiddlewaresMyOrg, myOrgAnalyticsRouter]);
   app.use('/analytics', [...routeMiddlewaresAnalytics, analyticsRouter]);
-
   app.get('/analytics', controller.analytics);
+
+  app.get('/analyses-last-modified', lastModifiedController.getAnalysesLastModifiedTime);
 
   analyticsRouter.get('/usage', controller.getOrganizationAnalysisUsage);
   analyticsRouter.get('/limit', controller.getOrganizationAnalysisLimit);

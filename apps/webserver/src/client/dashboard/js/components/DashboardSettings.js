@@ -1,6 +1,5 @@
 import React, { Component } from 'react';
 import store from '../store';
-import mapUtils from '../utils/mapUtils';
 import { selectAlert, selectTimeframe } from '../actions/dashboardActions';
 import GfwSelect from '../../../common/js/components/GfwSelect';
 import { proLayers } from '../../../common/js/proLayers.config';
@@ -45,8 +44,8 @@ export default class DashboardSettings extends Component {
     if (selectedAdmin !== '') {
       sendData['selectedLocations'] = this.filterselectedLocations();
     }
-    console.log(view);
-    //redirectToMap(sendData);
+
+    redirectToMap(sendData);
     gtag('event', 'view map clicked', {
       event_category: 'Dashboard Click',
       event_label: 'user is re-directed to the map page via a Dashboard View Map click',

@@ -1,7 +1,7 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { S3Service } from '@wri-monorepos/aws';
 import * as fs from 'fs';
-import * as csv2Json from 'csvtojson';
+import csv2Json from 'csvtojson';
 import { validateLocation } from './validate.location';
 import { ValidateCsvRepository } from './validate.csv.repository';
 import { ConfigService } from '@nestjs/config';

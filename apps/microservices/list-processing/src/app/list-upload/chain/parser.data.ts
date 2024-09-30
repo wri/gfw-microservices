@@ -31,6 +31,7 @@ export class ParserData extends AbstractHandler<ChainType> {
       // Convert CSV content to GeoJSON
       const geoJson = await csv2geojson(csvContent);
 
+      this.logger.log('Data parsed successfully');
       // Pass the GeoJSON to the next handler in the chain
       const response = await super.handle({ ...input, geojson: geoJson });
       this.deleteFile(fileDownloadedPath);

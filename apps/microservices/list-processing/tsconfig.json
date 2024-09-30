@@ -3,7 +3,7 @@
   "files": [],
   "include": [],
   "compilerOptions": {
-    "esModuleInterop": true,
+    "esModuleInterop": true
   },
   "references": [
     {

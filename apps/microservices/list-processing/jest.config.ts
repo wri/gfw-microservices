@@ -8,7 +8,7 @@ export default {
     },
   },
   testEnvironment: 'node',
-  transformIgnorePatterns: ["node_modules/(?!(@arcgis|@esri|@stencil))"],
+  transformIgnorePatterns: ['node_modules/(?!(@arcgis|@esri|@stencil))'],
   transform: {
     '^.+\\.[tj]s$': 'ts-jest',
   },

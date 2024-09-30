@@ -1,6 +1,10 @@
 .diagnostics-chart-header {
   margin-top: 30px;
   margin-bottom: 20px;
+
+  display: flex;
+  align-items: end;
+
   &__title {
     font-family: 'Fira Sans';
     font-size: 14px;

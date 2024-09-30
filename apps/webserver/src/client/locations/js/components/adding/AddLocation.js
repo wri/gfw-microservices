@@ -1917,7 +1917,6 @@ export default class AddLocation extends Component {
     const hasGeometry = geometry && geometry.type;
 
     if (dialogEmail && !React.isValidElement(dialogMessage)) {
-      console.log(dialogContent)
       dialogContent.push(this.generateEmailText());
     }
 

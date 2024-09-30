@@ -1383,7 +1383,6 @@ class UploadLocations extends Component {
         : dialogMessage.map(this.generateMessages);
 
     if (dialogEmail && !React.isValidElement(dialogMessage)) {
-      console.log(dialogContent)
       dialogContent.push(this.generateEmailText());
     }
 

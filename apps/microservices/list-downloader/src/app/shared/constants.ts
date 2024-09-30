@@ -1795,6 +1795,7 @@ export const FIELDS_NEEDED_CALCULATION = [
   'soy_pre2001_nonforest_area',
   'Country',
   'Investment Name',
+  'country_area',
 ];
 
 export const NESTED_JSON_ATTRIBUTES = [

@@ -80,12 +80,14 @@ export function RegionChartByCountry({ listId, data, fireDownload, country }) {
 
   const [isAllDataEmpty, setIsAllDataEmpty] = useState(false);
 
+  const countryGadm = country.substring(0, 3).toUpperCase();
+
   useEffect(() => {
     const fcdParams = {
       listId,
       locationId,
       country: country === regionIds.ARGENTINA ? 'Argentina' : 'Colombia',
-      countryGadm: country.substring(0, 3).toUpperCase(),
+      countryGadm,
       category: ['WDPA', 'landmark', 'country', 'classified_region'],
     };
 
@@ -128,22 +130,20 @@ export function RegionChartByCountry({ listId, data, fireDownload, country }) {
     );
   }
 
-  const argentinaOtbnAreaData = formatDecimals(JSON.parse(data?.arg_otbn_area) || {});
+  const argentinaOtbnAreaData = formatDecimals(JSON.parse(data?.arg_otbn_area) || '{}');
+
+  const totalArea = getTotalArea(data, countryGadm);
 
   const argentinaPieChartData =
     Object.keys(argentinaOtbnAreaData).length !== 0
-      ? addNoOverlapArea(argentinaOtbnAreaData, data.total_area, 'Outside of OTBN')
+      ? addNoOverlapArea(argentinaOtbnAreaData, totalArea, 'Outside of OTBN')
       : {};
 
   const showProtectedAreasPieChart =
     countryPieChartsData?.WDPA && !countryPieChartsData?.WDPA?.error;
 
   const protectedAreasPieChartData = showProtectedAreasPieChart
-    ? addNoOverlapArea(
-        countryPieChartsData?.WDPA?.overlap,
-        data.total_area,
-        'Outside of Protected Areas'
-      )
+    ? addNoOverlapArea(countryPieChartsData?.WDPA?.overlap, totalArea, 'Outside of Protected Areas')
     : {};
   const protectedAreasPieChartFormattedData = formatDecimals(protectedAreasPieChartData);
 
@@ -155,6 +155,7 @@ export function RegionChartByCountry({ listId, data, fireDownload, country }) {
 
   const showClassifiedRegionOverlapPieChart =
     countryPieChartsData?.classified_region && !countryPieChartsData?.classified_region?.error;
+
   const classifiedRegionOverlapPieChartFormattedData = formatDecimals(
     countryPieChartsData?.classified_region?.overlap
   );
@@ -261,3 +262,8 @@ export function RegionChartByCountry({ listId, data, fireDownload, country }) {
     </>
   );
 }
+
+const getTotalArea = (data, country) => {
+  const countryArea = JSON.parse(data.country_area || '{}');
+  return countryArea[country] ?? data.total_area;
+};

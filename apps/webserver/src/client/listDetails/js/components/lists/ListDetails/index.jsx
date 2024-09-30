@@ -87,6 +87,7 @@ import { isListFailedByAnalysisStatusLimit } from '../../../../../locations/js/u
 // CONSTANTS
 import { defaultMaximumAreaSizeForLocationsFilter } from '../../../../../common/js/constants/lists.constants';
 import { listStatus } from '../../../../../../config/env/listStatuses.constants';
+import { GFW_LISTS_NUMBER_CONSTANTS } from '../../../../../../config/env/gfwLists.constants';
 import { getListFilterValues } from '../getListFilterValues';
 import getAllColumnNames from '../getAllColumnNames';
 import { defaultFilterValues } from '../defaultFilterValues';
@@ -239,20 +240,35 @@ export default class ListDetails extends Component {
       previousKeys.length !== currentKeys.length ||
       previousKeys.some((key) => filters[key] !== prevProps.filters[key])
     ) {
-      // if the filters changed and this is a user list, get the paginated data from the API
-      if (!selectedLists[0].isGlobalForestWatchList) {
-        this.getUserLocationData(selectedLists[0].id);
+      if (selectedLists[0].isGlobalForestWatchList) {
+        this.getFilteredGfwListData(selectedLists[0].id);
       } else {
-        filterListData(
-          listData,
-          filters,
-          selectedLists[0],
-          this.getAdministrativeAreasData,
-          this.getProtectedAreasData
-        );
+        this.getUserLocationData(selectedLists[0].id);
       }
     }
   }
+
+  getFilteredGfwListData = (listId, page = 0) => {
+    // if the filters changed and this is a user list, get the paginated data from the API
+    const { listData, selectedLists, filters } = this.props;
+    const { OIL_PALM_CONCESSIONS, PALM_OIL_MILLS, RSPO_PALM_CONCESSIONS } =
+      GFW_LISTS_NUMBER_CONSTANTS;
+
+    this.setState({ page });
+
+    if ([OIL_PALM_CONCESSIONS, PALM_OIL_MILLS, RSPO_PALM_CONCESSIONS].includes(listId)) {
+      this.getGFWLocationData(listId, page);
+    } else {
+      filterListData(
+        listData,
+        filters,
+        selectedLists[0],
+        this.getAdministrativeAreasData,
+        this.getProtectedAreasData,
+        page
+      );
+    }
+  };
 
   // If given a filter's name and its current value, determine whether that filter is different than
   // the filter's preconfigured default value..
@@ -1182,19 +1198,31 @@ export default class ListDetails extends Component {
       });
   };
 
-  getGFWLocationData = (list_id) => {
+  getGFWLocationData = (list_id, page = 0) => {
+    const { filters } = this.props;
+
     this.setState({ isLoading: true });
+
     fetch({
       url: '/locations/getGFWListLocationData',
       method: 'POST',
       headers: {
         'Content-type': 'application/json',
       },
+
       body: {
         list_id,
+        pageNum: page,
+        pageSize: 50,
+        filters,
       },
     })
       .then((response) => {
+        const { numberOfPages, total_rows } = response;
+        this.setState({
+          numberOfPages,
+          numberOfResults: total_rows,
+        });
         this.processListData(response);
       })
       .catch((err) => {
@@ -1643,14 +1671,21 @@ export default class ListDetails extends Component {
       });
   };
 
-  getAdministrativeAreasData = ({ filters, id, locationNameForGFW }) => {
+  getAdministrativeAreasData = ({ filters, id, locationNameForGFW, page = 0 }) => {
     // when coming from the Map, locationNameForGFW is either the locationName or true
     this.setState({ isLoading: true });
     httpRequest
-      .fetchJSON('/locations/getAdministrativeAreasData', { filters, id })
+      .fetchJSON('/locations/getAdministrativeAreasData', {
+        filters,
+        id,
+        pageNum: page,
+        pageSize: 50,
+      })
       .then((response) => {
-        const currentAdminAreas = JSON.parse(response);
-        this.processListData(currentAdminAreas, locationNameForGFW);
+        const parsedResponse = JSON.parse(response);
+        const { numberOfPages, numberOfResults } = parsedResponse;
+        this.setState({ numberOfPages, numberOfResults });
+        this.processListData(parsedResponse, locationNameForGFW);
       })
       .catch((err) => {
         this.setState({ isLoading: false });
@@ -1658,13 +1693,15 @@ export default class ListDetails extends Component {
       });
   };
 
-  getProtectedAreasData = ({ filters, id, locationNameForGFW }) => {
+  getProtectedAreasData = ({ filters, id, locationNameForGFW, page = 0 }) => {
     this.setState({ isLoading: true });
     httpRequest
-      .fetchJSON('/locations/getProtectedAreasData', { filters, id })
+      .fetchJSON('/locations/getProtectedAreasData', { filters, id, pageNum: page, pageSize: 50 })
       .then((response) => {
-        const currentAdminAreas = JSON.parse(response);
-        this.processListData(currentAdminAreas, locationNameForGFW);
+        const parsedResponse = JSON.parse(response);
+        const { numberOfPages, numberOfResults } = parsedResponse;
+        this.setState({ numberOfPages, numberOfResults });
+        this.processListData(parsedResponse, locationNameForGFW);
       })
       .catch((err) => {
         this.setState({ isLoading: false });
@@ -2180,6 +2217,7 @@ export default class ListDetails extends Component {
                               page={page}
                               isUserList={!selectedLists[0].isGlobalForestWatchList}
                               getUserLocationData={this.getUserLocationData}
+                              getFilteredGfwListData={this.getFilteredGfwListData}
                               tableSortedBy={tableSortedBy}
                               tableSortedDesc={tableSortedDesc}
                               setSortedBy={(tableSortedBy, tableSortedDesc) =>
@@ -2189,7 +2227,11 @@ export default class ListDetails extends Component {
                                     tableSortedDesc,
                                   },
                                   () => {
-                                    this.getUserLocationData(selectedLists[0].id, page);
+                                    if (isGfwList) {
+                                      this.getFilteredGfwListData(selectedLists[0].id, page);
+                                    } else {
+                                      this.getUserLocationData(selectedLists[0].id, page);
+                                    }
                                   }
                                 )
                               }

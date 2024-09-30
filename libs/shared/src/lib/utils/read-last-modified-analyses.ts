@@ -13,7 +13,7 @@ interface AnalysisData {
 }
 
 // in-memory cache object
-let cache: {
+export let cache: {
   timestamp: number;
   data: AnalysisData[];
 } | null = null;
@@ -53,4 +53,11 @@ export const readAnalysesLastModifiedTime = async (s3: any) => {
   };
 
   return results;
+};
+
+export const resetCacheForTests = () => {
+  cache = {
+    timestamp: 0,
+    data: [],
+  };
 };

@@ -793,6 +793,11 @@ export default class ListDetails extends Component {
     });
   };
 
+  cancelDialogResetName = () => {
+    this.setState({ newListName: '' });
+    this.cancelDialog()
+  }
+
   // Prompt to move the locations currently selected in the list
   promptMoveSelectedLocations = ({
     newListName,

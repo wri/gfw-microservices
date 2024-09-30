@@ -40,6 +40,16 @@ export function RegionChartByCountry({ listId, data, fireDownload, country }) {
     otbnPieChart,
   } = chartDatasetConfigs;
 
+  const {
+    id: regionConstantsId,
+    chartsSelectorTitle,
+    diagnosticTitle,
+    informationBubbleId,
+    downloadId,
+    startYear,
+    endYear,
+  } = regionConstants[country];
+
   const [chartsConfiguration, setChartsConfiguration] = useState([
     argentinaTreeCoverLoss,
     protectedAreas,
@@ -50,8 +60,8 @@ export function RegionChartByCountry({ listId, data, fireDownload, country }) {
   const [selectedOptionId, setSelectedOptionId] = useState(chartsConfiguration[0].id);
 
   const [dateRange, setDateRange] = useState({
-    startYear: regionConstants.startYear,
-    endYear: regionConstants.endYear,
+    startYear: startYear,
+    endYear: endYear,
   });
 
   const [countryPieChartsData, setCountryPieChartsData] = useState({});
@@ -73,8 +83,8 @@ export function RegionChartByCountry({ listId, data, fireDownload, country }) {
 
   useEffect(() => {
     handleDateRangeChange({
-      startYear: regionConstants.startYear,
-      endYear: regionConstants.endYear,
+      startYear: startYear,
+      endYear: endYear,
     });
   }, []);
 
@@ -165,10 +175,10 @@ export function RegionChartByCountry({ listId, data, fireDownload, country }) {
       {country === regionIds.ARGENTINA && (
         <>
           <DiagnosticsChartHeader
-            title={regionConstants.chartsSelectorTitle}
-            informationBubbleId={regionConstants.informationBubbleId}
+            title={chartsSelectorTitle}
+            informationBubbleId={informationBubbleId}
             fireDownload={fireDownload}
-            downloadId={regionConstants.downloadId}
+            downloadId={downloadId}
           />
           <Card>
             <CardContent>
@@ -199,24 +209,30 @@ export function RegionChartByCountry({ listId, data, fireDownload, country }) {
           </Card>
 
           <DateRangeSlider
-            id={regionConstants.id}
+            id={regionConstantsId}
             dateRange={dateRange}
             setDateRange={handleDateRangeChange}
-            startYear={regionConstants.startYear}
-            endYear={regionConstants.endYear}
+            startYear={startYear}
+            endYear={endYear}
           />
 
           <PieChart
             data={argentinaPieChartData}
             chartLabels={otbnPieChart.chartLabels}
-            title={regionConstants.diagnosticTitle}
-            informationBubbleId={regionConstants.informationBubbleId}
+            title={diagnosticTitle}
+            informationBubbleId={informationBubbleId}
           />
         </>
       )}
 
       {country === regionIds.COLOMBIA && (
         <>
+          <DiagnosticsChartHeader
+            title={chartsSelectorTitle}
+            informationBubbleId={informationBubbleId}
+            fireDownload={fireDownload}
+            downloadId={downloadId}
+          />
           <BarChartTreeCoverLossColombia
             rawBarChartData={countryPieChartsData}
             isAllDataEmpty={isAllDataEmpty}

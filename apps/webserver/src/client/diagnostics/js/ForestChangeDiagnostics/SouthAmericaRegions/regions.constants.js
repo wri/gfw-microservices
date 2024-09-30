@@ -20,13 +20,23 @@ export const regionsTabs = [
 ];
 
 export const regionConstants = {
-  id: 'otbnArgentina',
-  chartsSelectorTitle: 'ARGENTINIAN DEFORESTATION',
-  informationBubbleId: 'tree_cover_loss_arg_otbn_yearly',
-  downloadId: 'argentinaDeforestation',
-  diagnosticTitle: 'OTBN Overlap',
-  startYear: 2008,
-  endYear: 2023,
+  argentina: {
+    id: 'otbnArgentina',
+    chartsSelectorTitle: 'ARGENTINIAN DEFORESTATION',
+    informationBubbleId: 'tree_cover_loss_arg_otbn_yearly',
+    downloadId: 'argentinaDeforestation',
+    diagnosticTitle: 'OTBN Overlap',
+    startYear: 2008,
+    endYear: 2023,
+  },
+  colombia: {
+    id: 'otbnColombia',
+    chartsSelectorTitle: 'COLOMBIAN DEFORESTATION',
+    informationBubbleId: '',
+    downloadId: 'colombia',
+    startYear: 2008,
+    endYear: 2023,
+  },
 };
 
 const nonOverlapAreaColor = 'rgb(200,200,200)';

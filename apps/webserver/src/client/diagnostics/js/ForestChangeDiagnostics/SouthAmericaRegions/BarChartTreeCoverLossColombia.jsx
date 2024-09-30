@@ -24,7 +24,9 @@ export function BarChartTreeCoverLossColombia({ rawBarChartData, isAllDataEmpty,
 
   const [selectedOptionId, setSelectedOptionId] = useState(classifiedRegionTreeCoverLoss.id);
 
-  const { startYear, endYear } = regionConstants;
+  const {
+    colombia: { startYear, endYear },
+  } = regionConstants;
   const dateRange = { startYear, endYear };
 
   let barChartData = [];

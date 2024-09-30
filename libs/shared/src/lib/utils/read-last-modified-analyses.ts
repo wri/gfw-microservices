@@ -17,7 +17,7 @@ let cache: {
   timestamp: number;
   data: AnalysisData[];
 } | null = null;
-
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export const readAnalysesLastModifiedTime = async (s3: any) => {
   // if cache exists and is still return it
   if (cache && Date.now() - cache.timestamp < CACHE_DURATION_MS) {
@@ -25,7 +25,6 @@ export const readAnalysesLastModifiedTime = async (s3: any) => {
   }
 
   const files = ['fcd.txt', 'afi.txt', 'alerts.txt'];
-  const ids = ['FCD', 'AFI', 'ALERTS'];
 
   const results: AnalysisData[] = [];
 

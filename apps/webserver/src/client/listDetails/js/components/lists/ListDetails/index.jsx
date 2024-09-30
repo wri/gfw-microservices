@@ -795,8 +795,8 @@ export default class ListDetails extends Component {
 
   cancelDialogResetName = () => {
     this.setState({ newListName: '' });
-    this.cancelDialog()
-  }
+    this.cancelDialog();
+  };
 
   // Prompt to move the locations currently selected in the list
   promptMoveSelectedLocations = ({
@@ -866,7 +866,7 @@ export default class ListDetails extends Component {
               }
             />
 
-            <LinkButton onClick={this.cancelDialog} label={locationsPage.lists.cancel} />
+            <LinkButton onClick={this.cancelDialogResetName} label={locationsPage.lists.cancel} />
           </>
         ),
         dialogOpen: true,

@@ -312,11 +312,14 @@ export class FCDService {
         const overlapIndigenous =
           JSON.parse(curr?.landmarkByCategoryArea)[this.INDIGENOUS_LAND] ?? 0;
 
+        const countryArea = JSON.parse(curr.countryArea || '{}');
+        const totalArea = countryArea[countryGadm] ?? curr.totalArea;
+
         landmark = {
           ...landmark,
           overlap: {
             indigenous: prev.overlap.indigenous + overlapIndigenous,
-            nonIndigenous: prev.overlap.nonIndigenous + curr.totalArea - overlapIndigenous,
+            nonIndigenous: prev.overlap.nonIndigenous + totalArea - overlapIndigenous,
           },
         };
       } catch (error) {

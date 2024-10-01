@@ -20,13 +20,23 @@ export const regionsTabs = [
 ];
 
 export const regionConstants = {
-  id: 'otbnArgentina',
-  chartsSelectorTitle: 'ARGENTINIAN DEFORESTATION',
-  informationBubbleId: 'tree_cover_loss_arg_otbn_yearly',
-  downloadId: 'argentinaDeforestation',
-  diagnosticTitle: 'OTBN Overlap',
-  startYear: 2008,
-  endYear: 2023,
+  argentina: {
+    id: 'otbnArgentina',
+    chartsSelectorTitle: 'ARGENTINIAN DEFORESTATION',
+    informationBubbleId: 'tree_cover_loss_arg_otbn_yearly',
+    downloadId: 'argentinaDeforestation',
+    diagnosticTitle: 'OTBN Overlap',
+    startYear: 2008,
+    endYear: 2023,
+  },
+  colombia: {
+    id: 'otbnColombia',
+    chartsSelectorTitle: 'COLOMBIAN DEFORESTATION',
+    informationBubbleId: '',
+    downloadId: 'colombia',
+    startYear: 2008,
+    endYear: 2023,
+  },
 };
 
 const nonOverlapAreaColor = 'rgb(200,200,200)';
@@ -191,24 +201,24 @@ export const chartDatasetConfigs = {
   },
 };
 
-const colombianSubcategories = [
+const colombianSubLayers = [
   {
     id: 'Unconditioned',
-    legend: 'Non Conditioned',
+    legend: 'Unconditioned',
     color: '#A0BB51',
-    subCategoryColor: '#CFDDA8',
+    subLayerColor: '#CFDDA8',
   },
   {
     id: 'Conditioned',
     legend: 'Conditioned',
     color: '#F7CD54',
-    subCategoryColor: '#FBE6A9',
+    subLayerColor: '#FBE6A9',
   },
   {
     id: 'Restrictions',
     legend: 'Restrictions',
     color: '#DA3D30',
-    subCategoryColor: '#EC9E97',
+    subLayerColor: '#EC9E97',
   },
 ];
 
@@ -220,7 +230,7 @@ export const chartDatasetConfigsColombia = {
     dataPath: 'classified_region.tree_cover_loss',
     dateRange: { startYear: 2008, endYear: 2023 },
     infoBubbleId: 'regions_col_tcl_ agricultural_frontier_restrictions',
-    subCategories: [...colombianSubcategories],
+    subLayers: [...colombianSubLayers],
   },
   classifiedRegionOverlap: {
     id: 'colombianClassifiedRegionOverlap',
@@ -228,7 +238,7 @@ export const chartDatasetConfigsColombia = {
     chartsSelectorTitle: 'National Agricultural Frontier Overlap',
     infoBubbleId: 'regions_col_ag_frontier_calc',
     dataPath: 'classified_region.overlap',
-    subCategories: [...colombianSubcategories],
+    subLayers: [...colombianSubLayers],
   },
   protectedAreasTreeCoverLoss: {
     id: 'protectedAreas',

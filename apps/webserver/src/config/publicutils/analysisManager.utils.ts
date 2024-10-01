@@ -26,6 +26,13 @@ import {
   getAnalysisDataForProtectedAreasByLocation,
   GfwLists,
   SqlParamType,
+  getPaginatedAfiAnalysisLocationLevel,
+  SQLUtils as SQLUtilsLibSql,
+  AfiAnalysisByListId,
+  getCountAfiAnalysisByListId,
+  CountAfiAnalysisByListId,
+  getPaginatedAfiAnalysisByListIdSortedByFilters,
+  PaginatedAfiAnalysisByListIdSortedByFilters,
 } from '@wri-monorepos/sql';
 
 /** @function {getAnalysisDataForUserList}
@@ -441,4 +448,123 @@ export async function getPaginatedAnalysisDataForAdministrativeAreas(
     database,
     filters
   );
+}
+/** @function {getListAnalyses}
+ *   @summary Function to return list analysis.
+ *   @param  {Object}   req - Manadatory first parameter to pass the request object into the function in case session info is required.
+ *   @param  {Number}  list_id - ID of list
+ *   @return {Promise} Returns promise object. If successful, recordsets, otherwise, error object
+ */
+export async function getAFIListAnalyses(list_id, page, pageSize, clientDatabase, filters) {
+  const {
+    orderType,
+    sortByAttribute = 'location_id',
+    searchString,
+    country,
+    state,
+    subState,
+    analysisAreaMin,
+    analysisAreaMax,
+
+    // commodity risk filters:
+    selectedSupplier,
+    selectedSecondSupplier,
+    selectedParentCompany,
+    showRSPOCertified,
+    selectedOverallThreats,
+    selectedOverallValues,
+    selectedMillPriority,
+  } = filters;
+  const parameters = [
+    { field: 'listId', type: sql.Int, value: list_id },
+    { field: 'rowsOfPage', type: sql.Int, value: pageSize },
+    { field: 'pageNumber', type: sql.Int, value: page },
+    { field: 'orderType', type: sql.NVarChar(255), value: orderType || 'ASC' },
+    { field: 'selectedSupplier', type: sql.NVarChar(255), value: selectedSupplier || null },
+    {
+      field: 'selectedSecondSupplier',
+      type: sql.NVarChar(255),
+      value:
+        selectedSecondSupplier !== '' && selectedSecondSupplier ? selectedSecondSupplier : null,
+    },
+    {
+      field: 'selectedParentCompany',
+      type: sql.NVarChar(255),
+      value: selectedParentCompany !== '' && selectedParentCompany ? selectedParentCompany : null,
+    },
+    { field: 'showRSPOCertified', type: sql.Bit, value: showRSPOCertified || 0 },
+    {
+      field: 'SearchString',
+      type: sql.NVarChar(255),
+      value: searchString !== '' && searchString ? searchString : null,
+    },
+    {
+      field: 'Country',
+      type: sql.NVarChar(255),
+      value: country !== '' && country ? country : null,
+    },
+    {
+      field: 'State',
+      type: sql.NVarChar(255),
+      value: state !== '' && state ? state : null,
+    },
+    {
+      field: 'SubState',
+      type: sql.NVarChar(255),
+      value: subState !== '' && subState ? subState : null,
+    },
+  ];
+  // Verify if the sortByAttribute is valid
+  const sortedAttributes = [
+    'list_id',
+    'location_id',
+    'gadm_id',
+    'natural_land_area',
+    'natural_land_deforested_area',
+    'total_area_ha',
+    'status_code',
+    'location_error',
+    'negligible_risk',
+    'jrc_land_area',
+    'jrc_land_deforested_area',
+    'jrc_forest_loss_by_year',
+    'natural_forest_loss_by_year',
+    'protected_areas_area',
+    'landmark_area',
+    'country',
+    'state',
+    'subState',
+  ];
+  const hasFilter = sortedAttributes.filter((key) => key === sortByAttribute);
+  if (hasFilter.length > 0) {
+    parameters.push({
+      field: 'sortByAttribute',
+      type: sql.NVarChar(255),
+      value: sortByAttribute,
+    });
+  } else {
+    throw new Error(
+      `Invalid sortByAttribute ${filters.sortByAttribute} use one of ${sortedAttributes}`
+    );
+  }
+
+  const listAnalyses = await SQLUtilsLibSql.queryDB<PaginatedAfiAnalysisByListIdSortedByFilters[]>(
+    clientDatabase,
+    getPaginatedAfiAnalysisByListIdSortedByFilters,
+    parameters
+  );
+  const quantity = listAnalyses?.length > 0 ? listAnalyses.length : 0;
+
+  const formattedListAnalyses = listAnalyses.map((analysis) => {
+    return {
+      ...analysis,
+      protectedAreasPercent: analysis.protectedAreasHA / (analysis.totalAreaHa * 100) || 0,
+      landmarkPercent: analysis.landmarkHA / (analysis.totalAreaHa * 100) || 0,
+      naturalForestLossPercent: analysis.naturalForestLossHA / (analysis.totalAreaHa * 100) || 0,
+      jrcNaturalForestLossPercent:
+        analysis.jrcNaturalForestLossHA / (analysis.totalAreaHa * 100) || 0,
+    };
+  });
+
+  return { listAnalyses: formattedListAnalyses, quantity };
 }

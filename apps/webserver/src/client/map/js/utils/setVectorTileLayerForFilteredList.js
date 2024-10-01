@@ -38,7 +38,9 @@ const setVectorTileLayerForFilteredList = async (listData, transitionListData, v
 
   const selectedLocationCoordinates = locationData[0]?.geometry?.coordinates;
 
-  if (selectedLocationCoordinates) {
+  if (alertsMapExtent) {
+    view.goTo(alertsMapExtent);
+  } else if (selectedLocationCoordinates) {
     const geometry = new Polygon({
       rings: selectedLocationCoordinates,
       spatialReference: SpatialReference.WGS84,
@@ -57,8 +59,6 @@ const setVectorTileLayerForFilteredList = async (listData, transitionListData, v
       symbol,
     });
     view.goTo(graphic);
-  } else if (alertsMapExtent) {
-    view.goTo(alertsMapExtent);
   }
 };
 

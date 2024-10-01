@@ -17,11 +17,11 @@ export function SelectorWithTwoLevels({
   selectedOptionId,
   onOptionChange,
 }) {
-  const [collapsedCategories, setCollapsedCategories] = useState({});
+  const [collapsedSubLayers, setCollapsedSubLayers] = useState({});
 
   const {
     dataCy,
-    subCategories,
+    subLayers,
     id: optionId,
     chartsSelectorTitle,
     infoBubbleId,
@@ -30,7 +30,7 @@ export function SelectorWithTwoLevels({
   } = chartConfiguration;
 
   // Determine the count of options with non-zero data
-  const nonZeroOptions = subCategories?.filter(
+  const nonZeroOptions = subLayers?.filter(
     ({ dataPath }) => !getDataAndCheckIfAllYearsZero(data, dataPath)
   ).length;
 
@@ -47,10 +47,10 @@ export function SelectorWithTwoLevels({
 
   let totalCoverageOverlap = 0;
 
-  if (!dateRange && subCategories) {
-    subCategories.forEach(({ id }) => {
-      const subCategoriesData = chartsSelectorData?.[id] ?? {};
-      totalCoverageOverlap = Object.values(subCategoriesData).reduce(
+  if (!dateRange && subLayers) {
+    subLayers.forEach(({ id }) => {
+      const subLayersData = chartsSelectorData?.[id] ?? {};
+      totalCoverageOverlap = Object.values(subLayersData).reduce(
         (acc, val) => acc + val,
         totalCoverageOverlap
       );
@@ -84,12 +84,20 @@ export function SelectorWithTwoLevels({
       )}
       {!isRadioButtonDisabled &&
         selectedOptionId === optionId &&
-        subCategories?.map(({ id, legend, color }, index) => {
-          const subCategoriesData = chartsSelectorData?.[id] ?? {};
-          const totalLossPerCategory = dateRange
-            ? calculateTotalLossForAllCategories(subCategoriesData, dateRange)
-            : Object.values(subCategoriesData).reduce((acc, val) => acc + val, 0);
-          const isCategoryCollapsed = collapsedCategories[id];
+        subLayers?.map(({ id, legend, color }, index) => {
+          const subLayersData = chartsSelectorData?.[id] ?? {};
+          const totalLossPerSubLayer = dateRange
+            ? calculateTotalLossForAllCategories(subLayersData, dateRange)
+            : Object.values(subLayersData).reduce((acc, val) => acc + val, 0);
+
+          const subLayersDataWithTotalLoss = Object.entries(subLayersData)
+            ?.map(([key, value]) => ({
+              data: { [key]: value },
+              totalLoss: dateRange ? calculateTotalLossForAllCategories(value, dateRange) : value,
+            }))
+            .sort((a, b) => b.totalLoss - a.totalLoss);
+
+          const isSubLayerCollapsed = collapsedSubLayers[id];
 
           return (
             <React.Fragment key={id}>
@@ -101,44 +109,46 @@ export function SelectorWithTwoLevels({
                 <th>
                   <IconButton
                     disableRipple
-                    style={{ visibility: subCategoriesData ? 'visible' : 'hidden' }}
+                    style={{ visibility: subLayersData ? 'visible' : 'hidden' }}
                     onClick={() =>
-                      setCollapsedCategories((prev) => ({ ...prev, [id]: !prev?.[id] }))
+                      setCollapsedSubLayers((prev) => ({ ...prev, [id]: !prev?.[id] }))
                     }
                   >
-                    {isCategoryCollapsed ? <KeyboardArrowUp /> : <KeyboardArrowDown />}
+                    {isSubLayerCollapsed ? <KeyboardArrowUp /> : <KeyboardArrowDown />}
                   </IconButton>
                   <span className="chart-legends-table__checkbox" style={{ background: color }} />
                   <label htmlFor={`pie-chart-label-${id}`}>{legend}</label>
                 </th>
                 {totalCoverageOverlap > 0 && (
                   <th>
-                    {((totalLossPerCategory / totalCoverageOverlap) * 100).toFixed(
+                    {((totalLossPerSubLayer / totalCoverageOverlap) * 100).toFixed(
                       COVERAGE_DECIMAL_PLACES
                     )}
                   </th>
                 )}
-                <th>{prettifyNum(formatNum(totalLossPerCategory))}</th>
+                <th>{prettifyNum(formatNum(totalLossPerSubLayer))}</th>
               </tr>
-              {subCategoriesData &&
-                !isCategoryCollapsed &&
-                Object.entries(subCategoriesData).map(([key, value]) => (
-                  <tr key={id + key} className="chart-legends-table__second-level-legend">
-                    <td>{key}</td>
-                    {totalCoverageOverlap > 0 && (
-                      <td>
-                        {((value / totalCoverageOverlap) * 100).toFixed(COVERAGE_DECIMAL_PLACES)}
-                      </td>
-                    )}
-                    <td>
-                      {prettifyNum(
-                        formatNum(
-                          dateRange ? calculateTotalLossForAllCategories(value, dateRange) : value
-                        )
+              {subLayersData &&
+                !isSubLayerCollapsed &&
+                Object.entries(subLayersDataWithTotalLoss).map(([, { data, totalLoss }]) => {
+                  const secondarySubLayerName = Object.keys(data)[0];
+                  return (
+                    <tr
+                      key={id + secondarySubLayerName}
+                      className="chart-legends-table__second-level-legend"
+                    >
+                      <td>{secondarySubLayerName}</td>
+                      {totalCoverageOverlap > 0 && (
+                        <td>
+                          {((totalLoss / totalCoverageOverlap) * 100).toFixed(
+                            COVERAGE_DECIMAL_PLACES
+                          )}
+                        </td>
                       )}
-                    </td>
-                  </tr>
-                ))}
+                      <td>{prettifyNum(formatNum(totalLoss))}</td>
+                    </tr>
+                  );
+                })}
             </React.Fragment>
           );
         })}

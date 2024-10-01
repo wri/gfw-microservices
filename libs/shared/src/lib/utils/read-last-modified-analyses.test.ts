@@ -1,8 +1,4 @@
-import {
-  readAnalysesLastModifiedTime,
-  cache,
-  resetCacheForTests,
-} from './read-last-modified-analyses';
+import { readAnalysesLastModifiedTime, resetCacheForTests } from './read-last-modified-analyses';
 
 const mockS3 = {
   readFileFromS3: jest.fn(),

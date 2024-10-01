@@ -679,33 +679,20 @@ module.exports = (app, limiter) => {
 
           // Sort listAnalyses by some of those attributes protectedAreasHA, landmarkHA, naturalForestLossHA or jrcNaturalForestLossHA if not empty
           if (listAnalyses.length > 0) {
-            listAnalyses = listAnalyses.sort((a, b) => {
-              if (AFI_SORT_BY_ATTRIBUTES == 'protectedAreasHA') {
-                if (orderType.toLowerCase() === 'desc') {
-                  return b.protectedAreasHA - a.protectedAreasHA;
-                } else {
-                  return a.protectedAreasHA - b.protectedAreasHA;
-                }
-              } else if (AFI_SORT_BY_ATTRIBUTES == 'landmarkHA') {
-                if (orderType.toLowerCase() === 'desc') {
-                  return b.landmarkHA - a.landmarkHA;
-                } else {
-                  return a.landmarkHA - b.landmarkHA;
-                }
-              } else if (AFI_SORT_BY_ATTRIBUTES == 'naturalForestLossHA') {
-                if (orderType.toLowerCase() === 'desc') {
-                  return b.naturalForestLossHA - a.naturalForestLossHA;
-                } else {
-                  return a.naturalForestLossHA - b.naturalForestLossHA;
-                }
-              } else if (AFI_SORT_BY_ATTRIBUTES == 'jrcNaturalForestLossHA') {
-                if (orderType.toLowerCase() === 'desc') {
-                  return b.jrcNaturalForestLossHA - a.jrcNaturalForestLossHA;
-                } else {
-                  return a.jrcNaturalForestLossHA - b.jrcNaturalForestLossHA;
-                }
-              }
-            });
+            const sortAttributes = {
+              protectedAreasHA: 'protectedAreasHA',
+              landmarkHA: 'landmarkHA',
+              naturalForestLossHA: 'naturalForestLossHA',
+              jrcNaturalForestLossHA: 'jrcNaturalForestLossHA',
+            };
+
+            if (sortAttributes[AFI_SORT_BY_ATTRIBUTES]) {
+              listAnalyses = listAnalyses.sort((a, b) =>
+                orderType === 'desc'
+                  ? b[AFI_SORT_BY_ATTRIBUTES] - a[AFI_SORT_BY_ATTRIBUTES]
+                  : a[AFI_SORT_BY_ATTRIBUTES] - b[AFI_SORT_BY_ATTRIBUTES]
+              );
+            }
           }
           break;
         }

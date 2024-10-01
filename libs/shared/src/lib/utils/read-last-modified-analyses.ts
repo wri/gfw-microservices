@@ -1,5 +1,5 @@
-// N is the cache duration in hours, setting N = 1 will cache for 1 hour
-const N = 1;
+// N is the cache duration in hours
+const N = 24;
 // convert n (hours) to milliseconds for time comparison
 const CACHE_DURATION_MS = N * 60 * 60 * 1000;
 

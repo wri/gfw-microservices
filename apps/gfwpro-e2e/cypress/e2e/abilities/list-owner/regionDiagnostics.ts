@@ -3,7 +3,12 @@ import * as ListDiagnostic from '../../../app-api/ListDiagnostic';
 import { datatCyIdFromRegionsOptionsName } from '../../../app-api/ListLabels';
 
 const getAllDataFromGraph = (barElements) => {
-  return barElements.map((index, element) => Cypress.$(element).attr('height')).get();
+  return barElements
+    .map((index, element) => {
+      const bbox = element.getBBox();
+      return bbox.height;
+    })
+    .get();
 };
 
 When('I select {string} in the regions section', (filter: string) => {

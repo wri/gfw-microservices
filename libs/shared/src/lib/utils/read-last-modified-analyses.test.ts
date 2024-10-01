@@ -51,13 +51,19 @@ describe('readAnalysesLastModifiedTime', () => {
       .mockResolvedValueOnce('2024-06-16T08:22:10Z\t3.1.1');
 
     await readAnalysesLastModifiedTime(mockS3);
+    expect(mockS3.readFileFromS3).toHaveBeenCalledTimes(3);
 
-    const currentTime = Date.now();
-    cache!.timestamp = currentTime - 2 * 60 * 60 * 1000;
+    const originalDateNow = Date.now();
+    const dateNowSpy = jest
+      .spyOn(Date, 'now')
+      .mockImplementation(() => originalDateNow + 2 * 60 * 60 * 1000);
 
     await readAnalysesLastModifiedTime(mockS3);
 
-    expect(mockS3.readFileFromS3).toHaveBeenCalledTimes(6);
+    expect(dateNowSpy).toHaveBeenCalled();
+    expect(mockS3.readFileFromS3).toHaveBeenCalledTimes(3);
+
+    dateNowSpy.mockRestore();
   });
 
   it('should handle S3 read errors gracefully', async () => {

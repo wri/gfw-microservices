@@ -48,6 +48,7 @@ export default function CopyMoveModal(props) {
     if (dropdownOptions.length > 0) {
       updateSelectedMove(dropdownOptions[0]);
       setSelectedExistingList(dropdownOptions[0]);
+      setNewOrExisting({ target: { value: 'existing' } });
     } else {
       // If there are no compatible existing lists, auto-select "Create New"
       setNewOrExisting({ target: { value: 'new' } });

@@ -87,7 +87,7 @@ export default class AdministrativeAreasGFWListFilter extends Component {
       ...new Set(
         adminAreas.filter((location) => location.Country !== '').map((list) => list.Country)
       ),
-    ];
+    ].sort();
 
     const statesOptions = [
       ...new Set(
@@ -95,9 +95,11 @@ export default class AdministrativeAreasGFWListFilter extends Component {
           .filter((location) => location.Country === selectedCountry && location.State !== '')
           .map((list) => list.State)
       ),
-    ].map((v) => {
-      return { label: v, value: v };
-    });
+    ]
+      .sort()
+      .map((v) => {
+        return { label: v, value: v };
+      });
 
     const subStatesOptions = adminAreas
       .filter(
@@ -107,6 +109,7 @@ export default class AdministrativeAreasGFWListFilter extends Component {
           selectedStates.includes(area.State)
       )
       .map((area) => area['Sub State'])
+      .sort()
       .map((v) => {
         return { label: v, value: v };
       });

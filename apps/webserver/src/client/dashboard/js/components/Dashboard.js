@@ -370,7 +370,6 @@ export default class Dashboard extends Component {
               selectedList={selectedList}
               selectedTimeframe={selectedTimeframe}
               locationFilters={locationFilters}
-              zoomLevel={zoomLevel}
               geoJSON={rawData.geojson}
               failedGeoJSON={rawData.failedGeoJSON}
               filteredLocationGeoJSON={timeframeGeojson}

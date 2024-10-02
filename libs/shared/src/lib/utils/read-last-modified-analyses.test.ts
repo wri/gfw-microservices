@@ -1,8 +1,16 @@
-import { readAnalysesLastModifiedTime, resetCacheForTests } from './read-last-modified-analyses';
+import {
+  readAnalysesLastModifiedTime,
+  resetCacheForTests,
+  CACHE_IN_HOURS,
+} from './read-last-modified-analyses';
 
 const mockS3 = {
   readFileFromS3: jest.fn(),
 };
+
+const fcdTxt = '2024-06-14T15:42:14Z\t2.3.27';
+const afiTxt = '2024-06-15T12:34:56Z\t2.4.0';
+const alertsTxt = '2024-06-16T08:22:10Z\t3.1.1';
 
 describe('readAnalysesLastModifiedTime', () => {
   beforeEach(() => {
@@ -13,9 +21,9 @@ describe('readAnalysesLastModifiedTime', () => {
 
   it('should fetch file contents from S3 and update cache if cache is empty', async () => {
     mockS3.readFileFromS3
-      .mockResolvedValueOnce('2024-06-14T15:42:14Z\t2.3.27')
-      .mockResolvedValueOnce('2024-06-15T12:34:56Z\t2.4.0')
-      .mockResolvedValueOnce('2024-06-16T08:22:10Z\t3.1.1');
+      .mockResolvedValueOnce(fcdTxt)
+      .mockResolvedValueOnce(afiTxt)
+      .mockResolvedValueOnce(alertsTxt);
 
     const result = await readAnalysesLastModifiedTime(mockS3);
 
@@ -30,7 +38,7 @@ describe('readAnalysesLastModifiedTime', () => {
   });
 
   it('should return cached data if cache is still valid', async () => {
-    mockS3.readFileFromS3.mockResolvedValueOnce('2024-06-14T15:42:14Z\t2.3.27');
+    mockS3.readFileFromS3.mockResolvedValueOnce(fcdTxt);
 
     const initialResult = await readAnalysesLastModifiedTime(mockS3);
 
@@ -42,17 +50,16 @@ describe('readAnalysesLastModifiedTime', () => {
 
   it('should fetch data again after cache expires', async () => {
     mockS3.readFileFromS3
-      .mockResolvedValueOnce('2024-06-14T15:42:14Z\t2.3.27')
-      .mockResolvedValueOnce('2024-06-15T12:34:56Z\t2.4.0')
-      .mockResolvedValueOnce('2024-06-16T08:22:10Z\t3.1.1');
+      .mockResolvedValueOnce(fcdTxt)
+      .mockResolvedValueOnce(afiTxt)
+      .mockResolvedValueOnce(alertsTxt);
 
     await readAnalysesLastModifiedTime(mockS3);
     expect(mockS3.readFileFromS3).toHaveBeenCalledTimes(3);
 
-    const originalDateNow = Date.now();
     const dateNowSpy = jest
       .spyOn(Date, 'now')
-      .mockImplementation(() => originalDateNow + 2 * 60 * 60 * 1000);
+      .mockImplementation(() => CACHE_IN_HOURS + 1 * 60 * 60 * 1000);
 
     await readAnalysesLastModifiedTime(mockS3);
 
@@ -64,9 +71,9 @@ describe('readAnalysesLastModifiedTime', () => {
 
   it('should handle S3 read errors gracefully', async () => {
     mockS3.readFileFromS3
-      .mockResolvedValueOnce('2024-06-14T15:42:14Z\t2.3.27')
+      .mockResolvedValueOnce(fcdTxt)
       .mockRejectedValueOnce(new Error('S3 read error'))
-      .mockResolvedValueOnce('2024-06-16T08:22:10Z\t3.1.1');
+      .mockResolvedValueOnce(alertsTxt);
 
     const result = await readAnalysesLastModifiedTime(mockS3);
 

@@ -1,7 +1,7 @@
 // N is the cache duration in hours
-const N = 24;
+export const CACHE_IN_HOURS = 24;
 // convert n (hours) to milliseconds for time comparison
-const CACHE_DURATION_MS = N * 60 * 60 * 1000;
+const CACHE_DURATION_MS = CACHE_IN_HOURS * 60 * 60 * 1000;
 
 const bucketName =
   process.env.NODE_ENV === 'production' ? 'gfwpro-geotrellis-production' : 'gfwpro-geotrellis';

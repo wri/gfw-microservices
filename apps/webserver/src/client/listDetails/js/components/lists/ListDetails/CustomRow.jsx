@@ -29,7 +29,6 @@ const CustomRow = ({
   isSharedList,
   listId,
   viewDiagnostic,
-  isListInDraftStatus,
   isDeleteButtonAvailable,
   promptDeleteSelectedLocations,
   isEditActionAvailable,

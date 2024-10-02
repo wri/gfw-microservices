@@ -59,8 +59,7 @@ const CustomRow = ({
   const { backgroundColor, color } = style;
 
   const isSelectedLocationActive = rowInfo?.location_status_id === listStatus.Active;
-  const showLocationDiagnosticButton =
-    isGfwList || (isSelectedLocationActive && !isListInDraftStatus);
+  const showLocationDiagnosticButton = isGfwList || isSelectedLocationActive;
   return (
     <div
       onMouseEnter={() => setIsHovered(true)}

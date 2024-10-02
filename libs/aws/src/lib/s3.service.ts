@@ -143,7 +143,7 @@ export class S3Service {
     }
   }
 
-  async readFileFromS3(bucketName, key) {
+  async readFileFromS3(bucketName: string, key: string): Promise<string> {
     try {
       const command = new GetObjectCommand({
         Bucket: bucketName,
@@ -155,7 +155,7 @@ export class S3Service {
 
       return await this.streamToString(data.Body as Readable);
     } catch (error) {
-      Logger.error(`Error reading '${bucketName}'/'${key}' from S3:`, error);
+      Logger.error(`Error reading '${bucketName}'/'${key}' from S3:`, error.stack || error);
       throw error;
     }
   }

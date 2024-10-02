@@ -39,6 +39,7 @@ module.exports = (app, limiter) => {
   app.use('/analytics', [...routeMiddlewaresAnalytics, analyticsRouter]);
   app.get('/analytics', controller.analytics);
 
+  app.use('/analyses-last-modified', [routeMiddlewaresMyOrg]);
   app.get('/analyses-last-modified', lastModifiedController.getAnalysesLastModifiedTime);
 
   analyticsRouter.get('/usage', controller.getOrganizationAnalysisUsage);

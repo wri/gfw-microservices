@@ -81,8 +81,8 @@ export class CreateListLevelData extends AbstractHandler<ChainType> {
       customAttributeNames,
       customAttributeTypes,
       gfwListId,
-      userId,
-      templateId,
+      user_id: userId,
+      template_id: templateId,
     } = input.request;
 
     const connection = new SQLUtils({

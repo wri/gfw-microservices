@@ -15,8 +15,8 @@ export type RequestNewList = {
   customAttributeNames?: string;
   customAttributeTypes?: string;
   gfwListId?: number;
-  userId?: number;
-  templateId?: number;
+  user_id?: number;
+  template_id?: number;
   path: string;
   listId?: number;
   analysisIds?: Array<string>;

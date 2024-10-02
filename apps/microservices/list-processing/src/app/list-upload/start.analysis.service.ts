@@ -32,7 +32,7 @@ export class StartAnalysisService {
     };
 
     const { organization_database } = request;
-    const connection = new SQLUtils({
+    const databaseConfig = {
       user: process.env.MSSQL_USERNAME,
       password: process.env.MSSQL_PASSWORD,
       database: organization_database,
@@ -47,7 +47,8 @@ export class StartAnalysisService {
         trustServerCertificate: true,
       },
       requestTimeout: 600000,
-    });
+    };
+    const connection = new SQLUtils(databaseConfig);
     await connection.connect();
 
     const downloadS3File = new DownloadS3File(this.s3Service, this.config);
@@ -56,20 +57,19 @@ export class StartAnalysisService {
     const gadmService = new GADMService();
     const createListLevelData = new CreateListLevelData();
     const createLocationSchema = new CreateLocationSchema(connection);
-    const insertLocationData = new InsertLocationData(connection);
+    const insertLocationData = new InsertLocationData();
 
     downloadS3File
       .setNext(parseData)
       .setNext(listSchemaName)
       .setNext(gadmService)
-      .setNext(createLocationSchema)
       .setNext(createListLevelData)
       .setNext(createLocationSchema)
       .setNext(insertLocationData);
 
-    const file = await downloadS3File.handle(chainType);
+    await downloadS3File.handle(chainType);
 
-    console.log(file);
+    await connection.disconnect();
     return {
       executionArn: '',
       startDate: '',

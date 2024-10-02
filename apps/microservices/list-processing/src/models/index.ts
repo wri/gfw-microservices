@@ -67,6 +67,12 @@ export class RequestLargeListProcess {
 
   @ApiProperty()
   list_name?: string;
+
+  @ApiProperty()
+  analysisIds: Array<string>;
+
+  @ApiProperty()
+  template_id: number;
 }
 
 export class StartAnalysisType {

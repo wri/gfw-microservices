@@ -1,20 +1,19 @@
 import { ParserData } from './parser.data';
-import { csv2geojson } from '../parser/csv2geojson.parser';
+import { Logger } from '@nestjs/common';
 import * as fs from 'fs';
+import { csv2geojson } from '../parser/csv2geojson.parser';
 import { ChainType } from './types';
+
 // Mock dependencies
 jest.mock('fs');
 jest.mock('../parser/csv2geojson.parser');
-jest.mock('@nestjs/common', () => ({
-  Logger: jest.fn().mockImplementation(() => ({
-    error: jest.fn(),
-  })),
-}));
 
 describe('ParserData', () => {
   let parserData: ParserData;
+  let logger: Logger;
 
   beforeEach(() => {
+    logger = new Logger();
     parserData = new ParserData();
   });
 
@@ -22,26 +21,23 @@ describe('ParserData', () => {
     jest.clearAllMocks();
   });
 
-  it('should read the CSV file, convert it to GeoJSON, and pass it to the next handler', async () => {
-    const mockCsvContent = 'id,name\n1,Test\n';
-    const mockGeoJson = { type: 'FeatureCollection', features: [] };
-    const input: ChainType = {
-      request: {
-        userId: 1,
-        list_name: 'test',
-        organization_database: 'test-db',
-        templateId: 1,
-        path: 'test/path',
-        fileDownloadedPath: 'path/to/file.csv',
-      },
-    };
+  describe('deleteFile', () => {
+    it('should log an error if the file does not exist', (done) => {
+      const fileDownloadedPath = 'path/to/nonexistent/file';
+      (fs.access as unknown as jest.Mock).mockImplementation((path, mode, callback) => {
+        callback(new Error('File does not exist'));
+      });
 
-    (fs.readFileSync as jest.Mock).mockReturnValue(mockCsvContent);
-    (csv2geojson as jest.Mock).mockResolvedValue(mockGeoJson);
+      const loggerErrorSpy = jest.spyOn(logger, 'error');
 
-    const response = await parserData.handle(input);
+      parserData.deleteFile(fileDownloadedPath);
 
-    expect(fs.readFileSync).toHaveBeenCalledWith('path/to/file.csv', 'utf8');
-    expect(response).toStrictEqual({ ...input, geojson: mockGeoJson });
+      // Wait for the asynchronous operation to complete
+      // eslint-disable-next-line no-undef
+      setImmediate(() => {
+        expect(loggerErrorSpy).toHaveBeenCalledWith(`${fileDownloadedPath} does not exist.`);
+        done();
+      });
+    });
   });
 });

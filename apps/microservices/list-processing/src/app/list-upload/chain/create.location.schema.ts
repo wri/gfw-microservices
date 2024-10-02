@@ -2,7 +2,6 @@ import { SQLUtils } from '@wri-monorepos/sql';
 import { updateListsUploadStatus } from '../shared/update.lists.upload.status';
 import { AbstractHandler, ChainType } from './types';
 import * as sql from 'mssql';
-import { sqlConfig } from '../shared/config';
 
 interface QueryCreateTableResult {
   query_string: string;
@@ -55,54 +54,11 @@ export class CreateLocationSchema extends AbstractHandler<ChainType> {
     await this.executeQueryWithParams<void>(connection, 'uspCreateListTable', parameters);
   }
 
-  public async getTableStructureQuery(templateId: number): Promise<QueryCreateTableResult> {
-    try {
-      const queryCreateTableResult =
-        await this.clientStoreConnection.executeQuery<QueryCreateTableResult>(
-          'uspGetTableQueryString',
-          [
-            {
-              field: 'template_id',
-              type: sql.Int,
-              value: templateId,
-            },
-            {
-              field: 'custom_attribute_1',
-              type: sql.NVarChar(50),
-              value: null,
-            },
-            {
-              field: 'custom_attribute_1_type',
-              type: sql.NVarChar(50),
-              value: null,
-            },
-            {
-              field: 'custom_attribute_2',
-              type: sql.NVarChar(50),
-              value: null,
-            },
-            {
-              field: 'custom_attribute_2_type',
-              type: sql.NVarChar(50),
-              value: null,
-            },
-            {
-              field: 'custom_attribute_3',
-              type: sql.NVarChar(50),
-              value: null,
-            },
-            {
-              field: 'custom_attribute_3_type',
-              type: sql.NVarChar(50),
-              value: null,
-            },
-          ]
-        );
-
-      return queryCreateTableResult;
-    } catch (error) {
-      throw new Error(`Failed to get table structure query: ${error.stack}`);
-    }
+  public async getTableStructureQuery(): Promise<QueryCreateTableResult> {
+    return {
+      query_string:
+        '[Location Name] NVARCHAR(150),[Latitude] FLOAT,[Longitude] FLOAT,[Analysis Radius] FLOAT,[Analysis Area] FLOAT,[Commodity] NVARCHAR(150),[Location Classification] NVARCHAR(150),[Company ID] NVARCHAR(150),[Volume] INT,[Owner Name] NVARCHAR(150),[Owner ID] NVARCHAR(150),[Company Name] NVARCHAR(150),[Supplier Name] NVARCHAR(150),[Facility Name] NVARCHAR(150),[Refinery Name] NVARCHAR(150),[Certification] NVARCHAR(150),[Start Date] NVARCHAR(150),[End Date] NVARCHAR(150),[Time Horizon] NVARCHAR(150),[Accuracy Rating of Location Entered] INT,[Country] NVARCHAR(150),[State] NVARCHAR(150),[Sub State] NVARCHAR(150),[Wind Barrier] NVARCHAR(150),[Riparian Buffers] NVARCHAR(150),[Buffer Zones] NVARCHAR(150),[gadmid] NVARCHAR(150), [Geometry] geometry, [location_id] INT, [flag_general] INT, [flag_gran_chaco] INT, [flag_glad] INT, [flag_forma] INT, [flag_viirs] INT, [flag_terrai] INT',
+    };
   }
 
   public async createAnalysisTableInDatabase(
@@ -138,39 +94,30 @@ export class CreateLocationSchema extends AbstractHandler<ChainType> {
   }
 
   async handle(input: ChainType): Promise<ChainType> {
-    const {
-      templateId,
-      listId,
+    const { listId, listTable, organization_database, analysisTable, listStatusId, analysisIds } =
+      input.request;
+
+    const queryCreateTableResult = await this.getTableStructureQuery();
+
+    await updateListsUploadStatus(organization_database, listId, 'Get table query structure');
+
+    await this.createListTableInDatabase(
+      this.clientStoreConnection,
       listTable,
-      organization_database: clientDatabase,
-      analysisTable,
+      queryCreateTableResult.query_string
+    );
+
+    await this.createAnalysisTableInDatabase(this.clientStoreConnection, analysisTable);
+    await updateListsUploadStatus(organization_database, listId, 'Create analysis table');
+
+    await this.createAnalysisStatusRecords(
+      organization_database,
+      listId,
       listStatusId,
-      analysisIds,
-    } = input.request;
+      analysisIds
+    );
+    await updateListsUploadStatus(organization_database, listId, 'Create analysis status records');
 
-    const queryCreateTableResult = await this.getTableStructureQuery(templateId);
-    const connection = new SQLUtils(sqlConfig);
-
-    try {
-      await connection.connect();
-
-      await updateListsUploadStatus(connection.databaseName, listId, 'Get table query structure');
-
-      await this.createListTableInDatabase(
-        connection,
-        listTable,
-        queryCreateTableResult[0].query_string
-      );
-
-      await this.createAnalysisTableInDatabase(connection, analysisTable);
-      await updateListsUploadStatus(connection.databaseName, listId, 'Create analysis table');
-
-      await this.createAnalysisStatusRecords(clientDatabase, listId, listStatusId, analysisIds);
-      await updateListsUploadStatus(clientDatabase, listId, 'Create analysis status records');
-
-      return await super.handle(input);
-    } finally {
-      await connection.disconnect();
-    }
+    return await super.handle(input);
   }
 }

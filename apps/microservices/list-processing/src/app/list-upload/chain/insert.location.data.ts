@@ -2,14 +2,13 @@ import { DataSource, EntitySchema } from 'typeorm';
 import { AbstractHandler, ChainType } from './types';
 import { ClientStoreConnection, ListSchema, ListSchemaType } from '@wri-monorepos/sql';
 import { FeatureCollection } from '@wri-monorepos/geo';
+import { GeoJSONGeometry, stringify } from 'wellknown';
 
 const BATCH_SIZE = 1000;
 
 export class InsertLocationData extends AbstractHandler<ChainType> {
-  clientStoreConnection: ClientStoreConnection;
-  constructor(clientStoreConnection) {
+  constructor() {
     super();
-    this.clientStoreConnection = clientStoreConnection;
   }
 
   private async insertBatch(
@@ -36,8 +35,10 @@ export class InsertLocationData extends AbstractHandler<ChainType> {
       ...ListSchema,
       name: listTable,
     });
+    ClientStoreConnection;
 
-    const connection = await this.clientStoreConnection.getConnection(organizationDatabase, [
+    const clientStoreConnection = new ClientStoreConnection();
+    const connection = await clientStoreConnection.getConnection(organizationDatabase, [
       ListEntity,
     ]);
 
@@ -45,6 +46,7 @@ export class InsertLocationData extends AbstractHandler<ChainType> {
       const features = (input.geojson as FeatureCollection).features;
       const values = features.map((feature) => ({
         ...feature.properties,
+        geometry: stringify(feature.geometry as GeoJSONGeometry),
       }));
 
       for (let i = 0; i < values.length; i += BATCH_SIZE) {

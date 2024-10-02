@@ -6,7 +6,9 @@ When('I select {string} in the sensitive areas section', (sensitiveArea: string)
 });
 
 Then('I can see tree cover loss within {string} by year', (sensitiveArea: string) => {
-  cy.get('.sensitive-areas-chart > svg > g.highcharts-series-group rect').eq(0).click();
+  cy.get('.sensitive-areas-chart > svg > g.highcharts-series-group > g.highcharts-series path')
+    .eq(0)
+    .click();
   cy.get('.sensitive-areas-chart div.highcharts-label.highcharts-tooltip > span > table > tbody')
     .eq(0)
     .then(() => {

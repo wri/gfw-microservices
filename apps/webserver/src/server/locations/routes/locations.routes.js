@@ -688,7 +688,7 @@ module.exports = (app, limiter) => {
 
             if (sortAttributes[AFI_SORT_BY_ATTRIBUTES]) {
               listAnalyses = listAnalyses.sort((a, b) =>
-                orderType === 'desc'
+                orderType.toLowerCase() === 'desc'
                   ? b[AFI_SORT_BY_ATTRIBUTES] - a[AFI_SORT_BY_ATTRIBUTES]
                   : a[AFI_SORT_BY_ATTRIBUTES] - b[AFI_SORT_BY_ATTRIBUTES]
               );

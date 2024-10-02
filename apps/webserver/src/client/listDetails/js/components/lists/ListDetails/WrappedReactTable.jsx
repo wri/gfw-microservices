@@ -25,7 +25,6 @@ const WrappedReactTable = ({
   isGfwList,
   isSharedList,
   viewDiagnostic,
-  isListInDraftStatus,
   isDeleteButtonAvailable,
   promptDeleteSelectedLocations,
   isEditActionAvailable,
@@ -178,7 +177,6 @@ const WrappedReactTable = ({
                 isSharedList={isSharedList}
                 rowInfo={props.rowInfo}
                 viewDiagnostic={viewDiagnostic}
-                isListInDraftStatus={isListInDraftStatus}
                 isDeleteButtonAvailable={isDeleteButtonAvailable}
                 promptDeleteSelectedLocations={promptDeleteSelectedLocations}
                 isEditActionAvailable={isEditActionAvailable}

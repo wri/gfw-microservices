@@ -32,7 +32,6 @@ import {
   updateListData,
   updateListLevelAnalysis,
   updateSelectedLocations,
-  toggleDeforestationDisplayFormat,
 } from '../../../../../locations/js/actions/locationActions';
 import LocationsSummary from './LocationsSummary';
 import SaveAsDraftButton from '../../../../../common/js/components/SaveAsDraft/SaveAsDraftButton';

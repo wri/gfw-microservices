@@ -121,6 +121,8 @@ export default class Filter extends Component {
       !isProtectedAreasFilterVisible &&
       !isAdministrativeAreasFilterVisible;
 
+    const isInlineFilterVisible =
+      isFilterModalVisible && !isGfwList && !isCommodityRiskFilterVisible;
     return (
       <>
         {isFilterModalVisible && (
@@ -178,7 +180,7 @@ export default class Filter extends Component {
           sx={{ paddingBottom: '10px' }}
         >
           <Grid container spacing={3}>
-            {isFilterModalVisible && !isGfwList ? (
+            {isInlineFilterVisible ? (
               <>
                 <Grid container item xs={8} spacing={3}>
                   <CountryStateSubStateFilter
@@ -248,7 +250,7 @@ export default class Filter extends Component {
                     />
                   )}
                 </MaterialButton>
-                {isFilterModalVisible && (
+                {isInlineFilterVisible && (
                   <MaterialButton
                     sx={{ minWidth: '35px', '& > svg': { margin: 0 } }}
                     onClick={() => store.dispatch(toggleCanopyModal())}

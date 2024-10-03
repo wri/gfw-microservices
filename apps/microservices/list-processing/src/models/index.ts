@@ -223,6 +223,7 @@ export interface FcdControllerRequestBody extends DatabaseQueryParam {
   country?: string;
   countryGadm?: string;
   locationId?: number;
+  isGfwList?: boolean;
 }
 
 export class DeleteListRequest {

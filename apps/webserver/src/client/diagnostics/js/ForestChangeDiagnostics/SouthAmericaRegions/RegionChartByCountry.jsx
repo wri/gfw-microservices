@@ -29,6 +29,7 @@ import { BarChartTreeCoverLossColombia } from './BarChartTreeCoverLossColombia';
 export function RegionChartByCountry({ listId, data, fireDownload, country }) {
   const query = useQuery();
   const locationId = query.get('locationId');
+  const isGfwList = !!query.get('gfw') || undefined;
 
   const {
     argentinaTreeCoverLoss,
@@ -99,6 +100,7 @@ export function RegionChartByCountry({ listId, data, fireDownload, country }) {
       country: country === regionIds.ARGENTINA ? 'Argentina' : 'Colombia',
       countryGadm,
       category: ['WDPA', 'landmark', 'country', 'classified_region'],
+      isGfwList,
     };
 
     fetch(`/api/fcd?${new URLSearchParams(fcdParams).toString()}`, {

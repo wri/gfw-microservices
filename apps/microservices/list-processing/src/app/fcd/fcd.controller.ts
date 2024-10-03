@@ -9,6 +9,7 @@ const databaseQuerySchema = z.object({
   country: z.string().optional(),
   countryGadm: z.string().optional(),
   locationId: z.coerce.number().optional(),
+  isGfwList: z.coerce.boolean().optional(),
 });
 
 const fcdServiceFunctionsMap = Object.freeze({

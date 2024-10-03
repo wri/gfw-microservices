@@ -84,7 +84,6 @@ export default class Filter extends Component {
       listData,
       adminAreas,
       protectedAreas,
-      history,
       isGfwList,
       clearFilters,
     } = this.props;
@@ -129,17 +128,12 @@ export default class Filter extends Component {
               <ProtectedAreasGFWList
                 filterCount={filterCount}
                 protectedAreas={protectedAreas}
-                history={history}
                 clearFilters={clearFilters}
               />
             )}
 
             {isAdministrativeAreasFilterVisible && (
-              <AdministrativeAreasGFWListFilter
-                filterCount={filterCount}
-                adminAreas={adminAreas}
-                history={history}
-              />
+              <AdministrativeAreasGFWListFilter filterCount={filterCount} adminAreas={adminAreas} />
             )}
 
             {isGFWListOtherThanProtectedOrAdministrativeAreas && (

@@ -59,7 +59,7 @@ describe('readAnalysesLastModifiedTime', () => {
 
     const dateNowSpy = jest
       .spyOn(Date, 'now')
-      .mockImplementation(() => CACHE_IN_HOURS + 1 * 60 * 60 * 1000);
+      .mockImplementation(() => (CACHE_IN_HOURS + 1) * 60 * 60 * 1000);
 
     await readAnalysesLastModifiedTime(mockS3);
 

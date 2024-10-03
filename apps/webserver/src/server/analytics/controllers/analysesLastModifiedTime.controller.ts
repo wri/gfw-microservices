@@ -1,6 +1,6 @@
 import { readAnalysesLastModifiedTime } from '@wri-monorepos/shared';
 import { S3Service } from '@wri-monorepos/aws';
-const logger = require('../../../config/privateutils/logger.utils');
+import * as logger from '../../../config/privateutils/logger.utils';
 
 export const getAnalysesLastModifiedTime = async (req, res) => {
   const s3 = new S3Service();

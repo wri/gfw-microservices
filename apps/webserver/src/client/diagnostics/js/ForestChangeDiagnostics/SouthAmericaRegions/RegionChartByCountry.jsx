@@ -244,7 +244,7 @@ export function RegionChartByCountry({ listId, data, fireDownload, country }) {
               chartLabels={chartDatasetConfigsColombia.classifiedRegionOverlap}
               title={chartDatasetConfigsColombia.classifiedRegionOverlap.chartsSelectorTitle}
               informationBubbleId={chartDatasetConfigsColombia.classifiedRegionOverlap.infoBubbleId}
-              hasSubLayers
+              hasSecondarySubLayers
             />
           )}
         </>

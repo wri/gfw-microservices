@@ -39,6 +39,11 @@ function AfiDiagnosticsChart({ data }) {
           dataLabels: {
             enabled: true,
             format: '<b>{point.name}</b>:<br>{point.percentage:.2f} %',
+            filter: {
+              property: 'percentage',
+              operator: '>',
+              value: 1,
+            },
           },
         },
       },

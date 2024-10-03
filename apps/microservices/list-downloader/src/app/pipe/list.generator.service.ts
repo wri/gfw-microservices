@@ -33,7 +33,7 @@ export class ListGeneratorService extends IFileGenerator {
   public async makeFile(filters: ListFieldsFileRequest) {
     const { organizationDatabase, listId, combinedColumns, selectedLocations, file, isGFWList } =
       filters;
-    filters.organizationDatabase = isGFWList
+    const dbName = isGFWList
       ? this.configService.get('MSSQL_DATABASE', { infer: true })
       : organizationDatabase;
 
@@ -55,7 +55,7 @@ export class ListGeneratorService extends IFileGenerator {
       ? []
       : selectedLocations.split(',').map((x) => parseInt(x, 10));
 
-    const [listLevelAnalysis] = await this.uspGetListAnalysis.run(organizationDatabase, {
+    const [listLevelAnalysis] = await this.uspGetListAnalysis.run(dbName, {
       listId: listId,
     });
 

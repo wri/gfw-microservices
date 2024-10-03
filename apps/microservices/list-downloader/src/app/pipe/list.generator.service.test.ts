@@ -90,7 +90,7 @@ describe('ListGeneratorServiceTest', () => {
       file: 'csv',
       isGFWList: true,
       listId: 15,
-      organizationDatabase: 'test-db',
+      organizationDatabase: 'client-db',
       selectedLocations: '',
     });
   });

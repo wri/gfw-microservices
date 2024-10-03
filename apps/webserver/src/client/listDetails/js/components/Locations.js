@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Route, Switch, withRouter } from 'react-router-dom';
+import { withRouter } from 'react-router-dom';
 import Page from '../../../common/js/components/Page';
 import { userAccessLevel, locationsPage } from '../../../common/js/config';
 import ModalLoader from '../../../common/js/components/Loaders/ModalLoader';

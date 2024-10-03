@@ -16,13 +16,13 @@ import UserListCommodityRiskFilter from './UserListCommodityRiskFilter';
 import ProtectedAreasGFWList from './ProtectedAreasGFWListFilter';
 import AdministrativeAreasGFWListFilter from './AdministrativeAreasGFWListFilter';
 import GFWListFilter from './GFWListFilter';
+import DeforestationDisplayFormatToggleButtons from '../DeforestationDisplayFormatToggleButtons';
 import { filterKeys, gfwListNames } from '../../../../../../common/js/constants/lists.constants';
 import { GFW_LISTS_NUMBER_CONSTANTS } from '../../../../../../../config/env/gfwLists.constants';
 import store from '../../../../../../locations/js/store';
 import '../../../../../../common/css/_irsBase.scss';
 import '../../../../../../common/css/_irsStyle.scss';
 import '../../../../../../common/css/filter-dialogs.scss';
-import DeforestationDisplayFormatToggleButtons from '../DeforestationDisplayFormatToggleButtons';
 
 export default class Filter extends Component {
   constructor(props) {

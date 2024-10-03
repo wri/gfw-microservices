@@ -108,7 +108,7 @@ class ArgentinaLayerUtil {
    * @returns this
    */
   handleNonOverlapDifference() {
-    const total = this.data.total_area;
+    const total = getTotalArea(this.data);
     const sumOfValues = this.getSumOfValues();
 
     const nonOverlapValue = total - sumOfValues;
@@ -119,7 +119,7 @@ class ArgentinaLayerUtil {
 
   handleRowPercentageAndFormat() {
     // avoid dividing by zero, number gets formatted down the stream
-    const total = Math.max(this.data.total_area, 0.01);
+    const total = Math.max(getTotalArea(this.data), 0.01);
 
     this.layerData = this.layerData.map(([key, value]) => {
       let percent = 0;
@@ -185,3 +185,5 @@ const argentinaLayers = ({ operation, data, dataRow, csvData }) => {
 };
 
 export { argentinaLayers };
+
+const getTotalArea = (data) => data.country_area?.ARG ?? data.total_area;

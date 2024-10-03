@@ -1,12 +1,12 @@
 /* eslint-disable default-param-last */
 import * as actionTypes from '../constants/actionTypes';
-import moment from 'moment';
+import { latestTreeCoverLossYearForTclDataInMap } from '../../../common/js/config';
 
 const initialAnalysisState = {
   activeAnalysis: 'draw',
   adminArea: {},
   gladDates: {
-    start: moment().subtract(2, 'years').toDate(),
+    start: new Date(`${latestTreeCoverLossYearForTclDataInMap + 1}-01-01 00:00:00`),
     sliderDate: new Date('2021-01-01 00:00:00'),
     end: new Date(),
   },

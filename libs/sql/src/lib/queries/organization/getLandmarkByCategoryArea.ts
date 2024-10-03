@@ -22,6 +22,7 @@ WHERE
 SET @TEMPLATE = '
   SELECT 
       an.total_area as totalArea,
+      an.country_area as countryArea,
       an.landmark_by_category_area as landmarkByCategoryArea
   FROM 
       dbo.[{LIST_TABLE_NAME}] lt 
@@ -43,7 +44,8 @@ EXEC sp_executesql @TEMPLATE,
 export const getLandmarkAreaByCategoryForList = `
 SELECT 
     an.total_area as totalArea,
-    an.landmark_by_category_area as landmarkByCategoryArea    
+    an.country_area as countryArea,
+    an.landmark_by_category_area as landmarkByCategoryArea
 FROM 
     dbo.[Analyses] an
 WHERE 
@@ -52,5 +54,6 @@ WHERE
 
 export type GetLandmarkByCategoryAreaType = {
   totalArea: number;
+  countryArea: string;
   landmarkByCategoryArea: string;
 };

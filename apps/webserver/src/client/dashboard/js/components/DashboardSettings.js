@@ -1,6 +1,5 @@
 import React, { Component } from 'react';
 import store from '../store';
-import mapUtils from '../utils/mapUtils';
 import { selectAlert, selectTimeframe } from '../actions/dashboardActions';
 import GfwSelect from '../../../common/js/components/GfwSelect';
 import { proLayers } from '../../../common/js/proLayers.config';
@@ -21,8 +20,7 @@ export default class DashboardSettings extends Component {
   };
 
   handleViewMap = () => {
-    const { selectedAlert, selectedList, selectedTimeframe, zoomLevel, selectedAdmin, view } =
-      this.props;
+    const { selectedAlert, selectedList, selectedTimeframe, selectedAdmin, view } = this.props;
     if (!selectedList || !selectedList.id) {
       return;
     }
@@ -32,17 +30,12 @@ export default class DashboardSettings extends Component {
         ? [proLayers.integratedDeforestationAlertsID]
         : [proLayers.viirsActiveFiresID];
 
-    const viewCenter = mapUtils.getExtent(view);
-
     const sendData = {
       listId: selectedList.id,
       selectedTimeframe,
       visibleLayers,
       isGfwList: selectedList.isGlobalForestWatchList,
       isSharedList: selectedList?.is_shared,
-      latitude: viewCenter.latitude,
-      longitude: viewCenter.longitude,
-      zoom: zoomLevel,
       xmin: view.extent.xmin,
       ymin: view.extent.ymin,
       xmax: view.extent.xmax,

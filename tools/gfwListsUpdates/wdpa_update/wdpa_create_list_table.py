@@ -1,8 +1,20 @@
 import pyodbc
+import pandas as pd
 import geopandas as gpd
 import wdpa_config as cfg
 
-def wdpa_renameColumns(df):
+def join_globalid(gdf):
+    """
+    Join globalid data
+    """
+    df = pd.read_json(cfg.json_path)
+    df_expanded = pd.json_normalize(df["data"])
+
+    gdf = gdf.merge(df_expanded, how="left", left_on="WDPA_PID", right_on="wdpa_pid")
+
+    return gdf
+
+def wdpa_renameColumns(gdf):
     """
     Rename columns in a dataframe
     """
@@ -16,31 +28,22 @@ def wdpa_renameColumns(df):
         "name_0": "Country",
         "name_1": "State",
         "name_2": "Sub State",
+        "gfw_geostore_id": "globalid",
     }
 
-    df = df.rename(columns=rename_dict)
-    df["id"] = df["location_id"]  # also use location_id as id calculated from objectid
+    gdf = gdf.rename(columns=rename_dict)
+    gdf["id"] = gdf["location_id"]
 
     # get centroid
-    df["Longitude"] = df.centroid.x
-    df["Latitude"] = df.centroid.y
+    gdf["Longitude"] = gdf.centroid.x
+    gdf["Latitude"] = gdf.centroid.y
 
     # df["Geometry"] = df.geometry.to_wkt(
     #     output_dimension=2
     # )
-    df["Location Classification"] = ""
+    gdf["Location Classification"] = ""
 
-    return df
-
-def loadGFWList(path, start, end, connection):
-    """
-    Loads and preps the geodataframe
-    """
-    gdf = gpd.read_file(path, driver="FileGDB", layer=0, rows=slice(start, end))
-    gdf = wdpa_renameColumns(gdf)
-    e = insert_geometry_WDPA(gdf, connection)
-
-    return e
+    return gdf
 
 def insert_geometry_WDPA(gdf, connection):
     """
@@ -103,25 +106,36 @@ def insert_geometry_WDPA(gdf, connection):
             cursor.setinputsizes(inputSizes)
             cursor.executemany(sql, new_locations)
 
-        # insert location_ids into analysis table
-        gdf["location_status_id"] = 1
-        columns = ["location_id", "location_status_id"]
-        t = list(gdf[columns].itertuples(index=False, name=None))
+        # # insert location_ids into analysis table
+        # gdf["location_status_id"] = 1
+        # columns = ["location_id", "location_status_id"]
+        # t = list(gdf[columns].itertuples(index=False, name=None))
 
-        with connection:
-            cursor = connection.cursor()
-            cursor.fast_executemany = True
-            column_name_string = ",".join([f'"{x}"' for x in columns])
-            value_marks = ",".join([f"?" for x in columns])
-            sql = f"INSERT into [dbo].[{analysis_table_name}] ({column_name_string}) VALUES ({value_marks})"
-            cursor.executemany(sql, t)
+        # with connection:
+        #     cursor = connection.cursor()
+        #     cursor.fast_executemany = True
+        #     column_name_string = ",".join([f'"{x}"' for x in columns])
+        #     value_marks = ",".join([f"?" for x in columns])
+        #     sql = f"INSERT into [dbo].[{analysis_table_name}] ({column_name_string}) VALUES ({value_marks})"
+        #     cursor.executemany(sql, t)
 
-        print(f"Adding {len(t)} empty rows to {analysis_table_name} finished")
+        # print(f"Adding {len(t)} empty rows to {analysis_table_name} finished")
 
         return []
     except Exception as e:
         print(e)
         return locations_objectid_list  # return list of failed locations
+
+def loadGFWList(path, start, end, connection):
+    """
+    Loads and preps the geodataframe
+    """
+    gdf = gpd.read_file(path, driver="FileGDB", layer=0, rows=slice(start, end))
+    gdf = join_globalid(gdf)
+    gdf = wdpa_renameColumns(gdf)
+    e = insert_geometry_WDPA(gdf, connection)
+
+    return e
 
 if __name__ == "__main__":
     """This is executed when run from the command line"""

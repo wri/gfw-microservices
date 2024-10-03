@@ -9,6 +9,10 @@ import {
   ListsPalmOilMills,
   ListGFWLists,
   AnalysisPalmOilMills,
+  AnalysisAdministrativesAreas,
+  AnalysisOilPalmConcessions,
+  AnalysisProtectedAreas,
+  AnalysisRspoOilPalmConcessions,
   RspoOilPalmConcessions,
   ListOilPalmConcessions,
   ListProtectedAreas,
@@ -16,15 +20,30 @@ import {
 } from '../entity';
 import { EntityTarget, FindOptionsWhere, Raw } from 'typeorm';
 
-const ANALYSYS_TABLE_NAMES = {
-  'analysis-palmOilMills': AnalysisPalmOilMills,
-};
 export class GfwLists {
   private readonly logger = new Logger('List processing service');
   private readonly clientStoreConnection = new ClientStoreConnection();
   private readonly DEFAULT_PAGE_SIZE: number = 50;
   private readonly DEFAULT_PAGE_NUM: number = 0;
 
+  getAnalysisTableNameEntity(
+    analysisTableName: string
+  ): EntityTarget<
+    | AnalysisPalmOilMills
+    | AnalysisProtectedAreas
+    | AnalysisAdministrativesAreas
+    | AnalysisOilPalmConcessions
+    | AnalysisRspoOilPalmConcessions
+  > {
+    const ANALYSYS_TABLE_NAMES = {
+      'analysis-palmOilMills': AnalysisPalmOilMills,
+      'analysis-protectedAreas': AnalysisProtectedAreas,
+      'analysis-administrativeAreas': AnalysisAdministrativesAreas,
+      'analysis-oilPalmConcessions': AnalysisOilPalmConcessions,
+      'analysis-rspoOilPalmConcessions': AnalysisRspoOilPalmConcessions,
+    };
+    return ANALYSYS_TABLE_NAMES[analysisTableName];
+  }
   getAttributesListEntity(
     list_id: number
   ): EntityTarget<
@@ -63,7 +82,7 @@ export class GfwLists {
       const connection = await this.getConnection(organizationDatabase);
       const listRepository = connection.getRepository(this.getAttributesListEntity(list_id));
       const take = pageSize === 0 ? this.DEFAULT_PAGE_SIZE : pageSize;
-      const skip = pageNum > 0 ? (pageNum - 1) * take : this.DEFAULT_PAGE_NUM;
+      const skip = pageNum > 0 ? pageNum * take : this.DEFAULT_PAGE_NUM;
 
       let items, count;
 
@@ -99,7 +118,7 @@ export class GfwLists {
       });
       return [itemsWithListId, count];
     } catch (error) {
-      throw new InternalServerErrorException('Error deleting list', error.message);
+      throw new InternalServerErrorException('Error getting paginated list data', error.message);
     }
   }
 
@@ -115,27 +134,33 @@ export class GfwLists {
       const listTableName = await this.getListAnalysisTableName(list_id, organizationDatabase);
 
       const listRepository = connection.getRepository(
-        ANALYSYS_TABLE_NAMES[listTableName.list_analysis_table_name]
+        this.getAnalysisTableNameEntity(listTableName.list_analysis_table_name)
       );
 
       const take = pageSize === 0 ? this.DEFAULT_PAGE_SIZE : pageSize;
-      const skip = pageNum > 0 ? (pageNum - 1) * take : this.DEFAULT_PAGE_NUM;
+      const skip = pageNum > 0 ? pageNum * take : this.DEFAULT_PAGE_NUM;
 
-      let items = [],
-        count = 0;
-
+      let items, count;
+      const where: FindOptionsWhere<
+        | AnalysisPalmOilMills
+        | AnalysisAdministrativesAreas
+        | AnalysisOilPalmConcessions
+        | AnalysisProtectedAreas
+        | AnalysisRspoOilPalmConcessions
+      > = {};
       if (ids.length > 0) {
         // If ids array is not empty, apply the where clause
-        items = await listRepository.findAndCount({
+        [items, count] = await listRepository.findAndCount({
           where: {
-            location_id: Raw((alias) => `${alias} IN (:...names)`, {
+            ...where,
+            LocationId: Raw((alias) => `${alias} IN (:...names)`, {
               names: ids,
             }),
           },
           skip,
           take,
           order: {
-            location_id: 'DESC',
+            LocationId: 'DESC',
           },
         });
       } else {
@@ -143,20 +168,26 @@ export class GfwLists {
           skip,
           take,
           order: {
-            location_id: 'DESC',
+            LocationId: 'DESC',
           },
         });
       }
       if (!items) {
-        this.logger.error('ListsPalmOilMills: lists not found');
-        throw new NotFoundException(`ListsPalmOilMills with list_id ${list_id} not found.`);
+        this.logger.error(`${listTableName.list_analysis_table_name}: lists not found`);
+        throw new NotFoundException(
+          `${listTableName.list_analysis_table_name} with list_id ${list_id} not found.`
+        );
       }
       const itemsWithListId = items.map((item) => {
         return { ...item, list_id: list_id };
       });
-      return [itemsWithListId, count];
+      const number_of_pages = Math.ceil(count / take);
+      return [itemsWithListId, count, number_of_pages];
     } catch (error) {
-      throw new InternalServerErrorException('Error getAnalysisDataForGFWList', error.message);
+      throw new InternalServerErrorException(
+        `Error getAnalysisDataForGFWList for gfwList id ${list_id}`,
+        error.message
+      );
     }
   }
 
@@ -227,7 +258,7 @@ export class GfwLists {
         locationNameArray = filters.selectedNames;
       }
     }
-    const skip = pageNum > 0 ? (pageNum - 1) * pageSize : this.DEFAULT_PAGE_NUM;
+    const skip = pageNum > 0 ? pageNum * pageSize : this.DEFAULT_PAGE_NUM;
     const take = pageSize === 0 ? this.DEFAULT_PAGE_SIZE : pageSize;
     try {
       const connection = await this.getConnection(organizationDatabase);

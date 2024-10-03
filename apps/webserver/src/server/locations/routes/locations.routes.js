@@ -607,8 +607,16 @@ module.exports = (app, limiter) => {
       selectedOverallThreats: overallThreats,
       selectedOverallValues: overallValues,
       selectedMillPriority: millPriority,
+      analysisId = 'FCD',
     } = req.query;
-
+    const VALID_ANALYSIS_TYPES = ['FCD', 'ALERTS', 'AFI'];
+    // Verify if analysisId is a valid analysis type
+    if (!VALID_ANALYSIS_TYPES.includes(analysisId.toUpperCase())) {
+      return res.status(400).send({
+        message:
+          'Invalid analysisId, analysisId should be one of the following: FCD, Alerts or AFI',
+      });
+    }
     const selectedOverallThreats = mapCommodityRiskValuesToDatabaseValues(overallThreats);
     const selectedOverallValues = mapCommodityRiskValuesToDatabaseValues(overallValues);
     const selectedMillPriority = mapCommodityRiskValuesToDatabaseValues(millPriority);
@@ -636,17 +644,83 @@ module.exports = (app, limiter) => {
     };
 
     try {
-      const listAnalyses = await AnalysisManager.getListAnalyses(req, listID);
-      const locationAttributeArray = await ListManager.getPaginatedAnalysisDataForUserList(
-        req,
-        listID,
-        filters
-      );
-      const { numberOfPages, numberOfResults, maximumAnalysisAreaInTheList } =
-        await ListManager.getNumberPagesForAnalysisDataUserList(req, listID, filters);
+      let listAnalyses = {};
+      let locationAttributeArray = {};
+      let numberOfPages = 0,
+        numberOfResults = 0,
+        maximumAnalysisAreaInTheList = 0,
+        locationAttributeList;
+      // Delete specifics AFI sortByAttribute
+      let AFI_SORT_BY_ATTRIBUTES = '';
+      if (
+        filters.sortByAttribute === 'protectedAreasHA' ||
+        filters.sortByAttribute === 'landmarkHA' ||
+        filters.sortByAttribute === 'naturalForestLossHA' ||
+        filters.sortByAttribute === 'jrcNaturalForestLossHA'
+      ) {
+        AFI_SORT_BY_ATTRIBUTES = filters.sortByAttribute;
+        delete filters.sortByAttribute;
+      }
+      switch (analysisId.toUpperCase()) {
+        case 'AFI': {
+          const analysisManagerResult = await AnalysisManager.getAFIListAnalyses(
+            listID,
+            page,
+            pageSize,
+            req.session.organization_database,
+            filters
+          );
+          listAnalyses = analysisManagerResult.listAnalyses;
+          numberOfResults = analysisManagerResult.quantity;
+          numberOfPages =
+            numberOfResults % pageSize === 0
+              ? numberOfResults / pageSize
+              : Math.floor(numberOfResults / pageSize) + 1;
+
+          // Sort listAnalyses by some of those attributes protectedAreasHA, landmarkHA, naturalForestLossHA or jrcNaturalForestLossHA if not empty
+          if (listAnalyses.length > 0) {
+            const sortAttributes = {
+              protectedAreasHA: 'protectedAreasHA',
+              landmarkHA: 'landmarkHA',
+              naturalForestLossHA: 'naturalForestLossHA',
+              jrcNaturalForestLossHA: 'jrcNaturalForestLossHA',
+            };
+
+            if (sortAttributes[AFI_SORT_BY_ATTRIBUTES]) {
+              listAnalyses = listAnalyses.sort((a, b) =>
+                orderType.toLowerCase() === 'desc'
+                  ? b[AFI_SORT_BY_ATTRIBUTES] - a[AFI_SORT_BY_ATTRIBUTES]
+                  : a[AFI_SORT_BY_ATTRIBUTES] - b[AFI_SORT_BY_ATTRIBUTES]
+              );
+            }
+          }
+          break;
+        }
+        case 'ALERTS':
+          return res.send({ msg: 'Alerts not implemented yet' });
+        default:
+        case 'FCD': {
+          listAnalyses = await AnalysisManager.getListAnalyses(req, listID);
+          locationAttributeArray = await ListManager.getPaginatedAnalysisDataForUserList(
+            req,
+            listID,
+            filters
+          );
+          const listManagerResult = await ListManager.getNumberPagesForAnalysisDataUserList(
+            req,
+            listID,
+            filters
+          );
+          numberOfPages = listManagerResult.numberOfPages;
+          numberOfResults = listManagerResult.numberOfResults;
+          maximumAnalysisAreaInTheList = listManagerResult.maximumAnalysisAreaInTheList;
+
+          break;
+        }
+      }
 
       if (locationAttributeArray?.length > 0) {
-        const locationAttributeList = await LocationManager.getLocationAttributesList(
+        locationAttributeList = await LocationManager.getLocationAttributesList(
           req,
           locationAttributeArray,
           false
@@ -662,14 +736,14 @@ module.exports = (app, limiter) => {
         res.send({
           list_analysis: listAnalyses,
           location_analyses: [],
-          numberOfPages: 0,
-          numberOfResults: 0,
+          numberOfPages,
+          numberOfResults,
           maximumAnalysisAreaInTheList,
         });
       }
     } catch (err) {
       console.log('Failed', err);
-      res.send(false);
+      res.status(err.status || 500).send({ msg: err.message });
     }
   });
 
@@ -735,12 +809,15 @@ module.exports = (app, limiter) => {
               total_rows: 0,
             });
           }
+          const numberOfPages =
+            count % pageSize === 0 ? count / pageSize : Math.floor(count / pageSize) + 1;
           LocationManager.getLocationAttributesList(req, locationAttributeArray, true)
             .then((locationAttributeList) => {
               return res.send({
                 list_analysis: listAnalyses,
                 location_analyses: [locationAttributeList, locationAnalysisArray],
                 total_rows: count,
+                numberOfPages,
               });
             })
             .catch((err) => {
@@ -845,7 +922,8 @@ module.exports = (app, limiter) => {
     let listData = [],
       protectedLocationResult = [],
       count = 0,
-      listDataSalted = [];
+      listDataSalted = [],
+      numberOfPages;
     try {
       if (pageNum || pageSize) {
         const paginatedListResult =
@@ -859,6 +937,7 @@ module.exports = (app, limiter) => {
         listData = paginatedListResult.listData;
         protectedLocationResult = paginatedListResult.protectedLocationResult;
         count = paginatedListResult.count;
+
         if (protectedLocationResult.length === 0) {
           return res.send({
             list_analysis: [],
@@ -866,6 +945,8 @@ module.exports = (app, limiter) => {
             total_rows: 0,
           });
         }
+        numberOfPages =
+          count % pageSize === 0 ? count / pageSize : Math.floor(count / pageSize) + 1;
       } else {
         listData = await GFWListManager.getAdministrativeAreasData(req, filters);
       }
@@ -876,14 +957,13 @@ module.exports = (app, limiter) => {
         listID,
         locationIds
       );
-      const messageToSend = {
+
+      res.send({
         list_analysis: [],
         location_analyses: [listDataSalted, protectedLocationResult],
-      };
-      if (count > 0) {
-        messageToSend.total_rows = count;
-      }
-      res.send(messageToSend);
+        numberOfPages,
+        numberOfResults: count,
+      });
     } catch (error) {
       console.log('Error /getAdministrativeAreasData', error);
       res.status(error.status || 500).send(error.message);
@@ -929,6 +1009,8 @@ module.exports = (app, limiter) => {
               total_rows: 0,
             });
           }
+          const numberOfPages =
+            count % pageSize === 0 ? count / pageSize : Math.floor(count / pageSize) + 1;
           const location_ids = protectedLocationResult.map((item) => item.location_id);
           AnalysisManager.getAnalysisDataForGFWList(req, listID, location_ids)
             .then((protectedLocationAnalysisResult) => {
@@ -936,7 +1018,8 @@ module.exports = (app, limiter) => {
               return res.send({
                 list_analysis: [],
                 location_analyses: [listDataSalted, protectedLocationAnalysisResult],
-                total_rows: count,
+                numberOfPages,
+                numberOfResults: count,
               });
             })
             .catch((err) => {

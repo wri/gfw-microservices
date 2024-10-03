@@ -20,11 +20,11 @@ const WrappedReactTable = ({
   tableSortedBy,
   tableSortedDesc,
   getUserLocationData,
+  getFilteredGfwListData,
   setSortedBy,
   isGfwList,
   isSharedList,
   viewDiagnostic,
-  isListInDraftStatus,
   isDeleteButtonAvailable,
   promptDeleteSelectedLocations,
   isEditActionAvailable,
@@ -112,15 +112,25 @@ const WrappedReactTable = ({
     data: filteredLists,
     columns: tableColumns,
     defaultPageSize: 50,
+    showPageSizeOptions: false,
+    showPagination: true,
+    manual: true,
+    pages: numberOfPages,
+    page,
     previousText: transifex('Previous'),
     nextText: transifex('Next'),
     pageText: transifex('Page'),
     getTheadProps: setHeaderProps,
     getTrProps: setRowProps,
-
     pageSizeOptions: [50],
     minRows: 0,
     disableMultiSort: true,
+    sorted: [
+      {
+        id: tableSortedBy,
+        desc: tableSortedDesc,
+      },
+    ],
     defaultSorted: [
       {
         id: REACT_TABLE__LOCATION_NAME.id,
@@ -132,19 +142,20 @@ const WrappedReactTable = ({
   if (isUserList) {
     reactTableOptions = {
       ...reactTableOptions,
-      showPageSizeOptions: false,
-      showPagination: true,
-      manual: true,
-      pages: numberOfPages,
-      page,
-      sorted: [
-        {
-          id: tableSortedBy,
-          desc: tableSortedDesc,
-        },
-      ],
+
       onPageChange: (pageIndex) => {
         getUserLocationData(listId, pageIndex);
+      },
+      onSortedChange: (newSorted) => {
+        setSortedBy(newSorted[0].id, newSorted[0].desc);
+      },
+    };
+  } else {
+    reactTableOptions = {
+      ...reactTableOptions,
+
+      onPageChange: (pageIndex) => {
+        getFilteredGfwListData(listId, pageIndex);
       },
       onSortedChange: (newSorted) => {
         setSortedBy(newSorted[0].id, newSorted[0].desc);
@@ -166,7 +177,6 @@ const WrappedReactTable = ({
                 isSharedList={isSharedList}
                 rowInfo={props.rowInfo}
                 viewDiagnostic={viewDiagnostic}
-                isListInDraftStatus={isListInDraftStatus}
                 isDeleteButtonAvailable={isDeleteButtonAvailable}
                 promptDeleteSelectedLocations={promptDeleteSelectedLocations}
                 isEditActionAvailable={isEditActionAvailable}

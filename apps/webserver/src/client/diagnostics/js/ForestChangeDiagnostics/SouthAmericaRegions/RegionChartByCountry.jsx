@@ -40,6 +40,16 @@ export function RegionChartByCountry({ listId, data, fireDownload, country }) {
     otbnPieChart,
   } = chartDatasetConfigs;
 
+  const {
+    id: regionConstantsId,
+    chartsSelectorTitle,
+    diagnosticTitle,
+    informationBubbleId,
+    downloadId,
+    startYear,
+    endYear,
+  } = regionConstants[country];
+
   const [chartsConfiguration, setChartsConfiguration] = useState([
     argentinaTreeCoverLoss,
     protectedAreas,
@@ -50,8 +60,8 @@ export function RegionChartByCountry({ listId, data, fireDownload, country }) {
   const [selectedOptionId, setSelectedOptionId] = useState(chartsConfiguration[0].id);
 
   const [dateRange, setDateRange] = useState({
-    startYear: regionConstants.startYear,
-    endYear: regionConstants.endYear,
+    startYear: startYear,
+    endYear: endYear,
   });
 
   const [countryPieChartsData, setCountryPieChartsData] = useState({});
@@ -73,19 +83,21 @@ export function RegionChartByCountry({ listId, data, fireDownload, country }) {
 
   useEffect(() => {
     handleDateRangeChange({
-      startYear: regionConstants.startYear,
-      endYear: regionConstants.endYear,
+      startYear: startYear,
+      endYear: endYear,
     });
   }, []);
 
   const [isAllDataEmpty, setIsAllDataEmpty] = useState(false);
+
+  const countryGadm = country.substring(0, 3).toUpperCase();
 
   useEffect(() => {
     const fcdParams = {
       listId,
       locationId,
       country: country === regionIds.ARGENTINA ? 'Argentina' : 'Colombia',
-      countryGadm: country.substring(0, 3).toUpperCase(),
+      countryGadm,
       category: ['WDPA', 'landmark', 'country', 'classified_region'],
     };
 
@@ -128,22 +140,20 @@ export function RegionChartByCountry({ listId, data, fireDownload, country }) {
     );
   }
 
-  const argentinaOtbnAreaData = formatDecimals(JSON.parse(data?.arg_otbn_area) || {});
+  const argentinaOtbnAreaData = formatDecimals(JSON.parse(data?.arg_otbn_area) || '{}');
+
+  const totalArea = getTotalArea(data, countryGadm);
 
   const argentinaPieChartData =
     Object.keys(argentinaOtbnAreaData).length !== 0
-      ? addNoOverlapArea(argentinaOtbnAreaData, data.total_area, 'Outside of OTBN')
+      ? addNoOverlapArea(argentinaOtbnAreaData, totalArea, 'Outside of OTBN')
       : {};
 
   const showProtectedAreasPieChart =
     countryPieChartsData?.WDPA && !countryPieChartsData?.WDPA?.error;
 
   const protectedAreasPieChartData = showProtectedAreasPieChart
-    ? addNoOverlapArea(
-        countryPieChartsData?.WDPA?.overlap,
-        data.total_area,
-        'Outside of Protected Areas'
-      )
+    ? addNoOverlapArea(countryPieChartsData?.WDPA?.overlap, totalArea, 'Outside of Protected Areas')
     : {};
   const protectedAreasPieChartFormattedData = formatDecimals(protectedAreasPieChartData);
 
@@ -155,6 +165,7 @@ export function RegionChartByCountry({ listId, data, fireDownload, country }) {
 
   const showClassifiedRegionOverlapPieChart =
     countryPieChartsData?.classified_region && !countryPieChartsData?.classified_region?.error;
+
   const classifiedRegionOverlapPieChartFormattedData = formatDecimals(
     countryPieChartsData?.classified_region?.overlap
   );
@@ -164,10 +175,10 @@ export function RegionChartByCountry({ listId, data, fireDownload, country }) {
       {country === regionIds.ARGENTINA && (
         <>
           <DiagnosticsChartHeader
-            title={regionConstants.chartsSelectorTitle}
-            informationBubbleId={regionConstants.informationBubbleId}
+            title={chartsSelectorTitle}
+            informationBubbleId={informationBubbleId}
             fireDownload={fireDownload}
-            downloadId={regionConstants.downloadId}
+            downloadId={downloadId}
           />
           <Card>
             <CardContent>
@@ -198,24 +209,30 @@ export function RegionChartByCountry({ listId, data, fireDownload, country }) {
           </Card>
 
           <DateRangeSlider
-            id={regionConstants.id}
+            id={regionConstantsId}
             dateRange={dateRange}
             setDateRange={handleDateRangeChange}
-            startYear={regionConstants.startYear}
-            endYear={regionConstants.endYear}
+            startYear={startYear}
+            endYear={endYear}
           />
 
           <PieChart
             data={argentinaPieChartData}
             chartLabels={otbnPieChart.chartLabels}
-            title={regionConstants.diagnosticTitle}
-            informationBubbleId={regionConstants.informationBubbleId}
+            title={diagnosticTitle}
+            informationBubbleId={informationBubbleId}
           />
         </>
       )}
 
       {country === regionIds.COLOMBIA && (
         <>
+          <DiagnosticsChartHeader
+            title={chartsSelectorTitle}
+            informationBubbleId={informationBubbleId}
+            fireDownload={fireDownload}
+            downloadId={downloadId}
+          />
           <BarChartTreeCoverLossColombia
             rawBarChartData={countryPieChartsData}
             isAllDataEmpty={isAllDataEmpty}
@@ -227,7 +244,7 @@ export function RegionChartByCountry({ listId, data, fireDownload, country }) {
               chartLabels={chartDatasetConfigsColombia.classifiedRegionOverlap}
               title={chartDatasetConfigsColombia.classifiedRegionOverlap.chartsSelectorTitle}
               informationBubbleId={chartDatasetConfigsColombia.classifiedRegionOverlap.infoBubbleId}
-              hasSubcategories
+              hasSubLayers
             />
           )}
         </>
@@ -261,3 +278,8 @@ export function RegionChartByCountry({ listId, data, fireDownload, country }) {
     </>
   );
 }
+
+const getTotalArea = (data, country) => {
+  const countryArea = JSON.parse(data.country_area || '{}');
+  return countryArea[country] ?? data.total_area;
+};

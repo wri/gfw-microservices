@@ -12,6 +12,7 @@ class ListDetailsPage {
     downloadShapefileptionListDetail: () => cy.contains('Shapefile'),
     titleAlertDownloadList: () => cy.contains('List file Download'),
     moveBtn: () => cy.contains('Move'),
+    editBtn: () => cy.contains('button', 'Edit'),
     deleteBtn: () => cy.contains('Delete'),
     createNewListOptionRadioBtn: () => cy.get('.move-or-copy__option').last().find('input'),
     moveSectionOptionRadioBtn: () => cy.contains('label', 'Move'),
@@ -138,6 +139,9 @@ class ListDetailsPage {
   }
   clickOnMoveBtn() {
     this.elements.moveBtn().click();
+  }
+  clickOnEditBtn() {
+    this.elements.editBtn().click();
   }
   clickOnDeleteBtn() {
     this.elements.deleteBtn().click();

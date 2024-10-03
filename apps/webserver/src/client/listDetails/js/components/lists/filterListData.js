@@ -8,12 +8,13 @@ const filterListData = (
   filters,
   selectedLists,
   getAdministrativeAreasData,
-  getProtectedAreasData
+  getProtectedAreasData,
+  page = 0
 ) => {
   if (Object.keys(filters).length > 0 && selectedLists.list_name === 'Administrative Areas') {
-    getAdministrativeAreasData({ filters, id: selectedLists.id });
+    getAdministrativeAreasData({ filters, id: selectedLists.id, page });
   } else if (Object.keys(filters).length > 0 && selectedLists.list_name === 'Protected Areas') {
-    getProtectedAreasData({ filters, id: selectedLists.id });
+    getProtectedAreasData({ filters, id: selectedLists.id, page });
   } else if (Object.keys(filters).length > 0) {
     const tempListData = listData.filter((location) => {
       let found = true;

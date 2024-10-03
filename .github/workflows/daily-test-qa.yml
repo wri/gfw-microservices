@@ -64,3 +64,17 @@ jobs:
             "username": "GitHub Actions",
             "icon_emoji": ":octocat:"
           }' $SLACK_E2E_TEST_WEBHOOK_URL
+
+      - name: Upload log file
+        if: failure() || success()
+        uses: actions/upload-artifact@v4
+        with:
+          name: test-log-${{ github.run_id }}-$(date +'%Y-%m-%d')
+          path: test-output.log
+
+      - name: Upload videos of tests failed 
+        uses: actions/upload-artifact@v4
+        if: failure()
+        with:
+          name: cypress-videos
+          path: cypress/videos

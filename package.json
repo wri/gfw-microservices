@@ -3,6 +3,8 @@
   "version": "0.0.0",
   "license": "MIT",
   "scripts": {
+    "cypress:open:qa": "cd ./apps/gfwpro-e2e && CYPRESS_ENV=qa cypress open ",
+    "cypress:open:staging": "cd ./apps/gfwpro-e2e && CYPRESS_ENV=staging cypress open ",
     "start": "nx serve",
     "start:lp": "nx serve microservices-list-processing",
     "start:ld": "nx serve microservices-list-downloader",

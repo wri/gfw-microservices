@@ -5,6 +5,7 @@
   "scripts": {
     "cypress:open:qa": "cd ./apps/gfwpro-e2e && CYPRESS_ENV=qa cypress open ",
     "cypress:open:staging": "cd ./apps/gfwpro-e2e && CYPRESS_ENV=staging cypress open ",
+    "cypress:spec:qa": "nx e2e gfwpro-e2e --configuration=qa --headed --spec '**/.feature'",
     "start": "nx serve",
     "start:lp": "nx serve microservices-list-processing",
     "start:ld": "nx serve microservices-list-downloader",

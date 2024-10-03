@@ -2236,7 +2236,6 @@ export default class ListDetails extends Component {
                                 )
                               }
                               viewDiagnostic={this.viewDiagnostic}
-                              isListInDraftStatus={getIsDiagnosticStatusDraft(selectedLists[0])}
                               isDeleteButtonAvailable={canDelete}
                               promptDeleteSelectedLocations={this.promptDeleteSelectedLocations}
                               isEditActionAvailable={isEditActionAvailable}

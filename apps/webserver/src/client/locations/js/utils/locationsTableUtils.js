@@ -159,7 +159,7 @@ export const getDeforestationFormatedValue = (treeCoverExtentTotal, data, auditD
       break;
     }
     default:
-      deforestationDisplayValue = value; // Por si acaso, mostramos el valor por defecto
+      deforestationDisplayValue = value;
       break;
   }
   return (

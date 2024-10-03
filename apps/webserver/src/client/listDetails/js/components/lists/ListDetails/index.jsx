@@ -32,6 +32,7 @@ import {
   updateListData,
   updateListLevelAnalysis,
   updateSelectedLocations,
+  toggleDeforestationDisplayFormat,
 } from '../../../../../locations/js/actions/locationActions';
 import LocationsSummary from './LocationsSummary';
 import SaveAsDraftButton from '../../../../../common/js/components/SaveAsDraft/SaveAsDraftButton';
@@ -2179,7 +2180,6 @@ export default class ListDetails extends Component {
                             {this.getAnalysisLastUpdatedDate(listAnalysesStatus)}
                           </span>
                         </div>
-
                         <Filter
                           history={this.props.history}
                           filterCount={filterCount}

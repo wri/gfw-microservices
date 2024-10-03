@@ -22,6 +22,7 @@ import store from '../../../../../../locations/js/store';
 import '../../../../../../common/css/_irsBase.scss';
 import '../../../../../../common/css/_irsStyle.scss';
 import '../../../../../../common/css/filter-dialogs.scss';
+import DeforestationDisplayFormatToggleButtons from '../DeforestationDisplayFormatToggleButtons';
 
 export default class Filter extends Component {
   constructor(props) {
@@ -208,7 +209,9 @@ export default class Filter extends Component {
                 </Grid>
               </>
             ) : (
-              <Grid item xs={11}></Grid>
+              <Grid item xs={11} sx={{ textAlign: 'center' }}>
+                <DeforestationDisplayFormatToggleButtons />
+              </Grid>
             )}
             <Grid item xs={1} sx={{ alignSelf: 'center' }}>
               <Box flexGrow={1} />

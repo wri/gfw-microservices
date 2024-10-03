@@ -26,9 +26,11 @@ import {
   UPDATE_BUBBLE_DATA,
   UPDATE_POPOVER_ANCHOR,
   UPDATE_SELECTED_LIST,
+  DEFORESTATION_DISPLAY_FORMAT,
 } from '../constants/actionTypes';
 import cloneDeep from 'lodash/cloneDeep';
 import infoBubbleConfig from '../../../common/js/infoBubbleConfig.constants';
+import { DISPLAY_FORMAT_SUMMARY } from '../../../listDetails/js/components/lists/ListDetails/deforestationDisplayFormat.constants';
 
 const initialLocationState = {
   localColor: 'red',
@@ -61,6 +63,7 @@ const initialLocationState = {
     bubbleData: {},
     anchorEl: null,
   },
+  deforestationDisplayFormat: DISPLAY_FORMAT_SUMMARY,
 };
 
 // initialize infoBubleCache keys from config
@@ -221,4 +224,11 @@ export function updatePopoverState(state = initialLocationState.popover, action)
 
 export function setLanguage(state = initialLocationState.language, action) {
   return action.type !== SET_LANGUAGE ? state : action.data;
+}
+
+export function toggleDeforestationDisplayFormat(
+  state = initialLocationState.deforestationDisplayFormat,
+  action
+) {
+  return action.type !== DEFORESTATION_DISPLAY_FORMAT ? state : action.data;
 }

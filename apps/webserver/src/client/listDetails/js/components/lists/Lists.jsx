@@ -1089,8 +1089,6 @@ export default class Lists extends Component {
           const { location_id } = data[0];
           store.dispatch(updateSelectedLocations([location_id]));
           store.dispatch(changeView('gfw'));
-          const { history } = this.props;
-          history.push('/gfw');
         } else if (userLocation) {
           const location_id = userListInfoFromMap.locationID;
 
@@ -1278,8 +1276,7 @@ export default class Lists extends Component {
             } else {
               this.setAddTypeAndTemplate();
               store.dispatch(changeView('edit'));
-              const { history } = this.props;
-              history.push('/edit');
+
               gtag('event', 'Edit button clicked', {
                 event_category: 'Lists Click',
                 event_label: 'user clicked to enter edit list workflow',
@@ -1302,8 +1299,6 @@ export default class Lists extends Component {
       // we don't necessarily need a loader here; we aren't making a request, &
       // step 1 of 3 in the addFromGFW workflow does Not render all the table rows!
       store.dispatch(changeView('gfw'));
-      const { history } = this.props;
-      history.push('/gfw');
       gtag('event', 'Edit button clicked', {
         event_category: 'Lists Click',
         event_label: 'user clicked to enter add from gfw workflow',
@@ -1780,9 +1775,8 @@ export default class Lists extends Component {
   }
 
   changeFolderView(folder) {
-    const { history, showShareList } = this.props;
+    const { showShareList } = this.props;
     showShareList(false);
-    history.push('/folders');
     store.dispatch(selectFolder(folder));
     store.dispatch(changeView('folders'));
   }

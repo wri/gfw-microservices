@@ -15,9 +15,13 @@ export class AnalysisAfiDataService extends IInputData {
   }
 
   async getNumberOfPages(filters: BasicFieldsFileRequest, isListLevel: number): Promise<number> {
-    const { organizationDatabase, listId, rowsPerPage } = filters;
+    const { organizationDatabase, listId, rowsPerPage, isGFWList } = filters;
 
-    const queryString = `rowsPerPage=${rowsPerPage}&clientDatabase=${organizationDatabase}&isListLevel=${isListLevel}`;
+    const dbName = isGFWList
+      ? this.configService.get('MSSQL_DATABASE', { infer: true })
+      : organizationDatabase;
+
+    const queryString = `rowsPerPage=${rowsPerPage}&clientDatabase=${dbName}&isListLevel=${isListLevel}`;
     const url = `${this.configService.get(
       'LIST_PROCESSING_MICROSERVICE_URL'
     )}/afi/${listId}/number-of-pages?${queryString}`;
@@ -35,8 +39,13 @@ export class AnalysisAfiDataService extends IInputData {
     filter: BasicFieldsFileRequest,
     isListLevel: number
   ): Promise<AfiAnalysisByListId[]> {
-    const { organizationDatabase, rowsPerPage, page, listId } = filter;
-    const queryString = `rowsPerPage=${rowsPerPage}&pageNumber=${page}&clientDatabase=${organizationDatabase}&isListLevel=${isListLevel}`;
+    const { organizationDatabase, rowsPerPage, page, listId, isGFWList } = filter;
+
+    const dbName = isGFWList
+      ? this.configService.get('MSSQL_DATABASE', { infer: true })
+      : organizationDatabase;
+
+    const queryString = `rowsPerPage=${rowsPerPage}&pageNumber=${page}&clientDatabase=${dbName}&isListLevel=${isListLevel}`;
     const url = `${this.configService.get(
       'LIST_PROCESSING_MICROSERVICE_URL'
     )}/afi/${listId}/data-per-page?${queryString}`;

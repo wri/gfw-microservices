@@ -6,8 +6,6 @@ import { MAX_NUMBER_OF_ROWS_PER_PAGE } from '../shared/constants';
 import { createDirectory } from '../shared/file.utils';
 import { AccountUsersAnalysisUsageFileService } from './account-users-usage.generator.service';
 import { AlertsGeneratorService } from './alerts.generator.service';
-import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
 import { ReadmeService } from '../files/readme.service';
 
 @Injectable({
@@ -15,9 +13,6 @@ import { ReadmeService } from '../files/readme.service';
 })
 export class PipeService {
   private readonly logger = new Logger(PipeService.name);
-
-  @InjectRepository(GFWList, 'default')
-  private gfwListRepository: Repository<GFWList>;
 
   constructor(
     private readonly afiGeneratorService: AfiGeneratorService,
@@ -56,9 +51,13 @@ export class PipeService {
       const connection = await this.clientStoreConnection.getConnection(organizationDatabase);
       const listRepository = connection.getRepository(Lists);
       const { listName } = await listRepository.findOne({ where: { id: listId } });
+      connection.destroy();
       return listName;
     } else {
-      const { listName } = await this.gfwListRepository.findOne({ where: { id: listId } });
+      const connection = await this.clientStoreConnection.getConnection('gfwpro', [GFWList]);
+      const gfwListRepository = connection.getRepository(GFWList);
+      const { listName } = await gfwListRepository.findOne({ where: { id: listId } });
+      connection.destroy();
       return listName;
     }
   }

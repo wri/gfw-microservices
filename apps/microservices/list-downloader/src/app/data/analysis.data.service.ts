@@ -19,8 +19,16 @@ export class AnalysisDataService extends IInputData {
   }
 
   async getNumberOfPages(filters: ListFieldsFileRequest): Promise<number> {
-    const { listId } = filters;
-    const queryString = this.convertToQueryFields(filters);
+    const { listId, isGFWList, organizationDatabase } = filters;
+
+    const dbName = isGFWList
+      ? this.configService.get('MSSQL_DATABASE', { infer: true })
+      : organizationDatabase;
+
+    const queryString = this.convertToQueryFields({
+      ...filters,
+      organizationDatabase: dbName,
+    });
     const url = `${this.configService.get(
       'LIST_PROCESSING_MICROSERVICE_URL'
     )}/pages-paginated-list-data?${queryString}`;
@@ -35,8 +43,16 @@ export class AnalysisDataService extends IInputData {
   }
 
   async getDataPaginated(filter: ListFieldsFileRequest): Promise<AnalysisDataType[]> {
-    const { listId, page } = filter;
-    const queryString = this.convertToQueryFields(filter);
+    const { listId, page, isGFWList, organizationDatabase } = filter;
+
+    const dbName = isGFWList
+      ? this.configService.get('MSSQL_DATABASE', { infer: true })
+      : organizationDatabase;
+
+    const queryString = this.convertToQueryFields({
+      ...filter,
+      organizationDatabase: dbName,
+    });
     const url = `${this.configService.get(
       'LIST_PROCESSING_MICROSERVICE_URL'
     )}/paginated-list-data?${queryString}`;

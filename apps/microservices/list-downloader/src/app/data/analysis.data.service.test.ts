@@ -29,6 +29,8 @@ describe('[AnalysisDataService] Get Data basic query param', () => {
 
     service = module.get<AnalysisDataService>(AnalysisDataService);
 
+    process.env.MSSQL_DATABASE = 'gfwpro';
+
     jest.spyOn(mockedAxios, 'get').mockResolvedValueOnce({ data: { numberOfPages: 10 } });
   });
 
@@ -54,6 +56,31 @@ describe('[AnalysisDataService] Get Data basic query param', () => {
     expect(mockedAxios.get).toBeCalledTimes(1);
     expect(mockedAxios.get).toHaveBeenCalledWith(
       'http://localhost:3333/api/paginated-list-data?listId=5692&organizationDatabase=test&page=1&rowsPerPage=10'
+    );
+  });
+
+  it('Get Number of pages for a GFWList', async () => {
+    await service.getNumberOfPages({
+      ...filters,
+      isGFWList: true,
+    });
+
+    expect(mockedAxios.get).toBeCalledTimes(1);
+    expect(mockedAxios.get).toHaveBeenCalledWith(
+      'http://localhost:3333/api/pages-paginated-list-data?listId=5692&organizationDatabase=gfwpro&rowsPerPage=10'
+    );
+  });
+
+  it('Get Paginated Data for a GFWList', async () => {
+    await service.getDataPaginated({
+      ...filters,
+      page: 1,
+      isGFWList: true,
+    });
+
+    expect(mockedAxios.get).toBeCalledTimes(1);
+    expect(mockedAxios.get).toHaveBeenCalledWith(
+      'http://localhost:3333/api/paginated-list-data?listId=5692&organizationDatabase=gfwpro&page=1&rowsPerPage=10'
     );
   });
 });

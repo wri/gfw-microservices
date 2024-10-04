@@ -37,6 +37,7 @@ export enum CSVInputTypes {
   SOUTHAMERICATCL = 'southAmericaTCL',
   SOUTHEASTASIAOVERLAP = 'southEastAsiaOverlap',
   SOUTHEASTASIATC = 'southEastAsiaTCL',
+  AFIVC = 'afi-vc',
 }
 
 // BasicFieldsFileRequest schema
@@ -112,6 +113,7 @@ const AccountUsersUsageRequestSchema = BasicFieldsFileRequestSchema.extend({
 const getSchemaByType = (type: string) => {
   switch (type) {
     case 'afi':
+    case 'afi-vc':
       return BasicFieldsFileRequestSchema;
     case 'alerts':
       return AlertFieldsFileRequestSchema;
@@ -166,7 +168,11 @@ export class ListMessageController {
   @UsePipes(ZodValidationPipe)
   async download(@Body() body: BasicFieldsFileRequest) {
     this.logger.log('List message received', body);
-    this.pipeService.makeFile(body);
-    return body;
+    if (body.type === 'afi-vc') {
+      return 'new geoJson output';
+    } else {
+      this.pipeService.makeFile(body);
+      return body;
+    }
   }
 }

@@ -28,7 +28,7 @@ describe('[AnalysisAfiDataService] Get number of pages', () => {
     }).compile();
 
     service = module.get<AnalysisAfiDataService>(AnalysisAfiDataService);
-
+    process.env.MSSQL_DATABASE = 'gfwpro';
     jest.spyOn(mockedAxios, 'get').mockResolvedValueOnce({ data: { pages: 1 } });
   });
 
@@ -53,6 +53,21 @@ describe('[AnalysisAfiDataService] Get number of pages', () => {
       'http://localhost:3333/api/afi/6982/number-of-pages?rowsPerPage=100&clientDatabase=test&isListLevel=1'
     );
   });
+
+  it('Get number of pages for list level data and is a GFWList', () => {
+    service.getNumberOfPages(
+      {
+        ...filters,
+        isGFWList: true,
+      },
+      1
+    );
+
+    expect(mockedAxios.get).toBeCalledTimes(1);
+    expect(mockedAxios.get).toHaveBeenCalledWith(
+      'http://localhost:3333/api/afi/6982/number-of-pages?rowsPerPage=100&clientDatabase=gfwpro&isListLevel=1'
+    );
+  });
 });
 
 describe('[AnalysisAfiDataService] Get data', () => {
@@ -70,7 +85,7 @@ describe('[AnalysisAfiDataService] Get data', () => {
     }).compile();
 
     service = module.get<AnalysisAfiDataService>(AnalysisAfiDataService);
-
+    process.env.MSSQL_DATABASE = 'gfwpro';
     jest.spyOn(mockedAxios, 'get').mockResolvedValueOnce({ data: { pages: 1 } });
   });
 
@@ -93,6 +108,21 @@ describe('[AnalysisAfiDataService] Get data', () => {
     expect(mockedAxios.get).toBeCalledTimes(1);
     expect(mockedAxios.get).toHaveBeenCalledWith(
       'http://localhost:3333/api/afi/6982/data-per-page?rowsPerPage=100&pageNumber=undefined&clientDatabase=test&isListLevel=1'
+    );
+  });
+
+  it('Get number of pages for list level data for a GFWList', () => {
+    service.getDataPaginated(
+      {
+        ...filters,
+        isGFWList: true,
+      },
+      1
+    );
+
+    expect(mockedAxios.get).toBeCalledTimes(1);
+    expect(mockedAxios.get).toHaveBeenCalledWith(
+      'http://localhost:3333/api/afi/6982/data-per-page?rowsPerPage=100&pageNumber=undefined&clientDatabase=gfwpro&isListLevel=1'
     );
   });
 });

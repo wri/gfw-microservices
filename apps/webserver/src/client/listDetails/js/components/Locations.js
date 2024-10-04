@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Route, Switch, withRouter } from 'react-router-dom';
+import { withRouter } from 'react-router-dom';
 import Page from '../../../common/js/components/Page';
 import { userAccessLevel, locationsPage } from '../../../common/js/config';
 import ModalLoader from '../../../common/js/components/Loaders/ModalLoader';
@@ -149,14 +149,13 @@ class Locations extends Component {
     return (
       <Page links={pageOptions.links} active="locations">
         <ModalLoader open={isLoading} />
-        <Switch>
-          <Route path="/edit">
+        {!isLoading && selectedList ? (
+          view === 'edit' ? (
             <EditList
               history={history}
               organizationId={organizationId}
               templateData={templateData}
               userLists={userLists}
-              view={view}
               addType={addType}
               activeTemplate={activeTemplate}
               listData={listData}
@@ -169,81 +168,76 @@ class Locations extends Component {
               }
               filteredData={filteredData}
             />
-          </Route>
-          <Route>
-            {!isLoading && selectedList ? (
-              isListDetailsPageRedesignAvailable ? (
-                <ListDetails
-                  activeTemplate={activeTemplate}
-                  addType={addType}
-                  gfwInfoFromMap={gfwInfoFromMap}
-                  history={history}
-                  userListInfoFromMap={userListInfoFromMap}
-                  currentUser={userInfo}
-                  selectedLists={selectedLists}
-                  folders={userFolders}
-                  userLists={userLists} // Contains all lists that users have created
-                  listView={listView}
-                  gfwLists={gfwLists}
-                  canopyModalVisible={canopyModalVisible}
-                  filters={filters}
-                  filterCount={filterCount}
-                  listData={listData}
-                  filteredData={filteredData}
-                  filteredLocationData={filteredLocationData}
-                  selectedLocations={selectedLocations}
-                  selectedAndVisibleLocations={selectedAndVisibleLocations}
-                  templateData={templateData}
-                  stopLoading={this.stopLoading}
-                  usersList={usersList} // Contains all users
-                  userSharedLists={userSharedLists}
-                  shareView={shareView}
-                  showShareList={this.showShareList}
-                />
-              ) : (
-                <Lists
-                  activeTemplate={activeTemplate}
-                  addType={addType}
-                  gfwInfoFromMap={gfwInfoFromMap}
-                  history={history}
-                  userListInfoFromMap={userListInfoFromMap}
-                  currentUser={userInfo}
-                  selectedLists={selectedLists}
-                  folders={userFolders}
-                  userLists={userLists} // Contains all lists that users have created
-                  listView={listView}
-                  gfwLists={gfwLists}
-                  canopyModalVisible={canopyModalVisible}
-                  filters={filters}
-                  filterCount={filterCount}
-                  listData={listData}
-                  filteredData={filteredData}
-                  filteredLocationData={filteredLocationData}
-                  selectedLocations={selectedLocations}
-                  selectedAndVisibleLocations={selectedAndVisibleLocations}
-                  templateData={templateData}
-                  stopLoading={this.stopLoading}
-                  usersList={usersList} // Contains all users
-                  userSharedLists={userSharedLists}
-                  shareView={shareView}
-                  showShareList={this.showShareList}
-                />
-              )
-            ) : (
-              <div
-                style={{
-                  display: 'flex',
-                  width: '100vw',
-                  height: '100vh',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                }}
-              >
-                <h2>{locationsPage.lists.notFound}</h2>
-              </div>
-            )}
-          </Route>
-        </Switch>
+          ) : isListDetailsPageRedesignAvailable ? (
+            <ListDetails
+              activeTemplate={activeTemplate}
+              addType={addType}
+              gfwInfoFromMap={gfwInfoFromMap}
+              history={history}
+              userListInfoFromMap={userListInfoFromMap}
+              currentUser={userInfo}
+              selectedLists={selectedLists}
+              folders={userFolders}
+              userLists={userLists} // Contains all lists that users have created
+              listView={listView}
+              gfwLists={gfwLists}
+              canopyModalVisible={canopyModalVisible}
+              filters={filters}
+              filterCount={filterCount}
+              listData={listData}
+              filteredData={filteredData}
+              filteredLocationData={filteredLocationData}
+              selectedLocations={selectedLocations}
+              selectedAndVisibleLocations={selectedAndVisibleLocations}
+              templateData={templateData}
+              stopLoading={this.stopLoading}
+              usersList={usersList} // Contains all users
+              userSharedLists={userSharedLists}
+              shareView={shareView}
+              showShareList={this.showShareList}
+            />
+          ) : (
+            <Lists
+              activeTemplate={activeTemplate}
+              addType={addType}
+              gfwInfoFromMap={gfwInfoFromMap}
+              history={history}
+              userListInfoFromMap={userListInfoFromMap}
+              currentUser={userInfo}
+              selectedLists={selectedLists}
+              folders={userFolders}
+              userLists={userLists} // Contains all lists that users have created
+              listView={listView}
+              gfwLists={gfwLists}
+              canopyModalVisible={canopyModalVisible}
+              filters={filters}
+              filterCount={filterCount}
+              listData={listData}
+              filteredData={filteredData}
+              filteredLocationData={filteredLocationData}
+              selectedLocations={selectedLocations}
+              selectedAndVisibleLocations={selectedAndVisibleLocations}
+              templateData={templateData}
+              stopLoading={this.stopLoading}
+              usersList={usersList} // Contains all users
+              userSharedLists={userSharedLists}
+              shareView={shareView}
+              showShareList={this.showShareList}
+            />
+          )
+        ) : (
+          <div
+            style={{
+              display: 'flex',
+              width: '100vw',
+              height: '100vh',
+              alignItems: 'center',
+              justifyContent: 'center',
+            }}
+          >
+            <h2>{locationsPage.lists.notFound}</h2>
+          </div>
+        )}
       </Page>
     );
   }

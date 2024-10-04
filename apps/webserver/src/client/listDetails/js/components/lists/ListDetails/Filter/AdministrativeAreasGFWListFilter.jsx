@@ -75,7 +75,7 @@ export default class AdministrativeAreasGFWListFilter extends Component {
     // If the user hasn't selected anything, also direct them back to the Locations landing page.
     if (!this.state.selectedCountry) {
       store.dispatch(removeList(0));
-      this.props.history.push('/');
+      window.location.href = '/locations';
     }
   };
 

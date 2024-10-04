@@ -31,7 +31,7 @@ function Chart({ data }) {
         enabled: false,
       },
       tooltip: {
-        pointFormat: '{point.y}<br>{point.percentage:.1f} %',
+        pointFormat: '{point.y}<br>{point.percentage:.2f} %',
       },
       plotOptions: {
         pie: {
@@ -39,7 +39,12 @@ function Chart({ data }) {
           cursor: 'pointer',
           dataLabels: {
             enabled: true,
-            format: '<b>{point.legend}</b>:<br>{point.y}<br>{point.percentage:.1f} %',
+            format: '<b>{point.legend}</b>:<br>{point.y}<br>{point.percentage:.2f} %',
+            filter: {
+              property: 'percentage',
+              operator: '>',
+              value: 1,
+            },
           },
         },
       },

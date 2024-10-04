@@ -1049,6 +1049,7 @@ export default class Diagnostics extends Component {
                 getFilteredLocations={this.getFilteredLocations}
                 getYearlyHighchartSeries={this.getYearlyHighchartSeries}
                 getCategoricalHighchartSeries={this.getCategoricalHighchartSeries}
+                isGfwList={isGfwList}
               />
             )}
 

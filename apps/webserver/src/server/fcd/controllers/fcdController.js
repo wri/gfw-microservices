@@ -16,14 +16,7 @@ export default async (req, res) => {
     const zodValidationResult = FcdValidationSchema.parse(req.query);
 
     // note: category is transformed by zod from string => string[]
-    const {
-      listId,
-      category: categories,
-      country,
-      countryGadm,
-      locationId,
-      isGfwList,
-    } = zodValidationResult;
+    const { listId, category: categories, country, countryGadm, locationId } = zodValidationResult;
 
     const requestData = await Promise.all(
       categories.map(async (category) => {
@@ -35,7 +28,6 @@ export default async (req, res) => {
             country,
             countryGadm,
             locationId,
-            isGfwList,
           });
         } catch (error) {
           return {

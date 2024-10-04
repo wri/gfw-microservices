@@ -14,5 +14,4 @@ export const FcdValidationSchema = z.object({
     required_error: 'Missing country Gadm',
   }),
   locationId: z.optional(z.coerce.number()).catch(undefined),
-  isGfwList: z.optional(z.coerce.boolean()).catch(false),
 });

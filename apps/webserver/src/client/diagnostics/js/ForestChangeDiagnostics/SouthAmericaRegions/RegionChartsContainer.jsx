@@ -18,13 +18,13 @@ function RegionChartsContainer({
   getFilteredLocations,
   getYearlyHighchartSeries,
   getCategoricalHighchartSeries,
+  isGfwList
 }) {
   const { isColombiaAvailable } = featureFlags;
-
   const [selectedTab, setSelectedTab] = useState(regionIds.REGIONAL);
 
-  const argOtbnArea = JSON.parse(data.arg_otbn_area || '{}');
-  const countryArea = JSON.parse(data.country_area || '{}');
+  const argOtbnArea = isGfwList ? {} : JSON.parse(data.arg_otbn_area || '{}');
+  const countryArea = isGfwList ? {} : JSON.parse(data.country_area || '{}');
 
   const argentinaDataNotAvailable =
     Object.entries(argOtbnArea).length === 0 && !(countryArea?.ARG > 0);

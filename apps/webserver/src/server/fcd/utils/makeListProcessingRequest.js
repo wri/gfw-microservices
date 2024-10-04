@@ -27,7 +27,6 @@ export default async ({
   country,
   countryGadm,
   locationId = '',
-  isGfwList,
 }) => {
   try {
     const url = getListProcessingUrl({ listId, category });
@@ -42,7 +41,6 @@ export default async ({
         country,
         countryGadm,
         locationId,
-        isGfwList,
       }),
     });
 

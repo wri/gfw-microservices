@@ -12,27 +12,25 @@ function LocationsSummary({
   anchorElCountries,
   closeCountriesPopover,
   countries,
-  filteredLists,
   filterValues,
   listLocationsCount,
   openCountriesPopover,
   selectedList,
   shareView,
   toggleCountriesPopover,
+  numberOfResults,
 }) {
   const isGfwProList = selectedList.isGlobalForestWatchList;
 
-  let listLength = 0;
+  const listLength = selectedList?.list_locations_count;
   let countriesSelected = [];
 
   if (!isGfwProList) {
-    listLength = listLocationsCount ?? selectedList.list_locations_count;
     countriesSelected =
       listLocationsCount < selectedList.list_locations_count
         ? countries
         : Object.keys(filterValues);
   } else {
-    listLength = filteredLists.length;
     countriesSelected = countries;
   }
   let countriesString = countriesSelected.join(', ');
@@ -41,8 +39,9 @@ function LocationsSummary({
     countriesSelected.length > 3
       ? countriesSelected.slice(0, 3).join(', ').replaceAll('null', '--')
       : countriesString;
+  const numberOfFilteredLocations =
+    numberOfResults < selectedList.list_locations_count ? `Showing ${numberOfResults} of` : '';
 
-  const numberOfLocations = listLength === 1 ? 'location' : 'locations';
   return (
     <header className="list-detail-header__info-container">
       <div>
@@ -61,9 +60,10 @@ function LocationsSummary({
               }
             }}
           >
-            {numberWithCommas(listLength)}
-            <span style={{ margin: '0px 5px' }}>{transifex(numberOfLocations)}</span>
-            <span className="bullet-divider">•</span>{' '}
+            <span>{`${numberOfFilteredLocations} ${numberWithCommas(
+              listLength
+            )} total locations • `}</span>
+
             {countriesSelected.length <= 3 && countriesStringSummary}
             {countriesSelected.length > 3 && (
               <span className="country-name-extend">

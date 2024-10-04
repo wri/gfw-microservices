@@ -1,5 +1,11 @@
 import React from 'react';
 import { listStatus } from '../../../../config/env/listStatuses.constants';
+import store from '../store';
+import {
+  DISPLAY_FORMAT_SUMMARY,
+  DISPLAY_FORMAT_HECTARES,
+  DISPLAY_FORMAT_PERCENTAGE,
+} from '../../../listDetails/js/components/lists/ListDetails/deforestationDisplayFormat.constants';
 
 export const getColorByLevelClasse = {
   0: 'yellow',
@@ -129,18 +135,37 @@ export const getValidatedValue = (data, auditData) => {
   return formatDigit(Object.values(JSON.parse(data)).reduce((a, b) => a + b, 0));
 };
 
-export const getBooleanValue = (data, auditData) => {
+export const getDeforestationFormatedValue = (treeCoverExtentTotal, data, auditData) => {
+  const { deforestationDisplayFormat } = store.getState();
+
   if (auditData === 0) {
     return '--';
   }
-  const value = formatDigit(Object.values(JSON.parse(data)).reduce((a, b) => a + b, 0));
-  const isZeroValue = value === 0;
-  return isZeroValue ? (
-    <> {value} </>
-  ) : (
+  const rawValue = Object.values(JSON.parse(data)).reduce((a, b) => a + b, 0);
+  const value = formatDigit(rawValue);
+  const isNonZeroValue = value !== 0;
+
+  let deforestationDisplayValue;
+  switch (deforestationDisplayFormat) {
+    case DISPLAY_FORMAT_HECTARES:
+      deforestationDisplayValue = value;
+      break;
+    case DISPLAY_FORMAT_SUMMARY:
+      deforestationDisplayValue = rawValue === 0 ? <>No</> : <>Yes</>;
+      break;
+    case DISPLAY_FORMAT_PERCENTAGE: {
+      const percentage = ((rawValue / treeCoverExtentTotal) * 100).toFixed(2);
+      deforestationDisplayValue = `${percentage}%`;
+      break;
+    }
+    default:
+      deforestationDisplayValue = value;
+      break;
+  }
+  return (
     <>
-      <span className="status-indicator status-indicator--red"></span>
-      {value}
+      {isNonZeroValue && <span className="status-indicator status-indicator--red"></span>}
+      {deforestationDisplayValue}
     </>
   );
 };

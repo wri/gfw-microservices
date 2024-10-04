@@ -2174,7 +2174,6 @@ export default class ListDetails extends Component {
                             {this.getAnalysisLastUpdatedDate(listAnalysesStatus)}
                           </span>
                         </div>
-
                         <Filter
                           filterCount={filterCount}
                           filterValues={filterValues}

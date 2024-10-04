@@ -210,7 +210,7 @@ export default class Filter extends Component {
               </>
             ) : (
               <Grid item xs={11} sx={{ textAlign: 'center' }}>
-                <DeforestationDisplayFormatToggleButtons />
+                {!isGfwList && <DeforestationDisplayFormatToggleButtons />}
               </Grid>
             )}
             <Grid item xs={1} sx={{ alignSelf: 'center' }}>

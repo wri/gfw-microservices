@@ -109,6 +109,47 @@ export class GADMService extends AbstractHandler<ChainType> {
     }
   };
 
+
+  getGADM = async (geojson): Promise<FeatureCollection> => {
+    return new Promise((resolve, reject) => {
+      const s3ObjectsToDelete = [];
+      const objectName = `gadm-${new Date().getTime()}`;
+      this
+        .putObject(objectName, { geojson: geojson })
+        .then((location_s3_info) => {
+          s3ObjectsToDelete.push(location_s3_info);
+
+          return this.invokeLambda('controller-admin-areas', {
+            receipt_handle: 'NOTARECEIPT',
+            s3_location_info: location_s3_info,
+            layer: 'gadm',
+            dissolve_aoi: false,
+            post_process_aoi: false,
+          });
+        })
+        .then((lambdaResult) => {
+          const { Payload } = lambdaResult;
+          const { bucket, key, errorMessage } = JSON.parse(Payload);
+
+          if (errorMessage) {
+            console.log(errorMessage);
+            throw new Error('Has error property');
+          }
+
+          s3ObjectsToDelete.push({ bucket, key });
+          return this.getObject(bucket, key);
+        })
+        .then((s3Object) => {
+          Promise.all(s3ObjectsToDelete.map((obj) => this.delObject(obj.bucket, obj.key)));
+          resolve(s3Object);
+        })
+        .catch((e) => {
+          console.log(e);
+          reject(e);
+        });
+    });
+  };
+
   composeResults = async (feature: Feature) => {
     await this.getGeoReferenceData(feature);
   };
@@ -121,6 +162,8 @@ export class GADMService extends AbstractHandler<ChainType> {
     for await (const localPage of asyncPool(POOL_SIZE, features, this.composeResults)) {
       this.logger.log(`(${listId}) - Get page of number ${localPage} from database`);
     }
+
+    input.geojson = await this.getGADM(geojson)
 
     return super.handle(input);
   }

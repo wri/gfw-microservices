@@ -1,8 +1,6 @@
 import { ParserData } from './parser.data';
 import { Logger } from '@nestjs/common';
 import * as fs from 'fs';
-import { csv2geojson } from '../parser/csv2geojson.parser';
-import { ChainType } from './types';
 
 // Mock dependencies
 jest.mock('fs');

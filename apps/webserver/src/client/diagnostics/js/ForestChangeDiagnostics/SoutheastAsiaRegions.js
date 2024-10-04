@@ -388,6 +388,11 @@ export default class SoutheastAsiaRegions extends Component {
             style: {
               color: (Highcharts.theme && Highcharts.theme.contrastTextColor) || 'black',
             },
+            filter: {
+              property: 'percentage',
+              operator: '>',
+              value: 1,
+            },
           },
         },
       },

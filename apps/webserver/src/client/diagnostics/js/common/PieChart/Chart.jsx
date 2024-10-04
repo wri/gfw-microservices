@@ -4,60 +4,20 @@ import useHookWithRefCallback from '../useHookWithRefCallback';
 
 const transifex = Transifex.live.translateText;
 
-function Chart({ data, chartLabels, hasSubLayers }) {
-  const pieChartsData = [];
+function Chart({ data, chartLabels, hasSecondarySubLayers }) {
+  const subLayersData = [];
+  const secondarySubLayersData = [];
 
-  let dataLabels = {
-    format: '<b>{point.name}</b>:<br>{point.percentage:.2f} %',
-  };
+  for (const chartLabel of chartLabels) {
+    const { id, legend, color, subLayerColor } = chartLabel;
 
-  if (hasSubLayers) {
-    dataLabels = {
-      distance: -50,
-      format: '<b>{point.name}</b>:<br>{point.percentage:.2f} %',
-      color: '#000',
-      filter: {
-        property: 'percentage',
-        operator: '>',
-        value: 10,
-      },
-    };
-  }
-
-  const categoriesData = {
-    colorByPoint: true,
-    data: [],
-    size: hasSubLayers ? '60%' : null,
-  };
-
-  const subLayersData = {
-    name: 'subLayers',
-    data: [],
-    size: '100%',
-    innerSize: '60%',
-    dataLabels: {
-      distance: 5,
-      filter: {
-        property: 'percentage',
-        operator: '>',
-        value: 3,
-      },
-      style: {
-        fontWeight: 'normal',
-      },
-    },
-    id: 'versions',
-  };
-
-  chartLabels.forEach(({ id, legend, color, subLayerColor }) => {
-    let category;
     let sumOfSubLayers = 0;
 
-    if (hasSubLayers && data[id]) {
+    if (hasSecondarySubLayers && data[id]) {
       Object.entries(data[id]).forEach(([key, value]) => {
         sumOfSubLayers += value;
 
-        subLayersData.data.push({
+        secondarySubLayersData.push({
           name: transifex(key),
           y: value,
           color: subLayerColor,
@@ -65,29 +25,61 @@ function Chart({ data, chartLabels, hasSubLayers }) {
       });
     }
 
-    category = {
+    subLayersData.push({
       name: transifex(legend),
-      y: hasSubLayers ? sumOfSubLayers : data[id],
+      y: hasSecondarySubLayers ? sumOfSubLayers : data[id],
       color,
-    };
+    });
+  }
 
-    categoriesData.data.push(category);
-  });
+  const series = [
+    {
+      name: 'SubLayers',
+      data: subLayersData,
+      colorByPoint: true,
+      color: '#000',
+      size: hasSecondarySubLayers ? '60%' : null,
+      dataLabels: {
+        distance: hasSecondarySubLayers ? '-50%' : '5%',
+        format: hasSecondarySubLayers ? null : '<b>{point.name}</b>:<br>{point.percentage:.2f} %',
+        filter: {
+          property: 'percentage',
+          operator: '>',
+          value: 1,
+        },
+      },
+    },
+  ];
 
-  pieChartsData.push(categoriesData);
-
-  if (hasSubLayers) {
-    pieChartsData.push(subLayersData);
+  if (hasSecondarySubLayers) {
+    series.push({
+      name: 'SecondarySubLayers',
+      data: secondarySubLayersData,
+      size: '100%',
+      innerSize: '60%',
+      dataLabels: {
+        distance: 1,
+        format: '<b>{point.name}</b>: {point.percentage:.2f} %',
+        filter: {
+          property: 'percentage',
+          operator: '>',
+          value: 1,
+        },
+        style: {
+          fontWeight: 'normal',
+        },
+      },
+    });
   }
 
   const renderChart = (divRef) => {
     Highcharts.chart({
       chart: {
         renderTo: divRef,
+        type: 'pie',
         plotBackgroundColor: null,
         plotBorderWidth: 0,
         plotShadow: false,
-        type: 'pie',
         animation: false,
       },
       title: {
@@ -101,12 +93,12 @@ function Chart({ data, chartLabels, hasSubLayers }) {
       },
       plotOptions: {
         pie: {
-          allowPointSelect: !hasSubLayers,
+          allowPointSelect: !hasSecondarySubLayers,
           cursor: 'pointer',
-          dataLabels,
+          center: ['50%', '50%'],
         },
       },
-      series: [...pieChartsData],
+      series,
     });
   };
 

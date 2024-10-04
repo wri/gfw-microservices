@@ -7,6 +7,7 @@ import { createDirectory } from '../shared/file.utils';
 import { AccountUsersAnalysisUsageFileService } from './account-users-usage.generator.service';
 import { AlertsGeneratorService } from './alerts.generator.service';
 import { ReadmeService } from '../files/readme.service';
+import { InputService, ResultService, ShapefileService } from '../files';
 
 @Injectable({
   scope: Scope.REQUEST,
@@ -20,7 +21,10 @@ export class PipeService {
     private readonly accountUsersUsageGeneratorService: AccountUsersAnalysisUsageFileService,
     private readonly alertsGeneratorService: AlertsGeneratorService,
     private readonly clientStoreConnection: ClientStoreConnection,
-    private readonly readmeService: ReadmeService
+    private readonly readmeService: ReadmeService,
+    private readonly shapefileService: ShapefileService,
+    private readonly resultService: ResultService,
+    private readonly inputService: InputService
   ) {}
 
   public async makeFile(filters: BasicFieldsFileRequest) {
@@ -95,4 +99,16 @@ export class PipeService {
     this.logger.log(`(${listId}) - Create directory: ${dir}`);
     createDirectory(dir);
   };
+
+  public async makeGeoJsonFile(filters: BasicFieldsFileRequest) {
+    this.createDirectory(filters);
+
+    const mapFileType2Service = {
+      input_csv: await this.inputService.start(filters),
+      input_shapefile: await this.shapefileService.start(filters),
+      results_csv: await this.resultService.start(filters),
+    };
+
+    return await mapFileType2Service;
+  }
 }

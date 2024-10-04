@@ -169,7 +169,7 @@ export class ListMessageController {
   async download(@Body() body: BasicFieldsFileRequest) {
     this.logger.log('List message received', body);
     if (body.type === 'afi-vc') {
-      return 'new geoJson output';
+      return this.pipeService.makeGeoJsonFile(body);
     } else {
       this.pipeService.makeFile(body);
       return body;

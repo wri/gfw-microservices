@@ -60,7 +60,7 @@ function LocationsSummary({
               }
             }}
           >
-            <span>{`${numberOfFilteredLocations} ${numberWithCommas(
+            <span>{`${numberWithCommas(numberOfFilteredLocations)} ${numberWithCommas(
               listLength
             )} total locations • `}</span>
 

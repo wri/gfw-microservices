@@ -4,9 +4,9 @@ DECLARE @TableName NVARCHAR(255);
 DECLARE @SQL NVARCHAR(MAX);
 
 DECLARE TableCursor CURSOR FOR
-SELECT TABLE_NAME 
-FROM INFORMATION_SCHEMA.TABLES 
-WHERE TABLE_NAME LIKE 'list-%';
+SELECT name 
+FROM sys.tables 
+WHERE name LIKE 'list-%';
 
 OPEN TableCursor;
 FETCH NEXT FROM TableCursor INTO @TableName;
@@ -16,9 +16,9 @@ BEGIN
     -- Check if the column 'ErrorDetails' exists
     IF NOT EXISTS (
         SELECT 1 
-        FROM INFORMATION_SCHEMA.COLUMNS 
-        WHERE TABLE_NAME = @TableName 
-        AND COLUMN_NAME = 'ErrorDetails'
+        FROM sys.columns 
+        WHERE object_id = OBJECT_ID(@TableName) 
+        AND name = 'ErrorDetails'
     )
     BEGIN
         -- Build SQL to add 'ErrorDetails' column
@@ -26,6 +26,8 @@ BEGIN
         PRINT 'Adding ErrorDetails column to ' + @TableName;
         EXEC sp_executesql @SQL;
     END
+
+    FETCH NEXT FROM TableCursor INTO @TableName;
 END
 
 CLOSE TableCursor;

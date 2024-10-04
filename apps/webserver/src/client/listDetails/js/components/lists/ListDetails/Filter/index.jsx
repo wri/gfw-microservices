@@ -16,6 +16,7 @@ import UserListCommodityRiskFilter from './UserListCommodityRiskFilter';
 import ProtectedAreasGFWList from './ProtectedAreasGFWListFilter';
 import AdministrativeAreasGFWListFilter from './AdministrativeAreasGFWListFilter';
 import GFWListFilter from './GFWListFilter';
+import DeforestationDisplayFormatToggleButtons from '../DeforestationDisplayFormatToggleButtons';
 import { filterKeys, gfwListNames } from '../../../../../../common/js/constants/lists.constants';
 import { GFW_LISTS_NUMBER_CONSTANTS } from '../../../../../../../config/env/gfwLists.constants';
 import store from '../../../../../../locations/js/store';
@@ -204,7 +205,9 @@ export default class Filter extends Component {
                 </Grid>
               </>
             ) : (
-              <Grid item xs={11}></Grid>
+              <Grid item xs={11} sx={{ textAlign: 'center' }}>
+                {!isGfwList && <DeforestationDisplayFormatToggleButtons />}
+              </Grid>
             )}
             <Grid item xs={1} sx={{ alignSelf: 'center' }}>
               <Box flexGrow={1} />

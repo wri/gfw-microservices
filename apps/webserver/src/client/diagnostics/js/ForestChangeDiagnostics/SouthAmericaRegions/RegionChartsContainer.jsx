@@ -18,7 +18,7 @@ function RegionChartsContainer({
   getFilteredLocations,
   getYearlyHighchartSeries,
   getCategoricalHighchartSeries,
-  isGfwList
+  isGfwList,
 }) {
   const { isColombiaAvailable } = featureFlags;
   const [selectedTab, setSelectedTab] = useState(regionIds.REGIONAL);

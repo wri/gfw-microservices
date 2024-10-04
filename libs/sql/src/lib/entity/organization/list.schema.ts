@@ -168,6 +168,11 @@ export const ListSchema = {
       name: 'flag_terrai',
       nullable: true,
     },
+    errorDetails: {
+      type: String,
+      name: 'ErrorDetails',
+      nullable: true,
+    },
   },
 };
 
@@ -207,4 +212,5 @@ export type ListSchemaType = {
   timeHorizon: string;
   volume: string;
   windBarrier: string;
+  errorDetails: string;
 };

@@ -1,3 +1,5 @@
+-- Tool: SQL Multi Script
+-- For: Clientstore Databases
 DECLARE @TableName NVARCHAR(255);
 DECLARE @SQL NVARCHAR(MAX);
 

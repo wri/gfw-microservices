@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 import {
   S3Client,
   PutObjectCommand,
@@ -140,6 +140,23 @@ export class S3Service {
       }
     } else {
       throw new Error('Response body is not a Readable stream');
+    }
+  }
+
+  async readFileFromS3(bucketName: string, key: string): Promise<string> {
+    try {
+      const command = new GetObjectCommand({
+        Bucket: bucketName,
+        Key: key,
+      });
+
+      // send the command to S3
+      const data = await this.s3Client.send(command);
+
+      return await this.streamToString(data.Body as Readable);
+    } catch (error) {
+      Logger.error(`Error reading '${bucketName}'/'${key}' from S3:`, error.stack || error);
+      throw error;
     }
   }
 

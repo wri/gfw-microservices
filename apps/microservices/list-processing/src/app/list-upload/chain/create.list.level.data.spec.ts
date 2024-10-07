@@ -99,8 +99,8 @@ describe('CreateList', () => {
           customAttributeNames: 'attr_names',
           customAttributeTypes: 'attr_types',
           gfwListId: 1,
-          userId: 1,
-          templateId: 1,
+          user_id: 1,
+          template_id: 1,
           path: 'test_path',
         },
       };
@@ -137,8 +137,8 @@ describe('CreateList', () => {
           customAttributeNames: 'attr_names',
           customAttributeTypes: 'attr_types',
           gfwListId: 1,
-          userId: 1,
-          templateId: 1,
+          user_id: 1,
+          template_id: 1,
           path: 'test_path',
         },
       };

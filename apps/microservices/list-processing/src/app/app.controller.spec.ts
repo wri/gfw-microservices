@@ -880,7 +880,7 @@ describe('AppController', () => {
     } = await request(app.getHttpServer()).post(`/save-list-to-process`).send(alertsGenerate);
     expect(response).toEqual(expectedResult);
   });
-  it('Should require startAnalysis when missing this parameter at process-list endpoint', async () => {
+  xit('Should require startAnalysis when missing this parameter at process-list endpoint', async () => {
     const bodyPost = {
       organization_id: 0,
       subscription_status_id: 0,

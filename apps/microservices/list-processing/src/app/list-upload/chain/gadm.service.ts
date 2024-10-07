@@ -109,13 +109,11 @@ export class GADMService extends AbstractHandler<ChainType> {
     }
   };
 
-
   getGADM = async (geojson): Promise<FeatureCollection> => {
     return new Promise((resolve, reject) => {
       const s3ObjectsToDelete = [];
       const objectName = `gadm-${new Date().getTime()}`;
-      this
-        .putObject(objectName, { geojson: geojson })
+      this.putObject(objectName, { geojson: geojson })
         .then((location_s3_info) => {
           s3ObjectsToDelete.push(location_s3_info);
 
@@ -163,7 +161,7 @@ export class GADMService extends AbstractHandler<ChainType> {
       this.logger.log(`(${listId}) - Get page of number ${localPage} from database`);
     }
 
-    input.geojson = await this.getGADM(geojson)
+    input.geojson = await this.getGADM(geojson);
 
     return super.handle(input);
   }

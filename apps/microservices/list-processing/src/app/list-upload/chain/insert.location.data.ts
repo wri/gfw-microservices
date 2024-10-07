@@ -7,8 +7,15 @@ import { GeoJSONGeometry, stringify } from 'wellknown';
 const BATCH_SIZE = 1000;
 
 export class InsertLocationData extends AbstractHandler<ChainType> {
-  constructor() {
+  private clientStoreConnection: ClientStoreConnection;
+
+  constructor(clientStoreConnection: ClientStoreConnection) {
     super();
+    if (clientStoreConnection !== null) {
+      this.clientStoreConnection = clientStoreConnection;
+    } else {
+      this.clientStoreConnection = new ClientStoreConnection();
+    }
   }
 
   private async insertBatch(
@@ -35,10 +42,8 @@ export class InsertLocationData extends AbstractHandler<ChainType> {
       ...ListSchema,
       name: listTable,
     });
-    ClientStoreConnection;
 
-    const clientStoreConnection = new ClientStoreConnection();
-    const connection = await clientStoreConnection.getConnection(organizationDatabase, [
+    const connection = await this.clientStoreConnection.getConnection(organizationDatabase, [
       ListEntity,
     ]);
 

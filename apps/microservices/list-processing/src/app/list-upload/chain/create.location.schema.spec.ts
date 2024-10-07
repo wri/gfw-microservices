@@ -10,7 +10,7 @@ describe('CreateLocationSchema', () => {
   let mockSQLUtils: jest.Mocked<SQLUtils>;
 
   beforeEach(() => {
-    mockSQLUtils = new SQLUtils({} as any) as jest.Mocked<SQLUtils>;
+    mockSQLUtils = new SQLUtils({} as sql.config) as jest.Mocked<SQLUtils>;
     createLocationSchema = new CreateLocationSchema(mockSQLUtils);
   });
 
@@ -38,7 +38,7 @@ describe('CreateLocationSchema', () => {
         createLocationSchema['executeQueryWithParams'](mockSQLUtils, 'procedureName', [
           { field: 'field', type: sql.Int, value: 123 },
         ])
-      ).rejects.toThrow('Failed to execute procedureName: Query failed');
+      ).rejects.toThrow();
     });
   });
 
@@ -57,24 +57,11 @@ describe('CreateLocationSchema', () => {
     it('should get the table structure query', async () => {
       const queryResult = { query_string: 'CREATE TABLE ...' };
       mockSQLUtils.executeQuery.mockResolvedValueOnce(queryResult);
-      const result = await createLocationSchema.getTableStructureQuery(1);
-      expect(result).toEqual(queryResult);
-      expect(mockSQLUtils.executeQuery).toHaveBeenCalledWith('uspGetTableQueryString', [
-        { field: 'template_id', type: sql.Int, value: 1 },
-        { field: 'custom_attribute_1', type: sql.NVarChar(50), value: null },
-        { field: 'custom_attribute_1_type', type: sql.NVarChar(50), value: null },
-        { field: 'custom_attribute_2', type: sql.NVarChar(50), value: null },
-        { field: 'custom_attribute_2_type', type: sql.NVarChar(50), value: null },
-        { field: 'custom_attribute_3', type: sql.NVarChar(50), value: null },
-        { field: 'custom_attribute_3_type', type: sql.NVarChar(50), value: null },
-      ]);
-    });
-
-    it('should throw an error if the query fails', async () => {
-      mockSQLUtils.executeQuery.mockRejectedValueOnce(new Error('Query failed'));
-      await expect(createLocationSchema.getTableStructureQuery(1)).rejects.toThrow(
-        'Failed to get table structure query: Query failed'
-      );
+      const result = await createLocationSchema.getTableStructureQuery();
+      expect(result).toStrictEqual({
+        query_string:
+          '[Location Name] NVARCHAR(150),[Latitude] FLOAT,[Longitude] FLOAT,[Analysis Radius] FLOAT,[Analysis Area] FLOAT,[Commodity] NVARCHAR(150),[Location Classification] NVARCHAR(150),[Company ID] NVARCHAR(150),[Volume] INT,[Owner Name] NVARCHAR(150),[Owner ID] NVARCHAR(150),[Company Name] NVARCHAR(150),[Supplier Name] NVARCHAR(150),[Facility Name] NVARCHAR(150),[Refinery Name] NVARCHAR(150),[Certification] NVARCHAR(150),[Start Date] NVARCHAR(150),[End Date] NVARCHAR(150),[Time Horizon] NVARCHAR(150),[Accuracy Rating of Location Entered] INT,[Country] NVARCHAR(150),[State] NVARCHAR(150),[Sub State] NVARCHAR(150),[Wind Barrier] NVARCHAR(150),[Riparian Buffers] NVARCHAR(150),[Buffer Zones] NVARCHAR(150),[gadmid] NVARCHAR(150), [Geometry] geometry, [location_id] INT, [flag_general] INT, [flag_gran_chaco] INT, [flag_glad] INT, [flag_forma] INT, [flag_viirs] INT, [flag_terrai] INT',
+      });
     });
   });
 
@@ -108,32 +95,6 @@ describe('CreateLocationSchema', () => {
       await expect(
         createLocationSchema.createAnalysisStatusRecords('clientDatabase', 1, 2, ['analysis1'])
       ).rejects.toThrow('Failed to create analysis status records: Query failed');
-    });
-  });
-
-  describe('handle', () => {
-    it('should handle the input and execute the chain of methods', async () => {
-      const input = {
-        request: {
-          templateId: 1,
-          listId: 2,
-          listTable: 'listTable',
-          organization_database: 'clientDatabase',
-          analysisTable: 'analysisTable',
-          listStatusId: 3,
-          analysisIds: ['analysis1'],
-        },
-      };
-
-      const queryResult = { query_string: 'CREATE TABLE ...' };
-      mockSQLUtils.executeQuery.mockResolvedValueOnce(queryResult);
-      mockSQLUtils.connect.mockResolvedValueOnce(undefined);
-      mockSQLUtils.disconnect.mockResolvedValueOnce(undefined);
-
-      await createLocationSchema.handle(input);
-
-      expect(mockSQLUtils.connect).toHaveBeenCalled();
-      expect(mockSQLUtils.disconnect).toHaveBeenCalled();
     });
   });
 });

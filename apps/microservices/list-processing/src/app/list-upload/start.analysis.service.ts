@@ -57,7 +57,7 @@ export class StartAnalysisService {
     const gadmService = new GADMService();
     const createListLevelData = new CreateListLevelData();
     const createLocationSchema = new CreateLocationSchema(connection);
-    const insertLocationData = new InsertLocationData();
+    const insertLocationData = new InsertLocationData(null);
 
     downloadS3File
       .setNext(parseData)

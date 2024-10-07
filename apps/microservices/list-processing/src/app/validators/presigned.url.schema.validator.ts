@@ -38,7 +38,7 @@ export const requestLargeListProcessSchema = z.object({
   user_id: z.number().optional(),
   startAnalysis: z.boolean().optional(),
   isExternalAPIProcess: z.boolean().optional(),
-  list_name: z.string(),
+  list_name: z.string().optional(),
   analysisIds: z.array(z.string()).optional(),
 });
 

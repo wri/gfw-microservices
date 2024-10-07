@@ -1,41 +1,49 @@
+import { Test, TestingModule } from '@nestjs/testing';
 import { ParserData } from './parser.data';
 import { Logger } from '@nestjs/common';
 import * as fs from 'fs';
+import { csv2geojson } from '../parser/csv2geojson.parser';
+import { AbstractHandler, ChainType } from './types';
 
-// Mock dependencies
 jest.mock('fs');
 jest.mock('../parser/csv2geojson.parser');
 
 describe('ParserData', () => {
   let parserData: ParserData;
-  let logger: Logger;
+  beforeEach(async () => {
+    const module: TestingModule = await Test.createTestingModule({
+      providers: [ParserData, Logger],
+    }).compile();
 
-  beforeEach(() => {
-    logger = new Logger();
-    parserData = new ParserData();
+    parserData = module.get<ParserData>(ParserData);
   });
 
   afterEach(() => {
     jest.clearAllMocks();
   });
 
-  describe('deleteFile', () => {
-    it('should log an error if the file does not exist', (done) => {
-      const fileDownloadedPath = 'path/to/nonexistent/file';
-      (fs.access as unknown as jest.Mock).mockImplementation((path, mode, callback) => {
-        callback(new Error('File does not exist'));
-      });
+  describe('handle', () => {
+    it('should parse CSV content and pass GeoJSON to the next handler', async () => {
+      const fileDownloadedPath = 'path/to/file.csv';
+      const csvContent = 'csv content';
+      const geoJson = { type: 'FeatureCollection', features: [] };
+      const input: ChainType = {
+        request: { fileDownloadedPath, organization_database: 'test', path: 'test' },
+      };
 
-      const loggerErrorSpy = jest.spyOn(logger, 'error');
+      (fs.readFileSync as jest.Mock).mockReturnValue(csvContent);
+      (csv2geojson as jest.Mock).mockResolvedValue(geoJson);
+      jest.spyOn(parserData, 'deleteFile').mockImplementation();
+      jest
+        .spyOn(AbstractHandler.prototype, 'handle')
+        .mockResolvedValue({ ...input, geojson: geoJson });
 
-      parserData.deleteFile(fileDownloadedPath);
+      const result = await parserData.handle(input);
 
-      // Wait for the asynchronous operation to complete
-      // eslint-disable-next-line no-undef
-      setImmediate(() => {
-        expect(loggerErrorSpy).toHaveBeenCalledWith(`${fileDownloadedPath} does not exist.`);
-        done();
-      });
+      expect(fs.readFileSync).toHaveBeenCalledWith(fileDownloadedPath, 'utf8');
+      expect(csv2geojson).toHaveBeenCalledWith(csvContent);
+      expect(parserData.deleteFile).toHaveBeenCalledWith(fileDownloadedPath);
+      expect(result).toEqual({ ...input, geojson: geoJson });
     });
   });
 });

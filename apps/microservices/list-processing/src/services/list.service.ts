@@ -64,15 +64,15 @@ export class ListService {
   async startAnalysisProcessForList(
     request: RequestLargeListProcess
   ): Promise<ResponseLargeListProcess> {
-    // const { getFeatureFlagsForCurrentOrg } = await featureFlagsService();
-    // const flags = await getFeatureFlagsForCurrentOrg(request.organization_id);
+    const { getFeatureFlagsForCurrentOrg } = await featureFlagsService();
+    const flags = await getFeatureFlagsForCurrentOrg(request.organization_id);
 
-    // const uploadListLpFlag = flags.find((f) => f.flagId === 'UploadListLp') as FeatureFlag;
+    const uploadListLpFlag = flags.find((f) => f.flagId === 'UploadListLp') as FeatureFlag;
 
-    // if (uploadListLpFlag.flagState) {
-    return this.startAnalysisService.run(request);
-    // }
-    // return this.deprecatedStartAnalysisService.run(request);
+    if (uploadListLpFlag.flagState) {
+      return this.startAnalysisService.run(request);
+    }
+    return this.deprecatedStartAnalysisService.run(request);
   }
 
   async createListTables(

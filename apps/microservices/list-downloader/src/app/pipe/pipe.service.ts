@@ -55,13 +55,11 @@ export class PipeService {
       const connection = await this.clientStoreConnection.getConnection(organizationDatabase);
       const listRepository = connection.getRepository(Lists);
       const { listName } = await listRepository.findOne({ where: { id: listId } });
-      connection.destroy();
       return listName;
     } else {
       const connection = await this.clientStoreConnection.getConnection('gfwpro', [GFWList]);
       const gfwListRepository = connection.getRepository(GFWList);
       const { listName } = await gfwListRepository.findOne({ where: { id: listId } });
-      connection.destroy();
       return listName;
     }
   }

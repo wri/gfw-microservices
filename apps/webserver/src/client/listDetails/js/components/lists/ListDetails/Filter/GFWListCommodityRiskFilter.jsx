@@ -460,7 +460,7 @@ export default class GFWListCommodityRiskFilter extends Component {
                 onChange={this.changeNames}
                 isMulti
                 isSearchable
-                placeholder="Select"
+                placeholder="LOCATIONS"
                 value={selectedNames}
                 styles={multipleSelectStyles}
               />

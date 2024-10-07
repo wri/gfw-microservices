@@ -283,7 +283,7 @@ export default class GFWProtectedForestChangeFilter extends Component {
                 display: 'flex',
               }}
             >
-              <Button variant="secondary" onClick={this.close} label="Clear" />
+              <Button variant="secondary" onClick={this.close} label="Cancel" />
               <Button
                 style={{ marginLeft: '10px' }}
                 variant="primary"

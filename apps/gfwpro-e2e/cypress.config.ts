@@ -45,16 +45,17 @@ async function setupNodeEvents(
 }
 
 export default defineConfig({
+  video: true,
   viewportWidth: 1800,
   viewportHeight: 1080,
   retries: {
-    runMode: 1,
+    runMode: 2,
     openMode: 0,
   },
   e2e: {
     env: {
       deployment: process.env.CYPRESS_ENV,
-      waittime: parseInt(process.env['CYPRESS_TIMEOUT']) || 60000,
+      waittime: parseInt(process.env['CYPRESS_TIMEOUT']) || 30000,
     },
     ...nxE2EPreset(__dirname),
     setupNodeEvents,
@@ -64,7 +65,7 @@ export default defineConfig({
         ? `https://pro-${process.env.CYPRESS_ENV}.globalforestwatch.org`
         : 'https://localhost:8443',
     specPattern: '**/*.feature',
-    defaultCommandTimeout: parseInt(process.env['CYPRESS_TIMEOUT']) || 60000,
+    defaultCommandTimeout: parseInt(process.env['CYPRESS_TIMEOUT']) || 30000,
     scrollBehavior: 'center',
   },
 });

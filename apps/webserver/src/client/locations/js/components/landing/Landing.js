@@ -43,6 +43,7 @@ import {
 } from './MyListsTabs/MyListsTabs.constants';
 import getCookie from '../../../../common/js/utils/getCookie';
 import getAccountUsagePercentage from './getAccountUsagePercentage';
+import featureFlags from '../../../../../utils/general.utils';
 
 class Landing extends Component {
   constructor(props) {
@@ -252,6 +253,8 @@ class Landing extends Component {
       B2BsharedListEnabled,
     } = this.props;
 
+    const { isUploadListUiAvailable } = featureFlags;
+
     let userListsFiltered;
 
     if (!selectedTab || selectedTab === MY_LISTS) {
@@ -359,14 +362,29 @@ class Landing extends Component {
         <section className="locations-body flex-grid">
           <aside className="col side-panel">
             {currentUser.access_level_id !== userAccessLevel.VIEWER && (
-              <Button
-                className="side-panel__button"
-                label={locationsPage.landing.addLocations}
-                icon={<IconPlus height="10px" />}
-                onClick={() => this.setState({ addLocationDialogOpen: true })}
-                fullWidth
-                variant="primary"
-              />
+              <>
+                <Button
+                  className="side-panel__button"
+                  label={locationsPage.landing.addLocations}
+                  icon={<IconPlus height="10px" />}
+                  onClick={() => this.setState({ addLocationDialogOpen: true })}
+                  fullWidth
+                  variant="primary"
+                />
+                {isUploadListUiAvailable && (
+                  <Button
+                    className="side-panel__button"
+                    label="New Location Upload"
+                    icon={<IconPlus height="10px" />}
+                    onClick={() => {
+                      const { history } = this.props;
+                      history.push('/new-location-upload');
+                    }}
+                    fullWidth
+                    variant="primary"
+                  />
+                )}
+              </>
             )}
             <SidebarTemplateDownload language={language} />
             <SavedLocationsSummary

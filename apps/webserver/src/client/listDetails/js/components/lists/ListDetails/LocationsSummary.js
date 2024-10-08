@@ -40,7 +40,9 @@ function LocationsSummary({
       ? countriesSelected.slice(0, 3).join(', ').replaceAll('null', '--')
       : countriesString;
   const numberOfFilteredLocations =
-    numberOfResults < selectedList.list_locations_count ? `Showing ${numberOfResults} of` : '';
+    numberOfResults && numberOfResults < selectedList.list_locations_count
+      ? `Showing ${numberWithCommas(numberOfResults)} of`
+      : '';
 
   return (
     <header className="list-detail-header__info-container">
@@ -60,7 +62,7 @@ function LocationsSummary({
               }
             }}
           >
-            <span>{`${numberWithCommas(numberOfFilteredLocations)} ${numberWithCommas(
+            <span>{`${numberOfFilteredLocations} ${numberWithCommas(
               listLength
             )} total locations • `}</span>
 

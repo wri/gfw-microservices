@@ -28,6 +28,7 @@ export class FCDService {
     const overlap = await this.getAggregatedWDPAOverlapData(
       listId,
       country,
+      countryGadm,
       clientDatabase,
       locationId
     );
@@ -181,6 +182,7 @@ export class FCDService {
   private async getAggregatedWDPAOverlapData(
     listId: number,
     country: string,
+    countryGadm: string,
     clientDatabase: string,
     locationId?: number
   ) {
@@ -197,7 +199,16 @@ export class FCDService {
     };
 
     data?.forEach((item) => {
-      const protectedAreasByCategoryArea = JSON.parse(item.protectedAreasByCategoryArea);
+      const protectedAreasByCategoryAreaTemp = JSON.parse(
+        item.protectedAreasByCategoryArea || '{}'
+      );
+
+      const protectedAreasByCategoryArea = this.isObjInCountryFormat(
+        protectedAreasByCategoryAreaTemp
+      )
+        ? protectedAreasByCategoryAreaTemp[countryGadm] || {}
+        : protectedAreasByCategoryAreaTemp;
+
       Object.entries(protectedAreasByCategoryArea).forEach(([key, value]) => {
         if (typeof value === 'number') {
           if (this.isFullRestrictiveCategory(key)) {
@@ -309,8 +320,13 @@ export class FCDService {
       let landmark = { ...prev };
 
       try {
-        const overlapIndigenous =
-          JSON.parse(curr?.landmarkByCategoryArea)[this.INDIGENOUS_LAND] ?? 0;
+        const parsedData = JSON.parse(curr?.landmarkByCategoryArea || '{}');
+
+        const landmarkByCategoryAreaTemp = this.isObjInCountryFormat(parsedData)
+          ? parsedData[countryGadm] || {}
+          : parsedData;
+
+        const overlapIndigenous = landmarkByCategoryAreaTemp[this.INDIGENOUS_LAND] ?? 0;
 
         const countryArea = JSON.parse(curr.countryArea || '{}');
         const totalArea = countryArea[countryGadm] ?? curr.totalArea;
@@ -476,4 +492,8 @@ export class FCDService {
 
     return result;
   }
+
+  private isObjInCountryFormat = (data) => {
+    return Object.keys(data).every((x) => x.length === 3);
+  };
 }

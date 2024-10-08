@@ -46,7 +46,7 @@ export class PipeService {
       await this.readmeService.write(filters);
     }
 
-    pipeHandler.makeFile(filters);
+    await pipeHandler.makeFile(filters);
   }
 
   private async getListName(filters: BasicFieldsFileRequest) {
@@ -99,14 +99,10 @@ export class PipeService {
   };
 
   public async makeGeoJsonFile(filters: BasicFieldsFileRequest) {
-    this.createDirectory(filters);
+    await this.shapefileService.start(filters);
 
-    const mapFileType2Service = {
-      input_csv: await this.inputService.start(filters),
-      input_shapefile: await this.shapefileService.start(filters),
-      results_csv: await this.resultService.start(filters),
-    };
+    await this.shapefileService.finish(filters);
 
-    return await mapFileType2Service;
+    return true;
   }
 }

@@ -9,7 +9,11 @@ import {
   BadRequestException,
   PipeTransform,
 } from '@nestjs/common';
-import { AlertsTimeframes, BasicFieldsFileRequest } from '@wri-monorepos/sql';
+import {
+  AlertsTimeframes,
+  BasicFieldsFileRequest,
+  ListFieldsFileRequest,
+} from '@wri-monorepos/sql';
 import { PipeService } from '../pipe/pipe.service';
 import { z } from 'zod';
 
@@ -166,13 +170,18 @@ export class ListMessageController {
 
   @Post('download')
   @UsePipes(ZodValidationPipe)
-  async download(@Body() body: BasicFieldsFileRequest) {
+  async download(@Body() body: ListFieldsFileRequest) {
     this.logger.log('List message received', body);
-    if (body.type === 'afi-vc') {
-      return this.pipeService.makeGeoJsonFile(body);
+    if (body.type.includes('-vc')) {
+      body.type = body.type.split('-vc')[0];
+      await this.pipeService.makeFile(body);
+      const listFieldsFileRequest: ListFieldsFileRequest = body as ListFieldsFileRequest;
+      listFieldsFileRequest.combinedColumnsSplitted = [];
+      await this.pipeService.makeGeoJsonFile(listFieldsFileRequest);
     } else {
       this.pipeService.makeFile(body);
-      return body;
     }
+
+    return body;
   }
 }

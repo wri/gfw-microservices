@@ -15,11 +15,22 @@ describe('Edit List', () => {
   });
 
   When('I navigate to a list details page', () => {
-    locationsPage.clickOnLocationsList('AAT Test Edit List 4');
+    locationsPage.clickOnLocationsList('AAT Test Edit List');
   });
 
   When('I select a location and press the Edit button', () => {
     listDetailsPage.selectCheckBoxes([1]);
+    listDetailsPage.clickOnEditBtn();
+  });
+
+  When('I select all locations and press the Edit button', () => {
+    listDetailsPage.checkOnCheckBoxSelectAll();
+    listDetailsPage.clickOnEditBtn();
+  });
+
+  When('I select 50 locations and press the Edit button', () => {
+    const locationsToSelect = Array.from({ length: 50 }, (_, i) => i + 1);
+    listDetailsPage.selectCheckBoxes(locationsToSelect);
     listDetailsPage.clickOnEditBtn();
   });
 
@@ -36,8 +47,13 @@ describe('Edit List', () => {
     editPage.clickOnConfirmBtn();
   });
 
+  Then('I should be able to download the file list', () => {
+    cy.url().should('include', '/list-details');
+    cy.contains('Download to make changes to your list').should('be.visible');
+  });
+
   Then('I should be able to cancel the edit and return to the list details view', () => {
-    cy.url().should('include', '/list-details/lists');
+    cy.url().should('include', '/list-details');
   });
   Then('I should be able to confirm the edit and be redirected to the list details view', () => {
     cy.url().should('include', '/locations');

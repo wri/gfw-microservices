@@ -113,16 +113,21 @@ def data_cleaning(df):
     Returns:
         Dataframe with cleaned values
     """
+    # Add and remove columns
+    missing_cols = list(set(cfg.small_lists_columns) - set(df.columns))
+    for col in missing_cols:
+        df[col] = None
+    df = df[cfg.small_lists_columns]
+
+    # Convert booleans to text
     mask = df.applymap(type) != bool
     d = {True: 'true', False: 'false'}
     df = df.where(mask, df.replace(d))
 
+    # Populate columns
     df = df[df['location_id'] != -1]
     df['location_status_id'] = 2
     df['id'] = df.index
-
-    # Reoder columns to match DB schema
-    df = df[cfg.small_lists_columns]
 
     return df
 

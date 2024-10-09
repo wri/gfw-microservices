@@ -420,7 +420,7 @@ export class ListAnalysisService {
       }
 
       await axios.post(
-        `${this.configService.get<string>('LD_MICROSERVICE_URL')}/api/list/download`,
+        `${this.configService.get<string>('LD_MICROSERVICE_URL')}/list/download`,
         message
       );
     } catch (error) {

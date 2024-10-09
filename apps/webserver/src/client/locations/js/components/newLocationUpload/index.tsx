@@ -1,49 +1,29 @@
-import React from 'react';
-import { RectangleButtonWithIcon } from './components/RectangleButtonWithIcon';
-
-import UploadFileTwoToneIcon from '@mui/icons-material/UploadFileTwoTone';
-import ScatterPlotTwoToneIcon from '@mui/icons-material/ScatterPlotTwoTone';
-import TimelineIcon from '@mui/icons-material/Timeline';
-
+import React, { useEffect } from 'react';
 import './index.scss';
 
+import ArrowBackIcon from '@mui/icons-material/ArrowBack';
+import ArrowForwardIosIcon from '@mui/icons-material/ArrowForwardIos';
+
+import { UploadOptions } from './components/UploadOptions';
+import { Typography } from '@mui/material';
+
 export function NewLocationUpload() {
+  useEffect(() => {
+    document.body.classList.add('new-location-upload-body');
+
+    return () => {
+      document.body.classList.remove('new-location-upload-body');
+    };
+  }, []);
   return (
     <div className="new-location-upload">
-      <div>
-        <h3>Add Location</h3>
-        <p>GFW Pro allows for users to upload their data in multiple ways.</p>
-        <div>
-          <span>How to format your location data for GFW Pro</span>
-        </div>
-      </div>
-      <div className="new-location-upload__upload-options">
-        <p>Best for multiple location or if your data is contained within a file.</p>
-        <RectangleButtonWithIcon
-          Icon={UploadFileTwoToneIcon}
-          text="File upload"
-          onClick={() => console.log('clicked')}
-        />
-        <div className="new-location-upload__upload-options__bottom-options">
-          <p>Or</p>
-          <p>
-            If you would like to enter a single location without uploading a file, you can define
-            your location via one of our interactive workflows:
-          </p>
-          <div>
-            <RectangleButtonWithIcon
-              Icon={ScatterPlotTwoToneIcon}
-              text="Point"
-              onClick={() => console.log('clicked')}
-            />
-            <RectangleButtonWithIcon
-              Icon={TimelineIcon}
-              text="Polygon"
-              onClick={() => console.log('clicked')}
-            />
-          </div>
-        </div>
-      </div>
+      <nav>
+        <ArrowBackIcon />
+        <Typography variant="h5">Name of the list</Typography>
+        <ArrowForwardIosIcon fontSize="small" />
+        <Typography variant="h5">Add location</Typography>
+      </nav>
+      <UploadOptions />
     </div>
   );
 }

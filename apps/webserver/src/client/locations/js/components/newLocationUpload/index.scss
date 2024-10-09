@@ -1,25 +1,33 @@
+.new-location-upload-body {
+  background: #e5e5e5;
+}
+
 .new-location-upload {
-  padding: 10px 16px;
+  margin: 12px auto;
+  max-width: 1000px;
+  min-width: 300px;
 
-  &__upload-options {
+  @media (max-width: 991px) {
+    padding: 12px 100px;
+
+    @media (max-width: 575px) {
+      padding: 0;
+    }
+  }
+
+  > nav {
     display: flex;
-    flex-direction: column;
     align-items: center;
+    gap: 0.75rem;
+    margin: 0.5rem 0 2rem 0;
 
-    max-width: 650px;
-    margin: auto;
+    h5 {
+      color: #404041;
+    }
 
-    &__bottom-options {
-      width: 100%;
-
-      > p {
-        text-align: center;
-      }
-
-      > div {
-        display: flex;
-        gap: 1.5rem;
-      }
+    svg:last-of-type {
+      color: #b3b3b3;
+      font-size: 0.75rem;
     }
   }
 }

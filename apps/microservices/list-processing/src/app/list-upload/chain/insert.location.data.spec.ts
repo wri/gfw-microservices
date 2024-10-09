@@ -44,9 +44,9 @@ describe('InsertLocationData', () => {
         organization_database: ':memory:',
         listTable: 'list_test_table',
         list_name: 'test_table',
-        templateId: 1,
+        template_id: 1,
         path: 'path',
-        userId: 1,
+        user_id: 1,
       },
       geojson: {
         type: 'FeatureCollection',
@@ -96,9 +96,9 @@ describe('InsertLocationData', () => {
         organization_database: 'test_db',
         listTable: 'list_test_table',
         list_name: 'test_table',
-        templateId: 1,
+        template_id: 1,
         path: 'path',
-        userId: 1,
+        user_id: 1,
       },
       geojson: {
         type: 'FeatureCollection',

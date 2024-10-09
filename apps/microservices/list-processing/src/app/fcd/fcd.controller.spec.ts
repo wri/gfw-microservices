@@ -2,7 +2,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { FCDController } from './fcd.controller';
 import { FCDService } from './fcd.service';
 import { INestApplication } from '@nestjs/common';
-import * as supertest from 'supertest';
+import supertest from 'supertest';
 
 describe('FCDController', () => {
   let controller: FCDController;

@@ -1,7 +1,7 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { Cron } from '@nestjs/schedule';
 import { UnlockListService } from './unlock.list.service';
-import * as moment from 'moment';
+import moment from 'moment';
 
 @Injectable()
 export class Task {

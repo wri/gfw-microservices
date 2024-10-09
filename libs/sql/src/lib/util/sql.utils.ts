@@ -15,8 +15,12 @@ export class SQLUtils {
   connection: sql.ConnectionPool;
   databaseName: string;
 
-  constructor(config: sql.config) {
-    this.config = config;
+  constructor(config?: sql.config) {
+    if (config) {
+      this.config = config;
+    } else {
+      this.config = SQL_CONFIG;
+    }
   }
 
   async connect(database: string = this.config.database): Promise<void> {
@@ -88,7 +92,7 @@ export class SQLUtils {
     queryName: string,
     parameters?: ParameterType[]
   ): Promise<T> {
-    const connection = new SQLUtils({ ...SQL_CONFIG, database: databaseName });
+    const connection = new SQLUtils();
     await connection.connect();
     try {
       const isSystemQuery = databaseName === SQL_CONFIG.database;

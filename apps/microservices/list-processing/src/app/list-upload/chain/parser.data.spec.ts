@@ -1,63 +1,49 @@
-import { ListSchema } from './list.schema';
-import { getListByFilters } from '@wri-monorepos/sql';
+import { Test, TestingModule } from '@nestjs/testing';
+import { ParserData } from './parser.data';
+import { Logger } from '@nestjs/common';
+import * as fs from 'fs';
+import { csv2geojson } from '../parser/csv2geojson.parser';
 import { AbstractHandler, ChainType } from './types';
 
-// Mock the getListByFilters function
-jest.mock('@wri-monorepos/sql', () => ({
-  getListByFilters: jest.fn(),
-}));
+jest.mock('fs');
+jest.mock('../parser/csv2geojson.parser');
 
-describe('ListSchema', () => {
-  let listSchema: ListSchema;
-  let mockInput: ChainType;
+describe('ParserData', () => {
+  let parserData: ParserData;
+  beforeEach(async () => {
+    const module: TestingModule = await Test.createTestingModule({
+      providers: [ParserData, Logger],
+    }).compile();
 
-  beforeEach(() => {
-    listSchema = new ListSchema();
-    mockInput = {
-      request: {
-        list_name: 'Test List',
-        organization_database: 'test_db',
-        userId: 0,
-        templateId: 0,
-        path: '',
-      },
-    };
+    parserData = module.get<ParserData>(ParserData);
   });
 
-  it('should throw an error if the list name already exists', async () => {
-    // Mock the getListByFilters function to return a truthy value
-    (getListByFilters as jest.Mock).mockResolvedValue(true);
-
-    await expect(listSchema.handle(mockInput)).rejects.toThrow(
-      'List name Test List already exists.'
-    );
+  afterEach(() => {
+    jest.clearAllMocks();
   });
 
-  it('should call the super handle method with the correct parameters if the list name does not exist', async () => {
-    // Mock the getListByFilters function to return a falsy value
-    (getListByFilters as jest.Mock).mockResolvedValue(false);
+  describe('handle', () => {
+    it('should parse CSV content and pass GeoJSON to the next handler', async () => {
+      const fileDownloadedPath = 'path/to/file.csv';
+      const csvContent = 'csv content';
+      const geoJson = { type: 'FeatureCollection', features: [] };
+      const input: ChainType = {
+        request: { fileDownloadedPath, organization_database: 'test', path: 'test' },
+      };
 
-    // Mock the super handle method
-    const superHandleSpy = jest
-      .spyOn(AbstractHandler.prototype, 'handle')
-      .mockImplementation(() => Promise.resolve());
+      (fs.readFileSync as jest.Mock).mockReturnValue(csvContent);
+      (csv2geojson as jest.Mock).mockResolvedValue(geoJson);
+      jest.spyOn(parserData, 'deleteFile').mockImplementation();
+      jest
+        .spyOn(AbstractHandler.prototype, 'handle')
+        .mockResolvedValue({ ...input, geojson: geoJson });
 
-    await listSchema.handle(mockInput);
+      const result = await parserData.handle(input);
 
-    expect(superHandleSpy).toHaveBeenCalledWith({
-      ...mockInput,
-      request: {
-        ...mockInput.request,
-        listTable: 'list-testlist',
-        analysisTable: 'analysis-testlist',
-        listStatusId: 1,
-        locationClassification: 'Property',
-        customAttributeNames: '',
-        customAttributeTypes: '',
-      },
+      expect(fs.readFileSync).toHaveBeenCalledWith(fileDownloadedPath, 'utf8');
+      expect(csv2geojson).toHaveBeenCalledWith(csvContent);
+      expect(parserData.deleteFile).toHaveBeenCalledWith(fileDownloadedPath);
+      expect(result).toEqual({ ...input, geojson: geoJson });
     });
-
-    // Restore the original implementation of the super handle method
-    superHandleSpy.mockRestore();
   });
 });

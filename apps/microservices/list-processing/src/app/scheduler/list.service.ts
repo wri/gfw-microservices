@@ -1,6 +1,6 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { ClientStoreConnection, Lists, Organization } from '@wri-monorepos/sql';
-import * as moment from 'moment';
+import moment from 'moment';
 
 @Injectable()
 export class ListService {

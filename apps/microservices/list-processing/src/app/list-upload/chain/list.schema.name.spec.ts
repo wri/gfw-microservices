@@ -1,4 +1,4 @@
-import { ListSchema } from './list.schema';
+import { ListSchemaName } from './list.schema.name';
 import { AbstractHandler, ChainType } from './types';
 import { getListByFilters } from '@wri-monorepos/sql';
 import * as sqlite3 from 'sqlite3';
@@ -9,7 +9,7 @@ jest.mock('@wri-monorepos/sql', () => ({
 }));
 
 describe('ListSchema', () => {
-  let listSchema: ListSchema;
+  let listSchema: ListSchemaName;
   let db: Database;
 
   beforeAll(async () => {
@@ -28,7 +28,7 @@ describe('ListSchema', () => {
   });
 
   beforeEach(() => {
-    listSchema = new ListSchema();
+    listSchema = new ListSchemaName();
   });
 
   afterAll(async () => {
@@ -47,10 +47,10 @@ describe('ListSchema', () => {
 
     const input: ChainType = {
       request: {
-        userId: 1,
+        user_id: 1,
         list_name: listName,
         organization_database: 'test-db',
-        templateId: 1,
+        template_id: 1,
         path: 'path',
       },
     };
@@ -68,10 +68,10 @@ describe('ListSchema', () => {
 
     const input: ChainType = {
       request: {
-        userId: 1,
+        user_id: 1,
         list_name: listName,
         organization_database: 'test-db',
-        templateId: 1,
+        template_id: 1,
         path: 'path',
       },
     };

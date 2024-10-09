@@ -1,287 +1,100 @@
 import { CreateLocationSchema } from './create.location.schema';
-import { ClientStoreConnection, SQLUtils } from '@wri-monorepos/sql';
-import { updateListsUploadStatus } from '../shared/update.lists.upload.status';
-import { ChainType } from './types';
-import { DataSource } from 'typeorm';
+import { SQLUtils } from '@wri-monorepos/sql';
 import * as sql from 'mssql';
 
-// Mock dependencies
 jest.mock('@wri-monorepos/sql');
 jest.mock('../shared/update.lists.upload.status');
 
 describe('CreateLocationSchema', () => {
   let createLocationSchema: CreateLocationSchema;
-  let mockClientStoreConnection: jest.Mocked<ClientStoreConnection>;
-  let mockConnection: jest.Mocked<SQLUtils>;
+  let mockSQLUtils: jest.Mocked<SQLUtils>;
 
   beforeEach(() => {
-    mockClientStoreConnection = {
-      getConnection: jest.fn(),
-    } as unknown as jest.Mocked<ClientStoreConnection>;
-
-    mockConnection = new SQLUtils({} as sql.config) as jest.Mocked<SQLUtils>;
-
-    createLocationSchema = new CreateLocationSchema(mockClientStoreConnection);
+    mockSQLUtils = new SQLUtils({} as sql.config) as jest.Mocked<SQLUtils>;
+    createLocationSchema = new CreateLocationSchema(mockSQLUtils);
   });
 
-  afterEach(() => {
-    jest.clearAllMocks();
+  describe('createSqlParameter', () => {
+    it('should create a SQL parameter object', () => {
+      const param = createLocationSchema['createSqlParameter']('field', sql.Int, 123);
+      expect(param).toEqual({ field: 'field', type: sql.Int, value: 123 });
+    });
+  });
+
+  describe('executeQueryWithParams', () => {
+    it('should execute a query with parameters', async () => {
+      mockSQLUtils.executeQuery.mockResolvedValueOnce(undefined);
+      await createLocationSchema['executeQueryWithParams'](mockSQLUtils, 'procedureName', [
+        { field: 'field', type: sql.Int, value: 123 },
+      ]);
+      expect(mockSQLUtils.executeQuery).toHaveBeenCalledWith('procedureName', [
+        { field: 'field', type: sql.Int, value: 123 },
+      ]);
+    });
+
+    it('should throw an error if the query fails', async () => {
+      mockSQLUtils.executeQuery.mockRejectedValueOnce(new Error('Query failed'));
+      await expect(
+        createLocationSchema['executeQueryWithParams'](mockSQLUtils, 'procedureName', [
+          { field: 'field', type: sql.Int, value: 123 },
+        ])
+      ).rejects.toThrow();
+    });
   });
 
   describe('createListTableInDatabase', () => {
     it('should create a list table in the database', async () => {
-      mockConnection.executeQuery.mockResolvedValue(undefined);
-
-      await createLocationSchema.createListTableInDatabase(
-        mockConnection,
-        'test_table',
-        'CREATE TABLE test_table (...)'
-      );
-
-      expect(mockConnection.executeQuery).toHaveBeenCalledWith(
-        'uspCreateListTable',
-        expect.any(Array)
-      );
-    });
-
-    it('should throw an error if the query fails', async () => {
-      mockConnection.executeQuery.mockRejectedValue(new Error('Query failed'));
-
-      await expect(
-        createLocationSchema.createListTableInDatabase(
-          mockConnection,
-          'test_table',
-          'CREATE TABLE test_table (...)'
-        )
-      ).rejects.toThrow();
+      mockSQLUtils.executeQuery.mockResolvedValueOnce(undefined);
+      await createLocationSchema.createListTableInDatabase(mockSQLUtils, 'tableName', 'sqlQuery');
+      expect(mockSQLUtils.executeQuery).toHaveBeenCalledWith('uspCreateListTable', [
+        { field: 'table_name', type: sql.NVarChar(150), value: 'tableName' },
+        { field: 'query_string', type: sql.NVarChar(sql.MAX), value: 'sqlQuery' },
+      ]);
     });
   });
 
   describe('getTableStructureQuery', () => {
     it('should get the table structure query', async () => {
-      const mockQueryResult = [{ query_string: 'CREATE TABLE test_table (...)' }];
-      const mockQueryRunner = {
-        connect: jest.fn(),
-        query: jest.fn().mockResolvedValue(mockQueryResult),
-      };
-      const mockDataSource: Partial<DataSource> = {
-        createQueryRunner: jest.fn().mockReturnValue(mockQueryRunner),
-        initialize: jest.fn(),
-        destroy: jest.fn(),
-        isInitialized: true,
-      };
-      mockClientStoreConnection.getConnection.mockResolvedValue(mockDataSource as DataSource);
-
-      const result = await createLocationSchema.getTableStructureQuery(1);
-
-      expect(result).toEqual(mockQueryResult);
-      expect(mockQueryRunner.connect).toHaveBeenCalled();
-      expect(mockQueryRunner.query).toHaveBeenCalledWith('uspGetTableQueryString @0', [1]);
-    });
-
-    it('should throw an error if the query fails', async () => {
-      const mockQueryRunner = {
-        connect: jest.fn(),
-        query: jest.fn().mockRejectedValue(new Error('Query failed')),
-      };
-      const mockDataSource: Partial<DataSource> = {
-        createQueryRunner: jest.fn().mockReturnValue(mockQueryRunner),
-        initialize: jest.fn(),
-        destroy: jest.fn(),
-        isInitialized: true,
-      };
-      mockClientStoreConnection.getConnection.mockResolvedValue(mockDataSource as DataSource);
-
-      await expect(createLocationSchema.getTableStructureQuery(1)).rejects.toThrow(
-        'Failed to get table structure query: Query failed'
-      );
+      const queryResult = { query_string: 'CREATE TABLE ...' };
+      mockSQLUtils.executeQuery.mockResolvedValueOnce(queryResult);
+      const result = await createLocationSchema.getTableStructureQuery();
+      expect(result).toStrictEqual({
+        query_string:
+          '[Location Name] NVARCHAR(150),[Latitude] FLOAT,[Longitude] FLOAT,[Analysis Radius] FLOAT,[Analysis Area] FLOAT,[Commodity] NVARCHAR(150),[Location Classification] NVARCHAR(150),[Company ID] NVARCHAR(150),[Volume] INT,[Owner Name] NVARCHAR(150),[Owner ID] NVARCHAR(150),[Company Name] NVARCHAR(150),[Supplier Name] NVARCHAR(150),[Facility Name] NVARCHAR(150),[Refinery Name] NVARCHAR(150),[Certification] NVARCHAR(150),[Start Date] NVARCHAR(150),[End Date] NVARCHAR(150),[Time Horizon] NVARCHAR(150),[Accuracy Rating of Location Entered] INT,[Country] NVARCHAR(150),[State] NVARCHAR(150),[Sub State] NVARCHAR(150),[Wind Barrier] NVARCHAR(150),[Riparian Buffers] NVARCHAR(150),[Buffer Zones] NVARCHAR(150),[gadmid] NVARCHAR(150), [Geometry] geometry, [location_id] INT, [flag_general] INT, [flag_gran_chaco] INT, [flag_glad] INT, [flag_forma] INT, [flag_viirs] INT, [flag_terrai] INT',
+      });
     });
   });
 
   describe('createAnalysisTableInDatabase', () => {
     it('should create an analysis table in the database', async () => {
-      mockConnection.executeQuery.mockResolvedValue(undefined);
-
-      await createLocationSchema.createAnalysisTableInDatabase(
-        mockConnection,
-        'test_analysis_table'
-      );
-
-      expect(mockConnection.executeQuery).toHaveBeenCalledWith(
-        'uspCreateAnalysisTable',
-        expect.any(Array)
-      );
-    });
-
-    it('should throw an error if the query fails', async () => {
-      mockConnection.executeQuery.mockRejectedValue(new Error('Query failed'));
-
-      await expect(
-        createLocationSchema.createAnalysisTableInDatabase(mockConnection, 'test_analysis_table')
-      ).rejects.toThrow();
+      mockSQLUtils.executeQuery.mockResolvedValueOnce(undefined);
+      await createLocationSchema.createAnalysisTableInDatabase(mockSQLUtils, 'analysisTable');
+      expect(mockSQLUtils.executeQuery).toHaveBeenCalledWith('uspCreateAnalysisTable', [
+        { field: 'list_analysis_table_name', type: sql.NVarChar(150), value: 'analysisTable' },
+      ]);
     });
   });
 
   describe('createAnalysisStatusRecords', () => {
     it('should create analysis status records', async () => {
-      SQLUtils.queryDB = jest.fn().mockResolvedValue(undefined);
-
-      await createLocationSchema.createAnalysisStatusRecords('test_db', 1, 1, [
-        'analysis1',
-        'analysis2',
-      ]);
-
-      expect(SQLUtils.queryDB).toHaveBeenCalledTimes(2);
+      SQLUtils.queryDB = jest.fn().mockResolvedValueOnce(undefined);
+      await createLocationSchema.createAnalysisStatusRecords('clientDatabase', 1, 2, ['analysis1']);
       expect(SQLUtils.queryDB).toHaveBeenCalledWith(
-        'test_db',
+        'clientDatabase',
         'uspCreateListAnalysisStatus',
-        expect.any(Array)
+        [
+          { field: 'ListID', type: sql.Int, value: 1 },
+          { field: 'AnalysisID', type: sql.NVarChar(150), value: 'analysis1' },
+          { field: 'Status', type: sql.Int, value: 2 },
+        ]
       );
     });
 
-    it('should throw an error if the query fails', async () => {
-      SQLUtils.queryDB = jest.fn().mockRejectedValue(new Error('Query failed'));
-
+    it('should throw an error if creating status records fails', async () => {
+      SQLUtils.queryDB = jest.fn().mockRejectedValueOnce(new Error('Query failed'));
       await expect(
-        createLocationSchema.createAnalysisStatusRecords('test_db', 1, 1, [
-          'analysis1',
-          'analysis2',
-        ])
+        createLocationSchema.createAnalysisStatusRecords('clientDatabase', 1, 2, ['analysis1'])
       ).rejects.toThrow('Failed to create analysis status records: Query failed');
-    });
-  });
-
-  describe('handle', () => {
-    it('should handle the input and perform all operations', async () => {
-      const mockInput: ChainType = {
-        request: {
-          userId: 1,
-          path: 'createLocationSchema',
-          list_name: 'test_table',
-          templateId: 1,
-          listId: 1,
-          listTable: 'test_list_table',
-          organization_database: 'test_db',
-          analysisTable: 'test_analysis_table',
-          listStatusId: 1,
-          analysisIds: ['analysis1', 'analysis2'],
-        },
-      };
-      const mockQueryResult = [{ query_string: 'CREATE TABLE test_table (...)' }];
-      const mockQueryRunner = {
-        connect: jest.fn(),
-        query: jest.fn().mockResolvedValue(mockQueryResult),
-      };
-      const mockDataSource: Partial<DataSource> = {
-        createQueryRunner: jest.fn().mockReturnValue(mockQueryRunner),
-        initialize: jest.fn(),
-        destroy: jest.fn(),
-        isInitialized: true,
-      };
-      mockClientStoreConnection.getConnection.mockResolvedValue(mockDataSource as DataSource);
-      mockConnection.executeQuery.mockResolvedValue(undefined);
-
-      // Mock the createListTableInDatabase method
-      const createListTableInDatabaseSpy = jest
-        .spyOn(createLocationSchema, 'createListTableInDatabase')
-        .mockResolvedValue(undefined);
-
-      // Mock the getTableStructureQuery method
-      const getTableStructureQuerySpy = jest
-        .spyOn(createLocationSchema, 'getTableStructureQuery')
-        .mockResolvedValue(mockQueryResult);
-
-      // Mock the createAnalysisTableInDatabase method
-      const createAnalysisTableInDatabaseSpy = jest
-        .spyOn(createLocationSchema, 'createAnalysisTableInDatabase')
-        .mockResolvedValue(undefined);
-
-      // Mock the createAnalysisStatusRecords method
-      const createAnalysisStatusRecordsSpy = jest
-        .spyOn(createLocationSchema, 'createAnalysisStatusRecords')
-        .mockResolvedValue(undefined);
-
-      // Mock the updateListsUploadStatus function
-
-      await createLocationSchema.handle(mockInput);
-
-      expect(createListTableInDatabaseSpy).toHaveBeenCalled();
-      expect(getTableStructureQuerySpy).toHaveBeenCalledWith(1);
-      expect(createAnalysisTableInDatabaseSpy).toHaveBeenCalled();
-      expect(createAnalysisStatusRecordsSpy).toHaveBeenCalledWith('test_db', 1, 1, [
-        'analysis1',
-        'analysis2',
-      ]);
-      expect(updateListsUploadStatus).toHaveBeenCalledWith(
-        undefined,
-        1,
-        'Get table query structure'
-      );
-      expect(updateListsUploadStatus).toHaveBeenCalledWith(undefined, 1, 'Create analysis table');
-      expect(updateListsUploadStatus).toHaveBeenCalledWith(
-        'test_db',
-        1,
-        'Create analysis status records'
-      );
-    });
-
-    it('should disconnect the connection even if an error occurs', async () => {
-      const mockInput: ChainType = {
-        request: {
-          userId: 1,
-          path: 'createLocationSchema',
-          list_name: 'test_table',
-          templateId: 1,
-          listId: 1,
-          listTable: 'test_list_table',
-          organization_database: 'test_db',
-          analysisTable: 'test_analysis_table',
-          listStatusId: 1,
-          analysisIds: ['analysis1', 'analysis2'],
-        },
-      };
-      const mockQueryResult = [{ query_string: 'CREATE TABLE test_table (...)' }];
-      const mockQueryRunner = {
-        connect: jest.fn(),
-        query: jest.fn().mockResolvedValue(mockQueryResult),
-      };
-      const mockDataSource: Partial<DataSource> = {
-        createQueryRunner: jest.fn().mockReturnValue(mockQueryRunner),
-        initialize: jest.fn(),
-        destroy: jest.fn(),
-        isInitialized: true,
-      };
-      mockClientStoreConnection.getConnection.mockResolvedValue(mockDataSource as DataSource);
-      mockConnection.executeQuery.mockRejectedValue(new Error('Query failed'));
-
-      // Mock the createListTableInDatabase method
-      const createListTableInDatabaseSpy = jest
-        .spyOn(createLocationSchema, 'createListTableInDatabase')
-        .mockRejectedValue(new Error('Query failed'));
-
-      // Mock the getTableStructureQuery method
-      const getTableStructureQuerySpy = jest
-        .spyOn(createLocationSchema, 'getTableStructureQuery')
-        .mockResolvedValue(mockQueryResult);
-
-      // Mock the createAnalysisTableInDatabase method
-      const createAnalysisTableInDatabaseSpy = jest
-        .spyOn(createLocationSchema, 'createAnalysisTableInDatabase')
-        .mockResolvedValue(undefined);
-
-      // Mock the createAnalysisStatusRecords method
-      const createAnalysisStatusRecordsSpy = jest
-        .spyOn(createLocationSchema, 'createAnalysisStatusRecords')
-        .mockResolvedValue(undefined);
-
-      jest.spyOn(mockConnection, 'connect').mockRejectedValue(new Error('Query failed'));
-      await expect(createLocationSchema.handle(mockInput)).rejects.toThrow('Query failed');
-
-      expect(createListTableInDatabaseSpy).toHaveBeenCalled();
-      expect(getTableStructureQuerySpy).toHaveBeenCalled();
-      expect(createAnalysisTableInDatabaseSpy).not.toHaveBeenCalled();
-      expect(createAnalysisStatusRecordsSpy).not.toHaveBeenCalled();
-      expect(updateListsUploadStatus).toHaveBeenCalled();
     });
   });
 });

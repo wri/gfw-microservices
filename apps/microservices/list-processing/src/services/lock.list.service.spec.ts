@@ -28,7 +28,7 @@ describe('Lock List Service', () => {
   let listsRepository: Repository<Lists>;
   let lockListService: LockListService;
 
-  beforeAll(async () => {
+  beforeEach(async () => {
     process.env.NODE_ENV = 'test';
     process.env.MSSQL_DATABASE = ':memory:';
     process.env.MSSQL_USERNAME = 'test';

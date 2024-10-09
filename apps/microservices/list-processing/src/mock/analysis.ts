@@ -10,7 +10,7 @@ import {
 } from '@wri-monorepos/sql';
 import { EntitySchema, In } from 'typeorm';
 import { mockData } from './data';
-import * as moment from 'moment';
+import moment from 'moment';
 
 const repository = async (organizationDatabase: string, listId: number) => {
   const clientStoreConnection = new ClientStoreConnection();

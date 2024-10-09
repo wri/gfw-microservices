@@ -170,7 +170,7 @@ export class ListMessageController {
 
   @Post('download')
   @UsePipes(ZodValidationPipe)
-  async download(@Body() body: ListFieldsFileRequest) {
+  async download(@Body() body: BasicFieldsFileRequest) {
     this.logger.log('List message received', body);
     this.pipeService.makeFile(body);
     return body;

@@ -23,6 +23,8 @@ export class StartAnalysisService {
   ) {}
 
   async run(request: RequestLargeListProcess): Promise<ResponseLargeListProcess> {
+    const { organization_database: organizationDatabase } = request;
+
     const chainType: ChainType = {
       request,
       geojson: {
@@ -32,7 +34,7 @@ export class StartAnalysisService {
     };
 
     const connection = new SQLUtils();
-    await connection.connect();
+    await connection.connect(organizationDatabase);
 
     const downloadS3File = new DownloadS3File(this.s3Service, this.config);
     const parseData = new ParserData();

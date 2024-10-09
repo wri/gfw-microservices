@@ -3,7 +3,6 @@ import { AbstractHandler, ChainType } from './types';
 import { CreateListResult } from '@wri-monorepos/geo';
 import * as sql from 'mssql';
 import { updateListsUploadStatus } from '../shared/update.lists.upload.status';
-import { sqlConfig } from '../shared/config';
 
 export class CreateListLevelData extends AbstractHandler<ChainType> {
   private createSqlParameter(
@@ -85,13 +84,10 @@ export class CreateListLevelData extends AbstractHandler<ChainType> {
       template_id: templateId,
     } = input.request;
 
-    const connection = new SQLUtils({
-      ...sqlConfig,
-      database: clientDatabase,
-    });
+    const connection = new SQLUtils();
 
     try {
-      await connection.connect();
+      await connection.connect(clientDatabase);
 
       const createListResult = await this.insertListInListTable(
         connection,

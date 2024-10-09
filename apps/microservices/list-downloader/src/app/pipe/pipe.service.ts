@@ -7,7 +7,6 @@ import { createDirectory } from '../shared/file.utils';
 import { AccountUsersAnalysisUsageFileService } from './account-users-usage.generator.service';
 import { AlertsGeneratorService } from './alerts.generator.service';
 import { ReadmeService } from '../files/readme.service';
-import { InputService, ResultService, ShapefileService } from '../files';
 
 @Injectable({
   scope: Scope.REQUEST,
@@ -23,8 +22,6 @@ export class PipeService {
     private readonly clientStoreConnection: ClientStoreConnection,
     private readonly readmeService: ReadmeService,
     private readonly shapefileService: ShapefileService,
-    private readonly resultService: ResultService,
-    private readonly inputService: InputService
   ) {}
 
   public async makeFile(filters: BasicFieldsFileRequest) {
@@ -87,6 +84,7 @@ export class PipeService {
       southAmericaTCL: this.listGeneratorService,
       southEastAsiaOverlap: this.listGeneratorService,
       southEastAsiaTCL: this.listGeneratorService,
+      ['afi-vc']: this.afiVcGeneratorService,
     };
   };
 
@@ -97,12 +95,4 @@ export class PipeService {
     this.logger.log(`(${listId}) - Create directory: ${dir}`);
     createDirectory(dir);
   };
-
-  public async makeGeoJsonFile(filters: BasicFieldsFileRequest) {
-    await this.shapefileService.start(filters);
-
-    await this.shapefileService.finish(filters);
-
-    return true;
-  }
 }

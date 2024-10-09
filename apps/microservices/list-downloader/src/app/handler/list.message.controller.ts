@@ -172,16 +172,7 @@ export class ListMessageController {
   @UsePipes(ZodValidationPipe)
   async download(@Body() body: ListFieldsFileRequest) {
     this.logger.log('List message received', body);
-    if (body.type.includes('-vc')) {
-      body.type = body.type.split('-vc')[0];
-      await this.pipeService.makeFile(body);
-      const listFieldsFileRequest: ListFieldsFileRequest = body as ListFieldsFileRequest;
-      listFieldsFileRequest.combinedColumnsSplitted = [];
-      await this.pipeService.makeGeoJsonFile(listFieldsFileRequest);
-    } else {
-      this.pipeService.makeFile(body);
-    }
-
+    this.pipeService.makeFile(body);
     return body;
   }
 }

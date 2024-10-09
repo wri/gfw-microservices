@@ -15,8 +15,27 @@ export class SQLUtils {
   connection: sql.ConnectionPool;
   databaseName: string;
 
-  constructor(config: sql.config) {
-    this.config = config;
+  constructor(config?: sql.config) {
+    if (config) {
+      this.config = config;
+    } else {
+      this.config = {
+        user: process.env.MSSQL_USERNAME,
+        password: process.env.MSSQL_PASSWORD,
+        database: process.env.MSSQL_DATABASE,
+        server: process.env.MSSQL_HOSTNAME,
+        pool: {
+          max: 10,
+          min: 0,
+          idleTimeoutMillis: 30000,
+        },
+        port: parseInt(process.env.MSSQL_PORT),
+        options: {
+          trustServerCertificate: true,
+        },
+        requestTimeout: 600000,
+      };
+    }
   }
 
   async connect(database: string = this.config.database): Promise<void> {
@@ -88,7 +107,7 @@ export class SQLUtils {
     queryName: string,
     parameters?: ParameterType[]
   ): Promise<T> {
-    const connection = new SQLUtils({ ...SQL_CONFIG, database: databaseName });
+    const connection = new SQLUtils();
     await connection.connect();
     try {
       const isSystemQuery = databaseName === SQL_CONFIG.database;

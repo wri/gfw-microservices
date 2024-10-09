@@ -130,7 +130,7 @@ export class GADMService extends AbstractHandler<ChainType> {
           const { bucket, key, errorMessage } = JSON.parse(Payload);
 
           if (errorMessage) {
-            console.log(errorMessage);
+            this.logger.log(errorMessage);
             throw new Error('Has error property');
           }
 
@@ -142,7 +142,7 @@ export class GADMService extends AbstractHandler<ChainType> {
           resolve(s3Object);
         })
         .catch((e) => {
-          console.log(e);
+          this.logger.log(e);
           reject(e);
         });
     });

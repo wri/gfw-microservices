@@ -31,24 +31,7 @@ export class StartAnalysisService {
       },
     };
 
-    const { organization_database } = request;
-    const databaseConfig = {
-      user: process.env.MSSQL_USERNAME,
-      password: process.env.MSSQL_PASSWORD,
-      database: organization_database,
-      server: process.env.MSSQL_HOSTNAME,
-      pool: {
-        max: 10,
-        min: 0,
-        idleTimeoutMillis: 30000,
-      },
-      port: parseInt(process.env.MSSQL_PORT),
-      options: {
-        trustServerCertificate: true,
-      },
-      requestTimeout: 600000,
-    };
-    const connection = new SQLUtils(databaseConfig);
+    const connection = new SQLUtils();
     await connection.connect();
 
     const downloadS3File = new DownloadS3File(this.s3Service, this.config);

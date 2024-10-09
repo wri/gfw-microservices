@@ -322,6 +322,7 @@ export default class GFWListFilter extends Component {
                 options={multiOptions}
                 value={selectedNames}
                 styles={multipleSelectStyles}
+                placeholder="LOCATIONS"
               />
             </Grid>
             <Grid

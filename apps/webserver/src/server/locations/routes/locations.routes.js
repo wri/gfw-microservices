@@ -806,7 +806,7 @@ module.exports = (app, limiter) => {
             return res.send({
               list_analysis: [],
               location_analyses: [],
-              total_rows: 0,
+              numberOfResults: 0,
             });
           }
           const numberOfPages =
@@ -816,7 +816,7 @@ module.exports = (app, limiter) => {
               return res.send({
                 list_analysis: listAnalyses,
                 location_analyses: [locationAttributeList, locationAnalysisArray],
-                total_rows: count,
+                numberOfResults: count,
                 numberOfPages,
               });
             })

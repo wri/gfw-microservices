@@ -318,6 +318,11 @@ export default class SouthAmericaRegionsWithoutArgentina extends Component {
               style: {
                 color: (Highcharts.theme && Highcharts.theme.contrastTextColor) || 'black',
               },
+              filter: {
+                property: 'percentage',
+                operator: '>',
+                value: 1,
+              },
             },
           },
         },

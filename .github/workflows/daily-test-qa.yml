@@ -21,18 +21,18 @@ jobs:
 
     steps:
       - name: Checkout code
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
         with:
           fetch-depth: 0
           ssh-key: '${{ secrets.DEPLOY_KEY }}'
 
       - name: Use Node.js ${{ matrix.node-version }}
-        uses: actions/setup-node@v3
+        uses: actions/setup-node@v4
         with:
           node-version: ${{ matrix.node-version }}
 
       - name: Cache node modules
-        uses: actions/cache@v3
+        uses: actions/cache@v4
         with:
           path: node_modules
           key: ${{ runner.OS }}-build-${{ hashFiles('**/package-lock.json') }}
@@ -64,3 +64,17 @@ jobs:
             "username": "GitHub Actions",
             "icon_emoji": ":octocat:"
           }' $SLACK_E2E_TEST_WEBHOOK_URL
+
+      - name: Upload log file
+        if: failure() || success()
+        uses: actions/upload-artifact@v4
+        with:
+          name: test-log-${{ github.run_id }}-$(date +'%Y-%m-%d')
+          path: test-output.log
+
+      - name: Upload videos of tests failed
+        uses: actions/upload-artifact@v4
+        if: failure()
+        with:
+          name: cypress-videos
+          path: cypress/videos

@@ -19,6 +19,7 @@ import {
   updateSelectedAndVisibleLocations,
   updateInfoBubbleCache,
   updatePopoverState,
+  toggleDeforestationDisplayFormat,
 } from './locationReducer';
 import { combineReducers } from 'redux';
 
@@ -43,6 +44,7 @@ const appReducer = combineReducers({
   selectedAndVisibleLocations: updateSelectedAndVisibleLocations,
   infoBubbleCache: updateInfoBubbleCache,
   popover: updatePopoverState,
+  deforestationDisplayFormat: toggleDeforestationDisplayFormat,
 });
 
 const rootReducer = (state, action) => {

@@ -53,8 +53,6 @@ export default class EditList extends Component {
       .fetchJSON('/locations/unlockList', { list_id })
       .then(() => {
         store.dispatch(changeView('lists'));
-        const { history } = this.props;
-        history.push('/lists');
       })
       .catch(() => {
         this.setState({
@@ -506,7 +504,7 @@ export default class EditList extends Component {
     const defaultAction = refreshPage ? this.shouldRefresh : this.shouldCloseDialog;
 
     return (
-      <div className={`locations-body ${this.props.view === 'edit' ? '' : 'hidden'}`}>
+      <div className="locations-body">
         <CustomDialog
           open={dialogOpen}
           closeAction={this.shouldCloseDialog}
@@ -546,7 +544,6 @@ export default class EditList extends Component {
           addType={this.props.addType}
           commodityType={this.state.commodityType}
           selectedLists={this.props.selectedLists}
-          view={this.props.view}
         />
 
         <section className="buttons-container">

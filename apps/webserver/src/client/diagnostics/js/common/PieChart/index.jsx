@@ -13,13 +13,13 @@ function PieChart({
   title,
   informationBubbleId,
   preview = false,
-  hasSubLayers,
+  hasSecondarySubLayers,
 }) {
-  const chartLabel = hasSubLayers ? chartLabels?.subLayers : chartLabels;
+  const chartLabel = hasSecondarySubLayers ? chartLabels?.subLayers : chartLabels;
 
   const sumOfAreasByChartLabel = chartLabel?.reduce((sum, { id }) => sum + (data?.[id] || 0), 0);
 
-  if (!sumOfAreasByChartLabel && !hasSubLayers) return <></>;
+  if (!sumOfAreasByChartLabel && !hasSecondarySubLayers) return <></>;
 
   return (
     <>
@@ -32,9 +32,13 @@ function PieChart({
         <CardContent>
           <div className="diagnostics-chart-container" data-testid="pie-chart">
             <div className="diagnostics-chart-container__chart">
-              <Chart data={data} chartLabels={chartLabel} hasSubLayers={hasSubLayers} />
+              <Chart
+                data={data}
+                chartLabels={chartLabel}
+                hasSecondarySubLayers={hasSecondarySubLayers}
+              />
             </div>
-            {hasSubLayers ? (
+            {hasSecondarySubLayers ? (
               <div className="chart-legends-table">
                 <table>
                   <thead>

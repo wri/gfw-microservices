@@ -26,6 +26,7 @@ import {
   UPDATE_BUBBLE_DATA,
   UPDATE_POPOVER_ANCHOR,
   UPDATE_SELECTED_LIST,
+  DEFORESTATION_DISPLAY_FORMAT,
 } from '../constants/actionTypes';
 
 export function changeView(data) {
@@ -138,4 +139,8 @@ export function updatePopoverAnchorEl(anchorEl) {
 
 export function setLanguage(data) {
   return { type: SET_LANGUAGE, data };
+}
+
+export function toggleDeforestationDisplayFormat(data) {
+  return { type: DEFORESTATION_DISPLAY_FORMAT, data };
 }

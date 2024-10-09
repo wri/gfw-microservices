@@ -5,9 +5,9 @@
   justify-content: start;
   flex-wrap: wrap;
   &__chart {
-    width: 50%;
+    flex: 1;
+    min-width: 500px;
     padding-top: 17px;
-    margin: auto;
   }
   > div {
     canvas {

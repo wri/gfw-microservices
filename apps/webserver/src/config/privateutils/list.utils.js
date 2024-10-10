@@ -317,7 +317,7 @@ const uploadBulkLocations = (req, list_id, list_name, geojson, commodity, attrib
         const errorObject = errorUtils.createErrorMessage(
           req,
           errorUtils.ERROR_CODES.failedToAppendList,
-          `Failed to append to ${list.table_name}`,
+          `Failed to append to ${list.list_table}`,
           errorMessage
         );
         reject(errorObject);

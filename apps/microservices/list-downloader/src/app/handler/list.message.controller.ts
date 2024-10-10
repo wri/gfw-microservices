@@ -9,10 +9,7 @@ import {
   BadRequestException,
   PipeTransform,
 } from '@nestjs/common';
-import {
-  AlertsTimeframes,
-  BasicFieldsFileRequest,
-} from '@wri-monorepos/sql';
+import { AlertsTimeframes, BasicFieldsFileRequest } from '@wri-monorepos/sql';
 import { PipeService } from '../pipe/pipe.service';
 import { z } from 'zod';
 

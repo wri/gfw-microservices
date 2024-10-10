@@ -374,7 +374,7 @@ class Landing extends Component {
                 {isUploadListUiAvailable && (
                   <Button
                     className="side-panel__button"
-                    label="New Location Upload"
+                    label="Add locations (alpha)"
                     icon={<IconPlus height="10px" />}
                     onClick={() => {
                       const { history } = this.props;

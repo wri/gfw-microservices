@@ -25,7 +25,7 @@ body:has(.new-location-upload) {
       color: #404041;
     }
 
-    svg:last-of-type {
+    > svg:last-of-type {
       color: #b3b3b3;
       font-size: 0.75rem;
     }

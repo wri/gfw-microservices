@@ -93,7 +93,7 @@ export class SQLUtils {
     parameters?: ParameterType[]
   ): Promise<T> {
     const connection = new SQLUtils();
-    await connection.connect();
+    await connection.connect(databaseName);
     try {
       const isSystemQuery = databaseName === SQL_CONFIG.database;
       const queryStr = getQueryStr(isSystemQuery, queryName);

@@ -6,8 +6,8 @@ import { MAX_NUMBER_OF_ROWS_PER_PAGE } from '../shared/constants';
 import { AccountUsersAnalysisUsageFileService } from './account-users-usage.generator.service';
 import { AlertsGeneratorService } from './alerts.generator.service';
 import { ReadmeService } from '../files/readme.service';
-import { createDirectory } from '../shared/file.utils'
-import {AfiVcGeneratorService} from './afi.vc.generator.service';
+import { createDirectory } from '../shared/file.utils';
+import { AfiVcGeneratorService } from './afi.vc.generator.service';
 
 @Injectable({
   scope: Scope.REQUEST,

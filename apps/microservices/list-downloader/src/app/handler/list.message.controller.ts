@@ -12,7 +12,6 @@ import {
 import {
   AlertsTimeframes,
   BasicFieldsFileRequest,
-  ListFieldsFileRequest,
 } from '@wri-monorepos/sql';
 import { PipeService } from '../pipe/pipe.service';
 import { z } from 'zod';

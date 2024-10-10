@@ -8,7 +8,7 @@ import TimelineIcon from '@mui/icons-material/Timeline';
 import SupportIcon from '@mui/icons-material/Support';
 import NorthEastIcon from '@mui/icons-material/NorthEast';
 
-import { RectangleButtonWithIcon } from '../RectangleButtonWithIcon';
+import { UploadOptionButton } from '../UploadOptionButton';
 
 export function UploadOptions() {
   return (
@@ -28,7 +28,7 @@ export function UploadOptions() {
         <Typography variant="body2">
           Best for multiple location or if your data is contained within a file.
         </Typography>
-        <RectangleButtonWithIcon
+        <UploadOptionButton
           Icon={UploadFileTwoToneIcon}
           text="File upload"
           onClick={() => console.log('clicked')}
@@ -40,12 +40,12 @@ export function UploadOptions() {
             your location via one of our interactive workflows:
           </Typography>
           <div>
-            <RectangleButtonWithIcon
+            <UploadOptionButton
               Icon={ScatterPlotTwoToneIcon}
               text="Point"
               onClick={() => console.log('clicked')}
             />
-            <RectangleButtonWithIcon
+            <UploadOptionButton
               Icon={TimelineIcon}
               text="Polygon"
               onClick={() => console.log('clicked')}

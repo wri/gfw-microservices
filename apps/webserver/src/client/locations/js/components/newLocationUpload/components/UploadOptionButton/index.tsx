@@ -1,9 +1,9 @@
 import React from 'react';
 
 import './index.scss';
-import { RectangleButtonWithIconProps } from './types';
+import { UploadOptionButtonProps } from './types';
 
-export function RectangleButtonWithIcon({ Icon, text, onClick }: RectangleButtonWithIconProps) {
+export function UploadOptionButton({ Icon, text, onClick }: UploadOptionButtonProps) {
   return (
     <button className="rectangle-button-with-icon-props" onClick={onClick}>
       <Icon />

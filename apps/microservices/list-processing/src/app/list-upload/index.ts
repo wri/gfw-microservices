@@ -7,16 +7,19 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { ValidateCsvRepository } from './validation/validate.csv.repository';
 import { DeprecatedStartAnalysisService } from './deprecated.start.analysis.service';
 import { StartAnalysisService } from './start.analysis.service';
+import { ListUploadController } from './list-upload.controller';
+import { ListUploadService } from './list-upload.service';
 
 @Module({
   imports: [TypeOrmModule.forFeature([ListTemplate], 'default'), SqlModule],
-  controllers: [ValidateCSVController],
+  controllers: [ValidateCSVController, ListUploadController],
   providers: [
     ValidateCSVService,
     S3Service,
     ValidateCsvRepository,
     DeprecatedStartAnalysisService,
     StartAnalysisService,
+    ListUploadService,
   ],
   exports: [DeprecatedStartAnalysisService, StartAnalysisService],
 })

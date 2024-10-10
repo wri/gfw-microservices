@@ -1,6 +1,6 @@
 import { SQLUtils } from '@wri-monorepos/sql';
 import { updateListsUploadStatus } from '../shared/update.lists.upload.status';
-import { AbstractHandler, ChainType } from './types';
+import { AbstractHandler, ChainType, RequestNewList } from './types';
 import * as sql from 'mssql';
 
 interface QueryCreateTableResult {
@@ -95,7 +95,7 @@ export class CreateLocationSchema extends AbstractHandler<ChainType> {
 
   async handle(input: ChainType): Promise<ChainType> {
     const { listId, listTable, organization_database, analysisTable, listStatusId, analysisIds } =
-      input.request;
+      input.request as RequestNewList;
 
     const queryCreateTableResult = await this.getTableStructureQuery();
 

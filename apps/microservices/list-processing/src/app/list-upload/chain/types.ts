@@ -2,10 +2,16 @@ import { FeatureCollection } from '@wri-monorepos/geo';
 
 export type ChainType = {
   geojson?: FeatureCollection;
-  request: RequestNewList;
+  request: RequestNewList | PreviewListRequest;
 };
 
-export type RequestNewList = {
+export interface PreviewListRequest {
+  path: string;
+  preview?: boolean;
+  fileDownloadedPath?: string;
+}
+
+export interface RequestNewList extends PreviewListRequest {
   list_name?: string;
   organization_database: string;
   listTable?: string;
@@ -17,11 +23,9 @@ export type RequestNewList = {
   gfwListId?: number;
   user_id?: number;
   template_id?: number;
-  path: string;
   listId?: number;
   analysisIds?: Array<string>;
-  fileDownloadedPath?: string;
-};
+}
 
 interface Handler<T> {
   setNext(handler: Handler<T>): Handler<T>;

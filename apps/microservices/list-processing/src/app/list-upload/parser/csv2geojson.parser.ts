@@ -11,6 +11,7 @@ interface LocationData {
 
 export const csv2geojson = async (
   csvContent: string,
+  preview = false,
   includeLatLon = true
 ): Promise<FeatureCollection> => {
   const toCamelCase = (str: string) => {
@@ -145,14 +146,24 @@ export const csv2geojson = async (
   }
 
   return await new Promise((resolve, reject) => {
-    Papa.parse(csvContent, {
+    let config = {
       worker: true,
       download: false,
       dynamicTyping: true,
       skipEmptyLines: true,
       header: true,
+      preview: 5,
       complete: (results) => convertToGeoJSON(results, reject, resolve),
       error: (error, file) => reject(`${file} - ${error}`),
-    });
+    };
+
+    if (!preview) {
+      config = {
+        ...config,
+        preview: 20,
+      };
+    }
+
+    Papa.parse(csvContent, config);
   });
 };

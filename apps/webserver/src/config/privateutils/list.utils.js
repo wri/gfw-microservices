@@ -198,7 +198,7 @@ const getListNameSchema = (req, list_id) => {
  *   @param commodity
  *   @return {Promise}
  */
-const uploadBulkLocations = (req, list_id, list_name, geojson, commodity) => {
+const uploadBulkLocations = (req, list_id, list_name, geojson, commodity, attributes) => {
   return new Promise((resolve, reject) => {
     // Important variables
     let primary_key = 1;
@@ -231,6 +231,9 @@ const uploadBulkLocations = (req, list_id, list_name, geojson, commodity) => {
           if (column.COLUMN_NAME === 'location_id' || column.COLUMN_NAME.includes('flag_')) {
             columnNamesArray.push(column.COLUMN_NAME);
             columnTypesArray.push(sql.Int);
+          } else if (column.COLUMN_NAME === 'attributes') {
+            columnNamesArray.push(column.COLUMN_NAME);
+            columnTypesArray.push(sql.NVarChar(-1));
           } else {
             columnNamesArray.push(column.COLUMN_NAME);
             columnTypesArray.push(sqlUtils.getDataType(req, column.DATA_TYPE));
@@ -250,23 +253,25 @@ const uploadBulkLocations = (req, list_id, list_name, geojson, commodity) => {
             }
           });
           // Add the feature geometry, feature primary key Add flag property for general, gran cho, glad, forma, viirs, terrai
-          featureArray.push(
+          const featureArrayValues = [
             locationUtils.getWKTGeometry(req, feature.geometry),
             primary_key,
+            attributes, // new `attributes` column default value
             0,
             0,
             0,
             0,
             0,
-            0
-          );
+            0,
+          ];
+          featureArray.push(...featureArrayValues);
           // Increment key for next feature
           primary_key += 1;
           dataArray.push(featureArray);
         });
         return sqlUtils.executeOrganizationBulkUpload(
           req,
-          list.list_table,
+          list.list_table, 
           true,
           columnNamesArray,
           columnTypesArray,

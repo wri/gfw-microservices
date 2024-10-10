@@ -40,12 +40,12 @@ export class ListService {
 
   async createNewList(createListRequest: CreateListRequest) {
     try {
-      const listTable = await this.createListTables(
-        createListRequest.listName,
-        createListRequest.userId,
-        createListRequest.clientDatabase,
-        createListRequest.analysisIds
-      );
+      const listTable = await this.createListTables({
+        listName: createListRequest.listName,
+        userId: createListRequest.userId,
+        clientDatabase: createListRequest.clientDatabase,
+        analysisIds: createListRequest.analysisIds
+      });
 
       const saveListRequest: RequestSaveLargeListProcessModel = {
         key: createListRequest.listName,
@@ -75,14 +75,21 @@ export class ListService {
     return this.deprecatedStartAnalysisService.run(request);
   }
 
-  async createListTables(
+  async createListTables({
+    listName,
+    userId,
+    clientDatabase,
+    analysisIds,
+    templateId = 13,
+    gfwListId = null
+  }:{
     listName: string,
     userId: number,
     clientDatabase: string,
     analysisIds: Array<string>,
-    templateId = 13,
-    gfwListId = null
-  ): Promise<CreateListResult> {
+    templateId?: number,
+    gfwListId?: number | null
+  }): Promise<CreateListResult> {
     const list = createListNameSchema(listName);
     const listTable = list.list_table;
     const analysisTable = list.analysis_table;
@@ -90,6 +97,7 @@ export class ListService {
     const locationClassification = 'Property';
     const customAttributeNames = '';
     const customAttributeTypes = '';
+    const attributes = '';
 
     let createListResult: CreateListResult;
     const doesListNameAlreadyExist = await getListByFilters({ listName: listName }, clientDatabase);

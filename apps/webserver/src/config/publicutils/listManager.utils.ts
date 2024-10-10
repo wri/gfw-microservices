@@ -933,10 +933,10 @@ export const getLocationsCount = (req) => {
  *   @param  {Object} geojson - a geojson object with array of features that contain geometry and properties
  *   @return
  */
-export const uploadToExistingList = (req, list_id, list_name, geojson, commodity) => {
+export const uploadToExistingList = (req, list_id, list_name, geojson, commodity, attributes) => {
   return new Promise((resolve, reject) => {
     listUtils
-      .uploadBulkLocations(req, list_id, list_name, geojson, commodity)
+      .uploadBulkLocations(req, list_id, list_name, geojson, commodity, attributes)
       .then((geojson) => {
         resolve(geojson);
       })
@@ -968,7 +968,8 @@ export const uploadToNewList = (
   geojson,
   gfw_list_id,
   is_edit = false,
-  analysisIds
+  analysisIds,
+  attributes,
 ) => {
   const user_id = req.session.organization_user_id;
   const list = listUtils.createListNameSchema(list_name);
@@ -989,7 +990,7 @@ export const uploadToNewList = (
     )
       .then((list_id) => {
         newListID = list_id;
-        return uploadToExistingList(req, list_id, list_name, geojson, commodity);
+        return uploadToExistingList(req, list_id, list_name, geojson, commodity, attributes);
       })
       .then((resultGeoJSON) => {
         logger.logActivity(
@@ -1032,7 +1033,8 @@ export const uploadToNewListAndSaveAsDraft = (
   custom_attributes,
   geojson,
   gfw_list_id,
-  analysisIds
+  analysisIds,
+  attributes = '',
 ) => {
   const { original_gfw_list } = req.body;
   const user_id = req.session.organization_user_id;
@@ -1052,7 +1054,7 @@ export const uploadToNewListAndSaveAsDraft = (
     )
       .then((list_id) => {
         listID = list_id;
-        return uploadToExistingList(req, list_id, list_name, geojson, commodity);
+        return uploadToExistingList(req, list_id, list_name, geojson, commodity, attributes);
       })
       .then(async (geojson) => {
         // Getting list analysis table name

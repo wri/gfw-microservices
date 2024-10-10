@@ -46,11 +46,22 @@ export default class EditList extends Component {
       edited: false,
     };
   }
+  componentDidMount() {
+    window.addEventListener('beforeunload', this.unlockList);
+  }
+
+  componentWillUnmount() {
+    window.removeEventListener('beforeunload', this.unlockList);
+    this.unlockList();
+  }
+
+  unlockList = () => {
+    const list_id = this.props.selectedLists[0].id;
+    return httpRequest.fetchJSON('/locations/unlockList', { list_id });
+  };
 
   cancelAdd = () => {
-    const list_id = this.props.selectedLists[0].id;
-    httpRequest
-      .fetchJSON('/locations/unlockList', { list_id })
+    this.unlockList()
       .then(() => {
         store.dispatch(changeView('lists'));
       })

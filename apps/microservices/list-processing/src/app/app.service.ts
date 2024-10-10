@@ -6,7 +6,7 @@ import {
 } from '@nestjs/common';
 import { S3Client, PutObjectCommand, GetObjectCommand } from '@aws-sdk/client-s3';
 import { DataSource } from 'typeorm';
-import uniqId from 'uniqid';
+import * as uniqId from 'uniqid';
 import { ResponsePreSignedURLModel, ResponseObjectPresignedURLModel } from '../models';
 import { ClientStoreConnection, Lists, ActivityLog, DeleteListTypeOrm } from '@wri-monorepos/sql';
 import { LockListService } from '../services/lock.list.service';

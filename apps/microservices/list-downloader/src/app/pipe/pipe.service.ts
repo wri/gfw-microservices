@@ -44,7 +44,7 @@ export class PipeService {
       await this.readmeService.write(filters);
     }
 
-    await pipeHandler.makeFile(filters);
+    pipeHandler.makeFile(filters);
   }
 
   private async getListName(filters: BasicFieldsFileRequest) {

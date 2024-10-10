@@ -5,7 +5,7 @@ import { UploadOptionButtonProps } from './types';
 
 export function UploadOptionButton({ Icon, text, onClick }: UploadOptionButtonProps) {
   return (
-    <button className="rectangle-button-with-icon-props" onClick={onClick}>
+    <button className="upload-option-button" onClick={onClick}>
       <Icon />
       <span>{text}</span>
     </button>

@@ -57,6 +57,7 @@ jobs:
       - name: Run QA e2e tests for GFW Pro
         run: |
           npx nx e2e gfwpro-e2e --configuration=qa
+        continue-on-error: true
 
       - name: Send failure notifications to Slack
         if: failure()

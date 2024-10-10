@@ -5,7 +5,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import fetch from 'node-fetch';
 import { AppController } from './app.controller';
 import * as fs from 'fs';
-import * as uniqId from 'uniqid';
+import uniqId from 'uniqid';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { AppService } from './app.service';
 import { ConfigModule } from '@nestjs/config';

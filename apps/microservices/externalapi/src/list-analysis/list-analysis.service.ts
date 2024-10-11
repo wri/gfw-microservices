@@ -382,6 +382,7 @@ export class ListAnalysisService {
     listId,
     userEmail,
     analysisId,
+    outputType,
   }: AnalysesGenerateRequest) {
     const organization = await this.getOrganizationDetails(organizationId);
     const user = await this.userService.findUser(organizationId, userEmail);
@@ -413,6 +414,9 @@ export class ListAnalysisService {
           analysisId,
           organization,
         });
+      }
+      if (outputType && analysisId === 'AFI') {
+        message = { ...message, type: 'afi-vc' };
       }
 
       await axios.post(
@@ -547,6 +551,7 @@ export class ListAnalysisService {
       processing_limit: processingLimit,
       analysis_types: { [analysisId]: true },
       reanalyze: true,
+      send_email: false,
     };
     const connectionLibSql = await this.clientStoreConnection.getConnection(
       organizationDetails.organizationDb

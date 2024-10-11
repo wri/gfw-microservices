@@ -518,7 +518,6 @@ export async function getAFIListAnalyses(list_id, page, pageSize, clientDatabase
   const sortedAttributes = [
     'list_id',
     'location_id',
-    'listName',
     'gadm_id',
     'natural_land_area',
     'natural_land_deforested_area',

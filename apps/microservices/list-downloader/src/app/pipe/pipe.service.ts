@@ -39,7 +39,6 @@ export class PipeService {
         listName,
         rowsPerPage: MAX_NUMBER_OF_ROWS_PER_PAGE,
       };
-
       this.createDirectory(filters);
       await this.readmeService.write(filters);
     }

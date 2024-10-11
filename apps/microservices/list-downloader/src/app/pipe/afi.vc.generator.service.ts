@@ -1,12 +1,16 @@
-import { DeforestationKpisService, NaturalForestLossService, OtherKpisService } from '../files';
+import { ShapefileService } from '../files';
 import { Injectable, Logger } from '@nestjs/common';
-import { BasicFieldsFileRequest } from '@wri-monorepos/sql';
+import { ListFieldsFileRequest, UspGetListAnalysis } from '@wri-monorepos/sql';
 import * as asyncPool from 'tiny-async-pool';
 import { getAllFilesAndZip } from '../shared/file.utils';
 
 import { AnalysisAfiDataService } from '../data/analysis.afi.data.service';
 import { IFileGenerator } from './i.file.generator';
 import { POOL_SIZE } from '../shared/constants';
+import { IPipeService } from './i.pipe.service';
+import { ConfigService } from '@nestjs/config';
+import { ServerConfigType } from '../../validators/server-config';
+import { AnalysisDataService } from '../data';
 
 @Injectable()
 export class AfiVcGeneratorService extends IFileGenerator {
@@ -14,54 +18,97 @@ export class AfiVcGeneratorService extends IFileGenerator {
 
   constructor(
     private readonly analysisAfiDataService: AnalysisAfiDataService,
-    private readonly deforestationKpisService: DeforestationKpisService,
-    private readonly naturalForestLostService: NaturalForestLossService,
-    private readonly otherKpisService: OtherKpisService
+    private readonly shapefileService: ShapefileService,
+    private readonly uspGetListAnalysis: UspGetListAnalysis,
+    private readonly configService: ConfigService<ServerConfigType, true>,
+    private readonly analysisDataService: AnalysisDataService
   ) {
     super();
   }
 
-  public async makeFile(filters: BasicFieldsFileRequest) {
-    await this.deforestationKpisService.startEmail(filters);
-    await this.runAfiFileGeneration(filters, 'location');
-    await this.runAfiFileGeneration(filters, 'list');
+  public async makeFile(filters: ListFieldsFileRequest) {
+    const service = this.defineService();
+    await this.runAfiFileGeneration(filters);
     await getAllFilesAndZip(filters);
-    await this.deforestationKpisService.finishProcess(filters);
+    await service.finish(filters);
   }
 
   private async runAfiFileGeneration(
-    filters: BasicFieldsFileRequest,
+    filters: ListFieldsFileRequest,
     suffix: 'location' | 'list' = 'location'
   ) {
+    const { organizationDatabase, listId, file, isGFWList, combinedColumns, selectedLocations } =
+      filters;
+    const notAllowedValues = ['', undefined, 'all'];
+    const selectedLocationsList = notAllowedValues.includes(selectedLocations)
+      ? []
+      : selectedLocations.split(',').map((x) => parseInt(x, 10));
     const isListLevel = suffix === 'list' ? 1 : 0;
+
     const numberOfPages = await this.analysisAfiDataService.getNumberOfPages(filters, isListLevel);
-    const { listId } = filters;
     this.logger.log(`(${listId}) - Number of pages: ${numberOfPages}`);
 
     const arrayOfPages = Array.from(Array(numberOfPages).keys());
 
-    this.deforestationKpisService.start(filters, suffix);
-    this.naturalForestLostService.start(filters, suffix);
-    this.otherKpisService.start(filters, suffix);
+    const combinedColumnsSplitted = notAllowedValues.includes(combinedColumns)
+      ? []
+      : combinedColumns.split(',');
+    const dbName = isGFWList
+      ? this.configService.get('MSSQL_DATABASE', { infer: true })
+      : organizationDatabase;
+    const [listLevelAnalysis] = await this.uspGetListAnalysis.run(dbName, {
+      listId: listId,
+    });
+    const fields = await this.getListOfFields(filters);
+
+    filters = {
+      ...filters,
+      numberOfPages,
+      combinedColumnsSplitted,
+      selectedLocationsList,
+      listLevelAnalysis,
+      // has to add the following parameter to bring the geometry from the database, use only for shapefile
+      geometry: file === 'shapefile' ? 1 : 0,
+      ...fields,
+    };
+
+    const service = this.defineService();
+
+    await service.start(filters);
 
     const composeResults = async (i: number) => {
-      const newFilter = { ...filters, page: i };
-      const analysisData = await this.analysisAfiDataService.getDataPaginated(
-        newFilter,
-        isListLevel
-      );
-      this.deforestationKpisService.process(analysisData);
-      this.naturalForestLostService.process(analysisData);
-      this.otherKpisService.process(analysisData);
+      const newFilters = { ...filters, page: i };
+
+      const analysisData = await this.analysisDataService.getDataPaginated(newFilters);
+
+      await service.process(analysisData, newFilters);
       return i;
     };
 
     for await (const localPage of asyncPool(POOL_SIZE, arrayOfPages, composeResults)) {
       this.logger.log(`(${listId}) - Get page of number ${localPage} from database`);
     }
+  }
+  private defineService(): IPipeService {
+    const mapFileType2Service = {
+      input_shapefile: this.shapefileService,
+    };
 
-    await this.deforestationKpisService.finish(filters);
-    await this.naturalForestLostService.finish(filters);
-    await this.otherKpisService.finish(filters);
+    return mapFileType2Service['input_shapefile'];
+  }
+  private async getListOfFields(filters: ListFieldsFileRequest) {
+    const newFilters = {
+      ...filters,
+      page: 1,
+      rowsPerPage: 1,
+    };
+
+    const analysisData = await this.analysisDataService.getDataPaginated(newFilters);
+    const [element] = analysisData;
+
+    return {
+      fields: Object.keys(element ?? {}),
+      templateId: element?.template_id,
+    };
   }
 }

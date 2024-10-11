@@ -83,11 +83,11 @@ export class ShapefileService extends IPipeService {
   }
 
   async finish(filters: ListFieldsFileRequest) {
-    const { listId, key, listName } = filters;
+    const { listId, key, listName, type } = filters;
     this.logger.log(`(${listId}) - Finished to process data and generate shapefile`);
     await this.writeAllData(this.inputStream);
     await finished(this.fileStream);
-    await this.convertGeojsonToSHP(key, listName);
+    type !== 'afi-vc' ? await this.convertGeojsonToSHP(key, listName) : null;
     this.logger.log(`(${listId}) - Data has been zipped`);
     await this.finishProcess(filters);
   }

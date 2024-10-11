@@ -1433,7 +1433,7 @@ export const copyLocations = (
       })
       .then(() => {
         // Perform uploadBulkLocations
-        return listUtils.uploadBulkLocations(req, dest_list.id, dest_list.list_name, src_geojson);
+        return listUtils.uploadBulkLocations(req, dest_list.id, dest_list.list_name, src_geojson, '{}');
       })
       .then((resultGeoJSON) => {
         // Array of destination location ids - assumption that it is in the same order as src_locations_ids

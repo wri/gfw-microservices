@@ -6,12 +6,11 @@ import { Typography, Card, IconButton } from '@mui/material';
 import UploadFileTwoToneIcon from '@mui/icons-material/UploadFileTwoTone';
 import ScatterPlotTwoToneIcon from '@mui/icons-material/ScatterPlotTwoTone';
 import TimelineIcon from '@mui/icons-material/Timeline';
-import SupportIcon from '@mui/icons-material/Support';
-import NorthEastIcon from '@mui/icons-material/NorthEast';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import ArrowForwardIosIcon from '@mui/icons-material/ArrowForwardIos';
 
-import { UploadOptionButton } from '../UploadOptionButton';
+import { UploadOptionButton } from './components/UploadOptionButton';
+import { HowToFormatLocationLink } from '../components/HowToFormatLocationLink';
 
 export function UploadOptions() {
   const history = useHistory();
@@ -32,11 +31,7 @@ export function UploadOptions() {
           <Typography variant="body2" className="upload-options__main-content__subtitle">
             GFW Pro allows for users to upload their data in multiple ways.
           </Typography>
-          <a className="upload-options__main-content__how-to-info-link" href="#">
-            <SupportIcon />
-            <Typography variant="body2">How to format your location data for GFW Pro</Typography>
-            <NorthEastIcon />
-          </a>
+          <HowToFormatLocationLink />
         </div>
         <div className="upload-options__main-content__options">
           <Typography variant="body2">

@@ -644,7 +644,7 @@ module.exports = (app, limiter) => {
     };
 
     try {
-      let listAnalyses = {};
+      let listAnalyses;
       let locationAttributeArray = {};
       let numberOfPages = 0,
         numberOfResults = 0,
@@ -652,6 +652,7 @@ module.exports = (app, limiter) => {
         locationAttributeList;
       // Delete specifics AFI sortByAttribute
       let AFI_SORT_BY_ATTRIBUTES = '';
+      let location_analyses = [];
       if (
         filters.sortByAttribute === 'protectedAreasHA' ||
         filters.sortByAttribute === 'landmarkHA' ||
@@ -693,6 +694,7 @@ module.exports = (app, limiter) => {
                   : a[AFI_SORT_BY_ATTRIBUTES] - b[AFI_SORT_BY_ATTRIBUTES]
               );
             }
+            location_analyses = listAnalyses;
           }
           break;
         }
@@ -735,7 +737,7 @@ module.exports = (app, limiter) => {
       } else {
         res.send({
           list_analysis: listAnalyses,
-          location_analyses: [],
+          location_analyses,
           numberOfPages,
           numberOfResults,
           maximumAnalysisAreaInTheList,

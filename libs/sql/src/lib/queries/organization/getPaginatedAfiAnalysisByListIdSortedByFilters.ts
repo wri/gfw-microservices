@@ -45,9 +45,6 @@ SET @SQL = 'SELECT  ' +
 	IF @Country IS NOT NULL
 	  SET @Filters = + @Filters + ' AND lt.Country = @Country'
 
-	IF @State IS NOT NULL
-	  SET @Filters = + @Filters + ' AND lt.listName = @listName'
-
   IF @State IS NOT NULL
 	  SET @Filters = + @Filters + ' AND lt.State = @State'
 

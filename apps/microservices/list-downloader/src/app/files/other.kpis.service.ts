@@ -12,11 +12,6 @@ import { FilterObject } from '../transform/filter.object';
 import { FormatNumber } from '../transform/format.number';
 import { NegligibleRiskDiscretize } from '../transform/negligible.risk.discretize';
 import { OverlapPercentageColumns } from '../transform/overlap.percentage.columns';
-import { ConvertObject2Geojson } from '../transform/convert.object.2.geojson';
-import { ConvertObject2String } from '../transform/convert.object.2.string';
-import { ReplaceSpace2Underscore } from '../transform/replace.space.2.underscore';
-import * as JSONStream from 'JSONStream';
-import { FilterSelection } from '../transform/filter.selection';
 
 @Injectable({
   scope: Scope.REQUEST,
@@ -44,12 +39,8 @@ export class OtherKpisService extends IPipeService {
     this.organizeStream(filters, Object.keys(headers), fileSuffix);
   }
 
-  private organizeStream(
-    filters: BasicFieldsFileRequest & { selectedLocationsList?: [] },
-    allFields: string[],
-    suffix: string
-  ) {
-    const { listId, key, listName, type, selectedLocationsList } = filters;
+  private organizeStream(filters: BasicFieldsFileRequest, allFields: string[], suffix: string) {
+    const { listId, key, listName } = filters;
     this.inputStream.removeAllListeners();
 
     this.inputStream.on('error', async (err) => {
@@ -80,39 +71,13 @@ export class OtherKpisService extends IPipeService {
     } else {
       pipeline = [...pipeline, new FormatNumber()];
     }
-    if (type === 'afi-vc') {
-      fs.writeFileSync(
-        `/tmp/wri-${key}/${listName}.geojson`,
-        JSON.stringify({
-          type: 'FeatureCollection',
-          features: [],
-        })
-      );
 
-      this.fileStream = fs.createWriteStream(`/tmp/wri-${key}/${listName}.geojson`, {
-        flags: 'r+',
-      });
+    pipeline.push(
+      csvWriter({
+        sendHeaders: false,
+      })
+    );
 
-      const open = '{"type":"FeatureCollection","features":[';
-      const close = ']}';
-
-      this.inputStream
-        .pipe(new FilterSelection(selectedLocationsList))
-        .pipe(new FilterObject(allFields))
-        .pipe(new ReplaceSpace2Underscore())
-        .pipe(new FormatNumber())
-        .pipe(new ConvertObject2Geojson())
-        .pipe(new ConvertObject2String())
-        .pipe(JSONStream.parse(['features', true]))
-        .pipe(JSONStream.stringify(open, '\n,\n', close))
-        .pipe(this.fileStream);
-    } else {
-      pipeline.push(
-        csvWriter({
-          sendHeaders: false,
-        })
-      );
-    }
     this.inputStream.pipe(new Chain(pipeline)).pipe(this.fileStream);
   }
 

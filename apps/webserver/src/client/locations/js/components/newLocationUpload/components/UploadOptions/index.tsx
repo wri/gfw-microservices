@@ -1,58 +1,73 @@
 import React from 'react';
 import './index.scss';
 
-import { Typography, Card } from '@mui/material';
+import { useHistory } from 'react-router-dom';
+import { Typography, Card, IconButton } from '@mui/material';
 import UploadFileTwoToneIcon from '@mui/icons-material/UploadFileTwoTone';
 import ScatterPlotTwoToneIcon from '@mui/icons-material/ScatterPlotTwoTone';
 import TimelineIcon from '@mui/icons-material/Timeline';
 import SupportIcon from '@mui/icons-material/Support';
 import NorthEastIcon from '@mui/icons-material/NorthEast';
+import ArrowBackIcon from '@mui/icons-material/ArrowBack';
+import ArrowForwardIosIcon from '@mui/icons-material/ArrowForwardIos';
 
 import { UploadOptionButton } from '../UploadOptionButton';
 
 export function UploadOptions() {
+  const history = useHistory();
+
   return (
-    <Card className="upload-options">
-      <div>
-        <Typography variant="h6">Add Location</Typography>
-        <Typography variant="body2" className="upload-options__subtitle">
-          GFW Pro allows for users to upload their data in multiple ways.
-        </Typography>
-        <a className="upload-options__how-to-info-link" href="#">
-          <SupportIcon />
-          <Typography variant="body2">How to format your location data for GFW Pro</Typography>
-          <NorthEastIcon />
-        </a>
-      </div>
-      <div className="upload-options__options">
-        <Typography variant="body2">
-          Best for multiple location or if your data is contained within a file.
-        </Typography>
-        <UploadOptionButton
-          Icon={UploadFileTwoToneIcon}
-          text="File upload"
-          onClick={() => console.log('clicked')}
-        />
-        <div className="upload-options__options__other-options">
-          <Typography variant="body2">Or</Typography>
-          <Typography variant="body2">
-            If you would like to enter a single location without uploading a file, you can define
-            your location via one of our interactive workflows:
+    <div className="upload-options">
+      <nav>
+        <IconButton onClick={() => history.goBack()} disableRipple>
+          <ArrowBackIcon />
+        </IconButton>
+        <Typography variant="h5">Name of the list</Typography>
+        <ArrowForwardIosIcon fontSize="small" />
+        <Typography variant="h5">Add location</Typography>
+      </nav>
+      <Card className="upload-options__main-content">
+        <div>
+          <Typography variant="h6">Add Location</Typography>
+          <Typography variant="body2" className="upload-options__main-content__subtitle">
+            GFW Pro allows for users to upload their data in multiple ways.
           </Typography>
-          <div>
-            <UploadOptionButton
-              Icon={ScatterPlotTwoToneIcon}
-              text="Point"
-              onClick={() => console.log('clicked')}
-            />
-            <UploadOptionButton
-              Icon={TimelineIcon}
-              text="Polygon"
-              onClick={() => console.log('clicked')}
-            />
+          <a className="upload-options__main-content__how-to-info-link" href="#">
+            <SupportIcon />
+            <Typography variant="body2">How to format your location data for GFW Pro</Typography>
+            <NorthEastIcon />
+          </a>
+        </div>
+        <div className="upload-options__main-content__options">
+          <Typography variant="body2">
+            Best for multiple location or if your data is contained within a file.
+          </Typography>
+          <UploadOptionButton
+            Icon={UploadFileTwoToneIcon}
+            text="File upload"
+            onClick={() => console.log('clicked')}
+          />
+          <div className="upload-options__main-content__options__other-options">
+            <Typography variant="body2">Or</Typography>
+            <Typography variant="body2">
+              If you would like to enter a single location without uploading a file, you can define
+              your location via one of our interactive workflows:
+            </Typography>
+            <div>
+              <UploadOptionButton
+                Icon={ScatterPlotTwoToneIcon}
+                text="Point"
+                onClick={() => console.log('clicked')}
+              />
+              <UploadOptionButton
+                Icon={TimelineIcon}
+                text="Polygon"
+                onClick={() => console.log('clicked')}
+              />
+            </div>
           </div>
         </div>
-      </div>
-    </Card>
+      </Card>
+    </div>
   );
 }

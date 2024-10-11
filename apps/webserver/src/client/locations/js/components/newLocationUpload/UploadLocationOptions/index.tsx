@@ -9,14 +9,14 @@ import TimelineIcon from '@mui/icons-material/Timeline';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import ArrowForwardIosIcon from '@mui/icons-material/ArrowForwardIos';
 
-import { UploadOptionButton } from './components/UploadOptionButton';
+import { UploadLocationOptionButton } from './components/UploadLocationOptionButton';
 import { HowToFormatLocationLink } from '../components/HowToFormatLocationLink';
 
-export function UploadOptions() {
+export function UploadLocationOptions() {
   const history = useHistory();
 
   return (
-    <div className="upload-options">
+    <div className="upload-location-options">
       <nav>
         <IconButton onClick={() => history.goBack()} disableRipple>
           <ArrowBackIcon />
@@ -25,36 +25,36 @@ export function UploadOptions() {
         <ArrowForwardIosIcon fontSize="small" />
         <Typography variant="h5">Add location</Typography>
       </nav>
-      <Card className="upload-options__main-content">
+      <Card className="upload-location-options__main-content">
         <div>
           <Typography variant="h6">Add Location</Typography>
-          <Typography variant="body2" className="upload-options__main-content__subtitle">
-            GFW Pro allows for users to upload their data in multiple ways.
+          <Typography variant="body2" className="upload-location-options__main-content__subtitle">
+            GFW Pro allows users to upload their data in multiple ways.
           </Typography>
           <HowToFormatLocationLink />
         </div>
-        <div className="upload-options__main-content__options">
+        <div className="upload-location-options__main-content__options">
           <Typography variant="body2">
             Best for multiple location or if your data is contained within a file.
           </Typography>
-          <UploadOptionButton
+          <UploadLocationOptionButton
             Icon={UploadFileTwoToneIcon}
             text="File upload"
             onClick={() => console.log('clicked')}
           />
-          <div className="upload-options__main-content__options__other-options">
+          <div className="upload-location-options__main-content__options__other-options">
             <Typography variant="body2">Or</Typography>
             <Typography variant="body2">
               If you would like to enter a single location without uploading a file, you can define
               your location via one of our interactive workflows:
             </Typography>
             <div>
-              <UploadOptionButton
+              <UploadLocationOptionButton
                 Icon={ScatterPlotTwoToneIcon}
                 text="Point"
                 onClick={() => console.log('clicked')}
               />
-              <UploadOptionButton
+              <UploadLocationOptionButton
                 Icon={TimelineIcon}
                 text="Polygon"
                 onClick={() => console.log('clicked')}

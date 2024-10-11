@@ -1,4 +1,3 @@
-import { Feature } from '@wri-monorepos/geo';
 import { AbstractHandler, ChainType } from './types';
 
 export class ValidateLatLongGeojson extends AbstractHandler<ChainType> {
@@ -45,8 +44,6 @@ export class ValidateLatLongGeojson extends AbstractHandler<ChainType> {
   }
 
   async handle(input: ChainType): Promise<ChainType> {
-    const errorFeatures: Feature[] = [];
-
     const { geojson } = input;
 
     if (!geojson.type || !geojson.features) {
@@ -63,15 +60,13 @@ export class ValidateLatLongGeojson extends AbstractHandler<ChainType> {
           'coordinates' in geometry &&
           !this.validateCoordinates(geometry.coordinates, country)
         ) {
-          errorFeatures.push(feature);
-          geojson.features.splice(i, 1);
+          feature.properties.error = ['Invalid coordinates'];
         }
       }
     }
 
     const response = await super.handle({
       ...input,
-      errorGeojson: { type: 'FeatureCollection', features: errorFeatures },
     });
     return response;
   }

@@ -93,8 +93,8 @@ describe('ValidateLatLongGeojson', () => {
       };
 
       const result = await validator.handle(input);
-      expect(result.geojson.features.length).toBe(0);
-      expect(result.errorGeojson.features.length).toBe(1);
+      expect(result.geojson.features.length).toBe(1);
+      expect(result.geojson.features[0].properties.error).toStrictEqual(['Invalid coordinates']);
     });
 
     it('should handle valid GeoJSON', async () => {
@@ -122,7 +122,6 @@ describe('ValidateLatLongGeojson', () => {
 
       const result = await validator.handle(input);
       expect(result.geojson.features.length).toBe(1);
-      expect(result.errorGeojson.features.length).toBe(0);
     });
 
     it('should handle invalid GeoJSON', async () => {
@@ -149,7 +148,8 @@ describe('ValidateLatLongGeojson', () => {
       };
 
       const result = await validator.handle(input);
-      expect(result.errorGeojson.features.length).toBe(1);
+      expect(result.geojson.features.length).toBe(1);
+      expect(result.geojson.features[0].properties.error).toStrictEqual(['Invalid coordinates']);
     });
   });
 });

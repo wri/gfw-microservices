@@ -2,6 +2,7 @@ import { FeatureCollection } from '@wri-monorepos/geo';
 
 export type ChainType = {
   geojson?: FeatureCollection;
+  errorGeojson?: FeatureCollection;
   request: RequestNewList;
 };
 

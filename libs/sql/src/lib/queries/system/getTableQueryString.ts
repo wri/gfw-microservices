@@ -38,3 +38,7 @@ SET @tableQueryString = CONCAT(@tableQueryString, ', [flag_terrai] INT')
 
 SELECT @tableQueryString AS [query_string]
 `;
+
+export interface ListTableColumnsQueryString {
+  query_string: string;
+}

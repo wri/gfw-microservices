@@ -117,7 +117,7 @@ module.exports = (app, limiter) => {
       original_gfw_list,
       analysisIds,
       attributes = JSON.stringify({
-        '[Custom Attribute]': 'Random,Values'
+        creationPath: '/addToNewList',
       }),
     } = req.body;
     const finalGeojson = LocationManager.getFinalGeojson(gfw_list_id, geojson);
@@ -135,7 +135,7 @@ module.exports = (app, limiter) => {
       gfw_list_id,
       false,
       analysisIds,
-      attributes,
+      attributes
     )
       .then(async ({ resultGeoJSON }) => {
         const dest_list = await ListManager.getListByListName(req, list_name);

@@ -112,7 +112,7 @@ export class AppController {
       listName: request.list_name,
       userId: request.user_id,
       clientDatabase: request.client_database,
-      analysisIds: request.analysisIds
+      analysisIds: request.analysisIds,
     });
   }
 

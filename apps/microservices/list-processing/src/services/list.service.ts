@@ -1,6 +1,7 @@
 import {
   ClientStoreConnection,
   FeatureFlag,
+  ListTableColumnsQueryString,
   ListsUploadStatus,
   SQLUtils,
   getListByFilters,
@@ -23,10 +24,6 @@ interface CreateListResult {
   list_id: number;
 }
 
-interface QueryCreateTableResult {
-  query_string: string;
-}
-
 @Injectable()
 export class ListService {
   constructor(
@@ -44,7 +41,7 @@ export class ListService {
         listName: createListRequest.listName,
         userId: createListRequest.userId,
         clientDatabase: createListRequest.clientDatabase,
-        analysisIds: createListRequest.analysisIds
+        analysisIds: createListRequest.analysisIds,
       });
 
       const saveListRequest: RequestSaveLargeListProcessModel = {
@@ -81,14 +78,14 @@ export class ListService {
     clientDatabase,
     analysisIds,
     templateId = 13,
-    gfwListId = null
-  }:{
-    listName: string,
-    userId: number,
-    clientDatabase: string,
-    analysisIds: Array<string>,
-    templateId?: number,
-    gfwListId?: number | null
+    gfwListId = null,
+  }: {
+    listName: string;
+    userId: number;
+    clientDatabase: string;
+    analysisIds: Array<string>;
+    templateId?: number;
+    gfwListId?: number | null;
   }): Promise<CreateListResult> {
     const list = createListNameSchema(listName);
     const listTable = list.list_table;
@@ -97,7 +94,6 @@ export class ListService {
     const locationClassification = 'Property';
     const customAttributeNames = '';
     const customAttributeTypes = '';
-    const attributes = '';
 
     let createListResult: CreateListResult;
     const doesListNameAlreadyExist = await getListByFilters({ listName: listName }, clientDatabase);
@@ -156,19 +152,15 @@ export class ListService {
         'Add list to analysis table'
       );
 
-      const queryCreateTableResult = await this.getTableStructureQuery(templateId);
+      const { query_string } = await this.getTableStructureQuery(templateId);
+
       await this.updateListsUploadStatus(
         connection.databaseName,
         listId,
         'Get table query structure'
       );
 
-      await this.createListTableInDatabase(
-        connection,
-        listId,
-        listTable,
-        queryCreateTableResult[0].query_string
-      );
+      await this.createListTableInDatabase(connection, listId, listTable, query_string);
       await this.updateListsUploadStatus(connection.databaseName, listId, 'Create list table');
 
       await this.createAnalysisTableInDatabase(connection, listId, analysisTable);
@@ -290,16 +282,32 @@ export class ListService {
     }
   }
 
-  async getTableStructureQuery(templateId: number): Promise<QueryCreateTableResult[]> {
+  async getTableStructureQuery(templateId: number): Promise<ListTableColumnsQueryString> {
+    // classical db connection
+    const sqlConfig = {
+      user: this.config.get('MSSQL_USERNAME', { infer: true }),
+      password: this.config.get('MSSQL_PASSWORD', { infer: true }),
+      database: 'gfwpro',
+      server: this.config.get('MSSQL_HOSTNAME', { infer: true }),
+      pool: {
+        max: 10,
+        min: 0,
+        idleTimeoutMillis: 30000,
+      },
+      port: this.config.get('MSSQL_PORT', { infer: true }),
+      options: {
+        trustServerCertificate: true, // change to true for local dev / self-signed certs
+      },
+    };
+    const connection = new SQLUtils(sqlConfig);
+    const parameters = [{ field: 'template_id', type: sql.Int, value: templateId }];
     try {
-      const command = this.dataSource.createQueryRunner();
-      await command.connect();
-      const queryCreateTableResult: QueryCreateTableResult[] = await command.query(
-        'uspGetTableQueryString @0',
-        [templateId]
+      await connection.connect();
+      const getTableQueryString = await connection.executeQuery<ListTableColumnsQueryString>(
+        'uspGetTableQueryString',
+        parameters
       );
-
-      return queryCreateTableResult;
+      return getTableQueryString;
     } catch (error) {
       throw new Error('Failed get table structure query: ' + error.message);
     }

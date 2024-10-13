@@ -233,7 +233,7 @@ const uploadBulkLocations = (req, list_id, list_name, geojson, commodity, attrib
             columnTypesArray.push(sql.Int);
           } else if (column.COLUMN_NAME === 'attributes') {
             columnNamesArray.push(column.COLUMN_NAME);
-            columnTypesArray.push(sql.NVarChar(-1));
+            columnTypesArray.push(sql.NVarChar(sql.MAX));
           } else {
             columnNamesArray.push(column.COLUMN_NAME);
             columnTypesArray.push(sqlUtils.getDataType(req, column.DATA_TYPE));
@@ -271,7 +271,7 @@ const uploadBulkLocations = (req, list_id, list_name, geojson, commodity, attrib
         });
         return sqlUtils.executeOrganizationBulkUpload(
           req,
-          list.list_table, 
+          list.list_table,
           true,
           columnNamesArray,
           columnTypesArray,

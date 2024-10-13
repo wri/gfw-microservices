@@ -283,31 +283,14 @@ export class ListService {
   }
 
   async getTableStructureQuery(templateId: number): Promise<ListTableColumnsQueryString> {
-    // classical db connection
-    const sqlConfig = {
-      user: this.config.get('MSSQL_USERNAME', { infer: true }),
-      password: this.config.get('MSSQL_PASSWORD', { infer: true }),
-      database: 'gfwpro',
-      server: this.config.get('MSSQL_HOSTNAME', { infer: true }),
-      pool: {
-        max: 10,
-        min: 0,
-        idleTimeoutMillis: 30000,
-      },
-      port: this.config.get('MSSQL_PORT', { infer: true }),
-      options: {
-        trustServerCertificate: true, // change to true for local dev / self-signed certs
-      },
-    };
-    const connection = new SQLUtils(sqlConfig);
-    const parameters = [{ field: 'template_id', type: sql.Int, value: templateId }];
     try {
-      await connection.connect();
-      const getTableQueryString = await connection.executeQuery<ListTableColumnsQueryString>(
+      const conn = new SQLUtils();
+      await conn.connect();
+      const parameters = [{ field: 'template_id', type: sql.Int, value: templateId }];
+      return await conn.executeQuery<ListTableColumnsQueryString>(
         'uspGetTableQueryString',
         parameters
       );
-      return getTableQueryString;
     } catch (error) {
       throw new Error('Failed get table structure query: ' + error.message);
     }

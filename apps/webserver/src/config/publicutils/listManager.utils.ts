@@ -969,7 +969,7 @@ export const uploadToNewList = (
   gfw_list_id,
   is_edit = false,
   analysisIds,
-  attributes,
+  attributes
 ) => {
   const user_id = req.session.organization_user_id;
   const list = listUtils.createListNameSchema(list_name);
@@ -1034,7 +1034,7 @@ export const uploadToNewListAndSaveAsDraft = (
   geojson,
   gfw_list_id,
   analysisIds,
-  attributes = '',
+  attributes = ''
 ) => {
   const { original_gfw_list } = req.body;
   const user_id = req.session.organization_user_id;
@@ -1433,7 +1433,16 @@ export const copyLocations = (
       })
       .then(() => {
         // Perform uploadBulkLocations
-        return listUtils.uploadBulkLocations(req, dest_list.id, dest_list.list_name, src_geojson, '{}');
+        const attributes = JSON.stringify({
+          createdPath: '/copyLocations',
+        });
+        return listUtils.uploadBulkLocations(
+          req,
+          dest_list.id,
+          dest_list.list_name,
+          src_geojson,
+          attributes
+        );
       })
       .then((resultGeoJSON) => {
         // Array of destination location ids - assumption that it is in the same order as src_locations_ids

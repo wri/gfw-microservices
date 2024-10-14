@@ -64,7 +64,7 @@ function AnalysesTabs({
         <Tab
           icon={icon}
           iconPosition="start"
-          label="Post-2020 Tree Risk Assessment"
+          label="Post-2020 Risk Assessment"
           value={POST_2020_RISK_ASSESSMENT_VIEW}
           sx={{
             backgroundColor: listView === POST_2020_RISK_ASSESSMENT_VIEW ? 'white' : '#e5e5e5',

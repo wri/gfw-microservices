@@ -1,6 +1,11 @@
 import cloneDeep from 'lodash/cloneDeep';
 import columns from '../../config/columns';
 import { getListColumns } from './getListColumns';
+import {
+  COMMODITY_RISK_VIEW,
+  FOREST_CHANGE_VIEW,
+  POST_2000_RISK_ASSESSMENT_VIEW,
+} from './ListDetails/listViews.constants';
 
 /**
  * Get all column names based on List view name and location data
@@ -15,7 +20,7 @@ const getAllColumnNames = (listView, locationData, selectedLists, getCheckboxCol
   const { custom_attribute_names, isGlobalForestWatchList } = selectedLists[0];
 
   columnNames.list = getListColumns(locationData, custom_attribute_names, selectedLists);
-  if (listView === 'forest_change') {
+  if (listView === FOREST_CHANGE_VIEW) {
     columnNames.required = cloneDeep(columns.forest_change_locations);
     if (isGlobalForestWatchList) {
       columnNames.required.map((n) => {
@@ -32,22 +37,20 @@ const getAllColumnNames = (listView, locationData, selectedLists, getCheckboxCol
         return n;
       });
     }
-  } else if (listView === 'policy') {
-    columnNames.required = columns.policy_locations.slice();
   }
   if (list_name === 'Palm Oil Mills') {
-    if (listView === 'forest_change') {
+    if (listView === FOREST_CHANGE_VIEW) {
       gfwColumns.push(...columns.palm_oil_mill_fc.slice());
-    } else if (listView === 'commodity_risk') {
+    } else if (listView === COMMODITY_RISK_VIEW) {
       gfwColumns.push(...columns.palm_oil_mill_cr.slice());
     }
   } else if (
     selectedLists.length > 0 &&
     (list_name === 'RSPO Palm Concessions' || list_name === 'Oil Palm Concessions') &&
-    listView === 'forest_change'
+    listView === FOREST_CHANGE_VIEW
   ) {
     gfwColumns.push(...columns.oil_palm_concession_fc.slice());
-  } else if (list_name === 'Protected Areas' && listView === 'forest_change') {
+  } else if (list_name === 'Protected Areas' && listView === FOREST_CHANGE_VIEW) {
     gfwColumns.push(...columns.protected_area_fc.slice());
   }
 
@@ -58,7 +61,7 @@ const getAllColumnNames = (listView, locationData, selectedLists, getCheckboxCol
     (column) => column.Header !== location_name.Header
   );
   columnNames.list = [...columnNamesCloneFiltered, site_id];
-  if (listView === 'forest_change') {
+  if (listView === FOREST_CHANGE_VIEW) {
     const { columns: forestChangeAnalysisColumns, ...forestChangeAnalysisRestOfProperties } =
       columns.forest_change_analysis[1];
 
@@ -89,17 +92,7 @@ const getAllColumnNames = (listView, locationData, selectedLists, getCheckboxCol
       ...gfwColumns,
       ...columnNames.list,
     ];
-  } else if (listView === 'policy') {
-    const analysis = columns.policy_analysis.slice();
-    columnNames.combinedColumns = [
-      checkbox,
-      location_name,
-      ...columnNames.required,
-      ...analysis,
-      ...gfwColumns,
-      ...columnNames.list,
-    ];
-  } else if (listView === 'commodity_risk') {
+  } else if (listView === COMMODITY_RISK_VIEW) {
     const analysis = columns.commodity_analysis.slice();
     columnNames.combinedColumns = [
       checkbox,
@@ -108,6 +101,9 @@ const getAllColumnNames = (listView, locationData, selectedLists, getCheckboxCol
       ...gfwColumns,
       ...columnNames.list,
     ];
+  } else if (listView === POST_2000_RISK_ASSESSMENT_VIEW) {
+    const analysis = columns.post_2020_risk.slice();
+    columnNames.combinedColumns = [checkbox, ...analysis];
   }
 
   return columnNames;

@@ -27,10 +27,14 @@ import {
   UPDATE_POPOVER_ANCHOR,
   UPDATE_SELECTED_LIST,
   DEFORESTATION_DISPLAY_FORMAT,
+  NATURAL_FOREST_LOSS_DATA_SOURCE,
 } from '../constants/actionTypes';
 import cloneDeep from 'lodash/cloneDeep';
 import infoBubbleConfig from '../../../common/js/infoBubbleConfig.constants';
-import { DISPLAY_FORMAT_SUMMARY } from '../../../listDetails/js/components/lists/ListDetails/deforestationDisplayFormat.constants';
+import {
+  DISPLAY_FORMAT_SUMMARY,
+  SBTN_NATURAL_FOREST_LOSS,
+} from '../../../listDetails/js/components/lists/ListDetails/deforestationDisplayFormat.constants';
 
 const initialLocationState = {
   localColor: 'red',
@@ -64,6 +68,7 @@ const initialLocationState = {
     anchorEl: null,
   },
   deforestationDisplayFormat: DISPLAY_FORMAT_SUMMARY,
+  naturalForestLossDataSource: SBTN_NATURAL_FOREST_LOSS,
 };
 
 // initialize infoBubleCache keys from config
@@ -231,4 +236,11 @@ export function toggleDeforestationDisplayFormat(
   action
 ) {
   return action.type !== DEFORESTATION_DISPLAY_FORMAT ? state : action.data;
+}
+
+export function toggleNaturalForestLossDataSource(
+  state = initialLocationState.naturalForestLossDataSource,
+  action
+) {
+  return action.type !== NATURAL_FOREST_LOSS_DATA_SOURCE ? state : action.data;
 }

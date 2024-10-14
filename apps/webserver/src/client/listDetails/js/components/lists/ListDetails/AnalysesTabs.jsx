@@ -4,6 +4,11 @@ import Tab from '@mui/material/Tab';
 import CircularProgress from '@mui/material/CircularProgress';
 import { analysisTypes } from '../../../../../../config/env/analysisTypes.constants';
 import { listStatus } from '../../../../../../config/env/listStatuses.constants';
+import {
+  COMMODITY_RISK_VIEW,
+  FOREST_CHANGE_VIEW,
+  POST_2000_RISK_ASSESSMENT_VIEW,
+} from './listViews.constants';
 
 function AnalysesTabs({
   listView,
@@ -41,9 +46,26 @@ function AnalysesTabs({
         icon={icon}
         iconPosition="start"
         label="POST-2000 TREE COVER LOSS"
-        value="forest_change"
+        value={FOREST_CHANGE_VIEW}
         sx={{
-          backgroundColor: listView === 'forest_change' ? 'white' : '#e5e5e5',
+          backgroundColor: listView === FOREST_CHANGE_VIEW ? 'white' : '#e5e5e5',
+          color: 'black',
+          '&.Mui-selected': {
+            color: 'black',
+            backgroundColor: 'white',
+            borderTopLeftRadius: '4px',
+            borderTopRightRadius: '4px',
+          },
+        }}
+      />
+
+      <Tab
+        icon={icon}
+        iconPosition="start"
+        label="Post-2000 Tree Risk Assessment"
+        value={POST_2000_RISK_ASSESSMENT_VIEW}
+        sx={{
+          backgroundColor: listView === POST_2000_RISK_ASSESSMENT_VIEW ? 'white' : '#e5e5e5',
           color: 'black',
           '&.Mui-selected': {
             color: 'black',
@@ -61,9 +83,9 @@ function AnalysesTabs({
           icon={icon}
           iconPosition="start"
           label="COMMODITY RISK"
-          value="commodity_risk"
+          value={COMMODITY_RISK_VIEW}
           sx={{
-            backgroundColor: listView === 'commodity_risk' ? 'white' : '#e5e5e5',
+            backgroundColor: listView === COMMODITY_RISK_VIEW ? 'white' : '#e5e5e5',
             color: 'black',
             '&.Mui-selected': {
               color: 'black',

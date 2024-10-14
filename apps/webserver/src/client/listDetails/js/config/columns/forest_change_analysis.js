@@ -10,7 +10,7 @@ import {
   sortByStatus,
   normalizeColunmData,
   locationIsActive,
-  getDeforestationFormatedValue,
+  calculateAndFormatTotalDeforestation,
 } from '../../../../locations/js/utils/locationsTableUtils';
 import featureFlags from '../../../../../utils/general.utils';
 import infoBubbleConfig from '../../../../common/js/infoBubbleConfig.constants';
@@ -79,7 +79,7 @@ const forest_change_analysis = [
             checkValid(row.value.tree_cover_loss_total_yearly) ? (
               <span title={getValue(row.value.tree_cover_loss_total_yearly)}>
                 {isListDetailsPageRedesignAvailable
-                  ? getDeforestationFormatedValue(
+                  ? calculateAndFormatTotalDeforestation(
                       row.value.tree_cover_extent_total,
                       row.value.tree_cover_loss_total_yearly
                     )
@@ -122,7 +122,7 @@ const forest_change_analysis = [
                 )}
               >
                 {isListDetailsPageRedesignAvailable
-                  ? getDeforestationFormatedValue(
+                  ? calculateAndFormatTotalDeforestation(
                       row.value.tree_cover_extent_total,
                       row.value.tree_cover_loss_protected_areas_yearly,
                       row.value.protected_areas_area
@@ -169,7 +169,7 @@ const forest_change_analysis = [
                 )}
               >
                 {isListDetailsPageRedesignAvailable
-                  ? getDeforestationFormatedValue(
+                  ? calculateAndFormatTotalDeforestation(
                       row.value.tree_cover_extent_total,
                       row.value.tree_cover_loss_primary_forest_yearly,
                       row.value.natural_habitat_primary

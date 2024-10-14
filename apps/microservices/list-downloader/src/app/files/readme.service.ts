@@ -83,7 +83,6 @@ export class ReadmeService {
 
     const returnFileToCopy = {
       afi: this.afiReadmeData,
-      ['afi-vc']: this.afiReadmeData,
       alerts: this.alertsReadmeData,
       everything: this.everythingBundleReadmeData,
       southEastAsiaTCL: this.southEastAsiaTCL,

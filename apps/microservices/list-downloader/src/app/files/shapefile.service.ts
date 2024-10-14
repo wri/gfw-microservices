@@ -87,7 +87,7 @@ export class ShapefileService extends IPipeService {
     this.logger.log(`(${listId}) - Finished to process data and generate shapefile`);
     await this.writeAllData(this.inputStream);
     await finished(this.fileStream);
-    type !== 'afi-vc' ? await this.convertGeojsonToSHP(key, listName) : null;
+    type !== 'afiVC' ? await this.convertGeojsonToSHP(key, listName) : null;
     this.logger.log(`(${listId}) - Data has been zipped`);
     await this.finishProcess(filters);
   }

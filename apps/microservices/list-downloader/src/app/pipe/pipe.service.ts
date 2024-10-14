@@ -84,7 +84,7 @@ export class PipeService {
       southAmericaTCL: this.listGeneratorService,
       southEastAsiaOverlap: this.listGeneratorService,
       southEastAsiaTCL: this.listGeneratorService,
-      ['afi-vc']: this.afiVcGeneratorService,
+      afiVC: this.afiVcGeneratorService,
     };
   };
 

@@ -113,7 +113,7 @@ const AccountUsersUsageRequestSchema = BasicFieldsFileRequestSchema.extend({
 const getSchemaByType = (type: string) => {
   switch (type) {
     case 'afi':
-    case 'afi-vc':
+    case 'afiVC':
       return BasicFieldsFileRequestSchema;
     case 'alerts':
       return AlertFieldsFileRequestSchema;

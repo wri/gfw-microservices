@@ -2130,6 +2130,7 @@ export default class ListDetails extends Component {
                       changeListView={this.changeListView}
                       listAnalysesStatus={listAnalysesStatus}
                       hasLocationWithErrors={hasLocationWithErrors}
+                      isGfwList={isGfwList}
                     />
 
                     {!isGfwList && (

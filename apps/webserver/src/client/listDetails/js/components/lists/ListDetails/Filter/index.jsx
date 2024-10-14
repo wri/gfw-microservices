@@ -27,7 +27,7 @@ import '../../../../../../common/css/filter-dialogs.scss';
 import {
   COMMODITY_RISK_VIEW,
   FOREST_CHANGE_VIEW,
-  POST_2000_RISK_ASSESSMENT_VIEW,
+  POST_2020_RISK_ASSESSMENT_VIEW,
 } from '../listViews.constants';
 
 export default class Filter extends Component {
@@ -213,7 +213,7 @@ export default class Filter extends Component {
             ) : (
               <>
                 <Grid item xs={4}>
-                  {listView === POST_2000_RISK_ASSESSMENT_VIEW && (
+                  {listView === POST_2020_RISK_ASSESSMENT_VIEW && (
                     <NaturalForestLossDataSourceToggle />
                   )}
                 </Grid>

@@ -4,7 +4,7 @@ import { getListColumns } from './getListColumns';
 import {
   COMMODITY_RISK_VIEW,
   FOREST_CHANGE_VIEW,
-  POST_2000_RISK_ASSESSMENT_VIEW,
+  POST_2020_RISK_ASSESSMENT_VIEW,
 } from './ListDetails/listViews.constants';
 
 /**
@@ -101,7 +101,7 @@ const getAllColumnNames = (listView, locationData, selectedLists, getCheckboxCol
       ...gfwColumns,
       ...columnNames.list,
     ];
-  } else if (listView === POST_2000_RISK_ASSESSMENT_VIEW) {
+  } else if (listView === POST_2020_RISK_ASSESSMENT_VIEW) {
     const analysis = columns.post_2020_risk.slice();
     columnNames.combinedColumns = [checkbox, ...analysis];
   }

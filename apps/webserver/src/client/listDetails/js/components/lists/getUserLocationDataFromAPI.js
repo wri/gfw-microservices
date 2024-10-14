@@ -3,7 +3,7 @@ import store from '../../../../locations/js/store';
 import {
   COMMODITY_RISK_VIEW,
   FOREST_CHANGE_VIEW,
-  POST_2000_RISK_ASSESSMENT_VIEW,
+  POST_2020_RISK_ASSESSMENT_VIEW,
 } from './ListDetails/listViews.constants';
 
 const getUserLocationDataFromAPI = (
@@ -27,7 +27,7 @@ const getUserLocationDataFromAPI = (
       analysisId = 'FCD';
 
       break;
-    case POST_2000_RISK_ASSESSMENT_VIEW:
+    case POST_2020_RISK_ASSESSMENT_VIEW:
       analysisId = 'AFI';
 
       break;
@@ -43,7 +43,7 @@ const getUserLocationDataFromAPI = (
     page: page + 1,
     listID: selectedLists,
     searchString,
-    sortByAttribute: listView === POST_2000_RISK_ASSESSMENT_VIEW ? 'landmarkHA' : tableSortedBy,
+    sortByAttribute: listView === POST_2020_RISK_ASSESSMENT_VIEW ? 'landmarkHA' : tableSortedBy,
     order: tableSortedDesc ? 'desc' : 'asc',
     analysisAreaMin: filters.selectedAreaMin || 0,
     analysisId,

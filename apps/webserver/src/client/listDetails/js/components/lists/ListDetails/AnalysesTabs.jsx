@@ -7,7 +7,7 @@ import { listStatus } from '../../../../../../config/env/listStatuses.constants'
 import {
   COMMODITY_RISK_VIEW,
   FOREST_CHANGE_VIEW,
-  POST_2000_RISK_ASSESSMENT_VIEW,
+  POST_2020_RISK_ASSESSMENT_VIEW,
 } from './listViews.constants';
 
 function AnalysesTabs({
@@ -16,6 +16,7 @@ function AnalysesTabs({
   listViewOptions,
   listAnalysesStatus,
   hasLocationWithErrors,
+  isGfwList,
 }) {
   const post2020TreeCoverLossAnalysisStatus = listAnalysesStatus?.find(
     ({ analysisId }) => analysisId === analysisTypes.FOREST_CHANGE_DIAGNOSTICS
@@ -59,22 +60,24 @@ function AnalysesTabs({
         }}
       />
 
-      <Tab
-        icon={icon}
-        iconPosition="start"
-        label="Post-2000 Tree Risk Assessment"
-        value={POST_2000_RISK_ASSESSMENT_VIEW}
-        sx={{
-          backgroundColor: listView === POST_2000_RISK_ASSESSMENT_VIEW ? 'white' : '#e5e5e5',
-          color: 'black',
-          '&.Mui-selected': {
+      {!isGfwList && (
+        <Tab
+          icon={icon}
+          iconPosition="start"
+          label="Post-2020 Tree Risk Assessment"
+          value={POST_2020_RISK_ASSESSMENT_VIEW}
+          sx={{
+            backgroundColor: listView === POST_2020_RISK_ASSESSMENT_VIEW ? 'white' : '#e5e5e5',
             color: 'black',
-            backgroundColor: 'white',
-            borderTopLeftRadius: '4px',
-            borderTopRightRadius: '4px',
-          },
-        }}
-      />
+            '&.Mui-selected': {
+              color: 'black',
+              backgroundColor: 'white',
+              borderTopLeftRadius: '4px',
+              borderTopRightRadius: '4px',
+            },
+          }}
+        />
+      )}
 
       {listViewOptions.length > 1 && (
         // only display Commodity Risk / Forest Change view toggle in Commodity Risk lists

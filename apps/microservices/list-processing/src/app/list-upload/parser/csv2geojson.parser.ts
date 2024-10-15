@@ -156,7 +156,7 @@ export const csv2geojson = async (
       error: (error, file) => reject(`${file} - ${error}`),
     } as Papa.ParseWorkerConfig;
 
-    if (!preview) {
+    if (preview) {
       config = {
         ...config,
         // force the lib to only read this amount of rows

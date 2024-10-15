@@ -215,6 +215,10 @@ export default class ListDetails extends Component {
         listColumns: columnNames.list.filter((c) => this.showListColumn(c)),
         combinedColumns: columnNames.combinedColumns,
       });
+
+      if (!selectedLists[0].isGlobalForestWatchList) {
+        this.getUserLocationData(selectedLists[0].id);
+      }
     }
 
     if (
@@ -2126,6 +2130,7 @@ export default class ListDetails extends Component {
                       changeListView={this.changeListView}
                       listAnalysesStatus={listAnalysesStatus}
                       hasLocationWithErrors={hasLocationWithErrors}
+                      isGfwList={isGfwList}
                     />
 
                     {!isGfwList && (

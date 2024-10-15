@@ -16,6 +16,7 @@ import UserListCommodityRiskFilter from './UserListCommodityRiskFilter';
 import ProtectedAreasGFWList from './ProtectedAreasGFWListFilter';
 import AdministrativeAreasGFWListFilter from './AdministrativeAreasGFWListFilter';
 import GFWListFilter from './GFWListFilter';
+import NaturalForestLossDataSourceToggle from './NaturalForestLossDataSourceToggle';
 import DeforestationDisplayFormatToggleButtons from '../DeforestationDisplayFormatToggleButtons';
 import { filterKeys, gfwListNames } from '../../../../../../common/js/constants/lists.constants';
 import { GFW_LISTS_NUMBER_CONSTANTS } from '../../../../../../../config/env/gfwLists.constants';
@@ -23,6 +24,11 @@ import store from '../../../../../../locations/js/store';
 import '../../../../../../common/css/_irsBase.scss';
 import '../../../../../../common/css/_irsStyle.scss';
 import '../../../../../../common/css/filter-dialogs.scss';
+import {
+  COMMODITY_RISK_VIEW,
+  FOREST_CHANGE_VIEW,
+  POST_2020_RISK_ASSESSMENT_VIEW,
+} from '../listViews.constants';
 
 export default class Filter extends Component {
   constructor(props) {
@@ -99,8 +105,8 @@ export default class Filter extends Component {
 
     const subStateList = selectedState ? filterValues[selectedCountry][selectedState] : [];
 
-    const isCommodityRiskFilterVisible = listView === 'commodity_risk';
-    const isForestChangeFilterVisible = listView === 'forest_change';
+    const isCommodityRiskFilterVisible = listView === COMMODITY_RISK_VIEW;
+    const isForestChangeFilterVisible = listView === FOREST_CHANGE_VIEW;
 
     const { PALM_OIL_MILLS, PROTECTED_AREAS, ADMINISTRATIVE_AREAS } = GFW_LISTS_NUMBER_CONSTANTS;
 
@@ -205,9 +211,16 @@ export default class Filter extends Component {
                 </Grid>
               </>
             ) : (
-              <Grid item xs={11} sx={{ textAlign: 'center' }}>
-                {!isGfwList && <DeforestationDisplayFormatToggleButtons />}
-              </Grid>
+              <>
+                <Grid item xs={4}>
+                  {listView === POST_2020_RISK_ASSESSMENT_VIEW && (
+                    <NaturalForestLossDataSourceToggle />
+                  )}
+                </Grid>
+                <Grid item xs={7}>
+                  {!isGfwList && <DeforestationDisplayFormatToggleButtons />}
+                </Grid>
+              </>
             )}
             <Grid item xs={1} sx={{ alignSelf: 'center' }}>
               <Box flexGrow={1} />

@@ -657,7 +657,8 @@ module.exports = (app, limiter) => {
         filters.sortByAttribute === 'protectedAreasHA' ||
         filters.sortByAttribute === 'landmarkHA' ||
         filters.sortByAttribute === 'naturalForestLossHA' ||
-        filters.sortByAttribute === 'jrcNaturalForestLossHA'
+        filters.sortByAttribute === 'jrcNaturalForestLossHA' ||
+        filters.sortByAttribute === 'locationName'
       ) {
         AFI_SORT_BY_ATTRIBUTES = filters.sortByAttribute;
         delete filters.sortByAttribute;
@@ -678,13 +679,14 @@ module.exports = (app, limiter) => {
               ? numberOfResults / pageSize
               : Math.floor(numberOfResults / pageSize) + 1;
 
-          // Sort listAnalyses by some of those attributes protectedAreasHA, landmarkHA, naturalForestLossHA or jrcNaturalForestLossHA if not empty
+          // Sort listAnalyses by some of those attributes protectedAreasHA, landmarkHA, naturalForestLossHA, jrcNaturalForestLossHA or locationName if not empty
           if (listAnalyses.length > 0) {
             const sortAttributes = {
               protectedAreasHA: 'protectedAreasHA',
               landmarkHA: 'landmarkHA',
               naturalForestLossHA: 'naturalForestLossHA',
               jrcNaturalForestLossHA: 'jrcNaturalForestLossHA',
+              locationName: 'locationName',
             };
 
             if (sortAttributes[AFI_SORT_BY_ATTRIBUTES]) {

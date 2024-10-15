@@ -1,5 +1,5 @@
 import { CreateListRequest } from './../../models/index';
-import { Body, Controller, Post, UseGuards } from '@nestjs/common';
+import { Body, Controller, Post, Request, UseGuards } from '@nestjs/common';
 import { AppController } from '../app.controller';
 import { ApiTags } from '@nestjs/swagger';
 import { ListPaginationService } from '../../services/list.pagination.service';
@@ -28,7 +28,11 @@ export class ListController extends AppController {
 
   @Post('/create-list')
   @UseGuards(new FeatureFlagCheckGuard('UploadListLp'))
-  createList(@Body() request: CreateListRequest) {
-    return this.listService.createNewList(request);
+  createList(@Body() request: CreateListRequest, @Request() context) {
+    const { featureFlag } = context;
+    return this.listService.createNewList({
+      ...request,
+      isUploadListLpEnabled: featureFlag.enabled,
+    });
   }
 }

@@ -113,6 +113,7 @@ export class CreateListRequest {
   analysisIds: Array<string>;
   @ApiProperty()
   filename: string;
+  isUploadListLpEnabled?: boolean;
 }
 
 export class CopyOrMoveLargeListRequestLLP implements CopyOrMoveLargeListRequest {

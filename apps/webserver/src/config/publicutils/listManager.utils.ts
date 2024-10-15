@@ -65,6 +65,8 @@ const { listStatusOrderByWorse } = require(path.resolve('./config/env/listStatus
 import { listStatus } from '@wri-monorepos/constants';
 import { SqlParamType, AnalysisDataType, ListsType, DeleteListTypeOrm } from '@wri-monorepos/sql';
 
+const LIST_UPLOAD_VERSION = 1;
+
 /** @function {createList}
  *   @summary Create a new list within Organization DB
  *   @param  {Object} req - Manadatory first parameter to pass the request object into the function in case session info is required.
@@ -121,6 +123,7 @@ const createList = (
       { field: 'custom_attribute_names', type: sql.NVarChar(2000), value: custom_attribute_names },
       { field: 'custom_attribute_types', type: sql.NVarChar(2000), value: custom_attribute_types },
       { field: 'associated_gfwlist', type: sql.TinyInt, value: gfw_list_id },
+      { field: 'version', type: sql.Int, value: LIST_UPLOAD_VERSION },
     ];
 
     sqlUtils
@@ -288,6 +291,7 @@ const saveAsDraftList = (
       { field: 'custom_attribute_names', type: sql.NVarChar(2000), value: custom_attribute_names },
       { field: 'custom_attribute_types', type: sql.NVarChar(2000), value: custom_attribute_types },
       { field: 'associated_gfwlist', type: sql.TinyInt, value: gfw_list_id },
+      { field: 'version', type: sql.Int, value: LIST_UPLOAD_VERSION },
     ];
 
     sqlUtils

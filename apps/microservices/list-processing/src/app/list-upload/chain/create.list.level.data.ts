@@ -4,6 +4,7 @@ import { CreateListResult } from '@wri-monorepos/geo';
 import * as sql from 'mssql';
 import { updateListsUploadStatus } from '../shared/update.lists.upload.status';
 
+const LIST_UPLOAD_VERSION = 2;
 export class CreateListLevelData extends AbstractHandler<ChainType> {
   private createSqlParameter(
     field: string,
@@ -53,6 +54,7 @@ export class CreateListLevelData extends AbstractHandler<ChainType> {
       this.createSqlParameter('custom_attribute_names', sql.NVarChar(2000), customAttributeNames),
       this.createSqlParameter('custom_attribute_types', sql.NVarChar(2000), customAttributeTypes),
       this.createSqlParameter('associated_gfwlist', sql.TinyInt, gfwListId),
+      this.createSqlParameter('version', sql.Int, LIST_UPLOAD_VERSION),
     ];
 
     const result = await this.executeQueryWithParams<CreateListResult>(

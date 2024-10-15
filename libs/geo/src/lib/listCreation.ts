@@ -13,6 +13,8 @@ interface QueryCreateTableResult {
   query_string: string;
 }
 
+const LIST_UPLOAD_VERSION = 1;
+
 @Injectable()
 export class SPSListCreation {
   async createNewList(
@@ -108,6 +110,8 @@ export class SPSListCreation {
         value: custom_attribute_types,
       },
       { field: 'associated_gfwlist', type: sql.TinyInt, value: gfw_list_id },
+      { field: 'associated_gfwlist', type: sql.TinyInt, value: gfw_list_id },
+      { field: 'version', type: sql.Int, value: LIST_UPLOAD_VERSION },
     ];
 
     let clientConnection = new SQLUtils(sqlClientConfig);

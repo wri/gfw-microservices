@@ -19,6 +19,8 @@ import { featureFlagsService } from '@wri-monorepos/shared';
 import { DeprecatedStartAnalysisService } from '../app/list-upload/deprecated.start.analysis.service';
 import { StartAnalysisService } from '../app/list-upload/start.analysis.service';
 
+const LIST_UPLOAD_VERSION = 1;
+
 interface CreateListResult {
   list_id: number;
 }
@@ -253,6 +255,7 @@ export class ListService {
           value: customAttributeTypes,
         },
         { field: 'associated_gfwlist', type: sql.TinyInt, value: gfwListId },
+        { field: 'version', type: sql.Int, value: LIST_UPLOAD_VERSION },
       ];
 
       const createListResult = await connection.executeQuery<CreateListResult>(

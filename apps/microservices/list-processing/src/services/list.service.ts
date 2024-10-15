@@ -27,7 +27,6 @@ interface CreateListResult {
 @Injectable()
 export class ListService {
   constructor(
-    private dataSource: DataSource,
     private readonly clientStoreConnection: ClientStoreConnection,
     private readonly awsMetadataService: AWSMetadataService,
     private readonly config: ConfigService<ServerConfigType, true>,
@@ -283,16 +282,19 @@ export class ListService {
   }
 
   async getTableStructureQuery(templateId: number): Promise<ListTableColumnsQueryString> {
+    const conn = new SQLUtils();
+    const parameters = [{ field: 'template_id', type: sql.Int, value: templateId }];
+
     try {
-      const conn = new SQLUtils();
       await conn.connect();
-      const parameters = [{ field: 'template_id', type: sql.Int, value: templateId }];
       return await conn.executeQuery<ListTableColumnsQueryString>(
         'uspGetTableQueryString',
         parameters
       );
     } catch (error) {
-      throw new Error('Failed get table structure query: ' + error.message);
+      throw new Error(
+        `Failed to get table structure query: ${error.stack || error.message || error}`
+      );
     }
   }
 

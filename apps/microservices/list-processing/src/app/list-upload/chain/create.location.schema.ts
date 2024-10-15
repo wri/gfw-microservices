@@ -2,6 +2,7 @@ import { ListTableColumnsQueryString, SQLUtils } from '@wri-monorepos/sql';
 import { updateListsUploadStatus } from '../shared/update.lists.upload.status';
 import { AbstractHandler, ChainType, RequestNewList } from './types';
 import * as sql from 'mssql';
+import { parameters } from 'libs/sql/src/lib/util/parameter/values';
 
 export class CreateLocationSchema extends AbstractHandler<ChainType> {
   private clientStoreConnection: SQLUtils;
@@ -51,9 +52,20 @@ export class CreateLocationSchema extends AbstractHandler<ChainType> {
   }
 
   public async getTableStructureQuery(templateId: number): Promise<ListTableColumnsQueryString> {
-    return await SQLUtils.queryDB('gfwpro', 'uspGetTableQueryString', [
-      this.createSqlParameter('template_id', sql.Int, templateId),
-    ]);
+    const conn = new SQLUtils();
+    const parameters = [this.createSqlParameter('template_id', sql.Int, templateId)];
+
+    try {
+      await conn.connect();
+      return await conn.executeQuery<ListTableColumnsQueryString>(
+        'uspGetTableQueryString',
+        parameters
+      );
+    } catch (error) {
+      throw new Error(
+        `Failed to get table structure query: ${error.stack || error.message || error}`
+      );
+    }
   }
 
   public async createAnalysisTableInDatabase(

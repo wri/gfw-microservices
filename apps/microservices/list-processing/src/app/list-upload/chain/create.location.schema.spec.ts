@@ -55,10 +55,14 @@ describe('CreateLocationSchema', () => {
 
   describe('getTableStructureQuery', () => {
     it('should get the table structure query', async () => {
-      SQLUtils.queryDB = jest.fn().mockResolvedValueOnce('');
       const someTemplateId = 13;
+
+      jest.spyOn(SQLUtils.prototype, 'connect').mockResolvedValueOnce();
+      jest.spyOn(SQLUtils.prototype, 'executeQuery').mockResolvedValueOnce('');
+
       await createLocationSchema.getTableStructureQuery(someTemplateId);
-      expect(SQLUtils.queryDB).toHaveBeenCalledWith('gfwpro', 'uspGetTableQueryString', [
+
+      expect(SQLUtils.prototype.executeQuery).toHaveBeenCalledWith('uspGetTableQueryString', [
         { field: 'template_id', type: sql.Int, value: someTemplateId },
       ]);
     });

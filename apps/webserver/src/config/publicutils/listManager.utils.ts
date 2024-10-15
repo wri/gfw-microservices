@@ -1034,7 +1034,7 @@ export const uploadToNewListAndSaveAsDraft = (
   geojson,
   gfw_list_id,
   analysisIds,
-  attributes = ''
+  attributes
 ) => {
   const { original_gfw_list } = req.body;
   const user_id = req.session.organization_user_id;

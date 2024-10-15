@@ -93,8 +93,8 @@ export class AfiVcGeneratorService extends IFileGenerator {
       this.logger.log(`(${listId}) - Get page of number ${localPage} from database`);
     }
   }
-  private defineService(filters:ListFieldsFileRequest): IPipeService {
-    const {type, file} = filters;
+  private defineService(filters: ListFieldsFileRequest): IPipeService {
+    const { type, file } = filters;
     const mapFileType2Service = {
       afiVC_shapefile: this.geometryService,
     };

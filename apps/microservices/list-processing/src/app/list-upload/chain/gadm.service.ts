@@ -1,5 +1,5 @@
 import { Logger } from '@nestjs/common';
-import { AbstractHandler, ChainType } from './types';
+import { AbstractHandler, ChainType, PreviewListRequest } from './types';
 import asyncPool from 'tiny-async-pool';
 import { Feature, FeatureCollection } from '@wri-monorepos/geo';
 import { IFeatureSet, IGeometry, queryFeatures } from '@esri/arcgis-rest-feature-service';
@@ -109,7 +109,7 @@ export class GADMService extends AbstractHandler<ChainType> {
     }
   };
 
-  getGADM = async (geojson): Promise<FeatureCollection> => {
+  clipToLand = async (geojson): Promise<FeatureCollection> => {
     return new Promise((resolve, reject) => {
       const s3ObjectsToDelete = [];
       const objectName = `gadm-${new Date().getTime()}`;
@@ -154,15 +154,17 @@ export class GADMService extends AbstractHandler<ChainType> {
 
   async handle(input: ChainType): Promise<ChainType> {
     const { geojson } = input;
-    const { listId } = input.request;
+    const { path, preview = false } = input.request as PreviewListRequest;
     const { features } = geojson as FeatureCollection;
 
     for await (const localPage of asyncPool(POOL_SIZE, features, this.composeResults)) {
-      this.logger.log(`(${listId}) - Get page of number ${localPage} from database`);
+      this.logger.log(`(${path}) - Get page of number ${localPage} from database`);
     }
 
-    input.geojson = await this.getGADM(geojson);
-
+    // We should not call clip to land if we are in the preview mode.
+    if (!preview) {
+      input.geojson = await this.clipToLand(geojson);
+    }
     return super.handle(input);
   }
 }

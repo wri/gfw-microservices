@@ -41,7 +41,7 @@ describe('ParserData', () => {
       const result = await parserData.handle(input);
 
       expect(fs.readFileSync).toHaveBeenCalledWith(fileDownloadedPath, 'utf8');
-      expect(csv2geojson).toHaveBeenCalledWith(csvContent);
+      expect(csv2geojson).toHaveBeenCalledWith(csvContent, false);
       expect(parserData.deleteFile).toHaveBeenCalledWith(fileDownloadedPath);
       expect(result).toEqual({ ...input, geojson: geoJson });
     });

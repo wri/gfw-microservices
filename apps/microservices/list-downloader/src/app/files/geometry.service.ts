@@ -19,8 +19,8 @@ import { ReplaceSpace2Underscore } from '../transform/replace.space.2.underscore
 @Injectable({
   scope: Scope.REQUEST,
 })
-export class ShapefileService extends IPipeService {
-  private readonly logger = new Logger(ShapefileService.name);
+export class GeometryService extends IPipeService {
+  private readonly logger = new Logger(GeometryService.name);
   private inputStream: PassThrough;
   private fileStream: fs.WriteStream;
 

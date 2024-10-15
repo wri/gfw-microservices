@@ -24,7 +24,7 @@ export * from './other.kpis.service';
 export * from './palm.risk.analysis.service';
 export * from './readme.service';
 export * from './result.service';
-export * from './shapefile.service';
+export * from './geometry.service';
 export * from './south.america.biomes.service';
 export * from './south.america.loss.service';
 export * from './south.east.asia.overlap.service';

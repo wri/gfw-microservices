@@ -1,4 +1,4 @@
-import { ShapefileService } from '../files';
+import { GeometryService } from '../files';
 import { Injectable, Logger } from '@nestjs/common';
 import { ListFieldsFileRequest, UspGetListAnalysis } from '@wri-monorepos/sql';
 import * as asyncPool from 'tiny-async-pool';
@@ -18,7 +18,7 @@ export class AfiVcGeneratorService extends IFileGenerator {
 
   constructor(
     private readonly analysisAfiDataService: AnalysisAfiDataService,
-    private readonly shapefileService: ShapefileService,
+    private readonly geometryService: GeometryService,
     private readonly uspGetListAnalysis: UspGetListAnalysis,
     private readonly configService: ConfigService<ServerConfigType, true>,
     private readonly analysisDataService: AnalysisDataService
@@ -27,7 +27,12 @@ export class AfiVcGeneratorService extends IFileGenerator {
   }
 
   public async makeFile(filters: ListFieldsFileRequest) {
-    const service = this.defineService();
+    const { file, type } = filters;
+    if (file !== 'shapefile' || type !== 'afiVC') {
+      this.logger.error(`Service not found for type: ${type} and file: ${file}`);
+      return;
+    }
+    const service = this.defineService(filters);
     await this.runAfiFileGeneration(filters);
     await getAllFilesAndZip(filters);
     await service.finish(filters);
@@ -72,8 +77,7 @@ export class AfiVcGeneratorService extends IFileGenerator {
       ...fields,
     };
 
-    const service = this.defineService();
-
+    const service = this.defineService(filters);
     await service.start(filters);
 
     const composeResults = async (i: number) => {
@@ -89,12 +93,13 @@ export class AfiVcGeneratorService extends IFileGenerator {
       this.logger.log(`(${listId}) - Get page of number ${localPage} from database`);
     }
   }
-  private defineService(): IPipeService {
+  private defineService(filters:ListFieldsFileRequest): IPipeService {
+    const {type, file} = filters;
     const mapFileType2Service = {
-      input_shapefile: this.shapefileService,
+      afiVC_shapefile: this.geometryService,
     };
 
-    return mapFileType2Service['input_shapefile'];
+    return mapFileType2Service[`${type}_${file}`];
   }
   private async getListOfFields(filters: ListFieldsFileRequest) {
     const newFilters = {

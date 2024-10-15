@@ -215,6 +215,10 @@ export default class ListDetails extends Component {
         listColumns: columnNames.list.filter((c) => this.showListColumn(c)),
         combinedColumns: columnNames.combinedColumns,
       });
+
+      if (!selectedLists[0].isGlobalForestWatchList) {
+        this.getUserLocationData(selectedLists[0].id);
+      }
     }
 
     if (
@@ -1216,10 +1220,10 @@ export default class ListDetails extends Component {
       },
     })
       .then((response) => {
-        const { numberOfPages, total_rows } = response;
+        const { numberOfPages, numberOfResults } = response;
         this.setState({
           numberOfPages,
-          numberOfResults: total_rows,
+          numberOfResults,
         });
         this.processListData(response);
       })
@@ -2039,13 +2043,13 @@ export default class ListDetails extends Component {
                 anchorElCountries={anchorElCountries}
                 closeCountriesPopover={this.closeCountriesPopover}
                 countries={countries}
-                filteredLists={filteredLists}
                 filterValues={filterValues}
                 listLocationsCount={numberOfResults}
                 openCountriesPopover={openCountriesPopover}
                 selectedList={selectedList}
                 shareView={shareView}
                 toggleCountriesPopover={this.toggleCountriesPopover}
+                numberOfResults={numberOfResults}
               />
             </Stack>
           )}
@@ -2126,6 +2130,7 @@ export default class ListDetails extends Component {
                       changeListView={this.changeListView}
                       listAnalysesStatus={listAnalysesStatus}
                       hasLocationWithErrors={hasLocationWithErrors}
+                      isGfwList={isGfwList}
                     />
 
                     {!isGfwList && (

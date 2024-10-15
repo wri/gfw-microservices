@@ -1,4 +1,7 @@
 {
+  "env": {
+    "browser": true
+  },
   "extends": ["../../.eslintrc.json"],
   "plugins": ["import"],
   "ignorePatterns": ["!**/*"],

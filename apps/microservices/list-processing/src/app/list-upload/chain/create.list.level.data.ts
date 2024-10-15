@@ -3,9 +3,8 @@ import { AbstractHandler, ChainType } from './types';
 import { CreateListResult } from '@wri-monorepos/geo';
 import * as sql from 'mssql';
 import { updateListsUploadStatus } from '../shared/update.lists.upload.status';
-import { sqlConfig } from '../shared/config';
 
-export class CreateList extends AbstractHandler<ChainType> {
+export class CreateListLevelData extends AbstractHandler<ChainType> {
   private createSqlParameter(
     field: string,
     type: sql.ISqlType | sql.ISqlTypeFactoryWithNoParams,
@@ -70,7 +69,7 @@ export class CreateList extends AbstractHandler<ChainType> {
     await this.executeQueryWithParams<void>(connection, 'uspAddListToAnalyses', parameters);
   }
 
-  async handle(input: ChainType): Promise<void> {
+  async handle(input: ChainType): Promise<ChainType> {
     const {
       list_name: listName,
       organization_database: clientDatabase,
@@ -81,17 +80,14 @@ export class CreateList extends AbstractHandler<ChainType> {
       customAttributeNames,
       customAttributeTypes,
       gfwListId,
-      userId,
-      templateId,
+      user_id: userId,
+      template_id: templateId,
     } = input.request;
 
-    const connection = new SQLUtils({
-      ...sqlConfig,
-      database: clientDatabase,
-    });
+    const connection = new SQLUtils();
 
     try {
-      await connection.connect();
+      await connection.connect(clientDatabase);
 
       const createListResult = await this.insertListInListTable(
         connection,
@@ -113,11 +109,6 @@ export class CreateList extends AbstractHandler<ChainType> {
         'Insert row in List table'
       );
 
-      await super.handle({
-        ...input,
-        request: { ...input.request, listId: createListResult.list_id },
-      });
-
       await this.addListToAnalysesTable(connection, createListResult.list_id);
 
       await updateListsUploadStatus(
@@ -125,6 +116,11 @@ export class CreateList extends AbstractHandler<ChainType> {
         createListResult.list_id,
         'Add list to analysis table'
       );
+
+      return await super.handle({
+        ...input,
+        request: { ...input.request, listId: createListResult.list_id },
+      });
     } finally {
       await connection.disconnect();
     }

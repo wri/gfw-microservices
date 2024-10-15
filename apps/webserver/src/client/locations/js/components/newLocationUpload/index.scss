@@ -1,0 +1,33 @@
+body:has(.new-location-upload) {
+  background: #e5e5e5;
+}
+
+.new-location-upload {
+  margin: 12px auto;
+  max-width: 1000px;
+  min-width: 300px;
+
+  @media (max-width: 991px) {
+    padding: 12px 100px;
+
+    @media (max-width: 575px) {
+      padding: 0;
+    }
+  }
+
+  > nav {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    margin: 0.5rem 0 2rem 0;
+
+    h5 {
+      color: #404041;
+    }
+
+    > svg:last-of-type {
+      color: #b3b3b3;
+      font-size: 0.75rem;
+    }
+  }
+}

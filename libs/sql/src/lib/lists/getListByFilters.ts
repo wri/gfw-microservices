@@ -13,6 +13,6 @@ export async function getListByFilters(
     ];
     return await SQLUtils.queryDBFirstRow(databaseName, 'getListByFiltersQuery', parameters);
   } catch (error) {
-    throw new Error(error);
+    throw new Error(error.stack);
   }
 }

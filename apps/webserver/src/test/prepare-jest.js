@@ -43,6 +43,7 @@ try {
     '@wri-monorepos/shared': '<rootDir>/../../../libs/shared/src/index.ts',
     '@wri-monorepos/sql': '<rootDir>/../../../libs/sql/src/index.ts',
     '@wri-monorepos/geo': '<rootDir>/../../../libs/geo/src/index.ts',
+    '@wri-monorepos/aws': '<rootDir>/../../../libs/aws/src/index.ts',
     ...aliases,
   };
   (jestConfig.modulePathIgnorePatterns = [

@@ -20,6 +20,7 @@ import {
   updateInfoBubbleCache,
   updatePopoverState,
   toggleDeforestationDisplayFormat,
+  toggleNaturalForestLossDataSource,
 } from './locationReducer';
 import { combineReducers } from 'redux';
 
@@ -45,6 +46,7 @@ const appReducer = combineReducers({
   infoBubbleCache: updateInfoBubbleCache,
   popover: updatePopoverState,
   deforestationDisplayFormat: toggleDeforestationDisplayFormat,
+  naturalForestLossDataSource: toggleNaturalForestLossDataSource,
 });
 
 const rootReducer = (state, action) => {

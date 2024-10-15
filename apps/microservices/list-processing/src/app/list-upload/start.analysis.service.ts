@@ -3,7 +3,15 @@ import { RequestLargeListProcess, ResponseLargeListProcess } from '../../models'
 import { ConfigService } from '@nestjs/config';
 import { ServerConfigType } from '../../validators/server-config';
 import { S3Service } from '@wri-monorepos/aws';
-import { csv2geojson } from './parser/csv2geojson.parser';
+import { ChainType } from './chain/types';
+import { DownloadS3File } from './chain/download.s3.file';
+import { ParserData } from './chain/parser.data';
+import { ListSchemaName } from './chain/list.schema.name';
+import { CreateLocationSchema } from './chain/create.location.schema';
+import { SQLUtils } from '@wri-monorepos/sql';
+import { GADMService } from './chain/gadm.service';
+import { CreateListLevelData } from './chain/create.list.level.data';
+import { InsertLocationData } from './chain/insert.location.data';
 
 @Injectable()
 export class StartAnalysisService {
@@ -15,15 +23,38 @@ export class StartAnalysisService {
   ) {}
 
   async run(request: RequestLargeListProcess): Promise<ResponseLargeListProcess> {
-    const { path } = request;
-    const bucket = this.config.get('LARGE_PROCESSING_LIST_BUCKET', { infer: true });
-    const fileDownloadedPath = await this.s3Service.writeS3fileIntoTmp(path, bucket);
-    this.logger.log(`Downloaded the file and write it into ${fileDownloadedPath}`);
+    const { organization_database: organizationDatabase } = request;
 
-    const geoJson = csv2geojson(fileDownloadedPath);
-    // debug log used to avoid eslint complains about unused variable
-    this.logger.debug(geoJson);
+    const chainType: ChainType = {
+      request,
+      geojson: {
+        type: 'FeatureCollection',
+        features: [],
+      },
+    };
 
+    const connection = new SQLUtils();
+    await connection.connect(organizationDatabase);
+
+    const downloadS3File = new DownloadS3File(this.s3Service, this.config);
+    const parseData = new ParserData();
+    const listSchemaName = new ListSchemaName();
+    const gadmService = new GADMService();
+    const createListLevelData = new CreateListLevelData();
+    const createLocationSchema = new CreateLocationSchema(connection);
+    const insertLocationData = new InsertLocationData(null);
+
+    downloadS3File
+      .setNext(parseData)
+      .setNext(listSchemaName)
+      .setNext(gadmService)
+      .setNext(createListLevelData)
+      .setNext(createLocationSchema)
+      .setNext(insertLocationData);
+
+    await downloadS3File.handle(chainType);
+
+    await connection.disconnect();
     return {
       executionArn: '',
       startDate: '',

@@ -64,6 +64,26 @@ export class RequestLargeListProcess {
   startAnalysis: boolean;
   @ApiProperty()
   isExternalAPIProcess?: boolean;
+
+  @ApiProperty()
+  list_name?: string;
+
+  @ApiProperty()
+  analysisIds?: Array<string>;
+
+  @ApiProperty()
+  template_id?: number;
+}
+
+export class StartAnalysisType {
+  @ApiProperty()
+  organization_id: number;
+  @ApiProperty()
+  subscription_status_id: number;
+  @ApiProperty()
+  organization_database: string;
+  @ApiProperty()
+  path: string;
 }
 
 export interface ResponseLargeListProcess {

@@ -21,6 +21,7 @@ import { resetScroll } from '../utils/scroll.utils';
 
 import '../../css/locations.scss';
 import ShareListModal from './ShareList/ShareListModal';
+import { NewLocationUpload } from './newLocationUpload';
 
 const { universalMillList } = proLayers;
 
@@ -391,6 +392,9 @@ class Locations extends Component {
               selectedLocations={selectedLocations}
               filteredData={filteredData}
             />
+          </Route>
+          <Route path="/new-location-upload">
+            <NewLocationUpload />
           </Route>
           <Route>
             <Landing

@@ -39,6 +39,7 @@ export const alertsGenerateBodySchema = z.object({
   startDate: dateFormat.optional(),
   endDate: dateFormat.optional(),
   userEmail: z.string().email(),
+  outputType: z.enum(['verifiableCredential']).optional(),
 });
 
 export type AlertsGenerateBodySchema = z.infer<typeof alertsGenerateBodySchema>;
@@ -56,6 +57,9 @@ export class AlertsGenerateRequest {
 
   @ApiProperty()
   userEmail: string;
+
+  @ApiProperty()
+  outputType?: string;
 }
 
 export const deleteListBodySchema = z.object({
@@ -80,6 +84,7 @@ export interface AnalysesGenerateRequest {
   userEmail: string;
   startDate: Date;
   endDate: Date;
+  outputType?: string;
 }
 
 export const reanalyzeAnalysisBodySchema = z.object({

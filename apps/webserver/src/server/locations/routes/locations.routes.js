@@ -644,7 +644,7 @@ module.exports = (app, limiter) => {
     };
 
     try {
-      let listAnalyses = {};
+      let listAnalyses;
       let locationAttributeArray = {};
       let numberOfPages = 0,
         numberOfResults = 0,
@@ -652,11 +652,13 @@ module.exports = (app, limiter) => {
         locationAttributeList;
       // Delete specifics AFI sortByAttribute
       let AFI_SORT_BY_ATTRIBUTES = '';
+      let location_analyses = [];
       if (
         filters.sortByAttribute === 'protectedAreasHA' ||
         filters.sortByAttribute === 'landmarkHA' ||
         filters.sortByAttribute === 'naturalForestLossHA' ||
-        filters.sortByAttribute === 'jrcNaturalForestLossHA'
+        filters.sortByAttribute === 'jrcNaturalForestLossHA' ||
+        filters.sortByAttribute === 'locationName'
       ) {
         AFI_SORT_BY_ATTRIBUTES = filters.sortByAttribute;
         delete filters.sortByAttribute;
@@ -677,13 +679,14 @@ module.exports = (app, limiter) => {
               ? numberOfResults / pageSize
               : Math.floor(numberOfResults / pageSize) + 1;
 
-          // Sort listAnalyses by some of those attributes protectedAreasHA, landmarkHA, naturalForestLossHA or jrcNaturalForestLossHA if not empty
+          // Sort listAnalyses by some of those attributes protectedAreasHA, landmarkHA, naturalForestLossHA, jrcNaturalForestLossHA or locationName if not empty
           if (listAnalyses.length > 0) {
             const sortAttributes = {
               protectedAreasHA: 'protectedAreasHA',
               landmarkHA: 'landmarkHA',
               naturalForestLossHA: 'naturalForestLossHA',
               jrcNaturalForestLossHA: 'jrcNaturalForestLossHA',
+              locationName: 'locationName',
             };
 
             if (sortAttributes[AFI_SORT_BY_ATTRIBUTES]) {
@@ -693,6 +696,7 @@ module.exports = (app, limiter) => {
                   : a[AFI_SORT_BY_ATTRIBUTES] - b[AFI_SORT_BY_ATTRIBUTES]
               );
             }
+            location_analyses = listAnalyses;
           }
           break;
         }
@@ -735,7 +739,7 @@ module.exports = (app, limiter) => {
       } else {
         res.send({
           list_analysis: listAnalyses,
-          location_analyses: [],
+          location_analyses,
           numberOfPages,
           numberOfResults,
           maximumAnalysisAreaInTheList,

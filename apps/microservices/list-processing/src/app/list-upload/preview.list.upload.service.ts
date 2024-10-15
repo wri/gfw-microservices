@@ -9,7 +9,7 @@ import { ConfigService } from '@nestjs/config';
 import { ServerConfigType } from '../../validators/server-config';
 
 @Injectable()
-export class ListUploadService {
+export class PreviewListUploadService {
   constructor(
     private readonly s3Service: S3Service,
     private readonly config: ConfigService<ServerConfigType, true>

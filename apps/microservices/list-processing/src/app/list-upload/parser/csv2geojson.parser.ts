@@ -152,10 +152,9 @@ export const csv2geojson = async (
       dynamicTyping: true,
       skipEmptyLines: true,
       header: true,
-      preview: 5,
       complete: (results) => convertToGeoJSON(results, reject, resolve),
       error: (error, file) => reject(`${file} - ${error}`),
-    };
+    } as Papa.ParseWorkerConfig;
 
     if (!preview) {
       config = {

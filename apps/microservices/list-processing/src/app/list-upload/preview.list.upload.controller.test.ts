@@ -1,18 +1,18 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { ListUploadController } from './list-upload.controller';
-import { ListUploadService } from './list-upload.service';
+import { PreviewListUploadController } from './preview.list.upload.controller';
+import { PreviewListUploadService } from './preview.list.upload.service';
 import { FeatureCollection } from '@wri-monorepos/geo';
 
 describe('ListUploadController', () => {
-  let listUploadController: ListUploadController;
-  let listUploadService: ListUploadService;
+  let previewListUploadController: PreviewListUploadController;
+  let previewListUploadService: PreviewListUploadService;
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
-      controllers: [ListUploadController],
+      controllers: [PreviewListUploadController],
       providers: [
         {
-          provide: ListUploadService,
+          provide: PreviewListUploadService,
           useValue: {
             previewData: jest.fn(),
           },
@@ -20,8 +20,10 @@ describe('ListUploadController', () => {
       ],
     }).compile();
 
-    listUploadController = module.get<ListUploadController>(ListUploadController);
-    listUploadService = module.get<ListUploadService>(ListUploadService);
+    previewListUploadController = module.get<PreviewListUploadController>(
+      PreviewListUploadController
+    );
+    previewListUploadService = module.get<PreviewListUploadService>(PreviewListUploadService);
   });
 
   describe('preview', () => {
@@ -31,20 +33,20 @@ describe('ListUploadController', () => {
         features: [],
       };
 
-      jest.spyOn(listUploadService, 'previewData').mockResolvedValue(mockFeatureCollection);
+      jest.spyOn(previewListUploadService, 'previewData').mockResolvedValue(mockFeatureCollection);
 
       const request = { path: '/valid/path' };
-      const result = await listUploadController.preview(request);
+      const result = await previewListUploadController.preview(request);
 
       expect(result).toEqual(mockFeatureCollection);
-      expect(listUploadService.previewData).toHaveBeenCalledWith('/valid/path');
+      expect(previewListUploadService.previewData).toHaveBeenCalledWith('/valid/path');
     });
 
     it('should throw an error when given an invalid path', async () => {
       const request = { path: 123 }; // Invalid path type
 
       try {
-        await listUploadController.preview(request as any);
+        await previewListUploadController.preview(request as any);
       } catch (error) {
         expect(error).toBeInstanceOf(Error);
         expect(error.message).toContain('Invalid input');

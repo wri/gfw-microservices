@@ -1,5 +1,5 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { ListUploadService } from './list-upload.service';
+import { PreviewListUploadService } from './preview.list.upload.service';
 import { S3Service } from '@wri-monorepos/aws';
 import { ConfigService } from '@nestjs/config';
 import { DownloadS3File } from './chain/download.s3.file';
@@ -10,12 +10,12 @@ jest.mock('./chain/parser.data');
 jest.mock('./chain/gadm.service');
 
 describe('ListUploadService', () => {
-  let service: ListUploadService;
+  let service: PreviewListUploadService;
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
       providers: [
-        ListUploadService,
+        PreviewListUploadService,
         {
           provide: S3Service,
           useValue: {
@@ -31,7 +31,7 @@ describe('ListUploadService', () => {
       ],
     }).compile();
 
-    service = module.get<ListUploadService>(ListUploadService);
+    service = module.get<PreviewListUploadService>(PreviewListUploadService);
   });
 
   it('should be defined', () => {

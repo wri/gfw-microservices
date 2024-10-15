@@ -40,7 +40,7 @@ const getAllFilesAndZip = async (filter: BasicFieldsFileRequest) => {
               reject(err);
             }
 
-            if (line.trim() !== '' || file.includes(`${listName}.geojson`)) {
+            if (line.trim() !== '') {
               array.push(file);
             }
 

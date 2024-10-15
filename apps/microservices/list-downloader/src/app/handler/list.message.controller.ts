@@ -37,7 +37,7 @@ export enum CSVInputTypes {
   SOUTHAMERICATCL = 'southAmericaTCL',
   SOUTHEASTASIAOVERLAP = 'southEastAsiaOverlap',
   SOUTHEASTASIATC = 'southEastAsiaTCL',
-  AFIVC = 'afi-vc',
+  AFIVC = 'afiVC',
 }
 
 // BasicFieldsFileRequest schema

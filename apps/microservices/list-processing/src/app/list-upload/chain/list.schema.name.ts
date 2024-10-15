@@ -1,5 +1,5 @@
 import { Logger } from '@nestjs/common';
-import { AbstractHandler, ChainType } from './types';
+import { AbstractHandler, ChainType, RequestNewList } from './types';
 import { getListByFilters } from '@wri-monorepos/sql';
 
 const createListNameSchema = (list_name) => ({
@@ -11,7 +11,8 @@ export class ListSchemaName extends AbstractHandler<ChainType> {
   private readonly logger = new Logger(ListSchemaName.name);
 
   async handle(input: ChainType): Promise<ChainType> {
-    const { list_name: listName, organization_database: clientDatabase } = input.request;
+    const { list_name: listName, organization_database: clientDatabase } =
+      input.request as RequestNewList;
     const list = createListNameSchema(listName);
     const listTable = list.list_table;
     const analysisTable = list.analysis_table;

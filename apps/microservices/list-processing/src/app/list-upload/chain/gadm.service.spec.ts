@@ -79,7 +79,9 @@ describe('GADMService', () => {
         geojson: { type: 'FeatureCollection', features: [] },
         request: { listId: 1, organization_database: 'test', path: 'test' },
       };
-      jest.spyOn(service, 'getGADM').mockResolvedValue({ type: 'FeatureCollection', features: [] });
+      jest
+        .spyOn(service, 'clipToLand')
+        .mockResolvedValue({ type: 'FeatureCollection', features: [] });
       const result = await service.handle(input);
       expect(result.geojson).toEqual({ type: 'FeatureCollection', features: [] });
     });

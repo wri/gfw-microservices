@@ -12,6 +12,7 @@ import { SQLUtils } from '@wri-monorepos/sql';
 import { GADMService } from './chain/gadm.service';
 import { CreateListLevelData } from './chain/create.list.level.data';
 import { InsertLocationData } from './chain/insert.location.data';
+import { ValidateLatLongGeojson } from './chain/validate.lat.long.geojson';
 
 @Injectable()
 export class StartAnalysisService {
@@ -43,11 +44,13 @@ export class StartAnalysisService {
     const createListLevelData = new CreateListLevelData();
     const createLocationSchema = new CreateLocationSchema(connection);
     const insertLocationData = new InsertLocationData(null);
+    const validateLatLongGeojson = new ValidateLatLongGeojson();
 
     downloadS3File
       .setNext(parseData)
       .setNext(listSchemaName)
       .setNext(gadmService)
+      .setNext(validateLatLongGeojson)
       .setNext(createListLevelData)
       .setNext(createLocationSchema)
       .setNext(insertLocationData);

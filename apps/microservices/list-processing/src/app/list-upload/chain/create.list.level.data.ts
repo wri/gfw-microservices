@@ -1,5 +1,5 @@
 import { SQLUtils } from '@wri-monorepos/sql';
-import { AbstractHandler, ChainType } from './types';
+import { AbstractHandler, ChainType, RequestNewList } from './types';
 import { CreateListResult } from '@wri-monorepos/geo';
 import * as sql from 'mssql';
 import { updateListsUploadStatus } from '../shared/update.lists.upload.status';
@@ -82,7 +82,7 @@ export class CreateListLevelData extends AbstractHandler<ChainType> {
       gfwListId,
       user_id: userId,
       template_id: templateId,
-    } = input.request;
+    } = input.request as RequestNewList;
 
     const connection = new SQLUtils();
 

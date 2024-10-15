@@ -181,6 +181,9 @@ module.exports = (app, limiter) => {
       selected_location_ids: src_location_ids,
       original_gfw_list,
       analysisIds,
+      attributes = JSON.stringify({
+        creationPath: `/${saveAsDraftListConfig.route}`,
+      }),
     } = req.body;
 
     const finalGeojson = LocationManager.getFinalGeojson(gfw_list_id, geojson);
@@ -195,7 +198,8 @@ module.exports = (app, limiter) => {
       custom_attributes,
       finalGeojson,
       gfw_list_id,
-      analysisIds
+      analysisIds,
+      attributes
     )
       .then(async ({ resultGeoJSON }) => {
         if (original_gfw_list) {

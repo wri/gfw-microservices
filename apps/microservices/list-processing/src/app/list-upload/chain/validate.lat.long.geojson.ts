@@ -9,8 +9,14 @@ export class ValidateLatLongGeojson extends AbstractHandler<ChainType> {
     return lon >= -180 && lon <= 180;
   }
 
-  isOnAntarctica(country): boolean {
-    return country?.toLowerCase() === 'antarctica';
+  isInvalidCountry(country): boolean {
+    const countryCleaner = country?.toLowerCase().trim();
+    return (
+      countryCleaner === 'antarctica' ||
+      countryCleaner === '' ||
+      countryCleaner === null ||
+      countryCleaner === undefined
+    );
   }
 
   validateCoordinates(coordinates: any, country: string): boolean {
@@ -18,7 +24,7 @@ export class ValidateLatLongGeojson extends AbstractHandler<ChainType> {
     if (typeof coordinates[0] === 'number' && typeof coordinates[1] === 'number') {
       const [lon, lat] = coordinates;
       return (
-        this.isValidLatitude(lat) && this.isValidLongitude(lon) && !this.isOnAntarctica(country)
+        this.isValidLatitude(lat) && this.isValidLongitude(lon) && !this.isInvalidCountry(country)
       );
     }
 
@@ -34,7 +40,7 @@ export class ValidateLatLongGeojson extends AbstractHandler<ChainType> {
         if (
           !this.isValidLatitude(lat) ||
           !this.isValidLongitude(lon) ||
-          !this.isOnAntarctica(country)
+          !this.isInvalidCountry(country)
         ) {
           return false;
         }

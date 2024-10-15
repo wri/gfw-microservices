@@ -36,13 +36,28 @@ describe('ValidateLatLongGeojson', () => {
 
   describe('isOnAntarctica', () => {
     it('should return true for Antarctica', () => {
-      expect(validator.isOnAntarctica('Antarctica')).toBe(true);
-      expect(validator.isOnAntarctica('antarctica')).toBe(true);
+      expect(validator.isInvalidCountry('Antarctica')).toBe(true);
+      expect(validator.isInvalidCountry('antarctica')).toBe(true);
     });
 
     it('should return false for other countries', () => {
-      expect(validator.isOnAntarctica('USA')).toBe(false);
-      expect(validator.isOnAntarctica('Brazil')).toBe(false);
+      expect(validator.isInvalidCountry('USA')).toBe(false);
+      expect(validator.isInvalidCountry('Brazil')).toBe(false);
+    });
+
+    it('should return false if country is empty', () => {
+      expect(validator.isInvalidCountry('')).toBe(true);
+      expect(validator.isInvalidCountry('')).toBe(true);
+    });
+
+    it('should return false if country is null', () => {
+      expect(validator.isInvalidCountry(null)).toBe(true);
+      expect(validator.isInvalidCountry(null)).toBe(true);
+    });
+
+    it('should return false if country is undefined', () => {
+      expect(validator.isInvalidCountry(undefined)).toBe(true);
+      expect(validator.isInvalidCountry(undefined)).toBe(true);
     });
   });
 

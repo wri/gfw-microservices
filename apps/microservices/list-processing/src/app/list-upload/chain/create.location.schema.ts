@@ -2,7 +2,6 @@ import { ListTableColumnsQueryString, SQLUtils } from '@wri-monorepos/sql';
 import { updateListsUploadStatus } from '../shared/update.lists.upload.status';
 import { AbstractHandler, ChainType, RequestNewList } from './types';
 import * as sql from 'mssql';
-import { parameters } from 'libs/sql/src/lib/util/parameter/values';
 
 export class CreateLocationSchema extends AbstractHandler<ChainType> {
   private clientStoreConnection: SQLUtils;

@@ -12,7 +12,6 @@ import { CreateListRequest, RequestLargeListProcess, ResponseLargeListProcess } 
 import { ConfigService } from '@nestjs/config';
 import * as sql from 'mssql';
 import { createListNameSchema } from '../utils/list.utils';
-import { DataSource } from 'typeorm';
 import { RequestSaveLargeListProcessModel, CreateListInsertResultModel } from '../models';
 import { MetadataService as AWSMetadataService } from '@wri-monorepos/aws';
 import { ServerConfigType } from '../validators/server-config';

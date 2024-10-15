@@ -11,9 +11,11 @@ import ArrowForwardIosIcon from '@mui/icons-material/ArrowForwardIos';
 
 import { UploadLocationOptionButton } from './components/UploadLocationOptionButton';
 import { HowToFormatLocationLink } from '../components/HowToFormatLocationLink';
+import { useUploadType, UploadType } from '../hooks/UploadTypeContext';
 
 export function UploadLocationOptions() {
   const history = useHistory();
+  const { selectUploadType } = useUploadType();
 
   return (
     <div className="upload-location-options">
@@ -31,7 +33,7 @@ export function UploadLocationOptions() {
           <Typography variant="body2" className="upload-location-options__main-content__subtitle">
             GFW Pro allows users to upload their data in multiple ways.
           </Typography>
-          <HowToFormatLocationLink />
+          <HowToFormatLocationLink text="How to format your location data for GFW Pro" url="#" />
         </div>
         <div className="upload-location-options__main-content__options">
           <Typography variant="body2">
@@ -40,7 +42,7 @@ export function UploadLocationOptions() {
           <UploadLocationOptionButton
             Icon={UploadFileTwoToneIcon}
             text="File upload"
-            onClick={() => console.log('clicked')}
+            onClick={() => selectUploadType(UploadType.BY_FILE)}
           />
           <div className="upload-location-options__main-content__options__other-options">
             <Typography variant="body2">Or</Typography>
@@ -52,12 +54,12 @@ export function UploadLocationOptions() {
               <UploadLocationOptionButton
                 Icon={ScatterPlotTwoToneIcon}
                 text="Point"
-                onClick={() => console.log('clicked')}
+                onClick={() => selectUploadType(UploadType.BY_POINT)}
               />
               <UploadLocationOptionButton
                 Icon={TimelineIcon}
                 text="Polygon"
-                onClick={() => console.log('clicked')}
+                onClick={() => selectUploadType(UploadType.BY_POLYGON)}
               />
             </div>
           </div>

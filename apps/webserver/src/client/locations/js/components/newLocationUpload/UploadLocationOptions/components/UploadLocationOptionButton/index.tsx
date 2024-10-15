@@ -1,7 +1,13 @@
 import React from 'react';
-
 import './index.scss';
-import { UploadLocationOptionButtonProps } from './types';
+
+import { SvgIconProps } from '@mui/material/SvgIcon/SvgIcon';
+
+type UploadLocationOptionButtonProps = {
+  Icon: React.ElementType<SvgIconProps>;
+  text: string;
+  onClick: () => void;
+};
 
 export function UploadLocationOptionButton({
   Icon,

@@ -1,0 +1,123 @@
+.upload-location-by-point {
+  > nav {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    margin: 0.5rem 0 2rem 0;
+
+    h5 {
+      color: #404041;
+    }
+
+    > svg:last-of-type {
+      color: #b3b3b3;
+      font-size: 0.75rem;
+    }
+  }
+
+  > div {
+    padding: 10px 16px 60px;
+
+    p.upload-location-by-point__subtitle {
+      margin: 0.4rem 0 0.8rem;
+    }
+
+    .upload-location-by-point__location-info {
+      display: flex;
+      gap: 1.5rem;
+
+      > div:first-child {
+        min-width: 260px;
+
+        .upload-location-by-point__location-info__location-type-button {
+          display: flex;
+          align-items: center;
+          gap: 0.5rem;
+
+          margin-bottom: 0.75rem;
+
+          background: white;
+          cursor: pointer;
+
+          width: 100%;
+          padding: 1rem 1.25rem;
+          border: 2px solid #dfdfdf;
+          border-radius: 5px;
+
+          &--selected {
+            border-color: #97bd3d;
+          }
+
+          > svg {
+            color: #444;
+            font-size: 1.5rem;
+          }
+
+          > span {
+            font-size: 1rem;
+            font-weight: bold;
+          }
+        }
+      }
+
+      > form {
+        flex: 1;
+
+        .upload-location-by-point__location-info__coordinates {
+          display: flex;
+          gap: 0.5rem;
+
+          > div {
+            flex: 1;
+
+            .MuiInputBase-input {
+              padding: 0.5rem 0.75rem;
+            }
+
+            .MuiFormLabel-root {
+              text-transform: none;
+
+              &:not(.MuiInputLabel-shrink) {
+                font-size: 0.75rem;
+                top: -3px;
+              }
+            }
+          }
+        }
+
+        .upload-location-by-point__location-info__radius-size-container {
+          display: grid;
+          grid-template-columns: repeat(2, 1fr);
+
+          > div {
+            display: flex;
+            flex: 1;
+
+            > div {
+              display: flex;
+              flex-direction: column;
+              justify-content: center;
+
+              > span {
+                font-size: 0.625rem;
+                color: #7f7f7f;
+              }
+            }
+          }
+        }
+
+        /* Hide arrow from input number for Chrome, Safari, Edge, Opera */
+        input::-webkit-outer-spin-button,
+        input::-webkit-inner-spin-button {
+          -webkit-appearance: none;
+          margin: 0;
+        }
+
+        /* Hide arrow from input number Firefox */
+        input[type='number'] {
+          -moz-appearance: textfield;
+        }
+      }
+    }
+  }
+}

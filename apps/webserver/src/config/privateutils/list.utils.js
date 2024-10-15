@@ -264,7 +264,7 @@ const uploadBulkLocations = (req, list_id, list_name, geojson, commodity, attrib
             0,
             attributes, // new `attributes` column
             '' // new `ErrorDetails` column
-          );
+          )
           // Increment key for next feature
           primary_key += 1;
           dataArray.push(featureArray);

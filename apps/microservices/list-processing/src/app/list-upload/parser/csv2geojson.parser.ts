@@ -159,6 +159,7 @@ export const csv2geojson = async (
     if (!preview) {
       config = {
         ...config,
+        // force the lib to only read this amount of rows
         preview: 20,
       };
     }

@@ -109,7 +109,7 @@ export class GADMService extends AbstractHandler<ChainType> {
     }
   };
 
-  getGADM = async (geojson): Promise<FeatureCollection> => {
+  clipToLand = async (geojson): Promise<FeatureCollection> => {
     return new Promise((resolve, reject) => {
       const s3ObjectsToDelete = [];
       const objectName = `gadm-${new Date().getTime()}`;
@@ -161,8 +161,9 @@ export class GADMService extends AbstractHandler<ChainType> {
       this.logger.log(`(${path}) - Get page of number ${localPage} from database`);
     }
 
+    // We should not call clip to land if we are in the preview mode.
     if (!preview) {
-      input.geojson = await this.getGADM(geojson);
+      input.geojson = await this.clipToLand(geojson);
     }
     return super.handle(input);
   }

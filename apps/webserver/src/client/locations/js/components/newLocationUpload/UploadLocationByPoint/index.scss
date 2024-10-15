@@ -26,6 +26,10 @@
       display: flex;
       gap: 1.5rem;
 
+      @media (max-width: 575px) {
+        display: block;
+      }
+
       > div:first-child {
         min-width: 260px;
 
@@ -88,6 +92,10 @@
         .upload-location-by-point__location-info__radius-size-container {
           display: grid;
           grid-template-columns: repeat(2, 1fr);
+
+          @media (max-width: 991px) {
+            display: block;
+          }
 
           > div {
             display: flex;

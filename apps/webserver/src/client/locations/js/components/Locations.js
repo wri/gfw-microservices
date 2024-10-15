@@ -13,8 +13,6 @@ import AddLocation from './adding/AddLocation';
 import UploadLocations from './uploading/UploadLocations';
 import AddGFW from './addGFW/AddGFW';
 
-import { UploadTypeProvider } from './newLocationUpload/hooks/UploadTypeContext';
-
 // Store
 import store from '../store';
 import { addList, changeView, changeAddType } from '../actions/locationActions';
@@ -396,9 +394,7 @@ class Locations extends Component {
             />
           </Route>
           <Route path="/new-location-upload">
-            <UploadTypeProvider>
-              <NewLocationUpload />
-            </UploadTypeProvider>
+            <NewLocationUpload />
           </Route>
           <Route>
             <Landing

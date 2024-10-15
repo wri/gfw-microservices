@@ -7,7 +7,6 @@ import AddLocationAltIcon from '@mui/icons-material/AddLocationAlt';
 import LocationOnIcon from '@mui/icons-material/LocationOn';
 
 import { HowToFormatLocationLink } from '../components/HowToFormatLocationLink';
-import { useUploadType } from '../hooks/UploadTypeContext';
 
 enum LocationFormat {
   COORDINATES,
@@ -20,12 +19,14 @@ enum RadiusSize {
   CUSTOM,
 }
 
-export function UploadLocationByPoint() {
+type UploadLocationByPointProps = {
+  clearUploadType: () => void;
+};
+
+export function UploadLocationByPoint({ clearUploadType }: UploadLocationByPointProps) {
   const [locationFormat, setLocationFormat] = useState<LocationFormat>(LocationFormat.COORDINATES);
 
   const [selectedRadiusSize, setSelectedRadiusSize] = useState<RadiusSize>(RadiusSize.SMALL);
-
-  const { clearUploadType } = useUploadType();
 
   const getButtonClassName = (locFormat: LocationFormat) => {
     return `upload-location-by-point__location-info__location-type-button ${
@@ -52,7 +53,9 @@ export function UploadLocationByPoint() {
         </Typography>
         <HowToFormatLocationLink text="How to format your location data for GFW Pro" url="#" />
 
-        <Typography variant="h6">Choose your location type</Typography>
+        <Typography variant="h6" sx={{ marginTop: '1rem' }}>
+          Choose your location type
+        </Typography>
         <Typography variant="body2" className="upload-location-by-point__subtitle">
           Choose one of the options below based on your preferred location format.
         </Typography>
@@ -140,10 +143,11 @@ export function UploadLocationByPoint() {
               </div>
             </div>
 
-            <Divider flexItem sx={{ margin: '0.75rem 0 2rem' }} />
-
             {selectedRadiusSize === RadiusSize.CUSTOM && (
-              <Typography variant="h6">Enter area (HA) or radius (km)</Typography>
+              <>
+                <Divider flexItem sx={{ margin: '0.75rem 0 2rem' }} />
+                <Typography variant="h6">Enter area (HA) or radius (km)</Typography>
+              </>
             )}
           </form>
         </div>

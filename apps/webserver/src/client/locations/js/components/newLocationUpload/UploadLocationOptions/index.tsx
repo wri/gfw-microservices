@@ -11,11 +11,14 @@ import ArrowForwardIosIcon from '@mui/icons-material/ArrowForwardIos';
 
 import { UploadLocationOptionButton } from './components/UploadLocationOptionButton';
 import { HowToFormatLocationLink } from '../components/HowToFormatLocationLink';
-import { useUploadType, UploadType } from '../hooks/UploadTypeContext';
+import { UploadType } from '..';
 
-export function UploadLocationOptions() {
+type UploadLocationOptionsProps = {
+  selectUploadType: (type: UploadType) => void;
+};
+
+export function UploadLocationOptions({ selectUploadType }: UploadLocationOptionsProps) {
   const history = useHistory();
-  const { selectUploadType } = useUploadType();
 
   return (
     <div className="upload-location-options">

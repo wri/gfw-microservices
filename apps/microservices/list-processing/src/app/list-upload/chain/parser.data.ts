@@ -1,5 +1,5 @@
 import { Logger } from '@nestjs/common';
-import { AbstractHandler, ChainType } from './types';
+import { AbstractHandler, ChainType, PreviewListRequest } from './types';
 import { csv2geojson } from '../parser/csv2geojson.parser';
 import * as fs from 'fs';
 
@@ -23,13 +23,13 @@ export class ParserData extends AbstractHandler<ChainType> {
   }
 
   async handle(input: ChainType): Promise<ChainType> {
-    const { fileDownloadedPath } = input.request;
+    const { fileDownloadedPath, preview = false } = input.request as PreviewListRequest;
 
     try {
       // Read the CSV file content asynchronously
       const csvContent = fs.readFileSync(fileDownloadedPath, 'utf8');
       // Convert CSV content to GeoJSON
-      const geoJson = await csv2geojson(csvContent);
+      const geoJson = await csv2geojson(csvContent, preview);
 
       this.logger.log('Data parsed successfully');
       // Pass the GeoJSON to the next handler in the chain

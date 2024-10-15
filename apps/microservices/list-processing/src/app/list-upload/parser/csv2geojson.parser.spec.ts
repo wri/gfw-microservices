@@ -118,7 +118,7 @@ describe('csv2geojson', () => {
   it('should remove latitude and longitude properties when includeLatLon is set to false', (done) => {
     const csvData = 'Longitude,Latitude\n-120.0,38.5\n-121.5,39.0';
 
-    csv2geojson(csvData, false).then((result) => {
+    csv2geojson(csvData, false, false).then((result) => {
       expect(result).toStrictEqual({
         features: [
           {

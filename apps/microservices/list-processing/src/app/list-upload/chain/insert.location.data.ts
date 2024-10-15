@@ -1,5 +1,5 @@
 import { DataSource, EntitySchema } from 'typeorm';
-import { AbstractHandler, ChainType } from './types';
+import { AbstractHandler, ChainType, RequestNewList } from './types';
 import { ClientStoreConnection, ListSchema, ListSchemaType } from '@wri-monorepos/sql';
 import { FeatureCollection } from '@wri-monorepos/geo';
 import { GeoJSONGeometry, stringify } from 'wellknown';
@@ -37,7 +37,8 @@ export class InsertLocationData extends AbstractHandler<ChainType> {
   }
 
   async handle(input: ChainType): Promise<ChainType> {
-    const { organization_database: organizationDatabase, listTable } = input.request;
+    const { organization_database: organizationDatabase, listTable } =
+      input.request as RequestNewList;
     const ListEntity = new EntitySchema<ListSchemaType>({
       ...ListSchema,
       name: listTable,

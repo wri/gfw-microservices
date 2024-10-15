@@ -64,9 +64,6 @@ export const colombiaLayers = ({ operation, data, dataRow, csvData }) => {
           return;
         }
 
-        const totalLossBySecondarySubLayerPerYear =
-          calculateTotalLossBySecondarySubLayerPerYear(subLayerValue);
-
         Object.entries(subLayerValue).forEach(([secondarySubLayerName, secondarySubLayerValue]) => {
           const totalPerSecondarySubLayer =
             calculateTotalLossForAllCategories(secondarySubLayerValue);
@@ -83,10 +80,6 @@ export const colombiaLayers = ({ operation, data, dataRow, csvData }) => {
                   ...dataRow,
                   label,
                   subLayerName,
-                  totalLossBySecondarySubLayerPerYear[year],
-                  year,
-                  totalPerSubLayer,
-                  percentagePerSubLayer,
                   secondarySubLayerName ?? '',
                   value,
                   year,
@@ -172,22 +165,6 @@ const calculateTotalLossForAllCategories = (obj) => {
 
   recursiveSum(obj);
   return sum;
-};
-
-const calculateTotalLossBySecondarySubLayerPerYear = (data) => {
-  const result = {};
-
-  for (const subLayer in data) {
-    for (const year in data[subLayer]) {
-      if (!result[year]) {
-        result[year] = 0;
-      }
-
-      result[year] += data[subLayer][year];
-    }
-  }
-
-  return result;
 };
 
 const createObjWithEmptyYears = (data, constantLayers) => {

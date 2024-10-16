@@ -55,8 +55,11 @@ export class GeometryService extends IPipeService {
   }
 
   private organizeStream(filters: ListFieldsFileRequest, allFields: string[]) {
-    const open = '{\n"type":"FeatureCollection","features":[';
-    const close = ']}\n';
+    const open =
+      filters.type === 'afiVC'
+        ? '{\n"type":"FeatureCollection","features":['
+        : '{"type":"FeatureCollection","features":[';
+    const close = filters.type === 'afiVC' ? ']}\n' : ']}';
 
     const { key, selectedLocationsList, listId, listName } = filters;
     this.inputStream.removeAllListeners();

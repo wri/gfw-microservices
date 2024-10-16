@@ -24,7 +24,7 @@ import { OtherKpisService } from './other.kpis.service';
 import { PalmRiskAnalysisService } from './palm.risk.analysis.service';
 import { ReadmeService } from './readme.service';
 import { ResultService } from './result.service';
-import { ShapefileService } from './shapefile.service';
+import { GeometryService } from './geometry.service';
 import { SouthAmericaBiomesService } from './south.america.biomes.service';
 import { SouthAmericaLossService } from './south.america.loss.service';
 import { SouthEastAsiaOverlapService } from './south.east.asia.overlap.service';
@@ -62,7 +62,7 @@ import { ColombiaDeforestationService } from './colombia-deforestation.service';
     PalmRiskAnalysisService,
     ReadmeService,
     ResultService,
-    ShapefileService,
+    GeometryService,
     SouthAmericaBiomesService,
     SouthAmericaLossService,
     SouthEastAsiaOverlapService,
@@ -96,7 +96,7 @@ import { ColombiaDeforestationService } from './colombia-deforestation.service';
     PalmRiskAnalysisService,
     ReadmeService,
     ResultService,
-    ShapefileService,
+    GeometryService,
     SouthAmericaBiomesService,
     SouthAmericaLossService,
     SouthEastAsiaOverlapService,

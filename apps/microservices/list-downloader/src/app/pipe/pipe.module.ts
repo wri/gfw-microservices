@@ -15,7 +15,7 @@ import { AlertsGeneratorService } from './alerts.generator.service';
 import { FilesModule } from '../files';
 import { DataModule } from '../data';
 import { DashboardService } from './dashboard.service';
-
+import { AfiVcGeneratorService } from './afi.vc.generator.service';
 @Module({
   imports: [envModule, AwsModule, SqlModule, FilesModule, DataModule],
   providers: [
@@ -25,6 +25,7 @@ import { DashboardService } from './dashboard.service';
     DashboardService,
     ListGeneratorService,
     PipeService,
+    AfiVcGeneratorService,
   ],
   exports: [PipeService],
 })

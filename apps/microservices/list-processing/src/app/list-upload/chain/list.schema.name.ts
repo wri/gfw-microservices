@@ -17,10 +17,7 @@ export class ListSchemaName extends AbstractHandler<ChainType> {
     const listTable = list.list_table;
     const analysisTable = list.analysis_table;
 
-    const doesListNameAlreadyExist = await getListByFilters(
-      { listName: listName },
-      clientDatabase
-    );
+    const doesListNameAlreadyExist = await getListByFilters({ listName: listName }, clientDatabase);
 
     if (doesListNameAlreadyExist) {
       throw Error(`List name ${listName} already exists.`);

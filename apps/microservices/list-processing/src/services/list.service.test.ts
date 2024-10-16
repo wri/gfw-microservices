@@ -16,17 +16,12 @@ describe('ListService - Start Analysis Process For List', () => {
   let service: ListService;
   let startAnalysisService: StartAnalysisService;
   let deprecatedStartAnalysisService: DeprecatedStartAnalysisService;
-  let dataSourceMock: Partial<DataSource>;
   let metadataServiceMock: Partial<MetadataService>;
   let configServiceMock: Partial<ConfigService>;
 
   beforeEach(async () => {
     const entityManagerMock: Partial<EntityManager> = {
       transaction: jest.fn(),
-    };
-
-    dataSourceMock = {
-      manager: entityManagerMock as EntityManager,
     };
 
     metadataServiceMock = {

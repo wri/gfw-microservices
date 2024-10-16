@@ -65,7 +65,6 @@ const { listStatusOrderByWorse } = require(path.resolve('./config/env/listStatus
 import { listStatus } from '@wri-monorepos/constants';
 import { SqlParamType, AnalysisDataType, ListsType, DeleteListTypeOrm } from '@wri-monorepos/sql';
 
-
 /** @function {createList}
  *   @summary Create a new list within Organization DB
  *   @param  {Object} req - Manadatory first parameter to pass the request object into the function in case session info is required.

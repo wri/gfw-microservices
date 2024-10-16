@@ -45,7 +45,7 @@ function AnalysesTabs({
       style={{ color: 'black', background: 'none' }}
       TabIndicatorProps={{ style: { display: 'none' } }} // Remove the default indicator
     >
-      {post2020RiskAssessmentStatus && (
+      {listViewOptions.includes(POST_2020_RISK_ASSESSMENT_VIEW) && (
         <Tab
           icon={getStatusIcon(post2020RiskAssessmentStatus)}
           iconPosition="start"
@@ -64,7 +64,7 @@ function AnalysesTabs({
         />
       )}
 
-      {post2000TreeCoverLossAnalysisStatus && (
+      {listViewOptions.includes(FOREST_CHANGE_VIEW) && (
         <Tab
           icon={getStatusIcon(post2000TreeCoverLossAnalysisStatus)}
           iconPosition="start"
@@ -83,7 +83,7 @@ function AnalysesTabs({
         />
       )}
 
-      {listViewOptions.length > 1 && (
+      {listViewOptions.includes(COMMODITY_RISK_VIEW) && (
         // only display Commodity Risk / Forest Change view toggle in Commodity Risk lists
 
         <Tab

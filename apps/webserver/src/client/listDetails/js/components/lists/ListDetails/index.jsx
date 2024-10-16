@@ -92,7 +92,11 @@ import { getListFilterValues } from '../getListFilterValues';
 import getAllColumnNames from '../getAllColumnNames';
 import { defaultFilterValues } from '../defaultFilterValues';
 import { analysisTypes } from '../../../../../../config/env/analysisTypes.constants';
-import { FOREST_CHANGE_VIEW, COMMODITY_RISK_VIEW } from './listViews.constants';
+import {
+  FOREST_CHANGE_VIEW,
+  COMMODITY_RISK_VIEW,
+  POST_2020_RISK_ASSESSMENT_VIEW,
+} from './listViews.constants';
 
 // STYLE
 import '../../../../../locations/css/lists.scss';
@@ -186,15 +190,15 @@ export default class ListDetails extends Component {
     // then select the tab and change the view to FOREST_CHANGE_VIEW
     const listAnalysesStatus = selectedLists[0]?.listAnalysesStatus || [];
 
-    const isPost2020RiskActive = listAnalysesStatus.some(
+    const isPost2020RiskActive = listAnalysesStatus?.some(
       ({ analysisId }) => analysisId === analysisTypes.DEFORESTATION_KPIS
     );
 
-    const isPost2000TreeCoverLossActive = listAnalysesStatus.some(
+    const isPost2000TreeCoverLossActive = listAnalysesStatus?.some(
       ({ analysisId }) => analysisId === analysisTypes.FOREST_CHANGE_DIAGNOSTICS
     );
 
-    if (!isPost2020RiskActive && isPost2000TreeCoverLossActive) {
+    if ((!isPost2020RiskActive && isPost2000TreeCoverLossActive) || isGlobalForestWatchList) {
       store.dispatch(changeListView(FOREST_CHANGE_VIEW));
     }
   }
@@ -1899,18 +1903,23 @@ export default class ListDetails extends Component {
 
     const isEditActionAvailable =
       !isGfwList && !selectedListIsShared && currentUser.access_level_id !== userAccessLevel.VIEWER;
-    if (checkValidView(listData)) {
-      listViewOptions.push({
-        value: FOREST_CHANGE_VIEW,
-        label: locationsPage.lists.viewForestChange,
-      });
+
+    const isPost2000TreeCoverLossActive = listAnalysesStatus?.some(
+      ({ analysisId }) => analysisId === analysisTypes.FOREST_CHANGE_DIAGNOSTICS
+    );
+    if (isPost2000TreeCoverLossActive || isGfwList) {
+      listViewOptions.push(FOREST_CHANGE_VIEW);
     }
 
     if (checkValidViewCommodity(selectedLists, listData)) {
-      listViewOptions.push({
-        value: COMMODITY_RISK_VIEW,
-        label: locationsPage.lists.viewCommodityRisk,
-      });
+      listViewOptions.push(COMMODITY_RISK_VIEW);
+    }
+
+    const isPost2020RiskActive = listAnalysesStatus?.some(
+      ({ analysisId }) => analysisId === analysisTypes.DEFORESTATION_KPIS
+    );
+    if (isPost2020RiskActive) {
+      listViewOptions.push(POST_2020_RISK_ASSESSMENT_VIEW);
     }
 
     const allDialogActions = dialogActions || (

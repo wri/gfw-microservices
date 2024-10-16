@@ -17,7 +17,6 @@ import { ConfigService } from '@nestjs/config';
 import { ServerConfigType } from '../validators/server-config';
 import { SaveActivityLogEndpoint } from './utils/saveActivityLogEndpoint';
 import { ActivityLog } from '@wri-monorepos/sql';
-
 @Module({
   imports: [
     TypeOrmModule.forFeature(

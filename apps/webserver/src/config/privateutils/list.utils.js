@@ -234,9 +234,6 @@ const uploadBulkLocations = (req, list_id, list_name, geojson, commodity, attrib
           } else if (column.COLUMN_NAME === 'attributes') {
             columnNamesArray.push(column.COLUMN_NAME);
             columnTypesArray.push(sql.NVarChar(sql.MAX));
-          } else if (column.COLUMN_NAME === 'ErrorDetails') {
-            columnNamesArray.push(column.COLUMN_NAME);
-            columnTypesArray.push(sql.NVarChar(256));
           } else {
             columnNamesArray.push(column.COLUMN_NAME);
             columnTypesArray.push(sqlUtils.getDataType(req, column.DATA_TYPE));
@@ -266,7 +263,7 @@ const uploadBulkLocations = (req, list_id, list_name, geojson, commodity, attrib
             0,
             0,
             attributes, // new `attributes` column
-            '' // new `ErrorDetails` column
+            '', // new `ErrorDetails` column
           );
           // Increment key for next feature
           primary_key += 1;

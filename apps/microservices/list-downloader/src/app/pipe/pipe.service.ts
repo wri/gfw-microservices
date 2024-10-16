@@ -3,10 +3,11 @@ import { AfiGeneratorService } from './afi.generator.service';
 import { ListGeneratorService } from './list.generator.service';
 import { BasicFieldsFileRequest, GFWList, ClientStoreConnection, Lists } from '@wri-monorepos/sql';
 import { MAX_NUMBER_OF_ROWS_PER_PAGE } from '../shared/constants';
-import { createDirectory } from '../shared/file.utils';
 import { AccountUsersAnalysisUsageFileService } from './account-users-usage.generator.service';
 import { AlertsGeneratorService } from './alerts.generator.service';
 import { ReadmeService } from '../files/readme.service';
+import { createDirectory } from '../shared/file.utils';
+import { AfiVcGeneratorService } from './afi.vc.generator.service';
 
 @Injectable({
   scope: Scope.REQUEST,
@@ -20,7 +21,8 @@ export class PipeService {
     private readonly accountUsersUsageGeneratorService: AccountUsersAnalysisUsageFileService,
     private readonly alertsGeneratorService: AlertsGeneratorService,
     private readonly clientStoreConnection: ClientStoreConnection,
-    private readonly readmeService: ReadmeService
+    private readonly readmeService: ReadmeService,
+    private readonly afiVcGeneratorService: AfiVcGeneratorService
   ) {}
 
   public async makeFile(filters: BasicFieldsFileRequest) {
@@ -37,7 +39,6 @@ export class PipeService {
         listName,
         rowsPerPage: MAX_NUMBER_OF_ROWS_PER_PAGE,
       };
-
       this.createDirectory(filters);
       await this.readmeService.write(filters);
     }
@@ -83,6 +84,7 @@ export class PipeService {
       southAmericaTCL: this.listGeneratorService,
       southEastAsiaOverlap: this.listGeneratorService,
       southEastAsiaTCL: this.listGeneratorService,
+      afiVC: this.afiVcGeneratorService,
     };
   };
 

@@ -19,7 +19,7 @@ import { featureFlagsService } from '@wri-monorepos/shared';
 import { DeprecatedStartAnalysisService } from '../app/list-upload/deprecated.start.analysis.service';
 import { StartAnalysisService } from '../app/list-upload/start.analysis.service';
 
-const LIST_UPLOAD_VERSION = 1;
+const LIST_UPLOAD_VERSION = 2;
 
 interface CreateListResult {
   list_id: number;

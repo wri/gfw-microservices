@@ -13,7 +13,7 @@ interface QueryCreateTableResult {
   query_string: string;
 }
 
-const LIST_UPLOAD_VERSION = 1;
+const LIST_UPLOAD_VERSION = 2;
 
 @Injectable()
 export class SPSListCreation {

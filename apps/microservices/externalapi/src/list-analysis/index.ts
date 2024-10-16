@@ -24,7 +24,7 @@ import { ActivityLog } from '@wri-monorepos/sql';
       'default'
     ),
   ],
-  controllers: [ListAnalysisController, ListUploadController, ClaugerController],
+  controllers: [ListAnalysisController, ListUploadController],
   providers: [
     ListAnalysisService,
     UserService,
@@ -33,8 +33,6 @@ import { ActivityLog } from '@wri-monorepos/sql';
     ListService,
     S3Service,
     SaveActivityLogEndpoint,
-    ClaugerService,
-    GfwLists,
     {
       provide: 'AWS',
       inject: [ConfigService],

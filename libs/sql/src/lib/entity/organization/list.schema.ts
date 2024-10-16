@@ -212,5 +212,4 @@ export type ListSchemaType = {
   volume: string;
   attributes: string;
   windBarrier: string;
-  errorDetails: string;
 };

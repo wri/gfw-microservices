@@ -79,7 +79,7 @@ export class FCDService {
     let countrySpecificDeforestation = [];
     try {
       countrySpecificDeforestation = this.toApproximateValueFormat(
-        JSON.parse(country_specific_deforestation_yearly)[countryGadm]
+        this.parseJsonSafely(country_specific_deforestation_yearly)[countryGadm]
       );
     } catch (error) {
       this.logger.error(`error converting json object: ${error}`);
@@ -88,7 +88,7 @@ export class FCDService {
     let treeCoverLoss = [];
     try {
       treeCoverLoss = this.toApproximateValueFormat(
-        JSON.parse(tree_cover_loss_by_country_yearly)[countryGadm]
+        this.parseJsonSafely(tree_cover_loss_by_country_yearly)[countryGadm]
       );
     } catch (error) {
       this.logger.error(`error converting json object: ${error}`);
@@ -126,8 +126,8 @@ export class FCDService {
     try {
       const overlapTemp =
         !classified_region_area && countryGadm === 'ARG'
-          ? JSON.parse(arg_otbn_area)
-          : JSON.parse(classified_region_area)?.[countryGadm] ?? {};
+          ? this.parseJsonSafely(arg_otbn_area)
+          : this.parseJsonSafely(classified_region_area)?.[countryGadm] ?? {};
 
       overlap =
         countryGadm === 'COL'
@@ -139,9 +139,11 @@ export class FCDService {
 
     const country_specific_deforestation = {};
     try {
-      const countrySpecificDeforestation = JSON.parse(
-        country_specific_deforestation_classified_region_yearly
-      )[countryGadm];
+      const countrySpecificDeforestation =
+        this.parseJsonSafely(country_specific_deforestation_classified_region_yearly)[
+          countryGadm
+        ] || {};
+
       Object.entries(countrySpecificDeforestation).forEach(([key, value]) => {
         country_specific_deforestation[key] = this.toApproximateValueFormat(value);
       });
@@ -154,11 +156,13 @@ export class FCDService {
       let treeCoverLoss = {};
       if (!tree_cover_loss_by_country_classified_region_yearly) {
         if (countryGadm === 'ARG') {
-          treeCoverLoss = JSON.parse(tree_cover_loss_arg_otbn_yearly);
+          treeCoverLoss = this.parseJsonSafely(tree_cover_loss_arg_otbn_yearly);
         }
       } else {
         treeCoverLoss =
-          JSON.parse(tree_cover_loss_by_country_classified_region_yearly)?.[countryGadm] ?? {};
+          this.parseJsonSafely(tree_cover_loss_by_country_classified_region_yearly)?.[
+            countryGadm
+          ] ?? {};
       }
 
       if (countryGadm === 'COL') {
@@ -199,8 +203,8 @@ export class FCDService {
     };
 
     data?.forEach((item) => {
-      const protectedAreasByCategoryAreaTemp = JSON.parse(
-        item.protectedAreasByCategoryArea || '{}'
+      const protectedAreasByCategoryAreaTemp = this.parseJsonSafely(
+        item.protectedAreasByCategoryArea
       );
 
       const protectedAreasByCategoryArea = this.isObjInCountryFormat(
@@ -268,7 +272,7 @@ export class FCDService {
 
   private getFullyAndLessRestrictedData(dataJsonString: string, countryGadm: string) {
     try {
-      const data = JSON.parse(dataJsonString)?.[countryGadm] || {};
+      const data = this.parseJsonSafely(dataJsonString)?.[countryGadm] || {};
 
       const obj = { fullyRestrictive: {}, lessRestricted: {} };
 
@@ -320,7 +324,7 @@ export class FCDService {
       let landmark = { ...prev };
 
       try {
-        const parsedData = JSON.parse(curr?.landmarkByCategoryArea || '{}');
+        const parsedData = this.parseJsonSafely(curr?.landmarkByCategoryArea);
 
         const landmarkByCategoryAreaTemp = this.isObjInCountryFormat(parsedData)
           ? parsedData[countryGadm] || {}
@@ -328,7 +332,7 @@ export class FCDService {
 
         const overlapIndigenous = landmarkByCategoryAreaTemp[this.INDIGENOUS_LAND] ?? 0;
 
-        const countryArea = JSON.parse(curr.countryArea || '{}');
+        const countryArea = this.parseJsonSafely(curr.countryArea);
         const totalArea = countryArea[countryGadm] ?? curr.totalArea;
 
         landmark = {
@@ -359,16 +363,16 @@ export class FCDService {
 
     let countrySpecificDeforestation = {};
     try {
-      countrySpecificDeforestation = JSON.parse(country_specific_deforestation_landmark_yearly)[
-        countryGadm
-      ][this.INDIGENOUS_LAND];
+      countrySpecificDeforestation = this.parseJsonSafely(
+        country_specific_deforestation_landmark_yearly
+      )[countryGadm][this.INDIGENOUS_LAND];
     } catch (error) {
       this.logger.error(`error converting json object: ${error}`);
     }
 
     let treeCoverLoss = {};
     try {
-      treeCoverLoss = JSON.parse(tree_cover_loss_by_country_landmark_yearly)[countryGadm][
+      treeCoverLoss = this.parseJsonSafely(tree_cover_loss_by_country_landmark_yearly)[countryGadm][
         this.INDIGENOUS_LAND
       ];
     } catch (error) {
@@ -467,6 +471,8 @@ export class FCDService {
   }
 
   private toApproximateValueFormat(obj: unknown) {
+    if (!obj) return [];
+
     return Object.entries(obj)
       .map(([key, value]) => ({
         year: Number(key.substring(0, 4)),
@@ -496,4 +502,8 @@ export class FCDService {
   private isObjInCountryFormat = (data) => {
     return Object.keys(data).every((x) => x.length === 3);
   };
+
+  private parseJsonSafely(stringObj) {
+    return JSON.parse(stringObj || {});
+  }
 }

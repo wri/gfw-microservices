@@ -45,7 +45,6 @@ import {
   checkColumnListGFWCR,
   checkColumnListGFWFC,
   checkColumnListPA,
-  checkValidView,
   checkValidViewCommodity,
   getGFWListLocationIDs,
   getListFilteredLocations,

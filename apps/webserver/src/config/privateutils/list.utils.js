@@ -253,7 +253,6 @@ const uploadBulkLocations = (req, list_id, list_name, geojson, commodity, attrib
             }
           });
           // Add the feature geometry, feature primary key Add flag property for general, gran cho, glad, forma, viirs, terrai
-          const featureArrayValues = ;
           featureArray.push(
             locationUtils.getWKTGeometry(req, feature.geometry),
             primary_key,
@@ -263,7 +262,7 @@ const uploadBulkLocations = (req, list_id, list_name, geojson, commodity, attrib
             0,
             0,
             0,
-            0,
+            0
           );
           // Increment key for next feature
           primary_key += 1;

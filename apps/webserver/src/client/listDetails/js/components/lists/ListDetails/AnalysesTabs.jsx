@@ -16,25 +16,27 @@ function AnalysesTabs({
   listViewOptions,
   listAnalysesStatus,
   hasLocationWithErrors,
-  isGfwList,
 }) {
-  const post2020TreeCoverLossAnalysisStatus = listAnalysesStatus?.find(
+  const getStatusIcon = (status) => {
+    switch (status) {
+      case listStatus.Draft:
+        return <span className="status-indicator status-indicator--blue" />;
+      case listStatus.Pending:
+        return <CircularProgress size={15} sx={{ color: '#97bd3d' }} />;
+      case listStatus.Inactive:
+      case hasLocationWithErrors:
+        return <span className="status-indicator status-indicator--red" />;
+      default:
+        return null;
+    }
+  };
+  const post2000TreeCoverLossAnalysisStatus = listAnalysesStatus?.find(
     ({ analysisId }) => analysisId === analysisTypes.FOREST_CHANGE_DIAGNOSTICS
   )?.status;
 
-  let icon;
-
-  if (post2020TreeCoverLossAnalysisStatus === listStatus.Draft) {
-    icon = <span className="status-indicator status-indicator--blue" />;
-  }
-
-  if (post2020TreeCoverLossAnalysisStatus === listStatus.Pending) {
-    icon = <CircularProgress size={15} sx={{ color: '#97bd3d' }} />;
-  }
-
-  if (post2020TreeCoverLossAnalysisStatus === listStatus.Inactive || hasLocationWithErrors) {
-    icon = <span className="status-indicator status-indicator--red" />;
-  }
+  const post2020RiskAssessmentStatus = listAnalysesStatus?.find(
+    ({ analysisId }) => analysisId === analysisTypes.DEFORESTATION_KPIS
+  )?.status;
 
   return (
     <Tabs
@@ -43,26 +45,9 @@ function AnalysesTabs({
       style={{ color: 'black', background: 'none' }}
       TabIndicatorProps={{ style: { display: 'none' } }} // Remove the default indicator
     >
-      <Tab
-        icon={icon}
-        iconPosition="start"
-        label="POST-2000 TREE COVER LOSS"
-        value={FOREST_CHANGE_VIEW}
-        sx={{
-          backgroundColor: listView === FOREST_CHANGE_VIEW ? 'white' : '#e5e5e5',
-          color: 'black',
-          '&.Mui-selected': {
-            color: 'black',
-            backgroundColor: 'white',
-            borderTopLeftRadius: '4px',
-            borderTopRightRadius: '4px',
-          },
-        }}
-      />
-
-      {!isGfwList && (
+      {post2020RiskAssessmentStatus && (
         <Tab
-          icon={icon}
+          icon={getStatusIcon(post2020RiskAssessmentStatus)}
           iconPosition="start"
           label="Post-2020 Risk Assessment"
           value={POST_2020_RISK_ASSESSMENT_VIEW}
@@ -79,11 +64,30 @@ function AnalysesTabs({
         />
       )}
 
+      {post2000TreeCoverLossAnalysisStatus && (
+        <Tab
+          icon={getStatusIcon(post2000TreeCoverLossAnalysisStatus)}
+          iconPosition="start"
+          label="POST-2000 TREE COVER LOSS"
+          value={FOREST_CHANGE_VIEW}
+          sx={{
+            backgroundColor: listView === FOREST_CHANGE_VIEW ? 'white' : '#e5e5e5',
+            color: 'black',
+            '&.Mui-selected': {
+              color: 'black',
+              backgroundColor: 'white',
+              borderTopLeftRadius: '4px',
+              borderTopRightRadius: '4px',
+            },
+          }}
+        />
+      )}
+
       {listViewOptions.length > 1 && (
         // only display Commodity Risk / Forest Change view toggle in Commodity Risk lists
 
         <Tab
-          icon={icon}
+          icon={null}
           iconPosition="start"
           label="COMMODITY RISK"
           value={COMMODITY_RISK_VIEW}

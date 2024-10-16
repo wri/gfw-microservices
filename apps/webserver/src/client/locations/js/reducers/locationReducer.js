@@ -35,11 +35,12 @@ import {
   DISPLAY_FORMAT_SUMMARY,
   SBTN_NATURAL_FOREST_LOSS,
 } from '../../../listDetails/js/components/lists/ListDetails/deforestationDisplayFormat.constants';
+import { POST_2020_RISK_ASSESSMENT_VIEW } from '../../../listDetails/js/components/lists/ListDetails/listViews.constants';
 
 const initialLocationState = {
   localColor: 'red',
   view: 'landing',
-  listView: 'forest_change',
+  listView: POST_2020_RISK_ASSESSMENT_VIEW,
   addType: null,
   addMethod: 'byAddress',
   activeTemplate: 'investment',

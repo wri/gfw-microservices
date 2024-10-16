@@ -41,7 +41,10 @@
       "runtimeExecutable": "npx",
       "runtimeArgs": ["nx", "serve", "microservices-list-downloader"],
       "console": "integratedTerminal",
-      "cwd": "${workspaceFolder}/apps/microservices/list-downloader"
+      "cwd": "${workspaceFolder}/apps/microservices/list-downloader",
+      "env": {
+        "NODE_ENV": "development"
+      }
     }
   ]
 }

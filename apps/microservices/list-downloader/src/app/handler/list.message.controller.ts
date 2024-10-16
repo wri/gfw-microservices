@@ -37,6 +37,7 @@ export enum CSVInputTypes {
   SOUTHAMERICATCL = 'southAmericaTCL',
   SOUTHEASTASIAOVERLAP = 'southEastAsiaOverlap',
   SOUTHEASTASIATC = 'southEastAsiaTCL',
+  AFIVC = 'afiVC',
 }
 
 // BasicFieldsFileRequest schema
@@ -112,6 +113,7 @@ const AccountUsersUsageRequestSchema = BasicFieldsFileRequestSchema.extend({
 const getSchemaByType = (type: string) => {
   switch (type) {
     case 'afi':
+    case 'afiVC':
       return BasicFieldsFileRequestSchema;
     case 'alerts':
       return AlertFieldsFileRequestSchema;

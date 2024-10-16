@@ -19,8 +19,8 @@ import { ReplaceSpace2Underscore } from '../transform/replace.space.2.underscore
 @Injectable({
   scope: Scope.REQUEST,
 })
-export class ShapefileService extends IPipeService {
-  private readonly logger = new Logger(ShapefileService.name);
+export class GeometryService extends IPipeService {
+  private readonly logger = new Logger(GeometryService.name);
   private inputStream: PassThrough;
   private fileStream: fs.WriteStream;
 
@@ -55,8 +55,11 @@ export class ShapefileService extends IPipeService {
   }
 
   private organizeStream(filters: ListFieldsFileRequest, allFields: string[]) {
-    const open = '{"type":"FeatureCollection","features":[';
-    const close = ']}';
+    const open =
+      filters.type === 'afiVC'
+        ? '{\n"type":"FeatureCollection","features":['
+        : '{"type":"FeatureCollection","features":[';
+    const close = filters.type === 'afiVC' ? ']}\n' : ']}';
 
     const { key, selectedLocationsList, listId, listName } = filters;
     this.inputStream.removeAllListeners();
@@ -83,11 +86,11 @@ export class ShapefileService extends IPipeService {
   }
 
   async finish(filters: ListFieldsFileRequest) {
-    const { listId, key, listName } = filters;
+    const { listId, key, listName, type } = filters;
     this.logger.log(`(${listId}) - Finished to process data and generate shapefile`);
     await this.writeAllData(this.inputStream);
     await finished(this.fileStream);
-    await this.convertGeojsonToSHP(key, listName);
+    type !== 'afiVC' ? await this.convertGeojsonToSHP(key, listName) : null;
     this.logger.log(`(${listId}) - Data has been zipped`);
     await this.finishProcess(filters);
   }

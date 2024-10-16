@@ -4,7 +4,7 @@ import * as tsMockito from 'ts-mockito';
 
 import { UspGetListAnalysis } from '@wri-monorepos/sql';
 import { InputService } from '../files/input.service';
-import { ShapefileService } from '../files/shapefile.service';
+import { GeometryService } from '../files/geometry.service';
 import { DashboardService } from './dashboard.service';
 import { ResultService } from '../files/result.service';
 import { AnalysisDataService } from '../data/analysis.data.service';
@@ -28,7 +28,7 @@ describe('ListGeneratorServiceTest', () => {
       providers: [
         ListGeneratorService,
         { provide: InputService, useValue: tsMockito.mock(InputService) },
-        { provide: ShapefileService, useValue: tsMockito.mock(ShapefileService) },
+        { provide: GeometryService, useValue: tsMockito.mock(GeometryService) },
         { provide: DashboardService, useValue: tsMockito.mock(DashboardService) },
         { provide: ResultService, useValue: tsMockito.mock(ResultService) },
         { provide: UspGetListAnalysis, useValue: tsMockito.mock(UspGetListAnalysis) },

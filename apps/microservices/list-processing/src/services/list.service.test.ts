@@ -46,7 +46,6 @@ describe('ListService - Start Analysis Process For List', () => {
     } as unknown as DeprecatedStartAnalysisService;
 
     service = new ListService(
-      dataSourceMock as DataSource,
       new ClientStoreConnection(),
       metadataServiceMock as MetadataService,
       configServiceMock as ConfigService,

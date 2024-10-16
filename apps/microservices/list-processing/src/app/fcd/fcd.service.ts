@@ -504,6 +504,6 @@ export class FCDService {
   };
 
   private parseJsonSafely(stringObj) {
-    return JSON.parse(stringObj || {});
+    return JSON.parse(stringObj || '{}');
   }
 }

@@ -1,8 +1,11 @@
-import { SQLUtils } from '@wri-monorepos/sql';
+import { FeatureFlag, SQLUtils } from '@wri-monorepos/sql';
 import { AbstractHandler, ChainType, RequestNewList } from './types';
 import { CreateListResult } from '@wri-monorepos/geo';
 import * as sql from 'mssql';
 import { updateListsUploadStatus } from '../shared/update.lists.upload.status';
+import { featureFlagsService } from '@wri-monorepos/shared';
+import { ConfigService } from '@nestjs/config';
+import { ServerConfigType } from '../../../validators/server-config';
 
 const LIST_UPLOAD_VERSION = 2;
 export class CreateListLevelData extends AbstractHandler<ChainType> {
@@ -41,8 +44,14 @@ export class CreateListLevelData extends AbstractHandler<ChainType> {
     locationClassification: string,
     customAttributeNames: string,
     customAttributeTypes: string,
-    gfwListId: number = null
+    gfwListId: number = null,
+    orgId: number
   ): Promise<CreateListResult> {
+    const { getFeatureFlagsForCurrentOrg } = await featureFlagsService();
+    const flags = await getFeatureFlagsForCurrentOrg(orgId);
+
+    const uploadListLpFlag = flags.find((f) => f.flagId === 'UploadListLp') as FeatureFlag;
+
     const parameters = [
       this.createSqlParameter('user_id', sql.Int, userId),
       this.createSqlParameter('template_id', sql.Int, templateId),
@@ -54,7 +63,11 @@ export class CreateListLevelData extends AbstractHandler<ChainType> {
       this.createSqlParameter('custom_attribute_names', sql.NVarChar(2000), customAttributeNames),
       this.createSqlParameter('custom_attribute_types', sql.NVarChar(2000), customAttributeTypes),
       this.createSqlParameter('associated_gfwlist', sql.TinyInt, gfwListId),
-      this.createSqlParameter('version', sql.Int, LIST_UPLOAD_VERSION),
+      this.createSqlParameter(
+        'version',
+        sql.Int,
+        uploadListLpFlag.flagState ? LIST_UPLOAD_VERSION : null
+      ),
     ];
 
     const result = await this.executeQueryWithParams<CreateListResult>(
@@ -86,6 +99,14 @@ export class CreateListLevelData extends AbstractHandler<ChainType> {
       template_id: templateId,
     } = input.request as RequestNewList;
 
+    const config: ConfigService = new ConfigService<ServerConfigType, true>();
+
+    const { orgId } = await SQLUtils.queryDB<{ orgId: number }>(
+      config.get('MSSQL_DATABASE', { infer: true }),
+      'SELECT [id] as orgId from [Organizations] WHERE organization_db = @organizationDB',
+      [{ field: 'organizationDB', type: sql.NVarChar(100), value: clientDatabase }]
+    );
+
     const connection = new SQLUtils();
 
     try {
@@ -102,7 +123,8 @@ export class CreateListLevelData extends AbstractHandler<ChainType> {
         locationClassification,
         customAttributeNames,
         customAttributeTypes,
-        gfwListId
+        gfwListId,
+        orgId
       );
 
       await updateListsUploadStatus(

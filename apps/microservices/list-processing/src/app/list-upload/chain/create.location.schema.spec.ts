@@ -55,13 +55,16 @@ describe('CreateLocationSchema', () => {
 
   describe('getTableStructureQuery', () => {
     it('should get the table structure query', async () => {
-      const queryResult = { query_string: 'CREATE TABLE ...' };
-      mockSQLUtils.executeQuery.mockResolvedValueOnce(queryResult);
-      const result = await createLocationSchema.getTableStructureQuery();
-      expect(result).toStrictEqual({
-        query_string:
-          '[Location Name] NVARCHAR(150),[Latitude] FLOAT,[Longitude] FLOAT,[Analysis Radius] FLOAT,[Analysis Area] FLOAT,[Commodity] NVARCHAR(150),[Location Classification] NVARCHAR(150),[Company ID] NVARCHAR(150),[Volume] INT,[Owner Name] NVARCHAR(150),[Owner ID] NVARCHAR(150),[Company Name] NVARCHAR(150),[Supplier Name] NVARCHAR(150),[Facility Name] NVARCHAR(150),[Refinery Name] NVARCHAR(150),[Certification] NVARCHAR(150),[Start Date] NVARCHAR(150),[End Date] NVARCHAR(150),[Time Horizon] NVARCHAR(150),[Accuracy Rating of Location Entered] INT,[Country] NVARCHAR(150),[State] NVARCHAR(150),[Sub State] NVARCHAR(150),[Wind Barrier] NVARCHAR(150),[Riparian Buffers] NVARCHAR(150),[Buffer Zones] NVARCHAR(150),[gadmid] NVARCHAR(150), [Geometry] geometry, [location_id] INT, [flag_general] INT, [flag_gran_chaco] INT, [flag_glad] INT, [flag_forma] INT, [flag_viirs] INT, [flag_terrai] INT',
-      });
+      const someTemplateId = 13;
+
+      jest.spyOn(SQLUtils.prototype, 'connect').mockResolvedValueOnce();
+      jest.spyOn(SQLUtils.prototype, 'executeQuery').mockResolvedValueOnce('');
+
+      await createLocationSchema.getTableStructureQuery(someTemplateId);
+
+      expect(SQLUtils.prototype.executeQuery).toHaveBeenCalledWith('uspGetTableQueryString', [
+        { field: 'template_id', type: sql.Int, value: someTemplateId },
+      ]);
     });
   });
 

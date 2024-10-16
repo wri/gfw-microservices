@@ -198,7 +198,7 @@ const getListNameSchema = (req, list_id) => {
  *   @param commodity
  *   @return {Promise}
  */
-const uploadBulkLocations = (req, list_id, list_name, geojson, commodity) => {
+const uploadBulkLocations = (req, list_id, list_name, geojson, commodity, attributes) => {
   return new Promise((resolve, reject) => {
     // Important variables
     let primary_key = 1;
@@ -231,6 +231,9 @@ const uploadBulkLocations = (req, list_id, list_name, geojson, commodity) => {
           if (column.COLUMN_NAME === 'location_id' || column.COLUMN_NAME.includes('flag_')) {
             columnNamesArray.push(column.COLUMN_NAME);
             columnTypesArray.push(sql.Int);
+          } else if (column.COLUMN_NAME === 'attributes') {
+            columnNamesArray.push(column.COLUMN_NAME);
+            columnTypesArray.push(sql.NVarChar(sql.MAX));
           } else {
             columnNamesArray.push(column.COLUMN_NAME);
             columnTypesArray.push(sqlUtils.getDataType(req, column.DATA_TYPE));
@@ -253,6 +256,7 @@ const uploadBulkLocations = (req, list_id, list_name, geojson, commodity) => {
           featureArray.push(
             locationUtils.getWKTGeometry(req, feature.geometry),
             primary_key,
+            attributes, // new `attributes` column default value
             0,
             0,
             0,
@@ -312,7 +316,7 @@ const uploadBulkLocations = (req, list_id, list_name, geojson, commodity) => {
         const errorObject = errorUtils.createErrorMessage(
           req,
           errorUtils.ERROR_CODES.failedToAppendList,
-          `Failed to append to ${list.table_name}`,
+          `Failed to append to ${list.list_table}`,
           errorMessage
         );
         reject(errorObject);

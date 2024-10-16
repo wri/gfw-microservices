@@ -16,7 +16,9 @@ import { S3Service } from '@wri-monorepos/aws';
 import { ConfigService } from '@nestjs/config';
 import { ServerConfigType } from '../validators/server-config';
 import { SaveActivityLogEndpoint } from './utils/saveActivityLogEndpoint';
-import { ActivityLog } from '@wri-monorepos/sql';
+import { ActivityLog, GfwLists } from '@wri-monorepos/sql';
+import { ClaugerService } from '../clauger/clauger.service';
+import { ClaugerController } from '../clauger/clauger.controller';
 @Module({
   imports: [
     TypeOrmModule.forFeature(
@@ -24,7 +26,7 @@ import { ActivityLog } from '@wri-monorepos/sql';
       'default'
     ),
   ],
-  controllers: [ListAnalysisController, ListUploadController],
+  controllers: [ListAnalysisController, ListUploadController, ClaugerController],
   providers: [
     ListAnalysisService,
     UserService,
@@ -33,6 +35,8 @@ import { ActivityLog } from '@wri-monorepos/sql';
     ListService,
     S3Service,
     SaveActivityLogEndpoint,
+    ClaugerService,
+    GfwLists,
     {
       provide: 'AWS',
       inject: [ConfigService],

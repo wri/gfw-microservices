@@ -416,7 +416,7 @@ export class ListAnalysisService {
         });
       }
       if (outputType && analysisId === 'AFI') {
-        message = { ...message, type: 'afi-vc' };
+        message = { ...message, type: 'afiVC', file: 'shapefile' };
       }
 
       await axios.post(

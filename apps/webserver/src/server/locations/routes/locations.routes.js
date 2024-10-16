@@ -116,9 +116,7 @@ module.exports = (app, limiter) => {
       selected_location_ids: src_location_ids,
       original_gfw_list,
       analysisIds,
-      attributes = JSON.stringify({
-        creationPath: '/addToNewList',
-      }),
+      attributes = null,
     } = req.body;
     const finalGeojson = LocationManager.getFinalGeojson(gfw_list_id, geojson);
     const custom_attributes = req.body.custom_attributes ? req.body.custom_attributes : [];
@@ -181,9 +179,7 @@ module.exports = (app, limiter) => {
       selected_location_ids: src_location_ids,
       original_gfw_list,
       analysisIds,
-      attributes = JSON.stringify({
-        creationPath: `/${saveAsDraftListConfig.route}`,
-      }),
+      attributes = null,
     } = req.body;
 
     const finalGeojson = LocationManager.getFinalGeojson(gfw_list_id, geojson);

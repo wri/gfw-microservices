@@ -1433,9 +1433,7 @@ export const copyLocations = (
       })
       .then(() => {
         // Perform uploadBulkLocations
-        const attributes = JSON.stringify({
-          createdPath: '/copyLocations',
-        });
+        const attributes = null;
         return listUtils.uploadBulkLocations(
           req,
           dest_list.id,

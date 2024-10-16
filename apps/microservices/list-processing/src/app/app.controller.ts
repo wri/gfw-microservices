@@ -112,7 +112,8 @@ export class AppController {
       request.list_name,
       request.user_id,
       request.client_database,
-      request.analysisIds
+      request.analysisIds,
+      request.organization_id
     );
   }
 

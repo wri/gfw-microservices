@@ -44,7 +44,8 @@ export class ListService {
         createListRequest.listName,
         createListRequest.userId,
         createListRequest.clientDatabase,
-        createListRequest.analysisIds
+        createListRequest.analysisIds,
+        createListRequest.organization_id
       );
 
       const saveListRequest: RequestSaveLargeListProcessModel = {
@@ -70,6 +71,7 @@ export class ListService {
     const uploadListLpFlag = flags.find((f) => f.flagId === 'UploadListLp') as FeatureFlag;
 
     if (uploadListLpFlag.flagState) {
+      request.path = request.path.replace('s3://gfwpro-lpl-dev/', '');
       return this.startAnalysisService.run(request);
     }
     return this.deprecatedStartAnalysisService.run(request);
@@ -80,9 +82,20 @@ export class ListService {
     userId: number,
     clientDatabase: string,
     analysisIds: Array<string>,
+    organization_id: number,
     templateId = 13,
     gfwListId = null
   ): Promise<CreateListResult> {
+    const { getFeatureFlagsForCurrentOrg } = await featureFlagsService();
+    const flags = await getFeatureFlagsForCurrentOrg(organization_id);
+    const uploadListLpFlag = flags.find((f) => f.flagId === 'UploadListLp') as FeatureFlag;
+
+    if (uploadListLpFlag.flagState) {
+      return {
+        list_id: -1,
+      };
+    }
+
     const list = createListNameSchema(listName);
     const listTable = list.list_table;
     const analysisTable = list.analysis_table;

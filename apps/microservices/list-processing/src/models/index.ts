@@ -100,6 +100,9 @@ export class RequestTriggerProcessLargeList {
   client_database: string;
   @ApiProperty()
   analysisIds: Array<string>;
+
+  @ApiProperty()
+  organization_id: number;
 }
 
 export class CreateListRequest {
@@ -113,6 +116,9 @@ export class CreateListRequest {
   analysisIds: Array<string>;
   @ApiProperty()
   filename: string;
+
+  @ApiProperty()
+  organization_id: number;
 }
 
 export class CopyOrMoveLargeListRequestLLP implements CopyOrMoveLargeListRequest {

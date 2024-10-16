@@ -31,6 +31,7 @@ export class GADMService extends AbstractHandler<ChainType> {
       process.env.AWS_ANALYSIS_BUCKET,
       'application/json'
     );
+    return filePath;
   };
 
   getObject = async (bucket, key) => {
@@ -114,12 +115,12 @@ export class GADMService extends AbstractHandler<ChainType> {
       const s3ObjectsToDelete = [];
       const objectName = `gadm-${new Date().getTime()}`;
       this.putObject(objectName, { geojson: geojson })
-        .then((location_s3_info) => {
-          s3ObjectsToDelete.push(location_s3_info);
+        .then((location_info) => {
+          s3ObjectsToDelete.push(location_info);
 
           return this.invokeLambda('controller-admin-areas', {
             receipt_handle: 'NOTARECEIPT',
-            s3_location_info: location_s3_info,
+            s3_location_info: location_info,
             layer: 'gadm',
             dissolve_aoi: false,
             post_process_aoi: false,

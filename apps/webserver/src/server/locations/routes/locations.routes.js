@@ -116,6 +116,7 @@ module.exports = (app, limiter) => {
       selected_location_ids: src_location_ids,
       original_gfw_list,
       analysisIds,
+      attributes = null,
     } = req.body;
     const finalGeojson = LocationManager.getFinalGeojson(gfw_list_id, geojson);
     const custom_attributes = req.body.custom_attributes ? req.body.custom_attributes : [];
@@ -131,7 +132,8 @@ module.exports = (app, limiter) => {
       finalGeojson,
       gfw_list_id,
       false,
-      analysisIds
+      analysisIds,
+      attributes
     )
       .then(async ({ resultGeoJSON }) => {
         const dest_list = await ListManager.getListByListName(req, list_name);
@@ -177,6 +179,7 @@ module.exports = (app, limiter) => {
       selected_location_ids: src_location_ids,
       original_gfw_list,
       analysisIds,
+      attributes = null,
     } = req.body;
 
     const finalGeojson = LocationManager.getFinalGeojson(gfw_list_id, geojson);
@@ -191,7 +194,8 @@ module.exports = (app, limiter) => {
       custom_attributes,
       finalGeojson,
       gfw_list_id,
-      analysisIds
+      analysisIds,
+      attributes
     )
       .then(async ({ resultGeoJSON }) => {
         if (original_gfw_list) {
@@ -804,8 +808,8 @@ module.exports = (app, limiter) => {
         .then((response) => {
           const [noGeomData, gfwListAnalysesData, gfwLocationsAnalysesData, count] = response;
           locationAttributeArray.push(...noGeomData);
-          locationAnalysisArray.push(...gfwListAnalysesData);
-          listAnalyses.push(...gfwLocationsAnalysesData);
+          locationAnalysisArray.push(...gfwLocationsAnalysesData);
+          listAnalyses.push(...gfwListAnalysesData);
           if (noGeomData.length === 0) {
             return res.send({
               list_analysis: [],

@@ -163,6 +163,10 @@ export const ListSchema = {
       name: 'flag_viirs',
       nullable: true,
     },
+    attributes: {
+      type: String,
+      name: 'attributes',
+    },
     flagTerrai: {
       type: Number,
       name: 'flag_terrai',
@@ -206,5 +210,6 @@ export type ListSchemaType = {
   supplierName: string;
   timeHorizon: string;
   volume: string;
+  attributes: string;
   windBarrier: string;
 };

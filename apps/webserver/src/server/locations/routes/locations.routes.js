@@ -808,8 +808,8 @@ module.exports = (app, limiter) => {
         .then((response) => {
           const [noGeomData, gfwListAnalysesData, gfwLocationsAnalysesData, count] = response;
           locationAttributeArray.push(...noGeomData);
-          locationAnalysisArray.push(...gfwListAnalysesData);
-          listAnalyses.push(...gfwLocationsAnalysesData);
+          locationAnalysisArray.push(...gfwLocationsAnalysesData);
+          listAnalyses.push(...gfwListAnalysesData);
           if (noGeomData.length === 0) {
             return res.send({
               list_analysis: [],

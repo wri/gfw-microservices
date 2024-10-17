@@ -33,7 +33,9 @@ const checkValidViewCommodity = (selectedLists, listData) => {
       return template_id === 2 || (template_id === 5 && locationClassification === 'supply shed');
     }
     // This is a GFW list
-    return selectedLists[0].list_name === 'Palm Oil Mills';
+    return (
+      selectedLists[0].list_name === 'Palm Oil Mills' && selectedLists[0].isGlobalForestWatchList
+    );
   }
   return false;
 };

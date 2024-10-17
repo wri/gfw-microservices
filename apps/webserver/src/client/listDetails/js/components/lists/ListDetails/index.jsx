@@ -45,7 +45,6 @@ import {
   checkColumnListGFWCR,
   checkColumnListGFWFC,
   checkColumnListPA,
-  checkValidView,
   checkValidViewCommodity,
   getGFWListLocationIDs,
   getListFilteredLocations,
@@ -91,6 +90,12 @@ import { GFW_LISTS_NUMBER_CONSTANTS } from '../../../../../../config/env/gfwList
 import { getListFilterValues } from '../getListFilterValues';
 import getAllColumnNames from '../getAllColumnNames';
 import { defaultFilterValues } from '../defaultFilterValues';
+import { analysisTypes } from '../../../../../../config/env/analysisTypes.constants';
+import {
+  FOREST_CHANGE_VIEW,
+  COMMODITY_RISK_VIEW,
+  POST_2020_RISK_ASSESSMENT_VIEW,
+} from './listViews.constants';
 
 // STYLE
 import '../../../../../locations/css/lists.scss';
@@ -178,6 +183,23 @@ export default class ListDetails extends Component {
       });
     }
     store.dispatch(updateSelectedLocations([]));
+
+    // post-2020 risk assesment tab is selected by default, but
+    // if that analysis is not active and post-2000 tree cover loss analysis is active,
+    // then select the tab and change the view to FOREST_CHANGE_VIEW
+    const listAnalysesStatus = selectedLists[0]?.listAnalysesStatus || [];
+
+    const isPost2020RiskActive = listAnalysesStatus?.some(
+      ({ analysisId }) => analysisId === analysisTypes.DEFORESTATION_KPIS
+    );
+
+    const isPost2000TreeCoverLossActive = listAnalysesStatus?.some(
+      ({ analysisId }) => analysisId === analysisTypes.FOREST_CHANGE_DIAGNOSTICS
+    );
+
+    if ((!isPost2020RiskActive && isPost2000TreeCoverLossActive) || isGlobalForestWatchList) {
+      store.dispatch(changeListView(FOREST_CHANGE_VIEW));
+    }
   }
 
   // When a list is selected update state
@@ -948,16 +970,16 @@ export default class ListDetails extends Component {
     const { selectedLists, listView } = this.props;
     if (selectedLists.length > 0 && !selectedLists[0].isGlobalForestWatchList) {
       return (
-        !(listView === 'forest_change' && checkColumnListFC(column.accessor)) &&
-        !(listView === 'commodity_risk' && checkColumnListCR(column.accessor))
+        !(listView === FOREST_CHANGE_VIEW && checkColumnListFC(column.accessor)) &&
+        !(listView === COMMODITY_RISK_VIEW && checkColumnListCR(column.accessor))
       );
     }
     if (selectedLists.length > 0) {
       const { list_name } = selectedLists[0];
       return (
-        !(listView === 'forest_change' && checkColumnListGFWFC(list_name, column.accessor)) &&
-        !(listView === 'commodity_risk' && checkColumnListGFWCR(list_name, column.accessor)) &&
-        !(listView === 'forest_change' && checkColumnListPA(list_name, column.accessor))
+        !(listView === FOREST_CHANGE_VIEW && checkColumnListGFWFC(list_name, column.accessor)) &&
+        !(listView === COMMODITY_RISK_VIEW && checkColumnListGFWCR(list_name, column.accessor)) &&
+        !(listView === FOREST_CHANGE_VIEW && checkColumnListPA(list_name, column.accessor))
       );
     }
   };
@@ -1096,14 +1118,6 @@ export default class ListDetails extends Component {
         }
       } else {
         store.dispatch(updateListData([]));
-        this.setState({
-          dialogOpen: true,
-          dialogTitle: 'No locations were returned',
-          dialogContent: 'This query matched no records. Please alter your query.',
-          listColumns: [],
-          combinedColumns: [],
-          isLoading: false,
-        });
       }
     } else {
       this.setState({
@@ -1888,15 +1902,23 @@ export default class ListDetails extends Component {
 
     const isEditActionAvailable =
       !isGfwList && !selectedListIsShared && currentUser.access_level_id !== userAccessLevel.VIEWER;
-    if (checkValidView(listData)) {
-      listViewOptions.push({ value: 'forest_change', label: locationsPage.lists.viewForestChange });
+
+    const isPost2000TreeCoverLossActive = listAnalysesStatus?.some(
+      ({ analysisId }) => analysisId === analysisTypes.FOREST_CHANGE_DIAGNOSTICS
+    );
+    if (isPost2000TreeCoverLossActive || isGfwList) {
+      listViewOptions.push(FOREST_CHANGE_VIEW);
     }
 
     if (checkValidViewCommodity(selectedLists, listData)) {
-      listViewOptions.push({
-        value: 'commodity_risk',
-        label: locationsPage.lists.viewCommodityRisk,
-      });
+      listViewOptions.push(COMMODITY_RISK_VIEW);
+    }
+
+    const isPost2020RiskActive = listAnalysesStatus?.some(
+      ({ analysisId }) => analysisId === analysisTypes.DEFORESTATION_KPIS
+    );
+    if (isPost2020RiskActive) {
+      listViewOptions.push(POST_2020_RISK_ASSESSMENT_VIEW);
     }
 
     const allDialogActions = dialogActions || (
@@ -2130,7 +2152,6 @@ export default class ListDetails extends Component {
                       changeListView={this.changeListView}
                       listAnalysesStatus={listAnalysesStatus}
                       hasLocationWithErrors={hasLocationWithErrors}
-                      isGfwList={isGfwList}
                     />
 
                     {!isGfwList && (

@@ -87,7 +87,6 @@ function AnalysesTabs({
         // only display Commodity Risk / Forest Change view toggle in Commodity Risk lists
 
         <Tab
-          icon={null}
           iconPosition="start"
           label="COMMODITY RISK"
           value={COMMODITY_RISK_VIEW}

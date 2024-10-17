@@ -5,6 +5,7 @@ import {
   FOREST_CHANGE_VIEW,
   POST_2020_RISK_ASSESSMENT_VIEW,
 } from './ListDetails/listViews.constants';
+import { analysisTypes } from '../../../../../config/env/analysisTypes.constants';
 
 const getUserLocationDataFromAPI = (
   filters,
@@ -20,24 +21,17 @@ const getUserLocationDataFromAPI = (
 
   switch (listView) {
     case FOREST_CHANGE_VIEW:
-      analysisId = 'FCD';
-
-      break;
     case COMMODITY_RISK_VIEW:
-      analysisId = 'FCD';
-
+      analysisId = analysisTypes.FOREST_CHANGE_DIAGNOSTICS;
       break;
     case POST_2020_RISK_ASSESSMENT_VIEW:
-      analysisId = 'AFI';
-
+      analysisId = analysisTypes.DEFORESTATION_KPIS;
       break;
     default:
-      analysisId = 'FCD';
-
+      analysisId = analysisTypes.FOREST_CHANGE_DIAGNOSTICS;
       break;
   }
 
-  console.log({ listView });
   const data = {
     pageSize: 50,
     page: page + 1,

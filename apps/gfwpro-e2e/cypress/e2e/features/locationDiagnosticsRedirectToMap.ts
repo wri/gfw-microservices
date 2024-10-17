@@ -35,15 +35,15 @@ describe('Location diagnostics', () => {
   });
 
   Then('I should be redirected to map with the selected location from GFW list', () => {
-    cy.url().should('include', '/map?listId=3&isGfwList=true');
+    cy.location('href').should('include', '/map?listId=3&isGfwList=true');
   });
 
   Then('I should be redirected to map with all locations from the GFW list', () => {
-    cy.url().should('include', '/map?listId=3&isGfwList=true');
+    cy.location('href').should('include', '/map?listId=3&isGfwList=true');
   });
 
   Then('I should be redirected to map with the selected location from the list', () => {
-    cy.url().should('include', '/map?listId=2&isGfwList=false');
+    cy.location('href').should('include', '/map?listId=2&isGfwList=false');
   });
 
   When('I navigate to the map from a draft list', () => {
@@ -57,10 +57,10 @@ describe('Location diagnostics', () => {
   });
 
   Then('I should be redirected to the draft list map view', () => {
-    cy.url().should('include', '/map?visibleLayers=Tree+cover+loss&listId=1038');
+    cy.location('href').should('include', '/map?visibleLayers=Tree+cover+loss&listId=1038');
   });
 
   Then('I should be redirected to the active list map view', () => {
-    cy.url().should('include', '/map?visibleLayers=Tree+cover+loss&listId=2');
+    cy.location('href').should('include', '/map?visibleLayers=Tree+cover+loss&listId=2');
   });
 });

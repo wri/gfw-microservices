@@ -76,7 +76,8 @@ const forest_change_analysis = [
         show: true,
         Cell: (row) => {
           return locationIsActive(row.value) ? (
-            checkValid(row.value.tree_cover_loss_total_yearly) ? (
+            checkValid(row.value.tree_cover_loss_total_yearly) ||
+            isListDetailsPageRedesignAvailable ? (
               <span title={getValue(row.value.tree_cover_loss_total_yearly)}>
                 {isListDetailsPageRedesignAvailable
                   ? calculateAndFormatTotalDeforestation(
@@ -114,7 +115,8 @@ const forest_change_analysis = [
         show: true,
         Cell: (row) => {
           return locationIsActive(row.value) ? (
-            checkValid(row.value.tree_cover_loss_protected_areas_yearly) ? (
+            checkValid(row.value.tree_cover_loss_protected_areas_yearly) ||
+            isListDetailsPageRedesignAvailable ? (
               <span
                 title={getValidatedValue(
                   row.value.tree_cover_loss_protected_areas_yearly,
@@ -161,7 +163,8 @@ const forest_change_analysis = [
         show: true,
         Cell: (row) => {
           return locationIsActive(row.value) ? (
-            checkValid(row.value.tree_cover_loss_primary_forest_yearly) ? (
+            checkValid(row.value.tree_cover_loss_primary_forest_yearly) ||
+            isListDetailsPageRedesignAvailable ? (
               <span
                 title={getValidatedValue(
                   row.value.tree_cover_loss_primary_forest_yearly,

@@ -1,12 +1,27 @@
 import React, { useState } from 'react';
 import './index.scss';
 
-import { Typography, Card, IconButton, TextField, Divider, Radio } from '@mui/material';
+import {
+  Typography,
+  Card,
+  IconButton,
+  TextField,
+  Divider,
+  Radio,
+  OutlinedInput,
+  InputAdornment,
+  FormControl,
+  InputLabel,
+} from '@mui/material';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import AddLocationAltIcon from '@mui/icons-material/AddLocationAlt';
 import LocationOnIcon from '@mui/icons-material/LocationOn';
+import SearchIcon from '@mui/icons-material/Search';
+import CloseIcon from '@mui/icons-material/Close';
+import ArrowForwardIosIcon from '@mui/icons-material/ArrowForwardIos';
 
 import { HowToFormatLocationLink } from '../components/HowToFormatLocationLink';
+import { PillButton } from '../components/PillButton';
 
 enum LocationFormat {
   COORDINATES,
@@ -78,14 +93,40 @@ export function UploadLocationByPoint({ clearUploadType }: UploadLocationByPoint
             </button>
           </div>
           <form>
-            <Typography variant="h6">Enter coordinates</Typography>
-            <Typography variant="body2" className="upload-location-by-point__subtitle">
-              Coordinate data must be in decimal degrees format.
-            </Typography>
-            <div className="upload-location-by-point__location-info__coordinates">
-              <TextField label="Latitude" variant="outlined" type="number" />
-              <TextField label="Longitude" variant="outlined" type="number" />
-            </div>
+            {locationFormat === LocationFormat.COORDINATES ? (
+              <>
+                <Typography variant="h6">Enter coordinates</Typography>
+                <Typography variant="body2" className="upload-location-by-point__subtitle">
+                  Coordinate data must be in decimal degrees format.
+                </Typography>
+                <div className="upload-location-by-point__location-info__coordinates">
+                  <TextField label="Latitude" variant="outlined" type="number" />
+                  <TextField label="Longitude" variant="outlined" type="number" />
+                </div>
+              </>
+            ) : (
+              <>
+                <Typography variant="h6">Enter address</Typography>
+
+                <FormControl
+                  variant="outlined"
+                  className="upload-location-by-point__location-info__address-text-field"
+                >
+                  <InputLabel htmlFor="outlined-adornment-password">Address</InputLabel>
+                  <OutlinedInput
+                    id="address"
+                    endAdornment={
+                      <InputAdornment position="end">
+                        <IconButton disableRipple>
+                          <SearchIcon />
+                        </IconButton>
+                      </InputAdornment>
+                    }
+                    label="Address"
+                  />
+                </FormControl>
+              </>
+            )}
 
             <Divider flexItem sx={{ margin: '2rem 0 0.75rem' }} />
 
@@ -95,6 +136,7 @@ export function UploadLocationByPoint({ clearUploadType }: UploadLocationByPoint
               <div>
                 <Radio
                   name="radius-size"
+                  color="primary"
                   value={RadiusSize.SMALL}
                   checked={selectedRadiusSize === RadiusSize.SMALL}
                   onClick={() => setSelectedRadiusSize(RadiusSize.SMALL)}
@@ -107,6 +149,7 @@ export function UploadLocationByPoint({ clearUploadType }: UploadLocationByPoint
               <div>
                 <Radio
                   name="radius-size"
+                  color="primary"
                   value={RadiusSize.MEDIUM}
                   checked={selectedRadiusSize === RadiusSize.MEDIUM}
                   onClick={() => setSelectedRadiusSize(RadiusSize.MEDIUM)}
@@ -120,6 +163,7 @@ export function UploadLocationByPoint({ clearUploadType }: UploadLocationByPoint
               <div>
                 <Radio
                   name="radius-size"
+                  color="primary"
                   value={RadiusSize.LARGE}
                   checked={selectedRadiusSize === RadiusSize.LARGE}
                   onClick={() => setSelectedRadiusSize(RadiusSize.LARGE)}
@@ -132,6 +176,7 @@ export function UploadLocationByPoint({ clearUploadType }: UploadLocationByPoint
               <div>
                 <Radio
                   name="radius-size"
+                  color="primary"
                   value={RadiusSize.CUSTOM}
                   checked={selectedRadiusSize === RadiusSize.CUSTOM}
                   onClick={() => setSelectedRadiusSize(RadiusSize.CUSTOM)}
@@ -149,6 +194,13 @@ export function UploadLocationByPoint({ clearUploadType }: UploadLocationByPoint
                 <Typography variant="h6">Enter area (HA) or radius (km)</Typography>
               </>
             )}
+
+            <div className="upload-location-by-point__location-info__bottom-buttons-container">
+              <PillButton color="secondary" startIcon={<CloseIcon />} onClick={clearUploadType}>
+                Cancel
+              </PillButton>
+              <PillButton startIcon={<ArrowForwardIosIcon />}>Next</PillButton>
+            </div>
           </form>
         </div>
       </Card>

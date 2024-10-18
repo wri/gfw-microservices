@@ -5,12 +5,7 @@ import { PassThrough } from 'stream';
 import { convert } from 'geojson2shp';
 import { Logger, Injectable, Scope } from '@nestjs/common';
 
-import {
-  ListFieldsFileRequest,
-  GFWList,
-  ClientStoreConnection,
-  Lists
-} from '@wri-monorepos/sql';
+import { ListFieldsFileRequest, GFWList, ClientStoreConnection, Lists } from '@wri-monorepos/sql';
 import { IPipeService } from '../pipe/i.pipe.service';
 import { columnsListName, columnsTemplateId } from '../shared/constants';
 import { FilterObject } from '../transform/filter.object';
@@ -60,11 +55,10 @@ export class GeometryService extends IPipeService {
   }
 
   private async organizeStream(filters: ListFieldsFileRequest, allFields: string[]) {
-    const listProperties = await this.getListProperties(filters);
-    console.log(listProperties);
-    const open =
-      filters.type === 'afiVC'
-        ? `{"properties": {
+    let protertiesAfiVC = '';
+    if (filters.type === 'afiVC') {
+      const listProperties = await this.getListProperties(filters);
+      protertiesAfiVC = `{"properties": {
             "Location_Name": ${listProperties['Location Name']},
             "Centroid_Country": ${listProperties.Country},
             "Location_HA": ${listProperties.total_area_ha},
@@ -72,12 +66,14 @@ export class GeometryService extends IPipeService {
             "SBTN_Natural_Forest_Loss_Post_2020_HA": ${listProperties.natural_land_deforested_area},
             "JRC_Forest_HA": ${listProperties.jrc_land_area},
             "JRC_Forest_Loss_Post_2020_HA": ${listProperties.jrc_land_deforested_area},
-            "Analysis_Time": ListsAnalysisStatus.UpdateTime,
+            "Analysis_Time": ${listProperties.updateTime},
             "GFWPro_Account": id,
             "Use_Rights": "Full Sharing",
             },
-            {\n"type":"FeatureCollection","features":[`
-        : '{"type":"FeatureCollection","features":[';
+            {\n"type":"FeatureCollection","features":[`;
+    }
+    const open =
+      filters.type === 'afiVC' ? protertiesAfiVC : '{"type":"FeatureCollection","features":[';
     const close = filters.type === 'afiVC' ? ']}\n}' : ']}';
 
     const { key, selectedLocationsList, listId, listName } = filters;
@@ -141,7 +137,15 @@ export class GeometryService extends IPipeService {
         WHERE [list_id] = ${listId} AND [location_id] > 0
       `;
       const AFIAnalysis = await connection.query(afiRawQuery);
-      return { ...listProperties, ...listProperties2[0], ...AFIAnalysis[0] };
+
+      const listAnalysisStatusQuery = `
+      SELECT *
+      FROM "ListsAnalysisStatus"
+      WHERE [ListID] = ${listId} and AnalysisID = 'AFI'
+    `;
+      const listAnalysisStatus = await connection.query(listAnalysisStatusQuery);
+      const updateTime = listAnalysisStatus[0]?.UpdateTime || '';
+      return { ...listProperties, ...listProperties2[0], ...AFIAnalysis[0], updateTime };
     } else {
       const connection = await this.clientStoreConnection.getConnection('gfwpro', [GFWList]);
       const gfwListRepository = await connection.getRepository(GFWList);

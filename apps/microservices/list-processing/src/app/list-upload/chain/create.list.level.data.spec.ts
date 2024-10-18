@@ -145,22 +145,18 @@ describe('CreateList', () => {
 
       const mockResult: CreateListResult = { list_id: 1 } as CreateListResult;
 
-      // Mock SQLUtils.queryDB to return orgId
       jest.spyOn(SQLUtils, 'queryDB').mockResolvedValue({ orgId: 123 });
 
-      // Mock SQLUtils instance methods
       jest.spyOn(SQLUtils.prototype, 'connect').mockImplementation(function (databaseName) {
         this.databaseName = databaseName; // Set databaseName for use in updateListsUploadStatus
         return Promise.resolve();
       });
       jest.spyOn(SQLUtils.prototype, 'disconnect').mockResolvedValue(undefined);
 
-      // Mock insertListInListTable method
       const insertListInListTableSpy = jest
         .spyOn(createList, 'insertListInListTable')
         .mockResolvedValue(mockResult);
 
-      // Mock addListToAnalysesTable method
       jest.spyOn(createList, 'addListToAnalysesTable').mockResolvedValue(undefined);
 
       await createList.handle(mockInput);

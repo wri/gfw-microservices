@@ -5,7 +5,7 @@ import { PassThrough } from 'stream';
 import { convert } from 'geojson2shp';
 import { Logger, Injectable, Scope } from '@nestjs/common';
 
-import { ListFieldsFileRequest } from '@wri-monorepos/sql';
+import { ListFieldsFileRequest, GFWList, ClientStoreConnection, Lists, ListSchema, ListsXxxEntity, AfiAnalysisByListId } from '@wri-monorepos/sql';
 import { IPipeService } from '../pipe/i.pipe.service';
 import { columnsListName, columnsTemplateId } from '../shared/constants';
 import { FilterObject } from '../transform/filter.object';
@@ -23,7 +23,7 @@ export class GeometryService extends IPipeService {
   private readonly logger = new Logger(GeometryService.name);
   private inputStream: PassThrough;
   private fileStream: fs.WriteStream;
-
+  private readonly clientStoreConnection = new ClientStoreConnection();
   async start(filters: ListFieldsFileRequest) {
     const { listId, key, templateId, combinedColumnsSplitted, listName } = filters;
     this.logger.log(`(${listId}) - Starting shapefile stream to process data`);
@@ -46,7 +46,7 @@ export class GeometryService extends IPipeService {
     let allFields = [...fields, ...combinedColumnsSplitted];
     allFields = [...new Set(allFields)];
 
-    this.organizeStream(filters, allFields);
+    await this.organizeStream(filters, allFields);
     await this.startEmail(filters);
   }
 
@@ -54,10 +54,24 @@ export class GeometryService extends IPipeService {
     analysisData.forEach((data) => this.inputStream.write(data));
   }
 
-  private organizeStream(filters: ListFieldsFileRequest, allFields: string[]) {
+  private async organizeStream(filters: ListFieldsFileRequest, allFields: string[]) {
+   const listProperties = await this.getListProperties(filters)
+   console.log(listProperties)
     const open =
       filters.type === 'afiVC'
-        ? '{\n"type":"FeatureCollection","features":['
+        ? `"properties": {
+            "Location_Name": ${listProperties['Location Name']},
+            "Centroid_Country": ${listProperties.Country},
+            "Location_HA": AFIAnalysis.total_area_ha,
+            "SBTN_Natural_Forest_HA": AFIAnalysis.natural_land_area,
+            "SBTN_Natural_Forest_Loss_Post_2020_HA": AFIAnalysis.natural_land_deforested_area,
+            "JRC_Forest_HA": AFIAnalysis.jrc_land_area,
+            "JRC_Forest_Loss_Post_2020_HA": AFIAnalysis.jrc_land_deforested_area,
+            "Analysis_Time": ListsAnalysisStatus.UpdateTime,
+            "GFWPro_Account": organization_id ([gfwpro].[dbo].[Organizations].id),
+            "Use_Rights": "Full Sharing",
+            }
+            {\n"type":"FeatureCollection","features":[`
         : '{"type":"FeatureCollection","features":[';
     const close = filters.type === 'afiVC' ? ']}\n' : ']}';
 
@@ -101,5 +115,32 @@ export class GeometryService extends IPipeService {
       targetCrs: 4326,
     };
     await convert(`/tmp/wri-${key}/${listName}.geojson`, `/tmp/${key}.zip`, options);
+  }
+  private async getListProperties(filters: ListFieldsFileRequest) {
+    const { organizationDatabase, listId, isGFWList } = filters;
+    if (!isGFWList) {
+      const connection = await this.clientStoreConnection.getConnection(organizationDatabase);
+      const listRepository = await connection.getRepository(Lists);
+      const listProperties = await listRepository.findOne({ where: { id: listId } });
+      // const listTableRepository = await connection.getRepository(ListsXxxEntity)
+      // listTableRepository.metadata.tableName = listProperties.listTableName
+      // const listTable = await listTableRepository.findOne({ where: { locationName: listProperties.listName } });
+      // console.log(listTable)
+      const rawQuery = `
+        SELECT *
+        FROM "${listProperties.listTableName}"
+        WHERE [Location Name] like '${listProperties.listName}' 
+      `;
+      const listProperties2 = await connection.query(rawQuery);
+
+      const AFIAnalysis =await connection.getRepository(AfiAnalysisByListId).findOne({ where: { listId: listId } });
+      console.log(listProperties2);
+      return {...listProperties, ...listProperties2[0], ...AFIAnalysis};
+    } else {
+      const connection = await this.clientStoreConnection.getConnection('gfwpro', [GFWList]);
+      const gfwListRepository = await connection.getRepository(GFWList);
+      const listProperties = await gfwListRepository.findOne({ where: { id: listId } });
+      return listProperties;
+    }
   }
 }

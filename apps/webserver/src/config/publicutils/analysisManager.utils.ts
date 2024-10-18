@@ -563,6 +563,8 @@ export async function getAFIListAnalyses(list_id, page, pageSize, clientDatabase
       naturalForestLossPercent: analysis.naturalForestLossHA / (analysis.totalAreaHa * 100) || 0,
       jrcNaturalForestLossPercent:
         analysis.jrcNaturalForestLossHA / (analysis.totalAreaHa * 100) || 0,
+      list_id: analysis.listId,
+      location_id: analysis.locationId,
     };
   });
 

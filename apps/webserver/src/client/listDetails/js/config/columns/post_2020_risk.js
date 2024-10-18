@@ -3,6 +3,7 @@ import ColumnsHeader from '../../components/columns/ColumnsHeader';
 import {
   checkValid,
   renderFormattedDeforestationValueWithIndicator,
+  formatDigit,
 } from '../../../../locations/js/utils/locationsTableUtils';
 import store from '../../../../locations/js/store';
 import { SBTN_NATURAL_FOREST_LOSS } from '../../components/lists/ListDetails/deforestationDisplayFormat.constants';
@@ -16,12 +17,12 @@ const post_2020_risk = [
     Cell: ({ original }) => <span>{original?.locationName}</span>,
   },
   {
-    Header: () => <ColumnsHeader label="Size" />,
+    Header: () => <ColumnsHeader label="Size (ha)" />,
     className: 'default-cell td-num',
-    Cell: ({ original }) => renderCell(original?.totalAreaHa),
+    Cell: ({ original }) => renderCell(formatDigit(original?.totalAreaHa)),
   },
   {
-    Header: () => <ColumnsHeader label="Post-20202 Forest Loss" />,
+    Header: () => <ColumnsHeader label="Post-2020 Forest Loss" />,
     className: 'default-cell td-num',
     Cell: ({ original }) => {
       const {

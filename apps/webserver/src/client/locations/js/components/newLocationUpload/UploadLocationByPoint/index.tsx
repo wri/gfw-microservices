@@ -12,6 +12,9 @@ import {
   InputAdornment,
   FormControl,
   InputLabel,
+  Stepper,
+  Step,
+  StepLabel,
 } from '@mui/material';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import AddLocationAltIcon from '@mui/icons-material/AddLocationAlt';
@@ -51,6 +54,9 @@ export function UploadLocationByPoint({ clearUploadType }: UploadLocationByPoint
     }`;
   };
 
+  const steps = ['Location', 'Configure List', 'Submit'];
+  const [activeStep] = React.useState(0);
+
   return (
     <div className="upload-location-by-point">
       <nav>
@@ -58,6 +64,16 @@ export function UploadLocationByPoint({ clearUploadType }: UploadLocationByPoint
           <ArrowBackIcon />
         </IconButton>
         <Typography variant="h5">New Location</Typography>
+
+        <Stepper activeStep={activeStep} sx={{ width: '100%' }}>
+          {steps.map((label) => {
+            return (
+              <Step key={label}>
+                <StepLabel>{label}</StepLabel>
+              </Step>
+            );
+          })}
+        </Stepper>
       </nav>
 
       <Card>

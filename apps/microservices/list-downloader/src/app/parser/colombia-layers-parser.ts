@@ -95,11 +95,11 @@ export const colombiaLayers = ({ operation, data, dataRow, csvData }) => {
                 ...dataRow,
                 label,
                 subLayerName.replace(',', ' -'),
+                '',
                 secondarySubLayerValue,
                 secondarySubLayerName ?? '',
                 totalPerSubLayer,
                 percentagePerSubLayer,
-                '',
               ]);
             }
           } else {

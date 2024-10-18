@@ -1,14 +1,19 @@
 import { CreateListLevelData } from './create.list.level.data';
-import { SQLUtils } from '@wri-monorepos/sql';
+import { FeatureFlag, SQLUtils } from '@wri-monorepos/sql';
 import { updateListsUploadStatus } from '../shared/update.lists.upload.status';
 import { CreateListResult } from '@wri-monorepos/geo';
 import * as sql from 'mssql';
+import { featureFlagsService } from '@wri-monorepos/shared';
 
 import { ChainType } from './types';
 
-// Mock dependencies
 jest.mock('@wri-monorepos/sql');
-jest.mock('../shared/update.lists.upload.status');
+jest.mock('../shared/update.lists.upload.status', () => ({
+  updateListsUploadStatus: jest.fn(),
+}));
+jest.mock('@wri-monorepos/shared', () => ({
+  featureFlagsService: jest.fn(),
+}));
 
 describe('CreateList', () => {
   let createList: CreateListLevelData;
@@ -24,26 +29,57 @@ describe('CreateList', () => {
   });
 
   describe('insertListInListTable', () => {
+    let createList: CreateListLevelData;
+    let mockConnection: any;
+    let mockFeatureFlagsService: any;
+
+    beforeEach(() => {
+      createList = new CreateListLevelData();
+      mockConnection = {
+        executeQuery: jest.fn(),
+      };
+
+
+      const mockFeatureFlags: FeatureFlag[] = [
+        { flagId: 'UploadListLp', flagState: true } as FeatureFlag,
+      ];
+
+      mockFeatureFlagsService = {
+        getFeatureFlagsForCurrentOrg: jest.fn().mockResolvedValue(mockFeatureFlags),
+      };
+
+
+      (featureFlagsService as jest.Mock).mockResolvedValue(mockFeatureFlagsService);
+    });
+
+    afterEach(() => {
+      jest.clearAllMocks();
+    });
+
     it('should insert a list in the list table and return the result', async () => {
       const mockResult: CreateListResult = { list_id: 1 } as CreateListResult;
       mockConnection.executeQuery.mockResolvedValue(mockResult);
 
       const result = await createList.insertListInListTable(
         mockConnection,
-        1,
-        1,
-        'Test List',
-        'test_list_table',
-        'test_analysis_table',
-        1,
-        'classification',
-        'attr_names',
-        'attr_types',
-        1
+        1, // userId
+        1, // templateId
+        'Test List', // listName
+        'test_list_table', // listTable
+        'test_analysis_table', // analysisTable
+        1, // listStatusId
+        'classification', // locationClassification
+        'attr_names', // customAttributeNames
+        'attr_types', // customAttributeTypes
+        1, // gfwListId
+        1 // orgId
       );
 
       expect(result).toEqual(mockResult);
       expect(mockConnection.executeQuery).toHaveBeenCalledWith('uspCreateList', expect.any(Array));
+
+      expect(featureFlagsService).toHaveBeenCalled();
+      expect(mockFeatureFlagsService.getFeatureFlagsForCurrentOrg).toHaveBeenCalledWith(1); // orgId
     });
 
     it('should throw an error if the query fails', async () => {
@@ -52,18 +88,22 @@ describe('CreateList', () => {
       await expect(
         createList.insertListInListTable(
           mockConnection,
-          1,
-          1,
-          'Test List',
-          'test_list_table',
-          'test_analysis_table',
-          1,
-          'classification',
-          'attr_names',
-          'attr_types',
-          1
+          1, // userId
+          1, // templateId
+          'Test List', // listName
+          'test_list_table', // listTable
+          'test_analysis_table', // analysisTable
+          1, // listStatusId
+          'classification', // locationClassification
+          'attr_names', // customAttributeNames
+          'attr_types', // customAttributeTypes
+          1, // gfwListId
+          1 // orgId
         )
       ).rejects.toThrow('Failed to execute uspCreateList: Query failed');
+
+      expect(featureFlagsService).toHaveBeenCalled();
+      expect(mockFeatureFlagsService.getFeatureFlagsForCurrentOrg).toHaveBeenCalledWith(1); // orgId
     });
   });
 
@@ -104,22 +144,51 @@ describe('CreateList', () => {
           path: 'test_path',
         },
       };
-      const mockResult: CreateListResult = { list_id: 1 } as CreateListResult;
-      mockConnection.executeQuery.mockResolvedValue(mockResult);
 
+      const mockResult: CreateListResult = { list_id: 1 } as CreateListResult;
+
+      // Mock SQLUtils.queryDB to return orgId
+      jest.spyOn(SQLUtils, 'queryDB').mockResolvedValue({ orgId: 123 });
+
+      // Mock SQLUtils instance methods
+      jest.spyOn(SQLUtils.prototype, 'connect').mockImplementation(function (databaseName) {
+        this.databaseName = databaseName; // Set databaseName for use in updateListsUploadStatus
+        return Promise.resolve();
+      });
+      jest.spyOn(SQLUtils.prototype, 'disconnect').mockResolvedValue(undefined);
+
+      // Mock insertListInListTable method
       const insertListInListTableSpy = jest
         .spyOn(createList, 'insertListInListTable')
         .mockResolvedValue(mockResult);
+
+      // Mock addListToAnalysesTable method
+      jest.spyOn(createList, 'addListToAnalysesTable').mockResolvedValue(undefined);
+
       await createList.handle(mockInput);
 
-      expect(insertListInListTableSpy).toHaveBeenCalled();
+      expect(insertListInListTableSpy).toHaveBeenCalledWith(
+        expect.any(SQLUtils), // connection instance
+        1, // userId
+        1, // templateId
+        'Test List', // listName
+        'test_list_table', // listTable
+        'test_analysis_table', // analysisTable
+        1, // listStatusId
+        'classification', // locationClassification
+        'attr_names', // customAttributeNames
+        'attr_types', // customAttributeTypes
+        1, // gfwListId
+        123 // orgId
+      );
+
       expect(updateListsUploadStatus).toHaveBeenCalledWith(
-        undefined,
-        1,
+        'test_db', // databaseName from the mocked connection
+        1, // list_id
         'Insert row in List table'
       );
       expect(updateListsUploadStatus).toHaveBeenCalledWith(
-        undefined,
+        'test_db',
         1,
         'Add list to analysis table'
       );

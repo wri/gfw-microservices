@@ -64,7 +64,7 @@ export class GeometryService extends IPipeService {
     console.log(listProperties);
     const open =
       filters.type === 'afiVC'
-        ? `"properties": {
+        ? `{"properties": {
             "Location_Name": ${listProperties['Location Name']},
             "Centroid_Country": ${listProperties.Country},
             "Location_HA": ${listProperties.total_area_ha},
@@ -73,12 +73,12 @@ export class GeometryService extends IPipeService {
             "JRC_Forest_HA": ${listProperties.jrc_land_area},
             "JRC_Forest_Loss_Post_2020_HA": ${listProperties.jrc_land_deforested_area},
             "Analysis_Time": ListsAnalysisStatus.UpdateTime,
-            "GFWPro_Account": organization_id ([gfwpro].[dbo].[Organizations].id),
+            "GFWPro_Account": id,
             "Use_Rights": "Full Sharing",
-            }
+            },
             {\n"type":"FeatureCollection","features":[`
         : '{"type":"FeatureCollection","features":[';
-    const close = filters.type === 'afiVC' ? ']}\n' : ']}';
+    const close = filters.type === 'afiVC' ? ']}\n}' : ']}';
 
     const { key, selectedLocationsList, listId, listName } = filters;
     this.inputStream.removeAllListeners();

@@ -65,7 +65,7 @@ export function UploadLocationByPoint({ clearUploadType }: UploadLocationByPoint
         </IconButton>
         <Typography variant="h5">New Location</Typography>
 
-        <Stepper activeStep={activeStep} sx={{ width: '100%' }}>
+        <Stepper activeStep={activeStep} sx={{ width: '100%', marginLeft: '4rem' }}>
           {steps.map((label) => {
             return (
               <Step key={label}>

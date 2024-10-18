@@ -15,7 +15,7 @@ import { ConvertObject2String } from '../transform/convert.object.2.string';
 import { finished } from 'stream/promises';
 import { FormatNumber } from '../transform/format.number';
 import { ReplaceSpace2Underscore } from '../transform/replace.space.2.underscore';
-
+import { getAllFilesAndZip } from '../shared/file.utils';
 @Injectable({
   scope: Scope.REQUEST,
 })
@@ -59,22 +59,22 @@ export class GeometryService extends IPipeService {
     if (filters.type === 'afiVC') {
       const listProperties = await this.getListProperties(filters);
       protertiesAfiVC = `{"properties": {
-            "Location_Name": ${listProperties['Location Name']},
-            "Centroid_Country": ${listProperties.Country},
+            "Location_Name": "${listProperties['Location Name']}",
+            "Centroid_Country": "${listProperties.Country}",
             "Location_HA": ${listProperties.total_area_ha},
             "SBTN_Natural_Forest_HA": ${listProperties.natural_land_area},
             "SBTN_Natural_Forest_Loss_Post_2020_HA": ${listProperties.natural_land_deforested_area},
             "JRC_Forest_HA": ${listProperties.jrc_land_area},
             "JRC_Forest_Loss_Post_2020_HA": ${listProperties.jrc_land_deforested_area},
-            "Analysis_Time": ${listProperties.updateTime},
+            "Analysis_Time": "${listProperties.updateTime}",
             "GFWPro_Account": id,
-            "Use_Rights": "Full Sharing",
+            "Use_Rights": "Full Sharing"
             },
-            {\n"type":"FeatureCollection","features":[`;
+            "type":"FeatureCollection","features":[`;
     }
     const open =
       filters.type === 'afiVC' ? protertiesAfiVC : '{"type":"FeatureCollection","features":[';
-    const close = filters.type === 'afiVC' ? ']}\n}' : ']}';
+    const close = ']}';
 
     const { key, selectedLocationsList, listId, listName } = filters;
     this.inputStream.removeAllListeners();
@@ -106,6 +106,7 @@ export class GeometryService extends IPipeService {
     await this.writeAllData(this.inputStream);
     await finished(this.fileStream);
     type !== 'afiVC' ? await this.convertGeojsonToSHP(key, listName) : null;
+    type === 'afiVC' ? await getAllFilesAndZip(filters) : null; // file was zipped befored process finished
     this.logger.log(`(${listId}) - Data has been zipped`);
     await this.finishProcess(filters);
   }

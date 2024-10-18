@@ -2,7 +2,6 @@ import { GeometryService } from '../files';
 import { Injectable, Logger } from '@nestjs/common';
 import { ListFieldsFileRequest, UspGetListAnalysis } from '@wri-monorepos/sql';
 import * as asyncPool from 'tiny-async-pool';
-import { getAllFilesAndZip } from '../shared/file.utils';
 
 import { AnalysisAfiDataService } from '../data/analysis.afi.data.service';
 import { IFileGenerator } from './i.file.generator';
@@ -32,9 +31,8 @@ export class AfiVcGeneratorService extends IFileGenerator {
       this.logger.error(`Service not found for type: ${type} and file: ${file}`);
       return;
     }
-    const service = this.defineService(filters);
+    const service = await this.defineService(filters);
     await this.runAfiFileGeneration(filters);
-    await getAllFilesAndZip(filters);
     await service.finish(filters);
   }
 

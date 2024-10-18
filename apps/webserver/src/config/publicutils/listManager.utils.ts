@@ -1108,7 +1108,7 @@ export const updateIndividualLocationsStatusID = (
   return new Promise((resolve, reject) => {
     const sqlParameters = [
       { field: 'analysis_table_name', type: sql.NVarChar(150), value: list_analysis_table_name },
-      { field: 'location_ids_array', type: sql.NVarChar(255), value: location_id.toString() },
+      { field: 'location_ids_array', type: sql.NVarChar(sql.MAX), value: location_id.toString() },
       { field: 'location_status_id', type: sql.Int, value: location_status_id },
     ];
     sqlUtils

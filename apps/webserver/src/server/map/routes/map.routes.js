@@ -5,6 +5,7 @@ const controller = require('../controllers/map.controller');
 const middlewares = require(path.resolve('./config/publicutils/middlewares'));
 const ListManager = require(path.resolve('./config/publicutils/listManager.utils'));
 const rateLimiterUtil = require(path.resolve('./config/lib/limiter-util'));
+const GFWListManager = require(path.resolve('./config/publicutils/gfwListManager.utils'));
 
 /**
  * @name exports
@@ -88,7 +89,11 @@ module.exports = (app, limiter) => {
     list_ids = list_ids.split(',').map((id) => parseInt(id));
     const promises = [];
     list_ids.forEach((id) => {
-      promises.push(ListManager.getListLocations(req, id));
+      if (GFWListManager.isGfwList(Number(id))) {
+        promises.push(GFWListManager.getGFWListLocations(req, id));
+      } else {
+        promises.push(ListManager.getListLocations(req, id));
+      }
     });
     Promise.all(promises)
       .then((listData) => {

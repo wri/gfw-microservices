@@ -10,6 +10,7 @@ const {
 // Utils
 const { getCurrentDateTimeFormatted } = require('./vectorTile.utils');
 const ListManager = require('../../../config/publicutils/listManager.utils');
+const GFWListManager = require('../../../config/publicutils/gfwListManager.utils');
 
 // Globals
 const logger = require('../../../config/privateutils/logger.utils');
@@ -25,11 +26,20 @@ const logger = require('../../../config/privateutils/logger.utils');
 const getListGeojson = async (req, listID, locationID = 0) => {
   const listIDNumber = Number(listID);
   logger.info(`Getting List Geojson for list ID: ${listIDNumber}`);
-  const geojson = await ListManager.getListLocations(req, listID, locationID).catch((err) => {
-    const errorMessage = `Getting List Geojson for list ID: ${listID} failed`;
-    logger.error(`${errorMessage}: ${err}`);
-    throw new Error(errorMessage);
-  });
+  let geojson;
+  if (GFWListManager.isGfwList(Number(listID))) {
+    geojson = await GFWListManager.getGFWListLocations(req, listID).catch((err) => {
+      const errorMessage = `Getting List Geojson for list ID: ${listID} failed`;
+      logger.error(`${errorMessage}: ${err}`);
+      throw new Error(errorMessage);
+    });
+  } else {
+    geojson = await ListManager.getListLocations(req, listID, locationID).catch((err) => {
+      const errorMessage = `Getting List Geojson for list ID: ${listID} failed`;
+      logger.error(`${errorMessage}: ${err}`);
+      throw new Error(errorMessage);
+    });
+  }
 
   return geojson;
 };

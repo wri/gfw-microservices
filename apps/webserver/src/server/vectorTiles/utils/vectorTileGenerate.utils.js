@@ -20,6 +20,7 @@ const {
 // Global
 const logger = require('../../../config/privateutils/logger.utils');
 const ListManager = require('../../../config/publicutils/listManager.utils');
+const GfwListManager = require('../../../config/publicutils/gfwListManager.utils');
 
 /**
  * @description - Generate MBTiles Vector Tiles for a List and store in S3 Bucket
@@ -29,9 +30,15 @@ const ListManager = require('../../../config/publicutils/listManager.utils');
  * @return {Promise<{message: string, path?: string, lastUpdatedTime?: any}>}
  */
 exports.generateAndStoreVectorTiles = async (req, listID) => {
-  const userLists = req.session.isNodeServer
+  let userLists = []
+  if (GfwListManager.isGfwList(Number(listID))) {
+    userLists = await GfwListManager.getGFWLists(listID)
+  } else {
+    userLists = req.session.isNodeServer
     ? await ListManager.getAllLists(req)
     : await ListManager.getUserLists(req);
+  }
+  
   const listInfo = userLists.find((list) => {
     return list.id === listID;
   });

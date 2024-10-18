@@ -81,6 +81,8 @@ function Chart({ data, chartLabels, hasSecondarySubLayers }) {
         plotBorderWidth: 0,
         plotShadow: false,
         animation: false,
+        marginLeft: 100,
+        marginRight: 100,
       },
       title: {
         text: '',
@@ -96,6 +98,14 @@ function Chart({ data, chartLabels, hasSecondarySubLayers }) {
           allowPointSelect: !hasSecondarySubLayers,
           cursor: 'pointer',
           center: ['50%', '50%'],
+
+          dataLabels: {
+            crop: false,
+            style: {
+              fontSize: '0.5625rem',
+            },
+            useHTML: true,
+          },
         },
       },
       series,

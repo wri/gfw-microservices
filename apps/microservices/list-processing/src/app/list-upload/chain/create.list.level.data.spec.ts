@@ -39,7 +39,6 @@ describe('CreateList', () => {
         executeQuery: jest.fn(),
       };
 
-
       const mockFeatureFlags: FeatureFlag[] = [
         { flagId: 'UploadListLp', flagState: true } as FeatureFlag,
       ];
@@ -47,7 +46,6 @@ describe('CreateList', () => {
       mockFeatureFlagsService = {
         getFeatureFlagsForCurrentOrg: jest.fn().mockResolvedValue(mockFeatureFlags),
       };
-
 
       (featureFlagsService as jest.Mock).mockResolvedValue(mockFeatureFlagsService);
     });

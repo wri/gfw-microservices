@@ -36,6 +36,9 @@ SET @tableQueryString = CONCAT(@tableQueryString, ', [flag_forma] INT')
 SET @tableQueryString = CONCAT(@tableQueryString, ', [flag_viirs] INT')
 SET @tableQueryString = CONCAT(@tableQueryString, ', [flag_terrai] INT')
 
+-- Add ErrorDetails
+SET @tableQueryString = CONCAT(@tableQueryString, ', [ErrorDetails] NVARCHAR(256) NULL')
+
 SELECT @tableQueryString AS [query_string]
 `;
 

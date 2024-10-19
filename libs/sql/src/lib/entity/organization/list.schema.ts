@@ -163,13 +163,18 @@ export const ListSchema = {
       name: 'flag_viirs',
       nullable: true,
     },
+    flagTerrai: {
+      type: Number,
+      name: 'flag_terrai',
+      nullable: true,
+    },
     attributes: {
       type: String,
       name: 'attributes',
     },
-    flagTerrai: {
-      type: Number,
-      name: 'flag_terrai',
+    errorDetails: {
+      type: String,
+      name: 'ErrorDetails',
       nullable: true,
     },
   },
@@ -212,4 +217,5 @@ export type ListSchemaType = {
   volume: string;
   attributes: string;
   windBarrier: string;
+  errorDetails: string;
 };

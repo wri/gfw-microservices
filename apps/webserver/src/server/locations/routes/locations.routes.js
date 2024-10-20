@@ -1317,9 +1317,10 @@ module.exports = (app, limiter) => {
         list_name: listName,
         path: pathLocal,
         template_type,
+        template_id: 13,
         user_id: organization_user_id,
         startAnalysis,
-        analysis_types: analysisTypes,
+        analysis_types: Object.keys(analysisTypes),
       })
       .then((response) => {
         logger.info('ProcessList LP response.data', response.data);

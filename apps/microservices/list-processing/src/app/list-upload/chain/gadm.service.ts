@@ -164,7 +164,7 @@ export class GADMService extends AbstractHandler<ChainType> {
 
     // We should not call clip to land if we are in the preview mode.
     if (!preview) {
-      input.geojson = await this.clipToLand(geojson);
+      //input.geojson = await this.clipToLand(geojson);
     }
     return super.handle(input);
   }

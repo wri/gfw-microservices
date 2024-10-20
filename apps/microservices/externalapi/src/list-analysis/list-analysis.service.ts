@@ -354,6 +354,7 @@ export class ListAnalysisService {
         // Forcing template_type because only cocoa_generic is supported
         // LP verifies the field is a string
         template_type: 'cocoa_generic',
+        template_id: 13,
         user_id: externalUpload.userId,
         startAnalysis: true,
         isExternalAPIProcess: true,

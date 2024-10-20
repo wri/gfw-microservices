@@ -94,8 +94,14 @@ export class CreateLocationSchema extends AbstractHandler<ChainType> {
   }
 
   async handle(input: ChainType): Promise<ChainType> {
-    const { listId, listTable, organization_database, analysisTable, listStatusId, analysisIds } =
-      input.request as RequestNewList;
+    const {
+      listId,
+      listTable,
+      organization_database,
+      analysisTable,
+      listStatusId,
+      analysis_types: analysisIds,
+    } = input.request as RequestNewList;
 
     const queryCreateTableResult = await this.getTableStructureQuery();
 

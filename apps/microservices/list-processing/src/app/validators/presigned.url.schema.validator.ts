@@ -40,6 +40,7 @@ export const requestLargeListProcessSchema = z.object({
   isExternalAPIProcess: z.boolean().optional(),
   list_name: z.string().optional(),
   analysis_types: z.array(z.string()).optional(),
+  subscriptionStatusId: z.number().optional(),
 });
 
 export const requestTriggerProcessLargeListSchema = z.object({

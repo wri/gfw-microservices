@@ -13,6 +13,7 @@ import { GADMService } from './chain/gadm.service';
 import { CreateListLevelData } from './chain/create.list.level.data';
 import { InsertLocationData } from './chain/insert.location.data';
 import { ValidateLatLongGeojson } from './chain/validate.lat.long.geojson';
+import { StartAnalysis } from './chain/start.analysis';
 
 @Injectable()
 export class StartAnalysisService {
@@ -45,6 +46,8 @@ export class StartAnalysisService {
     const createLocationSchema = new CreateLocationSchema(connection);
     const insertLocationData = new InsertLocationData(null);
     const validateLatLongGeojson = new ValidateLatLongGeojson();
+    1;
+    const startAnalysis = new StartAnalysis(null);
 
     downloadS3File
       .setNext(parseData)
@@ -53,7 +56,8 @@ export class StartAnalysisService {
       .setNext(validateLatLongGeojson)
       .setNext(createListLevelData)
       .setNext(createLocationSchema)
-      .setNext(insertLocationData);
+      .setNext(insertLocationData)
+      .setNext(startAnalysis);
 
     await downloadS3File.handle(chainType);
 

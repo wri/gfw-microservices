@@ -67,7 +67,7 @@ export class GeometryService extends IPipeService {
             "JRC_Forest_HA": ${listProperties.jrc_land_area},
             "JRC_Forest_Loss_Post_2020_HA": ${listProperties.jrc_land_deforested_area},
             "Analysis_Time": "${listProperties.updateTime}",
-            "GFWPro_Account": id,
+            "GFWPro_Account": ${listProperties.organizationId},
             "Use_Rights": "Full Sharing"
             },
             "type":"FeatureCollection","features":[`;
@@ -146,7 +146,20 @@ export class GeometryService extends IPipeService {
     `;
       const listAnalysisStatus = await connection.query(listAnalysisStatusQuery);
       const updateTime = listAnalysisStatus[0]?.UpdateTime || '';
-      return { ...listProperties, ...listProperties2[0], ...AFIAnalysis[0], updateTime };
+      const gfwProConnection = await this.clientStoreConnection.getConnection('gfwpro');
+      const organizationIdQuery = `
+        SELECT *
+        FROM "Organizations"
+        WHERE [organization_db] = '${organizationDatabase}'`;
+      const organizationProperties = await gfwProConnection.query(organizationIdQuery);
+      const organizationId = organizationProperties[0].id || null;
+      return {
+        ...listProperties,
+        ...listProperties2[0],
+        ...AFIAnalysis[0],
+        updateTime,
+        organizationId,
+      };
     } else {
       const connection = await this.clientStoreConnection.getConnection('gfwpro', [GFWList]);
       const gfwListRepository = await connection.getRepository(GFWList);

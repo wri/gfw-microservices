@@ -2,14 +2,13 @@ import React from 'react';
 import './index.scss';
 
 import { useHistory } from 'react-router-dom';
-import { Typography, Card, IconButton } from '@mui/material';
+import { Typography, Card, IconButton, Button } from '@mui/material';
 import UploadFileTwoToneIcon from '@mui/icons-material/UploadFileTwoTone';
 import ScatterPlotTwoToneIcon from '@mui/icons-material/ScatterPlotTwoTone';
 import TimelineIcon from '@mui/icons-material/Timeline';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import ArrowForwardIosIcon from '@mui/icons-material/ArrowForwardIos';
 
-import { UploadLocationOptionButton } from './components/UploadLocationOptionButton';
 import { HowToFormatLocationLink } from '../components/HowToFormatLocationLink';
 import { UploadType } from '..';
 
@@ -42,11 +41,15 @@ export function UploadLocationOptions({ selectUploadType }: UploadLocationOption
           <Typography variant="body2">
             Best for multiple location or if your data is contained within a file.
           </Typography>
-          <UploadLocationOptionButton
-            Icon={UploadFileTwoToneIcon}
-            text="File upload"
+
+          <Button
+            className="upload-location-options__button"
             onClick={() => selectUploadType(UploadType.BY_FILE)}
-          />
+            startIcon={<UploadFileTwoToneIcon />}
+            disableRipple
+          >
+            File upload
+          </Button>
           <div className="upload-location-options__main-content__options__other-options">
             <Typography variant="body2">Or</Typography>
             <Typography variant="body2">
@@ -54,16 +57,23 @@ export function UploadLocationOptions({ selectUploadType }: UploadLocationOption
               your location via one of our interactive workflows:
             </Typography>
             <div>
-              <UploadLocationOptionButton
-                Icon={ScatterPlotTwoToneIcon}
-                text="Point"
+              <Button
+                className="upload-location-options__button"
                 onClick={() => selectUploadType(UploadType.BY_POINT)}
-              />
-              <UploadLocationOptionButton
-                Icon={TimelineIcon}
-                text="Polygon"
+                startIcon={<ScatterPlotTwoToneIcon />}
+                disableRipple
+              >
+                Point
+              </Button>
+
+              <Button
+                className="upload-location-options__button"
                 onClick={() => selectUploadType(UploadType.BY_POLYGON)}
-              />
+                startIcon={<TimelineIcon />}
+                disableRipple
+              >
+                Polygon
+              </Button>
             </div>
           </div>
         </div>

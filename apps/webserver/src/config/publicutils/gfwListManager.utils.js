@@ -650,13 +650,24 @@ export function initialize() {
  * @param list_id
  * @summary Get paginated table data for GFW List based on list_id
  */
-export async function getPaginatedTable(req, pageNum, pageSize, list_id) {
+export async function getPaginatedTable(
+  req,
+  pageNum,
+  pageSize,
+  list_id,
+  filters,
+  tableSortedBy,
+  tableSortedDesc
+) {
   const gfwLists = new GfwLists();
-  const [noGeomData, count] = await gfwLists.getPaginatedTable(
+  const [noGeomData, count] = await gfwLists.getPaginatedAttributes(
+    config.SQLConnection.database,
+    list_id,
     pageNum,
     pageSize,
-    list_id,
-    config.SQLConnection.database
+    filters,
+    tableSortedBy,
+    tableSortedDesc
   );
   const location_ids = noGeomData.map((item) => item.location_id);
   const gfwLocationsAnalysesData = await AnalysisManager.getAnalysisDataForGFWList(

@@ -142,7 +142,7 @@ export default class ListDetails extends Component {
       maximumAnalysisAreaInTheList: defaultMaximumAreaSizeForLocationsFilter,
       isEveryRowSelected: false,
       filterValues: [],
-      tableSortedBy: 'Investment Name',
+      tableSortedBy: selectedLists[0].isGlobalForestWatchList ? 'Location Name' : 'Investment Name',
       tableSortedDesc: false,
       numberOfResults: undefined,
       displayLargeListEditingModal: false,
@@ -1216,6 +1216,7 @@ export default class ListDetails extends Component {
 
   getGFWLocationData = (list_id, page = 0) => {
     const { filters } = this.props;
+    const { tableSortedBy, tableSortedDesc } = this.state;
 
     this.setState({ isLoading: true });
 
@@ -1231,6 +1232,8 @@ export default class ListDetails extends Component {
         pageNum: page,
         pageSize: 50,
         filters,
+        tableSortedBy,
+        tableSortedDesc,
       },
     })
       .then((response) => {

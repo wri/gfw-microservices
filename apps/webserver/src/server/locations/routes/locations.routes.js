@@ -798,13 +798,21 @@ module.exports = (app, limiter) => {
 
   app.post('/locations/getGFWListLocationData', (req, res) => {
     console.log('POST /locations/getGFWListLocationData');
-    const { list_id, location_ids, pageNum, pageSize } = req.body;
+    const { list_id, location_ids, pageNum, pageSize, filters, tableSortedBy, tableSortedDesc } =
+      req.body;
     const listAnalyses = [];
     const locationAttributeArray = [];
     const locationAnalysisArray = [];
-
     if (pageNum || pageSize) {
-      GFWListManager.getPaginatedTable(req, pageNum, pageSize, list_id)
+      GFWListManager.getPaginatedTable(
+        req,
+        pageNum,
+        pageSize,
+        list_id,
+        filters,
+        tableSortedBy,
+        tableSortedDesc
+      )
         .then((response) => {
           const [noGeomData, gfwListAnalysesData, gfwLocationsAnalysesData, count] = response;
           locationAttributeArray.push(...noGeomData);

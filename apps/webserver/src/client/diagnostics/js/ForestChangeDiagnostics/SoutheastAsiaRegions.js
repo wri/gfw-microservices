@@ -353,6 +353,8 @@ export default class SoutheastAsiaRegions extends Component {
       chart: {
         renderTo: ref,
         type: 'pie',
+        marginLeft: 100,
+        marginRight: 100,
       },
       title: {
         text: '',
@@ -378,15 +380,18 @@ export default class SoutheastAsiaRegions extends Component {
       plotOptions: {
         pie: {
           allowPointSelect: true,
+          size: '70%',
           cursor: 'pointer',
           dataLabels: {
             useHTML: true,
             enabled: true,
+            crop: false,
             formatter: function () {
               return `<b>${transifex(this.point.name)}: </b>${formatPct(this.percentage)}%`;
             },
             style: {
               color: (Highcharts.theme && Highcharts.theme.contrastTextColor) || 'black',
+              fontSize: '0.5625rem',
             },
             filter: {
               property: 'percentage',

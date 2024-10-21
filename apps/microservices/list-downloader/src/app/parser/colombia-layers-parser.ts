@@ -59,6 +59,9 @@ export const colombiaLayers = ({ operation, data, dataRow, csvData }) => {
             subLayerName.replace(',', ' -'),
             totalPerSubLayer,
             percentagePerSubLayer,
+            '',
+            '',
+            '',
           ]);
 
           return;
@@ -92,6 +95,7 @@ export const colombiaLayers = ({ operation, data, dataRow, csvData }) => {
                 ...dataRow,
                 label,
                 subLayerName.replace(',', ' -'),
+                '',
                 secondarySubLayerValue,
                 secondarySubLayerName ?? '',
                 totalPerSubLayer,

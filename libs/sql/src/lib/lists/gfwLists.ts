@@ -69,12 +69,16 @@ export class GfwLists {
   }
 
   async getPaginatedAttributes(
-    pageNum: number,
-    pageSize: number,
-    list_id: number,
     organizationDatabase: string,
-    ids: number[] = []
-  ): Promise<[ListOilPalmConcessions[] | ListsPalmOilMills[] | RspoOilPalmConcessions[], number]> {
+    list_id: number,
+    pageNum = 0,
+    pageSize = 50,
+    filters: any = {},
+    tableSortedBy: string,
+    tableSortedDesc: boolean
+  ): Promise<
+    [ListOilPalmConcessions[] | ListsPalmOilMills[] | RspoOilPalmConcessions[] | any[], number]
+  > {
     if (list_id !== 2 && list_id !== 3 && list_id !== 5) {
       throw new BadRequestException('Invalid list_id, list id should be 2, 3 or 5');
     }
@@ -84,35 +88,41 @@ export class GfwLists {
       const take = pageSize === 0 ? this.DEFAULT_PAGE_SIZE : pageSize;
       const skip = pageNum > 0 ? pageNum * take : this.DEFAULT_PAGE_NUM;
 
-      let items, count;
+      const queryBuilder = listRepository.createQueryBuilder();
 
-      if (ids.length > 0) {
-        // If ids array is not empty, apply the where clause
-        [items, count] = await listRepository.findAndCount({
-          where: {
-            id: Raw((alias) => `${alias} IN (:...names)`, {
-              names: ids,
-            }),
-          },
-          skip,
-          take,
-          order: {
-            id: 'DESC',
-          },
-        });
-      } else {
-        [items, count] = await listRepository.findAndCount({
-          skip,
-          take,
-          order: {
-            id: 'DESC',
-          },
+      if (filters.selectedCountry && filters.selectedCountry !== '') {
+        queryBuilder.andWhere('Country = :country', { country: filters.selectedCountry });
+      }
+
+      if (filters.selectedState && filters.selectedState !== '') {
+        queryBuilder.andWhere('State = :state', { state: filters.selectedState });
+      }
+
+      if (filters.selectedSubState && filters.selectedSubState !== '') {
+        queryBuilder.andWhere('"Sub State" = :subState', { subState: filters.selectedSubState });
+      }
+
+      if (filters.selectedNames && filters.selectedNames.length > 0) {
+        queryBuilder.andWhere('"Location Name" IN (:...selectedNames)', {
+          selectedNames: filters.selectedNames,
         });
       }
+
+      const sortOrder: 'DESC' | 'ASC' = tableSortedDesc ? 'DESC' : 'ASC';
+
+      queryBuilder
+        .skip(skip)
+        .take(take)
+
+        .orderBy(tableSortedBy.length ? `"${tableSortedBy}"` : 'location_id', sortOrder);
+
+      const [items, count] = await queryBuilder.getManyAndCount();
+
       if (!items) {
         this.logger.error('ListsPalmOilMills: lists not found');
         throw new NotFoundException(`ListsPalmOilMills with list_id ${list_id} not found.`);
       }
+
       const itemsWithListId = items.map((item) => {
         return { ...item, list_id };
       });
@@ -179,7 +189,7 @@ export class GfwLists {
         );
       }
       const itemsWithListId = items.map((item) => {
-        return { ...item, list_id: list_id };
+        return { ...item, list_id };
       });
       const number_of_pages = Math.ceil(count / take);
       return [itemsWithListId, count, number_of_pages];
@@ -203,22 +213,6 @@ export class GfwLists {
     } catch (error) {
       throw new InternalServerErrorException('Error when get list_analysis_table', error.message);
     }
-  }
-
-  async getPaginatedTable(
-    pageNum = 0,
-    pageSize = 0,
-    list_id: number,
-    organizationDatabase: string
-  ) {
-    const result = await this.getPaginatedAttributes(
-      pageNum,
-      pageSize,
-      list_id,
-      organizationDatabase,
-      []
-    );
-    return result;
   }
 
   async getPaginatedAnalysisDataForProtectedAndAdministrativeAreas(

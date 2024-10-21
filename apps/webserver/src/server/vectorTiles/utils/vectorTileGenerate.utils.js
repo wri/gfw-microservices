@@ -30,15 +30,15 @@ const GfwListManager = require('../../../config/publicutils/gfwListManager.utils
  * @return {Promise<{message: string, path?: string, lastUpdatedTime?: any}>}
  */
 exports.generateAndStoreVectorTiles = async (req, listID) => {
-  let userLists = []
+  let userLists = [];
   if (GfwListManager.isGfwList(Number(listID))) {
-    userLists = await GfwListManager.getGFWLists(listID)
+    userLists = await GfwListManager.getGFWLists(listID);
   } else {
     userLists = req.session.isNodeServer
-    ? await ListManager.getAllLists(req)
-    : await ListManager.getUserLists(req);
+      ? await ListManager.getAllLists(req)
+      : await ListManager.getUserLists(req);
   }
-  
+
   const listInfo = userLists.find((list) => {
     return list.id === listID;
   });

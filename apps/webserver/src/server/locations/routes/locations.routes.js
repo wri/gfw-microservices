@@ -249,7 +249,7 @@ module.exports = (app, limiter) => {
       list_analysis_table_name,
       original_gfw_list,
       list_status_id,
-      attributes = '',
+      attributes,
     } = req.body;
 
     // 1. Change list status

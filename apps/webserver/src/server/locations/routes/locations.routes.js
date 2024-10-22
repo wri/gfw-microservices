@@ -249,13 +249,14 @@ module.exports = (app, limiter) => {
       list_analysis_table_name,
       original_gfw_list,
       list_status_id,
+      attributes,
     } = req.body;
 
     // 1. Change list status
     ListManager.resetListStatus(req, list_id, gfw_list_id, list_status_id)
       .then(() => {
         // 2. Upload location's to Existing List
-        return ListManager.uploadToExistingList(req, list_id, table_name, geojson);
+        return ListManager.uploadToExistingList(req, list_id, table_name, geojson, attributes);
       })
       .then(async (resultGeoJSON) => {
         if (original_gfw_list) {

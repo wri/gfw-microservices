@@ -25,6 +25,7 @@ import ArrowForwardIosIcon from '@mui/icons-material/ArrowForwardIos';
 
 import { HowToFormatLocationLink } from '../components/HowToFormatLocationLink';
 import { PillButton } from '../components/PillButton';
+import HectareKilometerSwitch from '../../adding/HectareKilometerSwitch';
 
 enum LocationFormat {
   COORDINATES,
@@ -45,6 +46,8 @@ export function UploadLocationByPoint({ clearUploadType }: UploadLocationByPoint
   const [locationFormat, setLocationFormat] = useState<LocationFormat>(LocationFormat.COORDINATES);
 
   const [selectedRadiusSize, setSelectedRadiusSize] = useState<RadiusSize>(RadiusSize.SMALL);
+
+  const [measurementUnit, setMeasurementUnit] = useState('hectares');
 
   const getButtonClassName = (locFormat: LocationFormat) => {
     return `upload-location-by-point__location-info__location-type-button ${
@@ -116,8 +119,18 @@ export function UploadLocationByPoint({ clearUploadType }: UploadLocationByPoint
                   Coordinate data must be in decimal degrees format.
                 </Typography>
                 <div className="upload-location-by-point__location-info__coordinates">
-                  <TextField label="Latitude" variant="outlined" type="number" />
-                  <TextField label="Longitude" variant="outlined" type="number" />
+                  <TextField
+                    className="upload-location-by-point__location-info__standard-text-field"
+                    label="Latitude"
+                    variant="outlined"
+                    type="number"
+                  />
+                  <TextField
+                    className="upload-location-by-point__location-info__standard-text-field"
+                    label="Longitude"
+                    variant="outlined"
+                    type="number"
+                  />
                 </div>
               </>
             ) : (
@@ -206,8 +219,28 @@ export function UploadLocationByPoint({ clearUploadType }: UploadLocationByPoint
 
             {selectedRadiusSize === RadiusSize.CUSTOM && (
               <>
-                <Divider flexItem sx={{ margin: '0.75rem 0 2rem' }} />
+                <Divider flexItem sx={{ margin: '1.5rem 0 2rem' }} />
                 <Typography variant="h6">Enter area (HA) or radius (km)</Typography>
+                <div className="upload-location-by-point__location-info__custom-area-container">
+                  <TextField
+                    className="upload-location-by-point__location-info__standard-text-field"
+                    label="Custom area"
+                    variant="outlined"
+                    type="number"
+                  />
+                  <HectareKilometerSwitch
+                    measurementUnit={measurementUnit}
+                    setMeasurementUnit={setMeasurementUnit}
+                  />
+                  <div className="upload-location-by-point__location-info__custom-area-container__suggestions-container">
+                    <Typography>Suggested areas:</Typography>
+                    <ul>
+                      <li>785,000 hectares for palm oil mills</li>
+                      <li>283,000 hectares for soy silos</li>
+                      <li>80-102,000 hectares for cocoa warehouses</li>
+                    </ul>
+                  </div>
+                </div>
               </>
             )}
 

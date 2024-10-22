@@ -121,7 +121,7 @@ const createList = (
       { field: 'custom_attribute_names', type: sql.NVarChar(2000), value: custom_attribute_names },
       { field: 'custom_attribute_types', type: sql.NVarChar(2000), value: custom_attribute_types },
       { field: 'associated_gfwlist', type: sql.TinyInt, value: gfw_list_id },
-      { field: 'version', type: sql.Int, value: null },
+      { field: 'version', type: sql.Int, value: 0 },
     ];
 
     sqlUtils
@@ -289,7 +289,7 @@ const saveAsDraftList = (
       { field: 'custom_attribute_names', type: sql.NVarChar(2000), value: custom_attribute_names },
       { field: 'custom_attribute_types', type: sql.NVarChar(2000), value: custom_attribute_types },
       { field: 'associated_gfwlist', type: sql.TinyInt, value: gfw_list_id },
-      { field: 'version', type: sql.Int, value: null },
+      { field: 'version', type: sql.Int, value: 0 },
     ];
 
     sqlUtils

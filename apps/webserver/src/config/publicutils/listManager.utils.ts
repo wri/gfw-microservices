@@ -49,6 +49,8 @@ const _ = require('lodash');
 // Configs
 import config from '../config';
 const { DEFAULT_LIST_LOCATIONS_ROWS_REQUESTED } = require('../config/locations.config');
+const LIST_UPLOAD_VERSION = 2;
+const LIST_UPLOAD_LEGACY_VERSION = 0;
 
 // Utils
 const Helper = require(path.resolve('./config/publicutils/helper.utils'));
@@ -63,6 +65,7 @@ const analyticsService = require(path.resolve('./server/analytics/service/analyt
 const listDataService = require(path.resolve('./server/listData/service/listData.service'));
 const { listStatusOrderByWorse } = require(path.resolve('./config/env/listStatuses.constants'));
 import { listStatus } from '@wri-monorepos/constants';
+import { featureFlagsService } from '@wri-monorepos/shared';
 import { SqlParamType, AnalysisDataType, ListsType, DeleteListTypeOrm } from '@wri-monorepos/sql';
 
 /** @function {createList}
@@ -76,7 +79,7 @@ import { SqlParamType, AnalysisDataType, ListsType, DeleteListTypeOrm } from '@w
  *   @param  {Boolean} is_edit
  *   @return {Promise} Returns promise object. If successful, recordsets, otherwise, error object
  */
-const createList = (
+const createList = async (
   req,
   list_name,
   template_id,
@@ -108,6 +111,11 @@ const createList = (
   // When creating new list, status is always pending.
   const list_status_id = listStatus.Pending;
 
+  const { getFeatureFlagsForCurrentOrg } = await featureFlagsService();
+  const flags = await getFeatureFlagsForCurrentOrg(req.organization_id);
+
+  const hasUploadListLpEnabled = flags.find((f) => f.flagId === 'UploadListLp');
+
   return new Promise((resolve, reject) => {
     // Parameters for stored procedure
     const parameters = [
@@ -121,7 +129,11 @@ const createList = (
       { field: 'custom_attribute_names', type: sql.NVarChar(2000), value: custom_attribute_names },
       { field: 'custom_attribute_types', type: sql.NVarChar(2000), value: custom_attribute_types },
       { field: 'associated_gfwlist', type: sql.TinyInt, value: gfw_list_id },
-      { field: 'version', type: sql.Int, value: 0 },
+      {
+        field: 'version',
+        type: sql.Int,
+        value: hasUploadListLpEnabled?.flagState ? LIST_UPLOAD_VERSION : LIST_UPLOAD_LEGACY_VERSION,
+      },
     ];
 
     sqlUtils
@@ -247,7 +259,7 @@ const createList = (
  * @param {string} gfw_list_id - The ID of the GFW List that this new list is associated with
  * @return {Promise<any>}
  */
-const saveAsDraftList = (
+const saveAsDraftList = async (
   req,
   list_name,
   template_id,
@@ -276,6 +288,11 @@ const saveAsDraftList = (
   // When creating new list, status is always Draft when we Save as Draft list
   const list_status_id = listStatus.Draft;
 
+  const { getFeatureFlagsForCurrentOrg } = await featureFlagsService();
+  const flags = await getFeatureFlagsForCurrentOrg(req.organization_id);
+
+  const hasUploadListLpEnabled = flags.find((f) => f.flagId === 'UploadListLp');
+
   return new Promise((resolve, reject) => {
     // Parameters for stored procedure
     const parameters = [
@@ -289,7 +306,11 @@ const saveAsDraftList = (
       { field: 'custom_attribute_names', type: sql.NVarChar(2000), value: custom_attribute_names },
       { field: 'custom_attribute_types', type: sql.NVarChar(2000), value: custom_attribute_types },
       { field: 'associated_gfwlist', type: sql.TinyInt, value: gfw_list_id },
-      { field: 'version', type: sql.Int, value: 0 },
+      {
+        field: 'version',
+        type: sql.Int,
+        value: hasUploadListLpEnabled?.flagState ? LIST_UPLOAD_VERSION : LIST_UPLOAD_LEGACY_VERSION,
+      },
     ];
 
     sqlUtils

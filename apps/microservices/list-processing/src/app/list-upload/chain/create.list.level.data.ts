@@ -8,6 +8,8 @@ import { ConfigService } from '@nestjs/config';
 import { ServerConfigType } from '../../../validators/server-config';
 
 const LIST_UPLOAD_VERSION = 2;
+const LIST_UPLOAD_LEGACY_VERSION = 0;
+
 export class CreateListLevelData extends AbstractHandler<ChainType> {
   private createSqlParameter(
     field: string,
@@ -66,7 +68,7 @@ export class CreateListLevelData extends AbstractHandler<ChainType> {
       this.createSqlParameter(
         'version',
         sql.Int,
-        uploadListLpFlag.flagState ? LIST_UPLOAD_VERSION : null
+        uploadListLpFlag?.flagState ? LIST_UPLOAD_VERSION : LIST_UPLOAD_LEGACY_VERSION
       ),
     ];
 

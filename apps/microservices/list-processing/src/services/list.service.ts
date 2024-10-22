@@ -20,6 +20,7 @@ import { DeprecatedStartAnalysisService } from '../app/list-upload/deprecated.st
 import { StartAnalysisService } from '../app/list-upload/start.analysis.service';
 
 const LIST_UPLOAD_VERSION = 2;
+const LIST_UPLOAD_LEGACY_VERSION = 0;
 
 interface CreateListResult {
   list_id: number;
@@ -258,7 +259,7 @@ export class ListService {
         {
           field: 'version',
           type: sql.Int,
-          value: isUploadListLpEnabled ? LIST_UPLOAD_VERSION : null,
+          value: isUploadListLpEnabled ? LIST_UPLOAD_VERSION : LIST_UPLOAD_LEGACY_VERSION,
         },
       ];
 

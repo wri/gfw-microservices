@@ -999,7 +999,8 @@ module.exports = (app, limiter) => {
       selectedIUCN,
       selectedNames,
     } = req.body.filters;
-    const listID = req.body.id;
+
+    const { id: listID, pageNum, pageSize, tableSortedBy, tableSortedDesc } = req.body;
     const filters = {
       selectedCountry,
       selectedState,
@@ -1009,14 +1010,16 @@ module.exports = (app, limiter) => {
       selectedIUCN,
       selectedNames,
     };
-    const { pageNum, pageSize } = req.body;
+
     if (pageNum || pageSize) {
       AnalysisManager.getPaginatedAnalysisDataForProtectedAreas(
         listID,
         pageNum,
         pageSize,
         config.SQLConnection.database,
-        filters
+        filters,
+        tableSortedBy,
+        tableSortedDesc
       )
         .then((result) => {
           const { listData, protectedLocationResult, count } = result;

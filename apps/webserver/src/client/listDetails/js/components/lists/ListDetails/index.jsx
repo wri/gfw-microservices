@@ -1714,9 +1714,17 @@ export default class ListDetails extends Component {
   };
 
   getProtectedAreasData = ({ filters, id, locationNameForGFW, page = 0 }) => {
+    const { tableSortedBy, tableSortedDesc } = this.state;
     this.setState({ isLoading: true });
     httpRequest
-      .fetchJSON('/locations/getProtectedAreasData', { filters, id, pageNum: page, pageSize: 50 })
+      .fetchJSON('/locations/getProtectedAreasData', {
+        filters,
+        id,
+        pageNum: page,
+        pageSize: 50,
+        tableSortedBy,
+        tableSortedDesc,
+      })
       .then((response) => {
         const parsedResponse = JSON.parse(response);
         const { numberOfPages, numberOfResults } = parsedResponse;

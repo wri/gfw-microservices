@@ -271,7 +271,9 @@ export class GfwLists {
         });
       }
       const sortOrder: 'DESC' | 'ASC' = tableSortedDesc ? 'DESC' : 'ASC';
-      const sanitizedSortColumn = tableSortedBy.includes(' ') ? `"${tableSortedBy}"` : tableSortedBy || 'id';
+      const sanitizedSortColumn = tableSortedBy?.includes(' ')
+        ? `"${tableSortedBy}"`
+        : tableSortedBy || 'id';
       const sortColumn = sanitizedSortColumn === 'total_area' ? 'Size' : sanitizedSortColumn;
 
       queryBuilder.skip(skip).take(take).orderBy(sortColumn, sortOrder);

@@ -78,6 +78,10 @@ export class ReadmeService {
     }
   }
 
+  withoutReadme() {
+    return null;
+  }
+
   async write(filters: BasicFieldsFileRequest): Promise<void> {
     const { type, key } = filters;
 
@@ -86,6 +90,7 @@ export class ReadmeService {
       alerts: this.alertsReadmeData,
       everything: this.everythingBundleReadmeData,
       southEastAsiaTCL: this.southEastAsiaTCL,
+      afiVC: this.withoutReadme,
     };
 
     if (!Object.prototype.hasOwnProperty.call(returnFileToCopy, type)) {

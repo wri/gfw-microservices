@@ -106,7 +106,6 @@ export class GeometryService extends IPipeService {
       .pipe(this.fileStream);
 
     return this.inputStream;
-    AFIAnalysis;
   }
 
   async finish(filters: ListFieldsFileRequest) {

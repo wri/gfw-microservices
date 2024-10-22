@@ -259,13 +259,14 @@ const uploadBulkLocations = (req, list_id, list_name, geojson, commodity, attrib
           featureArray.push(
             locationUtils.getWKTGeometry(req, feature.geometry),
             primary_key,
-            attributes, // new `attributes` column default value
             0,
             0,
             0,
             0,
             0,
-            0
+            0,
+            attributes, // new `attributes` column
+            '' // new `ErrorDetails` column
           );
           // Increment key for next feature
           primary_key += 1;

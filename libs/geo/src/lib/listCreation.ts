@@ -108,6 +108,7 @@ export class SPSListCreation {
         value: custom_attribute_types,
       },
       { field: 'associated_gfwlist', type: sql.TinyInt, value: gfw_list_id },
+      { field: 'version', type: sql.Int, value: 0 },
     ];
 
     let clientConnection = new SQLUtils(sqlClientConfig);

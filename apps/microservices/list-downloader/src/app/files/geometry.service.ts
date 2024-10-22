@@ -5,7 +5,14 @@ import { PassThrough } from 'stream';
 import { convert } from 'geojson2shp';
 import { Logger, Injectable, Scope } from '@nestjs/common';
 
-import { ListFieldsFileRequest, GFWList, ClientStoreConnection, Lists } from '@wri-monorepos/sql';
+import {
+  ListFieldsFileRequest,
+  GFWList,
+  ClientStoreConnection,
+  Lists,
+  AFIAnalysis,
+  ListsAnalysisStatus,
+} from '@wri-monorepos/sql';
 import { IPipeService } from '../pipe/i.pipe.service';
 import { columnsListName, columnsTemplateId } from '../shared/constants';
 import { FilterObject } from '../transform/filter.object';
@@ -16,6 +23,7 @@ import { finished } from 'stream/promises';
 import { FormatNumber } from '../transform/format.number';
 import { ReplaceSpace2Underscore } from '../transform/replace.space.2.underscore';
 import { getAllFilesAndZip } from '../shared/file.utils';
+import { MoreThanOrEqual } from 'typeorm/find-options/operator/MoreThanOrEqual';
 @Injectable({
   scope: Scope.REQUEST,
 })
@@ -98,6 +106,7 @@ export class GeometryService extends IPipeService {
       .pipe(this.fileStream);
 
     return this.inputStream;
+    AFIAnalysis;
   }
 
   async finish(filters: ListFieldsFileRequest) {
@@ -131,21 +140,16 @@ export class GeometryService extends IPipeService {
         WHERE [Location Name] like '${listProperties.listName}' 
       `;
       const listProperties2 = await connection.query(rawQuery);
+      const afiRepository = await connection.getRepository(AFIAnalysis);
+      const aFiAnalysis = await afiRepository.findOne({
+        where: { list_id: listId, location_id: MoreThanOrEqual(0) },
+      });
 
-      const afiRawQuery = `
-        SELECT *
-        FROM "AFIAnalysis"
-        WHERE [list_id] = ${listId} AND [location_id] > 0
-      `;
-      const AFIAnalysis = await connection.query(afiRawQuery);
+      const listAnalysisStatusRepository = await connection.getRepository(ListsAnalysisStatus);
+      const { updateTime } = await listAnalysisStatusRepository.findOne({
+        where: { listId: listId, analysisId: 'AFI' },
+      });
 
-      const listAnalysisStatusQuery = `
-      SELECT *
-      FROM "ListsAnalysisStatus"
-      WHERE [ListID] = ${listId} and AnalysisID = 'AFI'
-    `;
-      const listAnalysisStatus = await connection.query(listAnalysisStatusQuery);
-      const updateTime = listAnalysisStatus[0]?.UpdateTime || '';
       const gfwProConnection = await this.clientStoreConnection.getConnection('gfwpro');
       const organizationIdQuery = `
         SELECT *
@@ -156,7 +160,7 @@ export class GeometryService extends IPipeService {
       return {
         ...listProperties,
         ...listProperties2[0],
-        ...AFIAnalysis[0],
+        ...aFiAnalysis,
         updateTime,
         organizationId,
       };

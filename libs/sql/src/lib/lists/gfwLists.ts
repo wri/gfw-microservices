@@ -220,73 +220,72 @@ export class GfwLists {
     pageNum = 0,
     pageSize = 0,
     organizationDatabase: string,
-    filters
+    filters,
+    tableSortedBy,
+    tableSortedDesc
   ) {
-    const where: FindOptionsWhere<ListProtectedAreas | ListAdministrativeAreas> = {};
-
     if (list_id !== 1 && list_id !== 4) {
       throw new BadRequestException('Invalid list_id, list id should be either 1 or 4');
     }
 
-    let locationNameArray = [];
-    if (typeof filters != 'undefined') {
-      if (filters.selectedCountry && filters.selectedCountry !== '') {
-        where['Country'] = filters.selectedCountry;
-      }
-      if (filters.selectedState && filters.selectedState !== '') {
-        where['State'] = filters.selectedState;
-      }
-      if (filters.selectedSubState && filters.selectedSubState !== '') {
-        where['Sub State'] = filters.selectedSubState;
-      }
-      if (filters.selectedDesignation && filters.selectedDesignation !== '') {
-        where['Designation'] = filters.selectedDesignation;
-      }
-      if (filters.selectedDesignationType && filters.selectedDesignationType !== '') {
-        where['Designation Type'] = filters.selectedDesignationType;
-      }
-      if (filters.selectedIUCN) {
-        where['IUCN CAT'] = filters.selectedIUCN;
-      }
-      if (filters.selectedNames?.length > 0) {
-        locationNameArray = filters.selectedNames;
-      }
-    }
-    const skip = pageNum > 0 ? pageNum * pageSize : this.DEFAULT_PAGE_NUM;
-    const take = pageSize === 0 ? this.DEFAULT_PAGE_SIZE : pageSize;
     try {
       const connection = await this.getConnection(organizationDatabase);
-      const analysisDataRepository = await connection.getRepository(
-        this.getAttributesListEntity(list_id)
-      );
-      let items, count;
-      if (locationNameArray.length > 0) {
-        [items, count] = await analysisDataRepository.findAndCount({
-          where: {
-            ...where,
-            LocationName: Raw((alias) => `${alias} IN (:...names)`, {
-              names: locationNameArray,
-            }),
-          },
-          skip,
-          take,
-          order: {
-            id: 'DESC',
-          },
-        });
-      } else {
-        [items, count] = await analysisDataRepository.findAndCount({
-          where,
-          skip,
-          take,
-          order: {
-            id: 'DESC',
-          },
+      const listRepository = connection.getRepository(this.getAttributesListEntity(list_id));
+
+      const take = pageSize === 0 ? this.DEFAULT_PAGE_SIZE : pageSize;
+      const skip = pageNum > 0 ? pageNum * take : this.DEFAULT_PAGE_NUM;
+
+      const queryBuilder = listRepository.createQueryBuilder();
+
+      if (filters.selectedCountry && filters.selectedCountry !== '') {
+        queryBuilder.andWhere('Country = :country', { country: filters.selectedCountry });
+      }
+
+      if (filters.selectedState && filters.selectedState !== '') {
+        queryBuilder.andWhere('State = :state', { state: filters.selectedState });
+      }
+
+      if (filters.selectedSubState && filters.selectedSubState !== '') {
+        queryBuilder.andWhere('"Sub State" = :subState', { subState: filters.selectedSubState });
+      }
+
+      if (filters.selectedDesignation && filters.selectedDesignation !== '') {
+        queryBuilder.andWhere('Designation = :designation', {
+          designation: filters.selectedDesignation,
         });
       }
+
+      if (filters.selectedDesignationType && filters.selectedDesignationType !== '') {
+        queryBuilder.andWhere('"Designation Type" = :designationType', {
+          designationType: filters.selectedDesignationType,
+        });
+      }
+
+      if (filters.selectedIUCN && filters.selectedIUCN !== '') {
+        queryBuilder.andWhere('"IUCN CAT" = :iucnCat', { iucnCat: filters.selectedIUCN });
+      }
+
+      if (filters.selectedNames?.length > 0) {
+        queryBuilder.andWhere('"Location Name" IN (:...selectedNames)', {
+          selectedNames: filters.selectedNames,
+        });
+      }
+      const sortOrder: 'DESC' | 'ASC' = tableSortedDesc ? 'DESC' : 'ASC';
+      const sanitizedSortColumn = tableSortedBy.includes(' ') ? `"${tableSortedBy}"` : tableSortedBy || 'id';
+      const sortColumn = sanitizedSortColumn === 'total_area' ? 'Size' : sanitizedSortColumn;
+
+      queryBuilder.skip(skip).take(take).orderBy(sortColumn, sortOrder);
+
+      const [items, count] = await queryBuilder.getManyAndCount();
+      if (!items) {
+        this.logger.error('Analysis data: items not found');
+        throw new NotFoundException(`Data with list_id ${list_id} not found.`);
+      }
+
       const itemsWithListId = items.map((item) => {
-        return { ...item, 'Location Name': item.LocationName };
+        return { ...item, 'Location Name': item['LocationName'] };
       });
+
       const listDataFields = [
         'Country',
         'Designation',
@@ -307,23 +306,20 @@ export class GfwLists {
 
       const listData = itemsWithListId.map((record) => {
         const filteredRecord = {};
+
         for (const field of listDataFields) {
-          filteredRecord[field] = record[field];
+          if (record?.[field]) {
+            filteredRecord[field] = record[field];
+          }
         }
-        return {
-          ...filteredRecord,
-          id: record.id,
-          location_id: record.id,
-        };
+        return { ...filteredRecord, id: record.id, location_id: record.id };
       });
-      const omitFields = (
-        record: ListProtectedAreas & { 'Location Name': string },
-        fields: string[]
-      ): any => {
+
+      const omitFields = (record, fields: string[]): any => {
         const filteredRecord: any = {};
         for (const field in record) {
           if (!fields.includes(field)) {
-            filteredRecord[field] = record[field];
+            filteredRecord[field] = record?.[field];
           }
         }
         return filteredRecord;
@@ -335,7 +331,10 @@ export class GfwLists {
 
       return { listData, protectedLocationResult, count };
     } catch (error) {
-      throw new InternalServerErrorException('Error getAnalysisDataForGFWList', error.message);
+      throw new InternalServerErrorException(
+        'Error getting paginated analysis data',
+        error.message
+      );
     }
   }
 }

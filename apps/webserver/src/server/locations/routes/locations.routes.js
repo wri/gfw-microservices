@@ -933,7 +933,7 @@ module.exports = (app, limiter) => {
       selectedStates,
       selectedSubStates,
     };
-    const { id: listID, pageNum, pageSize } = req.body;
+    const { id: listID, pageNum, pageSize, tableSortedBy, tableSortedDesc } = req.body;
 
     let listData = [],
       protectedLocationResult = [],
@@ -948,7 +948,9 @@ module.exports = (app, limiter) => {
             pageNum,
             pageSize,
             config.SQLConnection.database,
-            filters
+            filters,
+            tableSortedBy,
+            tableSortedDesc
           );
         listData = paginatedListResult.listData;
         protectedLocationResult = paginatedListResult.protectedLocationResult;

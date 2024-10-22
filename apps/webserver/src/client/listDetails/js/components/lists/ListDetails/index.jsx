@@ -1642,9 +1642,9 @@ export default class ListDetails extends Component {
         'Content-type': 'application/json',
       },
     })
-      .then((info) => {
+      .then((currentAdminAreas) => {
         this.setState({
-          currentAdminAreas: info,
+          currentAdminAreas,
           isLoading: false,
         });
       })
@@ -1689,6 +1689,7 @@ export default class ListDetails extends Component {
   };
 
   getAdministrativeAreasData = ({ filters, id, locationNameForGFW, page = 0 }) => {
+    const { tableSortedBy, tableSortedDesc } = this.state;
     // when coming from the Map, locationNameForGFW is either the locationName or true
     this.setState({ isLoading: true });
     httpRequest
@@ -1697,6 +1698,8 @@ export default class ListDetails extends Component {
         id,
         pageNum: page,
         pageSize: 50,
+        tableSortedBy,
+        tableSortedDesc,
       })
       .then((response) => {
         const parsedResponse = JSON.parse(response);

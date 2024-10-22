@@ -163,15 +163,20 @@ export const ListSchema = {
       name: 'flag_viirs',
       nullable: true,
     },
-    attributes: {
-      type: String,
-      name: 'attributes',
-    },
     flagTerrai: {
       type: Number,
       name: 'flag_terrai',
       nullable: true,
-    }
+    },
+    attributes: {
+      type: String,
+      name: 'attributes',
+    },
+    errorDetails: {
+      type: String,
+      name: 'ErrorDetails',
+      nullable: true,
+    },
   },
 };
 

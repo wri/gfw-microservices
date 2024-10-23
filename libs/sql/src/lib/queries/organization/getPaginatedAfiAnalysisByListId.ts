@@ -69,7 +69,6 @@ BEGIN
     SET @locationColumn = 'lt.[Investment Name]'
 END
 
--- Build the main SQL query dynamically
 SET @SQL = 'SELECT  ' +
 ' @listId as listId,' +
 ' @listName as listName,' +

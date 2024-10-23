@@ -171,7 +171,7 @@ export const ListSchema = {
       type: Number,
       name: 'flag_terrai',
       nullable: true,
-    }
+    },
   },
 };
 

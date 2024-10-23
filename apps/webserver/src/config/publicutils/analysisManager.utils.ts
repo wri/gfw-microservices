@@ -421,7 +421,9 @@ export async function getPaginatedAnalysisDataForProtectedAreas(
   pageNum,
   pageSize,
   database,
-  filters
+  filters,
+  tableSortedBy,
+  tableSortedDesc
 ) {
   const gfwLists = new GfwLists();
   return await gfwLists.getPaginatedAnalysisDataForProtectedAndAdministrativeAreas(
@@ -429,7 +431,9 @@ export async function getPaginatedAnalysisDataForProtectedAreas(
     pageNum,
     pageSize,
     database,
-    filters
+    filters,
+    tableSortedBy,
+    tableSortedDesc
   );
 }
 
@@ -438,7 +442,9 @@ export async function getPaginatedAnalysisDataForAdministrativeAreas(
   pageNum,
   pageSize,
   database,
-  filters
+  filters,
+  tableSortedBy,
+  tableSortedDesc
 ) {
   const gfwLists = new GfwLists();
   return await gfwLists.getPaginatedAnalysisDataForProtectedAndAdministrativeAreas(
@@ -446,7 +452,9 @@ export async function getPaginatedAnalysisDataForAdministrativeAreas(
     pageNum,
     pageSize,
     database,
-    filters
+    filters,
+    tableSortedBy,
+    tableSortedDesc
   );
 }
 /** @function {getListAnalyses}

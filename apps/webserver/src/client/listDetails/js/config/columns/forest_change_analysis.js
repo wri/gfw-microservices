@@ -16,7 +16,6 @@ import featureFlags from '../../../../../utils/general.utils';
 import infoBubbleConfig from '../../../../common/js/infoBubbleConfig.constants';
 
 const { isListDetailsPageRedesignAvailable } = featureFlags;
-
 const transifex = Transifex.live.translateText;
 
 const forest_change_analysis = [
@@ -47,6 +46,7 @@ const forest_change_analysis = [
         '--'
       );
     },
+
     sortMethod: (a, b) => {
       const sortStatus = sortByStatus(a, b);
       if (sortStatus == 2) {
@@ -55,6 +55,8 @@ const forest_change_analysis = [
 
       return sortStatus;
     },
+
+    sortable: !isListDetailsPageRedesignAvailable,
   },
   {
     Header: () => (
@@ -104,6 +106,7 @@ const forest_change_analysis = [
 
           return sortStatus;
         },
+        sortable: !isListDetailsPageRedesignAvailable,
       },
       {
         id: 'tree_cover_loss_protected_areas_yearly',
@@ -152,6 +155,7 @@ const forest_change_analysis = [
 
           return sortStatus;
         },
+        sortable: !isListDetailsPageRedesignAvailable,
       },
       {
         id: 'tree_cover_loss_primary_forest_yearly',
@@ -200,6 +204,7 @@ const forest_change_analysis = [
 
           return sortStatus;
         },
+        sortable: !isListDetailsPageRedesignAvailable,
       },
     ],
   },

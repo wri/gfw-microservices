@@ -14,34 +14,38 @@ const { isListDetailsPageRedesignAvailable } = featureFlags;
 const transifex = Transifex.live.translateText;
 
 const forest_change_locations = [
-  {
-    id: 'total_area',
-    Header: () => (
-      <span className="title-text" title={transifex('Size in ha')}>
-        {transifex('Size')} <span className="title-text__units">{transifex('(ha)')}</span>
-      </span>
-    ),
-    accessor: (d) => {
-      return d;
-    },
-    Cell: (row) => {
-      const isValidStatus = locationIsActive(row.value);
-      const isValidArea = checkValid(row.value.total_area);
+  ...(!isListDetailsPageRedesignAvailable
+    ? [
+        {
+          id: 'total_area',
+          Header: () => (
+            <span className="title-text" title={transifex('Size in ha')}>
+              {transifex('Size')} <span className="title-text__units">{transifex('(ha)')}</span>
+            </span>
+          ),
+          accessor: (d) => {
+            return d;
+          },
+          Cell: (row) => {
+            const isValidStatus = locationIsActive(row.value);
+            const isValidArea = checkValid(row.value.total_area);
 
-      const formattedArea = isValidArea ? formatDigit(row.value.total_area) : 0;
-      return isValidStatus ? formattedArea : '--';
-    },
-    sortMethod: (a, b) => {
-      const sortStatus = sortByStatus(a, b);
-      if (sortStatus == 2) {
-        return a.total_area - b.total_area;
-      }
+            const formattedArea = isValidArea ? formatDigit(row.value.total_area) : 0;
+            return isValidStatus ? formattedArea : '--';
+          },
+          sortMethod: (a, b) => {
+            const sortStatus = sortByStatus(a, b);
+            if (sortStatus == 2) {
+              return a.total_area - b.total_area;
+            }
 
-      return sortStatus;
-    },
-    className: 'td-num',
-    show: true,
-  },
+            return sortStatus;
+          },
+          className: 'td-num',
+          show: true,
+        },
+      ]
+    : []),
   ...(!isListDetailsPageRedesignAvailable
     ? [
         {

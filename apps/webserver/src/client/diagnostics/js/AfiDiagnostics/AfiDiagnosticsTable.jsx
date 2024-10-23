@@ -27,8 +27,12 @@ function AfiDiagnosticsTable({
         <Table className="diagnostc__table">
           <TableHead>
             <TableRow>
-              <TableCell>Country</TableCell>
-              <TableCell align="right">Sub-state</TableCell>
+              {!isLocationLevel && (
+                <>
+                  <TableCell>Country</TableCell>
+                  <TableCell align="right">Sub-state</TableCell>
+                </>
+              )}
               <TableCell align="right">
                 <span>Natural Forest Coverage (HA)</span>
                 <BetaTag>(Beta)</BetaTag>
@@ -58,8 +62,12 @@ function AfiDiagnosticsTable({
           <TableBody>
             {data?.map((row) => (
               <TableRow key={row.subState}>
-                <TableCell align="right">{row.country}</TableCell>
-                <TableCell align="right">{row.subState}</TableCell>
+                {!isLocationLevel && (
+                  <>
+                    <TableCell align="right">{row.country}</TableCell>
+                    <TableCell align="right">{row.subState}</TableCell>
+                  </>
+                )}
                 {isSbtnSelected ? (
                   <>
                     <TableCell align="right">{row.coverageHA}</TableCell>

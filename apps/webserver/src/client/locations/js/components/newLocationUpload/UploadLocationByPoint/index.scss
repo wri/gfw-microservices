@@ -1,0 +1,205 @@
+.upload-location-by-point {
+  > nav {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    margin: 0.5rem 0 2rem;
+
+    @media (max-width: 575px) {
+      display: block;
+    }
+
+    h5 {
+      color: #404041;
+      min-width: fit-content;
+    }
+
+    > svg:last-of-type {
+      color: #b3b3b3;
+      font-size: 0.75rem;
+    }
+  }
+
+  > div {
+    padding: 10px 16px 15px;
+  }
+
+  p.upload-location-by-point__subtitle {
+    margin: 0.4rem 0 0.8rem;
+  }
+
+  &__location-info {
+    display: flex;
+    gap: 1.5rem;
+
+    @media (max-width: 575px) {
+      display: block;
+    }
+
+    > div:first-child {
+      min-width: 260px;
+    }
+
+    &__location-type-button {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+
+      margin-bottom: 0.75rem;
+
+      background: white;
+      cursor: pointer;
+
+      width: 100%;
+      padding: 1rem 1.25rem;
+      border: 2px solid #dfdfdf;
+      border-radius: 5px;
+
+      &--selected {
+        border-color: #97bd3d;
+      }
+
+      > svg {
+        color: #444;
+        font-size: 1.5rem;
+      }
+
+      > span {
+        font-size: 1rem;
+        font-weight: bold;
+      }
+    }
+
+    > form {
+      flex: 1;
+
+      /* Hide arrow from input number for Chrome, Safari, Edge, Opera */
+      input::-webkit-outer-spin-button,
+      input::-webkit-inner-spin-button {
+        -webkit-appearance: none;
+        margin: 0;
+      }
+      /* Hide arrow from input number Firefox */
+      input[type='number'] {
+        -moz-appearance: textfield;
+      }
+    }
+
+    &__coordinates {
+      display: flex;
+      gap: 0.5rem;
+    }
+
+    &__standard-text-field {
+      flex: 1;
+
+      .MuiInputBase-input {
+        padding: 0.5rem 0.75rem;
+      }
+
+      .MuiFormLabel-root {
+        text-transform: none;
+
+        &:not(.MuiInputLabel-shrink) {
+          font-size: 0.75rem;
+          top: -3px;
+        }
+      }
+    }
+
+    &__address-text-field {
+      width: 100%;
+
+      input.MuiInputBase-input {
+        padding: 0.5rem 0.75rem;
+        border-right: none;
+        box-shadow: none;
+      }
+
+      .MuiFormLabel-root {
+        text-transform: none;
+
+        &:not(.MuiInputLabel-shrink) {
+          font-size: 0.75rem;
+          top: -3px;
+        }
+      }
+    }
+
+    &__radius-size-container {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+
+      @media (max-width: 991px) {
+        display: block;
+      }
+
+      > div {
+        display: flex;
+
+        > span:hover {
+          background-color: rgb(151, 189, 61, 0.04);
+        }
+
+        svg {
+          color: #97bd3d;
+        }
+
+        > div {
+          display: flex;
+          flex-direction: column;
+          justify-content: center;
+
+          > span {
+            font-size: 0.625rem;
+            color: #7f7f7f;
+          }
+        }
+      }
+    }
+
+    &__custom-area-container {
+      display: flex;
+      gap: 0.5rem;
+      margin-top: 1rem;
+
+      @media (max-width: 575px) {
+        display: flex;
+        flex-direction: column;
+        gap: 1rem;
+      }
+
+      &__suggestions-container {
+        background-color: #f7f7f7;
+        padding: 0.75rem;
+        border-radius: 8px;
+        width: 400px;
+
+        @media (max-width: 575px) {
+          width: 100%;
+        }
+
+        ul {
+          padding-left: 1.5rem;
+          margin-top: 0.25rem;
+
+          li {
+            color: #717171;
+          }
+        }
+      }
+    }
+
+    &__bottom-buttons-container {
+      display: flex;
+      justify-content: end;
+      gap: 0.5rem;
+
+      margin-top: 2rem;
+
+      @media (max-width: 575px) {
+        justify-content: start;
+      }
+    }
+  }
+}

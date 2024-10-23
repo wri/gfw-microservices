@@ -3,7 +3,6 @@ import { RequestLargeListProcess } from '../models';
 import { ListService } from './list.service';
 import { StartAnalysisService } from '../app/list-upload/start.analysis.service';
 import { DeprecatedStartAnalysisService } from '../app/list-upload/deprecated.start.analysis.service';
-import { DataSource, EntityManager } from 'typeorm';
 import { MetadataService } from '@wri-monorepos/aws';
 import { ConfigService } from '@nestjs/config';
 import { featureFlagsService } from '@wri-monorepos/shared';
@@ -16,19 +15,10 @@ describe('ListService - Start Analysis Process For List', () => {
   let service: ListService;
   let startAnalysisService: StartAnalysisService;
   let deprecatedStartAnalysisService: DeprecatedStartAnalysisService;
-  let dataSourceMock: Partial<DataSource>;
   let metadataServiceMock: Partial<MetadataService>;
   let configServiceMock: Partial<ConfigService>;
 
   beforeEach(async () => {
-    const entityManagerMock: Partial<EntityManager> = {
-      transaction: jest.fn(),
-    };
-
-    dataSourceMock = {
-      manager: entityManagerMock as EntityManager,
-    };
-
     metadataServiceMock = {
       // Mock the methods you need from MetadataService
     };
@@ -46,7 +36,6 @@ describe('ListService - Start Analysis Process For List', () => {
     } as unknown as DeprecatedStartAnalysisService;
 
     service = new ListService(
-      dataSourceMock as DataSource,
       new ClientStoreConnection(),
       metadataServiceMock as MetadataService,
       configServiceMock as ConfigService,

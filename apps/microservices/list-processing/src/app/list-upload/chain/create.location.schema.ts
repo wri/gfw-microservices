@@ -1,11 +1,7 @@
-import { SQLUtils } from '@wri-monorepos/sql';
+import { ListTableColumnsQueryString, SQLUtils } from '@wri-monorepos/sql';
 import { updateListsUploadStatus } from '../shared/update.lists.upload.status';
 import { AbstractHandler, ChainType, RequestNewList } from './types';
 import * as sql from 'mssql';
-
-interface QueryCreateTableResult {
-  query_string: string;
-}
 
 export class CreateLocationSchema extends AbstractHandler<ChainType> {
   private clientStoreConnection: SQLUtils;
@@ -54,11 +50,21 @@ export class CreateLocationSchema extends AbstractHandler<ChainType> {
     await this.executeQueryWithParams<void>(connection, 'uspCreateListTable', parameters);
   }
 
-  public async getTableStructureQuery(): Promise<QueryCreateTableResult> {
-    return {
-      query_string:
-        '[Location Name] NVARCHAR(150),[Latitude] FLOAT,[Longitude] FLOAT,[Analysis Radius] FLOAT,[Analysis Area] FLOAT,[Commodity] NVARCHAR(150),[Location Classification] NVARCHAR(150),[Company ID] NVARCHAR(150),[Volume] INT,[Owner Name] NVARCHAR(150),[Owner ID] NVARCHAR(150),[Company Name] NVARCHAR(150),[Supplier Name] NVARCHAR(150),[Facility Name] NVARCHAR(150),[Refinery Name] NVARCHAR(150),[Certification] NVARCHAR(150),[Start Date] NVARCHAR(150),[End Date] NVARCHAR(150),[Time Horizon] NVARCHAR(150),[Accuracy Rating of Location Entered] INT,[Country] NVARCHAR(150),[State] NVARCHAR(150),[Sub State] NVARCHAR(150),[Wind Barrier] NVARCHAR(150),[Riparian Buffers] NVARCHAR(150),[Buffer Zones] NVARCHAR(150),[gadmid] NVARCHAR(150), [Geometry] geometry, [location_id] INT, [flag_general] INT, [flag_gran_chaco] INT, [flag_glad] INT, [flag_forma] INT, [flag_viirs] INT, [flag_terrai] INT',
-    };
+  public async getTableStructureQuery(templateId: number): Promise<ListTableColumnsQueryString> {
+    const conn = new SQLUtils();
+    const parameters = [this.createSqlParameter('template_id', sql.Int, templateId)];
+
+    try {
+      await conn.connect();
+      return await conn.executeQuery<ListTableColumnsQueryString>(
+        'uspGetTableQueryString',
+        parameters
+      );
+    } catch (error) {
+      throw new Error(
+        `Failed to get table structure query: ${error.stack || error.message || error}`
+      );
+    }
   }
 
   public async createAnalysisTableInDatabase(
@@ -101,9 +107,10 @@ export class CreateLocationSchema extends AbstractHandler<ChainType> {
       analysisTable,
       listStatusId,
       analysis_types: analysisIds,
+      template_id,
     } = input.request as RequestNewList;
 
-    const queryCreateTableResult = await this.getTableStructureQuery();
+    const queryCreateTableResult = await this.getTableStructureQuery(template_id);
 
     await updateListsUploadStatus(organization_database, listId, 'Get table query structure');
 

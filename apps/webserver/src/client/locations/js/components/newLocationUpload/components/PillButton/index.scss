@@ -1,0 +1,25 @@
+button.pill-button {
+  border-radius: 20px;
+  padding: 0.5rem 2rem;
+
+  &.MuiButton-containedPrimary {
+    background-color: #97bd3d;
+
+    &:hover {
+      background-color: #97bd3d;
+    }
+  }
+
+  &.MuiButton-containedSecondary {
+    background-color: #e5e5de;
+    color: #3e3e3c;
+
+    &:hover {
+      background-color: #e5e5de;
+    }
+  }
+
+  svg:nth-of-type(1) {
+    font-size: 1rem;
+  }
+}

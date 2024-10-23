@@ -10,5 +10,5 @@
     "types": ["node", "express"]
   },
   "exclude": ["**/*.spec.js", "**/*.test.js", "**/*.spec.ts", "**/*.test.ts", "src/client/**/*"],
-  "include": ["**/*.ts", "**/*.js"]
+  "include": ["**/*.ts", "**/*.js", "**/*.tsx"]
 }

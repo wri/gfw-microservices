@@ -1,26 +1,33 @@
-import React from 'react';
+import React, { useState } from 'react';
 import './index.scss';
-import { useHistory } from 'react-router-dom';
-import ArrowBackIcon from '@mui/icons-material/ArrowBack';
-import ArrowForwardIosIcon from '@mui/icons-material/ArrowForwardIos';
-import { IconButton, Typography } from '@mui/material';
 
-import { UploadOptions } from './components/UploadOptions';
+import { UploadLocationOptions } from './UploadLocationOptions';
+import { UploadLocationByPoint } from './UploadLocationByPoint';
+
+export enum UploadType {
+  BY_FILE,
+  BY_POINT,
+  BY_POLYGON,
+}
 
 export function NewLocationUpload() {
-  const history = useHistory();
+  const [uploadType, setUploadType] = useState<UploadType | null>(null);
+
+  const selectUploadType = (type: UploadType) => {
+    setUploadType(type);
+  };
+
+  const clearUploadType = () => {
+    setUploadType(null);
+  };
 
   return (
     <div className="new-location-upload">
-      <nav>
-        <IconButton onClick={() => history.goBack()} disableRipple>
-          <ArrowBackIcon />
-        </IconButton>
-        <Typography variant="h5">Name of the list</Typography>
-        <ArrowForwardIosIcon fontSize="small" />
-        <Typography variant="h5">Add location</Typography>
-      </nav>
-      <UploadOptions />
+      {uploadType === UploadType.BY_POINT ? (
+        <UploadLocationByPoint clearUploadType={clearUploadType} />
+      ) : (
+        <UploadLocationOptions selectUploadType={selectUploadType} />
+      )}
     </div>
   );
 }

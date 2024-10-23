@@ -16,7 +16,6 @@ import featureFlags from '../../../../../utils/general.utils';
 import infoBubbleConfig from '../../../../common/js/infoBubbleConfig.constants';
 
 const { isListDetailsPageRedesignAvailable } = featureFlags;
-
 const transifex = Transifex.live.translateText;
 
 const forest_change_analysis = [
@@ -47,6 +46,7 @@ const forest_change_analysis = [
         '--'
       );
     },
+
     sortMethod: (a, b) => {
       const sortStatus = sortByStatus(a, b);
       if (sortStatus == 2) {
@@ -55,6 +55,8 @@ const forest_change_analysis = [
 
       return sortStatus;
     },
+
+    sortable: !isListDetailsPageRedesignAvailable,
   },
   {
     Header: () => (
@@ -76,7 +78,8 @@ const forest_change_analysis = [
         show: true,
         Cell: (row) => {
           return locationIsActive(row.value) ? (
-            checkValid(row.value.tree_cover_loss_total_yearly) ? (
+            checkValid(row.value.tree_cover_loss_total_yearly) ||
+            isListDetailsPageRedesignAvailable ? (
               <span title={getValue(row.value.tree_cover_loss_total_yearly)}>
                 {isListDetailsPageRedesignAvailable
                   ? calculateAndFormatTotalDeforestation(
@@ -103,6 +106,7 @@ const forest_change_analysis = [
 
           return sortStatus;
         },
+        sortable: !isListDetailsPageRedesignAvailable,
       },
       {
         id: 'tree_cover_loss_protected_areas_yearly',
@@ -114,7 +118,8 @@ const forest_change_analysis = [
         show: true,
         Cell: (row) => {
           return locationIsActive(row.value) ? (
-            checkValid(row.value.tree_cover_loss_protected_areas_yearly) ? (
+            checkValid(row.value.tree_cover_loss_protected_areas_yearly) ||
+            isListDetailsPageRedesignAvailable ? (
               <span
                 title={getValidatedValue(
                   row.value.tree_cover_loss_protected_areas_yearly,
@@ -150,6 +155,7 @@ const forest_change_analysis = [
 
           return sortStatus;
         },
+        sortable: !isListDetailsPageRedesignAvailable,
       },
       {
         id: 'tree_cover_loss_primary_forest_yearly',
@@ -161,7 +167,8 @@ const forest_change_analysis = [
         show: true,
         Cell: (row) => {
           return locationIsActive(row.value) ? (
-            checkValid(row.value.tree_cover_loss_primary_forest_yearly) ? (
+            checkValid(row.value.tree_cover_loss_primary_forest_yearly) ||
+            isListDetailsPageRedesignAvailable ? (
               <span
                 title={getValidatedValue(
                   row.value.tree_cover_loss_primary_forest_yearly,
@@ -197,6 +204,7 @@ const forest_change_analysis = [
 
           return sortStatus;
         },
+        sortable: !isListDetailsPageRedesignAvailable,
       },
     ],
   },

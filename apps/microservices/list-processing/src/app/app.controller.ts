@@ -108,13 +108,13 @@ export class AppController {
     @Body()
     request: RequestTriggerProcessLargeList
   ) {
-    return this.listService.createListTables(
-      request.list_name,
-      request.user_id,
-      request.client_database,
-      request.analysisIds,
-      request.organization_id
-    );
+    return this.listService.createListTables({
+      listName: request.list_name,
+      userId: request.user_id,
+      organization_id: request.organization_id,
+      clientDatabase: request.client_database,
+      analysisIds: request.analysisIds,
+    });
   }
 
   @Post('/CopyOrMoveLargeList')

@@ -1,6 +1,7 @@
 import {
   ClientStoreConnection,
   FeatureFlag,
+  ListTableColumnsQueryString,
   ListsUploadStatus,
   SQLUtils,
   getListByFilters,
@@ -11,7 +12,6 @@ import { CreateListRequest, RequestLargeListProcess, ResponseLargeListProcess } 
 import { ConfigService } from '@nestjs/config';
 import * as sql from 'mssql';
 import { createListNameSchema } from '../utils/list.utils';
-import { DataSource } from 'typeorm';
 import { RequestSaveLargeListProcessModel, CreateListInsertResultModel } from '../models';
 import { MetadataService as AWSMetadataService } from '@wri-monorepos/aws';
 import { ServerConfigType } from '../validators/server-config';
@@ -23,14 +23,9 @@ interface CreateListResult {
   list_id: number;
 }
 
-interface QueryCreateTableResult {
-  query_string: string;
-}
-
 @Injectable()
 export class ListService {
   constructor(
-    private dataSource: DataSource,
     private readonly clientStoreConnection: ClientStoreConnection,
     private readonly awsMetadataService: AWSMetadataService,
     private readonly config: ConfigService<ServerConfigType, true>,
@@ -40,13 +35,13 @@ export class ListService {
 
   async createNewList(createListRequest: CreateListRequest) {
     try {
-      const listTable = await this.createListTables(
-        createListRequest.listName,
-        createListRequest.userId,
-        createListRequest.clientDatabase,
-        createListRequest.analysisIds,
-        createListRequest.organization_id
-      );
+      const listTable = await this.createListTables({
+        listName: createListRequest.listName,
+        userId: createListRequest.userId,
+        clientDatabase: createListRequest.clientDatabase,
+        analysisIds: createListRequest.analysisIds,
+        organization_id: createListRequest.organization_id,
+      });
 
       const saveListRequest: RequestSaveLargeListProcessModel = {
         key: createListRequest.listName,
@@ -77,15 +72,15 @@ export class ListService {
     return this.deprecatedStartAnalysisService.run(request);
   }
 
-  async createListTables(
-    listName: string,
-    userId: number,
-    clientDatabase: string,
-    analysisIds: Array<string>,
-    organization_id: number,
+  async createListTables({
+    listName,
+    userId,
+    clientDatabase,
+    analysisIds,
+    organization_id,
     templateId = 13,
     gfwListId = null
-  ): Promise<CreateListResult> {
+  }): Promise<CreateListResult> {
     const { getFeatureFlagsForCurrentOrg } = await featureFlagsService();
     const flags = await getFeatureFlagsForCurrentOrg(organization_id);
     const uploadListLpFlag = flags.find((f) => f.flagId === 'UploadListLp') as FeatureFlag;
@@ -161,19 +156,15 @@ export class ListService {
         'Add list to analysis table'
       );
 
-      const queryCreateTableResult = await this.getTableStructureQuery(templateId);
+      const { query_string } = await this.getTableStructureQuery(templateId);
+
       await this.updateListsUploadStatus(
         connection.databaseName,
         listId,
         'Get table query structure'
       );
 
-      await this.createListTableInDatabase(
-        connection,
-        listId,
-        listTable,
-        queryCreateTableResult[0].query_string
-      );
+      await this.createListTableInDatabase(connection, listId, listTable, query_string);
       await this.updateListsUploadStatus(connection.databaseName, listId, 'Create list table');
 
       await this.createAnalysisTableInDatabase(connection, listId, analysisTable);
@@ -295,18 +286,20 @@ export class ListService {
     }
   }
 
-  async getTableStructureQuery(templateId: number): Promise<QueryCreateTableResult[]> {
-    try {
-      const command = this.dataSource.createQueryRunner();
-      await command.connect();
-      const queryCreateTableResult: QueryCreateTableResult[] = await command.query(
-        'uspGetTableQueryString @0',
-        [templateId]
-      );
+  async getTableStructureQuery(templateId: number): Promise<ListTableColumnsQueryString> {
+    const conn = new SQLUtils();
+    const parameters = [{ field: 'template_id', type: sql.Int, value: templateId }];
 
-      return queryCreateTableResult;
+    try {
+      await conn.connect();
+      return await conn.executeQuery<ListTableColumnsQueryString>(
+        'uspGetTableQueryString',
+        parameters
+      );
     } catch (error) {
-      throw new Error('Failed get table structure query: ' + error.message);
+      throw new Error(
+        `Failed to get table structure query: ${error.stack || error.message || error}`
+      );
     }
   }
 

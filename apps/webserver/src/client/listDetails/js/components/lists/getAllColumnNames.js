@@ -1,11 +1,15 @@
 import cloneDeep from 'lodash/cloneDeep';
 import columns from '../../config/columns';
+import gfwListsSizeColumn from './gfwListsSizeColumn';
 import { getListColumns } from './getListColumns';
 import {
   COMMODITY_RISK_VIEW,
   FOREST_CHANGE_VIEW,
   POST_2020_RISK_ASSESSMENT_VIEW,
 } from './ListDetails/listViews.constants';
+import featureFlags from '../../../../../utils/general.utils';
+
+const { isListDetailsPageRedesignAvailable } = featureFlags;
 
 /**
  * Get all column names based on List view name and location data
@@ -66,7 +70,9 @@ const getAllColumnNames = (listView, locationData, selectedLists, getCheckboxCol
       columns.forest_change_analysis[1];
 
     let notSortableColumns;
-    if (!isGlobalForestWatchList) {
+    // when feature flag isListDetailsPageRedesignAvailable is removed, these columns should be sortable: false,
+    // for both gfw and user lists
+    if (!isGlobalForestWatchList || isListDetailsPageRedesignAvailable) {
       notSortableColumns = forestChangeAnalysisColumns.map((col) => {
         return {
           ...col,
@@ -87,6 +93,9 @@ const getAllColumnNames = (listView, locationData, selectedLists, getCheckboxCol
     columnNames.combinedColumns = [
       checkbox,
       location_name,
+
+      ...(isListDetailsPageRedesignAvailable && isGlobalForestWatchList ? gfwListsSizeColumn : []),
+
       ...columnNames.required,
       ...analysis,
       ...gfwColumns,

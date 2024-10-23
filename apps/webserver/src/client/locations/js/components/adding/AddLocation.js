@@ -1501,6 +1501,7 @@ export default class AddLocation extends Component {
               gfw_list_id: this.props.adminArea.gfwListID,
               list_status_id: getListStatusId(isSaveAsDraft),
               analysisIds: this.state.selectedAnalysis,
+              attributes: '', // new list attributes
             };
 
             request.open(
@@ -1569,6 +1570,7 @@ export default class AddLocation extends Component {
                 appendLocations: true,
                 list_analysis_table_name: activeList[0].list_analysis_table_name,
                 list_status_id: getListStatusId(isSaveAsDraft),
+                attributes: activeList[0]?.attributes ?? '',
               };
               request.open('POST', '/locations/updateExistingList', true);
               if (isSaveAsDraft) {

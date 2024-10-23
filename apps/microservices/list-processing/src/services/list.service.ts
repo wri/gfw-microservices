@@ -79,7 +79,7 @@ export class ListService {
     analysisIds,
     organization_id,
     templateId = 13,
-    gfwListId = null
+    gfwListId = null,
   }): Promise<CreateListResult> {
     const { getFeatureFlagsForCurrentOrg } = await featureFlagsService();
     const flags = await getFeatureFlagsForCurrentOrg(organization_id);

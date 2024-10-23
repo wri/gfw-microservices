@@ -120,7 +120,10 @@ export class GADMService extends AbstractHandler<ChainType> {
 
           return this.invokeLambda('controller-admin-areas', {
             receipt_handle: 'NOTARECEIPT',
-            s3_location_info: location_info,
+            s3_location_info: {
+              bucket: process.env.AWS_ANALYSIS_BUCKET,
+              key: location_info,
+            },
             layer: 'gadm',
             dissolve_aoi: false,
             post_process_aoi: false,
@@ -164,7 +167,7 @@ export class GADMService extends AbstractHandler<ChainType> {
 
     // We should not call clip to land if we are in the preview mode.
     if (!preview) {
-      //input.geojson = await this.clipToLand(geojson);
+      input.geojson = await this.clipToLand(geojson);
     }
     return super.handle(input);
   }

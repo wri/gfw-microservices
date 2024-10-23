@@ -1,7 +1,12 @@
 import { AbstractHandler, ChainType } from './types';
 
-import Point from '@arcgis/core/geometry/Point';
-import GeometryEngine from '@arcgis/core/geometry/geometryEngine';
+// ArcGIS imports are ESM only imports, and this code is transpiled into commonJS
+// so we need to use eval to import these modules
+let Point;
+eval ("import('@arcgis/core/geometry/Point.js').then(x=>Point=x.default)");
+let GeometryEngine;
+eval ("import('@arcgis/core/geometry/geometryEngine.js').then(x=>GeometryEngine=x)");
+
 import { Geometry } from '@wri-monorepos/geo';
 
 const DEFAULT_LOCATION_RADIUS = 4; // kilometers (medium buffer)

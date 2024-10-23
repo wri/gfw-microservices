@@ -110,7 +110,7 @@ export default () => {
       filename: '[name].[contenthash].js',
     },
     resolve: {
-      extensions: ['*', '.js', '.jsx', '.tsx'],
+      extensions: ['*', '.js', '.jsx', '.ts', '.tsx'],
       alias: aliases,
     },
   };

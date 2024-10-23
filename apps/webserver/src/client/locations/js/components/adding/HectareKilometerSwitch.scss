@@ -11,6 +11,7 @@
   height: 44px;
   align-items: center;
   cursor: pointer;
+  width: fit-content;
 
   &__option {
     @include heading(200, $color: $gfw-dark-gray);

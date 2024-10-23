@@ -5,7 +5,7 @@ import { PassThrough } from 'stream';
 import { convert } from 'geojson2shp';
 import { Logger, Injectable, Scope } from '@nestjs/common';
 
-import { ListFieldsFileRequest, ClientStoreConnection } from '@wri-monorepos/sql';
+import { ListFieldsFileRequest } from '@wri-monorepos/sql';
 import { IPipeService } from '../pipe/i.pipe.service';
 import { columnsListName, columnsTemplateId } from '../shared/constants';
 import { FilterObject } from '../transform/filter.object';
@@ -23,7 +23,6 @@ export class GeometryService extends IPipeService {
   private readonly logger = new Logger(GeometryService.name);
   private inputStream: PassThrough;
   private fileStream: fs.WriteStream;
-  private readonly clientStoreConnection = new ClientStoreConnection();
   async start(filters: ListFieldsFileRequest) {
     const { listId, key, templateId, combinedColumnsSplitted, listName, type } = filters;
     this.logger.log(`(${listId}) - Starting shapefile stream to process data`);
@@ -101,8 +100,9 @@ export class GeometryService extends IPipeService {
     this.logger.log(`(${listId}) - Finished to process data and generate shapefile`);
     await this.writeAllData(this.inputStream);
     await finished(this.fileStream);
-    type !== 'afiVC' ? await this.convertGeojsonToSHP(key, listName) : null;
-    type === 'afiVC' ? await getAllFilesAndZip(filters) : null; // file was zipped befored process finished
+    type !== 'afiVC'
+      ? await this.convertGeojsonToSHP(key, listName)
+      : await getAllFilesAndZip(filters); // file was zipped befored process finished
     this.logger.log(`(${listId}) - Data has been zipped`);
     await this.finishProcess(filters);
   }

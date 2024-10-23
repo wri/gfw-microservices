@@ -47,9 +47,7 @@ import {
 import { BadRequestExceptionResponse } from './types/apiResponses';
 import { ConfigService } from '@nestjs/config';
 import { ServerConfigType } from '../validators/server-config';
-import {
-  FeatureFlagEnabledGuard,
-} from '../guards/feature.flag.enabled.guard';
+import { FeatureFlagEnabledGuard } from '../guards/feature.flag.enabled.guard';
 
 /*
   This controller will be deprecated in the future

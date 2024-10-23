@@ -59,7 +59,6 @@ DECLARE @locationColumn NVARCHAR(100)
 
 SELECT @list_table = list_table_name, @listName = list_Name FROM [Lists] WHERE id = @listId
 
--- Check if 'Location Name' column exists in the list table
 IF COL_LENGTH('dbo.' + @list_table, 'Location Name') IS NOT NULL
 BEGIN
     SET @locationColumn = 'lt.[Location Name]'

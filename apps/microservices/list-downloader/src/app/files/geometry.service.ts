@@ -5,14 +5,7 @@ import { PassThrough } from 'stream';
 import { convert } from 'geojson2shp';
 import { Logger, Injectable, Scope } from '@nestjs/common';
 
-import {
-  ListFieldsFileRequest,
-  GFWList,
-  ClientStoreConnection,
-  Lists,
-  AFIAnalysis,
-  ListsAnalysisStatus,
-} from '@wri-monorepos/sql';
+import { ListFieldsFileRequest, ClientStoreConnection } from '@wri-monorepos/sql';
 import { IPipeService } from '../pipe/i.pipe.service';
 import { columnsListName, columnsTemplateId } from '../shared/constants';
 import { FilterObject } from '../transform/filter.object';
@@ -23,7 +16,6 @@ import { finished } from 'stream/promises';
 import { FormatNumber } from '../transform/format.number';
 import { ReplaceSpace2Underscore } from '../transform/replace.space.2.underscore';
 import { getAllFilesAndZip } from '../shared/file.utils';
-import { MoreThanOrEqual } from 'typeorm/find-options/operator/MoreThanOrEqual';
 @Injectable({
   scope: Scope.REQUEST,
 })
@@ -33,14 +25,16 @@ export class GeometryService extends IPipeService {
   private fileStream: fs.WriteStream;
   private readonly clientStoreConnection = new ClientStoreConnection();
   async start(filters: ListFieldsFileRequest) {
-    const { listId, key, templateId, combinedColumnsSplitted, listName } = filters;
+    const { listId, key, templateId, combinedColumnsSplitted, listName, type } = filters;
     this.logger.log(`(${listId}) - Starting shapefile stream to process data`);
     this.inputStream = new PassThrough({
       objectMode: true,
     });
 
     filters.combinedColumnsSplitted.push('WKTGeometry');
-
+    type === 'afiVC'
+      ? filters.combinedColumnsSplitted.push('organizationDatabase', 'list_id')
+      : null;
     fs.writeFileSync(
       `/tmp/wri-${key}/${listName}.geojson`,
       JSON.stringify({
@@ -58,31 +52,25 @@ export class GeometryService extends IPipeService {
     await this.startEmail(filters);
   }
 
-  process(analysisData) {
-    analysisData.forEach((data) => this.inputStream.write(data));
+  process(analysisData, newFilters = {}) {
+    if (newFilters['type'] === 'afiVC') {
+      const afiParameters = {
+        organizationDatabase: newFilters['organizationDatabase'],
+      };
+      analysisData.push(afiParameters);
+      const newAnalysisData = [Object.assign({}, ...analysisData)];
+      newAnalysisData.forEach((data) => this.inputStream.write(data));
+    } else {
+      analysisData.forEach((data) => this.inputStream.write(data));
+    }
   }
 
   private async organizeStream(filters: ListFieldsFileRequest, allFields: string[]) {
-    let protertiesAfiVC = '';
-    if (filters.type === 'afiVC') {
-      const listProperties = await this.getListProperties(filters);
-      protertiesAfiVC = `{"properties": {
-            "Location_Name": "${listProperties['Location Name']}",
-            "Centroid_Country": "${listProperties.Country}",
-            "Location_HA": ${listProperties.total_area_ha},
-            "SBTN_Natural_Forest_HA": ${listProperties.natural_land_area},
-            "SBTN_Natural_Forest_Loss_Post_2020_HA": ${listProperties.natural_land_deforested_area},
-            "JRC_Forest_HA": ${listProperties.jrc_land_area},
-            "JRC_Forest_Loss_Post_2020_HA": ${listProperties.jrc_land_deforested_area},
-            "Analysis_Time": "${listProperties.updateTime}",
-            "GFWPro_Account": ${listProperties.organizationId},
-            "Use_Rights": "Full Sharing"
-            },
-            "type":"FeatureCollection","features":[`;
-    }
     const open =
-      filters.type === 'afiVC' ? protertiesAfiVC : '{"type":"FeatureCollection","features":[';
-    const close = ']}';
+      filters.type === 'afiVC'
+        ? '{\n"type":"FeatureCollection","features":['
+        : '{"type":"FeatureCollection","features":[';
+    const close = filters.type === 'afiVC' ? ']}\n' : ']}';
 
     const { key, selectedLocationsList, listId, listName } = filters;
     this.inputStream.removeAllListeners();
@@ -125,49 +113,5 @@ export class GeometryService extends IPipeService {
       targetCrs: 4326,
     };
     await convert(`/tmp/wri-${key}/${listName}.geojson`, `/tmp/${key}.zip`, options);
-  }
-  private async getListProperties(filters: ListFieldsFileRequest) {
-    const { organizationDatabase, listId, isGFWList } = filters;
-    if (!isGFWList) {
-      const connection = await this.clientStoreConnection.getConnection(organizationDatabase);
-      const listRepository = await connection.getRepository(Lists);
-      const listProperties = await listRepository.findOne({ where: { id: listId } });
-
-      const rawQuery = `
-        SELECT *
-        FROM "${listProperties.listTableName}"
-        WHERE [Location Name] like '${listProperties.listName}' 
-      `;
-      const listProperties2 = await connection.query(rawQuery);
-      const afiRepository = await connection.getRepository(AFIAnalysis);
-      const aFiAnalysis = await afiRepository.findOne({
-        where: { list_id: listId, location_id: MoreThanOrEqual(0) },
-      });
-
-      const listAnalysisStatusRepository = await connection.getRepository(ListsAnalysisStatus);
-      const { updateTime } = await listAnalysisStatusRepository.findOne({
-        where: { listId: listId, analysisId: 'AFI' },
-      });
-
-      const gfwProConnection = await this.clientStoreConnection.getConnection('gfwpro');
-      const organizationIdQuery = `
-        SELECT *
-        FROM "Organizations"
-        WHERE [organization_db] = '${organizationDatabase}'`;
-      const organizationProperties = await gfwProConnection.query(organizationIdQuery);
-      const organizationId = organizationProperties[0].id || null;
-      return {
-        ...listProperties,
-        ...listProperties2[0],
-        ...aFiAnalysis,
-        updateTime,
-        organizationId,
-      };
-    } else {
-      const connection = await this.clientStoreConnection.getConnection('gfwpro', [GFWList]);
-      const gfwListRepository = await connection.getRepository(GFWList);
-      const listProperties = await gfwListRepository.findOne({ where: { id: listId } });
-      return listProperties;
-    }
   }
 }

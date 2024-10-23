@@ -12,7 +12,6 @@ const createDirectory = (dir: string) => {
 
 const getAllFilesAndZip = async (filter: BasicFieldsFileRequest) => {
   Logger.log('Started zipping the files');
-
   return new Promise((resolve, reject) => {
     const { key, listName } = filter;
     const output = fs.createWriteStream(`/tmp/${key}.zip`);

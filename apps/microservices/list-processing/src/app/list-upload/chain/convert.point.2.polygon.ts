@@ -1,15 +1,12 @@
-import { AbstractHandler, ChainType } from "./types";
+import { AbstractHandler, ChainType } from './types';
 
-import { circle } from "@turf/circle";
-import { point } from "@turf/helpers";
-import { Geometry } from "@wri-monorepos/geo";
+import Point from '@arcgis/core/geometry/Point';
+import GeometryEngine from '@arcgis/core/geometry/geometryEngine';
+import { Geometry } from '@wri-monorepos/geo';
 
 const DEFAULT_LOCATION_RADIUS = 4; // kilometers (medium buffer)
 
-
-
 export class ConvertPoint2Polygon extends AbstractHandler<ChainType> {
-
   async geomFromPointRadiusArea(point, featureRadius, featureArea) {
     let radius;
     if (featureRadius) {
@@ -27,18 +24,10 @@ export class ConvertPoint2Polygon extends AbstractHandler<ChainType> {
       radius = DEFAULT_LOCATION_RADIUS;
     }
 
-
-    const geoCircle = circle(point, radius, { steps: 64, units: 'kilometers' });
-    return geoCircle.geometry;
-
+    return GeometryEngine.geodesicBuffer(point, radius, 'kilometers');
   }
 
-  async geomFromLatLongRadiusArea(
-    latitudeInput,
-    longitudeInput,
-    featureRadius,
-    featureArea
-  ) {
+  async geomFromLatLongRadiusArea(latitudeInput, longitudeInput, featureRadius, featureArea) {
     const latitude = parseFloat(latitudeInput);
     const longitude = parseFloat(longitudeInput);
 
@@ -46,12 +35,13 @@ export class ConvertPoint2Polygon extends AbstractHandler<ChainType> {
       throw new Error('Invalid latitude or longitude value');
     }
 
-    const geoPoint = point([longitude, latitude]);
-    return this.geomFromPointRadiusArea(geoPoint, featureRadius, featureArea);
-
-
+    const point = new Point({
+      latitude,
+      longitude,
+      spatialReference: { wkid: 4326 },
+    });
+    return this.geomFromPointRadiusArea(point, featureRadius, featureArea);
   }
-
 
   async handle(input: ChainType): Promise<ChainType> {
     const { geojson } = input;
@@ -69,7 +59,7 @@ export class ConvertPoint2Polygon extends AbstractHandler<ChainType> {
           featureRadius,
           featureArea
         );
-        feature.geometry = (polygon as unknown as Geometry) ;
+        feature.geometry = polygon as unknown as Geometry;
       }
     }
     return await super.handle(input);

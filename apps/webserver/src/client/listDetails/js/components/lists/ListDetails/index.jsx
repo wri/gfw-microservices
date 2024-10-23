@@ -142,7 +142,7 @@ export default class ListDetails extends Component {
       maximumAnalysisAreaInTheList: defaultMaximumAreaSizeForLocationsFilter,
       isEveryRowSelected: false,
       filterValues: [],
-      tableSortedBy: 'Investment Name',
+      tableSortedBy: selectedLists[0].isGlobalForestWatchList ? 'Location Name' : 'Investment Name',
       tableSortedDesc: false,
       numberOfResults: undefined,
       displayLargeListEditingModal: false,
@@ -1216,6 +1216,7 @@ export default class ListDetails extends Component {
 
   getGFWLocationData = (list_id, page = 0) => {
     const { filters } = this.props;
+    const { tableSortedBy, tableSortedDesc } = this.state;
 
     this.setState({ isLoading: true });
 
@@ -1231,6 +1232,8 @@ export default class ListDetails extends Component {
         pageNum: page,
         pageSize: 50,
         filters,
+        tableSortedBy,
+        tableSortedDesc,
       },
     })
       .then((response) => {
@@ -1639,9 +1642,9 @@ export default class ListDetails extends Component {
         'Content-type': 'application/json',
       },
     })
-      .then((info) => {
+      .then((currentAdminAreas) => {
         this.setState({
-          currentAdminAreas: info,
+          currentAdminAreas,
           isLoading: false,
         });
       })
@@ -1686,6 +1689,7 @@ export default class ListDetails extends Component {
   };
 
   getAdministrativeAreasData = ({ filters, id, locationNameForGFW, page = 0 }) => {
+    const { tableSortedBy, tableSortedDesc } = this.state;
     // when coming from the Map, locationNameForGFW is either the locationName or true
     this.setState({ isLoading: true });
     httpRequest
@@ -1694,6 +1698,8 @@ export default class ListDetails extends Component {
         id,
         pageNum: page,
         pageSize: 50,
+        tableSortedBy,
+        tableSortedDesc,
       })
       .then((response) => {
         const parsedResponse = JSON.parse(response);
@@ -1708,9 +1714,17 @@ export default class ListDetails extends Component {
   };
 
   getProtectedAreasData = ({ filters, id, locationNameForGFW, page = 0 }) => {
+    const { tableSortedBy, tableSortedDesc } = this.state;
     this.setState({ isLoading: true });
     httpRequest
-      .fetchJSON('/locations/getProtectedAreasData', { filters, id, pageNum: page, pageSize: 50 })
+      .fetchJSON('/locations/getProtectedAreasData', {
+        filters,
+        id,
+        pageNum: page,
+        pageSize: 50,
+        tableSortedBy,
+        tableSortedDesc,
+      })
       .then((response) => {
         const parsedResponse = JSON.parse(response);
         const { numberOfPages, numberOfResults } = parsedResponse;

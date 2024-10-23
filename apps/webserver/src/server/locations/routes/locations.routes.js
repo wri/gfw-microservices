@@ -249,13 +249,14 @@ module.exports = (app, limiter) => {
       list_analysis_table_name,
       original_gfw_list,
       list_status_id,
+      attributes,
     } = req.body;
 
     // 1. Change list status
     ListManager.resetListStatus(req, list_id, gfw_list_id, list_status_id)
       .then(() => {
         // 2. Upload location's to Existing List
-        return ListManager.uploadToExistingList(req, list_id, table_name, geojson);
+        return ListManager.uploadToExistingList(req, list_id, table_name, geojson, attributes);
       })
       .then(async (resultGeoJSON) => {
         if (original_gfw_list) {
@@ -798,13 +799,21 @@ module.exports = (app, limiter) => {
 
   app.post('/locations/getGFWListLocationData', (req, res) => {
     console.log('POST /locations/getGFWListLocationData');
-    const { list_id, location_ids, pageNum, pageSize } = req.body;
+    const { list_id, location_ids, pageNum, pageSize, filters, tableSortedBy, tableSortedDesc } =
+      req.body;
     const listAnalyses = [];
     const locationAttributeArray = [];
     const locationAnalysisArray = [];
-
     if (pageNum || pageSize) {
-      GFWListManager.getPaginatedTable(req, pageNum, pageSize, list_id)
+      GFWListManager.getPaginatedTable(
+        req,
+        pageNum,
+        pageSize,
+        list_id,
+        filters,
+        tableSortedBy,
+        tableSortedDesc
+      )
         .then((response) => {
           const [noGeomData, gfwListAnalysesData, gfwLocationsAnalysesData, count] = response;
           locationAttributeArray.push(...noGeomData);
@@ -925,7 +934,7 @@ module.exports = (app, limiter) => {
       selectedStates,
       selectedSubStates,
     };
-    const { id: listID, pageNum, pageSize } = req.body;
+    const { id: listID, pageNum, pageSize, tableSortedBy, tableSortedDesc } = req.body;
 
     let listData = [],
       protectedLocationResult = [],
@@ -940,7 +949,9 @@ module.exports = (app, limiter) => {
             pageNum,
             pageSize,
             config.SQLConnection.database,
-            filters
+            filters,
+            tableSortedBy,
+            tableSortedDesc
           );
         listData = paginatedListResult.listData;
         protectedLocationResult = paginatedListResult.protectedLocationResult;
@@ -989,7 +1000,8 @@ module.exports = (app, limiter) => {
       selectedIUCN,
       selectedNames,
     } = req.body.filters;
-    const listID = req.body.id;
+
+    const { id: listID, pageNum, pageSize, tableSortedBy, tableSortedDesc } = req.body;
     const filters = {
       selectedCountry,
       selectedState,
@@ -999,14 +1011,16 @@ module.exports = (app, limiter) => {
       selectedIUCN,
       selectedNames,
     };
-    const { pageNum, pageSize } = req.body;
+
     if (pageNum || pageSize) {
       AnalysisManager.getPaginatedAnalysisDataForProtectedAreas(
         listID,
         pageNum,
         pageSize,
         config.SQLConnection.database,
-        filters
+        filters,
+        tableSortedBy,
+        tableSortedDesc
       )
         .then((result) => {
           const { listData, protectedLocationResult, count } = result;

@@ -1,0 +1,14 @@
+.how-to-format-location-link {
+  display: flex;
+  gap: 0.25rem;
+  width: fit-content;
+
+  p,
+  svg {
+    color: #97bd3d;
+  }
+
+  svg {
+    font-size: 1rem;
+  }
+}

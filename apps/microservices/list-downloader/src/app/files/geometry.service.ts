@@ -15,7 +15,7 @@ import { ConvertObject2String } from '../transform/convert.object.2.string';
 import { finished } from 'stream/promises';
 import { FormatNumber } from '../transform/format.number';
 import { ReplaceSpace2Underscore } from '../transform/replace.space.2.underscore';
-import { getAllFilesAndZip } from '../shared/file.utils';
+
 @Injectable({
   scope: Scope.REQUEST,
 })
@@ -23,17 +23,16 @@ export class GeometryService extends IPipeService {
   private readonly logger = new Logger(GeometryService.name);
   private inputStream: PassThrough;
   private fileStream: fs.WriteStream;
+
   async start(filters: ListFieldsFileRequest) {
-    const { listId, key, templateId, combinedColumnsSplitted, listName, type } = filters;
+    const { listId, key, templateId, combinedColumnsSplitted, listName } = filters;
     this.logger.log(`(${listId}) - Starting shapefile stream to process data`);
     this.inputStream = new PassThrough({
       objectMode: true,
     });
 
     filters.combinedColumnsSplitted.push('WKTGeometry');
-    type === 'afiVC'
-      ? filters.combinedColumnsSplitted.push('organizationDatabase', 'list_id')
-      : null;
+
     fs.writeFileSync(
       `/tmp/wri-${key}/${listName}.geojson`,
       JSON.stringify({
@@ -47,29 +46,17 @@ export class GeometryService extends IPipeService {
     let allFields = [...fields, ...combinedColumnsSplitted];
     allFields = [...new Set(allFields)];
 
-    await this.organizeStream(filters, allFields);
+    this.organizeStream(filters, allFields);
     await this.startEmail(filters);
   }
 
-  process(analysisData, newFilters = {}) {
-    if (newFilters['type'] === 'afiVC') {
-      const afiParameters = {
-        organizationDatabase: newFilters['organizationDatabase'],
-      };
-      analysisData.push(afiParameters);
-      const newAnalysisData = [Object.assign({}, ...analysisData)];
-      newAnalysisData.forEach((data) => this.inputStream.write(data));
-    } else {
-      analysisData.forEach((data) => this.inputStream.write(data));
-    }
+  process(analysisData) {
+    analysisData.forEach((data) => this.inputStream.write(data));
   }
 
-  private async organizeStream(filters: ListFieldsFileRequest, allFields: string[]) {
-    const open =
-      filters.type === 'afiVC'
-        ? '{\n"type":"FeatureCollection","features":['
-        : '{"type":"FeatureCollection","features":[';
-    const close = filters.type === 'afiVC' ? ']}\n' : ']}';
+  private organizeStream(filters: ListFieldsFileRequest, allFields: string[]) {
+    const open = '{"type":"FeatureCollection","features":[';
+    const close =  ']}';
 
     const { key, selectedLocationsList, listId, listName } = filters;
     this.inputStream.removeAllListeners();
@@ -100,9 +87,7 @@ export class GeometryService extends IPipeService {
     this.logger.log(`(${listId}) - Finished to process data and generate shapefile`);
     await this.writeAllData(this.inputStream);
     await finished(this.fileStream);
-    type !== 'afiVC'
-      ? await this.convertGeojsonToSHP(key, listName)
-      : await getAllFilesAndZip(filters); // file was zipped befored process finished
+     await this.convertGeojsonToSHP(key, listName)
     this.logger.log(`(${listId}) - Data has been zipped`);
     await this.finishProcess(filters);
   }

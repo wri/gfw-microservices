@@ -1,4 +1,4 @@
-import { GeometryService } from '../files';
+import { AfiGeometryService } from '../files';
 import { Injectable, Logger } from '@nestjs/common';
 import { ListFieldsFileRequest, UspGetListAnalysis } from '@wri-monorepos/sql';
 import * as asyncPool from 'tiny-async-pool';
@@ -17,7 +17,7 @@ export class AfiVcGeneratorService extends IFileGenerator {
 
   constructor(
     private readonly analysisAfiDataService: AnalysisAfiDataService,
-    private readonly geometryService: GeometryService,
+    private readonly afiGeometryService: AfiGeometryService,
     private readonly uspGetListAnalysis: UspGetListAnalysis,
     private readonly configService: ConfigService<ServerConfigType, true>,
     private readonly analysisDataService: AnalysisDataService
@@ -94,7 +94,7 @@ export class AfiVcGeneratorService extends IFileGenerator {
   private defineService(filters: ListFieldsFileRequest): IPipeService {
     const { type, file } = filters;
     const mapFileType2Service = {
-      afiVC_shapefile: this.geometryService,
+      afiVC_shapefile: this.afiGeometryService,
     };
 
     return mapFileType2Service[`${type}_${file}`];

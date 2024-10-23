@@ -1,0 +1,117 @@
+import * as fs from 'fs';
+import * as JSONStream from 'JSONStream';
+
+import { PassThrough } from 'stream';
+import { convert } from 'geojson2shp';
+import { Logger, Injectable, Scope } from '@nestjs/common';
+
+import { ListFieldsFileRequest } from '@wri-monorepos/sql';
+import { IPipeService } from '../pipe/i.pipe.service';
+import { columnsListName, columnsTemplateId } from '../shared/constants';
+import { FilterObject } from '../transform/filter.object';
+import { FilterSelection } from '../transform/filter.selection';
+import { ConvertObject2Geojson } from '../transform/convert.object.2.geojson';
+import { ConvertObject2String } from '../transform/convert.object.2.string';
+import { finished } from 'stream/promises';
+import { FormatNumber } from '../transform/format.number';
+import { ReplaceSpace2Underscore } from '../transform/replace.space.2.underscore';
+import { getAllFilesAndZip } from '../shared/file.utils';
+@Injectable({
+  scope: Scope.REQUEST,
+})
+export class AfiGeometryService extends IPipeService {
+  private readonly logger = new Logger(AfiGeometryService.name);
+  private inputStream: PassThrough;
+  private fileStream: fs.WriteStream;
+  async start(filters: ListFieldsFileRequest) {
+    const { listId, key, templateId, combinedColumnsSplitted, listName, type } = filters;
+    this.logger.log(`(${listId}) - Starting shapefile stream to process data`);
+    this.inputStream = new PassThrough({
+      objectMode: true,
+    });
+
+    filters.combinedColumnsSplitted.push('WKTGeometry');
+    type === 'afiVC'
+      ? filters.combinedColumnsSplitted.push('organizationDatabase', 'list_id')
+      : null;
+    fs.writeFileSync(
+      `/tmp/wri-${key}/${listName}.geojson`,
+      JSON.stringify({
+        type: 'FeatureCollection',
+        features: [],
+      })
+    );
+
+    const fields =
+      columnsTemplateId[templateId] ?? columnsListName[templateId] ?? columnsTemplateId[14];
+    let allFields = [...fields, ...combinedColumnsSplitted];
+    allFields = [...new Set(allFields)];
+
+    await this.organizeStream(filters, allFields);
+    await this.startEmail(filters);
+  }
+
+  process(analysisData, newFilters = {}) {
+    if (newFilters['type'] === 'afiVC') {
+      const afiParameters = {
+        organizationDatabase: newFilters['organizationDatabase'],
+      };
+      analysisData.push(afiParameters);
+      const newAnalysisData = [Object.assign({}, ...analysisData)];
+      newAnalysisData.forEach((data) => this.inputStream.write(data));
+    } else {
+      analysisData.forEach((data) => this.inputStream.write(data));
+    }
+  }
+
+  private async organizeStream(filters: ListFieldsFileRequest, allFields: string[]) {
+    const open =
+      filters.type === 'afiVC'
+        ? '{\n"type":"FeatureCollection","features":['
+        : '{"type":"FeatureCollection","features":[';
+    const close = filters.type === 'afiVC' ? ']}\n' : ']}';
+
+    const { key, selectedLocationsList, listId, listName } = filters;
+    this.inputStream.removeAllListeners();
+
+    this.inputStream.on('error', async (err) => {
+      this.logger.error(`(${listId}) - Error on stream: ${err}`);
+      await this.errorEmail(filters);
+    });
+
+    this.fileStream = fs.createWriteStream(`/tmp/wri-${key}/${listName}.geojson`, { flags: 'r+' });
+
+    this.inputStream
+      .pipe(new FilterSelection(selectedLocationsList))
+      .pipe(new FilterObject(allFields))
+      .pipe(new ReplaceSpace2Underscore())
+      .pipe(new FormatNumber())
+      .pipe(new ConvertObject2Geojson())
+      .pipe(new ConvertObject2String())
+      .pipe(JSONStream.parse(['features', true]))
+      .pipe(JSONStream.stringify(open, '\n,\n', close))
+      .pipe(this.fileStream);
+
+    return this.inputStream;
+  }
+
+  async finish(filters: ListFieldsFileRequest) {
+    const { listId, key, listName, type } = filters;
+    this.logger.log(`(${listId}) - Finished to process data and generate shapefile`);
+    await this.writeAllData(this.inputStream);
+    await finished(this.fileStream);
+    type !== 'afiVC'
+      ? await this.convertGeojsonToSHP(key, listName)
+      : await getAllFilesAndZip(filters); // file was zipped befored process finished
+    this.logger.log(`(${listId}) - Data has been zipped`);
+    await this.finishProcess(filters);
+  }
+
+  private async convertGeojsonToSHP(key: string, listName: string) {
+    const options = {
+      layer: 'gfw-pro',
+      targetCrs: 4326,
+    };
+    await convert(`/tmp/wri-${key}/${listName}.geojson`, `/tmp/${key}.zip`, options);
+  }
+}

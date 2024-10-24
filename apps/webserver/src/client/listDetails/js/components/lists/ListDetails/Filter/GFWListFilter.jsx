@@ -14,50 +14,6 @@ import { boxStyle, multipleSelectStyles, selectStyle } from './filterStyles';
 import store from '../../../../../../locations/js/store';
 import '../../../../../../common/css/filter-dialogs.scss';
 
-/**
- * Function that is used to filter locations within a GFW list.
- * @param {Object} location The location that we are filtering
- * @param {string} filterStr The string to filter based on user input
- * @param {string} selectedCountry The country
- * @param {string} selectedState The state
- * @param {string} selectedSubState The substate
- * @param {string} selectedParentCompany The parent company
- * @param {boolean} showRSPOCertified Boolean to determine if the user wants to filter for RSPO
- */
-const multiOptionsFilterLogic = (
-  location,
-  filterStr,
-  selectedCountry,
-  selectedState,
-  selectedSubState,
-  selectedParentCompany,
-  showRSPOCertified
-) => {
-  const locationName = location['Location Name'];
-  const investmentName = location['Investment Name'];
-
-  const initialFilter =
-    (locationName !== '' || investmentName !== '') &&
-    (locationName !== ' ' || investmentName !== ' ') &&
-    (selectedCountry === '' || selectedCountry === location.Country) &&
-    (selectedState === '' || selectedState === location.State) &&
-    (selectedSubState === '' || selectedSubState === location['Sub State']) &&
-    (selectedParentCompany === '' || selectedParentCompany === location['Parent Company']);
-
-  let stringSearchFilter = true;
-  if (filterStr.length > 0) {
-    stringSearchFilter =
-      (locationName && locationName.toLowerCase().includes(filterStr.toLowerCase())) ||
-      (investmentName && investmentName.toLowerCase().includes(filterStr.toLowerCase()));
-  }
-
-  let certifiedRSPO = false;
-  if ((location.Certification === 'RSPO' && showRSPOCertified) || !showRSPOCertified) {
-    certifiedRSPO = true;
-  }
-  return initialFilter && stringSearchFilter && certifiedRSPO;
-};
-
 export default class GFWListFilter extends Component {
   constructor(props) {
     super(props);
@@ -177,7 +133,6 @@ export default class GFWListFilter extends Component {
       selectedState,
       selectedSubState,
       selectedParentCompany,
-      filterStr,
       showRSPOCertified,
       selectedNames,
     } = this.state;
@@ -215,26 +170,6 @@ export default class GFWListFilter extends Component {
       'id',
       selectedParentCompany
     );
-
-    const multiOptions = listData
-      .filter((location) =>
-        multiOptionsFilterLogic(
-          location,
-          filterStr,
-          selectedCountry,
-          selectedState,
-          selectedSubState,
-          selectedParentCompany,
-          showRSPOCertified
-        )
-      )
-      .map((list) => {
-        return {
-          value: list.location_id,
-          label: list['Location Name'] || list['Investment Name'],
-        };
-      })
-      .sort((a, b) => a.label.toLowerCase().localeCompare(b.label.toLowerCase()));
 
     return (
       <Modal open onClose={this.close}>

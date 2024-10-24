@@ -10,7 +10,7 @@ class ConvertObject2Geojson extends Transform {
   getGeoJSONGeometry(wktGeometry: string): GeoJSONGeometryOrNull {
     return parse(wktGeometry);
   }
-  private async getListProperties(
+  private async getLocationProperties(
     listId: number,
     organizationDatabase: string,
     location_id: number
@@ -70,7 +70,7 @@ class ConvertObject2Geojson extends Transform {
       }
     );
     if (feature.properties['organizationDatabase']) {
-      this.getListProperties(
+      this.getLocationProperties(
         location.list_id,
         location.organizationDatabase,
         feature.properties['location_id']

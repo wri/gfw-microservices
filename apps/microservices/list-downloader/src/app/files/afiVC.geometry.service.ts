@@ -62,8 +62,8 @@ export class AfiGeometryService extends IPipeService {
   }
 
   private async organizeStream(filters: ListFieldsFileRequest, allFields: string[]) {
-    const open = '{\n"type":"FeatureCollection","features":[';
-    const close = ']}\n';
+    const open = '[\n';
+    const close = ']\n';
 
     const { key, selectedLocationsList, listId, listName } = filters;
     this.inputStream.removeAllListeners();

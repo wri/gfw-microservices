@@ -142,6 +142,7 @@ export default class ListDetails extends Component {
       maximumAnalysisAreaInTheList: defaultMaximumAreaSizeForLocationsFilter,
       isEveryRowSelected: false,
       filterValues: [],
+      locationNameOptionsForFilter: [],
       tableSortedBy: selectedLists[0].isGlobalForestWatchList ? 'Location Name' : 'Investment Name',
       tableSortedDesc: false,
       numberOfResults: undefined,
@@ -177,11 +178,12 @@ export default class ListDetails extends Component {
       this.getProtectedAreasData
     );
 
-    if (!selectedLists[0].isGlobalForestWatchList) {
-      getListFilterValues(selectedLists[0].id).then((filterValues) => {
-        this.setState({ filterValues });
-      });
-    }
+    getListFilterValues(selectedLists[0].id).then(
+      ({ filterValues, locationNameOptionsForFilter }) => {
+        this.setState({ filterValues, locationNameOptionsForFilter });
+      }
+    );
+
     store.dispatch(updateSelectedLocations([]));
 
     // post-2020 risk assesment tab is selected by default, but
@@ -240,22 +242,6 @@ export default class ListDetails extends Component {
 
       if (!selectedLists[0].isGlobalForestWatchList) {
         this.getUserLocationData(selectedLists[0].id);
-      }
-    }
-
-    if (
-      (selectedLists.length !== prevProps.selectedLists.length && selectedLists.length > 0) ||
-      selectedLists !== prevProps.selectedLists
-    ) {
-      // if we didn't have a list selected and now we do
-      // or we have selected a different list
-      this.clearFilters();
-      this.setState({ isEveryRowSelected: false, filterValues: [] });
-
-      if (!selectedLists[0].isGlobalForestWatchList) {
-        getListFilterValues(selectedLists[0].id).then((filterValues) => {
-          this.setState({ filterValues });
-        });
       }
     }
 
@@ -1831,6 +1817,7 @@ export default class ListDetails extends Component {
       dialogTitle,
       draftSubmitDialogOpen,
       filterValues,
+      locationNameOptionsForFilter,
       isLoading,
       isManageListFolderOpen,
       isNewListNameDuplicate,
@@ -2217,6 +2204,7 @@ export default class ListDetails extends Component {
                         <Filter
                           filterCount={filterCount}
                           filterValues={filterValues}
+                          locationNameOptionsForFilter={locationNameOptionsForFilter}
                           clearFilters={this.clearFilters}
                           listColumns={listColumns}
                           setListColumns={(newVisibleColumns) =>

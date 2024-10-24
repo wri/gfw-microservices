@@ -190,7 +190,7 @@ export default class Lists extends Component {
     );
 
     if (!selectedLists[0].isGlobalForestWatchList) {
-      getListFilterValues(selectedLists[0].id).then((filterValues) => {
+      getListFilterValues(selectedLists[0].id).then(({ filterValues }) => {
         this.setState({ filterValues });
       });
     }
@@ -245,7 +245,7 @@ export default class Lists extends Component {
       this.setState({ allLocationsSelected: false, filterValues: [] });
 
       if (!selectedLists[0].isGlobalForestWatchList) {
-        getListFilterValues(selectedLists[0].id).then((filterValues) => {
+        getListFilterValues(selectedLists[0].id).then(({ filterValues }) => {
           this.setState({ filterValues });
         });
       }

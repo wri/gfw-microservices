@@ -8,7 +8,7 @@ function MultipleCountriesLabel({ listId }) {
   const [countries, setCountries] = useState([]);
 
   useEffect(() => {
-    getListFilterValues(listId).then((filterValues) => {
+    getListFilterValues(listId).then(({ filterValues }) => {
       setCountries(Object.keys(filterValues));
     });
   }, [listId]);

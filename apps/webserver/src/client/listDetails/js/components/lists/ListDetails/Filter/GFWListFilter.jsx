@@ -171,7 +171,7 @@ export default class GFWListFilter extends Component {
   };
 
   render() {
-    const { listData, list_name } = this.props;
+    const { listData, list_name, filterValues, locationNameOptionsForFilter } = this.props;
     const {
       selectedCountry,
       selectedState,
@@ -182,32 +182,14 @@ export default class GFWListFilter extends Component {
       selectedNames,
     } = this.state;
 
-    const countries = [
-      ...new Set(
-        listData.filter((location) => location.Country !== '').map((list) => list.Country)
-      ),
-    ];
+    const countryList = Object.keys(filterValues).filter((name) => name !== 'null');
 
-    const states = [
-      ...new Set(
-        listData
-          .filter((location) => location.State !== '' && location.Country === selectedCountry)
-          .map((list) => list.State)
-      ),
-    ];
+    const stateList =
+      selectedCountry && selectedCountry in filterValues
+        ? Object.keys(filterValues[selectedCountry])
+        : [];
 
-    const subStates = [
-      ...new Set(
-        listData
-          .filter(
-            (location) =>
-              location['Sub State'] !== '' &&
-              location.Country === selectedCountry &&
-              location.State === selectedState
-          )
-          .map((list) => list['Sub State'])
-      ),
-    ];
+    const subStateList = selectedState ? filterValues[selectedCountry][selectedState] : [];
 
     // 1. Filter based on if company/state/substate is selected
     // 2. Grab just parent company values
@@ -261,13 +243,13 @@ export default class GFWListFilter extends Component {
 
           <Grid container spacing={3}>
             <CountryStateSubStateFilter
-              countries={countries}
+              countries={countryList}
               selectedCountry={selectedCountry}
               onCountryChange={this.onCountryChange}
-              states={states}
+              states={stateList}
               selectedState={selectedState}
               onStateChange={this.onStateChange}
-              subStates={subStates}
+              subStates={subStateList}
               selectedSubState={selectedSubState}
               onSubStateChange={this.onSubStateChange}
             />
@@ -319,7 +301,7 @@ export default class GFWListFilter extends Component {
                 maxMenuHeight={150}
                 className="edge-multi-select"
                 onChange={(evt) => this.changeNames(evt)}
-                options={multiOptions}
+                options={locationNameOptionsForFilter}
                 value={selectedNames}
                 styles={multipleSelectStyles}
                 placeholder="LOCATIONS"

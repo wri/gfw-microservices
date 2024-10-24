@@ -21,6 +21,7 @@ const getAllColumnNames = (listView, locationData, selectedLists, getCheckboxCol
   const columnNames = {};
   const gfwColumns = [];
   const list_name = selectedLists.length && selectedLists[0].list_name;
+  const listId = selectedLists[0]?.id;
   const { custom_attribute_names, isGlobalForestWatchList } = selectedLists[0];
 
   columnNames.list = getListColumns(locationData, custom_attribute_names, selectedLists);
@@ -94,7 +95,9 @@ const getAllColumnNames = (listView, locationData, selectedLists, getCheckboxCol
       checkbox,
       location_name,
 
-      ...(isListDetailsPageRedesignAvailable && isGlobalForestWatchList ? gfwListsSizeColumn : []),
+      ...(isListDetailsPageRedesignAvailable && isGlobalForestWatchList
+        ? gfwListsSizeColumn(listId)
+        : []),
 
       ...columnNames.required,
       ...analysis,

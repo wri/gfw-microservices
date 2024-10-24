@@ -28,8 +28,8 @@ export class ListController extends AppController {
 
   @Post('/create-list')
   @UseGuards(new FeatureFlagCheckGuard('UploadListLp'))
-  createList(@Body() request: CreateListRequest, @Request() context) {
-    const { featureFlag } = context;
+  createList(@Body() request: CreateListRequest, @Request() req) {
+    const { featureFlag } = req;
     return this.listService.createNewList({
       ...request,
       isUploadListLpEnabled: featureFlag.enabled,

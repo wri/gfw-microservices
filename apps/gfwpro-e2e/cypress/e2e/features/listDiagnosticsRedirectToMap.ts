@@ -32,10 +32,10 @@ describe('List diagnostics', () => {
   });
 
   Then('I should be redirected to the map page and view the GFW list loaded on the map', () => {
-    cy.url().should('include', '/map');
+    cy.location('href').should('include', '/map');
   });
 
   Then('I should be redirected to the map page and view the user list loaded on the map', () => {
-    cy.url().should('include', '/map');
+    cy.location('href').should('include', '/map');
   });
 });

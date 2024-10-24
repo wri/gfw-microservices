@@ -71,4 +71,4 @@ interface FeatureCollection {
 
 type GeoJson = Geometry | Feature | FeatureCollection;
 
-export { GeoJson, Geometry, Feature, FeatureCollection };
+export { GeoJson, Geometry, Feature, FeatureCollection, Polygon, Point };

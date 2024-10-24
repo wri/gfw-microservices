@@ -110,20 +110,21 @@ export class GADMService extends AbstractHandler<ChainType> {
     }
   };
 
-  clipToLand = async (geojson): Promise<FeatureCollection> => {
+  clipToLand = async (geojson): Promise<{ geojson: FeatureCollection }> => {
     return new Promise((resolve, reject) => {
       const s3ObjectsToDelete = [];
       const objectName = `gadm-${new Date().getTime()}`;
       this.putObject(objectName, { geojson: geojson })
         .then((location_info) => {
-          s3ObjectsToDelete.push(location_info);
+          const s3Info = {
+            bucket: process.env.AWS_ANALYSIS_BUCKET,
+            key: location_info,
+          };
+          s3ObjectsToDelete.push(s3Info);
 
           return this.invokeLambda('controller-admin-areas', {
             receipt_handle: 'NOTARECEIPT',
-            s3_location_info: {
-              bucket: process.env.AWS_ANALYSIS_BUCKET,
-              key: location_info,
-            },
+            s3_location_info: s3Info,
             layer: 'gadm',
             dissolve_aoi: false,
             post_process_aoi: false,
@@ -167,7 +168,8 @@ export class GADMService extends AbstractHandler<ChainType> {
 
     // We should not call clip to land if we are in the preview mode.
     if (!preview) {
-      input.geojson = await this.clipToLand(geojson);
+      const response = await this.clipToLand(geojson);
+      input.geojson = response.geojson;
     }
     return super.handle(input);
   }

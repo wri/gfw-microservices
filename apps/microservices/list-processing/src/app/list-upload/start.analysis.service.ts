@@ -52,10 +52,10 @@ export class StartAnalysisService {
 
     downloadS3File
       .setNext(parseData)
+      .setNext(validateLatLongGeojson)
       .setNext(listSchemaName)
       .setNext(convertPoint2Polygon)
       .setNext(gadmService)
-      .setNext(validateLatLongGeojson)
       .setNext(createListLevelData)
       .setNext(createLocationSchema)
       .setNext(insertLocationData)

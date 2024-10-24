@@ -1,13 +1,12 @@
 import { AbstractHandler, ChainType } from './types';
+import { Polygon } from '@wri-monorepos/geo';
 
 // ArcGIS imports are ESM only imports, and this code is transpiled into commonJS
 // so we need to use eval to import these modules
 let Point;
-eval ("import('@arcgis/core/geometry/Point.js').then(x=>Point=x.default)");
+eval("import('@arcgis/core/geometry/Point.js').then(x=>Point=x.default)");
 let GeometryEngine;
-eval ("import('@arcgis/core/geometry/geometryEngine.js').then(x=>GeometryEngine=x)");
-
-import { Geometry } from '@wri-monorepos/geo';
+eval("import('@arcgis/core/geometry/geometryEngine.js').then(x=>GeometryEngine=x)");
 
 const DEFAULT_LOCATION_RADIUS = 4; // kilometers (medium buffer)
 
@@ -64,7 +63,9 @@ export class ConvertPoint2Polygon extends AbstractHandler<ChainType> {
           featureRadius,
           featureArea
         );
-        feature.geometry = polygon as unknown as Geometry;
+        delete feature.properties.geometry;
+        (feature.geometry as Polygon).coordinates = polygon.rings;
+        (feature.geometry as Polygon).type = 'Polygon';
       }
     }
     return await super.handle(input);

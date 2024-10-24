@@ -24,7 +24,7 @@ export class AfiGeometryService extends IPipeService {
   private inputStream: PassThrough;
   private fileStream: fs.WriteStream;
   async start(filters: ListFieldsFileRequest) {
-    const { listId, key, templateId, combinedColumnsSplitted, listName, type } = filters;
+    const { listId, key, templateId, combinedColumnsSplitted, listName } = filters;
     this.logger.log(`(${listId}) - Starting shapefile stream to process data`);
     this.inputStream = new PassThrough({
       objectMode: true,
@@ -90,7 +90,7 @@ export class AfiGeometryService extends IPipeService {
   }
 
   async finish(filters: ListFieldsFileRequest) {
-    const { listId, key, listName, type } = filters;
+    const { listId } = filters;
     this.logger.log(`(${listId}) - Finished to process data and generate shapefile`);
     await this.writeAllData(this.inputStream);
     await finished(this.fileStream);

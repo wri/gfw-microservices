@@ -1,7 +1,6 @@
 import { Transform } from 'stream';
 import { parse, GeoJSONGeometryOrNull } from 'wellknown';
 import { ClientStoreConnection, Lists, AFIAnalysis, ListsAnalysisStatus } from '@wri-monorepos/sql';
-import { MoreThanOrEqual } from 'typeorm/find-options/operator/MoreThanOrEqual';
 class ConvertObject2Geojson extends Transform {
   constructor() {
     super({ objectMode: true });
@@ -11,20 +10,18 @@ class ConvertObject2Geojson extends Transform {
   getGeoJSONGeometry(wktGeometry: string): GeoJSONGeometryOrNull {
     return parse(wktGeometry);
   }
-  private async getListProperties(listId: number, organizationDatabase: string) {
+  private async getListProperties(
+    listId: number,
+    organizationDatabase: string,
+    location_id: number
+  ) {
     const connection = await this.clientStoreConnection.getConnection(organizationDatabase);
     const listRepository = await connection.getRepository(Lists);
     const listProperties = await listRepository.findOne({ where: { id: listId } });
 
-    const rawQuery = `
-        SELECT *
-        FROM "${listProperties.listTableName}"
-        WHERE [Location Name] like '${listProperties.listName}' 
-      `;
-    const listProperties2 = await connection.query(rawQuery);
     const afiRepository = await connection.getRepository(AFIAnalysis);
     const aFiAnalysis = await afiRepository.findOne({
-      where: { list_id: listId, location_id: MoreThanOrEqual(0) },
+      where: { list_id: listId, location_id },
     });
 
     const listAnalysisStatusRepository = await connection.getRepository(ListsAnalysisStatus);
@@ -41,7 +38,6 @@ class ConvertObject2Geojson extends Transform {
     const organizationId = organizationProperties[0].id || null;
     return {
       ...listProperties,
-      ...listProperties2[0],
       ...aFiAnalysis,
       updateTime,
       organizationId,
@@ -74,28 +70,31 @@ class ConvertObject2Geojson extends Transform {
       }
     );
     if (feature.properties['organizationDatabase']) {
-      this.getListProperties(location.list_id, location.organizationDatabase).then(
-        (listProperties) => {
-          const afiProperties = {
-            Location_Name: listProperties['Location Name'],
-            Centroid_Country: listProperties.Country,
-            Location_HA: listProperties.total_area_ha,
-            SBTN_Natural_Forest_HA: listProperties.natural_land_area,
-            SBTN_Natural_Forest_Loss_Post_2020_HA: listProperties.natural_land_deforested_area,
-            JRC_Forest_HA: listProperties.jrc_land_area,
-            JRC_Forest_Loss_Post_2020_HA: listProperties.jrc_land_deforested_area,
-            Analysis_Time: listProperties.updateTime,
-            GFWPro_Account: listProperties.organizationId,
-            Use_Rights: 'Full Sharing',
-          };
+      this.getListProperties(
+        location.list_id,
+        location.organizationDatabase,
+        feature.properties['location_id']
+      ).then((listProperties) => {
+        const afiProperties = {
+          Centroid_Country: feature.properties['Country'],
+          Location_HA: listProperties.total_area_ha,
+          SBTN_Natural_Forest_HA: listProperties.natural_land_area,
+          SBTN_Natural_Forest_Loss_Post_2020_HA: listProperties.natural_land_deforested_area,
+          JRC_Forest_HA: listProperties.jrc_land_area,
+          JRC_Forest_Loss_Post_2020_HA: listProperties.jrc_land_deforested_area,
+          Analysis_Time: listProperties.updateTime,
+          GFWPro_Account: listProperties.organizationId,
+          Use_Rights: 'Full Sharing',
+        };
 
-          delete feature.properties['list_id'];
-          delete feature.properties['organizationDatabase'];
-          feature.properties = { ...feature.properties, ...afiProperties };
-          geojson.features.push(feature);
-          next(null, geojson);
-        }
-      );
+        delete feature.properties['list_id'];
+        delete feature.properties['organizationDatabase'];
+        delete feature.properties['Country'];
+        delete feature.properties['location_id'];
+        feature.properties = { ...feature.properties, ...afiProperties };
+        geojson.features.push(feature);
+        next(null, geojson);
+      });
     } else {
       geojson.features.push(feature);
       next(null, geojson);

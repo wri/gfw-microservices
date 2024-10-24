@@ -31,9 +31,12 @@ export class AfiGeometryService extends IPipeService {
     });
 
     filters.combinedColumnsSplitted.push('WKTGeometry');
-    type === 'afiVC'
-      ? filters.combinedColumnsSplitted.push('organizationDatabase', 'list_id')
-      : null;
+    filters.combinedColumnsSplitted.push(
+      'organizationDatabase',
+      'list_id',
+      'Country',
+      'location_id'
+    );
     fs.writeFileSync(
       `/tmp/wri-${key}/${listName}.geojson`,
       JSON.stringify({
@@ -52,24 +55,15 @@ export class AfiGeometryService extends IPipeService {
   }
 
   process(analysisData, newFilters = {}) {
-    if (newFilters['type'] === 'afiVC') {
-      const afiParameters = {
-        organizationDatabase: newFilters['organizationDatabase'],
-      };
-      analysisData.push(afiParameters);
-      const newAnalysisData = [Object.assign({}, ...analysisData)];
-      newAnalysisData.forEach((data) => this.inputStream.write(data));
-    } else {
-      analysisData.forEach((data) => this.inputStream.write(data));
-    }
+    analysisData.forEach(
+      (data) => (data.organizationDatabase = newFilters['organizationDatabase'])
+    );
+    analysisData.forEach((data) => this.inputStream.write(data));
   }
 
   private async organizeStream(filters: ListFieldsFileRequest, allFields: string[]) {
-    const open =
-      filters.type === 'afiVC'
-        ? '{\n"type":"FeatureCollection","features":['
-        : '{"type":"FeatureCollection","features":[';
-    const close = filters.type === 'afiVC' ? ']}\n' : ']}';
+    const open = '{\n"type":"FeatureCollection","features":[';
+    const close = ']}\n';
 
     const { key, selectedLocationsList, listId, listName } = filters;
     this.inputStream.removeAllListeners();
@@ -100,9 +94,7 @@ export class AfiGeometryService extends IPipeService {
     this.logger.log(`(${listId}) - Finished to process data and generate shapefile`);
     await this.writeAllData(this.inputStream);
     await finished(this.fileStream);
-    type !== 'afiVC'
-      ? await this.convertGeojsonToSHP(key, listName)
-      : await getAllFilesAndZip(filters); // file was zipped befored process finished
+    await getAllFilesAndZip(filters); // file was zipped befored process finished
     this.logger.log(`(${listId}) - Data has been zipped`);
     await this.finishProcess(filters);
   }

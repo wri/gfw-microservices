@@ -111,7 +111,7 @@ export class AppController {
   triggerProcessLargeList(
     @Body()
     request: RequestTriggerProcessLargeList,
-    @Request() context
+    @Request() context?
   ) {
     const { featureFlag } = context;
     return this.listService.createListTables({

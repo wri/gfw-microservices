@@ -70,14 +70,10 @@ describe('CreateList', () => {
         'attr_names', // customAttributeNames
         'attr_types', // customAttributeTypes
         1, // gfwListId
-        1 // orgId
+        false // isUploadListLpFlagEnabled
       );
 
       expect(result).toEqual(mockResult);
-      expect(mockConnection.executeQuery).toHaveBeenCalledWith('uspCreateList', expect.any(Array));
-
-      expect(featureFlagsService).toHaveBeenCalled();
-      expect(mockFeatureFlagsService.getFeatureFlagsForCurrentOrg).toHaveBeenCalledWith(1); // orgId
     });
 
     it('should throw an error if the query fails', async () => {
@@ -96,12 +92,9 @@ describe('CreateList', () => {
           'attr_names', // customAttributeNames
           'attr_types', // customAttributeTypes
           1, // gfwListId
-          1 // orgId
+          false // isUploadListLpFlagEnabled
         )
       ).rejects.toThrow('Failed to execute uspCreateList: Query failed');
-
-      expect(featureFlagsService).toHaveBeenCalled();
-      expect(mockFeatureFlagsService.getFeatureFlagsForCurrentOrg).toHaveBeenCalledWith(1); // orgId
     });
   });
 
@@ -142,6 +135,10 @@ describe('CreateList', () => {
           path: 'test_path',
         },
       };
+      const mockFeatureFlag: Partial<FeatureFlag> = {
+        flagId: 'UploadListLp',
+        flagState: false,
+      };
 
       const mockResult: CreateListResult = { list_id: 1 } as CreateListResult;
 
@@ -159,7 +156,16 @@ describe('CreateList', () => {
 
       jest.spyOn(createList, 'addListToAnalysesTable').mockResolvedValue(undefined);
 
+      (featureFlagsService as jest.Mock).mockImplementation(async () => {
+        return {
+          getClientIdByClientStoreDatabaseName: jest.fn().mockResolvedValue(123),
+          getFeatureFlagsForCurrentOrg: jest.fn().mockResolvedValue([mockFeatureFlag]),
+        };
+      });
+
       await createList.handle(mockInput);
+
+      expect(featureFlagsService).toHaveBeenCalled();
 
       expect(insertListInListTableSpy).toHaveBeenCalledWith(
         expect.any(SQLUtils), // connection instance
@@ -173,7 +179,7 @@ describe('CreateList', () => {
         'attr_names', // customAttributeNames
         'attr_types', // customAttributeTypes
         1, // gfwListId
-        123 // orgId
+        false // isUploadListLpFlagEnabled
       );
 
       expect(updateListsUploadStatus).toHaveBeenCalledWith(

@@ -47,13 +47,8 @@ export class CreateListLevelData extends AbstractHandler<ChainType> {
     customAttributeNames: string,
     customAttributeTypes: string,
     gfwListId: number = null,
-    orgId: number
+    isUploadListLpFlagEnabled: boolean
   ): Promise<CreateListResult> {
-    const { getFeatureFlagsForCurrentOrg } = await featureFlagsService();
-    const flags = await getFeatureFlagsForCurrentOrg(orgId);
-
-    const uploadListLpFlag = flags.find((f) => f.flagId === 'UploadListLp') as FeatureFlag;
-
     const parameters = [
       this.createSqlParameter('user_id', sql.Int, userId),
       this.createSqlParameter('template_id', sql.Int, templateId),
@@ -68,7 +63,7 @@ export class CreateListLevelData extends AbstractHandler<ChainType> {
       this.createSqlParameter(
         'version',
         sql.Int,
-        uploadListLpFlag?.flagState ? LIST_UPLOAD_VERSION : LIST_UPLOAD_LEGACY_VERSION
+        isUploadListLpFlagEnabled ? LIST_UPLOAD_VERSION : LIST_UPLOAD_LEGACY_VERSION
       ),
     ];
 
@@ -101,13 +96,12 @@ export class CreateListLevelData extends AbstractHandler<ChainType> {
       template_id: templateId,
     } = input.request as RequestNewList;
 
-    const config: ConfigService = new ConfigService<ServerConfigType, true>();
+    const { getFeatureFlagsForCurrentOrg, getClientIdByClientStoreDatabaseName } =
+      await featureFlagsService();
+    const orgId = await getClientIdByClientStoreDatabaseName(clientDatabase);
+    const flags = await getFeatureFlagsForCurrentOrg(orgId);
 
-    const { orgId } = await SQLUtils.queryDB<{ orgId: number }>(
-      config.get('MSSQL_DATABASE', { infer: true }),
-      'SELECT [id] as orgId from [Organizations] WHERE organization_db = @organizationDB',
-      [{ field: 'organizationDB', type: sql.NVarChar(100), value: clientDatabase }]
-    );
+    const uploadListLpFlag = flags.find((f) => f.flagId === 'UploadListLp') as FeatureFlag;
 
     const connection = new SQLUtils();
 
@@ -126,7 +120,7 @@ export class CreateListLevelData extends AbstractHandler<ChainType> {
         customAttributeNames,
         customAttributeTypes,
         gfwListId,
-        orgId
+        uploadListLpFlag?.flagState
       );
 
       await updateListsUploadStatus(

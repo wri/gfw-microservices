@@ -1,84 +1,113 @@
+import { Polygon } from '@wri-monorepos/geo';
 import { ConvertPoint2Polygon } from './convert.point.2.polygon';
-import { point } from '@turf/helpers';
 import { ChainType } from './types';
+let Point;
+eval("import('@arcgis/core/geometry/Point.js').then(x=>Point=x.default)");
+let GeometryEngine;
+eval("import('@arcgis/core/geometry/geometryEngine.js').then(x=>GeometryEngine=x)");
+
+jest.mock('@arcgis/core/geometry/Point', () => ({
+  Point: jest.fn(),
+}));
+
+jest.mock('@arcgis/core/geometry/geometryEngine', () => ({
+  geodesicBuffer: jest.fn(),
+}));
 
 describe('ConvertPoint2Polygon', () => {
-  let converter: ConvertPoint2Polygon;
+  let convertPoint2Polygon: ConvertPoint2Polygon;
 
   beforeEach(() => {
-    converter = new ConvertPoint2Polygon();
+    convertPoint2Polygon = new ConvertPoint2Polygon();
   });
 
-  describe('geomFromPointRadiusArea', () => {
-    xit('should calculate geometry from point and radius', async () => {
-      const geoPoint = point([0, 0]);
-      const radius = '5';
-      const geometry = await converter.geomFromPointRadiusArea(geoPoint, radius, null);
-      expect(geometry).toBe('Polygon');
-    });
+  it('should convert a point to a polygon with a given radius', async () => {
+    const point = new Point({ latitude: 10, longitude: 20 });
+    const polygonMock = {
+      rings: [
+        [
+          /* mock coordinates */
+        ],
+      ],
+    };
+    (GeometryEngine.geodesicBuffer as jest.Mock).mockReturnValue(polygonMock);
 
-    xit('should calculate geometry from point and area', async () => {
-      const geoPoint = point([0, 0]);
-      const area = '314.16'; // approximately 10 km radius
-      const geometry = await converter.geomFromPointRadiusArea(geoPoint, null, area);
-      expect(geometry).toBe('Polygon');
-    });
+    const input = {
+      geojson: {
+        features: [
+          {
+            geometry: { type: 'Point', coordinates: [20, 10] },
+            properties: { featureRadius: '5' },
+          },
+        ],
+      },
+    } as unknown as ChainType;
 
-    xit('should throw an error for invalid radius', async () => {
-      const geoPoint = point([0, 0]);
-      await expect(converter.geomFromPointRadiusArea(geoPoint, '-5', null)).rejects.toThrow(
-        'Invalid radius value'
-      );
-    });
+    const result = await convertPoint2Polygon.handle(input);
 
-    xit('should throw an error for invalid area', async () => {
-      const geoPoint = point([0, 0]);
-      await expect(converter.geomFromPointRadiusArea(geoPoint, null, '-314.16')).rejects.toThrow(
-        'Invalid area value'
-      );
-    });
+    expect(GeometryEngine.geodesicBuffer).toHaveBeenCalledWith(point, 5, 'kilometers');
+    expect(result.geojson.features[0].geometry.type).toBe('Polygon');
+    expect((result.geojson.features[0].geometry as Polygon).coordinates).toEqual(polygonMock.rings);
   });
 
-  describe('geomFromLatLongRadiusArea', () => {
-    xit('should calculate geometry from latitude, longitude, and radius', async () => {
-      const latitude = '0';
-      const longitude = '0';
-      const radius = '5';
-      const geometry = await converter.geomFromLatLongRadiusArea(latitude, longitude, radius, null);
-      expect(geometry).toBe('Polygon');
-    });
+  it('should throw an error for invalid latitude or longitude', async () => {
+    const input = {
+      geojson: {
+        features: [
+          {
+            geometry: { type: 'Point', coordinates: ['invalid', 10] },
+            properties: {},
+          },
+        ],
+      },
+    } as unknown as ChainType;
 
-    xit('should throw an error for invalid latitude or longitude', async () => {
-      await expect(converter.geomFromLatLongRadiusArea('invalid', '0', '5', null)).rejects.toThrow(
-        'Invalid latitude or longitude value'
-      );
-    });
+    await expect(convertPoint2Polygon.handle(input)).rejects.toThrow(
+      'Invalid latitude or longitude value'
+    );
   });
 
-  describe('handle', () => {
-    xit('should convert point features to polygon features', async () => {
-      const input = {
-        request: {
-          path: 'path',
-        },
-        geojson: {
-          type: 'FeatureCollection',
-          features: [
-            {
-              geometry: {
-                type: 'Point',
-                coordinates: [0, 0],
-              },
-              properties: {
-                featureRadius: '5',
-              },
-            },
-          ],
-        },
-      } as unknown as ChainType;
+  it('should throw an error for invalid radius value', async () => {
+    const input = {
+      geojson: {
+        features: [
+          {
+            geometry: { type: 'Point', coordinates: [20, 10] },
+            properties: { featureRadius: '-5' },
+          },
+        ],
+      },
+    } as unknown as ChainType;
 
-      const output = await converter.handle(input);
-      expect(output.geojson.features[0].geometry.type).toBe('Polygon');
-    });
+    await expect(convertPoint2Polygon.handle(input)).rejects.toThrow('Invalid radius value');
+  });
+
+  it('should use default radius if no radius or area is provided', async () => {
+    const point = new Point({ latitude: 10, longitude: 20 });
+    const polygonMock = {
+      rings: [
+        [
+          /* mock coordinates */
+        ],
+      ],
+    };
+    (GeometryEngine.geodesicBuffer as jest.Mock).mockReturnValue(polygonMock);
+
+    const input = {
+      geojson: {
+        features: [
+          {
+            geometry: { type: 'Point', coordinates: [20, 10] },
+            properties: {},
+          },
+        ],
+      },
+    } as unknown as ChainType;
+
+    const result = await convertPoint2Polygon.handle(input);
+
+    expect(GeometryEngine.geodesicBuffer).toHaveBeenCalledWith(point, 4, 'kilometers');
+    expect(result.geojson.features[0].geometry.type).toBe('Polygon');
+    expect(result.geojson.features[0].geometry as Polygon).toEqual(polygonMock.rings);
   });
 });

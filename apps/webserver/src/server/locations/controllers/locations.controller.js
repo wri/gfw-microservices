@@ -158,7 +158,7 @@ export const listFilterValues = async (request, response) => {
         locationNameOptionsForFilter = adminAreasLocations
           .map(({ 'Location Name': locationName, location_id }) => ({
             value: location_id,
-            label: locationName, //list['Location Name'] || list['Investment Name'],
+            label: locationName,
           }))
           .sort((a, b) => a.label.toLowerCase().localeCompare(b.label.toLowerCase()));
       }

@@ -59,7 +59,7 @@ class ArgentinaLayerUtil {
 
   applyKeyFormatting(key: string) {
     const overrides = {
-      'Not Reported': this.key === LayersKeys.landmark_by_category_area ? 'Overlap' : '',
+      'Not Reported': '',
     };
 
     const newKey = key in overrides ? overrides[key] : key;

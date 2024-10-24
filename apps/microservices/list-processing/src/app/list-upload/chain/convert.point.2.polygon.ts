@@ -3,15 +3,23 @@ import { Polygon } from '@wri-monorepos/geo';
 
 // ArcGIS imports are ESM only imports, and this code is transpiled into commonJS
 // so we need to use eval to import these modules
-let Point;
-eval("import('@arcgis/core/geometry/Point.js').then(x=>Point=x.default)");
-let GeometryEngine;
-eval("import('@arcgis/core/geometry/geometryEngine.js').then(x=>GeometryEngine=x)");
-
 const DEFAULT_LOCATION_RADIUS = 4; // kilometers (medium buffer)
 
 export class ConvertPoint2Polygon extends AbstractHandler<ChainType> {
+  async loadPointModule() {
+    let Point;
+    await eval("import('@arcgis/core/geometry/Point.js').then(x => Point = x.default)");
+    return Point;
+  }
+
+  async loadGeometryEngineModule() {
+    let GeometryEngine;
+    await eval("import('@arcgis/core/geometry/geometryEngine.js').then(x=>GeometryEngine=x)");
+    return GeometryEngine;
+  }
+
   async geomFromPointRadiusArea(point, featureRadius, featureArea) {
+    const GeometryEngine = await this.loadGeometryEngineModule();
     let radius;
     if (featureRadius) {
       radius = parseFloat(featureRadius);
@@ -32,6 +40,7 @@ export class ConvertPoint2Polygon extends AbstractHandler<ChainType> {
   }
 
   async geomFromLatLongRadiusArea(latitudeInput, longitudeInput, featureRadius, featureArea) {
+    const Point = await this.loadPointModule();
     const latitude = parseFloat(latitudeInput);
     const longitude = parseFloat(longitudeInput);
 

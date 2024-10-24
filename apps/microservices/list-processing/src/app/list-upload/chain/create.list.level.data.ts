@@ -4,8 +4,6 @@ import { CreateListResult } from '@wri-monorepos/geo';
 import * as sql from 'mssql';
 import { updateListsUploadStatus } from '../shared/update.lists.upload.status';
 import { featureFlagsService } from '@wri-monorepos/shared';
-import { ConfigService } from '@nestjs/config';
-import { ServerConfigType } from '../../../validators/server-config';
 
 const LIST_UPLOAD_VERSION = 2;
 const LIST_UPLOAD_LEGACY_VERSION = 0;

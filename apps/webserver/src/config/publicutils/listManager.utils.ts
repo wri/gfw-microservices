@@ -49,7 +49,6 @@ const _ = require('lodash');
 // Configs
 import config from '../config';
 const { DEFAULT_LIST_LOCATIONS_ROWS_REQUESTED } = require('../config/locations.config');
-const LIST_UPLOAD_VERSION = 2;
 const LIST_UPLOAD_LEGACY_VERSION = 0;
 
 // Utils
@@ -65,7 +64,6 @@ const analyticsService = require(path.resolve('./server/analytics/service/analyt
 const listDataService = require(path.resolve('./server/listData/service/listData.service'));
 const { listStatusOrderByWorse } = require(path.resolve('./config/env/listStatuses.constants'));
 import { listStatus } from '@wri-monorepos/constants';
-import { featureFlagsService } from '@wri-monorepos/shared';
 import { SqlParamType, AnalysisDataType, ListsType, DeleteListTypeOrm } from '@wri-monorepos/sql';
 
 /** @function {createList}
@@ -111,11 +109,6 @@ const createList = async (
   // When creating new list, status is always pending.
   const list_status_id = listStatus.Pending;
 
-  const { getFeatureFlagsForCurrentOrg } = await featureFlagsService();
-  const flags = await getFeatureFlagsForCurrentOrg(req.organization_id);
-
-  const hasUploadListLpEnabled = flags.find((f) => f.flagId === 'UploadListLp');
-
   return new Promise((resolve, reject) => {
     // Parameters for stored procedure
     const parameters = [
@@ -132,7 +125,7 @@ const createList = async (
       {
         field: 'version',
         type: sql.Int,
-        value: hasUploadListLpEnabled?.flagState ? LIST_UPLOAD_VERSION : LIST_UPLOAD_LEGACY_VERSION,
+        value: LIST_UPLOAD_LEGACY_VERSION,
       },
     ];
 
@@ -288,11 +281,6 @@ const saveAsDraftList = async (
   // When creating new list, status is always Draft when we Save as Draft list
   const list_status_id = listStatus.Draft;
 
-  const { getFeatureFlagsForCurrentOrg } = await featureFlagsService();
-  const flags = await getFeatureFlagsForCurrentOrg(req.organization_id);
-
-  const hasUploadListLpEnabled = flags.find((f) => f.flagId === 'UploadListLp');
-
   return new Promise((resolve, reject) => {
     // Parameters for stored procedure
     const parameters = [
@@ -309,7 +297,7 @@ const saveAsDraftList = async (
       {
         field: 'version',
         type: sql.Int,
-        value: hasUploadListLpEnabled?.flagState ? LIST_UPLOAD_VERSION : LIST_UPLOAD_LEGACY_VERSION,
+        value: LIST_UPLOAD_LEGACY_VERSION,
       },
     ];
 

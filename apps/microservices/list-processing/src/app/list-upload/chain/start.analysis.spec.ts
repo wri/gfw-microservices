@@ -20,6 +20,8 @@ describe('StartAnalysis', () => {
   beforeEach(() => {
     clientStoreConnection = new ClientStoreConnection();
     startAnalysis = new StartAnalysis(clientStoreConnection);
+    process.env.LARGE_LIST_PROCESSING_ENDPOINT = 'http://test.com';
+    process.env.MICROSERVICES_ENV = 'DEVELOPMENT';
 
     const mockDataSource = {
       getRepository: jest.fn().mockReturnValue({

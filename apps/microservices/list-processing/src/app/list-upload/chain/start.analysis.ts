@@ -97,7 +97,6 @@ export class StartAnalysis extends AbstractHandler<ChainType> {
       body: requestBody,
     };
 
-    console.log('>>>>> isTestFlow', isTestFlow);
     // Flow used by cypress test, mock analysis flow so avoid call lambda functions.
     if (isTestFlow) {
       await mockAnalysisFlow({

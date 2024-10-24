@@ -1,5 +1,5 @@
 import { checkAndFormatStringWithComma } from '../transform/treat.string.with.comma';
-import { isObjInCountryFormat } from '../shared/functions';
+import { isObjInCountryFormat, getTotalArea } from '../shared/functions';
 
 /**
  * Argentina Layers Key Columns
@@ -59,7 +59,7 @@ class ArgentinaLayerUtil {
 
   applyKeyFormatting(key: string) {
     const overrides = {
-      'Not Reported': '',
+      'Not Reported': this.key === LayersKeys.landmark_by_category_area ? ' Overlap' : '',
     };
 
     const newKey = key in overrides ? overrides[key] : key;
@@ -108,10 +108,10 @@ class ArgentinaLayerUtil {
    * @returns this
    */
   handleNonOverlapDifference() {
-    const total = getTotalArea(this.data);
+    const totalArea = getTotalArea(this.data, 'ARG');
     const sumOfValues = this.getSumOfValues();
 
-    const nonOverlapValue = total - sumOfValues;
+    const nonOverlapValue = totalArea - sumOfValues;
     this.layerData.push(['Non-Overlap', nonOverlapValue]);
 
     return this;
@@ -119,7 +119,7 @@ class ArgentinaLayerUtil {
 
   handleRowPercentageAndFormat() {
     // avoid dividing by zero, number gets formatted down the stream
-    const total = Math.max(getTotalArea(this.data), 0.01);
+    const total = Math.max(getTotalArea(this.data, 'ARG'), 0.01);
 
     this.layerData = this.layerData.map(([key, value]) => {
       let percent = 0;
@@ -185,5 +185,3 @@ const argentinaLayers = ({ operation, data, dataRow, csvData }) => {
 };
 
 export { argentinaLayers };
-
-const getTotalArea = (data) => data.country_area?.ARG ?? data.total_area;

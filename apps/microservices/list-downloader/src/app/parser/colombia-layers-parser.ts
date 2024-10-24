@@ -3,7 +3,13 @@ import {
   DIAGNOSTIC_ANALYSIS_PERIOD,
 } from '@wri-monorepos/constants';
 
-import { isObjInCountryFormat } from '../shared/functions';
+import { isObjInCountryFormat, getTotalArea } from '../shared/functions';
+
+enum ColombiaOverlapField {
+  ClassifiedRegionArea = 'classified_region_area',
+  ProtectedAreasByCategoryArea = 'protected_areas_by_category_area',
+  LandmarkByCategoryArea = 'landmark_by_category_area',
+}
 
 /**
  * Calculate the data for each Colombia layer.
@@ -45,20 +51,22 @@ export const colombiaLayers = ({ operation, data, dataRow, csvData }) => {
 
       const totalForAllSubLayers = calculateTotalLossForAllCategories(parsedData);
 
+      const totalArea = getTotalArea(data, 'COL');
+
       Object.entries(parsedData).forEach(([subLayerName, subLayerValue]) => {
         const totalPerSubLayer = calculateTotalLossForAllCategories(subLayerValue);
 
-        const percentagePerSubLayer = ((totalPerSubLayer / totalForAllSubLayers) * 100).toFixed(
-          DIAGNOSTIC_COVERAGE_DECIMAL_PLACES
-        );
-
         if (type === 'category') {
+          const name =
+            attribute === ColombiaOverlapField.LandmarkByCategoryArea
+              ? 'Overlap'
+              : subLayerName.replace(',', ' -');
           csvData.push([
             ...dataRow,
             label,
-            subLayerName.replace(',', ' -'),
+            name,
             totalPerSubLayer,
-            percentagePerSubLayer,
+            getOverlapPercentage(totalPerSubLayer, totalArea),
             '',
             '',
             '',
@@ -67,14 +75,16 @@ export const colombiaLayers = ({ operation, data, dataRow, csvData }) => {
           return;
         }
 
+        const percentagePerSubLayer = getOverlapPercentage(totalPerSubLayer, totalForAllSubLayers);
+
         Object.entries(subLayerValue).forEach(([secondarySubLayerName, secondarySubLayerValue]) => {
           const totalPerSecondarySubLayer =
             calculateTotalLossForAllCategories(secondarySubLayerValue);
 
-          const percentagePerSecondarySubLayer = (
-            (totalPerSecondarySubLayer / totalForAllSubLayers) *
-            100
-          ).toFixed(DIAGNOSTIC_COVERAGE_DECIMAL_PLACES);
+          const percentagePerSecondarySubLayer = getOverlapPercentage(
+            totalPerSecondarySubLayer,
+            totalForAllSubLayers
+          );
 
           if (name === 'colombiaDeforestation') {
             if (hasSecondarySubLayers) {
@@ -117,6 +127,21 @@ export const colombiaLayers = ({ operation, data, dataRow, csvData }) => {
           }
         });
       });
+
+      if (type === 'category') {
+        const nonOverlap = totalArea - totalForAllSubLayers;
+
+        csvData.push([
+          ...dataRow,
+          label,
+          'Non-overlap',
+          nonOverlap,
+          getOverlapPercentage(nonOverlap, totalArea),
+          '',
+          '',
+          '',
+        ]);
+      }
     } catch (e) {
       /* empty */
     }
@@ -193,4 +218,8 @@ const createObjWithEmptyYears = (data, constantLayers) => {
   }
 
   return newObj;
+};
+
+const getOverlapPercentage = (value: number, totalArea: number) => {
+  return ((value / totalArea) * 100).toFixed(DIAGNOSTIC_COVERAGE_DECIMAL_PLACES);
 };

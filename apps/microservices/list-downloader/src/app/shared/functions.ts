@@ -98,3 +98,8 @@ export const isEmptyObject = (obj: object): boolean => {
 export const isObjInCountryFormat = (data) => {
   return Object.keys(data).every((x) => x.length === 3);
 };
+
+export const getTotalArea = (data, countryGadm) => {
+  const countryArea = JSON.parse(data.country_area || '{}');
+  return countryArea[countryGadm] ?? data.total_area;
+};

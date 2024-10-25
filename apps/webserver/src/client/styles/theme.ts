@@ -1,10 +1,4 @@
-import { createTheme, Theme, PaletteColor } from '@mui/material/styles';
-
-declare module '@mui/material/Button' {
-  interface ButtonPropsVariantOverrides {
-    pill: true;
-  }
-}
+import { createTheme } from '@mui/material/styles';
 
 export const theme = createTheme({
   palette: {
@@ -51,38 +45,17 @@ export const theme = createTheme({
       },
     },
     MuiButton: {
-      variants: [
-        {
-          props: { variant: 'pill', color: 'primary' },
-          style: ({ theme }) => buttonStyles(theme, 'primary'),
+      styleOverrides: {
+        root: {
+          borderRadius: '20px',
+          padding: '0.5rem 2rem',
         },
-        {
-          props: { variant: 'pill', color: 'secondary' },
-          style: ({ theme }) => buttonStyles(theme, 'secondary'),
-        },
-        {
-          props: { variant: 'pill', color: 'info' },
-          style: ({ theme }) => buttonStyles(theme, 'info'),
-        },
-      ],
+      },
+    },
+    MuiButtonBase: {
+      defaultProps: {
+        disableRipple: true,
+      },
     },
   },
 });
-
-const buttonStyles = (theme: Theme, color: keyof typeof theme.palette) => {
-  const paletteColor = theme.palette[color] as PaletteColor;
-
-  return {
-    borderRadius: '20px',
-    padding: '0.5rem 2rem',
-    backgroundColor: paletteColor.main,
-    color: paletteColor.contrastText,
-    transition: 'background-color 0.3s',
-    '&:hover': {
-      backgroundColor: paletteColor.dark,
-    },
-    '&:focus': {
-      outline: `2px solid ${paletteColor.dark}`,
-    },
-  };
-};

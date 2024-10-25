@@ -233,14 +233,14 @@ export function UploadLocationByPoint({ clearUploadType }: UploadLocationByPoint
 
             <div className="upload-location-by-point__location-info__bottom-buttons-container">
               <Button
-                variant="pill"
+                variant="contained"
                 color="info"
                 startIcon={<CloseIcon />}
                 onClick={clearUploadType}
               >
                 Cancel
               </Button>
-              <Button variant="pill" startIcon={<ArrowForwardIosIcon />}>
+              <Button variant="contained" startIcon={<ArrowForwardIosIcon />}>
                 Next
               </Button>
             </div>

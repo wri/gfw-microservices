@@ -2,7 +2,6 @@ import * as fs from 'fs';
 import * as JSONStream from 'JSONStream';
 
 import { PassThrough } from 'stream';
-import { convert } from 'geojson2shp';
 import { Logger, Injectable, Scope } from '@nestjs/common';
 
 import { ListFieldsFileRequest } from '@wri-monorepos/sql';
@@ -25,7 +24,7 @@ export class AfiGeometryService extends IPipeService {
   private fileStream: fs.WriteStream;
   async start(filters: ListFieldsFileRequest) {
     const { listId, key, templateId, combinedColumnsSplitted, listName } = filters;
-    this.logger.log(`(${listId}) - Starting shapefile stream to process data`);
+    this.logger.log(`(${listId}) - Starting verifiable credentials stream to process data`);
     this.inputStream = new PassThrough({
       objectMode: true,
     });
@@ -97,13 +96,5 @@ export class AfiGeometryService extends IPipeService {
     await getAllFilesAndZip(filters); // file was zipped befored process finished
     this.logger.log(`(${listId}) - Data has been zipped`);
     await this.finishProcess(filters);
-  }
-
-  private async convertGeojsonToSHP(key: string, listName: string) {
-    const options = {
-      layer: 'gfw-pro',
-      targetCrs: 4326,
-    };
-    await convert(`/tmp/wri-${key}/${listName}.geojson`, `/tmp/${key}.zip`, options);
   }
 }

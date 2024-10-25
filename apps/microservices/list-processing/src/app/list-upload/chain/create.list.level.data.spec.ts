@@ -56,10 +56,10 @@ describe('CreateList', () => {
 
     it('should insert a list in the list table and return the result', async () => {
       const mockResult: CreateListResult = { list_id: 1 } as CreateListResult;
-      mockConnection.executeQuery.mockResolvedValue(mockResult);
+      (mockConnection as jest.Mocked<SQLUtils>).executeQuery.mockResolvedValue(mockResult);
 
       const result = await createList.insertListInListTable(
-        mockConnection,
+        mockConnection as SQLUtils,
         1, // userId
         1, // templateId
         'Test List', // listName
@@ -77,11 +77,13 @@ describe('CreateList', () => {
     });
 
     it('should throw an error if the query fails', async () => {
-      mockConnection.executeQuery.mockRejectedValue(new Error('Query failed'));
+      (mockConnection as jest.Mocked<SQLUtils>).executeQuery.mockRejectedValue(
+        new Error('Query failed')
+      );
 
       await expect(
         createList.insertListInListTable(
-          mockConnection,
+          mockConnection as SQLUtils,
           1, // userId
           1, // templateId
           'Test List', // listName

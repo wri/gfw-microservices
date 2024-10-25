@@ -119,6 +119,9 @@ export class CreateListRequest {
 
   @ApiProperty()
   organization_id: number;
+
+  @ApiProperty()
+  isUploadListLpEnabled: boolean;
 }
 
 export class CopyOrMoveLargeListRequestLLP implements CopyOrMoveLargeListRequest {

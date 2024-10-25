@@ -82,6 +82,8 @@ export default class Filter extends Component {
   render() {
     const {
       filterValues,
+      locationNameOptionsForFilter,
+      parentCompanyOptionsForFilter,
       isFilterModalVisible,
       filterCount,
       listColumns,
@@ -147,7 +149,9 @@ export default class Filter extends Component {
 
             {isGFWListOtherThanProtectedOrAdministrativeAreas && (
               <GFWListFilter
-                listData={listData}
+                filterValues={filterValues}
+                locationNameOptionsForFilter={locationNameOptionsForFilter}
+                parentCompanyOptionsForFilter={parentCompanyOptionsForFilter}
                 filterCount={filterCount}
                 list_name={listName}
                 clearFilters={clearFilters}

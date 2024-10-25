@@ -22,6 +22,7 @@ const { getCurrentDateTimeFormatted } = require('../../vectorTiles/utils/vectorT
 
 // Config
 const { getGeoJSONGeometry } = require('../../../config/privateutils/location.utils');
+const { GFW_LISTS_NUMBER_CONSTANTS } = require('../../../config/env/gfwLists.constants');
 
 // Logging
 const logger = require('../../../config/privateutils/logger.utils');
@@ -138,26 +139,91 @@ export const getUserLists = (req, res) => {
  */
 export const listFilterValues = async (request, response) => {
   const { id } = request.params;
-
+  const listId = Number(id);
   try {
-    let adminAreasLocations;
+    let countryStateAndSubstates;
+    let locationNameOptionsForFilter;
+    let parentCompanyOptionsForFilter;
+    if (GFWlistManager.isGfwList(listId)) {
+      const adminAreasLocations = await GFWlistManager.getGFWListLocationsNoGeom(request, id);
 
-    if (GFWlistManager.isGfwList(Number(id))) {
-      adminAreasLocations = await GFWlistManager.getGFWListLocationsNoGeom(request, id);
-      adminAreasLocations = adminAreasLocations.map(
+      countryStateAndSubstates = adminAreasLocations.map(
         ({ Country, State, 'Sub State': SubState }) => ({
           Country,
           State,
           'Sub State': SubState,
         })
       );
+
+      if (
+        listId === GFW_LISTS_NUMBER_CONSTANTS.OIL_PALM_CONCESSIONS ||
+        GFW_LISTS_NUMBER_CONSTANTS.PALM_OIL_MILLS
+      ) {
+        locationNameOptionsForFilter = Array.from(
+          new Map(
+            adminAreasLocations
+              .map(
+                ({
+                  'Location Name': label,
+                  location_id: value,
+                  'Sub State': subState,
+                  Country: country,
+                  State: state,
+                  'Parent Company': parentCompany,
+                  Certification: certification,
+                }) => ({
+                  value,
+                  label,
+                  subState,
+                  country,
+                  state,
+                  parentCompany,
+                  certification,
+                })
+              )
+              .filter((location) => !!location.label) // Filter out items with a falsy label
+              .sort((a, b) => a.label.toLowerCase().localeCompare(b.label.toLowerCase()))
+              .map((location) => [location.label, location]) // Create [label, location] pairs for uniqueness
+          ).values() // Extract only unique locations based on the label
+        );
+      }
+
+      if (listId === GFW_LISTS_NUMBER_CONSTANTS.PALM_OIL_MILLS) {
+        parentCompanyOptionsForFilter = Array.from(
+          new Map(
+            adminAreasLocations
+              .map(
+                ({
+                  'Parent Company': label,
+                  location_id: value,
+                  'Sub State': subState,
+                  Country: country,
+                  State: state,
+                  Certification: certification,
+                }) => ({
+                  value,
+                  label,
+                  subState,
+                  country,
+                  state,
+                  certification,
+                })
+              )
+              .filter((location) => !!location.label) // Filter out items with a falsy label
+              .sort((a, b) => a.label.toLowerCase().localeCompare(b.label.toLowerCase()))
+              .map((location) => [location.label, location]) // Create [label, location] pairs for uniqueness
+          ).values() // Extract only unique locations based on the label
+        );
+      }
     } else {
-      adminAreasLocations = await ListManager.getListAdminAreasOrderedByCountry(request, id);
+      countryStateAndSubstates = await ListManager.getListAdminAreasOrderedByCountry(request, id);
     }
 
-    const filterValues = formatListLocationDataForFilter(adminAreasLocations);
+    const filterValues = formatListLocationDataForFilter(countryStateAndSubstates);
 
-    response.status(200).json(filterValues);
+    response
+      .status(200)
+      .json({ filterValues, locationNameOptionsForFilter, parentCompanyOptionsForFilter });
   } catch (err) {
     logger.error(`Getting list filter data failed: /listData/filters/${id}. Error message ${err}`);
     response.send({});

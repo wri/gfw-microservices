@@ -19,6 +19,9 @@ import { featureFlagsService } from '@wri-monorepos/shared';
 import { DeprecatedStartAnalysisService } from '../app/list-upload/deprecated.start.analysis.service';
 import { StartAnalysisService } from '../app/list-upload/start.analysis.service';
 
+const LIST_UPLOAD_VERSION = 2;
+const LIST_UPLOAD_LEGACY_VERSION = 0;
+
 interface CreateListResult {
   list_id: number;
 }
@@ -40,7 +43,7 @@ export class ListService {
         userId: createListRequest.userId,
         clientDatabase: createListRequest.clientDatabase,
         analysisIds: createListRequest.analysisIds,
-        organization_id: createListRequest.organization_id,
+        isUploadListLpEnabled: createListRequest.isUploadListLpEnabled,
       });
 
       const saveListRequest: RequestSaveLargeListProcessModel = {
@@ -77,15 +80,15 @@ export class ListService {
     userId,
     clientDatabase,
     analysisIds,
-    organization_id,
     templateId = 13,
     gfwListId = null,
-  }): Promise<CreateListResult> {
-    const { getFeatureFlagsForCurrentOrg } = await featureFlagsService();
-    const flags = await getFeatureFlagsForCurrentOrg(organization_id);
-    const uploadListLpFlag = flags.find((f) => f.flagId === 'UploadListLp') as FeatureFlag;
-
-    if (uploadListLpFlag.flagState) {
+    isUploadListLpEnabled = false,
+  }: {
+    templateId?: number;
+    gfwListId?: number | null;
+    isUploadListLpEnabled?: boolean;
+  } & Partial<CreateListRequest>): Promise<CreateListResult> {
+    if (isUploadListLpEnabled) {
       return {
         list_id: -1,
       };
@@ -139,7 +142,8 @@ export class ListService {
         locationClassification,
         customAttributeNames,
         customAttributeTypes,
-        gfwListId
+        gfwListId,
+        isUploadListLpEnabled
       );
       await this.updateListsUploadStatus(
         connection.databaseName,
@@ -225,7 +229,8 @@ export class ListService {
     locationClassification: string,
     customAttributeNames: string,
     customAttributeTypes: string,
-    gfwListId: number = null
+    gfwListId: number = null,
+    isUploadListLpEnabled
   ) {
     try {
       const parameters = [
@@ -259,6 +264,11 @@ export class ListService {
           value: customAttributeTypes,
         },
         { field: 'associated_gfwlist', type: sql.TinyInt, value: gfwListId },
+        {
+          field: 'version',
+          type: sql.Int,
+          value: isUploadListLpEnabled ? LIST_UPLOAD_VERSION : LIST_UPLOAD_LEGACY_VERSION,
+        },
       ];
 
       const createListResult = await connection.executeQuery<CreateListResult>(

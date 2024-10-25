@@ -1,7 +1,6 @@
 import React, { Component } from 'react';
 import ReactSelect from 'react-select';
 import { Select, MenuItem, FormControl, InputLabel, Box, Modal, Grid } from '@mui/material';
-import { buildDropdownOptions } from '../../../../../../common/js/utils/buildDropdownOptions';
 import {
   toggleCanopyModal,
   updateFilters,
@@ -13,50 +12,6 @@ import { defaultFilterValues } from '../../defaultFilterValues';
 import { boxStyle, multipleSelectStyles, selectStyle } from './filterStyles';
 import store from '../../../../../../locations/js/store';
 import '../../../../../../common/css/filter-dialogs.scss';
-
-/**
- * Function that is used to filter locations within a GFW list.
- * @param {Object} location The location that we are filtering
- * @param {string} filterStr The string to filter based on user input
- * @param {string} selectedCountry The country
- * @param {string} selectedState The state
- * @param {string} selectedSubState The substate
- * @param {string} selectedParentCompany The parent company
- * @param {boolean} showRSPOCertified Boolean to determine if the user wants to filter for RSPO
- */
-const multiOptionsFilterLogic = (
-  location,
-  filterStr,
-  selectedCountry,
-  selectedState,
-  selectedSubState,
-  selectedParentCompany,
-  showRSPOCertified
-) => {
-  const locationName = location['Location Name'];
-  const investmentName = location['Investment Name'];
-
-  const initialFilter =
-    (locationName !== '' || investmentName !== '') &&
-    (locationName !== ' ' || investmentName !== ' ') &&
-    (selectedCountry === '' || selectedCountry === location.Country) &&
-    (selectedState === '' || selectedState === location.State) &&
-    (selectedSubState === '' || selectedSubState === location['Sub State']) &&
-    (selectedParentCompany === '' || selectedParentCompany === location['Parent Company']);
-
-  let stringSearchFilter = true;
-  if (filterStr.length > 0) {
-    stringSearchFilter =
-      (locationName && locationName.toLowerCase().includes(filterStr.toLowerCase())) ||
-      (investmentName && investmentName.toLowerCase().includes(filterStr.toLowerCase()));
-  }
-
-  let certifiedRSPO = false;
-  if ((location.Certification === 'RSPO' && showRSPOCertified) || !showRSPOCertified) {
-    certifiedRSPO = true;
-  }
-  return initialFilter && stringSearchFilter && certifiedRSPO;
-};
 
 export default class GFWListFilter extends Component {
   constructor(props) {
@@ -106,17 +61,8 @@ export default class GFWListFilter extends Component {
   };
 
   changeParentCompany = (evt) => {
-    const listNames = this.props.listData
-      .filter((location) => location['Parent Company'] === evt.target.value)
-      .map((location) => {
-        return {
-          value: location.location_id,
-          label: location['Location Name'] || location['Investment Name'],
-        };
-      });
     this.setState({
       selectedParentCompany: evt.target.value,
-      selectedNames: listNames,
     });
   };
 
@@ -171,88 +117,51 @@ export default class GFWListFilter extends Component {
   };
 
   render() {
-    const { listData, list_name } = this.props;
+    const { list_name, filterValues, locationNameOptionsForFilter, parentCompanyOptionsForFilter } =
+      this.props;
     const {
       selectedCountry,
       selectedState,
       selectedSubState,
       selectedParentCompany,
-      filterStr,
       showRSPOCertified,
       selectedNames,
     } = this.state;
 
-    const countries = [
-      ...new Set(
-        listData.filter((location) => location.Country !== '').map((list) => list.Country)
-      ),
-    ];
+    const countryList = Object.keys(filterValues).filter((name) => name !== 'null');
 
-    const states = [
-      ...new Set(
-        listData
-          .filter((location) => location.State !== '' && location.Country === selectedCountry)
-          .map((list) => list.State)
-      ),
-    ];
+    const stateList =
+      selectedCountry && selectedCountry in filterValues
+        ? Object.keys(filterValues[selectedCountry])
+        : [];
 
-    const subStates = [
-      ...new Set(
-        listData
-          .filter(
-            (location) =>
-              location['Sub State'] !== '' &&
-              location.Country === selectedCountry &&
-              location.State === selectedState
-          )
-          .map((list) => list['Sub State'])
-      ),
-    ];
+    const subStateList = selectedState ? filterValues[selectedCountry][selectedState] : [];
 
     // 1. Filter based on if company/state/substate is selected
     // 2. Grab just parent company values
     // 3. Sort alphabetically
-    const parentCompanyOptions = [
-      ...new Set(
-        listData
-          .filter(
-            (location) =>
-              location['Parent Company'] &&
-              (selectedCountry === '' || selectedCountry === location.Country) &&
-              (selectedState === '' || selectedState === location.State) &&
-              (selectedSubState === '' || selectedSubState === location['Sub State'])
-          )
-          .map((list) => list['Parent Company'])
-      ),
-    ]
-      .sort()
-      .map(this.createOptions);
 
-    const dropdownOptionsMethodsParentCompany = buildDropdownOptions(
-      parentCompanyOptions,
-      'id',
-      selectedParentCompany
+    const filteredLocationNameOptions = locationNameOptionsForFilter?.filter(
+      (location) =>
+        (selectedCountry === '' || selectedCountry === location.country) &&
+        (selectedState === '' || selectedState === location.state) &&
+        (selectedSubState === '' || selectedSubState === location.subState) &&
+        (selectedParentCompany === '' || selectedParentCompany === location.parentCompany) &&
+        (!showRSPOCertified || location.certification === 'RSPO')
     );
 
-    const multiOptions = listData
-      .filter((location) =>
-        multiOptionsFilterLogic(
-          location,
-          filterStr,
-          selectedCountry,
-          selectedState,
-          selectedSubState,
-          selectedParentCompany,
-          showRSPOCertified
+    let filteredparentCompanyOptions = [];
+    if (list_name === 'Palm Oil Mills') {
+      filteredparentCompanyOptions = parentCompanyOptionsForFilter
+        ?.filter(
+          (location) =>
+            (selectedCountry === '' || selectedCountry === location.country) &&
+            (selectedState === '' || selectedState === location.state) &&
+            (selectedSubState === '' || selectedSubState === location.subState) &&
+            (!showRSPOCertified || location.certification === 'RSPO')
         )
-      )
-      .map((list) => {
-        return {
-          value: list.location_id,
-          label: list['Location Name'] || list['Investment Name'],
-        };
-      })
-      .sort((a, b) => a.label.toLowerCase().localeCompare(b.label.toLowerCase()));
+        ?.slice(0, 400);
+    }
 
     return (
       <Modal open onClose={this.close}>
@@ -261,13 +170,13 @@ export default class GFWListFilter extends Component {
 
           <Grid container spacing={3}>
             <CountryStateSubStateFilter
-              countries={countries}
+              countries={countryList}
               selectedCountry={selectedCountry}
               onCountryChange={this.onCountryChange}
-              states={states}
+              states={stateList}
               selectedState={selectedState}
               onStateChange={this.onStateChange}
-              subStates={subStates}
+              subStates={subStateList}
               selectedSubState={selectedSubState}
               onSubStateChange={this.onSubStateChange}
             />
@@ -298,11 +207,11 @@ export default class GFWListFilter extends Component {
                   <Select
                     labelId="parent-company-select-label"
                     id="country_select"
-                    value={dropdownOptionsMethodsParentCompany.value ?? ''}
+                    value={selectedParentCompany ?? ''}
                     onChange={this.changeParentCompany}
                     label="PARENT COMPANY"
                   >
-                    {dropdownOptionsMethodsParentCompany.dropdownOptions.map(({ label, value }) => (
+                    {filteredparentCompanyOptions.map(({ label, value }) => (
                       <MenuItem key={value} value={value}>
                         {label}
                       </MenuItem>
@@ -319,7 +228,7 @@ export default class GFWListFilter extends Component {
                 maxMenuHeight={150}
                 className="edge-multi-select"
                 onChange={(evt) => this.changeNames(evt)}
-                options={multiOptions}
+                options={filteredLocationNameOptions}
                 value={selectedNames}
                 styles={multipleSelectStyles}
                 placeholder="LOCATIONS"

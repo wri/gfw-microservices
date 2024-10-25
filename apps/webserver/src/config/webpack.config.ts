@@ -1,11 +1,8 @@
-/* eslint-disable no-unused-vars */
-/* eslint-disable guard-for-in */
-/* eslint-disable no-restricted-syntax */
-const MiniCssExtractPlugin = require('mini-css-extract-plugin');
-const webpack = require('webpack');
-const path = require('path');
+import MiniCssExtractPlugin from 'mini-css-extract-plugin';
+import webpack from 'webpack';
+import path from 'path';
 import config from './config';
-const clientConfig = require('./client.configs');
+import clientConfig from './client.configs';
 
 const entries = clientConfig.entries;
 const aliases = clientConfig.aliases;
@@ -36,7 +33,7 @@ export default () => {
   });
 
   rules.push({
-    test: /\.(tsx)$/,
+    test: /\.(ts|tsx)$/,
     use: [
       {
         loader: 'ts-loader',

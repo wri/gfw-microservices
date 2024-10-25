@@ -5,7 +5,7 @@ import { ApiTags } from '@nestjs/swagger';
 import { ListPaginationService } from '../../services/list.pagination.service';
 import { AppService } from '../app.service';
 import { ListService } from '../../services/list.service';
-import { FeatureFlagCheckGuard } from '../../guards/feature.flag.enabled.guard';
+import { FeatureFlagEnabledGuard } from '../../guards/feature.flag.enabled.guard';
 import { LocationService } from '../../services/locations.service';
 import { ConfigService } from '@nestjs/config';
 /*
@@ -27,7 +27,7 @@ export class ListController extends AppController {
   }
 
   @Post('/create-list')
-  @UseGuards(new FeatureFlagCheckGuard('UploadListLp'))
+  @UseGuards(new FeatureFlagEnabledGuard('UploadListLp'))
   createList(@Body() request: CreateListRequest, @Request() req) {
     const { featureFlag } = req;
     return this.listService.createNewList({

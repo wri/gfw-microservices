@@ -1,7 +1,6 @@
 import React from 'react';
-import './index.scss';
 
-import { Typography } from '@mui/material';
+import { Typography, Link } from '@mui/material';
 import SupportIcon from '@mui/icons-material/Support';
 import NorthEastIcon from '@mui/icons-material/NorthEast';
 
@@ -12,10 +11,21 @@ type HowToFormatLocationLinkProps = {
 
 export function HowToFormatLocationLink({ text, url }: HowToFormatLocationLinkProps) {
   return (
-    <a className="how-to-format-location-link" href={url}>
-      <SupportIcon />
-      <Typography variant="body2">{text}</Typography>
-      <NorthEastIcon />
-    </a>
+    <Link
+      sx={{
+        display: 'flex',
+        alignItems: 'center',
+        gap: '0.25rem',
+        width: 'fit-content',
+        textDecoration: 'none',
+      }}
+      href={url}
+    >
+      <SupportIcon fontSize="small" />
+      <Typography variant="body2" color="primary">
+        {text}
+      </Typography>
+      <NorthEastIcon fontSize="small" />
+    </Link>
   );
 }

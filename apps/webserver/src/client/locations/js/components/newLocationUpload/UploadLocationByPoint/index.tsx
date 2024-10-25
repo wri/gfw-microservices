@@ -12,11 +12,9 @@ import {
   InputAdornment,
   FormControl,
   InputLabel,
-  Stepper,
-  Step,
-  StepLabel,
+  Button,
 } from '@mui/material';
-import ArrowBackIcon from '@mui/icons-material/ArrowBack';
+
 import AddLocationAltIcon from '@mui/icons-material/AddLocationAlt';
 import LocationOnIcon from '@mui/icons-material/LocationOn';
 import SearchIcon from '@mui/icons-material/Search';
@@ -24,8 +22,9 @@ import CloseIcon from '@mui/icons-material/Close';
 import ArrowForwardIosIcon from '@mui/icons-material/ArrowForwardIos';
 
 import { HowToFormatLocationLink } from '../components/HowToFormatLocationLink';
-import { PillButton } from '../components/PillButton';
+
 import HectareKilometerSwitch from '../../adding/HectareKilometerSwitch';
+import { NavBarWithProgress } from '../components/NavBarWithProgress';
 
 enum LocationFormat {
   COORDINATES,
@@ -62,22 +61,7 @@ export function UploadLocationByPoint({ clearUploadType }: UploadLocationByPoint
 
   return (
     <div className="upload-location-by-point">
-      <nav>
-        <IconButton onClick={clearUploadType} disableRipple>
-          <ArrowBackIcon />
-        </IconButton>
-        <Typography variant="h5">New Location</Typography>
-
-        <Stepper activeStep={activeStep} sx={{ width: '100%', marginLeft: '4rem' }}>
-          {steps.map((label) => {
-            return (
-              <Step key={label}>
-                <StepLabel>{label}</StepLabel>
-              </Step>
-            );
-          })}
-        </Stepper>
-      </nav>
+      <NavBarWithProgress clearUploadType={clearUploadType} steps={steps} activeStep={activeStep} />
 
       <Card>
         <Typography variant="h6">Prepare your location</Typography>
@@ -120,16 +104,18 @@ export function UploadLocationByPoint({ clearUploadType }: UploadLocationByPoint
                 </Typography>
                 <div className="upload-location-by-point__location-info__coordinates">
                   <TextField
-                    className="upload-location-by-point__location-info__standard-text-field"
                     label="Latitude"
                     variant="outlined"
                     type="number"
+                    fullWidth
+                    size="small"
                   />
                   <TextField
-                    className="upload-location-by-point__location-info__standard-text-field"
                     label="Longitude"
                     variant="outlined"
                     type="number"
+                    fullWidth
+                    size="small"
                   />
                 </div>
               </>
@@ -223,10 +209,11 @@ export function UploadLocationByPoint({ clearUploadType }: UploadLocationByPoint
                 <Typography variant="h6">Enter area (HA) or radius (km)</Typography>
                 <div className="upload-location-by-point__location-info__custom-area-container">
                   <TextField
-                    className="upload-location-by-point__location-info__standard-text-field"
                     label="Custom area"
                     variant="outlined"
                     type="number"
+                    size="small"
+                    sx={{ flex: 1 }}
                   />
                   <HectareKilometerSwitch
                     measurementUnit={measurementUnit}
@@ -245,10 +232,17 @@ export function UploadLocationByPoint({ clearUploadType }: UploadLocationByPoint
             )}
 
             <div className="upload-location-by-point__location-info__bottom-buttons-container">
-              <PillButton color="secondary" startIcon={<CloseIcon />} onClick={clearUploadType}>
+              <Button
+                variant="contained"
+                color="info"
+                startIcon={<CloseIcon />}
+                onClick={clearUploadType}
+              >
                 Cancel
-              </PillButton>
-              <PillButton startIcon={<ArrowForwardIosIcon />}>Next</PillButton>
+              </Button>
+              <Button variant="contained" startIcon={<ArrowForwardIosIcon />}>
+                Next
+              </Button>
             </div>
           </form>
         </div>

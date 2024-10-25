@@ -45,7 +45,7 @@ export function UploadLocationOptions({ selectUploadType }: UploadLocationOption
           <Button
             className="upload-location-options__button"
             onClick={() => selectUploadType(UploadType.BY_FILE)}
-            startIcon={<UploadFileTwoToneIcon />}
+            startIcon={<UploadFileTwoToneIcon color="primary" fontSize="large" />}
             disableRipple
           >
             File upload
@@ -60,7 +60,7 @@ export function UploadLocationOptions({ selectUploadType }: UploadLocationOption
               <Button
                 className="upload-location-options__button"
                 onClick={() => selectUploadType(UploadType.BY_POINT)}
-                startIcon={<ScatterPlotTwoToneIcon />}
+                startIcon={<ScatterPlotTwoToneIcon color="primary" fontSize="large" />}
                 disableRipple
               >
                 Point
@@ -69,7 +69,7 @@ export function UploadLocationOptions({ selectUploadType }: UploadLocationOption
               <Button
                 className="upload-location-options__button"
                 onClick={() => selectUploadType(UploadType.BY_POLYGON)}
-                startIcon={<TimelineIcon />}
+                startIcon={<TimelineIcon color="primary" fontSize="large" />}
                 disableRipple
               >
                 Polygon

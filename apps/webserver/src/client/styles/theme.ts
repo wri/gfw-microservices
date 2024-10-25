@@ -54,5 +54,21 @@ export const theme = createTheme({
         disableRipple: true,
       },
     },
+    MuiTextField: {
+      styleOverrides: {
+        root: {
+          '& input[type="number"]': {
+            '-moz-appearance': 'textfield', // Firefox
+            appearance: 'none', // Chrome, Safari
+          },
+          '& input[type="number"]::-webkit-outer-spin-button': {
+            display: 'none', // Chrome
+          },
+          '& input[type="number"]::-webkit-inner-spin-button': {
+            display: 'none', // Chrome
+          },
+        },
+      },
+    },
   },
 });

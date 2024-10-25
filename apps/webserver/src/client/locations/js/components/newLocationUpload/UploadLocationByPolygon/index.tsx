@@ -1,7 +1,7 @@
 import React from 'react';
 import './index.scss';
 
-import { NavBarWithProgress } from '../components/NavBarWithProgress';
+import { NavBarWithProgress } from '../components';
 
 type UploadLocationByPointProps = {
   clearUploadType: () => void;

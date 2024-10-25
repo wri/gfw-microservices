@@ -1,8 +1,7 @@
 import React from 'react';
 
 import { Typography, Link } from '@mui/material';
-import SupportIcon from '@mui/icons-material/Support';
-import NorthEastIcon from '@mui/icons-material/NorthEast';
+import { Support, NorthEast } from '@mui/icons-material';
 
 type HowToFormatLocationLinkProps = {
   text: string;
@@ -21,11 +20,11 @@ export function HowToFormatLocationLink({ text, url }: HowToFormatLocationLinkPr
       }}
       href={url}
     >
-      <SupportIcon fontSize="small" />
+      <Support fontSize="small" />
       <Typography variant="body2" color="primary">
         {text}
       </Typography>
-      <NorthEastIcon fontSize="small" />
+      <NorthEast fontSize="small" />
     </Link>
   );
 }

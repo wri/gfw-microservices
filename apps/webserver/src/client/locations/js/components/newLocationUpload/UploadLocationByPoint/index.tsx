@@ -13,18 +13,14 @@ import {
   FormControl,
   InputLabel,
   Button,
+  Box,
 } from '@mui/material';
 
-import AddLocationAltIcon from '@mui/icons-material/AddLocationAlt';
-import LocationOnIcon from '@mui/icons-material/LocationOn';
-import SearchIcon from '@mui/icons-material/Search';
-import CloseIcon from '@mui/icons-material/Close';
-import ArrowForwardIosIcon from '@mui/icons-material/ArrowForwardIos';
+import { AddLocationAlt, LocationOn, Search, Close, ArrowForwardIos } from '@mui/icons-material';
 
-import { HowToFormatLocationLink } from '../components/HowToFormatLocationLink';
+import { NavBarWithProgress, LocationTypeButton, HowToFormatLocationLink } from '../components';
 
 import HectareKilometerSwitch from '../../adding/HectareKilometerSwitch';
-import { NavBarWithProgress } from '../components/NavBarWithProgress';
 
 enum LocationFormat {
   COORDINATES,
@@ -47,14 +43,6 @@ export function UploadLocationByPoint({ clearUploadType }: UploadLocationByPoint
   const [selectedRadiusSize, setSelectedRadiusSize] = useState<RadiusSize>(RadiusSize.SMALL);
 
   const [measurementUnit, setMeasurementUnit] = useState('hectares');
-
-  const getButtonClassName = (locFormat: LocationFormat) => {
-    return `upload-location-by-point__location-info__location-type-button ${
-      locationFormat === locFormat
-        ? 'upload-location-by-point__location-info__location-type-button--selected'
-        : ''
-    }`;
-  };
 
   const steps = ['Location', 'Configure List', 'Submit'];
   const [activeStep] = React.useState(0);
@@ -79,29 +67,35 @@ export function UploadLocationByPoint({ clearUploadType }: UploadLocationByPoint
         </Typography>
 
         <div className="upload-location-by-point__location-info">
-          <div>
-            <button
-              className={getButtonClassName(LocationFormat.COORDINATES)}
+          <Box
+            sx={{
+              display: 'flex',
+              flexDirection: 'column',
+              gap: '0.5rem',
+              marginBottom: '0.75rem',
+            }}
+          >
+            <LocationTypeButton
+              variant="outlined"
+              color={locationFormat === LocationFormat.COORDINATES ? 'primary' : 'info'}
               onClick={() => setLocationFormat(LocationFormat.COORDINATES)}
             >
-              <AddLocationAltIcon />
-              <Typography>Enter coordinates</Typography>
-            </button>
-            <button
-              className={getButtonClassName(LocationFormat.ADDRESS)}
+              <AddLocationAlt fontSize="medium" />
+              <Typography variant="body2">Enter coordinates</Typography>
+            </LocationTypeButton>
+            <LocationTypeButton
+              variant="outlined"
+              color={locationFormat === LocationFormat.ADDRESS ? 'primary' : 'info'}
               onClick={() => setLocationFormat(LocationFormat.ADDRESS)}
             >
-              <LocationOnIcon />
-              <Typography>Enter address</Typography>
-            </button>
-          </div>
+              <LocationOn fontSize="medium" />
+              <Typography variant="body2">Enter address</Typography>
+            </LocationTypeButton>
+          </Box>
           <form>
             {locationFormat === LocationFormat.COORDINATES ? (
               <>
                 <Typography variant="h6">Enter coordinates</Typography>
-                <Typography variant="body2" className="upload-location-by-point__subtitle">
-                  Coordinate data must be in decimal degrees format.
-                </Typography>
                 <div className="upload-location-by-point__location-info__coordinates">
                   <TextField
                     label="Latitude"
@@ -109,6 +103,7 @@ export function UploadLocationByPoint({ clearUploadType }: UploadLocationByPoint
                     type="number"
                     fullWidth
                     size="small"
+                    helperText="It must be in decimal degrees format"
                   />
                   <TextField
                     label="Longitude"
@@ -116,6 +111,7 @@ export function UploadLocationByPoint({ clearUploadType }: UploadLocationByPoint
                     type="number"
                     fullWidth
                     size="small"
+                    helperText="It must be in decimal degrees format"
                   />
                 </div>
               </>
@@ -123,17 +119,22 @@ export function UploadLocationByPoint({ clearUploadType }: UploadLocationByPoint
               <>
                 <Typography variant="h6">Enter address</Typography>
 
-                <FormControl
-                  variant="outlined"
-                  className="upload-location-by-point__location-info__address-text-field"
-                >
+                <FormControl variant="outlined" size="small" fullWidth>
                   <InputLabel htmlFor="outlined-adornment-password">Address</InputLabel>
                   <OutlinedInput
                     id="address"
+                    sx={{
+                      '& input': {
+                        borderRight: 'none',
+                        '&:focus': {
+                          boxShadow: 'none',
+                        },
+                      },
+                    }}
                     endAdornment={
                       <InputAdornment position="end">
                         <IconButton disableRipple>
-                          <SearchIcon />
+                          <Search />
                         </IconButton>
                       </InputAdornment>
                     }
@@ -235,12 +236,12 @@ export function UploadLocationByPoint({ clearUploadType }: UploadLocationByPoint
               <Button
                 variant="contained"
                 color="info"
-                startIcon={<CloseIcon />}
+                startIcon={<Close />}
                 onClick={clearUploadType}
               >
                 Cancel
               </Button>
-              <Button variant="contained" startIcon={<ArrowForwardIosIcon />}>
+              <Button variant="contained" startIcon={<ArrowForwardIos />}>
                 Next
               </Button>
             </div>

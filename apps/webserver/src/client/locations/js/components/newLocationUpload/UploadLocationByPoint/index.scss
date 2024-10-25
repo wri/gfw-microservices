@@ -19,73 +19,43 @@
       min-width: 260px;
     }
 
-    &__location-type-button {
-      display: flex;
-      align-items: center;
-      gap: 0.5rem;
+    // &__location-type-button {
+    //   display: flex;
+    //   align-items: center;
+    //   gap: 0.5rem;
 
-      margin-bottom: 0.75rem;
+    //   margin-bottom: 0.75rem;
 
-      background: white;
-      cursor: pointer;
+    //   background: white;
+    //   cursor: pointer;
 
-      width: 100%;
-      padding: 1rem 1.25rem;
-      border: 2px solid #dfdfdf;
-      border-radius: 5px;
+    //   width: 100%;
+    //   padding: 1rem 1.25rem;
+    //   border: 2px solid #dfdfdf;
+    //   border-radius: 5px;
 
-      &--selected {
-        border-color: #97bd3d;
-      }
+    //   &--selected {
+    //     border-color: #97bd3d;
+    //   }
 
-      > svg {
-        color: #444;
-        font-size: 1.5rem;
-      }
+    //   > svg {
+    //     color: #444;
+    //     font-size: 1.5rem;
+    //   }
 
-      > span {
-        font-size: 1rem;
-        font-weight: bold;
-      }
-    }
+    //   > span {
+    //     font-size: 1rem;
+    //     font-weight: bold;
+    //   }
+    // }
 
     > form {
       flex: 1;
-
-      /* Hide arrow from input number for Chrome, Safari, Edge, Opera */
-      input::-webkit-outer-spin-button,
-      input::-webkit-inner-spin-button {
-        -webkit-appearance: none;
-        margin: 0;
-      }
-      /* Hide arrow from input number Firefox */
-      input[type='number'] {
-        -moz-appearance: textfield;
-      }
     }
 
     &__coordinates {
       display: flex;
       gap: 0.5rem;
-    }
-
-    &__address-text-field {
-      width: 100%;
-
-      input.MuiInputBase-input {
-        padding: 0.5rem 0.75rem;
-        border-right: none;
-        box-shadow: none;
-      }
-
-      .MuiFormLabel-root {
-        text-transform: none;
-
-        &:not(.MuiInputLabel-shrink) {
-          font-size: 0.75rem;
-          top: -3px;
-        }
-      }
     }
 
     &__radius-size-container {

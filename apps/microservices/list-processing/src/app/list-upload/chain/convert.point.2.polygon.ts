@@ -5,21 +5,30 @@ import { Polygon } from '@wri-monorepos/geo';
 // so we need to use eval to import these modules
 const DEFAULT_LOCATION_RADIUS = 4; // kilometers (medium buffer)
 
-export class ConvertPoint2Polygon extends AbstractHandler<ChainType> {
-  async loadPointModule() {
-    let Point;
-    await eval("import('@arcgis/core/geometry/Point.js').then(x => Point = x.default)");
-    return Point;
-  }
+const loadPointModule = async () => {
+  let Point;
+  await eval("import('@arcgis/core/geometry/Point.js').then(x => Point = x.default)");
+  return Point;
+};
 
-  async loadGeometryEngineModule() {
-    let GeometryEngine;
-    await eval("import('@arcgis/core/geometry/geometryEngine.js').then(x=>GeometryEngine=x)");
-    return GeometryEngine;
+const loadGeometryEngineModule = async () => {
+  let GeometryEngine;
+  await eval("import('@arcgis/core/geometry/geometryEngine.js').then(x=>GeometryEngine=x)");
+  return GeometryEngine;
+};
+
+export class ConvertPoint2Polygon extends AbstractHandler<ChainType> {
+  GeometryEngine;
+  Point;
+
+  constructor() {
+    super();
+
+    loadGeometryEngineModule().then((geometryEngine) => (this.GeometryEngine = geometryEngine));
+    loadPointModule().then((point) => (this.Point = point));
   }
 
   async geomFromPointRadiusArea(point, featureRadius, featureArea) {
-    const GeometryEngine = await this.loadGeometryEngineModule();
     let radius;
     if (featureRadius) {
       radius = parseFloat(featureRadius);
@@ -36,11 +45,10 @@ export class ConvertPoint2Polygon extends AbstractHandler<ChainType> {
       radius = DEFAULT_LOCATION_RADIUS;
     }
 
-    return GeometryEngine.geodesicBuffer(point, radius, 'kilometers');
+    return this.GeometryEngine.geodesicBuffer(point, radius, 'kilometers');
   }
 
   async geomFromLatLongRadiusArea(latitudeInput, longitudeInput, featureRadius, featureArea) {
-    const Point = await this.loadPointModule();
     const latitude = parseFloat(latitudeInput);
     const longitude = parseFloat(longitudeInput);
 
@@ -48,7 +56,7 @@ export class ConvertPoint2Polygon extends AbstractHandler<ChainType> {
       throw new Error('Invalid latitude or longitude value');
     }
 
-    const point = new Point({
+    const point = new this.Point({
       latitude,
       longitude,
       spatialReference: { wkid: 4326 },

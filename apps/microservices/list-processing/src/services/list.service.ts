@@ -19,6 +19,9 @@ import { featureFlagsService } from '@wri-monorepos/shared';
 import { DeprecatedStartAnalysisService } from '../app/list-upload/deprecated.start.analysis.service';
 import { StartAnalysisService } from '../app/list-upload/start.analysis.service';
 
+const LIST_UPLOAD_VERSION = 2;
+const LIST_UPLOAD_LEGACY_VERSION = 0;
+
 interface CreateListResult {
   list_id: number;
 }
@@ -40,6 +43,7 @@ export class ListService {
         userId: createListRequest.userId,
         clientDatabase: createListRequest.clientDatabase,
         analysisIds: createListRequest.analysisIds,
+        isUploadListLpEnabled: createListRequest.isUploadListLpEnabled,
       });
 
       const saveListRequest: RequestSaveLargeListProcessModel = {
@@ -77,14 +81,11 @@ export class ListService {
     analysisIds,
     templateId = 13,
     gfwListId = null,
+    isUploadListLpEnabled,
   }: {
-    listName: string;
-    userId: number;
-    clientDatabase: string;
-    analysisIds: Array<string>;
     templateId?: number;
     gfwListId?: number | null;
-  }): Promise<CreateListResult> {
+  } & Partial<CreateListRequest>): Promise<CreateListResult> {
     const list = createListNameSchema(listName);
     const listTable = list.list_table;
     const analysisTable = list.analysis_table;
@@ -133,7 +134,8 @@ export class ListService {
         locationClassification,
         customAttributeNames,
         customAttributeTypes,
-        gfwListId
+        gfwListId,
+        isUploadListLpEnabled
       );
       await this.updateListsUploadStatus(
         connection.databaseName,
@@ -219,7 +221,8 @@ export class ListService {
     locationClassification: string,
     customAttributeNames: string,
     customAttributeTypes: string,
-    gfwListId: number = null
+    gfwListId: number = null,
+    isUploadListLpEnabled
   ) {
     try {
       const parameters = [
@@ -253,6 +256,11 @@ export class ListService {
           value: customAttributeTypes,
         },
         { field: 'associated_gfwlist', type: sql.TinyInt, value: gfwListId },
+        {
+          field: 'version',
+          type: sql.Int,
+          value: isUploadListLpEnabled ? LIST_UPLOAD_VERSION : LIST_UPLOAD_LEGACY_VERSION,
+        },
       ];
 
       const createListResult = await connection.executeQuery<CreateListResult>(

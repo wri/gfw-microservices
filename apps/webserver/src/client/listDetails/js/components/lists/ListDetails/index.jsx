@@ -143,6 +143,7 @@ export default class ListDetails extends Component {
       isEveryRowSelected: false,
       filterValues: [],
       locationNameOptionsForFilter: [],
+      parentCompanyOptionsForFilter: [],
       tableSortedBy: selectedLists[0].isGlobalForestWatchList ? 'Location Name' : 'Investment Name',
       tableSortedDesc: false,
       numberOfResults: undefined,
@@ -179,8 +180,12 @@ export default class ListDetails extends Component {
     );
 
     getListFilterValues(selectedLists[0].id).then(
-      ({ filterValues, locationNameOptionsForFilter }) => {
-        this.setState({ filterValues, locationNameOptionsForFilter });
+      ({ filterValues, locationNameOptionsForFilter, parentCompanyOptionsForFilter }) => {
+        this.setState({
+          filterValues,
+          locationNameOptionsForFilter,
+          parentCompanyOptionsForFilter,
+        });
       }
     );
 
@@ -1818,6 +1823,7 @@ export default class ListDetails extends Component {
       draftSubmitDialogOpen,
       filterValues,
       locationNameOptionsForFilter,
+      parentCompanyOptionsForFilter,
       isLoading,
       isManageListFolderOpen,
       isNewListNameDuplicate,
@@ -2204,6 +2210,7 @@ export default class ListDetails extends Component {
                         <Filter
                           filterCount={filterCount}
                           filterValues={filterValues}
+                          parentCompanyOptionsForFilter={parentCompanyOptionsForFilter}
                           locationNameOptionsForFilter={locationNameOptionsForFilter}
                           clearFilters={this.clearFilters}
                           listColumns={listColumns}

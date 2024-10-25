@@ -143,6 +143,7 @@ export const listFilterValues = async (request, response) => {
   try {
     let countryStateAndSubstates;
     let locationNameOptionsForFilter;
+    let parentCompanyOptionsForFilter;
     if (GFWlistManager.isGfwList(listId)) {
       const adminAreasLocations = await GFWlistManager.getGFWListLocationsNoGeom(request, id);
 
@@ -154,13 +155,65 @@ export const listFilterValues = async (request, response) => {
         })
       );
 
-      if (listId === GFW_LISTS_NUMBER_CONSTANTS.OIL_PALM_CONCESSIONS) {
-        locationNameOptionsForFilter = adminAreasLocations
-          .map(({ 'Location Name': locationName, location_id }) => ({
-            value: location_id,
-            label: locationName,
-          }))
-          .sort((a, b) => a.label.toLowerCase().localeCompare(b.label.toLowerCase()));
+      if (
+        listId === GFW_LISTS_NUMBER_CONSTANTS.OIL_PALM_CONCESSIONS ||
+        GFW_LISTS_NUMBER_CONSTANTS.PALM_OIL_MILLS
+      ) {
+        locationNameOptionsForFilter = Array.from(
+          new Map(
+            adminAreasLocations
+              .map(
+                ({
+                  'Location Name': label,
+                  location_id: value,
+                  'Sub State': subState,
+                  Country: country,
+                  State: state,
+                  'Parent Company': parentCompany,
+                  Certification: certification,
+                }) => ({
+                  value,
+                  label,
+                  subState,
+                  country,
+                  state,
+                  parentCompany,
+                  certification,
+                })
+              )
+              .filter((location) => !!location.label) // Filter out items with a falsy label
+              .sort((a, b) => a.label.toLowerCase().localeCompare(b.label.toLowerCase()))
+              .map((location) => [location.label, location]) // Create [label, location] pairs for uniqueness
+          ).values() // Extract only unique locations based on the label
+        );
+      }
+
+      if (listId === GFW_LISTS_NUMBER_CONSTANTS.PALM_OIL_MILLS) {
+        parentCompanyOptionsForFilter = Array.from(
+          new Map(
+            adminAreasLocations
+              .map(
+                ({
+                  'Parent Company': label,
+                  location_id: value,
+                  'Sub State': subState,
+                  Country: country,
+                  State: state,
+                  Certification: certification,
+                }) => ({
+                  value,
+                  label,
+                  subState,
+                  country,
+                  state,
+                  certification,
+                })
+              )
+              .filter((location) => !!location.label) // Filter out items with a falsy label
+              .sort((a, b) => a.label.toLowerCase().localeCompare(b.label.toLowerCase()))
+              .map((location) => [location.label, location]) // Create [label, location] pairs for uniqueness
+          ).values() // Extract only unique locations based on the label
+        );
       }
     } else {
       countryStateAndSubstates = await ListManager.getListAdminAreasOrderedByCountry(request, id);
@@ -168,7 +221,9 @@ export const listFilterValues = async (request, response) => {
 
     const filterValues = formatListLocationDataForFilter(countryStateAndSubstates);
 
-    response.status(200).json({ filterValues, locationNameOptionsForFilter });
+    response
+      .status(200)
+      .json({ filterValues, locationNameOptionsForFilter, parentCompanyOptionsForFilter });
   } catch (err) {
     logger.error(`Getting list filter data failed: /listData/filters/${id}. Error message ${err}`);
     response.send({});

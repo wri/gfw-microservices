@@ -30,7 +30,7 @@ describe('CreateList', () => {
 
   describe('insertListInListTable', () => {
     let createList: CreateListLevelData;
-    let mockConnection: any;
+    let mockConnection: unknown;
     let mockFeatureFlagsService: any;
 
     beforeEach(() => {

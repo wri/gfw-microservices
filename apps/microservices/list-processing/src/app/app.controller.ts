@@ -18,6 +18,8 @@ import {
   BadRequestException,
   Param,
   UsePipes,
+  UseGuards,
+  Request,
 } from '@nestjs/common';
 
 import { AppService } from './app.service';
@@ -45,6 +47,7 @@ import {
 import { BadRequestExceptionResponse } from './types/apiResponses';
 import { ConfigService } from '@nestjs/config';
 import { ServerConfigType } from '../validators/server-config';
+import { FeatureFlagEnabledGuard } from '../guards/feature.flag.enabled.guard';
 
 /*
   This controller will be deprecated in the future
@@ -103,16 +106,20 @@ export class AppController {
   }
 
   @Post('/create-large-list')
+  @UseGuards(new FeatureFlagEnabledGuard('UploadListLp'))
   @UsePipes(new ZodValidationPipe(requestTriggerProcessLargeListSchema))
   triggerProcessLargeList(
     @Body()
-    request: RequestTriggerProcessLargeList
+    request: RequestTriggerProcessLargeList,
+    @Request() req?
   ) {
+    const { featureFlag } = req;
     return this.listService.createListTables({
       listName: request.list_name,
       userId: request.user_id,
       clientDatabase: request.client_database,
       analysisIds: request.analysisIds,
+      isUploadListLpEnabled: featureFlag.enabled,
     });
   }
 

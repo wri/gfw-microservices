@@ -1,8 +1,12 @@
-import { SQLUtils } from '@wri-monorepos/sql';
+import { FeatureFlag, SQLUtils } from '@wri-monorepos/sql';
 import { AbstractHandler, ChainType, RequestNewList } from './types';
 import { CreateListResult } from '@wri-monorepos/geo';
 import * as sql from 'mssql';
 import { updateListsUploadStatus } from '../shared/update.lists.upload.status';
+import { featureFlagsService } from '@wri-monorepos/shared';
+
+const LIST_UPLOAD_VERSION = 2;
+const LIST_UPLOAD_LEGACY_VERSION = 0;
 
 export class CreateListLevelData extends AbstractHandler<ChainType> {
   private createSqlParameter(
@@ -40,7 +44,8 @@ export class CreateListLevelData extends AbstractHandler<ChainType> {
     locationClassification: string,
     customAttributeNames: string,
     customAttributeTypes: string,
-    gfwListId: number = null
+    gfwListId: number = null,
+    isUploadListLpFlagEnabled: boolean
   ): Promise<CreateListResult> {
     const parameters = [
       this.createSqlParameter('user_id', sql.Int, userId),
@@ -53,6 +58,11 @@ export class CreateListLevelData extends AbstractHandler<ChainType> {
       this.createSqlParameter('custom_attribute_names', sql.NVarChar(2000), customAttributeNames),
       this.createSqlParameter('custom_attribute_types', sql.NVarChar(2000), customAttributeTypes),
       this.createSqlParameter('associated_gfwlist', sql.TinyInt, gfwListId),
+      this.createSqlParameter(
+        'version',
+        sql.Int,
+        isUploadListLpFlagEnabled ? LIST_UPLOAD_VERSION : LIST_UPLOAD_LEGACY_VERSION
+      ),
     ];
 
     const result = await this.executeQueryWithParams<CreateListResult>(
@@ -84,6 +94,13 @@ export class CreateListLevelData extends AbstractHandler<ChainType> {
       template_id: templateId,
     } = input.request as RequestNewList;
 
+    const { getFeatureFlagsForCurrentOrg, getClientIdByClientStoreDatabaseName } =
+      await featureFlagsService();
+    const orgId = await getClientIdByClientStoreDatabaseName(clientDatabase);
+    const flags = await getFeatureFlagsForCurrentOrg(orgId);
+
+    const uploadListLpFlag = flags.find((f) => f.flagId === 'UploadListLp') as FeatureFlag;
+
     const connection = new SQLUtils();
 
     try {
@@ -100,7 +117,8 @@ export class CreateListLevelData extends AbstractHandler<ChainType> {
         locationClassification,
         customAttributeNames,
         customAttributeTypes,
-        gfwListId
+        gfwListId,
+        uploadListLpFlag?.flagState
       );
 
       await updateListsUploadStatus(

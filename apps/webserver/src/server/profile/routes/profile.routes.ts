@@ -1,6 +1,9 @@
 import * as controller from '../controllers/profile.controller';
 import express from 'express';
 import axios from 'axios';
+// import * as vc from '@digitalbazaar/vc';
+// import { Ed25519Signature2018 } from '@digitalbazaar/ed25519-signature-2018';
+// import { Ed25519VerificationKey2018 } from '@digitalbazaar/ed25519-verification-key-2018';
 
 import middlewares from '../../../config/publicutils/middlewares';
 import * as UserManager from '../../../config/publicutils/userManager.utils';
@@ -328,4 +331,26 @@ export = (app, limiter) => {
 
     next(request);
   });
+
+  const runGetPublicKey = async (request, response) => {
+    // const keyGenDetails = {
+    //   id: 'https://pro.globalforestwatch.org/publicKey/1',
+    //   controller: 'https://pro.globalforestwatch.org/vc-issuer/1'
+    // };
+    // const keyPair2018 = await Ed25519VerificationKey2018.generate(keyGenDetails);
+    // const envValue = btoa(JSON.stringify(keyPair2018));
+   return response.status(200).send({"publicKey": "my-public-key"});
+  };
+
+  const runVcIssuer = async (request, response) => {
+    const jsonVcContent = {
+      id: 'https://pro.globalforestwatch.org/vc-issuer/1',
+      '@context': 'https://www.w3.org/ns/did/v1',
+      assertionMethod: 'https://pro.globalforestwatch.org/publicKey/1'
+    };
+   return response.status(200).send({jsonVcContent});
+  };
+
+  app.get(`/publicKey/1`, [ runGetPublicKey]);
+  app.get(`/vc-issuer/1`, [ runVcIssuer]);
 };

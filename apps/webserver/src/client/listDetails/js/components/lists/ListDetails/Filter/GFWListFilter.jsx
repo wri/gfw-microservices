@@ -14,50 +14,6 @@ import { boxStyle, multipleSelectStyles, selectStyle } from './filterStyles';
 import store from '../../../../../../locations/js/store';
 import '../../../../../../common/css/filter-dialogs.scss';
 
-/**
- * Function that is used to filter locations within a GFW list.
- * @param {Object} location The location that we are filtering
- * @param {string} filterStr The string to filter based on user input
- * @param {string} selectedCountry The country
- * @param {string} selectedState The state
- * @param {string} selectedSubState The substate
- * @param {string} selectedParentCompany The parent company
- * @param {boolean} showRSPOCertified Boolean to determine if the user wants to filter for RSPO
- */
-const multiOptionsFilterLogic = (
-  location,
-  filterStr,
-  selectedCountry,
-  selectedState,
-  selectedSubState,
-  selectedParentCompany,
-  showRSPOCertified
-) => {
-  const locationName = location['Location Name'];
-  const investmentName = location['Investment Name'];
-
-  const initialFilter =
-    (locationName !== '' || investmentName !== '') &&
-    (locationName !== ' ' || investmentName !== ' ') &&
-    (selectedCountry === '' || selectedCountry === location.Country) &&
-    (selectedState === '' || selectedState === location.State) &&
-    (selectedSubState === '' || selectedSubState === location['Sub State']) &&
-    (selectedParentCompany === '' || selectedParentCompany === location['Parent Company']);
-
-  let stringSearchFilter = true;
-  if (filterStr.length > 0) {
-    stringSearchFilter =
-      (locationName && locationName.toLowerCase().includes(filterStr.toLowerCase())) ||
-      (investmentName && investmentName.toLowerCase().includes(filterStr.toLowerCase()));
-  }
-
-  let certifiedRSPO = false;
-  if ((location.Certification === 'RSPO' && showRSPOCertified) || !showRSPOCertified) {
-    certifiedRSPO = true;
-  }
-  return initialFilter && stringSearchFilter && certifiedRSPO;
-};
-
 export default class GFWListFilter extends Component {
   constructor(props) {
     super(props);
@@ -171,43 +127,24 @@ export default class GFWListFilter extends Component {
   };
 
   render() {
-    const { listData, list_name } = this.props;
+    const { listData, list_name, filterValues, locationNameOptionsForFilter } = this.props;
     const {
       selectedCountry,
       selectedState,
       selectedSubState,
       selectedParentCompany,
-      filterStr,
       showRSPOCertified,
       selectedNames,
     } = this.state;
 
-    const countries = [
-      ...new Set(
-        listData.filter((location) => location.Country !== '').map((list) => list.Country)
-      ),
-    ];
+    const countryList = Object.keys(filterValues).filter((name) => name !== 'null');
 
-    const states = [
-      ...new Set(
-        listData
-          .filter((location) => location.State !== '' && location.Country === selectedCountry)
-          .map((list) => list.State)
-      ),
-    ];
+    const stateList =
+      selectedCountry && selectedCountry in filterValues
+        ? Object.keys(filterValues[selectedCountry])
+        : [];
 
-    const subStates = [
-      ...new Set(
-        listData
-          .filter(
-            (location) =>
-              location['Sub State'] !== '' &&
-              location.Country === selectedCountry &&
-              location.State === selectedState
-          )
-          .map((list) => list['Sub State'])
-      ),
-    ];
+    const subStateList = selectedState ? filterValues[selectedCountry][selectedState] : [];
 
     // 1. Filter based on if company/state/substate is selected
     // 2. Grab just parent company values
@@ -234,26 +171,6 @@ export default class GFWListFilter extends Component {
       selectedParentCompany
     );
 
-    const multiOptions = listData
-      .filter((location) =>
-        multiOptionsFilterLogic(
-          location,
-          filterStr,
-          selectedCountry,
-          selectedState,
-          selectedSubState,
-          selectedParentCompany,
-          showRSPOCertified
-        )
-      )
-      .map((list) => {
-        return {
-          value: list.location_id,
-          label: list['Location Name'] || list['Investment Name'],
-        };
-      })
-      .sort((a, b) => a.label.toLowerCase().localeCompare(b.label.toLowerCase()));
-
     return (
       <Modal open onClose={this.close}>
         <Box sx={boxStyle}>
@@ -261,13 +178,13 @@ export default class GFWListFilter extends Component {
 
           <Grid container spacing={3}>
             <CountryStateSubStateFilter
-              countries={countries}
+              countries={countryList}
               selectedCountry={selectedCountry}
               onCountryChange={this.onCountryChange}
-              states={states}
+              states={stateList}
               selectedState={selectedState}
               onStateChange={this.onStateChange}
-              subStates={subStates}
+              subStates={subStateList}
               selectedSubState={selectedSubState}
               onSubStateChange={this.onSubStateChange}
             />
@@ -319,7 +236,7 @@ export default class GFWListFilter extends Component {
                 maxMenuHeight={150}
                 className="edge-multi-select"
                 onChange={(evt) => this.changeNames(evt)}
-                options={multiOptions}
+                options={locationNameOptionsForFilter}
                 value={selectedNames}
                 styles={multipleSelectStyles}
                 placeholder="LOCATIONS"

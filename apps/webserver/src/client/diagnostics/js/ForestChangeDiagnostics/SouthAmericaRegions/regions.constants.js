@@ -158,7 +158,7 @@ export const chartDatasetConfigs = {
       {
         id: 'nonIndigenous',
         color: nonOverlapAreaColor,
-        legend: 'Outside of Indigenous Territoriess',
+        legend: 'Outside of Indigenous Territories',
       },
     ],
   },

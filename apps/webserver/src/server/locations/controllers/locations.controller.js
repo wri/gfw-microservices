@@ -22,6 +22,7 @@ const { getCurrentDateTimeFormatted } = require('../../vectorTiles/utils/vectorT
 
 // Config
 const { getGeoJSONGeometry } = require('../../../config/privateutils/location.utils');
+const { GFW_LISTS_NUMBER_CONSTANTS } = require('../../../config/env/gfwLists.constants');
 
 // Logging
 const logger = require('../../../config/privateutils/logger.utils');
@@ -138,26 +139,36 @@ export const getUserLists = (req, res) => {
  */
 export const listFilterValues = async (request, response) => {
   const { id } = request.params;
-
+  const listId = Number(id);
   try {
-    let adminAreasLocations;
+    let countryStateAndSubstates;
+    let locationNameOptionsForFilter;
+    if (GFWlistManager.isGfwList(listId)) {
+      const adminAreasLocations = await GFWlistManager.getGFWListLocationsNoGeom(request, id);
 
-    if (GFWlistManager.isGfwList(Number(id))) {
-      adminAreasLocations = await GFWlistManager.getGFWListLocationsNoGeom(request, id);
-      adminAreasLocations = adminAreasLocations.map(
+      countryStateAndSubstates = adminAreasLocations.map(
         ({ Country, State, 'Sub State': SubState }) => ({
           Country,
           State,
           'Sub State': SubState,
         })
       );
+
+      if (listId === GFW_LISTS_NUMBER_CONSTANTS.OIL_PALM_CONCESSIONS) {
+        locationNameOptionsForFilter = adminAreasLocations
+          .map(({ 'Location Name': locationName, location_id }) => ({
+            value: location_id,
+            label: locationName,
+          }))
+          .sort((a, b) => a.label.toLowerCase().localeCompare(b.label.toLowerCase()));
+      }
     } else {
-      adminAreasLocations = await ListManager.getListAdminAreasOrderedByCountry(request, id);
+      countryStateAndSubstates = await ListManager.getListAdminAreasOrderedByCountry(request, id);
     }
 
-    const filterValues = formatListLocationDataForFilter(adminAreasLocations);
+    const filterValues = formatListLocationDataForFilter(countryStateAndSubstates);
 
-    response.status(200).json(filterValues);
+    response.status(200).json({ filterValues, locationNameOptionsForFilter });
   } catch (err) {
     logger.error(`Getting list filter data failed: /listData/filters/${id}. Error message ${err}`);
     response.send({});

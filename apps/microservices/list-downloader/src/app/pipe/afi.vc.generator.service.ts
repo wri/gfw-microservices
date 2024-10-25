@@ -31,7 +31,7 @@ export class AfiVcGeneratorService extends IFileGenerator {
       this.logger.error(`Service not found for type: ${type} and file: ${file}`);
       return;
     }
-    const service = await this.defineService(filters);
+    const service = this.defineService(filters);
     await this.runAfiFileGeneration(filters);
     await service.finish(filters);
   }

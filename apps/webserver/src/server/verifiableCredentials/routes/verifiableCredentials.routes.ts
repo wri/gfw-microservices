@@ -5,7 +5,7 @@ import * as logger from '../../../config/privateutils/logger.utils';
  * @static
  * @summary verifiableCredentials page routes
  */
-export = (app, limiter) => {
+export = (app) => {
   /**
    * @name /verifiableCredentials
    * @see verifiableCredentials.controller

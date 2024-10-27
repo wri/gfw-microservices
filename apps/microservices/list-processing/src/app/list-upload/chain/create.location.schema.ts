@@ -106,7 +106,7 @@ export class CreateLocationSchema extends AbstractHandler<ChainType> {
       organization_database,
       analysisTable,
       listStatusId,
-      analysisIds,
+      analysis_types: analysisIds,
       template_id,
     } = input.request as RequestNewList;
 

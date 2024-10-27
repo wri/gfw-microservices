@@ -4,7 +4,7 @@ import { ClientStoreConnection, ListSchema, ListSchemaType } from '@wri-monorepo
 import { FeatureCollection } from '@wri-monorepos/geo';
 import { GeoJSONGeometry, stringify } from 'wellknown';
 
-const BATCH_SIZE = 1000;
+const BATCH_SIZE = 100;
 
 export class InsertLocationData extends AbstractHandler<ChainType> {
   private clientStoreConnection: ClientStoreConnection;

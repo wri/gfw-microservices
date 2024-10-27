@@ -350,9 +350,11 @@ export class ListAnalysisService {
         organization_database: organizationDetails.organizationDb,
         subscription_status_id: organizationDetails.subscriptionStatusId,
         path: saveListToProcess.data.s3_location,
+        listName: newListDetails.listName,
         // Forcing template_type because only cocoa_generic is supported
         // LP verifies the field is a string
         template_type: 'cocoa_generic',
+        template_id: 13,
         user_id: externalUpload.userId,
         startAnalysis: true,
         isExternalAPIProcess: true,

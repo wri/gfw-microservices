@@ -69,6 +69,7 @@ export class ListService {
     const uploadListLpFlag = flags.find((f) => f.flagId === 'UploadListLp') as FeatureFlag;
 
     if (uploadListLpFlag.flagState) {
+      request.path = request.path.replace('s3://gfwpro-lpl-dev/', '');
       return this.startAnalysisService.run(request);
     }
     return this.deprecatedStartAnalysisService.run(request);
@@ -81,11 +82,18 @@ export class ListService {
     analysisIds,
     templateId = 13,
     gfwListId = null,
-    isUploadListLpEnabled,
+    isUploadListLpEnabled = false,
   }: {
     templateId?: number;
     gfwListId?: number | null;
+    isUploadListLpEnabled?: boolean;
   } & Partial<CreateListRequest>): Promise<CreateListResult> {
+    if (isUploadListLpEnabled) {
+      return {
+        list_id: -1,
+      };
+    }
+
     const list = createListNameSchema(listName);
     const listTable = list.list_table;
     const analysisTable = list.analysis_table;

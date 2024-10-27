@@ -234,6 +234,7 @@ describe('AppController', () => {
         list_name: listName,
         user_id: userId,
         analysisIds: ['FCD', 'ALERTS'],
+        organization_id: 10,
       };
       const result = await appController.triggerProcessLargeList(requestLargeListCreation);
 
@@ -276,6 +277,7 @@ describe('AppController', () => {
         list_name: listName,
         user_id: userId,
         analysisIds: ['FCD', 'ALERTS'],
+        organization_id: 10,
       };
       const trigguerProccessResult = await appController.triggerProcessLargeList(
         requestLargeListProcess

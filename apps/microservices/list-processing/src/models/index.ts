@@ -69,7 +69,7 @@ export class RequestLargeListProcess {
   list_name?: string;
 
   @ApiProperty()
-  analysisIds?: Array<string>;
+  analysis_types?: Array<string>;
 
   @ApiProperty()
   template_id?: number;
@@ -100,6 +100,9 @@ export class RequestTriggerProcessLargeList {
   client_database: string;
   @ApiProperty()
   analysisIds: Array<string>;
+
+  @ApiProperty()
+  organization_id: number;
 }
 
 export class CreateListRequest {
@@ -113,7 +116,12 @@ export class CreateListRequest {
   analysisIds: Array<string>;
   @ApiProperty()
   filename: string;
-  isUploadListLpEnabled?: boolean;
+
+  @ApiProperty()
+  organization_id: number;
+
+  @ApiProperty()
+  isUploadListLpEnabled: boolean;
 }
 
 export class CopyOrMoveLargeListRequestLLP implements CopyOrMoveLargeListRequest {

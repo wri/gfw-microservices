@@ -117,6 +117,7 @@ export class AppController {
     return this.listService.createListTables({
       listName: request.list_name,
       userId: request.user_id,
+      organization_id: request.organization_id,
       clientDatabase: request.client_database,
       analysisIds: request.analysisIds,
       isUploadListLpEnabled: featureFlag.enabled,

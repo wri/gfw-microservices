@@ -45,7 +45,7 @@ export class ConvertPoint2Polygon extends AbstractHandler<ChainType> {
       radius = DEFAULT_LOCATION_RADIUS;
     }
 
-    return this.GeometryEngine.geodesicBuffer(point, radius, 'kilometers');
+    return await this.GeometryEngine.geodesicBuffer(point, radius, 'kilometers');
   }
 
   async geomFromLatLongRadiusArea(latitudeInput, longitudeInput, featureRadius, featureArea) {

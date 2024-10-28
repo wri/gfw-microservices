@@ -169,7 +169,7 @@ function AfiDiagnostics() {
               <AfiDiagnosticsTable
                 data={tableData}
                 forestLossDataset={forestLossDataset}
-                isLocationLevel={locationId > 0}
+                isLocationLevel={!!locationId}
               />
               {isNegligibleRiskAvailable && (
                 <>

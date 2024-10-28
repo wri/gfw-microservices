@@ -2,7 +2,7 @@ import MiniCssExtractPlugin from 'mini-css-extract-plugin';
 import webpack from 'webpack';
 import path from 'path';
 import config from './config';
-import clientConfig from './client.configs';
+import * as clientConfig from './client.configs';
 
 const entries = clientConfig.entries;
 const aliases = clientConfig.aliases;

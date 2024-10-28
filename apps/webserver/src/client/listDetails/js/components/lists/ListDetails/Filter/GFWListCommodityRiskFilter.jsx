@@ -12,6 +12,7 @@ import CountryStateSubStateFilter from './CountryStateSubStateFilter';
 import { checkSelectedFilter } from '../../../../../../locations/js/utils/locationsTableUtils';
 import { getFilterCounter } from '../../../../../../locations/js/utils/lists.utils';
 import { defaultFilterValues } from '../../defaultFilterValues';
+import filterCountryStateAndSubStateOptions from './filterCountryStateAndSubStateOptions';
 import { boxStyle, selectStyle, multipleSelectStyles } from './filterStyles';
 import store from '../../../../../../locations/js/store';
 import '../../../../../../common/css/filter-dialogs.scss';
@@ -85,41 +86,29 @@ export default class GFWListCommodityRiskFilter extends Component {
     });
   };
 
+  toggleCheckboxSelection = (key, value) => {
+    this.setState((prevState) => {
+      const currentlySelected = [...prevState[key]];
+      if (currentlySelected.includes(value)) {
+        // Remove item if it exists
+        return { [key]: currentlySelected.filter((item) => item !== value) };
+      } else {
+        // Add item if it doesn't exist
+        return { [key]: [...currentlySelected, value] };
+      }
+    });
+  };
+
   changeOverallThreats = (evt) => {
-    const myList = this.state.selectedOverallThreats;
-    let elemIndex = myList.findIndex((item) => item === evt.value);
-    if (elemIndex === -1) {
-      myList.push(evt.value);
-      this.setState({ selectedOverallThreats: myList });
-    } else {
-      myList.splice(elemIndex, 1);
-      this.setState({ selectedOverallThreats: myList });
-    }
+    this.toggleCheckboxSelection('selectedOverallThreats', evt.target.value);
   };
 
   changeOverallValues = (evt) => {
-    const myList = this.state.selectedOverallValues;
-    let elemIndex = myList.findIndex((item) => item === evt.value);
-    if (elemIndex === -1) {
-      myList.push(evt.value);
-      this.setState({ selectedOverallValues: myList });
-    } else {
-      myList.splice(elemIndex, 1);
-      this.setState({ selectedOverallValues: myList });
-    }
+    this.toggleCheckboxSelection('selectedOverallValues', evt.target.value);
   };
 
   changeMillPriority = (evt) => {
-    console.log({ evt });
-    const myList = this.state.selectedMillPriority;
-    let elemIndex = myList.findIndex((item) => item === evt.value);
-    if (elemIndex === -1) {
-      myList.push(evt.value);
-      this.setState({ selectedMillPriority: myList });
-    } else {
-      myList.splice(elemIndex, 1);
-      this.setState({ selectedMillPriority: myList });
-    }
+    this.toggleCheckboxSelection('selectedMillPriority', evt.target.value);
   };
 
   onShowRSPOCertifiedChange = () => {
@@ -149,7 +138,8 @@ export default class GFWListCommodityRiskFilter extends Component {
   };
 
   render() {
-    const { listData } = this.props;
+    const { filterValues, locationNameOptionsForFilter, parentCompanyOptionsForFilter } =
+      this.props;
     const {
       selectedCountry,
       selectedState,
@@ -162,122 +152,68 @@ export default class GFWListCommodityRiskFilter extends Component {
       selectedOverallValues,
     } = this.state;
 
-    const countries = [
-      ...new Set(
-        listData.filter((location) => location.Country !== '').map((list) => list.Country)
-      ),
-    ].sort();
+    const { countryList, stateList, subStateList } = filterCountryStateAndSubStateOptions(
+      filterValues,
+      selectedCountry,
+      selectedState
+    );
 
-    const states = [
-      ...new Set(
-        listData
-          .filter((location) => location.State !== '' && location.Country === selectedCountry)
-          .map((list) => list.State)
-      ),
+    const passesFilter = (location, filters) => {
+      return filters.every(
+        ({ key, values }) => values.length === 0 || checkSelectedFilter(location, key, values)
+      );
+    };
+
+    const commodityFilters = [
+      { key: 'commodity_threat_overall_level', values: selectedOverallThreats },
+      { key: 'commodity_value_overall_level', values: selectedOverallValues },
+      { key: 'commodity_mill_priority_level', values: selectedMillPriority },
     ];
 
-    const subStates = [
-      ...new Set(
-        listData
-          .filter(
-            (location) =>
-              location['Sub State'] !== '' &&
-              location.Country === selectedCountry &&
-              location.State === selectedState
-          )
-          .map((list) => list['Sub State'])
-      ),
-    ];
+    const matchesParentCompanyCriteria = (location) => {
+      return (
+        (selectedCountry === '' || selectedCountry === location.country) &&
+        (selectedState === '' || selectedState === location.state) &&
+        (selectedSubState === '' || selectedSubState === location.subState) &&
+        (!showRSPOCertified || location.certification === 'RSPO')
+      );
+    };
+    const filteredparentCompanyOptions = parentCompanyOptionsForFilter
+      ?.filter(
+        (location) =>
+          passesFilter(location, commodityFilters) && matchesParentCompanyCriteria(location)
+      )
+      ?.slice(0, 400);
 
-    const parentCompaniesList = [
-      ...new Set(
-        listData
-          .filter(
-            (location) =>
-              location['Parent Company'] &&
-              (selectedCountry === '' || selectedCountry === location.Country) &&
-              (selectedState === '' || selectedState === location.State) &&
-              (selectedSubState === '' || selectedSubState === location['Sub State'])
-          )
-          .map((list) => list['Parent Company'])
-      ),
-    ].sort();
+    const matchesLocationCriteria = (location) => {
+      return (
+        (selectedCountry === '' || selectedCountry === location.country) &&
+        (selectedState === '' || selectedState === location.state) &&
+        (selectedSubState === '' || selectedSubState === location.subState) &&
+        (selectedParentCompany === '' || selectedParentCompany === location.parentCompany) &&
+        (!showRSPOCertified || location.certification === 'RSPO')
+      );
+    };
 
-    const selectedNameLabels = selectedNames.map((v) => v.label.toLowerCase());
-    const millList = listData
-      .filter((location) => {
-        const initialFilter =
-          location['Location Name'] !== '' &&
-          location['Location Name'] !== ' ' &&
-          !selectedNameLabels.includes(location['Location Name'].toLowerCase()) &&
-          (selectedCountry === '' || selectedCountry === location.Country) &&
-          (selectedState === '' || selectedState === location.State) &&
-          (selectedSubState === '' || selectedSubState === location['Sub State']) &&
-          (selectedParentCompany === '' || selectedParentCompany === location['Parent Company']);
-
-        let certifiedRSPO = false;
-        if ((location.Certification === 'RSPO' && showRSPOCertified) || !showRSPOCertified) {
-          certifiedRSPO = true;
-        }
-
-        let selectedOverallThreatsFilter = true;
-        if (selectedOverallThreats.length > 0) {
-          selectedOverallThreatsFilter = checkSelectedFilter(
-            location,
-            'commodity_threat_overall_level',
-            selectedOverallThreats
-          );
-        }
-
-        let selectedOverallValuesFilter = true;
-        if (selectedOverallValues.length > 0) {
-          selectedOverallValuesFilter = checkSelectedFilter(
-            location,
-            'commodity_value_overall_level',
-            selectedOverallValues
-          );
-        }
-
-        let selectedMillPriorityFilter = true;
-        if (selectedMillPriority.length > 0) {
-          selectedMillPriorityFilter = checkSelectedFilter(
-            location,
-            'commodity_mill_priority_level',
-            selectedMillPriority
-          );
-        }
-
-        return (
-          initialFilter &&
-          certifiedRSPO &&
-          selectedMillPriorityFilter &&
-          selectedOverallThreatsFilter &&
-          selectedOverallValuesFilter
-        );
+    const filteredLocationNameOptions = locationNameOptionsForFilter
+      ?.filter((location) => {
+        return passesFilter(location, commodityFilters) && matchesLocationCriteria(location);
       })
-      .map((list) => {
-        return {
-          id: list.location_id,
-          label: list['Location Name'],
-        };
-      })
-      .sort((a, b) => a.label.toLowerCase().localeCompare(b.label.toLowerCase()))
-      .map((v) => {
-        return { label: v.label, value: v.id };
-      });
+      ?.slice(0, 400);
+
     return (
       <Modal open onClose={this.close}>
         <Box sx={boxStyle}>
           <h3>Filters</h3>
           <Grid container spacing={3}>
             <CountryStateSubStateFilter
-              countries={countries}
+              countries={countryList}
               selectedCountry={selectedCountry}
               onCountryChange={this.onCountryChange}
-              states={states}
+              states={stateList}
               selectedState={selectedState}
               onStateChange={this.onStateChange}
-              subStates={subStates}
+              subStates={subStateList}
               selectedSubState={selectedSubState}
               onSubStateChange={this.onSubStateChange}
             />
@@ -301,9 +237,9 @@ export default class GFWListCommodityRiskFilter extends Component {
                   onChange={this.onParentCompanyChange}
                   label="Parent company"
                 >
-                  {parentCompaniesList.map((option) => (
-                    <MenuItem key={option} value={option}>
-                      {option}
+                  {filteredparentCompanyOptions.map(({ label, value }) => (
+                    <MenuItem key={value} value={value}>
+                      {label}
                     </MenuItem>
                   ))}
                 </Select>
@@ -456,7 +392,7 @@ export default class GFWListCommodityRiskFilter extends Component {
 
             <Grid item xs={12}>
               <ReactSelect
-                options={millList}
+                options={filteredLocationNameOptions}
                 onChange={this.changeNames}
                 isMulti
                 isSearchable

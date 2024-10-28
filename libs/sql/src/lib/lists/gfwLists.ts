@@ -88,7 +88,13 @@ export class GfwLists {
       const take = pageSize === 0 ? this.DEFAULT_PAGE_SIZE : pageSize;
       const skip = pageNum > 0 ? pageNum * take : this.DEFAULT_PAGE_NUM;
 
-      const queryBuilder = listRepository.createQueryBuilder();
+      const queryBuilder = listRepository.createQueryBuilder('list');
+
+      queryBuilder.leftJoin(
+        'analysis-palmOilMills',
+        'analysis',
+        'list.location_id = analysis.location_id'
+      );
 
       if (filters.selectedCountry && filters.selectedCountry !== '') {
         queryBuilder.andWhere('Country = :country', { country: filters.selectedCountry });
@@ -110,14 +116,13 @@ export class GfwLists {
 
       const sortOrder: 'DESC' | 'ASC' = tableSortedDesc ? 'DESC' : 'ASC';
 
-      queryBuilder
-        .skip(skip)
-        .take(take)
+      queryBuilder.skip(skip).take(take);
+      //  .orderBy(tableSortedBy.length ? `list."${tableSortedBy}"` : 'list.location_id', sortOrder);
 
-        .orderBy(tableSortedBy.length ? `"${tableSortedBy}"` : 'location_id', sortOrder);
+      // .orderBy(tableSortedBy.length ? `"${tableSortedBy}"` : 'location_id', sortOrder);
 
       const [items, count] = await queryBuilder.getManyAndCount();
-
+      console.log({ items });
       if (!items) {
         this.logger.error('ListsPalmOilMills: lists not found');
         throw new NotFoundException(`ListsPalmOilMills with list_id ${list_id} not found.`);

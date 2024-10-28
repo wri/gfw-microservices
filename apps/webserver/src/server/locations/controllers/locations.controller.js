@@ -154,10 +154,10 @@ export const listFilterValues = async (request, response) => {
           'Sub State': SubState,
         })
       );
-
       if (
         listId === GFW_LISTS_NUMBER_CONSTANTS.OIL_PALM_CONCESSIONS ||
-        GFW_LISTS_NUMBER_CONSTANTS.PALM_OIL_MILLS
+        listId === GFW_LISTS_NUMBER_CONSTANTS.PALM_OIL_MILLS ||
+        listId === GFW_LISTS_NUMBER_CONSTANTS.RSPO_PALM_CONCESSIONS
       ) {
         locationNameOptionsForFilter = Array.from(
           new Map(
@@ -171,6 +171,9 @@ export const listFilterValues = async (request, response) => {
                   State: state,
                   'Parent Company': parentCompany,
                   Certification: certification,
+                  commodity_threat_overall_level,
+                  commodity_value_overall_level,
+                  commodity_mill_priority_level,
                 }) => ({
                   value,
                   label,
@@ -179,6 +182,9 @@ export const listFilterValues = async (request, response) => {
                   state,
                   parentCompany,
                   certification,
+                  commodity_threat_overall_level,
+                  commodity_value_overall_level,
+                  commodity_mill_priority_level,
                 })
               )
               .filter((location) => !!location.label) // Filter out items with a falsy label
@@ -200,6 +206,9 @@ export const listFilterValues = async (request, response) => {
                   Country: country,
                   State: state,
                   Certification: certification,
+                  commodity_threat_overall_level,
+                  commodity_value_overall_level,
+                  commodity_mill_priority_level,
                 }) => ({
                   value,
                   label,
@@ -207,6 +216,9 @@ export const listFilterValues = async (request, response) => {
                   country,
                   state,
                   certification,
+                  commodity_threat_overall_level,
+                  commodity_value_overall_level,
+                  commodity_mill_priority_level,
                 })
               )
               .filter((location) => !!location.label) // Filter out items with a falsy label

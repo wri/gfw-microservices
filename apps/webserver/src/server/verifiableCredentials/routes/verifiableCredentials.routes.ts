@@ -1,16 +1,22 @@
 import * as logger from '../../../config/privateutils/logger.utils';
-
+import middlewares from '../../../config/publicutils/middlewares';
+import rateLimiterUtil from '../../../config/lib/limiter-util';
 /**
  * @name exports
  * @static
  * @summary verifiableCredentials page routes
  */
-export = (app) => {
+export = (app, limiter) => {
   /**
    * @name /verifiableCredentials
    * @see verifiableCredentials.controller
    * @memberof Router
    */
+
+  const routeMiddlewares = [];
+  if (rateLimiterUtil.useRateLimiter()) {
+    routeMiddlewares.push(limiter(middlewares.rateLimitUnauthenticated));
+  }
 
   const getPublicKey = async (request, response) => {
     logger.info('GET /publicKey/1');
@@ -69,9 +75,9 @@ export = (app) => {
     return response.status(200).send({ geoJsonDefReport });
   };
 
-  app.get('/geojson-defreport.jsonld', [getGeoJsonDefReport]);
+  app.get('/geojson-defreport.jsonld', [...routeMiddlewares, getGeoJsonDefReport]);
 
-  app.get(`/publicKey/1`, [getPublicKey]);
+  app.get(`/publicKey/1`, [...routeMiddlewares, getPublicKey]);
 
-  app.get(`/vc-issuer/1`, [getVcIssuer]);
+  app.get(`/vc-issuer/1`, [...routeMiddlewares, getVcIssuer]);
 };

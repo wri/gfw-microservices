@@ -5,1119 +5,1120 @@ CREATE PROCEDURE [dbo].[uspActivatePendingAccount]
    @UserSecret VARCHAR(50),
    @ActivatedTime SMALLDATETIME
 AS
-	--Declare Error Handler Variables.
-	DECLARE @ErrorMessage   varchar(2000) ,@ErrorSeverity  tinyint ,@ErrorState     tinyint
-
-	-- Obtain Organization Name.
-	DECLARE @OrgName NVARCHAR(200)
-	DECLARE @OrgdbName NVARCHAR(128)
-
-	BEGIN TRY
-		-- Get Organization Name
-		SELECT @OrgName = organization_name FROM PendingAccounts WHERE id = @PendingAccountID
-
-		-- Set Database Name.
-		SET @OrgdbName = REPLACE(@OrgName, ' ', '')
-		SET @OrgdbName = CONCAT('clientstore-', @OrgdbName)
-		SET @OrgdbName = SUBSTRING(@OrgdbName, 1, 128)
-
-		-- Obtain Pending Accounts Manager Id and Email.
-		DECLARE @pendingAccountManagerID INT
-		DECLARE @pendingAccountManagerEmail NVARCHAR(50)
-		DECLARE @pendingAccountManagerFirstName NVARCHAR(35)
-		DECLARE @pendingAccountManagerLastName NVARCHAR(35)
-		SELECT @pendingAccountManagerID = id, @pendingAccountManagerEmail = email, @pendingAccountManagerFirstName = first_name, @pendingAccountManagerLastName = last_name
-		FROM PendingAccountsUsers WHERE pendingaccounts_id = @PendingAccountID
-
-		--Create Database for the Account.
-		DECLARE @TEMPLATE NVARCHAR(MAX)
-		DECLARE @SQL NVARCHAR(MAX)
-		SET @TEMPLATE = 'CREATE DATABASE [{DATABASENAME}]; ALTER DATABASE [{DATABASENAME}] SET RECOVERY SIMPLE;'
-		SET @SQL = REPLACE(@TEMPLATE, '{DATABASENAME}', @OrgdbName)
-		EXEC sp_executesql @SQL
-
-		/********************************************************
-		* CREATE ALL THE TABLES.
-		********************************************************/
-		SET @TEMPLATE = 'CREATE TABLE [{DATABASENAME}].[dbo].[ListsUploadStatus]
-		(
-			[id] INT IDENTITY(1, 1) NOT NULL,
-			[list_id] INT,
-			[last_successful_stage] NVARCHAR(128) DEFAULT ''{}'',
-			[error_info] NVARCHAR(512) DEFAULT ''{}'',
-			[update_time] DATETIME,
-			[worker_instance_id] NVARCHAR(128) DEFAULT ''{}'',
-			CONSTRAINT [PK_ListsUploadStatus] PRIMARY KEY CLUSTERED(id)
-		 )'
-		SET @SQL = REPLACE(@TEMPLATE, '{DATABASENAME}', @OrgdbName)
-		EXEC sp_executesql @SQL
-
-		SET @TEMPLATE = 'CREATE TABLE [{DATABASENAME}].[dbo].[AccountProfile]
-		(
-			[id] INT IDENTITY(1,1) NOT NULL,
-			[organization_name] NVARCHAR(200) NOT NULL,
-			[organization_address] NVARCHAR(200) NOT NULL,
-			[organization_website] NVARCHAR(200) NOT NULL,
-			[organization_is_subsidiary] BIT NOT NULL,
-			[organization_parent] NVARCHAR(200) NOT NULL,
-			[manager_user_id] INT NOT NULL,
-			CONSTRAINT [PK_AccountProfile] PRIMARY KEY CLUSTERED(id)
-		 )'
-		SET @SQL = REPLACE(@TEMPLATE, '{DATABASENAME}', @OrgdbName)
-		EXEC sp_executesql @SQL
-
-		SET @TEMPLATE = 'CREATE TABLE [{DATABASENAME}].[dbo].[AccountClassifications]
-		(
-			[id] INT IDENTITY(1,1) NOT NULL,
-			[classification_id] INT NOT NULL,
-			CONSTRAINT [PK_AccountClassifications] PRIMARY KEY CLUSTERED(id)
-		)'
-		SET @SQL = REPLACE(@TEMPLATE, '{DATABASENAME}', @OrgdbName)
-		EXEC sp_executesql @SQL
-
-		SET @TEMPLATE = 'CREATE TABLE [{DATABASENAME}].[dbo].[InternalShareRoutes]
-		(
-			[id] [int] IDENTITY(1,1) NOT NULL,
-			[admin_id] [int] NOT NULL,
-			[user_id] [int] NOT NULL,
-			[list_id] [int] NOT NULL,
-			[datetime] [datetime] NOT NULL,
-			CONSTRAINT [PK_InternalShareRoutes] PRIMARY KEY CLUSTERED (id)
-		)'
-		SET @SQL = REPLACE(@TEMPLATE, '{DATABASENAME}', @OrgdbName)
-		EXEC sp_executesql @SQL
-
-		SET @TEMPLATE = 'CREATE TABLE [{DATABASENAME}].[dbo].[SharingStatuses]
-		(
-			[id] INT IDENTITY(1,1) NOT NULL,
-			[sharing_status] NVARCHAR(50) NOT NULL,
-			CONSTRAINT [PK_SharingStatuses] PRIMARY KEY CLUSTERED(id)
-		)'
-		SET @SQL = REPLACE(@TEMPLATE, '{DATABASENAME}', @OrgdbName)
-		EXEC sp_executesql @SQL
-
-		SET @TEMPLATE = 'CREATE TABLE [{DATABASENAME}].[dbo].[Users]
-		(
-			[id] INT IDENTITY(1,1) NOT NULL,
-			[first_name] NVARCHAR(35) NOT NULL,
-			[middle_initial] NVARCHAR(2) NOT NULL,
-			[last_name] NVARCHAR(35) NOT NULL,
-			[email] NVARCHAR(50) NOT NULL,
-			[phone] VARCHAR(50) NOT NULL,
-			[title_id] INT NOT NULL,
-			[other_title] NVARCHAR(150),
-			[access_level_id] INT NOT NULL,
-			[status_id] INT NOT NULL,
-			[activated_time] SMALLDATETIME,
-			[email_subscription] BIT NOT NULL,
-			[is_system_user] BIT NOT NULL,
-			[initial_login] SMALLDATETIME,
-			[viirs_email_frequency] INT,
-			[glad_email_frequency] INT,
-			[forma_email_frequency] INT,
-			[terrai_email_frequency] INT,
-			[gran_chaco_email_frequency] INT,
-			CONSTRAINT [PK_Users] PRIMARY KEY CLUSTERED(id),
-			CONSTRAINT [UQ_UserEmail] UNIQUE(email),
-			INDEX [Users_01] NONCLUSTERED(id)
-		 )'
-		SET @SQL = REPLACE(@TEMPLATE, '{DATABASENAME}', @OrgdbName)
-		EXEC sp_executesql @SQL
-
-		SET @TEMPLATE = 'CREATE TABLE [{DATABASENAME}].[dbo].[UserCommodities]
-		(
-			[id] INT IDENTITY(1,1) NOT NULL,
-			[user_id] INT NOT NULL,
-			[commodity_id] INT NOT NULL,
-			CONSTRAINT [PK_UserCommodities] PRIMARY KEY CLUSTERED(id),
-			INDEX [UserCommodities_01] NONCLUSTERED(user_id)
-		 )'
-		SET @SQL = REPLACE(@TEMPLATE, '{DATABASENAME}', @OrgdbName)
-		EXEC sp_executesql @SQL
-
-		SET @TEMPLATE = 'CREATE TABLE [{DATABASENAME}].[dbo].[UserGeographies]
-		(
-			[id] INT IDENTITY(1,1) NOT NULL,
-			[user_id] INT NOT NULL,
-			[geography_id] INT NOT NULL,
-			CONSTRAINT [PK_UserGeographies] PRIMARY KEY CLUSTERED(id),
-			INDEX [UserGeographies_01] NONCLUSTERED(user_id)
-		 )'
-		SET @SQL = REPLACE(@TEMPLATE, '{DATABASENAME}', @OrgdbName)
-		EXEC sp_executesql @SQL
-
-		SET @TEMPLATE = 'CREATE TABLE [{DATABASENAME}].[dbo].[ActivityLog]
-		(
-			[id] INT IDENTITY(1,1) NOT NULL,
-			[user_id] INT NOT NULL,
-			[activity_type_id] INT NOT NULL,
-			[activity_description] NVARCHAR(MAX) NOT NULL,
-			[activity_time] DATETIME NOT NULL,
-			CONSTRAINT [PK_ActivityLog] PRIMARY KEY CLUSTERED(id)
-		)'
-		SET @SQL = REPLACE(@TEMPLATE, '{DATABASENAME}', @OrgdbName)
-		EXEC sp_executesql @SQL
-
-		SET @TEMPLATE = 'CREATE TABLE [{DATABASENAME}].[dbo].[Lists]
-		(
-			[id] INT IDENTITY(1,1) NOT NULL,
-			[user_id] INT NOT NULL,
-			[template_id] INT NOT NULL,
-			[list_name] NVARCHAR(150) NOT NULL,
-			[list_table_name] NVARCHAR(150) NOT NULL,
-			[list_analysis_table_name] NVARCHAR(150) NOT NULL,
-			[list_status_id] INT NOT NULL,
-			[list_error_message] NVARCHAR(2000),
-			[location_classification] NVARCHAR(150),
-			[custom_attribute_names] NVARCHAR(2000),
-			[custom_attribute_types] NVARCHAR(2000),
-			[list_locations_count] INT,
-			[lock_status] SMALLDATETIME DEFAULT NULL,
-			[lock_user_id] INT,
-			[associated_gfwlist] TINYINT,
-			[dashboard_last_submit] datetime2 NULL,
-			[dashboard_last_results] datetime2 NULL,
-			[vector_tiles_storage_path] NVARCHAR(300) NULL,
-			[error_file_storage_path] NVARCHAR(300) NULL,
-			[vector_tiles_last_updated] DATETIME2 NULL,
-			[version] INT NOT NULL DEFAULT 0,
-
-			INDEX [IX_Lists_1] NONCLUSTERED(list_name, list_table_name, list_analysis_table_name),
-			INDEX [IX_Lists_2] NONCLUSTERED(list_table_name),
-			CONSTRAINT [PK_Lists] PRIMARY KEY CLUSTERED(id)
-		)'
-		SET @SQL = REPLACE(@TEMPLATE, '{DATABASENAME}', @OrgdbName)
-		EXEC sp_executesql @SQL
-
-    SET @TEMPLATE = 'CREATE TABLE [{DATABASENAME}].[dbo].[ListAttributes]
-      (
-        [id] INT NOT NULL,
-        [list_id] INT NULL,
-        [attribute_name] NVARCHAR(64),
-        [attribute_type] SMALLINT
-      )'
-    SET @SQL = REPLACE(@TEMPLATE, '{DATABASENAME}', @OrgdbName)
-    EXEC sp_executesql @SQL
-
-		SET @TEMPLATE = 'CREATE TABLE [{DATABASENAME}].[dbo].[LargeLists]
-		(
-			[large_list_id] INT IDENTITY(1,1) NOT NULL,
-			[list_id] [int] NOT NULL,
-			[organization_user_id] [int] NOT NULL,
-			[list_name] [nvarchar] (150) COLLATE SQL_Latin1_General_CP1_CI_AS NOT NULL,
-			[s3_filename] [nvarchar] (150) COLLATE SQL_Latin1_General_CP1_CI_AS NULL,
-			[s3_location] [nvarchar] (255) COLLATE SQL_Latin1_General_CP1_CI_AS NULL,
-			[list_status] [nvarchar] (20) COLLATE SQL_Latin1_General_CP1_CI_AS NOT NULL,
-			[creation_date] [datetime] NOT NULL,
-			[modification_date] [datetime] NULL
-
-			CONSTRAINT [PK_LargeLists] PRIMARY KEY CLUSTERED(large_list_id)
-		)'
-		SET @SQL = REPLACE(@TEMPLATE, '{DATABASENAME}', @OrgdbName)
-		EXEC sp_executesql @SQL
-
-		-- Dashboard Analysis Table for all lists
-		SET @TEMPLATE = 'CREATE TABLE [{DATABASENAME}].[dbo].[Analyses-Dashboard]
-		(
-			[id] INT IDENTITY(1,1) NOT NULL,
-			[list_id] INT NOT NULL,
-			[location_id] INT NULL,
-			[gadm_id] NVARCHAR(25) NULL,
-			[glad_alerts_coverage] NVARCHAR(MAX) NULL,
-			[glad_alerts_daily] NVARCHAR(MAX) NULL,
-			[glad_alerts_weekly] NVARCHAR(MAX) NULL,
-			[glad_alerts_monthly] NVARCHAR(MAX) NULL,
-			[viirs_alerts_daily] NVARCHAR(MAX) NULL,
-			[tree_cover_extent_total] decimal(18, 6) NULL,
-			[integrated_alerts_coverage] NVARCHAR(MAX) DEFAULT ''{}'',
-			[total_ha] FLOAT NULL,
-			[integrated_alerts_daily_all_nominal] NVARCHAR(MAX) DEFAULT ''{}'',
-			[integrated_alerts_daily_all_high] NVARCHAR(MAX) DEFAULT ''{}'',
-			[integrated_alerts_daily_all_highest] NVARCHAR(MAX) DEFAULT ''{}'',
-			[integrated_alerts_daily_sbtn_nominal] NVARCHAR(MAX) DEFAULT ''{}'',
-			[integrated_alerts_daily_sbtn_high] NVARCHAR(MAX) DEFAULT ''{}'',
-			[integrated_alerts_daily_sbtn_highest] NVARCHAR(MAX) DEFAULT ''{}'',
-			[integrated_alerts_daily_jrc_nominal] NVARCHAR(MAX) DEFAULT ''{}'',
-			[integrated_alerts_daily_jrc_high] NVARCHAR(MAX) DEFAULT ''{}'',
-			[integrated_alerts_daily_jrc_highest] NVARCHAR(MAX) DEFAULT ''{}'',
-			[status_code] INT NULL,
-
-			INDEX [IX_AnalysesDashboard_1] NONCLUSTERED(list_id),
-			INDEX [IX_AnalysesDashboard_2] NONCLUSTERED(location_id),
-			INDEX [IX_AnalysesDashboard_3] NONCLUSTERED(gadm_id)
-		)'
-		SET @SQL = REPLACE(@TEMPLATE, '{DATABASENAME}', @OrgdbName)
-		EXEC sp_executesql @SQL
-
-		-- Analysis Table for each list
-		SET @TEMPLATE = 'CREATE TABLE [{DATABASENAME}].[dbo].[Analyses]
-		(
-			[id] INT IDENTITY(1,1) NOT NULL,
-			[list_id] INT NOT NULL,
-			[status_id] INT NOT NULL DEFAULT 1,
-			[analysis_success_count] INT NOT NULL DEFAULT 0,
-			[analysis_fail_count] INT NOT NULL DEFAULT 0,
-
-			[tree_cover_loss_total_yearly] NVARCHAR(MAX) DEFAULT ''{}'',
-			[tree_cover_loss_primary_forest_yearly] NVARCHAR(MAX) DEFAULT ''{}'',
-			[tree_cover_loss_peat_yearly] NVARCHAR(MAX) DEFAULT ''{}'',
-			[tree_cover_loss_intact_forest_yearly] NVARCHAR(MAX) DEFAULT ''{}'',
-			[tree_cover_loss_protected_areas_yearly] NVARCHAR(MAX) DEFAULT ''{}'',
-			[tree_cover_loss_sea_landcover_yearly] NVARCHAR(MAX) DEFAULT ''{}'',
-			[tree_cover_loss_idn_landcover_yearly] NVARCHAR(MAX) DEFAULT ''{}'',
-			[tree_cover_loss_idn_primary_forest_yearly] NVARCHAR(MAX) DEFAULT ''{}'',
-			[tree_cover_loss_soy_yearly] NVARCHAR(2000) DEFAULT ''{}'',
-			[tree_cover_loss_idn_legal_yearly] NVARCHAR(MAX) DEFAULT ''{}'',
-			[tree_cover_loss_idn_forest_moratorium_yearly] NVARCHAR(MAX) DEFAULT ''{}'',
-			[tree_cover_loss_prodes_yearly] NVARCHAR(MAX) DEFAULT ''{}'',
-			[tree_cover_loss_prodes_wdpa_yearly] NVARCHAR(MAX) DEFAULT ''{}'',
-			[tree_cover_loss_prodes_primary_forest_yearly] NVARCHAR(MAX) DEFAULT ''{}'',
-			[tree_cover_loss_brazil_biomes_yearly] NVARCHAR(MAX) DEFAULT ''{}'',
-
-			[tree_cover_extent_total] DECIMAL(18,6) DEFAULT 0.000000,
-			[tree_cover_extent_primary_forest] DECIMAL(18,6) DEFAULT 0.000000,
-			[tree_cover_extent_protected_areas] DECIMAL(18,6) DEFAULT 0.000000,
-			[tree_cover_extent_peat] DECIMAL(18,6) DEFAULT 0.000000,
-			[tree_cover_extent_intact_forest] DECIMAL(18, 6) DEFAULT 0.00000,
-
-			[natural_habitat_primary] DECIMAL(18, 6) DEFAULT 0.00000,
-			[natural_habitat_intact_forest] DECIMAL(18,6) DEFAULT 0.000000,
-			[natural_habitat_global_land_cover] NVARCHAR(MAX) DEFAULT ''{}'',
-
-			[total_area] DECIMAL(18, 6) DEFAULT 0.00000,
-			[protected_areas_area] DECIMAL(18,6) DEFAULT 0.000000,
-			[critical_habitat_alliance_zero] DECIMAL(18,6) DEFAULT 0.000000,
-			[indigenous_people_land_rights] DECIMAL(18,6) DEFAULT 0.000000,
-			[peat_area] DECIMAL(18,6) DEFAULT 0.000000,
-			[fires_counts_monthly] NVARCHAR(MAX) DEFAULT ''{}'',
-			[soy_total_area] NVARCHAR(MAX) DEFAULT ''{}'',
-			[soy_pre2001_nonforest_area] DECIMAL(18, 6)  DEFAULT 0.00000,
-			[brazil_biomes] NVARCHAR(MAX) DEFAULT ''{}'',
-			[idn_legal_area] NVARCHAR(MAX) DEFAULT ''{}'',
-			[sea_landcover_area] NVARCHAR(MAX) DEFAULT ''{}'',
-			[idn_landcover_area] NVARCHAR(MAX) DEFAULT ''{}'',
-			[idn_forest_moratorium_area] DECIMAL(18, 6) DEFAULT 0.00000,
-
-			[south_america_presence] NVARCHAR(50) DEFAULT ''false'',
-			[legal_amazon_presence] NVARCHAR(50) DEFAULT ''false'',
-			[brazil_biomes_presence] NVARCHAR(50) DEFAULT ''false'',
-			[cerrado_biome_presence] NVARCHAR(50) DEFAULT ''false'',
-			[southeast_asia_presence] NVARCHAR(50) DEFAULT ''false'',
-			[indonesia_presence] NVARCHAR(50) DEFAULT ''false'',
-
-			[commodity_threat_deforestation_level] NVARCHAR(MAX) DEFAULT ''{}'',
-			[commodity_threat_peat_level] NVARCHAR(MAX) DEFAULT ''{}'',
-			[commodity_threat_protected_areas_level] NVARCHAR(MAX) DEFAULT ''{}'',
-			[commodity_threat_fires_level] NVARCHAR(MAX) DEFAULT ''{}'',
-			[commodity_threat_overall_level] NVARCHAR(MAX) DEFAULT ''{}'',
-			[commodity_threat_overall_score] NVARCHAR(MAX) DEFAULT ''{}'',
-			[commodity_value_forest_extent_level] NVARCHAR(MAX) DEFAULT ''{}'',
-			[commodity_value_peat_level] NVARCHAR(MAX) DEFAULT ''{}'',
-			[commodity_value_protected_areas_level] NVARCHAR(MAX) DEFAULT ''{}'',
-			[commodity_value_overall_level] NVARCHAR(MAX) DEFAULT ''{}'',
-			[commodity_value_overall_score] NVARCHAR(MAX) DEFAULT ''{}'',
-
-			[commodity_value_forest_extent] NVARCHAR(MAX) DEFAULT ''{}'',
-			[commodity_value_peat] NVARCHAR(MAX) DEFAULT ''{}'',
-			[commodity_value_protected_areas] NVARCHAR(MAX) DEFAULT ''{}'',
-
-			[commodity_mill_priority_level] NVARCHAR(MAX) DEFAULT ''{}'',
-			[commodity_mill_priority_score] NVARCHAR(MAX) DEFAULT ''{}'',
-
-			[commodity_threat_deforestation] NVARCHAR(MAX) DEFAULT ''{}'',
-			[commodity_threat_peat] NVARCHAR(MAX) DEFAULT ''{}'',
-			[commodity_threat_protected_areas] NVARCHAR(MAX) DEFAULT ''{}'',
-			[commodity_threat_fires] NVARCHAR(MAX) DEFAULT ''{}'',
-			[dissolved_geom_object_key] NVARCHAR(300) DEFAULT ''{}'',
-            [tree_cover_loss_arg_otbn_yearly] NVARCHAR(MAX) DEFAULT ''{}'',
-			[arg_otbn_area] NVARCHAR(MAX) DEFAULT ''{}'',
-			[argentina_presence] NVARCHAR(50) DEFAULT ''false'',
-
-			[protected_areas_by_category_area] NVARCHAR(MAX) DEFAULT ''{}'',
-			[landmark_by_category_area] NVARCHAR(MAX) DEFAULT ''{}'',
-
-			[country_specific_deforestation_yearly] NVARCHAR(MAX),
-			[country_specific_deforestation_wdpa_yearly] NVARCHAR(MAX),
-			[country_specific_deforestation_landmark_yearly] NVARCHAR(MAX),
-			[country_specific_deforestation_classified_region_yearly] NVARCHAR(MAX),
-			[tree_cover_loss_by_country_yearly] NVARCHAR(MAX),
-			[tree_cover_loss_by_country_wdpa_yearly] NVARCHAR(MAX),
-			[tree_cover_loss_by_country_landmark_yearly] NVARCHAR(MAX),
-
-			[country_area] NVARCHAR(MAX),
-			[classified_region_area] NVARCHAR(MAX),
-			[tree_cover_loss_by_country_classified_region_yearly] NVARCHAR(MAX),
-
-			INDEX [IX_Analyses_1] NONCLUSTERED(list_id)
-		)'
-		SET @SQL = REPLACE(@TEMPLATE, '{DATABASENAME}', @OrgdbName)
-		EXEC sp_executesql @SQL
-
-		SET @TEMPLATE = 'CREATE TABLE [{DATABASENAME}].[dbo].[Policies]
-		(
-			[id] INT IDENTITY(1,1) NOT NULL,
-			[document_name] NVARCHAR(250) NOT NULL
-		)'
-		SET @SQL = REPLACE(@TEMPLATE, '{DATABASENAME}', @OrgdbName)
-		EXEC sp_executesql @SQL
-
-		SET @TEMPLATE = 'CREATE TABLE [{DATABASENAME}].[dbo].[ListsAnalysisStatus](
-			[ListID] [INT] NOT NULL,
-			[AnalysisID] VARCHAR(30) NOT NULL,
-			[Status] [INT] NOT NULL,
-			[ErrorInfo] VARCHAR(2000) NULL,
-			[UpdateTime] [DATETIME2] NULL,
-			[s3_url] NVARCHAR(MAX) NULL,
-			[expiration_time] [DATETIME2] NULL,
-			[bundle_creation_time] [DATETIME2] NULL
-			CONSTRAINT UQ_ListAnalyses_ListID_AnalysisID UNIQUE (ListID, AnalysisID)
-		)'
-		SET @SQL = REPLACE(@TEMPLATE, '{DATABASENAME}', @OrgdbName)
-		EXEC sp_executesql @SQL
-
-		SET @TEMPLATE = 'CREATE TABLE [{DATABASENAME}].[dbo].[ListsProcessing](
-			[list_id] [INT] NOT NULL,
-			[user_id] [INT] NULL,
-			[analysis_type] [NVARCHAR](50) NOT NULL,
-			[run_identifier] [NVARCHAR](300) NOT NULL,
-			[analysis_start_time] [DATETIME2](7) NULL,
-			[analysis_end_time] [DATETIME2](7) NULL,
-			[area_analyzed_list_ha] [FLOAT] NULL,
-			[area_analyzed_locations_ha] [FLOAT] NULL,
-			[locations_analyzed] [INT] NULL
-		)'
-		SET @SQL = REPLACE(@TEMPLATE, '{DATABASENAME}', @OrgdbName)
-		EXEC sp_executesql @SQL
-
-		SET @TEMPLATE = 'CREATE TABLE [{DATABASENAME}].[dbo].[AFIAnalysis](
-			[list_id] [SMALLINT] NULL,
-			[location_id] [INT] NULL,
-			[gadm_id] [NVARCHAR](50) NULL,
-			[natural_land_area] [FLOAT] NULL,
-			[natural_land_deforested_area] [FLOAT] NULL,
-			[total_area_ha] [FLOAT] NULL,
-			[status_code] [SMALLINT] NULL,
-			[location_error] [NVARCHAR](MAX) NULL,
-			[negligible_risk] [FLOAT] NULL,
-			[jrc_land_area] [FLOAT] NULL DEFAULT 0,
-			[jrc_land_deforested_area] [FLOAT] NULL DEFAULT 0,
-			[jrc_forest_loss_by_year] [NVARCHAR](MAX) NULL DEFAULT ''{}'',
-			[natural_forest_loss_by_year] [NVARCHAR](MAX) NULL DEFAULT ''{}'',
-			[protected_areas_area] [decimal] (18, 6) NULL,
-			[landmark_area] [decimal] (18, 6) NULL,
-
-			INDEX [IX_AFIAnalysis_location_id] NONCLUSTERED ([location_id] ASC),
-			INDEX [IX_AFIAnalysis_gadm_id] NONCLUSTERED ([gadm_id] ASC),
-			INDEX [IX_AFIAnalysis_list_id] NONCLUSTERED ([list_id] ASC)
-		)'
-		SET @SQL = REPLACE(@TEMPLATE, '{DATABASENAME}', @OrgdbName)
-		EXEC sp_executesql @SQL
-
-		SET @TEMPLATE = 'CREATE TABLE [{DATABASENAME}].[dbo].[ExternalUploads](
-			[id] INT IDENTITY(1,1) NOT NULL,
-			[userId] [INT] NULL,
-			[uploadKeyFile] [NVARCHAR](200) NULL,
-			[uploadUrl] [NVARCHAR](MAX) NULL,
-			[uploadDateTime] [DATETIME] NULL
-		)'
-		SET @SQL = REPLACE(@TEMPLATE, '{DATABASENAME}', @OrgdbName)
-		EXEC sp_executesql @SQL
-
-		/********************************************************
-		* CREATE ALL THE TABLE TYPES.
-		********************************************************/
-		SET @TEMPLATE = 'USE [{DATABASENAME}]
-			EXEC(''		
-				CREATE TYPE dbo.[TT-Analyses-Dashboard]
-				AS TABLE
-				(
-					[list_id] [int] NOT NULL,
-					[location_id] [int] NULL,
-					[gadm_id] [nvarchar] (25) COLLATE SQL_Latin1_General_CP1_CI_AS NULL,
-					[glad_alerts_coverage] [nvarchar] (max) COLLATE SQL_Latin1_General_CP1_CI_AS NULL,
-					[glad_alerts_daily] [nvarchar] (max) COLLATE SQL_Latin1_General_CP1_CI_AS NULL,
-					[glad_alerts_weekly] [nvarchar] (max) COLLATE SQL_Latin1_General_CP1_CI_AS NULL,
-					[glad_alerts_monthly] [nvarchar] (max) COLLATE SQL_Latin1_General_CP1_CI_AS NULL,
-					[viirs_alerts_daily] [nvarchar] (max) COLLATE SQL_Latin1_General_CP1_CI_AS NULL,
-					[tree_cover_extent_total] [decimal] (18, 6) NULL
-				)
-			'')'
-		SET @SQL = REPLACE(@TEMPLATE, '{DATABASENAME}', @OrgdbName)
-		EXEC sp_executesql @SQL
-
-
-		/********************************************************
-		* CREATE ALL THE STORED PROCEDURES.
-		********************************************************/
-
-		SET @TEMPLATE = 'USE [{DATABASENAME}] EXEC(''
-			CREATE PROCEDURE uspInsertNewLocationToAnalysisTable
-				@list_id INT
-			AS
-				DECLARE @analyisTableName NVARCHAR(150)
-				DECLARE @listTableName NVARCHAR(150)
-
-				SET @analyisTableName = (
-					SELECT list_analysis_table_name
-					FROM Lists
-					WHERE id = @list_id
-				)
-				SET @listTableName = (
-					SELECT list_table_name
-					FROM Lists
-					WHERE id = @list_id
-				)
-
-				-- Insert New Rows into Analysis Table.
-				DECLARE @TEMPLATE NVARCHAR(1000)
-				DECLARE @SQL NVARCHAR(1000)
-				SET @TEMPLATE = ''''
-					INSERT INTO [{ANALYSIS_TABLE}](location_id, location_status_id)
-						SELECT location_id, 1
-						FROM [{LIST_TABLE}]
-						WHERE location_id > 0
-				''''
-				SET @SQL = REPLACE(@TEMPLATE, ''''{ANALYSIS_TABLE}'''', @analyisTableName)
-				SET @SQL = REPLACE(@SQL, ''''{LIST_TABLE}'''', @listTableName)
-				EXEC sp_executesql @SQL
-		'')'
-		SET @SQL = REPLACE(@TEMPLATE, '{DATABASENAME}', @OrgdbName)
-		EXEC sp_executesql @SQL
-
-		SET @TEMPLATE = 'USE [{DATABASENAME}] EXEC(''
-			CREATE PROCEDURE uspDeleteList
-				@list_name NVARCHAR(150),
-				@list_table NVARCHAR(150),
-				@analysis_table NVARCHAR(150)
-			AS
-				DECLARE @FOLDER_SQL NVARCHAR(MAX)
-				DECLARE @LIST_SQL NVARCHAR(MAX)
-				DECLARE @ANALYSIS_SQL NVARCHAR(MAX)
-				DECLARE @LIST_ID INT
-				SET @LIST_ID = (SELECT id FROM Lists WHERE list_name = @list_name AND list_table_name = @list_table AND list_analysis_table_name = @analysis_table)
-				-- Deleting folder items first
-				SET @FOLDER_SQL = ''''DELETE FROM FolderItems WHERE list_id = {LIST_ID}''''
-				SET @FOLDER_SQL = REPLACE(@FOLDER_SQL, ''''{LIST_ID}'''', @LIST_ID)
-				EXEC sp_executesql @FOLDER_SQL
-
-				-- Deleting list & analysis tables
-				SET @LIST_SQL = REPLACE(@LIST_SQL, ''''{LIST_TABLE}'''', @list_table)
-				SET @LIST_SQL = ''''DROP TABLE IF EXISTS [{LIST_TABLE}]''''
-				SET @ANALYSIS_SQL = ''''DROP TABLE IF EXISTS [{ANALYSIS_TABLE}]''''
-				DELETE from Lists WHERE id = @LIST_ID
-				DELETE from Analyses WHERE list_id = @LIST_ID
-				DELETE from dbo.[Analyses-Dashboard] WHERE list_id = @LIST_ID
-				SET @LIST_SQL = REPLACE(@LIST_SQL, ''''{LIST_TABLE}'''', @list_table)
-				SET @ANALYSIS_SQL = REPLACE(@ANALYSIS_SQL, ''''{ANALYSIS_TABLE}'''', @analysis_table)
-				EXEC sp_executesql @LIST_SQL
-				EXEC sp_executesql @ANALYSIS_SQL
-		'')'
-		SET @SQL = REPLACE(@TEMPLATE, '{DATABASENAME}', @OrgdbName)
-		EXEC sp_executesql @SQL
-
-		-- Roll back STORED PROCEDURES
-		SET @TEMPLATE = 'USE [{DATABASENAME}]
-						EXEC(''CREATE PROCEDURE uspDropOrganizationTable
-							@table_name NVARCHAR(150)
-						AS
-							DECLARE @TEMPLATE NVARCHAR(MAX)
-							DECLARE @SQL NVARCHAR(MAX)
-
-							SET @TEMPLATE = ''''DROP TABLE IF EXISTS [{TABLE_NAME}]''''
-							SET @SQL = REPLACE(@TEMPLATE, ''''{TABLE_NAME}'''', @table_name)
-						 	EXEC sp_executesql @SQL '')'
-		SET @SQL = REPLACE(@TEMPLATE, '{DATABASENAME}', @OrgdbName)
-		EXEC sp_executesql @SQL
-
-		SET @TEMPLATE = 'USE [{DATABASENAME}]
-						EXEC(''CREATE PROCEDURE uspDeleteOrganizationTableRow
-							@table_name NVARCHAR(150),
-							@primary_key INT,
-							@column NVARCHAR(150)
-						AS
-							DECLARE @TEMPLATE NVARCHAR(MAX)
-							DECLARE @SQL NVARCHAR(MAX)
-
-							SET @TEMPLATE = ''''DELETE FROM [{TABLE_NAME}] WHERE {COLUMN} = {PRIMARY_KEY}''''
-							SET @SQL = REPLACE(@TEMPLATE, ''''{TABLE_NAME}'''', @table_name)
-							SET @SQL = REPLACE(@SQL, ''''{COLUMN}'''', @column)
-							SET @SQL = REPLACE(@SQL, ''''{PRIMARY_KEY}'''', @primary_key)
-						 	EXEC sp_executesql @SQL '')'
-		SET @SQL = REPLACE(@TEMPLATE, '{DATABASENAME}', @OrgdbName)
-		EXEC sp_executesql @SQL
-
-		SET @TEMPLATE = 'USE [{DATABASENAME}]
-			EXEC(''CREATE PROCEDURE dbo.uspUpdateAccountProfile
-						@orgName NVARCHAR(200),
-						@orgAddress NVARCHAR(200),
-						@orgWebsite NVARCHAR(200),
-						@isSubsidiary BIT = 0,
-						@orgParent NVARCHAR(200) = ''''''''
-					AS
-						UPDATE AccountProfile SET
-						organization_name = @orgName,
-						organization_address = @orgAddress,
-						organization_website = @orgWebsite,
-						organization_is_subsidiary = @isSubsidiary,
-						organization_parent = @orgParent'')'
-		SET @SQL = REPLACE(@TEMPLATE, '{DATABASENAME}', @OrgdbName)
-		EXEC sp_executesql @SQL
-
-		SET @TEMPLATE = 'USE [{DATABASENAME}]
-						EXEC(''CREATE PROCEDURE dbo.uspUpdateAccountClassifications
-							@classification_ids VARCHAR(200)
-						AS
-							-- Remove old classifications.
-							DELETE FROM AccountClassifications
-
-							--Add new classifications.
-							DECLARE @pos INT
-							DECLARE @len INT
-							DECLARE @strClassificationId varchar(20)
-							DECLARE @nClassificationId INT
-
-							SET @pos = 1
-							WHILE CHARINDEX('''','''', @classification_ids, @pos) > 0
-							BEGIN
-								SET @len = CHARINDEX('''','''', @classification_ids, @pos)
-								SET @strClassificationId = SUBSTRING(@classification_ids, @pos, @len - @pos)
-								SET @nClassificationId = CAST(@strClassificationId AS INT)
-								INSERT INTO AccountClassifications VALUES(@nClassificationId)
-								set @pos = @len + 1
-							END
-							SET @strClassificationId = SUBSTRING(@classification_ids, @pos, LEN(@classification_ids) - @pos + 1)
-							SET @nClassificationId = CAST(@strClassificationId AS INT)
-							INSERT INTO AccountClassifications VALUES(@nClassificationId)'')'
-		SET @SQL = REPLACE(@TEMPLATE, '{DATABASENAME}', @OrgdbName)
-		EXEC sp_executesql @SQL
-
-		SET @TEMPLATE = 'USE [{DATABASENAME}]
-						EXEC(''CREATE PROCEDURE dbo.uspUpdateUserCommodities
-							@userID INT,
-							@commodity_ids VARCHAR(200)
-						AS
-							-- Remove old commodities for the user.
-							DELETE FROM UserCommodities WHERE user_id = @userID
-
-							--Add new commodities for the user.
-							DECLARE @pos INT
-							DECLARE @len INT
-							DECLARE @strCommoditiyId varchar(20)
-							DECLARE @nCommodityId INT
-
-							SET @pos = 1
-							WHILE CHARINDEX('''','''', @commodity_ids, @pos) > 0
-							BEGIN
-								SET @len = CHARINDEX('''','''', @commodity_ids, @pos)
-								SET @strCommoditiyId = SUBSTRING(@commodity_ids, @pos, @len - @pos)
-								SET @nCommodityId = CAST(@strCommoditiyId AS INT)
-								INSERT INTO UserCommodities(user_id, commodity_id) VALUES(@userID, @nCommodityId)
-								SET @pos = @len + 1
-							END
-							SET @strCommoditiyId = SUBSTRING(@commodity_ids, @pos, LEN(@commodity_ids) - @pos + 1)
-							SET @nCommodityId = CAST(@strCommoditiyId AS INT)
-							INSERT INTO UserCommodities(user_id, commodity_id) VALUES(@userID, @nCommodityId)'')'
-		SET @SQL = REPLACE(@TEMPLATE, '{DATABASENAME}', @OrgdbName)
-		EXEC sp_executesql @SQL
-
-		SET @TEMPLATE = 'USE [{DATABASENAME}]
-						EXEC(''CREATE PROCEDURE dbo.uspUpdateUserGeographies
-							@userID INT,
-							@geography_ids VARCHAR(200)
-						AS
-							-- Remove old geographies for the user.
-							DELETE FROM UserGeographies WHERE user_id = @userID
-
-							DECLARE @pos INT
-							DECLARE @len INT
-							DECLARE @strGeographyId varchar(20)
-							DECLARE @nGeographyId INT
-
-							SET @pos = 1
-							WHILE CHARINDEX('''','''', @geography_ids, @pos) > 0
-							BEGIN
-								SET @len = CHARINDEX('''','''', @geography_ids, @pos)
-								SET @strGeographyId = SUBSTRING(@geography_ids, @pos, @len - @pos)
-								SET @nGeographyId = CAST(@strGeographyId AS INT)
-								INSERT INTO UserGeographies(user_id,geography_id) VALUES(@userID, @nGeographyId)
-								SET @pos = @len +1
-							END
-							SET @strGeographyId = SUBSTRING(@geography_ids, @pos, LEN(@geography_ids) - @pos + 1)
-							SET @nGeographyId = CAST(@strGeographyId AS INT)
-							INSERT INTO UserGeographies(user_id,geography_id) VALUES(@userID, @nGeographyId)'')'
-		SET @SQL = REPLACE(@TEMPLATE, '{DATABASENAME}', @OrgdbName)
-		EXEC sp_executesql @SQL
-
-		SET @TEMPLATE = 'USE [{DATABASENAME}] EXEC(''
-			CREATE PROCEDURE dbo.uspGetUserStatus
-				@user_id INT
-			AS
-				SELECT status_id FROM Users WHERE id = @user_id
-		'')'
-		SET @SQL = REPLACE(@TEMPLATE, '{DATABASENAME}', @OrgdbName)
-		EXEC sp_executesql @SQL
-
-		SET @TEMPLATE = 'USE [{DATABASENAME}]
-						EXEC(''CREATE PROCEDURE dbo.uspGetUserInfo
-							@userID INT
-						AS
-							-- Obtain User Commodities Info.
-							DECLARE @arrCommodities NVARCHAR(100)
-							SELECT @arrCommodities = COALESCE(@arrCommodities + '''','''', '''''''') + CONVERT(varchar(3), commodity_id)
-							FROM UserCommodities WHERE user_id = @userID
-
-							-- Obtain User Geographies Info.
-							DECLARE @arrGeographies NVARCHAR(100)
-							SELECT @arrGeographies = COALESCE(@arrGeographies + '''','''', '''''''') + CONVERT(varchar(3), geography_id)
-							FROM UserGeographies WHERE user_id = @userID
-
-							SELECT id, first_name, middle_initial, last_name, email, phone, title_id, other_title, access_level_id, status_id, email_subscription,
-							@arrCommodities AS user_commodity_ids, @arrGeographies AS user_geography_ids,
-							viirs_email_frequency, glad_email_frequency, forma_email_frequency, terrai_email_frequency, gran_chaco_email_frequency
-							FROM Users WHERE id = @userID'')'
-		SET @SQL = REPLACE(@TEMPLATE, '{DATABASENAME}', @OrgdbName)
-		EXEC sp_executesql @SQL
-
-		SET @TEMPLATE = 'USE [{DATABASENAME}]
-						EXEC(''CREATE PROCEDURE dbo.uspGetUserInfoByEmail
-							@userEmail NVARCHAR(50)
-						AS
-							SELECT
-							U.id, U.first_name, U.middle_initial, U.last_name, U.email, U.phone,
-							U.title_id, U.other_title, U.access_level_id, U.status_id, U.email_subscription
-							FROM Users U
-							LEFT JOIN UserCommodities UC ON U.id = UC.user_id
-							LEFT JOIN UserGeographies UG ON U.id = UG.user_id
-							WHERE U.email = @userEmail'')'
-		SET @SQL = REPLACE(@TEMPLATE, '{DATABASENAME}', @OrgdbName)
-		EXEC sp_executesql @SQL
-
-
-		SET @TEMPLATE = 'USE [{DATABASENAME}]
-							EXEC(''CREATE PROCEDURE dbo.uspGetListLocations
-									@listID INT,
-                                    @locationID INT,
-                                    @rowsRequested INT
-                                AS
-                                --DECLARE IMPORTANT VARIABLES
-                                DECLARE @listLocationTableName NVARCHAR(1000)
-                                DECLARE @locationWhereStatement NVARCHAR(MAX)
-                                DECLARE @listLocationTableCols NVARCHAR(MAX)
-                                DECLARE @SQL NVARCHAR(MAX)
-
-                                -- Obtain the location table name and the analysis table name for the list.
-                                SELECT @listLocationTableName = list_table_name FROM Lists WHERE id = @listID
-
-                                -- Obtain the needed columns from the List Location Table. (All but Geometry)
-                                SELECT @listLocationTableCols = STUFF(
-                                    (
-                                        SELECT ''''], L.['''' + [name] FROM sys.columns
-                                        WHERE
-                                            [object_id] = (SELECT [object_id] FROM sys.objects WHERE [name] = @listLocationTableName)
-                                            AND [name] NOT IN (''''Geometry'''')
-                                            FOR XML PATH('''''''')
-                                    ),1,3,'''''''') + '''']'''';
-
-                                -- Return data 
-                                IF @rowsRequested > 0 
-                                    BEGIN
-                                        SET @SQL = ''''SELECT TOP ({NUM_ROWS}) {LIST_ID} As list_id, {LOCATION_COLUMNS}, L.Geometry.ToString() as [WKTGeometry]
-                                                    FROM [{LOCATION_TABLE}] L
-                                                    WHERE location_id >= {MIN_LOCATION_ID}
-                                                    ORDER BY location_id'''';
-                                        SET @SQL = REPLACE(@SQL, ''''{NUM_ROWS}'''', @rowsRequested);
-                                        SET @SQL = REPLACE(@SQL, ''''{MIN_LOCATION_ID}'''', @locationID);
-                                    END
-                                ELSE
-                                    BEGIN
-                                        SET @SQL = ''''SELECT {LIST_ID} As list_id, {LOCATION_COLUMNS}, L.Geometry.ToString() as [WKTGeometry]
-                                                    FROM [{LOCATION_TABLE}] L'''';
-                                    END
-
-                                SET @SQL = REPLACE(@SQL, ''''{LIST_ID}'''', @listID);
-                                SET @SQL = REPLACE(@SQL, ''''{LOCATION_COLUMNS}'''', @listLocationTableCols);
-                                SET @SQL = REPLACE(@SQL, ''''{LOCATION_TABLE}'''', @listLocationTableName);
-
-
-                                EXEC sp_executesql @SQL;
-						'')'
-		SET @SQL = REPLACE(@TEMPLATE, '{DATABASENAME}', @OrgdbName)
-		EXEC sp_executesql @SQL
-
-		SET @TEMPLATE = 'USE [{DATABASENAME}]
-							EXEC(''CREATE PROCEDURE dbo.uspGetSimplifiedListLocations
-								@listID INT
-							AS
-							--DECLARE IMPORTANT VARIABLES
-							DECLARE @listLocationTableName NVARCHAR(1000)
-							DECLARE @listLocationTableCols NVARCHAR(MAX)
-							DECLARE @SQL NVARCHAR(MAX)
-
-							-- Obtain the location table name and the analysis table name for the list.
-							SELECT @listLocationTableName = list_table_name FROM Lists WHERE id = @listID
-
-							-- Obtain the needed columns from the List Location Table. (All but Geometry)
-							SELECT @listLocationTableCols = STUFF(
-								(
-									SELECT ''''], L.['''' + [name] FROM sys.columns
-									WHERE
-										[object_id] = (SELECT [object_id] FROM sys.objects WHERE [name] = @listLocationTableName)
-										AND [name] NOT IN (''''Geometry'''')
-										FOR XML PATH('''''''')
-								),1,3,'''''''') + '''']'''';
-
-							-- Return data from both tables
-							SET @SQL = ''''SELECT {LIST_ID} As list_id, {LOCATION_COLUMNS}, L.Geometry.Reduce(0.008).ToString() as [WKTGeometry] FROM [{LOCATION_TABLE}] L'''';
-							SET @SQL = REPLACE(@SQL, ''''{LIST_ID}'''', @listID);
-							SET @SQL = REPLACE(@SQL, ''''{LOCATION_COLUMNS}'''', @listLocationTableCols);
-							SET @SQL = REPLACE(@SQL, ''''{LOCATION_TABLE}'''', @listLocationTableName);
-							EXEC sp_executesql @SQL
-						'')'
-		SET @SQL = REPLACE(@TEMPLATE, '{DATABASENAME}', @OrgdbName)
-		EXEC sp_executesql @SQL
-
-		SET @TEMPLATE = 'USE [{DATABASENAME}] EXEC(''
-			CREATE PROCEDURE dbo.uspGetDashboardData
-				@listId INT
-			AS
-			BEGIN
-				SET NOCOUNT ON;
-
-				DECLARE @template_id INT
-				DECLARE @name_field NVARCHAR(50)
-				DECLARE @list_table_name NVARCHAR(150)
-
-				SELECT @list_table_name = list_table_name, @template_id = template_id FROM dbo.Lists WHERE id = @listId
-				SET @name_field = CASE WHEN @template_id = 1 THEN ''''[Investment Name]'''' ELSE ''''[Location Name]'''' END
-
-				DECLARE @TEMPLATE NVARCHAR(MAX)
-
-				DECLARE @SQL NVARCHAR(MAX) 
-
-				SET @TEMPLATE = ''''
-						SELECT AD.list_id,
-							AD.location_id,
-							AD.gadm_id,
-							AD.glad_alerts_coverage AS gladAlerts,
-							AD.glad_alerts_daily,
-							AD.glad_alerts_weekly,
-							AD.glad_alerts_monthly,
-							AD.viirs_alerts_daily,
-							AD.tree_cover_extent_total,
-							AA.[Country],
-							AA.[State],
-							AA.[Sub State],			     
-							--AA.Geometry.ToString() AS [WKTGeometry],
-							AA.[Location Name] AS name_all,
-							AA.[gadmid],	
-							AA.gadmid AS gadmid_2,
-							AA.Latitude AS gadmid_2_lat, AA.Longitude AS gadmid_2_lon,
-							S.gadmid AS gadmid_1, S.Latitude AS gadmid_1_lat, S.Longitude AS gadmid_1_lon,
-							C.gadmid AS gadmid_0, C.Latitude AS gadmid_0_lat, C.Longitude AS gadmid_0_lon,
-							L.location_lat, L.location_lon,
-							L.location_name
-						FROM dbo.[Analyses-Dashboard] AD
-						LEFT JOIN gfwpro.dbo.[list-administrativeAreas] AA ON AA.gadmid = AD.gadm_id
-						LEFT JOIN (SELECT * FROM gfwpro.dbo.[list-administrativeAreas] WHERE [Sub State] IS NULL) S ON S.Country = AA.Country AND S.State = AA.State
-						LEFT JOIN (SELECT * FROM gfwpro.dbo.[list-administrativeAreas] WHERE State IS NULL) C ON C.Country = AA.Country	
-						LEFT JOIN (SELECT {NAME_FIELD} AS location_name, location_id, longitude AS location_lon, latitude AS location_lat FROM [{LIST_TABLE}]) L ON L.location_id = AD.location_id
-						WHERE AD.list_id = {LIST_ID}
-						ORDER BY AD.location_id 
-				''''
-				SET @SQL = REPLACE(@TEMPLATE, ''''{LIST_ID}'''', @listId)	
-				SET @SQL = REPLACE(@SQL, ''''{LIST_TABLE}'''', @list_table_name)
-				SET @SQL = REPLACE(@SQL, ''''{NAME_FIELD}'''', @name_field)	
-				EXEC sp_executesql @SQL
-			END
-		'')'
-		SET @SQL = REPLACE(@TEMPLATE, '{DATABASENAME}', @OrgdbName)
-		EXEC sp_executesql @SQL
-
-		SET @TEMPLATE = 'USE [{DATABASENAME}] EXEC(''
-			CREATE PROCEDURE dbo.uspGetDashboardCommodityLocations
-				@listId INT
-			AS
-				DECLARE @listTable NVARCHAR(1000)
-				DECLARE @analysisTable NVARCHAR(1000)
-				SELECT @listTable = list_table_name, @analysisTable = list_analysis_table_name FROM Lists WHERE id = @listId
-
-				DECLARE @SQL NVARCHAR(MAX)
-				SET @SQL = ''''
-					SELECT {LIST_ID} AS list_id,LT.[Latitude],LT.[Longitude],LT.[location_id],LT.[Location Name],LT.[Country],LT.[State],LT.[Sub State],LT.[gadmid],LT.Geometry.ToString() AS [WKTGeometry]
-					FROM [{LIST_TABLE}] LT JOIN [{ANALYSIS_TABLE}] AT
-					ON LT.location_id = AT.location_id
-					WHERE AT.location_status_id = 2
-				''''
-				SET @SQL = REPLACE(@SQL, ''''{LIST_ID}'''', @listId)
-				SET @SQL = REPLACE(@SQL, ''''{LIST_TABLE}'''', @listTable)
-				SET @SQL = REPLACE(@SQL, ''''{ANALYSIS_TABLE}'''', @analysisTable)
-				EXEC sp_executesql @SQL
-		'')'
-		SET @SQL = REPLACE(@TEMPLATE, '{DATABASENAME}', @OrgdbName)
-		EXEC sp_executesql @SQL
-
-		SET @TEMPLATE = 'USE [{DATABASENAME}] EXEC(''
-			CREATE PROCEDURE dbo.uspGetDashboardInvestmentLocations
-				@listId INT
-			AS
-				DECLARE @listTable NVARCHAR(1000)
-				DECLARE @analysisTable NVARCHAR(1000)
-				SELECT @listTable = list_table_name, @analysisTable = list_analysis_table_name FROM Lists WHERE id = @listId
-
-				DECLARE @SQL NVARCHAR(MAX)
-				SET @SQL = ''''
-					SELECT {LIST_ID} AS list_id,LT.[location_id],LT.[Latitude],LT.[Longitude],LT.[Investment Name] AS [Location Name],LT.[Country],LT.[State],LT.[Sub State],LT.[gadmid],LT.Geometry.ToString() AS [WKTGeometry]
-					FROM [{LIST_TABLE}] LT JOIN [{ANALYSIS_TABLE}] AT
-					ON LT.location_id = AT.location_id
-					WHERE AT.location_status_id = 2
-				''''
-				SET @SQL = REPLACE(@SQL, ''''{LIST_ID}'''', @listId)
-				SET @SQL = REPLACE(@SQL, ''''{LIST_TABLE}'''', @listTable)
-				SET @SQL = REPLACE(@SQL, ''''{ANALYSIS_TABLE}'''', @analysisTable)
-				EXEC sp_executesql @SQL
-		'')'
-		SET @SQL = REPLACE(@TEMPLATE, '{DATABASENAME}', @OrgdbName)
-		EXEC sp_executesql @SQL
-
-		SET @TEMPLATE = '
-			USE [{DATABASENAME}]
-			EXEC(''
-				CREATE PROCEDURE dbo.uspGetDashboardDissolvedS3Location
-					@listId INT
-				AS
-					SELECT dissolved_geom_object_key FROM Analyses WHERE list_id = @listId
-			'')
-		'
-		SET @SQL = REPLACE(@TEMPLATE, '{DATABASENAME}', @OrgdbName)
-		EXEC sp_executesql @SQL
-
-		SET @TEMPLATE = '
-			USE [{DATABASENAME}]
-			EXEC(''
-				CREATE PROCEDURE dbo.uspGetListErrorFiles
-					@list_id SMALLINT NULL
-
-				AS
-				BEGIN
-					IF @list_id IS NOT NULL
-						SELECT error_file_storage_path
-						FROM dbo.Lists
-						WHERE error_file_storage_path IS NOT NULL AND id = @list_id
-
-					ELSE
-						SELECT id, error_file_storage_path
-						FROM dbo.Lists
-						WHERE error_file_storage_path IS NOT NULL
-				END
-			'')
-		'
-		SET @SQL = REPLACE(@TEMPLATE, '{DATABASENAME}', @OrgdbName)
-		EXEC sp_executesql @SQL
-
-		SET @TEMPLATE = '
-			USE [{DATABASENAME}]
-			EXEC(''
-				CREATE PROCEDURE dbo.uspGetListVectorTilesPath
-					@list_id SMALLINT
-
-				AS
-				BEGIN
-					SELECT vector_tiles_storage_path
-					FROM dbo.Lists
-					WHERE id = @list_id
-				END
-			'')
-		'
-		SET @SQL = REPLACE(@TEMPLATE, '{DATABASENAME}', @OrgdbName)
-		EXEC sp_executesql @SQL
-
-		SET @TEMPLATE = '
-			USE [{DATABASENAME}]
-			EXEC(''
-				CREATE PROCEDURE dbo.uspGetListsDashboardTimestamp
-					@timestamp DATETIME2 NULL,
-					@list_id SMALLINT NULL
-
-				AS
-				BEGIN
-					IF @list_id IS NULL
-						SELECT id
-						FROM dbo.Lists WHERE dashboard_last_submit = @timestamp
-
-					ELSE
-						SELECT dashboard_last_results
-						FROM dbo.Lists WHERE id = @list_id
-				END
-			'')
-		'
-		SET @SQL = REPLACE(@TEMPLATE, '{DATABASENAME}', @OrgdbName)
-		EXEC sp_executesql @SQL
-
-		SET @TEMPLATE = '
-			USE [{DATABASENAME}]
-			EXEC(''
-				CREATE PROCEDURE dbo.uspSetDashboardTimestamp
-					@list_id_array NVARCHAR(MAX),
-					@column_name NVARCHAR(50),
-					@value DATETIME2
-				AS
-				BEGIN
-					SET NOCOUNT ON;
-
-					DECLARE @SQL NVARCHAR(MAX)
-
-
-					SET @SQL = ''''
-						BEGIN TRANSACTION
-							UPDATE [Lists]
-							SET {COLUMN_NAME} = ''''''''{VALUE}''''''''
-							WHERE id IN ({LIST_IDS})
-						COMMIT TRANSACTION
-					''''
-
-					SET @SQL = REPLACE(@SQL, ''''{COLUMN_NAME}'''', @column_name)
-					SET @SQL = REPLACE(@SQL, ''''{VALUE}'''', @value)
-					SET @SQL = REPLACE(@SQL, ''''{LIST_IDS}'''', @list_id_array)
-					EXEC sp_executesql @SQL
-
-				END
-
-			'')
-		'
-		SET @SQL = REPLACE(@TEMPLATE, '{DATABASENAME}', @OrgdbName)
-		EXEC sp_executesql @SQL
-
-		SET @TEMPLATE = 'USE [{DATABASENAME}]
-						EXEC(''CREATE PROCEDURE uspGetListLocationsNoGeom
-							@listID INT,
-							@ColumnsToReturn NVARCHAR(MAX) = NULL
-
-						AS
-							--DECLARE IMPORTANT VARIABLES
-							DECLARE @listLocationTableName NVARCHAR(1000)
-							DECLARE @listLocationTableCols NVARCHAR(MAX)
-							DECLARE @columnsList NVARCHAR(MAX)
-							DECLARE @SQL NVARCHAR(MAX)
-
-							-- Obtain the location table name and the analysis table name for the list.
-							SELECT @listLocationTableName = list_table_name FROM Lists WHERE id = @listID
-
-
-							IF @ColumnsToReturn IS NOT NULL
-								BEGIN
-									DECLARE @PRESQL NVARCHAR(MAX);
-									DECLARE @presql_list_params NVARCHAR(MAX) = ''''@list_location_table_cols_query VARCHAR(MAX) OUTPUT'''';
-
-									WITH ColumnsCTE AS (
-										SELECT TRIM(value) AS cols FROM STRING_SPLIT(@ColumnsToReturn, '''','''')
-									)
-
-									SELECT @columnsList = CONCAT('''''''''''''''', STRING_AGG(cols, '''''''''''', ''''''''''''), '''''''''''''''')
-									FROM ColumnsCTE;
-
-									-- Obtain the needed columns from the List Location Table. 
-									SET @PRESQL = N''''SELECT @list_location_table_cols_query = STUFF(
-										  (
-											SELECT ''''''''], L.['''''''' + [name] FROM sys.columns
-											WHERE
-											  [object_id] = (SELECT [object_id] FROM sys.objects WHERE [name] = ''''''''{LIST_LOCATION_TABLE_NAME}'''''''')
-											  AND [name] IN ({COLUMNS_LIST}) 
-											  FOR XML PATH('''''''''''''''')
-										  ),1,3,'''''''''''''''') + '''''''']'''''''''''';
-									SET @PRESQL = REPLACE(@PRESQL, ''''{LIST_LOCATION_TABLE_NAME}'''', @listLocationTableName)
-									SET @PRESQL = REPLACE(@PRESQL, ''''{COLUMNS_LIST}'''', @columnsList);
-
-									EXEC sp_executesql @PRESQL, @presql_list_params, @list_location_table_cols_query = @listLocationTableCols OUTPUT;
-
-								END
-
-							ELSE
-								BEGIN
-
-									-- Obtain the needed columns from the List Location Table. (All but Geometry)
-									SELECT @listLocationTableCols = STUFF(
-										(
-											SELECT ''''], L.['''' + [name] FROM sys.columns
-											WHERE
-												[object_id] = (SELECT [object_id] FROM sys.objects WHERE [name] = @listLocationTableName)
-												AND [name] NOT IN (''''Geometry'''')
-												FOR XML PATH('''''''')
-										),1,3,'''''''') + '''']'''';
-								END
-
-							-- Return data from both tables
-							SET @SQL = ''''SELECT {LIST_ID} As list_id, {LOCATION_COLUMNS} FROM [{LOCATION_TABLE}] L'''';
-							SET @SQL = REPLACE(@SQL, ''''{LIST_ID}'''', @listID);
-							SET @SQL = REPLACE(@SQL, ''''{LOCATION_COLUMNS}'''', @listLocationTableCols);
-							SET @SQL = REPLACE(@SQL, ''''{LOCATION_TABLE}'''', @listLocationTableName);
-							EXEC sp_executesql @SQL
-						'')'
-		SET @SQL = REPLACE(@TEMPLATE, '{DATABASENAME}', @OrgdbName)
-		EXEC sp_executesql @SQL
-
-		SET @TEMPLATE = 'USE [{DATABASENAME}]
-						EXEC(''CREATE PROCEDURE uspGetListTemplateInfo
-							@list_table NVARCHAR(150)
-						AS
-							--Obtain the template id and location classification for the list.
-							SELECT template_id, location_classification FROM Lists WHERE list_table_name = @list_table
-						'')'
-		SET @SQL = REPLACE(@TEMPLATE, '{DATABASENAME}', @OrgdbName)
-		EXEC sp_executesql @SQL
-
-		SET @TEMPLATE = 'USE [{DATABASENAME}]
-						EXEC(''CREATE PROCEDURE uspGetLocation
-							@list_table NVARCHAR(150),
-							@location_id INT
-						AS
-							DECLARE @LIST_TEMPLATE_ID INT
-							DECLARE @LOCATION_CLASSIFICATION NVARCHAR(150)
-							DECLARE @SQL NVARCHAR(MAX)
-
-							--Obtain the template id and location classification for the list.
-							SELECT @LIST_TEMPLATE_ID = template_id, @LOCATION_CLASSIFICATION = location_classification FROM Lists WHERE list_table_name = @list_table
-
-							SET @SQL = ''''
-								SELECT location_id, {LIST_TEMPLATE_ID} AS [template_id], ''''''''{LOCATION_CLASSIFICATION}'''''''' AS location_classification, Geometry.ToString() as [WKTGeometry]
-								FROM [{TABLE_NAME}]
-								WHERE location_id = {LOCATION_ID}
-								''''
-								SET @SQL = REPLACE(@SQL, ''''{TABLE_NAME}'''', @list_table)
-								SET @SQL = REPLACE(@SQL, ''''{LOCATION_ID}'''', @location_id)
-								SET @SQL = REPLACE(@SQL, ''''{LIST_TEMPLATE_ID}'''', @LIST_TEMPLATE_ID)
-								SET @SQL = REPLACE(@SQL, ''''{LOCATION_CLASSIFICATION}'''', @LOCATION_CLASSIFICATION)
-								EXEC sp_executesql @SQL'')'
-		SET @SQL = REPLACE(@TEMPLATE, '{DATABASENAME}', @OrgdbName)
-		EXEC sp_executesql @SQL
-
-		SET @TEMPLATE = 'USE [{DATABASENAME}]
-						EXEC(''CREATE PROCEDURE uspGetAllLocations
-							@list_table NVARCHAR(150)
-						AS
-							DECLARE @LIST_TEMPLATE_ID INT
-							DECLARE @LOCATION_CLASSIFICATION NVARCHAR(150)
-							DECLARE @TEMPLATE NVARCHAR(MAX)
-							DECLARE @SQL NVARCHAR(MAX)
-
-							--Obtain the template id and location classification for the list.
-							SELECT @LIST_TEMPLATE_ID = template_id, @LOCATION_CLASSIFICATION = location_classification FROM Lists WHERE list_table_name = @list_table
-
-							SET @TEMPLATE = ''''
-								SELECT location_id, {LIST_TEMPLATE_ID} AS [template_id], ''''''''{LOCATION_CLASSIFICATION}'''''''' AS location_classification, Geometry.ToString() as [WKTGeometry]
-								FROM [{TABLE_NAME}]
-								''''
-								SET @SQL = REPLACE(@TEMPLATE, ''''{TABLE_NAME}'''', @list_table)
-								SET @SQL = REPLACE(@SQL, ''''{LIST_TEMPLATE_ID}'''', @LIST_TEMPLATE_ID)
-								SET @SQL = REPLACE(@SQL, ''''{LOCATION_CLASSIFICATION}'''', @LOCATION_CLASSIFICATION)
-								EXEC sp_executesql @SQL'')'
-		SET @SQL = REPLACE(@TEMPLATE, '{DATABASENAME}', @OrgdbName)
-		EXEC sp_executesql @SQL
-
-		SET @TEMPLATE = 'USE [{DATABASENAME}]
-						EXEC(''CREATE PROCEDURE uspGetLocationsForBatchProcessing
-							@list_id INT
-						AS														
-							DECLARE	@list_table NVARCHAR(150)
+   --Declare Error Handler Variables.
+   DECLARE @ErrorMessage   varchar(2000) ,@ErrorSeverity  tinyint ,@ErrorState     tinyint
+
+   -- Obtain Organization Name.
+   DECLARE @OrgName NVARCHAR(200)
+   DECLARE @OrgdbName NVARCHAR(128)
+
+   BEGIN TRY
+       -- Get Organization Name
+       SELECT @OrgName = organization_name FROM PendingAccounts WHERE id = @PendingAccountID
+
+       -- Set Database Name.
+       SET @OrgdbName = REPLACE(@OrgName, ' ', '')
+       SET @OrgdbName = CONCAT('clientstore-', @OrgdbName)
+       SET @OrgdbName = SUBSTRING(@OrgdbName, 1, 128)
+
+       -- Obtain Pending Accounts Manager Id and Email.
+       DECLARE @pendingAccountManagerID INT
+       DECLARE @pendingAccountManagerEmail NVARCHAR(50)
+       DECLARE @pendingAccountManagerFirstName NVARCHAR(35)
+       DECLARE @pendingAccountManagerLastName NVARCHAR(35)
+       SELECT @pendingAccountManagerID = id, @pendingAccountManagerEmail = email, @pendingAccountManagerFirstName = first_name, @pendingAccountManagerLastName = last_name
+       FROM PendingAccountsUsers WHERE pendingaccounts_id = @PendingAccountID
+
+       --Create Database for the Account.
+       DECLARE @TEMPLATE NVARCHAR(MAX)
+       DECLARE @SQL NVARCHAR(MAX)
+       SET @TEMPLATE = 'CREATE DATABASE [{DATABASENAME}]; ALTER DATABASE [{DATABASENAME}] SET RECOVERY SIMPLE;'
+       SET @SQL = REPLACE(@TEMPLATE, '{DATABASENAME}', @OrgdbName)
+       EXEC sp_executesql @SQL
+
+       /********************************************************
+       * CREATE ALL THE TABLES.
+       ********************************************************/
+       SET @TEMPLATE = 'CREATE TABLE [{DATABASENAME}].[dbo].[ListsUploadStatus]
+       (
+           [id] INT IDENTITY(1, 1) NOT NULL,
+           [list_id] INT,
+           [last_successful_stage] NVARCHAR(128) DEFAULT ''{}'',
+           [error_info] NVARCHAR(512) DEFAULT ''{}'',
+           [update_time] DATETIME,
+           [worker_instance_id] NVARCHAR(128) DEFAULT ''{}'',
+           CONSTRAINT [PK_ListsUploadStatus] PRIMARY KEY CLUSTERED(id)
+        )'
+       SET @SQL = REPLACE(@TEMPLATE, '{DATABASENAME}', @OrgdbName)
+       EXEC sp_executesql @SQL
+
+       SET @TEMPLATE = 'CREATE TABLE [{DATABASENAME}].[dbo].[AccountProfile]
+       (
+           [id] INT IDENTITY(1,1) NOT NULL,
+           [organization_name] NVARCHAR(200) NOT NULL,
+           [organization_address] NVARCHAR(200) NOT NULL,
+           [organization_website] NVARCHAR(200) NOT NULL,
+           [organization_is_subsidiary] BIT NOT NULL,
+           [organization_parent] NVARCHAR(200) NOT NULL,
+           [manager_user_id] INT NOT NULL,
+           CONSTRAINT [PK_AccountProfile] PRIMARY KEY CLUSTERED(id)
+        )'
+       SET @SQL = REPLACE(@TEMPLATE, '{DATABASENAME}', @OrgdbName)
+       EXEC sp_executesql @SQL
+
+       SET @TEMPLATE = 'CREATE TABLE [{DATABASENAME}].[dbo].[AccountClassifications]
+       (
+           [id] INT IDENTITY(1,1) NOT NULL,
+           [classification_id] INT NOT NULL,
+           CONSTRAINT [PK_AccountClassifications] PRIMARY KEY CLUSTERED(id)
+       )'
+       SET @SQL = REPLACE(@TEMPLATE, '{DATABASENAME}', @OrgdbName)
+       EXEC sp_executesql @SQL
+
+       SET @TEMPLATE = 'CREATE TABLE [{DATABASENAME}].[dbo].[InternalShareRoutes]
+       (
+           [id] [int] IDENTITY(1,1) NOT NULL,
+           [admin_id] [int] NOT NULL,
+           [user_id] [int] NOT NULL,
+           [list_id] [int] NOT NULL,
+           [datetime] [datetime] NOT NULL,
+           CONSTRAINT [PK_InternalShareRoutes] PRIMARY KEY CLUSTERED (id)
+       )'
+       SET @SQL = REPLACE(@TEMPLATE, '{DATABASENAME}', @OrgdbName)
+       EXEC sp_executesql @SQL
+
+       SET @TEMPLATE = 'CREATE TABLE [{DATABASENAME}].[dbo].[SharingStatuses]
+       (
+           [id] INT IDENTITY(1,1) NOT NULL,
+           [sharing_status] NVARCHAR(50) NOT NULL,
+           CONSTRAINT [PK_SharingStatuses] PRIMARY KEY CLUSTERED(id)
+       )'
+       SET @SQL = REPLACE(@TEMPLATE, '{DATABASENAME}', @OrgdbName)
+       EXEC sp_executesql @SQL
+
+       SET @TEMPLATE = 'CREATE TABLE [{DATABASENAME}].[dbo].[Users]
+       (
+           [id] INT IDENTITY(1,1) NOT NULL,
+           [first_name] NVARCHAR(35) NOT NULL,
+           [middle_initial] NVARCHAR(2) NOT NULL,
+           [last_name] NVARCHAR(35) NOT NULL,
+           [email] NVARCHAR(50) NOT NULL,
+           [phone] VARCHAR(50) NOT NULL,
+           [title_id] INT NOT NULL,
+           [other_title] NVARCHAR(150),
+           [access_level_id] INT NOT NULL,
+           [status_id] INT NOT NULL,
+           [activated_time] SMALLDATETIME,
+           [email_subscription] BIT NOT NULL,
+           [is_system_user] BIT NOT NULL,
+           [initial_login] SMALLDATETIME,
+           [viirs_email_frequency] INT,
+           [glad_email_frequency] INT,
+           [forma_email_frequency] INT,
+           [terrai_email_frequency] INT,
+           [gran_chaco_email_frequency] INT,
+           CONSTRAINT [PK_Users] PRIMARY KEY CLUSTERED(id),
+           CONSTRAINT [UQ_UserEmail] UNIQUE(email),
+           INDEX [Users_01] NONCLUSTERED(id)
+        )'
+       SET @SQL = REPLACE(@TEMPLATE, '{DATABASENAME}', @OrgdbName)
+       EXEC sp_executesql @SQL
+
+       SET @TEMPLATE = 'CREATE TABLE [{DATABASENAME}].[dbo].[UserCommodities]
+       (
+           [id] INT IDENTITY(1,1) NOT NULL,
+           [user_id] INT NOT NULL,
+           [commodity_id] INT NOT NULL,
+           CONSTRAINT [PK_UserCommodities] PRIMARY KEY CLUSTERED(id),
+           INDEX [UserCommodities_01] NONCLUSTERED(user_id)
+        )'
+       SET @SQL = REPLACE(@TEMPLATE, '{DATABASENAME}', @OrgdbName)
+       EXEC sp_executesql @SQL
+
+       SET @TEMPLATE = 'CREATE TABLE [{DATABASENAME}].[dbo].[UserGeographies]
+       (
+           [id] INT IDENTITY(1,1) NOT NULL,
+           [user_id] INT NOT NULL,
+           [geography_id] INT NOT NULL,
+           CONSTRAINT [PK_UserGeographies] PRIMARY KEY CLUSTERED(id),
+           INDEX [UserGeographies_01] NONCLUSTERED(user_id)
+        )'
+       SET @SQL = REPLACE(@TEMPLATE, '{DATABASENAME}', @OrgdbName)
+       EXEC sp_executesql @SQL
+
+       SET @TEMPLATE = 'CREATE TABLE [{DATABASENAME}].[dbo].[ActivityLog]
+       (
+           [id] INT IDENTITY(1,1) NOT NULL,
+           [user_id] INT NOT NULL,
+           [activity_type_id] INT NOT NULL,
+           [activity_description] NVARCHAR(MAX) NOT NULL,
+           [activity_time] DATETIME NOT NULL,
+           CONSTRAINT [PK_ActivityLog] PRIMARY KEY CLUSTERED(id)
+       )'
+       SET @SQL = REPLACE(@TEMPLATE, '{DATABASENAME}', @OrgdbName)
+       EXEC sp_executesql @SQL
+
+       SET @TEMPLATE = 'CREATE TABLE [{DATABASENAME}].[dbo].[Lists]
+       (
+           [id] INT IDENTITY(1,1) NOT NULL,
+           [user_id] INT NOT NULL,
+           [template_id] INT NOT NULL,
+           [list_name] NVARCHAR(150) NOT NULL,
+           [list_table_name] NVARCHAR(150) NOT NULL,
+           [list_analysis_table_name] NVARCHAR(150) NOT NULL,
+           [list_status_id] INT NOT NULL,
+           [list_error_message] NVARCHAR(2000),
+           [location_classification] NVARCHAR(150),
+           [custom_attribute_names] NVARCHAR(2000),
+           [custom_attribute_types] NVARCHAR(2000),
+           [list_locations_count] INT,
+           [lock_status] SMALLDATETIME DEFAULT NULL,
+           [lock_user_id] INT,
+           [associated_gfwlist] TINYINT,
+           [dashboard_last_submit] datetime2 NULL,
+           [dashboard_last_results] datetime2 NULL,
+           [vector_tiles_storage_path] NVARCHAR(300) NULL,
+           [error_file_storage_path] NVARCHAR(300) NULL,
+           [vector_tiles_last_updated] DATETIME2 NULL,
+     [version] INT NOT NULL DEFAULT 0,
+     [Commodity] NVARCHAR(150) NULL,
+
+           INDEX [IX_Lists_1] NONCLUSTERED(list_name, list_table_name, list_analysis_table_name),
+           INDEX [IX_Lists_2] NONCLUSTERED(list_table_name),
+           CONSTRAINT [PK_Lists] PRIMARY KEY CLUSTERED(id)
+       )'
+       SET @SQL = REPLACE(@TEMPLATE, '{DATABASENAME}', @OrgdbName)
+       EXEC sp_executesql @SQL
+
+   SET @TEMPLATE = 'CREATE TABLE [{DATABASENAME}].[dbo].[ListAttributes]
+       (
+     [id] INT NOT NULL,
+     [list_id] INT NULL,
+     [attribute_name] NVARCHAR(64),
+     [attribute_type] SMALLINT
+   )'
+   SET @SQL = REPLACE(@TEMPLATE, '{DATABASENAME}', @OrgdbName)
+       EXEC sp_executesql @SQL
+       
+       SET @TEMPLATE = 'CREATE TABLE [{DATABASENAME}].[dbo].[LargeLists]
+       (
+           [large_list_id] INT IDENTITY(1,1) NOT NULL,
+           [list_id] [int] NOT NULL,
+           [organization_user_id] [int] NOT NULL,
+           [list_name] [nvarchar] (150) COLLATE SQL_Latin1_General_CP1_CI_AS NOT NULL,
+           [s3_filename] [nvarchar] (150) COLLATE SQL_Latin1_General_CP1_CI_AS NULL,
+           [s3_location] [nvarchar] (255) COLLATE SQL_Latin1_General_CP1_CI_AS NULL,
+           [list_status] [nvarchar] (20) COLLATE SQL_Latin1_General_CP1_CI_AS NOT NULL,
+           [creation_date] [datetime] NOT NULL,
+           [modification_date] [datetime] NULL
+
+           CONSTRAINT [PK_LargeLists] PRIMARY KEY CLUSTERED(large_list_id)
+       )'
+       SET @SQL = REPLACE(@TEMPLATE, '{DATABASENAME}', @OrgdbName)
+       EXEC sp_executesql @SQL
+
+       -- Dashboard Analysis Table for all lists
+       SET @TEMPLATE = 'CREATE TABLE [{DATABASENAME}].[dbo].[Analyses-Dashboard]
+       (
+           [id] INT IDENTITY(1,1) NOT NULL,
+           [list_id] INT NOT NULL,
+           [location_id] INT NULL,
+           [gadm_id] NVARCHAR(25) NULL,
+           [glad_alerts_coverage] NVARCHAR(MAX) NULL,
+           [glad_alerts_daily] NVARCHAR(MAX) NULL,
+           [glad_alerts_weekly] NVARCHAR(MAX) NULL,
+           [glad_alerts_monthly] NVARCHAR(MAX) NULL,
+           [viirs_alerts_daily] NVARCHAR(MAX) NULL,
+           [tree_cover_extent_total] decimal(18, 6) NULL,
+           [integrated_alerts_coverage] NVARCHAR(MAX) DEFAULT ''{}'',
+           [total_ha] FLOAT NULL,
+           [integrated_alerts_daily_all_nominal] NVARCHAR(MAX) DEFAULT ''{}'',
+           [integrated_alerts_daily_all_high] NVARCHAR(MAX) DEFAULT ''{}'',
+           [integrated_alerts_daily_all_highest] NVARCHAR(MAX) DEFAULT ''{}'',
+           [integrated_alerts_daily_sbtn_nominal] NVARCHAR(MAX) DEFAULT ''{}'',
+           [integrated_alerts_daily_sbtn_high] NVARCHAR(MAX) DEFAULT ''{}'',
+           [integrated_alerts_daily_sbtn_highest] NVARCHAR(MAX) DEFAULT ''{}'',
+           [integrated_alerts_daily_jrc_nominal] NVARCHAR(MAX) DEFAULT ''{}'',
+           [integrated_alerts_daily_jrc_high] NVARCHAR(MAX) DEFAULT ''{}'',
+           [integrated_alerts_daily_jrc_highest] NVARCHAR(MAX) DEFAULT ''{}'',
+           [status_code] INT NULL,
+
+           INDEX [IX_AnalysesDashboard_1] NONCLUSTERED(list_id),
+           INDEX [IX_AnalysesDashboard_2] NONCLUSTERED(location_id),
+           INDEX [IX_AnalysesDashboard_3] NONCLUSTERED(gadm_id)
+       )'
+       SET @SQL = REPLACE(@TEMPLATE, '{DATABASENAME}', @OrgdbName)
+       EXEC sp_executesql @SQL
+
+       -- Analysis Table for each list
+       SET @TEMPLATE = 'CREATE TABLE [{DATABASENAME}].[dbo].[Analyses]
+       (
+           [id] INT IDENTITY(1,1) NOT NULL,
+           [list_id] INT NOT NULL,
+           [status_id] INT NOT NULL DEFAULT 1,
+           [analysis_success_count] INT NOT NULL DEFAULT 0,
+           [analysis_fail_count] INT NOT NULL DEFAULT 0,
+
+           [tree_cover_loss_total_yearly] NVARCHAR(MAX) DEFAULT ''{}'',
+           [tree_cover_loss_primary_forest_yearly] NVARCHAR(MAX) DEFAULT ''{}'',
+           [tree_cover_loss_peat_yearly] NVARCHAR(MAX) DEFAULT ''{}'',
+           [tree_cover_loss_intact_forest_yearly] NVARCHAR(MAX) DEFAULT ''{}'',
+           [tree_cover_loss_protected_areas_yearly] NVARCHAR(MAX) DEFAULT ''{}'',
+           [tree_cover_loss_sea_landcover_yearly] NVARCHAR(MAX) DEFAULT ''{}'',
+           [tree_cover_loss_idn_landcover_yearly] NVARCHAR(MAX) DEFAULT ''{}'',
+           [tree_cover_loss_idn_primary_forest_yearly] NVARCHAR(MAX) DEFAULT ''{}'',
+           [tree_cover_loss_soy_yearly] NVARCHAR(2000) DEFAULT ''{}'',
+           [tree_cover_loss_idn_legal_yearly] NVARCHAR(MAX) DEFAULT ''{}'',
+           [tree_cover_loss_idn_forest_moratorium_yearly] NVARCHAR(MAX) DEFAULT ''{}'',
+           [tree_cover_loss_prodes_yearly] NVARCHAR(MAX) DEFAULT ''{}'',
+           [tree_cover_loss_prodes_wdpa_yearly] NVARCHAR(MAX) DEFAULT ''{}'',
+           [tree_cover_loss_prodes_primary_forest_yearly] NVARCHAR(MAX) DEFAULT ''{}'',
+           [tree_cover_loss_brazil_biomes_yearly] NVARCHAR(MAX) DEFAULT ''{}'',
+
+           [tree_cover_extent_total] DECIMAL(18,6) DEFAULT 0.000000,
+           [tree_cover_extent_primary_forest] DECIMAL(18,6) DEFAULT 0.000000,
+           [tree_cover_extent_protected_areas] DECIMAL(18,6) DEFAULT 0.000000,
+           [tree_cover_extent_peat] DECIMAL(18,6) DEFAULT 0.000000,
+           [tree_cover_extent_intact_forest] DECIMAL(18, 6) DEFAULT 0.00000,
+
+           [natural_habitat_primary] DECIMAL(18, 6) DEFAULT 0.00000,
+           [natural_habitat_intact_forest] DECIMAL(18,6) DEFAULT 0.000000,
+           [natural_habitat_global_land_cover] NVARCHAR(MAX) DEFAULT ''{}'',
+
+           [total_area] DECIMAL(18, 6) DEFAULT 0.00000,
+           [protected_areas_area] DECIMAL(18,6) DEFAULT 0.000000,
+           [critical_habitat_alliance_zero] DECIMAL(18,6) DEFAULT 0.000000,
+           [indigenous_people_land_rights] DECIMAL(18,6) DEFAULT 0.000000,
+           [peat_area] DECIMAL(18,6) DEFAULT 0.000000,
+           [fires_counts_monthly] NVARCHAR(MAX) DEFAULT ''{}'',
+           [soy_total_area] NVARCHAR(MAX) DEFAULT ''{}'',
+           [soy_pre2001_nonforest_area] DECIMAL(18, 6)  DEFAULT 0.00000,
+           [brazil_biomes] NVARCHAR(MAX) DEFAULT ''{}'',
+           [idn_legal_area] NVARCHAR(MAX) DEFAULT ''{}'',
+           [sea_landcover_area] NVARCHAR(MAX) DEFAULT ''{}'',
+           [idn_landcover_area] NVARCHAR(MAX) DEFAULT ''{}'',
+           [idn_forest_moratorium_area] DECIMAL(18, 6) DEFAULT 0.00000,
+
+           [south_america_presence] NVARCHAR(50) DEFAULT ''false'',
+           [legal_amazon_presence] NVARCHAR(50) DEFAULT ''false'',
+           [brazil_biomes_presence] NVARCHAR(50) DEFAULT ''false'',
+           [cerrado_biome_presence] NVARCHAR(50) DEFAULT ''false'',
+           [southeast_asia_presence] NVARCHAR(50) DEFAULT ''false'',
+           [indonesia_presence] NVARCHAR(50) DEFAULT ''false'',
+
+           [commodity_threat_deforestation_level] NVARCHAR(MAX) DEFAULT ''{}'',
+           [commodity_threat_peat_level] NVARCHAR(MAX) DEFAULT ''{}'',
+           [commodity_threat_protected_areas_level] NVARCHAR(MAX) DEFAULT ''{}'',
+           [commodity_threat_fires_level] NVARCHAR(MAX) DEFAULT ''{}'',
+           [commodity_threat_overall_level] NVARCHAR(MAX) DEFAULT ''{}'',
+           [commodity_threat_overall_score] NVARCHAR(MAX) DEFAULT ''{}'',
+           [commodity_value_forest_extent_level] NVARCHAR(MAX) DEFAULT ''{}'',
+           [commodity_value_peat_level] NVARCHAR(MAX) DEFAULT ''{}'',
+           [commodity_value_protected_areas_level] NVARCHAR(MAX) DEFAULT ''{}'',
+           [commodity_value_overall_level] NVARCHAR(MAX) DEFAULT ''{}'',
+           [commodity_value_overall_score] NVARCHAR(MAX) DEFAULT ''{}'',
+
+           [commodity_value_forest_extent] NVARCHAR(MAX) DEFAULT ''{}'',
+           [commodity_value_peat] NVARCHAR(MAX) DEFAULT ''{}'',
+           [commodity_value_protected_areas] NVARCHAR(MAX) DEFAULT ''{}'',
+
+           [commodity_mill_priority_level] NVARCHAR(MAX) DEFAULT ''{}'',
+           [commodity_mill_priority_score] NVARCHAR(MAX) DEFAULT ''{}'',
+
+           [commodity_threat_deforestation] NVARCHAR(MAX) DEFAULT ''{}'',
+           [commodity_threat_peat] NVARCHAR(MAX) DEFAULT ''{}'',
+           [commodity_threat_protected_areas] NVARCHAR(MAX) DEFAULT ''{}'',
+           [commodity_threat_fires] NVARCHAR(MAX) DEFAULT ''{}'',
+           [dissolved_geom_object_key] NVARCHAR(300) DEFAULT ''{}'',
+           [tree_cover_loss_arg_otbn_yearly] NVARCHAR(MAX) DEFAULT ''{}'',
+           [arg_otbn_area] NVARCHAR(MAX) DEFAULT ''{}'',
+           [argentina_presence] NVARCHAR(50) DEFAULT ''false'',
+
+           [protected_areas_by_category_area] NVARCHAR(MAX) DEFAULT ''{}'',
+           [landmark_by_category_area] NVARCHAR(MAX) DEFAULT ''{}'',
+
+           [country_specific_deforestation_yearly] NVARCHAR(MAX),
+           [country_specific_deforestation_wdpa_yearly] NVARCHAR(MAX),
+           [country_specific_deforestation_landmark_yearly] NVARCHAR(MAX),
+           [country_specific_deforestation_classified_region_yearly] NVARCHAR(MAX),
+           [tree_cover_loss_by_country_yearly] NVARCHAR(MAX),
+           [tree_cover_loss_by_country_wdpa_yearly] NVARCHAR(MAX),
+           [tree_cover_loss_by_country_landmark_yearly] NVARCHAR(MAX),
+
+           [country_area] NVARCHAR(MAX),
+           [classified_region_area] NVARCHAR(MAX),
+           [tree_cover_loss_by_country_classified_region_yearly] NVARCHAR(MAX),
+
+           INDEX [IX_Analyses_1] NONCLUSTERED(list_id)
+       )'
+       SET @SQL = REPLACE(@TEMPLATE, '{DATABASENAME}', @OrgdbName)
+       EXEC sp_executesql @SQL
+
+       SET @TEMPLATE = 'CREATE TABLE [{DATABASENAME}].[dbo].[Policies]
+       (
+           [id] INT IDENTITY(1,1) NOT NULL,
+           [document_name] NVARCHAR(250) NOT NULL
+       )'
+       SET @SQL = REPLACE(@TEMPLATE, '{DATABASENAME}', @OrgdbName)
+       EXEC sp_executesql @SQL
+
+       SET @TEMPLATE = 'CREATE TABLE [{DATABASENAME}].[dbo].[ListsAnalysisStatus](
+           [ListID] [INT] NOT NULL,
+           [AnalysisID] VARCHAR(30) NOT NULL,
+           [Status] [INT] NOT NULL,
+           [ErrorInfo] VARCHAR(2000) NULL,
+           [UpdateTime] [DATETIME2] NULL,
+           [s3_url] NVARCHAR(MAX) NULL,
+           [expiration_time] [DATETIME2] NULL,
+           [bundle_creation_time] [DATETIME2] NULL
+           CONSTRAINT UQ_ListAnalyses_ListID_AnalysisID UNIQUE (ListID, AnalysisID)
+       )'
+       SET @SQL = REPLACE(@TEMPLATE, '{DATABASENAME}', @OrgdbName)
+       EXEC sp_executesql @SQL
+
+       SET @TEMPLATE = 'CREATE TABLE [{DATABASENAME}].[dbo].[ListsProcessing](
+           [list_id] [INT] NOT NULL,
+           [user_id] [INT] NULL,
+           [analysis_type] [NVARCHAR](50) NOT NULL,
+           [run_identifier] [NVARCHAR](300) NOT NULL,
+           [analysis_start_time] [DATETIME2](7) NULL,
+           [analysis_end_time] [DATETIME2](7) NULL,
+           [area_analyzed_list_ha] [FLOAT] NULL,
+           [area_analyzed_locations_ha] [FLOAT] NULL,
+           [locations_analyzed] [INT] NULL
+       )'
+       SET @SQL = REPLACE(@TEMPLATE, '{DATABASENAME}', @OrgdbName)
+       EXEC sp_executesql @SQL
+       
+       SET @TEMPLATE = 'CREATE TABLE [{DATABASENAME}].[dbo].[AFIAnalysis](
+           [list_id] [SMALLINT] NULL,
+           [location_id] [INT] NULL,
+           [gadm_id] [NVARCHAR](50) NULL,
+           [natural_land_area] [FLOAT] NULL,
+           [natural_land_deforested_area] [FLOAT] NULL,
+           [total_area_ha] [FLOAT] NULL,
+           [status_code] [SMALLINT] NULL,
+           [location_error] [NVARCHAR](MAX) NULL,
+           [negligible_risk] [FLOAT] NULL,
+           [jrc_land_area] [FLOAT] NULL DEFAULT 0,
+           [jrc_land_deforested_area] [FLOAT] NULL DEFAULT 0,
+           [jrc_forest_loss_by_year] [NVARCHAR](MAX) NULL DEFAULT ''{}'',
+           [natural_forest_loss_by_year] [NVARCHAR](MAX) NULL DEFAULT ''{}'',
+           [protected_areas_area] [decimal] (18, 6) NULL,
+           [landmark_area] [decimal] (18, 6) NULL,
+
+           INDEX [IX_AFIAnalysis_location_id] NONCLUSTERED ([location_id] ASC),
+           INDEX [IX_AFIAnalysis_gadm_id] NONCLUSTERED ([gadm_id] ASC),
+           INDEX [IX_AFIAnalysis_list_id] NONCLUSTERED ([list_id] ASC)
+       )'
+       SET @SQL = REPLACE(@TEMPLATE, '{DATABASENAME}', @OrgdbName)
+       EXEC sp_executesql @SQL
+
+       SET @TEMPLATE = 'CREATE TABLE [{DATABASENAME}].[dbo].[ExternalUploads](
+           [id] INT IDENTITY(1,1) NOT NULL,
+           [userId] [INT] NULL,
+           [uploadKeyFile] [NVARCHAR](200) NULL,
+           [uploadUrl] [NVARCHAR](MAX) NULL,
+           [uploadDateTime] [DATETIME] NULL
+       )'
+       SET @SQL = REPLACE(@TEMPLATE, '{DATABASENAME}', @OrgdbName)
+       EXEC sp_executesql @SQL
+
+       /********************************************************
+       * CREATE ALL THE TABLE TYPES.
+       ********************************************************/
+       SET @TEMPLATE = 'USE [{DATABASENAME}]
+           EXEC(''        
+               CREATE TYPE dbo.[TT-Analyses-Dashboard]
+               AS TABLE
+               (
+                   [list_id] [int] NOT NULL,
+                   [location_id] [int] NULL,
+                   [gadm_id] [nvarchar] (25) COLLATE SQL_Latin1_General_CP1_CI_AS NULL,
+                   [glad_alerts_coverage] [nvarchar] (max) COLLATE SQL_Latin1_General_CP1_CI_AS NULL,
+                   [glad_alerts_daily] [nvarchar] (max) COLLATE SQL_Latin1_General_CP1_CI_AS NULL,
+                   [glad_alerts_weekly] [nvarchar] (max) COLLATE SQL_Latin1_General_CP1_CI_AS NULL,
+                   [glad_alerts_monthly] [nvarchar] (max) COLLATE SQL_Latin1_General_CP1_CI_AS NULL,
+                   [viirs_alerts_daily] [nvarchar] (max) COLLATE SQL_Latin1_General_CP1_CI_AS NULL,
+                   [tree_cover_extent_total] [decimal] (18, 6) NULL
+               )
+           '')'
+       SET @SQL = REPLACE(@TEMPLATE, '{DATABASENAME}', @OrgdbName)
+       EXEC sp_executesql @SQL
+
+
+       /********************************************************
+       * CREATE ALL THE STORED PROCEDURES.
+       ********************************************************/
+
+       SET @TEMPLATE = 'USE [{DATABASENAME}] EXEC(''
+           CREATE PROCEDURE uspInsertNewLocationToAnalysisTable
+               @list_id INT
+           AS
+               DECLARE @analyisTableName NVARCHAR(150)
+               DECLARE @listTableName NVARCHAR(150)
+
+               SET @analyisTableName = (
+                   SELECT list_analysis_table_name
+                   FROM Lists
+                   WHERE id = @list_id
+               )
+               SET @listTableName = (
+                   SELECT list_table_name
+                   FROM Lists
+                   WHERE id = @list_id
+               )
+
+               -- Insert New Rows into Analysis Table.
+               DECLARE @TEMPLATE NVARCHAR(1000)
+               DECLARE @SQL NVARCHAR(1000)
+               SET @TEMPLATE = ''''
+                   INSERT INTO [{ANALYSIS_TABLE}](location_id, location_status_id)
+                       SELECT location_id, 1
+                       FROM [{LIST_TABLE}]
+                       WHERE location_id > 0
+               ''''
+               SET @SQL = REPLACE(@TEMPLATE, ''''{ANALYSIS_TABLE}'''', @analyisTableName)
+               SET @SQL = REPLACE(@SQL, ''''{LIST_TABLE}'''', @listTableName)
+               EXEC sp_executesql @SQL
+       '')'
+       SET @SQL = REPLACE(@TEMPLATE, '{DATABASENAME}', @OrgdbName)
+       EXEC sp_executesql @SQL
+
+       SET @TEMPLATE = 'USE [{DATABASENAME}] EXEC(''
+           CREATE PROCEDURE uspDeleteList
+               @list_name NVARCHAR(150),
+               @list_table NVARCHAR(150),
+               @analysis_table NVARCHAR(150)
+           AS
+               DECLARE @FOLDER_SQL NVARCHAR(MAX)
+               DECLARE @LIST_SQL NVARCHAR(MAX)
+               DECLARE @ANALYSIS_SQL NVARCHAR(MAX)
+               DECLARE @LIST_ID INT
+               SET @LIST_ID = (SELECT id FROM Lists WHERE list_name = @list_name AND list_table_name = @list_table AND list_analysis_table_name = @analysis_table)
+               -- Deleting folder items first
+               SET @FOLDER_SQL = ''''DELETE FROM FolderItems WHERE list_id = {LIST_ID}''''
+               SET @FOLDER_SQL = REPLACE(@FOLDER_SQL, ''''{LIST_ID}'''', @LIST_ID)
+               EXEC sp_executesql @FOLDER_SQL
+
+               -- Deleting list & analysis tables
+               SET @LIST_SQL = REPLACE(@LIST_SQL, ''''{LIST_TABLE}'''', @list_table)
+               SET @LIST_SQL = ''''DROP TABLE IF EXISTS [{LIST_TABLE}]''''
+               SET @ANALYSIS_SQL = ''''DROP TABLE IF EXISTS [{ANALYSIS_TABLE}]''''
+               DELETE from Lists WHERE id = @LIST_ID
+               DELETE from Analyses WHERE list_id = @LIST_ID
+               DELETE from dbo.[Analyses-Dashboard] WHERE list_id = @LIST_ID
+               SET @LIST_SQL = REPLACE(@LIST_SQL, ''''{LIST_TABLE}'''', @list_table)
+               SET @ANALYSIS_SQL = REPLACE(@ANALYSIS_SQL, ''''{ANALYSIS_TABLE}'''', @analysis_table)
+               EXEC sp_executesql @LIST_SQL
+               EXEC sp_executesql @ANALYSIS_SQL
+       '')'
+       SET @SQL = REPLACE(@TEMPLATE, '{DATABASENAME}', @OrgdbName)
+       EXEC sp_executesql @SQL
+
+       -- Roll back STORED PROCEDURES
+       SET @TEMPLATE = 'USE [{DATABASENAME}]
+                       EXEC(''CREATE PROCEDURE uspDropOrganizationTable
+                           @table_name NVARCHAR(150)
+                       AS
+                           DECLARE @TEMPLATE NVARCHAR(MAX)
+                           DECLARE @SQL NVARCHAR(MAX)
+
+                           SET @TEMPLATE = ''''DROP TABLE IF EXISTS [{TABLE_NAME}]''''
+                           SET @SQL = REPLACE(@TEMPLATE, ''''{TABLE_NAME}'''', @table_name)
+                            EXEC sp_executesql @SQL '')'
+       SET @SQL = REPLACE(@TEMPLATE, '{DATABASENAME}', @OrgdbName)
+       EXEC sp_executesql @SQL
+
+       SET @TEMPLATE = 'USE [{DATABASENAME}]
+                       EXEC(''CREATE PROCEDURE uspDeleteOrganizationTableRow
+                           @table_name NVARCHAR(150),
+                           @primary_key INT,
+                           @column NVARCHAR(150)
+                       AS
+                           DECLARE @TEMPLATE NVARCHAR(MAX)
+                           DECLARE @SQL NVARCHAR(MAX)
+
+                           SET @TEMPLATE = ''''DELETE FROM [{TABLE_NAME}] WHERE {COLUMN} = {PRIMARY_KEY}''''
+                           SET @SQL = REPLACE(@TEMPLATE, ''''{TABLE_NAME}'''', @table_name)
+                           SET @SQL = REPLACE(@SQL, ''''{COLUMN}'''', @column)
+                           SET @SQL = REPLACE(@SQL, ''''{PRIMARY_KEY}'''', @primary_key)
+                            EXEC sp_executesql @SQL '')'
+       SET @SQL = REPLACE(@TEMPLATE, '{DATABASENAME}', @OrgdbName)
+       EXEC sp_executesql @SQL
+
+       SET @TEMPLATE = 'USE [{DATABASENAME}]
+           EXEC(''CREATE PROCEDURE dbo.uspUpdateAccountProfile
+                       @orgName NVARCHAR(200),
+                       @orgAddress NVARCHAR(200),
+                       @orgWebsite NVARCHAR(200),
+                       @isSubsidiary BIT = 0,
+                       @orgParent NVARCHAR(200) = ''''''''
+                   AS
+                       UPDATE AccountProfile SET
+                       organization_name = @orgName,
+                       organization_address = @orgAddress,
+                       organization_website = @orgWebsite,
+                       organization_is_subsidiary = @isSubsidiary,
+                       organization_parent = @orgParent'')'
+       SET @SQL = REPLACE(@TEMPLATE, '{DATABASENAME}', @OrgdbName)
+       EXEC sp_executesql @SQL
+
+       SET @TEMPLATE = 'USE [{DATABASENAME}]
+                       EXEC(''CREATE PROCEDURE dbo.uspUpdateAccountClassifications
+                           @classification_ids VARCHAR(200)
+                       AS
+                           -- Remove old classifications.
+                           DELETE FROM AccountClassifications
+
+                           --Add new classifications.
+                           DECLARE @pos INT
+                           DECLARE @len INT
+                           DECLARE @strClassificationId varchar(20)
+                           DECLARE @nClassificationId INT
+
+                           SET @pos = 1
+                           WHILE CHARINDEX('''','''', @classification_ids, @pos) > 0
+                           BEGIN
+                               SET @len = CHARINDEX('''','''', @classification_ids, @pos)
+                               SET @strClassificationId = SUBSTRING(@classification_ids, @pos, @len - @pos)
+                               SET @nClassificationId = CAST(@strClassificationId AS INT)
+                               INSERT INTO AccountClassifications VALUES(@nClassificationId)
+                               set @pos = @len + 1
+                           END
+                           SET @strClassificationId = SUBSTRING(@classification_ids, @pos, LEN(@classification_ids) - @pos + 1)
+                           SET @nClassificationId = CAST(@strClassificationId AS INT)
+                           INSERT INTO AccountClassifications VALUES(@nClassificationId)'')'
+       SET @SQL = REPLACE(@TEMPLATE, '{DATABASENAME}', @OrgdbName)
+       EXEC sp_executesql @SQL
+
+       SET @TEMPLATE = 'USE [{DATABASENAME}]
+                       EXEC(''CREATE PROCEDURE dbo.uspUpdateUserCommodities
+                           @userID INT,
+                           @commodity_ids VARCHAR(200)
+                       AS
+                           -- Remove old commodities for the user.
+                           DELETE FROM UserCommodities WHERE user_id = @userID
+
+                           --Add new commodities for the user.
+                           DECLARE @pos INT
+                           DECLARE @len INT
+                           DECLARE @strCommoditiyId varchar(20)
+                           DECLARE @nCommodityId INT
+
+                           SET @pos = 1
+                           WHILE CHARINDEX('''','''', @commodity_ids, @pos) > 0
+                           BEGIN
+                               SET @len = CHARINDEX('''','''', @commodity_ids, @pos)
+                               SET @strCommoditiyId = SUBSTRING(@commodity_ids, @pos, @len - @pos)
+                               SET @nCommodityId = CAST(@strCommoditiyId AS INT)
+                               INSERT INTO UserCommodities(user_id, commodity_id) VALUES(@userID, @nCommodityId)
+                               SET @pos = @len + 1
+                           END
+                           SET @strCommoditiyId = SUBSTRING(@commodity_ids, @pos, LEN(@commodity_ids) - @pos + 1)
+                           SET @nCommodityId = CAST(@strCommoditiyId AS INT)
+                           INSERT INTO UserCommodities(user_id, commodity_id) VALUES(@userID, @nCommodityId)'')'
+       SET @SQL = REPLACE(@TEMPLATE, '{DATABASENAME}', @OrgdbName)
+       EXEC sp_executesql @SQL
+
+       SET @TEMPLATE = 'USE [{DATABASENAME}]
+                       EXEC(''CREATE PROCEDURE dbo.uspUpdateUserGeographies
+                           @userID INT,
+                           @geography_ids VARCHAR(200)
+                       AS
+                           -- Remove old geographies for the user.
+                           DELETE FROM UserGeographies WHERE user_id = @userID
+
+                           DECLARE @pos INT
+                           DECLARE @len INT
+                           DECLARE @strGeographyId varchar(20)
+                           DECLARE @nGeographyId INT
+
+                           SET @pos = 1
+                           WHILE CHARINDEX('''','''', @geography_ids, @pos) > 0
+                           BEGIN
+                               SET @len = CHARINDEX('''','''', @geography_ids, @pos)
+                               SET @strGeographyId = SUBSTRING(@geography_ids, @pos, @len - @pos)
+                               SET @nGeographyId = CAST(@strGeographyId AS INT)
+                               INSERT INTO UserGeographies(user_id,geography_id) VALUES(@userID, @nGeographyId)
+                               SET @pos = @len +1
+                           END
+                           SET @strGeographyId = SUBSTRING(@geography_ids, @pos, LEN(@geography_ids) - @pos + 1)
+                           SET @nGeographyId = CAST(@strGeographyId AS INT)
+                           INSERT INTO UserGeographies(user_id,geography_id) VALUES(@userID, @nGeographyId)'')'
+       SET @SQL = REPLACE(@TEMPLATE, '{DATABASENAME}', @OrgdbName)
+       EXEC sp_executesql @SQL
+
+       SET @TEMPLATE = 'USE [{DATABASENAME}] EXEC(''
+           CREATE PROCEDURE dbo.uspGetUserStatus
+               @user_id INT
+           AS
+               SELECT status_id FROM Users WHERE id = @user_id
+       '')'
+       SET @SQL = REPLACE(@TEMPLATE, '{DATABASENAME}', @OrgdbName)
+       EXEC sp_executesql @SQL
+
+       SET @TEMPLATE = 'USE [{DATABASENAME}]
+                       EXEC(''CREATE PROCEDURE dbo.uspGetUserInfo
+                           @userID INT
+                       AS
+                           -- Obtain User Commodities Info.
+                           DECLARE @arrCommodities NVARCHAR(100)
+                           SELECT @arrCommodities = COALESCE(@arrCommodities + '''','''', '''''''') + CONVERT(varchar(3), commodity_id)
+                           FROM UserCommodities WHERE user_id = @userID
+
+                           -- Obtain User Geographies Info.
+                           DECLARE @arrGeographies NVARCHAR(100)
+                           SELECT @arrGeographies = COALESCE(@arrGeographies + '''','''', '''''''') + CONVERT(varchar(3), geography_id)
+                           FROM UserGeographies WHERE user_id = @userID
+
+                           SELECT id, first_name, middle_initial, last_name, email, phone, title_id, other_title, access_level_id, status_id, email_subscription,
+                           @arrCommodities AS user_commodity_ids, @arrGeographies AS user_geography_ids,
+                           viirs_email_frequency, glad_email_frequency, forma_email_frequency, terrai_email_frequency, gran_chaco_email_frequency
+                           FROM Users WHERE id = @userID'')'
+       SET @SQL = REPLACE(@TEMPLATE, '{DATABASENAME}', @OrgdbName)
+       EXEC sp_executesql @SQL
+
+       SET @TEMPLATE = 'USE [{DATABASENAME}]
+                       EXEC(''CREATE PROCEDURE dbo.uspGetUserInfoByEmail
+                           @userEmail NVARCHAR(50)
+                       AS
+                           SELECT
+                           U.id, U.first_name, U.middle_initial, U.last_name, U.email, U.phone,
+                           U.title_id, U.other_title, U.access_level_id, U.status_id, U.email_subscription
+                           FROM Users U
+                           LEFT JOIN UserCommodities UC ON U.id = UC.user_id
+                           LEFT JOIN UserGeographies UG ON U.id = UG.user_id
+                           WHERE U.email = @userEmail'')'
+       SET @SQL = REPLACE(@TEMPLATE, '{DATABASENAME}', @OrgdbName)
+       EXEC sp_executesql @SQL
+
+       
+       SET @TEMPLATE = 'USE [{DATABASENAME}]
+                           EXEC(''CREATE PROCEDURE dbo.uspGetListLocations
+                                   @listID INT,
+                                   @locationID INT,
+                                   @rowsRequested INT
+                               AS
+                               --DECLARE IMPORTANT VARIABLES
+                               DECLARE @listLocationTableName NVARCHAR(1000)
+                               DECLARE @locationWhereStatement NVARCHAR(MAX)
+                               DECLARE @listLocationTableCols NVARCHAR(MAX)
+                               DECLARE @SQL NVARCHAR(MAX)
+
+                               -- Obtain the location table name and the analysis table name for the list.
+                               SELECT @listLocationTableName = list_table_name FROM Lists WHERE id = @listID
+
+                               -- Obtain the needed columns from the List Location Table. (All but Geometry)
+                               SELECT @listLocationTableCols = STUFF(
+                                   (
+                                       SELECT ''''], L.['''' + [name] FROM sys.columns
+                                       WHERE
+                                           [object_id] = (SELECT [object_id] FROM sys.objects WHERE [name] = @listLocationTableName)
+                                           AND [name] NOT IN (''''Geometry'''')
+                                           FOR XML PATH('''''''')
+                                   ),1,3,'''''''') + '''']'''';
+
+                               -- Return data
+                               IF @rowsRequested > 0
+                                   BEGIN
+                                       SET @SQL = ''''SELECT TOP ({NUM_ROWS}) {LIST_ID} As list_id, {LOCATION_COLUMNS}, L.Geometry.ToString() as [WKTGeometry]
+                                                   FROM [{LOCATION_TABLE}] L
+                                                   WHERE location_id >= {MIN_LOCATION_ID}
+                                                   ORDER BY location_id'''';
+                                       SET @SQL = REPLACE(@SQL, ''''{NUM_ROWS}'''', @rowsRequested);
+                                       SET @SQL = REPLACE(@SQL, ''''{MIN_LOCATION_ID}'''', @locationID);
+                                   END
+                               ELSE
+                                   BEGIN
+                                       SET @SQL = ''''SELECT {LIST_ID} As list_id, {LOCATION_COLUMNS}, L.Geometry.ToString() as [WKTGeometry]
+                                                   FROM [{LOCATION_TABLE}] L'''';
+                                   END
+
+                               SET @SQL = REPLACE(@SQL, ''''{LIST_ID}'''', @listID);
+                               SET @SQL = REPLACE(@SQL, ''''{LOCATION_COLUMNS}'''', @listLocationTableCols);
+                               SET @SQL = REPLACE(@SQL, ''''{LOCATION_TABLE}'''', @listLocationTableName);
+
+
+                               EXEC sp_executesql @SQL;
+                       '')'
+       SET @SQL = REPLACE(@TEMPLATE, '{DATABASENAME}', @OrgdbName)
+       EXEC sp_executesql @SQL
+
+       SET @TEMPLATE = 'USE [{DATABASENAME}]
+                           EXEC(''CREATE PROCEDURE dbo.uspGetSimplifiedListLocations
+                               @listID INT
+                           AS
+                           --DECLARE IMPORTANT VARIABLES
+                           DECLARE @listLocationTableName NVARCHAR(1000)
+                           DECLARE @listLocationTableCols NVARCHAR(MAX)
+                           DECLARE @SQL NVARCHAR(MAX)
+
+                           -- Obtain the location table name and the analysis table name for the list.
+                           SELECT @listLocationTableName = list_table_name FROM Lists WHERE id = @listID
+
+                           -- Obtain the needed columns from the List Location Table. (All but Geometry)
+                           SELECT @listLocationTableCols = STUFF(
+                               (
+                                   SELECT ''''], L.['''' + [name] FROM sys.columns
+                                   WHERE
+                                       [object_id] = (SELECT [object_id] FROM sys.objects WHERE [name] = @listLocationTableName)
+                                       AND [name] NOT IN (''''Geometry'''')
+                                       FOR XML PATH('''''''')
+                               ),1,3,'''''''') + '''']'''';
+
+                           -- Return data from both tables
+                           SET @SQL = ''''SELECT {LIST_ID} As list_id, {LOCATION_COLUMNS}, L.Geometry.Reduce(0.008).ToString() as [WKTGeometry] FROM [{LOCATION_TABLE}] L'''';
+                           SET @SQL = REPLACE(@SQL, ''''{LIST_ID}'''', @listID);
+                           SET @SQL = REPLACE(@SQL, ''''{LOCATION_COLUMNS}'''', @listLocationTableCols);
+                           SET @SQL = REPLACE(@SQL, ''''{LOCATION_TABLE}'''', @listLocationTableName);
+                           EXEC sp_executesql @SQL
+                       '')'
+       SET @SQL = REPLACE(@TEMPLATE, '{DATABASENAME}', @OrgdbName)
+       EXEC sp_executesql @SQL
+
+       SET @TEMPLATE = 'USE [{DATABASENAME}] EXEC(''
+           CREATE PROCEDURE dbo.uspGetDashboardData
+               @listId INT
+           AS
+           BEGIN
+               SET NOCOUNT ON;
+
+               DECLARE @template_id INT
+               DECLARE @name_field NVARCHAR(50)
+               DECLARE @list_table_name NVARCHAR(150)
+
+               SELECT @list_table_name = list_table_name, @template_id = template_id FROM dbo.Lists WHERE id = @listId
+               SET @name_field = CASE WHEN @template_id = 1 THEN ''''[Investment Name]'''' ELSE ''''[Location Name]'''' END
+               
+               DECLARE @TEMPLATE NVARCHAR(MAX)
+
+               DECLARE @SQL NVARCHAR(MAX)
+
+               SET @TEMPLATE = ''''
+                       SELECT AD.list_id,
+                           AD.location_id,
+                           AD.gadm_id,
+                           AD.glad_alerts_coverage AS gladAlerts,
+                           AD.glad_alerts_daily,
+                           AD.glad_alerts_weekly,
+                           AD.glad_alerts_monthly,
+                           AD.viirs_alerts_daily,
+                           AD.tree_cover_extent_total,
+                           AA.[Country],
+                           AA.[State],
+                           AA.[Sub State],                 
+                           --AA.Geometry.ToString() AS [WKTGeometry],
+                           AA.[Location Name] AS name_all,
+                           AA.[gadmid],    
+                           AA.gadmid AS gadmid_2,
+                           AA.Latitude AS gadmid_2_lat, AA.Longitude AS gadmid_2_lon,
+                           S.gadmid AS gadmid_1, S.Latitude AS gadmid_1_lat, S.Longitude AS gadmid_1_lon,
+                           C.gadmid AS gadmid_0, C.Latitude AS gadmid_0_lat, C.Longitude AS gadmid_0_lon,
+                           L.location_lat, L.location_lon,
+                           L.location_name
+                       FROM dbo.[Analyses-Dashboard] AD
+                       LEFT JOIN gfwpro.dbo.[list-administrativeAreas] AA ON AA.gadmid = AD.gadm_id
+                       LEFT JOIN (SELECT * FROM gfwpro.dbo.[list-administrativeAreas] WHERE [Sub State] IS NULL) S ON S.Country = AA.Country AND S.State = AA.State
+                       LEFT JOIN (SELECT * FROM gfwpro.dbo.[list-administrativeAreas] WHERE State IS NULL) C ON C.Country = AA.Country    
+                       LEFT JOIN (SELECT {NAME_FIELD} AS location_name, location_id, longitude AS location_lon, latitude AS location_lat FROM [{LIST_TABLE}]) L ON L.location_id = AD.location_id
+                       WHERE AD.list_id = {LIST_ID}
+                       ORDER BY AD.location_id
+               ''''
+               SET @SQL = REPLACE(@TEMPLATE, ''''{LIST_ID}'''', @listId)    
+               SET @SQL = REPLACE(@SQL, ''''{LIST_TABLE}'''', @list_table_name)
+               SET @SQL = REPLACE(@SQL, ''''{NAME_FIELD}'''', @name_field)    
+               EXEC sp_executesql @SQL
+           END
+       '')'
+       SET @SQL = REPLACE(@TEMPLATE, '{DATABASENAME}', @OrgdbName)
+       EXEC sp_executesql @SQL
+
+       SET @TEMPLATE = 'USE [{DATABASENAME}] EXEC(''
+           CREATE PROCEDURE dbo.uspGetDashboardCommodityLocations
+               @listId INT
+           AS
+               DECLARE @listTable NVARCHAR(1000)
+               DECLARE @analysisTable NVARCHAR(1000)
+               SELECT @listTable = list_table_name, @analysisTable = list_analysis_table_name FROM Lists WHERE id = @listId
+
+               DECLARE @SQL NVARCHAR(MAX)
+               SET @SQL = ''''
+                   SELECT {LIST_ID} AS list_id,LT.[Latitude],LT.[Longitude],LT.[location_id],LT.[Location Name],LT.[Country],LT.[State],LT.[Sub State],LT.[gadmid],LT.Geometry.ToString() AS [WKTGeometry]
+                   FROM [{LIST_TABLE}] LT JOIN [{ANALYSIS_TABLE}] AT
+                   ON LT.location_id = AT.location_id
+                   WHERE AT.location_status_id = 2
+               ''''
+               SET @SQL = REPLACE(@SQL, ''''{LIST_ID}'''', @listId)
+               SET @SQL = REPLACE(@SQL, ''''{LIST_TABLE}'''', @listTable)
+               SET @SQL = REPLACE(@SQL, ''''{ANALYSIS_TABLE}'''', @analysisTable)
+               EXEC sp_executesql @SQL
+       '')'
+       SET @SQL = REPLACE(@TEMPLATE, '{DATABASENAME}', @OrgdbName)
+       EXEC sp_executesql @SQL
+
+       SET @TEMPLATE = 'USE [{DATABASENAME}] EXEC(''
+           CREATE PROCEDURE dbo.uspGetDashboardInvestmentLocations
+               @listId INT
+           AS
+               DECLARE @listTable NVARCHAR(1000)
+               DECLARE @analysisTable NVARCHAR(1000)
+               SELECT @listTable = list_table_name, @analysisTable = list_analysis_table_name FROM Lists WHERE id = @listId
+
+               DECLARE @SQL NVARCHAR(MAX)
+               SET @SQL = ''''
+                   SELECT {LIST_ID} AS list_id,LT.[location_id],LT.[Latitude],LT.[Longitude],LT.[Investment Name] AS [Location Name],LT.[Country],LT.[State],LT.[Sub State],LT.[gadmid],LT.Geometry.ToString() AS [WKTGeometry]
+                   FROM [{LIST_TABLE}] LT JOIN [{ANALYSIS_TABLE}] AT
+                   ON LT.location_id = AT.location_id
+                   WHERE AT.location_status_id = 2
+               ''''
+               SET @SQL = REPLACE(@SQL, ''''{LIST_ID}'''', @listId)
+               SET @SQL = REPLACE(@SQL, ''''{LIST_TABLE}'''', @listTable)
+               SET @SQL = REPLACE(@SQL, ''''{ANALYSIS_TABLE}'''', @analysisTable)
+               EXEC sp_executesql @SQL
+       '')'
+       SET @SQL = REPLACE(@TEMPLATE, '{DATABASENAME}', @OrgdbName)
+       EXEC sp_executesql @SQL
+
+       SET @TEMPLATE = '
+           USE [{DATABASENAME}]
+           EXEC(''
+               CREATE PROCEDURE dbo.uspGetDashboardDissolvedS3Location
+                   @listId INT
+               AS
+                   SELECT dissolved_geom_object_key FROM Analyses WHERE list_id = @listId
+           '')
+       '
+       SET @SQL = REPLACE(@TEMPLATE, '{DATABASENAME}', @OrgdbName)
+       EXEC sp_executesql @SQL
+
+       SET @TEMPLATE = '
+           USE [{DATABASENAME}]
+           EXEC(''
+               CREATE PROCEDURE dbo.uspGetListErrorFiles
+                   @list_id SMALLINT NULL
+
+               AS
+               BEGIN
+                   IF @list_id IS NOT NULL
+                       SELECT error_file_storage_path
+                       FROM dbo.Lists
+                       WHERE error_file_storage_path IS NOT NULL AND id = @list_id
+           
+                   ELSE
+                       SELECT id, error_file_storage_path
+                       FROM dbo.Lists
+                       WHERE error_file_storage_path IS NOT NULL
+               END
+           '')
+       '
+       SET @SQL = REPLACE(@TEMPLATE, '{DATABASENAME}', @OrgdbName)
+       EXEC sp_executesql @SQL
+
+       SET @TEMPLATE = '
+           USE [{DATABASENAME}]
+           EXEC(''
+               CREATE PROCEDURE dbo.uspGetListVectorTilesPath
+                   @list_id SMALLINT
+
+               AS
+               BEGIN
+                   SELECT vector_tiles_storage_path
+                   FROM dbo.Lists
+                   WHERE id = @list_id
+               END
+           '')
+       '
+       SET @SQL = REPLACE(@TEMPLATE, '{DATABASENAME}', @OrgdbName)
+       EXEC sp_executesql @SQL
+
+       SET @TEMPLATE = '
+           USE [{DATABASENAME}]
+           EXEC(''
+               CREATE PROCEDURE dbo.uspGetListsDashboardTimestamp
+                   @timestamp DATETIME2 NULL,
+                   @list_id SMALLINT NULL
+
+               AS
+               BEGIN
+                   IF @list_id IS NULL
+                       SELECT id
+                       FROM dbo.Lists WHERE dashboard_last_submit = @timestamp
+
+                   ELSE
+                       SELECT dashboard_last_results
+                       FROM dbo.Lists WHERE id = @list_id
+               END
+           '')
+       '
+       SET @SQL = REPLACE(@TEMPLATE, '{DATABASENAME}', @OrgdbName)
+       EXEC sp_executesql @SQL
+
+       SET @TEMPLATE = '
+           USE [{DATABASENAME}]
+           EXEC(''
+               CREATE PROCEDURE dbo.uspSetDashboardTimestamp
+                   @list_id_array NVARCHAR(MAX),
+                   @column_name NVARCHAR(50),
+                   @value DATETIME2
+               AS
+               BEGIN
+                   SET NOCOUNT ON;
+
+                   DECLARE @SQL NVARCHAR(MAX)
+
+
+                   SET @SQL = ''''
+                       BEGIN TRANSACTION
+                           UPDATE [Lists]
+                           SET {COLUMN_NAME} = ''''''''{VALUE}''''''''
+                           WHERE id IN ({LIST_IDS})
+                       COMMIT TRANSACTION
+                   ''''
+
+                   SET @SQL = REPLACE(@SQL, ''''{COLUMN_NAME}'''', @column_name)
+                   SET @SQL = REPLACE(@SQL, ''''{VALUE}'''', @value)
+                   SET @SQL = REPLACE(@SQL, ''''{LIST_IDS}'''', @list_id_array)
+                   EXEC sp_executesql @SQL
+
+               END
+
+           '')
+       '
+       SET @SQL = REPLACE(@TEMPLATE, '{DATABASENAME}', @OrgdbName)
+       EXEC sp_executesql @SQL
+
+       SET @TEMPLATE = 'USE [{DATABASENAME}]
+                       EXEC(''CREATE PROCEDURE uspGetListLocationsNoGeom
+                           @listID INT,
+                           @ColumnsToReturn NVARCHAR(MAX) = NULL
+
+                       AS
+                           --DECLARE IMPORTANT VARIABLES
+                           DECLARE @listLocationTableName NVARCHAR(1000)
+                           DECLARE @listLocationTableCols NVARCHAR(MAX)
+                           DECLARE @columnsList NVARCHAR(MAX)
+                           DECLARE @SQL NVARCHAR(MAX)
+
+                           -- Obtain the location table name and the analysis table name for the list.
+                           SELECT @listLocationTableName = list_table_name FROM Lists WHERE id = @listID
+
+
+                           IF @ColumnsToReturn IS NOT NULL
+                               BEGIN
+                                   DECLARE @PRESQL NVARCHAR(MAX);
+                                   DECLARE @presql_list_params NVARCHAR(MAX) = ''''@list_location_table_cols_query VARCHAR(MAX) OUTPUT'''';
+
+                                   WITH ColumnsCTE AS (
+                                       SELECT TRIM(value) AS cols FROM STRING_SPLIT(@ColumnsToReturn, '''','''')
+                                   )
+
+                                   SELECT @columnsList = CONCAT('''''''''''''''', STRING_AGG(cols, '''''''''''', ''''''''''''), '''''''''''''''')
+                                   FROM ColumnsCTE;
+
+                                   -- Obtain the needed columns from the List Location Table.
+                                   SET @PRESQL = N''''SELECT @list_location_table_cols_query = STUFF(
+                                         (
+                                           SELECT ''''''''], L.['''''''' + [name] FROM sys.columns
+                                           WHERE
+                                             [object_id] = (SELECT [object_id] FROM sys.objects WHERE [name] = ''''''''{LIST_LOCATION_TABLE_NAME}'''''''')
+                                             AND [name] IN ({COLUMNS_LIST})
+                                             FOR XML PATH('''''''''''''''')
+                                         ),1,3,'''''''''''''''') + '''''''']'''''''''''';
+                                   SET @PRESQL = REPLACE(@PRESQL, ''''{LIST_LOCATION_TABLE_NAME}'''', @listLocationTableName)
+                                   SET @PRESQL = REPLACE(@PRESQL, ''''{COLUMNS_LIST}'''', @columnsList);
+
+                                   EXEC sp_executesql @PRESQL, @presql_list_params, @list_location_table_cols_query = @listLocationTableCols OUTPUT;
+
+                               END
+
+                           ELSE
+                               BEGIN
+
+                                   -- Obtain the needed columns from the List Location Table. (All but Geometry)
+                                   SELECT @listLocationTableCols = STUFF(
+                                       (
+                                           SELECT ''''], L.['''' + [name] FROM sys.columns
+                                           WHERE
+                                               [object_id] = (SELECT [object_id] FROM sys.objects WHERE [name] = @listLocationTableName)
+                                               AND [name] NOT IN (''''Geometry'''')
+                                               FOR XML PATH('''''''')
+                                       ),1,3,'''''''') + '''']'''';
+                               END
+
+                           -- Return data from both tables
+                           SET @SQL = ''''SELECT {LIST_ID} As list_id, {LOCATION_COLUMNS} FROM [{LOCATION_TABLE}] L'''';
+                           SET @SQL = REPLACE(@SQL, ''''{LIST_ID}'''', @listID);
+                           SET @SQL = REPLACE(@SQL, ''''{LOCATION_COLUMNS}'''', @listLocationTableCols);
+                           SET @SQL = REPLACE(@SQL, ''''{LOCATION_TABLE}'''', @listLocationTableName);
+                           EXEC sp_executesql @SQL
+                       '')'
+       SET @SQL = REPLACE(@TEMPLATE, '{DATABASENAME}', @OrgdbName)
+       EXEC sp_executesql @SQL
+
+       SET @TEMPLATE = 'USE [{DATABASENAME}]
+                       EXEC(''CREATE PROCEDURE uspGetListTemplateInfo
+                           @list_table NVARCHAR(150)
+                       AS
+                           --Obtain the template id and location classification for the list.
+                           SELECT template_id, location_classification FROM Lists WHERE list_table_name = @list_table
+                       '')'
+       SET @SQL = REPLACE(@TEMPLATE, '{DATABASENAME}', @OrgdbName)
+       EXEC sp_executesql @SQL
+
+       SET @TEMPLATE = 'USE [{DATABASENAME}]
+                       EXEC(''CREATE PROCEDURE uspGetLocation
+                           @list_table NVARCHAR(150),
+                           @location_id INT
+                       AS
+                           DECLARE @LIST_TEMPLATE_ID INT
+                           DECLARE @LOCATION_CLASSIFICATION NVARCHAR(150)
+                           DECLARE @SQL NVARCHAR(MAX)
+
+                           --Obtain the template id and location classification for the list.
+                           SELECT @LIST_TEMPLATE_ID = template_id, @LOCATION_CLASSIFICATION = location_classification FROM Lists WHERE list_table_name = @list_table
+
+                           SET @SQL = ''''
+                               SELECT location_id, {LIST_TEMPLATE_ID} AS [template_id], ''''''''{LOCATION_CLASSIFICATION}'''''''' AS location_classification, Geometry.ToString() as [WKTGeometry]
+                               FROM [{TABLE_NAME}]
+                               WHERE location_id = {LOCATION_ID}
+                               ''''
+                               SET @SQL = REPLACE(@SQL, ''''{TABLE_NAME}'''', @list_table)
+                               SET @SQL = REPLACE(@SQL, ''''{LOCATION_ID}'''', @location_id)
+                               SET @SQL = REPLACE(@SQL, ''''{LIST_TEMPLATE_ID}'''', @LIST_TEMPLATE_ID)
+                               SET @SQL = REPLACE(@SQL, ''''{LOCATION_CLASSIFICATION}'''', @LOCATION_CLASSIFICATION)
+                               EXEC sp_executesql @SQL'')'
+       SET @SQL = REPLACE(@TEMPLATE, '{DATABASENAME}', @OrgdbName)
+       EXEC sp_executesql @SQL
+
+       SET @TEMPLATE = 'USE [{DATABASENAME}]
+                       EXEC(''CREATE PROCEDURE uspGetAllLocations
+                           @list_table NVARCHAR(150)
+                       AS
+                           DECLARE @LIST_TEMPLATE_ID INT
+                           DECLARE @LOCATION_CLASSIFICATION NVARCHAR(150)
+                           DECLARE @TEMPLATE NVARCHAR(MAX)
+                           DECLARE @SQL NVARCHAR(MAX)
+
+                           --Obtain the template id and location classification for the list.
+                           SELECT @LIST_TEMPLATE_ID = template_id, @LOCATION_CLASSIFICATION = location_classification FROM Lists WHERE list_table_name = @list_table
+
+                           SET @TEMPLATE = ''''
+                               SELECT location_id, {LIST_TEMPLATE_ID} AS [template_id], ''''''''{LOCATION_CLASSIFICATION}'''''''' AS location_classification, Geometry.ToString() as [WKTGeometry]
+                               FROM [{TABLE_NAME}]
+                               ''''
+                               SET @SQL = REPLACE(@TEMPLATE, ''''{TABLE_NAME}'''', @list_table)
+                               SET @SQL = REPLACE(@SQL, ''''{LIST_TEMPLATE_ID}'''', @LIST_TEMPLATE_ID)
+                               SET @SQL = REPLACE(@SQL, ''''{LOCATION_CLASSIFICATION}'''', @LOCATION_CLASSIFICATION)
+                               EXEC sp_executesql @SQL'')'
+       SET @SQL = REPLACE(@TEMPLATE, '{DATABASENAME}', @OrgdbName)
+       EXEC sp_executesql @SQL
+
+       SET @TEMPLATE = 'USE [{DATABASENAME}]
+                       EXEC(''CREATE PROCEDURE uspGetLocationsForBatchProcessing
+                           @list_id INT
+                       AS                                                        
+                           DECLARE    @list_table NVARCHAR(150)
                            DECLARE @analysis_table NVARCHAR(150)
 
                            DECLARE @SQL NVARCHAR(MAX)

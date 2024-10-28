@@ -189,6 +189,16 @@ AS
 		SET @SQL = REPLACE(@TEMPLATE, '{DATABASENAME}', @OrgdbName)
 		EXEC sp_executesql @SQL
 
+    SET @TEMPLATE = 'CREATE TABLE [{DATABASENAME}].[dbo].[ListAttributes]
+      (
+        [id] INT NOT NULL,
+        [list_id] INT NULL,
+        [attribute_name] NVARCHAR(32),
+        [attribute_type] SMALLINT
+      )'
+    SET @SQL = REPLACE(@TEMPLATE, '{DATABASENAME}', @OrgdbName)
+    EXEC sp_executesql @SQL
+
 		SET @TEMPLATE = 'CREATE TABLE [{DATABASENAME}].[dbo].[LargeLists]
 		(
 			[large_list_id] INT IDENTITY(1,1) NOT NULL,

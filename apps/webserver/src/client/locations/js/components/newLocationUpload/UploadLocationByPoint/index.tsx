@@ -12,7 +12,6 @@ import {
   InputAdornment,
   FormControl,
   InputLabel,
-  Button,
   Box,
 } from '@mui/material';
 
@@ -21,16 +20,17 @@ import { AddLocationAlt, LocationOn, Search, Close, ArrowForwardIos } from '@mui
 import { NavBarWithProgress, LocationTypeButton, HowToFormatLocationLink } from '../components';
 
 import HectareKilometerSwitch from '../../adding/HectareKilometerSwitch';
+import { PillButton } from '../../../../../components/PillButton';
 
 enum LocationFormat {
-  COORDINATES,
-  ADDRESS,
+  Coordinates,
+  Address,
 }
 enum RadiusSize {
-  SMALL,
-  MEDIUM,
-  LARGE,
-  CUSTOM,
+  Small,
+  Medium,
+  Large,
+  Custom,
 }
 
 type UploadLocationByPointProps = {
@@ -38,9 +38,9 @@ type UploadLocationByPointProps = {
 };
 
 export function UploadLocationByPoint({ clearUploadType }: UploadLocationByPointProps) {
-  const [locationFormat, setLocationFormat] = useState<LocationFormat>(LocationFormat.COORDINATES);
+  const [locationFormat, setLocationFormat] = useState<LocationFormat>(LocationFormat.Coordinates);
 
-  const [selectedRadiusSize, setSelectedRadiusSize] = useState<RadiusSize>(RadiusSize.SMALL);
+  const [selectedRadiusSize, setSelectedRadiusSize] = useState<RadiusSize>(RadiusSize.Small);
 
   const [measurementUnit, setMeasurementUnit] = useState('hectares');
 
@@ -77,23 +77,23 @@ export function UploadLocationByPoint({ clearUploadType }: UploadLocationByPoint
           >
             <LocationTypeButton
               variant="outlined"
-              color={locationFormat === LocationFormat.COORDINATES ? 'primary' : 'info'}
-              onClick={() => setLocationFormat(LocationFormat.COORDINATES)}
+              color={locationFormat === LocationFormat.Coordinates ? 'primary' : 'info'}
+              onClick={() => setLocationFormat(LocationFormat.Coordinates)}
             >
               <AddLocationAlt fontSize="medium" />
               <Typography variant="body2">Enter coordinates</Typography>
             </LocationTypeButton>
             <LocationTypeButton
               variant="outlined"
-              color={locationFormat === LocationFormat.ADDRESS ? 'primary' : 'info'}
-              onClick={() => setLocationFormat(LocationFormat.ADDRESS)}
+              color={locationFormat === LocationFormat.Address ? 'primary' : 'info'}
+              onClick={() => setLocationFormat(LocationFormat.Address)}
             >
               <LocationOn fontSize="medium" />
               <Typography variant="body2">Enter address</Typography>
             </LocationTypeButton>
           </Box>
           <form>
-            {locationFormat === LocationFormat.COORDINATES ? (
+            {locationFormat === LocationFormat.Coordinates ? (
               <>
                 <Typography variant="h6">Enter coordinates</Typography>
                 <div className="upload-location-by-point__location-info__coordinates">
@@ -153,9 +153,9 @@ export function UploadLocationByPoint({ clearUploadType }: UploadLocationByPoint
                 <Radio
                   name="radius-size"
                   color="primary"
-                  value={RadiusSize.SMALL}
-                  checked={selectedRadiusSize === RadiusSize.SMALL}
-                  onClick={() => setSelectedRadiusSize(RadiusSize.SMALL)}
+                  value={RadiusSize.Small}
+                  checked={selectedRadiusSize === RadiusSize.Small}
+                  onClick={() => setSelectedRadiusSize(RadiusSize.Small)}
                 />
                 <div>
                   <label htmlFor="radius-small">Small</label>
@@ -166,9 +166,9 @@ export function UploadLocationByPoint({ clearUploadType }: UploadLocationByPoint
                 <Radio
                   name="radius-size"
                   color="primary"
-                  value={RadiusSize.MEDIUM}
-                  checked={selectedRadiusSize === RadiusSize.MEDIUM}
-                  onClick={() => setSelectedRadiusSize(RadiusSize.MEDIUM)}
+                  value={RadiusSize.Medium}
+                  checked={selectedRadiusSize === RadiusSize.Medium}
+                  onClick={() => setSelectedRadiusSize(RadiusSize.Medium)}
                 />
                 <div>
                   <label htmlFor="radius-medium">Medium</label>
@@ -180,9 +180,9 @@ export function UploadLocationByPoint({ clearUploadType }: UploadLocationByPoint
                 <Radio
                   name="radius-size"
                   color="primary"
-                  value={RadiusSize.LARGE}
-                  checked={selectedRadiusSize === RadiusSize.LARGE}
-                  onClick={() => setSelectedRadiusSize(RadiusSize.LARGE)}
+                  value={RadiusSize.Large}
+                  checked={selectedRadiusSize === RadiusSize.Large}
+                  onClick={() => setSelectedRadiusSize(RadiusSize.Large)}
                 />
                 <div>
                   <label htmlFor="radius-large">Large</label>
@@ -193,9 +193,9 @@ export function UploadLocationByPoint({ clearUploadType }: UploadLocationByPoint
                 <Radio
                   name="radius-size"
                   color="primary"
-                  value={RadiusSize.CUSTOM}
-                  checked={selectedRadiusSize === RadiusSize.CUSTOM}
-                  onClick={() => setSelectedRadiusSize(RadiusSize.CUSTOM)}
+                  value={RadiusSize.Custom}
+                  checked={selectedRadiusSize === RadiusSize.Custom}
+                  onClick={() => setSelectedRadiusSize(RadiusSize.Custom)}
                 />
                 <div>
                   <label htmlFor="radius-custom">Custom</label>
@@ -204,7 +204,7 @@ export function UploadLocationByPoint({ clearUploadType }: UploadLocationByPoint
               </div>
             </div>
 
-            {selectedRadiusSize === RadiusSize.CUSTOM && (
+            {selectedRadiusSize === RadiusSize.Custom && (
               <>
                 <Divider flexItem sx={{ margin: '1.5rem 0 2rem' }} />
                 <Typography variant="h6">Enter area (HA) or radius (km)</Typography>
@@ -233,17 +233,17 @@ export function UploadLocationByPoint({ clearUploadType }: UploadLocationByPoint
             )}
 
             <div className="upload-location-by-point__location-info__bottom-buttons-container">
-              <Button
+              <PillButton
                 variant="contained"
                 color="info"
                 startIcon={<Close />}
                 onClick={clearUploadType}
               >
                 Cancel
-              </Button>
-              <Button variant="contained" startIcon={<ArrowForwardIos />}>
+              </PillButton>
+              <PillButton variant="contained" startIcon={<ArrowForwardIos />}>
                 Next
-              </Button>
+              </PillButton>
             </div>
           </form>
         </div>

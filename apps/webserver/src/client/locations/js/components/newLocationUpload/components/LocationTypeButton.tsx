@@ -7,7 +7,6 @@ export const LocationTypeButton = styled(Button)({
   justifyContent: 'start',
 
   padding: '1rem 1.25rem',
-  borderRadius: '5px',
   borderWidth,
 
   '&:hover': {

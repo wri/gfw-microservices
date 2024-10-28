@@ -39,6 +39,7 @@ export * from './analysisRspoPalmConcessions';
 export * from './analysisOilPalmConcessions';
 export * from './analysisProtectedAreas';
 export * from './afiAnalysis.entity';
+export * from './listAttributes.entity';
 
 export const organizationEntities = [
   Lists,

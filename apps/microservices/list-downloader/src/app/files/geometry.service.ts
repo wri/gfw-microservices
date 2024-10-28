@@ -55,11 +55,8 @@ export class GeometryService extends IPipeService {
   }
 
   private organizeStream(filters: ListFieldsFileRequest, allFields: string[]) {
-    const open =
-      filters.type === 'afiVC'
-        ? '{\n"type":"FeatureCollection","features":['
-        : '{"type":"FeatureCollection","features":[';
-    const close = filters.type === 'afiVC' ? ']}\n' : ']}';
+    const open = '{"type":"FeatureCollection","features":[';
+    const close = ']}';
 
     const { key, selectedLocationsList, listId, listName } = filters;
     this.inputStream.removeAllListeners();
@@ -86,11 +83,11 @@ export class GeometryService extends IPipeService {
   }
 
   async finish(filters: ListFieldsFileRequest) {
-    const { listId, key, listName, type } = filters;
+    const { listId, key, listName } = filters;
     this.logger.log(`(${listId}) - Finished to process data and generate shapefile`);
     await this.writeAllData(this.inputStream);
     await finished(this.fileStream);
-    type !== 'afiVC' ? await this.convertGeojsonToSHP(key, listName) : null;
+    await this.convertGeojsonToSHP(key, listName);
     this.logger.log(`(${listId}) - Data has been zipped`);
     await this.finishProcess(filters);
   }

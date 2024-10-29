@@ -20,7 +20,7 @@ import { AddLocationAlt, LocationOn, Search, Close, ArrowForwardIos } from '@mui
 import { NavBarWithProgress, LocationTypeButton, HowToFormatLocationLink } from '../components';
 
 import HectareKilometerSwitch from '../../adding/HectareKilometerSwitch';
-import { PillButton } from '../../../../../components/PillButton';
+import { PillButton } from '../../../../../components';
 
 enum LocationFormat {
   Coordinates,

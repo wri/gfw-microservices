@@ -193,7 +193,7 @@ AS
       (
         [id] INT NOT NULL,
         [list_id] INT NULL,
-        [attribute_name] NVARCHAR(32),
+        [attribute_name] NVARCHAR(64),
         [attribute_type] SMALLINT
       )'
     SET @SQL = REPLACE(@TEMPLATE, '{DATABASENAME}', @OrgdbName)

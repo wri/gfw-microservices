@@ -3,12 +3,17 @@ import React, { useState } from 'react';
 import { webMercatorToGeographic } from '@arcgis/core/geometry/support/webMercatorUtils';
 import { areasAndLengths } from '@arcgis/core/rest/geometryService';
 import AreasAndLengthsParameters from '@arcgis/core/rest/support/AreasAndLengthsParameters';
+import Point from '@arcgis/core/geometry/Point';
 
-import { HowToFormatLocationLink, LocationTypeButton, NavBarWithProgress } from '../components';
 import { Box, Card, Typography } from '@mui/material';
 import { AddLocationAlt, Close, ArrowForwardIos, Draw } from '@mui/icons-material';
+
+import { HowToFormatLocationLink, LocationTypeButton, NavBarWithProgress } from '../components';
 import AddLocationMap from '../../adding/AddLocationMap';
 import { PillButton } from '../../../../../components';
+
+const ARCGIS_GEOMETRY_SERVER_URL =
+  'https://sampleserver6.arcgisonline.com/arcgis/rest/services/Utilities/Geometry/GeometryServer';
 
 enum LocationFormat {
   DrawAShape,
@@ -20,7 +25,7 @@ type UploadLocationByPointProps = {
 };
 
 type MapData = {
-  geometry: any;
+  geometry?: Point;
   measurementUnit: 'hectares' | 'kilometers';
   areaAround: string;
   calculatedArea: number;
@@ -33,7 +38,6 @@ export function UploadLocationByPolygon({ clearUploadType }: UploadLocationByPoi
   const [locationFormat, setLocationFormat] = useState<LocationFormat>(LocationFormat.DrawAShape);
 
   const [mapData, setMapData] = useState<MapData>({
-    geometry: {},
     measurementUnit: 'hectares',
     areaAround: '',
     calculatedArea: 0,
@@ -46,11 +50,11 @@ export function UploadLocationByPolygon({ clearUploadType }: UploadLocationByPoi
     });
   };
 
-  const setGeometry = (geometry: any) => {
-    let wgsGeometry = {};
+  const setGeometry = (geometry: Point) => {
+    let wgsGeometry: Point;
 
     if (geometry?.spatialReference?.wkid === 102100) {
-      wgsGeometry = webMercatorToGeographic(geometry);
+      wgsGeometry = webMercatorToGeographic(geometry) as Point;
     } else {
       wgsGeometry = geometry;
     }
@@ -61,13 +65,11 @@ export function UploadLocationByPolygon({ clearUploadType }: UploadLocationByPoi
         geometry: wgsGeometry,
       });
     } else {
-      const url =
-        'https://sampleserver6.arcgisonline.com/arcgis/rest/services/Utilities/Geometry/GeometryServer';
       const params = new AreasAndLengthsParameters({
         areaUnit: 'hectares',
         polygons: [wgsGeometry],
       });
-      areasAndLengths(url, params).then((res) => {
+      areasAndLengths(ARCGIS_GEOMETRY_SERVER_URL, params).then((res) => {
         const area = res.areas && res.areas.length > 0 ? res.areas[0] : 0;
 
         setMapData({

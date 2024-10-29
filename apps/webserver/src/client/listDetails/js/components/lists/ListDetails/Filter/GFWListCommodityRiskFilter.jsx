@@ -75,14 +75,8 @@ export default class GFWListCommodityRiskFilter extends Component {
   };
 
   onParentCompanyChange = (evt) => {
-    const listNames = this.props.listData
-      .filter((location) => location['Parent Company'] === evt.target.value)
-      .map((location) => {
-        return { label: location['Location Name'], value: location['Location Name'] };
-      });
     this.setState({
       selectedParentCompany: evt.target.value,
-      selectedNames: listNames,
     });
   };
 

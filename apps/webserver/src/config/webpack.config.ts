@@ -1,65 +1,60 @@
 import MiniCssExtractPlugin from 'mini-css-extract-plugin';
 import webpack from 'webpack';
-import path from 'path';
-import config from './config';
-import * as clientConfig from './client.configs';
+import path from 'node:path';
 
-const entries = clientConfig.entries;
-const aliases = clientConfig.aliases;
+import config from './config';
+import { entries, aliases } from './client.configs';
 
 /**
- * @summary Make a webpack config for whatever environment/purpose needed
+ * @summary Generate a Webpack configuration based on the environment and purpose
  */
 export default () => {
-  // Add environment specific rules that need to get values from configs
+  const isDevelopment = process.env.NODE_ENV === 'development';
   const excludes = [];
   const plugins = [];
   const rules = [];
 
-  if (process.env.NODE_ENV === 'development') {
-    // Set up hot reloading in develop
-    const webpackHotMiddleware =
+  if (isDevelopment) {
+    const hotMiddleware =
       'webpack-hot-middleware/client?path=/__webpack_hmr&timeout=20000&reload=true';
     for (const key in entries) {
-      entries[key] = [entries[key], webpackHotMiddleware];
+      entries[key] = [entries[key], hotMiddleware];
     }
   }
 
-  // Add babel loader for javascript
-  rules.push({
-    test: /\.(js|jsx)$/,
-    loader: 'babel-loader',
-    exclude: /node_modules/,
-  });
-
-  rules.push({
-    test: /\.(ts|tsx)$/,
-    use: [
-      {
-        loader: 'ts-loader',
-        options: {
-          compilerOptions: {
-            noEmit: false,
+  rules.push(
+    {
+      test: /\.(js|jsx)$/,
+      loader: 'babel-loader',
+      exclude: /node_modules/,
+    },
+    {
+      test: /\.(ts|tsx)$/,
+      use: [
+        {
+          loader: 'ts-loader',
+          options: {
+            compilerOptions: { noEmit: false },
+            configFile: 'tsconfig.client.json',
           },
-          configFile: 'tsconfig.client.json',
         },
-      },
-    ],
-    exclude: /node_modules/,
-  });
+      ],
+      exclude: /node_modules/,
+    }
+  );
 
   rules.push({
     test: /\.(scss|css)$/,
     use: [
-      { loader: MiniCssExtractPlugin.loader },
+      MiniCssExtractPlugin.loader,
       { loader: 'css-loader', options: { esModule: false } },
-      { loader: 'postcss-loader' },
-      { loader: 'sass-loader' },
+      'postcss-loader',
+      'sass-loader',
     ],
     exclude: excludes,
   });
 
-  // TODO Updated webpack prefers Asset Modules https://webpack.js.org/guides/asset-modules/#root
+  // Asset loader (Consider switching to Asset Modules if possible)
   rules.push({
     test: /\.(jpe?g|png|mp4|svg)$/i,
     use: [
@@ -77,30 +72,28 @@ export default () => {
   });
 
   const progressLog = (percentage, message, ...args) => {
-    // e.g. Output each progress message directly to the console:
     console.log(`Webpack progress ${Math.round(percentage * 100)}%:`, message, ...args);
   };
+
+  plugins.push(
+    new webpack.ProgressPlugin(progressLog),
+    new MiniCssExtractPlugin({
+      filename: '[name].[contenthash].css',
+      chunkFilename: '[id].css',
+      ignoreOrder: false,
+    })
+  );
 
   return {
     ...(config.webpack || {}),
     entry: entries,
     module: { rules },
-    plugins: [
-      ...plugins,
-      new webpack.ProgressPlugin(progressLog),
-      new MiniCssExtractPlugin({
-        filename: '[name].[contenthash].css',
-        chunkFilename: '[id].css',
-        ignoreOrder: false,
-      }),
-    ],
-    node: {
-      __dirname: true,
-    },
+    plugins,
+    node: { __dirname: true },
     output: {
       publicPath: '/',
       library: {
-        name: 'GFWProWebpack', // Example name
+        name: 'GFWProWebpack',
         type: 'umd',
       },
       path: path.join(process.cwd(), 'public'),

@@ -188,6 +188,7 @@ AS
        SET @SQL = REPLACE(@TEMPLATE, '{DATABASENAME}', @OrgdbName)
        EXEC sp_executesql @SQL
 
+
    SET @TEMPLATE = 'CREATE TABLE [{DATABASENAME}].[dbo].[ListAttributes]
        (
      [id] INT NOT NULL,
@@ -197,6 +198,7 @@ AS
    )'
    SET @SQL = REPLACE(@TEMPLATE, '{DATABASENAME}', @OrgdbName)
        EXEC sp_executesql @SQL
+
        
        SET @TEMPLATE = 'CREATE TABLE [{DATABASENAME}].[dbo].[LargeLists]
        (
@@ -1116,7 +1118,9 @@ AS
                        EXEC(''CREATE PROCEDURE uspGetLocationsForBatchProcessing
                            @list_id INT
                        AS                                                        
-                           DECLARE    @list_table NVARCHAR(150)
+
+							DECLARE	@list_table NVARCHAR(150)
+
                            DECLARE @analysis_table NVARCHAR(150)
 
                            DECLARE @SQL NVARCHAR(MAX)

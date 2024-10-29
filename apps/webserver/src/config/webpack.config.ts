@@ -46,10 +46,10 @@ export default () => {
   rules.push({
     test: /\.(scss|css)$/,
     use: [
-      MiniCssExtractPlugin.loader,
+      { loader: MiniCssExtractPlugin.loader },
       { loader: 'css-loader', options: { esModule: false } },
-      'postcss-loader',
-      'sass-loader',
+      { loader: 'postcss-loader' },
+      { loader: 'sass-loader' },
     ],
     exclude: excludes,
   });

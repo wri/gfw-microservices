@@ -1,5 +1,3 @@
--- Stored Procedure
-
 CREATE PROCEDURE [dbo].[uspActivatePendingAccount]
    @PendingAccountID INT,
    @UserSecret VARCHAR(50),

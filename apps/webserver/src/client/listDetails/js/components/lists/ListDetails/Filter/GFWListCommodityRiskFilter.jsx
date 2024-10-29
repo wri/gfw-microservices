@@ -246,7 +246,7 @@ export default class GFWListCommodityRiskFilter extends Component {
               </FormControl>
             </Grid>
 
-            <Grid item xs={12} sx={{ alignItems: 'center' }}>
+            {/*            <Grid item xs={12} sx={{ alignItems: 'center' }}>
               <div className="col flex-grid align-center space-between filter-spacer input-field__block-container">
                 <span className="label">Overall Threats</span>
                 <div className="flex-grid space-between">
@@ -388,7 +388,7 @@ export default class GFWListCommodityRiskFilter extends Component {
                   </div>
                 </div>
               </div>
-            </Grid>
+            </Grid>*/}
 
             <Grid item xs={12}>
               <ReactSelect

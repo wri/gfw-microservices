@@ -14,6 +14,13 @@
     "skipDefaultLibCheck": true,
     "baseUrl": ".",
     "paths": {
+      "@digitalbazaar/ed25519-signature-2018": [
+        "node_modules/@digitalbazaar/ed25519-signature-2018/lib/index"
+      ],
+      "@digitalbazaar/ed25519-verification-key-2018": [
+        "node_modules/@digitalbazaar/ed25519-verification-key-2018/lib/index"
+      ],
+      "@digitalbazaar/vc": ["node_modules/@digitalbazaar/vc/lib/index"],
       "@wri-monorepos/aws": ["libs/aws/src/index.ts"],
       "@wri-monorepos/constants": ["libs/constants/src/index.ts"],
       "@wri-monorepos/feature-flags": ["libs/feature-flags/src/index.ts"],

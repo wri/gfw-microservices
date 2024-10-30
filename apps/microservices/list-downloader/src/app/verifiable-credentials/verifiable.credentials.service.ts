@@ -1,4 +1,8 @@
 import { Injectable, Logger } from '@nestjs/common';
+import jsonld from 'jsonld';
+import * as vc from '@digitalbazaar/vc';
+import { Ed25519Signature2018 } from '@digitalbazaar/ed25519-signature-2018';
+import { Ed25519VerificationKey2018 } from '@digitalbazaar/ed25519-verification-key-2018';
 import { v4 as uuidv4 } from 'uuid';
 
 @Injectable()
@@ -24,6 +28,15 @@ export class VerifiableCredentialService {
           geojson: 'geojson',
         },
       };
+      const { LD_VC_KeyPair } = process.env;
+      const keyPairJson = JSON.parse(atob(LD_VC_KeyPair));
+      console.log('keyPairJson', keyPairJson);
+      const suite = new Ed25519Signature2018({ key: keyPairJson });
+      const signedVC = await vc.issue({
+        credential,
+        suite,
+        documentLoader: jsonld.documentLoaders.node(),
+      });
       return credential;
     } catch (error) {
       this.logger.error(error.message);

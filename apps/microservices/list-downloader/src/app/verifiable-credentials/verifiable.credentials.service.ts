@@ -1,9 +1,9 @@
 import { Injectable, Logger } from '@nestjs/common';
-import jsonld from 'jsonld';
-import * as vc from '@digitalbazaar/vc';
-import { Ed25519Signature2018 } from '@digitalbazaar/ed25519-signature-2018';
+import { securityLoader } from '@digitalcredentials/security-document-loader';
+import * as vc from '@digitalcredentials/vc';
+import { Ed25519Signature2020 } from '@digitalcredentials/ed25519-signature-2020';
 import { v4 as uuidv4 } from 'uuid';
-
+import { Ed25519VerificationKey2020 } from '@digitalcredentials/ed25519-verification-key-2020';
 @Injectable()
 export class VerifiableCredentialService {
   public readonly logger = new Logger(VerifiableCredentialService.name);
@@ -28,13 +28,20 @@ export class VerifiableCredentialService {
         },
       };
       const { LD_VC_KeyPair } = process.env;
+      // couldn't use this keypair from env variable
       const keyPairJson = JSON.parse(Buffer.from(LD_VC_KeyPair, 'base64').toString('utf-8'));
       console.log('keyPairJson', keyPairJson);
-      const suite = new Ed25519Signature2018({ key: keyPairJson });
+      const keyGenDetails = {
+        id: 'https://pro.globalforestwatch.org/publicKey/1',
+        controller: 'https://pro.globalforestwatch.org/vc-issuer/1',
+      };
+      const keyPair = await Ed25519VerificationKey2020.generate(keyGenDetails);
+      console.log('keyPair', keyPair, keyPairJson);
+      const suite = new Ed25519Signature2020({ key: keyPair });
       const signedVC = await vc.issue({
         credential,
         suite,
-        documentLoader: jsonld.documentLoaders.node(),
+        documentLoader: securityLoader().build(),
       });
       return signedVC;
     } catch (error) {

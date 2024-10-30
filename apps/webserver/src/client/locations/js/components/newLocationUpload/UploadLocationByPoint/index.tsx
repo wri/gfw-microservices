@@ -42,7 +42,7 @@ export function UploadLocationByPoint({ clearUploadType }: UploadLocationByPoint
 
   const [selectedRadiusSize, setSelectedRadiusSize] = useState<RadiusSize>(RadiusSize.Small);
 
-  const [measurementUnit, setMeasurementUnit] = useState('hectares');
+  const [measurementUnit, setMeasurementUnit] = useState<'hectares' | 'kilometers'>('hectares');
 
   const steps = ['Location', 'Configure List', 'Submit'];
   const [activeStep] = React.useState(0);
@@ -223,9 +223,9 @@ export function UploadLocationByPoint({ clearUploadType }: UploadLocationByPoint
                   <div className="upload-location-by-point__location-info__custom-area-container__suggestions-container">
                     <Typography>Suggested areas:</Typography>
                     <ul>
-                      <li>785,000 hectares for palm oil mills</li>
-                      <li>283,000 hectares for soy silos</li>
-                      <li>80-102,000 hectares for cocoa warehouses</li>
+                      <li>785,000 {measurementUnit} for palm oil mills</li>
+                      <li>283,000 {measurementUnit} for soy silos</li>
+                      <li>80-102,000 {measurementUnit} for cocoa warehouses</li>
                     </ul>
                   </div>
                 </div>

@@ -5,11 +5,9 @@ The following tickets have been temporarily moved until the necessary correction
 - [GPV-3738](https://gfw.atlassian.net/browse/GPV-3738)
 - [GPV-3740](https://gfw.atlassian.net/browse/GPV-3740)
 
-### Moved Tickets
+### Moved specs
 
 - `moveList`
 - `copyList`
 - `copyListGFW`
 - `deleteList`
-
-Thank you for your understanding while we work on resolving these issues.

@@ -137,7 +137,7 @@ function ListDownloadMenu({
               />
             )}
             <Divider />
-            <MenuItem sx={{ fontSize: '10px', fontStyle: 'italic' }}>
+            <MenuItem>
               <Box sx={{ fontWeight: 'light', fontStyle: 'italic', fontSize: '10px' }}>
                 Downloads contain location data only; no analysis
               </Box>

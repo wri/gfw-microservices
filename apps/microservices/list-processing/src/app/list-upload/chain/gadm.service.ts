@@ -162,10 +162,12 @@ export class GADMService extends AbstractHandler<ChainType> {
     const { path, preview = false } = input.request as PreviewListRequest;
     const { features } = geojson as FeatureCollection;
 
-    for await (const localPage of asyncPool(POOL_SIZE, features, this.composeResults)) {
-      this.logger.log(`(${path}) - Get page of number ${localPage} from database`);
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    for await (const undefRet of asyncPool(POOL_SIZE, features, this.composeResults)) {
+      // disabling log because it is too verbose -- logs every iteration
+      // this.logger.log(`(${path}) - one more feature processed`);
     }
-
+    this.logger.log('GADMService - done with getGeoReferenceData for', path);
     // We should not call clip to land if we are in the preview mode.
     if (!preview) {
       const response = await this.clipToLand(geojson);

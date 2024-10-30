@@ -79,6 +79,7 @@ describe('ListUseCases', () => {
           errorFileStoragePath: 'test',
           vectorTilesLastUpdated: new Date('2022-01-01'),
           version: 0,
+          Commodity: null,
         },
         {
           id: 2,
@@ -102,6 +103,7 @@ describe('ListUseCases', () => {
           errorFileStoragePath: 'test2',
           vectorTilesLastUpdated: new Date('2022-01-01'),
           version: 0,
+          Commodity: null,
         },
       ];
 
@@ -172,6 +174,7 @@ describe('ListUseCases', () => {
         errorFileStoragePath: 'test',
         vectorTilesLastUpdated: new Date('2022-01-01'),
         version: 0,
+        Commodity: null,
       };
 
       jest

@@ -77,7 +77,6 @@ const DialogConfirmSubmitContent = ({ listName }) => {
 };
 
 const DialogDraftContent = ({ listName = 'Create New List' }) => {
-  console.log(listName, "----------------------------------")
   const listConditionalText =
     listName !== 'Create New List' ? (
       <>

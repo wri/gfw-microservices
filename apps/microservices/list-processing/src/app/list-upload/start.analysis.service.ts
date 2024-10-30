@@ -15,6 +15,7 @@ import { InsertLocationData } from './chain/insert.location.data';
 import { ValidateLatLongGeojson } from './chain/validate.lat.long.geojson';
 import { StartAnalysis } from './chain/start.analysis';
 import { ConvertPoint2Polygon } from './chain/convert.point.2.polygon';
+import { GetObjectTypes } from './chain/getobject.types';
 
 @Injectable()
 export class StartAnalysisService {
@@ -49,6 +50,7 @@ export class StartAnalysisService {
     const validateLatLongGeojson = new ValidateLatLongGeojson();
     const convertPoint2Polygon = new ConvertPoint2Polygon();
     const startAnalysis = new StartAnalysis(null);
+    const getObjectTypes = new GetObjectTypes();
 
     downloadS3File
       .setNext(parseData)
@@ -56,6 +58,7 @@ export class StartAnalysisService {
       .setNext(listSchemaName)
       .setNext(convertPoint2Polygon)
       .setNext(gadmService)
+      .setNext(getObjectTypes)
       .setNext(createListLevelData)
       .setNext(createLocationSchema)
       .setNext(insertLocationData)

@@ -1,8 +1,14 @@
 import { Injectable, Logger } from '@nestjs/common';
-import jsonld from 'jsonld';
-import * as vc from '@digitalbazaar/vc';
-import { Ed25519Signature2018 } from '@digitalbazaar/ed25519-signature-2018';
-import { Ed25519VerificationKey2018 } from '@digitalbazaar/ed25519-verification-key-2018';
+let vc, Ed25519Signature2018, Ed25519VerificationKey2018;
+import { securityLoader } from '@digitalcredentials/security-document-loader';
+eval("import('@digitalbazaar/vc').then(x=>vc=x)");
+eval(
+  "import('@digitalbazaar/ed25519-signature-2018').then(x=>Ed25519Signature2018=x.Ed25519Signature2018)"
+);
+eval(
+  "import('@digitalbazaar/ed25519-verification-key-2018').then(x=>Ed25519VerificationKey2018=x.Ed25519VerificationKey2018)"
+);
+
 import { v4 as uuidv4 } from 'uuid';
 
 @Injectable()
@@ -36,7 +42,7 @@ export class VerifiableCredentialService {
       const signedVC = await vc.issue({
         credential,
         suite,
-        documentLoader: jsonld.documentLoaders.node(),
+        documentLoader: securityLoader().build(),
       });
       return signedVC;
     } catch (error) {

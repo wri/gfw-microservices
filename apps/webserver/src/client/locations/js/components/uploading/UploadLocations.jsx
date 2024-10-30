@@ -58,7 +58,7 @@ import '../../../css/locations.scss';
 const DialogConfirmSubmitContent = ({ listName }) => {
   const listConditionalText = listName ? (
     <span>
-      You have added locations to <strong>{listName}</strong>, as defined above.
+      You have added locations to <strong>{listName}</strong>.
     </span>
   ) : (
     <span>You have successfully created a list in Pro.</span>
@@ -77,10 +77,11 @@ const DialogConfirmSubmitContent = ({ listName }) => {
 };
 
 const DialogDraftContent = ({ listName = 'Create New List' }) => {
+  console.log(listName, "----------------------------------")
   const listConditionalText =
     listName !== 'Create New List' ? (
       <>
-        You have added locations to <strong>{listName}</strong>, as defined above. Click OKAY to
+        You have added locations to <strong>{listName}</strong>. Click OKAY to
         save this updated list as a draft. Your list will stay
       </>
     ) : (
@@ -1320,11 +1321,15 @@ class UploadLocations extends Component {
     return this.state.selectedList !== '';
   };
 
+  getListName = () => {
+    return this.state.selectedList === '' ? this.state.customList : this.state.selectedList;
+  }
+
   confirmBeforeSubmit = () => {
     this.setState({
       dialogOpen: true,
       dialogTitle: 'Are you sure?',
-      dialogMessage: <DialogConfirmSubmitContent listName={this.state.selectedList} />,
+      dialogMessage: <DialogConfirmSubmitContent listName={this.getListName()} />,
       dialogConfirmAction: [
         <div className="dialog__footer" data-button-action="shouldCloseDialog">
           <Button
@@ -1542,7 +1547,7 @@ class UploadLocations extends Component {
 
                     {step === 4 && (
                       <SaveAsDraftButtonWithDialog
-                        dialogMessage={<DialogDraftContent listName={this.state.selectedList} />}
+                        dialogMessage={<DialogDraftContent listName={this.getListName()} />}
                         disabled={!canGoNext || selectedAnalyses.length <= 0}
                         saveLocations={() => this.saveLocations({ isSaveAsDraft: true })}
                       />

@@ -1,12 +1,13 @@
 import React, { useState } from 'react';
 import Button from '@mui/material/Button';
+import Box from '@mui/material/Box';
 import DownloadIcon from '@mui/icons-material/Download';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import ExpandLessIcon from '@mui/icons-material/ExpandLess';
+import Divider from '@mui/material/Divider';
 import Menu from 'material-ui/Menu';
 import MenuItem from 'material-ui/MenuItem';
 import Popover from 'material-ui/Popover';
-
 import { userAccessLevel } from '../../../../../common/js/config';
 import { isDownloadDisabledForThisList } from '../../../../../locations/js/utils/lists.utils';
 import ConfirmDialog from '../../../../../locations/js/components/lists/download/confirmDialog';
@@ -119,17 +120,13 @@ function ListDownloadMenu({
           onRequestClose={handleClose}
           targetOrigin={{ vertical: 'top', horizontal: 'right' }}
         >
-          <Menu
-
-          // style={{ width: isHoverMenu ? '100%' : 'auto' }}
-          >
+          <Menu>
             {isSourceFileDownloadEnabled && (
               <MenuItem
+                primaryText=" Location(s) CSV"
                 data-cy="download-list-csv"
                 onClick={() => handleMenuClick({ format: 'csv', type: 'input' })}
-              >
-                Location(s) CSV
-              </MenuItem>
+              />
             )}
 
             {isSourceFileDownloadEnabled && (
@@ -137,8 +134,14 @@ function ListDownloadMenu({
                 primaryText="Location(s) Shapefile"
                 data-cy="download-list-shapefile"
                 onClick={() => handleMenuClick({ format: 'shapefile', type: 'input' })}
-              ></MenuItem>
+              />
             )}
+            <Divider />
+            <MenuItem sx={{ fontSize: '10px', fontStyle: 'italic' }}>
+              <Box sx={{ fontWeight: 'light', fontStyle: 'italic', fontSize: '10px' }}>
+                Downloads contain location data only; no analysis
+              </Box>
+            </MenuItem>
           </Menu>
         </Popover>
         <ConfirmDialog open={dialogOpen} setDialogOpen={setDialogOpen} />

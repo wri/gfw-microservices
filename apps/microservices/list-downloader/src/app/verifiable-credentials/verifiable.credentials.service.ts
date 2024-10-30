@@ -31,13 +31,9 @@ export class VerifiableCredentialService {
       // couldn't use this keypair from env variable
       const keyPairJson = JSON.parse(Buffer.from(LD_VC_KeyPair, 'base64').toString('utf-8'));
       console.log('keyPairJson', keyPairJson);
-      const keyGenDetails = {
-        id: 'https://pro.globalforestwatch.org/publicKey/1',
-        controller: 'https://pro.globalforestwatch.org/vc-issuer/1',
-      };
-      const keyPair = await Ed25519VerificationKey2020.generate(keyGenDetails);
-      console.log('keyPair', keyPair, keyPairJson);
-      const suite = new Ed25519Signature2020({ key: keyPair });
+
+      const key = await Ed25519VerificationKey2020.from(keyPairJson);
+      const suite = new Ed25519Signature2020({ key: key });
       const signedVC = await vc.issue({
         credential,
         suite,

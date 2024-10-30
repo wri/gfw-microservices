@@ -2,6 +2,7 @@ import { Injectable, Logger } from '@nestjs/common';
 import jsonld from 'jsonld';
 import * as vc from '@digitalbazaar/vc';
 import { Ed25519Signature2018 } from '@digitalbazaar/ed25519-signature-2018';
+import { Ed25519VerificationKey2018 } from '@digitalbazaar/ed25519-verification-key-2018';
 import { v4 as uuidv4 } from 'uuid';
 
 @Injectable()
@@ -30,7 +31,8 @@ export class VerifiableCredentialService {
       const { LD_VC_KeyPair } = process.env;
       const keyPairJson = JSON.parse(Buffer.from(LD_VC_KeyPair, 'base64').toString('utf-8'));
       console.log('keyPairJson', keyPairJson);
-      const suite = new Ed25519Signature2018({ key: keyPairJson });
+      const key = await Ed25519VerificationKey2018.from(keyPairJson);
+      const suite = new Ed25519Signature2018({ key: key });
       const signedVC = await vc.issue({
         credential,
         suite,

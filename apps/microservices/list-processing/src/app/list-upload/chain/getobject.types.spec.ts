@@ -20,7 +20,21 @@ describe('GetObjectTypes', () => {
     expect(getObjectTypes.mergeTypes(existingTypes, newTypes)).toEqual(expectedMergedTypes);
   });
 
-  test('handle should process geojson and log merged types', async () => {
+  test('getObjectTypes should exclude specified fields', () => {
+    const obj = { name: 'John', age: 30, isActive: true };
+    const excludeFields = ['name'];
+    const expectedTypes = { age: 'number', isActive: 'boolean' };
+    expect(getObjectTypes.getObjectTypes(obj, excludeFields)).toEqual(expectedTypes);
+  });
+
+  test('mergeTypes should merge new types into existing types', () => {
+    const existingTypes = { name: 'string' };
+    const newTypes = { age: 'number', isActive: 'boolean' };
+    const expectedMergedTypes = { name: 'string', age: 'number', isActive: 'boolean' };
+    expect(getObjectTypes.mergeTypes(existingTypes, newTypes)).toEqual(expectedMergedTypes);
+  });
+
+  test('handle should process geojson and log merged types excluding specified fields', async () => {
     const input = {
       geojson: {
         features: [
@@ -33,7 +47,7 @@ describe('GetObjectTypes', () => {
     const consoleSpy = jest.spyOn(console, 'log');
     await getObjectTypes.handle(input);
 
-    const expectedMergedTypes = { name: 'string', age: 'number', isActive: 'boolean' };
+    const expectedMergedTypes = { age: 'number', isActive: 'boolean' };
     expect(consoleSpy).toHaveBeenCalledWith(expectedMergedTypes);
 
     consoleSpy.mockRestore();

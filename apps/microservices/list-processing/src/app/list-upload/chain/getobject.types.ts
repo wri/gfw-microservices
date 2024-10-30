@@ -1,10 +1,10 @@
 import { AbstractHandler, ChainType } from './types';
 
 export class GetObjectTypes extends AbstractHandler<ChainType> {
-  getObjectTypes(obj) {
+  getObjectTypes(obj, excludeFields = []) {
     const types = {};
     for (const key in obj) {
-      if (Object.prototype.hasOwnProperty.call(obj, key)) {
+      if (Object.prototype.hasOwnProperty.call(obj, key) && !excludeFields.includes(key)) {
         types[key] = typeof obj[key];
       }
     }
@@ -24,8 +24,9 @@ export class GetObjectTypes extends AbstractHandler<ChainType> {
     const { geojson } = input;
 
     let mergedTypes = {};
+    const excludeFields = ['name'];
     geojson.features.forEach((feature) => {
-      const propertyTypes = this.getObjectTypes(feature.properties);
+      const propertyTypes = this.getObjectTypes(feature.properties, excludeFields);
       mergedTypes = this.mergeTypes(mergedTypes, propertyTypes);
     });
 

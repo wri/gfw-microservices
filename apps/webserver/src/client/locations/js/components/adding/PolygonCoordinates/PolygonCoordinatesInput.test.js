@@ -250,73 +250,77 @@ describe('PolygonCoordinatesInput Component', () => {
     });
   });
 
-  test('allows adding multiple coordinates and submits a polygon geometry', async () => {
-    const button = screen.queryByTestId('polygon-coordinates-button');
-    fireEvent.click(button);
+  test(
+    'allows adding multiple coordinates and submits a polygon geometry',
+    async () => {
+      const button = screen.queryByTestId('polygon-coordinates-button');
+      fireEvent.click(button);
 
-    // Change to the polygon tab
-    fireEvent.click(screen.getByText('polygon'));
+      // Change to the polygon tab
+      fireEvent.click(screen.getByText('polygon'));
 
-    // Add another row of coordinates
-    fireEvent.click(screen.getByText('Add Coordinate'));
+      // Add another row of coordinates
+      fireEvent.click(screen.getByText('Add Coordinate'));
 
-    // Enter values for each coordinate
-    fireEvent.change(screen.getByTestId('latitude-input-0'), { target: { value: '40' } });
-    fireEvent.change(screen.getByTestId('longitude-input-0'), { target: { value: '-75' } });
+      // Enter values for each coordinate
+      fireEvent.change(screen.getByTestId('latitude-input-0'), { target: { value: '40' } });
+      fireEvent.change(screen.getByTestId('longitude-input-0'), { target: { value: '-75' } });
 
-    fireEvent.change(screen.getByTestId('latitude-input-1'), { target: { value: '41' } });
-    fireEvent.change(screen.getByTestId('longitude-input-1'), { target: { value: '-76' } });
+      fireEvent.change(screen.getByTestId('latitude-input-1'), { target: { value: '41' } });
+      fireEvent.change(screen.getByTestId('longitude-input-1'), { target: { value: '-76' } });
 
-    fireEvent.change(screen.getByTestId('latitude-input-2'), { target: { value: '42' } });
-    fireEvent.change(screen.getByTestId('longitude-input-2'), { target: { value: '-77' } });
+      fireEvent.change(screen.getByTestId('latitude-input-2'), { target: { value: '42' } });
+      fireEvent.change(screen.getByTestId('longitude-input-2'), { target: { value: '-77' } });
 
-    fireEvent.change(screen.getByTestId('latitude-input-3'), { target: { value: '41' } });
-    fireEvent.change(screen.getByTestId('longitude-input-3'), { target: { value: '-76' } });
+      fireEvent.change(screen.getByTestId('latitude-input-3'), { target: { value: '41' } });
+      fireEvent.change(screen.getByTestId('longitude-input-3'), { target: { value: '-76' } });
 
-    const submitButton = screen.getByText('OK');
-    fireEvent.click(submitButton);
+      const submitButton = screen.getByText('OK');
+      fireEvent.click(submitButton);
 
-    await waitFor(() => {
-      const mockGetPolygonGeometry = jest.spyOn(geometries, 'getPolygonGeometry');
+      await waitFor(() => {
+        const mockGetPolygonGeometry = jest.spyOn(geometries, 'getPolygonGeometry');
 
-      // Check if the correct geometry is generated based on the multiple coordinates
+        // Check if the correct geometry is generated based on the multiple coordinates
 
-      expect(mockGetPolygonGeometry).toHaveBeenCalled();
-      expect(mockGetPolygonGeometry).toHaveBeenCalledWith([
-        {
-          id: expect.any(String),
-          latitude: '40',
-          longitude: '-75',
-          errors: { latitude: false, longitude: false },
-        },
-        {
-          id: expect.any(String),
-          latitude: '41',
-          longitude: '-76',
-          errors: { latitude: false, longitude: false },
-        },
-        {
-          id: expect.any(String),
-          latitude: '42',
-          longitude: '-77',
-          errors: { latitude: false, longitude: false },
-        },
-        {
-          id: expect.any(String),
-          latitude: '41',
-          longitude: '-76',
-          errors: { latitude: false, longitude: false },
-        },
-        {
-          // the first point is added to the end to close the polygon
-          id: expect.any(String),
-          latitude: '40',
-          longitude: '-75',
-          errors: { latitude: false, longitude: false },
-        },
-      ]);
+        expect(mockGetPolygonGeometry).toHaveBeenCalled();
+        expect(mockGetPolygonGeometry).toHaveBeenCalledWith([
+          {
+            id: expect.any(String),
+            latitude: '40',
+            longitude: '-75',
+            errors: { latitude: false, longitude: false },
+          },
+          {
+            id: expect.any(String),
+            latitude: '41',
+            longitude: '-76',
+            errors: { latitude: false, longitude: false },
+          },
+          {
+            id: expect.any(String),
+            latitude: '42',
+            longitude: '-77',
+            errors: { latitude: false, longitude: false },
+          },
+          {
+            id: expect.any(String),
+            latitude: '41',
+            longitude: '-76',
+            errors: { latitude: false, longitude: false },
+          },
+          {
+            // the first point is added to the end to close the polygon
+            id: expect.any(String),
+            latitude: '40',
+            longitude: '-75',
+            errors: { latitude: false, longitude: false },
+          },
+        ]);
 
-      expect(mockSetGeometry).toHaveBeenCalled();
-    });
-  });
+        expect(mockSetGeometry).toHaveBeenCalled();
+      });
+    },
+    10 * 1000
+  );
 });

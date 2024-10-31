@@ -1,6 +1,7 @@
 import { Injectable, Logger } from '@nestjs/common';
 import * as jsonld from 'jsonld';
 import { v4 as uuidv4 } from 'uuid';
+import { GeoJsonSchema } from './types/geojson.schema';
 let vc, Ed25519Signature2018, Ed25519VerificationKey2018;
 eval("import('@digitalbazaar/vc').then(x=>vc=x)");
 eval(
@@ -13,7 +14,7 @@ eval(
 @Injectable()
 export class VerifiableCredentialService {
   public readonly logger = new Logger(VerifiableCredentialService.name);
-  async signedVcOutput() {
+  async signedVcOutput(geojson: GeoJsonSchema) {
     this.logger.log('Signing Verifiable Credentials');
     const issuanceDate = new Date().toISOString();
     const expirationDate = new Date(Date.now() + 1000 * 60 * 60 * 24 * 365).toISOString();
@@ -31,7 +32,7 @@ export class VerifiableCredentialService {
         issuanceDate: issuanceDate,
         expirationDate: expirationDate,
         credentialSubject: {
-          geojson: 'geojson',
+          geojson: geojson,
         },
       };
       const { LD_VC_KeyPair } = process.env;
@@ -51,7 +52,7 @@ export class VerifiableCredentialService {
       return signedVC;
     } catch (error) {
       this.logger.error(error.message);
-      throw error;
+      throw error.message;
     }
   }
   private getEnvironmentBaseUrl() {

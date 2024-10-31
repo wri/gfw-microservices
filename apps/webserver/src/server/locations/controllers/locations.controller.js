@@ -154,10 +154,10 @@ export const listFilterValues = async (request, response) => {
           'Sub State': SubState,
         })
       );
-
       if (
         listId === GFW_LISTS_NUMBER_CONSTANTS.OIL_PALM_CONCESSIONS ||
-        GFW_LISTS_NUMBER_CONSTANTS.PALM_OIL_MILLS
+        listId === GFW_LISTS_NUMBER_CONSTANTS.PALM_OIL_MILLS ||
+        listId === GFW_LISTS_NUMBER_CONSTANTS.RSPO_PALM_CONCESSIONS
       ) {
         locationNameOptionsForFilter = Array.from(
           new Map(

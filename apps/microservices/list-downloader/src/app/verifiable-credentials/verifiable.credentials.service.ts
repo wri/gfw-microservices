@@ -1,5 +1,5 @@
 import { Injectable, Logger } from '@nestjs/common';
-import jsonld from 'jsonld';
+import * as jsonld from 'jsonld';
 import { v4 as uuidv4 } from 'uuid';
 let vc, Ed25519Signature2018, Ed25519VerificationKey2018;
 eval("import('@digitalbazaar/vc').then(x=>vc=x)");
@@ -14,9 +14,9 @@ eval(
 export class VerifiableCredentialService {
   public readonly logger = new Logger(VerifiableCredentialService.name);
   async signedVcOutput() {
+    this.logger.log('Signing Verifiable Credentials');
     const issuanceDate = new Date().toISOString();
     const expirationDate = new Date(Date.now() + 1000 * 60 * 60 * 24 * 365).toISOString();
-    this.logger.log('Singing Verifiable Credentials');
     const BASE_URL = this.getEnvironmentBaseUrl();
     try {
       const credential = {
@@ -36,7 +36,6 @@ export class VerifiableCredentialService {
       };
       const { LD_VC_KeyPair } = process.env;
       const keyPairJson = JSON.parse(Buffer.from(LD_VC_KeyPair, 'base64').toString('utf-8'));
-      console.log('keyPairJson', keyPairJson);
       const key = await Ed25519VerificationKey2018.from(keyPairJson);
       const suite = new Ed25519Signature2018({ key: key });
       const customLoader =
@@ -44,7 +43,6 @@ export class VerifiableCredentialService {
           ? jsonld.documentLoaders.node({ strictSSL: false })
           : jsonld.documentLoaders.node();
 
-      console.log('suite', suite, 'credential', credential, 'loader', customLoader);
       const signedVC = await vc.issue({
         credential,
         suite,

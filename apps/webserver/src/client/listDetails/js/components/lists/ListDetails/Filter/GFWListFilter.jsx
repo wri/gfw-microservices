@@ -10,6 +10,7 @@ import Button from '../../../../../../common/js/components/Button';
 import CountryStateSubStateFilter from './CountryStateSubStateFilter';
 import { defaultFilterValues } from '../../defaultFilterValues';
 import { boxStyle, multipleSelectStyles, selectStyle } from './filterStyles';
+import filterCountryStateAndSubStateOptions from './filterCountryStateAndSubStateOptions';
 import store from '../../../../../../locations/js/store';
 import '../../../../../../common/css/filter-dialogs.scss';
 
@@ -128,27 +129,22 @@ export default class GFWListFilter extends Component {
       selectedNames,
     } = this.state;
 
-    const countryList = Object.keys(filterValues).filter((name) => name !== 'null');
-
-    const stateList =
-      selectedCountry && selectedCountry in filterValues
-        ? Object.keys(filterValues[selectedCountry])
-        : [];
-
-    const subStateList = selectedState ? filterValues[selectedCountry][selectedState] : [];
-
-    // 1. Filter based on if company/state/substate is selected
-    // 2. Grab just parent company values
-    // 3. Sort alphabetically
-
-    const filteredLocationNameOptions = locationNameOptionsForFilter?.filter(
-      (location) =>
-        (selectedCountry === '' || selectedCountry === location.country) &&
-        (selectedState === '' || selectedState === location.state) &&
-        (selectedSubState === '' || selectedSubState === location.subState) &&
-        (selectedParentCompany === '' || selectedParentCompany === location.parentCompany) &&
-        (!showRSPOCertified || location.certification === 'RSPO')
+    const { countryList, stateList, subStateList } = filterCountryStateAndSubStateOptions(
+      filterValues,
+      selectedCountry,
+      selectedState
     );
+
+    const filteredLocationNameOptions = locationNameOptionsForFilter
+      ?.filter(
+        (location) =>
+          (selectedCountry === '' || selectedCountry === location.country) &&
+          (selectedState === '' || selectedState === location.state) &&
+          (selectedSubState === '' || selectedSubState === location.subState) &&
+          (selectedParentCompany === '' || selectedParentCompany === location.parentCompany) &&
+          (!showRSPOCertified || location.certification === 'RSPO')
+      )
+      ?.slice(0, 400);
 
     let filteredparentCompanyOptions = [];
     if (list_name === 'Palm Oil Mills') {

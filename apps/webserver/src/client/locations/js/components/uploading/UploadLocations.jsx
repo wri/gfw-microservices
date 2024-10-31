@@ -80,8 +80,8 @@ const DialogDraftContent = ({ listName = 'Create New List' }) => {
   const listConditionalText =
     listName !== 'Create New List' ? (
       <>
-        You have added locations to <strong>{listName}</strong>. Click OKAY to
-        save this updated list as a draft. Your list will stay
+        You have added locations to <strong>{listName}</strong>. Click OKAY to save this updated
+        list as a draft. Your list will stay
       </>
     ) : (
       <>
@@ -1322,7 +1322,7 @@ class UploadLocations extends Component {
 
   getListName = () => {
     return this.state.selectedList === '' ? this.state.customList : this.state.selectedList;
-  }
+  };
 
   confirmBeforeSubmit = () => {
     this.setState({

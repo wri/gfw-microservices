@@ -5,7 +5,7 @@ import PolygonCoordinatesInput from './PolygonCoordinates/PolygonCoordinatesInpu
 import './AddLocationMap.scss';
 
 const AddLocationMap = (props) => {
-  const { geomFromMap } = props;
+  const { geomFromMap, isNewLocationUpload = false } = props;
   const [mapView, setMapView] = useState(null);
   const [sketchViewModel, setSketchViewModel] = useState(null);
 
@@ -37,13 +37,18 @@ const AddLocationMap = (props) => {
   };
 
   return (
-    <div className="add-location-map">
+    <div
+      className={`add-location-map${
+        isNewLocationUpload ? ' add-location-map--no-padding-top' : ''
+      }`}
+    >
       <div className="add-location-map__map-container">
         {mapView && (
           <PolygonCoordinatesInput
             mapView={mapView}
             sketchViewModel={sketchViewModel}
             setSketchViewModel={setSketchViewModel}
+            isNewLocationUpload={isNewLocationUpload}
             {...props}
           />
         )}

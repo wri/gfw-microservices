@@ -50,7 +50,7 @@ export const theme = createTheme({
       styleOverrides: {
         root: {
           '& input[type="number"]': {
-            '-moz-appearance': 'textfield', // Firefox
+            MozAppearance: 'textfield', // Firefox
             appearance: 'none', // Chrome, Safari
           },
           '& input[type="number"]::-webkit-outer-spin-button': {

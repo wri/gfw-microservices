@@ -9,6 +9,8 @@ export const LocationTypeButton = styled(Button)({
   padding: '1rem 1.25rem',
   borderWidth,
 
+  maxWidth: '400px',
+
   '&:hover': {
     borderWidth,
   },

@@ -5,15 +5,18 @@ import { areasAndLengths } from '@arcgis/core/rest/geometryService';
 import AreasAndLengthsParameters from '@arcgis/core/rest/support/AreasAndLengthsParameters';
 import Point from '@arcgis/core/geometry/Point';
 
-import { Box, Card, Typography } from '@mui/material';
-import { AddLocationAlt, Close, ArrowForwardIos, Draw } from '@mui/icons-material';
+import { Box, Card, TextField, Typography, useTheme } from '@mui/material';
+import { AddLocationAlt, Close, ArrowForwardIos, Draw, Add, Check } from '@mui/icons-material';
 
 import { HowToFormatLocationLink, LocationTypeButton, NavBarWithProgress } from '../components';
 import AddLocationMap from '../../adding/AddLocationMap';
 import { PillButton } from '../../../../../components';
+import { MeasurementUnit } from '../types';
 
 const ARCGIS_GEOMETRY_SERVER_URL =
   'https://sampleserver6.arcgisonline.com/arcgis/rest/services/Utilities/Geometry/GeometryServer';
+
+const MAX_AMOUNT_OF_COORDINATES = 10;
 
 enum LocationFormat {
   DrawAShape,
@@ -26,12 +29,14 @@ type UploadLocationByPointProps = {
 
 type MapData = {
   geometry?: Point;
-  measurementUnit: 'hectares' | 'kilometers';
+  measurementUnit: MeasurementUnit;
   areaAround: string;
   calculatedArea: number;
 };
 
 export function UploadLocationByPolygon({ clearUploadType }: UploadLocationByPointProps) {
+  const theme = useTheme();
+
   const steps = ['Location', 'Configure List', 'Submit'];
   const [activeStep] = React.useState(0);
 
@@ -43,7 +48,19 @@ export function UploadLocationByPolygon({ clearUploadType }: UploadLocationByPoi
     calculatedArea: 0,
   });
 
-  const setMeasurementUnit = (unit: 'hectares' | 'kilometers') => {
+  const [listOfCoordinates, setListOfCoordinates] = useState([
+    { id: 1, latitude: null, longitude: null },
+    { id: 2, latitude: null, longitude: null },
+    { id: 3, latitude: null, longitude: null },
+  ]);
+
+  const handleAddCoordinateField = () =>
+    setListOfCoordinates((prev) => [
+      ...prev,
+      { id: prev.length + 1, latitude: null, longitude: null },
+    ]);
+
+  const setMeasurementUnit = (unit: MeasurementUnit) => {
     setMapData({
       ...mapData,
       measurementUnit: unit,
@@ -81,6 +98,8 @@ export function UploadLocationByPolygon({ clearUploadType }: UploadLocationByPoi
     }
   };
 
+  const isLocationFormatInPolygon = locationFormat === LocationFormat.PolygonCoordinates;
+
   return (
     <Box>
       <NavBarWithProgress clearUploadType={clearUploadType} steps={steps} activeStep={activeStep} />
@@ -113,17 +132,71 @@ export function UploadLocationByPolygon({ clearUploadType }: UploadLocationByPoi
               variant="outlined"
               color={locationFormat === LocationFormat.DrawAShape ? 'primary' : 'info'}
               onClick={() => setLocationFormat(LocationFormat.DrawAShape)}
+              sx={{ maxWidth: '274px' }}
             >
               <Draw fontSize="medium" />
               <Typography variant="body2">Draw a shape</Typography>
             </LocationTypeButton>
             <LocationTypeButton
               variant="outlined"
-              color={locationFormat === LocationFormat.PolygonCoordinates ? 'primary' : 'info'}
+              color={isLocationFormatInPolygon ? 'primary' : 'info'}
               onClick={() => setLocationFormat(LocationFormat.PolygonCoordinates)}
+              sx={{
+                flexDirection: isLocationFormatInPolygon ? 'column' : 'row',
+                alignItems: isLocationFormatInPolygon ? 'start' : 'center',
+              }}
             >
-              <AddLocationAlt fontSize="medium" />
-              <Typography variant="body2">Enter polygon coordinates</Typography>
+              <Box sx={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                <AddLocationAlt fontSize="medium" />
+                <Typography variant="body2">
+                  {isLocationFormatInPolygon ? 'Enter  coordinates' : 'Enter polygon coordinates'}
+                </Typography>
+              </Box>
+
+              {isLocationFormatInPolygon && (
+                <>
+                  <Box
+                    sx={{
+                      display: 'grid',
+                      gap: '1rem',
+                      marginTop: '1rem',
+                      maxHeight: '250px',
+                      overflow: 'auto',
+                    }}
+                  >
+                    {listOfCoordinates.map((coordinate) => (
+                      <Box
+                        key={coordinate.id}
+                        sx={{
+                          display: 'flex',
+                          alignItems: 'center',
+                          gap: '0.75rem',
+                          paddingTop: '5px',
+                        }}
+                      >
+                        {coordinate.id}
+                        <TextField label="Latitude" variant="outlined" type="number" size="small" />
+                        <TextField label="Latitude" variant="outlined" type="number" size="small" />
+                      </Box>
+                    ))}
+                  </Box>
+                  <PillButton
+                    sx={{ margin: '1rem 0 2rem', alignSelf: 'center' }}
+                    startIcon={<Add style={{ color: theme.palette.primary.main }} />}
+                    disabled={listOfCoordinates.length === MAX_AMOUNT_OF_COORDINATES}
+                    onClick={handleAddCoordinateField}
+                  >
+                    Add Coordinate
+                  </PillButton>
+                  <PillButton
+                    variant="contained"
+                    sx={{ alignSelf: 'end' }}
+                    startIcon={<Check style={{ color: 'white' }} />}
+                  >
+                    Ok
+                  </PillButton>
+                </>
+              )}
             </LocationTypeButton>
           </Box>
           <Box sx={{ flex: 1, borderRadius: 5 }}>
@@ -137,7 +210,14 @@ export function UploadLocationByPolygon({ clearUploadType }: UploadLocationByPoi
           </Box>
         </Box>
 
-        <Box sx={{ display: 'flex', justifyContent: 'end', gap: '0.5rem', marginTop: '2rem' }}>
+        <Box
+          sx={{
+            display: 'flex',
+            justifyContent: 'end',
+            gap: '0.5rem',
+            marginTop: listOfCoordinates.length > 3 ? '0' : '2rem',
+          }}
+        >
           <PillButton
             variant="contained"
             color="info"

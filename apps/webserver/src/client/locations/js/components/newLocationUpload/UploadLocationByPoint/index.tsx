@@ -21,6 +21,7 @@ import { NavBarWithProgress, LocationTypeButton, HowToFormatLocationLink } from 
 
 import HectareKilometerSwitch from '../../adding/HectareKilometerSwitch';
 import { PillButton } from '../../../../../components';
+import { MeasurementUnit } from '../types';
 
 enum LocationFormat {
   Coordinates,
@@ -42,7 +43,7 @@ export function UploadLocationByPoint({ clearUploadType }: UploadLocationByPoint
 
   const [selectedRadiusSize, setSelectedRadiusSize] = useState<RadiusSize>(RadiusSize.Small);
 
-  const [measurementUnit, setMeasurementUnit] = useState<'hectares' | 'kilometers'>('hectares');
+  const [measurementUnit, setMeasurementUnit] = useState<MeasurementUnit>('hectares');
 
   const steps = ['Location', 'Configure List', 'Submit'];
   const [activeStep] = React.useState(0);

@@ -33,7 +33,6 @@ export = (app, limiter) => {
   }
 
   const getPublicKey = async (request, response) => {
-    const { NODE_ENV } = process.env;
     logger.info('GET /publicKey/1');
     const { LD_VC_KeyPair } = process.env;
     if (!LD_VC_KeyPair) {

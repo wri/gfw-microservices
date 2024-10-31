@@ -24,7 +24,7 @@ export interface RequestNewList extends PreviewListRequest {
   user_id?: number;
   template_id?: number;
   listId?: number;
-  analysis_types?: Array<string>;
+  analysisIds?: Array<string>;
 
   isExternalAPIProcess: boolean;
   organization_id: number;

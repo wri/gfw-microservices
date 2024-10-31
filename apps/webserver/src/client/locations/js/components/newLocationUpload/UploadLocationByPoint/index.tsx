@@ -16,7 +16,7 @@ import {
 } from '@mui/material';
 
 import { useForm, Controller } from 'react-hook-form';
-import z from 'zod';
+import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
 
 import { AddLocationAlt, LocationOn, Search, Close, ArrowForwardIos } from '@mui/icons-material';
@@ -43,7 +43,7 @@ type UploadLocationByPointProps = {
 };
 
 const schema = z.object({
-  latitude: z.coerce
+  latitude: z
     .string()
     .refine((value) => {
       const latitude = Math.abs(Number(value));
@@ -51,7 +51,7 @@ const schema = z.object({
       return hasDecimalPlaces && latitude <= 90;
     })
     .optional(),
-  longitude: z.coerce
+  longitude: z
     .string()
     .refine((value) => {
       const longitude = Math.abs(Number(value));

@@ -1,13 +1,11 @@
 import React, { useState } from 'react';
-import Button from '@mui/material/Button';
-import Box from '@mui/material/Box';
-import DownloadIcon from '@mui/icons-material/Download';
-import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
-import ExpandLessIcon from '@mui/icons-material/ExpandLess';
-import Divider from '@mui/material/Divider';
-import Menu from 'material-ui/Menu';
-import MenuItem from 'material-ui/MenuItem';
-import Popover from 'material-ui/Popover';
+import {
+  Download as DownloadIcon,
+  ExpandMore as ExpandMoreIcon,
+  ExpandLess as ExpandLessIcon,
+} from '@mui/icons-material';
+import { Divider, Box, Button } from '@mui/material';
+import { Menu, MenuItem, Popover } from 'material-ui/Menu';
 import { userAccessLevel } from '../../../../../common/js/config';
 import { isDownloadDisabledForThisList } from '../../../../../locations/js/utils/lists.utils';
 import ConfirmDialog from '../../../../../locations/js/components/lists/download/confirmDialog';
@@ -105,7 +103,6 @@ function ListDownloadMenu({
           <Button
             data-cy="download-list"
             startIcon={<DownloadIcon height="14px" />}
-            variant="primary"
             endIcon={isMenuOpen ? <ExpandLessIcon /> : <ExpandMoreIcon />}
             onClick={handleOpenMenu}
           >
@@ -138,7 +135,7 @@ function ListDownloadMenu({
             )}
             <Divider />
             <MenuItem>
-              <Box sx={{ fontWeight: 'light', fontStyle: 'italic', fontSize: '10px' }}>
+              <Box sx={{ fontWeight: 'light', fontStyle: 'italic', fontSize: '12px' }}>
                 Downloads contain location data only; no analysis
               </Box>
             </MenuItem>

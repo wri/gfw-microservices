@@ -219,7 +219,7 @@ const getGFWListLocationIDs = (gfwList, location) => {
  * @param {Object} selectedList - Selected List
  * @return {boolean} - [ true/false ] value in case that list is excluded GFW list or not
  */
-const isDownloadDisabledForThisList = (selectedList) => {
+export const isDownloadDisabledForThisList = (selectedList) => {
   const {
     associated_gfwlist: associatedGfwlist,
     isGlobalForestWatchList,

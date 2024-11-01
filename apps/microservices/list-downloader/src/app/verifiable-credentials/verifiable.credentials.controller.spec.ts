@@ -7,6 +7,21 @@ describe('ListMessageController', () => {
   let verifiableCredentialService: VerifiableCredentialService;
 
   beforeEach(async () => {
+    jest.mock('@digitalbazaar/vc', () => ({
+      __esModule: true,
+      ...jest.requireActual('@digitalbazaar/vc'),
+    }));
+
+    jest.mock('@digitalbazaar/ed25519-signature-2018', () => ({
+      __esModule: true,
+      Ed25519Signature2018: jest.fn(),
+    }));
+
+    jest.mock('@digitalbazaar/ed25519-verification-key-2018', () => ({
+      __esModule: true,
+      Ed25519VerificationKey2018: jest.fn(),
+    }));
+
     const module: TestingModule = await Test.createTestingModule({
       controllers: [VerifiableCredentialsController],
       providers: [

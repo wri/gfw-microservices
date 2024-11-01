@@ -41,7 +41,7 @@ export class VerifiableCredentialService {
       const suite = new Ed25519Signature2018({ key: key });
       const customLoader =
         process.env.NODE_ENV === 'development'
-          ? jsonld.documentLoaders.node({ strictSSL: false })
+          ? jsonld.documentLoaders.node({ strictSSL: false, safe: false })
           : jsonld.documentLoaders.node();
 
       const signedVC = await vc.issue({

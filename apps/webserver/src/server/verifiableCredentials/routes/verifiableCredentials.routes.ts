@@ -84,7 +84,7 @@ export = (app, limiter) => {
         SBTN_Natural_Forest_Loss_Post_2020_HA: 'geojson:SBTN_Natural_Forest_Loss_Post_2020_HA',
         JRC_Forest_HA: 'geojson:JRC_Forest_HA',
         JRC_Forest_Loss_Post_2020_HA: 'geojson:JRC_Forest_Loss_Post_2020_HA',
-        Analysis_Time: 'geojson:Analysis_time',
+        Analysis_Time: 'geojson:Analysis_Time',
         GFWPro_Account: 'geojson:GFWPro_Account',
         Use_Rights: 'geojson:Use_Rights',
       },

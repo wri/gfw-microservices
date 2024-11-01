@@ -9,7 +9,7 @@ import DriveFileMoveIcon from '@mui/icons-material/DriveFileMove';
 import Button from '@mui/material/Button';
 import QueryStatsIcon from '@mui/icons-material/QueryStats';
 import MoreVertIcon from '@mui/icons-material/MoreVert';
-import ListDownload from '../download/ListDownload';
+import ListDownloadMenu from '../download/ListDownloadMenu';
 import { updateSelectedLocations } from '../../../../../locations/js/actions/locationActions';
 import redirectToMap from '../../../../../common/js/utils/redirect';
 import { listStatus } from '../../../../../../config/env/listStatuses.constants';
@@ -141,7 +141,7 @@ const CustomRow = ({
                   />
                 )}
 
-                <ListDownload
+                <ListDownloadMenu
                   listID={listId}
                   filters={{}}
                   listFilterStr={''}

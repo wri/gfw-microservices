@@ -6,6 +6,13 @@ import { mockAnalysisFlow } from '../../../mock';
 import { extractAnalysisTypes, getListAnalysisStatus } from '@wri-monorepos/geo';
 import { ProcessingLimitException } from '../../app.exceptions';
 import { listStatus } from '@wri-monorepos/constants';
+import {
+  GEO_TRELLIS__ANALYZE_LIST_DEV,
+  GEO_TRELLIS__ANALYZE_LIST_QA,
+  GEO_TRELLIS__ANALYZE_LIST_STAGING,
+  GEO_TRELLIS__ANALYZE_LIST_PROD,
+  GEO_TRELLIS__ANALYZE_LIST_PRODV2,
+} from '@wri-monorepos/constants';
 
 const environmentAllowTestFlow = ['DEVELOPMENT', 'LATEST', 'QA', 'STAGING'];
 
@@ -45,7 +52,14 @@ export class StartAnalysis extends AbstractHandler<ChainType> {
       subscription_status_id: subscriptionStatusId,
     } = input.request as RequestNewList;
 
-    const largeListProcessingEndPoint = process.env.LARGE_LIST_PROCESSING_ENDPOINT;
+    const geoTrellisUrlsByEnv = {
+      qa: GEO_TRELLIS__ANALYZE_LIST_QA,
+      staging: GEO_TRELLIS__ANALYZE_LIST_STAGING,
+      production: GEO_TRELLIS__ANALYZE_LIST_PROD,
+      ProdV2: GEO_TRELLIS__ANALYZE_LIST_PRODV2,
+      default: GEO_TRELLIS__ANALYZE_LIST_DEV,
+    };
+    const geoTrellisUrl = geoTrellisUrlsByEnv[process.env.NODE_ENV] || geoTrellisUrlsByEnv.default;
     const microserviceEnvironment = process.env.MICROSERVICES_ENV;
 
     let listName = '';
@@ -81,11 +95,13 @@ export class StartAnalysis extends AbstractHandler<ChainType> {
     const analysis_types = extractAnalysisTypes(listAnalysisStatusData);
 
     const payloadBody = {
-      ...input.request,
-      environment: microserviceEnvironment,
+      list_id: listId,
+      user_id,
+      organization_id: organizationId,
       send_email: !isExternalAPIProcess,
       processing_limit: processingLimit,
       analysis_types,
+      reanalyze: false,
     };
 
     const requestBody = JSON.stringify(payloadBody);
@@ -107,7 +123,7 @@ export class StartAnalysis extends AbstractHandler<ChainType> {
       return input;
     }
 
-    const response = await fetch(largeListProcessingEndPoint, options);
+    const response = await fetch(geoTrellisUrl, options);
     await response.json();
     return input;
   }

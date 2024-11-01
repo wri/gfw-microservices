@@ -65,6 +65,7 @@
     "@turf/turf": "^6.5.0",
     "@types/cron": "^2.4.0",
     "@types/lodash": "^4.14.202",
+    "@types/material-ui": "^0.21.17",
     "@types/mssql": "^8.1.1",
     "@types/node": "^20.5.9",
     "@types/validator": "^13.7.13",

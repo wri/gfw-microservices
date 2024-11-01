@@ -18,6 +18,7 @@ import AdministrativeAreasGFWListFilter from './AdministrativeAreasGFWListFilter
 import GFWListFilter from './GFWListFilter';
 import NaturalForestLossDataSourceToggle from './NaturalForestLossDataSourceToggle';
 import DeforestationDisplayFormatToggleButtons from '../DeforestationDisplayFormatToggleButtons';
+import filterCountryStateAndSubStateOptions from './filterCountryStateAndSubStateOptions';
 import { filterKeys, gfwListNames } from '../../../../../../common/js/constants/lists.constants';
 import { GFW_LISTS_NUMBER_CONSTANTS } from '../../../../../../../config/env/gfwLists.constants';
 import store from '../../../../../../locations/js/store';
@@ -98,14 +99,11 @@ export default class Filter extends Component {
     } = this.props;
     const { selectedCountry, selectedState, selectedSubState } = this.state;
 
-    const countryList = Object.keys(filterValues).filter((name) => name !== 'null');
-
-    const stateList =
-      selectedCountry && selectedCountry in filterValues
-        ? Object.keys(filterValues[selectedCountry])
-        : [];
-
-    const subStateList = selectedState ? filterValues[selectedCountry][selectedState] : [];
+    const { countryList, stateList, subStateList } = filterCountryStateAndSubStateOptions(
+      filterValues,
+      selectedCountry,
+      selectedState
+    );
 
     const isCommodityRiskFilterVisible = listView === COMMODITY_RISK_VIEW;
     const isForestChangeFilterVisible = listView === FOREST_CHANGE_VIEW;
@@ -170,7 +168,9 @@ export default class Filter extends Component {
             {isGFWListCommodityRiskFilterVisible && (
               <GFWListCommodityRiskFilter
                 listName={listName}
-                listData={listData}
+                filterValues={filterValues}
+                locationNameOptionsForFilter={locationNameOptionsForFilter}
+                parentCompanyOptionsForFilter={parentCompanyOptionsForFilter}
                 filterCount={filterCount}
                 listView={listView}
                 clearFilters={clearFilters}

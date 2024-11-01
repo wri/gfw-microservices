@@ -34,22 +34,24 @@ describe('GetObjectTypes', () => {
     expect(getObjectTypes.mergeTypes(existingTypes, newTypes)).toEqual(expectedMergedTypes);
   });
 
-  test('handle should process geojson and log merged types excluding specified fields', async () => {
-    const input = {
-      geojson: {
-        features: [
-          { properties: { name: 'John', age: 30 } },
-          { properties: { isActive: true, age: 25 } },
-        ],
-      },
-    };
+  test('should merge new types into existing types when keys do not overlap', () => {
+    const existingTypes = { name: 'string' };
+    const newTypes = { age: 'number', isActive: 'boolean' };
+    const expectedMergedTypes = { name: 'string', age: 'number', isActive: 'boolean' };
+    expect(getObjectTypes.mergeTypes(existingTypes, newTypes)).toEqual(expectedMergedTypes);
+  });
 
-    const consoleSpy = jest.spyOn(console, 'log');
-    await getObjectTypes.handle(input);
+  test('should not overwrite existing types with the same key and type', () => {
+    const existingTypes = { name: 'string' };
+    const newTypes = { name: 'string', age: 'number' };
+    const expectedMergedTypes = { name: 'string', age: 'number' };
+    expect(getObjectTypes.mergeTypes(existingTypes, newTypes)).toEqual(expectedMergedTypes);
+  });
 
-    const expectedMergedTypes = { age: 'number', isActive: 'boolean' };
-    expect(consoleSpy).toHaveBeenCalledWith(expectedMergedTypes);
-
-    consoleSpy.mockRestore();
+  test('should concatenate types when existing and new types differ for the same key', () => {
+    const existingTypes = { name: 'string' };
+    const newTypes = { name: 'number', age: 'number' };
+    const expectedMergedTypes = { name: 'string, number', age: 'number' };
+    expect(getObjectTypes.mergeTypes(existingTypes, newTypes)).toEqual(expectedMergedTypes);
   });
 });

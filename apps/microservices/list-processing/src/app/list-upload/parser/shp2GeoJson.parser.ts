@@ -4,12 +4,7 @@ import * as fs from 'fs';
 import * as path from 'path';
 
 export const convertShapefileToGeoJSON = async (zipFilePath: string): Promise<any> => {
-  const extractedFolder = './extracted';
-
-  // Ensure the extracted folder exists
-  if (!fs.existsSync(extractedFolder)) {
-    fs.mkdirSync(extractedFolder);
-  }
+  const extractedFolder = '/tmp/';
 
   // Unzip the file
   await fs

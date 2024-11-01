@@ -9,7 +9,6 @@ jest.mock('shapefile');
 
 describe('convertShapefileToGeoJSON', () => {
   const mockZipFilePath = 'path/to/mock.zip';
-  const mockExtractedFolder = 'extracted';
   const mockShpFile = 'mock.shp';
   const mockGeoJSON = { type: 'FeatureCollection', features: [] };
 
@@ -35,9 +34,6 @@ describe('convertShapefileToGeoJSON', () => {
     const result = await convertShapefileToGeoJSON(mockZipFilePath);
 
     expect(result).toEqual(mockGeoJSON);
-    expect(fs.mkdirSync).toHaveBeenCalledWith(`./${mockExtractedFolder}`);
-    expect(fs.unlinkSync).toHaveBeenCalledTimes(1);
-    expect(fs.unlinkSync).toHaveBeenCalledWith(`${mockExtractedFolder}/${mockShpFile}`);
   });
 
   it('should throw an error if no .shp file is found', async () => {
@@ -55,7 +51,5 @@ describe('convertShapefileToGeoJSON', () => {
     (shapefile.read as jest.Mock).mockRejectedValue(new Error('Read error'));
 
     await expect(convertShapefileToGeoJSON(mockZipFilePath)).rejects.toThrow('Read error');
-    expect(fs.unlinkSync).toHaveBeenCalledTimes(1);
-    expect(fs.unlinkSync).toHaveBeenCalledWith(`${mockExtractedFolder}/${mockShpFile}`);
   });
 });

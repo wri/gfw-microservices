@@ -108,7 +108,8 @@ const ListDownloadMenu: React.FC<ListDownloadMenuProps> = ({
   const isSourceFileDownloadEnabled =
     !isGfwList && currentUser.access_level_id !== userAccessLevel.VIEWER;
 
-  return downloadEnabled ? (
+  if (!downloadEnabled) return <></>;
+  return (
     <>
       {isHoverMenu ? (
         <MenuItem
@@ -157,7 +158,7 @@ const ListDownloadMenu: React.FC<ListDownloadMenuProps> = ({
       </Popover>
       <ConfirmDialog open={dialogOpen} setDialogOpen={setDialogOpen} />
     </>
-  ) : null;
+  );
 };
 
 export default ListDownloadMenu;

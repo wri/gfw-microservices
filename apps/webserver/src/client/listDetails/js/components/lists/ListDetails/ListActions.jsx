@@ -10,7 +10,7 @@ import ReplayIcon from '@mui/icons-material/Replay';
 import DriveFileMoveIcon from '@mui/icons-material/DriveFileMove';
 import FolderSharedIcon from '@mui/icons-material/FolderShared';
 import DeleteIcon from '@mui/icons-material/Delete';
-import ListDownload from '../download/ListDownload';
+import ListDownloadMenu from '../download/ListDownloadMenu';
 import { EditListBulkActionButton } from '../EditList/EditListBulkActionButton';
 import CustomDialog from 'common/js/components/CustomDialog/CustomDialog';
 import ManageListFolderDialog from 'locations/js/components/landing/ManageListFolderDialog';
@@ -113,6 +113,7 @@ const ListActions = ({
     !selectedList.isGlobalForestWatchList &&
     !showMultipleSelectionBulkActions &&
     !isSearchBarOpen;
+
   return (
     <>
       <Paper className="list-actions">
@@ -255,7 +256,7 @@ const ListActions = ({
             )}
 
             {showMultipleSelectionBulkActions && !isSearchBarOpen && (
-              <ListDownload
+              <ListDownloadMenu
                 listID={selectedList?.id}
                 listName={selectedList?.list_name}
                 filters={filters}

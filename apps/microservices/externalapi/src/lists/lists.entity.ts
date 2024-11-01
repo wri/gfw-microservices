@@ -64,4 +64,7 @@ export class Lists {
 
   @Column({ name: 'version', default: 0 })
   version: number;
+
+  @Column({ name: 'Commodity', nullable: true })
+  Commodity: string | null;
 }

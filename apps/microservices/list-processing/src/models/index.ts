@@ -69,7 +69,7 @@ export class RequestLargeListProcess {
   list_name?: string;
 
   @ApiProperty()
-  analysis_types?: Array<string>;
+  analysisIds?: Array<string>;
 
   @ApiProperty()
   template_id?: number;

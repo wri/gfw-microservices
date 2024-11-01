@@ -233,6 +233,10 @@ const uploadBulkLocations = (req, list_id, list_name, geojson, commodity, attrib
             };
             if (feature.properties.hasOwnProperty(column.COLUMN_NAME)) {
               col.value = feature.properties[column.COLUMN_NAME];
+
+              if (column.COLUMN_NAME === 'Geometry') {
+                col.value = locationUtils.getWKTGeometry(req, feature.geometry);
+              }
             } else {
               /**
                *  Extra column to keep track

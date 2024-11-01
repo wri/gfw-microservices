@@ -49,7 +49,7 @@ export class ParserData extends AbstractHandler<ChainType> {
       '.zip': this.shapefileParser,
     };
 
-    if(!dataParser[fileExtension]) {
+    if (!dataParser[fileExtension]) {
       this.logger.error(`Unsupported file extension: ${fileExtension}`);
       throw new Error('Unsupported file extension');
     }

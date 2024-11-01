@@ -249,22 +249,17 @@ const uploadBulkLocations = (req, list_id, list_name, geojson, commodity, attrib
                */
               if (column.COLUMN_NAME === 'location_id') {
                 col.value = primary_key;
-              }
-              if (commodity && column.COLUMN_NAME === 'Commodity') {
+              } else if (commodity && column.COLUMN_NAME === 'Commodity') {
                 col.value = commodity;
-              }
-              if (column.COLUMN_NAME === 'Geometry') {
+              } else if (column.COLUMN_NAME === 'Geometry') {
                 col.value = locationUtils.getWKTGeometry(req, feature.geometry);
-              }
-              if (column.COLUMN_NAME === 'attributes') {
+              } else if (column.COLUMN_NAME === 'attributes') {
                 col.type = sql.NVarChar(sql.MAX);
                 col.value = '';
-              }
-              if (column.COLUMN_NAME === 'ErrorDetails') {
+              } else if (column.COLUMN_NAME === 'ErrorDetails') {
                 col.type = sql.NVarChar(256);
                 col.value = '';
-              }
-              if (column.COLUMN_NAME.includes('flag_')) {
+              } else if (column.COLUMN_NAME.includes('flag_')) {
                 col.value = 0;
               }
             }

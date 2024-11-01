@@ -113,7 +113,6 @@ export class GfwLists {
       queryBuilder
         .skip(skip)
         .take(take)
-
         .orderBy(tableSortedBy.length ? `"${tableSortedBy}"` : 'location_id', sortOrder);
 
       const [items, count] = await queryBuilder.getManyAndCount();

@@ -1,5 +1,3 @@
--- Stored Procedure
-
 CREATE PROCEDURE [dbo].[uspActivatePendingAccount]
    @PendingAccountID INT,
    @UserSecret VARCHAR(50),
@@ -189,6 +187,18 @@ AS
        )'
        SET @SQL = REPLACE(@TEMPLATE, '{DATABASENAME}', @OrgdbName)
        EXEC sp_executesql @SQL
+
+
+   SET @TEMPLATE = 'CREATE TABLE [{DATABASENAME}].[dbo].[ListAttributes]
+       (
+     [id] INT NOT NULL,
+     [list_id] INT NULL,
+     [attribute_name] NVARCHAR(64),
+     [attribute_type] SMALLINT
+   )'
+   SET @SQL = REPLACE(@TEMPLATE, '{DATABASENAME}', @OrgdbName)
+       EXEC sp_executesql @SQL
+
        
        SET @TEMPLATE = 'CREATE TABLE [{DATABASENAME}].[dbo].[LargeLists]
        (
@@ -1108,7 +1118,9 @@ AS
                        EXEC(''CREATE PROCEDURE uspGetLocationsForBatchProcessing
                            @list_id INT
                        AS                                                        
+
 							DECLARE	@list_table NVARCHAR(150)
+
                            DECLARE @analysis_table NVARCHAR(150)
 
                            DECLARE @SQL NVARCHAR(MAX)

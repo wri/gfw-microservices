@@ -11,15 +11,11 @@
 
     > svg:last-of-type {
       color: #b3b3b3;
-      font-size: 0.75rem;
     }
   }
 
   &__main-content {
     padding: 10px 16px 60px;
-    p {
-      color: #7f7f7f;
-    }
 
     p.upload-location-options__main-content__subtitle {
       margin: 0.4rem 0 0.8rem;
@@ -82,7 +78,6 @@
     }
 
     svg {
-      color: #97bd3d;
       font-size: 3rem;
     }
   }

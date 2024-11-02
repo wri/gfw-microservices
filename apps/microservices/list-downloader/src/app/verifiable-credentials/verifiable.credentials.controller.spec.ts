@@ -2,26 +2,27 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { VerifiableCredentialsController } from './verifiable.credentials.controller';
 import { VerifiableCredentialService } from './verifiable.credentials.service';
 import { GeoJsonSchema } from './types/geojson.schema';
+
+jest.mock('@digitalbazaar/vc', () => ({
+  __esModule: true,
+  ...jest.requireActual('@digitalbazaar/vc'),
+}));
+
+jest.mock('@digitalbazaar/ed25519-signature-2018', () => ({
+  __esModule: true,
+  Ed25519Signature2018: jest.fn(),
+}));
+
+jest.mock('@digitalbazaar/ed25519-verification-key-2018', () => ({
+  __esModule: true,
+  Ed25519VerificationKey2018: jest.fn(),
+}));
+
 describe('ListMessageController', () => {
   let controller: VerifiableCredentialsController;
   let verifiableCredentialService: VerifiableCredentialService;
 
   beforeEach(async () => {
-    jest.mock('@digitalbazaar/vc', () => ({
-      __esModule: true,
-      ...jest.requireActual('@digitalbazaar/vc'),
-    }));
-
-    jest.mock('@digitalbazaar/ed25519-signature-2018', () => ({
-      __esModule: true,
-      Ed25519Signature2018: jest.fn(),
-    }));
-
-    jest.mock('@digitalbazaar/ed25519-verification-key-2018', () => ({
-      __esModule: true,
-      Ed25519VerificationKey2018: jest.fn(),
-    }));
-
     const module: TestingModule = await Test.createTestingModule({
       controllers: [VerifiableCredentialsController],
       providers: [

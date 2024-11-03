@@ -2,6 +2,8 @@ import { Logger } from '@nestjs/common';
 import { AbstractHandler, ChainType, PreviewListRequest } from './types';
 import { csv2geojson } from '../parser/csv2geojson.parser';
 import * as fs from 'fs';
+import { performance } from 'perf_hooks';
+import { getDurationAsString } from './shared';
 
 export class ParserData extends AbstractHandler<ChainType> {
   private readonly logger = new Logger(ParserData.name);
@@ -26,6 +28,7 @@ export class ParserData extends AbstractHandler<ChainType> {
     const { fileDownloadedPath, preview = false } = input.request as PreviewListRequest;
 
     try {
+      const start = performance.now();
       // Read the CSV file content asynchronously
       const csvContent = fs.readFileSync(fileDownloadedPath, 'utf8');
       // Convert CSV content to GeoJSON
@@ -35,6 +38,8 @@ export class ParserData extends AbstractHandler<ChainType> {
       // Pass the GeoJSON to the next handler in the chain
       const response = await super.handle({ ...input, geojson: geoJson });
       this.deleteFile(fileDownloadedPath);
+      const end = performance.now();
+      this.logger.debug(`Execution time: ${getDurationAsString(start, end)}`);
       return response;
     } catch (error) {
       // Log the error with more context

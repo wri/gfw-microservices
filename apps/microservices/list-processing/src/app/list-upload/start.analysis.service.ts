@@ -15,6 +15,8 @@ import { InsertLocationData } from './chain/insert.location.data';
 import { ValidateLatLongGeojson } from './chain/validate.lat.long.geojson';
 import { StartAnalysis } from './chain/start.analysis';
 import { ConvertPoint2Polygon } from './chain/convert.point.2.polygon';
+import { performance } from 'perf_hooks';
+import { getDurationAsString } from './chain/shared';
 
 @Injectable()
 export class StartAnalysisService {
@@ -26,6 +28,7 @@ export class StartAnalysisService {
   ) {}
 
   async run(request: RequestLargeListProcess): Promise<ResponseLargeListProcess> {
+    const start = performance.now();
     const { organization_database: organizationDatabase } = request;
 
     const chainType: ChainType = {
@@ -62,6 +65,8 @@ export class StartAnalysisService {
       .setNext(startAnalysis);
 
     await downloadS3File.handle(chainType);
+    const end = performance.now();
+    this.logger.log(`Execution time: ${getDurationAsString(start, end)}`);
 
     await connection.disconnect();
     return {

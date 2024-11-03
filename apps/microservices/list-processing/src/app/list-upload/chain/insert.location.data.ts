@@ -3,10 +3,14 @@ import { AbstractHandler, ChainType, RequestNewList } from './types';
 import { ClientStoreConnection, ListSchema, ListSchemaType } from '@wri-monorepos/sql';
 import { FeatureCollection } from '@wri-monorepos/geo';
 import { GeoJSONGeometry, stringify } from 'wellknown';
+import { performance } from 'perf_hooks';
+import { Logger } from '@nestjs/common';
+import { getDurationAsString } from './shared';
 
 const BATCH_SIZE = 100;
 
 export class InsertLocationData extends AbstractHandler<ChainType> {
+  private readonly logger = new Logger(InsertLocationData.name);
   private clientStoreConnection: ClientStoreConnection;
 
   constructor(clientStoreConnection: ClientStoreConnection) {
@@ -37,6 +41,7 @@ export class InsertLocationData extends AbstractHandler<ChainType> {
   }
 
   async handle(input: ChainType): Promise<ChainType> {
+    const start = performance.now();
     const { organization_database: organizationDatabase, listTable } =
       input.request as RequestNewList;
     const ListEntity = new EntitySchema<ListSchemaType>({
@@ -59,6 +64,9 @@ export class InsertLocationData extends AbstractHandler<ChainType> {
         const batch = values.slice(i, i + BATCH_SIZE);
         await this.insertBatch(connection, ListEntity, batch);
       }
+
+      const end = performance.now();
+      this.logger.debug(`Execution time: ${getDurationAsString(start, end)}`);
 
       return super.handle(input);
     } catch (error) {

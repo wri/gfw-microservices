@@ -1,6 +1,10 @@
+import { Logger } from '@nestjs/common';
 import { AbstractHandler, ChainType } from './types';
+import { performance } from 'perf_hooks';
+import { getDurationAsString } from './shared';
 
 export class ValidateLatLongGeojson extends AbstractHandler<ChainType> {
+  private readonly logger = new Logger(ValidateLatLongGeojson.name);
   isValidLatitude(lat: number): boolean {
     return lat >= -90 && lat <= 90;
   }
@@ -50,6 +54,7 @@ export class ValidateLatLongGeojson extends AbstractHandler<ChainType> {
   }
 
   async handle(input: ChainType): Promise<ChainType> {
+    const start = performance.now();
     const { geojson } = input;
 
     if (!geojson.type || !geojson.features) {
@@ -70,6 +75,9 @@ export class ValidateLatLongGeojson extends AbstractHandler<ChainType> {
         }
       }
     }
+
+    const end = performance.now();
+    this.logger.debug(`Execution time: ${getDurationAsString(start, end)}`);
 
     const response = await super.handle({
       ...input,

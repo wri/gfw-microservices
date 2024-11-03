@@ -6,6 +6,8 @@ import { IFeatureSet, IGeometry, queryFeatures } from '@esri/arcgis-rest-feature
 import { LambdaClient, InvokeCommand, InvocationType } from '@aws-sdk/client-lambda';
 import { NodeHttpHandler } from '@smithy/node-http-handler';
 import { S3Service } from '@wri-monorepos/aws';
+import { performance } from 'perf_hooks';
+import { getDurationAsString } from './shared';
 
 const PRODUCTION_ENVIRONMENTS = ['production', 'ProdV2'];
 const POOL_SIZE = 5;
@@ -158,6 +160,7 @@ export class GADMService extends AbstractHandler<ChainType> {
   };
 
   async handle(input: ChainType): Promise<ChainType> {
+    const start = performance.now();
     const { geojson } = input;
     const { path, preview = false } = input.request as PreviewListRequest;
     const { features } = geojson as FeatureCollection;
@@ -167,12 +170,15 @@ export class GADMService extends AbstractHandler<ChainType> {
       // disabling log because it is too verbose -- logs every iteration
       // this.logger.log(`(${path}) - one more feature processed`);
     }
-    this.logger.log('GADMService - done with getGeoReferenceData for', path);
+    this.logger.debug('GADMService - done with getGeoReferenceData for', path);
     // We should not call clip to land if we are in the preview mode.
     if (!preview) {
       const response = await this.clipToLand(geojson);
       input.geojson = response.geojson;
     }
+
+    const end = performance.now();
+    this.logger.log(`Execution time: ${getDurationAsString(start, end)}`);
     return super.handle(input);
   }
 }

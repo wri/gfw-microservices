@@ -13,10 +13,14 @@ import {
   GEO_TRELLIS__ANALYZE_LIST_PROD,
   GEO_TRELLIS__ANALYZE_LIST_PRODV2,
 } from '@wri-monorepos/constants';
+import { performance } from 'perf_hooks';
+import { Logger } from '@nestjs/common';
+import { getDurationAsString } from './shared';
 
 const environmentAllowTestFlow = ['DEVELOPMENT', 'LATEST', 'QA', 'STAGING'];
 
 export class StartAnalysis extends AbstractHandler<ChainType> {
+  private readonly logger = new Logger(StartAnalysis.name);
   private clientStoreConnection: ClientStoreConnection;
 
   constructor(clientStoreConnection: ClientStoreConnection) {
@@ -43,6 +47,7 @@ export class StartAnalysis extends AbstractHandler<ChainType> {
   }
 
   async handle(input: ChainType): Promise<ChainType> {
+    const start = performance.now();
     const {
       organization_database,
       user_id,
@@ -125,6 +130,10 @@ export class StartAnalysis extends AbstractHandler<ChainType> {
 
     const response = await fetch(geoTrellisUrl, options);
     await response.json();
+
+    const end = performance.now();
+    this.logger.debug(`Execution time: ${getDurationAsString(start, end)}`);
+
     return input;
   }
 }

@@ -2,8 +2,12 @@ import { ListTableColumnsQueryString, SQLUtils } from '@wri-monorepos/sql';
 import { updateListsUploadStatus } from '../shared/update.lists.upload.status';
 import { AbstractHandler, ChainType, RequestNewList } from './types';
 import * as sql from 'mssql';
+import { Logger } from '@nestjs/common';
+import { performance } from 'perf_hooks';
+import { getDurationAsString } from './shared';
 
 export class CreateLocationSchema extends AbstractHandler<ChainType> {
+  private readonly logger = new Logger(CreateLocationSchema.name);
   private clientStoreConnection: SQLUtils;
 
   constructor(clientStoreConnection: SQLUtils) {
@@ -52,7 +56,15 @@ export class CreateLocationSchema extends AbstractHandler<ChainType> {
 
   public async getTableStructureQuery(templateId: number): Promise<ListTableColumnsQueryString> {
     const conn = new SQLUtils();
-    const parameters = [this.createSqlParameter('template_id', sql.Int, templateId)];
+    const parameters = [
+      this.createSqlParameter('template_id', sql.Int, templateId),
+      this.createSqlParameter('custom_attribute_1', sql.NVarChar(50), null),
+      this.createSqlParameter('custom_attribute_1_type', sql.NVarChar(50), null),
+      this.createSqlParameter('custom_attribute_2', sql.NVarChar(50), null),
+      this.createSqlParameter('custom_attribute_2_type', sql.NVarChar(50), null),
+      this.createSqlParameter('custom_attribute_3', sql.NVarChar(50), null),
+      this.createSqlParameter('custom_attribute_3_type', sql.NVarChar(50), null),
+    ];
 
     try {
       await conn.connect();
@@ -100,6 +112,7 @@ export class CreateLocationSchema extends AbstractHandler<ChainType> {
   }
 
   async handle(input: ChainType): Promise<ChainType> {
+    const start = performance.now();
     const {
       listId,
       listTable,
@@ -130,6 +143,8 @@ export class CreateLocationSchema extends AbstractHandler<ChainType> {
       analysisIds
     );
     await updateListsUploadStatus(organization_database, listId, 'Create analysis status records');
+    const end = performance.now();
+    this.logger.debug(`Execution time: ${getDurationAsString(start, end)}`);
 
     return await super.handle(input);
   }

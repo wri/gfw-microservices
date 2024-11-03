@@ -4,11 +4,15 @@ import { CreateListResult } from '@wri-monorepos/geo';
 import * as sql from 'mssql';
 import { updateListsUploadStatus } from '../shared/update.lists.upload.status';
 import { featureFlagsService } from '@wri-monorepos/shared';
+import { performance } from 'perf_hooks';
+import { Logger } from '@nestjs/common';
+import { getDurationAsString } from './shared';
 
 const LIST_UPLOAD_VERSION = 2;
 const LIST_UPLOAD_LEGACY_VERSION = 0;
 
 export class CreateListLevelData extends AbstractHandler<ChainType> {
+  private readonly logger = new Logger(CreateListLevelData.name);
   private createSqlParameter(
     field: string,
     type: sql.ISqlType | sql.ISqlTypeFactoryWithNoParams,
@@ -80,6 +84,7 @@ export class CreateListLevelData extends AbstractHandler<ChainType> {
   }
 
   async handle(input: ChainType): Promise<ChainType> {
+    const start = performance.now();
     const {
       list_name: listName,
       organization_database: clientDatabase,
@@ -134,6 +139,9 @@ export class CreateListLevelData extends AbstractHandler<ChainType> {
         createListResult.list_id,
         'Add list to analysis table'
       );
+
+      const end = performance.now();
+      this.logger.debug(`Execution time: ${getDurationAsString(start, end)}`);
 
       return await super.handle({
         ...input,

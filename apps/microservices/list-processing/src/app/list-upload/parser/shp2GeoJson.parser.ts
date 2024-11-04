@@ -3,8 +3,15 @@ import * as unzipper from 'unzipper';
 import * as fs from 'fs';
 import * as path from 'path';
 
+import { promisify } from 'util';
+
+const mkdtemp = promisify(fs.mkdtemp);
+
 export const convertShapefileToGeoJSON = async (zipFilePath: string): Promise<any> => {
-  const extractedFolder = '/tmp/';
+  const extractedFolder =
+    process.env.NODE_ENV !== 'test'
+      ? await mkdtemp(path.join('/tmp/', 'shapefile-'))
+      : '/tmp/shapefile';
 
   // Unzip the file
   await fs

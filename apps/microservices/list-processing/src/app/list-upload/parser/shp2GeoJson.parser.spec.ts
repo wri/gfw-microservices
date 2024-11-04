@@ -13,6 +13,7 @@ describe('convertShapefileToGeoJSON', () => {
   const mockGeoJSON = { type: 'FeatureCollection', features: [] };
 
   beforeEach(() => {
+    process.env.NODE_ENV = 'test';
     jest.clearAllMocks();
   });
 

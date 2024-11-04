@@ -5,6 +5,7 @@ import {
   ListsUploadStatus,
   SQLUtils,
   getListByFilters,
+  SqlParamType,
 } from '@wri-monorepos/sql';
 import { BadRequestException, Logger, InternalServerErrorException } from '@nestjs/common';
 import { Injectable } from '@nestjs/common';
@@ -298,14 +299,25 @@ export class ListService {
 
   async getTableStructureQuery(templateId: number): Promise<ListTableColumnsQueryString> {
     const conn = new SQLUtils();
-    const parameters = [{ field: 'template_id', type: sql.Int, value: templateId }];
+    const params: SqlParamType[] = [
+      { field: 'template_id', type: sql.NVarChar(150), value: templateId },
+    ];
+    for (let i = 0; i < 3; i++) {
+      params.push({
+        field: `custom_attribute_${i + 1}`,
+        type: sql.NVarChar(50),
+        value: null,
+      });
+      params.push({
+        field: `custom_attribute_${i + 1}_type`,
+        type: sql.NVarChar(50),
+        value: null,
+      });
+    }
 
     try {
       await conn.connect();
-      return await conn.executeQuery<ListTableColumnsQueryString>(
-        'uspGetTableQueryString',
-        parameters
-      );
+      return await conn.executeQuery<ListTableColumnsQueryString>('uspGetTableQueryString', params);
     } catch (error) {
       throw new Error(
         `Failed to get table structure query: ${error.stack || error.message || error}`
@@ -394,6 +406,7 @@ export class ListService {
     const connection = await this.clientStoreConnection.getConnection(clientStore);
     const repository = connection.getRepository(ListsUploadStatus);
     const { taskARN } = await this.awsMetadataService.getMetadata();
+    errorInfo = errorInfo?.substring(0, 511);
 
     try {
       const existingRecord = await repository.findOne({ where: { listId } });
@@ -415,7 +428,7 @@ export class ListService {
         await repository.save(newRecord);
       }
     } catch (error) {
-      Logger.error('Error updating/inserting record:', error);
+      Logger.error('Error updating/inserting record:', error.stack);
     }
   }
 

@@ -194,13 +194,13 @@ export function UploadLocationByPolygon({ clearUploadType }: UploadLocationByPoi
                   }}
                 >
                   {Array.from({ length: amountOfCoordinates }).map((_, i) => {
-                    const index = i + 1;
+                    const count = i + 1;
 
                     return (
-                      <React.Fragment key={index}>
-                        <Typography sx={{ marginTop: '9px' }}>{index}</Typography>
+                      <React.Fragment key={count}>
+                        <Typography sx={{ marginTop: '9px' }}>{count}</Typography>
                         <Controller
-                          name={`${index}.latitude`}
+                          name={`${count}.latitude`}
                           control={control}
                           rules={{ required: true }}
                           defaultValue=""
@@ -210,14 +210,14 @@ export function UploadLocationByPolygon({ clearUploadType }: UploadLocationByPoi
                               variant="outlined"
                               type="number"
                               size="small"
-                              error={!!errors[index]?.latitude}
-                              helperText={errors[index]?.latitude ? COORDINATE_ERROR_MESSAGE : ''}
+                              error={!!errors[count]?.latitude}
+                              helperText={errors[count]?.latitude ? COORDINATE_ERROR_MESSAGE : ''}
                               {...field}
                             />
                           )}
                         />
                         <Controller
-                          name={`${index}.longitude`}
+                          name={`${count}.longitude`}
                           control={control}
                           rules={{ required: true }}
                           defaultValue=""
@@ -227,8 +227,8 @@ export function UploadLocationByPolygon({ clearUploadType }: UploadLocationByPoi
                               variant="outlined"
                               type="number"
                               size="small"
-                              error={!!errors[index]?.longitude}
-                              helperText={errors[index]?.longitude ? COORDINATE_ERROR_MESSAGE : ''}
+                              error={!!errors[count]?.longitude}
+                              helperText={errors[count]?.longitude ? COORDINATE_ERROR_MESSAGE : ''}
                               {...field}
                             />
                           )}

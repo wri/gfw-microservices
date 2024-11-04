@@ -1,0 +1,130 @@
+import { ClientStoreConnection, Lists, updateListsAnalysisStatus, User } from '@wri-monorepos/sql';
+import { AbstractHandler, ChainType, RequestNewList } from './types';
+import { MARK_IS_TEST_LIST, MARK_IS_TEST_USER } from '../../../services/constants';
+import { checkProcessingLimits } from '@wri-monorepos/shared';
+import { mockAnalysisFlow } from '../../../mock';
+import { extractAnalysisTypes, getListAnalysisStatus } from '@wri-monorepos/geo';
+import { ProcessingLimitException } from '../../app.exceptions';
+import { listStatus } from '@wri-monorepos/constants';
+import {
+  GEO_TRELLIS__ANALYZE_LIST_DEV,
+  GEO_TRELLIS__ANALYZE_LIST_QA,
+  GEO_TRELLIS__ANALYZE_LIST_STAGING,
+  GEO_TRELLIS__ANALYZE_LIST_PROD,
+  GEO_TRELLIS__ANALYZE_LIST_PRODV2,
+} from '@wri-monorepos/constants';
+
+const environmentAllowTestFlow = ['DEVELOPMENT', 'LATEST', 'QA', 'STAGING'];
+
+export class StartAnalysis extends AbstractHandler<ChainType> {
+  private clientStoreConnection: ClientStoreConnection;
+
+  constructor(clientStoreConnection: ClientStoreConnection) {
+    super();
+    if (clientStoreConnection !== null) {
+      this.clientStoreConnection = clientStoreConnection;
+    } else {
+      this.clientStoreConnection = new ClientStoreConnection();
+    }
+  }
+
+  async getListName(organizationDatabase: string, list_id: number) {
+    const connection = await this.clientStoreConnection.getConnection(organizationDatabase);
+    const listRepository = connection.getRepository(Lists);
+    const { listName } = await listRepository.findOne({ where: { id: list_id } });
+    return listName;
+  }
+
+  async getUserEmail(organizationDatabase: string, user_id: number) {
+    const connection = await this.clientStoreConnection.getConnection(organizationDatabase);
+    const userRepository = connection.getRepository(User);
+    const { email } = await userRepository.findOne({ where: { id: user_id } });
+    return email;
+  }
+
+  async handle(input: ChainType): Promise<ChainType> {
+    const {
+      organization_database,
+      user_id,
+      listId,
+      isExternalAPIProcess,
+      organization_id: organizationId,
+      subscription_status_id: subscriptionStatusId,
+    } = input.request as RequestNewList;
+
+    const geoTrellisUrlsByEnv = {
+      qa: GEO_TRELLIS__ANALYZE_LIST_QA,
+      staging: GEO_TRELLIS__ANALYZE_LIST_STAGING,
+      production: GEO_TRELLIS__ANALYZE_LIST_PROD,
+      ProdV2: GEO_TRELLIS__ANALYZE_LIST_PRODV2,
+      default: GEO_TRELLIS__ANALYZE_LIST_DEV,
+    };
+    const geoTrellisUrl = geoTrellisUrlsByEnv[process.env.NODE_ENV] || geoTrellisUrlsByEnv.default;
+    const microserviceEnvironment = process.env.MICROSERVICES_ENV;
+
+    let listName = '';
+    let userEmail = '';
+
+    if (environmentAllowTestFlow.includes(microserviceEnvironment)) {
+      listName = await this.getListName(organization_database, listId);
+      userEmail = await this.getUserEmail(organization_database, user_id);
+    }
+
+    const isTestFlow =
+      environmentAllowTestFlow.includes(microserviceEnvironment) &&
+      listName.includes(MARK_IS_TEST_LIST) &&
+      userEmail.includes(MARK_IS_TEST_USER);
+
+    const { isListLocationOverLimit, processingLimit } = await checkProcessingLimits({
+      organizationDb: organization_database,
+      organizationId,
+      subscriptionStatusId,
+      listId,
+    });
+
+    if (isListLocationOverLimit) {
+      await updateListsAnalysisStatus(organization_database, {
+        listId,
+        errorInfo: 'Exceeded Analysis Limit',
+        status: listStatus.Inactive,
+      });
+      throw new ProcessingLimitException();
+    }
+
+    const listAnalysisStatusData = await getListAnalysisStatus(organization_database, listId);
+    const analysis_types = extractAnalysisTypes(listAnalysisStatusData);
+
+    const payloadBody = {
+      list_id: listId,
+      user_id,
+      organization_id: organizationId,
+      send_email: !isExternalAPIProcess,
+      processing_limit: processingLimit,
+      analysis_types,
+      reanalyze: false,
+    };
+
+    const requestBody = JSON.stringify(payloadBody);
+    const options = {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: requestBody,
+    };
+
+    // Flow used by cypress test, mock analysis flow so avoid call lambda functions.
+    if (isTestFlow) {
+      await mockAnalysisFlow({
+        organization_database: organization_database,
+        list_id: listId,
+        template_type: 'cocoa_generic',
+      });
+      return input;
+    }
+
+    const response = await fetch(geoTrellisUrl, options);
+    await response.json();
+    return input;
+  }
+}

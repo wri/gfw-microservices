@@ -37,7 +37,6 @@ function AfiDiagnostics() {
   const getAfiAnalysisForListId = () => {
     // Base URL
     let url = `/api/afi/analysis/${listId}`;
-
     // Add query parameter if locationId is defined
     if (locationId !== undefined && !isNaN(locationId)) {
       url += `?locationId=${locationId}`;
@@ -170,7 +169,7 @@ function AfiDiagnostics() {
               <AfiDiagnosticsTable
                 data={tableData}
                 forestLossDataset={forestLossDataset}
-                isLocationLevel={locationId !== undefined}
+                isLocationLevel={!!locationId}
               />
               {isNegligibleRiskAvailable && (
                 <>

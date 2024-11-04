@@ -49,6 +49,7 @@ const _ = require('lodash');
 // Configs
 import config from '../config';
 const { DEFAULT_LIST_LOCATIONS_ROWS_REQUESTED } = require('../config/locations.config');
+const LIST_UPLOAD_LEGACY_VERSION = 0;
 
 // Utils
 const Helper = require(path.resolve('./config/publicutils/helper.utils'));
@@ -76,7 +77,7 @@ import { SqlParamType, AnalysisDataType, ListsType, DeleteListTypeOrm } from '@w
  *   @param  {Boolean} is_edit
  *   @return {Promise} Returns promise object. If successful, recordsets, otherwise, error object
  */
-const createList = (
+const createList = async (
   req,
   list_name,
   template_id,
@@ -121,6 +122,11 @@ const createList = (
       { field: 'custom_attribute_names', type: sql.NVarChar(2000), value: custom_attribute_names },
       { field: 'custom_attribute_types', type: sql.NVarChar(2000), value: custom_attribute_types },
       { field: 'associated_gfwlist', type: sql.TinyInt, value: gfw_list_id },
+      {
+        field: 'version',
+        type: sql.Int,
+        value: LIST_UPLOAD_LEGACY_VERSION,
+      },
     ];
 
     sqlUtils
@@ -144,30 +150,17 @@ const createList = (
         const params: SqlParamType[] = [
           { field: 'template_id', type: sql.NVarChar(150), value: template_id },
         ];
-        for (let i = 0; i < custom_attributes.length; i++) {
-          const columnNameParameter = {
+        for (let i = 0; i < 3; i++) {
+          params.push({
             field: `custom_attribute_${i + 1}`,
             type: sql.NVarChar(50),
-            value: null,
-          };
-
-          if (Helper.isUndefined(custom_attributes[i].column_name)) {
-            columnNameParameter.value = null;
-          } else {
-            columnNameParameter.value = custom_attributes[i].column_name;
-          }
-          const columnTypeParameter = {
+            value: custom_attributes[i]?.column_name || null,
+          });
+          params.push({
             field: `custom_attribute_${i + 1}_type`,
             type: sql.NVarChar(50),
-            value: custom_attributes[i].column_type || null,
-          };
-          if (Helper.isUndefined(custom_attributes[i].column_type)) {
-            columnTypeParameter.value = null;
-          } else {
-            columnTypeParameter.value = custom_attributes[i].column_type;
-          }
-          params.push(columnNameParameter);
-          params.push(columnTypeParameter);
+            value: custom_attributes[i]?.column_type || null,
+          });
         }
         return sqlUtils.executeSystemStoredProcedure(req, 'uspGetTableQueryString', params);
       })
@@ -246,7 +239,7 @@ const createList = (
  * @param {string} gfw_list_id - The ID of the GFW List that this new list is associated with
  * @return {Promise<any>}
  */
-const saveAsDraftList = (
+const saveAsDraftList = async (
   req,
   list_name,
   template_id,
@@ -288,6 +281,11 @@ const saveAsDraftList = (
       { field: 'custom_attribute_names', type: sql.NVarChar(2000), value: custom_attribute_names },
       { field: 'custom_attribute_types', type: sql.NVarChar(2000), value: custom_attribute_types },
       { field: 'associated_gfwlist', type: sql.TinyInt, value: gfw_list_id },
+      {
+        field: 'version',
+        type: sql.Int,
+        value: LIST_UPLOAD_LEGACY_VERSION,
+      },
     ];
 
     sqlUtils
@@ -311,31 +309,17 @@ const saveAsDraftList = (
         const params: SqlParamType[] = [
           { field: 'template_id', type: sql.Int, value: template_id },
         ];
-        for (let i = 0; i < custom_attributes.length; i++) {
-          const columnNameParameter = {
+        for (let i = 0; i < 3; i++) {
+          params.push({
             field: `custom_attribute_${i + 1}`,
             type: sql.NVarChar(50),
-            value: null,
-          };
-          if (Helper.isUndefined(custom_attributes[i].column_name)) {
-            columnNameParameter.value = null;
-          } else {
-            columnNameParameter.value = custom_attributes[i].column_name;
-          }
-
-          const columnTypeParameter = {
+            value: custom_attributes[i]?.column_name || null,
+          });
+          params.push({
             field: `custom_attribute_${i + 1}_type`,
             type: sql.NVarChar(50),
-            value: custom_attributes[i].column_type || null,
-          };
-          if (Helper.isUndefined(custom_attributes[i].column_type)) {
-            columnTypeParameter.value = null;
-          } else {
-            columnTypeParameter.value = custom_attributes[i].column_type;
-          }
-
-          params.push(columnNameParameter);
-          params.push(columnTypeParameter);
+            value: custom_attributes[i]?.column_type || null,
+          });
         }
         return sqlUtils.executeSystemStoredProcedure(req, 'uspGetTableQueryString', params);
       })

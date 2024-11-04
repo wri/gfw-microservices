@@ -116,7 +116,7 @@ module.exports = (app, limiter) => {
       selected_location_ids: src_location_ids,
       original_gfw_list,
       analysisIds,
-      attributes = null,
+      attributes,
     } = req.body;
     const finalGeojson = LocationManager.getFinalGeojson(gfw_list_id, geojson);
     const custom_attributes = req.body.custom_attributes ? req.body.custom_attributes : [];
@@ -1302,6 +1302,7 @@ module.exports = (app, limiter) => {
         user_id: userId,
         list_name: listName,
         client_database: req.session.organization_database,
+        organization_id: req.session.organization_id,
         analysisIds,
       })
       .then((response) => {
@@ -1331,11 +1332,13 @@ module.exports = (app, limiter) => {
         list_id,
         organization_database,
         subscription_status_id,
+        list_name: listName,
         path: pathLocal,
         template_type,
+        template_id: 13,
         user_id: organization_user_id,
         startAnalysis,
-        analysis_types: analysisTypes,
+        analysisIds: Object.keys(analysisTypes),
       })
       .then((response) => {
         logger.info('ProcessList LP response.data', response.data);

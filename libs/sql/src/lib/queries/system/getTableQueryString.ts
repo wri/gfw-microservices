@@ -1,12 +1,6 @@
 export const getTableQueryString = `
 -- Declare variables
 DECLARE @tableQueryString NVARCHAR(MAX)
-DECLARE @custom_attribute_1 NVARCHAR(50) = NULL
-DECLARE @custom_attribute_1_type NVARCHAR(50) = NULL
-DECLARE @custom_attribute_2 NVARCHAR(50) = NULL
-DECLARE @custom_attribute_2_type NVARCHAR(50) = NULL
-DECLARE @custom_attribute_3 NVARCHAR(50) = NULL
-DECLARE @custom_attribute_3_type NVARCHAR(50) = NULL
 
 -- Add template column names and respective types
 SELECT @tableQueryString = COALESCE(@tableQueryString + ',', '') + CONCAT('[', template_datum_field_name, '] ', DataTypes.data_type)

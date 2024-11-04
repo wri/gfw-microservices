@@ -1,7 +1,6 @@
 import React, { Component } from 'react';
 import ReactSelect from 'react-select';
 import { Select, MenuItem, FormControl, InputLabel, Box, Modal, Grid } from '@mui/material';
-import { buildDropdownOptions } from '../../../../../../common/js/utils/buildDropdownOptions';
 import {
   toggleCanopyModal,
   updateFilters,
@@ -11,6 +10,7 @@ import Button from '../../../../../../common/js/components/Button';
 import CountryStateSubStateFilter from './CountryStateSubStateFilter';
 import { defaultFilterValues } from '../../defaultFilterValues';
 import { boxStyle, multipleSelectStyles, selectStyle } from './filterStyles';
+import filterCountryStateAndSubStateOptions from './filterCountryStateAndSubStateOptions';
 import store from '../../../../../../locations/js/store';
 import '../../../../../../common/css/filter-dialogs.scss';
 
@@ -62,17 +62,8 @@ export default class GFWListFilter extends Component {
   };
 
   changeParentCompany = (evt) => {
-    const listNames = this.props.listData
-      .filter((location) => location['Parent Company'] === evt.target.value)
-      .map((location) => {
-        return {
-          value: location.location_id,
-          label: location['Location Name'] || location['Investment Name'],
-        };
-      });
     this.setState({
       selectedParentCompany: evt.target.value,
-      selectedNames: listNames,
     });
   };
 
@@ -127,7 +118,8 @@ export default class GFWListFilter extends Component {
   };
 
   render() {
-    const { listData, list_name, filterValues, locationNameOptionsForFilter } = this.props;
+    const { list_name, filterValues, locationNameOptionsForFilter, parentCompanyOptionsForFilter } =
+      this.props;
     const {
       selectedCountry,
       selectedState,
@@ -137,39 +129,35 @@ export default class GFWListFilter extends Component {
       selectedNames,
     } = this.state;
 
-    const countryList = Object.keys(filterValues).filter((name) => name !== 'null');
-
-    const stateList =
-      selectedCountry && selectedCountry in filterValues
-        ? Object.keys(filterValues[selectedCountry])
-        : [];
-
-    const subStateList = selectedState ? filterValues[selectedCountry][selectedState] : [];
-
-    // 1. Filter based on if company/state/substate is selected
-    // 2. Grab just parent company values
-    // 3. Sort alphabetically
-    const parentCompanyOptions = [
-      ...new Set(
-        listData
-          .filter(
-            (location) =>
-              location['Parent Company'] &&
-              (selectedCountry === '' || selectedCountry === location.Country) &&
-              (selectedState === '' || selectedState === location.State) &&
-              (selectedSubState === '' || selectedSubState === location['Sub State'])
-          )
-          .map((list) => list['Parent Company'])
-      ),
-    ]
-      .sort()
-      .map(this.createOptions);
-
-    const dropdownOptionsMethodsParentCompany = buildDropdownOptions(
-      parentCompanyOptions,
-      'id',
-      selectedParentCompany
+    const { countryList, stateList, subStateList } = filterCountryStateAndSubStateOptions(
+      filterValues,
+      selectedCountry,
+      selectedState
     );
+
+    const filteredLocationNameOptions = locationNameOptionsForFilter
+      ?.filter(
+        (location) =>
+          (selectedCountry === '' || selectedCountry === location.country) &&
+          (selectedState === '' || selectedState === location.state) &&
+          (selectedSubState === '' || selectedSubState === location.subState) &&
+          (selectedParentCompany === '' || selectedParentCompany === location.parentCompany) &&
+          (!showRSPOCertified || location.certification === 'RSPO')
+      )
+      ?.slice(0, 400);
+
+    let filteredparentCompanyOptions = [];
+    if (list_name === 'Palm Oil Mills') {
+      filteredparentCompanyOptions = parentCompanyOptionsForFilter
+        ?.filter(
+          (location) =>
+            (selectedCountry === '' || selectedCountry === location.country) &&
+            (selectedState === '' || selectedState === location.state) &&
+            (selectedSubState === '' || selectedSubState === location.subState) &&
+            (!showRSPOCertified || location.certification === 'RSPO')
+        )
+        ?.slice(0, 400);
+    }
 
     return (
       <Modal open onClose={this.close}>
@@ -215,11 +203,11 @@ export default class GFWListFilter extends Component {
                   <Select
                     labelId="parent-company-select-label"
                     id="country_select"
-                    value={dropdownOptionsMethodsParentCompany.value ?? ''}
+                    value={selectedParentCompany ?? ''}
                     onChange={this.changeParentCompany}
                     label="PARENT COMPANY"
                   >
-                    {dropdownOptionsMethodsParentCompany.dropdownOptions.map(({ label, value }) => (
+                    {filteredparentCompanyOptions.map(({ label, value }) => (
                       <MenuItem key={value} value={value}>
                         {label}
                       </MenuItem>
@@ -236,7 +224,7 @@ export default class GFWListFilter extends Component {
                 maxMenuHeight={150}
                 className="edge-multi-select"
                 onChange={(evt) => this.changeNames(evt)}
-                options={locationNameOptionsForFilter}
+                options={filteredLocationNameOptions}
                 value={selectedNames}
                 styles={multipleSelectStyles}
                 placeholder="LOCATIONS"

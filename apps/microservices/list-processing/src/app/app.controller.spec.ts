@@ -20,6 +20,23 @@ import {
   TargetListType,
 } from '@wri-monorepos/sql';
 import { ListPaginationService } from '../services/list.pagination.service';
+import { FeatureFlagEnabledGuard } from '../guards/feature.flag.enabled.guard';
+
+jest.mock('@wri-monorepos/shared', () => {
+  const actualModule = jest.requireActual('@wri-monorepos/shared');
+  return {
+    ...actualModule,
+    featureFlagsService: jest.fn().mockImplementation(() => ({
+      getFeatureFlagsForCurrentOrg: jest.fn().mockResolvedValue([
+        {
+          flagId: 'UploadListLp',
+          flagState: false,
+        },
+      ]),
+      getClientIdByClientStoreDatabaseName: jest.fn(),
+    })),
+  };
+});
 
 describe('AppController', () => {
   let app: INestApplication;
@@ -77,8 +94,17 @@ describe('AppController', () => {
           },
         },
         ListPaginationService,
+        {
+          provide: FeatureFlagEnabledGuard,
+          useValue: {
+            canActivate: jest.fn(async () => true),
+          },
+        },
       ],
-    }).compile();
+    })
+      .overrideGuard(FeatureFlagEnabledGuard)
+      .useValue({ canActivate: async () => true })
+      .compile();
 
     appService = module.get<AppService>(AppService);
     app = module.createNestApplication();
@@ -208,6 +234,7 @@ describe('AppController', () => {
         list_name: listName,
         user_id: userId,
         analysisIds: ['FCD', 'ALERTS'],
+        organization_id: 10,
       };
       const result = await appController.triggerProcessLargeList(requestLargeListCreation);
 
@@ -250,6 +277,7 @@ describe('AppController', () => {
         list_name: listName,
         user_id: userId,
         analysisIds: ['FCD', 'ALERTS'],
+        organization_id: 10,
       };
       const trigguerProccessResult = await appController.triggerProcessLargeList(
         requestLargeListProcess

@@ -17,7 +17,7 @@ describe('Locations View', () => {
   });
 
   Then('Verify the Locations screen', () => {
-    cy.url().should('include', '/locations');
+    cy.location('href').should('include', '/locations');
   });
 
   Then('I test download list on Locations', () => {
@@ -71,7 +71,7 @@ describe('Locations View', () => {
 
   When('I navigate to the alerts page', () => {
     basePage.navigateToAlertsPage();
-    cy.url().should('include', '/dashboard');
+    cy.location('href').should('include', '/dashboard');
   });
 
   Then('I test download into Alerts', () => {
@@ -90,7 +90,7 @@ describe('Locations View', () => {
       .and('be.visible');
     alertsPage.elements.downloadConfirmationCloseBtn().click();
     alertsPage.navigateToListMap();
-    cy.url().should('include', '/map');
+    cy.location('href').should('include', '/map');
     alertsPage.elements.listInfo().should('have.text', '787 - AAT Argentina Points Generic');
   });
 });

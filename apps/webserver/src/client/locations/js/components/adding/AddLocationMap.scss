@@ -7,6 +7,10 @@
   padding-top: $space-comfortable;
   position: relative;
 
+  &--no-padding-top {
+    padding-top: 0;
+  }
+
   &__map-container {
     display: block;
     height: 490px;

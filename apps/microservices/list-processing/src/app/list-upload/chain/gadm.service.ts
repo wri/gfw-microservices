@@ -31,6 +31,7 @@ export class GADMService extends AbstractHandler<ChainType> {
       process.env.AWS_ANALYSIS_BUCKET,
       'application/json'
     );
+    return filePath;
   };
 
   getObject = async (bucket, key) => {
@@ -109,17 +110,21 @@ export class GADMService extends AbstractHandler<ChainType> {
     }
   };
 
-  clipToLand = async (geojson): Promise<FeatureCollection> => {
+  clipToLand = async (geojson): Promise<{ geojson: FeatureCollection }> => {
     return new Promise((resolve, reject) => {
       const s3ObjectsToDelete = [];
       const objectName = `gadm-${new Date().getTime()}`;
       this.putObject(objectName, { geojson: geojson })
-        .then((location_s3_info) => {
-          s3ObjectsToDelete.push(location_s3_info);
+        .then((location_info) => {
+          const s3Info = {
+            bucket: process.env.AWS_ANALYSIS_BUCKET,
+            key: location_info,
+          };
+          s3ObjectsToDelete.push(s3Info);
 
           return this.invokeLambda('controller-admin-areas', {
             receipt_handle: 'NOTARECEIPT',
-            s3_location_info: location_s3_info,
+            s3_location_info: s3Info,
             layer: 'gadm',
             dissolve_aoi: false,
             post_process_aoi: false,
@@ -157,13 +162,16 @@ export class GADMService extends AbstractHandler<ChainType> {
     const { path, preview = false } = input.request as PreviewListRequest;
     const { features } = geojson as FeatureCollection;
 
-    for await (const localPage of asyncPool(POOL_SIZE, features, this.composeResults)) {
-      this.logger.log(`(${path}) - Get page of number ${localPage} from database`);
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    for await (const undefRet of asyncPool(POOL_SIZE, features, this.composeResults)) {
+      // disabling log because it is too verbose -- logs every iteration
+      // this.logger.log(`(${path}) - one more feature processed`);
     }
-
+    this.logger.log('GADMService - done with getGeoReferenceData for', path);
     // We should not call clip to land if we are in the preview mode.
     if (!preview) {
-      input.geojson = await this.clipToLand(geojson);
+      const response = await this.clipToLand(geojson);
+      input.geojson = response.geojson;
     }
     return super.handle(input);
   }

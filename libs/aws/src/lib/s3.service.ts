@@ -107,7 +107,7 @@ export class S3Service {
     };
 
     const command = new PutObjectCommand(params);
-    await this.s3Client.send(command);
+    return await this.s3Client.send(command);
   }
 
   async deleteObject(key: string, bucket: string) {

@@ -33,6 +33,7 @@ import { AwsModule } from '@wri-monorepos/aws';
 import { SqlModule } from '@wri-monorepos/sql';
 import { ColombiaOverlapService } from './colombia-overlap.service';
 import { ColombiaDeforestationService } from './colombia-deforestation.service';
+import { AfiGeometryService } from './afiVC.geometry.service';
 
 @Module({
   imports: [AwsModule, SqlModule],
@@ -69,6 +70,7 @@ import { ColombiaDeforestationService } from './colombia-deforestation.service';
     SouthEastAsiaTCLService,
     ColombiaOverlapService,
     ColombiaDeforestationService,
+    AfiGeometryService,
   ],
   exports: [
     AlertsAdminAreasLevelService,
@@ -103,6 +105,7 @@ import { ColombiaDeforestationService } from './colombia-deforestation.service';
     SouthEastAsiaTCLService,
     ColombiaOverlapService,
     ColombiaDeforestationService,
+    AfiGeometryService,
   ],
 })
 export class FilesModule {}

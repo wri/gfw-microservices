@@ -25,6 +25,10 @@ export interface RequestNewList extends PreviewListRequest {
   template_id?: number;
   listId?: number;
   analysisIds?: Array<string>;
+
+  isExternalAPIProcess: boolean;
+  organization_id: number;
+  subscription_status_id: number;
 }
 
 interface Handler<T> {

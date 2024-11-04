@@ -52,7 +52,6 @@ const { DEFAULT_LIST_LOCATIONS_ROWS_REQUESTED } = require('../config/locations.c
 const LIST_UPLOAD_LEGACY_VERSION = 0;
 
 // Utils
-const Helper = require(path.resolve('./config/publicutils/helper.utils'));
 const sqlUtils = require(path.resolve('./config/privateutils/sql.utils'));
 const logger = require(path.resolve('./config/privateutils/logger.utils'));
 const listUtils = require(path.resolve('./config/privateutils/list.utils'));

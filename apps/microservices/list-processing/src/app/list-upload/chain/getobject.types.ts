@@ -17,7 +17,7 @@ export class GetObjectTypes extends AbstractHandler<ChainType> {
     for (const key in newTypes) {
       if (!existingTypes[key]) {
         existingTypes[key] = newTypes[key];
-      } else if (existingTypes[key] && existingTypes[key] !== newTypes[key]) {
+      } else if (existingTypes[key] && !existingTypes[key].includes(newTypes[key])) {
         existingTypes[key] = `${existingTypes[key]}, ${newTypes[key]}`;
       }
     }

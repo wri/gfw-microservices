@@ -8,6 +8,7 @@ import {
 import * as sql from 'mssql';
 import { SQLUtils } from '@wri-monorepos/sql';
 import { Injectable, Logger } from '@nestjs/common';
+import { Feature } from '../lib/type';
 
 interface MaxId {
   max_id?: number;
@@ -34,12 +35,7 @@ const SQL_CONFIG = {
   },
   requestTimeout: 600000,
 };
-type Feature = {
-  properties: {
-    [text: string]: unknown;
-  };
-  geometry: unknown;
-};
+
 interface GetColumnsData {
   connection: SQLUtils;
   list_id: number;

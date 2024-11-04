@@ -187,7 +187,10 @@ export class ListBulkCopy {
     );
 
     const bulkUploadPayload = [];
-
+    /**
+     * TODO GPV-3786
+     * duplicated code
+     */
     geojson.features.forEach((feature) => {
       const row = [];
       columns.forEach((column) => {

@@ -174,7 +174,6 @@ export class ListAnalysisService {
     if (analysisStatus.status === getListStatusString(listStatus.Draft)) {
       // Get the list details to get the error file storage path if it exists
       const list = await this.listService.getList({
-        analysisId,
         listId,
         organizationId,
       });
@@ -395,6 +394,14 @@ export class ListAnalysisService {
       LIST_ANALISYS_ENDPOINT_NAMES[GENERATE_ANALYSIS],
       ListActivityTypesEnum.ListGenerate
     );
+
+    const list = await this.listService.getList({
+      listId,
+      organizationId,
+    });
+
+    if (!list) throw new NotFoundException('List not found');
+
     let message = {};
     try {
       if (!userEmail) {

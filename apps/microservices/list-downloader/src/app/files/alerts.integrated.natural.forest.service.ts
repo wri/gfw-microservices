@@ -114,11 +114,18 @@ export class AlertsIntegratedNaturalForestService extends IPipeService {
     return listLocationsCount;
   }
 
-  private async getListLocationsSize(filters: AlertFieldsFileRequest) {
+  private async getListLocationsSize(filters: AlertFieldsFileRequest): Promise<number> {
     const { organizationDatabase, listId } = filters;
-    const connection = await this.clientStoreConnection.getConnection(organizationDatabase);
-    const analysesDashboardRepo = connection.getRepository(AnalysesDashboardEntity);
-    const { totalHa } = await analysesDashboardRepo.findOne({ where: { listId } });
-    return totalHa;
+    try {
+      const connection = await this.clientStoreConnection.getConnection(organizationDatabase);
+      const analysesDashboardRepo = connection.getRepository(AnalysesDashboardEntity);
+
+      const analysis = await analysesDashboardRepo.find({ where: { listId, locationId: -1 } });
+
+      return analysis.reduce((prev, curr) => prev + (curr.totalHa || 0), 0);
+    } catch (error) {
+      console.error('Error fetching analysis data:', error);
+      return 0;
+    }
   }
 }

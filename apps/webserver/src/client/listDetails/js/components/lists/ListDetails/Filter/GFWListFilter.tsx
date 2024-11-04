@@ -50,7 +50,7 @@ const GFWListFilter: React.FC<GFWListFilterProps> = ({
   const initialState: FilterState = store.getState().filters;
   const [state, setState] = useState<FilterState>(initialState);
 
-  const onCountryChange = (evt: React.ChangeEvent<{ value: unknown }>) => {
+  const onCountryChange = (evt: React.ChangeEvent<HTMLInputElement>) => {
     setState((prevState) => ({
       ...prevState,
       selectedCountry: evt.target.value as string,
@@ -61,7 +61,7 @@ const GFWListFilter: React.FC<GFWListFilterProps> = ({
     }));
   };
 
-  const onStateChange = (evt: React.ChangeEvent<{ value: unknown }>) => {
+  const onStateChange = (evt: React.ChangeEvent<HTMLInputElement>) => {
     setState((prevState) => ({
       ...prevState,
       selectedState: evt.target.value as string,
@@ -71,7 +71,7 @@ const GFWListFilter: React.FC<GFWListFilterProps> = ({
     }));
   };
 
-  const onSubStateChange = (evt: React.ChangeEvent<{ value: unknown }>) => {
+  const onSubStateChange = (evt: React.ChangeEvent<HTMLInputElement>) => {
     setState((prevState) => ({
       ...prevState,
       selectedSubState: evt.target.value as string,

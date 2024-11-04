@@ -1,10 +1,5 @@
 import { createGeoJSON } from '@wri-monorepos/shared';
-import {
-  CreateListNameSchema,
-  getDataType,
-  GetWKTGeometry,
-  objectHasOwnProperty,
-} from '@wri-monorepos/shared';
+import { CreateListNameSchema, getDataType, GetWKTGeometry } from '@wri-monorepos/shared';
 import * as sql from 'mssql';
 import { SQLUtils } from '@wri-monorepos/sql';
 import { Injectable, Logger } from '@nestjs/common';
@@ -39,7 +34,6 @@ const SQL_CONFIG = {
 interface GetColumnsData {
   connection: SQLUtils;
   list_id: number;
-  list_name: string;
   geojson: { features: Feature[] };
   commodity: unknown;
 }
@@ -72,7 +66,6 @@ export class ListBulkCopy {
       await this.getColumnsWithTypesAndValues({
         connection,
         list_id,
-        list_name,
         geojson,
         commodity,
       });
@@ -167,7 +160,6 @@ export class ListBulkCopy {
 
   private async getColumnsWithTypesAndValues({
     connection,
-    list_name,
     list_id,
     geojson,
     commodity = null,
@@ -175,8 +167,7 @@ export class ListBulkCopy {
     // Important variables
     let primary_key = 1;
     let max_id = 0;
-    // Transform list name
-    const list = CreateListNameSchema(list_name);
+
     // 1. Get the max ID to properly set primary key
     const sqlGetMaxIdParameters = [{ field: 'list_id', type: sql.Int, value: list_id }];
     const maxIdResult = (await connection.executeQuery(
@@ -190,21 +181,22 @@ export class ListBulkCopy {
     // 2. Get Columns from list/table
     const sqlGetTableColumnsParameters = [{ field: 'list_id', type: sql.Int, value: list_id }];
 
-    const columns = await connection.executeQuery<
-      Promise<{ COLUMN_NAME: string; DATA_TYPE: string }[]>
-    >('uspGetTableColumns', sqlGetTableColumnsParameters);
+    const columns = await connection.executeQuery<Promise<ColumnType[]>>(
+      'uspGetTableColumns',
+      sqlGetTableColumnsParameters
+    );
 
     const bulkUploadPayload = [];
 
     geojson.features.forEach((feature) => {
-      let row = [];
+      const row = [];
       columns.forEach((column) => {
-        let col = {
+        const col = {
           field: column.COLUMN_NAME,
           type: getDataType(column.DATA_TYPE),
           value: undefined,
         };
-        if (feature.properties.hasOwnProperty(column.COLUMN_NAME)) {
+        if (Object.hasOwnProperty.call(feature.properties, column.COLUMN_NAME)) {
           col.value = feature.properties[column.COLUMN_NAME];
 
           if (column.COLUMN_NAME === 'Geometry') {

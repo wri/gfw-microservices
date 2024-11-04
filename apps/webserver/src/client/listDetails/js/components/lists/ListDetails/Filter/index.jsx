@@ -131,53 +131,57 @@ export default class Filter extends Component {
       isFilterModalVisible && !isGfwList && !isCommodityRiskFilterVisible;
     return (
       <>
-        {isFilterModalVisible && (
-          <>
-            {isProtectedAreasFilterVisible && (
-              <ProtectedAreasGFWList
-                filterCount={filterCount}
-                protectedAreas={protectedAreas}
-                clearFilters={clearFilters}
-              />
-            )}
-
-            {isAdministrativeAreasFilterVisible && (
-              <AdministrativeAreasGFWListFilter filterCount={filterCount} adminAreas={adminAreas} />
-            )}
-
-            {isGFWListOtherThanProtectedOrAdministrativeAreas && (
-              <GFWListFilter
-                filterValues={filterValues}
-                locationNameOptionsForFilter={locationNameOptionsForFilter}
-                parentCompanyOptionsForFilter={parentCompanyOptionsForFilter}
-                filterCount={filterCount}
-                list_name={listName}
-                clearFilters={clearFilters}
-              />
-            )}
-
-            {isUserListCommodityRiskFilterVisible && (
-              <UserListCommodityRiskFilter
-                listName={listName}
-                listData={listData}
-                filterCount={filterCount}
-                listView={listView}
-                clearFilters={clearFilters}
-              />
-            )}
-            {isGFWListCommodityRiskFilterVisible && (
-              <GFWListCommodityRiskFilter
-                listName={listName}
-                filterValues={filterValues}
-                locationNameOptionsForFilter={locationNameOptionsForFilter}
-                parentCompanyOptionsForFilter={parentCompanyOptionsForFilter}
-                filterCount={filterCount}
-                listView={listView}
-                clearFilters={clearFilters}
-              />
-            )}
-          </>
+        {isProtectedAreasFilterVisible && (
+          <ProtectedAreasGFWList
+            filterCount={filterCount}
+            protectedAreas={protectedAreas}
+            clearFilters={clearFilters}
+            isFilterModalVisible={isFilterModalVisible}
+          />
         )}
+
+        {isAdministrativeAreasFilterVisible && (
+          <AdministrativeAreasGFWListFilter
+            filterCount={filterCount}
+            adminAreas={adminAreas}
+            isFilterModalVisible={isFilterModalVisible}
+          />
+        )}
+
+        {isGFWListOtherThanProtectedOrAdministrativeAreas && (
+          <GFWListFilter
+            filterValues={filterValues}
+            locationNameOptionsForFilter={locationNameOptionsForFilter}
+            parentCompanyOptionsForFilter={parentCompanyOptionsForFilter}
+            list_name={listName}
+            clearFilters={clearFilters}
+            isFilterModalVisible={isFilterModalVisible}
+          />
+        )}
+
+        {isUserListCommodityRiskFilterVisible && (
+          <UserListCommodityRiskFilter
+            listName={listName}
+            listData={listData}
+            filterCount={filterCount}
+            listView={listView}
+            clearFilters={clearFilters}
+            isFilterModalVisible={isFilterModalVisible}
+          />
+        )}
+        {isGFWListCommodityRiskFilterVisible && (
+          <GFWListCommodityRiskFilter
+            listName={listName}
+            filterValues={filterValues}
+            locationNameOptionsForFilter={locationNameOptionsForFilter}
+            parentCompanyOptionsForFilter={parentCompanyOptionsForFilter}
+            filterCount={filterCount}
+            listView={listView}
+            clearFilters={clearFilters}
+            isFilterModalVisible={isFilterModalVisible}
+          />
+        )}
+
         <Stack
           alignItems="center"
           direction="row"

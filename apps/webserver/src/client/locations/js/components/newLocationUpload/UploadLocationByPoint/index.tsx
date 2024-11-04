@@ -26,6 +26,7 @@ import { NavBarWithProgress, LocationTypeButton, HowToFormatLocationLink } from 
 import HectareKilometerSwitch from '../../adding/HectareKilometerSwitch';
 import { PillButton } from '../../../../../components';
 import { MeasurementUnit } from '../types';
+import { coordinateSchema } from '../utils/schema';
 
 enum LocationFormat {
   Coordinates,
@@ -42,26 +43,10 @@ type UploadLocationByPointProps = {
   clearUploadType: () => void;
 };
 
-const schema = z.object({
-  latitude: z
-    .string()
-    .refine((value) => {
-      const latitude = Math.abs(Number(value));
-      const hasDecimalPlaces = value.includes('.');
-      return hasDecimalPlaces && latitude <= 90;
-    })
-    .optional(),
-  longitude: z
-    .string()
-    .refine((value) => {
-      const longitude = Math.abs(Number(value));
-      const hasDecimalPlaces = value.includes('.');
-      return hasDecimalPlaces && longitude <= 180;
-    })
-    .optional(),
-});
+type FormFields = z.infer<typeof coordinateSchema>;
 
-type FormFields = z.infer<typeof schema>;
+const COORDINATE_ERROR_MESSAGE =
+  'Your coordinate value is invalid. Please ensure your data is in decimal degree notation';
 
 export function UploadLocationByPoint({ clearUploadType }: UploadLocationByPointProps) {
   const {
@@ -70,7 +55,7 @@ export function UploadLocationByPoint({ clearUploadType }: UploadLocationByPoint
     formState: { errors },
     reset,
   } = useForm<FormFields>({
-    resolver: zodResolver(schema),
+    resolver: zodResolver(coordinateSchema),
   });
   const [locationFormat, setLocationFormat] = useState<LocationFormat>(LocationFormat.Coordinates);
 
@@ -157,11 +142,7 @@ export function UploadLocationByPoint({ clearUploadType }: UploadLocationByPoint
                         fullWidth
                         size="small"
                         error={!!errors.latitude}
-                        helperText={
-                          errors.latitude
-                            ? 'Your coordinate value is invalid. Please ensure your data is in decimal degree notation'
-                            : ''
-                        }
+                        helperText={errors.latitude ? COORDINATE_ERROR_MESSAGE : ''}
                         {...field}
                       />
                     )}
@@ -179,11 +160,7 @@ export function UploadLocationByPoint({ clearUploadType }: UploadLocationByPoint
                         fullWidth
                         size="small"
                         error={!!errors.longitude}
-                        helperText={
-                          errors.longitude
-                            ? 'Your coordinate value is invalid. Please ensure your data is in decimal degree notation'
-                            : ''
-                        }
+                        helperText={errors.longitude ? COORDINATE_ERROR_MESSAGE : ''}
                         {...field}
                       />
                     )}

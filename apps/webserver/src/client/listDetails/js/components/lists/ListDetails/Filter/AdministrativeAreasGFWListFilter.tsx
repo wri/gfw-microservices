@@ -17,7 +17,7 @@ import {
 } from '../../../../../../locations/js/actions/locationActions';
 import store from '../../../../../../locations/js/store';
 import { boxStyle, selectStyle } from './filterStyles';
-import { FilterState } from '../../defaultFilterValues';
+import { DefaultFilterValues } from '../../DefaultFilterValuesType';
 import '../../../../../../common/css/filter-dialogs.scss';
 
 import Button from '../../../../../../common/js/components/Button';
@@ -31,8 +31,8 @@ const AdministrativeAreasGFWListFilter: React.FC<AdministrativeAreasGFWListFilte
   adminAreas,
   isFilterModalVisible,
 }) => {
-  const initialState: FilterState = store.getState().filters;
-  const [state, setState] = useState<FilterState>(initialState);
+  const initialState: DefaultFilterValues = store.getState().filters;
+  const [state, setState] = useState<DefaultFilterValues>(initialState);
 
   const onCountryChange = (evt: SelectChangeEvent<unknown>) => {
     setState((prevState) => ({

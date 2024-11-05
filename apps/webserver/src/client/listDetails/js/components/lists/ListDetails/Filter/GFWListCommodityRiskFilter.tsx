@@ -21,7 +21,7 @@ import CountryStateSubStateFilter from './CountryStateSubStateFilter';
 import filterCountryStateAndSubStateOptions from './filterCountryStateAndSubStateOptions';
 import { boxStyle, selectStyle } from './filterStyles';
 import store from '../../../../../../locations/js/store';
-import { FilterState } from '../../defaultFilterValues';
+import { DefaultFilterValues } from '../../DefaultFilterValuesType';
 import '../../../../../../common/css/filter-dialogs.scss';
 
 interface Location {
@@ -47,8 +47,8 @@ const GFWListCommodityRiskFilter: React.FC<GFWListCommodityRiskFilterProps> = ({
   parentCompanyOptionsForFilter,
   isFilterModalVisible,
 }) => {
-  const initialState: FilterState = store.getState().filters;
-  const [state, setState] = useState<FilterState>(initialState);
+  const initialState: DefaultFilterValues = store.getState().filters;
+  const [state, setState] = useState<DefaultFilterValues>(initialState);
 
   const onCountryChange = (evt: React.ChangeEvent<HTMLInputElement>) => {
     setState((prevState) => ({
@@ -123,12 +123,12 @@ const GFWListCommodityRiskFilter: React.FC<GFWListCommodityRiskFilterProps> = ({
     let newFilterCount = 0;
     Object.keys(state).forEach((key) => {
       if (
-        (key === 'selectedCountry' && state[key as keyof FilterState] !== '') ||
-        (key === 'selectedState' && state[key as keyof FilterState] !== '') ||
-        (key === 'selectedSubState' && state[key as keyof FilterState] !== '') ||
+        (key === 'selectedCountry' && state[key as keyof DefaultFilterValues] !== '') ||
+        (key === 'selectedState' && state[key as keyof DefaultFilterValues] !== '') ||
+        (key === 'selectedSubState' && state[key as keyof DefaultFilterValues] !== '') ||
         (key === 'selectedNames' && Object.values(state[key]).length > 0) ||
-        (key === 'showRSPOCertified' && state[key as keyof FilterState]) ||
-        (key === 'selectedParentCompany' && state[key as keyof FilterState] !== '')
+        (key === 'showRSPOCertified' && state[key as keyof DefaultFilterValues]) ||
+        (key === 'selectedParentCompany' && state[key as keyof DefaultFilterValues] !== '')
       ) {
         newFilterCount++;
       }

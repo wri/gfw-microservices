@@ -18,7 +18,7 @@ import {
 } from '../../../../../../locations/js/actions/locationActions';
 import Button from '../../../../../../common/js/components/Button';
 import CountryStateSubStateFilter from './CountryStateSubStateFilter';
-import { FilterState } from '../../defaultFilterValues';
+import { DefaultFilterValues } from '../../DefaultFilterValuesType';
 import store from '../../../../../../locations/js/store';
 import { boxStyle, selectStyle } from './filterStyles';
 import '../../../../../../common/css/filter-dialogs.scss';
@@ -32,8 +32,8 @@ const GFWProtectedForestChangeFilter: React.FC<GFWProtectedForestChangeFilterPro
   protectedAreas,
   isFilterModalVisible,
 }) => {
-  const initialState: FilterState = store.getState().filters;
-  const [state, setState] = useState<FilterState>(initialState);
+  const initialState: DefaultFilterValues = store.getState().filters;
+  const [state, setState] = useState<DefaultFilterValues>(initialState);
 
   const onCountryChange = (evt: React.ChangeEvent<{ value: unknown }>) => {
     setState({
@@ -89,7 +89,7 @@ const GFWProtectedForestChangeFilter: React.FC<GFWProtectedForestChangeFilterPro
   const updateValues = () => {
     let filterCount = 0;
     Object.keys(state).forEach((key) => {
-      if (state[key as keyof FilterState]) filterCount++;
+      if (state[key as keyof DefaultFilterValues]) filterCount++;
     });
 
     const filters = {

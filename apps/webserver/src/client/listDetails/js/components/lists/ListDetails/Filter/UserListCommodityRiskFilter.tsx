@@ -17,7 +17,7 @@ import {
 import Button from '../../../../../../common/js/components/Button';
 import CountryStateSubStateFilter from './CountryStateSubStateFilter';
 import { getFilterCounter } from '../../../../../../locations/js/utils/lists.utils';
-import { FilterState } from '../../defaultFilterValues';
+import { DefaultFilterValues } from '../../DefaultFilterValuesType';
 import { boxStyle, selectStyle } from './filterStyles';
 import store from '../../../../../../locations/js/store';
 import '../../../../../../common/css/filter-dialogs.scss';
@@ -31,8 +31,8 @@ const UserListCommodityRiskFilter: React.FC<UserListCommodityRiskFilterProps> = 
   listData,
   isFilterModalVisible,
 }) => {
-  const initialState: FilterState = store.getState().filters;
-  const [state, setState] = useState<FilterState>(initialState);
+  const initialState: DefaultFilterValues = store.getState().filters;
+  const [state, setState] = useState<DefaultFilterValues>(initialState);
 
   const onCountryChange = (evt: React.ChangeEvent<{ value: unknown }>) => {
     setState((prevState) => ({

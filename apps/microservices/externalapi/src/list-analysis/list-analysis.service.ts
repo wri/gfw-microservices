@@ -409,7 +409,7 @@ export class ListAnalysisService {
     });
 
     if (!listAnalysisStatus) {
-      throw new NotFoundException('Analysis status not found.');
+      throw new NotFoundException('Analysis status not found');
     }
 
     if (listAnalysisStatus.status !== listStatus.Active) {

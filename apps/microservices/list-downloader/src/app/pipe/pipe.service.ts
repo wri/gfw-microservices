@@ -48,6 +48,7 @@ export class PipeService {
 
   private async getListName(filters: BasicFieldsFileRequest) {
     const { organizationDatabase, listId, isGFWList } = filters;
+    try{
     if (!isGFWList) {
       const connection = await this.clientStoreConnection.getConnection(organizationDatabase);
       const listRepository = connection.getRepository(Lists);
@@ -59,6 +60,10 @@ export class PipeService {
       const { listName } = await gfwListRepository.findOne({ where: { id: listId } });
       return listName;
     }
+  } catch (error) {
+    this.logger.error(`Error getting list name, listId ${listId}: ${error}`);
+   return '';
+  }
   }
 
   private getGeneratorBaseOnType = () => {

@@ -81,7 +81,7 @@ export class AfiVcGeneratorService extends IFileGenerator {
     const composeResults = async (i: number) => {
       const newFilters = { ...filters, page: i };
 
-      const analysisData = this.analysisDataService.getDataPaginated(newFilters);
+      const analysisData = await this.analysisDataService.getDataPaginated(newFilters);
 
       await service.process(analysisData, newFilters);
       return i;

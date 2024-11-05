@@ -13,9 +13,8 @@ import {
   GEO_TRELLIS__ANALYZE_LIST_PROD,
   GEO_TRELLIS__ANALYZE_LIST_PRODV2,
 } from '@wri-monorepos/constants';
-import { performance } from 'perf_hooks';
 import { Logger } from '@nestjs/common';
-import { getDurationAsString } from './shared';
+import { logExecutionTime } from './shared';
 
 const environmentAllowTestFlow = ['DEVELOPMENT', 'LATEST', 'QA', 'STAGING'];
 
@@ -46,8 +45,8 @@ export class StartAnalysis extends AbstractHandler<ChainType> {
     return email;
   }
 
-  async handle(input: ChainType): Promise<ChainType> {
-    const start = performance.now();
+  @logExecutionTime(StartAnalysis.name)
+  async operation(request: ChainType): Promise<ChainType> {
     const {
       organization_database,
       user_id,
@@ -55,7 +54,7 @@ export class StartAnalysis extends AbstractHandler<ChainType> {
       isExternalAPIProcess,
       organization_id: organizationId,
       subscription_status_id: subscriptionStatusId,
-    } = input.request as RequestNewList;
+    } = request.request as RequestNewList;
 
     const geoTrellisUrlsByEnv = {
       qa: GEO_TRELLIS__ANALYZE_LIST_QA,
@@ -125,15 +124,16 @@ export class StartAnalysis extends AbstractHandler<ChainType> {
         list_id: listId,
         template_type: 'cocoa_generic',
       });
-      return input;
+      return request;
     }
 
     const response = await fetch(geoTrellisUrl, options);
     await response.json();
+    return request;
+  }
 
-    const end = performance.now();
-    this.logger.debug(`Execution time: ${getDurationAsString(start, end)}`);
-
-    return input;
+  async handle(input: ChainType): Promise<ChainType> {
+    const request = await this.operation(input);
+    return request;
   }
 }

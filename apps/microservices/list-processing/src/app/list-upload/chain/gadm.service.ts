@@ -6,8 +6,7 @@ import { IFeatureSet, IGeometry, queryFeatures } from '@esri/arcgis-rest-feature
 import { LambdaClient, InvokeCommand, InvocationType } from '@aws-sdk/client-lambda';
 import { NodeHttpHandler } from '@smithy/node-http-handler';
 import { S3Service } from '@wri-monorepos/aws';
-import { performance } from 'perf_hooks';
-import { getDurationAsString } from './shared';
+import { logExecutionTime } from './shared';
 
 const PRODUCTION_ENVIRONMENTS = ['production', 'ProdV2'];
 const POOL_SIZE = 5;
@@ -159,10 +158,10 @@ export class GADMService extends AbstractHandler<ChainType> {
     await this.getGeoReferenceData(feature);
   };
 
-  async handle(input: ChainType): Promise<ChainType> {
-    const start = performance.now();
-    const { geojson } = input;
-    const { path, preview = false } = input.request as PreviewListRequest;
+  @logExecutionTime(GADMService.name)
+  async operation(request: ChainType): Promise<ChainType> {
+    const { geojson } = request;
+    const { path, preview = false } = request.request as PreviewListRequest;
     const { features } = geojson as FeatureCollection;
 
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -174,11 +173,13 @@ export class GADMService extends AbstractHandler<ChainType> {
     // We should not call clip to land if we are in the preview mode.
     if (!preview) {
       const response = await this.clipToLand(geojson);
-      input.geojson = response.geojson;
+      request.geojson = response.geojson;
     }
+    return request;
+  }
 
-    const end = performance.now();
-    this.logger.log(`Execution time: ${getDurationAsString(start, end)}`);
-    return super.handle(input);
+  async handle(input: ChainType): Promise<ChainType> {
+    const request = await this.operation(input);
+    return super.handle(request);
   }
 }

@@ -1,8 +1,7 @@
 import { Logger } from '@nestjs/common';
 import { AbstractHandler, ChainType, RequestNewList } from './types';
 import { getListByFilters } from '@wri-monorepos/sql';
-import { performance } from 'perf_hooks';
-import { getDurationAsString } from './shared';
+import { logExecutionTime } from './shared';
 
 const createListNameSchema = (list_name) => ({
   list_table: `list-${list_name.replace(/\s/g, '').toLowerCase()}`,
@@ -12,10 +11,10 @@ const createListNameSchema = (list_name) => ({
 export class ListSchemaName extends AbstractHandler<ChainType> {
   private readonly logger = new Logger(ListSchemaName.name);
 
-  async handle(input: ChainType): Promise<ChainType> {
-    const start = performance.now();
+  @logExecutionTime(ListSchemaName.name)
+  async operation(request: ChainType): Promise<ChainType> {
     const { list_name: listName, organization_database: clientDatabase } =
-      input.request as RequestNewList;
+      request.request as RequestNewList;
     const list = createListNameSchema(listName);
     const listTable = list.list_table;
     const analysisTable = list.analysis_table;
@@ -28,13 +27,10 @@ export class ListSchemaName extends AbstractHandler<ChainType> {
 
     this.logger.log(`List name schema created: ${listTable}`);
 
-    const end = performance.now();
-    this.logger.debug(`Execution time: ${getDurationAsString(start, end)}`);
-
-    return super.handle({
-      ...input,
+    return {
+      ...request,
       request: {
-        ...input.request,
+        ...request.request,
         listTable,
         analysisTable,
         listStatusId: 1,
@@ -42,6 +38,11 @@ export class ListSchemaName extends AbstractHandler<ChainType> {
         customAttributeNames: '',
         customAttributeTypes: '',
       },
-    });
+    };
+  }
+
+  async handle(input: ChainType): Promise<ChainType> {
+    const request = await this.operation(input);
+    return super.handle(request);
   }
 }

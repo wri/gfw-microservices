@@ -1,38 +1,105 @@
-import { getDurationAsString } from './shared'; // Adjust the import path as necessary
+import { logExecutionTime } from './shared';
+import { performance } from 'perf_hooks';
+import { Logger } from '@nestjs/common';
 
-describe('getDurationAsString', () => {
-  it('should return an empty string for negative durations', () => {
-    const start = 1000;
-    const end = 500;
-    const result = getDurationAsString(start, end);
-    expect(result).toBe('');
+jest.mock('perf_hooks', () => ({
+  performance: {
+    now: jest.fn(),
+  },
+}));
+
+describe('logExecutionTime', () => {
+  let loggerLogSpy;
+
+  beforeEach(() => {
+    loggerLogSpy = jest.spyOn(Logger.prototype, 'debug').mockImplementation(jest.fn());
+    (performance.now as jest.Mock).mockClear();
   });
 
-  it('should return duration in milliseconds if less than 1000ms', () => {
-    const start = 0;
-    const end = 500;
-    const result = getDurationAsString(start, end);
-    expect(result).toBe('500.00ms');
+  afterEach(() => {
+    loggerLogSpy.mockRestore();
   });
 
-  it('should return duration in seconds if between 1000ms and 60000ms', () => {
-    const start = 0;
-    const end = 1500;
-    const result = getDurationAsString(start, end);
-    expect(result).toBe('1.50s');
+  it('should log the execution time of an async method using NestJS Logger', async () => {
+    // Mock performance.now to simulate execution time
+    (performance.now as jest.Mock)
+      .mockReturnValueOnce(1000) // start time
+      .mockReturnValueOnce(2000); // end time
+
+    class TestClass {
+      @logExecutionTime('TestClass')
+      async testMethod() {
+        return 'result';
+      }
+    }
+
+    const instance = new TestClass();
+    const result = await instance.testMethod();
+
+    expect(result).toBe('result');
+    expect(loggerLogSpy).toHaveBeenCalledWith('TestClass.testMethod executed in 1.00s');
   });
 
-  it('should return duration in minutes if 60000ms or more', () => {
-    const start = 0;
-    const end = 120000;
-    const result = getDurationAsString(start, end);
-    expect(result).toBe('2.00min');
+  it('should handle negative execution time gracefully using NestJS Logger', async () => {
+    // Mock performance.now to simulate negative execution time
+    (performance.now as jest.Mock)
+      .mockReturnValueOnce(2000) // start time
+      .mockReturnValueOnce(1000); // end time
+
+    class TestClass {
+      @logExecutionTime('TestClass')
+      async testMethod() {
+        return 'result';
+      }
+    }
+
+    const instance = new TestClass();
+    const result = await instance.testMethod();
+
+    expect(result).toBe('result');
+    expect(loggerLogSpy).not.toHaveBeenCalledWith(expect.stringContaining('executed in'));
+    expect(loggerLogSpy).toHaveBeenCalledWith(
+      'Error: Negative execution time detected for TestClass.testMethod'
+    );
   });
 
-  it('should handle zero duration correctly', () => {
-    const start = 1000;
-    const end = 1000;
-    const result = getDurationAsString(start, end);
-    expect(result).toBe('0.00ms');
+  it('should log the execution time of 100ms using NestJS Logger', async () => {
+    // Mock performance.now to simulate 100ms execution time
+    (performance.now as jest.Mock)
+      .mockReturnValueOnce(1000) // start time
+      .mockReturnValueOnce(1100); // end time
+
+    class TestClass {
+      @logExecutionTime('TestClass')
+      async testMethod() {
+        return 'result';
+      }
+    }
+
+    const instance = new TestClass();
+    const result = await instance.testMethod();
+
+    expect(result).toBe('result');
+    expect(loggerLogSpy).toHaveBeenCalledWith('TestClass.testMethod executed in 100.00ms');
+  });
+
+  it('should log the execution time of 1 minute using NestJS Logger', async () => {
+    // Mock performance.now to simulate 1 minute execution time
+    (performance.now as jest.Mock)
+      .mockReturnValueOnce(1000) // start time
+      .mockReturnValueOnce(61000); // end time
+
+    class TestClass {
+      @logExecutionTime('TestClass')
+      async testMethod() {
+        return 'result';
+      }
+    }
+
+    const instance = new TestClass();
+    const result = await instance.testMethod();
+
+    expect(result).toBe('result');
+    expect(loggerLogSpy).toHaveBeenCalledWith('TestClass.testMethod executed in 1.00min');
   });
 });

@@ -1,8 +1,6 @@
 import { Logger } from '@nestjs/common';
 import { AbstractHandler, ChainType } from './types';
 import { Polygon } from '@wri-monorepos/geo';
-import { performance } from 'perf_hooks';
-import { getDurationAsString } from './shared';
 
 // ArcGIS imports are ESM only imports, and this code is transpiled into commonJS
 // so we need to use eval to import these modules
@@ -69,9 +67,8 @@ export class ConvertPoint2Polygon extends AbstractHandler<ChainType> {
     return this.geomFromPointRadiusArea(point, featureRadius, featureArea);
   }
 
-  async handle(input: ChainType): Promise<ChainType> {
-    const start = performance.now();
-    const { geojson } = input;
+  async operation(request: ChainType): Promise<ChainType> {
+    const { geojson } = request;
     const { features } = geojson;
 
     for (const feature of features) {
@@ -91,9 +88,11 @@ export class ConvertPoint2Polygon extends AbstractHandler<ChainType> {
         (feature.geometry as Polygon).type = 'Polygon';
       }
     }
+    return request;
+  }
 
-    const end = performance.now();
-    this.logger.debug(`Execution time: ${getDurationAsString(start, end)}`);
-    return await super.handle(input);
+  async handle(input: ChainType): Promise<ChainType> {
+    const request = await this.operation(input);
+    return await super.handle(request);
   }
 }

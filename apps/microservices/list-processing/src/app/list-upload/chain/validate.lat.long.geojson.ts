@@ -1,7 +1,6 @@
 import { Logger } from '@nestjs/common';
 import { AbstractHandler, ChainType } from './types';
-import { performance } from 'perf_hooks';
-import { getDurationAsString } from './shared';
+import { logExecutionTime } from './shared';
 
 export class ValidateLatLongGeojson extends AbstractHandler<ChainType> {
   private readonly logger = new Logger(ValidateLatLongGeojson.name);
@@ -21,6 +20,32 @@ export class ValidateLatLongGeojson extends AbstractHandler<ChainType> {
       countryCleaner === null ||
       countryCleaner === undefined
     );
+  }
+
+  @logExecutionTime(ValidateLatLongGeojson.name)
+  operation(request: ChainType): ChainType {
+    const { geojson } = request;
+
+    if (!geojson.type || !geojson.features) {
+      throw new Error('Invalid GeoJSON format');
+    }
+
+    if (geojson.type === 'FeatureCollection' && geojson.features) {
+      for (let i = geojson.features.length - 1; i >= 0; i--) {
+        const feature = geojson.features[i];
+        const country = (feature.properties?.country as string) || '';
+        const geometry = feature.geometry;
+        if (
+          geometry &&
+          'coordinates' in geometry &&
+          !this.validateCoordinates(geometry.coordinates, country)
+        ) {
+          feature.properties.error = ['Invalid coordinates'];
+        }
+      }
+    }
+
+    return request;
   }
 
   validateCoordinates(coordinates: any, country: string): boolean {
@@ -54,32 +79,8 @@ export class ValidateLatLongGeojson extends AbstractHandler<ChainType> {
   }
 
   async handle(input: ChainType): Promise<ChainType> {
-    const start = performance.now();
-    const { geojson } = input;
-
-    if (!geojson.type || !geojson.features) {
-      throw new Error('Invalid GeoJSON format');
-    }
-
-    if (geojson.type === 'FeatureCollection' && geojson.features) {
-      for (let i = geojson.features.length - 1; i >= 0; i--) {
-        const feature = geojson.features[i];
-        const country = (feature.properties?.country as string) || '';
-        const geometry = feature.geometry;
-        if (
-          geometry &&
-          'coordinates' in geometry &&
-          !this.validateCoordinates(geometry.coordinates, country)
-        ) {
-          feature.properties.error = ['Invalid coordinates'];
-        }
-      }
-    }
-
-    const end = performance.now();
-    this.logger.debug(`Execution time: ${getDurationAsString(start, end)}`);
-
-    const response = await super.handle({
+    let response = await this.operation(input);
+    response = await super.handle({
       ...input,
     });
     return response;

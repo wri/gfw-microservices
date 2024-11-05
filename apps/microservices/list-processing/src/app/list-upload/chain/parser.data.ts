@@ -2,8 +2,6 @@ import { Logger } from '@nestjs/common';
 import { AbstractHandler, ChainType, PreviewListRequest } from './types';
 import { csv2geojson } from '../parser/csv2geojson.parser';
 import * as fs from 'fs';
-import { performance } from 'perf_hooks';
-import { getDurationAsString } from './shared';
 import { FeatureCollection } from '@wri-monorepos/geo';
 import { convertShapefileToGeoJSON } from '../parser/shp2GeoJson.parser';
 import * as path from 'path';
@@ -42,9 +40,8 @@ export class ParserData extends AbstractHandler<ChainType> {
     return geojson;
   };
 
-  async handle(input: ChainType): Promise<ChainType> {
-    const start = performance.now();
-    const { fileDownloadedPath, preview = false } = input.request as PreviewListRequest;
+  async operation(request: ChainType): Promise<ChainType> {
+    const { fileDownloadedPath, preview = false } = request.request as PreviewListRequest;
     const fileExtension = path.extname(fileDownloadedPath);
 
     const dataParser = {
@@ -61,10 +58,8 @@ export class ParserData extends AbstractHandler<ChainType> {
       const geoJson = await dataParser[fileExtension](fileDownloadedPath, preview);
       this.logger.log('Data parsed successfully');
 
-      const response = await super.handle({ ...input, geojson: geoJson });
+      const response = await super.handle({ ...request, geojson: geoJson });
       this.deleteFile(fileDownloadedPath);
-      const end = performance.now();
-      this.logger.debug(`Execution time: ${getDurationAsString(start, end)}`);
       return response;
     } catch (error) {
       // Log the error with more context
@@ -74,5 +69,10 @@ export class ParserData extends AbstractHandler<ChainType> {
       );
       throw new Error('Error while parsing the data');
     }
+  }
+
+  async handle(input: ChainType): Promise<ChainType> {
+    const request = await this.operation(input);
+    return super.handle(request);
   }
 }

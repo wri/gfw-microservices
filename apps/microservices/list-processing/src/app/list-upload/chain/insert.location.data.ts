@@ -3,9 +3,8 @@ import { AbstractHandler, ChainType, RequestNewList } from './types';
 import { ClientStoreConnection, ListSchema, ListSchemaType } from '@wri-monorepos/sql';
 import { FeatureCollection } from '@wri-monorepos/geo';
 import { GeoJSONGeometry, stringify } from 'wellknown';
-import { performance } from 'perf_hooks';
 import { Logger } from '@nestjs/common';
-import { getDurationAsString } from './shared';
+import { logExecutionTime } from './shared';
 
 const BATCH_SIZE = 100;
 
@@ -40,10 +39,10 @@ export class InsertLocationData extends AbstractHandler<ChainType> {
     }
   }
 
-  async handle(input: ChainType): Promise<ChainType> {
-    const start = performance.now();
+  @logExecutionTime(InsertLocationData.name)
+  async operation(request: ChainType): Promise<ChainType> {
     const { organization_database: organizationDatabase, listTable } =
-      input.request as RequestNewList;
+      request.request as RequestNewList;
     const ListEntity = new EntitySchema<ListSchemaType>({
       ...ListSchema,
       name: listTable,
@@ -54,7 +53,7 @@ export class InsertLocationData extends AbstractHandler<ChainType> {
     ]);
 
     try {
-      const features = (input.geojson as FeatureCollection).features;
+      const features = (request.geojson as FeatureCollection).features;
       const values = features.map((feature) => ({
         ...feature.properties,
         geometry: stringify(feature.geometry as GeoJSONGeometry),
@@ -65,12 +64,14 @@ export class InsertLocationData extends AbstractHandler<ChainType> {
         await this.insertBatch(connection, ListEntity, batch);
       }
 
-      const end = performance.now();
-      this.logger.debug(`Execution time: ${getDurationAsString(start, end)}`);
-
-      return super.handle(input);
+      return super.handle(request);
     } catch (error) {
       throw new Error(`Failed to handle input: ${error.message}`);
     }
+  }
+
+  async handle(input: ChainType): Promise<ChainType> {
+    const request = await this.operation(input);
+    return super.handle(request);
   }
 }

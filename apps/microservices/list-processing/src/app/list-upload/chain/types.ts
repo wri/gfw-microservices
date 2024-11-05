@@ -42,10 +42,14 @@ export abstract class AbstractHandler<T> implements Handler<T> {
     this.nextHandler = handler;
     return handler;
   }
+
+  abstract operation(request: T): Promise<T> | T;
+
   public async handle(request: T): Promise<T> {
     if (this.nextHandler) {
       return await this.nextHandler.handle(request);
     }
+
     return request;
   }
 }

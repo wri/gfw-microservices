@@ -4,9 +4,8 @@ import { CreateListResult } from '@wri-monorepos/geo';
 import * as sql from 'mssql';
 import { updateListsUploadStatus } from '../shared/update.lists.upload.status';
 import { featureFlagsService } from '@wri-monorepos/shared';
-import { performance } from 'perf_hooks';
 import { Logger } from '@nestjs/common';
-import { getDurationAsString } from './shared';
+import { logExecutionTime } from './shared';
 
 const LIST_UPLOAD_VERSION = 2;
 const LIST_UPLOAD_LEGACY_VERSION = 0;
@@ -83,8 +82,8 @@ export class CreateListLevelData extends AbstractHandler<ChainType> {
     await this.executeQueryWithParams<void>(connection, 'uspAddListToAnalyses', parameters);
   }
 
-  async handle(input: ChainType): Promise<ChainType> {
-    const start = performance.now();
+  @logExecutionTime(CreateListLevelData.name)
+  async operation(request: ChainType): Promise<ChainType> {
     const {
       list_name: listName,
       organization_database: clientDatabase,
@@ -97,7 +96,7 @@ export class CreateListLevelData extends AbstractHandler<ChainType> {
       gfwListId,
       user_id: userId,
       template_id: templateId,
-    } = input.request as RequestNewList;
+    } = request.request as RequestNewList;
 
     const { getFeatureFlagsForCurrentOrg, getClientIdByClientStoreDatabaseName } =
       await featureFlagsService();
@@ -140,15 +139,17 @@ export class CreateListLevelData extends AbstractHandler<ChainType> {
         'Add list to analysis table'
       );
 
-      const end = performance.now();
-      this.logger.debug(`Execution time: ${getDurationAsString(start, end)}`);
-
-      return await super.handle({
-        ...input,
-        request: { ...input.request, listId: createListResult.list_id },
-      });
+      return {
+        ...request,
+        request: { ...request.request, listId: createListResult.list_id },
+      };
     } finally {
       await connection.disconnect();
     }
+  }
+
+  async handle(input: ChainType): Promise<ChainType> {
+    const response = await this.operation(input);
+    return await super.handle(response);
   }
 }

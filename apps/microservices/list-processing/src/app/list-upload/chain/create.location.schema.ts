@@ -3,8 +3,7 @@ import { updateListsUploadStatus } from '../shared/update.lists.upload.status';
 import { AbstractHandler, ChainType, RequestNewList } from './types';
 import * as sql from 'mssql';
 import { Logger } from '@nestjs/common';
-import { performance } from 'perf_hooks';
-import { getDurationAsString } from './shared';
+import { logExecutionTime } from './shared';
 
 export class CreateLocationSchema extends AbstractHandler<ChainType> {
   private readonly logger = new Logger(CreateLocationSchema.name);
@@ -111,8 +110,8 @@ export class CreateLocationSchema extends AbstractHandler<ChainType> {
     }
   }
 
-  async handle(input: ChainType): Promise<ChainType> {
-    const start = performance.now();
+  @logExecutionTime(CreateLocationSchema.name)
+  async operation(request: ChainType): Promise<ChainType> {
     const {
       listId,
       listTable,
@@ -121,7 +120,7 @@ export class CreateLocationSchema extends AbstractHandler<ChainType> {
       listStatusId,
       analysisIds,
       template_id,
-    } = input.request as RequestNewList;
+    } = request.request as RequestNewList;
 
     const queryCreateTableResult = await this.getTableStructureQuery(template_id);
 
@@ -143,9 +142,11 @@ export class CreateLocationSchema extends AbstractHandler<ChainType> {
       analysisIds
     );
     await updateListsUploadStatus(organization_database, listId, 'Create analysis status records');
-    const end = performance.now();
-    this.logger.debug(`Execution time: ${getDurationAsString(start, end)}`);
+    return request;
+  }
 
-    return await super.handle(input);
+  async handle(input: ChainType): Promise<ChainType> {
+    const request = await this.operation(input);
+    return await super.handle(request);
   }
 }

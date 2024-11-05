@@ -28,7 +28,6 @@ export class ListService {
   }: {
     organizationId: number;
     listId: number;
-    analysisId: string;
   }): Promise<Lists> {
     try {
       const connection = await this.getOrganizationConnection(organizationId);

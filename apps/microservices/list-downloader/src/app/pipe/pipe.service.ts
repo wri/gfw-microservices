@@ -51,8 +51,14 @@ export class PipeService {
     if (!isGFWList) {
       const connection = await this.clientStoreConnection.getConnection(organizationDatabase);
       const listRepository = connection.getRepository(Lists);
-      const { listName } = await listRepository.findOne({ where: { id: listId } });
-      return listName;
+      const list = await listRepository.findOne({ where: { id: listId } });
+
+      if (!list) {
+        this.logger.log('List not found');
+        return '';
+      }
+
+      return list.listName;
     } else {
       const connection = await this.clientStoreConnection.getConnection('gfwpro', [GFWList]);
       const gfwListRepository = connection.getRepository(GFWList);

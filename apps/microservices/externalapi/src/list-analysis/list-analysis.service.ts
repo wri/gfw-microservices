@@ -402,6 +402,20 @@ export class ListAnalysisService {
 
     if (!list) throw new NotFoundException('List not found');
 
+    const connection = await this.getOrganizationConnection(organizationId);
+    const listAnalysisStatusRepository = connection.getRepository(ListsAnalysisStatus);
+    const listAnalysisStatus = await listAnalysisStatusRepository.findOne({
+      where: { listId, analysisId },
+    });
+
+    if (!listAnalysisStatus) {
+      throw new NotFoundException('Analysis status not found.');
+    }
+
+    if (listAnalysisStatus.status !== listStatus.Active) {
+      throw new BadRequestException('List is not active');
+    }
+
     let message = {};
     try {
       if (!userEmail) {

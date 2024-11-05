@@ -1,24 +1,30 @@
+import { Logger } from '@nestjs/common';
 import { csv2geojson } from './csv2geojson.parser';
 import * as XLSX from 'xlsx';
 
-export interface XLSParseOptions {
-  latfield?: string;
-  lonfield?: string;
-  numericFields?: string;
-  includeLatLon?: boolean;
-}
-
 export const xls2geojson = (xlsContent: Buffer) => {
-  const workbook = XLSX.read(xlsContent, { type: 'buffer' });
+  const logger = new Logger('XLS2GeoJSONParser');
 
-  // Get the name of the first sheet
-  const firstSheetName = workbook.SheetNames[0];
+  try {
+    // Read the workbook from the buffer
+    const workbook = XLSX.read(xlsContent, { type: 'buffer' });
 
-  // Get the first sheet
-  const worksheet = workbook.Sheets[firstSheetName];
+    // Ensure there is at least one sheet
+    if (workbook.SheetNames.length === 0) {
+      throw new Error('The workbook contains no sheets.');
+    }
 
-  // Convert the worksheet to CSV format
-  const csvOutput = XLSX.utils.sheet_to_csv(worksheet, { FS: ',' });
+    // Get the first sheet name and worksheet
+    const firstSheetName = workbook.SheetNames[0];
+    const worksheet = workbook.Sheets[firstSheetName];
 
-  return csv2geojson(csvOutput);
+    // Convert the worksheet to CSV format
+    const csvOutput = XLSX.utils.sheet_to_csv(worksheet, { FS: ',' });
+
+    // Convert CSV to GeoJSON using the provided options
+    return csv2geojson(csvOutput);
+  } catch (error) {
+    logger.error('Error converting XLS to GeoJSON:', error);
+    throw error; // Re-throw the error after logging
+  }
 };

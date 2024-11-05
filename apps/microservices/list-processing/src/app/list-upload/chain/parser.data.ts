@@ -43,9 +43,8 @@ export class ParserData extends AbstractHandler<ChainType> {
   };
 
   xls2geojson = async (fileDownloadedPath: string) => {
-    const xlsxContent = fs.readFileSync(fileDownloadedPath, 'utf8');
-    const buffer = Buffer.from(xlsxContent, 'utf-8');
-    const geojson = await xls2geojson(buffer);
+    const xlsxContent: Buffer = fs.readFileSync(fileDownloadedPath);
+    const geojson = await xls2geojson(xlsxContent);
     return geojson;
   };
 

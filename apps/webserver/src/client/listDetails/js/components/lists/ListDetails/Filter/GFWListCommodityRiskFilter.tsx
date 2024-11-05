@@ -50,10 +50,10 @@ const GFWListCommodityRiskFilter: React.FC<GFWListCommodityRiskFilterProps> = ({
   const initialState: DefaultFilterValues = store.getState().filters;
   const [state, setState] = useState<DefaultFilterValues>(initialState);
 
-  const onCountryChange = (evt: React.ChangeEvent<HTMLInputElement>) => {
+  const onCountryChange = (evt: SelectChangeEvent<string>) => {
     setState((prevState) => ({
       ...prevState,
-      selectedCountry: evt.target.value as string,
+      selectedCountry: evt.target.value,
       selectedState: '',
       selectedSubState: '',
       selectedParentCompany: '',
@@ -61,28 +61,28 @@ const GFWListCommodityRiskFilter: React.FC<GFWListCommodityRiskFilterProps> = ({
     }));
   };
 
-  const onStateChange = (evt: React.ChangeEvent<HTMLInputElement>) => {
+  const onStateChange = (evt: SelectChangeEvent<string>) => {
     setState((prevState) => ({
       ...prevState,
-      selectedState: evt.target.value as string,
+      selectedState: evt.target.value,
       selectedSubState: '',
       selectedParentCompany: '',
       selectedNames: [],
     }));
   };
 
-  const onSubStateChange = (evt: React.ChangeEvent<HTMLInputElement>) => {
+  const onSubStateChange = (evt: SelectChangeEvent<string>) => {
     setState((prevState) => ({
       ...prevState,
-      selectedSubState: evt.target.value as string,
+      selectedSubState: evt.target.value,
       selectedParentCompany: '',
       selectedNames: [],
     }));
   };
-  const changeParentCompany = (evt: SelectChangeEvent<unknown>) => {
+  const changeParentCompany = (evt: SelectChangeEvent<string>) => {
     setState((prevState) => ({
       ...prevState,
-      selectedParentCompany: evt.target.value as string,
+      selectedParentCompany: evt.target.value,
     }));
   };
 

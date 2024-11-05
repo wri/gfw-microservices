@@ -47,10 +47,10 @@ const GFWProtectedForestChangeFilter: React.FC<GFWProtectedForestChangeFilterPro
     });
   };
 
-  const onStateChange = (evt: React.ChangeEvent<{ value: unknown }>) => {
+  const onStateChange = (evt: SelectChangeEvent<string>) => {
     setState({
       ...state,
-      selectedState: evt.target.value as string,
+      selectedState: evt.target.value,
       selectedSubState: '',
       selectedDesignationType: '',
       selectedDesignation: '',
@@ -58,27 +58,27 @@ const GFWProtectedForestChangeFilter: React.FC<GFWProtectedForestChangeFilterPro
     });
   };
 
-  const onSubStateChange = (evt: React.ChangeEvent<{ value: unknown }>) => {
+  const onSubStateChange = (evt: SelectChangeEvent<string>) => {
     setState({
       ...state,
-      selectedSubState: evt.target.value as string,
+      selectedSubState: evt.target.value,
       selectedDesignationType: '',
       selectedDesignation: '',
       selectedNames: [],
     });
   };
 
-  const onDesignationTypeChange = (evt: SelectChangeEvent<unknown>) => {
+  const onDesignationTypeChange = (evt: SelectChangeEvent<string>) => {
     setState({
       ...state,
-      selectedDesignationType: evt.target.value as string,
+      selectedDesignationType: evt.target.value,
     });
   };
 
-  const onDesignationChange = (evt: SelectChangeEvent<unknown>) => {
+  const onDesignationChange = (evt: SelectChangeEvent<string>) => {
     setState({
       ...state,
-      selectedDesignation: evt.target.value as string,
+      selectedDesignation: evt.target.value,
     });
   };
 

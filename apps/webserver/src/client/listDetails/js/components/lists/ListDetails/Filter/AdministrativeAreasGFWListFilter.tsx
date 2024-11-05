@@ -34,10 +34,10 @@ const AdministrativeAreasGFWListFilter: React.FC<AdministrativeAreasGFWListFilte
   const initialState: DefaultFilterValues = store.getState().filters;
   const [state, setState] = useState<DefaultFilterValues>(initialState);
 
-  const onCountryChange = (evt: SelectChangeEvent<unknown>) => {
+  const onCountryChange = (evt: SelectChangeEvent<string>) => {
     setState((prevState) => ({
       ...prevState,
-      selectedCountry: evt.target.value as string,
+      selectedCountry: evt.target.value,
       selectedStates: [],
       selectedSubStates: [],
     }));

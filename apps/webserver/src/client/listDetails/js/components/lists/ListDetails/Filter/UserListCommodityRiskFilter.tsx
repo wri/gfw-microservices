@@ -34,37 +34,37 @@ const UserListCommodityRiskFilter: React.FC<UserListCommodityRiskFilterProps> = 
   const initialState: DefaultFilterValues = store.getState().filters;
   const [state, setState] = useState<DefaultFilterValues>(initialState);
 
-  const onCountryChange = (evt: React.ChangeEvent<{ value: unknown }>) => {
+  const onCountryChange = (evt: SelectChangeEvent<string>) => {
     setState((prevState) => ({
       ...prevState,
-      selectedCountry: evt.target.value as string,
+      selectedCountry: evt.target.value,
       selectedState: '',
       selectedSubState: '',
     }));
   };
 
-  const onStateChange = (evt: React.ChangeEvent<{ value: unknown }>) => {
+  const onStateChange = (evt: SelectChangeEvent<string>) => {
     setState((prevState) => ({
       ...prevState,
-      selectedState: evt.target.value as string,
+      selectedState: evt.target.value,
       selectedSubState: '',
     }));
   };
 
-  const onSubStateChange = (evt: React.ChangeEvent<{ value: unknown }>) => {
-    setState((prevState) => ({ ...prevState, selectedSubState: evt.target.value as string }));
+  const onSubStateChange = (evt: SelectChangeEvent<string>) => {
+    setState((prevState) => ({ ...prevState, selectedSubState: evt.target.value }));
   };
 
-  const changeSupplier = (evt: SelectChangeEvent<unknown>) => {
-    setState((prevState) => ({ ...prevState, selectedSupplier: evt.target.value as string }));
+  const changeSupplier = (evt: SelectChangeEvent<string>) => {
+    setState((prevState) => ({ ...prevState, selectedSupplier: evt.target.value }));
   };
 
-  const changeSecondSupplier = (evt: SelectChangeEvent<unknown>) => {
-    setState((prevState) => ({ ...prevState, selectedSecondSupplier: evt.target.value as string }));
+  const changeSecondSupplier = (evt: SelectChangeEvent<string>) => {
+    setState((prevState) => ({ ...prevState, selectedSecondSupplier: evt.target.value }));
   };
 
-  const onParentCompanyChange = (evt: SelectChangeEvent<unknown>) => {
-    setState((prevState) => ({ ...prevState, selectedParentCompany: evt.target.value as string }));
+  const onParentCompanyChange = (evt: SelectChangeEvent<string>) => {
+    setState((prevState) => ({ ...prevState, selectedParentCompany: evt.target.value }));
   };
 
   /* commented while we fix filtering by these attributes

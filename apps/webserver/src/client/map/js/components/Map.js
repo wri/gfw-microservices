@@ -2400,6 +2400,13 @@ class Map extends Component {
     this.setState({ dialogOpen: false });
   };
 
+  closePopups = () => {
+    if (this.view.popup.features && this.view.popup.features.length) {
+      this.view.popup.features = [];
+      this.view.popup.close();
+    }
+  };
+
   render() {
     const {
       mapLayers,
@@ -2615,6 +2622,7 @@ class Map extends Component {
           landsatYear={this.state.landsatYear}
           selectedList={selectedLists}
           goToOriginalPoint={this.goToOriginalPoint}
+          closePopups={this.closePopups}
         />
 
         <Legend

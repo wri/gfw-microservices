@@ -95,7 +95,7 @@ describe('Alerts Integrated Natural Forest Service', () => {
       'WRI,Sargento Cabral,Deforestation (Integrated Alerts),2021-01-01,2021-01-04,2021-01-04,100,Nominal,9,7,6,1',
       'WRI,Sargento Cabral,Deforestation (Integrated Alerts),2021-01-01,2021-01-04,2021-01-04,100,High,2,3,7,1',
       'WRI,Sargento Cabral,Deforestation (Integrated Alerts),2021-01-01,2021-01-04,2021-01-04,100,Highest,8,0,5,1',
-      'WRI,Total locations,Deforestation (Integrated Alerts),2021-01-01,2021-01-04,,undefined,,,,,10',
+      'WRI,Total locations,Deforestation (Integrated Alerts),2021-01-01,2021-01-04,,0,,,,,10',
       '',
     ]);
   });

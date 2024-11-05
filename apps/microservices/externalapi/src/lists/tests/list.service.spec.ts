@@ -393,7 +393,7 @@ describe('ListService', () => {
       }),
     });
 
-    const result = await listService.getList({ organizationId, listId, analysisId: 'FCD' });
+    const result = await listService.getList({ organizationId, listId });
     saveActivityLogEndpoint.saveActivityLogEndpoint = jest.fn().mockResolvedValue(true);
     const resultWithDatesTransformed = {};
     for (const prop in result) {
@@ -431,7 +431,7 @@ describe('ListService', () => {
       }),
     });
 
-    const result = await listService.getList({ organizationId, listId, analysisId: 'FCD' });
+    const result = await listService.getList({ organizationId, listId });
 
     const resultWithDatesTransformed = {};
     for (const prop in result) {
@@ -461,7 +461,7 @@ describe('ListService', () => {
       }),
     });
     saveActivityLogEndpoint.saveActivityLogEndpoint = jest.fn().mockResolvedValue(true);
-    const result = await listService.getList({ organizationId, listId, analysisId: 'FCD' });
+    const result = await listService.getList({ organizationId, listId });
     expect(result).toEqual(null);
   });
   it('Should get info from list', async () => {

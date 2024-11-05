@@ -15,6 +15,10 @@ import {
   Box,
 } from '@mui/material';
 
+import { useForm, Controller } from 'react-hook-form';
+import { z } from 'zod';
+import { zodResolver } from '@hookform/resolvers/zod';
+
 import { AddLocationAlt, LocationOn, Search, Close, ArrowForwardIos } from '@mui/icons-material';
 
 import { NavBarWithProgress, LocationTypeButton, HowToFormatLocationLink } from '../components';
@@ -22,6 +26,7 @@ import { NavBarWithProgress, LocationTypeButton, HowToFormatLocationLink } from 
 import HectareKilometerSwitch from '../../adding/HectareKilometerSwitch';
 import { PillButton } from '../../../../../components';
 import { MeasurementUnit } from '../types';
+import { coordinateSchema } from '../utils/schema';
 
 enum LocationFormat {
   Coordinates,
@@ -38,7 +43,20 @@ type UploadLocationByPointProps = {
   clearUploadType: () => void;
 };
 
+type FormFields = z.infer<typeof coordinateSchema>;
+
+const COORDINATE_ERROR_MESSAGE =
+  'Your coordinate value is invalid. Please ensure your data is in decimal degree notation';
+
 export function UploadLocationByPoint({ clearUploadType }: UploadLocationByPointProps) {
+  const {
+    handleSubmit,
+    control,
+    formState: { errors },
+    reset,
+  } = useForm<FormFields>({
+    resolver: zodResolver(coordinateSchema),
+  });
   const [locationFormat, setLocationFormat] = useState<LocationFormat>(LocationFormat.Coordinates);
 
   const [selectedRadiusSize, setSelectedRadiusSize] = useState<RadiusSize>(RadiusSize.Small);
@@ -46,7 +64,16 @@ export function UploadLocationByPoint({ clearUploadType }: UploadLocationByPoint
   const [measurementUnit, setMeasurementUnit] = useState<MeasurementUnit>('hectares');
 
   const steps = ['Location', 'Configure List', 'Submit'];
-  const [activeStep] = React.useState(0);
+  const [activeStep] = useState(0);
+
+  const handleChangeLocationFormat = (locFormat: LocationFormat) => {
+    setLocationFormat(locFormat);
+    reset();
+  };
+
+  const handleSubmitForm = (data: FormFields) => {
+    console.log({ data });
+  };
 
   return (
     <div className="upload-location-by-point">
@@ -79,7 +106,7 @@ export function UploadLocationByPoint({ clearUploadType }: UploadLocationByPoint
             <LocationTypeButton
               variant="outlined"
               color={locationFormat === LocationFormat.Coordinates ? 'primary' : 'info'}
-              onClick={() => setLocationFormat(LocationFormat.Coordinates)}
+              onClick={() => handleChangeLocationFormat(LocationFormat.Coordinates)}
             >
               <AddLocationAlt fontSize="medium" />
               <Typography variant="body2">Enter coordinates</Typography>
@@ -87,32 +114,56 @@ export function UploadLocationByPoint({ clearUploadType }: UploadLocationByPoint
             <LocationTypeButton
               variant="outlined"
               color={locationFormat === LocationFormat.Address ? 'primary' : 'info'}
-              onClick={() => setLocationFormat(LocationFormat.Address)}
+              onClick={() => handleChangeLocationFormat(LocationFormat.Address)}
             >
               <LocationOn fontSize="medium" />
               <Typography variant="body2">Enter address</Typography>
             </LocationTypeButton>
           </Box>
-          <form>
+          <form onSubmit={handleSubmit(handleSubmitForm)}>
             {locationFormat === LocationFormat.Coordinates ? (
               <>
                 <Typography variant="h6">Enter coordinates</Typography>
+                <Typography variant="body2" sx={{ marginBottom: '1rem' }}>
+                  Coordinate data must be in decimal degrees format.
+                </Typography>
+
                 <div className="upload-location-by-point__location-info__coordinates">
-                  <TextField
-                    label="Latitude"
-                    variant="outlined"
-                    type="number"
-                    fullWidth
-                    size="small"
-                    helperText="It must be in decimal degrees format"
+                  <Controller
+                    name="latitude"
+                    control={control}
+                    defaultValue=""
+                    rules={{ required: true }}
+                    render={({ field }) => (
+                      <TextField
+                        label="Latitude"
+                        variant="outlined"
+                        type="number"
+                        fullWidth
+                        size="small"
+                        error={!!errors.latitude}
+                        helperText={errors.latitude ? COORDINATE_ERROR_MESSAGE : ''}
+                        {...field}
+                      />
+                    )}
                   />
-                  <TextField
-                    label="Longitude"
-                    variant="outlined"
-                    type="number"
-                    fullWidth
-                    size="small"
-                    helperText="It must be in decimal degrees format"
+                  <Controller
+                    name="longitude"
+                    control={control}
+                    defaultValue=""
+                    rules={{ required: true }}
+                    render={({ field }) => (
+                      <TextField
+                        label="Longitude"
+                        variant="outlined"
+                        type="number"
+                        fullWidth
+                        size="small"
+                        error={!!errors.longitude}
+                        helperText={errors.longitude ? COORDINATE_ERROR_MESSAGE : ''}
+                        {...field}
+                      />
+                    )}
                   />
                 </div>
               </>
@@ -242,7 +293,7 @@ export function UploadLocationByPoint({ clearUploadType }: UploadLocationByPoint
               >
                 Cancel
               </PillButton>
-              <PillButton variant="contained" startIcon={<ArrowForwardIos />}>
+              <PillButton type="submit" variant="contained" startIcon={<ArrowForwardIos />}>
                 Next
               </PillButton>
             </div>

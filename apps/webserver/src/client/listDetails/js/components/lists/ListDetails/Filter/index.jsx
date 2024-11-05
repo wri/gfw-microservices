@@ -12,7 +12,7 @@ import Button from '../../../../../../common/js/components/Button';
 import CountryStateSubStateFilter from './CountryStateSubStateFilter';
 import ColumnSelector from '../ColumnSelector';
 import GFWListCommodityRiskFilter from './GFWListCommodityRiskFilter';
-import UserListCommodityRiskFilter from './UserListCommodityRiskFilter';
+import UserListCommodityRiskFilter from './UserListCommodityRiskFilter.tsx';
 import ProtectedAreasGFWList from './ProtectedAreasGFWListFilter';
 import AdministrativeAreasGFWListFilter from './AdministrativeAreasGFWListFilter';
 import GFWListFilter from './GFWListFilter';
@@ -95,7 +95,6 @@ export default class Filter extends Component {
       adminAreas,
       protectedAreas,
       isGfwList,
-      clearFilters,
     } = this.props;
     const { selectedCountry, selectedState, selectedSubState } = this.state;
 
@@ -133,16 +132,13 @@ export default class Filter extends Component {
       <>
         {isProtectedAreasFilterVisible && (
           <ProtectedAreasGFWList
-            filterCount={filterCount}
             protectedAreas={protectedAreas}
-            clearFilters={clearFilters}
             isFilterModalVisible={isFilterModalVisible}
           />
         )}
 
         {isAdministrativeAreasFilterVisible && (
           <AdministrativeAreasGFWListFilter
-            filterCount={filterCount}
             adminAreas={adminAreas}
             isFilterModalVisible={isFilterModalVisible}
           />
@@ -154,7 +150,6 @@ export default class Filter extends Component {
             locationNameOptionsForFilter={locationNameOptionsForFilter}
             parentCompanyOptionsForFilter={parentCompanyOptionsForFilter}
             list_name={listName}
-            clearFilters={clearFilters}
             isFilterModalVisible={isFilterModalVisible}
           />
         )}
@@ -163,21 +158,14 @@ export default class Filter extends Component {
           <UserListCommodityRiskFilter
             listName={listName}
             listData={listData}
-            filterCount={filterCount}
-            listView={listView}
-            clearFilters={clearFilters}
             isFilterModalVisible={isFilterModalVisible}
           />
         )}
         {isGFWListCommodityRiskFilterVisible && (
           <GFWListCommodityRiskFilter
-            listName={listName}
             filterValues={filterValues}
             locationNameOptionsForFilter={locationNameOptionsForFilter}
             parentCompanyOptionsForFilter={parentCompanyOptionsForFilter}
-            filterCount={filterCount}
-            listView={listView}
-            clearFilters={clearFilters}
             isFilterModalVisible={isFilterModalVisible}
           />
         )}

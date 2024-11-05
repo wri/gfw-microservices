@@ -1,0 +1,75 @@
+export const defaultFilterValues = {
+  selectedCountry: '',
+  selectedState: '',
+  selectedSubState: '',
+  selectedCompany: '',
+  selectedAreaMin: 0,
+  selectedAreaMax: null,
+  selectedDesignationType: '',
+  selectedDesignation: '',
+  selectedNames: [],
+  filterNames: '',
+  selectedSupplier: '',
+  selectedSecondSupplier: '',
+  selectedParentCompany: '',
+  selectedOverallThreats: [],
+  selectedOverallValues: [],
+  selectedMillPriority: [],
+  showRSPOCertified: false,
+  showTreeCoverExtent: false,
+  showTreeCoverLoss: false,
+  showTreeCoverLossPrimaryForest: false,
+  showTreeCoverLossProtectedAreas: false,
+  treeCoverExtentMin: 0,
+  treeCoverExtentMax: 100,
+  treeCoverLossMin: 0,
+  treeCoverLossMax: 100,
+  treeCoverLossPrimaryForestMin: 0,
+  treeCoverLossPrimaryForestMax: 100,
+  treeCoverLossProtectedAreasMin: 0,
+  treeCoverLossProtectedAreasMax: 100,
+  canopyDensity: 0,
+  selectedStates: [],
+  selectedSubStates: [],
+  filterState: '',
+  filterSubstate: '',
+  filterStr: '',
+};
+
+export interface FilterState {
+  selectedCountry: string;
+  selectedState: string;
+  selectedSubState: string;
+  selectedCompany: string;
+  selectedAreaMin: number;
+  selectedAreaMax: number | null;
+  selectedDesignationType: string;
+  selectedDesignation: string;
+  selectedNames: any[];
+  selectedStates: any[];
+  selectedSubStates: any[];
+  filterNames: string;
+  selectedSupplier: string;
+  selectedSecondSupplier: string;
+  selectedParentCompany: string;
+  selectedOverallThreats: string[];
+  selectedOverallValues: string[];
+  selectedMillPriority: string[];
+  showRSPOCertified: boolean;
+  showTreeCoverExtent: boolean;
+  showTreeCoverLoss: boolean;
+  showTreeCoverLossPrimaryForest: boolean;
+  showTreeCoverLossProtectedAreas: boolean;
+  treeCoverExtentMin: number;
+  treeCoverExtentMax: number;
+  treeCoverLossMin: number;
+  treeCoverLossMax: number;
+  treeCoverLossPrimaryForestMin: number;
+  treeCoverLossPrimaryForestMax: number;
+  treeCoverLossProtectedAreasMin: number;
+  treeCoverLossProtectedAreasMax: number;
+  canopyDensity: number;
+  filterState: string;
+  filterSubstate: string;
+  filterStr: string;
+}

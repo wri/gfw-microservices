@@ -298,7 +298,7 @@ function getTemplateData(allTemplatesData, selectedList) {
   });
 }
 
-function getFilterCounter(filterValues) {
+export function getFilterCounter(filterValues) {
   let counter = 0;
   Object.keys(filterValues).forEach((key) => {
     if (FILTER_STRING_VARIABLES.includes(key) && filterValues[key] !== '') {

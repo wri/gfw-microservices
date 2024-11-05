@@ -2212,7 +2212,6 @@ export default class ListDetails extends Component {
                           filterValues={filterValues}
                           parentCompanyOptionsForFilter={parentCompanyOptionsForFilter}
                           locationNameOptionsForFilter={locationNameOptionsForFilter}
-                          clearFilters={this.clearFilters}
                           listColumns={listColumns}
                           setListColumns={(newVisibleColumns) =>
                             this.setState({

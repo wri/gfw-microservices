@@ -21,16 +21,8 @@ import CountryStateSubStateFilter from './CountryStateSubStateFilter';
 import { boxStyle, selectStyle } from './filterStyles';
 import filterCountryStateAndSubStateOptions from './filterCountryStateAndSubStateOptions';
 import store from '../../../../../../locations/js/store';
+import { DefaultFilterValues } from '../../DefaultFilterValuesType';
 import '../../../../../../common/css/filter-dialogs.scss';
-
-interface FilterState {
-  selectedCountry: string;
-  selectedState: string;
-  selectedSubState: string;
-  selectedParentCompany: string;
-  showRSPOCertified: boolean;
-  selectedNames: any[];
-}
 
 interface GFWListFilterProps {
   list_name: string;
@@ -47,13 +39,13 @@ const GFWListFilter: React.FC<GFWListFilterProps> = ({
   parentCompanyOptionsForFilter,
   isFilterModalVisible,
 }) => {
-  const initialState: FilterState = store.getState().filters;
-  const [state, setState] = useState<FilterState>(initialState);
+  const initialState: DefaultFilterValues = store.getState().filters;
+  const [state, setState] = useState<DefaultFilterValues>(initialState);
 
-  const onCountryChange = (evt: React.ChangeEvent<HTMLInputElement>) => {
+  const onCountryChange = (evt: SelectChangeEvent<string>) => {
     setState((prevState) => ({
       ...prevState,
-      selectedCountry: evt.target.value as string,
+      selectedCountry: evt.target.value,
       selectedState: '',
       selectedSubState: '',
       selectedParentCompany: '',
@@ -61,29 +53,29 @@ const GFWListFilter: React.FC<GFWListFilterProps> = ({
     }));
   };
 
-  const onStateChange = (evt: React.ChangeEvent<HTMLInputElement>) => {
+  const onStateChange = (evt: SelectChangeEvent<string>) => {
     setState((prevState) => ({
       ...prevState,
-      selectedState: evt.target.value as string,
+      selectedState: evt.target.value,
       selectedSubState: '',
       selectedParentCompany: '',
       selectedNames: [],
     }));
   };
 
-  const onSubStateChange = (evt: React.ChangeEvent<HTMLInputElement>) => {
+  const onSubStateChange = (evt: SelectChangeEvent<string>) => {
     setState((prevState) => ({
       ...prevState,
-      selectedSubState: evt.target.value as string,
+      selectedSubState: evt.target.value,
       selectedParentCompany: '',
       selectedNames: [],
     }));
   };
 
-  const changeParentCompany = (evt: SelectChangeEvent<unknown>) => {
+  const changeParentCompany = (evt: SelectChangeEvent<string>) => {
     setState((prevState) => ({
       ...prevState,
-      selectedParentCompany: evt.target.value as string,
+      selectedParentCompany: evt.target.value,
     }));
   };
 
@@ -105,12 +97,12 @@ const GFWListFilter: React.FC<GFWListFilterProps> = ({
     let newFilterCount = 0;
     Object.keys(state).forEach((key) => {
       if (
-        (key === 'selectedCountry' && state[key as keyof FilterState] !== '') ||
-        (key === 'selectedState' && state[key as keyof FilterState] !== '') ||
-        (key === 'selectedSubState' && state[key as keyof FilterState] !== '') ||
-        (key === 'selectedNames' && Object.values(state[key as keyof FilterState]).length > 0) ||
-        (key === 'showRSPOCertified' && state[key as keyof FilterState]) ||
-        (key === 'selectedParentCompany' && state[key as keyof FilterState] !== '')
+        (key === 'selectedCountry' && state[key as keyof DefaultFilterValues] !== '') ||
+        (key === 'selectedState' && state[key as keyof DefaultFilterValues] !== '') ||
+        (key === 'selectedSubState' && state[key as keyof DefaultFilterValues] !== '') ||
+        (key === 'selectedNames' && Object.values(state[key]).length > 0) ||
+        (key === 'showRSPOCertified' && state[key as keyof DefaultFilterValues]) ||
+        (key === 'selectedParentCompany' && state[key as keyof DefaultFilterValues] !== '')
       ) {
         newFilterCount++;
       }
@@ -125,7 +117,7 @@ const GFWListFilter: React.FC<GFWListFilterProps> = ({
     store.dispatch(setFilterCount(newFilterCount));
   };
 
-  const close = () => {
+  const onCloseHandler = () => {
     setState(initialState);
     store.dispatch(toggleCanopyModal());
   };
@@ -187,7 +179,7 @@ const GFWListFilter: React.FC<GFWListFilterProps> = ({
   }, [isFilterModalVisible, locationNameOptionsForFilter, initialState]);
 
   return (
-    <Modal open={isFilterModalVisible} onClose={close}>
+    <Modal open={isFilterModalVisible} onClose={onCloseHandler}>
       <Box sx={boxStyle}>
         <h3>Filters</h3>
 
@@ -239,7 +231,6 @@ const GFWListFilter: React.FC<GFWListFilterProps> = ({
             <FormControl sx={selectStyle}>
               <Autocomplete
                 multiple
-                id="tags-outlined"
                 options={filteredLocationNameOptions || []}
                 getOptionLabel={(option) => option.label}
                 value={selectedNames?.length ? selectedNames : []}
@@ -251,7 +242,7 @@ const GFWListFilter: React.FC<GFWListFilterProps> = ({
           </Grid>
 
           <Grid item xs={12} sx={{ display: 'flex', justifyContent: 'flex-end' }}>
-            <Button variant="secondary" onClick={close} label="Cancel" />
+            <Button variant="secondary" onClick={onCloseHandler} label="Cancel" />
             <Button
               variant="primary"
               onClick={updateValues}

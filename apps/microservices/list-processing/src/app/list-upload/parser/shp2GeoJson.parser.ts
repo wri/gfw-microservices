@@ -2,22 +2,16 @@ import * as shapefile from 'shapefile';
 import * as unzipper from 'unzipper';
 import * as fs from 'fs';
 import * as path from 'path';
-import { pipeline, Readable } from 'stream';
+
 import { promisify } from 'util';
 
-const streamPipeline = promisify(pipeline);
+const mkdtemp = promisify(fs.mkdtemp);
 
-export const convertShapefileToGeoJSON = async (data: Readable): Promise<any> => {
-  const extractedFolder = './extracted';
-
-  // Ensure the extracted folder exists
-  if (!fs.existsSync(extractedFolder)) {
-    fs.mkdirSync(extractedFolder);
-  }
-
-  const zipFilePath = path.join(extractedFolder, 'file.zip');
-  const webStream = data;
-  await streamPipeline(webStream, fs.createWriteStream(zipFilePath));
+export const convertShapefileToGeoJSON = async (zipFilePath: string): Promise<any> => {
+  const extractedFolder =
+    process.env.NODE_ENV !== 'test'
+      ? await mkdtemp(path.join('/tmp/', 'shapefile-'))
+      : '/tmp/shapefile';
 
   // Unzip the file
   await fs

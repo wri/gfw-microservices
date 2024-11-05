@@ -48,7 +48,7 @@ class ConvertObject2Geojson extends Transform {
         SELECT *
         FROM "Organizations"
         WHERE [organization_db] = '${organizationDatabase}'`;
-    const { id: organizationId } = await gfwProConnection.query(organizationIdQuery);
+    const [{ id: organizationId }] = await gfwProConnection.query(organizationIdQuery);
     return {
       ...listProperties,
       ...aFiAnalysis,

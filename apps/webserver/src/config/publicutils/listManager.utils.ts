@@ -52,7 +52,6 @@ const { DEFAULT_LIST_LOCATIONS_ROWS_REQUESTED } = require('../config/locations.c
 const LIST_UPLOAD_LEGACY_VERSION = 0;
 
 // Utils
-const Helper = require(path.resolve('./config/publicutils/helper.utils'));
 const sqlUtils = require(path.resolve('./config/privateutils/sql.utils'));
 const logger = require(path.resolve('./config/privateutils/logger.utils'));
 const listUtils = require(path.resolve('./config/privateutils/list.utils'));
@@ -150,30 +149,17 @@ const createList = async (
         const params: SqlParamType[] = [
           { field: 'template_id', type: sql.NVarChar(150), value: template_id },
         ];
-        for (let i = 0; i < custom_attributes.length; i++) {
-          const columnNameParameter = {
+        for (let i = 0; i < 3; i++) {
+          params.push({
             field: `custom_attribute_${i + 1}`,
             type: sql.NVarChar(50),
-            value: null,
-          };
-
-          if (Helper.isUndefined(custom_attributes[i].column_name)) {
-            columnNameParameter.value = null;
-          } else {
-            columnNameParameter.value = custom_attributes[i].column_name;
-          }
-          const columnTypeParameter = {
+            value: custom_attributes[i]?.column_name || null,
+          });
+          params.push({
             field: `custom_attribute_${i + 1}_type`,
             type: sql.NVarChar(50),
-            value: custom_attributes[i].column_type || null,
-          };
-          if (Helper.isUndefined(custom_attributes[i].column_type)) {
-            columnTypeParameter.value = null;
-          } else {
-            columnTypeParameter.value = custom_attributes[i].column_type;
-          }
-          params.push(columnNameParameter);
-          params.push(columnTypeParameter);
+            value: custom_attributes[i]?.column_type || null,
+          });
         }
         return sqlUtils.executeSystemStoredProcedure(req, 'uspGetTableQueryString', params);
       })
@@ -322,31 +308,17 @@ const saveAsDraftList = async (
         const params: SqlParamType[] = [
           { field: 'template_id', type: sql.Int, value: template_id },
         ];
-        for (let i = 0; i < custom_attributes.length; i++) {
-          const columnNameParameter = {
+        for (let i = 0; i < 3; i++) {
+          params.push({
             field: `custom_attribute_${i + 1}`,
             type: sql.NVarChar(50),
-            value: null,
-          };
-          if (Helper.isUndefined(custom_attributes[i].column_name)) {
-            columnNameParameter.value = null;
-          } else {
-            columnNameParameter.value = custom_attributes[i].column_name;
-          }
-
-          const columnTypeParameter = {
+            value: custom_attributes[i]?.column_name || null,
+          });
+          params.push({
             field: `custom_attribute_${i + 1}_type`,
             type: sql.NVarChar(50),
-            value: custom_attributes[i].column_type || null,
-          };
-          if (Helper.isUndefined(custom_attributes[i].column_type)) {
-            columnTypeParameter.value = null;
-          } else {
-            columnTypeParameter.value = custom_attributes[i].column_type;
-          }
-
-          params.push(columnNameParameter);
-          params.push(columnTypeParameter);
+            value: custom_attributes[i]?.column_type || null,
+          });
         }
         return sqlUtils.executeSystemStoredProcedure(req, 'uspGetTableQueryString', params);
       })

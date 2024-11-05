@@ -54,10 +54,12 @@ export class AfiGeometryService extends IPipeService {
   }
 
   process(analysisData, newFilters = {}) {
-    analysisData.forEach(
-      (data) => (data.organizationDatabase = newFilters['organizationDatabase'])
-    );
-    analysisData.forEach((data) => this.inputStream.write(data));
+    if (analysisData.length > 0) {
+      analysisData.forEach(
+        (data) => (data.organizationDatabase = newFilters['organizationDatabase'])
+      );
+      analysisData.forEach((data) => this.inputStream.write(data));
+    }
   }
 
   private async organizeStream(filters: ListFieldsFileRequest, allFields: string[]) {

@@ -244,7 +244,6 @@ export default class ListDetails extends Component {
         listColumns: columnNames.list.filter((c) => this.showListColumn(c)),
         combinedColumns: columnNames.combinedColumns,
       });
-
       if (!selectedLists[0].isGlobalForestWatchList) {
         this.getUserLocationData(selectedLists[0].id);
       }
@@ -959,6 +958,8 @@ export default class ListDetails extends Component {
 
   showListColumn = (column) => {
     const { selectedLists, listView } = this.props;
+    const { list_name } = selectedLists[0];
+
     if (selectedLists.length > 0 && !selectedLists[0].isGlobalForestWatchList) {
       return (
         !(listView === FOREST_CHANGE_VIEW && checkColumnListFC(column.accessor)) &&
@@ -966,11 +967,10 @@ export default class ListDetails extends Component {
       );
     }
     if (selectedLists.length > 0) {
-      const { list_name } = selectedLists[0];
       return (
-        !(listView === FOREST_CHANGE_VIEW && checkColumnListGFWFC(list_name, column.accessor)) &&
-        !(listView === COMMODITY_RISK_VIEW && checkColumnListGFWCR(list_name, column.accessor)) &&
-        !(listView === FOREST_CHANGE_VIEW && checkColumnListPA(list_name, column.accessor))
+        (listView === FOREST_CHANGE_VIEW && checkColumnListGFWFC(list_name, column.accessor)) ||
+        (listView === COMMODITY_RISK_VIEW && checkColumnListGFWCR(list_name, column.accessor)) ||
+        (listView === FOREST_CHANGE_VIEW && checkColumnListPA(list_name, column.accessor))
       );
     }
   };
@@ -2212,7 +2212,6 @@ export default class ListDetails extends Component {
                           filterValues={filterValues}
                           parentCompanyOptionsForFilter={parentCompanyOptionsForFilter}
                           locationNameOptionsForFilter={locationNameOptionsForFilter}
-                          clearFilters={this.clearFilters}
                           listColumns={listColumns}
                           setListColumns={(newVisibleColumns) =>
                             this.setState({

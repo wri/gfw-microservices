@@ -221,64 +221,73 @@ const uploadBulkLocations = (req, list_id, list_name, geojson, commodity, attrib
           sqlParameters
         );
       })
-      .then((recordsets) => {
-        const columnNamesArray = [];
-        const columnTypesArray = [];
-        const dataArray = [];
-
-        // Push column name types into respective arrays
-        recordsets.forEach((column) => {
-          if (column.COLUMN_NAME === 'location_id' || column.COLUMN_NAME.includes('flag_')) {
-            columnNamesArray.push(column.COLUMN_NAME);
-            columnTypesArray.push(sql.Int);
-          } else if (column.COLUMN_NAME === 'attributes') {
-            columnNamesArray.push(column.COLUMN_NAME);
-            columnTypesArray.push(sql.NVarChar(sql.MAX));
-          } else if (column.COLUMN_NAME === 'ErrorDetails') {
-            columnNamesArray.push(column.COLUMN_NAME);
-            columnTypesArray.push(sql.NVarChar(256));
-          } else {
-            columnNamesArray.push(column.COLUMN_NAME);
-            columnTypesArray.push(sqlUtils.getDataType(req, column.DATA_TYPE));
-          }
-        });
-
-        // Push Inner array to dataArray for each feature
+      .then((columns) => {
+        const bulkUploadPayload = [];
+        /**
+         * TODO GPV-3786
+         * duplicated code
+         */
         geojson.features.forEach((feature) => {
-          const featureArray = [];
-          columnNamesArray.forEach((columnName) => {
-            if (feature.properties.hasOwnProperty(columnName)) {
-              featureArray.push(
-                commodity && columnName === 'Commodity' // If we have a commodity argument, use it
-                  ? commodity
-                  : feature.properties[columnName]
-              );
+          let row = [];
+          columns.forEach((column) => {
+            let col = {
+              field: column.COLUMN_NAME,
+              type: sqlUtils.getDataType(req, column.DATA_TYPE),
+              value: undefined,
+            };
+            if (feature.properties.hasOwnProperty(column.COLUMN_NAME)) {
+              col.value = feature.properties[column.COLUMN_NAME];
+
+              if (column.COLUMN_NAME === 'Geometry') {
+                col.value = locationUtils.getWKTGeometry(req, feature.geometry);
+              }
+            } else {
+              /**
+               *  Extra column to keep track
+                  { COLUMN_NAME: 'Geometry', DATA_TYPE: 'geometry' }
+                  { COLUMN_NAME: 'location_id', DATA_TYPE: 'int' }
+                  { COLUMN_NAME: 'attributes', DATA_TYPE: 'nvarchar' }
+                  { COLUMN_NAME: 'flag_general', DATA_TYPE: 'int' }
+                  { COLUMN_NAME: 'flag_gran_chaco', DATA_TYPE: 'int' }
+                  { COLUMN_NAME: 'flag_glad', DATA_TYPE: 'int' }
+                  { COLUMN_NAME: 'flag_forma', DATA_TYPE: 'int' }
+                  { COLUMN_NAME: 'flag_viirs', DATA_TYPE: 'int' }
+                  { COLUMN_NAME: 'flag_terrai', DATA_TYPE: 'int' }
+                  { COLUMN_NAME: 'ErrorDetails', DATA_TYPE: 'nvarchar' }
+               */
+              if (column.COLUMN_NAME === 'location_id') {
+                col.value = primary_key;
+              } else if (commodity && column.COLUMN_NAME === 'Commodity') {
+                col.value = commodity;
+              } else if (column.COLUMN_NAME === 'Geometry') {
+                col.value = locationUtils.getWKTGeometry(req, feature.geometry);
+              } else if (column.COLUMN_NAME === 'attributes') {
+                col.type = sql.NVarChar(sql.MAX);
+                col.value = '';
+              } else if (column.COLUMN_NAME === 'ErrorDetails') {
+                col.type = sql.NVarChar(256);
+                col.value = '';
+              } else if (column.COLUMN_NAME.includes('flag_')) {
+                col.value = 0;
+              }
             }
+            row.push(col);
           });
-          // Add the feature geometry, feature primary key Add flag property for general, gran cho, glad, forma, viirs, terrai
-          featureArray.push(
-            locationUtils.getWKTGeometry(req, feature.geometry),
-            primary_key,
-            0,
-            0,
-            0,
-            0,
-            0,
-            0,
-            attributes, // new `attributes` column
-            '' // new `ErrorDetails` column
-          );
+          bulkUploadPayload.push(row);
           // Increment key for next feature
           primary_key += 1;
-          dataArray.push(featureArray);
         });
+        const columnNames = bulkUploadPayload[0].map((col) => col.field);
+        const columnTypes = bulkUploadPayload[0].map((col) => col.type);
+        const dataRows = bulkUploadPayload.map((row) => row.map((item) => item.value));
+
         return sqlUtils.executeOrganizationBulkUpload(
           req,
           list.list_table,
           true,
-          columnNamesArray,
-          columnTypesArray,
-          dataArray
+          columnNames,
+          columnTypes,
+          dataRows
         );
       })
       .then(() => {

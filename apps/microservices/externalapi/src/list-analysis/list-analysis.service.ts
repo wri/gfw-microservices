@@ -174,7 +174,6 @@ export class ListAnalysisService {
     if (analysisStatus.status === getListStatusString(listStatus.Draft)) {
       // Get the list details to get the error file storage path if it exists
       const list = await this.listService.getList({
-        analysisId,
         listId,
         organizationId,
       });
@@ -351,7 +350,7 @@ export class ListAnalysisService {
         subscription_status_id: organizationDetails.subscriptionStatusId,
         path: saveListToProcess.data.s3_location,
         list_name: newListDetails.listName,
-        analysis_types: Object.keys(newListDetails.analysisIDs),
+        analysisIds: newListDetails.analysisIDs,
         // Forcing template_type because only cocoa_generic is supported
         // LP verifies the field is a string
         template_type: 'cocoa_generic',
@@ -395,6 +394,28 @@ export class ListAnalysisService {
       LIST_ANALISYS_ENDPOINT_NAMES[GENERATE_ANALYSIS],
       ListActivityTypesEnum.ListGenerate
     );
+
+    const list = await this.listService.getList({
+      listId,
+      organizationId,
+    });
+
+    if (!list) throw new NotFoundException('List not found');
+
+    const connection = await this.getOrganizationConnection(organizationId);
+    const listAnalysisStatusRepository = connection.getRepository(ListsAnalysisStatus);
+    const listAnalysisStatus = await listAnalysisStatusRepository.findOne({
+      where: { listId, analysisId },
+    });
+
+    if (!listAnalysisStatus) {
+      throw new NotFoundException('Analysis status not found');
+    }
+
+    if (listAnalysisStatus.status !== listStatus.Active) {
+      throw new BadRequestException('List is not active');
+    }
+
     let message = {};
     try {
       if (!userEmail) {

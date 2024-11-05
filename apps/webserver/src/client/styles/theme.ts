@@ -41,17 +41,25 @@ export const theme = createTheme({
         },
       },
     },
-    MuiButton: {
-      styleOverrides: {
-        root: {
-          borderRadius: '20px',
-          padding: '0.5rem 2rem',
-        },
-      },
-    },
     MuiButtonBase: {
       defaultProps: {
         disableRipple: true,
+      },
+    },
+    MuiTextField: {
+      styleOverrides: {
+        root: {
+          '& input[type="number"]': {
+            MozAppearance: 'textfield', // Firefox
+            appearance: 'none', // Chrome, Safari
+          },
+          '& input[type="number"]::-webkit-outer-spin-button': {
+            display: 'none', // Chrome
+          },
+          '& input[type="number"]::-webkit-inner-spin-button': {
+            display: 'none', // Chrome
+          },
+        },
       },
     },
   },

@@ -8,7 +8,6 @@ class ListDetailsPage {
     checkBoxSelectLocation: (name) => cy.contains(name),
     downloadBtn: () => cy.contains('Download'),
     downloadCSVOptionListDetail: () => cy.contains('CSV'),
-    downloadResultsOptionListDetail: () => cy.contains('Results'),
     downloadShapefileptionListDetail: () => cy.contains('Shapefile'),
     titleAlertDownloadList: () => cy.contains('List file Download'),
     moveBtn: () => cy.contains('Move'),

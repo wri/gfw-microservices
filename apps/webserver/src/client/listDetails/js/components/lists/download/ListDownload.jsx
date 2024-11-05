@@ -1,3 +1,4 @@
+/* component to be deprecated when isListDetailsPageRedesignAvailable is deleted */
 import React, { useState } from 'react';
 import IconMenu from 'material-ui/IconMenu';
 import { Button } from '@mui/material';

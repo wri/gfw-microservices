@@ -219,7 +219,7 @@ const getGFWListLocationIDs = (gfwList, location) => {
  * @param {Object} selectedList - Selected List
  * @return {boolean} - [ true/false ] value in case that list is excluded GFW list or not
  */
-const isDownloadDisabledForThisList = (selectedList) => {
+export const isDownloadDisabledForThisList = (selectedList) => {
   const {
     associated_gfwlist: associatedGfwlist,
     isGlobalForestWatchList,
@@ -298,7 +298,7 @@ function getTemplateData(allTemplatesData, selectedList) {
   });
 }
 
-function getFilterCounter(filterValues) {
+export function getFilterCounter(filterValues) {
   let counter = 0;
   Object.keys(filterValues).forEach((key) => {
     if (FILTER_STRING_VARIABLES.includes(key) && filterValues[key] !== '') {

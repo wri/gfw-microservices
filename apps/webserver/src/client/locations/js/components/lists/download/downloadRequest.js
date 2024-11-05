@@ -8,7 +8,7 @@ const downloadRequest = ({
   listFilterStr = '',
   tableSortedBy,
   tableSortedDesc,
-  aggregate,
+  aggregate = true,
   listView,
   combinedColumns,
   selectedLocations,

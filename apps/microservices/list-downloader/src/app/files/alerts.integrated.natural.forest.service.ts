@@ -120,9 +120,14 @@ export class AlertsIntegratedNaturalForestService extends IPipeService {
       const connection = await this.clientStoreConnection.getConnection(organizationDatabase);
       const analysesDashboardRepo = connection.getRepository(AnalysesDashboardEntity);
 
-      const analysis = await analysesDashboardRepo.find({ where: { listId, locationId: -1 } });
+      const { totalHaSum } = await analysesDashboardRepo
+        .createQueryBuilder('analysis')
+        .select('SUM(analysis.totalHa)', 'totalHaSum')
+        .where('analysis.listId = :listId', { listId })
+        .andWhere('analysis.locationId = -1')
+        .getRawOne();
 
-      return analysis.reduce((prev, curr) => prev + (curr.totalHa || 0), 0);
+      return totalHaSum || 0;
     } catch (error) {
       console.error('Error fetching analysis data:', error);
       return 0;

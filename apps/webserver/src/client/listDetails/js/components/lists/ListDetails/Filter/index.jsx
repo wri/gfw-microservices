@@ -12,7 +12,7 @@ import Button from '../../../../../../common/js/components/Button';
 import CountryStateSubStateFilter from './CountryStateSubStateFilter';
 import ColumnSelector from '../ColumnSelector';
 import GFWListCommodityRiskFilter from './GFWListCommodityRiskFilter';
-import UserListCommodityRiskFilter from './UserListCommodityRiskFilter.tsx';
+import UserListCommodityRiskFilter from './UserListCommodityRiskFilter';
 import ProtectedAreasGFWList from './ProtectedAreasGFWListFilter';
 import AdministrativeAreasGFWListFilter from './AdministrativeAreasGFWListFilter';
 import GFWListFilter from './GFWListFilter';

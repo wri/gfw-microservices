@@ -17,30 +17,32 @@ class ConvertObject2Geojson extends Transform {
   ) {
     const connection = await this.clientStoreConnection.getConnection(organizationDatabase);
     const listRepository = await connection.getRepository(Lists);
-    // const listProperties = await listRepository.findOne({ where: { id: listId } });
 
-    // const afiRepository = await connection.getRepository(AFIAnalysis);
-    // const aFiAnalysis = await afiRepository.findOne({
-    //   where: { list_id: listId, location_id },
-    // });
+    const listProperties = await listRepository
+      .createQueryBuilder('list')
+      .leftJoinAndMapOne(
+        'list.afi',
+        AFIAnalysis,
+        'afi',
+        'afi.list_id = list.id AND afi.location_id = :location_id',
+        { location_id }
+      )
+      .where('list.id = :listId', { listId })
+      .leftJoinAndMapOne(
+        'list.updateTime',
+        ListsAnalysisStatus,
+        'las',
+        'las.listId = list.id AND las.analysisId = :analysisId',
+        { analysisId: 'AFI' }
+      )
+      .getOne();
 
-    
-    const listProperties = await listRepository.createQueryBuilder('list')
-    .leftJoinAndMapOne('list.afi', AFIAnalysis, 'afi', 'afi.list_id = list.id AND afi.location_id = :location_id', { location_id })
-    .where('list.id = :listId', { listId })
-    .leftJoinAndMapOne('list.updateTime', ListsAnalysisStatus, 'las', 'las.listId = list.id AND las.analysisId = :analysisId', { analysisId: 'AFI' })
-    .getOne();
+    if (!listProperties) {
+      throw new Error('List not found');
+    }
 
-  
-  if (!listProperties) {
-    throw new Error('List not found');
-  }
-  // const listAnalysisStatusRepository = await connection.getRepository(ListsAnalysisStatus);
-  //   const { updateTime } = await listAnalysisStatusRepository.findOne({
-  //     where: { listId: listId, analysisId: 'AFI' },
-  //   });
-  const aFiAnalysis = listProperties['afi'];
-  const updateTime = listProperties['updateTime'].updateTime;
+    const aFiAnalysis = listProperties['afi'];
+    const updateTime = listProperties['updateTime'].updateTime;
     const gfwProConnection = await this.clientStoreConnection.getConnection('gfwpro');
     const organizationIdQuery = `
         SELECT *

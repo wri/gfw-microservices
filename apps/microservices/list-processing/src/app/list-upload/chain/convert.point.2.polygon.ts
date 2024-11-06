@@ -1,3 +1,4 @@
+import { Logger } from '@nestjs/common';
 import { AbstractHandler, ChainType } from './types';
 import { Polygon } from '@wri-monorepos/geo';
 
@@ -18,6 +19,8 @@ const loadGeometryEngineModule = async () => {
 };
 
 export class ConvertPoint2Polygon extends AbstractHandler<ChainType> {
+  private readonly logger = new Logger(ConvertPoint2Polygon.name);
+
   GeometryEngine;
   Point;
 
@@ -64,8 +67,8 @@ export class ConvertPoint2Polygon extends AbstractHandler<ChainType> {
     return this.geomFromPointRadiusArea(point, featureRadius, featureArea);
   }
 
-  async handle(input: ChainType): Promise<ChainType> {
-    const { geojson } = input;
+  async handle(request: ChainType): Promise<ChainType> {
+    const { geojson } = request;
     const { features } = geojson;
 
     for (const feature of features) {
@@ -85,6 +88,6 @@ export class ConvertPoint2Polygon extends AbstractHandler<ChainType> {
         (feature.geometry as Polygon).type = 'Polygon';
       }
     }
-    return await super.handle(input);
+    return request;
   }
 }

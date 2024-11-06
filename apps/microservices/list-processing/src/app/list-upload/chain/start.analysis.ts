@@ -13,10 +13,12 @@ import {
   GEO_TRELLIS__ANALYZE_LIST_PROD,
   GEO_TRELLIS__ANALYZE_LIST_PRODV2,
 } from '@wri-monorepos/constants';
+import { Logger } from '@nestjs/common';
 
 const environmentAllowTestFlow = ['DEVELOPMENT', 'LATEST', 'QA', 'STAGING'];
 
 export class StartAnalysis extends AbstractHandler<ChainType> {
+  private readonly logger = new Logger(StartAnalysis.name);
   private clientStoreConnection: ClientStoreConnection;
 
   constructor(clientStoreConnection: ClientStoreConnection) {
@@ -42,7 +44,7 @@ export class StartAnalysis extends AbstractHandler<ChainType> {
     return email;
   }
 
-  async handle(input: ChainType): Promise<ChainType> {
+  async handle(request: ChainType): Promise<ChainType> {
     const {
       organization_database,
       user_id,
@@ -50,7 +52,7 @@ export class StartAnalysis extends AbstractHandler<ChainType> {
       isExternalAPIProcess,
       organization_id: organizationId,
       subscription_status_id: subscriptionStatusId,
-    } = input.request as RequestNewList;
+    } = request.request as RequestNewList;
 
     const geoTrellisUrlsByEnv = {
       qa: GEO_TRELLIS__ANALYZE_LIST_QA,
@@ -120,11 +122,11 @@ export class StartAnalysis extends AbstractHandler<ChainType> {
         list_id: listId,
         template_type: 'cocoa_generic',
       });
-      return input;
+      return request;
     }
 
     const response = await fetch(geoTrellisUrl, options);
     await response.json();
-    return input;
+    return request;
   }
 }

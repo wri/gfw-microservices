@@ -32,6 +32,13 @@ branch=${1:-develop}
 microservice=${2:-ALL}
 environment=${3:-QA}
 
+
+# Validate environment
+if [[ "$environment" != "QA" && "$environment" != "STG" && "$environment" != "PROD" ]]; then
+  echo "Error: Invalid environment '$environment'. Allowed values are QA, STG, PROD."
+  exit 1
+fi
+
 # Checkout the repository
 git clone --branch $branch --depth 1 git@github.com:wri/gfw-microservices.git gfw-microservices-release
 cd gfw-microservices-release

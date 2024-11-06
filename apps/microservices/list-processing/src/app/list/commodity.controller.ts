@@ -5,7 +5,7 @@ import { CommodityService } from './commodity.service';
 import { z } from 'zod';
 import { ZodValidationPipe } from '@wri-monorepos/shared';
 import { ApiProperty } from '@nestjs/swagger';
-import { ListTemplate } from '@wri-monorepos/sql';
+import { CommodityResponse } from './types';
 
 export const getListCommodityRequestSchema = z.object({
   listId: z.coerce.number(),
@@ -27,13 +27,14 @@ export class CommodityController {
   async findOne(
     @Query(new ZodValidationPipe(getListCommodityRequestSchema))
     queryParam: getListCommodityRequest
-  ): Promise<ListTemplate[]> {
+  ): Promise<CommodityResponse> {
     // Validate organizationDB using Zod
     try {
-      console.log('queryParam:', queryParam);
+      const { listId, organizationDatabase } = queryParam;
+      return await this.commodityService.getCommodityFromExistingList(organizationDatabase, listId);
     } catch (error) {
+      console.log(error);
       throw new BadRequestException(error.errors);
     }
-    return await this.commodityService.findAllTemplate();
   }
 }

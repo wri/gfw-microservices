@@ -634,7 +634,7 @@ export default class Account extends Component {
                   <label htmlFor="checkBox">
                     I have read and accept the{' '}
                     <a href={termsOfServices} className="gfw-green" target="_blank">
-                      Terms of Service
+                      Terms of Use
                     </a>
                     ,{' '}
                     <a href={privacyPolicy} className="gfw-green" target="_blank">

@@ -2,8 +2,10 @@ import { ListTableColumnsQueryString, SQLUtils } from '@wri-monorepos/sql';
 import { updateListsUploadStatus } from '../shared/update.lists.upload.status';
 import { AbstractHandler, ChainType, RequestNewList } from './types';
 import * as sql from 'mssql';
+import { Logger } from '@nestjs/common';
 
 export class CreateLocationSchema extends AbstractHandler<ChainType> {
+  private readonly logger = new Logger(CreateLocationSchema.name);
   private clientStoreConnection: SQLUtils;
 
   constructor(clientStoreConnection: SQLUtils) {
@@ -52,7 +54,15 @@ export class CreateLocationSchema extends AbstractHandler<ChainType> {
 
   public async getTableStructureQuery(templateId: number): Promise<ListTableColumnsQueryString> {
     const conn = new SQLUtils();
-    const parameters = [this.createSqlParameter('template_id', sql.Int, templateId)];
+    const parameters = [
+      this.createSqlParameter('template_id', sql.Int, templateId),
+      this.createSqlParameter('custom_attribute_1', sql.NVarChar(50), null),
+      this.createSqlParameter('custom_attribute_1_type', sql.NVarChar(50), null),
+      this.createSqlParameter('custom_attribute_2', sql.NVarChar(50), null),
+      this.createSqlParameter('custom_attribute_2_type', sql.NVarChar(50), null),
+      this.createSqlParameter('custom_attribute_3', sql.NVarChar(50), null),
+      this.createSqlParameter('custom_attribute_3_type', sql.NVarChar(50), null),
+    ];
 
     try {
       await conn.connect();
@@ -99,7 +109,7 @@ export class CreateLocationSchema extends AbstractHandler<ChainType> {
     }
   }
 
-  async handle(input: ChainType): Promise<ChainType> {
+  async handle(request: ChainType): Promise<ChainType> {
     const {
       listId,
       listTable,
@@ -108,7 +118,7 @@ export class CreateLocationSchema extends AbstractHandler<ChainType> {
       listStatusId,
       analysisIds,
       template_id,
-    } = input.request as RequestNewList;
+    } = request.request as RequestNewList;
 
     const queryCreateTableResult = await this.getTableStructureQuery(template_id);
 
@@ -130,7 +140,6 @@ export class CreateLocationSchema extends AbstractHandler<ChainType> {
       analysisIds
     );
     await updateListsUploadStatus(organization_database, listId, 'Create analysis status records');
-
-    return await super.handle(input);
+    return request;
   }
 }

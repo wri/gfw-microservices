@@ -10,9 +10,9 @@ const createListNameSchema = (list_name) => ({
 export class ListSchemaName extends AbstractHandler<ChainType> {
   private readonly logger = new Logger(ListSchemaName.name);
 
-  async handle(input: ChainType): Promise<ChainType> {
+  async handle(request: ChainType): Promise<ChainType> {
     const { list_name: listName, organization_database: clientDatabase } =
-      input.request as RequestNewList;
+      request.request as RequestNewList;
     const list = createListNameSchema(listName);
     const listTable = list.list_table;
     const analysisTable = list.analysis_table;
@@ -25,10 +25,10 @@ export class ListSchemaName extends AbstractHandler<ChainType> {
 
     this.logger.log(`List name schema created: ${listTable}`);
 
-    return super.handle({
-      ...input,
+    return {
+      ...request,
       request: {
-        ...input.request,
+        ...request.request,
         listTable,
         analysisTable,
         listStatusId: 1,
@@ -36,6 +36,6 @@ export class ListSchemaName extends AbstractHandler<ChainType> {
         customAttributeNames: '',
         customAttributeTypes: '',
       },
-    });
+    };
   }
 }

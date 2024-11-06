@@ -1,13 +1,9 @@
 import { createGeoJSON } from '@wri-monorepos/shared';
-import {
-  CreateListNameSchema,
-  getDataType,
-  GetWKTGeometry,
-  objectHasOwnProperty,
-} from '@wri-monorepos/shared';
+import { CreateListNameSchema, getDataType, GetWKTGeometry } from '@wri-monorepos/shared';
 import * as sql from 'mssql';
 import { SQLUtils } from '@wri-monorepos/sql';
 import { Injectable, Logger } from '@nestjs/common';
+import { Feature } from '../lib/type';
 
 interface MaxId {
   max_id?: number;
@@ -35,6 +31,13 @@ const SQL_CONFIG = {
   requestTimeout: 600000,
 };
 
+interface GetColumnsData {
+  connection: SQLUtils;
+  list_id: number;
+  geojson: { features: Feature[] };
+  commodity: unknown;
+}
+
 @Injectable()
 export class ListBulkCopy {
   /** @function {uploadBulkLocations}
@@ -57,60 +60,15 @@ export class ListBulkCopy {
 
     const connection = new SQLUtils(clientConnectionConfiguration);
     await connection.connect();
-
-    // Important variables
-    let primary_key = 1;
-    let max_id = 0;
-    // Transform list name
     const list = CreateListNameSchema(list_name);
-    // 1. Get the max ID to properly set primary key
-    const sqlGetMaxIdParameters = [{ field: 'list_id', type: sql.Int, value: list_id }];
-    const maxIdResult: MaxId = await connection.executeQuery('uspGetMaxId', sqlGetMaxIdParameters);
 
-    max_id = maxIdResult.max_id === null ? 0 : maxIdResult.max_id;
-    primary_key = maxIdResult.max_id === null ? 1 : maxIdResult.max_id + 1;
-
-    // 2. Get Columns from list/table
-    const sqlGetTableColumnsParameters = [{ field: 'list_id', type: sql.Int, value: list_id }];
-
-    const tableColumnsResult = await connection.executeQuery<Promise<unknown[]>>(
-      'uspGetTableColumns',
-      sqlGetTableColumnsParameters
-    );
-
-    const columnNamesArray = [];
-    const columnTypesArray = [];
-    const dataArray = [];
-
-    // Push column name types into respective arrays
-    tableColumnsResult.forEach((column: ColumnType) => {
-      if (column.COLUMN_NAME === 'location_id' || column.COLUMN_NAME.includes('flag_')) {
-        columnNamesArray.push(column.COLUMN_NAME);
-        columnTypesArray.push(sql.Int);
-      } else {
-        columnNamesArray.push(column.COLUMN_NAME);
-        columnTypesArray.push(getDataType(column.DATA_TYPE));
-      }
-    });
-
-    // Push Inner array to dataArray for each feature
-    geojson.features.forEach((feature) => {
-      const featureArray = [];
-      columnNamesArray.forEach((columnName) => {
-        if (objectHasOwnProperty(feature.properties, columnName)) {
-          featureArray.push(
-            commodity && columnName === 'Commodity' // If we have a commodity argument, use it
-              ? commodity
-              : feature.properties[columnName]
-          );
-        }
+    const { start_location_id, columnNamesArray, columnTypesArray, dataArray } =
+      await this.getColumnsWithTypesAndValues({
+        connection,
+        list_id,
+        geojson,
+        commodity,
       });
-      // Add the feature geometry, feature primary key Add flag property for general, gran cho, glad, forma, viirs, terrai
-      featureArray.push(GetWKTGeometry(feature.geometry), primary_key, 0, 0, 0, 0, 0, 0);
-      // Increment key for next feature
-      primary_key += 1;
-      dataArray.push(featureArray);
-    });
 
     const objTable = new sql.Table(list.list_table);
     objTable.create = createTable;
@@ -180,7 +138,7 @@ export class ListBulkCopy {
     // Copy over list-<TABLE_NAME> ids to analysis-<TABLE_NAME>
     const sqlAddNewLocationToAnalysisTableParameters = [
       { field: 'list_id', type: sql.Int, value: list_id },
-      { field: 'start_location_id', type: sql.Int, value: max_id },
+      { field: 'start_location_id', type: sql.Int, value: start_location_id },
     ];
 
     Logger.log(
@@ -198,5 +156,95 @@ export class ListBulkCopy {
     const resultGeoJson = createGeoJSON(Array.isArray(recorsets) ? recorsets : [recorsets]);
 
     return resultGeoJson;
+  }
+
+  private async getColumnsWithTypesAndValues({
+    connection,
+    list_id,
+    geojson,
+    commodity = null,
+  }: GetColumnsData) {
+    // Important variables
+    let primary_key = 1;
+    let max_id = 0;
+
+    // 1. Get the max ID to properly set primary key
+    const sqlGetMaxIdParameters = [{ field: 'list_id', type: sql.Int, value: list_id }];
+    const maxIdResult = (await connection.executeQuery(
+      'uspGetMaxId',
+      sqlGetMaxIdParameters
+    )) as MaxId;
+
+    max_id = maxIdResult.max_id === null ? 0 : maxIdResult.max_id;
+    primary_key = maxIdResult.max_id === null ? 1 : maxIdResult.max_id + 1;
+
+    // 2. Get Columns from list/table
+    const sqlGetTableColumnsParameters = [{ field: 'list_id', type: sql.Int, value: list_id }];
+
+    const columns = await connection.executeQuery<Promise<ColumnType[]>>(
+      'uspGetTableColumns',
+      sqlGetTableColumnsParameters
+    );
+
+    const bulkUploadPayload = [];
+    /**
+     * TODO GPV-3786
+     * duplicated code
+     */
+    geojson.features.forEach((feature) => {
+      const row = [];
+      columns.forEach((column) => {
+        const col = {
+          field: column.COLUMN_NAME,
+          type: getDataType(column.DATA_TYPE),
+          value: undefined,
+        };
+        if (Object.hasOwnProperty.call(feature.properties, column.COLUMN_NAME)) {
+          col.value = feature.properties[column.COLUMN_NAME];
+
+          if (column.COLUMN_NAME === 'Geometry') {
+            col.value = GetWKTGeometry(feature.geometry);
+          }
+        } else {
+          /**
+           *  Extra column to keep track
+              { COLUMN_NAME: 'Geometry', DATA_TYPE: 'geometry' }
+              { COLUMN_NAME: 'location_id', DATA_TYPE: 'int' }
+              { COLUMN_NAME: 'attributes', DATA_TYPE: 'nvarchar' }
+              { COLUMN_NAME: 'flag_general', DATA_TYPE: 'int' }
+              { COLUMN_NAME: 'flag_gran_chaco', DATA_TYPE: 'int' }
+              { COLUMN_NAME: 'flag_glad', DATA_TYPE: 'int' }
+              { COLUMN_NAME: 'flag_forma', DATA_TYPE: 'int' }
+              { COLUMN_NAME: 'flag_viirs', DATA_TYPE: 'int' }
+              { COLUMN_NAME: 'flag_terrai', DATA_TYPE: 'int' }
+              { COLUMN_NAME: 'ErrorDetails', DATA_TYPE: 'nvarchar' }
+           */
+          if (column.COLUMN_NAME === 'location_id') {
+            col.value = primary_key;
+          } else if (commodity && column.COLUMN_NAME === 'Commodity') {
+            col.value = commodity;
+          } else if (column.COLUMN_NAME === 'Geometry') {
+            col.value = GetWKTGeometry(feature.geometry);
+          } else if (column.COLUMN_NAME === 'attributes') {
+            col.type = sql.NVarChar(sql.MAX);
+            col.value = '';
+          } else if (column.COLUMN_NAME === 'ErrorDetails') {
+            col.type = sql.NVarChar(256);
+            col.value = '';
+          } else if (column.COLUMN_NAME.includes('flag_')) {
+            col.value = 0;
+          }
+        }
+        row.push(col);
+      });
+      bulkUploadPayload.push(row);
+      // Increment key for next feature
+      primary_key += 1;
+    });
+    const columnNamesArray = bulkUploadPayload[0].map((col) => col.field);
+    const columnTypesArray = bulkUploadPayload[0].map((col) => col.type);
+    const dataArray = bulkUploadPayload.map((row) => row.map((item) => item.value));
+
+    return { columnNamesArray, columnTypesArray, dataArray, start_location_id: max_id };
   }
 }

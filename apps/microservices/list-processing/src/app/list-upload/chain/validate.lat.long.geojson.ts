@@ -1,6 +1,8 @@
+import { Logger } from '@nestjs/common';
 import { AbstractHandler, ChainType } from './types';
 
 export class ValidateLatLongGeojson extends AbstractHandler<ChainType> {
+  private readonly logger = new Logger(ValidateLatLongGeojson.name);
   isValidLatitude(lat: number): boolean {
     return lat >= -90 && lat <= 90;
   }
@@ -70,10 +72,6 @@ export class ValidateLatLongGeojson extends AbstractHandler<ChainType> {
         }
       }
     }
-
-    const response = await super.handle({
-      ...input,
-    });
-    return response;
+    return input;
   }
 }

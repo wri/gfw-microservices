@@ -223,6 +223,10 @@ const uploadBulkLocations = (req, list_id, list_name, geojson, commodity, attrib
       })
       .then((columns) => {
         const bulkUploadPayload = [];
+        /**
+         * TODO GPV-3786
+         * duplicated code
+         */
         geojson.features.forEach((feature) => {
           let row = [];
           columns.forEach((column) => {

@@ -3,13 +3,16 @@ import * as jsonld from 'jsonld';
 import { v4 as uuidv4 } from 'uuid';
 import { GeoJsonSchema } from './types/geojson.schema';
 let vc, Ed25519Signature2018, Ed25519VerificationKey2018;
-eval("import('@digitalbazaar/vc').then(x=>vc=x)");
-eval(
-  "import('@digitalbazaar/ed25519-signature-2018').then(x=>Ed25519Signature2018=x.Ed25519Signature2018)"
-);
-eval(
-  "import('@digitalbazaar/ed25519-verification-key-2018').then(x=>Ed25519VerificationKey2018=x.Ed25519VerificationKey2018)"
-);
+// hack to avoid importing in test because jest does not like dynamic import
+if (process.env.NODE_ENV !== 'test') {
+  eval("import('@digitalbazaar/vc').then(x=>vc=x)");
+  eval(
+    "import('@digitalbazaar/ed25519-signature-2018').then(x=>Ed25519Signature2018=x.Ed25519Signature2018)"
+  );
+  eval(
+    "import('@digitalbazaar/ed25519-verification-key-2018').then(x=>Ed25519VerificationKey2018=x.Ed25519VerificationKey2018)"
+  );
+}
 
 @Injectable()
 export class VerifiableCredentialService {

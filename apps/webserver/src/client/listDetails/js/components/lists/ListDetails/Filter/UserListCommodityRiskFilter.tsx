@@ -29,6 +29,8 @@ interface Location {
   subState: string;
   certification: string;
   parentCompany: string;
+  supplierName?: string;
+  secondSupplierName?: string;
   label?: string;
   value?: string;
 }
@@ -36,9 +38,9 @@ interface Location {
 interface UserListCommodityRiskFilterProps {
   isFilterModalVisible: boolean;
   filterValues: any;
-  parentCompanyOptionsForFilter: any[];
-  supplierNameOptionsForFilter: any[];
-  secondSupplierNameOptionsForFilter: any[];
+  parentCompanyOptionsForFilter: Location[];
+  supplierNameOptionsForFilter: Location[];
+  secondSupplierNameOptionsForFilter: Location[];
 }
 
 const UserListCommodityRiskFilter: React.FC<UserListCommodityRiskFilterProps> = ({

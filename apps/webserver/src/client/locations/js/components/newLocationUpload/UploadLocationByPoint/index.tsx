@@ -25,7 +25,7 @@ import { LocationTypeButton, HowToFormatLocationLink } from '../components';
 
 import HectareKilometerSwitch from '../../adding/HectareKilometerSwitch';
 import { PillButton } from '../../../../../components';
-import { MeasurementUnit } from '../types';
+import { ChangePageType, MeasurementUnit } from '../types';
 import { coordinateSchema } from '../utils/schema';
 
 enum LocationFormat {
@@ -39,16 +39,12 @@ enum RadiusSize {
   Custom,
 }
 
-type UploadLocationByPointProps = {
-  clearUploadType: () => void;
-};
-
 type FormFields = z.infer<typeof coordinateSchema>;
 
 const COORDINATE_ERROR_MESSAGE =
   'Your coordinate value is invalid. Please ensure your data is in decimal degree notation';
 
-export function UploadLocationByPoint({ clearUploadType }: UploadLocationByPointProps) {
+export function UploadLocationByPoint({ setUploadType }: ChangePageType) {
   const {
     handleSubmit,
     control,
@@ -283,7 +279,7 @@ export function UploadLocationByPoint({ clearUploadType }: UploadLocationByPoint
               variant="contained"
               color="info"
               startIcon={<Close />}
-              onClick={clearUploadType}
+              onClick={() => setUploadType(null)}
             >
               Cancel
             </PillButton>

@@ -14,7 +14,7 @@ import { AddLocationAlt, Close, ArrowForwardIos, Draw, Add, Check } from '@mui/i
 import { HowToFormatLocationLink, LocationTypeButton } from '../components';
 import AddLocationMap from '../../adding/AddLocationMap';
 import { PillButton } from '../../../../../components';
-import { MeasurementUnit } from '../types';
+import { ChangePageType, MeasurementUnit } from '../types';
 import { coordinateSchema } from '../utils/schema';
 
 const ARCGIS_GEOMETRY_SERVER_URL =
@@ -30,10 +30,6 @@ enum LocationFormat {
   PolygonCoordinates,
 }
 
-type UploadLocationByPointProps = {
-  clearUploadType: () => void;
-};
-
 type MapData = {
   geometry?: Point;
   measurementUnit: MeasurementUnit;
@@ -44,7 +40,7 @@ type MapData = {
 const schema = z.record(coordinateSchema);
 type FormFields = z.infer<typeof schema>;
 
-export function UploadLocationByPolygon({ clearUploadType }: UploadLocationByPointProps) {
+export function UploadLocationByPolygon({ setUploadType }: ChangePageType) {
   const theme = useTheme();
 
   const {
@@ -273,7 +269,7 @@ export function UploadLocationByPolygon({ clearUploadType }: UploadLocationByPoi
           variant="contained"
           color="info"
           startIcon={<Close />}
-          onClick={clearUploadType}
+          onClick={() => setUploadType(null)}
         >
           Cancel
         </PillButton>

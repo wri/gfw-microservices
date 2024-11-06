@@ -157,9 +157,9 @@ export class GADMService extends AbstractHandler<ChainType> {
     await this.getGeoReferenceData(feature);
   };
 
-  async handle(input: ChainType): Promise<ChainType> {
-    const { geojson } = input;
-    const { path, preview = false } = input.request as PreviewListRequest;
+  async handle(request: ChainType): Promise<ChainType> {
+    const { geojson } = request;
+    const { path, preview = false } = request.request as PreviewListRequest;
     const { features } = geojson as FeatureCollection;
 
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -167,12 +167,12 @@ export class GADMService extends AbstractHandler<ChainType> {
       // disabling log because it is too verbose -- logs every iteration
       // this.logger.log(`(${path}) - one more feature processed`);
     }
-    this.logger.log('GADMService - done with getGeoReferenceData for', path);
+    this.logger.debug('GADMService - done with getGeoReferenceData for', path);
     // We should not call clip to land if we are in the preview mode.
     if (!preview) {
       const response = await this.clipToLand(geojson);
-      input.geojson = response.geojson;
+      request.geojson = response.geojson;
     }
-    return super.handle(input);
+    return request;
   }
 }

@@ -80,18 +80,21 @@ describe('ListSchema', () => {
       .spyOn(AbstractHandler.prototype, 'handle')
       .mockImplementation(() => Promise.resolve());
 
-    await listSchema.handle(input);
+    const response = await listSchema.handle(input);
 
-    expect(superHandleSpy).toHaveBeenCalledWith({
-      ...input,
+    expect(response).toStrictEqual({
       request: {
-        ...input.request,
-        listTable: `list-${listName.toLowerCase()}`,
-        analysisTable: `analysis-${listName.toLowerCase()}`,
-        listStatusId: 1,
-        locationClassification: 'Property',
+        analysisTable: 'analysis-newlist',
         customAttributeNames: '',
         customAttributeTypes: '',
+        listStatusId: 1,
+        listTable: 'list-newlist',
+        list_name: 'NewList',
+        locationClassification: 'Property',
+        organization_database: 'test-db',
+        path: 'path',
+        template_id: 1,
+        user_id: 1,
       },
     });
 

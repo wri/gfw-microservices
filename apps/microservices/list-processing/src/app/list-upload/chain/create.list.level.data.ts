@@ -5,7 +5,6 @@ import * as sql from 'mssql';
 import { updateListsUploadStatus } from '../shared/update.lists.upload.status';
 import { featureFlagsService } from '@wri-monorepos/shared';
 import { Logger } from '@nestjs/common';
-import { logExecutionTime } from './shared';
 
 const LIST_UPLOAD_VERSION = 2;
 const LIST_UPLOAD_LEGACY_VERSION = 0;
@@ -82,8 +81,7 @@ export class CreateListLevelData extends AbstractHandler<ChainType> {
     await this.executeQueryWithParams<void>(connection, 'uspAddListToAnalyses', parameters);
   }
 
-  @logExecutionTime(CreateListLevelData.name)
-  async operation(request: ChainType): Promise<ChainType> {
+  async handle(request: ChainType): Promise<ChainType> {
     const {
       list_name: listName,
       organization_database: clientDatabase,
@@ -146,10 +144,5 @@ export class CreateListLevelData extends AbstractHandler<ChainType> {
     } finally {
       await connection.disconnect();
     }
-  }
-
-  async handle(input: ChainType): Promise<ChainType> {
-    const response = await this.operation(input);
-    return await super.handle(response);
   }
 }

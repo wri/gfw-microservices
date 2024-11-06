@@ -1,6 +1,5 @@
 import { Logger } from '@nestjs/common';
 import { AbstractHandler, ChainType } from './types';
-import { logExecutionTime } from './shared';
 
 export class GetObjectTypes extends AbstractHandler<ChainType> {
   private readonly logger = new Logger(GetObjectTypes.name);
@@ -25,8 +24,7 @@ export class GetObjectTypes extends AbstractHandler<ChainType> {
     return existingTypes;
   }
 
-  @logExecutionTime(GetObjectTypes.name)
-  operation(request: ChainType): ChainType {
+  async handle(request: ChainType): Promise<ChainType> {
     const { geojson } = request;
 
     let mergedTypes = {};
@@ -38,10 +36,5 @@ export class GetObjectTypes extends AbstractHandler<ChainType> {
 
     this.logger.log(mergedTypes);
     return request;
-  }
-
-  async handle(input: ChainType): Promise<ChainType> {
-    const request = await this.operation(input);
-    return super.handle(request);
   }
 }

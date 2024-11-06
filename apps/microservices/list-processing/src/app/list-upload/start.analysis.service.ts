@@ -3,7 +3,7 @@ import { RequestLargeListProcess, ResponseLargeListProcess } from '../../models'
 import { ConfigService } from '@nestjs/config';
 import { ServerConfigType } from '../../validators/server-config';
 import { S3Service } from '@wri-monorepos/aws';
-import { ChainType } from './chain/types';
+import { AbstractHandler, ChainType } from './chain/types';
 import { DownloadS3File } from './chain/download.s3.file';
 import { ParserData } from './chain/parser.data';
 import { ListSchemaName } from './chain/list.schema.name';
@@ -66,7 +66,7 @@ export class StartAnalysisService {
       .setNext(insertLocationData)
       .setNext(startAnalysis);
 
-    await downloadS3File.handle(chainType);
+    AbstractHandler.runFullChain(downloadS3File, chainType);
 
     await connection.disconnect();
     return {

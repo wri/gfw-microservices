@@ -3,7 +3,6 @@ import { AbstractHandler, ChainType } from './types';
 import { ConfigService } from '@nestjs/config';
 import { ServerConfigType } from '../../../validators/server-config';
 import { Logger } from '@nestjs/common';
-import { logExecutionTime } from './shared';
 
 export class DownloadS3File extends AbstractHandler<ChainType> {
   private readonly logger = new Logger(DownloadS3File.name);
@@ -15,8 +14,7 @@ export class DownloadS3File extends AbstractHandler<ChainType> {
     super();
   }
 
-  @logExecutionTime(DownloadS3File.name)
-  async operation(request: ChainType): Promise<ChainType> {
+  async handle(request: ChainType): Promise<ChainType> {
     const { path } = request.request;
     const bucket = this.config.get<string>('LARGE_PROCESSING_LIST_BUCKET', { infer: true });
 
@@ -44,10 +42,5 @@ export class DownloadS3File extends AbstractHandler<ChainType> {
       }
     }
     return { ...request, request: { ...request.request, fileDownloadedPath: '' } };
-  }
-
-  async handle(input: ChainType): Promise<ChainType> {
-    const request = await this.operation(input);
-    return super.handle(request);
   }
 }

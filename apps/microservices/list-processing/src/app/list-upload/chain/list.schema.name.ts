@@ -1,7 +1,6 @@
 import { Logger } from '@nestjs/common';
 import { AbstractHandler, ChainType, RequestNewList } from './types';
 import { getListByFilters } from '@wri-monorepos/sql';
-import { logExecutionTime } from './shared';
 
 const createListNameSchema = (list_name) => ({
   list_table: `list-${list_name.replace(/\s/g, '').toLowerCase()}`,
@@ -11,8 +10,7 @@ const createListNameSchema = (list_name) => ({
 export class ListSchemaName extends AbstractHandler<ChainType> {
   private readonly logger = new Logger(ListSchemaName.name);
 
-  @logExecutionTime(ListSchemaName.name)
-  async operation(request: ChainType): Promise<ChainType> {
+  async handle(request: ChainType): Promise<ChainType> {
     const { list_name: listName, organization_database: clientDatabase } =
       request.request as RequestNewList;
     const list = createListNameSchema(listName);
@@ -39,10 +37,5 @@ export class ListSchemaName extends AbstractHandler<ChainType> {
         customAttributeTypes: '',
       },
     };
-  }
-
-  async handle(input: ChainType): Promise<ChainType> {
-    const request = await this.operation(input);
-    return super.handle(request);
   }
 }

@@ -67,7 +67,7 @@ export class ConvertPoint2Polygon extends AbstractHandler<ChainType> {
     return this.geomFromPointRadiusArea(point, featureRadius, featureArea);
   }
 
-  async operation(request: ChainType): Promise<ChainType> {
+  async handle(request: ChainType): Promise<ChainType> {
     const { geojson } = request;
     const { features } = geojson;
 
@@ -89,10 +89,5 @@ export class ConvertPoint2Polygon extends AbstractHandler<ChainType> {
       }
     }
     return request;
-  }
-
-  async handle(input: ChainType): Promise<ChainType> {
-    const request = await this.operation(input);
-    return await super.handle(request);
   }
 }

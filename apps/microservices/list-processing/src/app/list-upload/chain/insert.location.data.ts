@@ -4,7 +4,6 @@ import { ClientStoreConnection, ListSchema, ListSchemaType } from '@wri-monorepo
 import { FeatureCollection } from '@wri-monorepos/geo';
 import { GeoJSONGeometry, stringify } from 'wellknown';
 import { Logger } from '@nestjs/common';
-import { logExecutionTime } from './shared';
 
 const BATCH_SIZE = 100;
 
@@ -39,8 +38,7 @@ export class InsertLocationData extends AbstractHandler<ChainType> {
     }
   }
 
-  @logExecutionTime(InsertLocationData.name)
-  async operation(request: ChainType): Promise<ChainType> {
+  async handle(request: ChainType): Promise<ChainType> {
     const { organization_database: organizationDatabase, listTable } =
       request.request as RequestNewList;
     const ListEntity = new EntitySchema<ListSchemaType>({
@@ -68,10 +66,5 @@ export class InsertLocationData extends AbstractHandler<ChainType> {
     } catch (error) {
       throw new Error(`Failed to handle input: ${error.message}`);
     }
-  }
-
-  async handle(input: ChainType): Promise<ChainType> {
-    const request = await this.operation(input);
-    return super.handle(request);
   }
 }

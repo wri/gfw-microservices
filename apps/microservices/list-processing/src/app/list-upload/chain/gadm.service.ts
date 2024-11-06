@@ -6,7 +6,6 @@ import { IFeatureSet, IGeometry, queryFeatures } from '@esri/arcgis-rest-feature
 import { LambdaClient, InvokeCommand, InvocationType } from '@aws-sdk/client-lambda';
 import { NodeHttpHandler } from '@smithy/node-http-handler';
 import { S3Service } from '@wri-monorepos/aws';
-import { logExecutionTime } from './shared';
 
 const PRODUCTION_ENVIRONMENTS = ['production', 'ProdV2'];
 const POOL_SIZE = 5;
@@ -158,8 +157,7 @@ export class GADMService extends AbstractHandler<ChainType> {
     await this.getGeoReferenceData(feature);
   };
 
-  @logExecutionTime(GADMService.name)
-  async operation(request: ChainType): Promise<ChainType> {
+  async handle(request: ChainType): Promise<ChainType> {
     const { geojson } = request;
     const { path, preview = false } = request.request as PreviewListRequest;
     const { features } = geojson as FeatureCollection;
@@ -176,10 +174,5 @@ export class GADMService extends AbstractHandler<ChainType> {
       request.geojson = response.geojson;
     }
     return request;
-  }
-
-  async handle(input: ChainType): Promise<ChainType> {
-    const request = await this.operation(input);
-    return super.handle(request);
   }
 }

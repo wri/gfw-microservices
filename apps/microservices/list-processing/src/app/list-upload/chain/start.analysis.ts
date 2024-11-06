@@ -14,7 +14,6 @@ import {
   GEO_TRELLIS__ANALYZE_LIST_PRODV2,
 } from '@wri-monorepos/constants';
 import { Logger } from '@nestjs/common';
-import { logExecutionTime } from './shared';
 
 const environmentAllowTestFlow = ['DEVELOPMENT', 'LATEST', 'QA', 'STAGING'];
 
@@ -45,8 +44,7 @@ export class StartAnalysis extends AbstractHandler<ChainType> {
     return email;
   }
 
-  @logExecutionTime(StartAnalysis.name)
-  async operation(request: ChainType): Promise<ChainType> {
+  async handle(request: ChainType): Promise<ChainType> {
     const {
       organization_database,
       user_id,
@@ -129,11 +127,6 @@ export class StartAnalysis extends AbstractHandler<ChainType> {
 
     const response = await fetch(geoTrellisUrl, options);
     await response.json();
-    return request;
-  }
-
-  async handle(input: ChainType): Promise<ChainType> {
-    const request = await this.operation(input);
     return request;
   }
 }

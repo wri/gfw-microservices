@@ -42,7 +42,6 @@ export class ParserData extends AbstractHandler<ChainType> {
     return geojson;
   };
 
-
   xls2geojson = async (fileDownloadedPath: string) => {
     const xlsxContent: Buffer = fs.readFileSync(fileDownloadedPath);
     const geojson = await xls2geojson(xlsxContent);
@@ -55,7 +54,7 @@ export class ParserData extends AbstractHandler<ChainType> {
     return geojson;
   };
 
-  async operation(request: ChainType): Promise<ChainType> {
+  async handle(request: ChainType): Promise<ChainType> {
     const { fileDownloadedPath, preview = false } = request.request as PreviewListRequest;
     const fileExtension = path.extname(fileDownloadedPath);
 
@@ -76,9 +75,8 @@ export class ParserData extends AbstractHandler<ChainType> {
       const geoJson = await dataParser[fileExtension](fileDownloadedPath, preview);
       this.logger.log('Data parsed successfully');
 
-      const response = await super.handle({ ...request, geojson: geoJson });
       this.deleteFile(fileDownloadedPath);
-      return response;
+      return { ...request, geojson: geoJson };
     } catch (error) {
       // Log the error with more context
       this.logger.error(
@@ -87,10 +85,5 @@ export class ParserData extends AbstractHandler<ChainType> {
       );
       throw new Error('Error while parsing the data');
     }
-  }
-
-  async handle(input: ChainType): Promise<ChainType> {
-    const request = await this.operation(input);
-    return super.handle(request);
   }
 }

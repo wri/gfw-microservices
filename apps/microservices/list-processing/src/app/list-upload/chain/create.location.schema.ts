@@ -3,7 +3,6 @@ import { updateListsUploadStatus } from '../shared/update.lists.upload.status';
 import { AbstractHandler, ChainType, RequestNewList } from './types';
 import * as sql from 'mssql';
 import { Logger } from '@nestjs/common';
-import { logExecutionTime } from './shared';
 
 export class CreateLocationSchema extends AbstractHandler<ChainType> {
   private readonly logger = new Logger(CreateLocationSchema.name);
@@ -110,8 +109,7 @@ export class CreateLocationSchema extends AbstractHandler<ChainType> {
     }
   }
 
-  @logExecutionTime(CreateLocationSchema.name)
-  async operation(request: ChainType): Promise<ChainType> {
+  async handle(request: ChainType): Promise<ChainType> {
     const {
       listId,
       listTable,
@@ -143,10 +141,5 @@ export class CreateLocationSchema extends AbstractHandler<ChainType> {
     );
     await updateListsUploadStatus(organization_database, listId, 'Create analysis status records');
     return request;
-  }
-
-  async handle(input: ChainType): Promise<ChainType> {
-    const request = await this.operation(input);
-    return await super.handle(request);
   }
 }

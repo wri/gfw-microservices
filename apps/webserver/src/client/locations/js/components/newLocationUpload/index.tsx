@@ -35,16 +35,14 @@ export function NewLocationUpload() {
     ActiveComponent.UploadOptions
   );
 
-  const selectUploadType = (type: UploadType) => {
+  const selectUploadType = (type: UploadType | null) => {
     setUploadType(type);
   };
 
-  const clearUploadType = () => {
-    setUploadType(null);
-  };
+  const stepsForUploadByLocation = ['Location', 'Configure List', 'Submit'];
+  const stepsForUploadByFile = ['Prepare & Upload', 'Preview', 'Configure List', 'Submit'];
 
-  const steps = ['Location', 'Configure List', 'Submit'];
-  const [activeStep] = useState(0);
+  const [steps, setSteps] = useState({ data: stepsForUploadByLocation, active: 0 });
 
   useEffect(() => {
     if (uploadType === null) {
@@ -52,16 +50,20 @@ export function NewLocationUpload() {
       return;
     }
 
+    const isUploadByFile = uploadType === UploadType.ByFile;
+    setSteps((steps) => ({
+      ...steps,
+      data: isUploadByFile ? stepsForUploadByFile : stepsForUploadByLocation,
+    }));
+
     setActiveComponent(mapUploadTypeToActiveComponent[uploadType]);
   }, [uploadType]);
 
   const ActiveComponentMap: { [key in ActiveComponent]: React.JSX.Element } = {
-    [ActiveComponent.UploadOptions]: <UploadLocationOptions selectUploadType={selectUploadType} />,
-    [ActiveComponent.UploadByFile]: <UploadLocationByFile />,
-    [ActiveComponent.UploadByPoint]: <UploadLocationByPoint clearUploadType={clearUploadType} />,
-    [ActiveComponent.UploadByPolygon]: (
-      <UploadLocationByPolygon clearUploadType={clearUploadType} />
-    ),
+    [ActiveComponent.UploadOptions]: <UploadLocationOptions setUploadType={selectUploadType} />,
+    [ActiveComponent.UploadByFile]: <UploadLocationByFile setUploadType={selectUploadType} />,
+    [ActiveComponent.UploadByPoint]: <UploadLocationByPoint setUploadType={selectUploadType} />,
+    [ActiveComponent.UploadByPolygon]: <UploadLocationByPolygon setUploadType={selectUploadType} />,
   };
 
   return (
@@ -69,13 +71,13 @@ export function NewLocationUpload() {
       <div className="new-location-upload">
         {activeComponent !== ActiveComponent.UploadOptions && (
           <nav>
-            <IconButton onClick={clearUploadType} disableRipple>
+            <IconButton onClick={() => setUploadType(null)} disableRipple>
               <ArrowBack />
             </IconButton>
             <Typography variant="h5">New Location</Typography>
 
-            <Stepper activeStep={activeStep} sx={{ width: '100%', marginLeft: '4rem' }}>
-              {steps.map((label) => {
+            <Stepper activeStep={steps.active} sx={{ width: '100%', marginLeft: '4rem' }}>
+              {steps.data.map((label) => {
                 return (
                   <Step key={label}>
                     <StepLabel>{label}</StepLabel>

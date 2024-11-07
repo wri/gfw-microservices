@@ -6,19 +6,22 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import {
-  ListsPalmOilMills,
   ListGFWLists,
   AnalysisPalmOilMills,
   AnalysisAdministrativesAreas,
   AnalysisOilPalmConcessions,
   AnalysisProtectedAreas,
   AnalysisRspoOilPalmConcessions,
-  RspoOilPalmConcessions,
-  ListOilPalmConcessions,
-  ListProtectedAreas,
   ListAdministrativeAreas,
 } from '../entity';
+
 import { EntityTarget, FindOptionsWhere, Raw } from 'typeorm';
+import {
+  ListOilPalmConcessions,
+  ListProtectedAreas,
+  ListsPalmOilMills,
+  RspoOilPalmConcessions,
+} from '@wri-monorepos/constants';
 
 export class GfwLists {
   private readonly logger = new Logger('List processing service');

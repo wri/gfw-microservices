@@ -58,7 +58,11 @@ export abstract class AbstractHandler<T> implements Handler<T> {
     let result: T = chainType;
     while (nextJob) {
       const start = performance.now();
-      result = await nextJob.handle(result);
+      try {
+        result = await nextJob.handle(result);
+      } catch (error) {
+        Logger.error(`Error in ${nextJob.constructor.name}: ${error.message}`);
+      }
       const end = performance.now();
       AbstractHandler.logExecutionTime(start, end, nextJob.constructor.name);
       nextJob = nextJob.nextHandler;

@@ -28,6 +28,7 @@ export const selectStyle = {
   },
   '& .MuiInputLabel-root': {
     color: gfwGreen,
+    fontSize: '0.8rem',
     '&.Mui-focused': {
       color: gfwGreen,
     },

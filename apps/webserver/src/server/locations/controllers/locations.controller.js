@@ -19,6 +19,11 @@ const {
 } = require('../../../config/publicutils/shareManager.utils');
 const { formatListLocationDataForFilter } = require('../utils/locations.utils');
 const { getCurrentDateTimeFormatted } = require('../../vectorTiles/utils/vectorTile.utils');
+const sqlUtils = require('../../../config/privateutils/sql.utils');
+const sql = require('mssql');
+const {
+  getFilterOptionsForUserLists,
+} = require('../../../../../../libs/sql/src/lib/queries/organization/getFilterOptionsForUserLists');
 
 // Config
 const { getGeoJSONGeometry } = require('../../../config/privateutils/location.utils');
@@ -144,6 +149,9 @@ export const listFilterValues = async (request, response) => {
     let countryStateAndSubstates;
     let locationNameOptionsForFilter;
     let parentCompanyOptionsForFilter;
+    let supplierNameOptionsForFilter;
+    let secondSupplierNameOptionsForFilter;
+
     if (GFWlistManager.isGfwList(listId)) {
       const adminAreasLocations = await GFWlistManager.getGFWListLocationsNoGeom(request, id);
 
@@ -216,14 +224,106 @@ export const listFilterValues = async (request, response) => {
         );
       }
     } else {
-      countryStateAndSubstates = await ListManager.getListAdminAreasOrderedByCountry(request, id);
-    }
+      const parameters = [{ field: 'listId', type: sql.Int, value: listId }];
 
+      const queryResult = await sqlUtils.executeOrganizationQuery(
+        request,
+        getFilterOptionsForUserLists,
+        parameters
+      );
+
+      countryStateAndSubstates = queryResult[0];
+
+      secondSupplierNameOptionsForFilter = Array.from(
+        new Map(
+          countryStateAndSubstates
+            .map(
+              ({
+                'Second Supplier Name': label,
+                location_id: value,
+                'Sub State': subState,
+                Country: country,
+                State: state,
+                Certification: certification,
+                'Supplier Name': supplerName,
+              }) => ({
+                value,
+                label,
+                subState,
+                country,
+                state,
+                certification,
+                supplerName,
+              })
+            )
+            .filter((location) => !!location.label) // Filter out items with a falsy label
+            .sort((a, b) => a.label.toLowerCase().localeCompare(b.label.toLowerCase()))
+            .map((location) => [location.label, location]) // Create [label, location] pairs for uniqueness
+        ).values() // Extract only unique locations based on the label
+      );
+      supplierNameOptionsForFilter = Array.from(
+        new Map(
+          countryStateAndSubstates
+            .map(
+              ({
+                'Supplier Name': label,
+                location_id: value,
+                'Sub State': subState,
+                Country: country,
+                State: state,
+                Certification: certification,
+                'Second Supplier Name': secondSupplierName,
+              }) => ({
+                value,
+                label,
+                subState,
+                country,
+                state,
+                certification,
+                secondSupplierName,
+              })
+            )
+            .filter((location) => !!location.label) // Filter out items with a falsy label
+            .sort((a, b) => a.label.toLowerCase().localeCompare(b.label.toLowerCase()))
+            .map((location) => [location.label, location]) // Create [label, location] pairs for uniqueness
+        ).values() // Extract only unique locations based on the label
+      );
+
+      parentCompanyOptionsForFilter = Array.from(
+        new Map(
+          countryStateAndSubstates
+            .map(
+              ({
+                'Parent Company': label,
+                location_id: value,
+                'Sub State': subState,
+                Country: country,
+                State: state,
+                Certification: certification,
+              }) => ({
+                value,
+                label,
+                subState,
+                country,
+                state,
+                certification,
+              })
+            )
+            .filter((location) => !!location.label) // Filter out items with a falsy label
+            .sort((a, b) => a.label.toLowerCase().localeCompare(b.label.toLowerCase()))
+            .map((location) => [location.label, location]) // Create [label, location] pairs for uniqueness
+        ).values() // Extract only unique locations based on the label
+      );
+    }
     const filterValues = formatListLocationDataForFilter(countryStateAndSubstates);
 
-    response
-      .status(200)
-      .json({ filterValues, locationNameOptionsForFilter, parentCompanyOptionsForFilter });
+    response.status(200).json({
+      filterValues,
+      locationNameOptionsForFilter,
+      parentCompanyOptionsForFilter,
+      supplierNameOptionsForFilter,
+      secondSupplierNameOptionsForFilter,
+    });
   } catch (err) {
     logger.error(`Getting list filter data failed: /listData/filters/${id}. Error message ${err}`);
     response.send({});

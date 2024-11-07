@@ -166,10 +166,10 @@ const GFWListCommodityRiskFilter: React.FC<GFWListCommodityRiskFilterProps> = ({
 */
   const matchesParentCompanyCriteria = (location: Location) => {
     return (
-      (!!state.selectedCountry || state.selectedCountry === location.country) &&
-      (!!state.selectedState || state.selectedState === location.state) &&
-      (!!state.selectedSubState || state.selectedSubState === location.subState) &&
-      (!!state.showRSPOCertified || location.certification === 'RSPO')
+      (!state.selectedCountry || state.selectedCountry === location.country) &&
+      (!state.selectedState || state.selectedState === location.state) &&
+      (!state.selectedSubState || state.selectedSubState === location.subState) &&
+      (!state.showRSPOCertified || location.certification === 'RSPO')
     );
   };
   const onSelectedLocationsChange = (event: any, newValue: any) => {

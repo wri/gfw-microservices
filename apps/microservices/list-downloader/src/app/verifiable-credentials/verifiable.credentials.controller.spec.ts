@@ -18,7 +18,7 @@ jest.mock('@digitalbazaar/ed25519-verification-key-2018', () => ({
   Ed25519VerificationKey2018: jest.fn(),
 }));
 
-describe('ListMessageController', () => {
+describe('VerifiableCredentialsController', () => {
   let controller: VerifiableCredentialsController;
   let verifiableCredentialService: VerifiableCredentialService;
 

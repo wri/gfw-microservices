@@ -7,13 +7,13 @@ import { ListsAnalysisStatus } from './lists.analysis.status.entity';
 import { AnalysesDashboardEntity } from './analyses.dashboard.entity';
 import { ListGFWLists } from './gfwLists.entity';
 import { AnalysisPalmOilMills } from './analysisPalmOilMills.entity';
-import { ListAdministrativeAreas } from './list.AdministrativeAreas.entity';
 import { AnalysisAdministrativesAreas } from './analysisAdministrativesAreas';
 import { AnalysisRspoOilPalmConcessions } from './analysisRspoPalmConcessions';
 import { AnalysisOilPalmConcessions } from './analysisOilPalmConcessions';
 import { AnalysisProtectedAreas } from './analysisProtectedAreas';
 import { AFIAnalysis } from './afiAnalysis.entity';
 import {
+  ListAdministrativeAreas,
   ListOilPalmConcessions,
   ListProtectedAreas,
   ListsPalmOilMills,
@@ -31,7 +31,6 @@ export * from './lists.analysis.status.entity';
 export * from './analyses.dashboard.entity';
 export * from './gfwLists.entity';
 export * from './analysisPalmOilMills.entity';
-export * from './list.AdministrativeAreas.entity';
 
 export * from './analysisAdministrativesAreas';
 export * from './analysisRspoPalmConcessions';

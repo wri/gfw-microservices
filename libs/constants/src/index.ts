@@ -8,3 +8,4 @@ export * from './lib/listActivityTypesEnum';
 export * from './lib/geoTrellis.config';
 export * from './lib/diagnostic-constants';
 export * from './entity';
+export * from './lib/getAttributesListEntity';

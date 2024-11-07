@@ -82,7 +82,7 @@ SET @SQL = 'SELECT  ' +
 
 	-- END Filters
 
-if (@Filters IS NOT NULL)
+if (@Filters IS NOT NULL) && LEN(@Filters) > 0
   SET @SQL = @SQL + @Filters;
 
 if (@orderType IS NOT NULL AND @sortByAttribute IS NOT NULL)

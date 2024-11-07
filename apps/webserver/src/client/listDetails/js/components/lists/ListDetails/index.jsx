@@ -144,6 +144,8 @@ export default class ListDetails extends Component {
       filterValues: [],
       locationNameOptionsForFilter: [],
       parentCompanyOptionsForFilter: [],
+      supplierNameOptionsForFilter: [],
+      secondSupplierNameOptionsForFilter: [],
       tableSortedBy: selectedLists[0].isGlobalForestWatchList ? 'Location Name' : 'Investment Name',
       tableSortedDesc: false,
       numberOfResults: undefined,
@@ -180,11 +182,19 @@ export default class ListDetails extends Component {
     );
 
     getListFilterValues(selectedLists[0].id).then(
-      ({ filterValues, locationNameOptionsForFilter, parentCompanyOptionsForFilter }) => {
+      ({
+        filterValues,
+        locationNameOptionsForFilter,
+        parentCompanyOptionsForFilter,
+        supplierNameOptionsForFilter,
+        secondSupplierNameOptionsForFilter,
+      }) => {
         this.setState({
           filterValues,
           locationNameOptionsForFilter,
           parentCompanyOptionsForFilter,
+          supplierNameOptionsForFilter,
+          secondSupplierNameOptionsForFilter,
         });
       }
     );
@@ -1824,6 +1834,8 @@ export default class ListDetails extends Component {
       filterValues,
       locationNameOptionsForFilter,
       parentCompanyOptionsForFilter,
+      supplierNameOptionsForFilter,
+      secondSupplierNameOptionsForFilter,
       isLoading,
       isManageListFolderOpen,
       isNewListNameDuplicate,
@@ -2212,6 +2224,8 @@ export default class ListDetails extends Component {
                           filterValues={filterValues}
                           parentCompanyOptionsForFilter={parentCompanyOptionsForFilter}
                           locationNameOptionsForFilter={locationNameOptionsForFilter}
+                          supplierNameOptionsForFilter={supplierNameOptionsForFilter}
+                          secondSupplierNameOptionsForFilter={secondSupplierNameOptionsForFilter}
                           listColumns={listColumns}
                           setListColumns={(newVisibleColumns) =>
                             this.setState({
@@ -2221,7 +2235,6 @@ export default class ListDetails extends Component {
                           isFilterModalVisible={isFilterModalVisible}
                           listView={listView}
                           listName={listName}
-                          listData={listData}
                           adminAreas={currentAdminAreas}
                           protectedAreas={pAreas}
                           isGfwList={selectedList.isGlobalForestWatchList}

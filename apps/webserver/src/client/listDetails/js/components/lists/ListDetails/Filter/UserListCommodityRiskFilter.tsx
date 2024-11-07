@@ -18,18 +18,37 @@ import Button from '../../../../../../common/js/components/Button';
 import CountryStateSubStateFilter from './CountryStateSubStateFilter';
 import { getFilterCounter } from '../../../../../../locations/js/utils/lists.utils';
 import { DefaultFilterValues } from '../../DefaultFilterValuesType';
+import filterCountryStateAndSubStateOptions from './filterCountryStateAndSubStateOptions';
 import { boxStyle, selectStyle } from './filterStyles';
 import store from '../../../../../../locations/js/store';
 import '../../../../../../common/css/filter-dialogs.scss';
 
+interface Location {
+  country: string;
+  state: string;
+  subState: string;
+  certification: string;
+  parentCompany: string;
+  supplierName?: string;
+  secondSupplierName?: string;
+  label?: string;
+  value?: string;
+}
+
 interface UserListCommodityRiskFilterProps {
-  listData: Array<{ [key: string]: any }>;
   isFilterModalVisible: boolean;
+  filterValues: DefaultFilterValues;
+  parentCompanyOptionsForFilter: Location[];
+  supplierNameOptionsForFilter: Location[];
+  secondSupplierNameOptionsForFilter: Location[];
 }
 
 const UserListCommodityRiskFilter: React.FC<UserListCommodityRiskFilterProps> = ({
-  listData,
   isFilterModalVisible,
+  filterValues,
+  parentCompanyOptionsForFilter,
+  supplierNameOptionsForFilter,
+  secondSupplierNameOptionsForFilter,
 }) => {
   const initialState: DefaultFilterValues = store.getState().filters;
   const [state, setState] = useState<DefaultFilterValues>(initialState);
@@ -40,6 +59,9 @@ const UserListCommodityRiskFilter: React.FC<UserListCommodityRiskFilterProps> = 
       selectedCountry: evt.target.value,
       selectedState: '',
       selectedSubState: '',
+      selectedParentCompany: '',
+      selectedSupplier: '',
+      selectedSecondSupplier: '',
     }));
   };
 
@@ -48,11 +70,20 @@ const UserListCommodityRiskFilter: React.FC<UserListCommodityRiskFilterProps> = 
       ...prevState,
       selectedState: evt.target.value,
       selectedSubState: '',
+      selectedParentCompany: '',
+      selectedSupplier: '',
+      selectedSecondSupplier: '',
     }));
   };
 
   const onSubStateChange = (evt: SelectChangeEvent<string>) => {
-    setState((prevState) => ({ ...prevState, selectedSubState: evt.target.value }));
+    setState((prevState) => ({
+      ...prevState,
+      selectedSubState: evt.target.value,
+      selectedParentCompany: '',
+      selectedSupplier: '',
+      selectedSecondSupplier: '',
+    }));
   };
 
   const changeSupplier = (evt: SelectChangeEvent<string>) => {
@@ -114,7 +145,13 @@ const UserListCommodityRiskFilter: React.FC<UserListCommodityRiskFilterProps> = 
   */
 
   const changeShowRSPOCertified = () => {
-    setState((prevState) => ({ ...prevState, showRSPOCertified: !prevState.showRSPOCertified }));
+    setState((prevState) => ({
+      ...prevState,
+      showRSPOCertified: !prevState.showRSPOCertified,
+      selectedParentCompany: '',
+      selectedSupplier: '',
+      selectedSecondSupplier: '',
+    }));
   };
 
   const updateValues = () => {
@@ -132,35 +169,6 @@ const UserListCommodityRiskFilter: React.FC<UserListCommodityRiskFilterProps> = 
     setState(initialState);
     store.dispatch(toggleCanopyModal());
   };
-
-  const countries = Array.from(new Set(listData.map((list) => list.Country)));
-  const states = Array.from(
-    new Set(
-      listData.filter((location) => location.Country === selectedCountry).map((list) => list.State)
-    )
-  );
-  const subStates = Array.from(
-    new Set(
-      listData
-        .filter(
-          (location) => location.Country === selectedCountry && location.State === selectedState
-        )
-        .map((list) => list['Sub State'])
-    )
-  );
-  const suppliersList = Array.from(
-    new Set(listData.filter((list) => list['Supplier Name']).map((list) => list['Supplier Name']))
-  );
-  const secondSuppliersList = Array.from(
-    new Set(
-      listData
-        .filter((list) => list['Second Supplier Name'])
-        .map((list) => list['Second Supplier Name'])
-    )
-  );
-  const parentCompaniesList = Array.from(
-    new Set(listData.filter((list) => list['Parent Company']).map((list) => list['Parent Company']))
-  );
   const {
     selectedCountry,
     selectedState,
@@ -170,19 +178,47 @@ const UserListCommodityRiskFilter: React.FC<UserListCommodityRiskFilterProps> = 
     selectedParentCompany,
     showRSPOCertified,
   } = state;
+
+  const { countryList, stateList, subStateList } = filterCountryStateAndSubStateOptions(
+    filterValues,
+    selectedCountry,
+    selectedState
+  );
+
+  const matchesCountryCriteria = (location: Location) => {
+    return (
+      (!state.selectedCountry || state.selectedCountry === location.country) &&
+      (!state.selectedState || state.selectedState === location.state) &&
+      (!state.selectedSubState || state.selectedSubState === location.subState) &&
+      (!state.showRSPOCertified || location.certification === 'RSPO')
+    );
+  };
+
+  const filteredSupplierNameOptions = supplierNameOptionsForFilter?.filter((location: Location) =>
+    matchesCountryCriteria(location)
+  );
+
+  const filteredSecondSupplierOptions = secondSupplierNameOptionsForFilter?.filter(
+    (location: Location) => matchesCountryCriteria(location)
+  );
+
+  const filteredParentCompanyOptions = parentCompanyOptionsForFilter
+    ?.filter((location: Location) => matchesCountryCriteria(location))
+    ?.slice(0, 400);
+
   return (
     <Modal open={isFilterModalVisible} onClose={onCloseHandler}>
       <Box sx={boxStyle}>
         <h3>Filters</h3>
         <Grid container spacing={3}>
           <CountryStateSubStateFilter
-            countries={countries}
+            countries={countryList}
             selectedCountry={selectedCountry}
             onCountryChange={onCountryChange}
-            states={states}
+            states={stateList}
             selectedState={selectedState}
             onStateChange={onStateChange}
-            subStates={subStates}
+            subStates={subStateList}
             selectedSubState={selectedSubState}
             onSubStateChange={onSubStateChange}
           />
@@ -191,15 +227,14 @@ const UserListCommodityRiskFilter: React.FC<UserListCommodityRiskFilterProps> = 
             <FormControl sx={selectStyle}>
               <InputLabel id="supplier-select">Supplier</InputLabel>
               <Select
-                id="supplier-select"
                 labelId="supplier-select"
                 value={selectedSupplier || ''}
                 onChange={changeSupplier}
                 label="Supplier"
               >
-                {suppliersList.map((option) => (
-                  <MenuItem key={option} value={option}>
-                    {option}
+                {filteredSupplierNameOptions.map(({ label, value }: Location) => (
+                  <MenuItem key={value} value={value}>
+                    {label}
                   </MenuItem>
                 ))}
               </Select>
@@ -216,9 +251,9 @@ const UserListCommodityRiskFilter: React.FC<UserListCommodityRiskFilterProps> = 
                 onChange={changeSecondSupplier}
                 label="Second Supplier"
               >
-                {secondSuppliersList.map((option) => (
-                  <MenuItem key={option} value={option}>
-                    {option}
+                {filteredSecondSupplierOptions.map(({ label, value }: Location) => (
+                  <MenuItem key={value} value={value}>
+                    {label}
                   </MenuItem>
                 ))}
               </Select>
@@ -252,9 +287,9 @@ const UserListCommodityRiskFilter: React.FC<UserListCommodityRiskFilterProps> = 
                 onChange={onParentCompanyChange}
                 label="Parent Company"
               >
-                {parentCompaniesList.map((option) => (
-                  <MenuItem key={option} value={option}>
-                    {option}
+                {filteredParentCompanyOptions.map(({ label, value }: Location) => (
+                  <MenuItem key={value} value={value}>
+                    {label}
                   </MenuItem>
                 ))}
               </Select>

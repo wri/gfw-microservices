@@ -37,7 +37,7 @@ interface Location {
 
 interface UserListCommodityRiskFilterProps {
   isFilterModalVisible: boolean;
-  filterValues: any;
+  filterValues: DefaultFilterValues;
   parentCompanyOptionsForFilter: Location[];
   supplierNameOptionsForFilter: Location[];
   secondSupplierNameOptionsForFilter: Location[];

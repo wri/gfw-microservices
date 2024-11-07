@@ -66,7 +66,7 @@ export class StartAnalysisService {
       .setNext(insertLocationData)
       .setNext(startAnalysis);
 
-    AbstractHandler.runFullChain(downloadS3File, chainType);
+    await AbstractHandler.runFullChain(downloadS3File, chainType);
 
     await connection.disconnect();
     return {

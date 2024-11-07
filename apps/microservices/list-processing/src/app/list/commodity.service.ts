@@ -77,9 +77,15 @@ export class CommodityService {
       ListEntity,
     ]);
     const listRepository = connection.getRepository(ListEntity);
-    const listData = await listRepository.find({ take: 1 });
-    const commodity = listData[0]?.commodity;
-    return { commodity };
+
+    // Use a raw SQL query to get distinct values
+    const distinctCommodities: Array<{ commodity: string }> = await listRepository.query(
+      `SELECT DISTINCT commodity FROM [${listTableName}]`
+    );
+    const commodities = distinctCommodities.map((commodity) => commodity.commodity);
+    return {
+      commodity: commodities.join(', '),
+    };
   }
 
   async getAllTemplates(): Promise<ListTemplate[]> {

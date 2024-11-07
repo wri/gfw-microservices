@@ -36,4 +36,6 @@ module.exports = (app, limiter) => {
   listRoutes.get('/:listId/selectedAnalyses', controller.getSelectedAnalyses);
 
   listRoutes.post('/:listId/selectedAnalyses', controller.setSelectedAnalysesCtrl);
+
+  listRoutes.get('/:listId/commodity', controller.getListCommodity);
 };

@@ -19,7 +19,7 @@ import {
   ListAdministrativeAreas,
 } from '../entity';
 import { EntityTarget, FindOptionsWhere, Raw } from 'typeorm';
-
+import { LIST_TABLE_NAMES } from '@wri-monorepos/constants';
 export class GfwLists {
   private readonly logger = new Logger('List processing service');
   private readonly clientStoreConnection = new ClientStoreConnection();
@@ -45,7 +45,7 @@ export class GfwLists {
     return ANALYSYS_TABLE_NAMES[analysisTableName];
   }
   getAttributesListEntity(
-    list_id: number
+    listTableName: string
   ): EntityTarget<
     | ListOilPalmConcessions
     | ListsPalmOilMills
@@ -55,13 +55,13 @@ export class GfwLists {
   > {
     const ATTRIBUTES_LIST_TABLE = ListsPalmOilMills;
     const ATTRIBUTES_LIST_TABLE_NAMES = {
-      1: ListAdministrativeAreas,
-      2: ListOilPalmConcessions,
-      3: ListsPalmOilMills,
-      4: ListProtectedAreas,
-      5: RspoOilPalmConcessions,
+      ListAdministrativeAreas: ListAdministrativeAreas,
+      ListOilPalmConcessions: ListOilPalmConcessions,
+      ListsPalmOilMills: ListsPalmOilMills,
+      ListProtectedAreas: ListProtectedAreas,
+      RspoOilPalmConcessions: RspoOilPalmConcessions,
     };
-    return ATTRIBUTES_LIST_TABLE_NAMES[list_id] || ATTRIBUTES_LIST_TABLE;
+    return ATTRIBUTES_LIST_TABLE_NAMES[listTableName] || ATTRIBUTES_LIST_TABLE;
   }
 
   async getConnection(organizationDatabase: string) {
@@ -84,7 +84,9 @@ export class GfwLists {
     }
     try {
       const connection = await this.getConnection(organizationDatabase);
-      const listRepository = connection.getRepository(this.getAttributesListEntity(list_id));
+      const listRepository = connection.getRepository(
+        this.getAttributesListEntity(LIST_TABLE_NAMES[list_id])
+      );
       const take = pageSize === 0 ? this.DEFAULT_PAGE_SIZE : pageSize;
       const skip = pageNum > 0 ? pageNum * take : this.DEFAULT_PAGE_NUM;
 
@@ -229,7 +231,9 @@ export class GfwLists {
 
     try {
       const connection = await this.getConnection(organizationDatabase);
-      const listRepository = connection.getRepository(this.getAttributesListEntity(list_id));
+      const listRepository = connection.getRepository(
+        this.getAttributesListEntity(LIST_TABLE_NAMES[list_id])
+      );
 
       const take = pageSize === 0 ? this.DEFAULT_PAGE_SIZE : pageSize;
       const skip = pageNum > 0 ? pageNum * take : this.DEFAULT_PAGE_NUM;

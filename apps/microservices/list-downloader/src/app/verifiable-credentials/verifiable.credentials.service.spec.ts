@@ -1,0 +1,94 @@
+import { GeoJsonSchema } from './types/geojson.schema';
+import { VerifiableCredentialService } from './verifiable.credentials.service';
+import { Test, TestingModule } from '@nestjs/testing';
+
+describe('VerifiableCredentialsService', () => {
+  let verifiableCredentialService: VerifiableCredentialService;
+  const mockGeoJsonObject = [
+    {
+      type: 'Feature',
+      properties: {
+        Location_Name: 'Location Test 1',
+        Latitude: '-25',
+        Longitude: '-57',
+        Analysis_Radius: '',
+        Analysis_Area: '312490.27',
+        Volume: '',
+        Facility_Code: '',
+        Slaughterhouse_Contact: '',
+        Start_Date: '',
+        End_Date: '',
+        Time_Horizon: '',
+        '@context': [
+          'https://www.w3.org/2018/credentials/v1',
+          'https://geojson.org/geojson-ld/geojson-context.jsonld',
+          'https://localhost:8443/geojson-defreport.jsonld',
+        ],
+        id: 'urn:uuid:0be8de79-4718-4767-9b77-99d3611c2c58',
+        type: ['VerifiableCredential'],
+        issuer: 'https://localhost:8443/vc-issuer/1',
+        issuanceDate: '2024-11-06T00:08:20.017Z',
+        expirationDate: '2025-11-06T00:08:20.017Z',
+        credentialSubject: {
+          geojson: {
+            Centroid_Country: 'Country Location Test',
+            Location_HA: 320,
+            SBTN_Natural_Forest_HA: 199,
+            SBTN_Natural_Forest_Loss_Post_2020_HA: 0,
+            JRC_Forest_HA: 206,
+            JRC_Forest_Loss_Post_2020_HA: 1,
+            Analysis_Time: '2099-10-23T01:06:38.394Z',
+            GFWPro_Account: 999,
+            Use_Rights: 'Full Sharing',
+          },
+        },
+        proof: {
+          type: 'Ed25519Signature2018',
+          created: '2024-11-06T00:08:20Z',
+          verificationMethod: 'https://localhost:8443/publicKey/1',
+          proofPurpose: 'assertionMethod',
+          jws: 'eyJhbGciOiJFZERTQSIsImI2NCI6ZmFsc2UsImNyaXQiOlsiYjY0Il19..HTOKxIOHposT7XT2iTSgay79XY4U-G5QLOFxyjzcwWoWtN5LkqLqYB-K4uM3obtHHBQpszSDV9N4PWLc3RHsCg',
+        },
+      },
+      geometry: {
+        type: 'Polygon',
+        coordinates: [[[-56.98498102294124, -24.72951754382428]]],
+      },
+    },
+  ];
+  beforeEach(async () => {
+    const module: TestingModule = await Test.createTestingModule({
+      controllers: [],
+      providers: [VerifiableCredentialService],
+    }).compile();
+
+    verifiableCredentialService = module.get<VerifiableCredentialService>(
+      VerifiableCredentialService
+    );
+  });
+  it('should be defined', () => {
+    expect(verifiableCredentialService).toBeDefined();
+  });
+  describe('singed-vc', () => {
+    it('should return a signed a geoJson', async () => {
+      const geojson: GeoJsonSchema = {
+        Location_Name: 'Location Test 1',
+        Centroid_Country: 'Country Location Test',
+        Location_HA: 320,
+        SBTN_Natural_Forest_HA: 199,
+        SBTN_Natural_Forest_Loss_Post_2020_HA: 0,
+        JRC_Forest_HA: 206,
+        JRC_Forest_Loss_Post_2020_HA: 1,
+        Analysis_Time: '2099-10-23T01:06:38.394Z',
+        GFWPro_Account: 999,
+        Use_Rights: 'Full Sharing',
+      };
+      verifiableCredentialService.signedVcOutput = jest
+        .fn()
+        .mockResolvedValueOnce(mockGeoJsonObject);
+      const signedGeoJson = await verifiableCredentialService.signedVcOutput(geojson);
+      expect(verifiableCredentialService.signedVcOutput).toHaveBeenCalled();
+      expect(signedGeoJson).toEqual(mockGeoJsonObject);
+    });
+  });
+});

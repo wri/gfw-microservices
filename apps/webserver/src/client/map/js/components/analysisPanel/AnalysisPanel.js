@@ -347,7 +347,8 @@ export default class AnalysisPanel extends Component {
   };
 
   startDrawing = () => {
-    const { sketchTool } = this.props;
+    const { sketchTool, closePopups } = this.props;
+    closePopups();
     sketchTool.layer.removeAll();
     store.dispatch(toggleDrawing());
     sketchTool.create('polygon', { mode: 'hybrid' });

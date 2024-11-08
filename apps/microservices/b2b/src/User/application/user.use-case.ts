@@ -46,7 +46,6 @@ export class UserUseCases {
       if (promise.isSuccess) {
         return promise.getValue();
       }
-      console.log(promise.getError());
       return null;
     };
 

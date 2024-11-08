@@ -2401,7 +2401,7 @@ class Map extends Component {
   };
 
   closePopups = () => {
-    if (this.view.popup.features && this.view.popup.features.length) {
+    if (this.view.popup.features && this.view.popup.features?.length > 0) {
       this.view.popup.features = [];
       this.view.popup.close();
     }

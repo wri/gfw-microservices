@@ -175,7 +175,6 @@ export const getListCommodity = async (req, res) => {
 
   try {
     const url = `${process.env.LISTS_MICROSERVICE_URL}/list/commodity?listId=${listId}&organizationDatabase=${organizationDatabase}`;
-    console.log(url);
     const { data } = await axios.get(url);
     res.status(200).json(data);
   } catch (error) {

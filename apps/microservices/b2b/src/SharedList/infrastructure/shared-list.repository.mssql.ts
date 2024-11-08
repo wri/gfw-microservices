@@ -22,12 +22,10 @@ export class SharedListRepositoryMssql
   }
 
   update(id: number, entity: SharedList): ResultPromise<SharedList> {
-    console.log(id, entity);
-    throw new Error('Method not implemented.');
+    throw new Error(`Method not implemented. ${id}  ${entity}`);
   }
   delete(id: number): ResultPromise<void> {
-    console.log(id);
-    throw new Error('Method not implemented.');
+    throw new Error(`Method not implemented. ${id}`);
   }
 
   async create(entity: SharedList): ResultPromise<SharedList> {

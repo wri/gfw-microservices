@@ -1,11 +1,14 @@
 // src/auth/guards/api-key.guard.ts
 
 import { Injectable, ExecutionContext, UnauthorizedException } from '@nestjs/common';
+import { Logger } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 const TOKEN_HEADER_NAME = 'x-api-key';
 
 @Injectable()
 export class ApiKeyGuard extends AuthGuard('header') {
+  private readonly logger = new Logger(ApiKeyGuard.name);
+
   constructor(/*private readonly usersService: UsersService*/) {
     super();
   }
@@ -26,7 +29,7 @@ export class ApiKeyGuard extends AuthGuard('header') {
 
   async validateToken(token: string) {
     // Implement your database validation logic here
-    console.log(token);
+    this.logger.log('Validating token: ' + token);
     return {
       username: 'admin',
       password: 'admin',

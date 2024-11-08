@@ -5,13 +5,13 @@ import { SQLUtils } from '@wri-monorepos/sql';
 
 class IPipeServiceStub extends IPipeService {
   start(_filters: BasicFieldsFileRequest, _table?: string, _fileSuffix?: string) {
-    console.log('Method not implemented.');
+    //console.log('Method not implemented.');
   }
   process(_data: unknown, _filters: BasicFieldsFileRequest) {
-    console.log('Method not implemented.');
+    // console.log('Method not implemented.');
   }
   finish(_filters: BasicFieldsFileRequest) {
-    console.log('Method not implemented.');
+    //console.log('Method not implemented.');
   }
 }
 

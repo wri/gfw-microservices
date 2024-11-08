@@ -101,7 +101,7 @@ export const isObjInCountryFormat = (data) => {
   const dataArray = Object.keys(data);
   if (dataArray.length === 0) return false;
 
-  return Object.keys(data).every((x) => x.length === 3);
+  return dataArray.every((x) => x.length === 3);
 };
 
 export const getTotalArea = (data, countryGadm) => {
@@ -125,7 +125,7 @@ export const shouldGenerateArgentinaCsv = ({
   const totalArea = getTotalArea(listLevelAnalysis, 'ARG');
   const isArgentinaDataAvailable = !isEmptyObject(argOtbnArea) || totalArea > 0;
 
-  return VALID_TYPES.includes(type) && listView !== 'commodity_risk' && isArgentinaDataAvailable;
+  return VALID_TYPES.includes(type) && listView === 'forest_change' && isArgentinaDataAvailable;
 };
 
 export const shouldGenerateColombiaCsv = ({

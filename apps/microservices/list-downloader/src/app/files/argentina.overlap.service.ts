@@ -6,21 +6,20 @@ import { generateCSV } from '../shared/generate.csv';
 import { EXCEL_TEMPLATES, EXCEL_TEMPLATE_HEADERS } from '../shared/constants';
 import { argentinaLayers } from '../parser/argentina.layers.parser';
 import { FormatNumber } from '../transform/format.number';
-
-const VALID_TYPES = ['argentinaOverlap', 'argentinaDeforestation', 'everything'];
+import { shouldGenerateArgentinaCsv } from '../shared/functions';
 
 @Injectable({
   scope: Scope.REQUEST,
 })
 export class ArgentinaOverlapService extends DashboardHandleDownload {
   start(filters: ListFieldsFileRequest) {
-    if (this.isArgentinaOverlapFile(filters)) {
+    if (shouldGenerateArgentinaCsv(filters)) {
       super.start(filters, 'argentinaOverlap', 'argentina_overlap');
     }
   }
 
   process(data, filters: ListFieldsFileRequest) {
-    if (this.isArgentinaOverlapFile(filters)) {
+    if (shouldGenerateArgentinaCsv(filters)) {
       super.process(data, filters);
     }
   }
@@ -53,7 +52,7 @@ export class ArgentinaOverlapService extends DashboardHandleDownload {
   async finish(filters: ListFieldsFileRequest) {
     const { selectedLocationsList } = filters;
 
-    if (this.isArgentinaOverlapFile(filters)) {
+    if (shouldGenerateArgentinaCsv(filters)) {
       this.logger.log('Argentina Overlap Service finish');
       if (selectedLocationsList.length != 1) {
         generateCSV(
@@ -65,16 +64,5 @@ export class ArgentinaOverlapService extends DashboardHandleDownload {
       }
       await super.finish(filters);
     }
-  }
-
-  isArgentinaOverlapFile({ type, listView, listLevelAnalysis }: ListFieldsFileRequest) {
-    const { arg_otbn_area, country_area } = listLevelAnalysis;
-    const argOtbnArea = JSON.parse(arg_otbn_area || '{}');
-    const countryArea = JSON.parse(country_area || '{}');
-
-    const hasProperties = (obj) => Object.keys(obj).length > 0;
-    const isArgentinaDataAvailable = hasProperties(argOtbnArea) || countryArea?.ARG > 0;
-
-    return VALID_TYPES.includes(type) && listView !== 'commodity_risk' && isArgentinaDataAvailable;
   }
 }

@@ -13,7 +13,7 @@ describe('Argentina Overlap Service', () => {
     listId: 5642,
     listName: 'WRI',
     key: 'tmp-key',
-    type: 'argentinaOverlap',
+    type: 'argentina',
     listView: 'forest_change',
     selectedLocationsList: [],
     listLevelAnalysis: argentinaListLevelData,

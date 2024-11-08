@@ -1,3 +1,5 @@
+import { ListFieldsFileRequest } from '@wri-monorepos/sql';
+
 export const cloneRow = (row) => {
   if (Array.isArray(row) === false) return [];
   return [...row];
@@ -96,10 +98,44 @@ export const isEmptyObject = (obj: object): boolean => {
 };
 
 export const isObjInCountryFormat = (data) => {
+  const dataArray = Object.keys(data);
+  if (dataArray.length === 0) return false;
+
   return Object.keys(data).every((x) => x.length === 3);
 };
 
 export const getTotalArea = (data, countryGadm) => {
   const countryArea = JSON.parse(data.country_area || '{}');
-  return countryArea[countryGadm] ?? data.total_area;
+  const isDataInCountryFormat = isObjInCountryFormat(countryArea);
+
+  if (isDataInCountryFormat) return countryArea[countryGadm] ?? 0;
+
+  return data.total_area;
+};
+
+export const shouldGenerateArgentinaCsv = ({
+  listView,
+  type,
+  listLevelAnalysis,
+}: ListFieldsFileRequest) => {
+  const VALID_TYPES = ['argentina', 'everything'];
+
+  const { arg_otbn_area } = listLevelAnalysis;
+  const argOtbnArea = JSON.parse(arg_otbn_area || '{}');
+  const totalArea = getTotalArea(listLevelAnalysis, 'ARG');
+  const isArgentinaDataAvailable = !isEmptyObject(argOtbnArea) || totalArea > 0;
+
+  return VALID_TYPES.includes(type) && listView !== 'commodity_risk' && isArgentinaDataAvailable;
+};
+
+export const shouldGenerateColombiaCsv = ({
+  type,
+  listView,
+  listLevelAnalysis,
+}: ListFieldsFileRequest) => {
+  const VALID_TYPES = ['colombia', 'everything'];
+
+  const totalArea = getTotalArea(listLevelAnalysis, 'COL');
+
+  return VALID_TYPES.includes(type) && totalArea > 0 && listView === 'forest_change';
 };

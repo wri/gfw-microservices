@@ -3,7 +3,7 @@ import { RequestLargeListProcess, ResponseLargeListProcess } from '../../models'
 import { ConfigService } from '@nestjs/config';
 import { ServerConfigType } from '../../validators/server-config';
 import { S3Service } from '@wri-monorepos/aws';
-import { ChainType } from './chain/types';
+import { AbstractHandler, ChainType } from './chain/types';
 import { DownloadS3File } from './chain/download.s3.file';
 import { ParserData } from './chain/parser.data';
 import { ListSchemaName } from './chain/list.schema.name';
@@ -16,6 +16,7 @@ import { ValidateLatLongGeojson } from './chain/validate.lat.long.geojson';
 import { StartAnalysis } from './chain/start.analysis';
 import { ConvertPoint2Polygon } from './chain/convert.point.2.polygon';
 import { GetObjectTypes } from './chain/getobject.types';
+import { logExecutionTime } from './chain/shared';
 
 @Injectable()
 export class StartAnalysisService {
@@ -26,6 +27,7 @@ export class StartAnalysisService {
     private readonly config: ConfigService<ServerConfigType, true>
   ) {}
 
+  @logExecutionTime(StartAnalysisService.name)
   async run(request: RequestLargeListProcess): Promise<ResponseLargeListProcess> {
     const { organization_database: organizationDatabase } = request;
 
@@ -64,7 +66,7 @@ export class StartAnalysisService {
       .setNext(insertLocationData)
       .setNext(startAnalysis);
 
-    await downloadS3File.handle(chainType);
+    await AbstractHandler.runFullChain(downloadS3File, chainType);
 
     await connection.disconnect();
     return {

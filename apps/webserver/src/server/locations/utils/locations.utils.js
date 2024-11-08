@@ -62,13 +62,34 @@ const getListDataFilterValues = (request, listID) => {
  */
 const formatListLocationDataForFilter = (listLocations) => {
   let listRecord = {};
+
   for (let i = 0; i < listLocations.length; i += 1) {
     const item = listLocations[i];
-    listRecord = addCountry(item, listRecord);
-    listRecord = addState(item, listRecord);
-    listRecord[item.Country][item.State].push(item['Sub State']);
+
+    // Initialize country if it doesn't exist
+    if (!listRecord[item.Country]) {
+      listRecord[item.Country] = new Map(); // Use Map for unique States within each Country
+    }
+
+    // Initialize state within the country if it doesn't exist
+    if (!listRecord[item.Country].has(item.State)) {
+      listRecord[item.Country].set(item.State, new Set()); // Use Set for unique Sub States within each State
+    }
+
+    // Add the Sub State to the Set within the specific State
+    listRecord[item.Country].get(item.State).add(item['Sub State']);
   }
-  return listRecord;
+
+  // Convert Maps and Sets to objects and arrays for final output
+  const formattedListRecord = {};
+  for (const country in listRecord) {
+    formattedListRecord[country] = {};
+    for (const [state, subStates] of listRecord[country]) {
+      formattedListRecord[country][state] = Array.from(subStates); // Convert Set to array
+    }
+  }
+
+  return formattedListRecord;
 };
 
 const mapCommodityRiskValuesToDatabaseValues = (arr) => {

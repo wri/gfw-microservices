@@ -54,8 +54,6 @@ export abstract class MultiConnectRepository<T> {
     this._mapFieldsToQuery(repository, query);
     this.convertQuery.convert(query, qb);
 
-    console.log(qb.getQuery());
-
     const { limit, offset } = query;
     const [items, count] = await qb.getManyAndCount();
 

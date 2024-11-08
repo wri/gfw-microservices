@@ -13,6 +13,7 @@ export const serverConfigSchema = z.object({
   AWS_TMP_BUCKET: z.string(),
   SES_SENDER_EMAIL: z.string().email(),
   LIST_PROCESSING_MICROSERVICE_URL: z.string().url(),
+  LD_VC_KeyPair: z.string(),
 });
 
 export type ServerConfigType = z.infer<typeof serverConfigSchema>;

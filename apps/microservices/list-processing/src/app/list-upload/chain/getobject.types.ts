@@ -24,8 +24,8 @@ export class GetObjectTypes extends AbstractHandler<ChainType> {
     return existingTypes;
   }
 
-  async handle(input: ChainType): Promise<ChainType> {
-    const { geojson } = input;
+  async handle(request: ChainType): Promise<ChainType> {
+    const { geojson } = request;
 
     let mergedTypes = {};
     const excludeFields = ['name'];
@@ -35,7 +35,6 @@ export class GetObjectTypes extends AbstractHandler<ChainType> {
     });
 
     this.logger.log(mergedTypes);
-
-    return super.handle(input);
+    return request;
   }
 }

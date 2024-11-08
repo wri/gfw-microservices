@@ -130,7 +130,7 @@ export const getValue = (data) => {
 
 export const getValidatedValue = (data, auditData) => {
   if (auditData === 0) {
-    return '--';
+    return '0%';
   }
   return formatDigit(Object.values(JSON.parse(data)).reduce((a, b) => a + b, 0));
 };
@@ -146,30 +146,18 @@ export const formatDeforestationValueByDisplayType = (rawValue, treeCoverExtentT
       deforestationDisplayValue = rawValue === 0 ? <>No</> : <>Yes</>;
       break;
     case DISPLAY_FORMAT_PERCENTAGE: {
-      const percentage = ((rawValue / treeCoverExtentTotal) * 100)?.toFixed(2);
-      deforestationDisplayValue = `${percentage}%`;
-      break;
-    }
-    default:
-      deforestationDisplayValue = formatDigit(rawValue);
-      break;
-  }
-  return deforestationDisplayValue;
-};
-
-export const tessadfasfdasdfasdfasdf = (rawValue, treeCoverExtentTotal) => {
-  const { deforestationDisplayFormat } = store.getState();
-  let deforestationDisplayValue;
-  switch (deforestationDisplayFormat) {
-    case DISPLAY_FORMAT_HECTARES:
-      deforestationDisplayValue = formatDigit(rawValue);
-      break;
-    case DISPLAY_FORMAT_SUMMARY:
-      deforestationDisplayValue = rawValue === 0 ? <>No</> : <>Yes</>;
-      break;
-    case DISPLAY_FORMAT_PERCENTAGE: {
-      const percentage = ((rawValue / treeCoverExtentTotal) * 100)?.toFixed(2);
-      deforestationDisplayValue = `${percentage}%`;
+      if (treeCoverExtentTotal === 0) {
+        deforestationDisplayValue = '0%'; // Avoid division by zero
+      } else {
+        const percentage = (rawValue / treeCoverExtentTotal) * 100;
+        if (percentage === 0) {
+          deforestationDisplayValue = '0%';
+        } else if (percentage < 1) {
+          deforestationDisplayValue = '<1%';
+        } else {
+          deforestationDisplayValue = `${Math.round(percentage)}%`;
+        }
+      }
       break;
     }
     default:
@@ -194,8 +182,7 @@ export const renderFormattedDeforestationValueWithIndicator = (
       deforestationDisplayValue = valueInHectares === 0 ? <>No</> : <>Yes</>;
       break;
     case DISPLAY_FORMAT_PERCENTAGE: {
-      const percentage = valueInPercentage?.toFixed(2);
-      deforestationDisplayValue = `${percentage}%`;
+      deforestationDisplayValue = valueInPercentage;
       break;
     }
     default:
@@ -207,7 +194,7 @@ export const renderFormattedDeforestationValueWithIndicator = (
 
   return (
     <>
-      {isNonZeroValue && <span className="status-indicator status-indicator--red"></span>}
+      <span className={`status-indicator ${isNonZeroValue ? 'status-indicator--red' : ''}`}></span>
       {deforestationDisplayValue}
     </>
   );
@@ -215,7 +202,7 @@ export const renderFormattedDeforestationValueWithIndicator = (
 
 export const calculateAndFormatTotalDeforestation = (treeCoverExtentTotal, data, auditData) => {
   if (auditData === 0) {
-    return '--';
+    return '0%';
   }
   const rawValue = Object.values(JSON.parse(data)).reduce((a, b) => a + b, 0);
 
@@ -228,7 +215,7 @@ export const calculateAndFormatTotalDeforestation = (treeCoverExtentTotal, data,
 
   return (
     <>
-      {isNonZeroValue && <span className="status-indicator status-indicator--red"></span>}
+      <span className={`status-indicator ${isNonZeroValue ? 'status-indicator--red' : ''}`}></span>
       {deforestationDisplayValue}
     </>
   );

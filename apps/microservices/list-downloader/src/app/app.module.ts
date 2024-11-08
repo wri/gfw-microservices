@@ -12,9 +12,9 @@ const envModule = ConfigModule.forRoot({
 
 import { HealthModule } from './health/health.module';
 import { ListModule } from './handler/list.module';
-
+import { VerifiableCredentialModule } from './verifiable-credentials/verifiable.credentials.module';
 @Module({
-  imports: [envModule, HealthModule, ListModule],
+  imports: [envModule, HealthModule, ListModule, VerifiableCredentialModule],
   controllers: [],
   providers: [],
 })

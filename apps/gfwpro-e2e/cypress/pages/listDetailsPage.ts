@@ -165,9 +165,6 @@ class ListDetailsPage {
   clickOnDownload() {
     this.elements.downloadBtn().click();
   }
-  clickOnResultsOption() {
-    this.elements.downloadResultsOptionListDetail().click();
-  }
   clickOnCSVOption() {
     this.elements.downloadCSVOptionListDetail().click();
   }

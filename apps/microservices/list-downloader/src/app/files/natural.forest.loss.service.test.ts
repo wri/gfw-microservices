@@ -85,7 +85,7 @@ describe('Natural Forest Loss Service - [Location level]', () => {
 
     const csvData = fs.readFileSync(filePath, 'utf8');
     const lines = csvData.toString().split('\n');
-    console.log('🚀 ~ test.only ~ lines:', lines);
+
     expect(lines).toStrictEqual([
       'List Name,Location Name,Country,State,Sub State,Location Size (HA),Natural Forest Coverage (HA),Natural Forest Loss cumulative (HA),Natural Forest Loss annual (HA),Year,Natural Forest Data Layer',
       '',

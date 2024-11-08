@@ -17,6 +17,20 @@ export = (app, limiter) => {
   if (rateLimiterUtil.useRateLimiter()) {
     routeMiddlewares.push(limiter(middlewares.rateLimitUnauthenticated));
   }
+  function getEnvironmentBaseUrls() {
+    const { NODE_ENV } = process.env;
+    let baseUrl;
+    if (NODE_ENV === 'ProdV2') {
+      baseUrl = 'https://pro.globalforestwatch.org';
+    } else if (NODE_ENV === 'staging') {
+      baseUrl = 'https://pro-staging.globalforestwatch.org';
+    } else if (NODE_ENV === 'qa') {
+      baseUrl = 'https://pro-qa.globalforestwatch.org';
+    } else {
+      baseUrl = 'https://localhost:8443';
+    }
+    return baseUrl;
+  }
 
   const getPublicKey = async (request, response) => {
     logger.info('GET /publicKey/1');
@@ -35,10 +49,12 @@ export = (app, limiter) => {
     if (!envPublicKey || envPublicKey.includes('privateKeyBase58')) {
       return response.status(500).send('Public key not found!');
     }
+    const BASE_URL = getEnvironmentBaseUrls();
+
     const publicKey = {
-      id: 'https://pro.globalforestwatch.org/publicKey/1',
+      id: `${BASE_URL}/publicKey/1`,
       type: 'Ed25519VerificationKey2018',
-      controller: 'https://pro.globalforestwatch.org/vc-issuer/1',
+      controller: `${BASE_URL}/vc-issuer/1`,
       publicKeyBase58: envPublicKey,
     };
     return response.status(200).send(publicKey);
@@ -46,12 +62,13 @@ export = (app, limiter) => {
 
   const getVcIssuer = async (request, response) => {
     logger.info('GET /vc-issuer/1');
+    const BASE_URL = getEnvironmentBaseUrls();
     const jsonVcContent = {
-      id: 'https://pro.globalforestwatch.org/vc-issuer/1',
+      id: `${BASE_URL}/vc-issuer/1`,
       '@context': 'https://www.w3.org/ns/did/v1',
-      assertionMethod: 'https://pro.globalforestwatch.org/publicKey/1',
+      assertionMethod: `${BASE_URL}/publicKey/1`,
     };
-    return response.status(200).send({ jsonVcContent });
+    return response.status(200).send(jsonVcContent);
   };
 
   const getGeoJsonDefReport = async (request, response) => {
@@ -67,12 +84,12 @@ export = (app, limiter) => {
         SBTN_Natural_Forest_Loss_Post_2020_HA: 'geojson:SBTN_Natural_Forest_Loss_Post_2020_HA',
         JRC_Forest_HA: 'geojson:JRC_Forest_HA',
         JRC_Forest_Loss_Post_2020_HA: 'geojson:JRC_Forest_Loss_Post_2020_HA',
-        Analysis_Time: 'geojson:Analysis_time',
+        Analysis_Time: 'geojson:Analysis_Time',
         GFWPro_Account: 'geojson:GFWPro_Account',
         Use_Rights: 'geojson:Use_Rights',
       },
     };
-    return response.status(200).send({ geoJsonDefReport });
+    return response.status(200).send(geoJsonDefReport);
   };
 
   app.get('/geojson-defreport.jsonld', [...routeMiddlewares, getGeoJsonDefReport]);

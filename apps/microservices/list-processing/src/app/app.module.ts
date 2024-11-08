@@ -26,6 +26,7 @@ import { AlertsModule } from './alerts';
 import { ListUploadModule } from './list-upload';
 import { AwsModule } from '@wri-monorepos/aws';
 import { HealthModule } from './health/health.module';
+import { ListModule } from './list';
 
 @Module({
   imports: [
@@ -42,6 +43,7 @@ import { HealthModule } from './health/health.module';
     ListUploadModule,
     AwsModule,
     HealthModule,
+    ListModule,
   ],
   controllers: [AppController],
   providers: [

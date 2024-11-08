@@ -85,13 +85,14 @@ export default class Filter extends Component {
       filterValues,
       locationNameOptionsForFilter,
       parentCompanyOptionsForFilter,
+      supplierNameOptionsForFilter,
+      secondSupplierNameOptionsForFilter,
       isFilterModalVisible,
       filterCount,
       listColumns,
       setListColumns,
       listView,
       listName,
-      listData,
       adminAreas,
       protectedAreas,
       isGfwList,
@@ -103,7 +104,6 @@ export default class Filter extends Component {
       selectedCountry,
       selectedState
     );
-
     const isCommodityRiskFilterVisible = listView === COMMODITY_RISK_VIEW;
     const isForestChangeFilterVisible = listView === FOREST_CHANGE_VIEW;
 
@@ -157,8 +157,11 @@ export default class Filter extends Component {
         {isUserListCommodityRiskFilterVisible && (
           <UserListCommodityRiskFilter
             listName={listName}
-            listData={listData}
             isFilterModalVisible={isFilterModalVisible}
+            filterValues={filterValues}
+            parentCompanyOptionsForFilter={parentCompanyOptionsForFilter}
+            supplierNameOptionsForFilter={supplierNameOptionsForFilter}
+            secondSupplierNameOptionsForFilter={secondSupplierNameOptionsForFilter}
           />
         )}
         {isGFWListCommodityRiskFilterVisible && (
@@ -214,7 +217,9 @@ export default class Filter extends Component {
                   )}
                 </Grid>
                 <Grid item xs={7}>
-                  {!isGfwList && <DeforestationDisplayFormatToggleButtons />}
+                  {!isGfwList && !isCommodityRiskFilterVisible && (
+                    <DeforestationDisplayFormatToggleButtons />
+                  )}
                 </Grid>
               </>
             )}

@@ -51,12 +51,11 @@ describe('Argentina Overlap Service', () => {
     }
   });
 
-  test('When list is not commodity_risk view, and has 6 locations data', async () => {
-    const localFilters = { ...filters, listView: 'some_other_view' };
-    argentinaOverlap.start(localFilters);
-    argentinaOverlap.process(argentinaLocationData, localFilters);
+  test('When list is forest_change view, and has 6 locations data', async () => {
+    argentinaOverlap.start(filters);
+    argentinaOverlap.process(argentinaLocationData, filters);
 
-    await argentinaOverlap.finish(localFilters);
+    await argentinaOverlap.finish(filters);
 
     let csvData = readCsvData(filePath);
     expect(csvData).toStrictEqual([
@@ -112,7 +111,7 @@ describe('Argentina Overlap Service', () => {
     ]);
   });
 
-  test('When listView is commodity_risk', async () => {
+  test('When listView is NOT forest_change', async () => {
     const localFilters = { ...filters, listView: 'commodity_risk' };
     argentinaOverlap.start(localFilters);
     argentinaOverlap.process(argentinaLocationData, localFilters);

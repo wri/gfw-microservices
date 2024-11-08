@@ -486,8 +486,8 @@ export async function getAFIListAnalyses(list_id, page, pageSize, clientDatabase
 
   const parameters = [
     { field: 'listId', type: sql.Int, value: list_id },
-    { field: 'rowsOfPage', type: sql.Int, value: parseInt(pageSize) },
-    { field: 'pageNumber', type: sql.Int, value: parseInt(page) },
+    { field: 'rowsOfPage', type: sql.Int, value: pageSize },
+    { field: 'pageNumber', type: sql.Int, value: page - 1 },
     { field: 'orderType', type: sql.NVarChar(255), value: orderType || 'ASC' },
     { field: 'selectedSupplier', type: sql.NVarChar(255), value: selectedSupplier || null },
     {

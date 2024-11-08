@@ -183,7 +183,30 @@ describe('API Endpoints', () => {
       },
       40 * 1000
     );
+    it(
+      'should create a geojson file for download',
+      async () => {
+        const res = await postRedirectHeaders(
+          `${BASE_URL}/api/v1/list/${list}/analysis/DefReport/generate`,
+          {
+            userEmail: email,
+            startDate: '01-01-2010',
+            endDate: '07-01-2024',
+            outputType: 'verifiableCredential',
+          },
+          {
+            headers: {
+              'Content-Type': 'application/json',
+              'x-api-key': API_TOKEN,
+            },
+          }
+        );
 
+        expect(res.status).toBe(201);
+        expect(res.data).toBeTruthy();
+      },
+      30 * 1000
+    );
     it(
       'should delete the list',
       async () => {

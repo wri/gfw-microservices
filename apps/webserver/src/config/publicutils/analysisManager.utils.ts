@@ -483,6 +483,7 @@ export async function getAFIListAnalyses(list_id, page, pageSize, clientDatabase
     selectedOverallValues,
     selectedMillPriority,
   } = filters;
+
   const parameters = [
     { field: 'listId', type: sql.Int, value: list_id },
     { field: 'rowsOfPage', type: sql.Int, value: pageSize },
@@ -564,13 +565,26 @@ export async function getAFIListAnalyses(list_id, page, pageSize, clientDatabase
   const quantity = listAnalyses?.length > 0 ? listAnalyses.length : 0;
 
   const formattedListAnalyses = listAnalyses.map((analysis) => {
+    const formatPercentage = (numerator, denominator) => {
+      if (denominator === 0) return '0%'; // Avoid division by zero
+      const value = (numerator * 100) / denominator;
+      if (value === 0) return '0%';
+      if (value < 1) return '<1%';
+      return `${Math.round(value)}%`;
+    };
+
     return {
       ...analysis,
-      protectedAreasPercent: analysis.protectedAreasHA / (analysis.totalAreaHa * 100) || 0,
-      landmarkPercent: analysis.landmarkHA / (analysis.totalAreaHa * 100) || 0,
-      naturalForestLossPercent: analysis.naturalForestLossHA / (analysis.totalAreaHa * 100) || 0,
-      jrcNaturalForestLossPercent:
-        analysis.jrcNaturalForestLossHA / (analysis.totalAreaHa * 100) || 0,
+      protectedAreasPercent: formatPercentage(analysis.protectedAreasHA, analysis.totalAreaHa),
+      landmarkPercent: formatPercentage(analysis.landmarkHA, analysis.totalAreaHa),
+      naturalForestLossPercent: formatPercentage(
+        analysis.naturalForestLossHA,
+        analysis.totalAreaHa
+      ),
+      jrcNaturalForestLossPercent: formatPercentage(
+        analysis.jrcNaturalForestLossHA,
+        analysis.totalAreaHa
+      ),
       list_id: analysis.listId,
       location_id: analysis.locationId,
     };

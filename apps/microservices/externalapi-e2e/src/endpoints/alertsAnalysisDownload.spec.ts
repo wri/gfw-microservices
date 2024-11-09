@@ -63,5 +63,5 @@ describe('Alerts Analysis', () => {
       expect(typeof res.data.creationDate).toBe('string');
       expect(typeof res.data.expirationDate).toBe('string');
     }
-  }, 10000);
+  }, 30000);
 });

@@ -37,12 +37,12 @@ describe('List Copy Feature', () => {
 
   Then('I should be able to select the country for the Protected Areas list GFW', () => {
     listDetailsPage.selectCountryForProtectedAreas('Argentina');
-    listDetailsPage.clickOnApplyFilters();
+    listDetailsPage.clickOnApply();
   });
 
   Then('I should be able to select the country for the Administrative Areas list GFW', () => {
     listDetailsPage.selectCountryForAdminAreas('Argentina');
-    listDetailsPage.clickOnApplyFilters();
+    listDetailsPage.clickOnApply();
   });
 
   Then('I should be able to copy a GFW list and save it as a draft', () => {

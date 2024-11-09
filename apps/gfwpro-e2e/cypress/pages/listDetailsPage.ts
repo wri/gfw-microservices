@@ -8,9 +8,10 @@ class ListDetailsPage {
     checkBoxSelectLocation: (name) => cy.contains(name),
     downloadBtn: () => cy.contains('Download'),
     downloadCSVOptionListDetail: () => cy.contains('CSV'),
+    downloadResultsOptionListDetail: () => cy.contains('Results'),
     downloadShapefileptionListDetail: () => cy.contains('Shapefile'),
     titleAlertDownloadList: () => cy.contains('List file Download'),
-    moveBtn: () => cy.contains('Move'),
+    copyMoveBtn: () => cy.contains('Copy/Move'),
     editBtn: () => cy.contains('button', 'Edit'),
     deleteBtn: () => cy.contains('Delete'),
     createNewListOptionRadioBtn: () => cy.get('.move-or-copy__option').last().find('input'),
@@ -20,7 +21,7 @@ class ListDetailsPage {
     saveAsDraftBtn: () => cy.contains('Save As Draft'),
     confirmActionBtn: () => cy.contains('button', 'OK'),
     titleConfirmCopyList: () => cy.contains('h3', 'Locations Moved'),
-    applyFilters: () => cy.contains('Apply filters'),
+    apply: () => cy.contains('Apply'),
     descriptionConfirmCopyList: () =>
       cy.contains('div', 'Location move process starts, this can take a while, please be patient.'),
     descriptionAlertDownloadList: () =>
@@ -38,15 +39,16 @@ class ListDetailsPage {
   }
 
   selectCountryForProtectedAreas(location: string) {
-    cy.get('select').first().select(location);
+    cy.get('#country_select').click();
+    cy.contains(location).should('be.visible').click();
   }
   selectCountryForAdminAreas(location: string) {
-    cy.contains('Select...').click();
-    cy.contains(location).click();
+    cy.get('#country_select').click();
+    cy.contains(location).should('be.visible').click();
   }
 
-  clickOnApplyFilters() {
-    this.elements.applyFilters().click();
+  clickOnApply() {
+    this.elements.apply().click();
   }
   selectCheckBoxes(locations: number[]) {
     if (locations && locations.length > 0) {
@@ -73,7 +75,7 @@ class ListDetailsPage {
 
   moveList(list: string, location: number[]) {
     this.selectCheckBoxes(location);
-    this.clickOnMoveBtn();
+    this.clickOnCopyMoveBtn();
     this.clickOnMoveSectionRadioBtn();
     this.selectList(list);
     this.clickOnSaveAsDraftBtn();
@@ -110,7 +112,7 @@ class ListDetailsPage {
         this.checkOnCheckBoxSelectAll();
       }
 
-      this.clickOnMoveBtn();
+      this.clickOnCopyMoveBtn();
       this.clickOnCreateNewListRadioBtn();
       this.elements.inputCreateNewList().type(listName);
       this.clickOnSaveAsDraftBtn();
@@ -139,8 +141,8 @@ class ListDetailsPage {
   clickOnCreateNewListRadioBtn() {
     this.elements.createNewListOptionRadioBtn().click({ force: true });
   }
-  clickOnMoveBtn() {
-    this.elements.moveBtn().click();
+  clickOnCopyMoveBtn() {
+    this.elements.copyMoveBtn().click();
   }
   clickOnEditBtn() {
     this.elements.editBtn().click();

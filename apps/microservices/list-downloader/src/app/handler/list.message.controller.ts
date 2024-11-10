@@ -20,7 +20,7 @@ export enum CSVInputTypes {
   ALERTS = 'alerts',
   ACCOUNTUSERSUSAGE = 'accountUsersUsage',
   ARGENTINAOVERLAP = 'argentinaOverlap',
-  ARGENTINADEFORESTATION = 'argentinaDeforestation',
+  ARGENTINA = 'argentina',
   COLOMBIA = 'colombia',
   COMMODITYRISKDIAGNOSTICLOCATIONSUMMARY = 'commodityRiskDiagnosticLocationSummary',
   DEFORESTATIONTRENDS = 'deforestationTrends',
@@ -119,8 +119,7 @@ const getSchemaByType = (type: string) => {
       return AlertFieldsFileRequestSchema;
     case 'accountUsersUsage':
       return AccountUsersUsageRequestSchema;
-    case 'argentinaOverlap':
-    case 'argentinaDeforestation':
+    case 'argentina':
     case 'colombia':
     case 'commodityRiskDiagnosticLocationSummary':
     case 'deforestationTrends':

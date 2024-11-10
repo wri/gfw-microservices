@@ -20,22 +20,23 @@ function RegionChartsContainer({
   getCategoricalHighchartSeries,
   isGfwList,
 }) {
-  const { isColombiaAvailable } = featureFlags;
+  const { isColombiaAvailable: isColombiaFeatureFlagOn } = featureFlags;
   const [selectedTab, setSelectedTab] = useState(regionIds.REGIONAL);
 
   const argOtbnArea = isGfwList ? {} : JSON.parse(data.arg_otbn_area || '{}');
-  const countryArea = isGfwList ? {} : JSON.parse(data.country_area || '{}');
 
-  const argentinaDataNotAvailable =
-    Object.entries(argOtbnArea).length === 0 && !(countryArea?.ARG > 0);
-  const colombiaDataNotAvailable = !(countryArea?.COL > 0);
+  const isArgentinaDataAvailable =
+    Object.entries(argOtbnArea).length > 0 || getTotalAreaPerCountry(data, 'ARG', isGfwList) > 0;
+
+  const isColombiaDataAvailable = getTotalAreaPerCountry(data, 'COL', isGfwList) > 0;
 
   let availableTabs = regionsTabs;
-  if (argentinaDataNotAvailable) {
+
+  if (!isArgentinaDataAvailable) {
     availableTabs = regionsTabs.filter((tab) => tab.id !== regionIds.ARGENTINA);
   }
 
-  if (!isColombiaAvailable || colombiaDataNotAvailable) {
+  if (!isColombiaFeatureFlagOn || !isColombiaDataAvailable) {
     availableTabs = availableTabs.filter((tab) => tab.id !== regionIds.COLOMBIA);
   }
 
@@ -58,6 +59,7 @@ function RegionChartsContainer({
           listId={listId}
           fireDownload={fireDownload}
           country={selectedTab}
+          totalArea={getTotalAreaPerCountry(data, selectedTab, isGfwList)}
         />
       )}
 
@@ -78,5 +80,23 @@ function RegionChartsContainer({
     </div>
   );
 }
+
+const getTotalAreaPerCountry = (data, countryGadm, isGfwList) => {
+  if (isGfwList) return 0;
+
+  const countryArea = JSON.parse(data.country_area || '{}');
+  const isDataInCountryFormat = isObjInCountryFormat(countryArea);
+
+  if (isDataInCountryFormat) return countryArea[countryGadm] ?? 0;
+
+  return data.total_area;
+};
+
+const isObjInCountryFormat = (data) => {
+  const dataArray = Object.keys(data);
+  if (dataArray.length === 0) return false;
+
+  return Object.keys(data).every((x) => x.length === 3);
+};
 
 export default RegionChartsContainer;

@@ -26,7 +26,7 @@ import '../../common/DiagnosticsChartContainer.scss';
 import { regionIds } from './regions.constants';
 import { BarChartTreeCoverLossColombia } from './BarChartTreeCoverLossColombia';
 
-export function RegionChartByCountry({ listId, data, fireDownload, country }) {
+export function RegionChartByCountry({ listId, data, fireDownload, country, totalArea }) {
   const query = useQuery();
   const locationId = query.get('locationId');
 
@@ -141,8 +141,6 @@ export function RegionChartByCountry({ listId, data, fireDownload, country }) {
   }
 
   const argentinaOtbnAreaData = formatDecimals(JSON.parse(data?.arg_otbn_area) || '{}');
-
-  const totalArea = getTotalArea(data, countryGadm);
 
   const argentinaPieChartData =
     Object.keys(argentinaOtbnAreaData).length !== 0
@@ -278,8 +276,3 @@ export function RegionChartByCountry({ listId, data, fireDownload, country }) {
     </>
   );
 }
-
-const getTotalArea = (data, country) => {
-  const countryArea = JSON.parse(data.country_area || '{}');
-  return countryArea[country] ?? data.total_area;
-};

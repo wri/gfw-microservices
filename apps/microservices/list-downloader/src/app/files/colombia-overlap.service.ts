@@ -6,19 +6,18 @@ import { generateCSV } from '../shared/generate.csv';
 import { EXCEL_TEMPLATES, EXCEL_TEMPLATE_HEADERS } from '../shared/constants';
 import { FormatNumber } from '../transform/format.number';
 import { colombiaLayers } from '../parser/colombia-layers-parser';
-
-const VALID_TYPES = ['colombia', 'everything'];
+import { shouldGenerateColombiaCsv } from '../shared/functions';
 
 @Injectable()
 export class ColombiaOverlapService extends DashboardHandleDownload {
   start(filters: ListFieldsFileRequest) {
-    if (this.isColombiaOverlapFile(filters)) {
+    if (shouldGenerateColombiaCsv(filters)) {
       super.start(filters, 'colombiaOverlap', 'colombia_overlap');
     }
   }
 
   process(data, filters: ListFieldsFileRequest) {
-    if (this.isColombiaOverlapFile(filters)) {
+    if (shouldGenerateColombiaCsv(filters)) {
       super.process(data, filters);
     }
   }
@@ -50,7 +49,7 @@ export class ColombiaOverlapService extends DashboardHandleDownload {
 
   async finish(filters: ListFieldsFileRequest) {
     const { selectedLocationsList } = filters;
-    if (this.isColombiaOverlapFile(filters)) {
+    if (shouldGenerateColombiaCsv(filters)) {
       this.logger.log('Colombia Overlap Service finish');
       if (selectedLocationsList.length != 1) {
         generateCSV(
@@ -62,9 +61,5 @@ export class ColombiaOverlapService extends DashboardHandleDownload {
       }
       await super.finish(filters);
     }
-  }
-
-  isColombiaOverlapFile({ type, listView }: ListFieldsFileRequest) {
-    return VALID_TYPES.includes(type) && listView !== 'commodity_risk';
   }
 }

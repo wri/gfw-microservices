@@ -6,19 +6,18 @@ import { generateCSV } from '../shared/generate.csv';
 import { EXCEL_TEMPLATES, EXCEL_TEMPLATE_HEADERS } from '../shared/constants';
 import { FormatNumber } from '../transform/format.number';
 import { colombiaLayers } from '../parser/colombia-layers-parser';
-
-const VALID_TYPES = ['colombia', 'everything'];
+import { shouldGenerateColombiaCsv } from '../shared/functions';
 
 @Injectable()
 export class ColombiaDeforestationService extends DashboardHandleDownload {
   start(filters: ListFieldsFileRequest) {
-    if (this.isColombiaDeforestationFile(filters)) {
+    if (shouldGenerateColombiaCsv(filters)) {
       super.start(filters, 'colombiaDeforestation', 'colombia_loss_of_forests');
     }
   }
 
   process(data, filters: ListFieldsFileRequest) {
-    if (this.isColombiaDeforestationFile(filters)) {
+    if (shouldGenerateColombiaCsv(filters)) {
       super.process(data, filters);
     }
   }
@@ -50,7 +49,7 @@ export class ColombiaDeforestationService extends DashboardHandleDownload {
 
   async finish(filters: ListFieldsFileRequest) {
     const { selectedLocationsList } = filters;
-    if (this.isColombiaDeforestationFile(filters)) {
+    if (shouldGenerateColombiaCsv(filters)) {
       this.logger.log('Colombia Deforestation Service finish');
       if (selectedLocationsList.length != 1) {
         generateCSV(
@@ -62,9 +61,5 @@ export class ColombiaDeforestationService extends DashboardHandleDownload {
       }
       await super.finish(filters);
     }
-  }
-
-  isColombiaDeforestationFile({ type, listView }: ListFieldsFileRequest) {
-    return VALID_TYPES.includes(type) && listView !== 'commodity_risk';
   }
 }

@@ -23,6 +23,13 @@
             "deployment": "qa"
           }
         },
+        "dev-ll": {
+          "baseUrl": "https://localhost:8443",
+          "env": {
+            "deployment": "dev-ll",
+            "featureFlags": "ListDetailsPageRedesign"
+          }
+        },
         "dev": {
           "baseUrl": "https://localhost:8443",
           "env": {

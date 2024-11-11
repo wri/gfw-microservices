@@ -2,7 +2,8 @@ class ListDetailsPage {
   elements = {
     listDiagnosticsBtn: () => cy.get('[data-cy="list-diagnostics"]'),
     locationDiagnosticsBtn: () => cy.get('[data-cy="location-diagnostics"]'),
-    fullListMapBtn: () => cy.contains('Full List Map'),
+    fullListMapBtn: () => cy.contains('List Map'),
+    mapBtn: () => cy.contains('Map'),
     locationMapBtn: () => cy.contains('Location(s) Map'),
     checkBoxSelectAll: () => cy.get('div.rt-table').find('label.column-checkbox:visible').eq(0),
     checkBoxSelectLocation: (name) => cy.contains(name),
@@ -12,7 +13,7 @@ class ListDetailsPage {
     downloadShapefileptionListDetail: () => cy.contains('Shapefile'),
     titleAlertDownloadList: () => cy.contains('List file Download'),
     copyMoveBtn: () => cy.contains('Copy/Move'),
-    editBtn: () => cy.contains('button', 'Edit'),
+    editBtn: () => cy.contains('EDIT'),
     deleteBtn: () => cy.contains('Delete'),
     createNewListOptionRadioBtn: () => cy.get('.move-or-copy__option').last().find('input'),
     moveSectionOptionRadioBtn: () => cy.contains('label', 'Move'),
@@ -145,6 +146,12 @@ class ListDetailsPage {
     this.elements.copyMoveBtn().click();
   }
   clickOnEditBtn() {
+    cy.get(
+      '.rt-tbody > :nth-child(1) > [style="width: 100%; display: flex;"] > :nth-child(6)'
+    ).trigger('mouseover');
+    cy.get(
+      '[style="position: absolute; right: 0px; background-color: white; padding: 0px 20px;"] > .css-gggkt8-MuiButtonBase-root-MuiButton-root > [data-testid="MoreVertIcon"]'
+    ).click();
     this.elements.editBtn().click();
   }
   clickOnDeleteBtn() {
@@ -164,11 +171,20 @@ class ListDetailsPage {
   }
 
   clickOnLocationDiagnosticsBtn() {
+    cy.get(':nth-child(1) > [style="width: 100%; display: flex;"] > :nth-child(6) > span').trigger(
+      'mouseover'
+    );
     this.elements.locationDiagnosticsBtn().click();
   }
 
   clickOnFullListMapBtn() {
     this.elements.fullListMapBtn().click();
+  }
+  clickOnMapBtn() {
+    cy.get(':nth-child(1) > [style="width: 100%; display: flex;"] > :nth-child(6) > span').trigger(
+      'mouseover'
+    );
+    this.elements.mapBtn().click();
   }
   clickOnLocationMapBtn() {
     this.elements.locationMapBtn().click();

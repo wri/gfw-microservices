@@ -141,6 +141,10 @@ export const shouldGenerateColombiaCsv = ({
 };
 
 export const filterYearsByDateRange = (data, startYear: number, endYear: number) => {
+  if (startYear > endYear) {
+    throw new Error('Start year must be less than or equal to end year');
+  }
+
   for (const category in data) {
     if (data[category]) {
       data[category] = Object.fromEntries(

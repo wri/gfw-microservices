@@ -234,7 +234,7 @@ class DiagnosticsPage {
   }
 
   verifyTclArgentinaOTBNInfoBubble() {
-    this.elements.infoBubbleTitle().should('have.text', 'Territorial Planning of Native Forests');
+    this.elements.infoBubbleTitle().should('have.text', 'Deforestation in Argentina');
     this.elements
       .infoBubbleContainer()
       .contains('a', 'http://snmb.ambiente.gob.ar/develop/')

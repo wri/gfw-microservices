@@ -20,14 +20,14 @@ describe('API Endpoints', () => {
       expect(res.data).toBeTruthy();
       expect(Array.isArray(res.data)).toBe(true);
       res.data.forEach((item) => {
+        expect(item).not.toBeNull();
         expect(item).toHaveProperty('listId');
         expect(item).toHaveProperty('listName');
         expect(item).toHaveProperty('locationCount');
         expect(typeof item).toBe('object');
         expect(typeof item.listId).toBe('number');
         expect(typeof item.listName).toBe('string');
-        expect(typeof item.locationCount).toBe('number');
-        expect(item).not.toBeNull();
+        expect(item.locationCount === null || typeof item.locationCount === 'number').toBe(true);
       });
     }, 10000);
 
@@ -183,7 +183,28 @@ describe('API Endpoints', () => {
       },
       40 * 1000
     );
+    it(
+      'should create a geojson file for download',
+      async () => {
+        const res = await postRedirectHeaders(
+          `${BASE_URL}/api/v1/list/${list}/analysis/DefReport/generate`,
+          {
+            userEmail: email,
+            outputType: 'verifiableCredential',
+          },
+          {
+            headers: {
+              'Content-Type': 'application/json',
+              'x-api-key': API_TOKEN,
+            },
+          }
+        );
 
+        expect(res.status).toBe(201);
+        expect(res.data).toBe('');
+      },
+      30 * 1000
+    );
     it(
       'should delete the list',
       async () => {

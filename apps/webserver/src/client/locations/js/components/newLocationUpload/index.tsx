@@ -10,11 +10,7 @@ import { UploadLocationByFile } from './UploadLocationByFile';
 import { UploadLocationByPoint } from './UploadLocationByPoint';
 import { UploadLocationByPolygon } from './UploadLocationByPolygon';
 
-export enum UploadType {
-  ByFile,
-  ByPoint,
-  ByPolygon,
-}
+import { UploadType } from './types/index';
 
 export enum ActiveComponent {
   UploadOptions,

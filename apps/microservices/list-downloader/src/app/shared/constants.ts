@@ -1427,6 +1427,8 @@ export const EXCEL_TEMPLATES = {
     {
       name: 'colombiaDeforestation',
       parsed: 'overhead',
+      startYear: 2011,
+      endYear: 2023,
       composites: [
         {
           attribute: 'tree_cover_loss_by_country_classified_region_yearly',
@@ -1455,6 +1457,8 @@ export const EXCEL_TEMPLATES = {
     {
       name: 'colombiaDeforestation',
       parsed: 'yearly',
+      startYear: 2011,
+      endYear: 2023,
       composites: [
         {
           attribute: 'tree_cover_loss_by_country_classified_region_yearly',

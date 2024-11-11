@@ -139,3 +139,18 @@ export const shouldGenerateColombiaCsv = ({
 
   return VALID_TYPES.includes(type) && totalArea > 0 && listView === 'forest_change';
 };
+
+export const filterYearsByDateRange = (data, startYear: number, endYear: number) => {
+  for (const category in data) {
+    if (data[category]) {
+      data[category] = Object.fromEntries(
+        Object.entries(data[category]).filter(([year]) => {
+          const yearInt = parseInt(year, 10);
+          return yearInt >= startYear && yearInt <= endYear;
+        })
+      );
+    }
+  }
+
+  return data;
+};

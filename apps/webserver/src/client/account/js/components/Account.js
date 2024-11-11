@@ -305,6 +305,10 @@ export default class Account extends Component {
       user_phone: evt.target.value.trim(),
     });
   };
+  
+  createCountryOptions = (option) => {
+    return { label: option, value: option };
+  };
 
   createClassOptions = (option) => {
     return { label: option.classification_name, value: option.id };
@@ -370,6 +374,7 @@ export default class Account extends Component {
       : [<Button variant="primary" label="OK" keyboardFocused={true} onClick={action} />];
 
     const options = this.props.classificationsData.map(this.createClassOptions);
+    const countryOptions = countries.map(this.createCountryOptions);
     const commOptions = this.props.commoditiesData.map(this.createCommOptions);
     const geogOptions = this.props.geographiesData.map(this.createGeogOptions);
     const user_title = this.state.user_title;
@@ -458,7 +463,7 @@ export default class Account extends Component {
                       isMulti={false}
                       isSearchable={true}
                       maxMenuHeight={150}
-                      options={countries}
+                      options={countryOptions}
                       name="org_country"
                       id="org_country"
                       onChange={this.updateCountry}

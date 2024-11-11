@@ -305,7 +305,7 @@ export default class Account extends Component {
       user_phone: evt.target.value.trim(),
     });
   };
-  
+
   createCountryOptions = (option) => {
     return { label: option, value: option };
   };

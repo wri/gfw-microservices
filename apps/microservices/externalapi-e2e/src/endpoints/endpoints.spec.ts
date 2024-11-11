@@ -190,8 +190,6 @@ describe('API Endpoints', () => {
           `${BASE_URL}/api/v1/list/${list}/analysis/DefReport/generate`,
           {
             userEmail: email,
-            startDate: '01-01-2010',
-            endDate: '07-01-2024',
             outputType: 'verifiableCredential',
           },
           {

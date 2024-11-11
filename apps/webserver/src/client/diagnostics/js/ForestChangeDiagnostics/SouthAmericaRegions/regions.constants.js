@@ -34,7 +34,7 @@ export const regionConstants = {
     chartsSelectorTitle: 'COLOMBIAN DEFORESTATION',
     informationBubbleId: '',
     downloadId: 'colombia',
-    startYear: 2008,
+    startYear: 2011,
     endYear: 2023,
   },
 };
@@ -228,7 +228,10 @@ export const chartDatasetConfigsColombia = {
     dataCy: 'colombian-tree-cover-loss',
     chartsSelectorTitle: 'National Agricultural Frontier',
     dataPath: 'classified_region.tree_cover_loss',
-    dateRange: { startYear: 2008, endYear: 2023 },
+    dateRange: {
+      startYear: regionConstants.colombia.startYear,
+      endYear: regionConstants.colombia.endYear,
+    },
     infoBubbleId: 'regions_col_tcl_ agricultural_frontier_restrictions',
     subLayers: [...colombianSubLayers],
   },
@@ -244,7 +247,10 @@ export const chartDatasetConfigsColombia = {
     id: 'protectedAreas',
     dataCy: 'protected-areas',
     dataPath: 'WDPA.tree_cover_loss',
-    dateRange: { startYear: 2008, endYear: 2023 },
+    dateRange: {
+      startYear: regionConstants.colombia.startYear,
+      endYear: regionConstants.colombia.endYear,
+    },
     chartsSelectorTitle: 'Protected Areas',
     infoBubbleId: 'regions_col_tcl_pa',
     chartLabels: [
@@ -268,7 +274,10 @@ export const chartDatasetConfigsColombia = {
     id: 'indigenousTerritories',
     dataCy: 'indigenous-territories',
     dataPath: 'landmark.tree_cover_loss',
-    dateRange: { startYear: 2008, endYear: 2023 },
+    dateRange: {
+      startYear: regionConstants.colombia.startYear,
+      endYear: regionConstants.colombia.endYear,
+    },
     chartsSelectorTitle: 'Indigenous Territories',
     infoBubbleId: 'regions_col_tcl_it',
     chartLabels: [

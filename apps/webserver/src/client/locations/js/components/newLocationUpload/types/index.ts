@@ -1,4 +1,4 @@
-import { UploadType } from '..';
+import { UploadType } from '../index';
 
 export type MeasurementUnit = 'hectares' | 'kilometers';
 

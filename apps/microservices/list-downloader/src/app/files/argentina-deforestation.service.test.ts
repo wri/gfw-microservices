@@ -12,7 +12,7 @@ describe('Argentina Deforestation Service', () => {
     listName: 'WRI',
     listView: 'forest_change',
     key: 'tmp-key',
-    type: 'argentinaDeforestation',
+    type: 'argentina',
     selectedLocationsList: [],
     listLevelAnalysis: argentinaListLevelData,
   };

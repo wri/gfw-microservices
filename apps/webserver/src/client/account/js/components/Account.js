@@ -14,6 +14,7 @@ import {
   profilePage,
   licenseAgreement,
 } from '../../../common/js/config';
+import countries from '../../../common/js/utils/countries.utils';
 import '../../css/account.scss';
 import LegalBanner from './LegalBanner';
 
@@ -25,6 +26,7 @@ export default class Account extends Component {
       is_subsidiary: false,
       parent_org_name: '',
       org_address: '',
+      org_country: '',
       org_website: '',
       policyList: [],
       policyName: [],
@@ -94,6 +96,9 @@ export default class Account extends Component {
     }
     if (this.state.arr_org_classification_ids.length === 0) {
       missing.push('Organization Classification');
+    }
+    if (this.state.org_country.length === 0) {
+      missing.push('Organization Country');
     }
 
     fieldValidations.organization_address.validations.forEach((validation) => {
@@ -172,6 +177,7 @@ export default class Account extends Component {
             is_subsidiary: false,
             parent_org_name: '',
             org_address: '',
+            org_country: '',
             org_website: '',
             policyList: [],
             policyName: [],
@@ -261,6 +267,12 @@ export default class Account extends Component {
   updateAddress = (evt) => {
     this.setState({
       org_address: evt.target.value,
+    });
+  };
+
+  updateCountry = (results) => {
+    this.setState({
+      org_country: results,
     });
   };
 
@@ -432,6 +444,25 @@ export default class Account extends Component {
                       value={this.state.org_address}
                       onChange={this.updateAddress}
                       onBlur={this.removeExtraSpaces}
+                    />
+                  </div>
+                  <div className="input-field__block-container">
+                    <label
+                      htmlFor="org_country"
+                      className="block-label profile-label required-param"
+                    >
+                      Organization Contry
+                    </label>
+                    <Select
+                      placeholder={profilePage.profileManager.selectCountry}
+                      isMulti={false}
+                      isSearchable={true}
+                      maxMenuHeight={150}
+                      options={countries}
+                      name="org_country"
+                      id="org_country"
+                      onChange={this.updateCountry}
+                      value={this.state.org_country}
                     />
                   </div>
                   <div className="input-field__block-container">

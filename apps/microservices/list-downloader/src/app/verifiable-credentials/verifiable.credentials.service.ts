@@ -67,13 +67,19 @@ export class VerifiableCredentialService {
         return result;
       };
 
+      const combinedDocumentLoader = async (url) => {
+        try {
+          const result = await documentLoader(url);
+          return result;
+        } catch (error) {
+          return customLoader(url);
+        }
+      };
+
       const signedVC = await vc.issue({
         credential,
         suite,
-        documentLoader: async (url) => {
-          const result = await documentLoader(url);
-          return result || customLoader(url);
-        },
+        documentLoader: combinedDocumentLoader,
       });
       return signedVC;
     } catch (error) {

@@ -12,7 +12,7 @@ import {
 } from '@mui/icons-material';
 
 import { HowToFormatLocationLink } from '../components/HowToFormatLocationLink';
-import { UploadType } from '..';
+import { UploadType } from '../types';
 import { ChangePageType } from '../types';
 
 export function UploadLocationOptions({ setUploadType }: ChangePageType) {

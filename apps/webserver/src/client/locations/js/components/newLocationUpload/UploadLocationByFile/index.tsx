@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { DragEvent, useState } from 'react';
 import { Box, Card, Typography, useTheme } from '@mui/material';
 import { ArrowForwardIos, Close, DriveFolderUpload } from '@mui/icons-material';
 
@@ -7,6 +7,33 @@ import { ChangePageType } from '../types';
 
 export function UploadLocationByFile({ setUploadType }: ChangePageType) {
   const theme = useTheme();
+  const [isDragAndDropActive, setIsDragAndDropActive] = useState(false);
+
+  const fileUpload = (event: DragEvent<HTMLFormElement>) => {
+    event.preventDefault();
+
+    const target = event.target as HTMLInputElement;
+
+    const file =
+      (target.files && target.files[0]) ||
+      (event.dataTransfer && event.dataTransfer.files && event.dataTransfer.files[0]);
+
+    if (!file) {
+      return;
+    }
+
+    console.log('uploading file...');
+  };
+
+  const handleFormDragEnter = (event: DragEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    setIsDragAndDropActive(true);
+  };
+
+  const handleFormDragLeave = (event: DragEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    setIsDragAndDropActive(false);
+  };
 
   return (
     <Card sx={{ padding: '10px 16px 15px' }}>
@@ -31,8 +58,13 @@ export function UploadLocationByFile({ setUploadType }: ChangePageType) {
       </Typography>
 
       <PillButton variant="contained">Data templates</PillButton>
-      <Box
-        sx={{
+      <form
+        onDrop={fileUpload}
+        onDragEnter={handleFormDragEnter}
+        onDragLeave={handleFormDragLeave}
+        onDragOver={(e) => e.preventDefault()}
+        encType="multipart/form-data"
+        style={{
           display: 'flex',
           flexDirection: 'column',
           alignItems: 'center',
@@ -41,9 +73,19 @@ export function UploadLocationByFile({ setUploadType }: ChangePageType) {
           margin: '1.5rem 0 0.75rem',
           border: '2px dashed #E5E5DE',
           borderRadius: '5px',
+          backgroundColor: isDragAndDropActive ? '#FCFCFC' : 'white',
         }}
       >
-        <DriveFolderUpload sx={{ color: '#FFE2BF', fontSize: '5.25rem' }} />
+        <label htmlFor="file-input" style={{ cursor: 'pointer' }}>
+          <DriveFolderUpload sx={{ color: '#FFE2BF', fontSize: '5.25rem' }} />
+          <input
+            type="file"
+            id="file-input"
+            name="file-input"
+            accept=".csv, .zip, .kml, .kmz"
+            style={{ display: 'none' }}
+          />
+        </label>
         <Typography variant="h6">
           Drop your files here or click to select from your device
         </Typography>
@@ -87,7 +129,7 @@ export function UploadLocationByFile({ setUploadType }: ChangePageType) {
             </li>
           </ul>
         </Box>
-      </Box>
+      </form>
 
       <Box
         sx={{

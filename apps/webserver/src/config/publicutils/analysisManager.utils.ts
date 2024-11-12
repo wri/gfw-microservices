@@ -466,7 +466,7 @@ export async function getPaginatedAnalysisDataForAdministrativeAreas(
 export async function getAFIListAnalyses(list_id, page, pageSize, clientDatabase, filters) {
   const {
     orderType,
-    sortByAttribute = 'location_id',
+    sortByAttribute,
     searchString,
     country,
     state,
@@ -523,39 +523,12 @@ export async function getAFIListAnalyses(list_id, page, pageSize, clientDatabase
       value: subState !== '' && subState ? subState : null,
     },
   ];
-  // Verify if the sortByAttribute is valid
-  const sortedAttributes = [
-    'list_id',
-    'location_id',
-    'gadm_id',
-    'natural_land_area',
-    'natural_land_deforested_area',
-    'total_area_ha',
-    'status_code',
-    'location_error',
-    'negligible_risk',
-    'jrc_land_area',
-    'jrc_land_deforested_area',
-    'jrc_forest_loss_by_year',
-    'natural_forest_loss_by_year',
-    'protected_areas_area',
-    'landmark_area',
-    'country',
-    'state',
-    'subState',
-  ];
-  const hasFilter = sortedAttributes.filter((key) => key === sortByAttribute);
-  if (hasFilter.length > 0) {
-    parameters.push({
-      field: 'sortByAttribute',
-      type: sql.NVarChar(255),
-      value: sortByAttribute,
-    });
-  } else {
-    throw new Error(
-      `Invalid sortByAttribute ${filters.sortByAttribute} use one of ${sortedAttributes}`
-    );
-  }
+
+  parameters.push({
+    field: 'sortByAttribute',
+    type: sql.NVarChar(255),
+    value: sortByAttribute,
+  });
 
   const listAnalyses = await SQLUtilsLibSql.queryDB<PaginatedAfiAnalysisByListIdSortedByFilters[]>(
     clientDatabase,

@@ -239,7 +239,7 @@ export function UploadLocationByPolygon({ setUploadType }: ChangePageType) {
                 type="submit"
                 variant="contained"
                 sx={{ alignSelf: 'end' }}
-                startIcon={<Check style={{ color: 'white' }} />}
+                startIcon={<Check />}
               >
                 Ok
               </PillButton>

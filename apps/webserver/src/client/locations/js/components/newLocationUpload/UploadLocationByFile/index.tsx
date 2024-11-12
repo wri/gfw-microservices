@@ -1,24 +1,30 @@
 import React, { DragEvent, useState } from 'react';
-import { Box, Card, Typography, useTheme } from '@mui/material';
+import { Box, Card, Dialog, DialogActions, DialogTitle, Typography, useTheme } from '@mui/material';
 import { ArrowForwardIos, Close, DriveFolderUpload } from '@mui/icons-material';
 
 import { PillButton } from '../../../../../components';
 import { ChangePageType } from '../types';
+import { VALID_UPLOAD_FILE_FORMATS } from '../utils/constants';
 
 export function UploadLocationByFile({ setUploadType }: ChangePageType) {
   const theme = useTheme();
   const [isDragAndDropActive, setIsDragAndDropActive] = useState(false);
+  const [isDialogOpen, setIsDialogOpen] = React.useState(false);
 
   const fileUpload = (event: DragEvent<HTMLFormElement>) => {
     event.preventDefault();
 
     const target = event.target as HTMLInputElement;
 
-    const file =
-      (target.files && target.files[0]) ||
-      (event.dataTransfer && event.dataTransfer.files && event.dataTransfer.files[0]);
+    const file = target.files?.[0] || event.dataTransfer?.files?.[0];
 
-    if (!file) {
+    if (!file) return;
+
+    const fileExtension = file.name.split('.').pop()?.toLowerCase();
+
+    if (!fileExtension || !VALID_UPLOAD_FILE_FORMATS.includes(fileExtension)) {
+      setIsDialogOpen(true);
+      setIsDragAndDropActive(false);
       return;
     }
 
@@ -82,7 +88,7 @@ export function UploadLocationByFile({ setUploadType }: ChangePageType) {
             type="file"
             id="file-input"
             name="file-input"
-            accept=".csv, .zip, .kml, .kmz"
+            accept={VALID_UPLOAD_FILE_FORMATS.map((f) => `.${f}`).join(', ')}
             style={{ display: 'none' }}
           />
         </label>
@@ -150,6 +156,20 @@ export function UploadLocationByFile({ setUploadType }: ChangePageType) {
           Next
         </PillButton>
       </Box>
+
+      <Dialog
+        open={isDialogOpen}
+        onClose={() => setIsDialogOpen(false)}
+        aria-labelledby="alert-dialog-title"
+        aria-describedby="alert-dialog-description"
+      >
+        <DialogTitle id="alert-dialog-title">Data type not compatible with GFW Pro</DialogTitle>
+        <DialogActions>
+          <PillButton onClick={() => setIsDialogOpen(false)} autoFocus>
+            Ok
+          </PillButton>
+        </DialogActions>
+      </Dialog>
     </Card>
   );
 }

@@ -1,10 +1,8 @@
-import React from 'react';
 import './index.scss';
 
+import React from 'react';
 import { useHistory } from 'react-router-dom';
-
 import { Typography, Card, IconButton, Button } from '@mui/material';
-
 import {
   UploadFileTwoTone,
   ScatterPlotTwoTone,
@@ -14,13 +12,10 @@ import {
 } from '@mui/icons-material';
 
 import { HowToFormatLocationLink } from '../components/HowToFormatLocationLink';
-import { UploadType } from '..';
+import { UploadType } from '../types';
+import { ChangePageType } from '../types';
 
-type UploadLocationOptionsProps = {
-  selectUploadType: (type: UploadType) => void;
-};
-
-export function UploadLocationOptions({ selectUploadType }: UploadLocationOptionsProps) {
+export function UploadLocationOptions({ setUploadType }: ChangePageType) {
   const history = useHistory();
 
   return (
@@ -48,7 +43,7 @@ export function UploadLocationOptions({ selectUploadType }: UploadLocationOption
 
           <Button
             className="upload-location-options__button"
-            onClick={() => selectUploadType(UploadType.BY_FILE)}
+            onClick={() => setUploadType(UploadType.ByFile)}
             startIcon={<UploadFileTwoTone color="primary" fontSize="large" />}
           >
             File upload
@@ -62,7 +57,7 @@ export function UploadLocationOptions({ selectUploadType }: UploadLocationOption
             <div>
               <Button
                 className="upload-location-options__button"
-                onClick={() => selectUploadType(UploadType.BY_POINT)}
+                onClick={() => setUploadType(UploadType.ByPoint)}
                 startIcon={<ScatterPlotTwoTone color="primary" fontSize="large" />}
               >
                 Point
@@ -70,7 +65,7 @@ export function UploadLocationOptions({ selectUploadType }: UploadLocationOption
 
               <Button
                 className="upload-location-options__button"
-                onClick={() => selectUploadType(UploadType.BY_POLYGON)}
+                onClick={() => setUploadType(UploadType.ByPolygon)}
                 startIcon={<Timeline color="primary" fontSize="large" />}
               >
                 Polygon

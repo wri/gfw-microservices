@@ -673,15 +673,7 @@ module.exports = (app, limiter) => {
               ? numberOfResults / pageSize
               : Math.floor(numberOfResults / pageSize) + 1;
 
-          // Sort listAnalyses by some of those attributes protectedAreasHA, landmarkHA, naturalForestLossHA, jrcNaturalForestLossHA or locationName if not empty
           if (listAnalyses.length > 0) {
-            const sortAttributes = {
-              protectedAreasHA: 'protectedAreasHA',
-              landmarkHA: 'landmarkHA',
-              naturalForestLossHA: 'naturalForestLossHA',
-              jrcNaturalForestLossHA: 'jrcNaturalForestLossHA',
-              locationName: 'locationName',
-            };
             location_analyses = listAnalyses;
           }
           break;

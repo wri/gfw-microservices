@@ -71,7 +71,9 @@ export const createBodyContent = (req, type, content = {}, level = 'info') => {
           content.is_subsidiary
             ? `<tr><td>Parent Company Name:</td><td>${content.parent_org_name}</td></tr>`
             : ''
-        }<tr><td>Company Address:</td><td>${content.org_address}, ${content.org_country}</td></tr>` +
+        }<tr><td>Company Address:</td><td>${content.org_address}, ${
+          content.org_country
+        }</td></tr>` +
         `<tr><td>Company Website:</td><td>${content.org_website}</td></tr>${
           content.policyNames.length > 0
             ? `<tr><td>Company Policy:</td><td>${content.policyNames.join(', ')}</td></tr>`

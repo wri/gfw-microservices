@@ -3,7 +3,6 @@ import * as jsonld from 'jsonld';
 import { v4 as uuidv4 } from 'uuid';
 import { GeoJsonSchema } from './types/geojson.schema';
 import * as cache from 'memory-cache';
-import axios from 'axios';
 let vc, Ed25519Signature2018, Ed25519VerificationKey2018;
 // hack to avoid importing in test because jest does not like dynamic import
 if (process.env.NODE_ENV !== 'test') {
@@ -49,33 +48,14 @@ export class VerifiableCredentialService {
           ? jsonld.documentLoaders.node({ strictSSL: false, safe: false })
           : jsonld.documentLoaders.node();
 
-      const documentLoader = async (url) => {
+      const combinedDocumentLoader = async (url) => {
         const cachedDocument = cache.get(url);
         if (cachedDocument) {
           return cachedDocument;
         }
-
-        const response = await axios.get(url);
-        const document = await response.data;
-        const result = {
-          contextUrl: null,
-          documentUrl: url,
-          document,
-        };
-
-        cache.put(url, result, 1000 * 60 * 3); // Cache about 3 minutes
-        return result;
-      };
-
-      const combinedDocumentLoader = async (url) => {
-        try {
-          const result = await documentLoader(url);
-          return result;
-        } catch (error) {
-          const nonCachedResult = await customLoader(url);
-          cache.put(url, nonCachedResult, 1000 * 60 * 3); // Cache about 3 minutes
-          return nonCachedResult;
-        }
+        const nonCachedResult = await customLoader(url);
+        cache.put(url, nonCachedResult, 1000 * 60 * 3); // Cache about 3 minutes
+        return nonCachedResult;
       };
 
       const signedVC = await vc.issue({

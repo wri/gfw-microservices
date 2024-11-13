@@ -5,6 +5,7 @@ import {
   renderFormattedDeforestationValueWithIndicator,
   formatDigit,
 } from '../../../../locations/js/utils/locationsTableUtils';
+import infoBubbleConfig from '../../../../common/js/infoBubbleConfig.constants';
 import store from '../../../../locations/js/store';
 import { SBTN_NATURAL_FOREST_LOSS } from '../../components/lists/ListDetails/deforestationDisplayFormat.constants';
 
@@ -24,7 +25,12 @@ const post_2020_risk = [
     Cell: ({ original }) => renderCell(formatDigit(original?.totalAreaHa)),
   },
   {
-    Header: () => <ColumnsHeader label="Post-2020 Forest Loss" />,
+    Header: () => (
+      <ColumnsHeader
+        label="Post-2020 Forest Loss"
+        infoBubbleId={infoBubbleConfig.post2020ForestLoss}
+      />
+    ),
     className: 'default-cell td-num',
     id:
       naturalForestLossDataSource === SBTN_NATURAL_FOREST_LOSS
@@ -51,7 +57,12 @@ const post_2020_risk = [
     },
   },
   {
-    Header: () => <ColumnsHeader label="Indigenous Territories Overlap" />,
+    Header: () => (
+      <ColumnsHeader
+        label="Indigenous Territories Overlap"
+        infoBubbleId={infoBubbleConfig.post2020ItOverlap}
+      />
+    ),
     className: 'default-cell td-num',
     id: 'landmark_area',
     Cell: ({ original }) => {
@@ -60,7 +71,9 @@ const post_2020_risk = [
     },
   },
   {
-    Header: () => <ColumnsHeader label="Protected Areas" />,
+    Header: () => (
+      <ColumnsHeader label="Protected Areas" infoBubbleId={infoBubbleConfig.post2020PaOverlap} />
+    ),
     className: 'default-cell td-num',
     id: 'protected_areas_area',
     Cell: ({ original }) => {

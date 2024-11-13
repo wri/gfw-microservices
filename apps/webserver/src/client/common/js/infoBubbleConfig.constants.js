@@ -38,6 +38,13 @@ const infoBubbleConfig = {
   naturalForestCoverage: 'deforestation_kpis_natural_forest_coverage',
   naturalForestLoss: 'deforestation_kpis_natural_forest_loss',
   negligibleRisk: 'deforestation_kpis_negligible_risk',
+  post2020RiskForestLossDataset: 'post-2020_risk_forest_loss_dataset',
+  post2020ForestLoss: 'post-2020_forest_loss',
+  post2020ItOverlap: 'post-2020_it_overlap',
+  post2020PaOverlap: 'post-2020_pa_overlap',
+  post2000PrimaryForest: 'post-2000_primary_forest',
+  post2000TreeCover: 'post-2000_tree_cover',
+  post2000TreeCoverLoss: 'post-2000_tree_cover_loss',
 };
 
 export default infoBubbleConfig;

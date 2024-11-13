@@ -1,20 +1,22 @@
 import { z } from 'zod';
 
+const validCoordinateFormat = /^-?\d+\.\d+$/;
+
 export const coordinateSchema = z.object({
   latitude: z
     .string()
+    .max(19)
     .refine((value) => {
       const latitude = Math.abs(Number(value));
-      const hasDecimalPlaces = value.includes('.');
-      return hasDecimalPlaces && latitude <= 90;
+      return validCoordinateFormat.test(value) && latitude <= 90;
     })
     .optional(),
   longitude: z
     .string()
+    .max(20)
     .refine((value) => {
       const longitude = Math.abs(Number(value));
-      const hasDecimalPlaces = value.includes('.');
-      return hasDecimalPlaces && longitude <= 180;
+      return validCoordinateFormat.test(value) && longitude <= 180;
     })
     .optional(),
 });

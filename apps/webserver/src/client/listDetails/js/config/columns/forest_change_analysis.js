@@ -22,11 +22,10 @@ const forest_change_analysis = [
   {
     id: 'tree_cover_extent_total',
     Header: () => (
-      <span>
-        <span className="title-text" title={transifex(columnHeaders.treeCoverExtentInHa)}>
-          {transifex(columnHeaders.treeCoverExtent)} <span className="title-text__units">(ha)</span>
-        </span>
-      </span>
+      <ColumnsHeader
+        label={columnHeaders.treeCoverExtent}
+        infoBubbleId={infoBubbleConfig.post2000TreeCoverLoss}
+      />
     ),
     accessor: (d) => {
       return d;
@@ -65,10 +64,16 @@ const forest_change_analysis = [
         </span>
       </div>
     ),
+
     columns: [
       {
         id: 'tree_cover_loss_total_yearly',
-        Header: () => <ColumnsHeader label={columnHeaders.total} />,
+        Header: () => (
+          <ColumnsHeader
+            label={columnHeaders.treeCover}
+            infoBubbleId={infoBubbleConfig.post2000TreeCover}
+          />
+        ),
         accessor: (d) => {
           return d;
         },
@@ -159,7 +164,12 @@ const forest_change_analysis = [
       },
       {
         id: 'tree_cover_loss_primary_forest_yearly',
-        Header: () => <ColumnsHeader label={columnHeaders.primaryForest} />,
+        Header: () => (
+          <ColumnsHeader
+            label={columnHeaders.primaryForest}
+            infoBubbleId={infoBubbleConfig.post2000PrimaryForest}
+          />
+        ),
         accessor: (d) => {
           return d;
         },

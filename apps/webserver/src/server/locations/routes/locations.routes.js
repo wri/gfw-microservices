@@ -655,19 +655,8 @@ module.exports = (app, limiter) => {
         numberOfResults = 0,
         maximumAnalysisAreaInTheList = 0,
         locationAttributeList;
-      // Delete specifics AFI sortByAttribute
-      let AFI_SORT_BY_ATTRIBUTES = '';
       let location_analyses = [];
-      if (
-        filters.sortByAttribute === 'protectedAreasHA' ||
-        filters.sortByAttribute === 'landmarkHA' ||
-        filters.sortByAttribute === 'naturalForestLossHA' ||
-        filters.sortByAttribute === 'jrcNaturalForestLossHA' ||
-        filters.sortByAttribute === 'locationName'
-      ) {
-        AFI_SORT_BY_ATTRIBUTES = filters.sortByAttribute;
-        delete filters.sortByAttribute;
-      }
+
       switch (analysisId.toUpperCase()) {
         case 'AFI': {
           const analysisManagerResult = await AnalysisManager.getAFIListAnalyses(
@@ -684,23 +673,7 @@ module.exports = (app, limiter) => {
               ? numberOfResults / pageSize
               : Math.floor(numberOfResults / pageSize) + 1;
 
-          // Sort listAnalyses by some of those attributes protectedAreasHA, landmarkHA, naturalForestLossHA, jrcNaturalForestLossHA or locationName if not empty
           if (listAnalyses.length > 0) {
-            const sortAttributes = {
-              protectedAreasHA: 'protectedAreasHA',
-              landmarkHA: 'landmarkHA',
-              naturalForestLossHA: 'naturalForestLossHA',
-              jrcNaturalForestLossHA: 'jrcNaturalForestLossHA',
-              locationName: 'locationName',
-            };
-
-            if (sortAttributes[AFI_SORT_BY_ATTRIBUTES]) {
-              listAnalyses = listAnalyses.sort((a, b) =>
-                orderType.toLowerCase() === 'desc'
-                  ? b[AFI_SORT_BY_ATTRIBUTES] - a[AFI_SORT_BY_ATTRIBUTES]
-                  : a[AFI_SORT_BY_ATTRIBUTES] - b[AFI_SORT_BY_ATTRIBUTES]
-              );
-            }
             location_analyses = listAnalyses;
           }
           break;

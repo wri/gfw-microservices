@@ -37,7 +37,7 @@ const getUserLocationDataFromAPI = (
     page: page + 1,
     listID: selectedLists,
     searchString,
-    sortByAttribute: listView === POST_2020_RISK_ASSESSMENT_VIEW ? 'landmarkHA' : tableSortedBy,
+    sortByAttribute: tableSortedBy,
     order: tableSortedDesc ? 'desc' : 'asc',
     analysisAreaMin: filters.selectedAreaMin || 0,
     analysisId,

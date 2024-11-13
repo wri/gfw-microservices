@@ -72,7 +72,9 @@ export class VerifiableCredentialService {
           const result = await documentLoader(url);
           return result;
         } catch (error) {
-          return customLoader(url);
+          const nonCachedResult = await customLoader(url);
+          cache.put(url, nonCachedResult, 1000 * 60 * 3); // Cache about 3 minutes
+          return nonCachedResult;
         }
       };
 

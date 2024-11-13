@@ -114,7 +114,7 @@ const forest_change_analysis = [
       },
       {
         id: 'tree_cover_loss_protected_areas_yearly',
-        Header: () => <ColumnsHeader label="Protected Areas" />,
+        Header: () => <ColumnsHeader label={columnHeaders.protectedAreas} />,
         accessor: (d) => {
           return d;
         },

@@ -11,7 +11,7 @@ jest.mock('../privateutils/sns.utils', () => ({
 }));
 
 describe('requestNewAccount', () => {
-  it('should handle the database response from uspCreateNewAccount', async () => {
+  it('should call sns with country data', async () => {
     const req = {};
     const org_country = 'Brazil';
     const testParams = {

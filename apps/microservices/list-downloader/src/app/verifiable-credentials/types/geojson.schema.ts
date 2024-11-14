@@ -12,3 +12,5 @@ export const geoJsonSchema = z.object({
   GFWPro_Account: z.number(),
   Use_Rights: z.string(),
 });
+
+export type GeoJsonSchema = z.infer<typeof geoJsonSchema>;

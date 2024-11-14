@@ -77,6 +77,12 @@ export = (app, limiter) => {
       ['@context']: {
         ['@version']: 1.1,
         geojson: 'https://purl.org/geojson/vocab#',
+        type:'geojson:type',
+        geometry:{
+        type: 'geojson:geometry_type',
+        coordinates: 'geojson:geometry_coordinates',
+        },
+        properties:{
         Location_Name: 'geojson:Location_Name',
         Centroid_Country: 'geojson:Centroid_Country',
         Location_HA: 'geojson:Location_HA',
@@ -87,6 +93,7 @@ export = (app, limiter) => {
         Analysis_Time: 'geojson:Analysis_Time',
         GFWPro_Account: 'geojson:GFWPro_Account',
         Use_Rights: 'geojson:Use_Rights',
+        }
       },
     };
     return response.status(200).send(geoJsonDefReport);

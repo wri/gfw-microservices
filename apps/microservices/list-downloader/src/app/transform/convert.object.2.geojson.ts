@@ -81,6 +81,7 @@ class ConvertObject2Geojson extends Transform {
       )
         .then((listProperties) => {
           const afiProperties = {
+            ['Location_Name']: feature.properties['Location_Name'],
             Centroid_Country: feature.properties['Country'],
             Location_HA: listProperties.total_area_ha,
             SBTN_Natural_Forest_HA: listProperties.natural_land_area,
@@ -96,12 +97,17 @@ class ConvertObject2Geojson extends Transform {
           delete feature.properties['organizationDatabase'];
           delete feature.properties['Country'];
           delete feature.properties['location_id'];
+          delete feature.properties['Location Name'];
           this.verifiableCredentialService
-            .signedVcOutput(afiProperties)
+            .signedVcOutput({
+              type:geojson.type, 
+              geometry: {
+                type:feature.geometry['type'], 
+                coordinates:feature.geometry['coordinates']
+              },
+              properties:afiProperties})
             .then((signedVC) => {
-              feature.properties = { ...feature.properties, ...signedVC };
-              geojson.features.push(feature);
-              next(null, geojson);
+              next(null, signedVC);
             })
             .catch((err) => {
               this.logger.error(`Error on signedVcOutput: ${err}`);

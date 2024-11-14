@@ -54,6 +54,15 @@ export class StartAnalysis extends AbstractHandler<ChainType> {
       subscription_status_id: subscriptionStatusId,
     } = request.request as RequestNewList;
 
+    const listSizeWithoutError = request.geojson.features?.filter(
+      (feature) =>
+        !Object.prototype.hasOwnProperty.call(feature.properties, 'error') &&
+        Object.prototype.hasOwnProperty.call(feature.properties, 'gadmid')
+    ).length;
+    if (listSizeWithoutError === 0) {
+      throw new Error('All the features have errors, not going to start the analysis');
+    }
+
     const geoTrellisUrlsByEnv = {
       qa: GEO_TRELLIS__ANALYZE_LIST_QA,
       staging: GEO_TRELLIS__ANALYZE_LIST_STAGING,

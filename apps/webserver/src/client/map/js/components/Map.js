@@ -83,7 +83,7 @@ import { constructLayerObject } from '../../../common/js/utils/layer.utils';
 import { getMapLayerIdFromGFWListName } from '../../../common/js/utils/gfw.utils';
 import { updateInteractiveLayers } from '../utils/layerUpdates.utils';
 import sortMapArray from './sortMapArray';
-import getQueryParams from './getQueryParams';
+import getQueryParams, { parseSearchParams } from './getQueryParams';
 
 import AnalysisPanel from './analysisPanel/AnalysisPanel';
 import ControlPanel from './controls/ControlPanel';
@@ -1790,10 +1790,9 @@ class Map extends Component {
       }
 
       if (gfwListName === 'Protected Areas') {
-        // Processing - Palm Oil Mills points
-
         // TODO: Currently latest date is not in sync. Check if this needs to be updated and remove at some point in future
         const PROTECTED_AREAS_DATE = 'v202106';
+        // const PROTECTED_AREAS_DATE = 'v202408.1'; // verify if this should map mapLayers
         gfwVectorTileUrl = gfwVectorTileUrl.replace(date, PROTECTED_AREAS_DATE);
         date = PROTECTED_AREAS_DATE;
       }
@@ -1846,7 +1845,299 @@ class Map extends Component {
     this.applyStateFromUrl();
   };
 
+  setUserList = (list, { selectedLocations, alertsMapExtent }) => {
+    let transitionListData;
+
+    // handle locations features
+    if (selectedLocations && selectedLocations.length > 0) {
+      fetch(`/map/getUserListFilteredLocationData`, {
+        method: 'POST',
+        credentials: 'same-origin',
+        headers: {
+          'Content-type': 'application/json',
+        },
+        body: JSON.stringify({
+          listId: list.id,
+          filterByLocations: selectedLocations ?? '',
+        }),
+      })
+        .then((res) => res.json())
+        .then((listLocationData) => {
+          const { features } = listLocationData;
+          const selectedLocationsData = [
+            {
+              type: 'FeatureCollection',
+              features,
+            },
+          ];
+          const { transitionListData } = this.state;
+
+          this.goToOriginalPoint = () =>
+            setVectorTileLayerForFilteredList(selectedLocationsData, transitionListData, this.view);
+
+          setVectorTileLayerForFilteredList(selectedLocationsData, transitionListData, this.view);
+        })
+        .catch((err) => {
+          console.log(`Error: ${err}`);
+          store.dispatch(showMapLoader(false));
+        });
+      // set up banner info for selected locations
+      transitionListData = {
+        id: list.id,
+        numLocations: list.list_locations_count,
+        name: list.list_locations_count,
+        alertsMapExtent,
+      };
+    }
+    // handle all locations
+    else if (!selectedLocations) {
+      // set up banner info for all locations
+      transitionListData = {
+        id: list.id,
+        numLocations: list.list_locations_count,
+        name: list.list_locations_count,
+        alertsMapExtent,
+      };
+      this.getUserLocationData([list.id]);
+    }
+    // set list and display map
+    store.dispatch(selectList(list));
+    this.setState({ transitionListData });
+    store.dispatch(showMapLoader(false));
+  };
+
+  setGfwList = (list, { selectedLocations, alertsMapExtent, visibleLayers = [] }) => {
+    const mapLayer = getMapLayerIdFromGFWListName(list.list_name);
+    const isLayerAlreadyVisible = visibleLayers.includes(mapLayer);
+    let transitionListData;
+    let gfwListLocDefinitions = {};
+
+    // remove all visible graphics from user list, if any
+    const userLayer = this.view.map.findLayerById('user-locations');
+    userLayer.removeAll();
+
+    // check if the corresponding GFW Layer is already visible
+    if (!isLayerAlreadyVisible) {
+      // if not, turn it on
+      store.dispatch(toggleLayer(mapLayer));
+    }
+
+    // setting geometry analysis for listId = 1
+    if (list.list_name === 'Administrative Areas' && selectedLocations?.length === 1) {
+      /**
+       * @note Administrative Areas
+       * selectedLocations is an array with 1 object looking like { gadmid, serverLayerId }
+       * for the purposes of `queryAdmin` this pattern is easier than using the locationId
+       * and fetch for these properties
+       */
+      const [parsedSelectedLocations] = selectedLocations;
+      queryAdmin(parsedSelectedLocations).then((adminArea) => {
+        store.dispatch(analysisActions.setAnalysis('analysis'));
+        store.dispatch(analysisActions.setActiveAnalysis('region'));
+        store.dispatch(
+          analysisActions.setAnalysisAdminArea({
+            country: adminArea.country,
+            region: adminArea.region,
+          })
+        );
+        this.view.goTo(adminArea);
+        this.goToOriginalPoint = () => this.view.goTo(adminArea);
+
+        this.analyzeAdmin(adminArea);
+
+        store.dispatch(
+          updateAdminSelections({
+            country: adminArea.countryText,
+            smallerRegion: adminArea.stateText,
+            subregion: adminArea.substateText,
+          })
+        );
+      });
+    } else if (list.list_name !== 'Administrative Areas' && selectedLocations?.length > 0) {
+      gfwListLocDefinitions = {
+        [mapLayer]: [],
+      };
+      // build gfw list locations definitions
+      selectedLocations?.forEach((gfwListLocation) => {
+        gfwListLocDefinitions[mapLayer].push(gfwListLocation);
+      });
+
+      // set up banner info
+      transitionListData = {
+        id: list.id,
+        numLocations: list.list_locations_count,
+        alertsMapExtent,
+        name: `(${selectedLocations.length}) ${list.list_name}`,
+        isGfwList: true,
+      };
+    } else if (list.list_name !== 'Administrative Areas' && !selectedLocations) {
+      // set up banner info
+      transitionListData = {
+        id: list.id,
+        numLocations: list.list_locations_count,
+        alertsMapExtent,
+        name: list.list_name,
+        isGfwList: true,
+      };
+    }
+
+    // zoom to the layer's extent
+    if (mapLayer === protectedAreas) {
+      this.view.goTo({
+        target: [15, 27],
+        zoom: 2,
+      });
+    } else {
+      const activeGFWLayer = this.state.mapLayers.find((l) => l.id === mapLayer);
+      // TODO: figure if this shold be move outside the reach for AdminAreas, since there's no layer and it already zooms to the analysis
+      if (activeGFWLayer) {
+        const url = `${activeGFWLayer.url}/${activeGFWLayer.layerId}`;
+        queryExtent(url).then((extent) => {
+          if (extent) {
+            this.view.goTo(extent);
+          }
+        });
+      }
+    }
+
+    // set the selected list to the selected GFW list
+    store.dispatch(selectList(list));
+    store.dispatch(updateGFWLocations(gfwListLocDefinitions));
+    this.setState({ transitionListData });
+    store.dispatch(showMapLoader(false));
+  };
+
   applyStateFromUrl = () => {
+    store.dispatch(showMapLoader(true));
+
+    const queryParams = parseSearchParams(this.props.location.search);
+    const {
+      visibleLayers,
+      listId,
+      isGfwList,
+      selectedTimeframe,
+      latitude,
+      longitude,
+      zoom,
+      xmin,
+      ymin,
+      xmax,
+      ymax,
+    } = queryParams;
+    const { userLists, gfwLists, userSharedLists } = this.props;
+
+    // grab the current list
+    const currentlySelectedList = [...userLists, ...gfwLists, ...userSharedLists].find(
+      (l) => l.id === listId
+    );
+
+    // list not found, silently exit for now.
+    if (!currentlySelectedList) {
+      return;
+    }
+
+    // set alerts extends if available
+    let alertsMapExtent;
+    if (xmin && ymin && xmax && ymax) {
+      alertsMapExtent = new Extent({
+        xmin,
+        ymin,
+        xmax,
+        ymax,
+        spatialReference: SpatialReference.WGS84,
+      });
+    } else {
+      alertsMapExtent = null; // Handle the case where extent cannot be calculated
+    }
+
+    console.log('currentlySelectedList', currentlySelectedList, `isGfwList=${isGfwList}`);
+
+    // handle setting list
+    if (isGfwList) {
+      this.setGfwList(currentlySelectedList, {
+        alertsMapExtent,
+        ...queryParams,
+      });
+    } else {
+      this.setUserList(currentlySelectedList, {
+        alertsMapExtent,
+        ...queryParams,
+      });
+    }
+
+    // handle selectedTimeframe for alerts if present
+    if (selectedTimeframe) {
+      if (
+        visibleLayers?.includes(gladAlertsID) ||
+        visibleLayers?.includes(integratedDeforestationAlertsID)
+      ) {
+        const startDate = new Date();
+        const firstDayOfThisMonth = new Date(startDate.getFullYear(), startDate.getMonth(), 1);
+        switch (selectedTimeframe) {
+          case 'WEEK':
+            startDate.setDate(startDate.getDate() - 7);
+            break;
+          case 'MONTH':
+            startDate.setMonth(startDate.getMonth() - 1);
+            break;
+          case 'QUARTER':
+            startDate.setMonth(firstDayOfThisMonth.getMonth() - 3, 1);
+            break;
+          case 'YEAR':
+            startDate.setFullYear(startDate.getFullYear() - 1);
+            break;
+          default:
+            break;
+        }
+
+        const promise = new Promise((resolve) => {
+          startDate.setHours(0, 0, 0, 0);
+          resolve();
+        });
+        promise.then(() => {
+          if (selectedTimeframe === 'QUARTER') {
+            store.dispatch(analysisActions.setGLADEndDate(firstDayOfThisMonth));
+          }
+          if (selectedTimeframe === 'MONTH') {
+            store.dispatch(analysisActions.setGLADEndDate(new Date()));
+          }
+          store.dispatch(analysisActions.setGLADStartDate(startDate));
+        });
+      } else if (visibleLayers?.includes(viirsActiveFiresID)) {
+        let fireDays = 1;
+        if (selectedTimeframe === 'WEEK') {
+          fireDays = 7;
+        }
+
+        //make sure we have viirs layer loaded up
+        const viirsLayerConfig = this.state.mapLayers.find((lx) => lx.id === viirsActiveFiresID);
+        const newViirsLayer = viirsLayer(
+          viirsActiveFiresID,
+          viirsLayerConfig.url,
+          true,
+          viirsLayerConfig.order,
+          fireDays
+        );
+        this.view.map.add(newViirsLayer);
+        store.dispatch(setFireDays(fireDays));
+      }
+    }
+
+    // handle coordinates if present
+    if (latitude && longitude && zoom) {
+      const point = new Point({
+        latitude,
+        longitude,
+      });
+
+      this.view.goTo({
+        target: point,
+        scale: zoom - 1,
+      });
+    }
+  };
+
+  applyStateFromUrl_DEPRECATED = () => {
     const queryParams = getQueryParams(this.props.location.search);
 
     const { gfwLists } = this.props;

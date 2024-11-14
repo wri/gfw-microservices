@@ -1,3 +1,66 @@
+import { z } from 'zod';
+
+const mapStringsToArrayHelper = (currentParam) => {
+  try {
+    const parsed = JSON.parse(currentParam);
+    if (Array.isArray(parsed)) {
+      return parsed;
+    }
+  } catch (e) {
+    // If parsing fails, it's not an Admin Areas
+    return currentParam.split(',').map((item) => {
+      const num = Number(item);
+      return isNaN(num) ? item.trim() : num;
+    });
+  }
+};
+
+const QueryParamsValidationSchema = z.object({
+  listId: z.coerce.number().optional(),
+  selectedLocations: z.string().transform(mapStringsToArrayHelper).optional(),
+  visibleLayers: z.string().transform(mapStringsToArrayHelper).optional(),
+  locationId: z.coerce.number().optional(),
+  // https://github.com/colinhacks/zod/issues/2985
+  isGfwList: z
+    .optional(
+      z
+        .string()
+        .transform((x) => x === 'true')
+        .pipe(z.boolean())
+    )
+    .catch(undefined),
+  isSharedList: z
+    .optional(
+      z
+        .string()
+        .transform((x) => x === 'true')
+        .pipe(z.boolean())
+    )
+    .catch(undefined),
+  latitude: z.coerce.number().optional(),
+  longitude: z.coerce.number().optional(),
+  zoom: z.coerce.number().optional(),
+  selectedTimeframe: z.string().optional(),
+  xmin: z.coerce.number().optional(),
+  ymin: z.coerce.number().optional(),
+  xmax: z.coerce.number().optional(),
+  ymax: z.coerce.number().optional(),
+});
+
+export const parseSearchParams = (queryString) => {
+  const urlSearchParams = new URLSearchParams(queryString);
+  const queryObj = Object.fromEntries(urlSearchParams.entries());
+
+  let validParams = QueryParamsValidationSchema.parse(queryObj);
+
+  // feat [GPV-3376]: external route `/apimap` uses locationId, set selectedLocations to trigger zoom for that
+  if (validParams.locationId && window.location.pathname === '/apimap') {
+    validParams.selectedLocations = [validParams.locationId];
+  }
+
+  return validParams;
+};
+
 const getQueryParams = (queryString) => {
   const queryParams = new URLSearchParams(queryString);
   const params = {};
@@ -50,6 +113,7 @@ const getQueryParams = (queryString) => {
     }
   });
 
+  // TODO GPV-3508 when locations are selected and the user wants to see the map with those locations, send zoom param: `zoom=1|2`
   // Workaround for makes zoom work at apimap route, zoom requires the selectedLocations attribute, and apimap route only sends locationId
   if (params['locationId']) {
     params['selectedLocations'] = params['locationId'];

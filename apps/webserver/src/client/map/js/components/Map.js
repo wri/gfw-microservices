@@ -866,9 +866,9 @@ class Map extends Component {
           symbol: symbol,
         });
         view.graphics.add(graphic);
-        store.dispatch(toggleDrawing());
         this.analyzeCustom(graphic);
-
+        store.dispatch(toggleDrawing());
+        
         this.state.drawnCoordinates.forEach((coordinate) =>
           addCoordinateTextFromPoint(view, coordinate)
         );
@@ -938,6 +938,9 @@ class Map extends Component {
     };
 
     const openPopup = (features, location, layerID) => {
+      if(this.state.drawingActive) {
+        return;
+      }
       //disable popup actions for VIIRS layers, this may need to be adjusted in the future as we move other layers to vector tile cache layers
       if (layerID === viirsActiveFiresID) {
         this.view.popup.open({

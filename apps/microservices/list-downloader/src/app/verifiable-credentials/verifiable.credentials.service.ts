@@ -54,7 +54,7 @@ export class VerifiableCredentialService {
           return cachedDocument;
         }
         const nonCachedResult = await customLoader(url);
-        cache.put(url, nonCachedResult, 1000 * 60 * 3); // Cache about 3 minutes
+        cache.put(url, nonCachedResult, 1000 * 60 * 60); // Cache about 1 hour
         return nonCachedResult;
       };
 

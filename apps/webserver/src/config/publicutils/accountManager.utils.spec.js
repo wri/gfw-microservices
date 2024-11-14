@@ -1,5 +1,4 @@
 const { requestNewAccount } = require('./accountManager.utils');
-const AWSSES = require('../privateutils/ses.utils');
 const snsUtils = require('../privateutils/sns.utils');
 const sqlUtils = require('../privateutils/sql.utils');
 
@@ -13,7 +12,7 @@ jest.mock('../privateutils/sns.utils', () => ({
 
 describe('requestNewAccount', () => {
   it('should handle the database response from uspCreateNewAccount', async () => {
-    const req = {}; // mock or real request object
+    const req = {};
     const org_country = 'Brazil';
     const testParams = {
       req,
@@ -37,14 +36,9 @@ describe('requestNewAccount', () => {
       policyNames: [],
     };
 
-    // Mock return value for the stored procedure
     const mockRecordset = [{ organization_id: 12345 }];
     sqlUtils.executeSystemStoredProcedure.mockResolvedValue(mockRecordset);
-
-    // Act
     await requestNewAccount(...Object.values(testParams));
-
-    // Assert
     expect(snsUtils.publish).toHaveBeenCalledWith(
       expect.anything(),
       expect.objectContaining({

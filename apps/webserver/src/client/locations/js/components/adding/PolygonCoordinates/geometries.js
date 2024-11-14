@@ -53,7 +53,10 @@ export const getPointGeometry = (coordinates, selectedRadius, areaUnit, customRa
 };
 
 export const getPolygonGeometry = (coordinates) => {
-  const polygonCoordinates = coordinates.map((coord) => [coord.longitude, coord.latitude]);
+  const polygonCoordinates = coordinates.map((coord) => [
+    parseFloat(coord.longitude),
+    parseFloat(coord.latitude),
+  ]);
 
   const polygon = new Polygon({
     rings: polygonCoordinates,

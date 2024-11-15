@@ -5,8 +5,8 @@ import { mockAnalysisFlow } from '../../../mock';
 import { checkProcessingLimits } from '@wri-monorepos/shared';
 import { getListAnalysisStatus, extractAnalysisTypes } from '@wri-monorepos/geo';
 import { listStatus } from '@wri-monorepos/constants';
-5;
 import { DataSource } from 'typeorm'; // ou o caminho correto para o DataSource na sua aplicação
+import { ChainType } from './types';
 
 jest.mock('@wri-monorepos/sql');
 jest.mock('../../../mock');
@@ -45,7 +45,23 @@ describe('StartAnalysis', () => {
         subscription_status_id: 1,
         path: 'test',
       },
-    };
+      geojson: {
+        features: [
+          {
+            type: 'Feature',
+            geometry: {
+              type: 'Point',
+              coordinates: [0, 0],
+            },
+            properties: {
+              name: 'test',
+              gadmid: 'test',
+            },
+          },
+        ],
+        type: 'FeatureCollection',
+      },
+    } as ChainType;
 
     (checkProcessingLimits as jest.Mock).mockResolvedValue({
       isListLocationOverLimit: false,
@@ -73,7 +89,23 @@ describe('StartAnalysis', () => {
         subscription_status_id: 1,
         path: 'test',
       },
-    };
+      geojson: {
+        features: [
+          {
+            type: 'Feature',
+            geometry: {
+              type: 'Point',
+              coordinates: [0, 0],
+            },
+            properties: {
+              name: 'test',
+              gadmid: 'test',
+            },
+          },
+        ],
+        type: 'FeatureCollection',
+      },
+    } as ChainType;
 
     (checkProcessingLimits as jest.Mock).mockResolvedValue({
       isListLocationOverLimit: true,
@@ -88,6 +120,44 @@ describe('StartAnalysis', () => {
     });
   });
 
+  it('should throw Error when all locations has problem', async () => {
+    const input = {
+      request: {
+        organization_database: 'test_db',
+        user_id: 1,
+        listId: 1,
+        isExternalAPIProcess: false,
+        organization_id: 1,
+        subscription_status_id: 1,
+        path: 'test',
+      },
+      geojson: {
+        features: [
+          {
+            type: 'Feature',
+            geometry: {
+              type: 'Point',
+              coordinates: [0, 0],
+            },
+            properties: {
+              name: 'test',
+            },
+          },
+        ],
+        type: 'FeatureCollection',
+      },
+    } as ChainType;
+
+    (checkProcessingLimits as jest.Mock).mockResolvedValue({
+      isListLocationOverLimit: true,
+      processingLimit: 100,
+    });
+
+    await expect(startAnalysis.handle(input)).rejects.toThrow(
+      'All the features have errors, not going to start the analysis'
+    );
+  });
+
   it('should make API call with correct payload', async () => {
     const input = {
       request: {
@@ -99,8 +169,23 @@ describe('StartAnalysis', () => {
         subscription_status_id: 1,
         path: 'test',
       },
-    };
-
+      geojson: {
+        features: [
+          {
+            type: 'Feature',
+            geometry: {
+              type: 'Point',
+              coordinates: [0, 0],
+            },
+            properties: {
+              name: 'test',
+              gadmid: 'test',
+            },
+          },
+        ],
+        type: 'FeatureCollection',
+      },
+    } as ChainType;
     (checkProcessingLimits as jest.Mock).mockResolvedValue({
       isListLocationOverLimit: false,
       processingLimit: 100,

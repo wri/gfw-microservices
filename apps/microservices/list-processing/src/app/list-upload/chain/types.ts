@@ -1,6 +1,7 @@
 import { FeatureCollection } from '@wri-monorepos/geo';
 import { Logger } from '@nestjs/common';
 import { performance } from 'perf_hooks';
+import { updateListsUploadStatus } from '../shared/update.lists.upload.status';
 
 export type ChainType = {
   geojson?: FeatureCollection;
@@ -60,8 +61,17 @@ export abstract class AbstractHandler<T> implements Handler<T> {
       const start = performance.now();
       try {
         result = await nextJob.handle(result);
+        AbstractHandler.updateListsUploadStatus(
+          result as ChainType,
+          `${nextJob.constructor.name} successfully executed`
+        );
       } catch (error) {
         Logger.error(`Error in ${nextJob.constructor.name}: ${error.message}`);
+        AbstractHandler.updateListsUploadStatus(
+          result as ChainType,
+          `Error in ${nextJob.constructor.name}`,
+          error.message
+        );
       }
       const end = performance.now();
       AbstractHandler.logExecutionTime(start, end, nextJob.constructor.name);
@@ -85,5 +95,13 @@ export abstract class AbstractHandler<T> implements Handler<T> {
     }
 
     logger.debug(`${className} executed in ${durationStr}`);
+  }
+
+  static async updateListsUploadStatus(result: ChainType, message: string, errorInfo?: string) {
+    const { listId, organization_database } = result.request as RequestNewList;
+
+    if (listId) {
+      await updateListsUploadStatus(organization_database, listId, message, errorInfo);
+    }
   }
 }

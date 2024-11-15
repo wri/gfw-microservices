@@ -313,7 +313,7 @@ export class GfwLists {
             filteredRecord[field] = record[field];
           }
         }
-        return { ...filteredRecord, id: record.id, location_id: record.id };
+        return { ...filteredRecord, id: record.location_id, location_id: record.location_id };
       });
 
       const omitFields = (record, fields: string[]): any => {

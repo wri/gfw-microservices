@@ -214,6 +214,7 @@ export default class Account extends Component {
       obj.arr_org_classification_ids = this.state.arr_org_classification_ids.map((c) => c.value);
       obj.arr_user_geography_ids = this.state.arr_user_geography_ids.map((g) => g.value);
       obj.arr_user_commodity_ids = this.state.arr_user_commodity_ids.map((c) => c.value);
+      obj.org_country = this.state.org_country.value;
       request.send(JSON.stringify(obj));
     } else {
       if (errors.length > 0 && missing.length > 0) {

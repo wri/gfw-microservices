@@ -199,9 +199,9 @@ export const requestNewAccount = (
         */
         const subject = 'GFW Pro Account Application Notification';
         const content = {
+          org_country,
           org_name,
           org_address,
-          org_country,
           org_website,
           parent_org_name,
           is_subsidiary,

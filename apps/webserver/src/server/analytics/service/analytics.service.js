@@ -21,12 +21,9 @@ const getAllListsAnalysisStatus = async (req) => {
         (analysisType) => analysisType.id === analysisStatus.analysisId
       );
 
-      if (!analysisTypeLastModified) {
-        logger.info('LLLLLLLLLLLLLLLLLLLL getAllListsAnalysisStatus3', analysisStatus);
-      }
       return {
         ...analysisStatus,
-        analysisIdLastModifed: analysisTypeLastModified.last_run,
+        analysisIdLastModifed: analysisTypeLastModified?.last_run,
       };
     });
   } catch (error) {

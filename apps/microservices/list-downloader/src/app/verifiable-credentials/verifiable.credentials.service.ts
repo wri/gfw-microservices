@@ -2,6 +2,7 @@ import { Injectable, Logger } from '@nestjs/common';
 import * as jsonld from 'jsonld';
 import { v4 as uuidv4 } from 'uuid';
 import { GeoJson } from './types/verifiable-credential.model';
+import * as cache from 'memory-cache';
 let vc, Ed25519Signature2018, Ed25519VerificationKey2018;
 // hack to avoid importing in test because jest does not like dynamic import
 if (process.env.NODE_ENV !== 'test') {
@@ -47,10 +48,20 @@ export class VerifiableCredentialService {
           ? jsonld.documentLoaders.node({ strictSSL: false, safe: false })
           : jsonld.documentLoaders.node();
 
+      const combinedDocumentLoader = async (url) => {
+        const cachedDocument = cache.get(url);
+        if (cachedDocument) {
+          return cachedDocument;
+        }
+        const nonCachedResult = await customLoader(url);
+        cache.put(url, nonCachedResult, 1000 * 60 * 60); // Cache about 1 hour
+        return nonCachedResult;
+      };
+
       const signedVC = await vc.issue({
         credential,
         suite,
-        documentLoader: customLoader,
+        documentLoader: combinedDocumentLoader,
       });
       return signedVC;
     } catch (error) {

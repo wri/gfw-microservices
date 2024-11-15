@@ -3,14 +3,22 @@ export const CACHE_IN_HOURS = 24;
 // convert n (hours) to milliseconds for time comparison
 const CACHE_DURATION_MS = CACHE_IN_HOURS * 60 * 60 * 1000;
 
-const bucketName =
-  process.env.NODE_ENV === 'production' ? 'gfwpro-geotrellis-production' : 'gfwpro-geotrellis';
-
 interface AnalysisData {
   id: string;
   last_run: Date;
   jar_version: string;
 }
+
+const getBucketName = () => {
+  switch (process.env.NODE_ENV) {
+    case 'production':
+      return 'gfwpro-geotrellis-production';
+    case 'staging':
+      return 'gfwpro-geotrellis-staging';
+    default:
+      return 'gfwpro-geotrellis';
+  }
+};
 
 // in-memory cache object
 export let cache: {
@@ -30,7 +38,7 @@ export const readAnalysesLastModifiedTime = async (s3: any) => {
 
   for (let i = 0; i < files.length; i++) {
     try {
-      const fileContents = await s3.readFileFromS3(bucketName, `jars/${files[i]}`);
+      const fileContents = await s3.readFileFromS3(getBucketName(), `jars/${files[i]}`);
 
       const fileName = files[i];
       const id = fileName.split('.')[0];

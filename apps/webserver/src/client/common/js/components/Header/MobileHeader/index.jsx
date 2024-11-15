@@ -46,6 +46,15 @@ function MobileHeader({ isLoggedIn }) {
             </div>
             <MenuItem>
               <ListItemText>
+                <HeaderNavLink
+                  link="https://pro-news.globalforestwatch.org/"
+                  label={nav.newsAndEnvents}
+                />
+              </ListItemText>
+            </MenuItem>
+            <Divider />
+            <MenuItem>
+              <ListItemText>
                 <HeaderNavLink link="/about" label="About" />
               </ListItemText>
             </MenuItem>

@@ -50,9 +50,6 @@ export class ListOilPalmConcessions {
   @Column({ name: 'Geometry' })
   'Geometry': string;
 
-  @Column({ name: 'Geometry Simplified' })
-  'Geometry Simplified': string;
-
   @Column({ name: 'location_id' })
   location_id: number;
 }

@@ -1,3 +1,4 @@
+// this list should likely be moved to a shared location in the future.
 const countries = [
   'Andorra',
   'United Arab Emirates',

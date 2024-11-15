@@ -109,7 +109,7 @@ class ConvertObject2Geojson extends Transform {
             })
             .then((signedVC) => {
               geojson.features.push(signedVC);
-              next(null,geojson );
+              next(null, geojson);
             })
             .catch((err) => {
               this.logger.error(`Error on signedVcOutput: ${err}`);

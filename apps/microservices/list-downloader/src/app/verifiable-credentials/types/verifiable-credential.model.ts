@@ -21,26 +21,3 @@ export class GeoJson {
   geometry: GeoJsonGeometry;
   properties: GeoJsonProperties;
 }
-
-export class CredentialSubject {
-  geojson: GeoJson;
-}
-
-export class Proof {
-  type: string;
-  created: string;
-  verificationMethod: string;
-  proofPurpose: string;
-  jws: string;
-}
-
-export class VerifiableCredential {
-  '@context': string[];
-  id: string;
-  type: string[];
-  issuer: string;
-  issuanceDate: string;
-  expirationDate: string;
-  credentialSubject: CredentialSubject;
-  proof: Proof;
-}

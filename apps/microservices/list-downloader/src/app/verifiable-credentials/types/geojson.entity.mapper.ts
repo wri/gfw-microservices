@@ -1,4 +1,11 @@
-import { VerifiableCredential, CredentialSubject, GeoJson, GeoJsonGeometry, GeoJsonProperties, Proof } from './verifiable-credential.model';
+import {
+  VerifiableCredential,
+  CredentialSubject,
+  GeoJson,
+  GeoJsonGeometry,
+  GeoJsonProperties,
+  Proof,
+} from './verifiable-credential.model';
 
 function convertToVerifiableCredential(data: any): VerifiableCredential {
   const credential = new VerifiableCredential();
@@ -21,10 +28,13 @@ function convertToVerifiableCredential(data: any): VerifiableCredential {
   properties.Location_Name = data.properties.Location_Name;
   properties.Centroid_Country = data.properties.credentialSubject.geojson.Centroid_Country;
   properties.Location_HA = data.properties.credentialSubject.geojson.Location_HA;
-  properties.SBTN_Natural_Forest_HA = data.properties.credentialSubject.geojson.SBTN_Natural_Forest_HA;
-  properties.SBTN_Natural_Forest_Loss_Post_2020_HA = data.properties.credentialSubject.geojson.SBTN_Natural_Forest_Loss_Post_2020_HA;
+  properties.SBTN_Natural_Forest_HA =
+    data.properties.credentialSubject.geojson.SBTN_Natural_Forest_HA;
+  properties.SBTN_Natural_Forest_Loss_Post_2020_HA =
+    data.properties.credentialSubject.geojson.SBTN_Natural_Forest_Loss_Post_2020_HA;
   properties.JRC_Forest_HA = data.properties.credentialSubject.geojson.JRC_Forest_HA;
-  properties.JRC_Forest_Loss_Post_2020_HA = data.properties.credentialSubject.geojson.JRC_Forest_Loss_Post_2020_HA;
+  properties.JRC_Forest_Loss_Post_2020_HA =
+    data.properties.credentialSubject.geojson.JRC_Forest_Loss_Post_2020_HA;
   properties.Analysis_Time = data.properties.credentialSubject.geojson.Analysis_Time;
   properties.GFWPro_Account = data.properties.credentialSubject.geojson.GFWPro_Account;
   properties.Use_Rights = data.properties.credentialSubject.geojson.Use_Rights;

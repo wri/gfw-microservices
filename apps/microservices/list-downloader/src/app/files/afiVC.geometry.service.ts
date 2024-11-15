@@ -37,7 +37,7 @@ export class AfiGeometryService extends IPipeService {
       'location_id'
     );
     fs.writeFileSync(
-      `/tmp/wri-${key}/${listName}.geojson`,
+      `/tmp/wri-${key}/${listName}.json`,
       JSON.stringify({
         type: 'FeatureCollection',
         features: [],
@@ -74,7 +74,7 @@ export class AfiGeometryService extends IPipeService {
       await this.errorEmail(filters);
     });
 
-    this.fileStream = fs.createWriteStream(`/tmp/wri-${key}/${listName}.geojson`, { flags: 'r+' });
+    this.fileStream = fs.createWriteStream(`/tmp/wri-${key}/${listName}.json`, { flags: 'r+' });
 
     this.inputStream
       .pipe(new FilterSelection(selectedLocationsList))

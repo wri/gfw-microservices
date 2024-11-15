@@ -74,26 +74,74 @@ export = (app, limiter) => {
   const getGeoJsonDefReport = async (request, response) => {
     logger.info('GET /geojson-defreport.jsonld');
     const geoJsonDefReport = {
-      ['@context']: {
-        ['@version']: 1.1,
-        geojson: 'https://purl.org/geojson/vocab#',
-        type:'geojson:type',
-        geometry:{
-        type: 'geojson:geometry_type',
-        coordinates: 'geojson:geometry_coordinates',
+      '@context': [
+        'https://www.w3.org/2018/credentials/v1',
+        'https://geojson.org/geojson-ld/geojson-context.jsonld',
+        {
+          '@id': 'https://geojson.org/geojson-ld/geojson-context.jsonld',
+          '@context': {
+            ['@version']: 1.1,
+            type: '@type',
+            coordinates: 'https://geojson.org/geojson-ld/geojson-context.jsonld#coordinates',
+            properties: {
+              '@id': 'https://geojson.org/geojson-ld/geojson-context.jsonld#properties',
+              '@context': {
+                Location_Name: 'geojson:Location_Name',
+                Centroid_Country: 'geojson:Centroid_Country',
+                Location_HA: 'geojson:Location_HA',
+                SBTN_Natural_Forest_HA: 'geojson:SBTN_Natural_Forest_HA',
+                SBTN_Natural_Forest_Loss_Post_2020_HA:
+                  'geojson:SBTN_Natural_Forest_Loss_Post_2020_HA',
+                JRC_Forest_HA: 'geojson:JRC_Forest_HA',
+                JRC_Forest_Loss_Post_2020_HA: 'geojson:JRC_Forest_Loss_Post_2020_HA',
+                Analysis_Time: 'geojson:Analysis_Time',
+                GFWPro_Account: 'geojson:GFWPro_Account',
+                Use_Rights: 'geojson:Use_Rights',
+              },
+            },
+          },
         },
-        properties:{
-        Location_Name: 'geojson:Location_Name',
-        Centroid_Country: 'geojson:Centroid_Country',
-        Location_HA: 'geojson:Location_HA',
-        SBTN_Natural_Forest_HA: 'geojson:SBTN_Natural_Forest_HA',
-        SBTN_Natural_Forest_Loss_Post_2020_HA: 'geojson:SBTN_Natural_Forest_Loss_Post_2020_HA',
-        JRC_Forest_HA: 'geojson:JRC_Forest_HA',
-        JRC_Forest_Loss_Post_2020_HA: 'geojson:JRC_Forest_Loss_Post_2020_HA',
-        Analysis_Time: 'geojson:Analysis_Time',
-        GFWPro_Account: 'geojson:GFWPro_Account',
-        Use_Rights: 'geojson:Use_Rights',
-        }
+      ],
+      id: 'urn:uuid:8c4uuid',
+      type: ['VerifiableCredential'],
+      issuer: 'https://url/vc-issuer/1',
+      issuanceDate: '2024-09-18T12:34:56Z',
+      expirationDate: '2025-09-18T12:34:56Z',
+      credentialSubject: {
+        geojson: {
+          type: 'Feature',
+          geometry: {
+            type: 'Polygon',
+            coordinates: [
+              [
+                [-76.995, 38.905],
+                [-76.995, 38.895],
+                [-77.005, 38.895],
+                [-77.005, 38.905],
+                [-76.995, 38.905],
+              ],
+            ],
+          },
+          properties: {
+            Location_Name: 'Location Name',
+            Centroid_Country: 'Country',
+            Location_HA: 100,
+            SBTN_Natural_Forest_HA: 12.3,
+            SBTN_Natural_Forest_Loss_Post_2020_HA: 1.2,
+            JRC_Forest_HA: 23.4,
+            JRC_Forest_Loss_Post_2020_HA: 2.3,
+            Analysis_Time: '2024-09-01T22:13:54.909Z',
+            GFWPro_Account: 1234,
+            Use_Rights: 'Full Sharing',
+          },
+        },
+      },
+      proof: {
+        type: 'Ed25519Signature2018',
+        created: '2024-09-18T23:45:21Z',
+        verificationMethod: 'https://url/publicKey/1',
+        proofPurpose: 'assertionMethod',
+        jws: 'ey',
       },
     };
     return response.status(200).send(geoJsonDefReport);

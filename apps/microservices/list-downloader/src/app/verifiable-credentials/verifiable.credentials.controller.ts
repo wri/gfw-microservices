@@ -1,8 +1,8 @@
 import { Body, Controller, Get, Injectable, Logger, Scope } from '@nestjs/common';
 import { VerifiableCredentialService } from './verifiable.credentials.service';
-import { geoJsonSchema, GeoJsonSchema } from './types/geojson.schema';
+import { geoJsonSchema } from './types/geojson.schema';
 import { ZodValidationPipe } from '@wri-monorepos/shared';
-import { GeoJson } from './types/verifiable-credential.model'
+import { GeoJson } from './types/verifiable-credential.model';
 @Injectable()
 @Controller({
   path: 'verifiable-credentials',

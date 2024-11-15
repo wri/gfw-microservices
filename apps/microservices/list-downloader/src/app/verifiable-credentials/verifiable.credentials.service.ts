@@ -1,7 +1,7 @@
 import { Injectable, Logger } from '@nestjs/common';
 import * as jsonld from 'jsonld';
 import { v4 as uuidv4 } from 'uuid';
-import { GeoJson } from './types/verifiable-credential.model'
+import { GeoJson } from './types/verifiable-credential.model';
 let vc, Ed25519Signature2018, Ed25519VerificationKey2018;
 // hack to avoid importing in test because jest does not like dynamic import
 if (process.env.NODE_ENV !== 'test') {

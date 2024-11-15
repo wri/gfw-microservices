@@ -4,11 +4,12 @@
     "allowJs": true,
     "checkJs": true,
     "esModuleInterop": true,
+    "allowSyntheticDefaultImports": true,
     "jsx": "react-jsx",
     "outDir": "../../dist/out-tsc",
     "module": "commonjs",
     "types": ["node", "express"]
   },
   "exclude": ["**/*.spec.js", "**/*.test.js", "**/*.spec.ts", "**/*.test.ts", "src/client/**/*"],
-  "include": ["**/*.ts", "**/*.js", "**/*.tsx"]
+  "include": ["**/*.ts", "**/*.js", "**/*.tsx", "**/*.jsx"]
 }

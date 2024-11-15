@@ -1,11 +1,11 @@
 import * as controller from '../controllers/profile.controller';
-import express from 'express';
+import * as express from 'express';
 import axios from 'axios';
 
 import middlewares from '../../../config/publicutils/middlewares';
 import * as UserManager from '../../../config/publicutils/userManager.utils';
 import * as AccountManager from '../../../config/publicutils/accountManager.utils';
-import PolicyManager from '../../../config/publicutils/policyManager.utils';
+import * as PolicyManager from '../../../config/publicutils/policyManager.utils';
 import rateLimiterUtil from '../../../config/lib/limiter-util';
 import * as logger from '../../../config/privateutils/logger.utils';
 

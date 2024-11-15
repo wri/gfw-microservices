@@ -15,8 +15,8 @@
  * @function {getPaginatedAnalysisDataForProtectedAreas}
  *
  ********************************************************************/
-import _ from 'lodash';
-import sql from 'mssql';
+import * as _ from 'lodash';
+import * as sql from 'mssql';
 
 import * as sqlUtils from '../privateutils/sql.utils';
 import { createErrorMessage, ERROR_CODES } from '../privateutils/error.utils';

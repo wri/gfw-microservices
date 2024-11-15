@@ -13,13 +13,19 @@ const getAllListsAnalysisStatus = async (req) => {
   const s3 = new S3Service();
   try {
     const analysisTypesLastModifiedData = await readAnalysesLastModifiedTime(s3);
+    logger.info('LLLLLLLLLLLLLLLLLLLL getAllListsAnalysisStatus0', analysisTypesLastModifiedData);
+    logger.info('LLLLLLLLLLLLLLLLLLLL getAllListsAnalysisStatus1', req.session);
     const [response] = await sqlUtils.executeOrganizationQuery(req, getAllListsAnalysisStatusQuery);
+    logger.info('LLLLLLLLLLLLLLLLLLLL getAllListsAnalysisStatus2', response?.slice(0, 1));
 
     return response.map((analysisStatus) => {
       const analysisTypeLastModified = analysisTypesLastModifiedData.find(
         (analysisType) => analysisType.id === analysisStatus.analysisId
       );
 
+      if (!analysisTypeLastModified) {
+        logger.info('LLLLLLLLLLLLLLLLLLLL getAllListsAnalysisStatus3', analysisStatus);
+      }
       return {
         ...analysisStatus,
         analysisIdLastModifed: analysisTypeLastModified.last_run,

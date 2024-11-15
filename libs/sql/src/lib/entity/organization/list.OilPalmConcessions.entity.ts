@@ -1,10 +1,7 @@
-import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
+import { Column, Entity, PrimaryColumn } from 'typeorm';
 
 @Entity({ name: 'list-oilPalmConcessions' })
 export class ListOilPalmConcessions {
-  @PrimaryGeneratedColumn()
-  id: number;
-
   @Column({ name: 'Location Name' })
   'Location Name': string;
 
@@ -50,9 +47,6 @@ export class ListOilPalmConcessions {
   @Column({ name: 'Geometry' })
   'Geometry': string;
 
-  @Column({ name: 'Geometry Simplified' })
-  'Geometry Simplified': string;
-
-  @Column({ name: 'location_id' })
+  @PrimaryColumn({ name: 'location_id' })
   location_id: number;
 }

@@ -313,7 +313,9 @@ export class GfwLists {
             filteredRecord[field] = record[field];
           }
         }
-        return { ...filteredRecord, id: record.id, location_id: record.id };
+        // fix for missing 'id' column for listId=2 despite the function condition
+        const idValue = 'id' in record ? record.id : record.location_id;
+        return { ...filteredRecord, id: idValue, location_id: idValue };
       });
 
       const omitFields = (record, fields: string[]): any => {

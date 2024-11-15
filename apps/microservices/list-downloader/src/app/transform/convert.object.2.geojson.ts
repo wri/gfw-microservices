@@ -100,15 +100,16 @@ class ConvertObject2Geojson extends Transform {
           delete feature.properties['Location Name'];
           this.verifiableCredentialService
             .signedVcOutput({
-              type: geojson.type,
+              type: 'Feature',
               geometry: {
-                type: 'Feature',
+                type: feature.geometry['type'],
                 coordinates: feature.geometry['coordinates'],
               },
               properties: afiProperties,
             })
             .then((signedVC) => {
-              next(null, signedVC);
+              geojson.features.push(signedVC);
+              next(null,geojson );
             })
             .catch((err) => {
               this.logger.error(`Error on signedVcOutput: ${err}`);

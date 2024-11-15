@@ -20,7 +20,14 @@ export let cache: {
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export const readAnalysesLastModifiedTime = async (s3: any) => {
   // if cache exists and is still return it
+  console.log(
+    'LLLLLLLLLLLLLLLLLLLL readAnalysesLastModifiedTime0',
+    !!cache,
+    cache?.timestamp,
+    cache && Date.now() - cache.timestamp < CACHE_DURATION_MS
+  );
   if (cache && Date.now() - cache.timestamp < CACHE_DURATION_MS) {
+    console.log('LLLLLLLLLLLLLLLLLLLL readAnalysesLastModifiedTime1', cache.data);
     return cache.data;
   }
 
@@ -30,7 +37,9 @@ export const readAnalysesLastModifiedTime = async (s3: any) => {
 
   for (let i = 0; i < files.length; i++) {
     try {
+      console.log('LLLLLLLLLLLLLLLLLLLL readAnalysesLastModifiedTime2', i, files[i]);
       const fileContents = await s3.readFileFromS3(bucketName, `jars/${files[i]}`);
+      console.log('LLLLLLLLLLLLLLLLLLLL readAnalysesLastModifiedTime3', i, fileContents);
 
       const fileName = files[i];
       const id = fileName.split('.')[0];
@@ -41,6 +50,7 @@ export const readAnalysesLastModifiedTime = async (s3: any) => {
         last_run: new Date(timestamp),
         jar_version: jar_version.trim(),
       });
+      console.log('LLLLLLLLLLLLLLLLLLLL readAnalysesLastModifiedTime4', i, results);
     } catch (err) {
       console.error(`Error fetching file ${files[i]}:`, err);
     }
@@ -52,6 +62,7 @@ export const readAnalysesLastModifiedTime = async (s3: any) => {
     data: results,
   };
 
+  console.log('LLLLLLLLLLLLLLLLLLLL readAnalysesLastModifiedTime5', results);
   return results;
 };
 

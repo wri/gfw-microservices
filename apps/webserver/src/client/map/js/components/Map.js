@@ -1917,10 +1917,9 @@ class Map extends Component {
     userLayer.removeAll();
 
     // check if the corresponding GFW Layer is already visible
-    if (!isLayerAlreadyVisible) {
-      // if not, turn it on
-      store.dispatch(toggleLayer(mapLayer));
-    }
+    // if (!isLayerAlreadyVisible) {
+    //   // if not, turn it on
+    // }
 
     // setting geometry analysis for listId = 1
     if (list.list_name === 'Administrative Areas' && selectedLocations?.length === 1) {
@@ -2002,8 +2001,10 @@ class Map extends Component {
 
     // set the selected list to the selected GFW list
     store.dispatch(selectList(list));
-    store.dispatch(updateGFWLocations(gfwListLocDefinitions));
+    store.dispatch(toggleLayer(mapLayer));
+    // store.dispatch(updateGFWLocations(gfwListLocDefinitions));
     this.setState({ transitionListData });
+    store.dispatch(resetList(list));
     store.dispatch(showMapLoader(false));
   };
 
@@ -2027,7 +2028,7 @@ class Map extends Component {
     const { userLists, gfwLists, userSharedLists } = this.props;
 
     // grab the current list
-    const currentlySelectedList = [...userLists, ...gfwLists, ...userSharedLists].find(
+    const currentlySelectedList = [...(isGfwList ? gfwLists : [...userLists, ...userSharedLists])].find(
       (l) => l.id === listId
     );
 

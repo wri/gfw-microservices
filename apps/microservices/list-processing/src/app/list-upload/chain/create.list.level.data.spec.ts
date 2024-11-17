@@ -1,6 +1,5 @@
 import { CreateListLevelData } from './create.list.level.data';
 import { FeatureFlag, SQLUtils } from '@wri-monorepos/sql';
-import { updateListsUploadStatus } from '../shared/update.lists.upload.status';
 import { CreateListResult } from '@wri-monorepos/geo';
 import * as sql from 'mssql';
 import { featureFlagsService } from '@wri-monorepos/shared';
@@ -182,17 +181,6 @@ describe('CreateList', () => {
         'attr_types', // customAttributeTypes
         1, // gfwListId
         false // isUploadListLpFlagEnabled
-      );
-
-      expect(updateListsUploadStatus).toHaveBeenCalledWith(
-        'test_db', // databaseName from the mocked connection
-        1, // list_id
-        'Insert row in List table'
-      );
-      expect(updateListsUploadStatus).toHaveBeenCalledWith(
-        'test_db',
-        1,
-        'Add list to analysis table'
       );
     });
 

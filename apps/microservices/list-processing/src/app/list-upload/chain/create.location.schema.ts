@@ -1,5 +1,4 @@
 import { ListTableColumnsQueryString, SQLUtils } from '@wri-monorepos/sql';
-import { updateListsUploadStatus } from '../shared/update.lists.upload.status';
 import { AbstractHandler, ChainType, RequestNewList } from './types';
 import * as sql from 'mssql';
 import { Logger } from '@nestjs/common';
@@ -121,8 +120,7 @@ export class CreateLocationSchema extends AbstractHandler<ChainType> {
     } = request.request as RequestNewList;
 
     const queryCreateTableResult = await this.getTableStructureQuery(template_id);
-
-    await updateListsUploadStatus(organization_database, listId, 'Get table query structure');
+    this.logger.log(`Creating list table ${listTable} in ${organization_database}`);
 
     await this.createListTableInDatabase(
       this.clientStoreConnection,
@@ -131,7 +129,9 @@ export class CreateLocationSchema extends AbstractHandler<ChainType> {
     );
 
     await this.createAnalysisTableInDatabase(this.clientStoreConnection, analysisTable);
-    await updateListsUploadStatus(organization_database, listId, 'Create analysis table');
+    this.logger.log(
+      `Creating analysis status records for list ${listId} in ${organization_database}`
+    );
 
     await this.createAnalysisStatusRecords(
       organization_database,
@@ -139,7 +139,9 @@ export class CreateLocationSchema extends AbstractHandler<ChainType> {
       listStatusId,
       analysisIds
     );
-    await updateListsUploadStatus(organization_database, listId, 'Create analysis status records');
+    this.logger.log(
+      `Created analysis status records for list ${listId} in ${organization_database}`
+    );
     return request;
   }
 }

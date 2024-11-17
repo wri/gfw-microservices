@@ -17,6 +17,7 @@ import { StartAnalysis } from './chain/start.analysis';
 import { ConvertPoint2Polygon } from './chain/convert.point.2.polygon';
 import { GetObjectTypes } from './chain/getobject.types';
 import { logExecutionTime } from './chain/shared';
+import { WriteLocationCount } from './chain/write.location.count';
 
 @Injectable()
 export class StartAnalysisService {
@@ -53,6 +54,7 @@ export class StartAnalysisService {
     const convertPoint2Polygon = new ConvertPoint2Polygon();
     const startAnalysis = new StartAnalysis(null);
     const getObjectTypes = new GetObjectTypes();
+    const writeLocationCount = new WriteLocationCount(null);
 
     downloadS3File
       .setNext(parseData)
@@ -64,6 +66,7 @@ export class StartAnalysisService {
       .setNext(createListLevelData)
       .setNext(createLocationSchema)
       .setNext(insertLocationData)
+      .setNext(writeLocationCount)
       .setNext(startAnalysis);
 
     await AbstractHandler.runFullChain(downloadS3File, chainType);

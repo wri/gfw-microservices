@@ -92,12 +92,7 @@ class ConvertObject2Geojson extends Transform {
             GFWPro_Account: listProperties.organizationId,
             Use_Rights: 'Full Sharing',
           };
-
-          delete feature.properties['list_id'];
-          delete feature.properties['organizationDatabase'];
-          delete feature.properties['Country'];
-          delete feature.properties['location_id'];
-          delete feature.properties['Location Name'];
+          
           this.verifiableCredentialService
             .signedVcOutput({
               type: 'Feature',

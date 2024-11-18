@@ -49,12 +49,12 @@ export class StartAnalysisService {
     const gadmService = new GADMService();
     const createListLevelData = new CreateListLevelData();
     const createLocationSchema = new CreateLocationSchema(connection);
-    const insertLocationData = new InsertLocationData(null);
+    const insertLocationData = new InsertLocationData();
     const validateLatLongGeojson = new ValidateLatLongGeojson();
     const convertPoint2Polygon = new ConvertPoint2Polygon();
-    const startAnalysis = new StartAnalysis(null);
+    const startAnalysis = new StartAnalysis();
     const getObjectTypes = new GetObjectTypes();
-    const writeLocationCount = new WriteLocationCount(null);
+    const writeLocationCount = new WriteLocationCount();
 
     downloadS3File
       .setNext(parseData)

@@ -11,13 +11,9 @@ export class InsertLocationData extends AbstractHandler<ChainType> {
   private readonly logger = new Logger(InsertLocationData.name);
   private clientStoreConnection: ClientStoreConnection;
 
-  constructor(clientStoreConnection: ClientStoreConnection) {
+  constructor(clientStoreConnection: ClientStoreConnection = new ClientStoreConnection()) {
     super();
-    if (clientStoreConnection !== null) {
-      this.clientStoreConnection = clientStoreConnection;
-    } else {
-      this.clientStoreConnection = new ClientStoreConnection();
-    }
+    this.clientStoreConnection = clientStoreConnection;
   }
 
   private async insertBatch(

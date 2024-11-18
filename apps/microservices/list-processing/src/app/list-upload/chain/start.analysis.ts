@@ -21,13 +21,9 @@ export class StartAnalysis extends AbstractHandler<ChainType> {
   private readonly logger = new Logger(StartAnalysis.name);
   private clientStoreConnection: ClientStoreConnection;
 
-  constructor(clientStoreConnection: ClientStoreConnection) {
+  constructor(clientStoreConnection: ClientStoreConnection = new ClientStoreConnection()) {
     super();
-    if (clientStoreConnection !== null) {
-      this.clientStoreConnection = clientStoreConnection;
-    } else {
-      this.clientStoreConnection = new ClientStoreConnection();
-    }
+    this.clientStoreConnection = clientStoreConnection;
   }
 
   async getListName(organizationDatabase: string, list_id: number) {

@@ -5,13 +5,9 @@ import { ClientStoreConnection, Lists } from '@wri-monorepos/sql';
 export class WriteLocationCount extends AbstractHandler<ChainType> {
   private readonly logger = new Logger(WriteLocationCount.name);
   private clientStoreConnection: ClientStoreConnection;
-  constructor(clientStoreConnection: ClientStoreConnection) {
+  constructor(clientStoreConnection: ClientStoreConnection = new ClientStoreConnection()) {
     super();
-    if (clientStoreConnection !== null) {
-      this.clientStoreConnection = clientStoreConnection;
-    } else {
-      this.clientStoreConnection = new ClientStoreConnection();
-    }
+    this.clientStoreConnection = clientStoreConnection;
   }
 
   async handle(request: ChainType): Promise<ChainType> {

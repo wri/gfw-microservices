@@ -1242,7 +1242,7 @@ export const mapLayers = [
         type: 'tileLayer',
         body: {
           useCors: true,
-          url: 'https://tiles.globalforestwatch.org/sbtn_natural_forests_map/v202310/default_pro/{z}/{x}/{y}.png',
+          url: 'https://tiles.globalforestwatch.org/sbtn_natural_forests_map/v202410/default_pro/{z}/{x}/{y}.png',
           metadata: 'https://api.resourcewatch.org/v1/gfw-metadata/sbtn_natural_forests_map',
         },
       },

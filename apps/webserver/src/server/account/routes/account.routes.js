@@ -59,6 +59,7 @@ module.exports = (app) => {
     const {
       org_name,
       org_address,
+      org_country,
       org_website,
       arr_org_classification_ids,
       user_first_name,
@@ -96,6 +97,7 @@ module.exports = (app) => {
     if (
       !org_name ||
       !org_address ||
+      !org_country ||
       !arr_org_classification_ids ||
       !user_first_name ||
       !user_last_name ||
@@ -108,6 +110,7 @@ module.exports = (app) => {
         req,
         org_name,
         org_address,
+        org_country,
         org_website,
         parent_org_name,
         is_subsidiary,

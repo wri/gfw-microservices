@@ -14,6 +14,7 @@ import {
   profilePage,
   licenseAgreement,
 } from '../../../common/js/config';
+import countries from '../../../common/js/utils/countries.utils';
 import '../../css/account.scss';
 import LegalBanner from './LegalBanner';
 
@@ -25,6 +26,7 @@ export default class Account extends Component {
       is_subsidiary: false,
       parent_org_name: '',
       org_address: '',
+      org_country: '',
       org_website: '',
       policyList: [],
       policyName: [],
@@ -94,6 +96,9 @@ export default class Account extends Component {
     }
     if (this.state.arr_org_classification_ids.length === 0) {
       missing.push('Organization Classification');
+    }
+    if (this.state.org_country.length === 0) {
+      missing.push('Organization Country');
     }
 
     fieldValidations.organization_address.validations.forEach((validation) => {
@@ -172,6 +177,7 @@ export default class Account extends Component {
             is_subsidiary: false,
             parent_org_name: '',
             org_address: '',
+            org_country: '',
             org_website: '',
             policyList: [],
             policyName: [],
@@ -208,6 +214,7 @@ export default class Account extends Component {
       obj.arr_org_classification_ids = this.state.arr_org_classification_ids.map((c) => c.value);
       obj.arr_user_geography_ids = this.state.arr_user_geography_ids.map((g) => g.value);
       obj.arr_user_commodity_ids = this.state.arr_user_commodity_ids.map((c) => c.value);
+      obj.org_country = this.state.org_country.value;
       request.send(JSON.stringify(obj));
     } else {
       if (errors.length > 0 && missing.length > 0) {
@@ -264,6 +271,12 @@ export default class Account extends Component {
     });
   };
 
+  updateCountry = (results) => {
+    this.setState({
+      org_country: results,
+    });
+  };
+
   updateWebsite = (evt) => {
     this.setState({
       org_website: evt.target.value.trim(),
@@ -292,6 +305,10 @@ export default class Account extends Component {
     this.setState({
       user_phone: evt.target.value.trim(),
     });
+  };
+
+  createCountryOptions = (option) => {
+    return { label: option, value: option };
   };
 
   createClassOptions = (option) => {
@@ -358,6 +375,7 @@ export default class Account extends Component {
       : [<Button variant="primary" label="OK" keyboardFocused={true} onClick={action} />];
 
     const options = this.props.classificationsData.map(this.createClassOptions);
+    const countryOptions = countries.map(this.createCountryOptions);
     const commOptions = this.props.commoditiesData.map(this.createCommOptions);
     const geogOptions = this.props.geographiesData.map(this.createGeogOptions);
     const user_title = this.state.user_title;
@@ -432,6 +450,25 @@ export default class Account extends Component {
                       value={this.state.org_address}
                       onChange={this.updateAddress}
                       onBlur={this.removeExtraSpaces}
+                    />
+                  </div>
+                  <div className="input-field__block-container">
+                    <label
+                      htmlFor="org_country"
+                      className="block-label profile-label required-param"
+                    >
+                      Organization Contry
+                    </label>
+                    <Select
+                      placeholder={profilePage.profileManager.selectCountry}
+                      isMulti={false}
+                      isSearchable={true}
+                      maxMenuHeight={150}
+                      options={countryOptions}
+                      name="org_country"
+                      id="org_country"
+                      onChange={this.updateCountry}
+                      value={this.state.org_country}
                     />
                   </div>
                   <div className="input-field__block-container">

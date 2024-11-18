@@ -7,6 +7,7 @@ const initialAnalysisState = {
   adminArea: {},
   gladDates: {
     start: new Date(`${latestTreeCoverLossYearForTclDataInMap + 1}-01-01 00:00:00`),
+    minDate: new Date('2019-01-01 00:00:00'),
     sliderDate: new Date('2021-01-01 00:00:00'),
     end: new Date(),
   },

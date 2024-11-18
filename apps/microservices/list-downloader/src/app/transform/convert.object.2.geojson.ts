@@ -92,16 +92,9 @@ class ConvertObject2Geojson extends Transform {
             GFWPro_Account: listProperties.organizationId,
             Use_Rights: 'Full Sharing',
           };
-
+          feature.properties = afiProperties;
           this.verifiableCredentialService
-            .signedVcOutput({
-              type: 'Feature',
-              geometry: {
-                type: feature.geometry['type'],
-                coordinates: feature.geometry['coordinates'],
-              },
-              properties: afiProperties,
-            })
+            .signedVcOutput(feature)
             .then((signedVC) => {
               geojson.features.push(signedVC);
               next(null, geojson);

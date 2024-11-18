@@ -1,12 +1,32 @@
-import React, { useRef, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import './index.scss';
 
 import { z } from 'zod';
 import { useForm, Controller } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 
-import { Box, Card, TextField, Typography, useTheme } from '@mui/material';
-import { AddLocationAlt, Close, ArrowForwardIos, Draw, Add, Check } from '@mui/icons-material';
+import {
+  Box,
+  Card,
+  Collapse,
+  IconButton,
+  List,
+  ListItem,
+  Skeleton,
+  TextField,
+  Typography,
+  useTheme,
+} from '@mui/material';
+import {
+  AddLocationAlt,
+  Close,
+  ArrowForwardIos,
+  Draw,
+  Add,
+  Check,
+  Clear,
+} from '@mui/icons-material';
+import { TransitionGroup } from 'react-transition-group';
 
 import { HowToFormatLocationLink, LocationTypeButton } from '../components';
 
@@ -18,7 +38,9 @@ import { useMap } from '../hooks/useMap';
 
 import LocationMapDrawer from '../../adding/LocationMapDrawer';
 
+const MIN_AMOUNT_OF_COORDINATES = 3;
 const MAX_AMOUNT_OF_COORDINATES = 10;
+
 const COORDINATE_ERROR_MESSAGE =
   'Your coordinate value is invalid. Please ensure your data is in decimal degree notation';
 
@@ -37,6 +59,8 @@ export function UploadLocationByPolygon({ setUploadType }: ChangePageType) {
     handleSubmit,
     control,
     formState: { errors },
+    setValue,
+    reset,
   } = useForm<FormFields>({ resolver: zodResolver(schema) });
 
   const {
@@ -48,15 +72,29 @@ export function UploadLocationByPolygon({ setUploadType }: ChangePageType) {
     setCoordinates,
     addGraphicToMap,
     generateEmptyCoordinate,
-  } = useMap(false);
+  } = useMap(false, MIN_AMOUNT_OF_COORDINATES);
 
   const [locationFormat, setLocationFormat] = useState<LocationFormat>(LocationFormat.DrawAShape);
-  const okButtonRef = useRef<HTMLButtonElement | null>(null);
 
   const handleAddCoordinateField = () => {
-    setCoordinates((prev) => [...prev, generateEmptyCoordinate()]);
-    okButtonRef.current?.scrollIntoView({ behavior: 'smooth' });
+    setCoordinates((prev) => [generateEmptyCoordinate(), ...prev]);
   };
+  const handleRemoveCoordinateField = (id: string) => {
+    setCoordinates((prev) => prev.filter((x) => x.id !== id));
+  };
+  const handleUpdateCoordinate = (id: string, key: string, value: string) => {
+    setCoordinates((prev) => {
+      return prev.map((item) => (item.id === id ? { ...item, [key]: value } : item));
+    });
+  };
+
+  useEffect(() => {
+    reset(); // clean out previous values from form
+
+    coordinates.forEach(({ id, latitude, longitude }) => {
+      setValue(`${id}`, { latitude: latitude.toString(), longitude: longitude.toString() });
+    });
+  }, [coordinates]);
 
   const handleChangeLocationFormat = (locFormat: LocationFormat) => {
     setLocationFormat(locFormat);
@@ -142,73 +180,93 @@ export function UploadLocationByPolygon({ setUploadType }: ChangePageType) {
                 overflow: 'auto',
               }}
             >
-              <Box sx={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                <AddLocationAlt fontSize="medium" />
-                <Typography variant="body2">Enter coordinates</Typography>
+              <Box sx={{ display: 'flex', width: '100%', justifyContent: 'space-between' }}>
+                <Box sx={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                  <AddLocationAlt fontSize="medium" />
+                  <Typography variant="body2" ml="0.5rem">
+                    Enter coordinates
+                  </Typography>
+                </Box>
+                <PillButton
+                  startIcon={<Add style={{ color: theme.palette.primary.main }} />}
+                  disabled={coordinates.length === MAX_AMOUNT_OF_COORDINATES}
+                  onClick={handleAddCoordinateField}
+                >
+                  Add
+                </PillButton>
               </Box>
 
-              <Box
-                sx={{
-                  display: 'grid',
-                  gridTemplateColumns: '10px 1fr 1fr',
-                  rowGap: '1.5rem',
-                  columnGap: '0.75rem',
-                  marginTop: '1rem',
-                }}
-              >
-                {coordinates.map(({ id, latitude, longitude }, index) => {
-                  return (
-                    <React.Fragment key={id}>
-                      <Typography sx={{ marginTop: '9px' }}>{index + 1}</Typography>
-                      <Controller
-                        name={`${id}.latitude`}
-                        control={control}
-                        rules={{ required: true }}
-                        render={({ field }) => (
-                          <TextField
-                            label="Latitude"
-                            variant="outlined"
-                            type="number"
-                            size="small"
-                            defaultValue={latitude}
-                            error={!!errors[id]?.latitude}
-                            helperText={errors[id]?.latitude ? COORDINATE_ERROR_MESSAGE : ''}
-                            {...field}
+              <List>
+                <TransitionGroup>
+                  {coordinates.map(({ id, latitude, longitude }, index) => {
+                    return (
+                      <Collapse key={id}>
+                        <ListItem
+                          sx={{ display: 'flex', alignItems: 'start', gap: '0.5rem' }}
+                          disableGutters
+                        >
+                          <Typography sx={{ minWidth: '1rem', marginTop: '9px' }}>
+                            {index + 1}
+                          </Typography>
+                          <Controller
+                            name={`${id}.latitude`}
+                            control={control}
+                            rules={{ required: true }}
+                            render={({ field }) => (
+                              <TextField
+                                label="Latitude"
+                                variant="outlined"
+                                type="number"
+                                size="small"
+                                value={latitude}
+                                onChange={(e) => {
+                                  field.onChange(e);
+                                  handleUpdateCoordinate(id, 'latitude', e.target.value);
+                                }}
+                                error={!!errors[id]?.latitude}
+                                helperText={errors[id]?.latitude ? COORDINATE_ERROR_MESSAGE : ''}
+                              />
+                            )}
                           />
-                        )}
-                      />
-                      <Controller
-                        name={`${id}.longitude`}
-                        control={control}
-                        rules={{ required: true }}
-                        render={({ field }) => (
-                          <TextField
-                            label="Longitude"
-                            variant="outlined"
-                            type="number"
-                            size="small"
-                            defaultValue={longitude}
-                            error={!!errors[id]?.longitude}
-                            helperText={errors[id]?.longitude ? COORDINATE_ERROR_MESSAGE : ''}
-                            {...field}
+                          <Controller
+                            name={`${id}.longitude`}
+                            control={control}
+                            rules={{ required: true }}
+                            render={({ field }) => (
+                              <TextField
+                                label="Longitude"
+                                variant="outlined"
+                                type="number"
+                                size="small"
+                                value={longitude}
+                                onChange={(e) => {
+                                  field.onChange(e);
+                                  handleUpdateCoordinate(id, 'longitude', e.target.value);
+                                }}
+                                error={!!errors[id]?.longitude}
+                                helperText={errors[id]?.longitude ? COORDINATE_ERROR_MESSAGE : ''}
+                              />
+                            )}
                           />
-                        )}
-                      />
-                    </React.Fragment>
-                  );
-                })}
-              </Box>
-              <PillButton
-                sx={{ margin: '1rem 0 2rem', alignSelf: 'center' }}
-                startIcon={<Add style={{ color: theme.palette.primary.main }} />}
-                disabled={coordinates.length === MAX_AMOUNT_OF_COORDINATES}
-                onClick={handleAddCoordinateField}
-              >
-                Add Coordinate
-              </PillButton>
+                          {coordinates.length > MIN_AMOUNT_OF_COORDINATES ? (
+                            <IconButton
+                              onClick={() => handleRemoveCoordinateField(id)}
+                              disableRipple
+                            >
+                              <Clear />
+                            </IconButton>
+                          ) : (
+                            <Box width="3rem" height="3rem"></Box>
+                          )}
+                        </ListItem>
+                      </Collapse>
+                    );
+                  })}
+                </TransitionGroup>
+              </List>
+
               <PillButton
                 type="submit"
-                ref={okButtonRef}
                 variant="contained"
                 sx={{ alignSelf: 'end' }}
                 startIcon={<Check />}
@@ -226,7 +284,7 @@ export function UploadLocationByPolygon({ setUploadType }: ChangePageType) {
             position: 'relative',
           }}
         >
-          {mapView && (
+          {mapView && locationFormat !== LocationFormat.PolygonCoordinates && (
             <Box
               sx={{
                 position: 'absolute',
@@ -247,7 +305,10 @@ export function UploadLocationByPolygon({ setUploadType }: ChangePageType) {
               />
             </Box>
           )}
-          <Box sx={{ height: '100%', width: '100%' }} id="mapView"></Box>
+          {!sketchViewModel && (
+            <Skeleton variant="rectangular" animation="wave" height="100%" width="100%" />
+          )}
+          <Box id="mapView" height="100%" width="100%"></Box>
         </Box>
       </Box>
 
@@ -257,7 +318,8 @@ export function UploadLocationByPolygon({ setUploadType }: ChangePageType) {
           justifyContent: 'end',
           gap: '0.5rem',
           marginTop:
-            coordinates.length > 3 && locationFormat === LocationFormat.PolygonCoordinates
+            coordinates.length > MIN_AMOUNT_OF_COORDINATES &&
+            locationFormat === LocationFormat.PolygonCoordinates
               ? '0'
               : '2rem',
         }}

@@ -1,29 +1,26 @@
 import { useEffect, useState } from 'react';
 import EsriMap from '@arcgis/core/Map';
 import MapView from '@arcgis/core/views/MapView';
+import { v4 as uuidv4 } from 'uuid';
+import { z } from 'zod';
 
 import {
   extractCoordinates,
   addCoordinateTextFromPolygon,
 } from '../../adding/PolygonCoordinates/polygonCoordinates.utils';
-
-import { v4 as uuidv4 } from 'uuid';
-import { z } from 'zod';
 import { coordinateSchema } from '../utils/schema';
 
 const generateEmptyCoordinate = () => ({ id: uuidv4(), latitude: '', longitude: '' });
 
 type CoordinateType = z.infer<typeof coordinateSchema> & { id: string };
 
-export const useMap = (geomFromMap: unknown) => {
+export const useMap = (geomFromMap: unknown, initialAmountOfCoordinates: number) => {
   const [mapView, setMapView] = useState<unknown>(null);
   const [sketchViewModel, setSketchViewModel] = useState(null);
   const [geometry, setGeometry] = useState<unknown>(null);
-  const [coordinates, setCoordinates] = useState<CoordinateType[]>([
-    generateEmptyCoordinate(),
-    generateEmptyCoordinate(),
-    generateEmptyCoordinate(),
-  ]);
+  const [coordinates, setCoordinates] = useState<CoordinateType[]>(
+    Array.from({ length: initialAmountOfCoordinates }, () => generateEmptyCoordinate())
+  );
 
   useEffect(() => {
     initMap();
@@ -64,7 +61,7 @@ export const useMap = (geomFromMap: unknown) => {
     }
   };
 
-  const addGraphicToMap = (geometryToAdd: unknown, graphic: unknown) => {
+  const addGraphicToMap = (geometry: unknown, graphic: unknown) => {
     if (!mapView) return;
 
     // eslint-disable-next-line @typescript-eslint/ban-ts-comment
@@ -88,7 +85,7 @@ export const useMap = (geomFromMap: unknown) => {
         { duration: 1000 }
       );
     }, 500);
-    setGeometry(geometryToAdd);
+    setGeometry(geometry);
     addCoordinateTextFromPolygon(geometry, mapView);
   };
 

@@ -9,14 +9,12 @@ export const coordinateSchema = z.object({
     .refine((value) => {
       const latitude = Math.abs(Number(value));
       return validCoordinateFormat.test(value) && latitude <= 90;
-    })
-    .optional(),
+    }),
   longitude: z
     .string()
     .max(20)
     .refine((value) => {
       const longitude = Math.abs(Number(value));
       return validCoordinateFormat.test(value) && longitude <= 180;
-    })
-    .optional(),
+    }),
 });

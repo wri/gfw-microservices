@@ -25,8 +25,7 @@ const PolygonCoordinatesInput = ({
   setSketchViewModel,
   measurementUnit,
   setMeasurementUnit,
-  geomFromMap, // geometry comming from "add location" option in the map
-  isNewLocationUpload = false,
+  geomFromMap, // geometry coming from "add location" option in the map
 }) => {
   const [selectedAreaRadioOption, setSelectedAreaRadioOption] = useState(
     NEW_LOCATION_AREA_OPTIONS.SMALL.id
@@ -192,16 +191,14 @@ const PolygonCoordinatesInput = ({
   return (
     <div>
       <div className="draw-shape__button-group">
-        {!isNewLocationUpload && (
-          <button
-            className="draw-shape__draw-button"
-            onClick={handleOpen}
-            data-testid="polygon-coordinates-button"
-          >
-            <AddLocationIcon />
-            <span>Add coordinates</span>
-          </button>
-        )}
+        <button
+          className="draw-shape__draw-button"
+          onClick={handleOpen}
+          data-testid="polygon-coordinates-button"
+        >
+          <AddLocationIcon />
+          <span>Add coordinates</span>
+        </button>
 
         <LocationMapDrawer
           mapView={mapView}

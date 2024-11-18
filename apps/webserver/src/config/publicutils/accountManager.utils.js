@@ -69,6 +69,7 @@ export const requestNewAccount = (
   req,
   org_name,
   org_address,
+  org_country,
   org_website,
   parent_org_name,
   is_subsidiary,
@@ -98,7 +99,7 @@ export const requestNewAccount = (
     // Setup Parameters for a new account request.
     const params = [
       { field: 'orgName', type: sql.NVarChar(200), value: org_name },
-      { field: 'orgAddress', type: sql.NVarChar(200), value: org_address },
+      { field: 'orgAddress', type: sql.NVarChar(200), value: `${org_address}, ${org_country}` },
       { field: 'orgWebsite', type: sql.NVarChar(200), value: org_website },
       { field: 'isSubsidiary', type: sql.Bit, value: is_subsidiary },
       { field: 'orgParent', type: sql.NVarChar(200), value: parent_org_name },
@@ -198,6 +199,7 @@ export const requestNewAccount = (
         */
         const subject = 'GFW Pro Account Application Notification';
         const content = {
+          org_country,
           org_name,
           org_address,
           org_website,

@@ -2344,6 +2344,7 @@ export const profilePage = {
     ],
     organizationTitle: 'Organization',
     multiselectPrompt: 'Select one or more.',
+    selectCountry: 'Select Country',
     policyPrompt: 'Upload policy document to reference within the system (.doc, .pdf)',
     policyUpload: 'Upload',
     policyDelete: 'Delete Documents',

@@ -92,7 +92,7 @@ class ConvertObject2Geojson extends Transform {
             GFWPro_Account: listProperties.organizationId,
             Use_Rights: 'Full Sharing',
           };
-          
+
           this.verifiableCredentialService
             .signedVcOutput({
               type: 'Feature',

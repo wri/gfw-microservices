@@ -72,7 +72,7 @@ export function UploadLocationByPolygon({ setUploadType }: ChangePageType) {
     setCoordinates,
     addGraphicToMap,
     generateEmptyCoordinate,
-  } = useMap(false, MIN_AMOUNT_OF_COORDINATES);
+  } = useMap(MIN_AMOUNT_OF_COORDINATES);
 
   const [locationFormat, setLocationFormat] = useState<LocationFormat>(LocationFormat.DrawAShape);
 

@@ -15,7 +15,7 @@ import { coordinateSchema } from '../utils/schema';
 
 type CoordinateType = z.infer<typeof coordinateSchema> & { id: string };
 
-export const useMap = (geomFromMap: unknown, initialAmountOfCoordinates: number) => {
+export const useMap = (initialAmountOfCoordinates: number) => {
   const [mapView, setMapView] = useState<MapView | null>(null);
   const [sketchViewModel, setSketchViewModel] = useState<SketchViewModel | null>(null);
   const [geometry, setGeometry] = useState<Polygon | Polygon[] | null>(null);
@@ -26,7 +26,7 @@ export const useMap = (geomFromMap: unknown, initialAmountOfCoordinates: number)
   useEffect(() => {
     initMap();
     return cleanup;
-  }, [geomFromMap]);
+  }, []);
 
   const cleanup = () => {
     if (sketchViewModel) {

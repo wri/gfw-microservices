@@ -3,6 +3,9 @@ import EsriMap from '@arcgis/core/Map';
 import MapView from '@arcgis/core/views/MapView';
 import { v4 as uuidv4 } from 'uuid';
 import { z } from 'zod';
+import SketchViewModel from '@arcgis/core/widgets/Sketch/SketchViewModel';
+import Graphic from '@arcgis/core/Graphic';
+import Polygon from '@arcgis/core/geometry/Polygon';
 
 import {
   extractCoordinates,
@@ -10,14 +13,12 @@ import {
 } from '../../adding/PolygonCoordinates/polygonCoordinates.utils';
 import { coordinateSchema } from '../utils/schema';
 
-const generateEmptyCoordinate = () => ({ id: uuidv4(), latitude: '', longitude: '' });
-
 type CoordinateType = z.infer<typeof coordinateSchema> & { id: string };
 
 export const useMap = (geomFromMap: unknown, initialAmountOfCoordinates: number) => {
-  const [mapView, setMapView] = useState<unknown>(null);
-  const [sketchViewModel, setSketchViewModel] = useState(null);
-  const [geometry, setGeometry] = useState<unknown>(null);
+  const [mapView, setMapView] = useState<MapView | null>(null);
+  const [sketchViewModel, setSketchViewModel] = useState<SketchViewModel | null>(null);
+  const [geometry, setGeometry] = useState<Polygon | Polygon[] | null>(null);
   const [coordinates, setCoordinates] = useState<CoordinateType[]>(
     Array.from({ length: initialAmountOfCoordinates }, () => generateEmptyCoordinate())
   );
@@ -29,13 +30,9 @@ export const useMap = (geomFromMap: unknown, initialAmountOfCoordinates: number)
 
   const cleanup = () => {
     if (sketchViewModel) {
-      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-      // @ts-ignore
       sketchViewModel.destroy();
     }
     if (mapView) {
-      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-      // @ts-ignore
       mapView.destroy();
     }
   };
@@ -48,12 +45,12 @@ export const useMap = (geomFromMap: unknown, initialAmountOfCoordinates: number)
       map: new EsriMap({
         basemap: 'hybrid',
       }),
-    }).when((mapViewInstance: unknown) => {
+    }).when((mapViewInstance: MapView) => {
       setMapView(mapViewInstance);
     });
   };
 
-  const updateGeometry = (geometry: unknown) => {
+  const updateGeometry = (geometry: Polygon) => {
     const initialCoordinates = extractCoordinates(geometry);
     if (initialCoordinates.length > 0) {
       setCoordinates(initialCoordinates);
@@ -61,23 +58,15 @@ export const useMap = (geomFromMap: unknown, initialAmountOfCoordinates: number)
     }
   };
 
-  const addGraphicToMap = (geometry: unknown, graphic: unknown) => {
+  const addGraphicToMap = (geometry: Polygon | Polygon[], graphic: Graphic) => {
     if (!mapView) return;
 
-    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-    // @ts-ignore
     mapView.graphics.removeAll();
-    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-    // @ts-ignore
     sketchViewModel?.delete();
 
-    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-    // @ts-ignore
     mapView.graphics.add(graphic);
 
     setTimeout(() => {
-      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-      // @ts-ignore
       mapView?.goTo(
         {
           target: graphic,
@@ -101,3 +90,5 @@ export const useMap = (geomFromMap: unknown, initialAmountOfCoordinates: number)
     generateEmptyCoordinate,
   };
 };
+
+const generateEmptyCoordinate = () => ({ id: uuidv4(), latitude: '', longitude: '' });

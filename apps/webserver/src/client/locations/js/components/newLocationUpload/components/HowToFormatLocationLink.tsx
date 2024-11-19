@@ -21,7 +21,7 @@ export function HowToFormatLocationLink({ text, url }: HowToFormatLocationLinkPr
       href={url}
     >
       <Support fontSize="small" />
-      <Typography variant="body2" color="primary">
+      <Typography variant="body2" color="primary" lineHeight="0">
         {text}
       </Typography>
       <NorthEast fontSize="small" />

@@ -1,6 +1,10 @@
 import { createTheme } from '@mui/material/styles';
 
 export const theme = createTheme({
+  shape: {
+    borderRadius: 5,
+  },
+  spacing: 8,
   palette: {
     primary: {
       main: '#9FC642',

@@ -84,7 +84,7 @@ module.exports = (app, limiter) => {
           `POST /map/getPlanetTile/  params=${JSON.stringify(
             req.params
           )} query=${querystring.stringify(req.query)}`,
-          error
+          error.stack || error
         );
         console.log('getPlanetTile Error:', error);
         res.send({ message: '/map/getPlanetTile failed' });

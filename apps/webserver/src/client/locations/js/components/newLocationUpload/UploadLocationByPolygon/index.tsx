@@ -28,7 +28,7 @@ import {
 } from '@mui/icons-material';
 import { TransitionGroup } from 'react-transition-group';
 
-import { HowToFormatLocationLink, LocationTypeButton } from '../components';
+import { ExternalHelperResource, LocationTypeButton } from '../components';
 
 import { PillButton } from '../../../../../components';
 import { ChangePageType } from '../types';
@@ -128,7 +128,7 @@ export function UploadLocationByPolygon({ setUploadType }: ChangePageType) {
         GFW Pro allows users to create polygon data for analysis view drawing a boundary on the map
         or defining a polygon via its coordinates vertices.
       </Typography>
-      <HowToFormatLocationLink text="How to format your location data for GFW Pro" url="#" />
+      <ExternalHelperResource text="How to format your location data for GFW Pro" url="#" />
 
       <Typography variant="h6" sx={{ marginTop: '1rem' }}>
         Choose your location type

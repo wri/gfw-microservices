@@ -12,32 +12,20 @@ import {
 import { ExternalHelperResource } from '../components/ExternalHelperResource';
 import { PillButton } from '../../../../../components';
 import {
+  Check,
   Close,
+  Description,
   Download,
   DownloadDone,
+  OilBarrel,
+  Public,
+  ScatterPlotTwoTone,
   SvgIconComponent,
   Timeline,
-  Public,
 } from '@mui/icons-material';
 
 type DataTemplatesProps = {
   handleClose: () => void;
-};
-
-const style: SxProps = {
-  display: 'flex',
-  flexDirection: 'column',
-  position: 'absolute',
-  top: '50%',
-  left: '50%',
-  transform: 'translate(-50%, -50%)',
-  width: '870px',
-  height: '750px',
-  bgcolor: 'background.paper',
-  borderRadius: '4px',
-  boxShadow: 24,
-  padding: 3,
-  paddingTop: 2,
 };
 
 enum Template {
@@ -47,33 +35,6 @@ enum Template {
   PointShapeFile,
   ListOfPalmMillIds,
 }
-
-const templateOptions: {
-  template: Template;
-  Icon: SvgIconComponent;
-  title: string;
-  bestForText: string;
-  requiredFieldsText: string;
-}[] = [
-  {
-    template: Template.PointShapeFile,
-    Icon: Timeline,
-    title: 'Polygon Shapefile',
-    bestForText:
-      'If you have sourcing locations in polygon format. Requires using a text editor such as Notepad++',
-    requiredFieldsText:
-      'The following required fields must be included in your file upload. Location_N  (Name of your locations)',
-  },
-  {
-    template: Template.Kml,
-    Icon: Public,
-    title: 'KML',
-    bestForText:
-      'If you have sourcing locations in polygon format. Requires using a text editor such as Notepad++',
-    requiredFieldsText:
-      'The following required fields must be included in your file upload. Location_N  (Name of your locations)',
-  },
-];
 
 export function DataTemplates({ handleClose }: DataTemplatesProps) {
   const theme = useTheme();
@@ -92,7 +53,7 @@ export function DataTemplates({ handleClose }: DataTemplatesProps) {
   const isAtLeastOneItemDownloaded = downloadedTemplates.length === 0;
 
   return (
-    <Box sx={style}>
+    <Box sx={mainContainerStyle}>
       <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
         <Typography variant="h6">Download a template</Typography>
         <IconButton onClick={handleClose}>
@@ -118,6 +79,7 @@ export function DataTemplates({ handleClose }: DataTemplatesProps) {
         {templateOptions.map(({ title, Icon, template, bestForText, requiredFieldsText }) => {
           const isSelected = selectedTemplate === template;
           const isHovered = hoveredTemplate === template;
+          const isAlreadyDownloaded = downloadedTemplates.includes(template);
 
           return (
             <Accordion
@@ -153,21 +115,36 @@ export function DataTemplates({ handleClose }: DataTemplatesProps) {
                   <Icon />
                   <Typography>{title}</Typography>
                 </Box>
-                {isHovered && !isSelected && (
-                  <Box
-                    sx={{
-                      display: 'flex',
-                      alignItems: 'center',
-                      ml: 'auto',
-                      color: theme.palette.primary.main,
-                    }}
-                  >
-                    <Typography>See more</Typography>
-                  </Box>
-                )}
-                {isSelected && (
+
+                {!isSelected ? (
                   <>
-                    {!downloadedTemplates.includes(template) ? (
+                    {isAlreadyDownloaded && (
+                      <Box
+                        sx={{
+                          display: 'flex',
+                          alignItems: 'center',
+                          ml: 'auto',
+                        }}
+                      >
+                        <Check fontSize="medium" />
+                      </Box>
+                    )}
+                    {isHovered && !isAlreadyDownloaded && (
+                      <Box
+                        sx={{
+                          display: 'flex',
+                          alignItems: 'center',
+                          ml: 'auto',
+                          color: theme.palette.primary.main,
+                        }}
+                      >
+                        <Typography>See more</Typography>
+                      </Box>
+                    )}
+                  </>
+                ) : (
+                  <>
+                    {!isAlreadyDownloaded ? (
                       <PillButton
                         variant="contained"
                         startIcon={<Download />}
@@ -250,3 +227,73 @@ export function DataTemplates({ handleClose }: DataTemplatesProps) {
     </Box>
   );
 }
+
+const mainContainerStyle: SxProps = {
+  display: 'flex',
+  flexDirection: 'column',
+  position: 'absolute',
+  top: '50%',
+  left: '50%',
+  transform: 'translate(-50%, -50%)',
+  width: '870px',
+  height: '800px',
+  bgcolor: 'background.paper',
+  borderRadius: '4px',
+  boxShadow: 24,
+  padding: 3,
+  paddingTop: 2,
+};
+
+const templateOptions: {
+  template: Template;
+  Icon: SvgIconComponent;
+  title: string;
+  bestForText: string;
+  requiredFieldsText: string;
+}[] = [
+  {
+    template: Template.PolygonShapeFile,
+    Icon: Timeline,
+    title: 'Polygon Shapefile',
+    bestForText:
+      'If you have sourcing locations in polygon format. Requires using a text editor such as Notepad++',
+    requiredFieldsText:
+      'The following required fields must be included in your file upload. Location_N  (Name of your locations)',
+  },
+  {
+    template: Template.Kml,
+    Icon: Public,
+    title: 'KML',
+    bestForText:
+      'If you have sourcing locations in polygon format. Requires using a text editor such as Notepad++',
+    requiredFieldsText:
+      'The following required fields must be included in your file upload. Location_N  (Name of your locations)',
+  },
+  {
+    template: Template.Spreadsheet,
+    Icon: Description,
+    title: 'Spreadsheet',
+    bestForText:
+      'If you have sourcing locations in polygon format. Requires using a text editor such as Notepad++',
+    requiredFieldsText:
+      'The following required fields must be included in your file upload. Location_N  (Name of your locations)',
+  },
+  {
+    template: Template.PointShapeFile,
+    Icon: ScatterPlotTwoTone,
+    title: 'Point Shapefile',
+    bestForText:
+      'If you have sourcing locations in polygon format. Requires using a text editor such as Notepad++',
+    requiredFieldsText:
+      'The following required fields must be included in your file upload. Location_N  (Name of your locations)',
+  },
+  {
+    template: Template.ListOfPalmMillIds,
+    Icon: OilBarrel,
+    title: 'List of Palm Mill IDs',
+    bestForText:
+      'If you have sourcing locations in polygon format. Requires using a text editor such as Notepad++',
+    requiredFieldsText:
+      'The following required fields must be included in your file upload. Location_N  (Name of your locations)',
+  },
+];

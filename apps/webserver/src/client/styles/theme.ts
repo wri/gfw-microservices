@@ -30,6 +30,10 @@ export const theme = createTheme({
   typography: {
     fontFamily: 'Fira Sans, sans-serif',
     fontSize: 16,
+    fontWeightLight: 300,
+    fontWeightRegular: 400,
+    fontWeightMedium: 500,
+    fontWeightBold: 700,
     h1: {
       fontSize: '2.25rem',
     },

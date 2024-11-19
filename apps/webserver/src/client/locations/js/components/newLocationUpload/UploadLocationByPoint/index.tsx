@@ -21,7 +21,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 
 import { AddLocationAlt, LocationOn, Search, Close, ArrowForwardIos } from '@mui/icons-material';
 
-import { LocationTypeButton, HowToFormatLocationLink } from '../components';
+import { LocationTypeButton, ExternalHelperResource } from '../components';
 
 import HectareKilometerSwitch from '../../adding/HectareKilometerSwitch';
 import { PillButton } from '../../../../../components';
@@ -75,7 +75,7 @@ export function UploadLocationByPoint({ setUploadType }: ChangePageType) {
         GFW Pro allows to create location data for analysis by defining a point and radius with one
         of the methods below.
       </Typography>
-      <HowToFormatLocationLink text="How to format your location data for GFW Pro" url="#" />
+      <ExternalHelperResource text="How to format your location data for GFW Pro" url="#" />
 
       <Typography variant="h6" sx={{ marginTop: '1rem' }}>
         Choose your location type

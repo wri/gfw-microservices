@@ -9,7 +9,7 @@ import {
   Typography,
   useTheme,
 } from '@mui/material';
-import { HowToFormatLocationLink } from '../components/HowToFormatLocationLink';
+import { ExternalHelperResource } from '../components/ExternalHelperResource';
 import { PillButton } from '../../../../../components';
 import {
   Close,
@@ -108,14 +108,14 @@ export function DataTemplates({ handleClose }: DataTemplatesProps) {
         data, then upload into GFW Pro.
       </Typography>
       <Box sx={{ display: 'flex', gap: 3 }}>
-        <HowToFormatLocationLink text="How to format your location data for GFW Pro" url="#" />
-        <HowToFormatLocationLink text="Learn more about GFW Pro templates" url="#" />
+        <ExternalHelperResource text="How to format your location data for GFW Pro" url="#" />
+        <ExternalHelperResource text="Learn more about GFW Pro templates" url="#" />
       </Box>
 
       <Box
         sx={{ mt: 6, mx: 'auto', width: '600px', display: 'flex', flexDirection: 'column', gap: 1 }}
       >
-        {templateOptions.map(({ title, Icon, template, bestForText }) => {
+        {templateOptions.map(({ title, Icon, template, bestForText, requiredFieldsText }) => {
           const isSelected = selectedTemplate === template;
           const isHovered = hoveredTemplate === template;
 
@@ -174,7 +174,9 @@ export function DataTemplates({ handleClose }: DataTemplatesProps) {
                         sx={{ ml: 'auto' }}
                         onClick={(e) => handleDownloadTemplate(e, template)}
                       >
-                        <Typography variant="caption">Download</Typography>
+                        <Typography variant="caption" sx={{ fontWeight: 'medium' }}>
+                          Download
+                        </Typography>
                       </PillButton>
                     ) : (
                       <PillButton
@@ -191,9 +193,45 @@ export function DataTemplates({ handleClose }: DataTemplatesProps) {
                 sx={{
                   backgroundColor: theme.palette.background.default,
                   borderTop: '1px solid #E5E5E5',
+                  padding: 2,
                 }}
               >
-                {bestForText}
+                <Box sx={{ ml: 4, maxWidth: '460px' }}>
+                  <Box sx={{ display: 'flex', gap: 7 }}>
+                    <Box>
+                      <Typography
+                        variant="caption"
+                        sx={{ display: 'block', mb: 1.5, fontWeight: 'medium' }}
+                      >
+                        Best for
+                      </Typography>
+                      <Typography variant="caption" color={theme.palette.text.secondary}>
+                        {bestForText}
+                      </Typography>
+                    </Box>
+                    <Box>
+                      <Typography
+                        variant="caption"
+                        sx={{ display: 'block', mb: 1.5, fontWeight: 'medium' }}
+                      >
+                        Required fields
+                      </Typography>
+                      <Typography variant="caption" color={theme.palette.text.secondary}>
+                        {requiredFieldsText}
+                      </Typography>
+                    </Box>
+                  </Box>
+                  <Typography
+                    variant="caption"
+                    color={theme.palette.text.secondary}
+                    sx={{ my: 2, display: 'inline-block' }}
+                  >
+                    You may also include additional fields of your choice (whatever numerical or
+                    text fields are helpful for you to have available when viewing your location
+                    data in Pro).
+                  </Typography>
+                </Box>
+                <ExternalHelperResource text="How to format shapefile data" url="#" />
               </AccordionDetails>
             </Accordion>
           );

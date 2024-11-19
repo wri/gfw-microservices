@@ -3,12 +3,12 @@ import React from 'react';
 import { Typography, Link } from '@mui/material';
 import { Support, NorthEast } from '@mui/icons-material';
 
-type HowToFormatLocationLinkProps = {
+type ExternalHelperResourceProps = {
   text: string;
   url: string;
 };
 
-export function HowToFormatLocationLink({ text, url }: HowToFormatLocationLinkProps) {
+export function ExternalHelperResource({ text, url }: ExternalHelperResourceProps) {
   return (
     <Link
       sx={{

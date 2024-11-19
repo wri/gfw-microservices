@@ -1,7 +1,7 @@
 import { Injectable, Logger } from '@nestjs/common';
 import * as jsonld from 'jsonld';
 import { v4 as uuidv4 } from 'uuid';
-import { GeoJsonSchema } from './types/geojson.schema';
+import { GeoJson } from './types/verifiable-credential.model';
 import * as cache from 'memory-cache';
 let vc, Ed25519Signature2018, Ed25519VerificationKey2018;
 // hack to avoid importing in test because jest does not like dynamic import
@@ -18,7 +18,7 @@ if (process.env.NODE_ENV !== 'test') {
 @Injectable()
 export class VerifiableCredentialService {
   public readonly logger = new Logger(VerifiableCredentialService.name);
-  async signedVcOutput(geojson: GeoJsonSchema) {
+  async signedVcOutput(geojson: GeoJson) {
     this.logger.log('Signing Verifiable Credentials');
     const issuanceDate = new Date().toISOString();
     const expirationDate = new Date(Date.now() + 1000 * 60 * 60 * 24 * 365).toISOString();

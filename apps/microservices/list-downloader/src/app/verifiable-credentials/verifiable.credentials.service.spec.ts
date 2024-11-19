@@ -1,4 +1,4 @@
-import { GeoJsonSchema } from './types/geojson.schema';
+import { GeoJson } from './types/verifiable-credential.model';
 import { VerifiableCredentialService } from './verifiable.credentials.service';
 import { Test, TestingModule } from '@nestjs/testing';
 
@@ -71,17 +71,24 @@ describe('VerifiableCredentialsService', () => {
   });
   describe('singed-vc', () => {
     it('should return a signed a geoJson', async () => {
-      const geojson: GeoJsonSchema = {
-        Location_Name: 'Location Test 1',
-        Centroid_Country: 'Country Location Test',
-        Location_HA: 320,
-        SBTN_Natural_Forest_HA: 199,
-        SBTN_Natural_Forest_Loss_Post_2020_HA: 0,
-        JRC_Forest_HA: 206,
-        JRC_Forest_Loss_Post_2020_HA: 1,
-        Analysis_Time: '2099-10-23T01:06:38.394Z',
-        GFWPro_Account: 999,
-        Use_Rights: 'Full Sharing',
+      const geojson: GeoJson = {
+        type: 'Feature',
+        geometry: {
+          type: 'Polygon',
+          coordinates: [[[-56.98498102294124, -24.72951754382428]]],
+        },
+        properties: {
+          Location_Name: 'Location Test 1',
+          Centroid_Country: 'Country Location Test',
+          Location_HA: 320,
+          SBTN_Natural_Forest_HA: 199,
+          SBTN_Natural_Forest_Loss_Post_2020_HA: 0,
+          JRC_Forest_HA: 206,
+          JRC_Forest_Loss_Post_2020_HA: 1,
+          Analysis_Time: '2099-10-23T01:06:38.394Z',
+          GFWPro_Account: 999,
+          Use_Rights: 'Full Sharing',
+        },
       };
       verifiableCredentialService.signedVcOutput = jest
         .fn()

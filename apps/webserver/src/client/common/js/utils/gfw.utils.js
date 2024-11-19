@@ -5,7 +5,7 @@ import {
   MAP_LAYER_IDS_TO_GFW_LISTS_NAMES,
 } from '../constants/lists.constants';
 
-export const getMapLayerIdFromGFWListName = (gfwListName) => 
+export const getMapLayerIdFromGFWListName = (gfwListName) =>
   GFW_LISTS_NAMES_TO_MAP_LAYER_IDS?.[gfwListName];
 export const getGFWListNameFromMapLayerId = (mapLayerId) => {
   if (mapLayerId === 'administrative-areas' || mapLayerId === 'admin-areas') {

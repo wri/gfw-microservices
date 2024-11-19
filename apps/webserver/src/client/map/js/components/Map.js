@@ -1906,20 +1906,9 @@ class Map extends Component {
     store.dispatch(showMapLoader(false));
   };
 
-  setGfwList = (list, { selectedLocations, alertsMapExtent, visibleLayers = [] }) => {
+  setGfwList = (list, { selectedLocations, alertsMapExtent }) => {
     const mapLayer = getMapLayerIdFromGFWListName(list.list_name);
-    const isLayerAlreadyVisible = visibleLayers.includes(mapLayer);
     let transitionListData;
-    let gfwListLocDefinitions = {};
-
-    // remove all visible graphics from user list, if any
-    const userLayer = this.view.map.findLayerById('user-locations');
-    userLayer.removeAll();
-
-    // check if the corresponding GFW Layer is already visible
-    // if (!isLayerAlreadyVisible) {
-    //   // if not, turn it on
-    // }
 
     // setting geometry analysis for listId = 1
     if (list.list_name === 'Administrative Areas' && selectedLocations?.length === 1) {
@@ -1953,14 +1942,6 @@ class Map extends Component {
         );
       });
     } else if (list.list_name !== 'Administrative Areas' && selectedLocations?.length > 0) {
-      gfwListLocDefinitions = {
-        [mapLayer]: [],
-      };
-      // build gfw list locations definitions
-      selectedLocations?.forEach((gfwListLocation) => {
-        gfwListLocDefinitions[mapLayer].push(gfwListLocation);
-      });
-
       // set up banner info
       transitionListData = {
         id: list.id,
@@ -1987,6 +1968,12 @@ class Map extends Component {
         zoom: 2,
       });
     } else {
+      /**
+       * TODO: use esri query to filter out existing features inside layer for displaying and zooming to specific
+       * @see esri_example https://developers.arcgis.com/javascript/latest/sample-code/featurelayer-query-basic/
+       * @see layers apps/webserver/src/client/common/js/service/gfw.service.js
+       */
+      // let gfwListLocDefinitions = {};
       const activeGFWLayer = this.state.mapLayers.find((l) => l.id === mapLayer);
       // TODO: figure if this shold be move outside the reach for AdminAreas, since there's no layer and it already zooms to the analysis
       if (activeGFWLayer) {
@@ -2002,7 +1989,7 @@ class Map extends Component {
     // set the selected list to the selected GFW list
     store.dispatch(selectList(list));
     store.dispatch(toggleLayer(mapLayer));
-    // store.dispatch(updateGFWLocations(gfwListLocDefinitions));
+    store.dispatch(updateGFWLocations({})); // this will display all layers locations
     this.setState({ transitionListData });
     store.dispatch(resetList(list));
     store.dispatch(showMapLoader(false));
@@ -2028,9 +2015,9 @@ class Map extends Component {
     const { userLists, gfwLists, userSharedLists } = this.props;
 
     // grab the current list
-    const currentlySelectedList = [...(isGfwList ? gfwLists : [...userLists, ...userSharedLists])].find(
-      (l) => l.id === listId
-    );
+    const currentlySelectedList = [
+      ...(isGfwList ? gfwLists : [...userLists, ...userSharedLists]),
+    ].find((l) => l.id === listId);
 
     // list not found, silently exit for now.
     if (!currentlySelectedList) {
@@ -2051,7 +2038,7 @@ class Map extends Component {
       alertsMapExtent = null; // Handle the case where extent cannot be calculated
     }
 
-    console.log('currentlySelectedList', currentlySelectedList, `isGfwList=${isGfwList}`);
+    // console.log('currentlySelectedList', currentlySelectedList, `isGfwList=${isGfwList}`);
 
     // handle setting list
     if (isGfwList) {

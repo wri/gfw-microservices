@@ -1429,7 +1429,7 @@ export default class Lists extends Component {
       userSharedLists &&
       userSharedLists.map((userSharedList) => userSharedList.id).includes(selectedLists[0].id);
 
-    let sendData = {
+    const sendData = {
       listId: selectedLists[0].id,
       isGfwList,
       isSharedList,

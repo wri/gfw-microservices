@@ -103,7 +103,7 @@ module.exports = (app, limiter) => {
         res.send(listData);
       })
       .catch((error) => {
-        logger.error('POST /map/getUserListLocationData-map', error);
+        logger.error('POST /map/getUserListLocationData-map', error.stack || error);
         res.send({
           errorCode: error.errorCode,
           message: 'Getting list data failed!',
@@ -127,7 +127,7 @@ module.exports = (app, limiter) => {
         });
       })
       .catch((error) => {
-        logger.error('POST /map/getUserListFilteredLocationData', error);
+        logger.error('POST /map/getUserListFilteredLocationData', error.stack || error);
         res.status(500).send({
           errorCode: error.errorCode,
           message: 'Getting list data failed!',

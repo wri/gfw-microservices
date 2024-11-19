@@ -74,19 +74,25 @@ export = (app, limiter) => {
   const getGeoJsonDefReport = async (request, response) => {
     logger.info('GET /geojson-defreport.jsonld');
     const geoJsonDefReport = {
-      ['@context']: {
-        ['@version']: 1.1,
-        geojson: 'https://purl.org/geojson/vocab#',
-        Location_Name: 'geojson:Location_Name',
-        Centroid_Country: 'geojson:Centroid_Country',
-        Location_HA: 'geojson:Location_HA',
-        SBTN_Natural_Forest_HA: 'geojson:SBTN_Natural_Forest_HA',
-        SBTN_Natural_Forest_Loss_Post_2020_HA: 'geojson:SBTN_Natural_Forest_Loss_Post_2020_HA',
-        JRC_Forest_HA: 'geojson:JRC_Forest_HA',
-        JRC_Forest_Loss_Post_2020_HA: 'geojson:JRC_Forest_Loss_Post_2020_HA',
-        Analysis_Time: 'geojson:Analysis_Time',
-        GFWPro_Account: 'geojson:GFWPro_Account',
-        Use_Rights: 'geojson:Use_Rights',
+      '@context': {
+        '@version': 1.1,
+        type: '@type',
+        coordinates: 'https://geojson.org/geojson-ld/geojson-context.jsonld#coordinates',
+        properties: {
+          '@id': 'https://geojson.org/geojson-ld/geojson-context.jsonld#properties',
+          '@context': {
+            Location_Name: 'geojson:Location_Name',
+            Centroid_Country: 'geojson:Centroid_Country',
+            Location_HA: 'geojson:Location_HA',
+            SBTN_Natural_Forest_HA: 'geojson:SBTN_Natural_Forest_HA',
+            SBTN_Natural_Forest_Loss_Post_2020_HA: 'geojson:SBTN_Natural_Forest_Loss_Post_2020_HA',
+            JRC_Forest_HA: 'geojson:JRC_Forest_HA',
+            JRC_Forest_Loss_Post_2020_HA: 'geojson:JRC_Forest_Loss_Post_2020_HA',
+            Analysis_Time: 'geojson:Analysis_Time',
+            GFWPro_Account: 'geojson:GFWPro_Account',
+            Use_Rights: 'geojson:Use_Rights',
+          },
+        },
       },
     };
     return response.status(200).send(geoJsonDefReport);

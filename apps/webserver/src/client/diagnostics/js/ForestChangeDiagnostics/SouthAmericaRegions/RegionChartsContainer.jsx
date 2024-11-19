@@ -59,7 +59,11 @@ function RegionChartsContainer({
           listId={listId}
           fireDownload={fireDownload}
           country={selectedTab}
-          totalArea={getTotalAreaPerCountry(data, selectedTab, isGfwList)}
+          totalArea={getTotalAreaPerCountry(
+            data,
+            selectedTab.substring(0, 3).toUpperCase(),
+            isGfwList
+          )}
         />
       )}
 

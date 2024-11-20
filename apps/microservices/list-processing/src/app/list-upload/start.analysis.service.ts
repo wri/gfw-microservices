@@ -7,9 +7,7 @@ import { RequestLargeListProcess, ResponseLargeListProcess } from '../../models'
 export class StartAnalysisService {
   private readonly logger = new Logger(StartAnalysisService.name);
 
-  constructor(
-    @InjectQueue('analysis') private readonly analysisQueue: Queue
-  ) {}
+  constructor(@InjectQueue('analysis') private readonly analysisQueue: Queue) {}
 
   async run(request: RequestLargeListProcess): Promise<ResponseLargeListProcess> {
     await this.analysisQueue.add('start-analysis', request);

@@ -6,20 +6,29 @@ import { ListTemplate, SqlModule } from '@wri-monorepos/sql';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { ValidateCsvRepository } from './validation/validate.csv.repository';
 import { DeprecatedStartAnalysisService } from './deprecated.start.analysis.service';
-import { StartAnalysisService } from './start.analysis.service';
 import { PreviewListUploadController } from './preview.list.upload.controller';
 import { PreviewListUploadService } from './preview.list.upload.service';
+import { BullModule } from '@nestjs/bull';
+import { StartAnalysisService } from './start.analysis.service';
+import { AnalysisProcessor } from './analysis.processor';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([ListTemplate], 'default'), SqlModule],
+  imports: [
+    TypeOrmModule.forFeature([ListTemplate], 'default'),
+    SqlModule,
+    BullModule.registerQueue({
+      name: 'analysis',
+    }),
+  ],
   controllers: [ValidateCSVController, PreviewListUploadController],
   providers: [
-    ValidateCSVService,
-    S3Service,
-    ValidateCsvRepository,
+    AnalysisProcessor,
     DeprecatedStartAnalysisService,
-    StartAnalysisService,
     PreviewListUploadService,
+    S3Service,
+    StartAnalysisService,
+    ValidateCsvRepository,
+    ValidateCSVService,
   ],
   exports: [DeprecatedStartAnalysisService, StartAnalysisService],
 })

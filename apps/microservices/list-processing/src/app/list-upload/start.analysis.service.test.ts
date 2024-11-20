@@ -1,48 +1,29 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { StartAnalysisService } from './start.analysis.service';
-import { S3Service } from '@wri-monorepos/aws';
-import { ConfigService } from '@nestjs/config';
+import { getQueueToken } from '@nestjs/bull';
+import { Queue } from 'bull';
 import { RequestLargeListProcess } from '../../models';
-import { csv2geojson } from './parser/csv2geojson.parser';
-
-jest.mock('./parser/csv2geojson.parser', () => ({
-  csv2geojson: jest.fn(),
-}));
 
 describe('StartAnalysisService', () => {
   let service: StartAnalysisService;
-  let s3Service: S3Service;
-  let configService: ConfigService;
+  let queue: Queue;
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
       providers: [
         StartAnalysisService,
         {
-          provide: S3Service,
-          useValue: {
-            writeS3fileIntoTmp: jest.fn(),
-          },
-        },
-        {
-          provide: ConfigService,
-          useValue: {
-            get: jest.fn(),
-          },
+          provide: getQueueToken('analysis'),
+          useValue: { add: jest.fn() },
         },
       ],
     }).compile();
 
     service = module.get<StartAnalysisService>(StartAnalysisService);
-    s3Service = module.get<S3Service>(S3Service);
-    configService = module.get<ConfigService>(ConfigService);
+    queue = module.get<Queue>(getQueueToken('analysis'));
   });
 
-  xit('should be defined', () => {
-    expect(service).toBeDefined();
-  });
-
-  xit('should run the analysis and return the expected response', async () => {
+  it('should enqueue a job', async () => {
     const request: RequestLargeListProcess = {
       organization_id: 1,
       subscription_status_id: 1,
@@ -53,22 +34,7 @@ describe('StartAnalysisService', () => {
       user_id: 1,
       startAnalysis: true,
     };
-    const bucket = 'test-bucket';
-    const fileDownloadedPath = 'tmp/test/path';
-    const geoJson = { type: 'FeatureCollection', features: [] };
-
-    jest.spyOn(configService, 'get').mockReturnValue(bucket);
-    jest.spyOn(s3Service, 'writeS3fileIntoTmp').mockResolvedValue(fileDownloadedPath);
-    (csv2geojson as jest.Mock).mockReturnValue(geoJson);
-
-    const result = await service.run(request);
-
-    expect(configService.get).toHaveBeenCalledWith('LARGE_PROCESSING_LIST_BUCKET', { infer: true });
-    expect(s3Service.writeS3fileIntoTmp).toHaveBeenCalledWith(request.path, bucket);
-    expect(csv2geojson).toHaveBeenCalledWith(fileDownloadedPath);
-    expect(result).toEqual({
-      executionArn: '',
-      startDate: '',
-    });
+    await service.run(request);
+    expect(queue.add).toHaveBeenCalledWith('start-analysis', request);
   });
 });

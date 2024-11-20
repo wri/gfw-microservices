@@ -18,7 +18,7 @@ export abstract class IPipeService {
   private readonly loggerPipe = new Logger(IPipeService.name);
 
   private EXPIRE_IN_FIVE_DAYS = 5;
-
+  private EXPIRE_IN_TWENTY_FOUR_HOURS = 24;
   @Inject(EmailService)
   private readonly emailService: EmailService;
 
@@ -100,8 +100,9 @@ export abstract class IPipeService {
     const { listId, organizationDatabase, type, file, isGFWList } = filters;
     let formattedAnalysisId = 'AFI';
     switch (type) {
+      case 'afiVC':
       case 'afi':
-        formattedAnalysisId = 'ALERTS';
+        formattedAnalysisId = 'AFI';
         break;
       case 'alerts':
         formattedAnalysisId = 'ALERTS';
@@ -109,13 +110,13 @@ export abstract class IPipeService {
       case 'fcd':
         formattedAnalysisId = 'FCD';
         break;
-      case 'afiVC':
-        formattedAnalysisId = 'AFIVC';
-        break;
     }
     const parameters = toSqlParameter({
       location,
-      expirationDate: moment(new Date()).add(this.EXPIRE_IN_FIVE_DAYS, 'days').toDate(),
+      expirationDate:
+        type === 'afiVC'
+          ? moment(new Date()).add(this.EXPIRE_IN_TWENTY_FOUR_HOURS, 'hours').toDate()
+          : moment(new Date()).add(this.EXPIRE_IN_FIVE_DAYS, 'days').toDate(),
       bundleCreationTime: new Date(),
       listId,
       analysisId: formattedAnalysisId,
@@ -129,14 +130,10 @@ export abstract class IPipeService {
         this.loggerPipe.log(
           'Saving S3 URL at database for list ' + listId + ' and analysis ' + type
         );
-        if(formattedAnalysisId === 'AFIVC'){
-          parameters['status']=2;
-          await SQLUtils.queryDB(organizationDatabase, setS3UrlAndExpirationDateVC, parameters)
-        }else{
-          await SQLUtils.queryDB(organizationDatabase, setS3UrlAndExpirationDate, parameters)
-        }
+        type === 'afiVC'
+          ? await SQLUtils.queryDB(organizationDatabase, setS3UrlAndExpirationDateVC, parameters)
+          : await SQLUtils.queryDB(organizationDatabase, setS3UrlAndExpirationDate, parameters);
       } catch (e) {
-        console.log(e);
         this.loggerPipe.log('Error saving S3 URL at database');
       }
     }

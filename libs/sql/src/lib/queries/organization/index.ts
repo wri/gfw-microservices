@@ -44,3 +44,4 @@ export * from './updateListAnalysisStatus';
 export * from './getSharedListByUser';
 export * from './getPaginatedAfiAnalysisByListIdSortedByFilters';
 export * from './createList';
+export * from './setS3UrlAndExpirationDateVC';

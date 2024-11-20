@@ -83,7 +83,7 @@ import { constructLayerObject } from '../../../common/js/utils/layer.utils';
 import { getMapLayerIdFromGFWListName } from '../../../common/js/utils/gfw.utils';
 import { updateInteractiveLayers } from '../utils/layerUpdates.utils';
 import sortMapArray from './sortMapArray';
-import getQueryParams from './getQueryParams';
+import getQueryParams, { parseSearchParams } from './getQueryParams';
 
 import AnalysisPanel from './analysisPanel/AnalysisPanel';
 import ControlPanel from './controls/ControlPanel';
@@ -1790,10 +1790,9 @@ class Map extends Component {
       }
 
       if (gfwListName === 'Protected Areas') {
-        // Processing - Palm Oil Mills points
-
         // TODO: Currently latest date is not in sync. Check if this needs to be updated and remove at some point in future
         const PROTECTED_AREAS_DATE = 'v202106';
+        // const PROTECTED_AREAS_DATE = 'v202408.1'; // verify if this should map mapLayers
         gfwVectorTileUrl = gfwVectorTileUrl.replace(date, PROTECTED_AREAS_DATE);
         date = PROTECTED_AREAS_DATE;
       }
@@ -1846,16 +1845,164 @@ class Map extends Component {
     this.applyStateFromUrl();
   };
 
-  applyStateFromUrl = () => {
-    const queryParams = getQueryParams(this.props.location.search);
+  setUserList = (list, { selectedLocations, alertsMapExtent }) => {
+    let transitionListData;
 
-    const { gfwLists } = this.props;
+    // handle locations features
+    if (selectedLocations && selectedLocations.length > 0) {
+      fetch(`/map/getUserListFilteredLocationData`, {
+        method: 'POST',
+        credentials: 'same-origin',
+        headers: {
+          'Content-type': 'application/json',
+        },
+        body: JSON.stringify({
+          listId: list.id,
+          filterByLocations: selectedLocations ?? '',
+        }),
+      })
+        .then((res) => res.json())
+        .then((listLocationData) => {
+          const { features } = listLocationData;
+          const selectedLocationsData = [
+            {
+              type: 'FeatureCollection',
+              features,
+            },
+          ];
+          const { transitionListData } = this.state;
+
+          this.goToOriginalPoint = () =>
+            setVectorTileLayerForFilteredList(selectedLocationsData, transitionListData, this.view);
+
+          setVectorTileLayerForFilteredList(selectedLocationsData, transitionListData, this.view);
+        })
+        .catch((err) => {
+          console.log(`Error: ${err}`);
+          store.dispatch(showMapLoader(false));
+        });
+      // set up banner info for selected locations
+      transitionListData = {
+        id: list.id,
+        numLocations: list.list_locations_count,
+        name: list.list_locations_count,
+        alertsMapExtent,
+      };
+    }
+    // handle all locations
+    else if (!selectedLocations) {
+      // set up banner info for all locations
+      transitionListData = {
+        id: list.id,
+        numLocations: list.list_locations_count,
+        name: list.list_locations_count,
+        alertsMapExtent,
+      };
+      this.getUserLocationData([list.id]);
+    }
+    // set list and display map
+    store.dispatch(selectList(list));
+    this.setState({ transitionListData });
+    store.dispatch(showMapLoader(false));
+  };
+
+  setGfwList = (list, { selectedLocations, alertsMapExtent }) => {
+    const mapLayer = getMapLayerIdFromGFWListName(list.list_name);
+    let transitionListData;
+
+    // setting geometry analysis for listId = 1
+    if (list.list_name === 'Administrative Areas' && selectedLocations?.length === 1) {
+      /**
+       * @note Administrative Areas
+       * selectedLocations is an array with 1 object looking like { gadmid, serverLayerId }
+       * for the purposes of `queryAdmin` this pattern is easier than using the locationId
+       * and fetch for these properties
+       */
+      const [parsedSelectedLocations] = selectedLocations;
+      queryAdmin(parsedSelectedLocations).then((adminArea) => {
+        store.dispatch(analysisActions.setAnalysis('analysis'));
+        store.dispatch(analysisActions.setActiveAnalysis('region'));
+        store.dispatch(
+          analysisActions.setAnalysisAdminArea({
+            country: adminArea.country,
+            region: adminArea.region,
+          })
+        );
+        this.view.goTo(adminArea);
+        this.goToOriginalPoint = () => this.view.goTo(adminArea);
+
+        this.analyzeAdmin(adminArea);
+
+        store.dispatch(
+          updateAdminSelections({
+            country: adminArea.countryText,
+            smallerRegion: adminArea.stateText,
+            subregion: adminArea.substateText,
+          })
+        );
+      });
+    } else if (list.list_name !== 'Administrative Areas' && selectedLocations?.length > 0) {
+      // set up banner info
+      transitionListData = {
+        id: list.id,
+        numLocations: list.list_locations_count,
+        alertsMapExtent,
+        name: `(${selectedLocations.length}) ${list.list_name}`,
+        isGfwList: true,
+      };
+    } else if (list.list_name !== 'Administrative Areas' && !selectedLocations) {
+      // set up banner info
+      transitionListData = {
+        id: list.id,
+        numLocations: list.list_locations_count,
+        alertsMapExtent,
+        name: list.list_name,
+        isGfwList: true,
+      };
+    }
+
+    // zoom to the layer's extent
+    if (mapLayer === protectedAreas) {
+      this.view.goTo({
+        target: [15, 27],
+        zoom: 2,
+      });
+    } else {
+      /**
+       * TODO: use esri query to filter out existing features inside layer for displaying and zooming to specific
+       * @see esri_example https://developers.arcgis.com/javascript/latest/sample-code/featurelayer-query-basic/
+       * @see layers apps/webserver/src/client/common/js/service/gfw.service.js
+       */
+      // let gfwListLocDefinitions = {};
+      const activeGFWLayer = this.state.mapLayers.find((l) => l.id === mapLayer);
+      // TODO: figure if this shold be move outside the reach for AdminAreas, since there's no layer and it already zooms to the analysis
+      if (activeGFWLayer) {
+        const url = `${activeGFWLayer.url}/${activeGFWLayer.layerId}`;
+        queryExtent(url).then((extent) => {
+          if (extent) {
+            this.view.goTo(extent);
+          }
+        });
+      }
+    }
+
+    // set the selected list to the selected GFW list
+    store.dispatch(selectList(list));
+    store.dispatch(toggleLayer(mapLayer));
+    store.dispatch(updateGFWLocations({})); // this will display all layers locations
+    this.setState({ transitionListData });
+    store.dispatch(resetList(list));
+    store.dispatch(showMapLoader(false));
+  };
+
+  applyStateFromUrl = () => {
+    store.dispatch(showMapLoader(true));
+
+    const queryParams = parseSearchParams(this.props.location.search);
     const {
       visibleLayers,
       listId,
-      selectedLocations,
       isGfwList,
-      isSharedList,
       selectedTimeframe,
       latitude,
       longitude,
@@ -1865,7 +2012,21 @@ class Map extends Component {
       xmax,
       ymax,
     } = queryParams;
+    const { userLists, gfwLists, userSharedLists } = this.props;
 
+    // grab the current list
+    const currentlySelectedList = [
+      ...(isGfwList ? gfwLists : [...userLists, ...userSharedLists]),
+    ].find((l) => l.id === listId);
+
+    // list not found, exit for now.
+    if (!currentlySelectedList) {
+      console.warn(`List ${listId} Not Found`);
+      store.dispatch(showMapLoader(false));
+      return;
+    }
+
+    // set alerts extends if available
     let alertsMapExtent;
     if (xmin && ymin && xmax && ymax) {
       alertsMapExtent = new Extent({
@@ -1879,156 +2040,22 @@ class Map extends Component {
       alertsMapExtent = null; // Handle the case where extent cannot be calculated
     }
 
-    const gfwListDefinitions = {};
-    const hashLayersToAdd = [];
+    // console.log('currentlySelectedList', currentlySelectedList, `isGfwList=${isGfwList}`);
 
+    // handle setting list
     if (isGfwList) {
-      if (!listId || listId < 1 || listId > 5) {
-        return; // if the list is not found, exit this function
-      }
-      const [listToSelect] = gfwLists.filter((gfwList) => gfwList.id === listId);
-      const listName = listToSelect.list_name;
-      const gfwListVisibleMapLayerId = getMapLayerIdFromGFWListName(listName);
-
-      hashLayersToAdd.push(gfwListVisibleMapLayerId);
-      if (listId === 1) {
-        // administrative areas
-        if (selectedLocations?.length > 0) {
-          // only for 'Administrative Areas', the selectedLocations is not an array but an object:
-          // const { gadmid, serverLayerId } = location;
-          // see the function queryAdmin in /src/client/map/js/utils/LayerUtils.js
-          // TODO: send the location ids only, and get gadmid / serverLayerId in the map view
-          // or use another property in sendData to send these
-          const parsedSelectedLocations = JSON.parse(selectedLocations[0])[0];
-          queryAdmin(parsedSelectedLocations).then((adminArea) => {
-            store.dispatch(analysisActions.setAnalysis('analysis'));
-            store.dispatch(analysisActions.setActiveAnalysis('region'));
-            store.dispatch(
-              analysisActions.setAnalysisAdminArea({
-                country: adminArea.country,
-                region: adminArea.region,
-              })
-            );
-            this.view.goTo(adminArea);
-            this.goToOriginalPoint = () => this.view.goTo(adminArea);
-
-            this.analyzeAdmin(adminArea);
-
-            store.dispatch(
-              updateAdminSelections({
-                country: adminArea.countryText,
-                smallerRegion: adminArea.stateText,
-                subregion: adminArea.substateText,
-              })
-            );
-          });
-        }
-      } else {
-        if (selectedLocations?.length) {
-          gfwListDefinitions[gfwListVisibleMapLayerId] = [];
-          selectedLocations.forEach((gfwLocation) => {
-            gfwListDefinitions[gfwListVisibleMapLayerId].push(gfwLocation);
-          });
-        } else {
-          if (listToSelect) {
-            this.updateSelectedLists(listToSelect);
-          }
-        }
-      }
-
-      const transitionListData = {
-        id: listId,
-        numLocations: selectedLocations?.length || listToSelect?.list_locations_count,
+      this.setGfwList(currentlySelectedList, {
         alertsMapExtent,
-        name: listName,
-        isGfwList: true,
-      };
-      // set name and selected locations in banner
-      this.setState({
-        transitionListData,
+        ...queryParams,
       });
     } else {
-      if (!listId) {
-        return; // if there is no list id in the get params, exit this function
-      }
-
-      const { userLists, userSharedLists } = this.props;
-
-      const listToSearch = isSharedList ? userSharedLists[0] : userLists;
-      const userList = listToSearch?.find((listData) => listData.id === listId);
-
-      if (!userList) {
-        return; // if the list is not found, exit this function
-      }
-
-      store.dispatch(showMapLoader(true));
-      // set name and selected locations in banner
-      this.setState({
-        transitionListData: {
-          id: listId,
-          numLocations: selectedLocations?.length || userList?.list_locations_count,
-          name: userList.list_name,
-          alertsMapExtent,
-        },
-      });
-
-      const request = new XMLHttpRequest();
-      request.onload = () => {
-        store.dispatch(showMapLoader(false));
-        if (request.responseText === '') {
-          console.log('LIST DATA IS NOT AVAILABLE');
-        } else {
-          const selectedListData = JSON.parse(request.responseText);
-          if (selectedLocations?.length) {
-            const feats = selectedListData[0].features;
-
-            const filteredLocations = feats.filter((location) => {
-              return selectedLocations.indexOf(location.properties.location_id) > -1;
-            });
-            const selectedLocationsData = [
-              {
-                type: 'FeatureCollection',
-                features: filteredLocations,
-              },
-            ];
-            const { transitionListData } = this.state;
-            this.goToOriginalPoint = () =>
-              setVectorTileLayerForFilteredList(
-                selectedLocationsData,
-                transitionListData,
-                this.view
-              );
-
-            setVectorTileLayerForFilteredList(selectedLocationsData, transitionListData, this.view);
-            store.dispatch(addList(userList));
-            return;
-          }
-          const { transitionListData } = this.state;
-
-          this.goToOriginalPoint = () =>
-            setVectorTileLayerForFullList(selectedListData, transitionListData, this.view);
-
-          setVectorTileLayerForFullList(selectedListData, transitionListData, this.view);
-          store.dispatch(addList(userList));
-        }
-        if (hashLayersToAdd.length > 0) {
-          store.dispatch(toggleLayer(hashLayersToAdd));
-        }
-      };
-      request.onerror = (err) => {
-        console.log(`Error: ${err}`);
-        store.dispatch(showMapLoader(false));
-      };
-      request.open('POST', '/map/getUserListLocationData-map', true);
-      request.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
-
-      request.send(`list_ids=${[listId]}`);
-      gtag('event', 'locations add', {
-        event_category: 'Map Load',
-        event_label: `user added locations from the ${userList.list_name} list`,
+      this.setUserList(currentlySelectedList, {
+        alertsMapExtent,
+        ...queryParams,
       });
     }
 
+    // handle selectedTimeframe for alerts if present
     if (selectedTimeframe) {
       if (
         visibleLayers?.includes(gladAlertsID) ||
@@ -2086,6 +2113,7 @@ class Map extends Component {
       }
     }
 
+    // handle coordinates if present
     if (latitude && longitude && zoom) {
       const point = new Point({
         latitude,
@@ -2096,19 +2124,6 @@ class Map extends Component {
         target: point,
         scale: zoom - 1,
       });
-    }
-
-    if (visibleLayers?.length) {
-      hashLayersToAdd.push(...visibleLayers);
-    }
-
-    if (hashLayersToAdd.length > 0) {
-      hashLayersToAdd.forEach((layer) => {
-        store.dispatch(toggleLayer(layer));
-      });
-      if (gfwListDefinitions && Object.keys(gfwListDefinitions).length > 0) {
-        store.dispatch(updateGFWLocations(gfwListDefinitions));
-      }
     }
   };
 

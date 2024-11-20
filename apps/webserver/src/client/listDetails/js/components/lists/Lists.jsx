@@ -166,7 +166,6 @@ export default class Lists extends Component {
 
   componentDidMount() {
     const { listData, filters, selectedLists } = this.props;
-
     const { list_name, id, isGlobalForestWatchList, associated_gfwlist } = selectedLists[0];
 
     gtag('event', 'User accessed list', {
@@ -1402,6 +1401,11 @@ export default class Lists extends Component {
       locationIds = filteredData;
     }
 
+    /**
+     * @note on Administrative Areas
+     * Map only available for 1 location, given that AdminAreas represent
+     * Country-State-(and possible)-Sub State delimitation
+     */
     if (gfwList === 'Administrative Areas' && locationIds.length > 1) {
       this.setState({
         dialogOpen: true,
@@ -1412,13 +1416,11 @@ export default class Lists extends Component {
       });
       return;
     }
-
+    /**
+     * @note getGFWListLocationIDs returns an object like { gadmid, serverLayerId } for adminAreas
+     * @summary the map should parse the string of objects
+     */
     if (gfwList === 'Administrative Areas' && locationIds.length === 1) {
-      // only for 'Administrative Areas', the selectedLocations is not an array but an object:
-      // const { gadmid, serverLayerId } = location;
-      // see the function queryAdmin in /src/client/map/js/utils/LayerUtils.js
-      // TODO: send the location ids only, and get gadmid / serverLayerId in the map view
-      // or use another property in sendData to send these
       locationIds = JSON.stringify(locationIds);
     }
     const isGfwList = selectedLists[0].isGlobalForestWatchList;
@@ -1431,8 +1433,12 @@ export default class Lists extends Component {
       listId: selectedLists[0].id,
       isGfwList,
       isSharedList,
-      selectedLocations: allLocationsSelected || showFullListMap ? [] : locationIds,
     };
+
+    // the presence of `selectedLocations` at Map.js determines full list map vs location(s) map
+    if (locationIds.length > 0 && !allLocationsSelected && !showFullListMap) {
+      sendData.selectedLocations = locationIds;
+    }
 
     redirectToMap(sendData);
     gtag('event', 'Header button click', {

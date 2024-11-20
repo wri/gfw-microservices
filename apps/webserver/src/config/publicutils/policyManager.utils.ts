@@ -37,7 +37,7 @@ const s3 = new S3();
  *   @param  {Boolean}   overwrite - true if files should be overwritten
  *   @return {Promise<any[]>} Return array of policies to ovewrite or an empty array if successful
  */
-const uploadPolicies = (req, policyList, policyNames, overwrite = false) => {
+export const uploadPolicies = (req, policyList, policyNames, overwrite = false) => {
   return new Promise((resolve, reject) => {
     // Stored procedure executions
     let uspAddPolicyExecuted = false;
@@ -116,7 +116,7 @@ const uploadPolicies = (req, policyList, policyNames, overwrite = false) => {
  *   @param  {Array}   policyNames - array of policy names
  *   @return {Promise<Boolean>} True if successful, false otherwise.
  */
-const uploadPendingPolicies = (req, organizationId, policyList, policyNames) => {
+export const uploadPendingPolicies = (req, organizationId, policyList, policyNames) => {
   return new Promise((resolve, reject) => {
     let uspAddPendingPolicyExecuted = false;
     const promises = [];
@@ -170,7 +170,7 @@ const uploadPendingPolicies = (req, organizationId, policyList, policyNames) => 
  *   @param  {Object}   req - Manadatory first parameter to pass the request object into the function in case session info is required.
  *   @return {Promise<any[]>} List of policies.
  */
-const getPolicyList = (req) => {
+export const getPolicyList = (req) => {
   return new Promise((resolve, reject) => {
     sqlUtils
       .executeOrganizationStoredProcedure(req, 'uspGetPolicyList')
@@ -194,7 +194,7 @@ const getPolicyList = (req) => {
  *   @param  {Object}   req - Manadatory first parameter to pass the request object into the function in case session info is required.
  *   @return {Promise<any[]>} List of policies.
  */
-const getAllPolicyList = (req) => {
+export const getAllPolicyList = (req) => {
   return new Promise((resolve, reject) => {
     if (!UserManager.isProManager(req)) {
       const userMessage = langResources.getResourceString('loginFailed');
@@ -229,7 +229,7 @@ const getAllPolicyList = (req) => {
  *   @param  {Object}   req - Manadatory first parameter to pass the request object into the function in case session info is required.
  *   @return {Promise<any[]>} List of policies.
  */
-const getPendingPolicyList = (req) => {
+export const getPendingPolicyList = (req) => {
   return new Promise((resolve, reject) => {
     //Get List of policies.
     sqlUtils
@@ -255,7 +255,7 @@ const getPendingPolicyList = (req) => {
  *   @param  {String} policy - name of policy to download
  *   @return {Promise} Return file stream from s3.
  */
-const downloadPolicy = async (req, policy, orgID) => {
+export const downloadPolicy = async (req, policy, orgID) => {
   const params = {
     Bucket: config.AWSVars.policyParams.bucket,
     Key: `${config.AWSVars.policyParams.key}/${
@@ -284,7 +284,7 @@ const downloadPolicy = async (req, policy, orgID) => {
  *   @param  {Array}   policyList - list of policies to delete
  *   @return {Promise<Boolean>} True if successful, false otherwise.
  */
-const deletePolicies = (req, policyList) => {
+export const deletePolicies = (req, policyList) => {
   return new Promise((resolve, reject) => {
     const promises = [];
     policyList.forEach((policy) => {
@@ -329,7 +329,7 @@ const deletePolicies = (req, policyList) => {
  *   @param  {number}   organizationId - organization ID
  *   @return {Promise<Boolean>} True if successful, false otherwise.
  */
-const movePolicy = (req, pendingaccount_id, organizationId) => {
+export const movePolicy = (req, pendingaccount_id, organizationId) => {
   return new Promise((resolve, reject) => {
     let policyList = [];
     // S3 Params
@@ -382,16 +382,4 @@ const movePolicy = (req, pendingaccount_id, organizationId) => {
         reject(errorObject);
       });
   });
-};
-
-// Exporting the functions.
-export = {
-  uploadPolicies,
-  uploadPendingPolicies,
-  getPolicyList,
-  getAllPolicyList,
-  getPendingPolicyList,
-  downloadPolicy,
-  deletePolicies,
-  movePolicy,
 };

@@ -1,15 +1,26 @@
 import React, { DragEvent, useState } from 'react';
-import { Box, Card, Dialog, DialogActions, DialogTitle, Typography, useTheme } from '@mui/material';
+import {
+  Box,
+  Card,
+  Dialog,
+  DialogActions,
+  DialogTitle,
+  Modal,
+  Typography,
+  useTheme,
+} from '@mui/material';
 import { ArrowForwardIos, Close, DriveFolderUpload } from '@mui/icons-material';
 
 import { PillButton } from '../../../../../components';
 import { ChangePageType } from '../types';
 import { VALID_UPLOAD_FILE_FORMATS } from '../utils/constants';
+import { DataTemplates } from '../DataTemplates';
 
 export function UploadLocationByFile({ setUploadType }: ChangePageType) {
   const theme = useTheme();
   const [isDragAndDropActive, setIsDragAndDropActive] = useState(false);
   const [isDialogOpen, setIsDialogOpen] = React.useState(false);
+  const [isDataTemplateModalOpen, setIsDataTemplateModalOpen] = React.useState(false);
 
   const fileUpload = (event: DragEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -63,7 +74,9 @@ export function UploadLocationByFile({ setUploadType }: ChangePageType) {
         data formatted for GFW Pro, just upload it below.
       </Typography>
 
-      <PillButton variant="contained">Data templates</PillButton>
+      <PillButton variant="contained" onClick={() => setIsDataTemplateModalOpen(true)}>
+        Data templates
+      </PillButton>
       <form
         onDrop={fileUpload}
         onDragEnter={handleFormDragEnter}
@@ -156,6 +169,10 @@ export function UploadLocationByFile({ setUploadType }: ChangePageType) {
           Next
         </PillButton>
       </Box>
+
+      <Modal open={isDataTemplateModalOpen} onClose={() => setIsDataTemplateModalOpen(false)}>
+        <DataTemplates handleClose={() => setIsDataTemplateModalOpen(false)} />
+      </Modal>
 
       <Dialog
         open={isDialogOpen}

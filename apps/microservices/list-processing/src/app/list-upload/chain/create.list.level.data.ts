@@ -2,7 +2,6 @@ import { FeatureFlag, SQLUtils } from '@wri-monorepos/sql';
 import { AbstractHandler, ChainType, RequestNewList } from './types';
 import { CreateListResult } from '@wri-monorepos/geo';
 import * as sql from 'mssql';
-import { updateListsUploadStatus } from '../shared/update.lists.upload.status';
 import { featureFlagsService } from '@wri-monorepos/shared';
 import { Logger } from '@nestjs/common';
 
@@ -123,18 +122,12 @@ export class CreateListLevelData extends AbstractHandler<ChainType> {
         uploadListLpFlag?.flagState
       );
 
-      await updateListsUploadStatus(
-        connection.databaseName,
-        createListResult.list_id,
-        'Insert row in List table'
-      );
+      this.logger.log(`List created with id: ${createListResult.list_id} in ${clientDatabase}`);
 
       await this.addListToAnalysesTable(connection, createListResult.list_id);
 
-      await updateListsUploadStatus(
-        connection.databaseName,
-        createListResult.list_id,
-        'Add list to analysis table'
+      this.logger.log(
+        `Add list to analysis table: ${createListResult.list_id} in ${clientDatabase}`
       );
 
       return {

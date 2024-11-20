@@ -81,6 +81,7 @@ class ConvertObject2Geojson extends Transform {
       )
         .then((listProperties) => {
           const afiProperties = {
+            ['Location_Name']: feature.properties['Location_Name'],
             Centroid_Country: feature.properties['Country'],
             Location_HA: listProperties.total_area_ha,
             SBTN_Natural_Forest_HA: listProperties.natural_land_area,
@@ -91,16 +92,11 @@ class ConvertObject2Geojson extends Transform {
             GFWPro_Account: listProperties.organizationId,
             Use_Rights: 'Full Sharing',
           };
-
-          delete feature.properties['list_id'];
-          delete feature.properties['organizationDatabase'];
-          delete feature.properties['Country'];
-          delete feature.properties['location_id'];
+          feature.properties = afiProperties;
           this.verifiableCredentialService
-            .signedVcOutput(afiProperties)
+            .signedVcOutput(feature)
             .then((signedVC) => {
-              feature.properties = { ...feature.properties, ...signedVC };
-              geojson.features.push(feature);
+              geojson.features.push(signedVC);
               next(null, geojson);
             })
             .catch((err) => {

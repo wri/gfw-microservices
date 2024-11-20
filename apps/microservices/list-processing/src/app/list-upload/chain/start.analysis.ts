@@ -21,13 +21,9 @@ export class StartAnalysis extends AbstractHandler<ChainType> {
   private readonly logger = new Logger(StartAnalysis.name);
   private clientStoreConnection: ClientStoreConnection;
 
-  constructor(clientStoreConnection: ClientStoreConnection) {
+  constructor(clientStoreConnection: ClientStoreConnection = new ClientStoreConnection()) {
     super();
-    if (clientStoreConnection !== null) {
-      this.clientStoreConnection = clientStoreConnection;
-    } else {
-      this.clientStoreConnection = new ClientStoreConnection();
-    }
+    this.clientStoreConnection = clientStoreConnection;
   }
 
   async getListName(organizationDatabase: string, list_id: number) {
@@ -53,6 +49,13 @@ export class StartAnalysis extends AbstractHandler<ChainType> {
       organization_id: organizationId,
       subscription_status_id: subscriptionStatusId,
     } = request.request as RequestNewList;
+
+    const listSizeWithoutError = request.geojson.features?.filter(
+      (feature) => !feature?.properties?.error && feature?.properties?.gadmid
+    ).length;
+    if (listSizeWithoutError === 0) {
+      throw new Error('All the features have errors, not going to start the analysis');
+    }
 
     const geoTrellisUrlsByEnv = {
       qa: GEO_TRELLIS__ANALYZE_LIST_QA,

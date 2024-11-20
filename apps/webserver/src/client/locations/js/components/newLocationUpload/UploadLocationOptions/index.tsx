@@ -11,7 +11,7 @@ import {
   ArrowForwardIos,
 } from '@mui/icons-material';
 
-import { HowToFormatLocationLink } from '../components/HowToFormatLocationLink';
+import { ExternalHelperResource } from '../components/ExternalHelperResource';
 import { UploadType } from '../types';
 import { ChangePageType } from '../types';
 
@@ -34,7 +34,7 @@ export function UploadLocationOptions({ setUploadType }: ChangePageType) {
           <Typography variant="body2" className="upload-location-options__main-content__subtitle">
             GFW Pro allows users to upload their data in multiple ways.
           </Typography>
-          <HowToFormatLocationLink text="How to format your location data for GFW Pro" url="#" />
+          <ExternalHelperResource text="How to format your location data for GFW Pro" url="#" />
         </div>
         <div className="upload-location-options__main-content__options">
           <Typography variant="body2">

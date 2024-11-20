@@ -22,7 +22,7 @@ const getAllListsAnalysisStatus = async (req) => {
 
       return {
         ...analysisStatus,
-        analysisIdLastModifed: analysisTypeLastModified.last_run,
+        analysisIdLastModifed: analysisTypeLastModified?.last_run,
       };
     });
   } catch (error) {

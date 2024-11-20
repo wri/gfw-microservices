@@ -5,10 +5,6 @@ on:
     # Runs at 6 AM UTC (one hour after automatic-release.yml) every weekday
     - cron: '0 6 * * 1-5'
 
-  push:
-    branches:
-      - cron-daily-unstable-test-qa
-
 # nx cache intermittently fails with github actions, likely due to parallelism
 # so disabling the check for now
 env:

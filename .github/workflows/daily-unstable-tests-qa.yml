@@ -1,4 +1,4 @@
-name: QA e2e Tests
+name: Unstable QA e2e Tests
 
 on:
   schedule:

@@ -80,13 +80,11 @@ module.exports = (app, limiter) => {
         res.send(results.data);
       })
       .catch((error) => {
-        logger.error(
-          `POST /map/getPlanetTile/  params=${JSON.stringify(
-            req.params
-          )} query=${querystring.stringify(req.query)}`,
-          error.stack || error
-        );
-        console.log('getPlanetTile Error:', error);
+        logger.error(`POST /map/getPlanetTile/`, {
+          params: req.params,
+          query: querystring.stringify(req.query),
+          error: error.stack || error,
+        });
         res.send({ message: '/map/getPlanetTile failed' });
       });
   });
@@ -111,27 +109,25 @@ module.exports = (app, limiter) => {
       });
   });
 
-  app.post('/map/getUserListFilteredLocationData', (req, res) => {
+  app.post('/map/getUserListFilteredLocationData', async (req, res) => {
     const { listId, filterByLocations } = req.body;
 
-    ListManager.getListLocations(req, listId)
-      .then((listData) => {
-        const { features } = listData;
-        const filteredLocations = features.filter((location) => {
-          return filterByLocations.includes(location.properties.location_id);
-        });
-
-        res.send({
-          ...listData,
-          features: filteredLocations,
-        });
-      })
-      .catch((error) => {
-        logger.error('POST /map/getUserListFilteredLocationData', error.stack || error);
-        res.status(500).send({
-          errorCode: error.errorCode,
-          message: 'Getting list data failed!',
-        });
+    try {
+      const { features, ...restOfListData } = await ListManager.getListLocations(req, listId);
+      const filteredLocations = features.filter((location) => {
+        return filterByLocations.includes(location.properties.location_id);
       });
+
+      res.send({
+        ...restOfListData,
+        features: filteredLocations,
+      });
+    } catch (error) {
+      logger.error('POST /map/getUserListFilteredLocationData', error.stack || error);
+      res.status(500).send({
+        errorCode: error.errorCode,
+        message: 'Getting list data failed!',
+      });
+    }
   });
 };

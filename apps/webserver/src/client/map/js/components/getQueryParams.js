@@ -22,21 +22,15 @@ const QueryParamsValidationSchema = z.object({
   locationId: z.coerce.number().optional(),
   // https://github.com/colinhacks/zod/issues/2985
   isGfwList: z
-    .optional(
-      z
-        .string()
-        .transform((x) => x === 'true')
-        .pipe(z.boolean())
-    )
-    .catch(undefined),
+    .string()
+    .transform((x) => x === 'true')
+    .pipe(z.boolean())
+    .optional(),
   isSharedList: z
-    .optional(
-      z
-        .string()
-        .transform((x) => x === 'true')
-        .pipe(z.boolean())
-    )
-    .catch(undefined),
+    .string()
+    .transform((x) => x === 'true')
+    .pipe(z.boolean())
+    .optional(),
   latitude: z.coerce.number().optional(),
   longitude: z.coerce.number().optional(),
   zoom: z.coerce.number().optional(),
@@ -51,7 +45,7 @@ export const parseSearchParams = (queryString) => {
   const urlSearchParams = new URLSearchParams(queryString);
   const queryObj = Object.fromEntries(urlSearchParams.entries());
 
-  let validParams = QueryParamsValidationSchema.parse(queryObj);
+  const validParams = QueryParamsValidationSchema.parse(queryObj);
 
   // feat [GPV-3376]: external route `/apimap` uses locationId, set selectedLocations to trigger zoom for that
   if (validParams.locationId && window.location.pathname === '/apimap') {

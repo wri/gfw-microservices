@@ -2019,8 +2019,10 @@ class Map extends Component {
       ...(isGfwList ? gfwLists : [...userLists, ...userSharedLists]),
     ].find((l) => l.id === listId);
 
-    // list not found, silently exit for now.
+    // list not found, exit for now.
     if (!currentlySelectedList) {
+      console.warn(`List ${listId} Not Found`);
+      store.dispatch(showMapLoader(false));
       return;
     }
 

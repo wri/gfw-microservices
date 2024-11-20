@@ -52,8 +52,12 @@ export function UploadLocationByPoint({ setUploadType }: ChangePageType) {
     reset,
   } = useForm<FormFields>({
     resolver: zodResolver(coordinateSchema),
+    defaultValues: {
+      latitude: '',
+      longitude: '',
+    },
   });
-  const [locationFormat, setLocationFormat] = useState<LocationFormat>(LocationFormat.Coordinates);
+  const [locationFormat, setLocationFormat] = useState<LocationFormat | null>(null);
 
   const [selectedRadiusSize, setSelectedRadiusSize] = useState<RadiusSize>(RadiusSize.Small);
 
@@ -64,9 +68,13 @@ export function UploadLocationByPoint({ setUploadType }: ChangePageType) {
     reset();
   };
 
-  const handleSubmitForm = (data: FormFields) => {
+  const onSubmit = (data: FormFields) => {
     console.log({ data });
   };
+
+  const getVisibilityStyle = () => ({
+    visibility: locationFormat === null ? 'hidden' : 'initial',
+  });
 
   return (
     <Card className="upload-location-by-point">
@@ -77,7 +85,7 @@ export function UploadLocationByPoint({ setUploadType }: ChangePageType) {
       </Typography>
       <ExternalHelperResource text="How to format your location data for GFW Pro" url="#" />
 
-      <Typography variant="h6" sx={{ marginTop: '1rem' }}>
+      <Typography variant="h6" sx={{ mt: 2 }}>
         Choose your location type
       </Typography>
       <Typography variant="body2" className="upload-location-by-point__subtitle">
@@ -89,8 +97,8 @@ export function UploadLocationByPoint({ setUploadType }: ChangePageType) {
           sx={{
             display: 'flex',
             flexDirection: 'column',
-            gap: '0.5rem',
-            marginBottom: '0.75rem',
+            gap: 1,
+            mb: 1.5,
           }}
         >
           <LocationTypeButton
@@ -110,11 +118,11 @@ export function UploadLocationByPoint({ setUploadType }: ChangePageType) {
             <Typography variant="body2">Enter address</Typography>
           </LocationTypeButton>
         </Box>
-        <form onSubmit={handleSubmit(handleSubmitForm)}>
+        <form onSubmit={handleSubmit(onSubmit)}>
           {locationFormat === LocationFormat.Coordinates ? (
-            <>
+            <Box sx={{ ...getVisibilityStyle() }}>
               <Typography variant="h6">Enter coordinates</Typography>
-              <Typography variant="body2" sx={{ marginBottom: '1rem' }}>
+              <Typography variant="body2" sx={{ mb: 2 }}>
                 Coordinate data must be in decimal degrees format.
               </Typography>
 
@@ -122,8 +130,6 @@ export function UploadLocationByPoint({ setUploadType }: ChangePageType) {
                 <Controller
                   name="latitude"
                   control={control}
-                  defaultValue=""
-                  rules={{ required: true }}
                   render={({ field }) => (
                     <TextField
                       label="Latitude"
@@ -140,8 +146,6 @@ export function UploadLocationByPoint({ setUploadType }: ChangePageType) {
                 <Controller
                   name="longitude"
                   control={control}
-                  defaultValue=""
-                  rules={{ required: true }}
                   render={({ field }) => (
                     <TextField
                       label="Longitude"
@@ -156,9 +160,9 @@ export function UploadLocationByPoint({ setUploadType }: ChangePageType) {
                   )}
                 />
               </div>
-            </>
+            </Box>
           ) : (
-            <>
+            <Box sx={{ ...getVisibilityStyle() }}>
               <Typography variant="h6">Enter address</Typography>
 
               <FormControl variant="outlined" size="small" fullWidth>
@@ -183,14 +187,19 @@ export function UploadLocationByPoint({ setUploadType }: ChangePageType) {
                   label="Address"
                 />
               </FormControl>
-            </>
+            </Box>
           )}
 
-          <Divider flexItem sx={{ margin: '2rem 0 0.75rem' }} />
+          <Divider flexItem sx={{ mt: 4, mb: 1.5, ...getVisibilityStyle() }} />
 
-          <Typography variant="h6">Define radius around location</Typography>
+          <Typography variant="h6" sx={{ ...getVisibilityStyle() }}>
+            Define radius around location
+          </Typography>
 
-          <div className="upload-location-by-point__location-info__radius-size-container">
+          <Box
+            className="upload-location-by-point__location-info__radius-size-container"
+            sx={{ ...getVisibilityStyle() }}
+          >
             <div>
               <Radio
                 name="radius-size"
@@ -244,11 +253,11 @@ export function UploadLocationByPoint({ setUploadType }: ChangePageType) {
                 <span>Define the area (in HA) or radius (in KM)</span>
               </div>
             </div>
-          </div>
+          </Box>
 
           {selectedRadiusSize === RadiusSize.Custom && (
-            <>
-              <Divider flexItem sx={{ margin: '1.5rem 0 2rem' }} />
+            <Box sx={{ ...getVisibilityStyle() }}>
+              <Divider flexItem sx={{ mt: 3, mb: 4 }} />
               <Typography variant="h6">Enter area (HA) or radius (km)</Typography>
               <div className="upload-location-by-point__location-info__custom-area-container">
                 <TextField
@@ -271,7 +280,7 @@ export function UploadLocationByPoint({ setUploadType }: ChangePageType) {
                   </ul>
                 </div>
               </div>
-            </>
+            </Box>
           )}
 
           <div className="upload-location-by-point__location-info__bottom-buttons-container">
@@ -283,7 +292,12 @@ export function UploadLocationByPoint({ setUploadType }: ChangePageType) {
             >
               Cancel
             </PillButton>
-            <PillButton type="submit" variant="contained" startIcon={<ArrowForwardIos />}>
+            <PillButton
+              type="submit"
+              variant="contained"
+              startIcon={<ArrowForwardIos />}
+              disabled={locationFormat === null}
+            >
               Next
             </PillButton>
           </div>

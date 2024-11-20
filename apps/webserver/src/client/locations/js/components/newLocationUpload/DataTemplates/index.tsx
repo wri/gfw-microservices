@@ -182,7 +182,11 @@ export function DataTemplates({ handleClose }: DataTemplatesProps) {
                       >
                         Best for
                       </Typography>
-                      <Typography variant="caption" color={theme.palette.text.secondary}>
+                      <Typography
+                        variant="caption"
+                        color={theme.palette.text.secondary}
+                        sx={{ display: 'block' }}
+                      >
                         {bestForText}
                       </Typography>
                     </Box>
@@ -193,7 +197,11 @@ export function DataTemplates({ handleClose }: DataTemplatesProps) {
                       >
                         Required fields
                       </Typography>
-                      <Typography variant="caption" color={theme.palette.text.secondary}>
+                      <Typography
+                        variant="caption"
+                        color={theme.palette.text.secondary}
+                        sx={{ display: 'block' }}
+                      >
                         {requiredFieldsText}
                       </Typography>
                     </Box>

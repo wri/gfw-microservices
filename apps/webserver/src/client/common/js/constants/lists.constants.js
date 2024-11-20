@@ -8,7 +8,7 @@ const {
   universalMillList,
 } = proLayers;
 
-const GFW_LISTS_NAMES_TO_MAP_LAYER_IDS = {
+export const GFW_LISTS_NAMES_TO_MAP_LAYER_IDS = {
   'Administrative Areas': administrativeAreas,
   'Oil Palm Concessions': oilPalmConcessions,
   'Palm Oil Mills': universalMillList,

@@ -8,6 +8,7 @@ import {
   BasicFieldsFileRequest,
   setS3UrlAndExpirationDate,
   toSqlParameter,
+  setS3UrlAndExpirationDateVC,
 } from '@wri-monorepos/sql';
 import { SQLUtils } from '@wri-monorepos/sql';
 import { ConfigService } from '@nestjs/config';
@@ -97,13 +98,27 @@ export abstract class IPipeService {
 
   async saveS3UrlAtDatabase(filters: BasicFieldsFileRequest, location: string) {
     const { listId, organizationDatabase, type, file, isGFWList } = filters;
-
+    let formattedAnalysisId = 'AFI';
+    switch (type) {
+      case 'afi':
+        formattedAnalysisId = 'ALERTS';
+        break;
+      case 'alerts':
+        formattedAnalysisId = 'ALERTS';
+        break;
+      case 'fcd':
+        formattedAnalysisId = 'FCD';
+        break;
+      case 'afiVC':
+        formattedAnalysisId = 'AFIVC';
+        break;
+    }
     const parameters = toSqlParameter({
       location,
       expirationDate: moment(new Date()).add(this.EXPIRE_IN_FIVE_DAYS, 'days').toDate(),
       bundleCreationTime: new Date(),
       listId,
-      analysisId: type === 'afi' ? 'AFI' : type === 'alerts' ? 'ALERTS' : 'FCD',
+      analysisId: formattedAnalysisId,
     });
 
     if (
@@ -114,8 +129,14 @@ export abstract class IPipeService {
         this.loggerPipe.log(
           'Saving S3 URL at database for list ' + listId + ' and analysis ' + type
         );
-        await SQLUtils.queryDB(organizationDatabase, setS3UrlAndExpirationDate, parameters);
+        if(formattedAnalysisId === 'AFIVC'){
+          parameters['status']=2;
+          await SQLUtils.queryDB(organizationDatabase, setS3UrlAndExpirationDateVC, parameters)
+        }else{
+          await SQLUtils.queryDB(organizationDatabase, setS3UrlAndExpirationDate, parameters)
+        }
       } catch (e) {
+        console.log(e);
         this.loggerPipe.log('Error saving S3 URL at database');
       }
     }

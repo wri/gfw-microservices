@@ -26,6 +26,7 @@ import {
   Check,
   Clear,
 } from '@mui/icons-material';
+import useMediaQuery from '@mui/material/useMediaQuery';
 import { TransitionGroup } from 'react-transition-group';
 
 import { ExternalHelperResource, LocationTypeButton } from '../components';
@@ -54,6 +55,7 @@ type FormFields = z.infer<typeof schema>;
 
 export function UploadLocationByPolygon({ setUploadType }: ChangePageType) {
   const theme = useTheme();
+  const isXsScreen = useMediaQuery(theme.breakpoints.up('xs'));
 
   const {
     handleSubmit,
@@ -138,19 +140,20 @@ export function UploadLocationByPolygon({ setUploadType }: ChangePageType) {
         Select draw a shape and start drawing or you can enter coordinates.
       </Typography>
 
-      <Box sx={{ display: 'flex', gap: 3, mt: 1.5, height: '500px' }}>
+      <Box sx={{ display: { sm: 'flex', xs: 'block' }, gap: 3, mt: 1.5, height: { sm: '500px' } }}>
         <Box
           sx={{
             display: 'flex',
             flexDirection: 'column',
             gap: 1,
+            mb: { xs: 2 },
           }}
         >
           <LocationTypeButton
             variant="outlined"
             color={isLocationFormatInDrawAShape ? 'primary' : 'info'}
             onClick={() => handleChangeLocationFormat(LocationFormat.DrawAShape)}
-            sx={{ maxWidth: '274px' }}
+            sx={{ maxWidth: { sm: '274px' } }}
           >
             <Draw fontSize="medium" />
             <Typography variant="body2">Draw a shape</Typography>
@@ -175,7 +178,7 @@ export function UploadLocationByPolygon({ setUploadType }: ChangePageType) {
                 border: `2px solid ${theme.palette.primary.main}`,
                 borderRadius: '3px',
                 padding: '1.5rem 1rem',
-                width: '440px',
+                width: isXsScreen ? '100%' : '440px',
                 maxHeight: '430px',
                 overflow: 'auto',
               }}
@@ -268,7 +271,7 @@ export function UploadLocationByPolygon({ setUploadType }: ChangePageType) {
               <PillButton
                 type="submit"
                 variant="contained"
-                sx={{ alignSelf: 'end' }}
+                sx={{ alignSelf: 'end', width: { sm: 'fit-content', xs: '100%' } }}
                 startIcon={<Check />}
               >
                 Ok
@@ -281,6 +284,7 @@ export function UploadLocationByPolygon({ setUploadType }: ChangePageType) {
           sx={{
             flex: 1,
             position: 'relative',
+            height: { xs: '500px' },
           }}
         >
           {mapView && isLocationFormatInDrawAShape && (
@@ -314,6 +318,7 @@ export function UploadLocationByPolygon({ setUploadType }: ChangePageType) {
       <Box
         sx={{
           display: 'flex',
+          flexDirection: { sm: 'row', xs: 'column' },
           justifyContent: 'end',
           gap: 1,
           mt: 3,

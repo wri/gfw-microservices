@@ -175,7 +175,7 @@ export function DataTemplates({ handleClose }: DataTemplatesProps) {
               >
                 <Box sx={{ ml: 4, maxWidth: '460px' }}>
                   <Box sx={{ display: 'flex', gap: 7 }}>
-                    <Box>
+                    <Box sx={{ flex: '1' }}>
                       <Typography
                         variant="caption"
                         sx={{ display: 'block', mb: 1.5, fontWeight: 'medium' }}
@@ -185,12 +185,12 @@ export function DataTemplates({ handleClose }: DataTemplatesProps) {
                       <Typography
                         variant="caption"
                         color={theme.palette.text.secondary}
-                        sx={{ display: 'block' }}
+                        sx={{ display: 'block', textAlign: 'justify' }}
                       >
                         {bestForText}
                       </Typography>
                     </Box>
-                    <Box>
+                    <Box sx={{ flex: '1' }}>
                       <Typography
                         variant="caption"
                         sx={{ display: 'block', mb: 1.5, fontWeight: 'medium' }}
@@ -200,7 +200,7 @@ export function DataTemplates({ handleClose }: DataTemplatesProps) {
                       <Typography
                         variant="caption"
                         color={theme.palette.text.secondary}
-                        sx={{ display: 'block' }}
+                        sx={{ display: 'block', textAlign: 'justify' }}
                       >
                         {requiredFieldsText}
                       </Typography>
@@ -264,44 +264,44 @@ const templateOptions: {
     Icon: Timeline,
     title: 'Polygon Shapefile',
     bestForText:
-      'If you have sourcing locations in polygon format. Requires using a text editor such as Notepad++',
+      'If you have sourcing locations with explicit boundaries. Requires formatting in a GIS software such as QGIS.',
     requiredFieldsText:
-      'The following required fields must be included in your file upload. Location_N  (Name of your locations)',
+      "Your polygon shapefile must be in the EPSG-4326 WGS 84 projection. The following field must be present in your polygon shapefile's attribute table: - Location_N (Name of your locations) You may also include additional fields of your choice (whatever numerical or text fields are helpful for you to have available when viewing your location data in Pro)",
   },
   {
     template: Template.Kml,
     Icon: Public,
     title: 'KML',
     bestForText:
-      'If you have sourcing locations in polygon format. Requires using a text editor such as Notepad++',
+      'Best for: If you have sourcing locations with explicit boundaries. This format is often used in conjunction with Google Earth, since Earth exports in KML format. Requires formatting in a text editor such as Notepad++',
     requiredFieldsText:
-      'The following required fields must be included in your file upload. Location_N  (Name of your locations)',
+      'The following fields must be present in your KML file: - Location Name (Name of your locations) You may also include additional fields of your choice (whatever numerical or text fields are helpful for you to have available when viewing your location data in Pro)',
   },
   {
     template: Template.Spreadsheet,
     Icon: Description,
     title: 'Spreadsheet',
     bestForText:
-      'If you have sourcing locations in polygon format. Requires using a text editor such as Notepad++',
+      'If you have sourcing locations defined via coordinates and want to analyze the area around them. Requires formatting in a spreadsheet editor.',
     requiredFieldsText:
-      'The following required fields must be included in your file upload. Location_N  (Name of your locations)',
+      'The following fields must be present in your spreadsheet: - Location Name (Name of your locations) - Latitude (latitude value of your coordinate data. Coordinate data must be in decimal degrees) - Longitude (longitude value of your coordinate data. Coordinate data must be in decimal degrees) - Analysis Radius (radius value (KM) that will be used to determine the area of analysis around your coordinate. Only required if Analysis Area is not defined) - Analysis Area (area value (HA) that will be used to determine the area of analysis around your coordinate. Only required it Analysis Radius is not defined) You may also include additional fields of your choice (whatever numerical or text fields are helpful for you to have available when viewing your location data in Pro)',
   },
   {
     template: Template.PointShapeFile,
     Icon: ScatterPlotTwoTone,
     title: 'Point Shapefile',
     bestForText:
-      'If you have sourcing locations in polygon format. Requires using a text editor such as Notepad++',
+      'If you have sourcing locations defined via coordinates and want to analyse the area around them. Requires formatting in a GIS software such as QGIS.',
     requiredFieldsText:
-      'The following required fields must be included in your file upload. Location_N  (Name of your locations)',
+      "Your point shapefile must be in the EPSG-4326 WGS 84 projection. The following fields must be present in your polygon shapefile's attribute table: - Location_N (Name of your locations) - Analysis_R (radius value (KM) that will be used to determine the area of analysis around your coordinate. Only required if Analysis Area is not defined) - Analysis_A (area value (HA) that will be used to determine the area of analysis around your coordinate. Only required it Analysis Radius is not defined) You may also include additional fields of your choice (whatever numerical or text fields are helpful for you to have available when viewing your location data in Pro)",
   },
   {
     template: Template.ListOfPalmMillIds,
     Icon: OilBarrel,
     title: 'List of Palm Mill IDs',
     bestForText:
-      'If you have sourcing locations in polygon format. Requires using a text editor such as Notepad++',
+      'If you wish to upload a list of palm oil mills identified in the Universal Mill List. Requires formatting in a spreadsheet editor.',
     requiredFieldsText:
-      'The following required fields must be included in your file upload. Location_N  (Name of your locations)',
+      'The following fields must be present in your  - Location Name (Name of your locations) - Palm Mill ID (Palm Mill ID as defined in the Universal Mill List - Analysis Radius (radius value (KM) that will be used to determine the area of analysis around your coordinate. Only required if Analysis Area is not defined) - Analysis Area (area value (HA) that will be used to determine the area of analysis around your coordinate. Only required it Analysis Radius is not defined) You may also include additional fields of your choice (whatever numerical or text fields are helpful for you to have available when viewing your location data in Pro)',
   },
 ];

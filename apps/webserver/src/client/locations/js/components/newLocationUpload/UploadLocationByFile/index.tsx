@@ -53,12 +53,12 @@ export function UploadLocationByFile({ setUploadType }: ChangePageType) {
   };
 
   return (
-    <Card sx={{ padding: '10px 16px 15px' }}>
+    <Card sx={{ pt: 1, px: 2, pb: 2 }}>
       <Typography variant="subtitle2">Prepare & Upload Location data</Typography>
       <Typography
         variant="caption"
         color={theme.palette.text.secondary}
-        sx={{ display: 'inline-block', margin: '0.625rem 0 1.5rem' }}
+        sx={{ display: 'inline-block', mt: 1.25, mx: 0, mb: 3 }}
       >
         First, prepare your data in a format accepted by GFW Pro. Then, upload your file(s).
       </Typography>
@@ -67,7 +67,7 @@ export function UploadLocationByFile({ setUploadType }: ChangePageType) {
       <Typography
         variant="caption"
         color={theme.palette.text.secondary}
-        sx={{ display: 'block', margin: '0.625rem 0', maxWidth: '530px' }}
+        sx={{ display: 'block', my: 1.25, maxWidth: '530px' }}
       >
         Before uploading your data, it must be formatted according to a GFW Pro template. Click
         below to learn more about data formatting and download templates. If you already have your
@@ -110,8 +110,8 @@ export function UploadLocationByFile({ setUploadType }: ChangePageType) {
         </Typography>
         <Box
           sx={{
-            padding: '0.625rem',
-            marginTop: '0.25rem',
+            p: 1.25,
+            mt: 0.5,
             backgroundColor: theme.palette.background.default,
             maxWidth: '345px',
             borderRadius: '4px',
@@ -131,7 +131,7 @@ export function UploadLocationByFile({ setUploadType }: ChangePageType) {
             Data files must be formatted according to GFW Pro requirements - click "Data Templates"
             above to learn more.
           </Typography>
-          <Typography variant="caption" sx={{ display: 'block', margin: '0.5rem 0' }}>
+          <Typography variant="caption" sx={{ display: 'block', my: 1, mx: 0 }}>
             Accepted filetypes
           </Typography>
           <ul style={{ padding: '0 1rem', margin: 0, color: theme.palette.text.secondary }}>
@@ -153,8 +153,9 @@ export function UploadLocationByFile({ setUploadType }: ChangePageType) {
       <Box
         sx={{
           display: 'flex',
+          flexDirection: { sm: 'row', xs: 'column' },
           justifyContent: 'end',
-          gap: '0.5rem',
+          gap: 1,
         }}
       >
         <PillButton

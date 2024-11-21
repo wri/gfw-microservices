@@ -3,7 +3,7 @@ name: Unstable QA e2e Tests
 on:
   schedule:
     # Runs at 6 AM UTC (one hour after automatic-release.yml) every weekday
-    - cron: '0 6 * * 1-5'
+    - cron: '0 8 * * 1-5'
 
 # nx cache intermittently fails with github actions, likely due to parallelism
 # so disabling the check for now
@@ -14,7 +14,7 @@ env:
 jobs:
   test_qa:
     runs-on: ubuntu-latest
-    timeout-minutes: 120 # Timeout the workflow after 120 minutes = 2 hours
+    timeout-minutes: 60 # Timeout the workflow after 120 minutes = 2 hours
 
     strategy:
       matrix:

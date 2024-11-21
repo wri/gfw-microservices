@@ -14,7 +14,7 @@ env:
 jobs:
   test_qa:
     runs-on: ubuntu-latest
-    timeout-minutes: 120 # Timeout the workflow after 120 minutes = 2 hours
+    timeout-minutes: 90 # Timeout the workflow after 120 minutes = 2 hours
 
     strategy:
       matrix:

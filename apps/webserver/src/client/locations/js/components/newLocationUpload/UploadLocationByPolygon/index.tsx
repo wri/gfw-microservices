@@ -26,6 +26,7 @@ import {
   Check,
   Clear,
 } from '@mui/icons-material';
+import useMediaQuery from '@mui/material/useMediaQuery';
 import { TransitionGroup } from 'react-transition-group';
 
 import { ExternalHelperResource, LocationTypeButton } from '../components';
@@ -54,6 +55,7 @@ type FormFields = z.infer<typeof schema>;
 
 export function UploadLocationByPolygon({ setUploadType }: ChangePageType) {
   const theme = useTheme();
+  const isXsScreen = useMediaQuery(theme.breakpoints.up('xs'));
 
   const {
     handleSubmit,
@@ -62,6 +64,8 @@ export function UploadLocationByPolygon({ setUploadType }: ChangePageType) {
     setValue,
     reset,
   } = useForm<FormFields>({ resolver: zodResolver(schema) });
+
+  const [locationFormat, setLocationFormat] = useState<LocationFormat | null>(null);
 
   const {
     mapView,
@@ -72,9 +76,7 @@ export function UploadLocationByPolygon({ setUploadType }: ChangePageType) {
     setCoordinates,
     addGraphicToMap,
     generateEmptyCoordinate,
-  } = useMap(MIN_AMOUNT_OF_COORDINATES);
-
-  const [locationFormat, setLocationFormat] = useState<LocationFormat>(LocationFormat.DrawAShape);
+  } = useMap(locationFormat !== null, MIN_AMOUNT_OF_COORDINATES);
 
   const handleAddCoordinateField = () => {
     setCoordinates((prev) => [generateEmptyCoordinate(), ...prev]);
@@ -120,42 +122,43 @@ export function UploadLocationByPolygon({ setUploadType }: ChangePageType) {
   };
 
   const isLocationFormatInDrawAShape = locationFormat === LocationFormat.DrawAShape;
+  const isLocationFormatInPolygonCoordinates = locationFormat === LocationFormat.PolygonCoordinates;
 
   return (
-    <Card sx={{ padding: '10px 16px 15px' }}>
+    <Card sx={{ pt: 1, pb: 2, px: 2 }}>
       <Typography variant="h6">Prepare your location</Typography>
-      <Typography variant="body2">
+      <Typography variant="body2" sx={{ mt: 0.5, mb: 1 }}>
         GFW Pro allows users to create polygon data for analysis view drawing a boundary on the map
         or defining a polygon via its coordinates vertices.
       </Typography>
       <ExternalHelperResource text="How to format your location data for GFW Pro" url="#" />
 
-      <Typography variant="h6" sx={{ marginTop: '1rem' }}>
+      <Typography variant="h6" sx={{ mt: 2 }}>
         Choose your location type
       </Typography>
       <Typography variant="body2">
         Select draw a shape and start drawing or you can enter coordinates.
       </Typography>
 
-      <Box sx={{ display: 'flex', gap: '1.5rem', marginTop: '0.75rem' }}>
+      <Box sx={{ display: { sm: 'flex', xs: 'block' }, gap: 3, mt: 1.5, height: { sm: '500px' } }}>
         <Box
           sx={{
             display: 'flex',
             flexDirection: 'column',
-            gap: '0.5rem',
-            marginBottom: '0.75rem',
+            gap: 1,
+            mb: { xs: 2 },
           }}
         >
           <LocationTypeButton
             variant="outlined"
-            color={locationFormat === LocationFormat.DrawAShape ? 'primary' : 'info'}
+            color={isLocationFormatInDrawAShape ? 'primary' : 'info'}
             onClick={() => handleChangeLocationFormat(LocationFormat.DrawAShape)}
-            sx={{ maxWidth: '274px' }}
+            sx={{ maxWidth: { sm: '274px' } }}
           >
             <Draw fontSize="medium" />
             <Typography variant="body2">Draw a shape</Typography>
           </LocationTypeButton>
-          {isLocationFormatInDrawAShape ? (
+          {!isLocationFormatInPolygonCoordinates ? (
             <LocationTypeButton
               variant="outlined"
               color="info"
@@ -175,15 +178,15 @@ export function UploadLocationByPolygon({ setUploadType }: ChangePageType) {
                 border: `2px solid ${theme.palette.primary.main}`,
                 borderRadius: '3px',
                 padding: '1.5rem 1rem',
-                width: '440px',
+                width: isXsScreen ? '100%' : '440px',
                 maxHeight: '430px',
                 overflow: 'auto',
               }}
             >
               <Box sx={{ display: 'flex', width: '100%', justifyContent: 'space-between' }}>
-                <Box sx={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
                   <AddLocationAlt fontSize="medium" />
-                  <Typography variant="body2" ml="0.5rem">
+                  <Typography variant="body2" sx={{ ml: 1 }}>
                     Enter coordinates
                   </Typography>
                 </Box>
@@ -202,10 +205,10 @@ export function UploadLocationByPolygon({ setUploadType }: ChangePageType) {
                     return (
                       <Collapse key={id}>
                         <ListItem
-                          sx={{ display: 'flex', alignItems: 'start', gap: '0.5rem' }}
+                          sx={{ display: 'flex', alignItems: 'start', gap: 1 }}
                           disableGutters
                         >
-                          <Typography sx={{ minWidth: '1rem', marginTop: '9px' }}>
+                          <Typography sx={{ minWidth: '1rem', marginTop: 1 }}>
                             {index + 1}
                           </Typography>
                           <Controller
@@ -256,7 +259,7 @@ export function UploadLocationByPolygon({ setUploadType }: ChangePageType) {
                               <Clear />
                             </IconButton>
                           ) : (
-                            <Box width="3rem" height="3rem"></Box>
+                            <Box sx={{ width: 6, height: 6 }}></Box>
                           )}
                         </ListItem>
                       </Collapse>
@@ -268,7 +271,7 @@ export function UploadLocationByPolygon({ setUploadType }: ChangePageType) {
               <PillButton
                 type="submit"
                 variant="contained"
-                sx={{ alignSelf: 'end' }}
+                sx={{ alignSelf: 'end', width: { sm: 'fit-content', xs: '100%' } }}
                 startIcon={<Check />}
               >
                 Ok
@@ -280,16 +283,16 @@ export function UploadLocationByPolygon({ setUploadType }: ChangePageType) {
         <Box
           sx={{
             flex: 1,
-            height: '490px',
             position: 'relative',
+            height: { xs: '500px' },
           }}
         >
-          {mapView && locationFormat !== LocationFormat.PolygonCoordinates && (
+          {mapView && isLocationFormatInDrawAShape && (
             <Box
               sx={{
                 position: 'absolute',
-                top: '1rem',
-                left: '1rem',
+                top: 2,
+                left: 2,
                 zIndex: '1',
                 display: 'flex',
                 flexDirection: 'column',
@@ -305,23 +308,20 @@ export function UploadLocationByPolygon({ setUploadType }: ChangePageType) {
               />
             </Box>
           )}
-          {!sketchViewModel && (
-            <Skeleton variant="rectangular" animation="wave" height="100%" width="100%" />
+          {!mapView && locationFormat !== null && (
+            <Skeleton variant="rectangular" animation="wave" height="100%" />
           )}
-          <Box id="mapView" height="100%" width="100%"></Box>
+          <Box id="mapView" height="100%"></Box>
         </Box>
       </Box>
 
       <Box
         sx={{
           display: 'flex',
+          flexDirection: { sm: 'row', xs: 'column' },
           justifyContent: 'end',
-          gap: '0.5rem',
-          marginTop:
-            coordinates.length > MIN_AMOUNT_OF_COORDINATES &&
-            locationFormat === LocationFormat.PolygonCoordinates
-              ? '0'
-              : '2rem',
+          gap: 1,
+          mt: 3,
         }}
       >
         <PillButton
@@ -332,7 +332,11 @@ export function UploadLocationByPolygon({ setUploadType }: ChangePageType) {
         >
           Cancel
         </PillButton>
-        <PillButton variant="contained" startIcon={<ArrowForwardIos />}>
+        <PillButton
+          variant="contained"
+          startIcon={<ArrowForwardIos />}
+          disabled={locationFormat === null}
+        >
           Next
         </PillButton>
       </Box>

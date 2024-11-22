@@ -5,7 +5,6 @@ import {
   toggleCanopyModal,
   updateFilters,
   setFilterCount,
-  removeList,
 } from '../../../../locations/js/actions/locationActions';
 import { locationsPage } from '../../../../common/js/config';
 import Button from '../../../../common/js/components/Button';
@@ -124,13 +123,13 @@ export default class GFWProtectedForestChangeFilter extends Component {
   close = () => {
     if (!this.state.selectedCountry) {
       window.location = '/locations';
-      return
     }
 
     if (this.props.filterCount === 0) {
       this.setState(this.initialState);
     }
     store.dispatch(toggleCanopyModal());
+    // If the user hasn't selected anything, also direct them back to the Locations landing page.
   };
 
   render() {

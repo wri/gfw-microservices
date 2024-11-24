@@ -33,8 +33,8 @@ export abstract class IPipeService {
   abstract finish(filters: BasicFieldsFileRequest);
 
   public async startEmail(filters: BasicFieldsFileRequest) {
-    const { listName, userEmail } = filters;
-    if (userEmail) {
+    const { listName, userEmail, type } = filters;
+    if (userEmail && type !== 'afiVC') {
       await this.emailService.sendEmail<{ listName: string }>(
         this.configService.get('SES_SENDER_EMAIL', { infer: true }),
         [userEmail],
@@ -46,8 +46,8 @@ export abstract class IPipeService {
   }
 
   public async finishedEmail(filters: BasicFieldsFileRequest, location: string) {
-    const { listName, userEmail } = filters;
-    if (userEmail) {
+    const { listName, userEmail, type } = filters;
+    if (userEmail && type !== 'afiVC') {
       await this.emailService.sendEmail<{
         listName: string;
         location: string;
@@ -65,8 +65,8 @@ export abstract class IPipeService {
   }
 
   public async errorEmail(filters: BasicFieldsFileRequest) {
-    const { listName, userEmail } = filters;
-    if (userEmail) {
+    const { listName, userEmail, type } = filters;
+    if (userEmail && type !== 'afiVC') {
       await this.emailService.sendEmail<{
         listName: string;
       }>(

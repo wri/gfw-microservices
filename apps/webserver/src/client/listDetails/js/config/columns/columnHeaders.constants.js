@@ -39,7 +39,7 @@ export const columnHeaders = {
   threats: 'Threats',
   threatsAndValuesAbbr: 'T + V',
   threatsAndValues: 'Threats and Values',
-  treeCoverExtent: 'Tree Cover Extent',
+  treeCoverExtent: 'Tree Cover Loss',
   treeCoverExtentInHa: 'Tree Cover Extent in ha',
   treeCoverLoss: 'Tree Cover Loss, all years',
   treeCoverLossInHa: 'Tree Cover Loss, all years in ha',

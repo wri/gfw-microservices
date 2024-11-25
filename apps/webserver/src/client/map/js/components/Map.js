@@ -1849,7 +1849,7 @@ class Map extends Component {
     let transitionListData;
 
     // handle locations features
-    if (selectedLocations && selectedLocations.length > 0) {
+    if (selectedLocations && selectedLocations?.length > 0) {
       fetch(`/map/getUserListFilteredLocationData`, {
         method: 'POST',
         credentials: 'same-origin',
@@ -1881,28 +1881,33 @@ class Map extends Component {
           console.log(`Error: ${err}`);
           store.dispatch(showMapLoader(false));
         });
-      // set up banner info for selected locations
-      transitionListData = {
-        id: list.id,
-        numLocations: list.list_locations_count,
-        name: list.list_locations_count,
-        alertsMapExtent,
-      };
+        // set up banner info for selected locations
+        transitionListData = {
+          id: list.id,
+          numLocations: list.list_locations_count,
+          name: list.list_name,
+          alertsMapExtent,
+          isGfwList: false,
+        };
+        // set list and display map
+        store.dispatch(selectList(list));
+        store.dispatch(resetList(list));
+        this.setState({ transitionListData });
     }
     // handle all locations
     else if (!selectedLocations) {
       // set up banner info for all locations
-      transitionListData = {
-        id: list.id,
-        numLocations: list.list_locations_count,
-        name: list.list_locations_count,
-        alertsMapExtent,
-      };
-      this.getUserLocationData([list.id]);
+      // transitionListData = {
+      //   id: list.id,
+      //   numLocations: list.list_locations_count,
+      //   name: list.list_name,
+      //   alertsMapExtent,
+      //   isGfwList: false,
+      // };
+      // this.getUserLocationData([list.id], list.list_name);
+      // TODO: Figure why some lists are failing to Getting MBTile Vector Tiles from S3 bucket
+      this.updateSelectedLists(list);
     }
-    // set list and display map
-    store.dispatch(selectList(list));
-    this.setState({ transitionListData });
     store.dispatch(showMapLoader(false));
   };
 

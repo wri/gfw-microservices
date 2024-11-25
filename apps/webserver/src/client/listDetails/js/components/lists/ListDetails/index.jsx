@@ -1328,8 +1328,8 @@ export default class ListDetails extends Component {
     }
   };
 
-  viewDiagnostic = async (locationId) => {
-    const { selectedLists, userSharedLists } = this.props;
+  viewDiagnostic = async (hoveredLocationId) => {
+    const { selectedLists, userSharedLists, listView, selectedLocations } = this.props;
 
     const selectedListIsShared =
       selectedLists &&
@@ -1338,9 +1338,15 @@ export default class ListDetails extends Component {
 
     const gfwList = selectedLists[0].isGlobalForestWatchList ? '&gfw=true' : '';
     const sharedList = selectedListIsShared ? '&shared=true' : '';
+
+    const locationId = hoveredLocationId ?? selectedLocations?.[0];
+
     const locationIdParam = locationId ? `&locationId=${locationId}` : '';
-    const diagnosticsType = getActiveAnalysisType(selectedLists[0]?.listAnalysesStatus);
+
+    const diagnosticsType = listView === POST_2020_RISK_ASSESSMENT_VIEW ? 'AFI' : 'FCD';
+
     const diagnosticsParam = !gfwList && diagnosticsType ? `&type=${diagnosticsType}` : '';
+
     window.location.href = `/diagnostics?listId=${selectedLists[0].id}${gfwList}${locationIdParam}${diagnosticsParam}${sharedList}`;
   };
 
@@ -1966,7 +1972,7 @@ export default class ListDetails extends Component {
       listName !== 'Administrative Areas' &&
       listName !== 'Protected Areas' &&
       (isGfwList || getActiveAnalysisType(listAnalysesStatus)) &&
-      !selectedLocations?.length;
+      selectedLocations?.length < 2;
 
     return (
       <div className="list-details">
@@ -2211,7 +2217,9 @@ export default class ListDetails extends Component {
                               onClick={() => this.viewDiagnostic()}
                               startIcon={<QueryStatsIcon />}
                             >
-                              List diagnostic
+                              {selectedLocations?.length
+                                ? 'Location Diagnostic'
+                                : 'List diagnostic'}
                             </MaterialButton>
                           )}
 

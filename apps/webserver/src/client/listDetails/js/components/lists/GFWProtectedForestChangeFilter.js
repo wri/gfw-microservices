@@ -129,7 +129,6 @@ export default class GFWProtectedForestChangeFilter extends Component {
       this.setState(this.initialState);
     }
     store.dispatch(toggleCanopyModal());
-    // If the user hasn't selected anything, also direct them back to the Locations landing page.
   };
 
   render() {

@@ -97,7 +97,6 @@ export default class GFWAdminForestChangeFilter extends Component {
     }
 
     store.dispatch(toggleCanopyModal());
-    // If the user hasn't selected anything, also direct them back to the Locations landing page.
   };
 
   createMultiOptions = (option, i) => {

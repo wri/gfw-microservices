@@ -87,16 +87,16 @@ export default class GFWAdminForestChangeFilter extends Component {
   };
 
   close = () => {
+    if (!this.state.selectedCountry) {
+      store.dispatch(removeList(0));
+      window.location = '/locations';
+    }
+
     if (this.props.filterCount === 0) {
       this.setState(this.initialState);
     }
 
     store.dispatch(toggleCanopyModal());
-    // If the user hasn't selected anything, also direct them back to the Locations landing page.
-    if (!this.state.selectedCountry) {
-      store.dispatch(removeList(0));
-      this.props.history.push('/');
-    }
   };
 
   createMultiOptions = (option, i) => {

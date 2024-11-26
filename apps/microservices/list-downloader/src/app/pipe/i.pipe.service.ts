@@ -63,8 +63,8 @@ export abstract class IPipeService {
   }
 
   public async errorEmail(filters: BasicFieldsFileRequest) {
-    const { listName, userEmail, type } = filters;
-    if (userEmail && type !== 'afiVC') {
+    const { listName, userEmail } = filters;
+    if (userEmail) {
       await this.emailService.sendEmail<{
         listName: string;
       }>(

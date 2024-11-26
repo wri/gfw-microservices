@@ -18,7 +18,6 @@ export const csv2geojson = async (
 ): Promise<FeatureCollection> => {
   const toCamelCase = (str: string) => {
     return str
-      .replace(/[_-]+/g, ' ') // Replace underscores and hyphens with spaces
       .toLowerCase()
       .replace(/(?:^\w|[A-Z]|\b\w)/g, (match, index) =>
         index === 0 ? match.toLowerCase() : match.toUpperCase()
@@ -135,7 +134,7 @@ export const csv2geojson = async (
     });
     const { columns } = options;
 
-    // required fields list (fields that are not nullable)
+    // required fields list (fields that are not null)
     const requiredFields = Object.keys(columns).filter((field) => {
       const fieldDef = columns[field];
       return fieldDef?.nullable !== true;
@@ -168,16 +167,16 @@ export const csv2geojson = async (
       // keep the original field name from headerMappings
       const originalField = headerMappings[key] || key; // Default to key if not found
 
-      // keep track of user defined custom fields
-      if (!fieldExistsInEntity) {
-        attributes[key].custom = true;
-      }
-
       attributes[key] = {
         field: originalField,
         value: value,
         type: type,
       };
+
+      // keep track of user defined fields as custom
+      if (!fieldExistsInEntity) {
+        attributes[key].custom = true;
+      }
     }
 
     row['attributes'] = JSON.stringify(attributes);

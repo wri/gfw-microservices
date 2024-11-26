@@ -8,7 +8,6 @@ import {
   BasicFieldsFileRequest,
   setS3UrlAndExpirationDate,
   toSqlParameter,
-  setS3UrlAndExpirationDateVC,
 } from '@wri-monorepos/sql';
 import { SQLUtils } from '@wri-monorepos/sql';
 import { ConfigService } from '@nestjs/config';
@@ -18,7 +17,6 @@ export abstract class IPipeService {
   private readonly loggerPipe = new Logger(IPipeService.name);
 
   private EXPIRE_IN_FIVE_DAYS = 5;
-  private EXPIRE_IN_TWENTY_FOUR_HOURS = 24;
   @Inject(EmailService)
   private readonly emailService: EmailService;
 
@@ -113,10 +111,7 @@ export abstract class IPipeService {
     }
     const parameters = toSqlParameter({
       location,
-      expirationDate:
-        type === 'afiVC'
-          ? moment(new Date()).add(this.EXPIRE_IN_TWENTY_FOUR_HOURS, 'hours').toDate()
-          : moment(new Date()).add(this.EXPIRE_IN_FIVE_DAYS, 'days').toDate(),
+      expirationDate: moment(new Date()).add(this.EXPIRE_IN_FIVE_DAYS, 'days').toDate(),
       bundleCreationTime: new Date(),
       listId,
       analysisId: formattedAnalysisId,
@@ -130,9 +125,7 @@ export abstract class IPipeService {
         this.loggerPipe.log(
           'Saving S3 URL at database for list ' + listId + ' and analysis ' + type
         );
-        type === 'afiVC'
-          ? await SQLUtils.queryDB(organizationDatabase, setS3UrlAndExpirationDateVC, parameters)
-          : await SQLUtils.queryDB(organizationDatabase, setS3UrlAndExpirationDate, parameters);
+        await SQLUtils.queryDB(organizationDatabase, setS3UrlAndExpirationDate, parameters);
       } catch (e) {
         this.loggerPipe.log('Error saving S3 URL at database');
       }

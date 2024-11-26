@@ -15,7 +15,7 @@ import { z } from 'zod';
 import { ZodValidationPipe } from '../middleware/zod.middleware';
 import {
   BadRequestResponse,
-  ErroResponseWithErroMessage,
+  ErrorResponseWithErrorMessage,
   ForbiddenResponse,
   InternalServerErrorResponse,
   UnauthorizedResponse,
@@ -37,7 +37,7 @@ export class APIKeyController {
   @ApiUnauthorizedResponse({ status: 401, type: UnauthorizedResponse })
   @ApiBadRequestResponse({ type: BadRequestResponse })
   @ApiForbiddenResponse({ type: ForbiddenResponse })
-  @ApiNotFoundResponse({ type: ErroResponseWithErroMessage })
+  @ApiNotFoundResponse({ type: ErrorResponseWithErrorMessage })
   @Get('/:organizationId')
   async getTokens(@Param('organizationId') orgId: string): Promise<ViewApiKeyResponse[]> {
     const organizationId = z.coerce.number().parse(orgId);
@@ -52,7 +52,7 @@ export class APIKeyController {
   @ApiUnauthorizedResponse({ status: 401, type: UnauthorizedResponse })
   @ApiBadRequestResponse({ type: BadRequestResponse })
   @ApiForbiddenResponse({ type: ForbiddenResponse })
-  @ApiNotFoundResponse({ type: ErroResponseWithErroMessage })
+  @ApiNotFoundResponse({ type: ErrorResponseWithErrorMessage })
   @ApiInternalServerErrorResponse({ type: InternalServerErrorResponse })
   @Post()
   @UsePipes(new ZodValidationPipe(apiKeyRequestSchema))
@@ -66,7 +66,7 @@ export class APIKeyController {
   @ApiUnauthorizedResponse({ status: 401, type: UnauthorizedResponse })
   @ApiBadRequestResponse({ type: BadRequestResponse })
   @ApiForbiddenResponse({ type: ForbiddenResponse })
-  @ApiNotFoundResponse({ type: ErroResponseWithErroMessage })
+  @ApiNotFoundResponse({ type: ErrorResponseWithErrorMessage })
   @ApiInternalServerErrorResponse({ type: InternalServerErrorResponse })
   @ApiResponse({ status: 204, type: String })
   @Delete('/:organizationId/:tokenId')

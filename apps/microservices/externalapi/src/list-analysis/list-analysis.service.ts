@@ -439,12 +439,12 @@ export class ListAnalysisService {
           organization,
         });
       }
+      // Not send email for AFI VC
       if (outputType && analysisId === 'AFI') {
         message = {
           ...message,
           type: 'afiVC',
           file: 'shapefile',
-          userEmail: userEmail,
         };
       }
 

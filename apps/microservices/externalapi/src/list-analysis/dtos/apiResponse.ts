@@ -31,7 +31,7 @@ export class BadRequestResponse {
   message: string;
 }
 
-export class ErroResponseWithErroMessage extends NotFoundResponse {
+export class ErrorResponseWithErrorMessage extends NotFoundResponse {
   @ApiProperty()
   error: string;
 }

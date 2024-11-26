@@ -17,7 +17,6 @@ export abstract class IPipeService {
   private readonly loggerPipe = new Logger(IPipeService.name);
 
   private EXPIRE_IN_FIVE_DAYS = 5;
-
   @Inject(EmailService)
   private readonly emailService: EmailService;
 
@@ -97,13 +96,25 @@ export abstract class IPipeService {
 
   async saveS3UrlAtDatabase(filters: BasicFieldsFileRequest, location: string) {
     const { listId, organizationDatabase, type, file, isGFWList } = filters;
-
+    let formattedAnalysisId = 'AFI';
+    switch (type) {
+      case 'afiVC':
+      case 'afi':
+        formattedAnalysisId = 'AFI';
+        break;
+      case 'alerts':
+        formattedAnalysisId = 'ALERTS';
+        break;
+      case 'fcd':
+        formattedAnalysisId = 'FCD';
+        break;
+    }
     const parameters = toSqlParameter({
       location,
       expirationDate: moment(new Date()).add(this.EXPIRE_IN_FIVE_DAYS, 'days').toDate(),
       bundleCreationTime: new Date(),
       listId,
-      analysisId: type === 'afi' ? 'AFI' : type === 'alerts' ? 'ALERTS' : 'FCD',
+      analysisId: formattedAnalysisId,
     });
 
     if (

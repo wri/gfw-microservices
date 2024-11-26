@@ -13,6 +13,7 @@ export default function InfoBubble({ children, infoBubbleId }) {
   const handleOpen = (event) => {
     setAnchorEl(event.currentTarget);
     setShowBubble(true);
+    event.stopPropagation();
   };
 
   const handleClose = () => {

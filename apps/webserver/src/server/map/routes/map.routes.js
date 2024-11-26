@@ -5,6 +5,8 @@ const controller = require('../controllers/map.controller');
 const middlewares = require(path.resolve('./config/publicutils/middlewares'));
 const ListManager = require(path.resolve('./config/publicutils/listManager.utils'));
 const rateLimiterUtil = require(path.resolve('./config/lib/limiter-util'));
+import * as logger from '../../../config/privateutils/logger.utils';
+import querystring from 'querystring';
 
 /**
  * @name exports
@@ -78,7 +80,11 @@ module.exports = (app, limiter) => {
         res.send(results.data);
       })
       .catch((error) => {
-        console.log('getPlanetTile Error:', error);
+        logger.error(`POST /map/getPlanetTile/`, {
+          params: req.params,
+          query: querystring.stringify(req.query),
+          error: error.stack || error,
+        });
         res.send({ message: '/map/getPlanetTile failed' });
       });
   });
@@ -95,11 +101,33 @@ module.exports = (app, limiter) => {
         res.send(listData);
       })
       .catch((error) => {
-        console.log('Reject', error);
+        logger.error('POST /map/getUserListLocationData-map', error.stack || error);
         res.send({
           errorCode: error.errorCode,
           message: 'Getting list data failed!',
         });
       });
+  });
+
+  app.post('/map/getUserListFilteredLocationData', async (req, res) => {
+    const { listId, filterByLocations } = req.body;
+
+    try {
+      const { features, ...restOfListData } = await ListManager.getListLocations(req, listId);
+      const filteredLocations = features.filter((location) => {
+        return filterByLocations.includes(location.properties.location_id);
+      });
+
+      res.send({
+        ...restOfListData,
+        features: filteredLocations,
+      });
+    } catch (error) {
+      logger.error('POST /map/getUserListFilteredLocationData', error.stack || error);
+      res.status(500).send({
+        errorCode: error.errorCode,
+        message: 'Getting list data failed!',
+      });
+    }
   });
 };

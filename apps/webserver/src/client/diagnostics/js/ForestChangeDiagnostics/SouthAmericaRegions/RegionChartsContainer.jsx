@@ -3,7 +3,6 @@ import { RegionChartByCountry } from './RegionChartByCountry';
 import RegionChartsTabs from './RegionChartsTabs';
 import SouthAmericaRegionsWithoutArgentina from '../SouthAmericaRegionsWithoutArgentina';
 import { regionsTabs, regionIds } from './regions.constants';
-import featureFlags from '../../../../../utils/general.utils';
 
 function RegionChartsContainer({
   listId,
@@ -20,7 +19,6 @@ function RegionChartsContainer({
   getCategoricalHighchartSeries,
   isGfwList,
 }) {
-  const { isColombiaAvailable: isColombiaFeatureFlagOn } = featureFlags;
   const [selectedTab, setSelectedTab] = useState(regionIds.REGIONAL);
 
   const argOtbnArea = isGfwList ? {} : JSON.parse(data.arg_otbn_area || '{}');
@@ -36,7 +34,7 @@ function RegionChartsContainer({
     availableTabs = regionsTabs.filter((tab) => tab.id !== regionIds.ARGENTINA);
   }
 
-  if (!isColombiaFeatureFlagOn || !isColombiaDataAvailable) {
+  if (!isColombiaDataAvailable) {
     availableTabs = availableTabs.filter((tab) => tab.id !== regionIds.COLOMBIA);
   }
 

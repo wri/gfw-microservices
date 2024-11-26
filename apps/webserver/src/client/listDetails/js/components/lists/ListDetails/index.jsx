@@ -1330,24 +1330,24 @@ export default class ListDetails extends Component {
 
   viewDiagnostic = async (hoveredLocationId) => {
     const { selectedLists, userSharedLists, listView, selectedLocations } = this.props;
-
+    const selectedList = selectedLists?.[0];
+    const isGfwList = selectedList?.isGlobalForestWatchList;
+    const listId = selectedList?.id;
     const selectedListIsShared =
       selectedLists &&
       userSharedLists &&
-      userSharedLists.map((userSharedList) => userSharedList.id).includes(selectedLists[0].id);
-
-    const gfwList = selectedLists[0].isGlobalForestWatchList ? '&gfw=true' : '';
-    const sharedList = selectedListIsShared ? '&shared=true' : '';
-
+      userSharedLists.some((userSharedList) => userSharedList.id === listId);
     const locationId = hoveredLocationId ?? selectedLocations?.[0];
-
-    const locationIdParam = locationId ? `&locationId=${locationId}` : '';
-
     const diagnosticsType = listView === POST_2020_RISK_ASSESSMENT_VIEW ? 'AFI' : 'FCD';
-
-    const diagnosticsParam = !gfwList && diagnosticsType ? `&type=${diagnosticsType}` : '';
-
-    window.location.href = `/diagnostics?listId=${selectedLists[0].id}${gfwList}${locationIdParam}${diagnosticsParam}${sharedList}`;
+    const queryParams = {
+      listId,
+      ...(isGfwList && { gfw: 'true' }),
+      ...(selectedListIsShared && { shared: 'true' }),
+      ...(locationId && { locationId }),
+      ...(!isGfwList && diagnosticsType && { type: diagnosticsType }),
+    };
+    const queryString = new URLSearchParams(queryParams).toString();
+    window.location.href = `/diagnostics?${queryString}`;
   };
 
   viewMap = ({ showFullListMap }) => {

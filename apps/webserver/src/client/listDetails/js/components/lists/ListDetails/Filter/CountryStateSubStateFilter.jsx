@@ -13,12 +13,18 @@ const CountryStateSubStateFilter = ({
   subStates,
   selectedSubState = '',
   onSubStateChange,
+  isCountryFieldRequired = false,
 }) => {
   return (
     <>
       <Grid item xs={4}>
         <FormControl sx={selectStyle}>
-          <InputLabel id="country-select-label">{locationsPage.lists.selectCountry}</InputLabel>
+          <InputLabel id="country-select-label">
+            {locationsPage.lists.selectCountry}
+            {isCountryFieldRequired && (
+              <span style={{ color: 'red', fontSize: '1.5rem' }}>*</span>
+            )}{' '}
+          </InputLabel>
           <Select
             labelId="country-select-label"
             id="country_select"
@@ -35,7 +41,7 @@ const CountryStateSubStateFilter = ({
         </FormControl>
       </Grid>
       <Grid item xs={4}>
-        <FormControl sx={selectStyle}>
+        <FormControl sx={selectStyle} disabled={!selectedCountry || states.length === 0}>
           <InputLabel id="state-select-label">{locationsPage.lists.selectState}</InputLabel>
           <Select
             labelId="state-select-label"
@@ -43,7 +49,6 @@ const CountryStateSubStateFilter = ({
             value={selectedState}
             onChange={onStateChange}
             label={locationsPage.lists.selectState}
-            disabled={!selectedCountry || states.length === 0}
           >
             {states.map((option) => (
               <MenuItem key={option} value={option}>
@@ -54,7 +59,7 @@ const CountryStateSubStateFilter = ({
         </FormControl>
       </Grid>
       <Grid item xs={4}>
-        <FormControl sx={selectStyle}>
+        <FormControl sx={selectStyle} disabled={!selectedState || subStates.length === 0}>
           <InputLabel id="substate-select-label">{locationsPage.lists.selectSubState}</InputLabel>
           <Select
             labelId="substate-select-label"
@@ -62,7 +67,6 @@ const CountryStateSubStateFilter = ({
             value={selectedSubState}
             onChange={onSubStateChange}
             label={locationsPage.lists.selectSubState}
-            disabled={!selectedState || subStates.length === 0}
           >
             {subStates.map((option) => (
               <MenuItem key={option} value={option}>

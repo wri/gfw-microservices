@@ -39,6 +39,17 @@ export type ListAttributesRecords = {
   [key: string]: ListAttributesRow;
 };
 
+export type ListAttributesRow = {
+  field: string;
+  type: string;
+  value: string | number | unknown;
+  custom?: boolean;
+};
+
+export type ListAttributesRecords = {
+  [key: string]: ListAttributesRow;
+};
+
 export interface PreviewListRequest {
   path: string;
   preview?: boolean;

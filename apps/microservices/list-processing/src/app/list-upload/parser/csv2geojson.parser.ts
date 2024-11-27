@@ -179,7 +179,7 @@ export const csv2geojson = async (
       }
     }
 
-    row['attributes'] = JSON.stringify(attributes);
+    row['attributes'] = attributes ? JSON.stringify(attributes) : '{}';
 
     return row;
   };

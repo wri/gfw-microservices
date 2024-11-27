@@ -20,6 +20,9 @@ export interface ListAttributesRecord {
   attribute_name: string;
   attribute_type: number;
 }
+export type ListAttributesRecords = {
+  [key: string]: ListAttributesRow;
+};
 
 export interface PreviewListRequest {
   path: string;

@@ -56,6 +56,7 @@ async function worker(input: WorkerType, cb: done) {
   const startAnalysis = new StartAnalysis();
   const getObjectTypes = new GetObjectTypes();
   const writeLocationCount = new WriteLocationCount();
+  const saveListAttributes = new SaveListAttributes(connection);
 
   downloadS3File
     .setNext(parseData)

@@ -8,6 +8,17 @@ export type ChainType = {
   request: RequestNewList | PreviewListRequest;
 };
 
+export type ListAttributesRow = {
+  field: string;
+  type: string;
+  value: string | number | unknown;
+  custom?: boolean;
+};
+
+export type ListAttributesRecords = {
+  [key: string]: ListAttributesRow;
+};
+
 export interface PreviewListRequest {
   path: string;
   preview?: boolean;
@@ -28,7 +39,6 @@ export interface RequestNewList extends PreviewListRequest {
   template_id?: number;
   listId?: number;
   analysisIds?: Array<string>;
-
   isExternalAPIProcess: boolean;
   organization_id: number;
   subscription_status_id: number;

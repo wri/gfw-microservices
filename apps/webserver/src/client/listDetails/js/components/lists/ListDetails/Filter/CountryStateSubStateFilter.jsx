@@ -21,7 +21,9 @@ const CountryStateSubStateFilter = ({
         <FormControl sx={selectStyle}>
           <InputLabel id="country-select-label">
             {locationsPage.lists.selectCountry}
-            {isCountryFieldRequired && <span style={{ color: 'red', fontSize: '1.5rem' }}>*</span>}{' '}
+            {isCountryFieldRequired && (
+              <span style={{ color: 'red', fontSize: '1.5rem' }}>*</span>
+            )}{' '}
           </InputLabel>
           <Select
             labelId="country-select-label"

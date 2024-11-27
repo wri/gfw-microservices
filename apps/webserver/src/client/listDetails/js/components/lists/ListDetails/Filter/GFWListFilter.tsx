@@ -209,7 +209,7 @@ const GFWListFilter: React.FC<GFWListFilterProps> = ({
                 <label htmlFor="show-RSPO-certified">Show RSPO Certified</label>
               </div>
 
-              <FormControl sx={selectStyle}>
+              <FormControl sx={selectStyle} disabled={!filteredParentCompanyOptions.length}>
                 <InputLabel id="parent-company-select-label">PARENT COMPANY</InputLabel>
                 <Select
                   labelId="parent-company-select-label"
@@ -228,7 +228,7 @@ const GFWListFilter: React.FC<GFWListFilterProps> = ({
           )}
 
           <Grid item xs={12}>
-            <FormControl sx={selectStyle}>
+            <FormControl sx={selectStyle} disabled={!filteredLocationNameOptions.length}>
               <Autocomplete
                 multiple
                 options={filteredLocationNameOptions || []}
@@ -237,6 +237,7 @@ const GFWListFilter: React.FC<GFWListFilterProps> = ({
                 filterSelectedOptions
                 onChange={onSelectedLocationsChange}
                 renderInput={(params) => <TextField {...params} label="LOCATIONS" />}
+                disabled={!filteredLocationNameOptions.length}
               />
             </FormControl>
           </Grid>

@@ -217,9 +217,7 @@ export default class Filter extends Component {
                   )}
                 </Grid>
                 <Grid item xs={7}>
-                  {!isGfwList && !isCommodityRiskFilterVisible && (
-                    <DeforestationDisplayFormatToggleButtons />
-                  )}
+                  {!isCommodityRiskFilterVisible && <DeforestationDisplayFormatToggleButtons />}
                 </Grid>
               </>
             )}

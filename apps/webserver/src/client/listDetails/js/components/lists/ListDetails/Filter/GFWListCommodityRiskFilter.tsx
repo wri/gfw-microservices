@@ -251,7 +251,7 @@ const GFWListCommodityRiskFilter: React.FC<GFWListCommodityRiskFilterProps> = ({
             <label htmlFor="show-RSPO-certified">Show RSPO Certified</label>
           </Grid>
           <Grid item xs={8}>
-            <FormControl sx={selectStyle}>
+            <FormControl sx={selectStyle} disabled={!filteredParentCompanyOptions.length}>
               <InputLabel id="parent-company-select">Parent company</InputLabel>
               <Select
                 id="parent-company-select"
@@ -414,7 +414,7 @@ const GFWListCommodityRiskFilter: React.FC<GFWListCommodityRiskFilterProps> = ({
         </Grid>*/}
 
           <Grid item xs={12}>
-            <FormControl sx={selectStyle}>
+            <FormControl sx={selectStyle} disabled={!filteredLocationNameOptions.length}>
               <Autocomplete
                 multiple
                 options={filteredLocationNameOptions || []}
@@ -423,6 +423,7 @@ const GFWListCommodityRiskFilter: React.FC<GFWListCommodityRiskFilterProps> = ({
                 filterSelectedOptions
                 onChange={onSelectedLocationsChange}
                 renderInput={(params) => <TextField {...params} label="LOCATIONS" />}
+                disabled={!filteredLocationNameOptions.length}
               />
             </FormControl>
           </Grid>

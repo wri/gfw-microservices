@@ -25,13 +25,23 @@ export const selectStyle = {
     '&.Mui-focused fieldset': {
       borderColor: gfwGreen,
     },
+    '&.Mui-disabled fieldset': {
+      borderColor: 'lightgray',
+    },
   },
   '& .MuiInputLabel-root': {
     color: gfwGreen,
-    fontSize: '0.8rem',
+    fontSize: '0.75rem',
     '&.Mui-focused': {
       color: gfwGreen,
     },
+    '&.Mui-disabled': {
+      color: 'lightgray',
+    },
+  },
+  '& .MuiSelect-root.Mui-disabled': {
+    backgroundColor: '#f5f5f5',
+    color: 'lightgray',
   },
 };
 

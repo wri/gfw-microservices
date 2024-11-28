@@ -6,7 +6,6 @@ import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
 import Card from '@mui/material/Card';
 import CardContent from '@mui/material/CardContent';
-import BetaTag from '../../../common/js/components/BetaTag';
 import InfoBubble from '../../../common/js/components/InfoBubble';
 import { forestLossDatasetIds } from './forestLossDatasets.constants';
 import infoBubbleConfig from '../../../common/js/infoBubbleConfig.constants';

@@ -39,7 +39,6 @@ import {
   deforestationAlertsGeographicCoverageIds,
   deforestationAlertsLayerToCoverageMap,
 } from './DeforestationAlerts/deforestationAlerts.constants';
-import BetaTag from '../../../../common/js/components/BetaTag';
 
 export default class LegendCheckbox extends Component {
   constructor(props) {

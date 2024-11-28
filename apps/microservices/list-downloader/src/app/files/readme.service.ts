@@ -10,14 +10,17 @@ import {
   ListFieldsFileRequest,
 } from '@wri-monorepos/sql';
 import { ServerConfigType } from '../../validators/server-config';
-
+import { CSVServices } from './csv.handler.service';
 @Injectable({
   scope: Scope.REQUEST,
 })
 export class ReadmeService {
   private readonly logger = new Logger(ReadmeService.name);
 
-  constructor(private readonly configService: ConfigService<ServerConfigType, true>) {}
+  constructor(
+    private readonly configService: ConfigService<ServerConfigType, true>,
+    private readonly cSVServices: CSVServices
+  ) {}
 
   afiReadmeData() {
     return 'afi_readme.csv';
@@ -98,7 +101,10 @@ export class ReadmeService {
       return;
     }
 
-    const fileToCopy = returnFileToCopy[type](filters);
+    const fileToCopy =
+      type === 'everything'
+        ? this.cSVServices.processFiles([returnFileToCopy[type](filters), this.southEastAsiaTCL], 'new Header')
+        : returnFileToCopy[type](filters);
 
     if (!fileToCopy) {
       return;

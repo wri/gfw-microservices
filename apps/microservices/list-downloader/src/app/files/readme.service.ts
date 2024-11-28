@@ -41,7 +41,7 @@ export class ReadmeService {
       return path.join('/tmp', `wri-${key}`, 'README.csv');
     }
   }
-  getPathDir(key: string){
+  getPathDir(key: string) {
     if (this.configService.get('NODE_ENV', { infer: true }) === 'test') {
       return `/tmp/wri-${key}/`;
     } else {
@@ -111,7 +111,10 @@ export class ReadmeService {
     const fileToCopy =
       type === 'everything'
         ? await this.cSVServices.processFiles(
-            [this.getSourceDir(returnFileToCopy[type](filters)), this.getSourceDir(returnFileToCopy['southEastAsiaTCL'](filters))],
+            [
+              this.getSourceDir(returnFileToCopy[type](filters)),
+              this.getSourceDir(returnFileToCopy['southEastAsiaTCL'](filters)),
+            ],
             'PLEASE NOTE: The contents of your zip files will vary based on the locations and comodities within your data, and the types of analysis you requested. Not all CSVs listed here may apply.',
             this.getPathDir(key)
           )

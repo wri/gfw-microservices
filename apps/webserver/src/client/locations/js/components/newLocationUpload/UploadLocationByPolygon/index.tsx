@@ -55,7 +55,7 @@ type FormFields = z.infer<typeof schema>;
 
 export function UploadLocationByPolygon({ setUploadType }: ChangePageType) {
   const theme = useTheme();
-  const isXsScreen = useMediaQuery(theme.breakpoints.up('xs'));
+  const isRegularScreenSize = useMediaQuery(theme.breakpoints.up('sm'));
 
   const {
     handleSubmit,
@@ -178,7 +178,7 @@ export function UploadLocationByPolygon({ setUploadType }: ChangePageType) {
                 border: `2px solid ${theme.palette.primary.main}`,
                 borderRadius: '3px',
                 padding: '1.5rem 1rem',
-                width: isXsScreen ? '100%' : '440px',
+                width: isRegularScreenSize ? '440px' : '100%',
                 maxHeight: '430px',
                 overflow: 'auto',
               }}

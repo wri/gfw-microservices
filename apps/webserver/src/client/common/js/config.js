@@ -272,7 +272,7 @@ export const locationsPage = {
     delete: 'Delete',
     move: 'Move',
     moveExistingDescription:
-      'Note: only compatible locations can belong to the same list, i.e., same location classification, same location or commodity type and location template.',
+      'Note: Lists must have the same commodity defined in order to copy or move locations between lists. Your additional attribute data will be merged when attribute names match. Additional attribute data that does not match will be assigned separate columns.',
     moveLocationsDialogHeader: 'Move selection',
     moveToNewListLabel: 'List name',
     moveToNewListDuplicate: 'A list with this name already exists',

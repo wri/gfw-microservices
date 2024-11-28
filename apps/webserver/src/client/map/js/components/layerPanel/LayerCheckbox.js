@@ -70,7 +70,6 @@ export default class LayerCheckbox extends Component {
         </span>
         <span onClick={this.toggleLayer.bind(this)} className="layer-checkbox-label pointer">
           {label}
-          {label === 'SBTN Natural Forest' && <BetaTag>(Beta)</BetaTag>}
         </span>
         <span
           className={`info-icon metadata-layer-panel layer-panel pointer ${

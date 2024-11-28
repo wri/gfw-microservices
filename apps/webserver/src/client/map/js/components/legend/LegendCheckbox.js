@@ -261,7 +261,6 @@ export default class LegendCheckbox extends Component {
 
         <span className="layer-checkbox-label">
           {label}
-          {label === 'SBTN Natural Forest' && <BetaTag>(Beta)</BetaTag>}
         </span>
         {gfwListDef &&
         Object.keys(gfwListDef).length > 0 &&

@@ -35,12 +35,10 @@ function AfiDiagnosticsTable({
               )}
               <TableCell align="right">
                 <span>Natural Forest Coverage (HA)</span>
-                <BetaTag>(Beta)</BetaTag>
                 <InfoBubble infoBubbleId={infoBubbleConfig.naturalForestCoverage} />
               </TableCell>
               <TableCell align="right">
                 <span>Natural Forest Loss (HA)</span>
-                <BetaTag>(Beta)</BetaTag>
                 <InfoBubble infoBubbleId={infoBubbleConfig.naturalForestLoss} />
               </TableCell>
               <TableCell align="right">

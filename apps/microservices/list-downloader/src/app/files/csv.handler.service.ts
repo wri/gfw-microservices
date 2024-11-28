@@ -32,14 +32,17 @@ export class CSVServices {
   }
 
   // Method to process multiple CSV files, remove duplicates and generate the output file
-  async processFiles(files: string[], newHeader: string): Promise<string> {
+  async processFiles(files: string[], newHeader: string, outputFilePath: string): Promise<string | void> {
     try {
       // Check if at least one file is provided
       if (files.length === 0) {
         this.logger.warn('Please provide at least one file.');
-        return;
+        return '';
       }
-
+      fs.writeFileSync(
+        `${outputFilePath}/README.csv`,
+            newHeader
+      );
       // Store all lines and headers from all files
       const allLines: string[] = [];
 
@@ -65,16 +68,22 @@ export class CSVServices {
       });
 
       // Writing the result to an output file
-      const outputFile = `README.csv`;
-      const writeStream = fs.createWriteStream(outputFile);
+      const outputFile = `${outputFilePath}/README.csv`;
+      const writeStream = fs.createWriteStream(outputFile, { flags: 'r+' });
 
       // Write the header
       writeStream.write(newHeader + '\n');
 
       // Write all unique lines
       for (const line of uniqueLines) {
-        writeStream.write(line + '\n');
+        fs.writeFileSync(
+          `${outputFilePath}/README.csv`,
+          line
+        );
       }
+
+      // Close the write stream
+      writeStream.end();
 
       this.logger.log(`CSV result file generated successfully: ${outputFile}`);
       return outputFile;

@@ -286,10 +286,6 @@ const templateOptions: {
         <ul>
           <li>Location_N (Name of your locations)</li>
         </ul>
-        <span>
-          You may also include additional fields of your choice (whatever numerical or text fields
-          are helpful for you to have available when viewing your location data in Pro)
-        </span>
       </>
     ),
     filename: 'GFWPro-PolygonShapefile.zip',
@@ -306,10 +302,6 @@ const templateOptions: {
         <ul>
           <li>Location Name (Name of your locations)</li>
         </ul>
-        <span>
-          You may also include additional fields of your choice (whatever numerical or text fields
-          are helpful for you to have available when viewing your location data in Pro)
-        </span>
       </>
     ),
     filename: 'GFWPro-KML.kml',
@@ -339,13 +331,9 @@ const templateOptions: {
           </li>
           <li>
             Analysis Area (area value (HA) that will be used to determine the area of analysis
-            around your coordinate. Only required it Analysis Radius is not defined)
+            around your coordinate. Only required if Analysis Radius is not defined)
           </li>
         </ul>
-        <span>
-          You may also include additional fields of your choice (whatever numerical or text fields
-          are helpful for you to have available when viewing your location data in Pro)
-        </span>
       </>
     ),
     filename: 'GFWPro-Spreadsheet.csv',
@@ -370,12 +358,8 @@ const templateOptions: {
           </li>
           <li>
             Analysis_A (area value (HA) that will be used to determine the area of analysis around
-            your coordinate. Only required it Analysis Radius is not defined)
+            your coordinate. Only required if Analysis Radius is not defined)
           </li>
-          <span>
-            You may also include additional fields of your choice (whatever numerical or text fields
-            are helpful for you to have available when viewing your location data in Pro)
-          </span>
         </ul>
       </>
     ),
@@ -417,13 +401,9 @@ const templateOptions: {
           </li>
           <li>
             Analysis Area (area value (HA) that will be used to determine the area of analysis
-            around your coordinate. Only required it Analysis Radius is not defined)
+            around your coordinate. Only required if Analysis Radius is not defined)
           </li>
         </ul>
-        <span>
-          You may also include additional fields of your choice (whatever numerical or text fields
-          are helpful for you to have available when viewing your location data in Pro)
-        </span>
       </>
     ),
     filename: 'GFWPro-PalmMillIDs.csv',

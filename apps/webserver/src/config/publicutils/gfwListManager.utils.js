@@ -656,6 +656,7 @@ export async function getPaginatedTable(
   pageSize,
   list_id,
   filters,
+  filterString,
   tableSortedBy,
   tableSortedDesc
 ) {
@@ -666,6 +667,7 @@ export async function getPaginatedTable(
     pageNum,
     pageSize,
     filters,
+    filterString,
     tableSortedBy,
     tableSortedDesc
   );

@@ -422,6 +422,7 @@ export async function getPaginatedAnalysisDataForProtectedAreas(
   pageSize,
   database,
   filters,
+  filterString,
   tableSortedBy,
   tableSortedDesc
 ) {
@@ -432,6 +433,7 @@ export async function getPaginatedAnalysisDataForProtectedAreas(
     pageSize,
     database,
     filters,
+    filterString,
     tableSortedBy,
     tableSortedDesc
   );
@@ -443,6 +445,7 @@ export async function getPaginatedAnalysisDataForAdministrativeAreas(
   pageSize,
   database,
   filters,
+  filterString,
   tableSortedBy,
   tableSortedDesc
 ) {
@@ -453,6 +456,7 @@ export async function getPaginatedAnalysisDataForAdministrativeAreas(
     pageSize,
     database,
     filters,
+    filterString,
     tableSortedBy,
     tableSortedDesc
   );

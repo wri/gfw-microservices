@@ -158,6 +158,7 @@ export default class ListDetails extends Component {
 
   componentDidMount() {
     const { listData, filters, selectedLists } = this.props;
+    const { filterString } = this.state;
 
     const { list_name, id, isGlobalForestWatchList, associated_gfwlist } = selectedLists[0];
 
@@ -277,6 +278,7 @@ export default class ListDetails extends Component {
   getFilteredGfwListData = (listId, page = 0) => {
     // if the filters changed and this is a user list, get the paginated data from the API
     const { listData, selectedLists, filters } = this.props;
+
     const { OIL_PALM_CONCESSIONS, PALM_OIL_MILLS, RSPO_PALM_CONCESSIONS } =
       GFW_LISTS_NUMBER_CONSTANTS;
 
@@ -1217,7 +1219,7 @@ export default class ListDetails extends Component {
 
   getGFWLocationData = (list_id, page = 0) => {
     const { filters } = this.props;
-    const { tableSortedBy, tableSortedDesc } = this.state;
+    const { tableSortedBy, tableSortedDesc, filterString } = this.state;
 
     this.setState({ isLoading: true });
 
@@ -1233,6 +1235,7 @@ export default class ListDetails extends Component {
         pageNum: page,
         pageSize: 50,
         filters,
+        filterString,
         tableSortedBy,
         tableSortedDesc,
       },
@@ -1468,7 +1471,7 @@ export default class ListDetails extends Component {
   };
 
   handleSearchInputChange = (newValue) => {
-    const { selectedLocations, selectedLists } = this.props;
+    const { selectedLists } = this.props;
     const { filterString } = this.state;
 
     this.setState({
@@ -1476,14 +1479,8 @@ export default class ListDetails extends Component {
     });
 
     const isGfwList = selectedLists[0].isGlobalForestWatchList;
-    if (isGfwList) {
-      //  gfw lists search works in the front end, so it searches as the use types
-      this.setState({
-        filterString: newValue,
-      });
 
-      this.getSearchedLocations(newValue, selectedLocations);
-    } else if (newValue === '' && filterString !== '') {
+    if (newValue === '' && filterString !== '') {
       // if there was a filter string set and we cleared the input text
 
       // user lists are paginated in the backend
@@ -1493,7 +1490,11 @@ export default class ListDetails extends Component {
           filterString: '',
         },
         () => {
-          this.getUserLocationData(selectedLists[0].id);
+          if (isGfwList) {
+            this.getFilteredGfwListData(selectedLists[0].id);
+          } else {
+            this.getUserLocationData(selectedLists[0].id);
+          }
         }
       );
     }
@@ -1503,22 +1504,30 @@ export default class ListDetails extends Component {
     // if enter key is pressed and it's not a GFW list, filter locations by input text
     const { selectedLists } = this.props;
     const isGfwList = selectedLists[0].isGlobalForestWatchList;
-    if (evt.keyCode === 13 && !isGfwList) {
+    if (evt.keyCode === 13) {
       this.setState(
         {
           filterString: evt.target.value.trim(),
         },
         () => {
-          this.getUserLocationData(selectedLists[0].id);
+          if (isGfwList) {
+            this.getFilteredGfwListData(selectedLists[0].id);
+          } else {
+            this.getUserLocationData(selectedLists[0].id);
+          }
         }
       );
     }
   };
-
   handlecSearchInputClick = () => {
     const { selectedLists, filterString } = this.props;
+    const isGfwList = selectedLists[0].isGlobalForestWatchList;
     if (filterString.trim()) {
-      this.getUserLocationData(selectedLists[0].id);
+      if (isGfwList) {
+        this.getFilteredGfwListData(selectedLists[0].id);
+      } else {
+        this.getUserLocationData(selectedLists[0].id);
+      }
     }
   };
 
@@ -1696,12 +1705,13 @@ export default class ListDetails extends Component {
   };
 
   getAdministrativeAreasData = ({ filters, id, locationNameForGFW, page = 0 }) => {
-    const { tableSortedBy, tableSortedDesc } = this.state;
+    const { tableSortedBy, tableSortedDesc, filterString } = this.state;
     // when coming from the Map, locationNameForGFW is either the locationName or true
     this.setState({ isLoading: true });
     httpRequest
       .fetchJSON('/locations/getAdministrativeAreasData', {
         filters,
+        filterString,
         id,
         pageNum: page,
         pageSize: 50,
@@ -1721,11 +1731,12 @@ export default class ListDetails extends Component {
   };
 
   getProtectedAreasData = ({ filters, id, locationNameForGFW, page = 0 }) => {
-    const { tableSortedBy, tableSortedDesc } = this.state;
+    const { tableSortedBy, tableSortedDesc, filterString } = this.state;
     this.setState({ isLoading: true });
     httpRequest
       .fetchJSON('/locations/getProtectedAreasData', {
         filters,
+        filterString,
         id,
         pageNum: page,
         pageSize: 50,
@@ -1889,10 +1900,13 @@ export default class ListDetails extends Component {
     const isGfwList = selectedList.associated_gfwlist || selectedList.isGlobalForestWatchList;
 
     // user lists are paginated in the backend, gfw lists search works in the front end
+    /*
     const filteredLists = isGfwList
       ? getListFilteredLocations(filteredLocationData, combinedColumns, filterString)
       : filteredLocationData;
+*/
 
+    const filteredLists = filteredLocationData;
     const listViewOptions = [];
 
     const isInFolder = selectedList && !!currentFolder;

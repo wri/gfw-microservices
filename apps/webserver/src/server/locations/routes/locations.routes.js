@@ -772,8 +772,16 @@ module.exports = (app, limiter) => {
 
   app.post('/locations/getGFWListLocationData', (req, res) => {
     console.log('POST /locations/getGFWListLocationData');
-    const { list_id, location_ids, pageNum, pageSize, filters, tableSortedBy, tableSortedDesc } =
-      req.body;
+    const {
+      list_id,
+      location_ids,
+      pageNum,
+      pageSize,
+      filters,
+      filterString,
+      tableSortedBy,
+      tableSortedDesc,
+    } = req.body;
     const listAnalyses = [];
     const locationAttributeArray = [];
     const locationAnalysisArray = [];
@@ -784,6 +792,7 @@ module.exports = (app, limiter) => {
         pageSize,
         list_id,
         filters,
+        filterString,
         tableSortedBy,
         tableSortedDesc
       )
@@ -907,8 +916,14 @@ module.exports = (app, limiter) => {
       selectedStates,
       selectedSubStates,
     };
-    const { id: listID, pageNum, pageSize, tableSortedBy, tableSortedDesc } = req.body;
-
+    const {
+      id: listID,
+      pageNum,
+      pageSize,
+      tableSortedBy,
+      tableSortedDesc,
+      filterString,
+    } = req.body;
     let listData = [],
       protectedLocationResult = [],
       count = 0,
@@ -923,6 +938,7 @@ module.exports = (app, limiter) => {
             pageSize,
             config.SQLConnection.database,
             filters,
+            filterString,
             tableSortedBy,
             tableSortedDesc
           );
@@ -974,7 +990,14 @@ module.exports = (app, limiter) => {
       selectedNames,
     } = req.body.filters;
 
-    const { id: listID, pageNum, pageSize, tableSortedBy, tableSortedDesc } = req.body;
+    const {
+      id: listID,
+      pageNum,
+      pageSize,
+      tableSortedBy,
+      tableSortedDesc,
+      filterString,
+    } = req.body;
     const filters = {
       selectedCountry,
       selectedState,
@@ -992,6 +1015,7 @@ module.exports = (app, limiter) => {
         pageSize,
         config.SQLConnection.database,
         filters,
+        filterString,
         tableSortedBy,
         tableSortedDesc
       )

@@ -74,6 +74,7 @@ export class GfwLists {
     pageNum = 0,
     pageSize = 50,
     filters: any = {},
+    filterString = '',
     tableSortedBy: string,
     tableSortedDesc: boolean
   ): Promise<
@@ -107,7 +108,13 @@ export class GfwLists {
           selectedNames: filters.selectedNames,
         });
       }
-
+      console.log({ filterString });
+      if (filterString && filterString.trim() !== '') {
+        queryBuilder.andWhere(
+          `(Country LIKE :filterString OR State LIKE :filterString OR "Location Name" LIKE :filterString)`,
+          { filterString: `%${filterString}%` }
+        );
+      }
       const sortOrder: 'DESC' | 'ASC' = tableSortedDesc ? 'DESC' : 'ASC';
 
       queryBuilder
@@ -220,6 +227,7 @@ export class GfwLists {
     pageSize = 0,
     organizationDatabase: string,
     filters,
+    filterString = '',
     tableSortedBy,
     tableSortedDesc
   ) {
@@ -269,6 +277,13 @@ export class GfwLists {
           selectedNames: filters.selectedNames,
         });
       }
+      if (filterString && filterString.trim() !== '') {
+        queryBuilder.andWhere(
+          `(Country LIKE :filterString OR State LIKE :filterString OR "Location Name" LIKE :filterString)`,
+          { filterString: `%${filterString}%` }
+        );
+      }
+
       const sortOrder: 'DESC' | 'ASC' = tableSortedDesc ? 'DESC' : 'ASC';
       const sanitizedSortColumn = tableSortedBy?.includes(' ')
         ? `"${tableSortedBy}"`

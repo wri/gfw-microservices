@@ -265,13 +265,17 @@ export default class ListDetails extends Component {
       previousKeys.length !== currentKeys.length ||
       previousKeys.some((key) => filters[key] !== prevProps.filters[key])
     ) {
-      if (selectedLists[0].isGlobalForestWatchList) {
-        this.getFilteredGfwListData(selectedLists[0].id);
-      } else {
-        this.getUserLocationData(selectedLists[0].id);
-      }
+      this.getLocationsData(selectedLists[0].id, selectedLists[0].isGlobalForestWatchList);
     }
   }
+
+  getLocationsData = (listId, isGfwList, page = 0) => {
+    if (isGfwList) {
+      this.getFilteredGfwListData(listId, page);
+    } else {
+      this.getUserLocationData(listId, page);
+    }
+  };
 
   getFilteredGfwListData = (listId, page = 0) => {
     // if the filters changed and this is a user list, get the paginated data from the API
@@ -1488,11 +1492,7 @@ export default class ListDetails extends Component {
           filterString: '',
         },
         () => {
-          if (isGfwList) {
-            this.getFilteredGfwListData(selectedLists[0].id);
-          } else {
-            this.getUserLocationData(selectedLists[0].id);
-          }
+          this.getLocationsData(selectedLists[0].id, isGfwList);
         }
       );
     }
@@ -1508,11 +1508,7 @@ export default class ListDetails extends Component {
           filterString: evt.target.value.trim(),
         },
         () => {
-          if (isGfwList) {
-            this.getFilteredGfwListData(selectedLists[0].id);
-          } else {
-            this.getUserLocationData(selectedLists[0].id);
-          }
+          this.getLocationsData(selectedLists[0].id, isGfwList);
         }
       );
     }
@@ -1521,11 +1517,7 @@ export default class ListDetails extends Component {
     const { selectedLists, filterString } = this.props;
     const isGfwList = selectedLists[0].isGlobalForestWatchList;
     if (filterString.trim()) {
-      if (isGfwList) {
-        this.getFilteredGfwListData(selectedLists[0].id);
-      } else {
-        this.getUserLocationData(selectedLists[0].id);
-      }
+      this.getLocationsData(selectedLists[0].id, isGfwList);
     }
   };
 
@@ -2280,11 +2272,7 @@ export default class ListDetails extends Component {
                                     tableSortedDesc,
                                   },
                                   () => {
-                                    if (isGfwList) {
-                                      this.getFilteredGfwListData(selectedLists[0].id, page);
-                                    } else {
-                                      this.getUserLocationData(selectedLists[0].id, page);
-                                    }
+                                    this.getLocationsData(selectedLists[0].id, isGfwList, page);
                                   }
                                 )
                               }

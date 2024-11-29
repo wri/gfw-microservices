@@ -258,9 +258,7 @@ export default class LegendCheckbox extends Component {
           )}
         </span>
 
-        <span className="layer-checkbox-label">
-          {label}
-        </span>
+        <span className="layer-checkbox-label">{label}</span>
         {gfwListDef &&
         Object.keys(gfwListDef).length > 0 &&
         Object.keys(gfwListDef)[0] === layer.id ? (

@@ -158,8 +158,6 @@ export default class ListDetails extends Component {
 
   componentDidMount() {
     const { listData, filters, selectedLists } = this.props;
-    const { filterString } = this.state;
-
     const { list_name, id, isGlobalForestWatchList, associated_gfwlist } = selectedLists[0];
 
     gtag('event', 'User accessed list', {

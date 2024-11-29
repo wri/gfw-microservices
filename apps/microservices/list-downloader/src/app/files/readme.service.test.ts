@@ -10,6 +10,7 @@ import {
   ListFieldsFileRequest,
 } from '@wri-monorepos/sql';
 import { ReadmeService } from './readme.service';
+import { CSVServices } from './csv.handler.service';
 
 jest.mock('fs');
 jest.mock('path', () => ({
@@ -20,6 +21,7 @@ jest.mock('path', () => ({
 
 describe('ReadmeService', () => {
   let service: ReadmeService;
+  let cSVServices: CSVServices;
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
@@ -29,10 +31,11 @@ describe('ReadmeService', () => {
           isGlobal: true,
         }),
       ],
-      providers: [ReadmeService],
+      providers: [ReadmeService, CSVServices],
     }).compile();
 
     service = await module.resolve<ReadmeService>(ReadmeService);
+    cSVServices = await module.resolve<CSVServices>(CSVServices);
   });
 
   afterEach(() => {

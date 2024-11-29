@@ -115,7 +115,7 @@ export class ReadmeService {
               this.getSourceDir(returnFileToCopy[type](filters)),
               this.getSourceDir(returnFileToCopy['southEastAsiaTCL'](filters)),
             ],
-            'PLEASE NOTE: The contents of your zip files will vary based on the locations and comodities within your data, and the types of analysis you requested. Not all CSVs listed here may apply.',
+            'PLEASE NOTE: The contents of your zip files will vary based on the locations and commodities within your data, and the types of analysis you requested. Not all CSVs listed here may apply.',
             this.getPathDir(key)
           )
         : returnFileToCopy[type](filters);

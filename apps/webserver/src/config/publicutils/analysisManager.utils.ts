@@ -26,13 +26,11 @@ import {
   getAnalysisDataForProtectedAreasByLocation,
   GfwLists,
   SqlParamType,
-  getPaginatedAfiAnalysisLocationLevel,
   SQLUtils as SQLUtilsLibSql,
-  AfiAnalysisByListId,
-  getCountAfiAnalysisByListId,
-  CountAfiAnalysisByListId,
   getPaginatedAfiAnalysisByListIdSortedByFilters,
   PaginatedAfiAnalysisByListIdSortedByFilters,
+  getDashboardDataPaginated,
+  DashboardDataPaginated,
 } from '@wri-monorepos/sql';
 
 /** @function {getAnalysisDataForUserList}
@@ -568,4 +566,85 @@ export async function getAFIListAnalyses(list_id, page, pageSize, clientDatabase
   });
 
   return { listAnalyses: formattedListAnalyses, quantity };
+}
+
+export async function getDashboardDataPaginatedByList(
+  list_id,
+  page,
+  pageSize,
+  clientDatabase,
+  filters
+) {
+  const {
+    orderType,
+    sortByAttribute,
+    searchString,
+    country,
+    state,
+    subState,
+    analysisAreaMin,
+    analysisAreaMax,
+
+    // commodity risk filters:
+    selectedSupplier,
+    selectedSecondSupplier,
+    selectedParentCompany,
+    showRSPOCertified,
+    selectedOverallThreats,
+    selectedOverallValues,
+    selectedMillPriority,
+  } = filters;
+  const parameters = [
+    { field: 'listId', type: sql.Int, value: list_id },
+    { field: 'rowsOfPage', type: sql.Int, value: pageSize },
+    { field: 'pageNumber', type: sql.Int, value: page - 1 },
+    { field: 'orderType', type: sql.NVarChar(255), value: orderType || 'ASC' },
+    { field: 'selectedSupplier', type: sql.NVarChar(255), value: selectedSupplier || null },
+    {
+      field: 'selectedSecondSupplier',
+      type: sql.NVarChar(255),
+      value:
+        selectedSecondSupplier !== '' && selectedSecondSupplier ? selectedSecondSupplier : null,
+    },
+    {
+      field: 'selectedParentCompany',
+      type: sql.NVarChar(255),
+      value: selectedParentCompany !== '' && selectedParentCompany ? selectedParentCompany : null,
+    },
+    { field: 'showRSPOCertified', type: sql.Bit, value: showRSPOCertified || 0 },
+    {
+      field: 'SearchString',
+      type: sql.NVarChar(255),
+      value: searchString !== '' && searchString ? searchString : null,
+    },
+    {
+      field: 'Country',
+      type: sql.NVarChar(255),
+      value: country !== '' && country ? country : null,
+    },
+    {
+      field: 'State',
+      type: sql.NVarChar(255),
+      value: state !== '' && state ? state : null,
+    },
+    {
+      field: 'SubState',
+      type: sql.NVarChar(255),
+      value: subState !== '' && subState ? subState : null,
+    },
+  ];
+
+  parameters.push({
+    field: 'sortByAttribute',
+    type: sql.NVarChar(255),
+    value: sortByAttribute,
+  });
+
+  const listDashboardAnalyses = await SQLUtilsLibSql.queryDB<DashboardDataPaginated[]>(
+    clientDatabase,
+    getDashboardDataPaginated,
+    parameters
+  );
+
+  return listDashboardAnalyses;
 }

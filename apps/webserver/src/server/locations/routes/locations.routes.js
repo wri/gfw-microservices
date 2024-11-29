@@ -679,7 +679,14 @@ module.exports = (app, limiter) => {
           break;
         }
         case 'ALERTS':
-          return res.send({ msg: 'Alerts not implemented yet' });
+          res.send( await AnalysisManager.getDashboardDataPaginatedByList(
+            listID,
+            page,
+            pageSize,
+            req.session.organization_database,
+            filters
+          ));
+          break;
         default:
         case 'FCD': {
           listAnalyses = await AnalysisManager.getListAnalyses(req, listID);

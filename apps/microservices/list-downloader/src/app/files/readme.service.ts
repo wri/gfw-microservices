@@ -35,17 +35,19 @@ export class ReadmeService {
   }
 
   getDestDir(key: string): string {
+    const dirName = `wri-${key}`;
     if (this.configService.get('NODE_ENV', { infer: true }) === 'test') {
-      return `/tmp/wri-${key}/README.csv`;
+      return `/tmp/${dirName}/README.csv`;
     } else {
-      return path.join('/tmp', `wri-${key}`, 'README.csv');
+      return path.join('/tmp', `${dirName}`, 'README.csv');
     }
   }
   getPathDir(key: string) {
+    const dirName = `wri-${key}`;
     if (this.configService.get('NODE_ENV', { infer: true }) === 'test') {
-      return `/tmp/wri-${key}/`;
+      return `/tmp/${dirName}/`;
     } else {
-      return path.join('/tmp', `wri-${key}`);
+      return path.join('/tmp', `${dirName}`);
     }
   }
 

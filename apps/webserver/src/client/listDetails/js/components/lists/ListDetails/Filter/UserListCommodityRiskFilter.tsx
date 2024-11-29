@@ -224,7 +224,7 @@ const UserListCommodityRiskFilter: React.FC<UserListCommodityRiskFilterProps> = 
           />
 
           <Grid item xs={12}>
-            <FormControl sx={selectStyle}>
+            <FormControl sx={selectStyle} disabled={!filteredSupplierNameOptions.length}>
               <InputLabel id="supplier-select">Supplier</InputLabel>
               <Select
                 labelId="supplier-select"
@@ -242,7 +242,7 @@ const UserListCommodityRiskFilter: React.FC<UserListCommodityRiskFilterProps> = 
           </Grid>
 
           <Grid item xs={12}>
-            <FormControl sx={selectStyle}>
+            <FormControl sx={selectStyle} disabled={!filteredSecondSupplierOptions.length}>
               <InputLabel id="second-supplier-select">Second Supplier</InputLabel>
               <Select
                 id="second-supplier-select"
@@ -278,7 +278,7 @@ const UserListCommodityRiskFilter: React.FC<UserListCommodityRiskFilterProps> = 
               />
               <label htmlFor="show-RSPO-certified">Show RSPO Certified</label>
             </div>
-            <FormControl sx={selectStyle}>
+            <FormControl sx={selectStyle} disabled={!filteredParentCompanyOptions.length}>
               <InputLabel id="parent-company-select">Parent Company</InputLabel>
               <Select
                 id="parent-company-select"

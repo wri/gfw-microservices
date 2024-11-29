@@ -103,7 +103,7 @@ const AdministrativeAreasGFWListFilter: React.FC<AdministrativeAreasGFWListFilte
     .filter(
       (area) =>
         area.Country === state.selectedCountry &&
-        !!area['Sub State'] &&
+        area?.['Sub State']?.trim().length &&
         state.selectedStates.includes(area.State)
     )
     .map((area) => area['Sub State']!)
@@ -112,13 +112,16 @@ const AdministrativeAreasGFWListFilter: React.FC<AdministrativeAreasGFWListFilte
 
   const isCountrySetInFilter = !!store.getState().filters?.selectedCountry;
   const isCountrySetInState = !!state?.selectedCountry;
+
   return (
     <Modal open={isFilterModalVisible} onClose={onCloseHandler}>
       <Box sx={boxStyle}>
         <h3>Show Administrative Areas for</h3>
 
         <FormControl sx={selectStyle}>
-          <InputLabel id="country-select-label">Country</InputLabel>
+          <InputLabel id="country-select-label">
+            Country <span style={{ color: 'red', fontSize: '1.5rem' }}>*</span>
+          </InputLabel>
           <Select
             labelId="country-select-label"
             id="country_select"
@@ -135,7 +138,7 @@ const AdministrativeAreasGFWListFilter: React.FC<AdministrativeAreasGFWListFilte
         </FormControl>
 
         <div style={{ margin: '10px 0px' }}>
-          <FormControl sx={selectStyle}>
+          <FormControl sx={selectStyle} disabled={!statesOptions.length}>
             <Autocomplete
               multiple
               options={statesOptions || []}
@@ -144,11 +147,12 @@ const AdministrativeAreasGFWListFilter: React.FC<AdministrativeAreasGFWListFilte
               filterSelectedOptions
               onChange={onStateChange}
               renderInput={(params) => <TextField {...params} label="States" />}
+              disabled={!statesOptions.length}
             />
           </FormControl>
         </div>
         <div style={{ margin: '10px 0px' }}>
-          <FormControl sx={selectStyle}>
+          <FormControl sx={selectStyle} disabled={!subStatesOptions.length}>
             <Autocomplete
               multiple
               options={subStatesOptions || []}
@@ -157,6 +161,7 @@ const AdministrativeAreasGFWListFilter: React.FC<AdministrativeAreasGFWListFilte
               filterSelectedOptions
               onChange={onSubStateChange}
               renderInput={(params) => <TextField {...params} label="Sub States" />}
+              disabled={!subStatesOptions.length}
             />
           </FormControl>
         </div>
@@ -169,12 +174,9 @@ const AdministrativeAreasGFWListFilter: React.FC<AdministrativeAreasGFWListFilte
             margin: '10px 0px',
           }}
         >
-          <Button
-            variant="secondary"
-            disabled={!isCountrySetInFilter}
-            onClick={onCloseHandler}
-            label="Cancel"
-          />
+          {isCountrySetInFilter && (
+            <Button variant="secondary" onClick={onCloseHandler} label="Cancel" />
+          )}
           <Button
             style={{ marginLeft: '10px' }}
             variant="primary"

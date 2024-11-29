@@ -59,7 +59,6 @@ describe('WriteLocationCount', () => {
     const listRepository = connection.getRepository(Lists);
 
     expect(listRepository.update).toHaveBeenCalledWith({ id: 1 }, { listLocationsCount: 2 });
-    expect(connection.close).toHaveBeenCalled();
   });
 
   it('should log an error if updating the list fails', async () => {

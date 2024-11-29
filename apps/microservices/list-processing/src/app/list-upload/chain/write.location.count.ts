@@ -32,10 +32,6 @@ export class WriteLocationCount extends AbstractHandler<ChainType> {
     } catch (error) {
       this.logger.error(`Failed to update list ${listId}: ${error.message}`);
       throw error; // Re-throw the error after logging
-    } finally {
-      if (connection) {
-        await connection.close(); // Ensure the connection is closed
-      }
     }
 
     return request;

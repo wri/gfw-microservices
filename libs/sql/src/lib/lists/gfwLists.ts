@@ -108,7 +108,7 @@ export class GfwLists {
           selectedNames: filters.selectedNames,
         });
       }
-      console.log({ filterString });
+
       if (filterString && filterString.trim() !== '') {
         queryBuilder.andWhere(
           `(Country LIKE :filterString OR State LIKE :filterString OR "Location Name" LIKE :filterString)`,

@@ -96,6 +96,7 @@
     "express-rate-limit": "^7.1.5",
     "express-session": "1.17.2",
     "extract-text-webpack-plugin": "4.0.0-beta.0",
+    "fastq": "^1.17.1",
     "file-loader": "6.2.0",
     "file-saver": "2.0.5",
     "generate-password": "1.7.0",

@@ -1899,13 +1899,6 @@ export default class ListDetails extends Component {
 
     const isGfwList = selectedList.associated_gfwlist || selectedList.isGlobalForestWatchList;
 
-    // user lists are paginated in the backend, gfw lists search works in the front end
-    /*
-    const filteredLists = isGfwList
-      ? getListFilteredLocations(filteredLocationData, combinedColumns, filterString)
-      : filteredLocationData;
-*/
-
     const filteredLists = filteredLocationData;
     const listViewOptions = [];
 

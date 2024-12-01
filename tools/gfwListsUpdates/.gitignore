@@ -163,3 +163,5 @@ cython_debug/
 *_config.py
 *.csv
 *.ipynb
+
+_old/

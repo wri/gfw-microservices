@@ -74,7 +74,7 @@ def main(connection, current_table):
     """
     print(f'working on {current_table}')
 
-    sql = f"SELECT location_id, CONVERT(VARCHAR(MAX), Geometry.STAsBinary(), 2) AS [geom] FROM dbo.[{current_table}]"
+    sql = f"SELECT TOP(500) location_id, CONVERT(VARCHAR(MAX), Geometry.STAsBinary(), 2) AS [geom] FROM dbo.[{current_table}]"
     df = pd.read_sql(sql, connection)
     print("loaded location_id dataframe")
 

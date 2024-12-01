@@ -71,6 +71,7 @@ def main(path_to_fgdb, list_id):
     )
 
     print("save geometry as wkb")
+    gdf_intersection.geometry = gdf_intersection.buffer(0)
     gdf_intersection["geom"] = gdf_intersection.geometry.apply(
         wkb.dumps, hex=True
     )  # add in wkb

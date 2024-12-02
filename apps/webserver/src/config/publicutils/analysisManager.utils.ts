@@ -31,6 +31,8 @@ import {
   PaginatedAfiAnalysisByListIdSortedByFilters,
   getDashboardDataPaginated,
   DashboardDataPaginated,
+  CountDashboardDataType,
+  getCountDashboardData,
 } from '@wri-monorepos/sql';
 
 /** @function {getAnalysisDataForUserList}
@@ -596,8 +598,8 @@ export async function getDashboardDataPaginatedByList(
   } = filters;
   const parameters = [
     { field: 'listId', type: sql.Int, value: list_id },
-    { field: 'rowsOfPage', type: sql.Int, value: pageSize },
-    { field: 'pageNumber', type: sql.Int, value: page - 1 },
+    { field: 'rowsPerPage', type: sql.Int, value: pageSize },
+    { field: 'pageNumber', type: sql.Int, value: page === 0 ? page : page - 1 },
     { field: 'orderType', type: sql.NVarChar(255), value: orderType || 'ASC' },
     { field: 'selectedSupplier', type: sql.NVarChar(255), value: selectedSupplier || null },
     {
@@ -645,6 +647,10 @@ export async function getDashboardDataPaginatedByList(
     getDashboardDataPaginated,
     parameters
   );
-
+  const numberOfResults = await SQLUtilsLibSql.queryDBFirstRow<CountDashboardDataType>(
+    clientDatabase,
+    getCountDashboardData,
+    parameters
+  );
   return listDashboardAnalyses;
 }

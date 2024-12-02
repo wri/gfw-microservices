@@ -679,13 +679,14 @@ module.exports = (app, limiter) => {
           break;
         }
         case 'ALERTS':
-          res.send( await AnalysisManager.getDashboardDataPaginatedByList(
+          listAnalyses = await AnalysisManager.getDashboardDataPaginatedByList(
             listID,
             page,
             pageSize,
             req.session.organization_database,
             filters
-          ));
+          );
+
           break;
         default:
         case 'FCD': {

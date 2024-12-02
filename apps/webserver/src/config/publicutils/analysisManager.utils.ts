@@ -652,5 +652,10 @@ export async function getDashboardDataPaginatedByList(
     getCountDashboardData,
     parameters
   );
-  return listDashboardAnalyses;
+  const numberOfPages = Math.ceil(numberOfResults.quantity / pageSize);
+  const maximumAnalysisAreaInTheList = Math.max(
+    ...listDashboardAnalyses.map((analysis) => analysis['totalHa'])
+  );
+
+  return { listDashboardAnalyses, numberOfResults, numberOfPages, maximumAnalysisAreaInTheList };
 }

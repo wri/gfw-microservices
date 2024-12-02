@@ -679,14 +679,21 @@ module.exports = (app, limiter) => {
           break;
         }
         case 'ALERTS':
-          listAnalyses = await AnalysisManager.getDashboardDataPaginatedByList(
+          const analysisManagerResult = await AnalysisManager.getDashboardDataPaginatedByList(
             listID,
             page,
             pageSize,
             req.session.organization_database,
             filters
           );
+          listAnalyses = analysisManagerResult.listAnalyses;
+          numberOfResults = analysisManagerResult.quantity;
+          numberOfPages = analysisManagerResult.numberOfPages;
+          maximumAnalysisAreaInTheList = analysisManagerResult.maximumAnalysisAreaInTheList;
 
+          if (listAnalyses.length > 0) {
+            location_analyses = listAnalyses;
+          }
           break;
         default:
         case 'FCD': {

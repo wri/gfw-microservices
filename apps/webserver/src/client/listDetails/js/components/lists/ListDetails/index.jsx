@@ -1958,7 +1958,7 @@ export default class ListDetails extends Component {
       userSharedLists.map((userSharedList) => userSharedList.id).includes(selectedLists[0].id);
 
     const showMultipleSelectionBulkActions =
-      selectedList && selectedLocations.length > 1 && !locationDataIsNotAvailable;
+      selectedList && selectedLocations.length > 0 && !locationDataIsNotAvailable;
 
     const hasLocationWithErrors = !!listData.find(
       ({ location_status_id }) => location_status_id === listStatus.Inactive

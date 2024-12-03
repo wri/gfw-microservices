@@ -1,4 +1,4 @@
-import { AbstractHandler, ChainType, ListAttributesRecords, ListAttributesRow, RequestNewList } from './types';
+import { AbstractHandler, ChainType, ListAttributesRow, RequestNewList } from './types';
 import { ClientStoreConnection, ListAttributes, SQLUtils } from '@wri-monorepos/sql';
 import { Logger } from '@nestjs/common';
 import * as sql from 'mssql';

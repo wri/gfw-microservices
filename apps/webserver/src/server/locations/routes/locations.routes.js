@@ -686,8 +686,8 @@ module.exports = (app, limiter) => {
             req.session.organization_database,
             filters
           );
-          listAnalyses = analysisManagerResult.listAnalyses;
-          numberOfResults = analysisManagerResult.quantity;
+          listAnalyses = analysisManagerResult.listDashboardAnalyses;
+          numberOfResults = analysisManagerResult.numberOfResults.quantity;
           numberOfPages = analysisManagerResult.numberOfPages;
           maximumAnalysisAreaInTheList = analysisManagerResult.maximumAnalysisAreaInTheList;
 

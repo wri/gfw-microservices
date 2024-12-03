@@ -27,8 +27,9 @@ const checkValidViewCommodity = (selectedLists, listData) => {
       // This is a user list
       const { template_id, location_classification } = selectedLists[0];
       const location = listData[0];
-      const locationClassification = location?.['Location Classification'].toLowerCase()
-        ?? location_classification?.toLowerCase();
+      const locationClassification =
+        location?.['Location Classification'].toLowerCase() ??
+        location_classification?.toLowerCase();
       return template_id === 2 || (template_id === 5 && locationClassification === 'supply shed');
     }
     // This is a GFW list

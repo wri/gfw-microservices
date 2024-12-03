@@ -16,6 +16,7 @@ import { GetObjectTypes } from './chain/getobject.types';
 import { logExecutionTime } from './chain/shared';
 import { WriteLocationCount } from './chain/write.location.count';
 import { SaveListAttributes } from './chain/save.list.attributes';
+import { ProcessUploadData } from './chain/process.upload.data';
 
 import fastq from 'fastq';
 import type { queue, done } from 'fastq';
@@ -49,7 +50,6 @@ async function worker(input: WorkerType, cb: done) {
   const startAnalysis = new StartAnalysis();
   const getObjectTypes = new GetObjectTypes();
   const writeLocationCount = new WriteLocationCount();
-  const saveListAttributes = new SaveListAttributes(connection);
 
   downloadS3File
     .setNext(parseData)
@@ -58,7 +58,6 @@ async function worker(input: WorkerType, cb: done) {
     .setNext(validateLatLongGeojson) // depends on gadmService
     .setNext(getObjectTypes)
     .setNext(insertLocationData)
-    .setNext(saveListAttributes)
     .setNext(writeLocationCount)
     .setNext(startAnalysis);
 

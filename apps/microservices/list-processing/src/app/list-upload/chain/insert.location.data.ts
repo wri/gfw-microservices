@@ -58,6 +58,8 @@ export class InsertLocationData extends AbstractHandler<ChainType> {
 
       for (let i = 0; i < values.length; i += BATCH_SIZE) {
         const batch = values.slice(i, i + BATCH_SIZE);
+        
+        this.logger.log(`Inserting features ${batch}/${values.length}`);
         await this.insertBatch(connection, ListEntity, batch);
       }
 

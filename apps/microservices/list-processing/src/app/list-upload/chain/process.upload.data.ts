@@ -44,7 +44,7 @@ export class ProcessUploadData extends AbstractHandler<ChainType> {
       ...ListSchema,
     });
     const { columns } = options;
-    
+
     const requiredFields = Object.keys(columns).filter((field) => {
       const fieldDef = columns[field];
       return fieldDef?.nullable !== true;
@@ -62,7 +62,8 @@ export class ProcessUploadData extends AbstractHandler<ChainType> {
           !properties.hasOwnProperty(propertyName) ||
           this.columnsToExclude.includes(propertyName) ||
           requiredFields.includes(propertyName)
-        ) continue;
+        )
+          continue;
 
         const isCustom = !schemaFields.includes(propertyName);
         const propertyValue = properties[propertyName];
@@ -82,10 +83,8 @@ export class ProcessUploadData extends AbstractHandler<ChainType> {
       }
       // update reference
       properties['attributes'] = JSON.stringify(attributesArray);
-      console.log("🚀 ~ ProcessUploadData ~ handle ~ properties:", properties)
     }
 
     return request;
   }
-
 }

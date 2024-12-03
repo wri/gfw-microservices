@@ -20,6 +20,9 @@ import { ProcessUploadData } from './chain/process.upload.data';
 
 import fastq from 'fastq';
 import type { queue, done } from 'fastq';
+import { ListSchemaName } from './chain/list.schema.name';
+import { CreateListLevelData } from './chain/create.list.level.data';
+import { CreateLocationSchema } from './chain/create.location.schema';
 
 type WorkerType = {
   request: RequestLargeListProcess;
@@ -43,8 +46,13 @@ async function worker(input: WorkerType, cb: done) {
 
   const downloadS3File = new DownloadS3File(s3Service, input.config);
   const parseData = new ParserData();
+  const processUploadData = new ProcessUploadData();
+  const listSchemaName = new ListSchemaName();
   const gadmService = new GADMService();
+  const createListLevelData = new CreateListLevelData();
+  const createLocationSchema = new CreateLocationSchema(connection);
   const insertLocationData = new InsertLocationData();
+  const saveListAttributes = new SaveListAttributes();
   const validateLatLongGeojson = new ValidateLatLongGeojson();
   const convertPoint2Polygon = new ConvertPoint2Polygon();
   const startAnalysis = new StartAnalysis();
@@ -53,6 +61,8 @@ async function worker(input: WorkerType, cb: done) {
 
   downloadS3File
     .setNext(parseData)
+    .setNext(processUploadData)
+    .setNext(listSchemaName)
     .setNext(convertPoint2Polygon)
     .setNext(gadmService) // depends on convertPoint2Polygon
     .setNext(validateLatLongGeojson) // depends on gadmService

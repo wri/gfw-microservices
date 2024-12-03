@@ -32,12 +32,12 @@ import { TransitionGroup } from 'react-transition-group';
 import { ExternalHelperResource, LocationTypeButton } from '../components';
 
 import { PillButton } from '../../../../../components';
-import { ChangePageType } from '../types';
 import { coordinateSchema } from '../utils/schema';
 import { createGeometryAndGraphic } from '../../adding/PolygonCoordinates/polygonCoordinates.utils';
 import { useMap } from '../hooks/useMap';
 
 import LocationMapDrawer from '../../adding/LocationMapDrawer';
+import { useUploadLocation } from '../contexts/UploadLocationContext';
 
 const MIN_AMOUNT_OF_COORDINATES = 3;
 const MAX_AMOUNT_OF_COORDINATES = 10;
@@ -53,8 +53,9 @@ enum LocationFormat {
 const schema = z.record(coordinateSchema);
 type FormFields = z.infer<typeof schema>;
 
-export function UploadLocationByPolygon({ setUploadType }: ChangePageType) {
+export function UploadLocationByPolygon() {
   const theme = useTheme();
+  const { clearUploadType } = useUploadLocation();
   const isRegularScreenSize = useMediaQuery(theme.breakpoints.up('sm'));
 
   const {
@@ -328,7 +329,7 @@ export function UploadLocationByPolygon({ setUploadType }: ChangePageType) {
           variant="contained"
           color="info"
           startIcon={<Close />}
-          onClick={() => setUploadType(null)}
+          onClick={clearUploadType}
         >
           Cancel
         </PillButton>

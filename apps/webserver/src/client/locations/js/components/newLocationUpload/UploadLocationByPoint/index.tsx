@@ -28,6 +28,7 @@ import { PillButton } from '../../../../../components';
 import { ChangePageType, MeasurementUnit } from '../types';
 import { coordinateSchema } from '../utils/schema';
 import { ActiveComponent } from '..';
+import { useUploadLocation } from '../contexts/UploadLocationContext';
 
 enum LocationFormat {
   Coordinates,
@@ -45,8 +46,9 @@ type FormFields = z.infer<typeof coordinateSchema>;
 const COORDINATE_ERROR_MESSAGE =
   'Your coordinate value is invalid. Please ensure your data is in decimal degree notation';
 
-export function UploadLocationByPoint({ setUploadType, setActiveComponent }: ChangePageType) {
+export function UploadLocationByPoint({ setActiveComponent }: ChangePageType) {
   const theme = useTheme();
+  const { clearUploadType } = useUploadLocation();
 
   const {
     handleSubmit,
@@ -317,7 +319,7 @@ export function UploadLocationByPoint({ setUploadType, setActiveComponent }: Cha
               variant="contained"
               color="info"
               startIcon={<Close />}
-              onClick={() => setUploadType(null)}
+              onClick={clearUploadType}
             >
               Cancel
             </PillButton>

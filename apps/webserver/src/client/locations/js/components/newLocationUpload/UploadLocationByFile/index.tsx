@@ -12,12 +12,14 @@ import {
 import { ArrowForwardIos, Close, DriveFolderUpload } from '@mui/icons-material';
 
 import { PillButton } from '../../../../../components';
-import { ChangePageType } from '../types';
+
 import { VALID_UPLOAD_FILE_FORMATS } from '../utils/constants';
 import { DataTemplates } from '../DataTemplates';
+import { useUploadLocation } from '../contexts/UploadLocationContext';
 
-export function UploadLocationByFile({ setUploadType }: ChangePageType) {
+export function UploadLocationByFile() {
   const theme = useTheme();
+  const { clearUploadType } = useUploadLocation();
   const [isDragAndDropActive, setIsDragAndDropActive] = useState(false);
   const [isDialogOpen, setIsDialogOpen] = React.useState(false);
   const [isDataTemplateModalOpen, setIsDataTemplateModalOpen] = React.useState(false);
@@ -162,7 +164,7 @@ export function UploadLocationByFile({ setUploadType }: ChangePageType) {
           variant="contained"
           color="info"
           startIcon={<Close />}
-          onClick={() => setUploadType(null)}
+          onClick={clearUploadType}
         >
           Cancel
         </PillButton>

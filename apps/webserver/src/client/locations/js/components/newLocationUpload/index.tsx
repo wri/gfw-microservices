@@ -12,6 +12,7 @@ import { UploadLocationByPolygon } from './UploadLocationByPolygon';
 
 import { UploadType } from './types/index';
 import { ConfigureList } from './ConfigureList';
+import { useUploadLocation } from './contexts/UploadLocationContext';
 
 export enum ActiveComponent {
   UploadOptions,
@@ -29,14 +30,10 @@ const mapUploadTypeToActiveComponent = {
 };
 
 export function NewLocationUpload() {
-  const [uploadType, setUploadType] = useState<UploadType | null>(null);
+  const { uploadType, clearUploadType } = useUploadLocation();
   const [activeComponent, setActiveComponent] = useState<ActiveComponent>(
     ActiveComponent.UploadOptions
   );
-
-  const selectUploadType = (type: UploadType | null) => {
-    setUploadType(type);
-  };
 
   const selectActiveComponent = (activeComponent: ActiveComponent) => {
     setActiveComponent(activeComponent);
@@ -63,33 +60,13 @@ export function NewLocationUpload() {
   }, [uploadType]);
 
   const ActiveComponentMap: { [key in ActiveComponent]: React.JSX.Element } = {
-    [ActiveComponent.UploadOptions]: (
-      <UploadLocationOptions
-        setUploadType={selectUploadType}
-        setActiveComponent={selectActiveComponent}
-      />
-    ),
-    [ActiveComponent.UploadByFile]: (
-      <UploadLocationByFile
-        setUploadType={selectUploadType}
-        setActiveComponent={selectActiveComponent}
-      />
-    ),
+    [ActiveComponent.UploadOptions]: <UploadLocationOptions />,
+    [ActiveComponent.UploadByFile]: <UploadLocationByFile />,
     [ActiveComponent.UploadByPoint]: (
-      <UploadLocationByPoint
-        setUploadType={selectUploadType}
-        setActiveComponent={selectActiveComponent}
-      />
+      <UploadLocationByPoint setActiveComponent={selectActiveComponent} />
     ),
-    [ActiveComponent.UploadByPolygon]: (
-      <UploadLocationByPolygon
-        setUploadType={selectUploadType}
-        setActiveComponent={selectActiveComponent}
-      />
-    ),
-    [ActiveComponent.ConfigureList]: (
-      <ConfigureList setUploadType={selectUploadType} setActiveComponent={selectActiveComponent} />
-    ),
+    [ActiveComponent.UploadByPolygon]: <UploadLocationByPolygon />,
+    [ActiveComponent.ConfigureList]: <ConfigureList />,
   };
 
   return (
@@ -97,7 +74,7 @@ export function NewLocationUpload() {
       <div className="new-location-upload">
         {activeComponent !== ActiveComponent.UploadOptions && (
           <nav>
-            <IconButton onClick={() => setUploadType(null)} disableRipple>
+            <IconButton onClick={clearUploadType} disableRipple>
               <ArrowBack />
             </IconButton>
             <Typography variant="h5">New Location</Typography>

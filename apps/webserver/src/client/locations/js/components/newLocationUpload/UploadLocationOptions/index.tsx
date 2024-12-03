@@ -13,10 +13,11 @@ import {
 
 import { ExternalHelperResource } from '../components/ExternalHelperResource';
 import { UploadType } from '../types';
-import { ChangePageType } from '../types';
+import { useUploadLocation } from '../contexts/UploadLocationContext';
 
-export function UploadLocationOptions({ setUploadType }: ChangePageType) {
+export function UploadLocationOptions() {
   const history = useHistory();
+  const { selectUploadType } = useUploadLocation();
 
   return (
     <div className="upload-location-options">
@@ -43,7 +44,7 @@ export function UploadLocationOptions({ setUploadType }: ChangePageType) {
 
           <Button
             className="upload-location-options__button"
-            onClick={() => setUploadType(UploadType.ByFile)}
+            onClick={() => selectUploadType(UploadType.ByFile)}
             startIcon={<UploadFileTwoTone color="primary" fontSize="large" />}
           >
             File upload
@@ -57,7 +58,7 @@ export function UploadLocationOptions({ setUploadType }: ChangePageType) {
             <div>
               <Button
                 className="upload-location-options__button"
-                onClick={() => setUploadType(UploadType.ByPoint)}
+                onClick={() => selectUploadType(UploadType.ByPoint)}
                 startIcon={<ScatterPlotTwoTone color="primary" fontSize="large" />}
               >
                 Point
@@ -65,7 +66,7 @@ export function UploadLocationOptions({ setUploadType }: ChangePageType) {
 
               <Button
                 className="upload-location-options__button"
-                onClick={() => setUploadType(UploadType.ByPolygon)}
+                onClick={() => selectUploadType(UploadType.ByPolygon)}
                 startIcon={<Timeline color="primary" fontSize="large" />}
               >
                 Polygon

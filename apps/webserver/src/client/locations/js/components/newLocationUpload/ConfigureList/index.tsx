@@ -13,10 +13,11 @@ import {
 } from '@mui/material';
 import { ArrowBackIos, ArrowForwardIos, Close } from '@mui/icons-material';
 import { PillButton } from '../../../../../components';
-import { ChangePageType } from '../types';
+import { useUploadLocation } from '../contexts/UploadLocationContext';
 
-export function ConfigureList({ setUploadType }: ChangePageType) {
+export function ConfigureList() {
   const theme = useTheme();
+  const { clearUploadType } = useUploadLocation();
 
   return (
     <Card component="form" sx={{ pt: 1, px: 2, pb: 2 }}>
@@ -133,7 +134,7 @@ export function ConfigureList({ setUploadType }: ChangePageType) {
           variant="contained"
           color="info"
           startIcon={<ArrowBackIos />}
-          onClick={() => setUploadType(null)}
+          onClick={clearUploadType}
           sx={{ mr: 'auto' }}
         >
           Back
@@ -143,7 +144,7 @@ export function ConfigureList({ setUploadType }: ChangePageType) {
           variant="contained"
           color="info"
           startIcon={<Close />}
-          onClick={() => setUploadType(null)}
+          onClick={clearUploadType}
         >
           Cancel
         </PillButton>

@@ -8,7 +8,7 @@ import { ListSchema, ListSchemaType } from '@wri-monorepos/sql';
 const logger = new Logger('CSV2GeoJSONParser');
 
 interface LocationData {
-  [key: string]: any;
+  [key: string]: string | number | undefined | object;
 }
 
 export const csv2geojson = async (
@@ -117,73 +117,6 @@ export const csv2geojson = async (
     };
   };
 
-  const processAttributes = (row: LocationData, headerMappings: { [key: string]: string }) => {
-    // known columns to exclude
-    const columnsToExclude: string[] = [
-      'locationName',
-      'longitude',
-      'latitude',
-      'commodity',
-      'attributes',
-      'errorDetails',
-    ];
-
-    // columns definitions
-    const { options } = new EntitySchema<ListSchemaType>({
-      ...ListSchema,
-    });
-    const { columns } = options;
-
-    // required fields list (fields that are not null)
-    const requiredFields = Object.keys(columns).filter((field) => {
-      const fieldDef = columns[field];
-      return fieldDef?.nullable !== true;
-    });
-
-    const attributes = {};
-
-    for (const key in row) {
-      if (key === 'geometry' || key === 'error') continue;
-
-      if (columnsToExclude.includes(key)) {
-        continue;
-      }
-
-      if (requiredFields.includes(key)) {
-        continue;
-      }
-
-      const fieldExistsInEntity = key in columns;
-
-      let value = row[key];
-      let type = typeof value;
-
-      // handle empty values as strings for ListAttributes
-      if (value === null || value === undefined) {
-        value = '';
-        type = 'string';
-      }
-
-      // keep the original field name from headerMappings
-      const originalField = headerMappings[key] || key; // Default to key if not found
-
-      attributes[key] = {
-        field: originalField,
-        value: value,
-        type: type,
-      };
-
-      // keep track of user defined fields as custom
-      if (!fieldExistsInEntity) {
-        attributes[key].custom = true;
-      }
-    }
-
-    row['attributes'] = attributes ? JSON.stringify(attributes) : '{}';
-
-    return row;
-  };
-
   const convertToGeoJSON = (results, reject, resolve) => {
     const { data, errors, meta } = results;
     if (errors.length > 0) {
@@ -208,7 +141,6 @@ export const csv2geojson = async (
       row = standardizeLocationData(row);
       row = createGeometry(row, includeLatLon);
       row = transformKeysToCamelCase(row);
-      row = processAttributes(row, headerMappings);
 
       if (row['error']) {
         logger.error(row['error']);

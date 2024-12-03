@@ -1,13 +1,13 @@
-import {
-  AbstractHandler,
-  ChainType,
-  ListAttributesRecord,
-  ListAttributesRow,
-  RequestNewList,
-} from './types';
+import { AbstractHandler, ChainType, ListAttributesRecords, ListAttributesRow, RequestNewList } from './types';
 import { ClientStoreConnection, ListAttributes, SQLUtils } from '@wri-monorepos/sql';
 import { Logger } from '@nestjs/common';
 import * as sql from 'mssql';
+
+interface ListAttributesRecord {
+  list_id: number;
+  attribute_name: string;
+  attribute_type: number;
+}
 
 enum ListsAttrsTypes {
   Int = 1,

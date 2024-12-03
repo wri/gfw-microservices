@@ -44,7 +44,6 @@ export class ProcessUploadData extends AbstractHandler<ChainType> {
       ...ListSchema,
     });
     const { columns } = options;
-
     const requiredFields = Object.keys(columns).filter((field) => {
       const fieldDef = columns[field];
       return fieldDef?.nullable !== true;

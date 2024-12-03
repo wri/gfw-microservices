@@ -21,8 +21,6 @@ import { ProcessUploadData } from './chain/process.upload.data';
 import fastq from 'fastq';
 import type { queue, done } from 'fastq';
 import { ListSchemaName } from './chain/list.schema.name';
-import { CreateListLevelData } from './chain/create.list.level.data';
-import { CreateLocationSchema } from './chain/create.location.schema';
 
 type WorkerType = {
   request: RequestLargeListProcess;
@@ -56,7 +54,6 @@ async function worker(input: WorkerType, cb: done) {
   const startAnalysis = new StartAnalysis();
   const getObjectTypes = new GetObjectTypes();
   const writeLocationCount = new WriteLocationCount();
-  const saveListAttributes = new SaveListAttributes(connection);
 
   downloadS3File
     .setNext(parseData)

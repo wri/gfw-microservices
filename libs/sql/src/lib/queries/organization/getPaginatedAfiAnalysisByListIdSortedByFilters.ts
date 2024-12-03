@@ -41,7 +41,8 @@ SET @SQL = 'SELECT  ' +
             ' lt.[Location Name] as locationName, ' +
             ' lt.Country as country ,' +
             ' lt.State as state,' +
-            ' lt.[Sub State] as subState ' +
+            ' lt.[Sub State] as subState, ' +
+            ' COUNT(*) OVER () AS totalRows ' +
             'FROM AFIAnalysis afi JOIN dbo.['+@list_table+'] lt ON lt.location_id = afi.location_id WHERE afi.location_id > 0 AND afi.list_id = @listId';
 
 
@@ -63,35 +64,13 @@ SET @SQL = 'SELECT  ' +
   IF @showRSPOCertified = 1
       SET @Filters = + @Filters + ' AND lt.[RSPO Model] = 1'
 
-	IF @SearchString IS NOT NULL
-	BEGIN
-
-		SELECT @listLocationTableCols = STUFF(
-		  (
-			SELECT '], [' + [name] FROM sys.columns
-			WHERE
-			  [object_id] = (SELECT [object_id] FROM sys.objects WHERE [name] = @listLocationTableName)
-			  AND [name] NOT IN ('Geometry', 'afi.location_id', 'lt.location_id')
-				AND user_type_id IN (SELECT user_type_id FROM sys.types WHERE name IN ('char', 'nchar', 'varchar', 'nvarchar'))
-			  FOR XML PATH('')
-		  ),1,3,' ') + ']';
-
-		DECLARE @SearchLogic NVARCHAR(MAX) = 'CONCAT({LIST_TABLE_CHAR_COLS}) LIKE ''%{SEARCH_STRING}%'' ';
-		SET @SearchLogic = REPLACE(@SearchLogic, '{LIST_TABLE_CHAR_COLS}', @listLocationTableCols);
-		SET @SearchLogic = REPLACE(@SearchLogic, '{SEARCH_STRING}', @SearchString);
-		--PRINT @SearchLogic;
-		SET @Filters = CONCAT(@Filters,' AND ', @SearchLogic);
-	END
-
-
 	-- END Filters
+
+IF (@SearchString IS NOT NULL)
+  SET @SQL = @SQL + ' AND lt.Country LIKE @SearchString OR lt.State LIKE @SearchString OR lt.[Location Name] LIKE @SearchString ';
 
 if (@Filters IS NOT NULL)
   SET @SQL = @SQL + @Filters;
-
-
-
-
 
 DECLARE @isValidSortColumn BIT = 0;
 
@@ -107,8 +86,6 @@ IF @orderType IS NOT NULL AND @sortByAttribute IS NOT NULL AND @isValidSortColum
                END + ' ' + @orderType;
 ELSE
     SET @SQL = @SQL + ' ORDER BY afi.negligible_risk ASC, afi.natural_land_deforested_area DESC';
-
-
 
 
 IF @RowsOfPage > 0 AND @PageNumber > 0
@@ -139,4 +116,5 @@ export class PaginatedAfiAnalysisByListIdSortedByFilters {
   country: string;
   state: string;
   subState: string;
+  totalRows: number;
 }

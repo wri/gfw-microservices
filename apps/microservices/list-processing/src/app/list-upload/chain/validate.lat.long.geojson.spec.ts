@@ -36,50 +36,45 @@ describe('ValidateLatLongGeojson', () => {
 
   describe('isOnAntarctica', () => {
     it('should return true for Antarctica', () => {
-      expect(validator.isInvalidCountry('Antarctica')).toBe(true);
-      expect(validator.isInvalidCountry('antarctica')).toBe(true);
+      expect(validator.isValidCountry('Antarctica')).toBe(false);
+      expect(validator.isValidCountry('antarctica')).toBe(false);
     });
 
     it('should return false for other countries', () => {
-      expect(validator.isInvalidCountry('USA')).toBe(false);
-      expect(validator.isInvalidCountry('Brazil')).toBe(false);
+      expect(validator.isValidCountry('USA')).toBe(true);
+      expect(validator.isValidCountry('Brazil')).toBe(true);
     });
 
     it('should return false if country is empty', () => {
-      expect(validator.isInvalidCountry('')).toBe(true);
-      expect(validator.isInvalidCountry('')).toBe(true);
+      expect(validator.isValidCountry('')).toBe(false);
+      expect(validator.isValidCountry('')).toBe(false);
     });
 
     it('should return false if country is null', () => {
-      expect(validator.isInvalidCountry(null)).toBe(true);
-      expect(validator.isInvalidCountry(null)).toBe(true);
+      expect(validator.isValidCountry(null)).toBe(false);
+      expect(validator.isValidCountry(null)).toBe(false);
     });
 
     it('should return false if country is undefined', () => {
-      expect(validator.isInvalidCountry(undefined)).toBe(true);
-      expect(validator.isInvalidCountry(undefined)).toBe(true);
+      expect(validator.isValidCountry(undefined)).toBe(false);
+      expect(validator.isValidCountry(undefined)).toBe(false);
     });
   });
 
   describe('validateCoordinates', () => {
     it('should return true for valid coordinates', () => {
       const coordinates = [[0, 0]];
-      expect(validator.validateCoordinates(coordinates, 'Antarctica')).toBe(true);
+      expect(validator.validateCoordinates(coordinates, 'Argentina')).toBe(true);
     });
 
     it('should return false for invalid coordinates', () => {
       const coordinates = [[200, 0]];
-      expect(validator.validateCoordinates(coordinates, 'Antarctica')).toBe(false);
-    });
-
-    it('should return false for coordinates not in Antarctica', () => {
-      const coordinates = [[0, 0]];
-      expect(validator.validateCoordinates(coordinates, 'USA')).toBe(false);
+      expect(validator.validateCoordinates(coordinates, 'Argentina')).toBe(false);
     });
 
     it('should handle nested coordinates', () => {
       const coordinates = [[[0, 0]]];
-      expect(validator.validateCoordinates(coordinates, 'Antarctica')).toBe(true);
+      expect(validator.validateCoordinates(coordinates, 'Argentina')).toBe(true);
     });
   });
 

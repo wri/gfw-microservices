@@ -27,6 +27,7 @@ import HectareKilometerSwitch from '../../adding/HectareKilometerSwitch';
 import { PillButton } from '../../../../../components';
 import { ChangePageType, MeasurementUnit } from '../types';
 import { coordinateSchema } from '../utils/schema';
+import { ActiveComponent } from '..';
 
 enum LocationFormat {
   Coordinates,
@@ -44,7 +45,7 @@ type FormFields = z.infer<typeof coordinateSchema>;
 const COORDINATE_ERROR_MESSAGE =
   'Your coordinate value is invalid. Please ensure your data is in decimal degree notation';
 
-export function UploadLocationByPoint({ setUploadType }: ChangePageType) {
+export function UploadLocationByPoint({ setUploadType, setActiveComponent }: ChangePageType) {
   const theme = useTheme();
 
   const {
@@ -325,6 +326,7 @@ export function UploadLocationByPoint({ setUploadType }: ChangePageType) {
               variant="contained"
               startIcon={<ArrowForwardIos />}
               disabled={locationFormat === null}
+              onClick={() => setActiveComponent(ActiveComponent.ConfigureList)}
             >
               Next
             </PillButton>

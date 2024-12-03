@@ -11,18 +11,21 @@ import { UploadLocationByPoint } from './UploadLocationByPoint';
 import { UploadLocationByPolygon } from './UploadLocationByPolygon';
 
 import { UploadType } from './types/index';
+import { ConfigureList } from './ConfigureList';
 
 export enum ActiveComponent {
   UploadOptions,
   UploadByFile,
   UploadByPoint,
   UploadByPolygon,
+  ConfigureList,
 }
 
 const mapUploadTypeToActiveComponent = {
   [UploadType.ByFile]: ActiveComponent.UploadByFile,
   [UploadType.ByPoint]: ActiveComponent.UploadByPoint,
   [UploadType.ByPolygon]: ActiveComponent.UploadByPolygon,
+  ConfigureList: ActiveComponent.ConfigureList,
 };
 
 export function NewLocationUpload() {
@@ -33,6 +36,10 @@ export function NewLocationUpload() {
 
   const selectUploadType = (type: UploadType | null) => {
     setUploadType(type);
+  };
+
+  const selectActiveComponent = (activeComponent: ActiveComponent) => {
+    setActiveComponent(activeComponent);
   };
 
   const stepsForUploadByLocation = ['Location', 'Configure List', 'Submit'];
@@ -56,10 +63,33 @@ export function NewLocationUpload() {
   }, [uploadType]);
 
   const ActiveComponentMap: { [key in ActiveComponent]: React.JSX.Element } = {
-    [ActiveComponent.UploadOptions]: <UploadLocationOptions setUploadType={selectUploadType} />,
-    [ActiveComponent.UploadByFile]: <UploadLocationByFile setUploadType={selectUploadType} />,
-    [ActiveComponent.UploadByPoint]: <UploadLocationByPoint setUploadType={selectUploadType} />,
-    [ActiveComponent.UploadByPolygon]: <UploadLocationByPolygon setUploadType={selectUploadType} />,
+    [ActiveComponent.UploadOptions]: (
+      <UploadLocationOptions
+        setUploadType={selectUploadType}
+        setActiveComponent={selectActiveComponent}
+      />
+    ),
+    [ActiveComponent.UploadByFile]: (
+      <UploadLocationByFile
+        setUploadType={selectUploadType}
+        setActiveComponent={selectActiveComponent}
+      />
+    ),
+    [ActiveComponent.UploadByPoint]: (
+      <UploadLocationByPoint
+        setUploadType={selectUploadType}
+        setActiveComponent={selectActiveComponent}
+      />
+    ),
+    [ActiveComponent.UploadByPolygon]: (
+      <UploadLocationByPolygon
+        setUploadType={selectUploadType}
+        setActiveComponent={selectActiveComponent}
+      />
+    ),
+    [ActiveComponent.ConfigureList]: (
+      <ConfigureList setUploadType={selectUploadType} setActiveComponent={selectActiveComponent} />
+    ),
   };
 
   return (

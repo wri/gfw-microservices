@@ -378,7 +378,7 @@ class Landing extends Component {
                     icon={<IconPlus height="10px" />}
                     onClick={() => {
                       const { history } = this.props;
-                      history.push('/new-location-upload');
+                      history.push('/upload-location');
                     }}
                     fullWidth
                     variant="primary"

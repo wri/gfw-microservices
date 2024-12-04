@@ -1,5 +1,3 @@
-import { ActiveComponent } from '..';
-
 export enum UploadType {
   ByFile,
   ByPoint,
@@ -7,7 +5,3 @@ export enum UploadType {
 }
 
 export type MeasurementUnit = 'hectares' | 'kilometers';
-
-export type ChangePageType = {
-  setActiveComponent: (type: ActiveComponent) => void;
-};

@@ -1,5 +1,7 @@
 import React, { createContext, useState, ReactNode, useContext } from 'react';
-import { UploadType } from '../types/index';
+
+import { useHistory } from '../hooks';
+import { UploadType } from '../types';
 
 type UploadLocationType = {
   uploadType: UploadType | null;
@@ -13,7 +15,8 @@ interface UploadLocationProviderProps {
   children: ReactNode;
 }
 
-export const UploadLocationProvider = ({ children }: UploadLocationProviderProps) => {
+export function UploadLocationProvider({ children }: UploadLocationProviderProps) {
+  const history = useHistory();
   const [uploadType, setUploadType] = useState<UploadType | null>(null);
 
   const selectUploadType = (type: UploadType) => {
@@ -22,6 +25,7 @@ export const UploadLocationProvider = ({ children }: UploadLocationProviderProps
 
   const clearUploadType = () => {
     setUploadType(null);
+    history.push('OPTIONS');
   };
 
   return (
@@ -29,6 +33,6 @@ export const UploadLocationProvider = ({ children }: UploadLocationProviderProps
       {children}
     </UploadLocationContext.Provider>
   );
-};
+}
 
 export const useUploadLocation = () => useContext(UploadLocationContext);

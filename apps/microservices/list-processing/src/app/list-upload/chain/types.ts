@@ -46,9 +46,11 @@ export type ListAttributesRow = {
   custom?: boolean;
 };
 
-export type ListAttributesRecords = {
-  [key: string]: ListAttributesRow;
-};
+export interface ListAttributesRecord {
+  list_id: number;
+  attribute_name: string;
+  attribute_type: number;
+}
 
 export interface PreviewListRequest {
   path: string;

@@ -80,14 +80,12 @@ describe('SaveListAttributes', () => {
 
   describe('getExistingListAttributesByListId', () => {
     it('should return a set of existing attributes', async () => {
-      // Arrange
       const orgDb = 'myOrgDb';
       const list_id = 123;
       const mockResults = [{ attribute_name: 'width' }, { attribute_name: 'height' }];
 
       (SQLUtils.queryDB as jest.Mock).mockResolvedValue(mockResults);
 
-      // Act
       const result = await saveListAttributes.getExistingListAttributesByListId(orgDb, list_id);
 
       expect(SQLUtils.queryDB).toHaveBeenCalledWith(

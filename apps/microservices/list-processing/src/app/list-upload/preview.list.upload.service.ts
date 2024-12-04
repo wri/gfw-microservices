@@ -1,12 +1,13 @@
 import { Injectable } from '@nestjs/common';
 import { FeatureCollection } from '@wri-monorepos/geo';
-import { ChainType } from './chain/types';
+import { AbstractHandler, ChainType } from './chain/types';
 import { DownloadS3File } from './chain/download.s3.file';
 import { ParserData } from './chain/parser.data';
 import { GADMService } from './chain/gadm.service';
 import { S3Service } from '@wri-monorepos/aws';
 import { ConfigService } from '@nestjs/config';
 import { ServerConfigType } from '../../validators/server-config';
+import { PreviewStep } from './chain/preview.step';
 
 @Injectable()
 export class PreviewListUploadService {
@@ -30,10 +31,11 @@ export class PreviewListUploadService {
     const downloadS3File = new DownloadS3File(this.s3Service, this.config);
     const parseData = new ParserData();
     const gadmService = new GADMService();
+    const previewStep = new PreviewStep();
 
-    downloadS3File.setNext(parseData).setNext(gadmService);
+    downloadS3File.setNext(parseData).setNext(previewStep).setNext(gadmService);
 
-    const response = await downloadS3File.handle(chainType);
+    const response = await AbstractHandler.runFullChain(downloadS3File, chainType);
     return response.geojson;
   }
 }

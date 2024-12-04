@@ -1,13 +1,13 @@
-import { AbstractHandler, ChainType, ListAttributesRow, RequestNewList } from './types';
+import {
+  AbstractHandler,
+  ChainType,
+  ListAttributesRecord,
+  ListAttributesRow,
+  RequestNewList,
+} from './types';
 import { ClientStoreConnection, ListAttributes, SQLUtils } from '@wri-monorepos/sql';
 import { Logger } from '@nestjs/common';
 import * as sql from 'mssql';
-
-interface ListAttributesRecord {
-  list_id: number;
-  attribute_name: string;
-  attribute_type: number;
-}
 
 enum ListsAttrsTypes {
   Int = 1,
@@ -33,7 +33,7 @@ export class SaveListAttributes extends AbstractHandler<ChainType> {
       organizationDatabase,
       selectAttsColumnQuery
     );
-    const existingListAttributesMap = await this.getExisingListAttributesForListId(
+    const existingListAttributesMap = await this.getExistingListAttributesForListId(
       organizationDatabase,
       listId
     );
@@ -105,7 +105,10 @@ export class SaveListAttributes extends AbstractHandler<ChainType> {
     return attributeInfos;
   }
 
-  protected async getExisingListAttributesForListId(orgDb: string, listId: number) {
+  protected async getExistingListAttributesForListId(
+    orgDb: string,
+    listId: number
+  ): Promise<Map<string, ListAttributesRecord>> {
     // fetch existing attribute names first for the list to avoid duplicates
     const query = `SELECT [attribute_name], [attribute_type], [list_id] FROM [ListAttributes] WHERE list_id = @list_id`;
     const parameters = [{ field: 'list_id', type: sql.Int, value: listId }];

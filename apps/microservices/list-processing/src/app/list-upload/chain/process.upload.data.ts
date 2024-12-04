@@ -59,7 +59,7 @@ export class ProcessUploadData extends AbstractHandler<ChainType> {
 
       for (const propertyName in properties) {
         if (
-          !properties.hasOwnProperty(propertyName) ||
+          !Object.prototype.hasOwnProperty.call(properties, propertyName) ||
           this.columnsToExclude.includes(propertyName) ||
           requiredFields.includes(propertyName)
         )

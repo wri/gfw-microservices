@@ -2,8 +2,6 @@ import * as Papa from 'papaparse';
 import sexagesimal from '@mapbox/sexagesimal';
 import { Logger } from '@nestjs/common';
 import { Geometry, GeoJson, FeatureCollection } from '@wri-monorepos/geo';
-import { EntitySchema } from 'typeorm';
-import { ListSchema, ListSchemaType } from '@wri-monorepos/sql';
 
 const logger = new Logger('CSV2GeoJSONParser');
 

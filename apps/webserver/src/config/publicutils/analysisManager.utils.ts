@@ -540,7 +540,7 @@ export async function getAFIListAnalyses(list_id, page, pageSize, clientDatabase
     parameters
   );
 
-  const numberOfResults = listAnalyses?.[0].totalRows;
+  const numberOfResults = listAnalyses?.[0]?.totalRows;
 
   const formattedListAnalyses = listAnalyses.map((analysis) => {
     const formatPercentage = (numerator, denominator) => {

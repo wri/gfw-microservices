@@ -12,7 +12,7 @@ import {
   ConfigureList,
 } from './pages';
 
-export const Routes = {
+export const UploadLocationRoutes = {
   LOCATIONS: '/',
   OPTIONS: '/upload-location',
   UPLOAD_BY_FILE: '/upload-location/by-file',
@@ -23,7 +23,7 @@ export const Routes = {
   SUBMIT: '/upload-location/submit',
 };
 
-export type RouteType = keyof typeof Routes;
+export type RouteType = keyof typeof UploadLocationRoutes;
 
 export function UploadLocationRouter() {
   return (
@@ -33,11 +33,14 @@ export function UploadLocationRouter() {
         sx={{ mt: 1.5, mx: 'auto', maxWidth: '1025px', minWidth: '300px' }}
       >
         <Switch>
-          <Route path={Routes.OPTIONS} component={UploadLocationOptions} exact />
-          <Route path={Routes.UPLOAD_BY_FILE} component={UploadLocationByFile} />
-          <Route path={Routes.UPLOAD_BY_POLYGON} component={UploadLocationByPolygon} />
-          <Route path={Routes.UPLOAD_BY_POINT} component={UploadLocationByPoint} />
-          <Route path={Routes.CONFIGURE_LIST} component={ConfigureList} />
+          <Route path={UploadLocationRoutes.OPTIONS} component={UploadLocationOptions} exact />
+          <Route path={UploadLocationRoutes.UPLOAD_BY_FILE} component={UploadLocationByFile} />
+          <Route
+            path={UploadLocationRoutes.UPLOAD_BY_POLYGON}
+            component={UploadLocationByPolygon}
+          />
+          <Route path={UploadLocationRoutes.UPLOAD_BY_POINT} component={UploadLocationByPoint} />
+          <Route path={UploadLocationRoutes.CONFIGURE_LIST} component={ConfigureList} />
         </Switch>
       </Box>
     </ThemeProvider>

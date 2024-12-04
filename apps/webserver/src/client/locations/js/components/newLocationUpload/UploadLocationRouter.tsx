@@ -13,7 +13,7 @@ import {
 } from './pages';
 
 export const Routes = {
-  LOCATIONS: '',
+  LOCATIONS: '/',
   OPTIONS: '/upload-location',
   UPLOAD_BY_FILE: '/upload-location/by-file',
   UPLOAD_BY_POLYGON: '/upload-location/by-polygon',
@@ -33,18 +33,10 @@ export function UploadLocationRouter() {
         sx={{ mt: 1.5, mx: 'auto', maxWidth: '1025px', minWidth: '300px' }}
       >
         <Switch>
-          <Route path={Routes.OPTIONS} exact>
-            <UploadLocationOptions />
-          </Route>
-          <Route path={Routes.UPLOAD_BY_FILE}>
-            <UploadLocationByFile />
-          </Route>
-          <Route path={Routes.UPLOAD_BY_POLYGON}>
-            <UploadLocationByPolygon />
-          </Route>
-          <Route path={Routes.UPLOAD_BY_POINT}>
-            <UploadLocationByPoint />
-          </Route>
+          <Route path={Routes.OPTIONS} component={UploadLocationOptions} exact />
+          <Route path={Routes.UPLOAD_BY_FILE} component={UploadLocationByFile} />
+          <Route path={Routes.UPLOAD_BY_POLYGON} component={UploadLocationByPolygon} />
+          <Route path={Routes.UPLOAD_BY_POINT} component={UploadLocationByPoint} />
           <Route path={Routes.CONFIGURE_LIST} component={ConfigureList} />
         </Switch>
       </Box>

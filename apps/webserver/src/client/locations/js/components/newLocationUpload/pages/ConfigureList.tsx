@@ -154,7 +154,7 @@ export function ConfigureList() {
           >
             Cancel
           </PillButton>
-          <PillButton type="submit" variant="contained" startIcon={<ArrowForwardIos />}>
+          <PillButton disabled type="submit" variant="contained" startIcon={<ArrowForwardIos />}>
             Next
           </PillButton>
         </Box>

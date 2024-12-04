@@ -93,8 +93,9 @@ const GFWProtectedForestChangeFilter: React.FC<GFWProtectedForestChangeFilterPro
     let filterCount = 0;
     Object.keys(state).forEach((key) => {
       const value = state[key as keyof DefaultFilterValues];
-      if (value !== null && value !== '' && (!Array.isArray(value) || value.length > 0))
+      if (value !== null && value !== '' && (!Array.isArray(value) || value.length > 0)) {
         filterCount++;
+      }
     });
     const filters = {
       selectedCountry: state.selectedCountry,

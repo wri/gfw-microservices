@@ -14,19 +14,22 @@ const analysisTypes = {
 
 const analysisTypesOptions = [
   {
-    id: analysisTypes.FOREST_CHANGE_DIAGNOSTICS,
-    label: 'Forest Change Global',
-    shortLabel: 'Forest Change',
-  },
-  {
     id: analysisTypes.DEFORESTATION_KPIS,
-    label: 'Deforestation Reporting (cutoff date 2020)',
+    label: 'Post-2020 Risk Assessment',
     shortLabel: 'Reporting',
+    description: 'Deforestation in natural forest since 2021 + additional contextual datasets',
   },
   {
     id: analysisTypes.ALERTS,
-    label: 'NEAR-REAL TIME ALERTS (INTEGRATED ALERTS, VIIRS)',
+    label: 'Recent Deforestation Alerts',
     shortLabel: 'Alerts',
+    description: 'Recent deforestation alerts, updated weekly',
+  },
+  {
+    id: analysisTypes.FOREST_CHANGE_DIAGNOSTICS,
+    label: 'Post-2000 Forest Change',
+    shortLabel: 'Forest Change',
+    description: 'Annual tree cover loss since 2001 + additional contextual and regional datasets',
   },
 ];
 

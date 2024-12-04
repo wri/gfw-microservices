@@ -2,7 +2,10 @@ import React from 'react';
 import Tabs from '@mui/material/Tabs';
 import Tab from '@mui/material/Tab';
 import CircularProgress from '@mui/material/CircularProgress';
-import { analysisTypes } from '../../../../../../config/env/analysisTypes.constants';
+import {
+  analysisTypes,
+  analysisTypesOptions,
+} from '../../../../../../config/env/analysisTypes.constants';
 import { listStatus } from '../../../../../../config/env/listStatuses.constants';
 import {
   COMMODITY_RISK_VIEW,
@@ -38,6 +41,8 @@ function AnalysesTabs({
     ({ analysisId }) => analysisId === analysisTypes.DEFORESTATION_KPIS
   )?.status;
 
+  const getAnalysisLabel = (id) =>
+    analysisTypesOptions.find((analysis) => analysis.id === id).label;
   return (
     <Tabs
       value={listView}
@@ -49,7 +54,7 @@ function AnalysesTabs({
         <Tab
           icon={getStatusIcon(post2020RiskAssessmentStatus)}
           iconPosition="start"
-          label="Post-2020 Risk Assessment"
+          label={getAnalysisLabel(analysisTypes.DEFORESTATION_KPIS)}
           value={POST_2020_RISK_ASSESSMENT_VIEW}
           sx={{
             backgroundColor: listView === POST_2020_RISK_ASSESSMENT_VIEW ? 'white' : '#e5e5e5',
@@ -68,7 +73,7 @@ function AnalysesTabs({
         <Tab
           icon={getStatusIcon(post2000TreeCoverLossAnalysisStatus)}
           iconPosition="start"
-          label="POST-2000 TREE COVER LOSS"
+          label={getAnalysisLabel(analysisTypes.FOREST_CHANGE_DIAGNOSTICS)}
           value={FOREST_CHANGE_VIEW}
           sx={{
             backgroundColor: listView === FOREST_CHANGE_VIEW ? 'white' : '#e5e5e5',
@@ -88,7 +93,7 @@ function AnalysesTabs({
 
         <Tab
           iconPosition="start"
-          label="COMMODITY RISK"
+          label="Palm Risk Assessment"
           value={COMMODITY_RISK_VIEW}
           sx={{
             backgroundColor: listView === COMMODITY_RISK_VIEW ? 'white' : '#e5e5e5',

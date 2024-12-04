@@ -1,7 +1,5 @@
 import { ProcessUploadData } from './process.upload.data';
 import { Logger } from '@nestjs/common';
-import { EntitySchema } from 'typeorm';
-import { ListSchema, ListSchemaType } from '@wri-monorepos/sql';
 import { ChainType } from './types';
 
 jest.mock('@wri-monorepos/sql', () => ({
@@ -29,7 +27,7 @@ describe('ProcessUploadData', () => {
 
   beforeEach(() => {
     processUploadData = new ProcessUploadData();
-    loggerLogSpy = jest.spyOn(Logger.prototype, 'log').mockImplementation(() => {});
+    loggerLogSpy = jest.spyOn(Logger.prototype, 'log').mockImplementation(() => void 0);
   });
 
   afterEach(() => {

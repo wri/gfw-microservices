@@ -42,8 +42,6 @@ describe('csv2geojson', () => {
               test_test: 'test33',
               timeHorizon: '1 year',
               volume: 3000,
-              attributes:
-                '{"analysisRadius":{"field":"Analysis Radius","value":50,"type":"number"},"analysisArea":{"field":"Analysis Area","value":0,"type":"number"},"locationClassification":{"field":"Location Classification","value":"property","type":"string"},"companyId":{"field":"Company ID","value":1,"type":"number","custom":true},"volume":{"field":"Volume","value":3000,"type":"number"},"ownerName":{"field":"Owner Name","value":"cocoa owner name","type":"string"},"ownerId":{"field":"Owner ID","value":"id123","type":"string","custom":true},"companyName":{"field":"Company Name","value":"Company1","type":"string"},"facilityName":{"field":"Facility Name","value":"facility 12","type":"string","custom":true},"refineryName":{"field":"Refinery Name","value":"cocoa refinery 80","type":"string"},"certification":{"field":"Certification","value":"No","type":"string"},"timeHorizon":{"field":"Time Horizon","value":"1 year","type":"string"},"company__1":{"field":"company__1","value":"test2","type":"string","custom":true},"owner_na_1":{"field":"owner_na_1","value":"test2test2test2test2test2test2test2test3","type":"string","custom":true},"test_test":{"field":"test_test","value":"test33","type":"string","custom":true},"startDate":{"field":"Start Date","value":"7/1/2017","type":"string"},"endDate":{"field":"End Date","value":"7/1/2017","type":"string"},"supplierName":{"field":"Supplier Name","value":"Cocoa24","type":"string"},"errors":{"field":"Errors","value":"Unable to get data from admin feature service. Location may be over water or invalid geometry.","type":"string","custom":true}}',
             },
             type: 'Feature',
           },
@@ -80,8 +78,6 @@ describe('csv2geojson', () => {
               test_test: 'test33',
               timeHorizon: '1 year',
               volume: 3000,
-              attributes:
-                '{"analysisRadius":{"field":"Analysis Radius","value":50,"type":"number"},"analysisArea":{"field":"Analysis Area","value":0,"type":"number"},"locationClassification":{"field":"Location Classification","value":"property","type":"string"},"companyId":{"field":"Company ID","value":1,"type":"number","custom":true},"volume":{"field":"Volume","value":3000,"type":"number"},"ownerName":{"field":"Owner Name","value":"cocoa owner name","type":"string"},"ownerId":{"field":"Owner ID","value":"id123","type":"string","custom":true},"companyName":{"field":"Company Name","value":"Company1","type":"string"},"facilityName":{"field":"Facility Name","value":"facility 12","type":"string","custom":true},"refineryName":{"field":"Refinery Name","value":"cocoa refinery 80","type":"string"},"certification":{"field":"Certification","value":"No","type":"string"},"timeHorizon":{"field":"Time Horizon","value":"1 year","type":"string"},"company__1":{"field":"company__1","value":"test2","type":"string","custom":true},"owner_na_1":{"field":"owner_na_1","value":"test2test2test2test2test2test2test2test3","type":"string","custom":true},"test_test":{"field":"test_test","value":"test33","type":"string","custom":true},"startDate":{"field":"Start Date","value":"7/1/2017","type":"string"},"endDate":{"field":"End Date","value":"7/1/2017","type":"string"},"supplierName":{"field":"Supplier Name","value":"Cocoa24","type":"string"},"errors":{"field":"Errors","value":"Unable to get data from admin feature service. Location may be over water or invalid geometry.","type":"string","custom":true}}',
             },
             type: 'Feature',
           },
@@ -103,7 +99,6 @@ describe('csv2geojson', () => {
               type: 'Point',
             },
             properties: {
-              attributes: '{}',
               geometry: {
                 coordinates: [-120, 38.5],
                 type: 'Point',
@@ -132,7 +127,6 @@ describe('csv2geojson', () => {
               type: 'Point',
             },
             properties: {
-              attributes: '{}',
               geometry: {
                 coordinates: [-120, 38.5],
                 type: 'Point',
@@ -146,7 +140,6 @@ describe('csv2geojson', () => {
               type: 'Point',
             },
             properties: {
-              attributes: '{}',
               geometry: {
                 coordinates: [-121.5, 39],
                 type: 'Point',
@@ -204,61 +197,5 @@ describe('csv2geojson', () => {
       });
       done();
     });
-  });
-
-  it('should include the original field names in attributes', async () => {
-    const csvData = `Latitude,Longitude,Location Name,Shipping Units,Custom Field
-66.4809422,177.6388311,random835,3,CustomValue`;
-
-    const result = await csv2geojson(csvData);
-    const { features } = result as FeatureCollection;
-
-    const attributes = JSON.parse(features[0].properties.attributes as string);
-
-    // verify that 'field' property matches the original CSV header
-    expect(attributes.shippingUnits.field).toBe('Shipping Units');
-    expect(attributes.customField.field).toBe('Custom Field');
-  });
-
-  it('should include the type and handle empty values as strings', async () => {
-    const csvData = `Latitude,Longitude,Shipping Units,Custom Field
-66.4809422,177.6388311,,`;
-
-    const result = await csv2geojson(csvData);
-    const { features } = result as FeatureCollection;
-
-    const attributes = JSON.parse(features[0].properties.attributes as string);
-
-    // empty values handled as empty strings with type 'string'
-    expect(attributes.shippingUnits.value).toBe('');
-    expect(attributes.shippingUnits.type).toBe('string');
-  });
-
-  it('should mark custom fields with custom: true', async () => {
-    const csvData = `Latitude,Longitude,Custom Field
-66.4809422,177.6388311,CustomValue`;
-
-    const result = await csv2geojson(csvData);
-    const { features } = result as FeatureCollection;
-
-    const attributes = JSON.parse(features[0].properties.attributes as string);
-
-    // 'customField' is not in the entity definition, so it should be marked as custom
-    expect(attributes.customField.custom).toBe(true);
-  });
-
-  it('should exclude required fields and columnsToExclude from attributes', async () => {
-    const csvData = `Latitude,Longitude,Volume,Commodity
-66.4809422,177.6388311,3000,Oil`;
-
-    const result = await csv2geojson(csvData);
-    const { features } = result as FeatureCollection;
-
-    const attributes = JSON.parse(features[0].properties.attributes as string);
-
-    // 'volume' is an optional field and should be present attributes
-    expect(attributes).toHaveProperty('volume');
-    // 'commodity' is in columnsToExclude and should not be in attributes
-    expect(attributes).not.toHaveProperty('commodity');
   });
 });

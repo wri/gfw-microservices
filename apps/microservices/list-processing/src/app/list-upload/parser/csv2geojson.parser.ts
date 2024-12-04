@@ -17,7 +17,7 @@ export const csv2geojson = async (
   const toCamelCase = (str: string) => {
     return str
       .toLowerCase()
-      .replace(/(?:^\w|[A-Z]|\b\w)/g, (match, index) =>
+      .replace(/(?:^\w|[A-Z]|\b\w|\s+)/g, (match, index) =>
         index === 0 ? match.toLowerCase() : match.toUpperCase()
       )
       .replace(/\s+/g, '');
@@ -116,7 +116,7 @@ export const csv2geojson = async (
   };
 
   const convertToGeoJSON = (results, reject, resolve) => {
-    const { data, errors, meta } = results;
+    const { data, errors } = results;
     if (errors.length > 0) {
       logger.error(errors);
       reject(errors);
@@ -126,14 +126,6 @@ export const csv2geojson = async (
       type: 'FeatureCollection',
       features: [],
     };
-
-    const headers = meta.fields; // original headers
-    const headerMappings = {};
-
-    headers.forEach((header) => {
-      const camelCaseHeader = toCamelCase(header);
-      headerMappings[camelCaseHeader] = header;
-    });
 
     (data as Array<LocationData>).forEach((row: LocationData) => {
       row = standardizeLocationData(row);

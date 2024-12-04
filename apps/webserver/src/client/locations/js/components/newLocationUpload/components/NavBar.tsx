@@ -5,6 +5,7 @@ import { ArrowBack } from '@mui/icons-material';
 import { useUploadLocation } from '../contexts';
 import { UploadType } from '../types';
 import { useLocation } from 'react-router-dom';
+import { Routes } from '../UploadLocationRouter';
 
 export function NavBar() {
   const { clearUploadType, uploadType } = useUploadLocation();
@@ -17,9 +18,9 @@ export function NavBar() {
 
   const getStepIndex = (path: string) => {
     const stepMap = {
-      CONFIGURE_LIST: 'Configure List',
-      PREVIEW: 'Preview',
-      SUBMIT: 'Submit',
+      [Routes.CONFIGURE_LIST]: 'Configure List',
+      [Routes.PREVIEW]: 'Preview',
+      [Routes.SUBMIT]: 'Submit',
     };
 
     const step = stepMap[path as keyof typeof stepMap];

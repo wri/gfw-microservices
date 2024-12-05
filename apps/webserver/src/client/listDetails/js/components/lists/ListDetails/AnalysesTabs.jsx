@@ -22,8 +22,6 @@ function AnalysesTabs({
 }) {
   const getStatusIcon = (status) => {
     switch (status) {
-      case listStatus.Draft:
-        return <span className="status-indicator status-indicator--blue" />;
       case listStatus.Pending:
         return <CircularProgress size={15} sx={{ color: '#97bd3d' }} />;
       case listStatus.Inactive:

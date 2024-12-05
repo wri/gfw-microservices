@@ -1,7 +1,10 @@
 import React from 'react';
 import Chip from '@mui/material/Chip';
 import RefreshIcon from '@mui/icons-material/Refresh';
-import { analysisTypesOptions } from '../../../../../../config/env/analysisTypes.constants';
+import {
+  analysisTypesOptions,
+  analysisTypesOptionsNewNames,
+} from '../../../../../../config/env/analysisTypes.constants';
 import { listStatus } from '../../../../../../config/env/listStatuses.constants';
 import featureFlags from '../../../../utils/general.utils';
 import '../../../../css/analysisChips.scss';

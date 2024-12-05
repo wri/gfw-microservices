@@ -6,7 +6,7 @@ import {
   analysisTypesOptionsNewNames,
 } from '../../../../../../config/env/analysisTypes.constants';
 import { listStatus } from '../../../../../../config/env/listStatuses.constants';
-import featureFlags from '../../../../utils/general.utils';
+import featureFlags from '../../../../../../utils/general.utils';
 import '../../../../css/analysisChips.scss';
 
 function AnalysisListChips({ listAnalysesStatus = [] }) {

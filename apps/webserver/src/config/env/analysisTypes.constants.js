@@ -31,7 +31,7 @@ const analysisTypesOptions = [
   },
 ];
 
-export const analysisTypesOptionsNewNames = [
+const analysisTypesOptionsNewNames = [
   {
     id: analysisTypes.DEFORESTATION_KPIS,
     label: 'Post-2020 Risk Assessment',

@@ -182,3 +182,27 @@ export const getListCommodity = async (req, res) => {
     res.status(500).json({ error: 'Failed to fetch commodity data' });
   }
 };
+
+export const getPreviewData = async (req, res) => {
+  const { path } = req.query;
+
+  try {
+    const url = `${process.env.LISTS_MICROSERVICE_URL}/list/upload/preview`;
+
+    const { data } = await axios.post(
+      url,
+      {
+        path,
+      },
+      {
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      }
+    );
+    res.status(200).json(data);
+  } catch (error) {
+    console.error('Error get the preview data:', error);
+    res.status(500).json({ error: 'Failed to fetch preview data' });
+  }
+};

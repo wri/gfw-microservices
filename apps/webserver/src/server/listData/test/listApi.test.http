@@ -19,3 +19,9 @@ Cookie: gfwpro.globalforestwatch.org={{gfwpro_token}}
 {
   "analysisIds": ["FCD"]
 }
+
+
+### set list preview endpoint
+GET https://localhost:8443/api/list/preview?path=114jds8z7m34nuzrz-investments_1.xlsx
+Content-Type: application/json
+Cookie: gfwpro.globalforestwatch.org={{gfwpro_token}}

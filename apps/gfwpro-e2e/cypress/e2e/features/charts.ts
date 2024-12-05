@@ -1,0 +1,38 @@
+import { When, Then, Given } from '@badeball/cypress-cucumber-preprocessor';
+import * as User from '../../app-api/User';
+import LocationsPage from '../../pages/locationsPage';
+import ListDetailsPage from '../../pages/listDetailsPage';
+import DiagnosticsPage from '../../pages/diagnosticsPage';
+
+describe('Alerts page', () => {
+  const locationsPage = new LocationsPage();
+  const listDetailsPage = new ListDetailsPage();
+  const diagnosticPage = new DiagnosticsPage();
+  Given('I login to the landing page', () => {
+    User.login();
+    cy.visit('/locations');
+  });
+
+  When('I navigate to a list details page from the Argentina list', () => {
+    locationsPage.clickOnLocationsList('Test Deforestation Arg');
+  });
+
+  When('I navigate to a list details page from the Colombia list', () => {
+    locationsPage.clickOnLocationsList('Test Deforestation Col');
+  });
+
+  When('I navigate to a diagnostics page', () => {
+    //listDetailsPage.clickOnTabTreeCoverLossBtn();
+    listDetailsPage.clickOnListDiagnosticsBtn();
+  });
+
+  Then('I should be able to control the visibility of the charts for Argentina', () => {
+    diagnosticPage.navigateToArgentinaRegionTab();
+    diagnosticPage.verifyChartArgentina();
+  });
+
+  Then('I should be able to control the visibility of the charts for Colombia', () => {
+    diagnosticPage.navigateToColombiaRegionTab();
+    diagnosticPage.verifyChartColombia();
+  });
+});

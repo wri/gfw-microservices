@@ -40,6 +40,111 @@ class DiagnosticsPage {
       .click();
   }
 
+  navigateToColombiaRegionTab() {
+    this.elements
+      .diagnosticsRegions()
+      .contains(/^Colombia$/)
+      .click();
+  }
+
+  verifyChartArgentina() {
+    cy.contains('ARGENTINIAN DEFORESTATION');
+    cy.get('[style="margin-top: 30px;"] > :nth-child(5) > .MuiCardContent-root').should(
+      'be.visible'
+    );
+    cy.get('[data-cy="argentina-tree-cover-loss"] > .legend-square-label').should('be.visible');
+    cy.get(':nth-child(2) > .chart-legends-table__label > label').should('be.visible');
+    cy.get(':nth-child(3) > .chart-legends-table__label > label').should('be.visible');
+    cy.get('[data-cy="argentina-protected-areas"] > .legend-square-label').should('be.visible');
+    cy.get('[data-cy="argentina-indigenous-territories"] > .legend-square-label').should(
+      'be.visible'
+    );
+    cy.get('[data-cy="annual-loss-OTBN"]').should('be.visible');
+    cy.get('[style="display: flex; align-items: center;"]').should('be.visible');
+    cy.get(':nth-child(7) > [data-testid="chart-header-title"]').should('be.visible');
+    cy.get(':nth-child(8) > .MuiCardContent-root').should('be.visible');
+    cy.get(
+      ':nth-child(8) > .MuiCardContent-root > [data-testid="pie-chart"] > .chart-legends-table > table > tbody > :nth-child(1) > :nth-child(1)'
+    ).should('be.visible');
+    cy.get(
+      ':nth-child(8) > .MuiCardContent-root > [data-testid="pie-chart"] > .chart-legends-table > table > tbody > :nth-child(2) > :nth-child(1)'
+    ).should('be.visible');
+    cy.get(
+      ':nth-child(8) > .MuiCardContent-root > [data-testid="pie-chart"] > .chart-legends-table > table > tbody > :nth-child(3) > :nth-child(1)'
+    ).should('be.visible');
+    cy.get(
+      '[data-testid="pie-chart"] > .chart-legends-table > table > tbody > :nth-child(4) > :nth-child(1)'
+    ).should('be.visible');
+    cy.get(':nth-child(9) > [data-testid="chart-header-title"]').should('be.visible');
+    cy.get(':nth-child(10) > .MuiCardContent-root').should('be.visible');
+    cy.get(
+      ':nth-child(10) > .MuiCardContent-root > [data-testid="pie-chart"] > .chart-legends-table > table > tbody > :nth-child(1) > :nth-child(1)'
+    ).should('be.visible');
+    cy.get(
+      ':nth-child(10) > .MuiCardContent-root > [data-testid="pie-chart"] > .chart-legends-table > table > tbody > :nth-child(2) > :nth-child(1)'
+    ).should('be.visible');
+    cy.get(
+      ':nth-child(10) > .MuiCardContent-root > [data-testid="pie-chart"] > .chart-legends-table > table > tbody > :nth-child(3) > :nth-child(1)'
+    ).should('be.visible');
+    cy.get(':nth-child(11) > [data-testid="chart-header-title"]').should('be.visible');
+    cy.get(':nth-child(12) > .MuiCardContent-root').should('be.visible');
+    cy.get(
+      ':nth-child(12) > .MuiCardContent-root > [data-testid="pie-chart"] > .chart-legends-table > table > tbody > :nth-child(1) > :nth-child(1) > label'
+    ).should('be.visible');
+    cy.get(
+      ':nth-child(12) > .MuiCardContent-root > [data-testid="pie-chart"] > .chart-legends-table > table > tbody > :nth-child(2) > :nth-child(1) > label'
+    ).should('be.visible');
+  }
+  verifyChartColombia() {
+    cy.contains('COLOMBIAN DEFORESTATION').should('be.visible');
+    cy.get('[style="margin-top: 30px;"] > :nth-child(5) > .MuiCardContent-root').should(
+      'be.visible'
+    );
+    cy.get('[data-cy="colombian-tree-cover-loss"] > .legend-square-label').should('be.visible');
+    cy.get(
+      ':nth-child(5) > .MuiCardContent-root > .diagnostics-chart-container > .chart-legends-table > table > tbody > :nth-child(2) > :nth-child(1)'
+    ).should('be.visible');
+    cy.get(
+      ':nth-child(5) > .MuiCardContent-root > .diagnostics-chart-container > .chart-legends-table > table > tbody > :nth-child(4) > :nth-child(1)'
+    ).should('be.visible');
+    cy.get(
+      ':nth-child(5) > .MuiCardContent-root > .diagnostics-chart-container > .chart-legends-table > table > tbody > :nth-child(12) > :nth-child(1)'
+    ).should('be.visible');
+    cy.get('[data-cy="protected-areas"] > .legend-square-label').should('be.visible');
+    cy.get('[data-cy="indigenous-territories"] > .legend-square-label').should('be.visible');
+    cy.get(':nth-child(6) > [data-testid="chart-header-title"]').should('be.visible');
+    cy.get(':nth-child(7) > .MuiCardContent-root').should('be.visible');
+    cy.get(
+      ':nth-child(7) > .MuiCardContent-root > [data-testid="pie-chart"] > .chart-legends-table > table > tbody > :nth-child(1) > :nth-child(1)'
+    ).should('be.visible');
+    cy.get(
+      ':nth-child(7) > .MuiCardContent-root > [data-testid="pie-chart"] > .chart-legends-table > table > tbody > :nth-child(3) > :nth-child(1)'
+    ).should('be.visible');
+    cy.get(
+      '[data-testid="pie-chart"] > .chart-legends-table > table > tbody > :nth-child(11) > :nth-child(1)'
+    ).should('be.visible');
+
+    cy.get(':nth-child(8) > [data-testid="chart-header-title"]').should('be.visible');
+    cy.get(':nth-child(9) > .MuiCardContent-root').should('be.visible');
+    cy.get(
+      ':nth-child(9) > .MuiCardContent-root > [data-testid="pie-chart"] > .chart-legends-table > table > tbody > :nth-child(1) > :nth-child(1)'
+    ).should('be.visible');
+    cy.get(
+      ':nth-child(9) > .MuiCardContent-root > [data-testid="pie-chart"] > .chart-legends-table > table > tbody > :nth-child(2) > :nth-child(1)'
+    ).should('be.visible');
+    cy.get(
+      ':nth-child(9) > .MuiCardContent-root > [data-testid="pie-chart"] > .chart-legends-table > table > tbody > :nth-child(3) > :nth-child(1)'
+    ).should('be.visible');
+    cy.get(':nth-child(10) > [data-testid="chart-header-title"]').should('be.visible');
+    cy.get(':nth-child(11) > .MuiCardContent-root').should('be.visible');
+    cy.get(
+      ':nth-child(11) > .MuiCardContent-root > [data-testid="pie-chart"] > .chart-legends-table > table > tbody > :nth-child(1) > :nth-child(1)'
+    ).should('be.visible');
+    cy.get(
+      ':nth-child(11) > .MuiCardContent-root > [data-testid="pie-chart"] > .chart-legends-table > table > tbody > :nth-child(2) > :nth-child(1)'
+    ).should('be.visible');
+  }
+
   verifyHistoricSiteCharacteristicsInfoBubble() {
     this.elements.infoBubbleTitle().should('have.text', 'Historic Site Characteristics');
     this.elements

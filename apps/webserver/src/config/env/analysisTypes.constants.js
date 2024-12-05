@@ -12,7 +12,26 @@ const analysisTypes = {
   ALERTS: 'ALERTS',
 };
 
+// remove these constant names when isListDetailsPageRedesignAvailable feature flag is removed
 const analysisTypesOptions = [
+  {
+    id: analysisTypes.FOREST_CHANGE_DIAGNOSTICS,
+    label: 'Forest Change Global',
+    shortLabel: 'Forest Change',
+  },
+  {
+    id: analysisTypes.DEFORESTATION_KPIS,
+    label: 'Deforestation Reporting (cutoff date 2020)',
+    shortLabel: 'Reporting',
+  },
+  {
+    id: analysisTypes.ALERTS,
+    label: 'NEAR-REAL TIME ALERTS (INTEGRATED ALERTS, VIIRS)',
+    shortLabel: 'Alerts',
+  },
+];
+
+export const analysisTypesOptionsNewNames = [
   {
     id: analysisTypes.DEFORESTATION_KPIS,
     label: 'Post-2020 Risk Assessment',
@@ -36,4 +55,5 @@ const analysisTypesOptions = [
 module.exports = {
   analysisTypes,
   analysisTypesOptions,
+  analysisTypesOptionsNewNames,
 };

@@ -4,7 +4,7 @@ import Tab from '@mui/material/Tab';
 import CircularProgress from '@mui/material/CircularProgress';
 import {
   analysisTypes,
-  analysisTypesOptions,
+  analysisTypesOptionsNewNames,
 } from '../../../../../../config/env/analysisTypes.constants';
 import { listStatus } from '../../../../../../config/env/listStatuses.constants';
 import {
@@ -42,7 +42,7 @@ function AnalysesTabs({
   )?.status;
 
   const getAnalysisLabel = (id) =>
-    analysisTypesOptions.find((analysis) => analysis.id === id).label;
+    analysisTypesOptionsNewNames.find((analysis) => analysis.id === id).label;
   return (
     <Tabs
       value={listView}

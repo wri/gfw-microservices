@@ -2,8 +2,14 @@ import React from 'react';
 import { Typography, Box, Link, Checkbox, FormControlLabel, FormGroup } from '@mui/material';
 import { ThemeProvider } from '../../../../styles/ThemeProvider';
 import { locationsPage } from '../../config';
-import { analysisTypesOptions } from '../../../../../config/env/analysisTypes.constants';
+import {
+  analysisTypesOptions,
+  analysisTypesOptionsNewNames,
+} from '../../../../../config/env/analysisTypes.constants';
 import BetaTag from '../BetaTag';
+import featureFlags from '../../../../../utils/general.utils';
+
+const { isListDetailsPageRedesignAvailable } = featureFlags;
 import './AnalysisTypesSelector.scss';
 
 function AnalysisTypesSelector({ selectedAnalyses, setSelectedAnalyses }) {
@@ -16,7 +22,9 @@ function AnalysisTypesSelector({ selectedAnalyses, setSelectedAnalyses }) {
     }
     setSelectedAnalyses(selection);
   };
-
+  const analysisOptions = isListDetailsPageRedesignAvailable
+    ? analysisTypesOptionsNewNames
+    : analysisTypesOptions;
   return (
     <ThemeProvider>
       <FormGroup className="analysis-types-selector">
@@ -29,7 +37,7 @@ function AnalysisTypesSelector({ selectedAnalyses, setSelectedAnalyses }) {
           </Link>
         </Typography>
         <br />
-        {analysisTypesOptions.map(({ id, label, description }) => (
+        {analysisOptions.map(({ id, label, description }) => (
           <div key={id}>
             <FormControlLabel
               control={
@@ -45,7 +53,7 @@ function AnalysisTypesSelector({ selectedAnalyses, setSelectedAnalyses }) {
                     <Typography variant="body1">{label}</Typography>
                     {id === 'AFI' && <BetaTag>(PREVIEW)</BetaTag>}
                   </Box>
-                  <Typography variant="caption">{description}</Typography>
+                  {description && <Typography variant="caption">{description}</Typography>}
                 </>
               }
             />

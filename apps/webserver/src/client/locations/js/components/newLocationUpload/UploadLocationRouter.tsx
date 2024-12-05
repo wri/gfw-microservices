@@ -11,6 +11,7 @@ import {
   UploadLocationOptions,
   ConfigureList,
 } from './pages';
+import { UploadLocationPreview } from './pages/UploadLocationPreview';
 
 export const UploadLocationRoutes = {
   LOCATIONS: '/',
@@ -41,6 +42,7 @@ export function UploadLocationRouter() {
           />
           <Route path={UploadLocationRoutes.UPLOAD_BY_POINT} component={UploadLocationByPoint} />
           <Route path={UploadLocationRoutes.CONFIGURE_LIST} component={ConfigureList} />
+          <Route path={UploadLocationRoutes.PREVIEW} component={UploadLocationPreview} />
         </Switch>
       </Box>
     </ThemeProvider>

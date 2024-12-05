@@ -1,4 +1,4 @@
-import React, { DragEvent, useState } from 'react';
+import React, { Dispatch, DragEvent, SetStateAction, useState } from 'react';
 import {
   Box,
   Card,
@@ -15,15 +15,19 @@ import { PillButton } from '../../../../../components';
 import { VALID_UPLOAD_FILE_FORMATS } from '../utils/constants';
 import { DataTemplates, NavBar } from '../components';
 import { useUploadLocation } from '../contexts';
+import { LocationListType } from '../types';
+import { getLocationListFromFile } from '../utils/upload';
+import { useHistory } from '../hooks';
 
 export function UploadLocationByFile() {
   const theme = useTheme();
+  const history = useHistory();
 
-  const { clearUploadType } = useUploadLocation();
+  const { clearUploadType, selectUploadLocationsList } = useUploadLocation();
 
   const [isDragAndDropActive, setIsDragAndDropActive] = useState(false);
-  const [isDialogOpen, setIsDialogOpen] = React.useState(false);
-  const [isDataTemplateModalOpen, setIsDataTemplateModalOpen] = React.useState(false);
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const [isDataTemplateModalOpen, setIsDataTemplateModalOpen] = useState(false);
 
   const fileUpload = (event: DragEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -42,7 +46,9 @@ export function UploadLocationByFile() {
       return;
     }
 
-    console.log('uploading file...');
+    getLocationListFromFile(file).then((data) => {
+      selectUploadLocationsList(data as LocationListType[]);
+    });
   };
 
   const handleFormDragEnter = (event: DragEvent<HTMLFormElement>) => {
@@ -171,7 +177,7 @@ export function UploadLocationByFile() {
           >
             Cancel
           </PillButton>
-          <PillButton variant="contained" startIcon={<ArrowForwardIos />}>
+          <PillButton variant="contained" onClick={() => history.push('PREVIEW')} startIcon={<ArrowForwardIos />}>
             Next
           </PillButton>
         </Box>

@@ -396,7 +396,7 @@ class Locations extends Component {
           </Route>
           <Route path="/upload-location">
             <UploadLocationProvider>
-              <UploadLocationRouter />
+              <UploadLocationRouter userLists={userLists} />
             </UploadLocationProvider>
           </Route>
           <Route>

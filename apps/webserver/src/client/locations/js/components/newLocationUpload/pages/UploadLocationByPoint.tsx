@@ -73,6 +73,7 @@ export function UploadLocationByPoint() {
 
   const onSubmit = (data: FormFields) => {
     console.log({ data });
+    history.push('CONFIGURE_LIST');
   };
 
   return (
@@ -328,7 +329,6 @@ export function UploadLocationByPoint() {
                 variant="contained"
                 startIcon={<ArrowForwardIos />}
                 disabled={locationFormat === null}
-                onClick={() => history.push('CONFIGURE_LIST')}
               >
                 Next
               </PillButton>

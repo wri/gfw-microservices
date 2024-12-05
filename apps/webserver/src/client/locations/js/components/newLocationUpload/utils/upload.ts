@@ -20,18 +20,16 @@ export const convertCSVtoJson = (file: File) => {
       },
     });
   });
-}
+};
 
 export const convertZIPtoJson = (file: File) => {
   const formData = new FormData();
   formData.append('file', file);
 
-  return axios
-  .post(convertURL, formData)
-  .then((response) => {
+  return axios.post(convertURL, formData).then((response) => {
     return response.data?.data?.attributes?.features;
   });
-}
+};
 
 export const convertXlsxToJson = (file: File) => {
   return new Promise((resolve, reject) => {
@@ -59,31 +57,48 @@ export const convertXlsxToJson = (file: File) => {
     reader.onerror = (error) => reject(error);
     reader.readAsArrayBuffer(file);
   });
-}
+};
 
 export const convertKMZAndKMLToJson = (file: File) => {
   return new Promise((resolve, reject) => {
     try {
       load(file, KMLLoader).then((data) => {
         resolve(data.features);
-      })     
+      });
     } catch (error) {
-      reject(error)
+      reject(error);
     }
   });
-}
+};
 
 export const getLocationListFromFile = (file: File) => {
-  const formData = new FormData();
-  formData.append('file', file);
-  
-  return axios
-  .post(convertURL, formData)
-  .then((response) => {
-    return response.data?.data?.attributes?.features;
-  });
-}
+  return new Promise((resolve, reject) => {
+    const fileExtension = file.name.split('.').pop()?.toLowerCase();
 
+    if (!fileExtension) {
+      reject(new Error('File does not have a valid extension.'));
+      return;
+    }
+
+    switch (fileExtension) {
+      case 'csv':
+        convertCSVtoJson(file).then(resolve).catch(reject);
+        break;
+      case 'zip':
+        convertZIPtoJson(file).then(resolve).catch(reject);
+        break;
+      case 'xlsx':
+        convertXlsxToJson(file).then(resolve).catch(reject);
+        break;
+      case 'kml':
+      case 'kmz':
+        convertKMZAndKMLToJson(file).then(resolve).catch(reject);
+        break;
+      default:
+        reject(new Error('Unsupported file type.'));
+    }
+  });
+};
 export const LabelNameTable = {
   Location_N: 'Location Name',
   Latitude: 'Latitude',
@@ -103,4 +118,4 @@ export const LabelNameTable = {
   Start_Date: 'Start Date',
   End_Date: 'End Date',
   Time_Horiz: 'Time Horizon',
-} 
+};

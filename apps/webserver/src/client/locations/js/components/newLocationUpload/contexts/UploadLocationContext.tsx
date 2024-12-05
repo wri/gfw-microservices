@@ -36,7 +36,15 @@ export function UploadLocationProvider({ children }: UploadLocationProviderProps
   };
 
   return (
-    <UploadLocationContext.Provider value={{ uploadType, selectUploadType, clearUploadType, uploadLocationsList, selectUploadLocationsList }}>
+    <UploadLocationContext.Provider
+      value={{
+        uploadType,
+        selectUploadType,
+        clearUploadType,
+        uploadLocationsList,
+        selectUploadLocationsList,
+      }}
+    >
       {children}
     </UploadLocationContext.Provider>
   );

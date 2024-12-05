@@ -6,10 +6,6 @@ export enum UploadType {
 
 export type MeasurementUnit = 'hectares' | 'kilometers';
 
-export type ChangePageType = {
-  setUploadType: (type: UploadType | null) => void;
-};
-
 type GeometryType = {
   type: string;
   coordinates: number[][][];
@@ -44,4 +40,3 @@ export type LocationListType = {
   geometry: GeometryType;
   properties: FeatureProperties;
 };
-

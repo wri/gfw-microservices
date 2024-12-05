@@ -10,8 +10,8 @@ import {
   UploadLocationByPoint,
   UploadLocationOptions,
   ConfigureList,
+  UploadLocationPreview,
 } from './pages';
-import { UploadLocationPreview } from './pages/UploadLocationPreview';
 
 export const UploadLocationRoutes = {
   LOCATIONS: '/',

@@ -23,7 +23,7 @@ export function UploadLocationByFile() {
   const theme = useTheme();
   const history = useHistory();
 
-  const { clearUploadType, selectUploadLocationsList } = useUploadLocation();
+  const { clearUploadType, selectUploadLocationsList, uploadLocationsList } = useUploadLocation();
 
   const [isDragAndDropActive, setIsDragAndDropActive] = useState(false);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
@@ -177,7 +177,12 @@ export function UploadLocationByFile() {
           >
             Cancel
           </PillButton>
-          <PillButton variant="contained" onClick={() => history.push('PREVIEW')} startIcon={<ArrowForwardIos />}>
+          <PillButton
+            variant="contained"
+            disabled={!uploadLocationsList}
+            onClick={() => history.push('PREVIEW')}
+            startIcon={<ArrowForwardIos />}
+          >
             Next
           </PillButton>
         </Box>

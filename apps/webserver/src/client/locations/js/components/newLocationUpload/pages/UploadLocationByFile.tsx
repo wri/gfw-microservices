@@ -1,4 +1,4 @@
-import React, { Dispatch, DragEvent, SetStateAction, useState } from 'react';
+import React, { DragEvent, useState } from 'react';
 import {
   Box,
   Card,

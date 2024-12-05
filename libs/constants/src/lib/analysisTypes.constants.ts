@@ -12,6 +12,7 @@ export const analysisTypes = {
   ALERTS: 'ALERTS',
 };
 
+// update these constant names when isListDetailsPageRedesignAvailable feature flag is removed
 export const analysisTypesOptions = [
   {
     id: analysisTypes.FOREST_CHANGE_DIAGNOSTICS,

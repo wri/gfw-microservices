@@ -422,6 +422,7 @@ export async function getPaginatedAnalysisDataForProtectedAreas(
   pageSize,
   database,
   filters,
+  filterString,
   tableSortedBy,
   tableSortedDesc
 ) {
@@ -432,6 +433,7 @@ export async function getPaginatedAnalysisDataForProtectedAreas(
     pageSize,
     database,
     filters,
+    filterString,
     tableSortedBy,
     tableSortedDesc
   );
@@ -443,6 +445,7 @@ export async function getPaginatedAnalysisDataForAdministrativeAreas(
   pageSize,
   database,
   filters,
+  filterString,
   tableSortedBy,
   tableSortedDesc
 ) {
@@ -453,6 +456,7 @@ export async function getPaginatedAnalysisDataForAdministrativeAreas(
     pageSize,
     database,
     filters,
+    filterString,
     tableSortedBy,
     tableSortedDesc
   );
@@ -487,7 +491,7 @@ export async function getAFIListAnalyses(list_id, page, pageSize, clientDatabase
   const parameters = [
     { field: 'listId', type: sql.Int, value: list_id },
     { field: 'rowsOfPage', type: sql.Int, value: pageSize },
-    { field: 'pageNumber', type: sql.Int, value: page - 1 },
+    { field: 'pageNumber', type: sql.Int, value: page },
     { field: 'orderType', type: sql.NVarChar(255), value: orderType || 'ASC' },
     { field: 'selectedSupplier', type: sql.NVarChar(255), value: selectedSupplier || null },
     {
@@ -535,7 +539,8 @@ export async function getAFIListAnalyses(list_id, page, pageSize, clientDatabase
     getPaginatedAfiAnalysisByListIdSortedByFilters,
     parameters
   );
-  const quantity = listAnalyses?.length > 0 ? listAnalyses.length : 0;
+
+  const numberOfResults = listAnalyses?.[0]?.totalRows;
 
   const formattedListAnalyses = listAnalyses.map((analysis) => {
     const formatPercentage = (numerator, denominator) => {
@@ -563,5 +568,5 @@ export async function getAFIListAnalyses(list_id, page, pageSize, clientDatabase
     };
   });
 
-  return { listAnalyses: formattedListAnalyses, quantity };
+  return { listAnalyses: formattedListAnalyses, numberOfResults };
 }

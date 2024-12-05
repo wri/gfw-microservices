@@ -31,7 +31,7 @@ import {
   NotFoundResponse,
   ForbiddenResponse,
   BadRequestResponse,
-  ErroResponseWithErroMessage,
+  ErrorResponseWithErrorMessage,
   DeleteListMessageResponse,
   InternalServerErrorResponse,
 } from './dtos/apiResponse';
@@ -47,7 +47,7 @@ export class ListAnalysisController {
   @ApiUnauthorizedResponse({ status: 401, type: UnauthorizedResponse })
   @ApiBadRequestResponse({ type: BadRequestResponse })
   @ApiForbiddenResponse({ type: ForbiddenResponse })
-  @ApiNotFoundResponse({ type: ErroResponseWithErroMessage })
+  @ApiNotFoundResponse({ type: ErrorResponseWithErrorMessage })
   @Get(':listId/analysis/:analysisId/status')
   async getAnalysisStatus(
     @Param('listId', new ZodValidationPipe(listIdSchema)) listId: number,
@@ -155,7 +155,7 @@ export class ListAnalysisController {
   @ApiUnauthorizedResponse({ status: 401, type: UnauthorizedResponse })
   @ApiBadRequestResponse({ type: BadRequestResponse })
   @ApiForbiddenResponse({ type: ForbiddenResponse })
-  @ApiNotFoundResponse({ type: ErroResponseWithErroMessage })
+  @ApiNotFoundResponse({ type: ErrorResponseWithErrorMessage })
   @ApiInternalServerErrorResponse({ type: InternalServerErrorResponse })
   @Get(':listId')
   async getListInfo(
@@ -179,7 +179,7 @@ export class ListAnalysisController {
   @ApiUnauthorizedResponse({ status: 401, type: UnauthorizedResponse })
   @ApiBadRequestResponse({ type: BadRequestResponse })
   @ApiForbiddenResponse({ type: ForbiddenResponse })
-  @ApiNotFoundResponse({ type: ErroResponseWithErroMessage })
+  @ApiNotFoundResponse({ type: ErrorResponseWithErrorMessage })
   @ApiInternalServerErrorResponse({ type: InternalServerErrorResponse })
   async getPaginatedLists(
     @Query('pageSize', new ZodValidationPipe(pageSizeSchema)) pageSize: number,

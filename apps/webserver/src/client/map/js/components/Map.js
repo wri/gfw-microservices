@@ -1881,18 +1881,18 @@ class Map extends Component {
           console.log(`Error: ${err}`);
           store.dispatch(showMapLoader(false));
         });
-        // set up banner info for selected locations
-        transitionListData = {
-          id: list.id,
-          numLocations: list.list_locations_count,
-          name: list.list_name,
-          alertsMapExtent,
-          isGfwList: false,
-        };
-        // set list and display map
-        store.dispatch(selectList(list));
-        store.dispatch(resetList(list));
-        this.setState({ transitionListData });
+      // set up banner info for selected locations
+      transitionListData = {
+        id: list.id,
+        numLocations: list.list_locations_count,
+        name: list.list_name,
+        alertsMapExtent,
+        isGfwList: false,
+      };
+      // set list and display map
+      store.dispatch(selectList(list));
+      store.dispatch(resetList(list));
+      this.setState({ transitionListData });
     }
     // handle all locations
     else if (!selectedLocations) {

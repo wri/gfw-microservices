@@ -28,7 +28,7 @@ export const oversizedUploadText =
 
 // IF YOU ARE CHANGING THE YEAR, CONSIDER SYNCING WITH libs/constants/src/lib/diagnostic-constants.ts
 export const latestTreeCoverLossYearForTclDataInMap = 2023;
-export const latestTreeCoverLossYearCommodityRisk = 2022;
+export const latestTreeCoverLossYearCommodityRisk = 2023;
 export const earliestTreeCoverLossYearCommodityRisk = 2002;
 export const latestTreeCoverLossYearForTclDataInAnalyses = 2023;
 
@@ -42,7 +42,7 @@ export const GFW_PRO_HELP_CENTER__LINK = 'https://www.globalforestwatch.org/help
 export const GFW_PRO_HELP_CENTER__LABEL = 'Help Center';
 
 export const pro_AWS_base = 'https://dpptfqp76xood.cloudfront.net';
-const aws_templates = `${pro_AWS_base}/templates/`;
+export const aws_templates = `${pro_AWS_base}/templates/`;
 
 export const termsAndConditions =
   'https://d1ps9kreypzu9a.cloudfront.net/Training%20Guides/GFW%20Pro%20Landing%20Page/World%20Resources%20Institute%20-%20GFW%20Pro%20-%20Terms%20of%20Service%207_2_2018.pdf';
@@ -272,7 +272,7 @@ export const locationsPage = {
     delete: 'Delete',
     move: 'Move',
     moveExistingDescription:
-      'Note: only compatible locations can belong to the same list, i.e., same location classification, same location or commodity type and location template.',
+      'Note: Lists must have the same commodity defined in order to copy or move locations between lists. Your additional attribute data will be merged when attribute names match. Additional attribute data that does not match will be assigned separate columns.',
     moveLocationsDialogHeader: 'Move selection',
     moveToNewListLabel: 'List name',
     moveToNewListDuplicate: 'A list with this name already exists',

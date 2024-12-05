@@ -82,16 +82,21 @@ const GFWProtectedForestChangeFilter: React.FC<GFWProtectedForestChangeFilterPro
     });
   };
 
-  const onProtectedAreasChange = (values: any) => {
-    setState({ ...state, selectedNames: values });
+  const onProtectedAreasChange = (event: any, newValue: any[]) => {
+    setState((prevState) => ({
+      ...prevState,
+      selectedNames: newValue.map((s) => s.value),
+    }));
   };
 
   const updateValues = () => {
     let filterCount = 0;
     Object.keys(state).forEach((key) => {
-      if (state[key as keyof DefaultFilterValues]) filterCount++;
+      const value = state[key as keyof DefaultFilterValues];
+      if (value !== null && value !== '' && (!Array.isArray(value) || value.length > 0)) {
+        filterCount++;
+      }
     });
-
     const filters = {
       selectedCountry: state.selectedCountry,
       selectedState: state.selectedState,
@@ -116,7 +121,9 @@ const GFWProtectedForestChangeFilter: React.FC<GFWProtectedForestChangeFilterPro
   const states = Array.from(
     new Set(
       protectedAreas
-        .filter((location) => location.Country === state.selectedCountry)
+        .filter(
+          (location) => location.Country === state.selectedCountry && location?.State?.trim().length
+        )
         .map((list) => list.State)
     )
   ).sort();
@@ -125,36 +132,53 @@ const GFWProtectedForestChangeFilter: React.FC<GFWProtectedForestChangeFilterPro
       protectedAreas
         .filter(
           (location) =>
-            location.Country === state.selectedCountry && location.State === state.selectedState
+            location.Country === state.selectedCountry &&
+            location.State === state.selectedState &&
+            location?.['Sub State']?.trim().length
         )
         .map((list) => list['Sub State'])
     )
   ).sort();
+
   const designationTypeOptions = Array.from(
     new Set(
       protectedAreas
         .filter(
           (location) =>
-            location.Country === state.selectedCountry && location.State === state.selectedState
+            location.Country === state.selectedCountry &&
+            location.State === state.selectedState &&
+            location?.['Designation Type']?.trim().length
         )
         .map((list) => list['Designation Type'])
     )
-  ).sort();
+  )
+    .sort()
+    ?.slice(0, 400);
+
   const designationOptions = Array.from(
     new Set(
       protectedAreas
         .filter(
           (location) =>
-            location.Country === state.selectedCountry && location.State === state.selectedState
+            location.Country === state.selectedCountry &&
+            location.State === state.selectedState &&
+            location?.Designation?.trim().length
         )
         .map((list) => list.Designation)
     )
-  ).sort();
+  )
+    .sort()
+    ?.slice(0, 400);
 
   const protectedAreasOptions = Array.from(
     new Set(
       protectedAreas
-        .filter((location) => location['Location Name'])
+        .filter(
+          (location) =>
+            location.Country === state.selectedCountry &&
+            location.State === state.selectedState &&
+            location?.['Location Name']?.trim().length
+        )
         .map((list) => list['Location Name'])
     )
   )
@@ -163,7 +187,6 @@ const GFWProtectedForestChangeFilter: React.FC<GFWProtectedForestChangeFilterPro
 
   const isCountrySetInFilter = !!store.getState().filters?.selectedCountry;
   const isCountrySetInState = !!state?.selectedCountry;
-
   return (
     <Modal open={isFilterModalVisible} onClose={onCloseHandler}>
       <Box sx={boxStyle}>
@@ -179,9 +202,10 @@ const GFWProtectedForestChangeFilter: React.FC<GFWProtectedForestChangeFilterPro
             subStates={subStates}
             selectedSubState={state.selectedSubState}
             onSubStateChange={onSubStateChange}
+            isCountryFieldRequired
           />
           <Grid item xs={6}>
-            <FormControl sx={selectStyle}>
+            <FormControl sx={selectStyle} disabled={!designationTypeOptions.length}>
               <InputLabel id="designation-type">Designation Type</InputLabel>
               <Select
                 id="designation-type"
@@ -198,7 +222,7 @@ const GFWProtectedForestChangeFilter: React.FC<GFWProtectedForestChangeFilterPro
             </FormControl>
           </Grid>
           <Grid item xs={6}>
-            <FormControl sx={selectStyle}>
+            <FormControl sx={selectStyle} disabled={!designationOptions.length}>
               <InputLabel id="designation">Designation</InputLabel>
               <Select
                 id="designation"
@@ -215,25 +239,23 @@ const GFWProtectedForestChangeFilter: React.FC<GFWProtectedForestChangeFilterPro
             </FormControl>
           </Grid>
           <Grid item xs={12}>
-            <FormControl sx={selectStyle}>
+            <FormControl sx={selectStyle} disabled={!protectedAreasOptions.length}>
               <Autocomplete
                 multiple
                 options={protectedAreasOptions || []}
                 getOptionLabel={(option) => option.label}
-                value={state.selectedSubStates?.map((v) => ({ value: v, label: v })) || []}
+                value={state.selectedNames?.map((v) => ({ value: v, label: v })) || []}
                 filterSelectedOptions
+                disabled={!protectedAreasOptions.length}
                 onChange={onProtectedAreasChange}
-                renderInput={(params) => <TextField {...params} label="Sub States" />}
+                renderInput={(params) => <TextField {...params} label="Protected Areas" />}
               />
             </FormControl>
           </Grid>
           <Grid item xs={12} sx={{ justifyContent: 'flex-end', display: 'flex' }}>
-            <Button
-              variant="secondary"
-              onClick={onCloseHandler}
-              disabled={!isCountrySetInFilter}
-              label="Cancel"
-            />
+            {isCountrySetInFilter && (
+              <Button variant="secondary" onClick={onCloseHandler} label="Cancel" />
+            )}
             <Button
               variant="primary"
               onClick={updateValues}

@@ -41,10 +41,6 @@ describe('columns', () => {
   describe('forest_change_analysis - tree_cover_loss_protected_areas_yearly', () => {
     runSortTests(columns.forest_change_analysis[1].columns[1].sortMethod);
   });
-
-  describe('forest_change_analysis - tree_cover_loss_primary_forest_yearly', () => {
-    runSortTests(columns.forest_change_analysis[1].columns[2].sortMethod);
-  });
   describe('forest_change_analysis - commodity_analysis', () => {
     runSortTests(columns.commodity_analysis[0].columns[0].sortMethod);
   });

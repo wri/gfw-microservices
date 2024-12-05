@@ -8,6 +8,9 @@ pd.options.mode.chained_assignment = None
 # [low, medium, high] cutoff breaks
 
 # Indicator Levels for Threat Forest [low, medium, high]
+
+# IF YOU ARE CHANGING THE YEAR, CONSIDER SYNCING WITH GFWPRO-ANALSES lambdas/post-geotrellis/utils_commodity.py
+
 INDICATOR_LEVELS_THREAT_FOREST = {
     "2002": [0.0000, 0.0021, 0.0034],
     "2003": [0.0000, 0.0019, 0.0028],
@@ -30,6 +33,7 @@ INDICATOR_LEVELS_THREAT_FOREST = {
     "2020": [0.0000, 0.0033, 0.0064],
     "2021": [0.0000, 0.0029, 0.0056],
     "2022": [0.0000, 0.0026, 0.0057],
+    "2023": [0.0000, 0.0034, 0.0068],
 }
 
 # Indicator Levels for Threat Peat [low, medium, high]
@@ -55,6 +59,7 @@ INDICATOR_LEVELS_THREAT_PEAT = {
     "2020": [0.0000, 0.0416, 0.1121],
     "2021": [0.0000, 0.0399, 0.1079],
     "2022": [0.0000, 0.0433, 0.1148],
+    "2023": [0.0000, 0.0436, 0.1133],
 }
 
 # Indicator Levels for Threat WDPA [low, medium, high]
@@ -80,6 +85,7 @@ INDICATOR_LEVELS_THREAT_WDPA = {
     "2020": [0.0000, 0.0008, 0.0052],
     "2021": [0.0000, 0.0007, 0.0047],
     "2022": [0.0000, 0.0016, 0.0072],
+    "2023": [0.0000, 0.0017, 0.0074],
 }
 
 # Indicator Levels for Threat Fires [low, medium, high]
@@ -105,6 +111,7 @@ INDICATOR_LEVELS_THREAT_FIRES = {
     "2020": [0.00000, 0.00016, 0.00038],
     "2021": [0.00000, 0.00006, 0.00012],
     "2022": [0.00000, 0.00005, 0.00011],
+    "2023": [0.00000, 0.00009, 0.00020],
 }
 
 INDICATOR_LEVELS_VALUE_FOREST = {
@@ -129,6 +136,7 @@ INDICATOR_LEVELS_VALUE_FOREST = {
     "2020": [0.0000, 0.1836, 0.3119],
     "2021": [0.0000, 0.1812, 0.3125],
     "2022": [0.0000, 0.1748, 0.3061],
+    "2023": [0.0000, 0.1734, 0.3055],
 }
 
 # indicator Levels for Value Peat [low, medium, high]
@@ -154,6 +162,7 @@ INDICATOR_LEVELS_VALUE_PEAT = {
     "2020": [0.0000, 0.1204, 0.2349],
     "2021": [0.0000, 0.1196, 0.2327],
     "2022": [0.0000, 0.1202, 0.2329],
+    "2023": [0.0000, 0.1201, 0.2307],
 }
 
 # Indicator Levels for Value WDPA [low, medium, high]
@@ -179,6 +188,7 @@ INDICATOR_LEVELS_VALUE_WDPA = {
     "2020": [0.0000, 0.0532, 0.1330],
     "2021": [0.0000, 0.0520, 0.1326],
     "2022": [0.0000, 0.0513, 0.1324],
+    "2023": [0.0000, 0.0512, 0.1325],
 }
 
 INDICATOR_LEVELS_THREAT_OVERALL = {
@@ -203,6 +213,7 @@ INDICATOR_LEVELS_THREAT_OVERALL = {
     "2020": [0.0000, 0.9999, 1.5999],
     "2021": [0.0000, 0.9999, 1.5999],
     "2022": [0.0000, 0.9999, 1.5999],
+    "2023": [0.0000, 0.9999, 1.5999],
 }
 
 INDICATOR_LEVELS_VALUE_OVERALL = {
@@ -227,6 +238,7 @@ INDICATOR_LEVELS_VALUE_OVERALL = {
     "2020": [0.0000, 0.9999, 1.5999],
     "2021": [0.0000, 0.9999, 1.5999],
     "2022": [0.0000, 0.9999, 1.5999],
+    "2023": [0.0000, 0.9999, 1.5999],
 }
 
 INDICATOR_LEVELS_MILL_PRIORITY = {
@@ -251,6 +263,7 @@ INDICATOR_LEVELS_MILL_PRIORITY = {
     "2020": [0.0000, 1.9999, 3.0999],
     "2021": [0.0000, 1.9999, 3.0999],
     "2022": [0.0000, 1.9999, 3.0999],
+    "2023": [0.0000, 1.9999, 3.0999],
 }
 
 

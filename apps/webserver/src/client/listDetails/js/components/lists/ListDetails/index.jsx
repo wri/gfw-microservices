@@ -158,7 +158,6 @@ export default class ListDetails extends Component {
 
   componentDidMount() {
     const { listData, filters, selectedLists } = this.props;
-
     const { list_name, id, isGlobalForestWatchList, associated_gfwlist } = selectedLists[0];
 
     gtag('event', 'User accessed list', {
@@ -266,17 +265,22 @@ export default class ListDetails extends Component {
       previousKeys.length !== currentKeys.length ||
       previousKeys.some((key) => filters[key] !== prevProps.filters[key])
     ) {
-      if (selectedLists[0].isGlobalForestWatchList) {
-        this.getFilteredGfwListData(selectedLists[0].id);
-      } else {
-        this.getUserLocationData(selectedLists[0].id);
-      }
+      this.getLocationsData(selectedLists[0].id, selectedLists[0].isGlobalForestWatchList);
     }
   }
+
+  getLocationsData = (listId, isGfwList, page = 0) => {
+    if (isGfwList) {
+      this.getFilteredGfwListData(listId, page);
+    } else {
+      this.getUserLocationData(listId, page);
+    }
+  };
 
   getFilteredGfwListData = (listId, page = 0) => {
     // if the filters changed and this is a user list, get the paginated data from the API
     const { listData, selectedLists, filters } = this.props;
+
     const { OIL_PALM_CONCESSIONS, PALM_OIL_MILLS, RSPO_PALM_CONCESSIONS } =
       GFW_LISTS_NUMBER_CONSTANTS;
 
@@ -1217,7 +1221,7 @@ export default class ListDetails extends Component {
 
   getGFWLocationData = (list_id, page = 0) => {
     const { filters } = this.props;
-    const { tableSortedBy, tableSortedDesc } = this.state;
+    const { tableSortedBy, tableSortedDesc, filterString } = this.state;
 
     this.setState({ isLoading: true });
 
@@ -1233,6 +1237,7 @@ export default class ListDetails extends Component {
         pageNum: page,
         pageSize: 50,
         filters,
+        filterString,
         tableSortedBy,
         tableSortedDesc,
       },
@@ -1328,20 +1333,26 @@ export default class ListDetails extends Component {
     }
   };
 
-  viewDiagnostic = async (locationId) => {
-    const { selectedLists, userSharedLists } = this.props;
-
+  viewDiagnostic = async (hoveredLocationId) => {
+    const { selectedLists, userSharedLists, listView, selectedLocations } = this.props;
+    const selectedList = selectedLists?.[0];
+    const isGfwList = selectedList?.isGlobalForestWatchList;
+    const listId = selectedList?.id;
     const selectedListIsShared =
       selectedLists &&
       userSharedLists &&
-      userSharedLists.map((userSharedList) => userSharedList.id).includes(selectedLists[0].id);
-
-    const gfwList = selectedLists[0].isGlobalForestWatchList ? '&gfw=true' : '';
-    const sharedList = selectedListIsShared ? '&shared=true' : '';
-    const locationIdParam = locationId ? `&locationId=${locationId}` : '';
-    const diagnosticsType = getActiveAnalysisType(selectedLists[0]?.listAnalysesStatus);
-    const diagnosticsParam = !gfwList && diagnosticsType ? `&type=${diagnosticsType}` : '';
-    window.location.href = `/diagnostics?listId=${selectedLists[0].id}${gfwList}${locationIdParam}${diagnosticsParam}${sharedList}`;
+      userSharedLists.some((userSharedList) => userSharedList.id === listId);
+    const locationId = hoveredLocationId ?? selectedLocations?.[0];
+    const diagnosticsType = listView === POST_2020_RISK_ASSESSMENT_VIEW ? 'AFI' : 'FCD';
+    const queryParams = {
+      listId,
+      ...(isGfwList && { gfw: 'true' }),
+      ...(selectedListIsShared && { shared: 'true' }),
+      ...(locationId && { locationId }),
+      ...(!isGfwList && diagnosticsType && { type: diagnosticsType }),
+    };
+    const queryString = new URLSearchParams(queryParams).toString();
+    window.location.href = `/diagnostics?${queryString}`;
   };
 
   viewMap = ({ showFullListMap }) => {
@@ -1462,7 +1473,7 @@ export default class ListDetails extends Component {
   };
 
   handleSearchInputChange = (newValue) => {
-    const { selectedLocations, selectedLists } = this.props;
+    const { selectedLists } = this.props;
     const { filterString } = this.state;
 
     this.setState({
@@ -1470,14 +1481,8 @@ export default class ListDetails extends Component {
     });
 
     const isGfwList = selectedLists[0].isGlobalForestWatchList;
-    if (isGfwList) {
-      //  gfw lists search works in the front end, so it searches as the use types
-      this.setState({
-        filterString: newValue,
-      });
 
-      this.getSearchedLocations(newValue, selectedLocations);
-    } else if (newValue === '' && filterString !== '') {
+    if (newValue === '' && filterString !== '') {
       // if there was a filter string set and we cleared the input text
 
       // user lists are paginated in the backend
@@ -1487,7 +1492,7 @@ export default class ListDetails extends Component {
           filterString: '',
         },
         () => {
-          this.getUserLocationData(selectedLists[0].id);
+          this.getLocationsData(selectedLists[0].id, isGfwList);
         }
       );
     }
@@ -1497,22 +1502,22 @@ export default class ListDetails extends Component {
     // if enter key is pressed and it's not a GFW list, filter locations by input text
     const { selectedLists } = this.props;
     const isGfwList = selectedLists[0].isGlobalForestWatchList;
-    if (evt.keyCode === 13 && !isGfwList) {
+    if (evt.keyCode === 13) {
       this.setState(
         {
           filterString: evt.target.value.trim(),
         },
         () => {
-          this.getUserLocationData(selectedLists[0].id);
+          this.getLocationsData(selectedLists[0].id, isGfwList);
         }
       );
     }
   };
-
   handlecSearchInputClick = () => {
     const { selectedLists, filterString } = this.props;
+    const isGfwList = selectedLists[0].isGlobalForestWatchList;
     if (filterString.trim()) {
-      this.getUserLocationData(selectedLists[0].id);
+      this.getLocationsData(selectedLists[0].id, isGfwList);
     }
   };
 
@@ -1690,12 +1695,13 @@ export default class ListDetails extends Component {
   };
 
   getAdministrativeAreasData = ({ filters, id, locationNameForGFW, page = 0 }) => {
-    const { tableSortedBy, tableSortedDesc } = this.state;
+    const { tableSortedBy, tableSortedDesc, filterString } = this.state;
     // when coming from the Map, locationNameForGFW is either the locationName or true
     this.setState({ isLoading: true });
     httpRequest
       .fetchJSON('/locations/getAdministrativeAreasData', {
         filters,
+        filterString,
         id,
         pageNum: page,
         pageSize: 50,
@@ -1715,11 +1721,12 @@ export default class ListDetails extends Component {
   };
 
   getProtectedAreasData = ({ filters, id, locationNameForGFW, page = 0 }) => {
-    const { tableSortedBy, tableSortedDesc } = this.state;
+    const { tableSortedBy, tableSortedDesc, filterString } = this.state;
     this.setState({ isLoading: true });
     httpRequest
       .fetchJSON('/locations/getProtectedAreasData', {
         filters,
+        filterString,
         id,
         pageNum: page,
         pageSize: 50,
@@ -1882,11 +1889,7 @@ export default class ListDetails extends Component {
 
     const isGfwList = selectedList.associated_gfwlist || selectedList.isGlobalForestWatchList;
 
-    // user lists are paginated in the backend, gfw lists search works in the front end
-    const filteredLists = isGfwList
-      ? getListFilteredLocations(filteredLocationData, combinedColumns, filterString)
-      : filteredLocationData;
-
+    const filteredLists = filteredLocationData;
     const listViewOptions = [];
 
     const isInFolder = selectedList && !!currentFolder;
@@ -1955,7 +1958,7 @@ export default class ListDetails extends Component {
       userSharedLists.map((userSharedList) => userSharedList.id).includes(selectedLists[0].id);
 
     const showMultipleSelectionBulkActions =
-      selectedList && selectedLocations.length > 1 && !locationDataIsNotAvailable;
+      selectedList && selectedLocations.length > 0 && !locationDataIsNotAvailable;
 
     const hasLocationWithErrors = !!listData.find(
       ({ location_status_id }) => location_status_id === listStatus.Inactive
@@ -1966,7 +1969,7 @@ export default class ListDetails extends Component {
       listName !== 'Administrative Areas' &&
       listName !== 'Protected Areas' &&
       (isGfwList || getActiveAnalysisType(listAnalysesStatus)) &&
-      !selectedLocations?.length;
+      selectedLocations?.length < 2;
 
     return (
       <div className="list-details">
@@ -2211,7 +2214,9 @@ export default class ListDetails extends Component {
                               onClick={() => this.viewDiagnostic()}
                               startIcon={<QueryStatsIcon />}
                             >
-                              List diagnostic
+                              {selectedLocations?.length
+                                ? 'Location Diagnostic'
+                                : 'List diagnostic'}
                             </MaterialButton>
                           )}
 
@@ -2267,11 +2272,7 @@ export default class ListDetails extends Component {
                                     tableSortedDesc,
                                   },
                                   () => {
-                                    if (isGfwList) {
-                                      this.getFilteredGfwListData(selectedLists[0].id, page);
-                                    } else {
-                                      this.getUserLocationData(selectedLists[0].id, page);
-                                    }
+                                    this.getLocationsData(selectedLists[0].id, isGfwList, page);
                                   }
                                 )
                               }

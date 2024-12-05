@@ -32,8 +32,6 @@ const forest_change_analysis = [
     },
     className: 'default-cell td-num',
     show: true,
-    width: 100,
-    maxWidth: 115,
     Cell: (row) => {
       return locationIsActive(row.value) && checkValid(row.value.tree_cover_extent_total) ? (
         <span title={formatDigit(row.value.tree_cover_extent_total)}>
@@ -83,8 +81,8 @@ const forest_change_analysis = [
           const { tree_cover_loss_total_yearly, tree_cover_extent_total } = row.value;
 
           if (
-            !locationIsActive(row.value) ||
-            (!checkValid(tree_cover_loss_total_yearly) && !isListDetailsPageRedesignAvailable)
+            (!locationIsActive(row.value) || !checkValid(tree_cover_loss_total_yearly)) &&
+            !isListDetailsPageRedesignAvailable
           ) {
             return '0%';
           }
@@ -113,56 +111,6 @@ const forest_change_analysis = [
         sortable: !isListDetailsPageRedesignAvailable,
       },
       {
-        id: 'tree_cover_loss_protected_areas_yearly',
-        Header: () => <ColumnsHeader label={columnHeaders.protectedAreas} />,
-        accessor: (d) => {
-          return d;
-        },
-        className: 'default-cell td-num',
-        show: true,
-        Cell: (row) => {
-          const {
-            tree_cover_loss_protected_areas_yearly,
-            protected_areas_area,
-            tree_cover_extent_total,
-          } = row.value;
-
-          if (
-            !locationIsActive(row.value) ||
-            (!checkValid(tree_cover_loss_protected_areas_yearly) &&
-              !isListDetailsPageRedesignAvailable)
-          ) {
-            return '0%';
-          }
-
-          const validatedValue = getValidatedValue(
-            tree_cover_loss_protected_areas_yearly,
-            protected_areas_area
-          );
-          const formattedValue = isListDetailsPageRedesignAvailable
-            ? calculateAndFormatTotalDeforestation(
-                tree_cover_extent_total,
-                tree_cover_loss_protected_areas_yearly,
-                protected_areas_area
-              )
-            : validatedValue;
-
-          return <span title={validatedValue}>{formattedValue}</span>;
-        },
-        sortMethod: (a, b) => {
-          const sortStatus = sortByStatus(a, b);
-          if (sortStatus == 2) {
-            return (
-              normalizeColunmData(a.tree_cover_loss_protected_areas_yearly) -
-              normalizeColunmData(b.tree_cover_loss_protected_areas_yearly)
-            );
-          }
-
-          return sortStatus;
-        },
-        sortable: !isListDetailsPageRedesignAvailable,
-      },
-      {
         id: 'tree_cover_loss_primary_forest_yearly',
         Header: () => (
           <ColumnsHeader
@@ -183,9 +131,8 @@ const forest_change_analysis = [
           } = row.value;
 
           if (
-            !locationIsActive(row.value) ||
-            (!checkValid(tree_cover_loss_primary_forest_yearly) &&
-              !isListDetailsPageRedesignAvailable)
+            (!locationIsActive(row.value) || !checkValid(tree_cover_loss_primary_forest_yearly)) &&
+            !isListDetailsPageRedesignAvailable
           ) {
             return '0%';
           }

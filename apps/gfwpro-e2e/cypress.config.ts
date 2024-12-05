@@ -49,7 +49,7 @@ export default defineConfig({
   viewportWidth: 1800,
   viewportHeight: 1080,
   retries: {
-    runMode: 3,
+    runMode: 0,
     openMode: 0,
   },
   e2e: {

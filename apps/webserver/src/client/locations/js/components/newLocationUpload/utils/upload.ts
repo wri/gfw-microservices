@@ -74,39 +74,13 @@ export const convertKMZAndKMLToJson = (file: File) => {
 }
 
 export const getLocationListFromFile = (file: File) => {
-  return new Promise((resolve, reject) => {
-    const fileExtension = file.name.split('.').pop()?.toLowerCase();
-
-    if (!fileExtension) {
-      reject(new Error('File does not have a valid extension.'));
-      return;
-    }
-
-    switch (fileExtension) {
-      case 'csv':
-        convertCSVtoJson(file)
-          .then(resolve)
-          .catch(reject);
-        break;
-      case 'zip':
-        convertZIPtoJson(file)
-          .then(resolve)
-          .catch(reject);
-        break;
-      case 'xlsx':
-        convertXlsxToJson(file)
-          .then(resolve)
-          .catch(reject);
-        break;
-      case 'kml':
-      case 'kmz':
-        convertKMZAndKMLToJson(file)
-          .then(resolve)
-          .catch(reject);
-        break;
-      default:
-        reject(new Error('Unsupported file type.'));
-    }
+  const formData = new FormData();
+  formData.append('file', file);
+  
+  return axios
+  .post(convertURL, formData)
+  .then((response) => {
+    return response.data?.data?.attributes?.features;
   });
 }
 

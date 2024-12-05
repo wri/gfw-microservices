@@ -1873,8 +1873,6 @@ export default class ListDetails extends Component {
     const selectedList = selectedLists.length > 0 ? selectedLists[0] : null;
     const locationDataIsNotAvailable = isLocationDataNotAvailable(selectedList);
 
-    const isAnalysisInProgress = isAnalyzingStatus(selectedLists[0]?.list_status_id);
-
     const listID = selectedList?.id;
     const countries = [...new Set(filteredLocationData.map((list) => list.Country))].sort();
     const customAttributeNames =
@@ -1891,6 +1889,20 @@ export default class ListDetails extends Component {
 
     const filteredLists = filteredLocationData;
     const listViewOptions = [];
+
+    const analysisMapping = {
+      [FOREST_CHANGE_VIEW]: analysisTypes.FOREST_CHANGE_DIAGNOSTICS,
+      [POST_2020_RISK_ASSESSMENT_VIEW]: analysisTypes.DEFORESTATION_KPIS,
+      [COMMODITY_RISK_VIEW]: analysisTypes.FOREST_CHANGE_DIAGNOSTICS,
+    };
+
+    const isAnalysisStatusPending = (id) =>
+      listAnalysesStatus?.some(
+        ({ analysisId, status }) => analysisId === id && status === listStatus.Pending
+      );
+
+    const analysisType = analysisMapping[listView];
+    const isAnalysisInProgress = isAnalysisStatusPending(analysisType);
 
     const isInFolder = selectedList && !!currentFolder;
     if (selectedList && currentFolder) {

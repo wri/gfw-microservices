@@ -1,5 +1,6 @@
-import './index.scss';
+import './DataTemplates.scss';
 import React, { ReactElement, useState } from 'react';
+
 import {
   Accordion,
   AccordionDetails,
@@ -10,8 +11,6 @@ import {
   Typography,
   useTheme,
 } from '@mui/material';
-import { ExternalHelperResource } from '../components/ExternalHelperResource';
-import { PillButton } from '../../../../../components';
 import {
   Check,
   Close,
@@ -24,6 +23,9 @@ import {
   SvgIconComponent,
   Timeline,
 } from '@mui/icons-material';
+
+import { ExternalHelperResource } from '.';
+import { PillButton } from '../../../../../components';
 import { aws_templates } from '../../../../../common/js/config';
 
 type DataTemplatesProps = {

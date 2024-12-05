@@ -1,7 +1,6 @@
-import './index.scss';
+import './UploadLocationOptions.scss';
 
 import React from 'react';
-import { useHistory } from 'react-router-dom';
 import { Typography, Card, IconButton, Button } from '@mui/material';
 import {
   UploadFileTwoTone,
@@ -11,17 +10,19 @@ import {
   ArrowForwardIos,
 } from '@mui/icons-material';
 
-import { ExternalHelperResource } from '../components/ExternalHelperResource';
+import { useUploadLocation } from '../contexts';
+import { useHistory } from '../hooks';
+import { ExternalHelperResource } from '../components';
 import { UploadType } from '../types';
-import { ChangePageType } from '../types';
 
-export function UploadLocationOptions({ setUploadType }: ChangePageType) {
+export function UploadLocationOptions() {
   const history = useHistory();
+  const { selectUploadType } = useUploadLocation();
 
   return (
     <div className="upload-location-options">
       <nav>
-        <IconButton onClick={() => history.goBack()}>
+        <IconButton onClick={() => history.push('LOCATIONS')}>
           <ArrowBack />
         </IconButton>
         <Typography variant="h5">Name of the list</Typography>
@@ -43,7 +44,10 @@ export function UploadLocationOptions({ setUploadType }: ChangePageType) {
 
           <Button
             className="upload-location-options__button"
-            onClick={() => setUploadType(UploadType.ByFile)}
+            onClick={() => {
+              selectUploadType(UploadType.ByFile);
+              history.push('UPLOAD_BY_FILE');
+            }}
             startIcon={<UploadFileTwoTone color="primary" fontSize="large" />}
           >
             File upload
@@ -57,7 +61,10 @@ export function UploadLocationOptions({ setUploadType }: ChangePageType) {
             <div>
               <Button
                 className="upload-location-options__button"
-                onClick={() => setUploadType(UploadType.ByPoint)}
+                onClick={() => {
+                  selectUploadType(UploadType.ByPoint);
+                  history.push('UPLOAD_BY_POINT');
+                }}
                 startIcon={<ScatterPlotTwoTone color="primary" fontSize="large" />}
               >
                 Point
@@ -65,7 +72,10 @@ export function UploadLocationOptions({ setUploadType }: ChangePageType) {
 
               <Button
                 className="upload-location-options__button"
-                onClick={() => setUploadType(UploadType.ByPolygon)}
+                onClick={() => {
+                  selectUploadType(UploadType.ByPolygon);
+                  history.push('UPLOAD_BY_POLYGON');
+                }}
                 startIcon={<Timeline color="primary" fontSize="large" />}
               >
                 Polygon

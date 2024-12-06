@@ -2,10 +2,13 @@ import {
   listStatus,
   listStatusOrderByWorse,
   listStatusDescriptions,
-  DIAGNOSTIC_ANALYSIS_PERIOD
+  DIAGNOSTIC_ANALYSIS_PERIOD,
 } from '@wri-monorepos/constants';
 import * as webserverConstants from './listStatuses.constants';
-
+import {
+  latestTreeCoverLossYearCommodityRisk,
+  latestTreeCoverLossYearForTclDataInAnalyses,
+} from '../../client/common/js/config';
 describe('Compare webserver and libs listStatus constants', () => {
   it('Compare webserver and libs listStatus', () => {
     expect(webserverConstants.listStatus).toEqual(listStatus);
@@ -19,9 +22,11 @@ describe('Compare webserver and libs listStatus constants', () => {
     expect(webserverConstants.listStatusDescriptions).toEqual(listStatusDescriptions);
   });
   it('Compare webserver and libs DIAGNOSTIC_ANALYSIS_PERIOD have same value for latestTreeCoverLossYearForTclDataInAnalyses', () => {
-    expect(webserverConstants.latestTreeCoverLossYearForTclDataInAnalyses).toEqual(DIAGNOSTIC_ANALYSIS_PERIOD.latestTreeCoverLossYearForTclDataInAnalyses);
+    expect(latestTreeCoverLossYearForTclDataInAnalyses).toEqual(
+      DIAGNOSTIC_ANALYSIS_PERIOD.latestTreeCoverLossYearForTclDataInAnalyses
+    );
   });
-  it('Compare webserver and libs DIAGNOSTIC_ANALYSIS_PERIOD have same value for latestTreeCoverLossYearForTclDataInAnalyses', () => {
-    expect(webserverConstants.latestTreeCoverLossYearCommodityRisk).toEqual(DIAGNOSTIC_ANALYSIS_PERIOD.latestTreeCoverLossYearCommodityRisk);
+  it('Compare webserver and libs DIAGNOSTIC_ANALYSIS_PERIOD have same value for latestTreeCoverLossYearCommodityRisk', () => {
+    expect(latestTreeCoverLossYearCommodityRisk).toEqual(DIAGNOSTIC_ANALYSIS_PERIOD.END_YEAR);
   });
 });

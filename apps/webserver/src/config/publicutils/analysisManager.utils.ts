@@ -21,7 +21,7 @@ import * as sql from 'mssql';
 import * as sqlUtils from '../privateutils/sql.utils';
 import { createErrorMessage, ERROR_CODES } from '../privateutils/error.utils';
 import * as analysisUtils from '../privateutils/analysis.utils';
-import * as ListManager from '../publicutils/listManager.utils'; 
+import * as ListManager from '../publicutils/listManager.utils';
 import {
   getAnalysisDataForProtectedAreasByLocation,
   GfwLists,
@@ -35,7 +35,7 @@ import {
   getCountDashboardData,
 } from '@wri-monorepos/sql';
 
-import { DIAGNOSTIC_ANALYSIS_PERIOD } from "@wri-monorepos/constants"
+import { DIAGNOSTIC_ANALYSIS_PERIOD } from '@wri-monorepos/constants';
 
 /** @function {getAnalysisDataForUserList}
  *   @summary Function to return analysis data for a user list.
@@ -659,13 +659,17 @@ export async function getDashboardDataPaginatedByList(
   const maximumAnalysisAreaInTheList = Math.max(
     ...listDashboardAnalyses.map((analysis) => analysis['totalHa'])
   );
-  let accIntegratedAlertsDailySbtnNominal = 0
-  if(Object.entries(listDashboardAnalyses['integratedAlertsDailyAllNominal']).length > 0) {
-    accIntegratedAlertsDailySbtnNominal=listDashboardAnalyses['integratedAlertsDailyAllNominal'].reduce((acc, val) => {
-      return acc+=val.includes(DIAGNOSTIC_ANALYSIS_PERIOD.latestTreeCoverLossYearForTclDataInAnalyses)
+  let accIntegratedAlertsDailySbtnNominal = 0;
+  if (Object.entries(listDashboardAnalyses['integratedAlertsDailyAllNominal']).length > 0) {
+    accIntegratedAlertsDailySbtnNominal = listDashboardAnalyses[
+      'integratedAlertsDailyAllNominal'
+    ].reduce((acc, val) => {
+      return (acc += val.includes(
+        DIAGNOSTIC_ANALYSIS_PERIOD.latestTreeCoverLossYearForTclDataInAnalyses
+      ));
     }, 0);
   }
-  
+
   const aletsInSBTN = accIntegratedAlertsDailySbtnNominal;
   return { listDashboardAnalyses, numberOfResults, numberOfPages, maximumAnalysisAreaInTheList };
 }

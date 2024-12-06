@@ -10,7 +10,7 @@ import {
   ListFieldsFileRequest,
 } from '@wri-monorepos/sql';
 import { ReadmeService } from './readme.service';
-import { CSVServices } from './csv.handler.service';
+import { CSVServices } from '../shared/readme.merge.service';
 
 jest.mock('fs');
 jest.mock('path', () => ({

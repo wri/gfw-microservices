@@ -10,7 +10,7 @@ import {
   ListFieldsFileRequest,
 } from '@wri-monorepos/sql';
 import { ServerConfigType } from '../../validators/server-config';
-import { CSVServices } from './csv.handler.service';
+import { CSVServices } from '../shared/readme.merge.service';
 @Injectable({
   scope: Scope.REQUEST,
 })

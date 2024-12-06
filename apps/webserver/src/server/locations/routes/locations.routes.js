@@ -678,7 +678,7 @@ module.exports = (app, limiter) => {
           }
           break;
         }
-        case 'ALERTS':
+        case 'ALERTS': {
           const analysisManagerResult = await AnalysisManager.getDashboardDataPaginatedByList(
             listID,
             page,
@@ -692,9 +692,10 @@ module.exports = (app, limiter) => {
           maximumAnalysisAreaInTheList = analysisManagerResult.maximumAnalysisAreaInTheList;
 
           if (listAnalyses.length > 0) {
-            location_analyses.push(listAnalyses.filter((analysis) => analysis.location_id > 1));
+            location_analyses = listAnalyses.filter(analysis => analysis.location_id > 1);
           }
           break;
+        }
         default:
         case 'FCD': {
           listAnalyses = await AnalysisManager.getListAnalyses(req, listID);

@@ -3,7 +3,7 @@ import { DIAGNOSTIC_ANALYSIS_PERIOD } from '@wri-monorepos/constants';
 
 const filterBelowEndYear = (ax) =>
   Object.entries(ax).reduce((acc, [key, value]) => {
-    if (parseInt(key, 10) < DIAGNOSTIC_ANALYSIS_PERIOD.END_YEAR) {
+    if (parseInt(key, 10) <= DIAGNOSTIC_ANALYSIS_PERIOD.COMMODITY_RISK_END_YEAR) {
       acc[key] = value;
     }
     return acc;

@@ -171,9 +171,10 @@ export function UploadLocationByPolygon() {
                 <Typography variant="body2">Enter polygon coordinates</Typography>
               </LocationTypeButton>
             ) : (
-              <form
+              <Box
+                component="form"
                 onSubmit={handleSubmit(onSubmit)}
-                style={{
+                sx={{
                   display: 'flex',
                   flexDirection: 'column',
                   alignItems: 'start',
@@ -279,7 +280,7 @@ export function UploadLocationByPolygon() {
                 >
                   Ok
                 </PillButton>
-              </form>
+              </Box>
             )}
           </Box>
 

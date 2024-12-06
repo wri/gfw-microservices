@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import {
   Box,
   Card,
@@ -10,7 +10,6 @@ import {
   Select,
   TextField,
   Typography,
-  useTheme,
 } from '@mui/material';
 import { ArrowBackIos, ArrowForwardIos, Close } from '@mui/icons-material';
 import { useForm, Controller } from 'react-hook-form';
@@ -22,32 +21,51 @@ import { PillButton } from '../../../../../components';
 import { useUploadLocation } from '../contexts';
 import { NavBar } from '../components';
 import { UserList } from '../types';
+import { filterValidTemplates } from '../utils/filterValidTemplates';
 
 const schema = z.object({
   commodity: z.string().trim().min(1),
   newListName: z.string().trim().min(1),
-  existingListName: z.string().trim().min(1),
-  post2000ForestChange: z.boolean(),
-  includePalmRiskAssessment: z.boolean(),
-  recentDeforestationAlerts: z.boolean(),
-  post2000RiskAssessment: z.boolean(),
+  existingListName: z.string().optional(),
+  post2000ForestChange: z.coerce.boolean(),
+  includePalmRiskAssessment: z.coerce.boolean(),
+  recentDeforestationAlerts: z.coerce.boolean(),
+  post2000RiskAssessment: z.coerce.boolean(),
 });
 
 type FormFields = z.infer<typeof schema>;
 
 export function ConfigureList({ userLists }: { userLists: UserList[] }) {
-  const theme = useTheme();
   const history = useHistory();
   const {
     handleSubmit,
     control,
     formState: { errors },
-  } = useForm<FormFields>({ resolver: zodResolver(schema) });
+  } = useForm<FormFields>({
+    resolver: zodResolver(schema),
+    defaultValues: {
+      commodity: '',
+      newListName: '',
+      existingListName: '',
+      includePalmRiskAssessment: false,
+      post2000ForestChange: false,
+      post2000RiskAssessment: false,
+      recentDeforestationAlerts: false,
+    },
+  });
   const { clearUploadType } = useUploadLocation();
+
+  const [commodity, setCommodity] = useState<string>('');
 
   const onSubmit = (data: FormFields) => {
     console.log({ data });
   };
+
+  const templateType = templateTypes[commodity];
+
+  const validLists = templateType
+    ? userLists.filter((list) => filterValidTemplates(list, templateType))
+    : [];
 
   return (
     <>
@@ -56,7 +74,8 @@ export function ConfigureList({ userLists }: { userLists: UserList[] }) {
         <Typography variant="h6">Configure List</Typography>
         <Typography
           variant="caption"
-          sx={{ display: 'inline-block', mb: 3, color: theme.palette.text.secondary }}
+          color="text.secondary"
+          sx={{ display: 'inline-block', mb: 3 }}
         >
           Define your data's commodity, whether you wish to create a new list or add it to an
           existing one, and the analysis you would like applied to your upload.
@@ -67,7 +86,15 @@ export function ConfigureList({ userLists }: { userLists: UserList[] }) {
           control={control}
           render={({ field }) => (
             <>
-              <Select sx={{ width: '240px' }} size="small" {...field}>
+              <Select
+                sx={{ width: '240px' }}
+                size="small"
+                value={commodity}
+                onChange={(e) => {
+                  setCommodity(e.target.value);
+                  field.onChange(e);
+                }}
+              >
                 <MenuItem value="cattle">Cattle</MenuItem>
                 <MenuItem value="cocoa">Cocoa</MenuItem>
                 <MenuItem value="coffee">Coffee</MenuItem>
@@ -80,7 +107,7 @@ export function ConfigureList({ userLists }: { userLists: UserList[] }) {
                 <MenuItem value="other">Other</MenuItem>
               </Select>
               {!!errors.commodity && (
-                <FormHelperText sx={{ color: theme.palette.error.main, mx: 1.75 }}>
+                <FormHelperText sx={{ color: 'error.main', mx: 1.75 }}>
                   Enter the commodity
                 </FormHelperText>
               )}
@@ -92,7 +119,8 @@ export function ConfigureList({ userLists }: { userLists: UserList[] }) {
         <Typography variant="subtitle2">Define List *</Typography>
         <Typography
           variant="caption"
-          sx={{ display: 'inline-block', mb: 4, color: theme.palette.text.secondary }}
+          color="text.secondary"
+          sx={{ display: 'inline-block', mb: 4 }}
         >
           Create a new list for your data, or add it to an existing list. Note that you can only add
           to lists that match the commodity you have defined above.
@@ -101,7 +129,6 @@ export function ConfigureList({ userLists }: { userLists: UserList[] }) {
           <Controller
             name="newListName"
             control={control}
-            defaultValue=""
             render={({ field }) => (
               <TextField
                 size="small"
@@ -120,9 +147,9 @@ export function ConfigureList({ userLists }: { userLists: UserList[] }) {
             name="existingListName"
             control={control}
             render={({ field }) => (
-              <Select sx={{ flex: '1' }} size="small" {...field}>
-                {userLists.map(({ id, list_name }) => (
-                  <MenuItem key={id} value={id}>
+              <Select disabled={validLists.length === 0} sx={{ flex: '1' }} size="small" {...field}>
+                {validLists.map(({ id, list_name }) => (
+                  <MenuItem key={id} value={list_name}>
                     {list_name}
                   </MenuItem>
                 ))}
@@ -132,60 +159,112 @@ export function ConfigureList({ userLists }: { userLists: UserList[] }) {
         </Box>
         <Divider sx={{ my: 3 }} />
         <Typography variant="subtitle2">Type of analysis *</Typography>
-        <Typography variant="caption" color={theme.palette.text.secondary}>
+        <Typography variant="caption" color="text.secondary">
           Select the analysis you would like applied to your data. Note that each analysis selected
           counts towards your account usage limits. See more information here.
         </Typography>
         <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1, mt: 1 }}>
-          <FormControlLabel
-            control={<Checkbox sx={{ py: 0 }} />}
-            sx={{ textTransform: 'none' }}
-            label={
-              <Box sx={{ lineHeight: 0 }}>
-                <Typography variant="body2">Post-2000 Forest Change</Typography>
-                <Typography variant="caption" color={theme.palette.text.secondary}>
-                  Post-2000 annual tree cover loss + additional contextual and regional datasets
-                </Typography>
-              </Box>
-            }
-          ></FormControlLabel>
-          <FormControlLabel
-            control={<Checkbox sx={{ py: 0 }} />}
-            sx={{ textTransform: 'none', ml: 2 }}
-            label={
-              <Box sx={{ lineHeight: 0 }}>
-                <Typography variant="body2">Include Palm Risk Assessment</Typography>
-                <Typography variant="caption" color={theme.palette.text.secondary}>
-                  Commodity-specific risk analysis for palm oil mills
-                </Typography>
-              </Box>
-            }
-          ></FormControlLabel>
+          <Controller
+            name="post2000ForestChange"
+            control={control}
+            render={({ field }) => (
+              <FormControlLabel
+                control={
+                  <Checkbox
+                    sx={{ py: 0 }}
+                    checked={field.value}
+                    onChange={field.onChange}
+                    inputRef={field.ref}
+                  />
+                }
+                sx={{ textTransform: 'none' }}
+                label={
+                  <Box sx={{ lineHeight: 0 }}>
+                    <Typography variant="body2">Post-2000 Forest Change</Typography>
+                    <Typography variant="caption" color="text.secondary">
+                      Post-2000 annual tree cover loss + additional contextual and regional datasets
+                    </Typography>
+                  </Box>
+                }
+              ></FormControlLabel>
+            )}
+          />
 
-          <FormControlLabel
-            control={<Checkbox sx={{ py: 0 }} />}
-            sx={{ textTransform: 'none' }}
-            label={
-              <Box sx={{ lineHeight: 0 }}>
-                <Typography variant="body2">Recent Deforestation Alerts</Typography>
-                <Typography variant="caption" color={theme.palette.text.secondary}>
-                  Recent deforestation alerts, updated weekly
-                </Typography>
-              </Box>
-            }
-          ></FormControlLabel>
-          <FormControlLabel
-            control={<Checkbox sx={{ py: 0 }} />}
-            sx={{ textTransform: 'none' }}
-            label={
-              <Box sx={{ lineHeight: 0 }}>
-                <Typography variant="body2">Post-2020 Risk Assessment</Typography>
-                <Typography variant="caption" color={theme.palette.text.secondary}>
-                  Post-2020 deforestation in natural forest + additional contextual datasets
-                </Typography>
-              </Box>
-            }
-          ></FormControlLabel>
+          <Controller
+            name="includePalmRiskAssessment"
+            control={control}
+            render={({ field }) => (
+              <FormControlLabel
+                control={
+                  <Checkbox
+                    sx={{ py: 0 }}
+                    checked={field.value}
+                    onChange={field.onChange}
+                    inputRef={field.ref}
+                  />
+                }
+                sx={{ textTransform: 'none', ml: 2 }}
+                label={
+                  <Box sx={{ lineHeight: 0 }}>
+                    <Typography variant="body2">Include Palm Risk Assessment</Typography>
+                    <Typography variant="caption" color="text.secondary">
+                      Commodity-specific risk analysis for palm oil mills
+                    </Typography>
+                  </Box>
+                }
+              ></FormControlLabel>
+            )}
+          />
+          <Controller
+            name="recentDeforestationAlerts"
+            control={control}
+            render={({ field }) => (
+              <FormControlLabel
+                control={
+                  <Checkbox
+                    sx={{ py: 0 }}
+                    checked={field.value}
+                    onChange={field.onChange}
+                    inputRef={field.ref}
+                  />
+                }
+                sx={{ textTransform: 'none' }}
+                label={
+                  <Box sx={{ lineHeight: 0 }}>
+                    <Typography variant="body2">Recent Deforestation Alerts</Typography>
+                    <Typography variant="caption" color="text.secondary">
+                      Recent deforestation alerts, updated weekly
+                    </Typography>
+                  </Box>
+                }
+              ></FormControlLabel>
+            )}
+          />
+          <Controller
+            name="post2000RiskAssessment"
+            control={control}
+            render={({ field }) => (
+              <FormControlLabel
+                control={
+                  <Checkbox
+                    sx={{ py: 0 }}
+                    checked={field.value}
+                    onChange={field.onChange}
+                    inputRef={field.ref}
+                  />
+                }
+                sx={{ textTransform: 'none' }}
+                label={
+                  <Box sx={{ lineHeight: 0 }}>
+                    <Typography variant="body2">Post-2020 Risk Assessment</Typography>
+                    <Typography variant="caption" color="text.secondary">
+                      Post-2020 deforestation in natural forest + additional contextual datasets
+                    </Typography>
+                  </Box>
+                }
+              ></FormControlLabel>
+            )}
+          />
         </Box>
         <Box
           sx={{
@@ -222,3 +301,15 @@ export function ConfigureList({ userLists }: { userLists: UserList[] }) {
     </>
   );
 }
+
+const templateTypes: Record<string, string[]> = {
+  cattle: ['cattle', 'cattleGeneric'],
+  cocoa: ['cocoa', 'cocoaGeneric'],
+  coffee: ['coffee'], // new type
+  'palm-oil': ['palmMill', 'palmPlantation', 'palmFarm', 'palmGeneric'],
+  'pulp-and-paper': ['pulpGeneric'],
+  rubber: ['rubberGeneric'],
+  soy: ['soySilo', 'soyFarm', 'soyGeneric'],
+  multiple: ['multiple'], // new type
+  other: ['other'],
+};

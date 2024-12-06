@@ -11,7 +11,7 @@ import {
   FormControl,
   InputLabel,
   Box,
-  useTheme,
+  FormHelperText,
 } from '@mui/material';
 import { AddLocationAlt, LocationOn, Search, Close, ArrowForwardIos } from '@mui/icons-material';
 import { useForm, Controller } from 'react-hook-form';
@@ -37,29 +37,37 @@ enum RadiusSize {
   Custom,
 }
 
-type FormFields = z.infer<typeof coordinateSchema>;
+type FormFieldsCoordinates = z.infer<typeof coordinateSchema>;
+
+const addressSchema = z.object({ address: z.string().trim().min(1) });
+type FormFieldsAddress = z.infer<typeof addressSchema>;
 
 const COORDINATE_ERROR_MESSAGE =
   'Your coordinate value is invalid. Please ensure your data is in decimal degree notation';
 
 export function UploadLocationByPoint() {
-  const theme = useTheme();
   const history = useHistory();
 
   const { clearUploadType } = useUploadLocation();
 
   const {
-    handleSubmit,
-    control,
-    formState: { errors },
-    reset,
-  } = useForm<FormFields>({
+    control: controlCoordinates,
+    handleSubmit: handleSubmitCoordinates,
+    formState: { errors: errorsCoordinates },
+    reset: resetCoordinates,
+  } = useForm<FormFieldsCoordinates>({
     resolver: zodResolver(coordinateSchema),
-    defaultValues: {
-      latitude: '',
-      longitude: '',
-    },
   });
+
+  const {
+    control: controlAddress,
+    handleSubmit: handleSubmitAddress,
+    formState: { errors: errorsAddress },
+    reset: resetAddress,
+  } = useForm<FormFieldsAddress>({
+    resolver: zodResolver(addressSchema),
+  });
+
   const [locationFormat, setLocationFormat] = useState<LocationFormat | null>(null);
 
   const [selectedRadiusSize, setSelectedRadiusSize] = useState<RadiusSize>(RadiusSize.Small);
@@ -68,10 +76,11 @@ export function UploadLocationByPoint() {
 
   const handleChangeLocationFormat = (locFormat: LocationFormat) => {
     setLocationFormat(locFormat);
-    reset();
+    resetCoordinates();
+    resetAddress();
   };
 
-  const onSubmit = (data: FormFields) => {
+  const onSubmit = (data: FormFieldsCoordinates | FormFieldsAddress) => {
     console.log({ data });
     history.push('CONFIGURE_LIST');
   };
@@ -121,7 +130,15 @@ export function UploadLocationByPoint() {
               <Typography variant="body2">Enter address</Typography>
             </LocationTypeButton>
           </Box>
-          <form onSubmit={handleSubmit(onSubmit)} style={{ flex: '1' }}>
+          <Box
+            component="form"
+            onSubmit={
+              locationFormat === LocationFormat.Coordinates
+                ? handleSubmitCoordinates(onSubmit)
+                : handleSubmitAddress(onSubmit)
+            }
+            sx={{ flex: '1' }}
+          >
             <Box sx={{ visibility: locationFormat === null ? 'hidden' : 'initial' }}>
               {locationFormat === LocationFormat.Coordinates ? (
                 <Box>
@@ -133,7 +150,7 @@ export function UploadLocationByPoint() {
                   <Box sx={{ display: 'flex', gap: 1 }}>
                     <Controller
                       name="latitude"
-                      control={control}
+                      control={controlCoordinates}
                       render={({ field }) => (
                         <TextField
                           label="Latitude"
@@ -141,15 +158,15 @@ export function UploadLocationByPoint() {
                           type="number"
                           fullWidth
                           size="small"
-                          error={!!errors.latitude}
-                          helperText={errors.latitude ? COORDINATE_ERROR_MESSAGE : ''}
+                          error={!!errorsCoordinates.latitude}
+                          helperText={errorsCoordinates.latitude ? COORDINATE_ERROR_MESSAGE : ''}
                           {...field}
                         />
                       )}
                     />
                     <Controller
                       name="longitude"
-                      control={control}
+                      control={controlCoordinates}
                       render={({ field }) => (
                         <TextField
                           label="Longitude"
@@ -157,8 +174,8 @@ export function UploadLocationByPoint() {
                           type="number"
                           fullWidth
                           size="small"
-                          error={!!errors.longitude}
-                          helperText={errors.longitude ? COORDINATE_ERROR_MESSAGE : ''}
+                          error={!!errorsCoordinates.longitude}
+                          helperText={errorsCoordinates.longitude ? COORDINATE_ERROR_MESSAGE : ''}
                           {...field}
                         />
                       )}
@@ -169,28 +186,40 @@ export function UploadLocationByPoint() {
                 <Box>
                   <Typography variant="h6">Enter address</Typography>
 
-                  <FormControl variant="outlined" size="small" fullWidth>
-                    <InputLabel htmlFor="outlined-adornment-password">Address</InputLabel>
-                    <OutlinedInput
-                      id="address"
-                      sx={{
-                        '& input': {
-                          borderRight: 'none',
-                          '&:focus': {
-                            boxShadow: 'none',
-                          },
-                        },
-                      }}
-                      endAdornment={
-                        <InputAdornment position="end">
-                          <IconButton disableRipple>
-                            <Search />
-                          </IconButton>
-                        </InputAdornment>
-                      }
-                      label="Address"
-                    />
-                  </FormControl>
+                  <Controller
+                    control={controlAddress}
+                    name="address"
+                    render={({ field }) => (
+                      <FormControl variant="outlined" size="small" fullWidth>
+                        <InputLabel htmlFor="outlined-adornment-password">Address</InputLabel>
+                        <OutlinedInput
+                          id="address"
+                          sx={{
+                            '& input': {
+                              borderRight: 'none',
+                              '&:focus': {
+                                boxShadow: 'none',
+                              },
+                            },
+                          }}
+                          endAdornment={
+                            <InputAdornment position="end">
+                              <IconButton disableRipple>
+                                <Search />
+                              </IconButton>
+                            </InputAdornment>
+                          }
+                          label="Address"
+                          {...field}
+                        />
+                        {!!errorsAddress.address && (
+                          <FormHelperText sx={{ color: 'error.main', mx: 1.75 }}>
+                            Enter the address
+                          </FormHelperText>
+                        )}
+                      </FormControl>
+                    )}
+                  />
                 </Box>
               )}
 
@@ -283,7 +312,7 @@ export function UploadLocationByPoint() {
                     />
                     <Box
                       sx={{
-                        backgroundColor: theme.palette.background.default,
+                        backgroundColor: 'background.default',
                         p: 1.5,
                         borderRadius: 2,
                         width: { sm: '400px', xs: '100%' },
@@ -294,7 +323,7 @@ export function UploadLocationByPoint() {
                         style={{
                           paddingLeft: '1.5rem',
                           marginTop: '0.25rem',
-                          color: theme.palette.text.secondary,
+                          color: 'text.secondary',
                         }}
                       >
                         <li>785,000 {measurementUnit} for palm oil mills</li>
@@ -333,7 +362,7 @@ export function UploadLocationByPoint() {
                 Next
               </PillButton>
             </Box>
-          </form>
+          </Box>
         </Box>
       </Card>
     </>

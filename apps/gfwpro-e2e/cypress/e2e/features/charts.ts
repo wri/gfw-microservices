@@ -27,12 +27,10 @@ describe('Alerts page', () => {
   });
 
   Then('I should be able to control the visibility of the charts for Argentina', () => {
-    diagnosticPage.navigateToArgentinaRegionTab();
     diagnosticPage.verifyChartArgentina();
   });
 
   Then('I should be able to control the visibility of the charts for Colombia', () => {
-    diagnosticPage.navigateToColombiaRegionTab();
     diagnosticPage.verifyChartColombia();
   });
 });

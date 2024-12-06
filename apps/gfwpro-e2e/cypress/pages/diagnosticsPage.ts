@@ -47,7 +47,68 @@ class DiagnosticsPage {
       .click();
   }
 
+  verifyPrincipalCharts() {
+    cy.get('.locations-diagnostics__subtitle').should('be.visible');
+    cy.get(':nth-child(2) > [data-testid="chart-header-title"]').should('be.visible');
+    cy.get(':nth-child(3) > .MuiCardContent-root').should('be.visible');
+    cy.get('.subsection-chart > .locations-instructional__text').should('be.visible');
+    cy.get('.loss-label > span').should('be.visible');
+    cy.get('.percent-loss__label').should('be.visible');
+    cy.get('[data-cy="tree-cover-loss"]').should('be.visible');
+    cy.get('[data-cy="primary-forest"]').should('be.visible');
+    cy.get(':nth-child(1) > [data-cy="protected-areas"]').should('be.visible');
+    cy.get('[data-cy="peat"]').should('be.visible');
+    cy.get('[data-cy="intact-forest-landscape"]').should('be.visible');
+    cy.get(
+      '.locations-diagnostics-section > :nth-child(4) > [data-testid="chart-header-title"]'
+    ).should('be.visible');
+    cy.get('.locations-diagnostics-section > :nth-child(5) > .MuiCardContent-root').should(
+      'be.visible'
+    );
+    cy.get('.historic-area__title-container > .locations-instructional__text').should('be.visible');
+    cy.get('.table__historic-area > table > tbody > :nth-child(1) > :nth-child(1)').should(
+      'be.visible'
+    );
+    cy.get('.table__historic-area > table > tbody > :nth-child(2) > :nth-child(1)').should(
+      'be.visible'
+    );
+    cy.get('.table__historic-area > table > tbody > :nth-child(3) > :nth-child(1)').should(
+      'be.visible'
+    );
+    cy.get('.table__historic-area > table > tbody > :nth-child(4) > :nth-child(1)').should(
+      'be.visible'
+    );
+    cy.get('.table__historic-area > table > tbody > :nth-child(5) > :nth-child(1)').should(
+      'be.visible'
+    );
+    cy.get('.js-irs-0 > .irs').should('be.visible');
+    cy.get('.locations-diagnostics-section-title').should('be.visible');
+    cy.get(':nth-child(4) > :nth-child(1) > [data-testid="chart-header-title"]').should(
+      'be.visible'
+    );
+    cy.get(':nth-child(4) > .MuiPaper-root > .MuiCardContent-root').should('be.visible');
+    cy.get('[data-cy="soy-cover-loss"] > .legend-square-label').should('be.visible');
+    cy.get('[data-cy="prodes"] > .legend-square-label').should('be.visible');
+    cy.get(
+      '.section__south-america > .locations-diagnostics-table > table > tbody > :nth-child(3) > .locations-diagnostics-table__column'
+    ).should('be.visible');
+    cy.get(
+      '.section__south-america > .locations-diagnostics-table > table > tbody > :nth-child(4) > .locations-diagnostics-table__column'
+    ).should('be.visible');
+    cy.get(
+      '.section__south-america > .locations-diagnostics-table > table > tbody > :nth-child(5) > .locations-diagnostics-table__column'
+    ).should('be.visible');
+    // cy.get(':nth-child(6) > [data-cy="protected-areas"]').should('be.visible')
+    // cy.get(':nth-child(8) > [data-cy="tree-cover-loss"]').should('be.visible')
+    cy.get('[data-cy="brazil-biomes"]').should('be.visible');
+    cy.get('.js-irs-1 > .irs').should('be.visible');
+  }
+
   verifyChartArgentina() {
+    this.verifyPrincipalCharts();
+
+    this.navigateToArgentinaRegionTab();
+
     cy.contains('ARGENTINIAN DEFORESTATION');
     cy.get('[style="margin-top: 30px;"] > :nth-child(5) > .MuiCardContent-root').should(
       'be.visible'
@@ -96,6 +157,10 @@ class DiagnosticsPage {
     ).should('be.visible');
   }
   verifyChartColombia() {
+    this.verifyPrincipalCharts();
+
+    this.navigateToColombiaRegionTab();
+
     cy.contains('COLOMBIAN DEFORESTATION').should('be.visible');
     cy.get('[style="margin-top: 30px;"] > :nth-child(5) > .MuiCardContent-root').should(
       'be.visible'

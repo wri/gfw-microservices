@@ -20,7 +20,7 @@ export function NavBar() {
     const stepMap = {
       [UploadLocationRoutes.CONFIGURE_LIST]: 'Configure List',
       [UploadLocationRoutes.PREVIEW]: 'Preview',
-      [UploadLocationRoutes.SUBMIT]: 'Submit',
+      [UploadLocationRoutes.SUMMARY_AND_SUBMIT]: 'Submit',
     };
 
     const step = stepMap[path as keyof typeof stepMap];

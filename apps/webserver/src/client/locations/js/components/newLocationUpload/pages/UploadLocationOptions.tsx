@@ -46,7 +46,7 @@ export function UploadLocationOptions() {
             className="upload-location-options__button"
             onClick={() => {
               selectUploadType(UploadType.ByFile);
-              history.push('UPLOAD_BY_FILE');
+              history.push('SUMMARY_AND_SUBMIT');
             }}
             startIcon={<UploadFileTwoTone color="primary" fontSize="large" />}
           >

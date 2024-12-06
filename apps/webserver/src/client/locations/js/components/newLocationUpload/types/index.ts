@@ -33,10 +33,34 @@ export type FeatureProperties = {
   attribute1?: string;
   attribute2?: string;
   attribute3?: string;
+  investmentName?: string;
+  mill_name?: string;
+  latitude?: string;
+  longitude?: string;
+  analysisRadius?: string;
+  analysisArea?: string;
+  commodity?: string;
+  riskLevel?: string;
+  certification?: string;
+  startDate?: string;
+  endDate?: string;
+  timeHorizon?: string;
+  country?: string;
+  state?: string;
+  substate?: string;
+  parentCompanyOrGroup?: string;
+  companyPolicyRanking?: string;
+  typeOfInvestment?: string;
+  locationName?: string;
+  companyName?: string;
+  locationClassification?: string;
+  refineryName?: string;
+  supplierName?: string;
+  facilityName?: string;
 };
 
 export type LocationListType = {
-  type: 'Feature';
+  type: string;
   geometry: GeometryType;
   properties: FeatureProperties;
 };

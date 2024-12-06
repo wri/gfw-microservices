@@ -1,69 +1,15 @@
-import Papa from 'papaparse';
 import axios from 'axios';
-import * as XLSX from 'xlsx';
-import { convertURL } from '../../../../../common/js/config';
-import { KMLLoader } from '@loaders.gl/kml';
-import { load } from '@loaders.gl/core';
 import { LocationListType } from '../types';
 
-export const convertCSVtoJson = (file: File) => {
-  return new Promise((resolve, reject) => {
-    Papa.parse(file, {
-      header: true,
-      skipEmptyLines: true,
-      dynamicTyping: true,
-      complete: function (results) {
-        resolve(results.data);
-      },
-      error: function (error) {
-        reject(error);
-      },
-    });
-  });
-};
-
-export const convertZIPtoJson = (file: File) => {
-  const formData = new FormData();
-  formData.append('file', file);
-
-  return axios.post(convertURL, formData).then((response) => {
-    return response.data?.data?.attributes?.features;
-  });
-};
-
-export const convertXlsxToJson = (file: File) => {
-  return new Promise((resolve, reject) => {
-    const reader: FileReader = new FileReader();
-
-    reader.onload = (event) => {
-      if (!event.target?.result) {
-        reject(new Error('File read error'));
-        return;
-      }
-
-      const data: Uint8Array = new Uint8Array(event.target.result as ArrayBuffer);
-      const workbook: XLSX.WorkBook = XLSX.read(data, { type: 'array' });
-      const sheetName: string = workbook.SheetNames[0];
-
-      const sheet: XLSX.WorkSheet | undefined = workbook.Sheets[sheetName];
-      if (!sheet) {
-        reject(new Error('No sheet found in workbook'));
-        return;
-      }
-      const jsonData: LocationListType[] = XLSX.utils.sheet_to_json(sheet);
-      resolve(jsonData);
-    };
-
-    reader.onerror = (error) => reject(error);
-    reader.readAsArrayBuffer(file);
-  });
-};
-
-export const convertKMZAndKMLToJson = (file: File) => {
+export const getLocationListFromFile = (file: File) => {
   return new Promise((resolve, reject) => {
     try {
-      load(file, KMLLoader).then((data) => {
-        resolve(data.features);
+      createPresignedUrlFile(file).then((data) => {
+        uploadFileToS3(file, data.url).then(() => {
+          getPreviewList(data.keyFile).then((data) => {
+            resolve(data);
+          });
+        });
       });
     } catch (error) {
       reject(error);
@@ -71,51 +17,99 @@ export const convertKMZAndKMLToJson = (file: File) => {
   });
 };
 
-export const getLocationListFromFile = (file: File) => {
-  return new Promise((resolve, reject) => {
-    const fileExtension = file.name.split('.').pop()?.toLowerCase();
+const createPresignedUrlFile = async (file: File) => {
+  try {
+    const { data } = await axios.post('/locations/create-presigned-url', {
+      key: file.name,
+      contentType: file.type,
+    });
+    return data;
+  } catch (error) {
+    console.log(error);
+  }
+};
 
-    if (!fileExtension) {
-      reject(new Error('File does not have a valid extension.'));
-      return;
-    }
+function uploadFileToS3(file: File, url: string | URL) {
+  const xhr = new XMLHttpRequest();
+  return new Promise((resolve) => {
+    xhr.addEventListener('loadend', () => {
+      resolve(xhr.readyState === 4 && xhr.status === 200);
+    });
 
-    switch (fileExtension) {
-      case 'csv':
-        convertCSVtoJson(file).then(resolve).catch(reject);
-        break;
-      case 'zip':
-        convertZIPtoJson(file).then(resolve).catch(reject);
-        break;
-      case 'xlsx':
-        convertXlsxToJson(file).then(resolve).catch(reject);
-        break;
-      case 'kml':
-      case 'kmz':
-        convertKMZAndKMLToJson(file).then(resolve).catch(reject);
-        break;
-      default:
-        reject(new Error('Unsupported file type.'));
-    }
+    xhr.open('PUT', url, true);
+    xhr.setRequestHeader('Content-Type', file.type);
+    xhr.send(file);
+  });
+}
+
+export const getPreviewList = async (path: string) => {
+  const config = {
+    method: 'GET',
+    url: '/api/list/preview',
+    params: {
+      path,
+    },
+  };
+
+  return axios(config).then((response) => {
+    return response.data?.features;
   });
 };
+
+export const getTableColumns = (templateData: LocationListType[] | null) => {
+  if (!Array.isArray(templateData) || templateData.length === 0) {
+    return [];
+  }
+
+  const availableKeys = Object.keys(templateData[0].properties);
+  return availableKeys.filter((key) => key in LabelNameTable);
+};
+
 export const LabelNameTable = {
   Location_N: 'Location Name',
+  locationName: 'Location Name',
+  investmentName: 'Investment Name',
+  mill_name: 'Mill Name',
+  latitude: 'Latitude',
   Latitude: 'Latitude',
   Longitude: 'Longitude',
+  longitude: 'Longitude',
+  analysisRadius: 'Analysis Radius',
   Analysis_R: 'Analysis Radius',
+  analysisArea: 'Analysis Area',
   Analysis_A: 'Analysis Area',
   Location_C: 'Location Classification',
-  Company_ID: 'Company ID',
+  commodity: 'Commodity',
+  riskLevel: 'Risk Level',
   Volume: 'Volume',
+  volume: 'Volume',
   Owner_Name: 'Owner Name',
   Owner_ID: 'Owner ID',
+  Company_ID: 'Company ID',
+  companyName: 'Company Name',
   Company_Na: 'Company Name',
   Supplier_N: 'Supplier Name',
   Facility_N: 'Facility Name',
   Refinery_N: 'Refinery Name',
+  certification: 'Certification',
   Certificat: 'Certification',
+  startDate: 'Start Date',
   Start_Date: 'Start Date',
+  endDate: 'End Date',
   End_Date: 'End Date',
+  timeHorizon: 'Time Horizon',
   Time_Horiz: 'Time Horizon',
+  country: 'Country',
+  state: 'State',
+  substate: 'Substate',
+  parentCompanyOrGroup: 'Parent Company',
+  companyPolicyRanking: 'Company Policy Ranking',
+  typeOfInvestment: 'Type Of Investment',
+  locationClassification: 'Location Classification',
+  refineryName: 'Refinery',
+  supplierName: 'Supplier',
+  facilityName: 'Facility',
+  attribute1: 'Attribute 1',
+  attribute2: 'Attribute 2',
+  attribute3: 'Attribute 3',
 };

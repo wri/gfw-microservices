@@ -179,7 +179,7 @@ export function UploadLocationByFile() {
           </PillButton>
           <PillButton
             variant="contained"
-            disabled={!uploadLocationsList}
+            disabled={uploadLocationsList?.length == 0}
             onClick={() => history.push('PREVIEW')}
             startIcon={<ArrowForwardIos />}
           >

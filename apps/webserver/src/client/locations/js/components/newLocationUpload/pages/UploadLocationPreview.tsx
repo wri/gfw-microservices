@@ -10,7 +10,7 @@ import {
   TableRow,
   Typography,
 } from '@mui/material';
-import { LabelNameTable } from '../utils/upload';
+import { getTableColumns, LabelNameTable } from '../utils/upload';
 import { theme } from '../../../../../styles/theme';
 import { PillButton } from '../../../../../components';
 import { ArrowBackIos, ArrowForwardIos, Replay } from '@mui/icons-material';
@@ -23,10 +23,16 @@ const getProperty = <T extends object>(obj: T, key: keyof T) => {
 };
 
 export function UploadLocationPreview() {
-  const { uploadLocationsList } = useUploadLocation();
+  const { selectUploadLocationsList, uploadLocationsList } = useUploadLocation();
   const history = useHistory();
 
-  const columns = Object.keys(LabelNameTable) as (keyof typeof LabelNameTable)[];
+  const handleBackButton = () => {
+    selectUploadLocationsList([]);
+    history.goBack();
+  };
+
+  const columns = getTableColumns(uploadLocationsList) as (keyof typeof LabelNameTable)[];
+
   return (
     <Card sx={{ pt: 1, px: 2, pb: 2 }}>
       <NavBar />
@@ -54,7 +60,7 @@ export function UploadLocationPreview() {
           variant="contained"
           color="info"
           startIcon={<Replay />}
-          onClick={() => history.goBack()}
+          onClick={handleBackButton}
           sx={{ minWidth: '200px' }}
         >
           Retry upload
@@ -70,7 +76,7 @@ export function UploadLocationPreview() {
             </TableRow>
           </TableHead>
           <TableBody>
-            {uploadLocationsList?.slice(0, 10).map((location) => (
+            {uploadLocationsList?.map((location) => (
               <TableRow key={location.properties.Location_N}>
                 {columns.map((column) => (
                   <TableCell key={column}>
@@ -94,7 +100,7 @@ export function UploadLocationPreview() {
           variant="contained"
           color="info"
           startIcon={<ArrowBackIos />}
-          onClick={() => history.goBack()}
+          onClick={handleBackButton}
         >
           Back
         </PillButton>

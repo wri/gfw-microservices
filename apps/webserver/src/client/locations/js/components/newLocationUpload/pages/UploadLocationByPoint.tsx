@@ -36,11 +36,16 @@ enum RadiusSize {
   Large,
   Custom,
 }
-
-type FormFieldsCoordinates = z.infer<typeof coordinateSchema>;
-
-const addressSchema = z.object({ address: z.string().trim().min(1) });
-type FormFieldsAddress = z.infer<typeof addressSchema>;
+const uploadByPointSchema = z
+  .discriminatedUnion('locationFormat', [
+    coordinateSchema.extend({ locationFormat: z.literal(LocationFormat.Coordinates) }),
+    z.object({
+      locationFormat: z.literal(LocationFormat.Address),
+      address: z.string().trim().min(1),
+    }),
+  ])
+  .or(z.object({ locationFormat: z.null() }));
+type FormFields = z.infer<typeof uploadByPointSchema>;
 
 const COORDINATE_ERROR_MESSAGE =
   'Your coordinate value is invalid. Please ensure your data is in decimal degree notation';
@@ -51,36 +56,31 @@ export function UploadLocationByPoint() {
   const { clearUploadType } = useUploadLocation();
 
   const {
-    control: controlCoordinates,
-    handleSubmit: handleSubmitCoordinates,
-    formState: { errors: errorsCoordinates },
-    reset: resetCoordinates,
-  } = useForm<FormFieldsCoordinates>({
-    resolver: zodResolver(coordinateSchema),
+    handleSubmit,
+    control,
+    formState: { errors },
+    reset,
+    watch,
+  } = useForm<FormFields>({
+    resolver: zodResolver(uploadByPointSchema),
+    defaultValues: { locationFormat: null },
   });
 
-  const {
-    control: controlAddress,
-    handleSubmit: handleSubmitAddress,
-    formState: { errors: errorsAddress },
-    reset: resetAddress,
-  } = useForm<FormFieldsAddress>({
-    resolver: zodResolver(addressSchema),
-  });
-
-  const [locationFormat, setLocationFormat] = useState<LocationFormat | null>(null);
+  const locationFormat: LocationFormat | null = watch('locationFormat');
 
   const [selectedRadiusSize, setSelectedRadiusSize] = useState<RadiusSize>(RadiusSize.Small);
 
   const [measurementUnit, setMeasurementUnit] = useState<MeasurementUnit>('hectares');
 
   const handleChangeLocationFormat = (locFormat: LocationFormat) => {
-    setLocationFormat(locFormat);
-    resetCoordinates();
-    resetAddress();
+    if (locFormat === LocationFormat.Coordinates) {
+      reset({ locationFormat: locFormat, latitude: '', longitude: '' });
+    } else {
+      reset({ locationFormat: locFormat, address: '' });
+    }
   };
 
-  const onSubmit = (data: FormFieldsCoordinates | FormFieldsAddress) => {
+  const onSubmit = (data: FormFields) => {
     console.log({ data });
     history.push('CONFIGURE_LIST');
   };
@@ -130,15 +130,7 @@ export function UploadLocationByPoint() {
               <Typography variant="body2">Enter address</Typography>
             </LocationTypeButton>
           </Box>
-          <Box
-            component="form"
-            onSubmit={
-              locationFormat === LocationFormat.Coordinates
-                ? handleSubmitCoordinates(onSubmit)
-                : handleSubmitAddress(onSubmit)
-            }
-            sx={{ flex: '1' }}
-          >
+          <Box component="form" onSubmit={handleSubmit(onSubmit)} style={{ flex: '1' }}>
             <Box sx={{ visibility: locationFormat === null ? 'hidden' : 'initial' }}>
               {locationFormat === LocationFormat.Coordinates ? (
                 <Box>
@@ -150,7 +142,7 @@ export function UploadLocationByPoint() {
                   <Box sx={{ display: 'flex', gap: 1 }}>
                     <Controller
                       name="latitude"
-                      control={controlCoordinates}
+                      control={control}
                       render={({ field }) => (
                         <TextField
                           label="Latitude"
@@ -158,15 +150,17 @@ export function UploadLocationByPoint() {
                           type="number"
                           fullWidth
                           size="small"
-                          error={!!errorsCoordinates.latitude}
-                          helperText={errorsCoordinates.latitude ? COORDINATE_ERROR_MESSAGE : ''}
+                          error={'latitude' in errors && !!errors.latitude}
+                          helperText={
+                            'latitude' in errors && errors.latitude ? COORDINATE_ERROR_MESSAGE : ''
+                          }
                           {...field}
                         />
                       )}
                     />
                     <Controller
                       name="longitude"
-                      control={controlCoordinates}
+                      control={control}
                       render={({ field }) => (
                         <TextField
                           label="Longitude"
@@ -174,8 +168,12 @@ export function UploadLocationByPoint() {
                           type="number"
                           fullWidth
                           size="small"
-                          error={!!errorsCoordinates.longitude}
-                          helperText={errorsCoordinates.longitude ? COORDINATE_ERROR_MESSAGE : ''}
+                          error={'longitude' in errors && !!errors.longitude}
+                          helperText={
+                            'longitude' in errors && errors.longitude
+                              ? COORDINATE_ERROR_MESSAGE
+                              : ''
+                          }
                           {...field}
                         />
                       )}
@@ -185,9 +183,8 @@ export function UploadLocationByPoint() {
               ) : (
                 <Box>
                   <Typography variant="h6">Enter address</Typography>
-
                   <Controller
-                    control={controlAddress}
+                    control={control}
                     name="address"
                     render={({ field }) => (
                       <FormControl variant="outlined" size="small" fullWidth>
@@ -212,7 +209,7 @@ export function UploadLocationByPoint() {
                           label="Address"
                           {...field}
                         />
-                        {!!errorsAddress.address && (
+                        {'address' in errors && !!errors.address && (
                           <FormHelperText sx={{ color: 'error.main', mx: 1.75 }}>
                             Enter the address
                           </FormHelperText>

@@ -1905,7 +1905,8 @@ export default class ListDetails extends Component {
       );
 
     const analysisType = analysisMapping[listView];
-    const isAnalysisInProgress = isAnalysisStatusPending(analysisType);
+    const isAnalysisInProgress =
+      isAnalysisStatusPending(analysisType) || isListSubmittedForAnalysis;
 
     const isInFolder = selectedList && !!currentFolder;
     if (selectedList && currentFolder) {
@@ -2007,6 +2008,7 @@ export default class ListDetails extends Component {
             toggleReRunAnalysisDialog={this.toggleReRunAnalysisDialog}
             listAnalysesStatus={listAnalysesStatus}
             isListFailedByAnalysisStatusLimit={isListFailedByAnalysisStatusLimit(selectedLists[0])}
+            isListSubmittedForAnalysis={isListSubmittedForAnalysis}
           />
         )}
         {bannerContent && (

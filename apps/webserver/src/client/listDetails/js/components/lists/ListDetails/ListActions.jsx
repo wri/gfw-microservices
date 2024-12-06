@@ -36,6 +36,7 @@ const ListActions = ({
   draftSubmitDialogOpen,
   setDraftSubmitDialogOpen,
   setIsListSubmittedForAnalysis,
+  isListSubmittedForAnalysis,
   isInFolder,
   folders,
   userIsOwner,
@@ -96,7 +97,8 @@ const ListActions = ({
     selectedList?.list_status_id !== 1 &&
     getIsDiagnosticStatusDraft(selectedList) &&
     !selectedList?.isGlobalForestWatchList &&
-    !isSearchBarOpen;
+    !isSearchBarOpen &&
+    !isListSubmittedForAnalysis;
 
   const isUpdateAnalysisAvailable =
     (currentUser.access_level_id === userAccessLevel.ADMIN ||
@@ -325,7 +327,6 @@ const ListActions = ({
                 event_label: 'User submits a list from listview page',
               });
               setIsListSubmittedForAnalysis(true);
-              window.location = '/locations';
             })
             .catch((error) => {
               console.log(error);

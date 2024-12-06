@@ -174,7 +174,6 @@ export class ListAnalysisService {
     if (analysisStatus.status === getListStatusString(listStatus.Draft)) {
       // Get the list details to get the error file storage path if it exists
       const list = await this.listService.getList({
-        analysisId,
         listId,
         organizationId,
       });
@@ -395,6 +394,28 @@ export class ListAnalysisService {
       LIST_ANALISYS_ENDPOINT_NAMES[GENERATE_ANALYSIS],
       ListActivityTypesEnum.ListGenerate
     );
+
+    const list = await this.listService.getList({
+      listId,
+      organizationId,
+    });
+
+    if (!list) throw new NotFoundException('List not found');
+
+    const connection = await this.getOrganizationConnection(organizationId);
+    const listAnalysisStatusRepository = connection.getRepository(ListsAnalysisStatus);
+    const listAnalysisStatus = await listAnalysisStatusRepository.findOne({
+      where: { listId, analysisId },
+    });
+
+    if (!listAnalysisStatus) {
+      throw new NotFoundException('Analysis status not found');
+    }
+
+    if (listAnalysisStatus.status !== listStatus.Active) {
+      throw new BadRequestException('List is not active');
+    }
+
     let message = {};
     try {
       if (!userEmail) {
@@ -418,12 +439,12 @@ export class ListAnalysisService {
           organization,
         });
       }
+      // Not send email for AFI VC
       if (outputType && analysisId === 'AFI') {
         message = {
           ...message,
           type: 'afiVC',
           file: 'shapefile',
-          userEmail: userEmail,
         };
       }
 

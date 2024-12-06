@@ -20,6 +20,7 @@ const AdhocAnalysis = ({ dateSliderDateRange, visibleLayers }) => {
       <DatePickerControl
         start={dateSliderDateRange.start}
         end={dateSliderDateRange.end}
+        minDate={dateSliderDateRange.minDate}
         changeStart={handleStartDate}
         changeEnd={handleEndDate}
       />

@@ -15,8 +15,8 @@
  * @function {getPaginatedAnalysisDataForProtectedAreas}
  *
  ********************************************************************/
-import _ from 'lodash';
-import sql from 'mssql';
+import * as _ from 'lodash';
+import * as sql from 'mssql';
 
 import * as sqlUtils from '../privateutils/sql.utils';
 import { createErrorMessage, ERROR_CODES } from '../privateutils/error.utils';
@@ -422,6 +422,7 @@ export async function getPaginatedAnalysisDataForProtectedAreas(
   pageSize,
   database,
   filters,
+  filterString,
   tableSortedBy,
   tableSortedDesc
 ) {
@@ -432,6 +433,7 @@ export async function getPaginatedAnalysisDataForProtectedAreas(
     pageSize,
     database,
     filters,
+    filterString,
     tableSortedBy,
     tableSortedDesc
   );
@@ -443,6 +445,7 @@ export async function getPaginatedAnalysisDataForAdministrativeAreas(
   pageSize,
   database,
   filters,
+  filterString,
   tableSortedBy,
   tableSortedDesc
 ) {
@@ -453,6 +456,7 @@ export async function getPaginatedAnalysisDataForAdministrativeAreas(
     pageSize,
     database,
     filters,
+    filterString,
     tableSortedBy,
     tableSortedDesc
   );
@@ -466,7 +470,7 @@ export async function getPaginatedAnalysisDataForAdministrativeAreas(
 export async function getAFIListAnalyses(list_id, page, pageSize, clientDatabase, filters) {
   const {
     orderType,
-    sortByAttribute = 'location_id',
+    sortByAttribute,
     searchString,
     country,
     state,
@@ -483,10 +487,11 @@ export async function getAFIListAnalyses(list_id, page, pageSize, clientDatabase
     selectedOverallValues,
     selectedMillPriority,
   } = filters;
+
   const parameters = [
     { field: 'listId', type: sql.Int, value: list_id },
     { field: 'rowsOfPage', type: sql.Int, value: pageSize },
-    { field: 'pageNumber', type: sql.Int, value: page - 1 },
+    { field: 'pageNumber', type: sql.Int, value: page },
     { field: 'orderType', type: sql.NVarChar(255), value: orderType || 'ASC' },
     { field: 'selectedSupplier', type: sql.NVarChar(255), value: selectedSupplier || null },
     {
@@ -522,59 +527,46 @@ export async function getAFIListAnalyses(list_id, page, pageSize, clientDatabase
       value: subState !== '' && subState ? subState : null,
     },
   ];
-  // Verify if the sortByAttribute is valid
-  const sortedAttributes = [
-    'list_id',
-    'location_id',
-    'gadm_id',
-    'natural_land_area',
-    'natural_land_deforested_area',
-    'total_area_ha',
-    'status_code',
-    'location_error',
-    'negligible_risk',
-    'jrc_land_area',
-    'jrc_land_deforested_area',
-    'jrc_forest_loss_by_year',
-    'natural_forest_loss_by_year',
-    'protected_areas_area',
-    'landmark_area',
-    'country',
-    'state',
-    'subState',
-  ];
-  const hasFilter = sortedAttributes.filter((key) => key === sortByAttribute);
-  if (hasFilter.length > 0) {
-    parameters.push({
-      field: 'sortByAttribute',
-      type: sql.NVarChar(255),
-      value: sortByAttribute,
-    });
-  } else {
-    throw new Error(
-      `Invalid sortByAttribute ${filters.sortByAttribute} use one of ${sortedAttributes}`
-    );
-  }
+
+  parameters.push({
+    field: 'sortByAttribute',
+    type: sql.NVarChar(255),
+    value: sortByAttribute,
+  });
 
   const listAnalyses = await SQLUtilsLibSql.queryDB<PaginatedAfiAnalysisByListIdSortedByFilters[]>(
     clientDatabase,
     getPaginatedAfiAnalysisByListIdSortedByFilters,
     parameters
   );
-  const quantity = listAnalyses?.length > 0 ? listAnalyses.length : 0;
+
+  const numberOfResults = listAnalyses?.[0]?.totalRows;
 
   const formattedListAnalyses = listAnalyses.map((analysis) => {
+    const formatPercentage = (numerator, denominator) => {
+      if (denominator === 0) return '0%'; // Avoid division by zero
+      const value = (numerator * 100) / denominator;
+      if (value === 0) return '0%';
+      if (value < 1) return '<1%';
+      return `${Math.round(value)}%`;
+    };
+
     return {
       ...analysis,
-      protectedAreasPercent: analysis.protectedAreasHA / (analysis.totalAreaHa * 100) || 0,
-      landmarkPercent: analysis.landmarkHA / (analysis.totalAreaHa * 100) || 0,
-      naturalForestLossPercent: analysis.naturalForestLossHA / (analysis.totalAreaHa * 100) || 0,
-      jrcNaturalForestLossPercent:
-        analysis.jrcNaturalForestLossHA / (analysis.totalAreaHa * 100) || 0,
+      protectedAreasPercent: formatPercentage(analysis.protectedAreasHA, analysis.totalAreaHa),
+      landmarkPercent: formatPercentage(analysis.landmarkHA, analysis.totalAreaHa),
+      naturalForestLossPercent: formatPercentage(
+        analysis.naturalForestLossHA,
+        analysis.totalAreaHa
+      ),
+      jrcNaturalForestLossPercent: formatPercentage(
+        analysis.jrcNaturalForestLossHA,
+        analysis.totalAreaHa
+      ),
       list_id: analysis.listId,
       location_id: analysis.locationId,
     };
   });
 
-  return { listAnalyses: formattedListAnalyses, quantity };
+  return { listAnalyses: formattedListAnalyses, numberOfResults };
 }

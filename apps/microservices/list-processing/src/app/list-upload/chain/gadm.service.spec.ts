@@ -83,7 +83,6 @@ describe('GADMService', () => {
         .spyOn(service, 'clipToLand')
         .mockResolvedValue({ geojson: { type: 'FeatureCollection', features: [] } });
       const result = await service.handle(input);
-      console.log(result);
       expect(result.geojson).toEqual({ type: 'FeatureCollection', features: [] });
     });
   });

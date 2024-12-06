@@ -12,6 +12,7 @@ export default function AnalysisStatusBanners({
   toggleReRunAnalysisDialog,
   listAnalysesStatus,
   isListFailedByAnalysisStatusLimit,
+  isListSubmittedForAnalysis,
 }) {
   const isFailedAnalysis = !!listAnalysesStatus.find(
     ({ status }) => status === listStatus.Inactive
@@ -41,7 +42,7 @@ export default function AnalysisStatusBanners({
       onButtonClick: toggleReRunAnalysisDialog,
     },
     {
-      condition: isDiagnosticStatusDraft,
+      condition: isDiagnosticStatusDraft && !isListSubmittedForAnalysis,
       title: 'DRAFT',
       backgroundColor: '#58a9cd',
       icon: <EditNoteIcon style={{ marginRight: '5px' }} fontSize="inherit" />,

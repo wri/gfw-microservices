@@ -21,11 +21,11 @@ const fontStyle = {
 export default class DatePickerControl extends Component {
   constructor(props) {
     super(props);
-    const { start, end } = props;
+    const { start, end, minDate } = props;
     this.state = {
       start: start,
       end: end,
-      minDate: start,
+      minDate: minDate || start,
       maxDate: end,
     };
   }

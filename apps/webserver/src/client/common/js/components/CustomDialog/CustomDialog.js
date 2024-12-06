@@ -17,6 +17,7 @@ export default function CustomDialog({
       paperClassName="list-diagnostics-dialog dialog-paper"
       open={open}
       title={dialogTitle}
+      contentStyle={{ opacity: 1 }}
       actions={[
         <div className="list-diagnostics-dialog__actions">
           {React.isValidElement(dialogActionConfirm) ? (

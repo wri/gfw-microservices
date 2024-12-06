@@ -2,16 +2,13 @@ body:has(.new-location-upload) {
   background: #e5e5e5;
 }
 
-.new-location-upload {
-  margin: 12px auto;
-  max-width: 1100px;
-  min-width: 300px;
+.esri-ui-top-left.esri-ui-corner {
+  height: 100%;
+  width: 100%;
+}
 
-  @media (max-width: 991px) {
-    padding: 12px 100px;
-
-    @media (max-width: 575px) {
-      padding: 0;
-    }
-  }
+.esri-component.esri-zoom.esri-widget {
+  position: absolute;
+  bottom: 0px;
+  right: 0px;
 }

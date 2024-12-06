@@ -43,16 +43,9 @@ describe('Maps View', () => {
     expect(listDetailPage.elements.downloadBtn().should('be.visible'));
     listDetailPage.clickOnDownload();
     expect(listDetailPage.elements.downloadCSVOptionListDetail().should('be.visible'));
-    expect(listDetailPage.elements.downloadResultsOptionListDetail().should('be.visible'));
     expect(listDetailPage.elements.downloadShapefileptionListDetail().should('be.visible'));
     //Download CSV
     listDetailPage.clickOnCSVOption();
-    expect(listDetailPage.elements.titleAlertDownloadList().should('be.visible'));
-    expect(listDetailPage.elements.descriptionAlertDownloadList().should('be.visible'));
-    listDetailPage.clickCloseAlertDownload();
-    //Download Results
-    listDetailPage.clickOnDownload();
-    listDetailPage.clickOnResultsOption();
     expect(listDetailPage.elements.titleAlertDownloadList().should('be.visible'));
     expect(listDetailPage.elements.descriptionAlertDownloadList().should('be.visible'));
     listDetailPage.clickCloseAlertDownload();

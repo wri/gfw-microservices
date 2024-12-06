@@ -85,17 +85,17 @@ export default class Filter extends Component {
       filterValues,
       locationNameOptionsForFilter,
       parentCompanyOptionsForFilter,
+      supplierNameOptionsForFilter,
+      secondSupplierNameOptionsForFilter,
       isFilterModalVisible,
       filterCount,
       listColumns,
       setListColumns,
       listView,
       listName,
-      listData,
       adminAreas,
       protectedAreas,
       isGfwList,
-      clearFilters,
     } = this.props;
     const { selectedCountry, selectedState, selectedSubState } = this.state;
 
@@ -104,7 +104,6 @@ export default class Filter extends Component {
       selectedCountry,
       selectedState
     );
-
     const isCommodityRiskFilterVisible = listView === COMMODITY_RISK_VIEW;
     const isForestChangeFilterVisible = listView === FOREST_CHANGE_VIEW;
 
@@ -131,53 +130,49 @@ export default class Filter extends Component {
       isFilterModalVisible && !isGfwList && !isCommodityRiskFilterVisible;
     return (
       <>
-        {isFilterModalVisible && (
-          <>
-            {isProtectedAreasFilterVisible && (
-              <ProtectedAreasGFWList
-                filterCount={filterCount}
-                protectedAreas={protectedAreas}
-                clearFilters={clearFilters}
-              />
-            )}
-
-            {isAdministrativeAreasFilterVisible && (
-              <AdministrativeAreasGFWListFilter filterCount={filterCount} adminAreas={adminAreas} />
-            )}
-
-            {isGFWListOtherThanProtectedOrAdministrativeAreas && (
-              <GFWListFilter
-                filterValues={filterValues}
-                locationNameOptionsForFilter={locationNameOptionsForFilter}
-                parentCompanyOptionsForFilter={parentCompanyOptionsForFilter}
-                filterCount={filterCount}
-                list_name={listName}
-                clearFilters={clearFilters}
-              />
-            )}
-
-            {isUserListCommodityRiskFilterVisible && (
-              <UserListCommodityRiskFilter
-                listName={listName}
-                listData={listData}
-                filterCount={filterCount}
-                listView={listView}
-                clearFilters={clearFilters}
-              />
-            )}
-            {isGFWListCommodityRiskFilterVisible && (
-              <GFWListCommodityRiskFilter
-                listName={listName}
-                filterValues={filterValues}
-                locationNameOptionsForFilter={locationNameOptionsForFilter}
-                parentCompanyOptionsForFilter={parentCompanyOptionsForFilter}
-                filterCount={filterCount}
-                listView={listView}
-                clearFilters={clearFilters}
-              />
-            )}
-          </>
+        {isProtectedAreasFilterVisible && (
+          <ProtectedAreasGFWList
+            protectedAreas={protectedAreas}
+            isFilterModalVisible={isFilterModalVisible}
+          />
         )}
+
+        {isAdministrativeAreasFilterVisible && (
+          <AdministrativeAreasGFWListFilter
+            adminAreas={adminAreas}
+            isFilterModalVisible={isFilterModalVisible}
+          />
+        )}
+
+        {isGFWListOtherThanProtectedOrAdministrativeAreas && (
+          <GFWListFilter
+            filterValues={filterValues}
+            locationNameOptionsForFilter={locationNameOptionsForFilter}
+            parentCompanyOptionsForFilter={parentCompanyOptionsForFilter}
+            list_name={listName}
+            isFilterModalVisible={isFilterModalVisible}
+          />
+        )}
+
+        {isUserListCommodityRiskFilterVisible && (
+          <UserListCommodityRiskFilter
+            listName={listName}
+            isFilterModalVisible={isFilterModalVisible}
+            filterValues={filterValues}
+            parentCompanyOptionsForFilter={parentCompanyOptionsForFilter}
+            supplierNameOptionsForFilter={supplierNameOptionsForFilter}
+            secondSupplierNameOptionsForFilter={secondSupplierNameOptionsForFilter}
+          />
+        )}
+        {isGFWListCommodityRiskFilterVisible && (
+          <GFWListCommodityRiskFilter
+            filterValues={filterValues}
+            locationNameOptionsForFilter={locationNameOptionsForFilter}
+            parentCompanyOptionsForFilter={parentCompanyOptionsForFilter}
+            isFilterModalVisible={isFilterModalVisible}
+          />
+        )}
+
         <Stack
           alignItems="center"
           direction="row"
@@ -222,7 +217,7 @@ export default class Filter extends Component {
                   )}
                 </Grid>
                 <Grid item xs={7}>
-                  {!isGfwList && <DeforestationDisplayFormatToggleButtons />}
+                  {!isCommodityRiskFilterVisible && <DeforestationDisplayFormatToggleButtons />}
                 </Grid>
               </>
             )}

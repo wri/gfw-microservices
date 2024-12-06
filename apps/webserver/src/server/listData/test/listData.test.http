@@ -57,3 +57,9 @@ Cookie: gfwpro.globalforestwatch.org={{gfwpro_token}}
     "selectedAreaMax": null
   }
 }
+
+
+### Country, sortByAttribute, order
+GET https://localhost:8443/api/list/5407/commodity
+Content-Type: application/json
+Cookie: gfwpro.globalforestwatch.org={{gfwpro_token}}

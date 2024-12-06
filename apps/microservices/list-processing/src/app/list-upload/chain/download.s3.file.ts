@@ -14,8 +14,8 @@ export class DownloadS3File extends AbstractHandler<ChainType> {
     super();
   }
 
-  async handle(input: ChainType): Promise<ChainType> {
-    const { path } = input.request;
+  async handle(request: ChainType): Promise<ChainType> {
+    const { path } = request.request;
     const bucket = this.config.get<string>('LARGE_PROCESSING_LIST_BUCKET', { infer: true });
 
     const maxRetries = 3;
@@ -25,7 +25,7 @@ export class DownloadS3File extends AbstractHandler<ChainType> {
       try {
         const fileDownloadedPath = await this.s3Service.writeS3fileIntoTmp(path, bucket);
         this.logger.log(`Downloaded the file and wrote it into ${fileDownloadedPath}`);
-        return super.handle({ ...input, request: { ...input.request, fileDownloadedPath } });
+        return { ...request, request: { ...request.request, fileDownloadedPath } };
       } catch (error) {
         this.logger.error(
           `Attempt ${attempt} - Failed to download the file from S3: ${error.message}`,
@@ -41,5 +41,6 @@ export class DownloadS3File extends AbstractHandler<ChainType> {
         }
       }
     }
+    return { ...request, request: { ...request.request, fileDownloadedPath: '' } };
   }
 }

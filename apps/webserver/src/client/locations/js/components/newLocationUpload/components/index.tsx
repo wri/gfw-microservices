@@ -1,3 +1,4 @@
-export { HowToFormatLocationLink } from './HowToFormatLocationLink';
+export { ExternalHelperResource } from './ExternalHelperResource';
 export { LocationTypeButton } from './LocationTypeButton';
-export { NavBarWithProgress } from './NavBarWithProgress';
+export { NavBar } from './NavBar';
+export { DataTemplates } from './DataTemplates';

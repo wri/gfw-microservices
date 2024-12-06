@@ -3,19 +3,17 @@ import { AbstractHandler, ChainType, RequestNewList } from './types';
 import { ClientStoreConnection, ListSchema, ListSchemaType } from '@wri-monorepos/sql';
 import { FeatureCollection } from '@wri-monorepos/geo';
 import { GeoJSONGeometry, stringify } from 'wellknown';
+import { Logger } from '@nestjs/common';
 
 const BATCH_SIZE = 100;
 
 export class InsertLocationData extends AbstractHandler<ChainType> {
+  private readonly logger = new Logger(InsertLocationData.name);
   private clientStoreConnection: ClientStoreConnection;
 
-  constructor(clientStoreConnection: ClientStoreConnection) {
+  constructor(clientStoreConnection: ClientStoreConnection = new ClientStoreConnection()) {
     super();
-    if (clientStoreConnection !== null) {
-      this.clientStoreConnection = clientStoreConnection;
-    } else {
-      this.clientStoreConnection = new ClientStoreConnection();
-    }
+    this.clientStoreConnection = clientStoreConnection;
   }
 
   private async insertBatch(
@@ -36,9 +34,9 @@ export class InsertLocationData extends AbstractHandler<ChainType> {
     }
   }
 
-  async handle(input: ChainType): Promise<ChainType> {
+  async handle(request: ChainType): Promise<ChainType> {
     const { organization_database: organizationDatabase, listTable } =
-      input.request as RequestNewList;
+      request.request as RequestNewList;
     const ListEntity = new EntitySchema<ListSchemaType>({
       ...ListSchema,
       name: listTable,
@@ -49,7 +47,10 @@ export class InsertLocationData extends AbstractHandler<ChainType> {
     ]);
 
     try {
-      const features = (input.geojson as FeatureCollection).features;
+      let features = (request.geojson as FeatureCollection).features;
+      features = features.map(
+        (feature, idx) => ((feature.properties.locationId = idx + 1), feature)
+      );
       const values = features.map((feature) => ({
         ...feature.properties,
         geometry: stringify(feature.geometry as GeoJSONGeometry),
@@ -60,7 +61,7 @@ export class InsertLocationData extends AbstractHandler<ChainType> {
         await this.insertBatch(connection, ListEntity, batch);
       }
 
-      return super.handle(input);
+      return super.handle(request);
     } catch (error) {
       throw new Error(`Failed to handle input: ${error.message}`);
     }

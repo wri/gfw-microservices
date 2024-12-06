@@ -44,10 +44,6 @@ const forest_change_locations = [
           className: 'td-num',
           show: true,
         },
-      ]
-    : []),
-  ...(!isListDetailsPageRedesignAvailable
-    ? [
         {
           Header: () => <ColumnsHeader label={columnHeaders.commodity} />,
           accessor: 'Commodity',

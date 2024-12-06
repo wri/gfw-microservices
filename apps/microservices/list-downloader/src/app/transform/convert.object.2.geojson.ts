@@ -1,11 +1,15 @@
 import { Transform } from 'stream';
 import { parse, GeoJSONGeometryOrNull } from 'wellknown';
 import { ClientStoreConnection, Lists, AFIAnalysis, ListsAnalysisStatus } from '@wri-monorepos/sql';
+import { VerifiableCredentialService } from '../verifiable-credentials/verifiable.credentials.service';
+import { Logger } from '@nestjs/common';
 class ConvertObject2Geojson extends Transform {
   constructor() {
     super({ objectMode: true });
   }
   private readonly clientStoreConnection = new ClientStoreConnection();
+  private readonly verifiableCredentialService = new VerifiableCredentialService();
+  private readonly logger = new Logger(ConvertObject2Geojson.name);
 
   getGeoJSONGeometry(wktGeometry: string): GeoJSONGeometryOrNull {
     return parse(wktGeometry);
@@ -74,27 +78,38 @@ class ConvertObject2Geojson extends Transform {
         location.list_id,
         location.organizationDatabase,
         feature.properties['location_id']
-      ).then((listProperties) => {
-        const afiProperties = {
-          Centroid_Country: feature.properties['Country'],
-          Location_HA: listProperties.total_area_ha,
-          SBTN_Natural_Forest_HA: listProperties.natural_land_area,
-          SBTN_Natural_Forest_Loss_Post_2020_HA: listProperties.natural_land_deforested_area,
-          JRC_Forest_HA: listProperties.jrc_land_area,
-          JRC_Forest_Loss_Post_2020_HA: listProperties.jrc_land_deforested_area,
-          Analysis_Time: listProperties.updateTime,
-          GFWPro_Account: listProperties.organizationId,
-          Use_Rights: 'Full Sharing',
-        };
-
-        delete feature.properties['list_id'];
-        delete feature.properties['organizationDatabase'];
-        delete feature.properties['Country'];
-        delete feature.properties['location_id'];
-        feature.properties = { ...feature.properties, ...afiProperties };
-        geojson.features.push(feature);
-        next(null, geojson);
-      });
+      )
+        .then((listProperties) => {
+          const afiProperties = {
+            ['Location_Name']: feature.properties['Location_Name'],
+            Centroid_Country: feature.properties['Country'],
+            Location_HA: listProperties.total_area_ha,
+            SBTN_Natural_Forest_HA: listProperties.natural_land_area,
+            SBTN_Natural_Forest_Loss_Post_2020_HA: listProperties.natural_land_deforested_area,
+            JRC_Forest_HA: listProperties.jrc_land_area,
+            JRC_Forest_Loss_Post_2020_HA: listProperties.jrc_land_deforested_area,
+            Analysis_Time: listProperties.updateTime,
+            GFWPro_Account: listProperties.organizationId,
+            Use_Rights: 'Full Sharing',
+          };
+          feature.properties = afiProperties;
+          this.verifiableCredentialService
+            .signedVcOutput(feature)
+            .then((signedVC) => {
+              geojson.features.push(signedVC);
+              next(null, geojson);
+            })
+            .catch((err) => {
+              this.logger.error(`Error on signedVcOutput: ${err}`);
+              // Send the feature without a signed location
+              feature.properties = { ...feature.properties, ...afiProperties };
+              geojson.features.push(feature);
+              next(null, geojson);
+            });
+        })
+        .catch((err) => {
+          this.logger.error(`Error on signedVcOutput: ${err}`);
+        });
     } else {
       geojson.features.push(feature);
       next(null, geojson);

@@ -1,0 +1,20 @@
+import { z } from 'zod';
+
+const validCoordinateFormat = /^-?\d+\.\d+$/;
+
+export const coordinateSchema = z.object({
+  latitude: z
+    .string()
+    .max(19)
+    .refine((value) => {
+      const latitude = Math.abs(Number(value));
+      return validCoordinateFormat.test(value) && latitude <= 90;
+    }),
+  longitude: z
+    .string()
+    .max(20)
+    .refine((value) => {
+      const longitude = Math.abs(Number(value));
+      return validCoordinateFormat.test(value) && longitude <= 180;
+    }),
+});

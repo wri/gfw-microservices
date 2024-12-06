@@ -655,19 +655,8 @@ module.exports = (app, limiter) => {
         numberOfResults = 0,
         maximumAnalysisAreaInTheList = 0,
         locationAttributeList;
-      // Delete specifics AFI sortByAttribute
-      let AFI_SORT_BY_ATTRIBUTES = '';
       let location_analyses = [];
-      if (
-        filters.sortByAttribute === 'protectedAreasHA' ||
-        filters.sortByAttribute === 'landmarkHA' ||
-        filters.sortByAttribute === 'naturalForestLossHA' ||
-        filters.sortByAttribute === 'jrcNaturalForestLossHA' ||
-        filters.sortByAttribute === 'locationName'
-      ) {
-        AFI_SORT_BY_ATTRIBUTES = filters.sortByAttribute;
-        delete filters.sortByAttribute;
-      }
+
       switch (analysisId.toUpperCase()) {
         case 'AFI': {
           const analysisManagerResult = await AnalysisManager.getAFIListAnalyses(
@@ -678,29 +667,13 @@ module.exports = (app, limiter) => {
             filters
           );
           listAnalyses = analysisManagerResult.listAnalyses;
-          numberOfResults = analysisManagerResult.quantity;
+          numberOfResults = analysisManagerResult.numberOfResults;
           numberOfPages =
             numberOfResults % pageSize === 0
               ? numberOfResults / pageSize
               : Math.floor(numberOfResults / pageSize) + 1;
 
-          // Sort listAnalyses by some of those attributes protectedAreasHA, landmarkHA, naturalForestLossHA, jrcNaturalForestLossHA or locationName if not empty
           if (listAnalyses.length > 0) {
-            const sortAttributes = {
-              protectedAreasHA: 'protectedAreasHA',
-              landmarkHA: 'landmarkHA',
-              naturalForestLossHA: 'naturalForestLossHA',
-              jrcNaturalForestLossHA: 'jrcNaturalForestLossHA',
-              locationName: 'locationName',
-            };
-
-            if (sortAttributes[AFI_SORT_BY_ATTRIBUTES]) {
-              listAnalyses = listAnalyses.sort((a, b) =>
-                orderType.toLowerCase() === 'desc'
-                  ? b[AFI_SORT_BY_ATTRIBUTES] - a[AFI_SORT_BY_ATTRIBUTES]
-                  : a[AFI_SORT_BY_ATTRIBUTES] - b[AFI_SORT_BY_ATTRIBUTES]
-              );
-            }
             location_analyses = listAnalyses;
           }
           break;
@@ -799,8 +772,16 @@ module.exports = (app, limiter) => {
 
   app.post('/locations/getGFWListLocationData', (req, res) => {
     console.log('POST /locations/getGFWListLocationData');
-    const { list_id, location_ids, pageNum, pageSize, filters, tableSortedBy, tableSortedDesc } =
-      req.body;
+    const {
+      list_id,
+      location_ids,
+      pageNum,
+      pageSize,
+      filters,
+      filterString,
+      tableSortedBy,
+      tableSortedDesc,
+    } = req.body;
     const listAnalyses = [];
     const locationAttributeArray = [];
     const locationAnalysisArray = [];
@@ -811,6 +792,7 @@ module.exports = (app, limiter) => {
         pageSize,
         list_id,
         filters,
+        filterString,
         tableSortedBy,
         tableSortedDesc
       )
@@ -934,8 +916,14 @@ module.exports = (app, limiter) => {
       selectedStates,
       selectedSubStates,
     };
-    const { id: listID, pageNum, pageSize, tableSortedBy, tableSortedDesc } = req.body;
-
+    const {
+      id: listID,
+      pageNum,
+      pageSize,
+      tableSortedBy,
+      tableSortedDesc,
+      filterString,
+    } = req.body;
     let listData = [],
       protectedLocationResult = [],
       count = 0,
@@ -950,6 +938,7 @@ module.exports = (app, limiter) => {
             pageSize,
             config.SQLConnection.database,
             filters,
+            filterString,
             tableSortedBy,
             tableSortedDesc
           );
@@ -1001,7 +990,14 @@ module.exports = (app, limiter) => {
       selectedNames,
     } = req.body.filters;
 
-    const { id: listID, pageNum, pageSize, tableSortedBy, tableSortedDesc } = req.body;
+    const {
+      id: listID,
+      pageNum,
+      pageSize,
+      tableSortedBy,
+      tableSortedDesc,
+      filterString,
+    } = req.body;
     const filters = {
       selectedCountry,
       selectedState,
@@ -1019,6 +1015,7 @@ module.exports = (app, limiter) => {
         pageSize,
         config.SQLConnection.database,
         filters,
+        filterString,
         tableSortedBy,
         tableSortedDesc
       )

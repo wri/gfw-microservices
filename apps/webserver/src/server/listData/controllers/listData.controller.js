@@ -10,6 +10,7 @@ const { getListDataFiltered } = require('../utils/listData.utils');
 const { getListAnalysisStatusById, setSelectedAnalyses } = require('../service/listData.service');
 const listUtils = require(path.resolve('./config/privateutils/list.utils'));
 import { analysisTypes } from '@wri-monorepos/constants';
+import axios from 'axios';
 
 /**
  * @description - Get the data from the GFW API for the given info Bubble ID
@@ -165,5 +166,43 @@ export const setSelectedAnalysesCtrl = async (req, res) => {
   } catch (err) {
     logger.error(`List analysis selection error: ${err}`);
     return res.status(400).json({ message: 'create list analysis failed' });
+  }
+};
+
+export const getListCommodity = async (req, res) => {
+  const { listId } = req.params;
+  const organizationDatabase = req.session.organization_database;
+
+  try {
+    const url = `${process.env.LISTS_MICROSERVICE_URL}/list/commodity?listId=${listId}&organizationDatabase=${organizationDatabase}`;
+    const { data } = await axios.get(url);
+    res.status(200).json(data);
+  } catch (error) {
+    console.error('Error fetching commodity data:', error);
+    res.status(500).json({ error: 'Failed to fetch commodity data' });
+  }
+};
+
+export const getPreviewData = async (req, res) => {
+  const { path } = req.query;
+
+  try {
+    const url = `${process.env.LISTS_MICROSERVICE_URL}/list/upload/preview`;
+
+    const { data } = await axios.post(
+      url,
+      {
+        path,
+      },
+      {
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      }
+    );
+    res.status(200).json(data);
+  } catch (error) {
+    console.error('Error get the preview data:', error);
+    res.status(500).json({ error: 'Failed to fetch preview data' });
   }
 };

@@ -83,7 +83,10 @@
       "executor": "nx:run-commands",
       "options": {
         "cwd": "apps/webserver/src",
-        "commands": ["node ./test/prepare-jest", "nx run webserver:testweb"],
+        "commands": [
+          "node ./test/prepare-jest",
+          "NODE_OPTIONS=--max-old-space-size=4096 nx run webserver:testweb"
+        ],
         "verbose": true,
         "parallel": false
       }

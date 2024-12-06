@@ -1,6 +1,6 @@
 import MiniCssExtractPlugin from 'mini-css-extract-plugin';
-import webpack from 'webpack';
-import path from 'node:path';
+import * as webpack from 'webpack';
+import * as path from 'node:path';
 
 import config from './config';
 import { entries, aliases } from './client.configs';

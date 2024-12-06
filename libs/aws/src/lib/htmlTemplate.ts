@@ -140,7 +140,7 @@ export function createPage(bodyContent: {
                           <br><br>  
                           <hr />
                           <span>
-                            <a href="https://www.wri.org/about/privacy-policy">Privacy Policy</a> | <a href="https://www.wri.org/about/wri-data-platforms-tos">Terms of Service</a> | <a href="https://www.globalforestwatch.org/help/guides/global-forest-watch-pro-license-agreement/">License Agreement</a>
+                            <a href="https://www.wri.org/about/privacy-policy">Privacy Policy</a> | <a href="https://www.wri.org/about/legal-notices">Terms of Use</a> | <a href="https://www.globalforestwatch.org/help/guides/global-forest-watch-pro-license-agreement/">License Agreement</a>
                           </span>
                         </td>
                       </tr>

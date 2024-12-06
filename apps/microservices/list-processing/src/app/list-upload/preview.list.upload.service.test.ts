@@ -53,7 +53,7 @@ describe('ListUploadService', () => {
       geojson: mockFeatureCollection,
     };
 
-    (DownloadS3File as jest.Mock).mockImplementation(() => ({
+    (DownloadS3File as unknown as jest.Mock).mockImplementation(() => ({
       setNext: jest.fn().mockReturnThis(),
       handle: jest.fn().mockResolvedValue(mockChainType),
     }));

@@ -3,7 +3,7 @@ import {
   DIAGNOSTIC_ANALYSIS_PERIOD,
 } from '@wri-monorepos/constants';
 
-import { isObjInCountryFormat, getTotalArea } from '../shared/functions';
+import { isObjInCountryFormat, getTotalArea, filterYearsByDateRange } from '../shared/functions';
 
 enum ColombiaOverlapField {
   ClassifiedRegionArea = 'classified_region_area',
@@ -41,17 +41,23 @@ export const colombiaLayers = ({ operation, data, dataRow, csvData }) => {
         parsedData = tempParsedData;
       }
 
+      if (operation.startYear && operation.endYear) {
+        parsedData = filterYearsByDateRange(parsedData, operation.startYear, operation.endYear);
+      }
+
       if (hasSecondarySubLayers) {
         parsedData = splitObjAndCreateNestedChildren(parsedData);
       }
 
       if (constantLayers) {
-        parsedData = createObjWithEmptyYears(parsedData, constantLayers);
+        parsedData = createObjWithEmptyYears(parsedData, constantLayers, operation);
       }
 
       const totalForAllSubLayers = calculateTotalLossForAllCategories(parsedData);
 
       const totalArea = getTotalArea(data, 'COL');
+
+      if (totalArea === 0) return;
 
       Object.entries(parsedData).forEach(([subLayerName, subLayerValue]) => {
         const totalPerSubLayer = calculateTotalLossForAllCategories(subLayerValue);
@@ -196,7 +202,7 @@ const calculateTotalLossForAllCategories = (obj) => {
   return sum;
 };
 
-const createObjWithEmptyYears = (data, constantLayers) => {
+const createObjWithEmptyYears = (data, constantLayers, operation) => {
   const newObj = { ...data };
   const keys = Object.keys(data);
 
@@ -204,12 +210,10 @@ const createObjWithEmptyYears = (data, constantLayers) => {
     if (!keys.includes(layer)) {
       newObj[layer] = (() => {
         const obj = {};
+        const startYear = operation?.startYear ?? DIAGNOSTIC_ANALYSIS_PERIOD.START_YEAR;
+        const endYear = operation?.endYear ?? DIAGNOSTIC_ANALYSIS_PERIOD.END_YEAR;
 
-        for (
-          let year = DIAGNOSTIC_ANALYSIS_PERIOD.START_YEAR;
-          year <= DIAGNOSTIC_ANALYSIS_PERIOD.END_YEAR;
-          year++
-        ) {
+        for (let year = startYear; year <= endYear; year++) {
           obj[year] = 0;
         }
         return obj;

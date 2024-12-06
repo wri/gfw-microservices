@@ -5,21 +5,20 @@ import { DashboardHandleDownload } from '../pipe/dashboard.handle.download';
 import { generateCSV } from '../shared/generate.csv';
 import { argentinaDeforestationParser } from '../parser/argentina.deforestation.parser';
 import { EXCEL_TEMPLATES, EXCEL_TEMPLATE_HEADERS } from '../shared/constants';
-
-const VALID_TYPES = ['argentinaDeforestation', 'everything'];
+import { shouldGenerateArgentinaCsv } from '../shared/functions';
 
 @Injectable({
   scope: Scope.REQUEST,
 })
 export class ArgentinaDeforestationService extends DashboardHandleDownload {
   start(filters: ListFieldsFileRequest) {
-    if (this.isForestLossFile(filters)) {
+    if (shouldGenerateArgentinaCsv(filters)) {
       super.start(filters, 'argentinaDeforestation', 'argentina_loss_of_forests');
     }
   }
 
   process(data, filters: ListFieldsFileRequest) {
-    if (this.isForestLossFile(filters)) {
+    if (shouldGenerateArgentinaCsv(filters)) {
       super.process(data, filters);
     }
   }
@@ -48,7 +47,7 @@ export class ArgentinaDeforestationService extends DashboardHandleDownload {
 
   async finish(filters: ListFieldsFileRequest) {
     const { selectedLocationsList } = filters;
-    if (this.isForestLossFile(filters)) {
+    if (shouldGenerateArgentinaCsv(filters)) {
       this.logger.log('Argentina loss of forest finish');
       if (selectedLocationsList.length != 1) {
         generateCSV(
@@ -60,16 +59,5 @@ export class ArgentinaDeforestationService extends DashboardHandleDownload {
       }
       await super.finish(filters);
     }
-  }
-
-  isForestLossFile({ listView, type, listLevelAnalysis }: ListFieldsFileRequest) {
-    const { arg_otbn_area, country_area } = listLevelAnalysis;
-    const argOtbnArea = JSON.parse(arg_otbn_area || '{}');
-    const countryArea = JSON.parse(country_area || '{}');
-
-    const hasProperties = (obj) => Object.keys(obj).length > 0;
-    const isArgentinaDataAvailable = hasProperties(argOtbnArea) || countryArea?.ARG > 0;
-
-    return listView === 'forest_change' && VALID_TYPES.includes(type) && isArgentinaDataAvailable;
   }
 }

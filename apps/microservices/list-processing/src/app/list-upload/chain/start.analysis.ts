@@ -1,4 +1,11 @@
-import { ClientStoreConnection, Lists, updateListsAnalysisStatus, User } from '@wri-monorepos/sql';
+import {
+  ClientStoreConnection,
+  Lists,
+  ListSchema,
+  ListSchemaType,
+  updateListsAnalysisStatus,
+  User,
+} from '@wri-monorepos/sql';
 import { AbstractHandler, ChainType, RequestNewList } from './types';
 import { MARK_IS_TEST_LIST, MARK_IS_TEST_USER } from '../../../services/constants';
 import { checkProcessingLimits } from '@wri-monorepos/shared';
@@ -13,19 +20,18 @@ import {
   GEO_TRELLIS__ANALYZE_LIST_PROD,
   GEO_TRELLIS__ANALYZE_LIST_PRODV2,
 } from '@wri-monorepos/constants';
+import { Logger } from '@nestjs/common';
+import { EntitySchema } from 'typeorm';
 
 const environmentAllowTestFlow = ['DEVELOPMENT', 'LATEST', 'QA', 'STAGING'];
 
 export class StartAnalysis extends AbstractHandler<ChainType> {
+  private readonly logger = new Logger(StartAnalysis.name);
   private clientStoreConnection: ClientStoreConnection;
 
-  constructor(clientStoreConnection: ClientStoreConnection) {
+  constructor(clientStoreConnection: ClientStoreConnection = new ClientStoreConnection()) {
     super();
-    if (clientStoreConnection !== null) {
-      this.clientStoreConnection = clientStoreConnection;
-    } else {
-      this.clientStoreConnection = new ClientStoreConnection();
-    }
+    this.clientStoreConnection = clientStoreConnection;
   }
 
   async getListName(organizationDatabase: string, list_id: number) {
@@ -42,7 +48,29 @@ export class StartAnalysis extends AbstractHandler<ChainType> {
     return email;
   }
 
-  async handle(input: ChainType): Promise<ChainType> {
+  async getAllLocationIds(request: ChainType) {
+    const { organization_database: organizationDatabase, listTable } =
+      request.request as RequestNewList;
+    const ListEntity = new EntitySchema<ListSchemaType>({
+      ...ListSchema,
+      name: listTable,
+    });
+
+    await this.clientStoreConnection.clearCache(process.env.MSSQL_HOSTNAME + organizationDatabase);
+    const connection = await this.clientStoreConnection.getConnection(organizationDatabase, [
+      ListEntity,
+    ]);
+    const ids = await connection
+      .createQueryBuilder()
+      .select('list.locationId')
+      .from(ListEntity, 'list')
+      .getMany();
+
+    // Extracting the locationIds from the result
+    return ids.map((entity) => entity.locationId);
+  }
+
+  async handle(request: ChainType): Promise<ChainType> {
     const {
       organization_database,
       user_id,
@@ -50,7 +78,14 @@ export class StartAnalysis extends AbstractHandler<ChainType> {
       isExternalAPIProcess,
       organization_id: organizationId,
       subscription_status_id: subscriptionStatusId,
-    } = input.request as RequestNewList;
+    } = request.request as RequestNewList;
+
+    const listSizeWithoutError = request.geojson.features?.filter(
+      (feature) => !feature?.properties?.error && feature?.properties?.gadmid
+    ).length;
+    if (listSizeWithoutError === 0) {
+      throw new Error('All the features have errors, not going to start the analysis');
+    }
 
     const geoTrellisUrlsByEnv = {
       qa: GEO_TRELLIS__ANALYZE_LIST_QA,
@@ -94,6 +129,8 @@ export class StartAnalysis extends AbstractHandler<ChainType> {
     const listAnalysisStatusData = await getListAnalysisStatus(organization_database, listId);
     const analysis_types = extractAnalysisTypes(listAnalysisStatusData);
 
+    const ids = await this.getAllLocationIds(request);
+
     const payloadBody = {
       list_id: listId,
       user_id,
@@ -102,6 +139,7 @@ export class StartAnalysis extends AbstractHandler<ChainType> {
       processing_limit: processingLimit,
       analysis_types,
       reanalyze: false,
+      location_id: ids,
     };
 
     const requestBody = JSON.stringify(payloadBody);
@@ -120,11 +158,11 @@ export class StartAnalysis extends AbstractHandler<ChainType> {
         list_id: listId,
         template_type: 'cocoa_generic',
       });
-      return input;
+      return request;
     }
 
     const response = await fetch(geoTrellisUrl, options);
     await response.json();
-    return input;
+    return request;
   }
 }

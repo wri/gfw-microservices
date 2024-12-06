@@ -10,7 +10,7 @@ import {
   ListFieldsFileRequest,
 } from '@wri-monorepos/sql';
 import { ServerConfigType } from '../../validators/server-config';
-import { CSVServices } from '../shared/readme.merge.service';
+import { ReadmeMergeServices } from '../shared/readme.merge.service';
 @Injectable({
   scope: Scope.REQUEST,
 })
@@ -19,7 +19,7 @@ export class ReadmeService {
 
   constructor(
     private readonly configService: ConfigService<ServerConfigType, true>,
-    private readonly cSVServices: CSVServices
+    private readonly readmeMergeServices: ReadmeMergeServices
   ) {}
 
   afiReadmeData() {
@@ -112,7 +112,7 @@ export class ReadmeService {
 
     const fileToCopy =
       type === 'everything'
-        ? await this.cSVServices.processFiles(
+        ? await this.readmeMergeServices.processFiles(
             [
               this.getSourceDir(returnFileToCopy[type](filters)),
               this.getSourceDir(returnFileToCopy['southEastAsiaTCL'](filters)),

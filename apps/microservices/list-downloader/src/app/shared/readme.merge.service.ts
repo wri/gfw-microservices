@@ -5,8 +5,8 @@ import readline = require('readline');
 @Injectable({
   scope: Scope.REQUEST,
 })
-export class CSVServices {
-  private readonly logger = new Logger(CSVServices.name);
+export class ReadmeMergeServices {
+  private readonly logger = new Logger(ReadmeMergeServices.name);
   // Method to read a CSV file and return its lines as an array
   static async readCSV(file: string): Promise<string[]> {
     return new Promise((resolve, reject) => {
@@ -52,7 +52,7 @@ export class CSVServices {
       let oldHeader = '';
       // Process each file
       for (const file of files) {
-        const lines = await CSVServices.readCSV(file);
+        const lines = await ReadmeMergeServices.readCSV(file);
 
         // If newHeader is not set, set it from the first file
         if (!newHeader) {

@@ -10,7 +10,7 @@ import {
   ListFieldsFileRequest,
 } from '@wri-monorepos/sql';
 import { ReadmeService } from './readme.service';
-import { CSVServices } from '../shared/readme.merge.service';
+import { ReadmeMergeServices } from '../shared/readme.merge.service';
 
 jest.mock('fs');
 jest.mock('path', () => ({
@@ -30,7 +30,7 @@ describe('ReadmeService', () => {
           isGlobal: true,
         }),
       ],
-      providers: [ReadmeService, CSVServices],
+      providers: [ReadmeService, ReadmeMergeServices],
     }).compile();
 
     service = await module.resolve<ReadmeService>(ReadmeService);

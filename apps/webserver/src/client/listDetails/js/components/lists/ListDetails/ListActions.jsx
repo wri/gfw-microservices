@@ -251,7 +251,7 @@ const ListActions = ({
                 variant="primary"
                 onClick={promptMoveSelectedLocations}
               >
-                Copy/Move
+                {isGfwList ? 'Copy' : 'Copy/Move'}
               </Button>
             )}
 

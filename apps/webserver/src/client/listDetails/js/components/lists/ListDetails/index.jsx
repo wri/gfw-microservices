@@ -851,7 +851,8 @@ export default class ListDetails extends Component {
     isNewListNameValid,
     selectedNewOrExisting,
   }) => {
-    const { selectedLocations, selectedMoveOrCopy } = this.props;
+    const { selectedLocations, selectedMoveOrCopy, selectedList } = this.props;
+    const isGfwList = selectedList?.isGlobalForestWatchList;
     if (selectedLocations.length > maxLocations) {
       this.setState({
         dialogOpen: true,
@@ -916,7 +917,9 @@ export default class ListDetails extends Component {
           </>
         ),
         dialogOpen: true,
-        dialogTitle: locationsPage.lists.moveLocationsDialogHeader,
+        dialogTitle: isGfwList
+          ? locationsPage.lists.copyLocationsDialogHeader
+          : locationsPage.lists.moveLocationsDialogHeader,
         dialogContent: '',
         dialogChildren: true,
       });

@@ -28,7 +28,7 @@ export const oversizedUploadText =
 
 // IF YOU ARE CHANGING THE YEAR, CONSIDER SYNCING WITH libs/constants/src/lib/diagnostic-constants.ts
 export const latestTreeCoverLossYearForTclDataInMap = 2023;
-export const latestTreeCoverLossYearCommodityRisk = 2022;
+export const latestTreeCoverLossYearCommodityRisk = 2023;
 export const earliestTreeCoverLossYearCommodityRisk = 2002;
 export const latestTreeCoverLossYearForTclDataInAnalyses = 2023;
 
@@ -274,6 +274,7 @@ export const locationsPage = {
     moveExistingDescription:
       'Note: Lists must have the same commodity defined in order to copy or move locations between lists. Your additional attribute data will be merged when attribute names match. Additional attribute data that does not match will be assigned separate columns.',
     moveLocationsDialogHeader: 'Move selection',
+    copyLocationsDialogHeader: 'Copy selection',
     moveToNewListLabel: 'List name',
     moveToNewListDuplicate: 'A list with this name already exists',
     moveToNewListNameInvalid:

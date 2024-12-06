@@ -667,7 +667,7 @@ module.exports = (app, limiter) => {
             filters
           );
           listAnalyses = analysisManagerResult.listAnalyses;
-          numberOfResults = analysisManagerResult.quantity;
+          numberOfResults = analysisManagerResult.numberOfResults;
           numberOfPages =
             numberOfResults % pageSize === 0
               ? numberOfResults / pageSize

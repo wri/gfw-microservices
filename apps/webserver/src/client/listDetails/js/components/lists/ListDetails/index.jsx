@@ -851,7 +851,8 @@ export default class ListDetails extends Component {
     isNewListNameValid,
     selectedNewOrExisting,
   }) => {
-    const { selectedLocations, selectedMoveOrCopy } = this.props;
+    const { selectedLocations, selectedMoveOrCopy, selectedList } = this.props;
+    const isGfwList = selectedList?.isGlobalForestWatchList;
     if (selectedLocations.length > maxLocations) {
       this.setState({
         dialogOpen: true,
@@ -916,7 +917,9 @@ export default class ListDetails extends Component {
           </>
         ),
         dialogOpen: true,
-        dialogTitle: locationsPage.lists.moveLocationsDialogHeader,
+        dialogTitle: isGfwList
+          ? locationsPage.lists.copyLocationsDialogHeader
+          : locationsPage.lists.moveLocationsDialogHeader,
         dialogContent: '',
         dialogChildren: true,
       });
@@ -1873,8 +1876,6 @@ export default class ListDetails extends Component {
     const selectedList = selectedLists.length > 0 ? selectedLists[0] : null;
     const locationDataIsNotAvailable = isLocationDataNotAvailable(selectedList);
 
-    const isAnalysisInProgress = isAnalyzingStatus(selectedLists[0]?.list_status_id);
-
     const listID = selectedList?.id;
     const countries = [...new Set(filteredLocationData.map((list) => list.Country))].sort();
     const customAttributeNames =
@@ -1891,6 +1892,21 @@ export default class ListDetails extends Component {
 
     const filteredLists = filteredLocationData;
     const listViewOptions = [];
+
+    const analysisMapping = {
+      [FOREST_CHANGE_VIEW]: analysisTypes.FOREST_CHANGE_DIAGNOSTICS,
+      [POST_2020_RISK_ASSESSMENT_VIEW]: analysisTypes.DEFORESTATION_KPIS,
+      [COMMODITY_RISK_VIEW]: analysisTypes.FOREST_CHANGE_DIAGNOSTICS,
+    };
+
+    const isAnalysisStatusPending = (id) =>
+      listAnalysesStatus?.some(
+        ({ analysisId, status }) => analysisId === id && status === listStatus.Pending
+      );
+
+    const analysisType = analysisMapping[listView];
+    const isAnalysisInProgress =
+      isAnalysisStatusPending(analysisType) || isListSubmittedForAnalysis;
 
     const isInFolder = selectedList && !!currentFolder;
     if (selectedList && currentFolder) {
@@ -1958,7 +1974,7 @@ export default class ListDetails extends Component {
       userSharedLists.map((userSharedList) => userSharedList.id).includes(selectedLists[0].id);
 
     const showMultipleSelectionBulkActions =
-      selectedList && selectedLocations.length > 1 && !locationDataIsNotAvailable;
+      selectedList && selectedLocations.length > 0 && !locationDataIsNotAvailable;
 
     const hasLocationWithErrors = !!listData.find(
       ({ location_status_id }) => location_status_id === listStatus.Inactive
@@ -1992,6 +2008,7 @@ export default class ListDetails extends Component {
             toggleReRunAnalysisDialog={this.toggleReRunAnalysisDialog}
             listAnalysesStatus={listAnalysesStatus}
             isListFailedByAnalysisStatusLimit={isListFailedByAnalysisStatusLimit(selectedLists[0])}
+            isListSubmittedForAnalysis={isListSubmittedForAnalysis}
           />
         )}
         {bannerContent && (

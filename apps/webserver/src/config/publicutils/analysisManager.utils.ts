@@ -656,20 +656,109 @@ export async function getDashboardDataPaginatedByList(
     parameters
   );
   const numberOfPages = Math.ceil(numberOfResults.quantity / pageSize);
-  const maximumAnalysisAreaInTheList = Math.max(
-    ...listDashboardAnalyses.map((analysis) => analysis['totalHa'])
-  );
-  let accIntegratedAlertsDailySbtnNominal = 0;
-  if (Object.entries(listDashboardAnalyses['integratedAlertsDailyAllNominal']).length > 0) {
-    accIntegratedAlertsDailySbtnNominal = listDashboardAnalyses[
-      'integratedAlertsDailyAllNominal'
-    ].reduce((acc, val) => {
-      return (acc += val.includes(
-        DIAGNOSTIC_ANALYSIS_PERIOD.latestTreeCoverLossYearForTclDataInAnalyses
-      ));
-    }, 0);
-  }
+  let maximumAnalysisAreaInTheList = 0;
+  const alertsinSBTNCalculated = [];
+  const alertsinJRCCalculated = [];
+  for (let analysis of listDashboardAnalyses) {
+    maximumAnalysisAreaInTheList = Math.max(maximumAnalysisAreaInTheList, analysis['totalHa']);
 
-  const aletsInSBTN = accIntegratedAlertsDailySbtnNominal;
-  return { listDashboardAnalyses, numberOfResults, numberOfPages, maximumAnalysisAreaInTheList };
+    let accIntegratedAlertsDailySbtn = 0;
+    let accIntegratedAlertsDailyJRC = 0;
+
+    // Calculate SBTN Alerts
+    if (Object.keys(analysis['integratedAlertsDailyAllNominal']).length > 0) {
+      accIntegratedAlertsDailySbtn += Object.entries(
+        JSON.parse(analysis['integratedAlertsDailyAllNominal'])
+      )
+        .filter(([key]) =>
+          key
+            .toString()
+            .includes(
+              DIAGNOSTIC_ANALYSIS_PERIOD.latestTreeCoverLossYearForTclDataInAnalyses.toString()
+            )
+        )
+        .reduce((acc, [, value]) => acc + (value as number), 0);
+    }
+    if (Object.keys(analysis['integratedAlertsDailyAllHigh']).length > 0) {
+      accIntegratedAlertsDailySbtn += Object.entries(
+        JSON.parse(analysis['integratedAlertsDailyAllHigh'])
+      )
+        .filter(([key]) =>
+          key
+            .toString()
+            .includes(
+              DIAGNOSTIC_ANALYSIS_PERIOD.latestTreeCoverLossYearForTclDataInAnalyses.toString()
+            )
+        )
+        .reduce((acc, [, value]) => acc + (value as number), 0);
+    }
+    if (Object.keys(analysis['integratedAlertsDailyAllHighest']).length > 0) {
+      accIntegratedAlertsDailySbtn += Object.entries(
+        JSON.parse(analysis['integratedAlertsDailyAllHighest'])
+      )
+        .filter(([key]) =>
+          key
+            .toString()
+            .includes(
+              DIAGNOSTIC_ANALYSIS_PERIOD.latestTreeCoverLossYearForTclDataInAnalyses.toString()
+            )
+        )
+        .reduce((acc, [, value]) => acc + (value as number), 0);
+    }
+    alertsinSBTNCalculated.push(accIntegratedAlertsDailySbtn);
+
+    // Calculate JRC Alerts
+    if (Object.keys(analysis['integratedAlertsDailyJrcNominal']).length > 0) {
+      accIntegratedAlertsDailyJRC += Object.entries(
+        JSON.parse(analysis['integratedAlertsDailyJrcNominal'])
+      )
+        .filter(([key]) =>
+          key
+            .toString()
+            .includes(
+              DIAGNOSTIC_ANALYSIS_PERIOD.latestTreeCoverLossYearForTclDataInAnalyses.toString()
+            )
+        )
+        .reduce((acc, [, value]) => acc + (value as number), 0);
+    }
+    if (Object.keys(analysis['integratedAlertsDailyJrcHigh']).length > 0) {
+      accIntegratedAlertsDailyJRC += Object.entries(
+        JSON.parse(analysis['integratedAlertsDailyJrcHigh'])
+      )
+        .filter(([key]) =>
+          key
+            .toString()
+            .includes(
+              DIAGNOSTIC_ANALYSIS_PERIOD.latestTreeCoverLossYearForTclDataInAnalyses.toString()
+            )
+        )
+        .reduce((acc, [, value]) => acc + (value as number), 0);
+    }
+    if (Object.keys(analysis['integratedAlertsDailyJrcHighest']).length > 0) {
+      accIntegratedAlertsDailyJRC += Object.entries(
+        JSON.parse(analysis['integratedAlertsDailyJrcHighest'])
+      )
+        .filter(([key]) =>
+          key
+            .toString()
+            .includes(
+              DIAGNOSTIC_ANALYSIS_PERIOD.latestTreeCoverLossYearForTclDataInAnalyses.toString()
+            )
+        )
+        .reduce((acc, [, value]) => acc + (value as number), 0);
+    }
+    alertsinJRCCalculated.push(accIntegratedAlertsDailyJRC);
+  }
+  // Adding calculated alerts to the list
+  listDashboardAnalyses.forEach((analysis, index) => {
+    analysis['alertsinSBTN'] = alertsinSBTNCalculated[index];
+    analysis['alertsinJRCC'] = alertsinJRCCalculated[index];
+  });
+
+  return {
+    listDashboardAnalyses,
+    numberOfResults,
+    numberOfPages,
+    maximumAnalysisAreaInTheList,
+  };
 }

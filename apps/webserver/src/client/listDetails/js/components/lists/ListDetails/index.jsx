@@ -851,7 +851,8 @@ export default class ListDetails extends Component {
     isNewListNameValid,
     selectedNewOrExisting,
   }) => {
-    const { selectedLocations, selectedMoveOrCopy } = this.props;
+    const { selectedLocations, selectedMoveOrCopy, selectedList } = this.props;
+    const isGfwList = selectedList?.isGlobalForestWatchList;
     if (selectedLocations.length > maxLocations) {
       this.setState({
         dialogOpen: true,
@@ -916,7 +917,9 @@ export default class ListDetails extends Component {
           </>
         ),
         dialogOpen: true,
-        dialogTitle: locationsPage.lists.moveLocationsDialogHeader,
+        dialogTitle: isGfwList
+          ? locationsPage.lists.copyLocationsDialogHeader
+          : locationsPage.lists.moveLocationsDialogHeader,
         dialogContent: '',
         dialogChildren: true,
       });
@@ -1902,7 +1905,8 @@ export default class ListDetails extends Component {
       );
 
     const analysisType = analysisMapping[listView];
-    const isAnalysisInProgress = isAnalysisStatusPending(analysisType);
+    const isAnalysisInProgress =
+      isAnalysisStatusPending(analysisType) || isListSubmittedForAnalysis;
 
     const isInFolder = selectedList && !!currentFolder;
     if (selectedList && currentFolder) {
@@ -2004,6 +2008,7 @@ export default class ListDetails extends Component {
             toggleReRunAnalysisDialog={this.toggleReRunAnalysisDialog}
             listAnalysesStatus={listAnalysesStatus}
             isListFailedByAnalysisStatusLimit={isListFailedByAnalysisStatusLimit(selectedLists[0])}
+            isListSubmittedForAnalysis={isListSubmittedForAnalysis}
           />
         )}
         {bannerContent && (

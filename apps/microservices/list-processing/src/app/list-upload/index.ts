@@ -9,6 +9,8 @@ import { DeprecatedStartAnalysisService } from './deprecated.start.analysis.serv
 import { StartAnalysisService } from './start.analysis.service';
 import { PreviewListUploadController } from './preview.list.upload.controller';
 import { PreviewListUploadService } from './preview.list.upload.service';
+import { DeprecatedCreateLargeListService } from './deprecated.create.large.list.service';
+import { CreateLargeListService } from './create.large.list.service';
 
 @Module({
   imports: [TypeOrmModule.forFeature([ListTemplate], 'default'), SqlModule],
@@ -20,6 +22,8 @@ import { PreviewListUploadService } from './preview.list.upload.service';
     DeprecatedStartAnalysisService,
     StartAnalysisService,
     PreviewListUploadService,
+    DeprecatedCreateLargeListService,
+    CreateLargeListService,
   ],
   exports: [DeprecatedStartAnalysisService, StartAnalysisService],
 })

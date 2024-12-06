@@ -4,4 +4,5 @@ export const DIAGNOSTIC_COVERAGE_DECIMAL_PLACES = 2;
 export const DIAGNOSTIC_ANALYSIS_PERIOD = {
   START_YEAR: 2001,
   END_YEAR: 2023,
+ latestTreeCoverLossYearForTclDataInAnalyses: 2023,
 };

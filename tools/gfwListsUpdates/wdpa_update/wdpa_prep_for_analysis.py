@@ -51,7 +51,7 @@ def main(path_to_fgdb, list_id):
     """
     # Load data
     print(f"loading {path_to_fgdb}")
-    gdf = gpd.read_file(path_to_fgdb, driver="FileGDB", layer="poly_gadm").set_crs(4326)
+    gdf = gpd.read_file(path_to_fgdb, driver="FileGDB", layer=cfg.layer_name).set_crs(4326)
     print("loaded location_id dataframe")
 
     gdf["list_id"] = list_id

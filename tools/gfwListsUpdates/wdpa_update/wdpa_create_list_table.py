@@ -32,7 +32,7 @@ def wdpa_renameColumns(gdf):
     }
 
     gdf = gdf.rename(columns=rename_dict)
-    gdf["id"] = gdf["location_id"]
+    gdf["location_id"] = gdf["id"]
 
     # get centroid
     gdf["Longitude"] = gdf.centroid.x
@@ -50,7 +50,7 @@ def insert_geometry_WDPA(gdf, connection):
     Large list processing - insert new locations into locations table
     """
 
-    table_name = "list-protectedAreas_import"
+    table_name = "list-protectedAreas_new"
     analysis_table_name = "analysis-protectedAreas_import"
     columns = [
         "Location Name",
@@ -68,8 +68,8 @@ def insert_geometry_WDPA(gdf, connection):
         "globalid",
         "location_id",
         "id",
-        "WDPAID",
-        "WDPA_PID",
+        # "WDPAID",
+        # "WDPA_PID",
         "Geometry",
     ]
 
@@ -130,9 +130,18 @@ def loadGFWList(path, start, end, connection):
     """
     Loads and preps the geodataframe
     """
-    gdf = gpd.read_file(path, driver="FileGDB", layer=0, rows=slice(start, end))
+    gdf = gpd.read_file(path, driver="FileGDB", layer=cfg.layer_name, rows=slice(start, end))
+
+    # # Prep df for insertion
+    # gdf["location_id"] = range(start, start + len(gdf))
+
+    print("Attaching GlobalID")
     gdf = join_globalid(gdf)
+
+    print("Fixing schema.")
     gdf = wdpa_renameColumns(gdf)
+
+    # Insert df
     e = insert_geometry_WDPA(gdf, connection)
 
     return e

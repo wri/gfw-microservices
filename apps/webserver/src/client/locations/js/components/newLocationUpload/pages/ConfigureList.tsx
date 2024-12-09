@@ -4,6 +4,7 @@ import {
   Card,
   Checkbox,
   Divider,
+  FormControl,
   FormControlLabel,
   FormHelperText,
   MenuItem,
@@ -23,15 +24,20 @@ import { NavBar } from '../components';
 import { UserList } from '../types';
 import { filterValidTemplates } from '../utils/filterValidTemplates';
 
-const schema = z.object({
-  commodity: z.string().trim().min(1),
-  newListName: z.string().trim().min(1),
-  existingListName: z.string().optional(),
-  post2000ForestChange: z.coerce.boolean(),
-  includePalmRiskAssessment: z.coerce.boolean(),
-  recentDeforestationAlerts: z.coerce.boolean(),
-  post2000RiskAssessment: z.coerce.boolean(),
-});
+const schema = z
+  .object({
+    commodity: z.string().trim().min(1),
+    newListName: z.string().trim().min(1).nullable(),
+    existingListName: z.string().nullable(),
+    post2000ForestChange: z.coerce.boolean(),
+    includePalmRiskAssessment: z.coerce.boolean(),
+    recentDeforestationAlerts: z.coerce.boolean(),
+    post2000RiskAssessment: z.coerce.boolean(),
+  })
+  .refine((data) => data.newListName || data.existingListName, {
+    message: 'Either list name or existing list must be provided.',
+    path: ['newListName', 'existingListName'],
+  });
 
 type FormFields = z.infer<typeof schema>;
 
@@ -45,20 +51,22 @@ export function ConfigureList({ userLists }: { userLists: UserList[] }) {
     resolver: zodResolver(schema),
     defaultValues: {
       commodity: '',
-      newListName: '',
-      existingListName: '',
+      newListName: null,
+      existingListName: null,
       includePalmRiskAssessment: false,
       post2000ForestChange: false,
       post2000RiskAssessment: false,
       recentDeforestationAlerts: false,
     },
   });
-  const { clearUploadType } = useUploadLocation();
+  const { clearUploadType, setUploadLocationConfigureList } = useUploadLocation();
 
   const [commodity, setCommodity] = useState<string>('');
 
   const onSubmit = (data: FormFields) => {
     console.log({ data });
+    setUploadLocationConfigureList(data);
+    history.push('SUMMARY_AND_SUBMIT');
   };
 
   const templateType = templateTypes[commodity];
@@ -85,7 +93,7 @@ export function ConfigureList({ userLists }: { userLists: UserList[] }) {
           name="commodity"
           control={control}
           render={({ field }) => (
-            <>
+            <FormControl error={!!errors.commodity}>
               <Select
                 sx={{ width: '240px' }}
                 size="small"
@@ -106,12 +114,8 @@ export function ConfigureList({ userLists }: { userLists: UserList[] }) {
                 <MenuItem value="multiple">Multiple</MenuItem>
                 <MenuItem value="other">Other</MenuItem>
               </Select>
-              {!!errors.commodity && (
-                <FormHelperText sx={{ color: 'error.main', mx: 1.75 }}>
-                  Enter the commodity
-                </FormHelperText>
-              )}
-            </>
+              {!!errors.commodity && <FormHelperText>Enter the commodity</FormHelperText>}
+            </FormControl>
           )}
         />
 

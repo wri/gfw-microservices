@@ -36,15 +36,28 @@ enum RadiusSize {
   Large,
   Custom,
 }
-const uploadByPointSchema = z
-  .discriminatedUnion('locationFormat', [
-    coordinateSchema.extend({ locationFormat: z.literal(LocationFormat.Coordinates) }),
-    z.object({
+
+const sharedFields = z.object({
+  areaSize: z.coerce.number().nonnegative(), // Ensure it's non-negative
+  areaMeasurementUnit: z.enum(['hectares', 'kilometers']),
+});
+
+const uploadByPointSchema = z.discriminatedUnion('locationFormat', [
+  coordinateSchema
+    .extend({
+      locationFormat: z.literal(LocationFormat.Coordinates),
+    })
+    .merge(sharedFields),
+  z
+    .object({
       locationFormat: z.literal(LocationFormat.Address),
-      address: z.string().trim().min(1),
-    }),
-  ])
-  .or(z.object({ locationFormat: z.null() }));
+      address: z.string().trim().min(1, 'Address cannot be empty'),
+    })
+    .merge(sharedFields),
+  z.object({
+    locationFormat: z.null(),
+  }),
+]);
 type FormFields = z.infer<typeof uploadByPointSchema>;
 
 const COORDINATE_ERROR_MESSAGE =
@@ -52,8 +65,8 @@ const COORDINATE_ERROR_MESSAGE =
 
 export function UploadLocationByPoint() {
   const history = useHistory();
-
-  const { clearUploadType } = useUploadLocation();
+  const { clearUploadType, setUploadLocationByPointAddress, setUploadLocationByPointCoordinates } =
+    useUploadLocation();
 
   const {
     handleSubmit,
@@ -81,8 +94,21 @@ export function UploadLocationByPoint() {
   };
 
   const onSubmit = (data: FormFields) => {
-    console.log({ data });
-    history.push('CONFIGURE_LIST');
+    if (!data.locationFormat === null) return;
+
+    if (data.locationFormat === LocationFormat.Address) {
+      setUploadLocationByPointAddress({
+        address: data.address,
+        area: { size: data.areaSize, measurementUnit: data.areaMeasurementUnit },
+      });
+      history.push('CONFIGURE_LIST');
+    } else if (data.locationFormat === LocationFormat.Coordinates) {
+      setUploadLocationByPointCoordinates({
+        coordinate: { latitude: data.latitude, longitude: data.longitude },
+        area: { size: data.areaSize, measurementUnit: data.areaMeasurementUnit },
+      });
+      history.push('CONFIGURE_LIST');
+    }
   };
 
   return (
@@ -130,12 +156,12 @@ export function UploadLocationByPoint() {
               <Typography variant="body2">Enter address</Typography>
             </LocationTypeButton>
           </Box>
-          <Box component="form" onSubmit={handleSubmit(onSubmit)} style={{ flex: '1' }}>
+          <Box component="form" onSubmit={handleSubmit(onSubmit)} sx={{ flex: '1' }}>
             <Box sx={{ visibility: locationFormat === null ? 'hidden' : 'initial' }}>
               {locationFormat === LocationFormat.Coordinates ? (
                 <Box>
-                  <Typography variant="h6">Enter coordinates</Typography>
-                  <Typography variant="body2" sx={{ mb: 2 }}>
+                  <Typography variant="h6">Enter coordinates *</Typography>
+                  <Typography variant="body2" sx={{ mb: 2, color: 'text.secondary' }}>
                     Coordinate data must be in decimal degrees format.
                   </Typography>
 
@@ -182,13 +208,18 @@ export function UploadLocationByPoint() {
                 </Box>
               ) : (
                 <Box>
-                  <Typography variant="h6">Enter address</Typography>
+                  <Typography variant="h6">Enter address *</Typography>
                   <Controller
                     control={control}
                     name="address"
                     render={({ field }) => (
-                      <FormControl variant="outlined" size="small" fullWidth>
-                        <InputLabel htmlFor="outlined-adornment-password">Address</InputLabel>
+                      <FormControl
+                        variant="outlined"
+                        size="small"
+                        fullWidth
+                        error={'address' in errors && !!errors.address}
+                      >
+                        <InputLabel htmlFor="address">Address</InputLabel>
                         <OutlinedInput
                           id="address"
                           sx={{
@@ -210,9 +241,7 @@ export function UploadLocationByPoint() {
                           {...field}
                         />
                         {'address' in errors && !!errors.address && (
-                          <FormHelperText sx={{ color: 'error.main', mx: 1.75 }}>
-                            Enter the address
-                          </FormHelperText>
+                          <FormHelperText>Enter the address</FormHelperText>
                         )}
                       </FormControl>
                     )}
@@ -296,16 +325,37 @@ export function UploadLocationByPoint() {
                       mt: 2,
                     }}
                   >
-                    <TextField
-                      label="Custom area"
-                      variant="outlined"
-                      type="number"
-                      size="small"
-                      sx={{ flex: 1 }}
+                    <Controller
+                      control={control}
+                      name="areaSize"
+                      render={({ field }) => (
+                        <TextField
+                          label="Custom area"
+                          variant="outlined"
+                          type="number"
+                          size="small"
+                          sx={{ flex: 1 }}
+                          error={'areaSize' in errors && !!errors.areaSize}
+                          helperText={
+                            'areaSize' in errors && errors.areaSize ? 'Enter the area size' : ''
+                          }
+                          {...field}
+                        />
+                      )}
                     />
-                    <HectareKilometerSwitch
-                      measurementUnit={measurementUnit}
-                      setMeasurementUnit={setMeasurementUnit}
+                    <Controller
+                      control={control}
+                      name="areaMeasurementUnit"
+                      defaultValue="hectares"
+                      render={({ field }) => (
+                        <HectareKilometerSwitch
+                          measurementUnit={measurementUnit}
+                          setMeasurementUnit={(value: MeasurementUnit) => {
+                            setMeasurementUnit(value);
+                            field.onChange(value);
+                          }}
+                        />
+                      )}
                     />
                     <Box
                       sx={{
@@ -316,17 +366,18 @@ export function UploadLocationByPoint() {
                       }}
                     >
                       <Typography>Suggested areas:</Typography>
-                      <ul
-                        style={{
-                          paddingLeft: '1.5rem',
-                          marginTop: '0.25rem',
+                      <Box
+                        component="ul"
+                        sx={{
+                          paddingLeft: 3,
+                          marginTop: 0.5,
                           color: 'text.secondary',
                         }}
                       >
                         <li>785,000 {measurementUnit} for palm oil mills</li>
                         <li>283,000 {measurementUnit} for soy silos</li>
                         <li>80-102,000 {measurementUnit} for cocoa warehouses</li>
-                      </ul>
+                      </Box>
                     </Box>
                   </Box>
                 </Box>

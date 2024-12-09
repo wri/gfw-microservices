@@ -9,7 +9,7 @@ import { NavBar } from '../components';
 
 export function SummaryAndSubmit() {
   const history = useHistory();
-  const { clearUploadType } = useUploadLocation();
+  const { clearUploadType, uploadLocationState } = useUploadLocation();
 
   return (
     <>
@@ -31,8 +31,9 @@ export function SummaryAndSubmit() {
           }}
         >
           <Typography variant="body2">
-            You are adding locations to the list <b>List Name 0001</b>, which has a commodity of{' '}
-            <b>cocoa</b>.
+            You are adding locations to the list{' '}
+            <b>{uploadLocationState?.existingListName ?? uploadLocationState?.newListName}</b>,
+            which has a commodity of <b>{uploadLocationState.commodity}</b>.
           </Typography>
           <Typography variant="body2">
             The resulting list will be submitted for the following analysis:

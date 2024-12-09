@@ -10,14 +10,17 @@ import {
   ListFieldsFileRequest,
 } from '@wri-monorepos/sql';
 import { ServerConfigType } from '../../validators/server-config';
-
+import { ReadmeMergeServices } from '../shared/readme.merge.service';
 @Injectable({
   scope: Scope.REQUEST,
 })
 export class ReadmeService {
   private readonly logger = new Logger(ReadmeService.name);
 
-  constructor(private readonly configService: ConfigService<ServerConfigType, true>) {}
+  constructor(
+    private readonly configService: ConfigService<ServerConfigType, true>,
+    private readonly readmeMergeServices: ReadmeMergeServices
+  ) {}
 
   afiReadmeData() {
     return 'afi_readme.csv';
@@ -32,10 +35,19 @@ export class ReadmeService {
   }
 
   getDestDir(key: string): string {
+    const dirName = `wri-${key}`;
     if (this.configService.get('NODE_ENV', { infer: true }) === 'test') {
-      return `/tmp/wri-${key}/README.csv`;
+      return `/tmp/${dirName}/README.csv`;
     } else {
-      return path.join('/tmp', `wri-${key}`, 'README.csv');
+      return path.join('/tmp', `${dirName}`, 'README.csv');
+    }
+  }
+  getPathDir(key: string) {
+    const dirName = `wri-${key}`;
+    if (this.configService.get('NODE_ENV', { infer: true }) === 'test') {
+      return `/tmp/${dirName}/`;
+    } else {
+      return path.join('/tmp', `${dirName}`);
     }
   }
 
@@ -98,7 +110,17 @@ export class ReadmeService {
       return;
     }
 
-    const fileToCopy = returnFileToCopy[type](filters);
+    const fileToCopy =
+      type === 'everything'
+        ? await this.readmeMergeServices.processFiles(
+            [
+              this.getSourceDir(returnFileToCopy[type](filters)),
+              this.getSourceDir(returnFileToCopy['southEastAsiaTCL'](filters)),
+            ],
+            'PLEASE NOTE: The contents of your zip files will vary based on the locations and commodities within your data, and the types of analysis you requested. Not all CSVs listed here may apply.',
+            this.getPathDir(key)
+          )
+        : returnFileToCopy[type](filters);
 
     if (!fileToCopy) {
       return;

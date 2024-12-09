@@ -21,7 +21,7 @@ export class CreateLargeListService {
     gfwListId?: number | null;
     isUploadListLpEnabled?: boolean;
   } & Partial<CreateListRequest>): Promise<CreateListResult> {
-    const chainType: ChainType = {
+    let chainType: ChainType = {
       request: {
         list_name: listName,
         organization_database: clientDatabase,
@@ -46,7 +46,7 @@ export class CreateLargeListService {
 
     listSchemaName.setNext(createListLevelData).setNext(createLocationSchema);
 
-    await AbstractHandler.runFullChain(listSchemaName, chainType);
+    chainType = await AbstractHandler.runFullChain(listSchemaName, chainType);
     await connection.disconnect();
 
     return {

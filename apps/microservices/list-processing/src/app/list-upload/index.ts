@@ -1,7 +1,7 @@
 import { Module } from '@nestjs/common';
 import { ValidateCSVController } from './validation/validate.csv.controller';
 import { ValidateCSVService } from './validation/validate.csv.service';
-import { S3Service } from '@wri-monorepos/aws';
+import { AwsModule, S3Service } from '@wri-monorepos/aws';
 import { ListTemplate, SqlModule } from '@wri-monorepos/sql';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { ValidateCsvRepository } from './validation/validate.csv.repository';
@@ -13,7 +13,7 @@ import { DeprecatedCreateLargeListService } from './deprecated.create.large.list
 import { CreateLargeListService } from './create.large.list.service';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([ListTemplate], 'default'), SqlModule],
+  imports: [TypeOrmModule.forFeature([ListTemplate], 'default'), SqlModule, AwsModule],
   controllers: [ValidateCSVController, PreviewListUploadController],
   providers: [
     ValidateCSVService,
@@ -25,6 +25,11 @@ import { CreateLargeListService } from './create.large.list.service';
     DeprecatedCreateLargeListService,
     CreateLargeListService,
   ],
-  exports: [DeprecatedStartAnalysisService, StartAnalysisService],
+  exports: [
+    DeprecatedStartAnalysisService,
+    StartAnalysisService,
+    DeprecatedCreateLargeListService,
+    CreateLargeListService,
+  ],
 })
 export class ListUploadModule {}

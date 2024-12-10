@@ -49,8 +49,6 @@ async function worker(input: WorkerType, cb: done) {
   const processUploadData = new ProcessUploadData();
   const listSchemaName = new ListSchemaName();
   const gadmService = new GADMService();
-  const createListLevelData = new CreateListLevelData();
-  const createLocationSchema = new CreateLocationSchema(connection);
   const insertLocationData = new InsertLocationData();
   const saveListAttributes = new SaveListAttributes();
   const validateLatLongGeojson = new ValidateLatLongGeojson();

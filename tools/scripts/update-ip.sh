@@ -1,7 +1,5 @@
 #!/bin/bash
 
-# You might need to run "chmod +x tools/scripts/ip_update.sh" to make this file runnable
-
 # Variables
 AWS_REGION="us-east-1"
 

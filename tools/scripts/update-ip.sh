@@ -1,5 +1,7 @@
 #!/bin/bash
 
+# You will need to setup awscli and install jq library to run it
+
 # Variables
 AWS_REGION="us-east-1"
 

@@ -8,7 +8,10 @@ import { useLocation } from 'react-router-dom';
 import { UploadLocationRoutes } from '../UploadLocationRouter';
 
 export function NavBar() {
-  const { clearUploadType, uploadType } = useUploadLocation();
+  const {
+    clearUploadType,
+    uploadLocationState: { uploadType },
+  } = useUploadLocation();
   const location = useLocation();
 
   const stepsForUploadByLocation = ['Location', 'Configure List', 'Submit'];

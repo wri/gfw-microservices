@@ -1,23 +1,25 @@
-import React, { createContext, useState, ReactNode, useContext, useReducer } from 'react';
+import React, { createContext, useContext, useReducer, ReactNode } from 'react';
 
 import { useHistory } from '../hooks';
 import { Area, Coordinate, UploadType } from '../types';
 
 type UploadLocationState = {
+  uploadType: UploadType | null;
   coordinates: Coordinate[];
   address: string;
   area: Area;
   commodity: string;
   existingListName: string | null;
   newListName: string | null;
-  post2000ForestChange: boolean;
-  includePalmRiskAssessment: boolean;
-  recentDeforestationAlerts: boolean;
-  post2000RiskAssessment: boolean;
+  typeOfAnalysis: {
+    post2000ForestChange: boolean;
+    includePalmRiskAssessment: boolean;
+    recentDeforestationAlerts: boolean;
+    post2000RiskAssessment: boolean;
+  };
 };
 
 type UploadLocationType = {
-  uploadType: UploadType | null;
   selectUploadType: (uploadType: UploadType) => void;
   clearUploadType: () => void;
   uploadLocationState: UploadLocationState;
@@ -28,18 +30,26 @@ type UploadLocationType = {
     commodity: string;
     existingListName: string | null;
     newListName: string | null;
-    includePalmRiskAssessment: boolean;
-    post2000ForestChange: boolean;
-    post2000RiskAssessment: boolean;
-    recentDeforestationAlerts: boolean;
+    typeOfAnalysis: {
+      includePalmRiskAssessment: boolean;
+      post2000ForestChange: boolean;
+      post2000RiskAssessment: boolean;
+      recentDeforestationAlerts: boolean;
+    };
   }) => void;
 };
 
 type UploadLocationAction =
   | {
+      type: 'SetUploadType';
+      payload: {
+        uploadType: UploadType | null;
+      };
+    }
+  | {
       type: 'ByPointCoordinates';
       payload: {
-        coordinate: Coordinate;
+        coordinates: Coordinate[];
         area: Area;
       };
     }
@@ -62,10 +72,12 @@ type UploadLocationAction =
         commodity: string;
         existingListName: string | null;
         newListName: string | null;
-        includePalmRiskAssessment: boolean;
-        post2000ForestChange: boolean;
-        post2000RiskAssessment: boolean;
-        recentDeforestationAlerts: boolean;
+        typeOfAnalysis: {
+          includePalmRiskAssessment: boolean;
+          post2000ForestChange: boolean;
+          post2000RiskAssessment: boolean;
+          recentDeforestationAlerts: boolean;
+        };
       };
     }
   | {
@@ -80,21 +92,23 @@ type UploadLocationProviderProps = {
 };
 
 const uploadLocationInitialState: UploadLocationState = {
+  uploadType: null,
   coordinates: [],
   address: '',
   area: { size: 0, measurementUnit: 'hectares' },
   commodity: '',
   existingListName: null,
   newListName: null,
-  includePalmRiskAssessment: false,
-  post2000ForestChange: false,
-  post2000RiskAssessment: false,
-  recentDeforestationAlerts: false,
+  typeOfAnalysis: {
+    includePalmRiskAssessment: false,
+    post2000ForestChange: false,
+    post2000RiskAssessment: false,
+    recentDeforestationAlerts: false,
+  },
 };
 
 export function UploadLocationProvider({ children }: UploadLocationProviderProps) {
   const history = useHistory();
-  const [uploadType, setUploadType] = useState<UploadType | null>(null);
 
   const [uploadLocationState, dispatch] = useReducer(
     uploadLocationReducer,
@@ -102,17 +116,20 @@ export function UploadLocationProvider({ children }: UploadLocationProviderProps
   );
 
   const selectUploadType = (type: UploadType) => {
-    setUploadType(type);
+    dispatch({ type: 'SetUploadType', payload: { uploadType: type } });
   };
 
   const clearUploadType = () => {
-    setUploadType(null);
+    dispatch({ type: 'SetUploadType', payload: { uploadType: null } });
     dispatch({ type: 'Clear', payload: uploadLocationInitialState });
     history.push('OPTIONS');
   };
 
   const setUploadLocationByPointCoordinates = (data: { coordinate: Coordinate; area: Area }) => {
-    dispatch({ type: 'ByPointCoordinates', payload: data });
+    dispatch({
+      type: 'ByPointCoordinates',
+      payload: { coordinates: [data.coordinate], area: data.area },
+    });
   };
 
   const setUploadLocationByPointAddress = (data: { address: string; area: Area }) => {
@@ -127,10 +144,12 @@ export function UploadLocationProvider({ children }: UploadLocationProviderProps
     commodity: string;
     existingListName: string | null;
     newListName: string | null;
-    includePalmRiskAssessment: boolean;
-    post2000ForestChange: boolean;
-    post2000RiskAssessment: boolean;
-    recentDeforestationAlerts: boolean;
+    typeOfAnalysis: {
+      includePalmRiskAssessment: boolean;
+      post2000ForestChange: boolean;
+      post2000RiskAssessment: boolean;
+      recentDeforestationAlerts: boolean;
+    };
   }) => {
     dispatch({ type: 'ConfigureList', payload: data });
   };
@@ -138,10 +157,9 @@ export function UploadLocationProvider({ children }: UploadLocationProviderProps
   return (
     <UploadLocationContext.Provider
       value={{
-        uploadType,
+        uploadLocationState,
         selectUploadType,
         clearUploadType,
-        uploadLocationState,
         setUploadLocationByPointCoordinates,
         setUploadLocationByPointAddress,
         setUploadLocationByPolygon,
@@ -153,7 +171,7 @@ export function UploadLocationProvider({ children }: UploadLocationProviderProps
   );
 }
 
-export const useUploadLocation = () => useContext(UploadLocationContext);
+export const useUploadLocation = (): UploadLocationType => useContext(UploadLocationContext);
 
 function uploadLocationReducer(
   state: UploadLocationState,
@@ -162,14 +180,31 @@ function uploadLocationReducer(
   const { type, payload } = action;
 
   switch (type) {
+    case 'SetUploadType':
+      return { ...state, uploadType: payload.uploadType };
+
     case 'ByPointCoordinates':
+      return { ...state, coordinates: payload.coordinates, area: payload.area };
+
     case 'ByPointAddress':
+      return { ...state, address: payload.address, area: payload.area };
+
     case 'ByPolygon':
+      return { ...state, coordinates: payload.coordinates };
+
     case 'ConfigureList':
+      return {
+        ...state,
+        commodity: payload.commodity,
+        existingListName: payload.existingListName,
+        newListName: payload.newListName,
+        typeOfAnalysis: payload.typeOfAnalysis,
+      };
+
     case 'Clear':
-      return { ...state, ...payload };
+      return payload;
 
     default:
-      return state;
+      throw new Error(`Unhandled action type: ${type}`);
   }
 }

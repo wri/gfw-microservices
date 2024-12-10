@@ -23,11 +23,17 @@ import { useUploadLocation } from '../contexts';
 import { NavBar } from '../components';
 import { UserList } from '../types';
 import { filterValidTemplates } from '../utils/filterValidTemplates';
+import { typeOfAnalysisMap } from '../utils/constants';
 
 const schema = z
   .object({
     commodity: z.string().trim().min(1),
-    newListName: z.string().trim().min(1).nullable(),
+    newListName: z
+      .string()
+      .trim()
+      .min(1)
+      .regex(/^[a-zA-Z0-9 ]+$/, 'Only letters, numbers, and spaces are allowed')
+      .nullable(),
     existingListName: z.string().nullable(),
     post2000ForestChange: z.coerce.boolean(),
     includePalmRiskAssessment: z.coerce.boolean(),
@@ -65,7 +71,17 @@ export function ConfigureList({ userLists }: { userLists: UserList[] }) {
 
   const onSubmit = (data: FormFields) => {
     console.log({ data });
-    setUploadLocationConfigureList(data);
+    setUploadLocationConfigureList({
+      commodity: data.commodity,
+      existingListName: data.existingListName,
+      newListName: data.newListName,
+      typeOfAnalysis: {
+        includePalmRiskAssessment: data.includePalmRiskAssessment,
+        post2000ForestChange: data.post2000ForestChange,
+        post2000RiskAssessment: data.post2000RiskAssessment,
+        recentDeforestationAlerts: data.recentDeforestationAlerts,
+      },
+    });
     history.push('SUMMARY_AND_SUBMIT');
   };
 
@@ -139,7 +155,9 @@ export function ConfigureList({ userLists }: { userLists: UserList[] }) {
                 sx={{ flex: '1' }}
                 placeholder="Name your new list"
                 error={!!errors.newListName}
-                helperText={errors.newListName ? 'Enter the list name' : ''}
+                helperText={
+                  errors.newListName ? errors.newListName.message ?? 'Enter the list name' : ''
+                }
                 {...field}
               />
             )}
@@ -168,107 +186,37 @@ export function ConfigureList({ userLists }: { userLists: UserList[] }) {
           counts towards your account usage limits. See more information here.
         </Typography>
         <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1, mt: 1 }}>
-          <Controller
-            name="post2000ForestChange"
-            control={control}
-            render={({ field }) => (
-              <FormControlLabel
-                control={
-                  <Checkbox
-                    sx={{ py: 0 }}
-                    checked={field.value}
-                    onChange={field.onChange}
-                    inputRef={field.ref}
-                  />
-                }
-                sx={{ textTransform: 'none' }}
-                label={
-                  <Box sx={{ lineHeight: 0 }}>
-                    <Typography variant="body2">Post-2000 Forest Change</Typography>
-                    <Typography variant="caption" color="text.secondary">
-                      Post-2000 annual tree cover loss + additional contextual and regional datasets
-                    </Typography>
-                  </Box>
-                }
-              ></FormControlLabel>
-            )}
-          />
-
-          <Controller
-            name="includePalmRiskAssessment"
-            control={control}
-            render={({ field }) => (
-              <FormControlLabel
-                control={
-                  <Checkbox
-                    sx={{ py: 0 }}
-                    checked={field.value}
-                    onChange={field.onChange}
-                    inputRef={field.ref}
-                  />
-                }
-                sx={{ textTransform: 'none', ml: 2 }}
-                label={
-                  <Box sx={{ lineHeight: 0 }}>
-                    <Typography variant="body2">Include Palm Risk Assessment</Typography>
-                    <Typography variant="caption" color="text.secondary">
-                      Commodity-specific risk analysis for palm oil mills
-                    </Typography>
-                  </Box>
-                }
-              ></FormControlLabel>
-            )}
-          />
-          <Controller
-            name="recentDeforestationAlerts"
-            control={control}
-            render={({ field }) => (
-              <FormControlLabel
-                control={
-                  <Checkbox
-                    sx={{ py: 0 }}
-                    checked={field.value}
-                    onChange={field.onChange}
-                    inputRef={field.ref}
-                  />
-                }
-                sx={{ textTransform: 'none' }}
-                label={
-                  <Box sx={{ lineHeight: 0 }}>
-                    <Typography variant="body2">Recent Deforestation Alerts</Typography>
-                    <Typography variant="caption" color="text.secondary">
-                      Recent deforestation alerts, updated weekly
-                    </Typography>
-                  </Box>
-                }
-              ></FormControlLabel>
-            )}
-          />
-          <Controller
-            name="post2000RiskAssessment"
-            control={control}
-            render={({ field }) => (
-              <FormControlLabel
-                control={
-                  <Checkbox
-                    sx={{ py: 0 }}
-                    checked={field.value}
-                    onChange={field.onChange}
-                    inputRef={field.ref}
-                  />
-                }
-                sx={{ textTransform: 'none' }}
-                label={
-                  <Box sx={{ lineHeight: 0 }}>
-                    <Typography variant="body2">Post-2020 Risk Assessment</Typography>
-                    <Typography variant="caption" color="text.secondary">
-                      Post-2020 deforestation in natural forest + additional contextual datasets
-                    </Typography>
-                  </Box>
-                }
-              ></FormControlLabel>
-            )}
-          />
+          {typeOfAnalysisMap.map(({ id, title, body }) => {
+            const isPalmRisk = id === 'includePalmRiskAssessment';
+            return (
+              <Controller
+                key={id}
+                name={id}
+                control={control}
+                render={({ field }) => (
+                  <FormControlLabel
+                    control={
+                      <Checkbox
+                        sx={{ py: 0 }}
+                        checked={field.value}
+                        onChange={field.onChange}
+                        inputRef={field.ref}
+                      />
+                    }
+                    sx={{ textTransform: 'none', ml: isPalmRisk ? 2 : 0 }}
+                    label={
+                      <Box sx={{ lineHeight: 0 }}>
+                        <Typography variant="body2">{title}</Typography>
+                        <Typography variant="caption" color="text.secondary">
+                          {body}
+                        </Typography>
+                      </Box>
+                    }
+                  ></FormControlLabel>
+                )}
+              />
+            );
+          })}
         </Box>
         <Box
           sx={{

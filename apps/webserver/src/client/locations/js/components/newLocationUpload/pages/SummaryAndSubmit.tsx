@@ -1,21 +1,31 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Box, Card, Link, Typography } from '@mui/material';
 import { ArrowBackIos, Close, EditNote, Publish } from '@mui/icons-material';
 
 import { useHistory } from '../hooks';
-import { PillButton } from '../../../../../components';
+import { LoadingModal, PillButton } from '../../../../../components';
 import { useUploadLocation } from '../contexts';
 import { NavBar } from '../components';
+import { typeOfAnalysisMap } from '../utils/constants';
 
 export function SummaryAndSubmit() {
   const history = useHistory();
   const { clearUploadType, uploadLocationState } = useUploadLocation();
+  const [isLoading, setIsLoading] = useState<boolean>(false);
+
+  console.log({ uploadLocationState });
+
+  const onSubmit = (e: React.FormEvent<HTMLDivElement>) => {
+    e.preventDefault();
+    setIsLoading(true);
+  };
 
   return (
     <>
       <NavBar />
       <Card
         component="form"
+        onSubmit={onSubmit}
         sx={{ height: '634px', display: 'flex', flexDirection: 'column', pt: 1, px: 2, pb: 2 }}
       >
         <Typography variant="h6">Summary & Submit</Typography>
@@ -39,11 +49,17 @@ export function SummaryAndSubmit() {
             The resulting list will be submitted for the following analysis:
           </Typography>
           <Box component="ul" sx={{ color: 'text.secondary' }}>
-            <li>
-              <Typography variant="caption">
-                Post-2000 Forest Change (Includes Palm Risk Assessment)
-              </Typography>
-            </li>
+            {Object.entries(uploadLocationState.typeOfAnalysis)
+              .filter(([, isChecked]) => isChecked)
+              .map(([key]) => {
+                const analysis = typeOfAnalysisMap.find((x) => x.id === key);
+
+                return (
+                  <li>
+                    <Typography variant="caption">{analysis?.body}</Typography>
+                  </li>
+                );
+              })}
           </Box>
           <Typography variant="body2">
             Please note that all analysis submissions count towards your usage limits. See more
@@ -91,6 +107,7 @@ export function SummaryAndSubmit() {
           </PillButton>
         </Box>
       </Card>
+      <LoadingModal isLoading={isLoading} />
     </>
   );
 }

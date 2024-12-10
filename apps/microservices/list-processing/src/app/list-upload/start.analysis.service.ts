@@ -6,11 +6,8 @@ import { S3Service } from '@wri-monorepos/aws';
 import { AbstractHandler, ChainType } from './chain/types';
 import { DownloadS3File } from './chain/download.s3.file';
 import { ParserData } from './chain/parser.data';
-import { ListSchemaName } from './chain/list.schema.name';
-import { CreateLocationSchema } from './chain/create.location.schema';
 import { SQLUtils } from '@wri-monorepos/sql';
 import { GADMService } from './chain/gadm.service';
-import { CreateListLevelData } from './chain/create.list.level.data';
 import { InsertLocationData } from './chain/insert.location.data';
 import { ValidateLatLongGeojson } from './chain/validate.lat.long.geojson';
 import { StartAnalysis } from './chain/start.analysis';
@@ -44,10 +41,7 @@ async function worker(input: WorkerType, cb: done) {
 
   const downloadS3File = new DownloadS3File(s3Service, input.config);
   const parseData = new ParserData();
-  const listSchemaName = new ListSchemaName();
   const gadmService = new GADMService();
-  const createListLevelData = new CreateListLevelData();
-  const createLocationSchema = new CreateLocationSchema(connection);
   const insertLocationData = new InsertLocationData();
   const validateLatLongGeojson = new ValidateLatLongGeojson();
   const convertPoint2Polygon = new ConvertPoint2Polygon();
@@ -57,13 +51,10 @@ async function worker(input: WorkerType, cb: done) {
 
   downloadS3File
     .setNext(parseData)
-    .setNext(listSchemaName)
     .setNext(convertPoint2Polygon)
     .setNext(gadmService) // depends on convertPoint2Polygon
     .setNext(validateLatLongGeojson) // depends on gadmService
     .setNext(getObjectTypes)
-    .setNext(createListLevelData)
-    .setNext(createLocationSchema)
     .setNext(insertLocationData)
     .setNext(writeLocationCount)
     .setNext(startAnalysis);

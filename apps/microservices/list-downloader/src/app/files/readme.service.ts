@@ -27,10 +27,14 @@ export class ReadmeService {
   }
 
   getSourceDir(fileToCopy: string): string {
-    if (this.configService.get('NODE_ENV', { infer: true }) === 'test') {
-      return '/mock/source/dir/' + fileToCopy;
-    } else {
-      return path.resolve(__dirname, 'assets/readme', fileToCopy);
+    try {
+      if (this.configService.get('NODE_ENV', { infer: true }) === 'test') {
+        return '/mock/source/dir/' + fileToCopy;
+      } else {
+        return path.resolve(__dirname, 'assets/readme', fileToCopy);
+      }
+    } catch (error) {
+      this.logger.error(`Error getting source dir: ${error.message}`);
     }
   }
 

@@ -4,6 +4,7 @@ import {
   Card,
   Checkbox,
   Divider,
+  FormControl,
   FormControlLabel,
   FormHelperText,
   MenuItem,
@@ -12,7 +13,7 @@ import {
   Typography,
 } from '@mui/material';
 import { ArrowBackIos, ArrowForwardIos, Close } from '@mui/icons-material';
-import { useForm, Controller } from 'react-hook-form';
+import { useForm, Controller, FieldError } from 'react-hook-form';
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
 
@@ -22,16 +23,25 @@ import { useUploadLocation } from '../contexts';
 import { NavBar } from '../components';
 import { UserList } from '../types';
 import { filterValidTemplates } from '../utils/filterValidTemplates';
+import { typeOfAnalysisMap } from '../utils/constants';
 
-const schema = z.object({
-  commodity: z.string().trim().min(1),
-  newListName: z.string().trim().min(1),
-  existingListName: z.string().optional(),
-  post2000ForestChange: z.coerce.boolean(),
-  includePalmRiskAssessment: z.coerce.boolean(),
-  recentDeforestationAlerts: z.coerce.boolean(),
-  post2000RiskAssessment: z.coerce.boolean(),
-});
+const schema = z
+  .object({
+    commodity: z.string().trim().min(1),
+    newListName: z
+      .string()
+      .trim()
+      .regex(/^[a-zA-Z0-9 ]*$/, 'Only letters, numbers, and spaces are allowed'),
+    existingListName: z.string(),
+    post2000ForestChange: z.coerce.boolean(),
+    includePalmRiskAssessment: z.coerce.boolean(),
+    recentDeforestationAlerts: z.coerce.boolean(),
+    post2000RiskAssessment: z.coerce.boolean(),
+  })
+  .refine((data) => data.newListName !== '' || data.existingListName !== '', {
+    message: 'You must provide at least one list name.',
+    path: ['noListNameProvided'],
+  });
 
 type FormFields = z.infer<typeof schema>;
 
@@ -53,15 +63,34 @@ export function ConfigureList({ userLists }: { userLists: UserList[] }) {
       recentDeforestationAlerts: false,
     },
   });
-  const { clearUploadType } = useUploadLocation();
+  const { clearUploadType, setUploadLocationConfigureList } = useUploadLocation();
 
-  const [commodity, setCommodity] = useState<string>('');
+  const [formFields, setFormFields] = useState<{
+    commodity: string;
+    newListName: string;
+    existingListName: string;
+  }>({
+    commodity: '',
+    newListName: '',
+    existingListName: '',
+  });
 
   const onSubmit = (data: FormFields) => {
-    console.log({ data });
+    setUploadLocationConfigureList({
+      commodity: data.commodity,
+      newListName: data.newListName ?? '',
+      existingListName: data.existingListName ?? '',
+      typeOfAnalysis: {
+        includePalmRiskAssessment: data.includePalmRiskAssessment,
+        post2000ForestChange: data.post2000ForestChange,
+        post2000RiskAssessment: data.post2000RiskAssessment,
+        recentDeforestationAlerts: data.recentDeforestationAlerts,
+      },
+    });
+    history.push('SUMMARY_AND_SUBMIT');
   };
 
-  const templateType = templateTypes[commodity];
+  const templateType = templateTypes[formFields.commodity];
 
   const validLists = templateType
     ? userLists.filter((list) => filterValidTemplates(list, templateType))
@@ -84,35 +113,35 @@ export function ConfigureList({ userLists }: { userLists: UserList[] }) {
         <Controller
           name="commodity"
           control={control}
-          render={({ field }) => (
-            <>
-              <Select
-                sx={{ width: '240px' }}
-                size="small"
-                value={commodity}
-                onChange={(e) => {
-                  setCommodity(e.target.value);
-                  field.onChange(e);
-                }}
-              >
-                <MenuItem value="cattle">Cattle</MenuItem>
-                <MenuItem value="cocoa">Cocoa</MenuItem>
-                <MenuItem value="coffee">Coffee</MenuItem>
-                <MenuItem value="palm-oil">Palm oil</MenuItem>
-                <MenuItem value="pulp-and-paper">Pulp and paper</MenuItem>
-                <MenuItem value="rubber">Rubber</MenuItem>
-                <MenuItem value="soy">Soy</MenuItem>
-                <MenuItem value="sugar-cane">Sugar cane</MenuItem>
-                <MenuItem value="multiple">Multiple</MenuItem>
-                <MenuItem value="other">Other</MenuItem>
-              </Select>
-              {!!errors.commodity && (
-                <FormHelperText sx={{ color: 'error.main', mx: 1.75 }}>
-                  Enter the commodity
-                </FormHelperText>
-              )}
-            </>
-          )}
+          render={({ field }) => {
+            const error = errors.commodity;
+            return (
+              <FormControl error={!!error}>
+                <Select
+                  sx={{ width: '240px' }}
+                  size="small"
+                  value={formFields.commodity || ''}
+                  onChange={(e) => {
+                    const value = e.target.value || '';
+                    setFormFields((v) => ({ ...v, commodity: value }));
+                    field.onChange(value);
+                  }}
+                >
+                  <MenuItem value="cattle">Cattle</MenuItem>
+                  <MenuItem value="cocoa">Cocoa</MenuItem>
+                  <MenuItem value="coffee">Coffee</MenuItem>
+                  <MenuItem value="palm-oil">Palm oil</MenuItem>
+                  <MenuItem value="pulp-and-paper">Pulp and paper</MenuItem>
+                  <MenuItem value="rubber">Rubber</MenuItem>
+                  <MenuItem value="soy">Soy</MenuItem>
+                  <MenuItem value="sugar-cane">Sugar cane</MenuItem>
+                  <MenuItem value="multiple">Multiple</MenuItem>
+                  <MenuItem value="other">Other</MenuItem>
+                </Select>
+                {!!error && <FormHelperText>Enter the commodity</FormHelperText>}
+              </FormControl>
+            );
+          }}
         />
 
         <Divider sx={{ my: 3 }} />
@@ -129,16 +158,28 @@ export function ConfigureList({ userLists }: { userLists: UserList[] }) {
           <Controller
             name="newListName"
             control={control}
-            render={({ field }) => (
-              <TextField
-                size="small"
-                sx={{ flex: '1' }}
-                placeholder="Name your new list"
-                error={!!errors.newListName}
-                helperText={errors.newListName ? 'Enter the list name' : ''}
-                {...field}
-              />
-            )}
+            render={({ field }) => {
+              const error =
+                ('noListNameProvided' in errors && (errors.noListNameProvided as FieldError)) ||
+                errors.newListName;
+
+              return (
+                <TextField
+                  size="small"
+                  disabled={!!formFields.existingListName}
+                  sx={{ flex: '1' }}
+                  placeholder="Name your new list"
+                  error={!!error}
+                  helperText={error ? error.message ?? 'Enter the list name' : ''}
+                  value={formFields.newListName}
+                  onChange={(e) => {
+                    const value = e.target.value || '';
+                    setFormFields((v) => ({ ...v, newListName: value }));
+                    field.onChange(value);
+                  }}
+                />
+              );
+            }}
           />
 
           <Typography sx={{ mt: 1 }}>or</Typography>
@@ -146,15 +187,35 @@ export function ConfigureList({ userLists }: { userLists: UserList[] }) {
           <Controller
             name="existingListName"
             control={control}
-            render={({ field }) => (
-              <Select disabled={validLists.length === 0} sx={{ flex: '1' }} size="small" {...field}>
-                {validLists.map(({ id, list_name }) => (
-                  <MenuItem key={id} value={list_name}>
-                    {list_name}
-                  </MenuItem>
-                ))}
-              </Select>
-            )}
+            render={({ field }) => {
+              const error =
+                ('noListNameProvided' in errors && (errors.noListNameProvided as FieldError)) ||
+                errors.existingListName;
+
+              return (
+                <FormControl error={!!error} sx={{ flex: '1' }}>
+                  <Select
+                    disabled={validLists.length === 0 || !!formFields.newListName}
+                    size="small"
+                    value={formFields.existingListName}
+                    onChange={(e) => {
+                      const value = e.target.value || '';
+                      setFormFields((v) => ({ ...v, existingListName: value }));
+                      field.onChange(value);
+                    }}
+                  >
+                    {validLists.map(({ id, list_name }) => (
+                      <MenuItem key={id} value={list_name}>
+                        {list_name}
+                      </MenuItem>
+                    ))}
+                  </Select>
+                  {!!error && (
+                    <FormHelperText>{error.message ?? 'Enter the list name'}</FormHelperText>
+                  )}
+                </FormControl>
+              );
+            }}
           />
         </Box>
         <Divider sx={{ my: 3 }} />
@@ -164,107 +225,37 @@ export function ConfigureList({ userLists }: { userLists: UserList[] }) {
           counts towards your account usage limits. See more information here.
         </Typography>
         <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1, mt: 1 }}>
-          <Controller
-            name="post2000ForestChange"
-            control={control}
-            render={({ field }) => (
-              <FormControlLabel
-                control={
-                  <Checkbox
-                    sx={{ py: 0 }}
-                    checked={field.value}
-                    onChange={field.onChange}
-                    inputRef={field.ref}
-                  />
-                }
-                sx={{ textTransform: 'none' }}
-                label={
-                  <Box sx={{ lineHeight: 0 }}>
-                    <Typography variant="body2">Post-2000 Forest Change</Typography>
-                    <Typography variant="caption" color="text.secondary">
-                      Post-2000 annual tree cover loss + additional contextual and regional datasets
-                    </Typography>
-                  </Box>
-                }
-              ></FormControlLabel>
-            )}
-          />
-
-          <Controller
-            name="includePalmRiskAssessment"
-            control={control}
-            render={({ field }) => (
-              <FormControlLabel
-                control={
-                  <Checkbox
-                    sx={{ py: 0 }}
-                    checked={field.value}
-                    onChange={field.onChange}
-                    inputRef={field.ref}
-                  />
-                }
-                sx={{ textTransform: 'none', ml: 2 }}
-                label={
-                  <Box sx={{ lineHeight: 0 }}>
-                    <Typography variant="body2">Include Palm Risk Assessment</Typography>
-                    <Typography variant="caption" color="text.secondary">
-                      Commodity-specific risk analysis for palm oil mills
-                    </Typography>
-                  </Box>
-                }
-              ></FormControlLabel>
-            )}
-          />
-          <Controller
-            name="recentDeforestationAlerts"
-            control={control}
-            render={({ field }) => (
-              <FormControlLabel
-                control={
-                  <Checkbox
-                    sx={{ py: 0 }}
-                    checked={field.value}
-                    onChange={field.onChange}
-                    inputRef={field.ref}
-                  />
-                }
-                sx={{ textTransform: 'none' }}
-                label={
-                  <Box sx={{ lineHeight: 0 }}>
-                    <Typography variant="body2">Recent Deforestation Alerts</Typography>
-                    <Typography variant="caption" color="text.secondary">
-                      Recent deforestation alerts, updated weekly
-                    </Typography>
-                  </Box>
-                }
-              ></FormControlLabel>
-            )}
-          />
-          <Controller
-            name="post2000RiskAssessment"
-            control={control}
-            render={({ field }) => (
-              <FormControlLabel
-                control={
-                  <Checkbox
-                    sx={{ py: 0 }}
-                    checked={field.value}
-                    onChange={field.onChange}
-                    inputRef={field.ref}
-                  />
-                }
-                sx={{ textTransform: 'none' }}
-                label={
-                  <Box sx={{ lineHeight: 0 }}>
-                    <Typography variant="body2">Post-2020 Risk Assessment</Typography>
-                    <Typography variant="caption" color="text.secondary">
-                      Post-2020 deforestation in natural forest + additional contextual datasets
-                    </Typography>
-                  </Box>
-                }
-              ></FormControlLabel>
-            )}
-          />
+          {typeOfAnalysisMap.map(({ id, title, body }) => {
+            const isPalmRisk = id === 'includePalmRiskAssessment';
+            return (
+              <Controller
+                key={id}
+                name={id}
+                control={control}
+                render={({ field }) => (
+                  <FormControlLabel
+                    control={
+                      <Checkbox
+                        sx={{ py: 0 }}
+                        checked={field.value}
+                        onChange={field.onChange}
+                        inputRef={field.ref}
+                      />
+                    }
+                    sx={{ textTransform: 'none', ml: isPalmRisk ? 2 : 0 }}
+                    label={
+                      <Box sx={{ lineHeight: 0 }}>
+                        <Typography variant="body2">{title}</Typography>
+                        <Typography variant="caption" color="text.secondary">
+                          {body}
+                        </Typography>
+                      </Box>
+                    }
+                  ></FormControlLabel>
+                )}
+              />
+            );
+          })}
         </Box>
         <Box
           sx={{

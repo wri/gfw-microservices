@@ -271,7 +271,7 @@ const dataCleanup = (data) => {
  * @param {number} list_status_id - List status ID
  * @return {boolean} - Return true/false value for template validity
  */
-const getListValidStatus = (list_status_id) => {
+export const getListValidStatus = (list_status_id) => {
   return list_status_id === listStatus.Active || list_status_id === listStatus.Draft;
 };
 

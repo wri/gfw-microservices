@@ -11,6 +11,7 @@ import {
   UploadLocationOptions,
   ConfigureList,
 } from './pages';
+import { UserList } from './types';
 
 export const UploadLocationRoutes = {
   LOCATIONS: '/',
@@ -25,7 +26,7 @@ export const UploadLocationRoutes = {
 
 export type RouteType = keyof typeof UploadLocationRoutes;
 
-export function UploadLocationRouter() {
+export function UploadLocationRouter({ userLists }: { userLists: UserList[] }) {
   return (
     <ThemeProvider>
       <Box
@@ -40,7 +41,9 @@ export function UploadLocationRouter() {
             component={UploadLocationByPolygon}
           />
           <Route path={UploadLocationRoutes.UPLOAD_BY_POINT} component={UploadLocationByPoint} />
-          <Route path={UploadLocationRoutes.CONFIGURE_LIST} component={ConfigureList} />
+          <Route path={UploadLocationRoutes.CONFIGURE_LIST}>
+            <ConfigureList userLists={userLists} />
+          </Route>
         </Switch>
       </Box>
     </ThemeProvider>

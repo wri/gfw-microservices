@@ -5,3 +5,12 @@ export enum UploadType {
 }
 
 export type MeasurementUnit = 'hectares' | 'kilometers';
+
+export type UserList = {
+  id: number;
+  user_id: number;
+  template_id: number;
+  list_name: string;
+  list_status_id: number;
+  location_classification: string;
+};

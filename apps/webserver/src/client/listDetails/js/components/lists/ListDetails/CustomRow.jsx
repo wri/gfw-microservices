@@ -120,7 +120,7 @@ const CustomRow = ({
               <Menu className="context-menu">
                 {isCopyMoveActionAvailable && (
                   <MenuItem
-                    primaryText="COPY/MOVE"
+                    primaryText={isGfwList ? 'COPY' : 'COPY/MOVE'}
                     leftIcon={<DriveFileMoveIcon />}
                     onClick={() => {
                       store.dispatch(updateSelectedLocations([locationId]));

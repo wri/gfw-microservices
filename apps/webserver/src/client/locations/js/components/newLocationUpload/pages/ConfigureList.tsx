@@ -13,7 +13,7 @@ import {
   Typography,
 } from '@mui/material';
 import { ArrowBackIos, ArrowForwardIos, Close } from '@mui/icons-material';
-import { useForm, Controller } from 'react-hook-form';
+import { useForm, Controller, FieldError } from 'react-hook-form';
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
 
@@ -31,18 +31,16 @@ const schema = z
     newListName: z
       .string()
       .trim()
-      .min(1)
-      .regex(/^[a-zA-Z0-9 ]+$/, 'Only letters, numbers, and spaces are allowed')
-      .nullable(),
-    existingListName: z.string().nullable(),
+      .regex(/^[a-zA-Z0-9 ]*$/, 'Only letters, numbers, and spaces are allowed'),
+    existingListName: z.string(),
     post2000ForestChange: z.coerce.boolean(),
     includePalmRiskAssessment: z.coerce.boolean(),
     recentDeforestationAlerts: z.coerce.boolean(),
     post2000RiskAssessment: z.coerce.boolean(),
   })
-  .refine((data) => data.newListName || data.existingListName, {
-    message: 'Either list name or existing list must be provided.',
-    path: ['newListName', 'existingListName'],
+  .refine((data) => data.newListName !== '' || data.existingListName !== '', {
+    message: 'You must provide at least one list name.',
+    path: ['noListNameProvided'],
   });
 
 type FormFields = z.infer<typeof schema>;
@@ -57,8 +55,8 @@ export function ConfigureList({ userLists }: { userLists: UserList[] }) {
     resolver: zodResolver(schema),
     defaultValues: {
       commodity: '',
-      newListName: null,
-      existingListName: null,
+      newListName: '',
+      existingListName: '',
       includePalmRiskAssessment: false,
       post2000ForestChange: false,
       post2000RiskAssessment: false,
@@ -67,14 +65,22 @@ export function ConfigureList({ userLists }: { userLists: UserList[] }) {
   });
   const { clearUploadType, setUploadLocationConfigureList } = useUploadLocation();
 
-  const [commodity, setCommodity] = useState<string>('');
+  const [formFields, setFormFields] = useState<{
+    commodity: string;
+    newListName: string;
+    existingListName: string;
+  }>({
+    commodity: '',
+    newListName: '',
+    existingListName: '',
+  });
 
   const onSubmit = (data: FormFields) => {
     console.log({ data });
     setUploadLocationConfigureList({
       commodity: data.commodity,
-      existingListName: data.existingListName,
-      newListName: data.newListName,
+      newListName: data.newListName ?? '',
+      existingListName: data.existingListName ?? '',
       typeOfAnalysis: {
         includePalmRiskAssessment: data.includePalmRiskAssessment,
         post2000ForestChange: data.post2000ForestChange,
@@ -85,7 +91,7 @@ export function ConfigureList({ userLists }: { userLists: UserList[] }) {
     history.push('SUMMARY_AND_SUBMIT');
   };
 
-  const templateType = templateTypes[commodity];
+  const templateType = templateTypes[formFields.commodity];
 
   const validLists = templateType
     ? userLists.filter((list) => filterValidTemplates(list, templateType))
@@ -108,31 +114,35 @@ export function ConfigureList({ userLists }: { userLists: UserList[] }) {
         <Controller
           name="commodity"
           control={control}
-          render={({ field }) => (
-            <FormControl error={!!errors.commodity}>
-              <Select
-                sx={{ width: '240px' }}
-                size="small"
-                value={commodity}
-                onChange={(e) => {
-                  setCommodity(e.target.value);
-                  field.onChange(e);
-                }}
-              >
-                <MenuItem value="cattle">Cattle</MenuItem>
-                <MenuItem value="cocoa">Cocoa</MenuItem>
-                <MenuItem value="coffee">Coffee</MenuItem>
-                <MenuItem value="palm-oil">Palm oil</MenuItem>
-                <MenuItem value="pulp-and-paper">Pulp and paper</MenuItem>
-                <MenuItem value="rubber">Rubber</MenuItem>
-                <MenuItem value="soy">Soy</MenuItem>
-                <MenuItem value="sugar-cane">Sugar cane</MenuItem>
-                <MenuItem value="multiple">Multiple</MenuItem>
-                <MenuItem value="other">Other</MenuItem>
-              </Select>
-              {!!errors.commodity && <FormHelperText>Enter the commodity</FormHelperText>}
-            </FormControl>
-          )}
+          render={({ field }) => {
+            const error = errors.commodity;
+            return (
+              <FormControl error={!!error}>
+                <Select
+                  sx={{ width: '240px' }}
+                  size="small"
+                  value={formFields.commodity || ''}
+                  onChange={(e) => {
+                    const value = e.target.value || '';
+                    setFormFields((v) => ({ ...v, commodity: value }));
+                    field.onChange(value);
+                  }}
+                >
+                  <MenuItem value="cattle">Cattle</MenuItem>
+                  <MenuItem value="cocoa">Cocoa</MenuItem>
+                  <MenuItem value="coffee">Coffee</MenuItem>
+                  <MenuItem value="palm-oil">Palm oil</MenuItem>
+                  <MenuItem value="pulp-and-paper">Pulp and paper</MenuItem>
+                  <MenuItem value="rubber">Rubber</MenuItem>
+                  <MenuItem value="soy">Soy</MenuItem>
+                  <MenuItem value="sugar-cane">Sugar cane</MenuItem>
+                  <MenuItem value="multiple">Multiple</MenuItem>
+                  <MenuItem value="other">Other</MenuItem>
+                </Select>
+                {!!error && <FormHelperText>Enter the commodity</FormHelperText>}
+              </FormControl>
+            );
+          }}
         />
 
         <Divider sx={{ my: 3 }} />
@@ -149,18 +159,28 @@ export function ConfigureList({ userLists }: { userLists: UserList[] }) {
           <Controller
             name="newListName"
             control={control}
-            render={({ field }) => (
-              <TextField
-                size="small"
-                sx={{ flex: '1' }}
-                placeholder="Name your new list"
-                error={!!errors.newListName}
-                helperText={
-                  errors.newListName ? errors.newListName.message ?? 'Enter the list name' : ''
-                }
-                {...field}
-              />
-            )}
+            render={({ field }) => {
+              const error =
+                ('noListNameProvided' in errors && (errors.noListNameProvided as FieldError)) ||
+                errors.newListName;
+
+              return (
+                <TextField
+                  size="small"
+                  disabled={!!formFields.existingListName}
+                  sx={{ flex: '1' }}
+                  placeholder="Name your new list"
+                  error={!!error}
+                  helperText={error ? error.message ?? 'Enter the list name' : ''}
+                  value={formFields.newListName}
+                  onChange={(e) => {
+                    const value = e.target.value || '';
+                    setFormFields((v) => ({ ...v, newListName: value }));
+                    field.onChange(value);
+                  }}
+                />
+              );
+            }}
           />
 
           <Typography sx={{ mt: 1 }}>or</Typography>
@@ -168,15 +188,35 @@ export function ConfigureList({ userLists }: { userLists: UserList[] }) {
           <Controller
             name="existingListName"
             control={control}
-            render={({ field }) => (
-              <Select disabled={validLists.length === 0} sx={{ flex: '1' }} size="small" {...field}>
-                {validLists.map(({ id, list_name }) => (
-                  <MenuItem key={id} value={list_name}>
-                    {list_name}
-                  </MenuItem>
-                ))}
-              </Select>
-            )}
+            render={({ field }) => {
+              const error =
+                ('noListNameProvided' in errors && (errors.noListNameProvided as FieldError)) ||
+                errors.existingListName;
+
+              return (
+                <FormControl error={!!error} sx={{ flex: '1' }}>
+                  <Select
+                    disabled={validLists.length === 0 || !!formFields.newListName}
+                    size="small"
+                    value={formFields.existingListName}
+                    onChange={(e) => {
+                      const value = e.target.value || '';
+                      setFormFields((v) => ({ ...v, existingListName: value }));
+                      field.onChange(value);
+                    }}
+                  >
+                    {validLists.map(({ id, list_name }) => (
+                      <MenuItem key={id} value={list_name}>
+                        {list_name}
+                      </MenuItem>
+                    ))}
+                  </Select>
+                  {!!error && (
+                    <FormHelperText>{error.message ?? 'Enter the list name'}</FormHelperText>
+                  )}
+                </FormControl>
+              );
+            }}
           />
         </Box>
         <Divider sx={{ my: 3 }} />

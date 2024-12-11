@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, FormEvent } from 'react';
 import { Box, Card, Link, Typography } from '@mui/material';
 import { ArrowBackIos, Close, EditNote, Publish } from '@mui/icons-material';
 
@@ -15,10 +15,12 @@ export function SummaryAndSubmit() {
 
   console.log({ uploadLocationState });
 
-  const onSubmit = (e: React.FormEvent<HTMLDivElement>) => {
+  const onSubmit = (e: FormEvent<HTMLDivElement>) => {
     e.preventDefault();
     setIsLoading(true);
   };
+
+  const isAddingToNewList = !!uploadLocationState.newListName;
 
   return (
     <>
@@ -41,12 +43,22 @@ export function SummaryAndSubmit() {
           }}
         >
           <Typography variant="body2">
-            You are adding locations to the list{' '}
-            <b>{uploadLocationState?.existingListName ?? uploadLocationState?.newListName}</b>,
-            which has a commodity of <b>{uploadLocationState.commodity}</b>.
+            You are{' '}
+            {isAddingToNewList ? (
+              <>
+                creating a new <b>{uploadLocationState.commodity}</b> list named{' '}
+                <b>{uploadLocationState.newListName}</b>.
+              </>
+            ) : (
+              <>
+                adding <b>{uploadLocationState.commodity}</b> location(s) to the list named{' '}
+                <b>{uploadLocationState.existingListName}</b>.
+              </>
+            )}
           </Typography>
           <Typography variant="body2">
-            The resulting list will be submitted for the following analysis:
+            {isAddingToNewList ? 'Your ' : 'The resulting '}list will be submitted for the following
+            analysis:
           </Typography>
           <Box component="ul" sx={{ color: 'text.secondary' }}>
             {Object.entries(uploadLocationState.typeOfAnalysis)
@@ -62,7 +74,7 @@ export function SummaryAndSubmit() {
               })}
           </Box>
           <Typography variant="body2">
-            Please note that all analysis submissions count towards your usage limits. See more
+            Please note that all analysis submission count towards your usage limits. See more
             information{' '}
             <Link href="#" sx={{ textDecoration: 'none', color: 'primary.main' }}>
               here

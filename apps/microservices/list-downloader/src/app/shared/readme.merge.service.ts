@@ -52,10 +52,10 @@ export class ReadmeMergeServices {
       const allLines: string[] = [];
       let oldHeader = '';
       // Process each file
-      for (const file of files) {
+      for (const filePath of files) {
         // Ensures that the file path is a string before try to read it
-        if (typeof file === 'string') {
-          const lines = await ReadmeMergeServices.readCSV(file);
+        if (typeof filePath === 'string') {
+          const lines = await ReadmeMergeServices.readCSV(filePath);
 
           // If newHeader is not set, set it from the first file
           if (!newHeader) {

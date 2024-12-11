@@ -27,10 +27,14 @@ export class ReadmeService {
   }
 
   getSourceDir(fileToCopy: string): string {
-    if (this.configService.get('NODE_ENV', { infer: true }) === 'test') {
-      return '/mock/source/dir/' + fileToCopy;
-    } else {
-      return path.resolve(__dirname, 'assets/readme', fileToCopy);
+    try {
+      if (this.configService.get('NODE_ENV', { infer: true }) === 'test') {
+        return '/mock/source/dir/' + fileToCopy;
+      } else {
+        return path.resolve(__dirname, 'assets/readme', fileToCopy);
+      }
+    } catch (error) {
+      this.logger.error(`Error getting source dir: ${error.message}`);
     }
   }
 
@@ -44,10 +48,14 @@ export class ReadmeService {
   }
   getPathDir(key: string) {
     const dirName = `wri-${key}`;
-    if (this.configService.get('NODE_ENV', { infer: true }) === 'test') {
-      return `/tmp/${dirName}/`;
-    } else {
-      return path.join('/tmp', `${dirName}`);
+    try {
+      if (this.configService.get('NODE_ENV', { infer: true }) === 'test') {
+        return `/tmp/${dirName}/`;
+      } else {
+        return path.join('/tmp', `${dirName}`);
+      }
+    } catch (error) {
+      this.logger.error(`Error getting path dir: ${error.message}`);
     }
   }
 
@@ -84,10 +92,8 @@ export class ReadmeService {
     const listsViews = {
       forest_change: 'forest_change_south_east_asia_readme.csv',
     };
-
-    if (listsViews[listView]) {
-      return listsViews[listView];
-    }
+    // Return listsViews['forest_change'] if has no listView in filter
+    return listsViews[listView] || listsViews['forest_change'];
   }
 
   withoutReadme() {
@@ -115,7 +121,10 @@ export class ReadmeService {
         ? await this.readmeMergeServices.processFiles(
             [
               this.getSourceDir(returnFileToCopy[type](filters)),
-              this.getSourceDir(returnFileToCopy['southEastAsiaTCL'](filters)),
+              // Checking if getSourceDir returns a valid path
+              returnFileToCopy['southEastAsiaTCL'](filters)
+                ? this.getSourceDir(returnFileToCopy['southEastAsiaTCL'](filters))
+                : null,
             ],
             'PLEASE NOTE: The contents of your zip files will vary based on the locations and commodities within your data, and the types of analysis you requested. Not all CSVs listed here may apply.',
             this.getPathDir(key)

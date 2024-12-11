@@ -38,6 +38,7 @@ export class ReadmeMergeServices {
     outputFilePath: string
   ): Promise<string | void> {
     try {
+      this.logger.log('Combining README files');
       // Check if at least one file is provided
       if (files.length === 0) {
         this.logger.warn('Please provide at least one file.');
@@ -52,6 +53,7 @@ export class ReadmeMergeServices {
       let oldHeader = '';
       // Process each file
       for (const file of files) {
+        // Ensures that the file path is a string before try to read it
         if (typeof file === 'string') {
           const lines = await ReadmeMergeServices.readCSV(file);
 

@@ -92,7 +92,7 @@ export class ReadmeService {
     const listsViews = {
       forest_change: 'forest_change_south_east_asia_readme.csv',
     };
-
+    // Return undefined if there is no file to copy
     return listsViews[listView];
   }
 
@@ -121,6 +121,7 @@ export class ReadmeService {
         ? await this.readmeMergeServices.processFiles(
             [
               this.getSourceDir(returnFileToCopy[type](filters)),
+              // Checking if getSourceDir returns a valid path
               returnFileToCopy['southEastAsiaTCL'](filters)
                 ? this.getSourceDir(returnFileToCopy['southEastAsiaTCL'](filters))
                 : null,

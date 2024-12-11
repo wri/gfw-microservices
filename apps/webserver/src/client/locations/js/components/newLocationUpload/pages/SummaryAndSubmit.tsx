@@ -13,8 +13,6 @@ export function SummaryAndSubmit() {
   const { clearUploadType, uploadLocationState } = useUploadLocation();
   const [isLoading, setIsLoading] = useState<boolean>(false);
 
-  console.log({ uploadLocationState });
-
   const onSubmit = (e: FormEvent<HTMLDivElement>) => {
     e.preventDefault();
     setIsLoading(true);

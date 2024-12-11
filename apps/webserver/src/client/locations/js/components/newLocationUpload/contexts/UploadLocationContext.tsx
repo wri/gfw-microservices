@@ -120,7 +120,6 @@ export function UploadLocationProvider({ children }: UploadLocationProviderProps
   };
 
   const clearUploadType = () => {
-    dispatch({ type: 'SetUploadType', payload: { uploadType: null } });
     dispatch({ type: 'Clear', payload: uploadLocationInitialState });
     history.push('OPTIONS');
   };

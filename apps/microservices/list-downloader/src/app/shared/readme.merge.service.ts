@@ -52,21 +52,22 @@ export class ReadmeMergeServices {
       let oldHeader = '';
       // Process each file
       for (const file of files) {
-        const lines = await ReadmeMergeServices.readCSV(file);
+        if (typeof file === 'string') {
+          const lines = await ReadmeMergeServices.readCSV(file);
 
-        // If newHeader is not set, set it from the first file
-        if (!newHeader) {
-          newHeader = lines[0]; // Header from the first file
+          // If newHeader is not set, set it from the first file
+          if (!newHeader) {
+            newHeader = lines[0]; // Header from the first file
+          }
+          // Add old Header
+          if (oldHeader.length < lines[0].length) {
+            oldHeader = lines[0];
+            fs.appendFileSync(`${outputFilePath}/README.csv`, lines[0] + '\n');
+          }
+          // Add all lines except the header
+          allLines.push(...lines.slice(1));
         }
-        // Add old Header
-        if (oldHeader.length < lines[0].length) {
-          oldHeader = lines[0];
-          fs.appendFileSync(`${outputFilePath}/README.csv`, lines[0] + '\n');
-        }
-        // Add all lines except the header
-        allLines.push(...lines.slice(1));
       }
-
       // Create a Set to store unique lines (eliminating duplicates)
       const uniqueLines = new Set<string>();
 

@@ -38,6 +38,7 @@ export class ReadmeMergeServices {
     outputFilePath: string
   ): Promise<string | void> {
     try {
+      this.logger.log('Combining README files');
       // Check if at least one file is provided
       if (files.length === 0) {
         this.logger.warn('Please provide at least one file.');
@@ -51,22 +52,24 @@ export class ReadmeMergeServices {
       const allLines: string[] = [];
       let oldHeader = '';
       // Process each file
-      for (const file of files) {
-        const lines = await ReadmeMergeServices.readCSV(file);
+      for (const filePath of files) {
+        // Ensures that the file path is a string before try to read it
+        if (typeof filePath === 'string') {
+          const lines = await ReadmeMergeServices.readCSV(filePath);
 
-        // If newHeader is not set, set it from the first file
-        if (!newHeader) {
-          newHeader = lines[0]; // Header from the first file
+          // If newHeader is not set, set it from the first file
+          if (!newHeader) {
+            newHeader = lines[0]; // Header from the first file
+          }
+          // Add old Header
+          if (oldHeader.length < lines[0].length) {
+            oldHeader = lines[0];
+            fs.appendFileSync(`${outputFilePath}/README.csv`, lines[0] + '\n');
+          }
+          // Add all lines except the header
+          allLines.push(...lines.slice(1));
         }
-        // Add old Header
-        if (oldHeader.length < lines[0].length) {
-          oldHeader = lines[0];
-          fs.appendFileSync(`${outputFilePath}/README.csv`, lines[0] + '\n');
-        }
-        // Add all lines except the header
-        allLines.push(...lines.slice(1));
       }
-
       // Create a Set to store unique lines (eliminating duplicates)
       const uniqueLines = new Set<string>();
 

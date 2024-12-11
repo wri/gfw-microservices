@@ -92,8 +92,8 @@ export class ReadmeService {
     const listsViews = {
       forest_change: 'forest_change_south_east_asia_readme.csv',
     };
-    // Return undefined if there is no file to copy
-    return listsViews[listView];
+    // Return listsViews['forest_change'] if has no listView in filter
+    return listsViews[listView] || listsViews['forest_change'];
   }
 
   withoutReadme() {

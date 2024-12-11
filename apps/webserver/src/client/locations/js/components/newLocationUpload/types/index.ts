@@ -1,3 +1,6 @@
+import { z } from 'zod';
+import { coordinateSchema } from '../utils/schema';
+
 export enum UploadType {
   ByFile,
   ByPoint,
@@ -13,4 +16,11 @@ export type UserList = {
   list_name: string;
   list_status_id: number;
   location_classification: string;
+};
+
+export type Coordinate = z.infer<typeof coordinateSchema>;
+
+export type Area = {
+  size: number;
+  measurementUnit: MeasurementUnit;
 };

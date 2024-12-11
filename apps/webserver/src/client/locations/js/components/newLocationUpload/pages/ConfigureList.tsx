@@ -76,7 +76,6 @@ export function ConfigureList({ userLists }: { userLists: UserList[] }) {
   });
 
   const onSubmit = (data: FormFields) => {
-    console.log({ data });
     setUploadLocationConfigureList({
       commodity: data.commodity,
       newListName: data.newListName ?? '',

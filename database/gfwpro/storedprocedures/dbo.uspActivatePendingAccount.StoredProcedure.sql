@@ -368,7 +368,8 @@ AS
 			[UpdateTime] [DATETIME2] NULL,
 			[s3_url] NVARCHAR(MAX) NULL,
 			[expiration_time] [DATETIME2] NULL,
-			[bundle_creation_time] [DATETIME2] NULL
+			[bundle_creation_time] [DATETIME2] NULL,
+            [options] NVACHAR(32) NULL
 			CONSTRAINT UQ_ListAnalyses_ListID_AnalysisID UNIQUE (ListID, AnalysisID)
 		)'
 		SET @SQL = REPLACE(@TEMPLATE, '{DATABASENAME}', @OrgdbName)

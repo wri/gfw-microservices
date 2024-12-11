@@ -412,6 +412,20 @@ AS
 		SET @SQL = REPLACE(@TEMPLATE, '{DATABASENAME}', @OrgdbName)
 		EXEC sp_executesql @SQL
 
+       SET @TEMPLATE = 'CREATE TABLE [{DATABASENAME}].[dbo].[GHGAnalyses] (
+           [list_id] INT NOT NULL,
+           [location_id] INT NOT NULL,
+           [total_area_ha] FLOAT,
+           [status_code] SMALLINT,
+           [location_error] NVARCHAR (MAX),
+           [emissions_factor_by_year] NVARCHAR (MAX),
+           PRIMARY KEY ([list_id], [location_id]),
+
+           INDEX IDX_GHGAnalyses_ListID NONCLUSTERED ([list_id] ASC)
+       )'
+       SET @SQL = REPLACE(@TEMPLATE, '{DATABASENAME}', @OrgdbName)
+       EXEC sp_executesql @SQL
+
 		SET @TEMPLATE = 'CREATE TABLE [{DATABASENAME}].[dbo].[ExternalUploads](
 			[id] INT IDENTITY(1,1) NOT NULL,
 			[userId] [INT] NULL,

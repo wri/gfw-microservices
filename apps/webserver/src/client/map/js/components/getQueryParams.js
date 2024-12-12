@@ -6,6 +6,7 @@ const mapStringsToArrayHelper = (currentParam) => {
     if (Array.isArray(parsed)) {
       return parsed;
     }
+    return [parsed];
   } catch (e) {
     // If parsing fails, it's not an Admin Areas
     return currentParam.split(',').map((item) => {

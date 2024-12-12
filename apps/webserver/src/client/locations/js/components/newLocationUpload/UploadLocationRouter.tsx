@@ -10,6 +10,7 @@ import {
   UploadLocationByPoint,
   UploadLocationOptions,
   ConfigureList,
+  SummaryAndSubmit,
 } from './pages';
 import { UserList } from './types';
 
@@ -21,7 +22,7 @@ export const UploadLocationRoutes = {
   UPLOAD_BY_POINT: '/upload-location/by-point',
   PREVIEW: '/upload-location/preview',
   CONFIGURE_LIST: '/upload-location/configure-list',
-  SUBMIT: '/upload-location/submit',
+  SUMMARY_AND_SUBMIT: '/upload-location/summary-and-submit',
 };
 
 export type RouteType = keyof typeof UploadLocationRoutes;
@@ -44,6 +45,7 @@ export function UploadLocationRouter({ userLists }: { userLists: UserList[] }) {
           <Route path={UploadLocationRoutes.CONFIGURE_LIST}>
             <ConfigureList userLists={userLists} />
           </Route>
+          <Route path={UploadLocationRoutes.SUMMARY_AND_SUBMIT} component={SummaryAndSubmit} />
         </Switch>
       </Box>
     </ThemeProvider>

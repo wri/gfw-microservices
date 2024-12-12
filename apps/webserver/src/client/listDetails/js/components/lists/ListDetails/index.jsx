@@ -851,8 +851,9 @@ export default class ListDetails extends Component {
     isNewListNameValid,
     selectedNewOrExisting,
   }) => {
-    const { selectedLocations, selectedMoveOrCopy, selectedList } = this.props;
-    const isGfwList = selectedList?.isGlobalForestWatchList;
+    const { selectedLocations, selectedMoveOrCopy, selectedLists } = this.props;
+
+    const isGfwList = selectedLists[0]?.isGlobalForestWatchList;
     if (selectedLocations.length > maxLocations) {
       this.setState({
         dialogOpen: true,

@@ -658,53 +658,53 @@ export async function getDashboardDataPaginatedByList(
   const numberOfPages = Math.ceil(numberOfResults.quantity / pageSize > 0 ? pageSize : 1);
   const alertsinSBTNCalculated = [];
   const alertsinJRCCalculated = [];
-  for (let locationAnalysis of listDashboardAnalyses) {
+  for (let i = 0; i < listDashboardAnalyses.length; i++) {
     let accIntegratedAlertsDailySbtn = 0;
     let accIntegratedAlertsDailyJRC = 0;
 
     // Calculate SBTN Alerts
     accIntegratedAlertsDailySbtn += sumAccumulatedAlerts(
-      locationAnalysis,
+      listDashboardAnalyses[i],
       'integratedAlertsDailySbtnNominal'
     );
     accIntegratedAlertsDailySbtn += sumAccumulatedAlerts(
-      locationAnalysis,
+      listDashboardAnalyses[i],
       'integratedAlertsDailySbtnHigh'
     );
     accIntegratedAlertsDailySbtn += sumAccumulatedAlerts(
-      locationAnalysis,
+      listDashboardAnalyses[i],
       'integratedAlertsDailySbtnHighest'
     );
+
     alertsinSBTNCalculated.push(accIntegratedAlertsDailySbtn);
 
     // Calculate JRC Alerts
     accIntegratedAlertsDailyJRC += sumAccumulatedAlerts(
-      locationAnalysis,
+      listDashboardAnalyses[i],
       'integratedAlertsDailyJrcNominal'
     );
     accIntegratedAlertsDailyJRC += sumAccumulatedAlerts(
-      locationAnalysis,
+      listDashboardAnalyses[i],
       'integratedAlertsDailyJrcHigh'
     );
     accIntegratedAlertsDailyJRC += sumAccumulatedAlerts(
-      locationAnalysis,
+      listDashboardAnalyses[i],
       'integratedAlertsDailyJrcHighest'
     );
     alertsinJRCCalculated.push(accIntegratedAlertsDailyJRC);
+
+    //Adding calculated alerts to the list
+    listDashboardAnalyses[i]['alertsInSBTN'] = accIntegratedAlertsDailySbtn;
+    listDashboardAnalyses[i]['alertsInJRC'] = accIntegratedAlertsDailyJRC;
+    listDashboardAnalyses[i]['alertsInSBTNPerHA'] =
+      listDashboardAnalyses[i]['alertsInSBTN'] > 0 && listDashboardAnalyses[i]['totalHa'] > 0
+        ? listDashboardAnalyses[i]['alertsInSBTN'] / listDashboardAnalyses[i]['totalHa']
+        : 0;
+    listDashboardAnalyses[i]['alertsInJRCPerHA'] =
+      listDashboardAnalyses[i]['alertsInJRC'] > 0 && listDashboardAnalyses[i]['totalHa'] > 0
+        ? listDashboardAnalyses[i]['alertsInJRC'] / listDashboardAnalyses[i]['totalHa']
+        : 0;
   }
-  // Adding calculated alerts to the list
-  listDashboardAnalyses.forEach((analysis, index) => {
-    analysis['alertsInSBTN'] = alertsinSBTNCalculated[index];
-    analysis['alertsInJRC'] = alertsinJRCCalculated[index];
-    analysis['alertsInSBTNPerHA'] =
-      analysis['alertsInSBTN'] > 0 && analysis['totalHa'] > 0
-        ? analysis['alertsInSBTN'] / analysis['totalHa']
-        : 0;
-    analysis['alertsInJRCPerHA'] =
-      analysis['alertsInJRC'] > 0 && analysis['totalHa'] > 0
-        ? analysis['alertsInJRC'] / analysis['totalHa']
-        : 0;
-  });
 
   return {
     listDashboardAnalyses,
@@ -716,8 +716,12 @@ function sumAccumulatedAlerts(analysis, alertType): number {
   let accIntegratedAlerts = 0;
   if (Object.keys(analysis[alertType]).length > 0) {
     accIntegratedAlerts += Object.entries(JSON.parse(analysis[alertType]))
-      .filter(([key]) =>
-        new Date(key.toString()) < new Date(DIAGNOSTIC_ANALYSIS_PERIOD.latestTreeCoverLossYearForTclDataInAnalyses.toString())
+      .filter(
+        ([key]) =>
+          new Date(key.toString()) <
+          new Date(
+            DIAGNOSTIC_ANALYSIS_PERIOD.latestTreeCoverLossYearForTclDataInAnalyses.toString()
+          )
       )
       .reduce((acc, [, value]) => acc + (value as number), 0);
   }

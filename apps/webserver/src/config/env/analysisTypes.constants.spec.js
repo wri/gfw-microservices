@@ -7,6 +7,6 @@ describe('Compare webserver and libs analysisTypes constants', () => {
   });
 
   it('Compare webserver and libs analysisTypesOptions', () => {
-    expect(webserverConstants.analysisTypesOptions).toEqual(analysisTypesOptions);
+    expect(webserverConstants.analysisTypesOptionsNewNames).toEqual(analysisTypesOptions);
   });
 });

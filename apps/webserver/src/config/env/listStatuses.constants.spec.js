@@ -5,9 +5,7 @@ import {
   DIAGNOSTIC_ANALYSIS_PERIOD,
 } from '@wri-monorepos/constants';
 import * as webserverConstants from './listStatuses.constants';
-import {
-  latestTreeCoverLossYearCommodityRisk,
-} from '../../client/common/js/config';
+import { latestTreeCoverLossYearCommodityRisk } from '../../client/common/js/config';
 
 describe('Compare webserver and libs listStatus constants', () => {
   it('Compare webserver and libs listStatus', () => {

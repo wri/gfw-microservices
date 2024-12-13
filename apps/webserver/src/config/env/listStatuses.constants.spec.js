@@ -7,8 +7,8 @@ import {
 import * as webserverConstants from './listStatuses.constants';
 import {
   latestTreeCoverLossYearCommodityRisk,
-  latestTreeCoverLossYearForTclDataInAnalyses,
 } from '../../client/common/js/config';
+
 describe('Compare webserver and libs listStatus constants', () => {
   it('Compare webserver and libs listStatus', () => {
     expect(webserverConstants.listStatus).toEqual(listStatus);
@@ -21,9 +21,9 @@ describe('Compare webserver and libs listStatus constants', () => {
   it('Compare webserver and libs listStatusOrderByWorse', () => {
     expect(webserverConstants.listStatusDescriptions).toEqual(listStatusDescriptions);
   });
-  it('Compare webserver and libs DIAGNOSTIC_ANALYSIS_PERIOD have same value for latestTreeCoverLossYearForTclDataInAnalyses', () => {
-    expect(latestTreeCoverLossYearForTclDataInAnalyses).toEqual(
-      DIAGNOSTIC_ANALYSIS_PERIOD.latestTreeCoverLossYearForTclDataInAnalyses
+  it('Compare webserver and libs latestTreeCoverLossYearCommodityRisk have same value for COMMODITY_RISK_END_YEAR', () => {
+    expect(latestTreeCoverLossYearCommodityRisk).toEqual(
+      DIAGNOSTIC_ANALYSIS_PERIOD.COMMODITY_RISK_END_YEAR
     );
   });
 });

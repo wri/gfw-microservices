@@ -689,7 +689,6 @@ module.exports = (app, limiter) => {
           listAnalyses = analysisManagerResult.listDashboardAnalyses;
           numberOfResults = analysisManagerResult.numberOfResults.quantity;
           numberOfPages = analysisManagerResult.numberOfPages;
-          maximumAnalysisAreaInTheList = analysisManagerResult.maximumAnalysisAreaInTheList;
 
           if (listAnalyses.length > 0) {
             location_analyses = listAnalyses.filter((analysis) => analysis.location_id > 1);

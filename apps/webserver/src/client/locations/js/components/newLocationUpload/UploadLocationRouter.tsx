@@ -9,6 +9,7 @@ import {
   UploadLocationByPolygon,
   UploadLocationByPoint,
   UploadLocationOptions,
+  UploadLocationPreview,
   ConfigureList,
   SummaryAndSubmit,
 } from './pages';
@@ -42,6 +43,7 @@ export function UploadLocationRouter({ userLists }: { userLists: UserList[] }) {
             component={UploadLocationByPolygon}
           />
           <Route path={UploadLocationRoutes.UPLOAD_BY_POINT} component={UploadLocationByPoint} />
+          <Route path={UploadLocationRoutes.PREVIEW} component={UploadLocationPreview} />
           <Route path={UploadLocationRoutes.CONFIGURE_LIST}>
             <ConfigureList userLists={userLists} />
           </Route>

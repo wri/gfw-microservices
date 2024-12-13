@@ -8,6 +8,7 @@ type UploadLocationState = {
   coordinates: Coordinate[];
   address: string;
   area: Area;
+  uploadedFileUrl: string | null;
   commodity: string;
   existingListName: string | null;
   newListName: string | null;
@@ -37,6 +38,7 @@ type UploadLocationType = {
       recentDeforestationAlerts: boolean;
     };
   }) => void;
+  addFileUrl: (uploadedFileUrl: string) => void;
 };
 
 type UploadLocationAction =
@@ -81,6 +83,12 @@ type UploadLocationAction =
       };
     }
   | {
+      type: 'AddFileUrl';
+      payload: {
+        uploadedFileUrl: string;
+      };
+    }
+  | {
       type: 'Clear';
       payload: UploadLocationState;
     };
@@ -96,6 +104,7 @@ const uploadLocationInitialState: UploadLocationState = {
   coordinates: [],
   address: '',
   area: { size: 0, measurementUnit: 'hectares' },
+  uploadedFileUrl: null,
   commodity: '',
   existingListName: null,
   newListName: null,
@@ -139,6 +148,10 @@ export function UploadLocationProvider({ children }: UploadLocationProviderProps
     dispatch({ type: 'ByPolygon', payload: data });
   };
 
+  const addFileUrl = (uploadedFileUrl: string) => {
+    dispatch({ type: 'AddFileUrl', payload: { uploadedFileUrl } });
+  };
+
   const setUploadLocationConfigureList = (data: {
     commodity: string;
     existingListName: string | null;
@@ -163,6 +176,7 @@ export function UploadLocationProvider({ children }: UploadLocationProviderProps
         setUploadLocationByPointAddress,
         setUploadLocationByPolygon,
         setUploadLocationConfigureList,
+        addFileUrl,
       }}
     >
       {children}
@@ -190,6 +204,9 @@ function uploadLocationReducer(
 
     case 'ByPolygon':
       return { ...state, coordinates: payload.coordinates };
+
+    case 'AddFileUrl':
+      return { ...state, uploadedFileUrl: payload.uploadedFileUrl };
 
     case 'ConfigureList':
       return {

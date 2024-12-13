@@ -656,8 +656,6 @@ export async function getDashboardDataPaginatedByList(
     parameters
   );
   const numberOfPages = Math.ceil(numberOfResults.quantity / pageSize > 0 ? pageSize : 1);
-  const alertsinSBTNCalculated = [];
-  const alertsinJRCCalculated = [];
   for (let i = 0; i < listDashboardAnalyses.length; i++) {
     let accIntegratedAlertsDailySbtn = 0;
     let accIntegratedAlertsDailyJRC = 0;
@@ -676,8 +674,6 @@ export async function getDashboardDataPaginatedByList(
       'integratedAlertsDailySbtnHighest'
     );
 
-    alertsinSBTNCalculated.push(accIntegratedAlertsDailySbtn);
-
     // Calculate JRC Alerts
     accIntegratedAlertsDailyJRC += sumAccumulatedAlerts(
       listDashboardAnalyses[i],
@@ -691,7 +687,6 @@ export async function getDashboardDataPaginatedByList(
       listDashboardAnalyses[i],
       'integratedAlertsDailyJrcHighest'
     );
-    alertsinJRCCalculated.push(accIntegratedAlertsDailyJRC);
 
     //Adding calculated alerts to the list
     listDashboardAnalyses[i]['alertsInSBTN'] = accIntegratedAlertsDailySbtn;
@@ -720,7 +715,7 @@ function sumAccumulatedAlerts(analysis, alertType): number {
         ([key]) =>
           new Date(key.toString()) <
           new Date(
-            DIAGNOSTIC_ANALYSIS_PERIOD.latestTreeCoverLossYearForTclDataInAnalyses.toString()
+            DIAGNOSTIC_ANALYSIS_PERIOD.END_YEAR.toString()
           )
       )
       .reduce((acc, [, value]) => acc + (value as number), 0);

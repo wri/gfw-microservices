@@ -28,7 +28,9 @@ export class SharedListController {
     @Body() query: CreateSharedListDto,
   ): Promise<SharedList | undefined> {
     const res = await this.sharedListUseCases.createSharedList(orgId, query);
-    if (res.isSuccess) return res.getValue();
+    if (res.isSuccess) {
+      return res.getValue();
+    }
     const error = res.getError();
     throw new HttpException(error.message, error.code);
   }
@@ -46,7 +48,9 @@ export class SharedListController {
       offset ? Number(offset) : undefined,
     );
     const res = await this.sharedListUseCases.search(query);
-    if (res.isSuccess) return res.getValue();
+    if (res.isSuccess) {
+      return res.getValue();
+    }
     const error = res.getError();
     throw new HttpException(error.message, error.code);
   }

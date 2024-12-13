@@ -30,12 +30,15 @@ export class SharedListUseCases {
     const connectionResult =
       await this.connectionUseCases.getConnectionRequestID(orgId, orgTargetId);
 
-    if (connectionResult.isFailure || connectionResult.getValue() === null)
+    if (connectionResult.isFailure || connectionResult.getValue() === null) {
       return Result.fail(ERRORS.HAS_NOT_CONNECTIONS_WITH_COMPANY);
+    }
 
     const orgRes = await this.organizationUseCases.findById(orgId);
 
-    if (orgRes.isFailure) return Result.fail(orgRes.getError());
+    if (orgRes.isFailure) {
+      return Result.fail(orgRes.getError());
+    }
 
     const organization = orgRes.getValue();
     const checkRes = await this.userUseCases.checkUserIsListAdmin(
@@ -45,8 +48,9 @@ export class SharedListUseCases {
       orgId,
     );
 
-    if (checkRes.isFailure || !checkRes.getValue())
+    if (checkRes.isFailure || !checkRes.getValue()) {
       return Result.fail(checkRes.getError());
+    }
 
     const sharedList = new SharedList();
     sharedList.idConnectionRequest = connectionResult.getValue().id;

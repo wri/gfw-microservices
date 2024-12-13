@@ -128,7 +128,9 @@ export class ConnectionUseCases {
     const result = await this.connectionRepoSp.updateStatusConnection(
       changeStatusDto,
     );
-    if (result.isSuccess) return Result.ok(true);
+    if (result.isSuccess) {
+      return Result.ok(true);
+    }
     return Result.fail(result.getError());
   }
 
@@ -144,7 +146,9 @@ export class ConnectionUseCases {
     const result = await this.connectionRepoSp.updateStatusConnection(
       changeStatusDto,
     );
-    if (result.isSuccess) return Result.ok(true);
+    if (result.isSuccess) {
+      return Result.ok(true);
+    }
     return Result.fail(result.getError());
   }
 
@@ -188,7 +192,9 @@ export class ConnectionUseCases {
     email: string,
   ): ResultPromise<ConnectionAdminOrganizationDto[]> {
     const result = await this.connectionRepoSp.getUserAdminOrganization(email);
-    if (result.isSuccess) return Result.ok(result.getValue());
+    if (result.isSuccess) {
+      return Result.ok(result.getValue());
+    }
     return Result.fail(result.getError());
   }
 }

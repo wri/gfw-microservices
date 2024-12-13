@@ -5,5 +5,4 @@ export const DIAGNOSTIC_ANALYSIS_PERIOD = {
   START_YEAR: 2001,
   END_YEAR: 2023,
   COMMODITY_RISK_END_YEAR: 2023,
-  latestTreeCoverLossYearForTclDataInAnalyses: 2023,
 };

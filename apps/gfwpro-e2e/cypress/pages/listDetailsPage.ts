@@ -29,6 +29,7 @@ class ListDetailsPage {
       ),
     closeAlertDownloadBtn: () => cy.get('[data-cy="download-dialog"]').find('button').first(),
     listByName: (name) => cy.contains('.list-item', name),
+    tabPost2020: () => cy.get('.Mui-selected'),
   };
   clickOnLocationsList(name: string) {
     cy.contains(name).click();

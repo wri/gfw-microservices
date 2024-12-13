@@ -30,6 +30,7 @@ export const oversizedUploadText =
 export const latestTreeCoverLossYearForTclDataInMap = 2023;
 export const latestTreeCoverLossYearCommodityRisk = 2023;
 export const earliestTreeCoverLossYearCommodityRisk = 2002;
+export const latestTreeCoverLossYearForTclDataInAnalyses = 2023;
 
 export const soyPlantedYearsRange = [2001, 2022];
 

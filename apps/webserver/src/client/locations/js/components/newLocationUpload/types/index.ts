@@ -27,7 +27,6 @@ export type Area = {
 
 export type LocationListType = {
   type: string;
-  geometry: GeometryType;
   properties: FeatureProperties;
 };
 
@@ -77,9 +76,4 @@ export type FeatureProperties = {
   refineryName?: string;
   supplierName?: string;
   facilityName?: string;
-};
-
-type GeometryType = {
-  type: string;
-  coordinates: number[][][];
 };

@@ -21,7 +21,7 @@ DECLARE @ltColumns NVARCHAR(MAX) = '[Location Name], Country, State, [Sub State]
 
 SELECT @list_table = list_table_name, @listName=list_Name FROM [Lists] WHERE id = @listId
 
-SET @SQL = 'SELECT  ' +
+SET @SQL = 'SELECT ' +
             ' @listId as listId,' +
             ' @listName as listName,' +
             ' ISNULL(afi.location_id, 0) as locationId, '+
@@ -42,6 +42,22 @@ SET @SQL = 'SELECT  ' +
             ' lt.Country as country ,' +
             ' lt.State as state,' +
             ' lt.[Sub State] as subState, ' +
+            ' lt.Latitude as Latitude,' +
+            ' lt.Longitude as Longitude, ' +
+            ' lt.Volume as Volume, ' +
+            ' lt.Certification as Certification, ' +
+            ' lt.[Company ID] as [Company ID], ' +
+            ' lt.[Time Horizon] as [Time Horizon], ' +
+            ' lt.[Start Date] as [Start Date], ' +
+            ' lt.[End Date] as [End Date], ' +
+            ' lt.[Supplier Name] as [Supplier Name], ' +
+            ' lt.[Facility Name] as [Facility Name], ' +
+            ' lt.[Refinery Name] as [Refinery Name], ' +
+            ' lt.[Owner Name] as [Owner Name], ' +
+            ' lt.[Owner ID] as [Owner ID], ' +
+            ' lt.[Company Name] as [Company Name], ' +
+            ' lt.[Analysis Radius] as [Analysis Radius], ' +
+            ' lt.[Analysis Area] as [Analysis Area], ' +
             ' COUNT(*) OVER () AS totalRows ' +
             'FROM AFIAnalysis afi JOIN dbo.['+@list_table+'] lt ON lt.location_id = afi.location_id WHERE afi.location_id > 0 AND afi.list_id = @listId';
 

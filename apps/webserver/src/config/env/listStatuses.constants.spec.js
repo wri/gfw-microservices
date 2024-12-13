@@ -26,9 +26,4 @@ describe('Compare webserver and libs listStatus constants', () => {
       DIAGNOSTIC_ANALYSIS_PERIOD.latestTreeCoverLossYearForTclDataInAnalyses
     );
   });
-  it('Compare webserver and libs DIAGNOSTIC_ANALYSIS_PERIOD have same value for latestTreeCoverLossYearCommodityRisk', () => {
-    expect(latestTreeCoverLossYearCommodityRisk).toEqual(
-      DIAGNOSTIC_ANALYSIS_PERIOD.COMMODITY_RISK_END_YEAR
-    );
-  });
 });

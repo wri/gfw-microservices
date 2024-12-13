@@ -1,6 +1,5 @@
 {
   "root": true,
-  "ignorePatterns": ["**/*"],
   "env": {
     "jest": true
   },
@@ -50,6 +49,12 @@
       "extends": ["plugin:@nrwl/nx/javascript", "eslint:recommended"],
       "rules": {
         "no-unused-vars": "error"
+      }
+    },
+    {
+      "files": ["*.ts", "*.tsx", "*.js", "*.jsx"],
+      "rules": {
+        "curly": ["error", "all"]
       }
     }
   ],

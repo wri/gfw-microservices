@@ -37,7 +37,9 @@ export function UploadLocationPreview() {
   const [iLoadingFileUpload, setIsLoadingFileUpload] = useState(false);
 
   useEffect(() => {
-    if (!uploadedFileUrl) return;
+    if (!uploadedFileUrl) {
+      return;
+    }
 
     request({
       method: 'GET',
@@ -49,7 +51,9 @@ export function UploadLocationPreview() {
   }, [uploadedFileUrl]);
 
   useEffect(() => {
-    if (!file) return;
+    if (!file) {
+      return;
+    }
 
     const uploadFile = async () => {
       try {

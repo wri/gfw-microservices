@@ -1,7 +1,9 @@
 import { ListFieldsFileRequest } from '@wri-monorepos/sql';
 
 export const cloneRow = (row) => {
-  if (Array.isArray(row) === false) return [];
+  if (Array.isArray(row) === false) {
+    return [];
+  }
   return [...row];
 };
 
@@ -99,7 +101,9 @@ export const isEmptyObject = (obj: object): boolean => {
 
 export const isObjInCountryFormat = (data) => {
   const dataArray = Object.keys(data);
-  if (dataArray.length === 0) return false;
+  if (dataArray.length === 0) {
+    return false;
+  }
 
   return dataArray.every((x) => x.length === 3);
 };
@@ -108,7 +112,9 @@ export const getTotalArea = (data, countryGadm) => {
   const countryArea = JSON.parse(data.country_area || '{}');
   const isDataInCountryFormat = isObjInCountryFormat(countryArea);
 
-  if (isDataInCountryFormat) return countryArea[countryGadm] ?? 0;
+  if (isDataInCountryFormat) {
+    return countryArea[countryGadm] ?? 0;
+  }
 
   return data.total_area;
 };

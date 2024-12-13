@@ -3,7 +3,9 @@ import { cloneRow, formatPct, validatePct } from '../shared/functions';
 const _soyParserForPre2001 = ({ data, currentRow }) => {
   const totalPre2001 = data.soy_pre2001_nonforest_area;
 
-  if (!currentRow) return;
+  if (!currentRow) {
+    return;
+  }
 
   const pre2001Percent = formatPct(validatePct((totalPre2001 / data.total_area) * 100));
 
@@ -19,7 +21,9 @@ const _soyParserForPre2001 = ({ data, currentRow }) => {
 const _soyParserForAfter2001 = ({ data, dataRow }) => {
   const { soy_total_area } = data;
 
-  if (!soy_total_area) return;
+  if (!soy_total_area) {
+    return;
+  }
 
   const soyTotalArea = JSON.parse(soy_total_area);
   let totalSoy = 0;
@@ -44,7 +48,9 @@ const soyParser = ({ dataRow, data, csvData }) => {
   const currentRow = _soyParserForAfter2001({ data, dataRow });
   _soyParserForPre2001({ data, currentRow });
 
-  if (!currentRow) return;
+  if (!currentRow) {
+    return;
+  }
 
   csvData.push(currentRow);
 };

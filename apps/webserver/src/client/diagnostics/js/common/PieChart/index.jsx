@@ -19,7 +19,9 @@ function PieChart({
 
   const sumOfAreasByChartLabel = chartLabel?.reduce((sum, { id }) => sum + (data?.[id] || 0), 0);
 
-  if (!sumOfAreasByChartLabel && !hasSecondarySubLayers) return <></>;
+  if (!sumOfAreasByChartLabel && !hasSecondarySubLayers) {
+    return <></>;
+  }
 
   return (
     <>

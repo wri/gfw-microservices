@@ -94,7 +94,9 @@ export function UploadLocationByPoint() {
   };
 
   const onSubmit = (data: FormFields) => {
-    if (!data.locationFormat === null) return;
+    if (!data.locationFormat === null) {
+      return;
+    }
 
     if (data.locationFormat === LocationFormat.Address) {
       setUploadLocationByPointAddress({

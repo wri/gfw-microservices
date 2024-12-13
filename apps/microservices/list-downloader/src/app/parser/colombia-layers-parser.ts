@@ -23,13 +23,16 @@ enum ColombiaOverlapField {
 export const colombiaLayers = ({ operation, data, dataRow, csvData }) => {
   const { name, composites } = operation;
 
-  if (!composites || (name !== 'colombiaOverlap' && name !== 'colombiaDeforestation'))
+  if (!composites || (name !== 'colombiaOverlap' && name !== 'colombiaDeforestation')) {
     return csvData;
+  }
 
   composites.forEach((composite) => {
     const { type, label, attribute, hasSecondarySubLayers, constantLayers } = composite;
 
-    if (type !== 'yearly' && type !== 'category') return;
+    if (type !== 'yearly' && type !== 'category') {
+      return;
+    }
 
     let parsedData = {};
 
@@ -57,7 +60,9 @@ export const colombiaLayers = ({ operation, data, dataRow, csvData }) => {
 
       const totalArea = getTotalArea(data, 'COL');
 
-      if (totalArea === 0) return;
+      if (totalArea === 0) {
+        return;
+      }
 
       Object.entries(parsedData).forEach(([subLayerName, subLayerValue]) => {
         const totalPerSubLayer = calculateTotalLossForAllCategories(subLayerValue);
@@ -180,7 +185,9 @@ const splitObjAndCreateNestedChildren = (treeCoverLoss) => {
 };
 
 const calculateTotalLossForAllCategories = (obj) => {
-  if (!obj) return 0;
+  if (!obj) {
+    return 0;
+  }
 
   let sum = 0;
 

@@ -108,7 +108,9 @@ const ListDownloadMenu: React.FC<ListDownloadMenuProps> = ({
   const isSourceFileDownloadEnabled =
     !isGfwList && currentUser.access_level_id !== userAccessLevel.VIEWER;
 
-  if (!downloadEnabled) return <></>;
+  if (!downloadEnabled) {
+    return <></>;
+  }
   return (
     <>
       {isHoverMenu ? (

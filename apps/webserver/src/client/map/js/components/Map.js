@@ -2224,7 +2224,9 @@ class Map extends Component {
   };
 
   getUserLocationData = (list_ids, listName) => {
-    if (!list_ids?.length) return;
+    if (!list_ids?.length) {
+      return;
+    }
     store.dispatch(showMapLoader(true));
     const request = new XMLHttpRequest();
     request.onload = () => {

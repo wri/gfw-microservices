@@ -85,7 +85,9 @@ const WrappedReactTable = ({
 
   const tableColumns = combinedColumns.slice();
   tableColumns.forEach((col) => {
-    if (col.accessor === 'checkbox') return;
+    if (col.accessor === 'checkbox') {
+      return;
+    }
     if (toggleableColumns.includes(col.accessor)) {
       col.show = visibleColumns.includes(col.accessor);
     }

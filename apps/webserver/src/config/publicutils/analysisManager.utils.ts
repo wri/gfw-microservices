@@ -713,7 +713,7 @@ function sumAccumulatedAlerts(analysis, alertType): number {
     accIntegratedAlerts += Object.entries(JSON.parse(analysis[alertType]))
       .filter(
         ([key]) =>
-          new Date(key.toString()) < new Date(DIAGNOSTIC_ANALYSIS_PERIOD.END_YEAR.toString())
+          new Date(key.toString()) > new Date(DIAGNOSTIC_ANALYSIS_PERIOD.END_YEAR.toString())
       )
       .reduce((acc, [, value]) => acc + (value as number), 0);
   }

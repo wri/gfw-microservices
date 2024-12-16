@@ -16,7 +16,7 @@ function AnalysisListChips({ listAnalysesStatus = [] }) {
     : analysisTypesOptions;
 
   const analysisTypesLabels = (analysis) => {
-    return analysisOptions.filter((option) => option.id === analysis)[0].shortLabel;
+    return analysisOptions.filter((option) => option.id === analysis)?.[0]?.shortLabel;
   };
 
   return (

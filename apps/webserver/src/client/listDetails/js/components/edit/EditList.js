@@ -46,14 +46,6 @@ export default class EditList extends Component {
       edited: false,
     };
   }
-  componentDidMount() {
-    window.addEventListener('beforeunload', this.unlockList);
-  }
-
-  componentWillUnmount() {
-    window.removeEventListener('beforeunload', this.unlockList);
-    this.unlockList();
-  }
 
   unlockList = () => {
     const list_id = this.props.selectedLists[0].id;
@@ -61,18 +53,7 @@ export default class EditList extends Component {
   };
 
   cancelAdd = () => {
-    this.unlockList()
-      .then(() => {
-        store.dispatch(changeView('lists'));
-      })
-      .catch(() => {
-        this.setState({
-          dialogOpen: true,
-          dialogTitle: 'Error in Locations',
-          dialogMessage: 'There was an error with unlocking a list.',
-          refreshPage: true,
-        });
-      });
+    store.dispatch(changeView('lists'));
   };
 
   assembleGeojson = (featProps) => {

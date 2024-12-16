@@ -109,7 +109,15 @@ export function ConfigureList({ userLists }: { userLists: UserList[] }) {
           Define your data's commodity, whether you wish to create a new list or add it to an
           existing one, and the analysis you would like applied to your upload.
         </Typography>
-        <Typography variant="subtitle2">Commodity *</Typography>
+
+        <Box sx={{ display: 'flex', gap: 0.75 }}>
+          <Typography variant="subtitle2" sx={{ fontWeight: '500' }}>
+            Commodity
+          </Typography>
+          <Typography variant="subtitle2" color="error.main">
+            *
+          </Typography>
+        </Box>
         <Controller
           name="commodity"
           control={control}
@@ -145,7 +153,15 @@ export function ConfigureList({ userLists }: { userLists: UserList[] }) {
         />
 
         <Divider sx={{ my: 3 }} />
-        <Typography variant="subtitle2">Define List *</Typography>
+        <Box sx={{ display: 'flex', gap: 0.75 }}>
+          <Typography variant="subtitle2" sx={{ fontWeight: '500' }}>
+            Define List
+          </Typography>
+          <Typography variant="subtitle2" color="error.main">
+            *
+          </Typography>
+        </Box>
+
         <Typography
           variant="caption"
           color="text.secondary"
@@ -219,7 +235,16 @@ export function ConfigureList({ userLists }: { userLists: UserList[] }) {
           />
         </Box>
         <Divider sx={{ my: 3 }} />
-        <Typography variant="subtitle2">Type of analysis *</Typography>
+
+        <Box sx={{ display: 'flex', gap: 0.75 }}>
+          <Typography variant="subtitle2" sx={{ fontWeight: '500' }}>
+            Type of analysis
+          </Typography>
+          <Typography variant="subtitle2" color="error.main">
+            *
+          </Typography>
+        </Box>
+
         <Typography variant="caption" color="text.secondary">
           Select the analysis you would like applied to your data. Note that each analysis selected
           counts towards your account usage limits. See more information here.

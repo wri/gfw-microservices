@@ -2003,7 +2003,9 @@ export default class Lists extends Component {
         (x) => x.location_id === selectedLocations[0]
       );
 
-      if (selectedLocation?.length !== 1) return false;
+      if (selectedLocation?.length !== 1) {
+        return false;
+      }
 
       return selectedLocation[0].location_status_id === listStatus.Active;
     };

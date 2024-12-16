@@ -51,7 +51,9 @@ const getSubLayers = (rawBarChartData, categoryId, year) => {
     rawBarChartData &&
     Object.keys(rawBarChartData).find((key) => key.toLowerCase() === categoryId.toLowerCase());
 
-  if (!subLayerData) return [];
+  if (!subLayerData) {
+    return [];
+  }
 
   return Object.entries(rawBarChartData[subLayerData])
     .map((category) => {

@@ -43,7 +43,9 @@ function FailedList({
   const isInFolder = !!folder;
 
   const goToListDetails = () => {
-    if (!isListDetailsPageRedesignAvailable) return;
+    if (!isListDetailsPageRedesignAvailable) {
+      return;
+    }
 
     // clicked a location with a successfully completed analysis; go to it
     gtag('event', 'List click', {

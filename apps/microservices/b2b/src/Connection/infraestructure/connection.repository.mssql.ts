@@ -37,7 +37,9 @@ export class ConnectionRequestRepositoryMssql
       );
 
     const result = await this.searchByCriteriaQuery(query, this.repository, qb);
-    if (result.isSuccess) return Result.ok(result.getValue());
+    if (result.isSuccess) {
+      return Result.ok(result.getValue());
+    }
     return Result.fail(result.getError());
   }
 

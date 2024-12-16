@@ -400,7 +400,9 @@ export class ListAnalysisService {
       organizationId,
     });
 
-    if (!list) throw new NotFoundException('List not found');
+    if (!list) {
+      throw new NotFoundException('List not found');
+    }
 
     const connection = await this.getOrganizationConnection(organizationId);
     const listAnalysisStatusRepository = connection.getRepository(ListsAnalysisStatus);

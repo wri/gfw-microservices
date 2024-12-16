@@ -6,20 +6,26 @@ export const filterDataByYearRange = (data, startYear, endYear) => {
 };
 
 export const allYearsHaveZeroValue = (data) => {
-  if (!data || data.length === 0) return true; // If data is empty, return true
+  if (!data || data.length === 0) {
+    return true;
+  } // If data is empty, return true
 
   // Check if every year has a value of 0
   return data.every((entry) => Object.values(entry).every(({ value }) => value === 0));
 };
 
 export const getDataFromPath = (data, dataPath) => {
-  if (!dataPath) return null;
+  if (!dataPath) {
+    return null;
+  }
 
   const dataPathArray = dataPath.split('.');
   let result = data;
   for (const path of dataPathArray) {
     result = result?.[path];
-    if (!result) break;
+    if (!result) {
+      break;
+    }
   }
   return result;
 };
@@ -47,7 +53,9 @@ export const addNoOverlapArea = (overlapArea, total_area, nonOverlapAreaLabel) =
 };
 
 export function calculateTotalLossForAllCategories(obj, dateRange) {
-  if (!obj) return 0;
+  if (!obj) {
+    return 0;
+  }
 
   let sum = 0;
 

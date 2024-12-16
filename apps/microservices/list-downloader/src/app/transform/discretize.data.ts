@@ -23,7 +23,9 @@ class DiscretizeData extends Transform {
     _: unknown,
     next: (arg0: null, arg1: TransformedData | undefined) => void
   ) {
-    if (!data) return next(null, undefined);
+    if (!data) {
+      return next(null, undefined);
+    }
     const newData: TransformedData = Object.entries(data).reduce(
       (acc: TransformedData, [key, value]) => {
         acc[key] = mapper[value] ?? value;

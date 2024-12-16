@@ -23,7 +23,9 @@ export const useMap = (shouldLoadMap: boolean, initialAmountOfCoordinates: numbe
   );
 
   useEffect(() => {
-    if (!shouldLoadMap) return;
+    if (!shouldLoadMap) {
+      return;
+    }
 
     initMap();
     return cleanup;
@@ -60,7 +62,9 @@ export const useMap = (shouldLoadMap: boolean, initialAmountOfCoordinates: numbe
   };
 
   const addGraphicToMap = (geometry: Polygon | Polygon[], graphic: Graphic) => {
-    if (!mapView) return;
+    if (!mapView) {
+      return;
+    }
 
     mapView.graphics.removeAll();
     sketchViewModel?.delete();

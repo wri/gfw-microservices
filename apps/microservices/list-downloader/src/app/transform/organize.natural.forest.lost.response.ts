@@ -6,7 +6,9 @@ class OrganizeNaturalForestLostResponse extends Transform {
   }
 
   _transform(chunk, _, next) {
-    if (!chunk) return next(null, undefined);
+    if (!chunk) {
+      return next(null, undefined);
+    }
     const {
       listName,
       country,

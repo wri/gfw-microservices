@@ -471,7 +471,9 @@ export class FCDService {
   }
 
   private toApproximateValueFormat(obj: unknown) {
-    if (!obj) return [];
+    if (!obj) {
+      return [];
+    }
 
     return Object.entries(obj)
       .map(([key, value]) => ({

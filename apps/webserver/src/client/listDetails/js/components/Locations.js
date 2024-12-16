@@ -167,6 +167,7 @@ class Locations extends Component {
                   : selectedLocations
               }
               filteredData={filteredData}
+              currentUser={userInfo}
             />
           ) : isListDetailsPageRedesignAvailable ? (
             <ListDetails

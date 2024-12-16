@@ -116,20 +116,7 @@ export class ReadmeService {
       return;
     }
 
-    const fileToCopy =
-      type === 'everything'
-        ? await this.readmeMergeServices.processFiles(
-            [
-              this.getSourceDir(returnFileToCopy[type](filters)),
-              // Checking if getSourceDir returns a valid path
-              returnFileToCopy['southEastAsiaTCL'](filters)
-                ? this.getSourceDir(returnFileToCopy['southEastAsiaTCL'](filters))
-                : null,
-            ],
-            'PLEASE NOTE: The contents of your zip files will vary based on the locations and commodities within your data, and the types of analysis you requested. Not all CSVs listed here may apply.',
-            this.getPathDir(key)
-          )
-        : returnFileToCopy[type](filters);
+    const fileToCopy = returnFileToCopy[type](filters);
 
     if (!fileToCopy) {
       return;

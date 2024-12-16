@@ -4,7 +4,9 @@ export function argentinaDeforestationParser({ operation, data, dataRow, csvData
   const { composites } = operation;
 
   composites.forEach(({ attribute, label }) => {
-    if (!attribute) return;
+    if (!attribute) {
+      return;
+    }
 
     const isOverallCountryAttribute = attribute === 'country_specific_deforestation_yearly';
 
@@ -33,7 +35,9 @@ export function argentinaDeforestationParser({ operation, data, dataRow, csvData
       const totalStatValue = Math.round(total * 100) / 100;
       const subLayerArrayNames = [label];
 
-      if (!isOverallCountryAttribute) subLayerArrayNames.push(subLayerName);
+      if (!isOverallCountryAttribute) {
+        subLayerArrayNames.push(subLayerName);
+      }
 
       Object.keys(yearlyData).forEach((year) => {
         const currentRow = cloneRow(dataRow);
@@ -58,7 +62,9 @@ export function argentinaDeforestationParser({ operation, data, dataRow, csvData
 }
 
 const removeApproxStringAndSort = (obj): object => {
-  if (!obj) return {};
+  if (!obj) {
+    return {};
+  }
 
   return Object.fromEntries(
     Object.entries(obj)

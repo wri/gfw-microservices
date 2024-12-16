@@ -2,7 +2,9 @@ import { getDataFromPath, filterDataByYearRange } from './barChart.utils';
 
 export const getBarChartData = (argentinaPieChartsData, dateRange, chartLabels) => {
   const filteredData = chartLabels?.flatMap((label) => {
-    if (!label.checked) return [];
+    if (!label.checked) {
+      return [];
+    }
     const data = getDataFromPath(argentinaPieChartsData, label.dataPath);
 
     if (data) {
@@ -29,10 +31,14 @@ export const getBarChartData = (argentinaPieChartsData, dateRange, chartLabels) 
 };
 
 export const getBarChartDataWithTwoLevels = (rawBarChartData, dateRange, chartConfiguration) => {
-  if (!chartConfiguration?.dataPath || !chartConfiguration?.subLayers) return [];
+  if (!chartConfiguration?.dataPath || !chartConfiguration?.subLayers) {
+    return [];
+  }
 
   const typeData = getDataFromPath(rawBarChartData, chartConfiguration.dataPath);
-  if (!typeData) return [];
+  if (!typeData) {
+    return [];
+  }
 
   const formattedBarChartDataColombia = formatBarChartDataWithTwoLevels(typeData);
 

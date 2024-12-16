@@ -35,7 +35,9 @@ export function UploadLocationByFile() {
 
     const target = event.target as HTMLInputElement;
     const attachedFile = target.files?.[0] || event.dataTransfer?.files?.[0];
-    if (!attachedFile) return;
+    if (!attachedFile) {
+      return;
+    }
 
     const fileExtension = attachedFile.name.split('.').pop()?.toLowerCase();
 
@@ -59,7 +61,9 @@ export function UploadLocationByFile() {
   };
 
   const handleUploadToS3 = async () => {
-    if (!file) return;
+    if (!file) {
+      return;
+    }
 
     try {
       setIsLoading(true);

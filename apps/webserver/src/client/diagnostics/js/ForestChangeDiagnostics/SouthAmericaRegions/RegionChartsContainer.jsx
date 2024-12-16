@@ -84,19 +84,25 @@ function RegionChartsContainer({
 }
 
 const getTotalAreaPerCountry = (data, countryGadm, isGfwList) => {
-  if (isGfwList) return 0;
+  if (isGfwList) {
+    return 0;
+  }
 
   const countryArea = JSON.parse(data.country_area || '{}');
   const isDataInCountryFormat = isObjInCountryFormat(countryArea);
 
-  if (isDataInCountryFormat) return countryArea[countryGadm] ?? 0;
+  if (isDataInCountryFormat) {
+    return countryArea[countryGadm] ?? 0;
+  }
 
   return data.total_area;
 };
 
 const isObjInCountryFormat = (data) => {
   const dataArray = Object.keys(data);
-  if (dataArray.length === 0) return false;
+  if (dataArray.length === 0) {
+    return false;
+  }
 
   return Object.keys(data).every((x) => x.length === 3);
 };

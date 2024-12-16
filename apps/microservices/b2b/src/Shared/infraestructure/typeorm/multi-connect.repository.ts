@@ -57,8 +57,9 @@ export abstract class MultiConnectRepository<T> {
     const { limit, offset } = query;
     const [items, count] = await qb.getManyAndCount();
 
-    if (items && count != null)
+    if (items && count != null) {
       return Result.ok({ count, offset, limit, items });
+    }
     return Result.fail(ERRORS.NOT_ELEMENTS_FOUND);
   }
 
@@ -79,8 +80,9 @@ export abstract class MultiConnectRepository<T> {
     const { limit, offset } = query;
     const [items, count] = await repository.findAndCount(sequelizeQuery);
 
-    if (items && count != null)
+    if (items && count != null) {
       return Result.ok({ count, offset, limit, items });
+    }
     return Result.fail(ERRORS.NOT_ELEMENTS_FOUND);
   }
 

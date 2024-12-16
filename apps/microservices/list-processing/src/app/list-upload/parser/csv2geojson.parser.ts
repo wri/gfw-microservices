@@ -48,7 +48,9 @@ export const csv2geojson = async (
     for (const key of latitudeKeys) {
       if (data[key] !== undefined) {
         standardizedData['latitude'] = data[key];
-        if (key !== 'latitude') delete standardizedData[key];
+        if (key !== 'latitude') {
+          delete standardizedData[key];
+        }
         break;
       }
     }
@@ -56,7 +58,9 @@ export const csv2geojson = async (
     for (const key of longitudeKeys) {
       if (data[key] !== undefined) {
         standardizedData['longitude'] = data[key];
-        if (key !== 'longitude') delete standardizedData[key];
+        if (key !== 'longitude') {
+          delete standardizedData[key];
+        }
         break;
       }
     }
@@ -73,9 +77,13 @@ export const csv2geojson = async (
     // The sexagesimal function is a utility function for converting geographic coordinates from a sexagesimal format (degrees, minutes, seconds) to a decimal format.
     // The parameters 'EW' and 'NS' indicate that the function should interpret the longitude (lonk) as being in the East-West direction and the latitude (latk) as being in the North-South direction.
     a = sexagesimal(latitude, 'EW');
-    if (a) latitude = a;
+    if (a) {
+      latitude = a;
+    }
     a = sexagesimal(longitude, 'NS');
-    if (a) longitude = a;
+    if (a) {
+      longitude = a;
+    }
 
     if (!includeLatLon) {
       delete data['latitude'];

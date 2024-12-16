@@ -20,10 +20,14 @@ export const uploadFileToS3 = async (file: File): Promise<string> => {
 };
 
 export const getTableColumns = (templateData?: LocationListType[]) => {
-  if (!templateData?.length) return [];
+  if (!templateData?.length) {
+    return [];
+  }
 
   const firstItemProperties = templateData[0]?.properties;
-  if (!firstItemProperties) return [];
+  if (!firstItemProperties) {
+    return [];
+  }
 
   return Object.keys(firstItemProperties).filter(
     (key) => key in LabelNameTable

@@ -5,7 +5,6 @@ import {
   IconButton,
   TextField,
   Divider,
-  Radio,
   OutlinedInput,
   InputAdornment,
   FormControl,
@@ -29,12 +28,6 @@ import { useUploadLocation } from '../contexts';
 enum LocationFormat {
   Coordinates,
   Address,
-}
-enum RadiusSize {
-  Small,
-  Medium,
-  Large,
-  Custom,
 }
 
 const sharedFields = z.object({
@@ -81,8 +74,6 @@ export function UploadLocationByPoint() {
 
   const locationFormat: LocationFormat | null = watch('locationFormat');
 
-  const [selectedRadiusSize, setSelectedRadiusSize] = useState<RadiusSize>(RadiusSize.Small);
-
   const [measurementUnit, setMeasurementUnit] = useState<MeasurementUnit>('hectares');
 
   const handleChangeLocationFormat = (locFormat: LocationFormat) => {
@@ -116,7 +107,7 @@ export function UploadLocationByPoint() {
       <NavBar />
       <Card sx={{ pt: 1, px: 2, pb: 2 }}>
         <Typography variant="h6">Prepare your location</Typography>
-        <Typography variant="body2" sx={{ mt: 0.75, mx: 0, mb: 1.5 }}>
+        <Typography variant="body2" sx={{ mt: 0.75, mx: 0, mb: 1.5, color: 'text.secondary' }}>
           GFW Pro allows to create location data for analysis by defining a point and radius with
           one of the methods below.
         </Typography>
@@ -125,7 +116,7 @@ export function UploadLocationByPoint() {
         <Typography variant="h6" sx={{ mt: 2 }}>
           Choose your location type
         </Typography>
-        <Typography variant="body2" sx={{ mt: 0.75, mx: 0, mb: 1.5 }}>
+        <Typography variant="body2" sx={{ mt: 0.75, mx: 0, mb: 1.5, color: 'text.secondary' }}>
           Choose one of the options below based on your preferred location format.
         </Typography>
 
@@ -136,7 +127,7 @@ export function UploadLocationByPoint() {
               flexDirection: 'column',
               gap: 1,
               mb: 1.5,
-              minWidth: '260px',
+              minWidth: '220px',
             }}
           >
             <LocationTypeButton
@@ -144,15 +135,17 @@ export function UploadLocationByPoint() {
               color={locationFormat === LocationFormat.Coordinates ? 'primary' : 'info'}
               onClick={() => handleChangeLocationFormat(LocationFormat.Coordinates)}
             >
-              <AddLocationAlt fontSize="medium" />
-              <Typography variant="body2">Enter coordinates</Typography>
+              <AddLocationAlt sx={{ fontSize: (theme) => theme.typography.h4 }} />
+              <Typography variant="body2" sx={{ fontWeight: 'medium' }}>
+                Enter coordinates
+              </Typography>
             </LocationTypeButton>
             <LocationTypeButton
               variant="outlined"
               color={locationFormat === LocationFormat.Address ? 'primary' : 'info'}
               onClick={() => handleChangeLocationFormat(LocationFormat.Address)}
             >
-              <LocationOn fontSize="medium" />
+              <LocationOn sx={{ fontSize: (theme) => theme.typography.h4 }} />
               <Typography variant="body2">Enter address</Typography>
             </LocationTypeButton>
           </Box>
@@ -160,7 +153,15 @@ export function UploadLocationByPoint() {
             <Box sx={{ visibility: locationFormat === null ? 'hidden' : 'initial' }}>
               {locationFormat === LocationFormat.Coordinates ? (
                 <Box>
-                  <Typography variant="h6">Enter coordinates *</Typography>
+                  <Box sx={{ display: 'flex', gap: 0.75 }}>
+                    <Typography variant="h6" sx={{ fontWeight: '500' }}>
+                      Enter coordinates
+                    </Typography>
+                    <Typography variant="h6" color="error.main">
+                      *
+                    </Typography>
+                  </Box>
+
                   <Typography variant="body2" sx={{ mb: 2, color: 'text.secondary' }}>
                     Coordinate data must be in decimal degrees format.
                   </Typography>
@@ -208,7 +209,14 @@ export function UploadLocationByPoint() {
                 </Box>
               ) : (
                 <Box>
-                  <Typography variant="h6">Enter address *</Typography>
+                  <Box sx={{ display: 'flex', gap: 0.75 }}>
+                    <Typography variant="h6" sx={{ fontWeight: '500' }}>
+                      Enter address
+                    </Typography>
+                    <Typography variant="h6" color="error.main">
+                      *
+                    </Typography>
+                  </Box>
                   <Controller
                     control={control}
                     name="address"
@@ -249,139 +257,81 @@ export function UploadLocationByPoint() {
                 </Box>
               )}
 
-              <Divider flexItem sx={{ mt: 4, mb: 1.5 }} />
-
-              <Typography variant="h6">Define radius around location</Typography>
-
-              <Box
-                sx={{ display: { sm: 'grid', xs: 'block' }, gridTemplateColumns: 'repeat(2, 1fr)' }}
-              >
-                <Box sx={{ display: 'flex' }}>
-                  <Radio
-                    name="radius-size"
-                    color="primary"
-                    value={RadiusSize.Small}
-                    checked={selectedRadiusSize === RadiusSize.Small}
-                    onClick={() => setSelectedRadiusSize(RadiusSize.Small)}
-                  />
-                  <Box sx={{ display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
-                    <label htmlFor="radius-small">Small</label>
-                    <Typography variant="caption">1000 hectares (1.78 km radius)</Typography>
-                  </Box>
+              <Box>
+                <Divider flexItem sx={{ mt: 3, mb: 4 }} />
+                <Box sx={{ display: 'flex', gap: 0.75 }}>
+                  <Typography variant="h6">Define radius around location</Typography>
+                  <Typography variant="h6" color="error.main">
+                    *
+                  </Typography>
                 </Box>
-                <Box sx={{ display: 'flex' }}>
-                  <Radio
-                    name="radius-size"
-                    color="primary"
-                    value={RadiusSize.Medium}
-                    checked={selectedRadiusSize === RadiusSize.Medium}
-                    onClick={() => setSelectedRadiusSize(RadiusSize.Medium)}
+                <Typography variant="body2" sx={{ mb: 2, color: 'text.secondary' }}>
+                  Enter area (Ha) or radius (Km)
+                </Typography>
+                <Box
+                  sx={{
+                    display: 'flex',
+                    flexDirection: { sm: 'row', xs: 'column' },
+                    gap: { sm: 2, xs: 1 },
+                    mt: 2,
+                  }}
+                >
+                  <Controller
+                    control={control}
+                    name="areaSize"
+                    render={({ field }) => (
+                      <TextField
+                        label="Custom area"
+                        variant="outlined"
+                        type="number"
+                        size="small"
+                        sx={{ flex: 1 }}
+                        error={'areaSize' in errors && !!errors.areaSize}
+                        helperText={
+                          'areaSize' in errors && errors.areaSize ? 'Enter the area size' : ''
+                        }
+                        {...field}
+                      />
+                    )}
                   />
-                  <Box sx={{ display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
-                    <label htmlFor="radius-medium">Medium</label>
-                    <Typography variant="caption">5000 hectares (3.99 km radius)</Typography>
-                  </Box>
-                </Box>
-
-                <Box sx={{ display: 'flex' }}>
-                  <Radio
-                    name="radius-size"
-                    color="primary"
-                    value={RadiusSize.Large}
-                    checked={selectedRadiusSize === RadiusSize.Large}
-                    onClick={() => setSelectedRadiusSize(RadiusSize.Large)}
+                  <Controller
+                    control={control}
+                    name="areaMeasurementUnit"
+                    defaultValue="hectares"
+                    render={({ field }) => (
+                      <HectareKilometerSwitch
+                        measurementUnit={measurementUnit}
+                        setMeasurementUnit={(value: MeasurementUnit) => {
+                          setMeasurementUnit(value);
+                          field.onChange(value);
+                        }}
+                      />
+                    )}
                   />
-                  <Box sx={{ display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
-                    <label htmlFor="radius-large">Large</label>
-                    <Typography variant="caption">20,000 hectares (7.98 km radius)</Typography>
-                  </Box>
-                </Box>
-                <Box sx={{ display: 'flex' }}>
-                  <Radio
-                    name="radius-size"
-                    color="primary"
-                    value={RadiusSize.Custom}
-                    checked={selectedRadiusSize === RadiusSize.Custom}
-                    onClick={() => setSelectedRadiusSize(RadiusSize.Custom)}
-                  />
-                  <Box sx={{ display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
-                    <label htmlFor="radius-custom">Custom</label>
-                    <Typography variant="caption">
-                      Define the area (in HA) or radius (in KM)
-                    </Typography>
-                  </Box>
-                </Box>
-              </Box>
-
-              {selectedRadiusSize === RadiusSize.Custom && (
-                <Box>
-                  <Divider flexItem sx={{ mt: 3, mb: 4 }} />
-                  <Typography variant="h6">Enter area (HA) or radius (km)</Typography>
                   <Box
                     sx={{
-                      display: 'flex',
-                      flexDirection: { xs: 'column' },
-                      gap: { xs: 1, sm: 2 },
-                      mt: 2,
+                      backgroundColor: 'background.default',
+                      p: 1.5,
+                      borderRadius: 2,
+                      width: { sm: '400px', xs: '100%' },
                     }}
                   >
-                    <Controller
-                      control={control}
-                      name="areaSize"
-                      render={({ field }) => (
-                        <TextField
-                          label="Custom area"
-                          variant="outlined"
-                          type="number"
-                          size="small"
-                          sx={{ flex: 1 }}
-                          error={'areaSize' in errors && !!errors.areaSize}
-                          helperText={
-                            'areaSize' in errors && errors.areaSize ? 'Enter the area size' : ''
-                          }
-                          {...field}
-                        />
-                      )}
-                    />
-                    <Controller
-                      control={control}
-                      name="areaMeasurementUnit"
-                      defaultValue="hectares"
-                      render={({ field }) => (
-                        <HectareKilometerSwitch
-                          measurementUnit={measurementUnit}
-                          setMeasurementUnit={(value: MeasurementUnit) => {
-                            setMeasurementUnit(value);
-                            field.onChange(value);
-                          }}
-                        />
-                      )}
-                    />
+                    <Typography>Suggested areas:</Typography>
                     <Box
+                      component="ul"
                       sx={{
-                        backgroundColor: 'background.default',
-                        p: 1.5,
-                        borderRadius: 2,
-                        width: { sm: '400px', xs: '100%' },
+                        paddingLeft: 3,
+                        marginTop: 0.5,
+                        color: 'text.secondary',
                       }}
                     >
-                      <Typography>Suggested areas:</Typography>
-                      <Box
-                        component="ul"
-                        sx={{
-                          paddingLeft: 3,
-                          marginTop: 0.5,
-                          color: 'text.secondary',
-                        }}
-                      >
-                        <li>785,000 {measurementUnit} for palm oil mills</li>
-                        <li>283,000 {measurementUnit} for soy silos</li>
-                        <li>80-102,000 {measurementUnit} for cocoa warehouses</li>
-                      </Box>
+                      <li>785,000 {measurementUnit} for palm oil mills</li>
+                      <li>283,000 {measurementUnit} for soy silos</li>
+                      <li>80-102,000 {measurementUnit} for cocoa warehouses</li>
                     </Box>
                   </Box>
                 </Box>
-              )}
+              </Box>
             </Box>
 
             <Box

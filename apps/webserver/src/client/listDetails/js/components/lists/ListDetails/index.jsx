@@ -45,7 +45,6 @@ import {
   checkColumnListGFWCR,
   checkColumnListGFWFC,
   checkColumnListPA,
-  checkValidViewCommodity,
   getGFWListLocationIDs,
   getListFilteredLocations,
   dataCleanup,
@@ -308,15 +307,6 @@ export default class ListDetails extends Component {
       return val.toString() !== defaultFilterValues[filterName].toString();
     }
     return val !== defaultFilterValues[filterName];
-  };
-
-  showDialogEdit = () => {
-    this.setState({
-      dialogOpen: true,
-      dialogTitle: 'List is locked',
-      dialogContent:
-        'The list that you have selected is currently being edited by another user. Please try again later.',
-    });
   };
 
   showGFWUnselectedDialog = () => {
@@ -1934,7 +1924,11 @@ export default class ListDetails extends Component {
       listViewOptions.push(FOREST_CHANGE_VIEW);
     }
 
-    if (checkValidViewCommodity(selectedLists, listData)) {
+    const isAlertsActive = listAnalysesStatus?.some(
+      ({ analysisId }) => analysisId === analysisTypes.ALERTS
+    );
+
+    if (isAlertsActive) {
       listViewOptions.push(COMMODITY_RISK_VIEW);
     }
 

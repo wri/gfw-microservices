@@ -166,17 +166,20 @@ export default class EditList extends Component {
     this.setState({
       isLoading: true,
     });
+    try {
+      const response = await httpRequest.fetchJSON('/locations/lockList', { list_id });
+      const result = JSON.parse(response);
 
-    const response = await httpRequest.fetchJSON('/locations/lockList', { list_id });
-    const result = JSON.parse(response);
-
-    if (result.isLocked && result.lock_user_id !== currentUser.id) {
-      // list locked by another user
-      this.showDialogEdit();
-      this.setState({
-        isLoading: false,
-      });
-      return;
+      if (result.isLocked && result.lock_user_id !== currentUser.id) {
+        // list locked by another user
+        this.showDialogEdit();
+        this.setState({
+          isLoading: false,
+        });
+        return;
+      }
+    } catch (err) {
+      console.warn('Error locking list', err);
     }
 
     const featProps = [];

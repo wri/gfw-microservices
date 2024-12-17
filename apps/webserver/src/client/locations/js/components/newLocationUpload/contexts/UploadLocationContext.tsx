@@ -5,6 +5,7 @@ import { Area, Coordinate, UploadType } from '../types';
 
 type UploadLocationState = {
   uploadType: UploadType | null;
+  locationName: string;
   coordinates: Coordinate[];
   address: string;
   area: Area;
@@ -24,9 +25,17 @@ type UploadLocationType = {
   selectUploadType: (uploadType: UploadType) => void;
   clearUploadType: () => void;
   uploadLocationState: UploadLocationState;
-  setUploadLocationByPointCoordinates: (data: { coordinate: Coordinate; area: Area }) => void;
-  setUploadLocationByPointAddress: (data: { address: string; area: Area }) => void;
-  setUploadLocationByPolygon: (data: { coordinates: Coordinate[] }) => void;
+  setUploadLocationByPointCoordinates: (data: {
+    locationName: string;
+    coordinate: Coordinate;
+    area: Area;
+  }) => void;
+  setUploadLocationByPointAddress: (data: {
+    locationName: string;
+    address: string;
+    area: Area;
+  }) => void;
+  setUploadLocationByPolygon: (data: { locationName: string; coordinates: Coordinate[] }) => void;
   setUploadLocationConfigureList: (data: {
     commodity: string;
     existingListName: string | null;
@@ -51,6 +60,7 @@ type UploadLocationAction =
   | {
       type: 'ByPointCoordinates';
       payload: {
+        locationName: string;
         coordinates: Coordinate[];
         area: Area;
       };
@@ -58,6 +68,7 @@ type UploadLocationAction =
   | {
       type: 'ByPointAddress';
       payload: {
+        locationName: string;
         address: string;
         area: Area;
       };
@@ -65,6 +76,7 @@ type UploadLocationAction =
   | {
       type: 'ByPolygon';
       payload: {
+        locationName: string;
         coordinates: Coordinate[];
       };
     }
@@ -102,6 +114,7 @@ type UploadLocationProviderProps = {
 const uploadLocationInitialState: UploadLocationState = {
   uploadType: null,
   coordinates: [],
+  locationName: '',
   address: '',
   area: { size: 0, measurementUnit: 'hectares' },
   uploadedFileUrl: null,
@@ -133,19 +146,41 @@ export function UploadLocationProvider({ children }: UploadLocationProviderProps
     history.push('OPTIONS');
   };
 
-  const setUploadLocationByPointCoordinates = (data: { coordinate: Coordinate; area: Area }) => {
+  const setUploadLocationByPointCoordinates = ({
+    locationName,
+    coordinate,
+    area,
+  }: {
+    locationName: string;
+    coordinate: Coordinate;
+    area: Area;
+  }) => {
     dispatch({
       type: 'ByPointCoordinates',
-      payload: { coordinates: [data.coordinate], area: data.area },
+      payload: { locationName, coordinates: [coordinate], area },
     });
   };
 
-  const setUploadLocationByPointAddress = (data: { address: string; area: Area }) => {
-    dispatch({ type: 'ByPointAddress', payload: data });
+  const setUploadLocationByPointAddress = ({
+    locationName,
+    address,
+    area,
+  }: {
+    locationName: string;
+    address: string;
+    area: Area;
+  }) => {
+    dispatch({ type: 'ByPointAddress', payload: { locationName, address, area } });
   };
 
-  const setUploadLocationByPolygon = (data: { coordinates: Coordinate[] }) => {
-    dispatch({ type: 'ByPolygon', payload: data });
+  const setUploadLocationByPolygon = ({
+    locationName,
+    coordinates,
+  }: {
+    locationName: string;
+    coordinates: Coordinate[];
+  }) => {
+    dispatch({ type: 'ByPolygon', payload: { locationName, coordinates } });
   };
 
   const addFileUrl = (uploadedFileUrl: string) => {
@@ -197,7 +232,12 @@ function uploadLocationReducer(
       return { ...state, uploadType: payload.uploadType };
 
     case 'ByPointCoordinates':
-      return { ...state, coordinates: payload.coordinates, area: payload.area };
+      return {
+        ...state,
+        coordinates: payload.coordinates,
+        area: payload.area,
+        address: payload.locationName,
+      };
 
     case 'ByPointAddress':
       return { ...state, address: payload.address, area: payload.area };

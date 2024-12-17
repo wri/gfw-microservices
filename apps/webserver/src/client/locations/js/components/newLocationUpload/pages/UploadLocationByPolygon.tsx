@@ -46,23 +46,28 @@ enum LocationFormat {
   PolygonCoordinates,
 }
 
-const schema = z.record(coordinateSchema);
-type FormFields = z.infer<typeof schema>;
+const uploadByPolygonSchema = z.object({
+  coordinates: z.record(coordinateSchema),
+  locationName: z.string(),
+});
+
+type FormFields = z.infer<typeof uploadByPolygonSchema>;
 
 export function UploadLocationByPolygon() {
   const theme = useTheme();
   const history = useHistory();
 
-  const { clearUploadType } = useUploadLocation();
+  const { clearUploadType, setUploadLocationByPolygon } = useUploadLocation();
   const isRegularScreenSize = useMediaQuery(theme.breakpoints.up('sm'));
 
   const {
     handleSubmit,
     control,
     formState: { errors },
+    getValues,
     setValue,
     reset,
-  } = useForm<FormFields>({ resolver: zodResolver(schema) });
+  } = useForm<FormFields>({ resolver: zodResolver(uploadByPolygonSchema) });
 
   const [locationFormat, setLocationFormat] = useState<LocationFormat | null>(null);
 
@@ -90,10 +95,13 @@ export function UploadLocationByPolygon() {
   };
 
   useEffect(() => {
-    reset(); // clean out previous values from form
+    reset();
 
     coordinates.forEach(({ id, latitude, longitude }) => {
-      setValue(`${id}`, { latitude: latitude.toString(), longitude: longitude.toString() });
+      setValue(`coordinates.${id}`, {
+        latitude: latitude.toString(),
+        longitude: longitude.toString(),
+      });
     });
   }, [coordinates]);
 
@@ -104,8 +112,8 @@ export function UploadLocationByPolygon() {
   const onSubmit = (data: FormFields) => {
     const coordinates: z.infer<typeof coordinateSchema>[] = [];
 
-    for (const key in data) {
-      const { latitude, longitude } = data[key];
+    for (const key in data.coordinates) {
+      const { latitude, longitude } = data.coordinates[key];
 
       coordinates.push({ latitude, longitude });
     }
@@ -120,6 +128,11 @@ export function UploadLocationByPolygon() {
     addGraphicToMap(geometry, graphic);
   };
 
+  const handleNextPage = () => {
+    setUploadLocationByPolygon({ coordinates, locationName: getValues('locationName') });
+    history.push('CONFIGURE_LIST');
+  };
+
   const isLocationFormatInDrawAShape = locationFormat === LocationFormat.DrawAShape;
   const isLocationFormatInPolygonCoordinates = locationFormat === LocationFormat.PolygonCoordinates;
 
@@ -128,21 +141,52 @@ export function UploadLocationByPolygon() {
       <NavBar />
       <Card sx={{ pt: 1, pb: 2, px: 2 }}>
         <Typography variant="h6">Prepare your location</Typography>
-        <Typography variant="body2" sx={{ mt: 0.5, mb: 1 }}>
+        <Typography
+          variant="caption"
+          sx={{ display: 'inline-block', mt: 0.5, mb: 1, color: 'text.secondary' }}
+        >
           GFW Pro allows users to create polygon data for analysis view drawing a boundary on the
           map or defining a polygon via its coordinates vertices.
         </Typography>
         <ExternalHelperResource text="How to format your location data for GFW Pro" url="#" />
 
-        <Typography variant="h6" sx={{ mt: 2 }}>
+        <Box sx={{ display: 'flex', gap: 0.75, mt: 3 }}>
+          <Typography variant="subtitle2" sx={{ fontWeight: '500' }}>
+            Name your location
+          </Typography>
+          <Typography variant="subtitle2" sx={{ fontWeight: '500', color: 'error.main' }}>
+            *
+          </Typography>
+        </Box>
+
+        <Controller
+          name="locationName"
+          control={control}
+          render={({ field }) => {
+            return (
+              <TextField
+                size="small"
+                placeholder="Location name"
+                fullWidth
+                error={'locationName' in errors && !!errors.locationName}
+                helperText={
+                  'locationName' in errors && errors.locationName ? 'Enter the location name' : ''
+                }
+                {...field}
+              />
+            );
+          }}
+        />
+
+        <Typography variant="subtitle2" sx={{ mt: 2, fontWeight: '500' }}>
           Choose your location type
         </Typography>
-        <Typography variant="body2">
+        <Typography variant="caption" sx={{ color: 'text.secondary' }}>
           Select draw a shape and start drawing or you can enter coordinates.
         </Typography>
 
         <Box
-          sx={{ display: { sm: 'flex', xs: 'block' }, gap: 3, mt: 1.5, height: { sm: '500px' } }}
+          sx={{ display: { sm: 'flex', xs: 'block' }, gap: 3, mt: 1.5, height: { sm: '470px' } }}
         >
           <Box
             sx={{
@@ -158,7 +202,7 @@ export function UploadLocationByPolygon() {
               onClick={() => handleChangeLocationFormat(LocationFormat.DrawAShape)}
               sx={{ maxWidth: { sm: '274px' } }}
             >
-              <Draw fontSize="medium" />
+              <Draw sx={{ fontSize: (theme) => theme.typography.h4 }} />
               <Typography variant="body2">Draw a shape</Typography>
             </LocationTypeButton>
             {!isLocationFormatInPolygonCoordinates ? (
@@ -167,7 +211,7 @@ export function UploadLocationByPolygon() {
                 color="info"
                 onClick={() => handleChangeLocationFormat(LocationFormat.PolygonCoordinates)}
               >
-                <AddLocationAlt fontSize="medium" />
+                <AddLocationAlt sx={{ fontSize: (theme) => theme.typography.h4 }} />
                 <Typography variant="body2">Enter polygon coordinates</Typography>
               </LocationTypeButton>
             ) : (
@@ -189,10 +233,8 @@ export function UploadLocationByPolygon() {
               >
                 <Box sx={{ display: 'flex', width: '100%', justifyContent: 'space-between' }}>
                   <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                    <AddLocationAlt fontSize="medium" />
-                    <Typography variant="body2" sx={{ ml: 1 }}>
-                      Enter coordinates
-                    </Typography>
+                    <AddLocationAlt sx={{ fontSize: (theme) => theme.typography.h4 }} />
+                    <Typography variant="body2">Enter coordinates</Typography>
                   </Box>
                   <PillButton
                     startIcon={<Add style={{ color: theme.palette.primary.main }} />}
@@ -216,7 +258,7 @@ export function UploadLocationByPolygon() {
                               {index + 1}
                             </Typography>
                             <Controller
-                              name={`${id}.latitude`}
+                              name={`coordinates.${id}.latitude`}
                               control={control}
                               rules={{ required: true }}
                               render={({ field }) => (
@@ -230,13 +272,17 @@ export function UploadLocationByPolygon() {
                                     field.onChange(e);
                                     handleUpdateCoordinate(id, 'latitude', e.target.value);
                                   }}
-                                  error={!!errors[id]?.latitude}
-                                  helperText={errors[id]?.latitude ? COORDINATE_ERROR_MESSAGE : ''}
+                                  error={!!errors.coordinates?.[id]?.latitude}
+                                  helperText={
+                                    errors.coordinates?.[id]?.latitude
+                                      ? COORDINATE_ERROR_MESSAGE
+                                      : ''
+                                  }
                                 />
                               )}
                             />
                             <Controller
-                              name={`${id}.longitude`}
+                              name={`coordinates.${id}.longitude`}
                               control={control}
                               rules={{ required: true }}
                               render={({ field }) => (
@@ -250,8 +296,12 @@ export function UploadLocationByPolygon() {
                                     field.onChange(e);
                                     handleUpdateCoordinate(id, 'longitude', e.target.value);
                                   }}
-                                  error={!!errors[id]?.longitude}
-                                  helperText={errors[id]?.longitude ? COORDINATE_ERROR_MESSAGE : ''}
+                                  error={!!errors.coordinates?.[id]?.longitude}
+                                  helperText={
+                                    errors.coordinates?.[id]?.longitude
+                                      ? COORDINATE_ERROR_MESSAGE
+                                      : ''
+                                  }
                                 />
                               )}
                             />
@@ -288,7 +338,7 @@ export function UploadLocationByPolygon() {
             sx={{
               flex: 1,
               position: 'relative',
-              height: { xs: '500px' },
+              height: { xs: '470px' },
             }}
           >
             {mapView && isLocationFormatInDrawAShape && (
@@ -340,7 +390,7 @@ export function UploadLocationByPolygon() {
             variant="contained"
             startIcon={<ArrowForwardIos />}
             disabled={locationFormat === null}
-            onClick={() => history.push('CONFIGURE_LIST')}
+            onClick={handleNextPage}
           >
             Next
           </PillButton>

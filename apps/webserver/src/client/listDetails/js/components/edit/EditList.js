@@ -46,14 +46,6 @@ export default class EditList extends Component {
       edited: false,
     };
   }
-  componentDidMount() {
-    window.addEventListener('beforeunload', this.unlockList);
-  }
-
-  componentWillUnmount() {
-    window.removeEventListener('beforeunload', this.unlockList);
-    this.unlockList();
-  }
 
   unlockList = () => {
     const list_id = this.props.selectedLists[0].id;
@@ -61,18 +53,7 @@ export default class EditList extends Component {
   };
 
   cancelAdd = () => {
-    this.unlockList()
-      .then(() => {
-        store.dispatch(changeView('lists'));
-      })
-      .catch(() => {
-        this.setState({
-          dialogOpen: true,
-          dialogTitle: 'Error in Locations',
-          dialogMessage: 'There was an error with unlocking a list.',
-          refreshPage: true,
-        });
-      });
+    store.dispatch(changeView('lists'));
   };
 
   assembleGeojson = (featProps) => {
@@ -166,14 +147,41 @@ export default class EditList extends Component {
     }
   };
 
-  updateLocations = () => {
+  showDialogEdit = () => {
+    this.setState({
+      dialogOpen: true,
+      dialogTitle: 'List is locked',
+      dialogContent:
+        'The list that you have selected is currently being edited by another user. Please try again later.',
+    });
+  };
+
+  updateLocations = async () => {
     if (!this.checkValid()) {
       return;
     }
+    const { currentUser, selectedLists } = this.props;
+    const list_id = selectedLists[0].id;
 
     this.setState({
       isLoading: true,
     });
+    try {
+      const response = await httpRequest.fetchJSON('/locations/lockList', { list_id });
+      const result = JSON.parse(response);
+
+      if (result.isLocked && result.lock_user_id !== currentUser.id) {
+        // list locked by another user
+        this.showDialogEdit();
+        this.setState({
+          isLoading: false,
+        });
+        return;
+      }
+    } catch (err) {
+      console.warn('Error locking list', err);
+    }
+
     const featProps = [];
     const customAttributes = [];
 

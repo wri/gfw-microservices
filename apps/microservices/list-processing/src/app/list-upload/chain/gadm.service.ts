@@ -93,7 +93,19 @@ export class GADMService extends AbstractHandler<ChainType> {
       feature.geometry.coordinates.length > 0
     ) {
       // Assuming the coordinates are in the format [ [ [x1, y1], [x2, y2], ... ] ]
-      const firstPoint = feature.geometry.coordinates[0][0];
+      const firstPoint = Array.isArray(feature.geometry.coordinates[0][0])
+        ? feature.geometry.coordinates[0][0]
+        : feature.geometry.coordinates[0];
+
+      longitude = firstPoint[0] as number;
+      latitude = firstPoint[1] as number;
+    } else if (
+      feature.geometry &&
+      feature.geometry.type === 'Point' &&
+      feature.geometry.coordinates.length > 0
+    ) {
+      // Assuming the coordinates are in the format [ [ [x1, y1], [x2, y2], ... ] ]
+      const firstPoint = feature.geometry.coordinates;
       longitude = firstPoint[0];
       latitude = firstPoint[1];
     } else {
@@ -122,7 +134,7 @@ export class GADMService extends AbstractHandler<ChainType> {
     if (response.features && response.features.length > 0) {
       feature.properties = {
         ...feature.properties,
-        substate: response.features[0].attributes.name_2,
+        subState: response.features[0].attributes.name_2,
         state: response.features[0].attributes.name_1,
         country: response.features[0].attributes.name_0,
         gadmid: response.features[0].attributes.gadmid,

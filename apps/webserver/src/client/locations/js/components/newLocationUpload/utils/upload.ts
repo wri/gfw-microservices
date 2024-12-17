@@ -6,14 +6,39 @@ type PresignedUrlResponse = {
   keyFile: string;
 };
 
+type FileTypes = {
+  csv: string;
+  zip: string;
+  xlsx: string;
+  kmz: string;
+  kml: string;
+  xls: string;
+};
+
+const fileExtensions: FileTypes = {
+  csv: 'text/csv',
+  kml: 'application/vnd.google-earth.kml+xml',
+  kmz: 'application/vnd.google-earth.kmz',
+  xls: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+  xlsx: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+  zip: 'application/zip',
+};
+function getFileType(extension: string): string | undefined {
+  if (extension in fileExtensions) {
+    return fileExtensions[extension as keyof FileTypes];
+  }
+  return undefined;
+}
+
 export const uploadFileToS3 = async (file: File): Promise<string> => {
+  const fileExtension = file.name.split('.').pop()?.toLowerCase() ?? '';
   const { data } = await axios.post<PresignedUrlResponse>('/locations/create-presigned-url', {
     key: file.name,
-    contentType: file.type,
+    contentType: getFileType(fileExtension),
   });
   await axios.put(data.url, file, {
     headers: {
-      'Content-Type': file.type,
+      'Content-Type': getFileType(fileExtension),
     },
   });
   return data.keyFile;

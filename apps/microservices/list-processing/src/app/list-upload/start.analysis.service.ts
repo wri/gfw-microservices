@@ -46,7 +46,7 @@ export class ChainEvents extends EventEmitter2 {
   }
   async chainJob(job, callback) {
     const { chain, chainPayload } = job;
-    const result = this.runChain(chain, chainPayload);
+    const result = await this.runChain(chain, chainPayload);
     callback(result);
     return result;
   }

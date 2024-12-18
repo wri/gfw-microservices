@@ -31,8 +31,9 @@ enum LocationFormat {
 }
 
 const sharedFields = z.object({
-  areaSize: z.coerce.number().nonnegative(), // Ensure it's non-negative
+  areaSize: z.coerce.number().nonnegative(),
   areaMeasurementUnit: z.enum(['hectares', 'kilometers']),
+  locationName: z.string(),
 });
 
 const uploadByPointSchema = z.discriminatedUnion('locationFormat', [
@@ -91,12 +92,14 @@ export function UploadLocationByPoint() {
 
     if (data.locationFormat === LocationFormat.Address) {
       setUploadLocationByPointAddress({
+        locationName: data.locationName,
         address: data.address,
         area: { size: data.areaSize, measurementUnit: data.areaMeasurementUnit },
       });
       history.push('CONFIGURE_LIST');
     } else if (data.locationFormat === LocationFormat.Coordinates) {
       setUploadLocationByPointCoordinates({
+        locationName: data.locationName,
         coordinate: { latitude: data.latitude, longitude: data.longitude },
         area: { size: data.areaSize, measurementUnit: data.areaMeasurementUnit },
       });
@@ -109,20 +112,51 @@ export function UploadLocationByPoint() {
       <NavBar />
       <Card sx={{ pt: 1, px: 2, pb: 2 }}>
         <Typography variant="h6">Prepare your location</Typography>
-        <Typography variant="body2" sx={{ mt: 0.75, mx: 0, mb: 1.5, color: 'text.secondary' }}>
+        <Typography
+          variant="caption"
+          sx={{ display: 'inline-block', mt: 0.75, mx: 0, mb: 1.5, color: 'text.secondary' }}
+        >
           GFW Pro allows to create location data for analysis by defining a point and radius with
           one of the methods below.
         </Typography>
         <ExternalHelperResource text="How to format your location data for GFW Pro" url="#" />
 
-        <Typography variant="h6" sx={{ mt: 2 }}>
+        <Box sx={{ display: 'flex', gap: 0.75, mt: 3 }}>
+          <Typography variant="subtitle2" sx={{ fontWeight: '500' }}>
+            Name your location
+          </Typography>
+          <Typography variant="subtitle2" sx={{ fontWeight: '500', color: 'error.main' }}>
+            *
+          </Typography>
+        </Box>
+
+        <Controller
+          name="locationName"
+          control={control}
+          render={({ field }) => {
+            return (
+              <TextField
+                size="small"
+                placeholder="Location name"
+                fullWidth
+                error={'locationName' in errors && !!errors.locationName}
+                helperText={
+                  'locationName' in errors && errors.locationName ? 'Enter the location name' : ''
+                }
+                {...field}
+              />
+            );
+          }}
+        />
+
+        <Typography variant="subtitle2" sx={{ mt: 2 }}>
           Choose your location type
         </Typography>
-        <Typography variant="body2" sx={{ mt: 0.75, mx: 0, mb: 1.5, color: 'text.secondary' }}>
+        <Typography variant="caption" sx={{ mt: 0.75, mx: 0, mb: 1.5, color: 'text.secondary' }}>
           Choose one of the options below based on your preferred location format.
         </Typography>
 
-        <Box sx={{ display: { sm: 'flex', xs: 'block' }, gap: 3 }}>
+        <Box sx={{ display: { sm: 'flex', xs: 'block' }, gap: 3, mt: 3 }}>
           <Box
             sx={{
               display: 'flex',
@@ -138,9 +172,7 @@ export function UploadLocationByPoint() {
               onClick={() => handleChangeLocationFormat(LocationFormat.Coordinates)}
             >
               <AddLocationAlt sx={{ fontSize: (theme) => theme.typography.h4 }} />
-              <Typography variant="body2" sx={{ fontWeight: 'medium' }}>
-                Enter coordinates
-              </Typography>
+              <Typography variant="body2">Enter coordinates</Typography>
             </LocationTypeButton>
             <LocationTypeButton
               variant="outlined"
@@ -156,15 +188,18 @@ export function UploadLocationByPoint() {
               {locationFormat === LocationFormat.Coordinates ? (
                 <Box>
                   <Box sx={{ display: 'flex', gap: 0.75 }}>
-                    <Typography variant="h6" sx={{ fontWeight: '500' }}>
+                    <Typography variant="body2" sx={{ fontWeight: '500' }}>
                       Enter coordinates
                     </Typography>
-                    <Typography variant="h6" color="error.main">
+                    <Typography variant="body2" sx={{ fontWeight: '500', color: 'error.main' }}>
                       *
                     </Typography>
                   </Box>
 
-                  <Typography variant="body2" sx={{ mb: 2, color: 'text.secondary' }}>
+                  <Typography
+                    variant="caption"
+                    sx={{ display: 'inline-block', mb: 2, color: 'text.secondary' }}
+                  >
                     Coordinate data must be in decimal degrees format.
                   </Typography>
 
@@ -212,10 +247,10 @@ export function UploadLocationByPoint() {
               ) : (
                 <Box>
                   <Box sx={{ display: 'flex', gap: 0.75 }}>
-                    <Typography variant="h6" sx={{ fontWeight: '500' }}>
+                    <Typography variant="body2" sx={{ fontWeight: '500' }}>
                       Enter address
                     </Typography>
-                    <Typography variant="h6" color="error.main">
+                    <Typography variant="body2" sx={{ fontWeight: '500', color: 'error.main' }}>
                       *
                     </Typography>
                   </Box>
@@ -262,12 +297,14 @@ export function UploadLocationByPoint() {
               <Box>
                 <Divider flexItem sx={{ mt: 3, mb: 4 }} />
                 <Box sx={{ display: 'flex', gap: 0.75 }}>
-                  <Typography variant="h6">Define radius around location</Typography>
-                  <Typography variant="h6" color="error.main">
+                  <Typography variant="body2" sx={{ fontWeight: '500' }}>
+                    Define radius around location
+                  </Typography>
+                  <Typography variant="body2" sx={{ fontWeight: '500', color: 'error.main' }}>
                     *
                   </Typography>
                 </Box>
-                <Typography variant="body2" sx={{ mb: 2, color: 'text.secondary' }}>
+                <Typography variant="caption" sx={{ mb: 2, color: 'text.secondary' }}>
                   Enter area (Ha) or radius (Km)
                 </Typography>
                 <Box

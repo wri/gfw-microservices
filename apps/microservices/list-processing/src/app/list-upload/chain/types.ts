@@ -17,6 +17,19 @@ export type AttributeType = {
   custom?: boolean;
 };
 
+export interface ChainEvent {
+  eventId?: string;
+  config?: unknown;
+  payload?: ChainType;
+}
+
+export type AttributeType = {
+  field: string;
+  type: string;
+  value: unknown;
+  custom?: boolean;
+};
+
 export type ChainType = {
   geojson?: FeatureCollection;
   request: RequestNewList | PreviewListRequest;

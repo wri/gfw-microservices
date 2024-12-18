@@ -78,6 +78,15 @@ export class SaveListAttributes extends AbstractHandler<ChainType> {
       this.logger.error(`Error parsing attributes`, error.stack || error);
       throw new Error(error);
     }
+
+    return attributes.map(
+      (attr) =>
+        ({
+          list_id,
+          attribute_name: attr.field,
+          attribute_type: attr.type === 'number' ? ListsAttrsTypes.Int : ListsAttrsTypes.Text,
+        } as ListAttributesRecord)
+    );
   }
 
   async handle(input: ChainType): Promise<ChainType> {

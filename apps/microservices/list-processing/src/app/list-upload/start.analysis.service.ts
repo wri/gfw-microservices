@@ -3,7 +3,7 @@ import { RequestLargeListProcess, ResponseLargeListProcess } from '../../models'
 import { ConfigService } from '@nestjs/config';
 import { ServerConfigType } from '../../validators/server-config';
 import { S3Service } from '@wri-monorepos/aws';
-import { AbstractHandler, ChainEvent } from './chain/types';
+import { AbstractHandler, ChainType } from './chain/types';
 import { DownloadS3File } from './chain/download.s3.file';
 import { ParserData } from './chain/parser.data';
 import { GADMService } from './chain/gadm.service';
@@ -59,38 +59,16 @@ async function worker(input: WorkerType, cb: done) {
     .setNext(writeLocationCount)
     .setNext(startAnalysis);
 
-    const nextPayload = await this.runChain(gadmService, {
-      ...prevPayload,
-    });
-
-    const doneEvent = {
-      ...event,
-      payload: nextPayload,
-    };
-
-    this.dispatch('list.upload.done', doneEvent);
-  }
-
-  @logExecutionTime('list.upload.async.attributes')
-  async processListUploadAttributes(event: ChainEvent) {
-    const { payload: prevPayload } = event;
-
-    const saveListAttributes = new SaveListAttributes();
-
-    await this.runChain(saveListAttributes, prevPayload);
-  }
+  await AbstractHandler.runFullChain(downloadS3File, chainType);
+  await connection.disconnect();
+  cb(null);
 }
 
 @Injectable()
 export class StartAnalysisService {
   private readonly logger = new Logger(StartAnalysisService.name);
 
-  constructor(
-    private readonly config: ConfigService<ServerConfigType, true>,
-    private chainEvents: ChainEvents
-  ) {
-    this.chainEvents = new ChainEvents(this.config);
-  }
+  constructor(private readonly config: ConfigService<ServerConfigType, true>) {}
 
   @logExecutionTime(StartAnalysisService.name)
   async run(request: RequestLargeListProcess): Promise<ResponseLargeListProcess> {

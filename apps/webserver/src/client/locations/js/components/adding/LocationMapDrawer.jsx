@@ -215,7 +215,7 @@ const LocationMapDrawer = ({
   }
 
   return (
-    <button className="draw-shape__draw-button" onClick={onDrawButtonClick}>
+    <button type="button" className="draw-shape__draw-button" onClick={onDrawButtonClick}>
       <DrawIcon />
       <span>{buttonTitle}</span>
     </button>

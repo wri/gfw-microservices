@@ -42,6 +42,7 @@ export class ChainEvents extends EventEmitter2 {
       this.off('list.upload.process.features', this.processListUploadGeojsonFeatures);
       this.off('list.upload.finish', this.finishListChains);
       this.off('list.upload.async.attributes', this.processListUploadAttributes);
+      this.logger.log(`ChainEvents Removed.`);
     });
   }
   async chainJob(job, callback) {
@@ -77,8 +78,6 @@ export class ChainEvents extends EventEmitter2 {
         features: [],
       },
     });
-
-    console.log('🚀 ~ ChainEventsListeners ~ startListUploadChain ~ nextPayload:', nextPayload);
 
     this.dispatch('list.upload.geojson.process', {
       ...event,

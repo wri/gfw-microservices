@@ -52,7 +52,7 @@ describe('GADMService', () => {
       expect(feature.properties).toEqual({
         longitude: 0,
         latitude: 0,
-        substate: 'Substate',
+        subState: 'Substate',
         state: 'State',
         country: 'Country',
         gadmid: '123',

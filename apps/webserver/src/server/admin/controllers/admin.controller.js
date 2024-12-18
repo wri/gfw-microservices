@@ -28,6 +28,7 @@ export const getCommitForSerivce = async (serviceUrl) => {
   const latestUrl = `${serviceUrl}/latest_commit`;
   try {
     const response = await axios.get(latestUrl);
+    logger.warn('getCommitForSerivce', latestUrl, response.data);
     return response.data || 'N/A';
   } catch (error) {
     logger.error('Error in getCommitForSerivce', latestUrl, error.stack);
@@ -48,5 +49,7 @@ export const getAllCommits = async () => ({
 
 // report all commits via express route
 export const latestCommit = async (req, res) => {
-  res.send(await getAllCommits());
+  const allCommits = await getAllCommits();
+  logger.warn('latestCommit', allCommits);
+  res.send(allCommits);
 };

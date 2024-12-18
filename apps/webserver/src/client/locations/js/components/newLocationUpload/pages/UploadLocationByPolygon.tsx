@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { z } from 'zod';
 import { useForm, Controller } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -6,6 +6,9 @@ import {
   Box,
   Card,
   Collapse,
+  Dialog,
+  DialogActions,
+  DialogTitle,
   IconButton,
   List,
   ListItem,
@@ -48,10 +51,11 @@ enum LocationFormat {
 
 const uploadByPolygonSchema = z.object({
   coordinates: z.record(coordinateSchema),
-  locationName: z.string(),
 });
+type FormFieldsCoordinates = z.infer<typeof uploadByPolygonSchema>;
 
-type FormFields = z.infer<typeof uploadByPolygonSchema>;
+const locationNameSchema = z.object({ locationName: z.string().trim().min(1) });
+type FormFieldsLocationName = z.infer<typeof locationNameSchema>;
 
 export function UploadLocationByPolygon() {
   const theme = useTheme();
@@ -59,15 +63,23 @@ export function UploadLocationByPolygon() {
 
   const { clearUploadType, setUploadLocationByPolygon } = useUploadLocation();
   const isRegularScreenSize = useMediaQuery(theme.breakpoints.up('sm'));
+  const validateCoordinatesButton = useRef<HTMLButtonElement>(null);
+  const [isValidatingCoordinates, setIsValidatingCoordinates] = useState(false);
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
 
   const {
-    handleSubmit,
-    control,
-    formState: { errors },
-    getValues,
-    setValue,
-    reset,
-  } = useForm<FormFields>({ resolver: zodResolver(uploadByPolygonSchema) });
+    handleSubmit: handleSubmitLocationName,
+    control: controlLocationName,
+    formState: { errors: errorsLocationName },
+  } = useForm<FormFieldsLocationName>({ resolver: zodResolver(locationNameSchema) });
+
+  const {
+    handleSubmit: handleSubmitCoordinates,
+    control: controlCoordinates,
+    formState: { errors: errorsCoordinates },
+    setValue: setValueCoordinates,
+    reset: resetCoordinates,
+  } = useForm<FormFieldsCoordinates>({ resolver: zodResolver(uploadByPolygonSchema) });
 
   const [locationFormat, setLocationFormat] = useState<LocationFormat | null>(null);
 
@@ -95,10 +107,10 @@ export function UploadLocationByPolygon() {
   };
 
   useEffect(() => {
-    reset();
+    resetCoordinates();
 
     coordinates.forEach(({ id, latitude, longitude }) => {
-      setValue(`coordinates.${id}`, {
+      setValueCoordinates(`coordinates.${id}`, {
         latitude: latitude.toString(),
         longitude: longitude.toString(),
       });
@@ -109,7 +121,7 @@ export function UploadLocationByPolygon() {
     setLocationFormat(locFormat);
   };
 
-  const onSubmit = (data: FormFields) => {
+  const onSubmitCoordinates = (data: FormFieldsCoordinates) => {
     const coordinates: z.infer<typeof coordinateSchema>[] = [];
 
     for (const key in data.coordinates) {
@@ -128,8 +140,34 @@ export function UploadLocationByPolygon() {
     addGraphicToMap(geometry, graphic);
   };
 
-  const handleNextPage = () => {
-    setUploadLocationByPolygon({ coordinates, locationName: getValues('locationName') });
+  const onSubmitFullForm = ({ locationName }: FormFieldsLocationName) => {
+    if (isValidatingCoordinates) {
+      return;
+    }
+
+    try {
+      const coordinatesString = coordinates.map(({ latitude, longitude }) => ({
+        latitude: latitude.toString(),
+        longitude: longitude.toString(),
+      }));
+      z.array(coordinateSchema).parse(coordinatesString);
+    } catch (err) {
+      if (locationFormat === LocationFormat.DrawAShape) {
+        setIsDialogOpen(true);
+      } else {
+        setIsValidatingCoordinates(true);
+        if (validateCoordinatesButton.current) {
+          validateCoordinatesButton.current.click();
+        }
+        setTimeout(() => setIsValidatingCoordinates(false), 0);
+      }
+      return;
+    }
+
+    setUploadLocationByPolygon({
+      coordinates,
+      locationName,
+    });
     history.push('CONFIGURE_LIST');
   };
 
@@ -139,7 +177,11 @@ export function UploadLocationByPolygon() {
   return (
     <>
       <NavBar />
-      <Card sx={{ pt: 1, pb: 2, px: 2 }}>
+      <Card
+        component="form"
+        onSubmit={handleSubmitLocationName(onSubmitFullForm)}
+        sx={{ pt: 1, pb: 2, px: 2 }}
+      >
         <Typography variant="h6">Prepare your location</Typography>
         <Typography
           variant="caption"
@@ -161,17 +203,15 @@ export function UploadLocationByPolygon() {
 
         <Controller
           name="locationName"
-          control={control}
+          control={controlLocationName}
           render={({ field }) => {
             return (
               <TextField
                 size="small"
                 placeholder="Location name"
                 fullWidth
-                error={'locationName' in errors && !!errors.locationName}
-                helperText={
-                  'locationName' in errors && errors.locationName ? 'Enter the location name' : ''
-                }
+                error={!!errorsLocationName.locationName}
+                helperText={errorsLocationName.locationName ? 'Enter the location name' : ''}
                 {...field}
               />
             );
@@ -216,8 +256,8 @@ export function UploadLocationByPolygon() {
               </LocationTypeButton>
             ) : (
               <Box
+                onSubmit={handleSubmitCoordinates(onSubmitCoordinates)}
                 component="form"
-                onSubmit={handleSubmit(onSubmit)}
                 sx={{
                   display: 'flex',
                   flexDirection: 'column',
@@ -259,7 +299,7 @@ export function UploadLocationByPolygon() {
                             </Typography>
                             <Controller
                               name={`coordinates.${id}.latitude`}
-                              control={control}
+                              control={controlCoordinates}
                               rules={{ required: true }}
                               render={({ field }) => (
                                 <TextField
@@ -272,9 +312,9 @@ export function UploadLocationByPolygon() {
                                     field.onChange(e);
                                     handleUpdateCoordinate(id, 'latitude', e.target.value);
                                   }}
-                                  error={!!errors.coordinates?.[id]?.latitude}
+                                  error={!!errorsCoordinates.coordinates?.[id]?.latitude}
                                   helperText={
-                                    errors.coordinates?.[id]?.latitude
+                                    errorsCoordinates.coordinates?.[id]?.latitude
                                       ? COORDINATE_ERROR_MESSAGE
                                       : ''
                                   }
@@ -283,7 +323,7 @@ export function UploadLocationByPolygon() {
                             />
                             <Controller
                               name={`coordinates.${id}.longitude`}
-                              control={control}
+                              control={controlCoordinates}
                               rules={{ required: true }}
                               render={({ field }) => (
                                 <TextField
@@ -296,9 +336,9 @@ export function UploadLocationByPolygon() {
                                     field.onChange(e);
                                     handleUpdateCoordinate(id, 'longitude', e.target.value);
                                   }}
-                                  error={!!errors.coordinates?.[id]?.longitude}
+                                  error={!!errorsCoordinates.coordinates?.[id]?.longitude}
                                   helperText={
-                                    errors.coordinates?.[id]?.longitude
+                                    errorsCoordinates.coordinates?.[id]?.longitude
                                       ? COORDINATE_ERROR_MESSAGE
                                       : ''
                                   }
@@ -323,6 +363,7 @@ export function UploadLocationByPolygon() {
                 </List>
 
                 <PillButton
+                  ref={validateCoordinatesButton}
                   type="submit"
                   variant="contained"
                   sx={{ alignSelf: 'end', width: { sm: 'fit-content', xs: '100%' } }}
@@ -387,14 +428,28 @@ export function UploadLocationByPolygon() {
             Cancel
           </PillButton>
           <PillButton
+            type="submit"
             variant="contained"
             startIcon={<ArrowForwardIos />}
             disabled={locationFormat === null}
-            onClick={handleNextPage}
           >
             Next
           </PillButton>
         </Box>
+
+        <Dialog
+          open={isDialogOpen}
+          onClose={() => setIsDialogOpen(false)}
+          aria-labelledby="alert-dialog-title"
+          aria-describedby="alert-dialog-description"
+        >
+          <DialogTitle id="alert-dialog-title">Draw your location</DialogTitle>
+          <DialogActions>
+            <PillButton onClick={() => setIsDialogOpen(false)} autoFocus>
+              Ok
+            </PillButton>
+          </DialogActions>
+        </Dialog>
       </Card>
     </>
   );

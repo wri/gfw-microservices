@@ -11,30 +11,35 @@ import {
 } from '@mui/material';
 import { ArrowForwardIos, Close, DriveFolderUpload } from '@mui/icons-material';
 
-import { PillButton } from '../../../../../components';
+import { LoadingModal, PillButton } from '../../../../../components';
 import { VALID_UPLOAD_FILE_FORMATS } from '../utils/constants';
 import { DataTemplates, NavBar } from '../components';
 import { useUploadLocation } from '../contexts';
+import { uploadFileToS3 } from '../utils/upload';
+import { useHistory } from '../hooks';
 
 export function UploadLocationByFile() {
   const theme = useTheme();
+  const history = useHistory();
 
-  const { clearUploadType } = useUploadLocation();
+  const { clearUploadType, addFileUrl } = useUploadLocation();
 
   const [isDragAndDropActive, setIsDragAndDropActive] = useState(false);
-  const [isDialogOpen, setIsDialogOpen] = React.useState(false);
-  const [isDataTemplateModalOpen, setIsDataTemplateModalOpen] = React.useState(false);
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const [isDataTemplateModalOpen, setIsDataTemplateModalOpen] = useState(false);
+  const [file, setFile] = useState<File | null>(null);
+  const [isLoading, setIsLoading] = useState(false);
 
   const fileUpload = (event: DragEvent<HTMLFormElement>) => {
     event.preventDefault();
 
     const target = event.target as HTMLInputElement;
+    const attachedFile = target.files?.[0] || event.dataTransfer?.files?.[0];
+    if (!attachedFile) {
+      return;
+    }
 
-    const file = target.files?.[0] || event.dataTransfer?.files?.[0];
-
-    if (!file) return;
-
-    const fileExtension = file.name.split('.').pop()?.toLowerCase();
+    const fileExtension = attachedFile.name.split('.').pop()?.toLowerCase();
 
     if (!fileExtension || !VALID_UPLOAD_FILE_FORMATS.includes(fileExtension)) {
       setIsDialogOpen(true);
@@ -42,7 +47,7 @@ export function UploadLocationByFile() {
       return;
     }
 
-    console.log('uploading file...');
+    setFile(attachedFile);
   };
 
   const handleFormDragEnter = (event: DragEvent<HTMLFormElement>) => {
@@ -53,6 +58,23 @@ export function UploadLocationByFile() {
   const handleFormDragLeave = (event: DragEvent<HTMLFormElement>) => {
     event.preventDefault();
     setIsDragAndDropActive(false);
+  };
+
+  const handleUploadToS3 = async () => {
+    if (!file) {
+      return;
+    }
+
+    try {
+      setIsLoading(true);
+      const data = await uploadFileToS3(file);
+      addFileUrl(data);
+      history.push('PREVIEW');
+    } catch (err: unknown) {
+      console.log({ err });
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (
@@ -82,13 +104,14 @@ export function UploadLocationByFile() {
         <PillButton variant="contained" onClick={() => setIsDataTemplateModalOpen(true)}>
           Data templates
         </PillButton>
-        <form
+        <Box
+          component="form"
           onDrop={fileUpload}
           onDragEnter={handleFormDragEnter}
           onDragLeave={handleFormDragLeave}
           onDragOver={(e) => e.preventDefault()}
           encType="multipart/form-data"
-          style={{
+          sx={{
             display: 'flex',
             flexDirection: 'column',
             alignItems: 'center',
@@ -96,7 +119,7 @@ export function UploadLocationByFile() {
             height: '354px',
             margin: '1.5rem 0 0.75rem',
             border: '2px dashed #E5E5DE',
-            borderRadius: '5px',
+            borderRadius: 1,
             backgroundColor: isDragAndDropActive ? '#FCFCFC' : 'white',
           }}
         >
@@ -108,6 +131,10 @@ export function UploadLocationByFile() {
               name="file-input"
               accept={VALID_UPLOAD_FILE_FORMATS.map((f) => `.${f}`).join(', ')}
               style={{ display: 'none' }}
+              onChange={(e) => {
+                const file = e.target.files?.[0] ?? null;
+                setFile(file);
+              }}
             />
           </label>
           <Typography variant="h6">
@@ -153,7 +180,7 @@ export function UploadLocationByFile() {
               </li>
             </ul>
           </Box>
-        </form>
+        </Box>
 
         <Box
           sx={{
@@ -171,7 +198,12 @@ export function UploadLocationByFile() {
           >
             Cancel
           </PillButton>
-          <PillButton variant="contained" startIcon={<ArrowForwardIos />}>
+          <PillButton
+            variant="contained"
+            startIcon={<ArrowForwardIos />}
+            onClick={handleUploadToS3}
+            disabled={!file}
+          >
             Next
           </PillButton>
         </Box>
@@ -193,6 +225,7 @@ export function UploadLocationByFile() {
             </PillButton>
           </DialogActions>
         </Dialog>
+        <LoadingModal isLoading={isLoading} />
       </Card>
     </>
   );

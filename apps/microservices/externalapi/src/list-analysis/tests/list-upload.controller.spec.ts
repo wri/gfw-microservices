@@ -33,10 +33,15 @@ import { SaveActivityLogEndpoint } from '../utils/saveActivityLogEndpoint';
 // Mock ConfigService
 const mockConfigService = {
   get: jest.fn().mockImplementation((key: string) => {
-    if (key === 'AWS_ANALYSIS_QUEUE' || key === 'AWS_DOWNLOAD_QUEUE')
+    if (key === 'AWS_ANALYSIS_QUEUE' || key === 'AWS_DOWNLOAD_QUEUE') {
       return 'https://sqs.us-west-2.amazonaws.com/123456789012/MyQueue';
-    if (key === 'AWS_REGION') return 'us-west-2';
-    if (key === 'NODE_ENV') return 'test';
+    }
+    if (key === 'AWS_REGION') {
+      return 'us-west-2';
+    }
+    if (key === 'NODE_ENV') {
+      return 'test';
+    }
   }),
 };
 
@@ -48,7 +53,9 @@ jest.mock('@aws-sdk/client-s3', () => {
 
   const mockS3Client = {
     send: async ({ Key }: { Key: string }) => {
-      if (!keyMap[Key]) throw new Error('File not found');
+      if (!keyMap[Key]) {
+        throw new Error('File not found');
+      }
 
       return { ContentLength: keyMap[Key] };
     },

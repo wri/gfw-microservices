@@ -18,7 +18,9 @@ export class ListUseCases {
     orgId: number,
   ): ResultPromise<List[]> {
     const orgRes = await this.organizationUseCases.findById(orgId);
-    if (orgRes.isFailure) return Result.fail(orgRes.getError());
+    if (orgRes.isFailure) {
+      return Result.fail(orgRes.getError());
+    }
     const org = orgRes.getValue();
     const lists = await this.listRepository.findListsByFilters(
       filters,
@@ -32,7 +34,9 @@ export class ListUseCases {
     orgId: number,
   ): ResultPromise<List | undefined> {
     const orgRes = await this.organizationUseCases.findById(orgId);
-    if (orgRes.isFailure) return Result.fail(orgRes.getError());
+    if (orgRes.isFailure) {
+      return Result.fail(orgRes.getError());
+    }
     const org = orgRes.getValue();
     const list = await this.listRepository.findListById(id, org.organizationDb);
     return list;

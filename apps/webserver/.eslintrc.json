@@ -4,21 +4,6 @@
   },
   "extends": ["../../.eslintrc.json"],
   "plugins": ["import"],
-  "ignorePatterns": ["!**/*"],
-  "overrides": [
-    {
-      "files": ["*.ts", "*.tsx", "*.js", "*.jsx"],
-      "rules": {}
-    },
-    {
-      "files": ["*.ts", "*.tsx"],
-      "rules": {}
-    },
-    {
-      "files": ["*.js", "*.jsx"],
-      "rules": {}
-    }
-  ],
   "globals": {
     "window": "readonly",
     "$": "readonly",

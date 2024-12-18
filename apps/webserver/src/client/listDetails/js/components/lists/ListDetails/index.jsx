@@ -45,7 +45,6 @@ import {
   checkColumnListGFWCR,
   checkColumnListGFWFC,
   checkColumnListPA,
-  checkValidViewCommodity,
   getGFWListLocationIDs,
   getListFilteredLocations,
   dataCleanup,
@@ -308,15 +307,6 @@ export default class ListDetails extends Component {
       return val.toString() !== defaultFilterValues[filterName].toString();
     }
     return val !== defaultFilterValues[filterName];
-  };
-
-  showDialogEdit = () => {
-    this.setState({
-      dialogOpen: true,
-      dialogTitle: 'List is locked',
-      dialogContent:
-        'The list that you have selected is currently being edited by another user. Please try again later.',
-    });
   };
 
   showGFWUnselectedDialog = () => {
@@ -1277,7 +1267,7 @@ export default class ListDetails extends Component {
   };
 
   editList = () => {
-    const { selectedLists, currentUser, selectedLocations } = this.props;
+    const { selectedLists, selectedLocations } = this.props;
     const { isEveryRowSelected, numberOfPages } = this.state;
     const selectedList = selectedLists[0];
     if (!selectedList.isGlobalForestWatchList) {
@@ -1288,32 +1278,17 @@ export default class ListDetails extends Component {
           displayLargeListEditingModal: true,
         });
       } else {
-        const list_id = selectedList.id;
         this.setState({
           isLoading: true,
         });
-        httpRequest
-          .fetchJSON('/locations/lockList', { list_id })
-          .then((response) => {
-            const result = JSON.parse(response);
-            if (result.isLocked && result.lock_user_id !== currentUser.id) {
-              this.showDialogEdit();
-              this.setState({
-                isLoading: false,
-              });
-            } else {
-              this.setAddTypeAndTemplate();
-              store.dispatch(changeView('edit'));
 
-              gtag('event', 'Edit button clicked', {
-                event_category: 'Lists Click',
-                event_label: 'user clicked to enter edit list workflow',
-              });
-            }
-          })
-          .catch((err) => {
-            console.warn('error with editing list', err);
-          });
+        this.setAddTypeAndTemplate();
+        store.dispatch(changeView('edit'));
+
+        gtag('event', 'Edit button clicked', {
+          event_category: 'Lists Click',
+          event_label: 'user clicked to enter edit list workflow',
+        });
       }
     } else if (selectedLocations.length > maxLocations) {
       this.setState({
@@ -1949,7 +1924,11 @@ export default class ListDetails extends Component {
       listViewOptions.push(FOREST_CHANGE_VIEW);
     }
 
-    if (checkValidViewCommodity(selectedLists, listData)) {
+    const isAlertsActive = listAnalysesStatus?.some(
+      ({ analysisId }) => analysisId === analysisTypes.ALERTS
+    );
+
+    if (isAlertsActive) {
       listViewOptions.push(COMMODITY_RISK_VIEW);
     }
 

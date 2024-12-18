@@ -54,8 +54,11 @@ const MIN_FILE_SIZE_IN_BYTES = 300;
 
 const contentType = {
   csv: 'text/csv',
-  zip: 'application/x-zip-compressed',
+  kml: 'application/vnd.google-earth.kml+xml',
+  kmz: 'application/vnd.google-earth.kmz',
+  xls: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
   xlsx: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+  zip: 'application/x-zip-compressed',
 };
 
 @Injectable()
@@ -400,7 +403,9 @@ export class ListAnalysisService {
       organizationId,
     });
 
-    if (!list) throw new NotFoundException('List not found');
+    if (!list) {
+      throw new NotFoundException('List not found');
+    }
 
     const connection = await this.getOrganizationConnection(organizationId);
     const listAnalysisStatusRepository = connection.getRepository(ListsAnalysisStatus);

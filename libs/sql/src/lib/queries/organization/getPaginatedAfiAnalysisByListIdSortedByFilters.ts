@@ -21,7 +21,46 @@ DECLARE @ltColumns NVARCHAR(MAX) = '[Location Name], Country, State, [Sub State]
 
 SELECT @list_table = list_table_name, @listName=list_Name FROM [Lists] WHERE id = @listId
 
-SET @SQL = 'SELECT  ' +
+
+
+DECLARE @locationColumns NVARCHAR(MAX) = '';
+
+-- we first check if these columns exist
+DECLARE @OptionalColumns TABLE (ColumnName NVARCHAR(255));
+INSERT INTO @OptionalColumns (ColumnName)
+VALUES
+    ('Latitude'),
+    ('Longitude'),
+    ('Volume'),
+    ('Certification'),
+    ('Company ID'),
+    ('Time Horizon'),
+    ('Start Date'),
+    ('End Date'),
+    ('Supplier Name'),
+    ('Facility Name'),
+    ('Refinery Name'),
+    ('Owner Name'),
+    ('Owner ID'),
+    ('Company Name'),
+    ('Analysis Radius'),
+    ('Analysis Area');
+
+-- construct dynamically the query with the existent columns
+SELECT @locationColumns +=
+    CASE
+        WHEN EXISTS (
+            SELECT 1
+            FROM INFORMATION_SCHEMA.COLUMNS
+            WHERE TABLE_NAME = @list_table AND COLUMN_NAME = ColumnName
+        )
+        THEN ' lt.' + QUOTENAME(ColumnName) + ' AS ' + QUOTENAME(ColumnName) + ', '
+        ELSE ''
+    END
+FROM @OptionalColumns;
+
+
+SET @SQL = 'SELECT ' +
             ' @listId as listId,' +
             ' @listName as listName,' +
             ' ISNULL(afi.location_id, 0) as locationId, '+
@@ -42,6 +81,10 @@ SET @SQL = 'SELECT  ' +
             ' lt.Country as country ,' +
             ' lt.State as state,' +
             ' lt.[Sub State] as subState, ' +
+
+            @locationColumns +
+
+
             ' COUNT(*) OVER () AS totalRows ' +
             'FROM AFIAnalysis afi JOIN dbo.['+@list_table+'] lt ON lt.location_id = afi.location_id WHERE afi.location_id > 0 AND afi.list_id = @listId';
 

@@ -678,8 +678,23 @@ module.exports = (app, limiter) => {
           }
           break;
         }
-        case 'ALERTS':
-          return res.send({ msg: 'Alerts not implemented yet' });
+        case 'ALERTS': {
+          const analysisManagerResult = await AnalysisManager.getDashboardDataPaginatedByList(
+            listID,
+            page,
+            pageSize,
+            req.session.organization_database,
+            filters
+          );
+          listAnalyses = analysisManagerResult.listDashboardAnalyses;
+          numberOfResults = analysisManagerResult.numberOfResults.quantity;
+          numberOfPages = analysisManagerResult.numberOfPages;
+          maximumAnalysisAreaInTheList = 0;
+          if (listAnalyses.length > 0) {
+            location_analyses = listAnalyses.filter((analysis) => analysis.location_id > 1);
+          }
+          break;
+        }
         default:
         case 'FCD': {
           listAnalyses = await AnalysisManager.getListAnalyses(req, listID);

@@ -71,3 +71,26 @@ export const getDashboardDataPaginated = `
 
     EXEC sp_executesql @SQL;
 `;
+export class DashboardDataPaginated {
+  list_id: number;
+  location_id: number;
+  gadm_id: number;
+  glad_alerts_coverage: string;
+  glad_alerts_daily: string;
+  glad_alerts_weekly: string;
+  glad_alerts_monthly: string;
+  viirs_alerts_daily: string;
+  tree_cover_extent_total: number;
+  integrated_alerts_coverage: string;
+  total_ha: number;
+  integrated_alerts_daily_all_nominal: string;
+  integrated_alerts_daily_all_high: string;
+  integrated_alerts_daily_all_highest: string;
+  integrated_alerts_daily_sbtn_nominal: string;
+  integrated_alerts_daily_sbtn_high: string;
+  integrated_alerts_daily_sbtn_highest: string;
+  integrated_alerts_daily_jrc_nominal: string;
+  integrated_alerts_daily_jrc_high: string;
+  integrated_alerts_daily_jrc_highest: string;
+  status_code: number;
+}

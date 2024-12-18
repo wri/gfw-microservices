@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { z } from 'zod';
 import { useForm, Controller } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -63,8 +63,6 @@ export function UploadLocationByPolygon() {
 
   const { clearUploadType, setUploadLocationByPolygon } = useUploadLocation();
   const isRegularScreenSize = useMediaQuery(theme.breakpoints.up('sm'));
-  const validateCoordinatesButton = useRef<HTMLButtonElement>(null);
-  const [isValidatingCoordinates, setIsValidatingCoordinates] = useState(false);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
 
   const {
@@ -141,10 +139,6 @@ export function UploadLocationByPolygon() {
   };
 
   const onSubmitFullForm = ({ locationName }: FormFieldsLocationName) => {
-    if (isValidatingCoordinates) {
-      return;
-    }
-
     try {
       const coordinatesString = coordinates.map(({ latitude, longitude }) => ({
         latitude: latitude.toString(),
@@ -155,11 +149,7 @@ export function UploadLocationByPolygon() {
       if (locationFormat === LocationFormat.DrawAShape) {
         setIsDialogOpen(true);
       } else {
-        setIsValidatingCoordinates(true);
-        if (validateCoordinatesButton.current) {
-          validateCoordinatesButton.current.click();
-        }
-        setTimeout(() => setIsValidatingCoordinates(false), 0);
+        handleSubmitCoordinates(onSubmitCoordinates)();
       }
       return;
     }
@@ -256,7 +246,6 @@ export function UploadLocationByPolygon() {
               </LocationTypeButton>
             ) : (
               <Box
-                onSubmit={handleSubmitCoordinates(onSubmitCoordinates)}
                 component="form"
                 sx={{
                   display: 'flex',
@@ -363,11 +352,11 @@ export function UploadLocationByPolygon() {
                 </List>
 
                 <PillButton
-                  ref={validateCoordinatesButton}
-                  type="submit"
+                  type="button"
                   variant="contained"
                   sx={{ alignSelf: 'end', width: { sm: 'fit-content', xs: '100%' } }}
                   startIcon={<Check />}
+                  onClick={handleSubmitCoordinates(onSubmitCoordinates)}
                 >
                   Ok
                 </PillButton>

@@ -1,14 +1,9 @@
-import { AbstractHandler, ChainType } from './types';
+import { AbstractHandler, ChainType, AttributeType } from './types';
 import { ListSchema, ListSchemaType } from '@wri-monorepos/sql';
 import { Logger } from '@nestjs/common';
 import { EntitySchema } from 'typeorm';
-
-type AttributeType = {
-  field: string;
-  type: string;
-  value: unknown;
-  custom?: boolean;
-};
+import { Feature } from '@wri-monorepos/geo';
+import { GeoJSONGeometry, stringify } from 'wellknown';
 
 export class ProcessUploadData extends AbstractHandler<ChainType> {
   private readonly logger = new Logger(ProcessUploadData.name);
@@ -30,16 +25,10 @@ export class ProcessUploadData extends AbstractHandler<ChainType> {
       if (Number.isInteger(value)) return 'number';
       else return 'string';
     }
-    return typeof value; // 'string', 'number'
+    return typeof value;
   }
 
-  /**
-   * @summary it should process parsed data into attributes
-   * @param request ChainType
-   * @returns request ChainType
-   */
-  async handle(request: ChainType): Promise<ChainType> {
-    const features = request.geojson.features;
+  private getFieldsRules() {
     const { options } = new EntitySchema<ListSchemaType>({
       ...ListSchema,
     });
@@ -51,17 +40,64 @@ export class ProcessUploadData extends AbstractHandler<ChainType> {
 
     const schemaFields = Object.keys(columns);
 
+    return { requiredFields, schemaFields } as const;
+  }
+
+  async processForFeature(featurePayload: Feature): Promise<Feature> {
+    const { requiredFields, schemaFields } = this.getFieldsRules();
+    const feature = Object.assign({}, featurePayload, {
+      geometry: stringify(featurePayload.geometry as GeoJSONGeometry),
+    });
+
+    const properties = feature.properties;
+    const propertiesKeys = Object.keys(properties);
+    const attributesArray = [];
+
+    propertiesKeys.forEach((propertyName) => {
+      if (this.columnsToExclude.includes(propertyName) || requiredFields.includes(propertyName)) {
+        return;
+      }
+
+      const isCustom = !schemaFields.includes(propertyName);
+      const propertyValue = properties[propertyName];
+      const inferredType = this.inferType(propertyValue);
+
+      const attributeObject: AttributeType = {
+        field: propertyName,
+        value: propertyValue,
+        type: inferredType,
+      };
+
+      if (isCustom) {
+        attributeObject.custom = isCustom;
+      }
+
+      attributesArray.push(attributeObject);
+    });
+
+    // update reference
+    properties['attributes'] = JSON.stringify(attributesArray);
+    feature.properties = properties;
+
+    return feature;
+  }
+
+  /**
+   * @summary it should process parsed data into attributes
+   * @param request ChainType
+   * @returns request ChainType
+   */
+  async handle(request: ChainType): Promise<ChainType> {
+    const features = request.geojson.features;
+    const { requiredFields, schemaFields } = this.getFieldsRules();
+
     this.logger.log(`Processing uploaded properties into attributes column`);
     for (const feature of features) {
       const properties = feature.properties;
       const attributesArray = [];
 
       for (const propertyName in properties) {
-        if (
-          !Object.prototype.hasOwnProperty.call(properties, propertyName) ||
-          this.columnsToExclude.includes(propertyName) ||
-          requiredFields.includes(propertyName)
-        )
+        if (this.columnsToExclude.includes(propertyName) || requiredFields.includes(propertyName))
           continue;
 
         const isCustom = !schemaFields.includes(propertyName);

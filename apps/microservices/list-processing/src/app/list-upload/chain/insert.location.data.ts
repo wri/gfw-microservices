@@ -2,7 +2,6 @@ import { DataSource, EntitySchema } from 'typeorm';
 import { AbstractHandler, ChainType, RequestNewList } from './types';
 import { ClientStoreConnection, ListSchema, ListSchemaType } from '@wri-monorepos/sql';
 import { FeatureCollection } from '@wri-monorepos/geo';
-import { GeoJSONGeometry, stringify } from 'wellknown';
 import { Logger } from '@nestjs/common';
 
 const BATCH_SIZE = 100;
@@ -48,12 +47,13 @@ export class InsertLocationData extends AbstractHandler<ChainType> {
 
     try {
       let features = (request.geojson as FeatureCollection).features;
-      features = features.map(
-        (feature, idx) => ((feature.properties.locationId = idx + 1), feature)
-      );
+      // already done in chainEvents
+      // features = features.map(
+      //   (feature, idx) => ((feature.properties.locationId = idx + 1), feature)
+      // );
       const values = features.map((feature) => ({
         ...feature.properties,
-        geometry: stringify(feature.geometry as GeoJSONGeometry),
+        // geometry: stringify(feature.geometry as GeoJSONGeometry),
       }));
 
       for (let i = 0; i < values.length; i += BATCH_SIZE) {

@@ -6,7 +6,7 @@ import { ListTemplate, SqlModule } from '@wri-monorepos/sql';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { ValidateCsvRepository } from './validation/validate.csv.repository';
 import { DeprecatedStartAnalysisService } from './deprecated.start.analysis.service';
-import { StartAnalysisService } from './start.analysis.service';
+import { ChainEvents, StartAnalysisService } from './start.analysis.service';
 import { PreviewListUploadController } from './preview.list.upload.controller';
 import { PreviewListUploadService } from './preview.list.upload.service';
 import { DeprecatedCreateLargeListService } from './deprecated.create.large.list.service';
@@ -21,6 +21,7 @@ import { CreateLargeListService } from './create.large.list.service';
     ValidateCsvRepository,
     DeprecatedStartAnalysisService,
     StartAnalysisService,
+    ChainEvents,
     PreviewListUploadService,
     DeprecatedCreateLargeListService,
     CreateLargeListService,

@@ -18,12 +18,21 @@ export class ProcessUploadData extends AbstractHandler<ChainType> {
   ];
 
   private inferType(value: unknown): string {
-    if (value === null) return 'string';
-    if (Array.isArray(value)) return 'string';
-    if (typeof value === 'object') return 'string';
+    if (value === null) {
+      return 'string';
+    }
+    if (Array.isArray(value)) {
+      return 'string';
+    }
+    if (typeof value === 'object') {
+      return 'string';
+    }
     if (typeof value === 'number') {
-      if (Number.isInteger(value)) return 'number';
-      else return 'string';
+      if (Number.isInteger(value)) {
+        return 'number';
+      } else {
+        return 'string';
+      }
     }
     return typeof value;
   }
@@ -97,8 +106,9 @@ export class ProcessUploadData extends AbstractHandler<ChainType> {
       const attributesArray = [];
 
       for (const propertyName in properties) {
-        if (this.columnsToExclude.includes(propertyName) || requiredFields.includes(propertyName))
+        if (this.columnsToExclude.includes(propertyName) || requiredFields.includes(propertyName)) {
           continue;
+        }
 
         const isCustom = !schemaFields.includes(propertyName);
         const propertyValue = properties[propertyName];

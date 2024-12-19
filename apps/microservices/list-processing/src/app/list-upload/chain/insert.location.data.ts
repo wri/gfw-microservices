@@ -46,14 +46,8 @@ export class InsertLocationData extends AbstractHandler<ChainType> {
     ]);
 
     try {
-      let features = (request.geojson as FeatureCollection).features;
-      // already done in chainEvents
-      // features = features.map(
-      //   (feature, idx) => ((feature.properties.locationId = idx + 1), feature)
-      // );
-      const values = features.map((feature) => ({
+      const values = (request.geojson as FeatureCollection).features.map((feature) => ({
         ...feature.properties,
-        // geometry: stringify(feature.geometry as GeoJSONGeometry),
       }));
 
       for (let i = 0; i < values.length; i += BATCH_SIZE) {

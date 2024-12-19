@@ -15,7 +15,6 @@ import { logExecutionTime } from './chain/shared';
 import { WriteLocationCount } from './chain/write.location.count';
 import { SaveListAttributes } from './chain/save.list.attributes';
 import { ProcessUploadData } from './chain/process.upload.data';
-import { ListSchemaName } from './chain/list.schema.name';
 import { v4 as uuidv4 } from 'uuid';
 import { EventEmitter2 } from '@nestjs/event-emitter';
 
@@ -24,19 +23,18 @@ export class ChainEvents extends EventEmitter2 {
   private readonly logger = new Logger(ChainEvents.name);
   private convertPoint2Polygon: ConvertPoint2Polygon;
   private processUploadData: ProcessUploadData;
-  // private queue: QueuePromise<unknown>;
 
   constructor(private readonly config: ConfigService<ServerConfigType, true>) {
     super({
       wildcard: true,
     });
-    // this.queue = fastq.promise(this.chainJob, 1);
     this.convertPoint2Polygon = new ConvertPoint2Polygon();
     this.processUploadData = new ProcessUploadData();
-    this.on('list.upload.start', this.startListUploadChains);
-    this.on('list.upload.process.features', this.processListUploadGeojsonFeatures);
-    this.on('list.upload.finish', this.finishListChains);
-    this.on('list.upload.async.attributes', this.processListUploadAttributes);
+    this.on('list.upload.start', this.startListUploadChains, true);
+    this.on('list.upload.process.features', this.processListUploadGeojsonFeatures, true);
+    this.on('list.upload.finish', this.finishListChains, true);
+    this.on('list.upload.finish', this.processListUploadAttributes, true);
+    this.on('list.upload.failed', this.handleChainErrors);
     this.on('list.upload.done', () => {
       this.off('list.upload.start', this.startListUploadChains);
       this.off('list.upload.process.features', this.processListUploadGeojsonFeatures);
@@ -45,12 +43,6 @@ export class ChainEvents extends EventEmitter2 {
       this.logger.log(`ChainEvents Removed.`);
     });
   }
-  async chainJob(job, callback) {
-    const { chain, chainPayload } = job;
-    const result = await this.runChain(chain, chainPayload);
-    callback(result);
-    return result;
-  }
 
   dispatch(eventName: string, event: ChainEvent) {
     this.logger.log(`Dispatching: ${eventName} event`);
@@ -58,7 +50,19 @@ export class ChainEvents extends EventEmitter2 {
   }
 
   async runChain<T>(chain: AbstractHandler<T>, chainPayload: T): Promise<T> {
-    return await AbstractHandler.runFullChain(chain, chainPayload);
+    try {
+      return await AbstractHandler.runFullChain(chain, chainPayload);
+    } catch (error) {
+      this.emit('list.upload.failed', {
+        events: this.eventNames(true),
+        error,
+      });
+    }
+  }
+
+  async handleChainErrors(args: { events: string[]; error: Error }) {
+    this.logger.debug(`Errors ChainEvents: `, args.events);
+    this.logger.error(args?.error?.stack || args.error);
   }
 
   @logExecutionTime('list.upload.start')
@@ -67,9 +71,8 @@ export class ChainEvents extends EventEmitter2 {
     const s3Service = new S3Service();
     const downloadS3File = new DownloadS3File(s3Service, this.config);
     const parseData = new ParserData();
-    const listSchemaName = new ListSchemaName();
 
-    downloadS3File.setNext(parseData).setNext(listSchemaName);
+    downloadS3File.setNext(parseData);
 
     const nextPayload = await this.runChain(downloadS3File, {
       request: payload.request,
@@ -79,7 +82,7 @@ export class ChainEvents extends EventEmitter2 {
       },
     });
 
-    this.dispatch('list.upload.geojson.process', {
+    this.dispatch('list.upload.process.features', {
       ...event,
       payload: nextPayload,
     });
@@ -110,7 +113,6 @@ export class ChainEvents extends EventEmitter2 {
     };
 
     this.dispatch('list.upload.finish', nextPayload);
-    this.dispatch('list.upload.async.attributes', nextPayload);
   }
 
   @logExecutionTime('list.upload.finish')
@@ -142,7 +144,7 @@ export class ChainEvents extends EventEmitter2 {
     this.dispatch('list.upload.done', doneEvent);
   }
 
-  @logExecutionTime('list.upload.async.attributes')
+  @logExecutionTime('list.upload.finish-async.attributes')
   async processListUploadAttributes(event: ChainEvent) {
     const { payload: prevPayload } = event;
 

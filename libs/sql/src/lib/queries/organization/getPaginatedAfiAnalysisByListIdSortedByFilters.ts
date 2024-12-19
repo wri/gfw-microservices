@@ -60,19 +60,16 @@ SELECT @locationColumns +=
 FROM @OptionalColumns;
 
 DECLARE @LocationNameColumn NVARCHAR(MAX) = '';
-IF EXISTS (
-    SELECT 1
-    FROM INFORMATION_SCHEMA.COLUMNS
-    WHERE TABLE_NAME = @list_table
-    AND COLUMN_NAME = 'Location Name'
-)
-BEGIN
-    SET @LocationNameColumn = 'lt.[Location Name] as locationName, '
-END
-ELSE
-BEGIN
-    SET @LocationNameColumn = ''
-END
+SET @LocationNameColumn = CASE
+    WHEN EXISTS (
+        SELECT 1
+        FROM INFORMATION_SCHEMA.COLUMNS
+        WHERE TABLE_NAME = @list_table
+        AND COLUMN_NAME = 'Location Name'
+    )
+    THEN 'lt.[Location Name] as locationName, '
+    ELSE ''
+END;
 
 
 SET @SQL = 'SELECT ' +

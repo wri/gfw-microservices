@@ -46,7 +46,8 @@ export class CreateListLevelData extends AbstractHandler<ChainType> {
     customAttributeNames: string,
     customAttributeTypes: string,
     gfwListId: number = null,
-    isUploadListLpFlagEnabled: boolean
+    isUploadListLpFlagEnabled: boolean,
+    commodity?: string
   ): Promise<CreateListResult> {
     const parameters = [
       this.createSqlParameter('user_id', sql.Int, userId),
@@ -59,6 +60,7 @@ export class CreateListLevelData extends AbstractHandler<ChainType> {
       this.createSqlParameter('custom_attribute_names', sql.NVarChar(2000), customAttributeNames),
       this.createSqlParameter('custom_attribute_types', sql.NVarChar(2000), customAttributeTypes),
       this.createSqlParameter('associated_gfwlist', sql.TinyInt, gfwListId),
+      this.createSqlParameter('commodity', sql.NVarChar(150), commodity),
       this.createSqlParameter(
         'version',
         sql.Int,

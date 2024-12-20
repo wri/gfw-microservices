@@ -16,10 +16,12 @@ export class CreateLargeListService {
     analysisIds,
     templateId = 13,
     gfwListId = null,
+    commodity = 'Unknown',
   }: {
     templateId?: number;
     gfwListId?: number | null;
     isUploadListLpEnabled?: boolean;
+    commodity?: string;
   } & Partial<CreateListRequest>): Promise<CreateListResult> {
     let chainType: ChainType = {
       request: {
@@ -30,6 +32,7 @@ export class CreateLargeListService {
         user_id: userId,
         template_id: templateId,
         analysisIds: analysisIds,
+        commodity: commodity,
       } as RequestNewList,
       geojson: {
         type: 'FeatureCollection',

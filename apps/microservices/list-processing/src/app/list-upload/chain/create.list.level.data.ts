@@ -47,7 +47,7 @@ export class CreateListLevelData extends AbstractHandler<ChainType> {
     customAttributeTypes: string,
     gfwListId: number = null,
     isUploadListLpFlagEnabled: boolean,
-    commodity?: string
+    commodity: string = null
   ): Promise<CreateListResult> {
     const parameters = [
       this.createSqlParameter('user_id', sql.Int, userId),
@@ -95,6 +95,7 @@ export class CreateListLevelData extends AbstractHandler<ChainType> {
       gfwListId,
       user_id: userId,
       template_id: templateId,
+      commodity = null,
     } = request.request as RequestNewList;
 
     const { getFeatureFlagsForCurrentOrg, getClientIdByClientStoreDatabaseName } =
@@ -121,7 +122,8 @@ export class CreateListLevelData extends AbstractHandler<ChainType> {
         customAttributeNames,
         customAttributeTypes,
         gfwListId,
-        uploadListLpFlag?.flagState
+        uploadListLpFlag?.flagState,
+        commodity
       );
 
       this.logger.log(`List created with id: ${createListResult.list_id} in ${clientDatabase}`);

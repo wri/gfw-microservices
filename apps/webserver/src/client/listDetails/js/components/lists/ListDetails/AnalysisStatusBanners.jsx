@@ -3,20 +3,16 @@ import ReportIcon from '@mui/icons-material/Report';
 import EditNoteIcon from '@mui/icons-material/EditNote';
 import SpeedIcon from '@mui/icons-material/Speed';
 import AlertBanner from './AlertBanner';
-import { listStatus } from '../../../../../../config/env/listStatuses.constants';
 
 export default function AnalysisStatusBanners({
   isDiagnosticStatusDraft,
   hasLocationWithErrors,
   openDraftSubmitDialog,
   toggleReRunAnalysisDialog,
-  listAnalysesStatus,
-  isListFailedByAnalysisStatusLimit,
+  isFailedAnalysis,
+  isAnalysisFailedByExceededAnalysisLimit,
   isListSubmittedForAnalysis,
 }) {
-  const isFailedAnalysis = !!listAnalysesStatus.find(
-    ({ status }) => status === listStatus.Inactive
-  );
   const alertsConfig = [
     {
       condition: !isFailedAnalysis && hasLocationWithErrors,
@@ -42,22 +38,7 @@ export default function AnalysisStatusBanners({
       onButtonClick: toggleReRunAnalysisDialog,
     },
     {
-      condition: isDiagnosticStatusDraft && !isListSubmittedForAnalysis,
-      title: 'DRAFT',
-      backgroundColor: '#58a9cd',
-      icon: <EditNoteIcon style={{ marginRight: '5px' }} fontSize="inherit" />,
-      message: (
-        <>
-          Your list is currently in Draft state. To view data for your list, please submit for
-          analysis.
-        </>
-      ),
-      buttonText: 'Submit for Analysis',
-      onButtonClick: openDraftSubmitDialog,
-    },
-
-    {
-      condition: isListFailedByAnalysisStatusLimit,
+      condition: isAnalysisFailedByExceededAnalysisLimit,
       title: 'Usage limit exceeded',
       backgroundColor: '#FFA500',
       icon: <SpeedIcon style={{ marginRight: '5px' }} fontSize="inherit" />,
@@ -70,6 +51,22 @@ export default function AnalysisStatusBanners({
       ),
       buttonText: 'INCREASE LIMIT',
       onButtonClick: () => (window.location.href = '/profile'),
+    },
+    {
+      condition:
+        (isDiagnosticStatusDraft && !isListSubmittedForAnalysis) ||
+        isAnalysisFailedByExceededAnalysisLimit,
+      title: 'DRAFT',
+      backgroundColor: '#58a9cd',
+      icon: <EditNoteIcon style={{ marginRight: '5px' }} fontSize="inherit" />,
+      message: (
+        <>
+          Your list is currently in Draft state. To view data for your list, please submit for
+          analysis.
+        </>
+      ),
+      buttonText: 'Submit for Analysis',
+      onButtonClick: openDraftSubmitDialog,
     },
   ];
 

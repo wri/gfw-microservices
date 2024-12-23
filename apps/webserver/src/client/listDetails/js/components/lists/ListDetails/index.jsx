@@ -78,7 +78,6 @@ import WrappedReactTable from './WrappedReactTable';
 import AnalysisStatusBanners from './AnalysisStatusBanners';
 import AnalysisFailedMessage from './AnalysisFailedMessage';
 import AnalysisInProgressMessage from './AnalysisInProgressMessage';
-import { isListFailedByAnalysisStatusLimit } from '../../../../../locations/js/utils/lists.utils';
 
 // CONSTANTS
 import { defaultMaximumAreaSizeForLocationsFilter } from '../../../../../common/js/constants/lists.constants';
@@ -1854,7 +1853,7 @@ export default class ListDetails extends Component {
     const listName = selectedList ? selectedList.list_name : '';
     const listAnalysesStatus = selectedList ? selectedList.listAnalysesStatus : [];
 
-    const isGfwList = selectedList.associated_gfwlist || selectedList.isGlobalForestWatchList;
+    const isGfwList = selectedList.isGlobalForestWatchList;
 
     const listViewOptions = [];
 
@@ -1869,16 +1868,26 @@ export default class ListDetails extends Component {
         ({ analysisId, status }) => analysisId === id && status === statusToCompareWith
       );
 
-    const analysisType = analysisMapping[listView];
+    const analysisIdOfCurrentTab = analysisMapping[listView];
 
     const isAnalysisInProgress =
-      compareAnalysisStatus(analysisType, listStatus.Pending) || isListSubmittedForAnalysis;
+      compareAnalysisStatus(analysisIdOfCurrentTab, listStatus.Pending) ||
+      isListSubmittedForAnalysis;
 
     const isListLocked = !!selectedList.lock_status && !!selectedList.lock_user_id;
 
-    const isAnalysisFailed = compareAnalysisStatus(analysisType, listStatus.Inactive);
+    const isAnalysisFailedByExceededAnalysisLimit = listAnalysesStatus?.find(
+      ({ analysisId, status, errorInfo }) =>
+        analysisId === analysisIdOfCurrentTab &&
+        status === listStatus.Inactive &&
+        errorInfo === 'Exceeded Analysis Limit'
+    );
 
-    const locationDataIsNotAvailable = isListLocked || isAnalysisFailed;
+    const isFailedAnalysis =
+      compareAnalysisStatus(analysisIdOfCurrentTab, listStatus.Inactive) &&
+      !isAnalysisFailedByExceededAnalysisLimit;
+
+    const locationDataIsNotAvailable = isListLocked || isFailedAnalysis;
 
     const isInFolder = selectedList && !!currentFolder;
     if (selectedList && currentFolder) {
@@ -1982,8 +1991,8 @@ export default class ListDetails extends Component {
             hasLocationWithErrors={hasLocationWithErrors}
             openDraftSubmitDialog={() => this.setState({ draftSubmitDialogOpen: true })}
             toggleReRunAnalysisDialog={this.toggleReRunAnalysisDialog}
-            listAnalysesStatus={listAnalysesStatus}
-            isListFailedByAnalysisStatusLimit={isListFailedByAnalysisStatusLimit(selectedLists[0])}
+            isFailedAnalysis={isFailedAnalysis}
+            isAnalysisFailedByExceededAnalysisLimit={isAnalysisFailedByExceededAnalysisLimit}
             isListSubmittedForAnalysis={isListSubmittedForAnalysis}
           />
         )}

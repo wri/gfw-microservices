@@ -21,6 +21,30 @@ describe('ConvertCommodityToMapsPamCode', () => {
     expect(result).toEqual(request);
   });
 
+  it('should return the same request if commodity is "Unknown"', async () => {
+    const request: ChainType = {
+      request: {
+        commodity: 'Unknown',
+      } as RequestNewList,
+    };
+
+    const result = await handler.handle(request);
+
+    expect(result).toEqual(request);
+  });
+
+  it('should return the same request if commodity is already a MapSpam name', async () => {
+    const request: ChainType = {
+      request: {
+        commodity: 'COCO',
+      } as RequestNewList,
+    };
+
+    const result = await handler.handle(request);
+
+    expect(result).toEqual(request);
+  });
+
   it('should map commodity to COMMODITY_MAP_SPAM value if exists', async () => {
     const request: ChainType = {
       request: {
@@ -44,7 +68,7 @@ describe('ConvertCommodityToMapsPamCode', () => {
 
     const result = await handler.handle(request);
 
-    expect((result.request as RequestNewList).commodity).toBe('"GFWP_"Unknown_Commodity');
+    expect((result.request as RequestNewList).commodity).toBe('GFWP_Unknown_Commodity');
   });
 
   it('should handle commodity with leading/trailing spaces', async () => {

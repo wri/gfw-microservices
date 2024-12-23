@@ -95,7 +95,7 @@ export class CreateListLevelData extends AbstractHandler<ChainType> {
       gfwListId,
       user_id: userId,
       template_id: templateId,
-      commodity = null,
+      commodity = '',
     } = request.request as RequestNewList;
 
     const { getFeatureFlagsForCurrentOrg, getClientIdByClientStoreDatabaseName } =

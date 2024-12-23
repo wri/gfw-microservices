@@ -55,12 +55,7 @@ def main(path_to_fgdb, list_id):
     print("loaded location_id dataframe")
 
     gdf["list_id"] = list_id
-    gdf["location_id"] = gdf.index
-
-    # # Not needed
-    # undiced_out = str(Path(cfg.out_dir) / "undiced_out.txt")
-    # print(f"saving to {undiced_out}")
-    # gdf.to_csv(undiced_out, sep="\t", index=False)
+    gdf["location_id"] = gdf["id"]
 
     print("creating in memory grid")
     grid = createGrid(degrees=1)

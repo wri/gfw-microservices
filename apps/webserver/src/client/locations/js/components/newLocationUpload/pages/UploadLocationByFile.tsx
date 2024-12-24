@@ -81,7 +81,7 @@ export function UploadLocationByFile() {
     <>
       <NavBar />
       <Card sx={{ pt: 1, px: 2, pb: 2 }}>
-        <Typography variant="subtitle2">Prepare & Upload Location data</Typography>
+        <Typography variant="h6">Prepare & Upload Location data</Typography>
         <Typography
           variant="caption"
           color={theme.palette.text.secondary}
@@ -90,7 +90,7 @@ export function UploadLocationByFile() {
           First, prepare your data in a format accepted by GFW Pro. Then, upload your file(s).
         </Typography>
 
-        <Typography variant="h6">How to prepare your data</Typography>
+        <Typography variant="subtitle2">How to prepare your data</Typography>
         <Typography
           variant="caption"
           color={theme.palette.text.secondary}

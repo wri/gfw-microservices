@@ -59,6 +59,18 @@ SELECT @locationColumns +=
     END
 FROM @OptionalColumns;
 
+DECLARE @LocationNameColumn NVARCHAR(MAX) = '';
+SET @LocationNameColumn = CASE
+    WHEN EXISTS (
+        SELECT 1
+        FROM INFORMATION_SCHEMA.COLUMNS
+        WHERE TABLE_NAME = @list_table
+        AND COLUMN_NAME = 'Location Name'
+    )
+    THEN 'lt.[Location Name] as locationName, '
+    ELSE ''
+END;
+
 
 SET @SQL = 'SELECT ' +
             ' @listId as listId,' +
@@ -77,13 +89,14 @@ SET @SQL = 'SELECT ' +
             ' ISNULL(afi.natural_forest_loss_by_year, 0) AS naturalForestLossByYear ,'+
             ' ISNULL(afi.protected_areas_area, 0) AS protectedAreasHA ,'+
             ' ISNULL(afi.landmark_area, 0) AS landmarkHA ,' +
-            ' lt.[Location Name] as locationName, ' +
+
+            @LocationNameColumn +
+
             ' lt.Country as country ,' +
             ' lt.State as state,' +
             ' lt.[Sub State] as subState, ' +
 
             @locationColumns +
-
 
             ' COUNT(*) OVER () AS totalRows ' +
             'FROM AFIAnalysis afi JOIN dbo.['+@list_table+'] lt ON lt.location_id = afi.location_id WHERE afi.location_id > 0 AND afi.list_id = @listId';

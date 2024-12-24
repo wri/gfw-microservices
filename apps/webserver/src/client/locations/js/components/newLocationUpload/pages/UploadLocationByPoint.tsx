@@ -246,7 +246,7 @@ export function UploadLocationByPoint() {
                 </Box>
               ) : (
                 <Box>
-                  <Box sx={{ display: 'flex', gap: 0.75 }}>
+                  <Box sx={{ display: 'flex', gap: 0.75, mb: 0.5 }}>
                     <Typography variant="body2" sx={{ fontWeight: '500' }}>
                       Enter address
                     </Typography>

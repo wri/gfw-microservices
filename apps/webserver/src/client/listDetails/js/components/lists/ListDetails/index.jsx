@@ -49,8 +49,6 @@ import {
   getListFilteredLocations,
   dataCleanup,
   getTemplateData,
-  isLocationDataNotAvailable,
-  isAnalyzingStatus,
   containsPunctuation,
 } from '../../../../../locations/js/utils/lists.utils';
 
@@ -1053,13 +1051,6 @@ export default class ListDetails extends Component {
     const { isEveryRowSelected } = this.state;
     const { list_analysis, location_analyses } = listData;
 
-    if (isAnalyzingStatus(selectedLists[0]?.list_status_id)) {
-      this.setState({
-        isLoading: false,
-      });
-      return;
-    }
-
     if (location_analyses) {
       const locationData = location_analyses[0];
       const analysisData = location_analyses[1];
@@ -1850,7 +1841,6 @@ export default class ListDetails extends Component {
     } = this.state;
 
     const selectedList = selectedLists.length > 0 ? selectedLists[0] : null;
-    const locationDataIsNotAvailable = isLocationDataNotAvailable(selectedList);
 
     const listID = selectedList?.id;
     const countries = [...new Set(filteredLocationData.map((list) => list.Country))].sort();
@@ -1866,23 +1856,29 @@ export default class ListDetails extends Component {
 
     const isGfwList = selectedList.associated_gfwlist || selectedList.isGlobalForestWatchList;
 
-    const filteredLists = filteredLocationData;
     const listViewOptions = [];
 
     const analysisMapping = {
       [FOREST_CHANGE_VIEW]: analysisTypes.FOREST_CHANGE_DIAGNOSTICS,
       [POST_2020_RISK_ASSESSMENT_VIEW]: analysisTypes.DEFORESTATION_KPIS,
-      [COMMODITY_RISK_VIEW]: analysisTypes.FOREST_CHANGE_DIAGNOSTICS,
+      [COMMODITY_RISK_VIEW]: analysisTypes.ALERTS,
     };
 
-    const isAnalysisStatusPending = (id) =>
+    const compareAnalysisStatus = (id, statusToCompareWith) =>
       listAnalysesStatus?.some(
-        ({ analysisId, status }) => analysisId === id && status === listStatus.Pending
+        ({ analysisId, status }) => analysisId === id && status === statusToCompareWith
       );
 
     const analysisType = analysisMapping[listView];
+
     const isAnalysisInProgress =
-      isAnalysisStatusPending(analysisType) || isListSubmittedForAnalysis;
+      compareAnalysisStatus(analysisType, listStatus.Pending) || isListSubmittedForAnalysis;
+
+    const isListLocked = !!selectedList.lock_status && !!selectedList.lock_user_id;
+
+    const isAnalysisFailed = compareAnalysisStatus(analysisType, listStatus.Inactive);
+
+    const locationDataIsNotAvailable = isListLocked || isAnalysisFailed;
 
     const isInFolder = selectedList && !!currentFolder;
     if (selectedList && currentFolder) {
@@ -2100,7 +2096,7 @@ export default class ListDetails extends Component {
               {/* Shared lists view */}
               {shareView ? (
                 <>
-                  {!locationDataIsNotAvailable && !isAnalysisInProgress && (
+                  {!locationDataIsNotAvailable && (
                     <div className="section-container">
                       <ShareList
                         key={selectedList.id}
@@ -2186,7 +2182,7 @@ export default class ListDetails extends Component {
                   </div>
 
                   <Paper sx={{ padding: '12px', borderTopLeftRadius: '0px' }}>
-                    {locationDataIsNotAvailable && !isAnalysisInProgress && (
+                    {locationDataIsNotAvailable && (
                       <AnalysisFailedMessage
                         toggleReRunAnalysisDialog={this.toggleReRunAnalysisDialog}
                       />
@@ -2243,9 +2239,7 @@ export default class ListDetails extends Component {
                         />
 
                         <section>
-                          {filteredLists.length > 0 &&
-                          listView !== '' &&
-                          filteredLocationData.length > 0 ? (
+                          {listView !== '' && filteredLocationData.length > 0 && (
                             <WrappedReactTable
                               listId={selectedLists[0].id}
                               isGfwList={isGfwList}
@@ -2255,7 +2249,7 @@ export default class ListDetails extends Component {
                               numberOfPages={this.state.numberOfPages}
                               listColumns={listColumns}
                               visibleColumns={visibleColumns}
-                              filteredLists={filteredLists}
+                              filteredLists={filteredLocationData}
                               page={page}
                               isUserList={!selectedLists[0].isGlobalForestWatchList}
                               getUserLocationData={this.getUserLocationData}
@@ -2286,7 +2280,7 @@ export default class ListDetails extends Component {
                                 this.setState({ isLoading: loading });
                               }}
                             />
-                          ) : null}
+                          )}
                         </section>
                       </>
                     )}

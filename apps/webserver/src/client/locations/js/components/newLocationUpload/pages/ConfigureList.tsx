@@ -37,10 +37,14 @@ const schema = z
     includePalmRiskAssessment: z.coerce.boolean(),
     recentDeforestationAlerts: z.coerce.boolean(),
     post2000RiskAssessment: z.coerce.boolean(),
+    customCommodity: z.string().optional(),
   })
   .refine((data) => data.newListName !== '' || data.existingListName !== '', {
     message: 'You must provide at least one list name.',
     path: ['noListNameProvided'],
+  })
+  .refine((data) => !(data.commodity === 'other' && data.customCommodity === ''), {
+    path: ['customCommodity'],
   });
 
 type FormFields = z.infer<typeof schema>;
@@ -61,6 +65,7 @@ export function ConfigureList({ userLists }: { userLists: UserList[] }) {
       post2000ForestChange: false,
       post2000RiskAssessment: false,
       recentDeforestationAlerts: false,
+      customCommodity: '',
     },
   });
   const { clearUploadType, setUploadLocationConfigureList } = useUploadLocation();
@@ -110,48 +115,77 @@ export function ConfigureList({ userLists }: { userLists: UserList[] }) {
           existing one, and the analysis you would like applied to your upload.
         </Typography>
 
-        <Box sx={{ display: 'flex', gap: 0.75 }}>
-          <Typography variant="subtitle2" sx={{ fontWeight: '500' }}>
-            Commodity
-          </Typography>
-          <Typography variant="subtitle2" color="error.main">
-            *
-          </Typography>
-        </Box>
-        <Controller
-          name="commodity"
-          control={control}
-          render={({ field }) => {
-            const error = errors.commodity;
-            return (
-              <FormControl error={!!error}>
-                <Select
-                  sx={{ width: '240px' }}
-                  size="small"
-                  value={formFields.commodity || ''}
-                  onChange={(e) => {
-                    const value = e.target.value || '';
-                    setFormFields((v) => ({ ...v, commodity: value }));
-                    field.onChange(value);
-                  }}
-                >
-                  <MenuItem value="cattle">Cattle</MenuItem>
-                  <MenuItem value="cocoa">Cocoa</MenuItem>
-                  <MenuItem value="coffee">Coffee</MenuItem>
-                  <MenuItem value="palm-oil">Palm oil</MenuItem>
-                  <MenuItem value="pulp-and-paper">Pulp and paper</MenuItem>
-                  <MenuItem value="rubber">Rubber</MenuItem>
-                  <MenuItem value="soy">Soy</MenuItem>
-                  <MenuItem value="sugar-cane">Sugar cane</MenuItem>
-                  <MenuItem value="multiple">Multiple</MenuItem>
-                  <MenuItem value="other">Other</MenuItem>
-                </Select>
-                {!!error && <FormHelperText>Enter the commodity</FormHelperText>}
-              </FormControl>
-            );
-          }}
-        />
+        <Box sx={{ display: 'flex' }}>
+          <Box sx={{ display: 'flex', gap: 0.75, mr: 1, mt: 1 }}>
+            <Typography variant="subtitle2" sx={{ fontWeight: '500' }}>
+              Commodity
+            </Typography>
+            <Typography variant="subtitle2" color="error.main">
+              *
+            </Typography>
+          </Box>
+          <Controller
+            name="commodity"
+            control={control}
+            render={({ field }) => {
+              const error = errors.commodity;
+              return (
+                <FormControl error={!!error}>
+                  <Select
+                    sx={{ width: '240px' }}
+                    size="small"
+                    value={formFields.commodity || ''}
+                    onChange={(e) => {
+                      const value = e.target.value || '';
+                      setFormFields((v) => ({ ...v, commodity: value }));
+                      field.onChange(value);
+                    }}
+                  >
+                    <MenuItem value="cattle">Cattle</MenuItem>
+                    <MenuItem value="cocoa">Cocoa</MenuItem>
+                    <MenuItem value="coffee">Coffee</MenuItem>
+                    <MenuItem value="palm-oil">Palm oil</MenuItem>
+                    <MenuItem value="pulp-and-paper">Pulp and paper</MenuItem>
+                    <MenuItem value="rubber">Rubber</MenuItem>
+                    <MenuItem value="soy">Soy</MenuItem>
+                    <MenuItem value="sugar-cane">Sugar cane</MenuItem>
+                    <MenuItem value="multiple">Multiple</MenuItem>
+                    <MenuItem value="other">Other</MenuItem>
+                  </Select>
+                  {!!error && <FormHelperText>Enter the commodity</FormHelperText>}
+                </FormControl>
+              );
+            }}
+          />
+          {formFields.commodity === 'other' && (
+            <>
+              <Box sx={{ display: 'flex', gap: 0.75, ml: 3, mr: 1, mt: 1 }}>
+                <Typography variant="subtitle2" sx={{ fontWeight: '500' }}>
+                  Custom commodity
+                </Typography>
+                <Typography variant="subtitle2" color="error.main">
+                  *
+                </Typography>
+              </Box>
 
+              <Controller
+                name="customCommodity"
+                control={control}
+                render={({ field }) => {
+                  return (
+                    <TextField
+                      size="small"
+                      sx={{ flex: '1' }}
+                      error={!!errors.customCommodity}
+                      helperText={errors.customCommodity ? 'Enter custom commodity' : ''}
+                      {...field}
+                    />
+                  );
+                }}
+              />
+            </>
+          )}
+        </Box>
         <Divider sx={{ my: 3 }} />
         <Box sx={{ display: 'flex', gap: 0.75 }}>
           <Typography variant="subtitle2" sx={{ fontWeight: '500' }}>

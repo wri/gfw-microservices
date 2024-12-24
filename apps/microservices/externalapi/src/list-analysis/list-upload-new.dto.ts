@@ -5,8 +5,9 @@ import { analysisIdsCsvSchema } from '../types/analysis-id';
 export const listUploadNewRequestSchema = z.object({
   uploadId: z.string(),
   listName: z.string(),
-  templateId: z.number(),
   analysisIDs: analysisIdsCsvSchema,
+  templateId: z.number().optional(),
+  commodity: z.string().optional(),
 });
 
 export type ListUploadNewRequestSchema = z.infer<typeof listUploadNewRequestSchema>;
@@ -19,6 +20,8 @@ export class ListUploadNewRequest {
   templateId: number;
   @ApiProperty()
   analysisIDs: string;
+  @ApiProperty()
+  commodity: string;
 }
 
 export class ListUploadNewResponse {

@@ -313,12 +313,16 @@ export class ListAnalysisService {
       data: { list_id: number };
     };
     try {
-      largeListCreated = await axios.post(`${this.LLP_BASE_URL}/api/create-large-list`, {
+      const data = {
         list_name: newListDetails.listName,
         user_id: externalUpload.userId,
         client_database: organizationDetails.organizationDb,
         analysisIds: newListDetails.analysisIDs,
-      });
+      };
+      if (newListDetails.commodity) {
+        data['commodity'] = newListDetails.commodity;
+      }
+      largeListCreated = await axios.post(`${this.LLP_BASE_URL}/api/create-large-list`, data);
     } catch (error) {
       if (error?.response?.status === HttpStatus.BAD_REQUEST) {
         throwCustomErrorResponse(error.response?.data?.message, HttpStatus.BAD_REQUEST);

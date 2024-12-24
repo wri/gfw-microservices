@@ -30,6 +30,8 @@ interface GFWListFilterProps {
   locationNameOptionsForFilter: any[];
   parentCompanyOptionsForFilter: any[];
   isFilterModalVisible: boolean;
+  clearFilters: () => void;
+  isListFiltered: boolean;
 }
 
 const GFWListFilter: React.FC<GFWListFilterProps> = ({
@@ -38,6 +40,8 @@ const GFWListFilter: React.FC<GFWListFilterProps> = ({
   locationNameOptionsForFilter,
   parentCompanyOptionsForFilter,
   isFilterModalVisible,
+  clearFilters,
+  isListFiltered,
 }) => {
   const initialState: DefaultFilterValues = store.getState().filters;
   const [state, setState] = useState<DefaultFilterValues>(initialState);
@@ -244,6 +248,14 @@ const GFWListFilter: React.FC<GFWListFilterProps> = ({
 
           <Grid item xs={12} sx={{ display: 'flex', justifyContent: 'flex-end' }}>
             <Button variant="secondary" onClick={onCloseHandler} label="Cancel" />
+            {isListFiltered && (
+              <Button
+                style={{ marginLeft: '10px' }}
+                variant="secondary"
+                onClick={clearFilters}
+                label="Clear"
+              />
+            )}
             <Button
               variant="primary"
               onClick={updateValues}

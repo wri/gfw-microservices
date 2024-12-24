@@ -128,6 +128,7 @@ export default class Filter extends Component {
 
     const isInlineFilterVisible =
       isFilterModalVisible && !isGfwList && !isCommodityRiskFilterVisible;
+    const isListFiltered = filterCount > 0;
     return (
       <>
         {isProtectedAreasFilterVisible && (
@@ -151,6 +152,8 @@ export default class Filter extends Component {
             parentCompanyOptionsForFilter={parentCompanyOptionsForFilter}
             list_name={listName}
             isFilterModalVisible={isFilterModalVisible}
+            clearFilters={this.resetFilters}
+            isListFiltered={isListFiltered}
           />
         )}
 
@@ -162,6 +165,8 @@ export default class Filter extends Component {
             parentCompanyOptionsForFilter={parentCompanyOptionsForFilter}
             supplierNameOptionsForFilter={supplierNameOptionsForFilter}
             secondSupplierNameOptionsForFilter={secondSupplierNameOptionsForFilter}
+            clearFilters={this.resetFilters}
+            isListFiltered={isListFiltered}
           />
         )}
         {isGFWListCommodityRiskFilterVisible && (
@@ -170,6 +175,8 @@ export default class Filter extends Component {
             locationNameOptionsForFilter={locationNameOptionsForFilter}
             parentCompanyOptionsForFilter={parentCompanyOptionsForFilter}
             isFilterModalVisible={isFilterModalVisible}
+            clearFilters={this.resetFilters}
+            isListFiltered={isListFiltered}
           />
         )}
 

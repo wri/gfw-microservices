@@ -41,6 +41,8 @@ interface UserListCommodityRiskFilterProps {
   parentCompanyOptionsForFilter: Location[];
   supplierNameOptionsForFilter: Location[];
   secondSupplierNameOptionsForFilter: Location[];
+  clearFilters: () => void;
+  isListFiltered: boolean;
 }
 
 const UserListCommodityRiskFilter: React.FC<UserListCommodityRiskFilterProps> = ({
@@ -49,6 +51,8 @@ const UserListCommodityRiskFilter: React.FC<UserListCommodityRiskFilterProps> = 
   parentCompanyOptionsForFilter,
   supplierNameOptionsForFilter,
   secondSupplierNameOptionsForFilter,
+  clearFilters,
+  isListFiltered,
 }) => {
   const initialState: DefaultFilterValues = store.getState().filters;
   const [state, setState] = useState<DefaultFilterValues>(initialState);
@@ -452,6 +456,14 @@ const UserListCommodityRiskFilter: React.FC<UserListCommodityRiskFilterProps> = 
             }}
           >
             <Button variant="secondary" onClick={onCloseHandler} label="Cancel" />
+            {isListFiltered && (
+              <Button
+                style={{ marginLeft: '10px' }}
+                variant="secondary"
+                onClick={clearFilters}
+                label="Clear"
+              />
+            )}
             <Button
               style={{ marginLeft: '10px' }}
               variant="primary"

@@ -40,12 +40,16 @@ interface GFWListCommodityRiskFilterProps {
   parentCompanyOptionsForFilter: any[];
   isFilterModalVisible: boolean;
   filterCount: number;
+  clearFilters: () => void;
+  isListFiltered: boolean;
 }
 const GFWListCommodityRiskFilter: React.FC<GFWListCommodityRiskFilterProps> = ({
   filterValues,
   locationNameOptionsForFilter,
   parentCompanyOptionsForFilter,
   isFilterModalVisible,
+  clearFilters,
+  isListFiltered,
 }) => {
   const initialState: DefaultFilterValues = store.getState().filters;
   const [state, setState] = useState<DefaultFilterValues>(initialState);
@@ -438,7 +442,14 @@ const GFWListCommodityRiskFilter: React.FC<GFWListCommodityRiskFilterProps> = ({
             }}
           >
             <Button variant="secondary" onClick={onCloseHandler} label="Cancel" />
-
+            {isListFiltered && (
+              <Button
+                style={{ marginLeft: '10px' }}
+                variant="secondary"
+                onClick={clearFilters}
+                label="Clear"
+              />
+            )}
             <Button
               style={{ marginLeft: '10px' }}
               variant="primary"

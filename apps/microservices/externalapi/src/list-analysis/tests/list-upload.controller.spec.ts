@@ -253,7 +253,7 @@ describe('ListUploadController', () => {
       listName: 'Example List',
       templateId: 456,
       analysisIDs: 'FCD',
-      commodity: 'Cocoa Generic'
+      commodity: 'Cocoa Generic',
     };
 
     const expectedResult = {
@@ -274,7 +274,7 @@ describe('ListUploadController', () => {
       listName: 'Example List',
       templateId: 456,
       analysisIDs: 'FCD',
-       commodity: 'Cocoa Generic'
+      commodity: 'Cocoa Generic',
     };
 
     // Mock user response to let process continue
@@ -315,7 +315,7 @@ describe('ListUploadController', () => {
       listName: 'Example List',
       templateId: 456,
       analysisIDs: 'FCD',
-       commodity: 'Cocoa Generic'
+      commodity: 'Cocoa Generic',
     };
 
     // Mock user response to let process continue
@@ -356,7 +356,7 @@ describe('ListUploadController', () => {
       listName: 'Example List',
       templateId: 456,
       analysisIDs: 'FCD',
-       commodity: 'Cocoa Generic'
+      commodity: 'Cocoa Generic',
     };
 
     // Mock user response to let process continue
@@ -398,7 +398,7 @@ describe('ListUploadController', () => {
       listName: 'Example List',
       templateId: 456,
       analysisIDs: 'FCD',
-       commodity: 'Cocoa Generic'
+      commodity: 'Cocoa Generic',
     };
 
     // Mock user response to let process continue
@@ -498,7 +498,7 @@ describe('ListUploadController', () => {
       listName: 'List name duplicated',
       templateId: 456,
       analysisIDs: 'FCD',
-       commodity: 'Cocoa Generic'
+      commodity: 'Cocoa Generic',
     };
 
     const expectedError = {

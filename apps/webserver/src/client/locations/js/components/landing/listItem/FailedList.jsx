@@ -38,8 +38,7 @@ function FailedList({
   const [menuAnchorEl, setMenuAnchorEl] = useState(null);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isChangeTypeOfAnalysisModalOpen, setIsChangeTypeOfAnalysisModalOpen] = useState(false);
-  const { id, list_name, large_list_id, folder, is_shared, listAnalysesStatus } = list;
-  const isLargeList = !!large_list_id;
+  const { id, list_name, folder, is_shared, listAnalysesStatus } = list;
   const isInFolder = !!folder;
 
   const goToListDetails = () => {
@@ -98,16 +97,7 @@ function FailedList({
               tooltipMessage={
                 isFailedByUsageLimits
                   ? `This list failed due to usage limits.`
-                  : `This list has failed analysis. To receive results, resubmit this list for analysis. ${
-                      isLargeList ? 'Click to download the file and fix errors.' : ''
-                    }`
-              }
-              onClickAction={
-                isLargeList
-                  ? () => {
-                      setOpenDownloadLargeListFileDialog(true);
-                    }
-                  : undefined
+                  : 'This list has failed analysis. To receive results, resubmit this list for analysis.'
               }
             />
           </span>

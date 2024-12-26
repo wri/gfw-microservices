@@ -58,7 +58,7 @@ export default function AnalysisStatusBanners({
         isAnalysisFailedByExceededAnalysisLimit,
       title: 'DRAFT',
       backgroundColor: '#58a9cd',
-      icon: <EditNoteIcon style={{ marginRight: '5px' }} fontSize="inherit" />,
+      icon: <EditNoteIcon sx={{ mr: 0.5 }} fontSize="inherit" />,
       message: (
         <>
           Your list is currently in Draft state. To view data for your list, please submit for

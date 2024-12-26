@@ -97,7 +97,7 @@ function FailedList({
               tooltipMessage={
                 isFailedByUsageLimits
                   ? `This list failed due to usage limits.`
-                  : `This list has failed analysis. To receive results, resubmit this list for analysis.`
+                  : 'This list has failed analysis. To receive results, resubmit this list for analysis.'
               }
             />
           </span>

@@ -16,7 +16,7 @@ import {
   updateFilters,
   setFilterCount,
 } from '../../../../../../locations/js/actions/locationActions';
-import Button from '../../../../../../common/js/components/Button';
+import { PillButton } from '../../../../../../components';
 import CountryStateSubStateFilter from './CountryStateSubStateFilter';
 import { boxStyle, selectStyle } from './filterStyles';
 import filterCountryStateAndSubStateOptions from './filterCountryStateAndSubStateOptions';
@@ -247,21 +247,17 @@ const GFWListFilter: React.FC<GFWListFilterProps> = ({
           </Grid>
 
           <Grid item xs={12} sx={{ display: 'flex', justifyContent: 'flex-end' }}>
-            <Button variant="secondary" onClick={onCloseHandler} label="Cancel" />
+            <PillButton variant="contained" color="info" sx={{ ml: 1 }} onClick={onCloseHandler}>
+              Cancel
+            </PillButton>
             {isListFiltered && (
-              <Button
-                style={{ marginLeft: '10px' }}
-                variant="secondary"
-                onClick={clearFilters}
-                label="Clear"
-              />
+              <PillButton variant="contained" color="info" sx={{ ml: 1 }} onClick={clearFilters}>
+                Clear
+              </PillButton>
             )}
-            <Button
-              variant="primary"
-              onClick={updateValues}
-              label="Apply"
-              style={{ marginLeft: '10px' }}
-            />
+            <PillButton variant="contained" sx={{ ml: 1 }} onClick={updateValues}>
+              Apply
+            </PillButton>
           </Grid>
         </Grid>
       </Box>

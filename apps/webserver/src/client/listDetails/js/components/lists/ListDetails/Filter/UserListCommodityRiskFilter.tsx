@@ -14,7 +14,7 @@ import {
   updateFilters,
   setFilterCount,
 } from '../../../../../../locations/js/actions/locationActions';
-import Button from '../../../../../../common/js/components/Button';
+import { PillButton } from '../../../../../../components';
 import CountryStateSubStateFilter from './CountryStateSubStateFilter';
 import { getFilterCounter } from '../../../../../../locations/js/utils/lists.utils';
 import { DefaultFilterValues } from '../../DefaultFilterValuesType';
@@ -455,21 +455,19 @@ const UserListCommodityRiskFilter: React.FC<UserListCommodityRiskFilterProps> = 
               display: 'flex',
             }}
           >
-            <Button variant="secondary" onClick={onCloseHandler} label="Cancel" />
+            <PillButton variant="contained" color="info" sx={{ ml: 1 }} onClick={onCloseHandler}>
+              Cancel
+            </PillButton>
+
             {isListFiltered && (
-              <Button
-                style={{ marginLeft: '10px' }}
-                variant="secondary"
-                onClick={clearFilters}
-                label="Clear"
-              />
+              <PillButton variant="contained" color="info" sx={{ ml: 1 }} onClick={clearFilters}>
+                Clear
+              </PillButton>
             )}
-            <Button
-              style={{ marginLeft: '10px' }}
-              variant="primary"
-              onClick={updateValues}
-              label="Apply"
-            />
+
+            <PillButton variant="contained" sx={{ ml: 1 }} onClick={updateValues}>
+              Apply
+            </PillButton>
           </Grid>
         </Grid>
       </Box>

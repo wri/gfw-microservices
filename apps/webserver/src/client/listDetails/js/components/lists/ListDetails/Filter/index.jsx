@@ -19,6 +19,7 @@ import GFWListFilter from './GFWListFilter';
 import NaturalForestLossDataSourceToggle from './NaturalForestLossDataSourceToggle';
 import DeforestationDisplayFormatToggleButtons from '../DeforestationDisplayFormatToggleButtons';
 import filterCountryStateAndSubStateOptions from './filterCountryStateAndSubStateOptions';
+import { ThemeProvider } from '../../../../../../styles/ThemeProvider';
 import { filterKeys, gfwListNames } from '../../../../../../common/js/constants/lists.constants';
 import { GFW_LISTS_NUMBER_CONSTANTS } from '../../../../../../../config/env/gfwLists.constants';
 import store from '../../../../../../locations/js/store';
@@ -130,7 +131,7 @@ export default class Filter extends Component {
       isFilterModalVisible && !isGfwList && !isCommodityRiskFilterVisible;
     const isListFiltered = filterCount > 0;
     return (
-      <>
+      <ThemeProvider>
         {isProtectedAreasFilterVisible && (
           <ProtectedAreasGFWList
             protectedAreas={protectedAreas}
@@ -281,7 +282,7 @@ export default class Filter extends Component {
             </Grid>
           </Grid>
         </Stack>
-      </>
+      </ThemeProvider>
     );
   }
 }

@@ -16,7 +16,7 @@ import {
   toggleCanopyModal,
   updateFilters,
 } from '../../../../../../locations/js/actions/locationActions';
-import Button from '../../../../../../common/js/components/Button';
+import { PillButton } from '../../../../../../components';
 import CountryStateSubStateFilter from './CountryStateSubStateFilter';
 import filterCountryStateAndSubStateOptions from './filterCountryStateAndSubStateOptions';
 import { boxStyle, selectStyle } from './filterStyles';
@@ -441,21 +441,18 @@ const GFWListCommodityRiskFilter: React.FC<GFWListCommodityRiskFilterProps> = ({
               display: 'flex',
             }}
           >
-            <Button variant="secondary" onClick={onCloseHandler} label="Cancel" />
+            <PillButton variant="contained" sx={{ ml: 1 }} onClick={onCloseHandler}>
+              Cancel
+            </PillButton>
             {isListFiltered && (
-              <Button
-                style={{ marginLeft: '10px' }}
-                variant="secondary"
-                onClick={clearFilters}
-                label="Clear"
-              />
+              <PillButton variant="contained" color="info" sx={{ ml: 1 }} onClick={clearFilters}>
+                Clear
+              </PillButton>
             )}
-            <Button
-              style={{ marginLeft: '10px' }}
-              variant="primary"
-              onClick={updateValues}
-              label="Apply"
-            />
+
+            <PillButton variant="contained" sx={{ ml: 1 }} onClick={updateValues}>
+              Apply
+            </PillButton>
           </Grid>
         </Grid>
       </Box>

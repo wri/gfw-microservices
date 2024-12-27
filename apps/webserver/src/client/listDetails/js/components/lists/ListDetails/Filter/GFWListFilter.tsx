@@ -16,7 +16,7 @@ import {
   updateFilters,
   setFilterCount,
 } from '../../../../../../locations/js/actions/locationActions';
-import Button from '../../../../../../common/js/components/Button';
+import { PillButton } from '../../../../../../components';
 import CountryStateSubStateFilter from './CountryStateSubStateFilter';
 import { boxStyle, selectStyle } from './filterStyles';
 import filterCountryStateAndSubStateOptions from './filterCountryStateAndSubStateOptions';
@@ -30,6 +30,8 @@ interface GFWListFilterProps {
   locationNameOptionsForFilter: any[];
   parentCompanyOptionsForFilter: any[];
   isFilterModalVisible: boolean;
+  clearFilters: () => void;
+  isListFiltered: boolean;
 }
 
 const GFWListFilter: React.FC<GFWListFilterProps> = ({
@@ -38,6 +40,8 @@ const GFWListFilter: React.FC<GFWListFilterProps> = ({
   locationNameOptionsForFilter,
   parentCompanyOptionsForFilter,
   isFilterModalVisible,
+  clearFilters,
+  isListFiltered,
 }) => {
   const initialState: DefaultFilterValues = store.getState().filters;
   const [state, setState] = useState<DefaultFilterValues>(initialState);
@@ -243,13 +247,17 @@ const GFWListFilter: React.FC<GFWListFilterProps> = ({
           </Grid>
 
           <Grid item xs={12} sx={{ display: 'flex', justifyContent: 'flex-end' }}>
-            <Button variant="secondary" onClick={onCloseHandler} label="Cancel" />
-            <Button
-              variant="primary"
-              onClick={updateValues}
-              label="Apply"
-              style={{ marginLeft: '10px' }}
-            />
+            <PillButton variant="contained" color="info" sx={{ ml: 1 }} onClick={onCloseHandler}>
+              Cancel
+            </PillButton>
+            {isListFiltered && (
+              <PillButton variant="contained" color="info" sx={{ ml: 1 }} onClick={clearFilters}>
+                Clear
+              </PillButton>
+            )}
+            <PillButton variant="contained" sx={{ ml: 1 }} onClick={updateValues}>
+              Apply
+            </PillButton>
           </Grid>
         </Grid>
       </Box>

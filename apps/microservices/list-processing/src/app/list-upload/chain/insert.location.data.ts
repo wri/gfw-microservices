@@ -1,7 +1,6 @@
 import { DataSource, EntitySchema } from 'typeorm';
 import { AbstractHandler, ChainType, RequestNewList } from './types';
 import { ClientStoreConnection, ListSchema, ListSchemaType } from '@wri-monorepos/sql';
-import { FeatureCollection } from '@wri-monorepos/geo';
 import { Logger } from '@nestjs/common';
 
 const BATCH_SIZE = 100;
@@ -34,6 +33,8 @@ export class InsertLocationData extends AbstractHandler<ChainType> {
   }
 
   async handle(request: ChainType): Promise<ChainType> {
+    const { locations: values } = request;
+
     const { organization_database: organizationDatabase, listTable } =
       request.request as RequestNewList;
     const ListEntity = new EntitySchema<ListSchemaType>({
@@ -46,10 +47,6 @@ export class InsertLocationData extends AbstractHandler<ChainType> {
     ]);
 
     try {
-      const values = (request.geojson as FeatureCollection).features.map((feature) => ({
-        ...feature.properties,
-      }));
-
       for (let i = 0; i < values.length; i += BATCH_SIZE) {
         const batch = values.slice(i, i + BATCH_SIZE);
 

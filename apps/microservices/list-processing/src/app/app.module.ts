@@ -27,7 +27,6 @@ import { ListUploadModule } from './list-upload';
 import { AwsModule } from '@wri-monorepos/aws';
 import { HealthModule } from './health/health.module';
 import { ListModule } from './list';
-import { EventEmitterModule } from '@nestjs/event-emitter';
 
 @Module({
   imports: [
@@ -41,7 +40,6 @@ import { EventEmitterModule } from '@nestjs/event-emitter';
     AFIModule,
     SchedulerModule,
     AlertsModule,
-    EventEmitterModule.forRoot(),
     ListUploadModule,
     AwsModule,
     HealthModule,

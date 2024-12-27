@@ -67,10 +67,9 @@ export class ConvertPoint2Polygon extends AbstractHandler<ChainType> {
     return this.geomFromPointRadiusArea(point, featureRadius, featureArea);
   }
 
-  async processForFeature(featurePayload: Feature): Promise<Feature> {
-    const feature = Object.assign({}, featurePayload);
-
+  async convertFeature(feature: Feature): Promise<Feature> {
     const { geometry, properties } = feature;
+
     if (geometry.type === 'Point') {
       const { coordinates } = geometry;
       const [longitude, latitude] = coordinates;
@@ -86,7 +85,7 @@ export class ConvertPoint2Polygon extends AbstractHandler<ChainType> {
       (feature.geometry as Polygon).type = 'Polygon';
     }
 
-    return feature;
+    return Object.assign({}, feature);
   }
 
   async handle(request: ChainType): Promise<ChainType> {

@@ -1,385 +1,203 @@
-import { ProcessUploadData } from './process.upload.data';
 import { Logger } from '@nestjs/common';
+import { ProcessUploadData } from './process.upload.data';
+import { ConvertPoint2Polygon } from './convert.point.2.polygon';
+import { Feature } from '@wri-monorepos/geo';
 import { ChainType } from './types';
 
-jest.mock('@wri-monorepos/sql', () => ({
-  ListSchema: {
-    name: 'ListSchema',
-    columns: {
-      id: { type: 'int', nullable: false },
-      locationName: { type: 'varchar', nullable: false },
-      longitude: { type: 'float', nullable: true },
-      latitude: { type: 'float', nullable: true },
-      commodity: { type: 'varchar', nullable: true },
-    },
-  },
-}));
-
-jest.mock('typeorm', () => ({
-  EntitySchema: jest.fn().mockImplementation((schema) => ({
-    options: schema,
+jest.mock('@nestjs/common', () => ({
+  ...jest.requireActual('@nestjs/common'),
+  Logger: jest.fn().mockImplementation(() => ({
+    log: jest.fn(),
+    error: jest.fn(),
+    debug: jest.fn(),
   })),
 }));
 
+jest.mock('./convert.point.2.polygon', () => ({
+  ConvertPoint2Polygon: jest.fn(),
+}));
+
+const requestMock = {
+  organization_id: 1,
+  subscription_status_id: 2,
+  organization_database: 'testDb',
+  list_id: 173,
+  path: 'ei66192vm56txqq1-gpv3646 working input_input - gpv3646 working input_input (2).csv',
+  template_id: 13,
+  template_type: 'cocoa_generic',
+  user_id: 1,
+  startAnalysis: true,
+  list_name: 'gpv3648 sample feature 4',
+  analysisIds: ['FCD', 'AFI', 'ALERTS'],
+  fileDownloadedPath:
+    '/tmp/ei66192vm56txqq1-gpv3646 working input_input - gpv3646 working input_input (2).csv',
+  listTable: 'list-gpv3648samplefeature4',
+  analysisTable: 'analysis-gpv3648samplefeature4',
+  listStatusId: 1,
+  locationClassification: 'Property',
+  customAttributeNames: '',
+  customAttributeTypes: '',
+};
+
 describe('ProcessUploadData', () => {
-  let processUploadData: ProcessUploadData;
-  let loggerLogSpy: jest.SpyInstance;
+  let service: ProcessUploadData;
+  let convertPoint2PolygonMock: ConvertPoint2Polygon;
 
-  beforeEach(() => {
-    processUploadData = new ProcessUploadData();
-    loggerLogSpy = jest.spyOn(Logger.prototype, 'log').mockImplementation(() => void 0);
+  beforeEach(async () => {
+    convertPoint2PolygonMock = {
+      convertFeature: jest.fn().mockImplementation((feature: Feature) => Promise.resolve(feature)),
+    } as any;
+
+    service = new ProcessUploadData();
+    (service as any).convertPoint2Polygon = convertPoint2PolygonMock;
   });
 
-  afterEach(() => {
-    jest.clearAllMocks();
-  });
-
-  it('should process features and populate attributes', async () => {
-    const request: ChainType = {
-      geojson: {
-        type: 'FeatureCollection',
-        features: [
-          {
-            type: 'Feature',
-            geometry: null,
-            properties: {
-              locationName: 'Location 1',
-              longitude: -122.4194,
-              latitude: 37.7749,
-              customField1: 'Value1',
-              customField2: 123,
-            },
-          },
-        ],
-      },
-      request: {
-        path: 'somepath',
-        list_name: 'test',
-        organization_database: '',
-        isExternalAPIProcess: false,
-        organization_id: 1,
-        subscription_status_id: 2,
-      },
-    };
-
-    const result = await processUploadData.handle(request);
-
-    expect(loggerLogSpy).toHaveBeenCalledWith(
-      'Processing uploaded properties into attributes column'
-    );
-
-    const processedFeature = result.geojson.features[0];
-    const expectedAttributes = [
-      {
-        field: 'customField1',
-        value: 'Value1',
-        type: 'string',
-        custom: true,
-      },
-      {
-        field: 'customField2',
-        value: 123,
-        type: 'number',
-        custom: true,
-      },
-    ];
-
-    expect(processedFeature.properties.attributes).toEqual(JSON.stringify(expectedAttributes));
-
-    // Ensure original properties are unchanged
-    expect(processedFeature.properties.locationName).toBe('Location 1');
-    expect(processedFeature.properties.longitude).toBe(-122.4194);
-    expect(processedFeature.properties.latitude).toBe(37.7749);
-  });
-
-  it('should exclude properties listed in columnsToExclude', async () => {
-    const request: ChainType = {
-      geojson: {
-        type: 'FeatureCollection',
-        features: [
-          {
-            type: 'Feature',
-            geometry: null,
-            properties: {
-              locationName: 'Location 2',
-              errorDetails: 'Some error',
-              customField: 'Custom Value',
-            },
-          },
-        ],
-      },
-      request: {
-        path: 'somepath',
-        list_name: 'test',
-        organization_database: '',
-        isExternalAPIProcess: false,
-        organization_id: 1,
-        subscription_status_id: 2,
-      },
-    };
-
-    const result = await processUploadData.handle(request);
-
-    const processedFeature = result.geojson.features[0];
-    const expectedAttributes = [
-      {
-        field: 'customField',
-        value: 'Custom Value',
-        type: 'string',
-        custom: true,
-      },
-    ];
-
-    expect(processedFeature.properties.attributes).toEqual(JSON.stringify(expectedAttributes));
-
-    // Ensure excluded fields are not in attributes
-    const attributes = JSON.parse(processedFeature.properties.attributes as string);
-    const excludedFields = processUploadData['columnsToExclude'];
-    attributes.forEach((attr) => {
-      expect(excludedFields).not.toContain(attr.field);
-    });
-  });
-
-  it('should exclude required fields from attributes', async () => {
-    const request: ChainType = {
-      geojson: {
-        type: 'FeatureCollection',
-        features: [
-          {
-            type: 'Feature',
-            geometry: null,
-            properties: {
-              id: 1,
-              locationName: 'Location 3',
-              customField: 'Custom Value',
-            },
-          },
-        ],
-      },
-      request: {
-        path: 'somepath',
-        list_name: 'test',
-        organization_database: '',
-        isExternalAPIProcess: false,
-        organization_id: 1,
-        subscription_status_id: 2,
-      },
-    };
-
-    const result = await processUploadData.handle(request);
-
-    const processedFeature = result.geojson.features[0];
-    const expectedAttributes = [
-      {
-        field: 'customField',
-        value: 'Custom Value',
-        type: 'string',
-        custom: true,
-      },
-    ];
-
-    expect(processedFeature.properties.attributes).toEqual(JSON.stringify(expectedAttributes));
-
-    // Ensure required fields are not in attributes
-    const attributes = JSON.parse(processedFeature.properties.attributes as string);
-    const requiredFields = ['id', 'locationName']; // As per ListSchema
-    attributes.forEach((attr) => {
-      expect(requiredFields).not.toContain(attr.field);
-    });
-  });
-
-  it('should mark fields not in schema as custom', async () => {
-    const request: ChainType = {
-      geojson: {
-        type: 'FeatureCollection',
-        features: [
-          {
-            type: 'Feature',
-            geometry: null,
-            properties: {
-              locationName: 'Location 4',
-              newField: 'New Value',
-            },
-          },
-        ],
-      },
-      request: {
-        path: 'somepath',
-        list_name: 'test',
-        organization_database: '',
-        isExternalAPIProcess: false,
-        organization_id: 1,
-        subscription_status_id: 2,
-      },
-    };
-
-    const result = await processUploadData.handle(request);
-
-    const processedFeature = result.geojson.features[0];
-    const expectedAttributes = [
-      {
-        field: 'newField',
-        value: 'New Value',
-        type: 'string',
-        custom: true,
-      },
-    ];
-
-    expect(processedFeature.properties.attributes).toEqual(JSON.stringify(expectedAttributes));
-
-    const attributes = JSON.parse(processedFeature.properties.attributes as string);
-    expect(attributes[0].custom).toBe(true);
-  });
-
-  it('should handle properties with various data types', async () => {
-    const request: ChainType = {
-      geojson: {
-        type: 'FeatureCollection',
-        features: [
-          {
-            type: 'Feature',
-            geometry: null,
-            properties: {
-              locationName: 'Location 5',
-              nullField: null,
-              arrayField: [1, 2, 3],
-              objectField: { key: 'value' },
-              numberField: 100.5,
-              booleanField: true,
-            },
-          },
-        ],
-      },
-      request: {
-        path: 'somepath',
-        list_name: 'test',
-        organization_database: '',
-        isExternalAPIProcess: false,
-        organization_id: 1,
-        subscription_status_id: 2,
-      },
-    };
-
-    const result = await processUploadData.handle(request);
-
-    const processedFeature = result.geojson.features[0];
-    const expectedAttributes = [
-      {
-        field: 'nullField',
-        value: null,
-        type: 'string',
-        custom: true,
-      },
-      {
-        field: 'arrayField',
-        value: [1, 2, 3],
-        type: 'string',
-        custom: true,
-      },
-      {
-        field: 'objectField',
-        value: { key: 'value' },
-        type: 'string',
-        custom: true,
-      },
-      {
-        field: 'numberField',
-        value: 100.5,
-        type: 'string',
-        custom: true,
-      },
-      {
-        field: 'booleanField',
-        value: true,
-        type: 'boolean',
-        custom: true,
-      },
-    ];
-
-    expect(processedFeature.properties.attributes).toEqual(JSON.stringify(expectedAttributes));
-  });
-
-  it('should handle empty features array', async () => {
-    const request: ChainType = {
-      geojson: {
-        type: 'FeatureCollection',
-        features: [],
-      },
-      request: {
-        path: 'somepath',
-        list_name: 'test',
-        organization_database: '',
-        isExternalAPIProcess: false,
-        organization_id: 1,
-        subscription_status_id: 2,
-      },
-    };
-
-    const result = await processUploadData.handle(request);
-
-    expect(result.geojson.features).toEqual([]);
-    expect(loggerLogSpy).toHaveBeenCalledWith(
-      'Processing uploaded properties into attributes column'
-    );
-  });
-
-  it('should process a large number of features', async () => {
-    const largeNumber = 1000;
-    const features = [];
-
-    for (let i = 0; i < largeNumber; i++) {
-      features.push({
+  describe('processFeatureAttributes', () => {
+    it('should not include columnsToExclude or required fields in attributes', () => {
+      const featurePayload: Feature = {
+        type: 'Feature',
+        geometry: {
+          type: 'Point',
+          coordinates: [100, 0],
+        },
         properties: {
-          locationName: `Location ${i}`,
-          customField: `Value ${i}`,
+          locationName: 'Sample Location',
+          longitude: 100,
+          latitude: 0,
+          commodity: 'Gold',
+          errorDetails: 'None',
+          someCustomField: 'CustomValue',
+          randomField: 'RandomValue',
         },
+      };
+
+      const result = service['processFeatureAttributes'](featurePayload);
+      const parsedAttributes = JSON.parse(result.properties.attributes as string);
+
+      expect(parsedAttributes.find((attr: any) => attr.field === 'locationName')).toBeUndefined();
+      expect(parsedAttributes.find((attr: any) => attr.field === 'longitude')).toBeUndefined();
+      expect(parsedAttributes.find((attr: any) => attr.field === 'latitude')).toBeUndefined();
+      expect(parsedAttributes.find((attr: any) => attr.field === 'commodity')).toBeUndefined();
+      expect(parsedAttributes.find((attr: any) => attr.field === 'errorDetails')).toBeUndefined();
+      expect(parsedAttributes.find((attr: any) => attr.field === 'someCustomField')).toBeDefined();
+      expect(parsedAttributes.find((attr: any) => attr.field === 'randomField')).toBeDefined();
+    });
+
+    it('should set custom = true for fields not in the schema and infer types correctly', () => {
+      const featurePayload: Feature = {
+        type: 'Feature',
+        geometry: {
+          type: 'Point',
+          coordinates: [100, 0],
+        },
+        properties: {
+          integerField: 42,
+          floatField: 42.42,
+          stringField: 'Test',
+          booleanField: true,
+          arrayField: [1, 2, 3],
+          objectField: { key: 'value' },
+        },
+      };
+
+      const result = service['processFeatureAttributes'](featurePayload);
+      const parsedAttributes = JSON.parse(result.properties.attributes as string);
+
+      expect(parsedAttributes.find((attr: any) => attr.field === 'integerField').type).toBe(
+        'number'
+      );
+      expect(parsedAttributes.find((attr: any) => attr.field === 'floatField').type).toBe('string');
+      expect(parsedAttributes.find((attr: any) => attr.field === 'stringField').type).toBe(
+        'string'
+      );
+      expect(parsedAttributes.find((attr: any) => attr.field === 'booleanField').type).toBe(
+        'boolean'
+      );
+      expect(parsedAttributes.find((attr: any) => attr.field === 'arrayField').type).toBe('string');
+      expect(parsedAttributes.find((attr: any) => attr.field === 'objectField').type).toBe(
+        'string'
+      );
+
+      parsedAttributes.forEach((attr: any) => {
+        expect(attr.custom).toBe(true);
       });
-    }
+    });
 
-    const request: ChainType = {
-      geojson: {
-        type: 'FeatureCollection',
-        features,
-      },
-      request: {
-        path: 'somepath',
-        list_name: 'test',
-        organization_database: '',
-        isExternalAPIProcess: false,
-        organization_id: 1,
-        subscription_status_id: 2,
-      },
-    };
-
-    const result = await processUploadData.handle(request);
-
-    expect(result.geojson.features.length).toBe(largeNumber);
-
-    for (let i = 0; i < largeNumber; i++) {
-      const processedFeature = result.geojson.features[i];
-      const expectedAttributes = [
-        {
-          field: 'customField',
-          value: `Value ${i}`,
-          type: 'string',
-          custom: true,
+    it('should stringfy geometry', () => {
+      const featurePayload: Feature = {
+        type: 'Feature',
+        geometry: {
+          type: 'Point',
+          coordinates: [100, 0],
         },
-      ];
-
-      expect(processedFeature.properties.attributes).toEqual(JSON.stringify(expectedAttributes));
-    }
+        properties: {},
+      };
+      const result = service['processFeatureAttributes'](featurePayload);
+      expect(typeof result.geometry).toBe('string');
+      expect(result.geometry).toContain('POINT');
+    });
   });
 
-  // type infering
-  describe('inferType', () => {
-    it('should infer types correctly', () => {
-      expect(processUploadData['inferType'](null)).toBe('string');
-      expect(processUploadData['inferType'](undefined)).toBe('undefined');
-      expect(processUploadData['inferType']('string')).toBe('string');
-      expect(processUploadData['inferType'](123.45)).toBe('string'); // so, string since it's not integer?
-      expect(processUploadData['inferType'](true)).toBe('boolean');
-      expect(processUploadData['inferType']([1, 2, 3])).toBe('string');
-      expect(processUploadData['inferType']({ key: 'value' })).toBe('string');
+  describe('handle', () => {
+    it('should process each feature and append locationId', async () => {
+      const request: ChainType = {
+        request: requestMock,
+        geojson: {
+          type: 'FeatureCollection',
+          features: [
+            {
+              type: 'Feature',
+              geometry: {
+                type: 'Point',
+                coordinates: [10, 20],
+              },
+              properties: {},
+            },
+            {
+              type: 'Feature',
+              geometry: {
+                type: 'Point',
+                coordinates: [30, 40],
+              },
+              properties: {},
+            },
+          ],
+        },
+        locations: [],
+      };
+
+      const result = await service.handle(request);
+      expect(convertPoint2PolygonMock.convertFeature).toHaveBeenCalledTimes(2);
+      expect(result.geojson.features[0].properties.locationId).toBe(1);
+      expect(result.geojson.features[1].properties.locationId).toBe(2);
+      expect(result.locations.length).toBe(2);
+    });
+
+    it('should catch errors in feature processing', async () => {
+      (convertPoint2PolygonMock.convertFeature as jest.Mock).mockRejectedValueOnce(
+        new Error('convert error')
+      );
+      const request: ChainType = {
+        request: requestMock,
+        geojson: {
+          type: 'FeatureCollection',
+          features: [
+            {
+              type: 'Feature',
+              geometry: {
+                type: 'Point',
+                coordinates: [10, 20],
+              },
+              properties: {},
+            },
+          ],
+        },
+        locations: [],
+      };
+
+      const result = await service.handle(request);
+      expect(Logger).toHaveBeenCalled();
+      expect(result.geojson.features.length).toBe(1);
     });
   });
 });

@@ -1,330 +1,238 @@
-import { SaveListAttributes } from './save.list.attributes';
+import { ListsAttrsTypes, SaveListAttributes } from './save.list.attributes';
 import { Logger } from '@nestjs/common';
-import { SQLUtils } from '@wri-monorepos/sql';
-import { ClientStoreConnection, ListAttributes } from '@wri-monorepos/sql';
-import { ChainType, RequestNewList, ListAttributesRecord } from './types';
+import { ClientStoreConnection, ListAttributes, SQLUtils } from '@wri-monorepos/sql';
+import { ChainType, RequestNewList } from './types';
+import { Feature } from '@wri-monorepos/geo';
 
+/**
+ * Mocking external dependencies and methods
+ */
 jest.mock('@wri-monorepos/sql', () => ({
-  SQLUtils: {
-    queryDB: jest.fn(),
-  },
-  ClientStoreConnection: jest.fn().mockImplementation(() => ({
-    getConnection: jest.fn(),
-  })),
+  ClientStoreConnection: jest.fn(), 
+  SQLUtils: { queryDB: jest.fn() },
   ListAttributes: jest.fn(),
 }));
 
-const mockQueryDB = SQLUtils.queryDB as jest.Mock;
-const mockClientStoreConnection = ClientStoreConnection as jest.Mock;
-
-class TestableSaveListAttributes extends SaveListAttributes {
-  public async getAttributesFromListTable(
-    organizationDatabase: string,
-    listTable: string,
-    listId: number
-  ): Promise<ListAttributesRecord[]> {
-    return super.getAttributesFromListTable(organizationDatabase, listTable, listId);
-  }
-
-  public async getExistingListAttributesForListId(
-    orgDb: string,
-    listId: number
-  ): Promise<Map<string, ListAttributesRecord>> {
-    return super.getExistingListAttributesForListId(orgDb, listId);
-  }
-
-  public async determineAttributeType(
-    orgDb: string,
-    listTable: string,
-    listId: number,
-    attributeName: string,
-    maxRecords = 100
-  ): Promise<number> {
-    return super.determineAttributeType(orgDb, listTable, listId, attributeName, maxRecords);
-  }
-
-  public async saveLocAttributesToListAttributes(
-    orgDb: string,
-    attributes: ListAttributesRecord[]
-  ): Promise<void> {
-    return super.saveLocAttributesToListAttributes(orgDb, attributes);
-  }
-}
-
 describe('SaveListAttributes', () => {
-  let saveListAttributes: TestableSaveListAttributes;
-  let loggerErrorSpy: jest.SpyInstance;
-  let loggerWarnSpy: jest.SpyInstance;
-  let loggerLogSpy: jest.SpyInstance;
+  let saveListAttributes: SaveListAttributes;
+
+  let mockGetConnection: jest.Mock;
+  let mockQueryBuilder: any;
 
   beforeEach(() => {
-    saveListAttributes = new TestableSaveListAttributes();
-    loggerErrorSpy = jest.spyOn(Logger.prototype, 'error').mockImplementation(() => void 0);
-    loggerWarnSpy = jest.spyOn(Logger.prototype, 'warn').mockImplementation(() => void 0);
-    loggerLogSpy = jest.spyOn(Logger.prototype, 'log').mockImplementation(() => void 0);
-  });
-
-  afterEach(() => {
     jest.clearAllMocks();
-  });
+    saveListAttributes = new SaveListAttributes();
 
-  describe('getAttributesFromListTable', () => {
-    it('should parse attributes correctly and return attribute infos', async () => {
-      const organizationDatabase = 'test_db';
-      const listTable = 'test_table';
-      const listId = 1;
+    mockQueryBuilder = {
+      insert: jest.fn().mockReturnThis(),
+      into: jest.fn().mockReturnThis(),
+      values: jest.fn().mockReturnThis(),
+      orIgnore: jest.fn().mockReturnThis(),
+      execute: jest.fn().mockResolvedValue(undefined),
+    };
 
-      const mockResultSets = [
-        {
-          attributesJson: JSON.stringify([
-            { field: 'age', type: 'number' },
-            { field: 'name', type: 'string' },
-          ]),
-        },
-        {
-          attributesJson: JSON.stringify([
-            { field: 'age', type: 'number' },
-            { field: 'email', type: 'string' },
-          ]),
-        },
-      ];
+    const mockConnection = {
+      createQueryBuilder: jest.fn().mockReturnValue(mockQueryBuilder),
+    };
 
-      const mockExistingAttributes = new Map();
+    mockGetConnection = jest.fn().mockResolvedValue(mockConnection);
 
-      mockQueryDB.mockImplementationOnce(() => Promise.resolve(mockResultSets));
-
-      jest
-        .spyOn(saveListAttributes, 'getExistingListAttributesForListId')
-        .mockImplementationOnce(() => Promise.resolve(mockExistingAttributes));
-
-      jest
-        .spyOn(saveListAttributes, 'determineAttributeType')
-        .mockImplementation(() => Promise.resolve(2));
-
-      const result = await saveListAttributes.getAttributesFromListTable(
-        organizationDatabase,
-        listTable,
-        listId
-      );
-
-      expect(result).toEqual([
-        { list_id: listId, attribute_name: 'age', attribute_type: 1 },
-        { list_id: listId, attribute_name: 'name', attribute_type: 2 },
-        { list_id: listId, attribute_name: 'email', attribute_type: 2 },
-      ]);
-    });
-
-    it('should handle JSON parsing errors and skip the row', async () => {
-      const organizationDatabase = 'test_db';
-      const listTable = 'test_table';
-      const listId = 1;
-
-      const mockResultSets = [
-        {
-          attributesJson: 'invalid_json',
-        },
-      ];
-
-      const mockExistingAttributes = new Map();
-
-      mockQueryDB.mockImplementationOnce(() => Promise.resolve(mockResultSets));
-
-      jest
-        .spyOn(saveListAttributes, 'getExistingListAttributesForListId')
-        .mockImplementationOnce(() => Promise.resolve(mockExistingAttributes));
-
-      const result = await saveListAttributes['getAttributesFromListTable'](
-        organizationDatabase,
-        listTable,
-        listId
-      );
-
-      expect(loggerErrorSpy).toHaveBeenCalled();
-      expect(result).toEqual([]);
-    });
-
-    it('should handle inconsistent attribute types and determine the correct type', async () => {
-      const organizationDatabase = 'test_db';
-      const listTable = 'test_table';
-      const listId = 1;
-
-      const mockResultSets = [
-        {
-          attributesJson: JSON.stringify([{ field: 'age', type: 'string' }]),
-        },
-        {
-          attributesJson: JSON.stringify([{ field: 'age', type: 'number' }]),
-        },
-      ];
-
-      const mockExistingAttributes = new Map();
-      mockExistingAttributes.set('age', {
-        list_id: listId,
-        attribute_name: 'age',
-        attribute_type: 2,
-      });
-
-      mockQueryDB.mockImplementationOnce(() => Promise.resolve(mockResultSets));
-
-      jest
-        .spyOn(saveListAttributes, 'getExistingListAttributesForListId')
-        .mockImplementationOnce(() => Promise.resolve(mockExistingAttributes));
-
-      jest
-        .spyOn(saveListAttributes, 'determineAttributeType')
-        .mockImplementation(() => Promise.resolve(1));
-
-      const result = await saveListAttributes['getAttributesFromListTable'](
-        organizationDatabase,
-        listTable,
-        listId
-      );
-
-      expect(loggerWarnSpy).toHaveBeenCalled();
-      expect(result).toEqual([{ list_id: listId, attribute_name: 'age', attribute_type: 1 }]);
-    });
-  });
-
-  describe('determineAttributeType', () => {
-    it('should return the most frequent attribute type', async () => {
-      const orgDb = 'test_db';
-      const listTable = 'test_table';
-      const listId = 1;
-      const attributeName = 'age';
-
-      const mockResultSets = [
-        {
-          attributesJson: JSON.stringify([{ field: 'age', type: 'number' }]),
-        },
-        {
-          attributesJson: JSON.stringify([{ field: 'age', type: 'number' }]),
-        },
-        {
-          attributesJson: JSON.stringify([{ field: 'age', type: 'string' }]),
-        },
-      ];
-
-      mockQueryDB.mockImplementationOnce(() => Promise.resolve(mockResultSets));
-
-      const result = await saveListAttributes['determineAttributeType'](
-        orgDb,
-        listTable,
-        listId,
-        attributeName
-      );
-
-      expect(result).toBe(1); // ListsAttrsTypes.Int
-    });
-
-    it('should default to text when types are equal or no data', async () => {
-      const orgDb = 'test_db';
-      const listTable = 'test_table';
-      const listId = 1;
-      const attributeName = 'name';
-
-      const mockResultSets = [];
-
-      mockQueryDB.mockImplementationOnce(() => Promise.resolve(mockResultSets));
-
-      const result = await saveListAttributes['determineAttributeType'](
-        orgDb,
-        listTable,
-        listId,
-        attributeName
-      );
-
-      expect(result).toBe(2); // ListsAttrsTypes.Text
+    (ClientStoreConnection as jest.Mock).mockImplementation(() => {
+      return {
+        getConnection: mockGetConnection,
+      };
     });
   });
 
   describe('saveLocAttributesToListAttributes', () => {
-    it('should save attributes to the database', async () => {
-      const orgDb = 'test_db';
+    it('should insert attributes successfully', async () => {
+      const orgDb = 'myOrgDb';
       const attributes = [
-        { list_id: 1, attribute_name: 'age', attribute_type: 1 },
-        { list_id: 1, attribute_name: 'name', attribute_type: 2 },
+        { list_id: 1, attribute_name: 'height', attribute_type: ListsAttrsTypes.Int },
       ];
 
-      const mockConnection = {
-        createQueryBuilder: jest.fn().mockReturnThis(),
-        insert: jest.fn().mockReturnThis(),
-        into: jest.fn().mockReturnThis(),
-        values: jest.fn().mockReturnThis(),
-        execute: jest.fn().mockResolvedValue({}),
-      };
+      await saveListAttributes.saveLocAttributesToListAttributes(orgDb, attributes);
 
-      mockClientStoreConnection.mockImplementationOnce(() => ({
-        getConnection: jest.fn().mockResolvedValue(mockConnection),
-      }));
-
-      await saveListAttributes['saveLocAttributesToListAttributes'](orgDb, attributes);
-
-      expect(loggerLogSpy).toHaveBeenCalledWith(
-        `Inserting ${attributes.length} into ListAttributes From ListSchema`
-      );
-      expect(mockConnection.insert).toHaveBeenCalled();
-      expect(mockConnection.into).toHaveBeenCalledWith(ListAttributes);
-      expect(mockConnection.values).toHaveBeenCalledWith(attributes);
-      expect(mockConnection.execute).toHaveBeenCalled();
+      expect(mockGetConnection).toHaveBeenCalledWith(orgDb, [ListAttributes]);
+      expect(mockQueryBuilder.insert).toHaveBeenCalled();
+      expect(mockQueryBuilder.values).toHaveBeenCalledWith(attributes);
+      expect(mockQueryBuilder.execute).toHaveBeenCalled();
     });
 
-    it('should handle database insertion errors', async () => {
-      const orgDb = 'test_db';
-      const attributes = [{ list_id: 1, attribute_name: 'age', attribute_type: 1 }];
+    it('should log a warning if an error occurs', async () => {
+      const orgDb = 'myOrgDb';
+      const attributes = [
+        { list_id: 1, attribute_name: 'width', attribute_type: ListsAttrsTypes.Int },
+      ];
 
-      const mockConnection = {
-        createQueryBuilder: jest.fn().mockReturnThis(),
-        insert: jest.fn().mockReturnThis(),
-        into: jest.fn().mockReturnThis(),
-        values: jest.fn().mockReturnThis(),
-        execute: jest.fn().mockRejectedValue(new Error('DB Error')),
-      };
+      mockGetConnection.mockRejectedValueOnce(new Error('DB Connection Error'));
 
-      mockClientStoreConnection.mockImplementationOnce(() => ({
-        getConnection: jest.fn().mockResolvedValue(mockConnection),
-      }));
+      const loggerWarnSpy = jest.spyOn(Logger.prototype, 'warn').mockImplementation();
 
-      await saveListAttributes['saveLocAttributesToListAttributes'](orgDb, attributes);
+      await saveListAttributes.saveLocAttributesToListAttributes(orgDb, attributes);
 
+      expect(loggerWarnSpy).toHaveBeenCalledWith(
+        'Something went wrong executing query.',
+        expect.stringMatching(/Error: DB Connection Error/)
+      );
+    });
+  });
+
+  describe('getExistingListAttributesByListId', () => {
+    it('should return a set of existing attributes', async () => {
+      // Arrange
+      const orgDb = 'myOrgDb';
+      const list_id = 123;
+      const mockResults = [{ attribute_name: 'width' }, { attribute_name: 'height' }];
+
+      (SQLUtils.queryDB as jest.Mock).mockResolvedValue(mockResults);
+
+      // Act
+      const result = await saveListAttributes.getExistingListAttributesByListId(orgDb, list_id);
+
+      expect(SQLUtils.queryDB).toHaveBeenCalledWith(
+        orgDb,
+        'SELECT [attribute_name] FROM [ListAttributes] WHERE list_id = 123'
+      );
+      expect(result).toBeInstanceOf(Set);
+      expect(result.has('width')).toBe(true);
+      expect(result.has('height')).toBe(true);
+    });
+  });
+
+  describe('extractFeatureAttributes', () => {
+    it('should parse and filter out existing attributes', async () => {
+      const orgDb = 'myOrgDb';
+      const list_id = 1;
+      const feature = {
+        properties: {
+          attributes: JSON.stringify([
+            { field: 'width', type: 'number' },
+            { field: 'color', type: 'string' },
+          ]),
+        },
+      } as unknown as Feature;
+
+      const existingAttrs = new Set(['width']);
+      jest
+        .spyOn(saveListAttributes, 'getExistingListAttributesByListId')
+        .mockResolvedValue(existingAttrs);
+
+      const result = await saveListAttributes.extractFeatureAttributes(orgDb, list_id, feature);
+
+      expect(result).toEqual([
+        {
+          list_id: 1,
+          attribute_name: 'color',
+          attribute_type: ListsAttrsTypes.Text,
+        },
+      ]);
+    });
+
+    it('should throw an error if JSON parsing fails', async () => {
+      const orgDb = 'myOrgDb';
+      const list_id = 1;
+      const invalidJsonFeature = {
+        properties: {
+          attributes: '{invalid JSON"',
+        },
+      } as unknown as Feature;
+
+      const loggerErrorSpy = jest.spyOn(Logger.prototype, 'error').mockImplementation();
+
+      await expect(
+        saveListAttributes.extractFeatureAttributes(orgDb, list_id, invalidJsonFeature)
+      ).rejects.toThrow();
       expect(loggerErrorSpy).toHaveBeenCalledWith(
-        `Something went wrong inserting ListAttributes`,
-        expect.stringContaining('DB Error')
+        'Error parsing attributes',
+        expect.any(String) // the stack trace
       );
     });
   });
 
   describe('handle', () => {
-    it('should process the request and invoke necessary methods', async () => {
-      const request: ChainType = {
+    it('should call extractFeatureAttributes and saveLocAttributesToListAttributes when features exist', async () => {
+      const input: ChainType = {
+        geojson: {
+          features: [
+            {
+              properties: {
+                attributes: JSON.stringify([
+                  { field: 'width', type: 'number' },
+                  { field: 'color', type: 'string' },
+                ]),
+              },
+            },
+          ],
+        },
         request: {
-          listId: 1,
-          listTable: 'test_table',
-          organization_database: 'test_db',
+          list_id: 1,
+          organization_database: 'myOrgDb',
         } as RequestNewList,
-      };
+      } as unknown as ChainType;
 
-      jest
-        .spyOn(saveListAttributes, 'getAttributesFromListTable')
-        .mockImplementation(() => Promise.resolve([]));
-
-      jest
+      const mockExtract = jest
+        .spyOn(saveListAttributes, 'extractFeatureAttributes')
+        .mockResolvedValue([
+          { list_id: 1, attribute_name: 'width', attribute_type: ListsAttrsTypes.Int },
+          { list_id: 1, attribute_name: 'color', attribute_type: ListsAttrsTypes.Text },
+        ]);
+      const mockSaveLoc = jest
         .spyOn(saveListAttributes, 'saveLocAttributesToListAttributes')
-        .mockImplementation(() => Promise.resolve());
+        .mockImplementation(async () => void 0);
 
-      const result = await saveListAttributes.handle(request);
+      const result = await saveListAttributes.handle(input);
 
-      expect(saveListAttributes['getAttributesFromListTable']).toHaveBeenCalledWith(
-        'test_db',
-        'test_table',
-        1
+      expect(mockExtract).toHaveBeenCalled();
+      expect(mockSaveLoc).toHaveBeenCalled();
+      expect(result).toBe(input);
+    });
+
+    it('should return input when there are no features', async () => {
+      const input: ChainType = {
+        geojson: {
+          features: [],
+        },
+        request: {
+          list_id: 1,
+          organization_database: 'myOrgDb',
+        } as RequestNewList,
+      } as unknown as ChainType;
+
+      const result = await saveListAttributes.handle(input);
+
+      expect(result).toBe(input);
+    });
+
+    it('should log an error if something goes wrong while handling', async () => {
+      const input: ChainType = {
+        geojson: {
+          features: [
+            {
+              properties: {
+                attributes: JSON.stringify([{ field: 'test', type: 'number' }]),
+              },
+            },
+          ],
+        },
+        request: {
+          list_id: 1,
+          organization_database: 'myOrgDb',
+        } as RequestNewList,
+      } as unknown as ChainType;
+
+      jest
+        .spyOn(saveListAttributes, 'extractFeatureAttributes')
+        .mockRejectedValue(new Error('Something bad happened'));
+      const loggerErrorSpy = jest.spyOn(Logger.prototype, 'error').mockImplementation();
+
+      const result = await saveListAttributes.handle(input);
+
+      expect(loggerErrorSpy).toHaveBeenCalledWith(
+        'Something went wrong.',
+        expect.stringMatching(/Error: Something bad happened/)
       );
-
-      expect(saveListAttributes['saveLocAttributesToListAttributes']).toHaveBeenCalledWith(
-        'test_db',
-        []
-      );
-
-      expect(result).toBe(request);
+      expect(result).toBe(input);
     });
   });
 });

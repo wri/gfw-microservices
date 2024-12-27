@@ -1,7 +1,8 @@
-import { FeatureCollection } from '@wri-monorepos/geo';
+import { Feature, FeatureCollection } from '@wri-monorepos/geo';
 import { Logger } from '@nestjs/common';
 import { performance } from 'perf_hooks';
 import { updateListsUploadStatus } from '../shared/update.lists.upload.status';
+import { formatDurationStr, formatHeapUsed } from '../shared/performance.utils';
 
 export interface ChainEvent {
   eventId?: string;
@@ -19,6 +20,7 @@ export type AttributeType = {
 export type ChainType = {
   geojson?: FeatureCollection;
   request: RequestNewList | PreviewListRequest;
+  locations?: Feature['properties'][];
 };
 
 export type ListAttributesRow = {
@@ -55,7 +57,9 @@ export interface RequestNewList extends PreviewListRequest {
   gfwListId?: number;
   user_id?: number;
   template_id?: number;
-  listId?: number;
+  template_type?: string;
+  startAnalysis?: boolean;
+  list_id?: number;
   analysisIds?: Array<string>;
   isExternalAPIProcess: boolean;
   organization_id: number;
@@ -102,31 +106,23 @@ export abstract class AbstractHandler<T> implements Handler<T> {
         );
       }
       const end = performance.now();
-      AbstractHandler.logExecutionTime(start, end, nextJob.constructor.name);
+      const { heapUsed } = process.memoryUsage();
+      AbstractHandler.logExecutionTime(start, end, heapUsed, nextJob.constructor.name);
       nextJob = nextJob.nextHandler;
     }
     return result;
   }
 
-  static logExecutionTime(start, end, className) {
+  static logExecutionTime(start, end, heapUsed, className) {
     const logger = new Logger(className);
-    const durationMs = end - start;
-    let durationStr;
-    if (durationMs < 1000) {
-      durationStr = `${durationMs.toFixed(2)}ms`;
-    } else if (durationMs < 60000) {
-      const durationSec = durationMs / 1000;
-      durationStr = `${durationSec.toFixed(2)}s`;
-    } else {
-      const durationMin = durationMs / 60000;
-      durationStr = `${durationMin.toFixed(2)}min`;
-    }
+    const durationStr = formatDurationStr(start, end);
+    const memoryUsed = formatHeapUsed(heapUsed);
 
-    logger.debug(`${className} executed in ${durationStr}`);
+    logger.debug(`Execution Time: ${durationStr}\tMemory Used: ${memoryUsed}`);
   }
 
   static async updateListsUploadStatus(result: ChainType, message: string, errorInfo?: string) {
-    const { listId, organization_database } = result.request as RequestNewList;
+    const { list_id: listId, organization_database } = result.request as RequestNewList;
 
     if (listId) {
       await updateListsUploadStatus(organization_database, listId, message, errorInfo);

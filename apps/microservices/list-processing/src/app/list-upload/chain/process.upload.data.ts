@@ -4,9 +4,16 @@ import { Logger } from '@nestjs/common';
 import { EntitySchema } from 'typeorm';
 import { Feature } from '@wri-monorepos/geo';
 import { GeoJSONGeometry, stringify } from 'wellknown';
+import { ConvertPoint2Polygon } from './convert.point.2.polygon';
 
 export class ProcessUploadData extends AbstractHandler<ChainType> {
   private readonly logger = new Logger(ProcessUploadData.name);
+  private convertPoint2Polygon: ConvertPoint2Polygon;
+
+  constructor() {
+    super();
+    this.convertPoint2Polygon = new ConvertPoint2Polygon();
+  }
 
   private columnsToExclude: string[] = [
     'locationName',
@@ -52,13 +59,10 @@ export class ProcessUploadData extends AbstractHandler<ChainType> {
     return { requiredFields, schemaFields } as const;
   }
 
-  async processForFeature(featurePayload: Feature): Promise<Feature> {
+  processFeatureAttributes(featurePayload: Feature): Feature {
     const { requiredFields, schemaFields } = this.getFieldsRules();
-    const feature = Object.assign({}, featurePayload, {
-      geometry: stringify(featurePayload.geometry as GeoJSONGeometry),
-    });
 
-    const properties = feature.properties;
+    const properties = featurePayload.properties;
     const propertiesKeys = Object.keys(properties);
     const attributesArray = [];
 
@@ -84,9 +88,12 @@ export class ProcessUploadData extends AbstractHandler<ChainType> {
       attributesArray.push(attributeObject);
     });
 
-    // update reference
-    properties['attributes'] = JSON.stringify(attributesArray);
-    feature.properties = properties;
+    properties.attributes = JSON.stringify(attributesArray);
+
+    const feature = Object.assign({}, featurePayload, {
+      properties,
+      geometry: stringify(featurePayload.geometry as GeoJSONGeometry),
+    });
 
     return feature;
   }
@@ -97,39 +104,28 @@ export class ProcessUploadData extends AbstractHandler<ChainType> {
    * @returns request ChainType
    */
   async handle(request: ChainType): Promise<ChainType> {
-    const features = request.geojson.features;
-    const { requiredFields, schemaFields } = this.getFieldsRules();
+    const { features: prevFeatures = [] } = request.geojson;
+    this.logger.log(`Processing features: ${prevFeatures.length}`);
 
-    this.logger.log(`Processing uploaded properties into attributes column`);
-    for (const feature of features) {
-      const properties = feature.properties;
-      const attributesArray = [];
-
-      for (const propertyName in properties) {
-        if (this.columnsToExclude.includes(propertyName) || requiredFields.includes(propertyName)) {
-          continue;
+    const locations = [];
+    request.geojson.features = await Promise.all(
+      prevFeatures.map(async (feature, index) => {
+        try {
+          feature = await this.convertPoint2Polygon.convertFeature(feature);
+          feature = this.processFeatureAttributes(feature);
+          feature.properties.locationId = index + 1;
+          locations.push(feature.properties);
+        } catch (error) {
+          this.logger.error(`Error processing feature`, error.stack || error);
+          this.logger.debug(feature);
         }
+        return feature;
+      })
+    );
 
-        const isCustom = !schemaFields.includes(propertyName);
-        const propertyValue = properties[propertyName];
-        const inferredType = this.inferType(propertyValue);
-
-        const attributeObject: AttributeType = {
-          field: propertyName,
-          value: propertyValue,
-          type: inferredType,
-        };
-
-        if (isCustom) {
-          attributeObject.custom = isCustom;
-        }
-
-        attributesArray.push(attributeObject);
-      }
-      // update reference
-      properties['attributes'] = JSON.stringify(attributesArray);
-    }
-
-    return request;
+    return {
+      ...request,
+      locations,
+    };
   }
 }

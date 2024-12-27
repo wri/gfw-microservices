@@ -17,39 +17,10 @@ export type AttributeType = {
   custom?: boolean;
 };
 
-export interface ChainEvent {
-  eventId?: string;
-  config?: unknown;
-  payload?: ChainType;
-}
-
-export type AttributeType = {
-  field: string;
-  type: string;
-  value: unknown;
-  custom?: boolean;
-};
-
 export type ChainType = {
   geojson?: FeatureCollection;
   request: RequestNewList | PreviewListRequest;
   locations?: Feature['properties'][];
-};
-
-export type ListAttributesRow = {
-  field: string;
-  type: string;
-  value: string | number | unknown;
-  custom?: boolean;
-};
-
-export interface ListAttributesRecord {
-  list_id: number;
-  attribute_name: string;
-  attribute_type: number;
-}
-export type ListAttributesRecords = {
-  [key: string]: ListAttributesRow;
 };
 
 export type ListAttributesRow = {

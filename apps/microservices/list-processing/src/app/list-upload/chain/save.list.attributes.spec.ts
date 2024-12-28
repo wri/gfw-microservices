@@ -8,7 +8,7 @@ import { Feature } from '@wri-monorepos/geo';
  * Mocking external dependencies and methods
  */
 jest.mock('@wri-monorepos/sql', () => ({
-  ClientStoreConnection: jest.fn(), 
+  ClientStoreConnection: jest.fn(),
   SQLUtils: { queryDB: jest.fn() },
   ListAttributes: jest.fn(),
 }));

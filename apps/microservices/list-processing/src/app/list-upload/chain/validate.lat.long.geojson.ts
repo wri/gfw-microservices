@@ -3,6 +3,7 @@ import { AbstractHandler, ChainType } from './types';
 
 export class ValidateLatLongGeojson extends AbstractHandler<ChainType> {
   private readonly logger = new Logger(ValidateLatLongGeojson.name);
+
   isValidLatitude(lat: number): boolean {
     return lat >= -90 && lat <= 90;
   }
@@ -11,7 +12,11 @@ export class ValidateLatLongGeojson extends AbstractHandler<ChainType> {
     return lon >= -180 && lon <= 180;
   }
 
-  isValidCountry(country): boolean {
+  isNumeric(value: any): boolean {
+    return !isNaN(value) && isFinite(value);
+  }
+
+  isValidCountry(country: string): boolean {
     const countryCleaner = country?.toLowerCase().trim();
     return !(
       countryCleaner === 'antarctica' ||
@@ -23,10 +28,14 @@ export class ValidateLatLongGeojson extends AbstractHandler<ChainType> {
 
   validateCoordinates(coordinates: any, country: string): boolean {
     // Check if coordinates is a single point (array of two numbers)
-    if (typeof coordinates[0] === 'number' && typeof coordinates[1] === 'number') {
+    if (Array.isArray(coordinates) && coordinates.length === 2) {
       const [lon, lat] = coordinates;
       return (
-        this.isValidLatitude(lat) && this.isValidLongitude(lon) && this.isValidCountry(country)
+        this.isNumeric(lat) &&
+        this.isNumeric(lon) &&
+        this.isValidLatitude(lat) &&
+        this.isValidLongitude(lon) &&
+        this.isValidCountry(country)
       );
     }
 
@@ -40,6 +49,8 @@ export class ValidateLatLongGeojson extends AbstractHandler<ChainType> {
       } else {
         const [lon, lat] = coord;
         if (
+          !this.isNumeric(lat) ||
+          !this.isNumeric(lon) ||
           !this.isValidLatitude(lat) ||
           !this.isValidLongitude(lon) ||
           !this.isValidCountry(country)
@@ -49,6 +60,13 @@ export class ValidateLatLongGeojson extends AbstractHandler<ChainType> {
       }
     }
     return true;
+  }
+
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  validatePolygon(_geometry: unknown): boolean {
+    // Implement polygon validation logic (e.g., check for open or self-intersecting polygons)
+    // This is a placeholder for actual polygon validation logic
+    return true; // Replace with actual validation
   }
 
   async handle(input: ChainType): Promise<ChainType> {
@@ -63,12 +81,19 @@ export class ValidateLatLongGeojson extends AbstractHandler<ChainType> {
         const feature = geojson.features[i];
         const country = (feature.properties?.country as string) || '';
         const geometry = feature.geometry;
-        if (
-          geometry &&
-          'coordinates' in geometry &&
-          !this.validateCoordinates(geometry.coordinates, country)
-        ) {
-          feature.properties.error = ['Invalid coordinates'];
+
+        if (geometry && 'coordinates' in geometry) {
+          if (!this.validateCoordinates(geometry.coordinates, country)) {
+            feature.properties.error = feature.properties.error || [];
+            feature.properties.error = ['Invalid coordinates'];
+          }
+
+          if (geometry.type === 'Polygon' || geometry.type === 'MultiPolygon') {
+            if (!this.validatePolygon(geometry)) {
+              feature.properties.error = feature.properties.error || [];
+              feature.properties.error = ['Invalid polygon geometry'];
+            }
+          }
         }
       }
     }

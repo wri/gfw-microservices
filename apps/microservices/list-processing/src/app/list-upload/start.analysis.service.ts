@@ -18,6 +18,7 @@ import { WriteLocationCount } from './chain/write.location.count';
 
 import fastq from 'fastq';
 import type { queue, done } from 'fastq';
+import { ListSchemaName } from './chain/list.schema.name';
 
 type WorkerType = {
   request: RequestLargeListProcess;
@@ -48,9 +49,11 @@ async function worker(input: WorkerType, cb: done) {
   const startAnalysis = new StartAnalysis();
   const getObjectTypes = new GetObjectTypes();
   const writeLocationCount = new WriteLocationCount();
+  const listSchemaName = new ListSchemaName(false);
 
   downloadS3File
     .setNext(parseData)
+    .setNext(listSchemaName)
     .setNext(convertPoint2Polygon)
     .setNext(gadmService) // depends on convertPoint2Polygon
     .setNext(validateLatLongGeojson) // depends on gadmService

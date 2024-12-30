@@ -34,7 +34,7 @@ describe('WriteLocationCount', () => {
     const request: ChainType = {
       request: {
         organization_database: 'test_db',
-        listId: 1,
+        list_id: 1,
       } as RequestNewList,
       geojson: {
         type: 'FeatureCollection', // Add this line
@@ -65,7 +65,7 @@ describe('WriteLocationCount', () => {
     const request: ChainType = {
       request: {
         organization_database: 'test_db',
-        listId: 1,
+        list_id: 1,
       } as RequestNewList,
       geojson: {
         type: 'FeatureCollection',

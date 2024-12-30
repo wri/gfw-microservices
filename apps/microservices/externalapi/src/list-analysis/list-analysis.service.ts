@@ -25,7 +25,12 @@ import {
 import { Organization } from '../api-keys/organization.entity';
 import { S3Client, GetObjectCommand } from '@aws-sdk/client-s3';
 import { throwCustomErrorResponse } from './utils/throw-custom-error-response';
-import { getListStatusString, ListActivityTypesEnum, listStatus } from '@wri-monorepos/constants';
+import {
+  deduceActiveId,
+  getListStatusString,
+  ListActivityTypesEnum,
+  listStatus,
+} from '@wri-monorepos/constants';
 import { SqsService } from '@ssut/nestjs-sqs';
 import {
   CREATE_ANALYSIS,
@@ -287,7 +292,7 @@ export class ListAnalysisService {
     organizationId: number
   ): Promise<ListUploadNewResponse | ListUploadNewErrorResponse> {
     if (!newListDetails.templateId) {
-      newListDetails['templateId'] = 13;
+      newListDetails['templateId'] = deduceActiveId['cocoaGeneric'];
     }
 
     const organizationDetails = await this.getOrganizationDetails(organizationId);
@@ -365,7 +370,7 @@ export class ListAnalysisService {
         // Forcing template_type because only cocoa_generic is supported
         // LP verifies the field is a string
         template_type: 'cocoa_generic',
-        template_id: 13,
+        template_id: deduceActiveId['cocoaGeneric'],
         user_id: externalUpload.userId,
         startAnalysis: true,
         isExternalAPIProcess: true,

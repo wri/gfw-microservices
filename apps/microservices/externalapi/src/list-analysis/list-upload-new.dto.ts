@@ -6,8 +6,8 @@ export const listUploadNewRequestSchema = z.object({
   uploadId: z.string(),
   listName: z.string(),
   analysisIDs: analysisIdsCsvSchema,
-  templateId: z.number().optional(),
-  commodity: z.string().optional(),
+  templateId: z.number().max(4).optional(),
+  commodity: z.string().max(150).optional(),
 });
 
 export type ListUploadNewRequestSchema = z.infer<typeof listUploadNewRequestSchema>;

@@ -74,7 +74,7 @@ export class StartAnalysis extends AbstractHandler<ChainType> {
     const {
       organization_database,
       user_id,
-      listId,
+      list_id: listId,
       isExternalAPIProcess,
       organization_id: organizationId,
       subscription_status_id: subscriptionStatusId,

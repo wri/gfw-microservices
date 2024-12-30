@@ -136,7 +136,7 @@ export class CreateListLevelData extends AbstractHandler<ChainType> {
 
       return {
         ...request,
-        request: { ...request.request, listId: createListResult.list_id },
+        request: { ...request.request, list_id: createListResult.list_id },
       };
     } finally {
       await connection.disconnect();

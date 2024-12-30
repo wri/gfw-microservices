@@ -77,7 +77,7 @@ describe('GADMService', () => {
     it('should handle the input', async () => {
       const input: ChainType = {
         geojson: { type: 'FeatureCollection', features: [] },
-        request: { listId: 1, organization_database: 'test', path: 'test' },
+        request: { list_id: 1, organization_database: 'test', path: 'test' },
       };
       jest
         .spyOn(service, 'clipToLand')

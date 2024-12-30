@@ -58,7 +58,7 @@ export class CreateLargeListService {
     await connection.disconnect();
 
     return {
-      list_id: (chainType.request as RequestNewList)?.listId,
+      list_id: (chainType.request as RequestNewList)?.list_id,
     };
   }
 }

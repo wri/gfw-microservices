@@ -25,7 +25,12 @@ import {
 import { Organization } from '../api-keys/organization.entity';
 import { S3Client, GetObjectCommand } from '@aws-sdk/client-s3';
 import { throwCustomErrorResponse } from './utils/throw-custom-error-response';
-import { getListStatusString, ListActivityTypesEnum, listStatus } from '@wri-monorepos/constants';
+import {
+  deduceActiveId,
+  getListStatusString,
+  ListActivityTypesEnum,
+  listStatus,
+} from '@wri-monorepos/constants';
 import { SqsService } from '@ssut/nestjs-sqs';
 import {
   CREATE_ANALYSIS,
@@ -286,6 +291,10 @@ export class ListAnalysisService {
     newListDetails: ListUploadNewRequestSchema,
     organizationId: number
   ): Promise<ListUploadNewResponse | ListUploadNewErrorResponse> {
+    if (!newListDetails.templateId) {
+      newListDetails['templateId'] = deduceActiveId['cocoaGeneric'];
+    }
+
     const organizationDetails = await this.getOrganizationDetails(organizationId);
     const organizationConnection = await this.createOrganizationConnection(organizationDetails);
     const externalUploadRepository = organizationConnection.getRepository(ExternalUpload);
@@ -313,12 +322,16 @@ export class ListAnalysisService {
       data: { list_id: number };
     };
     try {
-      largeListCreated = await axios.post(`${this.LLP_BASE_URL}/api/create-large-list`, {
+      const data = {
         list_name: newListDetails.listName,
         user_id: externalUpload.userId,
         client_database: organizationDetails.organizationDb,
         analysisIds: newListDetails.analysisIDs,
-      });
+      };
+      if (newListDetails.commodity) {
+        data['commodity'] = newListDetails.commodity;
+      }
+      largeListCreated = await axios.post(`${this.LLP_BASE_URL}/api/create-large-list`, data);
     } catch (error) {
       if (error?.response?.status === HttpStatus.BAD_REQUEST) {
         throwCustomErrorResponse(error.response?.data?.message, HttpStatus.BAD_REQUEST);
@@ -357,7 +370,7 @@ export class ListAnalysisService {
         // Forcing template_type because only cocoa_generic is supported
         // LP verifies the field is a string
         template_type: 'cocoa_generic',
-        template_id: 13,
+        template_id: deduceActiveId['cocoaGeneric'],
         user_id: externalUpload.userId,
         startAnalysis: true,
         isExternalAPIProcess: true,

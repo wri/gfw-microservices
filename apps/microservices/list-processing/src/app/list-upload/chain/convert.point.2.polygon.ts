@@ -1,6 +1,6 @@
 import { Logger } from '@nestjs/common';
 import { AbstractHandler, ChainType } from './types';
-import { Polygon } from '@wri-monorepos/geo';
+import { Feature, Polygon } from '@wri-monorepos/geo';
 
 // ArcGIS imports are ESM only imports, and this code is transpiled into commonJS
 // so we need to use eval to import these modules
@@ -65,6 +65,27 @@ export class ConvertPoint2Polygon extends AbstractHandler<ChainType> {
       spatialReference: { wkid: 4326 },
     });
     return this.geomFromPointRadiusArea(point, featureRadius, featureArea);
+  }
+
+  async convertFeature(feature: Feature): Promise<Feature> {
+    const { geometry, properties } = feature;
+
+    if (geometry.type === 'Point') {
+      const { coordinates } = geometry;
+      const [longitude, latitude] = coordinates;
+      const { featureRadius, featureArea } = properties;
+      const polygon = await this.geomFromLatLongRadiusArea(
+        latitude,
+        longitude,
+        featureRadius,
+        featureArea
+      );
+      delete feature.properties.geometry;
+      (feature.geometry as Polygon).coordinates = polygon.rings;
+      (feature.geometry as Polygon).type = 'Polygon';
+    }
+
+    return Object.assign({}, feature);
   }
 
   async handle(request: ChainType): Promise<ChainType> {

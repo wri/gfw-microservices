@@ -1,29 +1,19 @@
 import React, { DragEvent, useEffect, useState } from 'react';
 import { Box, Card, Modal, Typography, useTheme } from '@mui/material';
-import {
-  ArrowForwardIos,
-  CheckCircle,
-  Close,
-  Downloading,
-  DriveFolderUpload,
-  Report,
-} from '@mui/icons-material';
+import { ArrowForwardIos, Close } from '@mui/icons-material';
 
 import { PillButton } from '../../../../../components';
 import { VALID_UPLOAD_FILE_FORMATS } from '../utils/constants';
-import { DataTemplates, NavBar } from '../components';
+import {
+  DataTemplates,
+  NavBar,
+  UploadByFileFolderIcon,
+  UploadByFileInstructions,
+} from '../components';
 import { useUploadLocation } from '../contexts';
 import { uploadFileToS3 } from '../utils/upload';
 import { useHistory } from '../hooks';
-
-enum FileAttachState {
-  NoFile,
-  DragOver,
-  Uploading,
-  Uploaded,
-  UnsupportedType,
-  UploadFailed,
-}
+import { FileAttachState } from '../types';
 
 export function UploadLocationByFile() {
   const theme = useTheme();
@@ -107,79 +97,6 @@ export function UploadLocationByFile() {
     }
   };
 
-  const getTitleText = () => {
-    switch (fileAttachState) {
-      case FileAttachState.NoFile:
-        return 'Drop your files here or click to select from your device';
-      case FileAttachState.DragOver:
-        return 'Drop your file';
-      case FileAttachState.Uploading:
-        return 'Uploading your file...';
-      case FileAttachState.UnsupportedType:
-        return 'Unsupported file type';
-      case FileAttachState.UploadFailed:
-        return 'Error uploading your file';
-      case FileAttachState.Uploaded:
-        return 'File added successfully!';
-    }
-  };
-
-  const FolderIcon = () => {
-    switch (fileAttachState) {
-      case FileAttachState.NoFile:
-        return <DriveFolderUpload sx={{ color: '#FFE2BF', fontSize: '5.25rem' }} />;
-      case FileAttachState.DragOver:
-        return (
-          <DriveFolderUpload
-            sx={{ color: `${theme.palette.primary.main}80`, fontSize: '5.25rem' }}
-          />
-        );
-      case FileAttachState.Uploading:
-        return (
-          <Box sx={{ position: 'relative' }}>
-            <DriveFolderUpload
-              sx={{ color: `${theme.palette.primary.main}80`, fontSize: '5.25rem' }}
-            />
-            <Downloading
-              sx={{
-                color: 'white',
-                backgroundColor: theme.palette.primary.main,
-                fontSize: '1.75rem',
-                borderRadius: '50%',
-                transform: 'scaleY(-1)',
-                position: 'absolute',
-                left: '57px',
-
-                padding: '3px',
-              }}
-            />
-          </Box>
-        );
-      case FileAttachState.UnsupportedType:
-      case FileAttachState.UploadFailed:
-        return (
-          <Box sx={{ position: 'relative' }}>
-            <DriveFolderUpload
-              sx={{ color: `${theme.palette.error.main}80`, fontSize: '5.25rem' }}
-            />
-            <Report color="error" sx={{ position: 'absolute', fontSize: '2rem', left: '57px' }} />
-          </Box>
-        );
-      case FileAttachState.Uploaded:
-        return (
-          <Box sx={{ position: 'relative' }}>
-            <DriveFolderUpload
-              sx={{ color: `${theme.palette.primary.main}80`, fontSize: '5.25rem' }}
-            />
-            <CheckCircle
-              color="primary"
-              sx={{ position: 'absolute', fontSize: '2rem', left: '57px' }}
-            />
-          </Box>
-        );
-    }
-  };
-
   const isNoFileAttached = fileAttachState === FileAttachState.NoFile;
 
   return (
@@ -231,7 +148,7 @@ export function UploadLocationByFile() {
             htmlFor="file-input"
             style={{ cursor: isNoFileAttached ? 'pointer' : 'default', marginRight: 0 }}
           >
-            <FolderIcon />
+            <UploadByFileFolderIcon fileAttachState={fileAttachState} />
             {isNoFileAttached && (
               <input
                 type="file"
@@ -246,7 +163,7 @@ export function UploadLocationByFile() {
               />
             )}
           </label>
-          <Typography variant="h6">{getTitleText()}</Typography>
+          <UploadByFileInstructions fileAttachState={fileAttachState} />
           {(fileAttachState === FileAttachState.Uploading ||
             fileAttachState === FileAttachState.Uploaded) && (
             <Typography variant="body2" sx={{ color: 'text.secondary' }}>

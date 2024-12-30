@@ -77,3 +77,12 @@ export type FeatureProperties = {
   supplierName?: string;
   facilityName?: string;
 };
+
+export enum FileAttachState {
+  NoFile,
+  DragOver,
+  Uploading,
+  Uploaded,
+  UnsupportedType,
+  UploadFailed,
+}

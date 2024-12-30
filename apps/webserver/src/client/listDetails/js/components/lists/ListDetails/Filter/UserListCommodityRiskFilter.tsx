@@ -14,7 +14,7 @@ import {
   updateFilters,
   setFilterCount,
 } from '../../../../../../locations/js/actions/locationActions';
-import Button from '../../../../../../common/js/components/Button';
+import { PillButton } from '../../../../../../components';
 import CountryStateSubStateFilter from './CountryStateSubStateFilter';
 import { getFilterCounter } from '../../../../../../locations/js/utils/lists.utils';
 import { DefaultFilterValues } from '../../DefaultFilterValuesType';
@@ -41,6 +41,8 @@ interface UserListCommodityRiskFilterProps {
   parentCompanyOptionsForFilter: Location[];
   supplierNameOptionsForFilter: Location[];
   secondSupplierNameOptionsForFilter: Location[];
+  clearFilters: () => void;
+  isListFiltered: boolean;
 }
 
 const UserListCommodityRiskFilter: React.FC<UserListCommodityRiskFilterProps> = ({
@@ -49,6 +51,8 @@ const UserListCommodityRiskFilter: React.FC<UserListCommodityRiskFilterProps> = 
   parentCompanyOptionsForFilter,
   supplierNameOptionsForFilter,
   secondSupplierNameOptionsForFilter,
+  clearFilters,
+  isListFiltered,
 }) => {
   const initialState: DefaultFilterValues = store.getState().filters;
   const [state, setState] = useState<DefaultFilterValues>(initialState);
@@ -451,13 +455,19 @@ const UserListCommodityRiskFilter: React.FC<UserListCommodityRiskFilterProps> = 
               display: 'flex',
             }}
           >
-            <Button variant="secondary" onClick={onCloseHandler} label="Cancel" />
-            <Button
-              style={{ marginLeft: '10px' }}
-              variant="primary"
-              onClick={updateValues}
-              label="Apply"
-            />
+            <PillButton variant="contained" color="info" sx={{ ml: 1 }} onClick={onCloseHandler}>
+              Cancel
+            </PillButton>
+
+            {isListFiltered && (
+              <PillButton variant="contained" color="info" sx={{ ml: 1 }} onClick={clearFilters}>
+                Clear
+              </PillButton>
+            )}
+
+            <PillButton variant="contained" sx={{ ml: 1 }} onClick={updateValues}>
+              Apply
+            </PillButton>
           </Grid>
         </Grid>
       </Box>

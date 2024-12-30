@@ -100,9 +100,10 @@ export class RequestTriggerProcessLargeList {
   client_database: string;
   @ApiProperty()
   analysisIds: Array<string>;
-
   @ApiProperty()
   organization_id: number;
+  @ApiProperty()
+  commodity?: string;
 }
 
 export class CreateListRequest {

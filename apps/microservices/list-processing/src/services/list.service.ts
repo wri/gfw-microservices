@@ -26,6 +26,7 @@ type ListRequest = {
   templateId?: number;
   gfwListId?: number | null;
   isUploadListLpEnabled?: boolean;
+  commodity?: string;
 } & Partial<CreateListRequest>;
 
 interface CreateListResult {

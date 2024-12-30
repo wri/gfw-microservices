@@ -180,7 +180,8 @@ describe('CreateList', () => {
         'attr_names', // customAttributeNames
         'attr_types', // customAttributeTypes
         1, // gfwListId
-        false // isUploadListLpFlagEnabled
+        false, // isUploadListLpFlagEnabled
+        ''
       );
     });
 

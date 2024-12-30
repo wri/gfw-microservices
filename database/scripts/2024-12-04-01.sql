@@ -7,5 +7,5 @@ CREATE TABLE ListAttributes (
     [list_id] INT NOT NULL,
     [attribute_name] NVARCHAR(64) NOT NULL,
     [attribute_type] INT NOT NULL,
-    CONSTRAINT PK_ListAttributes PRIMARY KEY ([list_id],[attribute_name])
+    CONSTRAINT [PK_ListAttributes] PRIMARY KEY ([list_id],[attribute_name])
 );

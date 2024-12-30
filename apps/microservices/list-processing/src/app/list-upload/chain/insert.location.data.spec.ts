@@ -4,6 +4,29 @@ import { FeatureCollection } from '@wri-monorepos/geo';
 import { EntitySchema, DataSource } from 'typeorm';
 import { ChainType } from './types';
 
+const locationsDataMock = [
+  {
+    locationName: 'Location 1',
+    latitude: 0,
+    longitude: 0,
+    analysisRadius: '100',
+    analysisArea: 'Area 1',
+    commodity: 'Commodity 1',
+    attributes: '{}',
+    locationClassification: 'Location Classification 1',
+  },
+  {
+    locationName: 'Location 2',
+    latitude: 1,
+    longitude: 1,
+    analysisRadius: '100',
+    analysisArea: 'Area 1',
+    commodity: 'Commodity 1',
+    attributes: '{}',
+    locationClassification: 'Location Classification 1',
+  },
+];
+
 describe('InsertLocationData', () => {
   let insertLocationData: InsertLocationData;
   let clientStoreConnection: ClientStoreConnection;
@@ -53,34 +76,17 @@ describe('InsertLocationData', () => {
         features: [
           {
             type: 'Feature',
-            properties: {
-              locationName: 'Location 1',
-              latitude: 0,
-              longitude: 0,
-              analysisRadius: '100',
-              analysisArea: 'Area 1',
-              commodity: 'Commodity 1',
-              attributes: '{}',
-              locationClassification: 'Location Classification 1',
-            },
+            properties: locationsDataMock[0],
             geometry: { type: 'Point', coordinates: [0, 0] },
           },
           {
             type: 'Feature',
-            properties: {
-              locationName: 'Location 2',
-              latitude: 1,
-              longitude: 1,
-              analysisRadius: '100',
-              analysisArea: 'Area 1',
-              commodity: 'Commodity 1',
-              attributes: '{}',
-              locationClassification: 'Location Classification 1',
-            },
+            properties: locationsDataMock[1],
             geometry: { type: 'Point', coordinates: [1, 1] },
           },
         ],
       } as FeatureCollection,
+      locations: locationsDataMock,
     };
 
     await insertLocationData.handle(input);

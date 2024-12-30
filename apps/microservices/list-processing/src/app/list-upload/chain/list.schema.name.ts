@@ -11,8 +11,11 @@ export class ListSchemaName extends AbstractHandler<ChainType> {
   private readonly logger = new Logger(ListSchemaName.name);
 
   async handle(request: ChainType): Promise<ChainType> {
-    const { list_name: listName, organization_database: clientDatabase } =
-      request.request as RequestNewList;
+    const {
+      list_name: listName,
+      organization_database: clientDatabase,
+      commodity,
+    } = request.request as RequestNewList;
     const list = createListNameSchema(listName);
     const listTable = list.list_table;
     const analysisTable = list.analysis_table;
@@ -35,6 +38,7 @@ export class ListSchemaName extends AbstractHandler<ChainType> {
         locationClassification: 'Property',
         customAttributeNames: '',
         customAttributeTypes: '',
+        commodity,
       },
     };
   }

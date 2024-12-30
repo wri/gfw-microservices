@@ -13,6 +13,7 @@ import { StartAnalysis } from './chain/start.analysis';
 import { SQLUtils } from '@wri-monorepos/sql';
 import { logExecutionTime } from './chain/shared';
 import { WriteLocationCount } from './chain/write.location.count';
+import { SaveListAttributes } from './chain/save.list.attributes';
 import { ProcessUploadData } from './chain/process.upload.data';
 
 import fastq from 'fastq';
@@ -44,6 +45,7 @@ async function worker(input: WorkerType, cb: done) {
   const gadmService = new GADMService();
   const validateLatLongGeojson = new ValidateLatLongGeojson();
   const insertLocationData = new InsertLocationData();
+  const saveListAttributes = new SaveListAttributes();
   const writeLocationCount = new WriteLocationCount();
   const startAnalysis = new StartAnalysis();
 
@@ -53,6 +55,7 @@ async function worker(input: WorkerType, cb: done) {
     .setNext(gadmService) // depends on convertPoint2Polygon
     .setNext(validateLatLongGeojson) // depends on gadmService
     .setNext(insertLocationData)
+    .setNext(saveListAttributes)
     .setNext(writeLocationCount)
     .setNext(startAnalysis);
 

@@ -73,6 +73,7 @@ describe('ListSchema', () => {
         organization_database: 'test-db',
         template_id: 1,
         path: 'path',
+        commodity: 'COCO',
       },
     };
 
@@ -85,6 +86,7 @@ describe('ListSchema', () => {
     expect(response).toStrictEqual({
       request: {
         analysisTable: 'analysis-newlist',
+        commodity: 'COCO',
         customAttributeNames: '',
         customAttributeTypes: '',
         listStatusId: 1,

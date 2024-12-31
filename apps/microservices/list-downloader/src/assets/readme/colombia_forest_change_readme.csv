@@ -1,4 +1,3 @@
-"PLEASE NOTE: The contents of your zip files will vary based on the locations and commodities within your data, and the types of analysis you requested. Not all CSVs listed here may apply.",,,,
 CSV Name,Description,Version,Column,Column Description
 <LISTNAME>_colombia_overlap,Location Level Overlap with Colombia Categories from Colombia Region Panel,1.1,List Name,Name of List
 <LISTNAME>_colombia_overlap,Location Level Overlap with Colombia Categories from Colombia Region Panel,1.1,Location Name,Name of Location

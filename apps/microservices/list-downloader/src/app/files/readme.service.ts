@@ -100,7 +100,7 @@ export class ReadmeService {
     const { listView } = filters;
 
     const listsViews = {
-      forest_change: 'argentina_fcd_readme.csv',
+      forest_change: 'argentina_forest_change_readme.csv',
     };
     return listsViews[listView] || listsViews['forest_change'];
   }
@@ -109,7 +109,7 @@ export class ReadmeService {
     const { listView } = filters;
 
     const listsViews = {
-      forest_change: 'colombia_fcd_readme.csv',
+      forest_change: 'colombia_forest_change_readme.csv',
     };
     return listsViews[listView] || listsViews['forest_change'];
   }
@@ -118,7 +118,7 @@ export class ReadmeService {
     const { listView } = filters;
  
     const listsViews = {
-      forest_change: 'south_america_fcd_readme.csv',
+      forest_change: 'south_america_forest_change_readme.csv',
     };
     return listsViews[listView] || listsViews['forest_change'];
   }

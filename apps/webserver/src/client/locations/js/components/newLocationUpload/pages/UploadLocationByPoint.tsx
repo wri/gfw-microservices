@@ -67,7 +67,6 @@ export function UploadLocationByPoint() {
   };
 
   const onSubmit = (data: FormFields) => {
-    console.log({ data });
     setUploadLocationByPoint({
       locationName: data.locationName,
       coordinate: {

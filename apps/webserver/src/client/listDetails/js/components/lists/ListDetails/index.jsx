@@ -1107,6 +1107,9 @@ export default class ListDetails extends Component {
         }
       } else {
         store.dispatch(updateListData([]));
+        this.setState({
+          isLoading: false
+        });
       }
     } else {
       this.setState({

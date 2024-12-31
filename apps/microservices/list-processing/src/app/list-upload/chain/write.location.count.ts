@@ -11,7 +11,7 @@ export class WriteLocationCount extends AbstractHandler<ChainType> {
   }
 
   async handle(request: ChainType): Promise<ChainType> {
-    const { organization_database, listId } = request.request as RequestNewList;
+    const { organization_database, list_id: listId } = request.request as RequestNewList;
 
     // Calculate the number of valid features
     const listSize =
@@ -32,10 +32,6 @@ export class WriteLocationCount extends AbstractHandler<ChainType> {
     } catch (error) {
       this.logger.error(`Failed to update list ${listId}: ${error.message}`);
       throw error; // Re-throw the error after logging
-    } finally {
-      if (connection) {
-        await connection.close(); // Ensure the connection is closed
-      }
     }
 
     return request;

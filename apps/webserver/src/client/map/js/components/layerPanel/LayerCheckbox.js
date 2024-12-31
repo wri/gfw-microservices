@@ -3,7 +3,6 @@ import store from '../../store';
 import { toggleLayer, showLoading, getLayerInfo } from '../../actions/mapActions';
 import { toggleClarkLabsLayers } from '../../actions/analysisActions';
 import { proLayers } from '../../../../common/js/proLayers.config';
-import BetaTag from '../../../../common/js/components/BetaTag';
 
 const { clarkLabsAquacultureLandCover, clarkLabsAquacultureLandChange } = proLayers;
 export default class LayerCheckbox extends Component {
@@ -70,7 +69,6 @@ export default class LayerCheckbox extends Component {
         </span>
         <span onClick={this.toggleLayer.bind(this)} className="layer-checkbox-label pointer">
           {label}
-          {label === 'SBTN Natural Forest' && <BetaTag>(Beta)</BetaTag>}
         </span>
         <span
           className={`info-icon metadata-layer-panel layer-panel pointer ${

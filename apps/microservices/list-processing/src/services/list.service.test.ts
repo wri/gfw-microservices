@@ -6,6 +6,8 @@ import { DeprecatedStartAnalysisService } from '../app/list-upload/deprecated.st
 import { MetadataService } from '@wri-monorepos/aws';
 import { ConfigService } from '@nestjs/config';
 import { featureFlagsService } from '@wri-monorepos/shared';
+import { DeprecatedCreateLargeListService } from '../app/list-upload/deprecated.create.large.list.service';
+import { CreateLargeListService } from '../app/list-upload/create.large.list.service';
 
 jest.mock('@wri-monorepos/shared', () => ({
   featureFlagsService: jest.fn(),
@@ -15,6 +17,8 @@ describe('ListService - Start Analysis Process For List', () => {
   let service: ListService;
   let startAnalysisService: StartAnalysisService;
   let deprecatedStartAnalysisService: DeprecatedStartAnalysisService;
+  let createLargeListService: CreateLargeListService;
+  let deprecatedCreateLargeListService: DeprecatedCreateLargeListService;
   let metadataServiceMock: Partial<MetadataService>;
   let configServiceMock: Partial<ConfigService>;
 
@@ -35,12 +39,22 @@ describe('ListService - Start Analysis Process For List', () => {
       run: jest.fn(),
     } as unknown as DeprecatedStartAnalysisService;
 
+    createLargeListService = {
+      run: jest.fn(),
+    } as unknown as CreateLargeListService;
+
+    deprecatedCreateLargeListService = {
+      run: jest.fn(),
+    } as unknown as DeprecatedCreateLargeListService;
+
     service = new ListService(
       new ClientStoreConnection(),
       metadataServiceMock as MetadataService,
       configServiceMock as ConfigService,
       deprecatedStartAnalysisService,
-      startAnalysisService
+      startAnalysisService,
+      deprecatedCreateLargeListService,
+      createLargeListService
     );
   });
 

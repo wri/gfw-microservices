@@ -27,6 +27,10 @@ describe('StartAnalysis', () => {
       getRepository: jest.fn().mockReturnValue({
         findOne: jest.fn().mockResolvedValue({ listName: 'test_list' }), // Ajuste conforme necessário
       }),
+      createQueryBuilder: jest.fn().mockReturnThis(),
+      select: jest.fn().mockReturnThis(),
+      from: jest.fn().mockReturnThis(),
+      getMany: jest.fn().mockResolvedValue([]), // Adjust the return value as n
       // Adicione outras propriedades e métodos do DataSource que você usa
     } as unknown as DataSource;
 
@@ -83,7 +87,7 @@ describe('StartAnalysis', () => {
       request: {
         organization_database: 'test_db',
         user_id: 1,
-        listId: 1,
+        list_id: 1,
         isExternalAPIProcess: false,
         organization_id: 1,
         subscription_status_id: 1,

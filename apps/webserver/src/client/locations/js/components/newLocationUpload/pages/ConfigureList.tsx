@@ -1,0 +1,365 @@
+import React, { useState } from 'react';
+import {
+  Box,
+  Card,
+  Checkbox,
+  Divider,
+  FormControl,
+  FormControlLabel,
+  FormHelperText,
+  MenuItem,
+  Select,
+  TextField,
+  Typography,
+} from '@mui/material';
+import { ArrowBackIos, ArrowForwardIos, Close } from '@mui/icons-material';
+import { useForm, Controller, FieldError } from 'react-hook-form';
+import { z } from 'zod';
+import { zodResolver } from '@hookform/resolvers/zod';
+
+import { useHistory } from '../hooks';
+import { PillButton } from '../../../../../components';
+import { useUploadLocation } from '../contexts';
+import { NavBar } from '../components';
+import { UserList } from '../types';
+import { filterValidTemplates } from '../utils/filterValidTemplates';
+import { typeOfAnalysisMap } from '../utils/constants';
+
+const schema = z
+  .object({
+    commodity: z.string().trim().min(1),
+    newListName: z
+      .string()
+      .trim()
+      .regex(/^[a-zA-Z0-9 ]*$/, 'Only letters, numbers, and spaces are allowed'),
+    existingListName: z.string(),
+    post2000ForestChange: z.coerce.boolean(),
+    includePalmRiskAssessment: z.coerce.boolean(),
+    recentDeforestationAlerts: z.coerce.boolean(),
+    post2000RiskAssessment: z.coerce.boolean(),
+    customCommodity: z.string().optional(),
+  })
+  .refine((data) => data.newListName !== '' || data.existingListName !== '', {
+    message: 'You must provide at least one list name.',
+    path: ['noListNameProvided'],
+  })
+  .refine((data) => !(data.commodity === 'other' && data.customCommodity === ''), {
+    path: ['customCommodity'],
+  });
+
+type FormFields = z.infer<typeof schema>;
+
+export function ConfigureList({ userLists }: { userLists: UserList[] }) {
+  const history = useHistory();
+  const {
+    handleSubmit,
+    control,
+    formState: { errors },
+  } = useForm<FormFields>({
+    resolver: zodResolver(schema),
+    defaultValues: {
+      commodity: '',
+      newListName: '',
+      existingListName: '',
+      includePalmRiskAssessment: false,
+      post2000ForestChange: false,
+      post2000RiskAssessment: false,
+      recentDeforestationAlerts: false,
+      customCommodity: '',
+    },
+  });
+  const { clearUploadType, setUploadLocationConfigureList } = useUploadLocation();
+
+  const [formFields, setFormFields] = useState<{
+    commodity: string;
+    newListName: string;
+    existingListName: string;
+  }>({
+    commodity: '',
+    newListName: '',
+    existingListName: '',
+  });
+
+  const onSubmit = (data: FormFields) => {
+    setUploadLocationConfigureList({
+      commodity: data.commodity,
+      newListName: data.newListName ?? '',
+      existingListName: data.existingListName ?? '',
+      typeOfAnalysis: {
+        includePalmRiskAssessment: data.includePalmRiskAssessment,
+        post2000ForestChange: data.post2000ForestChange,
+        post2000RiskAssessment: data.post2000RiskAssessment,
+        recentDeforestationAlerts: data.recentDeforestationAlerts,
+      },
+    });
+    history.push('SUMMARY_AND_SUBMIT');
+  };
+
+  const templateType = templateTypes[formFields.commodity];
+
+  const validLists = templateType
+    ? userLists.filter((list) => filterValidTemplates(list, templateType))
+    : [];
+
+  return (
+    <>
+      <NavBar />
+      <Card component="form" sx={{ pt: 1, px: 2, pb: 2 }} onSubmit={handleSubmit(onSubmit)}>
+        <Typography variant="h6">Configure List</Typography>
+        <Typography
+          variant="caption"
+          color="text.secondary"
+          sx={{ display: 'inline-block', mb: 3 }}
+        >
+          Define your data's commodity, whether you wish to create a new list or add it to an
+          existing one, and the analysis you would like applied to your upload.
+        </Typography>
+
+        <Box sx={{ display: 'flex' }}>
+          <Box sx={{ display: 'flex', gap: 0.75, mr: 1, mt: 1 }}>
+            <Typography variant="subtitle2" sx={{ fontWeight: '500' }}>
+              Commodity
+            </Typography>
+            <Typography variant="subtitle2" color="error.main">
+              *
+            </Typography>
+          </Box>
+          <Controller
+            name="commodity"
+            control={control}
+            render={({ field }) => {
+              const error = errors.commodity;
+              return (
+                <FormControl error={!!error}>
+                  <Select
+                    sx={{ width: '240px' }}
+                    size="small"
+                    value={formFields.commodity || ''}
+                    onChange={(e) => {
+                      const value = e.target.value || '';
+                      setFormFields((v) => ({ ...v, commodity: value }));
+                      field.onChange(value);
+                    }}
+                  >
+                    <MenuItem value="cattle">Cattle</MenuItem>
+                    <MenuItem value="cocoa">Cocoa</MenuItem>
+                    <MenuItem value="coffee">Coffee</MenuItem>
+                    <MenuItem value="palm-oil">Palm oil</MenuItem>
+                    <MenuItem value="pulp-and-paper">Pulp and paper</MenuItem>
+                    <MenuItem value="rubber">Rubber</MenuItem>
+                    <MenuItem value="soy">Soy</MenuItem>
+                    <MenuItem value="sugar-cane">Sugar cane</MenuItem>
+                    <MenuItem value="multiple">Multiple</MenuItem>
+                    <MenuItem value="other">Other</MenuItem>
+                  </Select>
+                  {!!error && <FormHelperText>Enter the commodity</FormHelperText>}
+                </FormControl>
+              );
+            }}
+          />
+          {formFields.commodity === 'other' && (
+            <>
+              <Box sx={{ display: 'flex', gap: 0.75, ml: 3, mr: 1, mt: 1 }}>
+                <Typography variant="subtitle2" sx={{ fontWeight: '500' }}>
+                  Custom commodity
+                </Typography>
+                <Typography variant="subtitle2" color="error.main">
+                  *
+                </Typography>
+              </Box>
+
+              <Controller
+                name="customCommodity"
+                control={control}
+                render={({ field }) => {
+                  return (
+                    <TextField
+                      size="small"
+                      sx={{ flex: '1' }}
+                      error={!!errors.customCommodity}
+                      helperText={errors.customCommodity ? 'Enter custom commodity' : ''}
+                      {...field}
+                    />
+                  );
+                }}
+              />
+            </>
+          )}
+        </Box>
+        <Divider sx={{ my: 3 }} />
+        <Box sx={{ display: 'flex', gap: 0.75 }}>
+          <Typography variant="subtitle2" sx={{ fontWeight: '500' }}>
+            Define List
+          </Typography>
+          <Typography variant="subtitle2" color="error.main">
+            *
+          </Typography>
+        </Box>
+
+        <Typography
+          variant="caption"
+          color="text.secondary"
+          sx={{ display: 'inline-block', mb: 4 }}
+        >
+          Create a new list for your data, or add it to an existing list. Note that you can only add
+          to lists that match the commodity you have defined above.
+        </Typography>
+        <Box sx={{ display: 'flex', alignItems: 'start', gap: 3 }}>
+          <Controller
+            name="newListName"
+            control={control}
+            render={({ field }) => {
+              const error =
+                ('noListNameProvided' in errors && (errors.noListNameProvided as FieldError)) ||
+                errors.newListName;
+
+              return (
+                <TextField
+                  size="small"
+                  disabled={!!formFields.existingListName}
+                  sx={{ flex: '1' }}
+                  placeholder="Name your new list"
+                  error={!!error}
+                  helperText={error ? error.message ?? 'Enter the list name' : ''}
+                  value={formFields.newListName}
+                  onChange={(e) => {
+                    const value = e.target.value || '';
+                    setFormFields((v) => ({ ...v, newListName: value }));
+                    field.onChange(value);
+                  }}
+                />
+              );
+            }}
+          />
+
+          <Typography sx={{ mt: 1 }}>or</Typography>
+
+          <Controller
+            name="existingListName"
+            control={control}
+            render={({ field }) => {
+              const error =
+                ('noListNameProvided' in errors && (errors.noListNameProvided as FieldError)) ||
+                errors.existingListName;
+
+              return (
+                <FormControl error={!!error} sx={{ flex: '1' }}>
+                  <Select
+                    disabled={validLists.length === 0 || !!formFields.newListName}
+                    size="small"
+                    value={formFields.existingListName}
+                    onChange={(e) => {
+                      const value = e.target.value || '';
+                      setFormFields((v) => ({ ...v, existingListName: value }));
+                      field.onChange(value);
+                    }}
+                  >
+                    {validLists.map(({ id, list_name }) => (
+                      <MenuItem key={id} value={list_name}>
+                        {list_name}
+                      </MenuItem>
+                    ))}
+                  </Select>
+                  {!!error && (
+                    <FormHelperText>{error.message ?? 'Enter the list name'}</FormHelperText>
+                  )}
+                </FormControl>
+              );
+            }}
+          />
+        </Box>
+        <Divider sx={{ my: 3 }} />
+
+        <Box sx={{ display: 'flex', gap: 0.75 }}>
+          <Typography variant="subtitle2" sx={{ fontWeight: '500' }}>
+            Type of analysis
+          </Typography>
+          <Typography variant="subtitle2" color="error.main">
+            *
+          </Typography>
+        </Box>
+
+        <Typography variant="caption" color="text.secondary">
+          Select the analysis you would like applied to your data. Note that each analysis selected
+          counts towards your account usage limits. See more information here.
+        </Typography>
+        <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1, mt: 1 }}>
+          {typeOfAnalysisMap.map(({ id, title, body }) => {
+            const isPalmRisk = id === 'includePalmRiskAssessment';
+            return (
+              <Controller
+                key={id}
+                name={id}
+                control={control}
+                render={({ field }) => (
+                  <FormControlLabel
+                    control={
+                      <Checkbox
+                        sx={{ py: 0 }}
+                        checked={field.value}
+                        onChange={field.onChange}
+                        inputRef={field.ref}
+                      />
+                    }
+                    sx={{ textTransform: 'none', ml: isPalmRisk ? 2 : 0 }}
+                    label={
+                      <Box sx={{ lineHeight: 0 }}>
+                        <Typography variant="body2">{title}</Typography>
+                        <Typography variant="caption" color="text.secondary">
+                          {body}
+                        </Typography>
+                      </Box>
+                    }
+                  ></FormControlLabel>
+                )}
+              />
+            );
+          })}
+        </Box>
+        <Box
+          sx={{
+            display: 'flex',
+            flexDirection: { sm: 'row', xs: 'column' },
+            justifyContent: 'end',
+            gap: 1,
+            mt: 4,
+          }}
+        >
+          <PillButton
+            variant="contained"
+            color="info"
+            startIcon={<ArrowBackIos />}
+            onClick={() => history.goBack()}
+            sx={{ mr: 'auto' }}
+          >
+            Back
+          </PillButton>
+
+          <PillButton
+            variant="contained"
+            color="info"
+            startIcon={<Close />}
+            onClick={clearUploadType}
+          >
+            Cancel
+          </PillButton>
+          <PillButton type="submit" variant="contained" startIcon={<ArrowForwardIos />}>
+            Next
+          </PillButton>
+        </Box>
+      </Card>
+    </>
+  );
+}
+
+const templateTypes: Record<string, string[]> = {
+  cattle: ['cattle', 'cattleGeneric'],
+  cocoa: ['cocoa', 'cocoaGeneric'],
+  coffee: ['coffee'], // new type
+  'palm-oil': ['palmMill', 'palmPlantation', 'palmFarm', 'palmGeneric'],
+  'pulp-and-paper': ['pulpGeneric'],
+  rubber: ['rubberGeneric'],
+  soy: ['soySilo', 'soyFarm', 'soyGeneric'],
+  multiple: ['multiple'], // new type
+  other: ['other'],
+};

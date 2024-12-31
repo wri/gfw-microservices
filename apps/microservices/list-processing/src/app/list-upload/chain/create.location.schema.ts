@@ -110,7 +110,7 @@ export class CreateLocationSchema extends AbstractHandler<ChainType> {
 
   async handle(request: ChainType): Promise<ChainType> {
     const {
-      listId,
+      list_id: listId,
       listTable,
       organization_database,
       analysisTable,

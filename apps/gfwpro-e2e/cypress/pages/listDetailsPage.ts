@@ -29,6 +29,7 @@ class ListDetailsPage {
       ),
     closeAlertDownloadBtn: () => cy.get('[data-cy="download-dialog"]').find('button').first(),
     listByName: (name) => cy.contains('.list-item', name),
+    tabTreeCoverLoss: () => cy.get('.css-1wajlhh-MuiButtonBase-root-MuiTab-root'),
   };
   clickOnLocationsList(name: string) {
     cy.contains(name).click();
@@ -144,6 +145,9 @@ class ListDetailsPage {
   }
   clickOnDeleteBtn() {
     this.elements.deleteBtn().click();
+  }
+  clickOnTabTreeCoverLossBtn() {
+    this.elements.tabTreeCoverLoss().click();
   }
   clickOnListDiagnosticsBtn() {
     this.elements.listDiagnosticsBtn().click();

@@ -107,7 +107,9 @@ export class AlertsService {
   }
 
   formatDates(dateString: string) {
-    if (dateString === '{}') return [];
+    if (dateString === '{}') {
+      return [];
+    }
     const dayStr = dateString.replace(/{|}/gim, '');
     const dayStrArray = dayStr.split(',');
     return dayStrArray.map((s) => {

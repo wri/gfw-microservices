@@ -71,7 +71,9 @@ Popover.prototype.componentWillReceiveProps = function (nextProps) {
     );
   } else {
     if (nextProps.animated) {
-      if (this.timeout !== null) return;
+      if (this.timeout !== null) {
+        return;
+      }
       this.setState({ closing: true });
       this.timeout = setTimeout(() => {
         this.setState(

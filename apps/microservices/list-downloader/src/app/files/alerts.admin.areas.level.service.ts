@@ -85,11 +85,17 @@ export class AlertsAdminAreasLevelService extends IPipeService {
 
     const counts = this.featureDensityForAdminLevelAggregator.getCounts();
     Object.keys(counts.alerts).forEach((countryName) => {
-      if (countryName === 'total') return;
+      if (countryName === 'total') {
+        return;
+      }
       Object.keys(counts.alerts[countryName]).forEach((stateName) => {
-        if (stateName === 'total') return;
+        if (stateName === 'total') {
+          return;
+        }
         Object.keys(counts.alerts[countryName][stateName]).forEach((subStateName) => {
-          if (subStateName === 'total') return;
+          if (subStateName === 'total') {
+            return;
+          }
           const subStateCount = counts.alerts[countryName][stateName][subStateName];
 
           const row = [

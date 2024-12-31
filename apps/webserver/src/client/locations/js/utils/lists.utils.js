@@ -25,11 +25,11 @@ const checkValidViewCommodity = (selectedLists, listData) => {
   if (selectedLists.length > 0 && listData.length > 0) {
     if (!selectedLists[0].isGlobalForestWatchList) {
       // This is a user list
-      const { template_id } = selectedLists[0];
+      const { template_id, location_classification } = selectedLists[0];
       const location = listData[0];
-      const locationClassification = location['Location Classification']
-        ? location['Location Classification'].toLowerCase()
-        : null;
+      const locationClassification =
+        location?.['Location Classification']?.toLowerCase() ??
+        location_classification?.toLowerCase();
       return template_id === 2 || (template_id === 5 && locationClassification === 'supply shed');
     }
     // This is a GFW list
@@ -271,7 +271,7 @@ const dataCleanup = (data) => {
  * @param {number} list_status_id - List status ID
  * @return {boolean} - Return true/false value for template validity
  */
-const getListValidStatus = (list_status_id) => {
+export const getListValidStatus = (list_status_id) => {
   return list_status_id === listStatus.Active || list_status_id === listStatus.Draft;
 };
 

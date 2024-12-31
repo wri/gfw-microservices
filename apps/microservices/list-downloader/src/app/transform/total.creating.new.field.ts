@@ -21,8 +21,12 @@ class TotalCreatingNewField extends Transform {
   }
 
   _transform(chunk, _, next) {
-    if (!this.fields) return next(null, undefined);
-    if (!chunk) return next(null, undefined);
+    if (!this.fields) {
+      return next(null, undefined);
+    }
+    if (!chunk) {
+      return next(null, undefined);
+    }
 
     for (let i = 0; i < this.fields.length; i++) {
       const { input, output } = this.fields[i];

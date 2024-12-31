@@ -96,7 +96,7 @@ export abstract class IPipeService {
 
   async saveS3UrlAtDatabase(filters: BasicFieldsFileRequest, location: string) {
     const { listId, organizationDatabase, type, file, isGFWList } = filters;
-    let formattedAnalysisId = 'AFI';
+    let formattedAnalysisId = 'FCD';
     switch (type) {
       case 'afiVC':
       case 'afi':
@@ -104,9 +104,6 @@ export abstract class IPipeService {
         break;
       case 'alerts':
         formattedAnalysisId = 'ALERTS';
-        break;
-      case 'fcd':
-        formattedAnalysisId = 'FCD';
         break;
     }
     const parameters = toSqlParameter({

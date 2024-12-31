@@ -2,7 +2,6 @@ import { useEffect, useState } from 'react';
 import EsriMap from '@arcgis/core/Map';
 import MapView from '@arcgis/core/views/MapView';
 import { v4 as uuidv4 } from 'uuid';
-import { z } from 'zod';
 import SketchViewModel from '@arcgis/core/widgets/Sketch/SketchViewModel';
 import Graphic from '@arcgis/core/Graphic';
 import Polygon from '@arcgis/core/geometry/Polygon';
@@ -11,9 +10,9 @@ import {
   extractCoordinates,
   addCoordinateTextFromPolygon,
 } from '../../adding/PolygonCoordinates/polygonCoordinates.utils';
-import { coordinateSchema } from '../utils/schema';
+import { Coordinate } from '../types';
 
-type CoordinateType = z.infer<typeof coordinateSchema> & { id: string };
+type CoordinateType = Coordinate & { id: string };
 
 export const useMap = (shouldLoadMap: boolean, initialAmountOfCoordinates: number) => {
   const [mapView, setMapView] = useState<MapView | null>(null);
@@ -24,7 +23,9 @@ export const useMap = (shouldLoadMap: boolean, initialAmountOfCoordinates: numbe
   );
 
   useEffect(() => {
-    if (!shouldLoadMap) return;
+    if (!shouldLoadMap) {
+      return;
+    }
 
     initMap();
     return cleanup;
@@ -61,7 +62,9 @@ export const useMap = (shouldLoadMap: boolean, initialAmountOfCoordinates: numbe
   };
 
   const addGraphicToMap = (geometry: Polygon | Polygon[], graphic: Graphic) => {
-    if (!mapView) return;
+    if (!mapView) {
+      return;
+    }
 
     mapView.graphics.removeAll();
     sketchViewModel?.delete();

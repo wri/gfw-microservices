@@ -667,7 +667,7 @@ module.exports = (app, limiter) => {
             filters
           );
           listAnalyses = analysisManagerResult.listAnalyses;
-          numberOfResults = analysisManagerResult.quantity;
+          numberOfResults = analysisManagerResult.numberOfResults;
           numberOfPages =
             numberOfResults % pageSize === 0
               ? numberOfResults / pageSize
@@ -678,8 +678,23 @@ module.exports = (app, limiter) => {
           }
           break;
         }
-        case 'ALERTS':
-          return res.send({ msg: 'Alerts not implemented yet' });
+        case 'ALERTS': {
+          const analysisManagerResult = await AnalysisManager.getDashboardDataPaginatedByList(
+            listID,
+            page,
+            pageSize,
+            req.session.organization_database,
+            filters
+          );
+          listAnalyses = analysisManagerResult.listDashboardAnalyses;
+          numberOfResults = analysisManagerResult.numberOfResults.quantity;
+          numberOfPages = analysisManagerResult.numberOfPages;
+          maximumAnalysisAreaInTheList = 0;
+          if (listAnalyses.length > 0) {
+            location_analyses = listAnalyses.filter((analysis) => analysis.location_id > 1);
+          }
+          break;
+        }
         default:
         case 'FCD': {
           listAnalyses = await AnalysisManager.getListAnalyses(req, listID);
@@ -772,8 +787,16 @@ module.exports = (app, limiter) => {
 
   app.post('/locations/getGFWListLocationData', (req, res) => {
     console.log('POST /locations/getGFWListLocationData');
-    const { list_id, location_ids, pageNum, pageSize, filters, tableSortedBy, tableSortedDesc } =
-      req.body;
+    const {
+      list_id,
+      location_ids,
+      pageNum,
+      pageSize,
+      filters,
+      filterString,
+      tableSortedBy,
+      tableSortedDesc,
+    } = req.body;
     const listAnalyses = [];
     const locationAttributeArray = [];
     const locationAnalysisArray = [];
@@ -784,6 +807,7 @@ module.exports = (app, limiter) => {
         pageSize,
         list_id,
         filters,
+        filterString,
         tableSortedBy,
         tableSortedDesc
       )
@@ -907,8 +931,14 @@ module.exports = (app, limiter) => {
       selectedStates,
       selectedSubStates,
     };
-    const { id: listID, pageNum, pageSize, tableSortedBy, tableSortedDesc } = req.body;
-
+    const {
+      id: listID,
+      pageNum,
+      pageSize,
+      tableSortedBy,
+      tableSortedDesc,
+      filterString,
+    } = req.body;
     let listData = [],
       protectedLocationResult = [],
       count = 0,
@@ -923,6 +953,7 @@ module.exports = (app, limiter) => {
             pageSize,
             config.SQLConnection.database,
             filters,
+            filterString,
             tableSortedBy,
             tableSortedDesc
           );
@@ -974,7 +1005,14 @@ module.exports = (app, limiter) => {
       selectedNames,
     } = req.body.filters;
 
-    const { id: listID, pageNum, pageSize, tableSortedBy, tableSortedDesc } = req.body;
+    const {
+      id: listID,
+      pageNum,
+      pageSize,
+      tableSortedBy,
+      tableSortedDesc,
+      filterString,
+    } = req.body;
     const filters = {
       selectedCountry,
       selectedState,
@@ -992,6 +1030,7 @@ module.exports = (app, limiter) => {
         pageSize,
         config.SQLConnection.database,
         filters,
+        filterString,
         tableSortedBy,
         tableSortedDesc
       )

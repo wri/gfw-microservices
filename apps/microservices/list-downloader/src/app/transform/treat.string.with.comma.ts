@@ -14,7 +14,9 @@ class TreatStringWithComma extends Transform {
   }
 
   _transform(chunk, _, next) {
-    if (!chunk) return next(null, undefined);
+    if (!chunk) {
+      return next(null, undefined);
+    }
 
     if (Array.isArray(chunk)) {
       const result = chunk.map((item) => {

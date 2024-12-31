@@ -2025,7 +2025,7 @@ class Map extends Component {
     ].find((l) => l.id === listId);
 
     // list not found, exit for now.
-    if (!currentlySelectedList) {
+    if (!listId || !currentlySelectedList) {
       console.warn(`List ${listId} Not Found`);
       store.dispatch(showMapLoader(false));
       return;
@@ -2224,6 +2224,9 @@ class Map extends Component {
   };
 
   getUserLocationData = (list_ids, listName) => {
+    if (!list_ids?.length) {
+      return;
+    }
     store.dispatch(showMapLoader(true));
     const request = new XMLHttpRequest();
     request.onload = () => {

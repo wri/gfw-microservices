@@ -52,7 +52,7 @@ describe('GADMService', () => {
       expect(feature.properties).toEqual({
         longitude: 0,
         latitude: 0,
-        substate: 'Substate',
+        subState: 'Substate',
         state: 'State',
         country: 'Country',
         gadmid: '123',
@@ -77,7 +77,7 @@ describe('GADMService', () => {
     it('should handle the input', async () => {
       const input: ChainType = {
         geojson: { type: 'FeatureCollection', features: [] },
-        request: { listId: 1, organization_database: 'test', path: 'test' },
+        request: { list_id: 1, organization_database: 'test', path: 'test' },
       };
       jest
         .spyOn(service, 'clipToLand')

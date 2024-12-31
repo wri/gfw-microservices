@@ -42,7 +42,9 @@ class Handler {
   }
 
   protected handle(token: InjectionToken): unknown {
-    if (this.condition(token)) return this.callbackToken(token);
+    if (this.condition(token)) {
+      return this.callbackToken(token);
+    }
   }
 }
 
@@ -85,8 +87,11 @@ export const createMockModule = (options: ModuleMetadata, handlers: HandlerParam
   );
 
   handlers.forEach((handler) => {
-    if (handler.token) factory.createHandler((token) => handler.token === token, handler.callback);
-    else factory.createHandler(handler.condition, handler.callback);
+    if (handler.token) {
+      factory.createHandler((token) => handler.token === token, handler.callback);
+    } else {
+      factory.createHandler(handler.condition, handler.callback);
+    }
   });
 
   const topHandler = factory.getTopHandler();

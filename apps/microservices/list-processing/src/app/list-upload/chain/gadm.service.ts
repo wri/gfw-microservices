@@ -77,16 +77,46 @@ export class GADMService extends AbstractHandler<ChainType> {
 
   /**
    * Function to perform a GET request using axios.
-   * @param {number} longitude - The longitude of the location.
-   * @param {number} latitude - The latitude of the location.
-   * @returns {Promise} - A promise that resolves to the query result.
+   * @param {Feature} feature - The feature object containing properties and geometry.
+   * @returns {Promise<IFeatureSet>} - A promise that resolves to the query result.
    */
   async queryGADM(feature: Feature): Promise<IFeatureSet> {
-    return (await queryFeatures({
+    let longitude: number;
+    let latitude: number;
+
+    if (feature.properties.longitude !== undefined && feature.properties.latitude !== undefined) {
+      longitude = feature.properties.longitude as number;
+      latitude = feature.properties.latitude as number;
+    } else if (
+      feature.geometry &&
+      feature.geometry.type === 'Polygon' &&
+      feature.geometry.coordinates.length > 0
+    ) {
+      // Assuming the coordinates are in the format [ [ [x1, y1], [x2, y2], ... ] ]
+      const firstPoint = Array.isArray(feature.geometry.coordinates[0][0])
+        ? feature.geometry.coordinates[0][0]
+        : feature.geometry.coordinates[0];
+
+      longitude = firstPoint[0] as number;
+      latitude = firstPoint[1] as number;
+    } else if (
+      feature.geometry &&
+      feature.geometry.type === 'Point' &&
+      feature.geometry.coordinates.length > 0
+    ) {
+      // Assuming the coordinates are in the format [ [ [x1, y1], [x2, y2], ... ] ]
+      const firstPoint = feature.geometry.coordinates;
+      longitude = firstPoint[0];
+      latitude = firstPoint[1];
+    } else {
+      throw new Error('Feature does not have valid longitude/latitude or geometry.');
+    }
+
+    const response = (await queryFeatures({
       url: this.getGadmServiceUrl(),
       geometry: {
-        x: feature.properties.longitude,
-        y: feature.properties.latitude,
+        x: longitude,
+        y: latitude,
         spatialReference: {
           wkid: 4326,
         },
@@ -95,6 +125,8 @@ export class GADMService extends AbstractHandler<ChainType> {
       spatialRel: 'esriSpatialRelIntersects',
       outFields: ['gadmid', 'name_0', 'name_1', 'name_2'],
     })) as IFeatureSet;
+
+    return response;
   }
 
   getGeoReferenceData = async (feature: Feature) => {
@@ -102,7 +134,7 @@ export class GADMService extends AbstractHandler<ChainType> {
     if (response.features && response.features.length > 0) {
       feature.properties = {
         ...feature.properties,
-        substate: response.features[0].attributes.name_2,
+        subState: response.features[0].attributes.name_2,
         state: response.features[0].attributes.name_1,
         country: response.features[0].attributes.name_0,
         gadmid: response.features[0].attributes.gadmid,
@@ -157,16 +189,22 @@ export class GADMService extends AbstractHandler<ChainType> {
     await this.getGeoReferenceData(feature);
   };
 
+  async asyncPoolAll(...args) {
+    const results = [];
+    for await (const undefRet of asyncPool(...args)) {
+      // disabling log because it is too verbose -- logs every iteration
+      results.push(undefRet);
+    }
+    return results;
+  }
+
   async handle(request: ChainType): Promise<ChainType> {
     const { geojson } = request;
     const { path, preview = false } = request.request as PreviewListRequest;
     const { features } = geojson as FeatureCollection;
 
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    for await (const undefRet of asyncPool(POOL_SIZE, features, this.composeResults)) {
-      // disabling log because it is too verbose -- logs every iteration
-      // this.logger.log(`(${path}) - one more feature processed`);
-    }
+    await this.asyncPoolAll(POOL_SIZE, features, this.composeResults);
+
     this.logger.debug('GADMService - done with getGeoReferenceData for', path);
     // We should not call clip to land if we are in the preview mode.
     if (!preview) {

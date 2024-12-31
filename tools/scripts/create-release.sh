@@ -46,20 +46,21 @@ cd gfw-microservices-release
 git pull --tags
 
 # Create releases based on the microservice input
-if [[ "$microservice" == "LD" || "$microservice" == "ALL" ]]; then
-  create_release "LD" $environment
+
+if [[ "$microservice" == "WEB" || "$microservice" == "ALL" ]]; then
+  create_release "WEB" $environment
 fi
 
 if [[ "$microservice" == "LP" || "$microservice" == "ALL" ]]; then
   create_release "LP" $environment
 fi
 
-if [[ "$microservice" == "WEB" || "$microservice" == "ALL" ]]; then
-  create_release "WEB" $environment
-fi
-
 if [[ "$microservice" == "EAPI" || "$microservice" == "ALL" ]]; then
   create_release "EAPI" $environment
+fi
+
+if [[ "$microservice" == "LD" || "$microservice" == "ALL" ]]; then
+  create_release "LD" $environment
 fi
 
 # Cleanup: Remove the cloned repository

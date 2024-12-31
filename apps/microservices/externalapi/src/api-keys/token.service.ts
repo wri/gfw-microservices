@@ -88,7 +88,9 @@ export class TokenService {
       where: { organization_id: organizationId, organization_user_id: userId },
     });
 
-    if (!user) throw new NotFoundException('User or organization not found');
+    if (!user) {
+      throw new NotFoundException('User or organization not found');
+    }
 
     const token = new ExternalAPIKey();
     token.awsId = awsToken.id;
@@ -109,7 +111,9 @@ export class TokenService {
   async findTokenByOrganizationId(organizationId: number): Promise<ViewApiKeyResponse[]> {
     const tokens = await this.tokenRepository.find({ where: { organizationId } });
 
-    if (tokens.length === 0) throw new NotFoundException('Organization not found');
+    if (tokens.length === 0) {
+      throw new NotFoundException('Organization not found');
+    }
 
     return transformApiKeys(tokens);
   }

@@ -1,24 +1,12 @@
-import React, { useState } from 'react';
-import {
-  Typography,
-  Card,
-  IconButton,
-  TextField,
-  Divider,
-  OutlinedInput,
-  InputAdornment,
-  FormControl,
-  InputLabel,
-  Box,
-  FormHelperText,
-} from '@mui/material';
-import { AddLocationAlt, LocationOn, Search, Close, ArrowForwardIos } from '@mui/icons-material';
+import React, { useEffect, useState } from 'react';
+import { Typography, Card, TextField, Divider, Box } from '@mui/material';
+import { AddLocationAlt, LocationOn, Close, ArrowForwardIos } from '@mui/icons-material';
 import { useForm, Controller } from 'react-hook-form';
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
 
 import { useHistory } from '../hooks';
-import { LocationTypeButton, ExternalHelperResource, NavBar } from '../components';
+import { LocationTypeButton, ExternalHelperResource, NavBar, AddressSelector } from '../components';
 import HectareKilometerSwitch from '../../adding/HectareKilometerSwitch';
 import { PillButton } from '../../../../../components';
 import { MeasurementUnit } from '../types';
@@ -30,81 +18,65 @@ enum LocationFormat {
   Address,
 }
 
-const sharedFields = z.object({
-  areaSize: z.coerce.number().nonnegative(),
+const uploadByPointSchema = coordinateSchema.extend({
+  locationName: z.string().trim().min(1, { message: 'Enter location name' }),
+  areaSize: z
+    .string()
+    .min(1, { message: 'Enter the area size' })
+    .transform((val) => Number(val))
+    .refine((val) => val > 0, { message: 'Enter a valid area size' })
+    .transform((val) => val.toString()),
   areaMeasurementUnit: z.enum(['hectares', 'kilometers']),
-  locationName: z.string(),
 });
 
-const uploadByPointSchema = z.discriminatedUnion('locationFormat', [
-  coordinateSchema
-    .extend({
-      locationFormat: z.literal(LocationFormat.Coordinates),
-    })
-    .merge(sharedFields),
-  z
-    .object({
-      locationFormat: z.literal(LocationFormat.Address),
-      address: z.string().trim().min(1, 'Address cannot be empty'),
-    })
-    .merge(sharedFields),
-  z.object({
-    locationFormat: z.null(),
-  }),
-]);
 type FormFields = z.infer<typeof uploadByPointSchema>;
-
-const COORDINATE_ERROR_MESSAGE =
-  'Your coordinate value is invalid. Please ensure your data is in decimal degree notation';
 
 export function UploadLocationByPoint() {
   const history = useHistory();
-  const { clearUploadType, setUploadLocationByPointAddress, setUploadLocationByPointCoordinates } =
-    useUploadLocation();
+  const { clearUploadType, setUploadLocationByPoint } = useUploadLocation();
+  const [locationFormat, setLocationFormat] = useState<LocationFormat | null>(null);
 
   const {
     handleSubmit,
     control,
     formState: { errors },
     reset,
-    watch,
+    setValue,
   } = useForm<FormFields>({
     resolver: zodResolver(uploadByPointSchema),
-    defaultValues: { locationFormat: null },
+    defaultValues: {
+      areaMeasurementUnit: 'hectares',
+      areaSize: '',
+      latitude: '',
+      longitude: '',
+      locationName: '',
+    },
   });
-
-  const locationFormat: LocationFormat | null = watch('locationFormat');
+  useEffect(() => reset, [locationFormat]);
 
   const [measurementUnit, setMeasurementUnit] = useState<MeasurementUnit>('hectares');
 
-  const handleChangeLocationFormat = (locFormat: LocationFormat) => {
-    if (locFormat === LocationFormat.Coordinates) {
-      reset({ locationFormat: locFormat, latitude: '', longitude: '' });
-    } else {
-      reset({ locationFormat: locFormat, address: '' });
-    }
+  const handleClearAddress = () => {
+    setValue('latitude', '');
+    setValue('longitude', '');
+  };
+
+  const handleAddressSelected = (latitude: number, longitude: number) => {
+    setValue('latitude', latitude.toString());
+    setValue('longitude', longitude.toString());
   };
 
   const onSubmit = (data: FormFields) => {
-    if (!data.locationFormat === null) {
-      return;
-    }
-
-    if (data.locationFormat === LocationFormat.Address) {
-      setUploadLocationByPointAddress({
-        locationName: data.locationName,
-        address: data.address,
-        area: { size: data.areaSize, measurementUnit: data.areaMeasurementUnit },
-      });
-      history.push('CONFIGURE_LIST');
-    } else if (data.locationFormat === LocationFormat.Coordinates) {
-      setUploadLocationByPointCoordinates({
-        locationName: data.locationName,
-        coordinate: { latitude: data.latitude, longitude: data.longitude },
-        area: { size: data.areaSize, measurementUnit: data.areaMeasurementUnit },
-      });
-      history.push('CONFIGURE_LIST');
-    }
+    console.log({ data });
+    setUploadLocationByPoint({
+      locationName: data.locationName,
+      coordinate: {
+        latitude: data.latitude,
+        longitude: data.longitude,
+      },
+      area: { size: Number(data.areaSize), measurementUnit: data.areaMeasurementUnit },
+    });
+    history.push('CONFIGURE_LIST');
   };
 
   return (
@@ -137,12 +109,9 @@ export function UploadLocationByPoint() {
             return (
               <TextField
                 size="small"
-                placeholder="Location name"
                 fullWidth
-                error={'locationName' in errors && !!errors.locationName}
-                helperText={
-                  'locationName' in errors && errors.locationName ? 'Enter the location name' : ''
-                }
+                error={!!errors.locationName}
+                helperText={errors.locationName?.message}
                 {...field}
               />
             );
@@ -169,7 +138,7 @@ export function UploadLocationByPoint() {
             <LocationTypeButton
               variant="outlined"
               color={locationFormat === LocationFormat.Coordinates ? 'primary' : 'info'}
-              onClick={() => handleChangeLocationFormat(LocationFormat.Coordinates)}
+              onClick={() => setLocationFormat(LocationFormat.Coordinates)}
             >
               <AddLocationAlt sx={{ fontSize: (theme) => theme.typography.h4 }} />
               <Typography variant="body2">Enter coordinates</Typography>
@@ -177,7 +146,7 @@ export function UploadLocationByPoint() {
             <LocationTypeButton
               variant="outlined"
               color={locationFormat === LocationFormat.Address ? 'primary' : 'info'}
-              onClick={() => handleChangeLocationFormat(LocationFormat.Address)}
+              onClick={() => setLocationFormat(LocationFormat.Address)}
             >
               <LocationOn sx={{ fontSize: (theme) => theme.typography.h4 }} />
               <Typography variant="body2">Enter address</Typography>
@@ -214,10 +183,8 @@ export function UploadLocationByPoint() {
                           type="number"
                           fullWidth
                           size="small"
-                          error={'latitude' in errors && !!errors.latitude}
-                          helperText={
-                            'latitude' in errors && errors.latitude ? COORDINATE_ERROR_MESSAGE : ''
-                          }
+                          error={!!errors.latitude}
+                          helperText={errors.latitude?.message}
                           {...field}
                         />
                       )}
@@ -232,12 +199,8 @@ export function UploadLocationByPoint() {
                           type="number"
                           fullWidth
                           size="small"
-                          error={'longitude' in errors && !!errors.longitude}
-                          helperText={
-                            'longitude' in errors && errors.longitude
-                              ? COORDINATE_ERROR_MESSAGE
-                              : ''
-                          }
+                          error={!!errors.longitude}
+                          helperText={errors.longitude?.message}
                           {...field}
                         />
                       )}
@@ -245,8 +208,8 @@ export function UploadLocationByPoint() {
                   </Box>
                 </Box>
               ) : (
-                <Box>
-                  <Box sx={{ display: 'flex', gap: 0.75, mb: 0.5 }}>
+                <>
+                  <Box sx={{ display: 'flex', gap: 0.75, mb: 1 }}>
                     <Typography variant="body2" sx={{ fontWeight: '500' }}>
                       Enter address
                     </Typography>
@@ -254,44 +217,12 @@ export function UploadLocationByPoint() {
                       *
                     </Typography>
                   </Box>
-                  <Controller
-                    control={control}
-                    name="address"
-                    render={({ field }) => (
-                      <FormControl
-                        variant="outlined"
-                        size="small"
-                        fullWidth
-                        error={'address' in errors && !!errors.address}
-                      >
-                        <InputLabel htmlFor="address">Address</InputLabel>
-                        <OutlinedInput
-                          id="address"
-                          sx={{
-                            '& input': {
-                              borderRight: 'none',
-                              '&:focus': {
-                                boxShadow: 'none',
-                              },
-                            },
-                          }}
-                          endAdornment={
-                            <InputAdornment position="end">
-                              <IconButton disableRipple>
-                                <Search />
-                              </IconButton>
-                            </InputAdornment>
-                          }
-                          label="Address"
-                          {...field}
-                        />
-                        {'address' in errors && !!errors.address && (
-                          <FormHelperText>Enter the address</FormHelperText>
-                        )}
-                      </FormControl>
-                    )}
+                  <AddressSelector
+                    onResultSelect={handleAddressSelected}
+                    onClearValue={handleClearAddress}
+                    error={errors.latitude}
                   />
-                </Box>
+                </>
               )}
 
               <Box>
@@ -320,15 +251,12 @@ export function UploadLocationByPoint() {
                     name="areaSize"
                     render={({ field }) => (
                       <TextField
-                        label="Custom area"
                         variant="outlined"
                         type="number"
                         size="small"
                         sx={{ flex: 1 }}
-                        error={'areaSize' in errors && !!errors.areaSize}
-                        helperText={
-                          'areaSize' in errors && errors.areaSize ? 'Enter the area size' : ''
-                        }
+                        error={!!errors.areaSize}
+                        helperText={errors.areaSize?.message}
                         {...field}
                       />
                     )}

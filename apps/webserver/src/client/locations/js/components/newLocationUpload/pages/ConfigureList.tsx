@@ -127,35 +127,32 @@ export function ConfigureList({ userLists }: { userLists: UserList[] }) {
           <Controller
             name="commodity"
             control={control}
-            render={({ field }) => {
-              const error = errors.commodity;
-              return (
-                <FormControl error={!!error}>
-                  <Select
-                    sx={{ width: '240px' }}
-                    size="small"
-                    value={formFields.commodity || ''}
-                    onChange={(e) => {
-                      const value = e.target.value || '';
-                      setFormFields((v) => ({ ...v, commodity: value }));
-                      field.onChange(value);
-                    }}
-                  >
-                    <MenuItem value="cattle">Cattle</MenuItem>
-                    <MenuItem value="cocoa">Cocoa</MenuItem>
-                    <MenuItem value="coffee">Coffee</MenuItem>
-                    <MenuItem value="palm-oil">Palm oil</MenuItem>
-                    <MenuItem value="pulp-and-paper">Pulp and paper</MenuItem>
-                    <MenuItem value="rubber">Rubber</MenuItem>
-                    <MenuItem value="soy">Soy</MenuItem>
-                    <MenuItem value="sugar-cane">Sugar cane</MenuItem>
-                    <MenuItem value="multiple">Multiple</MenuItem>
-                    <MenuItem value="other">Other</MenuItem>
-                  </Select>
-                  {!!error && <FormHelperText>Enter the commodity</FormHelperText>}
-                </FormControl>
-              );
-            }}
+            render={({ field }) => (
+              <FormControl error={!!errors.commodity}>
+                <Select
+                  sx={{ width: '240px' }}
+                  size="small"
+                  value={formFields.commodity || ''}
+                  onChange={(e) => {
+                    const value = e.target.value || '';
+                    setFormFields((v) => ({ ...v, commodity: value }));
+                    field.onChange(value);
+                  }}
+                >
+                  <MenuItem value="cattle">Cattle</MenuItem>
+                  <MenuItem value="cocoa">Cocoa</MenuItem>
+                  <MenuItem value="coffee">Coffee</MenuItem>
+                  <MenuItem value="palm-oil">Palm oil</MenuItem>
+                  <MenuItem value="pulp-and-paper">Pulp and paper</MenuItem>
+                  <MenuItem value="rubber">Rubber</MenuItem>
+                  <MenuItem value="soy">Soy</MenuItem>
+                  <MenuItem value="sugar-cane">Sugar cane</MenuItem>
+                  <MenuItem value="multiple">Multiple</MenuItem>
+                  <MenuItem value="other">Other</MenuItem>
+                </Select>
+                {!!errors.commodity && <FormHelperText>Enter the commodity</FormHelperText>}
+              </FormControl>
+            )}
           />
           {formFields.commodity === 'other' && (
             <>

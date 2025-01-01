@@ -16,7 +16,6 @@ const draft_state_columns = [
     className: 'default-cell td-num',
     id: 'total_area_ha',
     Cell: (row) => {
-      // console.log({row})
       return renderCell(formatDigit(row.original?.['Analysis Area']));
     },
   },

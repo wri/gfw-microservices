@@ -613,6 +613,7 @@ module.exports = (app, limiter) => {
       selectedOverallValues: overallValues,
       selectedMillPriority: millPriority,
       analysisId = 'FCD',
+      areAllAnalysesDraft,
     } = req.query;
     const VALID_ANALYSIS_TYPES = ['FCD', 'ALERTS', 'AFI'];
     // Verify if analysisId is a valid analysis type
@@ -647,7 +648,7 @@ module.exports = (app, limiter) => {
       selectedOverallValues,
       selectedMillPriority,
     };
-
+    const areAllAnalysesDraftBoolean = areAllAnalysesDraft === 'true';
     try {
       let listAnalyses;
       let locationAttributeArray = {};
@@ -657,71 +658,93 @@ module.exports = (app, limiter) => {
         locationAttributeList;
       let location_analyses = [];
 
-      switch (analysisId.toUpperCase()) {
-        case 'AFI': {
-          const analysisManagerResult = await AnalysisManager.getAFIListAnalyses(
-            listID,
-            page,
-            pageSize,
-            req.session.organization_database,
-            filters
-          );
-          listAnalyses = analysisManagerResult.listAnalyses;
-          numberOfResults = analysisManagerResult.numberOfResults;
-          numberOfPages =
-            numberOfResults % pageSize === 0
-              ? numberOfResults / pageSize
-              : Math.floor(numberOfResults / pageSize) + 1;
+      if (areAllAnalysesDraftBoolean) {
+        const analysisManagerResult = await AnalysisManager.getDraftListLocationData(
+          listID,
+          page,
+          pageSize,
+          req.session.organization_database,
+          filters
+        );
 
-          if (listAnalyses.length > 0) {
-            location_analyses = listAnalyses;
-          }
-          break;
-        }
-        case 'ALERTS': {
-          const analysisManagerResult = await AnalysisManager.getDashboardDataPaginatedByList(
-            listID,
-            page,
-            pageSize,
-            req.session.organization_database,
-            filters
-          );
-          listAnalyses = analysisManagerResult.listDashboardAnalyses;
-          numberOfResults = analysisManagerResult.numberOfResults.quantity;
-          numberOfPages = analysisManagerResult.numberOfPages;
-          maximumAnalysisAreaInTheList = 0;
-          if (listAnalyses.length > 0) {
-            location_analyses = listAnalyses.filter((analysis) => analysis.location_id > 1);
-          }
-          break;
-        }
-        default:
-        case 'FCD': {
-          listAnalyses = await AnalysisManager.getListAnalyses(req, listID);
-          locationAttributeArray = await ListManager.getPaginatedAnalysisDataForUserList(
-            req,
-            listID,
-            filters
-          );
-          const listManagerResult = await ListManager.getNumberPagesForAnalysisDataUserList(
-            req,
-            listID,
-            filters
-          );
-          numberOfPages = listManagerResult.numberOfPages;
-          numberOfResults = listManagerResult.numberOfResults;
-          maximumAnalysisAreaInTheList = listManagerResult.maximumAnalysisAreaInTheList;
+        listAnalyses = analysisManagerResult.listAnalyses;
+        numberOfResults = analysisManagerResult.numberOfResults;
+        numberOfPages =
+          numberOfResults % pageSize === 0
+            ? numberOfResults / pageSize
+            : Math.floor(numberOfResults / pageSize) + 1;
 
-          break;
+        if (listAnalyses.length > 0) {
+          location_analyses = listAnalyses;
+        }
+      } else {
+        switch (analysisId.toUpperCase()) {
+          case 'AFI': {
+            const analysisManagerResult = await AnalysisManager.getAFIListAnalyses(
+              listID,
+              page,
+              pageSize,
+              req.session.organization_database,
+              filters
+            );
+
+            listAnalyses = analysisManagerResult.listAnalyses;
+            numberOfResults = analysisManagerResult.numberOfResults;
+            numberOfPages =
+              numberOfResults % pageSize === 0
+                ? numberOfResults / pageSize
+                : Math.floor(numberOfResults / pageSize) + 1;
+
+            if (listAnalyses.length > 0) {
+              location_analyses = listAnalyses;
+            }
+            break;
+          }
+          case 'ALERTS': {
+            const analysisManagerResult = await AnalysisManager.getDashboardDataPaginatedByList(
+              listID,
+              page,
+              pageSize,
+              req.session.organization_database,
+              filters
+            );
+            listAnalyses = analysisManagerResult.listDashboardAnalyses;
+            numberOfResults = analysisManagerResult.numberOfResults.quantity;
+            numberOfPages = analysisManagerResult.numberOfPages;
+            maximumAnalysisAreaInTheList = 0;
+            if (listAnalyses.length > 0) {
+              location_analyses = listAnalyses.filter((analysis) => analysis.location_id > 1);
+            }
+            break;
+          }
+          default:
+          case 'FCD': {
+            listAnalyses = await AnalysisManager.getListAnalyses(req, listID);
+            locationAttributeArray = await ListManager.getPaginatedAnalysisDataForUserList(
+              req,
+              listID,
+              filters
+            );
+            const listManagerResult = await ListManager.getNumberPagesForAnalysisDataUserList(
+              req,
+              listID,
+              filters
+            );
+            numberOfPages = listManagerResult.numberOfPages;
+            numberOfResults = listManagerResult.numberOfResults;
+            maximumAnalysisAreaInTheList = listManagerResult.maximumAnalysisAreaInTheList;
+
+            break;
+          }
         }
       }
-
       if (locationAttributeArray?.length > 0) {
         locationAttributeList = await LocationManager.getLocationAttributesList(
           req,
           locationAttributeArray,
           false
         );
+
         res.send({
           list_analysis: listAnalyses,
           location_analyses: locationAttributeList,

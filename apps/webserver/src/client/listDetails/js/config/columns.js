@@ -9,6 +9,7 @@ import protected_area_fc from './columns/protected_area_fc';
 import location_id from './columns/location_id';
 import react_table__location_name from './columns/react_table__location_name';
 import post_2020_risk from './columns/post_2020_risk';
+import draft_state_columns from './columns/draft_state_columns';
 
 const columns = {
   forest_change_locations,
@@ -22,6 +23,7 @@ const columns = {
   location_id,
   react_table__location_name,
   post_2020_risk,
+  draft_state_columns,
   flags: [
     {
       name: 'General',

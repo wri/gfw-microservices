@@ -81,7 +81,10 @@ export class ReadmeMergeServices {
 
       for (const line of uniqueLines) {
         // Replace with the list name
-        const updatedLine = line.replace(/03082024 Test List|<LISTNAME>/g, listName.replace(/ /g, '_'));
+        const updatedLine = line.replace(
+          / Test List|<LISTNAME>/g,
+          listName.replace(/ /g, '_')
+        );
         fs.appendFileSync(`${outputFilePath}/README.csv`, updatedLine + '\n');
       }
 

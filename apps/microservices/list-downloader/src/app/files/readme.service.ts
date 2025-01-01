@@ -116,7 +116,7 @@ export class ReadmeService {
 
   southAmericaReadmeData(filters: ListFieldsFileRequest) {
     const { listView } = filters;
- 
+
     const listsViews = {
       forest_change: 'south_america_forest_change_readme.csv',
     };

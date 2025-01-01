@@ -1817,9 +1817,10 @@ class Map extends Component {
           const { data } = await getBBoxAndGeostoreIDs(GFW_LIST, QUERY_FIELD, locationIDs, date);
           if (data && data.data.length !== 0 && data.status === 200) {
             const locations = data.data;
-
+            console.log({ data });
             // Zoom to locations
             const extents = locations.map((item) => {
+              console.log({ item });
               return new Extent(...item.gfw_bbox);
             });
             this.mapView.goTo(extents);

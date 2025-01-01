@@ -40,6 +40,17 @@ const checkValidViewCommodity = (selectedLists, listData) => {
   return false;
 };
 
+const checkColumnListDraftList = (accessor) => {
+  return (
+    accessor === 'Analysis Area' ||
+
+    accessor === 'state' ||
+    accessor === 'State' ||
+    accessor === 'subState'
+  );
+};
+
+
 const checkColumnListFC = (accessor) => {
   return (
     accessor === 'Analysis Area' ||
@@ -356,6 +367,7 @@ const isListFailedByAnalysisStatusLimit = ({ listAnalysesStatus }) => {
 module.exports = {
   checkValidView,
   checkValidViewCommodity,
+  checkColumnListDraftList,
   checkColumnListFC,
   checkColumnListCR,
   checkColumnListPA,

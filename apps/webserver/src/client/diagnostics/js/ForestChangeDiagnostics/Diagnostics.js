@@ -222,7 +222,6 @@ export default class Diagnostics extends Component {
   addMapGraphics = async () => {
     const { selectedList, spatialData, selectedLocations, isGfwList, isSharedList } = this.props;
     const { id, list_name: listName } = selectedList;
-
     this.updateStats();
 
     if (selectedLocations.length > 1) {
@@ -315,7 +314,7 @@ export default class Diagnostics extends Component {
       urlTemplate: treeCoverLossTilesUrl,
       view: this.view,
     });
-    this.view.map.add(tclLayer);
+    // this.view.map.add(tclLayer);
   };
 
   viewMap = (evt) => {

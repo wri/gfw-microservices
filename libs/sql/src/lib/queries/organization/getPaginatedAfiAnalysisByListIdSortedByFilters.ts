@@ -68,9 +68,15 @@ SET @LocationNameColumn = CASE
         AND COLUMN_NAME = 'Location Name'
     )
     THEN 'lt.[Location Name] as locationName, '
+    WHEN EXISTS (
+        SELECT 1
+        FROM INFORMATION_SCHEMA.COLUMNS
+        WHERE TABLE_NAME = @list_table
+        AND COLUMN_NAME = 'Investment Name'
+    )
+    THEN 'lt.[Investment Name] as locationName, '
     ELSE ''
 END;
-
 
 SET @SQL = 'SELECT ' +
             ' @listId as listId,' +

@@ -43,13 +43,11 @@ const checkValidViewCommodity = (selectedLists, listData) => {
 const checkColumnListDraftList = (accessor) => {
   return (
     accessor === 'Analysis Area' ||
-
     accessor === 'state' ||
     accessor === 'State' ||
     accessor === 'subState'
   );
 };
-
 
 const checkColumnListFC = (accessor) => {
   return (

@@ -1,6 +1,6 @@
 // src/example/example.service.ts
 
-import { Injectable } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import {
   ClientStoreConnection,
@@ -10,7 +10,7 @@ import {
   ListTemplate,
 } from '@wri-monorepos/sql';
 import { EntitySchema, Repository } from 'typeorm';
-import { CommodityResponse } from './types';
+import { CommodityResponse, ListResponse } from './types';
 
 @Injectable()
 export class CommodityService {
@@ -23,38 +23,45 @@ export class CommodityService {
     organizationDatabase: string,
     listId: number
   ): Promise<CommodityResponse> {
-    const listTemplate = await this.listTemplateRepository.find();
-    const {
-      commodity: commodityList,
-      listTableName,
-      templateId,
-    } = await this.getListCommodityAndTableName(organizationDatabase, listId);
-    if (commodityList && commodityList?.toLocaleLowerCase() !== 'other') {
-      return {
+    try {
+      const listTemplate = await this.listTemplateRepository.find();
+      const {
         commodity: commodityList,
-      };
-    }
+        listTableName,
+        templateId,
+      } = await this.getListCommodityAndTableName(organizationDatabase, listId);
+      if (commodityList && commodityList?.toLocaleLowerCase() !== 'other') {
+        return {
+          commodity: commodityList,
+        };
+      }
 
-    const { commodity: commodityLocation } = await this.getCommodityFromLocation(
-      organizationDatabase,
-      listTableName
-    );
-    if (commodityLocation && commodityLocation?.toLocaleLowerCase() !== 'other') {
+      const { commodity: commodityLocation } = await this.getCommodityFromLocation(
+        organizationDatabase,
+        listTableName
+      );
+      if (commodityLocation && commodityLocation?.toLocaleLowerCase() !== 'other') {
+        return {
+          commodity: commodityLocation,
+        };
+      }
+
+      const template = listTemplate.find((template) => template.id === templateId);
+      if (template) {
+        return {
+          commodity: template.templateName,
+        };
+      }
+
       return {
-        commodity: commodityLocation,
+        commodity: 'No commodity found',
       };
-    }
-
-    const template = listTemplate.find((template) => template.id === templateId);
-    if (template) {
+    } catch (error) {
+      Logger.warn(error);
       return {
-        commodity: template.templateName,
+        commodity: 'No commodity found',
       };
     }
-
-    return {
-      commodity: 'No commodity found',
-    };
   }
 
   async getListCommodityAndTableName(
@@ -86,6 +93,42 @@ export class CommodityService {
     return {
       commodity: commodities.join(', '),
     };
+  }
+
+  async getListsByCommodity(
+    organizationDatabase: string,
+    commodity: string
+  ): Promise<Array<ListResponse>> {
+    const clientStoreConnection = new ClientStoreConnection();
+    const connection = await clientStoreConnection.getConnection(organizationDatabase, [Lists]);
+    const listRepository = connection.getRepository(Lists);
+    const lists = await listRepository.find();
+    const elements = [];
+
+    for (const list of lists) {
+      const { commodity: commodityFromList } = await this.getCommodityFromExistingList(
+        organizationDatabase,
+        list.id
+      );
+      if (this.compareIgnoringAccentsAndCase(commodityFromList, commodity)) {
+        elements.push({
+          id: list.id,
+          name: list.listName,
+        });
+      }
+    }
+
+    return elements;
+  }
+
+  compareIgnoringAccentsAndCase(str1, str2) {
+    const normalizeString = (str) =>
+      str
+        .toLowerCase()
+        .normalize('NFD')
+        .replace(/[\u0300-\u036f]/g, '');
+
+    return normalizeString(str1) === normalizeString(str2);
   }
 
   async getAllTemplates(): Promise<ListTemplate[]> {

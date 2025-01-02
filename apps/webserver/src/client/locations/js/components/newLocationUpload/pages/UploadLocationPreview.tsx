@@ -31,7 +31,7 @@ export function UploadLocationPreview() {
   const history = useHistory();
   const theme = useTheme();
 
-  const { data, isLoading, request } = useFetch<{ features: LocationListType[] }>();
+  const { data, isLoading, request, error } = useFetch<{ features: LocationListType[] }>();
   const [file, setFile] = useState<File | null>(null);
 
   const [iLoadingFileUpload, setIsLoadingFileUpload] = useState(false);
@@ -41,13 +41,7 @@ export function UploadLocationPreview() {
       return;
     }
 
-    request({
-      method: 'GET',
-      url: '/api/list/preview',
-      params: {
-        path: uploadedFileUrl,
-      },
-    });
+    getPreviewData();
   }, [uploadedFileUrl]);
 
   useEffect(() => {
@@ -69,6 +63,16 @@ export function UploadLocationPreview() {
 
     uploadFile();
   }, [file]);
+
+  const getPreviewData = async () => {
+    request({
+      method: 'GET',
+      url: '/api/list/preview',
+      params: {
+        path: uploadedFileUrl,
+      },
+    });
+  };
 
   const columns = getTableColumns(data?.features);
 
@@ -122,6 +126,13 @@ export function UploadLocationPreview() {
 
         {isLoading ? (
           <Skeleton variant="rounded" sx={{ height: '460px' }} />
+        ) : error ? (
+          <Box sx={{ margin: 'auto' }}>
+            <Typography variant="h6">There were platform issues loading your data.</Typography>
+            <PillButton onClick={getPreviewData} sx={{ margin: 'auto' }}>
+              Click here to try again
+            </PillButton>
+          </Box>
         ) : (
           <Box sx={{ maxHeight: '460px', overflow: 'auto' }}>
             <Table

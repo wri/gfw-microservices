@@ -18,6 +18,7 @@ import { PillButton } from '../../../../../../components';
 import CountryStateSubStateFilter from './CountryStateSubStateFilter';
 import { getFilterCounter } from '../../../../../../locations/js/utils/lists.utils';
 import { DefaultFilterValues } from '../../DefaultFilterValuesType';
+import { defaultFilterValues } from '../../defaultFilterValues';
 import filterCountryStateAndSubStateOptions from './filterCountryStateAndSubStateOptions';
 import { boxStyle, selectStyle } from './filterStyles';
 import store from '../../../../../../locations/js/store';
@@ -57,6 +58,10 @@ const UserListCommodityRiskFilter: React.FC<UserListCommodityRiskFilterProps> = 
   const initialState: DefaultFilterValues = store.getState().filters;
   const [state, setState] = useState<DefaultFilterValues>(initialState);
 
+  const clearFiltersAndState = () => {
+    clearFilters();
+    setState(defaultFilterValues);
+  };
   const onCountryChange = (evt: SelectChangeEvent<string>) => {
     setState((prevState) => ({
       ...prevState,
@@ -460,7 +465,12 @@ const UserListCommodityRiskFilter: React.FC<UserListCommodityRiskFilterProps> = 
             </PillButton>
 
             {isListFiltered && (
-              <PillButton variant="contained" color="info" sx={{ ml: 1 }} onClick={clearFilters}>
+              <PillButton
+                variant="contained"
+                color="info"
+                sx={{ ml: 1 }}
+                onClick={clearFiltersAndState}
+              >
                 Clear
               </PillButton>
             )}

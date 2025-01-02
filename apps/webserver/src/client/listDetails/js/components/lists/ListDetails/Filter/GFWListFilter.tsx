@@ -22,6 +22,7 @@ import { boxStyle, selectStyle } from './filterStyles';
 import filterCountryStateAndSubStateOptions from './filterCountryStateAndSubStateOptions';
 import store from '../../../../../../locations/js/store';
 import { DefaultFilterValues } from '../../DefaultFilterValuesType';
+import { defaultFilterValues } from '../../defaultFilterValues';
 import '../../../../../../common/css/filter-dialogs.scss';
 
 interface GFWListFilterProps {
@@ -45,6 +46,11 @@ const GFWListFilter: React.FC<GFWListFilterProps> = ({
 }) => {
   const initialState: DefaultFilterValues = store.getState().filters;
   const [state, setState] = useState<DefaultFilterValues>(initialState);
+
+  const clearFiltersAndState = () => {
+    clearFilters();
+    setState(defaultFilterValues);
+  };
 
   const onCountryChange = (evt: SelectChangeEvent<string>) => {
     setState((prevState) => ({
@@ -251,7 +257,12 @@ const GFWListFilter: React.FC<GFWListFilterProps> = ({
               Cancel
             </PillButton>
             {isListFiltered && (
-              <PillButton variant="contained" color="info" sx={{ ml: 1 }} onClick={clearFilters}>
+              <PillButton
+                variant="contained"
+                color="info"
+                sx={{ ml: 1 }}
+                onClick={clearFiltersAndState}
+              >
                 Clear
               </PillButton>
             )}

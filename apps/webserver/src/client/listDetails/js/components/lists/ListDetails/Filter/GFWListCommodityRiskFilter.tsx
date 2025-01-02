@@ -22,6 +22,7 @@ import filterCountryStateAndSubStateOptions from './filterCountryStateAndSubStat
 import { boxStyle, selectStyle } from './filterStyles';
 import store from '../../../../../../locations/js/store';
 import { DefaultFilterValues } from '../../DefaultFilterValuesType';
+import { defaultFilterValues } from '../../defaultFilterValues';
 import '../../../../../../common/css/filter-dialogs.scss';
 
 interface Location {
@@ -53,6 +54,10 @@ const GFWListCommodityRiskFilter: React.FC<GFWListCommodityRiskFilterProps> = ({
 }) => {
   const initialState: DefaultFilterValues = store.getState().filters;
   const [state, setState] = useState<DefaultFilterValues>(initialState);
+  const clearFiltersAndState = () => {
+    clearFilters();
+    setState(defaultFilterValues);
+  };
 
   const onCountryChange = (evt: SelectChangeEvent<string>) => {
     setState((prevState) => ({
@@ -445,7 +450,12 @@ const GFWListCommodityRiskFilter: React.FC<GFWListCommodityRiskFilterProps> = ({
               Cancel
             </PillButton>
             {isListFiltered && (
-              <PillButton variant="contained" color="info" sx={{ ml: 1 }} onClick={clearFilters}>
+              <PillButton
+                variant="contained"
+                color="info"
+                sx={{ ml: 1 }}
+                onClick={clearFiltersAndState}
+              >
                 Clear
               </PillButton>
             )}

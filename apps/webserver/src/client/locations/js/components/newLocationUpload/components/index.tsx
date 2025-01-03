@@ -4,3 +4,4 @@ export { NavBar } from './NavBar';
 export { DataTemplates } from './DataTemplates';
 export { UploadByFileFolderIcon } from './UploadByFileFolderIcon';
 export { UploadByFileInstructions } from './UploadByFileInstructions';
+export { AddressSelector } from './AddressSelector';

@@ -27,6 +27,8 @@ import {
   GfwLists,
   SqlParamType,
   SQLUtils as SQLUtilsLibSql,
+  getPaginatedLocationsByListIdSortedByFilters,
+  PaginatedLocationsByListIdSortedByFilters,
   getPaginatedAfiAnalysisByListIdSortedByFilters,
   PaginatedAfiAnalysisByListIdSortedByFilters,
   getDashboardDataPaginated,
@@ -469,6 +471,92 @@ export async function getPaginatedAnalysisDataForAdministrativeAreas(
  *   @param  {Number}  list_id - ID of list
  *   @return {Promise} Returns promise object. If successful, recordsets, otherwise, error object
  */
+export async function getDraftListLocationData(list_id, page, pageSize, clientDatabase, filters) {
+  const {
+    orderType,
+    sortByAttribute,
+    searchString,
+    country,
+    state,
+    subState,
+    analysisAreaMin,
+    analysisAreaMax,
+
+    // commodity risk filters:
+    selectedSupplier,
+    selectedSecondSupplier,
+    selectedParentCompany,
+    showRSPOCertified,
+    selectedOverallThreats,
+    selectedOverallValues,
+    selectedMillPriority,
+  } = filters;
+
+  const parameters = [
+    { field: 'listId', type: sql.Int, value: list_id },
+    { field: 'rowsOfPage', type: sql.Int, value: pageSize },
+    { field: 'pageNumber', type: sql.Int, value: page },
+    { field: 'orderType', type: sql.NVarChar(255), value: orderType || 'ASC' },
+    { field: 'selectedSupplier', type: sql.NVarChar(255), value: selectedSupplier || null },
+    {
+      field: 'selectedSecondSupplier',
+      type: sql.NVarChar(255),
+      value:
+        selectedSecondSupplier !== '' && selectedSecondSupplier ? selectedSecondSupplier : null,
+    },
+    {
+      field: 'selectedParentCompany',
+      type: sql.NVarChar(255),
+      value: selectedParentCompany !== '' && selectedParentCompany ? selectedParentCompany : null,
+    },
+    { field: 'showRSPOCertified', type: sql.Bit, value: showRSPOCertified || 0 },
+    {
+      field: 'SearchString',
+      type: sql.NVarChar(255),
+      value: searchString !== '' && searchString ? searchString : null,
+    },
+    {
+      field: 'Country',
+      type: sql.NVarChar(255),
+      value: country !== '' && country ? country : null,
+    },
+    {
+      field: 'State',
+      type: sql.NVarChar(255),
+      value: state !== '' && state ? state : null,
+    },
+    {
+      field: 'SubState',
+      type: sql.NVarChar(255),
+      value: subState !== '' && subState ? subState : null,
+    },
+  ];
+
+  parameters.push({
+    field: 'sortByAttribute',
+    type: sql.NVarChar(255),
+    value: sortByAttribute,
+  });
+
+  const listAnalyses = await SQLUtilsLibSql.queryDB<PaginatedLocationsByListIdSortedByFilters[]>(
+    clientDatabase,
+    getPaginatedLocationsByListIdSortedByFilters,
+    parameters
+  );
+
+  const numberOfResults = listAnalyses?.[0]?.totalRows;
+
+  const formattedListAnalyses = listAnalyses.map((analysis) => {
+    return {
+      ...analysis,
+      list_id: analysis.listId,
+      location_id: analysis.locationId,
+    };
+  });
+
+  return { listAnalyses: formattedListAnalyses, numberOfResults };
+}
+
 export async function getAFIListAnalyses(list_id, page, pageSize, clientDatabase, filters) {
   const {
     orderType,

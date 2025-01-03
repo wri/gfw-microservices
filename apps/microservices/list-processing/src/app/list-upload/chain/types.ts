@@ -61,6 +61,7 @@ export interface RequestNewList extends PreviewListRequest {
   startAnalysis?: boolean;
   list_id?: number;
   analysisIds?: Array<string>;
+  commodity?: string;
   isExternalAPIProcess: boolean;
   organization_id: number;
   subscription_status_id: number;

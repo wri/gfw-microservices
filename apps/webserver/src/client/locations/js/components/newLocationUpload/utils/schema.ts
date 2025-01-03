@@ -6,15 +6,25 @@ export const coordinateSchema = z.object({
   latitude: z
     .string()
     .max(19)
-    .refine((value) => {
-      const latitude = Math.abs(Number(value));
-      return validCoordinateFormat.test(value) && latitude <= 90;
-    }),
+    .refine(
+      (value) => {
+        const latitude = Math.abs(Number(value));
+        return validCoordinateFormat.test(value) && latitude <= 90;
+      },
+      {
+        message: 'This latitude is invalid. Please ensure your it is in decimal degree notation',
+      }
+    ),
   longitude: z
     .string()
     .max(20)
-    .refine((value) => {
-      const longitude = Math.abs(Number(value));
-      return validCoordinateFormat.test(value) && longitude <= 180;
-    }),
+    .refine(
+      (value) => {
+        const longitude = Math.abs(Number(value));
+        return validCoordinateFormat.test(value) && longitude <= 180;
+      },
+      {
+        message: 'This longitude is invalid. Please ensure your it is in decimal degree notation',
+      }
+    ),
 });

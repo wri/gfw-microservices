@@ -944,6 +944,7 @@ export default class ListDetails extends Component {
       sortable: false,
       Cell: (cellProps) => {
         const { selectedLocations } = this.props;
+
         return (
           <div>
             <input
@@ -2257,9 +2258,11 @@ export default class ListDetails extends Component {
                             </MaterialButton>
                           )}
 
-                          <span className="list-analysis-actions__analysis-date">
-                            {this.getAnalysisLastUpdatedDate(listAnalysesStatus)}
-                          </span>
+                          {!this.areAllAnalysesDraft() && (
+                            <span className="list-analysis-actions__analysis-date">
+                              {this.getAnalysisLastUpdatedDate(listAnalysesStatus)}
+                            </span>
+                          )}
                         </div>
                         <Filter
                           filterCount={filterCount}

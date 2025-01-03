@@ -81,7 +81,7 @@ END;
 SET @SQL = 'SELECT ' +
             ' @listId as listId,' +
             ' @listName as listName,' +
-
+            ' lt.location_id as locationId, '+
 
             @LocationNameColumn +
 

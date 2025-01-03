@@ -7,6 +7,7 @@ import { convertShapefileToGeoJSON } from '../parser/shp2GeoJson.parser';
 import * as path from 'path';
 import { xls2geojson } from '../parser/xls2GeoJSON.parser';
 import { kml2GeoJSON } from '../parser/kml2GeoJSON.parser';
+import * as unzipper from 'unzipper';
 
 export class ParserData extends AbstractHandler<ChainType> {
   private readonly logger = new Logger(ParserData.name);
@@ -28,12 +29,8 @@ export class ParserData extends AbstractHandler<ChainType> {
   }
 
   csvParser = async (fileDownloadedPath: string, preview: boolean): Promise<FeatureCollection> => {
-    // Read the CSV file content asynchronously
     const csvContent = fs.readFileSync(fileDownloadedPath, 'utf8');
-    // Convert CSV content to GeoJSON
     const geoJson = await csv2geojson(csvContent, preview);
-
-    // Pass the GeoJSON to the next handler in the chain
     return geoJson;
   };
 
@@ -48,9 +45,27 @@ export class ParserData extends AbstractHandler<ChainType> {
     return geojson;
   };
 
-  kml2geojson = async (fileDownloadedPath: string) => {
+  kml2geojson = async (fileDownloadedPath: string): Promise<FeatureCollection> => {
     const kmlContent = fs.readFileSync(fileDownloadedPath, 'utf8');
     const geojson = await kml2GeoJSON(kmlContent);
+    return geojson as unknown as FeatureCollection;
+  };
+
+  kmz2geojson = async (fileDownloadedPath: string): Promise<FeatureCollection> => {
+    const kmlFilePath = `${fileDownloadedPath}.kml`;
+
+    // Extract the KML file from the KMZ archive
+    await fs
+      .createReadStream(fileDownloadedPath)
+      .pipe(unzipper.Extract({ path: path.dirname(fileDownloadedPath) }))
+      .promise();
+
+    // Parse the extracted KML file
+    const geojson = await this.kml2geojson(kmlFilePath);
+
+    // Optionally delete the extracted KML file after parsing
+    this.deleteFile(kmlFilePath);
+
     return geojson;
   };
 
@@ -64,6 +79,7 @@ export class ParserData extends AbstractHandler<ChainType> {
       '.xls': this.xls2geojson,
       '.xlsx': this.xls2geojson,
       '.kml': this.kml2geojson,
+      '.kmz': this.kmz2geojson, // Added support for KMZ files
     };
 
     if (!dataParser[fileExtension]) {
@@ -78,7 +94,6 @@ export class ParserData extends AbstractHandler<ChainType> {
       this.deleteFile(fileDownloadedPath);
       return { ...request, geojson: geoJson };
     } catch (error) {
-      // Log the error with more context
       this.logger.error(
         `Error while parsing the data from file: ${fileDownloadedPath}`,
         error.stack

@@ -17,22 +17,9 @@ export function UploadByFileInstructions({
     [FileAttachState.Uploaded]: 'File added successfully!',
   };
 
-  const extraInfo =
-    fileAttachState === FileAttachState.UnsupportedType ? (
-      <Typography
-        variant="body2"
-        sx={{ color: 'text.secondary', maxWidth: '480px', textAlign: 'center', my: 1 }}
-      >
-        It looks like the file you uploaded isn't one of GFW Pro's accepted file types. Please try
-        again with a compatible format: <b>.csv</b>, <b>.xlsl</b>, <b>.kml</b>, <b>.kmz</b>, or a{' '}
-        <b>.zip</b> containing a shapefile.
-      </Typography>
-    ) : null;
-
   return (
     <>
       <Typography variant="h6">{instructions[fileAttachState]}</Typography>
-      {extraInfo}
     </>
   );
 }

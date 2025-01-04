@@ -24,6 +24,7 @@ export function UploadLocationByFile() {
   const [isDataTemplateModalOpen, setIsDataTemplateModalOpen] = useState(false);
   const [file, setFile] = useState<File | null>(null);
   const [fileAttachState, setFileAttachState] = useState<FileAttachState>(FileAttachState.NoFile);
+  const [dragCounter, setDragCounter] = useState(0); // used to prevent dragleave event from firing when dragging over children
 
   useEffect(() => {
     if (!file) {
@@ -65,12 +66,17 @@ export function UploadLocationByFile() {
 
   const handleFormDragEnter = (event: DragEvent<HTMLFormElement>) => {
     event.preventDefault();
+    setDragCounter((prev) => prev + 1);
     setFileAttachState(FileAttachState.DragOver);
   };
 
   const handleFormDragLeave = (event: DragEvent<HTMLFormElement>) => {
     event.preventDefault();
-    setFileAttachState(FileAttachState.NoFile);
+    setDragCounter((prev) => Math.max(prev - 1, 0));
+
+    if (dragCounter === 1) {
+      setFileAttachState(FileAttachState.NoFile);
+    }
   };
 
   const getStyleProps = () => {

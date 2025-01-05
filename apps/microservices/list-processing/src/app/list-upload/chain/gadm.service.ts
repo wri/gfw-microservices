@@ -1,11 +1,12 @@
 import { Logger } from '@nestjs/common';
 import { AbstractHandler, ChainType, PreviewListRequest } from './types';
 import asyncPool from 'tiny-async-pool';
-import { Feature, FeatureCollection } from '@wri-monorepos/geo';
+import { Feature, FeatureCollection, GeometryWithoutCollection } from '@wri-monorepos/geo';
 import { IFeatureSet, IGeometry, queryFeatures } from '@esri/arcgis-rest-feature-service';
 import { LambdaClient, InvokeCommand, InvocationType } from '@aws-sdk/client-lambda';
 import { NodeHttpHandler } from '@smithy/node-http-handler';
 import { S3Service } from '@wri-monorepos/aws';
+import * as turf from '@turf/turf';
 
 const PRODUCTION_ENVIRONMENTS = ['production', 'ProdV2'];
 const POOL_SIZE = 5;
@@ -75,19 +76,27 @@ export class GADMService extends AbstractHandler<ChainType> {
       : GADM_SERVICE__STAGING;
   };
 
-  /**
-   * Function to perform a GET request using axios.
-   * @param {Feature} feature - The feature object containing properties and geometry.
-   * @returns {Promise<IFeatureSet>} - A promise that resolves to the query result.
-   */
-  async queryGADM(feature: Feature): Promise<IFeatureSet> {
-    let longitude: number;
-    let latitude: number;
-
+  getLatLngFromFeature = (feature: Feature) => {
     if (feature.properties.longitude !== undefined && feature.properties.latitude !== undefined) {
-      longitude = feature.properties.longitude as number;
-      latitude = feature.properties.latitude as number;
-    } else if (
+      return {
+        longitude: feature.properties.longitude as number,
+        latitude: feature.properties.latitude as number,
+      };
+    }
+
+    const coordinates = (feature.geometry as GeometryWithoutCollection).coordinates;
+    const modifiedArray = coordinates.map((subArray) => subArray.filter((value) => value !== 0));
+
+    const polygon = turf.polygon([modifiedArray] as turf.Position[][]);
+    const centroid = turf.centroid(polygon);
+    if (centroid.geometry.type === 'Point') {
+      return {
+        longitude: centroid.geometry.coordinates[0] as number,
+        latitude: centroid.geometry.coordinates[1] as number,
+      };
+    }
+
+    if (
       feature.geometry &&
       feature.geometry.type === 'Polygon' &&
       feature.geometry.coordinates.length > 0
@@ -96,21 +105,34 @@ export class GADMService extends AbstractHandler<ChainType> {
       const firstPoint = Array.isArray(feature.geometry.coordinates[0][0])
         ? feature.geometry.coordinates[0][0]
         : feature.geometry.coordinates[0];
-
-      longitude = firstPoint[0] as number;
-      latitude = firstPoint[1] as number;
-    } else if (
+      return {
+        longitude: firstPoint[0] as number,
+        latitude: firstPoint[1] as number,
+      };
+    }
+    if (
       feature.geometry &&
       feature.geometry.type === 'Point' &&
       feature.geometry.coordinates.length > 0
     ) {
       // Assuming the coordinates are in the format [ [ [x1, y1], [x2, y2], ... ] ]
       const firstPoint = feature.geometry.coordinates;
-      longitude = firstPoint[0];
-      latitude = firstPoint[1];
-    } else {
-      throw new Error('Feature does not have valid longitude/latitude or geometry.');
+      return {
+        longitude: firstPoint[0],
+        latitude: firstPoint[1],
+      };
     }
+
+    throw new Error('Feature does not have valid longitude/latitude or geometry.');
+  };
+
+  /**
+   * Function to perform a GET request using axios.
+   * @param {Feature} feature - The feature object containing properties and geometry.
+   * @returns {Promise<IFeatureSet>} - A promise that resolves to the query result.
+   */
+  async queryGADM(feature: Feature): Promise<IFeatureSet> {
+    const { latitude, longitude } = this.getLatLngFromFeature(feature);
 
     const response = (await queryFeatures({
       url: this.getGadmServiceUrl(),

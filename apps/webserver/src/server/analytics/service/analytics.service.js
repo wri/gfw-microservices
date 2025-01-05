@@ -20,8 +20,14 @@ const getAllListsAnalysisStatus = async (req) => {
         (analysisType) => analysisType.id === analysisStatus.analysisId
       );
 
+      const analysisId =
+        analysisStatus.analysisId === 'FCD' && analysisStatus.options === 'PalmRisk'
+          ? 'PalmRisk'
+          : analysisStatus.analysisId;
+
       return {
         ...analysisStatus,
+        analysisId,
         analysisIdLastModifed: analysisTypeLastModified?.last_run,
       };
     });
@@ -37,7 +43,17 @@ const getListAnalysisStatusByListId = async (req, listId) => {
     getListAnalysisStatusById,
     params
   );
-  return response;
+  return response.map((analysisStatus) => {
+    const analysisId =
+      analysisStatus.analysisId === 'FCD' && analysisStatus.options === 'PalmRisk'
+        ? 'PalmRisk'
+        : analysisStatus.analysisId;
+
+    return {
+      ...analysisStatus,
+      analysisId,
+    };
+  });
 };
 
 module.exports = {

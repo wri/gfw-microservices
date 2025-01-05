@@ -4,6 +4,16 @@ SELECT
     las.AnalysisID AS analysisId,
     las.Status AS status,
     las.ErrorInfo AS errorInfo,
-    las.UpdateTime AS updateTime
+    las.UpdateTime AS updateTime,
+    las.options AS options
 FROM dbo.[ListsAnalysisStatus] las
 `;
+
+export interface ListsAnalysisStatus {
+  listId: number;
+  analysisId: string;
+  status: number;
+  errorInfo: string;
+  updateTime: string;
+  options: string;
+}

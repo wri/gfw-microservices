@@ -36,11 +36,10 @@ const setVectorTileLayerForFilteredList = async (listData, transitionListData, v
 
   const alertsMapExtent = transitionListData?.alertsMapExtent;
 
-  const selectedLocationCoordinates = locationData[0]?.geometry?.coordinates;
-
   if (alertsMapExtent) {
     view.goTo(alertsMapExtent);
-  } else if (selectedLocationCoordinates) {
+  } else if (locationData.length == 1) {
+    const selectedLocationCoordinates = locationData[0]?.geometry?.coordinates;
     const geometry = new Polygon({
       rings: selectedLocationCoordinates,
       spatialReference: SpatialReference.WGS84,
@@ -59,6 +58,18 @@ const setVectorTileLayerForFilteredList = async (listData, transitionListData, v
       symbol,
     });
     view.goTo(graphic);
+  } else {
+    // Calculate the average latitude and longitude for centering
+    const latitudes = locationData.map((location) => location.properties.Latitude);
+    const longitudes = locationData.map((location) => location.properties.Longitude);
+
+    const avgLatitude = latitudes.reduce((sum, lat) => sum + lat, 0) / latitudes.length;
+    const avgLongitude = longitudes.reduce((sum, lon) => sum + lon, 0) / longitudes.length;
+
+    view.goTo({
+      center: [avgLongitude, avgLatitude],
+      zoom: 4,
+    });
   }
 };
 

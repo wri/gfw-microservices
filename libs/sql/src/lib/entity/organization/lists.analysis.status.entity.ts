@@ -26,6 +26,8 @@ export class ListsAnalysisStatus {
   @Column({ name: 'bundle_creation_time' })
   bundleCreationTime: string;
 
-  @Column({ name: 'options' })
-  options: string;
+  @Column({ name: 'options', nullable: true })
+  options?: string;
+
+  analysisIdLastModifed?: Date;
 }

@@ -1,4 +1,4 @@
-import { ListsAnalysisStatus } from "../../entity";
+import { ListsAnalysisStatus } from '../../entity';
 
 export const getAllLists = `SELECT  L.*, LL.large_list_id
 FROM Lists L

@@ -7,9 +7,10 @@ const AnalysisManager = require('../../../config/publicutils/analysisManager.uti
 const logger = require('../../../config/privateutils/logger.utils');
 
 const { getListDataFiltered } = require('../utils/listData.utils');
-const { getListAnalysisStatusById, setSelectedAnalyses } = require('../service/listData.service');
+const { setSelectedAnalyses } = require('../service/listData.service');
 const listUtils = require(path.resolve('./config/privateutils/list.utils'));
 import { analysisTypes } from '@wri-monorepos/constants';
+import { getListAnalysisStatusByListId } from '@wri-monorepos/geo';
 import axios from 'axios';
 
 /**
@@ -134,8 +135,9 @@ export const listDataCustom = async (req, res) => {
 export const getSelectedAnalyses = async (req, res) => {
   const { listId } = req.params;
   try {
+    const { organization_database } = req.session;
     await listUtils.getListNameSchema(req, listId);
-    const response = await getListAnalysisStatusById(req, listId);
+    const response = await getListAnalysisStatusByListId(organization_database, listId);
     return res.status(200).json(response);
   } catch (err) {
     logger.error(`Getting list analysis failed: Error message ${err}`);

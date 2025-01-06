@@ -1,20 +1,6 @@
 const path = require('path');
 const { listStatus } = require(path.resolve('./config/env/listStatuses.constants'));
-import * as sql from 'mssql';
-const sqlUtils = require(path.resolve('./config/privateutils/sql.utils'));
-
-import { getListAnalysisStatusById as getListAnalysisStatusByIdQuery } from '@wri-monorepos/sql';
-import { createListAnalysis, updateListAnalysis } from '@wri-monorepos/geo';
-
-const getListAnalysisStatusById = async (req, listId) => {
-  const parameters = [{ field: 'listID', type: sql.Int, value: listId }];
-  const [response] = await sqlUtils.executeOrganizationQuery(
-    req,
-    getListAnalysisStatusByIdQuery,
-    parameters
-  );
-  return response;
-};
+import { createListAnalysis, getListAnalysisStatusByListId, updateListAnalysis } from '@wri-monorepos/geo';
 
 const setSelectedAnalyses = async (
   req,
@@ -23,7 +9,7 @@ const setSelectedAnalyses = async (
   analysisStatus = listStatus.Pending
 ) => {
   const { organization_database } = req.session;
-  const analysisStatusData = await getListAnalysisStatusById(req, listId);
+  const analysisStatusData = await getListAnalysisStatusByListId(req, listId);
   if (
     analysisStatusData === undefined ||
     analysisStatusData === null ||
@@ -35,4 +21,4 @@ const setSelectedAnalyses = async (
   }
 };
 
-export { setSelectedAnalyses, getListAnalysisStatusById };
+export { setSelectedAnalyses };

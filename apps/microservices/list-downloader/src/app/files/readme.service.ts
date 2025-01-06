@@ -96,33 +96,14 @@ export class ReadmeService {
     return listsViews[listView] || listsViews['forest_change'];
   }
 
-  argentinaReadmeData(filters: ListFieldsFileRequest) {
+  countrySpecificReadmeData(filters: ListFieldsFileRequest, country: string) {
     const { listView } = filters;
 
     const listsViews = {
-      forest_change: 'argentina_forest_change_readme.csv',
+      forest_change: `${country}_forest_change_readme.csv`,
     };
     return listsViews[listView] || listsViews['forest_change'];
   }
-
-  colombiaReadmeData(filters: ListFieldsFileRequest) {
-    const { listView } = filters;
-
-    const listsViews = {
-      forest_change: 'colombia_forest_change_readme.csv',
-    };
-    return listsViews[listView] || listsViews['forest_change'];
-  }
-
-  southAmericaReadmeData(filters: ListFieldsFileRequest) {
-    const { listView } = filters;
-
-    const listsViews = {
-      forest_change: 'south_america_forest_change_readme.csv',
-    };
-    return listsViews[listView] || listsViews['forest_change'];
-  }
-
   withoutReadme() {
     return null;
   }
@@ -136,9 +117,7 @@ export class ReadmeService {
       everything: this.everythingBundleReadmeData,
       southEastAsiaTCL: this.southEastAsiaTCL,
       afiVC: this.withoutReadme,
-      argentina: this.argentinaReadmeData,
-      colombia: this.colombiaReadmeData,
-      southAmerica: this.southAmericaReadmeData,
+      genericCountryReadme: this.countrySpecificReadmeData,
     };
 
     if (!Object.prototype.hasOwnProperty.call(returnFileToCopy, type)) {
@@ -152,9 +131,9 @@ export class ReadmeService {
             [
               this.getSourceDir(returnFileToCopy[type](filters)),
               this.getSourceDir(returnFileToCopy['southEastAsiaTCL'](filters)),
-              this.getSourceDir(returnFileToCopy['argentina'](filters)),
-              this.getSourceDir(returnFileToCopy['colombia'](filters)),
-              this.getSourceDir(returnFileToCopy['southAmerica'](filters)),
+              this.getSourceDir(returnFileToCopy['genericCountry'](filters, 'argentina')),
+              this.getSourceDir(returnFileToCopy['genericCountry'](filters, 'colombia')),
+              this.getSourceDir(returnFileToCopy['genericCountry'](filters, 'south_america')),
             ],
             'PLEASE NOTE: The contents of your zip files will vary based on the locations and commodities within your data, and the types of analysis you requested. Not all CSVs listed here may apply.',
             this.getPathDir(key),

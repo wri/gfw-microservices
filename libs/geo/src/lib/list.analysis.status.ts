@@ -3,8 +3,8 @@ import { S3Service } from "@wri-monorepos/aws";
 import { readAnalysesLastModifiedTime } from "@wri-monorepos/shared";
 import { ListsAnalysisStatus, SQLUtils } from '@wri-monorepos/sql';
 import { listStatus } from '@wri-monorepos/constants';
-import * as sql from 'mssql';
 import { analysisTypesOptions } from '@wri-monorepos/constants';
+import * as sql from 'mssql';
 
 export const createListAnalysis = async (
   clientDatabase: string,
@@ -53,9 +53,11 @@ export const createListAnalysis = async (
   }
 };
 
-export const getAllListsAnalysisStatus = async (clientDatabase: string): Promise<ListsAnalysisStatus[]> => {
+export const getAllListsAnalysisStatus = async (
+  clientDatabase: string
+): Promise<ListsAnalysisStatus[]> => {
   try {
-    const analysisStatusData =  await SQLUtils.queryDB<ListsAnalysisStatus[]>(
+    const analysisStatusData = await SQLUtils.queryDB<ListsAnalysisStatus[]>(
       clientDatabase,
       'getAllListsAnalysisStatus'
     );
@@ -66,7 +68,10 @@ export const getAllListsAnalysisStatus = async (clientDatabase: string): Promise
   }
 };
 
-export const getListAnalysisStatusByListId = async (clientDatabase: string, listId: number): Promise<ListsAnalysisStatus[]> => {
+export const getListAnalysisStatusByListId = async (
+  clientDatabase: string,
+  listId: number
+): Promise<ListsAnalysisStatus[]> => {
   try {
     const parameters = [{ field: 'ListID', type: sql.Int, value: listId }];
     const analysisStatusData = await SQLUtils.queryDB<ListsAnalysisStatus[]>(
@@ -146,17 +151,17 @@ export async function resolveListAnalysisStatuses(listAnalysisStatuses: ListsAna
 
   try {
     const analysisTypesLastModifiedData = await readAnalysesLastModifiedTime(s3);
-    
+
     return listAnalysisStatuses.map((analysisStatus) => {
       const analysisIdLastModifed = analysisTypesLastModifiedData.find(
         (analysisType) => analysisType.id === analysisStatus.analysisId
       );
-  
+
       const analysisId =
         analysisStatus.analysisId === 'FCD' && analysisStatus.options === 'PalmRisk'
           ? 'PalmRisk'
           : analysisStatus.analysisId;
-  
+
       return {
         ...analysisStatus,
         analysisId,

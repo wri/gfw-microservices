@@ -68,7 +68,7 @@ const setVectorTileLayerForFilteredList = async (listData, transitionListData, v
 
     view.goTo({
       center: [avgLongitude, avgLatitude],
-      zoom: 4,
+      zoom: 3,
     });
   }
 };

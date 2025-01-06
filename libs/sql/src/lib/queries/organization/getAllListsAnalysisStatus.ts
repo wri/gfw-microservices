@@ -8,12 +8,3 @@ SELECT
     las.options AS options
 FROM dbo.[ListsAnalysisStatus] las
 `;
-
-export interface ListsAnalysisStatus {
-  listId: number;
-  analysisId: string;
-  status: number;
-  errorInfo: string;
-  updateTime: string;
-  options: string;
-}

@@ -55,10 +55,9 @@ export function SummaryAndSubmit() {
             )}
           </Typography>
           <Typography variant="body2">
-            Ï{isAddingToNewList ? 'Your ' : 'The resulting '}list will be submitted for the
-            following analysis:
+            {isAddingToNewList ? 'Your ' : 'The resulting '}list will be submitted for the following
+            analysis:
           </Typography>
-          Ï
           <Box component="ul" sx={{ color: 'text.secondary' }}>
             {Object.entries(uploadLocationState.typeOfAnalysis)
               .filter(([key, isChecked]) => isChecked && key !== 'palmRiskAssessment')
@@ -78,7 +77,7 @@ export function SummaryAndSubmit() {
                 );
               })}
           </Box>
-          Ï
+
           <Typography variant="body2">
             Please note that all analysis submission count towards your usage limits. See more
             information{' '}

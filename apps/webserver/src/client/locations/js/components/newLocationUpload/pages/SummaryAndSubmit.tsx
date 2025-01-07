@@ -7,6 +7,7 @@ import { LoadingModal, PillButton } from '../../../../../components';
 import { useUploadLocation } from '../contexts';
 import { NavBar } from '../components';
 import { analysisTypesOptionsNewNames } from '../../../../../../config/env/analysisTypes.constants';
+import { commodities } from '../utils/constants';
 
 export function SummaryAndSubmit() {
   const history = useHistory();
@@ -19,6 +20,7 @@ export function SummaryAndSubmit() {
   };
 
   const isAddingToNewList = !!uploadLocationState.newListName;
+  const commodity = commodities[uploadLocationState.commodity as keyof typeof commodities];
 
   return (
     <>
@@ -44,12 +46,12 @@ export function SummaryAndSubmit() {
             You are{' '}
             {isAddingToNewList ? (
               <>
-                creating a new <b>{uploadLocationState.commodity}</b> list named{' '}
+                creating a new <b>{commodity}</b> list named{' '}
                 <b>{uploadLocationState.newListName}</b>.
               </>
             ) : (
               <>
-                adding <b>{uploadLocationState.commodity}</b> location(s) to the list named{' '}
+                adding <b>{commodity}</b> location(s) to the list named{' '}
                 <b>{uploadLocationState.existingListName}</b>.
               </>
             )}

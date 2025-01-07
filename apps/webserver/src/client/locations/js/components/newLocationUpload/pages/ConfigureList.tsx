@@ -24,7 +24,7 @@ import { useUploadLocation } from '../contexts';
 import { NavBar } from '../components';
 import { UserList } from '../types';
 import { filterValidTemplates } from '../utils/filterValidTemplates';
-import { typeOfAnalysisMap } from '../utils/constants';
+import { typeOfAnalysisMap, commodities } from '../utils/constants';
 
 const schema = z
   .object({
@@ -177,16 +177,11 @@ export function ConfigureList({ userLists }: { userLists: UserList[] }) {
                     field.onChange(value);
                   }}
                 >
-                  <MenuItem value="cattle">Cattle</MenuItem>
-                  <MenuItem value="cocoa">Cocoa</MenuItem>
-                  <MenuItem value="coffee">Coffee</MenuItem>
-                  <MenuItem value="palm-oil">Palm oil</MenuItem>
-                  <MenuItem value="pulp-and-paper">Pulp and paper</MenuItem>
-                  <MenuItem value="rubber">Rubber</MenuItem>
-                  <MenuItem value="soy">Soy</MenuItem>
-                  <MenuItem value="sugar-cane">Sugar cane</MenuItem>
-                  <MenuItem value="multiple">Multiple</MenuItem>
-                  <MenuItem value="other">Other</MenuItem>
+                  {Object.entries(commodities).map(([key, label]) => (
+                    <MenuItem key={key} value={key}>
+                      {label}
+                    </MenuItem>
+                  ))}
                 </Select>
                 {!!errors.commodity && <FormHelperText>Enter the commodity</FormHelperText>}
               </FormControl>

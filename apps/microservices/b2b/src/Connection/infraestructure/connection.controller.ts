@@ -39,7 +39,9 @@ export class ConnectionController {
       id,
       connectionAcceptDto,
     );
-    if (result.isSuccess) return { msg: 'Connection accepted' };
+    if (result.isSuccess) {
+      return { msg: 'Connection accepted' };
+    }
     const error = result.getError();
     throw new HttpException(error.message, error.code);
   }
@@ -57,7 +59,9 @@ export class ConnectionController {
       id,
       connectionRejectDto,
     );
-    if (result.isSuccess) return { msg: 'Connection rejected' };
+    if (result.isSuccess) {
+      return { msg: 'Connection rejected' };
+    }
     const error = result.getError();
     throw new HttpException(error.message, error.code);
   }
@@ -75,7 +79,9 @@ export class ConnectionController {
       id,
       connectionCancelDto,
     );
-    if (result.isSuccess) return { msg: 'Connection canceled' };
+    if (result.isSuccess) {
+      return { msg: 'Connection canceled' };
+    }
     const error = result.getError();
     throw new HttpException(error.message, error.code);
   }
@@ -93,7 +99,9 @@ export class ConnectionController {
     const result = await this.connectionUseCases.getConnections(
       connectionsFiltersDto,
     );
-    if (result.isSuccess) return result.getValue();
+    if (result.isSuccess) {
+      return result.getValue();
+    }
     const error = result.getError();
     throw new HttpException(error.message, error.code);
   }
@@ -111,7 +119,9 @@ export class ConnectionController {
 
     const result = await this.connectionUseCases.search(query, orgId);
 
-    if (result.isSuccess) return result.getValue();
+    if (result.isSuccess) {
+      return result.getValue();
+    }
     const error = result.getError();
     throw new HttpException(error.message, error.code);
   }
@@ -123,7 +133,9 @@ export class ConnectionController {
   @Get('user/:email')
   async getUserOrganizations(@Param() { email }: IdStringDto) {
     const result = await this.connectionUseCases.getOrganizationsByUser(email);
-    if (result.isSuccess) return result.getValue();
+    if (result.isSuccess) {
+      return result.getValue();
+    }
     const error = result.getError();
     throw new HttpException(error.message, error.code);
   }
@@ -138,7 +150,9 @@ export class ConnectionController {
       creationConnectionDto,
     );
 
-    if (result.isSuccess) return { msg: 'Invitation sent' };
+    if (result.isSuccess) {
+      return { msg: 'Invitation sent' };
+    }
     const error = result.getError();
     throw new HttpException(error.message, error.code);
   }

@@ -6,6 +6,7 @@ const mapStringsToArrayHelper = (currentParam) => {
     if (Array.isArray(parsed)) {
       return parsed;
     }
+    return [parsed];
   } catch (e) {
     // If parsing fails, it's not an Admin Areas
     return currentParam.split(',').map((item) => {
@@ -84,7 +85,9 @@ const getQueryParams = (queryString) => {
     if (key in keyTypes) {
       switch (keyTypes[key]) {
         case 'array':
-          if (!params[key]) params[key] = [];
+          if (!params[key]) {
+            params[key] = [];
+          }
           params[key].push(value);
           break;
         case 'array-int-or-string':

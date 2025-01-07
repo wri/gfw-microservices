@@ -1,65 +1,115 @@
-import React, { DragEvent, useState } from 'react';
-import {
-  Box,
-  Card,
-  Dialog,
-  DialogActions,
-  DialogTitle,
-  Modal,
-  Typography,
-  useTheme,
-} from '@mui/material';
-import { ArrowForwardIos, Close, DriveFolderUpload } from '@mui/icons-material';
+import React, { DragEvent, useEffect, useState } from 'react';
+import { Box, Card, Modal, Typography, useTheme } from '@mui/material';
+import { ArrowForwardIos, Close } from '@mui/icons-material';
 
 import { PillButton } from '../../../../../components';
 import { VALID_UPLOAD_FILE_FORMATS } from '../utils/constants';
-import { DataTemplates, NavBar } from '../components';
+import {
+  DataTemplates,
+  NavBar,
+  UploadByFileFolderIcon,
+  UploadByFileInstructions,
+} from '../components';
 import { useUploadLocation } from '../contexts';
+import { uploadFileToS3 } from '../utils/upload';
+import { useHistory } from '../hooks';
+import { FileAttachState } from '../types';
 
 export function UploadLocationByFile() {
   const theme = useTheme();
+  const history = useHistory();
 
-  const { clearUploadType } = useUploadLocation();
+  const { clearUploadType, addFileUrl } = useUploadLocation();
 
-  const [isDragAndDropActive, setIsDragAndDropActive] = useState(false);
-  const [isDialogOpen, setIsDialogOpen] = React.useState(false);
-  const [isDataTemplateModalOpen, setIsDataTemplateModalOpen] = React.useState(false);
+  const [isDataTemplateModalOpen, setIsDataTemplateModalOpen] = useState(false);
+  const [file, setFile] = useState<File | null>(null);
+  const [fileAttachState, setFileAttachState] = useState<FileAttachState>(FileAttachState.NoFile);
+  const [dragCounter, setDragCounter] = useState(0); // used to prevent dragleave event from firing when dragging over children
+
+  useEffect(() => {
+    if (!file) {
+      return;
+    }
+
+    const uploadFile = async () => {
+      try {
+        setFileAttachState(FileAttachState.Uploading);
+        const data = await uploadFileToS3(file);
+        addFileUrl(data);
+        setFileAttachState(FileAttachState.Uploaded);
+      } catch (err: unknown) {
+        setFileAttachState(FileAttachState.UploadFailed);
+      }
+    };
+
+    uploadFile();
+  }, [file]);
 
   const fileUpload = (event: DragEvent<HTMLFormElement>) => {
     event.preventDefault();
 
     const target = event.target as HTMLInputElement;
-
-    const file = target.files?.[0] || event.dataTransfer?.files?.[0];
-
-    if (!file) return;
-
-    const fileExtension = file.name.split('.').pop()?.toLowerCase();
-
-    if (!fileExtension || !VALID_UPLOAD_FILE_FORMATS.includes(fileExtension)) {
-      setIsDialogOpen(true);
-      setIsDragAndDropActive(false);
+    const attachedFile = target.files?.[0] || event.dataTransfer?.files?.[0];
+    if (!attachedFile) {
       return;
     }
 
-    console.log('uploading file...');
+    const fileExtension = attachedFile.name.split('.').pop()?.toLowerCase();
+
+    if (!fileExtension || !VALID_UPLOAD_FILE_FORMATS.includes(fileExtension)) {
+      setFileAttachState(FileAttachState.UnsupportedType);
+      return;
+    }
+
+    setFile(attachedFile);
   };
 
   const handleFormDragEnter = (event: DragEvent<HTMLFormElement>) => {
     event.preventDefault();
-    setIsDragAndDropActive(true);
+    setDragCounter((prev) => prev + 1);
+    setFileAttachState(FileAttachState.DragOver);
   };
 
   const handleFormDragLeave = (event: DragEvent<HTMLFormElement>) => {
     event.preventDefault();
-    setIsDragAndDropActive(false);
+    setDragCounter((prev) => Math.max(prev - 1, 0));
+
+    if (dragCounter === 1) {
+      setFileAttachState(FileAttachState.NoFile);
+    }
   };
+
+  const getStyleProps = () => {
+    switch (fileAttachState) {
+      case FileAttachState.NoFile:
+        return { border: '2px dashed #E5E5DE', backgroundColor: 'white' };
+      case FileAttachState.DragOver:
+      case FileAttachState.Uploading:
+        return {
+          border: `2px dashed ${theme.palette.primary.main}`,
+          backgroundColor: 'primary.light',
+        };
+      case FileAttachState.UnsupportedType:
+      case FileAttachState.UploadFailed:
+        return {
+          border: `2px solid ${theme.palette.error.main}`,
+          backgroundColor: 'error.light',
+        };
+      case FileAttachState.Uploaded:
+        return {
+          border: `2px solid ${theme.palette.primary.main}`,
+          backgroundColor: 'background.default',
+        };
+    }
+  };
+
+  const isNoFileAttached = fileAttachState === FileAttachState.NoFile;
 
   return (
     <>
       <NavBar />
       <Card sx={{ pt: 1, px: 2, pb: 2 }}>
-        <Typography variant="subtitle2">Prepare & Upload Location data</Typography>
+        <Typography variant="h6">Prepare & Upload Location data</Typography>
         <Typography
           variant="caption"
           color={theme.palette.text.secondary}
@@ -68,7 +118,7 @@ export function UploadLocationByFile() {
           First, prepare your data in a format accepted by GFW Pro. Then, upload your file(s).
         </Typography>
 
-        <Typography variant="h6">How to prepare your data</Typography>
+        <Typography variant="subtitle2">How to prepare your data</Typography>
         <Typography
           variant="caption"
           color={theme.palette.text.secondary}
@@ -82,78 +132,131 @@ export function UploadLocationByFile() {
         <PillButton variant="contained" onClick={() => setIsDataTemplateModalOpen(true)}>
           Data templates
         </PillButton>
-        <form
+        <Box
+          component="form"
           onDrop={fileUpload}
           onDragEnter={handleFormDragEnter}
           onDragLeave={handleFormDragLeave}
           onDragOver={(e) => e.preventDefault()}
           encType="multipart/form-data"
-          style={{
+          sx={{
             display: 'flex',
             flexDirection: 'column',
             alignItems: 'center',
             justifyContent: 'center',
             height: '354px',
             margin: '1.5rem 0 0.75rem',
-            border: '2px dashed #E5E5DE',
-            borderRadius: '5px',
-            backgroundColor: isDragAndDropActive ? '#FCFCFC' : 'white',
+            borderRadius: 1,
+            ...getStyleProps(),
           }}
         >
-          <label htmlFor="file-input" style={{ cursor: 'pointer' }}>
-            <DriveFolderUpload sx={{ color: '#FFE2BF', fontSize: '5.25rem' }} />
-            <input
-              type="file"
-              id="file-input"
-              name="file-input"
-              accept={VALID_UPLOAD_FILE_FORMATS.map((f) => `.${f}`).join(', ')}
-              style={{ display: 'none' }}
-            />
-          </label>
-          <Typography variant="h6">
-            Drop your files here or click to select from your device
-          </Typography>
-          <Box
-            sx={{
-              p: 1.25,
-              mt: 0.5,
-              backgroundColor: theme.palette.background.default,
-              maxWidth: '345px',
-              borderRadius: '4px',
-            }}
+          <label
+            htmlFor="file-input"
+            style={{ cursor: isNoFileAttached ? 'pointer' : 'default', marginRight: 0 }}
           >
-            <Typography
-              variant="caption"
-              sx={{ textTransform: 'uppercase', fontWeight: 'bold', lineHeight: '1.25rem' }}
-            >
-              Important:
-            </Typography>{' '}
-            <Typography
-              variant="caption"
-              color={theme.palette.text.secondary}
-              sx={{ lineHeight: '1.25rem' }}
-            >
-              Data files must be formatted according to GFW Pro requirements - click "Data
-              Templates" above to learn more.
+            <UploadByFileFolderIcon fileAttachState={fileAttachState} />
+            {isNoFileAttached && (
+              <input
+                type="file"
+                id="file-input"
+                name="file-input"
+                accept={VALID_UPLOAD_FILE_FORMATS.map((f) => `.${f}`).join(', ')}
+                style={{ display: 'none' }}
+                onChange={(e) => {
+                  const file = e.target.files?.[0] ?? null;
+                  setFile(file);
+                }}
+              />
+            )}
+          </label>
+          <UploadByFileInstructions fileAttachState={fileAttachState} />
+          {(fileAttachState === FileAttachState.Uploading ||
+            fileAttachState === FileAttachState.Uploaded) && (
+            <Typography variant="body2" sx={{ color: 'text.secondary' }}>
+              {file?.name ?? ''}
             </Typography>
-            <Typography variant="caption" sx={{ display: 'block', my: 1, mx: 0 }}>
-              Accepted filetypes
+          )}
+          {fileAttachState === FileAttachState.UnsupportedType && (
+            <Typography
+              variant="body2"
+              sx={{ color: 'text.secondary', maxWidth: '480px', textAlign: 'center', my: 1 }}
+            >
+              It looks like the file you uploaded isn't one of GFW Pro's accepted file types. GFW
+              Pro supports <b>.csv</b>, <b>.xlsl</b>, <b>.kml</b>, <b>.kmz</b> and a <b>.zip</b>{' '}
+              containing a <b>shapeFile</b>. Please try again with a compatible file format.
             </Typography>
-            <ul style={{ padding: '0 1rem', margin: 0, color: theme.palette.text.secondary }}>
-              <li>
-                <Typography variant="caption">CSV or Excel files</Typography>
-              </li>
-              <li>
-                <Typography variant="caption">
-                  ZIP file containing a shapefile (SHP, DBF, SHX, and PRJ)
-                </Typography>
-              </li>
-              <li>
-                <Typography variant="caption">KML or KMZ files</Typography>
-              </li>
-            </ul>
-          </Box>
-        </form>
+          )}
+          {(fileAttachState === FileAttachState.UnsupportedType ||
+            fileAttachState === FileAttachState.UploadFailed) && (
+            <>
+              <PillButton variant="text">
+                <label
+                  htmlFor="file-input"
+                  style={{
+                    cursor: 'pointer',
+                    textTransform: 'none',
+                    textDecoration: 'underline',
+                    color: theme.palette.error.main,
+                  }}
+                >
+                  Upload again
+                </label>
+              </PillButton>
+              <input
+                type="file"
+                id="file-input"
+                accept={VALID_UPLOAD_FILE_FORMATS.map((f) => `.${f}`).join(', ')}
+                style={{ display: 'none' }}
+                onChange={(e) => {
+                  const file = e.target.files?.[0] ?? null;
+                  setFile(file);
+                }}
+              />
+            </>
+          )}
+          {isNoFileAttached && (
+            <Box
+              sx={{
+                p: 1.25,
+                mt: 0.5,
+                backgroundColor: theme.palette.background.default,
+                maxWidth: '345px',
+                borderRadius: '4px',
+              }}
+            >
+              <Typography
+                variant="caption"
+                sx={{ textTransform: 'uppercase', fontWeight: 'bold', lineHeight: '1.25rem' }}
+              >
+                Important:
+              </Typography>{' '}
+              <Typography
+                variant="caption"
+                color={theme.palette.text.secondary}
+                sx={{ lineHeight: '1.25rem' }}
+              >
+                Data files must be formatted according to GFW Pro requirements - click "Data
+                Templates" above to learn more.
+              </Typography>
+              <Typography variant="caption" sx={{ display: 'block', my: 1, mx: 0 }}>
+                Accepted filetypes
+              </Typography>
+              <ul style={{ padding: '0 1rem', margin: 0, color: theme.palette.text.secondary }}>
+                <li>
+                  <Typography variant="caption">CSV or Excel files</Typography>
+                </li>
+                <li>
+                  <Typography variant="caption">
+                    ZIP file containing a shapefile (SHP, DBF, SHX, and PRJ)
+                  </Typography>
+                </li>
+                <li>
+                  <Typography variant="caption">KML or KMZ files</Typography>
+                </li>
+              </ul>
+            </Box>
+          )}
+        </Box>
 
         <Box
           sx={{
@@ -171,7 +274,12 @@ export function UploadLocationByFile() {
           >
             Cancel
           </PillButton>
-          <PillButton variant="contained" startIcon={<ArrowForwardIos />}>
+          <PillButton
+            variant="contained"
+            startIcon={<ArrowForwardIos />}
+            onClick={() => history.push('PREVIEW')}
+            disabled={fileAttachState !== FileAttachState.Uploaded}
+          >
             Next
           </PillButton>
         </Box>
@@ -179,20 +287,6 @@ export function UploadLocationByFile() {
         <Modal open={isDataTemplateModalOpen} onClose={() => setIsDataTemplateModalOpen(false)}>
           <DataTemplates handleClose={() => setIsDataTemplateModalOpen(false)} />
         </Modal>
-
-        <Dialog
-          open={isDialogOpen}
-          onClose={() => setIsDialogOpen(false)}
-          aria-labelledby="alert-dialog-title"
-          aria-describedby="alert-dialog-description"
-        >
-          <DialogTitle id="alert-dialog-title">Data type not compatible with GFW Pro</DialogTitle>
-          <DialogActions>
-            <PillButton onClick={() => setIsDialogOpen(false)} autoFocus>
-              Ok
-            </PillButton>
-          </DialogActions>
-        </Dialog>
       </Card>
     </>
   );

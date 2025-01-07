@@ -64,7 +64,7 @@ const ListDownloadMenu: React.FC<ListDownloadMenuProps> = ({
   const handleMenuClick = async ({ format, type }: HandleMenuClickParams) => {
     isLoading(true);
     setDialogOpen(true);
-
+    handleClose();
     try {
       await downloadRequest({
         listID,
@@ -108,7 +108,9 @@ const ListDownloadMenu: React.FC<ListDownloadMenuProps> = ({
   const isSourceFileDownloadEnabled =
     !isGfwList && currentUser.access_level_id !== userAccessLevel.VIEWER;
 
-  if (!downloadEnabled) return <></>;
+  if (!downloadEnabled) {
+    return <></>;
+  }
   return (
     <>
       {isHoverMenu ? (

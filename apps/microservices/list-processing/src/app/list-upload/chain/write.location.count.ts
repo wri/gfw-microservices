@@ -11,7 +11,7 @@ export class WriteLocationCount extends AbstractHandler<ChainType> {
   }
 
   async handle(request: ChainType): Promise<ChainType> {
-    const { organization_database, listId } = request.request as RequestNewList;
+    const { organization_database, list_id: listId } = request.request as RequestNewList;
 
     // Calculate the number of valid features
     const listSize =

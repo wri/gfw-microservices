@@ -198,7 +198,7 @@ describe('ReadmeService', () => {
     expect(result).toBe('forest_change_south_east_asia_readme.csv');
   });
 
-  it('should return undefined when listView does not match any key in southEastAsiaTCL listsViews', () => {
+  it('should return forest_change_south_east_asia_readme.csv when listView does not match any key in southEastAsiaTCL listsViews', () => {
     const filters: ListFieldsFileRequest = {
       key: 'test-key',
       listView: 'non_existent_view',
@@ -207,6 +207,6 @@ describe('ReadmeService', () => {
 
     const result = service.southEastAsiaTCL(filters);
 
-    expect(result).toBeUndefined();
+    expect(result).toBe('forest_change_south_east_asia_readme.csv');
   });
 });

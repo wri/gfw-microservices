@@ -1,4 +1,4 @@
-import { analysisTypes, analysisTypesOptions } from '@wri-monorepos/constants';
+import { analysisTypes, analysisTypesOptionsNewNames } from '@wri-monorepos/constants';
 import * as webserverConstants from './analysisTypes.constants';
 
 describe('Compare webserver and libs analysisTypes constants', () => {
@@ -7,6 +7,6 @@ describe('Compare webserver and libs analysisTypes constants', () => {
   });
 
   it('Compare webserver and libs analysisTypesOptions', () => {
-    expect(webserverConstants.analysisTypesOptions).toEqual(analysisTypesOptions);
+    expect(webserverConstants.analysisTypesOptionsNewNames).toEqual(analysisTypesOptionsNewNames);
   });
 });

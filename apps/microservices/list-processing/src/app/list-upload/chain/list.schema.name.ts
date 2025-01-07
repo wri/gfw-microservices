@@ -9,18 +9,31 @@ const createListNameSchema = (list_name) => ({
 
 export class ListSchemaName extends AbstractHandler<ChainType> {
   private readonly logger = new Logger(ListSchemaName.name);
+  private validateList: boolean;
+
+  constructor(validateList = true) {
+    super();
+    this.validateList = validateList;
+  }
 
   async handle(request: ChainType): Promise<ChainType> {
-    const { list_name: listName, organization_database: clientDatabase } =
-      request.request as RequestNewList;
+    const {
+      list_name: listName,
+      organization_database: clientDatabase,
+      commodity,
+    } = request.request as RequestNewList;
     const list = createListNameSchema(listName);
     const listTable = list.list_table;
     const analysisTable = list.analysis_table;
 
-    const doesListNameAlreadyExist = await getListByFilters({ listName: listName }, clientDatabase);
-
-    if (doesListNameAlreadyExist) {
-      throw Error(`List name ${listName} already exists.`);
+    if (this.validateList) {
+      const doesListNameAlreadyExist = await getListByFilters(
+        { listName: listName },
+        clientDatabase
+      );
+      if (doesListNameAlreadyExist) {
+        throw Error(`List name ${listName} already exists.`);
+      }
     }
 
     this.logger.log(`List name schema created: ${listTable}`);
@@ -35,6 +48,7 @@ export class ListSchemaName extends AbstractHandler<ChainType> {
         locationClassification: 'Property',
         customAttributeNames: '',
         customAttributeTypes: '',
+        commodity,
       },
     };
   }

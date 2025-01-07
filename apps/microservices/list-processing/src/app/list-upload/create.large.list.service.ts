@@ -6,6 +6,7 @@ import { SQLUtils } from '@wri-monorepos/sql';
 import { ListSchemaName } from './chain/list.schema.name';
 import { CreateListLevelData } from './chain/create.list.level.data';
 import { CreateLocationSchema } from './chain/create.location.schema';
+import { ConvertCommodityToMapsPamCode } from './chain/convert.commodity.mapspam';
 
 @Injectable()
 export class CreateLargeListService {
@@ -16,10 +17,12 @@ export class CreateLargeListService {
     analysisIds,
     templateId = 13,
     gfwListId = null,
+    commodity = 'Unknown',
   }: {
     templateId?: number;
     gfwListId?: number | null;
     isUploadListLpEnabled?: boolean;
+    commodity?: string;
   } & Partial<CreateListRequest>): Promise<CreateListResult> {
     let chainType: ChainType = {
       request: {
@@ -30,6 +33,7 @@ export class CreateLargeListService {
         user_id: userId,
         template_id: templateId,
         analysisIds: analysisIds,
+        commodity: commodity,
       } as RequestNewList,
       geojson: {
         type: 'FeatureCollection',
@@ -40,17 +44,21 @@ export class CreateLargeListService {
     const connection = new SQLUtils();
     await connection.connect(clientDatabase);
 
+    const convertCommodityToMapsPamCode = new ConvertCommodityToMapsPamCode();
     const listSchemaName = new ListSchemaName();
     const createListLevelData = new CreateListLevelData();
     const createLocationSchema = new CreateLocationSchema(connection);
 
-    listSchemaName.setNext(createListLevelData).setNext(createLocationSchema);
+    convertCommodityToMapsPamCode
+      .setNext(listSchemaName)
+      .setNext(createListLevelData)
+      .setNext(createLocationSchema);
 
-    chainType = await AbstractHandler.runFullChain(listSchemaName, chainType);
+    chainType = await AbstractHandler.runFullChain(convertCommodityToMapsPamCode, chainType);
     await connection.disconnect();
 
     return {
-      list_id: (chainType.request as RequestNewList)?.listId,
+      list_id: (chainType.request as RequestNewList)?.list_id,
     };
   }
 }

@@ -146,6 +146,9 @@ class ListDetailsPage {
   clickOnDeleteBtn() {
     this.elements.deleteBtn().click();
   }
+  clickOnTabTreeCoverLossBtn() {
+    this.elements.tabTreeCoverLoss().click();
+  }
   clickOnListDiagnosticsBtn() {
     this.elements.listDiagnosticsBtn().click();
   }

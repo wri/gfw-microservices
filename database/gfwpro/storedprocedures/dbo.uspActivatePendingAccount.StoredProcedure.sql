@@ -188,17 +188,15 @@ AS
        SET @SQL = REPLACE(@TEMPLATE, '{DATABASENAME}', @OrgdbName)
        EXEC sp_executesql @SQL
 
-
    SET @TEMPLATE = 'CREATE TABLE [{DATABASENAME}].[dbo].[ListAttributes]
        (
-     [id] INT NOT NULL,
-     [list_id] INT NULL,
-     [attribute_name] NVARCHAR(64),
-     [attribute_type] SMALLINT
+     [list_id] INT NOT NULL,
+     [attribute_name] NVARCHAR(64) NOT NULL,
+     [attribute_type] INT NOT NULL,
+     CONSTRAINT [PK_ListAttributes] PRIMARY KEY ([list_id],[attribute_name])
    )'
    SET @SQL = REPLACE(@TEMPLATE, '{DATABASENAME}', @OrgdbName)
        EXEC sp_executesql @SQL
-
        
        SET @TEMPLATE = 'CREATE TABLE [{DATABASENAME}].[dbo].[LargeLists]
        (
@@ -370,6 +368,7 @@ AS
            [UpdateTime] [DATETIME2] NULL,
            [s3_url] NVARCHAR(MAX) NULL,
            [expiration_time] [DATETIME2] NULL,
+     [options] NVARCHAR(32) NULL,
            [bundle_creation_time] [DATETIME2] NULL
            CONSTRAINT UQ_ListAnalyses_ListID_AnalysisID UNIQUE (ListID, AnalysisID)
        )'
@@ -413,6 +412,20 @@ AS
        )'
        SET @SQL = REPLACE(@TEMPLATE, '{DATABASENAME}', @OrgdbName)
        EXEC sp_executesql @SQL
+
+       SET @TEMPLATE = 'CREATE TABLE [{DATABASENAME}].[dbo].[GHGAnalyses] (
+           [list_id] INT NOT NULL,
+           [location_id] INT NOT NULL,
+           [total_area_ha] FLOAT,
+           [status_code] SMALLINT,
+           [location_error] NVARCHAR (MAX),
+           [emissions_factor_by_year] NVARCHAR (MAX),
+           CONSTRAINT [PK_GHGAnalyses] PRIMARY KEY ([list_id], [location_id]),
+
+           INDEX [IDX_GHGAnalyses_ListID] NONCLUSTERED ([list_id] ASC)
+       )'
+   SET @SQL = REPLACE(@TEMPLATE, '{DATABASENAME}', @OrgdbName)
+   EXEC sp_executesql @SQL
 
        SET @TEMPLATE = 'CREATE TABLE [{DATABASENAME}].[dbo].[ExternalUploads](
            [id] INT IDENTITY(1,1) NOT NULL,
@@ -1118,9 +1131,7 @@ AS
                        EXEC(''CREATE PROCEDURE uspGetLocationsForBatchProcessing
                            @list_id INT
                        AS                                                        
-
-							DECLARE	@list_table NVARCHAR(150)
-
+                           DECLARE    @list_table NVARCHAR(150)
                            DECLARE @analysis_table NVARCHAR(150)
 
                            DECLARE @SQL NVARCHAR(MAX)

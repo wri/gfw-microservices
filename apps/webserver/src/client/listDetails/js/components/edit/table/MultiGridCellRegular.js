@@ -195,13 +195,13 @@ export class MultiGridCellRegular extends PureComponent {
           >
             <span
               title={
-                ['Latitude', 'Longitude'].includes(columnNameUnderscored) && feature[key].toFixed
+                ['Latitude', 'Longitude'].includes(columnNameUnderscored) && feature?.[key]?.toFixed
                   ? feature[key].toFixed(6)
                   : feature[key]
               }
               style={{ textOverflow: 'ellipsis', overflow: 'hidden', whiteSpace: 'nowrap' }}
             >
-              {['Latitude', 'Longitude'].includes(columnNameUnderscored) && feature[key].toFixed
+              {['Latitude', 'Longitude'].includes(columnNameUnderscored) && feature?.[key]?.toFixed
                 ? feature[key].toFixed(6)
                 : feature[key]}
             </span>

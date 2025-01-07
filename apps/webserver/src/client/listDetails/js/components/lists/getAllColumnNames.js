@@ -17,7 +17,13 @@ const { isListDetailsPageRedesignAvailable } = featureFlags;
  * @param {Object} locationData - Selected location data Object
  * @returns {Object} columnNames - Return data based on selected list
  */
-const getAllColumnNames = (listView, locationData, selectedLists, getCheckboxColumn) => {
+const getAllColumnNames = (
+  listView,
+  locationData,
+  selectedLists,
+  getCheckboxColumn,
+  areAllAnalysesDraft = false
+) => {
   const columnNames = {};
   const gfwColumns = [];
   const list_name = selectedLists.length && selectedLists[0].list_name;
@@ -66,7 +72,11 @@ const getAllColumnNames = (listView, locationData, selectedLists, getCheckboxCol
     (column) => column.Header !== location_name.Header
   );
   columnNames.list = [...columnNamesCloneFiltered, site_id];
-  if (listView === FOREST_CHANGE_VIEW) {
+
+  if (areAllAnalysesDraft) {
+    const draftStateColumns = columns.draft_state_columns.slice();
+    columnNames.combinedColumns = [checkbox, ...draftStateColumns];
+  } else if (listView === FOREST_CHANGE_VIEW) {
     const { columns: forestChangeAnalysisColumns, ...forestChangeAnalysisRestOfProperties } =
       columns.forest_change_analysis[1];
 

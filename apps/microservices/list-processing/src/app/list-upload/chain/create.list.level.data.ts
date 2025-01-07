@@ -46,7 +46,8 @@ export class CreateListLevelData extends AbstractHandler<ChainType> {
     customAttributeNames: string,
     customAttributeTypes: string,
     gfwListId: number = null,
-    isUploadListLpFlagEnabled: boolean
+    isUploadListLpFlagEnabled: boolean,
+    commodity: string = null
   ): Promise<CreateListResult> {
     const parameters = [
       this.createSqlParameter('user_id', sql.Int, userId),
@@ -59,6 +60,7 @@ export class CreateListLevelData extends AbstractHandler<ChainType> {
       this.createSqlParameter('custom_attribute_names', sql.NVarChar(2000), customAttributeNames),
       this.createSqlParameter('custom_attribute_types', sql.NVarChar(2000), customAttributeTypes),
       this.createSqlParameter('associated_gfwlist', sql.TinyInt, gfwListId),
+      this.createSqlParameter('commodity', sql.NVarChar(150), commodity),
       this.createSqlParameter(
         'version',
         sql.Int,
@@ -93,6 +95,7 @@ export class CreateListLevelData extends AbstractHandler<ChainType> {
       gfwListId,
       user_id: userId,
       template_id: templateId,
+      commodity = '',
     } = request.request as RequestNewList;
 
     const { getFeatureFlagsForCurrentOrg, getClientIdByClientStoreDatabaseName } =
@@ -119,7 +122,8 @@ export class CreateListLevelData extends AbstractHandler<ChainType> {
         customAttributeNames,
         customAttributeTypes,
         gfwListId,
-        uploadListLpFlag?.flagState
+        uploadListLpFlag?.flagState,
+        commodity
       );
 
       this.logger.log(`List created with id: ${createListResult.list_id} in ${clientDatabase}`);
@@ -132,7 +136,7 @@ export class CreateListLevelData extends AbstractHandler<ChainType> {
 
       return {
         ...request,
-        request: { ...request.request, listId: createListResult.list_id },
+        request: { ...request.request, list_id: createListResult.list_id },
       };
     } finally {
       await connection.disconnect();

@@ -87,7 +87,7 @@ describe('StartAnalysis', () => {
       request: {
         organization_database: 'test_db',
         user_id: 1,
-        listId: 1,
+        list_id: 1,
         isExternalAPIProcess: false,
         organization_id: 1,
         subscription_status_id: 1,

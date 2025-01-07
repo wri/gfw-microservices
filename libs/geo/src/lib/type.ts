@@ -27,10 +27,10 @@ interface MultiLineString extends GeometryBase {
 }
 
 type LinearRing = {
-  0: Position;
-  1: Position;
-  2: Position;
-  3: Position;
+  0: Position | number;
+  1: Position | number;
+  2: Position | number;
+  3: Position | number;
 } & Position[];
 
 interface Polygon extends GeometryBase {

@@ -55,7 +55,6 @@ export class ListUploadController {
     } = request;
 
     const listUpload = listUploadBody as unknown as ListUploadNewRequestSchema;
-
     return await this.listAnalysisService.uploadNewList(listUpload, organizationId);
   }
 

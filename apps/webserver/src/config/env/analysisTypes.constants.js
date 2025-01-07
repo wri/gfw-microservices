@@ -35,7 +35,7 @@ const analysisTypesOptionsNewNames = [
   {
     id: analysisTypes.DEFORESTATION_KPIS,
     label: 'Post-2020 Risk Assessment',
-    shortLabel: 'Reporting',
+    shortLabel: 'Post-2020',
     description: 'Deforestation in natural forest since 2021 + additional contextual datasets',
   },
   {
@@ -47,7 +47,7 @@ const analysisTypesOptionsNewNames = [
   {
     id: analysisTypes.FOREST_CHANGE_DIAGNOSTICS,
     label: 'Post-2000 Forest Change',
-    shortLabel: 'Forest Change',
+    shortLabel: 'Post-2000',
     description: 'Annual tree cover loss since 2001 + additional contextual and regional datasets',
   },
 ];

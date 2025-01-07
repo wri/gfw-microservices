@@ -121,6 +121,7 @@ export class AppController {
       clientDatabase: request.client_database,
       analysisIds: request.analysisIds,
       isUploadListLpEnabled: featureFlag.enabled,
+      commodity: request.commodity,
     });
   }
 

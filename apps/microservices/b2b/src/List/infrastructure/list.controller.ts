@@ -26,7 +26,9 @@ export class ListController {
     );
 
     const listRes = await this.listUseCases.findListsByFilters({}, orgId);
-    if (listRes.isSuccess) return listRes.getValue();
+    if (listRes.isSuccess) {
+      return listRes.getValue();
+    }
     const error = listRes.getError();
     throw new HttpException(error.message, error.code);
   }

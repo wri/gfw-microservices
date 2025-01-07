@@ -35,7 +35,8 @@ export class ReadmeMergeServices {
   async processFiles(
     files: string[],
     newHeader: string,
-    outputFilePath: string
+    outputFilePath: string,
+    listName: string
   ): Promise<string | void> {
     try {
       this.logger.log('Combining README files');
@@ -79,7 +80,9 @@ export class ReadmeMergeServices {
       });
 
       for (const line of uniqueLines) {
-        fs.appendFileSync(`${outputFilePath}/README.csv`, line + '\n');
+        // Replace with the list name
+        const updatedLine = line.replace(/Test List|<LISTNAME>/g, listName.replace(/ /g, '_'));
+        fs.appendFileSync(`${outputFilePath}/README.csv`, updatedLine + '\n');
       }
 
       this.logger.log(`CSV result file generated successfully: ${outputFile}`);

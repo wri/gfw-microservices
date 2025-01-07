@@ -1183,7 +1183,7 @@ export default class ListDetails extends Component {
     const areAllAnalysesDraft = listAnalysesStatus.every(
       (item) => item.status === listStatus.Draft
     );
-    return areAllAnalysesDraft;
+    return areAllAnalysesDraft && !selectedLists[0].isGlobalForestWatchList;
   };
 
   getUserLocationData = (list_id, page = 0) => {

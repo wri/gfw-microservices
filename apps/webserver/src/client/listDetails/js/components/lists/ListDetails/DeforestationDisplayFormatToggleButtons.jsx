@@ -31,6 +31,7 @@ function DeforestationDisplayFormatToggleButtons() {
           borderBottomLeftRadius: '50px',
         }}
         onClick={() => store.dispatch(toggleDeforestationDisplayFormat(DISPLAY_FORMAT_SUMMARY))}
+        data-cy="deforestation-display-summary-format-button"
       >
         SUMMARY
       </Button>
@@ -41,6 +42,7 @@ function DeforestationDisplayFormatToggleButtons() {
           borderLeft: 'none',
         }}
         onClick={() => store.dispatch(toggleDeforestationDisplayFormat(DISPLAY_FORMAT_HECTARES))}
+        data-cy="deforestation-display-hectares-format-button"
       >
         HECTARES
       </Button>
@@ -53,6 +55,7 @@ function DeforestationDisplayFormatToggleButtons() {
           borderBottomRightRadius: '50px',
         }}
         onClick={() => store.dispatch(toggleDeforestationDisplayFormat(DISPLAY_FORMAT_PERCENTAGE))}
+        data-cy="deforestation-display-percentage-format-button"
       >
         % OF LOCATION
       </Button>

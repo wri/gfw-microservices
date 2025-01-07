@@ -54,6 +54,7 @@ function AnalysesTabs({
           iconPosition="start"
           label={getAnalysisLabel(analysisTypes.DEFORESTATION_KPIS)}
           value={POST_2020_RISK_ASSESSMENT_VIEW}
+          data-cy="post-2020-tab"
           sx={{
             backgroundColor: listView === POST_2020_RISK_ASSESSMENT_VIEW ? 'white' : '#e5e5e5',
             color: 'black',
@@ -73,6 +74,7 @@ function AnalysesTabs({
           iconPosition="start"
           label={getAnalysisLabel(analysisTypes.FOREST_CHANGE_DIAGNOSTICS)}
           value={FOREST_CHANGE_VIEW}
+          data-cy="post-2000-tab"
           sx={{
             backgroundColor: listView === FOREST_CHANGE_VIEW ? 'white' : '#e5e5e5',
             color: 'black',
@@ -93,6 +95,7 @@ function AnalysesTabs({
           iconPosition="start"
           label="Palm Risk Assessment"
           value={COMMODITY_RISK_VIEW}
+          data-cy="palm-risk-assessment-tab"
           sx={{
             backgroundColor: listView === COMMODITY_RISK_VIEW ? 'white' : '#e5e5e5',
             color: 'black',

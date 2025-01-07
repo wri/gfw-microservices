@@ -131,7 +131,7 @@ export function ConfigureList({ userLists }: { userLists: UserList[] }) {
     history.push('SUMMARY_AND_SUBMIT');
   };
 
-  const chosenCommodity = getValues('commodity');
+  const chosenCommodity = getValues('commodity') as keyof typeof commodities;
   const templateType = templateTypes[chosenCommodity];
 
   const validLists = templateType

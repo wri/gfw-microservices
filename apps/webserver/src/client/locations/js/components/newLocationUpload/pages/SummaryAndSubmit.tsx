@@ -6,7 +6,7 @@ import { useHistory } from '../hooks';
 import { LoadingModal, PillButton } from '../../../../../components';
 import { useUploadLocation } from '../contexts';
 import { NavBar } from '../components';
-import { typeOfAnalysisMap } from '../utils/constants';
+import { analysisTypesOptionsNewNames } from '../../../../../../config/env/analysisTypes.constants';
 
 export function SummaryAndSubmit() {
   const history = useHistory();
@@ -55,22 +55,30 @@ export function SummaryAndSubmit() {
             )}
           </Typography>
           <Typography variant="body2">
-            {isAddingToNewList ? 'Your ' : 'The resulting '}list will be submitted for the following
-            analysis:
+            Ï{isAddingToNewList ? 'Your ' : 'The resulting '}list will be submitted for the
+            following analysis:
           </Typography>
+          Ï
           <Box component="ul" sx={{ color: 'text.secondary' }}>
             {Object.entries(uploadLocationState.typeOfAnalysis)
-              .filter(([, isChecked]) => isChecked)
+              .filter(([key, isChecked]) => isChecked && key !== 'palmRiskAssessment')
               .map(([key]) => {
-                const analysis = typeOfAnalysisMap.find((x) => x.id === key);
+                const analysis = analysisTypesOptionsNewNames.find((x) => x.id === key);
+
+                const isPalmRiskAssessmentIncluded =
+                  analysis?.id === 'FCD' && uploadLocationState.typeOfAnalysis.palmRiskAssessment;
 
                 return (
-                  <li>
-                    <Typography variant="caption">{analysis?.body}</Typography>
+                  <li key={key}>
+                    <Typography variant="caption">{analysis?.label}</Typography>
+                    {isPalmRiskAssessmentIncluded && (
+                      <Typography variant="caption"> (Includes Palm Risk Assessment)</Typography>
+                    )}
                   </li>
                 );
               })}
           </Box>
+          Ï
           <Typography variant="body2">
             Please note that all analysis submission count towards your usage limits. See more
             information{' '}

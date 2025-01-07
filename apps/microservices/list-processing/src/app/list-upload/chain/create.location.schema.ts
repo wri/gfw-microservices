@@ -94,14 +94,28 @@ export class CreateLocationSchema extends AbstractHandler<ChainType> {
     analysisIds: string[]
   ): Promise<void> {
     try {
+      const isPalmRiskIncluded = analysisIds.includes('PalmRisk');
       await Promise.all(
-        analysisIds.map(async (analysisId) => {
-          await SQLUtils.queryDB(clientDatabase, 'uspCreateListAnalysisStatus', [
-            this.createSqlParameter('ListID', sql.Int, listId),
-            this.createSqlParameter('AnalysisID', sql.NVarChar(150), analysisId),
-            this.createSqlParameter('Status', sql.Int, listStatusId),
-          ]);
-        })
+        analysisIds
+          // is "PalmRisk" an analysis type or an option for "FCD"?
+          .filter((analysisId) => analysisId !== 'PalmRisk')
+          .map(async (analysisId) => {
+            const parameters = [
+              this.createSqlParameter('ListID', sql.Int, listId),
+              this.createSqlParameter('AnalysisID', sql.NVarChar(150), analysisId),
+              this.createSqlParameter('Status', sql.Int, listStatusId),
+            ];
+
+            if (isPalmRiskIncluded && analysisId === 'FCD') {
+              parameters.push(this.createSqlParameter('options', sql.NVarChar(32), 'PalmRisk'));
+            }
+
+            return await SQLUtils.queryDB(
+              clientDatabase,
+              'uspCreateListAnalysisStatus',
+              parameters
+            );
+          })
       );
     } catch (error) {
       throw new Error(`Failed to create analysis status records: ${error.message}`);

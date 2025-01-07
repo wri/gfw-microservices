@@ -3,11 +3,8 @@ const { listStatus } = require(path.resolve('./config/env/listStatuses.constants
 import * as sql from 'mssql';
 const sqlUtils = require(path.resolve('./config/privateutils/sql.utils'));
 
-import {
-  createListAnalysisStatus as createListAnalysisStatusQuery,
-  getListAnalysisStatusById as getListAnalysisStatusByIdQuery,
-  dropListAnalysisStatusByListIdAndAnalysisId as dropListAnalysisStatusByListIdAndAnalysisIdQuery,
-} from '@wri-monorepos/sql';
+import { getListAnalysisStatusById as getListAnalysisStatusByIdQuery } from '@wri-monorepos/sql';
+import { createListAnalysis, updateListAnalysis } from '@wri-monorepos/geo';
 
 const getListAnalysisStatusById = async (req, listId) => {
   const parameters = [{ field: 'listID', type: sql.Int, value: listId }];
@@ -22,67 +19,19 @@ const getListAnalysisStatusById = async (req, listId) => {
 const setSelectedAnalyses = async (
   req,
   listId,
-  analysisData,
+  analysisIds,
   analysisStatus = listStatus.Pending
 ) => {
-  const response = await getListAnalysisStatusById(req, listId);
-  if (response === undefined || response === null || response.length === 0) {
-    createListAnalysis(req, listId, analysisData, analysisStatus);
+  const { organization_database } = req.session;
+  const analysisStatusData = await getListAnalysisStatusById(req, listId);
+  if (
+    analysisStatusData === undefined ||
+    analysisStatusData === null ||
+    analysisStatusData.length === 0
+  ) {
+    createListAnalysis(organization_database, listId, analysisIds, analysisStatus);
   } else {
-    updateListAnalysis(req, listId, analysisData, response);
-  }
-};
-
-const createListAnalysis = async (req, listId, analysisData, analysisStatus) => {
-  for (const element of analysisData) {
-    const params = [
-      {
-        field: 'ListID',
-        type: sql.Int,
-        value: listId,
-      },
-      {
-        field: 'AnalysisID',
-        type: sql.NVarChar(150),
-        value: element,
-      },
-      {
-        field: 'Status',
-        type: sql.Int,
-        value: analysisStatus,
-      },
-    ];
-    await sqlUtils.executeOrganizationQuery(req, createListAnalysisStatusQuery, params);
-  }
-};
-
-const deleteListAnalysis = async (req, listId, analysisId) => {
-  await sqlUtils.executeOrganizationQuery(req, dropListAnalysisStatusByListIdAndAnalysisIdQuery, [
-    {
-      field: 'ListID',
-      type: sql.Int,
-      value: listId,
-    },
-    {
-      field: 'AnalysisID',
-      type: sql.NVarChar(150),
-      value: analysisId,
-    },
-  ]);
-};
-
-const updateListAnalysis = async (req, listId, analysisData, currentAnalysis) => {
-  const analysisDataIds = currentAnalysis.map((analysis) => analysis.analysisId);
-  for (const element of analysisDataIds) {
-    if (!analysisData.includes(element)) {
-      deleteListAnalysis(req, listId, element);
-    }
-  }
-
-  for (const element of analysisData) {
-    if (!analysisDataIds.includes(element)) {
-      createListAnalysis(req, listId, [element], listStatus.Pending);
-    }
+    updateListAnalysis(organization_database, listId, analysisIds, analysisStatusData);
   }
 };
 

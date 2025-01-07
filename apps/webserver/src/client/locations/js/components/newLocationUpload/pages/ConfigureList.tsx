@@ -380,7 +380,7 @@ export function ConfigureList({ userLists }: { userLists: UserList[] }) {
   );
 }
 
-const templateTypes: Record<string, string[]> = {
+const templateTypes: Record<keyof typeof commodities, string[]> = {
   cattle: ['cattle', 'cattleGeneric'],
   cocoa: ['cocoa', 'cocoaGeneric'],
   coffee: ['coffee'], // new type
@@ -388,6 +388,7 @@ const templateTypes: Record<string, string[]> = {
   'pulp-and-paper': ['pulpGeneric'],
   rubber: ['rubberGeneric'],
   soy: ['soySilo', 'soyFarm', 'soyGeneric'],
+  'sugar-cane': ['sugar-cane'], //new type
   multiple: ['multiple'], // new type
   other: ['other'],
 };

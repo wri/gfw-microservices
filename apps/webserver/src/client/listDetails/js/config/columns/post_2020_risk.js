@@ -1,15 +1,14 @@
 import React from 'react';
 import ColumnsHeader from '../../components/columns/ColumnsHeader';
 import {
-  checkValid,
   renderFormattedDeforestationValueWithIndicator,
   formatDigit,
 } from '../../../../locations/js/utils/locationsTableUtils';
 import infoBubbleConfig from '../../../../common/js/infoBubbleConfig.constants';
 import store from '../../../../locations/js/store';
 import { SBTN_NATURAL_FOREST_LOSS } from '../../components/lists/ListDetails/deforestationDisplayFormat.constants';
+import { renderCell } from './columns.utils';
 
-const renderCell = (label) => (checkValid(label) ? <span>{label}</span> : '--');
 const { naturalForestLossDataSource } = store.getState();
 const post_2020_risk = [
   {

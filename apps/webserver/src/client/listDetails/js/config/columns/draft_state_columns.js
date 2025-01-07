@@ -1,8 +1,8 @@
 import React from 'react';
 import ColumnsHeader from '../../components/columns/ColumnsHeader';
 import { checkValid, formatDigit } from '../../../../locations/js/utils/locationsTableUtils';
+import { renderCell } from './columns.utils';
 
-const renderCell = (label) => (checkValid(label) ? <span>{label}</span> : '--');
 const draft_state_columns = [
   {
     Header: () => <ColumnsHeader label="Location Name" />,

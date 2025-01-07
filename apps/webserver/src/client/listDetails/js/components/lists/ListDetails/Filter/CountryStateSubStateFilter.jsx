@@ -26,6 +26,7 @@ const CountryStateSubStateFilter = ({
             )}{' '}
           </InputLabel>
           <Select
+            data-cy="country-filter-dropdown"
             labelId="country-select-label"
             id="country_select"
             value={selectedCountry}
@@ -44,6 +45,7 @@ const CountryStateSubStateFilter = ({
         <FormControl sx={selectStyle} disabled={!selectedCountry || states.length === 0}>
           <InputLabel id="state-select-label">{locationsPage.lists.selectState}</InputLabel>
           <Select
+            data-cy="state-filter-dropdown"
             labelId="state-select-label"
             id="state_select"
             value={selectedState}
@@ -62,6 +64,7 @@ const CountryStateSubStateFilter = ({
         <FormControl sx={selectStyle} disabled={!selectedState || subStates.length === 0}>
           <InputLabel id="substate-select-label">{locationsPage.lists.selectSubState}</InputLabel>
           <Select
+            data-cy="substate-filter-dropdown"
             labelId="substate-select-label"
             id="substate_select"
             value={selectedSubState}

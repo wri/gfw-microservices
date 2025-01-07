@@ -1,11 +1,7 @@
 import React from 'react';
 import { columnHeaders } from './columnHeaders.constants';
-import { checkValid } from '../../../../locations/js/utils/locationsTableUtils';
 import ColumnsHeader from '../../components/columns/ColumnsHeader';
-
-const renderCell = (label) => {
-  return checkValid(label) ? <span title={label}>{label}</span> : '--';
-};
+import { renderCell } from './columns.utils';
 
 const oil_palm_concession_fc = [
   {

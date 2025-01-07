@@ -158,8 +158,8 @@ function AfiDiagnostics() {
                     value={forestLossDataset}
                     onChange={handleChange}
                   >
-                    {forestLossDatasets.map(({ id, label }) => (
-                      <MenuItem key={id} value={id}>
+                    {forestLossDatasets.map(({ id, label, dataCy }) => (
+                      <MenuItem key={id} value={id} data-cy={dataCy}>
                         {label}
                       </MenuItem>
                     ))}

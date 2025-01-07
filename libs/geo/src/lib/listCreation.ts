@@ -24,7 +24,8 @@ export class SPSListCreation {
     clientDatabase: string,
     analysisIds: string[],
     gfw_list_id?: number,
-    saveAsDraft?: boolean
+    saveAsDraft?: boolean,
+    commodity: string = null
   ): Promise<CreateListResult> {
     const list = CreateListNameSchema(list_name);
     const list_table = list.list_table;
@@ -110,6 +111,7 @@ export class SPSListCreation {
       { field: 'associated_gfwlist', type: sql.TinyInt, value: gfw_list_id },
       { field: 'associated_gfwlist', type: sql.TinyInt, value: gfw_list_id },
       { field: 'version', type: sql.Int, value: LIST_UPLOAD_LEGACY_VERSION },
+      { field: 'commodity', type: sql.NVarChar(150), commodity },
     ];
 
     let clientConnection = new SQLUtils(sqlClientConfig);

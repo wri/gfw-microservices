@@ -1,7 +1,6 @@
 import { Logger } from "@nestjs/common";
 import { extractAnalysisTypes, getAllListsAnalysisStatus, getAnalysisTypesFromIds, getListAnalysisStatusByListId, resolveListAnalysisStatuses, updateListAnalysis } from './list.analysis.status';
 import { ListsAnalysisStatus, SQLUtils } from "@wri-monorepos/sql";
-// import { S3Service } from "@wri-monorepos/aws";
 import { readAnalysesLastModifiedTime } from "@wri-monorepos/shared";
 import { analysisTypesOptions, listStatus } from "@wri-monorepos/constants";
 import * as sql from "mssql";
@@ -29,6 +28,21 @@ jest.mock('@wri-monorepos/shared', () => ({
   readAnalysesLastModifiedTime: jest.fn(),
 }));
 
+const mockAnalysisStatusData = [
+  {
+    listId: 1,
+    analysisId: 'FCD',
+    status: 5,
+    options: 'PalmRisk',
+  },
+  {
+    listId: 1,
+    analysisId: 'AFI',
+    status: 5,
+    options: '',
+  },
+];
+
 const mockLastModifiedData = [
   {
     id: 'FCD',
@@ -44,22 +58,6 @@ const mockLastModifiedData = [
   },
 ];
 
-const mockAnalysisStatusData = [
-  {
-    listId: 1,
-    analysisId: 'FCD',
-    status: 5,
-    options: 'PalmRisk',
-  },
-  {
-    listId: 1,
-    analysisId: "AFI",
-    status: 5,
-    options: "SomeOptions"
-  }
-];
-
-
 describe('list.analysis.status.ts', () => {
   beforeEach(() => {
     jest.clearAllMocks();
@@ -71,25 +69,31 @@ describe('list.analysis.status.ts', () => {
       (readAnalysesLastModifiedTime as jest.Mock).mockResolvedValue(mockLastModifiedData);
 
       const result = await getAllListsAnalysisStatus('clientDatabaseName');
-      console.log("🚀 ~ it ~ result:", result)
 
       expect(SQLUtils.queryDB).toHaveBeenCalledWith("clientDatabaseName", "getAllListsAnalysisStatus");
       expect(result).toEqual(
         expect.arrayContaining([
           expect.objectContaining({
             listId: 1,
-            analysisId: 'PalmRisk',
+            analysisId: 'FCD',
             status: 5,
             options: 'PalmRisk',
             analysisIdLastModifed: '2025-01-01T00:00:00Z'
           }),
           expect.objectContaining({
             listId: 1,
-            analysisId: 'SCI',
+            analysisId: 'PalmRisk',
             status: 5,
-            options: 'SomeOptions',
-            analysisIdLastModifed: undefined
-          })
+            options: 'PalmRisk',
+            analysisIdLastModifed: '2025-01-03T00:00:00Z',
+          }),
+          expect.objectContaining({
+            listId: 1,
+            analysisId: 'AFI',
+            status: 5,
+            options: '',
+            analysisIdLastModifed: '2025-01-02T00:00:00Z',
+          }),
         ])
       );
       
@@ -115,16 +119,17 @@ describe('list.analysis.status.ts', () => {
 
       const listId = 1;
       const result = await getListAnalysisStatusByListId('clientDB', listId);
-      console.log("🚀 ~ it.only ~ result:", result)
 
       expect(SQLUtils.queryDB).toHaveBeenCalledWith('clientDB', 'getListAnalysisStatusById', [
         { field: 'ListID', type: sql.Int, value: listId },
       ]);
-      expect(result).toHaveLength(2);
-      expect(result?.[0].analysisId).toBe("PalmRisk");
-      expect(result?.[0]?.analysisIdLastModifed).toBe("2025-01-01T00:00:00Z");
-      expect(result?.[1].analysisId).toBe("AFI");
-      expect(result?.[1]?.analysisIdLastModifed).toBe("2025-01-02T00:00:00Z");
+      expect(result).toHaveLength(3);
+      expect(result?.[0].analysisId).toBe('FCD');
+      expect(result?.[0]?.analysisIdLastModifed).toBe('2025-01-01T00:00:00Z');
+      expect(result?.[1].analysisId).toBe('PalmRisk');
+      expect(result?.[1]?.analysisIdLastModifed).toBe('2025-01-03T00:00:00Z');
+      expect(result?.[2].analysisId).toBe('AFI');
+      expect(result?.[2]?.analysisIdLastModifed).toBe('2025-01-02T00:00:00Z');
     });
 
     it('should log an error if something goes wrong and return undefined', async () => {
@@ -179,9 +184,9 @@ describe('list.analysis.status.ts', () => {
     });
   });
 
-  describe("getAnalysisTypesFromIds", () => {
-    it("should correctly return a record of used/unused analysis types by ID", () => {
-      const analysisIds = ["FCD", "SCI"];
+  describe('getAnalysisTypesFromIds', () => {
+    it('should correctly return a record of used/unused analysis types by ID', () => {
+      const analysisIds = ['FCD', 'AFI'];
 
       expect(analysisTypesOptions.length).toBeGreaterThan(0);
 
@@ -208,8 +213,8 @@ describe('list.analysis.status.ts', () => {
     it('should correctly return a record of used/unused analysis types by checking status data', () => {
       const result = extractAnalysisTypes(mockAnalysisStatusData as ListsAnalysisStatus[]);
 
-      analysisTypesOptions.forEach(option => {
-        if (option.id === "FCD" || option.id === "AFI") {
+      analysisTypesOptions.forEach((option) => {
+        if (option.id === 'FCD' || option.id === 'AFI') {
           expect(result[option.id]).toBe(true);
         } else {
           expect(result[option.id]).toBe(false);
@@ -225,7 +230,7 @@ describe('list.analysis.status.ts', () => {
     });
   });
 
-  describe.only('resolveListAnalysisStatuses', () => {
+  describe('resolveListAnalysisStatuses', () => {
     beforeAll(() => {
       // Mock the returned data for "analysisTypesLastModifiedData"
       (readAnalysesLastModifiedTime as jest.Mock).mockResolvedValue([
@@ -235,7 +240,7 @@ describe('list.analysis.status.ts', () => {
       ]);
     });
 
-    it.only('should duplicate rows with FCD/PalmRisk and handle other rows normally', async () => {
+    it('should duplicate rows with FCD/PalmRisk and handle other rows normally', async () => {
       const inputStatuses = [
         { analysisId: 'FCD', options: 'PalmRisk', listId: 1 },
         { analysisId: 'FCD', options: '', listId: 1 },
@@ -243,7 +248,6 @@ describe('list.analysis.status.ts', () => {
       ];
 
       const result = await resolveListAnalysisStatuses(inputStatuses as ListsAnalysisStatus[]);
-      console.log("🚀 ~ it.only ~ result:", result)
 
       // We expect 4 rows:
       //  1) Original row for FCD/PalmRisk → analysisId = FCD
@@ -251,7 +255,7 @@ describe('list.analysis.status.ts', () => {
       //  3) The FCD row without OtherOption (unchanged)
       //  4) The AFI row with PalmRisk (unchanged)
 
-      expect(result).toHaveLength(3);
+      expect(result).toHaveLength(4);
 
       // 1) First row: FCD/PalmRisk → analysisId=FCD
       expect(result[0]).toMatchObject({

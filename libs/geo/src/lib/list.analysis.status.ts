@@ -151,23 +151,40 @@ export async function resolveListAnalysisStatuses(listAnalysisStatuses: ListsAna
 
   try {
     const analysisTypesLastModifiedData = await readAnalysesLastModifiedTime(s3);
+    const results: ListsAnalysisStatus[] = [];
 
-    return listAnalysisStatuses.map((analysisStatus) => {
-      const analysisIdLastModifed = analysisTypesLastModifiedData.find(
+    for (const analysisStatus of listAnalysisStatuses) {
+      const originalAnalysisIdLastModified = analysisTypesLastModifiedData.find(
         (analysisType) => analysisType.id === analysisStatus.analysisId
-      );
+      )?.last_run;
 
-      const analysisId =
-        analysisStatus.analysisId === 'FCD' && analysisStatus.options === 'PalmRisk'
-          ? 'PalmRisk'
-          : analysisStatus.analysisId;
+      if (analysisStatus.analysisId === 'FCD' && analysisStatus.options === 'PalmRisk') {
+        // original row with "FCD"
+        results.push({
+          ...analysisStatus,
+          analysisId: 'FCD',
+          analysisIdLastModifed: originalAnalysisIdLastModified,
+        });
 
-      return {
-        ...analysisStatus,
-        analysisId,
-        analysisIdLastModifed: analysisIdLastModifed?.last_run,
-      };
-    });
+        // new* row, changing analysisId to "PalmRisk"
+        const palmRiskLastModified = analysisTypesLastModifiedData.find(
+          (analysisType) => analysisType.id === 'PalmRisk'
+        )?.last_run;
+        results.push({
+          ...analysisStatus,
+          analysisId: 'PalmRisk',
+          analysisIdLastModifed: palmRiskLastModified,
+        });
+      } else {
+        // otherwise the original row
+        results.push({
+          ...analysisStatus,
+          analysisIdLastModifed: originalAnalysisIdLastModified,
+        });
+      }
+    }
+
+    return results;
   } catch (error) {
     Logger.error('Resolving list analysis statuses', error.stack || error);
   }

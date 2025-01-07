@@ -38,7 +38,7 @@ const setVectorTileLayerForFilteredList = async (listData, transitionListData, v
 
   if (alertsMapExtent) {
     view.goTo(alertsMapExtent);
-  } else if (locationData.length == 1) {
+  } else if (locationData.length === 1) {
     const selectedLocationCoordinates = locationData[0]?.geometry?.coordinates;
     const geometry = new Polygon({
       rings: selectedLocationCoordinates,

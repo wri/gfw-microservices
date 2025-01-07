@@ -1,3 +1,6 @@
+/**
+ * @jest-environment node
+ */
 const axios = require('axios');
 const path = require('path');
 const { handleGeoTrellisAnalyzeListRequest } = require('./geoTrellis.utils');
@@ -74,7 +77,7 @@ describe('handleGeoTrellisAnalyzeListRequest', () => {
 
     axios.mockResolvedValue({ data: expectedResult });
 
-    expect(async () => {
+    await expect(async () => {
       await handleGeoTrellisAnalyzeListRequest(req, list);
     }).rejects.toThrow('Analysis limit reached');
 

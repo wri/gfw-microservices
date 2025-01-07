@@ -58,13 +58,16 @@ const setVectorTileLayerForFilteredList = async (listData, transitionListData, v
       symbol,
     });
     view.goTo(graphic);
-  } else {
+  } else if (locationData?.length > 1) {
     // Calculate the average latitude and longitude for centering
     const latitudes = locationData.map((location) => location.properties.Latitude);
     const longitudes = locationData.map((location) => location.properties.Longitude);
 
-    const avgLatitude = latitudes.reduce((sum, lat) => sum + lat, 0) / latitudes.length;
-    const avgLongitude = longitudes.reduce((sum, lon) => sum + lon, 0) / longitudes.length;
+    const calculateAverage = (values) =>
+      values.reduce((sum, value) => sum + value, 0) / values.length;
+
+    const avgLatitude = calculateAverage(latitudes);
+    const avgLongitude = calculateAverage(longitudes);
 
     view.goTo({
       center: [avgLongitude, avgLatitude],

@@ -11,6 +11,7 @@ import {
   Select,
   TextField,
   Typography,
+  SelectChangeEvent,
 } from '@mui/material';
 import { ArrowBackIos, ArrowForwardIos, Close } from '@mui/icons-material';
 import { useForm, Controller, FieldError } from 'react-hook-form';
@@ -23,7 +24,7 @@ import { useUploadLocation } from '../contexts';
 import { NavBar } from '../components';
 import { UserList } from '../types';
 import { filterValidTemplates } from '../utils/filterValidTemplates';
-import { typeOfAnalysisMap } from '../utils/constants';
+import { typeOfAnalysisMap, commodities } from '../utils/constants';
 
 const schema = z
   .object({
@@ -33,10 +34,10 @@ const schema = z
       .trim()
       .regex(/^[a-zA-Z0-9 ]*$/, 'Only letters, numbers, and spaces are allowed'),
     existingListName: z.string(),
-    post2000ForestChange: z.coerce.boolean(),
-    includePalmRiskAssessment: z.coerce.boolean(),
-    recentDeforestationAlerts: z.coerce.boolean(),
-    post2000RiskAssessment: z.coerce.boolean(),
+    FCD: z.coerce.boolean(),
+    palmRiskAssessment: z.coerce.boolean(),
+    ALERTS: z.coerce.boolean(),
+    AFI: z.coerce.boolean(),
     customCommodity: z.string().optional(),
   })
   .refine((data) => data.newListName !== '' || data.existingListName !== '', {
@@ -55,30 +56,65 @@ export function ConfigureList({ userLists }: { userLists: UserList[] }) {
     handleSubmit,
     control,
     formState: { errors },
+    getValues,
+    setValue,
+    reset,
   } = useForm<FormFields>({
     resolver: zodResolver(schema),
     defaultValues: {
       commodity: '',
       newListName: '',
       existingListName: '',
-      includePalmRiskAssessment: false,
-      post2000ForestChange: false,
-      post2000RiskAssessment: false,
-      recentDeforestationAlerts: false,
+      palmRiskAssessment: false,
+      FCD: false,
+      ALERTS: false,
+      AFI: false,
       customCommodity: '',
     },
   });
   const { clearUploadType, setUploadLocationConfigureList } = useUploadLocation();
 
   const [formFields, setFormFields] = useState<{
-    commodity: string;
     newListName: string;
     existingListName: string;
   }>({
-    commodity: '',
     newListName: '',
     existingListName: '',
   });
+
+  const handleChangeExistingListName = (
+    e: SelectChangeEvent<string>,
+    field: {
+      onChange: (value: string) => void;
+    }
+  ) => {
+    const value = e.target.value || '';
+    setFormFields((v) => ({ ...v, existingListName: value }));
+    field.onChange(value);
+
+    const template = userLists.find((list) => list.list_name === value);
+
+    typeOfAnalysisMap.forEach((typeOfAnalysis) => {
+      const found = template?.listAnalysesStatus.find((x) => x.analysisId === typeOfAnalysis.id);
+      setValue(typeOfAnalysis.id as keyof FormFields, !!found);
+    });
+  };
+
+  const handleAnalysisChange = (
+    e: React.ChangeEvent<HTMLInputElement>,
+    field: {
+      onChange: (value: boolean) => void;
+    },
+    id: (typeof typeOfAnalysisMap)[number]['id']
+  ) => {
+    field.onChange(e.target.checked);
+
+    if (id === 'palmRiskAssessment' && e.target.checked) {
+      setValue('FCD', true);
+    } else if (id === 'FCD' && !e.target.checked) {
+      setValue('palmRiskAssessment', false);
+    }
+  };
 
   const onSubmit = (data: FormFields) => {
     setUploadLocationConfigureList({
@@ -86,16 +122,17 @@ export function ConfigureList({ userLists }: { userLists: UserList[] }) {
       newListName: data.newListName ?? '',
       existingListName: data.existingListName ?? '',
       typeOfAnalysis: {
-        includePalmRiskAssessment: data.includePalmRiskAssessment,
-        post2000ForestChange: data.post2000ForestChange,
-        post2000RiskAssessment: data.post2000RiskAssessment,
-        recentDeforestationAlerts: data.recentDeforestationAlerts,
+        palmRiskAssessment: data.palmRiskAssessment,
+        FCD: data.FCD,
+        AFI: data.AFI,
+        ALERTS: data.ALERTS,
       },
     });
     history.push('SUMMARY_AND_SUBMIT');
   };
 
-  const templateType = templateTypes[formFields.commodity];
+  const chosenCommodity = getValues('commodity') as keyof typeof commodities;
+  const templateType = templateTypes[chosenCommodity];
 
   const validLists = templateType
     ? userLists.filter((list) => filterValidTemplates(list, templateType))
@@ -132,29 +169,25 @@ export function ConfigureList({ userLists }: { userLists: UserList[] }) {
                 <Select
                   sx={{ width: '240px' }}
                   size="small"
-                  value={formFields.commodity || ''}
+                  value={field.value || ''}
                   onChange={(e) => {
                     const value = e.target.value || '';
-                    setFormFields((v) => ({ ...v, commodity: value }));
+                    reset({ commodity: value });
+                    setFormFields((v) => ({ ...v, existingListName: '' }));
                     field.onChange(value);
                   }}
                 >
-                  <MenuItem value="cattle">Cattle</MenuItem>
-                  <MenuItem value="cocoa">Cocoa</MenuItem>
-                  <MenuItem value="coffee">Coffee</MenuItem>
-                  <MenuItem value="palm-oil">Palm oil</MenuItem>
-                  <MenuItem value="pulp-and-paper">Pulp and paper</MenuItem>
-                  <MenuItem value="rubber">Rubber</MenuItem>
-                  <MenuItem value="soy">Soy</MenuItem>
-                  <MenuItem value="sugar-cane">Sugar cane</MenuItem>
-                  <MenuItem value="multiple">Multiple</MenuItem>
-                  <MenuItem value="other">Other</MenuItem>
+                  {Object.entries(commodities).map(([key, label]) => (
+                    <MenuItem key={key} value={key}>
+                      {label}
+                    </MenuItem>
+                  ))}
                 </Select>
                 {!!errors.commodity && <FormHelperText>Enter the commodity</FormHelperText>}
               </FormControl>
             )}
           />
-          {formFields.commodity === 'other' && (
+          {chosenCommodity === 'other' && (
             <>
               <Box sx={{ display: 'flex', gap: 0.75, ml: 3, mr: 1, mt: 1 }}>
                 <Typography variant="subtitle2" sx={{ fontWeight: '500' }}>
@@ -245,11 +278,7 @@ export function ConfigureList({ userLists }: { userLists: UserList[] }) {
                     disabled={validLists.length === 0 || !!formFields.newListName}
                     size="small"
                     value={formFields.existingListName}
-                    onChange={(e) => {
-                      const value = e.target.value || '';
-                      setFormFields((v) => ({ ...v, existingListName: value }));
-                      field.onChange(value);
-                    }}
+                    onChange={(e) => handleChangeExistingListName(e, field)}
                   >
                     {validLists.map(({ id, list_name }) => (
                       <MenuItem key={id} value={list_name}>
@@ -281,37 +310,39 @@ export function ConfigureList({ userLists }: { userLists: UserList[] }) {
           counts towards your account usage limits. See more information here.
         </Typography>
         <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1, mt: 1 }}>
-          {typeOfAnalysisMap.map(({ id, title, body }) => {
-            const isPalmRisk = id === 'includePalmRiskAssessment';
-            return (
-              <Controller
-                key={id}
-                name={id}
-                control={control}
-                render={({ field }) => (
-                  <FormControlLabel
-                    control={
-                      <Checkbox
-                        sx={{ py: 0 }}
-                        checked={field.value}
-                        onChange={field.onChange}
-                        inputRef={field.ref}
-                      />
-                    }
-                    sx={{ textTransform: 'none', ml: isPalmRisk ? 2 : 0 }}
-                    label={
-                      <Box sx={{ lineHeight: 0 }}>
-                        <Typography variant="body2">{title}</Typography>
-                        <Typography variant="caption" color="text.secondary">
-                          {body}
-                        </Typography>
-                      </Box>
-                    }
-                  ></FormControlLabel>
-                )}
-              />
-            );
-          })}
+          {typeOfAnalysisMap
+            .filter((x) => chosenCommodity === 'palm-oil' || x.id !== 'palmRiskAssessment')
+            .map(({ id, label, description }) => {
+              const isPalmRisk = id === 'palmRiskAssessment';
+              return (
+                <Controller
+                  key={id}
+                  name={id as keyof FormFields}
+                  control={control}
+                  render={({ field }) => (
+                    <FormControlLabel
+                      control={
+                        <Checkbox
+                          sx={{ py: 0 }}
+                          checked={!!field.value}
+                          onChange={(e) => handleAnalysisChange(e, field, id)}
+                          inputRef={field.ref}
+                        />
+                      }
+                      sx={{ textTransform: 'none', ml: isPalmRisk ? 2 : 0 }}
+                      label={
+                        <Box sx={{ lineHeight: 0 }}>
+                          <Typography variant="body2">{label}</Typography>
+                          <Typography variant="caption" color="text.secondary">
+                            {description}
+                          </Typography>
+                        </Box>
+                      }
+                    ></FormControlLabel>
+                  )}
+                />
+              );
+            })}
         </Box>
         <Box
           sx={{
@@ -349,7 +380,7 @@ export function ConfigureList({ userLists }: { userLists: UserList[] }) {
   );
 }
 
-const templateTypes: Record<string, string[]> = {
+const templateTypes: Record<keyof typeof commodities, string[]> = {
   cattle: ['cattle', 'cattleGeneric'],
   cocoa: ['cocoa', 'cocoaGeneric'],
   coffee: ['coffee'], // new type
@@ -357,6 +388,7 @@ const templateTypes: Record<string, string[]> = {
   'pulp-and-paper': ['pulpGeneric'],
   rubber: ['rubberGeneric'],
   soy: ['soySilo', 'soyFarm', 'soyGeneric'],
+  'sugar-cane': ['sugar-cane'], //new type
   multiple: ['multiple'], // new type
   other: ['other'],
 };

@@ -13,10 +13,10 @@ type UploadLocationState = {
   existingListName: string | null;
   newListName: string | null;
   typeOfAnalysis: {
-    post2000ForestChange: boolean;
-    includePalmRiskAssessment: boolean;
-    recentDeforestationAlerts: boolean;
-    post2000RiskAssessment: boolean;
+    FCD: boolean;
+    palmRiskAssessment: boolean;
+    ALERTS: boolean;
+    AFI: boolean;
   };
 };
 
@@ -35,10 +35,10 @@ type UploadLocationType = {
     existingListName: string | null;
     newListName: string | null;
     typeOfAnalysis: {
-      includePalmRiskAssessment: boolean;
-      post2000ForestChange: boolean;
-      post2000RiskAssessment: boolean;
-      recentDeforestationAlerts: boolean;
+      palmRiskAssessment: boolean;
+      FCD: boolean;
+      AFI: boolean;
+      ALERTS: boolean;
     };
   }) => void;
   addFileUrl: (uploadedFileUrl: string) => void;
@@ -73,10 +73,10 @@ type UploadLocationAction =
         existingListName: string | null;
         newListName: string | null;
         typeOfAnalysis: {
-          includePalmRiskAssessment: boolean;
-          post2000ForestChange: boolean;
-          post2000RiskAssessment: boolean;
-          recentDeforestationAlerts: boolean;
+          palmRiskAssessment: boolean;
+          FCD: boolean;
+          AFI: boolean;
+          ALERTS: boolean;
         };
       };
     }
@@ -107,10 +107,10 @@ const uploadLocationInitialState: UploadLocationState = {
   existingListName: null,
   newListName: null,
   typeOfAnalysis: {
-    includePalmRiskAssessment: false,
-    post2000ForestChange: false,
-    post2000RiskAssessment: false,
-    recentDeforestationAlerts: false,
+    palmRiskAssessment: false,
+    FCD: false,
+    AFI: false,
+    ALERTS: false,
   },
 };
 
@@ -165,10 +165,10 @@ export function UploadLocationProvider({ children }: UploadLocationProviderProps
     existingListName: string | null;
     newListName: string | null;
     typeOfAnalysis: {
-      includePalmRiskAssessment: boolean;
-      post2000ForestChange: boolean;
-      post2000RiskAssessment: boolean;
-      recentDeforestationAlerts: boolean;
+      palmRiskAssessment: boolean;
+      FCD: boolean;
+      AFI: boolean;
+      ALERTS: boolean;
     };
   }) => {
     dispatch({ type: 'ConfigureList', payload: data });

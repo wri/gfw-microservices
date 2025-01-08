@@ -317,7 +317,7 @@ export function ConfigureList({ userLists }: { userLists: UserList[] }) {
               return (
                 <Controller
                   key={id}
-                  name={id}
+                  name={id as keyof FormFields}
                   control={control}
                   render={({ field }) => (
                     <FormControlLabel

@@ -80,7 +80,7 @@ const createList = async (
   req,
   list_name,
   template_id,
-  commodity = null,
+  commodity = null, // ensure commodity is null if not provided
   location_classification,
   user_id,
   custom_attributes,

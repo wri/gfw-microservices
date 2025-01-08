@@ -126,7 +126,7 @@ const createList = async (
         type: sql.Int,
         value: LIST_UPLOAD_LEGACY_VERSION,
       },
-      { field: 'commodity', type: sql.NVarChar(50), value: commodity },
+      { field: 'commodity', type: sql.NVarChar(150), value: commodity },
     ];
 
     sqlUtils
@@ -319,7 +319,7 @@ const saveAsDraftList = async (
           });
           params.push({
             field: `custom_attribute_${i + 1}_type`,
-            type: sql.NVarChar(150),
+            type: sql.NVarChar(50),
             value: custom_attributes[i]?.column_type || null,
           });
         }

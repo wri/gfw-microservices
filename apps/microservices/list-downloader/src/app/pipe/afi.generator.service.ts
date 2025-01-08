@@ -40,7 +40,6 @@ export class AfiGeneratorService extends IFileGenerator {
 
     const arrayOfPages = Array.from(Array(numberOfPages).keys());
 
-    this.deforestationKpisService.start(filters, suffix);
     this.naturalForestLostService.start(filters, suffix);
     this.otherKpisService.start(filters, suffix);
 
@@ -50,7 +49,6 @@ export class AfiGeneratorService extends IFileGenerator {
         newFilter,
         isListLevel
       );
-      this.deforestationKpisService.process(analysisData);
       this.naturalForestLostService.process(analysisData);
       this.otherKpisService.process(analysisData);
       return i;
@@ -60,7 +58,6 @@ export class AfiGeneratorService extends IFileGenerator {
       this.logger.log(`(${listId}) - Get page of number ${localPage} from database`);
     }
 
-    await this.deforestationKpisService.finish(filters);
     await this.naturalForestLostService.finish(filters);
     await this.otherKpisService.finish(filters);
   }

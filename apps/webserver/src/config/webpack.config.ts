@@ -34,7 +34,7 @@ export default () => {
         {
           loader: 'ts-loader',
           options: {
-            compilerOptions: { noEmit: false },
+            compilerOptions: { noEmit: false, sourceMap: isDevelopment },
             configFile: 'tsconfig.client.json',
           },
         },

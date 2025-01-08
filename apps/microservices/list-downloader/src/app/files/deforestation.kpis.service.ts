@@ -28,10 +28,10 @@ export class DeforestationKpisService extends IPipeService {
     this.logger.log(`(${listId}) - Starting stream to process data`);
     this.inputStream = new PassThrough({ objectMode: true });
 
-    const [header, fileSuffix] =
-      suffix == 'list'
-        ? [DEFORESTATION_KPIS_HEADER_AGGREGATE, 'deforestation_kpis_aggregated']
-        : [DEFORESTATION_KPIS_HEADER, 'deforestation_kpis'];
+    const [header, fileSuffix] = [
+      DEFORESTATION_KPIS_HEADER_AGGREGATE,
+      'deforestation_kpis_aggregated',
+    ];
 
     fs.writeFileSync(
       `/tmp/wri-${key}/${listName}_${fileSuffix}.csv`,

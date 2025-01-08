@@ -12,7 +12,7 @@ export const typeOfAnalysisMap = [
     description: 'Commodity-specific risk analysis for palm oil mills',
   },
   ...analysisTypesOptionsNewNames.slice(1, 2),
-];
+] as const;
 
 export const commodities = {
   cattle: 'Cattle',

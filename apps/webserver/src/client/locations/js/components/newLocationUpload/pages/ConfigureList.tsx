@@ -105,7 +105,7 @@ export function ConfigureList({ userLists }: { userLists: UserList[] }) {
     field: {
       onChange: (value: boolean) => void;
     },
-    id: string
+    id: (typeof typeOfAnalysisMap)[number]['id']
   ) => {
     field.onChange(e.target.checked);
 
@@ -317,7 +317,7 @@ export function ConfigureList({ userLists }: { userLists: UserList[] }) {
               return (
                 <Controller
                   key={id}
-                  name={id as keyof FormFields}
+                  name={id}
                   control={control}
                   render={({ field }) => (
                     <FormControlLabel

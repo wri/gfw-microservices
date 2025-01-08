@@ -31,7 +31,7 @@ export type LocationListType = {
 };
 
 export type FeatureProperties = {
-  Location_N: string;
+  Location_N?: string;
   Analysis_A?: number;
   Analysis_R?: number;
   Certificat?: string;

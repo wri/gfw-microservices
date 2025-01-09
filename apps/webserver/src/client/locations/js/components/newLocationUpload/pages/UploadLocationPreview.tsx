@@ -154,9 +154,16 @@ export function UploadLocationPreview() {
               </TableHead>
               <TableBody>
                 {data?.features?.map((location) => (
-                  <TableRow key={location.properties.Location_N}>
+                  <TableRow
+                    key={location.properties?.Location_N ?? location.properties?.locationName}
+                  >
                     {columns.map((column) => (
-                      <TableCell key={column}>{location.properties[column] ?? ''}</TableCell>
+                      <TableCell key={column}>
+                        {location.properties?.[column] &&
+                        typeof location.properties[column] !== 'object'
+                          ? location.properties[column]
+                          : ''}
+                      </TableCell>
                     ))}
                   </TableRow>
                 ))}

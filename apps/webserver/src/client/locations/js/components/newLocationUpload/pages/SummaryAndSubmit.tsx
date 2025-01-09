@@ -9,6 +9,13 @@ import { NavBar } from '../components';
 import { analysisTypesOptionsNewNames } from '../../../../../../config/env/analysisTypes.constants';
 import { commodities } from '../utils/constants';
 
+export enum AnalysisTypes {
+  'FCD' = 'FCD',
+  'FCA' = 'FCA',
+  'FSA' = 'FSA',
+  'palmRiskAssessment' = 'palmRiskAssessment',
+}
+
 export function SummaryAndSubmit() {
   const history = useHistory();
   const { clearUploadType, uploadLocationState } = useUploadLocation();

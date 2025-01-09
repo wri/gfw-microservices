@@ -1,4 +1,5 @@
 import { analysisTypesOptionsNewNames } from '../../../../../../config/env/analysisTypes.constants';
+import { AnalysisTypes } from '../pages/SummaryAndSubmit';
 
 export const VALID_UPLOAD_FILE_FORMATS = ['csv', 'xls', 'xlsx', 'zip', 'kml', 'kmz'];
 
@@ -25,4 +26,8 @@ export const commodities = {
   'sugar-cane': 'Sugar cane',
   multiple: 'Multiple',
   other: 'Other',
+};
+
+export const testEnum = () => {
+  console.log(AnalysisTypes.FCD);
 };

@@ -209,4 +209,37 @@ describe('ReadmeService', () => {
 
     expect(result).toBe('forest_change_south_east_asia_readme.csv');
   });
+
+  it('should return argentina_forest_change_readme.csv when listView is forest_change', () => {
+    const filters: ListFieldsFileRequest = {
+      key: 'test-key',
+      listView: 'forest_change',
+      type: 'argentina',
+    };
+
+    const result = service.countrySpecificReadmeData(filters, 'argentina');
+    expect(result).toBe('argentina_forest_change_readme.csv');
+  });
+
+  it('should return colombia_forest_change_readme.csv when listView is forest_change', () => {
+    const filters: ListFieldsFileRequest = {
+      key: 'test-key',
+      listView: 'forest_change',
+      type: 'colombia',
+    };
+
+    const result = service.countrySpecificReadmeData(filters, 'colombia');
+    expect(result).toBe('colombia_forest_change_readme.csv');
+  });
+
+  it('should return south_america_forest_change_readme.csv when listView is forest_change', () => {
+    const filters: ListFieldsFileRequest = {
+      key: 'test-key',
+      listView: 'forest_change',
+      type: 'south_america',
+    };
+
+    const result = service.countrySpecificReadmeData(filters, 'south_america');
+    expect(result).toBe('south_america_forest_change_readme.csv');
+  });
 });

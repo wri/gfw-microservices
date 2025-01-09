@@ -1,22 +1,22 @@
 CSV Name,Description,Version,Column,Column Description
-03082024 Test List_south_east_asia_tcl,Location Level Tree Cover Loss For South East Asia Region Panel,1.0,List Name,Name of List
-03082024 Test List_south_east_asia_tcl,Location Level Tree Cover Loss For South East Asia Region Panel,1.0,Location Name,Name of Location
-03082024 Test List_south_east_asia_tcl,Location Level Tree Cover Loss For South East Asia Region Panel,1.0,Data Layer Name,Analyis or Contextual Data Layer name and Layer Category (e.g. Tree Cover Loss; Indonesia Landcover - Agriculture; Indonesia Forest Moratorium)
-03082024 Test List_south_east_asia_tcl,Location Level Tree Cover Loss For South East Asia Region Panel,1.0,Forest Loss (ha),HA of TCL in the location in the data category in the year
-03082024 Test List_south_east_asia_tcl,Location Level Tree Cover Loss For South East Asia Region Panel,1.0,Year,Year
-03082024 Test List_south_east_asia_tcl,Location Level Tree Cover Loss For South East Asia Region Panel,1.0,Loss (all years) (ha),Total Loss in that Layer Category across all years for this location
-03082024 Test List_south_east_asia_tcl,Location Level Tree Cover Loss For South East Asia Region Panel,1.0,% of TCL,Percentage of Loss within this location within this Layer Category in that year
-03082024 Test List_south_east_asia_tcl_aggregate,List Level Level Tree Cover Loss For South East Asia Region Panel,1.0,List Name,Name of List
-03082024 Test List_south_east_asia_tcl_aggregate,List Level Level Tree Cover Loss For South East Asia Region Panel,1.0,Data Layer Name,Analyis or Contextual Data Layer name and Layer Category (e.g. Tree Cover Loss; Indonesia Landcover - Agriculture; Indonesia Forest Moratorium)
-03082024 Test List_south_east_asia_tcl_aggregate,List Level Level Tree Cover Loss For South East Asia Region Panel,1.0,Forest Loss (ha),Total Loss in that Layer Category across all years for this List
-03082024 Test List_south_east_asia_tcl_aggregate,List Level Level Tree Cover Loss For South East Asia Region Panel,1.0,Year,Year
-03082024 Test List_south_east_asia_tcl_aggregate,List Level Level Tree Cover Loss For South East Asia Region Panel,1.0,Total Loss (ha),Percentage of Loss within this List within this Layer Category in that year
-03082024 Test List_south_east_asia_overlap,Location Level Level Overlap For South East Asia Region Panel,1.0,List Name,Name of List
-03082024 Test List_south_east_asia_overlap,Location Level Level Overlap For South East Asia Region Panel,1.0,Location Name,Name of Location
-03082024 Test List_south_east_asia_overlap,Location Level Level Overlap For South East Asia Region Panel,1.0,Data Layer Name,Analyis or Contextual Data Layer name and Layer Category (e.g. Tree Cover Loss; Indonesia Landcover; Indonesia Forest Moratorium)
-03082024 Test List_south_east_asia_overlap,Location Level Level Overlap For South East Asia Region Panel,1.0,Sub-layer name,Contextual Data Subcategory (e.g. Swamp; Note: This is blank for layers with no sub-categories)
-03082024 Test List_south_east_asia_overlap,Location Level Level Overlap For South East Asia Region Panel,1.0,Overlap with sub-layer (%),Percentage of the Location that Overlaps with the Sub Category
-03082024 Test List_south_east_asia_overlap_aggregate,List Level Level Overlap For South East Asia Region Panel,1.0,List Name,Name of List
-03082024 Test List_south_east_asia_overlap_aggregate,List Level Level Overlap For South East Asia Region Panel,1.0,Data Layer Name,Analyis or Contextual Data Layer name and Layer Category (e.g. Tree Cover Loss; Indonesia Landcover; Indonesia Forest Moratorium)
-03082024 Test List_south_east_asia_overlap_aggregate,List Level Level Overlap For South East Asia Region Panel,1.0,Sub-layer name,Contextual Data Subcategory (e.g. Swamp; Note: This is blank for layers with no sub-categories)
-03082024 Test List_south_east_asia_overlap_aggregate,List Level Level Overlap For South East Asia Region Panel,1.0,Overlap with sub-layer (%),Percentage of the List that Overlaps with the Sub Category
+Test List_south_east_asia_tcl,Location Level Tree Cover Loss For South East Asia Region Panel,1.0,List Name,Name of List
+Test List_south_east_asia_tcl,Location Level Tree Cover Loss For South East Asia Region Panel,1.0,Location Name,Name of Location
+Test List_south_east_asia_tcl,Location Level Tree Cover Loss For South East Asia Region Panel,1.0,Data Layer Name,Analyis or Contextual Data Layer name and Layer Category (e.g. Tree Cover Loss; Indonesia Landcover - Agriculture; Indonesia Forest Moratorium)
+Test List_south_east_asia_tcl,Location Level Tree Cover Loss For South East Asia Region Panel,1.0,Forest Loss (ha),HA of TCL in the location in the data category in the year
+Test List_south_east_asia_tcl,Location Level Tree Cover Loss For South East Asia Region Panel,1.0,Year,Year
+Test List_south_east_asia_tcl,Location Level Tree Cover Loss For South East Asia Region Panel,1.0,Loss (all years) (ha),Total Loss in that Layer Category across all years for this location
+Test List_south_east_asia_tcl,Location Level Tree Cover Loss For South East Asia Region Panel,1.0,% of TCL,Percentage of Loss within this location within this Layer Category in that year
+Test List_south_east_asia_tcl_aggregate,List Level Level Tree Cover Loss For South East Asia Region Panel,1.0,List Name,Name of List
+Test List_south_east_asia_tcl_aggregate,List Level Level Tree Cover Loss For South East Asia Region Panel,1.0,Data Layer Name,Analyis or Contextual Data Layer name and Layer Category (e.g. Tree Cover Loss; Indonesia Landcover - Agriculture; Indonesia Forest Moratorium)
+Test List_south_east_asia_tcl_aggregate,List Level Level Tree Cover Loss For South East Asia Region Panel,1.0,Forest Loss (ha),Total Loss in that Layer Category across all years for this List
+Test List_south_east_asia_tcl_aggregate,List Level Level Tree Cover Loss For South East Asia Region Panel,1.0,Year,Year
+Test List_south_east_asia_tcl_aggregate,List Level Level Tree Cover Loss For South East Asia Region Panel,1.0,Total Loss (ha),Percentage of Loss within this List within this Layer Category in that year
+Test List_south_east_asia_overlap,Location Level Level Overlap For South East Asia Region Panel,1.0,List Name,Name of List
+Test List_south_east_asia_overlap,Location Level Level Overlap For South East Asia Region Panel,1.0,Location Name,Name of Location
+Test List_south_east_asia_overlap,Location Level Level Overlap For South East Asia Region Panel,1.0,Data Layer Name,Analyis or Contextual Data Layer name and Layer Category (e.g. Tree Cover Loss; Indonesia Landcover; Indonesia Forest Moratorium)
+Test List_south_east_asia_overlap,Location Level Level Overlap For South East Asia Region Panel,1.0,Sub-layer name,Contextual Data Subcategory (e.g. Swamp; Note: This is blank for layers with no sub-categories)
+Test List_south_east_asia_overlap,Location Level Level Overlap For South East Asia Region Panel,1.0,Overlap with sub-layer (%),Percentage of the Location that Overlaps with the Sub Category
+Test List_south_east_asia_overlap_aggregate,List Level Level Overlap For South East Asia Region Panel,1.0,List Name,Name of List
+Test List_south_east_asia_overlap_aggregate,List Level Level Overlap For South East Asia Region Panel,1.0,Data Layer Name,Analyis or Contextual Data Layer name and Layer Category (e.g. Tree Cover Loss; Indonesia Landcover; Indonesia Forest Moratorium)
+Test List_south_east_asia_overlap_aggregate,List Level Level Overlap For South East Asia Region Panel,1.0,Sub-layer name,Contextual Data Subcategory (e.g. Swamp; Note: This is blank for layers with no sub-categories)
+Test List_south_east_asia_overlap_aggregate,List Level Level Overlap For South East Asia Region Panel,1.0,Overlap with sub-layer (%),Percentage of the List that Overlaps with the Sub Category

@@ -109,7 +109,7 @@ export class ReadmeService {
   }
 
   async write(filters: BasicFieldsFileRequest): Promise<void> {
-    const { type, key, listName } = filters;
+    const { type, key, listName, listView } = filters;
 
     const returnFileToCopy = {
       afi: this.afiReadmeData,
@@ -126,7 +126,7 @@ export class ReadmeService {
     }
 
     const fileToCopy =
-      type === 'everything'
+      type === 'everything' && listView === 'forest_change'
         ? await this.readmeMergeServices.processFiles(
             [
               this.getSourceDir(returnFileToCopy[type](filters)),

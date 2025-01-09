@@ -29,7 +29,7 @@ class ListDetailsPage {
       ),
     closeAlertDownloadBtn: () => cy.get('[data-cy="download-dialog"]').find('button').first(),
     listByName: (name) => cy.contains('.list-item', name),
-    tabTreeCoverLoss: () => cy.get('.css-1wajlhh-MuiButtonBase-root-MuiTab-root'),
+    tabPost2020: () => cy.get('.Mui-selected'),
   };
   clickOnLocationsList(name: string) {
     cy.contains(name).click();

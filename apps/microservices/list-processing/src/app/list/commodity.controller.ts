@@ -46,7 +46,7 @@ export class CommodityController {
       const { listId, organizationDatabase } = queryParam;
       return await this.commodityService.getCommodityFromExistingList(organizationDatabase, listId);
     } catch (error) {
-      this.logger.error(error);
+      this.logger.error(error.stack || error);
       throw new BadRequestException(error.errors);
     }
   }
@@ -60,7 +60,7 @@ export class CommodityController {
       const { commodity, organizationDatabase } = queryParam;
       return await this.commodityService.getListsByCommodity(organizationDatabase, commodity);
     } catch (error) {
-      this.logger.error(error);
+      this.logger.error(error.stack || error);
       throw new BadRequestException(error.errors);
     }
   }

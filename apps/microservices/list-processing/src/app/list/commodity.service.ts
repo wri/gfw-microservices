@@ -57,7 +57,7 @@ export class CommodityService {
         commodity: 'No commodity found',
       };
     } catch (error) {
-      Logger.warn(error);
+      Logger.warn(error.stack || error);
       return {
         commodity: 'No commodity found',
       };
@@ -99,26 +99,42 @@ export class CommodityService {
     organizationDatabase: string,
     commodity: string
   ): Promise<Array<ListResponse>> {
+    const listTemplate = await this.listTemplateRepository.find();
     const clientStoreConnection = new ClientStoreConnection();
     const connection = await clientStoreConnection.getConnection(organizationDatabase, [Lists]);
     const listRepository = connection.getRepository(Lists);
     const lists = await listRepository.find();
-    const elements = [];
+
+    const matchedLists = [];
 
     for (const list of lists) {
-      const { commodity: commodityFromList } = await this.getCommodityFromExistingList(
-        organizationDatabase,
-        list.id
-      );
-      if (this.compareIgnoringAccentsAndCase(commodityFromList, commodity)) {
-        elements.push({
-          id: list.id,
-          name: list.listName,
-        });
+      try {
+        if (list.Commodity === null) {
+          const { commodity: commodityFromLocation } = await this.getCommodityFromLocation(
+            organizationDatabase,
+            list.listTableName
+          );
+          if (this.compareIgnoringAccentsAndCase(commodityFromLocation, commodity)) {
+            matchedLists.push({ id: list.id, name: list.listName });
+          }
+          if (commodityFromLocation === null) {
+            const template = listTemplate.find((template) => template.id === list.templateId);
+            if (this.compareIgnoringAccentsAndCase(commodityFromLocation, template)) {
+              matchedLists.push({
+                id: list.id,
+                name: list.listName,
+              });
+            }
+          }
+        } else if (this.compareIgnoringAccentsAndCase(list.Commodity, commodity)) {
+          matchedLists.push({ id: list.id, name: list.listName });
+        }
+      } catch (error) {
+        Logger.warn(error.stack || error);
       }
     }
 
-    return elements;
+    return matchedLists;
   }
 
   compareIgnoringAccentsAndCase(str1, str2) {

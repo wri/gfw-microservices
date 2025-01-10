@@ -20,6 +20,8 @@ import fastq from 'fastq';
 import type { queue, done } from 'fastq';
 import { ListSchemaName } from './chain/list.schema.name';
 import { ConvertPoint2Polygon } from './chain/convert.point.2.polygon';
+import { ValidateMandatoryFields } from './chain/validate.mandatory.fields';
+import { ValidateLocationName } from './chain/validate.location.name';
 
 type WorkerType = {
   request: RequestLargeListProcess;
@@ -52,11 +54,15 @@ async function worker(input: WorkerType, cb: done) {
   const listSchemaName = new ListSchemaName(false);
   const startAnalysis = new StartAnalysis();
   const convertPoint2Polygon = new ConvertPoint2Polygon();
+  const validateMandatoryFields = new ValidateMandatoryFields();
+  const validateLocationName = new ValidateLocationName();
 
   downloadS3File
     .setNext(parseData)
     .setNext(listSchemaName)
     .setNext(processUploadData)
+    .setNext(validateMandatoryFields)
+    .setNext(validateLocationName)
     .setNext(convertPoint2Polygon)
     .setNext(gadmService) // depends on convertPoint2Polygon
     .setNext(validateLatLongGeojson) // depends on gadmService

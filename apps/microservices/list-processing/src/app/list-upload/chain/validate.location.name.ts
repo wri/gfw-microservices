@@ -21,11 +21,11 @@ export class ValidateLocationName extends AbstractHandler<ChainType> {
     const formattedName = this.formatLocationName(originalName);
 
     if (!this.isValidLocationName(formattedName)) {
-      location.properties.error = location.properties.error || [];
-      if (!location.properties.error) {
-        location.properties.error = [];
+      location.properties.errorDetails = location.properties.errorDetails || [];
+      if (!location.properties.errorDetails) {
+        location.properties.errorDetails = [];
       }
-      (location.properties.error as Array<string>).push('Invalid location name');
+      (location.properties.errorDetails as Array<string>).push('Invalid location name');
       // Remove offending characters (non-alphanumeric and non-space)
       location.properties.locationName = formattedName.replace(/[^a-zA-Z0-9\s]/g, '');
     } else {

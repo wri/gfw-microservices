@@ -26,7 +26,7 @@
       "name": "List processing",
       "request": "launch",
       "type": "node",
-      "runtimeExecutable": "npx",
+      "runtimeExecutable": "/Users/gdanis/.nvm/versions/node/v20.11.1/bin/npx",
       "runtimeArgs": ["nx", "serve", "microservices-list-processing"],
       "console": "integratedTerminal",
       "cwd": "${workspaceFolder}/apps/microservices/list-processing",

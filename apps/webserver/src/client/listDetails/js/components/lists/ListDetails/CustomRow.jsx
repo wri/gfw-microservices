@@ -63,6 +63,7 @@ const CustomRow = ({
 
   return (
     <div
+      data-testid="custom-row"
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
       style={{ width: '100%', display: 'flex', backgroundColor, color }}

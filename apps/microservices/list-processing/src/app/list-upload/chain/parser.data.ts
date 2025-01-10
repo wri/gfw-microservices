@@ -7,7 +7,7 @@ import { convertShapefileToGeoJSON } from '../parser/shp2GeoJson.parser';
 import * as path from 'path';
 import { xls2geojson } from '../parser/xls2GeoJSON.parser';
 import { kml2GeoJSON } from '../parser/kml2GeoJSON.parser';
-import * as unzipper from 'unzipper';
+import AdmZip from 'adm-zip';
 
 export class ParserData extends AbstractHandler<ChainType> {
   private readonly logger = new Logger(ParserData.name);
@@ -52,13 +52,22 @@ export class ParserData extends AbstractHandler<ChainType> {
   };
 
   kmz2geojson = async (fileDownloadedPath: string): Promise<FeatureCollection> => {
-    const kmlFilePath = `${fileDownloadedPath}.kml`;
+    const zip = new AdmZip(fileDownloadedPath);
+    const zipEntries = zip.getEntries();
 
-    // Extract the KML file from the KMZ archive
-    await fs
-      .createReadStream(fileDownloadedPath)
-      .pipe(unzipper.Extract({ path: path.dirname(fileDownloadedPath) }))
-      .promise();
+    // Find the KML file in the KMZ archive
+    const kmlEntry = zipEntries.find((entry) => entry.entryName.endsWith('.kml'));
+    if (!kmlEntry) {
+      this.logger.error(`No KML file found in the KMZ archive: ${fileDownloadedPath}`);
+      throw new Error('No KML file found in the KMZ archive');
+    }
+
+    const fileName = path.basename(fileDownloadedPath).replace('.kmz', '.kml');
+    // Define the path for the extracted KML file
+    const kmlFilePath = path.join(path.dirname(fileDownloadedPath), fileName);
+
+    // Extract the KML file to the specified path
+    fs.writeFileSync(kmlFilePath, kmlEntry.getData());
 
     // Parse the extracted KML file
     const geojson = await this.kml2geojson(kmlFilePath);

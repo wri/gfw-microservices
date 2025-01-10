@@ -8,6 +8,9 @@ import { S3Service } from '@wri-monorepos/aws';
 import { ConfigService } from '@nestjs/config';
 import { ServerConfigType } from '../../validators/server-config';
 import { PreviewStep } from './chain/preview.step';
+import { ValidateMandatoryFields } from './chain/validate.mandatory.fields';
+import { ValidateLatLongGeojson } from './chain/validate.lat.long.geojson';
+import { ValidateLocationName } from './chain/validate.location.name';
 
 @Injectable()
 export class PreviewListUploadService {
@@ -32,8 +35,17 @@ export class PreviewListUploadService {
     const parseData = new ParserData();
     const gadmService = new GADMService();
     const previewStep = new PreviewStep();
+    const validateMandatoryFields = new ValidateMandatoryFields();
+    const validateLatLongGeojson = new ValidateLatLongGeojson();
+    const validateLocationName = new ValidateLocationName();
 
-    downloadS3File.setNext(parseData).setNext(previewStep).setNext(gadmService);
+    downloadS3File
+      .setNext(parseData)
+      .setNext(previewStep)
+      .setNext(validateMandatoryFields)
+      .setNext(validateLocationName)
+      .setNext(gadmService)
+      .setNext(validateLatLongGeojson);
 
     const response = await AbstractHandler.runFullChain(downloadS3File, chainType);
     return response.geojson;

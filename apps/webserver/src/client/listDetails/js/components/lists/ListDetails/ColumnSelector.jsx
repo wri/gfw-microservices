@@ -8,7 +8,7 @@ import { locationsPage } from '../../../../../common/js/config';
 
 const transifex = Transifex.live.translateText;
 
-function ColumnSelector({ listColumns, setListColumns }) {
+function ColumnSelector({ listColumns, visibleColumns, setListColumns }) {
   const [displayColumnSelectionMenu, setDisplayColumnSelectionMenu] = useState(false);
   const [anchorElColumnMenu, setAnchorElColumnMenu] = useState();
 
@@ -55,11 +55,11 @@ function ColumnSelector({ listColumns, setListColumns }) {
   const displayedColumns = listColumns
     ?.filter((column) => column.accessor !== 'location_id')
     .map((column, index) => (
-      <div className="select-columns__checkbox-container" key={listColumns[index].accessor}>
+      <div className="select-columns__checkbox-container" key={column.accessor}>
         <input
           id={`checkBox-${index}`}
           type="checkbox"
-          checked={listColumns[index].show}
+          checked={visibleColumns.includes(column.accessor)}
           onChange={() => updateCheck(index)}
         />
         <label htmlFor={`checkBox-${index}`}>{column.accessor}</label>

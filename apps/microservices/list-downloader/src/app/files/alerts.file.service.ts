@@ -34,7 +34,6 @@ export class AlertsFileService extends IPipeService {
     const { selectedTimeframe } = filters;
     await this.startEmail(filters);
     if (selectedTimeframe === AlertsTimeframes.DAY) {
-      this.alertsLocationsHistoryService.start(filters);
       this.alertsIntegratedNaturalForestService.start(filters);
     } else {
       await this.alertsLocationsLevelService.start(filters);
@@ -49,7 +48,6 @@ export class AlertsFileService extends IPipeService {
   process(analysisData: DashboardDataType[], filters: AlertFieldsFileRequest) {
     const { selectedTimeframe } = filters;
     if (selectedTimeframe === AlertsTimeframes.DAY) {
-      this.alertsLocationsHistoryService.process(analysisData);
       this.alertsIntegratedNaturalForestService.process(analysisData);
     } else {
       this.alertsLocationsLevelService.process(analysisData);
@@ -64,7 +62,6 @@ export class AlertsFileService extends IPipeService {
   async finish(filters: AlertFieldsFileRequest) {
     const { key, selectedTimeframe } = filters;
     if (selectedTimeframe === AlertsTimeframes.DAY) {
-      await this.alertsLocationsHistoryService.finish(filters);
       await this.alertsIntegratedNaturalForestService.finish(filters);
     } else {
       await this.alertsLocationsLevelService.finish(filters);

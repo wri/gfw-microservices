@@ -69,7 +69,7 @@ describe('AlertsFileService', () => {
 
       await service.start(filters);
 
-      expect(alertsLocationsHistoryService.start).toHaveBeenCalledWith(filters);
+      expect(alertsLocationsHistoryService.start).not.toHaveBeenCalledWith(filters);
       expect(alertsIntegratedNaturalForestService.start).toHaveBeenCalledWith(filters);
     });
 
@@ -112,7 +112,7 @@ describe('AlertsFileService', () => {
 
       service.process(analysisData, filters);
 
-      expect(alertsLocationsHistoryService.process).toHaveBeenCalledWith(analysisData);
+      expect(alertsLocationsHistoryService.process).not.toHaveBeenCalledWith(analysisData);
       expect(alertsIntegratedNaturalForestService.process).toHaveBeenCalledWith(analysisData);
     });
 
@@ -163,7 +163,7 @@ describe('AlertsFileService', () => {
 
       await service.finish(filters);
 
-      expect(alertsLocationsHistoryService.finish).toHaveBeenCalledWith(filters);
+      expect(alertsLocationsHistoryService.finish).not.toHaveBeenCalledWith(filters);
       expect(alertsIntegratedNaturalForestService.finish).toHaveBeenCalledWith(filters);
       expect(getAllFilesAndZip).toHaveBeenCalledWith(filters);
       expect(service.finishProcess).toHaveBeenCalledWith(filters);

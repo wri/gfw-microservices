@@ -1,5 +1,6 @@
 import React from 'react';
-import { render, screen, fireEvent, cleanup } from '@testing-library/react';
+import { render, screen, cleanup } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
 import '@testing-library/jest-dom';
 import AlertBanner from '../js/components/lists/ListDetails/AlertBanner';
 
@@ -7,6 +8,7 @@ afterEach(() => {
   cleanup();
   jest.clearAllMocks();
 });
+
 describe('AlertBanner', () => {
   const mockProps = {
     title: 'Test Title',
@@ -39,11 +41,12 @@ describe('AlertBanner', () => {
     expect(alert).toHaveStyle(`background-color: ${mockProps.backgroundColor}`);
   });
 
-  it('handles the button click event', () => {
+  it('handles the button click event', async () => {
+    const user = userEvent.setup();
     render(<AlertBanner {...mockProps} />);
 
     const button = screen.getByRole('button', { name: mockProps.buttonText });
-    fireEvent.click(button);
+    await user.click(button);
     expect(mockProps.onButtonClick).toHaveBeenCalledTimes(1);
   });
 

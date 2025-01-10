@@ -67,6 +67,7 @@
     "@slack/bolt": "^3.13.2",
     "@smithy/node-http-handler": "^2.1.8",
     "@ssut/nestjs-sqs": "^2.2.0",
+    "@testing-library/user-event": "^14.5.2",
     "@turf/turf": "^6.5.0",
     "@types/cron": "^2.4.0",
     "@types/lodash": "^4.14.202",

@@ -336,9 +336,26 @@ export const updateAccountProfile = (
   arr_org_classification_ids
 ) => {
   return new Promise((resolve, reject) => {
+    // First get current user's orgName
+    let currentOrgName = '';
+    getAccountProfile(req)
+      .then((recordsets) => {
+        console.log('recordsets', recordsets);
+        currentOrgName = recordsets.orgName;
+      })
+      .catch((errorMessage) => {
+        const errorObject = errorUtils.createErrorMessage(
+          req,
+          errorUtils.ERROR_CODES.failedToGetAccountProfile,
+          'Failed to get account profile',
+          errorMessage
+        );
+        reject(errorObject);
+      });
+
     // Setup parameters to update account profile.
     const params = [
-      { field: 'orgName', type: sql.NVarChar(200), value: org_name },
+      { field: 'orgName', type: sql.NVarChar(200), value: currentOrgName },
       { field: 'orgAddress', type: sql.NVarChar(200), value: org_address },
       { field: 'orgWebsite', type: sql.NVarChar(200), value: org_website },
       { field: 'isSubsidiary', type: sql.Bit, value: is_subsidiary },

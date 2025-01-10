@@ -6,14 +6,14 @@
  * of the two files are identical
  */
 
-const analysisTypes = {
+export const analysisTypes = {
   FOREST_CHANGE_DIAGNOSTICS: 'FCD',
   DEFORESTATION_KPIS: 'AFI',
   ALERTS: 'ALERTS',
-};
+} as const;
 
 // remove these constant names when isListDetailsPageRedesignAvailable feature flag is removed
-const analysisTypesOptions = [
+export const analysisTypesOptions = [
   {
     id: analysisTypes.FOREST_CHANGE_DIAGNOSTICS,
     label: 'Forest Change Global',
@@ -31,7 +31,7 @@ const analysisTypesOptions = [
   },
 ];
 
-const analysisTypesOptionsNewNames = [
+export const analysisTypesOptionsNewNames = [
   {
     id: analysisTypes.DEFORESTATION_KPIS,
     label: 'Post-2020 Risk Assessment',
@@ -51,9 +51,3 @@ const analysisTypesOptionsNewNames = [
     description: 'Annual tree cover loss since 2001 + additional contextual and regional datasets',
   },
 ];
-
-module.exports = {
-  analysisTypes,
-  analysisTypesOptions,
-  analysisTypesOptionsNewNames,
-};

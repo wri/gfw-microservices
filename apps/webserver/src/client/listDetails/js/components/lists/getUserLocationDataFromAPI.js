@@ -13,7 +13,8 @@ const getUserLocationDataFromAPI = (
   searchString,
   tableSortedBy,
   tableSortedDesc,
-  page = 0
+  page = 0,
+  areAllAnalysesDraft = false
 ) => {
   const { listView } = store.getState();
 
@@ -35,6 +36,7 @@ const getUserLocationDataFromAPI = (
   const data = {
     pageSize: 50,
     page: page + 1,
+    areAllAnalysesDraft,
     listID: selectedLists,
     searchString,
     sortByAttribute: tableSortedBy,

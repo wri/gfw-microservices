@@ -6,7 +6,8 @@ import { useHistory } from '../hooks';
 import { LoadingModal, PillButton } from '../../../../../components';
 import { useUploadLocation } from '../contexts';
 import { NavBar } from '../components';
-import { typeOfAnalysisMap } from '../utils/constants';
+import { analysisTypesOptionsNewNames } from '../../../../../../config/env/analysisTypes.constants';
+import { commodities } from '../utils/constants';
 
 export function SummaryAndSubmit() {
   const history = useHistory();
@@ -19,6 +20,7 @@ export function SummaryAndSubmit() {
   };
 
   const isAddingToNewList = !!uploadLocationState.newListName;
+  const commodity = commodities[uploadLocationState.commodity as keyof typeof commodities];
 
   return (
     <>
@@ -44,12 +46,12 @@ export function SummaryAndSubmit() {
             You are{' '}
             {isAddingToNewList ? (
               <>
-                creating a new <b>{uploadLocationState.commodity}</b> list named{' '}
+                creating a new <b>{commodity}</b> list named{' '}
                 <b>{uploadLocationState.newListName}</b>.
               </>
             ) : (
               <>
-                adding <b>{uploadLocationState.commodity}</b> location(s) to the list named{' '}
+                adding <b>{commodity}</b> location(s) to the list named{' '}
                 <b>{uploadLocationState.existingListName}</b>.
               </>
             )}
@@ -60,17 +62,24 @@ export function SummaryAndSubmit() {
           </Typography>
           <Box component="ul" sx={{ color: 'text.secondary' }}>
             {Object.entries(uploadLocationState.typeOfAnalysis)
-              .filter(([, isChecked]) => isChecked)
+              .filter(([key, isChecked]) => isChecked && key !== 'palmRiskAssessment')
               .map(([key]) => {
-                const analysis = typeOfAnalysisMap.find((x) => x.id === key);
+                const analysis = analysisTypesOptionsNewNames.find((x) => x.id === key);
+
+                const isPalmRiskAssessmentIncluded =
+                  analysis?.id === 'FCD' && uploadLocationState.typeOfAnalysis.palmRiskAssessment;
 
                 return (
-                  <li>
-                    <Typography variant="caption">{analysis?.body}</Typography>
+                  <li key={key}>
+                    <Typography variant="caption">{analysis?.label}</Typography>
+                    {isPalmRiskAssessmentIncluded && (
+                      <Typography variant="caption"> (Includes Palm Risk Assessment)</Typography>
+                    )}
                   </li>
                 );
               })}
           </Box>
+
           <Typography variant="body2">
             Please note that all analysis submission count towards your usage limits. See more
             information{' '}

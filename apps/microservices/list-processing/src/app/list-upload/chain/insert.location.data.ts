@@ -14,6 +14,15 @@ export class InsertLocationData extends AbstractHandler<ChainType> {
     this.clientStoreConnection = clientStoreConnection;
   }
 
+  private convertErrorDetails(locations) {
+    return locations.map((location) => {
+      if (location && Array.isArray(location.errorDetails)) {
+        location.errorDetails = location.errorDetails.join(', ');
+      }
+      return location;
+    });
+  }
+
   private async insertBatch(
     connection: DataSource,
     ListEntity: EntitySchema<ListSchemaType>,
@@ -45,6 +54,8 @@ export class InsertLocationData extends AbstractHandler<ChainType> {
     const connection = await this.clientStoreConnection.getConnection(organizationDatabase, [
       ListEntity,
     ]);
+
+    this.convertErrorDetails(values);
 
     try {
       for (let i = 0; i < values.length; i += BATCH_SIZE) {

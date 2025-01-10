@@ -96,12 +96,20 @@ export class ReadmeService {
     return listsViews[listView] || listsViews['forest_change'];
   }
 
+  countrySpecificReadmeData(filters: ListFieldsFileRequest, country: string) {
+    const { listView } = filters;
+
+    const listsViews = {
+      forest_change: `${country}_forest_change_readme.csv`,
+    };
+    return listsViews[listView] || listsViews['forest_change'];
+  }
   withoutReadme() {
     return null;
   }
 
   async write(filters: BasicFieldsFileRequest): Promise<void> {
-    const { type, key } = filters;
+    const { type, key, listName, listView } = filters;
 
     const returnFileToCopy = {
       afi: this.afiReadmeData,
@@ -109,6 +117,7 @@ export class ReadmeService {
       everything: this.everythingBundleReadmeData,
       southEastAsiaTCL: this.southEastAsiaTCL,
       afiVC: this.withoutReadme,
+      genericCountryReadme: this.countrySpecificReadmeData,
     };
 
     if (!Object.prototype.hasOwnProperty.call(returnFileToCopy, type)) {
@@ -116,7 +125,21 @@ export class ReadmeService {
       return;
     }
 
-    const fileToCopy = returnFileToCopy[type](filters);
+    const fileToCopy =
+      type === 'everything' && listView === 'forest_change'
+        ? await this.readmeMergeServices.processFiles(
+            [
+              this.getSourceDir(returnFileToCopy[type](filters)),
+              this.getSourceDir(returnFileToCopy['southEastAsiaTCL'](filters)),
+              this.getSourceDir(returnFileToCopy['genericCountryReadme'](filters, 'argentina')),
+              this.getSourceDir(returnFileToCopy['genericCountryReadme'](filters, 'colombia')),
+              this.getSourceDir(returnFileToCopy['genericCountryReadme'](filters, 'south_america')),
+            ],
+            'PLEASE NOTE: The contents of your zip files will vary based on the locations and commodities within your data, and the types of analysis you requested. Not all CSVs listed here may apply.',
+            this.getPathDir(key),
+            listName
+          )
+        : returnFileToCopy[type](filters);
 
     if (!fileToCopy) {
       return;

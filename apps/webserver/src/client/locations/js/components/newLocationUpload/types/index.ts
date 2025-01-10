@@ -16,6 +16,10 @@ export type UserList = {
   list_name: string;
   list_status_id: number;
   location_classification: string;
+  listAnalysesStatus: {
+    listId: number;
+    analysisId: 'FCD' | 'AFI' | 'ALERTS';
+  }[];
 };
 
 export type Coordinate = z.infer<typeof coordinateSchema>;
@@ -31,7 +35,7 @@ export type LocationListType = {
 };
 
 export type FeatureProperties = {
-  Location_N: string;
+  Location_N?: string;
   Analysis_A?: number;
   Analysis_R?: number;
   Certificat?: string;

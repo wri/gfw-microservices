@@ -1,0 +1,27 @@
+CSV Name,Description,Version,Column,Column Description
+<LISTNAME>_argentina_overlap,Location Level Overlap with Argentina Categories from For South America Region Panel,1.0,List Name,Name of List
+<LISTNAME>_argentina_overlap,Location Level Overlap with Argentina Categories from For South America Region Panel,1.0,Location Name,Name of Location
+<LISTNAME>_argentina_overlap,Location Level Overlap with Argentina Categories from For South America Region Panel,1.0,Data Layer,Contextual Data Layer name (e.g. Argentina Indigenous Territories) (Note: Argentina Indigenous Territories data is a preview)
+<LISTNAME>_argentina_overlap,Location Level Overlap with Argentina Categories from For South America Region Panel,1.0,Sub-Layer,Contextual Data Subcategory (e.g. Category VI; Note: This is blank for layers with no sub-categories)
+<LISTNAME>_argentina_overlap,Location Level Overlap with Argentina Categories from For South America Region Panel,1.0,Overlap with Sub-layer (Ha),Area the Location Overlaps with the Layer and Sub-Layer
+<LISTNAME>_argentina_overlap,Location Level Overlap with Argentina Categories from For South America Region Panel,1.0,Overlap with Sub-Layer (%),Percentage of the Location that Overlaps with the Sub-Layer
+<LISTNAME>_argentina_overlap_aggregate,List Level Overlap with Argentina Categories from For South America Region Panel,1.0,List Name,Name of List
+<LISTNAME>_argentina_overlap_aggregate,List Level Overlap with Argentina Categories from For South America Region Panel,1.0,Data Layer,Contextual Data Layer name (e.g. Argentina Indigenous Territories) (Note: Argentina Indigenous Territories data is a preview)
+<LISTNAME>_argentina_overlap_aggregate,List Level Overlap with Argentina Categories from For South America Region Panel,1.0,Sub-Layer,Contextual Data Subcategory (e.g. Category VI; Note: This is blank for layers with no sub-categories)
+<LISTNAME>_argentina_overlap_aggregate,List Level Overlap with Argentina Categories from For South America Region Panel,1.0,Overlap with Sub-layer (Ha),Area the List Overlaps with the Layer and Sub-Layer
+<LISTNAME>_argentina_overlap_aggregate,List Level Overlap with Argentina Categories from For South America Region Panel,1.0,Overlap with Sub-Layer (%),Percentage of the List that Overlaps with the Sub-Layer
+<LISTNAME>_argentina_loss_of_forests,Location level forest loss in Argentina as defined by different forest change data layers.,1.1,List Name,Name of List
+<LISTNAME>_argentina_loss_of_forests,Location level forest loss in Argentina as defined by different forest change data layers.,1.1,Location Name,Name of Location
+<LISTNAME>_argentina_loss_of_forests,Location level forest loss in Argentina as defined by different forest change data layers.,1.1,Data Layer Name,Forest loss layer being used in the forest loss calculation.
+<LISTNAME>_argentina_loss_of_forests,Location level forest loss in Argentina as defined by different forest change data layers.,1.1,Sub-Layer,"Contextual data layer (e.g. OTBN and categories, protected areas and categories, indigenous territories) Please note that the indigenous territories data layer is a preview."
+<LISTNAME>_argentina_loss_of_forests,Location level forest loss in Argentina as defined by different forest change data layers.,1.1,Forest Loss (ha),Ha of forest loss in the location and sub-layer during the Year as defined by the Data Layer
+<LISTNAME>_argentina_loss_of_forests,Location level forest loss in Argentina as defined by different forest change data layers.,1.1,Year,Year
+<LISTNAME>_argentina_loss_of_forests,Location level forest loss in Argentina as defined by different forest change data layers.,1.1,Loss (all years) (ha),Cumulative forest loss of all years in the location
+<LISTNAME>_argentina_loss_of_forests,Location level forest loss in Argentina as defined by different forest change data layers.,1.1,% of Forest Loss,% of forest loss that Year contriubtes to the cumulative Loss (all years)
+<LISTNAME>_argentina_loss_of_forests_aggregate,List level forest loss in Argentina as defined by different forest change data layers.,1.1,List Name,Name of List
+<LISTNAME>_argentina_loss_of_forests_aggregate,List level forest loss in Argentina as defined by different forest change data layers.,1.1,Data Layer Name,Forest loss layer being used in the forest loss calculation.
+<LISTNAME>_argentina_loss_of_forests_aggregate,List level forest loss in Argentina as defined by different forest change data layers.,1.1,Sub-Layer,"Contextual data layer (e.g. OTBN and categories, protected areas and categories, indigenous territories) Please note that the indigenous territories data layer is a preview."
+<LISTNAME>_argentina_loss_of_forests_aggregate,List level forest loss in Argentina as defined by different forest change data layers.,1.1,Forest Loss (ha),Ha of forest loss in the list and sub-layer during the Year as defined by the Data Layer
+<LISTNAME>_argentina_loss_of_forests_aggregate,List level forest loss in Argentina as defined by different forest change data layers.,1.1,Year,Year
+<LISTNAME>_argentina_loss_of_forests_aggregate,List level forest loss in Argentina as defined by different forest change data layers.,1.1,Loss (all years) (ha),Cumulative forest loss of all years in the total area of the list
+<LISTNAME>_argentina_loss_of_forests_aggregate,List level forest loss in Argentina as defined by different forest change data layers.,1.1,% of Forest Loss,% of forest loss that Year contriubtes to the cumulative Loss (all years)

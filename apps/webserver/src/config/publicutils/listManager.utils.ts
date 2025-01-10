@@ -80,7 +80,7 @@ const createList = async (
   req,
   list_name,
   template_id,
-  commodity,
+  commodity = null, // ensure commodity is null if not provided
   location_classification,
   user_id,
   custom_attributes,
@@ -126,6 +126,7 @@ const createList = async (
         type: sql.Int,
         value: LIST_UPLOAD_LEGACY_VERSION,
       },
+      { field: 'commodity', type: sql.NVarChar(150), value: commodity },
     ];
 
     sqlUtils
@@ -246,7 +247,8 @@ const saveAsDraftList = async (
   user_id,
   custom_attributes,
   gfw_list_id,
-  analysisIds = []
+  analysisIds = [],
+  commodity = null
 ) => {
   let list_id = null;
   // Tracking Stored Procedure Executions for rollbacks
@@ -285,6 +287,7 @@ const saveAsDraftList = async (
         type: sql.Int,
         value: LIST_UPLOAD_LEGACY_VERSION,
       },
+      { field: 'commodity', type: sql.NVarChar(150), value: commodity },
     ];
 
     sqlUtils

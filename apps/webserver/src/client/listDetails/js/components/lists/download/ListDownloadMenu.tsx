@@ -64,7 +64,7 @@ const ListDownloadMenu: React.FC<ListDownloadMenuProps> = ({
   const handleMenuClick = async ({ format, type }: HandleMenuClickParams) => {
     isLoading(true);
     setDialogOpen(true);
-
+    handleClose();
     try {
       await downloadRequest({
         listID,

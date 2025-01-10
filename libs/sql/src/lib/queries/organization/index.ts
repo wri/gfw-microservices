@@ -43,4 +43,5 @@ export * from './getAnnualLossFcdData';
 export * from './updateListAnalysisStatus';
 export * from './getSharedListByUser';
 export * from './getPaginatedAfiAnalysisByListIdSortedByFilters';
+export * from './getPaginatedLocationsByListIdSortedByFilters';
 export * from './createList';

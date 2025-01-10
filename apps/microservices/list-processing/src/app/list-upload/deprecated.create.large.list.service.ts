@@ -211,7 +211,8 @@ export class DeprecatedCreateLargeListService {
     customAttributeNames: string,
     customAttributeTypes: string,
     gfwListId: number = null,
-    isUploadListLpEnabled
+    isUploadListLpEnabled,
+    commodity: string = null
   ) {
     try {
       const parameters = [
@@ -249,6 +250,11 @@ export class DeprecatedCreateLargeListService {
           field: 'version',
           type: sql.Int,
           value: isUploadListLpEnabled ? LIST_UPLOAD_VERSION : LIST_UPLOAD_LEGACY_VERSION,
+        },
+        {
+          field: 'commodity',
+          type: sql.NVarChar(150),
+          value: commodity,
         },
       ];
 

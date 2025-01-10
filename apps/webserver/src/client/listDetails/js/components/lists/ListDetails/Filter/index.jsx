@@ -97,6 +97,7 @@ export default class Filter extends Component {
       adminAreas,
       protectedAreas,
       isGfwList,
+      areAllAnalysesDraft,
     } = this.props;
     const { selectedCountry, selectedState, selectedSubState } = this.state;
 
@@ -225,7 +226,9 @@ export default class Filter extends Component {
                   )}
                 </Grid>
                 <Grid item xs={7}>
-                  {!isCommodityRiskFilterVisible && <DeforestationDisplayFormatToggleButtons />}
+                  {!isCommodityRiskFilterVisible && !areAllAnalysesDraft && (
+                    <DeforestationDisplayFormatToggleButtons />
+                  )}
                 </Grid>
               </>
             )}

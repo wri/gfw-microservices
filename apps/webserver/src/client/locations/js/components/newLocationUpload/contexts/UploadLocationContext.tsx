@@ -7,17 +7,16 @@ type UploadLocationState = {
   uploadType: UploadType | null;
   locationName: string;
   coordinates: Coordinate[];
-  address: string;
   area: Area;
   uploadedFileUrl: string | null;
   commodity: string;
   existingListName: string | null;
   newListName: string | null;
   typeOfAnalysis: {
-    post2000ForestChange: boolean;
-    includePalmRiskAssessment: boolean;
-    recentDeforestationAlerts: boolean;
-    post2000RiskAssessment: boolean;
+    FCD: boolean;
+    palmRiskAssessment: boolean;
+    ALERTS: boolean;
+    AFI: boolean;
   };
 };
 
@@ -25,14 +24,9 @@ type UploadLocationType = {
   selectUploadType: (uploadType: UploadType) => void;
   clearUploadType: () => void;
   uploadLocationState: UploadLocationState;
-  setUploadLocationByPointCoordinates: (data: {
+  setUploadLocationByPoint: (data: {
     locationName: string;
     coordinate: Coordinate;
-    area: Area;
-  }) => void;
-  setUploadLocationByPointAddress: (data: {
-    locationName: string;
-    address: string;
     area: Area;
   }) => void;
   setUploadLocationByPolygon: (data: { locationName: string; coordinates: Coordinate[] }) => void;
@@ -41,10 +35,10 @@ type UploadLocationType = {
     existingListName: string | null;
     newListName: string | null;
     typeOfAnalysis: {
-      includePalmRiskAssessment: boolean;
-      post2000ForestChange: boolean;
-      post2000RiskAssessment: boolean;
-      recentDeforestationAlerts: boolean;
+      palmRiskAssessment: boolean;
+      FCD: boolean;
+      AFI: boolean;
+      ALERTS: boolean;
     };
   }) => void;
   addFileUrl: (uploadedFileUrl: string) => void;
@@ -58,18 +52,10 @@ type UploadLocationAction =
       };
     }
   | {
-      type: 'ByPointCoordinates';
+      type: 'ByPoint';
       payload: {
         locationName: string;
         coordinates: Coordinate[];
-        area: Area;
-      };
-    }
-  | {
-      type: 'ByPointAddress';
-      payload: {
-        locationName: string;
-        address: string;
         area: Area;
       };
     }
@@ -87,10 +73,10 @@ type UploadLocationAction =
         existingListName: string | null;
         newListName: string | null;
         typeOfAnalysis: {
-          includePalmRiskAssessment: boolean;
-          post2000ForestChange: boolean;
-          post2000RiskAssessment: boolean;
-          recentDeforestationAlerts: boolean;
+          palmRiskAssessment: boolean;
+          FCD: boolean;
+          AFI: boolean;
+          ALERTS: boolean;
         };
       };
     }
@@ -115,17 +101,16 @@ const uploadLocationInitialState: UploadLocationState = {
   uploadType: null,
   coordinates: [],
   locationName: '',
-  address: '',
   area: { size: 0, measurementUnit: 'hectares' },
   uploadedFileUrl: null,
   commodity: '',
   existingListName: null,
   newListName: null,
   typeOfAnalysis: {
-    includePalmRiskAssessment: false,
-    post2000ForestChange: false,
-    post2000RiskAssessment: false,
-    recentDeforestationAlerts: false,
+    palmRiskAssessment: false,
+    FCD: false,
+    AFI: false,
+    ALERTS: false,
   },
 };
 
@@ -146,7 +131,7 @@ export function UploadLocationProvider({ children }: UploadLocationProviderProps
     history.push('OPTIONS');
   };
 
-  const setUploadLocationByPointCoordinates = ({
+  const setUploadLocationByPoint = ({
     locationName,
     coordinate,
     area,
@@ -156,21 +141,9 @@ export function UploadLocationProvider({ children }: UploadLocationProviderProps
     area: Area;
   }) => {
     dispatch({
-      type: 'ByPointCoordinates',
+      type: 'ByPoint',
       payload: { locationName, coordinates: [coordinate], area },
     });
-  };
-
-  const setUploadLocationByPointAddress = ({
-    locationName,
-    address,
-    area,
-  }: {
-    locationName: string;
-    address: string;
-    area: Area;
-  }) => {
-    dispatch({ type: 'ByPointAddress', payload: { locationName, address, area } });
   };
 
   const setUploadLocationByPolygon = ({
@@ -192,10 +165,10 @@ export function UploadLocationProvider({ children }: UploadLocationProviderProps
     existingListName: string | null;
     newListName: string | null;
     typeOfAnalysis: {
-      includePalmRiskAssessment: boolean;
-      post2000ForestChange: boolean;
-      post2000RiskAssessment: boolean;
-      recentDeforestationAlerts: boolean;
+      palmRiskAssessment: boolean;
+      FCD: boolean;
+      AFI: boolean;
+      ALERTS: boolean;
     };
   }) => {
     dispatch({ type: 'ConfigureList', payload: data });
@@ -207,8 +180,7 @@ export function UploadLocationProvider({ children }: UploadLocationProviderProps
         uploadLocationState,
         selectUploadType,
         clearUploadType,
-        setUploadLocationByPointCoordinates,
-        setUploadLocationByPointAddress,
+        setUploadLocationByPoint,
         setUploadLocationByPolygon,
         setUploadLocationConfigureList,
         addFileUrl,
@@ -231,16 +203,12 @@ function uploadLocationReducer(
     case 'SetUploadType':
       return { ...state, uploadType: payload.uploadType };
 
-    case 'ByPointCoordinates':
+    case 'ByPoint':
       return {
         ...state,
         coordinates: payload.coordinates,
         area: payload.area,
-        address: payload.locationName,
       };
-
-    case 'ByPointAddress':
-      return { ...state, address: payload.address, area: payload.area };
 
     case 'ByPolygon':
       return { ...state, coordinates: payload.coordinates };

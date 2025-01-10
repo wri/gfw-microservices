@@ -1,5 +1,6 @@
 import React from 'react';
-import { render, screen, fireEvent, cleanup } from '@testing-library/react';
+import { render, screen, cleanup } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
 import AnalysisStatusBanners from '../js/components/lists/ListDetails/AnalysisStatusBanners';
 import '@testing-library/jest-dom';
 
@@ -79,7 +80,7 @@ describe('AnalysisStatusBanners Component', () => {
     ).toBeInTheDocument();
   });
 
-  test('calls the correct function when a button is clicked', () => {
+  test('calls the correct function when a button is clicked', async () => {
     const openDraftSubmitDialog = jest.fn();
 
     render(
@@ -91,9 +92,10 @@ describe('AnalysisStatusBanners Component', () => {
       />
     );
 
-    fireEvent.click(screen.getByText('Submit for Analysis'));
+    const user = userEvent.setup();
+    await user.click(screen.getByText('Submit for Analysis'));
 
-    expect(openDraftSubmitDialog).toHaveBeenCalled();
+    expect(openDraftSubmitDialog).toHaveBeenCalledTimes(1);
   });
 
   test('renders no banners if no conditions are met', () => {

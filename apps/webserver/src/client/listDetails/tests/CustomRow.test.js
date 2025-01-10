@@ -1,5 +1,6 @@
 import React from 'react';
-import { render, screen, fireEvent } from '@testing-library/react';
+import { render, screen } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
 import { Provider } from 'react-redux';
 import { createStore } from 'redux';
 import CustomRow from '../js/components/lists/ListDetails/CustomRow';
@@ -51,9 +52,11 @@ it('should render the component and handle interactions', async () => {
     </Provider>
   );
 
+  const user = userEvent.setup();
+
   // Simulate hovering over the row to reveal the menu
-  const rowElement = screen.getByTestId('custom-row'); // Assuming you have added `data-testid="custom-row"` to the row element
-  fireEvent.mouseEnter(rowElement);
+  const rowElement = screen.getByTestId('custom-row'); // Assuming `data-testid="custom-row"` exists
+  await user.hover(rowElement);
 
   // Verify that the location diagnostic button is rendered after hover
   expect(screen.getByText('Location diagnostic')).toBeInTheDocument();
@@ -62,5 +65,5 @@ it('should render the component and handle interactions', async () => {
   expect(screen.getByText('Map')).toBeInTheDocument();
 
   // Simulate mouse leave to hide the menu
-  fireEvent.mouseLeave(rowElement);
+  await user.unhover(rowElement);
 });

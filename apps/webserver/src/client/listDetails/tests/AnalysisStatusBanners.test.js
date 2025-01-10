@@ -8,7 +8,7 @@ afterEach(() => {
   jest.clearAllMocks();
 });
 
-jest.mock('../AlertBanner', () => (props) => (
+jest.mock('../js/components/lists/ListDetails/AlertBanner', () => (props) => (
   <div data-testid="alert-banner">
     <span>{props.title}</span>
     <span>{props.message}</span>

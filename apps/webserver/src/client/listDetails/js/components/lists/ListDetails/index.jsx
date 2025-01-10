@@ -1465,7 +1465,7 @@ export default class ListDetails extends Component {
       listId: selectedLists[0].id,
       isGfwList,
       isSharedList,
-      selectedLocations: isEveryRowSelected || showFullListMap ? [] : locationIds,
+      ...(isEveryRowSelected || showFullListMap ? {} : { selectedLocations: locationIds }),
     };
     redirectToMap(sendData);
     gtag('event', 'Header button click', {

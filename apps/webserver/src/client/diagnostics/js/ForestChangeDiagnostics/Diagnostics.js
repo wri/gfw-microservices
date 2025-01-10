@@ -326,7 +326,7 @@ export default class Diagnostics extends Component {
     const sendData = {
       visibleLayers: [treeCoverLossID],
       listId,
-      selectedLocations: isSingleLocation ? selectedLocations : [],
+      ...(isSingleLocation ? { selectedLocations } : {}),
       isGfwList,
       isSharedList: is_shared,
       longitude: evt.mapPoint.longitude,

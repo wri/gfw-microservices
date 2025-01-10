@@ -174,7 +174,7 @@ export const getListCommodity = async (req, res) => {
   const organizationDatabase = req.session.organization_database;
 
   try {
-    const url = `${process.env.LISTS_MICROSERVICE_URL}/list/commodity?listId=${listId}&organizationDatabase=${organizationDatabase}`;
+    const url = `${process.env.LISTS_MICROSERVICE_URL}/commodity/by-list?listId=${listId}&organizationDatabase=${organizationDatabase}`;
     const { data } = await axios.get(url);
     res.status(200).json(data);
   } catch (error) {
@@ -187,7 +187,7 @@ export const getListByCommodity = async (req, res) => {
   const { commodity } = req.query;
   const organizationDatabase = req.session.organization_database;
   try {
-    const url = `${process.env.LISTS_MICROSERVICE_URL}/list/by-commodity?commodity=${commodity}&organizationDatabase=${organizationDatabase}`;
+    const url = `${process.env.LISTS_MICROSERVICE_URL}/commodity/all-lists?commodity=${commodity}&organizationDatabase=${organizationDatabase}`;
     const { data } = await axios.get(url);
     res.status(200).json(data);
   } catch (error) {

@@ -31,13 +31,13 @@ export class getCommodityRequest {
   organizationDatabase: string;
 }
 
-@Controller('/list')
+@Controller('/commodity')
 export class CommodityController {
   private readonly logger = new Logger(CommodityController.name);
 
   constructor(private readonly commodityService: CommodityService) {}
 
-  @Get('/commodity')
+  @Get('/by-list')
   async findOne(
     @Query(new ZodValidationPipe(getListCommodityRequestSchema))
     queryParam: getListCommodityRequest
@@ -51,7 +51,7 @@ export class CommodityController {
     }
   }
 
-  @Get('/by-commodity')
+  @Get('/all-lists')
   async findAllByCommodity(
     @Query(new ZodValidationPipe(getCommodityRequestSchema))
     queryParam: getCommodityRequest

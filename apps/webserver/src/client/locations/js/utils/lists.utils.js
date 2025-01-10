@@ -49,6 +49,44 @@ const checkColumnListDraftList = (accessor) => {
   );
 };
 
+const isHiddenColumnInPost2020riskTable = (accessor) => {
+  const post2020riskassessmentHiddenDataColumns = [
+    'Certification',
+    'End Date',
+    'Latitude',
+    'Longitude',
+    'Refinery Name',
+    'Start Date',
+    'Time Horizon',
+    'Volume',
+    'coverageHA',
+    'gadmId',
+    'jrcForestLossByYear',
+    'jrcLandAreaHA',
+    'jrcNaturalForestLossHA',
+    'jrcNaturalForestLossPercent',
+    'landmarkHA',
+    'landmarkPercent',
+    'listId',
+    'listName',
+    'list_id',
+    'locationError',
+    'locationId',
+    'locationName',
+    'location_id',
+    'naturalForestLossByYear',
+    'naturalForestLossHA',
+    'naturalForestLossPercent',
+    'negligibleRisk',
+    'protectedAreasHA',
+    'protectedAreasPercent',
+    'statusCode',
+    'totalAreaHa',
+    'totalRows',
+  ];
+  return post2020riskassessmentHiddenDataColumns.includes(accessor);
+};
+
 const checkColumnListFC = (accessor) => {
   return (
     accessor === 'Analysis Area' ||
@@ -99,7 +137,9 @@ const checkColumnListGFWFC = (list_name, accessor) => {
       accessor === 'Mill ID' ||
       accessor === 'Alternative Name' ||
       accessor === 'id' ||
-      accessor === 'globalid'
+      accessor === 'globalid' ||
+      accessor === 'Geometry' ||
+      accessor === 'Geometry Simplified'
     );
   }
   if (list_name === 'RSPO Palm Concessions' || list_name === 'Oil Palm Concessions') {
@@ -366,6 +406,7 @@ module.exports = {
   checkValidView,
   checkValidViewCommodity,
   checkColumnListDraftList,
+  isHiddenColumnInPost2020riskTable,
   checkColumnListFC,
   checkColumnListCR,
   checkColumnListPA,

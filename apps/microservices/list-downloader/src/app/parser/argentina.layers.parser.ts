@@ -58,13 +58,7 @@ class ArgentinaLayerUtil {
   }
 
   applyKeyFormatting(key: string) {
-    const overrides = {
-      'Not Reported': '',
-    };
-
-    const newKey = key in overrides ? overrides[key] : key;
-
-    return checkAndFormatStringWithComma(newKey);
+    return checkAndFormatStringWithComma(key);
   }
 
   /**

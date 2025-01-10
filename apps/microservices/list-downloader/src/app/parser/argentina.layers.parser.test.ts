@@ -134,7 +134,7 @@ describe('Argentina Layers Parser', () => {
       ['Argentina Protected Areas', 'cat1', 1, 20],
       ['Argentina Protected Areas', 'cat2', 2, 40],
       ['Argentina Protected Areas', 'Non-Overlap', 2, 40],
-      ['Argentina Indigenous Territories', '', 1, 20],
+      ['Argentina Indigenous Territories', 'Not Reported', 1, 20],
       ['Argentina Indigenous Territories', 'Non-Overlap', 4, 80],
     ]);
   });
@@ -181,7 +181,7 @@ describe('Argentina Layers Parser', () => {
       ['Argentina Protected Areas', 'cat1', 1, 20],
       ['Argentina Protected Areas', 'cat2', 2, 40],
       ['Argentina Protected Areas', 'Non-Overlap', 2, 40],
-      ['Argentina Indigenous Territories', '', 1, 20],
+      ['Argentina Indigenous Territories', 'Not Reported', 1, 20],
       ['Argentina Indigenous Territories', 'Non-Overlap', 4, 80],
     ]);
   });

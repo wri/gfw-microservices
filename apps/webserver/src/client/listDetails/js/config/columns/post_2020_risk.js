@@ -83,6 +83,58 @@ const post_2020_risk = [
       );
     },
   },
+  {
+    Header: () => <ColumnsHeader label="Country" />,
+    accessor: 'country',
+    className: 'default-cell td-num',
+    Cell: ({ original }) => <span>{original?.country}</span>,
+  },
+
+  {
+    Header: () => <ColumnsHeader label="State" />,
+    accessor: 'state',
+    className: 'default-cell td-num',
+    id: 'State',
+    Cell: ({ original }) => <span>{original?.state}</span>,
+  },
+
+  {
+    Header: () => <ColumnsHeader label="Sub State" />,
+    accessor: 'subState',
+    className: 'default-cell td-num',
+
+    Cell: ({ original }) => <span>{original?.subState}</span>,
+  },
+
+  {
+    Header: () => <ColumnsHeader label="Company ID" />,
+    accessor: 'Company ID',
+    className: 'default-cell td-num',
+    Cell: ({ original }) => <span>{original?.['Company ID']}</span>,
+  },
+  {
+    Header: () => <ColumnsHeader label="Analysis Area" />,
+    accessor: 'Analysis Area',
+    show: false,
+    className: 'default-cell td-num',
+    Cell: ({ original }) => <span>{original?.['Analysis Area']}</span>,
+  },
+
+  {
+    Header: () => <ColumnsHeader label="Analysis Radius" />,
+    accessor: 'Analysis Radius',
+    show: false,
+    className: 'default-cell td-num',
+    Cell: ({ original }) => <span>{original?.['Analysis Radius']}</span>,
+  },
+
+  {
+    Header: () => <ColumnsHeader label="Supplier Name" />,
+    accessor: 'Supplier Name',
+    show: false,
+    className: 'default-cell td-num',
+    Cell: ({ original }) => <span>{original?.['Supplier Name']}</span>,
+  },
 ];
 
 export default post_2020_risk;

@@ -41,6 +41,7 @@ import httpRequest from '../../../../../common/js/utils/httpRequest';
 import Banner from '../../../../../common/js/components/Banners/Banner';
 import {
   checkColumnListDraftList,
+  isHiddenColumnInPost2020riskTable,
   checkColumnListCR,
   checkColumnListFC,
   checkColumnListGFWCR,
@@ -966,27 +967,49 @@ export default class ListDetails extends Component {
 
   showListColumn = (column) => {
     const { selectedLists, listView } = this.props;
-    const { list_name } = selectedLists[0];
 
+    // Exclude columns if all analyses are drafts
     if (this.areAllAnalysesDraft()) {
-      return !checkColumnListDraftList(column.accessor);
+      return !checkColumnListDraftList(column.accessor); // Exclude draft columns
     }
 
-    if (selectedLists.length > 0 && !selectedLists[0].isGlobalForestWatchList) {
-      return (
-        !(listView === FOREST_CHANGE_VIEW && checkColumnListFC(column.accessor)) &&
-        !(listView === COMMODITY_RISK_VIEW && checkColumnListCR(column.accessor))
-      );
-    }
     if (selectedLists.length > 0) {
-      return (
-        (listView === FOREST_CHANGE_VIEW && checkColumnListGFWFC(list_name, column.accessor)) ||
-        (listView === COMMODITY_RISK_VIEW && checkColumnListGFWCR(list_name, column.accessor)) ||
-        (listView === FOREST_CHANGE_VIEW && checkColumnListPA(list_name, column.accessor))
-      );
-    }
-  };
+      const { isGlobalForestWatchList, list_name } = selectedLists[0];
 
+      if (!isGlobalForestWatchList) {
+        // Exclude columns based on listView
+        if (listView === POST_2020_RISK_ASSESSMENT_VIEW) {
+          return !isHiddenColumnInPost2020riskTable(column.accessor); // checks for excluded post-2020 risk columns
+        }
+
+        if (listView === FOREST_CHANGE_VIEW) {
+          return !checkColumnListFC(column.accessor); // checks for excluded forest change columns
+        }
+
+        if (listView === COMMODITY_RISK_VIEW) {
+          return !checkColumnListCR(column.accessor); // checks for excluded commodity risk columns
+        }
+
+        // For unsupported views, exclude the column
+        return false;
+      }
+
+      // For Global Forest Watch lists, exclude columns accordingly
+      if (listView === FOREST_CHANGE_VIEW) {
+        return !(
+          checkColumnListGFWFC(list_name, column.accessor) ||
+          checkColumnListPA(list_name, column.accessor)
+        ); // checks for excluded GFW forest change or protected area columns
+      }
+
+      if (listView === COMMODITY_RISK_VIEW) {
+        return !checkColumnListGFWCR(list_name, column.accessor); // checks for excluded GFW commodity risk columns
+      }
+    }
+
+    // Default case: exclude the column
+    return false;
+  };
   /**
    * Set all list data
    * @param {Array} locationData - All locations for selected list
@@ -2272,6 +2295,7 @@ export default class ListDetails extends Component {
                           supplierNameOptionsForFilter={supplierNameOptionsForFilter}
                           secondSupplierNameOptionsForFilter={secondSupplierNameOptionsForFilter}
                           listColumns={listColumns}
+                          visibleColumns={visibleColumns}
                           setListColumns={(newVisibleColumns) =>
                             this.setState({
                               visibleColumns: newVisibleColumns,

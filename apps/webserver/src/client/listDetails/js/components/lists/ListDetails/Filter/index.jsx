@@ -91,6 +91,7 @@ export default class Filter extends Component {
       isFilterModalVisible,
       filterCount,
       listColumns,
+      visibleColumns,
       setListColumns,
       listView,
       listName,
@@ -279,7 +280,11 @@ export default class Filter extends Component {
                   </MaterialButton>
                 )}
                 {!isFilterModalVisible && (
-                  <ColumnSelector listColumns={listColumns} setListColumns={setListColumns} />
+                  <ColumnSelector
+                    listColumns={listColumns}
+                    visibleColumns={visibleColumns}
+                    setListColumns={setListColumns}
+                  />
                 )}
               </Stack>
             </Grid>

@@ -5,12 +5,28 @@ const renameProp = (oldProp, newProp, { [oldProp]: old, ...others }) => ({
   ...others,
 });
 
+const fileExtensions = {
+  csv: 'text/csv',
+  kml: 'application/vnd.google-earth.kml+xml',
+  kmz: 'application/vnd.google-earth.kmz',
+  xls: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+  xlsx: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+  zip: 'application/zip',
+};
+function getFileType(extension) {
+  if (extension in fileExtensions) {
+    return fileExtensions[extension];
+  }
+  return undefined;
+}
+
 const createPresignedUrlStep = async (param) => {
   const { largeListFile } = param;
+  const fileExtension = largeListFile.name.split('.').pop()?.toLowerCase() ?? '';
   try {
     const { data } = await axios.post('/locations/create-presigned-url', {
       key: largeListFile.name,
-      contentType: largeListFile.type,
+      contentType: getFileType(fileExtension),
     });
     return { ...param, ...data };
   } catch (error) {

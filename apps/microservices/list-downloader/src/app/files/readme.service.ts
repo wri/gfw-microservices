@@ -109,7 +109,7 @@ export class ReadmeService {
   }
 
   async write(filters: BasicFieldsFileRequest): Promise<void> {
-    const { type, key, listName } = filters;
+    const { type, key, listName, listView } = filters;
 
     const returnFileToCopy = {
       afi: this.afiReadmeData,
@@ -126,14 +126,14 @@ export class ReadmeService {
     }
 
     const fileToCopy =
-      type === 'everything'
+      type === 'everything' && listView === 'forest_change'
         ? await this.readmeMergeServices.processFiles(
             [
               this.getSourceDir(returnFileToCopy[type](filters)),
               this.getSourceDir(returnFileToCopy['southEastAsiaTCL'](filters)),
-              this.getSourceDir(returnFileToCopy['genericCountry'](filters, 'argentina')),
-              this.getSourceDir(returnFileToCopy['genericCountry'](filters, 'colombia')),
-              this.getSourceDir(returnFileToCopy['genericCountry'](filters, 'south_america')),
+              this.getSourceDir(returnFileToCopy['genericCountryReadme'](filters, 'argentina')),
+              this.getSourceDir(returnFileToCopy['genericCountryReadme'](filters, 'colombia')),
+              this.getSourceDir(returnFileToCopy['genericCountryReadme'](filters, 'south_america')),
             ],
             'PLEASE NOTE: The contents of your zip files will vary based on the locations and commodities within your data, and the types of analysis you requested. Not all CSVs listed here may apply.',
             this.getPathDir(key),

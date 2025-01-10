@@ -7,6 +7,7 @@ export const allowedContentTypes = [
   'application/zip',
   'application/x-zip-compressed',
   'application/vnd.google-earth.kml+xml',
+  'application/vnd.google-earth.kmz',
   'application/vnd.ms-excel',
   'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
 ] as const;

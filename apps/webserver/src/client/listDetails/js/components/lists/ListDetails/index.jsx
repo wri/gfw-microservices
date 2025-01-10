@@ -41,7 +41,7 @@ import httpRequest from '../../../../../common/js/utils/httpRequest';
 import Banner from '../../../../../common/js/components/Banners/Banner';
 import {
   checkColumnListDraftList,
-  checkColumnListPost2020risk,
+  isHiddenColumnInPost2020riskTable,
   checkColumnListCR,
   checkColumnListFC,
   checkColumnListGFWCR,
@@ -979,7 +979,7 @@ export default class ListDetails extends Component {
       if (!isGlobalForestWatchList) {
         // Exclude columns based on listView
         if (listView === POST_2020_RISK_ASSESSMENT_VIEW) {
-          return !checkColumnListPost2020risk(column.accessor); // checks for excluded post-2020 risk columns
+          return !isHiddenColumnInPost2020riskTable(column.accessor); // checks for excluded post-2020 risk columns
         }
 
         if (listView === FOREST_CHANGE_VIEW) {

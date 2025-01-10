@@ -49,7 +49,7 @@ const checkColumnListDraftList = (accessor) => {
   );
 };
 
-const checkColumnListPost2020risk = (accessor) => {
+const isHiddenColumnInPost2020riskTable = (accessor) => {
   const post2020riskassessmentHiddenDataColumns = [
     'Certification',
     'End Date',
@@ -406,7 +406,7 @@ module.exports = {
   checkValidView,
   checkValidViewCommodity,
   checkColumnListDraftList,
-  checkColumnListPost2020risk,
+  isHiddenColumnInPost2020riskTable,
   checkColumnListFC,
   checkColumnListCR,
   checkColumnListPA,

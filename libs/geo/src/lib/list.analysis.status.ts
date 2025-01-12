@@ -46,7 +46,7 @@ export const createListAnalysis = async (
     );
   } catch (error) {
     Logger.error('Create list analysis', error.stack || error);
-    throw new Error(error);
+    throw error;
   }
 };
 

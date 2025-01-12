@@ -65,6 +65,7 @@ export const getAllListsAnalysisStatus = async (
     return await resolveListAnalysisStatuses(analysisStatusData);
   } catch (error) {
     Logger.error('Getting all lists analysis status', error.stack || error);
+    throw error;
   }
 };
 
@@ -83,6 +84,7 @@ export const getListAnalysisStatusByListId = async (
     return await resolveListAnalysisStatuses(analysisStatusData);
   } catch (error) {
     Logger.error('Getting list analysis status by list id', error.stack || error);
+    throw error;
   }
 };
 
@@ -165,15 +167,10 @@ export async function resolveListAnalysisStatuses(listAnalysisStatuses: ListsAna
           analysisId: 'FCD',
           analysisIdLastModifed: originalAnalysisIdLastModified,
         });
-
-        // new* row, changing analysisId to "PalmRisk"
-        const palmRiskLastModified = analysisTypesLastModifiedData.find(
-          (analysisType) => analysisType.id === 'PalmRisk'
-        )?.last_run;
         results.push({
           ...analysisStatus,
           analysisId: 'PalmRisk',
-          analysisIdLastModifed: palmRiskLastModified,
+          analysisIdLastModifed: originalAnalysisIdLastModified,
         });
       } else {
         // otherwise the original row
@@ -187,5 +184,6 @@ export async function resolveListAnalysisStatuses(listAnalysisStatuses: ListsAna
     return results;
   } catch (error) {
     Logger.error('Resolving list analysis statuses', error.stack || error);
+    throw error;
   }
 }

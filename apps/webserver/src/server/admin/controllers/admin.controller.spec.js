@@ -5,7 +5,7 @@
 const adminController = require('./admin.controller');
 import { expect, describe, it } from '@jest/globals';
 
-describe.skip('Latest Commit', () => {
+describe('Latest Commit', () => {
   it('getCommitForSerivce bad service returns N/A', async () => {
     const res = await adminController.getCommitForSerivce('http://localhost:9');
     expect(res).toBe('N/A');

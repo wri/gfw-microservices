@@ -460,6 +460,7 @@ export const getUserListsWithAnalysisId = async (req): Promise<ListsType[]> => {
     });
   } catch (error) {
     logger.error('getUserListsWithAnalysisId', error.stack || error);
+    throw error;
   }
 };
 
@@ -535,6 +536,7 @@ export const getAllListsWithAnalysisId = async (req) => {
     return orgLists;
   } catch (error) {
     logger.error('getAllListsWithAnalysisId', error.stack || error);
+    throw error;
   }
 };
 
@@ -1647,7 +1649,7 @@ export const getListByIdWithAnalysisId = async (req, listId) => {
     const allLists = await getUserListsWithAnalysisId(req);
     return allLists.find((list) => list.id === Number(listId));
   } catch (e) {
-    logger.error('getListByIdWithAnalysisId', e);
+    logger.error('getListByIdWithAnalysisId', e.stack || e);
   }
 };
 

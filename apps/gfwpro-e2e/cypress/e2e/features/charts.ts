@@ -22,7 +22,7 @@ describe('Alerts page', () => {
   });
 
   When('I navigate to a diagnostics page', () => {
-    //listDetailsPage.clickOnTabTreeCoverLossBtn();
+    //listDetailsPage.clickOnPost2020Tab();
     listDetailsPage.clickOnListDiagnosticsBtn();
   });
 

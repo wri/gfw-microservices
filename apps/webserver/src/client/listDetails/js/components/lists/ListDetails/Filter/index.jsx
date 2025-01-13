@@ -222,7 +222,7 @@ export default class Filter extends Component {
             ) : (
               <>
                 <Grid item xs={4}>
-                  {listView === POST_2020_RISK_ASSESSMENT_VIEW && (
+                  {listView === POST_2020_RISK_ASSESSMENT_VIEW && !areAllAnalysesDraft && (
                     <NaturalForestLossDataSourceToggle />
                   )}
                 </Grid>

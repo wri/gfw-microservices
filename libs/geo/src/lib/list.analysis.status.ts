@@ -127,25 +127,21 @@ const deleteListAnalysis = async (clientDatabase: string, listId: number, analys
 };
 
 export const getAnalysisTypesFromIds = (analysisIds: string[]) => {
-  const extractAnalysisTypes = analysisTypesOptions.reduce((result, analysisTypesOption) => {
-    const isAnalysisUsed = analysisIds.includes(analysisTypesOption.id);
-    result[analysisTypesOption.id] = Boolean(isAnalysisUsed);
+  const analysisIdSet = new Set(analysisIds);
+  return analysisTypesOptions.reduce((result, { id }) => {
+    result[id] = analysisIdSet.has(id);
     return result;
-  }, {});
-
-  return extractAnalysisTypes;
+  }, {} as Record<string, boolean>);
 };
 
 export const extractAnalysisTypes = (listAnalysisStatusData: ListsAnalysisStatus[]) => {
-  const extractAnalysisTypes = analysisTypesOptions.reduce((result, analysisTypesOption) => {
-    const listAnalysisInfo = listAnalysisStatusData.find(
-      (item) => item.analysisId === analysisTypesOption.id
-    );
-    result[analysisTypesOption.id] = Boolean(listAnalysisInfo);
+  const analysisStatusMap = new Map(
+    listAnalysisStatusData.map(({ analysisId }) => [analysisId, true])
+  );
+  return analysisTypesOptions.reduce((result, { id }) => {
+    result[id] = analysisStatusMap.has(id);
     return result;
-  }, {});
-
-  return extractAnalysisTypes;
+  }, {} as Record<string, boolean>);
 };
 
 export async function resolveListAnalysisStatuses(listAnalysisStatuses: ListsAnalysisStatus[]) {
@@ -153,29 +149,22 @@ export async function resolveListAnalysisStatuses(listAnalysisStatuses: ListsAna
 
   try {
     const analysisTypesLastModifiedData = await readAnalysesLastModifiedTime(s3);
+    const lastModifiedMap = new Map(
+      analysisTypesLastModifiedData.map(({ id, last_run }) => [id, last_run])
+    );
     const results: ListsAnalysisStatus[] = [];
 
     for (const analysisStatus of listAnalysisStatuses) {
-      const originalAnalysisIdLastModified = analysisTypesLastModifiedData.find(
-        (analysisType) => analysisType.id === analysisStatus.analysisId
-      )?.last_run;
+      const { analysisId, options } = analysisStatus;
+      const originalAnalysisIdLastModified = lastModifiedMap.get(analysisId);
 
-      if (analysisStatus.analysisId === 'FCD' && analysisStatus.options === 'PalmRisk') {
-        // original row with "FCD"
+      const analysisIdsToPush =
+        analysisId === 'FCD' && options === 'PalmRisk' ? ['FCD', 'PalmRisk'] : [analysisId];
+
+      for (const id of analysisIdsToPush) {
         results.push({
           ...analysisStatus,
-          analysisId: 'FCD',
-          analysisIdLastModifed: originalAnalysisIdLastModified,
-        });
-        results.push({
-          ...analysisStatus,
-          analysisId: 'PalmRisk',
-          analysisIdLastModifed: originalAnalysisIdLastModified,
-        });
-      } else {
-        // otherwise the original row
-        results.push({
-          ...analysisStatus,
+          analysisId: id,
           analysisIdLastModifed: originalAnalysisIdLastModified,
         });
       }
@@ -183,7 +172,11 @@ export async function resolveListAnalysisStatuses(listAnalysisStatuses: ListsAna
 
     return results;
   } catch (error) {
-    Logger.error('Resolving list analysis statuses', error.stack || error);
+    Logger.error('Error resolving list analysis statuses', {
+      message: error.message,
+      stack: error.stack,
+      listAnalysisStatuses,
+    });
     throw error;
   }
 }

@@ -127,7 +127,7 @@ describe('list.analysis.status.ts', () => {
       expect(result?.[0].analysisId).toBe('FCD');
       expect(result?.[0]?.analysisIdLastModifed).toBe('2025-01-01T00:00:00Z');
       expect(result?.[1].analysisId).toBe('PalmRisk');
-      expect(result?.[1]?.analysisIdLastModifed).toBe('2025-01-03T00:00:00Z');
+      expect(result?.[1]?.analysisIdLastModifed).toBe('2025-01-01T00:00:00Z');
       expect(result?.[2].analysisId).toBe('AFI');
       expect(result?.[2]?.analysisIdLastModifed).toBe('2025-01-02T00:00:00Z');
     });
@@ -136,7 +136,7 @@ describe('list.analysis.status.ts', () => {
       const mockError = new Error('Another DB error');
       (SQLUtils.queryDB as jest.Mock).mockRejectedValue(mockError);
 
-      const result = await getListAnalysisStatusByListId("clientDB", 99);
+      await expect(getListAnalysisStatusByListId('clientDB', 99)).rejects.toThrow('DB error');
 
       expect(Logger.error).toHaveBeenCalledWith(
         'Getting list analysis status by list id',

@@ -34,7 +34,7 @@ function DiagnosticsBreadCrums({
 
   const diagnosticLabel = analysisTypesOptionsNewNames.find(
     ({ id }) => id === analysisId
-  ).shortLabel;
+  )?.shortLabel;
 
   const diagnosticPath = isListDetailsPageRedesignAvailable
     ? `${diagnosticLabel} diagnostic`

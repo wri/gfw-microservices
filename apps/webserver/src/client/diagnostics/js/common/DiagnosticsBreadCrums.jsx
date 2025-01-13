@@ -5,12 +5,17 @@ import LinkButton from '../../../common/js/components/LinkButton';
 import { changeView, selectFolder } from '../../../locations/js/actions/locationActions';
 import store from '../../../locations/js/store';
 import { locationsPage } from '../../../common/js/config';
+import { analysisTypesOptionsNewNames } from '../../../../config/env/analysisTypes.constants';
+import featureFlags from '../../../../utils/general.utils';
+
+const { isListDetailsPageRedesignAvailable } = featureFlags;
 
 function DiagnosticsBreadCrums({
   selectedList,
   diagnosticName = '',
   isSharedList = false,
   isGfwList,
+  analysisId,
 }) {
   const history = useHistory();
   const { list_name, id } = selectedList;
@@ -27,6 +32,14 @@ function DiagnosticsBreadCrums({
     }`;
   };
 
+  const diagnosticLabel = analysisTypesOptionsNewNames.find(
+    ({ id }) => id === analysisId
+  ).shortLabel;
+
+  const diagnosticPath = isListDetailsPageRedesignAvailable
+    ? `${diagnosticLabel} diagnostic`
+    : diagnosticName;
+
   return (
     <Breadcrumbs>
       <LinkButton
@@ -42,7 +55,7 @@ function DiagnosticsBreadCrums({
         />
       )}
       <LinkButton label={list_name} onClick={backToLists} />
-      <span>{diagnosticName}</span>
+      <span>{diagnosticPath}</span>
     </Breadcrumbs>
   );
 }

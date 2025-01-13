@@ -142,6 +142,7 @@ function AfiDiagnostics() {
                 selectedList={selectedList}
                 diagnosticName="Deforestation Reporting"
                 isSharedList={isSharedList}
+                analysisId={analysisTypes.DEFORESTATION_KPIS}
               />
             )}
             <div className="locations-diagnostics__body">

@@ -32,7 +32,9 @@ def prep_data(gdf):
     gdf["Longitude"] = gdf.centroid.x
     gdf["Latitude"] = gdf.centroid.y
     gdf["Location Classification"] = ""
-    gdf["Size"] = gdf["GIS_AREA"].round(6)
+    
+    # Convert from km^2 to hectares by multiplying by 100
+    gdf["Size"] = (gdf["GIS_AREA"] * 100).round(6)
 
     # Validate geometry then convert to WKT.
     gdf.geometry = gdf.buffer(0)

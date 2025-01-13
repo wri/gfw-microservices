@@ -10,7 +10,7 @@ import featureFlags from '../../../../utils/general.utils';
 
 const { isListDetailsPageRedesignAvailable } = featureFlags;
 
-function DiagnosticsBreadCrums({
+function DiagnosticsBreadCrumbs({
   selectedList,
   diagnosticName = '',
   isSharedList = false,
@@ -60,4 +60,4 @@ function DiagnosticsBreadCrums({
   );
 }
 
-export default DiagnosticsBreadCrums;
+export default DiagnosticsBreadCrumbs;

@@ -97,7 +97,6 @@ export class CreateLocationSchema extends AbstractHandler<ChainType> {
       const isPalmRiskIncluded = analysisIds.includes('PalmRisk');
       await Promise.all(
         analysisIds
-          // is "PalmRisk" an analysis type or an option for "FCD"?
           .filter((analysisId) => analysisId !== 'PalmRisk')
           .map(async (analysisId) => {
             const parameters = [

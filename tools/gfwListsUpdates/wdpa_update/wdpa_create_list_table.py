@@ -1,6 +1,7 @@
 import pyodbc
 import pandas as pd
 import geopandas as gpd
+import fiona
 import wdpa_config as cfg
 
 
@@ -35,9 +36,7 @@ def prep_data(gdf):
 
     # Validate geometry then convert to WKT.
     gdf.geometry = gdf.buffer(0)
-    gdf["Geometry"] = gdf.geometry.to_wkt(
-        output_dimension=2
-    )
+    gdf["Geometry"] = gdf.geometry.to_wkt(output_dimension=2)
 
     # Remove NULL values
     gdf = gdf[gdf["globalid"].notna()]
@@ -75,22 +74,22 @@ def insert_geom(gdf, connection):
         # select columns to keep (Geometry should be last in the list)
         common_columns = list(
             gdf.columns.intersection(set(columns))
-        )  # selects columns that are in the list provided
-        common_columns.sort(
-            key="Geometry".__eq__
-        )  # https://stackoverflow.com/questions/20320702/how-do-i-move-an-element-in-my-list-to-the-end-in-python
+        )
+        # move Geometry to the end of the list
+        # https://stackoverflow.com/questions/20320702/how-do-i-move-an-element-in-my-list-to-the-end-in-python
+        common_columns.sort(key="Geometry".__eq__)
+
         new_locations = list(gdf[common_columns].itertuples(index=False, name=None))
 
         with connection:
             cursor = connection.cursor()
             cursor.fast_executemany = True
             column_name_string = ",".join([f'"{x}"' for x in common_columns])
-            value_marks = ",".join(
-                [f"?" for x in common_columns[:-1]]
-            )  # ? per attribute minus 1 for geometry (special case)
-
+            # '?' per attribute minus 1 for geometry (special case)
+            value_marks = ",".join(["?" for x in common_columns[:-1]])
             value_marks = value_marks + "," + "geometry::STGeomFromText(?, 4326)"
-            sql = f"INSERT into [dbo].[{table_name}] ({column_name_string}) VALUES ({value_marks})"
+
+            sql = f"INSERT INTO [dbo].[{table_name}] ({column_name_string}) VALUES ({value_marks})"
             inputSizes = [None for c in common_columns[:-1]]
             inputSizes.append((pyodbc.SQL_WVARCHAR, 0, 0))
             cursor.setinputsizes(inputSizes)
@@ -127,10 +126,15 @@ if __name__ == "__main__":
     connection = pyodbc.connect(cfg.conn_string)
     print("Connected to DB")
 
+    # Use Fiona to get the total number of features in the layer
+    with fiona.open(in_gdb, layer=in_layer, driver="FileGDB") as src:
+        total_rows = len(src)
+
+    print(f"Total rows in the FileGDB: {total_rows}")
+
     # Iteratively load data to DB
     error_ls = []
     batch_size = 5000
-    total_rows = 293200
     for i in range(0, total_rows, batch_size):
         end_val = min(i + batch_size, total_rows)
 
@@ -146,4 +150,3 @@ if __name__ == "__main__":
         # Halt on error
         if res:
             break
-        

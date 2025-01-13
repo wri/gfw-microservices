@@ -8,7 +8,7 @@ import Select from '@mui/material/Select';
 import AfiDiagnosticsTable from './AfiDiagnosticsTable';
 import AfiPieChart from './AfiPieChart';
 import DiagnosticsMenuBar from '../common/DiagnosticsMenuBar';
-import DiagnosticsBreadCrums from '../common/DiagnosticsBreadCrums';
+import DiagnosticsBreadCrumbs from '../common/DiagnosticsBreadCrumbs';
 import { analysisTypes } from '../../../../config/env/analysisTypes.constants';
 import ConfirmDialog from '../../../locations/js/components/lists/download/confirmDialog';
 import infoBubbleConfig from '../../../common/js/infoBubbleConfig.constants';
@@ -138,10 +138,11 @@ function AfiDiagnostics() {
           />
           <div className="diagnostics-container">
             {selectedList && (
-              <DiagnosticsBreadCrums
+              <DiagnosticsBreadCrumbs
                 selectedList={selectedList}
                 diagnosticName="Deforestation Reporting"
                 isSharedList={isSharedList}
+                analysisId={analysisTypes.DEFORESTATION_KPIS}
               />
             )}
             <div className="locations-diagnostics__body">

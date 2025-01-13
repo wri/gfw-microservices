@@ -22,7 +22,7 @@ import SingleLocationDiagnosticsHeaderInfo from './DiagnosticsHeaderInfo/SingleL
 import FullListDiagnosticsHeaderInfo from './DiagnosticsHeaderInfo/FullListDiagnosticsHeaderInfo';
 import ConfirmDialog from '../../../locations/js/components/lists/download/confirmDialog';
 import downloadRequest from '../../../locations/js/components/lists/download/downloadRequest';
-import DiagnosticsBreadCrums from '../common/DiagnosticsBreadCrums';
+import DiagnosticsBreadCrumbs from '../common/DiagnosticsBreadCrumbs';
 import DiagnosticsMenuBar from '../common/DiagnosticsMenuBar';
 import RegionChartsContainer from './SouthAmericaRegions/RegionChartsContainer';
 import InfoBubble from '../../../common/js/components/InfoBubble';
@@ -728,11 +728,12 @@ export default class Diagnostics extends Component {
           <div className="locations-diagnostics__header-container">
             <div className="locations-diagnostics__header-data">
               <div className="header-container">
-                <DiagnosticsBreadCrums
+                <DiagnosticsBreadCrumbs
                   selectedList={selectedList}
                   diagnosticName={locationsPage.lists.diagnostic}
                   isSharedList={isSharedList}
                   isGfwList={isGfwList}
+                  analysisId={analysisTypes.FOREST_CHANGE_DIAGNOSTICS}
                 />
 
                 <div style={{ marginBottom: '2rem' }}>

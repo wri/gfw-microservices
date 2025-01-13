@@ -59,6 +59,7 @@ function ColumnSelector({ listColumns, visibleColumns, setListColumns }) {
         <input
           id={`checkBox-${index}`}
           type="checkbox"
+          data-cy={`column-selector-${column.accessor.replace(/\s+/g, '-')}`} // changes spaces in the column names for dashes
           checked={visibleColumns.includes(column.accessor)}
           onChange={() => updateCheck(index)}
         />
@@ -70,6 +71,7 @@ function ColumnSelector({ listColumns, visibleColumns, setListColumns }) {
     <>
       <MaterialButton
         sx={{ minWidth: '35px', '& > svg': { margin: 0 } }}
+        data-cy="column-selector-button"
         onClick={toggleColumnMenu}
       >
         <MoreVertIcon sx={{ color: 'black' }} />

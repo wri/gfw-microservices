@@ -23,10 +23,18 @@ const NaturalForestLossDataSourceToggle = () => {
             store.dispatch(toggleNaturalForestLossDataSource(target.value));
           }}
         >
-          <MenuItem key={JRC_NATURAL_FOREST_LOSS} value={JRC_NATURAL_FOREST_LOSS}>
+          <MenuItem
+            key={JRC_NATURAL_FOREST_LOSS}
+            value={JRC_NATURAL_FOREST_LOSS}
+            data-cy="data-source-toggle-JRC"
+          >
             JRC Natural Forest Loss
           </MenuItem>
-          <MenuItem key={SBTN_NATURAL_FOREST_LOSS} value={SBTN_NATURAL_FOREST_LOSS}>
+          <MenuItem
+            key={SBTN_NATURAL_FOREST_LOSS}
+            value={SBTN_NATURAL_FOREST_LOSS}
+            data-cy="data-source-toggle-SBTN"
+          >
             SBTN Natural Forest Loss
           </MenuItem>
         </Select>

@@ -70,7 +70,7 @@ describe('ValidateMandatoryFields', () => {
 
     const result = await validator.handle(input);
     expect(result.geojson.features[0].properties.errorDetails).toContain(
-      'Missing mandatory fields for shapefile'
+      'Missing mandatory fields: locationName'
     );
   });
 
@@ -119,8 +119,8 @@ describe('ValidateMandatoryFields', () => {
     };
 
     const result = await validator.handle(input);
-    expect(result.geojson.features[0].properties.errorDetails[0]).toEqual(
-      'Missing mandatory fields for shapefile'
+    expect(result.geojson.features[0].properties.errorDetails[0]).toContain(
+      'Missing mandatory fields: analysisRadius, analysisArea'
     );
   });
 
@@ -197,7 +197,7 @@ describe('ValidateMandatoryFields', () => {
 
     const result = await validator.handle(input);
     expect(result.geojson.features[0].properties.errorDetails).toContain(
-      'Missing mandatory fields'
+      'Missing mandatory fields: latitude, longitude, analysisRadius, analysisArea'
     );
   });
 

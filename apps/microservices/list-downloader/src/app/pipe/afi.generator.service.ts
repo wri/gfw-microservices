@@ -1,4 +1,4 @@
-import { DeforestationKpisService, NaturalForestLossService, OtherKpisService } from '../files';
+import { NaturalForestLossService, OtherKpisService } from '../files';
 import { Injectable, Logger } from '@nestjs/common';
 import { BasicFieldsFileRequest } from '@wri-monorepos/sql';
 import * as asyncPool from 'tiny-async-pool';
@@ -14,7 +14,6 @@ export class AfiGeneratorService extends IFileGenerator {
 
   constructor(
     private readonly analysisAfiDataService: AnalysisAfiDataService,
-    private readonly deforestationKpisService: DeforestationKpisService,
     private readonly naturalForestLostService: NaturalForestLossService,
     private readonly otherKpisService: OtherKpisService
   ) {
@@ -22,11 +21,11 @@ export class AfiGeneratorService extends IFileGenerator {
   }
 
   public async makeFile(filters: BasicFieldsFileRequest) {
-    await this.deforestationKpisService.startEmail(filters);
+    await this.naturalForestLostService.startEmail(filters);
     await this.runAfiFileGeneration(filters, 'location');
     await this.runAfiFileGeneration(filters, 'list');
     await getAllFilesAndZip(filters);
-    await this.deforestationKpisService.finishProcess(filters);
+    await this.naturalForestLostService.finishProcess(filters);
   }
 
   private async runAfiFileGeneration(
@@ -40,7 +39,6 @@ export class AfiGeneratorService extends IFileGenerator {
 
     const arrayOfPages = Array.from(Array(numberOfPages).keys());
 
-    this.deforestationKpisService.start(filters, suffix);
     this.naturalForestLostService.start(filters, suffix);
     this.otherKpisService.start(filters, suffix);
 
@@ -50,7 +48,6 @@ export class AfiGeneratorService extends IFileGenerator {
         newFilter,
         isListLevel
       );
-      this.deforestationKpisService.process(analysisData);
       this.naturalForestLostService.process(analysisData);
       this.otherKpisService.process(analysisData);
       return i;
@@ -60,7 +57,6 @@ export class AfiGeneratorService extends IFileGenerator {
       this.logger.log(`(${listId}) - Get page of number ${localPage} from database`);
     }
 
-    await this.deforestationKpisService.finish(filters);
     await this.naturalForestLostService.finish(filters);
     await this.otherKpisService.finish(filters);
   }

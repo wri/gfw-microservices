@@ -341,58 +341,58 @@ export const updateAccountProfile = (
     getAccountProfile(req)
       .then((recordsets) => {
         console.log('recordsets', recordsets);
-        currentOrgName = recordsets.orgName;
+        currentOrgName = recordsets.organization_name;
+
+        // Setup parameters to update account profile.
+        const params = [
+          { field: 'orgName', type: sql.NVarChar(200), value: currentOrgName },
+          { field: 'orgAddress', type: sql.NVarChar(200), value: org_address },
+          { field: 'orgWebsite', type: sql.NVarChar(200), value: org_website },
+          { field: 'isSubsidiary', type: sql.Bit, value: is_subsidiary },
+          { field: 'orgParent', type: sql.NVarChar(200), value: parent_org_name },
+        ];
+        // Update Account Profile.
+        sqlUtils
+          .executeOrganizationStoredProcedure(req, 'uspUpdateAccountProfile', params)
+          .then(() => {
+            // Update Classifications
+            const parameters = [
+              {
+                field: 'classification_ids',
+                type: sql.VarChar(200),
+                value: arr_org_classification_ids.toString(),
+              },
+            ];
+            // Update Classifications for Account.
+            return sqlUtils.executeOrganizationStoredProcedure(
+              req,
+              'uspUpdateAccountClassifications',
+              parameters
+            );
+          })
+          .then(() => {
+            logger.logActivity(
+              req,
+              logger.listActivityTypes.Account.AccountUpdated,
+              `User '${req.session.user_email}' has updated account information.`
+            );
+            resolve(true);
+          })
+          .catch((errorMessage) => {
+            const errorObject = errorUtils.createErrorMessage(
+              req,
+              errorUtils.ERROR_CODES.failedToUpdateAccount,
+              `Failed to update ${org_name}`,
+              errorMessage
+            );
+            reject(errorObject);
+          });
       })
       .catch((errorMessage) => {
         const errorObject = errorUtils.createErrorMessage(
           req,
           errorUtils.ERROR_CODES.failedToGetAccountProfile,
           'Failed to get account profile',
-          errorMessage
-        );
-        reject(errorObject);
-      });
-
-    // Setup parameters to update account profile.
-    const params = [
-      { field: 'orgName', type: sql.NVarChar(200), value: currentOrgName },
-      { field: 'orgAddress', type: sql.NVarChar(200), value: org_address },
-      { field: 'orgWebsite', type: sql.NVarChar(200), value: org_website },
-      { field: 'isSubsidiary', type: sql.Bit, value: is_subsidiary },
-      { field: 'orgParent', type: sql.NVarChar(200), value: parent_org_name },
-    ];
-    // Update Account Profile.
-    sqlUtils
-      .executeOrganizationStoredProcedure(req, 'uspUpdateAccountProfile', params)
-      .then(() => {
-        // Update Classifications
-        const parameters = [
-          {
-            field: 'classification_ids',
-            type: sql.VarChar(200),
-            value: arr_org_classification_ids.toString(),
-          },
-        ];
-        // Update Classifications for Account.
-        return sqlUtils.executeOrganizationStoredProcedure(
-          req,
-          'uspUpdateAccountClassifications',
-          parameters
-        );
-      })
-      .then(() => {
-        logger.logActivity(
-          req,
-          logger.listActivityTypes.Account.AccountUpdated,
-          `User '${req.session.user_email}' has updated account information.`
-        );
-        resolve(true);
-      })
-      .catch((errorMessage) => {
-        const errorObject = errorUtils.createErrorMessage(
-          req,
-          errorUtils.ERROR_CODES.failedToUpdateAccount,
-          `Failed to update ${org_name}`,
           errorMessage
         );
         reject(errorObject);

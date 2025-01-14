@@ -5,7 +5,6 @@ import { AlertsLocationsLevelService } from './alerts.locations.level.service';
 import { AlertsPrioritiesAdminAreasLevelService } from './alerts.priorities.admin.areas.level.service';
 import { AlertsPrioritiesLocationsLevelService } from './alerts.priorities.locations.level.service';
 import { AlertsSummaryService } from './alerts.summary.service';
-import { AlertsLocationsHistoryService } from './alerts.locations.history.service';
 import { AlertsIntegratedNaturalForestService } from './alerts.integrated.natural.forest.service';
 import { getAllFilesAndZip } from '../shared/file.utils';
 import {
@@ -25,7 +24,6 @@ describe('AlertsFileService', () => {
   let alertsPrioritiesAdminAreasLevelService: AlertsPrioritiesAdminAreasLevelService;
   let alertsPrioritiesLocationsLevelService: AlertsPrioritiesLocationsLevelService;
   let alertsSummaryService: AlertsSummaryService;
-  let alertsLocationsHistoryService: AlertsLocationsHistoryService;
   let alertsIntegratedNaturalForestService: AlertsIntegratedNaturalForestService;
 
   beforeEach(() => {
@@ -35,7 +33,6 @@ describe('AlertsFileService', () => {
     alertsPrioritiesAdminAreasLevelService = new AlertsPrioritiesAdminAreasLevelService();
     alertsPrioritiesLocationsLevelService = new AlertsPrioritiesLocationsLevelService();
     alertsSummaryService = new AlertsSummaryService();
-    alertsLocationsHistoryService = new AlertsLocationsHistoryService();
     alertsIntegratedNaturalForestService = new AlertsIntegratedNaturalForestService(
       new ClientStoreConnection()
     );
@@ -47,7 +44,6 @@ describe('AlertsFileService', () => {
       alertsPrioritiesAdminAreasLevelService,
       alertsPrioritiesLocationsLevelService,
       alertsSummaryService,
-      alertsLocationsHistoryService,
       alertsIntegratedNaturalForestService
     );
   });
@@ -61,15 +57,11 @@ describe('AlertsFileService', () => {
       const filters = { selectedTimeframe: AlertsTimeframes.DAY } as AlertFieldsFileRequest;
 
       jest
-        .spyOn(alertsLocationsHistoryService, 'start')
-        .mockImplementation(() => Promise.resolve());
-      jest
         .spyOn(alertsIntegratedNaturalForestService, 'start')
         .mockImplementation(() => Promise.resolve());
 
       await service.start(filters);
 
-      expect(alertsLocationsHistoryService.start).toHaveBeenCalledWith(filters);
       expect(alertsIntegratedNaturalForestService.start).toHaveBeenCalledWith(filters);
     });
 
@@ -104,15 +96,11 @@ describe('AlertsFileService', () => {
       const analysisData = [] as DashboardDataType[];
 
       jest
-        .spyOn(alertsLocationsHistoryService, 'process')
-        .mockImplementation(() => Promise.resolve());
-      jest
         .spyOn(alertsIntegratedNaturalForestService, 'process')
         .mockImplementation(() => Promise.resolve());
 
       service.process(analysisData, filters);
 
-      expect(alertsLocationsHistoryService.process).toHaveBeenCalledWith(analysisData);
       expect(alertsIntegratedNaturalForestService.process).toHaveBeenCalledWith(analysisData);
     });
 
@@ -154,16 +142,12 @@ describe('AlertsFileService', () => {
       } as AlertFieldsFileRequest;
 
       jest
-        .spyOn(alertsLocationsHistoryService, 'finish')
-        .mockImplementation(() => Promise.resolve());
-      jest
         .spyOn(alertsIntegratedNaturalForestService, 'finish')
         .mockImplementation(() => Promise.resolve());
       jest.spyOn(service, 'finishProcess').mockImplementation(() => Promise.resolve());
 
       await service.finish(filters);
 
-      expect(alertsLocationsHistoryService.finish).toHaveBeenCalledWith(filters);
       expect(alertsIntegratedNaturalForestService.finish).toHaveBeenCalledWith(filters);
       expect(getAllFilesAndZip).toHaveBeenCalledWith(filters);
       expect(service.finishProcess).toHaveBeenCalledWith(filters);

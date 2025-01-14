@@ -1,15 +1,13 @@
 import React from 'react';
-import Card from '@material-ui/core/Card';
-import CardContent from '@material-ui/core/CardContent';
-import CardActions from '@mui/material/CardActions';
-import Backdrop from '@mui/material/Backdrop';
+import { Card, CardContent } from '@material-ui/core';
+import { Backdrop, CardActions } from '@mui/material';
 import Button from '../../../../../common/js/components/Button';
 import IconButton from '../../../../../common/js/components/IconButton';
 import IconTimes from '../../../../../common/js/components/icon/IconTimes';
 import { profilePage } from '../../../../../common/js/config';
 import { useCancel, useAccept, useReject } from '../hooks';
 import './B2bConnectionDetailsModal.scss';
-import CircularProgress from '@mui/material/CircularProgress';
+import { LoadingModal } from '../../../../../components';
 
 function B2bConnectionDetailsModal({ onCloseModal, connectionData }) {
   const { targetOrganizationName, status, name, editorEmail, id, isCurrentOrganization } =
@@ -100,12 +98,7 @@ function B2bConnectionDetailsModal({ onCloseModal, connectionData }) {
         </Card>
       </Backdrop>
 
-      <Backdrop
-        sx={{ color: '#fff', zIndex: (theme) => theme.zIndex.drawer + 1 }}
-        open={isCancelling || isAccepting || isRejecting}
-      >
-        <CircularProgress color="inherit" />
-      </Backdrop>
+      <LoadingModal isLoading={isCancelling || isAccepting || isRejecting} />
     </>
   );
 }

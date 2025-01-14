@@ -4,17 +4,16 @@ import { Container } from '@mui/material';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import B2BConnectionListTable from './B2BConnectionList/B2BConnectionListTable';
 import NewConnectionButton from './NewConnectionButton';
-import CircularProgress from '@mui/material/CircularProgress';
-import Backdrop from '@mui/material/Backdrop';
 import { getConnections } from './fetchB2b';
 import B2BImageCard from './B2BConnectionList/B2BImageCard';
 import './NewB2bConnectionModal/NewB2bConnectionModal.scss';
 import './B2BConnectionList/B2BConnectionList.scss';
+import { LoadingModal } from '../../../../components';
 
 const B2bConnectionsList = () => {
   const [b2bSelectedConnections, setB2bSelectedConnections] = useState([]);
   const [b2bConnections, setB2bConnections] = useState([]);
-  const [filter, setfilter] = useState('');
+  const [filter, setFilter] = useState('');
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -30,7 +29,7 @@ const B2bConnectionsList = () => {
       getConnections().then((res) => {
         setB2bConnections(res);
       });
-      setfilter('');
+      setFilter('');
       return;
     }
 
@@ -38,7 +37,7 @@ const B2bConnectionsList = () => {
       setB2bConnections(res.filter((el) => el.status === status));
     });
     setB2bConnections(b2bConnections.filter((el) => el.status === status));
-    setfilter(status);
+    setFilter(status);
   };
 
   const activeFilter = (status) => {
@@ -104,9 +103,7 @@ const B2bConnectionsList = () => {
         </B2BImageCard>
       )}
 
-      <Backdrop sx={{ color: '#fff', zIndex: (theme) => theme.zIndex.drawer + 1 }} open={loading}>
-        <CircularProgress color="inherit" />
-      </Backdrop>
+      <LoadingModal isLoading={loading} />
     </Container>
   );
 };

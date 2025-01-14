@@ -1,21 +1,24 @@
 import React, { useState, useEffect } from 'react';
-import CircularProgress from '@mui/material/CircularProgress';
-import Table from '@mui/material/Table';
-import TableBody from '@mui/material/TableBody';
-import TableCell from '@mui/material/TableCell';
-import TableContainer from '@mui/material/TableContainer';
-import TableHead from '@mui/material/TableHead';
-import TableRow from '@mui/material/TableRow';
-import Paper from '@mui/material/Paper';
-import Grid from '@mui/material/Grid';
+import moment from 'moment';
+import {
+  Divider,
+  Table,
+  TableBody,
+  TableCell,
+  TableContainer,
+  TableHead,
+  TableRow,
+  Paper,
+  Grid,
+} from '@mui/material';
+
 import { numberWithCommas } from '../../../../../locations/js/utils/locationsTableUtils.js';
 import DateRangeSelector from './DateRangeSelector';
 import { oneMonthAgoDate, endDayIncludingToday } from './AccountUsage.utils';
 import { accountProfileStrings } from '../../../../../common/js/config';
 import { useAccountDetail } from '../AccountDetailSection';
 import AccountUsage from '../../../../../profile/js/components/AccountUsage/AccountUsage.jsx';
-import Divider from '@mui/material/Divider';
-import moment from 'moment';
+import { LoadingModal } from '../../../../../components';
 
 function AccountDetailUsage() {
   const { currentAccount } = useAccountDetail();
@@ -59,7 +62,7 @@ function AccountDetailUsage() {
         endDate={endDate}
         setEndDate={setEndDate}
       />
-      {isLoading && <CircularProgress color="success" />}
+      {isLoading && <LoadingModal isLoading={true} />}
       {!isLoading && (
         <Grid container justifyContent="center" sx={{ marginTop: '1em' }}>
           <TableContainer component={Paper}>
@@ -132,7 +135,7 @@ function AccountUsageInfoBubbles() {
   }, []);
 
   if (!accountUsageData) {
-    return <CircularProgress color="success" />;
+    return <LoadingModal isLoading={true} />;
   }
 
   return <AccountUsage {...accountUsageData} />;

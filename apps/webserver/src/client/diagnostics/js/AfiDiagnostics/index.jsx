@@ -1,10 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import CircularProgress from '@mui/material/CircularProgress';
-import Card from '@mui/material/Card';
-import CardContent from '@mui/material/CardContent';
-import MenuItem from '@mui/material/MenuItem';
-import FormControl from '@mui/material/FormControl';
-import Select from '@mui/material/Select';
+import { Card, CardContent, MenuItem, FormControl, Select } from '@mui/material';
 import AfiDiagnosticsTable from './AfiDiagnosticsTable';
 import AfiPieChart from './AfiPieChart';
 import DiagnosticsMenuBar from '../common/DiagnosticsMenuBar';
@@ -16,6 +11,7 @@ import InfoBubble from '../../../common/js/components/InfoBubble';
 import getAnalysisAvailabilityMessage from '../common/getAnalysisAvailabilityMessage';
 import { forestLossDatasetIds, forestLossDatasets } from './forestLossDatasets.constants';
 import '../common/DiagnosticsContainer.scss';
+import { LoadingModal } from '../../../components';
 
 function AfiDiagnostics() {
   const [isLoading, setIsLoading] = useState(true);
@@ -115,19 +111,7 @@ function AfiDiagnostics() {
   const isNegligibleRiskAvailable = forestLossDataset !== forestLossDatasetIds.JRC;
   return (
     <>
-      {isLoading && (
-        <div
-          style={{
-            display: 'flex',
-            width: '100vw',
-            height: '100vh',
-            alignItems: 'center',
-            justifyContent: 'center',
-          }}
-        >
-          <CircularProgress color="success" />
-        </div>
-      )}
+      <LoadingModal isLoading={isLoading} />
       {!isLoading && DiagnosticsStatusMessage && DiagnosticsStatusMessage}
       {!isLoading && !isListBeingAnalyzed && (
         <div style={{ backgroundColor: 'rgb(250, 250, 250)' }}>

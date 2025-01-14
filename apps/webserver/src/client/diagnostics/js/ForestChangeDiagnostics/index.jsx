@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { connect } from 'react-redux';
-import CircularProgress from '@mui/material/CircularProgress';
 import Diagnostics from './Diagnostics';
 import { diagnosticsStrings } from '../../../common/js/config';
 import { useQuery } from '../../../common/js/hooks';
 import getAnalysisAvailabilityMessage from '../common/getAnalysisAvailabilityMessage';
+import { LoadingModal } from '../../../components';
 
 const mapStateToProps = ({ infoBubbleCache, popover }) => ({ infoBubbleCache, popover });
 
@@ -82,19 +82,7 @@ function ForestChangeDiagnostics({ popover, infoBubbleCache }) {
 
   return (
     <>
-      {isLoading && (
-        <div
-          style={{
-            display: 'flex',
-            width: '100vw',
-            height: '100vh',
-            alignItems: 'center',
-            justifyContent: 'center',
-          }}
-        >
-          <CircularProgress color="success" />
-        </div>
-      )}
+      <LoadingModal isLoading={isLoading} />
       {!isLoading && DiagnosticsStatusMessage && DiagnosticsStatusMessage}
       {!isLoading && !selectedList && !processedListData && (
         <div

@@ -12,7 +12,7 @@ import FeatureFlags from './featuresFlags/index';
 import AccountLimits from './accounts/AccountLimits';
 import Grid from '@mui/material/Grid';
 import Box from '@mui/material/Box';
-import Loading from '../../../common/js/components/Loaders/Loading';
+import { LoadingModal } from '../../../components';
 
 function ProManagerPanel({ location }) {
   const [isLoading, setIsLoading] = useState(true);
@@ -48,7 +48,6 @@ function ProManagerPanel({ location }) {
       </Grid>
       <Grid item xs={12} sm={9}>
         <Box>
-          {isLoading && <Loading />}
           {selectedTab === proManagerPanelTabs.accountProfiles.id && accountDetail && (
             <AccountDetailSection
               isLoading={isLoading}
@@ -84,6 +83,7 @@ function ProManagerPanel({ location }) {
             <FeatureFlags isLoading={isLoading} setIsLoading={setIsLoading} />
           )}
         </Box>
+        <LoadingModal isLoading={isLoading} />
       </Grid>
     </Grid>
   );

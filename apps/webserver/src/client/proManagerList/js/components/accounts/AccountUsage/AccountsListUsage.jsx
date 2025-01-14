@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import CircularProgress from '@mui/material/CircularProgress';
+
 import Table from '@mui/material/Table';
 import TableBody from '@mui/material/TableBody';
 import TableCell from '@mui/material/TableCell';
@@ -14,6 +14,7 @@ import DateRangeSelector from './DateRangeSelector';
 import { oneMonthAgoDate, endDayIncludingToday } from './AccountUsage.utils';
 import { accountProfileStrings } from '../../../../../common/js/config';
 import { numberWithCommas } from '../../../../../locations/js/utils/locationsTableUtils.js';
+import { LoadingModal } from '../../../../../components';
 
 const fontStyles = {
   fontFamily: 'Fira Sans, sans-serif',
@@ -67,7 +68,7 @@ function AccountsListUsage({ setIsLoading }) {
       </Box>
 
       <Grid container justifyContent="center">
-        {isFetching && <CircularProgress color="success" />}
+        {isFetching && <LoadingModal isLoading={true} />}
         {!isFetching && (
           <TableContainer component={Paper}>
             <Table sx={{ minWidth: 650 }} aria-label="simple table">

@@ -36,9 +36,8 @@ import { numberWithCommas } from '../../../locations/js/utils/locationsTableUtil
 import { loaderMessages } from '../../../common/js/config';
 import { listStatus } from '../../../../config/env/listStatuses.constants';
 import ConfirmDialog from '../../../locations/js/components/lists/download/confirmDialog';
-import CircularProgress from '@mui/material/CircularProgress';
-import Backdrop from '@mui/material/Backdrop';
 import fetch from '../../../common/js/utils/fetch';
+import { LoadingModal } from '../../../components';
 
 import '../../css/dashboard.scss';
 
@@ -406,9 +405,8 @@ export default class Dashboard extends Component {
           </div>
         </div>
         <ConfirmDialog open={isOpenDownloadDialog} setDialogOpen={this.setOpenDownloadDialog} />
-        <Backdrop sx={{ zIndex: (theme) => theme.zIndex.drawer + 1 }} open={isLoading}>
-          <CircularProgress color="success" />
-        </Backdrop>
+
+        <LoadingModal isLoading={isLoading} />
       </Page>
     );
   }

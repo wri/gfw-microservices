@@ -50,9 +50,11 @@ export class PreviewListUploadService {
     const response = await AbstractHandler.runFullChain(downloadS3File, chainType);
 
     // Check for errors in the geojson features
-    const errors = response.geojson.features
-      .filter((feature) => feature.properties?.errorDetails)
-      .map((feature) => feature.properties.errorDetails);
+    const errors = [
+      ...new Set(
+        response.geojson.features.flatMap((feature) => feature.properties?.errorDetails || [])
+      ),
+    ];
 
     if (errors.length > 0) {
       throw new BadRequestException({

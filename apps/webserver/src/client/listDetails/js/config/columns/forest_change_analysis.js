@@ -24,7 +24,7 @@ const forest_change_analysis = [
     Header: () => (
       <ColumnsHeader
         label={columnHeaders.treeCoverExtent}
-        infoBubbleId={infoBubbleConfig.post2000TreeCoverLoss}
+        infoBubbleId={infoBubbleConfig.post2000TreeCover}
       />
     ),
     accessor: (d) => {
@@ -68,8 +68,8 @@ const forest_change_analysis = [
         id: 'tree_cover_loss_total_yearly',
         Header: () => (
           <ColumnsHeader
-            label={columnHeaders.treeCover}
-            infoBubbleId={infoBubbleConfig.post2000TreeCover}
+            label={columnHeaders.treeCoverLoss}
+            infoBubbleId={infoBubbleConfig.post2000TreeCoverLoss}
           />
         ),
         accessor: (d) => {
@@ -114,7 +114,7 @@ const forest_change_analysis = [
         id: 'tree_cover_loss_primary_forest_yearly',
         Header: () => (
           <ColumnsHeader
-            label={columnHeaders.primaryForest}
+            label={columnHeaders.treeCoverLossOnPrimaryForest}
             infoBubbleId={infoBubbleConfig.post2000PrimaryForest}
           />
         ),

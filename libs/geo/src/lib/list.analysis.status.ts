@@ -1,6 +1,6 @@
 import { Logger } from '@nestjs/common';
-import { S3Service } from "@wri-monorepos/aws";
-import { readAnalysesLastModifiedTime } from "@wri-monorepos/shared";
+import { S3Service } from '@wri-monorepos/aws';
+import { readAnalysesLastModifiedTime } from '@wri-monorepos/shared';
 import { ListsAnalysisStatus, SQLUtils } from '@wri-monorepos/sql';
 import { listStatus } from '@wri-monorepos/constants';
 import { analysisTypesOptions } from '@wri-monorepos/constants';

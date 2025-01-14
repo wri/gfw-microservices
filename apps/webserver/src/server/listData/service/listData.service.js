@@ -1,6 +1,10 @@
 const path = require('path');
 const { listStatus } = require(path.resolve('./config/env/listStatuses.constants'));
-import { createListAnalysis, getListAnalysisStatusByListId, updateListAnalysis } from '@wri-monorepos/geo';
+import {
+  createListAnalysis,
+  getListAnalysisStatusByListId,
+  updateListAnalysis,
+} from '@wri-monorepos/geo';
 
 const setSelectedAnalyses = async (
   req,

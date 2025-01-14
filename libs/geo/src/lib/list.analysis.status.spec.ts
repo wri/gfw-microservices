@@ -1,9 +1,16 @@
-import { Logger } from "@nestjs/common";
-import { extractAnalysisTypes, getAllListsAnalysisStatus, getAnalysisTypesFromIds, getListAnalysisStatusByListId, resolveListAnalysisStatuses, updateListAnalysis } from './list.analysis.status';
-import { ListsAnalysisStatus, SQLUtils } from "@wri-monorepos/sql";
-import { readAnalysesLastModifiedTime } from "@wri-monorepos/shared";
-import { analysisTypesOptions, listStatus } from "@wri-monorepos/constants";
-import * as sql from "mssql";
+import { Logger } from '@nestjs/common';
+import {
+  extractAnalysisTypes,
+  getAllListsAnalysisStatus,
+  getAnalysisTypesFromIds,
+  getListAnalysisStatusByListId,
+  resolveListAnalysisStatuses,
+  updateListAnalysis,
+} from './list.analysis.status';
+import { ListsAnalysisStatus, SQLUtils } from '@wri-monorepos/sql';
+import { readAnalysesLastModifiedTime } from '@wri-monorepos/shared';
+import { analysisTypesOptions, listStatus } from '@wri-monorepos/constants';
+import * as sql from 'mssql';
 
 jest.mock('@nestjs/common', () => ({
   ...jest.requireActual('@nestjs/common'),
@@ -63,14 +70,17 @@ describe('list.analysis.status.ts', () => {
     jest.clearAllMocks();
   });
 
-  describe("getAllListsAnalysisStatus", () => {
-    it("should return an array of ListsAnalysisStatus if queryDB resolves successfully", async () => {
+  describe('getAllListsAnalysisStatus', () => {
+    it('should return an array of ListsAnalysisStatus if queryDB resolves successfully', async () => {
       (SQLUtils.queryDB as jest.Mock).mockResolvedValue(mockAnalysisStatusData);
       (readAnalysesLastModifiedTime as jest.Mock).mockResolvedValue(mockLastModifiedData);
 
       const result = await getAllListsAnalysisStatus('clientDatabaseName');
 
-      expect(SQLUtils.queryDB).toHaveBeenCalledWith("clientDatabaseName", "getAllListsAnalysisStatus");
+      expect(SQLUtils.queryDB).toHaveBeenCalledWith(
+        'clientDatabaseName',
+        'getAllListsAnalysisStatus'
+      );
       expect(result).toEqual(
         expect.arrayContaining([
           expect.objectContaining({
@@ -78,14 +88,14 @@ describe('list.analysis.status.ts', () => {
             analysisId: 'FCD',
             status: 5,
             options: 'PalmRisk',
-            analysisIdLastModifed: '2025-01-01T00:00:00Z'
+            analysisIdLastModifed: '2025-01-01T00:00:00Z',
           }),
           expect.objectContaining({
             listId: 1,
             analysisId: 'PalmRisk',
             status: 5,
             options: 'PalmRisk',
-            analysisIdLastModifed: '2025-01-03T00:00:00Z',
+            analysisIdLastModifed: '2025-01-01T00:00:00Z',
           }),
           expect.objectContaining({
             listId: 1,
@@ -96,14 +106,13 @@ describe('list.analysis.status.ts', () => {
           }),
         ])
       );
-      
     });
 
-    it("should log an error if something goes wrong and return undefined", async () => {
-      const mockError = new Error("DB error");
+    it('should log an error if something goes wrong and throw an error', async () => {
+      const mockError = new Error('DB error');
       (SQLUtils.queryDB as jest.Mock).mockRejectedValue(mockError);
 
-      const result = await getAllListsAnalysisStatus("clientDatabaseName");
+      await expect(getAllListsAnalysisStatus('clientDatabaseName')).rejects.toThrow('DB error');
 
       expect(Logger.error).toHaveBeenCalledWith(
         'Getting all lists analysis status',
@@ -112,8 +121,8 @@ describe('list.analysis.status.ts', () => {
     });
   });
 
-  describe("getListAnalysisStatusByListId", () => {
-    it("should return an array of ListsAnalysisStatus for a given listId if queryDB resolves successfully", async () => {
+  describe('getListAnalysisStatusByListId', () => {
+    it('should return an array of ListsAnalysisStatus for a given listId if queryDB resolves successfully', async () => {
       (SQLUtils.queryDB as jest.Mock).mockResolvedValue(mockAnalysisStatusData);
       (readAnalysesLastModifiedTime as jest.Mock).mockResolvedValue(mockLastModifiedData);
 
@@ -136,7 +145,9 @@ describe('list.analysis.status.ts', () => {
       const mockError = new Error('Another DB error');
       (SQLUtils.queryDB as jest.Mock).mockRejectedValue(mockError);
 
-      await expect(getListAnalysisStatusByListId('clientDB', 99)).rejects.toThrow('DB error');
+      await expect(getListAnalysisStatusByListId('clientDB', 99)).rejects.toThrow(
+        'Another DB error'
+      );
 
       expect(Logger.error).toHaveBeenCalledWith(
         'Getting list analysis status by list id',

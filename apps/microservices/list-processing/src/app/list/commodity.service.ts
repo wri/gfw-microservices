@@ -103,38 +103,14 @@ export class CommodityService {
     const clientStoreConnection = new ClientStoreConnection();
     const connection = await clientStoreConnection.getConnection(organizationDatabase, [Lists]);
     const listRepository = connection.getRepository(Lists);
-    const lists = await listRepository.find();
 
-    const matchedLists = [];
+    const template = listTemplate.find((template) =>
+      this.compareIgnoringAccentsAndCase(template.templateName, commodity)
+    );
 
-    for (const list of lists) {
-      try {
-        if (list.Commodity === null) {
-          const { commodity: commodityFromLocation } = await this.getCommodityFromLocation(
-            organizationDatabase,
-            list.listTableName
-          );
-          if (this.compareIgnoringAccentsAndCase(commodityFromLocation, commodity)) {
-            matchedLists.push({ id: list.id, name: list.listName });
-          }
-          if (commodityFromLocation === null) {
-            const template = listTemplate.find((template) => template.id === list.templateId);
-            if (this.compareIgnoringAccentsAndCase(commodityFromLocation, template)) {
-              matchedLists.push({
-                id: list.id,
-                name: list.listName,
-              });
-            }
-          }
-        } else if (this.compareIgnoringAccentsAndCase(list.Commodity, commodity)) {
-          matchedLists.push({ id: list.id, name: list.listName });
-        }
-      } catch (error) {
-        Logger.warn(error.stack || error);
-      }
-    }
+    const lists = await listRepository.find({ where: { templateId: template?.id } });
 
-    return matchedLists;
+    return lists.map((list) => ({ id: list.id, name: list.listName }));
   }
 
   compareIgnoringAccentsAndCase(str1, str2) {

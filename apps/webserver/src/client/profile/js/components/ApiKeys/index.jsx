@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import CreateApiKeyScreen from './CreateApiKeyScreen';
 import ApiKeysTable from './ApiKeysTable';
-import Loading from '../../../../common/js/components/Loaders/Loading';
+
+import { LoadingModal } from '../../../../components';
 
 export default function ApiKeys() {
   const [keys, setKeys] = useState([]);
@@ -45,7 +46,7 @@ export default function ApiKeys() {
   }, [keys.length]);
 
   if (isLoading) {
-    return <Loading />;
+    return <LoadingModal isLoading={true} />;
   }
 
   return keys.length ? (

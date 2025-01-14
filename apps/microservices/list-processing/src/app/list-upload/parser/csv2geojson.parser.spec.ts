@@ -108,6 +108,15 @@ describe('csv2geojson', () => {
             },
             type: 'Feature',
           },
+          {
+            geometry: undefined,
+            properties: {
+              errordetails: ['Invalid latitude or longitude: invalid, -121.5'],
+              latitude: 'invalid',
+              longitude: -121.5,
+            },
+            type: 'Feature',
+          },
         ],
         type: 'FeatureCollection',
       });
@@ -158,7 +167,7 @@ describe('csv2geojson', () => {
     const csvData = 'Longitude,Latitude\n-120.0,invalid\n-121.5,39.0';
     csv2geojson(csvData).then((result) => {
       const { features } = result as FeatureCollection;
-      expect(features.length).toBe(1);
+      expect(features.length).toBe(2);
       done();
     });
   });
@@ -180,7 +189,30 @@ describe('csv2geojson', () => {
 
     csv2geojson(csvData).then((result) => {
       expect(result).toStrictEqual({
-        features: [],
+        features: [
+          {
+            geometry: undefined,
+            properties: {
+              errordetails: ['Invalid latitude or longitude: null, null'],
+              latitude: null,
+              longitude: null,
+              property1: null,
+              property2: null,
+            },
+            type: 'Feature',
+          },
+          {
+            geometry: undefined,
+            properties: {
+              errordetails: ['Invalid latitude or longitude: null, null'],
+              latitude: null,
+              longitude: null,
+              property1: null,
+              property2: null,
+            },
+            type: 'Feature',
+          },
+        ],
         type: 'FeatureCollection',
       });
       done();
@@ -192,7 +224,26 @@ describe('csv2geojson', () => {
 
     csv2geojson(csvData).then((result) => {
       expect(result).toStrictEqual({
-        features: [],
+        features: [
+          {
+            geometry: undefined,
+            properties: {
+              errordetails: ['Invalid latitude or longitude: undefined, undefined'],
+              property1: null,
+              property2: null,
+            },
+            type: 'Feature',
+          },
+          {
+            geometry: undefined,
+            properties: {
+              errordetails: ['Invalid latitude or longitude: undefined, undefined'],
+              property1: null,
+              property2: null,
+            },
+            type: 'Feature',
+          },
+        ],
         type: 'FeatureCollection',
       });
       done();

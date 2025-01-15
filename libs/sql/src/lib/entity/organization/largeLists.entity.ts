@@ -11,21 +11,21 @@ export class LargeLists {
   @Column({ name: 'organization_user_id' })
   organizationUserId: number;
 
-  @Column({ name: ' list_name' })
+  @Column({ name: 'list_name' })
   listName: number;
 
-  @Column({ name: ' s3_filename' })
+  @Column({ name: 's3_filename' })
   s3Filename: number;
 
-  @Column({ name: ' s3_location' })
+  @Column({ name: 's3_location' })
   s3Location: number;
 
-  @Column({ name: ' list_status' })
+  @Column({ name: 'list_status' })
   listStatus: number;
 
-  @Column({ name: ' creation_date' })
+  @Column({ name: 'creation_date' })
   creationDate: number;
 
-  @Column({ name: ' modification_date' })
+  @Column({ name: 'modification_date' })
   modificationDate: number;
 }

@@ -1,20 +1,9 @@
-import {
-  Injectable,
-  InternalServerErrorException,
-  NotFoundException,
-  Logger,
-} from '@nestjs/common';
+import { Injectable, InternalServerErrorException, Logger } from '@nestjs/common';
 import { S3Client, PutObjectCommand, GetObjectCommand } from '@aws-sdk/client-s3';
 import { DataSource } from 'typeorm';
 import uniqId from 'uniqid';
 import { ResponsePreSignedURLModel, ResponseObjectPresignedURLModel } from '../models';
-import {
-  ClientStoreConnection,
-  Lists,
-  ActivityLog,
-  DeleteListTypeOrm,
-  LargeLists,
-} from '@wri-monorepos/sql';
+import { ClientStoreConnection, ActivityLog, DeleteListTypeOrm } from '@wri-monorepos/sql';
 import { LockListService } from '../services/lock.list.service';
 import { ConfigService } from '@nestjs/config';
 import { ServerConfigType } from '../validators/server-config';
@@ -99,18 +88,8 @@ export class AppService {
     userEmail: string
   ): Promise<string> {
     const connection = await this.clientStoreConnection.getConnection(organizationDatabase);
-    const listRepository = connection.getRepository(Lists);
-    const listFound = await listRepository.findOne({ where: { id: list_id } });
-    if (!listFound) {
-      this.logger.error('DeleteList: list not found');
-      throw new NotFoundException(`List id ${list_id} not found.`);
-    }
-    const { lockStatus, listName } = listFound;
-    if (lockStatus === null) {
-      //Lock list
-      await this.lockListService.lockList(organizationDatabase, list_id, organization_user_id);
-    }
     const activityLogRepository = connection.getRepository(ActivityLog);
+
     try {
       // await DeleteList(organizationDatabase, list_id, organization_user_id);
       const deleteResult = await this.deleteListTypeOrm.delete(
@@ -123,19 +102,12 @@ export class AppService {
         const activityLog = new ActivityLog();
         activityLog.userId = organization_user_id;
         activityLog.activityTypeId = 21;
-        activityLog.activityDescription = `User '${userEmail}' has deleted list (${listName}).`;
-        activityLog.activityTime = new Date();
-        await activityLogRepository.save(activityLog);
-
-        // Delete correlated row at Large List table
-        const largeListsRepository = connection.getRepository(LargeLists);
-        await largeListsRepository.delete({ listId: list_id });
-        activityLog.activityDescription = `User '${userEmail}' has deleted list (${listName}) - (${list_id}) at LargeLists Table.`;
+        activityLog.activityDescription = `User '${userEmail}' has deleted list (${list_id}).`;
         activityLog.activityTime = new Date();
         await activityLogRepository.save(activityLog);
 
         // Return message that the list was deleted to user
-        return `User '${userEmail}' has deleted list (${listName}) - (${list_id}).`;
+        return `User '${userEmail}' has deleted list (${list_id}).`;
       } else {
         throw new InternalServerErrorException({
           message: `Failed to delete list ${list_id}`,
@@ -147,11 +119,11 @@ export class AppService {
       const activityLog = new ActivityLog();
       activityLog.userId = organization_user_id;
       activityLog.activityTypeId = 21;
-      activityLog.activityDescription = `User '${userEmail}' has tried to delete list (${listName}) - (${list_id}) but some error occurs ${error.message}.`;
+      activityLog.activityDescription = `User '${userEmail}' has tried to delete list (${list_id}) but some error occurs ${error.message}.`;
       activityLog.activityTime = new Date();
       await activityLogRepository.save(activityLog);
       throw new InternalServerErrorException({
-        message: `User '${userEmail}' has tried to delete list (${listName}) - (${list_id}) but some error occurs ${error.message}.`,
+        message: `User '${userEmail}' has tried to delete list (${list_id}) but some error occurs ${error.message}.`,
         code: 603,
       });
     }

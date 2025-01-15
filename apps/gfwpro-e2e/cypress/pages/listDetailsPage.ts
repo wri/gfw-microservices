@@ -29,7 +29,9 @@ class ListDetailsPage {
       ),
     closeAlertDownloadBtn: () => cy.get('[data-cy="download-dialog"]').find('button').first(),
     listByName: (name) => cy.contains('.list-item', name),
-    tabPost2020: () => cy.get('.Mui-selected'),
+    post2020Tab: () => cy.get('[data-cy="post-2020-tab"]'),
+    post2000Tab: () => cy.get('[data-cy="post-2000-tab"]'),
+    palmRiskAssessmentTab: () => cy.get('[data-cy="palm-risk-assessment-tab"]'),
   };
   clickOnLocationsList(name: string) {
     cy.contains(name).click();
@@ -146,8 +148,14 @@ class ListDetailsPage {
   clickOnDeleteBtn() {
     this.elements.deleteBtn().click();
   }
-  clickOnTabTreeCoverLossBtn() {
-    this.elements.tabTreeCoverLoss().click();
+  clickOnPost2020Tab() {
+    this.elements.post2020Tab().click();
+  }
+  clickOnPost2000Tab() {
+    this.elements.post2000Tab().click();
+  }
+  clickOnPalmRiskAssessmentTab() {
+    this.elements.palmRiskAssessmentTab().click();
   }
   clickOnListDiagnosticsBtn() {
     this.elements.listDiagnosticsBtn().click();

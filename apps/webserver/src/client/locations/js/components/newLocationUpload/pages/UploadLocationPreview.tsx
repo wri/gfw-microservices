@@ -152,6 +152,7 @@ export function UploadLocationPreview() {
                   border: `2px solid ${theme.palette.error.main}`,
                   backgroundColor: 'error.light',
                   position: 'relative',
+                  px: 25,
                 }}
               >
                 <Box sx={{ position: 'relative' }}>
@@ -163,10 +164,38 @@ export function UploadLocationPreview() {
                     sx={{ position: 'absolute', fontSize: '2rem', left: '57px' }}
                   />
                 </Box>
-                <Typography variant="h6">Errors in the file</Typography>
-                {error.errors.map((err) => (
+                <Typography variant="h6">Missing required fields</Typography>
+                <Typography variant="caption" sx={{ color: theme.palette.text.secondary, my: 1 }}>
+                  Your [INPUT FILE TYPE] is missing the following obligatory fields: [MISSING
+                  OBLIGATORY FIELDS]. Please check the required fields in the Data Templates and
+                  update your file before re-uploading it.
+                </Typography>
+                {/* {error.errors.map((err) => (
                   <Typography key={err}>{err}</Typography>
-                ))}
+                ))} */}
+                <PillButton variant="text" color="error">
+                  <label
+                    htmlFor="file-input-error"
+                    style={{
+                      cursor: 'pointer',
+                      color: theme.palette.error.main,
+                      textDecoration: 'underline',
+                      textTransform: 'none',
+                    }}
+                  >
+                    Retry upload
+                  </label>
+                </PillButton>
+                <input
+                  type="file"
+                  id="file-input-error"
+                  accept={VALID_UPLOAD_FILE_FORMATS.map((f) => `.${f}`).join(', ')}
+                  style={{ display: 'none' }}
+                  onChange={(e) => {
+                    const file = e.target.files?.[0] ?? null;
+                    setFile(file);
+                  }}
+                />
               </Box>
             ) : (
               <Box sx={{ margin: 'auto' }}>
@@ -248,7 +277,7 @@ export function UploadLocationPreview() {
             variant="contained"
             startIcon={<ArrowForwardIos />}
             onClick={() => history.push('CONFIGURE_LIST')}
-            disabled={!data?.features}
+            disabled={isLoading || !data?.features || !!error}
           >
             Next
           </PillButton>

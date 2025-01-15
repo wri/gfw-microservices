@@ -11,7 +11,14 @@ import {
   Typography,
   useTheme,
 } from '@mui/material';
-import { ArrowBackIos, ArrowForwardIos, Close, Replay } from '@mui/icons-material';
+import {
+  ArrowBackIos,
+  ArrowForwardIos,
+  Close,
+  DriveFolderUpload,
+  Replay,
+  Report,
+} from '@mui/icons-material';
 
 import { LocationListType } from '../types';
 import { LoadingModal, PillButton } from '../../../../../components';
@@ -31,7 +38,10 @@ export function UploadLocationPreview() {
   const history = useHistory();
   const theme = useTheme();
 
-  const { data, isLoading, request, error } = useFetch<{ features: LocationListType[] }>();
+  const { data, isLoading, request, error } = useFetch<
+    { features: LocationListType[] },
+    { errors: string[] }
+  >();
   const [file, setFile] = useState<File | null>(null);
 
   const [iLoadingFileUpload, setIsLoadingFileUpload] = useState(false);
@@ -76,6 +86,7 @@ export function UploadLocationPreview() {
 
   const columns = getTableColumns(data?.features);
 
+  console.log({ error });
   return (
     <>
       <NavBar />
@@ -127,12 +138,45 @@ export function UploadLocationPreview() {
         {isLoading ? (
           <Skeleton variant="rounded" sx={{ height: '460px' }} />
         ) : error ? (
-          <Box sx={{ margin: 'auto' }}>
-            <Typography variant="h6">There were platform issues loading your data.</Typography>
-            <PillButton onClick={getPreviewData} sx={{ margin: 'auto' }}>
-              Click here to try again
-            </PillButton>
-          </Box>
+          <>
+            {error.errors ? (
+              <Box
+                sx={{
+                  display: 'flex',
+                  flexDirection: 'column',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  height: '354px',
+                  margin: '1.5rem 0 0.75rem',
+                  borderRadius: 1,
+                  border: `2px solid ${theme.palette.error.main}`,
+                  backgroundColor: 'error.light',
+                  position: 'relative',
+                }}
+              >
+                <Box sx={{ position: 'relative' }}>
+                  <DriveFolderUpload
+                    sx={{ color: `${theme.palette.error.main}80`, fontSize: '5.25rem' }}
+                  />
+                  <Report
+                    color="error"
+                    sx={{ position: 'absolute', fontSize: '2rem', left: '57px' }}
+                  />
+                </Box>
+                <Typography variant="h6">Errors in the file</Typography>
+                {error.errors.map((err) => (
+                  <Typography key={err}>{err}</Typography>
+                ))}
+              </Box>
+            ) : (
+              <Box sx={{ margin: 'auto' }}>
+                <Typography variant="h6">There were platform issues loading your data.</Typography>
+                <PillButton onClick={getPreviewData} sx={{ margin: 'auto' }}>
+                  Click here to try again
+                </PillButton>
+              </Box>
+            )}
+          </>
         ) : (
           <Box sx={{ maxHeight: '460px', overflow: 'auto' }}>
             <Table

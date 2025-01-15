@@ -7,16 +7,18 @@ interface ExtendedAxiosRequestConfig extends AxiosRequestConfig {
   method?: ValidHttpMethod;
 }
 
-type UseFetchResponse<T> = {
+type UseFetchResponse<T, E = unknown> = {
   data: T | null;
-  error: string | null;
+  error: E | null;
   isLoading: boolean;
   request: (config?: ExtendedAxiosRequestConfig) => Promise<void>;
 };
 
-export const useFetch = <T>(initialConfig?: ExtendedAxiosRequestConfig): UseFetchResponse<T> => {
+export const useFetch = <T, E>(
+  initialConfig?: ExtendedAxiosRequestConfig
+): UseFetchResponse<T, E> => {
   const [data, setData] = useState<T | null>(null);
-  const [error, setError] = useState<string | null>(null);
+  const [error, setError] = useState<E | null>(null);
   const [isLoading, setIsLoading] = useState(false);
 
   const request = useCallback(
@@ -34,7 +36,7 @@ export const useFetch = <T>(initialConfig?: ExtendedAxiosRequestConfig): UseFetc
       } catch (err: unknown) {
         setError(
           axios.isAxiosError(err) && err.response
-            ? err.response.data.message || 'An error occurred'
+            ? err.response.data || 'An error occurred'
             : 'An unexpected error occurred'
         );
       } finally {

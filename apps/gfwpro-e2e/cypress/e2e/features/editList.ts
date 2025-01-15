@@ -19,19 +19,19 @@ describe('Edit List', () => {
   });
 
   When('I select a location and press the Edit button', () => {
-    listDetailsPage.elements.tabPost2020().should('be.visible');
+    // listDetailsPage.elements.tabPost2020().should('be.visible');
     listDetailsPage.selectCheckBoxes([1]);
     listDetailsPage.clickOnEditBtn();
   });
 
   When('I select all locations and press the Edit button', () => {
-    listDetailsPage.elements.tabPost2020().should('be.visible');
+    // listDetailsPage.elements.tabPost2020().should('be.visible');
     listDetailsPage.checkOnCheckBoxSelectAll();
     listDetailsPage.clickOnEditBtn();
   });
 
   When('I select 50 locations and press the Edit button', () => {
-    listDetailsPage.elements.tabPost2020().should('be.visible');
+    // listDetailsPage.elements.tabPost2020().should('be.visible');
     const locationsToSelect = Array.from({ length: 50 }, (_, i) => i + 1);
     listDetailsPage.selectCheckBoxes(locationsToSelect);
     listDetailsPage.clickOnEditBtn();

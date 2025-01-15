@@ -1,7 +1,7 @@
 class EditPage {
   elements = {
-    cancelBtn: () => cy.contains('Cancel'),
-    updateBtn: () => cy.contains('Update'),
+    cancelBtn: () => cy.contains('button', 'Cancel'),
+    updateBtn: () => cy.contains('button', 'Update'),
     confirmBtn: () => cy.contains('OK'),
   };
 

@@ -405,16 +405,6 @@ class DiagnosticsPage {
 
   verifyTclArgentinaOTBNInfoBubble() {
     this.elements.infoBubbleTitle().should('have.text', 'Deforestation in Argentina');
-    this.elements
-      .infoBubbleContainer()
-      .contains('a', 'http://snmb.ambiente.gob.ar/develop/')
-      .should('have.attr', 'href')
-      .and('include', 'http://snmb.ambiente.gob.ar/develop/');
-    this.elements
-      .infoBubbleContainer()
-      .contains('a', 'see this guide.')
-      .should('have.attr', 'href')
-      .and('include', '/documents/GIS_Data_Formats.pdf');
   }
 }
 

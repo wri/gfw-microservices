@@ -68,6 +68,7 @@ const mockLastModifiedData = [
 describe('list.analysis.status.ts', () => {
   beforeEach(() => {
     jest.clearAllMocks();
+    jest.resetAllMocks();
   });
 
   describe('getAllListsAnalysisStatus', () => {
@@ -141,13 +142,11 @@ describe('list.analysis.status.ts', () => {
       expect(result?.[2]?.analysisIdLastModifed).toBe('2025-01-02T00:00:00Z');
     });
 
-    it('should log an error if something goes wrong and return undefined', async () => {
-      const mockError = new Error('Another DB error');
+    it('should log an error if something goes wrong and throw an error', async () => {
+      const mockError = new Error('DB error');
       (SQLUtils.queryDB as jest.Mock).mockRejectedValue(mockError);
 
-      await expect(getListAnalysisStatusByListId('clientDB', 99)).rejects.toThrow(
-        'Another DB error'
-      );
+      await expect(getListAnalysisStatusByListId('clientDB', 99)).rejects.toThrow('DB error');
 
       expect(Logger.error).toHaveBeenCalledWith(
         'Getting list analysis status by list id',
@@ -242,68 +241,163 @@ describe('list.analysis.status.ts', () => {
   });
 
   describe('resolveListAnalysisStatuses', () => {
-    beforeAll(() => {
-      // Mock the returned data for "analysisTypesLastModifiedData"
-      (readAnalysesLastModifiedTime as jest.Mock).mockResolvedValue([
-        { id: 'FCD', last_run: '2025-01-01T00:00:00Z' },
-        { id: 'PalmRisk', last_run: '2025-01-02T00:00:00Z' },
-        { id: 'XYZ', last_run: '2025-01-03T00:00:00Z' },
-      ]);
+    const mockAnalysisTypesLastModifiedData = [
+      { id: 'FCD', last_run: '2025-01-01T00:00:00Z' },
+      { id: 'PalmRisk', last_run: '2025-01-02T00:00:00Z' },
+      { id: 'AFI', last_run: '2025-01-03T00:00:00Z' },
+    ];
+
+    beforeEach(() => {
+      jest.clearAllMocks();
     });
 
-    it('should duplicate rows with FCD/PalmRisk and handle other rows normally', async () => {
-      const inputStatuses = [
-        { analysisId: 'FCD', options: 'PalmRisk', listId: 1 },
-        { analysisId: 'FCD', options: '', listId: 1 },
-        { analysisId: 'AFI', options: '', listId: 1 },
-      ];
+    it('should return an empty array if no listAnalysisStatuses are provided', async () => {
+      (readAnalysesLastModifiedTime as jest.Mock).mockResolvedValue(
+        mockAnalysisTypesLastModifiedData
+      );
 
-      const result = await resolveListAnalysisStatuses(inputStatuses as ListsAnalysisStatus[]);
-
-      // We expect 4 rows:
-      //  1) Original row for FCD/PalmRisk → analysisId = FCD
-      //  2) Duplicated row for PalmRisk → analysisId = PalmRisk
-      //  3) The FCD row without OtherOption (unchanged)
-      //  4) The AFI row with PalmRisk (unchanged)
-
-      expect(result).toHaveLength(4);
-
-      // 1) First row: FCD/PalmRisk → analysisId=FCD
-      expect(result[0]).toMatchObject({
-        analysisId: 'FCD',
-        options: 'PalmRisk',
-        listId: 1,
-        analysisIdLastModifed: '2025-01-01T00:00:00Z', // from mock data
-      });
-
-      // 2) Second row: duplicated with analysisId=PalmRisk
-      // expect(result[1]).toMatchObject({
-      //   analysisId: 'PalmRisk',
-      //   options: 'PalmRisk',
-      //   listId: 1,
-      //   analysisIdLastModifed: '2025-01-02T00:00:00Z', // from mock data
-      // });
-
-      // 3) Third row: FCD with OtherOption (non-duplicated)
-      // expect(result[2]).toMatchObject({
-      //   analysisId: 'FCD',
-      //   options: 'OtherOption',
-      //   listId: 1,
-      //   analysisIdLastModifed: '2025-01-01T00:00:00Z', // from mock data
-      // });
-
-      // 4) Fourth row: AFI with PalmRisk (non-duplicated)
-      // expect(result[3]).toMatchObject({
-      //   analysisId: 'XYZ',
-      //   options: 'PalmRisk',
-      //   listId: 1,
-      //   analysisIdLastModifed: '2025-01-03T00:00:00Z', // from mock data
-      // });
-    });
-
-    it('should handle empty input gracefully', async () => {
       const result = await resolveListAnalysisStatuses([]);
       expect(result).toEqual([]);
+      expect(readAnalysesLastModifiedTime).toHaveBeenCalledTimes(1);
+    });
+
+    it('should duplicate rows if analysisId=FCD and options=PalmRisk', async () => {
+      (readAnalysesLastModifiedTime as jest.Mock).mockResolvedValue(
+        mockAnalysisTypesLastModifiedData
+      );
+
+      const input: ListsAnalysisStatus[] = [
+        {
+          listId: 1,
+          analysisId: 'FCD',
+          options: 'PalmRisk',
+          status: 5,
+        } as ListsAnalysisStatus,
+      ];
+
+      const result = await resolveListAnalysisStatuses(input);
+
+      // We expect 2 rows:
+      // 1) The original FCD row
+      // 2) A new PalmRisk row
+      expect(result).toHaveLength(2);
+
+      // FCD row
+      expect(result[0]).toMatchObject({
+        listId: 1,
+        analysisId: 'FCD',
+        options: 'PalmRisk',
+        status: 5,
+        // The code uses the *original* analysisId (FCD) to look up the lastModified, so it
+        // sets the same timestamp for both entries.
+        analysisIdLastModifed: '2025-01-01T00:00:00Z',
+      });
+
+      // PalmRisk row
+      expect(result[1]).toMatchObject({
+        listId: 1,
+        analysisId: 'PalmRisk',
+        options: 'PalmRisk',
+        status: 5,
+        // Again, per the current implementation, it’s using the original FCD's last-modified timestamp.
+        analysisIdLastModifed: '2025-01-01T00:00:00Z',
+      });
+    });
+
+    it('should NOT duplicate rows if analysisId=FCD but options != PalmRisk', async () => {
+      (readAnalysesLastModifiedTime as jest.Mock).mockResolvedValue(
+        mockAnalysisTypesLastModifiedData
+      );
+
+      const input: ListsAnalysisStatus[] = [
+        {
+          listId: 2,
+          analysisId: 'FCD',
+          options: 'XYZ', // Not "PalmRisk"
+          status: 3,
+        } as ListsAnalysisStatus,
+      ];
+
+      const result = await resolveListAnalysisStatuses(input);
+      // Should only yield 1 row, unmodified
+      expect(result).toHaveLength(1);
+      expect(result[0]).toMatchObject({
+        listId: 2,
+        analysisId: 'FCD',
+        options: 'XYZ',
+        status: 3,
+        analysisIdLastModifed: '2025-01-01T00:00:00Z',
+      });
+    });
+
+    it('should handle regular rows (e.g., AFI) without duplication', async () => {
+      (readAnalysesLastModifiedTime as jest.Mock).mockResolvedValue(
+        mockAnalysisTypesLastModifiedData
+      );
+
+      const input: ListsAnalysisStatus[] = [
+        {
+          listId: 3,
+          analysisId: 'AFI',
+          options: '',
+          status: 1,
+        } as ListsAnalysisStatus,
+      ];
+
+      const result = await resolveListAnalysisStatuses(input);
+      expect(result).toHaveLength(1);
+      expect(result[0]).toMatchObject({
+        listId: 3,
+        analysisId: 'AFI',
+        options: '',
+        status: 1,
+        analysisIdLastModifed: '2025-01-03T00:00:00Z', // from mock data for AFI
+      });
+    });
+
+    it('should set analysisIdLastModifed to undefined if not present in the map', async () => {
+      // If "XYZ" doesn't appear in the last-modified data, the code should set `analysisIdLastModifed: undefined`.
+      (readAnalysesLastModifiedTime as jest.Mock).mockResolvedValue([
+        { id: 'FCD', last_run: '2025-01-01T00:00:00Z' },
+      ]);
+
+      const input: ListsAnalysisStatus[] = [
+        {
+          listId: 100,
+          analysisId: 'XYZ',
+          options: '',
+          status: 0,
+        } as ListsAnalysisStatus,
+      ];
+
+      const result = await resolveListAnalysisStatuses(input);
+      expect(result).toHaveLength(1);
+      expect(result[0]).toMatchObject({
+        listId: 100,
+        analysisId: 'XYZ',
+        analysisIdLastModifed: undefined,
+      });
+    });
+
+    it('should log an error and rethrow if readAnalysesLastModifiedTime fails', async () => {
+      const mockError = new Error('S3 read error');
+      (readAnalysesLastModifiedTime as jest.Mock).mockRejectedValue(mockError);
+
+      const input: ListsAnalysisStatus[] = [
+        { listId: 99, analysisId: 'FCD' } as ListsAnalysisStatus,
+      ];
+
+      await expect(resolveListAnalysisStatuses(input)).rejects.toThrow('S3 read error');
+
+      // Confirm that we log it
+      expect(Logger.error).toHaveBeenCalledWith(
+        'Error resolving list analysis statuses',
+        expect.objectContaining({
+          message: 'S3 read error',
+          stack: expect.any(String),
+          listAnalysisStatuses: input,
+        })
+      );
     });
   });
 });

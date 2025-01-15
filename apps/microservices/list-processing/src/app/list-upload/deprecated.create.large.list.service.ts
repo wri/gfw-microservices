@@ -2,7 +2,7 @@ import { BadRequestException, Injectable, Logger } from '@nestjs/common';
 import { CreateListRequest } from '../../models';
 import { ConfigService } from '@nestjs/config';
 import { ServerConfigType } from '../../validators/server-config';
-import { CreateListResult } from '@wri-monorepos/geo';
+import { createListAnalysis, CreateListResult } from '@wri-monorepos/geo';
 import {
   ClientStoreConnection,
   getListByFilters,
@@ -355,28 +355,7 @@ export class DeprecatedCreateLargeListService {
     analysisIds: Array<string>
   ) {
     try {
-      // instead of using 'foreach', 'map' and Promise.all guarantee faster updates
-      await Promise.all(
-        analysisIds.map(async (analysisId) => {
-          await SQLUtils.queryDB(clientDatabase, 'uspCreateListAnalysisStatus', [
-            {
-              field: 'ListID',
-              type: sql.Int,
-              value: listId,
-            },
-            {
-              field: 'AnalysisID',
-              type: sql.NVarChar(150),
-              value: analysisId,
-            },
-            {
-              field: 'Status',
-              type: sql.Int,
-              value: listStatusId,
-            },
-          ]);
-        })
-      );
+      await createListAnalysis(clientDatabase, listId, analysisIds, listStatusId);
     } catch (error) {
       throw new Error('Failed create analysis status records: ' + error.message);
     }

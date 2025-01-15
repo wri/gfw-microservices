@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, BadRequestException } from '@nestjs/common';
 import { FeatureCollection } from '@wri-monorepos/geo';
 import { AbstractHandler, ChainType } from './chain/types';
 import { DownloadS3File } from './chain/download.s3.file';
@@ -48,6 +48,21 @@ export class PreviewListUploadService {
       .setNext(validateLatLongGeojson);
 
     const response = await AbstractHandler.runFullChain(downloadS3File, chainType);
+
+    // Check for errors in the geojson features
+    const errors = [
+      ...new Set(
+        response.geojson.features.flatMap((feature) => feature.properties?.errorDetails || [])
+      ),
+    ];
+
+    if (errors.length > 0) {
+      throw new BadRequestException({
+        message: 'Validation errors found in the data',
+        errors,
+      });
+    }
+
     return response.geojson;
   }
 }

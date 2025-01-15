@@ -222,7 +222,7 @@ export default class Filter extends Component {
             ) : (
               <>
                 <Grid item xs={4}>
-                  {listView === POST_2020_RISK_ASSESSMENT_VIEW && (
+                  {listView === POST_2020_RISK_ASSESSMENT_VIEW && !areAllAnalysesDraft && (
                     <NaturalForestLossDataSourceToggle />
                   )}
                 </Grid>
@@ -237,6 +237,7 @@ export default class Filter extends Component {
               <Box flexGrow={1} />
               <Stack alignItems="center" direction="row">
                 <MaterialButton
+                  data-cy="filter-open-button"
                   sx={{ minWidth: '35px', '& > svg': { margin: 0 } }}
                   onClick={() => store.dispatch(toggleCanopyModal())}
                 >
@@ -273,6 +274,7 @@ export default class Filter extends Component {
                 </MaterialButton>
                 {isInlineFilterVisible && (
                   <MaterialButton
+                    data-cy="filter-close-button"
                     sx={{ minWidth: '35px', '& > svg': { margin: 0 } }}
                     onClick={() => store.dispatch(toggleCanopyModal())}
                   >

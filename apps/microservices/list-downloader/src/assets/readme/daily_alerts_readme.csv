@@ -11,10 +11,3 @@ CSV Name,Description,Version,Column,Column Description
 <LISTNAME>_IntegratedAlerts_NaturalForest_Daily,Natural Forest Daily Alerts by Location,1.1,# Alerts in SBTN Natural Forest,Count of Alerts in SBTN
 <LISTNAME>_IntegratedAlerts_NaturalForest_Daily,Natural Forest Daily Alerts by Location,1.1,# Alerts in JRC Natural Forest,Count of Alerts in JRC
 <LISTNAME>_IntegratedAlerts_NaturalForest_Daily,Natural Forest Daily Alerts by Location,1.1,# of locations,Count of Locations
-<LISTNAME>_Alerts_LocationsLevel_Daily,Daily Alerts by Location,1.0 (Deprecated),List Name,Name of List
-<LISTNAME>_Alerts_LocationsLevel_Daily,Daily Alerts by Location,1.0 (Deprecated),Location Name,Name of Location
-<LISTNAME>_Alerts_LocationsLevel_Daily,Daily Alerts by Location,1.0 (Deprecated),Alert Type,Selected Alert Type
-<LISTNAME>_Alerts_LocationsLevel_Daily,Daily Alerts by Location,1.0 (Deprecated),Start Date,Start Date of Selected Time Period
-<LISTNAME>_Alerts_LocationsLevel_Daily,Daily Alerts by Location,1.0 (Deprecated),End Date,End Date of Selected Time Period
-<LISTNAME>_Alerts_LocationsLevel_Daily,Daily Alerts by Location,1.0 (Deprecated),Date,Date Selected
-<LISTNAME>_Alerts_LocationsLevel_Daily,Daily Alerts by Location,1.0 (Deprecated),# of alerts for location,Count of Alerts of Alert Type in location

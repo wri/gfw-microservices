@@ -12,7 +12,6 @@ export default class ModalLoader extends Component {
         className={`modal-loader__dialog ${open ? '' : 'hidden'}`}
         style={{ position: stylePosition }}
       >
-        {/* <CircularProgress size={wheelSize} thickness={5} color='#97bd3d' /> */}
         {showSpinner && (
           <div className="modal-loader">
             <div></div>

@@ -178,7 +178,7 @@ export const getListCommodity = async (req, res) => {
     const { data } = await axios.get(url);
     res.status(200).json(data);
   } catch (error) {
-    console.error('Error fetching commodity data:', error);
+    logger.error('Error fetching commodity data:', error);
     res.status(500).json({ error: 'Failed to fetch commodity data' });
   }
 };
@@ -202,7 +202,9 @@ export const getPreviewData = async (req, res) => {
     );
     res.status(200).json(data);
   } catch (error) {
-    console.error('Error get the preview data:', error);
-    res.status(500).json({ error: 'Failed to fetch preview data' });
+    logger.error('Error get the preview data:', error);
+    res
+      .status(error.response?.status || 400)
+      .json(error.response?.data || { message: 'Failed to fetch preview data' });
   }
 };

@@ -61,7 +61,7 @@ function DiagnosticsMenuBar({
 
   const diagnosticOptions = activeAnalysesIds.map((analysisId) => ({
     value: analysisId,
-    label: analysisOptions.find(({ id }) => id === analysisId).label,
+    label: analysisOptions.find(({ id }) => id === analysisId)?.label,
   }));
 
   const redirectToSelectedDiagnostics = (diagnostics) => {

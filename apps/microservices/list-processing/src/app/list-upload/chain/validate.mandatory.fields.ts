@@ -8,6 +8,7 @@ const mandatoryFields = {
     '.point': ['locationName', 'analysisRadius', 'analysisArea'],
   },
   '.csv': ['locationName', 'latitude', 'longitude', 'analysisRadius', 'analysisArea'],
+  '.xls': ['locationName', 'latitude', 'longitude', 'analysisRadius', 'analysisArea'],
   '.xlsx': ['locationName', 'latitude', 'longitude', 'analysisRadius', 'analysisArea'],
   '.kml': ['locationName'],
   '.kmz': ['locationName'],
@@ -36,10 +37,12 @@ export class ValidateMandatoryFields extends AbstractHandler<ChainType> {
       this.validateShapefile(geojson);
     } else {
       geojson.features.forEach((feature) => {
-        const hasFields = fieldsToCheck.every((field) => field in feature.properties);
-        if (!hasFields) {
+        const missingFields = fieldsToCheck.filter((field) => !(field in feature.properties));
+        if (missingFields.length > 0) {
           feature.properties.errorDetails = feature.properties.errorDetails || [];
-          (feature.properties.errorDetails as Array<string>).push('Missing mandatory fields');
+          (feature.properties.errorDetails as Array<string>).push(
+            `Missing mandatory fields: ${missingFields.join(', ')}`
+          );
         }
       });
     }
@@ -60,11 +63,11 @@ export class ValidateMandatoryFields extends AbstractHandler<ChainType> {
         return; // Skip if geometry type is neither polygon nor point
       }
 
-      const hasFields = fieldsToCheck.every((field) => field in feature.properties);
-      if (!hasFields) {
+      const missingFields = fieldsToCheck.filter((field) => !(field in feature.properties));
+      if (missingFields.length > 0) {
         feature.properties.errorDetails = feature.properties.errorDetails || [];
         (feature.properties.errorDetails as Array<string>).push(
-          'Missing mandatory fields for shapefile'
+          `Missing mandatory fields: ${missingFields.join(', ')}`
         );
       }
     });

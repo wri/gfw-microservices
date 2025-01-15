@@ -8,7 +8,13 @@ import { S3Client, PutObjectCommand, GetObjectCommand } from '@aws-sdk/client-s3
 import { DataSource } from 'typeorm';
 import uniqId from 'uniqid';
 import { ResponsePreSignedURLModel, ResponseObjectPresignedURLModel } from '../models';
-import { ClientStoreConnection, Lists, ActivityLog, DeleteListTypeOrm } from '@wri-monorepos/sql';
+import {
+  ClientStoreConnection,
+  Lists,
+  ActivityLog,
+  DeleteListTypeOrm,
+  LargeLists,
+} from '@wri-monorepos/sql';
 import { LockListService } from '../services/lock.list.service';
 import { ConfigService } from '@nestjs/config';
 import { ServerConfigType } from '../validators/server-config';
@@ -118,6 +124,13 @@ export class AppService {
         activityLog.userId = organization_user_id;
         activityLog.activityTypeId = 21;
         activityLog.activityDescription = `User '${userEmail}' has deleted list (${listName}).`;
+        activityLog.activityTime = new Date();
+        await activityLogRepository.save(activityLog);
+
+        // Delete correlated row at Large List table
+        const largeListsRepository = connection.getRepository(LargeLists);
+        await largeListsRepository.delete({ listId: list_id });
+        activityLog.activityDescription = `User '${userEmail}' has deleted list (${listName}) - (${list_id}) at LargeLists Table.`;
         activityLog.activityTime = new Date();
         await activityLogRepository.save(activityLog);
 

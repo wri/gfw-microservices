@@ -433,10 +433,6 @@ export class DeleteListTypeOrm {
           }
         } catch (error) {
           this.logger.error('DeleteList failure LargeLists', error);
-          throw new InternalServerErrorException({
-            message: `Failed to delete LargeLists ${list_id}`,
-            code: 603,
-          });
         }
 
         if (!activityLogRepository) {

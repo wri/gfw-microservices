@@ -12,7 +12,7 @@ import { UspResetListStatus } from './uspResetListStatus';
 import { UspDeleteList } from './uspDeleteList';
 import { InternalServerErrorException, Logger, NotFoundException } from '@nestjs/common';
 import { UspDeleteLocationIdsFilteredDataForUserList } from './uspDeleteLocationIdsFilteredDataForUserList';
-import { ActivityLog, Lists } from '../entity';
+import { ActivityLog, LargeLists, Lists } from '../entity';
 const logger = new Logger('ClientDatabaseOperationsManager');
 
 const DEFAULT_ROWS_REQUESTED = 200000;
@@ -422,6 +422,19 @@ export class DeleteListTypeOrm {
             code: 603,
           });
         }
+        // delete row at LargeLists table
+        try {
+          // Delete correlated row at Large List table
+          const largeListsRepository = connection.getRepository(LargeLists);
+          const largeListFound = await largeListsRepository.findOne({ where: { listId: list_id } });
+          if (largeListFound) {
+            await largeListsRepository.delete({ listId: list_id });
+            this.logger.log(`LargeLists row with listId ${list_id} was deleted`);
+          }
+        } catch (error) {
+          this.logger.error('DeleteList failure LargeLists', error);
+        }
+
         if (!activityLogRepository) {
           throw new InternalServerErrorException('Failed to get repository for ActivityLog');
         }

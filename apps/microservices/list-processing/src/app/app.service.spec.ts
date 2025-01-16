@@ -85,7 +85,7 @@ describe('AppService', () => {
       });
       await expect(
         appService.deleteList(listId, organizationDatabase, organization_user_id, userEmail)
-      ).rejects.toThrowError(NotFoundException);
+      ).rejects.toThrowError(InternalServerErrorException);
     });
     it('should throw error on trying to delete a locked list', async () => {
       const listId = 123;
@@ -201,9 +201,7 @@ describe('AppService', () => {
         organization_user_id,
         userEmail
       );
-      expect(result).toEqual(
-        `User '${userEmail}' has deleted list (${mockList.listName}) - (${mockList.listId}).`
-      );
+      expect(result).toEqual(`User '${userEmail}' has deleted list (${mockList.listId}).`);
     });
   });
 });

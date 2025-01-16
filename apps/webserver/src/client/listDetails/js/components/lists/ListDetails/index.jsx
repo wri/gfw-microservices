@@ -51,6 +51,7 @@ import {
   dataCleanup,
   getTemplateData,
   containsPunctuation,
+  checkValidViewCommodity,
 } from '../../../../../locations/js/utils/lists.utils';
 
 import {
@@ -1963,11 +1964,7 @@ export default class ListDetails extends Component {
       listViewOptions.push(FOREST_CHANGE_VIEW);
     }
 
-    const isAlertsActive = listAnalysesStatus?.some(
-      ({ analysisId }) => analysisId === analysisTypes.ALERTS
-    );
-
-    if (isAlertsActive) {
+    if (checkValidViewCommodity(selectedLists, listData)) {
       listViewOptions.push(COMMODITY_RISK_VIEW);
     }
 

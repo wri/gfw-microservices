@@ -11,7 +11,7 @@ import { UserService } from './user.service';
 import { ExternalUpload } from './external-upload.entity';
 import { ConfigService } from '@nestjs/config';
 import axios from 'axios';
-import { checkProcessingLimits, generateRandomFilename } from '@wri-monorepos/shared';
+import { generateRandomFilename } from '@wri-monorepos/shared';
 import { ClientStoreConnection } from '../shared/client-store-connection';
 import { OrganizationService } from './organization.service';
 import { ListsAnalysisStatus } from './list-analysis-status.entity';
@@ -44,15 +44,8 @@ import { generateAnalysisTemplate } from '../shared/generate-templates';
 import { ListService } from '../lists/lists.service';
 import { ServerConfigType } from '../validators/server-config';
 import { SaveActivityLogEndpoint } from './utils/saveActivityLogEndpoint';
-
-import {
-  GEO_TRELLIS__ANALYZE_LIST_DEV,
-  GEO_TRELLIS__ANALYZE_LIST_QA,
-  GEO_TRELLIS__ANALYZE_LIST_STAGING,
-  GEO_TRELLIS__ANALYZE_LIST_PROD,
-  GEO_TRELLIS__ANALYZE_LIST_PRODV2,
-} from '@wri-monorepos/constants';
-import { ActivityLog, updateListsAnalysisStatus } from '@wri-monorepos/sql';
+import { ActivityLog } from '@wri-monorepos/sql';
+import { handleCreateAnalysis } from '@wri-monorepos/geo';
 
 const LIST_INITIAL_STATUS = 'Pending';
 const MIN_FILE_SIZE_IN_BYTES = 300;
@@ -530,87 +523,31 @@ export class ListAnalysisService {
     userEmail: string,
     organization_user_id: number
   ) {
-    const geoTrellisUrlsByEnv = {
-      qa: GEO_TRELLIS__ANALYZE_LIST_QA,
-      staging: GEO_TRELLIS__ANALYZE_LIST_STAGING,
-      production: GEO_TRELLIS__ANALYZE_LIST_PROD,
-      ProdV2: GEO_TRELLIS__ANALYZE_LIST_PRODV2,
-      default: GEO_TRELLIS__ANALYZE_LIST_DEV,
-    };
-
     const organizationDetails = await this.getOrganizationDetails(organizationId);
-    const url = geoTrellisUrlsByEnv[process.env.NODE_ENV] || geoTrellisUrlsByEnv.default;
 
-    const { isListLocationOverLimit, processingLimit } = await checkProcessingLimits({
-      organizationDb: organizationDetails.organizationDb,
-      organizationId,
-      subscriptionStatusId: organizationDetails.subscriptionStatusId,
-      listId: listId,
-    });
-    const user = await this.userService.findUser(organizationId, userEmail);
     await this.saveActivityLogEndpoint.saveActivityLogEndpoint(
       organizationDetails,
-      user.organization_user_id,
+      organization_user_id,
       LIST_ANALISYS_ENDPOINT_NAMES[CREATE_ANALYSIS],
       ListActivityTypesEnum.ListAnalyzing
     );
-    const connection = await this.clientStoreConnection.getConnection(
-      organizationDetails.organizationDb
-    );
-    const listAnalysisStatusRepository = connection.getRepository(ListsAnalysisStatus);
 
-    const listAnalysisStatusToUpdate = await listAnalysisStatusRepository.findBy({
+    const response = await handleCreateAnalysis(
+      analysisId.toUpperCase(),
       listId,
-      analysisId,
-    });
+      organizationId,
+      organizationDetails.organizationDb,
+      userEmail,
+      organization_user_id,
+      organizationDetails.subscriptionStatusId
+    );
 
-    if (listAnalysisStatusToUpdate.length === 0) {
-      await listAnalysisStatusRepository.save({
-        listId: listId,
-        analysisId,
-        status: listStatus.Pending,
-        updateTime: new Date(),
-      });
-    } else {
-      await listAnalysisStatusRepository.update(
-        { listId, analysisId },
-        {
-          status: listStatus.Pending,
-          s3URL: null,
-          bundleCreationTime: null,
-          expirationTime: null,
-          errorInfo: null,
-        }
-      );
-    }
-    if (isListLocationOverLimit) {
-      await updateListsAnalysisStatus(organizationDetails.organizationDb, {
-        listId: listId,
-        errorInfo: 'Exceeded Analysis Limit',
-        status: listStatus.Inactive,
-      });
-      throw new Error(`Analysis limit reached`);
-    }
-    const data = {
-      list_id: listId,
-      user_id: organization_user_id,
-      organization_id: organizationId,
-      processing_limit: processingLimit,
-      analysis_types: { [analysisId]: true },
-      reanalyze: true,
-      send_email: false,
-    };
     const connectionLibSql = await this.clientStoreConnection.getConnection(
       organizationDetails.organizationDb
     );
 
     const activityLogRepository = connectionLibSql.getRepository(ActivityLog);
 
-    const response = await axios.post(url, data, {
-      headers: {
-        'Content-Type': 'application/json',
-      },
-    });
     try {
       await activityLogRepository.save({
         userId: organization_user_id,

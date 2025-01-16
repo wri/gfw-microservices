@@ -257,7 +257,7 @@
     "babel-loader": "8.2.5",
     "babel-plugin-istanbul": "^7.0.0",
     "commitizen": "^4.2.4",
-    "cypress": "^12.11.0",
+    "cypress": "^13.17.0",
     "danger": "^11.2.3",
     "eslint": "^8.26.0",
     "eslint-config-airbnb": "^19.0.4",

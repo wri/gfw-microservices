@@ -17,6 +17,7 @@ import { AnalysisRspoOilPalmConcessions } from './analysisRspoPalmConcessions';
 import { AnalysisOilPalmConcessions } from './analysisOilPalmConcessions';
 import { AnalysisProtectedAreas } from './analysisProtectedAreas';
 import { AFIAnalysis } from './afiAnalysis.entity';
+import { LargeLists } from './largeLists.entity';
 
 export * from './lists.entity';
 export * from './activityLog.entity';
@@ -40,6 +41,7 @@ export * from './analysisOilPalmConcessions';
 export * from './analysisProtectedAreas';
 export * from './afiAnalysis.entity';
 export * from './listAttributes.entity';
+export * from './largeLists.entity';
 
 export const organizationEntities = [
   Lists,
@@ -61,4 +63,5 @@ export const organizationEntities = [
   AnalysisOilPalmConcessions,
   AnalysisProtectedAreas,
   AFIAnalysis,
+  LargeLists,
 ];

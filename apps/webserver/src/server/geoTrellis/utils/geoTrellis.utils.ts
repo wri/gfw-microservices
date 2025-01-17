@@ -4,7 +4,11 @@ import * as logger from '../../../config/privateutils/logger.utils';
 import * as AWSSES from '../../../config/privateutils/ses.utils';
 
 import { checkProcessingLimits } from '@wri-monorepos/shared';
-import { extractAnalysisTypes, getListAnalysisStatus } from '@wri-monorepos/geo';
+import {
+  extractAnalysisTypes,
+  getListAnalysisStatus,
+  handleCreateAnalysis,
+} from '@wri-monorepos/geo';
 import { updateListsAnalysisStatus } from '@wri-monorepos/sql';
 import {
   listStatus,
@@ -32,23 +36,18 @@ export const handleGeoTrellisAnalyzeListRequest = async (req, list, analysisType
 
   const { reanalyze = false } = req.body;
   const { id: listID, list_name } = list;
+  const { user_email } = req.session;
 
-  const geoTrellisUrlsByEnv = {
-    qa: GEO_TRELLIS__ANALYZE_LIST_QA,
-    staging: GEO_TRELLIS__ANALYZE_LIST_STAGING,
-    production: GEO_TRELLIS__ANALYZE_LIST_PROD,
-    ProdV2: GEO_TRELLIS__ANALYZE_LIST_PRODV2,
-    default: GEO_TRELLIS__ANALYZE_LIST_DEV,
-  };
-
-  const url = geoTrellisUrlsByEnv[process.env.NODE_ENV] || geoTrellisUrlsByEnv.default;
-
-  const { isListLocationOverLimit, processingLimit } = await checkProcessingLimits({
-    organizationDb: databaseName,
+  const result = await handleCreateAnalysis(
+    analysisTypesToProcess,
+    listID,
     organizationId,
-    subscriptionStatusId,
-    listId: listID,
-  });
+    databaseName,
+    user_email,
+    organization_user_id,
+    reanalyze,
+    subscriptionStatusId
+  );
 
   const listAnalysisStatusData = await getListAnalysisStatus(databaseName, listID);
 
@@ -60,51 +59,8 @@ export const handleGeoTrellisAnalyzeListRequest = async (req, list, analysisType
       : listAnalysisStatusData
   );
 
-  if (isListLocationOverLimit) {
-    await updateListsAnalysisStatus(databaseName, {
-      listId: listID,
-      errorInfo: 'Exceeded Analysis Limit',
-      status: listStatus.Inactive,
-    });
-    throw new Error(`Analysis limit reached`);
-  }
+  // Send email to user that list is submitted to be analysed
+  await AWSSES.sendEmail__ListSubmittedForAnalysis(req, list_name, analysiTypes);
 
-  const data = {
-    list_id: listID,
-    user_id: organization_user_id,
-    organization_id: parseInt(organizationId),
-    reanalyze,
-    processing_limit: processingLimit,
-    analysis_types: analysiTypes,
-  };
-
-  return await axios({
-    method: 'post',
-    url: url,
-    data: data,
-    headers: {
-      'Content-Type': 'application/json',
-    },
-  })
-    .then(async (result) => {
-      logger.logActivity(
-        req,
-        logger.listActivityTypes.List.ListAnalyzing,
-        `ListAnalyzing ${list_name} has been sent to analysis`
-      );
-
-      // Send email to user that list is submitted to be analysed
-      await AWSSES.sendEmail__ListSubmittedForAnalysis(req, list_name, analysiTypes);
-
-      return result;
-    })
-    .catch((error) => {
-      logger.logActivity(
-        req,
-        logger.listActivityTypes.List.ListAnalyzing,
-        `Error sending ${list_name} to analysis: ${error}`
-      );
-
-      return error.toJSON();
-    });
+  return result;
 };

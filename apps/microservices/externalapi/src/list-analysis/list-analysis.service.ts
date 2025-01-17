@@ -44,7 +44,6 @@ import { generateAnalysisTemplate } from '../shared/generate-templates';
 import { ListService } from '../lists/lists.service';
 import { ServerConfigType } from '../validators/server-config';
 import { SaveActivityLogEndpoint } from './utils/saveActivityLogEndpoint';
-import { ActivityLog } from '@wri-monorepos/sql';
 import { handleCreateAnalysis } from '@wri-monorepos/geo';
 
 const LIST_INITIAL_STATUS = 'Pending';
@@ -542,26 +541,6 @@ export class ListAnalysisService {
       organizationDetails.subscriptionStatusId
     );
 
-    const connectionLibSql = await this.clientStoreConnection.getConnection(
-      organizationDetails.organizationDb
-    );
-
-    const activityLogRepository = connectionLibSql.getRepository(ActivityLog);
-
-    try {
-      await activityLogRepository.save({
-        userId: organization_user_id,
-        activityTypeId: 22,
-        activityDescription: `ListAnalyzing ${listId} has been sent to analysis`,
-        activityTime: new Date(),
-      });
-    } catch (error) {
-      this.logger.error(
-        'createAnalysis',
-        `Error when updating ${listId} to analysis: ${error.message}`
-      );
-      return error.message;
-    }
     return response.statusText;
   }
 }

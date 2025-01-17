@@ -414,8 +414,7 @@ describe('ListAnalysisService', () => {
         },
       });
 
-      
-      (handleCreateAnalysis as jest.Mock).mockResolvedValue({statusText:'mockedEmailResponse'});
+      (handleCreateAnalysis as jest.Mock).mockResolvedValue({ statusText: 'mockedEmailResponse' });
 
       const result = await service.createAnalysis(
         analysisTypesToProcess,

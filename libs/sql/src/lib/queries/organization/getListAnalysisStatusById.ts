@@ -11,7 +11,8 @@ SELECT
   las.AnalysisID AS analysisId,
   las.Status AS status,
   las.ErrorInfo AS errorInfo,
-  las.UpdateTime AS updateTime
+  las.UpdateTime AS updateTime,
+  las.options AS options
 FROM dbo.[ListsAnalysisStatus] las
 WHERE las.ListID = @ListID;
 `;

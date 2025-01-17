@@ -1,3 +1,6 @@
+/**
+ * @jest-environment node
+ */
 const axios = require('axios');
 const path = require('path');
 const { handleGeoTrellisAnalyzeListRequest } = require('./geoTrellis.utils');
@@ -23,7 +26,7 @@ jest.mock('@wri-monorepos/shared', () => ({
 
 jest.mock('@wri-monorepos/geo', () => ({
   ...jest.requireActual('@wri-monorepos/geo'),
-  getListAnalysisStatus: async () => {
+  getListAnalysisStatusByListId: async () => {
     return [
       {
         listId: 123,
@@ -55,7 +58,7 @@ describe('handleGeoTrellisAnalyzeListRequest', () => {
     // Mock dependencies and axios response for successful submission
     const req = {
       session: {
-        /* mock session data */
+        organization_database: 'orgDb',
       },
       body: {
         reanalyze: true,
@@ -74,7 +77,7 @@ describe('handleGeoTrellisAnalyzeListRequest', () => {
 
     axios.mockResolvedValue({ data: expectedResult });
 
-    expect(async () => {
+    await expect(async () => {
       await handleGeoTrellisAnalyzeListRequest(req, list);
     }).rejects.toThrow('Analysis limit reached');
 

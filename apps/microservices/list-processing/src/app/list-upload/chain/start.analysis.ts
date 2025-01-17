@@ -10,7 +10,7 @@ import { AbstractHandler, ChainType, RequestNewList } from './types';
 import { MARK_IS_TEST_LIST, MARK_IS_TEST_USER } from '../../../services/constants';
 import { checkProcessingLimits } from '@wri-monorepos/shared';
 import { mockAnalysisFlow } from '../../../mock';
-import { extractAnalysisTypes, getListAnalysisStatus } from '@wri-monorepos/geo';
+import { extractAnalysisTypes, getListAnalysisStatusByListId } from '@wri-monorepos/geo';
 import { ProcessingLimitException } from '../../app.exceptions';
 import { listStatus } from '@wri-monorepos/constants';
 import {
@@ -126,7 +126,10 @@ export class StartAnalysis extends AbstractHandler<ChainType> {
       throw new ProcessingLimitException();
     }
 
-    const listAnalysisStatusData = await getListAnalysisStatus(organization_database, listId);
+    const listAnalysisStatusData = await getListAnalysisStatusByListId(
+      organization_database,
+      listId
+    );
     const analysis_types = extractAnalysisTypes(listAnalysisStatusData);
 
     const ids = await this.getAllLocationIds(request);

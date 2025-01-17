@@ -45,8 +45,8 @@ export const handleGeoTrellisAnalyzeListRequest = async (req, list, analysisType
     databaseName,
     user_email,
     organization_user_id,
-    reanalyze,
-    subscriptionStatusId
+    subscriptionStatusId,
+    reanalyze
   );
 
   const listAnalysisStatusData = await getListAnalysisStatus(databaseName, listID);

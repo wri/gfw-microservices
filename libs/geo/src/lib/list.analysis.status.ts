@@ -120,92 +120,99 @@ export const handleCreateAnalysis = async (
     ProdV2: GEO_TRELLIS__ANALYZE_LIST_PRODV2,
     default: GEO_TRELLIS__ANALYZE_LIST_DEV,
   };
-
-  const url = geoTrellisUrlsByEnv[process.env.NODE_ENV] || geoTrellisUrlsByEnv.default;
-
-  const { isListLocationOverLimit, processingLimit } = await checkProcessingLimits({
-    organizationDb,
-    organizationId,
-    subscriptionStatusId,
-    listId: listId,
-  });
-  const clientStoreConnection = new ClientStoreConnection();
-  const connection = await clientStoreConnection.getConnection(organizationDb);
-  const listAnalysisStatusRepository = connection.getRepository(ListsAnalysisStatus);
-
-  const analysisTypes = analysisTypesToProcess.split(',');
-  analysisTypes.map(async (analysisId) => {
-    const listAnalysisStatusToUpdate = await listAnalysisStatusRepository.findBy({
-      listId,
-      analysisId,
-    });
-
-    if (listAnalysisStatusToUpdate.length === 0) {
-      await listAnalysisStatusRepository.save({
-        listId,
-        analysisId,
-        status: listStatus.Pending,
-        updateTime: new Date().toISOString(),
-      });
-    } else {
-      await listAnalysisStatusRepository.update(
-        { listId, analysisId },
-        {
-          status: listStatus.Pending,
-          s3Url: null,
-          bundleCreationTime: null,
-          expirationTime: null,
-          errorInfo: null,
-        }
-      );
-    }
-  });
-  if (isListLocationOverLimit) {
-    await updateListsAnalysisStatus(organizationDb, {
-      listId: listId,
-      errorInfo: 'Exceeded Analysis Limit',
-      status: listStatus.Inactive,
-    });
-    throw new Error(`Analysis limit reached`);
-  }
-  const listAnalysisStatusData = await getListAnalysisStatus(organizationDb, listId);
-
-  const analysiTypes = extractAnalysisTypes(
-    analysisTypesToProcess
-      ? listAnalysisStatusData.filter(({ analysisId }) =>
-          analysisTypesToProcess.includes(analysisId)
-        )
-      : listAnalysisStatusData
-  );
-
-  const data = {
-    list_id: listId,
-    user_id: organization_user_id,
-    organization_id: organizationId,
-    processing_limit: processingLimit,
-    analysis_types: analysiTypes,
-    reanalyze,
-    send_email: userEmail ? true : false,
-  };
-  const connectionLibSql = await clientStoreConnection.getConnection(organizationDb);
-
-  const activityLogRepository = connectionLibSql.getRepository(ActivityLog);
-
-  const response = await axios.post(url, data, {
-    headers: {
-      'Content-Type': 'application/json',
-    },
-  });
   try {
-    await activityLogRepository.save({
-      userId: organization_user_id,
-      activityTypeId: 22,
-      activityDescription: `ListAnalyzing ${listId} has been sent to analysis`,
-      activityTime: new Date(),
+    const url = geoTrellisUrlsByEnv[process.env.NODE_ENV] || geoTrellisUrlsByEnv.default;
+    console.log(organizationDb, organizationId, subscriptionStatusId, listId);
+    const { isListLocationOverLimit, processingLimit } = await checkProcessingLimits({
+      organizationDb,
+      organizationId,
+      subscriptionStatusId,
+      listId,
     });
+    const clientStoreConnection = new ClientStoreConnection();
+    const connection = await clientStoreConnection.getConnection(organizationDb);
+    const listAnalysisStatusRepository = connection.getRepository(ListsAnalysisStatus);
+
+    const analysisTypesToUpdate = analysisTypesToProcess.split(',');
+    await Promise.all(
+      analysisTypesToUpdate.map(async (analysisId) => {
+        const listAnalysisStatusToUpdate = await listAnalysisStatusRepository.findBy({
+          listId,
+          analysisId,
+        });
+
+        if (listAnalysisStatusToUpdate.length === 0) {
+          await listAnalysisStatusRepository.save({
+            listId,
+            analysisId,
+            status: listStatus.Pending,
+            updateTime: new Date().toISOString(),
+          });
+        } else {
+          await listAnalysisStatusRepository.update(
+            { listId, analysisId },
+            {
+              status: listStatus.Pending,
+              s3Url: null,
+              bundleCreationTime: null,
+              expirationTime: null,
+              errorInfo: null,
+            }
+          );
+        }
+      })
+    );
+
+    if (isListLocationOverLimit) {
+      await updateListsAnalysisStatus(organizationDb, {
+        listId: listId,
+        errorInfo: 'Exceeded Analysis Limit',
+        status: listStatus.Inactive,
+      });
+      throw new Error(`Analysis limit reached`);
+    }
+    const listAnalysisStatusData = await getListAnalysisStatus(organizationDb, listId);
+
+    const analysiTypes = extractAnalysisTypes(
+      analysisTypesToProcess
+        ? listAnalysisStatusData.filter(({ analysisId }) =>
+            analysisTypesToProcess.includes(analysisId)
+          )
+        : listAnalysisStatusData
+    );
+
+    const data = {
+      list_id: listId,
+      user_id: organization_user_id,
+      organization_id: organizationId,
+      processing_limit: processingLimit,
+      analysis_types: analysiTypes,
+      reanalyze,
+      send_email: userEmail ? true : false,
+    };
+    const connectionLibSql = await clientStoreConnection.getConnection(organizationDb);
+
+    const activityLogRepository = connectionLibSql.getRepository(ActivityLog);
+
+    const response = await axios.post(url, data, {
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    });
+    try {
+      await activityLogRepository.save({
+        userId: organization_user_id,
+        activityTypeId: 22,
+        activityDescription: `ListAnalyzing ${listId} has been sent to analysis`,
+        activityTime: new Date(),
+      });
+    } catch (error) {
+      Logger.error('createAnalysis', `Error when updating ${listId} to analysis: ${error.message}`);
+      return error.message;
+    }
+    return response.statusText;
   } catch (error) {
     Logger.error('createAnalysis', `Error when updating ${listId} to analysis: ${error.message}`);
     return error.message;
   }
-  return response.statusText;
 };

@@ -22,11 +22,7 @@ describe('Alerts page', () => {
   });
 
   When('I navigate to a diagnostics page', () => {
-<<<<<<< HEAD
-    //listDetailsPage.clickOnPost2020Tab();
-=======
-    //listDetailsPage.clickOnTabTreeCoverLossBtn();
->>>>>>> 25a04275 (Gpv 3843 charts feature (#1462))
+    listDetailsPage.clickOnPost2020Tab();
     listDetailsPage.clickOnListDiagnosticsBtn();
   });
 

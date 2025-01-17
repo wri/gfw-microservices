@@ -157,7 +157,6 @@ class ListDetailsPage {
   clickOnDeleteBtn() {
     this.elements.deleteBtn().click();
   }
-<<<<<<< HEAD
   clickOnPost2020Tab() {
     this.elements.post2020Tab().click();
   }
@@ -166,10 +165,6 @@ class ListDetailsPage {
   }
   clickOnPalmRiskAssessmentTab() {
     this.elements.palmRiskAssessmentTab().click();
-=======
-  clickOnTabTreeCoverLossBtn() {
-    this.elements.tabTreeCoverLoss().click();
->>>>>>> 25a04275 (Gpv 3843 charts feature (#1462))
   }
   clickOnListDiagnosticsBtn() {
     this.elements.listDiagnosticsBtn().click();

@@ -22,6 +22,11 @@ import { SqsService } from '@ssut/nestjs-sqs';
 import { SaveActivityLogEndpoint } from '../utils/saveActivityLogEndpoint';
 import { checkProcessingLimits } from '@wri-monorepos/shared';
 import { listStatus } from '@wri-monorepos/constants';
+import { handleCreateAnalysis } from '@wri-monorepos/geo';
+
+jest.mock('@wri-monorepos/geo', () => ({
+  handleCreateAnalysis: jest.fn().mockResolvedValue('true value'),
+}));
 
 jest.mock('@wri-monorepos/shared', () => ({
   checkProcessingLimits: jest.fn(),
@@ -409,7 +414,8 @@ describe('ListAnalysisService', () => {
         },
       });
 
-      axios.post = jest.fn().mockResolvedValue({ status: 200, statusText: 'mockedEmailResponse' });
+      
+      (handleCreateAnalysis as jest.Mock).mockResolvedValue({statusText:'mockedEmailResponse'});
 
       const result = await service.createAnalysis(
         analysisTypesToProcess,
@@ -452,9 +458,7 @@ describe('ListAnalysisService', () => {
           database: 'mock_db',
         },
       });
-
-      axios.post = jest.fn().mockRejectedValue(new Error('Failed to send email'));
-
+      (handleCreateAnalysis as jest.Mock).mockRejectedValue(new Error('Failed to send email'));
       await expect(
         service.createAnalysis(
           analysisTypesToProcess,

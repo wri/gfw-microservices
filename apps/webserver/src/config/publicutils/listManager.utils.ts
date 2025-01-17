@@ -59,11 +59,12 @@ const errorUtils = require(path.resolve('./config/privateutils/error.utils'));
 const analysisUtils = require(path.resolve('./config/privateutils/analysis.utils'));
 const rollbackUtils = require(path.resolve('./config/privateutils/rollback.utils'));
 const locationUtils = require(path.resolve('./config/privateutils/location.utils'));
-const analyticsService = require(path.resolve('./server/analytics/service/analytics.service'));
 const listDataService = require(path.resolve('./server/listData/service/listData.service'));
 const { listStatusOrderByWorse } = require(path.resolve('./config/env/listStatuses.constants'));
 import { listStatus } from '@wri-monorepos/constants';
 import { SqlParamType, AnalysisDataType, ListsType, DeleteListTypeOrm } from '@wri-monorepos/sql';
+import { getAllListsAnalysisStatus } from '@wri-monorepos/geo';
+import type { ListsAnalysisStatus } from '@wri-monorepos/sql';
 
 /** @function {createList}
  *   @summary Create a new list within Organization DB
@@ -426,7 +427,10 @@ export const getUserLists = (req): Promise<ListsType[]> => {
   });
 };
 
-export const mergeListsWithAnalysisId = (lists, listAnalysisStatuses) => {
+export const mergeListsWithAnalysisId = (
+  lists: ListsType[],
+  listAnalysisStatuses: ListsAnalysisStatus[]
+) => {
   lists.forEach((list) => {
     const listAnalysesStatus = listAnalysisStatuses.filter(
       (analysis) => analysis.listId == list.id
@@ -442,22 +446,22 @@ export const mergeListsWithAnalysisId = (lists, listAnalysisStatuses) => {
   });
 };
 
-export const getUserListsWithAnalysisId = (req): Promise<[{ id; list_name }]> => {
-  return new Promise((resolve, reject) => {
-    const promises = [getUserLists(req), analyticsService.getAllListsAnalysisStatus(req)];
+export const getUserListsWithAnalysisId = async (req): Promise<ListsType[]> => {
+  try {
+    const { organization_database } = req.session;
+    const userLists = await getUserLists(req);
+    const listAnalysisStatuses = await getAllListsAnalysisStatus(organization_database);
 
-    Promise.all(promises)
-      .then((results) => {
-        const [userLists, listAnalysisStatuses] = results;
-        mergeListsWithAnalysisId(userLists, listAnalysisStatuses);
-        const userListsWithGFWListFlag = userLists.map((list) => {
-          list.isGlobalForestWatchList = false;
-          return list;
-        });
-        resolve(userListsWithGFWListFlag);
-      })
-      .catch((error) => reject(error));
-  });
+    mergeListsWithAnalysisId(userLists, listAnalysisStatuses);
+
+    return userLists.map((list) => {
+      list.isGlobalForestWatchList = false;
+      return list;
+    });
+  } catch (error) {
+    logger.error('getUserListsWithAnalysisId', error.stack || error);
+    throw error;
+  }
 };
 
 /** @function {rerunExistingList}
@@ -521,18 +525,19 @@ export const getAllLists = (req): Promise<ListsType[]> => {
   });
 };
 
-export const getAllListsWithAnalysisId = (req) => {
-  return new Promise((resolve, reject) => {
-    const promises = [getAllLists(req), analyticsService.getAllListsAnalysisStatus(req)];
+export const getAllListsWithAnalysisId = async (req) => {
+  try {
+    const { organization_database } = req.session;
+    const orgLists = await getAllLists(req);
+    const listAnalysisStatuses = await getAllListsAnalysisStatus(organization_database);
 
-    Promise.all(promises)
-      .then((results) => {
-        const [orgLists, listAnalysisStatuses] = results;
-        mergeListsWithAnalysisId(orgLists, listAnalysisStatuses);
-        resolve(orgLists);
-      })
-      .catch((error) => reject(error));
-  });
+    mergeListsWithAnalysisId(orgLists, listAnalysisStatuses);
+
+    return orgLists;
+  } catch (error) {
+    logger.error('getAllListsWithAnalysisId', error.stack || error);
+    throw error;
+  }
 };
 
 export const getWorstStatusId = (analysisIds) => {
@@ -1644,7 +1649,7 @@ export const getListByIdWithAnalysisId = async (req, listId) => {
     const allLists = await getUserListsWithAnalysisId(req);
     return allLists.find((list) => list.id === Number(listId));
   } catch (e) {
-    console.log('getListByIdWithAnalysisId', e);
+    logger.error('getListByIdWithAnalysisId', e.stack || e);
   }
 };
 

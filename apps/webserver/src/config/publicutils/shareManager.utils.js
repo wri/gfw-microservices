@@ -1,3 +1,4 @@
+import { getAllListsAnalysisStatus } from '@wri-monorepos/geo';
 import { mergeListsWithAnalysisId } from './listManager.utils';
 
 /** ******************************************************************
@@ -21,7 +22,6 @@ const langResources = require(path.resolve('./config/langResources'));
 const sqlUtils = require(path.resolve('./config/privateutils/sql.utils'));
 const errorUtils = require(path.resolve('./config/privateutils/error.utils'));
 const UserManager = require(path.resolve('./config/publicutils/userManager.utils'));
-const analyticsService = require(path.resolve('./server/analytics/service/analytics.service'));
 
 import { getSharedListByUser as getSharedListByUserQuery } from '@wri-monorepos/sql';
 
@@ -360,7 +360,7 @@ export const getSharedListDataByUserWithAnalysisStatus = (req, user_id) => {
   return new Promise((resolve, reject) => {
     const promises = [
       getSharedListDataByUser(req, user_id),
-      analyticsService.getAllListsAnalysisStatus(req),
+      getAllListsAnalysisStatus(req.session.organization_database),
     ];
     Promise.all(promises)
       .then((results) => {

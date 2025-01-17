@@ -9,7 +9,7 @@ import { RequestLargeListProcess, ResponseLargeListProcess } from '../../models'
 import { ConfigService } from '@nestjs/config';
 import { ServerConfigType } from '../../validators/server-config';
 import { MARK_IS_TEST_LIST, MARK_IS_TEST_USER } from '../../services/constants';
-import { extractAnalysisTypes, getListAnalysisStatus } from '@wri-monorepos/geo';
+import { extractAnalysisTypes, getListAnalysisStatusByListId } from '@wri-monorepos/geo';
 import moment from 'moment';
 import { ClientStoreConnection, Lists, updateListsAnalysisStatus, User } from '@wri-monorepos/sql';
 import { checkProcessingLimits } from '@wri-monorepos/shared';
@@ -65,7 +65,7 @@ export class DeprecatedStartAnalysisService {
       throw new ProcessingLimitException();
     }
 
-    const listAnalysisStatusData = await getListAnalysisStatus(
+    const listAnalysisStatusData = await getListAnalysisStatusByListId(
       request.organization_database,
       request.list_id
     );

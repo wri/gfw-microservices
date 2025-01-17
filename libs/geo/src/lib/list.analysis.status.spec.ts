@@ -175,7 +175,7 @@ describe('list.analysis.status.ts', () => {
 
       expect(SQLUtils.queryDB).toHaveBeenCalledWith(
         mockClientDB,
-        'dropListAnalysisStatusByListIdAndAnalysisIdQuery',
+        'deleteListAnalysisStatusBy',
         expect.arrayContaining([
           { field: 'ListID', type: sql.Int, value: mockListId },
           { field: 'AnalysisID', type: sql.NVarChar(150), value: 'GFW' },

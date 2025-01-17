@@ -1,13 +1,6 @@
 import { Logger } from '@nestjs/common';
-import * as sql from 'mssql';
-import {
-  SQLUtils,
-  GetTableAnalysisColumnsById,
-  UnlockList,
-  ListsAnalysisStatus,
-} from '@wri-monorepos/sql';
+import { SQLUtils, GetTableAnalysisColumnsById, UnlockList } from '@wri-monorepos/sql';
 import { ListBulkCopy } from './ListBulkCopy';
-import { analysisTypesOptions } from '@wri-monorepos/constants';
 
 const LIST_STATUS = {
   LIST_STATUS_PENDING: 1,
@@ -425,40 +418,4 @@ export async function PerformLocationsBulkCopy(
   destLocationIds.sort((a, b) => a - b);
 
   return destLocationIds;
-}
-
-// Get the analyses (including status for each) for given list
-export async function getListAnalysisStatus(
-  clientDatabase: string,
-  listId: number
-): Promise<ListsAnalysisStatus[]> {
-  const parameters = [{ field: 'ListID', type: sql.Int, value: listId }];
-  return await SQLUtils.queryDB<ListsAnalysisStatus[]>(
-    clientDatabase,
-    'getListAnalysisStatusById',
-    parameters
-  );
-}
-
-// Get the analyses_types appropriate for sending for pre-analysis step function
-export function getAnalysisTypesFromIds(analysisIds: string[]) {
-  const extractAnalysisTypes = analysisTypesOptions.reduce((result, analysisTypesOption) => {
-    const isAnalysisUsed = analysisIds.includes(analysisTypesOption.id);
-    result[analysisTypesOption.id] = Boolean(isAnalysisUsed);
-    return result;
-  }, {});
-
-  return extractAnalysisTypes;
-}
-
-export function extractAnalysisTypes(listAnalysisStatusData: ListsAnalysisStatus[]) {
-  const extractAnalysisTypes = analysisTypesOptions.reduce((result, analysisTypesOption) => {
-    const listAnalysisInfo = listAnalysisStatusData.find(
-      (item) => item.analysisId === analysisTypesOption.id
-    );
-    result[analysisTypesOption.id] = Boolean(listAnalysisInfo);
-    return result;
-  }, {});
-
-  return extractAnalysisTypes;
 }

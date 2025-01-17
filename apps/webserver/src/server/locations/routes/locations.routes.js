@@ -28,10 +28,7 @@ const { mapCommodityRiskValuesToDatabaseValues } = require('../utils/locations.u
 const { listStatus } = require(path.resolve('./config/env/listStatuses.constants'));
 import config from '../../../config/config';
 
-const { getListAnalysisStatusByListId } = require(path.resolve(
-  './server/analytics/service/analytics.service'
-));
-import { extractAnalysisTypes, getListAnalysisStatus } from '@wri-monorepos/geo';
+import { extractAnalysisTypes, getListAnalysisStatusByListId } from '@wri-monorepos/geo';
 
 /**
  * @name exports
@@ -1358,7 +1355,10 @@ module.exports = (app, limiter) => {
       req.session;
 
     const { LISTS_MICROSERVICE_URL } = process.env;
-    const listAnalysisStatusData = await getListAnalysisStatus(organization_database, list_id);
+    const listAnalysisStatusData = await getListAnalysisStatusByListId(
+      organization_database,
+      list_id
+    );
     const analysisTypes = extractAnalysisTypes(listAnalysisStatusData);
 
     axios
@@ -1476,7 +1476,7 @@ module.exports = (app, limiter) => {
     if (listType === 'existing') {
       listName = targetList.list_name;
     }
-    getListAnalysisStatusByListId(req, listId)
+    getListAnalysisStatusByListId(organization_database, listId)
       .then((listAnalysisStatusData) => {
         const analysisTypes = extractAnalysisTypes(listAnalysisStatusData);
         const { LISTS_MICROSERVICE_URL } = process.env;

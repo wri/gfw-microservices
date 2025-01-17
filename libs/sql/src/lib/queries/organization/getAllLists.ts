@@ -1,3 +1,5 @@
+import { ListsAnalysisStatus } from '../../entity';
+
 export const getAllLists = `SELECT  L.*, LL.large_list_id
 FROM Lists L
 LEFT JOIN LargeLists LL ON L.id=LL.list_id
@@ -24,4 +26,6 @@ export interface ListsType {
   vector_tiles_storage_path: string;
   error_file_storage_path: string;
   vector_tiles_last_updated: Date;
+  isGlobalForestWatchList?: boolean;
+  listAnalysesStatus?: ListsAnalysisStatus[];
 }

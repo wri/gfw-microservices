@@ -12,12 +12,15 @@ import {
   UnlockLists,
   createFeatureProps,
   deleteGeoJSONFeatureProperties,
-  getAnalysisTypesFromIds,
-  getListAnalysisStatusByListId,
   SPSListCreation,
   GeoJson,
 } from '@wri-monorepos/geo';
-import { checkProcessingLimits, getFinalGeojson } from '@wri-monorepos/shared';
+import {
+  getAnalysisTypesFromIds,
+  getListAnalysisStatusByListId,
+  checkProcessingLimits,
+  getFinalGeojson,
+} from '@wri-monorepos/shared';
 import {
   BulkDeleteLocations,
   CopyOrMoveLargeListRequest,

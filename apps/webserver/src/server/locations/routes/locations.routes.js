@@ -28,7 +28,7 @@ const { mapCommodityRiskValuesToDatabaseValues } = require('../utils/locations.u
 const { listStatus } = require(path.resolve('./config/env/listStatuses.constants'));
 import config from '../../../config/config';
 
-import { extractAnalysisTypes, getListAnalysisStatusByListId } from '@wri-monorepos/geo';
+import { extractAnalysisTypes, getListAnalysisStatusByListId } from '@wri-monorepos/shared';
 
 /**
  * @name exports

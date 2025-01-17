@@ -4,7 +4,7 @@ import {
   createListAnalysis,
   getListAnalysisStatusByListId,
   updateListAnalysis,
-} from '@wri-monorepos/geo';
+} from '@wri-monorepos/shared';
 
 const setSelectedAnalyses = async (
   req,

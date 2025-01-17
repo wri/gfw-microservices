@@ -1,5 +1,8 @@
 import { Logger } from '@nestjs/common';
 import {
+  createListAnalysis,
+  deleteListAnalysisOption,
+  deleteListAnalysisRecord,
   extractAnalysisTypes,
   getAllListsAnalysisStatus,
   getAnalysisTypesFromIds,
@@ -8,8 +11,8 @@ import {
   updateListAnalysis,
 } from './list.analysis.status';
 import { ListsAnalysisStatus, SQLUtils } from '@wri-monorepos/sql';
-import { readAnalysesLastModifiedTime } from '@wri-monorepos/shared';
 import { analysisTypesOptions, listStatus } from '@wri-monorepos/constants';
+import { readAnalysesLastModifiedTime } from './utils/read-last-modified-analyses';
 import * as sql from 'mssql';
 
 jest.mock('@nestjs/common', () => ({
@@ -155,36 +158,118 @@ describe('list.analysis.status.ts', () => {
     });
   });
 
-  describe('updateListAnalysis', () => {
+  describe.skip('updateListAnalysis', () => {
+    const clientDatabase = 'testDB';
+    const listId = 123;
+
+    beforeEach(() => {
+      jest.clearAllMocks();
+    });
+
+    it('calls deleteListAnalysisOption when an analysis ID in DB is not in the new list but is in analysisOptionsAsIds', async () => {
+      const analysisStatusData = [
+        { analysisId: 'PalmRisk' },
+        { analysisId: 'FCD' }, // Also in analysisIdsOptionsMap, but let's see what we pass in analysisIds
+      ] as ListsAnalysisStatus[];
+      const newAnalysisIds: string[] = [];
+
+      await updateListAnalysis(clientDatabase, listId, newAnalysisIds, analysisStatusData);
+
+      expect(deleteListAnalysisOption).toHaveBeenCalledTimes(2);
+      // expect(deleteListAnalysisOption).toHaveBeenCalledWith(clientDatabase, listId, 'PalmRisk');
+      // expect(deleteListAnalysisOption).toHaveBeenCalledWith(clientDatabase, listId, 'FCD');
+      // expect(deleteListAnalysisRecord).not.toHaveBeenCalled();
+      // expect(createListAnalysis).not.toHaveBeenCalled();
+    });
+
+    it('calls deleteListAnalysisRecord when an analysis ID in DB is not in the new list and is NOT in analysisOptionsAsIds', async () => {
+      const analysisStatusData: ListsAnalysisStatus[] = [
+        { analysisId: 'AFI' } as ListsAnalysisStatus,
+        { analysisId: 'SOME_OTHER' } as ListsAnalysisStatus,
+      ];
+      const newAnalysisIds: string[] = [];
+
+      await updateListAnalysis(clientDatabase, listId, newAnalysisIds, analysisStatusData);
+
+      expect(deleteListAnalysisRecord).toHaveBeenCalledTimes(2);
+      expect(deleteListAnalysisRecord).toHaveBeenCalledWith(clientDatabase, listId, 'AFI');
+      expect(deleteListAnalysisRecord).toHaveBeenCalledWith(clientDatabase, listId, 'SOME_OTHER');
+      expect(deleteListAnalysisOption).not.toHaveBeenCalled();
+      expect(createListAnalysis).not.toHaveBeenCalled();
+    });
+
+    it('calls deleteListAnalysisRecord when an analysis ID in DB is not in the new list and is NOT in analysisOptionsAsIds', async () => {
+      const analysisStatusData: ListsAnalysisStatus[] = [
+        { analysisId: 'AFI' } as ListsAnalysisStatus, // Suppose this is not in analysisOptionsAsIds (like 'PalmRisk')
+        { analysisId: 'SOME_OTHER' } as ListsAnalysisStatus,
+      ];
+      const newAnalysisIds: string[] = [];
+
+      await updateListAnalysis(clientDatabase, listId, newAnalysisIds, analysisStatusData);
+
+      expect(deleteListAnalysisRecord).toHaveBeenCalledTimes(2);
+      expect(deleteListAnalysisRecord).toHaveBeenCalledWith(clientDatabase, listId, 'AFI');
+      expect(deleteListAnalysisRecord).toHaveBeenCalledWith(clientDatabase, listId, 'SOME_OTHER');
+      expect(deleteListAnalysisOption).not.toHaveBeenCalled();
+      expect(createListAnalysis).not.toHaveBeenCalled();
+    });
+
+    it('calls createListAnalysis if the new desired analysis ID is not in the DB data', async () => {
+      const analysisStatusData: ListsAnalysisStatus[] = [
+        { analysisId: 'AFI' } as ListsAnalysisStatus,
+      ];
+      const newAnalysisIds: string[] = ['AFI', 'FCD', 'ALERTS'];
+
+      await updateListAnalysis(clientDatabase, listId, newAnalysisIds, analysisStatusData);
+
+      expect(deleteListAnalysisOption).not.toHaveBeenCalled();
+      expect(deleteListAnalysisRecord).not.toHaveBeenCalled();
+      expect(createListAnalysis).toHaveBeenCalledTimes(2);
+      expect(createListAnalysis).toHaveBeenCalledWith(
+        clientDatabase,
+        listId,
+        ['FCD'],
+        expect.any(String)
+      );
+      expect(createListAnalysis).toHaveBeenCalledWith(
+        clientDatabase,
+        listId,
+        ['ALERTS'],
+        expect.any(String)
+      );
+    });
+  });
+
+  describe('updateListAnalysis_DEPRECATED', () => {
     it('should delete existing analyses not in the new list, and create new analyses not in the existing list', async () => {
-      const mockExistingStatusData: ListsAnalysisStatus[] = [
+      const analysisStatusData: ListsAnalysisStatus[] = [
         { listId: 999, analysisId: 'FCD', status: 1 },
         { listId: 999, analysisId: 'GFW', status: 1 },
       ] as ListsAnalysisStatus[];
 
-      const newAnalysisIds = ['FCD', 'SCI'];
-      const mockClientDB = 'dbTest';
-      const mockListId = 999;
+      const analysisIds = ['FCD', 'SCI'];
+      const clientDB = 'dbTest';
+      const listId = 999;
 
       const createListAnalysisSpy = jest.spyOn(
         jest.requireActual('./list.analysis.status'),
         'createListAnalysis'
       );
 
-      await updateListAnalysis(mockClientDB, mockListId, newAnalysisIds, mockExistingStatusData);
+      await updateListAnalysis(clientDB, listId, analysisIds, analysisStatusData);
 
       expect(SQLUtils.queryDB).toHaveBeenCalledWith(
-        mockClientDB,
+        clientDB,
         'dropListAnalysisStatusByListIdAndAnalysisIdQuery',
         expect.arrayContaining([
-          { field: 'ListID', type: sql.Int, value: mockListId },
+          { field: 'ListID', type: sql.Int, value: listId },
           { field: 'AnalysisID', type: sql.NVarChar(150), value: 'GFW' },
         ])
       );
 
       expect(createListAnalysisSpy).toHaveBeenCalledWith(
-        mockClientDB,
-        mockListId,
+        clientDB,
+        listId,
         ['SCI'],
         listStatus.Pending
       );

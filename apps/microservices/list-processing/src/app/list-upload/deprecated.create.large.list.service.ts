@@ -2,7 +2,7 @@ import { BadRequestException, Injectable, Logger } from '@nestjs/common';
 import { CreateListRequest } from '../../models';
 import { ConfigService } from '@nestjs/config';
 import { ServerConfigType } from '../../validators/server-config';
-import { createListAnalysis, CreateListResult } from '@wri-monorepos/geo';
+import { CreateListResult } from '@wri-monorepos/geo';
 import {
   ClientStoreConnection,
   getListByFilters,
@@ -14,6 +14,7 @@ import {
 import * as sql from 'mssql';
 import { MetadataService as AWSMetadataService } from '@wri-monorepos/aws';
 import { createListNameSchema } from '../../utils/list.utils';
+import { createListAnalysis } from '@wri-monorepos/shared';
 
 const LIST_UPLOAD_VERSION = 2;
 const LIST_UPLOAD_LEGACY_VERSION = 0;

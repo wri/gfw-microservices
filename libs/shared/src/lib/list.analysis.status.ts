@@ -1,10 +1,10 @@
 import { Logger } from '@nestjs/common';
 import { S3Service } from '@wri-monorepos/aws';
-import { readAnalysesLastModifiedTime } from '@wri-monorepos/shared';
+import { readAnalysesLastModifiedTime } from './utils/read-last-modified-analyses';
 import { ListsAnalysisStatus, SQLUtils } from '@wri-monorepos/sql';
-import { listStatus } from '@wri-monorepos/constants';
-import { analysisTypesOptions } from '@wri-monorepos/constants';
+import { analysisIdsOptionsMap, listStatus, analysisTypesOptions } from '@wri-monorepos/constants';
 import * as sql from 'mssql';
+import { flatten } from 'lodash';
 
 export const createListAnalysis = async (
   clientDatabase: string,
@@ -89,15 +89,20 @@ export const getListAnalysisStatusByListId = async (
 };
 
 export const updateListAnalysis = async (
-  clientDatabase,
+  clientDatabase: string,
   listId: number,
   analysisIds: string[],
   analysisStatusData: ListsAnalysisStatus[]
 ) => {
   const analysisDataIds = analysisStatusData.map((analysis) => analysis.analysisId);
-  for (const analysisRow of analysisDataIds) {
-    if (!analysisIds.includes(analysisRow)) {
-      deleteListAnalysis(clientDatabase, listId, analysisRow);
+  const analysisOptionsAsIds = new Set(flatten(Object.values(analysisIdsOptionsMap)));
+  for (const analysisIdRow of analysisDataIds) {
+    if (!analysisIds.includes(analysisIdRow)) {
+      if (analysisOptionsAsIds.has(analysisIdRow)) {
+        deleteListAnalysisOption(clientDatabase, listId, analysisIdRow);
+      } else {
+        deleteListAnalysisRecord(clientDatabase, listId, analysisIdRow);
+      }
     }
   }
 
@@ -108,11 +113,36 @@ export const updateListAnalysis = async (
   }
 };
 
-const deleteListAnalysis = async (clientDatabase: string, listId: number, analysisId: string) => {
-  if (analysisId === 'PalmRisk') {
-    analysisId = 'FCD';
-  }
-  await SQLUtils.queryDB(clientDatabase, 'dropListAnalysisStatusByListIdAndAnalysisIdQuery', [
+export const deleteListAnalysisOption = async (
+  clientDatabase: string,
+  listId: number,
+  analysisId: string
+) => {
+  await SQLUtils.queryDB(clientDatabase, 'deleteListAnalysisStatusBy', [
+    {
+      field: 'ListID',
+      type: sql.Int,
+      value: listId,
+    },
+    {
+      field: 'AnalysisID',
+      type: sql.NVarChar(150),
+      value: analysisId,
+    },
+    {
+      field: 'OptionOnly',
+      type: sql.Int,
+      value: 1,
+    },
+  ]);
+};
+
+export const deleteListAnalysisRecord = async (
+  clientDatabase: string,
+  listId: number,
+  analysisId: string
+) => {
+  await SQLUtils.queryDB(clientDatabase, 'deleteListAnalysisStatusBy', [
     {
       field: 'ListID',
       type: sql.Int,

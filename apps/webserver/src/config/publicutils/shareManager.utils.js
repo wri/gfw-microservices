@@ -1,4 +1,4 @@
-import { getAllListsAnalysisStatus } from '@wri-monorepos/geo';
+import { getAllListsAnalysisStatus } from '@wri-monorepos/shared';
 import { mergeListsWithAnalysisId } from './listManager.utils';
 
 /** ******************************************************************

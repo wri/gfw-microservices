@@ -63,7 +63,7 @@ const listDataService = require(path.resolve('./server/listData/service/listData
 const { listStatusOrderByWorse } = require(path.resolve('./config/env/listStatuses.constants'));
 import { listStatus } from '@wri-monorepos/constants';
 import { SqlParamType, AnalysisDataType, ListsType, DeleteListTypeOrm } from '@wri-monorepos/sql';
-import { getAllListsAnalysisStatus } from '@wri-monorepos/geo';
+import { getAllListsAnalysisStatus } from '@wri-monorepos/shared';
 import type { ListsAnalysisStatus } from '@wri-monorepos/sql';
 
 /** @function {createList}

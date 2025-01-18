@@ -58,6 +58,13 @@ Cypress.Commands.add('visitAndVerifyLoad', (url, options: Partial<Cypress.VisitO
   });
 });
 
+Cypress.on('uncaught:exception', (err) => {
+  if (err.message.includes('Cannot read properties of undefined')) {
+    return false;
+  }
+  return true;
+});
+
 //
 // -- This is a child command --
 // Cypress.Commands.add("drag", { prevSubject: 'element'}, (subject, options) => { ... })

@@ -186,9 +186,15 @@ export class GADMService extends AbstractHandler<ChainType> {
         })
         .then((lambdaResult) => {
           const { Payload } = lambdaResult;
-          const { bucket, key, errorMessage } = JSON.parse(Payload);
+          const { bucket, key, errorMessageStr } = JSON.parse(Payload);
+          let errorMessage = errorMessageStr || '';
+          try {
+            errorMessage = JSON.parse(errorMessageStr);
+          } catch (e) {
+            void e;
+          } // ignore any JSON parsing errors
 
-          if (errorMessage) {
+          if (errorMessage.length || Object.keys(errorMessage).length) {
             this.logger.log(errorMessage);
             throw new Error('Has error property');
           }
@@ -201,7 +207,7 @@ export class GADMService extends AbstractHandler<ChainType> {
           resolve(s3Object);
         })
         .catch((e) => {
-          this.logger.log(e);
+          this.logger.log('Error in clipToLand:', e.stack || e);
           reject(e);
         });
     });

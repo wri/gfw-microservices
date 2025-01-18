@@ -3,7 +3,7 @@ import { ClientStoreConnection, updateListsAnalysisStatus } from '@wri-monorepos
 import { ProcessingLimitException } from '../../app.exceptions';
 import { mockAnalysisFlow } from '../../../mock';
 import { checkProcessingLimits } from '@wri-monorepos/shared';
-import { getListAnalysisStatus, extractAnalysisTypes } from '@wri-monorepos/geo';
+import { getListAnalysisStatusByListId, extractAnalysisTypes } from '@wri-monorepos/geo';
 import { listStatus } from '@wri-monorepos/constants';
 import { DataSource } from 'typeorm'; // ou o caminho correto para o DataSource na sua aplicação
 import { ChainType } from './types';
@@ -194,7 +194,7 @@ describe('StartAnalysis', () => {
       isListLocationOverLimit: false,
       processingLimit: 100,
     });
-    (getListAnalysisStatus as jest.Mock).mockResolvedValue({});
+    (getListAnalysisStatusByListId as jest.Mock).mockResolvedValue({});
     (extractAnalysisTypes as jest.Mock).mockReturnValue(['type1', 'type2']);
 
     global.fetch = jest.fn(() =>

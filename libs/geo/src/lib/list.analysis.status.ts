@@ -14,9 +14,12 @@ import {
   GEO_TRELLIS__ANALYZE_LIST_STAGING,
   listStatus,
 } from '@wri-monorepos/constants';
+import { S3Service } from '@wri-monorepos/aws';
+import { readAnalysesLastModifiedTime } from '@wri-monorepos/shared';
+import { analysisTypesOptions } from '@wri-monorepos/constants';
 import * as sql from 'mssql';
 import { checkProcessingLimits } from '@wri-monorepos/shared';
-import { extractAnalysisTypes, getListAnalysisStatus } from '../utils/list.utils';
+import { getListAnalysisStatus } from '../utils/list.utils';
 import axios from 'axios';
 
 export const createListAnalysis = async (
@@ -66,22 +69,39 @@ export const createListAnalysis = async (
   }
 };
 
-const deleteListAnalysis = async (clientDatabase, listId: number, analysisId: string) => {
-  if (analysisId === 'PalmRisk') {
-    analysisId = 'FCD';
+export const getAllListsAnalysisStatus = async (
+  clientDatabase: string
+): Promise<ListsAnalysisStatus[]> => {
+  try {
+    const analysisStatusData = await SQLUtils.queryDB<ListsAnalysisStatus[]>(
+      clientDatabase,
+      'getAllListsAnalysisStatus'
+    );
+
+    return await resolveListAnalysisStatuses(analysisStatusData);
+  } catch (error) {
+    Logger.error('Getting all lists analysis status', error.stack || error);
+    throw error;
   }
-  await SQLUtils.queryDB(clientDatabase, 'dropListAnalysisStatusByListIdAndAnalysisIdQuery', [
-    {
-      field: 'ListID',
-      type: sql.Int,
-      value: listId,
-    },
-    {
-      field: 'AnalysisID',
-      type: sql.NVarChar(150),
-      value: analysisId,
-    },
-  ]);
+};
+
+export const getListAnalysisStatusByListId = async (
+  clientDatabase: string,
+  listId: number
+): Promise<ListsAnalysisStatus[]> => {
+  try {
+    const parameters = [{ field: 'ListID', type: sql.Int, value: listId }];
+    const analysisStatusData = await SQLUtils.queryDB<ListsAnalysisStatus[]>(
+      clientDatabase,
+      'getListAnalysisStatusById',
+      parameters
+    );
+
+    return await resolveListAnalysisStatuses(analysisStatusData);
+  } catch (error) {
+    Logger.error('Getting list analysis status by list id', error.stack || error);
+    throw error;
+  }
 };
 
 export const updateListAnalysis = async (
@@ -216,3 +236,76 @@ export const handleCreateAnalysis = async (
     return error.message;
   }
 };
+
+const deleteListAnalysis = async (clientDatabase: string, listId: number, analysisId: string) => {
+  if (analysisId === 'PalmRisk') {
+    analysisId = 'FCD';
+  }
+  await SQLUtils.queryDB(clientDatabase, 'dropListAnalysisStatusByListIdAndAnalysisIdQuery', [
+    {
+      field: 'ListID',
+      type: sql.Int,
+      value: listId,
+    },
+    {
+      field: 'AnalysisID',
+      type: sql.NVarChar(150),
+      value: analysisId,
+    },
+  ]);
+};
+
+export const getAnalysisTypesFromIds = (analysisIds: string[]) => {
+  const analysisIdSet = new Set(analysisIds);
+  return analysisTypesOptions.reduce((result, { id }) => {
+    result[id] = analysisIdSet.has(id);
+    return result;
+  }, {} as Record<string, boolean>);
+};
+
+export const extractAnalysisTypes = (listAnalysisStatusData: ListsAnalysisStatus[]) => {
+  const analysisStatusMap = new Map(
+    listAnalysisStatusData.map(({ analysisId }) => [analysisId, true])
+  );
+  return analysisTypesOptions.reduce((result, { id }) => {
+    result[id] = analysisStatusMap.has(id);
+    return result;
+  }, {} as Record<string, boolean>);
+};
+
+export async function resolveListAnalysisStatuses(listAnalysisStatuses: ListsAnalysisStatus[]) {
+  const s3 = new S3Service();
+
+  try {
+    const analysisTypesLastModifiedData = await readAnalysesLastModifiedTime(s3);
+    const lastModifiedMap = new Map(
+      analysisTypesLastModifiedData.map(({ id, last_run }) => [id, last_run])
+    );
+    const results: ListsAnalysisStatus[] = [];
+
+    for (const analysisStatus of listAnalysisStatuses) {
+      const { analysisId, options } = analysisStatus;
+      const originalAnalysisIdLastModified = lastModifiedMap.get(analysisId);
+
+      const analysisIdsToPush =
+        analysisId === 'FCD' && options === 'PalmRisk' ? ['FCD', 'PalmRisk'] : [analysisId];
+
+      for (const id of analysisIdsToPush) {
+        results.push({
+          ...analysisStatus,
+          analysisId: id,
+          analysisIdLastModifed: originalAnalysisIdLastModified,
+        });
+      }
+    }
+
+    return results;
+  } catch (error) {
+    Logger.error('Error resolving list analysis statuses', {
+      message: error.message,
+      stack: error.stack,
+      listAnalysisStatuses,
+    });
+    throw error;
+  }
+}

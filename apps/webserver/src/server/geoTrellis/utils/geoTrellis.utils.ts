@@ -1,10 +1,13 @@
 
 import * as AWSSES from '../../../config/privateutils/ses.utils';
 
+import { checkProcessingLimits } from '@wri-monorepos/shared';
+import { updateListsAnalysisStatus } from '@wri-monorepos/sql';
 import {
   extractAnalysisTypes,
   getListAnalysisStatus,
   handleCreateAnalysis,
+  getListAnalysisStatusByListId,
 } from '@wri-monorepos/geo';
 
 /**
@@ -37,7 +40,7 @@ export const handleGeoTrellisAnalyzeListRequest = async (req, list, analysisType
     reanalyze
   );
 
-  const listAnalysisStatusData = await getListAnalysisStatus(databaseName, listID);
+  const listAnalysisStatusData = await getListAnalysisStatusByListId(databaseName, listID);
 
   const analysiTypes = extractAnalysisTypes(
     analysisTypesToProcess

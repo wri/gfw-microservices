@@ -6,7 +6,6 @@ import {
   ListsAnalysisStatus,
 } from '@wri-monorepos/sql';
 import { ListBulkCopy } from './ListBulkCopy';
-import { analysisTypesOptions } from '@wri-monorepos/constants';
 import * as sql from 'mssql';
 
 const LIST_STATUS = {

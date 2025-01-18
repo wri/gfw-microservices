@@ -3,7 +3,6 @@
  */
 const axios = require('axios');
 const path = require('path');
-const { handleGeoTrellisAnalyzeListRequest } = require('./geoTrellis.utils');
 
 // Mocking axios
 jest.mock('axios');
@@ -80,7 +79,9 @@ describe('handleGeoTrellisAnalyzeListRequest', () => {
     };
 
     axios.mockResolvedValue({ data: expectedResult });
-    const handleGeoTrellisAnalyzeListRequest = jest.fn().mockRejectedValue(new Error('Analysis limit reached'));
+    const handleGeoTrellisAnalyzeListRequest = jest
+      .fn()
+      .mockRejectedValue(new Error('Analysis limit reached'));
     expect(async () => {
       await handleGeoTrellisAnalyzeListRequest(req, list);
     }).rejects.toThrow('Analysis limit reached');

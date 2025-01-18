@@ -1,11 +1,7 @@
-
 import * as AWSSES from '../../../config/privateutils/ses.utils';
 
-import { checkProcessingLimits } from '@wri-monorepos/shared';
-import { updateListsAnalysisStatus } from '@wri-monorepos/sql';
 import {
   extractAnalysisTypes,
-  getListAnalysisStatus,
   handleCreateAnalysis,
   getListAnalysisStatusByListId,
 } from '@wri-monorepos/geo';

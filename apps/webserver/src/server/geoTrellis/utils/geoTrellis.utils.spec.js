@@ -82,7 +82,8 @@ describe('handleGeoTrellisAnalyzeListRequest', () => {
     const handleGeoTrellisAnalyzeListRequest = jest
       .fn()
       .mockRejectedValue(new Error('Analysis limit reached'));
-    expect(async () => {
+
+    await expect(async () => {
       await handleGeoTrellisAnalyzeListRequest(req, list);
     }).rejects.toThrow('Analysis limit reached');
 

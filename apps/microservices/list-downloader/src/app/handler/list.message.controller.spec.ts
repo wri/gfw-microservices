@@ -3,8 +3,8 @@ import { ListMessageController } from './list.message.controller';
 import { PipeService } from '../pipe/pipe.service';
 import { ZodValidationPipe } from './list.message.controller';
 import { BadRequestException } from '@nestjs/common';
-import { BasicFieldsFileRequest } from '@wri-monorepos/sql';
-import { CSVInputTypes } from './list.message.controller';
+import { AlertsTimeframes, BasicFieldsFileRequest } from '@wri-monorepos/sql';
+import { CSVInputTypes } from './message.schema';
 
 describe('ListMessageController', () => {
   let controller: ListMessageController;
@@ -57,19 +57,99 @@ describe('ListMessageController', () => {
       expect(result).toEqual(body);
     });
 
+    it('should throw BadRequestException for invalid date range', async () => {
+      const invalidDateRequest = {
+        listId: 123,
+        type: CSVInputTypes.ALERTS,
+        isGFWList: false,
+        selectedTimeframe: AlertsTimeframes.YEAR,
+        selectedAlert: 'GLAD',
+        startDate: '2023-12-31T00:00:00Z',
+        endDate: '2023-01-01T00:00:00Z',
+      };
+
+      try {
+        await controller.download(invalidDateRequest);
+      } catch (e) {
+        expect(e).toBeInstanceOf(BadRequestException);
+      }
+    });
+
     it('should throw BadRequestException for invalid data', async () => {
-      const body: any = {
+      const body = {
         listId: 'invalid',
         type: 'invalid',
         isGFWList: 'invalid',
       };
 
       try {
-        await controller.download(body);
+        await controller.download(body as unknown as BasicFieldsFileRequest);
       } catch (e) {
         expect(e).toBeInstanceOf(BadRequestException);
       }
     });
+
+    it('should throw BadRequestException for invalid email format', async () => {
+      const invalidRequest = {
+        listId: 123,
+        type: CSVInputTypes.AFI,
+        isGFWList: false,
+        userEmail: 'invalid-email',
+      };
+
+      try {
+        await controller.download(invalidRequest);
+      } catch (e) {
+        expect(e).toBeInstanceOf(BadRequestException);
+      }
+    });
+
+    it('should throw BadRequestException for invalid listId', async () => {
+      const invalidRequest = {
+        listId: -1,
+        type: CSVInputTypes.AFI,
+        isGFWList: false,
+      };
+
+      try {
+        await controller.download(invalidRequest);
+      } catch (e) {
+        expect(e).toBeInstanceOf(BadRequestException);
+      }
+    });
+
+    it('should throw an error for invalid date format', async () => {
+      const invalidData = {
+        listId: 1,
+        type: 'alerts',
+        selectedTimeframe: 'someTimeframe', // Replace with a valid timeframe
+        selectedAlert: 'someAlert',
+        startDate: 'invalid-date',
+        endDate: '2023-01-31',
+        isGFWList: false,
+      };
+
+      try {
+        await controller.download(invalidData);
+      } catch (e) {
+        expect(e).toBeInstanceOf(BadRequestException);
+      }
+    });
+  });
+
+  it('should throw an error if startDate is after endDate', async () => {
+    const invalidData = {
+      listId: 1,
+      type: 'accountUsersUsage',
+      startDate: '2023-02-01',
+      endDate: '2023-01-31',
+    };
+
+    try {
+      await controller.download(invalidData);
+    } catch (e) {
+      expect(e).toBeInstanceOf(BadRequestException);
+    }
   });
 });
 

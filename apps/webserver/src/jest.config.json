@@ -21,10 +21,9 @@
   "setupFilesAfterEnv": ["./test/jest.setup.js", "@testing-library/jest-dom/extend-expect"],
   "testEnvironment": "jest-environment-jsdom",
   "testMatch": [
-    "<rootDir>/client/**/*.test.js",
-    "<rootDir>/server/**/*.spec.js",
-    "<rootDir>/config/**/*.spec.js",
-    "<rootDir>/test/fitness/**/*.test.js"
+    "<rootDir>/client/**/*.{spec,test}.{js,ts,jsx,tsx}",
+    "<rootDir>/{server,config}/**/*.{spec,test}.{js,ts}",
+    "<rootDir>/test/fitness/**/*.{spec,test}.{js,ts,jsx,tsx}"
   ],
   "transform": {
     ".+\\.(css|css!|styl|less|sass|scss|png|jpg|ttf|woff|woff2)$": "jest-transform-stub",

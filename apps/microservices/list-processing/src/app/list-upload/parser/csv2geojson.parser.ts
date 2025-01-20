@@ -92,10 +92,11 @@ export const csv2geojson = async (
     }
 
     if (
-      typeof latitude != 'number' ||
-      typeof longitude != 'number' ||
-      isNaN(latitude) ||
-      isNaN(longitude)
+      !preview &&
+      (typeof latitude != 'number' ||
+        typeof longitude != 'number' ||
+        isNaN(latitude) ||
+        isNaN(longitude))
     ) {
       return {
         ...data,

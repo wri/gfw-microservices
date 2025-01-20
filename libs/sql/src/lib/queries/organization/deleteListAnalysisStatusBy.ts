@@ -4,14 +4,14 @@
  */
 export const deleteListAnalysisStatusBy = `
 IF (@OptionOnly IS NOT NULL AND @OptionOnly <> 0)
-BEGIN
-    UPDATE dbo.[ListsAnalysisStatus]
-    SET [Option] = NULL
-    WHERE ListID = @ListID;
-END
+    BEGIN
+        UPDATE dbo.[ListsAnalysisStatus]
+        SET [options] = NULL
+        WHERE ListID = @ListID;
+    END
 ELSE
-BEGIN
-    DELETE FROM dbo.[ListsAnalysisStatus]
-    WHERE ListID = @ListID;
-END
+    BEGIN
+        DELETE FROM dbo.[ListsAnalysisStatus]
+        WHERE ListID = @ListID;
+    END
 `;

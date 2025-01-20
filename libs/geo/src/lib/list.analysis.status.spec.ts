@@ -155,6 +155,17 @@ describe('list.analysis.status.ts', () => {
     });
   });
 
+  describe.skip('setSelectedAnalyses', () => {
+    it('should call createListAnalysis if no data exists on getListAnalysisStatusByListId', async () => {
+      // const mockExistingStatusData = [] as ListsAnalysisStatus[];
+      throw new Error('Not Implemented');
+    });
+    it('should call updateListAnalysis if data exists on getListAnalysisStatusByListId', async () => {
+      // const mockExistingStatusData = [] as ListsAnalysisStatus[];
+      throw new Error('Not Implemented');
+    });
+  });
+
   describe('updateListAnalysis', () => {
     it('should delete existing analyses not in the new list, and create new analyses not in the existing list', async () => {
       const mockExistingStatusData: ListsAnalysisStatus[] = [

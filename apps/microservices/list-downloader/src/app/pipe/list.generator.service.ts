@@ -4,7 +4,6 @@ import * as asyncPool from 'tiny-async-pool';
 
 import { ListFieldsFileRequest, UspGetListAnalysis } from '@wri-monorepos/sql';
 import { InputService } from '../files/input.service';
-import { ResultService } from '../files/result.service';
 import { GeometryService } from '../files/geometry.service';
 import { DashboardService } from './dashboard.service';
 import { IPipeService } from './i.pipe.service';
@@ -22,7 +21,6 @@ export class ListGeneratorService extends IFileGenerator {
     private readonly inputService: InputService,
     private readonly geometryService: GeometryService,
     private readonly dashboardService: DashboardService,
-    private readonly resultService: ResultService,
     private readonly uspGetListAnalysis: UspGetListAnalysis,
     private readonly analysisDataService: AnalysisDataService,
     private readonly configService: ConfigService<ServerConfigType, true>
@@ -96,7 +94,6 @@ export class ListGeneratorService extends IFileGenerator {
     const mapFileType2Service = {
       input_csv: this.inputService,
       input_shapefile: this.geometryService,
-      results_csv: this.resultService,
     };
 
     return mapFileType2Service[`${type}_${file}`] ?? this.dashboardService;

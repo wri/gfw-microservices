@@ -6,7 +6,7 @@ import { DataTemplates } from './DataTemplates';
 // this test is failing probably due to a ts config missing
 //  Module './UploadLocationContext' was resolved to '/apps/webserver/src/client/locations/js/components/newLocationUpload/contexts/UploadLocationContext.tsx', but '--jsx' is not set.
 
-describe.skip('DataTemplates', () => {
+describe('DataTemplates', () => {
   const handleCloseMock = jest.fn();
 
   beforeEach(() => {

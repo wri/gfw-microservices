@@ -8,6 +8,7 @@ import {
   setSelectedAnalyses,
   updateListAnalysis,
 } from './list.analysis.status';
+import * as LAS from './list.analysis.status';
 import { ListsAnalysisStatus, SQLUtils } from '@wri-monorepos/sql';
 import { readAnalysesLastModifiedTime } from '@wri-monorepos/shared';
 import { analysisTypesOptions, listStatus } from '@wri-monorepos/constants';
@@ -70,6 +71,7 @@ describe('list.analysis.status.ts', () => {
   beforeEach(() => {
     jest.clearAllMocks();
     jest.resetAllMocks();
+    jest.restoreAllMocks();
   });
 
   describe('getAllListsAnalysisStatus', () => {
@@ -163,9 +165,8 @@ describe('list.analysis.status.ts', () => {
     const fakeAnalysisStatus = listStatus.Pending;
 
     it('should call createListAnalysis if no data exists on getListAnalysisStatusByListId', async () => {
-      jest
-        .spyOn(jest.requireActual('./list.analysis.status'), 'getListAnalysisStatusByListId')
-        .mockResolvedValueOnce([]);
+      jest.spyOn(LAS, 'getListAnalysisStatusByListId').mockResolvedValueOnce([]);
+      jest.spyOn(LAS, 'createListAnalysis').mockResolvedValueOnce(undefined);
 
       const createListAnalysisSpy = jest
         .spyOn(jest.requireActual('./list.analysis.status'), 'createListAnalysis')
@@ -229,6 +230,11 @@ describe('list.analysis.status.ts', () => {
   });
 
   describe('updateListAnalysis', () => {
+    beforeEach(() => {
+      jest.clearAllMocks();
+      jest.resetAllMocks();
+    });
+
     it('should not call deleteListAnalysisStatusBy or createListAnalysis if analysisDataIds and analysisIds match exactly', async () => {
       const fakeClientDatabase = 'mockClientDB';
       const fakeListId = 123;

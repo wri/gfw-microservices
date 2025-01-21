@@ -108,3 +108,14 @@ export const LabelNameTable: {
   attribute2: 'Attribute 2',
   attribute3: 'Attribute 3',
 };
+
+export const LabelNameTableZip = {
+  locationName: 'Location_N',
+  analysisRadius: 'Analysis_R',
+  analysisArea: 'Analysis_A',
+  locationClassification: 'Location_C',
+  companyName: 'Company_Na',
+  supplierName: 'Supplier_N',
+  facilityName: 'Facility_N',
+  refineryName: 'Refinery_N',
+};

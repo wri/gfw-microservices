@@ -36,8 +36,13 @@ export class SaveListAttributes extends AbstractHandler<ChainType> {
         .orIgnore()
         .execute();
     } catch (error) {
-      // will throw erros for rows failing but not for the entire batch
-      this.logger.warn(`Something went wrong executing query.`, error.stack || error);
+      // throwing errors for PrimaryKey constraints should not break the chain
+      if (error?.message.includes('Violation of PRIMARY KEY constraint')) {
+        this.logger.warn(`Constraint violation.`, error.stack || error);
+      } else {
+        this.logger.error(`Something went wrong executing query.`, error.stack || error);
+        throw error;
+      }
     }
   }
 

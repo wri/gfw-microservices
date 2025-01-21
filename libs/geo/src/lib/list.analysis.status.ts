@@ -14,12 +14,14 @@ import {
   GEO_TRELLIS__ANALYZE_LIST_STAGING,
   listStatus,
   analysisTypesOptions,
+  analysisIdsOptionsMap,
 } from '@wri-monorepos/constants';
 import { S3Service } from '@wri-monorepos/aws';
 import { readAnalysesLastModifiedTime, checkProcessingLimits } from '@wri-monorepos/shared';
 import * as sql from 'mssql';
 import { getListAnalysisStatus } from '../utils/list.utils';
 import axios from 'axios';
+import { flatten } from 'lodash';
 
 export const createListAnalysis = async (
   clientDatabase: string,
@@ -103,22 +105,43 @@ export const getListAnalysisStatusByListId = async (
   }
 };
 
+export const setSelectedAnalyses = async (
+  clientDatabase: string,
+  listId: number,
+  analysisIds: string[],
+  analysisStatus = listStatus.Pending
+) => {
+  const analysisStatusData = await getListAnalysisStatusByListId(clientDatabase, listId);
+  if (!analysisStatusData || analysisStatusData.length === 0) {
+    await createListAnalysis(clientDatabase, listId, analysisIds, analysisStatus);
+  } else {
+    await updateListAnalysis(clientDatabase, listId, analysisIds, analysisStatusData);
+  }
+};
+
 export const updateListAnalysis = async (
-  clientDatabase,
+  clientDatabase: string,
   listId: number,
   analysisIds: string[],
   analysisStatusData: ListsAnalysisStatus[]
 ) => {
   const analysisDataIds = analysisStatusData.map((analysis) => analysis.analysisId);
-  for (const analysisRow of analysisDataIds) {
-    if (!analysisIds.includes(analysisRow)) {
-      deleteListAnalysis(clientDatabase, listId, analysisRow);
+  const analysisOptionsAsIds = new Set(flatten(Object.values(analysisIdsOptionsMap)));
+
+  for (const analysisIdRow of analysisDataIds) {
+    if (!analysisIds.includes(analysisIdRow)) {
+      await deleteListAnalysisStatusBy(
+        clientDatabase,
+        listId,
+        analysisIdRow,
+        analysisOptionsAsIds.has(analysisIdRow)
+      );
     }
   }
 
   for (const element of analysisIds) {
     if (!analysisDataIds.includes(element)) {
-      createListAnalysis(clientDatabase, listId, [element], listStatus.Pending);
+      await createListAnalysis(clientDatabase, listId, [element], listStatus.Pending);
     }
   }
 };
@@ -236,11 +259,13 @@ export const handleCreateAnalysis = async (
   }
 };
 
-const deleteListAnalysis = async (clientDatabase: string, listId: number, analysisId: string) => {
-  if (analysisId === 'PalmRisk') {
-    analysisId = 'FCD';
-  }
-  await SQLUtils.queryDB(clientDatabase, 'dropListAnalysisStatusByListIdAndAnalysisIdQuery', [
+export const deleteListAnalysisStatusBy = async (
+  clientDatabase: string,
+  listId: number,
+  analysisId: string,
+  optionOnly: boolean
+) => {
+  await SQLUtils.queryDB(clientDatabase, 'deleteListAnalysisStatusBy', [
     {
       field: 'ListID',
       type: sql.Int,
@@ -250,6 +275,11 @@ const deleteListAnalysis = async (clientDatabase: string, listId: number, analys
       field: 'AnalysisID',
       type: sql.NVarChar(150),
       value: analysisId,
+    },
+    {
+      field: 'OptionOnly',
+      type: sql.Int,
+      value: Number(optionOnly),
     },
   ]);
 };

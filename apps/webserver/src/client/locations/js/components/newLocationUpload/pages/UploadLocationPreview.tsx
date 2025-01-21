@@ -19,10 +19,16 @@ import {
   Replay,
   Report,
 } from '@mui/icons-material';
+import { getFileExtension } from '../../../../../utils';
 
-import { LocationListType } from '../types';
+import { FeatureProperties, LocationListType } from '../types';
 import { LoadingModal, PillButton } from '../../../../../components';
-import { getTableColumns, LabelNameTable, uploadFileToS3 } from '../utils/upload';
+import {
+  getTableColumns,
+  LabelNameTable,
+  LabelNameTableZip,
+  uploadFileToS3,
+} from '../utils/upload';
 import { useUploadLocation } from '../contexts';
 import { useHistory } from '../hooks';
 import { NavBar } from '../components';
@@ -40,7 +46,7 @@ export function UploadLocationPreview() {
 
   const { data, isLoading, request, error } = useFetch<
     { features: LocationListType[] },
-    { errors: string[] }
+    { message: string; errors: string[] }
   >();
   const [file, setFile] = useState<File | null>(null);
 
@@ -84,9 +90,29 @@ export function UploadLocationPreview() {
     });
   };
 
-  const columns = getTableColumns(data?.features);
+  const getMissingFieldsNames = (errors: string[], fileExtension: string) => {
+    if (!errors.length) {
+      return '';
+    }
 
-  console.log({ error });
+    const errorMessage = errors[0].split(':');
+    if (errorMessage.length < 2) {
+      return '';
+    }
+
+    const map = fileExtension === '.zip' ? LabelNameTableZip : LabelNameTable;
+
+    const missingFields = errorMessage[1].replaceAll(' ', '').split(',') as Array<
+      keyof FeatureProperties
+    >;
+
+    return missingFields
+      .map((field) => (field in map ? map[field as keyof typeof map] : ''))
+      .join(', ');
+  };
+  const columns = getTableColumns(data?.features);
+  const fileExtension = getFileExtension(uploadedFileUrl);
+
   return (
     <>
       <NavBar />
@@ -139,7 +165,7 @@ export function UploadLocationPreview() {
           <Skeleton variant="rounded" sx={{ height: '460px' }} />
         ) : error ? (
           <>
-            {error.errors ? (
+            {error.message === 'Validation errors found in the data' ? (
               <Box
                 sx={{
                   display: 'flex',
@@ -165,14 +191,14 @@ export function UploadLocationPreview() {
                   />
                 </Box>
                 <Typography variant="h6">Missing required fields</Typography>
-                <Typography variant="caption" sx={{ color: theme.palette.text.secondary, my: 1 }}>
-                  Your [INPUT FILE TYPE] is missing the following obligatory fields: [MISSING
-                  OBLIGATORY FIELDS]. Please check the required fields in the Data Templates and
-                  update your file before re-uploading it.
+                <Typography
+                  variant="caption"
+                  sx={{ color: theme.palette.text.secondary, my: 1, textAlign: 'center' }}
+                >
+                  Your {fileExtension} file is missing the following obligatory fields:{' '}
+                  {getMissingFieldsNames(error.errors, fileExtension)}. Please check the required
+                  fields in the Data Templates and update your file before re-uploading it.
                 </Typography>
-                {/* {error.errors.map((err) => (
-                  <Typography key={err}>{err}</Typography>
-                ))} */}
                 <PillButton variant="text" color="error">
                   <label
                     htmlFor="file-input-error"

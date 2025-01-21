@@ -1,14 +1,13 @@
 import { When, Then, Given } from '@badeball/cypress-cucumber-preprocessor';
 import BasePage from '../../pages/basePage';
 import AlertsPage from '../../pages/alertsPage';
-import * as User from '../../app-api/User';
 
 describe('Alerts page', () => {
   const basePage = new BasePage();
   const alertsPage = new AlertsPage();
 
   Given('I login to the landing page', () => {
-    User.login();
+    cy.loginUI();
     cy.visit('/locations');
   });
 

@@ -5,8 +5,10 @@ import {
   getAnalysisTypesFromIds,
   getListAnalysisStatusByListId,
   resolveListAnalysisStatuses,
+  setSelectedAnalyses,
   updateListAnalysis,
 } from './list.analysis.status';
+import * as LAS from './list.analysis.status';
 import { ListsAnalysisStatus, SQLUtils } from '@wri-monorepos/sql';
 import { readAnalysesLastModifiedTime } from '@wri-monorepos/shared';
 import { analysisTypesOptions, listStatus } from '@wri-monorepos/constants';
@@ -69,6 +71,7 @@ describe('list.analysis.status.ts', () => {
   beforeEach(() => {
     jest.clearAllMocks();
     jest.resetAllMocks();
+    jest.restoreAllMocks();
   });
 
   describe('getAllListsAnalysisStatus', () => {
@@ -155,42 +158,218 @@ describe('list.analysis.status.ts', () => {
     });
   });
 
+  describe('setSelectedAnalyses', () => {
+    const fakeClientDatabase = 'mockClientDB';
+    const fakeListId = 123;
+    const fakeAnalysisIds = ['PalmRisk', 'FCD'];
+    const fakeAnalysisStatus = listStatus.Pending;
+
+    it('should call createListAnalysis if no data exists on getListAnalysisStatusByListId', async () => {
+      jest.spyOn(LAS, 'getListAnalysisStatusByListId').mockResolvedValueOnce([]);
+      jest.spyOn(LAS, 'createListAnalysis').mockResolvedValueOnce(undefined);
+
+      const createListAnalysisSpy = jest
+        .spyOn(jest.requireActual('./list.analysis.status'), 'createListAnalysis')
+
+        .mockResolvedValueOnce(undefined);
+
+      const updateListAnalysisSpy = jest
+        .spyOn(jest.requireActual('./list.analysis.status'), 'updateListAnalysis')
+        .mockResolvedValueOnce(undefined);
+
+      await setSelectedAnalyses(
+        fakeClientDatabase,
+        fakeListId,
+        fakeAnalysisIds,
+        fakeAnalysisStatus
+      );
+
+      expect(getListAnalysisStatusByListId).toHaveBeenCalledWith(fakeClientDatabase, fakeListId);
+      expect(createListAnalysisSpy).toHaveBeenCalledWith(
+        fakeClientDatabase,
+        fakeListId,
+        fakeAnalysisIds,
+        fakeAnalysisStatus
+      );
+      expect(updateListAnalysisSpy).not.toHaveBeenCalled();
+    });
+    it('should call updateListAnalysis if data exists on getListAnalysisStatusByListId', async () => {
+      const mockExistingStatusData = [
+        { analysisId: 'PalmRisk', status: listStatus.Pending /* or some numeric value */ },
+        { analysisId: 'FCD', status: listStatus.Pending },
+      ];
+
+      jest
+        .spyOn(jest.requireActual('./list.analysis.status'), 'getListAnalysisStatusByListId')
+        .mockResolvedValueOnce(mockExistingStatusData);
+
+      const createListAnalysisSpy = jest
+        .spyOn(jest.requireActual('./list.analysis.status'), 'createListAnalysis')
+        .mockResolvedValueOnce(undefined);
+
+      const updateListAnalysisSpy = jest
+        .spyOn(jest.requireActual('./list.analysis.status'), 'updateListAnalysis')
+        .mockResolvedValueOnce(undefined);
+
+      await setSelectedAnalyses(
+        fakeClientDatabase,
+        fakeListId,
+        fakeAnalysisIds,
+        fakeAnalysisStatus
+      );
+
+      expect(getListAnalysisStatusByListId).toHaveBeenCalledWith(fakeClientDatabase, fakeListId);
+      expect(updateListAnalysisSpy).toHaveBeenCalledWith(
+        fakeClientDatabase,
+        fakeListId,
+        fakeAnalysisIds,
+        mockExistingStatusData
+      );
+      expect(createListAnalysisSpy).not.toHaveBeenCalled();
+    });
+  });
+
   describe('updateListAnalysis', () => {
-    it('should delete existing analyses not in the new list, and create new analyses not in the existing list', async () => {
-      const mockExistingStatusData: ListsAnalysisStatus[] = [
-        { listId: 999, analysisId: 'FCD', status: 1 },
-        { listId: 999, analysisId: 'GFW', status: 1 },
+    beforeEach(() => {
+      jest.clearAllMocks();
+      jest.resetAllMocks();
+    });
+
+    it('should not call deleteListAnalysisStatusBy or createListAnalysis if analysisDataIds and analysisIds match exactly', async () => {
+      const fakeClientDatabase = 'mockClientDB';
+      const fakeListId = 123;
+
+      const analysisIds = ['PalmRisk', 'FCDOption1'];
+      const analysisStatusData: ListsAnalysisStatus[] = [
+        { analysisId: 'PalmRisk', status: 1 },
+        { analysisId: 'FCDOption1', status: 1 },
       ] as ListsAnalysisStatus[];
 
-      const newAnalysisIds = ['FCD', 'SCI'];
-      const mockClientDB = 'dbTest';
-      const mockListId = 999;
+      const deleteSpy = jest
+        .spyOn(jest.requireActual('./list.analysis.status'), 'deleteListAnalysisStatusBy')
+        .mockResolvedValue(undefined);
+      const createSpy = jest
+        .spyOn(jest.requireActual('./list.analysis.status'), 'createListAnalysis')
+        .mockResolvedValue(undefined);
 
-      const createListAnalysisSpy = jest.spyOn(
-        jest.requireActual('./list.analysis.status'),
-        'createListAnalysis'
+      await updateListAnalysis(fakeClientDatabase, fakeListId, analysisIds, analysisStatusData);
+
+      expect(deleteSpy).not.toHaveBeenCalled();
+      expect(createSpy).not.toHaveBeenCalled();
+    });
+
+    it('should delete analysis IDs in analysisStatusData but not in analysisIds', async () => {
+      const fakeClientDatabase = 'mockClientDB';
+      const fakeListId = 123;
+
+      const analysisIds = ['PalmRisk'];
+      const analysisStatusData: ListsAnalysisStatus[] = [
+        { analysisId: 'PalmRisk', status: 1 },
+        { analysisId: 'FCDOption1', status: 1 }, // This one should get deleted
+      ] as ListsAnalysisStatus[];
+
+      const deleteSpy = jest
+        .spyOn(jest.requireActual('./list.analysis.status'), 'deleteListAnalysisStatusBy')
+        .mockResolvedValue(undefined);
+      const createSpy = jest
+        .spyOn(jest.requireActual('./list.analysis.status'), 'createListAnalysis')
+        .mockResolvedValue(undefined);
+
+      await updateListAnalysis(fakeClientDatabase, fakeListId, analysisIds, analysisStatusData);
+
+      expect(deleteSpy).toHaveBeenCalledTimes(1);
+      expect(deleteSpy).toHaveBeenCalledWith(
+        fakeClientDatabase,
+        fakeListId,
+        'FCDOption1',
+        expect.any(Boolean)
       );
+      expect(createSpy).not.toHaveBeenCalled();
+    });
 
-      await updateListAnalysis(mockClientDB, mockListId, newAnalysisIds, mockExistingStatusData);
+    it('should create analysis IDs in analysisIds but not in analysisStatusData', async () => {
+      const fakeClientDatabase = 'mockClientDB';
+      const fakeListId = 123;
 
-      expect(SQLUtils.queryDB).toHaveBeenCalledWith(
-        mockClientDB,
-        'dropListAnalysisStatusByListIdAndAnalysisIdQuery',
-        expect.arrayContaining([
-          { field: 'ListID', type: sql.Int, value: mockListId },
-          { field: 'AnalysisID', type: sql.NVarChar(150), value: 'GFW' },
-        ])
-      );
+      const analysisIds = ['PalmRisk', 'FCDOption1'];
+      const analysisStatusData: ListsAnalysisStatus[] = [
+        { analysisId: 'PalmRisk', status: 1 },
+      ] as ListsAnalysisStatus[];
 
-      expect(createListAnalysisSpy).toHaveBeenCalledWith(
-        mockClientDB,
-        mockListId,
-        ['SCI'],
+      const deleteSpy = jest
+        .spyOn(jest.requireActual('./list.analysis.status'), 'deleteListAnalysisStatusBy')
+        .mockResolvedValue(undefined);
+      const createSpy = jest
+        .spyOn(jest.requireActual('./list.analysis.status'), 'createListAnalysis')
+        .mockResolvedValue(undefined);
+
+      await updateListAnalysis(fakeClientDatabase, fakeListId, analysisIds, analysisStatusData);
+
+      // FCDOption1 is not in analysisStatusData, so it should be created
+      expect(createSpy).toHaveBeenCalledTimes(1);
+      expect(createSpy).toHaveBeenCalledWith(
+        fakeClientDatabase,
+        fakeListId,
+        ['FCDOption1'],
         listStatus.Pending
       );
+      // No analysis to delete
+      expect(deleteSpy).not.toHaveBeenCalled();
+    });
 
-      expect(SQLUtils.queryDB).toHaveBeenCalledTimes(2);
-      expect(createListAnalysisSpy).toHaveBeenCalledTimes(1);
+    it('should delete missing IDs and create new IDs in a mixed scenario', async () => {
+      const fakeClientDatabase = 'mockClientDB';
+      const fakeListId = 123;
+
+      const analysisIds = ['CommonAnalysis', 'NewAnalysis'];
+      const analysisStatusData: ListsAnalysisStatus[] = [
+        { analysisId: 'CommonAnalysis', status: 1 },
+        { analysisId: 'OldAnalysis', status: 2 },
+      ] as ListsAnalysisStatus[];
+
+      const deleteSpy = jest
+        .spyOn(jest.requireActual('./list.analysis.status'), 'deleteListAnalysisStatusBy')
+        .mockResolvedValue(undefined);
+      const createSpy = jest
+        .spyOn(jest.requireActual('./list.analysis.status'), 'createListAnalysis')
+        .mockResolvedValue(undefined);
+
+      await updateListAnalysis(fakeClientDatabase, fakeListId, analysisIds, analysisStatusData);
+
+      expect(deleteSpy).toHaveBeenCalledTimes(1);
+      expect(deleteSpy).toHaveBeenCalledWith(
+        fakeClientDatabase,
+        fakeListId,
+        'OldAnalysis',
+        expect.any(Boolean)
+      );
+      expect(createSpy).toHaveBeenCalledTimes(1);
+      expect(createSpy).toHaveBeenCalledWith(
+        fakeClientDatabase,
+        fakeListId,
+        ['NewAnalysis'],
+        listStatus.Pending
+      );
+    });
+
+    it('should pass correct boolean to deleteListAnalysisStatusBy (checks if ID is in analysisIdsOptionsMap)', async () => {
+      const fakeClientDatabase = 'mockClientDB';
+      const fakeListId = 123;
+
+      const analysisIds = ['FCDOption1'];
+      const analysisStatusData: ListsAnalysisStatus[] = [
+        { analysisId: 'PalmRisk', status: 1 },
+      ] as ListsAnalysisStatus[];
+
+      const deleteSpy = jest
+        .spyOn(jest.requireActual('./list.analysis.status'), 'deleteListAnalysisStatusBy')
+        .mockResolvedValue(undefined);
+
+      await updateListAnalysis(fakeClientDatabase, fakeListId, analysisIds, analysisStatusData);
+
+      // 'PalmRisk' is in the status data but not in new analysisIds => must delete
+      expect(deleteSpy).toHaveBeenCalledTimes(1);
+      expect(deleteSpy).toHaveBeenCalledWith(fakeClientDatabase, fakeListId, 'PalmRisk', true);
     });
   });
 

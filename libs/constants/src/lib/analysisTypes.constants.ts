@@ -5,6 +5,11 @@
  * Test in apps/webserver/src/config/env/analysisTypes.constants.spec.js verifies the contents
  * of the two files are identical
  */
+export enum ListAnalysisIds {
+  FCD = 'FCD',
+  AFI = 'AFI',
+  ALERTS = 'ALERTS',
+}
 
 export const analysisTypes = {
   FOREST_CHANGE_DIAGNOSTICS: 'FCD',
@@ -51,3 +56,7 @@ export const analysisTypesOptionsNewNames = [
     description: 'Annual tree cover loss since 2001 + additional contextual and regional datasets',
   },
 ];
+
+export const analysisIdsOptionsMap = {
+  [ListAnalysisIds.FCD]: ['PalmRisk'],
+};

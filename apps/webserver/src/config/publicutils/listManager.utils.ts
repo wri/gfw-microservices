@@ -59,11 +59,10 @@ const errorUtils = require(path.resolve('./config/privateutils/error.utils'));
 const analysisUtils = require(path.resolve('./config/privateutils/analysis.utils'));
 const rollbackUtils = require(path.resolve('./config/privateutils/rollback.utils'));
 const locationUtils = require(path.resolve('./config/privateutils/location.utils'));
-const listDataService = require(path.resolve('./server/listData/service/listData.service'));
 const { listStatusOrderByWorse } = require(path.resolve('./config/env/listStatuses.constants'));
 import { listStatus } from '@wri-monorepos/constants';
 import { SqlParamType, AnalysisDataType, ListsType, DeleteListTypeOrm } from '@wri-monorepos/sql';
-import { getAllListsAnalysisStatus } from '@wri-monorepos/geo';
+import { getAllListsAnalysisStatus, setSelectedAnalyses } from '@wri-monorepos/geo';
 import type { ListsAnalysisStatus } from '@wri-monorepos/sql';
 
 /** @function {createList}
@@ -189,7 +188,8 @@ const createList = async (
       .then(() => {
         // Previous Stored Procedure executed
         uspCreateAnalysisTableExecuted = true;
-        return listDataService.setSelectedAnalyses(req, list_id, analysisIds);
+        const { organization_database } = req.session;
+        return setSelectedAnalyses(organization_database, list_id, analysisIds);
       })
       .then(() => {
         logger.logActivity(
@@ -350,7 +350,8 @@ const saveAsDraftList = async (
       .then(() => {
         // Previous Stored Procedure executed
         uspCreateAnalysisTableExecuted = true;
-        return listDataService.setSelectedAnalyses(req, list_id, analysisIds, listStatus.Draft);
+        const { organization_database } = req.session;
+        return setSelectedAnalyses(organization_database, list_id, analysisIds, listStatus.Draft);
       })
       .then(() => {
         logger.logActivity(

@@ -4,7 +4,7 @@ export * from './deleteList';
 export * from './deleteLocation';
 export * from './deleteLocationIdsFilteredDataForUserList';
 export * from './dropListAnalysisStatusByListId';
-export * from './dropListAnalysisStatusByListIdAndAnalysisId';
+export * from './deleteListAnalysisStatusBy';
 export * from './getActivityLog';
 export * from './getAfiAnalysisForListId';
 export * from './getAfiNegligibleRiskStatsForListId';

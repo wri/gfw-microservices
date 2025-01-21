@@ -154,54 +154,6 @@ export const deleteListAnalysisStatusBy = async (
   ]);
 };
 
-export const deleteListAnalysisOption = async (
-  clientDatabase: string,
-  listId: number,
-  analysisId: string
-) => {
-  await SQLUtils.queryDB(clientDatabase, 'deleteListAnalysisStatusBy', [
-    {
-      field: 'ListID',
-      type: sql.Int,
-      value: listId,
-    },
-    {
-      field: 'AnalysisID',
-      type: sql.NVarChar(150),
-      value: analysisId,
-    },
-    {
-      field: 'OptionOnly',
-      type: sql.Int,
-      value: 1,
-    },
-  ]);
-};
-
-export const deleteListAnalysisRecord = async (
-  clientDatabase: string,
-  listId: number,
-  analysisId: string
-) => {
-  await SQLUtils.queryDB(clientDatabase, 'deleteListAnalysisStatusBy', [
-    {
-      field: 'ListID',
-      type: sql.Int,
-      value: listId,
-    },
-    {
-      field: 'AnalysisID',
-      type: sql.NVarChar(150),
-      value: analysisId,
-    },
-    {
-      field: 'OptionOnly',
-      type: sql.Int,
-      value: 0,
-    },
-  ]);
-};
-
 export const getAnalysisTypesFromIds = (analysisIds: string[]) => {
   const analysisIdSet = new Set(analysisIds);
   return analysisTypesOptions.reduce((result, { id }) => {

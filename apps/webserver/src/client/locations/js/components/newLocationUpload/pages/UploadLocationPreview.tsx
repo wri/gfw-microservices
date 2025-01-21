@@ -95,16 +95,14 @@ export function UploadLocationPreview() {
       return '';
     }
 
-    const errorMessage = errors[0].split(':');
-    if (errorMessage.length < 2) {
+    const [, fields] = errors[0].split(':');
+    if (!fields) {
       return '';
     }
 
     const map = fileExtension === '.zip' ? LabelNameTableZip : LabelNameTable;
 
-    const missingFields = errorMessage[1].replaceAll(' ', '').split(',') as Array<
-      keyof FeatureProperties
-    >;
+    const missingFields = fields.replaceAll(' ', '').split(',') as Array<keyof FeatureProperties>;
 
     return missingFields
       .map((field) => (field in map ? map[field as keyof typeof map] : ''))

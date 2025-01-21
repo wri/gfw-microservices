@@ -122,7 +122,7 @@ describe('ListMessageController', () => {
       const invalidData = {
         listId: 1,
         type: 'alerts',
-        selectedTimeframe: 'someTimeframe', // Replace with a valid timeframe
+        selectedTimeframe: 'someTimeframe',
         selectedAlert: 'someAlert',
         startDate: 'invalid-date',
         endDate: '2023-01-31',

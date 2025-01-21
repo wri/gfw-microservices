@@ -32,17 +32,10 @@ export const BasicFieldsFileRequestSchema = z.object({
   file: z.string().trim().optional().describe('File path or identifier'),
   listId: z.coerce.number().int().positive().describe('Unique identifier for the list'),
   key: z.string().trim().optional().describe('API key or access token'),
-  userEmail: z
-    .string()
-    .trim()
-    .email()
-    .trim()
-    .optional()
-    .describe('Email address of the requesting user'),
+  userEmail: z.string().trim().email().optional().describe('Email address of the requesting user'),
   type: z.nativeEnum(CSVInputTypes).describe('Type of CSV input being processed'),
   organizationDatabase: z
     .string()
-    .trim()
     .trim()
     .optional()
     .describe('Database identifier for the organization'),

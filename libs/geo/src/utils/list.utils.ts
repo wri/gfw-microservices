@@ -1,6 +1,12 @@
 import { Logger } from '@nestjs/common';
-import { SQLUtils, GetTableAnalysisColumnsById, UnlockList } from '@wri-monorepos/sql';
+import {
+  SQLUtils,
+  GetTableAnalysisColumnsById,
+  UnlockList,
+  ListsAnalysisStatus,
+} from '@wri-monorepos/sql';
 import { ListBulkCopy } from './ListBulkCopy';
+import * as sql from 'mssql';
 
 const LIST_STATUS = {
   LIST_STATUS_PENDING: 1,
@@ -418,4 +424,17 @@ export async function PerformLocationsBulkCopy(
   destLocationIds.sort((a, b) => a - b);
 
   return destLocationIds;
+}
+
+// Get the analyses (including status for each) for given list
+export async function getListAnalysisStatus(
+  clientDatabase: string,
+  listId: number
+): Promise<ListsAnalysisStatus[]> {
+  const parameters = [{ field: 'ListID', type: sql.Int, value: listId }];
+  return await SQLUtils.queryDB<ListsAnalysisStatus[]>(
+    clientDatabase,
+    'getListAnalysisStatusById',
+    parameters
+  );
 }

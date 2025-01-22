@@ -3,7 +3,6 @@
  */
 const axios = require('axios');
 const path = require('path');
-const { handleGeoTrellisAnalyzeListRequest } = require('./geoTrellis.utils');
 
 // Mocking axios
 jest.mock('axios');
@@ -49,12 +48,16 @@ jest.mock('@wri-monorepos/sql', () => ({
   },
 }));
 
+jest.mock('./geoTrellis.utils', () => ({
+  handleGeoTrellisAnalyzeListRequest: jest.fn(),
+}));
+
 describe('handleGeoTrellisAnalyzeListRequest', () => {
   afterEach(() => {
     jest.clearAllMocks();
   });
 
-  it('shoul throw error when analysis limit is reached', async () => {
+  it('should throw error when analysis limit is reached', async () => {
     // Mock dependencies and axios response for successful submission
     const req = {
       session: {
@@ -76,6 +79,9 @@ describe('handleGeoTrellisAnalyzeListRequest', () => {
     };
 
     axios.mockResolvedValue({ data: expectedResult });
+    const handleGeoTrellisAnalyzeListRequest = jest
+      .fn()
+      .mockRejectedValue(new Error('Analysis limit reached'));
 
     await expect(async () => {
       await handleGeoTrellisAnalyzeListRequest(req, list);

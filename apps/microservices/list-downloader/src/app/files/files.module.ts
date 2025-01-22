@@ -21,7 +21,6 @@ import { NaturalForestLossService } from './natural.forest.loss.service';
 import { OtherKpisService } from './other.kpis.service';
 import { PalmRiskAnalysisService } from './palm.risk.analysis.service';
 import { ReadmeService } from './readme.service';
-import { ResultService } from './result.service';
 import { GeometryService } from './geometry.service';
 import { SouthAmericaBiomesService } from './south.america.biomes.service';
 import { SouthAmericaLossService } from './south.america.loss.service';
@@ -59,7 +58,6 @@ import { ReadmeMergeServices } from '../shared/readme.merge.service';
     OtherKpisService,
     PalmRiskAnalysisService,
     ReadmeService,
-    ResultService,
     GeometryService,
     SouthAmericaBiomesService,
     SouthAmericaLossService,
@@ -93,7 +91,6 @@ import { ReadmeMergeServices } from '../shared/readme.merge.service';
     OtherKpisService,
     PalmRiskAnalysisService,
     ReadmeService,
-    ResultService,
     GeometryService,
     SouthAmericaBiomesService,
     SouthAmericaLossService,

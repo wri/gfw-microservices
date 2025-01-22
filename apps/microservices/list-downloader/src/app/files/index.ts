@@ -21,7 +21,6 @@ export * from './natural.forest.loss.service';
 export * from './other.kpis.service';
 export * from './palm.risk.analysis.service';
 export * from './readme.service';
-export * from './result.service';
 export * from './geometry.service';
 export * from './south.america.biomes.service';
 export * from './south.america.loss.service';

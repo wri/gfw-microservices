@@ -1,5 +1,5 @@
 import React from 'react';
-import { render, screen, waitFor, cleanup } from '@testing-library/react';
+import { render, screen, cleanup } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { AddressSelector } from './AddressSelector';
 import { FieldError } from 'react-hook-form';

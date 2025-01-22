@@ -4,10 +4,10 @@ import { UploadByFileFolderIcon } from './UploadByFileFolderIcon';
 import { FileAttachState } from '../types';
 
 jest.mock('@mui/icons-material', () => ({
-  DriveFolderUpload: (props) => <span data-testid="DriveFolderUpload" {...props} />,
-  Downloading: (props) => <span data-testid="Downloading" {...props} />,
-  Report: (props) => <span data-testid="Report" {...props} />,
-  CheckCircle: (props) => <span data-testid="CheckCircle" {...props} />,
+  DriveFolderUpload: (props: any) => <span data-testid="DriveFolderUpload" {...props} />,
+  Downloading: (props: any) => <span data-testid="Downloading" {...props} />,
+  Report: (props: any) => <span data-testid="Report" {...props} />,
+  CheckCircle: (props: any) => <span data-testid="CheckCircle" {...props} />,
 }));
 
 afterEach(() => {

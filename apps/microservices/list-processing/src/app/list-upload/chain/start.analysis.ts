@@ -10,7 +10,11 @@ import { AbstractHandler, ChainType, RequestNewList } from './types';
 import { MARK_IS_TEST_LIST, MARK_IS_TEST_USER } from '../../../services/constants';
 import { checkProcessingLimits } from '@wri-monorepos/shared';
 import { mockAnalysisFlow } from '../../../mock';
-import { extractAnalysisTypes, getListAnalysisStatusByListId } from '@wri-monorepos/geo';
+import {
+  extractAnalysisTypes,
+  getListAnalysisStatusByListId,
+  validateGHGCommodity,
+} from '@wri-monorepos/geo';
 import { ProcessingLimitException } from '../../app.exceptions';
 import { listStatus } from '@wri-monorepos/constants';
 import {
@@ -116,6 +120,11 @@ export class StartAnalysis extends AbstractHandler<ChainType> {
       subscriptionStatusId,
       listId,
     });
+
+    // Check if the commodity is valid for GHG Analysis
+    if (await validateGHGCommodity(listId, organization_database)) {
+      Logger.log(`Commodity is valid for GHG Analysis`);
+    }
 
     if (isListLocationOverLimit) {
       await updateListsAnalysisStatus(organization_database, {

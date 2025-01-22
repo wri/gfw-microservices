@@ -1,9 +1,8 @@
 import { Then, Given, When } from '@badeball/cypress-cucumber-preprocessor';
-import * as User from '../../app-api/User';
 
 describe('Api Map', () => {
   Given('I login to the landing page', () => {
-    User.login();
+    cy.loginUI();
   });
 
   When('I am redirected to the API Map with location {string}', (location: string) => {

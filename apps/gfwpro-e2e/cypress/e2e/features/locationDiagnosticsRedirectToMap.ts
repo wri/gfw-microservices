@@ -1,14 +1,13 @@
 import { Given, When, Then } from '@badeball/cypress-cucumber-preprocessor';
 import LocationsPage from '../../pages/locationsPage';
 import ListDetailsPage from '../../pages/listDetailsPage';
-import * as User from '../../app-api/User';
 
 describe('Location diagnostics', () => {
   const locationsPage = new LocationsPage();
   const listDetailsPage = new ListDetailsPage();
 
   Given('I am logged in', () => {
-    User.login();
+    cy.loginUI();
     cy.visit('/locations');
   });
 

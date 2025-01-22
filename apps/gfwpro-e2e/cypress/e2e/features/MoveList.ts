@@ -1,7 +1,6 @@
 import { When, Then } from '@badeball/cypress-cucumber-preprocessor';
 import LocationsPage from '../../pages/locationsPage';
 import ListDetailsPage from '../../pages/listDetailsPage';
-import * as User from '../../app-api/User';
 
 describe('Move List', () => {
   const locationsPage = new LocationsPage();
@@ -13,7 +12,7 @@ describe('Move List', () => {
   ];
 
   When('I login in the landing page', () => {
-    User.login();
+    cy.loginUI();
     cy.visit('/locations');
   });
 

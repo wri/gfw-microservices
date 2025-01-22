@@ -45,7 +45,7 @@ import { ListService } from '../lists/lists.service';
 import { ServerConfigType } from '../validators/server-config';
 import { SaveActivityLogEndpoint } from './utils/saveActivityLogEndpoint';
 import { handleCreateAnalysis } from '@wri-monorepos/geo';
-
+import { Lists } from '../lists/lists.entity';
 const LIST_INITIAL_STATUS = 'Pending';
 const MIN_FILE_SIZE_IN_BYTES = 300;
 
@@ -335,9 +335,9 @@ export class ListAnalysisService {
     const listId = largeListCreated.data.list_id;
 
     // Get list data
-    const listData = await this.listService.getList({
-      listId,
-      organizationId,
+    const listRepository = organizationConnection.getRepository(Lists);
+    const listData = await listRepository.findOne({
+      where: { id: listId },
     });
     // verify if list has a non valid GHG commodity
     if (listData?.Commodity.startsWith('GFWP_')) {

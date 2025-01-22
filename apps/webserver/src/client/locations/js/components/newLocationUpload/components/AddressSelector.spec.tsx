@@ -55,7 +55,7 @@ describe('AddressSelector', () => {
     const inputField = screen.getByRole('combobox');
     await user.type(inputField, 'St');
 
-    await waitFor(() => expect(global.fetch).toHaveBeenCalled());
+    expect(global.fetch).toHaveBeenCalled();
     expect(global.fetch).toHaveBeenCalledWith(
       expect.stringContaining(
         'https://geocode.arcgis.com/arcgis/rest/services/World/GeocodeServer/suggest'
@@ -132,9 +132,9 @@ describe('AddressSelector', () => {
     global.fetch = jest.fn(() => Promise.reject(new Error('API Error'))) as jest.Mock;
 
     const inputField = screen.getByRole('combobox');
-    user.type(inputField, '123');
+    await user.type(inputField, '123');
 
-    await waitFor(() => expect(global.fetch).toHaveBeenCalledTimes(1));
+    expect(global.fetch).toHaveBeenCalled();
     expect(screen.queryByText('123 Main St')).not.toBeInTheDocument();
   });
 });

@@ -334,6 +334,22 @@ export class ListAnalysisService {
     }
     const listId = largeListCreated.data.list_id;
 
+    // Get list data
+    const listData = await this.listService.getList({
+      listId,
+      organizationId,
+    });
+    // verify if list has a non valid GHG commodity
+    if (listData?.Commodity.startsWith('GFWP_')) {
+      this.logger.log(
+        `Invalid commodity in list ${listData.id} - ${listData.listName} for GHG Analysis`
+      );
+      throwCustomErrorResponse(
+        `Invalid commodity in list ${listData.id} - ${listData.listName} for GHG Analysis`,
+        HttpStatus.BAD_REQUEST
+      );
+    }
+
     try {
       // save list to process
       const saveListToProcess = await axios.post<{

@@ -12,6 +12,7 @@
 declare namespace Cypress {
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   interface Chainable<Subject> {
+    loginUI(): void;
     login(email: string, password: string, verifyToken?: string): void;
     visitAndVerifyLoad(url: string, options?: Partial<Cypress.VisitOptions>): void;
   }
@@ -36,6 +37,18 @@ Cypress.Commands.add('login', (email: string, password: string, verifyToken = 'u
       tokenID: verifyToken,
     },
   });
+});
+
+Cypress.Commands.add('loginUI', () => {
+  const deployment = Cypress.env('deployment');
+  const credentials = Cypress.env(deployment);
+  cy.visit(`https://pro-${deployment}.globalforestwatch.org/`);
+  cy.contains('Log in').click();
+  cy.get('input').eq(0).type(credentials.username);
+  cy.get('input').eq(1).type(credentials.password);
+  cy.get('[data-cy="loginButton"]').first().click();
+  cy.get('[data-cy="verifyToken"]').type(credentials.password);
+  cy.contains('Verify').click();
 });
 
 Cypress.Commands.add('visitAndVerifyLoad', (url, options: Partial<Cypress.VisitOptions> = {}) => {

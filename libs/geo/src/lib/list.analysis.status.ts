@@ -165,7 +165,7 @@ export const handleCreateAnalysis = async (
   };
   try {
     // Check if commodity is valid for GHG Analysis
-    if (await validateGHGCommodity(listId, organizationDb)) {
+    if (!(await validateGHGCommodity(listId, organizationDb))) {
       Logger.log(`Commodity is valid for GHG Analysis`);
     }
 
@@ -350,18 +350,25 @@ export const validateGHGCommodity = async (
   organizationDb: string
 ): Promise<boolean> => {
   // Get list data
-  const clientStoreConnection = new ClientStoreConnection();
-  const organizationConnection = await clientStoreConnection.getConnection(organizationDb);
-  const listRepository = organizationConnection.getRepository(Lists);
-  const listData = await listRepository.findOne({
-    where: { id },
-  });
-  // verify if list has a non valid GHG commodity
-  if (listData?.Commodity.startsWith('GFWP_')) {
-    Logger.log(`Invalid commodity in list ${listData.id} - ${listData.listName} for GHG Analysis`);
-    throw new Error(
-      `Invalid commodity in list ${listData.id} - ${listData.listName} for GHG Analysis`
-    );
+  try {
+    const clientStoreConnection = new ClientStoreConnection();
+    const organizationConnection = await clientStoreConnection.getConnection(organizationDb);
+    const listRepository = organizationConnection.getRepository(Lists);
+    const listData = await listRepository.findOne({
+      where: { id },
+    });
+    // verify if list has a non valid GHG commodity
+    if (listData?.Commodity.startsWith('GFWP_')) {
+      Logger.log(
+        `Invalid commodity in list ${listData.id} - ${listData.listName} for GHG Analysis`
+      );
+      throw new Error(
+        `Invalid commodity in list ${listData.id} - ${listData.listName} for GHG Analysis`
+      );
+    }
+    return true;
+  } catch (error) {
+    Logger.error('validateGHGCommodity', error.message || error);
+    throw error;
   }
-  return true;
 };

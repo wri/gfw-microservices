@@ -84,6 +84,11 @@ export class StartAnalysis extends AbstractHandler<ChainType> {
       subscription_status_id: subscriptionStatusId,
     } = request.request as RequestNewList;
 
+    // Check if the commodity is valid for GHG Analysis
+    if (! await validateGHGCommodity(listId, organization_database)) {
+      Logger.log(`Commodity is valid for GHG Analysis`);
+    }
+
     const listSizeWithoutError = request.geojson.features?.filter(
       (feature) => !feature?.properties?.error && feature?.properties?.gadmid
     ).length;
@@ -120,11 +125,6 @@ export class StartAnalysis extends AbstractHandler<ChainType> {
       subscriptionStatusId,
       listId,
     });
-
-    // Check if the commodity is valid for GHG Analysis
-    if (await validateGHGCommodity(listId, organization_database)) {
-      Logger.log(`Commodity is valid for GHG Analysis`);
-    }
 
     if (isListLocationOverLimit) {
       await updateListsAnalysisStatus(organization_database, {

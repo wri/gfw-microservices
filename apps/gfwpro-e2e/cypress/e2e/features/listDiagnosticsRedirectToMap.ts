@@ -30,6 +30,10 @@ describe('List diagnostics', () => {
     diagnosticsPage.clickOnDiagnosticMap();
   });
 
+  When('I change to the post 2000 Forest Change diagnostics', () => {
+    diagnosticsPage.changeDiagnostics('Post-2000 Forest Change');
+  });
+
   Then('I should be redirected to the map page and view the GFW list loaded on the map', () => {
     cy.location('href').should('include', '/map');
   });

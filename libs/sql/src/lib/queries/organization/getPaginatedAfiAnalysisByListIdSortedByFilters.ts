@@ -67,14 +67,14 @@ SET @LocationNameColumn = CASE
         WHERE TABLE_NAME = @list_table
         AND COLUMN_NAME = 'Location Name'
     )
-    THEN 'lt.[Location Name] as locationName, '
+    THEN 'lt.[Location Name] as locationName, lt.[Location Name] as [Location Name], '
     WHEN EXISTS (
         SELECT 1
         FROM INFORMATION_SCHEMA.COLUMNS
         WHERE TABLE_NAME = @list_table
         AND COLUMN_NAME = 'Investment Name'
     )
-    THEN 'lt.[Investment Name] as locationName, '
+    THEN 'lt.[Investment Name] as locationName, lt.[Investment Name] as [Location Name], '
     ELSE ''
 END;
 

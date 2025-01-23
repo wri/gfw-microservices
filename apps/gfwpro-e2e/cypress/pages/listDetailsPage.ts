@@ -13,6 +13,7 @@ class ListDetailsPage {
     downloadShapefileptionListDetail: () => cy.contains('Shapefile'),
     titleAlertDownloadList: () => cy.contains('List file Download'),
     copyMoveBtn: () => cy.contains('Copy/Move'),
+    copyBtn: () => cy.get('.MuiButton-primary'),
     editBtn: () => cy.contains('EDIT'),
     deleteBtn: () => cy.contains('Delete'),
     createNewListOptionRadioBtn: () => cy.get('.move-or-copy__option').last().find('input'),
@@ -112,8 +113,11 @@ class ListDetailsPage {
       } else {
         this.checkOnCheckBoxSelectAll();
       }
-
-      this.clickOnCopyMoveBtn();
+      if (!cy.get('.MuiButton-primary').should('be.visible')) {
+        this.clickOnCopyMoveBtn();
+      } else {
+        this.clickOnCopyBtn();
+      }
       this.clickOnCreateNewListRadioBtn();
       this.elements.inputCreateNewList().type(listName);
       this.clickOnSaveAsDraftBtn();
@@ -144,6 +148,9 @@ class ListDetailsPage {
   }
   clickOnCopyMoveBtn() {
     this.elements.copyMoveBtn().click();
+  }
+  clickOnCopyBtn() {
+    this.elements.copyBtn().click();
   }
   clickOnEditBtn() {
     cy.get(

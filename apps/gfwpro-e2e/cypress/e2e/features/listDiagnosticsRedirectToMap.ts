@@ -12,6 +12,11 @@ describe('List diagnostics', () => {
     cy.loginUI();
   });
 
+  When('I navigate to locations and select a user list', () => {
+    cy.visit('/locations');
+    locationsPage.clickOnLocationsList('AAT Argentina Points Generic');
+  });
+
   When('I navigate to locations and select a GFW list', () => {
     cy.visit('/locations');
     locationsPage.clickOnLocationsList('Palm Oil Mills');
@@ -25,7 +30,15 @@ describe('List diagnostics', () => {
     diagnosticsPage.clickOnDiagnosticMap();
   });
 
+  When('I change to the post 2000 Forest Change diagnostics', () => {
+    diagnosticsPage.changeDiagnostics('Post-2000 Forest Change');
+  });
+
   Then('I should be redirected to the map page and view the GFW list loaded on the map', () => {
+    cy.location('href').should('include', '/map');
+  });
+
+  Then('I should be redirected to the map page and view the user list loaded on the map', () => {
     cy.location('href').should('include', '/map');
   });
 });

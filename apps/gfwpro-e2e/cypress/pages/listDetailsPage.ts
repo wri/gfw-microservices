@@ -178,9 +178,7 @@ class ListDetailsPage {
   }
 
   clickOnLocationDiagnosticsBtn() {
-    cy.get(':nth-child(1) > [style="width: 100%; display: flex;"] > :nth-child(6) > span').trigger(
-      'mouseover'
-    );
+    cy.get(':nth-child(1) > [data-testid="custom-row"] > :nth-child(5)').trigger('mouseover');
     this.elements.locationDiagnosticsBtn().click();
   }
 

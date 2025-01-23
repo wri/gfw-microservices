@@ -3,7 +3,6 @@ import { AlertsAdminAreasLevelService } from './alerts.admin.areas.level.service
 import { AlertsFileService } from './alerts.file.service';
 import { AlertsHistoryService } from './alerts.history.service';
 import { AlertsIntegratedNaturalForestService } from './alerts.integrated.natural.forest.service';
-import { AlertsLocationsHistoryService } from './alerts.locations.history.service';
 import { AlertsLocationsLevelService } from './alerts.locations.level.service';
 import { AlertsPrioritiesAdminAreasLevelService } from './alerts.priorities.admin.areas.level.service';
 import { AlertsPrioritiesLocationsLevelService } from './alerts.priorities.locations.level.service';
@@ -11,7 +10,6 @@ import { AlertsSummaryService } from './alerts.summary.service';
 import { ArgentinaDeforestationService } from './argentina-deforestation.service';
 import { ArgentinaOverlapService } from './argentina.overlap.service';
 import { CommodityRiskDiagnosticLocationSummaryService } from './commodity.risk.diagnostic.location.summary.service';
-import { DeforestationKpisService } from './deforestation.kpis.service';
 import { DeforestationTrendsService } from './deforestation.trends.service';
 import { ForestChangeDiagnosticListSummaryService } from './forest.change.diagnostic.list.summary.service';
 import { ForestChangeDiagnosticLocationSummaryService } from './forest.change.diagnostic.location.summary.service';
@@ -23,7 +21,6 @@ import { NaturalForestLossService } from './natural.forest.loss.service';
 import { OtherKpisService } from './other.kpis.service';
 import { PalmRiskAnalysisService } from './palm.risk.analysis.service';
 import { ReadmeService } from './readme.service';
-import { ResultService } from './result.service';
 import { GeometryService } from './geometry.service';
 import { SouthAmericaBiomesService } from './south.america.biomes.service';
 import { SouthAmericaLossService } from './south.america.loss.service';
@@ -43,7 +40,6 @@ import { ReadmeMergeServices } from '../shared/readme.merge.service';
     AlertsFileService,
     AlertsHistoryService,
     AlertsIntegratedNaturalForestService,
-    AlertsLocationsHistoryService,
     AlertsLocationsLevelService,
     AlertsPrioritiesAdminAreasLevelService,
     AlertsPrioritiesLocationsLevelService,
@@ -51,7 +47,6 @@ import { ReadmeMergeServices } from '../shared/readme.merge.service';
     ArgentinaDeforestationService,
     ArgentinaOverlapService,
     CommodityRiskDiagnosticLocationSummaryService,
-    DeforestationKpisService,
     DeforestationTrendsService,
     ForestChangeDiagnosticListSummaryService,
     ForestChangeDiagnosticLocationSummaryService,
@@ -63,7 +58,6 @@ import { ReadmeMergeServices } from '../shared/readme.merge.service';
     OtherKpisService,
     PalmRiskAnalysisService,
     ReadmeService,
-    ResultService,
     GeometryService,
     SouthAmericaBiomesService,
     SouthAmericaLossService,
@@ -79,7 +73,6 @@ import { ReadmeMergeServices } from '../shared/readme.merge.service';
     AlertsFileService,
     AlertsHistoryService,
     AlertsIntegratedNaturalForestService,
-    AlertsLocationsHistoryService,
     AlertsLocationsLevelService,
     AlertsPrioritiesAdminAreasLevelService,
     AlertsPrioritiesLocationsLevelService,
@@ -87,7 +80,6 @@ import { ReadmeMergeServices } from '../shared/readme.merge.service';
     ArgentinaDeforestationService,
     ArgentinaOverlapService,
     CommodityRiskDiagnosticLocationSummaryService,
-    DeforestationKpisService,
     DeforestationTrendsService,
     ForestChangeDiagnosticListSummaryService,
     ForestChangeDiagnosticLocationSummaryService,
@@ -99,7 +91,6 @@ import { ReadmeMergeServices } from '../shared/readme.merge.service';
     OtherKpisService,
     PalmRiskAnalysisService,
     ReadmeService,
-    ResultService,
     GeometryService,
     SouthAmericaBiomesService,
     SouthAmericaLossService,

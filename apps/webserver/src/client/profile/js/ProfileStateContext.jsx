@@ -1,5 +1,5 @@
 import React, { useState, useEffect, createContext, useContext, useCallback } from 'react';
-import Loading from '../../common/js/components/Loaders/Loading';
+import { LoadingModal } from '../../components';
 
 const ProfileStateContext = createContext();
 
@@ -59,7 +59,7 @@ export default function ProfileContextProvider({ children }) {
         policyList,
       }}
     >
-      {isLoading ? <Loading /> : children}
+      {isLoading ? <LoadingModal isLoading={true} /> : children}
     </ProfileStateContext.Provider>
   );
 }

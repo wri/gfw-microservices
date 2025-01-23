@@ -13,7 +13,7 @@ import {
   createFeatureProps,
   deleteGeoJSONFeatureProperties,
   getAnalysisTypesFromIds,
-  getListAnalysisStatus,
+  getListAnalysisStatusByListId,
   SPSListCreation,
   GeoJson,
 } from '@wri-monorepos/geo';
@@ -158,7 +158,7 @@ export class LocationService {
       // Create final GEO JSON
       this.logger.log('Creating final GEO JSON for database insertion');
       const finalGeojson = getFinalGeojson(0, geojson);
-      const listAnalyses = await getListAnalysisStatus(clientDatabase, selectedListId);
+      const listAnalyses = await getListAnalysisStatusByListId(clientDatabase, selectedListId);
       const analysisIds = listAnalyses.map((analysis) => analysis.analysisId);
 
       if (listType === TargetListType.New) {
@@ -341,7 +341,7 @@ export class LocationService {
     if (isSaveAsDraft) {
       await UnlockListAndSaveAsDraft(clientDatabase, moveToList.id, gfwListId);
     } else {
-      const listAnalyses = await getListAnalysisStatus(clientDatabase, moveToList.id);
+      const listAnalyses = await getListAnalysisStatusByListId(clientDatabase, moveToList.id);
       const analysisIds = listAnalyses.map((analysis) => analysis.analysisId);
       await this.handleProcessingLimits({
         clientDatabase,

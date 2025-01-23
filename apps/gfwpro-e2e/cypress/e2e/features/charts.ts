@@ -1,5 +1,5 @@
 import { When, Then, Given } from '@badeball/cypress-cucumber-preprocessor';
-import * as User from '../../app-api/User';
+
 import LocationsPage from '../../pages/locationsPage';
 import ListDetailsPage from '../../pages/listDetailsPage';
 import DiagnosticsPage from '../../pages/diagnosticsPage';
@@ -9,7 +9,7 @@ describe('Alerts page', () => {
   const listDetailsPage = new ListDetailsPage();
   const diagnosticPage = new DiagnosticsPage();
   Given('I login to the landing page', () => {
-    User.login();
+    cy.loginUI();
     cy.visit('/locations');
   });
 
@@ -22,7 +22,7 @@ describe('Alerts page', () => {
   });
 
   When('I navigate to a diagnostics page', () => {
-    //listDetailsPage.clickOnTabTreeCoverLossBtn();
+    listDetailsPage.clickOnPost2020Tab();
     listDetailsPage.clickOnListDiagnosticsBtn();
   });
 

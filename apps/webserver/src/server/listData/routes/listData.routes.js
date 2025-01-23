@@ -39,5 +39,7 @@ module.exports = (app, limiter) => {
 
   listRoutes.get('/:listId/commodity', controller.getListCommodity);
 
+  listRoutes.get('/by-commodity', controller.getListByCommodity);
+
   listRoutes.get('/preview', controller.getPreviewData);
 };

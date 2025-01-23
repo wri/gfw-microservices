@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, BadRequestException } from '@nestjs/common';
 import { FeatureCollection } from '@wri-monorepos/geo';
 import { AbstractHandler, ChainType } from './chain/types';
 import { DownloadS3File } from './chain/download.s3.file';
@@ -9,7 +9,6 @@ import { ConfigService } from '@nestjs/config';
 import { ServerConfigType } from '../../validators/server-config';
 import { PreviewStep } from './chain/preview.step';
 import { ValidateMandatoryFields } from './chain/validate.mandatory.fields';
-import { ValidateLatLongGeojson } from './chain/validate.lat.long.geojson';
 import { ValidateLocationName } from './chain/validate.location.name';
 
 @Injectable()
@@ -36,7 +35,6 @@ export class PreviewListUploadService {
     const gadmService = new GADMService();
     const previewStep = new PreviewStep();
     const validateMandatoryFields = new ValidateMandatoryFields();
-    const validateLatLongGeojson = new ValidateLatLongGeojson();
     const validateLocationName = new ValidateLocationName();
 
     downloadS3File
@@ -44,10 +42,24 @@ export class PreviewListUploadService {
       .setNext(previewStep)
       .setNext(validateMandatoryFields)
       .setNext(validateLocationName)
-      .setNext(gadmService)
-      .setNext(validateLatLongGeojson);
+      .setNext(gadmService);
 
     const response = await AbstractHandler.runFullChain(downloadS3File, chainType);
+
+    // Check for errors in the geojson features
+    const errors = [
+      ...new Set(
+        response.geojson.features.flatMap((feature) => feature.properties?.errorDetails || [])
+      ),
+    ];
+
+    if (errors.length > 0) {
+      throw new BadRequestException({
+        message: 'Validation errors found in the data',
+        errors,
+      });
+    }
+
     return response.geojson;
   }
 }

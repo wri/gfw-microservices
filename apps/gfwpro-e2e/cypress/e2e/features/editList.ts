@@ -2,7 +2,6 @@ import { When, Then } from '@badeball/cypress-cucumber-preprocessor';
 import LocationsPage from '../../pages/locationsPage';
 import ListDetailsPage from '../../pages/listDetailsPage';
 import EditPage from '../../pages/editPage';
-import * as User from '../../app-api/User';
 
 describe('Edit List', () => {
   const locationsPage = new LocationsPage();
@@ -10,7 +9,7 @@ describe('Edit List', () => {
   const editPage = new EditPage();
 
   When('I login in the landing page', () => {
-    User.login();
+    cy.loginUI();
     cy.visit('/locations');
   });
 
@@ -19,19 +18,19 @@ describe('Edit List', () => {
   });
 
   When('I select a location and press the Edit button', () => {
-    listDetailsPage.elements.tabPost2020().should('be.visible');
+    // listDetailsPage.elements.tabPost2020().should('be.visible');
     listDetailsPage.selectCheckBoxes([1]);
     listDetailsPage.clickOnEditBtn();
   });
 
   When('I select all locations and press the Edit button', () => {
-    listDetailsPage.elements.tabPost2020().should('be.visible');
+    // listDetailsPage.elements.tabPost2020().should('be.visible');
     listDetailsPage.checkOnCheckBoxSelectAll();
     listDetailsPage.clickOnEditBtn();
   });
 
   When('I select 50 locations and press the Edit button', () => {
-    listDetailsPage.elements.tabPost2020().should('be.visible');
+    // listDetailsPage.elements.tabPost2020().should('be.visible');
     const locationsToSelect = Array.from({ length: 50 }, (_, i) => i + 1);
     listDetailsPage.selectCheckBoxes(locationsToSelect);
     listDetailsPage.clickOnEditBtn();

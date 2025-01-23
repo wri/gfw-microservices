@@ -1,12 +1,12 @@
 import { When, Then } from '@badeball/cypress-cucumber-preprocessor';
-import * as User from '../../app-api/User';
+
 import MapPage from '../../pages/mapPage';
 
 describe('Maps View', () => {
   const mapPage = new MapPage();
 
   When('I login in the landing page', () => {
-    User.login();
+    cy.loginUI();
     cy.visit('/map');
   });
 

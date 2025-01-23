@@ -60,7 +60,7 @@ const palmRiskAnalysisParser = ({ operation, data, dataRow, csvData }) => {
       rowObj = filterBelowEndYear(rowObj);
 
       const years = Object.keys(rowObj);
-      const value = rowObj[years[years.length - 1]];
+      const value = rowObj[years[years.length - 1]] || 0;
       const priority = priorityLabel[value];
 
       if (priority) {

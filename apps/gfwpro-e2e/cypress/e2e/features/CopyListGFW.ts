@@ -1,7 +1,6 @@
 import { Given, When, Then } from '@badeball/cypress-cucumber-preprocessor';
 import LocationsPage from '../../pages/locationsPage';
 import ListDetailsPage from '../../pages/listDetailsPage';
-import * as User from '../../app-api/User';
 
 describe('List Copy Feature', () => {
   const locationsPage = new LocationsPage();
@@ -11,7 +10,7 @@ describe('List Copy Feature', () => {
   const checkboxLocations = [1, 2];
 
   Given('I login in the landing page', () => {
-    User.login();
+    cy.loginUI();
     cy.visit('/locations');
   });
 
@@ -37,12 +36,12 @@ describe('List Copy Feature', () => {
 
   Then('I should be able to select the country for the Protected Areas list GFW', () => {
     listDetailsPage.selectCountryForProtectedAreas('Argentina');
-    listDetailsPage.clickOnApplyFilters();
+    listDetailsPage.clickOnApply();
   });
 
   Then('I should be able to select the country for the Administrative Areas list GFW', () => {
     listDetailsPage.selectCountryForAdminAreas('Argentina');
-    listDetailsPage.clickOnApplyFilters();
+    listDetailsPage.clickOnApply();
   });
 
   Then('I should be able to copy a GFW list and save it as a draft', () => {

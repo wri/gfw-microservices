@@ -2,7 +2,6 @@ import { When, Then } from '@badeball/cypress-cucumber-preprocessor';
 import LocationsPage from '../../pages/locationsPage';
 import ListDetailsPage from '../../pages/listDetailsPage';
 import DiagnosticsPage from '../../pages/diagnosticsPage';
-import * as User from '../../app-api/User';
 
 describe('Location diagnostics', () => {
   const locationsPage = new LocationsPage();
@@ -10,16 +9,16 @@ describe('Location diagnostics', () => {
   const diagnosticsPage = new DiagnosticsPage();
 
   When('I login in the landing page', () => {
-    User.login();
+    cy.loginUI();
     cy.visit('/locations');
   });
 
   When('I navigate to a list details page and click on a location checkbox', () => {
     locationsPage.clickOnLocationsList('AAT Argentina Points Generic');
-    locationsPage.clickOnLocationCheckbox('a1');
   });
 
   When('I click on location diagnostic button', () => {
+    listDetailsPage.clickOnPost2000Tab();
     listDetailsPage.clickOnLocationDiagnosticsBtn();
   });
 

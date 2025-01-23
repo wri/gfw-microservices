@@ -2,16 +2,18 @@ class ListDetailsPage {
   elements = {
     listDiagnosticsBtn: () => cy.get('[data-cy="list-diagnostics"]'),
     locationDiagnosticsBtn: () => cy.get('[data-cy="location-diagnostics"]'),
-    fullListMapBtn: () => cy.contains('Full List Map'),
+    fullListMapBtn: () => cy.contains('List Map'),
+    mapBtn: () => cy.contains('Map'),
     locationMapBtn: () => cy.contains('Location(s) Map'),
     checkBoxSelectAll: () => cy.get('div.rt-table').find('label.column-checkbox:visible').eq(0),
     checkBoxSelectLocation: (name) => cy.contains(name),
     downloadBtn: () => cy.contains('Download'),
     downloadCSVOptionListDetail: () => cy.contains('CSV'),
+    downloadResultsOptionListDetail: () => cy.contains('Results'),
     downloadShapefileptionListDetail: () => cy.contains('Shapefile'),
     titleAlertDownloadList: () => cy.contains('List file Download'),
-    moveBtn: () => cy.contains('Move'),
-    editBtn: () => cy.contains('button', 'Edit'),
+    copyMoveBtn: () => cy.contains('Copy/Move'),
+    editBtn: () => cy.contains('EDIT'),
     deleteBtn: () => cy.contains('Delete'),
     createNewListOptionRadioBtn: () => cy.get('.move-or-copy__option').last().find('input'),
     moveSectionOptionRadioBtn: () => cy.contains('label', 'Move'),
@@ -20,7 +22,7 @@ class ListDetailsPage {
     saveAsDraftBtn: () => cy.contains('Save As Draft'),
     confirmActionBtn: () => cy.contains('button', 'OK'),
     titleConfirmCopyList: () => cy.contains('h3', 'Locations Moved'),
-    applyFilters: () => cy.contains('Apply filters'),
+    apply: () => cy.contains('Apply'),
     descriptionConfirmCopyList: () =>
       cy.contains('div', 'Location move process starts, this can take a while, please be patient.'),
     descriptionAlertDownloadList: () =>
@@ -29,22 +31,25 @@ class ListDetailsPage {
       ),
     closeAlertDownloadBtn: () => cy.get('[data-cy="download-dialog"]').find('button').first(),
     listByName: (name) => cy.contains('.list-item', name),
-    tabPost2020: () => cy.get('.Mui-selected'),
+    post2020Tab: () => cy.get('[data-cy="post-2020-tab"]'),
+    post2000Tab: () => cy.get('[data-cy="post-2000-tab"]'),
+    palmRiskAssessmentTab: () => cy.get('[data-cy="palm-risk-assessment-tab"]'),
   };
   clickOnLocationsList(name: string) {
     cy.contains(name).click();
   }
 
   selectCountryForProtectedAreas(location: string) {
-    cy.get('select').first().select(location);
+    cy.get('#country_select').click();
+    cy.contains(location).should('be.visible').click();
   }
   selectCountryForAdminAreas(location: string) {
-    cy.contains('Select...').click();
-    cy.contains(location).click();
+    cy.get('#country_select').click();
+    cy.contains(location).should('be.visible').click();
   }
 
-  clickOnApplyFilters() {
-    this.elements.applyFilters().click();
+  clickOnApply() {
+    this.elements.apply().click();
   }
   selectCheckBoxes(locations: number[]) {
     if (locations && locations.length > 0) {
@@ -71,7 +76,7 @@ class ListDetailsPage {
 
   moveList(list: string, location: number[]) {
     this.selectCheckBoxes(location);
-    this.clickOnMoveBtn();
+    this.clickOnCopyMoveBtn();
     this.clickOnMoveSectionRadioBtn();
     this.selectList(list);
     this.clickOnSaveAsDraftBtn();
@@ -108,7 +113,7 @@ class ListDetailsPage {
         this.checkOnCheckBoxSelectAll();
       }
 
-      this.clickOnMoveBtn();
+      this.clickOnCopyMoveBtn();
       this.clickOnCreateNewListRadioBtn();
       this.elements.inputCreateNewList().type(listName);
       this.clickOnSaveAsDraftBtn();
@@ -137,28 +142,49 @@ class ListDetailsPage {
   clickOnCreateNewListRadioBtn() {
     this.elements.createNewListOptionRadioBtn().click({ force: true });
   }
-  clickOnMoveBtn() {
-    this.elements.moveBtn().click();
+  clickOnCopyMoveBtn() {
+    this.elements.copyMoveBtn().click();
   }
   clickOnEditBtn() {
+    cy.get(
+      '.rt-tbody > :nth-child(1) > [style="width: 100%; display: flex;"] > :nth-child(6)'
+    ).trigger('mouseover');
+    cy.get(
+      '[style="position: absolute; right: 0px; background-color: white; padding: 0px 20px;"] > .css-gggkt8-MuiButtonBase-root-MuiButton-root > [data-testid="MoreVertIcon"]'
+    ).click();
     this.elements.editBtn().click();
   }
   clickOnDeleteBtn() {
     this.elements.deleteBtn().click();
   }
-  clickOnTabTreeCoverLossBtn() {
-    this.elements.tabTreeCoverLoss().click();
+  clickOnPost2020Tab() {
+    this.elements.post2020Tab().click();
+  }
+  clickOnPost2000Tab() {
+    this.elements.post2000Tab().click();
+  }
+  clickOnPalmRiskAssessmentTab() {
+    this.elements.palmRiskAssessmentTab().click();
   }
   clickOnListDiagnosticsBtn() {
     this.elements.listDiagnosticsBtn().click();
   }
 
   clickOnLocationDiagnosticsBtn() {
+    cy.get(':nth-child(1) > [style="width: 100%; display: flex;"] > :nth-child(6) > span').trigger(
+      'mouseover'
+    );
     this.elements.locationDiagnosticsBtn().click();
   }
 
   clickOnFullListMapBtn() {
     this.elements.fullListMapBtn().click();
+  }
+  clickOnMapBtn() {
+    cy.get(':nth-child(1) > [style="width: 100%; display: flex;"] > :nth-child(6) > span').trigger(
+      'mouseover'
+    );
+    this.elements.mapBtn().click();
   }
   clickOnLocationMapBtn() {
     this.elements.locationMapBtn().click();

@@ -7,9 +7,9 @@ const AnalysisManager = require('../../../config/publicutils/analysisManager.uti
 const logger = require('../../../config/privateutils/logger.utils');
 
 const { getListDataFiltered } = require('../utils/listData.utils');
-const { getListAnalysisStatusById, setSelectedAnalyses } = require('../service/listData.service');
 const listUtils = require(path.resolve('./config/privateutils/list.utils'));
 import { analysisTypes } from '@wri-monorepos/constants';
+import { getListAnalysisStatusByListId, setSelectedAnalyses } from '@wri-monorepos/geo';
 import axios from 'axios';
 
 /**
@@ -134,8 +134,9 @@ export const listDataCustom = async (req, res) => {
 export const getSelectedAnalyses = async (req, res) => {
   const { listId } = req.params;
   try {
+    const { organization_database } = req.session;
     await listUtils.getListNameSchema(req, listId);
-    const response = await getListAnalysisStatusById(req, listId);
+    const response = await getListAnalysisStatusByListId(organization_database, listId);
     return res.status(200).json(response);
   } catch (err) {
     logger.error(`Getting list analysis failed: Error message ${err}`);
@@ -145,6 +146,7 @@ export const getSelectedAnalyses = async (req, res) => {
 
 export const setSelectedAnalysesCtrl = async (req, res) => {
   const { listId } = req.params;
+  const { organization_database } = req.session;
 
   const { analysisIds } = req.body;
 
@@ -158,8 +160,8 @@ export const setSelectedAnalysesCtrl = async (req, res) => {
 
   try {
     await listUtils.getListNameSchema(req, listId);
+    await setSelectedAnalyses(organization_database, listId, analysisIds);
 
-    await setSelectedAnalyses(req, listId, analysisIds);
     return res.status(201).json({
       message: 'List analysis selection created successfully',
     });
@@ -174,11 +176,24 @@ export const getListCommodity = async (req, res) => {
   const organizationDatabase = req.session.organization_database;
 
   try {
-    const url = `${process.env.LISTS_MICROSERVICE_URL}/list/commodity?listId=${listId}&organizationDatabase=${organizationDatabase}`;
+    const url = `${process.env.LISTS_MICROSERVICE_URL}/commodity/by-list?listId=${listId}&organizationDatabase=${organizationDatabase}`;
     const { data } = await axios.get(url);
     res.status(200).json(data);
   } catch (error) {
     console.error('Error fetching commodity data:', error);
+    res.status(500).json({ error: 'Failed to fetch commodity data' });
+  }
+};
+
+export const getListByCommodity = async (req, res) => {
+  const { commodity } = req.query;
+  const organizationDatabase = req.session.organization_database;
+  try {
+    const url = `${process.env.LISTS_MICROSERVICE_URL}/commodity/all-lists?commodity=${commodity}&organizationDatabase=${organizationDatabase}`;
+    const { data } = await axios.get(url);
+    res.status(200).json(data);
+  } catch (error) {
+    logger.error('Error fetching commodity data:', error);
     res.status(500).json({ error: 'Failed to fetch commodity data' });
   }
 };
@@ -202,7 +217,9 @@ export const getPreviewData = async (req, res) => {
     );
     res.status(200).json(data);
   } catch (error) {
-    console.error('Error get the preview data:', error);
-    res.status(500).json({ error: 'Failed to fetch preview data' });
+    logger.error('Error get the preview data:', error);
+    res
+      .status(error.response?.status || 400)
+      .json(error.response?.data || { message: 'Failed to fetch preview data' });
   }
 };

@@ -1,5 +1,4 @@
 import { Logger } from '@nestjs/common';
-import * as sql from 'mssql';
 import {
   SQLUtils,
   GetTableAnalysisColumnsById,
@@ -7,7 +6,7 @@ import {
   ListsAnalysisStatus,
 } from '@wri-monorepos/sql';
 import { ListBulkCopy } from './ListBulkCopy';
-import { analysisTypesOptions } from '@wri-monorepos/constants';
+import * as sql from 'mssql';
 
 const LIST_STATUS = {
   LIST_STATUS_PENDING: 1,
@@ -438,27 +437,4 @@ export async function getListAnalysisStatus(
     'getListAnalysisStatusById',
     parameters
   );
-}
-
-// Get the analyses_types appropriate for sending for pre-analysis step function
-export function getAnalysisTypesFromIds(analysisIds: string[]) {
-  const extractAnalysisTypes = analysisTypesOptions.reduce((result, analysisTypesOption) => {
-    const isAnalysisUsed = analysisIds.includes(analysisTypesOption.id);
-    result[analysisTypesOption.id] = Boolean(isAnalysisUsed);
-    return result;
-  }, {});
-
-  return extractAnalysisTypes;
-}
-
-export function extractAnalysisTypes(listAnalysisStatusData: ListsAnalysisStatus[]) {
-  const extractAnalysisTypes = analysisTypesOptions.reduce((result, analysisTypesOption) => {
-    const listAnalysisInfo = listAnalysisStatusData.find(
-      (item) => item.analysisId === analysisTypesOption.id
-    );
-    result[analysisTypesOption.id] = Boolean(listAnalysisInfo);
-    return result;
-  }, {});
-
-  return extractAnalysisTypes;
 }

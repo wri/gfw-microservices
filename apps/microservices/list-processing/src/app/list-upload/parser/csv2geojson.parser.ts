@@ -17,6 +17,7 @@ export const csv2geojson = async (
   const toCamelCase = (str: string) => {
     return str
       .toLowerCase()
+      .trim()
       .replace(/(?:^\w|[A-Z]|\b\w|\s+)/g, (match, index) =>
         index === 0 ? match.toLowerCase() : match.toUpperCase()
       )
@@ -91,18 +92,15 @@ export const csv2geojson = async (
     }
 
     if (
-      typeof latitude != 'number' ||
-      typeof longitude != 'number' ||
-      isNaN(latitude) ||
-      isNaN(longitude)
+      !preview &&
+      (typeof latitude != 'number' ||
+        typeof longitude != 'number' ||
+        isNaN(latitude) ||
+        isNaN(longitude))
     ) {
       return {
         ...data,
-        error: {
-          message: 'Invalid latitude or longitude',
-          latitude,
-          longitude,
-        },
+        errorDetails: [`Invalid latitude or longitude: ${latitude}, ${longitude}`],
       };
     }
 
@@ -132,15 +130,14 @@ export const csv2geojson = async (
       row = createGeometry(row, includeLatLon);
       row = transformKeysToCamelCase(row);
 
-      if (row['error']) {
-        logger.error(row['error']);
-      } else {
-        geoJson.features.push({
-          type: 'Feature',
-          properties: row,
-          geometry: row['geometry'] as Geometry,
-        });
+      if (row['errorDetails']) {
+        logger.error(row['errorDetails']);
       }
+      geoJson.features.push({
+        type: 'Feature',
+        properties: row,
+        geometry: row['geometry'] as Geometry,
+      });
     });
 
     resolve(geoJson);

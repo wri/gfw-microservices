@@ -59,7 +59,7 @@ describe('SaveListAttributes', () => {
       expect(mockQueryBuilder.execute).toHaveBeenCalled();
     });
 
-    it('should log a warning if an error occurs', async () => {
+    it('should handle DB errors and throw it if something goes wrong', async () => {
       const orgDb = 'myOrgDb';
       const attributes = [
         { list_id: 1, attribute_name: 'width', attribute_type: ListsAttrsTypes.Int },
@@ -67,27 +67,49 @@ describe('SaveListAttributes', () => {
 
       mockGetConnection.mockRejectedValueOnce(new Error('DB Connection Error'));
 
-      const loggerWarnSpy = jest.spyOn(Logger.prototype, 'warn').mockImplementation();
+      const loggerWarnSpy = jest.spyOn(Logger.prototype, 'error').mockImplementation();
 
-      await saveListAttributes.saveLocAttributesToListAttributes(orgDb, attributes);
+      await expect(
+        saveListAttributes.saveLocAttributesToListAttributes(orgDb, attributes)
+      ).rejects.toThrow();
 
       expect(loggerWarnSpy).toHaveBeenCalledWith(
         'Something went wrong executing query.',
         expect.stringMatching(/Error: DB Connection Error/)
       );
     });
+
+    it('should log a warning if a violation of primary key happens', async () => {
+      const orgDb = 'myOrgDb';
+      const attributes = [
+        { list_id: 1, attribute_name: 'width', attribute_type: ListsAttrsTypes.Int },
+      ];
+
+      mockGetConnection.mockRejectedValueOnce(
+        new Error(
+          "Violation of PRIMARY KEY constraint 'PK_ListAttributes'. Cannot insert duplicate key in object 'dbo.ListAttributes'."
+        )
+      );
+
+      const loggerWarnSpy = jest.spyOn(Logger.prototype, 'warn').mockImplementation();
+
+      await saveListAttributes.saveLocAttributesToListAttributes(orgDb, attributes);
+
+      expect(loggerWarnSpy).toHaveBeenCalledWith(
+        'Constraint violation.',
+        expect.stringMatching(/Violation of PRIMARY KEY constraint/)
+      );
+    });
   });
 
   describe('getExistingListAttributesByListId', () => {
     it('should return a set of existing attributes', async () => {
-      // Arrange
       const orgDb = 'myOrgDb';
       const list_id = 123;
       const mockResults = [{ attribute_name: 'width' }, { attribute_name: 'height' }];
 
       (SQLUtils.queryDB as jest.Mock).mockResolvedValue(mockResults);
 
-      // Act
       const result = await saveListAttributes.getExistingListAttributesByListId(orgDb, list_id);
 
       expect(SQLUtils.queryDB).toHaveBeenCalledWith(

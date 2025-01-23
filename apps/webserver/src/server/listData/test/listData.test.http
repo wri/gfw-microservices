@@ -63,3 +63,8 @@ Cookie: gfwpro.globalforestwatch.org={{gfwpro_token}}
 GET https://localhost:8443/api/list/5407/commodity
 Content-Type: application/json
 Cookie: gfwpro.globalforestwatch.org={{gfwpro_token}}
+
+### Get List of specific commodity
+GET https://localhost:8443/api/list/by-commodity?commodity=other
+Content-Type: application/json
+Cookie: gfwpro.globalforestwatch.org={{gfwpro_token}}

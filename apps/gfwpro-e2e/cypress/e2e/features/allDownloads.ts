@@ -1,7 +1,7 @@
 import { Then, When } from '@badeball/cypress-cucumber-preprocessor';
 import LocationsPage from '../../pages/locationsPage';
 import ListDetailsPage from '../../pages/listDetailsPage';
-import * as User from '../../app-api/User';
+
 import AlertsPage from '../../pages/alertsPage';
 import BasePage from '../../pages/basePage';
 
@@ -12,7 +12,7 @@ describe('Locations View', () => {
   const basePage = new BasePage();
 
   When('I login in the landing page', () => {
-    User.login();
+    cy.loginUI();
     cy.visit('/locations');
   });
 

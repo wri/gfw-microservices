@@ -41,17 +41,17 @@ const createMultiGridHeaders = (
         return;
       }
       if (data.template_datum_field_name === 'Attribute1') {
-        if (customAttributeHeaders?.[0].custom !== 'Attribute1') {
+        if (customAttributeHeaders?.[0]?.custom !== 'Attribute1') {
           data.template_datum_field_name_updated = customAttributeHeaders[0].custom;
           headerArray.push(data.template_datum_field_name_updated);
         }
       } else if (data.template_datum_field_name === 'Attribute2') {
-        if (customAttributeHeaders?.[1].custom !== 'Attribute2') {
+        if (customAttributeHeaders?.[1]?.custom !== 'Attribute2') {
           data.template_datum_field_name_updated = customAttributeHeaders[1].custom;
           headerArray.push(data.template_datum_field_name_updated);
         }
       } else if (data.template_datum_field_name === 'Attribute3') {
-        if (customAttributeHeaders?.[2].custom !== 'Attribute3') {
+        if (customAttributeHeaders?.[2]?.custom !== 'Attribute3') {
           data.template_datum_field_name_updated = customAttributeHeaders[2].custom;
           headerArray.push(data.template_datum_field_name_updated);
         }

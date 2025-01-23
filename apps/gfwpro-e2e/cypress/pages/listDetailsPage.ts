@@ -101,7 +101,7 @@ class ListDetailsPage {
     });
   }
 
-  copyLists(lists: string[], locations?: number[]) {
+  copyLists(lists: string[], locations?: number[], isGFW?: boolean) {
     lists.forEach((listName) => {
       if (locations && locations.length > 0) {
         locations.forEach((location) => {
@@ -113,10 +113,10 @@ class ListDetailsPage {
       } else {
         this.checkOnCheckBoxSelectAll();
       }
-      if (!cy.get('.MuiButton-primary').should('be.visible')) {
-        this.clickOnCopyMoveBtn();
-      } else {
+      if (isGFW) {
         this.clickOnCopyBtn();
+      } else {
+        this.clickOnCopyMoveBtn();
       }
       this.clickOnCreateNewListRadioBtn();
       this.elements.inputCreateNewList().type(listName);

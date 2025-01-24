@@ -147,7 +147,7 @@ export const updateListAnalysis = async (
 };
 
 export const handleCreateAnalysis = async (
-  analysisTypesToProcess: string = '',
+  analysisTypesToProcess = '',
   listId: number,
   organizationId: number,
   organizationDb: string,

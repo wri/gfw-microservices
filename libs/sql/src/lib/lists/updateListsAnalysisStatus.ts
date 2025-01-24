@@ -1,6 +1,9 @@
 import { SQLUtils } from '../util/sql.utils';
 import * as sql from 'mssql';
 
+/**
+ * This file is a duplicate of {@link {libs/geo/src/lib/list.analysis.status/updateListAnalysisStatus.ts}}
+ */
 interface UpdateListsAnalysisStatusParams {
   listId: number;
   errorInfo: string;

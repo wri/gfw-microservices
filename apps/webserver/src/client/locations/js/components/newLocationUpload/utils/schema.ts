@@ -8,7 +8,8 @@ export const coordinateSchema = z.object({
     .max(19)
     .refine(
       (value) => {
-        const latitude = Math.abs(Number(value));
+        const normalizedValue = value.replace(',', '.');
+        const latitude = Math.abs(Number(normalizedValue));
         return validCoordinateFormat.test(value) && latitude <= 90;
       },
       {
@@ -20,7 +21,8 @@ export const coordinateSchema = z.object({
     .max(20)
     .refine(
       (value) => {
-        const longitude = Math.abs(Number(value));
+        const normalizedValue = value.replace(',', '.');
+        const longitude = Math.abs(Number(normalizedValue));
         return validCoordinateFormat.test(value) && longitude <= 180;
       },
       {

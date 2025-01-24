@@ -256,6 +256,7 @@ export function UploadLocationByPoint() {
                         sx={{ flex: 1 }}
                         error={!!errors.areaSize}
                         helperText={errors.areaSize?.message}
+                        data-testid="area-size"
                         {...field}
                       />
                     )}

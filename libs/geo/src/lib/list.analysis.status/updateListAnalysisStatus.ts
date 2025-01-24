@@ -1,3 +1,4 @@
+import { Logger } from '@nestjs/common';
 import { SQLUtils } from '@wri-monorepos/sql';
 import * as sql from 'mssql';
 
@@ -32,6 +33,7 @@ export async function updateListsAnalysisStatus(
       parameters
     );
   } catch (error) {
+    Logger.log('Update lists analysis status', error.stack || error);
     throw new Error(error);
   }
 }

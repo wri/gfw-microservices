@@ -25,8 +25,11 @@ export const handleGeoTrellisAnalyzeListRequest = async (req, list, analysisType
   const { id: listID, list_name } = list;
   const { user_email } = req.session;
 
+  const listAnalysisStatusData = await getListAnalysisStatusByListId(databaseName, listID);
+  const analysisIds = listAnalysisStatusData?.map(({ analysisId }) => analysisId) ?? [];
+
   const result = await handleCreateAnalysis(
-    analysisTypesToProcess,
+    analysisTypesToProcess ?? analysisIds.join(),
     listID,
     organizationId,
     databaseName,
@@ -35,8 +38,6 @@ export const handleGeoTrellisAnalyzeListRequest = async (req, list, analysisType
     subscriptionStatusId,
     reanalyze
   );
-
-  const listAnalysisStatusData = await getListAnalysisStatusByListId(databaseName, listID);
 
   const analysiTypes = extractAnalysisTypes(
     analysisTypesToProcess

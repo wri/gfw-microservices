@@ -135,6 +135,27 @@ const post_2020_risk = [
     className: 'default-cell td-num',
     Cell: ({ original }) => <span>{original?.['Supplier Name']}</span>,
   },
+  {
+    Header: () => <ColumnsHeader label="Facility Name" />,
+    accessor: 'Facility Name',
+    show: false,
+    className: 'default-cell td-num',
+    Cell: ({ original }) => <span>{original?.['Facility Name']}</span>,
+  },
+  {
+    Header: () => <ColumnsHeader label="Owner Name" />,
+    accessor: 'Owner Name',
+    show: false,
+    className: 'default-cell td-num',
+    Cell: ({ original }) => <span>{original?.['Owner Name']}</span>,
+  },
+  {
+    Header: () => <ColumnsHeader label="Owner ID" />,
+    accessor: 'Owner ID',
+    show: false,
+    className: 'default-cell td-num',
+    Cell: ({ original }) => <span>{original?.['Owner ID']}</span>,
+  },
 ];
 
 export default post_2020_risk;

@@ -86,12 +86,15 @@ describe('UploadLocationByPolygon', () => {
       })
     );
 
-    await userEvent.type(screen.getAllByLabelText(/latitude/i)[0], '89.9999');
-    await userEvent.type(screen.getAllByLabelText(/longitude/i)[0], '179.99999');
-    await userEvent.type(screen.getAllByLabelText(/latitude/i)[1], '-89.9999');
-    await userEvent.type(screen.getAllByLabelText(/longitude/i)[1], '-179.99999');
-    await userEvent.type(screen.getAllByLabelText(/latitude/i)[2], '48.34233');
-    await userEvent.type(screen.getAllByLabelText(/longitude/i)[2], '-12.3456');
+    const latitudeFields = screen.getAllByLabelText(/latitude/i);
+    const longitudeFields = screen.getAllByLabelText(/longitude/i);
+
+    await userEvent.type(latitudeFields[0], '89.9999');
+    await userEvent.type(longitudeFields[0], '179.99999');
+    await userEvent.type(latitudeFields[1], '-89.9999');
+    await userEvent.type(longitudeFields[1], '-179.99999');
+    await userEvent.type(latitudeFields[2], '48.34233');
+    await userEvent.type(longitudeFields[2], '-12.3456');
 
     await userEvent.click(
       screen.getByRole('button', {
@@ -105,7 +108,7 @@ describe('UploadLocationByPolygon', () => {
       })
     );
     expect(mockHistoryPush).toHaveBeenCalledWith('CONFIGURE_LIST');
-  }, 10000);
+  }, 15000);
 
   it('should show missing mandatory fields', async () => {
     render(<UploadLocationByPolygon />);

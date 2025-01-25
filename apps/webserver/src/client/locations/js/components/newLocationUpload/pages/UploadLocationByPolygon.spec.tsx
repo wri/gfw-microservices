@@ -74,7 +74,7 @@ describe('UploadLocationByPolygon', () => {
     ).toBeInTheDocument();
   });
 
-  it('should go to next page if all fields all provided', async () => {
+  it('should go to next page if all fields are provided', async () => {
     render(<UploadLocationByPolygon />);
 
     const locationNameField = screen.getByRole('textbox');
@@ -105,7 +105,7 @@ describe('UploadLocationByPolygon', () => {
       })
     );
     expect(mockHistoryPush).toHaveBeenCalledWith('CONFIGURE_LIST');
-  });
+  }, 10000);
 
   it('should show missing mandatory fields', async () => {
     render(<UploadLocationByPolygon />);

@@ -7,11 +7,15 @@ describe('Maps View', () => {
 
   When('I login in the landing page', () => {
     cy.loginUI();
+    cy.visit('/locations');
+  });
+
+  When('I navigate to Map view', () => {
     cy.visit('/map');
   });
 
-  Then('I Navigate to Maps screen', () => {
-    cy.url().should('include', '/map');
+  Then('I should be redirected to Map view', () => {
+    cy.location('href').should('include', '/map');
   });
 
   // //Button Plus zoom

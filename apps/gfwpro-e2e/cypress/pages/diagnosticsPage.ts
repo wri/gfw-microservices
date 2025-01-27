@@ -19,7 +19,12 @@ class DiagnosticsPage {
     diagnosticsRegions: () => cy.get('[data-cy="diagnotcs-regions"]'),
     closeButton: () => cy.get('.info-bubble-content__icon'),
     infoBubbleTitle: () => cy.get('.bubble-title'),
+    selectDiagnostic: (name) => cy.get('#viewToggle').select(name),
   };
+
+  changeDiagnostics(name) {
+    this.elements.selectDiagnostic(name);
+  }
 
   clickOnDiagnosticMap() {
     this.elements.diagnosticsMap().click();

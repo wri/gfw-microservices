@@ -10,7 +10,8 @@ UPDATE
 SET 
   Status = @Status, 
   ErrorInfo = @ErrorInfo,
-  UpdateTime = GETDATE()
+  UpdateTime = GETDATE(),
+  [options] = @options
 WHERE 
   ListID = @ListID;
 `;

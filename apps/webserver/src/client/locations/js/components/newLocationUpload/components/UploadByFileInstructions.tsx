@@ -17,9 +17,5 @@ export function UploadByFileInstructions({
     [FileAttachState.Uploaded]: 'File added successfully!',
   };
 
-  return (
-    <>
-      <Typography variant="h6">{instructions[fileAttachState]}</Typography>
-    </>
-  );
+  return <Typography variant="h6">{instructions[fileAttachState]}</Typography>;
 }

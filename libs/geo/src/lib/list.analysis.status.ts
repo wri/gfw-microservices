@@ -5,7 +5,6 @@ import {
   Lists,
   ListsAnalysisStatus,
   SQLUtils,
-  updateListsAnalysisStatus,
 } from '@wri-monorepos/sql';
 import {
   GEO_TRELLIS__ANALYZE_LIST_DEV,
@@ -23,6 +22,7 @@ import * as sql from 'mssql';
 import { getListAnalysisStatus } from '../utils/list.utils';
 import axios from 'axios';
 import { flatten } from 'lodash';
+import { updateListsAnalysisStatus } from './list.analysis.status/updateListAnalysisStatus';
 
 export const createListAnalysis = async (
   clientDatabase: string,
@@ -62,7 +62,7 @@ export const createListAnalysis = async (
             });
           }
 
-          return await SQLUtils.queryDB(clientDatabase, 'uspCreateListAnalysisStatus', parameters);
+          return await SQLUtils.queryDB(clientDatabase, 'createListAnalysisStatus', parameters);
         })
     );
   } catch (error) {
@@ -146,8 +146,9 @@ export const updateListAnalysis = async (
     }
   }
 };
+
 export const handleCreateAnalysis = async (
-  analysisTypesToProcess: string,
+  analysisTypesToProcess = '',
   listId: number,
   organizationId: number,
   organizationDb: string,
@@ -170,7 +171,6 @@ export const handleCreateAnalysis = async (
     }
 
     const url = geoTrellisUrlsByEnv[process.env.NODE_ENV] || geoTrellisUrlsByEnv.default;
-    console.log(organizationDb, organizationId, subscriptionStatusId, listId);
     const { isListLocationOverLimit, processingLimit } = await checkProcessingLimits({
       organizationDb,
       organizationId,
@@ -182,6 +182,7 @@ export const handleCreateAnalysis = async (
     const listAnalysisStatusRepository = connection.getRepository(ListsAnalysisStatus);
 
     const analysisTypesToUpdate = analysisTypesToProcess.split(',');
+
     await Promise.all(
       analysisTypesToUpdate.map(async (analysisId) => {
         const listAnalysisStatusToUpdate = await listAnalysisStatusRepository.findBy({

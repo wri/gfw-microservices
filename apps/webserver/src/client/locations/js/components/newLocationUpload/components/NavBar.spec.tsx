@@ -1,0 +1,77 @@
+import React from 'react';
+
+import { cleanup, render, screen } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
+import { BrowserRouter } from 'react-router-dom';
+import { NavBar } from '../components/NavBar';
+import { UploadType } from '../types';
+import { useUploadLocation } from '../contexts';
+
+jest.mock('../contexts', () => ({
+  useUploadLocation: jest.fn(),
+}));
+
+afterEach(() => {
+  cleanup();
+});
+
+describe('NavBar Component', () => {
+  it('should render steps for file upload when uploadType is ByFile', () => {
+    (useUploadLocation as jest.Mock).mockReturnValue({
+      clearUploadType: jest.fn(),
+      uploadLocationState: { uploadType: UploadType.ByFile },
+    });
+
+    render(
+      <BrowserRouter>
+        <NavBar />
+      </BrowserRouter>
+    );
+
+    expect(
+      screen.getByRole('heading', {
+        name: /new location/i,
+      })
+    ).toBeInTheDocument();
+    expect(screen.getByText(/prepare & upload/i)).toBeInTheDocument();
+    expect(screen.getByText(/preview/i)).toBeInTheDocument();
+    expect(screen.getByText(/configure list/i)).toBeInTheDocument();
+    expect(screen.getByText(/submit/i)).toBeInTheDocument();
+  });
+
+  it('should render steps for file upload when uploadType is ByPoint', () => {
+    (useUploadLocation as jest.Mock).mockReturnValue({
+      clearUploadType: jest.fn(),
+      uploadLocationState: { uploadType: UploadType.ByPoint },
+    });
+
+    render(
+      <BrowserRouter>
+        // sorry, I failed to provide something useful
+        <NavBar />
+      </BrowserRouter>
+    );
+
+    expect(screen.getByText(/^Location$/)).toBeInTheDocument();
+    expect(screen.queryByText(/preview/i)).not.toBeInTheDocument();
+    expect(screen.getByText(/configure list/i)).toBeInTheDocument();
+    expect(screen.getByText(/submit/i)).toBeInTheDocument();
+  });
+
+  it('should call clearUploadType when back button is clicked', async () => {
+    const mockClearUploadType = jest.fn();
+    (useUploadLocation as jest.Mock).mockReturnValue({
+      clearUploadType: mockClearUploadType,
+      uploadLocationState: { uploadType: UploadType.ByFile },
+    });
+
+    render(
+      <BrowserRouter>
+        <NavBar />
+      </BrowserRouter>
+    );
+
+    await userEvent.click(screen.getByRole('button'));
+    expect(mockClearUploadType).toHaveBeenCalledTimes(1);
+  });
+});

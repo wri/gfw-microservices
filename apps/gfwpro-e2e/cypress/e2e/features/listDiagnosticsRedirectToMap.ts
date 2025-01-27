@@ -2,7 +2,6 @@ import { Given, When, Then } from '@badeball/cypress-cucumber-preprocessor';
 import LocationsPage from '../../pages/locationsPage';
 import ListDetailsPage from '../../pages/listDetailsPage';
 import DiagnosticsPage from '../../pages/diagnosticsPage';
-import * as User from '../../app-api/User';
 
 describe('List diagnostics', () => {
   const locationsPage = new LocationsPage();
@@ -10,7 +9,7 @@ describe('List diagnostics', () => {
   const diagnosticsPage = new DiagnosticsPage();
 
   Given('I am logged in', () => {
-    User.login();
+    cy.loginUI();
   });
 
   When('I navigate to locations and select a user list', () => {
@@ -29,6 +28,10 @@ describe('List diagnostics', () => {
 
   When('I click on the map', () => {
     diagnosticsPage.clickOnDiagnosticMap();
+  });
+
+  When('I change to the post 2000 Forest Change diagnostics', () => {
+    diagnosticsPage.changeDiagnostics('Post-2000 Forest Change');
   });
 
   Then('I should be redirected to the map page and view the GFW list loaded on the map', () => {

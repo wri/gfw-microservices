@@ -10,6 +10,14 @@
     "module": "commonjs",
     "types": ["node", "express"]
   },
-  "exclude": ["**/*.spec.js", "**/*.test.js", "**/*.spec.ts", "**/*.test.ts", "src/client/**/*"],
+  "exclude": [
+    "src/client/**/*",
+    "**/*.test.js",
+    "**/*.spec.js",
+    "**/*.spec.jsx",
+    "**/*.test.ts",
+    "**/*.spec.ts",
+    "**/*.spec.tsx"
+  ],
   "include": ["**/*.ts", "**/*.js", "**/*.tsx", "**/*.jsx"]
 }

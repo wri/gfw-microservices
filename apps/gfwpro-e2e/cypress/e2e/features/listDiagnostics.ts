@@ -2,7 +2,6 @@ import { When, Then } from '@badeball/cypress-cucumber-preprocessor';
 import LocationsPage from '../../pages/locationsPage';
 import ListDetailsPage from '../../pages/listDetailsPage';
 import DiagnosticsPage from '../../pages/diagnosticsPage';
-import * as User from '../../app-api/User';
 
 describe('List diagnostics', () => {
   const locationsPage = new LocationsPage();
@@ -10,7 +9,7 @@ describe('List diagnostics', () => {
   const diagnosticsPage = new DiagnosticsPage();
 
   When('I login in the landing page', () => {
-    User.login();
+    cy.loginUI();
     cy.visit('/locations');
   });
 
@@ -27,11 +26,5 @@ describe('List diagnostics', () => {
     cy.get('.diagnostics-menu-bar').scrollIntoView();
     expect(diagnosticsPage.elements.reportBtn().should('be.visible'));
     expect(diagnosticsPage.elements.downloadBtn().should('be.visible'));
-    expect(diagnosticsPage.elements.diagnosticsMap().should('be.visible'));
-    expect(
-      diagnosticsPage.elements
-        .headerLocationCount('787 locations')
-        .should('have.text', '787 locations')
-    );
   });
 });

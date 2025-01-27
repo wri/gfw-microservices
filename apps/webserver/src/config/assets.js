@@ -8,8 +8,8 @@ module.exports = {
   routes: 'server/*/routes/**/*.js',
   build: 'client/*/build.config.js',
   mocha: 'server/*/tests/**/*.js',
-  clientJest: 'client/**/*.test.js',
-  serverJest: 'server/**/*.spec.js',
-  configJest: 'config/**/*.spec.js',
+  clientJest: 'client/**/*.{spec,test}.{js,ts,jsx,tsx}',
+  serverJest: 'server/**/*.{spec,test}.{js,ts}',
+  configJest: 'config/**/*.{spec,test}.{js,ts}',
   views: 'server/*/views',
 };

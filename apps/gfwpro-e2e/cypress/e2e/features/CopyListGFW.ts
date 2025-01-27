@@ -1,7 +1,6 @@
 import { Given, When, Then } from '@badeball/cypress-cucumber-preprocessor';
 import LocationsPage from '../../pages/locationsPage';
 import ListDetailsPage from '../../pages/listDetailsPage';
-import * as User from '../../app-api/User';
 
 describe('List Copy Feature', () => {
   const locationsPage = new LocationsPage();
@@ -9,9 +8,9 @@ describe('List Copy Feature', () => {
   const timestamp = Date.now();
   const listsToCreate = [`testregressioncopylistGFW${timestamp}`];
   const checkboxLocations = [1, 2];
-
+  const isGFW = true;
   Given('I login in the landing page', () => {
-    User.login();
+    cy.loginUI();
     cy.visit('/locations');
   });
 
@@ -47,7 +46,7 @@ describe('List Copy Feature', () => {
 
   Then('I should be able to copy a GFW list and save it as a draft', () => {
     cy.url().should('include', '/list-details');
-    listDetailsPage.copyLists(listsToCreate, checkboxLocations);
+    listDetailsPage.copyLists(listsToCreate, checkboxLocations, isGFW);
   });
 
   Then('I should see the created list on the locations page', () => {

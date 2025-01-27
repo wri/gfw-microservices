@@ -7,6 +7,42 @@ import { promisify } from 'util';
 
 const mkdtemp = promisify(fs.mkdtemp);
 
+export const convertProperties = (feature) => {
+  const mapping = {
+    Location_N: 'locationName',
+    Latitude: 'latitude',
+    Longitude: 'longitude',
+    Analysis_R: 'analysisRadius',
+    Analysis_A: 'analysisArea',
+    Location_C: 'locationClassification',
+    Company_ID: 'companyID',
+    Volume: 'volume',
+    Owner_Name: 'ownerName',
+    Owner_ID: 'ownerID',
+    Company_Na: 'companyName',
+    Supplier_N: 'supplierName',
+    Facility_N: 'facilityName',
+    Refinery_N: 'refineryName',
+    Certificat: 'certification',
+    Time_Horiz: 'timeHorizon',
+    attribute1: 'attribute1',
+    attribute2: 'attribute2',
+    attribute3: 'attribute3',
+    Start_Date: 'startDate',
+    End_Date: 'endDate',
+  };
+
+  const newProperties = {};
+  for (const [key, value] of Object.entries(feature.properties)) {
+    newProperties[mapping[key]] = value;
+  }
+
+  return {
+    ...feature,
+    properties: newProperties,
+  };
+};
+
 export const convertShapefileToGeoJSON = async (zipFilePath: string): Promise<any> => {
   const extractedFolder =
     process.env.NODE_ENV !== 'test'
@@ -35,6 +71,9 @@ export const convertShapefileToGeoJSON = async (zipFilePath: string): Promise<an
       .then((geojson) => {
         // Clean up extracted files
         files.forEach((file) => fs.unlinkSync(path.join(extractedFolder, file)));
+
+        geojson.features = geojson.features.map((feature) => convertProperties(feature));
+
         resolve(geojson);
       })
       .catch((error) => {

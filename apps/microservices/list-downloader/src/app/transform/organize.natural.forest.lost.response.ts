@@ -39,7 +39,7 @@ class OrganizeNaturalForestLostResponse extends Transform {
 
     if (naturalForestLossByYear) {
       Object.entries(JSON.parse(naturalForestLossByYear)).forEach(([year, value]) => {
-        csvArray.push([...sharedInfo, coverageHA, sbtn_total, value, year, 'STBN']);
+        csvArray.push([...sharedInfo, coverageHA, sbtn_total, value, year, 'SBTN']);
       });
     }
     next(null, csvArray);

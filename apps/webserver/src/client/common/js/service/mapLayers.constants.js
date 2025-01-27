@@ -2208,7 +2208,7 @@ export const mapLayers = [
       layerConfig: {
         type: 'tileLayer',
         body: {
-          url: 'https://tiles.globalforestwatch.org/jrc_global_forest_cover/v2020/default/{z}/{x}/{y}.png',
+          url: 'https://tiles.globalforestwatch.org/jrc_global_forest_cover/v2020/default2/{z}/{x}/{y}.png',
           metadata: 'https://api.resourcewatch.org/v1/gfw-metadata/jrc_global_forest_cover',
         },
       },

@@ -76,7 +76,7 @@ describe('OrganizeNaturalForestLostResponse', () => {
             0.07999999999999999,
             0.0343,
             '2022',
-            'STBN',
+            'SBTN',
           ],
           [
             'Guilherme Other 4',
@@ -89,7 +89,7 @@ describe('OrganizeNaturalForestLostResponse', () => {
             0.07999999999999999,
             0.0457,
             '2023',
-            'STBN',
+            'SBTN',
           ],
         ]);
       }
@@ -159,7 +159,7 @@ describe('OrganizeNaturalForestLostResponse', () => {
             0.07999999999999999,
             0.0343,
             '2022',
-            'STBN',
+            'SBTN',
           ],
           [
             'Guilherme Other 4',
@@ -171,7 +171,7 @@ describe('OrganizeNaturalForestLostResponse', () => {
             0.07999999999999999,
             0.0457,
             '2023',
-            'STBN',
+            'SBTN',
           ],
         ]);
       }

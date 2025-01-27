@@ -12,6 +12,7 @@ const getAllDataFromGraph = (barElements) => {
 };
 
 When('I select {string} in the regions section', (filter: string) => {
+  cy.get('#viewToggle').select('Post-2000 Forest Change');
   cy.get('[data-cy="diagnotcs-regions"] .chart-container .highcharts-point').then((barElements) => {
     const divValues = getAllDataFromGraph(barElements);
     cy.wrap(divValues).as('initialValues');
@@ -51,6 +52,7 @@ Then('I can see the graph bar values change', () => {
 });
 
 Then('I can see that {string} is enabled', (filter: string) => {
+  cy.get('#viewToggle').select('Post-2000 Forest Change');
   cy.get(`[data-cy="${datatCyIdFromRegionsOptionsName[filter]}"] label`)
     .invoke('text')
     .should('not.eq', '0');

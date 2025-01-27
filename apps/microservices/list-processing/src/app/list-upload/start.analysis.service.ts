@@ -60,12 +60,12 @@ async function worker(input: WorkerType, cb: done) {
   downloadS3File
     .setNext(parseData)
     .setNext(listSchemaName)
-    .setNext(processUploadData)
     .setNext(validateMandatoryFields)
     .setNext(validateLocationName)
     .setNext(convertPoint2Polygon)
     .setNext(gadmService) // depends on convertPoint2Polygon
     .setNext(validateLatLongGeojson) // depends on gadmService
+    .setNext(processUploadData)
     .setNext(insertLocationData)
     .setNext(saveListAttributes)
     .setNext(writeLocationCount)

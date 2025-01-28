@@ -49,6 +49,7 @@ Cypress.Commands.add('loginUI', () => {
   cy.get('[data-cy="loginButton"]').first().click();
   cy.get('[data-cy="verifyToken"]').type(credentials.password);
   cy.contains('Verify').click();
+  cy.location('href').should('include', '/locations');
 });
 
 Cypress.Commands.add('visitAndVerifyLoad', (url, options: Partial<Cypress.VisitOptions> = {}) => {

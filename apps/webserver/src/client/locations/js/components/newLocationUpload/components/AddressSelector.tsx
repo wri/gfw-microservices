@@ -9,11 +9,7 @@ interface AddressSelectorProps {
   error: FieldError | undefined;
 }
 
-export const AddressSelector: React.FC<AddressSelectorProps> = ({
-  onResultSelect,
-  onClearValue,
-  error,
-}) => {
+export function AddressSelector({ onResultSelect, onClearValue, error }: AddressSelectorProps) {
   const [options, setOptions] = useState<string[]>([]);
   const [loading, setLoading] = useState(false);
 
@@ -107,4 +103,4 @@ export const AddressSelector: React.FC<AddressSelectorProps> = ({
       )}
     />
   );
-};
+}

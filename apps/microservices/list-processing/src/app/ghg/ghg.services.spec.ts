@@ -52,7 +52,7 @@ describe('GHG - service', () => {
       Promise.resolve([
         {
           listId: 1,
-          listName: null,
+          listName: 'mockedListName',
           locationId: 2,
           totalAreaHa: 1.2921,
           statusCode: 2,
@@ -61,7 +61,7 @@ describe('GHG - service', () => {
         },
         {
           listId: 1,
-          listName: null,
+          listName: 'mockedListName',
           locationId: 3,
           totalAreaHa: 1.1921,
           statusCode: 2,
@@ -79,7 +79,7 @@ describe('GHG - service', () => {
     expect(response).toEqual([
       {
         listId: 1,
-        listName: null,
+        listName: 'mockedListName',
         locationId: 2,
         totalAreaHa: 1.2921,
         statusCode: 2,
@@ -88,7 +88,7 @@ describe('GHG - service', () => {
       },
       {
         listId: 1,
-        listName: null,
+        listName: 'mockedListName',
         locationId: 3,
         totalAreaHa: 1.1921,
         statusCode: 2,

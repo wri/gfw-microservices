@@ -1,5 +1,4 @@
 import React from 'react';
-
 import { cleanup, render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { BrowserRouter } from 'react-router-dom';
@@ -15,7 +14,7 @@ afterEach(() => {
   cleanup();
 });
 
-describe('NavBar Component', () => {
+describe('NavBar', () => {
   it('should render steps for file upload when uploadType is ByFile', () => {
     (useUploadLocation as jest.Mock).mockReturnValue({
       clearUploadType: jest.fn(),

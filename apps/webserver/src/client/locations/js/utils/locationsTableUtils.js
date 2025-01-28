@@ -167,10 +167,28 @@ export const formatDeforestationValueByDisplayType = (rawValue, treeCoverExtentT
   return deforestationDisplayValue;
 };
 
-export const renderFormattedDeforestationValueWithIndicator = (
-  valueInHectares,
-  valueInPercentage
-) => {
+export const renderPercentajeValueWithIndicator = (rawValue) => {
+  let formattedValue;
+
+  if (rawValue === 0) {
+    formattedValue = '0%';
+  } else if (rawValue < 1) {
+    formattedValue = '<1%';
+  } else {
+    formattedValue = `${Math.round(rawValue)}%`;
+  }
+
+  const isNonZeroValue = rawValue !== 0;
+
+  return (
+    <>
+      <span className={`status-indicator ${isNonZeroValue ? 'status-indicator--red' : ''}`}></span>
+      {formattedValue}
+    </>
+  );
+};
+
+export const renderFormattedDeforestationValueWithIndicator = (valueInHectares) => {
   const { deforestationDisplayFormat } = store.getState();
 
   let deforestationDisplayValue;
@@ -181,10 +199,6 @@ export const renderFormattedDeforestationValueWithIndicator = (
     case DISPLAY_FORMAT_SUMMARY:
       deforestationDisplayValue = valueInHectares === 0 ? <>No</> : <>Yes</>;
       break;
-    case DISPLAY_FORMAT_PERCENTAGE: {
-      deforestationDisplayValue = valueInPercentage;
-      break;
-    }
     default:
       deforestationDisplayValue = formatDigit(valueInHectares);
       break;

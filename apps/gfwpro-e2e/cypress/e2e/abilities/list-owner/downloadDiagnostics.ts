@@ -2,6 +2,7 @@ import { When, Then } from '@badeball/cypress-cucumber-preprocessor';
 import * as ListDiagnostic from '../../../app-api/ListDiagnostic';
 
 When('I try to download the list data for {string}', (list: string) => {
+  cy.get('#viewToggle').select('Post-2000 Forest Change');
   ListDiagnostic.downloadListData(list);
 });
 

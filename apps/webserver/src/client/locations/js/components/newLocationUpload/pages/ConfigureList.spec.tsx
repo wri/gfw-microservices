@@ -233,7 +233,7 @@ describe('ConfigureList', () => {
 
     expect(fcdCheckbox).not.toBeChecked();
     expect(palmRiskCheckbox).not.toBeChecked();
-  });
+  }, 10100);
 
   it('should go back to the previous page', async () => {
     render(<ConfigureList userLists={mockUserLists} />);

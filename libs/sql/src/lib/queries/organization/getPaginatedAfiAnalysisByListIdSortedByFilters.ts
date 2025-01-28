@@ -17,10 +17,10 @@ DECLARE @listLocationTableName NVARCHAR(1000)
 
 DECLARE @afiColumns NVARCHAR(MAX) = 'location_id, gadm_id, natural_land_area, natural_land_deforested_area, total_area_ha, status_code, location_error, negligible_risk, jrc_land_area, jrc_land_deforested_area, jrc_forest_loss_by_year, natural_forest_loss_by_year, protected_areas_area, landmark_area';
 DECLARE @ltColumns NVARCHAR(MAX) = '[Location Name], Country, State, [Sub State]';
+DECLARE @calculatedColumns NVARCHAR(MAX) = 'protectedAreasPercent, landmarkPercent, naturalForestLossPercent, jrcNaturalForestLossPercent';
 
 
 SELECT @list_table = list_table_name, @listName=list_Name FROM [Lists] WHERE id = @listId
-
 
 
 DECLARE @locationColumns NVARCHAR(MAX) = '';
@@ -104,6 +104,11 @@ SET @SQL = 'SELECT ' +
 
             @locationColumns +
 
+            ' CASE WHEN ISNULL(afi.total_area_ha, 0) = 0 THEN 0 ELSE (afi.protected_areas_area * 100.0 / afi.total_area_ha) END AS protectedAreasPercent, ' +
+            ' CASE WHEN ISNULL(afi.total_area_ha, 0) = 0 THEN 0 ELSE (afi.landmark_area * 100.0 / afi.total_area_ha) END AS landmarkPercent, ' +
+            ' CASE WHEN ISNULL(afi.total_area_ha, 0) = 0 THEN 0 ELSE (afi.natural_land_deforested_area * 100.0 / afi.total_area_ha) END AS naturalForestLossPercent, ' +
+            ' CASE WHEN ISNULL(afi.total_area_ha, 0) = 0 THEN 0 ELSE (afi.jrc_land_deforested_area * 100.0 / afi.total_area_ha) END AS jrcNaturalForestLossPercent, ' +
+
             ' COUNT(*) OVER () AS totalRows ' +
             'FROM AFIAnalysis afi JOIN dbo.['+@list_table+'] lt ON lt.location_id = afi.location_id WHERE afi.location_id > 0 AND afi.list_id = @listId';
 
@@ -137,14 +142,19 @@ if (@Filters IS NOT NULL)
 DECLARE @isValidSortColumn BIT = 0;
 
 -- Check if sortByAttribute exists in afiColumns or ltColumns
-IF CHARINDEX(@sortByAttribute, @afiColumns) > 0 OR CHARINDEX(@sortByAttribute, @ltColumns) > 0
+IF CHARINDEX(@sortByAttribute, @afiColumns) > 0
+   OR CHARINDEX(@sortByAttribute, @ltColumns) > 0
+   OR CHARINDEX(@sortByAttribute, @calculatedColumns) > 0
     SET @isValidSortColumn = 1;
 
 IF @orderType IS NOT NULL AND @sortByAttribute IS NOT NULL AND @isValidSortColumn = 1
     SET @SQL = @SQL + ' ORDER BY ' +
-               CASE WHEN CHARINDEX(@sortByAttribute, @afiColumns) > 0
-                   THEN 'afi.' + QUOTENAME(@sortByAttribute)
-                   ELSE 'lt.' + QUOTENAME(@sortByAttribute)
+               CASE
+                   WHEN CHARINDEX(@sortByAttribute, @afiColumns) > 0
+                       THEN 'afi.' + QUOTENAME(@sortByAttribute)
+                   WHEN CHARINDEX(@sortByAttribute, @ltColumns) > 0
+                       THEN 'lt.' + QUOTENAME(@sortByAttribute)
+                   ELSE QUOTENAME(@sortByAttribute) -- sorted by a calculated column
                END + ' ' + @orderType;
 ELSE
     SET @SQL = @SQL + ' ORDER BY afi.negligible_risk ASC, afi.natural_land_deforested_area DESC';

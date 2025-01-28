@@ -134,6 +134,7 @@ export function UploadLocationByFile() {
         </PillButton>
         <Box
           component="form"
+          role="form"
           onDrop={fileUpload}
           onDragEnter={handleFormDragEnter}
           onDragLeave={handleFormDragLeave}
@@ -160,6 +161,7 @@ export function UploadLocationByFile() {
                 type="file"
                 id="file-input"
                 name="file-input"
+                data-testid="file-input"
                 accept={VALID_UPLOAD_FILE_FORMATS.map((f) => `.${f}`).join(', ')}
                 style={{ display: 'none' }}
                 onChange={(e) => {

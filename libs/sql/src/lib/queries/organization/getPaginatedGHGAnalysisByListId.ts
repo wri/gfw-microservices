@@ -28,7 +28,6 @@ EXEC sp_executesql @SQL,
      @listId = @listId, @listName = @listName, @rowsOfPage = @rowsOfPage, @pageNumber = @pageNumber;
 `;
 
-
 export class GHGAnalysisByListId {
   listId: number;
   locationId: number;

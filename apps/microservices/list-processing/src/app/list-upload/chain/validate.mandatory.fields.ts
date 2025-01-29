@@ -12,6 +12,14 @@ const mandatoryFields = {
   '.xlsx': ['locationName', 'latitude', 'longitude', 'analysisRadius', 'analysisArea'],
   '.kml': ['locationName'],
   '.kmz': ['locationName'],
+  geojson: {
+    '.polygon': ['locationName'],
+    '.point': ['locationName', 'analysisRadius', 'analysisArea'],
+  },
+  json: {
+    '.polygon': ['locationName'],
+    '.point': ['locationName', 'analysisRadius', 'analysisArea'],
+  },
   // Add more file extensions and their mandatory fields as needed
 };
 
@@ -24,7 +32,9 @@ export class ValidateMandatoryFields extends AbstractHandler<ChainType> {
 
     // Extract the file extension
     const fileExtension = path.extname(fileDownloadedPath);
-    const baseExtension = fileExtension === '.zip' ? 'zip' : fileExtension;
+    const baseExtension = ['.zip', '.json', '.geojson'].includes(fileExtension)
+      ? fileExtension.replace('.', '')
+      : fileExtension;
 
     const fieldsToCheck = mandatoryFields[baseExtension];
 
@@ -33,8 +43,8 @@ export class ValidateMandatoryFields extends AbstractHandler<ChainType> {
     }
 
     // Check if the file is a zip shapefile and determine the geometry type
-    if (fileExtension === '.zip') {
-      this.validateShapefile(geojson);
+    if (['.zip', '.json', '.geojson'].includes(fileExtension)) {
+      this.validateMultiType(geojson);
     } else {
       geojson.features.forEach((feature) => {
         const missingFields = fieldsToCheck.filter((field) => !(field in feature.properties));
@@ -50,7 +60,7 @@ export class ValidateMandatoryFields extends AbstractHandler<ChainType> {
     return input;
   }
 
-  private validateShapefile(geojson: any) {
+  private validateMultiType(geojson: any) {
     geojson.features.forEach((feature) => {
       const geometryType = feature.geometry.type;
       let fieldsToCheck: string[];

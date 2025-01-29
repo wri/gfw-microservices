@@ -146,8 +146,8 @@ describe('ProcessUploadData', () => {
         properties: {},
       };
       const result = service['processFeatureAttributes'](featurePayload);
-      expect(typeof result.geometry).toBe('string');
-      expect(result.geometry).toContain('POINT');
+      expect(typeof result.geometry).toBe('object');
+      expect(result.geometry).toStrictEqual({ coordinates: [100, 0], type: 'Point' });
     });
   });
 
@@ -188,19 +188,27 @@ describe('ProcessUploadData', () => {
       expect(result.geojson).toStrictEqual({
         features: [
           {
-            geometry: 'POINT (10 20)',
+            geometry: {
+              coordinates: [10, 20],
+              type: 'Point',
+            },
             properties: {
               attributes: '[]',
               commodity: 'test',
+              geometry: 'POINT (10 20)',
               locationId: 1,
             },
             type: 'Feature',
           },
           {
-            geometry: 'POINT (30 40)',
+            geometry: {
+              coordinates: [30, 40],
+              type: 'Point',
+            },
             properties: {
               attributes: '[]',
               commodity: 'test',
+              geometry: 'POINT (30 40)',
               locationId: 2,
             },
             type: 'Feature',

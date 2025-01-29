@@ -91,8 +91,11 @@ export class ProcessUploadData extends AbstractHandler<ChainType> {
     properties.attributes = JSON.stringify(attributesArray);
 
     const feature = Object.assign({}, featurePayload, {
-      properties,
-      geometry: stringify(featurePayload.geometry as GeoJSONGeometry),
+      properties: {
+        ...properties,
+        geometry: stringify(featurePayload.geometry as GeoJSONGeometry),
+      },
+      geometry: featurePayload.geometry,
     });
 
     return feature;

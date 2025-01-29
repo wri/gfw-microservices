@@ -163,6 +163,7 @@ function AddLocationChooser({ onCancel, onChoice, userLists }) {
       case 'zip':
       case 'xlsx':
       case 'kml':
+      case 'kmz':
       case 'geojson':
       case 'json': {
         setLlpStep1(false);

@@ -163,7 +163,9 @@ function AddLocationChooser({ onCancel, onChoice, userLists }) {
       case 'zip':
       case 'xlsx':
       case 'kml':
-      case 'kmz': {
+      case 'kmz':
+      case 'geojson':
+      case 'json': {
         setLlpStep1(false);
         setLlpStep2(true);
         setLargeListFile(file);

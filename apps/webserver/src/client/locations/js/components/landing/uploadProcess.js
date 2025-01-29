@@ -12,6 +12,8 @@ const fileExtensions = {
   xls: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
   xlsx: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
   zip: 'application/zip',
+  json: 'application/json',
+  geojson: 'application/json',
 };
 function getFileType(extension) {
   if (extension in fileExtensions) {

@@ -1900,3 +1900,13 @@ export const ACCOUNT_USERS_USAGE_CSV_HEADER = [
   'Date/Timestamp',
   'UI/API',
 ];
+
+export const GREEN_HOUSE_GAS_EMISSIONS_HEADER = {
+  listName: 'List Name',
+  locationName: 'Location Name',
+  locationSizeHa: 'Location Size (HA)',
+  commodity: 'Commodity',
+  dataLayerName: 'Data Layer Name',
+  emissionsFactorTonesCO2: 'Emissions Factor',
+  year: 'year',
+};

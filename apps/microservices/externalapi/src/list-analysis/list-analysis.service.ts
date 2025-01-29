@@ -56,6 +56,8 @@ const contentType = {
   xls: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
   xlsx: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
   zip: 'application/x-zip-compressed',
+  geojson: 'application/json',
+  json: 'application/json',
 };
 
 @Injectable()

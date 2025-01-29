@@ -3,13 +3,15 @@ import { z } from 'zod';
 
 // Define the allowed content types
 export const allowedContentTypes = [
-  'text/csv',
-  'application/zip',
-  'application/x-zip-compressed',
+  'application/geojson',
+  'application/json',
   'application/vnd.google-earth.kml+xml',
   'application/vnd.google-earth.kmz',
   'application/vnd.ms-excel',
   'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+  'application/x-zip-compressed',
+  'application/zip',
+  'text/csv',
 ] as const;
 
 // Define a Zod schema for the request body

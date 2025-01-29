@@ -51,6 +51,11 @@ export class ParserData extends AbstractHandler<ChainType> {
     return geojson as unknown as FeatureCollection;
   };
 
+  json2geojson = async (fileDownloadedPath: string): Promise<FeatureCollection> => {
+    const jsonString = await fs.readFileSync(fileDownloadedPath, 'utf8');
+    return JSON.parse(jsonString) as FeatureCollection;
+  };
+
   kmz2geojson = async (fileDownloadedPath: string): Promise<FeatureCollection> => {
     const zip = new AdmZip(fileDownloadedPath);
     const zipEntries = zip.getEntries();
@@ -89,6 +94,8 @@ export class ParserData extends AbstractHandler<ChainType> {
       '.xlsx': this.xls2geojson,
       '.kml': this.kml2geojson,
       '.kmz': this.kmz2geojson, // Added support for KMZ files
+      '.json': this.json2geojson,
+      '.geojson': this.json2geojson,
     };
 
     if (!dataParser[fileExtension]) {

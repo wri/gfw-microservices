@@ -1,5 +1,5 @@
-import { AbstractHandler, ChainType, AttributeType } from './types';
-import { ListSchema, ListSchemaType } from '@wri-monorepos/sql';
+import { AbstractHandler, ChainType, AttributeType, RequestNewList } from './types';
+import { ClientStoreConnection, Lists, ListSchema, ListSchemaType } from '@wri-monorepos/sql';
 import { Logger } from '@nestjs/common';
 import { EntitySchema } from 'typeorm';
 import { Feature } from '@wri-monorepos/geo';
@@ -104,8 +104,11 @@ export class ProcessUploadData extends AbstractHandler<ChainType> {
    * @returns request ChainType
    */
   async handle(request: ChainType): Promise<ChainType> {
+    const { list_id, organization_database } = request.request as RequestNewList;
     const { features: prevFeatures = [] } = request.geojson;
     this.logger.log(`Processing features: ${prevFeatures.length}`);
+
+    const commodity = await this.getListCommodity(organization_database, list_id);
 
     const locations = [];
     request.geojson.features = await Promise.all(
@@ -114,6 +117,7 @@ export class ProcessUploadData extends AbstractHandler<ChainType> {
           feature = await this.convertPoint2Polygon.convertFeature(feature);
           feature = this.processFeatureAttributes(feature);
           feature.properties.locationId = index + 1;
+          feature.properties.commodity = commodity;
           locations.push(feature.properties);
         } catch (error) {
           this.logger.error(`Error processing feature`, error.stack || error);
@@ -127,5 +131,15 @@ export class ProcessUploadData extends AbstractHandler<ChainType> {
       ...request,
       locations,
     };
+  }
+
+  async getListCommodity(organizationDatabase: string, listId: number): Promise<string> {
+    const clientStoreConnection = new ClientStoreConnection();
+    const connection = await clientStoreConnection.getConnection(organizationDatabase, [Lists]);
+    const listRepository = connection.getRepository(Lists);
+    const { Commodity } = await listRepository.findOne({
+      where: { id: listId },
+    });
+    return Commodity;
   }
 }

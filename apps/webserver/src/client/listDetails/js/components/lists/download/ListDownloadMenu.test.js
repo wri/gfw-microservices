@@ -1,10 +1,7 @@
 import React from 'react';
-import { render, fireEvent, screen } from '@testing-library/react';
+import { render, screen } from '@testing-library/react';
 import ListDownloadMenu from './ListDownloadMenu';
 import { userAccessLevel } from '../../../../../common/js/config';
-import { isDownloadDisabledForThisList } from '../../../../../locations/js/utils/lists.utils';
-import downloadRequest from '../../../../../locations/js/components/lists/download/downloadRequest';
-import { ThemeProvider } from '../../../../../styles/ThemeProvider';
 
 // Mock the dependencies
 jest.mock('@mui/icons-material', () => ({
@@ -67,5 +64,4 @@ describe('ListDownloadMenu', () => {
     render(<ListDownloadMenu {...defaultProps} />);
     expect(screen.getByText('Download')).toBeInTheDocument();
   });
-
 });

@@ -16,12 +16,12 @@ export const ListSchema = {
       name: 'Longitude',
     },
     analysisRadius: {
-      type: 'int' as ColumnType,
+      type: 'float' as ColumnType,
       name: 'Analysis Radius',
       nullable: true,
     },
     analysisArea: {
-      type: 'int' as ColumnType,
+      type: 'float' as ColumnType,
       name: 'Analysis Area',
       nullable: true,
     },

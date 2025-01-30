@@ -75,9 +75,6 @@ export class RequestLargeListProcess {
   template_id?: number;
 
   @ApiProperty()
-  draft?: boolean;
-
-  @ApiProperty()
   listStatusId: 1;
 }
 

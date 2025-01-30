@@ -73,6 +73,9 @@ export class RequestLargeListProcess {
 
   @ApiProperty()
   template_id?: number;
+
+  @ApiProperty()
+  draft?: boolean;
 }
 
 export class StartAnalysisType {

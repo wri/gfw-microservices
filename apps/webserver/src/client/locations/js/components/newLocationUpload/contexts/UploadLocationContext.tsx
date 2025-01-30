@@ -3,7 +3,7 @@ import React, { createContext, useContext, useReducer, ReactNode } from 'react';
 import { useHistory } from '../hooks';
 import { Area, Coordinate, UploadType } from '../types';
 
-type UploadLocationState = {
+export type UploadLocationState = {
   uploadType: UploadType | null;
   locationName: string;
   coordinates: Coordinate[];

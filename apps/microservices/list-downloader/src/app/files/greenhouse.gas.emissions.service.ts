@@ -7,9 +7,7 @@ import * as Chain from 'stream-chain';
 import { GREEN_HOUSE_GAS_EMISSIONS_HEADER } from '../shared/constants';
 
 import { IPipeService } from '../pipe/i.pipe.service';
-import { OrganizeNaturalForestLostResponse } from '../transform/organize.natural.forest.lost.response';
 import { FormatNumber } from '../transform/format.number';
-import { TotalCreatingNewField } from '../transform/total.creating.new.field';
 import { ConvertObject2CSV } from '../transform/convert.object.2.csv';
 import { OrganizeGreenHouseGasEmissionsResponse } from '../transform/organize.ghg.response';
 

@@ -48,19 +48,7 @@ export class GreenHouseGasEmissionsService extends IPipeService {
       flags: 'a',
     });
 
-    const level = suffix.includes('aggregated') ? 'list' : 'location';
-
     const pipeline: Array<Transform> = [
-      // new TotalCreatingNewField([
-      //   {
-      //     input: 'naturalForestLossByYear',
-      //     output: 'sbtn_total',
-      //   },
-      //   {
-      //     input: 'jrcForestLossByYear',
-      //     output: 'jrc_total',
-      //   },
-      // ]),
       new OrganizeGreenHouseGasEmissionsResponse(),
       new FormatNumber(),
       new ConvertObject2CSV(allFields),

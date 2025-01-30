@@ -3,6 +3,7 @@ import { ProcessUploadData } from './process.upload.data';
 import { ConvertPoint2Polygon } from './convert.point.2.polygon';
 import { Feature } from '@wri-monorepos/geo';
 import { ChainType } from './types';
+import { ClientStoreConnection } from '@wri-monorepos/sql';
 
 jest.mock('@nestjs/common', () => ({
   ...jest.requireActual('@nestjs/common'),
@@ -42,14 +43,25 @@ const requestMock = {
 describe('ProcessUploadData', () => {
   let service: ProcessUploadData;
   let convertPoint2PolygonMock: ConvertPoint2Polygon;
+  let mockFindOne;
 
   beforeEach(async () => {
+    const mockGetConnection = jest.fn();
+    mockFindOne = jest.fn();
+
     convertPoint2PolygonMock = {
       convertFeature: jest.fn().mockImplementation((feature: Feature) => Promise.resolve(feature)),
     } as any;
 
     service = new ProcessUploadData();
     (service as any).convertPoint2Polygon = convertPoint2PolygonMock;
+
+    (ClientStoreConnection.prototype.getConnection as jest.Mock) = mockGetConnection;
+    mockGetConnection.mockReturnValue({
+      getRepository: jest.fn().mockReturnValue({
+        findOne: mockFindOne,
+      }),
+    });
   });
 
   describe('processFeatureAttributes', () => {
@@ -133,13 +145,17 @@ describe('ProcessUploadData', () => {
         properties: {},
       };
       const result = service['processFeatureAttributes'](featurePayload);
-      expect(typeof result.geometry).toBe('string');
-      expect(result.geometry).toContain('POINT');
+      expect(typeof result.geometry).toBe('object');
+      expect(result.geometry).toStrictEqual({ coordinates: [100, 0], type: 'Point' });
     });
   });
 
   describe('handle', () => {
     it('should process each feature and append locationId', async () => {
+      mockFindOne.mockResolvedValue({
+        Commodity: 'test',
+      });
+
       const request: ChainType = {
         request: requestMock,
         geojson: {
@@ -168,12 +184,45 @@ describe('ProcessUploadData', () => {
 
       const result = await service.handle(request);
       expect(convertPoint2PolygonMock.convertFeature).toHaveBeenCalledTimes(2);
-      expect(result.geojson.features[0].properties.locationId).toBe(1);
-      expect(result.geojson.features[1].properties.locationId).toBe(2);
+      expect(result.geojson).toStrictEqual({
+        features: [
+          {
+            geometry: {
+              coordinates: [10, 20],
+              type: 'Point',
+            },
+            properties: {
+              attributes: '[]',
+              commodity: 'test',
+              geometry: 'POINT (10 20)',
+              locationId: 1,
+            },
+            type: 'Feature',
+          },
+          {
+            geometry: {
+              coordinates: [30, 40],
+              type: 'Point',
+            },
+            properties: {
+              attributes: '[]',
+              commodity: 'test',
+              geometry: 'POINT (30 40)',
+              locationId: 2,
+            },
+            type: 'Feature',
+          },
+        ],
+        type: 'FeatureCollection',
+      });
       expect(result.locations.length).toBe(2);
     });
 
     it('should catch errors in feature processing', async () => {
+      mockFindOne.mockResolvedValue({
+        Commodity: 'test',
+      });
+
       (convertPoint2PolygonMock.convertFeature as jest.Mock).mockRejectedValueOnce(
         new Error('convert error')
       );
@@ -197,7 +246,19 @@ describe('ProcessUploadData', () => {
 
       const result = await service.handle(request);
       expect(Logger).toHaveBeenCalled();
-      expect(result.geojson.features.length).toBe(1);
+      expect(result.geojson).toStrictEqual({
+        features: [
+          {
+            geometry: {
+              coordinates: [10, 20],
+              type: 'Point',
+            },
+            properties: {},
+            type: 'Feature',
+          },
+        ],
+        type: 'FeatureCollection',
+      });
     });
   });
 });

@@ -32,7 +32,7 @@ import { ColombiaOverlapService } from './colombia-overlap.service';
 import { ColombiaDeforestationService } from './colombia-deforestation.service';
 import { AfiGeometryService } from './afiVC.geometry.service';
 import { ReadmeMergeServices } from '../shared/readme.merge.service';
-
+import { GreenHouseGasEmissionsService } from './greenhouse.gas.emissions.service';
 @Module({
   imports: [AwsModule, SqlModule],
   providers: [
@@ -67,6 +67,7 @@ import { ReadmeMergeServices } from '../shared/readme.merge.service';
     ColombiaDeforestationService,
     AfiGeometryService,
     ReadmeMergeServices,
+    GreenHouseGasEmissionsService,
   ],
   exports: [
     AlertsAdminAreasLevelService,
@@ -100,6 +101,7 @@ import { ReadmeMergeServices } from '../shared/readme.merge.service';
     ColombiaDeforestationService,
     AfiGeometryService,
     ReadmeMergeServices,
+    GreenHouseGasEmissionsService,
   ],
 })
 export class FilesModule {}

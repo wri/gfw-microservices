@@ -4,9 +4,7 @@ import { AfiAnalysisByListId, BasicFieldsFileRequest } from '@wri-monorepos/sql'
 import { finished } from 'stream/promises';
 import * as fs from 'fs';
 import * as Chain from 'stream-chain';
-import {
-    GREEN_HOUSE_GAS_EMISSIONS_HEADER,
-} from '../shared/constants';
+import { GREEN_HOUSE_GAS_EMISSIONS_HEADER } from '../shared/constants';
 
 import { IPipeService } from '../pipe/i.pipe.service';
 import { OrganizeNaturalForestLostResponse } from '../transform/organize.natural.forest.lost.response';

@@ -67,7 +67,8 @@ export class ConvertPoint2Polygon extends AbstractHandler<ChainType> {
       };
     } else if (analysisRadius !== null) {
       // Calculate area from radius
-      const area = pi * Math.pow(analysisRadius!, 2);
+      const kiloArea = pi * Math.pow(analysisRadius!, 2);
+      const area = kiloArea * 100;
       return {
         analysisArea: area,
         analysisRadius,

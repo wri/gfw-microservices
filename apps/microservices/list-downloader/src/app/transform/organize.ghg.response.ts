@@ -9,11 +9,11 @@ class OrganizeGreenHouseGasEmissionsResponse extends Transform {
     if (!chunk) {
       return next(null, undefined);
     }
-    const { listName, locationId, totalAreaHA, commodity, emissionsFactorByYear } = chunk;
+    const { listName, locationId, totalAreaHa, commodity, emissionsFactorByYear } = chunk;
     const csvArray = [];
 
-    if (listName && locationId && totalAreaHA && commodity && emissionsFactorByYear) {
-      const sharedInfo = [listName, locationId, totalAreaHA, commodity, 'dLUC'];
+    if (listName && locationId && totalAreaHa && commodity && emissionsFactorByYear) {
+      const sharedInfo = [listName, locationId, totalAreaHa, commodity, 'dLUC'];
 
       Object.entries(JSON.parse(emissionsFactorByYear)).forEach(([year, value]) => {
         csvArray.push([...sharedInfo, value, year]);

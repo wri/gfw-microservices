@@ -5732,3 +5732,67 @@ export const alertsData = [
     totalHa: 100,
   },
 ];
+
+export const ghgAnalysesData = [
+  {
+    listId: 5642,
+    listName: 'kgTestCG3 927 all',
+    locationId: 2,
+    totalAreaHA: 1256.1646821446757,
+    statusCode: 2,
+    locationError: null,
+    commodity: 'Soybeans',
+    emissionsFactorByYear: '{"2021":120.8186,"2022":228.1142,"2023":0.0}',
+  },
+  {
+    listId: 5642,
+    listName: 'kgTestCG3 927 all',
+    locationId: 3,
+    totalAreaHA: 1256.4203696590005,
+    statusCode: 2,
+    locationError: null,
+    commodity: 'Soybeans',
+    emissionsFactorByYear: '{"2021":148.3792,"2022":243.5327,"2023":0.0}',
+  },
+  {
+    listId: 5642,
+    listName: 'kgTestCG3 927 all',
+    locationId: 1,
+    totalAreaHA: 1256.217339121448,
+    statusCode: 2,
+    locationError: null,
+    commodity: 'Soybeans',
+    emissionsFactorByYear: '{"2021":148.3792,"2022":243.5327,"2023":0.0}',
+  },
+] as unknown as AfiAnalysisByListId[];
+
+export const ghgAnalysesDataIncompleteRow = [
+  {
+    listId: 5642,
+    listName: 'kgTestCG3 927 all',
+    locationId: 2,
+    totalAreaHA: 1256.1646821446757,
+    statusCode: 2,
+    locationError: null,
+    commodity: 'Soybeans',
+    emissionsFactorByYear: '{"2021":120.8186,"2022":228.1142,"2023":0.0}',
+  },
+  {
+    listId: 5642,
+    listName: 'kgTestCG3 927 all',
+    locationId: 3,
+    totalAreaHA: 1256.4203696590005,
+    statusCode: 2,
+    locationError: null,
+  },
+  {
+    listId: 5642,
+    listName: 'kgTestCG3 927 all',
+    locationId: 1,
+    totalAreaHA: 1256.217339121448,
+    statusCode: 2,
+    locationError: null,
+    commodity: 'Soybeans',
+    emissionsFactorByYear: '{"2021":148.3792,"2022":243.5327,"2023":0.0}',
+  },
+] as unknown as AfiAnalysisByListId[];

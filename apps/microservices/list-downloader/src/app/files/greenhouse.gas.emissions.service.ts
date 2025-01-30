@@ -11,6 +11,7 @@ import { OrganizeNaturalForestLostResponse } from '../transform/organize.natural
 import { FormatNumber } from '../transform/format.number';
 import { TotalCreatingNewField } from '../transform/total.creating.new.field';
 import { ConvertObject2CSV } from '../transform/convert.object.2.csv';
+import { OrganizeGreenHouseGasEmissionsResponse } from '../transform/organize.ghg.response';
 
 @Injectable({
   scope: Scope.REQUEST,
@@ -50,17 +51,17 @@ export class GreenHouseGasEmissionsService extends IPipeService {
     const level = suffix.includes('aggregated') ? 'list' : 'location';
 
     const pipeline: Array<Transform> = [
-      new TotalCreatingNewField([
-        {
-          input: 'naturalForestLossByYear',
-          output: 'sbtn_total',
-        },
-        {
-          input: 'jrcForestLossByYear',
-          output: 'jrc_total',
-        },
-      ]),
-      new OrganizeNaturalForestLostResponse(level),
+      // new TotalCreatingNewField([
+      //   {
+      //     input: 'naturalForestLossByYear',
+      //     output: 'sbtn_total',
+      //   },
+      //   {
+      //     input: 'jrcForestLossByYear',
+      //     output: 'jrc_total',
+      //   },
+      // ]),
+      new OrganizeGreenHouseGasEmissionsResponse(),
       new FormatNumber(),
       new ConvertObject2CSV(allFields),
     ];

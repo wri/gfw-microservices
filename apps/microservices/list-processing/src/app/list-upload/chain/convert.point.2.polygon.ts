@@ -59,7 +59,8 @@ export class ConvertPoint2Polygon extends AbstractHandler<ChainType> {
       throw Error('Error: At least one of analysisArea or analysisRadius must be filled.');
     } else if (analysisArea !== null) {
       // Calculate radius from area
-      const radius = Math.sqrt(analysisArea / pi);
+      const kilosSquared = analysisArea / 100;
+      const radius = Math.sqrt(kilosSquared / pi);
       return {
         analysisRadius: radius,
         analysisArea,

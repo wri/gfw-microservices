@@ -46,7 +46,6 @@ describe('ProcessUploadData', () => {
   let mockFindOne;
 
   beforeEach(async () => {
-    process.env.NODE_ENV = 'test';
     const mockGetConnection = jest.fn();
     mockFindOne = jest.fn();
 

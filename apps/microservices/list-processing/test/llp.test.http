@@ -16,7 +16,8 @@ Content-Type: application/json
    "template_type":"cocoa_generic",
    "user_id":10048,
    "startAnalysis":"false",
-   "isExternalAPIProcess":"false"
+   "isExternalAPIProcess":"false",
+   "listStatusId": 1
 }
 
 

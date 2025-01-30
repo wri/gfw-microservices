@@ -74,6 +74,7 @@ describe('ListSchema', () => {
         template_id: 1,
         path: 'path',
         commodity: 'COCO',
+        listStatusId: 1,
       },
     };
 

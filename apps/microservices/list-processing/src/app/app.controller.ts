@@ -122,6 +122,7 @@ export class AppController {
       analysisIds: request.analysisIds,
       isUploadListLpEnabled: featureFlag.enabled,
       commodity: request.commodity,
+      listStatusId: request.listStatusId,
     });
   }
 

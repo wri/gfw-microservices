@@ -368,6 +368,7 @@ export class ListAnalysisService {
         user_id: externalUpload.userId,
         startAnalysis: true,
         isExternalAPIProcess: true,
+        listStatusId: 1,
       });
       this.logger.log('Event analysis response: ', processListResponse.data);
 

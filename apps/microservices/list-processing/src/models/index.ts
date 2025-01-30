@@ -73,6 +73,12 @@ export class RequestLargeListProcess {
 
   @ApiProperty()
   template_id?: number;
+
+  @ApiProperty()
+  draft?: boolean;
+
+  @ApiProperty()
+  listStatusId: 1;
 }
 
 export class StartAnalysisType {
@@ -104,6 +110,8 @@ export class RequestTriggerProcessLargeList {
   organization_id: number;
   @ApiProperty()
   commodity?: string;
+  @ApiProperty()
+  listStatusId: number;
 }
 
 export class CreateListRequest {
@@ -123,6 +131,9 @@ export class CreateListRequest {
 
   @ApiProperty()
   isUploadListLpEnabled: boolean;
+
+  @ApiProperty()
+  listStatusId: number;
 }
 
 export class CopyOrMoveLargeListRequestLLP implements CopyOrMoveLargeListRequest {

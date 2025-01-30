@@ -4,6 +4,8 @@ import { performance } from 'perf_hooks';
 import { updateListsUploadStatus } from '../shared/update.lists.upload.status';
 import { formatDurationStr, formatHeapUsed } from '../shared/performance.utils';
 
+export const DRAFT_STATUS_CODE = 4;
+
 export interface ChainEvent {
   eventId?: string;
   config?: unknown;

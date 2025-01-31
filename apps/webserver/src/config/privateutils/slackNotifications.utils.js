@@ -1,65 +1,145 @@
 const Slack = require('@slack/bolt');
 
 /**
- * @description - send notification to the slack log channel from the backend
- *
- * @param {string} text - Title of notification / error
- * @param {Object} data - Data to be logged
- * @param {string} userInfo - optional user info to be logged
+ * @description - sends notification to the slack log channel from the backend
+ * @param messageBlocks
  */
 
-const sendNotification = async (text, data, userInfo) => {
-  const slackApp = new Slack.App({
-    signingSecret: process.env.SLACK_SIGNING_SECRET,
-    token: process.env.SLACK_BOT_TOKEN,
-  });
+const sendNotification = async (messageBlocks) => {
+  console.log('🚀 ~ sendNotification ~ messageBlocks:', JSON.stringify(messageBlocks));
+  try {
+    const slackApp = new Slack.App({
+      signingSecret: process.env.SLACK_SIGNING_SECRET,
+      token: process.env.SLACK_BOT_TOKEN,
+    });
 
-  // only first 1000 characters of the data string to comply with slack limits
-  const truncatedDataString = JSON.stringify(data, null, '\t').slice(0, 1000);
+    return await slackApp.client.chat.postMessage({
+      token: process.env.SLACK_BOT_TOKEN,
+      channel: process.env.SLACK_LOG_CHANNEL,
+      text: 'GFWProErrorBoundary',
+      blocks: messageBlocks,
+    });
+  } catch (error) {
+    console.error('sendNotification', error.stack || error);
+    throw error;
+  }
+};
+
+function buildSlackNotificationMessage(contxtInfo) {
+  const SLACK_TEXT_LENGTH_LIMIT = 1010;
+  const { url, stackTrace, browserInfo, userInfo } = contxtInfo;
+  const errorBlock = stackTrace.slice(0, SLACK_TEXT_LENGTH_LIMIT + url.length);
+  const userBlock = getMaybeUserBlock(userInfo);
 
   const blocks = [
     {
-      type: 'section',
-      text: {
-        type: 'mrkdwn',
-        text: `:warning: *${text}*`,
-      },
+      type: 'context',
+      elements: [
+        {
+          type: 'mrkdwn',
+          text: ':warning: *GFWProErrorBoundary*',
+        },
+        {
+          type: 'mrkdwn',
+          text: `NODE_ENV: ${process.env.NODE_ENV}`,
+        },
+      ],
     },
     {
       type: 'section',
       text: {
         type: 'mrkdwn',
-        text: `NODE_ENV: *${process.env.NODE_ENV}*`,
+        text: `\`${url}\` \`\`\`${errorBlock}\`\`\``,
+      },
+    },
+    { ...userBlock },
+    {
+      type: 'section',
+      text: {
+        type: 'mrkdwn',
+        text: `\`\`\`${browserInfo}\`\`\``,
       },
     },
   ];
 
+  return blocks;
+}
+
+function getMaybeUserBlock(userInfo) {
   if (userInfo) {
-    blocks.push({
-      type: 'section',
-      text: {
-        type: 'mrkdwn',
-        text: `user info: \`\`\` ${userInfo} \`\`\``,
-      },
-    });
+    return {
+      type: 'rich_text',
+      elements: [
+        {
+          type: 'rich_text_quote',
+          elements: [
+            {
+              type: 'text',
+              text: 'OrgID\t',
+            },
+            {
+              type: 'text',
+              text: `${userInfo.OrgID}`,
+              style: {
+                code: true,
+              },
+            },
+            {
+              type: 'text',
+              text: '\nUser\t',
+            },
+            {
+              type: 'text',
+              text: userInfo.first_name,
+              style: {
+                code: true,
+              },
+            },
+            {
+              type: 'text',
+              text: '\t ID  ',
+            },
+            {
+              type: 'text',
+              text: `${userInfo.id}`,
+              style: {
+                code: true,
+              },
+            },
+            {
+              type: 'text',
+              text: '\nEmail\t',
+            },
+            {
+              type: 'text',
+              text: userInfo.email,
+              style: {
+                code: true,
+              },
+            },
+          ],
+        },
+      ],
+    };
   }
 
-  blocks.push({
-    type: 'section',
-    text: {
-      type: 'mrkdwn',
-      text: `data: \`\`\` ${truncatedDataString} \`\`\``,
-    },
-  });
-
-  await slackApp.client.chat.postMessage({
-    token: process.env.SLACK_BOT_TOKEN,
-    channel: process.env.SLACK_LOG_CHANNEL,
-    text,
-    blocks: blocks,
-  });
-};
+  return {
+    type: 'rich_text',
+    elements: [
+      {
+        type: 'rich_text_quote',
+        elements: [
+          {
+            type: 'text',
+            text: 'Not Authenticated',
+          },
+        ],
+      },
+    ],
+  };
+}
 
 module.exports = {
   sendNotification,
+  buildSlackNotificationMessage,
 };

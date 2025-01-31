@@ -1,0 +1,53 @@
+import React from 'react';
+import { render, screen, fireEvent, cleanup } from '@testing-library/react';
+import LocationsSummary from './LocationsSummary';
+import { ThemeProvider } from '../../../../../styles/ThemeProvider';
+import '@testing-library/jest-dom';
+
+afterEach(() => {
+  cleanup();
+  jest.clearAllMocks();
+});
+
+describe('LocationsSummary Component', () => {
+  const defaultProps = {
+    anchorElCountries: null,
+    closeCountriesPopover: jest.fn(),
+    countries: ['Brazil', 'Colombia', 'Peru', 'Argentina'],
+    filterValues: { Brazil: true, Colombia: true },
+    listLocationsCount: 2,
+    openCountriesPopover: false,
+    selectedList: {
+      isGlobalForestWatchList: false,
+      list_locations_count: 4,
+    },
+    shareView: true,
+    toggleCountriesPopover: jest.fn(),
+    numberOfResults: 3,
+  };
+
+  const renderWithTheme = (component) => render(<ThemeProvider>{component}</ThemeProvider>);
+
+  test('renders the correct location and country summary', () => {
+    renderWithTheme(<LocationsSummary {...defaultProps} />);
+
+    expect(screen.getByText('Showing 3 of 4 total locations •')).toBeInTheDocument();
+    expect(screen.getByText('Brazil, Colombia, Peru', { exact: false })).toBeInTheDocument();
+  });
+
+  test('displays the popover when the country list is clicked', () => {
+    renderWithTheme(<LocationsSummary {...defaultProps} />);
+
+    const countrySummary = screen.getByText('Brazil, Colombia, Peru…');
+    fireEvent.click(countrySummary);
+
+    expect(defaultProps.toggleCountriesPopover).toHaveBeenCalled();
+  });
+
+  test('does not display the share icon when shareView is false', () => {
+    renderWithTheme(<LocationsSummary {...defaultProps} shareView={false} />);
+
+    expect(screen.queryByTestId('icon-share')).not.toBeInTheDocument();
+    expect(screen.queryByText('locationsPage.lists.share')).not.toBeInTheDocument();
+  });
+});

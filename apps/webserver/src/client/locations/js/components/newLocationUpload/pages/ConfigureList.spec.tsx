@@ -23,7 +23,7 @@ jest.mocked(useUploadLocation).mockReturnValue({
   clearUploadType: mockClearUploadType,
   uploadLocationState: {
     newListName: 'Random list name 123',
-    existingListName: '',
+    existingList: null,
     commodity: 'palm-oil',
     typeOfAnalysis: {
       AFI: true,
@@ -280,7 +280,7 @@ describe('ConfigureList', () => {
     expect(mockSetUploadLocationConfigureList).toHaveBeenCalledWith({
       commodity: 'cattle',
       newListName: 'My new List 3',
-      existingListName: '',
+      existingList: null,
       typeOfAnalysis: {
         palmRiskAssessment: false,
         FCD: false,

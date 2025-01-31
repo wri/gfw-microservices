@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useRef, useState } from 'react';
 import {
   Box,
   Card,
@@ -73,6 +73,7 @@ export function ConfigureList({ userLists }: { userLists: UserList[] }) {
     },
   });
   const { clearUploadType, setUploadLocationConfigureList } = useUploadLocation();
+  const existingListId = useRef(0);
 
   const [formFields, setFormFields] = useState<{
     newListName: string;
@@ -93,6 +94,7 @@ export function ConfigureList({ userLists }: { userLists: UserList[] }) {
     field.onChange(value);
 
     const template = userLists.find((list) => list.list_name === value);
+    existingListId.current = template?.id || 0;
 
     typeOfAnalysisMap.forEach((typeOfAnalysis) => {
       const found = template?.listAnalysesStatus.find((x) => x.analysisId === typeOfAnalysis.id);
@@ -120,7 +122,9 @@ export function ConfigureList({ userLists }: { userLists: UserList[] }) {
     setUploadLocationConfigureList({
       commodity: data.commodity,
       newListName: data.newListName ?? '',
-      existingListName: data.existingListName ?? '',
+      existingList: data.existingListName
+        ? { name: data.existingListName ?? '', id: existingListId.current }
+        : null,
       typeOfAnalysis: {
         palmRiskAssessment: data.palmRiskAssessment,
         FCD: data.FCD,

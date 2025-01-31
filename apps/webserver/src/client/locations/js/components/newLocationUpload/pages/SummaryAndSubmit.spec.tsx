@@ -11,7 +11,7 @@ jest.mocked(useUploadLocation).mockReturnValue({
   clearUploadType: mockClearUploadType,
   uploadLocationState: {
     newListName: 'Random list name 123',
-    existingListName: '',
+    existingList: null,
     commodity: 'palm-oil',
     typeOfAnalysis: {
       AFI: true,
@@ -72,7 +72,7 @@ describe('SummaryAndSubmit', () => {
       clearUploadType: mockClearUploadType,
       uploadLocationState: {
         newListName: '',
-        existingListName: 'List created last year',
+        existingList: { name: 'List created last year', id: 1 },
         commodity: 'sugar-cane',
         typeOfAnalysis: {
           AFI: false,

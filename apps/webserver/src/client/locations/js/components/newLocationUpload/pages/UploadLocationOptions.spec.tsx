@@ -16,7 +16,7 @@ jest.mocked(useUploadLocation).mockReturnValue({
   selectUploadType: mockSelectUploadType,
   uploadLocationState: {
     newListName: 'Random list name 123',
-    existingListName: '',
+    existingList: null,
     commodity: 'palm-oil',
     typeOfAnalysis: {
       AFI: true,

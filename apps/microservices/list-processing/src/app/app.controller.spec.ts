@@ -215,7 +215,7 @@ describe('AppController', () => {
         template_type: 'cocoa_generic',
         user_id: 10011,
         startAnalysis: true,
-        listStatusId: 1,
+        saveAsDraft: false,
       });
 
       expect(result).toEqual({
@@ -236,7 +236,7 @@ describe('AppController', () => {
         user_id: userId,
         analysisIds: ['FCD', 'ALERTS'],
         organization_id: 10,
-        listStatusId: 1,
+        saveAsDraft: false,
       };
       const result = await appController.triggerProcessLargeList(requestLargeListCreation);
 
@@ -280,7 +280,7 @@ describe('AppController', () => {
         user_id: userId,
         analysisIds: ['FCD', 'ALERTS'],
         organization_id: 10,
-        listStatusId: 1,
+        saveAsDraft: false,
       };
       const trigguerProccessResult = await appController.triggerProcessLargeList(
         requestLargeListProcess
@@ -299,7 +299,7 @@ describe('AppController', () => {
         template_type: 'cocoa_generic',
         user_id: userId,
         startAnalysis: true,
-        listStatusId: 1,
+        saveAsDraft: false,
       });
 
       expect(trigguerLargeListProcessResult).toEqual({

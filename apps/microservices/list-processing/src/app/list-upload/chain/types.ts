@@ -4,7 +4,10 @@ import { performance } from 'perf_hooks';
 import { updateListsUploadStatus } from '../shared/update.lists.upload.status';
 import { formatDurationStr, formatHeapUsed } from '../shared/performance.utils';
 
-export const DRAFT_STATUS_CODE = 4;
+export const LIST_STATUS_CODE = {
+  DRAFT: 4,
+  PENDING: 1,
+};
 
 export interface ChainEvent {
   eventId?: string;
@@ -52,7 +55,7 @@ export interface RequestNewList extends PreviewListRequest {
   organization_database: string;
   listTable?: string;
   analysisTable?: string;
-  listStatusId?: number;
+  saveAsDraft?: boolean;
   locationClassification?: string;
   customAttributeNames?: string;
   customAttributeTypes?: string;

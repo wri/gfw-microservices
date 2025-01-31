@@ -17,7 +17,7 @@ Content-Type: application/json
    "user_id":10048,
    "startAnalysis":"false",
    "isExternalAPIProcess":"false",
-   "listStatusId": 1
+   "saveAsDraft": false
 }
 
 

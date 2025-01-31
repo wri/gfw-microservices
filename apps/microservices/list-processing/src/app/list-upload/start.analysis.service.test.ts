@@ -52,7 +52,7 @@ describe('StartAnalysisService', () => {
       template_type: 'test-type',
       user_id: 1,
       startAnalysis: true,
-      listStatusId: 1,
+      saveAsDraft: false,
     };
     const bucket = 'test-bucket';
     const fileDownloadedPath = 'tmp/test/path';

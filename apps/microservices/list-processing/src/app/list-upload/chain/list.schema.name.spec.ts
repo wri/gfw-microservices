@@ -74,7 +74,7 @@ describe('ListSchema', () => {
         template_id: 1,
         path: 'path',
         commodity: 'COCO',
-        listStatusId: 1,
+        saveAsDraft: false,
       },
     };
 
@@ -90,7 +90,7 @@ describe('ListSchema', () => {
         commodity: 'COCO',
         customAttributeNames: '',
         customAttributeTypes: '',
-        listStatusId: 1,
+        saveAsDraft: false,
         listTable: 'list-newlist',
         list_name: 'NewList',
         locationClassification: 'Property',

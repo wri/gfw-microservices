@@ -1,5 +1,5 @@
 import { FeatureFlag, SQLUtils } from '@wri-monorepos/sql';
-import { AbstractHandler, ChainType, RequestNewList } from './types';
+import { AbstractHandler, ChainType, LIST_STATUS_CODE, RequestNewList } from './types';
 import { CreateListResult } from '@wri-monorepos/geo';
 import * as sql from 'mssql';
 import { featureFlagsService } from '@wri-monorepos/shared';
@@ -88,7 +88,7 @@ export class CreateListLevelData extends AbstractHandler<ChainType> {
       organization_database: clientDatabase,
       listTable,
       analysisTable,
-      listStatusId,
+      saveAsDraft,
       locationClassification,
       customAttributeNames,
       customAttributeTypes,
@@ -106,6 +106,8 @@ export class CreateListLevelData extends AbstractHandler<ChainType> {
     const uploadListLpFlag = flags.find((f) => f.flagId === 'UploadListLp') as FeatureFlag;
 
     const connection = new SQLUtils();
+
+    const listStatusId = saveAsDraft ? LIST_STATUS_CODE.DRAFT : LIST_STATUS_CODE.PENDING;
 
     try {
       await connection.connect(clientDatabase);

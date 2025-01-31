@@ -6,7 +6,7 @@ import {
   updateListsAnalysisStatus,
   User,
 } from '@wri-monorepos/sql';
-import { AbstractHandler, ChainType, DRAFT_STATUS_CODE, RequestNewList } from './types';
+import { AbstractHandler, ChainType, RequestNewList } from './types';
 import { MARK_IS_TEST_LIST, MARK_IS_TEST_USER } from '../../../services/constants';
 import { checkProcessingLimits } from '@wri-monorepos/shared';
 import { mockAnalysisFlow } from '../../../mock';
@@ -70,8 +70,8 @@ export class StartAnalysis extends AbstractHandler<ChainType> {
     return ids.map((entity) => entity.locationId);
   }
 
-  private isDraftList(listStatusId: number, listId: number): boolean {
-    if (listStatusId === DRAFT_STATUS_CODE) {
+  private isDraftList(saveAsDraft: boolean, listId: number): boolean {
+    if (saveAsDraft) {
       this.logger.debug(`List ${listId} is set as draft so going to skip analysis`);
       return true;
     }
@@ -215,10 +215,10 @@ export class StartAnalysis extends AbstractHandler<ChainType> {
       isExternalAPIProcess,
       organization_id: organizationId,
       subscription_status_id: subscriptionStatusId,
-      listStatusId,
+      saveAsDraft,
     } = request.request as RequestNewList;
 
-    if (this.isDraftList(listStatusId, listId)) {
+    if (this.isDraftList(saveAsDraft, listId)) {
       return request;
     }
 

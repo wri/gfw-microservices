@@ -68,7 +68,7 @@ describe('ListService - Start Analysis Process For List', () => {
       template_type: 'test-type',
       user_id: 1,
       startAnalysis: true,
-      listStatusId: 1,
+      saveAsDraft: false,
     };
 
     const flags: FeatureFlag[] = [
@@ -114,7 +114,7 @@ describe('ListService - Start Analysis Process For List', () => {
       template_type: 'test-type',
       user_id: 1,
       startAnalysis: true,
-      listStatusId: 1,
+      saveAsDraft: false,
     };
 
     const flags: FeatureFlag[] = [

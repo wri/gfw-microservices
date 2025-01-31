@@ -33,7 +33,7 @@ const requestMock = {
     '/tmp/ei66192vm56txqq1-gpv3646 working input_input - gpv3646 working input_input (2).csv',
   listTable: 'list-gpv3648samplefeature4',
   analysisTable: 'analysis-gpv3648samplefeature4',
-  listStatusId: 1,
+  saveAsDraft: false,
   locationClassification: 'Property',
   customAttributeNames: '',
   customAttributeTypes: '',

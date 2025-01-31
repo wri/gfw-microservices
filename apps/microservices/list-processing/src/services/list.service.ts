@@ -27,7 +27,7 @@ type ListRequest = {
   gfwListId?: number | null;
   isUploadListLpEnabled?: boolean;
   commodity?: string;
-  listStatusId: number;
+  saveAsDraft: boolean;
 } & Partial<CreateListRequest>;
 
 interface CreateListResult {
@@ -54,7 +54,7 @@ export class ListService {
         clientDatabase: createListRequest.clientDatabase,
         analysisIds: createListRequest.analysisIds,
         isUploadListLpEnabled: createListRequest.isUploadListLpEnabled,
-        listStatusId: createListRequest.listStatusId,
+        saveAsDraft: createListRequest.saveAsDraft,
       });
 
       const saveListRequest: RequestSaveLargeListProcessModel = {

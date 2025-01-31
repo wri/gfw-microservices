@@ -126,4 +126,18 @@ function uploadProcess(list, uploadFileToS3, largeListFile, isExistingList, anal
   });
 }
 
+export function uploadProcessByPrevUploadedFile({
+  listName,
+  analysisIds,
+  keyFile,
+  list_id,
+  fileS3Route,
+}) {
+  const processPipeline = list_id
+    ? promiseCompose(processListStep)
+    : promiseCompose(processListStep, saveListToProcessStep, createLargeListStep);
+
+  return processPipeline({ listName, analysisIds, keyFile, list_id, fileS3Route });
+}
+
 export default uploadProcess;

@@ -87,7 +87,11 @@ describe('UploadLocationByFile', () => {
 
   it('should handle file upload success', async () => {
     const file = new File(['dummy content'], 'test.csv', { type: 'text/csv' });
-    jest.mocked(uploadFileToS3).mockResolvedValue('https://example.com/test.csv');
+    jest.mocked(uploadFileToS3).mockResolvedValue({
+      keyFile: 'https://example.com/test.csv',
+      fileS3Route: 'fileS3Route',
+      url: 'url',
+    });
 
     render(
       <ThemeProvider>
@@ -145,14 +149,17 @@ describe('UploadLocationByFile', () => {
     });
 
     await waitFor(() => {
-      screen.logTestingPlaygroundURL();
       expect(screen.getByText('Upload again')).toBeInTheDocument();
       expect(screen.getByText('Next')).toBeDisabled();
     });
   });
 
   it('should navigate to preview page when file upload is successful', async () => {
-    (uploadFileToS3 as jest.Mock).mockResolvedValue('https://example.com/test.csv');
+    (uploadFileToS3 as jest.Mock).mockResolvedValue({
+      keyFile: 'https://example.com/test.csv',
+      fileS3Route: 'fileS3Route',
+      url: 'url',
+    });
     const file = new File(['dummy content'], 'test.csv', { type: 'text/csv' });
 
     render(

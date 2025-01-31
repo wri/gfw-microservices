@@ -34,13 +34,13 @@ jest.mocked(useUploadLocation).mockReturnValue({
     area: { measurementUnit: 'hectares', size: 0 },
     coordinates: [{ latitude: '1.1', longitude: '1.1' }],
     locationName: 'location name',
-    uploadedFileUrl: '',
+    uploadedFile: { fileS3Route: '', keyFile: '', url: '' },
     uploadType: UploadType.ByPolygon,
   },
   selectUploadType: jest.fn(),
   setUploadLocationByPoint: jest.fn(),
   setUploadLocationByPolygon: jest.fn(),
-  addFileUrl: jest.fn(),
+  addFile: jest.fn(),
 });
 
 const mockUserLists: UserList[] = [

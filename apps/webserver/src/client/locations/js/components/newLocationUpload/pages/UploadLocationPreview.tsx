@@ -37,9 +37,9 @@ import { VALID_UPLOAD_FILE_FORMATS } from '../utils/constants';
 
 export function UploadLocationPreview() {
   const {
-    uploadLocationState: { uploadedFileUrl },
+    uploadLocationState: { uploadedFile },
     clearUploadType,
-    addFileUrl,
+    addFile,
   } = useUploadLocation();
   const history = useHistory();
   const theme = useTheme();
@@ -53,12 +53,12 @@ export function UploadLocationPreview() {
   const [iLoadingFileUpload, setIsLoadingFileUpload] = useState(false);
 
   useEffect(() => {
-    if (!uploadedFileUrl) {
+    if (!uploadedFile?.keyFile) {
       return;
     }
 
     getPreviewData();
-  }, [uploadedFileUrl]);
+  }, [uploadedFile]);
 
   useEffect(() => {
     if (!file) {
@@ -69,7 +69,7 @@ export function UploadLocationPreview() {
       try {
         setIsLoadingFileUpload(true);
         const data = await uploadFileToS3(file);
-        addFileUrl(data);
+        addFile(data);
       } catch (err: unknown) {
         console.log({ err });
       } finally {
@@ -85,7 +85,7 @@ export function UploadLocationPreview() {
       method: 'GET',
       url: '/api/list/preview',
       params: {
-        path: uploadedFileUrl,
+        path: uploadedFile?.keyFile,
       },
     });
   };
@@ -109,7 +109,7 @@ export function UploadLocationPreview() {
       .join(', ');
   };
   const columns = getTableColumns(data?.features);
-  const fileExtension = getFileExtension(uploadedFileUrl);
+  const fileExtension = getFileExtension(uploadedFile?.keyFile);
 
   return (
     <>

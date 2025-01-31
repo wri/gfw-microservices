@@ -2,13 +2,14 @@ import React, { createContext, useContext, useReducer, ReactNode } from 'react';
 
 import { useHistory } from '../hooks';
 import { Area, Coordinate, UploadType } from '../types';
+import { PresignedUrl } from '../utils/upload';
 
 export type UploadLocationState = {
   uploadType: UploadType | null;
   locationName: string;
   coordinates: Coordinate[];
   area: Area;
-  uploadedFileUrl: string | null;
+  uploadedFile: PresignedUrl | null;
   commodity: string;
   existingListName: string | null;
   newListName: string | null;
@@ -41,7 +42,7 @@ type UploadLocationType = {
       ALERTS: boolean;
     };
   }) => void;
-  addFileUrl: (uploadedFileUrl: string) => void;
+  addFile: (uploadedFile: PresignedUrl) => void;
 };
 
 type UploadLocationAction =
@@ -81,9 +82,9 @@ type UploadLocationAction =
       };
     }
   | {
-      type: 'AddFileUrl';
+      type: 'AddFile';
       payload: {
-        uploadedFileUrl: string;
+        uploadedFile: PresignedUrl;
       };
     }
   | {
@@ -102,7 +103,7 @@ const uploadLocationInitialState: UploadLocationState = {
   coordinates: [],
   locationName: '',
   area: { size: 0, measurementUnit: 'hectares' },
-  uploadedFileUrl: null,
+  uploadedFile: null,
   commodity: '',
   existingListName: null,
   newListName: null,
@@ -156,8 +157,8 @@ export function UploadLocationProvider({ children }: UploadLocationProviderProps
     dispatch({ type: 'ByPolygon', payload: { locationName, coordinates } });
   };
 
-  const addFileUrl = (uploadedFileUrl: string) => {
-    dispatch({ type: 'AddFileUrl', payload: { uploadedFileUrl } });
+  const addFile = (uploadedFile: PresignedUrl) => {
+    dispatch({ type: 'AddFile', payload: { uploadedFile } });
   };
 
   const setUploadLocationConfigureList = (data: {
@@ -183,7 +184,7 @@ export function UploadLocationProvider({ children }: UploadLocationProviderProps
         setUploadLocationByPoint,
         setUploadLocationByPolygon,
         setUploadLocationConfigureList,
-        addFileUrl,
+        addFile,
       }}
     >
       {children}
@@ -208,13 +209,14 @@ function uploadLocationReducer(
         ...state,
         coordinates: payload.coordinates,
         area: payload.area,
+        locationName: payload.locationName,
       };
 
     case 'ByPolygon':
-      return { ...state, coordinates: payload.coordinates };
+      return { ...state, coordinates: payload.coordinates, locationName: payload.locationName };
 
-    case 'AddFileUrl':
-      return { ...state, uploadedFileUrl: payload.uploadedFileUrl };
+    case 'AddFile':
+      return { ...state, uploadedFile: payload.uploadedFile };
 
     case 'ConfigureList':
       return {

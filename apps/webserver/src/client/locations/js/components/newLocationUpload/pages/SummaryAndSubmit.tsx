@@ -8,18 +8,14 @@ import { useUploadLocation } from '../contexts';
 import { NavBar } from '../components';
 import { analysisTypesOptionsNewNames } from '../../../../../../config/env/analysisTypes.constants';
 import { commodities } from '../utils/constants';
-import { deduceActiveId } from '../../../../../common/js/utils/templateUtils';
-import { UploadLocationState } from '../contexts/UploadLocationContext';
 import Point from '@arcgis/core/geometry/Point';
-import { getListStatusId } from '../../../utils/lists.utils';
-import { saveAsDraftListConfig } from '../../../../../../config/config/locations.config';
 import geojsonUtil from '../../../../../common/js/utils/arcgis-to-geojson';
 import SpatialReference from '@arcgis/core/geometry/SpatialReference';
 
 import * as geometryEngine from '@arcgis/core/geometry/geometryEngine';
-import { Area, Coordinate } from '../types';
-import { getGadmService } from '../../../../../common/js/utils/getGadmService.utils';
-import { esriQuery } from '../../../utils/esriTasks';
+import { Area, Coordinate, UploadType } from '../types';
+import { uploadFileToS3 } from '../utils/upload';
+import { uploadProcessByPrevUploadedFile } from '../../landing/uploadProcess';
 
 export function SummaryAndSubmit() {
   const history = useHistory();
@@ -33,6 +29,76 @@ export function SummaryAndSubmit() {
 
   const isAddingToNewList = !!uploadLocationState.newListName;
   const commodity = commodities[uploadLocationState.commodity as keyof typeof commodities];
+
+  const uploadList = async () => {
+    if (uploadLocationState.typeOfAnalysis.AFI) {
+      gtag('event', 'User saved a list with Deforestation Reporting KPIs analysis selected', {
+        event_category: 'Deforestation Reporting KPIs',
+      });
+    }
+
+    let uploadedFile = uploadLocationState.uploadedFile;
+    if (
+      uploadLocationState.uploadType === UploadType.ByPoint ||
+      uploadLocationState.uploadType === UploadType.ByPolygon
+    ) {
+      const geometry = createPointGeometry({
+        area: uploadLocationState.area,
+        coordinate: uploadLocationState.coordinates[0],
+      });
+      const { coordinates, area, commodity, locationName } = uploadLocationState;
+
+      const properties = {
+        Latitude: coordinates[0].latitude,
+        Longitude: coordinates[0].longitude,
+        'Analysis Radius': area.size,
+        Commodity: commodity,
+        'Location Name': locationName,
+        'Accuracy Rating of Location Entered': 3, // check if this can be removed
+      };
+      const geojson = {
+        type: 'FeatureCollection',
+        features: [
+          {
+            type: 'Feature',
+            properties,
+            geometry: geojsonUtil.arcgisToGeoJSON(geometry),
+          },
+        ],
+      };
+
+      const file = new File([JSON.stringify(geojson, null, 2)], 'data.json', {
+        type: 'application/json',
+      });
+
+      uploadedFile = await uploadFileToS3(file);
+    }
+
+    if (!uploadedFile) {
+      return;
+    }
+
+    try {
+      const listName = uploadLocationState.newListName || uploadLocationState.existingListName;
+
+      const analysisIds = Object.keys(uploadLocationState.typeOfAnalysis).filter(
+        (key) =>
+          uploadLocationState.typeOfAnalysis[key as keyof typeof uploadLocationState.typeOfAnalysis]
+      );
+
+      await uploadProcessByPrevUploadedFile({
+        listName,
+        analysisIds,
+        fileS3Route: uploadedFile.fileS3Route,
+        keyFile: uploadedFile.keyFile,
+        list_id: 0,
+      });
+    } catch (err) {
+      console.log('error');
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   return (
     <>
@@ -137,7 +203,7 @@ export function SummaryAndSubmit() {
             type="submit"
             variant="contained"
             startIcon={<Publish />}
-            onClick={() => uploadList({ isSaveAsDraft: false, uploadLocationState })}
+            onClick={uploadList}
           >
             Submit for analysis
           </PillButton>
@@ -147,116 +213,6 @@ export function SummaryAndSubmit() {
     </>
   );
 }
-
-const uploadList = async ({
-  isSaveAsDraft,
-  uploadLocationState,
-}: {
-  isSaveAsDraft: boolean;
-  uploadLocationState: UploadLocationState;
-}) => {
-  if (uploadLocationState.typeOfAnalysis.AFI) {
-    gtag('event', 'User saved a list with Deforestation Reporting KPIs analysis selected', {
-      event_category: 'Deforestation Reporting KPIs',
-    });
-  }
-
-  const listName = uploadLocationState.newListName || uploadLocationState.existingListName;
-
-  const templateId = deduceActiveId(uploadLocationState.commodity);
-
-  const geometry = createPointGeometry({
-    area: uploadLocationState.area,
-    coordinate: uploadLocationState.coordinates[0],
-  });
-
-  const adminArea = await deduceAdmin(geometry);
-
-  const properties = {} as any;
-  properties.Latitude = uploadLocationState.coordinates[0].latitude;
-  properties.Longitude = uploadLocationState.coordinates[0].longitude;
-  properties.Commodity = uploadLocationState.commodity;
-  properties['List Name'] = listName;
-  properties['Location Name'] = uploadLocationState.locationName;
-  properties['Analysis Area'] = uploadLocationState.area.size;
-  properties['Analysis Radius'] = uploadLocationState.area.size;
-  properties.gadmid = adminArea?.gadmid;
-
-  const geojsonGeom = geojsonUtil.arcgisToGeoJSON(geometry);
-
-  // Necessary to please the server's checks (this is no longer a field we use)
-  properties['Accuracy Rating of Location Entered'] = 3;
-
-  const geojson = {
-    type: 'FeatureCollection',
-    features: [
-      {
-        type: 'Feature',
-        properties,
-        geometry: geojsonGeom,
-      },
-    ],
-  };
-
-  try {
-    const response = await fetch('/locations/gadm', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ geojson }),
-    });
-
-    const jsonResponse = await response.json();
-    const updatedGeoJSON = jsonResponse.geojson;
-
-    if (updatedGeoJSON.features.length === 0) {
-      // show error to the user
-      return;
-    }
-
-    let bigObj;
-    if (uploadLocationState.newListName) {
-      bigObj = {
-        list_name: listName,
-        template_id: templateId,
-        commodity: uploadLocationState.commodity,
-        geojson: updatedGeoJSON,
-        custom_attributes: [],
-        location_classification: '',
-        list_status_id: getListStatusId(isSaveAsDraft),
-        analysisIds: Object.keys(uploadLocationState.typeOfAnalysis).filter(
-          (key) =>
-            uploadLocationState.typeOfAnalysis[
-              key as keyof typeof uploadLocationState.typeOfAnalysis
-            ]
-        ),
-        attributes: '',
-      };
-
-      const route = isSaveAsDraft ? saveAsDraftListConfig.route : '/locations/addToNewList';
-      const fetchResponse = await fetch(route, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(bigObj),
-      });
-
-      if (!fetchResponse.ok) {
-        throw new Error('Failed to create/update list');
-      }
-
-      gtag('event', 'Upload List', {
-        event_category: 'Submit',
-        event_label: isSaveAsDraft
-          ? 'User uploads a list with single location as a draft'
-          : 'User uploads a list with single location and submits',
-      });
-    }
-
-    // display "Locations have been successfully added."
-  } catch (err) {
-    console.error(err);
-    // display "An error occurred while processing your request. Please try again."
-  }
-};
 
 const createPointGeometry = ({
   coordinate: { latitude, longitude },
@@ -278,24 +234,4 @@ const createPointGeometry = ({
   }
 
   return geometryEngine.geodesicBuffer(centerPoint, radius, 'kilometers');
-};
-
-const deduceAdmin = async (deduceAdminGeometry: any) => {
-  try {
-    const serviceURL = getGadmService();
-    const geometry = deduceAdminGeometry.centroid || deduceAdminGeometry;
-    const queryProperties = {
-      geometry,
-      returnGeometry: false,
-      outFields: ['name_0', 'name_1', 'name_2', 'gadmid'],
-    };
-
-    const response = await esriQuery(serviceURL, queryProperties);
-    if (response.features?.length > 0) {
-      const { name_0, name_1, name_2, gadmid } = response.features[0].attributes;
-      return { substate: name_2, state: name_1, country: name_0, gadmid };
-    }
-  } catch (err) {
-    console.error('Error', err);
-  }
 };

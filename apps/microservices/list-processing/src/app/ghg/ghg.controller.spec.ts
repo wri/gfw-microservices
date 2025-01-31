@@ -150,6 +150,7 @@ describe('[GET] /ghg/:listId/data-per-page', () => {
             totalAreaHA: 0,
             statusCode: 200,
             locationError: null,
+            commodity: 'SOYB',
             emissionsFactorByYear: '{"2021":0.5839,"2022":0.1825,"2023":0.3258}',
           },
         ]);
@@ -172,6 +173,7 @@ describe('[GET] /ghg/:listId/data-per-page', () => {
         totalAreaHA: 0,
         statusCode: 200,
         locationError: null,
+        commodity: 'SOYB',
         emissionsFactorByYear: '{"2021":0.5839,"2022":0.1825,"2023":0.3258}',
       },
     ]);

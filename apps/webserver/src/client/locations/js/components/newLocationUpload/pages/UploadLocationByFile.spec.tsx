@@ -34,12 +34,12 @@ jest.mock('../hooks', () => ({
 }));
 
 describe('UploadLocationByFile', () => {
-  const mockAddFileUrl = jest.fn();
+  const mockAddFile = jest.fn();
   const mockClearUploadType = jest.fn();
 
   beforeEach(() => {
     (useUploadLocation as jest.Mock).mockReturnValue({
-      addFileUrl: mockAddFileUrl,
+      addFile: mockAddFile,
       clearUploadType: mockClearUploadType,
     });
   });
@@ -106,7 +106,11 @@ describe('UploadLocationByFile', () => {
 
     await waitFor(() => {
       expect(uploadFileToS3).toHaveBeenCalledWith(file);
-      expect(mockAddFileUrl).toHaveBeenCalledWith('https://example.com/test.csv');
+      expect(mockAddFile).toHaveBeenCalledWith({
+        keyFile: 'https://example.com/test.csv',
+        fileS3Route: 'fileS3Route',
+        url: 'url',
+      });
     });
   });
 

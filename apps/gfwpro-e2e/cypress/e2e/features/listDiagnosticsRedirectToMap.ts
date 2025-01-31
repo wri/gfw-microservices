@@ -10,10 +10,11 @@ describe('List diagnostics', () => {
 
   Given('I am logged in', () => {
     cy.loginUI();
+    cy.visit('/locations');
   });
 
   When('I navigate to locations and select a user list', () => {
-    cy.visit('/locations');
+    cy.location('href').should('include', '/locations');
     locationsPage.clickOnLocationsList('AAT Argentina Points Generic');
   });
 

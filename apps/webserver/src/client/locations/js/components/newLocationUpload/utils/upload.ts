@@ -8,15 +8,19 @@ type PresignedUrlResponse = {
 
 type FileTypes = {
   csv: string;
-  zip: string;
-  xlsx: string;
-  kmz: string;
+  geojson: string;
+  json: string;
   kml: string;
+  kmz: string;
   xls: string;
+  xlsx: string;
+  zip: string;
 };
 
 const fileExtensions: FileTypes = {
   csv: 'text/csv',
+  geojson: 'application/geojson',
+  json: 'application/json',
   kml: 'application/vnd.google-earth.kml+xml',
   kmz: 'application/vnd.google-earth.kmz',
   xls: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',

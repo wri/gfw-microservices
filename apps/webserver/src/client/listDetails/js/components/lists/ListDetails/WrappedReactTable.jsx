@@ -3,7 +3,13 @@ import ReactTable from 'react-table';
 import cloneDeep from 'lodash/cloneDeep';
 import columns from '../../../config/columns';
 import CustomRow from './CustomRow';
+import store from '../../../../../locations/js/store';
 import { listStatus } from '../../../../../../config/env/listStatuses.constants';
+import {
+  SBTN_NATURAL_FOREST_LOSS,
+  JRC_NATURAL_FOREST_LOSS,
+  DISPLAY_FORMAT_PERCENTAGE,
+} from './deforestationDisplayFormat.constants';
 
 const transifex = Transifex.live.translateText;
 
@@ -90,6 +96,46 @@ const WrappedReactTable = ({
     }
     if (toggleableColumns.includes(col.accessor)) {
       col.show = visibleColumns.includes(col.accessor);
+    }
+
+    const { naturalForestLossDataSource, deforestationDisplayFormat } = store.getState();
+    if (col.accessor === 'natural_land_deforested_area') {
+      col.show =
+        naturalForestLossDataSource === SBTN_NATURAL_FOREST_LOSS &&
+        deforestationDisplayFormat !== DISPLAY_FORMAT_PERCENTAGE;
+    }
+
+    if (col.accessor === 'naturalForestLossPercent') {
+      col.show =
+        naturalForestLossDataSource === SBTN_NATURAL_FOREST_LOSS &&
+        deforestationDisplayFormat === DISPLAY_FORMAT_PERCENTAGE;
+    }
+
+    if (col.accessor === 'jrc_land_deforested_area') {
+      col.show =
+        naturalForestLossDataSource === JRC_NATURAL_FOREST_LOSS &&
+        deforestationDisplayFormat !== DISPLAY_FORMAT_PERCENTAGE;
+    }
+    if (col.accessor === 'jrcNaturalForestLossPercent') {
+      col.show =
+        naturalForestLossDataSource === JRC_NATURAL_FOREST_LOSS &&
+        deforestationDisplayFormat === DISPLAY_FORMAT_PERCENTAGE;
+    }
+
+    if (col.accessor === 'protected_areas_area') {
+      col.show = deforestationDisplayFormat !== DISPLAY_FORMAT_PERCENTAGE;
+    }
+
+    if (col.accessor === 'protectedAreasPercent') {
+      col.show = deforestationDisplayFormat === DISPLAY_FORMAT_PERCENTAGE;
+    }
+
+    if (col.accessor === 'landmark_area') {
+      col.show = deforestationDisplayFormat !== DISPLAY_FORMAT_PERCENTAGE;
+    }
+
+    if (col.accessor === 'landmarkPercent') {
+      col.show = deforestationDisplayFormat === DISPLAY_FORMAT_PERCENTAGE;
     }
 
     const max = Math.max(

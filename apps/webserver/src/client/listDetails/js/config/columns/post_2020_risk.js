@@ -1,15 +1,13 @@
 import React from 'react';
 import ColumnsHeader from '../../components/columns/ColumnsHeader';
 import {
+  renderPercentajeValueWithIndicator,
   renderFormattedDeforestationValueWithIndicator,
   formatDigit,
 } from '../../../../locations/js/utils/locationsTableUtils';
 import infoBubbleConfig from '../../../../common/js/infoBubbleConfig.constants';
-import store from '../../../../locations/js/store';
-import { SBTN_NATURAL_FOREST_LOSS } from '../../components/lists/ListDetails/deforestationDisplayFormat.constants';
 import { renderCell } from './columns.utils';
 
-const { naturalForestLossDataSource } = store.getState();
 const post_2020_risk = [
   {
     Header: () => <ColumnsHeader label="Location Name" />,
@@ -23,6 +21,7 @@ const post_2020_risk = [
     id: 'total_area_ha',
     Cell: ({ original }) => renderCell(formatDigit(original?.totalAreaHa)),
   },
+
   {
     Header: () => (
       <ColumnsHeader
@@ -31,30 +30,62 @@ const post_2020_risk = [
       />
     ),
     className: 'default-cell td-num',
-    id:
-      naturalForestLossDataSource === SBTN_NATURAL_FOREST_LOSS
-        ? 'natural_land_deforested_area'
-        : 'jrc_land_deforested_area',
-    Cell: ({ original }) => {
-      const {
-        naturalForestLossHA,
-        jrcNaturalForestLossHA,
-        naturalForestLossPercent,
-        jrcNaturalForestLossPercent,
-      } = original;
-      const { naturalForestLossDataSource } = store.getState();
+    accessor: 'naturalForestLossPercent',
 
-      const valueInHectares =
-        naturalForestLossDataSource === SBTN_NATURAL_FOREST_LOSS
-          ? naturalForestLossHA
-          : jrcNaturalForestLossHA;
-      const valueInPercentage =
-        naturalForestLossDataSource === SBTN_NATURAL_FOREST_LOSS
-          ? naturalForestLossPercent
-          : jrcNaturalForestLossPercent;
-      return renderFormattedDeforestationValueWithIndicator(valueInHectares, valueInPercentage);
+    Cell: ({ original }) => (
+      <span>{renderPercentajeValueWithIndicator(original?.naturalForestLossPercent)}</span>
+    ),
+  },
+
+  {
+    Header: () => (
+      <ColumnsHeader
+        label="Post-2020 Forest Loss"
+        infoBubbleId={infoBubbleConfig.post2020ForestLoss}
+      />
+    ),
+    className: 'default-cell td-num',
+    accessor: 'jrcNaturalForestLossPercent',
+
+    Cell: ({ original }) => (
+      <span>{renderPercentajeValueWithIndicator(original?.jrcNaturalForestLossPercent)}</span>
+    ),
+  },
+
+  {
+    Header: () => (
+      <ColumnsHeader
+        label="Post-2020 Forest Loss"
+        infoBubbleId={infoBubbleConfig.post2020ForestLoss}
+      />
+    ),
+    className: 'default-cell td-num',
+    accessor: 'natural_land_deforested_area',
+
+    Cell: ({ original }) => {
+      const { naturalForestLossHA } = original;
+
+      return renderFormattedDeforestationValueWithIndicator(naturalForestLossHA);
     },
   },
+
+  {
+    Header: () => (
+      <ColumnsHeader
+        label="Post-2020 Forest Loss"
+        infoBubbleId={infoBubbleConfig.post2020ForestLoss}
+      />
+    ),
+    className: 'default-cell td-num',
+    accessor: 'jrc_land_deforested_area',
+
+    Cell: ({ original }) => {
+      const { jrcNaturalForestLossHA } = original;
+
+      return renderFormattedDeforestationValueWithIndicator(jrcNaturalForestLossHA);
+    },
+  },
+
   {
     Header: () => (
       <ColumnsHeader
@@ -63,24 +94,49 @@ const post_2020_risk = [
       />
     ),
     className: 'default-cell td-num',
-    id: 'landmark_area',
+    accessor: 'landmarkPercent',
+    Cell: ({ original }) => (
+      <span>{renderPercentajeValueWithIndicator(original?.landmarkPercent)}</span>
+    ),
+  },
+
+  {
+    Header: () => (
+      <ColumnsHeader
+        label="Indigenous Territories Overlap"
+        infoBubbleId={infoBubbleConfig.post2020ItOverlap}
+      />
+    ),
+    className: 'default-cell td-num',
+    accessor: 'landmark_area',
     Cell: ({ original }) => {
-      const { landmarkHA, landmarkPercent } = original;
-      return renderFormattedDeforestationValueWithIndicator(landmarkHA, landmarkPercent);
+      const { landmarkHA } = original;
+      return renderFormattedDeforestationValueWithIndicator(landmarkHA);
     },
+  },
+
+  {
+    Header: () => (
+      <ColumnsHeader
+        label="Indigenous Territories Overlap"
+        infoBubbleId={infoBubbleConfig.post2020ItOverlap}
+      />
+    ),
+    className: 'default-cell td-num',
+    accessor: 'protectedAreasPercent',
+    Cell: ({ original }) => (
+      <span>{renderPercentajeValueWithIndicator(original?.protectedAreasPercent)}</span>
+    ),
   },
   {
     Header: () => (
       <ColumnsHeader label="Protected Areas" infoBubbleId={infoBubbleConfig.post2020PaOverlap} />
     ),
     className: 'default-cell td-num',
-    id: 'protected_areas_area',
+    accessor: 'protected_areas_area',
     Cell: ({ original }) => {
-      const { protectedAreasHA, protectedAreasPercent } = original;
-      return renderFormattedDeforestationValueWithIndicator(
-        protectedAreasHA,
-        protectedAreasPercent
-      );
+      const { protectedAreasHA } = original;
+      return renderFormattedDeforestationValueWithIndicator(protectedAreasHA);
     },
   },
   {

@@ -34,7 +34,7 @@ module.exports = (app, limiter) => {
       url,
       stackTrace,
       browserInfo,
-      userInfo
+      userInfo,
     });
 
     await slackUtils.sendNotification(slackMessage);

@@ -13,7 +13,7 @@ const sendSlackNotification = (stackTrace) => {
   const payload = {
     url,
     stackTrace,
-    browserInfo
+    browserInfo,
   };
 
   httpRequest.fetchJSON('/slack-notification', payload);

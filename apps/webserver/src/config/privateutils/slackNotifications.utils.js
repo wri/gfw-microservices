@@ -6,7 +6,6 @@ const Slack = require('@slack/bolt');
  */
 
 const sendNotification = async (messageBlocks) => {
-  console.log('🚀 ~ sendNotification ~ messageBlocks:', JSON.stringify(messageBlocks));
   try {
     const slackApp = new Slack.App({
       signingSecret: process.env.SLACK_SIGNING_SECRET,

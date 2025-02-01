@@ -22,6 +22,7 @@ module.exports = (app, limiter) => {
     if (organization_id != undefined) {
       try {
         userInfo = await getUserInfo(req);
+        userInfo.OrgID = organization_id;
       } catch (error) {
         logger.error('Could not getUserInfo', error.stack || error);
       }
@@ -33,10 +34,7 @@ module.exports = (app, limiter) => {
       url,
       stackTrace,
       browserInfo,
-      userInfo: {
-        OrgID: organization_id,
-        ...userInfo,
-      },
+      userInfo
     });
 
     await slackUtils.sendNotification(slackMessage);

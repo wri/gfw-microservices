@@ -85,7 +85,7 @@ export class StartAnalysis extends AbstractHandler<ChainType> {
     } = request.request as RequestNewList;
 
     // Check if the commodity is valid for GHG Analysis
-    if (! await validateGHGCommodity(listId, organization_database)) {
+    if (!(await validateGHGCommodity(listId, organization_database))) {
       Logger.log(`Commodity is valid for GHG Analysis`);
     }
 

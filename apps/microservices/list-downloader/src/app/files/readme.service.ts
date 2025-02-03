@@ -104,6 +104,10 @@ export class ReadmeService {
     };
     return listsViews[listView] || listsViews['forest_change'];
   }
+  ghgReadmeData() {
+    return 'ghg_readme.csv';
+  }
+
   withoutReadme() {
     return null;
   }
@@ -118,6 +122,7 @@ export class ReadmeService {
       southEastAsiaTCL: this.southEastAsiaTCL,
       afiVC: this.withoutReadme,
       genericCountryReadme: this.countrySpecificReadmeData,
+      ghg: this.ghgReadmeData,
     };
 
     if (!Object.prototype.hasOwnProperty.call(returnFileToCopy, type)) {

@@ -4,6 +4,7 @@ import { CreateListResult } from '@wri-monorepos/geo';
 import * as sql from 'mssql';
 import { featureFlagsService } from '@wri-monorepos/shared';
 import { Logger } from '@nestjs/common';
+import { listStatus } from '@wri-monorepos/constants';
 
 const LIST_UPLOAD_VERSION = 2;
 const LIST_UPLOAD_LEGACY_VERSION = 0;
@@ -88,7 +89,7 @@ export class CreateListLevelData extends AbstractHandler<ChainType> {
       organization_database: clientDatabase,
       listTable,
       analysisTable,
-      listStatusId,
+      saveAsDraft,
       locationClassification,
       customAttributeNames,
       customAttributeTypes,
@@ -106,6 +107,8 @@ export class CreateListLevelData extends AbstractHandler<ChainType> {
     const uploadListLpFlag = flags.find((f) => f.flagId === 'UploadListLp') as FeatureFlag;
 
     const connection = new SQLUtils();
+
+    const listStatusId = saveAsDraft ? listStatus.Draft : listStatus.Pending;
 
     try {
       await connection.connect(clientDatabase);

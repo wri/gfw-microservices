@@ -50,7 +50,7 @@ export interface RequestNewList extends PreviewListRequest {
   organization_database: string;
   listTable?: string;
   analysisTable?: string;
-  listStatusId?: number;
+  saveAsDraft?: boolean;
   locationClassification?: string;
   customAttributeNames?: string;
   customAttributeTypes?: string;

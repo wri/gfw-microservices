@@ -44,7 +44,6 @@ export class ListSchemaName extends AbstractHandler<ChainType> {
         ...request.request,
         listTable,
         analysisTable,
-        listStatusId: 1,
         locationClassification: 'Property',
         customAttributeNames: '',
         customAttributeTypes: '',

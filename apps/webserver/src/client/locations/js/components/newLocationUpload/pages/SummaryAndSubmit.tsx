@@ -64,7 +64,7 @@ export function SummaryAndSubmit() {
             {Object.entries(uploadLocationState.typeOfAnalysis)
               .filter(([key, isChecked]) => isChecked && key !== 'palmRiskAssessment')
               .map(([key]) => {
-                const analysis = analysisTypesOptionsNewNames.find((x: any) => x.id === key);
+                const analysis = analysisTypesOptionsNewNames.find((x) => x.id === key);
 
                 const isPalmRiskAssessmentIncluded =
                   analysis?.id === 'FCD' && uploadLocationState.typeOfAnalysis.palmRiskAssessment;

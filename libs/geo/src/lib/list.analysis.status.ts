@@ -166,9 +166,7 @@ export const handleCreateAnalysis = async (
   };
   try {
     // Check if commodity is valid for GHG Analysis
-    if (!(await validateGHGCommodity(listId, organizationDb))) {
-      Logger.log(`Commodity is valid for GHG Analysis`);
-    }
+    await isGHGCommodityValid(listId, organizationDb);
 
     const url = geoTrellisUrlsByEnv[process.env.NODE_ENV] || geoTrellisUrlsByEnv.default;
     const { isListLocationOverLimit, processingLimit } = await checkProcessingLimits({
@@ -346,10 +344,7 @@ export async function resolveListAnalysisStatuses(listAnalysisStatuses: ListsAna
   }
 }
 
-export const validateGHGCommodity = async (
-  id: number,
-  organizationDb: string
-): Promise<boolean> => {
+export const isGHGCommodityValid = async (id: number, organizationDb: string): Promise<boolean> => {
   // Get list data
   try {
     const clientStoreConnection = new ClientStoreConnection();

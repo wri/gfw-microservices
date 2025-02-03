@@ -13,7 +13,7 @@ import { mockAnalysisFlow } from '../../../mock';
 import {
   extractAnalysisTypes,
   getListAnalysisStatusByListId,
-  validateGHGCommodity,
+  isGHGCommodityValid,
 } from '@wri-monorepos/geo';
 import { ProcessingLimitException } from '../../app.exceptions';
 import { listStatus } from '@wri-monorepos/constants';
@@ -85,9 +85,7 @@ export class StartAnalysis extends AbstractHandler<ChainType> {
     } = request.request as RequestNewList;
 
     // Check if the commodity is valid for GHG Analysis
-    if (!(await validateGHGCommodity(listId, organization_database))) {
-      Logger.log(`Commodity is valid for GHG Analysis`);
-    }
+    await isGHGCommodityValid(listId, organization_database);
 
     const listSizeWithoutError = request.geojson.features?.filter(
       (feature) => !feature?.properties?.error && feature?.properties?.gadmid

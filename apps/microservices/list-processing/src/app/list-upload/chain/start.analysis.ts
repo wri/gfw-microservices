@@ -41,6 +41,13 @@ export class StartAnalysis extends AbstractHandler<ChainType> {
     return listName;
   }
 
+  async getListStatus(organizationDatabase: string, list_id: number) {
+    const connection = await this.clientStoreConnection.getConnection(organizationDatabase);
+    const listRepository = connection.getRepository(Lists);
+    const { listStatusId } = await listRepository.findOne({ where: { id: list_id } });
+    return listStatusId;
+  }
+
   async getUserEmail(organizationDatabase: string, user_id: number) {
     const connection = await this.clientStoreConnection.getConnection(organizationDatabase);
     const userRepository = connection.getRepository(User);
@@ -70,8 +77,13 @@ export class StartAnalysis extends AbstractHandler<ChainType> {
     return ids.map((entity) => entity.locationId);
   }
 
-  private isDraftList(saveAsDraft: boolean, listId: number): boolean {
-    if (saveAsDraft) {
+  private async isDraftList(
+    saveAsDraft: boolean,
+    organizationDatabase: string,
+    listId: number
+  ): Promise<boolean> {
+    const listStatusId = await this.getListStatus(organizationDatabase, listId);
+    if (saveAsDraft || listStatusId === listStatus.Draft) {
       this.logger.debug(`List ${listId} is set as draft so going to skip analysis`);
       return true;
     }
@@ -218,7 +230,8 @@ export class StartAnalysis extends AbstractHandler<ChainType> {
       saveAsDraft,
     } = request.request as RequestNewList;
 
-    if (this.isDraftList(saveAsDraft, listId)) {
+    const isDraft = await this.isDraftList(saveAsDraft, organization_database, listId);
+    if (isDraft) {
       return request;
     }
 

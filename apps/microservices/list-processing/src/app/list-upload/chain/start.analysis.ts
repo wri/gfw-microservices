@@ -96,7 +96,6 @@ export class StartAnalysis extends AbstractHandler<ChainType> {
 
   private validateGeoJsonFeatures(features: any[]): void {
     const listSizeWithoutError = features?.filter(
-      // Check if the commodity is valid for GHG Analysis
       (feature) => !feature?.properties?.error && feature?.properties?.gadmid
     ).length;
     if (listSizeWithoutError === 0) {
@@ -235,6 +234,7 @@ export class StartAnalysis extends AbstractHandler<ChainType> {
       saveAsDraft,
     } = request.request as RequestNewList;
 
+    // Check if the commodity is valid for GHG Analysis
     await isGHGCommodityValid(listId, organization_database);
 
     const isDraft = await this.isDraftList(saveAsDraft, organization_database, listId);

@@ -2,7 +2,8 @@
   "extends": "../../tsconfig.base.json",
   "files": [],
   "compilerOptions": {
-    "jsx": "react-jsx"
+    "jsx": "react-jsx",
+    "incremental": true
   },
   "include": [],
   "references": [{ "path": "./tsconfig.app.json" }, { "path": "./tsconfig.spec.json" }]

@@ -48,11 +48,11 @@ describe('ConvertCommodityToMapsPamCode', () => {
   it('should map commodity to COMMODITY_MAP_SPAM value if exists', async () => {
     const request: ChainType = {
       request: {
-        commodity: 'Banana',
+        commodity: 'Cocoa generic',
       } as RequestNewList,
     };
 
-    const expectedCommodity = COMMODITY_MAP_SPAM['banana'];
+    const expectedCommodity = COMMODITY_MAP_SPAM['cocoa'];
 
     const result = await handler.handle(request);
 
@@ -74,11 +74,11 @@ describe('ConvertCommodityToMapsPamCode', () => {
   it('should handle commodity with leading/trailing spaces', async () => {
     const request: ChainType = {
       request: {
-        commodity: '  Banana  ',
+        commodity: '  cocoa  ',
       } as RequestNewList,
     };
 
-    const expectedCommodity = COMMODITY_MAP_SPAM['banana'];
+    const expectedCommodity = COMMODITY_MAP_SPAM['cocoa'];
 
     const result = await handler.handle(request);
 
@@ -88,11 +88,11 @@ describe('ConvertCommodityToMapsPamCode', () => {
   it('should handle commodity with mixed case', async () => {
     const request: ChainType = {
       request: {
-        commodity: 'BaNana',
+        commodity: 'CoCoa',
       } as RequestNewList,
     };
 
-    const expectedCommodity = COMMODITY_MAP_SPAM['banana'];
+    const expectedCommodity = COMMODITY_MAP_SPAM['cocoa generic'];
 
     const result = await handler.handle(request);
 

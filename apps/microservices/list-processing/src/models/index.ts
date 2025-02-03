@@ -273,3 +273,8 @@ export class DeleteListRequest {
   @ApiProperty()
   userEmail: string;
 }
+export interface GetGHGAnalysisDataRequest {
+  clientDatabase: string;
+  rowsPerPage?: number;
+  pageNumber?: number;
+}

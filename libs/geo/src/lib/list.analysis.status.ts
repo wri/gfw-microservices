@@ -2,6 +2,7 @@ import { Logger } from '@nestjs/common';
 import {
   ActivityLog,
   ClientStoreConnection,
+  Lists,
   ListsAnalysisStatus,
   SQLUtils,
 } from '@wri-monorepos/sql';
@@ -164,6 +165,9 @@ export const handleCreateAnalysis = async (
     default: GEO_TRELLIS__ANALYZE_LIST_DEV,
   };
   try {
+    // Check if commodity is valid for GHG Analysis
+    await isGHGCommodityValid(listId, organizationDb);
+
     const url = geoTrellisUrlsByEnv[process.env.NODE_ENV] || geoTrellisUrlsByEnv.default;
     const { isListLocationOverLimit, processingLimit } = await checkProcessingLimits({
       organizationDb,
@@ -339,3 +343,28 @@ export async function resolveListAnalysisStatuses(listAnalysisStatuses: ListsAna
     throw error;
   }
 }
+
+export const isGHGCommodityValid = async (id: number, organizationDb: string): Promise<boolean> => {
+  // Get list data
+  try {
+    const clientStoreConnection = new ClientStoreConnection();
+    const organizationConnection = await clientStoreConnection.getConnection(organizationDb);
+    const listRepository = organizationConnection.getRepository(Lists);
+    const listData = await listRepository.findOne({
+      where: { id },
+    });
+    // verify if list has a non valid GHG commodity
+    if (listData?.Commodity.startsWith('GFWP_')) {
+      Logger.log(
+        `Invalid commodity in list ${listData.id} - ${listData.listName} for GHG Analysis`
+      );
+      throw new Error(
+        `Invalid commodity in list ${listData.id} - ${listData.listName} for GHG Analysis`
+      );
+    }
+    return true;
+  } catch (error) {
+    Logger.error('validateGHGCommodity', error.message || error);
+    throw error;
+  }
+};

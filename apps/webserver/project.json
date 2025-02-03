@@ -15,6 +15,11 @@
         "assets": [
           {
             "glob": "**/*",
+            "input": "apps/webserver/src/config/",
+            "output": "apps/webserver/config/"
+          },
+          {
+            "glob": "**/*",
             "input": "apps/webserver/src/client/",
             "output": "apps/webserver/src/client/"
           },
@@ -45,17 +50,22 @@
         }
       },
       "configurations": {
-        "development": {},
-        "production": {}
+        "development": {
+          "bundle": true,
+          "sourcemap": false,
+          "minify": false
+        },
+        "production": {
+          "minify": true
+        }
       }
     },
     "serve": {
       "executor": "@nx/js:node",
-      "dependsOn": ["build"],
       "options": {
         "buildTarget": "webserver:build",
         "runtimeArgs": ["--max-old-space-size=4096"],
-        "runBuildTargetDependencies": true
+        "watch": true
       }
     },
     "lint": {

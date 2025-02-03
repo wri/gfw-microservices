@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import Card from '@material-ui/core/Card';
 import Backdrop from '@mui/material/Backdrop';
-import ClickAwayListener from '@mui/base/ClickAwayListener';
+import ClickAwayListener from '@mui/material/ClickAwayListener';
 import B2bMultipleAccountsList from './B2bMultipleAccountsList';
 import IconButton from '../../../../../common/js/components/IconButton';
 import IconTimes from '../../../../../common/js/components/icon/IconTimes';

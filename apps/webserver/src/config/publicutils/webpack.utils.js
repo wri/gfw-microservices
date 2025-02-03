@@ -31,46 +31,28 @@ const middleware = () => {
   // WHen the compiler completes, update our assets and log any issues
   compiler.hooks.done.tap('done', (statistics) => {
     const stats = statistics.toJson();
-    // Check for soft errors or warnings
-    if (stats.errors.length) {
-      logger.error('###############################################');
-      logger.error('### Compilation errors from webpack - START ###');
-      logger.error('###############################################');
-      logger.error(stats.errors);
-      logger.error('###############################################');
-      logger.error('### Compilation errors from webpack -  END  ###');
-      logger.error('###############################################');
-    } else {
-      if (stats.warnings.length) {
-        logger.warn('#################################################');
-        logger.warn('### Compilation warnings from webpack - START ###');
-        logger.warn('#################################################');
-        logger.warn(stats.warnings);
-        logger.warn('#################################################');
-        logger.warn('### Compilation warnings from webpack -  END  ###');
-        logger.warn('#################################################');
-      } else {
-        logger.info('############################################################');
-        logger.info('### Webpack compilation complete, updating asset map now ###');
-        logger.info('############################################################');
-      }
+    if (!stats.errors.length && !stats.warnings.length) {
+      const newJsAssets = generateAssetMap(stats, 1);
+      const newCssAssets = generateAssetMap(stats, 0);
 
-      config.compiledAssets.js = Object.assign(
-        config.compiledAssets.js,
-        generateAssetMap(stats, 1)
-      );
-      config.compiledAssets.css = Object.assign(
-        config.compiledAssets.css,
-        generateAssetMap(stats, 0)
-      );
-      logger.info('############################################################');
-      logger.info('config.compiledAssets', config.compiledAssets);
-      logger.info('############################################################');
+      if (
+        JSON.stringify(config.compiledAssets.js) !== JSON.stringify(newJsAssets) ||
+        JSON.stringify(config.compiledAssets.css) !== JSON.stringify(newCssAssets)
+      ) {
+        config.compiledAssets.js = newJsAssets;
+        config.compiledAssets.css = newCssAssets;
+        logger.info('### Updated asset map ###', config.compiledAssets);
+      }
     }
   });
 
   return {
-    dev: webpackDevMiddleware(compiler, { stats: { colors: true } }),
+    dev: webpackDevMiddleware(compiler, {
+      stats: 'minimal',
+      publicPath: '/',
+      writeToDisk: false,
+      serverSideRender: true,
+    }),
     hot: webpackHotMiddleware(compiler, { path: '/__webpack_hmr' }),
   };
 };

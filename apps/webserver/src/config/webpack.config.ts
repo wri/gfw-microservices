@@ -8,7 +8,7 @@ import { entries, aliases } from './client.configs';
 /**
  * @summary Generate a Webpack configuration based on the environment and purpose
  */
-export default () => {
+export default (): webpack.Configuration => {
   const isDevelopment = process.env.NODE_ENV === 'development';
   const excludes = [];
   const plugins = [];
@@ -25,15 +25,23 @@ export default () => {
   rules.push(
     {
       test: /\.(js|jsx)$/,
-      loader: 'babel-loader',
+      use: ['thread-loader', 'babel-loader'],
       exclude: /node_modules/,
     },
     {
       test: /\.(ts|tsx)$/,
       use: [
         {
+          loader: 'thread-loader',
+          options: {
+            workers: 4,
+          },
+        },
+        {
           loader: 'ts-loader',
           options: {
+            transpileOnly: true,
+            happyPackMode: true,
             compilerOptions: { noEmit: false, sourceMap: isDevelopment },
             configFile: 'tsconfig.client.json',
           },
@@ -86,6 +94,8 @@ export default () => {
 
   return {
     ...(config.webpack || {}),
+    mode: isDevelopment ? 'development' : 'production',
+    devtool: isDevelopment ? 'eval-source-map' : 'source-map',
     entry: entries,
     module: { rules },
     plugins,

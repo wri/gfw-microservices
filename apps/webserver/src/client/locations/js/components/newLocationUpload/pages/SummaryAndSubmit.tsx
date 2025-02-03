@@ -36,9 +36,9 @@ export function SummaryAndSubmit() {
           };
 
     const properties = {
-      'Analysis Radius': area.size,
       Commodity: commodity,
       'Location Name': locationName,
+      [area.measurementUnit === 'hectares' ? 'Analysis Area' : 'Analysis Radius']: area.size,
     };
 
     const geojson = {

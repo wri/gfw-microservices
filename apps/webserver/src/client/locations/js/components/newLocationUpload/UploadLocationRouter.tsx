@@ -12,6 +12,7 @@ import {
   UploadLocationPreview,
   ConfigureList,
   SummaryAndSubmit,
+  SubmissionSuccess,
 } from './pages';
 import { UserList } from './types';
 
@@ -24,6 +25,7 @@ export const UploadLocationRoutes = {
   PREVIEW: '/upload-location/preview',
   CONFIGURE_LIST: '/upload-location/configure-list',
   SUMMARY_AND_SUBMIT: '/upload-location/summary-and-submit',
+  SUBMISSION_SUCCESS: '/upload-location/submission-success',
 };
 
 export type RouteType = keyof typeof UploadLocationRoutes;
@@ -48,6 +50,7 @@ export function UploadLocationRouter({ userLists }: { userLists: UserList[] }) {
             <ConfigureList userLists={userLists} />
           </Route>
           <Route path={UploadLocationRoutes.SUMMARY_AND_SUBMIT} component={SummaryAndSubmit} />
+          <Route path={UploadLocationRoutes.SUBMISSION_SUCCESS} component={SubmissionSuccess} />
         </Switch>
       </Box>
     </ThemeProvider>

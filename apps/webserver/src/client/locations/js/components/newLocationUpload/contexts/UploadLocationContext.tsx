@@ -19,6 +19,7 @@ export type UploadLocationState = {
     ALERTS: boolean;
     AFI: boolean;
   };
+  isDraft?: boolean;
 };
 
 type UploadLocationType = {
@@ -43,6 +44,7 @@ type UploadLocationType = {
     };
   }) => void;
   addFile: (uploadedFile: PresignedUrl) => void;
+  updateSaveMode: (isDraft: boolean) => void;
 };
 
 type UploadLocationAction =
@@ -88,6 +90,12 @@ type UploadLocationAction =
       };
     }
   | {
+      type: 'UpdateSaveMode';
+      payload: {
+        isDraft: boolean;
+      };
+    }
+  | {
       type: 'Clear';
       payload: UploadLocationState;
     };
@@ -113,6 +121,7 @@ const uploadLocationInitialState: UploadLocationState = {
     AFI: false,
     ALERTS: false,
   },
+  isDraft: undefined,
 };
 
 export function UploadLocationProvider({ children }: UploadLocationProviderProps) {
@@ -161,6 +170,10 @@ export function UploadLocationProvider({ children }: UploadLocationProviderProps
     dispatch({ type: 'AddFile', payload: { uploadedFile } });
   };
 
+  const updateSaveMode = (isDraft: boolean) => {
+    dispatch({ type: 'UpdateSaveMode', payload: { isDraft } });
+  };
+
   const setUploadLocationConfigureList = (data: {
     commodity: string;
     existingList: { id: number; name: string } | null;
@@ -185,6 +198,7 @@ export function UploadLocationProvider({ children }: UploadLocationProviderProps
         setUploadLocationByPolygon,
         setUploadLocationConfigureList,
         addFile,
+        updateSaveMode,
       }}
     >
       {children}
@@ -226,6 +240,9 @@ function uploadLocationReducer(
         newListName: payload.newListName,
         typeOfAnalysis: payload.typeOfAnalysis,
       };
+
+    case 'UpdateSaveMode':
+      return { ...state, isDraft: payload.isDraft };
 
     case 'Clear':
       return payload;

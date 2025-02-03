@@ -1,4 +1,4 @@
-import React, { useState, FormEvent } from 'react';
+import React, { useState } from 'react';
 import { Box, Card, Link, Typography } from '@mui/material';
 import { ArrowBackIos, Close, EditNote, Publish } from '@mui/icons-material';
 
@@ -14,18 +14,48 @@ import { UploadType } from '../types';
 
 export function SummaryAndSubmit() {
   const history = useHistory();
-  const { clearUploadType, uploadLocationState } = useUploadLocation();
+  const { clearUploadType, uploadLocationState, updateSaveMode } = useUploadLocation();
   const [isLoading, setIsLoading] = useState<boolean>(false);
-
-  const onSubmit = (e: FormEvent<HTMLDivElement>) => {
-    e.preventDefault();
-    setIsLoading(true);
-  };
 
   const isAddingToNewList = !!uploadLocationState.newListName;
   const commodity = commodities[uploadLocationState.commodity as keyof typeof commodities];
 
-  const uploadList = async () => {
+  const createGeoJSONFile = async (): Promise<File | null> => {
+    const { uploadType, coordinates, area, commodity, locationName } = uploadLocationState;
+
+    if (!coordinates || !coordinates.length) {
+      return null;
+    }
+
+    const geometry =
+      uploadType === UploadType.ByPoint
+        ? { type: 'Point', coordinates: [coordinates[0].longitude, coordinates[0].latitude] }
+        : {
+            type: 'Polygon',
+            coordinates: [[coordinates.map(({ longitude, latitude }) => [longitude, latitude])]],
+          };
+
+    const properties = {
+      'Analysis Radius': area.size,
+      Commodity: commodity,
+      'Location Name': locationName,
+    };
+
+    const geojson = {
+      type: 'FeatureCollection',
+      features: [{ type: 'Feature', properties, geometry }],
+    };
+
+    return new File([JSON.stringify(geojson, null, 2)], 'data.geojson', {
+      type: 'application/geo+json',
+    });
+  };
+
+  const uploadList = async ({ isDraft }: { isDraft: boolean }) => {
+    if (uploadLocationState.uploadType === null) {
+      return;
+    }
+
     if (uploadLocationState.typeOfAnalysis.AFI) {
       gtag('event', 'User saved a list with Deforestation Reporting KPIs analysis selected', {
         event_category: 'Deforestation Reporting KPIs',
@@ -33,58 +63,23 @@ export function SummaryAndSubmit() {
     }
 
     let uploadedFile = uploadLocationState.uploadedFile;
-    if (
-      uploadLocationState.uploadType === UploadType.ByPoint ||
-      uploadLocationState.uploadType === UploadType.ByPolygon
-    ) {
-      const { coordinates, area, commodity, locationName } = uploadLocationState;
-      let geometry = {};
 
-      if (uploadLocationState.uploadType === UploadType.ByPoint) {
-        geometry = {
-          type: 'Point',
-          coordinates: [coordinates[0].longitude, coordinates[0].latitude],
-        };
-      } else {
-        geometry = {
-          type: 'Polygon',
-          coordinates: [
-            [coordinates.map((coordinate) => [coordinate.longitude, coordinate.latitude])],
-          ],
-        };
+    if ([UploadType.ByPoint, UploadType.ByPolygon].includes(uploadLocationState.uploadType)) {
+      const geojsonFile = await createGeoJSONFile();
+      if (!geojsonFile) {
+        return;
       }
 
-      const properties = {
-        'Analysis Radius': area.size,
-        Commodity: commodity,
-        'Location Name': locationName,
-      };
-      const geojson = {
-        type: 'FeatureCollection',
-        features: [
-          {
-            type: 'Feature',
-            properties,
-            geometry,
-          },
-        ],
-      };
-
-      const file = new File([JSON.stringify(geojson, null, 2)], 'data.geojson', {
-        type: 'application/geo+json',
-      });
-
-      uploadedFile = await uploadFileToS3(file);
+      uploadedFile = await uploadFileToS3(geojsonFile);
     }
 
     if (!uploadedFile) {
-      // send a message to user
-      return;
+      return; // Handle missing file scenario
     }
 
     try {
+      setIsLoading(true);
       const listName = uploadLocationState.newListName || uploadLocationState.existingList?.name;
-
       const analysisIds = Object.keys(uploadLocationState.typeOfAnalysis).filter(
         (key) =>
           uploadLocationState.typeOfAnalysis[key as keyof typeof uploadLocationState.typeOfAnalysis]
@@ -96,10 +91,12 @@ export function SummaryAndSubmit() {
         fileS3Route: uploadedFile.fileS3Route,
         keyFile: uploadedFile.keyFile,
         list_id: uploadLocationState.existingList?.id,
+        saveAsDraft: isDraft,
       });
+      updateSaveMode(isDraft);
+      history.push('SUBMISSION_SUCCESS');
     } catch (err) {
-      console.log('error');
-    } finally {
+      console.error('Upload process failed:', err);
       setIsLoading(false);
     }
   };
@@ -107,11 +104,7 @@ export function SummaryAndSubmit() {
   return (
     <>
       <NavBar />
-      <Card
-        component="form"
-        onSubmit={onSubmit}
-        sx={{ height: '634px', display: 'flex', flexDirection: 'column', pt: 1, px: 2, pb: 2 }}
-      >
+      <Card sx={{ height: '634px', display: 'flex', flexDirection: 'column', pt: 1, px: 2, pb: 2 }}>
         <Typography variant="h6">Summary & Submit</Typography>
 
         <Box
@@ -200,14 +193,20 @@ export function SummaryAndSubmit() {
           >
             Cancel
           </PillButton>
-          <PillButton type="submit" color="secondary" variant="contained" startIcon={<EditNote />}>
+          <PillButton
+            type="submit"
+            color="secondary"
+            variant="contained"
+            startIcon={<EditNote />}
+            onClick={() => uploadList({ isDraft: true })}
+          >
             Save as draft
           </PillButton>
           <PillButton
             type="submit"
             variant="contained"
             startIcon={<Publish />}
-            onClick={uploadList}
+            onClick={() => uploadList({ isDraft: false })}
           >
             Submit for analysis
           </PillButton>

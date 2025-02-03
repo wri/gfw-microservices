@@ -35,6 +35,7 @@ jest.mocked(useUploadLocation).mockReturnValue({
   setUploadLocationByPolygon: jest.fn(),
   setUploadLocationConfigureList: jest.fn(),
   addFile: jest.fn(),
+  updateSaveMode: jest.fn(),
 });
 
 afterEach(() => {

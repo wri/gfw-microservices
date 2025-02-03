@@ -8,6 +8,7 @@ import { AlertsGeneratorService } from './alerts.generator.service';
 import { ReadmeService } from '../files/readme.service';
 import { createDirectory } from '../shared/file.utils';
 import { AfiVcGeneratorService } from './afi.vc.generator.service';
+import { GreenHouseGasEmissionsGeneratorService } from './ghg.generator.service';
 
 @Injectable({
   scope: Scope.REQUEST,
@@ -22,7 +23,8 @@ export class PipeService {
     private readonly alertsGeneratorService: AlertsGeneratorService,
     private readonly clientStoreConnection: ClientStoreConnection,
     private readonly readmeService: ReadmeService,
-    private readonly afiVcGeneratorService: AfiVcGeneratorService
+    private readonly afiVcGeneratorService: AfiVcGeneratorService,
+    private readonly greenHouseGasEmissionsGeneratorService: GreenHouseGasEmissionsGeneratorService
   ) {}
 
   public async makeFile(filters: BasicFieldsFileRequest) {
@@ -89,6 +91,7 @@ export class PipeService {
       southEastAsiaOverlap: this.listGeneratorService,
       southEastAsiaTCL: this.listGeneratorService,
       afiVC: this.afiVcGeneratorService,
+      ghg: this.greenHouseGasEmissionsGeneratorService,
     };
   };
 

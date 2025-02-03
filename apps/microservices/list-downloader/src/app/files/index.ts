@@ -29,3 +29,4 @@ export * from './south.east.asia.tcl.service';
 export * from './colombia-deforestation.service';
 export * from './colombia-overlap.service';
 export * from './afiVC.geometry.service';
+export * from './greenhouse.gas.emissions.service';

@@ -24,6 +24,7 @@ export enum CSVInputTypes {
   SOUTHEASTASIAOVERLAP = 'southEastAsiaOverlap',
   SOUTHEASTASIATC = 'southEastAsiaTCL',
   AFIVC = 'afiVC',
+  GHG = 'ghg',
 }
 
 export const BooleanStringZod = z.preprocess((val) => val === 'true', z.boolean()).default(false);
@@ -123,6 +124,7 @@ export const getSchemaByType = (type: string) => {
   switch (type) {
     case CSVInputTypes.AFI:
     case CSVInputTypes.AFIVC:
+    case CSVInputTypes.GHG:
       return BasicFieldsFileRequestSchema;
     case CSVInputTypes.ALERTS:
       return AlertFieldsFileRequestSchema;

@@ -4,7 +4,6 @@ import httpRequest from './httpRequest';
  * @description - send notification to the slack log channel from the front end
  *
  * @param {string} stackTrace – stack trace error string
- * @return {void 0}
  */
 const sendSlackNotification = (stackTrace) => {
   const url = window.location.href;

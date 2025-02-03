@@ -5,15 +5,12 @@ import getMuiTheme from 'material-ui/styles/getMuiTheme';
 import Select from './js/components/Select';
 import { render } from 'react-dom';
 import React from 'react';
-import AppErrorFallback from '../common/js/components/Errors/AppErrorFallback';
 
 lightBaseTheme.fontFamily = 'Fira Sans, sans-serif';
 
 const App = () => (
   <MuiThemeProvider muiTheme={getMuiTheme(lightBaseTheme)}>
-    <AppErrorFallback>
-      <Select organizations={organizations} />
-    </AppErrorFallback>
+    <Select organizations={organizations} />
   </MuiThemeProvider>
 );
 

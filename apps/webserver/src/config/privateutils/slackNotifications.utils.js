@@ -130,7 +130,7 @@ function getMaybeUserBlock(userInfo) {
         elements: [
           {
             type: 'text',
-            text: 'Not Authenticated',
+            text: 'Could not get userInfo',
           },
         ],
       },

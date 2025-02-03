@@ -1,7 +1,8 @@
 import { ListTableColumnsQueryString, SQLUtils } from '@wri-monorepos/sql';
-import { AbstractHandler, ChainType, LIST_STATUS_CODE, RequestNewList } from './types';
+import { AbstractHandler, ChainType, RequestNewList } from './types';
 import * as sql from 'mssql';
 import { Logger } from '@nestjs/common';
+import { listStatus } from '@wri-monorepos/constants';
 
 export class CreateLocationSchema extends AbstractHandler<ChainType> {
   private readonly logger = new Logger(CreateLocationSchema.name);
@@ -141,7 +142,7 @@ export class CreateLocationSchema extends AbstractHandler<ChainType> {
       queryCreateTableResult.query_string
     );
 
-    const listStatusId = saveAsDraft ? LIST_STATUS_CODE.DRAFT : LIST_STATUS_CODE.PENDING;
+    const listStatusId = saveAsDraft ? listStatus.Draft : listStatus.Pending;
 
     await this.createAnalysisTableInDatabase(this.clientStoreConnection, analysisTable);
     this.logger.log(

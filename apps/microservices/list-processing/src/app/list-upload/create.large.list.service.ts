@@ -18,6 +18,7 @@ export class CreateLargeListService {
     templateId = 13,
     gfwListId = null,
     commodity = 'Unknown',
+    saveAsDraft = false,
   }: {
     templateId?: number;
     gfwListId?: number | null;
@@ -34,6 +35,7 @@ export class CreateLargeListService {
         template_id: templateId,
         analysisIds: analysisIds,
         commodity: commodity,
+        saveAsDraft: saveAsDraft,
       } as RequestNewList,
       geojson: {
         type: 'FeatureCollection',

@@ -230,5 +230,6 @@ Cookie: gfwpro.globalforestwatch.org={{gfwpro_token}}
   "template_type": "investment",
   "startAnalysis": true,
   "processing_limit": 120000,
-  "analysis_types": ["FCD", "ALERTS"]
+  "analysis_types": ["FCD", "ALERTS"],
+  "saveAsDraft": false
 }

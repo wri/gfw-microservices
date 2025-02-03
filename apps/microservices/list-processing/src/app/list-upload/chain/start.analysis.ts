@@ -45,6 +45,13 @@ export class StartAnalysis extends AbstractHandler<ChainType> {
     return listName;
   }
 
+  async getListStatus(organizationDatabase: string, list_id: number) {
+    const connection = await this.clientStoreConnection.getConnection(organizationDatabase);
+    const listRepository = connection.getRepository(Lists);
+    const { listStatusId } = await listRepository.findOne({ where: { id: list_id } });
+    return listStatusId;
+  }
+
   async getUserEmail(organizationDatabase: string, user_id: number) {
     const connection = await this.clientStoreConnection.getConnection(organizationDatabase);
     const userRepository = connection.getRepository(User);
@@ -74,16 +81,21 @@ export class StartAnalysis extends AbstractHandler<ChainType> {
     return ids.map((entity) => entity.locationId);
   }
 
-  async handle(request: ChainType): Promise<ChainType> {
-    const {
-      organization_database,
-      user_id,
-      list_id: listId,
-      isExternalAPIProcess,
-      organization_id: organizationId,
-      subscription_status_id: subscriptionStatusId,
-    } = request.request as RequestNewList;
+  private async isDraftList(
+    saveAsDraft: boolean,
+    organizationDatabase: string,
+    listId: number
+  ): Promise<boolean> {
+    const listStatusId = await this.getListStatus(organizationDatabase, listId);
+    if (saveAsDraft || listStatusId === listStatus.Draft) {
+      this.logger.debug(`List ${listId} is set as draft so going to skip analysis`);
+      return true;
+    }
+    return false;
+  }
 
+  private validateGeoJsonFeatures(features: any[]): void {
+    const listSizeWithoutError = features?.filter(
     // Check if the commodity is valid for GHG Analysis
     await isGHGCommodityValid(listId, organization_database);
 
@@ -93,7 +105,9 @@ export class StartAnalysis extends AbstractHandler<ChainType> {
     if (listSizeWithoutError === 0) {
       throw new Error('All the features have errors, not going to start the analysis');
     }
+  }
 
+  private getGeoTrellisUrl(): string {
     const geoTrellisUrlsByEnv = {
       qa: GEO_TRELLIS__ANALYZE_LIST_QA,
       staging: GEO_TRELLIS__ANALYZE_LIST_STAGING,
@@ -101,9 +115,15 @@ export class StartAnalysis extends AbstractHandler<ChainType> {
       ProdV2: GEO_TRELLIS__ANALYZE_LIST_PRODV2,
       default: GEO_TRELLIS__ANALYZE_LIST_DEV,
     };
-    const geoTrellisUrl = geoTrellisUrlsByEnv[process.env.NODE_ENV] || geoTrellisUrlsByEnv.default;
-    const microserviceEnvironment = process.env.MICROSERVICES_ENV;
+    return geoTrellisUrlsByEnv[process.env.NODE_ENV] || geoTrellisUrlsByEnv.default;
+  }
 
+  private async getTestFlowDetails(
+    microserviceEnvironment: string,
+    organization_database: string,
+    listId: number,
+    user_id: number
+  ): Promise<{ listName: string; userEmail: string }> {
     let listName = '';
     let userEmail = '';
 
@@ -112,36 +132,67 @@ export class StartAnalysis extends AbstractHandler<ChainType> {
       userEmail = await this.getUserEmail(organization_database, user_id);
     }
 
-    const isTestFlow =
+    return { listName, userEmail };
+  }
+
+  private isTestFlow(
+    microserviceEnvironment: string,
+    listName: string,
+    userEmail: string
+  ): boolean {
+    return (
       environmentAllowTestFlow.includes(microserviceEnvironment) &&
       listName.includes(MARK_IS_TEST_LIST) &&
-      userEmail.includes(MARK_IS_TEST_USER);
+      userEmail.includes(MARK_IS_TEST_USER)
+    );
+  }
 
-    const { isListLocationOverLimit, processingLimit } = await checkProcessingLimits({
+  private async checkProcessingLimits(
+    organization_database: string,
+    organizationId: number,
+    subscriptionStatusId: number,
+    listId: number
+  ): Promise<{ isListLocationOverLimit: boolean; processingLimit: number }> {
+    return await checkProcessingLimits({
       organizationDb: organization_database,
       organizationId,
       subscriptionStatusId,
       listId,
     });
+  }
 
-    if (isListLocationOverLimit) {
-      await updateListsAnalysisStatus(organization_database, {
-        listId,
-        errorInfo: 'Exceeded Analysis Limit',
-        status: listStatus.Inactive,
-      });
-      throw new ProcessingLimitException();
-    }
+  private async handleExceededAnalysisLimit(
+    organization_database: string,
+    listId: number
+  ): Promise<void> {
+    await updateListsAnalysisStatus(organization_database, {
+      listId,
+      errorInfo: 'Exceeded Analysis Limit',
+      status: listStatus.Inactive,
+    });
+  }
 
+  private async getAnalysisTypes(
+    organization_database: string,
+    listId: number
+  ): Promise<Record<string, boolean>> {
     const listAnalysisStatusData = await getListAnalysisStatusByListId(
       organization_database,
       listId
     );
-    const analysis_types = extractAnalysisTypes(listAnalysisStatusData);
+    return extractAnalysisTypes(listAnalysisStatusData);
+  }
 
-    const ids = await this.getAllLocationIds(request);
-
-    const payloadBody = {
+  private createPayloadBody(
+    listId: number,
+    user_id: number,
+    organizationId: number,
+    isExternalAPIProcess: boolean,
+    processingLimit: number,
+    analysis_types: Record<string, boolean>,
+    ids: Array<number>
+  ): object {
+    return {
       list_id: listId,
       user_id,
       organization_id: organizationId,
@@ -151,28 +202,92 @@ export class StartAnalysis extends AbstractHandler<ChainType> {
       reanalyze: false,
       location_id: ids,
     };
+  }
 
-    const requestBody = JSON.stringify(payloadBody);
-    const options = {
+  private createFetchOptions(payloadBody: object): object {
+    return {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
       },
-      body: requestBody,
+      body: JSON.stringify(payloadBody),
     };
+  }
 
-    // Flow used by cypress test, mock analysis flow so avoid call lambda functions.
-    if (isTestFlow) {
-      await mockAnalysisFlow({
-        organization_database: organization_database,
-        list_id: listId,
-        template_type: 'cocoa_generic',
-      });
+  private async mockAnalysisFlow(organization_database: string, listId: number): Promise<void> {
+    await mockAnalysisFlow({
+      organization_database: organization_database,
+      list_id: listId,
+      template_type: 'cocoa_generic',
+    });
+  }
+
+  private async performAnalysis(geoTrellisUrl: string, options: object): Promise<void> {
+    const response = await fetch(geoTrellisUrl, options);
+    await response.json();
+  }
+
+  async handle(request: ChainType): Promise<ChainType> {
+    const {
+      organization_database,
+      user_id,
+      list_id: listId,
+      isExternalAPIProcess,
+      organization_id: organizationId,
+      subscription_status_id: subscriptionStatusId,
+      saveAsDraft,
+    } = request.request as RequestNewList;
+
+    const isDraft = await this.isDraftList(saveAsDraft, organization_database, listId);
+    if (isDraft) {
       return request;
     }
 
-    const response = await fetch(geoTrellisUrl, options);
-    await response.json();
+    this.validateGeoJsonFeatures(request.geojson.features);
+
+    const geoTrellisUrl = this.getGeoTrellisUrl();
+    const microserviceEnvironment = process.env.MICROSERVICES_ENV;
+
+    const { listName, userEmail } = await this.getTestFlowDetails(
+      microserviceEnvironment,
+      organization_database,
+      listId,
+      user_id
+    );
+    const isTestFlow = this.isTestFlow(microserviceEnvironment, listName, userEmail);
+
+    const { isListLocationOverLimit, processingLimit } = await this.checkProcessingLimits(
+      organization_database,
+      organizationId,
+      subscriptionStatusId,
+      listId
+    );
+
+    if (isListLocationOverLimit) {
+      await this.handleExceededAnalysisLimit(organization_database, listId);
+      throw new ProcessingLimitException();
+    }
+
+    const analysis_types = await this.getAnalysisTypes(organization_database, listId);
+    const ids = await this.getAllLocationIds(request);
+
+    const payloadBody = this.createPayloadBody(
+      listId,
+      user_id,
+      organizationId,
+      isExternalAPIProcess,
+      processingLimit,
+      analysis_types,
+      ids
+    );
+    const options = this.createFetchOptions(payloadBody);
+
+    if (isTestFlow) {
+      await this.mockAnalysisFlow(organization_database, listId);
+      return request;
+    }
+
+    await this.performAnalysis(geoTrellisUrl, options);
     return request;
   }
 }

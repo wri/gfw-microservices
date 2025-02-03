@@ -21,7 +21,7 @@ const errorPage = {
 };
 function ErrorHandlerFn(error) {
   if (isProduction) {
-    sendSlackNotification('GFWProErrorBoundary', error.stack);
+    sendSlackNotification(error.stack);
   }
   console.error(`%c GFWProError: ${error.message}`, 'font-weight:bold;', error.stack);
 }

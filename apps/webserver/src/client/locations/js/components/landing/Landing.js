@@ -346,7 +346,6 @@ class Landing extends Component {
         </Dialog>
 
         <Dialog
-          autoScrollBodyContent
           modal
           open={addLocationDialogOpen}
           contentStyle={{ width: '60%', maxWidth: '1200px', transform: 'none' }}

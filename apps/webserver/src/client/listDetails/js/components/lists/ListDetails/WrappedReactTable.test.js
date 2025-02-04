@@ -1,0 +1,137 @@
+import React from 'react';
+import { render, screen } from '@testing-library/react';
+import WrappedReactTable from './WrappedReactTable';
+import ReactTable from 'react-table';
+
+// Mock ReactTable to avoid rendering the actual table
+jest.mock('react-table', () => ({
+  __esModule: true,
+  default: jest.fn(() => null),
+}));
+
+global.Transifex = {
+  live: {
+    translateText: jest.fn((text) => text),
+  },
+};
+
+// Mock store
+jest.mock('../../../../../locations/js/store', () => ({
+  getState: jest.fn(() => ({
+    naturalForestLossDataSource: 'SBTN_NATURAL_FOREST_LOSS',
+    deforestationDisplayFormat: 'DISPLAY_FORMAT_PERCENTAGE',
+  })),
+}));
+
+describe('WrappedReactTable', () => {
+  const mockFilteredLists = [
+    {
+      id: 1,
+      location_status_id: 'active',
+      natural_land_deforested_area: 100,
+      naturalForestLossPercent: 10,
+      jrc_land_deforested_area: 200,
+      jrcNaturalForestLossPercent: 20,
+      protected_areas_area: 300,
+      protectedAreasPercent: 30,
+      landmark_area: 400,
+      landmarkPercent: 40,
+    },
+  ];
+
+  const mockColumns = [
+    { accessor: 'checkbox', show: true },
+    { accessor: 'natural_land_deforested_area', show: true },
+    { accessor: 'naturalForestLossPercent', show: true },
+    { accessor: 'jrc_land_deforested_area', show: true },
+    { accessor: 'jrcNaturalForestLossPercent', show: true },
+    { accessor: 'protected_areas_area', show: true },
+    { accessor: 'protectedAreasPercent', show: true },
+    { accessor: 'landmark_area', show: true },
+    { accessor: 'landmarkPercent', show: true },
+  ];
+
+  const defaultProps = {
+    listId: 'list-1',
+    listView: 'grid',
+    isUserList: false,
+    page: 0,
+    listColumns: mockColumns,
+    combinedColumns: mockColumns,
+    visibleColumns: mockColumns.map((col) => col.accessor),
+    filteredLists: mockFilteredLists,
+    numberOfPages: 1,
+    tableSortedBy: 'id',
+    tableSortedDesc: false,
+    getUserLocationData: jest.fn(),
+    getFilteredGfwListData: jest.fn(),
+    setSortedBy: jest.fn(),
+    isGfwList: false,
+    isSharedList: false,
+    viewDiagnostic: jest.fn(),
+    isDeleteButtonAvailable: false,
+    promptDeleteSelectedLocations: jest.fn(),
+    isEditActionAvailable: false,
+    editList: jest.fn(),
+    copyMoveAction: jest.fn(),
+    isCopyMoveActionAvailable: false,
+    selectedList: null,
+    setIsLoading: jest.fn(),
+    currentUser: { id: 1 },
+  };
+
+  it('renders correctly with initial props', () => {
+    render(<WrappedReactTable {...defaultProps} />);
+
+    // Check if ReactTable is rendered
+    expect(ReactTable).toHaveBeenCalled();
+
+    // Verify ReactTable props
+    const reactTableProps = ReactTable.mock.calls[0][0];
+    expect(reactTableProps.data).toEqual(mockFilteredLists);
+    expect(reactTableProps.columns).toEqual(mockColumns);
+    expect(reactTableProps.defaultPageSize).toBe(50);
+    expect(reactTableProps.showPagination).toBe(true);
+    expect(reactTableProps.manual).toBe(true);
+    expect(reactTableProps.pages).toBe(1);
+    expect(reactTableProps.page).toBe(0);
+  });
+
+  it('toggles column visibility based on store state', () => {
+    render(<WrappedReactTable {...defaultProps} />);
+    const { columns } = ReactTable.mock.calls[0][0];
+
+    // Verify column visibility based on store state
+    const naturalLandColumn = columns.find(
+      (col) => col.accessor === 'natural_land_deforested_area'
+    );
+    expect(naturalLandColumn.show).toBe(false);
+
+    const naturalForestLossPercentColumn = columns.find(
+      (col) => col.accessor === 'naturalForestLossPercent'
+    );
+    expect(naturalForestLossPercentColumn.show).toBe(true);
+
+    const jrcLandColumn = columns.find((col) => col.accessor === 'jrc_land_deforested_area');
+    expect(jrcLandColumn.show).toBe(false);
+
+    const jrcNaturalForestLossPercentColumn = columns.find(
+      (col) => col.accessor === 'jrcNaturalForestLossPercent'
+    );
+    expect(jrcNaturalForestLossPercentColumn.show).toBe(false);
+
+    const protectedAreasColumn = columns.find((col) => col.accessor === 'protected_areas_area');
+    expect(protectedAreasColumn.show).toBe(false);
+
+    const protectedAreasPercentColumn = columns.find(
+      (col) => col.accessor === 'protectedAreasPercent'
+    );
+    expect(protectedAreasPercentColumn.show).toBe(true);
+
+    const landmarkColumn = columns.find((col) => col.accessor === 'landmark_area');
+    expect(landmarkColumn.show).toBe(false);
+
+    const landmarkPercentColumn = columns.find((col) => col.accessor === 'landmarkPercent');
+    expect(landmarkPercentColumn.show).toBe(true);
+  });
+});

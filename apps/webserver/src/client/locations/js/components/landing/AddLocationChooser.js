@@ -66,7 +66,7 @@ function AddLocationChooser({ onCancel, onChoice, userLists }) {
     setAlertDialogOpen(false);
   };
 
-  function calculatePercentaje(loaded, total) {
+  function calculatePercentage(loaded, total) {
     return Math.round(loaded / total) * 100;
   }
 
@@ -75,7 +75,7 @@ function AddLocationChooser({ onCancel, onChoice, userLists }) {
     return new Promise((resolve) => {
       xhr.upload.addEventListener('progress', (event) => {
         if (event.lengthComputable) {
-          setUploadedPercentage(calculatePercentaje(event.loaded, event.total));
+          setUploadedPercentage(calculatePercentage(event.loaded, event.total));
           setFileBytesUploaded(formatBytes(event.loaded));
         }
       });

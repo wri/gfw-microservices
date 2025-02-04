@@ -2,15 +2,16 @@ import React, { createContext, useContext, useReducer, ReactNode } from 'react';
 
 import { useHistory } from '../hooks';
 import { Area, Coordinate, UploadType } from '../types';
+import { PresignedUrl } from '../utils/upload';
 
-type UploadLocationState = {
+export type UploadLocationState = {
   uploadType: UploadType | null;
   locationName: string;
   coordinates: Coordinate[];
   area: Area;
-  uploadedFileUrl: string | null;
+  uploadedFile: PresignedUrl | null;
   commodity: string;
-  existingListName: string | null;
+  existingList: { id: number; name: string } | null;
   newListName: string | null;
   typeOfAnalysis: {
     FCD: boolean;
@@ -18,6 +19,7 @@ type UploadLocationState = {
     ALERTS: boolean;
     AFI: boolean;
   };
+  isDraft?: boolean;
 };
 
 type UploadLocationType = {
@@ -32,7 +34,7 @@ type UploadLocationType = {
   setUploadLocationByPolygon: (data: { locationName: string; coordinates: Coordinate[] }) => void;
   setUploadLocationConfigureList: (data: {
     commodity: string;
-    existingListName: string | null;
+    existingList: { id: number; name: string } | null;
     newListName: string | null;
     typeOfAnalysis: {
       palmRiskAssessment: boolean;
@@ -41,7 +43,8 @@ type UploadLocationType = {
       ALERTS: boolean;
     };
   }) => void;
-  addFileUrl: (uploadedFileUrl: string) => void;
+  addFile: (uploadedFile: PresignedUrl) => void;
+  updateSaveMode: (isDraft: boolean) => void;
 };
 
 type UploadLocationAction =
@@ -70,7 +73,7 @@ type UploadLocationAction =
       type: 'ConfigureList';
       payload: {
         commodity: string;
-        existingListName: string | null;
+        existingList: { id: number; name: string } | null;
         newListName: string | null;
         typeOfAnalysis: {
           palmRiskAssessment: boolean;
@@ -81,9 +84,15 @@ type UploadLocationAction =
       };
     }
   | {
-      type: 'AddFileUrl';
+      type: 'AddFile';
       payload: {
-        uploadedFileUrl: string;
+        uploadedFile: PresignedUrl;
+      };
+    }
+  | {
+      type: 'UpdateSaveMode';
+      payload: {
+        isDraft: boolean;
       };
     }
   | {
@@ -102,9 +111,9 @@ const uploadLocationInitialState: UploadLocationState = {
   coordinates: [],
   locationName: '',
   area: { size: 0, measurementUnit: 'hectares' },
-  uploadedFileUrl: null,
+  uploadedFile: null,
   commodity: '',
-  existingListName: null,
+  existingList: null,
   newListName: null,
   typeOfAnalysis: {
     palmRiskAssessment: false,
@@ -112,6 +121,7 @@ const uploadLocationInitialState: UploadLocationState = {
     AFI: false,
     ALERTS: false,
   },
+  isDraft: undefined,
 };
 
 export function UploadLocationProvider({ children }: UploadLocationProviderProps) {
@@ -156,13 +166,17 @@ export function UploadLocationProvider({ children }: UploadLocationProviderProps
     dispatch({ type: 'ByPolygon', payload: { locationName, coordinates } });
   };
 
-  const addFileUrl = (uploadedFileUrl: string) => {
-    dispatch({ type: 'AddFileUrl', payload: { uploadedFileUrl } });
+  const addFile = (uploadedFile: PresignedUrl) => {
+    dispatch({ type: 'AddFile', payload: { uploadedFile } });
+  };
+
+  const updateSaveMode = (isDraft: boolean) => {
+    dispatch({ type: 'UpdateSaveMode', payload: { isDraft } });
   };
 
   const setUploadLocationConfigureList = (data: {
     commodity: string;
-    existingListName: string | null;
+    existingList: { id: number; name: string } | null;
     newListName: string | null;
     typeOfAnalysis: {
       palmRiskAssessment: boolean;
@@ -183,7 +197,8 @@ export function UploadLocationProvider({ children }: UploadLocationProviderProps
         setUploadLocationByPoint,
         setUploadLocationByPolygon,
         setUploadLocationConfigureList,
-        addFileUrl,
+        addFile,
+        updateSaveMode,
       }}
     >
       {children}
@@ -208,22 +223,26 @@ function uploadLocationReducer(
         ...state,
         coordinates: payload.coordinates,
         area: payload.area,
+        locationName: payload.locationName,
       };
 
     case 'ByPolygon':
-      return { ...state, coordinates: payload.coordinates };
+      return { ...state, coordinates: payload.coordinates, locationName: payload.locationName };
 
-    case 'AddFileUrl':
-      return { ...state, uploadedFileUrl: payload.uploadedFileUrl };
+    case 'AddFile':
+      return { ...state, uploadedFile: payload.uploadedFile };
 
     case 'ConfigureList':
       return {
         ...state,
         commodity: payload.commodity,
-        existingListName: payload.existingListName,
+        existingList: payload.existingList,
         newListName: payload.newListName,
         typeOfAnalysis: payload.typeOfAnalysis,
       };
+
+    case 'UpdateSaveMode':
+      return { ...state, isDraft: payload.isDraft };
 
     case 'Clear':
       return payload;

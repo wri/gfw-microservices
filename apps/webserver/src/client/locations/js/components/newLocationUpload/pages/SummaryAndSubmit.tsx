@@ -1,5 +1,14 @@
-import React, { useState, FormEvent } from 'react';
-import { Box, Card, Link, Typography } from '@mui/material';
+import React, { useRef, useState } from 'react';
+import {
+  Box,
+  Card,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogTitle,
+  Link,
+  Typography,
+} from '@mui/material';
 import { ArrowBackIos, Close, EditNote, Publish } from '@mui/icons-material';
 
 import { useHistory } from '../hooks';
@@ -8,28 +17,106 @@ import { useUploadLocation } from '../contexts';
 import { NavBar } from '../components';
 import { analysisTypesOptionsNewNames } from '../../../../../../config/env/analysisTypes.constants';
 import { commodities } from '../utils/constants';
+import { uploadFileToS3 } from '../utils/upload';
+import { uploadProcessByPrevUploadedFile } from '../../landing/uploadProcess';
+import { UploadType } from '../types';
 
 export function SummaryAndSubmit() {
   const history = useHistory();
-  const { clearUploadType, uploadLocationState } = useUploadLocation();
+  const { clearUploadType, uploadLocationState, updateSaveMode } = useUploadLocation();
   const [isLoading, setIsLoading] = useState<boolean>(false);
-
-  const onSubmit = (e: FormEvent<HTMLDivElement>) => {
-    e.preventDefault();
-    setIsLoading(true);
-  };
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const isDraftUpload = useRef(false);
 
   const isAddingToNewList = !!uploadLocationState.newListName;
+  const listName = uploadLocationState.newListName || uploadLocationState.existingList?.name;
   const commodity = commodities[uploadLocationState.commodity as keyof typeof commodities];
+
+  const createGeoJSONFile = async (): Promise<File | null> => {
+    const { uploadType, coordinates, area, commodity, locationName } = uploadLocationState;
+
+    if (!coordinates || !coordinates.length) {
+      return null;
+    }
+
+    const geometry =
+      uploadType === UploadType.ByPoint
+        ? { type: 'Point', coordinates: [coordinates[0].longitude, coordinates[0].latitude] }
+        : {
+            type: 'Polygon',
+            coordinates: [[coordinates.map(({ longitude, latitude }) => [longitude, latitude])]],
+          };
+
+    const properties = {
+      Commodity: commodity,
+      'Location Name': locationName,
+      [area.measurementUnit === 'hectares' ? 'Analysis Area' : 'Analysis Radius']: area.size,
+    };
+
+    const geojson = {
+      type: 'FeatureCollection',
+      features: [{ type: 'Feature', properties, geometry }],
+    };
+
+    return new File([JSON.stringify(geojson, null, 2)], 'data.geojson', {
+      type: 'application/geo+json',
+    });
+  };
+
+  const uploadList = async () => {
+    if (uploadLocationState.uploadType === null) {
+      return;
+    }
+    try {
+      setIsDialogOpen(false);
+      setIsLoading(true);
+
+      if (uploadLocationState.typeOfAnalysis.AFI) {
+        gtag('event', 'User saved a list with Deforestation Reporting KPIs analysis selected', {
+          event_category: 'Deforestation Reporting KPIs',
+        });
+      }
+
+      let uploadedFile = uploadLocationState.uploadedFile;
+
+      if ([UploadType.ByPoint, UploadType.ByPolygon].includes(uploadLocationState.uploadType)) {
+        const geojsonFile = await createGeoJSONFile();
+        if (!geojsonFile) {
+          return;
+        }
+
+        uploadedFile = await uploadFileToS3(geojsonFile);
+      }
+
+      if (!uploadedFile) {
+        return; // Handle missing file scenario
+      }
+
+      const analysisIds = Object.keys(uploadLocationState.typeOfAnalysis).filter(
+        (key) =>
+          uploadLocationState.typeOfAnalysis[key as keyof typeof uploadLocationState.typeOfAnalysis]
+      );
+
+      await uploadProcessByPrevUploadedFile({
+        listName,
+        analysisIds,
+        fileS3Route: uploadedFile.fileS3Route,
+        keyFile: uploadedFile.keyFile,
+        list_id: uploadLocationState.existingList?.id,
+        saveAsDraft: isDraftUpload.current,
+      });
+      updateSaveMode(isDraftUpload.current);
+      history.push('SUBMISSION_SUCCESS');
+    } catch (err) {
+      console.error('Upload process failed:', err);
+      setIsLoading(false);
+    }
+  };
 
   return (
     <>
       <NavBar />
-      <Card
-        component="form"
-        onSubmit={onSubmit}
-        sx={{ height: '634px', display: 'flex', flexDirection: 'column', pt: 1, px: 2, pb: 2 }}
-      >
+      <Card sx={{ height: '634px', display: 'flex', flexDirection: 'column', pt: 1, px: 2, pb: 2 }}>
         <Typography variant="h6">Summary & Submit</Typography>
 
         <Box
@@ -46,13 +133,11 @@ export function SummaryAndSubmit() {
             You are{' '}
             {isAddingToNewList ? (
               <>
-                creating a new <b>{commodity}</b> list named{' '}
-                <b>{uploadLocationState.newListName}</b>.
+                creating a new <b>{commodity}</b> list named <b>{listName}</b>.
               </>
             ) : (
               <>
-                adding <b>{commodity}</b> location(s) to the list named{' '}
-                <b>{uploadLocationState.existingListName}</b>.
+                adding <b>{commodity}</b> location(s) to the list named <b>{listName}</b>.
               </>
             )}
           </Typography>
@@ -118,15 +203,59 @@ export function SummaryAndSubmit() {
           >
             Cancel
           </PillButton>
-          <PillButton type="submit" color="secondary" variant="contained" startIcon={<EditNote />}>
+          <PillButton
+            type="submit"
+            color="secondary"
+            variant="contained"
+            startIcon={<EditNote />}
+            onClick={() => {
+              isDraftUpload.current = true;
+              setIsDialogOpen(true);
+            }}
+          >
             Save as draft
           </PillButton>
-          <PillButton type="submit" variant="contained" startIcon={<Publish />}>
+          <PillButton
+            type="submit"
+            variant="contained"
+            startIcon={<Publish />}
+            onClick={() => {
+              isDraftUpload.current = false;
+              setIsDialogOpen(true);
+            }}
+          >
             Submit for analysis
           </PillButton>
         </Box>
       </Card>
       <LoadingModal isLoading={isLoading} />
+      <Dialog open={isDialogOpen}>
+        <DialogTitle>
+          <Typography variant="subtitle1">Are you sure?</Typography>
+        </DialogTitle>
+        <DialogContent sx={{ textAlign: 'justify' }}>
+          <Typography variant="body2">
+            You have added locations to <b>{listName}</b>.{' '}
+            {isDraftUpload
+              ? 'Click OK to save this updated list as draft. Your list will stay in draft state until you choose to run analysis on it'
+              : 'Please confirm that you wish to submit this list to analysis'}
+            . Note that running analysis counts towards your account usage limits. See more
+            information{' '}
+            <Link href="#" sx={{ textDecoration: 'none', color: 'primary.main' }}>
+              here
+            </Link>
+            .
+          </Typography>
+        </DialogContent>
+        <DialogActions sx={{ mr: 'auto', ml: 1.5, pb: 2 }}>
+          <PillButton variant="contained" sx={{ width: '150px' }} onClick={uploadList}>
+            Ok
+          </PillButton>
+          <PillButton sx={{ color: 'info.contrastText' }} onClick={() => setIsDialogOpen(false)}>
+            Cancel
+          </PillButton>
+        </DialogActions>
+      </Dialog>
     </>
   );
 }

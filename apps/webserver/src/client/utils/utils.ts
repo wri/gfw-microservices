@@ -1,4 +1,4 @@
-export const getFileExtension = (fileName: string | null): string => {
+export const getFileExtension = (fileName?: string): string => {
   if (!fileName) {
     return '';
   }

@@ -1,9 +1,10 @@
 import axios from 'axios';
 import { LocationListType, FeatureProperties } from '../types';
 
-type PresignedUrlResponse = {
+export type PresignedUrl = {
   url: string;
   keyFile: string;
+  fileS3Route: string;
 };
 
 type FileTypes = {
@@ -34,9 +35,9 @@ function getFileType(extension: string): string | undefined {
   return undefined;
 }
 
-export const uploadFileToS3 = async (file: File): Promise<string> => {
+export const uploadFileToS3 = async (file: File): Promise<PresignedUrl> => {
   const fileExtension = file.name.split('.').pop()?.toLowerCase() ?? '';
-  const { data } = await axios.post<PresignedUrlResponse>('/locations/create-presigned-url', {
+  const { data } = await axios.post<PresignedUrl>('/locations/create-presigned-url', {
     key: file.name,
     contentType: getFileType(fileExtension),
   });
@@ -45,7 +46,7 @@ export const uploadFileToS3 = async (file: File): Promise<string> => {
       'Content-Type': getFileType(fileExtension),
     },
   });
-  return data.keyFile;
+  return data;
 };
 
 export const getTableColumns = (templateData?: LocationListType[]) => {

@@ -11,7 +11,7 @@ jest.mocked(useUploadLocation).mockReturnValue({
   clearUploadType: mockClearUploadType,
   uploadLocationState: {
     newListName: 'Random list name 123',
-    existingListName: '',
+    existingList: null,
     commodity: 'palm-oil',
     typeOfAnalysis: {
       AFI: true,
@@ -22,14 +22,15 @@ jest.mocked(useUploadLocation).mockReturnValue({
     area: { measurementUnit: 'hectares', size: 0 },
     coordinates: [{ latitude: '1.1', longitude: '1.1' }],
     locationName: 'location name',
-    uploadedFileUrl: '',
+    uploadedFile: { fileS3Route: '', keyFile: '', url: '' },
     uploadType: UploadType.ByPoint,
   },
   selectUploadType: jest.fn(),
   setUploadLocationByPoint: jest.fn(),
   setUploadLocationByPolygon: jest.fn(),
   setUploadLocationConfigureList: jest.fn(),
-  addFileUrl: jest.fn(),
+  addFile: jest.fn(),
+  updateSaveMode: jest.fn(),
 });
 
 const mockGoBack = jest.fn();
@@ -72,7 +73,7 @@ describe('SummaryAndSubmit', () => {
       clearUploadType: mockClearUploadType,
       uploadLocationState: {
         newListName: '',
-        existingListName: 'List created last year',
+        existingList: { name: 'List created last year', id: 1 },
         commodity: 'sugar-cane',
         typeOfAnalysis: {
           AFI: false,
@@ -83,14 +84,15 @@ describe('SummaryAndSubmit', () => {
         area: { measurementUnit: 'hectares', size: 0 },
         coordinates: [{ latitude: '1.1', longitude: '1.1' }],
         locationName: 'location name',
-        uploadedFileUrl: '',
+        uploadedFile: { fileS3Route: '', keyFile: '', url: '' },
         uploadType: UploadType.ByFile,
       },
       selectUploadType: jest.fn(),
       setUploadLocationByPoint: jest.fn(),
       setUploadLocationByPolygon: jest.fn(),
       setUploadLocationConfigureList: jest.fn(),
-      addFileUrl: jest.fn(),
+      addFile: jest.fn(),
+      updateSaveMode: jest.fn(),
     });
 
     render(<SummaryAndSubmit />);

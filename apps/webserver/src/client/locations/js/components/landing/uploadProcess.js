@@ -48,9 +48,13 @@ const uploadFileStep = async (param) => {
 };
 
 const createLargeListStep = async (param) => {
-  const { listName, analysisIds = [] } = param;
+  const { listName, analysisIds = [], saveAsDraft = false } = param;
   try {
-    const { data } = await axios.post('/locations/create-large-list', { listName, analysisIds });
+    const { data } = await axios.post('/locations/create-large-list', {
+      listName,
+      analysisIds,
+      saveAsDraft,
+    });
     return { ...param, ...data };
   } catch (error) {
     throw new Error(error);
@@ -74,7 +78,7 @@ const saveListToProcessStep = async (param) => {
 };
 
 const processListStep = async (param) => {
-  const { list_id: listID, fileS3Route, listName } = param;
+  const { list_id: listID, fileS3Route, listName, saveAsDraft = false } = param;
 
   try {
     const { data } = await axios.post('/locations/process-list', {
@@ -83,6 +87,7 @@ const processListStep = async (param) => {
       template_type: 'cocoa_generic',
       startAnalysis: true,
       listName,
+      saveAsDraft,
     });
     return { ...param, ...data };
   } catch (error) {
@@ -124,6 +129,21 @@ function uploadProcess(list, uploadFileToS3, largeListFile, isExistingList, anal
     uploadFileToS3,
     largeListFile,
   });
+}
+
+export function uploadProcessByPrevUploadedFile({
+  listName,
+  analysisIds,
+  keyFile,
+  list_id,
+  fileS3Route,
+  saveAsDraft,
+}) {
+  const processPipeline = list_id
+    ? promiseCompose(processListStep)
+    : promiseCompose(processListStep, saveListToProcessStep, createLargeListStep);
+
+  return processPipeline({ listName, analysisIds, keyFile, list_id, fileS3Route, saveAsDraft });
 }
 
 export default uploadProcess;

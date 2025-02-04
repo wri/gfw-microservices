@@ -7,7 +7,7 @@ export default function SaveAsDraftButton({ onClick, disabled }) {
     <Button
       className="locations-list__draft-button dialog__primary-action"
       variant="secondary"
-      label={'Save As Draft'}
+      label="Save As Draft"
       onClick={onClick}
       disabled={disabled}
     />

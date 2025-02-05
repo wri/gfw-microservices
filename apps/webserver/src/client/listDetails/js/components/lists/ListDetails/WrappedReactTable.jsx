@@ -138,6 +138,8 @@ const WrappedReactTable = ({
       col.show = deforestationDisplayFormat === DISPLAY_FORMAT_PERCENTAGE;
     }
 
+    col.defaultSortDesc = true;
+
     const max = Math.max(
       ...filteredLists.map((v) =>
         v[col.accessor] ? Math.max(col.accessor.length, v[col.accessor].toString().length) : 0

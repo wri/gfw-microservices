@@ -16,6 +16,7 @@ import { FilesModule } from '../files';
 import { DataModule } from '../data';
 import { DashboardService } from './dashboard.service';
 import { AfiVcGeneratorService } from './afi.vc.generator.service';
+import { GreenHouseGasEmissionsGeneratorService } from './ghg.generator.service';
 @Module({
   imports: [envModule, AwsModule, SqlModule, FilesModule, DataModule],
   providers: [
@@ -26,6 +27,7 @@ import { AfiVcGeneratorService } from './afi.vc.generator.service';
     ListGeneratorService,
     PipeService,
     AfiVcGeneratorService,
+    GreenHouseGasEmissionsGeneratorService,
   ],
   exports: [PipeService],
 })

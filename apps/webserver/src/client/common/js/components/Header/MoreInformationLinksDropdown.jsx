@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import ClickAwayListener from '@mui/base/ClickAwayListener';
+import ClickAwayListener from '@mui/material/ClickAwayListener';
 import IconButton from 'material-ui/IconButton';
 import Icon from '@material-ui/core/Icon';
 import MoreInformationLinks from './MoreInformationLinks';

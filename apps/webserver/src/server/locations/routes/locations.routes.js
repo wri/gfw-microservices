@@ -1336,6 +1336,7 @@ module.exports = (app, limiter) => {
         client_database: req.session.organization_database,
         organization_id: req.session.organization_id,
         analysisIds,
+        saveAsDraft: false,
       })
       .then((response) => {
         res.send({ user_id: userId, list_id: response.data.list_id });
@@ -1374,6 +1375,7 @@ module.exports = (app, limiter) => {
         user_id: organization_user_id,
         startAnalysis,
         analysisIds: Object.keys(analysisTypes),
+        saveAsDraft: false,
       })
       .then((response) => {
         logger.info('ProcessList LP response.data', response.data);

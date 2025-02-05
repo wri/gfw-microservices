@@ -40,6 +40,7 @@ describe('upload-process', () => {
       .onPost('/locations/create-large-list', {
         listName: 'llp gfw pro 205806022023',
         analysisIds: ['FCD', 'ALERTS'],
+        saveAsDraft: false,
       })
       .reply(200, {
         user_id: 10033,
@@ -64,6 +65,7 @@ describe('upload-process', () => {
         template_type: 'cocoa_generic',
         startAnalysis: true,
         listName: 'llp gfw pro 205806022023',
+        saveAsDraft: false,
       })
       .reply(200, {
         ResponseMetadata: {
@@ -116,6 +118,7 @@ describe('upload-process', () => {
         template_type: 'cocoa_generic',
         startAnalysis: true,
         listName: 'llp gfw pro 205806022023',
+        saveAsDraft: false,
       })
       .reply(200, {
         ResponseMetadata: {

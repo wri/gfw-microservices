@@ -39,23 +39,11 @@ loadenv
   .loadEnvironmentVars(process.env.NODE_ENV)
   .then(() => {
     console.log('REDIS', process.env.REDIS_HOST, process.env.REDIS_PORT);
-
-    // Initialize all neccesary modules.
-    return Promise.all([
-      require('./config/config').default,
-      require('./config/lib/express').initialize(app),
-      require(path.resolve('./config/publicutils/gfwListManager.utils')).initialize(),
-      require(path.resolve('./config/publicutils/userManager.utils')).initialize(),
-      require(path.resolve('./config/privateutils/cognito.utils')).initialize(),
-      require(path.resolve('./server/vectorTiles/utils/vectorTileSQS.utils')).initialize(),
-    ]);
+    return require('./config/config').default; // Load config first to get the port
   })
-  .then((initializations) => {
-    // Obtaining config and app from initializations.
-    const [config] = initializations;
-    // Setup Express to listen on https port for everything but production.
-    // NOTE: Production SSL is handled via the Load Balancer.
-    // NOTE: test does not use SSL
+  .then((config) => {
+    // Start server immediately
+    let server;
     if (
       !PRODUCTION_ENVIRONMENTS.includes(process.env.NODE_ENV) &&
       process.env.NODE_ENV !== 'test'
@@ -66,21 +54,30 @@ loadenv
           path.join(__dirname, `config/ssl/${process.env.NODE_ENV}/gfwpro.crt`)
         ),
       };
-      https.createServer(sslOptions, app).listen(config.port);
-      logger.info(`App listening on port: ${config.port}`);
+      server = https.createServer(sslOptions, app);
     } else {
-      const httpServer = http.createServer(app);
-      if (process.env.NODE_ENV !== 'test') {
-        // supertest does not need to listen on port
-        httpServer.listen(config.port);
-      }
-      logger.info(`App listening on port: ${config.port}`);
+      server = http.createServer(app);
     }
+
+    server.listen(config.port, () => {
+      logger.info(`App listening on port: ${config.port}`);
+    });
+
+    // Initialize all necessary modules in parallel without blocking the server
+    return Promise.all([
+      require('./config/lib/express').initialize(app),
+      require(path.resolve('./config/publicutils/gfwListManager.utils')).initialize(),
+      require(path.resolve('./config/publicutils/userManager.utils')).initialize(),
+      require(path.resolve('./config/privateutils/cognito.utils')).initialize(),
+      require(path.resolve('./server/vectorTiles/utils/vectorTileSQS.utils')).initialize(),
+    ]);
+  })
+  .then(() => {
     app.emit('appReady', null);
   })
   .catch((error) => {
     logger.error('Error initializing application', error);
-    exit();
+    exit(1);
   });
 
 function walkDir(dir, callback) {

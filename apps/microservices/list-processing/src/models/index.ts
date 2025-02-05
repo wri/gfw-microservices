@@ -75,7 +75,7 @@ export class RequestLargeListProcess {
   template_id?: number;
 
   @ApiProperty()
-  draft?: boolean;
+  saveAsDraft: false;
 }
 
 export class StartAnalysisType {
@@ -107,6 +107,8 @@ export class RequestTriggerProcessLargeList {
   organization_id: number;
   @ApiProperty()
   commodity?: string;
+  @ApiProperty()
+  saveAsDraft: boolean;
 }
 
 export class CreateListRequest {
@@ -126,6 +128,9 @@ export class CreateListRequest {
 
   @ApiProperty()
   isUploadListLpEnabled: boolean;
+
+  @ApiProperty()
+  saveAsDraft: boolean;
 }
 
 export class CopyOrMoveLargeListRequestLLP implements CopyOrMoveLargeListRequest {
@@ -267,4 +272,9 @@ export class DeleteListRequest {
 
   @ApiProperty()
   userEmail: string;
+}
+export interface GetGHGAnalysisDataRequest {
+  clientDatabase: string;
+  rowsPerPage?: number;
+  pageNumber?: number;
 }

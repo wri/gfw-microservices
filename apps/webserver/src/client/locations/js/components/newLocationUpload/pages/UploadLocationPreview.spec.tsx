@@ -40,7 +40,7 @@ describe('UploadLocationPreview', () => {
   const mockUseUploadLocation = {
     uploadLocationState: { uploadedFileUrl: 'test.csv' },
     clearUploadType: jest.fn(),
-    addFileUrl: jest.fn(),
+    addFile: jest.fn(),
   };
 
   beforeEach(() => {
@@ -68,7 +68,9 @@ describe('UploadLocationPreview', () => {
   });
 
   it('should handle file upload', async () => {
-    jest.mocked(uploadFileToS3).mockResolvedValue('data 123');
+    jest
+      .mocked(uploadFileToS3)
+      .mockResolvedValue({ keyFile: 'file', fileS3Route: 'fileS3Route', url: 'url' });
 
     render(<UploadLocationPreview />);
 
@@ -77,7 +79,11 @@ describe('UploadLocationPreview', () => {
 
     await userEvent.upload(fileInput, file);
 
-    expect(mockUseUploadLocation.addFileUrl).toHaveBeenCalledWith('data 123');
+    expect(mockUseUploadLocation.addFile).toHaveBeenCalledWith({
+      fileS3Route: 'fileS3Route',
+      keyFile: 'file',
+      url: 'url',
+    });
 
     await userEvent.click(screen.getByRole('button', { name: /next/i }));
 

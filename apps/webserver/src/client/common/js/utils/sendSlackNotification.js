@@ -1,26 +1,21 @@
-/* global userInfo, organizationId */
-
 import httpRequest from './httpRequest';
 
 /**
  * @description - send notification to the slack log channel from the front end
  *
- * @param {string} text - Title of notification / error
- * @param {Object} data - Data to be logged
- * @return {null}
+ * @param {string} stackTrace – stack trace error string
  */
+const sendSlackNotification = (stackTrace) => {
+  const url = window.location.href;
+  const browserInfo = navigator.userAgent;
 
-const sendSlackNotification = (text, data) => {
-  const userData = ` id: ${userInfo.id}
-  first_name: ${userInfo.first_name}
-  email: ${userInfo.email}
-  organizationId: ${organizationId}`;
+  const payload = {
+    url,
+    stackTrace,
+    browserInfo,
+  };
 
-  httpRequest.fetchJSON('/slack-notification', {
-    text,
-    data,
-    userInfo: userData,
-  });
+  httpRequest.fetchJSON('/slack-notification', payload);
 };
 
 export default sendSlackNotification;

@@ -25,19 +25,16 @@ export function SummaryAndSubmit() {
   const history = useHistory();
   const { clearUploadType, uploadLocationState, updateSaveMode } = useUploadLocation();
   const [isLoading, setIsLoading] = useState<boolean>(false);
-  const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const [isConfirmationDialogOpen, setIsConfirmationDialogOpen] = useState(false);
+  const [isErrorDialogOpen, setIsErrorDialogOpen] = useState(false);
   const isDraftUpload = useRef(false);
 
   const isAddingToNewList = !!uploadLocationState.newListName;
   const listName = uploadLocationState.newListName || uploadLocationState.existingList?.name;
   const commodity = commodities[uploadLocationState.commodity as keyof typeof commodities];
 
-  const createGeoJSONFile = async (): Promise<File | null> => {
+  const createGeoJSONFile = async (): Promise<File> => {
     const { uploadType, coordinates, area, commodity, locationName } = uploadLocationState;
-
-    if (!coordinates || !coordinates.length) {
-      return null;
-    }
 
     const geometry =
       uploadType === UploadType.ByPoint
@@ -68,7 +65,7 @@ export function SummaryAndSubmit() {
       return;
     }
     try {
-      setIsDialogOpen(false);
+      setIsConfirmationDialogOpen(false);
       setIsLoading(true);
 
       if (uploadLocationState.typeOfAnalysis.AFI) {
@@ -81,15 +78,13 @@ export function SummaryAndSubmit() {
 
       if ([UploadType.ByPoint, UploadType.ByPolygon].includes(uploadLocationState.uploadType)) {
         const geojsonFile = await createGeoJSONFile();
-        if (!geojsonFile) {
-          return;
-        }
 
         uploadedFile = await uploadFileToS3(geojsonFile);
       }
 
       if (!uploadedFile) {
-        return; // Handle missing file scenario
+        setIsLoading(false);
+        return;
       }
 
       const analysisIds = Object.keys(uploadLocationState.typeOfAnalysis).filter(
@@ -108,8 +103,8 @@ export function SummaryAndSubmit() {
       updateSaveMode(isDraftUpload.current);
       history.push('SUBMISSION_SUCCESS');
     } catch (err) {
-      console.error('Upload process failed:', err);
       setIsLoading(false);
+      setIsErrorDialogOpen(true);
     }
   };
 
@@ -210,7 +205,7 @@ export function SummaryAndSubmit() {
             startIcon={<EditNote />}
             onClick={() => {
               isDraftUpload.current = true;
-              setIsDialogOpen(true);
+              setIsConfirmationDialogOpen(true);
             }}
           >
             Save as draft
@@ -221,7 +216,7 @@ export function SummaryAndSubmit() {
             startIcon={<Publish />}
             onClick={() => {
               isDraftUpload.current = false;
-              setIsDialogOpen(true);
+              setIsConfirmationDialogOpen(true);
             }}
           >
             Submit for analysis
@@ -229,7 +224,7 @@ export function SummaryAndSubmit() {
         </Box>
       </Card>
       <LoadingModal isLoading={isLoading} />
-      <Dialog open={isDialogOpen}>
+      <Dialog open={isConfirmationDialogOpen}>
         <DialogTitle>
           <Typography variant="subtitle1">Are you sure?</Typography>
         </DialogTitle>
@@ -251,8 +246,24 @@ export function SummaryAndSubmit() {
           <PillButton variant="contained" sx={{ width: '150px' }} onClick={uploadList}>
             Ok
           </PillButton>
-          <PillButton sx={{ color: 'info.contrastText' }} onClick={() => setIsDialogOpen(false)}>
+          <PillButton
+            sx={{ color: 'info.contrastText' }}
+            onClick={() => setIsConfirmationDialogOpen(false)}
+          >
             Cancel
+          </PillButton>
+        </DialogActions>
+      </Dialog>
+
+      <Dialog open={isErrorDialogOpen}>
+        <DialogContent>There was an error uploading your file. Please try again.</DialogContent>
+        <DialogActions sx={{ m: 'auto' }}>
+          <PillButton
+            variant="contained"
+            sx={{ width: '150px' }}
+            onClick={() => setIsErrorDialogOpen(false)}
+          >
+            Ok
           </PillButton>
         </DialogActions>
       </Dialog>

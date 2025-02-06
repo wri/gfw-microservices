@@ -93,3 +93,7 @@ function App() {
 }
 
 render(<App />, document.getElementById('user-profile-mount'));
+
+if (module.hot) {
+  module.hot.accept();
+}

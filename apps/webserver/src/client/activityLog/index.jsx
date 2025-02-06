@@ -25,3 +25,7 @@ function App() {
 }
 
 render(<App />, document.getElementById('activity-log-mount'));
+
+if (module.hot) {
+  module.hot.accept();
+}

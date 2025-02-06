@@ -162,6 +162,7 @@ const ListActions = ({
                 onClick={() => viewMap({ showFullListMap: !showMultipleSelectionBulkActions })}
                 startIcon={<PublicIcon />}
                 sx={greenButtonStyle}
+                data-cy={showMultipleSelectionBulkActions ? 'locations-map' : 'full-list-map'}
               >
                 {showMultipleSelectionBulkActions ? <>Location(s) Map</> : <>List Map</>}
               </Button>
@@ -240,6 +241,7 @@ const ListActions = ({
                   onClick={() => showShareList(true)}
                   sx={blackButtonStyle}
                   startIcon={<FolderSharedIcon height="14px" />}
+                  data-cy="share-list"
                 >
                   Share
                 </Button>

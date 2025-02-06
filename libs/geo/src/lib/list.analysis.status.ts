@@ -165,9 +165,6 @@ export const handleCreateAnalysis = async (
     default: GEO_TRELLIS__ANALYZE_LIST_DEV,
   };
   try {
-    // Check if commodity is valid for GHG Analysis
-    await isGHGCommodityValid(listId, organizationDb);
-
     const url = geoTrellisUrlsByEnv[process.env.NODE_ENV] || geoTrellisUrlsByEnv.default;
     const { isListLocationOverLimit, processingLimit } = await checkProcessingLimits({
       organizationDb,
@@ -228,6 +225,10 @@ export const handleCreateAnalysis = async (
         : listAnalysisStatusData
     );
 
+    if ('GHG' in analysiTypes) {
+      // Check if commodity is valid for GHG Analysis
+      await isGHGCommodityValid(listId, organizationDb);
+    }
     const data = {
       list_id: listId,
       user_id: organization_user_id,

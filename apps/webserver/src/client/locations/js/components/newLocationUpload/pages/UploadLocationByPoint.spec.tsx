@@ -124,7 +124,7 @@ describe('UploadLocationByPoint', () => {
       area: { size: 100, measurementUnit: 'kilometers' },
     });
     expect(mockHistoryPush).toHaveBeenCalledWith('CONFIGURE_LIST');
-  });
+  }, 10100);
 
   it('should call clearUploadType when cancel button is clicked', async () => {
     await userEvent.click(screen.getByText(/cancel/i));

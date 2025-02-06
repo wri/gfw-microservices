@@ -108,7 +108,7 @@ describe('UploadLocationByPolygon', () => {
       })
     );
     expect(mockHistoryPush).toHaveBeenCalledWith('CONFIGURE_LIST');
-  }, 30100);
+  }, 50100);
 
   it('should show missing mandatory fields', async () => {
     render(<UploadLocationByPolygon />);

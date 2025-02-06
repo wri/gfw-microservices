@@ -58,7 +58,12 @@ const commodity_analysis = [
     columns: [
       {
         id: 'commodity_mill_priority_level',
-        Header: () => <ColumnsHeader label={columnHeaders.millPriority} />,
+        Header: () => (
+          <ColumnsHeader
+            label={columnHeaders.millPriority}
+            infoBubbleId={infoBubbleConfig.palmRiskAssessMillPriority}
+          />
+        ),
         accessor: (d) => {
           return d;
         },
@@ -207,7 +212,12 @@ const commodity_analysis = [
       },
       {
         id: 'commodity_threat_overall_level',
-        Header: () => <ColumnsHeader label={columnHeaders.overall} />,
+        Header: () => (
+          <ColumnsHeader
+            label={columnHeaders.overallThreats}
+            infoBubbleId={infoBubbleConfig.palmRiskAssessOverallThreats}
+          />
+        ),
         accessor: (d) => {
           return d;
         },
@@ -329,7 +339,12 @@ const commodity_analysis = [
       },
       {
         id: 'commodity_value_overall_level',
-        Header: () => <ColumnsHeader label={columnHeaders.overall} />,
+        Header: () => (
+          <ColumnsHeader
+            label={columnHeaders.overallValues}
+            infoBubbleId={infoBubbleConfig.palmRiskAssessOverallValues}
+          />
+        ),
         accessor: (d) => {
           return d;
         },

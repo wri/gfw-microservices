@@ -167,7 +167,7 @@ export const handleCreateAnalysis = async (
   try {
     // disabled for now because https://gfw.atlassian.net/browse/GPV-4103
     // Check if commodity is valid for GHG Analysis
-    // await isGHGCommodityValid(listId, organizationDb);
+    await isGHGCommodityValid(listId, organizationDb);
 
     const url = geoTrellisUrlsByEnv[process.env.NODE_ENV] || geoTrellisUrlsByEnv.default;
     const { isListLocationOverLimit, processingLimit } = await checkProcessingLimits({
@@ -354,8 +354,19 @@ export const isGHGCommodityValid = async (id: number, organizationDb: string): P
     const listData = await listRepository.findOne({
       where: { id },
     });
+    if (!listData) {
+      Logger.error('validateGHGCommodity', `List ${id} not found`);
+      throw new Error(`List ${id} not found`);
+    }
+
+    // verify if list has no commodity
+    if (listData.Commodity === null) {
+      Logger.log('validateGHGCommodity', `List ${id} has no commodity`);
+      return true;
+    }
+
     // verify if list has a non valid GHG commodity
-    if (listData?.Commodity.startsWith('GFWP_')) {
+    if (listData.Commodity.startsWith('GFWP_')) {
       Logger.log(
         `Invalid commodity in list ${listData.id} - ${listData.listName} for GHG Analysis`
       );

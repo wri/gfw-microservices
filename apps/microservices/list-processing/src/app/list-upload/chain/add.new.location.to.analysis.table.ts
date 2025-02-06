@@ -59,6 +59,16 @@ export class AddNewLocationToAnalysisTable extends AbstractHandler<ChainType> {
     }
   }
 
+  /**
+   *  To improve performance we could run the query at once with all values.
+   *
+   *
+   * INSERT INTO [{ANALYSIS_TABLE}](location_id, location_status_id)
+   * SELECT location_id, 1
+   * FROM [{LIST_TABLE}]
+   * WHERE location_id > 0
+   */
+
   async insertBatch(
     connection: DataSource,
     analysisEntity: EntitySchema<AnalysisSchemaType>,

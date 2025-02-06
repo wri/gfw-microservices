@@ -57,7 +57,11 @@ class ArgentinaLayerUtil {
     return values;
   }
 
-  applyKeyFormatting(key: string) {
+  applyKeyFormatting(key: string, attribute: string) {
+    if (attribute === 'landmark_by_category_area' && key === 'Not Reported') {
+      return 'Overlap';
+    }
+
     return checkAndFormatStringWithComma(key);
   }
 
@@ -111,7 +115,7 @@ class ArgentinaLayerUtil {
     return this;
   }
 
-  handleRowPercentageAndFormat() {
+  handleRowPercentageAndFormat(attribute: string) {
     // avoid dividing by zero, number gets formatted down the stream
     const total = Math.max(getTotalArea(this.data, 'ARG'), 0.01);
 
@@ -121,7 +125,7 @@ class ArgentinaLayerUtil {
         percent = (value / total) * 100;
       }
 
-      key = this.applyKeyFormatting(key);
+      key = this.applyKeyFormatting(key, attribute);
 
       return {
         key,
@@ -148,7 +152,7 @@ const parseArgentinaLayer = (operation, data, dataRow, csvData, type) => {
   const layerGeneratedRows = layer
     .handleCategoryLayerLimit(limit)
     .handleNonOverlapDifference()
-    .handleRowPercentageAndFormat()
+    .handleRowPercentageAndFormat(attribute)
     .getLayerRowValues();
 
   // write Rows

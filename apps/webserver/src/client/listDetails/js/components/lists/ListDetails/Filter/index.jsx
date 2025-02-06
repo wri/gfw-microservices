@@ -208,6 +208,7 @@ export default class Filter extends Component {
                 <Grid item xs={3} sx={{ alignSelf: 'center' }}>
                   <Button
                     variant="primary"
+                    data-cy="filter-apply-button"
                     onClick={() => this.updateValues(this.state)}
                     label="APPLY"
                   />

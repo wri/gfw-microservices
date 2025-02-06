@@ -40,7 +40,6 @@ export function UploadLocationByPoint() {
     handleSubmit,
     control,
     formState: { errors },
-    reset,
     setValue,
   } = useForm<FormFields>({
     resolver: zodResolver(uploadByPointSchema),
@@ -52,7 +51,10 @@ export function UploadLocationByPoint() {
       locationName: '',
     },
   });
-  useEffect(() => reset, [locationFormat]);
+  useEffect(() => {
+    setValue('latitude', '');
+    setValue('longitude', '');
+  }, [locationFormat]);
 
   const [measurementUnit, setMeasurementUnit] = useState<MeasurementUnit>('hectares');
 

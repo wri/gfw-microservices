@@ -39,3 +39,7 @@ const App = () => (
 );
 
 render(<App />, document.getElementById('dashboard-mount'));
+
+if (module.hot) {
+  module.hot.accept();
+}

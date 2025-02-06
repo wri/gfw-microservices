@@ -97,6 +97,7 @@ const CustomRow = ({
               onClick={() => redirectToMap(sendData)}
               startIcon={<PublicIcon />}
               sx={greenButtonStyle}
+              data-cy="locations-map"
             >
               Map
             </Button>

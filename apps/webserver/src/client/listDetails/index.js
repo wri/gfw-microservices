@@ -98,3 +98,7 @@ const App = () => {
 };
 
 render(<App />, document.getElementById('list-details-mount'));
+
+if (module.hot) {
+  module.hot.accept();
+}

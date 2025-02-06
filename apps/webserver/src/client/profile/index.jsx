@@ -25,3 +25,7 @@ function App() {
 }
 
 render(<App />, document.getElementById('profile-mount'));
+
+if (module.hot) {
+  module.hot.accept();
+}

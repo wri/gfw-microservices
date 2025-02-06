@@ -30,3 +30,7 @@ function App() {
 }
 
 render(<App />, document.getElementById('proManagerList-mount'));
+
+if (module.hot) {
+  module.hot.accept();
+}

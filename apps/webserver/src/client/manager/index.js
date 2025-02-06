@@ -14,3 +14,7 @@ const App = () => (
 );
 
 render(<App />, document.getElementById('manager-mount'));
+
+if (module.hot) {
+  module.hot.accept();
+}

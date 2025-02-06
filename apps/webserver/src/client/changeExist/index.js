@@ -16,3 +16,7 @@ const App = () => (
 );
 
 render(<App />, document.getElementById('changeExist-mount'));
+
+if (module.hot) {
+  module.hot.accept();
+}

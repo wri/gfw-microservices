@@ -364,7 +364,7 @@ export const isGHGCommodityValid = async (id: number, organizationDb: string): P
       Logger.log('validateGHGCommodity', `List ${id} has no commodity`);
       return true;
     }
-
+    // ListData.version = 2 won't have commodities with null values, take care of it when version 2 is implemented
     // verify if list has a non valid GHG commodity
     if (listData.Commodity.startsWith('GFWP_')) {
       Logger.log(

@@ -166,7 +166,6 @@ export const handleCreateAnalysis = async (
   };
   try {
     // disabled for now because https://gfw.atlassian.net/browse/GPV-4103
-    // Check if commodity is valid for GHG Analysis
     await isGHGCommodityValid(listId, organizationDb);
 
     const url = geoTrellisUrlsByEnv[process.env.NODE_ENV] || geoTrellisUrlsByEnv.default;

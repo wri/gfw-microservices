@@ -1,46 +1,51 @@
-import { AddMewLocationToAnalysisTable } from './add.new.location.to.analysis.table';
-import { AnalysisSchema, AnalysisSchemaType, ClientStoreConnection } from '@wri-monorepos/sql';
+import { AddNewLocationToAnalysisTable } from './add.new.location.to.analysis.table';
+import { ClientStoreConnection } from '@wri-monorepos/sql';
 import { ChainType, RequestNewList } from './types';
-import { DataSource, EntitySchema } from 'typeorm';
+import { DataSource, EntitySchema, SelectQueryBuilder } from 'typeorm';
 
 jest.mock('@wri-monorepos/sql');
-jest.mock('typeorm');
 
 describe('AddMewLocationToAnalysisTable', () => {
-  let addMewLocationToAnalysisTable: AddMewLocationToAnalysisTable;
-  let clientStoreConnection: ClientStoreConnection;
-  let dataSource: DataSource;
+  let handler: AddNewLocationToAnalysisTable;
+  let mockConnection: jest.Mocked<DataSource>;
+  let mockClientStoreConnection: jest.Mocked<ClientStoreConnection>;
 
-  const AnalysisEntity = new EntitySchema<AnalysisSchemaType>({
-    ...AnalysisSchema,
-    name: 'analysis_test_table',
+  beforeEach(() => {
+    mockClientStoreConnection = new ClientStoreConnection() as jest.Mocked<ClientStoreConnection>;
+    mockConnection = {
+      createQueryBuilder: jest.fn().mockReturnValue({
+        insert: jest.fn().mockReturnThis(),
+        into: jest.fn().mockReturnThis(),
+        values: jest.fn().mockReturnThis(),
+        orIgnore: jest.fn().mockReturnThis(),
+        execute: jest.fn(), // Ensure execute is a Jest mock function
+      }),
+      insert: jest.fn().mockReturnThis(),
+      into: jest.fn().mockReturnThis(),
+      values: jest.fn().mockReturnThis(),
+      orIgnore: jest.fn().mockReturnThis(),
+      execute: jest.fn(), // Ensure execute is a Jest mock function
+      getRawMany: jest.fn().mockResolvedValue([]),
+    } as unknown as jest.Mocked<DataSource>;
+
+    // Mocking the query builder methods
+    const mockQueryBuilder = {
+      select: jest.fn().mockReturnThis(),
+      from: jest.fn().mockReturnThis(),
+      getRawMany: jest
+        .fn()
+        .mockResolvedValue([
+          { list_location_id: 1 },
+          { list_location_id: 2 },
+          { list_location_id: 3 },
+        ]),
+    } as unknown as SelectQueryBuilder<unknown>;
+
+    mockConnection.createQueryBuilder.mockReturnValue(mockQueryBuilder);
+    mockClientStoreConnection.getConnection = jest.fn().mockResolvedValue(mockConnection);
+    handler = new AddNewLocationToAnalysisTable(mockClientStoreConnection);
   });
-
-  beforeAll(async () => {
-    dataSource = new DataSource({
-      type: 'sqlite',
-      database: ':memory:',
-      entities: [AnalysisEntity],
-      synchronize: true,
-      logging: false,
-    });
-
-    clientStoreConnection = new ClientStoreConnection();
-
-    // Mock the getConnection method to return the DataSource instance
-    jest.spyOn(clientStoreConnection, 'getConnection').mockResolvedValue(dataSource);
-
-    // Initialize the DataSource
-    await dataSource.initialize();
-
-    addMewLocationToAnalysisTable = new AddMewLocationToAnalysisTable(clientStoreConnection);
-  });
-
-  afterEach(() => {
-    jest.clearAllMocks();
-  });
-
-  it('should handle the request and insert new locations', async () => {
+  it('should get location IDs from the database', async () => {
     const request: ChainType = {
       request: {
         organization_database: 'test_db',
@@ -48,14 +53,45 @@ describe('AddMewLocationToAnalysisTable', () => {
       } as RequestNewList,
     };
 
-    const mockLocationIds = [1, 2, 3];
-    (addMewLocationToAnalysisTable.getAllLocationIds as jest.Mock).mockResolvedValue(
-      mockLocationIds
+    const locationIds = await handler.getAllLocationIds(request);
+
+    expect(mockClientStoreConnection.clearCache).toHaveBeenCalledWith(
+      expect.stringContaining('test_db')
     );
+    expect(mockConnection.createQueryBuilder().select).toHaveBeenCalledWith('list.locationId');
+    expect(mockConnection.createQueryBuilder().from).toHaveBeenCalledWith(
+      expect.any(EntitySchema),
+      'list'
+    );
+    expect(locationIds).toEqual([1, 2, 3]);
+  });
 
-    await addMewLocationToAnalysisTable.handle(request);
+  it('should call insertBatch with the correct parameters', async () => {
+    const request: ChainType = {
+      request: {
+        organization_database: 'test_db',
+        listTable: 'test_list',
+      } as RequestNewList,
+    };
 
-    expect(clientStoreConnection.getConnection).toHaveBeenCalledWith('test_db', expect.any(Array));
-    expect(addMewLocationToAnalysisTable.getAllLocationIds).toHaveBeenCalledWith(request);
+    // Mocking the return value of getAllLocationIds
+    jest.spyOn(handler, 'getAllLocationIds').mockResolvedValue([1, 2, 3]);
+
+    // Create a mock for the insertBatch method
+    const insertBatchMock = jest.fn();
+    handler['insertBatch'] = insertBatchMock; // Accessing the private method directly
+
+    await handler.handle(request);
+
+    expect(insertBatchMock).toHaveBeenCalledTimes(1); // Check if insertBatch was called
+    expect(insertBatchMock).toHaveBeenCalledWith(
+      mockConnection,
+      expect.any(EntitySchema),
+      expect.arrayContaining([
+        expect.objectContaining({ locationId: 1, locationStatusId: 1 }),
+        expect.objectContaining({ locationId: 2, locationStatusId: 1 }),
+        expect.objectContaining({ locationId: 3, locationStatusId: 1 }),
+      ])
+    );
   });
 });

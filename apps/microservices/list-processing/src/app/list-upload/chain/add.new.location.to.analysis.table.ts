@@ -3,6 +3,7 @@ import { AbstractHandler, RequestNewList } from './types';
 import { ChainType } from './types';
 import {
   AnalysisSchema,
+  AnalysisSchemaType,
   ClientStoreConnection,
   ListSchema,
   ListSchemaType,
@@ -11,8 +12,8 @@ import { DataSource, EntitySchema } from 'typeorm';
 
 const BATCH_SIZE = 1000;
 
-export class AddMewLocationToAnalysisTable extends AbstractHandler<ChainType> {
-  private readonly logger = new Logger(AddMewLocationToAnalysisTable.name);
+export class AddNewLocationToAnalysisTable extends AbstractHandler<ChainType> {
+  private readonly logger = new Logger(AddNewLocationToAnalysisTable.name);
 
   private clientStoreConnection: ClientStoreConnection;
 
@@ -24,18 +25,19 @@ export class AddMewLocationToAnalysisTable extends AbstractHandler<ChainType> {
   async handle(request: ChainType): Promise<ChainType> {
     this.logger.log('add new locations to the analysis table');
 
-    const { organization_database: organizationDatabase, listTable } =
+    const { organization_database: organizationDatabase, analysisTable } =
       request.request as RequestNewList;
-    const AnalysisEntity = new EntitySchema<ListSchemaType>({
+    const AnalysisEntity = new EntitySchema<AnalysisSchemaType>({
       ...AnalysisSchema,
-      name: listTable,
+      name: analysisTable,
     });
 
+    const locationIds = await this.getAllLocationIds(request);
+
+    await this.clientStoreConnection.clearCache(process.env.MSSQL_HOSTNAME + organizationDatabase);
     const connection = await this.clientStoreConnection.getConnection(organizationDatabase, [
       AnalysisEntity,
     ]);
-
-    const locationIds = await this.getAllLocationIds(request);
 
     const dataToInsert = locationIds.map((locationId) => {
       return {
@@ -57,22 +59,19 @@ export class AddMewLocationToAnalysisTable extends AbstractHandler<ChainType> {
     }
   }
 
-  private async insertBatch(
+  async insertBatch(
     connection: DataSource,
-    ListEntity: EntitySchema<ListSchemaType>,
+    analysisEntity: EntitySchema<AnalysisSchemaType>,
     batch: Record<string, unknown>[]
   ): Promise<void> {
-    try {
-      await connection
-        .createQueryBuilder()
-        .insert()
-        .into(ListEntity)
-        .values(batch)
-        .orIgnore()
-        .execute();
-    } catch (error) {
-      throw new Error(`Failed to insert batch: ${error.message}`);
-    }
+    const values = batch.map((item) => `(${item.locationId}, ${item.locationStatusId})`).join(', ');
+
+    const sql = `
+      INSERT INTO [${analysisEntity.options.name}] (location_id, location_status_id)
+      VALUES ${values}
+    `;
+
+    await connection.query(sql);
   }
 
   async getAllLocationIds(request: ChainType) {
@@ -91,9 +90,9 @@ export class AddMewLocationToAnalysisTable extends AbstractHandler<ChainType> {
       .createQueryBuilder()
       .select('list.locationId')
       .from(ListEntity, 'list')
-      .getMany();
+      .getRawMany();
 
     // Extracting the locationIds from the result
-    return ids.map((entity) => entity.locationId);
+    return ids.map((entity) => entity.list_location_id);
   }
 }

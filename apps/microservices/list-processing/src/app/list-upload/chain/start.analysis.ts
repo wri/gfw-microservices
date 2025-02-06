@@ -75,10 +75,10 @@ export class StartAnalysis extends AbstractHandler<ChainType> {
       .createQueryBuilder()
       .select('list.locationId')
       .from(ListEntity, 'list')
-      .getMany();
+      .getRawMany();
 
     // Extracting the locationIds from the result
-    return ids.map((entity) => entity.locationId);
+    return ids.map((entity) => entity.list_location_id);
   }
 
   private async isDraftList(

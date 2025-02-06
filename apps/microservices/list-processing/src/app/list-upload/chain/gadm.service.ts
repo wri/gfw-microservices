@@ -87,7 +87,7 @@ export class GADMService extends AbstractHandler<ChainType> {
     const coordinates = (feature.geometry as GeometryWithoutCollection).coordinates;
     const modifiedArray = coordinates.map((subArray) => subArray.filter((value) => value !== 0));
 
-    const polygon = turf.polygon([modifiedArray] as turf.Position[][]);
+    const polygon = turf.polygon(modifiedArray as turf.Position[][]);
     const centroid = turf.centroid(polygon);
     if (centroid.geometry.type === 'Point') {
       return {

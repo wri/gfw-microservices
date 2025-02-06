@@ -19,7 +19,7 @@ export function UploadLocationByFile() {
   const theme = useTheme();
   const history = useHistory();
 
-  const { clearUploadType, addFileUrl } = useUploadLocation();
+  const { clearUploadType, addFile } = useUploadLocation();
 
   const [isDataTemplateModalOpen, setIsDataTemplateModalOpen] = useState(false);
   const [file, setFile] = useState<File | null>(null);
@@ -35,7 +35,7 @@ export function UploadLocationByFile() {
       try {
         setFileAttachState(FileAttachState.Uploading);
         const data = await uploadFileToS3(file);
-        addFileUrl(data);
+        addFile(data);
         setFileAttachState(FileAttachState.Uploaded);
       } catch (err: unknown) {
         setFileAttachState(FileAttachState.UploadFailed);

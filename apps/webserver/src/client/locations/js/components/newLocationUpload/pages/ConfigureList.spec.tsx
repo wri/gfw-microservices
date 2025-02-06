@@ -23,7 +23,7 @@ jest.mocked(useUploadLocation).mockReturnValue({
   clearUploadType: mockClearUploadType,
   uploadLocationState: {
     newListName: 'Random list name 123',
-    existingListName: '',
+    existingList: null,
     commodity: 'palm-oil',
     typeOfAnalysis: {
       AFI: true,
@@ -34,13 +34,14 @@ jest.mocked(useUploadLocation).mockReturnValue({
     area: { measurementUnit: 'hectares', size: 0 },
     coordinates: [{ latitude: '1.1', longitude: '1.1' }],
     locationName: 'location name',
-    uploadedFileUrl: '',
+    uploadedFile: { fileS3Route: '', keyFile: '', url: '' },
     uploadType: UploadType.ByPolygon,
   },
   selectUploadType: jest.fn(),
   setUploadLocationByPoint: jest.fn(),
   setUploadLocationByPolygon: jest.fn(),
-  addFileUrl: jest.fn(),
+  addFile: jest.fn(),
+  updateSaveMode: jest.fn(),
 });
 
 const mockUserLists: UserList[] = [
@@ -280,7 +281,7 @@ describe.skip('ConfigureList', () => {
     expect(mockSetUploadLocationConfigureList).toHaveBeenCalledWith({
       commodity: 'cattle',
       newListName: 'My new List 3',
-      existingListName: '',
+      existingList: null,
       typeOfAnalysis: {
         palmRiskAssessment: false,
         FCD: false,

@@ -108,3 +108,7 @@ const App = () => (
 );
 
 render(<App />, document.getElementById('locations-mount'));
+
+if (module.hot) {
+  module.hot.accept();
+}

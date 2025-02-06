@@ -20,6 +20,7 @@ export default (): webpack.Configuration => {
     for (const key in entries) {
       entries[key] = [entries[key], hotMiddleware];
     }
+    plugins.push(new webpack.HotModuleReplacementPlugin());
   }
 
   rules.push(

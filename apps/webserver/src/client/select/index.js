@@ -15,3 +15,7 @@ const App = () => (
 );
 
 render(<App />, document.getElementById('select-mount'));
+
+if (module.hot) {
+  module.hot.accept();
+}

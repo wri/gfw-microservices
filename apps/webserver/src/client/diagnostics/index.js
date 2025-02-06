@@ -35,3 +35,7 @@ function App() {
 }
 
 render(<App />, document.getElementById('mount'));
+
+if (module.hot) {
+  module.hot.accept();
+}

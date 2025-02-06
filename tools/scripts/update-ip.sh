@@ -31,7 +31,7 @@ if [ -z "$SECURITY_GROUP_NAME" ] || [ -z "$RULE_DESCRIPTION" ]; then
 fi
 
 # Get the current public IP with /32 CIDR format
-CURRENT_PUBLIC_IP="$(curl -s ifconfig.me)/32"
+CURRENT_PUBLIC_IP="$(curl -4 -s ifconfig.me)/32"
 
 # Resolve security group ID from the security group name
 SECURITY_GROUP_ID=$(aws ec2 describe-security-groups \

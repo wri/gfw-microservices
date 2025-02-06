@@ -6,6 +6,12 @@ class LocationsPage {
     dataTemplatesBtn: () => cy.get('.MuiPaper-root > :nth-child(5)'),
     ShapefileOption: () => cy.contains('Polygon Shapefile'),
     KMLOption: () => cy.get('.css-16a0j3s > :nth-child(2) > .MuiButtonBase-root'),
+    SpreadSheetOption: () =>
+      cy.get(
+        ':nth-child(3) > .MuiButtonBase-root > .MuiAccordionSummary-content > .MuiBox-root > .MuiTypography-root'
+      ),
+    PointShapefileOption: () => cy.get(':nth-child(4) > .MuiButtonBase-root'),
+    ListOfPalmOilOption: () => cy.get(':nth-child(5) > .MuiButtonBase-root'),
     checkBtn: () => cy.get('.MuiAccordionSummary-content > .MuiButtonBase-root'),
     searchInput: () => cy.get('.input-search__input'),
     downloadCSVOptionBtn: () => cy.contains('CSV'),
@@ -13,7 +19,8 @@ class LocationsPage {
     downloadShapefileptionBtn: () => cy.contains('Shapefile'),
     downloadTypeDropdown: () => cy.get('#downloadTypeSelect'),
     downloadTemplateBtn: () => cy.contains('Download'),
-    downloadTemplateUploadLocationBtn: () => cy.get('.MuiAccordionSummary-content > .MuiButtonBase-root'),
+    downloadTemplateUploadLocationBtn: () =>
+      cy.get('.MuiAccordionSummary-content > .MuiButtonBase-root'),
     locationNameCell: () => cy.get('.rt-td.cell__Location-Name.default-cell'),
     checkbox: () => '.rt-td.td-checkbox',
     downloadListBtn: () => cy.contains('Download…'),
@@ -86,7 +93,15 @@ class LocationsPage {
   clickOnKMLOptionBtn() {
     this.elements.KMLOption().click();
   }
-
+  clickOnSpreadSheetOptionBtn() {
+    this.elements.SpreadSheetOption().click();
+  }
+  clickOnPointShapefileOptionBtn() {
+    this.elements.PointShapefileOption().click();
+  }
+  clickOnListOfPalmMillOptionBtn() {
+    this.elements.ListOfPalmOilOption().click();
+  }
 
   searchLocation(location: string) {
     this.elements.searchInput().type(location);

@@ -60,3 +60,7 @@ function App() {
 }
 
 render(<App />, document.getElementById('map-mount'));
+
+if (module.hot) {
+  module.hot.accept();
+}

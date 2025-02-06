@@ -14,3 +14,7 @@ const App = () => (
 );
 
 render(<App />, document.getElementById('analytics-mount'));
+
+if (module.hot) {
+  module.hot.accept();
+}

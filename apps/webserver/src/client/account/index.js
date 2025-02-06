@@ -21,3 +21,7 @@ const App = () => (
 );
 
 render(<App />, document.getElementById('account-mount'));
+
+if (module.hot) {
+  module.hot.accept();
+}

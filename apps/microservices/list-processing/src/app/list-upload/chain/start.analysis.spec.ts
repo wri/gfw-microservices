@@ -30,7 +30,7 @@ describe('StartAnalysis', () => {
       createQueryBuilder: jest.fn().mockReturnThis(),
       select: jest.fn().mockReturnThis(),
       from: jest.fn().mockReturnThis(),
-      getMany: jest.fn().mockResolvedValue([]), // Adjust the return value as n
+      getRawMany: jest.fn().mockResolvedValue([]), // Adjust the return value as n
       // Adicione outras propriedades e métodos do DataSource que você usa
     } as unknown as DataSource;
 

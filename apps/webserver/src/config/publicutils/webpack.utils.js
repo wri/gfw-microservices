@@ -25,7 +25,7 @@ const generateAssetMap = (stats, index) => {
  * @summary Start the dev task, update the assets in the config, and return the middleware
  * @return {Object}
  */
-export const webpackMiddleware = () => {
+const middleware = () => {
   // Create our compiler
   const compiler = webpack(makeWebpackConfig());
   // WHen the compiler completes, update our assets and log any issues
@@ -55,4 +55,8 @@ export const webpackMiddleware = () => {
     }),
     hot: webpackHotMiddleware(compiler, { path: '/__webpack_hmr' }),
   };
+};
+
+module.exports = {
+  middleware,
 };

@@ -1,22 +1,22 @@
-import { webpackMiddleware } from '../publicutils/webpack.utils';
-import methodOverride from 'method-override';
-import compression from 'compression';
+const webpackUtils = require('../publicutils/webpack.utils');
+const methodOverride = require('method-override');
+const compression = require('compression');
 import type { RedisClientType } from 'redis';
 import { createClient } from 'redis';
-import session from 'express-session';
+const session = require('express-session');
 import RedisStore from 'connect-redis';
-import { v1 as uuidv1 } from 'uuid';
+const { v1: uuidv1 } = require('uuid');
 
-import bodyParser from 'body-parser';
-import favicon from 'serve-favicon';
-import * as logger from '../privateutils/logger.utils';
+const bodyParser = require('body-parser');
+const favicon = require('serve-favicon');
+const logger = require('../privateutils/logger.utils');
 import * as express from 'express';
 import { Application, Request, Response, NextFunction } from 'express';
-import helmet from 'helmet';
-import path from 'path';
-import rateLimiterUtil from './limiter-util';
+const helmet = require('helmet');
+const path = require('path');
+const rateLimiterUtil = require('./limiter-util');
 import config from '../config';
-import { PRODUCTION_ENVIRONMENTS } from '../config/environments.config';
+const { PRODUCTION_ENVIRONMENTS } = require('../config/environments.config');
 import * as expressRateLimit from 'express-rate-limit';
 import * as redisRateLimit from 'rate-limit-redis';
 
@@ -72,7 +72,7 @@ const configureMiddleware = (app: Application) => {
     // If we're in development mode, add some hot middleware
     if (process.env.NODE_ENV === 'development') {
       // We need to initalize the middleware to compile our webpack resources
-      const middleware = webpackMiddleware();
+      const middleware = webpackUtils.middleware();
       app.use(middleware.dev);
       app.use(middleware.hot);
     }
@@ -109,7 +109,7 @@ const configureViewEngine = (app: Application) => {
  * @param {Express.Application} app
  */
 const configureSession = (app: Application) => {
-  const sessionParams: session.SessionOptions = {
+  const sessionParams: Record<string, any> = {
     name: 'gfwpro.globalforestwatch.org',
     saveUninitialized: false,
     secret: config.sessionVars.secret,
@@ -172,7 +172,7 @@ const configureStaticAssetPath = (app: Application) => {
  * @param {Express.Application} app
  */
 const configureServerRoutes = (app: Application, limiter: any) => {
-  config.files.routes.forEach((route: string) => require(path.resolve(route))(app, limiter));
+  config.files.routes.forEach((route: String) => require(path.resolve(route))(app, limiter));
 };
 
 /**
@@ -208,6 +208,7 @@ const configureErrorRoutes = (app: Application) => {
 // Redis based limiter suitable for all server routes
 // The passed in limitConfig object specifies the windowMs and max values and is typically
 // either middlewares.rateLimitAuthenticated or middlewares.rateLimitUnauthenticated
+// @ts-ignore:next-line
 const redisBasedLimiter = (limitConfig) => {
   return expressRateLimit.rateLimit({
     standardHeaders: true, // Return rate limit info in the `RateLimit-*` headers
@@ -245,7 +246,7 @@ export const initialize = (app: Application) => {
       configureSession(app); //TODO: Bake in a DB connection to our SQL Server via its API
       // Configure passport
       // configurePassport(app); //TODO: Bake in security via AWS Cognito, nothing to do with Mongo or mongoose
-      // Configure Helmet security headers
+      // Configure Hemlet security headers
       configureHelmetHeaders(app);
       // Set path for static assets
       configureStaticAssetPath(app);

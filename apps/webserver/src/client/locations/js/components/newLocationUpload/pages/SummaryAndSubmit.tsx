@@ -33,16 +33,39 @@ export function SummaryAndSubmit() {
   const listName = uploadLocationState.newListName || uploadLocationState.existingList?.name;
   const commodity = commodities[uploadLocationState.commodity as keyof typeof commodities];
 
+  // Function to convert coordinates to GeoJSON format respecting the right-hand rule
+  const mountPolygon = (coordinates) => {
+    // Function to calculate the signed area of the polygon
+    function signedArea(coords) {
+      let area = 0;
+      for (let i = 0; i < coords.length; i++) {
+        const j = (i + 1) % coords.length;
+        area += coords[i][0] * coords[j][1];
+        area -= coords[j][0] * coords[i][1];
+      }
+      return area / 2;
+    }
+
+    // Check if the coordinates are in clockwise order
+    if (signedArea(coordinates) > 0) {
+      // Reverse the coordinates to make them counter-clockwise
+      coordinates.reverse();
+    }
+
+    // Create GeoJSON object
+    return {
+      type: 'Polygon',
+      coordinates: [coordinates],
+    };
+  };
+
   const createGeoJSONFile = async (): Promise<File> => {
     const { uploadType, coordinates, area, commodity, locationName } = uploadLocationState;
 
     const geometry =
       uploadType === UploadType.ByPoint
         ? { type: 'Point', coordinates: [coordinates[0].longitude, coordinates[0].latitude] }
-        : {
-            type: 'Polygon',
-            coordinates: [[coordinates.map(({ longitude, latitude }) => [longitude, latitude])]],
-          };
+        : mountPolygon(coordinates.map(({ longitude, latitude }) => [longitude, latitude]));
 
     const properties = {
       Commodity: commodity,

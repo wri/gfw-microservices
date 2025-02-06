@@ -59,7 +59,6 @@ export function SummaryAndSubmit() {
     };
   };
 
-
   const createGeoJSONFile = async (): Promise<File> => {
     const { uploadType, coordinates, area, commodity, locationName } = uploadLocationState;
 

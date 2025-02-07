@@ -22,6 +22,7 @@ import { ListSchemaName } from './chain/list.schema.name';
 import { ConvertPoint2Polygon } from './chain/convert.point.2.polygon';
 import { ValidateMandatoryFields } from './chain/validate.mandatory.fields';
 import { ValidateLocationName } from './chain/validate.location.name';
+import { AddNewLocationToAnalysisTable } from './chain/add.new.location.to.analysis.table';
 
 type WorkerType = {
   request: RequestLargeListProcess;
@@ -56,6 +57,7 @@ async function worker(input: WorkerType, cb: done) {
   const convertPoint2Polygon = new ConvertPoint2Polygon();
   const validateMandatoryFields = new ValidateMandatoryFields();
   const validateLocationName = new ValidateLocationName();
+  const addNewLocationToAnalysisTable = new AddNewLocationToAnalysisTable();
 
   downloadS3File
     .setNext(parseData)
@@ -69,6 +71,7 @@ async function worker(input: WorkerType, cb: done) {
     .setNext(insertLocationData)
     .setNext(saveListAttributes)
     .setNext(writeLocationCount)
+    .setNext(addNewLocationToAnalysisTable)
     .setNext(startAnalysis);
 
   await AbstractHandler.runFullChain(downloadS3File, chainType);

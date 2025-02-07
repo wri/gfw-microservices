@@ -122,6 +122,7 @@ export function SummaryAndSubmit() {
         keyFile: uploadedFile.keyFile,
         list_id: uploadLocationState.existingList?.id,
         saveAsDraft: isDraftUpload.current,
+        commodity: uploadLocationState.commodity,
       });
       updateSaveMode(isDraftUpload.current);
       history.push('SUBMISSION_SUCCESS');

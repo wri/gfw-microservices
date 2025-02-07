@@ -99,7 +99,9 @@ export abstract class AbstractHandler<T> implements Handler<T> {
           `${nextJob.constructor.name} successfully executed`
         );
       } catch (error) {
-        Logger.error(`Error in ${nextJob.constructor.name}: ${error.message}`);
+        Logger.error(
+          `Error in ${nextJob.constructor.name}: ${error.stack || error.message || error}`
+        );
         AbstractHandler.updateListsUploadStatus(
           result as ChainType,
           `Error in ${nextJob.constructor.name}`,

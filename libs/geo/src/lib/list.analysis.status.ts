@@ -359,12 +359,14 @@ export const isGHGCommodityValid = async (id: number, organizationDb: string): P
       throw new Error(`List ${id} not found`);
     }
 
+    // ListData.version = 2 won't have commodities with null values, take care of it when version 2 is implemented
     // verify if list has no commodity
-    if (listData.Commodity === null) {
+    if (listData.Commodity === null && listData.version > 1) {
+      throw new Error('missing commodity');
+    } else if (listData.Commodity === null) {
       Logger.log('validateGHGCommodity', `List ${id} has no commodity`);
       return true;
     }
-    // ListData.version = 2 won't have commodities with null values, take care of it when version 2 is implemented
     // verify if list has a non valid GHG commodity
     if (listData.Commodity.startsWith('GFWP_')) {
       Logger.log(

@@ -148,7 +148,7 @@
     "stream-chain": "^2.2.5",
     "swagger-ui-dist": "^5.17.14",
     "tiny-async-pool": "^2.1.0",
-    "tippecanoe": "^0.4.1",
+    "tippecanoe": "^0.6.0",
     "tmp": "^0.2.1",
     "ts-loader": "^9.4.2",
     "tslib": "^2.3.0",

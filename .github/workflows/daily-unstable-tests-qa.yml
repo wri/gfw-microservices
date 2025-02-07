@@ -1,6 +1,9 @@
 name: Unstable QA e2e Tests
 
 on:
+  push:
+    branches:
+      - 'unstables-to-stables-0702'
   schedule:
     # Runs at 6 AM UTC (one hour after automatic-release.yml) every weekday
     - cron: '0 8 * * 1-5'
@@ -8,7 +11,7 @@ on:
 # nx cache intermittently fails with github actions, likely due to parallelism
 # so disabling the check for now
 env:
-  UNSTABLE: 'apps/gfwpro-e2e/cypress/e2e/features/charts.feature,apps/gfwpro-e2e/cypress/e2e/features/locationDiagnosticsRedirectToMap.feature,apps/gfwpro-e2e/cypress/e2e/features/alerts.feature,apps/gfwpro-e2e/cypress/e2e/features/allDownloads.feature,apps/gfwpro-e2e/cypress/e2e/features/InformationBubbles.feature'
+  UNSTABLE: ''
   NX_REJECT_UNKNOWN_LOCAL_CACHE: 0
 
 jobs:

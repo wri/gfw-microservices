@@ -1326,7 +1326,7 @@ module.exports = (app, limiter) => {
    * Save list to being processed in database and queue for processing
    */
   app.post('/locations/create-large-list', (req, res) => {
-    const { listName, analysisIds } = req.body;
+    const { listName, analysisIds, saveAsDraft } = req.body;
     const userId = req.session.organization_user_id;
     const { LISTS_MICROSERVICE_URL } = process.env;
     axios
@@ -1336,7 +1336,7 @@ module.exports = (app, limiter) => {
         client_database: req.session.organization_database,
         organization_id: req.session.organization_id,
         analysisIds,
-        saveAsDraft: false,
+        saveAsDraft: saveAsDraft || false,
       })
       .then((response) => {
         res.send({ user_id: userId, list_id: response.data.list_id });
@@ -1351,7 +1351,14 @@ module.exports = (app, limiter) => {
    * Send request to S3 Endpoint to start list processing
    */
   app.post('/locations/process-list', async (req, res) => {
-    const { list_id, path: pathLocal, template_type, startAnalysis, listName } = req.body;
+    const {
+      list_id,
+      path: pathLocal,
+      template_type,
+      startAnalysis,
+      listName,
+      saveAsDraft,
+    } = req.body;
     const { organization_user_id, organization_id, subscription_status_id, organization_database } =
       req.session;
 
@@ -1375,7 +1382,7 @@ module.exports = (app, limiter) => {
         user_id: organization_user_id,
         startAnalysis,
         analysisIds: Object.keys(analysisTypes),
-        saveAsDraft: false,
+        saveAsDraft: saveAsDraft || false,
       })
       .then((response) => {
         logger.info('ProcessList LP response.data', response.data);

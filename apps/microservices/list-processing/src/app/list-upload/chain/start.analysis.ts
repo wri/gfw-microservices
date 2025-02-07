@@ -39,6 +39,7 @@ export class StartAnalysis extends AbstractHandler<ChainType> {
   }
 
   async getListName(organizationDatabase: string, list_id: number) {
+    await this.clientStoreConnection.clearCache(process.env.MSSQL_HOSTNAME + organizationDatabase);
     const connection = await this.clientStoreConnection.getConnection(organizationDatabase);
     const listRepository = connection.getRepository(Lists);
     const { listName } = await listRepository.findOne({ where: { id: list_id } });
@@ -46,6 +47,7 @@ export class StartAnalysis extends AbstractHandler<ChainType> {
   }
 
   async getListStatus(organizationDatabase: string, list_id: number) {
+    await this.clientStoreConnection.clearCache(process.env.MSSQL_HOSTNAME + organizationDatabase);
     const connection = await this.clientStoreConnection.getConnection(organizationDatabase);
     const listRepository = connection.getRepository(Lists);
     const { listStatusId } = await listRepository.findOne({ where: { id: list_id } });
@@ -53,6 +55,7 @@ export class StartAnalysis extends AbstractHandler<ChainType> {
   }
 
   async getUserEmail(organizationDatabase: string, user_id: number) {
+    await this.clientStoreConnection.clearCache(process.env.MSSQL_HOSTNAME + organizationDatabase);
     const connection = await this.clientStoreConnection.getConnection(organizationDatabase);
     const userRepository = connection.getRepository(User);
     const { email } = await userRepository.findOne({ where: { id: user_id } });

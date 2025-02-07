@@ -1,9 +1,6 @@
 name: Unstable QA e2e Tests
 
 on:
-  push:
-    branches:
-      - 'unstables-to-stables-0702'
   schedule:
     # Runs at 6 AM UTC (one hour after automatic-release.yml) every weekday
     - cron: '0 8 * * 1-5'

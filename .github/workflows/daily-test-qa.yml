@@ -1,6 +1,9 @@
 name: QA e2e Tests
 
 on:
+  push:
+    branches:
+      - 'fixes-nightly-run-0702'
   schedule:
     # Runs at 6 AM UTC (one hour after automatic-release.yml) every weekday
     - cron: '0 6 * * 1-5'

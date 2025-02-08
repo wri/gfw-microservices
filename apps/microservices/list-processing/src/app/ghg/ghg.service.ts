@@ -1,40 +1,73 @@
-import {
-  SQLUtils,
-  CountGHGAnalysisByListId,
-  getPaginatedGHGAnalysisListLevel,
-  GHGAnalysisByListId,
-  getCountGHGAnalysisByListId,
-} from '@wri-monorepos/sql';
+import { ClientStoreConnection, GHGAnalyses, Lists } from '@wri-monorepos/sql';
 import { Injectable, Logger } from '@nestjs/common';
-import * as sql from 'mssql';
 
+interface GHGAnalysisData {
+  listId: number;
+  listName: string;
+  locationId: number;
+  totalAreaHA: number;
+  statusCode: number;
+  locationError: string;
+  commodity: string;
+  emissionsFactorByYear: string;
+}
+interface GHGNumerOfPages {
+  id: number;
+  quantity: number;
+}
 @Injectable()
 export class GHGService {
   private readonly logger = new Logger(GHGService.name);
 
-  async getNumberOfPagesGHGAnalysis(listID: string, queryParam): Promise<CountGHGAnalysisByListId> {
-    const { clientDatabase } = queryParam;
+  constructor(private readonly clientStoreConnection: ClientStoreConnection) {}
 
-    const parameters = [{ field: 'listID', type: sql.Int, value: listID }];
+  async getNumberOfPagesGHGAnalysis(listId: number, queryParam): Promise<GHGNumerOfPages> {
+    const { clientDatabase, rowsPerPage } = queryParam;
+    this.logger.log(`Get Number Of Pages GHG Analysis for listId: ${listId}`);
 
-    this.logger.debug('Get Number Of Pages GHG Analysis');
-    return await SQLUtils.queryDBFirstRow<CountGHGAnalysisByListId>(
-      clientDatabase,
-      getCountGHGAnalysisByListId,
-      parameters
-    );
+    const connection = await this.clientStoreConnection.getConnection(clientDatabase);
+    const ghgRepository = await connection.getRepository(GHGAnalyses);
+
+    const quantity = await ghgRepository.count({
+      where: { listId },
+      take: rowsPerPage,
+    });
+
+    return {
+      id: listId,
+      quantity,
+    };
   }
-  async getGHGDataPerPage(listId: string, queryParam) {
+
+  async getGHGDataPerPage(listId: number, queryParam): Promise<GHGAnalysisData[]> {
     const { clientDatabase, rowsPerPage = 50, pageNumber = 0 } = queryParam;
+    this.logger.log(`Get GHG Data Per Page for listId: ${listId}`);
 
-    const parameters = [
-      { field: 'listId', type: sql.Int, value: listId },
-      { field: 'rowsOfPage', type: sql.Int, value: rowsPerPage },
-      { field: 'pageNumber', type: sql.Int, value: pageNumber },
-    ];
+    const connection = await this.clientStoreConnection.getConnection(clientDatabase);
+    const ghgRepository = await connection.getRepository(GHGAnalyses);
 
-    this.logger.debug('Get data AFI Analysis');
-    const query = getPaginatedGHGAnalysisListLevel;
-    return await SQLUtils.queryDB<GHGAnalysisByListId[]>(clientDatabase, query, parameters);
+    const [data, total] = await ghgRepository.findAndCount({
+      where: { listId: Number(listId) },
+      skip: pageNumber * rowsPerPage,
+      take: rowsPerPage,
+    });
+
+    const ListRepository = await connection.getRepository(Lists);
+    const { listName, Commodity } = await ListRepository.findOne({ where: { id: listId } });
+
+    return data.map((item) => {
+      const { listId, locationId, totalAreaHA, statusCode, locationError, emissionsFactorByYear } =
+        item;
+      return {
+        listId,
+        listName,
+        locationId,
+        totalAreaHA,
+        statusCode,
+        locationError,
+        commodity: Commodity,
+        emissionsFactorByYear,
+      };
+    });
   }
 }

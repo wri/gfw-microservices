@@ -19,18 +19,15 @@ export class GHGController {
 
   @Get('/:listId/number-of-pages')
   async getNumberOfPagesAfiAnalysis(
-    @Param('listId') listId: string,
+    @Param('listId') listId: number,
     @Query(new ZodValidationPipe(GetGHGAnalysisDataSchema)) queryParam: GetGHGAnalysisDataRequest
   ) {
-    this.logger.debug('Get Number Of Pages AFI Analysis');
+    this.logger.debug('Get Number Of Pages GHG Analysis');
     const { rowsPerPage } = queryParam;
 
-    const { quantity: qtdElements } = await this.ghgService.getNumberOfPagesGHGAnalysis(
-      listId,
-      queryParam
-    );
+    const { quantity } = await this.ghgService.getNumberOfPagesGHGAnalysis(listId, queryParam);
 
-    const pages = Math.ceil(qtdElements / rowsPerPage);
+    const pages = Math.ceil(quantity / rowsPerPage);
 
     return {
       pages: pages,
@@ -39,10 +36,10 @@ export class GHGController {
   }
   @Get('/:listId/data-per-page')
   async getDataAfiAnalysis(
-    @Param('listId') listId: string,
+    @Param('listId') listId: number,
     @Query(new ZodValidationPipe(GetGHGAnalysisDataSchema)) queryParam: GetGHGAnalysisDataRequest
   ) {
-    this.logger.debug('Get Number Of Pages AFI Analysis');
+    this.logger.debug('Get Data per Pages GHG Analysis');
     return await this.ghgService.getGHGDataPerPage(listId, queryParam);
   }
 }

@@ -4,7 +4,6 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { DataSource } from 'typeorm';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import * as sinon from 'sinon';
-import { ConfigModule } from '@nestjs/config';
 
 describe('GHG - service', () => {
   let ghgService: GHGService;
@@ -15,7 +14,7 @@ describe('GHG - service', () => {
     sinon
       .stub(DataSource.prototype, 'getRepository')
       .withArgs(GHGAnalyses)
-      .returns(()=>{});
+      .returns();
 
     module = await Test.createTestingModule({
       imports: [

@@ -5,7 +5,6 @@ interface GHGAnalysisData {
   listId: number;
   listName: string;
   locationId: number;
-
   totalAreaHa: number;
   statusCode: number;
   locationError: string;

@@ -46,7 +46,7 @@ export class GHGService {
     const connection = await this.clientStoreConnection.getConnection(clientDatabase);
     const ghgRepository = await connection.getRepository(GHGAnalyses);
 
-    const [data, total] = await ghgRepository.findAndCount({
+    const [data] = await ghgRepository.findAndCount({
       where: { listId: Number(listId) },
       skip: pageNumber * rowsPerPage,
       take: rowsPerPage,

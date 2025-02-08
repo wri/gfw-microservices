@@ -1,4 +1,4 @@
-import { ClientStoreConnection, GHGAnalyses, Lists, SQLUtils } from '@wri-monorepos/sql';
+import { ClientStoreConnection, GHGAnalyses, Lists } from '@wri-monorepos/sql';
 import { GHGService } from './ghg.service';
 import { Test, TestingModule } from '@nestjs/testing';
 import { DataSource } from 'typeorm';
@@ -46,6 +46,7 @@ describe('GHG - service', () => {
 
   it(`Should return Number of Pages`, async () => {
     const mockCount = 5;
+    const listId = 5692;
     clientStoreConnection.getConnection = jest.fn().mockResolvedValueOnce({
       getRepository: () => ({
         count: () => mockCount,
@@ -55,18 +56,18 @@ describe('GHG - service', () => {
       },
     });
 
-    const response = await ghgService.getNumberOfPagesGHGAnalysis(5692, {
+    const response = await ghgService.getNumberOfPagesGHGAnalysis(listId, {
       clientDatabase: 'mockDatabase',
       rowsPerPage: 5,
     });
     expect(response).toEqual({
-      pages: 2,
-      clientDatabase: 'mockDatabase',
-      rowsPerPage: 5,
+      id: listId,
+      quantity: 5,
     });
   });
   it(`Should not find Number of Pages for an inexistent id`, async () => {
     const mockCount = 0;
+    const listId = 2;
     clientStoreConnection.getConnection = jest.fn().mockResolvedValueOnce({
       getRepository: () => ({
         count: () => mockCount,
@@ -75,74 +76,89 @@ describe('GHG - service', () => {
         database: 'mock_db',
       },
     });
-    const response = await ghgService.getNumberOfPagesGHGAnalysis(2, {
+    const response = await ghgService.getNumberOfPagesGHGAnalysis(listId, {
       clientDatabase: 'mockDatabase',
       rowsPerPage: 5,
     });
     expect(response).toEqual({
-      pages: 0,
-      clientDatabase: 'mockDatabase',
-      rowsPerPage: 1,
+      id: listId,
+      quantity: 0,
     });
   });
-  it(`Should return GHG Data Per Page`, async () => {
-    jest.spyOn(SQLUtils, 'queryDB').mockImplementation(() =>
-      Promise.resolve([
-        {
-          listId: 1,
-          listName: 'mockedListName',
-          locationId: 2,
-          totalAreaHa: 1.2921,
-          statusCode: 2,
-          locationError: null,
-          commodity: 'SOYB',
-          emissionsFactorByYear: '{"2021":0.5839,"2022":0.1825,"2023":0.3258}',
-        },
-        {
-          listId: 1,
-          listName: 'mockedListName',
-          locationId: 3,
-          totalAreaHa: 1.1921,
-          statusCode: 2,
-          locationError: null,
-          commodity: 'SOYB',
-          emissionsFactorByYear: '{"2021":0.5839,"2022":0.1825,"2023":0.4258}',
-        },
-      ])
-    );
 
-    const response = await ghgService.getGHGDataPerPage(1, {
-      clientDatabase: 'mockDatabase',
-      rowsPerPage: 2,
-      pageNumber: 0,
-    });
-    expect(response).toEqual([
+  it(`Should return GHG Data Per Page`, async () => {
+    const mockData = [
       {
         listId: 1,
         listName: 'mockedListName',
         locationId: 2,
-        totalAreaHa: 1.2921,
+        totalAreaHA: 1.2921,
         statusCode: 2,
         locationError: null,
-        commodity: 'SOYB',
+        commodity: 'COCOA',
         emissionsFactorByYear: '{"2021":0.5839,"2022":0.1825,"2023":0.3258}',
       },
       {
         listId: 1,
         listName: 'mockedListName',
         locationId: 3,
-        totalAreaHa: 1.1921,
+        totalAreaHA: 1.1921,
         statusCode: 2,
         locationError: null,
-        commodity: 'SOYB',
+        commodity: 'COCOA',
+        emissionsFactorByYear: '{"2021":0.5839,"2022":0.1825,"2023":0.4258}',
+      },
+    ];
+    const listId = 1;
+    clientStoreConnection.getConnection = jest.fn().mockResolvedValueOnce({
+      getRepository: () => ({
+        findAndCount: () => [mockData, mockData.length],
+        findOne: () => ({ listName: 'mockedListName', Commodity: 'COCOA' }),
+      }),
+      options: {
+        database: 'mock_db',
+      },
+    });
+    const response = await ghgService.getGHGDataPerPage(listId, {
+      clientDatabase: 'mockDatabase',
+      rowsPerPage: 2,
+      pageNumber: 0,
+    });
+    expect(response).toEqual([
+      {
+        listId: listId,
+        listName: 'mockedListName',
+        locationId: 2,
+        totalAreaHA: 1.2921,
+        statusCode: 2,
+        locationError: null,
+        commodity: 'COCOA',
+        emissionsFactorByYear: '{"2021":0.5839,"2022":0.1825,"2023":0.3258}',
+      },
+      {
+        listId: 1,
+        listName: 'mockedListName',
+        locationId: 3,
+        totalAreaHA: 1.1921,
+        statusCode: 2,
+        locationError: null,
+        commodity: 'COCOA',
         emissionsFactorByYear: '{"2021":0.5839,"2022":0.1825,"2023":0.4258}',
       },
     ]);
   });
   it(`Should not find GHG data for an inexistent ID`, async () => {
-    jest.spyOn(SQLUtils, 'queryDB').mockImplementation(() => Promise.resolve([]));
-
-    const response = await ghgService.getGHGDataPerPage(2, {
+    const listId = 2;
+    clientStoreConnection.getConnection = jest.fn().mockResolvedValueOnce({
+      getRepository: () => ({
+        findAndCount: () => [[], 0],
+        findOne: () => ({ listName: 'mockedListName', Commodity: 'COCOA' }),
+      }),
+      options: {
+        database: 'mock_db',
+      },
+    });
+    const response = await ghgService.getGHGDataPerPage(listId, {
       clientDatabase: 'mockDatabase',
       rowsPerPage: 2,
       pageNumber: 0,

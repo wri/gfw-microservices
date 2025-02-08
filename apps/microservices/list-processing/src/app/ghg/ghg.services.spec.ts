@@ -4,7 +4,6 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { DataSource } from 'typeorm';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import * as sinon from 'sinon';
-import { GHGRepositoryMock } from './Repository/ghg.repository.mock';
 import { ConfigModule } from '@nestjs/config';
 
 describe('GHG - service', () => {
@@ -16,7 +15,7 @@ describe('GHG - service', () => {
     sinon
       .stub(DataSource.prototype, 'getRepository')
       .withArgs(GHGAnalyses)
-      .returns(new GHGRepositoryMock());
+      .returns(()=>{});
 
     module = await Test.createTestingModule({
       imports: [
@@ -29,10 +28,6 @@ describe('GHG - service', () => {
           entities: [Lists],
         }),
         TypeOrmModule.forFeature([Lists], 'default'),
-        ConfigModule.forRoot({
-          envFilePath: ['.env', '.env.production'],
-          isGlobal: true,
-        }),
       ],
       providers: [GHGService, ClientStoreConnection],
     }).compile();

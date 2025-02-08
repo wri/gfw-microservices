@@ -8,8 +8,8 @@ export class GHGAnalyses {
   @PrimaryGeneratedColumn({ name: 'location_id' })
   locationId: number;
 
-  @Column({ name: 'total_area_ha' })
-  totalAreaHA: number;
+  @Column({ name: 'total_area_ha', type: 'float' })
+  totalAreaHa: number;
 
   @Column({ name: 'status_code' })
   statusCode: number;

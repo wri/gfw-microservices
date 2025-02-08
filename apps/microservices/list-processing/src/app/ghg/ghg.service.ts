@@ -5,7 +5,8 @@ interface GHGAnalysisData {
   listId: number;
   listName: string;
   locationId: number;
-  totalAreaHA: number;
+
+  totalAreaHa: number;
   statusCode: number;
   locationError: string;
   commodity: string;
@@ -27,16 +28,23 @@ export class GHGService {
 
     const connection = await this.clientStoreConnection.getConnection(clientDatabase);
     const ghgRepository = await connection.getRepository(GHGAnalyses);
+    try {
+      const quantity = await ghgRepository.count({
+        where: { listId },
+        take: rowsPerPage,
+      });
 
-    const quantity = await ghgRepository.count({
-      where: { listId },
-      take: rowsPerPage,
-    });
-
-    return {
-      id: listId,
-      quantity,
-    };
+      return {
+        id: listId,
+        quantity,
+      };
+    } catch (e) {
+      this.logger.error(`listId: ${listId} error: ${e}`);
+      return {
+        id: listId,
+        quantity: 0,
+      };
+    }
   }
 
   async getGHGDataPerPage(listId: number, queryParam): Promise<GHGAnalysisData[]> {
@@ -45,29 +53,39 @@ export class GHGService {
 
     const connection = await this.clientStoreConnection.getConnection(clientDatabase);
     const ghgRepository = await connection.getRepository(GHGAnalyses);
+    try {
+      const [data] = await ghgRepository.findAndCount({
+        where: { listId: Number(listId) },
+        skip: pageNumber * rowsPerPage,
+        take: rowsPerPage,
+      });
 
-    const [data] = await ghgRepository.findAndCount({
-      where: { listId: Number(listId) },
-      skip: pageNumber * rowsPerPage,
-      take: rowsPerPage,
-    });
+      const ListRepository = await connection.getRepository(Lists);
+      const { listName, Commodity } = await ListRepository.findOne({ where: { id: listId } });
 
-    const ListRepository = await connection.getRepository(Lists);
-    const { listName, Commodity } = await ListRepository.findOne({ where: { id: listId } });
-
-    return data.map((item) => {
-      const { listId, locationId, totalAreaHA, statusCode, locationError, emissionsFactorByYear } =
-        item;
-      return {
-        listId,
-        listName,
-        locationId,
-        totalAreaHA,
-        statusCode,
-        locationError,
-        commodity: Commodity,
-        emissionsFactorByYear,
-      };
-    });
+      return data.map((item) => {
+        const {
+          listId,
+          locationId,
+          totalAreaHa,
+          statusCode,
+          locationError,
+          emissionsFactorByYear,
+        } = item;
+        return {
+          listId,
+          listName,
+          locationId,
+          totalAreaHa,
+          statusCode,
+          locationError,
+          commodity: Commodity,
+          emissionsFactorByYear,
+        };
+      });
+    } catch (e) {
+      this.logger.error(`listId: ${listId} , pageNumber: ${pageNumber} error: ${e}`);
+      return [];
+    }
   }
 }

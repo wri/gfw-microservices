@@ -14,7 +14,7 @@ import {
   SummaryAndSubmit,
   SubmissionSuccess,
 } from './pages';
-import { UserList } from './types';
+import { GeoFromMap, UserList } from './types';
 
 export const UploadLocationRoutes = {
   LOCATIONS: '/',
@@ -30,7 +30,12 @@ export const UploadLocationRoutes = {
 
 export type RouteType = keyof typeof UploadLocationRoutes;
 
-export function UploadLocationRouter({ userLists }: { userLists: UserList[] }) {
+type UploadLocationRouterProps = {
+  userLists: UserList[];
+  geoFromMap?: GeoFromMap;
+};
+
+export function UploadLocationRouter({ userLists, geoFromMap }: UploadLocationRouterProps) {
   return (
     <ThemeProvider>
       <Box
@@ -47,7 +52,7 @@ export function UploadLocationRouter({ userLists }: { userLists: UserList[] }) {
           <Route path={UploadLocationRoutes.UPLOAD_BY_POINT} component={UploadLocationByPoint} />
           <Route path={UploadLocationRoutes.PREVIEW} component={UploadLocationPreview} />
           <Route path={UploadLocationRoutes.CONFIGURE_LIST}>
-            <ConfigureList userLists={userLists} />
+            <ConfigureList userLists={userLists} geoFromMap={geoFromMap} />
           </Route>
           <Route path={UploadLocationRoutes.SUMMARY_AND_SUBMIT} component={SummaryAndSubmit} />
           <Route path={UploadLocationRoutes.SUBMISSION_SUCCESS} component={SubmissionSuccess} />

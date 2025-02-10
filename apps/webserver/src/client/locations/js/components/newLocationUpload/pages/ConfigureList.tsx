@@ -22,7 +22,7 @@ import { useHistory } from '../hooks';
 import { PillButton } from '../../../../../components';
 import { useUploadLocation } from '../contexts';
 import { NavBar } from '../components';
-import { UserList } from '../types';
+import { GeoFromMap, UserList } from '../types';
 import { filterValidTemplates } from '../utils/filterValidTemplates';
 import { typeOfAnalysisMap, commodities } from '../utils/constants';
 
@@ -50,7 +50,13 @@ const schema = z
 
 type FormFields = z.infer<typeof schema>;
 
-export function ConfigureList({ userLists }: { userLists: UserList[] }) {
+export function ConfigureList({
+  userLists,
+  geoFromMap,
+}: {
+  userLists: UserList[];
+  geoFromMap?: GeoFromMap;
+}) {
   const history = useHistory();
   const {
     handleSubmit,
@@ -72,7 +78,8 @@ export function ConfigureList({ userLists }: { userLists: UserList[] }) {
       customCommodity: '',
     },
   });
-  const { clearUploadType, setUploadLocationConfigureList } = useUploadLocation();
+  const { clearUploadType, setUploadLocationConfigureList, setUploadLocationByPolygon } =
+    useUploadLocation();
   const existingListId = useRef(0);
 
   const [formFields, setFormFields] = useState<{
@@ -132,6 +139,18 @@ export function ConfigureList({ userLists }: { userLists: UserList[] }) {
         ALERTS: data.ALERTS,
       },
     });
+
+    if (geoFromMap?.geometry) {
+      const coordinates = geoFromMap.geometry.rings[0].map((coord) => ({
+        longitude: coord[0],
+        latitude: coord[1],
+      }));
+
+      setUploadLocationByPolygon({
+        locationName: geoFromMap.locationName,
+        coordinates,
+      });
+    }
     history.push('SUMMARY_AND_SUBMIT');
   };
 

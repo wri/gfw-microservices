@@ -11,10 +11,7 @@ describe('GHG - service', () => {
   let module: TestingModule;
 
   beforeAll(async () => {
-    sinon
-      .stub(DataSource.prototype, 'getRepository')
-      .withArgs(GHGAnalyses)
-      .returns();
+    sinon.stub(DataSource.prototype, 'getRepository').withArgs(GHGAnalyses).returns();
 
     module = await Test.createTestingModule({
       imports: [

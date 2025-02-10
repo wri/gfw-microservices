@@ -59,3 +59,4 @@ jobs:
         with:
           name: cypress-videos
           path: dist/cypress/apps/gfwpro-e2e/videos
+          retention-days: 2

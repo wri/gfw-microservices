@@ -255,7 +255,7 @@ export const sendErrorNotificationEmail = (req, type) => {
       level: 'error',
     },
     [config.platformVars.emailType.ANALYSIS_LIMIT_REACHED]: {
-      subject: 'Analysis limit reached',
+      subject: 'GFW Pro Usage Limit Exceeded - Analysis Not Completed',
       emailTemplate: config.platformVars.emailType.ANALYSIS_LIMIT_REACHED,
       level: 'limit',
     },

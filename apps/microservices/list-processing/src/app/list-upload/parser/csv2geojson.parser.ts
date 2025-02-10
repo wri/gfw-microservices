@@ -1,19 +1,99 @@
 import * as Papa from 'papaparse';
+import axios from 'axios';
 import sexagesimal from '@mapbox/sexagesimal';
 import { Logger } from '@nestjs/common';
 import { Geometry, GeoJson, FeatureCollection } from '@wri-monorepos/geo';
 
-const logger = new Logger('CSV2GeoJSONParser');
-
 interface LocationData {
   [key: string]: string | number | undefined | object;
 }
+
+const logger = new Logger('CSV2GeoJSONParser');
+
+const updateOriginalData = (response, originalData) => {
+  // Create a hashmap for originalData
+  const originalDataMap = {};
+  originalData.forEach((data) => {
+    originalDataMap[data['Palm Mill ID']] = data;
+  });
+
+  // Update originalData with latitude and longitude from response
+  response.forEach((item) => {
+    const match = originalDataMap[item.uml_id];
+    if (match) {
+      match.latitude = item.latitude;
+      match.longitude = item.longitude;
+    }
+  });
+};
+
+const getPalmOilMillLatLongChunk = async (millsChunk) => {
+  const millSqlList = millsChunk.map((row) => "'" + row['Palm Mill ID'] + "'").join(', ');
+  const url = `${process.env.GFW_DATASET_API_URL}/gfw_universal_mill_list/latest/query`;
+
+  try {
+    const response = await axios.get(url, {
+      headers: {
+        'x-api-key': process.env.GFW_DATA_API_KEY,
+      },
+      params: {
+        sql: `select uml_id, latitude, longitude from data where uml_id in (${millSqlList})`,
+      },
+    });
+
+    const data = response.data.data;
+    updateOriginalData(data, millsChunk);
+
+    return {
+      data: millsChunk,
+      status: 200,
+    };
+  } catch (error) {
+    const errorStatus = error?.response?.status || 422;
+    return {
+      detail: error?.message,
+      status: errorStatus,
+    };
+  }
+};
+
+const getPalmOilMillLatLong = async (data) => {
+  logger.log(`getPalmOilMillLatLong - total ${data?.length} locations`);
+
+  if (!data?.length) {
+    logger.error(`Error /getPalmOilMillLatLong/ - No mills`);
+    throw new Error('Palm Oil Bad Input');
+  }
+  let fullResult = [];
+  const chunkSize = 100;
+  for (let index = 0; index < data.length; index += chunkSize) {
+    const chunkMax = Math.min(data.length, index + chunkSize);
+    logger.log(`getPalmOilMillLatLong - chunk ${index} to ${chunkMax}`);
+    const millsChunk = data.slice(index, chunkMax);
+    const chunkResp = await getPalmOilMillLatLongChunk(millsChunk);
+    if (chunkResp.status === 200) {
+      fullResult = fullResult.concat(chunkResp.data);
+    } else {
+      logger.error(`getPalmOilMillLatLong - Request Error => ${JSON.stringify(chunkResp)}`);
+    }
+  }
+  logger.log(`getPalmOilMillLatLong - Request Success ${fullResult.length} locations`);
+  return fullResult;
+};
 
 export const csv2geojson = async (
   csvContent: string,
   preview = false,
   includeLatLon = true
 ): Promise<FeatureCollection> => {
+  const isPalmMill = (data) => {
+    const firstRow = data[0];
+    if (Object.keys(firstRow).includes('Palm Mill ID')) {
+      return true;
+    }
+    return false;
+  };
+
   const toCamelCase = (str: string) => {
     return str
       .toLowerCase()
@@ -113,11 +193,17 @@ export const csv2geojson = async (
     };
   };
 
-  const convertToGeoJSON = (results, reject, resolve) => {
-    const { data, errors } = results;
+  const convertToGeoJSON = async (results, reject, resolve) => {
+    let { data } = results;
+    const { errors } = results;
     if (errors.length > 0) {
       logger.error(errors);
       reject(errors);
+    }
+
+    // if has palm oil id need to fill the lat long
+    if (isPalmMill(data)) {
+      data = await getPalmOilMillLatLong(data);
     }
 
     const geoJson: GeoJson = {

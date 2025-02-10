@@ -155,7 +155,10 @@ export function UploadLocationByPolygon() {
     }
 
     setUploadLocationByPolygon({
-      coordinates,
+      coordinates: coordinates.map(({ latitude, longitude }) => ({
+        latitude: parseFloat(latitude),
+        longitude: parseFloat(longitude),
+      })),
       locationName,
     });
     history.push('CONFIGURE_LIST');

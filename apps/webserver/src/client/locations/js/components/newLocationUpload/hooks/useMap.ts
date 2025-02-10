@@ -10,15 +10,14 @@ import {
   extractCoordinates,
   addCoordinateTextFromPolygon,
 } from '../../adding/PolygonCoordinates/polygonCoordinates.utils';
-import { Coordinate } from '../types';
 
-type CoordinateType = Coordinate & { id: string };
+type Coordinate = { longitude: string; latitude: string; id: string };
 
 export const useMap = (shouldLoadMap: boolean, initialAmountOfCoordinates: number) => {
   const [mapView, setMapView] = useState<MapView | null>(null);
   const [sketchViewModel, setSketchViewModel] = useState<SketchViewModel | null>(null);
   const [geometry, setGeometry] = useState<Polygon | Polygon[] | null>(null);
-  const [coordinates, setCoordinates] = useState<CoordinateType[]>(
+  const [coordinates, setCoordinates] = useState<Coordinate[]>(
     Array.from({ length: initialAmountOfCoordinates }, () => generateEmptyCoordinate())
   );
 

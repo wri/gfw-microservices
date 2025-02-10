@@ -23,7 +23,6 @@ export type UploadLocationState = {
 };
 
 type UploadLocationType = {
-  selectUploadType: (uploadType: UploadType) => void;
   clearUploadType: () => void;
   uploadLocationState: UploadLocationState;
   setUploadLocationByPoint: (data: {
@@ -48,12 +47,6 @@ type UploadLocationType = {
 };
 
 type UploadLocationAction =
-  | {
-      type: 'SetUploadType';
-      payload: {
-        uploadType: UploadType | null;
-      };
-    }
   | {
       type: 'ByPoint';
       payload: {
@@ -132,10 +125,6 @@ export function UploadLocationProvider({ children }: UploadLocationProviderProps
     uploadLocationInitialState
   );
 
-  const selectUploadType = (type: UploadType) => {
-    dispatch({ type: 'SetUploadType', payload: { uploadType: type } });
-  };
-
   const clearUploadType = () => {
     dispatch({ type: 'Clear', payload: uploadLocationInitialState });
     history.push('OPTIONS');
@@ -192,7 +181,6 @@ export function UploadLocationProvider({ children }: UploadLocationProviderProps
     <UploadLocationContext.Provider
       value={{
         uploadLocationState,
-        selectUploadType,
         clearUploadType,
         setUploadLocationByPoint,
         setUploadLocationByPolygon,
@@ -215,22 +203,25 @@ function uploadLocationReducer(
   const { type, payload } = action;
 
   switch (type) {
-    case 'SetUploadType':
-      return { ...state, uploadType: payload.uploadType };
-
     case 'ByPoint':
       return {
         ...state,
         coordinates: payload.coordinates,
         area: payload.area,
         locationName: payload.locationName,
+        uploadType: UploadType.ByPoint,
       };
 
     case 'ByPolygon':
-      return { ...state, coordinates: payload.coordinates, locationName: payload.locationName };
+      return {
+        ...state,
+        coordinates: payload.coordinates,
+        locationName: payload.locationName,
+        uploadType: UploadType.ByPolygon,
+      };
 
     case 'AddFile':
-      return { ...state, uploadedFile: payload.uploadedFile };
+      return { ...state, uploadedFile: payload.uploadedFile, uploadType: UploadType.ByFile };
 
     case 'ConfigureList':
       return {

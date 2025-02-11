@@ -7,16 +7,18 @@ export class ConvertGeojsonProperties extends AbstractHandler<ChainType> {
   private readonly logger = new Logger(ConvertGeojsonProperties.name);
 
   convertGeoJsonProperties = (geoJson: FeatureCollection): FeatureCollection => {
+    // Create a mapping of column names to field names
+    const columnMapping: Record<string, string> = Object.fromEntries(
+      Object.entries(ListSchema.columns).map(([key, col]) => [col.name, key])
+    );
+
     const featuresFormatted = geoJson.features.map((feature: Feature) => {
       const converted: Record<string, unknown> = {};
 
       for (const [key, value] of Object.entries(feature.properties)) {
-        const [foundColumn] = Object.entries(ListSchema.columns).filter(
-          ([, col]) => col.name === key
-        );
+        const fieldName = columnMapping[key];
 
-        if (foundColumn) {
-          const [fieldName] = foundColumn;
+        if (fieldName) {
           converted[fieldName] = value; // Map the value to the key
         } else {
           converted[key] = value;

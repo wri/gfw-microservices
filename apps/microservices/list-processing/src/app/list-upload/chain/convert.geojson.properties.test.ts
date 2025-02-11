@@ -54,6 +54,50 @@ describe('ConvertGeojsonProperties', () => {
 
     const result = await handler.handle(request);
 
-    expect(result.geojson).toEqual(expectedGeojson);
+    expect(result.geojson).toStrictEqual(expectedGeojson);
+  });
+
+  it('should retain properties that do not match column mapping', async () => {
+    const geojson: FeatureCollection = {
+      type: 'FeatureCollection',
+      features: [
+        {
+          type: 'Feature',
+          properties: {
+            oldName: 'value1',
+            unrelatedField: 'value3',
+          },
+          geometry: {
+            type: 'Point',
+            coordinates: [102.0, 0.5],
+          },
+        },
+      ],
+    } as FeatureCollection;
+
+    const request: ChainType = {
+      geojson,
+    } as ChainType;
+
+    const result = await handler.handle(request);
+
+    expect(result).toStrictEqual({
+      geojson: {
+        features: [
+          {
+            geometry: {
+              coordinates: [102, 0.5],
+              type: 'Point',
+            },
+            properties: {
+              oldName: 'value1',
+              unrelatedField: 'value3',
+            },
+            type: 'Feature',
+          },
+        ],
+        type: 'FeatureCollection',
+      },
+    });
   });
 });

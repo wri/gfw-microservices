@@ -56,11 +56,12 @@ const UserListCommodityRiskFilter: React.FC<UserListCommodityRiskFilterProps> = 
   clearFilters,
   isListFiltered,
 }) => {
+  const filters = store.getState().filters;
   const initialState: DefaultFilterValues = {
-    ...store.getState().filters,
-    selectedOverallThreats: store.getState().filters.selectedOverallThreats || [],
-    selectedOverallValues: store.getState().filters.selectedOverallValues || [],
-    selectedMillPriority: store.getState().filters.selectedMillPriority || [],
+    ...filters,
+    selectedOverallThreats: filters.selectedOverallThreats || [],
+    selectedOverallValues: filters.selectedOverallValues || [],
+    selectedMillPriority: filters.selectedMillPriority || [],
   };
 
   const [state, setState] = useState<DefaultFilterValues>(initialState);
@@ -191,7 +192,7 @@ const UserListCommodityRiskFilter: React.FC<UserListCommodityRiskFilterProps> = 
     ?.slice(0, 400);
 
   return (
-    <Modal open={isFilterModalVisible} onClose={onCloseHandler} sx={{ zIndex: 1502 }}>
+    <Modal open={isFilterModalVisible} onClose={onCloseHandler}>
       <Box sx={boxStyle}>
         <h3>Filters</h3>
         <Grid container spacing={3}>

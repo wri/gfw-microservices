@@ -5940,7 +5940,7 @@ AS
 
 	SELECT SUM (row_count) AS TotalRows FROM sys.dm_db_partition_stats
 
-	WHERE object_id=OBJECT_ID(@listLocationTableName)
+	WHERE object_id=OBJECT_ID(@listLocationTableName)   
 
 	AND (index_id=0 or index_id=1);
 
@@ -6017,11 +6017,11 @@ SELECT @listLocationTableCols = STUFF(
       FOR XML PATH('')
   ),1,3,'') + ']';
 
-SET @SQL = N';WITH MyListTable AS (SELECT {LIST_ID} As list_id, {LOCATION_COLUMNS}, location_id as list_location_id'
+SET @SQL = N';WITH MyListTable AS (SELECT {LIST_ID} As list_id, {LOCATION_COLUMNS}, location_id as list_location_id'      
 IF @Geometry = 1
 BEGIN
   SET @SQL = @SQL + ', Geometry.ToString() As [WKTGeometry]'
-END
+END     
 
 SET @SQL = @SQL + ' FROM [{LOCATION_TABLE}] L), ';
 DECLARE @listAnalysisTableCols NVARCHAR(MAX)
@@ -6037,13 +6037,13 @@ SELECT @listAnalysisTableCols = STUFF(
   ),1,3,'') + ']';
 
 -- ADD Filters
-IF @Country IS NOT NULL
+IF @Country IS NOT NULL 
   SET @Filters = + @Filters + ' AND Country = @Country'
 
-IF @State IS NOT NULL
+IF @State IS NOT NULL 
   SET @Filters = + @Filters + ' AND State = @State'
 
-IF @SubState IS NOT NULL
+IF @SubState IS NOT NULL 
   SET @Filters = + @Filters + ' AND [Sub State] = @SubState'
 
 IF ISNUMERIC( @AnalysisAreaFilter ) = 1
@@ -6052,45 +6052,17 @@ BEGIN
   PRINT @AnalysisAreaFilter
   print 'test-' + Convert(varchar(50), @AnalysisAreaFilter);
   IF @AnalysisAreaOperator NOT IN('>=', '<=', '<', '>')
-    RAISERROR ('Invalid @AnalysisAreaOperator', -1, 1);
+    RAISERROR ('Invalid @AnalysisAreaOperator', -1, 1); 
   SET @Filters = + @Filters + ' AND [Analysis Area] ' + @AnalysisAreaOperator + ' @AnalysisAreaFilter '
 END
 -- END Filters
 
-IF @selectedOverallThreats IS NOT NULL
-  BEGIN
-      set @Filters = '(SELECT TOP 1 CAST(value AS INT) AS last_property
-                              FROM OPENJSON(commodity_threat_overall_level)
-                              WHERE [key] = (SELECT TOP 1 [key] FROM OPENJSON(commodity_threat_overall_level) ORDER BY [key] DESC)
-                              AND CAST(value AS INT) IN (SELECT CAST(value AS INT) FROM OPENJSON(@selectedOverallThreats))) IS NOT NULL'
-  END
-  IF @selectedOverallValues IS NOT NULL
-  BEGIN
-      IF @Filters <> ''
-          SET @Filters = @Filters + ' AND ';
-
-              set @Filters = @Filters + '(SELECT TOP 1 CAST(value AS INT) AS last_property
-                              FROM OPENJSON(commodity_value_overall_level)
-                              WHERE [key] = (SELECT TOP 1 [key] FROM OPENJSON(commodity_value_overall_level) ORDER BY [key] DESC)
-                              AND CAST(value AS INT) IN (SELECT CAST(value AS INT) FROM OPENJSON(@selectedOverallValues))) IS NOT NULL'
-
-  END
-  IF @selectedMillPriority IS NOT NULL
-  BEGIN
-      IF @Filters <> ''
-          SET @Filters = @Filters + ' AND ';
-      set @Filters = @Filters + '(SELECT TOP 1 CAST(value AS INT) AS last_property
-                          FROM OPENJSON(commodity_mill_priority_level)
-                          WHERE [key] = (SELECT TOP 1 [key] FROM OPENJSON(commodity_mill_priority_level) ORDER BY [key] DESC)
-                          AND CAST(value AS INT) IN (SELECT CAST(value AS INT) FROM OPENJSON(@selectedMillPriority))) IS NOT NULL'
-END
-
 -- Return data from both tables
-SET @SQL = @SQL + ' MyAnalysisTable AS(SELECT {LIST_ID} As analysis_list_id, {TEMPLATE_ID} As template_id, {ANALYSIS_COLUMNS} FROM [{ANALYSIS_TABLE}] A)
-          SELECT * FROM MyListTable INNER JOIN MyAnalysisTable ON MyListTable.list_id = MyAnalysisTable.analysis_list_id AND  MyListTable.list_location_id = MyAnalysisTable.location_id
+SET @SQL = @SQL + ' MyAnalysisTable AS(SELECT {LIST_ID} As analysis_list_id, {TEMPLATE_ID} As template_id, {ANALYSIS_COLUMNS} FROM [{ANALYSIS_TABLE}] A) 
+          SELECT * FROM MyListTable INNER JOIN MyAnalysisTable ON MyListTable.list_id = MyAnalysisTable.analysis_list_id AND  MyListTable.list_location_id = MyAnalysisTable.location_id 
           WHERE 1=1 '+@Filters+'
           ORDER BY '+@OrderByColumn + ' '+@Order+' OFFSET (@PageNumber-1)*@RowsOfPage ROWS FETCH NEXT @RowsOfPage ROWS ONLY';
-PRINT @Filters
+PRINT @Filters  
 -- MyListTable.[Location Name]
 
 SET @SQL = REPLACE(@SQL, '{TEMPLATE_ID}', @template_id);
@@ -6101,7 +6073,7 @@ SET @SQL = REPLACE(@SQL, '{ANALYSIS_COLUMNS}', @listAnalysisTableCols);
 SET @SQL = REPLACE(@SQL, '{ANALYSIS_TABLE}', @listAnalysisTableName);
 
 print @SQL
-EXEC sp_executesql @SQL,
+EXEC sp_executesql @SQL, 
           N'@PageNumber INT, @RowsOfPage INT, @OrderByColumn AS NVARCHAR(MAX), @Order AS NVARCHAR(5), @Country AS NVARCHAR(150), @State AS NVARCHAR(150), @SubState AS NVARCHAR(150), @AnalysisAreaFilter AS float, @AnalysisAreaOperator AS VARCHAR(10)',
           @PageNumber=@PageNumber, @RowsOfPage=@RowsOfPage, @OrderByColumn=@OrderByColumn, @Order=@Order, @Country=@Country, @State=@State, @SubState=@SubState, @AnalysisAreaFilter=@AnalysisAreaFilter, @AnalysisAreaOperator=@AnalysisAreaOperator;
 

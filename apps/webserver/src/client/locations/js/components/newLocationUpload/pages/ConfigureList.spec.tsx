@@ -95,7 +95,7 @@ afterEach(() => {
   cleanup();
 });
 
-describe.skip('ConfigureList', () => {
+describe('ConfigureList', () => {
   it('should render the form fields correctly', () => {
     render(<ConfigureList userLists={mockUserLists} />);
 
@@ -109,20 +109,20 @@ describe.skip('ConfigureList', () => {
     render(<ConfigureList userLists={mockUserLists} />);
 
     expect(
-      screen.queryByRole('button', {
+      screen.queryByRole('option', {
         name: /sugar cane/i,
       })
     ).not.toBeInTheDocument();
-    const commoditySelect = screen.getAllByRole('button')[0];
+    const commoditySelect = screen.getAllByRole('combobox')[0];
 
     await userEvent.click(commoditySelect);
-    await userEvent.click(screen.getByText(/sugar cane/i));
-
-    expect(
-      screen.getByRole('button', {
+    await userEvent.click(
+      screen.getByRole('option', {
         name: /sugar cane/i,
       })
-    ).toBeInTheDocument();
+    );
+
+    expect(screen.getByText(/sugar cane/i)).toBeInTheDocument();
   });
 
   it('should validate list name fields correctly', async () => {
@@ -146,19 +146,19 @@ describe.skip('ConfigureList', () => {
   it('should select an existing list and auto-populate analyses', async () => {
     render(<ConfigureList userLists={mockUserLists} />);
 
-    const commoditySelect = screen.getAllByRole('button')[0];
+    const commoditySelect = screen.getAllByRole('combobox')[0];
 
     await userEvent.click(commoditySelect);
-    await userEvent.click(screen.getByText(/cocoa/i));
+    await userEvent.click(
+      screen.getByRole('option', {
+        name: /cocoa/i,
+      })
+    );
 
-    const existingListSelect = screen.getAllByRole('button')[1];
+    const existingListSelect = screen.getAllByRole('combobox')[1];
 
     await userEvent.click(existingListSelect);
-    await userEvent.click(screen.getByText(/best list of cocoa 1/i));
-
-    screen.getByRole('button', {
-      name: /best list of cocoa 1/i,
-    });
+    await userEvent.click(screen.getByRole('option', { name: /best list of cocoa 1/i }));
 
     expect(
       screen.getByRole('checkbox', {
@@ -180,19 +180,19 @@ describe.skip('ConfigureList', () => {
   it('should select an existing list without analysis and no checkbox selected ', async () => {
     render(<ConfigureList userLists={mockUserLists} />);
 
-    const commoditySelect = screen.getAllByRole('button')[0];
+    const commoditySelect = screen.getAllByRole('combobox')[0];
 
     await userEvent.click(commoditySelect);
-    await userEvent.click(screen.getByText(/cocoa/i));
+    await userEvent.click(
+      screen.getByRole('option', {
+        name: /cocoa/i,
+      })
+    );
 
-    const existingListSelect = screen.getAllByRole('button')[1];
+    const existingListSelect = screen.getAllByRole('combobox')[1];
 
     await userEvent.click(existingListSelect);
-    await userEvent.click(screen.getByText(/best list of cocoa 2/i));
-
-    screen.getByRole('button', {
-      name: /best list of cocoa 2/i,
-    });
+    await userEvent.click(screen.getByRole('option', { name: /best list of cocoa 2/i }));
 
     expect(
       screen.getByRole('checkbox', {
@@ -214,10 +214,10 @@ describe.skip('ConfigureList', () => {
   it('should toggle dependent checkboxes fcd and palm risk', async () => {
     render(<ConfigureList userLists={mockUserLists} />);
 
-    const commoditySelect = screen.getAllByRole('button')[0];
+    const commoditySelect = screen.getAllByRole('combobox')[0];
 
     await userEvent.click(commoditySelect);
-    await userEvent.click(screen.getByText(/palm oil/i));
+    await userEvent.click(screen.getByRole('option', { name: /palm oil/i }));
 
     const fcdCheckbox = screen.getByRole('checkbox', {
       name: /post-2000 forest change annual tree cover loss since 2001 \+ additional contextual and regional datasets/i,
@@ -260,10 +260,10 @@ describe.skip('ConfigureList', () => {
   it('should submit the form with valid data', async () => {
     render(<ConfigureList userLists={mockUserLists} />);
 
-    const commoditySelect = screen.getAllByRole('button')[0];
+    const commoditySelect = screen.getAllByRole('combobox')[0];
 
     await userEvent.click(commoditySelect);
-    await userEvent.click(screen.getByText(/cattle/i));
+    await userEvent.click(screen.getByRole('option', { name: /cattle/i }));
 
     const newListInput = screen.getByPlaceholderText('Name your new list');
     await userEvent.type(newListInput, 'My new List 3');

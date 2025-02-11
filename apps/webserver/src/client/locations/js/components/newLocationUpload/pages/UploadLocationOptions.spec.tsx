@@ -11,9 +11,7 @@ jest.mock('../hooks', () => ({
 }));
 
 jest.mock('../contexts');
-const mockSelectUploadType = jest.fn();
 jest.mocked(useUploadLocation).mockReturnValue({
-  selectUploadType: mockSelectUploadType,
   uploadLocationState: {
     newListName: 'Random list name 123',
     existingList: null,
@@ -25,7 +23,7 @@ jest.mocked(useUploadLocation).mockReturnValue({
       palmRiskAssessment: true,
     },
     area: { measurementUnit: 'hectares', size: 0 },
-    coordinates: [{ latitude: '1.1', longitude: '1.1' }],
+    coordinates: [{ latitude: 1.1, longitude: 1.1 }],
     locationName: 'location name',
     uploadedFile: { fileS3Route: '', keyFile: '', url: '' },
     uploadType: UploadType.ByPoint,
@@ -74,12 +72,8 @@ describe('UploadLocationOptions', () => {
         name: new RegExp(buttonName, 'i'),
       });
 
-      expect(mockSelectUploadType).not.toHaveBeenCalled();
       expect(mockHistoryPush).not.toHaveBeenCalled();
-
       await userEvent.click(button);
-
-      expect(mockSelectUploadType).toHaveBeenCalledWith(expectedUploadType);
       expect(mockHistoryPush).toHaveBeenCalledWith(expectedRoute);
     }
   );

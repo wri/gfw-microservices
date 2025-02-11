@@ -7,7 +7,6 @@ import Graphic from '@arcgis/core/Graphic';
 import Polygon from '@arcgis/core/geometry/Polygon';
 import GraphicsLayer from '@arcgis/core/layers/GraphicsLayer';
 import SpatialReference from '@arcgis/core/geometry/SpatialReference';
-import EsriError from '@arcgis/core/core/Error.js';
 import TreeCoverLossLayer from '../../../map/js/layers/TreeCoverLossLayer';
 import store from '../../../locations/js/store';
 import { updateInfoBubbleCache } from '../../../locations/js/actions/locationActions';

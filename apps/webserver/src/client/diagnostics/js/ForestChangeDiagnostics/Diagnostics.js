@@ -209,7 +209,6 @@ export default class Diagnostics extends Component {
       () => {
         this.addTreeCoverLoss();
         this.addMapGraphics();
-        throw new Error(new EsriError('could not read property of truth'));
         this.view.focus();
       }
     );

@@ -9,12 +9,12 @@ interface CommodityRiskFiltersProps {
   handleCheckboxChange: (key: keyof DefaultFilterValues, value: string) => void;
 }
 
-const CommodityRiskFilters: React.FC<CommodityRiskFiltersProps> = ({
+function CommodityRiskFilters({
   selectedOverallThreats,
   selectedOverallValues,
   selectedMillPriority,
   handleCheckboxChange,
-}) => {
+}: CommodityRiskFiltersProps) {
   const changeOverallThreats = (evt: React.ChangeEvent<HTMLInputElement>) => {
     handleCheckboxChange('selectedOverallThreats', evt.target.value);
   };
@@ -152,6 +152,6 @@ const CommodityRiskFilters: React.FC<CommodityRiskFiltersProps> = ({
       </Grid>
     </>
   );
-};
+}
 
 export default CommodityRiskFilters;

@@ -45,5 +45,3 @@ export * from './getSharedListByUser';
 export * from './getPaginatedAfiAnalysisByListIdSortedByFilters';
 export * from './getPaginatedLocationsByListIdSortedByFilters';
 export * from './createList';
-export * from './getCountGHGAnalysisByListId';
-export * from './getPaginatedGHGAnalysisByListId';

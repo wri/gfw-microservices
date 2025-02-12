@@ -133,7 +133,7 @@ const GFWListCommodityRiskFilter: React.FC<GFWListCommodityRiskFilterProps> = ({
     store.dispatch(setFilterCount(newFilterCount));
   };
   const onCloseHandler = () => {
-    setState(memoizedInitialState);
+    setState(initialState);
     store.dispatch(toggleCanopyModal());
   };
 

@@ -11,7 +11,7 @@ export type UploadLocationState = {
   area: Area;
   uploadedFile: PresignedUrl | null;
   commodity: string;
-  existingList: { id: number; name: string } | null;
+  existingList: { id: number; name: string; analysisIds: string[] } | null;
   newListName: string | null;
   typeOfAnalysis: {
     FCD: boolean;
@@ -33,7 +33,7 @@ type UploadLocationType = {
   setUploadLocationByPolygon: (data: { locationName: string; coordinates: Coordinate[] }) => void;
   setUploadLocationConfigureList: (data: {
     commodity: string;
-    existingList: { id: number; name: string } | null;
+    existingList: { id: number; name: string; analysisIds: string[] } | null;
     newListName: string | null;
     typeOfAnalysis: {
       palmRiskAssessment: boolean;
@@ -66,7 +66,7 @@ type UploadLocationAction =
       type: 'ConfigureList';
       payload: {
         commodity: string;
-        existingList: { id: number; name: string } | null;
+        existingList: { id: number; name: string; analysisIds: string[] } | null;
         newListName: string | null;
         typeOfAnalysis: {
           palmRiskAssessment: boolean;
@@ -165,7 +165,7 @@ export function UploadLocationProvider({ children }: UploadLocationProviderProps
 
   const setUploadLocationConfigureList = (data: {
     commodity: string;
-    existingList: { id: number; name: string } | null;
+    existingList: { id: number; name: string; analysisIds: string[] } | null;
     newListName: string | null;
     typeOfAnalysis: {
       palmRiskAssessment: boolean;

@@ -80,7 +80,7 @@ export function ConfigureList({
   });
   const { clearUploadType, setUploadLocationConfigureList, setUploadLocationByPolygon } =
     useUploadLocation();
-  const existingListId = useRef(0);
+  const existingList = useRef({ id: 0, analysisIds: Array<string>() });
 
   const [formFields, setFormFields] = useState<{
     newListName: string;
@@ -101,12 +101,16 @@ export function ConfigureList({
     field.onChange(value);
 
     const template = userLists.find((list) => list.list_name === value);
-    existingListId.current = template?.id || 0;
-
-    typeOfAnalysisMap.forEach((typeOfAnalysis) => {
-      const found = template?.listAnalysesStatus.find((x) => x.analysisId === typeOfAnalysis.id);
-      setValue(typeOfAnalysis.id as keyof FormFields, !!found);
-    });
+    if (template?.id) {
+      existingList.current = {
+        id: template.id,
+        analysisIds: template?.listAnalysesStatus.map((x) => x.analysisId) || [],
+      };
+      typeOfAnalysisMap.forEach((typeOfAnalysis) => {
+        const found = template.listAnalysesStatus.find((x) => x.analysisId === typeOfAnalysis.id);
+        setValue(typeOfAnalysis.id as keyof FormFields, !!found);
+      });
+    }
   };
 
   const handleAnalysisChange = (
@@ -130,7 +134,7 @@ export function ConfigureList({
       commodity: data.commodity,
       newListName: data.newListName ?? '',
       existingList: data.existingListName
-        ? { name: data.existingListName ?? '', id: existingListId.current }
+        ? { name: data.existingListName ?? '', ...existingList.current }
         : null,
       typeOfAnalysis: {
         palmRiskAssessment: data.palmRiskAssessment,

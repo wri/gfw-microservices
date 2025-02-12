@@ -1,4 +1,6 @@
-const axios = require('axios');
+import axios from 'axios';
+
+import { areArraysEqual } from '../../utils/arrayUtils';
 
 const renameProp = (oldProp, newProp, { [oldProp]: old, ...others }) => ({
   [newProp]: old,
@@ -62,9 +64,11 @@ const createLargeListStep = async (param) => {
 };
 
 const changeAnalysesTypes = async (param) => {
-  const { list_id: listId, analysisIds } = param;
+  const { list_id: listId, analysisIds, existingListAnalysisIds } = param;
   try {
-    await axios.post(`/api/list/${listId}/selectedAnalyses`, { analysisIds });
+    if (!areArraysEqual(analysisIds, existingListAnalysisIds)) {
+      await axios.post(`/api/list/${listId}/selectedAnalyses`, { analysisIds });
+    }
 
     return param;
   } catch (error) {
@@ -147,15 +151,23 @@ export function uploadProcessByPrevUploadedFile({
   listName,
   analysisIds,
   keyFile,
-  list_id,
+  existingList,
   fileS3Route,
   saveAsDraft,
 }) {
-  const processPipeline = list_id
+  const processPipeline = existingList.id
     ? promiseCompose(processListStep, changeAnalysesTypes)
     : promiseCompose(processListStep, saveListToProcessStep, createLargeListStep);
 
-  return processPipeline({ listName, analysisIds, keyFile, list_id, fileS3Route, saveAsDraft });
+  return processPipeline({
+    listName,
+    analysisIds,
+    keyFile,
+    list_id: existingList.id,
+    existingListAnalysisIds: existingList.analysisIds,
+    fileS3Route,
+    saveAsDraft,
+  });
 }
 
 export default uploadProcess;

@@ -86,7 +86,7 @@ function cleanUpStoredProcedures() {
   console.log('Not Implemented SQL files:', notImplementedFiles.length);
   console.log(notImplementedFiles);
 
-  // Option to delete implemented files (uncomment to use)
+  // Option to delete SP .sql files after already implemented ts files (uncomment to use)
   /*
 		implementedFiles.forEach((file) => {
 				fs.unlinkSync(file);

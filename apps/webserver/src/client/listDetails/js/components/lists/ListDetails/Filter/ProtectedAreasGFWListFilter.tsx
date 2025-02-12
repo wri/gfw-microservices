@@ -157,21 +157,6 @@ const GFWProtectedForestChangeFilter: React.FC<GFWProtectedForestChangeFilterPro
     .sort()
     ?.slice(0, 400);
 
-  const protectedAreasOptions = Array.from(
-    new Set(
-      protectedAreas
-        .filter(
-          (location) =>
-            location.Country === state.selectedCountry &&
-            location.State === state.selectedState &&
-            location?.['Location Name']?.trim().length
-        )
-        .map((list) => list['Location Name'])
-    )
-  )
-    .sort()
-    .map((v) => ({ label: v, value: v }));
-
   const isCountrySetInFilter = !!store.getState().filters?.selectedCountry;
   const isCountrySetInState = !!state?.selectedCountry;
   return (

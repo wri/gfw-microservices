@@ -39,7 +39,7 @@ export const analysisTypesOptions = [
     id: analysisTypes.GREENHOUSE_GAS_EMISSIONS,
     label: 'Greenhouse Gas Emissions',
     shortLabel: 'GHG',
-  }
+  },
 ];
 
 export const analysisTypesOptionsNewNames = [

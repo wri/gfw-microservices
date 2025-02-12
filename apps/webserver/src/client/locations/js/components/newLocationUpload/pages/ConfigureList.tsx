@@ -80,7 +80,7 @@ export function ConfigureList({
   });
   const { clearUploadType, setUploadLocationConfigureList, setUploadLocationByPolygon } =
     useUploadLocation();
-  const existingList = useRef({ id: 0, analysisIds: Array<string>() });
+  const existingList = useRef<{ id: number; analysisIds: string[] }>({ id: 0, analysisIds: [] });
 
   const [formFields, setFormFields] = useState<{
     newListName: string;

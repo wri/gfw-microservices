@@ -7,8 +7,6 @@ import {
   InputLabel,
   Modal,
   Grid,
-  Autocomplete,
-  TextField,
   SelectChangeEvent,
 } from '@mui/material';
 import {
@@ -43,7 +41,6 @@ const GFWProtectedForestChangeFilter: React.FC<GFWProtectedForestChangeFilterPro
       selectedSubState: '',
       selectedDesignationType: '',
       selectedDesignation: '',
-      selectedNames: [],
     });
   };
 
@@ -54,7 +51,6 @@ const GFWProtectedForestChangeFilter: React.FC<GFWProtectedForestChangeFilterPro
       selectedSubState: '',
       selectedDesignationType: '',
       selectedDesignation: '',
-      selectedNames: [],
     });
   };
 
@@ -64,7 +60,6 @@ const GFWProtectedForestChangeFilter: React.FC<GFWProtectedForestChangeFilterPro
       selectedSubState: evt.target.value,
       selectedDesignationType: '',
       selectedDesignation: '',
-      selectedNames: [],
     });
   };
 
@@ -82,13 +77,6 @@ const GFWProtectedForestChangeFilter: React.FC<GFWProtectedForestChangeFilterPro
     });
   };
 
-  const onProtectedAreasChange = (event: any, newValue: any[]) => {
-    setState((prevState) => ({
-      ...prevState,
-      selectedNames: newValue.map((s) => s.value),
-    }));
-  };
-
   const updateValues = () => {
     let filterCount = 0;
     Object.keys(state).forEach((key) => {
@@ -103,7 +91,6 @@ const GFWProtectedForestChangeFilter: React.FC<GFWProtectedForestChangeFilterPro
       selectedSubState: state.selectedSubState,
       selectedDesignationType: state.selectedDesignationType,
       selectedDesignation: state.selectedDesignation,
-      selectedNames: state.selectedNames.map((v) => v.label),
     };
     store.dispatch(toggleCanopyModal());
     store.dispatch(updateFilters(filters));
@@ -238,20 +225,7 @@ const GFWProtectedForestChangeFilter: React.FC<GFWProtectedForestChangeFilterPro
               </Select>
             </FormControl>
           </Grid>
-          <Grid item xs={12}>
-            <FormControl sx={selectStyle} disabled={!protectedAreasOptions.length}>
-              <Autocomplete
-                multiple
-                options={protectedAreasOptions || []}
-                getOptionLabel={(option) => option.label}
-                value={state.selectedNames?.map((v) => ({ value: v, label: v })) || []}
-                filterSelectedOptions
-                disabled={!protectedAreasOptions.length}
-                onChange={onProtectedAreasChange}
-                renderInput={(params) => <TextField {...params} label="Protected Areas" />}
-              />
-            </FormControl>
-          </Grid>
+
           <Grid item xs={12} sx={{ justifyContent: 'flex-end', display: 'flex' }}>
             {isCountrySetInFilter && (
               <Button variant="secondary" onClick={onCloseHandler} label="Cancel" />

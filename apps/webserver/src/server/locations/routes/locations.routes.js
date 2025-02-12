@@ -791,12 +791,29 @@ module.exports = (app, limiter) => {
     const locationAttributeArray = [];
     const locationAnalysisArray = [];
     if (pageNum || pageSize) {
+      const selectedOverallThreats = mapCommodityRiskValuesToDatabaseValues(
+        filters.selectedOverallThreats
+      );
+      const selectedOverallValues = mapCommodityRiskValuesToDatabaseValues(
+        filters.selectedOverallValues
+      );
+      const selectedMillPriority = mapCommodityRiskValuesToDatabaseValues(
+        filters.selectedMillPriority
+      );
+
+      const filtersWithDatabaseValues = {
+        ...filters,
+        selectedOverallThreats,
+        selectedOverallValues,
+        selectedMillPriority,
+      };
+
       GFWListManager.getPaginatedTable(
         req,
         pageNum,
         pageSize,
         list_id,
-        filters,
+        filtersWithDatabaseValues,
         filterString,
         tableSortedBy,
         tableSortedDesc
@@ -992,7 +1009,6 @@ module.exports = (app, limiter) => {
       selectedDesignation,
       selectedDesignationType,
       selectedIUCN,
-      selectedNames,
     } = req.body.filters;
 
     const {
@@ -1010,7 +1026,6 @@ module.exports = (app, limiter) => {
       selectedDesignation,
       selectedDesignationType,
       selectedIUCN,
-      selectedNames,
     };
 
     if (pageNum || pageSize) {

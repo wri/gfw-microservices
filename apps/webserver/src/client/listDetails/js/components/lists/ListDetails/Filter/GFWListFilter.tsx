@@ -8,8 +8,6 @@ import {
   Modal,
   Grid,
   SelectChangeEvent,
-  Autocomplete,
-  TextField,
 } from '@mui/material';
 import {
   toggleCanopyModal,
@@ -28,7 +26,6 @@ import '../../../../../../common/css/filter-dialogs.scss';
 interface GFWListFilterProps {
   list_name: string;
   filterValues: any;
-  locationNameOptionsForFilter: any[];
   parentCompanyOptionsForFilter: any[];
   isFilterModalVisible: boolean;
   clearFilters: () => void;
@@ -38,7 +35,6 @@ interface GFWListFilterProps {
 const GFWListFilter: React.FC<GFWListFilterProps> = ({
   list_name,
   filterValues,
-  locationNameOptionsForFilter,
   parentCompanyOptionsForFilter,
   isFilterModalVisible,
   clearFilters,
@@ -59,7 +55,6 @@ const GFWListFilter: React.FC<GFWListFilterProps> = ({
       selectedState: '',
       selectedSubState: '',
       selectedParentCompany: '',
-      selectedNames: [],
     }));
   };
 
@@ -69,7 +64,6 @@ const GFWListFilter: React.FC<GFWListFilterProps> = ({
       selectedState: evt.target.value,
       selectedSubState: '',
       selectedParentCompany: '',
-      selectedNames: [],
     }));
   };
 
@@ -78,7 +72,6 @@ const GFWListFilter: React.FC<GFWListFilterProps> = ({
       ...prevState,
       selectedSubState: evt.target.value,
       selectedParentCompany: '',
-      selectedNames: [],
     }));
   };
 
@@ -96,13 +89,6 @@ const GFWListFilter: React.FC<GFWListFilterProps> = ({
     }));
   };
 
-  const onSelectedLocationsChange = (event: any, newValue: any) => {
-    setState((prevState) => ({
-      ...prevState,
-      selectedNames: newValue,
-    }));
-  };
-
   const updateValues = () => {
     let newFilterCount = 0;
     Object.keys(state).forEach((key) => {
@@ -110,7 +96,6 @@ const GFWListFilter: React.FC<GFWListFilterProps> = ({
         (key === 'selectedCountry' && state[key as keyof DefaultFilterValues] !== '') ||
         (key === 'selectedState' && state[key as keyof DefaultFilterValues] !== '') ||
         (key === 'selectedSubState' && state[key as keyof DefaultFilterValues] !== '') ||
-        (key === 'selectedNames' && Object.values(state[key]).length > 0) ||
         (key === 'showRSPOCertified' && state[key as keyof DefaultFilterValues]) ||
         (key === 'selectedParentCompany' && state[key as keyof DefaultFilterValues] !== '')
       ) {
@@ -118,12 +103,8 @@ const GFWListFilter: React.FC<GFWListFilterProps> = ({
       }
     });
 
-    const filterData = {
-      ...state,
-      selectedNames: state.selectedNames.map((n) => n.label),
-    };
     store.dispatch(toggleCanopyModal());
-    store.dispatch(updateFilters(filterData));
+    store.dispatch(updateFilters(state));
     store.dispatch(setFilterCount(newFilterCount));
   };
 
@@ -138,7 +119,6 @@ const GFWListFilter: React.FC<GFWListFilterProps> = ({
     selectedSubState,
     selectedParentCompany,
     showRSPOCertified,
-    selectedNames,
   } = state;
 
   const { countryList, stateList, subStateList } = filterCountryStateAndSubStateOptions(
@@ -146,17 +126,6 @@ const GFWListFilter: React.FC<GFWListFilterProps> = ({
     selectedCountry,
     selectedState
   );
-
-  const filteredLocationNameOptions = locationNameOptionsForFilter
-    ?.filter(
-      (location) =>
-        (selectedCountry === '' || selectedCountry === location.country) &&
-        (selectedState === '' || selectedState === location.state) &&
-        (selectedSubState === '' || selectedSubState === location.subState) &&
-        (selectedParentCompany === '' || selectedParentCompany === location.parentCompany) &&
-        (!showRSPOCertified || location.certification === 'RSPO')
-    )
-    ?.slice(0, 400);
 
   const filteredParentCompanyOptions =
     list_name === 'Palm Oil Mills'
@@ -170,23 +139,6 @@ const GFWListFilter: React.FC<GFWListFilterProps> = ({
           )
           ?.slice(0, 400)
       : [];
-
-  useEffect(() => {
-    // When the filter modal opens, load the previously saved filter state from the store.
-    // This allows us to show the last used filter values if the user opens the modal again without saving changes.
-    // Since `selectedNames` is stored as an array of strings in the store, we need to map each string to its corresponding
-    // option object in `filteredLocationNameOptions`. This ensures `selectedNames` is properly formatted for the multi-select component.
-    if (isFilterModalVisible) {
-      const selectedNamesWithObjects = initialState.selectedNames?.map((name: any) =>
-        locationNameOptionsForFilter.find((option) => option.label === name)
-      );
-
-      setState({
-        ...initialState,
-        selectedNames: selectedNamesWithObjects,
-      });
-    }
-  }, [isFilterModalVisible, locationNameOptionsForFilter, initialState]);
 
   return (
     <Modal open={isFilterModalVisible} onClose={onCloseHandler}>
@@ -236,21 +188,6 @@ const GFWListFilter: React.FC<GFWListFilterProps> = ({
               </FormControl>
             </Grid>
           )}
-
-          <Grid item xs={12}>
-            <FormControl sx={selectStyle} disabled={!filteredLocationNameOptions.length}>
-              <Autocomplete
-                multiple
-                options={filteredLocationNameOptions || []}
-                getOptionLabel={(option) => option.label}
-                value={selectedNames?.length ? selectedNames : []}
-                filterSelectedOptions
-                onChange={onSelectedLocationsChange}
-                renderInput={(params) => <TextField {...params} label="LOCATIONS" />}
-                disabled={!filteredLocationNameOptions.length}
-              />
-            </FormControl>
-          </Grid>
 
           <Grid item xs={12} sx={{ display: 'flex', justifyContent: 'flex-end' }}>
             <PillButton variant="contained" color="info" sx={{ ml: 1 }} onClick={onCloseHandler}>

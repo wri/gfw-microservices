@@ -85,7 +85,7 @@ export class GfwLists {
     }
     try {
       const connection = await this.getConnection(organizationDatabase);
-      const listRepository = connection.getRepository(this.getAttributesListEntity(list_id));
+      const listRepository = await connection.getRepository(this.getAttributesListEntity(list_id));
 
       const take = pageSize === 0 ? this.DEFAULT_PAGE_SIZE : pageSize;
       const skip = pageNum > 0 ? pageNum * take : this.DEFAULT_PAGE_NUM;

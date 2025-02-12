@@ -905,57 +905,6 @@ AS
        EXEC sp_executesql @SQL
 
        SET @TEMPLATE = '
-       USE [{DATABASENAME}]
-       EXEC(''
-           CREATE PROCEDURE uspAddNewLocationToAnalysisTable
-               @list_id INT,
-               @start_location_id INT
-           AS
-               DECLARE @analyisTableName NVARCHAR(150)
-               DECLARE @listTableName NVARCHAR(150)
-
-               SET @analyisTableName = (
-                   SELECT list_analysis_table_name
-                   FROM Lists
-                   WHERE id = @list_id
-               )
-               SET @listTableName = (
-                   SELECT list_table_name
-                   FROM Lists
-                   WHERE id = @list_id
-               )
-
-               -- Insert New Rows into Analysis Table.
-               DECLARE @TEMPLATE NVARCHAR(1000)
-               DECLARE @SQL NVARCHAR(1000)
-               SET @TEMPLATE = ''''
-                   INSERT INTO [{ANALYSIS_TABLE}](location_id, location_status_id)
-                       SELECT location_id, 1
-                       FROM [{LIST_TABLE}]
-                       WHERE location_id > {START_LOCATION_ID}
-               ''''
-               SET @SQL = REPLACE(@TEMPLATE, ''''{ANALYSIS_TABLE}'''', @analyisTableName)
-               SET @SQL = REPLACE(@SQL, ''''{LIST_TABLE}'''', @listTableName)
-               SET @SQL = REPLACE(@SQL, ''''{START_LOCATION_ID}'''', @start_location_id)
-               EXEC sp_executesql @SQL
-
-               DECLARE @TEMPLATE2 NVARCHAR(1000)
-               DECLARE @SQL2 NVARCHAR(1000)
-
-               SET @TEMPLATE2 = ''''
-                   SELECT location_id, Geometry.ToString() as WKTGeometry
-                   FROM [{LIST_TABLE}]
-                   WHERE location_id > {START_LOCATION_ID}
-               ''''
-
-               SET @SQL2 = REPLACE(@TEMPLATE2, ''''{LIST_TABLE}'''', @listTableName)
-               SET @SQL2 = REPLACE(@SQL2, ''''{START_LOCATION_ID}'''', @start_location_id)
-               EXEC sp_executesql @SQL2
-       '')'
-       SET @SQL = REPLACE(@TEMPLATE, '{DATABASENAME}', @OrgdbName)
-       EXEC sp_executesql @SQL
-
-       SET @TEMPLATE = '
            USE [{DATABASENAME}]
            EXEC(''
                CREATE PROCEDURE [dbo].[uspCopyGFWLocationAnalysis]
@@ -1213,51 +1162,6 @@ AS
        EXEC sp_executesql @SQL
 
        SET @TEMPLATE = 'USE [{DATABASENAME}]
-                       EXEC(''CREATE PROCEDURE dbo.uspActivateShareInternalList
-                           @admin_id INT,
-                           @user_id INT,
-                           @list_id INT,
-                           @datetime DATETIME
-                       AS
-                           UPDATE InternalShareRoutes
-                           SET datetime = @datetime
-                           WHERE
-                               admin_id = @admin_id AND
-                               user_id = @user_id AND
-                               list_id = @list_id'')'
-       SET @SQL = REPLACE(@TEMPLATE, '{DATABASENAME}', @OrgdbName)
-       EXEC sp_executesql @SQL
-
-       SET @TEMPLATE = 'USE [{DATABASENAME}]
-                       EXEC(''CREATE PROCEDURE dbo.uspDeactivateShareInternalList
-                           @user_id INT,
-                           @list_id INT
-                       AS
-                           DELETE FROM InternalShareRoutes
-                           WHERE
-                               user_id = @user_id AND
-                               list_id = @list_id
-
-                           DELETE FROM [dbo].[FolderItems] WHERE folder_id IN (SELECT id FROM [Folders] WHERE USER_ID = @user_id) AND list_id = @list_id'')'
-       SET @SQL = REPLACE(@TEMPLATE, '{DATABASENAME}', @OrgdbName)
-       EXEC sp_executesql @SQL
-
-       SET @TEMPLATE = 'USE [{DATABASENAME}]
-                       EXEC(''CREATE PROCEDURE dbo.uspDeactivateAllShareInternalList
-                           @user_id NVARCHAR(MAX),
-                           @list_id INT
-                       AS
-                           DELETE FROM InternalShareRoutes
-                           WHERE
-                               list_id = @list_id AND
-                               user_id IN (SELECT value FROM STRING_SPLIT(@user_id, '''',''''))
-
-                           DELETE FROM [dbo].[FolderItems]
-                           WHERE folder_id IN (SELECT id FROM [Folders] WHERE USER_ID IN (SELECT value FROM STRING_SPLIT(@user_id, '''',''''))) AND list_id = @list_id'')'
-       SET @SQL = REPLACE(@TEMPLATE, '{DATABASENAME}', @OrgdbName)
-       EXEC sp_executesql @SQL
-
-       SET @TEMPLATE = 'USE [{DATABASENAME}]
                        EXEC(''CREATE PROCEDURE dbo.uspGetUserInternalShareLists
                            @user_id INT
                        AS
@@ -1275,13 +1179,6 @@ AS
                            SELECT * FROM InternalShareRoutes
                            WHERE
                                user_id = @user_id'')'
-       SET @SQL = REPLACE(@TEMPLATE, '{DATABASENAME}', @OrgdbName)
-       EXEC sp_executesql @SQL
-
-       SET @TEMPLATE = 'USE [{DATABASENAME}]
-                       EXEC(''CREATE PROCEDURE dbo.uspAdminInternalLists
-                       AS
-                           SELECT * FROM InternalShareRoutes'')'
        SET @SQL = REPLACE(@TEMPLATE, '{DATABASENAME}', @OrgdbName)
        EXEC sp_executesql @SQL
 
@@ -1360,75 +1257,6 @@ AS
                        AS
                            INSERT INTO ActivityLog([user_id], activity_type_id, activity_description, activity_time)
                            VALUES(@userID, @activityTypeID, @activityDescription, @activityTime)'')'
-       SET @SQL = REPLACE(@TEMPLATE, '{DATABASENAME}', @OrgdbName)
-       EXEC sp_executesql @SQL
-
-       SET @TEMPLATE = 'USE [{DATABASENAME}]
-               EXEC(''CREATE PROCEDURE uspCreateNewUser
-                   @firstName NVARCHAR(35),
-                   @mi NVARCHAR(2),
-                   @lastName NVARCHAR(35),
-                   @email NVARCHAR(50),
-                   @phone NVARCHAR(50),
-                   @titleId INT,
-                   @other_title NVARCHAR(150),
-                   @accessLevelId INT,
-                   @statusId INT,
-                   @email_subscription BIT,
-                   @commodity_ids VARCHAR(200),
-                   @geography_ids VARCHAR(200),
-                   @viirs_email_frequency INT = 0,
-                   @glad_email_frequency INT = 0,
-                   @forma_email_frequency INT = 0,
-                   @terrai_email_frequency INT = 0,
-                   @gran_chaco_email_frequency INT = 0
-               AS
-                   -- Insert User into Users Tables.
-                   INSERT INTO Users(first_name, middle_initial, last_name,
-                       email, phone, title_id, other_title, access_level_id, status_id, is_system_user, email_subscription,
-                       viirs_email_frequency, glad_email_frequency, forma_email_frequency, terrai_email_frequency, gran_chaco_email_frequency)
-                   VALUES(@firstName, @mi, @lastName,
-                       @email, @phone, @titleId, @other_title, @accessLevelId, @statusId, 0, @email_subscription,
-                       @viirs_email_frequency, @glad_email_frequency, @forma_email_frequency, @terrai_email_frequency, @gran_chaco_email_frequency)
-
-                   --Get Current User ID.
-                   DECLARE @userID INT
-                   SET @userID = SCOPE_IDENTITY()
-
-                   -- Add Commodity Data.
-                   DECLARE @pos INT
-                   DECLARE @len INT
-                   DECLARE @strCurId varchar(20)
-                   DECLARE @nCurId INT
-
-                   SET @pos = 1
-                   WHILE CHARINDEX('''','''', @commodity_ids, @pos) > 0
-                   BEGIN
-                       SET @len = CHARINDEX('''','''', @commodity_ids, @pos)
-                       SET @strCurId = SUBSTRING(@commodity_ids, @pos, @len - @pos)
-                       SET @nCurId = CAST(@strCurId AS INT)
-                       INSERT INTO [dbo].[UserCommodities] VALUES(@userID, @nCurId)
-                       set @pos = @len + 1
-                   END
-                   SET @strCurId = SUBSTRING(@commodity_ids, @pos, LEN(@commodity_ids) - @pos + 1)
-                   SET @nCurId = CAST(@strCurId AS INT)
-                   INSERT INTO [dbo].[UserCommodities] VALUES(@userID, @nCurId)
-
-                   -- Add Geography Data.
-                   SET @pos = 1
-                   WHILE CHARINDEX('''','''', @geography_ids, @pos) > 0
-                   BEGIN
-                       SET @len = CHARINDEX('''','''', @geography_ids, @pos)
-                       SET @strCurId = SUBSTRING(@geography_ids, @pos, @len - @pos)
-                       SET @nCurId = CAST(@strCurId AS INT)
-                       INSERT INTO [dbo].[UserGeographies] VALUES(@userID, @nCurId)
-                       set @pos = @len + 1
-                   END
-                   SET @strCurId = SUBSTRING(@geography_ids, @pos, LEN(@geography_ids) - @pos + 1)
-                   SET @nCurId = CAST(@strCurId AS INT)
-                   INSERT INTO [dbo].[UserGeographies] VALUES(@userID, @nCurId)
-
-                   SELECT @userID AS NewUserID'')'
        SET @SQL = REPLACE(@TEMPLATE, '{DATABASENAME}', @OrgdbName)
        EXEC sp_executesql @SQL
 
@@ -1669,19 +1497,6 @@ AS
        SET @TEMPLATE = '
            USE [{DATABASENAME}]
            EXEC(''
-               CREATE PROCEDURE dbo.uspAddListToAnalyses
-                   @list_id INT
-               AS
-                   -- Insert list_id into Analyses Table
-                   INSERT INTO Analyses (list_id) VALUES (@list_id)
-           '')
-       '
-       SET @SQL = REPLACE(@TEMPLATE, '{DATABASENAME}', @OrgdbName)
-       EXEC sp_executesql @SQL
-
-       SET @TEMPLATE = '
-           USE [{DATABASENAME}]
-           EXEC(''
                CREATE PROCEDURE dbo.uspRerunList
                    @list_id INT,
                    @list_analysis_table_name NVARCHAR(150),
@@ -1705,25 +1520,6 @@ AS
                    EXEC uspInsertNewLocationToAnalysisTable @list_id
            '')
        '
-       SET @SQL = REPLACE(@TEMPLATE, '{DATABASENAME}', @OrgdbName)
-       EXEC sp_executesql @SQL
-
-       SET @TEMPLATE = '
-         USE [{DATABASENAME}]
-           EXEC(''
-           CREATE PROCEDURE uspCreateListTable
-                 @table_name NVARCHAR(150),
-                 @query_string NVARCHAR(MAX)
-               AS
-                   DECLARE @TEMPLATE NVARCHAR(MAX)
-                   DECLARE @SQL NVARCHAR(MAX)
-
-                   SET @TEMPLATE = ''''CREATE TABLE [{TABLE_NAME}] ({QUERY_STRING}, INDEX [IX_{TABLE_NAME}] NONCLUSTERED(location_id))''''
-
-                   SET @SQL = REPLACE(@TEMPLATE, ''''{TABLE_NAME}'''', @table_name)
-                   SET @SQL = REPLACE(@SQL, ''''{QUERY_STRING}'''', @query_string)
-                   EXEC sp_executesql @SQL
-         '')'
        SET @SQL = REPLACE(@TEMPLATE, '{DATABASENAME}', @OrgdbName)
        EXEC sp_executesql @SQL
 
@@ -1956,18 +1752,6 @@ AS
        SET @SQL = REPLACE(@TEMPLATE, '{DATABASENAME}', @OrgdbName)
        EXEC sp_executesql @SQL
 
-
-       SET @TEMPLATE = 'USE [{DATABASENAME}]
-                       EXEC(''CREATE PROCEDURE dbo.uspAddPolicy
-                           @document_name NVARCHAR(250)
-                       AS
-                           IF NOT EXISTS ( SELECT * FROM Policies
-                                                           WHERE document_name = @document_name)
-                           INSERT INTO Policies
-                           VALUES (@document_name)'')'
-       SET @SQL = REPLACE(@TEMPLATE, '{DATABASENAME}', @OrgdbName)
-       EXEC sp_executesql @SQL
-
        SET @TEMPLATE = 'USE [{DATABASENAME}]
            EXEC(''CREATE PROCEDURE dbo.uspGetAccountClassifications
            AS SELECT * FROM AccountClassifications'')
@@ -1997,16 +1781,6 @@ AS
                                        SELECT document_name
                                        FROM Policies
                                    END'')'
-       SET @SQL = REPLACE(@TEMPLATE, '{DATABASENAME}', @OrgdbName)
-       EXEC sp_executesql @SQL
-
-       SET @TEMPLATE = 'USE [{DATABASENAME}]
-                       EXEC(''CREATE PROCEDURE dbo.uspDeletePolicy(
-                           @document_name NVARCHAR(250)
-                       )
-                       AS
-                           DELETE FROM Policies
-                           WHERE document_name=@document_name'')'
        SET @SQL = REPLACE(@TEMPLATE, '{DATABASENAME}', @OrgdbName)
        EXEC sp_executesql @SQL
 
@@ -2398,49 +2172,6 @@ AS
                            SET @SQL = REPLACE(@SQL, ''''{LOCATION_ID}'''', @location_id)
                            SET @SQL = REPLACE(@SQL, ''''{LIST_ID}'''', @list_id)
                            EXEC sp_executesql @SQL
-           '')
-       '
-       SET @SQL = REPLACE(@TEMPLATE, '{DATABASENAME}', @OrgdbName)
-       EXEC sp_executesql @SQL
-
-       SET @TEMPLATE = '
-           USE [{DATABASENAME}]
-           EXEC(''
-               CREATE PROCEDURE dbo.uspCopyLocationAnalysis
-                   @dest_list_id INT,
-                   @dest_location_id INT,
-                   @src_list_id INT,
-                   @src_location_id INT,
-                   @statement NVARCHAR(MAX)
-               AS
-                   DECLARE @SRC_TABLE NVARCHAR(150)
-                   DECLARE @DEST_TABLE NVARCHAR(150)
-                   DECLARE @SQL NVARCHAR(MAX)
-
-                   SET @SRC_TABLE = (SELECT list_analysis_table_name FROM Lists WHERE id = @src_list_id)
-                   SET @DEST_TABLE = (SELECT list_analysis_table_name FROM Lists WHERE id = @dest_list_id)
-
-                   SET @SQL = ''''
-                       UPDATE [{DEST_TABLE}]
-                       SET {STATEMENT}
-                       FROM [{SRC_TABLE}]
-                       WHERE [{SRC_TABLE}].location_id = {SRC_LOCATION_ID} AND [{DEST_TABLE}].location_id = {DEST_LOCATION_ID}
-                   ''''
-
-                   SET @SQL = REPLACE(@SQL, ''''{DEST_TABLE}'''', @DEST_TABLE)
-                   SET @SQL = REPLACE(@SQL, ''''{SRC_TABLE}'''', @SRC_TABLE)
-                   SET @SQL = REPLACE(@SQL, ''''{STATEMENT}'''', @statement)
-                   SET @SQL = REPLACE(@SQL, ''''{SRC_LOCATION_ID}'''', @src_location_id)
-                   SET @SQL = REPLACE(@SQL, ''''{DEST_LOCATION_ID}'''', @dest_location_id)
-                   EXEC sp_executesql @SQL
-
-                   SET @SQL = ''''
-                       UPDATE [{DEST_TABLE}]
-                       SET location_status_id = 3
-                       WHERE location_status_id = 1
-                   ''''
-                   SET @SQL = REPLACE(@SQL, ''''{DEST_TABLE}'''', @DEST_TABLE)
-                   EXEC sp_executesql @SQL
            '')
        '
        SET @SQL = REPLACE(@TEMPLATE, '{DATABASENAME}', @OrgdbName)

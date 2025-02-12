@@ -168,7 +168,7 @@ export class GfwLists {
         queryBuilder.orderBy('listTable.location_id', sortOrder);
       } else {
         queryBuilder.orderBy(
-          tableSortedBy.length ? `"${tableSortedBy}"` : 'listTable.location_id',
+          tableSortedBy.length ? `"${tableSortedBy}"` : 'location_id',
           sortOrder
         );
       }

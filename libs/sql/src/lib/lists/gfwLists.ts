@@ -92,12 +92,7 @@ export class GfwLists {
 
       let queryBuilder;
 
-      if (
-        list_id === 3 &&
-        (filters.selectedOverallThreats?.length ||
-          filters.selectedOverallValues?.length ||
-          filters.selectedMillPriority?.length)
-      ) {
+      if (list_id === 3) {
         // if these filter values are not set we don't need to make this table join
         // after we fix the sorting issue https://gfw.atlassian.net/browse/GPV-3774 we can remove the checks on the filtering and just leave the list_id check
 

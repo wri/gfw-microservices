@@ -158,12 +158,7 @@ export class GfwLists {
       }
       queryBuilder.skip(skip).take(take);
       const sortOrder: 'DESC' | 'ASC' = tableSortedDesc ? 'DESC' : 'ASC';
-      if (
-        list_id === 3 &&
-        (filters.selectedOverallThreats?.length ||
-          filters.selectedOverallValues?.length ||
-          filters.selectedMillPriority?.length)
-      ) {
+      if (list_id === 3) {
         // temporary harcoded value as the sorting for commodity risk is fixed https://gfw.atlassian.net/browse/GPV-3774
         queryBuilder.orderBy('listTable.location_id', sortOrder);
       } else {

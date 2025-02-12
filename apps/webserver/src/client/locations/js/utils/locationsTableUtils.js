@@ -7,6 +7,8 @@ import {
   DISPLAY_FORMAT_PERCENTAGE,
 } from '../../../listDetails/js/components/lists/ListDetails/deforestationDisplayFormat.constants';
 
+const transifex = Transifex.live.translateText;
+
 export const getColorByLevelClasse = {
   0: 'yellow',
   1: 'orange',
@@ -197,7 +199,8 @@ export const renderFormattedDeforestationValueWithIndicator = (valueInHectares) 
       deforestationDisplayValue = formatDigit(valueInHectares);
       break;
     case DISPLAY_FORMAT_SUMMARY:
-      deforestationDisplayValue = valueInHectares === 0 ? <>No</> : <>Yes</>;
+      deforestationDisplayValue =
+        valueInHectares === 0 ? <>{transifex('No')}</> : <>{transifex('Yes')}</>;
       break;
     default:
       deforestationDisplayValue = formatDigit(valueInHectares);

@@ -15,6 +15,8 @@ import redirectToMap from '../../../../../common/js/utils/redirect';
 import { listStatus } from '../../../../../../config/env/listStatuses.constants';
 import store from '../../../../../locations/js/store';
 
+const transifex = Transifex.live.translateText;
+
 const greenButtonStyle = {
   color: '#97bd3d',
   padding: '0px 20px',
@@ -89,7 +91,7 @@ const CustomRow = ({
                 onClick={() => viewDiagnostic(locationId)}
                 startIcon={<QueryStatsIcon />}
               >
-                Location diagnostic
+                {transifex('Location diagnostic')}
               </Button>
             )}
 
@@ -99,7 +101,7 @@ const CustomRow = ({
               sx={greenButtonStyle}
               data-cy="locations-map"
             >
-              Map
+              {transifex('Map')}
             </Button>
 
             <Button

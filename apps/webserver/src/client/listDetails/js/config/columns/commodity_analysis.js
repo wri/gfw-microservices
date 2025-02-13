@@ -69,7 +69,7 @@ const commodity_analysis = [
         },
         className: 'default-cell',
         show: true,
-        width: 110,
+        width: 125,
 
         Cell: (row) =>
           !locationIsActive(row.value) ? (
@@ -114,7 +114,7 @@ const commodity_analysis = [
         },
         className: 'default-cell',
         show: true,
-        width: 100,
+        width: 140,
         Cell: (row) =>
           !locationIsActive(row.value)
             ? '--'
@@ -223,7 +223,7 @@ const commodity_analysis = [
         },
         className: 'default-cell',
         show: true,
-        width: 95,
+        width: 145,
         Cell: (row) =>
           !locationIsActive(row.value) ? (
             '--'
@@ -350,7 +350,7 @@ const commodity_analysis = [
         },
         className: 'default-cell',
         show: true,
-        width: 90,
+        width: 140,
         Cell: (row) =>
           !locationIsActive(row.value) ? (
             '--'

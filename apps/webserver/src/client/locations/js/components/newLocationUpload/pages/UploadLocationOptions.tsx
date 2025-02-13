@@ -10,14 +10,11 @@ import {
   ArrowForwardIos,
 } from '@mui/icons-material';
 
-import { useUploadLocation } from '../contexts';
 import { useHistory } from '../hooks';
 import { ExternalHelperResource } from '../components';
-import { UploadType } from '../types';
 
 export function UploadLocationOptions() {
   const history = useHistory();
-  const { selectUploadType } = useUploadLocation();
 
   return (
     <div className="upload-location-options">
@@ -45,7 +42,6 @@ export function UploadLocationOptions() {
           <Button
             className="upload-location-options__button"
             onClick={() => {
-              selectUploadType(UploadType.ByFile);
               history.push('UPLOAD_BY_FILE');
             }}
             startIcon={<UploadFileTwoTone color="primary" fontSize="large" />}
@@ -62,7 +58,6 @@ export function UploadLocationOptions() {
               <Button
                 className="upload-location-options__button"
                 onClick={() => {
-                  selectUploadType(UploadType.ByPoint);
                   history.push('UPLOAD_BY_POINT');
                 }}
                 startIcon={<ScatterPlotTwoTone color="primary" fontSize="large" />}
@@ -73,7 +68,6 @@ export function UploadLocationOptions() {
               <Button
                 className="upload-location-options__button"
                 onClick={() => {
-                  selectUploadType(UploadType.ByPolygon);
                   history.push('UPLOAD_BY_POLYGON');
                 }}
                 startIcon={<Timeline color="primary" fontSize="large" />}

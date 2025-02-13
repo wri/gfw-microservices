@@ -71,36 +71,6 @@ module.exports = (app, limiter) => {
     controller.getUserLists(req, res);
   });
 
-  // If a user reloads the page when deep in the locations views,
-  // return to the locations landing page.
-  app.get('/locations/add', (req, res) => {
-    res.redirect('/locations');
-  });
-
-  app.get('/locations/diagnostics', (req, res) => {
-    res.redirect('/locations');
-  });
-
-  app.get('/locations/edit', (req, res) => {
-    res.redirect('/locations');
-  });
-
-  app.get('/locations/folders', (req, res) => {
-    res.redirect('/locations');
-  });
-
-  app.get('/locations/gfw', (req, res) => {
-    res.redirect('/locations');
-  });
-
-  app.get('/locations/lists', (req, res) => {
-    res.redirect('/locations');
-  });
-
-  app.get('/locations/upload/step/:step', (req, res) => {
-    res.redirect('/locations');
-  });
-
   app.post('/locations/addToNewList', (req, res) => {
     console.log('POST /locations/addToNewList');
     const {
@@ -821,12 +791,29 @@ module.exports = (app, limiter) => {
     const locationAttributeArray = [];
     const locationAnalysisArray = [];
     if (pageNum || pageSize) {
+      const selectedOverallThreats = mapCommodityRiskValuesToDatabaseValues(
+        filters.selectedOverallThreats
+      );
+      const selectedOverallValues = mapCommodityRiskValuesToDatabaseValues(
+        filters.selectedOverallValues
+      );
+      const selectedMillPriority = mapCommodityRiskValuesToDatabaseValues(
+        filters.selectedMillPriority
+      );
+
+      const filtersWithDatabaseValues = {
+        ...filters,
+        selectedOverallThreats,
+        selectedOverallValues,
+        selectedMillPriority,
+      };
+
       GFWListManager.getPaginatedTable(
         req,
         pageNum,
         pageSize,
         list_id,
-        filters,
+        filtersWithDatabaseValues,
         filterString,
         tableSortedBy,
         tableSortedDesc
@@ -1022,7 +1009,6 @@ module.exports = (app, limiter) => {
       selectedDesignation,
       selectedDesignationType,
       selectedIUCN,
-      selectedNames,
     } = req.body.filters;
 
     const {
@@ -1040,7 +1026,6 @@ module.exports = (app, limiter) => {
       selectedDesignation,
       selectedDesignationType,
       selectedIUCN,
-      selectedNames,
     };
 
     if (pageNum || pageSize) {
@@ -1525,5 +1510,9 @@ module.exports = (app, limiter) => {
         logger.error('Error: getListAnalysisStatusByListId', err);
         res.status(500).send(err);
       });
+  });
+
+  app.get('/locations/*', (_, res) => {
+    res.redirect('/locations');
   });
 };

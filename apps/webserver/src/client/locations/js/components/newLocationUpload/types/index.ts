@@ -1,6 +1,3 @@
-import { z } from 'zod';
-import { coordinateSchema } from '../utils/schema';
-
 export enum UploadType {
   ByFile,
   ByPoint,
@@ -22,7 +19,7 @@ export type UserList = {
   }[];
 };
 
-export type Coordinate = z.infer<typeof coordinateSchema>;
+export type Coordinate = { longitude: number; latitude: number };
 
 export type Area = {
   size: number;
@@ -32,6 +29,11 @@ export type Area = {
 export type LocationListType = {
   type: string;
   properties: FeatureProperties;
+};
+
+export type GeoFromMap = {
+  locationName: string;
+  geometry: { rings: number[][][] };
 };
 
 export type FeatureProperties = {

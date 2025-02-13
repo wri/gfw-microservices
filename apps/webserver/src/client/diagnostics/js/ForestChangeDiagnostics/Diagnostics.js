@@ -7,7 +7,6 @@ import Graphic from '@arcgis/core/Graphic';
 import Polygon from '@arcgis/core/geometry/Polygon';
 import GraphicsLayer from '@arcgis/core/layers/GraphicsLayer';
 import SpatialReference from '@arcgis/core/geometry/SpatialReference';
-
 import TreeCoverLossLayer from '../../../map/js/layers/TreeCoverLossLayer';
 import store from '../../../locations/js/store';
 import { updateInfoBubbleCache } from '../../../locations/js/actions/locationActions';
@@ -41,7 +40,6 @@ import { handleUserListLocationsVectorTileLayer } from '../../../common/js/userL
 import { generateCentroidGraphic } from '../../../common/js/utils/esri.utils';
 import getAvailableDiagnostics from './getAvailableDiagnostics';
 import { handleGfwProListVectorTileLayer } from '../../../common/js/utils/gfw.utils';
-import sendSlackNotification from '../../../common/js/utils/sendSlackNotification';
 import { getSingleLocationData } from './diagnostic.utils';
 
 // Configs
@@ -144,16 +142,12 @@ export default class Diagnostics extends Component {
       },
     });
 
-    const { listId, isSharedList, isGfwList } = this.props;
-
     this.mapView.on('click', this.viewMap);
     this.mapView.when(this.mapLoaded, (error) => {
       console.error('Error loading map:', error);
-      sendSlackNotification('Error loading map in diagnostics view', {
-        error,
-        listId,
-        isSharedList,
-        isGfwList,
+      // https://developers.arcgis.com/javascript/latest/api-reference/esri-core-Error.html#properties-summary
+      throw new Error(`${error.name}: ${error.message}`, {
+        cause: error.details,
       });
     });
   }

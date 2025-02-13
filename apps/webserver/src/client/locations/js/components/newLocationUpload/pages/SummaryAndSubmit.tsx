@@ -255,7 +255,7 @@ export function SummaryAndSubmit() {
         <DialogContent sx={{ textAlign: 'justify' }}>
           <Typography variant="body2">
             You have added locations to <b>{listName}</b>.{' '}
-            {isDraftUpload
+            {isDraftUpload.current
               ? 'Click OK to save this updated list as draft. Your list will stay in draft state until you choose to run analysis on it'
               : 'Please confirm that you wish to submit this list to analysis'}
             . Note that running analysis counts towards your account usage limits. See more

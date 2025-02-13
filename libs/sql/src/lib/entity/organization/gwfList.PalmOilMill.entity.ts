@@ -1,4 +1,5 @@
-import { Entity, PrimaryGeneratedColumn, Column } from 'typeorm';
+import { Entity, PrimaryGeneratedColumn, Column, OneToOne, JoinColumn } from 'typeorm';
+import { AnalysisPalmOilMills } from './analysisPalmOilMills.entity';
 
 @Entity({ name: 'list-palmOilMills' })
 export class ListsPalmOilMills {
@@ -70,4 +71,8 @@ export class ListsPalmOilMills {
 
   @Column({ name: 'globalid' })
   globalid: string;
+
+  @OneToOne(() => AnalysisPalmOilMills, { eager: true })
+  @JoinColumn({ name: 'location_id' })
+  analysis: AnalysisPalmOilMills;
 }

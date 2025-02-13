@@ -140,10 +140,9 @@ export class ClientStoreConnection {
       Logger.log(`Data Source ${database} has been initialized`);
       return mapToInsert.get(connectionName).connection;
     } catch (error) {
-      console.log(error.stack);
       Logger.error(
         `Data Source ${database} initialization error on env: ${process.env.NODE_ENV}`,
-        error
+        error.stack
       );
       throw new Error(`Data Source initialization error ${error.message}`);
     } finally {

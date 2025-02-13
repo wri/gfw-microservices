@@ -1,6 +1,7 @@
-import { Entity, PrimaryGeneratedColumn, Column } from 'typeorm';
+import { Entity, PrimaryGeneratedColumn, Column, Unique } from 'typeorm';
 
 @Entity({ name: 'GFWLists' })
+@Unique(['list_name'])
 export class ListGFWLists {
   @PrimaryGeneratedColumn()
   id: number;

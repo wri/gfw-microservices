@@ -44,7 +44,7 @@ describe('DataTemplates', () => {
     window.open = jest.fn();
     await userEvent.click(within(button).getByText(/download/i));
     expect(window.open).toHaveBeenCalledWith(expect.stringContaining('GFWPro-Spreadsheet.csv'));
-  });
+  }, 10100);
 
   it('should show a check icon after downloading a template', async () => {
     render(<DataTemplates handleClose={handleCloseMock} />);

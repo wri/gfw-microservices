@@ -1,4 +1,4 @@
-import { createDatasourceConfig } from './typeORM.utils';
+import { createDatasourceConfig, ClientStoreConnection } from './typeORM.utils';
 
 describe('createDatasourceConfig', () => {
   const TEST_ENVIRONMENT = 'test'; // Assuming this constant is defined somewhere
@@ -40,5 +40,29 @@ describe('createDatasourceConfig', () => {
     process.env.MSSQL_DATABASE = 'MSSQL_DB';
     const config = createDatasourceConfig('someName', 'MSSQL_DB', ['Entity1', 'Entity2']);
     expect(config.database).toBe('MSSQL_DB');
+  });
+
+  it('should use static connections when entities are not provided', async () => {
+    process.env.NODE_ENV = TEST_ENVIRONMENT;
+
+    const clientStoreConnection = new ClientStoreConnection();
+    const connection = await clientStoreConnection.getConnection('someDB');
+
+    expect(connection).toBeDefined();
+    expect(clientStoreConnection.getConnections().size).toBe(1); // Check static map
+    expect(clientStoreConnection.getDynamicConnections().size).toBe(0); // Check dynamic map
+  });
+
+  it('should use dynamic connections when entities are provided', async () => {
+    process.env.NODE_ENV = TEST_ENVIRONMENT;
+    const clientStoreConnection = new ClientStoreConnection();
+    const entities = [
+      /* Your dynamic entities here */
+    ];
+    const connection = await clientStoreConnection.getConnection('someDB', entities);
+
+    expect(connection).toBeDefined();
+    expect(clientStoreConnection.getConnections().size).toBe(0); // Check static map
+    expect(clientStoreConnection.getDynamicConnections().size).toBe(1); // Check dynamic map
   });
 });

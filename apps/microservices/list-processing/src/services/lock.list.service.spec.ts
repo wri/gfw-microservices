@@ -37,7 +37,7 @@ describe('Lock List Service', () => {
 
     const clientStoreConnection = new ClientStoreConnection();
     const database = process.env.MSSQL_DATABASE;
-    const connection = await clientStoreConnection.getConnection(database, [Lists]);
+    const connection = await clientStoreConnection.getConnection(database);
     lockListService = new LockListService(clientStoreConnection);
     listsRepository = connection.getRepository(Lists);
   });

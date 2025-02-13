@@ -68,10 +68,6 @@ describe('Feature Flag Service', () => {
     featureFlagRepository.clear();
   });
 
-  afterAll(() => {
-    clientStoreConnection.clearCache(':memory:');
-  });
-
   it('Should return error when try to insert flagId and orgId that is not acceptable', async () => {
     const { insertOrSaveFeatureFlag } = await featureFlagsService();
 

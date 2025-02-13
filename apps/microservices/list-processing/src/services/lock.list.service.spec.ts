@@ -42,10 +42,6 @@ describe('Lock List Service', () => {
     listsRepository = connection.getRepository(Lists);
   });
 
-  afterEach(() => {
-    listsRepository.clear();
-  });
-
   it('Locking an existing List', async () => {
     await listsRepository.insert({
       ...LIST_DATE,
@@ -128,7 +124,7 @@ describe('Lock List Service', () => {
       lockUserId: 10,
     });
 
-    const accomplishTask = await lockListService.lockList(':memory:', 5408, 10);
+    const accomplishTask = await lockListService.unlockList(':memory:', 5408, 10);
 
     const list = await listsRepository.findOne({ where: { id: 5408 } });
 

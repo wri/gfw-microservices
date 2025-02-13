@@ -1,3 +1,4 @@
+import { Lists } from '../entity';
 import { createDatasourceConfig, ClientStoreConnection } from './typeORM.utils';
 
 describe('createDatasourceConfig', () => {
@@ -56,9 +57,7 @@ describe('createDatasourceConfig', () => {
   it('should use dynamic connections when entities are provided', async () => {
     process.env.NODE_ENV = TEST_ENVIRONMENT;
     const clientStoreConnection = new ClientStoreConnection();
-    const entities = [
-      /* Your dynamic entities here */
-    ];
+    const entities = [Lists];
     const connection = await clientStoreConnection.getConnection('someDB', entities);
 
     expect(connection).toBeDefined();

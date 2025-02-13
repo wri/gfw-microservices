@@ -67,6 +67,7 @@ export const createDatasourceConfig = (
     username: process.env.MSSQL_USERNAME,
     password: process.env.MSSQL_PASSWORD,
     host: process.env.MSSQL_HOSTNAME,
+    dropSchema: env === TEST_ENVIRONMENT,
     port: parseInt(process.env.MSSQL_PORT, 10),
     extra: {
       trustServerCertificate: true,
@@ -139,6 +140,7 @@ export class ClientStoreConnection {
       Logger.log(`Data Source ${database} has been initialized`);
       return mapToInsert.get(connectionName).connection;
     } catch (error) {
+      console.log(error.stack);
       Logger.error(
         `Data Source ${database} initialization error on env: ${process.env.NODE_ENV}`,
         error

@@ -1,8 +1,9 @@
-import { Entity, PrimaryGeneratedColumn, Column } from 'typeorm';
+import { Entity, PrimaryGeneratedColumn, Column, Unique } from 'typeorm';
 
 @Entity({ name: 'GHGAnalyses' })
+@Unique(['listId', 'locationId'])
 export class GHGAnalyses {
-  @PrimaryGeneratedColumn({ name: 'list_id' })
+  @Column({ name: 'list_id' })
   listId: number;
 
   @PrimaryGeneratedColumn({ name: 'location_id' })

@@ -5,6 +5,7 @@ import {
   Logger,
   NotFoundException,
 } from '@nestjs/common';
+import { EntityTarget, FindOptionsWhere, Raw } from 'typeorm';
 import {
   ListsPalmOilMills,
   ListGFWLists,
@@ -18,7 +19,6 @@ import {
   ListProtectedAreas,
   ListAdministrativeAreas,
 } from '../entity';
-import { EntityTarget, FindOptionsWhere, Raw } from 'typeorm';
 
 export class GfwLists {
   private readonly logger = new Logger('List processing service');
@@ -85,42 +85,83 @@ export class GfwLists {
     }
     try {
       const connection = await this.getConnection(organizationDatabase);
-      const listRepository = connection.getRepository(this.getAttributesListEntity(list_id));
+      const listRepository = await connection.getRepository(this.getAttributesListEntity(list_id));
+
       const take = pageSize === 0 ? this.DEFAULT_PAGE_SIZE : pageSize;
       const skip = pageNum > 0 ? pageNum * take : this.DEFAULT_PAGE_NUM;
 
-      const queryBuilder = listRepository.createQueryBuilder();
+      let queryBuilder;
+
+      if (list_id === 3) {
+        // if these filter values are not set we don't need to make this table join
+        // after we fix the sorting issue https://gfw.atlassian.net/browse/GPV-3774 we can remove the checks on the filtering and just leave the list_id check
+
+        // we join the analysis table if the list is Palm Oil Mills so we can filter by commodity risk values
+        queryBuilder = listRepository
+          .createQueryBuilder('listTable')
+          .leftJoin('listTable.analysis', 'analysis');
+      } else {
+        queryBuilder = listRepository.createQueryBuilder('listTable');
+      }
 
       if (filters.selectedCountry && filters.selectedCountry !== '') {
-        queryBuilder.andWhere('Country = :country', { country: filters.selectedCountry });
+        queryBuilder.andWhere('listTable.Country = :country', { country: filters.selectedCountry });
       }
 
       if (filters.selectedState && filters.selectedState !== '') {
-        queryBuilder.andWhere('State = :state', { state: filters.selectedState });
+        queryBuilder.andWhere('listTable.State = :state', { state: filters.selectedState });
       }
 
       if (filters.selectedSubState && filters.selectedSubState !== '') {
-        queryBuilder.andWhere('"Sub State" = :subState', { subState: filters.selectedSubState });
+        queryBuilder.andWhere('listTable."Sub State" = :subState', {
+          subState: filters.selectedSubState,
+        });
       }
 
-      if (filters.selectedNames && filters.selectedNames.length > 0) {
-        queryBuilder.andWhere('"Location Name" IN (:...selectedNames)', {
-          selectedNames: filters.selectedNames,
-        });
+      if (filters.selectedOverallThreats && filters.selectedOverallThreats.length) {
+        queryBuilder.andWhere(
+          `(SELECT TOP 1 CAST(value AS INT) FROM OPENJSON(analysis.commodity_threat_overall_level)
+           WHERE [key] = (SELECT TOP 1 [key] FROM OPENJSON(analysis.commodity_threat_overall_level) ORDER BY [key] DESC)
+           AND CAST(value AS INT) IN (:...selectedOverallThreats)) IS NOT NULL`,
+          { selectedOverallThreats: filters.selectedOverallThreats }
+        );
+      }
+
+      if (filters.selectedOverallValues && filters.selectedOverallValues.length) {
+        queryBuilder.andWhere(
+          `(SELECT TOP 1 CAST(value AS INT) FROM OPENJSON(analysis.commodity_value_overall_level)
+           WHERE [key] = (SELECT TOP 1 [key] FROM OPENJSON(analysis.commodity_value_overall_level) ORDER BY [key] DESC)
+           AND CAST(value AS INT) IN (:...selectedOverallValues)) IS NOT NULL`,
+          { selectedOverallValues: filters.selectedOverallValues }
+        );
+      }
+
+      if (filters.selectedMillPriority && filters.selectedMillPriority.length) {
+        queryBuilder.andWhere(
+          `(SELECT TOP 1 CAST(value AS INT) FROM OPENJSON(analysis.commodity_mill_priority_level)
+           WHERE [key] = (SELECT TOP 1 [key] FROM OPENJSON(analysis.commodity_mill_priority_level) ORDER BY [key] DESC)
+           AND CAST(value AS INT) IN (:...selectedMillPriority)) IS NOT NULL`,
+          { selectedMillPriority: filters.selectedMillPriority }
+        );
       }
 
       if (filterString && filterString.trim() !== '') {
         queryBuilder.andWhere(
-          `(Country LIKE :filterString OR State LIKE :filterString OR "Location Name" LIKE :filterString)`,
+          `(listTable.Country LIKE :filterString OR listTable.State LIKE :filterString OR listTable."Location Name" LIKE :filterString)`,
           { filterString: `%${filterString}%` }
         );
       }
+      queryBuilder.skip(skip).take(take);
       const sortOrder: 'DESC' | 'ASC' = tableSortedDesc ? 'DESC' : 'ASC';
-
-      queryBuilder
-        .skip(skip)
-        .take(take)
-        .orderBy(tableSortedBy.length ? `"${tableSortedBy}"` : 'location_id', sortOrder);
+      if (list_id === 3) {
+        // temporary harcoded value as the sorting for commodity risk is fixed https://gfw.atlassian.net/browse/GPV-3774
+        queryBuilder.orderBy('listTable.location_id', sortOrder);
+      } else {
+        queryBuilder.orderBy(
+          tableSortedBy.length ? `listTable."${tableSortedBy}"` : 'location_id',
+          sortOrder
+        );
+      }
 
       const [items, count] = await queryBuilder.getManyAndCount();
 
@@ -132,6 +173,7 @@ export class GfwLists {
       const itemsWithListId = items.map((item) => {
         return { ...item, list_id };
       });
+
       return [itemsWithListId, count];
     } catch (error) {
       throw new InternalServerErrorException('Error getting paginated list data', error.message);
@@ -272,11 +314,6 @@ export class GfwLists {
         queryBuilder.andWhere('"IUCN CAT" = :iucnCat', { iucnCat: filters.selectedIUCN });
       }
 
-      if (filters.selectedNames?.length > 0) {
-        queryBuilder.andWhere('"Location Name" IN (:...selectedNames)', {
-          selectedNames: filters.selectedNames,
-        });
-      }
       if (filterString && filterString.trim() !== '') {
         queryBuilder.andWhere(
           `(Country LIKE :filterString OR State LIKE :filterString OR "Location Name" LIKE :filterString)`,

@@ -184,8 +184,8 @@ describe('ListAnalysisController', () => {
     const expectedResult = [
       {
         code: 'invalid_enum_value',
-        message: `Invalid enum value. Expected 'Alerts' | 'FCD' | 'DefReport', received '${analysisId}'`,
-        options: ['Alerts', 'FCD', 'DefReport'],
+        message: `Invalid enum value. Expected 'Alerts' | 'FCD' | 'DefReport' | 'GHG', received '${analysisId}'`,
+        options: ['Alerts', 'FCD', 'DefReport', 'GHG'],
         path: [],
         received: 'unknown_type',
       },

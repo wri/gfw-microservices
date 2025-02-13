@@ -15,6 +15,7 @@ export const analysisTypes = {
   FOREST_CHANGE_DIAGNOSTICS: 'FCD',
   DEFORESTATION_KPIS: 'AFI',
   ALERTS: 'ALERTS',
+  GREENHOUSE_GAS_EMISSIONS: 'GHG',
 };
 
 // update these constant names when isListDetailsPageRedesignAvailable feature flag is removed
@@ -33,6 +34,11 @@ export const analysisTypesOptions = [
     id: analysisTypes.ALERTS,
     label: 'NEAR-REAL TIME ALERTS (INTEGRATED ALERTS, VIIRS)',
     shortLabel: 'Alerts',
+  },
+  {
+    id: analysisTypes.GREENHOUSE_GAS_EMISSIONS,
+    label: 'Greenhouse Gas Emissions',
+    shortLabel: 'GHG',
   },
 ];
 

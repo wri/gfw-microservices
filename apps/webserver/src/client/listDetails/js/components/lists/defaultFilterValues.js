@@ -7,7 +7,6 @@ export const defaultFilterValues = {
   selectedAreaMax: null,
   selectedDesignationType: '',
   selectedDesignation: '',
-  selectedNames: [],
   filterNames: '',
   selectedSupplier: '',
   selectedSecondSupplier: '',

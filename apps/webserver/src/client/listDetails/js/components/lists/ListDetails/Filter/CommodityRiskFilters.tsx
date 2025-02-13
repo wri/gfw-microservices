@@ -31,6 +31,46 @@ function CommodityRiskFilters({
       <Grid item xs={12}>
         <FormGroup row>
           <Grid item xs={6} sx={{ display: 'flex', alignItems: 'center' }}>
+            <span className="label">Mill Priority</span>
+          </Grid>
+
+          <Grid item xs={6} sx={{ display: 'flex', justifyContent: 'flex-end' }}>
+            <FormControlLabel
+              control={
+                <Checkbox
+                  checked={selectedMillPriority.includes('high')}
+                  onChange={changeMillPriority}
+                  value="high"
+                />
+              }
+              label="High"
+            />
+            <FormControlLabel
+              control={
+                <Checkbox
+                  checked={selectedMillPriority.includes('medium')}
+                  onChange={changeMillPriority}
+                  value="medium"
+                />
+              }
+              label="Medium"
+            />
+            <FormControlLabel
+              control={
+                <Checkbox
+                  checked={selectedMillPriority.includes('low')}
+                  onChange={changeMillPriority}
+                  value="low"
+                />
+              }
+              label="Low"
+            />
+          </Grid>
+        </FormGroup>
+      </Grid>
+      <Grid item xs={12}>
+        <FormGroup row>
+          <Grid item xs={6} sx={{ display: 'flex', alignItems: 'center' }}>
             <span className="label">Overall Threats</span>
           </Grid>
 
@@ -101,47 +141,6 @@ function CommodityRiskFilters({
                 <Checkbox
                   checked={selectedOverallValues.includes('low')}
                   onChange={changeOverallValues}
-                  value="low"
-                />
-              }
-              label="Low"
-            />
-          </Grid>
-        </FormGroup>
-      </Grid>
-
-      <Grid item xs={12}>
-        <FormGroup row>
-          <Grid item xs={6} sx={{ display: 'flex', alignItems: 'center' }}>
-            <span className="label">Mill Priority</span>
-          </Grid>
-
-          <Grid item xs={6} sx={{ display: 'flex', justifyContent: 'flex-end' }}>
-            <FormControlLabel
-              control={
-                <Checkbox
-                  checked={selectedMillPriority.includes('high')}
-                  onChange={changeMillPriority}
-                  value="high"
-                />
-              }
-              label="High"
-            />
-            <FormControlLabel
-              control={
-                <Checkbox
-                  checked={selectedMillPriority.includes('medium')}
-                  onChange={changeMillPriority}
-                  value="medium"
-                />
-              }
-              label="Medium"
-            />
-            <FormControlLabel
-              control={
-                <Checkbox
-                  checked={selectedMillPriority.includes('low')}
-                  onChange={changeMillPriority}
                   value="low"
                 />
               }

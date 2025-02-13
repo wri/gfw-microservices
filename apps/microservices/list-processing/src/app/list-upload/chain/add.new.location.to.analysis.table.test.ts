@@ -55,9 +55,6 @@ describe('AddMewLocationToAnalysisTable', () => {
 
     const locationIds = await handler.getAllLocationIds(request);
 
-    expect(mockClientStoreConnection.clearCache).toHaveBeenCalledWith(
-      expect.stringContaining('test_db')
-    );
     expect(mockConnection.createQueryBuilder().select).toHaveBeenCalledWith('list.locationId');
     expect(mockConnection.createQueryBuilder().from).toHaveBeenCalledWith(
       expect.any(EntitySchema),

@@ -8,8 +8,9 @@ import {
 
 const DEFAULT_GLOBAL_FEATURE_FLAG_STATE = false;
 
-export const featureFlagsService = async () => {
-  const clientStoreConnection = new ClientStoreConnection();
+export const featureFlagsService = async (
+  clientStoreConnection: ClientStoreConnection = new ClientStoreConnection()
+) => {
   const database = process.env.MSSQL_DATABASE || 'gfwpro';
   const connection = await clientStoreConnection.getConnection(database, systemEntities);
   const repository = connection.getRepository(FeatureFlag);

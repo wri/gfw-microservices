@@ -44,7 +44,11 @@ export class LockListService {
   ): Promise<boolean> {
     const connection = await this.clientStoreConnection.getConnection(organizationDatabase);
     const listRepository = connection.getRepository(Lists);
-    const { lockStatus, lockUserId } = await listRepository.findOne({ where: { id: list_id } });
+    const list = await listRepository.findOne({ where: { id: list_id } });
+    if (!list) {
+      return false;
+    }
+    const { lockStatus, lockUserId } = list;
 
     if (lockStatus !== null && lockUserId !== organization_user_id) {
       return false;

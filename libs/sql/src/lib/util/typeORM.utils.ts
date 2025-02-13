@@ -11,7 +11,10 @@ const TEST_ENVIRONMENT = 'test';
 const CONNECTION_TYPE_MSSQL = 'mssql';
 const CONNECTION_TYPE_SQLITE = 'sqlite';
 
-const CLEAR_CONNECTION_FROM_CACHE_TIMEOUT = 60 * 60 * 1000;
+const CLEAR_CONNECTION_TIMEOUT = {
+  static: 60 * 60 * 1000, // 1 hour
+  dynamic: 5 * 60 * 1000, // 5 minute
+};
 
 type CreateTypeOrmSystemModuleProps = {
   name: string;
@@ -54,7 +57,6 @@ export const createDatasourceConfig = (
   }
 
   const type = env === TEST_ENVIRONMENT ? CONNECTION_TYPE_SQLITE : CONNECTION_TYPE_MSSQL;
-
   return {
     name,
     type,
@@ -65,6 +67,7 @@ export const createDatasourceConfig = (
     username: process.env.MSSQL_USERNAME,
     password: process.env.MSSQL_PASSWORD,
     host: process.env.MSSQL_HOSTNAME,
+    dropSchema: env === TEST_ENVIRONMENT,
     port: parseInt(process.env.MSSQL_PORT, 10),
     extra: {
       trustServerCertificate: true,
@@ -94,6 +97,7 @@ export class ClientStoreConnection {
   );
 
   private readonly connections: Map<string, ConnectionCacheItem> = new Map();
+  private readonly dynamicConnections: Map<string, ConnectionCacheItem> = new Map();
 
   async getConnection(
     database: string,
@@ -101,9 +105,19 @@ export class ClientStoreConnection {
     entities: MixedList<Function | string | EntitySchema> = organizationEntities
   ): Promise<DataSource> {
     const connectionId = process.env.MSSQL_HOSTNAME + database;
+    const [mapToInsert, connectionName, entityType] =
+      entities === organizationEntities || entities === systemEntities
+        ? [this.connections, connectionId, 'static']
+        : [
+            this.dynamicConnections,
+            `${connectionId}_${(entities as Array<unknown>)
+              .map((entity: { name: string }) => entity.name)
+              .join('')}`,
+            'dynamic',
+          ];
 
-    if (this.connections.has(connectionId)) {
-      return this.connections.get(connectionId).connection;
+    if (mapToInsert.has(connectionId)) {
+      return mapToInsert.get(connectionId).connection;
     }
 
     const release = await this.mutexWithTimeout.acquire();
@@ -114,22 +128,21 @@ export class ClientStoreConnection {
         entities
       ) as DataSourceOptions;
       const connectionDb = new DataSource(datasourceConfig);
-
       const orgConnection = await connectionDb.initialize();
 
-      this.connections.set(connectionId, {
+      mapToInsert.set(connectionName, {
         connection: orgConnection,
         timeout: setTimeout(() => {
-          this.clearCache(connectionId);
-        }, CLEAR_CONNECTION_FROM_CACHE_TIMEOUT),
+          this.clearCache(connectionName, entityType);
+        }, CLEAR_CONNECTION_TIMEOUT[entityType]),
       });
 
       Logger.log(`Data Source ${database} has been initialized`);
-      return this.connections.get(connectionId).connection;
+      return mapToInsert.get(connectionName).connection;
     } catch (error) {
       Logger.error(
         `Data Source ${database} initialization error on env: ${process.env.NODE_ENV}`,
-        error
+        error.stack
       );
       throw new Error(`Data Source initialization error ${error.message}`);
     } finally {
@@ -137,11 +150,20 @@ export class ClientStoreConnection {
     }
   }
 
-  async clearCache(connectionId: string): Promise<void> {
-    const cached = this.connections.get(connectionId);
+  async clearCache(connectionName: string, entityType: string): Promise<void> {
+    const mapToUse = entityType === 'dynamic' ? this.dynamicConnections : this.connections;
+    const cached = mapToUse.get(connectionName);
     if (cached) {
-      this.connections.delete(connectionId);
+      mapToUse.delete(connectionName);
       await cached.connection.destroy();
     }
+  }
+
+  public getConnections() {
+    return this.connections;
+  }
+
+  public getDynamicConnections() {
+    return this.dynamicConnections;
   }
 }

@@ -420,6 +420,9 @@ AS
            [status_code] SMALLINT,
            [location_error] NVARCHAR (MAX),
            [emissions_factor_by_year] NVARCHAR (MAX),
+           [ef_co2_by_year] NVARCHAR(MAX),
+           [ef_ch4_by_year] NVARCHAR(MAX),
+           [ef_n2o_by_year] NVARCHAR(MAX),
            CONSTRAINT [PK_GHGAnalyses] PRIMARY KEY ([list_id], [location_id]),
 
            INDEX [IDX_GHGAnalyses_ListID] NONCLUSTERED ([list_id] ASC)

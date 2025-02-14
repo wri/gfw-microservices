@@ -1,6 +1,7 @@
-import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
+import { Column, Entity, PrimaryGeneratedColumn, Unique } from 'typeorm';
 
 @Entity({ name: 'AFIAnalysis' })
+@Unique(['list_id', 'location_id'])
 export class AFIAnalysis {
   @PrimaryGeneratedColumn({ name: 'list_id' })
   list_id: number;

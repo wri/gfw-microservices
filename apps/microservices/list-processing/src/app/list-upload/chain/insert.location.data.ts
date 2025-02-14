@@ -3,7 +3,7 @@ import { AbstractHandler, ChainType, RequestNewList } from './types';
 import { ClientStoreConnection, ListSchema, ListSchemaType } from '@wri-monorepos/sql';
 import { Logger } from '@nestjs/common';
 
-const BATCH_SIZE = 100;
+const BATCH_SIZE = 80;
 
 export class InsertLocationData extends AbstractHandler<ChainType> {
   private readonly logger = new Logger(InsertLocationData.name);

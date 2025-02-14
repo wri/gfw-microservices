@@ -37,13 +37,9 @@ describe('Lock List Service', () => {
 
     const clientStoreConnection = new ClientStoreConnection();
     const database = process.env.MSSQL_DATABASE;
-    const connection = await clientStoreConnection.getConnection(database, [Lists]);
+    const connection = await clientStoreConnection.getConnection(database);
     lockListService = new LockListService(clientStoreConnection);
     listsRepository = connection.getRepository(Lists);
-  });
-
-  afterEach(() => {
-    listsRepository.clear();
   });
 
   it('Locking an existing List', async () => {
@@ -128,7 +124,7 @@ describe('Lock List Service', () => {
       lockUserId: 10,
     });
 
-    const accomplishTask = await lockListService.lockList(':memory:', 5408, 10);
+    const accomplishTask = await lockListService.unlockList(':memory:', 5408, 10);
 
     const list = await listsRepository.findOne({ where: { id: 5408 } });
 

@@ -287,7 +287,7 @@ describe('csv2geojson', () => {
               latitude: 5.641362,
               locationName: 'Palm Mill Name',
               longitude: 118.166868,
-              palmMillId: 'PO1000000065',
+              id: 'PO1000000065',
             },
             type: 'Feature',
           },

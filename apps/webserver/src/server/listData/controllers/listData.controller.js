@@ -186,10 +186,19 @@ export const getListCommodity = async (req, res) => {
 };
 
 export const getListByCommodity = async (req, res) => {
-  const { commodity } = req.query;
+  const { commodity, templateId } = req.query;
   const organizationDatabase = req.session.organization_database;
+
+  if (!templateId) {
+    return res.status(400).json({ error: 'templateId is required' });
+  }
+
   try {
-    const url = `${process.env.LISTS_MICROSERVICE_URL}/commodity/all-lists?commodity=${commodity}&organizationDatabase=${organizationDatabase}`;
+    let url = `${process.env.LISTS_MICROSERVICE_URL}/commodity/all-lists?templateId=${templateId}&organizationDatabase=${organizationDatabase}`;
+
+    if (commodity) {
+      url += `&commodity=${commodity}`;
+    }
     const { data } = await axios.get(url);
     res.status(200).json(data);
   } catch (error) {

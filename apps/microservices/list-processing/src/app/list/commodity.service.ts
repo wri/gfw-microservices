@@ -9,7 +9,7 @@ import {
   ListSchemaType,
   ListTemplate,
 } from '@wri-monorepos/sql';
-import { EntitySchema, Repository } from 'typeorm';
+import { EntitySchema, FindOptionsWhere, Raw, Repository } from 'typeorm';
 import { CommodityResponse, ListResponse } from './types';
 
 @Injectable()
@@ -95,32 +95,43 @@ export class CommodityService {
     };
   }
 
-  async getListsByCommodity(
-    organizationDatabase: string,
-    commodity: string
-  ): Promise<Array<ListResponse>> {
-    const listTemplate = await this.listTemplateRepository.find();
-    const clientStoreConnection = new ClientStoreConnection();
-    const connection = await clientStoreConnection.getConnection(organizationDatabase, [Lists]);
-    const listRepository = connection.getRepository(Lists);
+  async getListsByCommodity({
+    commodity,
+    templateId,
+    organizationDatabase,
+  }: {
+    commodity?: string;
+    templateId: number;
+    organizationDatabase: string;
+  }): Promise<Array<ListResponse>> {
+    try {
+      const clientStoreConnection = new ClientStoreConnection();
+      const connection = await clientStoreConnection.getConnection(organizationDatabase, [Lists]);
+      const listRepository = connection.getRepository(Lists);
 
-    const template = listTemplate.find((template) =>
-      this.compareIgnoringAccentsAndCase(template.templateName, commodity)
-    );
+      const whereCondition: FindOptionsWhere<Lists> = {};
 
-    const lists = await listRepository.find({ where: { templateId: template?.id } });
+      if (commodity) {
+        // using raw query to find commodities ignoring case and special characters for better performance
+        whereCondition.Commodity = Raw(
+          (alias) =>
+            `LOWER(${alias}) COLLATE Latin1_General_CI_AI = LOWER(:commodity) COLLATE Latin1_General_CI_AI`,
+          { commodity }
+        );
+      } else if (templateId) {
+        whereCondition.templateId = templateId;
+      }
 
-    return lists.map((list) => ({ id: list.id, name: list.listName }));
-  }
+      const lists = await listRepository.find({
+        where: whereCondition,
+        select: ['id', 'listName'],
+      });
 
-  compareIgnoringAccentsAndCase(str1, str2) {
-    const normalizeString = (str) =>
-      str
-        .toLowerCase()
-        .normalize('NFD')
-        .replace(/[\u0300-\u036f]/g, '');
-
-    return normalizeString(str1) === normalizeString(str2);
+      return lists.map((list) => ({ id: list.id, name: list.listName }));
+    } catch (error) {
+      Logger.warn(`Error in getListsByCommodity: ${error.stack || error}`);
+      return [];
+    }
   }
 
   async getAllTemplates(): Promise<ListTemplate[]> {

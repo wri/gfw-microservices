@@ -1,6 +1,7 @@
-import { BaseEntity, Column, PrimaryGeneratedColumn } from 'typeorm';
+import { BaseEntity, Column, PrimaryGeneratedColumn, Unique } from 'typeorm';
 
 // Step 1: Create a base entity with common columns
+@Unique(['id', 'LocationId'])
 export abstract class BaseGfwAnalysis extends BaseEntity {
   @Column({ name: 'id' })
   'id': number;

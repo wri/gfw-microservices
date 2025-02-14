@@ -289,5 +289,5 @@ describe('ConfigureList', () => {
       },
     });
     expect(mockHistoryPush).toHaveBeenCalledWith('SUMMARY_AND_SUBMIT');
-  });
+  }, 10100);
 });

@@ -34,7 +34,6 @@ export class AddNewLocationToAnalysisTable extends AbstractHandler<ChainType> {
 
     const locationIds = await this.getAllLocationIds(request);
 
-    await this.clientStoreConnection.clearCache(process.env.MSSQL_HOSTNAME + organizationDatabase);
     const connection = await this.clientStoreConnection.getConnection(organizationDatabase, [
       AnalysisEntity,
     ]);
@@ -92,7 +91,6 @@ export class AddNewLocationToAnalysisTable extends AbstractHandler<ChainType> {
       name: listTable,
     });
 
-    await this.clientStoreConnection.clearCache(process.env.MSSQL_HOSTNAME + organizationDatabase);
     const connection = await this.clientStoreConnection.getConnection(organizationDatabase, [
       ListEntity,
     ]);

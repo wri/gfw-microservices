@@ -140,7 +140,6 @@ export default class ListDetails extends Component {
       maximumAnalysisAreaInTheList: defaultMaximumAreaSizeForLocationsFilter,
       isEveryRowSelected: false,
       filterValues: [],
-      locationNameOptionsForFilter: [],
       parentCompanyOptionsForFilter: [],
       supplierNameOptionsForFilter: [],
       secondSupplierNameOptionsForFilter: [],
@@ -181,14 +180,12 @@ export default class ListDetails extends Component {
     getListFilterValues(selectedLists[0].id).then(
       ({
         filterValues,
-        locationNameOptionsForFilter,
         parentCompanyOptionsForFilter,
         supplierNameOptionsForFilter,
         secondSupplierNameOptionsForFilter,
       }) => {
         this.setState({
           filterValues,
-          locationNameOptionsForFilter,
           parentCompanyOptionsForFilter,
           supplierNameOptionsForFilter,
           secondSupplierNameOptionsForFilter,
@@ -1865,7 +1862,6 @@ export default class ListDetails extends Component {
       dialogTitle,
       draftSubmitDialogOpen,
       filterValues,
-      locationNameOptionsForFilter,
       parentCompanyOptionsForFilter,
       supplierNameOptionsForFilter,
       secondSupplierNameOptionsForFilter,
@@ -2291,7 +2287,6 @@ export default class ListDetails extends Component {
                           filterCount={filterCount}
                           filterValues={filterValues}
                           parentCompanyOptionsForFilter={parentCompanyOptionsForFilter}
-                          locationNameOptionsForFilter={locationNameOptionsForFilter}
                           supplierNameOptionsForFilter={supplierNameOptionsForFilter}
                           secondSupplierNameOptionsForFilter={secondSupplierNameOptionsForFilter}
                           listColumns={listColumns}

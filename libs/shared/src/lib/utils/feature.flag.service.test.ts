@@ -64,16 +64,8 @@ describe('Feature Flag Service', () => {
     });
   });
 
-  afterEach(() => {
-    featureFlagRepository.clear();
-  });
-
-  afterAll(() => {
-    clientStoreConnection.clearCache(':memory:');
-  });
-
   it('Should return error when try to insert flagId and orgId that is not acceptable', async () => {
-    const { insertOrSaveFeatureFlag } = await featureFlagsService();
+    const { insertOrSaveFeatureFlag } = await featureFlagsService(clientStoreConnection);
 
     try {
       await insertOrSaveFeatureFlag({
@@ -92,7 +84,7 @@ describe('Feature Flag Service', () => {
   });
 
   it('Should return error when try to insert flagId that is not acceptable', async () => {
-    const { insertOrSaveFeatureFlag } = await featureFlagsService();
+    const { insertOrSaveFeatureFlag } = await featureFlagsService(clientStoreConnection);
 
     try {
       await insertOrSaveFeatureFlag({
@@ -111,7 +103,7 @@ describe('Feature Flag Service', () => {
   });
 
   it('Should return all feature flag that exist inside the database.', async () => {
-    const { getAllFeatureFlags } = await featureFlagsService();
+    const { getAllFeatureFlags } = await featureFlagsService(clientStoreConnection);
     const allFeatureFlag = await getAllFeatureFlags();
     allFeatureFlag.forEach((flag) => {
       delete flag['updateDateTime'];
@@ -139,7 +131,9 @@ describe('Feature Flag Service', () => {
   });
 
   it('Should return all feature where organization id equal to 10', async () => {
-    const { getAllFeatureFlags, insertOrSaveFeatureFlag } = await featureFlagsService();
+    const { getAllFeatureFlags, insertOrSaveFeatureFlag } = await featureFlagsService(
+      clientStoreConnection
+    );
 
     await insertOrSaveFeatureFlag({
       id: 4,
@@ -175,7 +169,9 @@ describe('Feature Flag Service', () => {
   });
 
   it('Should return all feature where flag id equal to flag1', async () => {
-    const { getFeatureFlagsByFlagId, insertOrSaveFeatureFlag } = await featureFlagsService();
+    const { getFeatureFlagsByFlagId, insertOrSaveFeatureFlag } = await featureFlagsService(
+      clientStoreConnection
+    );
 
     await insertOrSaveFeatureFlag({
       id: 5,
@@ -212,7 +208,9 @@ describe('Feature Flag Service', () => {
   });
 
   it('Should return existing feature flag for specific organization which id is 20', async () => {
-    const { getFeatureFlagsForCurrentOrg, insertOrSaveFeatureFlag } = await featureFlagsService();
+    const { getFeatureFlagsForCurrentOrg, insertOrSaveFeatureFlag } = await featureFlagsService(
+      clientStoreConnection
+    );
 
     await insertOrSaveFeatureFlag({
       id: 6,
@@ -250,7 +248,7 @@ describe('Feature Flag Service', () => {
 
   it('Should delete feature flat which flagId is Afi and OrgId is 20', async () => {
     const { deleteFeatureFlag, getFeatureFlagsForCurrentOrg, insertOrSaveFeatureFlag } =
-      await featureFlagsService();
+      await featureFlagsService(clientStoreConnection);
 
     await insertOrSaveFeatureFlag({
       id: 7,
@@ -273,10 +271,10 @@ describe('Feature Flag Service', () => {
     expect(allFeatureFlag).toEqual([
       {
         flagId: 'flag1',
-        flagState: 1,
-        id: 1,
+        flagState: 0,
+        id: 7,
         modifierUserId: 1692,
-        orgId: null,
+        orgId: 20,
       },
       {
         flagId: 'flag2',

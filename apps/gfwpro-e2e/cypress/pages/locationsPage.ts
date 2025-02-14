@@ -13,6 +13,8 @@ class LocationsPage {
     PointShapefileOption: () => cy.get(':nth-child(4) > .MuiButtonBase-root'),
     ListOfPalmOilOption: () => cy.get(':nth-child(5) > .MuiButtonBase-root'),
     checkBtn: () => cy.get('.MuiAccordionSummary-content > .MuiButtonBase-root'),
+    nextBtn: () => cy.contains('Next'),
+    selectCommodity: () =>cy.get('.css-k008qs > .MuiFormControl-root > .MuiInputBase-root > .MuiSelect-select'),
     searchInput: () => cy.get('.input-search__input'),
     downloadCSVOptionBtn: () => cy.contains('CSV'),
     MapOptionBtn: () => cy.contains('span[role="menuitem"]', 'Map'),
@@ -22,6 +24,7 @@ class LocationsPage {
     downloadTemplateUploadLocationBtn: () =>
       cy.get('.MuiAccordionSummary-content > .MuiButtonBase-root'),
     locationNameCell: () => cy.get('.rt-td.cell__Location-Name.default-cell'),
+    newNameListCell: ()=> cy.get('#mui-2'),
     checkbox: () => '.rt-td.td-checkbox',
     downloadListBtn: () => cy.contains('Download…'),
     confirmActionBtn: () => cy.contains('button', 'OK'),
@@ -33,6 +36,9 @@ class LocationsPage {
     optionListDraft: () =>
       cy.get('.my-lists-list li').filter(':has(.DiagnosticStatusDraft__label)').first(),
     listByName: (name) => cy.contains(name),
+    typeAnalisyscheckBox: (number: number) => cy.get('input[type="checkbox"]').eq(number),
+    submitAnalisys: ()=>cy.get('.MuiButton-containedPrimary'),
+    confirmAnalisysBtn: () => cy.get('.MuiDialogActions-root > .MuiButton-contained')
   };
 
   verifyLists(lists: string[], exist: boolean) {
@@ -58,6 +64,24 @@ class LocationsPage {
     });
   }
 
+  clickOnNextBtn() {
+    this.elements.nextBtn().click();
+  }
+  selectCommodity(name:string) {
+    this.elements.selectCommodity().click().get(`[data-value="${name}"]`).click();
+  }
+  typeNewNameList(name:string){
+    this.elements.newNameListCell().type(name)
+  }
+  selectTypeAnalisys(number:number){
+    this.elements.typeAnalisyscheckBox(number).click()
+  }
+  clickOnSubmitAnalisys(){
+    this.elements.submitAnalisys().click()
+  }
+  clickOnConfirmAnalisysBtn() {
+    this.elements.confirmAnalisysBtn().click();
+  }
   clickOnConfirmActionBtn() {
     this.elements.confirmActionBtn().click();
   }

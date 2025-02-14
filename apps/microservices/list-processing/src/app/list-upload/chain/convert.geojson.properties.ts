@@ -3,6 +3,11 @@ import { AbstractHandler, ChainType } from './types';
 import { ListSchema } from '@wri-monorepos/sql';
 import { Feature, FeatureCollection } from '@wri-monorepos/geo';
 
+/**
+ * added this step to fix the issue with the naming convention in the GeoJSON conversion
+ * we are going to use the ListSchema to map the column names to the field names,
+ * but the field doesnt exist inside the geojson is going to be copied as is.
+ */
 export class ConvertGeojsonProperties extends AbstractHandler<ChainType> {
   private readonly logger = new Logger(ConvertGeojsonProperties.name);
 

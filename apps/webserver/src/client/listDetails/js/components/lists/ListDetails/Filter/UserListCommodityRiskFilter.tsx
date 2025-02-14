@@ -21,6 +21,7 @@ import { DefaultFilterValues } from '../../DefaultFilterValuesType';
 import { defaultFilterValues } from '../../defaultFilterValues';
 import filterCountryStateAndSubStateOptions from './filterCountryStateAndSubStateOptions';
 import { boxStyle, selectStyle } from './filterStyles';
+import CommodityRiskFilters from './CommodityRiskFilters';
 import store from '../../../../../../locations/js/store';
 import '../../../../../../common/css/filter-dialogs.scss';
 
@@ -55,7 +56,14 @@ const UserListCommodityRiskFilter: React.FC<UserListCommodityRiskFilterProps> = 
   clearFilters,
   isListFiltered,
 }) => {
-  const initialState: DefaultFilterValues = store.getState().filters;
+  const filters = store.getState().filters;
+  const initialState: DefaultFilterValues = {
+    ...filters,
+    selectedOverallThreats: filters.selectedOverallThreats || [],
+    selectedOverallValues: filters.selectedOverallValues || [],
+    selectedMillPriority: filters.selectedMillPriority || [],
+  };
+
   const [state, setState] = useState<DefaultFilterValues>(initialState);
 
   const clearFiltersAndState = () => {
@@ -107,51 +115,16 @@ const UserListCommodityRiskFilter: React.FC<UserListCommodityRiskFilterProps> = 
     setState((prevState) => ({ ...prevState, selectedParentCompany: evt.target.value }));
   };
 
-  /* commented while we fix filtering by these attributes
-  https://gfw.atlassian.net/browse/GPV-3773
-
-  const changeOverallThreats = (evt: React.ChangeEvent<{ value: unknown }>) => {
+  const handleCheckboxChange = (key: keyof DefaultFilterValues, value: string) => {
     setState((prevState) => {
-      const myList = [...prevState.selectedOverallThreats];
-      const value = evt.target.value as string;
-      const elemIndex = myList.findIndex((item) => item === value);
-      if (elemIndex === -1) {
-        myList.push(value);
-      } else {
-        myList.splice(elemIndex, 1);
-      }
-      return { ...prevState, selectedOverallThreats: myList };
+      const currentList = Array.isArray(prevState[key]) ? prevState[key] : []; // makes sure it's and array
+      const updatedList = currentList.includes(value)
+        ? currentList.filter((item) => item !== value) // delete value if already set
+        : [...currentList, value]; // adds value if not present
+
+      return { ...prevState, [key]: updatedList };
     });
   };
-
-  const changeOverallValues = (evt: React.ChangeEvent<{ value: unknown }>) => {
-    setState((prevState) => {
-      const myList = [...prevState.selectedOverallValues];
-      const value = evt.target.value as string;
-      const elemIndex = myList.findIndex((item) => item === value);
-      if (elemIndex === -1) {
-        myList.push(value);
-      } else {
-        myList.splice(elemIndex, 1);
-      }
-      return { ...prevState, selectedOverallValues: myList };
-    });
-  };
-
-  const changeMillPriority = (evt: React.ChangeEvent<{ value: unknown }>) => {
-    setState((prevState) => {
-      const myList = [...prevState.selectedMillPriority];
-      const value = evt.target.value as string;
-      const elemIndex = myList.findIndex((item) => item === value);
-      if (elemIndex === -1) {
-        myList.push(value);
-      } else {
-        myList.splice(elemIndex, 1);
-      }
-      return { ...prevState, selectedMillPriority: myList };
-    });
-  };
-  */
 
   const changeShowRSPOCertified = () => {
     setState((prevState) => ({
@@ -186,6 +159,9 @@ const UserListCommodityRiskFilter: React.FC<UserListCommodityRiskFilterProps> = 
     selectedSecondSupplier,
     selectedParentCompany,
     showRSPOCertified,
+    selectedOverallThreats,
+    selectedOverallValues,
+    selectedMillPriority,
   } = state;
 
   const { countryList, stateList, subStateList } = filterCountryStateAndSubStateOptions(
@@ -305,152 +281,12 @@ const UserListCommodityRiskFilter: React.FC<UserListCommodityRiskFilterProps> = 
             </FormControl>
           </Grid>
 
-          {/* commented while we fix the filtering by these attributes
-  https://gfw.atlassian.net/browse/GPV-3773
-       <Grid item xs={12} sx={{ alignItems: 'center' }}>
-          <div className="col flex-grid align-center space-between filter-spacer input-field__block-container">
-            <span className="label">Overall Threats</span>
-            <div className="flex-grid space-between">
-              <div>
-                <input
-                  type="checkbox"
-                  id="overall-threats-high"
-                  name="overall-threats-selection"
-                  value="high"
-                  checked={selectedOverallThreats?.includes('high')}
-                  onChange={changeOverallThreats}
-                />
-                <label className="filter-label" htmlFor="overall-threats-high">
-                  {' '}
-                  High{' '}
-                </label>
-              </div>
-              <div>
-                <input
-                  type="checkbox"
-                  id="overall-threats-medium"
-                  name="overall-threats-selection"
-                  value="medium"
-                  checked={selectedOverallThreats?.includes('medium')}
-                  onChange={changeOverallThreats}
-                />
-                <label className="filter-label" htmlFor="overall-threats-medium">
-                  {' '}
-                  Medium{' '}
-                </label>
-              </div>
-              <div>
-                <input
-                  type="checkbox"
-                  id="overall-threats-low"
-                  name="overall-threats-selection"
-                  value="low"
-                  checked={selectedOverallThreats?.includes('low')}
-                  onChange={changeOverallThreats}
-                />
-                <label className="filter-label" htmlFor="overall-threats-low">
-                  {' '}
-                  Low{' '}
-                </label>
-              </div>
-            </div>
-          </div>
-          <div className="col flex-grid align-center space-between filter-spacer input-field__block-container">
-            <span className="label">Overall Values</span>
-            <div className="flex-grid space-between">
-              <div>
-                <input
-                  type="checkbox"
-                  id="overall-values-high"
-                  name="overall-values-selection"
-                  value="high"
-                  checked={selectedOverallValues?.includes('high')}
-                  onChange={changeOverallValues}
-                />
-                <label htmlFor="overall-values-high" className="filter-label">
-                  {' '}
-                  High{' '}
-                </label>
-              </div>
-              <div>
-                <input
-                  type="checkbox"
-                  id="overall-values-medium"
-                  name="overall-values-selection"
-                  value="medium"
-                  checked={selectedOverallValues?.includes('medium')}
-                  onChange={changeOverallValues}
-                />
-                <label htmlFor="overall-values-medium" className="filter-label">
-                  {' '}
-                  Medium{' '}
-                </label>
-              </div>
-              <div>
-                <input
-                  type="checkbox"
-                  id="overall-values-low"
-                  name="overall-values-selection"
-                  value="low"
-                  checked={selectedOverallValues?.includes('low')}
-                  onChange={changeOverallValues}
-                />
-                <label htmlFor="overall-values-low" className="filter-label">
-                  {' '}
-                  Low{' '}
-                </label>
-              </div>
-            </div>
-          </div>
-          <div className="col flex-grid align-center space-between filter-spacer input-field__block-container">
-            <span className="label">Mill Priority</span>
-            <div className="flex-grid space-between">
-              <div>
-                <input
-                  type="checkbox"
-                  id="mill-priority-high"
-                  name="mill-priority-selection"
-                  value="high"
-                  checked={selectedMillPriority?.includes('high')}
-                  onChange={changeMillPriority}
-                />
-                <label htmlFor="mill-priority-high" className="filter-label">
-                  {' '}
-                  High{' '}
-                </label>
-              </div>
-              <div>
-                <input
-                  type="checkbox"
-                  id="mill-priority-medium"
-                  name="mill-priority-selection"
-                  value="medium"
-                  checked={selectedMillPriority?.includes('medium')}
-                  onChange={changeMillPriority}
-                />
-                <label htmlFor="mill-priority-medium" className="filter-label">
-                  {' '}
-                  Medium{' '}
-                </label>
-              </div>
-              <div>
-                <input
-                  type="checkbox"
-                  id="mill-priority-low"
-                  name="mill-priority-selection"
-                  value="low"
-                  checked={selectedMillPriority?.includes('low')}
-                  onChange={changeMillPriority}
-                />
-                <label htmlFor="mill-priority-low" className="filter-label">
-                  {' '}
-                  Low{' '}
-                </label>
-              </div>
-            </div>{' '}
-          </div>
-        </Grid>*/}
-
+          <CommodityRiskFilters
+            selectedOverallThreats={selectedOverallThreats}
+            selectedOverallValues={selectedOverallValues}
+            selectedMillPriority={selectedMillPriority}
+            handleCheckboxChange={handleCheckboxChange}
+          />
           <Grid
             item
             xs={12}

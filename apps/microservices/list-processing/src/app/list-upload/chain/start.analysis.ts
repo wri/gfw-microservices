@@ -67,7 +67,6 @@ export class StartAnalysis extends AbstractHandler<ChainType> {
       name: listTable,
     });
 
-    await this.clientStoreConnection.clearCache(process.env.MSSQL_HOSTNAME + organizationDatabase);
     const connection = await this.clientStoreConnection.getConnection(organizationDatabase, [
       ListEntity,
     ]);

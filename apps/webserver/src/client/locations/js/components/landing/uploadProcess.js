@@ -1,4 +1,6 @@
-const axios = require('axios');
+import axios from 'axios';
+
+import { areArraysEqual } from '../../utils/arrayUtils';
 
 const renameProp = (oldProp, newProp, { [oldProp]: old, ...others }) => ({
   [newProp]: old,
@@ -61,6 +63,19 @@ const createLargeListStep = async (param) => {
   }
 };
 
+const changeAnalysesTypes = async (param) => {
+  const { list_id: listId, analysisIds, existingListAnalysisIds } = param;
+  try {
+    if (!areArraysEqual(analysisIds, existingListAnalysisIds)) {
+      await axios.post(`/api/list/${listId}/selectedAnalyses`, { analysisIds });
+    }
+
+    return param;
+  } catch (error) {
+    throw new Error(error);
+  }
+};
+
 const saveListToProcessStep = async (param) => {
   const { listName, keyFile, list_id: listID } = param;
 
@@ -78,7 +93,7 @@ const saveListToProcessStep = async (param) => {
 };
 
 const processListStep = async (param) => {
-  const { list_id: listID, fileS3Route, listName, saveAsDraft = false } = param;
+  const { list_id: listID, fileS3Route, listName, saveAsDraft = false, analysisIds } = param;
 
   try {
     const { data } = await axios.post('/locations/process-list', {
@@ -88,6 +103,7 @@ const processListStep = async (param) => {
       startAnalysis: true,
       listName,
       saveAsDraft,
+      analysisTypesParam: Object.fromEntries(analysisIds.map((key) => [key, true])),
     });
     return { ...param, ...data };
   } catch (error) {
@@ -135,15 +151,23 @@ export function uploadProcessByPrevUploadedFile({
   listName,
   analysisIds,
   keyFile,
-  list_id,
+  existingList,
   fileS3Route,
   saveAsDraft,
 }) {
-  const processPipeline = list_id
-    ? promiseCompose(processListStep)
+  const processPipeline = existingList.id
+    ? promiseCompose(processListStep, changeAnalysesTypes)
     : promiseCompose(processListStep, saveListToProcessStep, createLargeListStep);
 
-  return processPipeline({ listName, analysisIds, keyFile, list_id, fileS3Route, saveAsDraft });
+  return processPipeline({
+    listName,
+    analysisIds,
+    keyFile,
+    list_id: existingList.id,
+    existingListAnalysisIds: existingList.analysisIds,
+    fileS3Route,
+    saveAsDraft,
+  });
 }
 
 export default uploadProcess;

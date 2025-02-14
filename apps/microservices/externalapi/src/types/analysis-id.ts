@@ -4,6 +4,7 @@ const analysisIdsMap = {
   Alerts: 'ALERTS',
   FCD: 'FCD',
   DefReport: 'AFI',
+  GHG: 'GHG',
 };
 
 const analysisIdsInputArray = Object.keys(analysisIdsMap) as [keyof typeof analysisIdsMap];

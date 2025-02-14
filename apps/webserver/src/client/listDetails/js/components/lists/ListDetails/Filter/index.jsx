@@ -84,7 +84,6 @@ export default class Filter extends Component {
   render() {
     const {
       filterValues,
-      locationNameOptionsForFilter,
       parentCompanyOptionsForFilter,
       supplierNameOptionsForFilter,
       secondSupplierNameOptionsForFilter,
@@ -151,7 +150,6 @@ export default class Filter extends Component {
         {isGFWListOtherThanProtectedOrAdministrativeAreas && (
           <GFWListFilter
             filterValues={filterValues}
-            locationNameOptionsForFilter={locationNameOptionsForFilter}
             parentCompanyOptionsForFilter={parentCompanyOptionsForFilter}
             list_name={listName}
             isFilterModalVisible={isFilterModalVisible}
@@ -175,7 +173,6 @@ export default class Filter extends Component {
         {isGFWListCommodityRiskFilterVisible && (
           <GFWListCommodityRiskFilter
             filterValues={filterValues}
-            locationNameOptionsForFilter={locationNameOptionsForFilter}
             parentCompanyOptionsForFilter={parentCompanyOptionsForFilter}
             isFilterModalVisible={isFilterModalVisible}
             clearFilters={this.resetFilters}

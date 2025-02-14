@@ -23,6 +23,7 @@ import '../../css/locations.scss';
 import ShareListModal from './ShareList/ShareListModal';
 import { UploadLocationRouter } from './newLocationUpload/UploadLocationRouter';
 import { UploadLocationProvider } from './newLocationUpload/contexts';
+import featureFlags from '../../../../utils/general.utils';
 
 const { universalMillList } = proLayers;
 
@@ -31,6 +32,8 @@ const pageOptions = {
     logout: true,
   },
 };
+
+const { isUploadListUiAvailable } = featureFlags;
 
 class Locations extends Component {
   unloadHistory = undefined;
@@ -182,8 +185,13 @@ class Locations extends Component {
       };
 
       this.setState({ drawnGeom: mapData, isLoading: false });
-      store.dispatch(changeView('add'));
-      this.props.history.push('/add');
+
+      if (isUploadListUiAvailable) {
+        this.props.history.push('/upload-location/configure-list');
+      } else {
+        store.dispatch(changeView('add'));
+        this.props.history.push('/add');
+      }
     } else {
       console.warn('Did not get draw data to use on add location page');
       this.setState({ isLoading: false });
@@ -396,7 +404,7 @@ class Locations extends Component {
           </Route>
           <Route path="/upload-location">
             <UploadLocationProvider>
-              <UploadLocationRouter userLists={userLists} />
+              <UploadLocationRouter userLists={userLists} geoFromMap={drawnGeom} />
             </UploadLocationProvider>
           </Route>
           <Route>

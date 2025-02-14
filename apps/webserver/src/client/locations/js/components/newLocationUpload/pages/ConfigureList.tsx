@@ -22,7 +22,7 @@ import { useHistory } from '../hooks';
 import { PillButton } from '../../../../../components';
 import { useUploadLocation } from '../contexts';
 import { NavBar } from '../components';
-import { UserList } from '../types';
+import { GeoFromMap, UserList } from '../types';
 import { filterValidTemplates } from '../utils/filterValidTemplates';
 import { typeOfAnalysisMap, commodities } from '../utils/constants';
 
@@ -50,7 +50,13 @@ const schema = z
 
 type FormFields = z.infer<typeof schema>;
 
-export function ConfigureList({ userLists }: { userLists: UserList[] }) {
+export function ConfigureList({
+  userLists,
+  geoFromMap,
+}: {
+  userLists: UserList[];
+  geoFromMap?: GeoFromMap;
+}) {
   const history = useHistory();
   const {
     handleSubmit,
@@ -72,8 +78,9 @@ export function ConfigureList({ userLists }: { userLists: UserList[] }) {
       customCommodity: '',
     },
   });
-  const { clearUploadType, setUploadLocationConfigureList } = useUploadLocation();
-  const existingListId = useRef(0);
+  const { clearUploadType, setUploadLocationConfigureList, setUploadLocationByPolygon } =
+    useUploadLocation();
+  const existingList = useRef<{ id: number; analysisIds: string[] }>({ id: 0, analysisIds: [] });
 
   const [formFields, setFormFields] = useState<{
     newListName: string;
@@ -94,12 +101,16 @@ export function ConfigureList({ userLists }: { userLists: UserList[] }) {
     field.onChange(value);
 
     const template = userLists.find((list) => list.list_name === value);
-    existingListId.current = template?.id || 0;
-
-    typeOfAnalysisMap.forEach((typeOfAnalysis) => {
-      const found = template?.listAnalysesStatus.find((x) => x.analysisId === typeOfAnalysis.id);
-      setValue(typeOfAnalysis.id as keyof FormFields, !!found);
-    });
+    if (template?.id) {
+      existingList.current = {
+        id: template.id,
+        analysisIds: template?.listAnalysesStatus.map((x) => x.analysisId) || [],
+      };
+      typeOfAnalysisMap.forEach((typeOfAnalysis) => {
+        const found = template.listAnalysesStatus.find((x) => x.analysisId === typeOfAnalysis.id);
+        setValue(typeOfAnalysis.id as keyof FormFields, !!found);
+      });
+    }
   };
 
   const handleAnalysisChange = (
@@ -123,7 +134,7 @@ export function ConfigureList({ userLists }: { userLists: UserList[] }) {
       commodity: data.commodity,
       newListName: data.newListName ?? '',
       existingList: data.existingListName
-        ? { name: data.existingListName ?? '', id: existingListId.current }
+        ? { name: data.existingListName ?? '', ...existingList.current }
         : null,
       typeOfAnalysis: {
         palmRiskAssessment: data.palmRiskAssessment,
@@ -132,6 +143,18 @@ export function ConfigureList({ userLists }: { userLists: UserList[] }) {
         ALERTS: data.ALERTS,
       },
     });
+
+    if (geoFromMap?.geometry) {
+      const coordinates = geoFromMap.geometry.rings[0].map((coord) => ({
+        longitude: coord[0],
+        latitude: coord[1],
+      }));
+
+      setUploadLocationByPolygon({
+        locationName: geoFromMap.locationName,
+        coordinates,
+      });
+    }
     history.push('SUMMARY_AND_SUBMIT');
   };
 

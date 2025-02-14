@@ -31,7 +31,6 @@ const repository = async (organizationDatabase: string, listId: number) => {
     name: listTableName,
   });
 
-  clientStoreConnection.clearCache(organizationDatabase);
   connection = await clientStoreConnection.getConnection(organizationDatabase, [
     Lists,
     Analyses,

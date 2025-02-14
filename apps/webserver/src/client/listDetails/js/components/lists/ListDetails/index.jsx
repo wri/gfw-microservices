@@ -1,10 +1,9 @@
 import React, { Component } from 'react';
-import Paper from '@mui/material/Paper';
-import ArrowBackIcon from '@mui/icons-material/ArrowBack';
+import { Typography, Grid, Button as MaterialButton, Stack, Paper, Box } from '@mui/material';
 import Button from 'common/js/components/Button';
-import MaterialButton from '@mui/material/Button';
+import ArrowBackIcon from '@mui/icons-material/ArrowBack';
+import NotListedLocationIcon from '@mui/icons-material/NotListedLocation';
 import QueryStatsIcon from '@mui/icons-material/QueryStats';
-import Stack from '@mui/material/Stack';
 import CustomDialog from 'common/js/components/CustomDialog/CustomDialog';
 import { maxLocations } from 'locations/js/utils/upload.utils';
 import LinkButton from 'common/js/components/LinkButton';
@@ -141,7 +140,6 @@ export default class ListDetails extends Component {
       maximumAnalysisAreaInTheList: defaultMaximumAreaSizeForLocationsFilter,
       isEveryRowSelected: false,
       filterValues: [],
-      locationNameOptionsForFilter: [],
       parentCompanyOptionsForFilter: [],
       supplierNameOptionsForFilter: [],
       secondSupplierNameOptionsForFilter: [],
@@ -182,14 +180,12 @@ export default class ListDetails extends Component {
     getListFilterValues(selectedLists[0].id).then(
       ({
         filterValues,
-        locationNameOptionsForFilter,
         parentCompanyOptionsForFilter,
         supplierNameOptionsForFilter,
         secondSupplierNameOptionsForFilter,
       }) => {
         this.setState({
           filterValues,
-          locationNameOptionsForFilter,
           parentCompanyOptionsForFilter,
           supplierNameOptionsForFilter,
           secondSupplierNameOptionsForFilter,
@@ -1866,7 +1862,6 @@ export default class ListDetails extends Component {
       dialogTitle,
       draftSubmitDialogOpen,
       filterValues,
-      locationNameOptionsForFilter,
       parentCompanyOptionsForFilter,
       supplierNameOptionsForFilter,
       secondSupplierNameOptionsForFilter,
@@ -2268,7 +2263,11 @@ export default class ListDetails extends Component {
                                   backgroundColor: 'rgba(151, 189, 61, 0.2)',
                                 },
                               }}
-                              data-cy="list-diagnostics"
+                              data-cy={
+                                selectedLocations?.length
+                                  ? 'location-diagnostics'
+                                  : 'list-diagnostics'
+                              }
                               onClick={() => this.viewDiagnostic()}
                               startIcon={<QueryStatsIcon />}
                             >
@@ -2288,7 +2287,6 @@ export default class ListDetails extends Component {
                           filterCount={filterCount}
                           filterValues={filterValues}
                           parentCompanyOptionsForFilter={parentCompanyOptionsForFilter}
-                          locationNameOptionsForFilter={locationNameOptionsForFilter}
                           supplierNameOptionsForFilter={supplierNameOptionsForFilter}
                           secondSupplierNameOptionsForFilter={secondSupplierNameOptionsForFilter}
                           listColumns={listColumns}
@@ -2308,6 +2306,30 @@ export default class ListDetails extends Component {
                         />
 
                         <section>
+                          {filteredLocationData.length === 0 && !isLoading && (
+                            <Grid
+                              item
+                              container
+                              direction="column"
+                              alignItems="center"
+                              justifyContent="center"
+                              textAlign="center"
+                            >
+                              <Box display="flex" alignItems="center" gap={1}>
+                                <NotListedLocationIcon
+                                  variant="primary"
+                                  sx={{
+                                    fontSize: '25px',
+                                  }}
+                                />
+                              </Box>
+                              <Typography variant="h5">No locations found.</Typography>
+
+                              <Typography variant="body1">
+                                Adjust your filters or add locations to your list to get started
+                              </Typography>
+                            </Grid>
+                          )}
                           {listView !== '' && filteredLocationData.length > 0 && (
                             <WrappedReactTable
                               listId={selectedLists[0].id}

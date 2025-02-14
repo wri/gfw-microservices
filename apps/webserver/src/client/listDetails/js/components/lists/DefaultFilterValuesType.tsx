@@ -7,7 +7,6 @@ export interface DefaultFilterValues {
   selectedAreaMax: number | null;
   selectedDesignationType: string;
   selectedDesignation: string;
-  selectedNames: any[];
   selectedStates: any[];
   selectedSubStates: any[];
   filterNames: string;

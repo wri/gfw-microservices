@@ -4,20 +4,28 @@ import { Test } from '@nestjs/testing';
 import { GHGService } from './ghg.service';
 import { GHGController } from './ghg.controller';
 import { INestApplication } from '@nestjs/common';
+import { ClientStoreConnection } from '@wri-monorepos/sql';
 
 describe('[GET] /ghg/:listId/number-of-pages', () => {
   let ghgService: GHGService;
   let app: INestApplication;
+  let clientStoreConnection: ClientStoreConnection;
 
-  it(`when database return data`, async () => {
+  beforeAll(async () => {
     const moduleRef = await Test.createTestingModule({
       controllers: [GHGController],
-      providers: [GHGService],
+      providers: [GHGService, ClientStoreConnection],
     }).compile();
 
     ghgService = moduleRef.get<GHGService>(GHGService);
+    clientStoreConnection = moduleRef.get<ClientStoreConnection>(ClientStoreConnection);
     moduleRef.get<GHGController>(GHGController);
+    app = moduleRef.createNestApplication();
+    await app.init();
+  });
 
+  it(`when database return data`, async () => {
+    jest.spyOn(clientStoreConnection, 'getConnection').mockImplementation();
     jest.spyOn(ghgService, 'getNumberOfPagesGHGAnalysis').mockImplementation(() => {
       return new Promise((resolve) => {
         resolve({
@@ -26,9 +34,6 @@ describe('[GET] /ghg/:listId/number-of-pages', () => {
         });
       });
     });
-
-    app = moduleRef.createNestApplication();
-    await app.init();
 
     const response = await request(app.getHttpServer()).get(
       '/ghg/5692/number-of-pages?clientDatabase=production&rowsPerPage=5'
@@ -45,14 +50,6 @@ describe('[GET] /ghg/:listId/number-of-pages', () => {
   });
 
   it(`when quantity is 0`, async () => {
-    const moduleRef = await Test.createTestingModule({
-      controllers: [GHGController],
-      providers: [GHGService],
-    }).compile();
-
-    ghgService = moduleRef.get<GHGService>(GHGService);
-    moduleRef.get<GHGController>(GHGController);
-
     jest.spyOn(ghgService, 'getNumberOfPagesGHGAnalysis').mockImplementation(() => {
       return new Promise((resolve) => {
         resolve({
@@ -61,9 +58,6 @@ describe('[GET] /ghg/:listId/number-of-pages', () => {
         });
       });
     });
-
-    app = moduleRef.createNestApplication();
-    await app.init();
 
     const response = await request(app.getHttpServer()).get(
       '/ghg/5692/number-of-pages?clientDatabase=production&rowsPerPage=5'
@@ -80,14 +74,6 @@ describe('[GET] /ghg/:listId/number-of-pages', () => {
   });
 
   it(`when dont receive query param`, async () => {
-    const moduleRef = await Test.createTestingModule({
-      controllers: [GHGController],
-      providers: [GHGService],
-    }).compile();
-
-    ghgService = moduleRef.get<GHGService>(GHGService);
-    moduleRef.get<GHGController>(GHGController);
-
     jest.spyOn(ghgService, 'getNumberOfPagesGHGAnalysis').mockImplementation(() => {
       return new Promise((resolve) => {
         resolve({
@@ -96,9 +82,6 @@ describe('[GET] /ghg/:listId/number-of-pages', () => {
         });
       });
     });
-
-    app = moduleRef.createNestApplication();
-    await app.init();
 
     const response = await request(app.getHttpServer()).get('/ghg/5692/number-of-pages');
     expect(response.status).toEqual(400);
@@ -130,16 +113,23 @@ describe('[GET] /ghg/:listId/number-of-pages', () => {
 describe('[GET] /ghg/:listId/data-per-page', () => {
   let ghgService: GHGService;
   let app: INestApplication;
+  let clientStoreConnection: ClientStoreConnection;
 
-  it(`when database return data`, async () => {
+  beforeAll(async () => {
     const moduleRef = await Test.createTestingModule({
       controllers: [GHGController],
-      providers: [GHGService],
+      providers: [GHGService, ClientStoreConnection],
     }).compile();
 
     ghgService = moduleRef.get<GHGService>(GHGService);
+    clientStoreConnection = moduleRef.get<ClientStoreConnection>(ClientStoreConnection);
     moduleRef.get<GHGController>(GHGController);
+    app = moduleRef.createNestApplication();
+    await app.init();
+  });
 
+  it(`when database return data`, async () => {
+    jest.spyOn(clientStoreConnection, 'getConnection').mockImplementation();
     jest.spyOn(ghgService, 'getGHGDataPerPage').mockImplementation(() => {
       return new Promise((resolve) => {
         resolve([
@@ -147,7 +137,7 @@ describe('[GET] /ghg/:listId/data-per-page', () => {
             listId: 5692,
             listName: 'Test WRI List',
             locationId: 5631,
-            totalAreaHA: 0,
+            totalAreaHa: 0,
             statusCode: 200,
             locationError: null,
             commodity: 'SOYB',
@@ -156,9 +146,6 @@ describe('[GET] /ghg/:listId/data-per-page', () => {
         ]);
       });
     });
-
-    app = moduleRef.createNestApplication();
-    await app.init();
 
     const response = await request(app.getHttpServer()).get(
       '/ghg/5692/data-per-page?clientDatabase=production&rowsPerPage=5'
@@ -170,7 +157,7 @@ describe('[GET] /ghg/:listId/data-per-page', () => {
         listId: 5692,
         listName: 'Test WRI List',
         locationId: 5631,
-        totalAreaHA: 0,
+        totalAreaHa: 0,
         statusCode: 200,
         locationError: null,
         commodity: 'SOYB',
@@ -182,20 +169,9 @@ describe('[GET] /ghg/:listId/data-per-page', () => {
   });
 
   it(`when return is empty`, async () => {
-    const moduleRef = await Test.createTestingModule({
-      controllers: [GHGController],
-      providers: [GHGService],
-    }).compile();
-
-    ghgService = moduleRef.get<GHGService>(GHGService);
-    moduleRef.get<GHGController>(GHGController);
-
     jest.spyOn(ghgService, 'getGHGDataPerPage').mockImplementation(() => {
       return new Promise((resolve) => resolve([]));
     });
-
-    app = moduleRef.createNestApplication();
-    await app.init();
 
     const response = await request(app.getHttpServer()).get(
       '/ghg/5692/data-per-page?clientDatabase=production&rowsPerPage=5'
@@ -208,20 +184,9 @@ describe('[GET] /ghg/:listId/data-per-page', () => {
   });
 
   it(`when dont sent query param`, async () => {
-    const moduleRef = await Test.createTestingModule({
-      controllers: [GHGController],
-      providers: [GHGService],
-    }).compile();
-
-    ghgService = moduleRef.get<GHGService>(GHGService);
-    moduleRef.get<GHGController>(GHGController);
-
     jest.spyOn(ghgService, 'getGHGDataPerPage').mockImplementation(() => {
       return new Promise((resolve) => resolve([]));
     });
-
-    app = moduleRef.createNestApplication();
-    await app.init();
 
     const response = await request(app.getHttpServer()).get('/ghg/5692/data-per-page');
     expect(response.status).toEqual(400);

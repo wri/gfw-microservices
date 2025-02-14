@@ -71,36 +71,6 @@ module.exports = (app, limiter) => {
     controller.getUserLists(req, res);
   });
 
-  // If a user reloads the page when deep in the locations views,
-  // return to the locations landing page.
-  app.get('/locations/add', (req, res) => {
-    res.redirect('/locations');
-  });
-
-  app.get('/locations/diagnostics', (req, res) => {
-    res.redirect('/locations');
-  });
-
-  app.get('/locations/edit', (req, res) => {
-    res.redirect('/locations');
-  });
-
-  app.get('/locations/folders', (req, res) => {
-    res.redirect('/locations');
-  });
-
-  app.get('/locations/gfw', (req, res) => {
-    res.redirect('/locations');
-  });
-
-  app.get('/locations/lists', (req, res) => {
-    res.redirect('/locations');
-  });
-
-  app.get('/locations/upload/step/:step', (req, res) => {
-    res.redirect('/locations');
-  });
-
   app.post('/locations/addToNewList', (req, res) => {
     console.log('POST /locations/addToNewList');
     const {
@@ -821,12 +791,29 @@ module.exports = (app, limiter) => {
     const locationAttributeArray = [];
     const locationAnalysisArray = [];
     if (pageNum || pageSize) {
+      const selectedOverallThreats = mapCommodityRiskValuesToDatabaseValues(
+        filters.selectedOverallThreats
+      );
+      const selectedOverallValues = mapCommodityRiskValuesToDatabaseValues(
+        filters.selectedOverallValues
+      );
+      const selectedMillPriority = mapCommodityRiskValuesToDatabaseValues(
+        filters.selectedMillPriority
+      );
+
+      const filtersWithDatabaseValues = {
+        ...filters,
+        selectedOverallThreats,
+        selectedOverallValues,
+        selectedMillPriority,
+      };
+
       GFWListManager.getPaginatedTable(
         req,
         pageNum,
         pageSize,
         list_id,
-        filters,
+        filtersWithDatabaseValues,
         filterString,
         tableSortedBy,
         tableSortedDesc
@@ -1022,7 +1009,6 @@ module.exports = (app, limiter) => {
       selectedDesignation,
       selectedDesignationType,
       selectedIUCN,
-      selectedNames,
     } = req.body.filters;
 
     const {
@@ -1040,7 +1026,6 @@ module.exports = (app, limiter) => {
       selectedDesignation,
       selectedDesignationType,
       selectedIUCN,
-      selectedNames,
     };
 
     if (pageNum || pageSize) {
@@ -1351,19 +1336,30 @@ module.exports = (app, limiter) => {
    * Send request to S3 Endpoint to start list processing
    */
   app.post('/locations/process-list', async (req, res) => {
-    const { list_id, path: pathLocal, template_type, startAnalysis, listName } = req.body;
-    const { organization_user_id, organization_id, subscription_status_id, organization_database } =
-      req.session;
+    try {
+      const {
+        list_id,
+        path: pathLocal,
+        template_type,
+        startAnalysis,
+        listName,
+        analysisTypesParam,
+      } = req.body;
 
-    const { LISTS_MICROSERVICE_URL } = process.env;
-    const listAnalysisStatusData = await getListAnalysisStatusByListId(
-      organization_database,
-      list_id
-    );
-    const analysisTypes = extractAnalysisTypes(listAnalysisStatusData);
+      const {
+        organization_user_id,
+        organization_id,
+        subscription_status_id,
+        organization_database,
+      } = req.session;
 
-    axios
-      .post(`${LISTS_MICROSERVICE_URL}/process-list`, {
+      const { LISTS_MICROSERVICE_URL } = process.env;
+
+      let analysisTypes =
+        analysisTypesParam ||
+        extractAnalysisTypes(await getListAnalysisStatusByListId(organization_database, list_id));
+
+      const payload = {
         organization_id,
         list_id,
         organization_database,
@@ -1376,27 +1372,30 @@ module.exports = (app, limiter) => {
         startAnalysis,
         analysisIds: Object.keys(analysisTypes),
         saveAsDraft: false,
-      })
-      .then((response) => {
-        logger.info('ProcessList LP response.data', response.data);
-        // Send email to user that list is submitted to be analysed
-        return AWSSES.sendEmail__ListSubmittedForAnalysis(req, listName, analysisTypes);
-      })
-      .then((response) => {
-        logger.info('ProcessList SES response', response);
-        res.send(response);
-      })
-      .catch(async (error) => {
-        await controller.handleListProcessingError(
-          error,
-          req,
-          res,
-          listName,
-          'Error /locations/process-list',
-          `${LISTS_MICROSERVICE_URL}/process-list`,
-          config
-        );
-      });
+      };
+
+      const response = await axios.post(`${LISTS_MICROSERVICE_URL}/process-list`, payload);
+      logger.info('ProcessList LP response.data', response.data);
+
+      const emailResponse = await AWSSES.sendEmail__ListSubmittedForAnalysis(
+        req,
+        listName,
+        analysisTypes
+      );
+      logger.info('ProcessList SES response', emailResponse);
+
+      res.send(emailResponse);
+    } catch (error) {
+      await controller.handleListProcessingError(
+        error,
+        req,
+        res,
+        req.body.listName,
+        'Error /locations/process-list',
+        `${process.env.LISTS_MICROSERVICE_URL}/process-list`,
+        config
+      );
+    }
   });
 
   /**
@@ -1515,5 +1514,9 @@ module.exports = (app, limiter) => {
         logger.error('Error: getListAnalysisStatusByListId', err);
         res.status(500).send(err);
       });
+  });
+
+  app.get('/locations/*', (_, res) => {
+    res.redirect('/locations');
   });
 };

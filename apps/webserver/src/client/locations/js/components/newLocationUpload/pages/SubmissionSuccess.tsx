@@ -39,7 +39,7 @@ export function SubmissionSuccess() {
         </Typography>
         <Typography variant="caption" sx={{ color: 'text.secondary' }}>
           {uploadLocationState.isDraft
-            ? 'Your list can be access via the Locations page and be submitted for analysis later on.'
+            ? 'Your list can be accessed via the Locations page and be submitted for analysis later on.'
             : 'We will review your request and you will be notified within 24 hours.'}
         </Typography>
         <PillButton

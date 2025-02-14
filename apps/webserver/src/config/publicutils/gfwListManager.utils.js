@@ -338,11 +338,6 @@ export const getProtectedAreasData = (req, filters) => {
         value: filters.selectedDesignationType,
       },
       { field: 'selected_iucn', type: sql.NVarChar(150), value: filters.selectedIUCN },
-      {
-        field: 'selected_names',
-        type: sql.NVarChar(sql.MAX),
-        value: filters.selectedNames.toString(),
-      },
     ];
     sqlUtils
       .executeSystemStoredProcedure(req, 'uspGetProtectedAreasData', parameters)

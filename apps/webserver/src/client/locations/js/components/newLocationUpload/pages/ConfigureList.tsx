@@ -1,4 +1,4 @@
-import React, { useRef, useState } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import {
   Box,
   Card,
@@ -12,6 +12,7 @@ import {
   TextField,
   Typography,
   SelectChangeEvent,
+  Skeleton,
 } from '@mui/material';
 import { ArrowBackIos, ArrowForwardIos, Close } from '@mui/icons-material';
 import { useForm, Controller, FieldError } from 'react-hook-form';
@@ -22,9 +23,10 @@ import { useHistory } from '../hooks';
 import { PillButton } from '../../../../../components';
 import { useUploadLocation } from '../contexts';
 import { NavBar } from '../components';
-import { GeoFromMap, UserList } from '../types';
-import { filterValidTemplates } from '../utils/filterValidTemplates';
+import { GeoFromMap } from '../types';
 import { typeOfAnalysisMap, commodities } from '../utils/constants';
+import { useFetch } from '../../../../../hooks';
+import debounce from 'lodash/debounce';
 
 const schema = z
   .object({
@@ -50,21 +52,15 @@ const schema = z
 
 type FormFields = z.infer<typeof schema>;
 
-export function ConfigureList({
-  userLists,
-  geoFromMap,
-}: {
-  userLists: UserList[];
-  geoFromMap?: GeoFromMap;
-}) {
+export function ConfigureList({ geoFromMap }: { geoFromMap?: GeoFromMap }) {
   const history = useHistory();
   const {
     handleSubmit,
     control,
     formState: { errors },
-    getValues,
     setValue,
     reset,
+    watch,
   } = useForm<FormFields>({
     resolver: zodResolver(schema),
     defaultValues: {
@@ -90,28 +86,65 @@ export function ConfigureList({
     existingListName: '',
   });
 
+  const { data: validLists = [], isLoading, request } = useFetch<{ id: number; name: string }[]>();
+
+  const selectedCommodity = watch('commodity');
+
+  useEffect(() => {
+    if (!selectedCommodity || selectedCommodity === 'other') {
+      return;
+    }
+
+    fetchCommodityNames(selectedCommodity);
+  }, [selectedCommodity]);
+
+  const fetchCommodityNames = (selectedCommodity: string) => {
+    request({
+      method: 'GET',
+      url: `/api/list/by-commodity?templateId=0&commodity=${selectedCommodity}`,
+    });
+  };
+
+  const debouncedFetchCommodityNames = useCallback(
+    debounce((selectedCommodity: string) => {
+      fetchCommodityNames(selectedCommodity);
+    }, 1000),
+    []
+  );
+
   const handleChangeExistingListName = (
     e: SelectChangeEvent<string>,
     field: {
       onChange: (value: string) => void;
     }
   ) => {
+    if (validLists === null) {
+      return;
+    }
     const value = e.target.value || '';
     setFormFields((v) => ({ ...v, existingListName: value }));
     field.onChange(value);
-
-    const template = userLists.find((list) => list.list_name === value);
-    if (template?.id) {
-      existingList.current = {
-        id: template.id,
-        analysisIds: template?.listAnalysesStatus.map((x) => x.analysisId) || [],
-      };
-      typeOfAnalysisMap.forEach((typeOfAnalysis) => {
-        const found = template.listAnalysesStatus.find((x) => x.analysisId === typeOfAnalysis.id);
-        setValue(typeOfAnalysis.id as keyof FormFields, !!found);
-      });
-    }
+    //   const template = userLists.find((list) => list.name === value);
+    //   if (template?.id) {
+    //     existingList.current = {
+    //       id: template.id,
+    //       analysisIds: template?.listAnalysesStatus.map((x) => x.analysisId) || [],
+    //     };
+    //     typeOfAnalysisMap.forEach((typeOfAnalysis) => {
+    //       const found = template.listAnalysesStatus.find((x) => x.analysisId === typeOfAnalysis.id);
+    //       setValue(typeOfAnalysis.id as keyof FormFields, !!found);
+    //     });
+    // }
   };
+
+  const customCommodity = watch('customCommodity');
+  useEffect(() => {
+    if (!customCommodity) {
+      return;
+    }
+
+    debouncedFetchCommodityNames(customCommodity);
+  }, [customCommodity]);
 
   const handleAnalysisChange = (
     e: React.ChangeEvent<HTMLInputElement>,
@@ -157,13 +190,6 @@ export function ConfigureList({
     }
     history.push('SUMMARY_AND_SUBMIT');
   };
-
-  const chosenCommodity = getValues('commodity') as keyof typeof commodities;
-  const templateType = templateTypes[chosenCommodity];
-
-  const validLists = templateType
-    ? userLists.filter((list) => filterValidTemplates(list, templateType))
-    : [];
 
   return (
     <>
@@ -214,7 +240,7 @@ export function ConfigureList({
               </FormControl>
             )}
           />
-          {chosenCommodity === 'other' && (
+          {selectedCommodity === 'other' && (
             <>
               <Box sx={{ display: 'flex', gap: 0.75, ml: 3, mr: 1, mt: 1 }}>
                 <Typography variant="subtitle2" sx={{ fontWeight: '500' }}>
@@ -299,6 +325,20 @@ export function ConfigureList({
                 ('noListNameProvided' in errors && (errors.noListNameProvided as FieldError)) ||
                 errors.existingListName;
 
+              if (isLoading) {
+                return (
+                  <Box
+                    sx={{
+                      flex: 1,
+                      border: (theme) => `1px solid ${theme.palette.info.main}`,
+                      borderRadius: 1,
+                    }}
+                  >
+                    <Skeleton variant="rectangular" sx={{ height: 40 }} />
+                  </Box>
+                );
+              }
+
               return (
                 <FormControl error={!!error} sx={{ flex: '1' }}>
                   <Select
@@ -307,9 +347,9 @@ export function ConfigureList({
                     value={formFields.existingListName}
                     onChange={(e) => handleChangeExistingListName(e, field)}
                   >
-                    {validLists.map(({ id, list_name }) => (
-                      <MenuItem key={id} value={list_name}>
-                        {list_name}
+                    {validLists.map(({ id, name }) => (
+                      <MenuItem key={id} value={name}>
+                        {name}
                       </MenuItem>
                     ))}
                   </Select>
@@ -338,7 +378,7 @@ export function ConfigureList({
         </Typography>
         <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1, mt: 1 }}>
           {typeOfAnalysisMap
-            .filter((x) => chosenCommodity === 'palm-oil' || x.id !== 'palmRiskAssessment')
+            .filter((x) => selectedCommodity === 'palm-oil' || x.id !== 'palmRiskAssessment')
             .map(({ id, label, description }) => {
               const isPalmRisk = id === 'palmRiskAssessment';
               return (
@@ -407,15 +447,15 @@ export function ConfigureList({
   );
 }
 
-const templateTypes: Record<keyof typeof commodities, string[]> = {
-  cattle: ['cattle', 'cattleGeneric'],
-  cocoa: ['cocoa', 'cocoaGeneric'],
-  coffee: ['coffee'], // new type
-  'palm-oil': ['palmMill', 'palmPlantation', 'palmFarm', 'palmGeneric'],
-  'pulp-and-paper': ['pulpGeneric'],
-  rubber: ['rubberGeneric'],
-  soy: ['soySilo', 'soyFarm', 'soyGeneric'],
-  'sugar-cane': ['sugar-cane'], //new type
-  multiple: ['multiple'], // new type
-  other: ['other'],
-};
+// const templateTypes: Record<keyof typeof commodities, string[]> = {
+//   cattle: ['cattle', 'cattleGeneric'],
+//   cocoa: ['cocoa', 'cocoaGeneric'],
+//   coffee: ['coffee'], // new type
+//   'palm-oil': ['palmMill', 'palmPlantation', 'palmFarm', 'palmGeneric'],
+//   'pulp-and-paper': ['pulpGeneric'],
+//   rubber: ['rubberGeneric'],
+//   soy: ['soySilo', 'soyFarm', 'soyGeneric'],
+//   'sugar-cane': ['sugar-cane'], //new type
+//   multiple: ['multiple'], // new type
+//   other: ['other'],
+// };

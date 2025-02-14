@@ -72,8 +72,8 @@ export function UploadLocationByPoint() {
     setUploadLocationByPoint({
       locationName: data.locationName,
       coordinate: {
-        latitude: data.latitude,
-        longitude: data.longitude,
+        latitude: Number(data.latitude),
+        longitude: Number(data.longitude),
       },
       area: { size: Number(data.areaSize), measurementUnit: data.areaMeasurementUnit },
     });

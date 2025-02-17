@@ -85,5 +85,4 @@ BEGIN
 
 	SET @SQL = REPLACE(@TEMPLATE, '{TABLE_NAME}', @list_analysis_table_name)
 	EXEC sp_executesql @SQL
-END
-GO`;
+END`;

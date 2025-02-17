@@ -165,7 +165,7 @@ export function uploadProcessByPrevUploadedFile({
   saveAsDraft,
   commodity,
 }) {
-  const processPipeline = existingList.id
+  const processPipeline = existingList?.id
     ? promiseCompose(processListStep, changeAnalysesTypes)
     : promiseCompose(processListStep, saveListToProcessStep, createLargeListStep);
 
@@ -176,8 +176,8 @@ export function uploadProcessByPrevUploadedFile({
     fileS3Route,
     saveAsDraft,
     commodity,
-    list_id: existingList.id,
-    existingListAnalysisIds: existingList.analysisIds,
+    list_id: existingList?.id,
+    existingListAnalysisIds: existingList?.analysisIds,
   });
 }
 

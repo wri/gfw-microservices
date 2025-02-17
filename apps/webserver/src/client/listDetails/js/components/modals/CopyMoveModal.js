@@ -48,21 +48,24 @@ export default function CopyMoveModal(props) {
   const [selectedExistingList, setSelectedExistingList] = useState();
   const newListNameRef = createRef();
 
-  useEffect(async () => {
-    if (selectedLists.length === 0) {
-      return;
+  useEffect(() => {
+    async function fetchData() {
+      if (selectedLists.length === 0) {
+        return;
+      }
+
+      try {
+        setIsLoading(true);
+        const response = await axios.get(
+          `api/list/by-commodity?commodity=${commodity ?? templateList[templateId]}`
+        );
+        setFilteredLists(response.data);
+      } finally {
+        setIsLoading(false);
+      }
     }
 
-    try {
-      setIsLoading(true);
-
-      const response = await axios.get(
-        `api/list/by-commodity?commodity=${commodity ?? templateList[templateId]}`
-      );
-      setFilteredLists(response.data);
-    } finally {
-      setIsLoading(false);
-    }
+    fetchData();
   }, [selectedLists]);
 
   useEffect(() => {

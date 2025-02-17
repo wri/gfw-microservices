@@ -1,6 +1,10 @@
 import React from 'react';
-import { render, screen, fireEvent, cleanup } from '@testing-library/react';
+import { render, screen, cleanup, waitFor } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
 import CopyMoveModal from './CopyMoveModal';
+import axios from 'axios';
+
+jest.mock('axios');
 
 const defaultProps = {
   isGfwList: false,
@@ -15,8 +19,19 @@ const defaultProps = {
   setNewOrExisting: jest.fn(),
   updateNewListName: jest.fn(),
   updateSelectedMove: jest.fn(),
-  validLists: [{ list_name: 'List A' }, { list_name: 'List B' }],
 };
+
+beforeEach(() => {
+  axios.get.mockReturnValue({
+    data: [
+      { id: 5830, name: 'List A' },
+      { id: 5831, name: 'List B' },
+    ],
+    isLoading: false,
+    request: jest.fn(),
+    error: null,
+  });
+});
 
 afterEach(() => {
   cleanup();
@@ -31,25 +46,31 @@ describe('CopyMoveModal', () => {
     expect(screen.getByLabelText(/Copy/i)).toBeChecked();
   });
 
-  test('allows changing from copy to move', () => {
+  test('allows changing from copy to move', async () => {
     render(<CopyMoveModal {...defaultProps} selectedMoveOrCopy="move" />);
-    expect(screen.getByText('Remove', { exact: false })).toBeInTheDocument();
-    expect(screen.getByText(/5 selected locations/i)).toBeInTheDocument();
-    expect(screen.getByLabelText(/Move/i)).toBeChecked();
+    await waitFor(() => {
+      expect(screen.getByText(/remove/i)).toBeInTheDocument();
+      expect(screen.getByText(/5 selected locations/i)).toBeInTheDocument();
+      expect(screen.getByLabelText(/move/i)).toBeChecked();
+    });
   });
 
-  test('renders the existing list dropdown', () => {
+  test('renders the existing list dropdown', async () => {
     render(<CopyMoveModal {...defaultProps} />);
 
-    expect(screen.getByText('List A')).toBeInTheDocument();
-    expect(screen.getByText('List B')).toBeInTheDocument();
+    await waitFor(() => {
+      expect(screen.getByText('List A')).toBeInTheDocument();
+      expect(screen.getByText('List B')).toBeInTheDocument();
+    });
   });
 
-  test('calls setMoveOrCopy when selecting move', () => {
+  test('calls setMoveOrCopy when selecting move', async () => {
     render(<CopyMoveModal {...defaultProps} />);
-    const moveRadio = screen.getByLabelText(/Move/i);
-    fireEvent.click(moveRadio);
 
-    expect(defaultProps.setMoveOrCopy).toHaveBeenCalled();
+    await waitFor(() => {
+      const moveRadio = screen.getByLabelText(/move/i);
+      userEvent.click(moveRadio);
+      expect(defaultProps.setMoveOrCopy).toHaveBeenCalled();
+    });
   });
 });

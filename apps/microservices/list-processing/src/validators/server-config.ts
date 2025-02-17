@@ -19,6 +19,9 @@ export const serverConfigSchema = z.object({
 
   MICROSERVICES_ENV: z.enum(['LATEST', 'DEVELOPMENT', 'QA', 'PRODV2', 'STAGING']),
 
+  GFW_DATASET_API_URL: z.string().url(),
+  GFW_DATA_API_KEY: z.string(),
+
   LATEST_COMMIT: z.string().optional(),
 });
 

@@ -2064,7 +2064,6 @@ export default class ListDetails extends Component {
                   setNewOrExisting={this.setNewOrExisting}
                   updateNewListName={this.updateNewListName}
                   updateSelectedMove={this.updateSelectedMove}
-                  validLists={validLists}
                 />
               ) : (
                 dialogContent

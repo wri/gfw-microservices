@@ -110,6 +110,7 @@ export class CommodityService {
       const connection = await clientStoreConnection.getConnection(organizationDatabase, [Lists]);
       const listRepository = connection.getRepository(Lists);
 
+      // TODO: remove the case sensitivity when ticket 3983 is done
       const lists = await listRepository.find({
         where: [
           {

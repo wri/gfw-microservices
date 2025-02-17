@@ -20,21 +20,6 @@ const updateOriginalData = (response, originalData) => {
   });
 };
 
-const renameKeys = (data) => {
-  return data.map((row) => {
-    const newRow = { ...row }; // Create a shallow copy of the row
-    if (newRow['Palm Mill ID']) {
-      newRow['ID'] = newRow['Palm Mill ID']; // Rename 'Palm Mill ID' to 'ID'
-      delete newRow['Palm Mill ID']; // Remove the old key
-    }
-    if (newRow['UML ID']) {
-      newRow['ID'] = newRow['UML ID']; // Rename 'UML ID' to 'ID'
-      delete newRow['UML ID']; // Remove the old key
-    }
-    return newRow; // Return the modified row
-  });
-};
-
 const getPalmOilMillLatLongChunk = async (millsChunk) => {
   const millSqlList = millsChunk.map((row) => "'" + row['ID'] + "'").join(', ');
   const url = `${process.env.GFW_DATASET_API_URL}/gfw_universal_mill_list/latest/query`;
@@ -91,9 +76,8 @@ const getPalmOilMillLatLong = async (data) => {
 
 const isPalmMill = (data) => {
   const firstRow = data[0];
-  const validKeys = ['Palm Mill ID', 'ID', 'UML ID'];
 
-  const hasValidKey = validKeys.some((key) => Object.keys(firstRow).includes(key));
+  const hasValidKey = Object.keys(firstRow).includes('ID');
 
   if (hasValidKey) {
     return true;
@@ -104,7 +88,6 @@ const isPalmMill = (data) => {
 
 export const palmOilCsvAdjust = async (data: Record<string, unknown>[]) => {
   if (isPalmMill(data)) {
-    data = renameKeys(data);
     data = await getPalmOilMillLatLong(data);
   }
   return data;

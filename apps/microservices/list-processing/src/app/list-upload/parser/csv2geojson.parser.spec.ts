@@ -255,7 +255,7 @@ describe('csv2geojson', () => {
 
   it('Get lat long from Palm Oil Mill ID', (done) => {
     const csvData =
-      'Location Name,Palm Mill ID,Analysis Radius,Analysis Area\r\nPalm Mill Name,PO1000000065,10,';
+      'Location Name,ID,Analysis Radius,Analysis Area\r\nPalm Mill Name,PO1000000065,10,';
 
     jest.spyOn(axios, 'get').mockResolvedValue({
       data: {
@@ -284,10 +284,10 @@ describe('csv2geojson', () => {
                 coordinates: [118.166868, 5.641362],
                 type: 'Point',
               },
+              id: 'PO1000000065',
               latitude: 5.641362,
               locationName: 'Palm Mill Name',
               longitude: 118.166868,
-              id: 'PO1000000065',
             },
             type: 'Feature',
           },

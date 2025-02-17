@@ -25,9 +25,16 @@ class LocationsPage {
       cy.get('.MuiAccordionSummary-content > .MuiButtonBase-root'),
     locationNameCell: () => cy.get('.rt-td.cell__Location-Name.default-cell'),
     newNameListCell: ()=> cy.get('#mui-2'),
+    newNameListCellPolygon: ()=> cy.get('#mui-9'),
+    newNameListCellPoint: ()=> cy.get('#mui-8'),
+    newNamePolygonListCell: ()=> cy.get('#mui-1'),
+    enterPolygonCoordsBtn: ()=> cy.get('.css-seoeeh-MuiButtonBase-root-MuiButton-root > .MuiTypography-root'),
+    enterPointCoordsBtn: ()=> cy.get('.css-p6lt5n > :nth-child(1) > .MuiTypography-root'),
     checkbox: () => '.rt-td.td-checkbox',
     downloadListBtn: () => cy.contains('Download…'),
     confirmActionBtn: () => cy.contains('button', 'OK'),
+    confirmCoordsBtn: () => cy.get('.css-kj9wkw > .MuiButton-contained'),
+
     optionListOK: () =>
       cy
         .get('.my-lists-list li')
@@ -38,7 +45,21 @@ class LocationsPage {
     listByName: (name) => cy.contains(name),
     typeAnalisyscheckBox: (number: number) => cy.get('input[type="checkbox"]').eq(number),
     submitAnalisys: ()=>cy.get('.MuiButton-containedPrimary'),
-    confirmAnalisysBtn: () => cy.get('.MuiDialogActions-root > .MuiButton-contained')
+    confirmAnalisysBtn: () => cy.get('.MuiDialogActions-root > .MuiButton-contained'),
+    pointBtn: () => cy.get('.upload-location-options__main-content__options__other-options > div > :nth-child(1)'),
+    polygonBtn: () => cy.get('.upload-location-options__main-content__options__other-options > div > :nth-child(2)'),
+    inputCoordLatitude1: ()=> cy.get('#mui-2'),
+    inputCoordLongitude1: () => cy.get('#mui-3'),
+    inputCoordLatitude2: ()=> cy.get('#mui-4'),
+    inputCoordLongitude2: () => cy.get('#mui-5'),
+    inputCoordLatitude3: ()=> cy.get('#mui-6'),
+    inputCoordLongitude3: () => cy.get('#mui-7'),
+    inputCoordLongitude: () => cy.get('#mui-5'),
+    inputCoordLatitude: ()=> cy.get('#mui-6'),
+    inputRadiusAroundLoc: ()=> cy.get('#mui-4'),
+    titleFinishLegend:()=> cy.get('.MuiTypography-subtitle2'),
+    subtitleFinishLegend: () => cy.get('.MuiTypography-caption'),
+    returnToLocationBtn: () => cy.get('.MuiPaper-root > .MuiButtonBase-root')
   };
 
   verifyLists(lists: string[], exist: boolean) {
@@ -73,6 +94,21 @@ class LocationsPage {
   typeNewNameList(name:string){
     this.elements.newNameListCell().type(name)
   }
+  typeNewNameListPolygon(name:string){
+    this.elements.newNameListCellPolygon().type(name)
+  }
+  typeNewNameListPoint(name:string){
+    this.elements.newNameListCellPoint().type(name)
+  }
+  typeNewNameLocation(name:string){
+    this.elements.newNamePolygonListCell().type(name)
+  }
+  ClickOnEnterPolygonCoordsBtn(){
+    this.elements.enterPolygonCoordsBtn().click()
+  }
+  ClickOnEnterPointCoordsBtn(){
+    this.elements.enterPointCoordsBtn().click()
+  }
   selectTypeAnalisys(number:number){
     this.elements.typeAnalisyscheckBox(number).click()
   }
@@ -82,8 +118,47 @@ class LocationsPage {
   clickOnConfirmAnalisysBtn() {
     this.elements.confirmAnalisysBtn().click();
   }
+  clickOnPoinBtn() {
+    this.elements.pointBtn().click();
+  }
+  clickOnPolygonBtn() {
+    this.elements.polygonBtn().click();
+  }
+  clickOnPointBtn() {
+    this.elements.pointBtn().click();
+  }
   clickOnConfirmActionBtn() {
     this.elements.confirmActionBtn().click();
+  }
+  typeOnInputCoordLat1(latitude:string){
+    this.elements.inputCoordLatitude1().click().type(latitude)
+  }
+  typeOnInputCoordLong1(longitude:string){
+    this.elements.inputCoordLongitude1().click().type(longitude)
+  }
+  typeOnInputCoordLat2(latitude:string){
+    this.elements.inputCoordLatitude2().click().type(latitude)
+  }
+  typeOnInputCoordLong2(longitude:string){
+    this.elements.inputCoordLongitude2().click().type(longitude)
+  }
+  typeOnInputCoordLat3(latitude:string){
+    this.elements.inputCoordLatitude3().click().type(latitude)
+  }
+  typeOnInputCoordLong3(longitude:string){
+    this.elements.inputCoordLongitude3().click().type(longitude)
+  }
+  typeOnInputPointCoordLong(longitude:string){
+    this.elements.inputCoordLongitude().click().type(longitude)
+  }
+  typeOnInputPointCoordLat(latitude:string){
+    this.elements.inputCoordLatitude().click().type(latitude)
+  }
+  typeOnInputRadiusAroundLoc(radius:string){
+    this.elements.inputRadiusAroundLoc().click().type(radius)
+  }
+  clickOnConfirmCoods(){
+    this.elements.confirmCoordsBtn().click()
   }
 
   clickOnMapBtn() {

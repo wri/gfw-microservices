@@ -1,16 +1,44 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <kml xmlns="http://www.opengis.net/kml/2.2">
 <Document id="root_doc">
-<Schema name="gfwpropolygonshapefile" id="gfwpropolygonshapefile">
-	<SimpleField name="Location_N" type="string"></SimpleField>
+<Schema name="pro_kml_schema" id="pro_kml_schema">
+<SimpleField name="Location Name" type="string"></SimpleField>
+<SimpleField name="Analysis_R" type="string"></SimpleField>
 </Schema>
-<Folder><name>gfwpropolygonshapefile</name>
+<Folder><name>pro_kml_schema</name>  <Placemark>
+	<Style><LineStyle><color>ff0000ff</color></LineStyle><PolyStyle><fill>0</fill></PolyStyle></Style>
+	<ExtendedData><SchemaData schemaUrl="#pro_kml_schema">
+		<SimpleData name="Location Name">Loc0_0</SimpleData><SimpleData name="Analysis_R">0.1</SimpleData></SchemaData></ExtendedData><Point><coordinates>14,-13,0</coordinates></Point></Placemark>
   <Placemark>
 	<Style><LineStyle><color>ff0000ff</color></LineStyle><PolyStyle><fill>0</fill></PolyStyle></Style>
-	<ExtendedData><SchemaData schemaUrl="#gfwpropolygonshapefile">
-		<SimpleData name="Location_N">Name of Location</SimpleData>
-	</SchemaData></ExtendedData>
-      <MultiGeometry><Polygon><outerBoundaryIs><LinearRing><coordinates>-52.1269333096609,-8.69188861979734 -51.8658675987332,-8.88147205273294 -52.1020699086202,-9.16740116470138 -52.3444880687673,-8.97781773176578 -52.1269333096609,-8.69188861979734</coordinates></LinearRing></outerBoundaryIs></Polygon></MultiGeometry>
-  </Placemark>
-</Folder>
-</Document></kml>
+	<ExtendedData><SchemaData schemaUrl="#pro_kml_schema">
+		<SimpleData name="Location Name">Loc0_1</SimpleData><SimpleData name="Analysis_R">0.1</SimpleData></SchemaData></ExtendedData><Point><coordinates>14,-12.964,0</coordinates></Point></Placemark>
+  <Placemark>
+	<Style><LineStyle><color>ff0000ff</color></LineStyle><PolyStyle><fill>0</fill></PolyStyle></Style>
+	<ExtendedData><SchemaData schemaUrl="#pro_kml_schema">
+		<SimpleData name="Location Name">Loc0_2</SimpleData><SimpleData name="Analysis_R">0.1</SimpleData></SchemaData></ExtendedData><Point><coordinates>14,-12.928,0</coordinates></Point></Placemark>
+  <Placemark>
+	<Style><LineStyle><color>ff0000ff</color></LineStyle><PolyStyle><fill>0</fill></PolyStyle></Style>
+	<ExtendedData><SchemaData schemaUrl="#pro_kml_schema">
+		<SimpleData name="Location Name">Loc1_0</SimpleData><SimpleData name="Analysis_R">0.1</SimpleData></SchemaData></ExtendedData><Point><coordinates>14.036,-13,0</coordinates></Point></Placemark>
+  <Placemark>
+	<Style><LineStyle><color>ff0000ff</color></LineStyle><PolyStyle><fill>0</fill></PolyStyle></Style>
+	<ExtendedData><SchemaData schemaUrl="#pro_kml_schema">
+		<SimpleData name="Location Name">Loc1_1</SimpleData><SimpleData name="Analysis_R">0.1</SimpleData></SchemaData></ExtendedData><Point><coordinates>14.036,-12.964,0</coordinates></Point></Placemark>
+  <Placemark>
+	<Style><LineStyle><color>ff0000ff</color></LineStyle><PolyStyle><fill>0</fill></PolyStyle></Style>
+	<ExtendedData><SchemaData schemaUrl="#pro_kml_schema">
+		<SimpleData name="Location Name">Loc1_2</SimpleData><SimpleData name="Analysis_R">0.1</SimpleData></SchemaData></ExtendedData><Point><coordinates>14.036,-12.928,0</coordinates></Point></Placemark>
+  <Placemark>
+	<Style><LineStyle><color>ff0000ff</color></LineStyle><PolyStyle><fill>0</fill></PolyStyle></Style>
+	<ExtendedData><SchemaData schemaUrl="#pro_kml_schema">
+		<SimpleData name="Location Name">Loc2_0</SimpleData><SimpleData name="Analysis_R">0.1</SimpleData></SchemaData></ExtendedData><Point><coordinates>14.072,-13,0</coordinates></Point></Placemark>
+  <Placemark>
+	<Style><LineStyle><color>ff0000ff</color></LineStyle><PolyStyle><fill>0</fill></PolyStyle></Style>
+	<ExtendedData><SchemaData schemaUrl="#pro_kml_schema">
+		<SimpleData name="Location Name">Loc2_1</SimpleData><SimpleData name="Analysis_R">0.1</SimpleData></SchemaData></ExtendedData><Point><coordinates>14.072,-12.964,0</coordinates></Point></Placemark>
+  <Placemark>
+	<Style><LineStyle><color>ff0000ff</color></LineStyle><PolyStyle><fill>0</fill></PolyStyle></Style>
+	<ExtendedData><SchemaData schemaUrl="#pro_kml_schema">
+		<SimpleData name="Location Name">Loc2_2</SimpleData><SimpleData name="Analysis_R">0.1</SimpleData></SchemaData></ExtendedData><Point><coordinates>14.072,-12.928,0</coordinates></Point></Placemark>
+</Folder></Document></kml>

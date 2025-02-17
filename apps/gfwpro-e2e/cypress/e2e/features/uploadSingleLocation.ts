@@ -5,6 +5,8 @@ describe('Downloading Templates', () => {
   const KML = 'KML.kml'
   const timestamp = Date.now();
   const listToUploadSingleLocation = `uploadSingleLocation${timestamp}`;
+  const listToUploadPolygonLocation = `uploadPolygonLocation${timestamp}`;
+  const listToUploadPointLocation = `uploadPointLocation${timestamp}`;
   const locationPage = new LocationsPage();
   Given('I login in the landing page', () => {
     cy.loginUI();
@@ -14,9 +16,17 @@ describe('Downloading Templates', () => {
     cy.visit('/locations');
   });
 
-  When('I click on the Add Location Alpha button and select the file upload option', () => {
+  When('I click on the Add Location Alpha button', () => {
     locationPage.clickOnAddLocationsAlphaBtn();
+  });
+  When('I select the file upload option', () => {
     locationPage.clickOnfileUploadBtn();
+  });
+  When('I select the Polygon option', () => {
+    locationPage.clickOnPolygonBtn();
+  });
+  When('I select the Point option', () => {
+    locationPage.clickOnPointBtn();
   });
 
   When('I click on the Drop file button and drag a KML file', () => {
@@ -32,6 +42,43 @@ describe('Downloading Templates', () => {
     locationPage.clickOnSubmitAnalisys()
     locationPage.clickOnConfirmAnalisysBtn()
   });
+
+  When('I complete the polygon form and confirm', () => {
+    locationPage.typeNewNameLocation(listToUploadPolygonLocation)
+    locationPage.ClickOnEnterPolygonCoordsBtn()
+    locationPage.typeOnInputCoordLat1('14.072')
+    locationPage.typeOnInputCoordLong1('-12.928,0')
+    locationPage.typeOnInputCoordLat2('14.072')
+    locationPage.typeOnInputCoordLong2('-12.928,0')
+    locationPage.typeOnInputCoordLat3('14.072')
+    locationPage.typeOnInputCoordLong3('-12.928,0')
+    locationPage.clickOnConfirmCoods()
+    locationPage.clickOnNextBtn()
+    locationPage.selectCommodity('coffee')
+    locationPage.typeNewNameListPolygon(listToUploadPolygonLocation)
+    locationPage.clickOnNextBtn()
+    locationPage.clickOnSubmitAnalisys()
+    locationPage.clickOnConfirmAnalisysBtn()
+  });
+  When('I complete the point form and confirm', () => {
+    locationPage.typeNewNameLocation(listToUploadPointLocation)
+    locationPage.ClickOnEnterPointCoordsBtn()
+    locationPage.typeOnInputPointCoordLong('-12.928,0')
+    locationPage.typeOnInputPointCoordLat('14.072')
+    locationPage.typeOnInputRadiusAroundLoc('100')
+    locationPage.clickOnNextBtn()
+    locationPage.selectCommodity('coffee')
+    locationPage.typeNewNameListPoint(listToUploadPointLocation)
+    locationPage.clickOnNextBtn()
+    locationPage.clickOnSubmitAnalisys()
+    locationPage.clickOnConfirmAnalisysBtn()
+  });
+
+  Then('I should see the completion legend', () => {
+    locationPage.elements.titleFinishLegend().should('be.visible')
+    locationPage.elements.subtitleFinishLegend().should('be.visible')
+    locationPage.elements.returnToLocationBtn().should('be.visible')
+  })
 
 
 });

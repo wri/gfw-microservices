@@ -120,7 +120,7 @@ describe('UploadLocationByPoint', () => {
 
     expect(setUploadLocationByPoint).toHaveBeenCalledWith({
       locationName: 'Test Location',
-      coordinate: { latitude: '12.3456', longitude: '-45.6789' },
+      coordinate: { latitude: 12.3456, longitude: -45.6789 },
       area: { size: 100, measurementUnit: 'kilometers' },
     });
     expect(mockHistoryPush).toHaveBeenCalledWith('CONFIGURE_LIST');

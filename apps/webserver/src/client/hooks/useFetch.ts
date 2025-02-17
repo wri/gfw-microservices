@@ -8,23 +8,23 @@ interface ExtendedAxiosRequestConfig extends AxiosRequestConfig {
 }
 
 type UseFetchResponse<T, E = unknown> = {
-  data: T | null;
-  error: E | null;
+  data: T | undefined;
+  error: E | undefined;
   isLoading: boolean;
   request: (config?: ExtendedAxiosRequestConfig) => Promise<void>;
 };
 
-export const useFetch = <T, E>(
+export const useFetch = <T, E = unknown>(
   initialConfig?: ExtendedAxiosRequestConfig
 ): UseFetchResponse<T, E> => {
-  const [data, setData] = useState<T | null>(null);
-  const [error, setError] = useState<E | null>(null);
+  const [data, setData] = useState<T | undefined>(undefined);
+  const [error, setError] = useState<E | undefined>(undefined);
   const [isLoading, setIsLoading] = useState(false);
 
   const request = useCallback(
     async (config?: ExtendedAxiosRequestConfig) => {
       setIsLoading(true);
-      setError(null);
+      setError(undefined);
 
       try {
         const response: AxiosResponse<T> = await axios({

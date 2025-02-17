@@ -9,6 +9,7 @@ import { locationsPage } from '../../../../common/js/config';
 import SaveAsDraftNote from '../../../../common/js/components/SaveAsDraft/SaveAsDraftNote';
 import { buildDropdownOptions } from '../../../../common/js/utils/buildDropdownOptions';
 import { LoadingModal } from '../../../../components';
+import { templateList } from '../../../../common/js/utils/templateUtils';
 
 const ActionType = {
   Move: 'move',
@@ -48,20 +49,21 @@ export default function CopyMoveModal(props) {
   const newListNameRef = createRef();
 
   useEffect(async () => {
+    if (selectedLists.length === 0) {
+      return;
+    }
+
     try {
       setIsLoading(true);
-      let url = `api/list/by-commodity?templateId=${templateId}`;
 
-      if (commodity) {
-        url += `&commodity=${commodity}`;
-      }
-
-      const response = await axios.get(url);
+      const response = await axios.get(
+        `api/list/by-commodity?commodity=${commodity ?? templateList[templateId]}`
+      );
       setFilteredLists(response.data);
     } finally {
       setIsLoading(false);
     }
-  }, []);
+  }, [selectedLists]);
 
   useEffect(() => {
     if (dropdownOptions.length > 0) {

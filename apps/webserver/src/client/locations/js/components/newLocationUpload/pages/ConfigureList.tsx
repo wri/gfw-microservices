@@ -23,7 +23,7 @@ import { useHistory } from '../hooks';
 import { PillButton } from '../../../../../components';
 import { useUploadLocation } from '../contexts';
 import { NavBar } from '../components';
-import { GeoFromMap } from '../types';
+import { GeoFromMap, UserList } from '../types';
 import { typeOfAnalysisMap, commodities } from '../utils/constants';
 import { useFetch } from '../../../../../hooks';
 import debounce from 'lodash/debounce';
@@ -52,7 +52,14 @@ const schema = z
 
 type FormFields = z.infer<typeof schema>;
 
-export function ConfigureList({ geoFromMap }: { geoFromMap?: GeoFromMap }) {
+// @userLists param will be deprecated when new endpoint for typeOfAnalysis is released
+export function ConfigureList({
+  geoFromMap,
+  userLists,
+}: {
+  geoFromMap?: GeoFromMap;
+  userLists: UserList[];
+}) {
   const history = useHistory();
   const {
     handleSubmit,
@@ -88,10 +95,10 @@ export function ConfigureList({ geoFromMap }: { geoFromMap?: GeoFromMap }) {
 
   const { data: validLists = [], isLoading, request } = useFetch<{ id: number; name: string }[]>();
 
-  const selectedCommodity = watch('commodity');
+  const selectedCommodity = watch('commodity') as (typeof commodities)[keyof typeof commodities];
 
   useEffect(() => {
-    if (!selectedCommodity || selectedCommodity === 'other') {
+    if (!selectedCommodity || selectedCommodity === 'Other') {
       return;
     }
 
@@ -101,7 +108,7 @@ export function ConfigureList({ geoFromMap }: { geoFromMap?: GeoFromMap }) {
   const fetchCommodityNames = (selectedCommodity: string) => {
     request({
       method: 'GET',
-      url: `/api/list/by-commodity?templateId=0&commodity=${selectedCommodity}`,
+      url: `/api/list/by-commodity?commodity=${selectedCommodity}`,
     });
   };
 
@@ -124,17 +131,18 @@ export function ConfigureList({ geoFromMap }: { geoFromMap?: GeoFromMap }) {
     const value = e.target.value || '';
     setFormFields((v) => ({ ...v, existingListName: value }));
     field.onChange(value);
-    //   const template = userLists.find((list) => list.name === value);
-    //   if (template?.id) {
-    //     existingList.current = {
-    //       id: template.id,
-    //       analysisIds: template?.listAnalysesStatus.map((x) => x.analysisId) || [],
-    //     };
-    //     typeOfAnalysisMap.forEach((typeOfAnalysis) => {
-    //       const found = template.listAnalysesStatus.find((x) => x.analysisId === typeOfAnalysis.id);
-    //       setValue(typeOfAnalysis.id as keyof FormFields, !!found);
-    //     });
-    // }
+
+    const template = userLists.find((list) => list.list_name === value);
+    if (template?.id) {
+      existingList.current = {
+        id: template.id,
+        analysisIds: template?.listAnalysesStatus.map((x) => x.analysisId) || [],
+      };
+      typeOfAnalysisMap.forEach((typeOfAnalysis) => {
+        const found = template.listAnalysesStatus.find((x) => x.analysisId === typeOfAnalysis.id);
+        setValue(typeOfAnalysis.id as keyof FormFields, !!found);
+      });
+    }
   };
 
   const customCommodity = watch('customCommodity');
@@ -230,9 +238,9 @@ export function ConfigureList({ geoFromMap }: { geoFromMap?: GeoFromMap }) {
                     field.onChange(value);
                   }}
                 >
-                  {Object.entries(commodities).map(([key, label]) => (
-                    <MenuItem key={key} value={key}>
-                      {label}
+                  {Object.values(commodities).map((commodity) => (
+                    <MenuItem key={commodity} value={commodity}>
+                      {commodity}
                     </MenuItem>
                   ))}
                 </Select>
@@ -240,7 +248,7 @@ export function ConfigureList({ geoFromMap }: { geoFromMap?: GeoFromMap }) {
               </FormControl>
             )}
           />
-          {selectedCommodity === 'other' && (
+          {selectedCommodity === 'Other' && (
             <>
               <Box sx={{ display: 'flex', gap: 0.75, ml: 3, mr: 1, mt: 1 }}>
                 <Typography variant="subtitle2" sx={{ fontWeight: '500' }}>
@@ -378,7 +386,7 @@ export function ConfigureList({ geoFromMap }: { geoFromMap?: GeoFromMap }) {
         </Typography>
         <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1, mt: 1 }}>
           {typeOfAnalysisMap
-            .filter((x) => selectedCommodity === 'palm-oil' || x.id !== 'palmRiskAssessment')
+            .filter((x) => selectedCommodity === 'Palm oil' || x.id !== 'palmRiskAssessment')
             .map(({ id, label, description }) => {
               const isPalmRisk = id === 'palmRiskAssessment';
               return (
@@ -446,16 +454,3 @@ export function ConfigureList({ geoFromMap }: { geoFromMap?: GeoFromMap }) {
     </>
   );
 }
-
-// const templateTypes: Record<keyof typeof commodities, string[]> = {
-//   cattle: ['cattle', 'cattleGeneric'],
-//   cocoa: ['cocoa', 'cocoaGeneric'],
-//   coffee: ['coffee'], // new type
-//   'palm-oil': ['palmMill', 'palmPlantation', 'palmFarm', 'palmGeneric'],
-//   'pulp-and-paper': ['pulpGeneric'],
-//   rubber: ['rubberGeneric'],
-//   soy: ['soySilo', 'soyFarm', 'soyGeneric'],
-//   'sugar-cane': ['sugar-cane'], //new type
-//   multiple: ['multiple'], // new type
-//   other: ['other'],
-// };

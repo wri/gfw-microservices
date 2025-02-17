@@ -9,7 +9,7 @@ import {
   ListSchemaType,
   ListTemplate,
 } from '@wri-monorepos/sql';
-import { EntitySchema, FindOptionsWhere, Raw, Repository } from 'typeorm';
+import { EntitySchema, Raw, Repository } from 'typeorm';
 import { CommodityResponse, ListResponse } from './types';
 
 @Injectable()
@@ -97,33 +97,30 @@ export class CommodityService {
 
   async getListsByCommodity({
     commodity,
-    templateId,
     organizationDatabase,
   }: {
-    commodity?: string;
-    templateId: number;
+    commodity: string;
     organizationDatabase: string;
   }): Promise<Array<ListResponse>> {
     try {
+      const listTemplate = await this.listTemplateRepository.findOne({
+        where: { templateName: commodity },
+      });
       const clientStoreConnection = new ClientStoreConnection();
       const connection = await clientStoreConnection.getConnection(organizationDatabase, [Lists]);
       const listRepository = connection.getRepository(Lists);
 
-      const whereCondition: FindOptionsWhere<Lists> = {};
-
-      if (commodity) {
-        // using raw query to find commodities ignoring case and special characters for better performance
-        whereCondition.Commodity = Raw(
-          (alias) =>
-            `LOWER(${alias}) COLLATE Latin1_General_CI_AI = LOWER(:commodity) COLLATE Latin1_General_CI_AI`,
-          { commodity }
-        );
-      } else if (templateId) {
-        whereCondition.templateId = templateId;
-      }
-
       const lists = await listRepository.find({
-        where: whereCondition,
+        where: [
+          {
+            Commodity: Raw(
+              (alias) =>
+                `LOWER(${alias}) COLLATE Latin1_General_CI_AI = LOWER(:commodity) COLLATE Latin1_General_CI_AI`,
+              { commodity }
+            ),
+          },
+          listTemplate ? { templateId: listTemplate.id } : null,
+        ].filter(Boolean),
         select: ['id', 'listName'],
       });
 

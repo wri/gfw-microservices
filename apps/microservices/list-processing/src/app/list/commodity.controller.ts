@@ -28,7 +28,6 @@ export class getListCommodityRequest {
 
 export const getCommodityRequestSchema = z.object({
   commodity: z.string().optional(),
-  templateId: z.coerce.number(),
   organizationDatabase: z.string(),
 });
 
@@ -37,8 +36,6 @@ export class getCommodityRequest {
   commodity: string;
   @ApiProperty()
   organizationDatabase: string;
-  @ApiProperty()
-  templateId: number;
 }
 
 @Controller('/commodity')
@@ -67,11 +64,10 @@ export class CommodityController {
     queryParam: getCommodityRequest
   ): Promise<ListResponse[]> {
     try {
-      const { commodity, organizationDatabase, templateId } = queryParam;
+      const { commodity, organizationDatabase } = queryParam;
       return await this.commodityService.getListsByCommodity({
         organizationDatabase,
         commodity,
-        templateId,
       });
     } catch (error) {
       this.logger.error(error.stack || error);

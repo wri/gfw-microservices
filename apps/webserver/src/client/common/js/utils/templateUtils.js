@@ -44,3 +44,20 @@ export const deduceActiveId = (activeTemplate) => {
 
   return templateMap[activeTemplate] || 1;
 };
+
+export const templateList = {
+  1: 'Investment',
+  2: 'Palm Oil Mill',
+  3: 'Palm Oil Plantation',
+  4: 'Palm Smallholder Farm',
+  5: 'Palm Oil Generic',
+  6: 'Soy Silo',
+  7: 'Soy Farm',
+  8: 'Soy Generic',
+  9: 'Beef Slaughterhouse',
+  10: 'Cattle Ranch',
+  11: 'Cattle Generic',
+  12: 'Cocoa Farm',
+  13: 'Cocoa Generic',
+  14: 'Other',
+};

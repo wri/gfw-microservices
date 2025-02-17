@@ -4,9 +4,14 @@ import userEvent from '@testing-library/user-event';
 import { ConfigureList } from './ConfigureList';
 import { UploadType, UserList } from '../types';
 import { useUploadLocation } from '../contexts';
+import { useFetch } from '../../../../../hooks';
 
 jest.mock('../components', () => ({
   NavBar: () => <span />,
+}));
+
+jest.mock('../../../../../hooks', () => ({
+  useFetch: jest.fn(),
 }));
 
 const mockHistoryPush = jest.fn();
@@ -24,7 +29,7 @@ jest.mocked(useUploadLocation).mockReturnValue({
   uploadLocationState: {
     newListName: 'Random list name 123',
     existingList: null,
-    commodity: 'palm-oil',
+    commodity: 'Palm Oil',
     typeOfAnalysis: {
       AFI: true,
       ALERTS: true,
@@ -91,6 +96,19 @@ const mockUserLists: UserList[] = [
   },
 ];
 
+beforeEach(() => {
+  (useFetch as jest.Mock).mockReturnValue({
+    data: [
+      { id: 5829, name: 'cattle 1' },
+      { id: 5830, name: 'best list of cocoa 1' },
+      { id: 5831, name: 'best list of cocoa 2' },
+    ],
+    isLoading: false,
+    request: jest.fn(),
+    error: null,
+  });
+});
+
 afterEach(() => {
   cleanup();
 });
@@ -118,7 +136,7 @@ describe('ConfigureList', () => {
     await userEvent.click(commoditySelect);
     await userEvent.click(
       screen.getByRole('option', {
-        name: /sugar cane/i,
+        name: /Sugar Cane/i,
       })
     );
 
@@ -151,7 +169,7 @@ describe('ConfigureList', () => {
     await userEvent.click(commoditySelect);
     await userEvent.click(
       screen.getByRole('option', {
-        name: /cocoa/i,
+        name: /Cocoa/i,
       })
     );
 
@@ -185,7 +203,7 @@ describe('ConfigureList', () => {
     await userEvent.click(commoditySelect);
     await userEvent.click(
       screen.getByRole('option', {
-        name: /cocoa/i,
+        name: /Cocoa/i,
       })
     );
 
@@ -263,7 +281,7 @@ describe('ConfigureList', () => {
     const commoditySelect = screen.getAllByRole('combobox')[0];
 
     await userEvent.click(commoditySelect);
-    await userEvent.click(screen.getByRole('option', { name: /cattle/i }));
+    await userEvent.click(screen.getByRole('option', { name: /Cattle/i }));
 
     const newListInput = screen.getByPlaceholderText('Name your new list');
     await userEvent.type(newListInput, 'My new List 3');
@@ -278,7 +296,7 @@ describe('ConfigureList', () => {
     await userEvent.click(nextButton);
 
     expect(mockSetUploadLocationConfigureList).toHaveBeenCalledWith({
-      commodity: 'cattle',
+      commodity: 'Cattle',
       newListName: 'My new List 3',
       existingList: null,
       typeOfAnalysis: {

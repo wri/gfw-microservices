@@ -1,6 +1,13 @@
 // src/example/example.controller.ts
 
-import { BadRequestException, Controller, Get, Logger, Query } from '@nestjs/common';
+import {
+  BadRequestException,
+  Controller,
+  Get,
+  InternalServerErrorException,
+  Logger,
+  Query,
+} from '@nestjs/common';
 import { CommodityService } from './commodity.service';
 import { z } from 'zod';
 import { ZodValidationPipe } from '@wri-monorepos/shared';
@@ -20,7 +27,7 @@ export class getListCommodityRequest {
 }
 
 export const getCommodityRequestSchema = z.object({
-  commodity: z.string(),
+  commodity: z.string().optional(),
   organizationDatabase: z.string(),
 });
 
@@ -58,10 +65,13 @@ export class CommodityController {
   ): Promise<ListResponse[]> {
     try {
       const { commodity, organizationDatabase } = queryParam;
-      return await this.commodityService.getListsByCommodity(organizationDatabase, commodity);
+      return await this.commodityService.getListsByCommodity({
+        organizationDatabase,
+        commodity,
+      });
     } catch (error) {
       this.logger.error(error.stack || error);
-      throw new BadRequestException(error.errors);
+      throw new InternalServerErrorException(error.errors);
     }
   }
 }

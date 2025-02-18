@@ -2,7 +2,7 @@ import { Given, Then, When } from '@badeball/cypress-cucumber-preprocessor';
 import LocationsPage from '../../pages/locationsPage';
 
 describe('Downloading Templates', () => {
-  const KML = 'KML.kml'
+  const KML = 'KML.kml';
   const timestamp = Date.now();
   const listToUploadSingleLocation = `uploadSingleLocation${timestamp}`;
   const listToUploadPolygonLocation = `uploadPolygonLocation${timestamp}`;
@@ -16,7 +16,7 @@ describe('Downloading Templates', () => {
     cy.visit('/locations');
   });
 
-  When('I click on the Add Location Alpha button', () => {
+  When('I click on the Add Location button', () => {
     locationPage.clickOnAddLocationsAlphaBtn();
   });
   When('I select the file upload option', () => {
@@ -30,55 +30,53 @@ describe('Downloading Templates', () => {
   });
 
   When('I click on the Drop file button and drag a KML file', () => {
-    cy.uploadFile( KML, 'application/vnd.google-earth.kml+xml');
-    locationPage.clickOnNextBtn()
-    locationPage.clickOnNextBtn()
+    cy.uploadFile(KML, 'application/vnd.google-earth.kml+xml');
+    locationPage.clickOnNextBtn();
+    locationPage.clickOnNextBtn();
   });
-  
+
   Then('I complete the form and confirm the upload', () => {
-    locationPage.selectCommodity('other')
-    locationPage.typeNewNameList(listToUploadSingleLocation)
-    locationPage.clickOnNextBtn()
-    locationPage.clickOnSubmitAnalisys()
-    locationPage.clickOnConfirmAnalisysBtn()
+    locationPage.selectCommodity('other');
+    locationPage.typeNewNameList(listToUploadSingleLocation);
+    locationPage.clickOnNextBtn();
+    locationPage.clickOnSubmitAnalisys();
+    locationPage.clickOnConfirmAnalisysBtn();
   });
 
   When('I complete the polygon form and confirm', () => {
-    locationPage.typeNewNameLocation(listToUploadPolygonLocation)
-    locationPage.ClickOnEnterPolygonCoordsBtn()
-    locationPage.typeOnInputCoordLat1('14.072')
-    locationPage.typeOnInputCoordLong1('-12.928,0')
-    locationPage.typeOnInputCoordLat2('14.072')
-    locationPage.typeOnInputCoordLong2('-12.928,0')
-    locationPage.typeOnInputCoordLat3('14.072')
-    locationPage.typeOnInputCoordLong3('-12.928,0')
-    locationPage.clickOnConfirmCoods()
-    locationPage.clickOnNextBtn()
-    locationPage.selectCommodity('coffee')
-    locationPage.typeNewNameListPolygon(listToUploadPolygonLocation)
-    locationPage.clickOnNextBtn()
-    locationPage.clickOnSubmitAnalisys()
-    locationPage.clickOnConfirmAnalisysBtn()
+    locationPage.typeNewNameLocation(listToUploadPolygonLocation);
+    locationPage.ClickOnEnterPolygonCoordsBtn();
+    locationPage.typeOnInputCoordLat1('14.072');
+    locationPage.typeOnInputCoordLong1('-12.928,0');
+    locationPage.typeOnInputCoordLat2('14.072');
+    locationPage.typeOnInputCoordLong2('-12.928,0');
+    locationPage.typeOnInputCoordLat3('14.072');
+    locationPage.typeOnInputCoordLong3('-12.928,0');
+    locationPage.clickOnConfirmCoods();
+    locationPage.clickOnNextBtn();
+    locationPage.selectCommodity('coffee');
+    locationPage.typeNewNameListPolygon(listToUploadPolygonLocation);
+    locationPage.clickOnNextBtn();
+    locationPage.clickOnSubmitAnalisys();
+    locationPage.clickOnConfirmAnalisysBtn();
   });
   When('I complete the point form and confirm', () => {
-    locationPage.typeNewNameLocation(listToUploadPointLocation)
-    locationPage.ClickOnEnterPointCoordsBtn()
-    locationPage.typeOnInputPointCoordLong('-12.928,0')
-    locationPage.typeOnInputPointCoordLat('14.072')
-    locationPage.typeOnInputRadiusAroundLoc('100')
-    locationPage.clickOnNextBtn()
-    locationPage.selectCommodity('coffee')
-    locationPage.typeNewNameListPoint(listToUploadPointLocation)
-    locationPage.clickOnNextBtn()
-    locationPage.clickOnSubmitAnalisys()
-    locationPage.clickOnConfirmAnalisysBtn()
+    locationPage.typeNewNameLocation(listToUploadPointLocation);
+    locationPage.ClickOnEnterPointCoordsBtn();
+    locationPage.typeOnInputPointCoordLong('-12.928,0');
+    locationPage.typeOnInputPointCoordLat('14.072');
+    locationPage.typeOnInputRadiusAroundLoc('100');
+    locationPage.clickOnNextBtn();
+    locationPage.selectCommodity('coffee');
+    locationPage.typeNewNameListPoint(listToUploadPointLocation);
+    locationPage.clickOnNextBtn();
+    locationPage.clickOnSubmitAnalisys();
+    locationPage.clickOnConfirmAnalisysBtn();
   });
 
   Then('I should see the completion legend', () => {
-    locationPage.elements.titleFinishLegend().should('be.visible')
-    locationPage.elements.subtitleFinishLegend().should('be.visible')
-    locationPage.elements.returnToLocationBtn().should('be.visible')
-  })
-
-
+    locationPage.elements.titleFinishLegend().should('be.visible');
+    locationPage.elements.subtitleFinishLegend().should('be.visible');
+    locationPage.elements.returnToLocationBtn().should('be.visible');
+  });
 });

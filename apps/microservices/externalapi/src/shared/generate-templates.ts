@@ -58,6 +58,15 @@ export const generateAnalysisTemplate = ({
       };
       break;
     }
+    case 'GHG': {
+      message = {
+        listId,
+        type: 'ghg',
+        file: 'csv',
+        key: `${fileName}`,
+      };
+      break;
+    }
     default:
       return;
   }

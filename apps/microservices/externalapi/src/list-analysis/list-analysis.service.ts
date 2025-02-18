@@ -459,6 +459,13 @@ export class ListAnalysisService {
           file: 'shapefile',
         };
       }
+      // Remove it after Analysis Status route for GHG is implemented
+      if (analysisId === 'GHG') {
+        message = {
+          ...message,
+          userEmail,
+        };
+      }
 
       await axios.post(
         `${this.configService.get<string>('LD_MICROSERVICE_URL')}/list/download`,

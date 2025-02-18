@@ -1,10 +1,8 @@
 import { Given, Then, When } from '@badeball/cypress-cucumber-preprocessor';
 import LocationsPage from '../../pages/locationsPage';
 
-describe('Downloading Templates', () => {
-  const KML = 'KML.kml';
+describe('Upload location', () => {
   const timestamp = Date.now();
-  const listToUploadSingleLocation = `uploadSingleLocation${timestamp}`;
   const listToUploadPolygonLocation = `uploadPolygonLocation${timestamp}`;
   const listToUploadPointLocation = `uploadPointLocation${timestamp}`;
   const locationPage = new LocationsPage();
@@ -19,28 +17,12 @@ describe('Downloading Templates', () => {
   When('I click on the Add Location button', () => {
     locationPage.clickOnAddLocations2Btn();
   });
-  When('I select the file upload option', () => {
-    locationPage.clickOnfileUploadBtn();
-  });
+
   When('I select the Polygon option', () => {
     locationPage.clickOnPolygonBtn();
   });
   When('I select the Point option', () => {
     locationPage.clickOnPointBtn();
-  });
-
-  When('I click on the Drop file button and drag a KML file', () => {
-    cy.uploadFile(KML, 'application/vnd.google-earth.kml+xml');
-    locationPage.clickOnNextBtn();
-    locationPage.clickOnNextBtn();
-  });
-
-  Then('I complete the form and confirm the upload', () => {
-    locationPage.selectCommodity('other');
-    locationPage.typeNewNameList(listToUploadSingleLocation);
-    locationPage.clickOnNextBtn();
-    locationPage.clickOnSubmitAnalisys();
-    locationPage.clickOnConfirmAnalisysBtn();
   });
 
   When('I complete the polygon form and confirm', () => {

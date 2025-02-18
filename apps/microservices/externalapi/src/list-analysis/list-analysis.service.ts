@@ -533,6 +533,9 @@ export class ListAnalysisService {
       ListActivityTypesEnum.ListAnalyzing
     );
 
+    // Validate templateID, validate if has commodity specified, if no commodity specified or is specified as "Other" or "Unknown" validate yields
+
+
     const response = await handleCreateAnalysis(
       analysisId.toUpperCase(),
       listId,

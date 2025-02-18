@@ -17,7 +17,7 @@ describe('Downloading Templates', () => {
   });
 
   When('I click on the Add Location button', () => {
-    locationPage.clickOnAddLocationsAlphaBtn();
+    locationPage.clickOnAddLocations2Btn();
   });
   When('I select the file upload option', () => {
     locationPage.clickOnfileUploadBtn();

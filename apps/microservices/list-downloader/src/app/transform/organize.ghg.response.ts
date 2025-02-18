@@ -13,7 +13,10 @@ class OrganizeGreenHouseGasEmissionsResponse extends Transform {
     const csvArray = [];
 
     // Convert Commodity to Human Readable
-    const commodityHumanReadable = MAPSPAM_COMMODITY[commodity] || commodity;
+    let commodityHumanReadable = MAPSPAM_COMMODITY[commodity] || commodity;
+
+    // Remove GFWP_ prefix if it exists
+    commodityHumanReadable = commodityHumanReadable.replace('GFWP_', '');
 
     if (listName && locationId && totalAreaHa && commodity && emissionsFactorByYear) {
       const sharedInfo = [listName, locationId, totalAreaHa, commodityHumanReadable, 'dLUC'];

@@ -1,5 +1,5 @@
 import { Logger } from '@nestjs/common';
-import { AbstractHandler, ChainType } from './types';
+import { AbstractHandler, ChainType, RequestNewList } from './types';
 
 export class ValidateLatLongGeojson extends AbstractHandler<ChainType> {
   private readonly logger = new Logger(ValidateLatLongGeojson.name);
@@ -85,12 +85,14 @@ export class ValidateLatLongGeojson extends AbstractHandler<ChainType> {
         if (geometry && 'coordinates' in geometry) {
           if (!this.validateCoordinates(geometry.coordinates, country)) {
             feature.properties.errorDetails = feature.properties.errorDetails || [];
+            (input.request as RequestNewList).hasGeometryError = true;
             (feature.properties.errorDetails as Array<string>).push('Invalid coordinates');
           }
 
           if (geometry.type === 'Polygon' || geometry.type === 'MultiPolygon') {
             if (!this.validatePolygon(geometry)) {
               feature.properties.errorDetails = feature.properties.errorDetails || [];
+              (input.request as RequestNewList).hasGeometryError = true;
               (feature.properties.errorDetails as Array<string>).push('Invalid polygon geometry');
             }
           }

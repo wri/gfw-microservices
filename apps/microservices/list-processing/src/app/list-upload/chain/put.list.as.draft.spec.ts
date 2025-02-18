@@ -11,91 +11,32 @@ describe('PutListAsDraft', () => {
   it('should return input if saveAsDraft is true', async () => {
     const input: ChainType = {
       request: { saveAsDraft: true } as RequestNewList,
-      geojson: {
-        type: 'FeatureCollection',
-        features: [
-          {
-            type: 'Feature',
-            geometry: {
-              type: 'Point',
-              coordinates: [100, 0],
-            },
-            properties: {},
-          },
-        ],
-      },
     };
 
     const result = await handler.handle(input);
     expect(result).toBe(input);
   });
 
-  it('should return input with saveAsDraft set to true if invalid coordinates are present', async () => {
+  it('should log an error and return input with saveAsDraft set to true if hasGeometryError is true', async () => {
     const input: ChainType = {
-      request: { saveAsDraft: false } as RequestNewList,
-      geojson: {
-        type: 'FeatureCollection',
-        features: [
-          {
-            type: 'Feature',
-            geometry: {
-              type: 'Point',
-              coordinates: [100, 0],
-            },
-            properties: {
-              errorDetails: ['Invalid coordinates'],
-            },
-          },
-        ],
-      },
+      request: { saveAsDraft: false, hasGeometryError: true } as RequestNewList,
     };
 
+    const loggerSpy = jest.spyOn(handler['logger'], 'error');
     const result = await handler.handle(input);
-    expect((result.request as RequestNewList).saveAsDraft).toBe(true);
+
+    expect(loggerSpy).toHaveBeenCalledWith(
+      'Should put list as draft, has invalid coordinates or polygon geometry'
+    );
+    expect(result).toEqual({
+      ...input,
+      request: { ...input.request, saveAsDraft: true },
+    });
   });
 
-  it('should return input with saveAsDraft set to true if invalid polygon geometry is present', async () => {
+  it('should return input unchanged if hasGeometryError is false', async () => {
     const input: ChainType = {
-      request: { saveAsDraft: false } as RequestNewList,
-      geojson: {
-        type: 'FeatureCollection',
-        features: [
-          {
-            type: 'Feature',
-            geometry: {
-              type: 'Point',
-              coordinates: [100, 0],
-            },
-            properties: {
-              errorDetails: ['Invalid polygon geometry'],
-            },
-          },
-        ],
-      },
-    };
-
-    const result = await handler.handle(input);
-    expect((result.request as RequestNewList).saveAsDraft).toBe(true);
-  });
-
-  it('should return input unchanged if no errors are present', async () => {
-    const input: ChainType = {
-      request: { saveAsDraft: false } as RequestNewList,
-      geojson: {
-        type: 'FeatureCollection',
-        features: [
-          {
-            type: 'Feature',
-            geometry: {
-              type: 'Point',
-              coordinates: [100, 0],
-            },
-            properties: {
-              errorDetails: [],
-            },
-          },
-        ],
-      },
+      request: { saveAsDraft: false, hasGeometryError: false } as RequestNewList,
     };
 
     const result = await handler.handle(input);

@@ -376,11 +376,6 @@ export const isGHGCommodityValid = async (id: number, organizationDb: string): P
         `Invalid commodity in list ${listData.id} - ${listData.listName} for GHG Analysis`
       );
     }
-    
-    if (listData.templateId !== 13){
-      Logger.log(`Invalid templateId in list ${listData.id} - ${listData.listName} for GHG Analysis`);
-      throw new Error(`Invalid templateId in list ${listData.id} - ${listData.listName} for GHG Analysis`);
-    }
 
     return true;
   } catch (error) {

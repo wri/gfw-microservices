@@ -524,6 +524,8 @@ export class ListAnalysisService {
     userEmail: string,
     organization_user_id: number
   ) {
+    await this.validateGHGAnalysis(listId, organizationId, analysisId);
+
     const organizationDetails = await this.getOrganizationDetails(organizationId);
 
     await this.saveActivityLogEndpoint.saveActivityLogEndpoint(
@@ -532,9 +534,6 @@ export class ListAnalysisService {
       LIST_ANALISYS_ENDPOINT_NAMES[CREATE_ANALYSIS],
       ListActivityTypesEnum.ListAnalyzing
     );
-
-    // Validate templateID, validate if has commodity specified, if no commodity specified or is specified as "Other" or "Unknown" validate yields
-
 
     const response = await handleCreateAnalysis(
       analysisId.toUpperCase(),
@@ -547,5 +546,40 @@ export class ListAnalysisService {
     );
 
     return response.statusText;
+  }
+  private async validateGHGAnalysis(
+    listId: number,
+    organizationId: number,
+    analysisId: string
+  ): Promise<boolean> {
+    if (analysisId !== 'GHG') {
+      return true;
+    } else {
+      const lists = await this.listService.getList({
+        listId,
+        organizationId,
+      });
+
+      if (!lists) {
+        Logger.warn(`List ${lists} not found`);
+        throw new BadRequestException(`List ${lists.listName} not supported for GHG Analysis`);
+      }
+      // Validate if Template is supported
+      if (lists.templateId !== 13) {
+        Logger.warn('Template not supported');
+        throw new BadRequestException(`List ${lists.listName} not supported for GHG Analysis`);
+      }
+      // Validate if has commodity specified
+      if (!lists.Commodity || lists.Commodity === 'Unknown') {
+        Logger.log('Commodity not specified');
+        throw new BadRequestException(`List ${lists.listName} not supported for GHG Analysis`);
+      }
+      // Validate if commodity is valid one
+      if (lists.Commodity.startsWith('GFWP_')) {
+        Logger.log('Commodity not valid');
+        throw new BadRequestException(`List ${lists.listName} not supported for GHG Analysis`);
+      }
+      return true;
+    }
   }
 }

@@ -1,7 +1,7 @@
 import { Logger } from '@nestjs/common';
 import { AbstractHandler, ChainType, PreviewListRequest } from './types';
 import asyncPool from 'tiny-async-pool';
-import { Feature, FeatureCollection, GeometryWithoutCollection } from '@wri-monorepos/geo';
+import { Feature, FeatureCollection } from '@wri-monorepos/geo';
 import { IFeatureSet, IGeometry, queryFeatures } from '@esri/arcgis-rest-feature-service';
 import { LambdaClient, InvokeCommand, InvocationType } from '@aws-sdk/client-lambda';
 import { NodeHttpHandler } from '@smithy/node-http-handler';

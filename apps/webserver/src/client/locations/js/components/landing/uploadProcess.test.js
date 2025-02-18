@@ -66,6 +66,7 @@ describe('upload-process', () => {
         startAnalysis: true,
         listName: 'llp gfw pro 205806022023',
         saveAsDraft: false,
+        analysisTypesParam: { FCD: true, ALERTS: true },
       })
       .reply(200, {
         ResponseMetadata: {
@@ -119,6 +120,7 @@ describe('upload-process', () => {
         startAnalysis: true,
         listName: 'llp gfw pro 205806022023',
         saveAsDraft: false,
+        analysisTypesParam: { FCD: true, ALERTS: true },
       })
       .reply(200, {
         ResponseMetadata: {

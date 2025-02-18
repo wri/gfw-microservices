@@ -1,4 +1,6 @@
-const axios = require('axios');
+import axios from 'axios';
+
+import { areArraysEqual } from '../../utils/arrayUtils';
 
 const renameProp = (oldProp, newProp, { [oldProp]: old, ...others }) => ({
   [newProp]: old,
@@ -48,14 +50,28 @@ const uploadFileStep = async (param) => {
 };
 
 const createLargeListStep = async (param) => {
-  const { listName, analysisIds = [], saveAsDraft = false } = param;
+  const { listName, analysisIds = [], commodity, saveAsDraft = false } = param;
   try {
     const { data } = await axios.post('/locations/create-large-list', {
       listName,
       analysisIds,
       saveAsDraft,
+      commodity,
     });
     return { ...param, ...data };
+  } catch (error) {
+    throw new Error(error);
+  }
+};
+
+const changeAnalysesTypes = async (param) => {
+  const { list_id: listId, analysisIds, existingListAnalysisIds } = param;
+  try {
+    if (!areArraysEqual(analysisIds, existingListAnalysisIds)) {
+      await axios.post(`/api/list/${listId}/selectedAnalyses`, { analysisIds });
+    }
+
+    return param;
   } catch (error) {
     throw new Error(error);
   }
@@ -78,7 +94,14 @@ const saveListToProcessStep = async (param) => {
 };
 
 const processListStep = async (param) => {
-  const { list_id: listID, fileS3Route, listName, saveAsDraft = false } = param;
+  const {
+    list_id: listID,
+    fileS3Route,
+    listName,
+    commodity,
+    analysisIds,
+    saveAsDraft = false,
+  } = param;
 
   try {
     const { data } = await axios.post('/locations/process-list', {
@@ -88,6 +111,8 @@ const processListStep = async (param) => {
       startAnalysis: true,
       listName,
       saveAsDraft,
+      commodity,
+      analysisTypesParam: Object.fromEntries(analysisIds.map((key) => [key, true])),
     });
     return { ...param, ...data };
   } catch (error) {
@@ -135,15 +160,25 @@ export function uploadProcessByPrevUploadedFile({
   listName,
   analysisIds,
   keyFile,
-  list_id,
+  existingList,
   fileS3Route,
   saveAsDraft,
+  commodity,
 }) {
-  const processPipeline = list_id
-    ? promiseCompose(processListStep)
+  const processPipeline = existingList?.id
+    ? promiseCompose(processListStep, changeAnalysesTypes)
     : promiseCompose(processListStep, saveListToProcessStep, createLargeListStep);
 
-  return processPipeline({ listName, analysisIds, keyFile, list_id, fileS3Route, saveAsDraft });
+  return processPipeline({
+    listName,
+    analysisIds,
+    keyFile,
+    fileS3Route,
+    saveAsDraft,
+    commodity,
+    list_id: existingList?.id,
+    existingListAnalysisIds: existingList?.analysisIds,
+  });
 }
 
 export default uploadProcess;

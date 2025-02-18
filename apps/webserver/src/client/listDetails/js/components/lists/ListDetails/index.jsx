@@ -12,11 +12,7 @@ import AnalysesTabs from './AnalysesTabs';
 import getUserLocationDataFromAPI from '../getUserLocationDataFromAPI';
 import filterListData from '../filterListData';
 import Filter from './Filter';
-import {
-  filterValidCustom,
-  filterValidTemplates,
-  saveGfwListLocations,
-} from '../../../utils/moveLocations';
+import { saveGfwListLocations } from '../../../utils/moveLocations';
 import store from '../../../../../locations/js/store';
 import { locationsPage, userAccessLevel } from '../../../../../common/js/config';
 import {
@@ -80,6 +76,7 @@ import WrappedReactTable from './WrappedReactTable';
 import AnalysisStatusBanners from './AnalysisStatusBanners';
 import AnalysisFailedMessage from './AnalysisFailedMessage';
 import AnalysisInProgressMessage from './AnalysisInProgressMessage';
+import { ThemeProvider } from '../../../../../styles/ThemeProvider';
 
 // CONSTANTS
 import { defaultMaximumAreaSizeForLocationsFilter } from '../../../../../common/js/constants/lists.constants';
@@ -1081,7 +1078,7 @@ export default class ListDetails extends Component {
       const locationData = location_analyses[0];
       const analysisData = location_analyses[1];
 
-      if (locationData.length > 0) {
+      if (locationData?.length) {
         const data = this.setListData(locationData, analysisData);
 
         const columnNames = getAllColumnNames(
@@ -1845,7 +1842,6 @@ export default class ListDetails extends Component {
       shareView,
       showShareList,
       templateData,
-      userLists: userListsProps,
       userSharedLists,
       usersList,
     } = this.props;
@@ -1948,12 +1944,6 @@ export default class ListDetails extends Component {
     }
 
     const userIsOwner = currentUser.id === selectedList.user_id;
-    const validLists = userListsProps.filter((t) => {
-      return (
-        filterValidTemplates(t, activeTemplate, addType, commodityType) &&
-        filterValidCustom(t, customAttributeNames)
-      );
-    });
 
     const selectedListIsShared =
       selectedList &&
@@ -2022,391 +2012,395 @@ export default class ListDetails extends Component {
       selectedLocations?.length < 2;
 
     return (
-      <div className="list-details">
-        {!isGfwList && (
-          <ChangeTypeOfAnalysisModal
-            listId={listID}
-            listName={listName}
-            listAnalysesStatus={listAnalysesStatus}
-            setIsChangeTypeOfAnalysisModalOpen={(open) =>
-              this.setState({ isChangeTypeOfAnalysisModalOpen: open })
-            }
-            isChangeTypeOfAnalysisModalOpen={this.state.isChangeTypeOfAnalysisModalOpen}
-          />
-        )}
-        {!isGfwList && (
-          <AnalysisStatusBanners
-            isDiagnosticStatusDraft={getIsDiagnosticStatusDraft(selectedLists[0])}
-            hasLocationWithErrors={hasLocationWithErrors}
-            openDraftSubmitDialog={() => this.setState({ draftSubmitDialogOpen: true })}
-            toggleReRunAnalysisDialog={this.toggleReRunAnalysisDialog}
-            isFailedAnalysis={isFailedAnalysis}
-            isAnalysisFailedByExceededAnalysisLimit={isAnalysisFailedByExceededAnalysisLimit}
-            isListSubmittedForAnalysis={isListSubmittedForAnalysis}
-          />
-        )}
-        {bannerContent && (
-          <Banner
-            className="lists-banner"
-            intent="positive"
-            onBannerClose={() => this.setState({ bannerContent: '' })}
-          >
-            <span>{bannerContent}</span>
-          </Banner>
-        )}
-
-        <CustomDialog
-          open={dialogOpen}
-          dialogTitle={dialogTitle}
-          dialogMessage={
-            dialogChildren ? (
-              <CopyMoveModal
-                isGfwList={isGfwList}
-                newListName={newListName}
-                isNewListNameDuplicate={isNewListNameDuplicate}
-                isNewListNameValid={isNewListNameValid}
-                selectedLists={selectedLists}
-                locationsCount={isEveryRowSelected ? numberOfResults : selectedLocations.length}
-                selectedMoveOrCopy={selectedMoveOrCopy}
-                selectedNewOrExisting={selectedNewOrExisting}
-                setMoveOrCopy={this.setMoveOrCopy}
-                setNewOrExisting={this.setNewOrExisting}
-                updateNewListName={this.updateNewListName}
-                updateSelectedMove={this.updateSelectedMove}
-                validLists={validLists}
-              />
-            ) : (
-              dialogContent
-            )
-          }
-          dialogActionConfirm={allDialogActions}
-        />
-
-        <CustomDialog
-          open={showSubmitModal}
-          closeAction={() => this.setState({ showSubmitModal: false })}
-          dialogTitle="Confirm Submission"
-          dialogMessage="Click OK to submit this list for analysis. You will not be able to access the list until analysis is complete."
-          dialogActionConfirm={this.moveSelectedLocations}
-        />
-
-        {listNotAccessible && (
-          <FailedPopupDialog
-            open={listNotAccessible}
-            title={`${listName} diagnostic failed to load.`}
-            message={
-              <p>
-                Please select the list to try loading the diagnostic again. If diagnostic continue
-                to fail, email{' '}
-                <a className="popup__link" href="mailto:GFWPROsupport@wri.org">
-                  GFWPROsupport@wri.org
-                </a>{' '}
-                for assistance.
-              </p>
-            }
-            onRequestClose={() => this.setState({ listNotAccessible: !listNotAccessible })}
-            onOkButtonPress={() => (window.location = '/locations')}
-          />
-        )}
-
-        <ModalLoader open={isLoading} />
-
-        <section className="locations-body list-detail-page">
-          {selectedList && (
-            <Stack
-              sx={{ marginBottom: '15px', margin: 'auto', maxWidth: '100%' }}
-              direction="row"
-              justifyContent="space-between"
-              alignItems="center"
+      <ThemeProvider>
+        <div className="list-details">
+          {!isGfwList && (
+            <ChangeTypeOfAnalysisModal
+              listId={listID}
+              listName={listName}
+              listAnalysesStatus={listAnalysesStatus}
+              setIsChangeTypeOfAnalysisModalOpen={(open) =>
+                this.setState({ isChangeTypeOfAnalysisModalOpen: open })
+              }
+              isChangeTypeOfAnalysisModalOpen={this.state.isChangeTypeOfAnalysisModalOpen}
+            />
+          )}
+          {!isGfwList && (
+            <AnalysisStatusBanners
+              isDiagnosticStatusDraft={getIsDiagnosticStatusDraft(selectedLists[0])}
+              hasLocationWithErrors={hasLocationWithErrors}
+              openDraftSubmitDialog={() => this.setState({ draftSubmitDialogOpen: true })}
+              toggleReRunAnalysisDialog={this.toggleReRunAnalysisDialog}
+              isFailedAnalysis={isFailedAnalysis}
+              isAnalysisFailedByExceededAnalysisLimit={isAnalysisFailedByExceededAnalysisLimit}
+              isListSubmittedForAnalysis={isListSubmittedForAnalysis}
+            />
+          )}
+          {bannerContent && (
+            <Banner
+              className="lists-banner"
+              intent="positive"
+              onBannerClose={() => this.setState({ bannerContent: '' })}
             >
-              <div>
-                <Stack alignItems="center" direction="row">
-                  <a href="/locations">
-                    <ArrowBackIcon
-                      sx={{
-                        color: 'black',
-                        marginRight: '10px',
-                        fontSize: '25px',
-                        marginTop: '3px',
-                      }}
-                    />
-                  </a>
-                  <span style={{ fontSize: '25px', textTransform: 'capitalize' }}>{listName}</span>
-                </Stack>
-              </div>
-              <LocationsSummary
-                anchorElCountries={anchorElCountries}
-                closeCountriesPopover={this.closeCountriesPopover}
-                countries={countries}
-                filterValues={filterValues}
-                listLocationsCount={numberOfResults}
-                openCountriesPopover={openCountriesPopover}
-                selectedList={selectedList}
-                shareView={shareView}
-                toggleCountriesPopover={this.toggleCountriesPopover}
-                numberOfResults={numberOfResults}
-              />
-            </Stack>
+              <span>{bannerContent}</span>
+            </Banner>
           )}
 
-          <div className="flex-grid">
-            <section className="list-details-container">
-              {/* Shared lists view */}
-              {shareView ? (
-                <>
-                  {!locationDataIsNotAvailable && (
-                    <div className="section-container">
-                      <ShareList
-                        key={selectedList.id}
-                        usersList={usersList}
-                        currentUser={currentUser}
-                        selectedList={selectedList}
-                      />
-                    </div>
-                  )}
-                </>
+          <CustomDialog
+            open={dialogOpen}
+            dialogTitle={dialogTitle}
+            dialogMessage={
+              dialogChildren ? (
+                <CopyMoveModal
+                  isGfwList={isGfwList}
+                  newListName={newListName}
+                  isNewListNameDuplicate={isNewListNameDuplicate}
+                  isNewListNameValid={isNewListNameValid}
+                  selectedLists={selectedLists}
+                  locationsCount={isEveryRowSelected ? numberOfResults : selectedLocations.length}
+                  selectedMoveOrCopy={selectedMoveOrCopy}
+                  selectedNewOrExisting={selectedNewOrExisting}
+                  setMoveOrCopy={this.setMoveOrCopy}
+                  setNewOrExisting={this.setNewOrExisting}
+                  updateNewListName={this.updateNewListName}
+                  updateSelectedMove={this.updateSelectedMove}
+                />
               ) : (
-                <>
-                  <ListActions
-                    selectedList={selectedList}
-                    viewMap={this.viewMap}
-                    currentUser={currentUser}
-                    toggleReRunAnalysisDialog={this.toggleReRunAnalysisDialog}
-                    rerunDialogState={rerunDialogState}
-                    rerunList={this.rerunList}
-                    isManageListFolderOpen={isManageListFolderOpen}
-                    setIsManageListFolderOpen={(value) => {
-                      this.setState({ isManageListFolderOpen: value });
-                    }}
-                    showShareList={() => {
-                      showShareList(true);
-                    }}
-                    handleDraftSubmit={(e) => this.handleDraftSubmit(e)}
-                    draftSubmitDialogOpen={draftSubmitDialogOpen}
-                    setDraftSubmitDialogOpen={(value) => {
-                      this.setState({ draftSubmitDialogOpen: value });
-                    }}
-                    isListSubmittedForAnalysis={isListSubmittedForAnalysis}
-                    setIsListSubmittedForAnalysis={(value) => {
-                      this.setState({ isListSubmittedForAnalysis: value });
-                    }}
-                    isInFolder={isInFolder}
-                    folders={folders}
-                    userIsOwner={userIsOwner}
-                    setState={this.setState}
-                    searchInputValue={searchInputValue}
-                    handleSearchInputChange={this.handleSearchInputChange}
-                    handleSearchInputKeyDown={this.handleSearchInputKeyDown}
-                    handlecSearchInputClick={this.handlecSearchInputClick}
-                    showMultipleSelectionBulkActions={showMultipleSelectionBulkActions}
-                    isEditActionAvailable={isEditActionAvailable}
-                    editList={this.editList}
-                    canMove={canMove}
-                    promptMoveSelectedLocations={this.promptMoveSelectedLocations}
-                    canDelete={canDelete}
-                    promptDeleteSelectedLocations={this.promptDeleteSelectedLocations}
-                    filters={filters}
-                    listFilterStr={filterString}
-                    tableSortedBy={tableSortedBy}
-                    tableSortedDesc={tableSortedDesc}
-                    visibleColumns={visibleColumns}
-                    selectedLocations={selectedLocations}
-                    listView={listView}
-                    isLoading={(loading) => {
-                      this.setState({ isLoading: loading });
-                    }}
-                    isGfwList={isGfwList}
-                  />
-
-                  <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                    {!this.areAllAnalysesDraft() && (
-                      <AnalysesTabs
-                        listViewOptions={listViewOptions}
-                        listView={listView}
-                        changeListView={this.changeListView}
-                        listAnalysesStatus={listAnalysesStatus}
-                        hasLocationWithErrors={hasLocationWithErrors}
-                      />
-                    )}
-
-                    {!isGfwList && (
-                      <MaterialButton
-                        style={{ color: '#97bd3d', fontSize: '12px' }}
-                        onClick={() => {
-                          this.setState({ isChangeTypeOfAnalysisModalOpen: true });
-                        }}
-                      >
-                        CHANGE ANALYSES
-                      </MaterialButton>
-                    )}
-                  </div>
-
-                  <Paper sx={{ padding: '12px', borderTopLeftRadius: '0px' }}>
-                    {locationDataIsNotAvailable && (
-                      <AnalysisFailedMessage
-                        toggleReRunAnalysisDialog={this.toggleReRunAnalysisDialog}
-                      />
-                    )}
-
-                    {isAnalysisInProgress && <AnalysisInProgressMessage />}
-                    {!locationDataIsNotAvailable && !isAnalysisInProgress && (
-                      <>
-                        <div className="list-analysis-actions">
-                          {isListDiagnosticButtonVisible && (
-                            <MaterialButton
-                              className="list-analysis-actions__diagnostic-button"
-                              sx={{
-                                color: '#97bd3d',
-                                border: '1px solid #97bd3d',
-                                borderRadius: '50px',
-                                '&:hover': {
-                                  backgroundColor: 'rgba(151, 189, 61, 0.2)',
-                                },
-                              }}
-                              data-cy={
-                                selectedLocations?.length
-                                  ? 'location-diagnostics'
-                                  : 'list-diagnostics'
-                              }
-                              onClick={() => this.viewDiagnostic()}
-                              startIcon={<QueryStatsIcon />}
-                            >
-                              {selectedLocations?.length
-                                ? 'Location Diagnostic'
-                                : 'List diagnostic'}
-                            </MaterialButton>
-                          )}
-
-                          {!this.areAllAnalysesDraft() && (
-                            <span className="list-analysis-actions__analysis-date">
-                              {this.getAnalysisLastUpdatedDate(listAnalysesStatus)}
-                            </span>
-                          )}
-                        </div>
-                        <Filter
-                          filterCount={filterCount}
-                          filterValues={filterValues}
-                          parentCompanyOptionsForFilter={parentCompanyOptionsForFilter}
-                          supplierNameOptionsForFilter={supplierNameOptionsForFilter}
-                          secondSupplierNameOptionsForFilter={secondSupplierNameOptionsForFilter}
-                          listColumns={listColumns}
-                          visibleColumns={visibleColumns}
-                          setListColumns={(newVisibleColumns) =>
-                            this.setState({
-                              visibleColumns: newVisibleColumns,
-                            })
-                          }
-                          isFilterModalVisible={isFilterModalVisible}
-                          listView={listView}
-                          listName={listName}
-                          adminAreas={currentAdminAreas}
-                          protectedAreas={pAreas}
-                          isGfwList={selectedList.isGlobalForestWatchList}
-                          areAllAnalysesDraft={this.areAllAnalysesDraft()}
-                        />
-
-                        <section>
-                          {filteredLocationData.length === 0 && !isLoading && (
-                            <Grid
-                              item
-                              container
-                              direction="column"
-                              alignItems="center"
-                              justifyContent="center"
-                              textAlign="center"
-                            >
-                              <Box display="flex" alignItems="center" gap={1}>
-                                <NotListedLocationIcon
-                                  variant="primary"
-                                  sx={{
-                                    fontSize: '25px',
-                                  }}
-                                />
-                              </Box>
-                              <Typography variant="h5">No locations found.</Typography>
-
-                              <Typography variant="body1">
-                                Adjust your filters or add locations to your list to get started
-                              </Typography>
-                            </Grid>
-                          )}
-                          {listView !== '' && filteredLocationData.length > 0 && (
-                            <WrappedReactTable
-                              listId={selectedLists[0].id}
-                              isGfwList={isGfwList}
-                              listView={listView}
-                              isSharedList={isSharedList}
-                              combinedColumns={combinedColumns}
-                              numberOfPages={this.state.numberOfPages}
-                              listColumns={listColumns}
-                              visibleColumns={visibleColumns}
-                              filteredLists={filteredLocationData}
-                              page={page}
-                              isUserList={!selectedLists[0].isGlobalForestWatchList}
-                              getUserLocationData={this.getUserLocationData}
-                              getFilteredGfwListData={this.getFilteredGfwListData}
-                              tableSortedBy={tableSortedBy}
-                              tableSortedDesc={tableSortedDesc}
-                              setSortedBy={(tableSortedBy, tableSortedDesc) =>
-                                this.setState(
-                                  {
-                                    tableSortedBy,
-                                    tableSortedDesc,
-                                  },
-                                  () => {
-                                    this.getLocationsData(selectedLists[0].id, isGfwList, page);
-                                  }
-                                )
-                              }
-                              viewDiagnostic={this.viewDiagnostic}
-                              isDeleteButtonAvailable={canDelete}
-                              promptDeleteSelectedLocations={this.promptDeleteSelectedLocations}
-                              isEditActionAvailable={isEditActionAvailable}
-                              editList={this.editList}
-                              copyMoveAction={this.promptMoveSelectedLocations}
-                              isCopyMoveActionAvailable={canMove}
-                              currentUser={currentUser}
-                              selectedList={selectedList}
-                              setIsLoading={(loading) => {
-                                this.setState({ isLoading: loading });
-                              }}
-                            />
-                          )}
-                        </section>
-                      </>
-                    )}
-                  </Paper>
-                </>
-              )}
-            </section>
-          </div>
-        </section>
-
-        {displayLargeListEditingModal && (
-          <LargeListEditing
-            addType={addType}
-            activeTemplate={activeTemplate}
-            commodityType={commodityType}
-            templateData={templateData}
-            customAttributeNames={customAttributeNames}
-            listID={listID}
-            listName={listName}
-            filters={filters}
-            tableSortedBy={tableSortedBy}
-            tableSortedDesc={tableSortedDesc}
-            selectedLocations={selectedLocations}
-            onClose={(refreshTable) => {
-              this.setState({ displayLargeListEditingModal: false });
-              if (refreshTable) {
-                this.getUserLocationData(listID);
-              }
-            }}
-            isLoading={(loading) => {
-              this.setState({ isLoading: loading });
-            }}
+                dialogContent
+              )
+            }
+            dialogActionConfirm={allDialogActions}
           />
-        )}
-      </div>
+
+          <CustomDialog
+            open={showSubmitModal}
+            closeAction={() => this.setState({ showSubmitModal: false })}
+            dialogTitle="Confirm Submission"
+            dialogMessage="Click OK to submit this list for analysis. You will not be able to access the list until analysis is complete."
+            dialogActionConfirm={this.moveSelectedLocations}
+          />
+
+          {listNotAccessible && (
+            <FailedPopupDialog
+              open={listNotAccessible}
+              title={`${listName} diagnostic failed to load.`}
+              message={
+                <p>
+                  Please select the list to try loading the diagnostic again. If diagnostic continue
+                  to fail, email{' '}
+                  <a className="popup__link" href="mailto:GFWPROsupport@wri.org">
+                    GFWPROsupport@wri.org
+                  </a>{' '}
+                  for assistance.
+                </p>
+              }
+              onRequestClose={() => this.setState({ listNotAccessible: !listNotAccessible })}
+              onOkButtonPress={() => (window.location = '/locations')}
+            />
+          )}
+
+          <ModalLoader open={isLoading} />
+
+          <section className="locations-body list-detail-page">
+            {selectedList && (
+              <Stack
+                sx={{ marginBottom: '15px', margin: 'auto', maxWidth: '100%' }}
+                direction="row"
+                justifyContent="space-between"
+                alignItems="center"
+              >
+                <div>
+                  <Stack alignItems="center" direction="row">
+                    <a href="/locations">
+                      <ArrowBackIcon
+                        sx={{
+                          color: 'black',
+                          marginRight: '10px',
+                          fontSize: '25px',
+                          marginTop: '3px',
+                        }}
+                      />
+                    </a>
+                    <span style={{ fontSize: '25px', textTransform: 'capitalize' }}>
+                      {listName}
+                    </span>
+                  </Stack>
+                </div>
+                <LocationsSummary
+                  anchorElCountries={anchorElCountries}
+                  closeCountriesPopover={this.closeCountriesPopover}
+                  countries={countries}
+                  filterValues={filterValues}
+                  listLocationsCount={numberOfResults}
+                  openCountriesPopover={openCountriesPopover}
+                  selectedList={selectedList}
+                  shareView={shareView}
+                  toggleCountriesPopover={this.toggleCountriesPopover}
+                  numberOfResults={numberOfResults}
+                />
+              </Stack>
+            )}
+
+            <div className="flex-grid">
+              <section className="list-details-container">
+                {/* Shared lists view */}
+                {shareView ? (
+                  <>
+                    {!locationDataIsNotAvailable && (
+                      <div className="section-container">
+                        <ShareList
+                          key={selectedList.id}
+                          usersList={usersList}
+                          currentUser={currentUser}
+                          selectedList={selectedList}
+                        />
+                      </div>
+                    )}
+                  </>
+                ) : (
+                  <>
+                    <ListActions
+                      selectedList={selectedList}
+                      viewMap={this.viewMap}
+                      currentUser={currentUser}
+                      toggleReRunAnalysisDialog={this.toggleReRunAnalysisDialog}
+                      rerunDialogState={rerunDialogState}
+                      rerunList={this.rerunList}
+                      isManageListFolderOpen={isManageListFolderOpen}
+                      setIsManageListFolderOpen={(value) => {
+                        this.setState({ isManageListFolderOpen: value });
+                      }}
+                      showShareList={() => {
+                        showShareList(true);
+                      }}
+                      handleDraftSubmit={(e) => this.handleDraftSubmit(e)}
+                      draftSubmitDialogOpen={draftSubmitDialogOpen}
+                      setDraftSubmitDialogOpen={(value) => {
+                        this.setState({ draftSubmitDialogOpen: value });
+                      }}
+                      isListSubmittedForAnalysis={isListSubmittedForAnalysis}
+                      setIsListSubmittedForAnalysis={(value) => {
+                        this.setState({ isListSubmittedForAnalysis: value });
+                      }}
+                      isInFolder={isInFolder}
+                      folders={folders}
+                      userIsOwner={userIsOwner}
+                      setState={this.setState}
+                      searchInputValue={searchInputValue}
+                      handleSearchInputChange={this.handleSearchInputChange}
+                      handleSearchInputKeyDown={this.handleSearchInputKeyDown}
+                      handlecSearchInputClick={this.handlecSearchInputClick}
+                      showMultipleSelectionBulkActions={showMultipleSelectionBulkActions}
+                      isEditActionAvailable={isEditActionAvailable}
+                      editList={this.editList}
+                      canMove={canMove}
+                      promptMoveSelectedLocations={this.promptMoveSelectedLocations}
+                      canDelete={canDelete}
+                      promptDeleteSelectedLocations={this.promptDeleteSelectedLocations}
+                      filters={filters}
+                      listFilterStr={filterString}
+                      tableSortedBy={tableSortedBy}
+                      tableSortedDesc={tableSortedDesc}
+                      visibleColumns={visibleColumns}
+                      selectedLocations={selectedLocations}
+                      listView={listView}
+                      isLoading={(loading) => {
+                        this.setState({ isLoading: loading });
+                      }}
+                      isGfwList={isGfwList}
+                    />
+
+                    <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                      {!this.areAllAnalysesDraft() && (
+                        <AnalysesTabs
+                          listViewOptions={listViewOptions}
+                          listView={listView}
+                          changeListView={this.changeListView}
+                          listAnalysesStatus={listAnalysesStatus}
+                          hasLocationWithErrors={hasLocationWithErrors}
+                        />
+                      )}
+
+                      {!isGfwList && (
+                        <MaterialButton
+                          style={{ color: '#97bd3d', fontSize: '12px' }}
+                          onClick={() => {
+                            this.setState({ isChangeTypeOfAnalysisModalOpen: true });
+                          }}
+                        >
+                          CHANGE ANALYSES
+                        </MaterialButton>
+                      )}
+                    </div>
+
+                    <Paper sx={{ padding: '12px', borderTopLeftRadius: '0px' }}>
+                      {locationDataIsNotAvailable && (
+                        <AnalysisFailedMessage
+                          toggleReRunAnalysisDialog={this.toggleReRunAnalysisDialog}
+                        />
+                      )}
+
+                      {isAnalysisInProgress && <AnalysisInProgressMessage />}
+                      {!locationDataIsNotAvailable && !isAnalysisInProgress && (
+                        <>
+                          <div className="list-analysis-actions">
+                            {isListDiagnosticButtonVisible && (
+                              <MaterialButton
+                                className="list-analysis-actions__diagnostic-button"
+                                sx={{
+                                  color: '#97bd3d',
+                                  border: '1px solid #97bd3d',
+                                  borderRadius: '50px',
+                                  '&:hover': {
+                                    backgroundColor: 'rgba(151, 189, 61, 0.2)',
+                                  },
+                                }}
+                                data-cy={
+                                  selectedLocations?.length
+                                    ? 'location-diagnostics'
+                                    : 'list-diagnostics'
+                                }
+                                onClick={() => this.viewDiagnostic()}
+                                startIcon={<QueryStatsIcon />}
+                              >
+                                {selectedLocations?.length
+                                  ? 'Location Diagnostic'
+                                  : 'List diagnostic'}
+                              </MaterialButton>
+                            )}
+
+                            {!this.areAllAnalysesDraft() && (
+                              <span className="list-analysis-actions__analysis-date">
+                                {this.getAnalysisLastUpdatedDate(listAnalysesStatus)}
+                              </span>
+                            )}
+                          </div>
+                          <Filter
+                            filterCount={filterCount}
+                            filterValues={filterValues}
+                            parentCompanyOptionsForFilter={parentCompanyOptionsForFilter}
+                            supplierNameOptionsForFilter={supplierNameOptionsForFilter}
+                            secondSupplierNameOptionsForFilter={secondSupplierNameOptionsForFilter}
+                            listColumns={listColumns}
+                            visibleColumns={visibleColumns}
+                            setListColumns={(newVisibleColumns) =>
+                              this.setState({
+                                visibleColumns: newVisibleColumns,
+                              })
+                            }
+                            isFilterModalVisible={isFilterModalVisible}
+                            listView={listView}
+                            listName={listName}
+                            adminAreas={currentAdminAreas}
+                            protectedAreas={pAreas}
+                            isGfwList={selectedList.isGlobalForestWatchList}
+                            areAllAnalysesDraft={this.areAllAnalysesDraft()}
+                          />
+
+                          <section>
+                            {filteredLocationData.length === 0 && !isLoading && (
+                              <Grid
+                                item
+                                container
+                                direction="column"
+                                alignItems="center"
+                                justifyContent="center"
+                                textAlign="center"
+                                sx={{ pb: 2 }}
+                              >
+                                <Box display="flex" alignItems="center" gap={1}>
+                                  <NotListedLocationIcon
+                                    color="primary"
+                                    sx={{
+                                      fontSize: '25px',
+                                    }}
+                                  />
+                                </Box>
+                                <Typography variant="h5">No locations found.</Typography>
+
+                                <Typography variant="body1">
+                                  Adjust your filters or add locations to your list to get started
+                                </Typography>
+                              </Grid>
+                            )}
+                            {listView !== '' && filteredLocationData.length > 0 && (
+                              <WrappedReactTable
+                                listId={selectedLists[0].id}
+                                isGfwList={isGfwList}
+                                listView={listView}
+                                isSharedList={isSharedList}
+                                combinedColumns={combinedColumns}
+                                numberOfPages={this.state.numberOfPages}
+                                listColumns={listColumns}
+                                visibleColumns={visibleColumns}
+                                filteredLists={filteredLocationData}
+                                page={page}
+                                isUserList={!selectedLists[0].isGlobalForestWatchList}
+                                getUserLocationData={this.getUserLocationData}
+                                getFilteredGfwListData={this.getFilteredGfwListData}
+                                tableSortedBy={tableSortedBy}
+                                tableSortedDesc={tableSortedDesc}
+                                setSortedBy={(tableSortedBy, tableSortedDesc) =>
+                                  this.setState(
+                                    {
+                                      tableSortedBy,
+                                      tableSortedDesc,
+                                    },
+                                    () => {
+                                      this.getLocationsData(selectedLists[0].id, isGfwList, page);
+                                    }
+                                  )
+                                }
+                                viewDiagnostic={this.viewDiagnostic}
+                                isDeleteButtonAvailable={canDelete}
+                                promptDeleteSelectedLocations={this.promptDeleteSelectedLocations}
+                                isEditActionAvailable={isEditActionAvailable}
+                                editList={this.editList}
+                                copyMoveAction={this.promptMoveSelectedLocations}
+                                isCopyMoveActionAvailable={canMove}
+                                currentUser={currentUser}
+                                selectedList={selectedList}
+                                setIsLoading={(loading) => {
+                                  this.setState({ isLoading: loading });
+                                }}
+                              />
+                            )}
+                          </section>
+                        </>
+                      )}
+                    </Paper>
+                  </>
+                )}
+              </section>
+            </div>
+          </section>
+
+          {displayLargeListEditingModal && (
+            <LargeListEditing
+              addType={addType}
+              activeTemplate={activeTemplate}
+              commodityType={commodityType}
+              templateData={templateData}
+              customAttributeNames={customAttributeNames}
+              listID={listID}
+              listName={listName}
+              filters={filters}
+              tableSortedBy={tableSortedBy}
+              tableSortedDesc={tableSortedDesc}
+              selectedLocations={selectedLocations}
+              onClose={(refreshTable) => {
+                this.setState({ displayLargeListEditingModal: false });
+                if (refreshTable) {
+                  this.getUserLocationData(listID);
+                }
+              }}
+              isLoading={(loading) => {
+                this.setState({ isLoading: loading });
+              }}
+            />
+          )}
+        </div>
+      </ThemeProvider>
     );
   }
 }

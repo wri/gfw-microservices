@@ -1311,7 +1311,7 @@ module.exports = (app, limiter) => {
    * Save list to being processed in database and queue for processing
    */
   app.post('/locations/create-large-list', (req, res) => {
-    const { listName, analysisIds } = req.body;
+    const { listName, analysisIds, saveAsDraft, commodity } = req.body;
     const userId = req.session.organization_user_id;
     const { LISTS_MICROSERVICE_URL } = process.env;
     axios
@@ -1321,7 +1321,8 @@ module.exports = (app, limiter) => {
         client_database: req.session.organization_database,
         organization_id: req.session.organization_id,
         analysisIds,
-        saveAsDraft: false,
+        saveAsDraft: saveAsDraft || false,
+        commodity: commodity,
       })
       .then((response) => {
         res.send({ user_id: userId, list_id: response.data.list_id });
@@ -1336,19 +1337,32 @@ module.exports = (app, limiter) => {
    * Send request to S3 Endpoint to start list processing
    */
   app.post('/locations/process-list', async (req, res) => {
-    const { list_id, path: pathLocal, template_type, startAnalysis, listName } = req.body;
-    const { organization_user_id, organization_id, subscription_status_id, organization_database } =
-      req.session;
+    try {
+      const {
+        list_id,
+        path: pathLocal,
+        template_type,
+        startAnalysis,
+        listName,
+        saveAsDraft,
+        commodity,
+        analysisTypesParam,
+      } = req.body;
 
-    const { LISTS_MICROSERVICE_URL } = process.env;
-    const listAnalysisStatusData = await getListAnalysisStatusByListId(
-      organization_database,
-      list_id
-    );
-    const analysisTypes = extractAnalysisTypes(listAnalysisStatusData);
+      const {
+        organization_user_id,
+        organization_id,
+        subscription_status_id,
+        organization_database,
+      } = req.session;
 
-    axios
-      .post(`${LISTS_MICROSERVICE_URL}/process-list`, {
+      const { LISTS_MICROSERVICE_URL } = process.env;
+
+      let analysisTypes =
+        analysisTypesParam ||
+        extractAnalysisTypes(await getListAnalysisStatusByListId(organization_database, list_id));
+
+      const payload = {
         organization_id,
         list_id,
         organization_database,
@@ -1360,28 +1374,32 @@ module.exports = (app, limiter) => {
         user_id: organization_user_id,
         startAnalysis,
         analysisIds: Object.keys(analysisTypes),
-        saveAsDraft: false,
-      })
-      .then((response) => {
-        logger.info('ProcessList LP response.data', response.data);
-        // Send email to user that list is submitted to be analysed
-        return AWSSES.sendEmail__ListSubmittedForAnalysis(req, listName, analysisTypes);
-      })
-      .then((response) => {
-        logger.info('ProcessList SES response', response);
-        res.send(response);
-      })
-      .catch(async (error) => {
-        await controller.handleListProcessingError(
-          error,
-          req,
-          res,
-          listName,
-          'Error /locations/process-list',
-          `${LISTS_MICROSERVICE_URL}/process-list`,
-          config
-        );
-      });
+        saveAsDraft,
+        commodity,
+      };
+
+      const response = await axios.post(`${LISTS_MICROSERVICE_URL}/process-list`, payload);
+      logger.info('ProcessList LP response.data', response.data);
+
+      const emailResponse = await AWSSES.sendEmail__ListSubmittedForAnalysis(
+        req,
+        listName,
+        analysisTypes
+      );
+      logger.info('ProcessList SES response', emailResponse);
+
+      res.send(emailResponse);
+    } catch (error) {
+      await controller.handleListProcessingError(
+        error,
+        req,
+        res,
+        req.body.listName,
+        'Error /locations/process-list',
+        `${process.env.LISTS_MICROSERVICE_URL}/process-list`,
+        config
+      );
+    }
   });
 
   /**

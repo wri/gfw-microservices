@@ -120,8 +120,9 @@ export function SummaryAndSubmit() {
         analysisIds,
         fileS3Route: uploadedFile.fileS3Route,
         keyFile: uploadedFile.keyFile,
-        list_id: uploadLocationState.existingList?.id,
+        existingList: uploadLocationState.existingList,
         saveAsDraft: isDraftUpload.current,
+        commodity: uploadLocationState.commodity,
       });
       updateSaveMode(isDraftUpload.current);
       history.push('SUBMISSION_SUCCESS');

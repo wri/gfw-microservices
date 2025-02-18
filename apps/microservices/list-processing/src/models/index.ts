@@ -76,6 +76,8 @@ export class RequestLargeListProcess {
 
   @ApiProperty()
   saveAsDraft: false;
+  @ApiProperty()
+  commodity?: string;
 }
 
 export class StartAnalysisType {

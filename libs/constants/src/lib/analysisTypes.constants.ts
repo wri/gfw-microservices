@@ -9,6 +9,8 @@ export enum ListAnalysisIds {
   FCD = 'FCD',
   AFI = 'AFI',
   ALERTS = 'ALERTS',
+
+  GHG = 'GHG',
 }
 
 export const analysisTypes = {

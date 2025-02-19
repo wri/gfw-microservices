@@ -48,6 +48,7 @@ describe('StartAnalysis', () => {
         organization_id: 1,
         subscription_status_id: 1,
         path: 'test',
+        analysisIds: ['FCD'],
       },
       geojson: {
         features: [
@@ -92,6 +93,7 @@ describe('StartAnalysis', () => {
         organization_id: 1,
         subscription_status_id: 1,
         path: 'test',
+        analysisIds: ['FCD'],
       },
       geojson: {
         features: [
@@ -134,6 +136,7 @@ describe('StartAnalysis', () => {
         organization_id: 1,
         subscription_status_id: 1,
         path: 'test',
+        analysisIds: ['FCD'],
       },
       geojson: {
         features: [
@@ -172,6 +175,7 @@ describe('StartAnalysis', () => {
         organization_id: 1,
         subscription_status_id: 1,
         path: 'test',
+        analysisIds: ['FCD'],
       },
       geojson: {
         features: [

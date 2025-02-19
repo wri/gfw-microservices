@@ -1,5 +1,5 @@
 import { Logger } from '@nestjs/common';
-import { AbstractHandler, ChainType, PreviewListRequest } from './types';
+import { AbstractHandler, ChainType, PreviewListRequest, RequestNewList } from './types';
 import asyncPool from 'tiny-async-pool';
 import { Feature, FeatureCollection } from '@wri-monorepos/geo';
 import { IFeatureSet, IGeometry, queryFeatures } from '@esri/arcgis-rest-feature-service';
@@ -121,7 +121,11 @@ export class GADMService extends AbstractHandler<ChainType> {
       };
     }
 
-    throw new Error('Feature does not have valid longitude/latitude or geometry.');
+    return {
+      latitude: 0,
+      longitude: 0,
+      hasUnanalyzableError: true,
+    };
   };
 
   /**
@@ -130,7 +134,11 @@ export class GADMService extends AbstractHandler<ChainType> {
    * @returns {Promise<IFeatureSet>} - A promise that resolves to the query result.
    */
   async queryGADM(feature: Feature): Promise<IFeatureSet> {
-    const { latitude, longitude } = this.getLatLngFromFeature(feature);
+    const { latitude, longitude, hasUnanalyzableError } = this.getLatLngFromFeature(feature);
+
+    if (hasUnanalyzableError) {
+      throw new Error('Feature does not have valid longitude/latitude or geometry.');
+    }
 
     const response = (await queryFeatures({
       url: this.getGadmServiceUrl(),
@@ -150,14 +158,21 @@ export class GADMService extends AbstractHandler<ChainType> {
   }
 
   getGeoReferenceData = async (feature: Feature) => {
-    const response = await this.queryGADM(feature);
-    if (response.features && response.features.length > 0) {
-      feature.properties = {
-        ...feature.properties,
-        subState: response.features[0].attributes.name_2,
-        state: response.features[0].attributes.name_1,
-        country: response.features[0].attributes.name_0,
-        gadmid: response.features[0].attributes.gadmid,
+    try {
+      const response = await this.queryGADM(feature);
+      if (response.features && response.features.length > 0) {
+        feature.properties = {
+          ...feature.properties,
+          subState: response.features[0].attributes.name_2,
+          state: response.features[0].attributes.name_1,
+          country: response.features[0].attributes.name_0,
+          gadmid: response.features[0].attributes.gadmid,
+        };
+      }
+    } catch (e) {
+      this.logger.error('Error in queryGADM', e.stack || e.message);
+      return {
+        hasUnanalyzableError: true,
       };
     }
   };
@@ -229,7 +244,11 @@ export class GADMService extends AbstractHandler<ChainType> {
     const { path, preview = false } = request.request as PreviewListRequest;
     const { features } = geojson as FeatureCollection;
 
-    await this.asyncPoolAll(POOL_SIZE, features, this.composeResults);
+    const results = await this.asyncPoolAll(POOL_SIZE, features, this.composeResults);
+
+    if (results.some((result) => result.hasUnanalyzableError)) {
+      (request.request as RequestNewList).hasUnanalyzableError = true;
+    }
 
     this.logger.debug('GADMService - done with getGeoReferenceData for', path);
     // We should not call clip to land if we are in the preview mode.

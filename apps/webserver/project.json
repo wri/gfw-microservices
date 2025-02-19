@@ -61,6 +61,7 @@
       }
     },
     "serve": {
+      "dependsOn": ["build"],
       "executor": "@nx/js:node",
       "options": {
         "buildTarget": "webserver:build",

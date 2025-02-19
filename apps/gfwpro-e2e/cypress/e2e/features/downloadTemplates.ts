@@ -12,7 +12,7 @@ describe('Downloading Templates', () => {
   });
 
   When('I click on the Add Location Alpa button and select the file upload option', () => {
-    locationPage.clickOnAddLocationsAlphaBtn();
+    locationPage.clickOnAddLocations2Btn();
     locationPage.clickOnfileUploadBtn();
   });
 

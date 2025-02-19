@@ -12,5 +12,4 @@ UPDATE AccountProfile SET
   organization_website = @orgWebsite,
   organization_is_subsidiary = @isSubsidiary,
   organization_parent = @orgParent
-GO
 `;

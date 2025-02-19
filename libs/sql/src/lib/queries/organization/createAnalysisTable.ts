@@ -74,12 +74,31 @@ BEGIN
 			[commodity_value_protected_areas] NVARCHAR(MAX) DEFAULT ''{}'',
 
 			[commodity_mill_priority_level] NVARCHAR(MAX) DEFAULT ''{}'',
+			[commodity_mill_priority_score] NVARCHAR(MAX) DEFAULT ''{}'',
+			[commodity_value_overall_score] NVARCHAR(MAX) DEFAULT ''{}'',
 
 			[commodity_threat_deforestation] NVARCHAR(MAX) DEFAULT ''{}'',
 			[commodity_threat_peat] NVARCHAR(MAX) DEFAULT ''{}'',
 			[commodity_threat_protected_areas] NVARCHAR(MAX) DEFAULT ''{}'',
 			[commodity_threat_fires] NVARCHAR(MAX) DEFAULT ''{}'',
-			[dissolved_data_location_info] NVARCHAR(300) DEFAULT ''{}''
+			[commodity_threat_overall_score] NVARCHAR(MAX) DEFAULT ''{}'',
+			[dissolved_data_location_info] NVARCHAR(300) DEFAULT ''{}'',
+
+			[tree_cover_loss_arg_otbn_yearly] NVARCHAR(MAX) DEFAULT ''{}'',
+			[arg_otbn_area] NVARCHAR(MAX) DEFAULT ''{}'',
+			[argentina_presence] NVARCHAR(50) DEFAULT ''false'',
+			[protected_areas_by_category_area] NVARCHAR(MAX) NOT NULL DEFAULT ''{}'',
+			[landmark_by_category_area] NVARCHAR(MAX) NOT NULL DEFAULT ''{}'',
+			[country_specific_deforestation_yearly] NVARCHAR(MAX),
+			[country_specific_deforestation_wdpa_yearly] NVARCHAR(MAX),
+			[country_specific_deforestation_landmark_yearly] NVARCHAR(MAX),
+			[country_specific_deforestation_classified_region_yearly] NVARCHAR(MAX),
+			[tree_cover_loss_by_country_yearly] NVARCHAR(MAX),
+			[tree_cover_loss_by_country_wdpa_yearly] NVARCHAR(MAX),
+			[tree_cover_loss_by_country_landmark_yearly] NVARCHAR(MAX),
+			[country_area] NVARCHAR(MAX),
+			[classified_region_area] NVARCHAR(MAX),
+			[tree_cover_loss_by_country_classified_region_yearly] NVARCHAR(MAX)
 		)
 	'
 

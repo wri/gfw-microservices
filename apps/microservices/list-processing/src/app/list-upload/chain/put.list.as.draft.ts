@@ -6,13 +6,13 @@ export class PutListAsDraft extends AbstractHandler<ChainType> {
 
   async handle(input: ChainType): Promise<ChainType> {
     const { request } = input;
-    const { saveAsDraft, hasGeometryError = false } = request as RequestNewList;
+    const { saveAsDraft, hasUnanalyzableError = false } = request as RequestNewList;
 
     if (saveAsDraft) {
       return input;
     }
 
-    if (hasGeometryError) {
+    if (hasUnanalyzableError) {
       this.logger.error('Should put list as draft, has invalid coordinates or polygon geometry');
       return {
         ...input,

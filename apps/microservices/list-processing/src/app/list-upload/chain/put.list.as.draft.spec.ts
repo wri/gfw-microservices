@@ -17,9 +17,9 @@ describe('PutListAsDraft', () => {
     expect(result).toBe(input);
   });
 
-  it('should log an error and return input with saveAsDraft set to true if hasGeometryError is true', async () => {
+  it('should log an error and return input with saveAsDraft set to true if hasUnanalyzableError is true', async () => {
     const input: ChainType = {
-      request: { saveAsDraft: false, hasGeometryError: true } as RequestNewList,
+      request: { saveAsDraft: false, hasUnanalyzableError: true } as RequestNewList,
     };
 
     const loggerSpy = jest.spyOn(handler['logger'], 'error');
@@ -34,9 +34,9 @@ describe('PutListAsDraft', () => {
     });
   });
 
-  it('should return input unchanged if hasGeometryError is false', async () => {
+  it('should return input unchanged if hasUnanalyzableError is false', async () => {
     const input: ChainType = {
-      request: { saveAsDraft: false, hasGeometryError: false } as RequestNewList,
+      request: { saveAsDraft: false, hasUnanalyzableError: false } as RequestNewList,
     };
 
     const result = await handler.handle(input);

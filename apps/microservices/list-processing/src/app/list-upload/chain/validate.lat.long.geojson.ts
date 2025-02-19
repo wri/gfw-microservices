@@ -85,14 +85,14 @@ export class ValidateLatLongGeojson extends AbstractHandler<ChainType> {
         if (geometry && 'coordinates' in geometry) {
           if (!this.validateCoordinates(geometry.coordinates, country)) {
             feature.properties.errorDetails = feature.properties.errorDetails || [];
-            (input.request as RequestNewList).hasGeometryError = true;
+            (input.request as RequestNewList).hasUnanalyzableError = true;
             (feature.properties.errorDetails as Array<string>).push('Invalid coordinates');
           }
 
           if (geometry.type === 'Polygon' || geometry.type === 'MultiPolygon') {
             if (!this.validatePolygon(geometry)) {
               feature.properties.errorDetails = feature.properties.errorDetails || [];
-              (input.request as RequestNewList).hasGeometryError = true;
+              (input.request as RequestNewList).hasUnanalyzableError = true;
               (feature.properties.errorDetails as Array<string>).push('Invalid polygon geometry');
             }
           }

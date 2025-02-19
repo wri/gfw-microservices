@@ -67,7 +67,7 @@ describe('GADMService', () => {
         properties: { longitude: 0, latitude: 0 },
         geometry: { type: 'Point', coordinates: [0, 0] },
       };
-      jest.spyOn(service, 'getGeoReferenceData').mockResolvedValue();
+      jest.spyOn(service, 'getGeoReferenceData').mockResolvedValue({ hasUnanalyzableError: false });
       await service.composeResults(feature);
       expect(service.getGeoReferenceData).toHaveBeenCalledWith(feature);
     });

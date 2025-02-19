@@ -66,7 +66,7 @@ export interface RequestNewList extends PreviewListRequest {
   organization_id: number;
   subscription_status_id: number;
 
-  hasGeometryError: boolean;
+  hasUnanalyzableError: boolean;
 }
 
 interface Handler<T> {

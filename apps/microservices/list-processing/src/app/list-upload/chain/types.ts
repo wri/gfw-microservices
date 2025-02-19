@@ -65,6 +65,8 @@ export interface RequestNewList extends PreviewListRequest {
   isExternalAPIProcess: boolean;
   organization_id: number;
   subscription_status_id: number;
+
+  hasUnanalyzableError: boolean;
 }
 
 interface Handler<T> {

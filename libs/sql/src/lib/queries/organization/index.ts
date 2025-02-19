@@ -52,4 +52,3 @@ export * from './updateAccountProfile';
 export * from './updateAccountClassifications';
 export * from './getListLocations';
 export * from './getSimplifiedListLocations';
-export * from './copyLocationAnalysis';

@@ -125,7 +125,7 @@ export class GADMService extends AbstractHandler<ChainType> {
       latitude: 0,
       longitude: 0,
       hasUnanalyzableError: true,
-    }
+    };
   };
 
   /**
@@ -167,13 +167,13 @@ export class GADMService extends AbstractHandler<ChainType> {
           state: response.features[0].attributes.name_1,
           country: response.features[0].attributes.name_0,
           gadmid: response.features[0].attributes.gadmid,
-        }
+        };
       }
     } catch (e) {
       this.logger.error('Error in queryGADM', e.stack || e.message);
-       return {
+      return {
         hasUnanalyzableError: true,
-       }
+      };
     }
   };
 

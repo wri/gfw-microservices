@@ -45,6 +45,12 @@ import { ListService } from '../lists/lists.service';
 import { ServerConfigType } from '../validators/server-config';
 import { SaveActivityLogEndpoint } from './utils/saveActivityLogEndpoint';
 import { handleCreateAnalysis } from '@wri-monorepos/geo';
+import { EntitySchema } from 'typeorm';
+import {
+  ListSchema,
+  ListSchemaType,
+  ClientStoreConnection as ClientStoreConnectionSql,
+} from '@wri-monorepos/sql';
 const LIST_INITIAL_STATUS = 'Pending';
 const MIN_FILE_SIZE_IN_BYTES = 70; // single location CSV file size
 
@@ -577,6 +583,48 @@ export class ListAnalysisService {
       // Validate if commodity is valid one
       if (lists.Commodity.startsWith('GFWP_')) {
         Logger.log('Commodity not valid');
+        throw new BadRequestException(`List ${lists.listName} not supported for GHG Analysis`);
+      }
+      try {
+        if (lists.Commodity === 'Other') {
+          // Get List-XXX attributes for list that has commodity as Other
+          const ListEntity = new EntitySchema<ListSchemaType>({
+            ...ListSchema,
+            name: lists.listTableName,
+          });
+          const clientStoreConnection = new ClientStoreConnectionSql();
+          const organization = await this.getOrganizationDetails(organizationId);
+          const connection = await clientStoreConnection.getConnection(
+            organization.organizationDb,
+            [ListEntity]
+          );
+          const listTableNameRepository = await connection.getRepository(ListEntity);
+          const listTableName = await listTableNameRepository.findBy({ commodity: 'Other' });
+
+          if (listTableName.length > 0) {
+            let hasYield = 0;
+            listTableName.forEach((element) => {
+              JSON.parse(element.attributes).map((item) => {
+                if (item['field'] === 'yield' && parseFloat(item['value']) > 0) {
+                  Logger.log('There is yield');
+                  hasYield += 1;
+                }
+              });
+            });
+            // Verify if has yield for all locations
+            if (hasYield < listTableName.length) {
+              Logger.log('Commodity not valid');
+              throw new BadRequestException(
+                `List ${lists.listName} not supported for GHG Analysis`
+              );
+            }
+          } else {
+            Logger.log('Commodity not valid');
+            throw new BadRequestException(`List ${lists.listName} not supported for GHG Analysis`);
+          }
+        }
+      } catch (error) {
+        Logger.warn(error.stack || error);
         throw new BadRequestException(`List ${lists.listName} not supported for GHG Analysis`);
       }
       return true;

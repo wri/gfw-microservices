@@ -36,7 +36,7 @@ describe('Upload location', () => {
     locationPage.typeOnInputCoordLong3('-12.928,0');
     locationPage.clickOnConfirmCoods();
     locationPage.clickOnNextBtn();
-    locationPage.selectCommodity('coffee');
+    locationPage.selectCommodity('Coffee');
     locationPage.typeNewNameListPolygon(listToUploadPolygonLocation);
     locationPage.clickOnNextBtn();
     locationPage.clickOnSubmitAnalisys();
@@ -49,7 +49,7 @@ describe('Upload location', () => {
     locationPage.typeOnInputPointCoordLat('14.072');
     locationPage.typeOnInputRadiusAroundLoc('100');
     locationPage.clickOnNextBtn();
-    locationPage.selectCommodity('coffee');
+    locationPage.selectCommodity('Coffee');
     locationPage.typeNewNameListPoint(listToUploadPointLocation);
     locationPage.clickOnNextBtn();
     locationPage.clickOnSubmitAnalisys();

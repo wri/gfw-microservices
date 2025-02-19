@@ -221,7 +221,19 @@ export const ComposeAnalysisCopyQuery = (
   destinationLocationIds: number[],
   statement: string
 ) => {
-  return `declare @SourceTableIds table ( Id int IDENTITY(1,1) PRIMARY KEY,sourceId int);
+  return `
+        EXEC(''
+          CREATE OR ALTER PROCEDURE dbo.uspCopyLocationAnalysis
+                @dest_list_id INT,
+                @dest_location_id INT,
+                @src_list_id INT,
+                @src_location_id INT,
+                @statement NVARCHAR(MAX)
+            AS
+              ${copyLocationAnalysis}
+        '')
+  
+          declare @SourceTableIds table ( Id int IDENTITY(1,1) PRIMARY KEY,sourceId int);
           declare @DestinationTableIds table ( Id int IDENTITY(1,1) PRIMARY KEY,destinationId int);
 
           declare @sourceIDs varchar(1000);
@@ -231,16 +243,6 @@ export const ComposeAnalysisCopyQuery = (
           declare @sourceListID INT;
           declare @destinationListID INT;
           declare @statement NVARCHAR(MAX)
-
-          -- PROCEDURE REMOVED IN FAVOR OF TS IMPLEMENTATION
-          CREATE PROCEDURE dbo.uspCopyLocationAnalysis
-              @dest_list_id INT,
-              @dest_location_id INT,
-              @src_list_id INT,
-              @src_location_id INT,
-              @statement NVARCHAR(MAX)
-          AS
-          ${copyLocationAnalysis}
 
           SET @sourceListID = ${sourceListId};
           SET @destinationListID = ${destinationListId};

@@ -1,13 +1,15 @@
 import React, { createRef, useEffect, useState } from 'react';
 import debounce from 'lodash/debounce';
+import axios from 'axios';
+
+import './CopyMoveModal.scss';
 
 import GfwSelect from '../../../../common/js/components/GfwSelect';
 import { locationsPage } from '../../../../common/js/config';
 import SaveAsDraftNote from '../../../../common/js/components/SaveAsDraft/SaveAsDraftNote';
-
 import { buildDropdownOptions } from '../../../../common/js/utils/buildDropdownOptions';
-
-import './CopyMoveModal.scss';
+import { LoadingModal } from '../../../../components';
+import { templateList } from '../../../../common/js/utils/templateUtils';
 
 const ActionType = {
   Move: 'move',
@@ -33,16 +35,38 @@ export default function CopyMoveModal(props) {
     setNewOrExisting,
     updateNewListName,
     updateSelectedMove,
-    validLists,
   } = props;
+  const { list_name: listName, Commodity: commodity, template_id: templateId } = selectedLists[0];
 
-  const listName = selectedLists[0].list_name;
-  const dropdownOptions = buildDropdownOptions(validLists, 'list_name').dropdownOptions.filter(
+  const [filteredLists, setFilteredLists] = useState([]);
+  const [isLoading, setIsLoading] = useState(false);
+
+  const dropdownOptions = buildDropdownOptions(filteredLists, 'name').dropdownOptions.filter(
     (v) => v.value !== listName
   );
 
   const [selectedExistingList, setSelectedExistingList] = useState();
   const newListNameRef = createRef();
+
+  useEffect(() => {
+    async function fetchData() {
+      if (selectedLists.length === 0) {
+        return;
+      }
+
+      try {
+        setIsLoading(true);
+        const response = await axios.get(
+          `api/list/by-commodity?commodity=${commodity ?? templateList[templateId]}`
+        );
+        setFilteredLists(response.data);
+      } finally {
+        setIsLoading(false);
+      }
+    }
+
+    fetchData();
+  }, [selectedLists]);
 
   useEffect(() => {
     if (dropdownOptions.length > 0) {
@@ -53,7 +77,7 @@ export default function CopyMoveModal(props) {
       // If there are no compatible existing lists, auto-select "Create New"
       setNewOrExisting({ target: { value: 'new' } });
     }
-  }, []);
+  }, [filteredLists]);
 
   return (
     <div className="CopyMoveModal">
@@ -199,6 +223,7 @@ export default function CopyMoveModal(props) {
       <div className="CopyMoveModalFooter">
         <SaveAsDraftNote />
       </div>
+      <LoadingModal isLoading={isLoading} />
     </div>
   );
 }

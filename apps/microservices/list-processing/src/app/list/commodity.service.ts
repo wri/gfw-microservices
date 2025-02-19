@@ -9,7 +9,7 @@ import {
   ListSchemaType,
   ListTemplate,
 } from '@wri-monorepos/sql';
-import { EntitySchema, Repository } from 'typeorm';
+import { EntitySchema, Raw, Repository } from 'typeorm';
 import { CommodityResponse, ListResponse } from './types';
 
 @Injectable()
@@ -95,32 +95,41 @@ export class CommodityService {
     };
   }
 
-  async getListsByCommodity(
-    organizationDatabase: string,
-    commodity: string
-  ): Promise<Array<ListResponse>> {
-    const listTemplate = await this.listTemplateRepository.find();
-    const clientStoreConnection = new ClientStoreConnection();
-    const connection = await clientStoreConnection.getConnection(organizationDatabase, [Lists]);
-    const listRepository = connection.getRepository(Lists);
+  async getListsByCommodity({
+    commodity,
+    organizationDatabase,
+  }: {
+    commodity: string;
+    organizationDatabase: string;
+  }): Promise<Array<ListResponse>> {
+    try {
+      const listTemplate = await this.listTemplateRepository.findOne({
+        where: { templateName: commodity },
+      });
+      const clientStoreConnection = new ClientStoreConnection();
+      const connection = await clientStoreConnection.getConnection(organizationDatabase, [Lists]);
+      const listRepository = connection.getRepository(Lists);
 
-    const template = listTemplate.find((template) =>
-      this.compareIgnoringAccentsAndCase(template.templateName, commodity)
-    );
+      // TODO: remove the case sensitivity when ticket 3983 is done
+      const lists = await listRepository.find({
+        where: [
+          {
+            Commodity: Raw(
+              (alias) =>
+                `LOWER(${alias}) COLLATE Latin1_General_CI_AI = LOWER(:commodity) COLLATE Latin1_General_CI_AI`,
+              { commodity }
+            ),
+          },
+          listTemplate ? { templateId: listTemplate.id } : null,
+        ].filter(Boolean),
+        select: ['id', 'listName'],
+      });
 
-    const lists = await listRepository.find({ where: { templateId: template?.id } });
-
-    return lists.map((list) => ({ id: list.id, name: list.listName }));
-  }
-
-  compareIgnoringAccentsAndCase(str1, str2) {
-    const normalizeString = (str) =>
-      str
-        .toLowerCase()
-        .normalize('NFD')
-        .replace(/[\u0300-\u036f]/g, '');
-
-    return normalizeString(str1) === normalizeString(str2);
+      return lists.map((list) => ({ id: list.id, name: list.listName }));
+    } catch (error) {
+      Logger.warn(`Error in getListsByCommodity: ${error.stack || error}`);
+      return [];
+    }
   }
 
   async getAllTemplates(): Promise<ListTemplate[]> {

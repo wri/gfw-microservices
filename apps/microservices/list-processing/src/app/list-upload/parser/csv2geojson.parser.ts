@@ -1,13 +1,15 @@
 import * as Papa from 'papaparse';
+
 import sexagesimal from '@mapbox/sexagesimal';
 import { Logger } from '@nestjs/common';
 import { Geometry, GeoJson, FeatureCollection } from '@wri-monorepos/geo';
-
-const logger = new Logger('CSV2GeoJSONParser');
+import { palmOilCsvAdjust } from './palm.oil.csv.adjust';
 
 interface LocationData {
   [key: string]: string | number | undefined | object;
 }
+
+const logger = new Logger('CSV2GeoJSONParser');
 
 export const csv2geojson = async (
   csvContent: string,
@@ -113,12 +115,16 @@ export const csv2geojson = async (
     };
   };
 
-  const convertToGeoJSON = (results, reject, resolve) => {
-    const { data, errors } = results;
+  const convertToGeoJSON = async (results, reject, resolve) => {
+    let { data } = results;
+    const { errors } = results;
     if (errors.length > 0) {
       logger.error(errors);
       reject(errors);
     }
+
+    // if has palm oil id need to fill the lat long
+    data = await palmOilCsvAdjust(data);
 
     const geoJson: GeoJson = {
       type: 'FeatureCollection',

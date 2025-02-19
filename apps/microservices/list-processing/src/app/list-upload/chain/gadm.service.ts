@@ -1,7 +1,7 @@
 import { Logger } from '@nestjs/common';
 import { AbstractHandler, ChainType, PreviewListRequest } from './types';
 import asyncPool from 'tiny-async-pool';
-import { Feature, FeatureCollection, GeometryWithoutCollection } from '@wri-monorepos/geo';
+import { Feature, FeatureCollection } from '@wri-monorepos/geo';
 import { IFeatureSet, IGeometry, queryFeatures } from '@esri/arcgis-rest-feature-service';
 import { LambdaClient, InvokeCommand, InvocationType } from '@aws-sdk/client-lambda';
 import { NodeHttpHandler } from '@smithy/node-http-handler';
@@ -84,16 +84,14 @@ export class GADMService extends AbstractHandler<ChainType> {
       };
     }
 
-    const coordinates = (feature.geometry as GeometryWithoutCollection).coordinates;
-    const modifiedArray = coordinates.map((subArray) => subArray.filter((value) => value !== 0));
-
-    const polygon = turf.polygon(modifiedArray as turf.Position[][]);
-    const centroid = turf.centroid(polygon);
-    if (centroid.geometry.type === 'Point') {
+    try {
+      const centroid = turf.centroid(feature.geometry as unknown as turf.AllGeoJSON);
       return {
-        longitude: centroid.geometry.coordinates[0] as number,
-        latitude: centroid.geometry.coordinates[1] as number,
+        longitude: centroid.geometry.coordinates[0],
+        latitude: centroid.geometry.coordinates[1],
       };
+    } catch (e) {
+      this.logger.error('Error in getting centroid from polygon', e);
     }
 
     if (

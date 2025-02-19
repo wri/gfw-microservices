@@ -1,5 +1,8 @@
 import { csv2geojson } from './csv2geojson.parser';
 import { FeatureCollection } from '@wri-monorepos/geo'; // Adjust the import according to your file structure
+import axios from 'axios';
+
+jest.mock('axios');
 
 describe('csv2geojson', () => {
   it('should correctly convert CSV data to GeoJSON format', (done) => {
@@ -240,6 +243,51 @@ describe('csv2geojson', () => {
               errordetails: ['Invalid latitude or longitude: undefined, undefined'],
               property1: null,
               property2: null,
+            },
+            type: 'Feature',
+          },
+        ],
+        type: 'FeatureCollection',
+      });
+      done();
+    });
+  });
+
+  it('Get lat long from Palm Oil Mill ID', (done) => {
+    const csvData =
+      'Location Name,ID,Analysis Radius,Analysis Area\r\nPalm Mill Name,PO1000000065,10,';
+
+    jest.spyOn(axios, 'get').mockResolvedValue({
+      data: {
+        data: [
+          {
+            uml_id: 'PO1000000065',
+            latitude: 5.641362,
+            longitude: 118.166868,
+          },
+        ],
+      },
+    });
+
+    csv2geojson(csvData).then((result) => {
+      expect(result).toStrictEqual({
+        features: [
+          {
+            geometry: {
+              coordinates: [118.166868, 5.641362],
+              type: 'Point',
+            },
+            properties: {
+              analysisArea: null,
+              analysisRadius: 10,
+              geometry: {
+                coordinates: [118.166868, 5.641362],
+                type: 'Point',
+              },
+              id: 'PO1000000065',
+              latitude: 5.641362,
+              locationName: 'Palm Mill Name',
+              longitude: 118.166868,
             },
             type: 'Feature',
           },

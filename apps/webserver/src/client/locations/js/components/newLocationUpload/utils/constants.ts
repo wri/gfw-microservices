@@ -25,4 +25,4 @@ export const commodities = {
   'sugar-cane': 'Sugar cane',
   multiple: 'Multiple',
   other: 'Other',
-};
+} as const;

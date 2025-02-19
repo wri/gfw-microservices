@@ -24,11 +24,7 @@ import IconListAlt from 'common/js/components/icon/IconListAlt';
 import IconGlobeAmericas from 'common/js/components/icon/IconGlobeAmericas';
 import getUserLocationDataFromAPI from './getUserLocationDataFromAPI';
 import filterListData from './filterListData';
-import {
-  filterValidCustom,
-  filterValidTemplates,
-  saveGfwListLocations,
-} from '../../utils/moveLocations';
+import { saveGfwListLocations } from '../../utils/moveLocations';
 import store from '../../../../locations/js/store';
 import { locationsPage, userAccessLevel } from '../../../../common/js/config';
 
@@ -1851,7 +1847,6 @@ export default class Lists extends Component {
       shareView,
       showShareList,
       templateData,
-      userLists: userListsProps,
       userSharedLists,
       usersList,
     } = this.props;
@@ -1929,12 +1924,6 @@ export default class Lists extends Component {
     }
 
     const userIsOwner = currentUser.id === selectedList.user_id;
-    const validLists = userListsProps.filter((t) => {
-      return (
-        filterValidTemplates(t, activeTemplate, addType, commodityType) &&
-        filterValidCustom(t, customAttributeNames)
-      );
-    });
 
     const selectedListIsShared =
       selectedList &&
@@ -2112,7 +2101,6 @@ export default class Lists extends Component {
                 setNewOrExisting={this.setNewOrExisting}
                 updateNewListName={this.updateNewListName}
                 updateSelectedMove={this.updateSelectedMove}
-                validLists={validLists}
               />
             ) : (
               dialogContent

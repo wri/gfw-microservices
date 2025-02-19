@@ -15,20 +15,8 @@ declare namespace Cypress {
     loginUI(): void;
     login(email: string, password: string, verifyToken?: string): void;
     visitAndVerifyLoad(url: string, options?: Partial<Cypress.VisitOptions>): void;
-    uploadFile( fileName: string, mimeType: string): Chainable<void>;
   }
 }
-
-Cypress.Commands.add('uploadFile', ( fileName, mimeType = 'application/octet-stream') => {
-  cy.fixture(fileName, 'base64').then(fileContent => {
-    cy.get('#file-input').attachFile({
-      fileContent,
-      fileName,
-      mimeType
-    });
-  });
-});
-
 
 // login using desktop header and verify MFA token
 Cypress.Commands.add('login', (email: string, password: string, verifyToken = 'unsafe') => {

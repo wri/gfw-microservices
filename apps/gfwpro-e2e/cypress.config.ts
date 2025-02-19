@@ -60,7 +60,6 @@ export default defineConfig({
     ...nxE2EPreset(__dirname),
     setupNodeEvents,
     supportFile: 'cypress/support/e2e.ts',
-    fixturesFolder:"cypress/fixtures",
     baseUrl:
       process.env.CYPRESS_ENV != 'dev'
         ? `https://pro-${process.env.CYPRESS_ENV}.globalforestwatch.org`

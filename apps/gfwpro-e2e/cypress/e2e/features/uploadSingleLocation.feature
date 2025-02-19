@@ -1,7 +1,7 @@
 Feature: User can upload a location
 
   Scenario: User uploads a Polygon location
-  Given I login in the landing page
+  Given I login in the landing page 
   When I navigate to the Locations page
   When I click on the Add Location button
   And I select the Polygon option

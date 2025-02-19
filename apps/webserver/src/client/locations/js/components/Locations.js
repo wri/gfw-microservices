@@ -260,15 +260,19 @@ class Locations extends Component {
   };
 
   navigateToAddView = (gfwInfoFromMap, gfwList) => {
-    let addType = this.state.activeTemplate === 'investment' ? 'investment' : 'commodity';
-    if (gfwInfoFromMap.gfwData.listName === universalMillList) {
-      addType = 'commodity';
-    }
+    if (isUploadListUiAvailable) {
+      this.props.history.push('/upload-location/configure-list');
+    } else {
+      let addType = this.state.activeTemplate === 'investment' ? 'investment' : 'commodity';
+      if (gfwInfoFromMap.gfwData.listName === universalMillList) {
+        addType = 'commodity';
+      }
 
-    store.dispatch(changeAddType(addType));
-    store.dispatch(addList(gfwList));
-    store.dispatch(changeView('add'));
-    this.props.history.push('/add');
+      store.dispatch(changeAddType(addType));
+      store.dispatch(addList(gfwList));
+      store.dispatch(changeView('add'));
+      this.props.history.push('/add');
+    }
   };
 
   showShareList = (show) => {

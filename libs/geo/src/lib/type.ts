@@ -57,8 +57,6 @@ type Geometry =
   | MultiPolygon
   | GeometryCollection;
 
-type GeometryWithoutCollection = Exclude<Geometry, GeometryCollection>;
-
 interface Feature {
   type: 'Feature';
   id?: string | number;
@@ -73,4 +71,4 @@ interface FeatureCollection {
 
 type GeoJson = Geometry | Feature | FeatureCollection;
 
-export { GeoJson, Geometry, Feature, FeatureCollection, Polygon, Point, GeometryWithoutCollection };
+export { GeoJson, Geometry, Feature, FeatureCollection, Polygon, Point };

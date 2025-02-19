@@ -23,5 +23,5 @@ END
 SET @strClassificationId = SUBSTRING(@classification_ids, @pos, LEN(@classification_ids) - @pos + 1)
 SET @nClassificationId = CAST(@strClassificationId AS INT)
 INSERT INTO AccountClassifications VALUES(@nClassificationId)
-GO
+
 `;

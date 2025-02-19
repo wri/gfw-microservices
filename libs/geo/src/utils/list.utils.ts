@@ -4,6 +4,7 @@ import {
   GetTableAnalysisColumnsById,
   UnlockList,
   ListsAnalysisStatus,
+  copyLocationAnalysis,
 } from '@wri-monorepos/sql';
 import { ListBulkCopy } from './ListBulkCopy';
 import * as sql from 'mssql';
@@ -230,6 +231,16 @@ export const ComposeAnalysisCopyQuery = (
           declare @sourceListID INT;
           declare @destinationListID INT;
           declare @statement NVARCHAR(MAX)
+
+          -- PROCEDURE REMOVED IN FAVOR OF TS IMPLEMENTATION
+          CREATE PROCEDURE dbo.uspCopyLocationAnalysis
+              @dest_list_id INT,
+              @dest_location_id INT,
+              @src_list_id INT,
+              @src_location_id INT,
+              @statement NVARCHAR(MAX)
+          AS
+          ${copyLocationAnalysis}
 
           SET @sourceListID = ${sourceListId};
           SET @destinationListID = ${destinationListId};

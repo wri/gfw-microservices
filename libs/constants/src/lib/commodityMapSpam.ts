@@ -25,3 +25,5 @@ export const MAPSPAM_COMMODITY = {
   SOYB: 'Soy Generic',
   SUGC: 'Sugar Cane',
 };
+
+export const REGEX_MAPSPAM_COMMODITY = /^GFWP_(Other|Unknown)$/;

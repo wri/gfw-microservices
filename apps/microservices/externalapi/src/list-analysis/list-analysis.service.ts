@@ -30,6 +30,7 @@ import {
   getListStatusString,
   ListActivityTypesEnum,
   listStatus,
+  REGEX_MAPSPAM_COMMODITY,
 } from '@wri-monorepos/constants';
 import { SqsService } from '@ssut/nestjs-sqs';
 import {
@@ -568,33 +569,34 @@ export class ListAnalysisService {
 
       if (!lists) {
         Logger.warn(`List ${lists} not found`);
-        throw new BadRequestException(`List ${lists.listName} not supported for GHG Analysis`);
+        throw new BadRequestException(`List not found`);
       }
       // Validate if Template is supported
       if (lists.templateId !== 13) {
         Logger.warn('Template not supported');
-        throw new BadRequestException(`List ${lists.listName} not supported for GHG Analysis`);
+        throw new BadRequestException(
+          `List template id ${lists.templateId} for ${lists.listName} not supported for GHG Analysis`
+        );
       }
-      // Validate if has commodity specified
-      if (!lists.Commodity || lists.Commodity === 'Unknown') {
-        Logger.log('Commodity not specified');
-        throw new BadRequestException(`List ${lists.listName} not supported for GHG Analysis`);
-      }
+
       // Validate if commodity is valid one
-      if (lists.Commodity.startsWith('GFWP_')) {
+      const regex = REGEX_MAPSPAM_COMMODITY;
+      if (lists.Commodity.startsWith('GFWP_') && !regex.test(lists.Commodity)) {
         Logger.log('Commodity not valid');
-        throw new BadRequestException(`List ${lists.listName} not supported for GHG Analysis`);
+        throw new BadRequestException(
+          `List commodity ${lists.Commodity} for ${lists.listName} not supported for GHG Analysis`
+        );
       }
       try {
-        if (lists.Commodity === 'Other') {
+        if (lists.Commodity === 'GFWP_Other') {
           // Get List-XXX attributes for list that has commodity as Other
           const ListEntity = new EntitySchema<ListSchemaType>({
             ...ListSchema,
             name: lists.listTableName,
           });
-          const clientStoreConnection = new ClientStoreConnectionSql();
           const organization = await this.getOrganizationDetails(organizationId);
-          const connection = await clientStoreConnection.getConnection(
+          const clientStoreConnectionSql = new ClientStoreConnectionSql();
+          const connection = await clientStoreConnectionSql.getConnection(
             organization.organizationDb,
             [ListEntity]
           );
@@ -625,7 +627,10 @@ export class ListAnalysisService {
         }
       } catch (error) {
         Logger.warn(error.stack || error);
-        throw new BadRequestException(`List ${lists.listName} not supported for GHG Analysis`);
+        throw new BadRequestException(
+          `List ${lists.listName} not supported for GHG Analysis`,
+          error
+        );
       }
       return true;
     }

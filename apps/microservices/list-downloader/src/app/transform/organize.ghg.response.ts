@@ -1,5 +1,5 @@
 import { Transform } from 'stream';
-
+import { MAPSPAM_COMMODITY } from '@wri-monorepos/constants';
 class OrganizeGreenHouseGasEmissionsResponse extends Transform {
   constructor() {
     super({ objectMode: true });
@@ -12,8 +12,16 @@ class OrganizeGreenHouseGasEmissionsResponse extends Transform {
     const { listName, locationId, totalAreaHa, commodity, emissionsFactorByYear } = chunk;
     const csvArray = [];
 
+    // Convert Commodity to Human Readable
+    let commodityHumanReadable = MAPSPAM_COMMODITY[commodity] || commodity;
+
+    // Remove GFWP_ prefix if it exists
+    commodityHumanReadable = commodityHumanReadable
+      ? commodityHumanReadable.replace('GFWP_', '')
+      : null;
+
     if (listName && locationId && totalAreaHa && commodity && emissionsFactorByYear) {
-      const sharedInfo = [listName, locationId, totalAreaHa, commodity, 'dLUC'];
+      const sharedInfo = [listName, locationId, totalAreaHa, commodityHumanReadable, 'dLUC'];
 
       Object.entries(JSON.parse(emissionsFactorByYear)).forEach(([year, value]) => {
         csvArray.push([...sharedInfo, value, year]);

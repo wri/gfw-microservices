@@ -16,3 +16,12 @@ export const COMMODITY_MAP_SPAM = {
   ['soy generic']: 'SOYB',
   ['sugar cane']: 'SUGC',
 };
+
+export const MAPSPAM_COMMODITY = {
+  COFF: 'Coffee',
+  COCO: 'Cocoa Generic',
+  OILP: 'Palm Oil Generic',
+  RUBB: 'Rubber',
+  SOYB: 'Soy Generic',
+  SUGC: 'Sugar Cane',
+};

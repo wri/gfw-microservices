@@ -16,7 +16,7 @@ import {
   isGHGCommodityValid,
 } from '@wri-monorepos/geo';
 import { ProcessingLimitException } from '../../app.exceptions';
-import { listStatus } from '@wri-monorepos/constants';
+import { ListAnalysisIds, listStatus } from '@wri-monorepos/constants';
 import {
   GEO_TRELLIS__ANALYZE_LIST_DEV,
   GEO_TRELLIS__ANALYZE_LIST_QA,
@@ -231,14 +231,17 @@ export class StartAnalysis extends AbstractHandler<ChainType> {
       organization_id: organizationId,
       subscription_status_id: subscriptionStatusId,
       saveAsDraft,
+      analysisIds,
     } = request.request as RequestNewList;
-
-    // Check if the commodity is valid for GHG Analysis
-    await isGHGCommodityValid(listId, organization_database);
 
     const isDraft = await this.isDraftList(saveAsDraft, organization_database, listId);
     if (isDraft) {
       return request;
+    }
+
+    if (analysisIds.includes(ListAnalysisIds.GHG)) {
+      // Check if the commodity is valid for GHG Analysis
+      await isGHGCommodityValid(listId, organization_database);
     }
 
     this.validateGeoJsonFeatures(request.geojson.features);

@@ -6,7 +6,7 @@ describe('Upload location', () => {
   const listToUploadPolygonLocation = `uploadPolygonLocation${timestamp}`;
   const listToUploadPointLocation = `uploadPointLocation${timestamp}`;
   const locationPage = new LocationsPage();
-  Given('I login in the landing page', () => {
+  Given('I login in the landing page ', () => {
     cy.loginUI();
   });
 

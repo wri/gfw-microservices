@@ -533,16 +533,20 @@ export class ListAnalysisService {
       ListActivityTypesEnum.ListAnalyzing
     );
 
-    const response = await handleCreateAnalysis(
-      analysisId.toUpperCase(),
-      listId,
-      organizationId,
-      organizationDetails.organizationDb,
-      userEmail,
-      organization_user_id,
-      organizationDetails.subscriptionStatusId
-    );
+    try {
+      const response = await handleCreateAnalysis(
+        analysisId.toUpperCase(),
+        listId,
+        organizationId,
+        organizationDetails.organizationDb,
+        userEmail,
+        organization_user_id,
+        organizationDetails.subscriptionStatusId
+      );
 
-    return response.statusText;
+      return response;
+    } catch (error) {
+      throw error;
+    }
   }
 }

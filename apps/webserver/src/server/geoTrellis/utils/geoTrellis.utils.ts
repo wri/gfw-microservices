@@ -1,4 +1,5 @@
 import * as AWSSES from '../../../config/privateutils/ses.utils';
+import * as logger from '../../../config/privateutils/logger.utils';
 
 import {
   extractAnalysisTypes,
@@ -28,27 +29,37 @@ export const handleGeoTrellisAnalyzeListRequest = async (req, list, analysisType
   const listAnalysisStatusData = await getListAnalysisStatusByListId(databaseName, listID);
   const analysisIds = listAnalysisStatusData?.map(({ analysisId }) => analysisId) ?? [];
 
-  const result = await handleCreateAnalysis(
-    analysisTypesToProcess ?? analysisIds.join(),
-    listID,
-    organizationId,
-    databaseName,
-    user_email,
-    organization_user_id,
-    subscriptionStatusId,
-    reanalyze
-  );
+  try {
+    const result = await handleCreateAnalysis(
+      analysisTypesToProcess ?? analysisIds.join(),
+      listID,
+      organizationId,
+      databaseName,
+      user_email,
+      organization_user_id,
+      subscriptionStatusId,
+      reanalyze
+    );
 
-  const analysiTypes = extractAnalysisTypes(
-    analysisTypesToProcess
-      ? listAnalysisStatusData.filter(({ analysisId }) =>
-          analysisTypesToProcess.includes(analysisId)
-        )
-      : listAnalysisStatusData
-  );
+    const analysiTypes = extractAnalysisTypes(
+      analysisTypesToProcess
+        ? listAnalysisStatusData.filter(({ analysisId }) =>
+            analysisTypesToProcess.includes(analysisId)
+          )
+        : listAnalysisStatusData
+    );
 
-  // Send email to user that list is submitted to be analysed
-  await AWSSES.sendEmail__ListSubmittedForAnalysis(req, list_name, analysiTypes);
+    // Send email to user that list is submitted to be analysed
+    await AWSSES.sendEmail__ListSubmittedForAnalysis(req, list_name, analysiTypes);
 
-  return result;
+    return result;
+  } catch (error) {
+    // await AWSSES.sendErrorNotificationEmail(req, error);
+    logger.logActivity(
+      req,
+      logger.listActivityTypes.List.ListAnalyzing,
+      `Error sending ${list_name} to analysis: ${error}`
+    );
+    throw error;
+  }
 };

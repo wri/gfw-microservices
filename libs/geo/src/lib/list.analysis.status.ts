@@ -256,12 +256,12 @@ export const handleCreateAnalysis = async (
       });
     } catch (error) {
       Logger.error('createAnalysis', `Error when updating ${listId} to analysis: ${error.message}`);
-      return error.message;
+      throw error;
     }
     return response.statusText;
   } catch (error) {
     Logger.error('createAnalysis', `Error when updating ${listId} to analysis: ${error.message}`);
-    return error.message;
+    throw error;
   }
 };
 

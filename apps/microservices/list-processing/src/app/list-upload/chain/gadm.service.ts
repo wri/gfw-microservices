@@ -246,7 +246,7 @@ export class GADMService extends AbstractHandler<ChainType> {
 
     const results = await this.asyncPoolAll(POOL_SIZE, features, this.composeResults);
 
-    if (results.some((result) => result.hasUnanalyzableError)) {
+    if (results.some((result) => result?.hasUnanalyzableError)) {
       (request.request as RequestNewList).hasUnanalyzableError = true;
     }
 

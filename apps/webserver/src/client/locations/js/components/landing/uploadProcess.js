@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-import { areArraysEqual } from '../../utils/arrayUtils';
+import { requestGeoTrellisAnalyzeList } from '../../utils/requestUtils';
 
 const renameProp = (oldProp, newProp, { [oldProp]: old, ...others }) => ({
   [newProp]: old,
@@ -65,11 +65,18 @@ const createLargeListStep = async (param) => {
 };
 
 const changeAnalysesTypes = async (param) => {
-  const { list_id: listId, analysisIds, existingListAnalysisIds } = param;
+  const { list_id: listId, analysisIds, saveAsDraft, listName } = param;
   try {
-    if (!areArraysEqual(analysisIds, existingListAnalysisIds)) {
-      await axios.post(`/api/list/${listId}/selectedAnalyses`, { analysisIds });
-    }
+    await axios.post(`/api/list/${listId}/selectedAnalyses`, { analysisIds });
+
+    await requestGeoTrellisAnalyzeList(
+      {
+        id: listId,
+        list_name: listName,
+      },
+      saveAsDraft,
+      analysisIds.join()
+    );
 
     return param;
   } catch (error) {
@@ -177,7 +184,6 @@ export function uploadProcessByPrevUploadedFile({
     saveAsDraft,
     commodity,
     list_id: existingList?.id,
-    existingListAnalysisIds: existingList?.analysisIds,
   });
 }
 

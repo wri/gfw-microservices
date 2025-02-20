@@ -18,7 +18,7 @@ import { getIsDiagnosticStatusDraft } from '../../../utils/draft.utils';
 import { locationsPage, userAccessLevel } from '../../../../../common/js/config';
 import { updateFolders } from '../../../../../locations/js/actions/locationActions';
 import { getFolders } from 'locations/js/components/landing/foldersApi';
-import { requestGeoTrellisAnalyzeList } from '../../../../../locations/js/utils/request.utils';
+import { requestGeoTrellisAnalyzeList } from '../../../../../locations/js/utils/requestUtils';
 import store from '../../../../../locations/js/store';
 import './ListActions.scss';
 

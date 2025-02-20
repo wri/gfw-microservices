@@ -44,6 +44,5 @@ SET @SQL = REPLACE(@SQL, '{LOCATION_COLUMNS}', @listLocationTableCols);
 SET @SQL = REPLACE(@SQL, '{LOCATION_TABLE}', @listLocationTableName);
 
 
-EXEC sp_executesql @SQL;
-GO
+EXEC sp_executesql @SQL
 `;

@@ -921,7 +921,6 @@ describe('ListAnalysisService', () => {
 
     listService.getList = jest.fn().mockResolvedValue({
       templateId: 13,
-      Commodity: 'GFWP_Cattle Generic',
       listName: 'mockList',
     });
     saveActivityLogEndpoint.saveActivityLogEndpoint = jest.fn().mockResolvedValue(true);
@@ -931,7 +930,6 @@ describe('ListAnalysisService', () => {
       status: listStatus.Pending,
       templateId: '13',
       listName: 'mockList',
-      Commodity: 'GFWP_Cattle Generic',
     };
     clientStoreConnection.getConnection = jest.fn().mockResolvedValue({
       getRepository: () => ({
@@ -950,10 +948,6 @@ describe('ListAnalysisService', () => {
         USER_EMAIL,
         organization_user_id
       )
-    ).rejects.toThrow(
-      new BadRequestException(
-        `No commodity specified for ${mockList.Commodity} for ${mockList.listName}`
-      )
-    );
+    ).rejects.toThrow(new BadRequestException(`No commodity specified for ${mockList.listName}`));
   });
 });

@@ -26,4 +26,4 @@ export const MAPSPAM_COMMODITY = {
   SUGC: 'Sugar Cane',
 };
 
-export const REGEX_MAPSPAM_COMMODITY = /^GFWP_(Other|Unknown)$/;
+export const REGEX_MAPSPAM_COMMODITY = /^GFWP_(Other|Unknown)$/i;

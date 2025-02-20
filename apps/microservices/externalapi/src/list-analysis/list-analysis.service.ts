@@ -578,7 +578,10 @@ export class ListAnalysisService {
           `List template id ${lists.templateId} for ${lists.listName} not supported for GHG Analysis`
         );
       }
-
+      if (!lists.Commodity) {
+        Logger.warn('Commodity not valid');
+        throw new BadRequestException(`No commodity specified for ${lists.listName}`);
+      }
       // Validate if commodity is valid one
       const regex = REGEX_MAPSPAM_COMMODITY;
       if (lists.Commodity.startsWith('GFWP_') && !regex.test(lists.Commodity)) {
@@ -601,7 +604,7 @@ export class ListAnalysisService {
             [ListEntity]
           );
           const listTableNameRepository = await connection.getRepository(ListEntity);
-          const listTableName = await listTableNameRepository.findBy({ commodity: 'Other' });
+          const listTableName = await listTableNameRepository.findBy({ commodity: 'GFWP_Other' });
 
           if (listTableName.length > 0) {
             let hasYield = 0;
@@ -617,7 +620,7 @@ export class ListAnalysisService {
             if (hasYield < listTableName.length) {
               Logger.log('Commodity not valid');
               throw new BadRequestException(
-                `List ${lists.listName} not supported for GHG Analysis`
+                `List ${lists.listName} not supported for GHG Analysis missing yield for some locations`
               );
             }
           } else {
@@ -627,10 +630,14 @@ export class ListAnalysisService {
         }
       } catch (error) {
         Logger.warn(error.stack || error);
-        throw new BadRequestException(
-          `List ${lists.listName} not supported for GHG Analysis`,
-          error
-        );
+        if (error instanceof BadRequestException) {
+          throw error;
+        } else {
+          throw new BadRequestException(
+            `List ${lists.listName} not supported for GHG Analysis`,
+            error
+          );
+        }
       }
       return true;
     }

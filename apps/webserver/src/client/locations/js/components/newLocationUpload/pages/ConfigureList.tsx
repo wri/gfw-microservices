@@ -30,7 +30,7 @@ import debounce from 'lodash/debounce';
 
 const schema = z
   .object({
-    commodity: z.string().trim().min(1),
+    commodity: z.string().trim().nonempty(),
     newListName: z
       .string()
       .trim()

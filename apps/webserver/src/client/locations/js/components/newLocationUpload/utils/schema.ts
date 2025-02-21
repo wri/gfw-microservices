@@ -30,3 +30,10 @@ export const coordinateSchema = z.object({
       }
     ),
 });
+
+export const locationNameSchema = z
+  .string()
+  .nonempty({ message: 'Enter location name' })
+  .refine((val) => val === val.trim(), {
+    message: 'Leading or trailing spaces are not allowed',
+  });

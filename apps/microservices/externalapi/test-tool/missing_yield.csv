@@ -1,0 +1,6 @@
+Location Name,Latitude,Longitude,Analysis Radius,Analysis Area,Location Classification,Company ID,Volume,Owner Name,Owner ID,Company Name,Supplier Name,Facility Name,Refinery Name,Certification,Start Date,End Date,Time Horizon,yield,Attribute2,Attribute3
+Brazil1,-8.9001,-67,1,,Property,,,,,,,,,,,,,10.5,,
+brazil2,-8.7001,-66.8,,1,Property,,,,,,,,,,,,,11.5,,
+arg3 landmark,-29.8001,-60.2,2345,,Property,,,,,,,,,,,,,12.5,,
+arg4 wdpa,-27.0401,-65.85,,3.14159,Property,,,,,,,,,,,,,13.5,,
+arg4 wdpas,-27.0402,-65.85,,3.14159,Property,,,,,,,,,,,,,,,

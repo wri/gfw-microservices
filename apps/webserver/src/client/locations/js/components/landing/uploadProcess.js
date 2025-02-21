@@ -1,7 +1,5 @@
 import axios from 'axios';
 
-import { requestGeoTrellisAnalyzeList } from '../../utils/requestUtils';
-
 const renameProp = (oldProp, newProp, { [oldProp]: old, ...others }) => ({
   [newProp]: old,
   ...others,
@@ -59,26 +57,6 @@ const createLargeListStep = async (param) => {
       commodity,
     });
     return { ...param, ...data };
-  } catch (error) {
-    throw new Error(error);
-  }
-};
-
-const changeAnalysesTypes = async (param) => {
-  const { list_id: listId, analysisIds, saveAsDraft, listName } = param;
-  try {
-    await axios.post(`/api/list/${listId}/selectedAnalyses`, { analysisIds });
-
-    await requestGeoTrellisAnalyzeList(
-      {
-        id: listId,
-        list_name: listName,
-      },
-      saveAsDraft,
-      analysisIds.join()
-    );
-
-    return param;
   } catch (error) {
     throw new Error(error);
   }
@@ -173,7 +151,7 @@ export function uploadProcessByPrevUploadedFile({
   commodity,
 }) {
   const processPipeline = existingList?.id
-    ? promiseCompose(processListStep, changeAnalysesTypes)
+    ? promiseCompose(processListStep)
     : promiseCompose(processListStep, saveListToProcessStep, createLargeListStep);
 
   return processPipeline({
@@ -184,6 +162,7 @@ export function uploadProcessByPrevUploadedFile({
     saveAsDraft,
     commodity,
     list_id: existingList?.id,
+    existingListAnalysisIds: existingList?.analysisIds,
   });
 }
 

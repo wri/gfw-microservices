@@ -2,8 +2,8 @@ import { ClientStoreConnection, Lists, User } from '@wri-monorepos/sql';
 import { AbstractHandler, ChainType, RequestNewList } from './types';
 import { MARK_IS_TEST_LIST, MARK_IS_TEST_USER } from '../../../services/constants';
 import { mockAnalysisFlow } from '../../../mock';
-import { isGHGCommodityValid, handleCreateAnalysis } from '@wri-monorepos/geo';
-import { ListAnalysisIds, listStatus } from '@wri-monorepos/constants';
+import { handleCreateAnalysis } from '@wri-monorepos/geo';
+import { listStatus } from '@wri-monorepos/constants';
 
 import { Logger } from '@nestjs/common';
 

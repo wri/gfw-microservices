@@ -771,7 +771,8 @@ describe('ListAnalysisService', () => {
       processingLimit: 1000,
     });
 
-    (handleCreateAnalysis as jest.Mock).mockResolvedValue({ statusText: 'mockedEmailResponse' });
+    const mockedhandleCreateAnalysis = { statusText: 'mockedEmailResponse' };
+    (handleCreateAnalysis as jest.Mock).mockResolvedValue(mockedhandleCreateAnalysis);
 
     listService.getList = jest.fn().mockResolvedValue({
       templateId: 13,
@@ -804,7 +805,7 @@ describe('ListAnalysisService', () => {
       USER_EMAIL,
       organization_user_id
     );
-    expect(resutl).toBe('mockedEmailResponse');
+    expect(resutl).toBe(mockedhandleCreateAnalysis);
   });
 
   it('Should fail when try to create GHG Analysis with wrong TemplateID', async () => {

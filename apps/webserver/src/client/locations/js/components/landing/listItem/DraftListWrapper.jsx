@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import AnalyzingList from './AnalyzingList';
 import DraftList from './DraftList';
-import { requestGeoTrellisAnalyzeList } from '../../../utils/request.utils';
+import { requestGeoTrellisAnalyzeList } from '../../../utils/requestUtils';
 
 function DraftListWrapper(props) {
   const [isAnalyzing, setIsAnalyzing] = useState(false);

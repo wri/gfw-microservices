@@ -31,7 +31,7 @@ import { TransitionGroup } from 'react-transition-group';
 
 import { ExternalHelperResource, LocationTypeButton, NavBar } from '../components';
 import { PillButton } from '../../../../../components';
-import { coordinateSchema } from '../utils/schema';
+import { coordinateSchema, locationNameSchema } from '../utils/schema';
 import { createGeometryAndGraphic } from '../../adding/PolygonCoordinates/polygonCoordinates.utils';
 import { useMap } from '../hooks';
 import LocationMapDrawer from '../../adding/LocationMapDrawer';
@@ -54,8 +54,8 @@ const uploadByPolygonSchema = z.object({
 });
 type FormFieldsCoordinates = z.infer<typeof uploadByPolygonSchema>;
 
-const locationNameSchema = z.object({ locationName: z.string().trim().min(1) });
-type FormFieldsLocationName = z.infer<typeof locationNameSchema>;
+const locationSchema = z.object({ locationName: locationNameSchema });
+type FormFieldsLocationName = z.infer<typeof locationSchema>;
 
 export function UploadLocationByPolygon() {
   const theme = useTheme();
@@ -69,7 +69,7 @@ export function UploadLocationByPolygon() {
     handleSubmit: handleSubmitLocationName,
     control: controlLocationName,
     formState: { errors: errorsLocationName },
-  } = useForm<FormFieldsLocationName>({ resolver: zodResolver(locationNameSchema) });
+  } = useForm<FormFieldsLocationName>({ resolver: zodResolver(locationSchema) });
 
   const {
     handleSubmit: handleSubmitCoordinates,
@@ -196,6 +196,7 @@ export function UploadLocationByPolygon() {
 
         <Controller
           name="locationName"
+          defaultValue=""
           control={controlLocationName}
           render={({ field }) => {
             return (
@@ -204,7 +205,7 @@ export function UploadLocationByPolygon() {
                 placeholder="Location name"
                 fullWidth
                 error={!!errorsLocationName.locationName}
-                helperText={errorsLocationName.locationName ? 'Enter the location name' : ''}
+                helperText={errorsLocationName.locationName?.message}
                 {...field}
               />
             );

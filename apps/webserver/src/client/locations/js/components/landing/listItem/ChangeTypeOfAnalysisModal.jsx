@@ -5,7 +5,7 @@ import CardActions from '@mui/material/CardActions';
 import Modal from '@mui/material/Modal';
 import Button from '../../../../../common/js/components/Button';
 import AnalysisTypesSelector from '../../../../../common/js/components/AnalysisTypesSelector';
-import { requestGeoTrellisAnalyzeList } from '../../../utils/request.utils';
+import { requestGeoTrellisAnalyzeList } from '../../../utils/requestUtils';
 import InlineLoader from '../../../../../common/js/components/Loaders/InlineLoader';
 import './ChangeTypeOfAnalysisModal.scss';
 
@@ -17,7 +17,7 @@ const AddAnalysisTypeConfirmationMessage = () => {
         analysis and will not be accessible until the analysis is complete.
       </p>
       <p>
-        Newly-added analyses will be processed immediatley. Existing analyses will remain unchanged.
+        Newly-added analyses will be processed immediately. Existing analyses will remain unchanged.
         List Update date will reflect the oldest analysis. See more information{' '}
         <a
           href="/about?section=Fees"
@@ -39,19 +39,19 @@ function ChangeTypeOfAnalysisModal({
   isChangeTypeOfAnalysisModalOpen,
   listAnalysesStatus,
 }) {
-  const intialAnalysisSelection = listAnalysesStatus.map(({ analysisId }) => analysisId);
-  const [selectedAnalysis, setSelectedAnalysis] = useState(intialAnalysisSelection);
+  const initialAnalysisSelection = listAnalysesStatus.map(({ analysisId }) => analysisId);
+  const [selectedAnalysis, setSelectedAnalysis] = useState(initialAnalysisSelection);
   const [isAddingAnalysis, setIsAddingAnalysis] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
     const isAddingElements = selectedAnalysis.some(
-      (item) => !intialAnalysisSelection.includes(item)
+      (item) => !initialAnalysisSelection.includes(item)
     );
 
     if (isAddingElements) {
       setIsAddingAnalysis(true);
-    } else if (intialAnalysisSelection.length > selectedAnalysis.length) {
+    } else if (initialAnalysisSelection.length > selectedAnalysis.length) {
       setIsAddingAnalysis(false);
     }
   }, [selectedAnalysis]);
@@ -67,7 +67,7 @@ function ChangeTypeOfAnalysisModal({
 
   const requestAnalysisForSelectedTypes = () => {
     const analysisTypesForRequest = selectedAnalysis.filter(
-      (analysis) => !intialAnalysisSelection.includes(analysis)
+      (analysis) => !initialAnalysisSelection.includes(analysis)
     );
 
     return requestGeoTrellisAnalyzeList(
@@ -108,7 +108,7 @@ function ChangeTypeOfAnalysisModal({
   };
 
   const revertChanges = () => {
-    setSelectedAnalysis(intialAnalysisSelection);
+    setSelectedAnalysis(initialAnalysisSelection);
   };
 
   return (
@@ -134,7 +134,7 @@ function ChangeTypeOfAnalysisModal({
                 buttonLabel="Submit Analysis"
                 confirmationMessage={<AddAnalysisTypeConfirmationMessage />}
                 disabled={selectedAnalysis.every((analysis) =>
-                  intialAnalysisSelection.includes(analysis)
+                  initialAnalysisSelection.includes(analysis)
                 )}
                 onConfirm={updateSelectedAnalysis}
                 onCancel={revertChanges}
@@ -142,7 +142,7 @@ function ChangeTypeOfAnalysisModal({
             ) : (
               <Button
                 variant="primary"
-                disabled={selectedAnalysis.length === intialAnalysisSelection.length}
+                disabled={selectedAnalysis.length === initialAnalysisSelection.length}
                 onClick={updateSelectedAnalysis}
                 label="Submit Analysis"
               />

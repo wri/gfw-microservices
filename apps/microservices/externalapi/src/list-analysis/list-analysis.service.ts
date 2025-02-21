@@ -543,6 +543,6 @@ export class ListAnalysisService {
       organizationDetails.subscriptionStatusId
     );
 
-    return response.statusText;
+    return response;
   }
 }

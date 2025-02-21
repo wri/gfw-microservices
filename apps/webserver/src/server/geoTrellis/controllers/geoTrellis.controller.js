@@ -23,7 +23,7 @@ export const geoTrellisAnalyzeListController = async (req, res) => {
     await ListManager.setListStatus(req, listID, listStatus.Pending);
 
     // Send request to GeoTrellis step function
-    const { data } = await handleGeoTrellisAnalyzeListRequest(req, list, analysisTypes);
+    const data = await handleGeoTrellisAnalyzeListRequest(req, list, analysisTypes);
 
     res.status(200).send({
       message: data,

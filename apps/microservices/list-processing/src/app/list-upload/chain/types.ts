@@ -109,6 +109,8 @@ export abstract class AbstractHandler<T> implements Handler<T> {
           `Error in ${nextJob.constructor.name}`,
           error.message
         );
+        ((result as ChainType).request as RequestNewList).hasUnanalyzableError = true;
+        break;
       }
       const end = performance.now();
       const { heapUsed } = process.memoryUsage();

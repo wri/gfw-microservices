@@ -54,11 +54,10 @@ export const handleGeoTrellisAnalyzeListRequest = async (req, list, analysisType
 
     return result;
   } catch (error) {
-    // await AWSSES.sendErrorNotificationEmail(req, error);
     logger.logActivity(
       req,
       logger.listActivityTypes.List.ListAnalyzing,
-      `Error sending ${list_name} to analysis: ${error}`
+      `Error sending ${list_name} to analysis: ${error.stack || error}`
     );
     throw error;
   }

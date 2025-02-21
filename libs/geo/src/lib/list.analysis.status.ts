@@ -255,13 +255,19 @@ export const handleCreateAnalysis = async (
         activityTime: new Date(),
       });
     } catch (error) {
-      Logger.error('createAnalysis', `Error when updating ${listId} to analysis: ${error.message}`);
-      return error.message;
+      Logger.error(
+        'createAnalysis',
+        `Error when updating ${listId} to analysis: ${error.stack || error}`
+      );
+      throw error;
     }
     return response.statusText;
   } catch (error) {
-    Logger.error('createAnalysis', `Error when updating ${listId} to analysis: ${error.message}`);
-    return error.message;
+    Logger.error(
+      'createAnalysis',
+      `Error when updating ${listId} to analysis: ${error.stack || error}`
+    );
+    throw error;
   }
 };
 

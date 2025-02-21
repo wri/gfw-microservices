@@ -1,5 +1,6 @@
 const path = require('path');
 const controller = require('../controllers/listDetails.controller');
+import { upgradeListSchema } from '@wri-monorepos/sql';
 const middlewares = require(path.resolve('./config/publicutils/middlewares'));
 const rateLimiterUtil = require(path.resolve('./config/lib/limiter-util'));
 
@@ -47,5 +48,21 @@ module.exports = (app, limiter) => {
     app.set('map-data', '');
     app.set('draw-data', '');
     app.set('location-name', '');
+  });
+
+  app.get('/list-details/upgrade-version-2', async (req, res) => {
+    const { organization_db, organization_user_id } = req.session;
+    const { listId } = req.query;
+
+    try {
+      await upgradeListSchema({
+        listId,
+        clientDb: organization_db,
+        userId: organization_user_id,
+      });
+    } catch (error) {
+      console.error('Schema upgrader test route failed');
+      throw error;
+    }
   });
 };

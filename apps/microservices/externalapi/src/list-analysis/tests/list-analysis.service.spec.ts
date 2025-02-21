@@ -414,7 +414,8 @@ describe('ListAnalysisService', () => {
         },
       });
 
-      (handleCreateAnalysis as jest.Mock).mockResolvedValue({ statusText: 'mockedEmailResponse' });
+      const mockResponseHandleCreateAnalysis = { statusText: 'mockedEmailResponse' };
+      (handleCreateAnalysis as jest.Mock).mockResolvedValue(mockResponseHandleCreateAnalysis);
 
       const result = await service.createAnalysis(
         analysisTypesToProcess,
@@ -424,7 +425,7 @@ describe('ListAnalysisService', () => {
         organization_user_id
       );
 
-      expect(result).toBe('mockedEmailResponse');
+      expect(result).toBe(mockResponseHandleCreateAnalysis);
 
       (clientStoreConnection.getConnection as jest.Mock).mockReset();
     });

@@ -1,7 +1,5 @@
 import axios from 'axios';
 
-import { areArraysEqual } from '../../utils/arrayUtils';
-
 const renameProp = (oldProp, newProp, { [oldProp]: old, ...others }) => ({
   [newProp]: old,
   ...others,
@@ -59,19 +57,6 @@ const createLargeListStep = async (param) => {
       commodity,
     });
     return { ...param, ...data };
-  } catch (error) {
-    throw new Error(error);
-  }
-};
-
-const changeAnalysesTypes = async (param) => {
-  const { list_id: listId, analysisIds, existingListAnalysisIds } = param;
-  try {
-    if (!areArraysEqual(analysisIds, existingListAnalysisIds)) {
-      await axios.post(`/api/list/${listId}/selectedAnalyses`, { analysisIds });
-    }
-
-    return param;
   } catch (error) {
     throw new Error(error);
   }
@@ -166,7 +151,7 @@ export function uploadProcessByPrevUploadedFile({
   commodity,
 }) {
   const processPipeline = existingList?.id
-    ? promiseCompose(processListStep, changeAnalysesTypes)
+    ? promiseCompose(processListStep)
     : promiseCompose(processListStep, saveListToProcessStep, createLargeListStep);
 
   return processPipeline({

@@ -66,7 +66,7 @@ export class InsertLocationData extends AbstractHandler<ChainType> {
 
       return super.handle(request);
     } catch (error) {
-      throw new Error(`Failed to handle input: ${error.message}`);
+      throw new Error(`Failed to handle input: ${error.stack || error}`);
     }
   }
 }

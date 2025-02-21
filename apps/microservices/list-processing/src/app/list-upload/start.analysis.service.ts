@@ -24,6 +24,7 @@ import { ValidateMandatoryFields } from './chain/validate.mandatory.fields';
 import { ValidateLocationName } from './chain/validate.location.name';
 import { AddNewLocationToAnalysisTable } from './chain/add.new.location.to.analysis.table';
 import { ConvertGeojsonProperties } from './chain/convert.geojson.properties';
+import { PutListAsDraft } from './chain/put.list.as.draft';
 
 type WorkerType = {
   request: RequestLargeListProcess;
@@ -60,6 +61,7 @@ async function worker(input: WorkerType, cb: done) {
   const validateLocationName = new ValidateLocationName();
   const addNewLocationToAnalysisTable = new AddNewLocationToAnalysisTable();
   const convertGeojsonProperties = new ConvertGeojsonProperties();
+  const putListAsDraft = new PutListAsDraft();
 
   downloadS3File
     .setNext(parseData)
@@ -71,6 +73,7 @@ async function worker(input: WorkerType, cb: done) {
     .setNext(gadmService) // depends on convertPoint2Polygon
     .setNext(validateLatLongGeojson) // depends on gadmService
     .setNext(processUploadData)
+    .setNext(putListAsDraft) // depends on gadmService and validateLatLongGeojson
     .setNext(insertLocationData)
     .setNext(saveListAttributes)
     .setNext(writeLocationCount)

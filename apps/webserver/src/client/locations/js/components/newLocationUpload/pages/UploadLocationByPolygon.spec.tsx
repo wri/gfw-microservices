@@ -118,17 +118,17 @@ describe('UploadLocationByPolygon', () => {
         name: /enter polygon coordinates/i,
       })
     );
-    expect(screen.queryByText(/enter the location name/i)).not.toBeInTheDocument();
+    expect(screen.queryByText(/enter location name/i)).not.toBeInTheDocument();
     await userEvent.click(
       screen.getByRole('button', {
         name: /next/i,
       })
     );
-    expect(screen.queryByText(/enter the location name/i)).toBeInTheDocument();
+    expect(screen.getByText(/enter location name/i)).toBeInTheDocument();
 
     const locationNameField = screen.getByRole('textbox');
     await userEvent.type(locationNameField, 'new location 123');
-    expect(screen.queryByText(/enter the location name/i)).not.toBeInTheDocument();
+    expect(screen.queryByText(/enter location name/i)).not.toBeInTheDocument();
 
     expect(
       screen.queryAllByText(

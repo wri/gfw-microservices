@@ -220,7 +220,8 @@ export const ComposeAnalysisCopyQuery = (
   destinationLocationIds: number[],
   statement: string
 ) => {
-  return `declare @SourceTableIds table ( Id int IDENTITY(1,1) PRIMARY KEY,sourceId int);
+  return `
+          declare @SourceTableIds table ( Id int IDENTITY(1,1) PRIMARY KEY,sourceId int);
           declare @DestinationTableIds table ( Id int IDENTITY(1,1) PRIMARY KEY,destinationId int);
 
           declare @sourceIDs varchar(1000);

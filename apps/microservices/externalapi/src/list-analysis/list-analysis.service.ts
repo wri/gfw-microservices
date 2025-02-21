@@ -552,7 +552,7 @@ export class ListAnalysisService {
       organizationDetails.subscriptionStatusId
     );
 
-    return response.statusText;
+    return response;
   }
   private async validateGHGAnalysis(
     listId: number,

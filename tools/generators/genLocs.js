@@ -1,5 +1,6 @@
 const fs = require('fs');
 const child_process = require('child_process');
+// const Math = require('mathjs');
 
 // Define default values for parameters
 const defaultLocations = 4;
@@ -18,17 +19,23 @@ parser.addArgument(['-l', '--locations'], { help: 'Number of locations to genera
 parser.addArgument(['-r', '--radius'], { help: 'Radius of analysis' });
 parser.addArgument(['-f', '--format'], { help: 'Output format: CSV, KML, GeoJson, SHP' });
 parser.addArgument(['-g', '--polygon'], { action: 'storeTrue', help: 'Polygon vs point' });
+parser.addArgument(['-a', '--attributes'], { action: 'storeTrue', help: 'Random attributes' });
 const args = parser.parseArgs();
 
 const locations = args.locations ? Math.round(Number(args.locations)) : defaultLocations;
 const radius = args.radius ? Number(args.radius) : defaultRadius;
 const format = args.format || defaultFormat;
 const polygon = args.polygon;
+const attributes = args.attributes;
 
 function outputHeader(fileName) {
   let headerString = '';
   if (format === 'CSV') {
-    headerString = 'Location Name,Latitude,Longitude,Analysis Radius,Analysis Area\n';
+    headerString = 'Location Name,Latitude,Longitude,Analysis Radius,Analysis Area';
+    if (attributes) {
+      headerString += ',Attr1';
+    }
+    headerString += '\n';
     if (polygon) {
       throw new Error('Polygon not supported for CSV');
     }
@@ -38,12 +45,12 @@ function outputHeader(fileName) {
 <Document id="root_doc">
 <Schema name="pro_kml_schema" id="pro_kml_schema">
 <SimpleField name="Location Name" type="string"></SimpleField>
-<SimpleField name="Analysis_R" type="string"></SimpleField>
-</Schema>
+<SimpleField name="Analysis_R" type="string"></SimpleField>\n`;
+    if (attributes) {
+      headerString += '<SimpleField name="Attr1" type="string"></SimpleField>\n';
+    }
+    headerString += `</Schema>
 <Folder><name>pro_kml_schema</name>`;
-    /* <SimpleField name="Latitude" type="float"></SimpleField>
-<SimpleField name="Longitude" type="float"></SimpleField>
-<SimpleField name="Analysis_A" type="string"></SimpleField> */
   } else if (format === 'GeoJson') {
     headerString = `{
       "type": "FeatureCollection",
@@ -57,17 +64,23 @@ function outputHeader(fileName) {
 function outputLocation(fileName, locName, lat, lon) {
   let locString = '';
   try {
+    const randomAttr = `A${Math.random().toString().slice(2, 5)}`;
     if (format === 'CSV') {
-      locString = `${locName},${lat},${lon},${radius},\n`;
+      locString = `${locName},${lat},${lon},${radius},`;
+      if (attributes) {
+        locString += ',' + randomAttr;
+      }
+      locString += '\n';
     } else if (format === 'KML') {
       locString = `  <Placemark>
 	<Style><LineStyle><color>ff0000ff</color></LineStyle><PolyStyle><fill>0</fill></PolyStyle></Style>
 	<ExtendedData><SchemaData schemaUrl="#pro_kml_schema">
 		<SimpleData name="Location Name">${locName}</SimpleData>`;
       locString += polygon ? '' : `<SimpleData name="Analysis_R">${radius}</SimpleData>`;
-      // <SimpleData name="Latitude">${lat}</SimpleData>
-      // <SimpleData name="Longitude">${lon}</SimpleData>
-      locString += '</SchemaData></ExtendedData>';
+      if (attributes) {
+        locString += `\n<SimpleData name="Attr1">${randomAttr}</SimpleData>`;
+      }
+      locString += '</SchemaData></ExtendedData>\n';
       if (polygon) {
         locString += `<Polygon><outerBoundaryIs><LinearRing><coordinates>
         ${lon - 0.01},${lat - 0.01},0
@@ -81,13 +94,16 @@ function outputLocation(fileName, locName, lat, lon) {
       }
       locString += '</Placemark>\n';
     } else if (format === 'GeoJson') {
-      if (locName !== 'Loc0_0') {
+      if (locName !== 'Loc 0 0') {
         locString = ',';
       }
-      locString += `        {
+      locString += `      {
         "type": "Feature",
         "properties": {"Location Name": "${locName}"`;
       locString += polygon ? '},\n' : `,"Analysis Radius": ${radius}},\n`;
+      if (attributes) {
+        locString += `        "Attr1": "${randomAttr}",\n`;
+      }
       if (polygon) {
         locString += `        "geometry": {
           "type": "Polygon",
@@ -150,7 +166,7 @@ function genLocs(inputlocations) {
     for (let y = 0; y < numPoints; y++) {
       const lat = startLat + y * 0.036;
       const lon = startLon + x * 0.036;
-      const locName = `Loc${x}_${y}`;
+      const locName = `Loc ${x} ${y}`;
       outputLocation(fileName, locName, lat, lon);
     }
     if (((x - lastLogPoints) * 100) / numPoints >= 10) {
@@ -164,7 +180,9 @@ function genLocs(inputlocations) {
 
 if (format === 'SHP') {
   const childOutput = child_process.execSync(
-    `python ${__dirname}/genLocShp.py -l ${locations} ${polygon ? '-g' : ''}`
+    `python ${__dirname}/genLocShp.py -l ${locations} ${polygon ? '-g' : ''} ${
+      attributes ? '-a' : ''
+    }`
   );
   console.log(childOutput.toString());
 } else if (format !== 'CSV' && format !== 'KML' && format !== 'GeoJson') {

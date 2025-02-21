@@ -22,7 +22,7 @@ const uploadByPointSchema = coordinateSchema.extend({
   locationName: locationNameSchema,
   areaSize: z
     .string()
-    .min(1, { message: 'Enter the area size' })
+    .nonempty({ message: 'Enter the area size' })
     .transform((val) => Number(val))
     .refine((val) => val > 0, { message: 'Enter a valid area size' })
     .transform((val) => val.toString()),

@@ -196,6 +196,7 @@ export function UploadLocationByPolygon() {
 
         <Controller
           name="locationName"
+          defaultValue=""
           control={controlLocationName}
           render={({ field }) => {
             return (

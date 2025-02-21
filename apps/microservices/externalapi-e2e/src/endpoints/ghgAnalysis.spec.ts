@@ -6,7 +6,6 @@ import postRedirectHeaders from './postRedirectHeaders';
 const BASE_URL = process.env.HOST;
 const API_TOKEN = process.env.API_TOKEN;
 const email = process.env.USER_EMAIL;
-const list = process.env.TEST_LIST;
 describe('GHGAnalysis', () => {
   let prepareUploadRes;
   let uploadNewRes;
@@ -273,7 +272,7 @@ describe('GHGAnalysis', () => {
     'Should not create an GHG Analysis for the list missing yields',
     async () => {
       try {
-        const res = await postRedirectHeaders(
+        await postRedirectHeaders(
           `${BASE_URL}/api/v1/list/${uploadNewRes.data.listId}/analysis/GHG/analyze`,
           {
             userEmail: email,

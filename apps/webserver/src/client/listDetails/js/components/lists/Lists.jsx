@@ -78,7 +78,7 @@ import { EditList } from './EditList/EditList';
 import redirectToMap from '../../../../common/js/utils/redirect';
 import { FailedPopupDialog } from '../../../../locations/js/components/landing/FailedPopupDialog';
 import { getIsDiagnosticStatusDraft, getIsDraftWithoutDiagnostic } from '../../utils/draft.utils';
-import { requestGeoTrellisAnalyzeList } from '../../../../locations/js/utils/request.utils';
+import { requestGeoTrellisAnalyzeList } from '../../../../locations/js/utils/requestUtils';
 import {
   getDialogContent,
   getDialogTitle,

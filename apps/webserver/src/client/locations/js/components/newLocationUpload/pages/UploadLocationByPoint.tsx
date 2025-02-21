@@ -10,7 +10,7 @@ import { LocationTypeButton, ExternalHelperResource, NavBar, AddressSelector } f
 import HectareKilometerSwitch from '../../adding/HectareKilometerSwitch';
 import { PillButton } from '../../../../../components';
 import { MeasurementUnit } from '../types';
-import { coordinateSchema } from '../utils/schema';
+import { coordinateSchema, locationNameSchema } from '../utils/schema';
 import { useUploadLocation } from '../contexts';
 
 enum LocationFormat {
@@ -19,7 +19,7 @@ enum LocationFormat {
 }
 
 const uploadByPointSchema = coordinateSchema.extend({
-  locationName: z.string().trim().min(1, { message: 'Enter location name' }),
+  locationName: locationNameSchema,
   areaSize: z
     .string()
     .min(1, { message: 'Enter the area size' })

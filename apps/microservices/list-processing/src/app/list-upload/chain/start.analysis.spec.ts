@@ -2,7 +2,7 @@ import { StartAnalysis } from './start.analysis';
 import { ClientStoreConnection, updateListsAnalysisStatus } from '@wri-monorepos/sql';
 import { ProcessingLimitException } from '../../app.exceptions';
 import { mockAnalysisFlow } from '../../../mock';
-import { checkProcessingLimits } from '@wri-monorepos/shared';
+import { checkProcessingLimits, featureFlagsService } from '@wri-monorepos/shared';
 import { getListAnalysisStatusByListId, extractAnalysisTypes } from '@wri-monorepos/geo';
 import { listStatus } from '@wri-monorepos/constants';
 import { DataSource } from 'typeorm'; // ou o caminho correto para o DataSource na sua aplicação
@@ -76,6 +76,14 @@ describe('StartAnalysis', () => {
     jest.spyOn(startAnalysis, 'getListName').mockResolvedValue('e2e_automation_list');
     jest.spyOn(startAnalysis, 'getUserEmail').mockResolvedValue('dt_user');
     (mockAnalysisFlow as jest.Mock).mockResolvedValue(undefined);
+
+    const mockFeatureFlagsService = {
+      getFeatureFlagsForCurrentOrg: jest
+        .fn()
+        .mockResolvedValue([{ flagId: 'MockedFeatureFlag', flagState: true }]),
+      getClientIdByClientStoreDatabaseName: jest.fn().mockResolvedValue(19999),
+    };
+    (featureFlagsService as jest.Mock).mockResolvedValue(mockFeatureFlagsService);
 
     const result = await startAnalysis.handle(input);
 
@@ -200,6 +208,14 @@ describe('StartAnalysis', () => {
     });
     (getListAnalysisStatusByListId as jest.Mock).mockResolvedValue({});
     (extractAnalysisTypes as jest.Mock).mockReturnValue(['type1', 'type2']);
+
+    const mockFeatureFlagsService = {
+      getFeatureFlagsForCurrentOrg: jest
+        .fn()
+        .mockResolvedValue([{ flagId: 'MockedFeatureFlag', flagState: true }]),
+      getClientIdByClientStoreDatabaseName: jest.fn().mockResolvedValue(19999),
+    };
+    (featureFlagsService as jest.Mock).mockResolvedValue(mockFeatureFlagsService);
 
     global.fetch = jest.fn(() =>
       Promise.resolve({

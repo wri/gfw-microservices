@@ -77,11 +77,11 @@ describe('API Endpoints', () => {
 
   describe('POST Endpoints', () => {
     // disabled because re-analyze list takes a while
-    xit(
+    it(
       'should generate new analysis to existing list',
       async () => {
         const res = await postRedirectHeaders(
-          `${BASE_URL}/api/v1/list/${list}/analysis/FCD/analyze`,
+          `${BASE_URL}/api/v1/list/${list}/analysis/Alerts/analyze`,
           {
             userEmail: email,
           },
@@ -96,7 +96,7 @@ describe('API Endpoints', () => {
         expect(res.status).toBe(201);
         expect(res.data).toBeTruthy();
       },
-      10 * 1000
+      30 * 1000
     );
 
     let prepareUploadRes;

@@ -20,13 +20,6 @@
  * @param userId number
  */
 import { Logger } from '@nestjs/common';
-import {
-  COMMODITY_MAP_SPAM,
-  COMMODITY_MAP_SPAM_CODES_FOR_HUMANS,
-  GHG_MAPSPAM_CODES,
-  GHG_PREFIX,
-} from '@wri-monorepos/constants';
-
 import { ClientStoreConnection, SQLUtils } from '../util';
 import { UspSetListUnlocked } from './uspSetListUnlocked';
 import { UspSetListLocked } from './uspSetListLocked';
@@ -43,14 +36,14 @@ interface SchemaUpgraderArgs {
 }
 export default async function upgradeListSchema(args: SchemaUpgraderArgs) {
   const { clientDb, listId, userId } = args;
-  const logger = new Logger(`Schema Upgrade: ${clientDb}. ListId: listId`);
+  const logger = new Logger(`Schema Upgrade [dbo].[${clientDb}]. ListId: ${listId}`);
   try {
     const db = new ClientStoreConnection();
     const connection = await db.getConnection(clientDb);
     const listRepo = connection.getRepository(Lists);
     const list = await listRepo.findOne({ where: { id: listId } });
 
-    logger.log(`Upgrading List ${listId}`);
+    logger.log(`Lock ${listId}`);
 
     if (list.version !== LIST_UPGRADE_VERSION) {
       await new UspSetListLocked().run(clientDb, list.id, userId);
@@ -233,4 +226,53 @@ function getFormattedAttributes(listId, attributes) {
     attribute_name: attributes[0].field,
     attribute_type: attributes[0].type === 'number' ? ListsAttrsTypes.Int : ListsAttrsTypes.Text,
   };
+}
+export enum GHG_MAPSPAM_CODES {
+  COCO = 'COCO',
+  COFF = 'COFF',
+  OILP = 'OILP',
+  RUBB = 'RUBB',
+  SOYB = 'SOYB',
+  SUGC = 'SUGC',
+}
+
+export const COMMODITY_MAP_SPAM = {
+  ['arabica coffee']: GHG_MAPSPAM_CODES.COFF,
+  ['cocoa']: GHG_MAPSPAM_CODES.COCO,
+  ['oilpalm']: GHG_MAPSPAM_CODES.OILP,
+  ['robusta coffee']: GHG_MAPSPAM_CODES.COFF,
+  ['rubber']: GHG_MAPSPAM_CODES.RUBB,
+  ['soybean']: GHG_MAPSPAM_CODES.SOYB,
+  ['sugarcane']: GHG_MAPSPAM_CODES.SUGC,
+  ['cocoa farm']: GHG_MAPSPAM_CODES.COCO,
+  ['cocoa generic']: GHG_MAPSPAM_CODES.COCO,
+  ['palm oil plantation']: GHG_MAPSPAM_CODES.OILP,
+  ['palm oil generic']: GHG_MAPSPAM_CODES.OILP,
+  ['palm smallholder farm']: GHG_MAPSPAM_CODES.OILP,
+  ['palm oil mill']: GHG_MAPSPAM_CODES.OILP,
+  ['soy farm']: GHG_MAPSPAM_CODES.SOYB,
+  ['soy generic']: GHG_MAPSPAM_CODES.SOYB,
+  ['sugar cane']: GHG_MAPSPAM_CODES.SUGC,
+};
+
+export const COMMODITY_MAP_SPAM_CODES_FOR_HUMANS = {
+  [GHG_MAPSPAM_CODES.COFF]: 'Coffee',
+  [GHG_MAPSPAM_CODES.COCO]: 'Cocoa Generic',
+  [GHG_MAPSPAM_CODES.OILP]: 'Palm Oil Generic',
+  [GHG_MAPSPAM_CODES.RUBB]: 'Rubber',
+  [GHG_MAPSPAM_CODES.SOYB]: 'Soy Generic',
+  [GHG_MAPSPAM_CODES.SUGC]: 'Sugar Cane',
+};
+
+export const MAPSPAM_COMMODITY = {
+  COFF: 'Coffee',
+  COCO: 'Cocoa Generic',
+  OILP: 'Palm Oil Generic',
+  RUBB: 'Rubber',
+  SOYB: 'Soy Generic',
+  SUGC: 'Sugar Cane',
+};
+// for unexisting codes, multiple, unknown or other
+export enum GHG_PREFIX {
+  VALUE = 'GFWP_',
 }

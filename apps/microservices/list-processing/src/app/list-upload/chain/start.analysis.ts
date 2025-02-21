@@ -198,7 +198,7 @@ export class StartAnalysis extends AbstractHandler<ChainType> {
       location_id: ids,
     };
   }
-
+  private searchForFeatureFlags() {}
   private createFetchOptions(payloadBody: object): object {
     return {
       method: 'POST',

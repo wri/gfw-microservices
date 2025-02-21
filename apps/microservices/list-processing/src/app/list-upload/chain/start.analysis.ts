@@ -1,5 +1,6 @@
 import {
   ClientStoreConnection,
+  FeatureFlag,
   Lists,
   ListSchema,
   ListSchemaType,
@@ -8,7 +9,7 @@ import {
 } from '@wri-monorepos/sql';
 import { AbstractHandler, ChainType, RequestNewList } from './types';
 import { MARK_IS_TEST_LIST, MARK_IS_TEST_USER } from '../../../services/constants';
-import { checkProcessingLimits } from '@wri-monorepos/shared';
+import { checkProcessingLimits, featureFlagsService } from '@wri-monorepos/shared';
 import { mockAnalysisFlow } from '../../../mock';
 import {
   extractAnalysisTypes,
@@ -198,7 +199,17 @@ export class StartAnalysis extends AbstractHandler<ChainType> {
       location_id: ids,
     };
   }
-  private searchForFeatureFlags() {}
+  private async searchForFeatureFlags(
+    organizationDb: string,
+    featureFlag: string
+  ): Promise<FeatureFlag> {
+    const { getFeatureFlagsForCurrentOrg, getClientIdByClientStoreDatabaseName } =
+      await featureFlagsService();
+    const orgId = await getClientIdByClientStoreDatabaseName(organizationDb);
+    const flags = await getFeatureFlagsForCurrentOrg(orgId);
+    const uploadListLpFlag = flags.find((f) => f.flagId === featureFlag) as FeatureFlag;
+    return uploadListLpFlag;
+  }
   private createFetchOptions(payloadBody: object): object {
     return {
       method: 'POST',
@@ -282,6 +293,15 @@ export class StartAnalysis extends AbstractHandler<ChainType> {
       ids
     );
     const options = this.createFetchOptions(payloadBody);
+
+    // Check if the expedited analysis flag is enabled
+    const uploadListLpFlag = await this.searchForFeatureFlags(
+      organization_database,
+      'PermanentFlagExpeditedAnalysis'
+    );
+    if (uploadListLpFlag?.flagState) {
+      options['expedited_analysis'] = true;
+    }
 
     if (isTestFlow) {
       await this.mockAnalysisFlow(organization_database, listId);

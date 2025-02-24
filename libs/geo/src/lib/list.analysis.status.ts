@@ -2,6 +2,7 @@ import { Logger } from '@nestjs/common';
 import {
   ActivityLog,
   ClientStoreConnection,
+  FeatureFlag,
   Lists,
   ListsAnalysisStatus,
   SQLUtils,
@@ -18,7 +19,11 @@ import {
   analysisIdsOptionsMap,
 } from '@wri-monorepos/constants';
 import { S3Service } from '@wri-monorepos/aws';
-import { readAnalysesLastModifiedTime, checkProcessingLimits } from '@wri-monorepos/shared';
+import {
+  readAnalysesLastModifiedTime,
+  checkProcessingLimits,
+  featureFlagsService,
+} from '@wri-monorepos/shared';
 import * as sql from 'mssql';
 import { getListAnalysisStatus } from '../utils/list.utils';
 import axios from 'axios';
@@ -302,6 +307,21 @@ export const handleCreateAnalysis = async (
     const connectionLibSql = await clientStoreConnection.getConnection(organizationDb);
 
     const activityLogRepository = connectionLibSql.getRepository(ActivityLog);
+
+    //Search for FeatureFlag
+    const { getFeatureFlagsForCurrentOrg, getClientIdByClientStoreDatabaseName } =
+      await featureFlagsService();
+    const orgId = await getClientIdByClientStoreDatabaseName(organizationDb);
+    const flags = await getFeatureFlagsForCurrentOrg(orgId);
+
+    const uploadListLpFlag = flags.find(
+      (f) => f.flagId === 'PermanentFlagExpeditedAnalysis'
+    ) as FeatureFlag;
+
+    //Add FeatureFlag to data
+    if (uploadListLpFlag?.flagState === true) {
+      data['expedited_analysis'] = true;
+    }
 
     const microserviceEnvironment = process.env.MICROSERVICES_ENV;
     const { listName, userEmail: testUserEmail } = await getTestFlowDetails(

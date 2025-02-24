@@ -414,6 +414,14 @@ const isNotNone = (value) => {
 const yesNoBinaryCheck = (value) =>
   String(value).toLowerCase() === 'yes' || String(value).toLowerCase() === 'no' || value === '';
 
+const checkNUllOrUndefined = (str) => {
+  let returnValue = false;
+  if (str === undefined || str === null || str === '') {
+    returnValue = true;
+  }
+  return returnValue;
+};
+
 const certificationCheck = (value, template) => {
   const certObj = {
     cattleGeneric: ['yes', 'no'],
@@ -447,6 +455,10 @@ const certificationCheck = (value, template) => {
   };
 
   let valid = true;
+
+  if (checkNUllOrUndefined(value)) {
+    return true;
+  }
 
   if (template) {
     if (value && typeof value === 'string') {

@@ -60,6 +60,9 @@ module.exports = (app, limiter) => {
         clientDb: organization_db,
         userId: organization_user_id,
       });
+      res.status(200).send({
+        success: true
+      });
     } catch (error) {
       console.error('Schema upgrader test route failed');
       throw error;

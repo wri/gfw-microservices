@@ -204,61 +204,6 @@ export function deleteGeoJSONFeatureProperties(geojson): void {
     delete feature.properties.flag_viirs;
   });
 }
-/**
- * Return a Raw SQL query to copy analysis from one list to another
- * @param sourceListId - List id from which analysis will be copied
- * @param destinationListId - List id to which analysis will be copied
- * @param sourceLocationIds - Location ids from which analysis will be copied, string IDs separated by comma, ex: 1,2,3
- * @param destinationLocationIds - Location ids to which analysis will be copied, string IDs separated by comma, ex: 1,2,3
- * @param statement - Partial SQL statement to be executed composed by ComposeCopyQueryStatement function, ex: [columnA] = [srcListAnalysisTable].[columnA], [columnB] = [srcListAnalysisTable].[columnB]
- * @returns
- */
-export const ComposeAnalysisCopyQuery = (
-  sourceListId: number,
-  destinationListId: number,
-  sourceLocationIds: number[],
-  destinationLocationIds: number[],
-  statement: string
-) => {
-  return `
-          declare @SourceTableIds table ( Id int IDENTITY(1,1) PRIMARY KEY,sourceId int);
-          declare @DestinationTableIds table ( Id int IDENTITY(1,1) PRIMARY KEY,destinationId int);
-
-          declare @sourceIDs varchar(1000);
-          declare @destinationIDs varchar(1000);
-          declare @sourceID INT;
-          declare @destinationID INT;
-          declare @sourceListID INT;
-          declare @destinationListID INT;
-          declare @statement NVARCHAR(MAX)
-
-          SET @sourceListID = ${sourceListId};
-          SET @destinationListID = ${destinationListId};
-          SET @statement = '${statement}';
-
-          SET @sourceIDs = '${sourceLocationIds.join(',')}';
-          SET @destinationIDs = '${destinationLocationIds.join(',')}';
-
-          insert into @SourceTableIds(sourceId) SELECT value from STRING_SPLIT(@sourceIDs, ',')
-
-          insert into @DestinationTableIds(destinationId) SELECT value from STRING_SPLIT(@destinationIDs, ',')
-
-          DECLARE copy_analysis_cursor CURSOR FOR
-          SELECT sourceId, destinationId FROM @SourceTableIds A INNER JOIN @DestinationTableIds B ON A.Id = B.Id
-
-          OPEN copy_analysis_cursor
-          FETCH NEXT FROM copy_analysis_cursor INTO @sourceID, @destinationID
-
-          WHILE @@FETCH_STATUS = 0
-          BEGIN
-                EXEC uspCopyLocationAnalysis @destinationListID, @destinationID, @sourceListID, @sourceID, @statement
-                FETCH NEXT FROM copy_analysis_cursor INTO @sourceID, @destinationID
-          END
-
-          CLOSE copy_analysis_cursor
-          DEALLOCATE copy_analysis_cursor
-  `;
-};
 
 interface RecordType {
   COLUMN_NAME: string;
@@ -389,15 +334,45 @@ export const PerformCopyAnalysis = async (
   );
   Logger.log(`Copy statement: ${statement}`, 'LocationsService');
 
-  const copyAnalysisRawQuery = ComposeAnalysisCopyQuery(
-    sourceListId,
-    destinationListId,
-    sourceLocationIds,
-    destinationLocationIds,
-    statement
-  );
+  // Performing Copy Locations
+  if (sourceLocationIds.length !== destinationLocationIds.length) {
+    throw new Error('sourceLocationIds and destinationLocationIds must have the same length');
+  }
 
-  await SQLUtils.queryDB(clientDatabase, copyAnalysisRawQuery);
+  for (let i = 0; i < sourceLocationIds.length; i++) {
+    const srcLocationId = sourceLocationIds[i];
+    const destLocationId = destinationLocationIds[i];
+
+    const parameters = [
+      {
+        field: 'dest_list_id',
+        type: sql.Int,
+        value: destinationListId,
+      },
+      {
+        field: 'dest_location_id',
+        type: sql.Int,
+        value: destLocationId,
+      },
+      {
+        field: 'src_list_id',
+        type: sql.Int,
+        value: sourceListId,
+      },
+      {
+        field: 'src_location_id',
+        type: sql.Int,
+        value: srcLocationId,
+      },
+      {
+        field: 'statement',
+        type: sql.NVarChar(sql.MAX),
+        value: statement,
+      },
+    ];
+
+    await SQLUtils.queryDB(clientDatabase, 'copyLocationAnalysis', parameters);
+  }
 };
 
 export async function PerformLocationsBulkCopy(

@@ -64,7 +64,7 @@ describe('GHGAnalysis', () => {
         {
           uploadId,
           listName,
-          templateId: 13,
+          commodity: 'Unknown',
           analysisIDs: 'GHG',
         },
         {
@@ -163,7 +163,6 @@ describe('GHGAnalysis', () => {
         {
           uploadId,
           listName,
-          templateId: 13,
           analysisIDs: 'GHG',
           commodity: 'Cocoa Generic',
         },

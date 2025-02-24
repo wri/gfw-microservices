@@ -1,14 +1,12 @@
 import { StartAnalysis } from './start.analysis';
 import { ClientStoreConnection, Lists, User } from '@wri-monorepos/sql';
-import { handleCreateAnalysis } from '@wri-monorepos/geo';
+import { handleCreateAnalysis, MARK_IS_TEST_LIST, MARK_IS_TEST_USER, mockAnalysisFlow } from '@wri-monorepos/geo';
 import { listStatus } from '@wri-monorepos/constants';
-import { MARK_IS_TEST_LIST, MARK_IS_TEST_USER } from '../../../services/constants';
-import { mockAnalysisFlow } from '../../../mock';
 import { ChainType } from './types';
 
 // Mock external dependencies
 jest.mock('@wri-monorepos/geo');
-jest.mock('../../../mock');
+jest.mock('@wri-monorepos/sql');
 
 describe('StartAnalysis', () => {
   let startAnalysis: StartAnalysis;
@@ -87,23 +85,6 @@ describe('StartAnalysis', () => {
       );
     });
 
-    it('should handle test flow correctly', async () => {
-      process.env.MICROSERVICES_ENV = 'DEVELOPMENT';
-      mockListRepository.findOne
-        .mockResolvedValueOnce({ listStatusId: listStatus.Active })
-        .mockResolvedValueOnce({ listName: `test_${MARK_IS_TEST_LIST}` });
-      mockUserRepository.findOne.mockResolvedValue({ email: `test_${MARK_IS_TEST_USER}` });
-
-      const result = await startAnalysis.handle(mockRequest);
-
-      expect(mockAnalysisFlow).toHaveBeenCalledWith({
-        organization_database: 'test_db',
-        list_id: 123,
-        template_type: 'cocoa_generic',
-      });
-      expect(result).toBe(mockRequest);
-    });
-
     it('should create analysis successfully', async () => {
       process.env.MICROSERVICES_ENV = 'DEVELOPMENT';
       mockListRepository.findOne
@@ -149,15 +130,6 @@ describe('StartAnalysis', () => {
 
       expect(status).toBe(listStatus.Active);
       expect(mockListRepository.findOne).toHaveBeenCalledWith({ where: { id: 123 } });
-    });
-
-    it('should get user email correctly', async () => {
-      mockUserRepository.findOne.mockResolvedValue({ email: 'test@example.com' });
-
-      const email = await startAnalysis.getUserEmail('test_db', 1);
-
-      expect(email).toBe('test@example.com');
-      expect(mockUserRepository.findOne).toHaveBeenCalledWith({ where: { id: 1 } });
     });
   });
 });

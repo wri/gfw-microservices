@@ -1,223 +1,135 @@
 import { StartAnalysis } from './start.analysis';
-import { ClientStoreConnection, updateListsAnalysisStatus } from '@wri-monorepos/sql';
-import { ProcessingLimitException } from '../../app.exceptions';
-import { mockAnalysisFlow } from '../../../mock';
-import { checkProcessingLimits } from '@wri-monorepos/shared';
-import { getListAnalysisStatusByListId, extractAnalysisTypes } from '@wri-monorepos/geo';
+import { ClientStoreConnection, Lists, User } from '@wri-monorepos/sql';
+import { handleCreateAnalysis } from '@wri-monorepos/geo';
 import { listStatus } from '@wri-monorepos/constants';
-import { DataSource } from 'typeorm'; // ou o caminho correto para o DataSource na sua aplicação
 import { ChainType } from './types';
 
-jest.mock('@wri-monorepos/sql');
-jest.mock('../../../mock');
-jest.mock('@wri-monorepos/shared');
+// Mock external dependencies
 jest.mock('@wri-monorepos/geo');
+jest.mock('@wri-monorepos/sql');
 
 describe('StartAnalysis', () => {
   let startAnalysis: StartAnalysis;
-  let clientStoreConnection: ClientStoreConnection;
+  let mockClientStoreConnection: jest.Mocked<ClientStoreConnection>;
+  let mockConnection: any;
+  let mockListRepository: any;
+  let mockUserRepository: any;
 
   beforeEach(() => {
-    clientStoreConnection = new ClientStoreConnection();
-    startAnalysis = new StartAnalysis(clientStoreConnection);
-    process.env.LARGE_LIST_PROCESSING_ENDPOINT = 'http://test.com';
-    process.env.MICROSERVICES_ENV = 'DEVELOPMENT';
+    // Reset all mocks
+    jest.clearAllMocks();
 
-    const mockDataSource = {
-      getRepository: jest.fn().mockReturnValue({
-        findOne: jest.fn().mockResolvedValue({ listName: 'test_list' }), // Ajuste conforme necessário
+    // Mock connection and repositories
+    mockListRepository = {
+      findOne: jest.fn(),
+    };
+    mockUserRepository = {
+      findOne: jest.fn(),
+    };
+    mockConnection = {
+      getRepository: jest.fn((entity) => {
+        if (entity === Lists) {
+          return mockListRepository;
+        }
+        if (entity === User) {
+          return mockUserRepository;
+        }
       }),
-      createQueryBuilder: jest.fn().mockReturnThis(),
-      select: jest.fn().mockReturnThis(),
-      from: jest.fn().mockReturnThis(),
-      getRawMany: jest.fn().mockResolvedValue([]), // Adjust the return value as n
-      // Adicione outras propriedades e métodos do DataSource que você usa
-    } as unknown as DataSource;
+    };
+    mockClientStoreConnection = {
+      getConnection: jest.fn().mockResolvedValue(mockConnection),
+    } as any;
 
-    jest.spyOn(clientStoreConnection, 'getConnection').mockResolvedValue(mockDataSource);
+    startAnalysis = new StartAnalysis(mockClientStoreConnection as any);
   });
 
-  it('should handle test flow correctly', async () => {
-    process.env.MICROSERVICES_ENV = 'DEVELOPMENT';
-    const input = {
-      request: {
-        organization_database: 'test_db',
-        user_id: 1,
-        listId: 1,
-        isExternalAPIProcess: false,
-        organization_id: 1,
-        subscription_status_id: 1,
-        path: 'test',
-        analysisIds: ['FCD'],
-      },
-      geojson: {
-        features: [
-          {
-            type: 'Feature',
-            geometry: {
-              type: 'Point',
-              coordinates: [0, 0],
-            },
-            properties: {
-              name: 'test',
-              gadmid: 'test',
-            },
-          },
-        ],
-        type: 'FeatureCollection',
-      },
-    } as ChainType;
+  const mockRequest = {
+    request: {
+      organization_database: 'test_db',
+      user_id: 1,
+      list_id: 123,
+      isExternalAPIProcess: false,
+      organization_id: 456,
+      subscription_status_id: 1,
+      saveAsDraft: false,
+      analysisIds: ['analysis1', 'analysis2'],
+      userEmail: 'test@example.com',
+    },
+    geojson: {
+      features: [{ properties: { gadmid: '123', error: null } }],
+    },
+  } as unknown as ChainType;
 
-    (checkProcessingLimits as jest.Mock).mockResolvedValue({
-      isListLocationOverLimit: false,
-      processingLimit: 100,
+  describe('handle', () => {
+    it('should skip analysis for draft lists', async () => {
+      mockListRepository.findOne.mockResolvedValue({ listStatusId: listStatus.Draft });
+
+      const result = await startAnalysis.handle(mockRequest);
+
+      expect(result).toBe(mockRequest);
+      expect(handleCreateAnalysis).not.toHaveBeenCalled();
     });
 
-    jest.spyOn(startAnalysis, 'getListName').mockResolvedValue('e2e_automation_list');
-    jest.spyOn(startAnalysis, 'getUserEmail').mockResolvedValue('dt_user');
-    (mockAnalysisFlow as jest.Mock).mockResolvedValue(undefined);
+    it('should throw error if all features have errors', async () => {
+      mockListRepository.findOne.mockResolvedValue({ listStatusId: listStatus.Active });
 
-    const result = await startAnalysis.handle(input);
-
-    expect(mockAnalysisFlow).toHaveBeenCalled();
-    expect(result).toEqual(input);
-  });
-
-  it('should throw ProcessingLimitException when limits are exceeded', async () => {
-    const input = {
-      request: {
-        organization_database: 'test_db',
-        user_id: 1,
-        list_id: 1,
-        isExternalAPIProcess: false,
-        organization_id: 1,
-        subscription_status_id: 1,
-        path: 'test',
-        analysisIds: ['FCD'],
-      },
-      geojson: {
-        features: [
-          {
-            type: 'Feature',
-            geometry: {
-              type: 'Point',
-              coordinates: [0, 0],
-            },
-            properties: {
-              name: 'test',
-              gadmid: 'test',
-            },
-          },
-        ],
-        type: 'FeatureCollection',
-      },
-    } as ChainType;
-
-    (checkProcessingLimits as jest.Mock).mockResolvedValue({
-      isListLocationOverLimit: true,
-      processingLimit: 100,
-    });
-
-    await expect(startAnalysis.handle(input)).rejects.toThrow(ProcessingLimitException);
-    expect(updateListsAnalysisStatus).toHaveBeenCalledWith('test_db', {
-      listId: 1,
-      errorInfo: 'Exceeded Analysis Limit',
-      status: listStatus.Inactive,
-    });
-  });
-
-  it('should throw Error when all locations has problem', async () => {
-    const input = {
-      request: {
-        organization_database: 'test_db',
-        user_id: 1,
-        listId: 1,
-        isExternalAPIProcess: false,
-        organization_id: 1,
-        subscription_status_id: 1,
-        path: 'test',
-        analysisIds: ['FCD'],
-      },
-      geojson: {
-        features: [
-          {
-            type: 'Feature',
-            geometry: {
-              type: 'Point',
-              coordinates: [0, 0],
-            },
-            properties: {
-              name: 'test',
-            },
-          },
-        ],
-        type: 'FeatureCollection',
-      },
-    } as ChainType;
-
-    (checkProcessingLimits as jest.Mock).mockResolvedValue({
-      isListLocationOverLimit: true,
-      processingLimit: 100,
-    });
-
-    await expect(startAnalysis.handle(input)).rejects.toThrow(
-      'All the features have errors, not going to start the analysis'
-    );
-  });
-
-  it('should make API call with correct payload', async () => {
-    const input = {
-      request: {
-        organization_database: 'test_db',
-        user_id: 1,
-        listId: 1,
-        isExternalAPIProcess: false,
-        organization_id: 1,
-        subscription_status_id: 1,
-        path: 'test',
-        analysisIds: ['FCD'],
-      },
-      geojson: {
-        features: [
-          {
-            type: 'Feature',
-            geometry: {
-              type: 'Point',
-              coordinates: [0, 0],
-            },
-            properties: {
-              name: 'test',
-              gadmid: 'test',
-            },
-          },
-        ],
-        type: 'FeatureCollection',
-      },
-    } as ChainType;
-    (checkProcessingLimits as jest.Mock).mockResolvedValue({
-      isListLocationOverLimit: false,
-      processingLimit: 100,
-    });
-    (getListAnalysisStatusByListId as jest.Mock).mockResolvedValue({});
-    (extractAnalysisTypes as jest.Mock).mockReturnValue(['type1', 'type2']);
-
-    global.fetch = jest.fn(() =>
-      Promise.resolve({
-        json: () => Promise.resolve({}),
-      })
-    ) as jest.Mock;
-
-    await startAnalysis.handle(input);
-
-    expect(global.fetch).toHaveBeenCalledWith(
-      expect.any(String),
-      expect.objectContaining({
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
+      const requestWithErrors = {
+        ...mockRequest,
+        geojson: {
+          features: [{ properties: { error: 'Some error' } }],
         },
-        body: expect.any(String),
-      })
-    );
+      } as unknown as ChainType;
+
+      await expect(startAnalysis.handle(requestWithErrors)).rejects.toThrow(
+        'All the features have errors, not going to start the analysis'
+      );
+    });
+
+    it('should create analysis successfully', async () => {
+      process.env.MICROSERVICES_ENV = 'DEVELOPMENT';
+      mockListRepository.findOne
+        .mockResolvedValueOnce({ listStatusId: listStatus.Active })
+        .mockResolvedValueOnce({ listName: 'normal_list' });
+      mockUserRepository.findOne.mockResolvedValue({ email: 'normal@example.com' });
+      (handleCreateAnalysis as jest.Mock).mockResolvedValue('OK');
+
+      const result = await startAnalysis.handle(mockRequest);
+
+      expect(handleCreateAnalysis).toHaveBeenCalledWith(
+        'analysis1,analysis2',
+        123,
+        456,
+        'test_db',
+        '',
+        1,
+        1,
+        false
+      );
+      expect(result).toBe(mockRequest);
+    });
+
+    it('should throw error if analysis creation fails', async () => {
+      process.env.MICROSERVICES_ENV = 'DEVELOPMENT';
+      mockListRepository.findOne
+        .mockResolvedValueOnce({ listStatusId: listStatus.Active })
+        .mockResolvedValueOnce({ listName: 'normal_list' });
+      mockUserRepository.findOne.mockResolvedValue({ email: 'normal@example.com' });
+      (handleCreateAnalysis as jest.Mock).mockResolvedValue('Error');
+
+      await expect(startAnalysis.handle(mockRequest)).rejects.toThrow(
+        'Failed to start analysis: Error'
+      );
+    });
+  });
+
+  describe('helper methods', () => {
+    it('should get list status correctly', async () => {
+      mockListRepository.findOne.mockResolvedValue({ listStatusId: listStatus.Active });
+
+      const status = await startAnalysis.getListStatus('test_db', 123);
+
+      expect(status).toBe(listStatus.Active);
+      expect(mockListRepository.findOne).toHaveBeenCalledWith({ where: { id: 123 } });
+    });
   });
 });

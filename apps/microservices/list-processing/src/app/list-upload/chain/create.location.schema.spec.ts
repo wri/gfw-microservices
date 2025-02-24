@@ -53,51 +53,6 @@ describe('CreateLocationSchema', () => {
     });
   });
 
-  describe('getTableStructureQuery', () => {
-    it('should get the table structure query', async () => {
-      const someTemplateId = 13;
-
-      jest.spyOn(SQLUtils.prototype, 'connect').mockResolvedValueOnce();
-      jest.spyOn(SQLUtils.prototype, 'executeQuery').mockResolvedValueOnce('');
-
-      await createLocationSchema.getTableStructureQuery(someTemplateId);
-
-      expect(SQLUtils.prototype.executeQuery).toHaveBeenCalledWith('uspGetTableQueryString', [
-        { field: 'template_id', type: sql.Int, value: someTemplateId },
-        {
-          field: 'custom_attribute_1',
-          type: sql.NVarChar(50),
-          value: null,
-        },
-        {
-          field: 'custom_attribute_1_type',
-          type: sql.NVarChar(50),
-          value: null,
-        },
-        {
-          field: 'custom_attribute_2',
-          type: sql.NVarChar(50),
-          value: null,
-        },
-        {
-          field: 'custom_attribute_2_type',
-          type: sql.NVarChar(50),
-          value: null,
-        },
-        {
-          field: 'custom_attribute_3',
-          type: sql.NVarChar(50),
-          value: null,
-        },
-        {
-          field: 'custom_attribute_3_type',
-          type: sql.NVarChar(50),
-          value: null,
-        },
-      ]);
-    });
-  });
-
   describe('createAnalysisTableInDatabase', () => {
     it('should create an analysis table in the database', async () => {
       mockSQLUtils.executeQuery.mockResolvedValueOnce(undefined);

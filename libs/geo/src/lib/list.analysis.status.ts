@@ -5,6 +5,7 @@ import {
   Lists,
   ListsAnalysisStatus,
   SQLUtils,
+  User,
 } from '@wri-monorepos/sql';
 import {
   GEO_TRELLIS__ANALYZE_LIST_DEV,
@@ -23,6 +24,12 @@ import { getListAnalysisStatus } from '../utils/list.utils';
 import axios from 'axios';
 import { flatten } from 'lodash';
 import { updateListsAnalysisStatus } from './list.analysis.status/updateListAnalysisStatus';
+import { mockAnalysisFlow } from '../mock';
+
+export const MARK_IS_TEST_LIST = 'e2e_automation';
+export const MARK_IS_TEST_USER = 'dt_';
+
+const environmentAllowTestFlow = ['DEVELOPMENT', 'LATEST', 'QA', 'STAGING'];
 
 export const createListAnalysis = async (
   clientDatabase: string,
@@ -118,6 +125,60 @@ export const setSelectedAnalyses = async (
   } else {
     await updateListAnalysis(clientDatabase, listId, analysisIds, analysisStatusData);
   }
+};
+
+const getListName = async (organizationDatabase: string, list_id: number) => {
+  const connection = await new ClientStoreConnection().getConnection(organizationDatabase);
+  const listRepository = connection.getRepository(Lists);
+  const { listName } = await listRepository.findOne({ where: { id: list_id } });
+  return listName;
+};
+
+const getUserEmail = async (organizationDatabase: string, user_id: number) => {
+  const connection = await new ClientStoreConnection().getConnection(organizationDatabase);
+  const userRepository = connection.getRepository(User);
+  const { email } = await userRepository.findOne({ where: { id: user_id } });
+  return email;
+};
+
+const checkIsTestFlow = (
+  microserviceEnvironment: string,
+  listName: string,
+  userEmail: string
+): boolean => {
+  return (
+    environmentAllowTestFlow.includes(microserviceEnvironment) &&
+    listName.includes(MARK_IS_TEST_LIST) &&
+    userEmail.includes(MARK_IS_TEST_USER)
+  );
+};
+
+const getTestFlowDetails = async (
+  microserviceEnvironment: string,
+  organization_database: string,
+  listId: number,
+  user_id: number
+): Promise<{ listName: string; userEmail: string }> => {
+  let listName = '';
+  let userEmail = '';
+
+  if (environmentAllowTestFlow.includes(microserviceEnvironment)) {
+    listName = await getListName(organization_database, listId);
+    userEmail = await getUserEmail(organization_database, user_id);
+  }
+
+  return { listName, userEmail };
+};
+
+const runMockAnalysisFlow = async (
+  organization_database: string,
+  listId: number
+): Promise<void> => {
+  await mockAnalysisFlow({
+    organization_database: organization_database,
+    list_id: listId,
+    template_type: 'cocoa_generic',
+  });
 };
 
 export const updateListAnalysis = async (
@@ -241,6 +302,20 @@ export const handleCreateAnalysis = async (
     const connectionLibSql = await clientStoreConnection.getConnection(organizationDb);
 
     const activityLogRepository = connectionLibSql.getRepository(ActivityLog);
+
+    const microserviceEnvironment = process.env.MICROSERVICES_ENV;
+    const { listName, userEmail: testUserEmail } = await getTestFlowDetails(
+      microserviceEnvironment,
+      organizationDb,
+      listId,
+      organization_user_id
+    );
+    const isTestFlow = checkIsTestFlow(microserviceEnvironment, listName, testUserEmail);
+
+    if (isTestFlow) {
+      await runMockAnalysisFlow(organizationDb, listId);
+      return 'OK';
+    }
 
     const response = await axios.post(url, data, {
       headers: {

@@ -1,4 +1,4 @@
-import { ListTableColumnsQueryString, SQLUtils } from '@wri-monorepos/sql';
+import { SQLUtils } from '@wri-monorepos/sql';
 import { AbstractHandler, ChainType, RequestNewList } from './types';
 import * as sql from 'mssql';
 import { Logger } from '@nestjs/common';
@@ -50,31 +50,6 @@ export class CreateLocationSchema extends AbstractHandler<ChainType> {
     ];
 
     await this.executeQueryWithParams<void>(connection, 'uspCreateListTable', parameters);
-  }
-
-  public async getTableStructureQuery(templateId: number): Promise<ListTableColumnsQueryString> {
-    const conn = new SQLUtils();
-    const parameters = [
-      this.createSqlParameter('template_id', sql.Int, templateId),
-      this.createSqlParameter('custom_attribute_1', sql.NVarChar(50), null),
-      this.createSqlParameter('custom_attribute_1_type', sql.NVarChar(50), null),
-      this.createSqlParameter('custom_attribute_2', sql.NVarChar(50), null),
-      this.createSqlParameter('custom_attribute_2_type', sql.NVarChar(50), null),
-      this.createSqlParameter('custom_attribute_3', sql.NVarChar(50), null),
-      this.createSqlParameter('custom_attribute_3_type', sql.NVarChar(50), null),
-    ];
-
-    try {
-      await conn.connect();
-      return await conn.executeQuery<ListTableColumnsQueryString>(
-        'uspGetTableQueryString',
-        parameters
-      );
-    } catch (error) {
-      throw new Error(
-        `Failed to get table structure query: ${error.stack || error.message || error}`
-      );
-    }
   }
 
   public async createAnalysisTableInDatabase(
@@ -130,17 +105,13 @@ export class CreateLocationSchema extends AbstractHandler<ChainType> {
       analysisTable,
       saveAsDraft,
       analysisIds,
-      template_id,
     } = request.request as RequestNewList;
 
-    const queryCreateTableResult = await this.getTableStructureQuery(template_id);
     this.logger.log(`Creating list table ${listTable} in ${organization_database}`);
+    const tableStructure =
+      '[Location Name] NVARCHAR(150), [Latitude] FLOAT, [Longitude] FLOAT, [Analysis Radius] FLOAT, [Analysis Area] FLOAT, [Commodity] NVARCHAR(150), [Country] NVARCHAR(150), [State] NVARCHAR(150), [Sub State] NVARCHAR(150), [gadmid] NVARCHAR(150), [Geometry] geometry, [location_id] INT, [attributes] NVARCHAR(MAX), [ErrorDetails] NVARCHAR(256) NULL';
 
-    await this.createListTableInDatabase(
-      this.clientStoreConnection,
-      listTable,
-      queryCreateTableResult.query_string
-    );
+    await this.createListTableInDatabase(this.clientStoreConnection, listTable, tableStructure);
 
     const listStatusId = saveAsDraft ? listStatus.Draft : listStatus.Pending;
 

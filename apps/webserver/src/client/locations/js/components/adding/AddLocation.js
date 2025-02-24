@@ -975,7 +975,7 @@ export default class AddLocation extends Component {
                 field.template_datum_field_name === 'Certification' &&
                 field.template_datum_field_value
               ) {
-                fieldValue = field.template_datum_field_value.length
+                fieldValue = Array.isArray(field.template_datum_field_value)
                   ? field.template_datum_field_value.map((vals) => vals.label).join(', ')
                   : field.template_datum_field_value;
               }

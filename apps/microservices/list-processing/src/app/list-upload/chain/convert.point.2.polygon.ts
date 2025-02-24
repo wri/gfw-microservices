@@ -1,6 +1,7 @@
 import { Logger } from '@nestjs/common';
-import { AbstractHandler, ChainType } from './types';
+import { AbstractHandler, ChainType, RequestNewList } from './types';
 import { Feature, Polygon } from '@wri-monorepos/geo';
+
 // ArcGIS imports are ESM only imports, and this code is transpiled into commonJS
 // so we need to use eval to import these modules
 
@@ -40,13 +41,16 @@ export class ConvertPoint2Polygon extends AbstractHandler<ChainType> {
     if (isNaN(latitude) || isNaN(longitude)) {
       throw new Error('Invalid latitude or longitude value');
     }
+    if (isNaN(featureRadius)) {
+      throw new Error('Invalid radius value');
+    }
 
     const point = new this.Point({
       latitude,
       longitude,
       spatialReference: { wkid: 4326 },
     });
-    return this.geomFromPointRadiusArea(point, featureRadius);
+    return await this.geomFromPointRadiusArea(point, featureRadius);
   }
 
   validateAndCalculate(
@@ -105,23 +109,28 @@ export class ConvertPoint2Polygon extends AbstractHandler<ChainType> {
     const { geojson } = request;
     const { features } = geojson;
 
-    for (const feature of features) {
-      const { geometry, properties } = feature;
-      if (geometry.type === 'Point') {
-        const { coordinates } = geometry;
-        const [longitude, latitude] = coordinates;
-        const { analysisArea, analysisRadius } = this.validateAndCalculate(
-          properties.analysisArea as number,
-          properties.analysisRadius as number
-        );
+    try {
+      for (const feature of features) {
+        const { geometry, properties } = feature;
+        if (geometry.type === 'Point') {
+          const { coordinates } = geometry;
+          const [longitude, latitude] = coordinates;
+          const { analysisArea, analysisRadius } = this.validateAndCalculate(
+            properties.analysisArea as number,
+            properties.analysisRadius as number
+          );
 
-        const polygon = await this.geomFromLatLongRadiusArea(latitude, longitude, analysisRadius);
-        delete feature.properties.geometry;
-        (feature.geometry as Polygon).coordinates = polygon.rings;
-        (feature.geometry as Polygon).type = 'Polygon';
-        feature.properties.analysisArea = analysisArea;
-        feature.properties.analysisRadius = analysisRadius;
+          const polygon = await this.geomFromLatLongRadiusArea(latitude, longitude, analysisRadius);
+          delete feature.properties.geometry;
+          (feature.geometry as Polygon).coordinates = polygon.rings;
+          (feature.geometry as Polygon).type = 'Polygon';
+          feature.properties.analysisArea = analysisArea;
+          feature.properties.analysisRadius = analysisRadius;
+        }
       }
+    } catch (error) {
+      this.logger.error('Error in converting point to polygon', error.stack || error);
+      (request.request as RequestNewList).hasUnanalyzableError = true;
     }
     return request;
   }

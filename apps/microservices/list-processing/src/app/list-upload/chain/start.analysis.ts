@@ -1,13 +1,9 @@
-import { ClientStoreConnection, Lists, User } from '@wri-monorepos/sql';
+import { ClientStoreConnection, Lists } from '@wri-monorepos/sql';
 import { AbstractHandler, ChainType, RequestNewList } from './types';
-import { MARK_IS_TEST_LIST, MARK_IS_TEST_USER } from '../../../services/constants';
-import { mockAnalysisFlow } from '../../../mock';
 import { handleCreateAnalysis } from '@wri-monorepos/geo';
 import { listStatus } from '@wri-monorepos/constants';
 
 import { Logger } from '@nestjs/common';
-
-const environmentAllowTestFlow = ['DEVELOPMENT', 'LATEST', 'QA', 'STAGING'];
 
 export class StartAnalysis extends AbstractHandler<ChainType> {
   private readonly logger = new Logger(StartAnalysis.name);
@@ -18,25 +14,11 @@ export class StartAnalysis extends AbstractHandler<ChainType> {
     this.clientStoreConnection = clientStoreConnection;
   }
 
-  async getListName(organizationDatabase: string, list_id: number) {
-    const connection = await this.clientStoreConnection.getConnection(organizationDatabase);
-    const listRepository = connection.getRepository(Lists);
-    const { listName } = await listRepository.findOne({ where: { id: list_id } });
-    return listName;
-  }
-
   async getListStatus(organizationDatabase: string, list_id: number) {
     const connection = await this.clientStoreConnection.getConnection(organizationDatabase);
     const listRepository = connection.getRepository(Lists);
     const { listStatusId } = await listRepository.findOne({ where: { id: list_id } });
     return listStatusId;
-  }
-
-  async getUserEmail(organizationDatabase: string, user_id: number) {
-    const connection = await this.clientStoreConnection.getConnection(organizationDatabase);
-    const userRepository = connection.getRepository(User);
-    const { email } = await userRepository.findOne({ where: { id: user_id } });
-    return email;
   }
 
   private async isDraftList(
@@ -61,43 +43,6 @@ export class StartAnalysis extends AbstractHandler<ChainType> {
     }
   }
 
-  private async getTestFlowDetails(
-    microserviceEnvironment: string,
-    organization_database: string,
-    listId: number,
-    user_id: number
-  ): Promise<{ listName: string; userEmail: string }> {
-    let listName = '';
-    let userEmail = '';
-
-    if (environmentAllowTestFlow.includes(microserviceEnvironment)) {
-      listName = await this.getListName(organization_database, listId);
-      userEmail = await this.getUserEmail(organization_database, user_id);
-    }
-
-    return { listName, userEmail };
-  }
-
-  private isTestFlow(
-    microserviceEnvironment: string,
-    listName: string,
-    userEmail: string
-  ): boolean {
-    return (
-      environmentAllowTestFlow.includes(microserviceEnvironment) &&
-      listName.includes(MARK_IS_TEST_LIST) &&
-      userEmail.includes(MARK_IS_TEST_USER)
-    );
-  }
-
-  private async mockAnalysisFlow(organization_database: string, listId: number): Promise<void> {
-    await mockAnalysisFlow({
-      organization_database: organization_database,
-      list_id: listId,
-      template_type: 'cocoa_generic',
-    });
-  }
-
   async handle(request: ChainType): Promise<ChainType> {
     const {
       organization_database,
@@ -116,20 +61,6 @@ export class StartAnalysis extends AbstractHandler<ChainType> {
     }
 
     this.validateGeoJsonFeatures(request.geojson.features);
-
-    const microserviceEnvironment = process.env.MICROSERVICES_ENV;
-    const { listName, userEmail: testUserEmail } = await this.getTestFlowDetails(
-      microserviceEnvironment,
-      organization_database,
-      listId,
-      user_id
-    );
-    const isTestFlow = this.isTestFlow(microserviceEnvironment, listName, testUserEmail);
-
-    if (isTestFlow) {
-      await this.mockAnalysisFlow(organization_database, listId);
-      return request;
-    }
 
     const analysisTypesToProcess = analysisIds.join(',');
     const result = await handleCreateAnalysis(

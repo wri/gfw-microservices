@@ -30,7 +30,6 @@ export const MARK_IS_TEST_LIST = 'e2e_automation';
 export const MARK_IS_TEST_USER = 'dt_';
 
 const environmentAllowTestFlow = ['DEVELOPMENT', 'LATEST', 'QA', 'STAGING'];
-const clientStoreConnection = new ClientStoreConnection();
 
 export const createListAnalysis = async (
   clientDatabase: string,
@@ -129,14 +128,14 @@ export const setSelectedAnalyses = async (
 };
 
 const getListName = async (organizationDatabase: string, list_id: number) => {
-  const connection = await clientStoreConnection.getConnection(organizationDatabase);
+  const connection = await new ClientStoreConnection().getConnection(organizationDatabase);
   const listRepository = connection.getRepository(Lists);
   const { listName } = await listRepository.findOne({ where: { id: list_id } });
   return listName;
 };
 
 const getUserEmail = async (organizationDatabase: string, user_id: number) => {
-  const connection = await clientStoreConnection.getConnection(organizationDatabase);
+  const connection = await new ClientStoreConnection().getConnection(organizationDatabase);
   const userRepository = connection.getRepository(User);
   const { email } = await userRepository.findOne({ where: { id: user_id } });
   return email;

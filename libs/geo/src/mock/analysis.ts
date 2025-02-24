@@ -10,7 +10,6 @@ import {
 } from '@wri-monorepos/sql';
 import { EntitySchema, In } from 'typeorm';
 import { mockData } from './data';
-import moment from 'moment';
 
 const repository = async (organizationDatabase: string, listId: number) => {
   const clientStoreConnection = new ClientStoreConnection();
@@ -73,7 +72,7 @@ const repository = async (organizationDatabase: string, listId: number) => {
   };
 
   const insertListAnalysisStatus = async () => {
-    const updateTime = moment().format('YYYY-MM-DD');
+    const updateTime = new Date().toISOString().split('T')[0];
     const listsAnalysisStatusRepository = connection.getRepository(ListsAnalysisStatus);
     const { analysisId } = (await listsAnalysisStatusRepository.findOne({
       where: { listId: listId, analysisId: 'FCD' },

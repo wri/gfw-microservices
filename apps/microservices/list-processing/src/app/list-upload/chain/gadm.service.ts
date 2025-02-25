@@ -177,7 +177,7 @@ export class GADMService extends AbstractHandler<ChainType> {
     }
   };
 
-  clipToLand = async (geojson): Promise<{ geojson: FeatureCollection }> => {
+  clipToLand = async (geojson, request): Promise<{ geojson: FeatureCollection }> => {
     return new Promise((resolve, reject) => {
       const s3ObjectsToDelete = [];
       const objectName = `gadm-${new Date().getTime()}`;
@@ -220,6 +220,7 @@ export class GADMService extends AbstractHandler<ChainType> {
           resolve(s3Object);
         })
         .catch((e) => {
+          (request.request as RequestNewList).hasUnanalyzableError = true;
           this.logger.log('Error in clipToLand:', e.stack || e);
           reject(e);
         });
@@ -253,7 +254,7 @@ export class GADMService extends AbstractHandler<ChainType> {
     this.logger.debug('GADMService - done with getGeoReferenceData for', path);
     // We should not call clip to land if we are in the preview mode.
     if (!preview) {
-      const response = await this.clipToLand(geojson);
+      const response = await this.clipToLand(geojson, request);
       request.geojson = response.geojson;
     }
     return request;

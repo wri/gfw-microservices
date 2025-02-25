@@ -4,7 +4,7 @@ import LocationsPage from '../../pages/locationsPage';
 describe('Upload File Csv', () => {
   const csv = 'CG9.csv';
   const timestamp = Date.now();
-  const listToUploadSingleLocation = `uploadFileCsv${timestamp}`;
+  const listToUploadSingleLocation = `uploadfilecsv${timestamp}`;
   const locationPage = new LocationsPage();
   Given('I login in the landing page', () => {
     cy.loginUI();
@@ -36,6 +36,7 @@ describe('Upload File Csv', () => {
   Then('I complete the form and confirm the upload', () => {
     locationPage.selectCommodity('Coffee');
     locationPage.typeNewNameList(listToUploadSingleLocation);
+    locationPage.clickOnCheckBoxIcon();
     locationPage.clickOnNextBtn();
     locationPage.clickOnSubmitAnalisys();
     locationPage.clickOnConfirmAnalisysBtn();

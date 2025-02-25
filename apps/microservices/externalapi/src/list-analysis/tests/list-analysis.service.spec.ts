@@ -22,15 +22,17 @@ import { SqsService } from '@ssut/nestjs-sqs';
 import { SaveActivityLogEndpoint } from '../utils/saveActivityLogEndpoint';
 import { checkProcessingLimits } from '@wri-monorepos/shared';
 import { listStatus } from '@wri-monorepos/constants';
-import { handleCreateAnalysis } from '@wri-monorepos/geo';
+import { handleCreateAnalysis, isValidMapSpamCommodity } from '@wri-monorepos/geo';
 
 jest.mock('@wri-monorepos/geo', () => ({
   handleCreateAnalysis: jest.fn().mockResolvedValue('true value'),
+  isValidMapSpamCommodity: jest.fn(),
 }));
 
 jest.mock('@wri-monorepos/shared', () => ({
   checkProcessingLimits: jest.fn(),
 }));
+
 jest.mock('../../shared/generate-templates', () => ({
   generateAnalysisTemplate: jest.fn().mockResolvedValue(true),
 }));
@@ -773,10 +775,11 @@ describe('ListAnalysisService', () => {
 
     const mockedhandleCreateAnalysis = { statusText: 'mockedEmailResponse' };
     (handleCreateAnalysis as jest.Mock).mockResolvedValue(mockedhandleCreateAnalysis);
+    (isValidMapSpamCommodity as jest.Mock).mockReturnValue(true);
 
     listService.getList = jest.fn().mockResolvedValue({
       templateId: 13,
-      Commodity: 'COCOA',
+      Commodity: 'COCO',
     });
     saveActivityLogEndpoint.saveActivityLogEndpoint = jest.fn().mockResolvedValue(true);
     const mockList = {
@@ -808,56 +811,6 @@ describe('ListAnalysisService', () => {
     expect(resutl).toBe(mockedhandleCreateAnalysis);
   });
 
-  it('Should fail when try to create GHG Analysis with wrong TemplateID', async () => {
-    const analysisTypesToProcess = 'GHG';
-    const listId = 123;
-    const organizationId = 1;
-    const organization_user_id = 1;
-
-    (checkProcessingLimits as jest.Mock).mockResolvedValue({
-      isListLocationOverLimit: false,
-      processingLimit: 1000,
-    });
-
-    (handleCreateAnalysis as jest.Mock).mockResolvedValue({ statusText: 'mockedEmailResponse' });
-
-    listService.getList = jest.fn().mockResolvedValue({
-      templateId: 10,
-      Commodity: 'GFWP_Cattle Generic',
-      listName: 'mockList',
-    });
-    saveActivityLogEndpoint.saveActivityLogEndpoint = jest.fn().mockResolvedValue(true);
-    const mockList = {
-      listId: 123,
-      analysisId: analysisTypesToProcess,
-      status: listStatus.Pending,
-      templateId: '10',
-      listName: 'mockList',
-    };
-    clientStoreConnection.getConnection = jest.fn().mockResolvedValue({
-      getRepository: () => ({
-        findBy: () => mockList,
-      }),
-      options: {
-        database: 'mock_db',
-      },
-    });
-
-    await expect(
-      service.createAnalysis(
-        analysisTypesToProcess,
-        listId,
-        organizationId,
-        USER_EMAIL,
-        organization_user_id
-      )
-    ).rejects.toThrow(
-      new BadRequestException(
-        `List template id ${mockList.templateId} for ${mockList.listName} not supported for GHG Analysis`
-      )
-    );
-  });
-
   it('Should fail when try to create GHG Analysis with unavailable commodity', async () => {
     const analysisTypesToProcess = 'GHG';
     const listId = 123;
@@ -869,8 +822,7 @@ describe('ListAnalysisService', () => {
       processingLimit: 1000,
     });
 
-    (handleCreateAnalysis as jest.Mock).mockResolvedValue({ statusText: 'mockedEmailResponse' });
-
+    
     listService.getList = jest.fn().mockResolvedValue({
       templateId: 13,
       Commodity: 'GFWP_Cattle Generic',
@@ -893,7 +845,7 @@ describe('ListAnalysisService', () => {
         database: 'mock_db',
       },
     });
-
+    (isValidMapSpamCommodity as jest.Mock).mockReturnValue(false);
     await expect(
       service.createAnalysis(
         analysisTypesToProcess,
@@ -920,7 +872,7 @@ describe('ListAnalysisService', () => {
     });
 
     (handleCreateAnalysis as jest.Mock).mockResolvedValue({ statusText: 'mockedEmailResponse' });
-
+    (isValidMapSpamCommodity as jest.Mock).mockReturnValue(false); 
     listService.getList = jest.fn().mockResolvedValue({
       templateId: 13,
       listName: 'mockList',

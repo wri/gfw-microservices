@@ -30,7 +30,7 @@ import {
   getListStatusString,
   ListActivityTypesEnum,
   listStatus,
-  REGEX_MAPSPAM_COMMODITY,
+  MAPSPAM_COMMODITY,
 } from '@wri-monorepos/constants';
 import { SqsService } from '@ssut/nestjs-sqs';
 import {
@@ -45,7 +45,7 @@ import { generateAnalysisTemplate } from '../shared/generate-templates';
 import { ListService } from '../lists/lists.service';
 import { ServerConfigType } from '../validators/server-config';
 import { SaveActivityLogEndpoint } from './utils/saveActivityLogEndpoint';
-import { handleCreateAnalysis } from '@wri-monorepos/geo';
+import { handleCreateAnalysis, isValidMapSpamCommodity } from '@wri-monorepos/geo';
 import { EntitySchema } from 'typeorm';
 import {
   ListSchema,
@@ -571,20 +571,15 @@ export class ListAnalysisService {
         Logger.warn(`List ${lists} not found`);
         throw new BadRequestException(`List not found`);
       }
-      // Validate if Template is supported
-      if (lists.templateId !== 13) {
-        Logger.warn('Template not supported');
-        throw new BadRequestException(
-          `List template id ${lists.templateId} for ${lists.listName} not supported for GHG Analysis`
-        );
-      }
+
       if (!lists.Commodity) {
         Logger.warn('Commodity not valid');
         throw new BadRequestException(`No commodity specified for ${lists.listName}`);
       }
+
       // Validate if commodity is valid one
-      const regex = REGEX_MAPSPAM_COMMODITY;
-      if (lists.Commodity.startsWith('GFWP_') && !regex.test(lists.Commodity)) {
+      const reu= isValidMapSpamCommodity(lists.Commodity)
+      if (!isValidMapSpamCommodity(lists.Commodity)) {
         Logger.log('Commodity not valid');
         throw new BadRequestException(
           `List commodity ${lists.Commodity} for ${lists.listName} not supported for GHG Analysis`
@@ -609,7 +604,7 @@ export class ListAnalysisService {
           if (listTableName.length > 0) {
             let hasYield = 0;
             listTableName.forEach((element) => {
-              JSON.parse(element.attributes).map((item) => {
+              JSON.parse(element.attributes || '').map((item) => {
                 if (item['field'] === 'yield' && parseFloat(item['value']) > 0) {
                   Logger.log('There is yield');
                   hasYield += 1;

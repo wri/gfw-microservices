@@ -30,7 +30,6 @@ import {
   getListStatusString,
   ListActivityTypesEnum,
   listStatus,
-  MAPSPAM_COMMODITY,
 } from '@wri-monorepos/constants';
 import { SqsService } from '@ssut/nestjs-sqs';
 import {
@@ -578,7 +577,6 @@ export class ListAnalysisService {
       }
 
       // Validate if commodity is valid one
-      const reu= isValidMapSpamCommodity(lists.Commodity)
       if (!isValidMapSpamCommodity(lists.Commodity)) {
         Logger.log('Commodity not valid');
         throw new BadRequestException(

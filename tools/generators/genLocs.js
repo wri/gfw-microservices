@@ -76,7 +76,9 @@ function outputLocation(fileName, locName, lat, lon) {
 	<Style><LineStyle><color>ff0000ff</color></LineStyle><PolyStyle><fill>0</fill></PolyStyle></Style>
 	<ExtendedData><SchemaData schemaUrl="#pro_kml_schema">
 		<SimpleData name="Location Name">${locName}</SimpleData>`;
-      locString += polygon ? '' : `<SimpleData name="Analysis_R">${radius}</SimpleData>`;
+      locString += polygon
+        ? ''
+        : `<SimpleData name="Analysis_R">${radius}</SimpleData><SimpleData name="Analysis_A">0</SimpleData>`;
       if (attributes) {
         locString += `\n<SimpleData name="Attr1">${randomAttr}</SimpleData>`;
       }

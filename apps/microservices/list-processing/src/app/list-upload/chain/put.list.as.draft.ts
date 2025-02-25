@@ -22,7 +22,9 @@ export class PutListAsDraft extends AbstractHandler<ChainType> {
     if (hasUnanalyzableError) {
       this.logger.error('Should put list as draft, has invalid coordinates or polygon geometry');
 
-      await this.putListAsDraft(organization_database, list_id);
+      if (organization_database && list_id) {
+        await this.putListAsDraft(organization_database, list_id);
+      }
 
       return {
         ...input,
@@ -36,6 +38,6 @@ export class PutListAsDraft extends AbstractHandler<ChainType> {
     this.logger.log(`Putting list ${list_id} status as draft`);
     const connection = await new ClientStoreConnection().getConnection(organizationDatabase);
     const listRepository = connection.getRepository(Lists);
-    await listRepository.update(list_id, { listStatusId: listStatus.Draft });
+    await listRepository.update({ id: list_id }, { listStatusId: listStatus.Draft });
   }
 }

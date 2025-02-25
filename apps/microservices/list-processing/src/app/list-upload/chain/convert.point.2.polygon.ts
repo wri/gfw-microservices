@@ -59,9 +59,9 @@ export class ConvertPoint2Polygon extends AbstractHandler<ChainType> {
   ): { analysisRadius: number; analysisArea: number } {
     const pi = Math.PI;
 
-    if (analysisArea === null && analysisRadius === null) {
-      throw Error('Error: At least one of analysisArea or analysisRadius must be filled.');
-    } else if (analysisArea !== null) {
+    if (!analysisArea && !analysisRadius) {
+      throw Error('Error: At least one of analysisArea or analysisRadius must be valid.');
+    } else if (analysisArea) {
       // Calculate radius from area
       const kilosSquared = analysisArea / 100;
       const radius = Math.sqrt(kilosSquared / pi);
@@ -69,9 +69,9 @@ export class ConvertPoint2Polygon extends AbstractHandler<ChainType> {
         analysisRadius: radius,
         analysisArea,
       };
-    } else if (analysisRadius !== null) {
+    } else if (analysisRadius) {
       // Calculate area from radius
-      const kiloArea = pi * Math.pow(analysisRadius!, 2);
+      const kiloArea = pi * Math.pow(analysisRadius, 2);
       const area = kiloArea * 100;
       return {
         analysisArea: area,
@@ -91,8 +91,8 @@ export class ConvertPoint2Polygon extends AbstractHandler<ChainType> {
       const { coordinates } = geometry;
       const [longitude, latitude] = coordinates;
       const { analysisArea, analysisRadius } = this.validateAndCalculate(
-        properties.analysisArea as number,
-        properties.analysisRadius as number
+        Number(properties.analysisArea),
+        Number(properties.analysisRadius)
       );
       const polygon = await this.geomFromLatLongRadiusArea(latitude, longitude, analysisRadius);
       delete feature.properties.geometry;
@@ -111,22 +111,7 @@ export class ConvertPoint2Polygon extends AbstractHandler<ChainType> {
 
     try {
       for (const feature of features) {
-        const { geometry, properties } = feature;
-        if (geometry.type === 'Point') {
-          const { coordinates } = geometry;
-          const [longitude, latitude] = coordinates;
-          const { analysisArea, analysisRadius } = this.validateAndCalculate(
-            properties.analysisArea as number,
-            properties.analysisRadius as number
-          );
-
-          const polygon = await this.geomFromLatLongRadiusArea(latitude, longitude, analysisRadius);
-          delete feature.properties.geometry;
-          (feature.geometry as Polygon).coordinates = polygon.rings;
-          (feature.geometry as Polygon).type = 'Polygon';
-          feature.properties.analysisArea = analysisArea;
-          feature.properties.analysisRadius = analysisRadius;
-        }
+        await this.convertFeature(feature);
       }
     } catch (error) {
       this.logger.error('Error in converting point to polygon', error.stack || error);

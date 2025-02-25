@@ -822,7 +822,6 @@ describe('ListAnalysisService', () => {
       processingLimit: 1000,
     });
 
-    
     listService.getList = jest.fn().mockResolvedValue({
       templateId: 13,
       Commodity: 'GFWP_Cattle Generic',
@@ -872,7 +871,7 @@ describe('ListAnalysisService', () => {
     });
 
     (handleCreateAnalysis as jest.Mock).mockResolvedValue({ statusText: 'mockedEmailResponse' });
-    (isValidMapSpamCommodity as jest.Mock).mockReturnValue(false); 
+    (isValidMapSpamCommodity as jest.Mock).mockReturnValue(false);
     listService.getList = jest.fn().mockResolvedValue({
       templateId: 13,
       listName: 'mockList',

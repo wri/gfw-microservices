@@ -391,7 +391,7 @@ export const isGHGCommodityValid = async (id: number, organizationDb: string): P
   }
 };
 
-export const isValidMapSpamCommodity=(Commodity: string): boolean=> {
+export const isValidMapSpamCommodity = (Commodity: string): boolean => {
   if (Object.keys(MAPSPAM_COMMODITY).includes(Commodity)) {
     return true;
   }

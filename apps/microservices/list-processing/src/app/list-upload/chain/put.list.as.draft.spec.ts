@@ -1,6 +1,6 @@
 import { PutListAsDraft } from './put.list.as.draft';
 import { ChainType, RequestNewList } from './types';
-import { ClientStoreConnection, Lists } from '@wri-monorepos/sql';
+import { Lists } from '@wri-monorepos/sql';
 import { listStatus } from '@wri-monorepos/constants';
 
 const mockUpdate = jest.fn().mockResolvedValue(undefined);

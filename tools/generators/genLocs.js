@@ -100,7 +100,7 @@ function outputLocation(fileName, locName, lat, lon) {
       locString += `      {
         "type": "Feature",
         "properties": {"Location Name": "${locName}"`;
-      locString += polygon ? '},\n' : `,"Analysis Radius": ${radius}},\n`;
+      locString += polygon ? '},\n' : `,"Analysis Radius": ${radius},"Analysis Area": 0},\n`;
       if (attributes) {
         locString += `        "Attr1": "${randomAttr}",\n`;
       }

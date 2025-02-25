@@ -64,7 +64,7 @@ describe('GHGAnalysis', () => {
         {
           uploadId,
           listName,
-          commodity: 'Unknown',
+          commodity: 'Cocoa Generic',
           analysisIDs: 'GHG',
         },
         {

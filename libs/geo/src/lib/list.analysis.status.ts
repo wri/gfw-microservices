@@ -395,7 +395,7 @@ export const isValidMapSpamCommodity = (Commodity: string): boolean => {
   if (Object.keys(MAPSPAM_COMMODITY).includes(Commodity)) {
     return true;
   }
-  if (Commodity === 'GFWP_Other' || Commodity === 'GFWP_Unknown') {
+  if (Commodity === 'GFWP_Other') {
     return true;
   }
   return false;

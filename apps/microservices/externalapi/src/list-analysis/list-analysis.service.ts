@@ -602,7 +602,7 @@ export class ListAnalysisService {
           if (listTableName.length > 0) {
             let hasYield = 0;
             listTableName.forEach((element) => {
-              JSON.parse(element.attributes || '').map((item) => {
+              JSON.parse(element.attributes || '[]').map((item) => {
                 if (item['field'] === 'yield' && parseFloat(item['value']) > 0) {
                   Logger.log('There is yield');
                   hasYield += 1;

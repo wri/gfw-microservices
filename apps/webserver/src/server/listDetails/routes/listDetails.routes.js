@@ -61,7 +61,7 @@ module.exports = (app, limiter) => {
         userId: organization_user_id,
       });
       res.status(200).send({
-        success: true
+        success: true,
       });
     } catch (error) {
       console.error('Schema upgrader test route failed');

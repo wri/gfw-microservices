@@ -68,6 +68,10 @@ export class SaveListAttributes extends AbstractHandler<ChainType> {
     const existingAttributes = await this.getExistingListAttributesByListId(orgDb, list_id);
     let attributes: AttributeType[];
 
+    if (!unparsedAttributes) {
+      return [];
+    }
+
     try {
       attributes = JSON.parse(unparsedAttributes as string);
       attributes = attributes.filter((attr) => !existingAttributes.has(attr.field));

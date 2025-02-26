@@ -17,6 +17,7 @@ import {
   listStatus,
   analysisTypesOptions,
   analysisIdsOptionsMap,
+  MAPSPAM_COMMODITY,
 } from '@wri-monorepos/constants';
 import { S3Service } from '@wri-monorepos/aws';
 import {
@@ -469,7 +470,7 @@ export const isGHGCommodityValid = async (id: number, organizationDb: string): P
       return true;
     }
     // verify if list has a non valid GHG commodity
-    if (listData.Commodity.startsWith('GFWP_')) {
+    if (!isValidMapSpamCommodity(listData.Commodity)) {
       Logger.log(
         `Invalid commodity in list ${listData.id} - ${listData.listName} for GHG Analysis`
       );
@@ -477,9 +478,20 @@ export const isGHGCommodityValid = async (id: number, organizationDb: string): P
         `Invalid commodity in list ${listData.id} - ${listData.listName} for GHG Analysis`
       );
     }
+
     return true;
   } catch (error) {
     Logger.error('validateGHGCommodity', error.message || error);
     throw error;
   }
+};
+
+export const isValidMapSpamCommodity = (Commodity: string): boolean => {
+  if (Object.keys(MAPSPAM_COMMODITY).includes(Commodity)) {
+    return true;
+  }
+  if (Commodity === 'GFWP_Other') {
+    return true;
+  }
+  return false;
 };

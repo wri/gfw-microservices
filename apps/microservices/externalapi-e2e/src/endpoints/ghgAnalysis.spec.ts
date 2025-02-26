@@ -294,7 +294,7 @@ describe('GHGAnalysis', () => {
     40 * 1000
   );
   const deleteList = async (listId) => {
-    const res = await postRedirectHeaders(
+    await postRedirectHeaders(
       `${BASE_URL}/api/v1/list/${listId}/delete`,
       {
         userEmail: email,

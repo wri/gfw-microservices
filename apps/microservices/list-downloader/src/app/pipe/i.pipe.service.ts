@@ -105,6 +105,9 @@ export abstract class IPipeService {
       case 'alerts':
         formattedAnalysisId = 'ALERTS';
         break;
+      case 'ghg':
+        formattedAnalysisId = 'GHG';
+        break;
     }
     const parameters = toSqlParameter({
       location,

@@ -21,10 +21,6 @@ export class ConvertCommodityToMapsPamCode extends AbstractHandler<ChainType> {
   }
 
   private getCommodityName(commodity: string): string {
-    if (commodity === 'Other' || commodity === 'Unknown') {
-      return commodity;
-    }
-
     if (Object.values(COMMODITY_MAP_SPAM).includes(commodity)) {
       return commodity;
     }

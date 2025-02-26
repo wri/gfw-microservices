@@ -2000,7 +2000,6 @@ export default class ListDetails extends Component {
     const showMultipleSelectionBulkActions =
       selectedList && selectedLocations.length > 0 && !locationDataIsNotAvailable;
 
-    // its trying to find the location_status_id in the list-xxx table, but this field only exists in the analysis-xxx table
     const hasLocationWithErrors = !!listData.find(
       ({ location_status_id }) => location_status_id === listStatus.Inactive
     );
@@ -2035,6 +2034,7 @@ export default class ListDetails extends Component {
               isFailedAnalysis={isFailedAnalysis}
               isAnalysisFailedByExceededAnalysisLimit={isAnalysisFailedByExceededAnalysisLimit}
               isListSubmittedForAnalysis={isListSubmittedForAnalysis}
+              isListWithErrors={selectedLists[0]?.error_file_storage_path}
             />
           )}
           {bannerContent && (

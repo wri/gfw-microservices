@@ -12,6 +12,7 @@ export default function AnalysisStatusBanners({
   isFailedAnalysis,
   isAnalysisFailedByExceededAnalysisLimit,
   isListSubmittedForAnalysis,
+  isListWithErrors,
 }) {
   const alertsConfig = [
     {
@@ -21,7 +22,7 @@ export default function AnalysisStatusBanners({
       icon: <ReportIcon style={{ marginRight: '5px' }} fontSize="inherit" />,
       message: (
         <>
-          Some of your locations have failed analysis. <br /> This means that these locations won’t
+          Some of your locations have failed analysis. <br /> This means that these locations won't
           be included in list diagnostic calculations.
         </>
       ),
@@ -49,15 +50,16 @@ export default function AnalysisStatusBanners({
           To continue parsing your lists, you need to increase the usage limit.
         </>
       ),
-      buttonText: 'INCREASE LIMIT',
+      buttonText: 'Increase limit',
       onButtonClick: () => (window.location.href = '/profile'),
     },
     {
       condition:
-        (isDiagnosticStatusDraft && !isListSubmittedForAnalysis) ||
-        isAnalysisFailedByExceededAnalysisLimit,
+        !isListWithErrors &&
+        ((isDiagnosticStatusDraft && !isListSubmittedForAnalysis) ||
+          isAnalysisFailedByExceededAnalysisLimit),
       title: 'DRAFT',
-      backgroundColor: '#58a9cd',
+      backgroundColor: '#58A9CD',
       icon: <EditNoteIcon sx={{ mr: 0.5 }} fontSize="inherit" />,
       message: (
         <>
@@ -69,9 +71,9 @@ export default function AnalysisStatusBanners({
       onButtonClick: openDraftSubmitDialog,
     },
     {
-      condition: true,
+      condition: isListWithErrors && isDiagnosticStatusDraft,
       title: 'DRAFT',
-      backgroundColor: 'orange',
+      backgroundColor: '#FFA500',
       icon: <EditNoteIcon sx={{ mr: 0.5 }} fontSize="inherit" />,
       message: (
         <>

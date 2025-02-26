@@ -1,7 +1,5 @@
 import * as React from 'react';
-import Alert from '@mui/material/Alert';
-import Button from '@mui/material/Button';
-import Stack from '@mui/material/Stack';
+import { Alert, Button, Stack } from '@mui/material';
 
 export default function AlertBanner({
   title,
@@ -17,14 +15,13 @@ export default function AlertBanner({
       spacing={2}
     >
       <Alert
-        className="banner"
         sx={{
           backgroundColor,
           color: '#EEE',
           display: 'flex',
-          justifyContent: 'center',
           alignItems: 'center',
-          padding: '10px 45px',
+          py: 1,
+          maxWidth: '1200px',
         }}
         icon={
           <div
@@ -47,6 +44,7 @@ export default function AlertBanner({
               color: backgroundColor,
               borderRadius: '20px',
               padding: '10px 20px',
+              width: '200px',
             }}
             size="small"
             onClick={onButtonClick}

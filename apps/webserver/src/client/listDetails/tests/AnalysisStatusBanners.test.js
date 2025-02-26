@@ -34,13 +34,14 @@ describe('AnalysisStatusBanners Component', () => {
         {...defaultProps}
         hasLocationWithErrors={true}
         isFailedAnalysis={false}
+        isListWithErrors={false}
       />
     );
 
     expect(screen.getByText('Location errors')).toBeInTheDocument();
     expect(
       screen.getByText(
-        'Some of your locations have failed analysis. This means that these locations won’t be included in list diagnostic calculations.'
+        "Some of your locations have failed analysis. This means that these locations won't be included in list diagnostic calculations."
       )
     ).toBeInTheDocument();
   });

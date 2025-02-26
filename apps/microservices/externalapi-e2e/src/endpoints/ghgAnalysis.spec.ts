@@ -65,7 +65,7 @@ describe('GHGAnalysis', () => {
           uploadId,
           listName,
           commodity: 'Cocoa Generic',
-          analysisIDs: 'GHG',
+          analysisIDs: 'FCD',
         },
         {
           headers: {
@@ -163,7 +163,7 @@ describe('GHGAnalysis', () => {
         {
           uploadId,
           listName,
-          analysisIDs: 'GHG',
+          analysisIDs: 'FCD',
           commodity: 'Cocoa Generic',
         },
         {

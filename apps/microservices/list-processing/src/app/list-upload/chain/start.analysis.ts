@@ -28,7 +28,6 @@ export class StartAnalysis extends AbstractHandler<ChainType> {
   ): Promise<boolean> {
     const listStatusId = await this.getListStatus(organizationDatabase, listId);
     if (saveAsDraft || listStatusId === listStatus.Draft) {
-      this.logger.debug(`List ${listId} is set as draft so going to skip analysis`);
       return true;
     }
     return false;
@@ -57,6 +56,7 @@ export class StartAnalysis extends AbstractHandler<ChainType> {
 
     const isDraft = await this.isDraftList(saveAsDraft, organization_database, listId);
     if (isDraft) {
+      this.logger.debug(`List ${listId} is set as draft so going to skip analysis`);
       return request;
     }
 

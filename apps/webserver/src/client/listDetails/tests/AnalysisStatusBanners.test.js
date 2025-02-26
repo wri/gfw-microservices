@@ -99,6 +99,25 @@ describe('AnalysisStatusBanners Component', () => {
     expect(openDraftSubmitDialog).toHaveBeenCalledTimes(1);
   });
 
+  test('renders a banner when there is error in list level', () => {
+    render(
+      <AnalysisStatusBanners
+        {...defaultProps}
+        hasLocationWithErrors={true}
+        isFailedAnalysis={false}
+        isListWithErrors={true}
+        isDiagnosticStatusDraft={true}
+      />
+    );
+
+    expect(screen.getByText('Location errors')).toBeInTheDocument();
+    expect(
+      screen.getByText(
+        'Your list is in Draft state because there are errors in your locations. Hover over your locations with errors to understand why they failed. After fixing them offline, you can re-upload them and add them to this list once again for submission.'
+      )
+    ).toBeInTheDocument();
+  });
+
   test('renders no banners if no conditions are met', () => {
     render(<AnalysisStatusBanners {...defaultProps} />);
 

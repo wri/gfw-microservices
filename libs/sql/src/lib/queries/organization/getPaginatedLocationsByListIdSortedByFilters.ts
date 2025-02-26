@@ -44,7 +44,8 @@ VALUES
     ('Owner ID'),
     ('Company Name'),
     ('Analysis Radius'),
-    ('Analysis Area');
+    ('Analysis Area'),
+    ('ErrorDetails');
 
 -- construct dynamically the query with the existent columns
 SELECT @locationColumns +=

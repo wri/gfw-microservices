@@ -68,6 +68,21 @@ export default function AnalysisStatusBanners({
       buttonText: 'Submit for Analysis',
       onButtonClick: openDraftSubmitDialog,
     },
+    {
+      condition: true,
+      title: 'DRAFT',
+      backgroundColor: 'orange',
+      icon: <EditNoteIcon sx={{ mr: 0.5 }} fontSize="inherit" />,
+      message: (
+        <>
+          Your list is in Draft state because there are errors in your locations. Hover over your
+          locations with errors to understand why they failed. After fixing them offline, you can
+          re-upload them and add them to this list once again for submission.
+        </>
+      ),
+      buttonText: 'Submit for Analysis',
+      onButtonClick: openDraftSubmitDialog,
+    },
   ];
 
   return (

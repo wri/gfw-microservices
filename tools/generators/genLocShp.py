@@ -29,6 +29,7 @@ schemaPoint = {
     "properties": [
         ("Location_Name", "str"),
         ("Analysis_Radius", "str"),
+        ("Analysis_Area", "str"),
     ]
 }
 
@@ -67,6 +68,7 @@ def genLoc(locName, lat, lon):
     else:
         baseObj["geometry"]["coordinates"] = [lon, lat]
         baseObj["properties"]["Analysis_Radius"] = .1
+        baseObj["properties"]["Analysis_Area"] = 0
     if args.attributes:
         baseObj["properties"]["Attr1"] = 'A' + ''.join(random.choices('0123456789', k=3))
     return baseObj

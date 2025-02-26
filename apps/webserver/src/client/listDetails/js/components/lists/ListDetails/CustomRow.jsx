@@ -111,7 +111,7 @@ const CustomRow = ({
                 setIsMenuOpen(!isMenuOpen);
               }}
             >
-              <MoreVertIcon sx={{ color: 'black' }} />
+              <MoreVertIcon data-cy="row-more-options-button" sx={{ color: 'black' }} />
             </Button>
 
             <Popover

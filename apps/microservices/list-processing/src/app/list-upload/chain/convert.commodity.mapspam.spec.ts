@@ -16,9 +16,14 @@ describe('ConvertCommodityToMapsPamCode', () => {
       } as RequestNewList,
     };
 
+    const requestTransformed: ChainType = {
+      request: {
+        commodity: 'GFWP_Other',
+      } as RequestNewList,
+    };
     const result = await handler.handle(request);
 
-    expect(result).toEqual(request);
+    expect(result).toEqual(requestTransformed);
   });
 
   it('should return the same request if commodity is "Unknown"', async () => {
@@ -28,9 +33,15 @@ describe('ConvertCommodityToMapsPamCode', () => {
       } as RequestNewList,
     };
 
+    const requestTransformed: ChainType = {
+      request: {
+        commodity: 'GFWP_Unknown',
+      } as RequestNewList,
+    };
+
     const result = await handler.handle(request);
 
-    expect(result).toEqual(request);
+    expect(result).toEqual(requestTransformed);
   });
 
   it('should return the same request if commodity is already a MapSpam name', async () => {

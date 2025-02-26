@@ -109,6 +109,7 @@ describe('GHGAnalysis', () => {
       } catch (err) {
         expect(err.status).toBe(400);
         expect(err.message).toBe('Request failed with status code 400');
+        deleteList(uploadNewRes.data.listId);
       }
     },
     40 * 1000
@@ -210,6 +211,7 @@ describe('GHGAnalysis', () => {
       } catch (err) {
         console.log(err);
       }
+      deleteList(uploadNewRes.data.listId);
     },
     40 * 1000
   );
@@ -286,8 +288,23 @@ describe('GHGAnalysis', () => {
       } catch (err) {
         expect(err.status).toBe(400);
         expect(err.message).toBe('Request failed with status code 400');
+        deleteList(uploadNewRes.data.listId);
       }
     },
     40 * 1000
   );
+  const deleteList = async (listId) => {
+    const res = await postRedirectHeaders(
+      `${BASE_URL}/api/v1/list/${listId}/delete`,
+      {
+        userEmail: email,
+      },
+      {
+        headers: {
+          'Content-Type': 'application/json',
+          'x-api-key': API_TOKEN,
+        },
+      }
+    );
+  };
 });

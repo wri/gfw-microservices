@@ -1907,6 +1907,9 @@ export const GREEN_HOUSE_GAS_EMISSIONS_HEADER = {
   locationSizeHa: 'Location Size (HA)',
   commodity: 'Commodity',
   dataLayerName: 'Data Layer Name',
-  emissionsFactorTonesCO2: 'Emissions Factor',
+  co2EmissionsFactor: 'CO2 Emissions Factor',
+  ch4EmissionsFactor: 'CH4 Emissions Factor',
+  n2oEmissionsFactor: 'N2O Emissions Factor',
+  CombinedEmissionsFactor: 'Combined Emissions Factor',
   year: 'year',
 };

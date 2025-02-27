@@ -9,7 +9,10 @@ class OrganizeGreenHouseGasEmissionsResponse extends Transform {
     if (!chunk) {
       return next(null, undefined);
     }
-    const { listName, locationId, totalAreaHa, commodity, emissionsFactorByYear } = chunk;
+    const { listName, locationId, totalAreaHa, commodity, co2EmissionsFactor,
+      ch4EmissionsFactor,
+      n2oEmissionsFactor,
+      combinedEmissionsFactor } = chunk;
     const csvArray = [];
 
     // Convert Commodity to Human Readable
@@ -20,11 +23,30 @@ class OrganizeGreenHouseGasEmissionsResponse extends Transform {
       ? commodityHumanReadable.replace('GFWP_', '')
       : null;
 
-    if (listName && locationId && totalAreaHa && commodity && emissionsFactorByYear) {
+    if (listName && locationId && totalAreaHa && commodity ) {
       const sharedInfo = [listName, locationId, totalAreaHa, commodityHumanReadable, 'dLUC'];
 
-      Object.entries(JSON.parse(emissionsFactorByYear)).forEach(([year, value]) => {
-        csvArray.push([...sharedInfo, value, year]);
+      const co2Emissions = JSON.parse(co2EmissionsFactor ||{});
+      const ch4Emissions = JSON.parse(ch4EmissionsFactor || {});
+      const n2oEmissions = JSON.parse(n2oEmissionsFactor || {});
+      const combinedEmissions = JSON.parse(combinedEmissionsFactor ||{});
+
+      const years = new Set([
+        ...Object.keys(co2Emissions),
+        ...Object.keys(ch4Emissions),
+        ...Object.keys(n2oEmissions),
+        ...Object.keys(combinedEmissions),
+      ]);
+
+      years.forEach((year) => {
+        csvArray.push([
+        ...sharedInfo,
+        co2Emissions[year] || 0,
+        ch4Emissions[year] || 0,
+        n2oEmissions[year] || 0,
+        combinedEmissions[year] || 0,
+        year,
+        ]);
       });
     }
 

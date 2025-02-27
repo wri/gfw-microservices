@@ -93,7 +93,6 @@ const commodity_analysis = [
 
           return sortStatus;
         },
-        sortable: !isListDetailsPageRedesignAvailable,
       },
     ],
   },
@@ -246,7 +245,6 @@ const commodity_analysis = [
 
           return sortStatus;
         },
-        sortable: !isListDetailsPageRedesignAvailable,
       },
     ],
   },
@@ -371,7 +369,6 @@ const commodity_analysis = [
             );
           }
         },
-        sortable: !isListDetailsPageRedesignAvailable,
       },
     ],
   },

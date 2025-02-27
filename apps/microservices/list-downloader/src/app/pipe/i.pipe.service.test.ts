@@ -47,4 +47,16 @@ describe('IPipeService', () => {
     );
     expect(runDbQuery).toHaveBeenCalledTimes(0);
   });
+
+  it('Should save s3 url on the database for GHG Analysis', () => {
+    const runDbQuery = jest.spyOn(SQLUtils, 'queryDB').mockResolvedValue('ok');
+    iPipeServiceStub.saveS3UrlAtDatabase(
+      {
+        ...filter,
+        type: 'ghg',
+      },
+      'file-location'
+    );
+    expect(runDbQuery).toHaveBeenCalledTimes(0);
+  });
 });

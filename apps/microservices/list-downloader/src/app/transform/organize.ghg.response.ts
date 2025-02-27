@@ -9,7 +9,7 @@ class OrganizeGreenHouseGasEmissionsResponse extends Transform {
     if (!chunk) {
       return next(null, undefined);
     }
-    const { listName, locationId, totalAreaHa, commodity, emissionsFactorByYear } = chunk;
+    const { listName, locationId, totalAreaHa, commodity, emissionsFactorByYear, efCo2ByYear } = chunk;
     const csvArray = [];
 
     // Convert Commodity to Human Readable
@@ -20,8 +20,8 @@ class OrganizeGreenHouseGasEmissionsResponse extends Transform {
       ? commodityHumanReadable.replace('GFWP_', '')
       : null;
 
-    if (listName && locationId && totalAreaHa && commodity && emissionsFactorByYear) {
-      const sharedInfo = [listName, locationId, totalAreaHa, commodityHumanReadable, 'dLUC'];
+    if (listName && locationId && totalAreaHa && commodity && emissionsFactorByYear && efCo2ByYear) {
+      const sharedInfo = [listName, locationId, totalAreaHa, commodityHumanReadable, efCo2ByYear, 'dLUC'];
 
       Object.entries(JSON.parse(emissionsFactorByYear)).forEach(([year, value]) => {
         csvArray.push([...sharedInfo, value, year]);

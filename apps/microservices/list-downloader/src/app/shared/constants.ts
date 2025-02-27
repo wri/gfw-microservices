@@ -1909,4 +1909,5 @@ export const GREEN_HOUSE_GAS_EMISSIONS_HEADER = {
   dataLayerName: 'Data Layer Name',
   emissionsFactorTonesCO2: 'Emissions Factor',
   year: 'year',
+  efCo2ByYear: 'Emissions Factor (CO2)',
 };

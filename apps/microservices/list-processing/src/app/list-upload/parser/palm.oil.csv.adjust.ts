@@ -75,7 +75,7 @@ const getPalmOilMillLatLong = async (data) => {
 };
 
 const isPalmMill = (data) => {
-  const firstRow = data[0];
+  const firstRow = data[0] || {};
 
   const hasValidKey = Object.keys(firstRow).includes('ID');
 

@@ -283,7 +283,7 @@ export const handleCreateAnalysis = async (
     }
     const listAnalysisStatusData = await getListAnalysisStatus(organizationDb, listId);
 
-    const analysiTypes = extractAnalysisTypes(
+    const analysisTypes = extractAnalysisTypes(
       analysisTypesToProcess
         ? listAnalysisStatusData.filter(({ analysisId }) =>
             analysisTypesToProcess.includes(analysisId)
@@ -291,7 +291,7 @@ export const handleCreateAnalysis = async (
         : listAnalysisStatusData
     );
 
-    if ('GHG' in analysiTypes) {
+    if ('GHG' in analysisTypes && analysisTypes['GHG']) {
       // Check if commodity is valid for GHG Analysis
       await isGHGCommodityValid(listId, organizationDb);
     }
@@ -300,7 +300,7 @@ export const handleCreateAnalysis = async (
       user_id: organization_user_id,
       organization_id: organizationId,
       processing_limit: processingLimit,
-      analysis_types: analysiTypes,
+      analysis_types: analysisTypes,
       reanalyze,
       send_email: userEmail ? true : false,
     };

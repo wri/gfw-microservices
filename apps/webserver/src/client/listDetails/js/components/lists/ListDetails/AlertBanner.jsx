@@ -1,12 +1,15 @@
 import * as React from 'react';
-import { Alert, Button, Stack } from '@mui/material';
+import { Alert, Box, Stack, Typography } from '@mui/material';
+import { PillButton } from '../../../../../components';
 
 export default function AlertBanner({
   title,
   backgroundColor,
+  color,
   icon,
   message,
   buttonText,
+  buttonTextColor,
   onButtonClick,
 }) {
   return (
@@ -17,16 +20,16 @@ export default function AlertBanner({
       <Alert
         sx={{
           backgroundColor,
-          color: '#EEE',
+          color,
           display: 'flex',
           alignItems: 'center',
           py: 1,
           maxWidth: '1200px',
         }}
         icon={
-          <div
-            style={{
-              color: 'white',
+          <Box
+            sx={{
+              color,
               display: 'flex',
               justifyContent: 'center',
               alignItems: 'center',
@@ -34,27 +37,29 @@ export default function AlertBanner({
           >
             {icon}
             {title}
-          </div>
+          </Box>
         }
         severity="error"
         action={
-          <Button
+          <PillButton
             style={{
               background: 'white',
-              color: backgroundColor,
+              color: buttonTextColor,
               borderRadius: '20px',
               padding: '10px 20px',
-              width: '200px',
+              width: '220px',
             }}
             size="small"
             onClick={onButtonClick}
             aria-label={buttonText}
           >
             {buttonText}
-          </Button>
+          </PillButton>
         }
       >
-        {message}
+        <Typography variant="body2" sx={{ fontWeight: 'medium' }}>
+          {message}
+        </Typography>
       </Alert>
     </Stack>
   );

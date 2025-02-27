@@ -4,6 +4,8 @@ import EditNoteIcon from '@mui/icons-material/EditNote';
 import SpeedIcon from '@mui/icons-material/Speed';
 import AlertBanner from './AlertBanner';
 
+import { useTheme } from '@mui/material';
+
 export default function AnalysisStatusBanners({
   isDiagnosticStatusDraft,
   hasLocationWithErrors,
@@ -14,11 +16,14 @@ export default function AnalysisStatusBanners({
   isListSubmittedForAnalysis,
   isListWithErrors,
 }) {
+  const theme = useTheme();
+
   const alertsConfig = [
     {
       condition: !isFailedAnalysis && hasLocationWithErrors,
       title: 'Location errors',
-      backgroundColor: '#F24E1E',
+      backgroundColor: theme.palette.error.main,
+      color: '#EEE',
       icon: <ReportIcon style={{ marginRight: '5px' }} fontSize="inherit" />,
       message: (
         <>
@@ -27,21 +32,25 @@ export default function AnalysisStatusBanners({
         </>
       ),
       buttonText: 'Try Again',
+      buttonTextColor: theme.palette.error.main,
       onButtonClick: openDraftSubmitDialog,
     },
     {
       condition: isFailedAnalysis,
       title: 'Analysis has failed',
-      backgroundColor: '#F24E1E',
+      backgroundColor: theme.palette.error.main,
+      color: '#EEE',
       icon: <ReportIcon style={{ marginRight: '5px' }} fontSize="inherit" />,
       message: <>To receive results, resubmit this list for analysis.</>,
       buttonText: 'Try Again',
+      buttonTextColor: theme.palette.error.main,
       onButtonClick: toggleReRunAnalysisDialog,
     },
     {
       condition: isAnalysisFailedByExceededAnalysisLimit,
       title: 'Usage limit exceeded',
-      backgroundColor: '#FFA500',
+      backgroundColor: theme.palette.warning.main,
+      color: theme.palette.text.primary,
       icon: <SpeedIcon style={{ marginRight: '5px' }} fontSize="inherit" />,
       message: (
         <>
@@ -51,6 +60,7 @@ export default function AnalysisStatusBanners({
         </>
       ),
       buttonText: 'Increase limit',
+      buttonTextColor: theme.palette.text.primary,
       onButtonClick: () => (window.location.href = '/profile'),
     },
     {
@@ -59,7 +69,8 @@ export default function AnalysisStatusBanners({
         ((isDiagnosticStatusDraft && !isListSubmittedForAnalysis) ||
           isAnalysisFailedByExceededAnalysisLimit),
       title: 'DRAFT',
-      backgroundColor: '#58A9CD',
+      backgroundColor: theme.palette.secondary.main,
+      color: '#EEE',
       icon: <EditNoteIcon sx={{ mr: 0.5 }} fontSize="inherit" />,
       message: (
         <>
@@ -68,12 +79,14 @@ export default function AnalysisStatusBanners({
         </>
       ),
       buttonText: 'Submit for Analysis',
+      buttonTextColor: theme.palette.secondary.main,
       onButtonClick: openDraftSubmitDialog,
     },
     {
       condition: isListWithErrors && isDiagnosticStatusDraft,
       title: 'DRAFT',
-      backgroundColor: '#FFA500',
+      backgroundColor: theme.palette.warning.main,
+      color: theme.palette.text.primary,
       icon: <EditNoteIcon sx={{ mr: 0.5 }} fontSize="inherit" />,
       message: (
         <>
@@ -83,6 +96,7 @@ export default function AnalysisStatusBanners({
         </>
       ),
       buttonText: 'Submit for Analysis',
+      buttonTextColor: theme.palette.text.primary,
       onButtonClick: openDraftSubmitDialog,
     },
   ];

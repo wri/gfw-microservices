@@ -1,9 +1,8 @@
 import React, { Component } from 'react';
 import { Typography, Grid, Button as MaterialButton, Stack, Paper, Box } from '@mui/material';
 import Button from 'common/js/components/Button';
-import ArrowBackIcon from '@mui/icons-material/ArrowBack';
-import NotListedLocationIcon from '@mui/icons-material/NotListedLocation';
-import QueryStatsIcon from '@mui/icons-material/QueryStats';
+
+import { ArrowBack, NotListedLocation, QueryStats, Warning } from '@mui/icons-material';
 import CustomDialog from 'common/js/components/CustomDialog/CustomDialog';
 import { maxLocations } from 'locations/js/utils/upload.utils';
 import LinkButton from 'common/js/components/LinkButton';
@@ -2011,6 +2010,8 @@ export default class ListDetails extends Component {
       (isGfwList || getActiveAnalysisType(listAnalysesStatus)) &&
       selectedLocations?.length < 2;
 
+    const locationsWithError = listData?.filter((x) => x.ErrorDetails);
+
     return (
       <ThemeProvider>
         <div className="list-details">
@@ -2113,7 +2114,7 @@ export default class ListDetails extends Component {
                 <div>
                   <Stack alignItems="center" direction="row">
                     <a href="/locations">
-                      <ArrowBackIcon
+                      <ArrowBack
                         sx={{
                           color: 'black',
                           marginRight: '10px',
@@ -2262,12 +2263,36 @@ export default class ListDetails extends Component {
                                     : 'list-diagnostics'
                                 }
                                 onClick={() => this.viewDiagnostic()}
-                                startIcon={<QueryStatsIcon />}
+                                startIcon={<QueryStats />}
                               >
                                 {selectedLocations?.length
                                   ? 'Location Diagnostic'
                                   : 'List diagnostic'}
                               </MaterialButton>
+                            )}
+                            {locationsWithError?.length > 0 && (
+                              <Box
+                                sx={{
+                                  p: 0.5,
+                                  backgroundColor: '#FEEEDB',
+                                  borderRadius: 1,
+                                  display: 'flex',
+                                  alignItems: 'center',
+                                  gap: 1,
+                                }}
+                              >
+                                <Warning
+                                  color="text"
+                                  sx={{
+                                    fontSize: '0.875rem',
+                                  }}
+                                />
+                                <Typography variant="body2">
+                                  We have found <strong>{locationsWithError?.length}</strong>
+                                  {locationsWithError?.length === 1 ? ' error' : ' errors'} in your
+                                  locations
+                                </Typography>
+                              </Box>
                             )}
 
                             {!this.areAllAnalysesDraft() && (
@@ -2310,7 +2335,7 @@ export default class ListDetails extends Component {
                                 sx={{ pb: 2 }}
                               >
                                 <Box display="flex" alignItems="center" gap={1}>
-                                  <NotListedLocationIcon
+                                  <NotListedLocation
                                     color="primary"
                                     sx={{
                                       fontSize: '25px',

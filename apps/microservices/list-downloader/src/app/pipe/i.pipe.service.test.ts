@@ -57,6 +57,6 @@ describe('IPipeService', () => {
       },
       'file-location'
     );
-    expect(runDbQuery).toHaveBeenCalledTimes(0);
+    expect(runDbQuery).toHaveBeenCalledTimes(1);
   });
 });

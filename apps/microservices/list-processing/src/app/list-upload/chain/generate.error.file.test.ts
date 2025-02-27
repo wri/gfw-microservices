@@ -1,9 +1,9 @@
-import { GenerateErrorFile } from "./generate.error.file";
-import { ChainType } from "./types";
+import { GenerateErrorFile } from './generate.error.file';
+import { ChainType } from './types';
 import * as fs from 'fs';
 import * as path from 'path';
-import { S3Service } from "@wri-monorepos/aws";
-import { ConfigService } from "@nestjs/config";
+import { S3Service } from '@wri-monorepos/aws';
+import { ConfigService } from '@nestjs/config';
 import { Test } from '@nestjs/testing';
 
 describe('GenerateErrorFile', () => {
@@ -14,36 +14,45 @@ describe('GenerateErrorFile', () => {
 
   beforeEach(async () => {
     process.env.LARGE_PROCESSING_LIST_BUCKET = 'test-bucket';
+    process.env.NODE_ENV = 'test';
+
     const moduleRef = await Test.createTestingModule({
       providers: [
-        GenerateErrorFile,
         {
           provide: S3Service,
           useValue: {
             putObject: jest.fn().mockResolvedValue(undefined),
+            getFileSignedUrl: jest.fn().mockResolvedValue('https://test-url.com'),
           },
         },
         {
           provide: ConfigService,
           useValue: {
-            get: jest.fn().mockReturnValue('test-bucket'),
+            get: jest.fn((key) => {
+              if (key === 'LARGE_PROCESSING_LIST_ERROR_BUCKET') {
+                return 'test-bucket';
+              }
+              return undefined;
+            }),
           },
         },
       ],
     }).compile();
 
-    handler = moduleRef.get<GenerateErrorFile>(GenerateErrorFile);
     s3Service = moduleRef.get<S3Service>(S3Service);
     configService = moduleRef.get<ConfigService>(ConfigService);
+    handler = new GenerateErrorFile(s3Service, configService);
 
     mockInput = {
       geojson: {
         type: 'FeatureCollection',
-        features: []
+        features: [],
       },
       request: {
-        list_name: 'test-list'
-      }
+        list_name: 'test-list',
+        list_id: 1,
+        organization_database: 'test_org',
+      },
     } as unknown as ChainType;
   });
 
@@ -54,18 +63,18 @@ describe('GenerateErrorFile', () => {
         type: 'Feature',
         properties: {
           locationName: 'Location 1',
-          errorDetail: ['Invalid latitude', 'Missing field']
+          errorDetails: ['Invalid latitude', 'Missing field'],
         },
-        geometry: null
+        geometry: null,
       },
       {
         type: 'Feature',
         properties: {
           locationName: 'Location 2',
-          errorDetail: 'Invalid coordinates'
+          errorDetails: 'Invalid coordinates',
         },
-        geometry: null
-      }
+        geometry: null,
+      },
     ];
 
     // Mock fs.promises methods
@@ -74,10 +83,10 @@ describe('GenerateErrorFile', () => {
 
     await handler.handle(mockInput);
 
-    const expectedFilePath = path.join('tmp', 'test-list_error_report.csv');
-    const expectedS3Key = 'test/test-list_error_report.csv';
+    const expectedFilePath = path.join('/tmp', 'test-list_error_report.csv');
+    const expectedS3Key = `failed/${process.env.NODE_ENV}/test-list_error_report.csv`;
 
-    expect(fs.promises.mkdir).toHaveBeenCalledWith('tmp', { recursive: true });
+    expect(fs.promises.mkdir).toHaveBeenCalledWith('/tmp', { recursive: true });
     expect(fs.promises.writeFile).toHaveBeenCalledWith(
       expectedFilePath,
       '"Location Name","Error Details"\n"Location 1","Invalid latitude; Missing field"\n"Location 2","Invalid coordinates"'
@@ -88,7 +97,9 @@ describe('GenerateErrorFile', () => {
       'test-bucket',
       'text/csv'
     );
-    expect(configService.get).toHaveBeenCalledWith('LARGE_PROCESSING_LIST_BUCKET', { infer: true });
+    expect(configService.get).toHaveBeenCalledWith('LARGE_PROCESSING_LIST_ERROR_BUCKET', {
+      infer: true,
+    });
   });
 
   it('should skip CSV generation when no errors exist', async () => {
@@ -96,10 +107,10 @@ describe('GenerateErrorFile', () => {
       {
         type: 'Feature',
         properties: {
-          locationName: 'Location 1'
+          locationName: 'Location 1',
         },
-        geometry: null
-      }
+        geometry: null,
+      },
     ];
 
     jest.spyOn(fs.promises, 'mkdir').mockImplementation(async () => undefined);
@@ -113,5 +124,7 @@ describe('GenerateErrorFile', () => {
 
   afterEach(() => {
     jest.resetAllMocks();
+    delete process.env.LARGE_PROCESSING_LIST_BUCKET;
+    delete process.env.NODE_ENV;
   });
 });

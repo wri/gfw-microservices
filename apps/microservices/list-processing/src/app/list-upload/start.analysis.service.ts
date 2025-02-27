@@ -35,8 +35,6 @@ type WorkerType = {
 async function worker(input: WorkerType, cb: done) {
   const { organization_database: organizationDatabase } = input.request;
 
-
-
   const chainType: ChainType = {
     request: input.request,
     geojson: {

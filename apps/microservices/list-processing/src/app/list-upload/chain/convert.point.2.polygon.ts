@@ -84,7 +84,7 @@ export class ConvertPoint2Polygon extends AbstractHandler<ChainType> {
     };
   }
   q;
-  async convertFeature(feature: Feature): Promise<Feature> {
+  async convertFeature(feature: Feature, input: ChainType): Promise<Feature> {
     const { geometry, properties } = feature;
 
     if (geometry.type === 'Point') {
@@ -96,10 +96,18 @@ export class ConvertPoint2Polygon extends AbstractHandler<ChainType> {
       );
       const polygon = await this.geomFromLatLongRadiusArea(latitude, longitude, analysisRadius);
       delete feature.properties.geometry;
-      (feature.geometry as Polygon).coordinates = polygon.rings;
-      (feature.geometry as Polygon).type = 'Polygon';
-      feature.properties.analysisArea = analysisArea;
-      feature.properties.analysisRadius = analysisRadius;
+      if (polygon !== null) {
+        (feature.geometry as Polygon).coordinates = polygon.rings;
+        (feature.geometry as Polygon).type = 'Polygon';
+        feature.properties.analysisArea = analysisArea;
+        feature.properties.analysisRadius = analysisRadius;
+      } else {
+        feature.properties.errorDetails = feature.properties.errorDetails || [];
+        (input.request as RequestNewList).hasUnanalyzableError = true;
+        (feature.properties.errorDetails as Array<string>).push(
+          'Error: Unable to convert point to polygon'
+        );
+      }
     }
 
     return Object.assign({}, feature);
@@ -111,7 +119,7 @@ export class ConvertPoint2Polygon extends AbstractHandler<ChainType> {
 
     try {
       for (const feature of features) {
-        await this.convertFeature(feature);
+        await this.convertFeature(feature, request);
       }
     } catch (error) {
       this.logger.error('Error in converting point to polygon', error.stack || error);

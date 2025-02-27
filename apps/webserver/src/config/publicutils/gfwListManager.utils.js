@@ -33,7 +33,7 @@ const errorUtils = require(path.resolve('./config/privateutils/error.utils'));
 const lambdaUtils = require(path.resolve('./config/privateutils/lambda.utils'));
 const locationUtils = require(path.resolve('./config/privateutils/location.utils'));
 const AnalysisManager = require(path.resolve('./config/publicutils/analysisManager.utils'));
-import { getAdministrativeAreasDataByLocation, GfwLists } from '@wri-monorepos/sql';
+import { getAdministrativeAreasDataByLocation } from '@wri-monorepos/sql';
 import { gfwListsIds, gfwListsNames } from '@wri-monorepos/constants';
 let adminInfo = [];
 let protectedInfo = [];
@@ -655,23 +655,47 @@ export async function getPaginatedTable(
   tableSortedBy,
   tableSortedDesc
 ) {
-  const gfwLists = new GfwLists();
-  const [noGeomData, count] = await gfwLists.getPaginatedAttributes(
-    config.SQLConnection.database,
-    list_id,
-    pageNum,
-    pageSize,
-    filters,
-    filterString,
-    tableSortedBy,
-    tableSortedDesc
-  );
-  const location_ids = noGeomData.map((item) => item.location_id);
-  const gfwLocationsAnalysesData = await AnalysisManager.getAnalysisDataForGFWList(
+  const params_src = [
+    { field: 'listID', type: sql.Int, value: list_id },
+    { field: 'pageNum', type: sql.Int, value: pageNum },
+    { field: 'pageSize', type: sql.Int, value: pageSize },
+    { field: 'Country', type: sql.NVarChar, value: filters.selectedCountry || null },
+    { field: 'State', type: sql.NVarChar, value: filters.selectedState || null },
+    { field: 'SubState', type: sql.NVarChar, value: filters.selectedSubState || null },
+    {
+      field: 'selectedOverallThreats',
+      type: sql.NVarChar,
+      value: filters?.selectedOverallThreats?.length
+        ? JSON.stringify(filters.selectedOverallThreats)
+        : null,
+    },
+    {
+      field: 'selectedOverallValues',
+      type: sql.NVarChar,
+      value: filters?.selectedOverallValues?.length
+        ? JSON.stringify(filters.selectedOverallValues)
+        : null,
+    },
+    {
+      field: 'selectedMillPriority',
+      type: sql.NVarChar,
+      value: filters?.selectedMillPriority?.length
+        ? JSON.stringify(filters.selectedMillPriority)
+        : null,
+    },
+    { field: 'filterString', type: sql.NVarChar, value: filterString || null },
+    { field: 'tableSortedBy', type: sql.NVarChar, value: tableSortedBy || null },
+    { field: 'tableSortedDesc', type: sql.NVarChar, value: tableSortedDesc ? 'DESC' : 'ASC' },
+  ];
+
+  const resultsWithListId = await sqlUtils.executeSystemStoredProcedure(
     req,
-    list_id,
-    location_ids
+    'uspGetGFWListTableData',
+    params_src
   );
+
+  const totalCount = resultsWithListId.length ? resultsWithListId[0].TotalCount : 0;
+
   const gfwListAnalysesData = await AnalysisManager.getGFWListAnalyses(req, list_id);
-  return [noGeomData, gfwListAnalysesData, gfwLocationsAnalysesData, count];
+  return [resultsWithListId, gfwListAnalysesData, resultsWithListId, totalCount];
 }

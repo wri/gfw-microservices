@@ -126,15 +126,17 @@ export const getDigit = (value, lat) => {
   return Math.round(value * 100) / 100;
 };
 
-export const getValue = (data = '{}') => {
-  return formatDigit(Object.values(JSON.parse(data)).reduce((rowA, rowB) => rowA + rowB, 0));
+export const getValue = (data) => {
+  return formatDigit(
+    Object.values(JSON.parse(data ?? '{}')).reduce((rowA, rowB) => rowA + rowB, 0)
+  );
 };
 
-export const getValidatedValue = (data = '{}', auditData) => {
+export const getValidatedValue = (data, auditData) => {
   if (auditData === 0) {
     return '0%';
   }
-  return formatDigit(Object.values(JSON.parse(data)).reduce((a, b) => a + b, 0));
+  return formatDigit(Object.values(JSON.parse(data ?? '{}')).reduce((a, b) => a + b, 0));
 };
 
 export const formatDeforestationValueByDisplayType = (rawValue, treeCoverExtentTotal) => {
@@ -217,12 +219,9 @@ export const renderFormattedDeforestationValueWithIndicator = (valueInHectares) 
   );
 };
 
-export const calculateAndFormatTotalDeforestation = (
-  treeCoverExtentTotal,
-  data = '{}',
-  auditData
-) => {
-  const rawValue = auditData === 0 ? 0 : Object.values(JSON.parse(data)).reduce((a, b) => a + b, 0);
+export const calculateAndFormatTotalDeforestation = (treeCoverExtentTotal, data, auditData) => {
+  const rawValue =
+    auditData === 0 ? 0 : Object.values(JSON.parse(data ?? '{}')).reduce((a, b) => a + b, 0);
 
   const isNonZeroValue = rawValue !== 0;
 

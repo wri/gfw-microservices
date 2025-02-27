@@ -68,6 +68,7 @@ class LocationsPage {
     titleFinishLegend: () => cy.get('.MuiTypography-subtitle2'),
     subtitleFinishLegend: () => cy.get('.MuiTypography-caption'),
     returnToLocationBtn: () => cy.get('.MuiPaper-root > .MuiButtonBase-root'),
+    checkBoxIconBtn: () => cy.get('[data-testid="CheckBoxOutlineBlankIcon"]').eq(0),
   };
 
   verifyLists(lists: string[], exist: boolean) {
@@ -91,6 +92,9 @@ class LocationsPage {
       this.elements.confirmActionBtn().should('be.visible');
       this.clickOnConfirmActionBtn();
     });
+  }
+  clickOnCheckBoxIcon() {
+    this.elements.checkBoxIconBtn().click();
   }
 
   clickOnNextBtn() {

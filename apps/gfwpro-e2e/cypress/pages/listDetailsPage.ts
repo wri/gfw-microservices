@@ -35,6 +35,8 @@ class ListDetailsPage {
     post2020Tab: () => cy.get('[data-cy="post-2020-tab"]'),
     post2000Tab: () => cy.get('[data-cy="post-2000-tab"]'),
     palmRiskAssessmentTab: () => cy.get('[data-cy="palm-risk-assessment-tab"]'),
+    hiddenElement: () => cy.get('.rt-tr-group').eq(0).find('.rt-td.default-cell.td-num').last(),
+    moreOptionsBtn: () => cy.get('data-cy="row-more-options-button"]').eq(1),
   };
   clickOnLocationsList(name: string) {
     cy.contains(name).click();
@@ -153,12 +155,8 @@ class ListDetailsPage {
     this.elements.copyBtn().click();
   }
   clickOnEditBtn() {
-    cy.get(
-      '.rt-tbody > :nth-child(1) > [style="width: 100%; display: flex;"] > :nth-child(6)'
-    ).trigger('mouseover');
-    cy.get(
-      '[style="position: absolute; right: 0px; background-color: white; padding: 0px 20px;"] > .css-gggkt8-MuiButtonBase-root-MuiButton-root > [data-testid="MoreVertIcon"]'
-    ).click();
+    this.elements.hiddenElement().trigger('mouseover');
+    this.elements.moreOptionsBtn().click();
     this.elements.editBtn().click();
   }
   clickOnDeleteBtn() {

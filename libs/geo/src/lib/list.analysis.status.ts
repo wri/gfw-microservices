@@ -17,6 +17,7 @@ import {
   listStatus,
   analysisTypesOptions,
   analysisIdsOptionsMap,
+  MAPSPAM_COMMODITY,
 } from '@wri-monorepos/constants';
 import { S3Service } from '@wri-monorepos/aws';
 import {
@@ -283,7 +284,7 @@ export const handleCreateAnalysis = async (
     }
     const listAnalysisStatusData = await getListAnalysisStatus(organizationDb, listId);
 
-    const analysiTypes = extractAnalysisTypes(
+    const analysisTypes = extractAnalysisTypes(
       analysisTypesToProcess
         ? listAnalysisStatusData.filter(({ analysisId }) =>
             analysisTypesToProcess.includes(analysisId)
@@ -291,7 +292,7 @@ export const handleCreateAnalysis = async (
         : listAnalysisStatusData
     );
 
-    if ('GHG' in analysiTypes) {
+    if ('GHG' in analysisTypes && analysisTypes['GHG']) {
       // Check if commodity is valid for GHG Analysis
       await isGHGCommodityValid(listId, organizationDb);
     }
@@ -300,7 +301,7 @@ export const handleCreateAnalysis = async (
       user_id: organization_user_id,
       organization_id: organizationId,
       processing_limit: processingLimit,
-      analysis_types: analysiTypes,
+      analysis_types: analysisTypes,
       reanalyze,
       send_email: userEmail ? true : false,
     };
@@ -469,7 +470,7 @@ export const isGHGCommodityValid = async (id: number, organizationDb: string): P
       return true;
     }
     // verify if list has a non valid GHG commodity
-    if (listData.Commodity.startsWith('GFWP_')) {
+    if (!isValidMapSpamCommodity(listData.Commodity)) {
       Logger.log(
         `Invalid commodity in list ${listData.id} - ${listData.listName} for GHG Analysis`
       );
@@ -477,9 +478,20 @@ export const isGHGCommodityValid = async (id: number, organizationDb: string): P
         `Invalid commodity in list ${listData.id} - ${listData.listName} for GHG Analysis`
       );
     }
+
     return true;
   } catch (error) {
     Logger.error('validateGHGCommodity', error.message || error);
     throw error;
   }
+};
+
+export const isValidMapSpamCommodity = (Commodity: string): boolean => {
+  if (Object.keys(MAPSPAM_COMMODITY).includes(Commodity)) {
+    return true;
+  }
+  if (Commodity === 'GFWP_Other') {
+    return true;
+  }
+  return false;
 };

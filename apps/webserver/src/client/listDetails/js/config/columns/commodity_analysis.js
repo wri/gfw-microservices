@@ -69,7 +69,7 @@ const commodity_analysis = [
         },
         className: 'default-cell',
         show: true,
-        width: 125,
+        width: 140,
 
         Cell: (row) =>
           !locationIsActive(row.value) ? (
@@ -93,7 +93,6 @@ const commodity_analysis = [
 
           return sortStatus;
         },
-        sortable: !isListDetailsPageRedesignAvailable,
       },
     ],
   },
@@ -223,7 +222,7 @@ const commodity_analysis = [
         },
         className: 'default-cell',
         show: true,
-        width: 145,
+        width: 160,
         Cell: (row) =>
           !locationIsActive(row.value) ? (
             '--'
@@ -246,7 +245,6 @@ const commodity_analysis = [
 
           return sortStatus;
         },
-        sortable: !isListDetailsPageRedesignAvailable,
       },
     ],
   },
@@ -350,7 +348,7 @@ const commodity_analysis = [
         },
         className: 'default-cell',
         show: true,
-        width: 140,
+        width: 155,
         Cell: (row) =>
           !locationIsActive(row.value) ? (
             '--'
@@ -371,7 +369,6 @@ const commodity_analysis = [
             );
           }
         },
-        sortable: !isListDetailsPageRedesignAvailable,
       },
     ],
   },

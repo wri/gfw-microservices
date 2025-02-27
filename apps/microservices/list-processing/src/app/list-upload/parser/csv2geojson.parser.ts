@@ -161,7 +161,7 @@ export const csv2geojson = async (
       worker: true,
       download: false,
       dynamicTyping: true,
-      skipEmptyLines: 'greedy',
+      skipEmptyLines: true,
       header: true,
       complete: (results) => convertToGeoJSON(results, reject, resolve),
       error: (error, file) => reject(`${file} - ${error}`),

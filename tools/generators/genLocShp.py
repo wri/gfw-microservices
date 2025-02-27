@@ -1,11 +1,13 @@
 import fiona
 import argparse
 import math
+import random
 
 # parse arguments
 parser = argparse.ArgumentParser(description="Generate shapefile (point or polygon)")
 parser.add_argument("-l", "--locations", type=int, help="Number of locations", default=4)
 parser.add_argument("-g", "--polygon", action='store_true', help="Polygon vs point shapefile")
+parser.add_argument("-a", "--attributes", action='store_true', help="Random attributes")
 args = parser.parse_args()
 
 numPoints = math.ceil(math.sqrt(args.locations))
@@ -27,8 +29,13 @@ schemaPoint = {
     "properties": [
         ("Location_Name", "str"),
         ("Analysis_Radius", "str"),
+        ("Analysis_Area", "str"),
     ]
 }
+
+if args.attributes:
+    schemaPoly["properties"] += [("Attr1", "str")]
+    schemaPoint["properties"] += [("Attr1", "str")]
 
 # open a fiona object
 shpFile = fiona.open(
@@ -61,6 +68,9 @@ def genLoc(locName, lat, lon):
     else:
         baseObj["geometry"]["coordinates"] = [lon, lat]
         baseObj["properties"]["Analysis_Radius"] = .1
+        baseObj["properties"]["Analysis_Area"] = 0
+    if args.attributes:
+        baseObj["properties"]["Attr1"] = 'A' + ''.join(random.choices('0123456789', k=3))
     return baseObj
 
 startLat = -13.0
@@ -70,7 +80,7 @@ def genAllLocs():
     allLocs = []
     for x in range (0, numPoints):
         for y in range (0, numPoints):
-            locName = "Loc%d_%d" % (x, y)
+            locName = "Loc %d %d" % (x, y)
             lat = startLat + y * 0.036
             lon = startLon + x * 0.036
             locObj = genLoc(locName, lat, lon)

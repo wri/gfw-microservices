@@ -12,7 +12,6 @@
 ******************************************************************* */
 // Imports for this module.
 const { SESClient, SendEmailCommand } = require('@aws-sdk/client-ses');
-import { featureFlagsService } from '@wri-monorepos/shared';
 const moment = require('moment');
 
 import config from '../config';
@@ -22,7 +21,7 @@ import { createErrorMessage, ERROR_CODES } from '../privateutils/error.utils';
 import emailUtil from '../emailTemplates';
 
 const sesClient = new SESClient();
-import { analysisTypesOptions, analysisTypesOptionsNewNames } from '@wri-monorepos/constants';
+import { analysisTypesOptionsNewNames } from '@wri-monorepos/constants';
 
 const defineIcon = (type) => {
   switch (type) {
@@ -220,19 +219,9 @@ export const sendEmail = (req, sender, receivers, subject, content) => {
 export const sendEmail__ListSubmittedForAnalysis = async (req, list_name, analysis_types) => {
   const { user_email } = req.session;
 
-  const { getFeatureFlagsForCurrentOrg } = await featureFlagsService();
-
-  const flags = await getFeatureFlagsForCurrentOrg(req.session.organization_id);
-
-  const isListDetailsPageRedesignAvailable = flags.some(
-    (f) => f.flagId === 'ListDetailsPageRedesign'
+  const enabledAnalyses = analysisTypesOptionsNewNames.filter(
+    (analysis) => analysis_types[analysis.id]
   );
-
-  const analysistypes = isListDetailsPageRedesignAvailable
-    ? analysisTypesOptionsNewNames
-    : analysisTypesOptions;
-
-  const enabledAnalyses = analysistypes.filter((analysis) => analysis_types[analysis.id]);
   const content = {
     list_name,
     analysis_types: enabledAnalyses.map((analysis) => analysis.label).join(', '),

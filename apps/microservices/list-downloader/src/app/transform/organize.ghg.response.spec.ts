@@ -24,9 +24,31 @@ describe('OrganizeGreenHouseGasEmissionsResponse', () => {
       '',
       (err, data) => {
         expect(data).toEqual([
-          ['kgTestCG3 927 all', 2, 1256.1646821446757, 'Soybeans', 'dLUC', 0,0,0,120.8186, '2021'],
-          ['kgTestCG3 927 all', 2, 1256.1646821446757, 'Soybeans', 'dLUC', 0,0,0,228.1142, '2022'],
-          ['kgTestCG3 927 all', 2, 1256.1646821446757, 'Soybeans', 'dLUC', 0,0,0,0, '2023'],
+          [
+            'kgTestCG3 927 all',
+            2,
+            1256.1646821446757,
+            'Soybeans',
+            'dLUC',
+            0,
+            0,
+            0,
+            120.8186,
+            '2021',
+          ],
+          [
+            'kgTestCG3 927 all',
+            2,
+            1256.1646821446757,
+            'Soybeans',
+            'dLUC',
+            0,
+            0,
+            0,
+            228.1142,
+            '2022',
+          ],
+          ['kgTestCG3 927 all', 2, 1256.1646821446757, 'Soybeans', 'dLUC', 0, 0, 0, 0, '2023'],
         ]);
       }
     );

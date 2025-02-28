@@ -88,9 +88,9 @@ describe('GHG - service', () => {
         locationError: null,
         commodity: 'COCOA',
         emissionsFactorByYear: '{"2021":0.5839,"2022":0.1825,"2023":0.3258}',
-        efCo2ByYear:'{}',
-        efCh4ByYear:'{}',
-        efN2oByYear:'{}'
+        efCo2ByYear: '{}',
+        efCh4ByYear: '{}',
+        efN2oByYear: '{}',
       },
       {
         listId: 1,
@@ -101,9 +101,9 @@ describe('GHG - service', () => {
         locationError: null,
         commodity: 'COCOA',
         emissionsFactorByYear: '{"2021":0.5839,"2022":0.1825,"2023":0.4258}',
-        efCo2ByYear:'{}',
-          efCh4ByYear:'{}',
-          efN2oByYear:'{}'
+        efCo2ByYear: '{}',
+        efCh4ByYear: '{}',
+        efN2oByYear: '{}',
       },
     ];
     const listId = 1;

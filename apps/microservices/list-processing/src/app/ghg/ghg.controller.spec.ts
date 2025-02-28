@@ -144,7 +144,7 @@ describe('[GET] /ghg/:listId/data-per-page', () => {
             combinedEmissionsFactor: '{"2021":0.5839,"2022":0.1825,"2023":0.3258}',
             co2EmissionsFactor: '{}',
             ch4EmissionsFactor: '{}',
-            n2oEmissionsFactor: '{}'
+            n2oEmissionsFactor: '{}',
           },
         ]);
       });
@@ -167,7 +167,7 @@ describe('[GET] /ghg/:listId/data-per-page', () => {
         combinedEmissionsFactor: '{"2021":0.5839,"2022":0.1825,"2023":0.3258}',
         co2EmissionsFactor: '{}',
         ch4EmissionsFactor: '{}',
-        n2oEmissionsFactor: '{}'
+        n2oEmissionsFactor: '{}',
       },
     ]);
 

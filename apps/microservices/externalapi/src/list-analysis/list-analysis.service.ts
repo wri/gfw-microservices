@@ -5,6 +5,7 @@ import {
   InternalServerErrorException,
   Logger,
   NotFoundException,
+  HttpException,
 } from '@nestjs/common';
 import { AnalysesGenerateRequest, ListAnalysisResponse } from './list-analysis.dto';
 import { UserService } from './user.service';
@@ -202,34 +203,56 @@ export class ListAnalysisService {
     listId: number;
     organizationId: number;
   }): Promise<Array<{ locationName: string; errorDetails: string }>> {
-    const organizationDetails = await this.getOrganizationDetails(organizationId);
-    const connection = await this.createOrganizationConnection(organizationDetails);
+    try {
+      const organization = await this.organizationService.findOrganizationById(organizationId);
+      if (!organization) {
+        throw new HttpException({ errorDetails: 'Organization not found' }, HttpStatus.NOT_FOUND);
+      }
 
-    const list = await this.listService.getList({
-      listId,
-      organizationId,
-    });
+      const list = await this.listService.getList({
+        listId,
+        organizationId,
+      });
 
-    if (!list) {
-      throw new NotFoundException('List not found');
+      if (!list) {
+        throw new HttpException({ errorDetails: 'List not found' }, HttpStatus.NOT_FOUND);
+      }
+
+      const connection = await this.clientStoreConnection.getConnection(
+        organization.organizationDb
+      );
+      const listTable = list.listTableName;
+
+      const ListEntity = new EntitySchema<ListSchemaType>({
+        ...ListSchema,
+        name: listTable,
+      });
+
+      const listTableNameRepository = connection.getRepository(ListEntity);
+      const locationsWithErrors = await listTableNameRepository.find({
+        select: ['locationName', 'errorDetails'],
+        where: {
+          errorDetails: Not(IsNull()),
+        },
+      });
+
+      if (!locationsWithErrors || locationsWithErrors.length === 0) {
+        throw new HttpException(
+          { errorDetails: 'No errors found for this list' },
+          HttpStatus.NOT_FOUND
+        );
+      }
+
+      return locationsWithErrors;
+    } catch (error) {
+      if (error instanceof HttpException) {
+        throw error;
+      }
+      throw new HttpException(
+        { errorDetails: error.message || 'Failed to retrieve list errors' },
+        HttpStatus.INTERNAL_SERVER_ERROR
+      );
     }
-
-    const listTable = list.listTableName;
-
-    const ListEntity = new EntitySchema<ListSchemaType>({
-      ...ListSchema,
-      name: listTable,
-    });
-
-    const listTableNameRepository = await connection.getRepository(ListEntity);
-    const locationsWithErrors = await listTableNameRepository.find({
-      select: ['locationName', 'errorDetails'],
-      where: {
-        errorDetails: Not(IsNull()),
-      },
-    });
-
-    return locationsWithErrors;
   }
 
   async prepareUpload({

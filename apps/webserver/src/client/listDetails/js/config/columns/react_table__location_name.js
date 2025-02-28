@@ -74,7 +74,7 @@ const react_table__location_name = [
                 placement="top"
                 label=""
                 tooltipMessage={locationsPage.columns.tooltipMessage}
-                reason={'failed-location'}
+                reason="failed-location"
               />
             </span>
           </span>

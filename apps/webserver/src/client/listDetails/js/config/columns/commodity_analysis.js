@@ -11,9 +11,6 @@ import {
   getColorByLevelClasse,
 } from '../../../../locations/js/utils/locationsTableUtils';
 import infoBubbleConfig from '../../../../common/js/infoBubbleConfig.constants';
-import featureFlags from '../../../../../utils/general.utils';
-
-const { isListDetailsPageRedesignAvailable } = featureFlags;
 
 const transifex = Transifex.live.translateText;
 
@@ -129,7 +126,7 @@ const commodity_analysis = [
 
           return sortStatus;
         },
-        sortable: !isListDetailsPageRedesignAvailable,
+        sortable: false,
       },
       {
         id: 'commodity_threat_peat_level',
@@ -155,7 +152,7 @@ const commodity_analysis = [
 
           return sortStatus;
         },
-        sortable: !isListDetailsPageRedesignAvailable,
+        sortable: false,
       },
       {
         id: 'commodity_threat_protected_areas_level',
@@ -181,7 +178,7 @@ const commodity_analysis = [
           }
           return sortStatus;
         },
-        sortable: !isListDetailsPageRedesignAvailable,
+        sortable: false,
       },
       {
         id: 'commodity_threat_fires_level',
@@ -207,7 +204,7 @@ const commodity_analysis = [
 
           return sortStatus;
         },
-        sortable: !isListDetailsPageRedesignAvailable,
+        sortable: false,
       },
       {
         id: 'commodity_threat_overall_level',
@@ -281,7 +278,7 @@ const commodity_analysis = [
 
           return sortStatus;
         },
-        sortable: !isListDetailsPageRedesignAvailable,
+        sortable: false,
       },
       {
         id: 'commodity_value_peat_level',
@@ -307,7 +304,7 @@ const commodity_analysis = [
 
           return sortStatus;
         },
-        sortable: !isListDetailsPageRedesignAvailable,
+        sortable: false,
       },
       {
         id: 'commodity_value_protected_areas_level',
@@ -333,7 +330,7 @@ const commodity_analysis = [
 
           return sortStatus;
         },
-        sortable: !isListDetailsPageRedesignAvailable,
+        sortable: false,
       },
       {
         id: 'commodity_value_overall_level',

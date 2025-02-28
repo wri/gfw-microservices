@@ -7,9 +7,6 @@ import {
   FOREST_CHANGE_VIEW,
   POST_2020_RISK_ASSESSMENT_VIEW,
 } from './ListDetails/listViews.constants';
-import featureFlags from '../../../../../utils/general.utils';
-
-const { isListDetailsPageRedesignAvailable } = featureFlags;
 
 /**
  * Get all column names based on List view name and location data
@@ -31,24 +28,7 @@ const getAllColumnNames = (
   const { custom_attribute_names, isGlobalForestWatchList } = selectedLists[0];
 
   columnNames.list = getListColumns(locationData, custom_attribute_names, selectedLists);
-  if (listView === FOREST_CHANGE_VIEW) {
-    columnNames.required = cloneDeep(columns.forest_change_locations);
-    if (isGlobalForestWatchList) {
-      columnNames.required.map((n) => {
-        if (n.accessor === 'total_area') {
-          switch (list_name) {
-            case 'RSPO Palm Concessions':
-            case 'Oil Palm Concessions':
-              n.accessor = 'Analysis Area';
-              break;
-            default:
-              n.accessor = 'Size';
-          }
-        }
-        return n;
-      });
-    }
-  }
+
   if (list_name === 'Palm Oil Mills') {
     if (listView === FOREST_CHANGE_VIEW) {
       gfwColumns.push(...columns.palm_oil_mill_fc.slice());
@@ -80,17 +60,12 @@ const getAllColumnNames = (
     const { columns: forestChangeAnalysisColumns, ...forestChangeAnalysisRestOfProperties } =
       columns.forest_change_analysis[1];
 
-    let notSortableColumns;
-    // when feature flag isListDetailsPageRedesignAvailable is removed, these columns should be sortable: false,
-    // for both gfw and user lists
-    if (!isGlobalForestWatchList || isListDetailsPageRedesignAvailable) {
-      notSortableColumns = forestChangeAnalysisColumns.map((col) => {
-        return {
-          ...col,
-          sortable: false,
-        };
-      });
-    }
+    const notSortableColumns = forestChangeAnalysisColumns.map((col) => {
+      return {
+        ...col,
+        sortable: false,
+      };
+    });
 
     const analysis = [
       columns.forest_change_analysis[0],
@@ -104,12 +79,7 @@ const getAllColumnNames = (
     columnNames.combinedColumns = [
       checkbox,
       location_name,
-
-      ...(isListDetailsPageRedesignAvailable && isGlobalForestWatchList
-        ? gfwListsSizeColumn(listId)
-        : []),
-
-      ...columnNames.required,
+      ...(isGlobalForestWatchList ? gfwListsSizeColumn(listId) : []),
       ...analysis,
       ...gfwColumns,
       ...columnNames.list,

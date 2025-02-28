@@ -19,9 +19,6 @@ import FailedTooltip from '../../../../../common/js/components/CustomTooltip/Fai
 import { locationsPage, nav } from '../../../../../common/js/config';
 import AnalysisListChips from './AnalysisListChips';
 import ChangeTypeOfAnalysisModal from './ChangeTypeOfAnalysisModal';
-import featureFlags from '../../../../../../utils/general.utils';
-
-const { isListDetailsPageRedesignAvailable } = featureFlags;
 
 function FailedList({
   list,
@@ -42,10 +39,6 @@ function FailedList({
   const isInFolder = !!folder;
 
   const goToListDetails = () => {
-    if (!isListDetailsPageRedesignAvailable) {
-      return;
-    }
-
     // clicked a location with a successfully completed analysis; go to it
     gtag('event', 'List click', {
       event_category: 'Landing',

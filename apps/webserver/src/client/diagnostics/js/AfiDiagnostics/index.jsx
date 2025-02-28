@@ -124,7 +124,6 @@ function AfiDiagnostics() {
             {selectedList && (
               <DiagnosticsBreadCrumbs
                 selectedList={selectedList}
-                diagnosticName="Deforestation Reporting"
                 isSharedList={isSharedList}
                 analysisId={analysisTypes.DEFORESTATION_KPIS}
               />

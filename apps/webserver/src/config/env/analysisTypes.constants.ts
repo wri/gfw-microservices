@@ -12,25 +12,6 @@ export const analysisTypes = {
   ALERTS: 'ALERTS',
 } as const;
 
-// remove these constant names when isListDetailsPageRedesignAvailable feature flag is removed
-export const analysisTypesOptions = [
-  {
-    id: analysisTypes.FOREST_CHANGE_DIAGNOSTICS,
-    label: 'Forest Change Global',
-    shortLabel: 'Forest Change',
-  },
-  {
-    id: analysisTypes.DEFORESTATION_KPIS,
-    label: 'Deforestation Reporting (cutoff date 2020)',
-    shortLabel: 'Reporting',
-  },
-  {
-    id: analysisTypes.ALERTS,
-    label: 'NEAR-REAL TIME ALERTS (INTEGRATED ALERTS, VIIRS)',
-    shortLabel: 'Alerts',
-  },
-];
-
 export const analysisTypesOptionsNewNames = [
   {
     id: analysisTypes.DEFORESTATION_KPIS,

@@ -11,14 +11,6 @@ import {
   GFW_LISTS_NAMES_WITH_DOWNLOAD_OPTION_DISABLED,
 } from '../../../common/js/constants/lists.constants';
 import { listStatus } from '../../../../config/env/listStatuses.constants';
-import featureFlags from '../../../../utils/general.utils';
-
-const { isListDetailsPageRedesignAvailable } = featureFlags;
-
-// Check to see which views should be enabled
-const checkValidView = (listData) => {
-  return listData.length !== 0;
-};
 
 // Check to see which views should be enabled
 const checkValidViewCommodity = (selectedLists, listData) => {
@@ -389,13 +381,6 @@ const isAnalyzingStatus = (status) => {
 
 const isFailedList = (list) => list?.list_status_id === listStatus.Inactive;
 
-const isLocationDataNotAvailable = (list) => {
-  const isFailed = isFailedList(list);
-  const isBeingAnalized = isAnalyzingStatus(list.list_status_id);
-  const hasLockStatus = !!list.lock_status && !!list.lock_user_id;
-  return isFailed || hasLockStatus || (isBeingAnalized && !isListDetailsPageRedesignAvailable);
-};
-
 const isListFailedByAnalysisStatusLimit = ({ listAnalysesStatus }) => {
   return listAnalysesStatus.some(({ status, errorInfo }) => {
     return status === listStatus.Inactive && errorInfo === 'Exceeded Analysis Limit';
@@ -403,7 +388,6 @@ const isListFailedByAnalysisStatusLimit = ({ listAnalysesStatus }) => {
 };
 
 module.exports = {
-  checkValidView,
   checkValidViewCommodity,
   checkColumnListDraftList,
   isHiddenColumnInPost2020riskTable,
@@ -427,6 +411,5 @@ module.exports = {
   findArrIndex,
   isAnalyzingStatus,
   isFailedList,
-  isLocationDataNotAvailable,
   isListFailedByAnalysisStatusLimit,
 };

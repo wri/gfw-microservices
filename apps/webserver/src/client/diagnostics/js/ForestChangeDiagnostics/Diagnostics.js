@@ -724,7 +724,6 @@ export default class Diagnostics extends Component {
               <div className="header-container">
                 <DiagnosticsBreadCrumbs
                   selectedList={selectedList}
-                  diagnosticName={locationsPage.lists.diagnostic}
                   isSharedList={isSharedList}
                   isGfwList={isGfwList}
                   analysisId={analysisTypes.FOREST_CHANGE_DIAGNOSTICS}

@@ -18,7 +18,6 @@ import {
   UPDATE_FILTERED_DATA,
   UPDATE_LIST_LEVEL_ANALYSIS,
   UPDATE_SELECTED_LOCATIONS,
-  UPDATE_SELECTED_AND_VISIBLE_LOCATIONS,
   CURRENT_LIST_VIEW,
   UPDATE_INFO_BUBBLE_CACHE,
   TOGGLE_POPOVER,
@@ -112,10 +111,6 @@ export function updateListLevelAnalysis(data) {
 
 export function updateSelectedLocations(data) {
   return { type: UPDATE_SELECTED_LOCATIONS, data };
-}
-
-export function updateSelectedAndVisibleLocations(data) {
-  return { type: UPDATE_SELECTED_AND_VISIBLE_LOCATIONS, data };
 }
 
 export function updateInfoBubbleCache(infoBubbleId, data) {

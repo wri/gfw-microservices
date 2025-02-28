@@ -1,7 +1,4 @@
 import { checkValidViewCommodity } from '../../../locations/js/utils/lists.utils';
-import featureFlags from '../../../../utils/general.utils';
-
-const { isListDetailsPageRedesignAvailable } = featureFlags;
 
 const getAvailableDiagnostics = (listData, selectedLists) => {
   let availableDiagnostics = [];
@@ -13,7 +10,7 @@ const getAvailableDiagnostics = (listData, selectedLists) => {
   if (!commodityRiskDisabled) {
     availableDiagnostics.push({
       value: 'commodity_risk',
-      label: isListDetailsPageRedesignAvailable ? 'Palm Risk Assessment' : 'Commodity risk',
+      label: 'Palm Risk Assessment',
     });
   }
   return availableDiagnostics;

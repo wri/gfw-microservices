@@ -6,15 +6,10 @@ import IconDownload from '../../../common/js/components/icon/IconDownload';
 import printDiagnosticsReport from './printDiagnosticsReport';
 import {
   analysisTypes,
-  analysisTypesOptions,
   analysisTypesOptionsNewNames,
 } from '../../../../config/env/analysisTypes.constants';
 import { listStatus } from '../../../../config/env/listStatuses.constants';
 import './DiagnosticsMenuBar.scss';
-
-import featureFlags from '../../../../utils/general.utils';
-
-const { isListDetailsPageRedesignAvailable } = featureFlags;
 
 function DiagnosticsMenuBar({
   listId,
@@ -55,13 +50,9 @@ function DiagnosticsMenuBar({
       });
   }, []);
 
-  const analysisOptions = isListDetailsPageRedesignAvailable
-    ? analysisTypesOptionsNewNames
-    : analysisTypesOptions;
-
   const diagnosticOptions = activeAnalysesIds.map((analysisId) => ({
     value: analysisId,
-    label: analysisOptions.find(({ id }) => id === analysisId)?.label,
+    label: analysisTypesOptionsNewNames.find(({ id }) => id === analysisId)?.label,
   }));
 
   const redirectToSelectedDiagnostics = (diagnostics) => {

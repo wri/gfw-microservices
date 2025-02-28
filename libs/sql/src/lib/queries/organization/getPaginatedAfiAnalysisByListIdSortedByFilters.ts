@@ -101,6 +101,7 @@ SET @SQL = 'SELECT ' +
             ' lt.Country as country ,' +
             ' lt.State as state,' +
             ' lt.[Sub State] as subState, ' +
+            ' lt.ErrorDetails as errorDetails, ' +
 
             @locationColumns +
 
@@ -122,6 +123,8 @@ SET @SQL = 'SELECT ' +
 
 	IF @SubState IS NOT NULL
 	  SET @Filters = + @Filters + ' AND lt.[Sub State] = @SubState'
+    IF @hasError IS NOT NULL
+        SET @Filters = + @Filters + ' AND lt.ErrorDetails IS NOT NULL AND LEN(lt.ErrorDetails) > 0'
 	IF @selectedSupplier IS NOT NULL
         SET @Filters = + @Filters + ' AND lt.[Supplier Name] = @selectedSupplier'
   IF @selectedSecondSupplier IS NOT NULL
@@ -164,8 +167,8 @@ IF @RowsOfPage > 0 AND @PageNumber > 0
     SET @SQL = @SQL +' OFFSET (@PageNumber-1)*@RowsOfPage ROWS FETCH NEXT @RowsOfPage ROWS ONLY';
 
 EXEC sp_executesql @SQL,
-     N'@listId INT, @listName NVARCHAR(150), @rowsOfPage INT, @pageNumber INT, @Country NVARCHAR(255), @State NVARCHAR(255), @SubState NVARCHAR(255), @selectedSupplier NVARCHAR(255), @selectedSecondSupplier NVARCHAR(255), @selectedParentCompany NVARCHAR(255), @showRSPOCertified BIT, @SearchString NVARCHAR(255), @orderType NVARCHAR(255), @sortByAttribute NVARCHAR(255)',
-     @listId=@listId, @listName=@listName,@rowsOfPage=@rowsOfPage, @pageNumber=@pageNumber, @Country=@Country, @State=@State, @SubState=@SubState, @selectedSupplier=@selectedSupplier, @selectedSecondSupplier=@selectedSecondSupplier, @selectedParentCompany=@selectedParentCompany, @showRSPOCertified=@showRSPOCertified, @SearchString=@SearchString, @orderType=@orderType, @sortByAttribute=@sortByAttribute;
+     N'@listId INT, @listName NVARCHAR(150), @rowsOfPage INT, @pageNumber INT, @Country NVARCHAR(255), @State NVARCHAR(255), @SubState NVARCHAR(255), @hasError BIT, @selectedSupplier NVARCHAR(255), @selectedSecondSupplier NVARCHAR(255), @selectedParentCompany NVARCHAR(255), @showRSPOCertified BIT, @SearchString NVARCHAR(255), @orderType NVARCHAR(255), @sortByAttribute NVARCHAR(255)',
+     @listId=@listId, @listName=@listName,@rowsOfPage=@rowsOfPage, @pageNumber=@pageNumber, @Country=@Country, @State=@State, @SubState=@SubState, @hasError=@hasError,@selectedSupplier=@selectedSupplier, @selectedSecondSupplier=@selectedSecondSupplier, @selectedParentCompany=@selectedParentCompany, @showRSPOCertified=@showRSPOCertified, @SearchString=@SearchString, @orderType=@orderType, @sortByAttribute=@sortByAttribute;
 `;
 export class PaginatedAfiAnalysisByListIdSortedByFilters {
   listId: number;
@@ -189,4 +192,5 @@ export class PaginatedAfiAnalysisByListIdSortedByFilters {
   state: string;
   subState: string;
   totalRows: number;
+  errorDetails: string;
 }

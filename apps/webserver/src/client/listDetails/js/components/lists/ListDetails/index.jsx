@@ -2012,6 +2012,9 @@ export default class ListDetails extends Component {
 
     const locationsWithError = listData?.filter((x) => x.ErrorDetails);
 
+    const urlRegex = /^[^:]+:\/\/.+/;
+    const isListWithErrors = urlRegex.test(selectedLists[0]?.error_file_storage_path);
+
     return (
       <ThemeProvider>
         <div className="list-details">
@@ -2035,7 +2038,7 @@ export default class ListDetails extends Component {
               isFailedAnalysis={isFailedAnalysis}
               isAnalysisFailedByExceededAnalysisLimit={isAnalysisFailedByExceededAnalysisLimit}
               isListSubmittedForAnalysis={isListSubmittedForAnalysis}
-              isListWithErrors={selectedLists[0]?.error_file_storage_path}
+              isListWithErrors={isListWithErrors}
             />
           )}
           {bannerContent && (
@@ -2321,6 +2324,7 @@ export default class ListDetails extends Component {
                             protectedAreas={pAreas}
                             isGfwList={selectedList.isGlobalForestWatchList}
                             areAllAnalysesDraft={this.areAllAnalysesDraft()}
+                            isListWithErrors={isListWithErrors}
                           />
 
                           <section>

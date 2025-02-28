@@ -2,6 +2,7 @@ export const defaultFilterValues = {
   selectedCountry: '',
   selectedState: '',
   selectedSubState: '',
+  hasError: false,
   selectedCompany: '',
   selectedAreaMin: 0,
   selectedAreaMax: null,

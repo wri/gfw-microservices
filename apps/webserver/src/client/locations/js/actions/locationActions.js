@@ -114,10 +114,6 @@ export function updateSelectedLocations(data) {
   return { type: UPDATE_SELECTED_LOCATIONS, data };
 }
 
-export function updateSelectedAndVisibleLocations(data) {
-  return { type: UPDATE_SELECTED_AND_VISIBLE_LOCATIONS, data };
-}
-
 export function updateInfoBubbleCache(infoBubbleId, data) {
   return { type: UPDATE_INFO_BUBBLE_CACHE, infoBubbleId, data };
 }

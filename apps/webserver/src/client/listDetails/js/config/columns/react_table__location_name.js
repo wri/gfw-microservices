@@ -4,10 +4,7 @@ import { columnHeaders } from './columnHeaders.constants';
 import CustomTooltip from '../../../../common/js/components/CustomTooltip/CustomTooltip';
 import FailedTooltip from '../../../../common/js/components/CustomTooltip/FailedTooltip';
 import ColumnsHeader from '../../components/columns/ColumnsHeader';
-import featureFlags from '../../../../../utils/general.utils';
 import { listStatus } from '../../../../../config/env/listStatuses.constants';
-
-const { isListDetailsPageRedesignAvailable } = featureFlags;
 
 const react_table__location_name = [
   {
@@ -77,7 +74,7 @@ const react_table__location_name = [
                 placement="top"
                 label=""
                 tooltipMessage={locationsPage.columns.tooltipMessage}
-                reason={isListDetailsPageRedesignAvailable ? 'failed-location' : 'default'}
+                reason={'failed-location'}
               />
             </span>
           </span>

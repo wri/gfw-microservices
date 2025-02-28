@@ -1,5 +1,6 @@
 import React from 'react';
 import ReactTable from 'react-table';
+import { Box, Tooltip, useTheme } from '@mui/material';
 import cloneDeep from 'lodash/cloneDeep';
 import columns from '../../../config/columns';
 import CustomRow from './CustomRow';
@@ -41,30 +42,26 @@ const WrappedReactTable = ({
   setIsLoading,
   currentUser,
 }) => {
+  const theme = useTheme();
+
   const setRowProps = (state, rowInfo) => {
     // determine row background color based on location status
     function returnBgColor(id) {
-      switch (id) {
-        case listStatus.Inactive:
-          return 'rgba(242, 78, 30, 0.25)';
-        default:
-          return '';
+      if (rowInfo.original.ErrorDetails) {
+        return 'rgb(255,247,237)';
       }
+
+      return id === listStatus.Inactive ? 'rgba(242, 78, 30, 0.25)' : '';
     }
 
     // determine row text color based on location status
     function returnFgColor(id) {
-      switch (id) {
-        case listStatus.Inactive:
-          return '#F24E1E';
-        default:
-          return '';
-      }
+      return id === listStatus.Inactive ? theme.palette.error.main : '';
     }
     return {
       style: {
-        backgroundColor: rowInfo?.original && returnBgColor(rowInfo?.original?.location_status_id),
-        color: rowInfo?.original && returnFgColor(rowInfo?.original?.location_status_id),
+        backgroundColor: returnBgColor(rowInfo.original?.location_status_id),
+        color: returnFgColor(rowInfo.original?.location_status_id),
       },
       rowInfo: rowInfo.original,
 
@@ -214,13 +211,13 @@ const WrappedReactTable = ({
   }
 
   return (
-    <>
-      <div>
-        <ReactTable
-          className={`-highlight notranslate lists-react-table table__${listView}`}
-          {...reactTableOptions}
-          TrComponent={(props) => {
-            return (
+    <ReactTable
+      className={`-highlight notranslate lists-react-table table__${listView}`}
+      {...reactTableOptions}
+      TrComponent={(props) => {
+        return (
+          <Tooltip title={props.rowInfo?.ErrorDetails ?? ''} arrow placement="left">
+            <span>
               <CustomRow
                 isGfwList={isGfwList}
                 listId={listId}
@@ -242,11 +239,11 @@ const WrappedReactTable = ({
               >
                 {props.children}
               </CustomRow>
-            );
-          }}
-        />
-      </div>
-    </>
+            </span>
+          </Tooltip>
+        );
+      }}
+    />
   );
 };
 

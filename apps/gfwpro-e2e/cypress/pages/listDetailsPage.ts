@@ -16,6 +16,7 @@ class ListDetailsPage {
     copyBtn: () => cy.get('.MuiButton-primary'),
     editBtn: () => cy.contains('EDIT'),
     deleteBtn: () => cy.contains('Delete'),
+    createNewListText: () => cy.contains('Create new'),
     createNewListOptionRadioBtn: () => cy.get('.move-or-copy__option').last().find('input'),
     moveSectionOptionRadioBtn: () => cy.contains('label', 'Move'),
     inputCreateNewList: () => cy.get('[id="new-list-name"]'),
@@ -120,6 +121,7 @@ class ListDetailsPage {
       } else {
         this.clickOnCopyMoveBtn();
       }
+      this.elements.createNewListText().should('be.visible');
       this.clickOnCreateNewListRadioBtn();
       this.elements.inputCreateNewList().type(listName);
       this.clickOnSaveAsDraftBtn();

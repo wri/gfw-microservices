@@ -36,7 +36,7 @@ class ListDetailsPage {
     post2000Tab: () => cy.get('[data-cy="post-2000-tab"]'),
     palmRiskAssessmentTab: () => cy.get('[data-cy="palm-risk-assessment-tab"]'),
     hiddenElement: () => cy.get('.rt-tr-group').eq(0).find('.rt-td.default-cell.td-num').last(),
-    moreOptionsBtn: () => cy.get('data-cy="row-more-options-button"]').eq(1),
+    moreOptionsBtn: () => cy.get('[data-cy="row-more-options-button"]').eq(0),
   };
   clickOnLocationsList(name: string) {
     cy.contains(name).click();

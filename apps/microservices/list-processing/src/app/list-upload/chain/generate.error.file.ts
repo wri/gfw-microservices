@@ -57,9 +57,7 @@ export class GenerateErrorFile extends AbstractHandler<ChainType> {
         await this.s3Service.putObject(key, errorFilePath, bucket, 'text/csv');
         const url = await this.s3Service.getFileSignedUrl(key, 'csv', bucket);
 
-        // Truncate URL if necessary (assuming column length of 255)
-        const truncatedUrl = url.substring(0, 255);
-        await this.setListErrorFileStoragePath(organizationDatabase, listId, truncatedUrl);
+        await this.setListErrorFileStoragePath(organizationDatabase, listId, url);
       }
 
       return input;

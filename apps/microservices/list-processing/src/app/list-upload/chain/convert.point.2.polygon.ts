@@ -96,7 +96,7 @@ export class ConvertPoint2Polygon extends AbstractHandler<ChainType> {
       );
       const polygon = await this.geomFromLatLongRadiusArea(latitude, longitude, analysisRadius);
       delete feature.properties.geometry;
-      if (polygon !== null) {
+      if (polygon !== null && polygon !== undefined && polygon.rings.length > 0) {
         (feature.geometry as Polygon).coordinates = polygon.rings;
         (feature.geometry as Polygon).type = 'Polygon';
         feature.properties.analysisArea = analysisArea;

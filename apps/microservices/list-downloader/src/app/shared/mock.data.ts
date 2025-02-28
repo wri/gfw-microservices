@@ -5742,7 +5742,7 @@ export const ghgAnalysesData = [
     statusCode: 2,
     locationError: null,
     commodity: 'SOYB',
-    emissionsFactorByYear: '{"2021":120.8186,"2022":228.1142,"2023":0.0}',
+    combinedEmissionsFactor: '{"2021":120.8186,"2022":228.1142,"2023":0.0}',
   },
   {
     listId: 5642,
@@ -5752,7 +5752,7 @@ export const ghgAnalysesData = [
     statusCode: 2,
     locationError: null,
     commodity: 'SOYB',
-    emissionsFactorByYear: '{"2021":148.3792,"2022":243.5327,"2023":0.0}',
+    combinedEmissionsFactor: '{"2021":148.3792,"2022":243.5327,"2023":0.0}',
   },
   {
     listId: 5642,
@@ -5762,7 +5762,7 @@ export const ghgAnalysesData = [
     statusCode: 2,
     locationError: null,
     commodity: 'SOYB',
-    emissionsFactorByYear: '{"2021":148.3792,"2022":243.5327,"2023":0.0}',
+    combinedEmissionsFactor: '{"2021":148.3792,"2022":243.5327,"2023":0.0}',
   },
 ] as unknown as AfiAnalysisByListId[];
 
@@ -5775,7 +5775,7 @@ export const ghgAnalysesDataIncompleteRow = [
     statusCode: 2,
     locationError: null,
     commodity: 'SOYB',
-    emissionsFactorByYear: '{"2021":120.8186,"2022":228.1142,"2023":0.0}',
+    combinedEmissionsFactor: '{"2021":120.8186,"2022":228.1142,"2023":0.0}',
   },
   {
     listId: 5642,
@@ -5793,6 +5793,6 @@ export const ghgAnalysesDataIncompleteRow = [
     statusCode: 2,
     locationError: null,
     commodity: 'SOYB',
-    emissionsFactorByYear: '{"2021":148.3792,"2022":243.5327,"2023":0.0}',
+    combinedEmissionsFactor: '{"2021":148.3792,"2022":243.5327,"2023":0.0}',
   },
 ] as unknown as AfiAnalysisByListId[];

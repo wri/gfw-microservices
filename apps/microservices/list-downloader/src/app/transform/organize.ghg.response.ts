@@ -9,10 +9,16 @@ class OrganizeGreenHouseGasEmissionsResponse extends Transform {
     if (!chunk) {
       return next(null, undefined);
     }
-    const { listName, locationId, totalAreaHa, commodity, co2EmissionsFactor,
+    const {
+      listName,
+      locationId,
+      totalAreaHa,
+      commodity,
+      co2EmissionsFactor,
       ch4EmissionsFactor,
       n2oEmissionsFactor,
-      combinedEmissionsFactor } = chunk;
+      combinedEmissionsFactor,
+    } = chunk;
     const csvArray = [];
 
     // Convert Commodity to Human Readable
@@ -23,13 +29,13 @@ class OrganizeGreenHouseGasEmissionsResponse extends Transform {
       ? commodityHumanReadable.replace('GFWP_', '')
       : null;
 
-    if (listName && locationId && totalAreaHa && commodity ) {
+    if (listName && locationId && totalAreaHa && commodity && combinedEmissionsFactor) {
       const sharedInfo = [listName, locationId, totalAreaHa, commodityHumanReadable, 'dLUC'];
 
-      const co2Emissions = JSON.parse(co2EmissionsFactor ||{});
-      const ch4Emissions = JSON.parse(ch4EmissionsFactor || {});
-      const n2oEmissions = JSON.parse(n2oEmissionsFactor || {});
-      const combinedEmissions = JSON.parse(combinedEmissionsFactor ||{});
+      const co2Emissions = JSON.parse(co2EmissionsFactor || '{}');
+      const ch4Emissions = JSON.parse(ch4EmissionsFactor || '{}');
+      const n2oEmissions = JSON.parse(n2oEmissionsFactor || '{}');
+      const combinedEmissions = JSON.parse(combinedEmissionsFactor || '{}');
 
       const years = new Set([
         ...Object.keys(co2Emissions),
@@ -40,12 +46,12 @@ class OrganizeGreenHouseGasEmissionsResponse extends Transform {
 
       years.forEach((year) => {
         csvArray.push([
-        ...sharedInfo,
-        co2Emissions[year] || 0,
-        ch4Emissions[year] || 0,
-        n2oEmissions[year] || 0,
-        combinedEmissions[year] || 0,
-        year,
+          ...sharedInfo,
+          co2Emissions[year] || 0,
+          ch4Emissions[year] || 0,
+          n2oEmissions[year] || 0,
+          combinedEmissions[year] || 0,
+          year,
         ]);
       });
     }

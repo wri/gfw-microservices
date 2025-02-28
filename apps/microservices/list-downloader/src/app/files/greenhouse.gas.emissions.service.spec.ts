@@ -42,16 +42,16 @@ describe('Green House Gas Emissions Service - [Location level]', () => {
     const lines = csvData.toString().split('\n');
 
     expect(lines).toStrictEqual([
-      'List Name,Location Name,Location Size (HA),Commodity,Data Layer Name,Emissions Factor,year',
-      'kgTestCG3 927 all,2,1256.16,Soy Generic,dLUC,120.82,2021',
-      'kgTestCG3 927 all,2,1256.16,Soy Generic,dLUC,228.11,2022',
-      'kgTestCG3 927 all,2,1256.16,Soy Generic,dLUC,0,2023',
-      'kgTestCG3 927 all,3,1256.42,Soy Generic,dLUC,148.38,2021',
-      'kgTestCG3 927 all,3,1256.42,Soy Generic,dLUC,243.53,2022',
-      'kgTestCG3 927 all,3,1256.42,Soy Generic,dLUC,0,2023',
-      'kgTestCG3 927 all,1,1256.22,Soy Generic,dLUC,148.38,2021',
-      'kgTestCG3 927 all,1,1256.22,Soy Generic,dLUC,243.53,2022',
-      'kgTestCG3 927 all,1,1256.22,Soy Generic,dLUC,0,2023',
+      'List Name,Location Name,Location Size (Ha),Commodity,Data Layer Name,CO2 Emissions Factor,CH4 Emissions Factor,N2O Emissions Factor,Combined Emissions Factor,Year',
+      'kgTestCG3 927 all,2,1256.164682,Soy Generic,dLUC,0,0,0,120.8186,2021',
+      'kgTestCG3 927 all,2,1256.164682,Soy Generic,dLUC,0,0,0,228.1142,2022',
+      'kgTestCG3 927 all,2,1256.164682,Soy Generic,dLUC,0,0,0,0,2023',
+      'kgTestCG3 927 all,3,1256.42037,Soy Generic,dLUC,0,0,0,148.3792,2021',
+      'kgTestCG3 927 all,3,1256.42037,Soy Generic,dLUC,0,0,0,243.5327,2022',
+      'kgTestCG3 927 all,3,1256.42037,Soy Generic,dLUC,0,0,0,0,2023',
+      'kgTestCG3 927 all,1,1256.217339,Soy Generic,dLUC,0,0,0,148.3792,2021',
+      'kgTestCG3 927 all,1,1256.217339,Soy Generic,dLUC,0,0,0,243.5327,2022',
+      'kgTestCG3 927 all,1,1256.217339,Soy Generic,dLUC,0,0,0,0,2023',
       '',
     ]);
   });
@@ -64,7 +64,7 @@ describe('Green House Gas Emissions Service - [Location level]', () => {
     const csvData = fs.readFileSync(filePath, 'utf8');
     const lines = csvData.toString().split('\n');
     expect(lines).toStrictEqual([
-      'List Name,Location Name,Location Size (HA),Commodity,Data Layer Name,Emissions Factor,year',
+      'List Name,Location Name,Location Size (Ha),Commodity,Data Layer Name,CO2 Emissions Factor,CH4 Emissions Factor,N2O Emissions Factor,Combined Emissions Factor,Year',
       '',
     ]);
   });
@@ -78,7 +78,7 @@ describe('Green House Gas Emissions Service - [Location level]', () => {
     const lines = csvData.toString().split('\n');
 
     expect(lines).toStrictEqual([
-      'List Name,Location Name,Location Size (HA),Commodity,Data Layer Name,Emissions Factor,year',
+      'List Name,Location Name,Location Size (Ha),Commodity,Data Layer Name,CO2 Emissions Factor,CH4 Emissions Factor,N2O Emissions Factor,Combined Emissions Factor,Year',
       '',
     ]);
   });
@@ -90,13 +90,13 @@ describe('Green House Gas Emissions Service - [Location level]', () => {
     const csvData = fs.readFileSync(filePath, 'utf8');
     const lines = csvData.toString().split('\n');
     expect(lines).toStrictEqual([
-      'List Name,Location Name,Location Size (HA),Commodity,Data Layer Name,Emissions Factor,year',
-      'kgTestCG3 927 all,2,1256.16,Soy Generic,dLUC,120.82,2021',
-      'kgTestCG3 927 all,2,1256.16,Soy Generic,dLUC,228.11,2022',
-      'kgTestCG3 927 all,2,1256.16,Soy Generic,dLUC,0,2023',
-      'kgTestCG3 927 all,1,1256.22,Soy Generic,dLUC,148.38,2021',
-      'kgTestCG3 927 all,1,1256.22,Soy Generic,dLUC,243.53,2022',
-      'kgTestCG3 927 all,1,1256.22,Soy Generic,dLUC,0,2023',
+      'List Name,Location Name,Location Size (Ha),Commodity,Data Layer Name,CO2 Emissions Factor,CH4 Emissions Factor,N2O Emissions Factor,Combined Emissions Factor,Year',
+      'kgTestCG3 927 all,2,1256.164682,Soy Generic,dLUC,0,0,0,120.8186,2021',
+      'kgTestCG3 927 all,2,1256.164682,Soy Generic,dLUC,0,0,0,228.1142,2022',
+      'kgTestCG3 927 all,2,1256.164682,Soy Generic,dLUC,0,0,0,0,2023',
+      'kgTestCG3 927 all,1,1256.217339,Soy Generic,dLUC,0,0,0,148.3792,2021',
+      'kgTestCG3 927 all,1,1256.217339,Soy Generic,dLUC,0,0,0,243.5327,2022',
+      'kgTestCG3 927 all,1,1256.217339,Soy Generic,dLUC,0,0,0,0,2023',
       '',
     ]);
   });

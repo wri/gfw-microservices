@@ -346,14 +346,14 @@ export class DeleteListTypeOrm {
     } else {
       const activityLogRepository = connection.getRepository(ActivityLog);
       try {
-        // Try to delete list's attributes
+        // Try to delete list's tables
         try {
           await connection.query(`DROP TABLE IF EXISTS [${listTableName}]`);
           await connection.query(`DROP TABLE IF EXISTS [${listAnalysisTableName}]`);
         } catch (error) {
           this.logger.error('DeleteList failure drop tables', error);
           throw new InternalServerErrorException({
-            message: `Failed to delete attributes from list id ${list_id}`,
+            message: `Failed to delete tables from list id ${list_id}`,
             code: 603,
           });
         }
@@ -379,6 +379,16 @@ export class DeleteListTypeOrm {
           this.logger.error('DeleteList failure Lists', error);
           throw new InternalServerErrorException({
             message: `Failed to delete list ${list_id}`,
+            code: 603,
+          });
+        }
+        // delete list associated attributes rows
+        try {
+          await connection.query(`DELETE FROM [ListAttributes] WHERE list_id = ${list_id}`);
+        } catch (error) {
+          this.logger.error('DELETE [ListAttributes] rows failed for list', error.stack || error);
+          throw new InternalServerErrorException({
+            message: `Failed to delete [ListAttributes] rows for list ${list_id}`,
             code: 603,
           });
         }

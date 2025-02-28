@@ -24,7 +24,7 @@ describe('[GET] /ghg/:listId/number-of-pages', () => {
     await app.init();
   });
 
-  it(`when database return data`, async () => {
+  it(`when database return paginated data`, async () => {
     jest.spyOn(clientStoreConnection, 'getConnection').mockImplementation();
     jest.spyOn(ghgService, 'getNumberOfPagesGHGAnalysis').mockImplementation(() => {
       return new Promise((resolve) => {
@@ -141,7 +141,10 @@ describe('[GET] /ghg/:listId/data-per-page', () => {
             statusCode: 200,
             locationError: null,
             commodity: 'SOYB',
-            emissionsFactorByYear: '{"2021":0.5839,"2022":0.1825,"2023":0.3258}',
+            combinedEmissionsFactor: '{"2021":0.5839,"2022":0.1825,"2023":0.3258}',
+            co2EmissionsFactor: '{}',
+            ch4EmissionsFactor: '{}',
+            n2oEmissionsFactor: '{}'
           },
         ]);
       });
@@ -161,7 +164,10 @@ describe('[GET] /ghg/:listId/data-per-page', () => {
         statusCode: 200,
         locationError: null,
         commodity: 'SOYB',
-        emissionsFactorByYear: '{"2021":0.5839,"2022":0.1825,"2023":0.3258}',
+        combinedEmissionsFactor: '{"2021":0.5839,"2022":0.1825,"2023":0.3258}',
+        co2EmissionsFactor: '{}',
+        ch4EmissionsFactor: '{}',
+        n2oEmissionsFactor: '{}'
       },
     ]);
 

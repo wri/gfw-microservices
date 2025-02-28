@@ -19,14 +19,14 @@ describe('OrganizeGreenHouseGasEmissionsResponse', () => {
         statusCode: 2,
         locationError: null,
         commodity: 'Soybeans',
-        emissionsFactorByYear: '{"2021":120.8186,"2022":228.1142,"2023":0.0}',
+        combinedEmissionsFactor: '{"2021":120.8186,"2022":228.1142,"2023":0.0}',
       },
       '',
       (err, data) => {
         expect(data).toEqual([
-          ['kgTestCG3 927 all', 2, 1256.1646821446757, 'Soybeans', 'dLUC', 120.8186, '2021'],
-          ['kgTestCG3 927 all', 2, 1256.1646821446757, 'Soybeans', 'dLUC', 228.1142, '2022'],
-          ['kgTestCG3 927 all', 2, 1256.1646821446757, 'Soybeans', 'dLUC', 0, '2023'],
+          ['kgTestCG3 927 all', 2, 1256.1646821446757, 'Soybeans', 'dLUC', 0,0,0,120.8186, '2021'],
+          ['kgTestCG3 927 all', 2, 1256.1646821446757, 'Soybeans', 'dLUC', 0,0,0,228.1142, '2022'],
+          ['kgTestCG3 927 all', 2, 1256.1646821446757, 'Soybeans', 'dLUC', 0,0,0,0, '2023'],
         ]);
       }
     );
@@ -42,7 +42,7 @@ describe('OrganizeGreenHouseGasEmissionsResponse', () => {
         totalAreaHa: 1256.1646821446757,
         statusCode: 2,
         locationError: null,
-        emissionsFactorByYear: '{"2021":120.8186,"2022":228.1142,"2023":0.0}',
+        combinedEmissionsFactor: '{"2021":120.8186,"2022":228.1142,"2023":0.0}',
       },
       '',
       (err, data) => {

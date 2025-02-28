@@ -1,6 +1,6 @@
 import React from 'react';
 import ReactTable from 'react-table';
-import { Box, Tooltip, useTheme } from '@mui/material';
+import { Tooltip, useTheme } from '@mui/material';
 import cloneDeep from 'lodash/cloneDeep';
 import columns from '../../../config/columns';
 import CustomRow from './CustomRow';

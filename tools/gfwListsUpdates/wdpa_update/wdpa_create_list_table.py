@@ -28,7 +28,7 @@ def prep_data(gdf):
     gdf = gdf.rename(columns=rename_dict)
 
     # Generate other required columns
-    gdf["location_id"] = gdf["id"]
+    gdf["id"] = gdf["location_id"]
     gdf["Longitude"] = gdf.centroid.x
     gdf["Latitude"] = gdf.centroid.y
     gdf["Location Classification"] = ""

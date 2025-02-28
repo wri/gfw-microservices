@@ -23,6 +23,9 @@ export class ListAnalysisResponse {
 
   @ApiProperty()
   expirationDate: Date;
+
+  @ApiProperty()
+  locationsWithErrors?: Array<{ locationName: string; errorDetails: string }>;
 }
 
 const dateFormat = z.string().transform((value) => {

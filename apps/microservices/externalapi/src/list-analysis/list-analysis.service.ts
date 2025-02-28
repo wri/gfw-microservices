@@ -45,7 +45,7 @@ import { ListService } from '../lists/lists.service';
 import { ServerConfigType } from '../validators/server-config';
 import { SaveActivityLogEndpoint } from './utils/saveActivityLogEndpoint';
 import { handleCreateAnalysis, isValidMapSpamCommodity } from '@wri-monorepos/geo';
-import { EntitySchema } from 'typeorm';
+import { EntitySchema, IsNull, Not } from 'typeorm';
 import {
   ListSchema,
   ListSchemaType,
@@ -193,6 +193,43 @@ export class ListAnalysisService {
       }
     }
     return analysisStatus;
+  }
+
+  async getLocationsErrors({
+    listId,
+    organizationId,
+  }: {
+    listId: number;
+    organizationId: number;
+  }): Promise<Array<{ locationName: string; errorDetails: string }>> {
+    const organizationDetails = await this.getOrganizationDetails(organizationId);
+    const connection = await this.createOrganizationConnection(organizationDetails);
+
+    const list = await this.listService.getList({
+      listId,
+      organizationId,
+    });
+
+    if (!list) {
+      throw new NotFoundException('List not found');
+    }
+
+    const listTable = list.listTableName;
+
+    const ListEntity = new EntitySchema<ListSchemaType>({
+      ...ListSchema,
+      name: listTable,
+    });
+
+    const listTableNameRepository = await connection.getRepository(ListEntity);
+    const locationsWithErrors = await listTableNameRepository.find({
+      select: ['locationName', 'errorDetails'],
+      where: {
+        errorDetails: Not(IsNull()),
+      },
+    });
+
+    return locationsWithErrors;
   }
 
   async prepareUpload({

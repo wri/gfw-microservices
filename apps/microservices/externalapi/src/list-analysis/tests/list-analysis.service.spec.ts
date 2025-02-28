@@ -1,3 +1,4 @@
+/* eslint-disable no-undef */
 import { Test, TestingModule } from '@nestjs/testing';
 import { ListAnalysisService } from '../list-analysis.service';
 import { TypeOrmModule } from '@nestjs/typeorm';

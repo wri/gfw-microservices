@@ -6,17 +6,8 @@ import { changeView, selectFolder } from '../../../locations/js/actions/location
 import store from '../../../locations/js/store';
 import { locationsPage } from '../../../common/js/config';
 import { analysisTypesOptionsNewNames } from '../../../../config/env/analysisTypes.constants';
-import featureFlags from '../../../../utils/general.utils';
 
-const { isListDetailsPageRedesignAvailable } = featureFlags;
-
-function DiagnosticsBreadCrumbs({
-  selectedList,
-  diagnosticName = '',
-  isSharedList = false,
-  isGfwList,
-  analysisId,
-}) {
+function DiagnosticsBreadCrumbs({ selectedList, isSharedList = false, isGfwList, analysisId }) {
   const history = useHistory();
   const { list_name, id } = selectedList;
 
@@ -36,9 +27,7 @@ function DiagnosticsBreadCrumbs({
     ({ id }) => id === analysisId
   )?.shortLabel;
 
-  const diagnosticPath = isListDetailsPageRedesignAvailable
-    ? `${diagnosticLabel} diagnostic`
-    : diagnosticName;
+  const diagnosticPath = `${diagnosticLabel} diagnostic`;
 
   return (
     <Breadcrumbs>

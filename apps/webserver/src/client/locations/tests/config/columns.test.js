@@ -26,10 +26,6 @@ const runSortTests = (sortMethod) => {
   });
 };
 describe('columns', () => {
-  describe('forest_change_locations', () => {
-    runSortTests(columns.forest_change_locations[0].sortMethod);
-  });
-
   describe('forest_change_analysis - tree_cover_extent_total', () => {
     runSortTests(columns.forest_change_analysis[0].sortMethod);
   });

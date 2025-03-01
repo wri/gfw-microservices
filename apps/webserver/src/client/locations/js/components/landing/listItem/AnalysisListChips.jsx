@@ -1,22 +1,13 @@
 import React from 'react';
 import Chip from '@mui/material/Chip';
 import RefreshIcon from '@mui/icons-material/Refresh';
-import {
-  analysisTypesOptions,
-  analysisTypesOptionsNewNames,
-} from '../../../../../../config/env/analysisTypes.constants';
+import { analysisTypesOptionsNewNames } from '../../../../../../config/env/analysisTypes.constants';
 import { listStatus } from '../../../../../../config/env/listStatuses.constants';
-import featureFlags from '../../../../../../utils/general.utils';
 import '../../../../css/analysisChips.scss';
 
 function AnalysisListChips({ listAnalysesStatus = [] }) {
-  const { isListDetailsPageRedesignAvailable } = featureFlags;
-  const analysisOptions = isListDetailsPageRedesignAvailable
-    ? analysisTypesOptionsNewNames
-    : analysisTypesOptions;
-
   const analysisTypesLabels = (analysis) => {
-    return analysisOptions.filter((option) => option.id === analysis)?.[0]?.shortLabel;
+    return analysisTypesOptionsNewNames.filter((option) => option.id === analysis)?.[0]?.shortLabel;
   };
 
   return (

@@ -12,10 +12,8 @@ import {
   locationIsActive,
   calculateAndFormatTotalDeforestation,
 } from '../../../../locations/js/utils/locationsTableUtils';
-import featureFlags from '../../../../../utils/general.utils';
 import infoBubbleConfig from '../../../../common/js/infoBubbleConfig.constants';
 
-const { isListDetailsPageRedesignAvailable } = featureFlags;
 const transifex = Transifex.live.translateText;
 
 const forest_change_analysis = [
@@ -51,7 +49,7 @@ const forest_change_analysis = [
       return sortStatus;
     },
 
-    sortable: !isListDetailsPageRedesignAvailable,
+    sortable: false,
   },
   {
     Header: () => (
@@ -80,20 +78,11 @@ const forest_change_analysis = [
         Cell: (row) => {
           const { tree_cover_loss_total_yearly, tree_cover_extent_total } = row.value;
 
-          if (
-            (!locationIsActive(row.value) || !checkValid(tree_cover_loss_total_yearly)) &&
-            !isListDetailsPageRedesignAvailable
-          ) {
-            return '0%';
-          }
-
           const value = getValue(tree_cover_loss_total_yearly);
-          const formattedValue = isListDetailsPageRedesignAvailable
-            ? calculateAndFormatTotalDeforestation(
-                tree_cover_extent_total,
-                tree_cover_loss_total_yearly
-              )
-            : value;
+          const formattedValue = calculateAndFormatTotalDeforestation(
+            tree_cover_extent_total,
+            tree_cover_loss_total_yearly
+          );
 
           return <span title={value}>{formattedValue}</span>;
         },
@@ -108,7 +97,7 @@ const forest_change_analysis = [
 
           return sortStatus;
         },
-        sortable: !isListDetailsPageRedesignAvailable,
+        sortable: false,
       },
       {
         id: 'tree_cover_loss_primary_forest_yearly',
@@ -130,24 +119,15 @@ const forest_change_analysis = [
             tree_cover_extent_total,
           } = row.value;
 
-          if (
-            (!locationIsActive(row.value) || !checkValid(tree_cover_loss_primary_forest_yearly)) &&
-            !isListDetailsPageRedesignAvailable
-          ) {
-            return '0%';
-          }
-
           const validatedValue = getValidatedValue(
             tree_cover_loss_primary_forest_yearly,
             natural_habitat_primary
           );
-          const formattedValue = isListDetailsPageRedesignAvailable
-            ? calculateAndFormatTotalDeforestation(
-                tree_cover_extent_total,
-                tree_cover_loss_primary_forest_yearly,
-                natural_habitat_primary
-              )
-            : validatedValue;
+          const formattedValue = calculateAndFormatTotalDeforestation(
+            tree_cover_extent_total,
+            tree_cover_loss_primary_forest_yearly,
+            natural_habitat_primary
+          );
 
           return <span title={validatedValue}>{formattedValue}</span>;
         },
@@ -162,7 +142,7 @@ const forest_change_analysis = [
 
           return sortStatus;
         },
-        sortable: !isListDetailsPageRedesignAvailable,
+        sortable: false,
       },
     ],
   },

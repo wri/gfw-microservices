@@ -29,7 +29,21 @@ describe('Upload File Csv', () => {
 
   When('I click on the Drop file button and drag a CSV file', () => {
     cy.uploadFile(csv, 'application/vnd.google-earth.csv+xml');
+    locationPage.elements.fileAddedSuccess().should('be.visible');
     locationPage.clickOnNextBtn();
+  });
+
+  Then('I should see a list preview', () => {
+    locationPage.elements.titleListPreview().should('be.visible');
+    locationPage.elements.backBtn().should('be.visible');
+    locationPage.elements.cancelBtn().should('be.visible');
+    locationPage.elements.titleListPreview().should('be.visible');
+    locationPage.elements.locationNameColumn().should('be.visible');
+    locationPage.elements.analysisRadiusColumn().should('be.visible');
+    locationPage.elements.analysisAreaColumn().should('be.visible');
+    locationPage.elements.latitudeColumn().should('be.visible');
+    locationPage.elements.longitudeColumn().should('be.visible');
+    locationPage.elements.stateColumn().should('be.visible');
     locationPage.clickOnNextBtn();
   });
 

@@ -6,5 +6,6 @@ Feature: User can upload a location
   When I click on the Add Location button
   And I select the file upload option
   When I click on the Drop file button and drag a CSV file
+  Then I should see a list preview
   Then I complete the form and confirm the upload
   Then I should see the completion legend

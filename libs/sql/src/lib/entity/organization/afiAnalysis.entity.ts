@@ -30,7 +30,7 @@ export class AFIAnalysis {
   @Column({ name: 'negligible_risk' })
   negligible_risk: number;
 
-  @Column({ name: 'jrc_land_area' , type: 'float'})
+  @Column({ name: 'jrc_land_area', type: 'float' })
   jrc_land_area: number;
 
   @Column({ name: 'jrc_land_deforested_area', type: 'float' })
@@ -45,6 +45,6 @@ export class AFIAnalysis {
   @Column({ name: 'protected_areas_area' })
   protected_areas_area: number;
 
-  @Column({ name: 'landmark_area' , type: 'float'})
+  @Column({ name: 'landmark_area', type: 'float' })
   landmark_area: number;
 }

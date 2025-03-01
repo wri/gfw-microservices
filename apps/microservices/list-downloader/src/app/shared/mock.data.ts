@@ -5742,6 +5742,9 @@ export const ghgAnalysesData = [
     statusCode: 2,
     locationError: null,
     commodity: 'SOYB',
+    co2EmissionsFactor: '{"2021":20.8186,"2022":28.1142,"2023":10.0}',
+    ch4EmissionsFactor: '{"2021":220.8186,"2022":228.1142,"2023":20.0}',
+    n2oEmissionsFactor: '{"2021":320.8186,"2022":328.1142,"2023":3.0}',
     combinedEmissionsFactor: '{"2021":120.8186,"2022":228.1142,"2023":0.0}',
   },
   {
@@ -5752,6 +5755,9 @@ export const ghgAnalysesData = [
     statusCode: 2,
     locationError: null,
     commodity: 'SOYB',
+    co2EmissionsFactor: '{"2021":40.8186,"2022":48.1142,"2023":410.0}',
+    ch4EmissionsFactor: '{"2021":420.8186,"2022":428.1142,"2023":420.0}',
+    n2oEmissionsFactor: '{"2021":420.8186,"2022":428.1142,"2023":43.0}',
     combinedEmissionsFactor: '{"2021":148.3792,"2022":243.5327,"2023":0.0}',
   },
   {
@@ -5762,6 +5768,9 @@ export const ghgAnalysesData = [
     statusCode: 2,
     locationError: null,
     commodity: 'SOYB',
+    co2EmissionsFactor: '{"2021":50.8186,"2022":58.1142,"2023":510.0}',
+    ch4EmissionsFactor: '{"2021":520.8186,"2022":528.1142,"2023":520.0}',
+    n2oEmissionsFactor: '{"2021":520.8186,"2022":528.1142,"2023":53.0}',
     combinedEmissionsFactor: '{"2021":148.3792,"2022":243.5327,"2023":0.0}',
   },
 ] as unknown as AfiAnalysisByListId[];
@@ -5775,6 +5784,9 @@ export const ghgAnalysesDataIncompleteRow = [
     statusCode: 2,
     locationError: null,
     commodity: 'SOYB',
+    co2EmissionsFactor: '{"2021":50.8186,"2022":58.1142,"2023":510.0}',
+    ch4EmissionsFactor: '{"2021":520.8186,"2022":528.1142,"2023":520.0}',
+    n2oEmissionsFactor: '{"2021":520.8186,"2022":528.1142,"2023":53.0}',
     combinedEmissionsFactor: '{"2021":120.8186,"2022":228.1142,"2023":0.0}',
   },
   {
@@ -5783,6 +5795,9 @@ export const ghgAnalysesDataIncompleteRow = [
     locationId: 3,
     totalAreaHa: 1256.4203696590005,
     statusCode: 2,
+    co2EmissionsFactor: '{"2021":50.8186,"2022":58.1142,"2023":510.0}',
+    ch4EmissionsFactor: '{"2021":520.8186,"2022":528.1142,"2023":53.0}',
+    n2oEmissionsFactor: '{"2021":520.8186,"2022":528.1142,"2023":520.0}',
     locationError: null,
   },
   {
@@ -5793,6 +5808,9 @@ export const ghgAnalysesDataIncompleteRow = [
     statusCode: 2,
     locationError: null,
     commodity: 'SOYB',
+    co2EmissionsFactor: '{"2021":50.8186,"2022":58.1142,"2023":510.0}',
+    ch4EmissionsFactor: '{"2021":520.8186,"2022":528.1142,"2023":53.0}',
+    n2oEmissionsFactor: '{"2021":520.8186,"2022":528.1142,"2023":520.0}',
     combinedEmissionsFactor: '{"2021":148.3792,"2022":243.5327,"2023":0.0}',
   },
 ] as unknown as AfiAnalysisByListId[];

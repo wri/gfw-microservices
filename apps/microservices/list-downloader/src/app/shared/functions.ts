@@ -110,13 +110,8 @@ export const isObjInCountryFormat = (data) => {
 
 export const getTotalArea = (data, countryGadm) => {
   const countryArea = JSON.parse(data.country_area || '{}');
-  const isDataInCountryFormat = isObjInCountryFormat(countryArea);
 
-  if (isDataInCountryFormat) {
-    return countryArea[countryGadm] ?? 0;
-  }
-
-  return data.total_area;
+  return countryArea[countryGadm] ?? 0;
 };
 
 export const shouldGenerateArgentinaCsv = ({

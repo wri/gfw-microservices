@@ -1904,9 +1904,12 @@ export const ACCOUNT_USERS_USAGE_CSV_HEADER = [
 export const GREEN_HOUSE_GAS_EMISSIONS_HEADER = {
   listName: 'List Name',
   locationName: 'Location Name',
-  locationSizeHa: 'Location Size (HA)',
+  locationSizeHa: 'Location Size (Ha)',
   commodity: 'Commodity',
   dataLayerName: 'Data Layer Name',
-  emissionsFactorTonesCO2: 'Emissions Factor',
-  year: 'year',
+  co2EmissionsFactor: 'CO2 Emissions Factor',
+  ch4EmissionsFactor: 'CH4 Emissions Factor',
+  n2oEmissionsFactor: 'N2O Emissions Factor',
+  CombinedEmissionsFactor: 'Combined Emissions Factor',
+  year: 'Year',
 };

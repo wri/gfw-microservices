@@ -387,6 +387,11 @@ export const AnalysisSchema = {
       name: 'tree_cover_loss_by_country_landmark_yearly',
       nullable: true,
     },
+    locationError: {
+      type: String,
+      name: 'location_error',
+      nullable: true,
+    }
   },
 };
 
@@ -469,4 +474,5 @@ export interface AnalysisSchemaType {
   treeCoverLossSeaLandcoverYearly: string;
   treeCoverLossSoyYearly: string;
   treeCoverLossTotalYearly: string;
+  locationError: string;
 }

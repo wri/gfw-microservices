@@ -63,8 +63,16 @@ def main(path_to_fgdb, list_id, split_into=1):
     gdf = gpd.read_file(path_to_fgdb, driver="FileGDB", layer="poly_gadm").set_crs(4326)
     print("loaded location_id dataframe")
 
+    # Cleaning and filter
+    # gdf = gdf.dropna(subset=["geometry"]).copy()
+    # gdf = gdf[~gdf.geometry.is_empty].copy()
+    # gdf = gdf[gdf.is_valid].copy()
+
+    #  no copy
+    # gdf = gdf.dropna(subset=["geometry"])
+    # gdf = gdf[~gdf.geometry.is_empty]
+
     gdf["list_id"] = list_id
-    gdf["location_id"] = gdf["id"]
 
     print("creating in memory grid")
     grid = createGrid(degrees=1)
@@ -111,5 +119,5 @@ def main(path_to_fgdb, list_id, split_into=1):
 if __name__ == "__main__":
     """This is executed when run from the command line"""
     # Example usage: main(cfg.fgdb_path, 4, split_into=5)
-    main(path_to_fgdb=cfg.fgdb_path, list_id=4, split_into=2)
+    main(path_to_fgdb=cfg.fgdb_path, list_id=4, split_into=1)
     print("done")

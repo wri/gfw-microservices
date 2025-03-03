@@ -45,7 +45,7 @@ describe('Argentina Layers Parser', () => {
         ],
       },
       data: {
-        total_area: 15,
+        country_area: '{ "ARG": 15 }',
         arg_otbn_area: '{ "cat1": 1, "cat2": 2, "cat3": 3, "cat4": 4, "cat5": 5  }',
       },
       dataRow: [],
@@ -78,7 +78,7 @@ describe('Argentina Layers Parser', () => {
         ],
       },
       data: {
-        total_area: 15,
+        country_area: '{ "ARG": 15 }',
         arg_otbn_area: '{ "cat1": 1, "cat2": 2, "cat3": 3, "cat4": 4, "cat5": 5  }',
       },
       dataRow: [],
@@ -119,7 +119,7 @@ describe('Argentina Layers Parser', () => {
         ],
       },
       data: {
-        total_area: 5,
+        country_area: '{ "ARG": 5 }',
         arg_otbn_area: '{ "cat1": 1, "cat2": 2, "cat3": 3 }',
         protected_areas_by_category_area: '{ "cat1": 1, "cat2": 2 }',
         landmark_by_category_area: '{ "Not Reported": 1 }',
@@ -166,7 +166,7 @@ describe('Argentina Layers Parser', () => {
         ],
       },
       data: {
-        total_area: 5,
+        country_area: '{ "ARG": 5 }',
         arg_otbn_area: '{ "cat1": 1, "cat2": 2, "cat3": 3 }',
         protected_areas_by_category_area: '{ "cat1": 1, "cat2": 2 }',
         landmark_by_category_area: '{ "Not Reported": 1 }',
@@ -203,7 +203,7 @@ describe('Argentina Layers Parser', () => {
         ],
       },
       data: {
-        total_area: 15,
+        country_area: '{ "ARG": 15 }',
         arg_otbn_area: '{ "cat1": 1, "cat2": 2, "cat3": 3, "cat4": 4, "cat5": 5  }',
       },
       dataRow: ['test', 'wri', 1],
@@ -235,7 +235,7 @@ describe('Argentina Layers Parser', () => {
       },
       data: {
         arg_otbn_area: '{ "cat1": 0, "cat2": 0, "cat3": 0, "cat4": 0, "cat5": 0  }',
-        total_area: 0,
+        country_area: '{}',
         protected_areas_by_category_area: '{ "cat1": 1, "cat2": 2 }',
         landmark_by_category_area: '{ "Not Reported": 0 }',
       },
@@ -276,7 +276,7 @@ describe('Argentina Layers Parser', () => {
           '{ "ARG": { "cat1": 10, "cat2": 35, "cat3": 5 }, "COL": { "cat1": 1, "cat2": 2, "cat3": 3 } }',
         landmark_by_category_area:
           '{ "ARG": { "dog1": 30, "dog2": 5, "dog3": 15 }, "COL": { "dog1": 1, "dog2": 2, "dog3": 3 } }',
-        total_area: 50,
+        country_area: '{ "ARG": 50 }',
       },
       dataRow: ['wri', 1],
       csvData,

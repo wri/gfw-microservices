@@ -48,8 +48,7 @@ export class GreenHouseGasEmissionsService extends IPipeService {
 
     const pipeline: Array<Transform> = [
       new OrganizeGreenHouseGasEmissionsResponse(),
-      // 2 decimal places defined
-      new FormatNumber(2),
+      new FormatNumber(),
       new ConvertObject2CSV(allFields),
     ];
 

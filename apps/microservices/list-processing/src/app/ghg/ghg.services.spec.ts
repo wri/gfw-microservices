@@ -88,6 +88,9 @@ describe('GHG - service', () => {
         locationError: null,
         commodity: 'COCOA',
         emissionsFactorByYear: '{"2021":0.5839,"2022":0.1825,"2023":0.3258}',
+        efCo2ByYear: '{}',
+        efCh4ByYear: '{}',
+        efN2oByYear: '{}',
       },
       {
         listId: 1,
@@ -98,6 +101,9 @@ describe('GHG - service', () => {
         locationError: null,
         commodity: 'COCOA',
         emissionsFactorByYear: '{"2021":0.5839,"2022":0.1825,"2023":0.4258}',
+        efCo2ByYear: '{}',
+        efCh4ByYear: '{}',
+        efN2oByYear: '{}',
       },
     ];
     const listId = 1;
@@ -124,7 +130,10 @@ describe('GHG - service', () => {
         statusCode: 2,
         locationError: null,
         commodity: 'COCOA',
-        emissionsFactorByYear: '{"2021":0.5839,"2022":0.1825,"2023":0.3258}',
+        combinedEmissionsFactor: '{"2021":0.5839,"2022":0.1825,"2023":0.3258}',
+        ch4EmissionsFactor: '{}',
+        co2EmissionsFactor: '{}',
+        n2oEmissionsFactor: '{}',
       },
       {
         listId: 1,
@@ -134,7 +143,10 @@ describe('GHG - service', () => {
         statusCode: 2,
         locationError: null,
         commodity: 'COCOA',
-        emissionsFactorByYear: '{"2021":0.5839,"2022":0.1825,"2023":0.4258}',
+        combinedEmissionsFactor: '{"2021":0.5839,"2022":0.1825,"2023":0.4258}',
+        ch4EmissionsFactor: '{}',
+        co2EmissionsFactor: '{}',
+        n2oEmissionsFactor: '{}',
       },
     ]);
   });

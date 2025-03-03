@@ -391,7 +391,7 @@ export const AnalysisSchema = {
       type: String,
       name: 'location_error',
       nullable: true,
-    }
+    },
   },
 };
 

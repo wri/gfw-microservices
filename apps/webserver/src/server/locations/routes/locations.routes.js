@@ -777,103 +777,71 @@ module.exports = (app, limiter) => {
 
   app.post('/locations/getGFWListLocationData', (req, res) => {
     console.log('POST /locations/getGFWListLocationData');
-    const {
-      list_id,
-      location_ids,
-      pageNum,
-      pageSize,
-      filters,
-      filterString,
-      tableSortedBy,
-      tableSortedDesc,
-    } = req.body;
+    const { list_id, pageNum, pageSize, filters, filterString, tableSortedBy, tableSortedDesc } =
+      req.body;
     const listAnalyses = [];
     const locationAttributeArray = [];
     const locationAnalysisArray = [];
-    if (pageNum || pageSize) {
-      const selectedOverallThreats = mapCommodityRiskValuesToDatabaseValues(
-        filters.selectedOverallThreats
-      );
-      const selectedOverallValues = mapCommodityRiskValuesToDatabaseValues(
-        filters.selectedOverallValues
-      );
-      const selectedMillPriority = mapCommodityRiskValuesToDatabaseValues(
-        filters.selectedMillPriority
-      );
 
-      const filtersWithDatabaseValues = {
-        ...filters,
-        selectedOverallThreats,
-        selectedOverallValues,
-        selectedMillPriority,
-      };
+    const selectedOverallThreats = mapCommodityRiskValuesToDatabaseValues(
+      filters.selectedOverallThreats
+    );
+    const selectedOverallValues = mapCommodityRiskValuesToDatabaseValues(
+      filters.selectedOverallValues
+    );
+    const selectedMillPriority = mapCommodityRiskValuesToDatabaseValues(
+      filters.selectedMillPriority
+    );
 
-      GFWListManager.getPaginatedTable(
-        req,
-        pageNum,
-        pageSize,
-        list_id,
-        filtersWithDatabaseValues,
-        filterString,
-        tableSortedBy,
-        tableSortedDesc
-      )
-        .then((response) => {
-          const [noGeomData, gfwListAnalysesData, gfwLocationsAnalysesData, count] = response;
-          locationAttributeArray.push(...noGeomData);
-          locationAnalysisArray.push(...gfwLocationsAnalysesData);
-          listAnalyses.push(...gfwListAnalysesData);
-          if (noGeomData.length === 0) {
-            return res.send({
-              list_analysis: [],
-              location_analyses: [],
-              numberOfResults: 0,
-            });
-          }
-          const numberOfPages =
-            count % pageSize === 0 ? count / pageSize : Math.floor(count / pageSize) + 1;
-          LocationManager.getLocationAttributesList(req, locationAttributeArray, true)
-            .then((locationAttributeList) => {
-              return res.send({
-                list_analysis: listAnalyses,
-                location_analyses: [locationAttributeList, locationAnalysisArray],
-                numberOfResults: count,
-                numberOfPages,
-              });
-            })
-            .catch((err) => {
-              console.log('Error /locations/getGFWListLocationData', err);
-              res.status(err.status || 500).send(err.message);
-            });
-        })
-        .catch((err) => {
-          console.log('Error /locations/getGFWListLocationData', err);
-          res.status(err.status || 500).send(err.message);
-        });
-    } else {
-      Promise.all([
-        GFWListManager.getGFWListLocationsNoGeom(req, list_id, location_ids),
-        AnalysisManager.getAnalysisDataForGFWList(req, list_id, location_ids),
-        AnalysisManager.getGFWListAnalyses(req, list_id),
-      ]).then((response) => {
-        const [noGeomData, gfwListAnalysesData, gfwLocationsAnalysesData] = response;
+    const filtersWithDatabaseValues = {
+      ...filters,
+      selectedOverallThreats,
+      selectedOverallValues,
+      selectedMillPriority,
+    };
+
+    GFWListManager.getPaginatedTable(
+      req,
+      pageNum,
+      pageSize,
+      list_id,
+      filtersWithDatabaseValues,
+      filterString,
+      tableSortedBy,
+      tableSortedDesc
+    )
+      .then((response) => {
+        const [noGeomData, gfwListAnalysesData, gfwLocationsAnalysesData, count] = response;
         locationAttributeArray.push(...noGeomData);
-        locationAnalysisArray.push(...gfwListAnalysesData);
-        listAnalyses.push(...gfwLocationsAnalysesData);
-
+        locationAnalysisArray.push(...gfwLocationsAnalysesData);
+        listAnalyses.push(...gfwListAnalysesData);
+        if (noGeomData.length === 0) {
+          return res.send({
+            list_analysis: [],
+            location_analyses: [],
+            numberOfResults: 0,
+          });
+        }
+        const numberOfPages =
+          count % pageSize === 0 ? count / pageSize : Math.floor(count / pageSize) + 1;
         LocationManager.getLocationAttributesList(req, locationAttributeArray, true)
           .then((locationAttributeList) => {
-            res.send({
+            return res.send({
               list_analysis: listAnalyses,
               location_analyses: [locationAttributeList, locationAnalysisArray],
+              numberOfResults: count,
+              numberOfPages,
             });
           })
           .catch((err) => {
             console.log('Error /locations/getGFWListLocationData', err);
-            res.send(false);
+            res.status(err.status || 500).send(err.message);
           });
+      })
+      .catch((err) => {
+        console.log('Error /locations/getGFWListLocationData', err);
+        res.status(err.status || 500).send(err.message);
       });
-    }
   });
 
   app.post('/locations/getGFWListLocationGeom', (req, res) => {

@@ -111,6 +111,11 @@ const ListDownloadMenu: React.FC<ListDownloadMenuProps> = ({
   if (!downloadEnabled) {
     return <></>;
   }
+  const errorFileStoragePath =
+    selectedList?.error_file_storage_path && selectedList.error_file_storage_path !== 'None'
+      ? selectedList.error_file_storage_path
+      : null;
+
   return (
     <>
       {isHoverMenu ? (
@@ -135,6 +140,15 @@ const ListDownloadMenu: React.FC<ListDownloadMenuProps> = ({
 
       <Popover anchorEl={anchorEl} open={isMenuOpen} onRequestClose={handleClose}>
         <Menu>
+          {errorFileStoragePath && (
+            <MenuItem
+              primaryText="Download error file CSV"
+              data-cy="download-error-file"
+              href={`/locations/downloadErrorFile?fileKey=${errorFileStoragePath}`}
+              target="_blank"
+            />
+          )}
+
           {isSourceFileDownloadEnabled && (
             <MenuItem
               primaryText="Location(s) CSV"

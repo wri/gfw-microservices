@@ -89,22 +89,8 @@ const getTotalAreaPerCountry = (data, countryGadm, isGfwList) => {
   }
 
   const countryArea = JSON.parse(data.country_area || '{}');
-  const isDataInCountryFormat = isObjInCountryFormat(countryArea);
 
-  if (isDataInCountryFormat) {
-    return countryArea[countryGadm] ?? 0;
-  }
-
-  return data.total_area;
-};
-
-const isObjInCountryFormat = (data) => {
-  const dataArray = Object.keys(data);
-  if (dataArray.length === 0) {
-    return false;
-  }
-
-  return Object.keys(data).every((x) => x.length === 3);
+  return countryArea[countryGadm] ?? 0;
 };
 
 export default RegionChartsContainer;

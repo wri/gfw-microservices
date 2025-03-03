@@ -22,7 +22,7 @@ BEGIN
           AND COLUMN_NAME = 'location_error'
     )
     BEGIN
-        -- Add 'country_area' column
+        -- Add 'location_error' column
         SET @SQL = 'ALTER TABLE [' + @TableName + '] ADD [location_error] NVARCHAR(MAX);';
         EXEC sp_executesql @SQL;
     END

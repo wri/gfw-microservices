@@ -4,10 +4,10 @@
  * 2 - Write list-xxx.attributes based on other list-xxx columns
  * 3 - Update Lists.version=2 for given list_id
  * –––––––––––––––––––––––––––––––––––––––
- * @notes
+ * @notes for the [Commodity] column values:
  * — Multiple is not supported in v1
- * — Commodity=Other is supported only if they specify yield
- * — Commodity=Unknown is not supported
+ * — Other is stored as GFWP_Other 
+ * — Commodity=GFWP_Unknown is not supported
  * — API default when uploading lists will be Commodity=Unknown unless user specifies otherwise
  * — DB internally will store 4 letter Mapspam codes, but both input and output CSVs will require full English names
  * — @note
@@ -24,10 +24,11 @@ import { ClientStoreConnection, SQLUtils } from '../util';
 import { UspSetListUnlocked } from './uspSetListUnlocked';
 import { UspSetListLocked } from './uspSetListLocked';
 import { ListAttributes, Lists, ListSchema, ListSchemaType } from '../entity';
-import { TemplateMetadata } from '../queries';
+import { getAllLists, ListsType, TemplateMetadata } from '../queries';
 import { EntitySchema } from 'typeorm';
+import * as sql from 'mssql';
 
-const LIST_UPGRADE_VERSION = 2;
+const LIST_VERSION_POST_UPGRADE = 2;
 
 interface SchemaUpgraderArgs {
   clientDb: string;
@@ -38,32 +39,36 @@ export default async function upgradeListSchema(args: SchemaUpgraderArgs) {
   const { clientDb, listId, userId } = args;
   const logger = new Logger(`Schema Upgrade [dbo].[${clientDb}]. ListId: ${listId}`);
   try {
-    const db = new ClientStoreConnection();
-    const connection = await db.getConnection(clientDb);
-    const listRepo = connection.getRepository(Lists);
-    const list = await listRepo.findOne({ where: { id: listId } });
+    const listsQuery = getAllLists.replace(
+      'ORDER BY list_name', 
+      `WHERE L.[id] = ${listId} ORDER BY L.list_name`
+    );
+    const list = await SQLUtils.queryDBFirstRow<ListsType>(clientDb, listsQuery);
 
-    logger.log(`Lock ${listId}`);
-
-    if (list.version !== LIST_UPGRADE_VERSION) {
-      await new UspSetListLocked().run(clientDb, list.id, userId);
+    if (list.version !== LIST_VERSION_POST_UPGRADE) {
+      logger.log(`Locking list`);
+      // todo: uncomment this line to lock list
+      // await new UspSetListLocked().run(clientDb, list.id, userId);
 
       // 1. Write Lists.Commodity based on Lists.template_id for given list_id. See https://gfw.atlassian.net/browse/GPV-3983
-      const templateName = await getTemplateName(clientDb, list.templateId);
-      list.Commodity = await getCommodityCodeFromTemplate(templateName, list.Commodity);
-      logger.log(`list.Commodity = ${list.Commodity}. TemplateName: ${templateName}`);
+      const templateName = await getTemplateName('gfwpro', list.template_id);
+      const listCommmodity = await getCommodityCodeFromTemplate(templateName);
+      logger.log(`Writing list.[Commodity] = ${listCommmodity} from template: ${templateName}`);
+      // todo: uncomment line below to write
+      // await SQLUtils.queryDB<undefined>(clientDb, `UPDATE [Lists] SET [Commodity] = ${listCommmodity} WHERE [id] = ${listId}`);
 
       // 2. Write list-xxx.attributes based on other list-xxx columns ––– [STARTS]
       const ListLocations = new EntitySchema<ListSchemaType>({
         ...ListSchema,
-        name: list.listTableName,
+        name: list.list_table_name,
       });
 
-      const listLocsRepo = connection.getRepository(ListLocations);
-      const listLocationsData = await listLocsRepo.find();
+      // Todo: make sure this writes into the db
+      const listLocations = await SQLUtils.queryDB<typeof ListLocations[]>(clientDb, `SELECT * FROM [${list.list_table_name}]`);
+      return listLocations;
       const { selectFields } = getListsLocsAttrsRules();
       await Promise.all(
-        listLocationsData.map(async (listLocRow, indx) => {
+        listLocations.map(async (listLocRow, indx) => {
           const attributes = selectFields.map((propertyKey) => {
             const value = listLocRow[propertyKey];
             const inferredType = inferType(value);
@@ -74,51 +79,51 @@ export default async function upgradeListSchema(args: SchemaUpgraderArgs) {
             };
           });
 
-          if (indx === 0) {
-            const formatedAttributes = getFormattedAttributes(listId, attributes);
-            const connToSaveAttributes = await db.getConnection(clientDb, [ListAttributes]);
-            await connToSaveAttributes
-              .createQueryBuilder()
-              .insert()
-              .into(ListAttributes)
-              .values(formatedAttributes)
-              // .orIgnore()
-              .execute();
-            logger.log(`Saved [ListAttributes]`);
-          }
+          // if (indx === 0) {
+            // const formatedAttributes = getFormattedAttributes(listId, attributes);
+            // const connToSaveAttributes = await db.getConnection(clientDb, [ListAttributes]);
+            // await connToSaveAttributes
+            //   .createQueryBuilder()
+            //   .insert()
+            //   .into(ListAttributes)
+            //   .values(formatedAttributes)
+            //   // .orIgnore()
+            //   .execute();
+            // logger.log(`Saved [ListAttributes]`);
+          // }
 
-          listLocRow.attributes = JSON.stringify(attributes);
+          // listLocRow.attributes = JSON.stringify(attributes);
           // save list-xxx attributes
-          const connToSaveListLocs = await db.getConnection(clientDb, [ListLocations]);
-          await connToSaveListLocs
-            .createQueryBuilder()
-            .insert()
-            .into(ListLocations)
-            .values(listLocRow)
-            // .orIgnore()
-            .execute();
-          logger.log(`Saved [${list.listTableName}].attributes`);
+          // const connToSaveListLocs = await db.getConnection(clientDb, [ListLocations]);
+          // await connToSaveListLocs
+          //   .createQueryBuilder()
+          //   .insert()
+          //   .into(ListLocations)
+          //   .values(listLocRow)
+          //   // .orIgnore()
+          //   .execute();
+          // logger.log(`Saved [${list.listTableName}].attributes`);
           return true;
         })
       );
       // 2. Write list-xxx.attributes based on other list-xxx columns –––  [ENDS]
 
       // 3. Update Lists.version=2 for given list_id
-      list.version = LIST_UPGRADE_VERSION;
+      list.version = LIST_VERSION_POST_UPGRADE;
       logger.log(`Updated list version ${list.version}`);
       // save list
-      const connToSavelList = await db.getConnection(clientDb, [Lists]);
-      await connToSavelList
-        .createQueryBuilder()
-        .insert()
-        .into(Lists)
-        .values(list)
-        // .orIgnore()
-        .execute();
-      logger.log(`list Saved`);
+      // const connToSavelList = await db.getConnection(clientDb, [Lists]);
+      // await connToSavelList
+      //   .createQueryBuilder()
+      //   .insert()
+      //   .into(Lists)
+      //   .values(list)
+      //   // .orIgnore()
+      //   .execute();
+      // logger.log(`list Saved`);
 
-      // unlockListxx
-      await new UspSetListUnlocked().run(clientDb, list.id);
+      // todo: uncomment this line to unlock
+      // await new UspSetListUnlocked().run(clientDb, list.id);
       logger.log(`Done.`);
     }
   } catch (error) {
@@ -130,14 +135,13 @@ export default async function upgradeListSchema(args: SchemaUpgraderArgs) {
 async function getTemplateName(clientDb: string, listTemplateId: number) {
   const templateData = await SQLUtils.queryDB<TemplateMetadata[]>(
     clientDb,
-    'uspGetTemplateMetadata',
-    null
+    'getTemplateMetadata'
   );
   const template = templateData.find(({ template_id }) => template_id === listTemplateId);
   return template.template_name;
 }
 
-async function getCommodityCodeFromTemplate(templateName: string, userMaybeFallback: string) {
+async function getCommodityCodeFromTemplate(templateName: string) {
   const ghgCodes = getGHGCodesMap();
   const ghgForUser = ghgCodes.find((v) => {
     return (
@@ -146,7 +150,7 @@ async function getCommodityCodeFromTemplate(templateName: string, userMaybeFallb
     );
   });
 
-  return ghgForUser.value || userMaybeFallback || `${GHG_PREFIX}_Unknown`;
+  return ghgForUser.value || `${GHG_PREFIX}_Unknown`;
 }
 
 type GHGCodeMapping = {

@@ -190,15 +190,6 @@ const ListActions = ({
                 />
               </div>
             )}
-            {!isSearchBarOpen && (
-              <Button
-                sx={blackButtonStyle}
-                startIcon={<Add height="14px" />}
-                href="/locations?redirect-to-add-locations=true"
-              >
-                Add locations
-              </Button>
-            )}
             {isSubmitOptionAvailable && (
               <div>
                 <Button
@@ -210,6 +201,15 @@ const ListActions = ({
                   Submit Analysis
                 </Button>
               </div>
+            )}
+            {!isSearchBarOpen && (
+              <Button
+                sx={blackButtonStyle}
+                startIcon={<Add height="14px" />}
+                href="/locations?redirect-to-add-locations=true"
+              >
+                Add locations
+              </Button>
             )}
 
             {isAddToFolderOptionAvailable && (

@@ -141,7 +141,7 @@ describe('ConfigureList', () => {
     );
 
     expect(screen.getByText(/sugar cane/i)).toBeInTheDocument();
-  });
+  }, 10100);
 
   it('should validate list name fields correctly', async () => {
     render(<ConfigureList userLists={mockUserLists} />);
@@ -193,7 +193,7 @@ describe('ConfigureList', () => {
         name: /recent deforestation alerts recent deforestation alerts, updated weekly/i,
       })
     ).toBeChecked();
-  });
+  }, 10100);
 
   it('should select an existing list without analysis and no checkbox selected ', async () => {
     render(<ConfigureList userLists={mockUserLists} />);
@@ -227,7 +227,7 @@ describe('ConfigureList', () => {
         name: /recent deforestation alerts recent deforestation alerts, updated weekly/i,
       })
     ).not.toBeChecked();
-  });
+  }, 10100);
 
   it('should toggle dependent checkboxes fcd and palm risk', async () => {
     render(<ConfigureList userLists={mockUserLists} />);

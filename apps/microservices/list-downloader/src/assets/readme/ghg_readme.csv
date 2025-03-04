@@ -4,5 +4,8 @@ CSV Name,Description,Version,Column,Column Description.
 <LISTNAME>_ghg_analysis,Location leve GHG emissions factor related to crop commodity production.,1.0,Location Size (ha),Size of location in hectares.
 <LISTNAME>_ghg_analysis,Location leve GHG emissions factor related to crop commodity production.,1.0,Commodity,Crop commodity in production within given location.
 <LISTNAME>_ghg_analysis,Location leve GHG emissions factor related to crop commodity production.,1.0,Data Layer Name,Data layer being used to calculate the emissions factor.
-<LISTNAME>_ghg_analysis,Location leve GHG emissions factor related to crop commodity production.,1.0,Emissions Factor,Tonnes of CO2e per tonne of commodity producted.
+<LISTNAME>_ghg_analysis,Location leve GHG emissions factor related to crop commodity production.,1.0,CO2 Emissions Factor,Tonnes of CO2e per tonne of commodity producted.
+<LISTNAME>_ghg_analysis,Location leve GHG emissions factor related to crop commodity production.,1.0,CH4 Emissions Factor,Tonnes of CH4e per tonne of commodity producted.
+<LISTNAME>_ghg_analysis,Location leve GHG emissions factor related to crop commodity production.,1.0,N2O Emissions Factor,Tonnes of NO2e per tonne of commodity producted.
+<LISTNAME>_ghg_analysis,Location leve GHG emissions factor related to crop commodity production.,1.0,Combined Emissions Factor,Tonnes of Combined Emissions per tonne of commodity producted.
 <LISTNAME>_ghg_analysis,Location leve GHG emissions factor related to crop commodity production.,1.0,Year,Emissions factor for the given year. This includes linear discounting for the previous 20 year period.

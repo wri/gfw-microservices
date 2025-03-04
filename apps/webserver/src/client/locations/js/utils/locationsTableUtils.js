@@ -6,10 +6,11 @@ import {
   DISPLAY_FORMAT_HECTARES,
   DISPLAY_FORMAT_PERCENTAGE,
 } from '../../../listDetails/js/components/lists/ListDetails/deforestationDisplayFormat.constants';
+import { columnHeaders } from '../../../listDetails/js/config/columns/columnHeaders.constants';
 
 const transifex = Transifex.live.translateText;
 
-export const getColorByLevelClasse = {
+export const getColorByLevelClass = {
   0: 'yellow',
   1: 'orange',
   2: 'red',
@@ -292,4 +293,44 @@ export const sortByDate = (a, b) => {
   const x = new Date(a);
   const y = new Date(b);
   return x - y;
+};
+
+export const getAnalysisTextClasse = (level) => {
+  return `list-analysis-text list-analysis-text--${
+    getColorByLevelClass[getLastValue(level)] || 'red'
+  }`;
+};
+
+export const getAnalysisText = {
+  0: transifex(columnHeaders.low),
+  1: transifex(columnHeaders.mediumAbbr),
+  2: transifex(columnHeaders.high),
+};
+
+export const renderDataIcon = (level, row) => {
+  if (!locationIsActive(row) || level === null || level === undefined) {
+    return '--';
+  } else {
+    return (
+      <div className={`list-icons-container list-icons-container--${getColorByLevelClass[level]}`}>
+        <svg className="list-icons">
+          <use className="analysis-header-click" xlinkHref="#circle-list" />
+        </svg>
+      </div>
+    );
+  }
+};
+
+export const renderDataLevelTag = (level, row) => {
+  if (!locationIsActive(row) || level === null || level === undefined) {
+    return '--';
+  } else {
+    return (
+      <div
+        className={`list-analysis-text list-analysis-text--${getColorByLevelClass[level] || 'red'}`}
+      >
+        {getAnalysisText[level] || transifex(columnHeaders.high)}
+      </div>
+    );
+  }
 };

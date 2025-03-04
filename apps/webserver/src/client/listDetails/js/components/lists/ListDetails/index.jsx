@@ -963,6 +963,9 @@ export default class ListDetails extends Component {
   showListColumn = (column) => {
     const { selectedLists, listView } = this.props;
 
+    if (column.accessor === 'total_count') {
+      return false;
+    }
     // Exclude columns if all analyses are drafts
     if (this.areAllAnalysesDraft()) {
       return !checkColumnListDraftList(column.accessor); // Exclude draft columns

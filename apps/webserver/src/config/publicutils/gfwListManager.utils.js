@@ -694,7 +694,7 @@ export async function getPaginatedTable(
     params_src
   );
 
-  const totalCount = resultsWithListId.length ? resultsWithListId[0].TotalCount : 0;
+  const totalCount = resultsWithListId.length ? resultsWithListId[0].total_count : 0;
 
   const gfwListAnalysesData = await AnalysisManager.getGFWListAnalyses(req, list_id);
   return [resultsWithListId, gfwListAnalysesData, resultsWithListId, totalCount];

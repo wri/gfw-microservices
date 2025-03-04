@@ -568,6 +568,7 @@ module.exports = (app, limiter) => {
       country,
       state,
       subState,
+      hasError: hasErrorParam,
       analysisAreaMin,
       analysisAreaMax,
 
@@ -582,6 +583,8 @@ module.exports = (app, limiter) => {
       analysisId = 'FCD',
       areAllAnalysesDraft,
     } = req.query;
+    const hasError = hasErrorParam === 'true';
+
     const VALID_ANALYSIS_TYPES = ['FCD', 'ALERTS', 'AFI'];
     // Verify if analysisId is a valid analysis type
     if (!VALID_ANALYSIS_TYPES.includes(analysisId.toUpperCase())) {
@@ -603,9 +606,9 @@ module.exports = (app, limiter) => {
       country,
       state,
       subState,
+      hasError,
       analysisAreaMin,
       analysisAreaMax,
-
       // commodity risk filters:
       selectedSupplier,
       selectedSecondSupplier,
@@ -900,11 +903,12 @@ module.exports = (app, limiter) => {
 
   app.post('/locations/getAdministrativeAreasData', async (req, res) => {
     console.log('POST /getAdministrativeAreasData');
-    const { selectedCountry, selectedStates, selectedSubStates } = req.body.filters;
+    const { selectedCountry, selectedStates, selectedSubStates, hasError } = req.body.filters;
     const filters = {
       selectedCountry,
       selectedStates,
       selectedSubStates,
+      hasError,
     };
     const {
       id: listID,

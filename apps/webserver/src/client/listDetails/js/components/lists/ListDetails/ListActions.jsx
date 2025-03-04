@@ -2,14 +2,18 @@ import React, { useState } from 'react';
 import InputBase from '@mui/material/InputBase';
 import IconButton from '@mui/material/IconButton';
 import { Stack, Button, Paper } from '@mui/material';
-import SearchIcon from '@mui/icons-material/Search';
-import ClearIcon from '@mui/icons-material/Clear';
-import PublishIcon from '@mui/icons-material/Publish';
-import PublicIcon from '@mui/icons-material/Public';
-import ReplayIcon from '@mui/icons-material/Replay';
-import DriveFileMoveIcon from '@mui/icons-material/DriveFileMove';
-import FolderSharedIcon from '@mui/icons-material/FolderShared';
-import DeleteIcon from '@mui/icons-material/Delete';
+import {
+  Search,
+  Clear,
+  Publish,
+  Public,
+  Replay,
+  DriveFileMove,
+  FolderShared,
+  Delete,
+  Add,
+} from '@mui/icons-material/';
+
 import ListDownloadMenu from '../download/ListDownloadMenu';
 import { EditListBulkActionButton } from '../EditList/EditListBulkActionButton';
 import CustomDialog from 'common/js/components/CustomDialog/CustomDialog';
@@ -44,7 +48,7 @@ const ListActions = ({
   searchInputValue,
   handleSearchInputChange,
   handleSearchInputKeyDown,
-  handlecSearchInputClick,
+  handleSearchInputClick,
   showMultipleSelectionBulkActions,
   isEditActionAvailable,
   editList,
@@ -129,8 +133,8 @@ const ListActions = ({
         >
           {isSearchBarOpen && (
             <>
-              <IconButton sx={{ p: '10px' }} aria-label="menu" onClick={handlecSearchInputClick}>
-                <SearchIcon />
+              <IconButton sx={{ p: '10px' }} aria-label="menu" onClick={handleSearchInputClick}>
+                <Search />
               </IconButton>
               <InputBase
                 sx={{
@@ -160,7 +164,7 @@ const ListActions = ({
             {!isSearchBarOpen && (
               <Button
                 onClick={() => viewMap({ showFullListMap: !showMultipleSelectionBulkActions })}
-                startIcon={<PublicIcon />}
+                startIcon={<Public />}
                 sx={greenButtonStyle}
                 data-cy={showMultipleSelectionBulkActions ? 'locations-map' : 'full-list-map'}
               >
@@ -173,7 +177,7 @@ const ListActions = ({
                 <Button
                   sx={blackButtonStyle}
                   onClick={toggleReRunAnalysisDialog}
-                  startIcon={<ReplayIcon height="14px" />}
+                  startIcon={<Replay height="14px" />}
                 >
                   Update Analysis
                 </Button>
@@ -190,7 +194,7 @@ const ListActions = ({
               <div>
                 <Button
                   sx={greenButtonStyle}
-                  startIcon={<PublishIcon height="14px" />}
+                  startIcon={<Publish height="14px" />}
                   variant="primary"
                   onClick={handleDraftSubmit}
                 >
@@ -198,11 +202,20 @@ const ListActions = ({
                 </Button>
               </div>
             )}
+            {!isSearchBarOpen && (
+              <Button
+                sx={blackButtonStyle}
+                startIcon={<Add height="14px" />}
+                href="/locations?redirect-to-add-locations=true"
+              >
+                Add locations
+              </Button>
+            )}
 
             {isAddToFolderOptionAvailable && (
               <div>
                 <Button
-                  startIcon={<DriveFileMoveIcon />}
+                  startIcon={<DriveFileMove />}
                   onClick={() => setIsManageListFolderOpen(true)}
                   sx={blackButtonStyle}
                 >
@@ -240,7 +253,7 @@ const ListActions = ({
                 <Button
                   onClick={() => showShareList(true)}
                   sx={blackButtonStyle}
-                  startIcon={<FolderSharedIcon height="14px" />}
+                  startIcon={<FolderShared height="14px" />}
                   data-cy="share-list"
                 >
                   Share
@@ -251,7 +264,7 @@ const ListActions = ({
             {canMove && showMultipleSelectionBulkActions && !isSearchBarOpen && (
               <Button
                 sx={blackButtonStyle}
-                startIcon={<DriveFileMoveIcon height="14px" />}
+                startIcon={<DriveFileMove height="14px" />}
                 variant="primary"
                 onClick={promptMoveSelectedLocations}
               >
@@ -284,7 +297,7 @@ const ListActions = ({
             {canDelete && showMultipleSelectionBulkActions && !isSearchBarOpen && (
               <Button
                 sx={{ ...blackButtonStyle, color: 'red' }}
-                startIcon={<DeleteIcon height="14px" />}
+                startIcon={<Delete height="14px" />}
                 variant="primary"
                 onClick={promptDeleteSelectedLocations}
               >
@@ -299,14 +312,14 @@ const ListActions = ({
                 sx={{ minWidth: '35px', '& > svg': { margin: 0 } }}
                 onClick={() => setIsSearchBarOpen(true)}
               >
-                <SearchIcon sx={{ color: 'black' }} />{' '}
+                <Search sx={{ color: 'black' }} />
               </Button>
             ) : (
               <Button
                 sx={{ minWidth: '35px', '& > svg': { margin: 0 } }}
                 onClick={closeSearchBarHandler}
               >
-                <ClearIcon sx={{ color: 'black' }} />
+                <Clear sx={{ color: 'black' }} />
               </Button>
             )}
           </div>

@@ -47,6 +47,7 @@ const getUserLocationDataFromAPI = (
     ...(filters.selectedCountry ? { country: filters.selectedCountry } : {}),
     ...(filters.selectedState ? { state: filters.selectedState } : {}),
     ...(filters.selectedSubState ? { subState: filters.selectedSubState } : {}),
+    ...(filters.hasError ? { hasError: filters.hasError } : {}),
 
     // commodity risk filters:
     ...(filters.selectedSupplier ? { selectedSupplier: filters.selectedSupplier } : {}),

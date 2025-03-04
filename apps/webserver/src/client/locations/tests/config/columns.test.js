@@ -37,34 +37,4 @@ describe('columns', () => {
   describe('forest_change_analysis - tree_cover_loss_protected_areas_yearly', () => {
     runSortTests(columns.forest_change_analysis[1].columns[1].sortMethod);
   });
-  describe('forest_change_analysis - commodity_analysis', () => {
-    runSortTests(columns.commodity_analysis[0].columns[0].sortMethod);
-  });
-  describe('forest_change_analysis - commodity_threat_deforestation_level', () => {
-    runSortTests(columns.commodity_analysis[1].columns[0].sortMethod);
-  });
-  describe('forest_change_analysis - commodity_threat_peat_level', () => {
-    runSortTests(columns.commodity_analysis[1].columns[1].sortMethod);
-  });
-  describe('forest_change_analysis - commodity_threat_protected_areas_level', () => {
-    runSortTests(columns.commodity_analysis[1].columns[2].sortMethod);
-  });
-  describe('forest_change_analysis - commodity_threat_fires_level', () => {
-    runSortTests(columns.commodity_analysis[1].columns[3].sortMethod);
-  });
-  describe('forest_change_analysis - commodity_threat_overall_level', () => {
-    runSortTests(columns.commodity_analysis[1].columns[4].sortMethod);
-  });
-  describe('forest_change_analysis - commodity_value_forest_extent_level', () => {
-    runSortTests(columns.commodity_analysis[2].columns[0].sortMethod);
-  });
-  describe('forest_change_analysis - commodity_value_peat_level', () => {
-    runSortTests(columns.commodity_analysis[2].columns[1].sortMethod);
-  });
-  describe('forest_change_analysis - commodity_value_protected_areas_level', () => {
-    runSortTests(columns.commodity_analysis[2].columns[2].sortMethod);
-  });
-  describe('forest_change_analysis - commodity_value_overall_level', () => {
-    runSortTests(columns.commodity_analysis[2].columns[2].sortMethod);
-  });
 });

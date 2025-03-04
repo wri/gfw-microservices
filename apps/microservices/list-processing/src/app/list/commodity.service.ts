@@ -8,15 +8,19 @@ import {
   ListSchema,
   ListSchemaType,
   ListTemplate,
+  Commodity,
 } from '@wri-monorepos/sql';
 import { EntitySchema, Raw, Repository } from 'typeorm';
 import { CommodityResponse, ListResponse } from './types';
+import { ConvertCommodityToMapsPamCode } from '../list-upload/chain/convert.commodity.mapspam';
 
 @Injectable()
 export class CommodityService {
   constructor(
     @InjectRepository(ListTemplate, 'default')
-    private readonly listTemplateRepository: Repository<ListTemplate>
+    private readonly listTemplateRepository: Repository<ListTemplate>,
+    @InjectRepository(Commodity, 'default')
+    private readonly commodityRepository: Repository<Commodity>
   ) {}
 
   async getCommodityFromExistingList(
@@ -103,8 +107,8 @@ export class CommodityService {
     organizationDatabase: string;
   }): Promise<Array<ListResponse>> {
     try {
-      const listTemplate = await this.listTemplateRepository.findOne({
-        where: { templateName: commodity },
+      const listTemplate = await this.commodityRepository.findOne({
+        where: { commodityName: commodity },
       });
       const clientStoreConnection = new ClientStoreConnection();
       const connection = await clientStoreConnection.getConnection(organizationDatabase, [Lists]);
@@ -117,12 +121,13 @@ export class CommodityService {
             Commodity: Raw(
               (alias) =>
                 `LOWER(${alias}) COLLATE Latin1_General_CI_AI = LOWER(:commodity) COLLATE Latin1_General_CI_AI`,
-              { commodity }
+              { commodity: ConvertCommodityToMapsPamCode.getCommodityName(commodity) }
             ),
           },
           listTemplate ? { templateId: listTemplate.id } : null,
         ].filter(Boolean),
         select: ['id', 'listName'],
+        order: { listName: 'ASC' },
       });
 
       return lists.map((list) => ({ id: list.id, name: list.listName }));

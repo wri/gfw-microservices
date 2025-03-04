@@ -108,7 +108,7 @@ export function ConfigureList({
   const fetchCommodityNames = (selectedCommodity: string) => {
     request({
       method: 'GET',
-      url: `/api/list/by-commodity?commodity=${selectedCommodity}`,
+      url: `/api/list/by-commodity?commodity=${selectedCommodity.toLowerCase()}`,
     });
   };
 

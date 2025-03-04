@@ -3,7 +3,7 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { CommodityService } from './commodity.service';
 import { getRepositoryToken } from '@nestjs/typeorm';
-import { ListTemplate } from '@wri-monorepos/sql';
+import { Commodity, ListTemplate } from '@wri-monorepos/sql';
 import { Repository } from 'typeorm';
 
 describe('CommodityService', () => {
@@ -17,6 +17,10 @@ describe('CommodityService', () => {
         {
           provide: getRepositoryToken(ListTemplate, 'default'),
           useClass: Repository,
+        },
+        {
+          provide: getRepositoryToken(Commodity, 'default'),
+          useClass: Commodity,
         },
       ],
     }).compile();

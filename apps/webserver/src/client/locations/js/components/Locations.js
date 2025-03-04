@@ -74,7 +74,7 @@ class Locations extends Component {
     resetScroll();
     this.unsubscribe = store.subscribe(this.storeDidUpdate);
     this.getGeomFromMap(this.state.isAddingLocationFromMap);
-    const { history } = this.props;
+    const { history, location } = this.props;
 
     this.unloadHistory = history.listen((location, action) => {
       // Update state view on browser back.
@@ -87,6 +87,18 @@ class Locations extends Component {
         store.dispatch(changeView('upload'));
       }
     });
+
+    const searchParams = new URLSearchParams(location.search);
+    const redirectUrl = searchParams.get('redirect-to-add-locations');
+
+    if (redirectUrl) {
+      if (isUploadListUiAvailable) {
+        history.replace('/upload-location');
+      } else {
+        store.dispatch(changeView('add'));
+        history.replace('/add');
+      }
+    }
   }
 
   componentWillUnmount() {

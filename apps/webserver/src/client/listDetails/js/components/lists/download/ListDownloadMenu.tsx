@@ -33,7 +33,7 @@ interface HandleMenuClickParams {
   type: 'input';
 }
 
-const ListDownloadMenu: React.FC<ListDownloadMenuProps> = ({
+function ListDownloadMenu({
   combinedColumns,
   currentUser,
   filters,
@@ -48,7 +48,7 @@ const ListDownloadMenu: React.FC<ListDownloadMenuProps> = ({
   allLocationsSelected,
   isGfwList,
   isHoverMenu = false,
-}) => {
+}: ListDownloadMenuProps) {
   const [dialogOpen, setDialogOpen] = useState(false);
   const [anchorEl, setAnchorEl] = useState<undefined | HTMLElement>(undefined);
   const isMenuOpen = Boolean(anchorEl);
@@ -104,11 +104,11 @@ const ListDownloadMenu: React.FC<ListDownloadMenuProps> = ({
     }
   };
 
-  const downloadEnabled = !isDownloadDisabledForThisList(selectedList);
+  const isDownloadEnabled = !isDownloadDisabledForThisList(selectedList);
   const isSourceFileDownloadEnabled =
     !isGfwList && currentUser.access_level_id !== userAccessLevel.VIEWER;
 
-  if (!downloadEnabled) {
+  if (!isDownloadEnabled) {
     return <></>;
   }
   const errorFileStoragePath =
@@ -175,6 +175,6 @@ const ListDownloadMenu: React.FC<ListDownloadMenuProps> = ({
       <ConfirmDialog open={dialogOpen} setDialogOpen={setDialogOpen} />
     </>
   );
-};
+}
 
 export default ListDownloadMenu;

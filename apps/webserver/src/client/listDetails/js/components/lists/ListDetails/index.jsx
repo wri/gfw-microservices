@@ -1531,7 +1531,7 @@ export default class ListDetails extends Component {
       );
     }
   };
-  handlecSearchInputClick = () => {
+  handleSearchInputClick = () => {
     const { selectedLists, filterString } = this.props;
     const isGfwList = selectedLists[0].isGlobalForestWatchList;
     if (filterString.trim()) {
@@ -2194,7 +2194,7 @@ export default class ListDetails extends Component {
                       searchInputValue={searchInputValue}
                       handleSearchInputChange={this.handleSearchInputChange}
                       handleSearchInputKeyDown={this.handleSearchInputKeyDown}
-                      handlecSearchInputClick={this.handlecSearchInputClick}
+                      handleSearchInputClick={this.handleSearchInputClick}
                       showMultipleSelectionBulkActions={showMultipleSelectionBulkActions}
                       isEditActionAvailable={isEditActionAvailable}
                       editList={this.editList}

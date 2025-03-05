@@ -117,7 +117,7 @@ export class CommodityService {
           {
             Commodity: Raw(
               (alias) =>
-                `LOWER(${alias}) COLLATE Latin1_General_CI_AI = LOWER(:commodity) COLLATE Latin1_General_CI_AI`,
+                `LOWER(${alias}) COLLATE Latin1_General_CI_AI = LOWER(:commodity) COLLATE Latin1_General_CI_AI`, // makes the commodity name lower case and removes accents, so that "Maíz" matches "maiz", for example
               { commodity: ConvertCommodityToMapsPamCode.getCommodityName(commodity) }
             ),
           },

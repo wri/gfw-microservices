@@ -2,14 +2,9 @@ import React from 'react';
 import { Typography, Box, Link, Checkbox, FormControlLabel, FormGroup } from '@mui/material';
 import { ThemeProvider } from '../../../../styles/ThemeProvider';
 import { locationsPage } from '../../config';
-import {
-  analysisTypesOptions,
-  analysisTypesOptionsNewNames,
-} from '../../../../../config/env/analysisTypes.constants';
+import { analysisTypesOptionsNewNames } from '../../../../../config/env/analysisTypes.constants';
 import BetaTag from '../BetaTag';
-import featureFlags from '../../../../../utils/general.utils';
 
-const { isListDetailsPageRedesignAvailable } = featureFlags;
 import './AnalysisTypesSelector.scss';
 
 function AnalysisTypesSelector({ selectedAnalyses, setSelectedAnalyses }) {
@@ -22,9 +17,7 @@ function AnalysisTypesSelector({ selectedAnalyses, setSelectedAnalyses }) {
     }
     setSelectedAnalyses(selection);
   };
-  const analysisOptions = isListDetailsPageRedesignAvailable
-    ? analysisTypesOptionsNewNames
-    : analysisTypesOptions;
+
   return (
     <ThemeProvider>
       <FormGroup className="analysis-types-selector">
@@ -37,7 +30,7 @@ function AnalysisTypesSelector({ selectedAnalyses, setSelectedAnalyses }) {
           </Link>
         </Typography>
         <br />
-        {analysisOptions.map(({ id, label, description }) => (
+        {analysisTypesOptionsNewNames.map(({ id, label, description }) => (
           <div key={id}>
             <FormControlLabel
               control={

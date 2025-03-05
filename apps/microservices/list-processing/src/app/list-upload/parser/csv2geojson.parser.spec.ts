@@ -188,7 +188,7 @@ describe('csv2geojson', () => {
   });
 
   it('should handle invalid latitude and longitude', (done) => {
-    const csvData = 'Longitude,Latitude,Property1,Property2\n,,,\n,,,';
+    const csvData = 'Longitude,Latitude,Property1,Property2\n,,1,\n,,,2';
 
     csv2geojson(csvData).then((result) => {
       expect(result).toStrictEqual({
@@ -199,7 +199,7 @@ describe('csv2geojson', () => {
               errordetails: ['Invalid latitude or longitude: null, null'],
               latitude: null,
               longitude: null,
-              property1: null,
+              property1: 1,
               property2: null,
             },
             type: 'Feature',
@@ -211,7 +211,7 @@ describe('csv2geojson', () => {
               latitude: null,
               longitude: null,
               property1: null,
-              property2: null,
+              property2: 2,
             },
             type: 'Feature',
           },
@@ -223,7 +223,7 @@ describe('csv2geojson', () => {
   });
 
   it('should handle no geometry when no latitude and longitude is send correctly', (done) => {
-    const csvData = 'Property1,Property2\n,\n,';
+    const csvData = 'Property1,Property2\n1,\n,2';
 
     csv2geojson(csvData).then((result) => {
       expect(result).toStrictEqual({
@@ -232,7 +232,7 @@ describe('csv2geojson', () => {
             geometry: undefined,
             properties: {
               errordetails: ['Invalid latitude or longitude: undefined, undefined'],
-              property1: null,
+              property1: 1,
               property2: null,
             },
             type: 'Feature',
@@ -242,7 +242,7 @@ describe('csv2geojson', () => {
             properties: {
               errordetails: ['Invalid latitude or longitude: undefined, undefined'],
               property1: null,
-              property2: null,
+              property2: 2,
             },
             type: 'Feature',
           },

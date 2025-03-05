@@ -1,4 +1,3 @@
-import forest_change_locations from './columns/forest_change_locations';
 import forest_change_analysis from './columns/forest_change_analysis';
 import commodity_analysis from './columns/commodity_analysis';
 import commodity_locations from './columns/commodity_locations';
@@ -12,7 +11,6 @@ import post_2020_risk from './columns/post_2020_risk';
 import draft_state_columns from './columns/draft_state_columns';
 
 const columns = {
-  forest_change_locations,
   forest_change_analysis,
   commodity_locations,
   commodity_analysis,

@@ -8,7 +8,6 @@ import {
   ListSchema,
   ListSchemaType,
   ListTemplate,
-  Commodity,
 } from '@wri-monorepos/sql';
 import { EntitySchema, Raw, Repository } from 'typeorm';
 import { CommodityResponse, ListResponse } from './types';
@@ -18,9 +17,7 @@ import { ConvertCommodityToMapsPamCode } from '../list-upload/chain/convert.comm
 export class CommodityService {
   constructor(
     @InjectRepository(ListTemplate, 'default')
-    private readonly listTemplateRepository: Repository<ListTemplate>,
-    @InjectRepository(Commodity, 'default')
-    private readonly commodityRepository: Repository<Commodity>
+    private readonly listTemplateRepository: Repository<ListTemplate>
   ) {}
 
   async getCommodityFromExistingList(
@@ -107,8 +104,8 @@ export class CommodityService {
     organizationDatabase: string;
   }): Promise<Array<ListResponse>> {
     try {
-      const listTemplate = await this.commodityRepository.findOne({
-        where: { commodityName: commodity },
+      const listTemplate = await this.listTemplateRepository.findOne({
+        where: { templateName: commodity },
       });
       const clientStoreConnection = new ClientStoreConnection();
       const connection = await clientStoreConnection.getConnection(organizationDatabase, [Lists]);

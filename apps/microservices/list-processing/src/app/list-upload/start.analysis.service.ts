@@ -25,6 +25,7 @@ import { ValidateLocationName } from './chain/validate.location.name';
 import { AddNewLocationToAnalysisTable } from './chain/add.new.location.to.analysis.table';
 import { ConvertGeojsonProperties } from './chain/convert.geojson.properties';
 import { PutListAsDraft } from './chain/put.list.as.draft';
+import { GenerateErrorFile } from './chain/generate.error.file';
 
 type WorkerType = {
   request: RequestLargeListProcess;
@@ -62,6 +63,7 @@ async function worker(input: WorkerType, cb: done) {
   const addNewLocationToAnalysisTable = new AddNewLocationToAnalysisTable();
   const convertGeojsonProperties = new ConvertGeojsonProperties();
   const putListAsDraft = new PutListAsDraft();
+  const generateErrorFile = new GenerateErrorFile(s3Service, input.config);
 
   downloadS3File
     .setNext(parseData)
@@ -77,6 +79,7 @@ async function worker(input: WorkerType, cb: done) {
     .setNext(insertLocationData)
     .setNext(saveListAttributes)
     .setNext(writeLocationCount)
+    .setNext(generateErrorFile)
     .setNext(addNewLocationToAnalysisTable)
     .setNext(startAnalysis);
 

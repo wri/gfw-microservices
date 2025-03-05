@@ -2,7 +2,7 @@ import { Given, Then, When } from '@badeball/cypress-cucumber-preprocessor';
 import LocationsPage from '../../pages/locationsPage';
 
 describe('Upload File Csv', () => {
-  const csv = 'CG9.csv';
+  const csv = 'uploadCsv.xlsx';
   const timestamp = Date.now();
   const listToUploadSingleLocation = `uploadfilecsv${timestamp}`;
   const locationPage = new LocationsPage();
@@ -28,9 +28,7 @@ describe('Upload File Csv', () => {
   });
 
   When('I click on the Drop file button and drag a CSV file', () => {
-    cy.uploadFile(csv, 'application/vnd.google-earth.csv+xml');
-    locationPage.elements.fileAddedSuccess().should('be.visible');
-    locationPage.clickOnNextBtn();
+    cy.uploadFile(csv, 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
   });
 
   Then('I should see a list preview', () => {

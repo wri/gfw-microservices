@@ -19,7 +19,7 @@ declare namespace Cypress {
   }
 }
 
-Cypress.Commands.add('uploadFile', (fileName, mimeType = 'application/octet-stream') => {
+Cypress.Commands.add('uploadFile', (fileName, mimeType = '') => {
   cy.fixture(fileName, 'base64').then((fileContent) => {
     cy.get('#file-input').attachFile({
       fileContent,

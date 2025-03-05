@@ -28,9 +28,12 @@ import { typeOfAnalysisMap, commodities } from '../utils/constants';
 import { useFetch } from '../../../../../hooks';
 import debounce from 'lodash/debounce';
 
+type CommoditiesType = (typeof commodities)[keyof typeof commodities];
+const commodityValues = Object.values(commodities) as [CommoditiesType, ...CommoditiesType[]];
+
 const schema = z
   .object({
-    commodity: z.string().trim().nonempty(),
+    commodity: z.enum(commodityValues),
     newListName: z
       .string()
       .trim()
@@ -46,9 +49,16 @@ const schema = z
     message: 'You must provide at least one list name.',
     path: ['noListNameProvided'],
   })
-  .refine((data) => !(data.commodity === 'other' && data.customCommodity === ''), {
-    path: ['customCommodity'],
-  });
+  .refine(
+    (data) =>
+      !(
+        data.commodity === 'Other' &&
+        (!data.customCommodity || data.customCommodity.trim() === '')
+      ),
+    {
+      path: ['customCommodity'],
+    }
+  );
 
 type FormFields = z.infer<typeof schema>;
 
@@ -71,7 +81,7 @@ export function ConfigureList({
   } = useForm<FormFields>({
     resolver: zodResolver(schema),
     defaultValues: {
-      commodity: '',
+      commodity: '' as CommoditiesType,
       newListName: '',
       existingListName: '',
       palmRiskAssessment: false,
@@ -95,7 +105,7 @@ export function ConfigureList({
 
   const { data: validLists = [], isLoading, request } = useFetch<{ id: number; name: string }[]>();
 
-  const selectedCommodity = watch('commodity') as (typeof commodities)[keyof typeof commodities];
+  const selectedCommodity = watch('commodity') as CommoditiesType;
 
   useEffect(() => {
     if (!selectedCommodity || selectedCommodity === 'Other') {
@@ -108,7 +118,7 @@ export function ConfigureList({
   const fetchCommodityNames = (selectedCommodity: string) => {
     request({
       method: 'GET',
-      url: `/api/list/by-commodity?commodity=${selectedCommodity}`,
+      url: `/api/list/by-commodity?commodity=${selectedCommodity.toLowerCase()}`,
     });
   };
 
@@ -171,8 +181,14 @@ export function ConfigureList({
   };
 
   const onSubmit = (data: FormFields) => {
+    // this should never happen due to form validation, but just in case...
+    if (data.commodity === 'Other' && !data.customCommodity) {
+      console.error('invalid custom commodity', data.customCommodity);
+      return;
+    }
+
     setUploadLocationConfigureList({
-      commodity: data.commodity,
+      commodity: (data.commodity === 'Other' ? data.customCommodity : data.commodity) as string,
       newListName: data.newListName ?? '',
       existingList: data.existingListName
         ? { name: data.existingListName ?? '', ...existingList.current }
@@ -232,7 +248,7 @@ export function ConfigureList({
                   size="small"
                   value={field.value || ''}
                   onChange={(e) => {
-                    const value = e.target.value || '';
+                    const value = (e.target.value as CommoditiesType) || '';
                     reset({ commodity: value });
                     setFormFields((v) => ({ ...v, existingListName: '' }));
                     field.onChange(value);
@@ -269,6 +285,7 @@ export function ConfigureList({
                       sx={{ flex: '1' }}
                       error={!!errors.customCommodity}
                       helperText={errors.customCommodity ? 'Enter custom commodity' : ''}
+                      InputProps={{ inputProps: { 'data-testid': 'custom-commodity-input' } }}
                       {...field}
                     />
                   );

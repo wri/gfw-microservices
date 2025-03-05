@@ -5,6 +5,8 @@ import {
   FeatureFlag,
   Lists,
   ListsAnalysisStatus,
+  ListSchema,
+  ListSchemaType,
   SQLUtils,
   User,
 } from '@wri-monorepos/sql';
@@ -31,6 +33,7 @@ import axios from 'axios';
 import { flatten } from 'lodash';
 import { updateListsAnalysisStatus } from './list.analysis.status/updateListAnalysisStatus';
 import { mockAnalysisFlow } from '../mock';
+import { EntitySchema } from 'typeorm';
 
 export const MARK_IS_TEST_LIST = 'e2e_automation';
 export const MARK_IS_TEST_USER = 'dt_';
@@ -456,6 +459,17 @@ export const isGHGCommodityValid = async (id: number, organizationDb: string): P
     const listData = await listRepository.findOne({
       where: { id },
     });
+    // Get list.xxx repository
+
+    const ListEntity = new EntitySchema<ListSchemaType>({
+      ...ListSchema,
+      name: listData.listTableName,
+    });
+    const connection = await clientStoreConnection.getConnection(
+      organizationDb,
+      [ListEntity]
+    );
+    const listTableNameRepository = await connection.getRepository(ListEntity);
     if (!listData) {
       Logger.error('validateGHGCommodity', `List ${id} not found`);
       throw new Error(`List ${id} not found`);

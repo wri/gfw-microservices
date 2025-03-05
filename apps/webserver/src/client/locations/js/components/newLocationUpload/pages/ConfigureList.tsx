@@ -172,7 +172,7 @@ export function ConfigureList({
 
   const onSubmit = (data: FormFields) => {
     setUploadLocationConfigureList({
-      commodity: data.commodity,
+      commodity: data.commodity !== 'Other' ? data.commodity : data.customCommodity ?? '',
       newListName: data.newListName ?? '',
       existingList: data.existingListName
         ? { name: data.existingListName ?? '', ...existingList.current }

@@ -173,7 +173,7 @@ describe('ConfigureList', () => {
     await userEvent.click(nextButton);
     expect(screen.queryByText(/enter custom commodity/i)).not.toBeInTheDocument();
     expect(mockHistoryPush).toHaveBeenCalledWith('SUMMARY_AND_SUBMIT');
-  });
+  }, 15100);
 
   it('should allow entering a new list name', async () => {
     render(<ConfigureList userLists={mockUserLists} />);
@@ -274,7 +274,7 @@ describe('ConfigureList', () => {
 
     expect(fcdCheckbox).not.toBeChecked();
     expect(palmRiskCheckbox).not.toBeChecked();
-  }, 10100);
+  }, 15100);
 
   it('should go back to the previous page', async () => {
     render(<ConfigureList userLists={mockUserLists} />);

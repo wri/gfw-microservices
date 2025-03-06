@@ -111,6 +111,8 @@ export class RequestTriggerProcessLargeList {
   commodity?: string;
   @ApiProperty()
   saveAsDraft: boolean;
+  @ApiProperty()
+  existingListId?: number;
 }
 
 export class CreateListRequest {
@@ -133,6 +135,9 @@ export class CreateListRequest {
 
   @ApiProperty()
   saveAsDraft: boolean;
+
+  @ApiProperty()
+  existingListId?: number;
 }
 
 export class CopyOrMoveLargeListRequestLLP implements CopyOrMoveLargeListRequest {

@@ -123,6 +123,7 @@ export class AppController {
       isUploadListLpEnabled: featureFlag.enabled,
       commodity: request.commodity,
       saveAsDraft: request.saveAsDraft,
+      existingListId: request.existingListId,
     });
   }
 

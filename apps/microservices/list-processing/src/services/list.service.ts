@@ -28,6 +28,7 @@ type ListRequest = {
   isUploadListLpEnabled?: boolean;
   commodity?: string;
   saveAsDraft: boolean;
+  existingListId?: number | null;
 } & Partial<CreateListRequest>;
 
 interface CreateListResult {
@@ -55,6 +56,7 @@ export class ListService {
         analysisIds: createListRequest.analysisIds,
         isUploadListLpEnabled: createListRequest.isUploadListLpEnabled,
         saveAsDraft: createListRequest.saveAsDraft,
+        existingListId: createListRequest.existingListId,
       });
 
       const saveListRequest: RequestSaveLargeListProcessModel = {

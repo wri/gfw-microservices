@@ -67,6 +67,7 @@ export interface RequestNewList extends PreviewListRequest {
   subscription_status_id: number;
 
   hasUnanalyzableError: boolean;
+  existingListId?: number;
 }
 
 interface Handler<T> {

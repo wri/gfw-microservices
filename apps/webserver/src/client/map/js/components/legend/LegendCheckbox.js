@@ -10,7 +10,6 @@ import {
   showBasemapInfo,
   toggleCanopyModal,
   updateGFWLocations,
-  removeList,
   updateSoyYear,
 } from '../../actions/mapActions';
 import { setBiomassMinRange, setBiomassMaxRange } from '../../actions/analysisActions';

@@ -178,7 +178,7 @@ class ListDetailsPage {
   }
 
   clickOnLocationDiagnosticsBtn() {
-    cy.get(':nth-child(1) > [data-testid="custom-row"] > :nth-child(5)').trigger('mouseover');
+    cy.get(':nth-child(1) > [data-testid="custom-row"] > :nth-child(5)').eq(1).trigger('mouseover');
     this.elements.locationDiagnosticsBtn().click();
   }
 
@@ -186,9 +186,9 @@ class ListDetailsPage {
     this.elements.fullListMapBtn().click();
   }
   clickOnMapBtn() {
-    cy.get(':nth-child(1) > [style="width: 100%; display: flex;"] > :nth-child(6) > span').trigger(
-      'mouseover'
-    );
+    cy.get(':nth-child(1) > [style="width: 100%; display: flex;"] > :nth-child(6) > span')
+      .eq(1)
+      .trigger('mouseover');
     this.elements.mapBtn().click();
   }
   clickOnLocationMapBtn() {

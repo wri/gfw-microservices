@@ -465,10 +465,7 @@ export const isGHGCommodityValid = async (id: number, organizationDb: string): P
       ...ListSchema,
       name: listData.listTableName,
     });
-    const connection = await clientStoreConnection.getConnection(
-      organizationDb,
-      [ListEntity]
-    );
+    const connection = await clientStoreConnection.getConnection(organizationDb, [ListEntity]);
     const listTableNameRepository = await connection.getRepository(ListEntity);
     if (!listData) {
       Logger.error('validateGHGCommodity', `List ${id} not found`);
@@ -478,9 +475,18 @@ export const isGHGCommodityValid = async (id: number, organizationDb: string): P
     // ListData.version = 2 won't have commodities with null values, take care of it when version 2 is implemented
     // verify if list has no commodity
     if (listData.Commodity === null && listData.version > 1) {
+      listTableNameRepository.save({
+        id,
+        errorDetails: 'missing commodity',
+      });
+
       throw new Error('missing commodity');
     } else if (listData.Commodity === null) {
       Logger.log('validateGHGCommodity', `List ${id} has no commodity`);
+      listTableNameRepository.save({
+        id,
+        errorDetails: `List ${id} has no commodity`,
+      });
       return true;
     }
     // verify if list has a non valid GHG commodity
@@ -488,6 +494,10 @@ export const isGHGCommodityValid = async (id: number, organizationDb: string): P
       Logger.log(
         `Invalid commodity in list ${listData.id} - ${listData.listName} for GHG Analysis`
       );
+      listTableNameRepository.save({
+        id,
+        errorDetails: `Invalid commodity in list ${listData.id} - ${listData.listName} for GHG Analysis`,
+      });
       throw new Error(
         `Invalid commodity in list ${listData.id} - ${listData.listName} for GHG Analysis`
       );

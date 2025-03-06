@@ -1966,19 +1966,7 @@ class Map extends Component {
         });
       }
 
-      if (!selectedLocations) {
-        // set up banner info for all locations
-        // transitionListData = {
-        //   id: list.id,
-        //   numLocations: list.list_locations_count,
-        //   name: list.list_name,
-        //   alertsMapExtent,
-        //   isGfwList: false,
-        // };
-        // this.getUserLocationData([list.id], list.list_name);
-        // TODO: Figure why some lists are failing to Getting MBTile Vector Tiles from S3 bucket
-        this.updateSelectedLists(listToSelect);
-      }
+      this.updateSelectedLists(listToSelect);
 
       const transitionListData = {
         id: listId,

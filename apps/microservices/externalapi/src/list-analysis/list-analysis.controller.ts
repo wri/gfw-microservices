@@ -67,14 +67,14 @@ export class ListAnalysisController {
       }
     );
 
-    const locationsWithErrors = await this.listAnalysisService.getLocationsErrors({
+    const errorsDetails = await this.listAnalysisService.getLocationsErrors({
       listId,
       organizationId,
     });
 
     return {
       ...analysisStatus,
-      locationsWithErrors,
+      errorsDetails: [...errorsDetails, ...analysisStatus.errorsDetails],
     };
   }
   @ApiResponse({ status: 200, type: ListAnalysisResponse })

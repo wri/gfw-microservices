@@ -202,7 +202,7 @@ export class ListAnalysisService {
   }: {
     listId: number;
     organizationId: number;
-  }): Promise<Array<{ locationName: string; errorDetails: string }>> {
+  }): Promise<Array<unknown>> {
     try {
       const organization = await this.organizationService.findOrganizationById(organizationId);
       if (!organization) {
@@ -230,7 +230,7 @@ export class ListAnalysisService {
 
       const listTableNameRepository = connection.getRepository(ListEntity);
       const locationsWithErrors = await listTableNameRepository.find({
-        select: ['locationName', 'errorDetails'],
+        select: ['errorDetails'],
         where: {
           errorDetails: Not(IsNull()),
         },

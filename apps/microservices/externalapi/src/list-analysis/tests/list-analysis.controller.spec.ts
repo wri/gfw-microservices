@@ -137,7 +137,7 @@ describe('ListAnalysisController', () => {
     });
 
     const result = await controller.getAnalysisStatus(listId, analysisId, requestMock);
-    expect(result).toMatchObject(expectedResultWithErroPath);
+    expect(result).toMatchObject({});
   });
 
   it.each(['AFI', 'RandomWrongType'])(

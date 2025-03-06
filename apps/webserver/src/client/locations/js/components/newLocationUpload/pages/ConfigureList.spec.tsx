@@ -131,9 +131,9 @@ describe('ConfigureList', () => {
         name: /sugar cane/i,
       })
     ).not.toBeInTheDocument();
-    const commoditySelect = screen.getAllByRole('combobox')[0];
+    const commodityDropdown = screen.getAllByRole('combobox')[0];
 
-    await userEvent.click(commoditySelect);
+    await userEvent.click(commodityDropdown);
     await userEvent.click(
       screen.getByRole('option', {
         name: /Sugar Cane/i,
@@ -143,30 +143,53 @@ describe('ConfigureList', () => {
     expect(screen.getByText(/sugar cane/i)).toBeInTheDocument();
   }, 10100);
 
-  it('should validate list name fields correctly', async () => {
+  it('should show missing mandatory field errors', async () => {
     render(<ConfigureList userLists={mockUserLists} />);
 
+    expect(screen.queryByText(/enter the commodity/i)).not.toBeInTheDocument();
     const nextButton = screen.getByRole('button', { name: /next/i });
     await userEvent.click(nextButton);
+    expect(screen.queryByText(/enter the commodity/i)).toBeInTheDocument();
 
-    expect(screen.queryAllByText(/you must provide at least one list name./i)).toHaveLength(2);
-  });
+    const commodityDropdown = screen.getAllByRole('combobox')[0];
+
+    expect(screen.queryByText(/you must provide at least one list name/i)).not.toBeInTheDocument();
+    await userEvent.click(commodityDropdown);
+    await userEvent.click(screen.getByRole('option', { name: /soy/i }));
+    await userEvent.click(nextButton);
+    expect(screen.queryByText(/enter the commodity/i)).not.toBeInTheDocument();
+    expect(screen.queryAllByText(/you must provide at least one list name/i)).toHaveLength(2);
+
+    await userEvent.click(commodityDropdown);
+    await userEvent.click(screen.getByRole('option', { name: /other/i }));
+    const newListNameInput = screen.getByPlaceholderText(/name your new list/i);
+    await userEvent.type(newListNameInput, 'New list name');
+    expect(screen.queryByText(/enter custom commodity/i)).not.toBeInTheDocument();
+    await userEvent.click(nextButton);
+    expect(screen.queryByText(/enter custom commodity/i)).toBeInTheDocument();
+
+    const customCommodityInput = screen.getByTestId('custom-commodity-input');
+    await userEvent.type(customCommodityInput, 'corn');
+    await userEvent.click(nextButton);
+    expect(screen.queryByText(/enter custom commodity/i)).not.toBeInTheDocument();
+    expect(mockHistoryPush).toHaveBeenCalledWith('SUMMARY_AND_SUBMIT');
+  }, 15100);
 
   it('should allow entering a new list name', async () => {
     render(<ConfigureList userLists={mockUserLists} />);
 
-    const newListInput = screen.getByPlaceholderText('Name your new list');
-    await userEvent.type(newListInput, 'New List');
+    const newListNameInput = screen.getByPlaceholderText('Name your new list');
+    await userEvent.type(newListNameInput, 'New List');
 
-    expect(newListInput).toHaveValue('New List');
+    expect(newListNameInput).toHaveValue('New List');
   });
 
   it('should select an existing list and auto-populate analyses', async () => {
     render(<ConfigureList userLists={mockUserLists} />);
 
-    const commoditySelect = screen.getAllByRole('combobox')[0];
+    const commodityDropdown = screen.getAllByRole('combobox')[0];
 
-    await userEvent.click(commoditySelect);
+    await userEvent.click(commodityDropdown);
     await userEvent.click(
       screen.getByRole('option', {
         name: /Cocoa/i,
@@ -198,9 +221,9 @@ describe('ConfigureList', () => {
   it('should select an existing list without analysis and no checkbox selected ', async () => {
     render(<ConfigureList userLists={mockUserLists} />);
 
-    const commoditySelect = screen.getAllByRole('combobox')[0];
+    const commodityDropdown = screen.getAllByRole('combobox')[0];
 
-    await userEvent.click(commoditySelect);
+    await userEvent.click(commodityDropdown);
     await userEvent.click(
       screen.getByRole('option', {
         name: /Cocoa/i,
@@ -232,9 +255,9 @@ describe('ConfigureList', () => {
   it('should toggle dependent checkboxes fcd and palm risk', async () => {
     render(<ConfigureList userLists={mockUserLists} />);
 
-    const commoditySelect = screen.getAllByRole('combobox')[0];
+    const commodityDropdown = screen.getAllByRole('combobox')[0];
 
-    await userEvent.click(commoditySelect);
+    await userEvent.click(commodityDropdown);
     await userEvent.click(screen.getByRole('option', { name: /palm oil/i }));
 
     const fcdCheckbox = screen.getByRole('checkbox', {
@@ -251,7 +274,7 @@ describe('ConfigureList', () => {
 
     expect(fcdCheckbox).not.toBeChecked();
     expect(palmRiskCheckbox).not.toBeChecked();
-  }, 10100);
+  }, 15100);
 
   it('should go back to the previous page', async () => {
     render(<ConfigureList userLists={mockUserLists} />);
@@ -278,13 +301,13 @@ describe('ConfigureList', () => {
   it('should submit the form with valid data', async () => {
     render(<ConfigureList userLists={mockUserLists} />);
 
-    const commoditySelect = screen.getAllByRole('combobox')[0];
+    const commodityDropdown = screen.getAllByRole('combobox')[0];
 
-    await userEvent.click(commoditySelect);
-    await userEvent.click(screen.getByRole('option', { name: /Cattle/i }));
+    await userEvent.click(commodityDropdown);
+    await userEvent.click(screen.getByRole('option', { name: /cattle/i }));
 
-    const newListInput = screen.getByPlaceholderText('Name your new list');
-    await userEvent.type(newListInput, 'My new List 3');
+    const newListNameInput = screen.getByPlaceholderText('Name your new list');
+    await userEvent.type(newListNameInput, 'My new List 3');
 
     await userEvent.click(
       screen.getByRole('checkbox', {

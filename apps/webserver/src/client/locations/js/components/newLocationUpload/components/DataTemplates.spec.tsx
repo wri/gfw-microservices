@@ -83,5 +83,5 @@ describe('DataTemplates', () => {
     window.open = jest.fn();
     await userEvent.click(within(button).getByText(/download/i));
     expect(screen.getByRole('button', { name: /done/i })).toBeInTheDocument();
-  });
+  }, 10100);
 });

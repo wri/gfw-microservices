@@ -43,7 +43,6 @@ export function getLongLat(event, esriMapView) {
  */
 async function getVectorTileFeature({ zoom, longLat, tile, layerName, listMbtileInfo }) {
   const { maxZoom } = listMbtileInfo;
-  console.log(zoom, maxZoom);
 
   const geojson = await tileQuery({
     point: longLat,

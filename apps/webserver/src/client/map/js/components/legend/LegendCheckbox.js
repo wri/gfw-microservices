@@ -115,15 +115,6 @@ export default class LegendCheckbox extends Component {
       store.dispatch(toggleLayer(layerId));
     }
 
-    const [selectedList] = this.props.selectedLists;
-    const hasSelectedList = !!selectedList;
-
-    if (hasSelectedList) {
-      // can be hardcoded to 0 because there will only ever
-      // be one list selected at a time
-      store.dispatch(removeList(0));
-    }
-
     if (this.props.gfwListDef[layerId]) {
       this.clearGFWFilter();
     }

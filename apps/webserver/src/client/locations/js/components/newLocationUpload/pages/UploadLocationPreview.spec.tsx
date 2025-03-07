@@ -74,7 +74,7 @@ describe('UploadLocationPreview', () => {
 
     render(<UploadLocationPreview />);
 
-    const fileInput = screen.getByLabelText(/retry upload/i);
+    const fileInput = screen.getByTestId('file-input');
     const file = new File(['dummy content'], 'test.csv', { type: 'text/csv' });
 
     await userEvent.upload(fileInput, file);

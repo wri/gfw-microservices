@@ -94,16 +94,16 @@ export function UploadLocationPreview() {
       return '';
     }
 
-    const fields = errors[0].split(':')?.[1]?.trim();
+    const fields = errors[0].split(':')?.[1];
     if (!fields) {
       return '';
     }
 
     const map = fileExtension === '.zip' ? LabelNameTableZip : LabelNameTable;
     return fields
+      .replaceAll(' ', '')
       .split(',')
       .map((field) => map[field as keyof typeof map] || '')
-      .filter(Boolean)
       .join(', ');
   };
   const columns = getTableColumns(data?.features);
@@ -150,6 +150,7 @@ export function UploadLocationPreview() {
             accept={VALID_UPLOAD_FILE_FORMATS.map((f) => `.${f}`).join(', ')}
             style={{ display: 'none' }}
             onChange={handleFileChange}
+            data-testid="file-input"
           />
         </Box>
 

@@ -506,16 +506,12 @@ export const isGHGCommodityValid = async (id: number, organizationDb: string): P
           );
           throw new Error('Invalid GHG Commodity');
         }
-        let hasYield = 0;
-        listTableName.forEach((element) => {
-          JSON.parse(element.attributes || '[]').map((item) => {
-            if (item['field'] === 'yield' && parseFloat(item['value']) > 0) {
-              hasYield += 1;
-            }
-          });
+        const hasYield = listTableName.every((element) => {
+          const attributes = JSON.parse(element.attributes || '[]');
+          return attributes.some((item) => item.field === 'yield' && parseFloat(item.value) > 0);
         });
         // Verify if has yield for all locations
-        if (hasYield < listTableName.length) {
+        if (!hasYield) {
           Logger.log('Missing Yield Values');
           saveListTableNameErrorDetails(
             listTableNameRepository,

@@ -1,4 +1,4 @@
-import { Logger } from '@nestjs/common';
+import { BadRequestException, Logger } from '@nestjs/common';
 import {
   ActivityLog,
   ClientStoreConnection,
@@ -30,10 +30,10 @@ import {
 import * as sql from 'mssql';
 import { getListAnalysisStatus } from '../utils/list.utils';
 import axios from 'axios';
-import { flatten } from 'lodash';
+import { flatten, forEach } from 'lodash';
 import { updateListsAnalysisStatus } from './list.analysis.status/updateListAnalysisStatus';
 import { mockAnalysisFlow } from '../mock';
-import { EntitySchema } from 'typeorm';
+import { EntitySchema, Repository } from 'typeorm';
 
 export const MARK_IS_TEST_LIST = 'e2e_automation';
 export const MARK_IS_TEST_USER = 'dt_';
@@ -459,14 +459,16 @@ export const isGHGCommodityValid = async (id: number, organizationDb: string): P
     const listData = await listRepository.findOne({
       where: { id },
     });
-    // Get list.xxx repository
 
+    // Get list.xxx repository
     const ListEntity = new EntitySchema<ListSchemaType>({
       ...ListSchema,
       name: listData.listTableName,
     });
     const connection = await clientStoreConnection.getConnection(organizationDb, [ListEntity]);
     const listTableNameRepository = await connection.getRepository(ListEntity);
+    const listTableName = await listTableNameRepository.findBy({ commodity: listData.Commodity });
+
     if (!listData) {
       Logger.error('validateGHGCommodity', `List ${id} not found`);
       throw new Error(`List ${id} not found`);
@@ -475,38 +477,64 @@ export const isGHGCommodityValid = async (id: number, organizationDb: string): P
     // ListData.version = 2 won't have commodities with null values, take care of it when version 2 is implemented
     // verify if list has no commodity
     if (listData.Commodity === null && listData.version > 1) {
-      listTableNameRepository.save({
-        id,
-        errorDetails: 'missing commodity',
-      });
-
-      throw new Error('missing commodity');
-    } else if (listData.Commodity === null) {
       Logger.log('validateGHGCommodity', `List ${id} has no commodity`);
-      listTableNameRepository.save({
-        id,
-        errorDetails: `List ${id} has no commodity`,
-      });
-      return true;
+      saveListTableNameErrorDetails(
+        listTableNameRepository,
+        listTableName,
+        'Invalid GHG Commodity'
+      );
+      throw new Error('Invalid GHG Commodity');
     }
     // verify if list has a non valid GHG commodity
     if (!isValidMapSpamCommodity(listData.Commodity)) {
-      Logger.log(
-        `Invalid commodity in list ${listData.id} - ${listData.listName} for GHG Analysis`
+      Logger.log('Invalid GHG Commodity');
+      saveListTableNameErrorDetails(
+        listTableNameRepository,
+        listTableName,
+        'Invalid GHG Commodity'
       );
-      listTableNameRepository.save({
-        id,
-        errorDetails: `Invalid commodity in list ${listData.id} - ${listData.listName} for GHG Analysis`,
-      });
-      throw new Error(
-        `Invalid commodity in list ${listData.id} - ${listData.listName} for GHG Analysis`
-      );
+      throw new Error('Invalid GHG Commodity');
+    }
+    try {
+      if (listData.Commodity === 'GFWP_Other') {
+        if (listTableName.length > 0) {
+          let hasYield = 0;
+          listTableName.forEach((element) => {
+            JSON.parse(element.attributes || '[]').map((item) => {
+              if (item['field'] === 'yield' && parseFloat(item['value']) > 0) {
+                hasYield += 1;
+              }
+            });
+          });
+          // Verify if has yield for all locations
+          if (hasYield < listTableName.length) {
+            Logger.log('Missing Yield Values');
+            saveListTableNameErrorDetails(
+              listTableNameRepository,
+              listTableName,
+              'Missing Yield Values'
+            );
+            throw new Error('Missing Yield Values');
+          }
+        } else {
+          Logger.log('Invalid GHG Commodity');
+          saveListTableNameErrorDetails(
+            listTableNameRepository,
+            listTableName,
+            'Missing Yield Values'
+          );
+          throw new Error('Invalid GHG Commodity');
+        }
+      }
+    } catch (error) {
+      Logger.warn(error.stack || error);
+      throw error;
     }
 
     return true;
   } catch (error) {
     Logger.error('validateGHGCommodity', error.message || error);
-    throw error;
+    throw new BadRequestException(error.message || error);
   }
 };
 
@@ -518,4 +546,17 @@ export const isValidMapSpamCommodity = (Commodity: string): boolean => {
     return true;
   }
   return false;
+};
+
+const saveListTableNameErrorDetails = async (
+  listTableNameRepository: Repository<ListSchemaType>,
+  listTableNameEntity: ListSchemaType[],
+  message: string
+): Promise<void> => {
+  forEach(listTableNameEntity, async (element) => {
+    await listTableNameRepository.update(
+      { locationId: element.locationId },
+      { errorDetails: message }
+    );
+  });
 };

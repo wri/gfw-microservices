@@ -497,26 +497,7 @@ export const isGHGCommodityValid = async (id: number, organizationDb: string): P
     }
     try {
       if (listData.Commodity === 'GFWP_Other') {
-        if (listTableName.length > 0) {
-          let hasYield = 0;
-          listTableName.forEach((element) => {
-            JSON.parse(element.attributes || '[]').map((item) => {
-              if (item['field'] === 'yield' && parseFloat(item['value']) > 0) {
-                hasYield += 1;
-              }
-            });
-          });
-          // Verify if has yield for all locations
-          if (hasYield < listTableName.length) {
-            Logger.log('Missing Yield Values');
-            saveListTableNameErrorDetails(
-              listTableNameRepository,
-              listTableName,
-              'Missing Yield Values'
-            );
-            throw new Error('Missing Yield Values');
-          }
-        } else {
+        if (listTableName.length == 0) {
           Logger.log('Invalid GHG Commodity');
           saveListTableNameErrorDetails(
             listTableNameRepository,
@@ -524,6 +505,24 @@ export const isGHGCommodityValid = async (id: number, organizationDb: string): P
             'Missing Yield Values'
           );
           throw new Error('Invalid GHG Commodity');
+        }
+        let hasYield = 0;
+        listTableName.forEach((element) => {
+          JSON.parse(element.attributes || '[]').map((item) => {
+            if (item['field'] === 'yield' && parseFloat(item['value']) > 0) {
+              hasYield += 1;
+            }
+          });
+        });
+        // Verify if has yield for all locations
+        if (hasYield < listTableName.length) {
+          Logger.log('Missing Yield Values');
+          saveListTableNameErrorDetails(
+            listTableNameRepository,
+            listTableName,
+            'Missing Yield Values'
+          );
+          throw new Error('Missing Yield Values');
         }
       }
     } catch (error) {

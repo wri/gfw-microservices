@@ -4,13 +4,11 @@ import {
   Logger,
   NotFoundException,
 } from '@nestjs/common';
-import { Lists } from './lists.entity';
-import { ClientStoreConnection } from '../shared/client-store-connection';
 import { OrganizationService } from '../list-analysis/organization.service';
 import { Organization } from '../api-keys/organization.entity';
 import { S3Service } from '@wri-monorepos/aws';
 import { ListInfoResponse } from '../list-analysis/list-upload-new.dto';
-import { SaveActivityLogEndpoint } from '../list-analysis/utils/saveActivityLogEndpoint';
+import { ClientStoreConnection, Lists } from '@wri-monorepos/sql';
 
 @Injectable()
 export class ListService {
@@ -18,8 +16,7 @@ export class ListService {
   constructor(
     private clientStoreConnection: ClientStoreConnection,
     private organizationService: OrganizationService,
-    private s3Service: S3Service,
-    private saveActivityLogEndpoint: SaveActivityLogEndpoint
+    private s3Service: S3Service
   ) {}
   // Replace this with actual database or external service calls
   async getList({

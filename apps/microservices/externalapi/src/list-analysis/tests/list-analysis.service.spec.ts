@@ -7,15 +7,12 @@ import { ConfigModule } from '@nestjs/config';
 import { ExternalAPIKey } from '../../api-keys/external-api-key.entity';
 import { UserRoutes } from '../../api-keys/user-route.entity';
 import { UserService } from '../user.service';
-import { ClientStoreConnection } from '../../shared/client-store-connection';
 import { OrganizationService } from '../organization.service';
 import * as sinon from 'sinon';
 import { DataSource } from 'typeorm';
-import { ListsAnalysisStatus } from '../list-analysis-status.entity';
 import { ListAnalysisStatusRepositoryMock } from './repositories/list-analysis-status.repository.mock';
 import { ListAnalysisMessageModule } from '../../list-analysis-message-handler';
 import { ListService } from '../../lists/lists.service';
-import { Lists } from '../../lists/lists.entity';
 import { S3Service } from '@wri-monorepos/aws';
 import { BadRequestException, NotFoundException, HttpException, HttpStatus } from '@nestjs/common';
 import axios from 'axios';
@@ -24,6 +21,7 @@ import { SaveActivityLogEndpoint } from '../utils/saveActivityLogEndpoint';
 import { checkProcessingLimits } from '@wri-monorepos/shared';
 import { listStatus } from '@wri-monorepos/constants';
 import { handleCreateAnalysis, isValidMapSpamCommodity } from '@wri-monorepos/geo';
+import { ClientStoreConnection, Lists, ListsAnalysisStatus } from '@wri-monorepos/sql';
 
 jest.mock('@wri-monorepos/geo', () => ({
   handleCreateAnalysis: jest.fn().mockResolvedValue('true value'),
@@ -63,7 +61,7 @@ describe('ListAnalysisService', () => {
           database: ':memory:',
           synchronize: true,
           logging: true,
-          entities: [Organization, UserRoutes, ExternalAPIKey, Lists],
+          entities: [Organization, UserRoutes, ExternalAPIKey, Lists, ListsAnalysisStatus],
         }),
         TypeOrmModule.forFeature([Organization, ExternalAPIKey, UserRoutes], 'default'),
         ConfigModule.forRoot({
@@ -982,7 +980,7 @@ describe('ListAnalysisService', () => {
       }
     });
 
-    it('should throw NOT_FOUND when no errors exist', async () => {
+    it('should not throw NOT_FOUND when no errors exist', async () => {
       const mockList = {
         id: 1,
         listTableName: 'test_list_table',
@@ -1001,17 +999,11 @@ describe('ListAnalysisService', () => {
         }),
       });
 
-      try {
-        await service.getLocationsErrors({
-          listId: 1,
-          organizationId: 1,
-        });
-        fail('Should have thrown an error');
-      } catch (error) {
-        expect(error).toBeInstanceOf(HttpException);
-        expect(error.response).toEqual({ errorDetails: 'No errors found for this list' });
-        expect(error.status).toBe(HttpStatus.NOT_FOUND);
-      }
+      const result = await service.getLocationsErrors({
+        listId: 1,
+        organizationId: 1,
+      });
+      expect(result).toStrictEqual([]);
     });
   });
 });

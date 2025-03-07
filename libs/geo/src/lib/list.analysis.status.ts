@@ -264,7 +264,7 @@ export const handleCreateAnalysis = async (
             { listId, analysisId },
             {
               status: listStatus.Pending,
-              s3Url: null,
+              s3URL: null,
               bundleCreationTime: null,
               expirationTime: null,
               errorInfo: null,

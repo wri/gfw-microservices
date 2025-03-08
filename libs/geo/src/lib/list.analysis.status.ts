@@ -30,10 +30,10 @@ import {
 import * as sql from 'mssql';
 import { getListAnalysisStatus } from '../utils/list.utils';
 import axios from 'axios';
-import { flatten, forEach } from 'lodash';
+import { flatten } from 'lodash';
 import { updateListsAnalysisStatus } from './list.analysis.status/updateListAnalysisStatus';
 import { mockAnalysisFlow } from '../mock';
-import { EntitySchema, Repository } from 'typeorm';
+import { EntitySchema } from 'typeorm';
 
 export const MARK_IS_TEST_LIST = 'e2e_automation';
 export const MARK_IS_TEST_USER = 'dt_';
@@ -478,20 +478,24 @@ export const isGHGCommodityValid = async (id: number, organizationDb: string): P
     // verify if list has no commodity
     if (listData.Commodity === null && listData.version > 1) {
       Logger.log('validateGHGCommodity', `List ${id} has no commodity`);
-      saveListTableNameErrorDetails(
-        listTableNameRepository,
-        listTableName,
-        'Invalid GHG Commodity'
+      await saveAnalysisStatusErrorInfo(
+        organizationDb,
+        id,
+        'Invalid GHG Commodity',
+        listStatus.Pending,
+        'GHG'
       );
       throw new Error('Invalid GHG Commodity');
     }
     // verify if list has a non valid GHG commodity
     if (!isValidMapSpamCommodity(listData.Commodity)) {
       Logger.log('Invalid GHG Commodity');
-      saveListTableNameErrorDetails(
-        listTableNameRepository,
-        listTableName,
-        'Invalid GHG Commodity'
+      await saveAnalysisStatusErrorInfo(
+        organizationDb,
+        id,
+        'Invalid GHG Commodity',
+        listStatus.Pending,
+        'GHG'
       );
       throw new Error('Invalid GHG Commodity');
     }
@@ -499,10 +503,12 @@ export const isGHGCommodityValid = async (id: number, organizationDb: string): P
       if (listData.Commodity === 'GFWP_Other') {
         if (listTableName.length == 0) {
           Logger.log('Invalid GHG Commodity');
-          saveListTableNameErrorDetails(
-            listTableNameRepository,
-            listTableName,
-            'Missing Yield Values'
+          await saveAnalysisStatusErrorInfo(
+            organizationDb,
+            id,
+            'Invalid GHG Commodity',
+            listStatus.Pending,
+            'GHG'
           );
           throw new Error('Invalid GHG Commodity');
         }
@@ -513,10 +519,12 @@ export const isGHGCommodityValid = async (id: number, organizationDb: string): P
         // Verify if has yield for all locations
         if (!hasYield) {
           Logger.log('Missing Yield Values');
-          saveListTableNameErrorDetails(
-            listTableNameRepository,
-            listTableName,
-            'Missing Yield Values'
+          await saveAnalysisStatusErrorInfo(
+            organizationDb,
+            id,
+            'Missing Yield Values',
+            listStatus.Pending,
+            'GHG'
           );
           throw new Error('Missing Yield Values');
         }
@@ -543,15 +551,16 @@ export const isValidMapSpamCommodity = (Commodity: string): boolean => {
   return false;
 };
 
-const saveListTableNameErrorDetails = async (
-  listTableNameRepository: Repository<ListSchemaType>,
-  listTableNameEntity: ListSchemaType[],
-  message: string
-): Promise<void> => {
-  forEach(listTableNameEntity, async (element) => {
-    await listTableNameRepository.update(
-      { locationId: element.locationId },
-      { errorDetails: message }
-    );
-  });
+//Saves the error info in the database based on the analysisId and listId
+const saveAnalysisStatusErrorInfo = async (
+  organizationDb: string,
+  listId: number,
+  errorInfo: string,
+  status: number,
+  analysisId: string
+) => {
+  const clientStoreConnection = new ClientStoreConnection();
+  const connection = await clientStoreConnection.getConnection(organizationDb);
+  const listAnalysisStatusRepository = await connection.getRepository(ListsAnalysisStatus);
+  await listAnalysisStatusRepository.update({ listId, analysisId }, { errorInfo, status });
 };

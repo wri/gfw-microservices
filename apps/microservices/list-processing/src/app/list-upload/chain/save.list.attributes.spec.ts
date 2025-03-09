@@ -37,7 +37,7 @@ describe('SaveListAttributes', () => {
 
     mockGetConnection = jest.fn().mockResolvedValue(mockConnection);
 
-    (ClientStoreConnection as jest.Mock).mockImplementation(() => {
+    (ClientStoreConnection as unknown as jest.Mock).mockImplementation(() => {
       return {
         getConnection: mockGetConnection,
       };

@@ -1,4 +1,5 @@
-import { Lists } from '../entity';
+import { EntitySchema } from 'typeorm';
+import { organizationEntities, systemEntities, ListSchema, ListSchemaType } from '../entity';
 import { createDatasourceConfig, ClientStoreConnection } from './typeORM.utils';
 
 describe('createDatasourceConfig', () => {
@@ -43,25 +44,34 @@ describe('createDatasourceConfig', () => {
     expect(config.database).toBe('MSSQL_DB');
   });
 
-  it('should use static connections when entities are not provided', async () => {
+  it('should return correct connections type for given entities', async () => {
+    expect(ClientStoreConnection.getConnectionType(systemEntities)).toBe('static');
+    expect(ClientStoreConnection.getConnectionType(organizationEntities)).toBe('static');
+    expect(ClientStoreConnection.getConnectionType([])).toBe('dynamic');
+  });
+
+  it('should create static connections when no entities are provided', async () => {
     process.env.NODE_ENV = TEST_ENVIRONMENT;
 
     const clientStoreConnection = new ClientStoreConnection();
     const connection = await clientStoreConnection.getConnection('someDB');
 
     expect(connection).toBeDefined();
-    expect(clientStoreConnection.getConnections().size).toBe(1); // Check static map
-    expect(clientStoreConnection.getDynamicConnections().size).toBe(0); // Check dynamic map
+    expect(ClientStoreConnection.getConnections('dynamic').size).toBe(0);
+    expect(ClientStoreConnection.getConnections('static').size).toBe(1);
   });
 
-  it('should use dynamic connections when entities are provided', async () => {
+  it('should create dynamic connections when dynamic entity is provided', async () => {
+    const listTable = 'myListTable';
     process.env.NODE_ENV = TEST_ENVIRONMENT;
     const clientStoreConnection = new ClientStoreConnection();
-    const entities = [Lists];
-    const connection = await clientStoreConnection.getConnection('someDB', entities);
+    const ListEntity = new EntitySchema<ListSchemaType>({
+      ...ListSchema,
+      name: listTable,
+    });
+    const connection = await clientStoreConnection.getConnection('someDB', [ListEntity]);
 
     expect(connection).toBeDefined();
-    expect(clientStoreConnection.getConnections().size).toBe(0); // Check static map
-    expect(clientStoreConnection.getDynamicConnections().size).toBe(1); // Check dynamic map
+    expect(ClientStoreConnection.getConnections('dynamic').size).toBe(1);
   });
 });

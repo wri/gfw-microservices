@@ -482,7 +482,7 @@ export const isGHGCommodityValid = async (id: number, organizationDb: string): P
         organizationDb,
         id,
         'Invalid GHG Commodity',
-        listStatus.Pending,
+        listStatus.Inactive,
         'GHG'
       );
       throw new Error('Invalid GHG Commodity');
@@ -494,7 +494,7 @@ export const isGHGCommodityValid = async (id: number, organizationDb: string): P
         organizationDb,
         id,
         'Invalid GHG Commodity',
-        listStatus.Pending,
+        listStatus.Inactive,
         'GHG'
       );
       throw new Error('Invalid GHG Commodity');
@@ -507,7 +507,7 @@ export const isGHGCommodityValid = async (id: number, organizationDb: string): P
             organizationDb,
             id,
             'Invalid GHG Commodity',
-            listStatus.Pending,
+            listStatus.Inactive,
             'GHG'
           );
           throw new Error('Invalid GHG Commodity');
@@ -523,7 +523,7 @@ export const isGHGCommodityValid = async (id: number, organizationDb: string): P
             organizationDb,
             id,
             'Missing Yield Values',
-            listStatus.Pending,
+            listStatus.Inactive,
             'GHG'
           );
           throw new Error('Missing Yield Values');

@@ -6,6 +6,7 @@ import { DataSource, EntitySchema } from 'typeorm';
 import { withTimeout, Mutex } from 'async-mutex';
 import { DataSourceOptions } from 'typeorm/data-source/DataSourceOptions';
 import { MixedList } from 'typeorm/common/MixedList';
+import { clearTimeout } from 'timers';
 
 const TEST_ENVIRONMENT = 'test';
 const CONNECTION_TYPE_MSSQL = 'mssql';
@@ -122,6 +123,12 @@ export class ClientStoreConnection {
         .join('')}`;
     }
     if (mapToInsert.has(connectionId)) {
+      const cached = mapToInsert.get(connectionId);
+      // reset timeout from now to prevent destroying connection while it's being used
+      clearTimeout(cached.timeout);
+      cached.timeout = setTimeout(() => {
+        this.clearCache(connectionId, entityType);
+      }, CLEAR_CONNECTION_TIMEOUT[entityType]);
       return mapToInsert.get(connectionId).connection;
     }
 

@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import {
   Box,
   Card,
@@ -21,7 +21,7 @@ import {
 } from '@mui/icons-material';
 import { getFileExtension } from '../../../../../utils';
 
-import { FeatureProperties, LocationListType } from '../types';
+import { LocationListType } from '../types';
 import { LoadingModal, PillButton } from '../../../../../components';
 import {
   getTableColumns,
@@ -48,7 +48,7 @@ export function UploadLocationPreview() {
     { features: LocationListType[] },
     { message: string; errors: string[] }
   >();
-  const [file, setFile] = useState<File | null>(null);
+  const fileInputRef = useRef<HTMLInputElement | null>(null);
 
   const [iLoadingFileUpload, setIsLoadingFileUpload] = useState(false);
 
@@ -60,25 +60,24 @@ export function UploadLocationPreview() {
     getPreviewData();
   }, [uploadedFile]);
 
-  useEffect(() => {
-    if (!file) {
-      return;
+  const handleFileUpload = async (selectedFile: File) => {
+    try {
+      setIsLoadingFileUpload(true);
+      const uploadedData = await uploadFileToS3(selectedFile);
+      addFile(uploadedData);
+    } catch (err) {
+      console.error('Upload error:', err);
+    } finally {
+      setIsLoadingFileUpload(false);
     }
+  };
 
-    const uploadFile = async () => {
-      try {
-        setIsLoadingFileUpload(true);
-        const data = await uploadFileToS3(file);
-        addFile(data);
-      } catch (err: unknown) {
-        console.log({ err });
-      } finally {
-        setIsLoadingFileUpload(false);
-      }
-    };
-
-    uploadFile();
-  }, [file]);
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const selectedFile = e.target.files?.[0] ?? null;
+    if (selectedFile) {
+      handleFileUpload(selectedFile);
+    }
+  };
 
   const getPreviewData = async () => {
     request({
@@ -95,17 +94,16 @@ export function UploadLocationPreview() {
       return '';
     }
 
-    const [, fields] = errors[0].split(':');
+    const fields = errors[0].split(':')?.[1];
     if (!fields) {
       return '';
     }
 
     const map = fileExtension === '.zip' ? LabelNameTableZip : LabelNameTable;
-
-    const missingFields = fields.replaceAll(' ', '').split(',') as Array<keyof FeatureProperties>;
-
-    return missingFields
-      .map((field) => (field in map ? map[field as keyof typeof map] : ''))
+    return fields
+      .replaceAll(' ', '')
+      .split(',')
+      .map((field) => map[field as keyof typeof map] || '')
       .join(', ');
   };
   const columns = getTableColumns(data?.features);
@@ -142,20 +140,17 @@ export function UploadLocationPreview() {
             color="info"
             disabled={isLoading || iLoadingFileUpload}
             startIcon={<Replay />}
+            onClick={() => fileInputRef.current?.click()}
           >
-            <label htmlFor="file-input" style={{ cursor: 'pointer' }}>
-              Retry upload
-            </label>
+            Retry upload
           </PillButton>
           <input
             type="file"
-            id="file-input"
+            ref={fileInputRef}
             accept={VALID_UPLOAD_FILE_FORMATS.map((f) => `.${f}`).join(', ')}
             style={{ display: 'none' }}
-            onChange={(e) => {
-              const file = e.target.files?.[0] ?? null;
-              setFile(file);
-            }}
+            onChange={handleFileChange}
+            data-testid="file-input"
           />
         </Box>
 
@@ -197,29 +192,14 @@ export function UploadLocationPreview() {
                   {getMissingFieldsNames(error.errors, fileExtension)}. Please check the required
                   fields in the Data Templates and update your file before re-uploading it.
                 </Typography>
-                <PillButton variant="text" color="error">
-                  <label
-                    htmlFor="file-input-error"
-                    style={{
-                      cursor: 'pointer',
-                      color: theme.palette.error.main,
-                      textDecoration: 'underline',
-                      textTransform: 'none',
-                    }}
-                  >
-                    Retry upload
-                  </label>
-                </PillButton>
-                <input
-                  type="file"
-                  id="file-input-error"
-                  accept={VALID_UPLOAD_FILE_FORMATS.map((f) => `.${f}`).join(', ')}
-                  style={{ display: 'none' }}
-                  onChange={(e) => {
-                    const file = e.target.files?.[0] ?? null;
-                    setFile(file);
-                  }}
-                />
+                <Typography
+                  variant="body2"
+                  color="error"
+                  onClick={() => fileInputRef.current?.click()}
+                  sx={{ cursor: 'pointer', textDecoration: 'underline' }}
+                >
+                  Retry upload
+                </Typography>
               </Box>
             ) : (
               <Box sx={{ margin: 'auto' }}>

@@ -136,7 +136,7 @@ export class ProcessUploadData extends AbstractHandler<ChainType> {
     request.geojson.features = await Promise.all(
       prevFeatures.map(async (feature, index) => {
         try {
-          feature = await this.convertPoint2Polygon.convertFeature(feature);
+          feature = await this.convertPoint2Polygon.convertFeature(feature, request);
           feature = this.processFeatureAttributes(feature);
           feature.properties.locationId = index + 1;
           feature.properties.commodity = commodity;

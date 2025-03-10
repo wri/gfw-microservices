@@ -8,6 +8,7 @@ DECLARE @Filters NVARCHAR(MAX) = ''
 DECLARE @where_clauses NVARCHAR(MAX) = '1=1' -- Initialize @where_clauses to a neutral condition so we can always append with AND.
 DECLARE @skip INT
 SET @skip = @pageNum * @pageSize
+
 DECLARE @analysisColumns NVARCHAR(MAX) = '
 location_status_id,
 tree_cover_loss_total_yearly,
@@ -51,15 +52,8 @@ brazil_biomes_presence,
 cerrado_biome_presence,
 southeast_asia_presence,
 indonesia_presence,
-commodity_threat_deforestation_level,
-commodity_threat_peat_level,
-commodity_threat_protected_areas_level,
-commodity_threat_fires_level,
 commodity_threat_overall_level,
 commodity_threat_overall_score,
-commodity_value_forest_extent_level,
-commodity_value_peat_level,
-commodity_value_protected_areas_level,
 commodity_value_overall_level,
 commodity_value_overall_score,
 commodity_value_forest_extent,
@@ -88,6 +82,7 @@ country_area,
 classified_region_area,
 tree_cover_loss_by_country_classified_region_yearly'
 
+
 -- Remove line breaks and carriage returns
 SET @analysisColumns = REPLACE(@analysisColumns, CHAR(10), '');
 SET @analysisColumns = REPLACE(@analysisColumns, CHAR(13), '');
@@ -98,13 +93,67 @@ SET @analysisColumns = REPLACE(@analysisColumns, CHAR(9), '');
 -- Remove leading and trailing spaces
 SET @analysisColumns = LTRIM(RTRIM(@analysisColumns));
 
+
 -- Get the location and analysis table names from the GFWLists table based on listID
 SELECT @listLocationTableName = list_table_name, @listAnalysisTableName = list_analysis_table_name
 FROM GFWLists
 WHERE id = @listID
 
+
 -- Now @analysisColumns becomes: [ListAnalysis].[column1], [ListAnalysis].[column2], [ListAnalysis].[column3]
 SET @analysisColumns = '[' + @listAnalysisTableName + '].[' + REPLACE(LTRIM(RTRIM(REPLACE(@analysisColumns, ', ', ','))), ',', '], [' + @listAnalysisTableName + '].[') + ']';
+
+
+DECLARE @jsonColumns TABLE (ColumnName NVARCHAR(255));
+
+-- Add all columns that need parsing
+INSERT INTO @jsonColumns (ColumnName)
+VALUES
+    ('commodity_threat_deforestation_level'),
+    ('commodity_threat_peat_level'),
+    ('commodity_threat_protected_areas_level'),
+    ('commodity_threat_fires_level'),
+    ('commodity_value_forest_extent_level'),
+    ('commodity_value_peat_level'),
+    ('commodity_value_protected_areas_level'),
+    ('commodity_value_overall_level'),
+    ('commodity_threat_overall_level'),
+    ('commodity_mill_priority_level');
+
+DECLARE @parsedColumns NVARCHAR(MAX) = '';
+
+DECLARE @columnName NVARCHAR(255);
+DECLARE column_cursor CURSOR FOR SELECT ColumnName FROM @jsonColumns;
+
+OPEN column_cursor;
+FETCH NEXT FROM column_cursor INTO @columnName;
+
+WHILE @@FETCH_STATUS = 0
+BEGIN
+    DECLARE @parsedColumn NVARCHAR(MAX);
+
+    SET @parsedColumn = '
+        (SELECT TOP 1 CAST(value AS INT)
+         FROM OPENJSON([' + @listAnalysisTableName + '].' + @columnName + ')
+         ORDER BY [key] DESC
+        ) AS ' + @columnName + '_parsed';
+
+    -- Append to @parsedColumns
+    IF @parsedColumns = ''
+        SET @parsedColumns = @parsedColumn;
+    ELSE
+        SET @parsedColumns = @parsedColumns + ', ' + @parsedColumn;
+
+    FETCH NEXT FROM column_cursor INTO @columnName;
+END
+
+CLOSE column_cursor;
+DEALLOCATE column_cursor;
+
+
+-- Append the dynamically generated parsed columns
+SET @analysisColumns = @analysisColumns + ', ' + @parsedColumns;
+
 
 -- Begin constructing the main CommonTableExpression
 SET @CommonTableExpression = 'SELECT [' + @listLocationTableName + '].*, ' + @analysisColumns + '
@@ -154,7 +203,7 @@ SET @CommonTableExpression = @CommonTableExpression + ' WHERE ' + @where_clauses
 
 -- Template for pagination: use OFFSET-FETCH and attach the CommonTableExpression
 SET @TEMPLATE = 'WITH Locations_CTE AS ( {LOCATION_COMMON_TABLE_EXPRESSION} )
-SELECT *, {listID} AS list_id, COUNT(*) OVER() AS TotalCount
+SELECT *, {listID} AS list_id, COUNT(*) OVER() AS total_count
 FROM Locations_CTE
 ORDER BY [{ORDER_COLUMN}] {ORDER_DIR}
 OFFSET @skip ROWS FETCH NEXT @take ROWS ONLY;
@@ -171,8 +220,6 @@ SET @TEMPLATE = REPLACE(@TEMPLATE, '{ORDER_DIR}', @tableSortedDesc)
 SET @TEMPLATE = REPLACE(@TEMPLATE, '{listID}', @listID)
 
 SET @SQL = @TEMPLATE
-
-PRINT 'List Analysis Table: ' + @listAnalysisTableName
 
 EXEC sp_executesql @SQL,
   N'@skip INT, @take INT, @Country NVARCHAR(150), @State NVARCHAR(150), @SubState NVARCHAR(150),

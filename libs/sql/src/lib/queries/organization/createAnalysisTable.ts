@@ -98,7 +98,9 @@ BEGIN
 			[tree_cover_loss_by_country_landmark_yearly] NVARCHAR(MAX),
 			[country_area] NVARCHAR(MAX),
 			[classified_region_area] NVARCHAR(MAX),
-			[tree_cover_loss_by_country_classified_region_yearly] NVARCHAR(MAX)
+			[tree_cover_loss_by_country_classified_region_yearly] NVARCHAR(MAX),
+
+			[location_error] NVARCHAR(MAX)
 		)
 	'
 

@@ -1,7 +1,15 @@
 import React, { Component } from 'react';
-import { Stack, Button as MaterialButton, Badge, Box, Grid } from '@mui/material';
-import FilterAltIcon from '@mui/icons-material/FilterAlt';
-import ClearIcon from '@mui/icons-material/Clear';
+import {
+  Stack,
+  Button as MaterialButton,
+  Badge,
+  Box,
+  Grid,
+  Typography,
+  Checkbox,
+  FormControlLabel,
+} from '@mui/material';
+import { Clear, FilterAlt } from '@mui/icons-material';
 import {
   toggleCanopyModal,
   updateFilters,
@@ -55,6 +63,12 @@ export default class Filter extends Component {
     this.setState({ selectedSubState: evt.target.value });
   };
 
+  changeShowOnlyLocationsWithError = (evt) => {
+    this.setState({ hasError: evt.target.checked }, () =>
+      store.dispatch(updateFilters(this.state))
+    );
+  };
+
   updateValues = (state) => {
     let filterCount = 0;
     Object.keys(state).forEach((key) => {
@@ -98,6 +112,7 @@ export default class Filter extends Component {
       protectedAreas,
       isGfwList,
       areAllAnalysesDraft,
+      isListWithErrors,
     } = this.props;
     const { selectedCountry, selectedState, selectedSubState } = this.state;
 
@@ -131,6 +146,9 @@ export default class Filter extends Component {
     const isInlineFilterVisible =
       isFilterModalVisible && !isGfwList && !isCommodityRiskFilterVisible;
     const isListFiltered = filterCount > 0;
+
+    const shouldRenderLocationsWithErrorsCheckbox = !isInlineFilterVisible && isListWithErrors;
+
     return (
       <ThemeProvider>
         {isProtectedAreasFilterVisible && (
@@ -224,16 +242,31 @@ export default class Filter extends Component {
                     <NaturalForestLossDataSourceToggle />
                   )}
                 </Grid>
-                <Grid item xs={7}>
+                <Grid item xs={shouldRenderLocationsWithErrorsCheckbox ? 5 : 7}>
                   {!isCommodityRiskFilterVisible && !areAllAnalysesDraft && (
                     <DeforestationDisplayFormatToggleButtons />
                   )}
                 </Grid>
               </>
             )}
-            <Grid item xs={1} sx={{ alignSelf: 'center' }}>
+            <Grid
+              item
+              xs={shouldRenderLocationsWithErrorsCheckbox ? 3 : 1}
+              sx={{ alignSelf: 'center' }}
+            >
               <Box flexGrow={1} />
               <Stack alignItems="center" direction="row">
+                {shouldRenderLocationsWithErrorsCheckbox && (
+                  <FormControlLabel
+                    control={
+                      <Checkbox
+                        checked={this.state.hasError}
+                        onChange={this.changeShowOnlyLocationsWithError}
+                      />
+                    }
+                    label={<Typography variant="span">Show only locations with errors</Typography>}
+                  />
+                )}
                 <MaterialButton
                   data-cy="filter-open-button"
                   sx={{ minWidth: '35px', '& > svg': { margin: 0 } }}
@@ -250,7 +283,7 @@ export default class Filter extends Component {
                       badgeContent={filterCount}
                       overlap="circular"
                     >
-                      <FilterAltIcon
+                      <FilterAlt
                         sx={{
                           color: 'black',
                           marginRight: '10px',
@@ -260,7 +293,7 @@ export default class Filter extends Component {
                       />
                     </Badge>
                   ) : (
-                    <FilterAltIcon
+                    <FilterAlt
                       sx={{
                         color: 'black',
                         marginRight: '10px',
@@ -276,7 +309,7 @@ export default class Filter extends Component {
                     sx={{ minWidth: '35px', '& > svg': { margin: 0 } }}
                     onClick={() => store.dispatch(toggleCanopyModal())}
                   >
-                    <ClearIcon sx={{ color: 'black' }} />
+                    <Clear sx={{ color: 'black' }} />
                   </MaterialButton>
                 )}
                 {!isFilterModalVisible && (

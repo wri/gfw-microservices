@@ -41,7 +41,7 @@ import { DIAGNOSTIC_ANALYSIS_PERIOD } from '@wri-monorepos/constants';
 
 /** @function {getAnalysisDataForUserList}
  *   @summary Function to return analysis data for a user list.
- *   @param  {Object}   req - Manadatory first parameter to pass the request object into the function in case session info is required.
+ *   @param  {Object}   req - Mandatory first parameter to pass the request object into the function in case session info is required.
  *   @param  {Number}  list_id - ID of the user list in the database
  *   @return {Promise} Returns promise object. If successful, recordsets, otherwise, error object
  */
@@ -67,7 +67,7 @@ export const getAnalysisDataForUserList = (req, list_id) => {
 
 /** @function {getAnalysisDataForGFWList}
  *   @summary Function to return analysis data for a GFW list.
- *   @param  {Object}   req - Manadatory first parameter to pass the request object into the function in case session info is required.
+ *   @param  {Object}   req - Mandatory first parameter to pass the request object into the function in case session info is required.
  *   @param  {Number}  list_id - ID of the GFW list in the database
  *   @return {Promise} Returns promise object. If successful, recordsets, otherwise, error object
  */
@@ -246,7 +246,7 @@ export const getAnalysisDataForProtectedAreasByLocationId = (req, list_id, locat
 
 /** @function {getGFWListAnalyses}
  *   @summary Function to return GFW list analysis.
- *   @param  {Object}   req - Manadatory first parameter to pass the request object into the function in case session info is required.
+ *   @param  {Object}   req - Mandatory first parameter to pass the request object into the function in case session info is required.
  *   @param  {Number}  list_id - ID of list
  *   @return {Promise} Returns promise object. If successful, recordsets, otherwise, error object
  */
@@ -340,7 +340,7 @@ export const getAFINegligibleStatsForListId = (req, listId, locationId) => {
 
 /** @function {getListAnalyses}
  *   @summary Function to return list analysis.
- *   @param  {Object}   req - Manadatory first parameter to pass the request object into the function in case session info is required.
+ *   @param  {Object}   req - Mandatory first parameter to pass the request object into the function in case session info is required.
  *   @param  {Number}  list_id - ID of list
  *   @return {Promise} Returns promise object. If successful, recordsets, otherwise, error object
  */
@@ -367,7 +367,7 @@ export const getListAnalyses = (req, list_id) => {
 
 /** @function {requestAnalysis}
  *   @summary Function to send SQS message to request analysis for later
- *   @param  {Object}    req - Manadatory first parameter to pass the request object into the function in case session info is required.
+ *   @param  {Object}    req - Mandatory first parameter to pass the request object into the function in case session info is required.
  *   @param  {String}    list_name - Name of the list
  *   @param  {Object}    geojson - A geojson used for the analysis
  */
@@ -397,7 +397,9 @@ export const requestAnalysis = async (req, list_name, geojson = {}) => {
 export const formatNumber = (data, decimals = 2) => {
   const isFloat = (n) => Number(n) === n && n % 1 !== 0;
 
-  if (data === undefined || data === null) return data;
+  if (data === undefined || data === null) {
+    return data;
+  }
 
   let newData = {};
   if (Array.isArray(data)) {
@@ -467,7 +469,7 @@ export async function getPaginatedAnalysisDataForAdministrativeAreas(
 }
 /** @function {getListAnalyses}
  *   @summary Function to return list analysis.
- *   @param  {Object}   req - Manadatory first parameter to pass the request object into the function in case session info is required.
+ *   @param  {Object}   req - Mandatory first parameter to pass the request object into the function in case session info is required.
  *   @param  {Number}  list_id - ID of list
  *   @return {Promise} Returns promise object. If successful, recordsets, otherwise, error object
  */
@@ -479,17 +481,11 @@ export async function getDraftListLocationData(list_id, page, pageSize, clientDa
     country,
     state,
     subState,
-    analysisAreaMin,
-    analysisAreaMax,
-
     // commodity risk filters:
     selectedSupplier,
     selectedSecondSupplier,
     selectedParentCompany,
     showRSPOCertified,
-    selectedOverallThreats,
-    selectedOverallValues,
-    selectedMillPriority,
   } = filters;
 
   const parameters = [
@@ -565,17 +561,13 @@ export async function getAFIListAnalyses(list_id, page, pageSize, clientDatabase
     country,
     state,
     subState,
-    analysisAreaMin,
-    analysisAreaMax,
+    hasError,
 
     // commodity risk filters:
     selectedSupplier,
     selectedSecondSupplier,
     selectedParentCompany,
     showRSPOCertified,
-    selectedOverallThreats,
-    selectedOverallValues,
-    selectedMillPriority,
   } = filters;
 
   const parameters = [
@@ -615,6 +607,11 @@ export async function getAFIListAnalyses(list_id, page, pageSize, clientDatabase
       field: 'SubState',
       type: sql.NVarChar(255),
       value: subState !== '' && subState ? subState : null,
+    },
+    {
+      field: 'hasError',
+      type: sql.Bit(),
+      value: hasError ? hasError : null,
     },
   ];
 
@@ -657,17 +654,12 @@ export async function getDashboardDataPaginatedByList(
     country,
     state,
     subState,
-    analysisAreaMin,
-    analysisAreaMax,
 
     // commodity risk filters:
     selectedSupplier,
     selectedSecondSupplier,
     selectedParentCompany,
     showRSPOCertified,
-    selectedOverallThreats,
-    selectedOverallValues,
-    selectedMillPriority,
   } = filters;
   const parameters = [
     { field: 'listId', type: sql.Int, value: list_id },

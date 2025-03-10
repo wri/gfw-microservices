@@ -156,7 +156,15 @@ export class GfwLists {
     pageNum = 0,
     pageSize = 0,
     organizationDatabase: string,
-    filters,
+    filters: {
+      selectedCountry?: string;
+      selectedState?: string;
+      selectedSubState?: string;
+      hasError: boolean;
+      selectedDesignation?: string;
+      selectedDesignationType?: string;
+      selectedIUCN?: string;
+    },
     filterString = '',
     tableSortedBy,
     tableSortedDesc
@@ -174,19 +182,23 @@ export class GfwLists {
 
       const queryBuilder = listRepository.createQueryBuilder();
 
-      if (filters.selectedCountry && filters.selectedCountry !== '') {
+      if (filters.selectedCountry) {
         queryBuilder.andWhere('Country = :country', { country: filters.selectedCountry });
       }
 
-      if (filters.selectedState && filters.selectedState !== '') {
+      if (filters.selectedState) {
         queryBuilder.andWhere('State = :state', { state: filters.selectedState });
       }
 
-      if (filters.selectedSubState && filters.selectedSubState !== '') {
+      if (filters.selectedSubState) {
         queryBuilder.andWhere('"Sub State" = :subState', { subState: filters.selectedSubState });
       }
 
-      if (filters.selectedDesignation && filters.selectedDesignation !== '') {
+      if (filters.hasError) {
+        queryBuilder.andWhere('ErrorDetails IS NOT NULL AND LEN(ErrorDetails) > 0');
+      }
+
+      if (filters.selectedDesignation) {
         queryBuilder.andWhere('Designation = :designation', {
           designation: filters.selectedDesignation,
         });
@@ -198,7 +210,7 @@ export class GfwLists {
         });
       }
 
-      if (filters.selectedIUCN && filters.selectedIUCN !== '') {
+      if (filters.selectedIUCN) {
         queryBuilder.andWhere('"IUCN CAT" = :iucnCat', { iucnCat: filters.selectedIUCN });
       }
 

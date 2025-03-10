@@ -4,6 +4,8 @@ import EditNoteIcon from '@mui/icons-material/EditNote';
 import SpeedIcon from '@mui/icons-material/Speed';
 import AlertBanner from './AlertBanner';
 
+import { useTheme } from '@mui/material';
+
 export default function AnalysisStatusBanners({
   isDiagnosticStatusDraft,
   hasLocationWithErrors,
@@ -12,35 +14,43 @@ export default function AnalysisStatusBanners({
   isFailedAnalysis,
   isAnalysisFailedByExceededAnalysisLimit,
   isListSubmittedForAnalysis,
+  isListWithErrors,
 }) {
+  const theme = useTheme();
+
   const alertsConfig = [
     {
       condition: !isFailedAnalysis && hasLocationWithErrors,
       title: 'Location errors',
-      backgroundColor: '#F24E1E',
+      backgroundColor: theme.palette.error.main,
+      color: '#EEE',
       icon: <ReportIcon style={{ marginRight: '5px' }} fontSize="inherit" />,
       message: (
         <>
-          Some of your locations have failed analysis. <br /> This means that these locations won’t
+          Some of your locations have failed analysis. <br /> This means that these locations won't
           be included in list diagnostic calculations.
         </>
       ),
       buttonText: 'Try Again',
+      buttonTextColor: theme.palette.error.main,
       onButtonClick: openDraftSubmitDialog,
     },
     {
       condition: isFailedAnalysis,
       title: 'Analysis has failed',
-      backgroundColor: '#F24E1E',
+      backgroundColor: theme.palette.error.main,
+      color: '#EEE',
       icon: <ReportIcon style={{ marginRight: '5px' }} fontSize="inherit" />,
       message: <>To receive results, resubmit this list for analysis.</>,
       buttonText: 'Try Again',
+      buttonTextColor: theme.palette.error.main,
       onButtonClick: toggleReRunAnalysisDialog,
     },
     {
       condition: isAnalysisFailedByExceededAnalysisLimit,
       title: 'Usage limit exceeded',
-      backgroundColor: '#FFA500',
+      backgroundColor: theme.palette.warning.main,
+      color: theme.palette.text.primary,
       icon: <SpeedIcon style={{ marginRight: '5px' }} fontSize="inherit" />,
       message: (
         <>
@@ -49,15 +59,18 @@ export default function AnalysisStatusBanners({
           To continue parsing your lists, you need to increase the usage limit.
         </>
       ),
-      buttonText: 'INCREASE LIMIT',
+      buttonText: 'Increase limit',
+      buttonTextColor: theme.palette.text.primary,
       onButtonClick: () => (window.location.href = '/profile'),
     },
     {
       condition:
-        (isDiagnosticStatusDraft && !isListSubmittedForAnalysis) ||
-        isAnalysisFailedByExceededAnalysisLimit,
+        !isListWithErrors &&
+        ((isDiagnosticStatusDraft && !isListSubmittedForAnalysis) ||
+          isAnalysisFailedByExceededAnalysisLimit),
       title: 'DRAFT',
-      backgroundColor: '#58a9cd',
+      backgroundColor: theme.palette.secondary.main,
+      color: '#EEE',
       icon: <EditNoteIcon sx={{ mr: 0.5 }} fontSize="inherit" />,
       message: (
         <>
@@ -66,6 +79,24 @@ export default function AnalysisStatusBanners({
         </>
       ),
       buttonText: 'Submit for Analysis',
+      buttonTextColor: theme.palette.secondary.main,
+      onButtonClick: openDraftSubmitDialog,
+    },
+    {
+      condition: isListWithErrors && isDiagnosticStatusDraft,
+      title: 'DRAFT',
+      backgroundColor: theme.palette.warning.main,
+      color: theme.palette.text.primary,
+      icon: <EditNoteIcon sx={{ mr: 0.5 }} fontSize="inherit" />,
+      message: (
+        <>
+          Your list is in Draft state because there are errors in your locations. Hover over your
+          locations with errors to understand why they failed. After fixing them offline, you can
+          re-upload them and add them to this list once again for submission.
+        </>
+      ),
+      buttonText: 'Submit for Analysis',
+      buttonTextColor: theme.palette.text.primary,
       onButtonClick: openDraftSubmitDialog,
     },
   ];

@@ -9,7 +9,10 @@ interface GHGAnalysisData {
   statusCode: number;
   locationError: string;
   commodity: string;
-  emissionsFactorByYear: string;
+  co2EmissionsFactor: string;
+  ch4EmissionsFactor: string;
+  n2oEmissionsFactor: string;
+  combinedEmissionsFactor: string;
 }
 interface GHGNumerOfPages {
   id: number;
@@ -70,6 +73,9 @@ export class GHGService {
           statusCode,
           locationError,
           emissionsFactorByYear,
+          efCo2ByYear,
+          efCh4ByYear,
+          efN2oByYear,
         } = item;
         return {
           listId,
@@ -79,7 +85,10 @@ export class GHGService {
           statusCode,
           locationError,
           commodity: Commodity,
-          emissionsFactorByYear,
+          co2EmissionsFactor: efCo2ByYear,
+          ch4EmissionsFactor: efCh4ByYear,
+          n2oEmissionsFactor: efN2oByYear,
+          combinedEmissionsFactor: emissionsFactorByYear,
         };
       });
     } catch (e) {

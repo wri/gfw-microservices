@@ -54,6 +54,7 @@ describe('Lock List Service', () => {
     expect(accomplishTask).toBeTruthy();
     expect(lockStatus).toBeDefined();
     expect(lockUserId).toBe(10);
+    await listsRepository.delete({ id: 5407 });
   });
 
   it('Locking a list that does not exist', async () => {
@@ -67,6 +68,7 @@ describe('Lock List Service', () => {
 
     expect(accomplishTask).toBeFalsy();
     expect(list).toBeNull();
+    await listsRepository.delete({ id: 5407 });
   });
 
   it('Locking a locked list', async () => {
@@ -83,6 +85,7 @@ describe('Lock List Service', () => {
     expect(accomplishTask).toBeFalsy();
     expect(lockStatus).toBeDefined();
     expect(lockUserId).toBe(10);
+    await listsRepository.delete({ id: 5407 });
   });
 
   it('Unlocking an existing List', async () => {
@@ -99,6 +102,7 @@ describe('Lock List Service', () => {
     expect(accomplishTask).toBeTruthy();
     expect(lockStatus).toBeNull();
     expect(lockUserId).toBe(10);
+    await listsRepository.delete({ id: 5407 });
   });
 
   it('Unlocking an existing List with different user', async () => {
@@ -115,6 +119,7 @@ describe('Lock List Service', () => {
     expect(accomplishTask).toBeFalsy();
     expect(lockStatus).toBeDefined();
     expect(lockUserId).toBe(10);
+    await listsRepository.delete({ id: 5407 });
   });
 
   it('Unlocking a list that does not exist', async () => {
@@ -130,5 +135,6 @@ describe('Lock List Service', () => {
 
     expect(accomplishTask).toBeFalsy();
     expect(list).toBeNull();
+    await listsRepository.delete({ id: 5407 });
   });
 });

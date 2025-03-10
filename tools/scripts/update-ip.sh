@@ -7,7 +7,7 @@ SECURITY_GROUPS=()
 
 usage() {
   echo "Usage: $0 -d <RULE_DESCRIPTION> -g <SECURITY_GROUP1,SECURITY_GROUP2,...>"
-   echo "Usage: $0 -d \"Guilherme\" -g \"STD-DEVELOPMENT,STD-V2-WINDOWS\""
+  echo "Usage: $0 -d \"Guilherme\" -g \"STD-DEVELOPMENT,STD-V2-WINDOWS\""
   exit 1
 }
 

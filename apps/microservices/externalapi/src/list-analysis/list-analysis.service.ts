@@ -215,7 +215,6 @@ export class ListAnalysisService {
         throw new HttpException({ errorDetails: 'List not found' }, HttpStatus.NOT_FOUND);
       }
 
-      let connection = await this.clientStoreConnection.getConnection(organization.organizationDb);
       const listTable = list.listTableName;
 
       const ListEntity = new EntitySchema<ListSchemaType>({
@@ -223,9 +222,10 @@ export class ListAnalysisService {
         name: listTable,
       });
 
-      connection = await this.clientStoreConnection.getConnection(organization.organizationDb, [
-        ListEntity,
-      ]);
+      const connection = await this.clientStoreConnection.getConnection(
+        organization.organizationDb,
+        [ListEntity]
+      );
       const listTableNameRepository = connection.getRepository(ListEntity);
       const locationsWithErrors = await listTableNameRepository.find({
         select: ['locationName', 'errorDetails'],

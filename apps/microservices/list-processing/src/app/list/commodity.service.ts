@@ -70,7 +70,7 @@ export class CommodityService {
     listId: number
   ): Promise<{ commodity: string; listTableName: string; templateId: number }> {
     const clientStoreConnection = new ClientStoreConnection();
-    const connection = await clientStoreConnection.getConnection(organizationDatabase, [Lists]);
+    const connection = await clientStoreConnection.getConnection(organizationDatabase);
     const listRepository = connection.getRepository(Lists);
     const { Commodity, listTableName, templateId } = await listRepository.findOne({
       where: { id: listId },

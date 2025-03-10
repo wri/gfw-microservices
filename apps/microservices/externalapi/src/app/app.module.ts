@@ -83,7 +83,6 @@ function createTypeOrmModule(name: string, entities?: Array<Function | string | 
         username: config.get('MSSQL_USERNAME', { infer: true }),
         password: MSSQL_PASSWORD,
         synchronize: env === TEST_ENVIRONMENT,
-        logging: true,
         entities,
         host: config.get('MSSQL_HOSTNAME', { infer: true }),
         port: config.get('MSSQL_PORT', { infer: true }),

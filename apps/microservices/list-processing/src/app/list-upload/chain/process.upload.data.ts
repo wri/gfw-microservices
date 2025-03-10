@@ -157,7 +157,7 @@ export class ProcessUploadData extends AbstractHandler<ChainType> {
 
   async getListCommodity(organizationDatabase: string, listId: number): Promise<string> {
     const clientStoreConnection = new ClientStoreConnection();
-    const connection = await clientStoreConnection.getConnection(organizationDatabase, [Lists]);
+    const connection = await clientStoreConnection.getConnection(organizationDatabase);
     const listRepository = connection.getRepository(Lists);
     const { Commodity } = await listRepository.findOne({
       where: { id: listId },

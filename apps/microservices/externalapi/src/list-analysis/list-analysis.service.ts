@@ -42,12 +42,11 @@ import { generateAnalysisTemplate } from '../shared/generate-templates';
 import { ListService } from '../lists/lists.service';
 import { ServerConfigType } from '../validators/server-config';
 import { SaveActivityLogEndpoint } from './utils/saveActivityLogEndpoint';
-import { handleCreateAnalysis, isValidMapSpamCommodity } from '@wri-monorepos/geo';
+import { handleCreateAnalysis } from '@wri-monorepos/geo';
 import { EntitySchema, IsNull, Not } from 'typeorm';
 import {
   ListSchema,
   ListSchemaType,
-  ClientStoreConnection as ClientStoreConnectionSql,
   ClientStoreConnection,
   ListsAnalysisStatus,
 } from '@wri-monorepos/sql';
@@ -582,8 +581,6 @@ export class ListAnalysisService {
     userEmail: string,
     organization_user_id: number
   ) {
-    await this.validateGHGAnalysis(listId, organizationId, analysisId);
-
     const organizationDetails = await this.getOrganizationDetails(organizationId);
 
     await this.saveActivityLogEndpoint.saveActivityLogEndpoint(
@@ -604,87 +601,5 @@ export class ListAnalysisService {
     );
 
     return response;
-  }
-  private async validateGHGAnalysis(
-    listId: number,
-    organizationId: number,
-    analysisId: string
-  ): Promise<boolean> {
-    if (analysisId !== 'GHG') {
-      return true;
-    } else {
-      const lists = await this.listService.getList({
-        listId,
-        organizationId,
-      });
-
-      if (!lists) {
-        Logger.warn(`List ${lists} not found`);
-        throw new BadRequestException(`List not found`);
-      }
-
-      if (!lists.Commodity) {
-        Logger.warn('Commodity not valid');
-        throw new BadRequestException(`No commodity specified for ${lists.listName}`);
-      }
-
-      // Validate if commodity is valid one
-      if (!isValidMapSpamCommodity(lists.Commodity)) {
-        Logger.log('Commodity not valid');
-        throw new BadRequestException(
-          `List commodity ${lists.Commodity} for ${lists.listName} not supported for GHG Analysis`
-        );
-      }
-      try {
-        if (lists.Commodity === 'GFWP_Other') {
-          // Get List-XXX attributes for list that has commodity as Other
-          const ListEntity = new EntitySchema<ListSchemaType>({
-            ...ListSchema,
-            name: lists.listTableName,
-          });
-          const organization = await this.getOrganizationDetails(organizationId);
-          const clientStoreConnectionSql = new ClientStoreConnectionSql();
-          const connection = await clientStoreConnectionSql.getConnection(
-            organization.organizationDb,
-            [ListEntity]
-          );
-          const listTableNameRepository = await connection.getRepository(ListEntity);
-          const listTableName = await listTableNameRepository.findBy({ commodity: 'GFWP_Other' });
-
-          if (listTableName.length > 0) {
-            let hasYield = 0;
-            listTableName.forEach((element) => {
-              JSON.parse(element.attributes || '[]').map((item) => {
-                if (item['field'] === 'yield' && parseFloat(item['value']) > 0) {
-                  Logger.log('There is yield');
-                  hasYield += 1;
-                }
-              });
-            });
-            // Verify if has yield for all locations
-            if (hasYield < listTableName.length) {
-              Logger.log('Commodity not valid');
-              throw new BadRequestException(
-                `List ${lists.listName} not supported for GHG Analysis missing yield for some locations`
-              );
-            }
-          } else {
-            Logger.log('Commodity not valid');
-            throw new BadRequestException(`List ${lists.listName} not supported for GHG Analysis`);
-          }
-        }
-      } catch (error) {
-        Logger.warn(error.stack || error);
-        if (error instanceof BadRequestException) {
-          throw error;
-        } else {
-          throw new BadRequestException(
-            `List ${lists.listName} not supported for GHG Analysis`,
-            error
-          );
-        }
-      }
-      return true;
-    }
   }
 }

@@ -63,6 +63,7 @@ export const vectorEnabledLayers = [
   proLayers.protectedAreas,
   proLayers.oilPalmConcessions,
   proLayers.universalMillList,
+  proLayers.landRights,
 ];
 
 export const densityDisplayLayers = [proLayers.treeCoverID, proLayers.treeBiomassLossID];

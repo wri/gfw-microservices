@@ -196,18 +196,8 @@ export const mapLayers = [
       interactionConfig: {
         type: 'info',
         config: {
-          url: 'http://tile.globalforestwatch.org/nasa_viirs_fire_alerts/latest/features?lat={lat}&lng={lng}&z={z}',
+          url: 'https://data-api.globalforestwatch.org/dataset/gfw_indigenous_community_and_indicative_lands/v202408/features',
         },
-        output: [
-          {
-            column: 'name',
-            format: null,
-            prefix: '',
-            property: 'Name',
-            suffix: '',
-            type: 'string',
-          },
-        ],
       },
       applicationConfig: {},
       staticImageConfig: {},

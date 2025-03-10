@@ -1,62 +1,4 @@
-import { z } from 'zod';
-
-const mapStringsToArrayHelper = (currentParam) => {
-  try {
-    const parsed = JSON.parse(currentParam);
-    if (Array.isArray(parsed)) {
-      return parsed;
-    }
-    return [parsed];
-  } catch (e) {
-    // If parsing fails, it's not an Admin Areas
-    return currentParam.split(',').map((item) => {
-      const num = Number(item);
-      return isNaN(num) ? item.trim() : num;
-    });
-  }
-};
-
-const QueryParamsValidationSchema = z.object({
-  listId: z.coerce.number().optional(),
-  selectedLocations: z.string().transform(mapStringsToArrayHelper).optional(),
-  visibleLayers: z.string().transform(mapStringsToArrayHelper).optional(),
-  locationId: z.coerce.number().optional(),
-  // https://github.com/colinhacks/zod/issues/2985
-  isGfwList: z
-    .string()
-    .transform((x) => x === 'true')
-    .pipe(z.boolean())
-    .optional(),
-  isSharedList: z
-    .string()
-    .transform((x) => x === 'true')
-    .pipe(z.boolean())
-    .optional(),
-  latitude: z.coerce.number().optional(),
-  longitude: z.coerce.number().optional(),
-  zoom: z.coerce.number().optional(),
-  selectedTimeframe: z.string().optional(),
-  xmin: z.coerce.number().optional(),
-  ymin: z.coerce.number().optional(),
-  xmax: z.coerce.number().optional(),
-  ymax: z.coerce.number().optional(),
-});
-
-export const parseSearchParams = (queryString) => {
-  const urlSearchParams = new URLSearchParams(queryString);
-  const queryObj = Object.fromEntries(urlSearchParams.entries());
-
-  const validParams = QueryParamsValidationSchema.parse(queryObj);
-
-  // feat [GPV-3376]: external route `/apimap` uses locationId, set selectedLocations to trigger zoom for that
-  if (validParams.locationId && window.location.pathname === '/apimap') {
-    validParams.selectedLocations = [validParams.locationId];
-  }
-
-  return validParams;
-};
-
-const getQueryParams = (queryString) => {
+export const getQueryParams = (queryString) => {
   const queryParams = new URLSearchParams(queryString);
   const params = {};
 
@@ -120,5 +62,3 @@ const getQueryParams = (queryString) => {
 
   return params;
 };
-
-export default getQueryParams;

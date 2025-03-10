@@ -1,6 +1,10 @@
 #!/bin/bash
 
 # You will need AWS CLI and jq installed
+if ! command -v aws &> /dev/null || ! command -v jq &> /dev/null; then
+  echo "Error: AWS CLI and jq must be installed." >&2
+  exit 1
+fi
 
 AWS_REGION="us-east-1"
 SECURITY_GROUPS=()
@@ -35,8 +39,8 @@ for SECURITY_GROUP_NAME in "${SECURITY_GROUPS[@]}"; do
 
   SECURITY_GROUP_ID=$(echo "$SECURITY_GROUP_INFO" | jq -r '.SecurityGroups[0].GroupId')
 
-  if [[ -z "$SECURITY_GROUP_ID" || "$SECURITY_GROUP_ID" == "None" ]]; then
-    echo "Security group '$SECURITY_GROUP_NAME' not found. Skipping..."
+  if [ -z "$SECURITY_GROUP_ID" ] || [ "$SECURITY_GROUP_ID" == "null" ]; then
+    echo "Security group '$SECURITY_GROUP_NAME' not found. Skipping..." >&2
     continue
   fi
 
@@ -82,6 +86,11 @@ for SECURITY_GROUP_NAME in "${SECURITY_GROUPS[@]}"; do
       --region "$AWS_REGION" \
       > /dev/null 2>&1
 
+    if [ $? -ne 0 ]; then
+      echo "$(date +"%Y-%m-%d %H:%M:%S") - Error executing AWS CLI command. Skipping..." >&2
+      continue
+    fi
+
     echo "Adding new rule with IP $CURRENT_PUBLIC_IP to $SECURITY_GROUP_NAME..."
     aws ec2 authorize-security-group-ingress \
       --group-id "$SECURITY_GROUP_ID" \
@@ -100,6 +109,11 @@ for SECURITY_GROUP_NAME in "${SECURITY_GROUPS[@]}"; do
       ]" \
       --region "$AWS_REGION" \
       > /dev/null 2>&1
+
+    if [ $? -ne 0 ]; then
+      echo "$(date +"%Y-%m-%d %H:%M:%S") - Error executing AWS CLI command. Skipping..." >&2
+      continue
+    fi
 
     echo "Security group rule updated successfully for $SECURITY_GROUP_NAME!"
   done <<< "$(echo "$MATCHING_RULES" | jq -c '.')"

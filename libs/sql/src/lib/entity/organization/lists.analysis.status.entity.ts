@@ -12,19 +12,19 @@ export class ListsAnalysisStatus {
   status: number;
 
   @Column({ name: 'ErrorInfo' })
-  errorInfo: string;
+  errorInfo?: string;
 
   @Column({ name: 'UpdateTime' })
-  updateTime: string;
+  updateTime: Date;
 
   @Column({ name: 's3_url' })
-  s3Url: string;
+  s3URL: string;
 
   @Column({ name: 'expiration_time' })
-  expirationTime: string;
+  expirationTime: Date;
 
   @Column({ name: 'bundle_creation_time' })
-  bundleCreationTime: string;
+  bundleCreationTime: Date;
 
   @Column({ name: 'options', nullable: true })
   options?: string;

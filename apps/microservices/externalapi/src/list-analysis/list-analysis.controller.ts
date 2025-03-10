@@ -67,7 +67,15 @@ export class ListAnalysisController {
       }
     );
 
-    return analysisStatus;
+    const errorsDetails = await this.listAnalysisService.getLocationsErrors({
+      listId,
+      organizationId,
+    });
+
+    return {
+      ...analysisStatus,
+      errorsDetails: [...errorsDetails, ...analysisStatus.errorsDetails],
+    };
   }
   @ApiResponse({ status: 200, type: ListAnalysisResponse })
   @ApiUnauthorizedResponse({ status: 401, type: UnauthorizedResponse })

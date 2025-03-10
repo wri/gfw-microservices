@@ -12,7 +12,6 @@ import { ExternalAPIKey } from '../../api-keys/external-api-key.entity';
 import { Organization } from '../../api-keys/organization.entity';
 import { UserRoutes } from '../../api-keys/user-route.entity';
 import { UserService } from '../user.service';
-import { ClientStoreConnection } from '../../shared/client-store-connection';
 import { OrganizationService } from '../organization.service';
 import axios from 'axios';
 import AxiosMockAdapter from 'axios-mock-adapter';
@@ -29,6 +28,7 @@ import { ListService } from '../../lists/lists.service';
 import { S3Service } from '@wri-monorepos/aws';
 //import { } from '@ssut/nestjs-sqs';
 import { SaveActivityLogEndpoint } from '../utils/saveActivityLogEndpoint';
+import { ClientStoreConnection } from '@wri-monorepos/sql';
 
 // Mock ConfigService
 const mockConfigService = {

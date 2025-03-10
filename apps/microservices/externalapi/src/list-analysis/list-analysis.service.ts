@@ -5,6 +5,7 @@ import {
   InternalServerErrorException,
   Logger,
   NotFoundException,
+  HttpException,
 } from '@nestjs/common';
 import { AnalysesGenerateRequest, ListAnalysisResponse } from './list-analysis.dto';
 import { UserService } from './user.service';
@@ -12,9 +13,7 @@ import { ExternalUpload } from './external-upload.entity';
 import { ConfigService } from '@nestjs/config';
 import axios from 'axios';
 import { generateRandomFilename } from '@wri-monorepos/shared';
-import { ClientStoreConnection } from '../shared/client-store-connection';
 import { OrganizationService } from './organization.service';
-import { ListsAnalysisStatus } from './list-analysis-status.entity';
 import { transformExternalUpload } from './transformers';
 import {
   ListUploadNewErrorResponse,
@@ -31,7 +30,6 @@ import {
   ListActivityTypesEnum,
   listStatus,
 } from '@wri-monorepos/constants';
-import { SqsService } from '@ssut/nestjs-sqs';
 import {
   CREATE_ANALYSIS,
   DELETE_LIST,
@@ -45,6 +43,13 @@ import { ListService } from '../lists/lists.service';
 import { ServerConfigType } from '../validators/server-config';
 import { SaveActivityLogEndpoint } from './utils/saveActivityLogEndpoint';
 import { handleCreateAnalysis } from '@wri-monorepos/geo';
+import { EntitySchema, IsNull, Not } from 'typeorm';
+import {
+  ListSchema,
+  ListSchemaType,
+  ClientStoreConnection,
+  ListsAnalysisStatus,
+} from '@wri-monorepos/sql';
 const LIST_INITIAL_STATUS = 'Pending';
 const MIN_FILE_SIZE_IN_BYTES = 70; // single location CSV file size
 
@@ -75,7 +80,6 @@ export class ListAnalysisService {
     private userService: UserService,
     private clientStoreConnection: ClientStoreConnection,
     private organizationService: OrganizationService,
-    private readonly sqsService: SqsService,
     private readonly listService: ListService,
     private readonly saveActivityLogEndpoint: SaveActivityLogEndpoint
   ) {
@@ -187,6 +191,59 @@ export class ListAnalysisService {
       }
     }
     return analysisStatus;
+  }
+
+  async getLocationsErrors({
+    listId,
+    organizationId,
+  }: {
+    listId: number;
+    organizationId: number;
+  }): Promise<Array<{ locationName: string; errorDetails: string }>> {
+    try {
+      const organization = await this.organizationService.findOrganizationById(organizationId);
+      if (!organization) {
+        throw new HttpException({ errorDetails: 'Organization not found' }, HttpStatus.NOT_FOUND);
+      }
+
+      const list = await this.listService.getList({
+        listId,
+        organizationId,
+      });
+
+      if (!list) {
+        throw new HttpException({ errorDetails: 'List not found' }, HttpStatus.NOT_FOUND);
+      }
+
+      const listTable = list.listTableName;
+
+      const ListEntity = new EntitySchema<ListSchemaType>({
+        ...ListSchema,
+        name: listTable,
+      });
+
+      const connection = await this.clientStoreConnection.getConnection(
+        organization.organizationDb,
+        [ListEntity]
+      );
+      const listTableNameRepository = connection.getRepository(ListEntity);
+      const locationsWithErrors = await listTableNameRepository.find({
+        select: ['locationName', 'errorDetails'],
+        where: {
+          errorDetails: Not(IsNull()),
+        },
+      });
+
+      return locationsWithErrors;
+    } catch (error) {
+      if (error instanceof HttpException) {
+        throw error;
+      }
+      throw new HttpException(
+        { errorDetails: error.message || 'Failed to retrieve list errors' },
+        HttpStatus.INTERNAL_SERVER_ERROR
+      );
+    }
   }
 
   async prepareUpload({

@@ -20,14 +20,14 @@
  * @param userId number
  */
 import { Logger } from '@nestjs/common';
-import { ClientStoreConnection, SQLUtils } from '../util';
+import { SQLUtils } from '../util';
 import { UspSetListUnlocked } from './uspSetListUnlocked';
 import { UspSetListLocked } from './uspSetListLocked';
-import { ListAttributes, Lists, ListSchema, ListSchemaType } from '../entity';
+import { ListSchema, ListSchemaType } from '../entity';
 import { getAllLists, ListsType, TemplateMetadata } from '../queries';
 import { EntitySchema } from 'typeorm';
-import * as sql from 'mssql';
 
+const GHG_PREFIX = 'GFWP_';
 const LIST_VERSION_POST_UPGRADE = 2;
 
 interface SchemaUpgraderArgs {
@@ -55,7 +55,7 @@ export async function upgradeListSchema(args: SchemaUpgraderArgs) {
        * see {@link https://gfw.atlassian.net/browse/GPV-3983}
        */
       const templateName = await getTemplateName(list.template_id);
-      const listCommmodity = await getCommodityCodeFromTemplate(templateName);
+      const listCommmodity = await getCommodityCodeFromTemplate(templateName, list.Commodity);
 
       logger.log(`Writing list.[Commodity] = ${listCommmodity} from template: ${templateName}`);
       await SQLUtils.queryDBFirstRow<undefined>(
@@ -171,7 +171,18 @@ async function getTemplateName(listTemplateId: number) {
   return template.template_name;
 }
 
-async function getCommodityCodeFromTemplate(templateName: string) {
+async function getCommodityCodeFromTemplate(templateName: string, userListCommodity: string) {
+  /**
+   * If version=1 and template_id=1 (investment), then we store GFWP_Multiple as the Lists.Commodity.
+   * @see {@link https://gfw.atlassian.net/browse/GPV-4086?focusedCommentId=38187}
+   */
+  if (templateName === 'Investment') {
+    return `${GHG_PREFIX}_Multiple`;
+  }
+  if (userListCommodity) {
+    return `${GHG_PREFIX}_${userListCommodity}`;
+  }
+
   const ghgCodes = getGHGCodesMap();
   const ghgForUser = ghgCodes.find((v) => {
     return (
@@ -278,15 +289,3 @@ export const COMMODITY_MAP_SPAM_CODES_FOR_HUMANS = {
   [GHG_MAPSPAM_CODES.SOYB]: 'Soy Generic',
   [GHG_MAPSPAM_CODES.SUGC]: 'Sugar Cane',
 };
-export const MAPSPAM_COMMODITY = {
-  COFF: 'Coffee',
-  COCO: 'Cocoa Generic',
-  OILP: 'Palm Oil Generic',
-  RUBB: 'Rubber',
-  SOYB: 'Soy Generic',
-  SUGC: 'Sugar Cane',
-};
-
-export enum GHG_PREFIX {
-  VALUE = 'GFWP_',
-}

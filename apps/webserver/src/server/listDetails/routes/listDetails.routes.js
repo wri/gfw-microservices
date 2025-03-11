@@ -51,7 +51,6 @@ module.exports = (app, limiter) => {
   });
 
   app.get('/list-details/upgrade-version-2', async (req, res) => {
-    console.log("🚀 ~ app.get ~ req.session:", req.session)
     const { organization_database, organization_user_id } = req.session;
     const { listId } = req.query;
 
@@ -63,7 +62,7 @@ module.exports = (app, limiter) => {
       });
       res.status(200).send({
         success: true,
-        data: list
+        data: list,
       });
     } catch (error) {
       console.error('Schema upgrader test route failed');

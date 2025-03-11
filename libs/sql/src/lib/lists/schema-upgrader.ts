@@ -32,6 +32,7 @@ import {
   saveListAttributes,
 } from '../list-attributes';
 
+const GHG_PREFIX = 'GFWP_';
 const LIST_VERSION_POST_UPGRADE = 2;
 
 interface SchemaUpgraderArgs {

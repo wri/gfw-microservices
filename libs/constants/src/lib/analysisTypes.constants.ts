@@ -20,30 +20,6 @@ export const analysisTypes = {
   GREENHOUSE_GAS_EMISSIONS: 'GHG',
 };
 
-// update these constant names when isListDetailsPageRedesignAvailable feature flag is removed
-export const analysisTypesOptions = [
-  {
-    id: analysisTypes.FOREST_CHANGE_DIAGNOSTICS,
-    label: 'Forest Change Global',
-    shortLabel: 'Forest Change',
-  },
-  {
-    id: analysisTypes.DEFORESTATION_KPIS,
-    label: 'Deforestation Reporting (cutoff date 2020)',
-    shortLabel: 'Reporting',
-  },
-  {
-    id: analysisTypes.ALERTS,
-    label: 'NEAR-REAL TIME ALERTS (INTEGRATED ALERTS, VIIRS)',
-    shortLabel: 'Alerts',
-  },
-  {
-    id: analysisTypes.GREENHOUSE_GAS_EMISSIONS,
-    label: 'Greenhouse Gas Emissions',
-    shortLabel: 'GHG',
-  },
-];
-
 export const analysisTypesOptionsNewNames = [
   {
     id: analysisTypes.DEFORESTATION_KPIS,

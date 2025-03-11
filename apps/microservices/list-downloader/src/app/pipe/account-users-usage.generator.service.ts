@@ -13,7 +13,7 @@ import {
 } from '@wri-monorepos/sql';
 import { IFileGenerator } from './i.file.generator';
 import { ACCOUNT_USERS_USAGE_CSV_HEADER } from '../shared/constants';
-import { analysisTypesOptions } from '@wri-monorepos/constants';
+import { analysisTypesOptionsNewNames } from '@wri-monorepos/constants';
 import { ServerConfigType } from '../../validators/server-config';
 
 @Injectable()
@@ -206,7 +206,7 @@ export class AccountUsersAnalysisUsageFileService extends IFileGenerator {
   }
 
   private getAnalysisTypeShortLabel(analysisTypeId: string) {
-    const analysisType = analysisTypesOptions.find(
+    const analysisType = analysisTypesOptionsNewNames.find(
       (analysisOpt) => analysisOpt.id === analysisTypeId
     );
     return analysisType ? analysisType.shortLabel : '';

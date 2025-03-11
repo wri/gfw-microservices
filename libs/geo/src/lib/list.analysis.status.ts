@@ -17,7 +17,7 @@ import {
   GEO_TRELLIS__ANALYZE_LIST_QA,
   GEO_TRELLIS__ANALYZE_LIST_STAGING,
   listStatus,
-  analysisTypesOptions,
+  analysisTypesOptionsNewNames,
   analysisIdsOptionsMap,
   MAPSPAM_COMMODITY,
 } from '@wri-monorepos/constants';
@@ -397,7 +397,7 @@ export const deleteListAnalysisStatusBy = async (
 
 export const getAnalysisTypesFromIds = (analysisIds: string[]) => {
   const analysisIdSet = new Set(analysisIds);
-  return analysisTypesOptions.reduce((result, { id }) => {
+  return analysisTypesOptionsNewNames.reduce((result, { id }) => {
     result[id] = analysisIdSet.has(id);
     return result;
   }, {} as Record<string, boolean>);
@@ -407,7 +407,7 @@ export const extractAnalysisTypes = (listAnalysisStatusData: ListsAnalysisStatus
   const analysisStatusMap = new Map(
     listAnalysisStatusData.map(({ analysisId }) => [analysisId, true])
   );
-  return analysisTypesOptions.reduce((result, { id }) => {
+  return analysisTypesOptionsNewNames.reduce((result, { id }) => {
     result[id] = analysisStatusMap.has(id);
     return result;
   }, {} as Record<string, boolean>);

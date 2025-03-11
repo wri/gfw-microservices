@@ -3,14 +3,13 @@ import { NestFactory } from '@nestjs/core';
 import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
 
 import { AppModule } from './app/app.module';
-import { ConsoleLog } from '@wri-monorepos/shared';
 import { ConfigService } from '@nestjs/config';
 import { ServerConfigType } from './validators/server-config';
 
 const SWAGGER_DISABLED_ENVS = ['staging', 'production'];
 
 async function bootstrap() {
-  const app = await NestFactory.create(AppModule, { logger: new ConsoleLog() });
+  const app = await NestFactory.create(AppModule);
   const globalPrefix = 'api';
   app.setGlobalPrefix(globalPrefix);
 

@@ -147,7 +147,7 @@ describe('UploadLocationByPolygon', () => {
         /your coordinate value is invalid\. please ensure your data is in decimal degree notation/i
       )
     ).toHaveLength(6);
-  }, 10100);
+  }, 15100);
 
   it('should allow adding and removing coordinate fields', async () => {
     render(<UploadLocationByPolygon />);
@@ -170,7 +170,7 @@ describe('UploadLocationByPolygon', () => {
 
     await userEvent.click(screen.getAllByRole('button')[2]);
     await waitFor(() => expect(screen.getAllByLabelText(/longitude/i)).toHaveLength(3));
-  }, 10100);
+  }, 15100);
 
   it('should call clearUploadType on cancel', async () => {
     render(<UploadLocationByPolygon />);

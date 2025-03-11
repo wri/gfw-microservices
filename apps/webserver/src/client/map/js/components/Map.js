@@ -83,7 +83,7 @@ import { constructLayerObject } from '../../../common/js/utils/layer.utils';
 import { getMapLayerIdFromGFWListName } from '../../../common/js/utils/gfw.utils';
 import { updateInteractiveLayers } from '../utils/layerUpdates.utils';
 import sortMapArray from './sortMapArray';
-import getQueryParams, { parseSearchParams } from './getQueryParams';
+import { getQueryParams } from './getQueryParams';
 
 import AnalysisPanel from './analysisPanel/AnalysisPanel';
 import ControlPanel from './controls/ControlPanel';
@@ -222,11 +222,15 @@ class Map extends Component {
 
       drawnCoordinates: [],
     });
-
-    this.svm = null;
+    this.eventHandlers = [];
+    this.sketchViewModel = null;
   }
 
   componentWillUnmount() {
+    if (this.mapView) {
+      this.eventHandlers.forEach((handler) => handler.remove());
+      this.eventHandlers = [];
+    }
     if (this.state && this.state.sketchEventListener) {
       this.state.sketchEventListener.remove();
     }
@@ -270,8 +274,25 @@ class Map extends Component {
     });
     this.mapView = mapView;
 
+    this.eventHandlers.push(this.mapView.on('drag', this.startInteraction));
+    this.eventHandlers.push(this.mapView.on('mouse-wheel', this.startInteraction));
+    this.eventHandlers.push(this.mapView.on('keyboard', this.startInteraction));
+    this.eventHandlers.push(this.mapView.watch('stationary', this.stopInteraction));
+
     mapView.when(this.mapLoaded);
   }
+
+  startInteraction = () => {
+    if (!this.state.isMapMoving) {
+      this.setState({ isMapMoving: true });
+    }
+  };
+
+  stopInteraction = (stationary) => {
+    if (stationary) {
+      this.setState({ isMapMoving: false });
+    }
+  };
 
   componentDidUpdate(prevProps, prevState) {
     const {
@@ -697,11 +718,12 @@ class Map extends Component {
     this.addCustomBasemaps(view);
     this.view = view;
 
-    this.goToOriginalPoint = () =>
+    this.goToOriginalPoint = () => {
       this.view.goTo({
         center: DEFAULT_MAPVIEW_CENTER,
         zoom: 3,
       });
+    };
 
     const customActions = [popupAnalyzeAction];
     if (access_level_id !== 3) {
@@ -825,19 +847,19 @@ class Map extends Component {
 
     const sketchEventListener = view.on('double-click', (event) => {
       //If sketch is in progress and we double click > we need to complete it. If sketch is not in progress and we double click map, we just ignore it
-      if (!this.svm || this.svm.state === 'ready') {
+      if (!this.sketchViewModel || this.sketchViewModel.state === 'ready') {
         return;
       }
 
       event.stopPropagation();
-      this.svm.complete();
+      this.sketchViewModel.complete();
     });
 
     this.setState(sketchEventListener);
   };
 
   initializeSketchViewModel = (view) => {
-    const svm = new SketchViewModel({
+    const sketchViewModel = new SketchViewModel({
       view,
       layer: view.graphics,
       polygonSymbol: {
@@ -849,9 +871,9 @@ class Map extends Component {
         },
       },
     });
-    this.svm = svm;
+    this.sketchViewModel = sketchViewModel;
 
-    svm.on('create', (event) => {
+    sketchViewModel.on('create', (event) => {
       if (event.state === 'complete') {
         const symbol = new SimpleFillSymbol({
           color: [227, 139, 79, 0.8],
@@ -874,7 +896,7 @@ class Map extends Component {
         );
       }
     });
-    store.dispatch(saveSketchTool(svm));
+    store.dispatch(saveSketchTool(sketchViewModel));
   };
 
   executeIdentifyTask = (evt) => {
@@ -1815,6 +1837,7 @@ class Map extends Component {
         if (locationIDs.length < 200) {
           // Zoom to locations only if we have less than 200 locations
           const { data } = await getBBoxAndGeostoreIDs(GFW_LIST, QUERY_FIELD, locationIDs, date);
+
           if (data && data.data.length !== 0 && data.status === 200) {
             const locations = data.data;
 
@@ -1845,169 +1868,16 @@ class Map extends Component {
     this.applyStateFromUrl();
   };
 
-  setUserList = (list, { selectedLocations, alertsMapExtent }) => {
-    let transitionListData;
-
-    // handle locations features
-    if (selectedLocations && selectedLocations?.length > 0) {
-      fetch(`/map/getUserListFilteredLocationData`, {
-        method: 'POST',
-        credentials: 'same-origin',
-        headers: {
-          'Content-type': 'application/json',
-        },
-        body: JSON.stringify({
-          listId: list.id,
-          filterByLocations: selectedLocations ?? '',
-        }),
-      })
-        .then((res) => res.json())
-        .then((listLocationData) => {
-          const { features } = listLocationData;
-          const selectedLocationsData = [
-            {
-              type: 'FeatureCollection',
-              features,
-            },
-          ];
-          const { transitionListData } = this.state;
-
-          this.goToOriginalPoint = () =>
-            setVectorTileLayerForFilteredList(selectedLocationsData, transitionListData, this.view);
-
-          setVectorTileLayerForFilteredList(selectedLocationsData, transitionListData, this.view);
-        })
-        .catch((err) => {
-          console.log(`Error: ${err}`);
-          store.dispatch(showMapLoader(false));
-        });
-      // set up banner info for selected locations
-      transitionListData = {
-        id: list.id,
-        numLocations: list.list_locations_count,
-        name: list.list_name,
-        alertsMapExtent,
-        isGfwList: false,
-      };
-      // set list and display map
-      store.dispatch(selectList(list));
-      store.dispatch(resetList(list));
-      this.setState({ transitionListData });
-    }
-    // handle all locations
-    else if (!selectedLocations) {
-      // set up banner info for all locations
-      // transitionListData = {
-      //   id: list.id,
-      //   numLocations: list.list_locations_count,
-      //   name: list.list_name,
-      //   alertsMapExtent,
-      //   isGfwList: false,
-      // };
-      // this.getUserLocationData([list.id], list.list_name);
-      // TODO: Figure why some lists are failing to Getting MBTile Vector Tiles from S3 bucket
-      this.updateSelectedLists(list);
-    }
-    store.dispatch(showMapLoader(false));
-  };
-
-  setGfwList = (list, { selectedLocations, alertsMapExtent }) => {
-    const mapLayer = getMapLayerIdFromGFWListName(list.list_name);
-    let transitionListData;
-
-    // setting geometry analysis for listId = 1
-    if (list.list_name === 'Administrative Areas' && selectedLocations?.length === 1) {
-      /**
-       * @note Administrative Areas
-       * selectedLocations is an array with 1 object looking like { gadmid, serverLayerId }
-       * for the purposes of `queryAdmin` this pattern is easier than using the locationId
-       * and fetch for these properties
-       */
-      const [parsedSelectedLocations] = selectedLocations;
-      queryAdmin(parsedSelectedLocations).then((adminArea) => {
-        store.dispatch(analysisActions.setAnalysis('analysis'));
-        store.dispatch(analysisActions.setActiveAnalysis('region'));
-        store.dispatch(
-          analysisActions.setAnalysisAdminArea({
-            country: adminArea.country,
-            region: adminArea.region,
-          })
-        );
-        this.view.goTo(adminArea);
-        this.goToOriginalPoint = () => this.view.goTo(adminArea);
-
-        this.analyzeAdmin(adminArea);
-
-        store.dispatch(
-          updateAdminSelections({
-            country: adminArea.countryText,
-            smallerRegion: adminArea.stateText,
-            subregion: adminArea.substateText,
-          })
-        );
-      });
-    } else if (list.list_name !== 'Administrative Areas' && selectedLocations?.length > 0) {
-      // set up banner info
-      transitionListData = {
-        id: list.id,
-        numLocations: list.list_locations_count,
-        alertsMapExtent,
-        name: `(${selectedLocations.length}) ${list.list_name}`,
-        isGfwList: true,
-      };
-    } else if (list.list_name !== 'Administrative Areas' && !selectedLocations) {
-      // set up banner info
-      transitionListData = {
-        id: list.id,
-        numLocations: list.list_locations_count,
-        alertsMapExtent,
-        name: list.list_name,
-        isGfwList: true,
-      };
-    }
-
-    // zoom to the layer's extent
-    if (mapLayer === protectedAreas) {
-      this.view.goTo({
-        target: [15, 27],
-        zoom: 2,
-      });
-    } else {
-      /**
-       * TODO: use esri query to filter out existing features inside layer for displaying and zooming to specific
-       * @see esri_example https://developers.arcgis.com/javascript/latest/sample-code/featurelayer-query-basic/
-       * @see layers apps/webserver/src/client/common/js/service/gfw.service.js
-       */
-      // let gfwListLocDefinitions = {};
-      const activeGFWLayer = this.state.mapLayers.find((l) => l.id === mapLayer);
-      // TODO: figure if this shold be move outside the reach for AdminAreas, since there's no layer and it already zooms to the analysis
-      if (activeGFWLayer) {
-        const url = `${activeGFWLayer.url}/${activeGFWLayer.layerId}`;
-        queryExtent(url).then((extent) => {
-          if (extent) {
-            this.view.goTo(extent);
-          }
-        });
-      }
-    }
-
-    // set the selected list to the selected GFW list
-    store.dispatch(selectList(list));
-    store.dispatch(toggleLayer(mapLayer));
-    store.dispatch(updateGFWLocations({})); // this will display all layers locations
-    this.setState({ transitionListData });
-    store.dispatch(resetList(list));
-    store.dispatch(showMapLoader(false));
-  };
-
   applyStateFromUrl = () => {
-    store.dispatch(showMapLoader(true));
+    const queryParams = getQueryParams(this.props.location.search);
 
-    const queryParams = parseSearchParams(this.props.location.search);
+    const { gfwLists } = this.props;
     const {
       visibleLayers,
       listId,
+      selectedLocations,
       isGfwList,
+      isSharedList,
       selectedTimeframe,
       latitude,
       longitude,
@@ -2017,21 +1887,7 @@ class Map extends Component {
       xmax,
       ymax,
     } = queryParams;
-    const { userLists, gfwLists, userSharedLists } = this.props;
 
-    // grab the current list
-    const currentlySelectedList = [
-      ...(isGfwList ? gfwLists : [...userLists, ...userSharedLists]),
-    ].find((l) => l.id === listId);
-
-    // list not found, exit for now.
-    if (!listId || !currentlySelectedList) {
-      console.warn(`List ${listId} Not Found`);
-      store.dispatch(showMapLoader(false));
-      return;
-    }
-
-    // set alerts extends if available
     let alertsMapExtent;
     if (xmin && ymin && xmax && ymax) {
       alertsMapExtent = new Extent({
@@ -2045,22 +1901,169 @@ class Map extends Component {
       alertsMapExtent = null; // Handle the case where extent cannot be calculated
     }
 
-    // console.log('currentlySelectedList', currentlySelectedList, `isGfwList=${isGfwList}`);
+    const gfwListDefinitions = {};
+    const hashLayersToAdd = [];
 
-    // handle setting list
     if (isGfwList) {
-      this.setGfwList(currentlySelectedList, {
+      if (!listId || listId < 1 || listId > 5) {
+        return; // if the list is not found, exit this function
+      }
+      const [listToSelect] = gfwLists.filter((gfwList) => gfwList.id === listId);
+      const listName = listToSelect.list_name;
+      store.dispatch(addList(listToSelect));
+
+      const mapLayer = getMapLayerIdFromGFWListName(listName);
+
+      if (mapLayer) {
+        store.dispatch(toggleLayer(mapLayer));
+      }
+
+      if (!listToSelect.length) {
+        return;
+      }
+
+      const gfwListVisibleMapLayerId = getMapLayerIdFromGFWListName(listName);
+
+      hashLayersToAdd.push(gfwListVisibleMapLayerId);
+      if (listId === 1) {
+        // administrative areas
+        if (selectedLocations?.length > 0) {
+          // only for 'Administrative Areas', the selectedLocations is not an array but an object:
+          // const { gadmid, serverLayerId } = location;
+          // see the function queryAdmin in /src/client/map/js/utils/LayerUtils.js
+          // TODO: send the location ids only, and get gadmid / serverLayerId in the map view
+          // or use another property in sendData to send these
+          const parsedSelectedLocations = JSON.parse(selectedLocations[0])[0];
+          queryAdmin(parsedSelectedLocations).then((adminArea) => {
+            store.dispatch(analysisActions.setAnalysis('analysis'));
+            store.dispatch(analysisActions.setActiveAnalysis('region'));
+            store.dispatch(
+              analysisActions.setAnalysisAdminArea({
+                country: adminArea.country,
+                region: adminArea.region,
+              })
+            );
+            this.view.goTo(adminArea);
+            this.goToOriginalPoint = () => {
+              this.view.goTo(adminArea);
+            };
+
+            this.analyzeAdmin(adminArea);
+
+            store.dispatch(
+              updateAdminSelections({
+                country: adminArea.countryText,
+                smallerRegion: adminArea.stateText,
+                subregion: adminArea.substateText,
+              })
+            );
+          });
+        }
+      } else {
+        gfwListDefinitions[gfwListVisibleMapLayerId] = [];
+        selectedLocations.forEach((gfwLocation) => {
+          gfwListDefinitions[gfwListVisibleMapLayerId].push(gfwLocation);
+        });
+      }
+
+      this.updateSelectedLists(listToSelect);
+
+      const transitionListData = {
+        id: listId,
+        numLocations: selectedLocations?.length || listToSelect?.list_locations_count,
         alertsMapExtent,
-        ...queryParams,
+        name: listName,
+        isGfwList: true,
+      };
+      // set name and selected locations in banner
+      this.setState({
+        transitionListData,
       });
+
+      // is user list
     } else {
-      this.setUserList(currentlySelectedList, {
-        alertsMapExtent,
-        ...queryParams,
+      if (!listId) {
+        return; // if there is no list id in the get params, exit this function
+      }
+
+      const { userLists, userSharedLists } = this.props;
+
+      const listToSearch = isSharedList ? userSharedLists[0] : userLists;
+      const userList = listToSearch?.find((listData) => listData.id === listId);
+
+      if (!userList) {
+        return; // if the list is not found, exit this function
+      }
+
+      store.dispatch(showMapLoader(true));
+      // set name and selected locations in banner
+      this.setState({
+        transitionListData: {
+          id: listId,
+          numLocations: selectedLocations?.length || userList?.list_locations_count,
+          name: userList.list_name,
+          alertsMapExtent,
+        },
+      });
+
+      const request = new XMLHttpRequest();
+      request.onload = () => {
+        store.dispatch(showMapLoader(false));
+        if (request.responseText === '') {
+          console.log('LIST DATA IS NOT AVAILABLE');
+        } else {
+          const selectedListData = JSON.parse(request.responseText);
+          if (selectedLocations?.length) {
+            const feats = selectedListData[0].features;
+
+            const filteredLocations = feats.filter((location) => {
+              return selectedLocations.indexOf(location.properties.location_id) > -1;
+            });
+            const selectedLocationsData = [
+              {
+                type: 'FeatureCollection',
+                features: filteredLocations,
+              },
+            ];
+            const { transitionListData } = this.state;
+            this.goToOriginalPoint = () => {
+              setVectorTileLayerForFilteredList(
+                selectedLocationsData,
+                transitionListData,
+                this.view
+              );
+            };
+
+            setVectorTileLayerForFilteredList(selectedLocationsData, transitionListData, this.view);
+            store.dispatch(addList(userList));
+            return;
+          }
+          const { transitionListData } = this.state;
+
+          this.goToOriginalPoint = async () => {
+            setVectorTileLayerForFullList(selectedListData, transitionListData, this.view);
+          };
+          setVectorTileLayerForFullList(selectedListData, transitionListData, this.view);
+          store.dispatch(addList(userList));
+        }
+        if (hashLayersToAdd.length > 0) {
+          store.dispatch(toggleLayer(hashLayersToAdd));
+        }
+      };
+      request.onerror = (err) => {
+        console.log(`Error: ${err}`);
+        store.dispatch(showMapLoader(false));
+      };
+      request.open('POST', '/map/getUserListLocationData-map', true);
+      request.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
+
+      request.send(`list_ids=${[listId]}`);
+      gtag('event', 'locations add', {
+        event_category: 'Map Load',
+        event_label: `user added locations from the ${userList.list_name} list`,
       });
     }
 
-    // handle selectedTimeframe for alerts if present
     if (selectedTimeframe) {
       if (
         visibleLayers?.includes(gladAlertsID) ||
@@ -2118,7 +2121,6 @@ class Map extends Component {
       }
     }
 
-    // handle coordinates if present
     if (latitude && longitude && zoom) {
       const point = new Point({
         latitude,
@@ -2129,6 +2131,19 @@ class Map extends Component {
         target: point,
         scale: zoom - 1,
       });
+    }
+
+    if (visibleLayers?.length) {
+      hashLayersToAdd.push(...visibleLayers);
+    }
+
+    if (hashLayersToAdd.length > 0) {
+      hashLayersToAdd.forEach((layer) => {
+        store.dispatch(toggleLayer(layer));
+      });
+      if (gfwListDefinitions && Object.keys(gfwListDefinitions).length > 0) {
+        store.dispatch(updateGFWLocations(gfwListDefinitions));
+      }
     }
   };
 
@@ -2211,6 +2226,7 @@ class Map extends Component {
       // If active list is a user list and template id is the same and it's an existing list then remove it from selectedLists and grab data
       else {
         store.dispatch(removeList(index));
+
         list_ids.splice(index, 1);
         if (list_ids.length === 0) {
           this.view.map.findLayerById('user-locations').removeAll();
@@ -2649,6 +2665,7 @@ class Map extends Component {
           selectedList={selectedLists}
           goToOriginalPoint={this.goToOriginalPoint}
           closePopups={this.closePopups}
+          isMapMoving={this.state.isMapMoving}
         />
 
         <Legend

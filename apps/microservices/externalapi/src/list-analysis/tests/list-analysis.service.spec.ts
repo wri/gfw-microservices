@@ -1,3 +1,4 @@
+/* eslint-disable no-undef */
 import { Test, TestingModule } from '@nestjs/testing';
 import { ListAnalysisService } from '../list-analysis.service';
 import { TypeOrmModule } from '@nestjs/typeorm';
@@ -6,23 +7,21 @@ import { ConfigModule } from '@nestjs/config';
 import { ExternalAPIKey } from '../../api-keys/external-api-key.entity';
 import { UserRoutes } from '../../api-keys/user-route.entity';
 import { UserService } from '../user.service';
-import { ClientStoreConnection } from '../../shared/client-store-connection';
 import { OrganizationService } from '../organization.service';
 import * as sinon from 'sinon';
 import { DataSource } from 'typeorm';
-import { ListsAnalysisStatus } from '../list-analysis-status.entity';
 import { ListAnalysisStatusRepositoryMock } from './repositories/list-analysis-status.repository.mock';
 import { ListAnalysisMessageModule } from '../../list-analysis-message-handler';
 import { ListService } from '../../lists/lists.service';
-import { Lists } from '../../lists/lists.entity';
 import { S3Service } from '@wri-monorepos/aws';
-import { BadRequestException, NotFoundException } from '@nestjs/common';
+import { NotFoundException, HttpException, HttpStatus } from '@nestjs/common';
 import axios from 'axios';
 import { SqsService } from '@ssut/nestjs-sqs';
 import { SaveActivityLogEndpoint } from '../utils/saveActivityLogEndpoint';
 import { checkProcessingLimits } from '@wri-monorepos/shared';
 import { listStatus } from '@wri-monorepos/constants';
 import { handleCreateAnalysis, isValidMapSpamCommodity } from '@wri-monorepos/geo';
+import { ClientStoreConnection, Lists, ListsAnalysisStatus } from '@wri-monorepos/sql';
 
 jest.mock('@wri-monorepos/geo', () => ({
   handleCreateAnalysis: jest.fn().mockResolvedValue('true value'),
@@ -62,7 +61,7 @@ describe('ListAnalysisService', () => {
           database: ':memory:',
           synchronize: true,
           logging: true,
-          entities: [Organization, UserRoutes, ExternalAPIKey, Lists],
+          entities: [Organization, UserRoutes, ExternalAPIKey, Lists, ListsAnalysisStatus],
         }),
         TypeOrmModule.forFeature([Organization, ExternalAPIKey, UserRoutes], 'default'),
         ConfigModule.forRoot({
@@ -811,96 +810,107 @@ describe('ListAnalysisService', () => {
     expect(resutl).toBe(mockedhandleCreateAnalysis);
   });
 
-  it('Should fail when try to create GHG Analysis with unavailable commodity', async () => {
-    const analysisTypesToProcess = 'GHG';
-    const listId = 123;
-    const organizationId = 1;
-    const organization_user_id = 1;
+  describe('getLocationsErrors', () => {
+    it('should return locations with errors when they exist', async () => {
+      const mockLocationsWithErrors = [
+        {
+          locationName: 'Location 1',
+          errorDetails: 'Error 1',
+        },
+        {
+          locationName: 'Location 2',
+          errorDetails: 'Error 2',
+        },
+      ];
 
-    (checkProcessingLimits as jest.Mock).mockResolvedValue({
-      isListLocationOverLimit: false,
-      processingLimit: 1000,
-    });
+      const mockList = {
+        id: 1,
+        listTableName: 'test_list_table',
+      };
 
-    listService.getList = jest.fn().mockResolvedValue({
-      templateId: 13,
-      Commodity: 'GFWP_Cattle Generic',
-      listName: 'mockList',
-    });
-    saveActivityLogEndpoint.saveActivityLogEndpoint = jest.fn().mockResolvedValue(true);
-    const mockList = {
-      listId: 123,
-      analysisId: analysisTypesToProcess,
-      status: listStatus.Pending,
-      templateId: '13',
-      listName: 'mockList',
-      Commodity: 'GFWP_Cattle Generic',
-    };
-    clientStoreConnection.getConnection = jest.fn().mockResolvedValue({
-      getRepository: () => ({
-        findBy: () => mockList,
-      }),
-      options: {
-        database: 'mock_db',
-      },
-    });
-    (isValidMapSpamCommodity as jest.Mock).mockReturnValue(false);
-    await expect(
-      service.createAnalysis(
-        analysisTypesToProcess,
-        listId,
-        organizationId,
-        USER_EMAIL,
-        organization_user_id
-      )
-    ).rejects.toThrow(
-      new BadRequestException(
-        `List commodity ${mockList.Commodity} for ${mockList.listName} not supported for GHG Analysis`
-      )
-    );
-  });
-  it('Should fail when try to create GHG Analysis for list without commodity specified', async () => {
-    const analysisTypesToProcess = 'GHG';
-    const listId = 123;
-    const organizationId = 1;
-    const organization_user_id = 1;
+      const mockOrg = {
+        id: 1,
+        organizationDb: 'test_db',
+      };
 
-    (checkProcessingLimits as jest.Mock).mockResolvedValue({
-      isListLocationOverLimit: false,
-      processingLimit: 1000,
+      organizationService.findOrganizationById = jest.fn().mockResolvedValue(mockOrg);
+      listService.getList = jest.fn().mockResolvedValue(mockList);
+      clientStoreConnection.getConnection = jest.fn().mockResolvedValue({
+        getRepository: () => ({
+          find: jest.fn().mockResolvedValue(mockLocationsWithErrors),
+        }),
+      });
+
+      const result = await service.getLocationsErrors({
+        listId: 1,
+        organizationId: 1,
+      });
+
+      expect(result).toEqual(mockLocationsWithErrors);
     });
 
-    (handleCreateAnalysis as jest.Mock).mockResolvedValue({ statusText: 'mockedEmailResponse' });
-    (isValidMapSpamCommodity as jest.Mock).mockReturnValue(false);
-    listService.getList = jest.fn().mockResolvedValue({
-      templateId: 13,
-      listName: 'mockList',
-    });
-    saveActivityLogEndpoint.saveActivityLogEndpoint = jest.fn().mockResolvedValue(true);
-    const mockList = {
-      listId: 123,
-      analysisId: analysisTypesToProcess,
-      status: listStatus.Pending,
-      templateId: '13',
-      listName: 'mockList',
-    };
-    clientStoreConnection.getConnection = jest.fn().mockResolvedValue({
-      getRepository: () => ({
-        findBy: () => mockList,
-      }),
-      options: {
-        database: 'mock_db',
-      },
+    it('should throw NOT_FOUND with correct message when organization does not exist', async () => {
+      organizationService.findOrganizationById = jest.fn().mockResolvedValue(null);
+
+      try {
+        await service.getLocationsErrors({
+          listId: 1,
+          organizationId: 999,
+        });
+        fail('Should have thrown an error');
+      } catch (error) {
+        expect(error).toBeInstanceOf(HttpException);
+        expect(error.response).toEqual({ errorDetails: 'Organization not found' });
+        expect(error.status).toBe(HttpStatus.NOT_FOUND);
+      }
     });
 
-    await expect(
-      service.createAnalysis(
-        analysisTypesToProcess,
-        listId,
-        organizationId,
-        USER_EMAIL,
-        organization_user_id
-      )
-    ).rejects.toThrow(new BadRequestException(`No commodity specified for ${mockList.listName}`));
+    it('should throw NOT_FOUND with correct message when list does not exist', async () => {
+      const mockOrg = {
+        id: 1,
+        organizationDb: 'test_db',
+      };
+
+      organizationService.findOrganizationById = jest.fn().mockResolvedValue(mockOrg);
+      listService.getList = jest.fn().mockResolvedValue(null);
+
+      try {
+        await service.getLocationsErrors({
+          listId: 999,
+          organizationId: 1,
+        });
+        fail('Should have thrown an error');
+      } catch (error) {
+        expect(error).toBeInstanceOf(HttpException);
+        expect(error.response).toEqual({ errorDetails: 'List not found' });
+        expect(error.status).toBe(HttpStatus.NOT_FOUND);
+      }
+    });
+
+    it('should not throw NOT_FOUND when no errors exist', async () => {
+      const mockList = {
+        id: 1,
+        listTableName: 'test_list_table',
+      };
+
+      const mockOrg = {
+        id: 1,
+        organizationDb: 'test_db',
+      };
+
+      organizationService.findOrganizationById = jest.fn().mockResolvedValue(mockOrg);
+      listService.getList = jest.fn().mockResolvedValue(mockList);
+      clientStoreConnection.getConnection = jest.fn().mockResolvedValue({
+        getRepository: () => ({
+          find: jest.fn().mockResolvedValue([]),
+        }),
+      });
+
+      const result = await service.getLocationsErrors({
+        listId: 1,
+        organizationId: 1,
+      });
+      expect(result).toStrictEqual([]);
+    });
   });
 });

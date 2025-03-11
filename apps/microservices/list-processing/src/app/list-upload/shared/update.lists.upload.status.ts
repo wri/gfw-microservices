@@ -14,7 +14,7 @@ export const updateListsUploadStatus = async (
 ): Promise<void> => {
   const logger = new Logger('updateListsUploadStatus');
   const clientStoreConnection = new ClientStoreConnection();
-  const connection = await clientStoreConnection.getConnection(clientStore, [ListsUploadStatus]);
+  const connection = await clientStoreConnection.getConnection(clientStore);
   const repository = connection.getRepository(ListsUploadStatus);
   const { taskARN } = await getMetadata();
 

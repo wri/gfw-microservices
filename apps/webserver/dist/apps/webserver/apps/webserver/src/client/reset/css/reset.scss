@@ -1,0 +1,9 @@
+@import '../../common/css/baseGFW';
+@import '../../common/css/subHeader';
+@import '../../common/css/profile';
+
+.change-password-input {
+  &.broken {
+    border: 1px solid red;
+  }
+}

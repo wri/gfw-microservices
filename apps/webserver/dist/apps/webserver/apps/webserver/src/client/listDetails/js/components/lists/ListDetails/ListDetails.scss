@@ -1,0 +1,59 @@
+body:has(.list-details) {
+  height: 100%;
+  background-color: #e5e5e5;
+}
+
+.list-details-container {
+  overflow: auto;
+  margin: auto;
+  width: 100%;
+
+  .status-indicator {
+    height: 7px;
+    width: 7px;
+    border-radius: 50%;
+    display: inline-block;
+    margin-right: 8px;
+    &--red {
+      background-color: #f24e1e;
+    }
+    &--blue {
+      background-color: #58a9cd;
+    }
+  }
+}
+
+.list-analysis-actions {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px solid lightgray;
+  padding-bottom: 10px;
+  margin-bottom: 10px;
+
+  &__analysis-date {
+    font-size: 12px;
+    color: gray;
+    margin-left: auto;
+  }
+}
+
+.ReactTable.lists-react-table {
+  position: relative;
+  margin: auto;
+  .-headerGroups {
+    display: none;
+  }
+  .rt-thead.-header {
+    box-shadow: none;
+  }
+  .rt-th {
+    background-color: lightgray;
+  }
+  .rt-tr-group {
+    border-bottom: 1px solid lightgray;
+  }
+  .rt-tbody .rt-td {
+    border: none;
+  }
+}

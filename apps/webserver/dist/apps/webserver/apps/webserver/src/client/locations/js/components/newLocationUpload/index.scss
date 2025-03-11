@@ -1,0 +1,14 @@
+body:has(.new-location-upload) {
+  background: #e5e5e5;
+}
+
+.esri-ui-top-left.esri-ui-corner {
+  height: 100%;
+  width: 100%;
+}
+
+.esri-component.esri-zoom.esri-widget {
+  position: absolute;
+  bottom: 0px;
+  right: 0px;
+}

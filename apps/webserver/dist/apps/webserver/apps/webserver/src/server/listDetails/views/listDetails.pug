@@ -1,0 +1,29 @@
+extends ../../core/views/layout.pug
+block head
+  link(href=listDetailscss, rel='stylesheet')
+  script(src='https://code.jquery.com/jquery-3.3.1.js')
+block content
+  div#list-details-mount
+  include ./svg.pug
+  script.
+    var templateData = !{JSON.stringify(templateData)};
+    var userLists = !{JSON.stringify(userLists)};
+    var userSharedLists = !{JSON.stringify(userSharedLists)};
+    var userInfo = !{JSON.stringify(userInfo)};
+    var usersList = !{JSON.stringify(usersList)};
+    var organizationId = !{JSON.stringify(organizationId)};
+    var locationCount = !{JSON.stringify(locationCount)};
+    var gfwLists = !{JSON.stringify(gfwLists)};
+    var mapData = !{JSON.stringify(mapData)};
+    var gfwData = !{JSON.stringify(gfwData)};
+    var drawData = !{JSON.stringify(drawData)};
+    var locationName = !{JSON.stringify(locationName)};
+    var fromMap = !{JSON.stringify(fromMap)};
+    var listStatuses = !{JSON.stringify(listStatuses)};
+    var CURRENT_ENVIRONMENT = !{JSON.stringify(CURRENT_ENVIRONMENT)};
+    var subscription_status_id = !{JSON.stringify(subscriptionStatus)};
+    // Set the user ID using signed-in user_id.
+    gtag('set', { 'user_id': userInfo.email });
+
+  script(src='https://dpptfqp76xood.cloudfront.net/js/ionRange.js')
+  script(src=listDetailsjs, async)

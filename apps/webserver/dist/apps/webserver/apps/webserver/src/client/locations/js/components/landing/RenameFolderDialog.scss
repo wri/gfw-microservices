@@ -1,0 +1,23 @@
+@import '../../../../common/css/baseGFW';
+
+.RenameFolder__dialog-options {
+  display: flex;
+  flex-direction: column;
+  padding: $space-normal 0 0;
+
+  &__option > label {
+    & + input,
+    & + select {
+      display: block;
+    }
+  }
+}
+
+.RenameFolder__dialog-list-name {
+  font-weight: $font-weight-semibold;
+}
+
+.RenameFolder__dialog-error {
+  @include text(100, $weight: $font-weight-semibold, $color: $theme-danger-dark-red);
+  margin-top: $space-small;
+}

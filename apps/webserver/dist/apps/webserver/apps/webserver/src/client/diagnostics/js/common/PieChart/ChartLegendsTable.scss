@@ -1,0 +1,78 @@
+.chart-legends-table {
+  width: 450px;
+  display: inline-block;
+  margin: 0 auto;
+
+  thead {
+    border-bottom: 1px solid gray;
+  }
+  tr {
+    border-bottom: none;
+    th {
+      font-family: 'Fira Sans', sans-serif;
+      font-size: 11px;
+      text-transform: uppercase;
+      color: #555555;
+      font-weight: 600;
+      text-wrap: wrap;
+    }
+  }
+  &__checkbox {
+    width: 15px;
+    height: 15px;
+    margin-right: 12px;
+    display: inline-block;
+  }
+  &__label {
+    padding-left: 30px;
+    label {
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+    }
+  }
+  &__label--disabled {
+    opacity: 0.3;
+  }
+
+  &__first-level-legend {
+    &--with-padding-top > th {
+      padding-top: 0.75rem;
+    }
+
+    th:first-child {
+      display: flex;
+      align-items: center;
+      padding-bottom: 0;
+
+      & > button {
+        padding: 0 0.5rem 0 0;
+      }
+    }
+
+    & > :last-child {
+      width: 100px;
+    }
+
+    label {
+      text-transform: capitalize;
+      font-size: 0.85rem;
+    }
+
+    th:last-child {
+      font-size: 0.7rem;
+    }
+  }
+
+  &__second-level-legend {
+    font-size: 0.7rem;
+
+    td:first-child {
+      padding-left: 70px;
+    }
+
+    & > :last-child {
+      width: 100px;
+    }
+  }
+}

@@ -1,0 +1,296 @@
+import React, { useRef, useState } from 'react';
+import {
+  Box,
+  Card,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogTitle,
+  Link,
+  Typography,
+} from '@mui/material';
+import { ArrowBackIos, Close, EditNote, Publish } from '@mui/icons-material';
+
+import { useHistory } from '../hooks';
+import { LoadingModal, PillButton } from '../../../../../components';
+import { useUploadLocation } from '../contexts';
+import { NavBar } from '../components';
+import { analysisTypesOptionsNewNames } from '../../../../../../config/env/analysisTypes.constants';
+import { commodities } from '../utils/constants';
+import { uploadFileToS3 } from '../utils/upload';
+import { uploadProcessByPrevUploadedFile } from '../../landing/uploadProcess';
+import { UploadType } from '../types';
+
+export function SummaryAndSubmit() {
+  const history = useHistory();
+  const { clearUploadType, uploadLocationState, updateSaveMode } = useUploadLocation();
+  const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [isConfirmationDialogOpen, setIsConfirmationDialogOpen] = useState(false);
+  const [isErrorDialogOpen, setIsErrorDialogOpen] = useState(false);
+  const isDraftUpload = useRef(false);
+
+  const isAddingToNewList = !!uploadLocationState.newListName;
+  const listName = uploadLocationState.newListName || uploadLocationState.existingList?.name;
+  const commodity = commodities[uploadLocationState.commodity as keyof typeof commodities];
+
+  // Function to convert coordinates to GeoJSON format respecting the right-hand rule
+  const mountPolygon = (coordinates) => {
+    // Function to calculate the signed area of the polygon
+    function signedArea(coords) {
+      let area = 0;
+      for (let i = 0; i < coords.length; i++) {
+        const j = (i + 1) % coords.length;
+        area += coords[i][0] * coords[j][1];
+        area -= coords[j][0] * coords[i][1];
+      }
+      return area / 2;
+    }
+
+    // Check if the coordinates are in clockwise order
+    if (signedArea(coordinates) > 0) {
+      // Reverse the coordinates to make them counter-clockwise
+      coordinates.reverse();
+    }
+
+    // Create GeoJSON object
+    return {
+      type: 'Polygon',
+      coordinates: [coordinates],
+    };
+  };
+
+  const createGeoJSONFile = async (): Promise<File> => {
+    const { uploadType, coordinates, area, commodity, locationName } = uploadLocationState;
+
+    const geometry =
+      uploadType === UploadType.ByPoint
+        ? { type: 'Point', coordinates: [coordinates[0].longitude, coordinates[0].latitude] }
+        : mountPolygon(coordinates.map(({ longitude, latitude }) => [longitude, latitude]));
+
+    const properties = {
+      Commodity: commodity,
+      'Location Name': locationName,
+      [area.measurementUnit === 'hectares' ? 'Analysis Area' : 'Analysis Radius']: area.size,
+    };
+
+    const geojson = {
+      type: 'FeatureCollection',
+      features: [{ type: 'Feature', properties, geometry }],
+    };
+
+    return new File([JSON.stringify(geojson, null, 2)], 'data.geojson', {
+      type: 'application/geo+json',
+    });
+  };
+
+  const uploadList = async () => {
+    if (uploadLocationState.uploadType === null) {
+      return;
+    }
+    try {
+      setIsConfirmationDialogOpen(false);
+      setIsLoading(true);
+
+      if (uploadLocationState.typeOfAnalysis.AFI) {
+        gtag('event', 'User saved a list with Deforestation Reporting KPIs analysis selected', {
+          event_category: 'Deforestation Reporting KPIs',
+        });
+      }
+
+      let uploadedFile = uploadLocationState.uploadedFile;
+
+      if ([UploadType.ByPoint, UploadType.ByPolygon].includes(uploadLocationState.uploadType)) {
+        const geojsonFile = await createGeoJSONFile();
+
+        uploadedFile = await uploadFileToS3(geojsonFile);
+      }
+
+      if (!uploadedFile) {
+        setIsLoading(false);
+        return;
+      }
+
+      const analysisIds = Object.keys(uploadLocationState.typeOfAnalysis).filter(
+        (key) =>
+          uploadLocationState.typeOfAnalysis[key as keyof typeof uploadLocationState.typeOfAnalysis]
+      );
+
+      await uploadProcessByPrevUploadedFile({
+        listName,
+        analysisIds,
+        fileS3Route: uploadedFile.fileS3Route,
+        keyFile: uploadedFile.keyFile,
+        existingList: uploadLocationState.existingList,
+        saveAsDraft: isDraftUpload.current,
+        commodity: uploadLocationState.commodity,
+      });
+      updateSaveMode(isDraftUpload.current);
+      history.push('SUBMISSION_SUCCESS');
+    } catch (err) {
+      setIsLoading(false);
+      setIsErrorDialogOpen(true);
+    }
+  };
+
+  return (
+    <>
+      <NavBar />
+      <Card sx={{ height: '634px', display: 'flex', flexDirection: 'column', pt: 1, px: 2, pb: 2 }}>
+        <Typography variant="h6">Summary & Submit</Typography>
+
+        <Box
+          sx={{
+            padding: 1.25,
+            borderRadius: 1,
+            width: '500px',
+            mt: 3,
+            mx: 'auto',
+            backgroundColor: 'background.default',
+          }}
+        >
+          <Typography variant="body2">
+            You are{' '}
+            {isAddingToNewList ? (
+              <>
+                creating a new <b>{commodity}</b> list named <b>{listName}</b>.
+              </>
+            ) : (
+              <>
+                adding <b>{commodity}</b> location(s) to the list named <b>{listName}</b>.
+              </>
+            )}
+          </Typography>
+          <Typography variant="body2">
+            {isAddingToNewList ? 'Your ' : 'The resulting '}list will be submitted for the following
+            analysis:
+          </Typography>
+          <Box component="ul" sx={{ color: 'text.secondary' }}>
+            {Object.entries(uploadLocationState.typeOfAnalysis)
+              .filter(([key, isChecked]) => isChecked && key !== 'palmRiskAssessment')
+              .map(([key]) => {
+                const analysis = analysisTypesOptionsNewNames.find((x) => x.id === key);
+
+                const isPalmRiskAssessmentIncluded =
+                  analysis?.id === 'FCD' && uploadLocationState.typeOfAnalysis.palmRiskAssessment;
+
+                return (
+                  <li key={key}>
+                    <Typography variant="caption">{analysis?.label}</Typography>
+                    {isPalmRiskAssessmentIncluded && (
+                      <Typography variant="caption"> (Includes Palm Risk Assessment)</Typography>
+                    )}
+                  </li>
+                );
+              })}
+          </Box>
+
+          <Typography variant="body2">
+            Please note that all analysis submission count towards your usage limits. See more
+            information{' '}
+            <Link href="#" sx={{ textDecoration: 'none', color: 'primary.main' }}>
+              here
+            </Link>
+            .
+          </Typography>
+        </Box>
+
+        <Box
+          sx={{
+            display: 'flex',
+            flexDirection: { sm: 'row', xs: 'column' },
+            justifyContent: 'end',
+            gap: 1,
+            mt: 'auto',
+            width: '100%',
+          }}
+        >
+          <PillButton
+            variant="contained"
+            color="info"
+            startIcon={<ArrowBackIos />}
+            onClick={() => history.goBack()}
+            sx={{ mr: 'auto' }}
+          >
+            Back
+          </PillButton>
+
+          <PillButton
+            variant="contained"
+            color="info"
+            startIcon={<Close />}
+            onClick={clearUploadType}
+          >
+            Cancel
+          </PillButton>
+          <PillButton
+            type="submit"
+            color="secondary"
+            variant="contained"
+            startIcon={<EditNote />}
+            onClick={() => {
+              isDraftUpload.current = true;
+              setIsConfirmationDialogOpen(true);
+            }}
+          >
+            Save as draft
+          </PillButton>
+          <PillButton
+            type="submit"
+            variant="contained"
+            startIcon={<Publish />}
+            onClick={() => {
+              isDraftUpload.current = false;
+              setIsConfirmationDialogOpen(true);
+            }}
+          >
+            Submit for analysis
+          </PillButton>
+        </Box>
+      </Card>
+      <LoadingModal isLoading={isLoading} />
+      <Dialog open={isConfirmationDialogOpen}>
+        <DialogTitle>
+          <Typography variant="subtitle1">Are you sure?</Typography>
+        </DialogTitle>
+        <DialogContent sx={{ textAlign: 'justify' }}>
+          <Typography variant="body2">
+            You have added locations to <b>{listName}</b>.{' '}
+            {isDraftUpload.current
+              ? 'Click OK to save this updated list as draft. Your list will stay in draft state until you choose to run analysis on it'
+              : 'Please confirm that you wish to submit this list to analysis'}
+            . Note that running analysis counts towards your account usage limits. See more
+            information{' '}
+            <Link href="#" sx={{ textDecoration: 'none', color: 'primary.main' }}>
+              here
+            </Link>
+            .
+          </Typography>
+        </DialogContent>
+        <DialogActions sx={{ mr: 'auto', ml: 1.5, pb: 2 }}>
+          <PillButton variant="contained" sx={{ width: '150px' }} onClick={uploadList}>
+            Ok
+          </PillButton>
+          <PillButton
+            sx={{ color: 'info.contrastText' }}
+            onClick={() => setIsConfirmationDialogOpen(false)}
+          >
+            Cancel
+          </PillButton>
+        </DialogActions>
+      </Dialog>
+
+      <Dialog open={isErrorDialogOpen}>
+        <DialogContent>There was an error uploading your file. Please try again.</DialogContent>
+        <DialogActions sx={{ m: 'auto' }}>
+          <PillButton
+            variant="contained"
+            sx={{ width: '150px' }}
+            onClick={() => setIsErrorDialogOpen(false)}
+          >
+            Ok
+          </PillButton>
+        </DialogActions>
+      </Dialog>
+    </>
+  );
+}

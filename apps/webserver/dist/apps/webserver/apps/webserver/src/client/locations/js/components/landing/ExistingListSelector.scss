@@ -1,0 +1,4 @@
+/* material ui autocomplete z-index fix */
+div[role='presentation'].MuiAutocomplete-popper {
+  z-index: 1000000;
+}

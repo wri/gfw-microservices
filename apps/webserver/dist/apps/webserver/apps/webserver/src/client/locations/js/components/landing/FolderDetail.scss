@@ -1,0 +1,72 @@
+@import '../../../../common/css/baseGFW';
+
+.folder-detail {
+  .breadcrumb {
+    max-width: 1024px;
+    margin: 0 auto;
+    padding: $space-large 0 0;
+
+    @media screen and (max-width: 1399px) {
+      width: 95%;
+      max-width: 100%;
+    }
+
+    @media (min-width: 1400px) {
+      width: 75%;
+      max-width: 1200px;
+    }
+
+    @media (min-width: 850px) and (max-width: 1399px) {
+      width: 95%;
+    }
+  }
+
+  &__content {
+    max-width: 925px;
+    margin: 0 auto;
+    padding: 0 0 $space-large;
+
+    @media screen and (max-width: 1399px) {
+      width: 95%;
+      max-width: 100%;
+    }
+
+    @media (min-width: 1400px) {
+      width: 75%;
+    }
+
+    @media (min-width: 850px) and (max-width: 1399px) {
+      width: 95%;
+    }
+  }
+
+  &__title {
+    @include heading(400);
+    margin-bottom: $space-compact;
+  }
+
+  &__icon {
+    display: inline-block;
+    width: 16px;
+    height: auto;
+    color: $gfw-gray;
+    margin-right: $space-small;
+  }
+
+  &__counts {
+    @include text(200, $color: $gfw-gray-2);
+    margin-bottom: $space-small;
+  }
+
+  &__counts-divider {
+    color: $gfw-gray;
+    padding: $space-compact;
+  }
+}
+
+.folder-detail__header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-bottom: 20px;
+}

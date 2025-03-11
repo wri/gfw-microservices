@@ -1,0 +1,45 @@
+@import '../../../css/colorsGFW';
+
+.login-form {
+  padding: 15px;
+
+  &__display-button {
+    all: unset;
+    text-transform: uppercase;
+    cursor: pointer;
+    color: white;
+    padding: 0px 15px;
+    border: 1px solid white;
+    border-radius: 20px;
+    height: 32px;
+    line-height: 32px;
+    font-size: 13px;
+    margin: 10px;
+    &:hover {
+      text-decoration: none;
+      background-color: rgba(255, 255, 255, 0.2);
+    }
+  }
+  &__title {
+    font-size: 20px;
+    padding: 10px;
+  }
+  a,
+  a:hover,
+  a:visited,
+  a:active {
+    text-decoration: none;
+    color: $gfw-green;
+  }
+  &__input {
+    width: 300px;
+    margin-bottom: 10px;
+  }
+  &__actions-container {
+    display: flex;
+    align-items: center;
+    > div {
+      width: 50%;
+    }
+  }
+}

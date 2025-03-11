@@ -1,0 +1,112 @@
+@import '../../common/css/baseGFW';
+@import '../../common/css/subHeader';
+@import '../../common/css/location';
+
+.list-detail-page .main-panel {
+  flex: 1;
+
+  .section-container {
+    margin: auto;
+    width: 100%;
+  }
+}
+
+///////////
+// Banner
+//////////
+.lists-banner {
+  margin-top: $space-small;
+}
+
+/////////////////////////
+// Country names, Flagged
+/////////////////////////
+.countries-popover {
+  max-width: 500px;
+
+  &__inner {
+    padding: $space-comfortable;
+  }
+
+  &__prompt {
+    margin: 0;
+  }
+}
+
+.country-name-extend {
+  &:hover {
+    text-decoration: underline;
+    cursor: pointer;
+  }
+}
+
+.flag-count {
+  font-size: $font-size-large;
+}
+
+//////////////////////////
+// Select Columns
+/////////////////////////
+.add-columns-list {
+  .select-columns {
+    padding: $space-small;
+
+    &__checkbox-container {
+      padding: $space-compact 0;
+    }
+  }
+  &__footer {
+    display: flex;
+    justify-content: space-between;
+    padding: $space-small 0 0;
+    margin: $space-small $space-small 0;
+    border-top: 1px solid $gfw-light-gray;
+
+    .button {
+      flex: 0 0 48%;
+    }
+
+    .button:first-child {
+      margin-right: 2%;
+    }
+  }
+}
+
+//////////////////////////
+// Side panel Summaries
+/////////////////////////
+
+.list-detail-page {
+  margin-bottom: $space-normal;
+}
+
+.saved-locations-summary {
+  margin-bottom: $space-normal;
+}
+
+@media screen and (max-width: 1023px) {
+  .main-panel {
+    max-width: 80%;
+    .table-container {
+      overflow-x: auto;
+    }
+  }
+}
+
+.cancel-upload-wizard {
+  margin-top: 1em;
+  a {
+    color: black;
+    text-decoration: underline;
+  }
+}
+
+.move-to-list-select {
+  select {
+    width: 100% !important;
+  }
+}
+
+.admin-area-row {
+  padding-bottom: 10px;
+}

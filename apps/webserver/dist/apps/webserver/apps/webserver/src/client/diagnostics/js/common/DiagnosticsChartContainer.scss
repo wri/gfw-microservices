@@ -1,0 +1,17 @@
+.diagnostics-chart-container {
+  margin-top: 30px;
+  display: flex;
+  flex-direction: row;
+  justify-content: start;
+  flex-wrap: wrap;
+  &__chart {
+    flex: 1;
+    min-width: 500px;
+    padding-top: 17px;
+  }
+  > div {
+    canvas {
+      margin: auto;
+    }
+  }
+}

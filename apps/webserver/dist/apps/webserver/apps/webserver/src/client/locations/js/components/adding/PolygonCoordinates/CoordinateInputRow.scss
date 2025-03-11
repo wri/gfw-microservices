@@ -1,0 +1,16 @@
+.coordinate-input-row {
+  &__index {
+    padding-top: 10px;
+  }
+
+  &__input {
+    padding: 8px;
+  }
+  &__delete-icon {
+    cursor: pointer;
+    margin-top: 10px;
+  }
+  &__cell {
+    min-height: 65px;
+  }
+}

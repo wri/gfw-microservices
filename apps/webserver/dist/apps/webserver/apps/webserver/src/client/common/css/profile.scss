@@ -1,0 +1,94 @@
+.profile-page,
+.profile-body {
+  margin: 0 auto;
+  padding: $space-spacious $space-normal;
+
+  @media (min-width: 1400px) {
+    padding: $space-spacious 0;
+    max-width: $full-max-width;
+    width: $full-width;
+  }
+
+  @media (min-width: 850px) and (max-width: 1399px) {
+    max-width: $mobile-max-width;
+    width: $mobile-width;
+  }
+
+  &__title {
+    @include heading(600);
+  }
+
+  &__subheader {
+    @include heading(300);
+  }
+
+  &__section {
+    margin-bottom: $space-large;
+  }
+
+  &__multiple-inputs {
+    display: flex;
+    align-items: center;
+  }
+
+  .input-field__block-container {
+    width: 350px;
+    margin-right: $space-comfortable;
+  }
+
+  .profile-button-container {
+    border-top: 1px solid $gfw-light-gray;
+    padding: $space-comfortable 0;
+    margin-top: $space-spacious;
+
+    .button {
+      margin-right: $space-medium;
+      width: 10rem;
+    }
+  }
+
+  .upload-policy-container {
+    margin: $space-compact 0;
+    padding: $space-normal;
+    background: $gfw-x-light-gray;
+    border-radius: $border-radius;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .policies-delete-download {
+    margin-top: $space-small;
+
+    .button {
+      &:first-child {
+        margin-right: $space-small;
+      }
+    }
+  }
+
+  #subsidiary-input-container {
+    margin-bottom: 0.25rem;
+  }
+}
+
+.users-section {
+  &__title {
+    @include heading(300);
+  }
+
+  &__action-bar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: $space-normal;
+  }
+
+  &__log-button {
+    margin: 0 $space-medium 0 auto;
+  }
+
+  &__search-input {
+    width: 25rem;
+  }
+}

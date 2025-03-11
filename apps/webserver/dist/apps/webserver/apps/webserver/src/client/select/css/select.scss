@@ -1,0 +1,24 @@
+@import '../../common/css/baseGFW';
+@import '../../common/css/subHeader';
+@import '../../common/css/profile';
+
+table {
+  .select-table-link {
+    cursor: pointer;
+    &:hover {
+      background: $gfw-green;
+    }
+  }
+  .disabled-table-link {
+    cursor: default;
+    color: $theme-disabled;
+  }
+  .active {
+    background: $gfw-green;
+    color: #fff;
+  }
+}
+
+.buttons-container {
+  border: none;
+}

@@ -1,0 +1,16 @@
+.my-lists-tabs {
+  display: flex;
+  padding-bottom: 10px;
+  &__tab {
+    all: unset;
+    cursor: pointer;
+    text-transform: uppercase;
+    margin-right: 30px;
+    h5 {
+      margin: 10px;
+    }
+  }
+  &__tab--selected {
+    border-bottom: 2px solid green;
+  }
+}

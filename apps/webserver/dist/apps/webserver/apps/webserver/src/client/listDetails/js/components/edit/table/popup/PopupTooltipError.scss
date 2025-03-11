@@ -1,0 +1,22 @@
+@import '../../../../../../common/css/colorsGFW';
+
+$popup-tooltip--error-message__width: 250px;
+
+.popup-tooltip--error {
+  .popup-tooltip--error-message {
+    position: absolute;
+    z-index: 100;
+    margin-left: -10px;
+    width: $popup-tooltip--error-message__width;
+    padding: 0.25rem 0.375rem;
+    font-size: 11px;
+    line-height: calc(13px * 1.25);
+    background-color: #efefef;
+    border: 1px solid #ccc;
+    box-shadow: 0 0 5px 0 #ccc;
+  }
+}
+
+[data-show-error-message='false'] {
+  display: none;
+}

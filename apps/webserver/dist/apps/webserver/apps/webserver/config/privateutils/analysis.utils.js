@@ -1,0 +1,105 @@
+/* eslint-disable consistent-return */
+/* eslint-disable camelcase */
+/** ******************************************************************
+ *  @name : analysis.utils.js
+ *  @description : A utility file for analysis
+ *
+ *  @function {analyzeLocation}
+ *  @function {analyzeList}
+ *
+ ******************************************************************* */
+import config from '../config';
+
+import * as AWSSES from './ses.utils';
+import * as sqsUtils from './sqs.utils';
+import * as logger from './logger.utils';
+import { createErrorMessage, ERROR_CODES } from './error.utils';
+import { handleGeoTrellisAnalyzeListRequest } from '../../server/geoTrellis/utils/geoTrellis.utils';
+import { listStatus } from '../env/listStatuses.constants';
+
+export const analyzeLocation = (req, organization_database, list, geojson) => {
+  const { organization_user_id, organization_id, user_first_name, user_last_name, user_email } =
+    req.session;
+  const { appendLocations } = req.body;
+
+  // Log the action
+  logger.logActivity(
+    req,
+    logger.listActivityTypes.List.ListAnalyzing,
+    `Calculation process has started for (${geojson.features.length}) locations in (${list.list_name})`
+  );
+  // Loop through each feature(location) in geojson and send SQS message to be pulled for analysis
+  const entries = geojson.features.map((feature) => {
+    const { location_id } = feature.properties;
+    return {
+      AnalysisTable: list.analysis_table,
+      Analyses: [],
+      Database: organization_database,
+      Environment: process.env.NODE_ENV,
+      ListName: list.list_name,
+      ListTable: list.list_table,
+      LocationId: location_id,
+      Retries: 0,
+      UserEmail: user_email,
+      FirstName: user_first_name,
+      LastName: user_last_name,
+      UserId: organization_user_id,
+      OrganizationId: organization_id,
+      AppendLocations: appendLocations ? 1 : 0,
+    };
+  });
+  sqsUtils
+    .sendMessageBatch(entries, config.AWSVars.sqs.location_queue_url)
+    .then(() => {
+      console.log('Sent locations to queue.');
+    })
+    .catch((err) => {
+      console.log('Error sending location to queue', err);
+      createErrorMessage(
+        req,
+        ERROR_CODES.SQSError,
+        `Failed to sending locations in ${list.list_name} to queue`,
+        err
+      );
+    });
+};
+
+/**
+ * @function analyzeList
+ * @summary Sends list level messages to the AWS SQS queue
+ * @param {Object} req - Mandatory first parameter to pass the request object into the function in case session info is required.
+ * @param {Object} list - Object containg all info about a list (schema)
+ */
+export const analyzeList = async (req, list) => {
+  const { list_id, dest_list_id, list_status_id } = req.body;
+  const { id: listID, list_name } = list;
+
+  const id = listID || dest_list_id || list_id;
+
+  try {
+    if (list_status_id === listStatus.Pending) {
+      // Send list to be analysed
+      await handleGeoTrellisAnalyzeListRequest(req, { id, list_name });
+    }
+  } catch (err) {
+    logger.logActivity(
+      req,
+      logger.listActivityTypes.List.ListAnalyzing,
+      `Error sending (${list_name}) to be analysed. Error: ${err}`
+    );
+
+    req.list = list;
+
+    if (err.message === `Analysis limit reached`) {
+      return AWSSES.sendErrorNotificationEmail(
+        req,
+        config.platformVars.emailType.ANALYSIS_LIMIT_REACHED
+      );
+    }
+
+    return AWSSES.sendErrorNotificationEmail(
+      req,
+      config.platformVars.emailType.LIST_ANALYSIS_ERROR
+    );
+  }
+};

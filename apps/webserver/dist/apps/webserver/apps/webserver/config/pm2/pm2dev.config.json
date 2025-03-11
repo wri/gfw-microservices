@@ -1,0 +1,12 @@
+{
+  "apps": [
+    {
+      "name": "GFWPRO-DEV",
+      "script": "server.js",
+      "watch": ["client", "config", "server"],
+      "autorestart": false,
+      "exec_mode": "cluster",
+      "instances": 2
+    }
+  ]
+}

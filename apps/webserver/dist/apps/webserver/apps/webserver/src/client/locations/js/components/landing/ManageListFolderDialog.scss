@@ -1,0 +1,28 @@
+@import '../../../../common/css/baseGFW';
+
+.AddToFolder__dialog-options {
+  padding: 0;
+  border: none;
+  margin-top: $space-normal;
+
+  &__option {
+    margin-top: $space-normal;
+  }
+
+  &__option > label {
+    & + input,
+    & + select {
+      display: block;
+      margin: 8px 0 $space-normal 1.75rem;
+    }
+  }
+}
+
+.AddToFolder__dialog-list-name {
+  font-weight: $font-weight-semibold;
+}
+
+.AddToFolder__dialog-error {
+  @include text(100, $weight: $font-weight-semibold, $color: $theme-danger-dark-red);
+  margin-top: $space-small;
+}

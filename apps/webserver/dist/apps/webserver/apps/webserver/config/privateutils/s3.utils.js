@@ -1,0 +1,82 @@
+/** ******************************************************************
+*   @name: s3.utils.js
+*   @description : A utility file to allow calling various
+* functionality from AWS SDK relating to S3
+*
+*   @function {get}
+*   @function {put}
+*   @function {del}
+
+********************************************************************/
+const AWS = require('@aws-sdk/client-s3');
+import config from '../config';
+const logger = require('./logger.utils');
+
+const s3 = new AWS.S3();
+
+export function get(bucket, key) {
+  return new Promise((resolve, reject) => {
+    const parameters = {
+      Bucket: bucket,
+      Key: key,
+    };
+
+    s3.getObject(parameters, async function (err, data) {
+      if (err) {
+        logger.error('In s3.utils.js GET function failed to get object from S3', err);
+        reject(err);
+      } else {
+        try {
+          const s3DataString = await data.Body.transformToString();
+          const s3DataJson = JSON.parse(s3DataString);
+          resolve(s3DataJson);
+        } catch (err) {
+          logger.error('In s3.utils.js GET function failed to parse JSON', err);
+          reject(err);
+        }
+      }
+    });
+  });
+}
+
+export function put(objectName, object) {
+  return new Promise((resolve, reject) => {
+    const filePath = `${process.env.NODE_ENV}/${objectName}.geojson`;
+    const parameters = {
+      Bucket: config.AWSVars.s3.analysisBucket,
+      Key: filePath,
+      Body: JSON.stringify(object),
+      ContentType: 'application/json',
+    };
+
+    s3.putObject(parameters, function (err, data) {
+      if (err) {
+        logger.error('In s3.utils.js PUT function failed to put object to S3', err);
+        reject(err);
+      } else {
+        resolve({
+          bucket: config.AWSVars.s3.analysisBucket,
+          key: filePath,
+        });
+      }
+    });
+  });
+}
+
+export function del(bucket, key) {
+  return new Promise((resolve, reject) => {
+    const parameters = {
+      Bucket: bucket,
+      Key: key,
+    };
+
+    s3.deleteObject(parameters, function (err, data) {
+      if (err) {
+        logger.error('In s3.utils.js DEL function failed to delete object from S3', err);
+        reject(err);
+      } else {
+        resolve(data);
+      }
+    });
+  });
+}

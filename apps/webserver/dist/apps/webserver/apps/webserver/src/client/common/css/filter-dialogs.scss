@@ -1,0 +1,63 @@
+@import '../../common/css/baseGFW';
+.dialog .modal-content {
+  padding: 0;
+  overflow: visible;
+}
+
+.dialog__content .dialog__footer {
+  padding: 0;
+  margin-top: $space-comfortable;
+}
+
+.dialog,
+.modal {
+  .dropdown-group {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+
+    &__dropdown {
+      width: 100%;
+      flex: 0 0 75%;
+    }
+  }
+
+  hr {
+    height: 1px;
+    background: $gfw-light-gray-2;
+    border: none;
+    margin-bottom: 25px;
+  }
+}
+
+//Filter Containers
+.filter-section-container {
+  .search {
+    margin-bottom: 1em;
+  }
+
+  .wdpa-search {
+    width: 40%;
+  }
+
+  .filter-label {
+    padding-right: 0;
+  }
+}
+
+.forest-change-filter-container {
+  width: 30rem;
+}
+
+.forest-change-filter-container-gfw {
+  max-width: 550px;
+}
+
+.commodity-risk-filter-container-gfw {
+  max-width: 875px;
+}
+
+.commodity-risk-filter-container {
+  width: 650px;
+  overflow-x: hidden;
+}

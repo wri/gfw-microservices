@@ -1,0 +1,17 @@
+.chart-container {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-around;
+  align-items: flex-start;
+  &__pie-chart {
+    width: 50%;
+  }
+  > div {
+    canvas {
+      margin: auto;
+    }
+  }
+  table th {
+    text-wrap: wrap;
+  }
+}

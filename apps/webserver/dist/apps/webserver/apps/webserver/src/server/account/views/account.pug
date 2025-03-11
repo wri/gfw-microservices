@@ -1,0 +1,12 @@
+extends ../../core/views/layout.pug
+block head
+  link(href=accountcss, rel='stylesheet')
+block content
+  div#account-mount
+  script.
+    var classificationsData = !{JSON.stringify(classifications)};
+    var commoditiesData = !{JSON.stringify(commodities)};
+    var geographiesData = !{JSON.stringify(geographies)};
+    var titlesData = !{JSON.stringify(titles)};
+
+  script(src=accountjs, async)

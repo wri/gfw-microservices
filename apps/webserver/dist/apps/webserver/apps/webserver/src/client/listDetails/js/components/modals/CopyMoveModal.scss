@@ -1,0 +1,56 @@
+@import '../../../../common/css/baseGFW';
+
+.CopyMoveModal {
+  #new-list-name {
+    width: $list-name__input-field--width;
+  }
+}
+
+.CopyMoveModalFooter {
+  padding-top: 0.5rem;
+  border-bottom: 1px solid $gfw-light-gray-2;
+}
+
+// ======================
+//  CopyMoveModal
+// ======================
+.move-or-copy {
+  &__selector {
+    border-bottom: 1px solid $gfw-light-gray-2;
+    padding-bottom: $space-small;
+  }
+
+  &__selection {
+    position: relative;
+
+    &--selected {
+      &::after {
+        content: '';
+        display: block;
+        height: 2px;
+        width: 100%;
+        background: $gfw-green;
+        left: 0;
+        right: 0;
+        bottom: -0.5rem;
+        position: absolute;
+      }
+    }
+  }
+
+  &__option {
+    margin-bottom: $space-small;
+  }
+
+  &__suboption {
+    margin-left: 1.65rem;
+    margin-bottom: $space-small;
+    max-width: 450px;
+  }
+
+  &__hint {
+    @include text(100);
+    display: block;
+    margin-bottom: $space-small;
+  }
+}

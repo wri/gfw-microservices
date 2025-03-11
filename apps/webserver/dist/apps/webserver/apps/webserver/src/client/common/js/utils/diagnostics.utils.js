@@ -1,0 +1,92 @@
+/** ******************************************************************
+ *   @name : diagnostics.utils.js
+ *   @description : This file should provide helper utility methods
+ *                  to help parse and data manipulation for Diagnostics
+ *
+ *   @function {formatNum}
+ *   @function {formatPct}
+ *   @function {prettifyNum}
+ *   @function {validatePct}
+ *   @function {formatDecimals}
+ *
+ ********************************************************************/
+
+// Logic follows ticket #930 requirements
+const formatNum = (value) => {
+  let preparedValue;
+  if (value >= 10 || value === 0) {
+    preparedValue = Math.round(value);
+  } else {
+    preparedValue = parseFloat(value).toFixed(2);
+  }
+  return preparedValue;
+};
+
+const formatPct = (value) => value.toFixed(2);
+
+// Formats number with commas
+const prettifyNum = (value) => value.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+
+const validatePct = (percentage) => {
+  if (percentage > 100) {
+    return 100;
+  } else if (isNaN(percentage) || !isFinite(percentage) || Math.sign(percentage) === -1) {
+    return 0;
+  } else {
+    return percentage;
+  }
+};
+
+const isFloat = (n) => Number(n) === n && n % 1 !== 0;
+
+const formatDecimals = (chunk, decimals = 2) => {
+  if (Array.isArray(chunk)) {
+    const newChunk = chunk.map((value) => {
+      if (isFloat(value)) {
+        return parseFloat(value.toFixed(decimals));
+      }
+      if (Array.isArray(value)) {
+        return value.map((v) => {
+          if (isFloat(v)) {
+            return parseFloat(v.toFixed(decimals));
+          }
+          return v;
+        });
+      }
+      return value;
+    });
+    return newChunk;
+  } else if (typeof chunk === 'object' && chunk !== null) {
+    const newChunk = Object.entries(chunk).reduce((acc, [key, value]) => {
+      if (typeof value === 'number' && isFloat(value)) {
+        acc[key] = parseFloat(value.toFixed(decimals));
+      } else {
+        acc[key] = value;
+      }
+      return acc;
+    }, {});
+    return newChunk;
+  }
+  return chunk;
+};
+
+function getFormattedTooltipForDiagnosticsChart() {
+  const transifex = Transifex.live.translateText;
+
+  const { color: optionsColor, label, type } = this.options;
+  const { color: seriesColor, userOptions } = this.series;
+  const tooltipText = type === 'PRODES' ? `${type} (${label})` : userOptions.name || userOptions.id;
+  return `<tr>
+  <td style="color:${optionsColor || seriesColor};padding:0">${transifex(tooltipText)}: </td>
+  <td style="padding-top:0; padding-bottom: 0"><b>${prettifyNum(formatNum(this.y || 0))} ha</b></td>
+  </tr>`;
+}
+
+module.exports = {
+  formatNum,
+  formatDecimals,
+  formatPct,
+  prettifyNum,
+  validatePct,
+  getFormattedTooltipForDiagnosticsChart,
+};

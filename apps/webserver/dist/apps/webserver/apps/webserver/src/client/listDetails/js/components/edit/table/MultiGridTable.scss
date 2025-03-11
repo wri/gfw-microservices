@@ -1,0 +1,30 @@
+@import '../../../../../common/css/colorsGFW';
+
+.gfw-table {
+  .gfw-table__fixed-row-select {
+    background-color: #f7f7f7;
+    width: 100%;
+    color: $gfw-green;
+    font-weight: 500;
+    padding: 0.3rem;
+    padding-right: 2rem;
+    margin: 0px;
+    border-color: #e5e5df;
+    height: 100%;
+    border-radius: 0;
+    border-left: 0;
+    border-top: 0;
+    text-overflow: ellipsis;
+    background: url(data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHhtbG5zOnhsaW5rPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5L3hsaW5rIiB3aWR0aD0iMTYiIGhlaWdodD0iMTYiIHZlcnNpb249IjEuMSIgc3R5bGU9IiI+PHJlY3QgaWQ9ImJhY2tncm91bmRyZWN0IiB3aWR0aD0iMTAwJSIgaGVpZ2h0PSIxMDAlIiB4PSIwIiB5PSIwIiBmaWxsPSJub25lIiBzdHJva2U9Im5vbmUiLz4KICAgIDx0aXRsZT5JbnB1dCBpY29uL0Ryb3Bkb3duIGFycm93czwvdGl0bGU+CiAgICAKPGcgY2xhc3M9ImN1cnJlbnRMYXllciIgc3R5bGU9IiI+PHRpdGxlPkxheWVyIDE8L3RpdGxlPjxnIGlkPSJJbnB1dC1pY29uL0Ryb3Bkb3duLWFycm93cyIgc3Ryb2tlPSJub25lIiBzdHJva2Utd2lkdGg9IjEiIGZpbGw9IiM5N2JkM2QiIGZpbGwtcnVsZT0iZXZlbm9kZCIgb3BhY2l0eT0iMC41IiBjbGFzcz0ic2VsZWN0ZWQiIGZpbGwtb3BhY2l0eT0iMSI+CiAgICAgICAgPHBvbHlnb24gaWQ9ImFycm93IiBmaWxsPSIjOTdiZDNkIiBmaWxsLXJ1bGU9Im5vbnplcm8iIHRyYW5zZm9ybT0icm90YXRlKDQ1IDguMDAwMDAwMDAwMDAwMDA0LDYuOTk5OTk5OTk5OTk5OTk4KSB0cmFuc2xhdGUoLTgsLTcpICIgcG9pbnRzPSIxNy43MTQyODU4NTA1MjQ5MDIsMTUuNzE0Mjg1ODUwNTI0OTAyIDE3LjcxNDI4NTg1MDUyNDkwMiwxMCAyMCwxMCAyMCwxOCAxMiwxOCAxMiwxNS43MTQyODU4NTA1MjQ5MDIgIi8+CiAgICA8L2c+PC9nPjwvc3ZnPg==)
+      no-repeat center right 1em;
+  }
+
+  .gfw-table__fixed-row-select:focus {
+    box-shadow: none;
+  }
+
+  .row-icon.gfw-table__td,
+  .row-icon.gfw-table__thead {
+    border-right: none;
+  }
+}

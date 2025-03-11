@@ -1,0 +1,115 @@
+import React from 'react';
+import Tabs from '@mui/material/Tabs';
+import Tab from '@mui/material/Tab';
+import CircularProgress from '@mui/material/CircularProgress';
+import {
+  analysisTypes,
+  analysisTypesOptionsNewNames,
+} from '../../../../../../config/env/analysisTypes.constants';
+import { listStatus } from '../../../../../../config/env/listStatuses.constants';
+import {
+  COMMODITY_RISK_VIEW,
+  FOREST_CHANGE_VIEW,
+  POST_2020_RISK_ASSESSMENT_VIEW,
+} from './listViews.constants';
+
+function AnalysesTabs({
+  listView,
+  changeListView,
+  listViewOptions,
+  listAnalysesStatus,
+  hasLocationWithErrors,
+}) {
+  const getStatusIcon = (status) => {
+    switch (status) {
+      case listStatus.Pending:
+        return <CircularProgress size={15} sx={{ color: '#97bd3d' }} />;
+      case listStatus.Inactive:
+      case hasLocationWithErrors:
+        return <span className="status-indicator status-indicator--red" />;
+      default:
+        return null;
+    }
+  };
+  const post2000TreeCoverLossAnalysisStatus = listAnalysesStatus?.find(
+    ({ analysisId }) => analysisId === analysisTypes.FOREST_CHANGE_DIAGNOSTICS
+  )?.status;
+
+  const post2020RiskAssessmentStatus = listAnalysesStatus?.find(
+    ({ analysisId }) => analysisId === analysisTypes.DEFORESTATION_KPIS
+  )?.status;
+
+  const getAnalysisLabel = (id) =>
+    analysisTypesOptionsNewNames.find((analysis) => analysis.id === id).label;
+  return (
+    <Tabs
+      value={listView}
+      onChange={(e, newValue) => changeListView(newValue)}
+      style={{ color: 'black', background: 'none' }}
+      TabIndicatorProps={{ style: { display: 'none' } }} // Remove the default indicator
+    >
+      {listViewOptions.includes(POST_2020_RISK_ASSESSMENT_VIEW) && (
+        <Tab
+          icon={getStatusIcon(post2020RiskAssessmentStatus)}
+          iconPosition="start"
+          label={getAnalysisLabel(analysisTypes.DEFORESTATION_KPIS)}
+          value={POST_2020_RISK_ASSESSMENT_VIEW}
+          data-cy="post-2020-tab"
+          sx={{
+            backgroundColor: listView === POST_2020_RISK_ASSESSMENT_VIEW ? 'white' : '#e5e5e5',
+            color: 'black',
+            '&.Mui-selected': {
+              color: 'black',
+              backgroundColor: 'white',
+              borderTopLeftRadius: '4px',
+              borderTopRightRadius: '4px',
+            },
+          }}
+        />
+      )}
+
+      {listViewOptions.includes(FOREST_CHANGE_VIEW) && (
+        <Tab
+          icon={getStatusIcon(post2000TreeCoverLossAnalysisStatus)}
+          iconPosition="start"
+          label={getAnalysisLabel(analysisTypes.FOREST_CHANGE_DIAGNOSTICS)}
+          value={FOREST_CHANGE_VIEW}
+          data-cy="post-2000-tab"
+          sx={{
+            backgroundColor: listView === FOREST_CHANGE_VIEW ? 'white' : '#e5e5e5',
+            color: 'black',
+            '&.Mui-selected': {
+              color: 'black',
+              backgroundColor: 'white',
+              borderTopLeftRadius: '4px',
+              borderTopRightRadius: '4px',
+            },
+          }}
+        />
+      )}
+
+      {listViewOptions.includes(COMMODITY_RISK_VIEW) && (
+        // only display Commodity Risk / Forest Change view toggle in Commodity Risk lists
+
+        <Tab
+          iconPosition="start"
+          label="Palm Risk Assessment"
+          value={COMMODITY_RISK_VIEW}
+          data-cy="palm-risk-assessment-tab"
+          sx={{
+            backgroundColor: listView === COMMODITY_RISK_VIEW ? 'white' : '#e5e5e5',
+            color: 'black',
+            '&.Mui-selected': {
+              color: 'black',
+              backgroundColor: 'white',
+              borderTopLeftRadius: '4px',
+              borderTopRightRadius: '4px',
+            },
+          }}
+        />
+      )}
+    </Tabs>
+  );
+}
+
+export default AnalysesTabs;

@@ -1,0 +1,144 @@
+import React, { useState, useEffect } from 'react';
+import moment from 'moment';
+import {
+  Divider,
+  Table,
+  TableBody,
+  TableCell,
+  TableContainer,
+  TableHead,
+  TableRow,
+  Paper,
+  Grid,
+} from '@mui/material';
+
+import { numberWithCommas } from '../../../../../locations/js/utils/locationsTableUtils.js';
+import DateRangeSelector from './DateRangeSelector';
+import { oneMonthAgoDate, endDayIncludingToday } from './AccountUsage.utils';
+import { accountProfileStrings } from '../../../../../common/js/config';
+import { useAccountDetail } from '../AccountDetailSection';
+import AccountUsage from '../../../../../profile/js/components/AccountUsage/AccountUsage.jsx';
+import { LoadingModal } from '../../../../../components';
+
+function AccountDetailUsage() {
+  const { currentAccount } = useAccountDetail();
+  const [startDate, setStartDate] = useState(oneMonthAgoDate);
+  const [endDate, setEndDate] = useState(endDayIncludingToday);
+  const [isLoading, setIsLoading] = useState(true);
+  const [dateRangeAccountData, setDateRangeAccountData] = useState({});
+
+  const { organization_id: organizationId } = currentAccount;
+  const { number_of_lists_analyzed, max_area_analyzed, total_area_analyzed } = dateRangeAccountData;
+
+  useEffect(() => {
+    setIsLoading(true);
+    fetch(
+      `/analytics/usage?startDate=${startDate}&endDate=${endDate}&organizationId=${organizationId}`,
+      {
+        method: 'GET',
+        credentials: 'same-origin',
+        headers: {
+          'Content-type': 'application/json',
+        },
+      }
+    )
+      .then((res) => res.json())
+      .then(([data]) => {
+        setDateRangeAccountData(data);
+        setIsLoading(false);
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+  }, [startDate, endDate]);
+
+  return (
+    <section>
+      <AccountUsageInfoBubbles />
+      <Divider sx={{ margin: '1.5rem 0' }} />
+      <DateRangeSelector
+        startDate={startDate}
+        setStartDate={setStartDate}
+        endDate={endDate}
+        setEndDate={setEndDate}
+      />
+      {isLoading && <LoadingModal isLoading={true} />}
+      {!isLoading && (
+        <Grid container justifyContent="center" sx={{ marginTop: '1em' }}>
+          <TableContainer component={Paper}>
+            <Table sx={{ minWidth: 650 }} aria-label="simple table">
+              <TableHead>
+                <TableRow>
+                  <TableCell>{accountProfileStrings.accountUsageLabels.numberOfLists}</TableCell>
+                  <TableCell>{accountProfileStrings.accountUsageLabels.maxAreaPerList}</TableCell>
+                  <TableCell>
+                    {accountProfileStrings.accountUsageLabels.totalAreaAnalyzed}
+                  </TableCell>
+                </TableRow>
+              </TableHead>
+              <TableBody>
+                <TableRow>
+                  <TableCell>{numberWithCommas(number_of_lists_analyzed)}</TableCell>
+                  <TableCell>{numberWithCommas(max_area_analyzed)}</TableCell>
+                  <TableCell>{numberWithCommas(total_area_analyzed)}</TableCell>
+                </TableRow>
+              </TableBody>
+            </Table>
+          </TableContainer>
+        </Grid>
+      )}
+    </section>
+  );
+}
+
+function AccountUsageInfoBubbles() {
+  const { currentAccount } = useAccountDetail();
+  const { organization_id: organizationId, renewal_time: renewalTime } = currentAccount;
+  const [accountUsageData, setAccountUsageData] = useState(null);
+  const accountActivationDate = moment(renewalTime);
+  const accountLatestYearStartDate = moment(endDayIncludingToday)
+    .clone()
+    .subtract(moment().diff(accountActivationDate, 'days') % 365, 'days');
+
+  useEffect(() => {
+    fetch(
+      `/analytics/usage?startDate=${accountLatestYearStartDate.format(
+        'YYYY-MM-DD'
+      )}&endDate=${endDayIncludingToday}&organizationId=${organizationId}`,
+      {
+        method: 'GET',
+        credentials: 'same-origin',
+        headers: {
+          'Content-type': 'application/json',
+        },
+      }
+    )
+      .then((res) => res.json())
+      .then((data) => {
+        if (data?.success === false) {
+          console.warn(data);
+        }
+
+        const [accountUsage = {}] = data;
+        const { limits: accountLimits } = currentAccount.analysis_limits;
+
+        setAccountUsageData({
+          total_area_analyzed: accountUsage.total_area_analyzed ?? 0,
+          locations_analyzed: accountUsage.locations_analyzed ?? 0,
+          maxLocations: accountLimits.max_locations_per_year ?? 0,
+          maxArea: accountLimits.MaxAreaAnalyzeablePerYear ?? 0,
+        });
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+  }, []);
+
+  if (!accountUsageData) {
+    return <LoadingModal isLoading={true} />;
+  }
+
+  return <AccountUsage {...accountUsageData} />;
+}
+
+export default AccountDetailUsage;

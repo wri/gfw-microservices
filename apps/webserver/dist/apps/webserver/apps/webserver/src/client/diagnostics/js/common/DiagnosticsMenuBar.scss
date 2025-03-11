@@ -1,0 +1,37 @@
+@import '../../../common/css/baseGFW';
+
+.diagnostics-menu-bar {
+  width: 100%;
+  background: #404042;
+  height: 55px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 1rem;
+
+  &__action-bar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    color: white;
+    width: 75%;
+    max-width: 1200px;
+  }
+  &__actions-group {
+    display: flex;
+    align-items: center;
+
+    label {
+      color: $gfw-white;
+      @include antialiased();
+    }
+
+    select:not([multiple]) {
+      height: 25px;
+    }
+
+    > .button:not(:last-child) {
+      margin-right: $space-small;
+    }
+  }
+}

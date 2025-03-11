@@ -1,0 +1,45 @@
+@import '../../common/css/baseGFW';
+@import '../../common/css/subHeader';
+@import '../../common/css/profile';
+
+.verify-section {
+  margin: 0 auto;
+  padding: $space-spacious $space-normal;
+
+  @media (min-width: 1400px) {
+    max-width: $full-max-width;
+    width: $full-width;
+  }
+
+  @media (min-width: 850px) and (max-width: 1399px) {
+    max-width: $mobile-max-width;
+    width: $mobile-width;
+  }
+
+  &__title {
+    @include heading(600);
+    margin-bottom: 0;
+  }
+
+  &__prompt {
+    @include text(200);
+    margin-top: $space-small;
+  }
+
+  &__input-container {
+    margin-top: $space-spacious;
+  }
+
+  &__verify-button {
+    margin-left: $space-comfortable;
+  }
+
+  &__resend-prompt {
+    display: flex;
+    align-items: center;
+
+    > .link-button {
+      margin-left: $space-compact;
+    }
+  }
+}

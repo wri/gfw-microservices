@@ -1,0 +1,57 @@
+// ErrorPage.scss
+
+.error-page {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background-color: #fbfcfa;
+  display: flex;
+  z-index: 999;
+
+  &__dialog {
+    z-index: 99999;
+    background-color: #fff;
+    max-width: 540px;
+    border-radius: 4px;
+    border-color: #3d3d3d;
+    box-sizing: border-box;
+    align-self: center;
+    margin: 0 auto;
+    border: solid 1px #eeeeee;
+  }
+
+  &__tile {
+    font-weight: 500;
+    font-size: 1.1em;
+    padding: 16px;
+    border-bottom: 1px solid #eeeeee;
+  }
+
+  &__message {
+    padding: 16px;
+
+    > a {
+      color: #97bd3d;
+      text-decoration: underline;
+    }
+  }
+
+  &__details {
+    font-family: monospace;
+    padding: 16px;
+    background-color: #fff4f4;
+    font-size: 14px;
+    white-space: pre-wrap;
+    border: 1px solid #f00;
+    word-wrap: break-word;
+    margin-bottom: 0;
+    max-height: 340px;
+    overflow-y: scroll;
+  }
+
+  &__button-wrapper {
+    padding: 0 16px 16px;
+  }
+}

@@ -1,0 +1,21 @@
+@import '../../../../common/css/variables';
+@import '../../../../common/css/colorsGFW';
+@import '../../../../common/css/typographyGFW';
+@import '../../../../common/css/mixins';
+
+.location-map-drawer {
+  &__message {
+    @include text(100);
+    position: absolute;
+    top: -20px;
+    &--error {
+      color: $theme-danger-red-2;
+    }
+  }
+  &__draw-button {
+    position: absolute;
+    top: $space-normal;
+    right: $space-normal;
+    z-index: 999;
+  }
+}

@@ -1,0 +1,10 @@
+@import '../../../../common/css/baseGFW';
+
+.DeleteFolder__dialog-folder-name {
+  font-weight: $font-weight-semibold;
+}
+
+.DeleteFolder__dialog-error {
+  @include text(100, $weight: $font-weight-semibold, $color: $theme-danger-dark-red);
+  margin-top: $space-small;
+}

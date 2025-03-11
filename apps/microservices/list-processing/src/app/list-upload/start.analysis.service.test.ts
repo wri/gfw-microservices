@@ -3,73 +3,87 @@ import { StartAnalysisService } from './start.analysis.service';
 import { S3Service } from '@wri-monorepos/aws';
 import { ConfigService } from '@nestjs/config';
 import { RequestLargeListProcess } from '../../models';
-import { csv2geojson } from './parser/csv2geojson.parser';
+import { checkIfListExist } from './shared/cheker.utils';
 
 jest.mock('./parser/csv2geojson.parser', () => ({
   csv2geojson: jest.fn(),
 }));
 
+jest.mock('./shared/cheker.utils', () => ({
+  checkIfListExist: jest.fn(),
+}));
+
+jest.mock('@wri-monorepos/sql', () => ({
+  SQLUtils: jest.fn().mockImplementation(() => ({
+    connect: jest.fn().mockResolvedValue(undefined),
+    disconnect: jest.fn().mockResolvedValue(undefined),
+  })),
+}));
+
+jest.mock('fastq', () => ({
+  __esModule: true,
+  default: {
+    promise: jest.fn().mockImplementation(() => ({
+      push: jest.fn().mockResolvedValue(undefined),
+    })),
+  },
+}));
+
 describe('StartAnalysisService', () => {
   let service: StartAnalysisService;
-  let s3Service: S3Service;
-  let configService: ConfigService;
+  let mockGet: jest.Mock;
+  let mockWriteS3fileIntoTmp: jest.Mock;
 
   beforeEach(async () => {
+    mockGet = jest.fn().mockReturnValue('test-bucket');
+    mockWriteS3fileIntoTmp = jest.fn();
+
     const module: TestingModule = await Test.createTestingModule({
       providers: [
         StartAnalysisService,
         {
           provide: S3Service,
           useValue: {
-            writeS3fileIntoTmp: jest.fn(),
+            writeS3fileIntoTmp: mockWriteS3fileIntoTmp,
           },
         },
         {
           provide: ConfigService,
           useValue: {
-            get: jest.fn(),
+            get: mockGet,
           },
         },
       ],
     }).compile();
 
     service = module.get<StartAnalysisService>(StartAnalysisService);
-    s3Service = module.get<S3Service>(S3Service);
-    configService = module.get<ConfigService>(ConfigService);
   });
 
-  xit('should be defined', () => {
+  afterEach(() => {
+    jest.clearAllMocks();
+  });
+
+  it('should be defined', () => {
     expect(service).toBeDefined();
   });
 
-  xit('should run the analysis and return the expected response', async () => {
+  it('should throw an error when list does not exist in client store', async () => {
     const request: RequestLargeListProcess = {
       organization_id: 1,
       subscription_status_id: 1,
       organization_database: 'test-database',
-      list_id: 1,
+      list_id: 123,
       path: 'test-path',
       template_type: 'test-type',
       user_id: 1,
       startAnalysis: true,
       saveAsDraft: false,
     };
-    const bucket = 'test-bucket';
-    const fileDownloadedPath = 'tmp/test/path';
-    const geoJson = { type: 'FeatureCollection', features: [] };
 
-    jest.spyOn(configService, 'get').mockReturnValue(bucket);
-    jest.spyOn(s3Service, 'writeS3fileIntoTmp').mockResolvedValue(fileDownloadedPath);
-    (csv2geojson as jest.Mock).mockReturnValue(geoJson);
+    (checkIfListExist as jest.Mock).mockResolvedValue(false);
 
-    const result = await service.run(request);
-
-    expect(configService.get).toHaveBeenCalledWith('LARGE_PROCESSING_LIST_BUCKET', { infer: true });
-    expect(s3Service.writeS3fileIntoTmp).toHaveBeenCalledWith(request.path, bucket);
-    expect(csv2geojson).toHaveBeenCalledWith(fileDownloadedPath);
-    expect(result).toEqual({
-      executionArn: '',
-      startDate: '',
-    });
+    await expect(service.run(request)).rejects.toThrow(
+      'List not found with id 123 at client store'
+    );
   });
 });

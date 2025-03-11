@@ -26,6 +26,7 @@ import { AddNewLocationToAnalysisTable } from './chain/add.new.location.to.analy
 import { ConvertGeojsonProperties } from './chain/convert.geojson.properties';
 import { PutListAsDraft } from './chain/put.list.as.draft';
 import { GenerateErrorFile } from './chain/generate.error.file';
+import { checkIfListExist } from './shared/cheker.utils';
 
 type WorkerType = {
   request: RequestLargeListProcess;
@@ -91,11 +92,21 @@ async function worker(input: WorkerType, cb: done) {
 @Injectable()
 export class StartAnalysisService {
   private readonly logger = new Logger(StartAnalysisService.name);
-
   constructor(private readonly config: ConfigService<ServerConfigType, true>) {}
 
   @logExecutionTime(StartAnalysisService.name)
   async run(request: RequestLargeListProcess): Promise<ResponseLargeListProcess> {
+    const { organization_database: organizationDatabase, list_id: existingListId } = request;
+    if (existingListId) {
+      const listExistAtClientStore = await checkIfListExist(existingListId, organizationDatabase);
+      if (!listExistAtClientStore) {
+        this.logger.warn(`List not found with id ${existingListId} at client store`);
+        throw new Error(`List not found with id ${existingListId} at client store`);
+      } else {
+        this.logger.log(`List ${existingListId} found at client store`);
+      }
+    }
+
     const q: queue<WorkerType> = fastq(worker, 2);
 
     q.push({

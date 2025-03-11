@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 import { CreateListRequest } from '../../models';
 import { CreateListResult } from '@wri-monorepos/geo';
 import { AbstractHandler, ChainType, RequestNewList } from './chain/types';
@@ -7,9 +7,12 @@ import { ListSchemaName } from './chain/list.schema.name';
 import { CreateListLevelData } from './chain/create.list.level.data';
 import { CreateLocationSchema } from './chain/create.location.schema';
 import { ConvertCommodityToMapsPamCode } from './chain/convert.commodity.mapspam';
+import { checkIfListExist } from './shared/cheker.utils';
 
 @Injectable()
 export class CreateLargeListService {
+  private readonly logger = new Logger(CreateLargeListService.name);
+
   async run({
     listName,
     userId,
@@ -52,6 +55,19 @@ export class CreateLargeListService {
     const listSchemaName = new ListSchemaName();
     const createListLevelData = new CreateListLevelData();
     const createLocationSchema = new CreateLocationSchema(connection);
+
+    if (existingListId) {
+      const listExistAtClientStore = await checkIfListExist(existingListId, clientDatabase);
+      if (!listExistAtClientStore) {
+        this.logger.warn(`List not found with id ${existingListId} at client store`);
+        throw new Error(`List not found with id ${existingListId} at client store`);
+      } else {
+        this.logger.log(`List ${existingListId} found at client store`);
+        return {
+          list_id: existingListId,
+        };
+      }
+    }
 
     convertCommodityToMapsPamCode
       .setNext(listSchemaName)

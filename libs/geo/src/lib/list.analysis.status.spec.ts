@@ -11,7 +11,7 @@ import {
 import * as LAS from './list.analysis.status';
 import { ListsAnalysisStatus, SQLUtils } from '@wri-monorepos/sql';
 import { readAnalysesLastModifiedTime } from '@wri-monorepos/shared';
-import { analysisTypesOptions, listStatus } from '@wri-monorepos/constants';
+import { analysisTypesOptionsNewNames, listStatus } from '@wri-monorepos/constants';
 import * as sql from 'mssql';
 
 jest.mock('@nestjs/common', () => ({
@@ -377,11 +377,11 @@ describe('list.analysis.status.ts', () => {
     it('should correctly return a record of used/unused analysis types by ID', () => {
       const analysisIds = ['FCD', 'AFI'];
 
-      expect(analysisTypesOptions.length).toBeGreaterThan(0);
+      expect(analysisTypesOptionsNewNames.length).toBeGreaterThan(0);
 
       const result = getAnalysisTypesFromIds(analysisIds);
 
-      analysisTypesOptions.forEach((option) => {
+      analysisTypesOptionsNewNames.forEach((option) => {
         if (analysisIds.includes(option.id)) {
           expect(result[option.id]).toBe(true);
         } else {
@@ -392,7 +392,7 @@ describe('list.analysis.status.ts', () => {
 
     it('should return an empty object if no analysisIds are provided', () => {
       const result = getAnalysisTypesFromIds([]);
-      analysisTypesOptions.forEach((option) => {
+      analysisTypesOptionsNewNames.forEach((option) => {
         expect(result[option.id]).toBe(false);
       });
     });
@@ -402,7 +402,7 @@ describe('list.analysis.status.ts', () => {
     it('should correctly return a record of used/unused analysis types by checking status data', () => {
       const result = extractAnalysisTypes(mockAnalysisStatusData as ListsAnalysisStatus[]);
 
-      analysisTypesOptions.forEach((option) => {
+      analysisTypesOptionsNewNames.forEach((option) => {
         if (option.id === 'FCD' || option.id === 'AFI') {
           expect(result[option.id]).toBe(true);
         } else {
@@ -413,7 +413,7 @@ describe('list.analysis.status.ts', () => {
 
     it('should return all false if input listAnalysisStatusData is empty', () => {
       const result = extractAnalysisTypes([]);
-      analysisTypesOptions.forEach((option) => {
+      analysisTypesOptionsNewNames.forEach((option) => {
         expect(result[option.id]).toBe(false);
       });
     });

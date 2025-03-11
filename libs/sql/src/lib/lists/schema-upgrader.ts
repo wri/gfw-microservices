@@ -35,7 +35,7 @@ interface SchemaUpgraderArgs {
   listId: number;
   userId: number;
 }
-export default async function upgradeListSchema(args: SchemaUpgraderArgs) {
+export async function upgradeListSchema(args: SchemaUpgraderArgs) {
   const { clientDb, listId, userId } = args;
   const logger = new Logger(`SchemaUpgrade for ListId: ${listId}`);
   try {
@@ -252,7 +252,6 @@ export enum GHG_MAPSPAM_CODES {
   SOYB = 'SOYB',
   SUGC = 'SUGC',
 }
-
 export const COMMODITY_MAP_SPAM = {
   ['arabica coffee']: GHG_MAPSPAM_CODES.COFF,
   ['cocoa']: GHG_MAPSPAM_CODES.COCO,
@@ -271,7 +270,6 @@ export const COMMODITY_MAP_SPAM = {
   ['soy generic']: GHG_MAPSPAM_CODES.SOYB,
   ['sugar cane']: GHG_MAPSPAM_CODES.SUGC,
 };
-
 export const COMMODITY_MAP_SPAM_CODES_FOR_HUMANS = {
   [GHG_MAPSPAM_CODES.COFF]: 'Coffee',
   [GHG_MAPSPAM_CODES.COCO]: 'Cocoa Generic',
@@ -280,7 +278,6 @@ export const COMMODITY_MAP_SPAM_CODES_FOR_HUMANS = {
   [GHG_MAPSPAM_CODES.SOYB]: 'Soy Generic',
   [GHG_MAPSPAM_CODES.SUGC]: 'Sugar Cane',
 };
-
 export const MAPSPAM_COMMODITY = {
   COFF: 'Coffee',
   COCO: 'Cocoa Generic',
@@ -289,7 +286,7 @@ export const MAPSPAM_COMMODITY = {
   SOYB: 'Soy Generic',
   SUGC: 'Sugar Cane',
 };
-// for unexisting codes, multiple, unknown or other
+
 export enum GHG_PREFIX {
   VALUE = 'GFWP_',
 }

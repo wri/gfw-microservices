@@ -10,4 +10,4 @@ export * from './getListLocationsCountById';
 export * from './getListByFilters';
 export * from './updateListsAnalysisStatus';
 export * from './gfwLists';
-export { default as upgradeListSchema } from './schema-upgrader';
+export * from './schema-upgrader';

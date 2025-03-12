@@ -107,7 +107,7 @@ class ShareList extends React.Component {
     const combinedUsersList = SharedListUsers ? AdminsOwner.concat(SharedListUsers) : AdminsOwner;
 
     return (
-      <div className="App">
+      <div>
         {SharedListUsers && (
           <React.Fragment>
             <ShareListDialog
@@ -116,7 +116,7 @@ class ShareList extends React.Component {
               open={addUserToSharedListDialog__isOpen}
               modalTitle="Share list"
               body={
-                <div className="SharedListDialog">
+                <div className="shared-list-dialog">
                   <p>
                     You are about to share <strong>{selectedList.list_name}</strong> with
                     <strong> {selectedUser && selectedUser.name}</strong>. Please confirm by
@@ -132,7 +132,7 @@ class ShareList extends React.Component {
               open={removeUserFromSharedListDialog__isOpen}
               modalTitle="Discontinue sharing"
               body={
-                <div className="SharedListDialog">
+                <div className="shared-list-dialog">
                   <p>
                     You are about to discontinue sharing of{' '}
                     <strong>{selectedList.list_name}</strong> with
@@ -149,7 +149,7 @@ class ShareList extends React.Component {
               open={stopSharingWithAllDialog__isOpen}
               modalTitle="Discontinue sharing"
               body={
-                <div className="SharedListDialog">
+                <div className="shared-list-dialog">
                   <p>
                     You are about to discontinue sharing of{' '}
                     <strong>{selectedList.list_name}</strong> with{' '}
@@ -164,7 +164,7 @@ class ShareList extends React.Component {
               }
             />
 
-            <section id="SearchUsers__filter">
+            <section className="users-list-dropdown">
               <Select
                 classNamePrefix="react-select"
                 isClearable
@@ -172,13 +172,11 @@ class ShareList extends React.Component {
                 options={NotAdminsOwner}
                 onChange={this._updateSelectedUserState}
                 isOptionDisabled={(option) => option.disabled === true}
-                //menuIsOpen={true}
               />
-              <div className="SearchUsers__buttons">
+              <div className="users-search">
                 {selectedUser && !selectedUserInSharedList.length > 0 ? (
                   <Button
                     variant="primary"
-                    className="SearchUsers__add-user"
                     onClick={() => this._handleAddUserToSharedListDialogMessage()}
                     icon={<IconPlus height="10px" />}
                     label="Add user"
@@ -187,7 +185,6 @@ class ShareList extends React.Component {
                   <Button
                     variant="primary"
                     disabled
-                    className="SearchUsers__add-user"
                     icon={<IconPlus height="10px" />}
                     label="Add user"
                   />
@@ -196,30 +193,24 @@ class ShareList extends React.Component {
                 {SharedListUsers.length > 0 ? (
                   <Button
                     variant="danger"
-                    className="SearchUsers__remove-all-user"
                     onClick={() => this._handleStopSharingWithAllDialog()}
                     label="STOP SHARING WITH ALL"
                   />
                 ) : (
-                  <Button
-                    variant="danger"
-                    disabled
-                    className="SearchUsers__remove-all-user"
-                    label="STOP SHARING WITH ALL"
-                  />
+                  <Button variant="danger" disabled label="STOP SHARING WITH ALL" />
                 )}
               </div>
             </section>
 
-            <section id="ShareUsers__container">
-              <table id="ShareUsersTable">
+            <section className="users-to-share-with">
+              <table className="users-to-share-with__table">
                 <thead>
                   <tr>
-                    <th className="ShareUsers__name">User Name</th>
-                    <th className="ShareUsers__email">User Email</th>
-                    <th className="ShareUsers__timestamp">Timestamp</th>
-                    <th className="ShareUsers__access-level">Access Level</th>
-                    <th className="ShareUsers__remove-user">Remove User</th>
+                    <th className="users-to-share-with__name">User Name</th>
+                    <th className="users-to-share-with__email">User Email</th>
+                    <th className="users-to-share-with__timestamp">Timestamp</th>
+                    <th className="users-to-share-with__access-level">Access Level</th>
+                    <th className="users-to-share-with__remove-user">Remove User</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -228,15 +219,21 @@ class ShareList extends React.Component {
                     return (
                       <tr
                         key={user.email}
-                        className={!userRemovable ? 'user-not-removable' : 'user-removable'}
+                        className={
+                          !userRemovable
+                            ? 'users-to-share-with__user-not-removable'
+                            : 'users-to-share-with__user-removable'
+                        }
                       >
-                        <td className="ShareUsers__name">{user.name}</td>
-                        <td className="ShareUsers__email">{user.email}</td>
-                        <td className="ShareUsers__timestamp">
+                        <td className="users-to-share-with__name">{user.name}</td>
+                        <td className="users-to-share-with__email">{user.email}</td>
+                        <td className="users-to-share-with__timestamp">
                           {user.timestamp ? user.timestamp : listTimestamp}
                         </td>
-                        <td className="ShareUsers__access-level">{user.accessLevelTitle}</td>
-                        <td className="ShareUsers__remove-user">
+                        <td className="users-to-share-with__access-level">
+                          {user.accessLevelTitle}
+                        </td>
+                        <td className="users-to-share-with__remove-user">
                           {userRemovable && (
                             <button
                               className="gfw-button btn-remove"

@@ -222,7 +222,7 @@ export const handleCreateAnalysis = async (
   listId: number,
   organizationId: number,
   organizationDb: string,
-  userEmail: string,
+  sendEmail: boolean,
   organization_user_id: number,
   subscriptionStatusId: number,
   reanalyze = true
@@ -306,7 +306,7 @@ export const handleCreateAnalysis = async (
       processing_limit: processingLimit,
       analysis_types: analysisTypes,
       reanalyze,
-      send_email: userEmail ? true : false,
+      send_email: sendEmail,
     };
     const connectionLibSql = await clientStoreConnection.getConnection(organizationDb);
 

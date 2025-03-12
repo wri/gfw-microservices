@@ -35,7 +35,7 @@ export const handleGeoTrellisAnalyzeListRequest = async (req, list, analysisType
       listID,
       organizationId,
       databaseName,
-      user_email,
+      user_email ? true : false,
       organization_user_id,
       subscriptionStatusId,
       reanalyze

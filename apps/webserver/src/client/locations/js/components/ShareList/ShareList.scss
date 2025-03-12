@@ -2,7 +2,6 @@
 @import '../../../../common/css/baseGFW';
 
 $remove-button-height: 25px;
-$users-to-share-tableButton__height: 40px;
 $react-select__z-index: 1000;
 
 .btn-remove {
@@ -57,7 +56,7 @@ $react-select__z-index: 1000;
     th,
     td {
       padding: 0 0.75rem;
-      height: $users-to-share-tableButton__height;
+      height: 40px;
     }
   }
 }

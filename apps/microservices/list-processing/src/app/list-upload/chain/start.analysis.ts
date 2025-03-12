@@ -68,7 +68,7 @@ export class StartAnalysis extends AbstractHandler<ChainType> {
       listId,
       organizationId,
       organization_database,
-      isExternalAPIProcess ? null : '',
+      isExternalAPIProcess ? null : 'sendEmail',
       user_id,
       subscriptionStatusId,
       false

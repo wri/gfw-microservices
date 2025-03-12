@@ -60,7 +60,7 @@ export const getTableColumns = (templateData?: LocationListType[]) => {
   }
 
   return Object.keys(firstItemProperties).filter(
-    (key) => key in LabelNameTable
+    (key) => !blackListedFields.includes(key)
   ) as (keyof typeof LabelNameTable)[];
 };
 
@@ -69,49 +69,18 @@ export const LabelNameTable: {
 } = {
   Location_N: 'Location Name',
   locationName: 'Location Name',
-  investmentName: 'Investment Name',
-  mill_name: 'Mill Name',
-  latitude: 'Latitude',
   Latitude: 'Latitude',
+  latitude: 'Latitude',
   Longitude: 'Longitude',
   longitude: 'Longitude',
   analysisRadius: 'Analysis Radius',
   Analysis_R: 'Analysis Radius',
   analysisArea: 'Analysis Area',
   Analysis_A: 'Analysis Area',
-  Location_C: 'Location Classification',
   commodity: 'Commodity',
-  riskLevel: 'Risk Level',
-  Volume: 'Volume',
-  Owner_Name: 'Owner Name',
-  Owner_ID: 'Owner ID',
-  Company_ID: 'Company ID',
-  companyName: 'Company Name',
-  Company_Na: 'Company Name',
-  Supplier_N: 'Supplier Name',
-  Facility_N: 'Facility Name',
-  Refinery_N: 'Refinery Name',
-  certification: 'Certification',
-  Certificat: 'Certification',
-  startDate: 'Start Date',
-  Start_Date: 'Start Date',
-  endDate: 'End Date',
-  End_Date: 'End Date',
-  timeHorizon: 'Time Horizon',
-  Time_Horiz: 'Time Horizon',
   country: 'Country',
   state: 'State',
-  substate: 'Substate',
-  parentCompanyOrGroup: 'Parent Company',
-  companyPolicyRanking: 'Company Policy Ranking',
-  typeOfInvestment: 'Type Of Investment',
-  locationClassification: 'Location Classification',
-  refineryName: 'Refinery',
-  supplierName: 'Supplier',
-  facilityName: 'Facility',
-  attribute1: 'Attribute 1',
-  attribute2: 'Attribute 2',
-  attribute3: 'Attribute 3',
+  subState: 'Substate',
 };
 
 export const LabelNameTableZip = {
@@ -124,3 +93,5 @@ export const LabelNameTableZip = {
   facilityName: 'Facility_N',
   refineryName: 'Refinery_N',
 };
+
+const blackListedFields = ['gadmid'];

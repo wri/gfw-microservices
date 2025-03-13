@@ -6,17 +6,6 @@ export const getAccessLevelTitle = {
   3: 'Viewer',
 };
 
-export const isAdmin = (user) => {
-  return user.access_level_id === ADMIN_ACCESS_LEVEL;
-};
-
-export const normalizeUserData = (user) => {
-  user['tag'] = getAccessLevelTitle[user.access_level_id];
-  user['label'] = `${user.email} ${user.first_name} ${user.last_name}`.toLowerCase();
-  user['name'] = `${user.first_name} ${user.last_name}`;
-  return user;
-};
-
 export const normalizeComapnyData = (company) => {
   company['tag'] = company.contry;
   company['label'] = `${company.name}`.toLowerCase();

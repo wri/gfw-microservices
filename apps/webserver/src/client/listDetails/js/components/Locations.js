@@ -38,6 +38,7 @@ class Locations extends Component {
     const locationIdSearch = parseInt(new URLSearchParams(location.search).get('id'));
     const isGfwList = JSON.parse(new URLSearchParams(location.search).get('gfw'));
     const isSharedList = JSON.parse(new URLSearchParams(location.search).get('shared'));
+    const shareView = new URLSearchParams(location.search).has('shareView');
 
     if (locationIdSearch) {
       const listToSearch = isGfwList ? gfwLists : isSharedList ? userSharedLists : userLists;
@@ -47,6 +48,11 @@ class Locations extends Component {
     if (listToRedirect) {
       onListFromViewToList(listToRedirect, canopyModalVisible);
     }
+
+    if (shareView) {
+      this.setState({ shareView: true });
+    }
+
     this.setState({ isLoading: false });
   }
 

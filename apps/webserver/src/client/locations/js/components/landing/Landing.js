@@ -134,10 +134,9 @@ class Landing extends Component {
   };
 
   changeFolderView = (folder) => {
-    const { history, showShareList } = this.props;
+    const { history } = this.props;
     // reset list selections before setting new selection
 
-    showShareList(false);
     history.push('/folders');
 
     store.dispatch(resetList());
@@ -149,8 +148,6 @@ class Landing extends Component {
   };
 
   changeList = ({ id }) => {
-    const { showShareList } = this.props;
-    showShareList(false);
     window.location = `/list-details?id=${id}&gfw=true`;
   };
 
@@ -165,7 +162,7 @@ class Landing extends Component {
   };
 
   createLocationsFromList = (list, i) => {
-    const { history, userFolders, currentUser, showShareList } = this.props;
+    const { history, userFolders, currentUser } = this.props;
     const isAListSharedWithMe = this.state.selectedTab === LISTS_SHARED_WITH_ME;
 
     return (
@@ -179,7 +176,6 @@ class Landing extends Component {
         showDialog={this.showDialog}
         showFailedDialog={this.showFailedDialog}
         currentUser={currentUser}
-        showShareList={showShareList}
         B2BsharedListEnabled={this.props.B2BsharedListEnabled}
         onFolderChange={(msg) => {
           this.setState({ bannerContent: msg });

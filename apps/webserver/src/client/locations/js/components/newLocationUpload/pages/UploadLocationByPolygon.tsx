@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { z } from 'zod';
 import { useForm, Controller } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -28,6 +28,7 @@ import {
 } from '@mui/icons-material';
 import useMediaQuery from '@mui/material/useMediaQuery';
 import { TransitionGroup } from 'react-transition-group';
+import { v4 as uuidv4 } from 'uuid';
 
 import { ExternalHelperResource, LocationTypeButton, NavBar } from '../components';
 import { PillButton } from '../../../../../components';
@@ -37,6 +38,7 @@ import { useMap } from '../hooks';
 import LocationMapDrawer from '../../adding/LocationMapDrawer';
 import { useUploadLocation } from '../contexts';
 import { useHistory } from '../hooks';
+import { PolygonFromMapPage } from '../types';
 
 const MIN_AMOUNT_OF_COORDINATES = 3;
 const MAX_AMOUNT_OF_COORDINATES = 10;
@@ -57,13 +59,18 @@ type FormFieldsCoordinates = z.infer<typeof uploadByPolygonSchema>;
 const locationSchema = z.object({ locationName: locationNameSchema });
 type FormFieldsLocationName = z.infer<typeof locationSchema>;
 
-export function UploadLocationByPolygon() {
+export function UploadLocationByPolygon({
+  polygonFromMapPage,
+}: {
+  polygonFromMapPage?: React.MutableRefObject<PolygonFromMapPage | undefined>;
+}) {
   const theme = useTheme();
   const history = useHistory();
 
   const { clearUploadType, setUploadLocationByPolygon } = useUploadLocation();
   const isRegularScreenSize = useMediaQuery(theme.breakpoints.up('sm'));
   const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const locationNameRef = useRef<HTMLInputElement | null>(null);
 
   const {
     handleSubmit: handleSubmitLocationName,
@@ -103,6 +110,40 @@ export function UploadLocationByPolygon() {
       return prev.map((item) => (item.id === id ? { ...item, [key]: value } : item));
     });
   };
+
+  useEffect(() => {
+    if (polygonFromMapPage?.current?.geometry) {
+      setLocationFormat(LocationFormat.DrawAShape);
+    }
+  }, []);
+
+  useEffect(() => {
+    // draw the map one time when it's redirected from the map page
+    if (mapView && polygonFromMapPage?.current?.geometry) {
+      const coordinates = polygonFromMapPage.current.geometry.rings[0].map((coord) => ({
+        longitude: coord[0].toString(),
+        latitude: coord[1].toString(),
+      }));
+      const formattedCoordinates = coordinates.reduce((acc, coord, index) => {
+        acc[index.toString()] = {
+          latitude: coord.latitude,
+          longitude: coord.longitude,
+        };
+        return acc;
+      }, {} as Record<string, { latitude: string; longitude: string }>);
+
+      setCoordinates(
+        coordinates.map((coordinate) => ({
+          id: uuidv4(),
+          ...coordinate,
+        }))
+      );
+
+      onSubmitCoordinates({ coordinates: formattedCoordinates });
+      locationNameRef?.current?.focus();
+      polygonFromMapPage.current = undefined;
+    }
+  }, [mapView]);
 
   useEffect(() => {
     resetCoordinates();
@@ -206,6 +247,7 @@ export function UploadLocationByPolygon() {
                 fullWidth
                 error={!!errorsLocationName.locationName}
                 helperText={errorsLocationName.locationName?.message}
+                inputRef={locationNameRef}
                 {...field}
               />
             );

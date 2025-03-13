@@ -31,8 +31,7 @@ export type LocationListType = {
   properties: FeatureProperties;
 };
 
-export type GeoFromMap = {
-  locationName: string;
+export type PolygonFromMapPage = {
   geometry: { rings: number[][][] };
 };
 

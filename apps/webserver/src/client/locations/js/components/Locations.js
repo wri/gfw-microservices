@@ -199,7 +199,7 @@ class Locations extends Component {
       this.setState({ drawnGeom: mapData, isLoading: false });
 
       if (isUploadListUiAvailable) {
-        this.props.history.push('/upload-location/configure-list');
+        this.props.history.replace('/upload-location/by-polygon');
       } else {
         store.dispatch(changeView('add'));
         this.props.history.push('/add');
@@ -273,7 +273,7 @@ class Locations extends Component {
 
   navigateToAddView = (gfwInfoFromMap, gfwList) => {
     if (isUploadListUiAvailable) {
-      this.props.history.push('/upload-location/configure-list');
+      this.props.history.replace('/upload-location/by-polygon');
     } else {
       let addType = this.state.activeTemplate === 'investment' ? 'investment' : 'commodity';
       if (gfwInfoFromMap.gfwData.listName === universalMillList) {

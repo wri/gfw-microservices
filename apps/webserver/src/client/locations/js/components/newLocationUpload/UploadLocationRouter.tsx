@@ -1,5 +1,5 @@
 import './index.scss';
-import React from 'react';
+import React, { useRef } from 'react';
 import { Route, Switch } from 'react-router-dom';
 import { Box } from '@mui/material';
 
@@ -14,7 +14,7 @@ import {
   SummaryAndSubmit,
   SubmissionSuccess,
 } from './pages';
-import { GeoFromMap, UserList } from './types';
+import { PolygonFromMapPage, UserList } from './types';
 
 export const UploadLocationRoutes = {
   LOCATIONS: '/',
@@ -32,10 +32,11 @@ export type RouteType = keyof typeof UploadLocationRoutes;
 
 type UploadLocationRouterProps = {
   userLists: UserList[];
-  geoFromMap?: GeoFromMap;
+  geoFromMap?: PolygonFromMapPage;
 };
 
 export function UploadLocationRouter({ userLists, geoFromMap }: UploadLocationRouterProps) {
+  const polygonFromMapPage = useRef(geoFromMap);
   return (
     <ThemeProvider>
       <Box
@@ -45,14 +46,13 @@ export function UploadLocationRouter({ userLists, geoFromMap }: UploadLocationRo
         <Switch>
           <Route path={UploadLocationRoutes.OPTIONS} component={UploadLocationOptions} exact />
           <Route path={UploadLocationRoutes.UPLOAD_BY_FILE} component={UploadLocationByFile} />
-          <Route
-            path={UploadLocationRoutes.UPLOAD_BY_POLYGON}
-            component={UploadLocationByPolygon}
-          />
+          <Route path={UploadLocationRoutes.UPLOAD_BY_POLYGON}>
+            <UploadLocationByPolygon polygonFromMapPage={polygonFromMapPage} />
+          </Route>
           <Route path={UploadLocationRoutes.UPLOAD_BY_POINT} component={UploadLocationByPoint} />
           <Route path={UploadLocationRoutes.PREVIEW} component={UploadLocationPreview} />
           <Route path={UploadLocationRoutes.CONFIGURE_LIST}>
-            <ConfigureList userLists={userLists} geoFromMap={geoFromMap} />
+            <ConfigureList userLists={userLists} />
           </Route>
           <Route path={UploadLocationRoutes.SUMMARY_AND_SUBMIT} component={SummaryAndSubmit} />
           <Route path={UploadLocationRoutes.SUBMISSION_SUCCESS} component={SubmissionSuccess} />

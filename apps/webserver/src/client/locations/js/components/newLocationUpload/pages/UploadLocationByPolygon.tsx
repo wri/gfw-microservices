@@ -118,6 +118,7 @@ export function UploadLocationByPolygon({
   }, []);
 
   useEffect(() => {
+    // draw the map one time when it's redirected from the map page
     if (mapView && polygonFromMapPage?.current?.geometry) {
       const coordinates = polygonFromMapPage.current.geometry.rings[0].map((coord) => ({
         longitude: coord[0].toString(),
@@ -134,8 +135,7 @@ export function UploadLocationByPolygon({
       setCoordinates(
         coordinates.map((coordinate) => ({
           id: uuidv4(),
-          latitude: coordinate.latitude,
-          longitude: coordinate.longitude,
+          ...coordinate,
         }))
       );
 

@@ -15,7 +15,6 @@ export const serverConfigSchema = z.object({
   AWS_SECRET_ACCESS_KEY: z.string(),
   AWS_REGION: z.string(),
   LARGE_PROCESSING_LIST_BUCKET: z.string(),
-  LARGE_PROCESSING_LIST_ERROR_BUCKET: z.string(),
   AWS_ANALYSIS_QUEUE: z.string().url(),
   LD_MICROSERVICE_URL: z.string().url(),
   AWS_API_USAGE_PLAN_ID: z.string(),

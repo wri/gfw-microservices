@@ -178,53 +178,50 @@ export class GADMService extends AbstractHandler<ChainType> {
   };
 
   clipToLand = async (geojson, request): Promise<{ geojson: FeatureCollection }> => {
-    return new Promise((resolve, reject) => {
-      const s3ObjectsToDelete = [];
-      const objectName = `gadm-${new Date().getTime()}`;
-      this.putObject(objectName, { geojson: geojson })
-        .then((location_info) => {
-          const s3Info = {
-            bucket: process.env.AWS_ANALYSIS_BUCKET,
-            key: location_info,
-          };
-          s3ObjectsToDelete.push(s3Info);
+    const s3ObjectsToDelete = [];
+    const objectName = `gadm-${new Date().getTime()}`;
 
-          return this.invokeLambda('controller-admin-areas', {
-            receipt_handle: 'NOTARECEIPT',
-            s3_location_info: s3Info,
-            layer: 'gadm',
-            dissolve_aoi: false,
-            post_process_aoi: false,
-          });
-        })
-        .then((lambdaResult) => {
-          const { Payload } = lambdaResult;
-          const { bucket, key, errorMessageStr } = JSON.parse(Payload);
-          let errorMessage = errorMessageStr || '';
-          try {
-            errorMessage = JSON.parse(errorMessageStr);
-          } catch (e) {
-            void e;
-          } // ignore any JSON parsing errors
+    try {
+      const location_info = await this.putObject(objectName, { geojson: geojson });
+      const s3Info = {
+        bucket: process.env.AWS_ANALYSIS_BUCKET,
+        key: location_info,
+      };
+      s3ObjectsToDelete.push(s3Info);
 
-          if (errorMessage.length || Object.keys(errorMessage).length) {
-            this.logger.log(errorMessage);
-            throw new Error('Has error property');
-          }
+      const lambdaResult = await this.invokeLambda('controller-admin-areas', {
+        receipt_handle: 'NOTARECEIPT',
+        s3_location_info: s3Info,
+        layer: 'gadm',
+        dissolve_aoi: false,
+        post_process_aoi: false,
+      });
 
-          s3ObjectsToDelete.push({ bucket, key });
-          return this.getObject(bucket, key);
-        })
-        .then((s3Object) => {
-          Promise.all(s3ObjectsToDelete.map((obj) => this.delObject(obj.bucket, obj.key)));
-          resolve(s3Object);
-        })
-        .catch((e) => {
-          (request.request as RequestNewList).hasUnanalyzableError = true;
-          this.logger.log('Error in clipToLand:', e.stack || e);
-          reject(e);
-        });
-    });
+      const { Payload } = lambdaResult;
+      const { bucket, key, errorMessageStr } = JSON.parse(Payload);
+      let errorMessage = errorMessageStr || '';
+
+      try {
+        errorMessage = JSON.parse(errorMessageStr);
+      } catch (e) {
+        void e; // ignore any JSON parsing errors
+      }
+
+      if (errorMessage.length || Object.keys(errorMessage).length) {
+        this.logger.log(errorMessage);
+        throw new Error('Has error property');
+      }
+
+      s3ObjectsToDelete.push({ bucket, key });
+      const s3Object = await this.getObject(bucket, key);
+
+      await Promise.all(s3ObjectsToDelete.map((obj) => this.delObject(obj.bucket, obj.key)));
+
+      return s3Object;
+    } catch (e) {
+      (request.request as RequestNewList).hasUnanalyzableError = true;
+      this.logger.warn('Error in clipToLand:', e.stack || e);
+    }
   };
 
   composeResults = async (feature: Feature) => {

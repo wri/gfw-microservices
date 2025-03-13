@@ -23,7 +23,7 @@ import { useHistory } from '../hooks';
 import { PillButton } from '../../../../../components';
 import { useUploadLocation } from '../contexts';
 import { NavBar } from '../components';
-import { GeoFromMap, UserList } from '../types';
+import { UserList } from '../types';
 import { typeOfAnalysisMap, commodities } from '../utils/constants';
 import { useFetch } from '../../../../../hooks';
 import debounce from 'lodash/debounce';
@@ -63,13 +63,7 @@ const schema = z
 type FormFields = z.infer<typeof schema>;
 
 // @userLists param will be deprecated when new endpoint for typeOfAnalysis is released
-export function ConfigureList({
-  geoFromMap,
-  userLists,
-}: {
-  geoFromMap?: GeoFromMap;
-  userLists: UserList[];
-}) {
+export function ConfigureList({ userLists }: { userLists: UserList[] }) {
   const history = useHistory();
   const {
     handleSubmit,
@@ -91,8 +85,7 @@ export function ConfigureList({
       customCommodity: '',
     },
   });
-  const { clearUploadType, setUploadLocationConfigureList, setUploadLocationByPolygon } =
-    useUploadLocation();
+  const { clearUploadType, setUploadLocationConfigureList } = useUploadLocation();
   const existingList = useRef<{ id: number; analysisIds: string[] }>({ id: 0, analysisIds: [] });
 
   const [formFields, setFormFields] = useState<{
@@ -201,17 +194,6 @@ export function ConfigureList({
       },
     });
 
-    if (geoFromMap?.geometry) {
-      const coordinates = geoFromMap.geometry.rings[0].map((coord) => ({
-        longitude: coord[0],
-        latitude: coord[1],
-      }));
-
-      setUploadLocationByPolygon({
-        locationName: geoFromMap.locationName,
-        coordinates,
-      });
-    }
     history.push('SUMMARY_AND_SUBMIT');
   };
 

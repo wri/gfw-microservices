@@ -19,6 +19,7 @@ export const VALID_ARC_GIS_FILE_FORMATS = [
   'prj',
   'xml',
   'cpg',
+  'qmd',
 ];
 
 export const typeOfAnalysisMap = [

@@ -42,8 +42,8 @@ export class InsertLocationData extends AbstractHandler<ChainType> {
   }
 
   async handle(request: ChainType): Promise<ChainType> {
-    const { locations: values } = request;
-
+    // todo: these changes goes for [GPV-4085]
+    const values = request.geojson.features.map((feature) => feature.properties);
     const { organization_database: organizationDatabase, listTable } =
       request.request as RequestNewList;
     const ListEntity = new EntitySchema<ListSchemaType>({

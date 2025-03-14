@@ -26,7 +26,7 @@ BEGIN
     )
     BEGIN
 		PRINT 'Table ' + @TableName + ' does not has location_id index';
-        SET @SQL = N'CREATE NONCLUSTERED INDEX [IX_' + @TableName + '_location_id]
+        SET @SQL = N'CREATE NONCLUSTERED INDEX [IX_' + @TableName + '_1]
                     ON [dbo].[' + @TableName + '](location_id);';
         PRINT @SQL;
         EXEC sp_executesql @SQL;
@@ -45,7 +45,7 @@ BEGIN
     )
     BEGIN
 		PRINT 'Table ' + @TableName + ' does not has location_status_id index';
-        SET @SQL = N'CREATE NONCLUSTERED INDEX [IX_' + @TableName + '_location_status_id]
+        SET @SQL = N'CREATE NONCLUSTERED INDEX [IX_' + @TableName + '_2]
                     ON [dbo].[' + @TableName + '](location_status_id);';
         PRINT @SQL;
         EXEC sp_executesql @SQL;

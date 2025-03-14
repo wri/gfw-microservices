@@ -83,11 +83,15 @@ class ConvertObject2Geojson extends Transform {
           const afiProperties = {
             ['Location_Name']: feature.properties['Location_Name'],
             Centroid_Country: feature.properties['Country'],
-            Location_HA: listProperties.total_area_ha,
-            SBTN_Natural_Forest_HA: listProperties.natural_land_area,
-            SBTN_Natural_Forest_Loss_Post_2020_HA: listProperties.natural_land_deforested_area,
-            JRC_Forest_HA: listProperties.jrc_land_area,
-            JRC_Forest_Loss_Post_2020_HA: listProperties.jrc_land_deforested_area,
+            Location_HA: parseFloat(listProperties.total_area_ha.toFixed(2)),
+            SBTN_Natural_Forest_HA: parseFloat(listProperties.natural_land_area.toFixed(2)),
+            SBTN_Natural_Forest_Loss_Post_2020_HA: parseFloat(
+              listProperties.natural_land_deforested_area.toFixed(2)
+            ),
+            JRC_Forest_HA: parseFloat(listProperties.jrc_land_area.toFixed(2)),
+            JRC_Forest_Loss_Post_2020_HA: parseFloat(
+              listProperties.jrc_land_deforested_area.toFixed(2)
+            ),
             Analysis_Time: listProperties.updateTime,
             GFWPro_Account: listProperties.organizationId,
             Use_Rights: 'Full Sharing',

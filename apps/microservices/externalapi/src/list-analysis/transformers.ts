@@ -1,5 +1,5 @@
+import { ExternalUpload } from '@wri-monorepos/sql';
 import { PrepareUploadResponse } from './dtos';
-import { ExternalUpload } from './external-upload.entity';
 
 export function transformExternalUpload(externalUpload: ExternalUpload): PrepareUploadResponse {
   return {

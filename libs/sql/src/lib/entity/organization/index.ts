@@ -19,6 +19,7 @@ import { AnalysisProtectedAreas } from './analysisProtectedAreas';
 import { AFIAnalysis } from './afiAnalysis.entity';
 import { LargeLists } from './largeLists.entity';
 import { GHGAnalyses } from './ghgAnalyses.entity';
+import { ExternalUpload } from './externalUpload.entity';
 
 export * from './lists.entity';
 export * from './activityLog.entity';
@@ -44,6 +45,7 @@ export * from './afiAnalysis.entity';
 export * from './listAttributes.entity';
 export * from './largeLists.entity';
 export * from './ghgAnalyses.entity';
+export * from './externalUpload.entity';
 
 export const organizationEntities = [
   Lists,
@@ -67,4 +69,5 @@ export const organizationEntities = [
   AFIAnalysis,
   LargeLists,
   GHGAnalyses,
+  ExternalUpload,
 ];

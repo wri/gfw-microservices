@@ -19,6 +19,8 @@ export const serverConfigSchema = z.object({
 
   MICROSERVICES_ENV: z.enum(['LATEST', 'DEVELOPMENT', 'QA', 'PRODV2', 'STAGING']),
 
+  LARGE_PROCESSING_LIST_ERROR_BUCKET: z.string(),
+
   GFW_DATASET_API_URL: z.string().url(),
   GFW_DATA_API_KEY: z.string(),
 

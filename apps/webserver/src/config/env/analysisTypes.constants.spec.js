@@ -10,6 +10,7 @@ describe('Compare webserver and libs analysisTypes constants', () => {
   });
 
   it('Compare webserver and libs analysisTypesOptionsNewNames', () => {
-    expect(webserverConstants.analysisTypesOptionsNewNames).toEqual(analysisTypesOptionsNewNames);
+    // For GHG V1 only EAPI will have GHG analysis
+    expect(webserverConstants.analysisTypesOptionsNewNames).toEqual(analysisTypesOptionsNewNames.slice(0, -1));
   });
 });

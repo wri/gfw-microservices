@@ -1,7 +1,7 @@
 /**
  * @summary update list schema from version 1 to 2
- * 1 - Write Lists.Commodity based on Lists.template_id for given list_id
- * 2 - Write list-xxx.attributes based on other list-xxx columns
+ * 1 - Write list-xxx.attributes based on other list-xxx columns
+ * 2 - Write Lists.Commodity based on Lists.template_id for given list_id
  * 3 - Update Lists.version=2 for given list_id
  * –––––––––––––––––––––––––––––––––––––––
  * @notes for the [Commodity] column values:
@@ -20,14 +20,18 @@
  * @param userId number
  */
 import { Logger } from '@nestjs/common';
-import { SQLUtils } from '../util';
+import { ClientStoreConnection, SQLUtils } from '../util';
 import { UspSetListUnlocked } from './uspSetListUnlocked';
 import { UspSetListLocked } from './uspSetListLocked';
-import { ListSchema, ListSchemaType } from '../entity';
-import { getAllLists, ListsType, TemplateMetadata } from '../queries';
-import { EntitySchema } from 'typeorm';
+import { Lists } from '../entity';
+import {
+  getCommodityCodeFromTemplate,
+  getFormattedAttributes,
+  getListsLocsColumnsToExclude,
+  getTemplateName,
+  saveListAttributes,
+} from '../list-attributes';
 
-const GHG_PREFIX = 'GFWP_';
 const LIST_VERSION_POST_UPGRADE = 2;
 
 interface SchemaUpgraderArgs {
@@ -39,11 +43,12 @@ export async function upgradeListSchema(args: SchemaUpgraderArgs) {
   const { clientDb, listId, userId } = args;
   const logger = new Logger(`SchemaUpgrade for ListId: ${listId}`);
   try {
-    const listsQuery = getAllLists.replace(
-      'ORDER BY list_name',
-      `WHERE L.[id] = ${listId} ORDER BY L.list_name`
-    );
-    const list = await SQLUtils.queryDBFirstRow<ListsType>(clientDb, listsQuery);
+    const clientStoreConnection = new ClientStoreConnection();
+    const connection = await clientStoreConnection.getConnection(clientDb);
+    const listRepository = connection.getRepository(Lists);
+    const list = await listRepository.findOne({
+      where: { id: listId },
+    });
 
     if (list.version !== LIST_VERSION_POST_UPGRADE) {
       logger.log(`Locking list`);
@@ -51,20 +56,6 @@ export async function upgradeListSchema(args: SchemaUpgraderArgs) {
 
       /**
        * @step 1
-       * Write Lists.Commodity based on Lists.template_id for given list_id
-       * see {@link https://gfw.atlassian.net/browse/GPV-3983}
-       */
-      const templateName = await getTemplateName(list.template_id);
-      const listCommmodity = await getCommodityCodeFromTemplate(templateName, list.Commodity);
-
-      logger.log(`Writing list.[Commodity] = ${listCommmodity} from template: ${templateName}`);
-      await SQLUtils.queryDBFirstRow<undefined>(
-        clientDb,
-        `UPDATE [Lists] SET [Commodity] = '${listCommmodity}' WHERE [id] = ${listId}`
-      );
-
-      /**
-       * @step 2
        * Write list-xxx.attributes based on own list-xxx columns
        *
        * – Get all locations from the DB
@@ -81,66 +72,61 @@ export async function upgradeListSchema(args: SchemaUpgraderArgs) {
 
       const listLocations = await SQLUtils.queryDB<unknown[]>(
         clientDb,
-        `SELECT * FROM [${list.list_table_name}]`
+        `SELECT * FROM [${list.listTableName}]`
       );
       logger.log(`List Locations found: ${listLocations.length}`);
 
-      let listAttrToSave;
+      const validListAttrs = Object.keys(listLocations[0] ?? {}).filter(
+        (col) => !columnsToExclude.includes(col)
+      );
+
       for (let index = 0; index < listLocations.length; index++) {
         const record = listLocations[index];
-        const validListAttrs = Object.keys(record).filter((col) => !columnsToExclude.includes(col));
 
         const locAttrObj = validListAttrs.reduce((acc, key) => {
           acc[key] = `${record[key]}`;
           return acc;
         }, {} as Record<string, unknown>);
 
-        await SQLUtils.queryDBFirstRow<undefined>(
-          clientDb,
-          `UPDATE [${list.list_table_name}] 
-          SET [attributes] = '${JSON.stringify(locAttrObj) ?? 'NULL'}' 
-          WHERE [location_id] = ${record['location_id']}`
-        );
+        const attrValue = validListAttrs.length ? `'${JSON.stringify(locAttrObj)}'` : 'NULL';
 
-        listAttrToSave = validListAttrs.map((attributeField) =>
-          getFormattedAttributes({
-            listId,
-            attributeField,
-            fieldValue: record[attributeField],
-          })
-        );
+        const updateQuery = `UPDATE [${list.listTableName}] 
+          SET [attributes] = {ATTR_VALUE}  
+          WHERE [location_id] = ${record['location_id']}`.replace('{ATTR_VALUE}', attrValue);
+
+        await SQLUtils.queryDBFirstRow<undefined>(clientDb, updateQuery);
       }
 
-      for (let index = 0; index < listAttrToSave.length; index++) {
-        const listAttrRecord = listAttrToSave[index];
-        const checkPayload = {
-          clientDb,
-          attributeName: listAttrRecord.attribute_name,
+      const listAttrsToSave = validListAttrs.map((attributeField) =>
+        getFormattedAttributes({
           listId,
-        };
-        if (!(await isExistingListAttr(checkPayload))) {
-          await SQLUtils.queryDBFirstRow<undefined>(
-            clientDb,
-            `INSERT INTO [dbo].[ListAttributes]
-              ([list_id]
-              ,[attribute_name]
-              ,[attribute_type])
-            VALUES
-              (${listAttrRecord.list_id}
-              ,'${listAttrRecord.attribute_name}'
-              ,${listAttrRecord.attribute_type})`
-          );
-        }
-      }
+          attributeField,
+          fieldValue: listLocations[0]?.[attributeField],
+        })
+      );
+
+      // save into ListAttributes tables, handles constraints
+      await saveListAttributes(clientDb, listAttrsToSave);
 
       /**
+       * @step 2
+       * Write Lists.Commodity based on Lists.template_id for given list_id
+       * see {@link https://gfw.atlassian.net/browse/GPV-3983}
+       *
        * @step 3
        * Update Lists.version=2 for given list_id
        */
+      const templateName = await getTemplateName(list.templateId);
+      const listCommmodity = await getCommodityCodeFromTemplate(templateName, list.Commodity);
+
+      logger.log(`Writing list.[Commodity] = ${listCommmodity} from template: ${templateName}`);
       logger.log(`Updating list version ${list.version} to ${LIST_VERSION_POST_UPGRADE}`);
-      await SQLUtils.queryDB<undefined>(
-        clientDb,
-        `UPDATE [Lists] SET [version] = ${LIST_VERSION_POST_UPGRADE} WHERE [id] = ${listId}`
+      await listRepository.update(
+        { id: listId },
+        {
+          Commodity: listCommmodity,
+          version: LIST_VERSION_POST_UPGRADE,
+        }
       );
 
       logger.log(`Unlocking list`);
@@ -156,136 +142,3 @@ export async function upgradeListSchema(args: SchemaUpgraderArgs) {
     throw error;
   }
 }
-
-async function isExistingListAttr({ clientDb, attributeName, listId }) {
-  const { exists } = await SQLUtils.queryDBFirstRow<{ exists: number }>(
-    clientDb,
-    `SELECT COUNT(*) as 'exists' FROM [ListAttributes] WHERE [attribute_name] = '${attributeName}' AND [list_id] = ${listId}`
-  );
-  return !!exists;
-}
-
-async function getTemplateName(listTemplateId: number) {
-  const templateData = await SQLUtils.queryDB<TemplateMetadata[]>('gfwpro', 'getTemplateMetadata');
-  const template = templateData.find(({ template_id }) => template_id === listTemplateId);
-  return template.template_name;
-}
-
-async function getCommodityCodeFromTemplate(templateName: string, userListCommodity: string) {
-  /**
-   * If version=1 and template_id=1 (investment), then we store GFWP_Multiple as the Lists.Commodity.
-   * @see {@link https://gfw.atlassian.net/browse/GPV-4086?focusedCommentId=38187}
-   */
-  if (templateName === 'Investment') {
-    return `${GHG_PREFIX}_Multiple`;
-  }
-  if (userListCommodity) {
-    return `${GHG_PREFIX}_${userListCommodity}`;
-  }
-
-  const ghgCodes = getGHGCodesMap();
-  const ghgForUser = ghgCodes.find((v) => {
-    return (
-      v.commodities.includes(templateName.toLowerCase()) ||
-      v.label.toLowerCase() === templateName.toLowerCase()
-    );
-  });
-
-  return ghgForUser.value || `${GHG_PREFIX}_Unknown`;
-}
-
-type GHGCodeMapping = {
-  value: string;
-  label: string;
-  commodities: string[];
-};
-function getGHGCodesMap(): GHGCodeMapping[] {
-  const codeMap: { [key in GHG_MAPSPAM_CODES]?: string[] } = {};
-
-  // group commodities by their GHG code
-  Object.entries(COMMODITY_MAP_SPAM).forEach(([commodity, code]) => {
-    if (!codeMap[code]) {
-      codeMap[code] = [];
-    }
-    codeMap[code]?.push(commodity);
-  });
-
-  return Object.keys(codeMap).map((code: keyof typeof GHG_MAPSPAM_CODES) => ({
-    value: code,
-    label: COMMODITY_MAP_SPAM_CODES_FOR_HUMANS[code],
-    commodities: codeMap[code] || [],
-  }));
-}
-function getListsLocsColumnsToExclude() {
-  const { options } = new EntitySchema<ListSchemaType>({
-    ...ListSchema,
-  });
-
-  return Object.keys(options.columns).map((keyAcc) => {
-    return options.columns[keyAcc].name;
-  });
-}
-function inferType(value: unknown): string {
-  if (value === null) {
-    return 'string';
-  }
-  if (Array.isArray(value)) {
-    return 'string';
-  }
-  if (typeof value === 'object') {
-    return 'string';
-  }
-  if (typeof value === 'number') {
-    if (Number.isInteger(value)) {
-      return 'number';
-    } else {
-      return 'string';
-    }
-  }
-  return typeof value;
-}
-function getFormattedAttributes({ listId, attributeField, fieldValue }) {
-  enum ListsAttrsTypes {
-    Int = 1,
-    Text = 2,
-  }
-  return {
-    list_id: listId,
-    attribute_name: attributeField,
-    attribute_type: inferType(fieldValue) === 'number' ? ListsAttrsTypes.Int : ListsAttrsTypes.Text,
-  };
-}
-export enum GHG_MAPSPAM_CODES {
-  COCO = 'COCO',
-  COFF = 'COFF',
-  OILP = 'OILP',
-  RUBB = 'RUBB',
-  SOYB = 'SOYB',
-  SUGC = 'SUGC',
-}
-export const COMMODITY_MAP_SPAM = {
-  ['arabica coffee']: GHG_MAPSPAM_CODES.COFF,
-  ['cocoa']: GHG_MAPSPAM_CODES.COCO,
-  ['oilpalm']: GHG_MAPSPAM_CODES.OILP,
-  ['robusta coffee']: GHG_MAPSPAM_CODES.COFF,
-  ['rubber']: GHG_MAPSPAM_CODES.RUBB,
-  ['soybean']: GHG_MAPSPAM_CODES.SOYB,
-  ['sugarcane']: GHG_MAPSPAM_CODES.SUGC,
-  ['cocoa farm']: GHG_MAPSPAM_CODES.COCO,
-  ['cocoa generic']: GHG_MAPSPAM_CODES.COCO,
-  ['palm oil plantation']: GHG_MAPSPAM_CODES.OILP,
-  ['palm oil generic']: GHG_MAPSPAM_CODES.OILP,
-  ['palm smallholder farm']: GHG_MAPSPAM_CODES.OILP,
-  ['palm oil mill']: GHG_MAPSPAM_CODES.OILP,
-  ['soy farm']: GHG_MAPSPAM_CODES.SOYB,
-  ['soy generic']: GHG_MAPSPAM_CODES.SOYB,
-  ['sugar cane']: GHG_MAPSPAM_CODES.SUGC,
-};
-export const COMMODITY_MAP_SPAM_CODES_FOR_HUMANS = {
-  [GHG_MAPSPAM_CODES.COFF]: 'Coffee',
-  [GHG_MAPSPAM_CODES.COCO]: 'Cocoa Generic',
-  [GHG_MAPSPAM_CODES.OILP]: 'Palm Oil Generic',
-  [GHG_MAPSPAM_CODES.RUBB]: 'Rubber',
-  [GHG_MAPSPAM_CODES.SOYB]: 'Soy Generic',
-  [GHG_MAPSPAM_CODES.SUGC]: 'Sugar Cane',
-};

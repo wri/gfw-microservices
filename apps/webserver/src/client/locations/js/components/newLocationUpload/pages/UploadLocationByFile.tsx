@@ -272,7 +272,7 @@ export function UploadLocationByFile() {
                 </li>
                 <li>
                   <Typography variant="caption">
-                    ZIP file containing a shapefile (SHP, DBF, SHX, and PRJ)
+                    ZIP file containing a shape file (SHP, DBF, SHX, and PRJ)
                   </Typography>
                 </li>
                 <li>

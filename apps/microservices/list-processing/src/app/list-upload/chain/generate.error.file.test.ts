@@ -84,7 +84,7 @@ describe('GenerateErrorFile', () => {
     await handler.handle(mockInput);
 
     const expectedFilePath = path.join('/tmp', 'test-list_error_report.csv');
-    const expectedS3Key = `failed/${process.env.NODE_ENV}/test-list_error_report.csv`;
+    const expectedS3Key = `${process.env.NODE_ENV}/failed/test-list_error_report.csv`;
 
     expect(fs.promises.mkdir).toHaveBeenCalledWith('/tmp', { recursive: true });
     expect(fs.promises.writeFile).toHaveBeenCalledWith(

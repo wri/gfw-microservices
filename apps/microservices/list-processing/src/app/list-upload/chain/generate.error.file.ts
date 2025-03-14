@@ -53,11 +53,11 @@ export class GenerateErrorFile extends AbstractHandler<ChainType> {
         const bucket = this.config.get<string>('LARGE_PROCESSING_LIST_ERROR_BUCKET', {
           infer: true,
         });
-        const key = `failed/${process.env.NODE_ENV}/${fileName}`;
+        const key = `${process.env.NODE_ENV}/failed/${fileName}`;
         await this.s3Service.putObject(key, errorFilePath, bucket, 'text/csv');
-        const url = await this.s3Service.getFileSignedUrl(key, 'csv', bucket);
+        const s3Path = `s3://${bucket}/${key}`;
 
-        await this.setListErrorFileStoragePath(organizationDatabase, listId, url);
+        await this.setListErrorFileStoragePath(organizationDatabase, listId, s3Path);
       }
 
       return input;
@@ -66,9 +66,9 @@ export class GenerateErrorFile extends AbstractHandler<ChainType> {
     }
   }
 
-  async setListErrorFileStoragePath(organizationDatabase: string, listId: number, url: string) {
+  async setListErrorFileStoragePath(organizationDatabase: string, listId: number, s3Path: string) {
     const connection = await new ClientStoreConnection().getConnection(organizationDatabase);
     const listAnalysisStatusRepository = connection.getRepository(Lists);
-    await listAnalysisStatusRepository.update({ id: listId }, { errorFileStoragePath: url });
+    await listAnalysisStatusRepository.update({ id: listId }, { errorFileStoragePath: s3Path });
   }
 }

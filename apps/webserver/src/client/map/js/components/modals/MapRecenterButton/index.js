@@ -4,7 +4,12 @@ import React, { useEffect, useState } from 'react';
 
 import './mapRecenterButton.scss';
 
-const MapRecenterButton = ({ selectedList = [], goToOriginalPoint, isMapMoving }) => {
+const MapRecenterButton = ({
+  selectedList = [],
+  goToOriginalPoint,
+  isMapMoving,
+  isMapCentered,
+}) => {
   const [showButton, setShowButton] = useState(false);
 
   useEffect(() => {
@@ -15,7 +20,7 @@ const MapRecenterButton = ({ selectedList = [], goToOriginalPoint, isMapMoving }
 
   return (
     <>
-      {showButton && !isMapMoving && (
+      {showButton && !isMapMoving && !isMapCentered && (
         <Button
           data-testid="map-center-button"
           onClick={goToOriginalPoint}

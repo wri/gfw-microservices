@@ -221,6 +221,7 @@ class Map extends Component {
       sketchEventListener: null,
 
       drawnCoordinates: [],
+      isMapCentered: true,
     });
     this.eventHandlers = [];
     this.sketchViewModel = null;
@@ -284,7 +285,7 @@ class Map extends Component {
 
   startInteraction = () => {
     if (!this.state.isMapMoving) {
-      this.setState({ isMapMoving: true });
+      this.setState({ isMapMoving: true, isMapCentered: false });
     }
   };
 
@@ -2663,7 +2664,11 @@ class Map extends Component {
           userInfo={userInfo}
           landsatYear={this.state.landsatYear}
           selectedList={selectedLists}
-          goToOriginalPoint={this.goToOriginalPoint}
+          isMapCentered={this.state.isMapCentered}
+          goToOriginalPoint={() => {
+            this.setState({ isMapCentered: true });
+            this.goToOriginalPoint();
+          }}
           closePopups={this.closePopups}
           isMapMoving={this.state.isMapMoving}
         />

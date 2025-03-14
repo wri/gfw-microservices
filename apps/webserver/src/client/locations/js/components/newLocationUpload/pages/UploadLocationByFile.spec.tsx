@@ -1,5 +1,5 @@
 import React from 'react';
-import { cleanup, fireEvent, render, screen, waitFor } from '@testing-library/react';
+import { cleanup, fireEvent, render, screen, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { UploadLocationByFile } from './UploadLocationByFile';
 import { useUploadLocation } from '../contexts';
@@ -77,10 +77,10 @@ describe('UploadLocationByFile', () => {
     ).toBeInTheDocument();
     expect(screen.getByText(/csv or excel files/i)).toBeInTheDocument();
     expect(
-      screen.getByText(/zip file containing a shapefile \(shp, dbf, shx, and prj\)/i)
+      screen.getByText(/zip file containing a shape file \(shp, dbf, shx, and prj\)/i)
     ).toBeInTheDocument();
     expect(
-      screen.getByText(/zip file containing a shapefile \(shp, dbf, shx, and prj\)/i)
+      screen.getByText(/zip file containing a shape file \(shp, dbf, shx, and prj\)/i)
     ).toBeInTheDocument();
     expect(screen.getByText('Next')).toBeDisabled();
   });
@@ -128,11 +128,20 @@ describe('UploadLocationByFile', () => {
       dataTransfer: { files: [file] },
     });
 
-    expect(
-      screen.getByText(
-        /it looks like the file you uploaded isn't one of gfw pro's accepted file types\. gfw pro supports , , , and a containing a \. please try again with a compatible file format\./i
-      )
-    ).toBeInTheDocument();
+    const errorMessage = screen.getByText(
+      /it looks like the file you uploaded isn't one of gfw pro's accepted file types\. gfw pro supports , , , , and containing a \. please try again with a compatible file format\./i
+    );
+
+    expect(errorMessage).toBeInTheDocument();
+
+    // those strings are inside a <b> tag, so they need to be queried separately
+    expect(within(errorMessage).getByText('.csv')).toBeInTheDocument();
+    expect(within(errorMessage).getByText('.xls')).toBeInTheDocument();
+    expect(within(errorMessage).getByText('.xlsx')).toBeInTheDocument();
+    expect(within(errorMessage).getByText('.kml')).toBeInTheDocument();
+    expect(within(errorMessage).getByText('.kmz')).toBeInTheDocument();
+    expect(within(errorMessage).getByText('.zip')).toBeInTheDocument();
+    expect(within(errorMessage).getByText('shape file')).toBeInTheDocument();
 
     expect(screen.getByRole('button', { name: /upload again/i })).toBeInTheDocument();
   });

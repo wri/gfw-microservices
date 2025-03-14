@@ -1,9 +1,10 @@
 import React, { DragEvent, useEffect, useState } from 'react';
 import { Box, Card, Modal, Typography, useTheme } from '@mui/material';
 import { ArrowForwardIos, Close } from '@mui/icons-material';
+import JSZip from 'jszip';
 
 import { PillButton } from '../../../../../components';
-import { VALID_UPLOAD_FILE_FORMATS } from '../utils/constants';
+import { VALID_ARC_GIS_FILE_FORMATS, VALID_UPLOAD_FILE_FORMATS } from '../utils/constants';
 import {
   DataTemplates,
   NavBar,
@@ -31,9 +32,25 @@ export function UploadLocationByFile() {
       return;
     }
 
-    const uploadFile = async () => {
+    const processFile = async () => {
       try {
         setFileAttachState(FileAttachState.Uploading);
+
+        if (file.name.endsWith('.zip')) {
+          const zip = await JSZip.loadAsync(file);
+          const files = Object.keys(zip.files);
+
+          const allFilesValid = files.every((filename) => {
+            const extension = filename.split('.').pop()?.toLowerCase();
+            return extension && VALID_ARC_GIS_FILE_FORMATS.includes(extension);
+          });
+
+          if (!allFilesValid) {
+            setFileAttachState(FileAttachState.UnsupportedType);
+            return;
+          }
+        }
+
         const data = await uploadFileToS3(file);
         addFile(data);
         setFileAttachState(FileAttachState.Uploaded);
@@ -42,7 +59,7 @@ export function UploadLocationByFile() {
       }
     };
 
-    uploadFile();
+    processFile();
   }, [file]);
 
   const fileUpload = (event: DragEvent<HTMLFormElement>) => {
@@ -184,8 +201,14 @@ export function UploadLocationByFile() {
               sx={{ color: 'text.secondary', maxWidth: '480px', textAlign: 'center', my: 1 }}
             >
               It looks like the file you uploaded isn't one of GFW Pro's accepted file types. GFW
-              Pro supports <b>.csv</b>, <b>.xlsl</b>, <b>.kml</b>, <b>.kmz</b> and a <b>.zip</b>{' '}
-              containing a <b>shapeFile</b>. Please try again with a compatible file format.
+              Pro supports{' '}
+              {VALID_UPLOAD_FILE_FORMATS.map((format, index, array) => (
+                <React.Fragment key={format}>
+                  <b>.{format}</b>
+                  {index < array.length - 2 ? ', ' : index === array.length - 2 ? ' and ' : ''}
+                </React.Fragment>
+              ))}{' '}
+              containing a <b>shape file</b>. Please try again with a compatible file format.
             </Typography>
           )}
           {(fileAttachState === FileAttachState.UnsupportedType ||

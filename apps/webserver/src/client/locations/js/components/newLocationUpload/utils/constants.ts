@@ -2,6 +2,25 @@ import { analysisTypesOptionsNewNames } from '../../../../../../config/env/analy
 
 export const VALID_UPLOAD_FILE_FORMATS = ['csv', 'xls', 'xlsx', 'zip', 'kml', 'kmz'];
 
+export const VALID_ARC_GIS_FILE_FORMATS = [
+  'shp',
+  'shx',
+  'dbf',
+  'sbn',
+  'sbx',
+  'fbn',
+  'fbx',
+  'ain',
+  'aih',
+  'atx',
+  'atx',
+  'ixs',
+  'mxs',
+  'prj',
+  'xml',
+  'cpg',
+];
+
 export const typeOfAnalysisMap = [
   ...analysisTypesOptionsNewNames.slice(0, 1),
   ...analysisTypesOptionsNewNames.slice(2, 3),

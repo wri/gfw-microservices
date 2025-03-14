@@ -9,18 +9,15 @@ export interface ChainEvent {
   config?: unknown;
   payload?: ChainType;
 }
-
+// todo: these changes goes for [GPV-4085]
 export type AttributeType = {
-  field: string;
-  type: string;
-  value: unknown;
-  custom?: boolean;
+  [x: string]: string;
 };
 
 export type ChainType = {
   geojson?: FeatureCollection;
   request: RequestNewList | PreviewListRequest;
-  locations?: Feature['properties'][];
+  attributes?: ListAttributesRecord[];
 };
 
 export type ListAttributesRow = {

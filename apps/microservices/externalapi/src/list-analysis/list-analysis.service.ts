@@ -9,7 +9,7 @@ import {
 } from '@nestjs/common';
 import { AnalysesGenerateRequest, ListAnalysisResponse } from './list-analysis.dto';
 import { UserService } from './user.service';
-import { ExternalUpload } from './external-upload.entity';
+
 import { ConfigService } from '@nestjs/config';
 import axios from 'axios';
 import { generateRandomFilename } from '@wri-monorepos/shared';
@@ -49,6 +49,7 @@ import {
   ListSchemaType,
   ClientStoreConnection,
   ListsAnalysisStatus,
+  ExternalUpload,
 } from '@wri-monorepos/sql';
 const LIST_INITIAL_STATUS = 'Pending';
 const MIN_FILE_SIZE_IN_BYTES = 70; // single location CSV file size

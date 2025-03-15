@@ -83,6 +83,29 @@ export class ParserData extends AbstractHandler<ChainType> {
     return geojson;
   };
 
+  private removeEmptyGeometries(geojson: FeatureCollection): FeatureCollection {
+    if (!geojson || !geojson.features) {
+      return geojson;
+    }
+
+    return {
+      ...geojson,
+      features: geojson.features.filter(feature => {
+        if (!feature.geometry) {
+          return false;
+        }
+
+        // Handle GeometryCollection separately
+        if (feature.geometry.type === 'GeometryCollection') {
+          return feature.geometry.geometries && feature.geometry.geometries.length > 0;
+        }
+
+        // For all other geometry types
+        return Object.keys(feature.geometry).length > 0;
+      })
+    };
+  }
+
   async handle(request: ChainType): Promise<ChainType> {
     const { fileDownloadedPath, preview = false } = request.request as PreviewListRequest;
     const fileExtension = path.extname(fileDownloadedPath);
@@ -93,7 +116,7 @@ export class ParserData extends AbstractHandler<ChainType> {
       '.xls': this.xls2geojson,
       '.xlsx': this.xls2geojson,
       '.kml': this.kml2geojson,
-      '.kmz': this.kmz2geojson, // Added support for KMZ files
+      '.kmz': this.kmz2geojson,
       '.json': this.json2geojson,
       '.geojson': this.json2geojson,
     };
@@ -105,10 +128,11 @@ export class ParserData extends AbstractHandler<ChainType> {
 
     try {
       const geoJson = await dataParser[fileExtension](fileDownloadedPath, preview);
+      const cleanedGeoJson = this.removeEmptyGeometries(geoJson);
       this.logger.log('Data parsed successfully');
 
       this.deleteFile(fileDownloadedPath);
-      return { ...request, geojson: geoJson };
+      return { ...request, geojson: cleanedGeoJson };
     } catch (error) {
       this.logger.error(
         `Error while parsing the data from file: ${fileDownloadedPath}`,

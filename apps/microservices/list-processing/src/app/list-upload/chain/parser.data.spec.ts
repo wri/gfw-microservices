@@ -4,6 +4,7 @@ import { Logger } from '@nestjs/common';
 import * as fs from 'fs';
 import { csv2geojson } from '../parser/csv2geojson.parser';
 import { AbstractHandler, ChainType } from './types';
+import { FeatureCollection } from '@wri-monorepos/geo';
 
 jest.mock('fs');
 jest.mock('../parser/csv2geojson.parser');
@@ -23,27 +24,69 @@ describe('ParserData', () => {
   });
 
   describe('handle', () => {
-    it('should parse CSV content and pass GeoJSON to the next handler', async () => {
+    it('should parse CSV content, remove empty geometries, and pass GeoJSON to the next handler', async () => {
       const fileDownloadedPath = 'path/to/file.csv';
       const csvContent = 'csv content';
-      const geoJson = { type: 'FeatureCollection', features: [] };
-      const input: ChainType = {
-        request: { fileDownloadedPath, organization_database: 'test', path: 'test' },
+      const geoJson: FeatureCollection = {
+        type: 'FeatureCollection',
+        features: [
+          {
+            type: 'Feature',
+            geometry: {
+              type: 'Point',
+              coordinates: [0, 0]
+            },
+            properties: {}
+          },
+          {
+            type: 'Feature',
+            geometry: null,
+            properties: {}
+          },
+          {
+            type: 'Feature',
+            geometry: {
+              type: 'GeometryCollection',
+              geometries: []
+            },
+            properties: {}
+          }
+        ]
+      };
+
+      const expectedGeoJson: FeatureCollection = {
+        type: 'FeatureCollection',
+        features: [
+          {
+            type: 'Feature',
+            geometry: {
+              type: 'Point',
+              coordinates: [0, 0]
+            },
+            properties: {}
+          }
+        ]
       };
 
       (fs.readFileSync as jest.Mock).mockReturnValue(csvContent);
       (csv2geojson as jest.Mock).mockResolvedValue(geoJson);
       jest.spyOn(parserData, 'deleteFile').mockImplementation();
+
+      const input: ChainType = {
+        request: { fileDownloadedPath, organization_database: 'test', path: 'test' },
+      };
+
       jest
         .spyOn(AbstractHandler.prototype, 'handle')
-        .mockResolvedValue({ ...input, geojson: geoJson });
+        .mockResolvedValue({ ...input, geojson: expectedGeoJson });
 
       const result = await parserData.handle(input);
 
       expect(fs.readFileSync).toHaveBeenCalledWith(fileDownloadedPath, 'utf8');
       expect(csv2geojson).toHaveBeenCalledWith(csvContent, false);
       expect(parserData.deleteFile).toHaveBeenCalledWith(fileDownloadedPath);
-      expect(result).toEqual({ ...input, geojson: geoJson });
+      expect(result.geojson.features).toHaveLength(1);
+      expect(result.geojson).toEqual(expectedGeoJson);
     });
   });
 });

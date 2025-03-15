@@ -34,24 +34,24 @@ describe('ParserData', () => {
             type: 'Feature',
             geometry: {
               type: 'Point',
-              coordinates: [0, 0]
+              coordinates: [0, 0],
             },
-            properties: {}
+            properties: {},
           },
           {
             type: 'Feature',
             geometry: null,
-            properties: {}
+            properties: {},
           },
           {
             type: 'Feature',
             geometry: {
               type: 'GeometryCollection',
-              geometries: []
+              geometries: [],
             },
-            properties: {}
-          }
-        ]
+            properties: {},
+          },
+        ],
       };
 
       const expectedGeoJson: FeatureCollection = {
@@ -61,11 +61,11 @@ describe('ParserData', () => {
             type: 'Feature',
             geometry: {
               type: 'Point',
-              coordinates: [0, 0]
+              coordinates: [0, 0],
             },
-            properties: {}
-          }
-        ]
+            properties: {},
+          },
+        ],
       };
 
       (fs.readFileSync as jest.Mock).mockReturnValue(csvContent);

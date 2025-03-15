@@ -90,7 +90,7 @@ export class ParserData extends AbstractHandler<ChainType> {
 
     return {
       ...geojson,
-      features: geojson.features.filter(feature => {
+      features: geojson.features.filter((feature) => {
         if (!feature.geometry) {
           return false;
         }
@@ -102,7 +102,7 @@ export class ParserData extends AbstractHandler<ChainType> {
 
         // For all other geometry types
         return Object.keys(feature.geometry).length > 0;
-      })
+      }),
     };
   }
 

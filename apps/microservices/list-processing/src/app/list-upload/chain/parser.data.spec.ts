@@ -4,15 +4,10 @@ import { Logger } from '@nestjs/common';
 import { FeatureCollection } from '@wri-monorepos/geo';
 import * as fs from 'fs';
 import { csv2geojson } from '../parser/csv2geojson.parser';
-<<<<<<< HEAD
 import { convertShapefileToGeoJSON } from '../parser/shp2GeoJson.parser';
 import { xls2geojson } from '../parser/xls2GeoJSON.parser';
 import { kml2GeoJSON } from '../parser/kml2GeoJSON.parser';
 import AdmZip from 'adm-zip';
-=======
-import { AbstractHandler, ChainType } from './types';
-import { FeatureCollection } from '@wri-monorepos/geo';
->>>>>>> 9e0807092 (feat(microservices-list-processing): remove empty lines with empty geometry)
 
 jest.mock('fs');
 jest.mock('../parser/csv2geojson.parser');

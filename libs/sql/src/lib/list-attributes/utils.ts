@@ -1,8 +1,14 @@
-import { EntitySchema } from "typeorm";
-import { Logger } from "@nestjs/common";
-import { ListAttributes, ListSchema, ListSchemaType } from "../entity";
-import { ClientStoreConnection, SQLUtils } from "../util";
-import { TemplateMetadata } from "../queries";
+import { EntitySchema } from 'typeorm';
+import { Logger } from '@nestjs/common';
+import { ListAttributes, ListSchema, ListSchemaType } from '../entity';
+import { ClientStoreConnection, SQLUtils } from '../util';
+import { TemplateMetadata } from '../queries';
+import {
+  COMMODITY_MAP_SPAM,
+  COMMODITY_MAP_SPAM_CODES_FOR_HUMANS,
+  GHG_PREFIX,
+  MAPSPAM_CODES,
+} from './comMapSpam';
 
 export function inferType(value: unknown): string {
   if (value === null) {
@@ -27,7 +33,11 @@ enum ListsAttrsTypes {
   Int = 1,
   Text = 2,
 }
-export function getFormattedAttributes({ listId, attributeField, fieldValue }): ListAttributesRecord {
+export function getFormattedAttributes({
+  listId,
+  attributeField,
+  fieldValue,
+}): ListAttributesRecord {
   return {
     list_id: listId,
     attribute_name: attributeField,
@@ -75,58 +85,6 @@ export async function saveListAttributes(clientDb, attributes: ListAttributesRec
   }
 }
 
-export const GHG_PREFIX = 'GFWP_';
-
-export const MAPSPAM_CODES = {
-  COCO: 'COCO',
-  COFF: 'COFF',
-  OILP: 'OILP',
-  RUBB: 'RUBB',
-  SOYB: 'SOYB',
-  SUGC: 'SUGC',
-  RCOF: 'RCOF',
-};
-
-export const COMMODITY_MAP_SPAM = {
-  ['arabic coffee']: MAPSPAM_CODES.COFF,
-  ['coffee']: MAPSPAM_CODES.COFF,
-  ['cocoa']: MAPSPAM_CODES.COCO,
-  ['cocoa farm']: MAPSPAM_CODES.COCO,
-  ['cocoa generic']: MAPSPAM_CODES.COCO,
-  ['oilpalm']: MAPSPAM_CODES.OILP,
-  ['palm oil']: MAPSPAM_CODES.OILP,
-  ['palm oil plantation']: MAPSPAM_CODES.OILP,
-  ['palm oil generic']: MAPSPAM_CODES.OILP,
-  ['palm smallholder farm']: MAPSPAM_CODES.OILP,
-  ['palm oil mill']: MAPSPAM_CODES.OILP,
-  ['robust coffee']: MAPSPAM_CODES.RCOF,
-  ['rubber']: MAPSPAM_CODES.RUBB,
-  ['soybean']: MAPSPAM_CODES.SOYB,
-  ['sugarcane']: MAPSPAM_CODES.SUGC,
-  ['sugar cane']: MAPSPAM_CODES.SUGC,
-  ['soy']: MAPSPAM_CODES.SOYB,
-  ['soy farm']: MAPSPAM_CODES.SOYB,
-  ['soy generic']: MAPSPAM_CODES.SOYB,
-};
-
-export const MAPSPAM_COMMODITY = {
-  COFF: 'Coffee',
-  COCO: 'Cocoa Generic',
-  OILP: 'Palm Oil Generic',
-  RUBB: 'Rubber',
-  SOYB: 'Soy Generic',
-  SUGC: 'Sugar Cane',
-};
-
-export const COMMODITY_MAP_SPAM_CODES_FOR_HUMANS = {
-  [MAPSPAM_CODES.COFF]: 'Coffee',
-  [MAPSPAM_CODES.COCO]: 'Cocoa Generic',
-  [MAPSPAM_CODES.OILP]: 'Palm Oil Generic',
-  [MAPSPAM_CODES.RUBB]: 'Rubber',
-  [MAPSPAM_CODES.SOYB]: 'Soy Generic',
-  [MAPSPAM_CODES.SUGC]: 'Sugar Cane',
-};
-
 export async function getTemplateName(listTemplateId: number) {
   const templateData = await SQLUtils.queryDB<TemplateMetadata[]>('gfwpro', 'getTemplateMetadata');
   const template = templateData.find(({ template_id }) => template_id === listTemplateId);
@@ -136,9 +94,9 @@ export async function getTemplateName(listTemplateId: number) {
 function searchCommodityCodeFromTerm(searchTerm: string) {
   return getGHGCodesMap().find(
     (code) =>
-      code.commodities.includes(searchTerm.toLowerCase()) ||
-      code.label.toLowerCase() === searchTerm.toLowerCase() ||
-      code.value.toLocaleLowerCase() === searchTerm.toLowerCase()
+      code.commodities.includes(searchTerm?.toLowerCase()) ||
+      code.label?.toLowerCase() === searchTerm?.toLowerCase() ||
+      code.value?.toLowerCase() === searchTerm?.toLowerCase()
   );
 }
 

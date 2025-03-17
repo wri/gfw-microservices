@@ -199,7 +199,7 @@ export class ListAnalysisService {
   }: {
     listId: number;
     organizationId: number;
-  }): Promise<Array<{ ['Location Name']: string; errorDetails: string }>> {
+  }): Promise<Array<{ ['Location Name']: string; Details: string }>> {
     try {
       const organization = await this.organizationService.findOrganizationById(organizationId);
       if (!organization) {
@@ -236,7 +236,7 @@ export class ListAnalysisService {
 
       return locationsWithErrors.map((location) => ({
         'Location Name': location.locationName,
-        errorDetails: location.errorDetails,
+        Details: location.errorDetails,
       }));
     } catch (error) {
       if (error instanceof HttpException) {

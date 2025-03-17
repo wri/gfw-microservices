@@ -33,7 +33,7 @@ export class GenerateErrorFile extends AbstractHandler<ChainType> {
         const fileName = `${safeListName}_error_report.csv`;
         const errorFilePath = path.join('/tmp', fileName);
 
-        const csvRows = ['"Location Name","Error Details"'];
+        const csvRows = ['"Location Name","Details"'];
         errorFeatures.forEach((feature) => {
           const locationName = (
             (feature.properties.locationName || 'Unknown Location') as string

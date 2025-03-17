@@ -825,11 +825,11 @@ describe('ListAnalysisService', () => {
       const mockResult = [
         {
           'Location Name': 'Location 1',
-          errorDetails: 'Error 1',
+          Details: 'Error 1',
         },
         {
           'Location Name': 'Location 2',
-          errorDetails: 'Error 2',
+          Details: 'Error 2',
         },
       ];
       const mockList = {

@@ -39,6 +39,12 @@ export const analysisTypesOptionsNewNames = [
     shortLabel: 'Post-2000',
     description: 'Annual tree cover loss since 2001 + additional contextual and regional datasets',
   },
+  {
+    id: analysisTypes.GREENHOUSE_GAS_EMISSIONS,
+    label: 'Greenhouse Gas Emissions',
+    shortLabel: 'GHG',
+    description: 'Greenhouse gas emissions from deforestation and forest degradation',
+  },
 ];
 
 export const analysisIdsOptionsMap = {

@@ -77,7 +77,12 @@ export class GADMService extends AbstractHandler<ChainType> {
   };
 
   getLatLngFromFeature = (feature: Feature) => {
-    if (feature.properties.longitude !== undefined && feature.properties.latitude !== undefined) {
+    if (
+      feature.properties.longitude !== undefined &&
+      feature.properties.latitude !== undefined &&
+      feature.properties.longitude !== null &&
+      feature.properties.latitude !== null
+    ) {
       return {
         longitude: feature.properties.longitude as number,
         latitude: feature.properties.latitude as number,

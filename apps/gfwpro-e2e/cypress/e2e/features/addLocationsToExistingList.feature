@@ -1,4 +1,4 @@
-Feature: User can add location to an existing list
+Feature: User can add a location to an existing list
   Scenario: Add locations to an existing list
     Given I login in the landing page
     When I click on Add Location and select the Single Location option

@@ -51,8 +51,8 @@ describe('Test convert KML File to GeoJSON', () => {
       'Location Name': 'SosoSoy0',
       'Company ID': '1',
       'Cadaster ID': 'CAR_12345',
-      'Volume': '200',
-      'Owner Name': 'Ike'
+      Volume: '200',
+      'Owner Name': 'Ike',
     });
   });
 });

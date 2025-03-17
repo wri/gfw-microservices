@@ -9,7 +9,7 @@ export interface ChainEvent {
   config?: unknown;
   payload?: ChainType;
 }
-// todo: these changes goes for [GPV-4085]
+
 export type AttributeType = {
   [x: string]: string;
 };

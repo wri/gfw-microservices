@@ -5,7 +5,7 @@ import {
   Logger,
   NotFoundException,
 } from '@nestjs/common';
-import { EntityTarget, FindOptionsWhere, Raw } from 'typeorm';
+import { EntityTarget } from 'typeorm';
 import {
   ListsPalmOilMills,
   ListGFWLists,
@@ -68,75 +68,6 @@ export class GfwLists {
 
   async getConnection() {
     return await this.clientStoreConnection.getConnection(systemDatabase);
-  }
-
-  async getAnalysisDataForGFWList(
-    pageNum: number,
-    pageSize: number,
-    list_id: number,
-    XXXXorganizationDatabase: string,
-    ids: number[] = []
-  ) {
-    try {
-      const connection = await this.getConnection();
-      const listTableName = await this.getListAnalysisTableName(list_id);
-
-      const listRepository = connection.getRepository(
-        this.getAnalysisTableNameEntity(listTableName.list_analysis_table_name)
-      );
-
-      const take = pageSize === 0 ? this.DEFAULT_PAGE_SIZE : pageSize;
-      const skip = pageNum > 0 ? pageNum * take : this.DEFAULT_PAGE_NUM;
-
-      let items, count;
-      const where: FindOptionsWhere<
-        | AnalysisPalmOilMills
-        | AnalysisAdministrativesAreas
-        | AnalysisOilPalmConcessions
-        | AnalysisProtectedAreas
-        | AnalysisRspoOilPalmConcessions
-      > = {};
-      if (ids.length > 0) {
-        // If ids array is not empty, apply the where clause
-        [items, count] = await listRepository.findAndCount({
-          where: {
-            ...where,
-            LocationId: Raw((alias) => `${alias} IN (:...names)`, {
-              names: ids,
-            }),
-          },
-          skip,
-          take,
-          order: {
-            LocationId: 'DESC',
-          },
-        });
-      } else {
-        [items, count] = await listRepository.findAndCount({
-          skip,
-          take,
-          order: {
-            LocationId: 'DESC',
-          },
-        });
-      }
-      if (!items) {
-        this.logger.error(`${listTableName.list_analysis_table_name}: lists not found`);
-        throw new NotFoundException(
-          `${listTableName.list_analysis_table_name} with list_id ${list_id} not found.`
-        );
-      }
-      const itemsWithListId = items.map((item) => {
-        return { ...item, list_id };
-      });
-      const number_of_pages = Math.ceil(count / take);
-      return [itemsWithListId, count, number_of_pages];
-    } catch (error) {
-      throw new InternalServerErrorException(
-        `Error getAnalysisDataForGFWList for gfwList id ${list_id}`,
-        error.message
-      );
-    }
   }
 
   async getListAnalysisTableName(list_id: number): Promise<ListGFWLists> {

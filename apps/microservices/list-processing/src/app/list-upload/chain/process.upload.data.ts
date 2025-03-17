@@ -9,7 +9,6 @@ import { Logger } from '@nestjs/common';
 import { Feature } from '@wri-monorepos/geo';
 import { GeoJSONGeometry, stringify } from 'wellknown';
 import { ConvertPoint2Polygon } from './convert.point.2.polygon';
-// todo: these changes goes for [GPV-4085]
 
 export class ProcessUploadData extends AbstractHandler<ChainType> {
   private readonly logger = new Logger(ProcessUploadData.name);
@@ -23,7 +22,7 @@ export class ProcessUploadData extends AbstractHandler<ChainType> {
   }
 
   getValidAttribtes(properties: string[]): string[] {
-    return properties.filter((col) => !this.columnsToExclude.includes(col));
+    return properties.filter((col) => !['', ...this.columnsToExclude].includes(col));
   }
 
   getFeatureAttributes(featurePayload: Feature): string {
@@ -32,7 +31,9 @@ export class ProcessUploadData extends AbstractHandler<ChainType> {
     this.logger.log(`Processing list-xxx.attributes. Excluding Columns: ${this.columnsToExclude}`);
 
     const locAttrObj = validAttrs.reduce((acc, key) => {
-      acc[key] = `${featurePayload.properties[key]}`;
+      if (key) {
+        acc[key] = featurePayload.properties[key] ? `${featurePayload.properties[key]}` : '';
+      }
       return acc;
     }, {} as AttributeType);
 
@@ -64,6 +65,44 @@ export class ProcessUploadData extends AbstractHandler<ChainType> {
     });
   }
 
+  async getListCommodity(organizationDatabase: string, listId: number): Promise<string> {
+    const clientStoreConnection = new ClientStoreConnection();
+    const connection = await clientStoreConnection.getConnection(organizationDatabase);
+    const listRepository = connection.getRepository(Lists);
+    const { Commodity } = await listRepository.findOne({
+      where: { id: listId },
+    });
+    return Commodity;
+  }
+
+  async getProcessedFeature(features: Feature[], commodity, request): Promise<Feature[]> {
+    return await Promise.all(
+      features.map(async (feature, index) => {
+        try {
+          return await this.processFeature(feature, index + 1, commodity, request);
+        } catch (error) {
+          this.logger.error(`Error processing feature`, error.stack || error);
+          this.logger.debug(feature);
+        }
+      })
+    );
+  }
+
+  getFeatPropAttrs(request: ChainType) {
+    const { list_id } = request.request as RequestNewList;
+    const validAttrs = this.getValidAttribtes(
+      Object.keys(request.geojson.features[0]?.properties ?? {})
+    );
+
+    return validAttrs.map((attributeField) =>
+      getFormattedAttributes({
+        listId: list_id,
+        attributeField,
+        fieldValue: request.geojson.features[0]?.properties[attributeField] ?? '',
+      })
+    );
+  }
+
   /**
    * @summary it should process parsed data into attributes
    * @param request ChainType
@@ -76,39 +115,9 @@ export class ProcessUploadData extends AbstractHandler<ChainType> {
 
     const commodity = await this.getListCommodity(organization_database, list_id);
 
-    request.geojson.features = await Promise.all(
-      prevFeatures.map(async (feature, index) => {
-        try {
-          return await this.processFeature(feature, index + 1, commodity, request);
-        } catch (error) {
-          this.logger.error(`Error processing feature`, error.stack || error);
-          this.logger.debug(feature);
-        }
-      })
-    );
-
-    const validAttrs = this.getValidAttribtes(
-      Object.keys(request.geojson.features[0]?.properties ?? {})
-    );
-
-    request.attributes = validAttrs.map((attributeField) =>
-      getFormattedAttributes({
-        listId: list_id,
-        attributeField,
-        fieldValue: request.geojson.features[0]?.properties[attributeField] ?? '',
-      })
-    );
+    request.geojson.features = await this.getProcessedFeature(prevFeatures, commodity, request);
+    request.attributes = this.getFeatPropAttrs(request);
 
     return request;
-  }
-
-  async getListCommodity(organizationDatabase: string, listId: number): Promise<string> {
-    const clientStoreConnection = new ClientStoreConnection();
-    const connection = await clientStoreConnection.getConnection(organizationDatabase);
-    const listRepository = connection.getRepository(Lists);
-    const { Commodity } = await listRepository.findOne({
-      where: { id: listId },
-    });
-    return Commodity;
   }
 }

@@ -20,6 +20,8 @@ import {
   ListAdministrativeAreas,
 } from '../entity';
 
+const systemDatabase = 'gfwpro';
+
 export class GfwLists {
   private readonly logger = new Logger('List processing service');
   private readonly clientStoreConnection = new ClientStoreConnection();
@@ -64,20 +66,20 @@ export class GfwLists {
     return ATTRIBUTES_LIST_TABLE_NAMES[list_id] || ATTRIBUTES_LIST_TABLE;
   }
 
-  async getConnection(organizationDatabase: string) {
-    return await this.clientStoreConnection.getConnection(organizationDatabase);
+  async getConnection() {
+    return await this.clientStoreConnection.getConnection(systemDatabase);
   }
 
   async getAnalysisDataForGFWList(
     pageNum: number,
     pageSize: number,
     list_id: number,
-    organizationDatabase: string,
+    XXXXorganizationDatabase: string,
     ids: number[] = []
   ) {
     try {
-      const connection = await this.getConnection(organizationDatabase);
-      const listTableName = await this.getListAnalysisTableName(list_id, organizationDatabase);
+      const connection = await this.getConnection();
+      const listTableName = await this.getListAnalysisTableName(list_id);
 
       const listRepository = connection.getRepository(
         this.getAnalysisTableNameEntity(listTableName.list_analysis_table_name)
@@ -137,12 +139,9 @@ export class GfwLists {
     }
   }
 
-  async getListAnalysisTableName(
-    list_id: number,
-    organizationDatabase: string
-  ): Promise<ListGFWLists> {
+  async getListAnalysisTableName(list_id: number): Promise<ListGFWLists> {
     try {
-      const connection = await this.getConnection(organizationDatabase);
+      const connection = await this.getConnection();
       const listRepository = await connection.getRepository(ListGFWLists);
       const listName = await listRepository.findOne({ where: { id: list_id } });
       return listName;
@@ -155,7 +154,6 @@ export class GfwLists {
     list_id: number,
     pageNum = 0,
     pageSize = 0,
-    organizationDatabase: string,
     filters: {
       selectedCountry?: string;
       selectedState?: string;
@@ -174,7 +172,7 @@ export class GfwLists {
     }
 
     try {
-      const connection = await this.getConnection(organizationDatabase);
+      const connection = await this.getConnection();
       const listRepository = connection.getRepository(this.getAttributesListEntity(list_id));
 
       const take = pageSize === 0 ? this.DEFAULT_PAGE_SIZE : pageSize;

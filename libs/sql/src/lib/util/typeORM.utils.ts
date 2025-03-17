@@ -112,8 +112,11 @@ export class ClientStoreConnection {
   async getConnection(
     database: string,
     // eslint-disable-next-line @typescript-eslint/ban-types
-    entities: MixedList<Function | string | EntitySchema> = organizationEntities
+    entities?: MixedList<Function | string | EntitySchema>
   ): Promise<DataSource> {
+    if (entities === undefined) {
+      entities = database === 'gfwpro' ? systemEntities : organizationEntities;
+    }
     const entityType = ClientStoreConnection.getConnectionType(entities);
     const mapToInsert = ClientStoreConnection.getConnections(entityType);
     let connectionId = process.env.MSSQL_HOSTNAME + database;

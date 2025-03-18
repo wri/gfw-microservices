@@ -89,7 +89,7 @@ describe('GenerateErrorFile', () => {
     expect(fs.promises.mkdir).toHaveBeenCalledWith('/tmp', { recursive: true });
     expect(fs.promises.writeFile).toHaveBeenCalledWith(
       expectedFilePath,
-      '"Location Name","Error Details"\n"Location 1","Invalid latitude; Missing field"\n"Location 2","Invalid coordinates"'
+      '"Location Name","Details"\n"Location 1","Invalid latitude; Missing field"\n"Location 2","Invalid coordinates"'
     );
     expect(s3Service.putObject).toHaveBeenCalledWith(
       expectedS3Key,

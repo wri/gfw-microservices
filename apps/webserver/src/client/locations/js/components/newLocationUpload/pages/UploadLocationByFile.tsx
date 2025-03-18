@@ -37,17 +37,18 @@ export function UploadLocationByFile() {
         setFileAttachState(FileAttachState.Uploading);
 
         if (file.name.endsWith('.zip')) {
-          const zip = await JSZip.loadAsync(file);
-          const files = Object.keys(zip.files);
+          const zip = await JSZip.loadAsync(file, { createFolders: false });
 
-          const allFilesValid = files.every((filename) => {
+          for (const filename in zip.files) {
+            if (zip.files[filename].dir) {
+              continue;
+            }
+
             const extension = filename.split('.').pop()?.toLowerCase();
-            return extension && VALID_ARC_GIS_FILE_FORMATS.includes(extension);
-          });
-
-          if (!allFilesValid) {
-            setFileAttachState(FileAttachState.UnsupportedType);
-            return;
+            if (!extension || !VALID_ARC_GIS_FILE_FORMATS.includes(extension)) {
+              setFileAttachState(FileAttachState.UnsupportedType);
+              return;
+            }
           }
         }
 

@@ -83,7 +83,7 @@ export class ParserData extends AbstractHandler<ChainType> {
     return geojson;
   };
 
-  private removeEmptyGeometries(geojson: FeatureCollection): FeatureCollection {
+  private removeTemplateLines(geojson: FeatureCollection): FeatureCollection {
     if (!geojson || !geojson.features) {
       return geojson;
     }
@@ -91,17 +91,26 @@ export class ParserData extends AbstractHandler<ChainType> {
     return {
       ...geojson,
       features: geojson.features.filter((feature) => {
-        if (!feature.geometry) {
+        if (!feature.properties?.locationName) {
           return false;
         }
 
-        // Handle GeometryCollection separately
-        if (feature.geometry.type === 'GeometryCollection') {
-          return feature.geometry.geometries && feature.geometry.geometries.length > 0;
+        // Remove template lines
+        const templateStrings = [
+          'Mandatory',
+          'String',
+          'name of the location',
+          'POPULATE WITH DATA BELOW THIS LINE',
+        ];
+        if (
+          templateStrings.some((template) =>
+            (feature.properties?.locationName as string)?.includes(template)
+          )
+        ) {
+          return false;
         }
 
-        // For all other geometry types
-        return Object.keys(feature.geometry).length > 0;
+        return true;
       }),
     };
   }
@@ -128,7 +137,7 @@ export class ParserData extends AbstractHandler<ChainType> {
 
     try {
       const geoJson = await dataParser[fileExtension](fileDownloadedPath, preview);
-      const cleanedGeoJson = this.removeEmptyGeometries(geoJson);
+      const cleanedGeoJson = this.removeTemplateLines(geoJson);
       this.logger.log('Data parsed successfully');
 
       this.deleteFile(fileDownloadedPath);

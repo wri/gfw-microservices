@@ -1,16 +1,34 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { ParserData } from './parser.data';
 import { Logger } from '@nestjs/common';
+import { FeatureCollection } from '@wri-monorepos/geo';
 import * as fs from 'fs';
 import { csv2geojson } from '../parser/csv2geojson.parser';
-import { AbstractHandler, ChainType } from './types';
-import { FeatureCollection } from '@wri-monorepos/geo';
+import { convertShapefileToGeoJSON } from '../parser/shp2GeoJson.parser';
+import { xls2geojson } from '../parser/xls2GeoJSON.parser';
+import { kml2GeoJSON } from '../parser/kml2GeoJSON.parser';
+import AdmZip from 'adm-zip';
 
 jest.mock('fs');
 jest.mock('../parser/csv2geojson.parser');
+jest.mock('../parser/shp2GeoJson.parser');
+jest.mock('../parser/xls2GeoJSON.parser');
+jest.mock('../parser/kml2GeoJSON.parser');
+jest.mock('adm-zip');
 
 describe('ParserData', () => {
   let parserData: ParserData;
+  const mockFeatureCollection: FeatureCollection = {
+    type: 'FeatureCollection',
+    features: [
+      {
+        type: 'Feature',
+        geometry: { type: 'Point', coordinates: [0, 0] },
+        properties: { locationName: 'Test Location' },
+      },
+    ],
+  };
+
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
       providers: [ParserData, Logger],
@@ -23,70 +41,226 @@ describe('ParserData', () => {
     jest.clearAllMocks();
   });
 
+  describe('removeTemplateLines', () => {
+    it('should filter out features with template strings in locationName', () => {
+      const inputGeoJson: FeatureCollection = {
+        type: 'FeatureCollection',
+        features: [
+          {
+            type: 'Feature',
+            geometry: { type: 'Point', coordinates: [0, 0] },
+            properties: { locationName: 'Valid Location' },
+          },
+          {
+            type: 'Feature',
+            geometry: { type: 'Point', coordinates: [1, 1] },
+            properties: { locationName: 'Mandatory Field' },
+          },
+          {
+            type: 'Feature',
+            geometry: { type: 'Point', coordinates: [2, 2] },
+            properties: { locationName: 'String Template' },
+          },
+          {
+            type: 'Feature',
+            geometry: { type: 'Point', coordinates: [3, 3] },
+            properties: { locationName: 'name of the location' },
+          },
+          {
+            type: 'Feature',
+            geometry: { type: 'Point', coordinates: [4, 4] },
+            properties: { locationName: 'POPULATE WITH DATA BELOW THIS LINE' },
+          },
+          {
+            type: 'Feature',
+            geometry: { type: 'Point', coordinates: [5, 5] },
+            properties: { locationName: null },
+          },
+          {
+            type: 'Feature',
+            geometry: { type: 'Point', coordinates: [6, 6] },
+            properties: {},
+          },
+        ],
+      };
+
+      const result = parserData['removeTemplateLines'](inputGeoJson);
+
+      expect(result.features).toHaveLength(1);
+      expect(result.features[0].properties.locationName).toBe('Valid Location');
+    });
+
+    it('should handle empty or invalid GeoJSON', () => {
+      const emptyGeoJson: FeatureCollection = {
+        type: 'FeatureCollection',
+        features: [],
+      };
+
+      const nullGeoJson = null;
+
+      const result1 = parserData['removeTemplateLines'](emptyGeoJson);
+      const result2 = parserData['removeTemplateLines'](nullGeoJson);
+
+      expect(result1.features).toHaveLength(0);
+      expect(result2).toBeNull();
+    });
+  });
+
+  describe('csvParser', () => {
+    it('should parse CSV file correctly', async () => {
+      const filePath = 'test.csv';
+      const mockCsvContent = 'header1,header2\nvalue1,value2';
+      (fs.readFileSync as jest.Mock).mockReturnValue(mockCsvContent);
+      (csv2geojson as jest.Mock).mockResolvedValue(mockFeatureCollection);
+
+      const result = await parserData['csvParser'](filePath, false);
+
+      expect(fs.readFileSync).toHaveBeenCalledWith(filePath, 'utf8');
+      expect(csv2geojson).toHaveBeenCalledWith(mockCsvContent, false);
+      expect(result).toEqual(mockFeatureCollection);
+    });
+  });
+
+  describe('shapefileParser', () => {
+    it('should parse shapefile correctly', async () => {
+      const filePath = 'test.zip';
+      (convertShapefileToGeoJSON as jest.Mock).mockResolvedValue(mockFeatureCollection);
+
+      const result = await parserData['shapefileParser'](filePath);
+
+      expect(convertShapefileToGeoJSON).toHaveBeenCalledWith(filePath);
+      expect(result).toEqual(mockFeatureCollection);
+    });
+  });
+
+  describe('xls2geojson', () => {
+    it('should parse Excel file correctly', async () => {
+      const filePath = 'test.xlsx';
+      const mockBuffer = Buffer.from('test');
+      (fs.readFileSync as jest.Mock).mockReturnValue(mockBuffer);
+      (xls2geojson as jest.Mock).mockResolvedValue(mockFeatureCollection);
+
+      const result = await parserData['xls2geojson'](filePath);
+
+      expect(fs.readFileSync).toHaveBeenCalledWith(filePath);
+      expect(xls2geojson).toHaveBeenCalledWith(mockBuffer);
+      expect(result).toEqual(mockFeatureCollection);
+    });
+  });
+
+  describe('kml2geojson', () => {
+    it('should parse KML file correctly', async () => {
+      const filePath = 'test.kml';
+      const mockKmlContent = '<kml>...</kml>';
+      (fs.readFileSync as jest.Mock).mockReturnValue(mockKmlContent);
+      (kml2GeoJSON as jest.Mock).mockResolvedValue(mockFeatureCollection);
+
+      const result = await parserData['kml2geojson'](filePath);
+
+      expect(fs.readFileSync).toHaveBeenCalledWith(filePath, 'utf8');
+      expect(kml2GeoJSON).toHaveBeenCalledWith(mockKmlContent);
+      expect(result).toEqual(mockFeatureCollection);
+    });
+  });
+
+  describe('json2geojson', () => {
+    it('should parse JSON file correctly', async () => {
+      const filePath = 'test.json';
+      const mockJsonString = JSON.stringify(mockFeatureCollection);
+      (fs.readFileSync as jest.Mock).mockReturnValue(mockJsonString);
+
+      const result = await parserData['json2geojson'](filePath);
+
+      expect(fs.readFileSync).toHaveBeenCalledWith(filePath, 'utf8');
+      expect(result).toEqual(mockFeatureCollection);
+    });
+  });
+
+  describe('kmz2geojson', () => {
+    it('should parse KMZ file correctly', async () => {
+      const filePath = 'test.kmz';
+      const mockKmlContent = '<kml>...</kml>';
+      const mockZipEntry = {
+        entryName: 'test.kml',
+        getData: jest.fn().mockReturnValue(mockKmlContent),
+      };
+      const mockZip = {
+        getEntries: jest.fn().mockReturnValue([mockZipEntry]),
+      };
+      (AdmZip as jest.Mock).mockImplementation(() => mockZip);
+      (fs.writeFileSync as jest.Mock).mockReturnValue(undefined);
+      (fs.readFileSync as jest.Mock).mockReturnValue(mockKmlContent);
+      (kml2GeoJSON as jest.Mock).mockResolvedValue(mockFeatureCollection);
+
+      const result = await parserData['kmz2geojson'](filePath);
+
+      expect(AdmZip).toHaveBeenCalledWith(filePath);
+      expect(mockZip.getEntries).toHaveBeenCalled();
+      expect(fs.writeFileSync).toHaveBeenCalled();
+      expect(fs.readFileSync).toHaveBeenCalledWith(expect.stringContaining('.kml'), 'utf8');
+      expect(kml2GeoJSON).toHaveBeenCalledWith(mockKmlContent);
+      expect(result).toEqual(mockFeatureCollection);
+    });
+
+    it('should throw error if no KML file found in KMZ', async () => {
+      const filePath = 'test.kmz';
+      const mockZip = {
+        getEntries: jest.fn().mockReturnValue([]),
+      };
+      (AdmZip as jest.Mock).mockImplementation(() => mockZip);
+
+      await expect(parserData['kmz2geojson'](filePath)).rejects.toThrow(
+        'No KML file found in the KMZ archive'
+      );
+    });
+  });
+
   describe('handle', () => {
-    it('should parse CSV content, remove empty geometries, and pass GeoJSON to the next handler', async () => {
-      const fileDownloadedPath = 'path/to/file.csv';
-      const csvContent = 'csv content';
-      const geoJson: FeatureCollection = {
-        type: 'FeatureCollection',
-        features: [
-          {
-            type: 'Feature',
-            geometry: {
-              type: 'Point',
-              coordinates: [0, 0],
-            },
-            properties: {},
-          },
-          {
-            type: 'Feature',
-            geometry: null,
-            properties: {},
-          },
-          {
-            type: 'Feature',
-            geometry: {
-              type: 'GeometryCollection',
-              geometries: [],
-            },
-            properties: {},
-          },
-        ],
+    it('should handle CSV file processing correctly', async () => {
+      const request = {
+        request: {
+          fileDownloadedPath: 'test.csv',
+          preview: false,
+          path: 'test/path',
+        },
+      };
+      const mockCsvContent = 'header1,header2\nvalue1,value2';
+      (fs.readFileSync as jest.Mock).mockReturnValue(mockCsvContent);
+      (csv2geojson as jest.Mock).mockResolvedValue(mockFeatureCollection);
+
+      const result = await parserData.handle(request);
+
+      expect(result).toEqual({
+        ...request,
+        geojson: mockFeatureCollection,
+      });
+    });
+
+    it('should throw error for unsupported file extension', async () => {
+      const request = {
+        request: {
+          fileDownloadedPath: 'test.unsupported',
+          preview: false,
+          path: 'test/path',
+        },
       };
 
-      const expectedGeoJson: FeatureCollection = {
-        type: 'FeatureCollection',
-        features: [
-          {
-            type: 'Feature',
-            geometry: {
-              type: 'Point',
-              coordinates: [0, 0],
-            },
-            properties: {},
-          },
-        ],
+      await expect(parserData.handle(request)).rejects.toThrow('Unsupported file extension');
+    });
+
+    it('should throw error when parsing fails', async () => {
+      const request = {
+        request: {
+          fileDownloadedPath: 'test.csv',
+          preview: false,
+          path: 'test/path',
+        },
       };
+      (fs.readFileSync as jest.Mock).mockImplementation(() => {
+        throw new Error('File read error');
+      });
 
-      (fs.readFileSync as jest.Mock).mockReturnValue(csvContent);
-      (csv2geojson as jest.Mock).mockResolvedValue(geoJson);
-      jest.spyOn(parserData, 'deleteFile').mockImplementation();
-
-      const input: ChainType = {
-        request: { fileDownloadedPath, organization_database: 'test', path: 'test' },
-      };
-
-      jest
-        .spyOn(AbstractHandler.prototype, 'handle')
-        .mockResolvedValue({ ...input, geojson: expectedGeoJson });
-
-      const result = await parserData.handle(input);
-
-      expect(fs.readFileSync).toHaveBeenCalledWith(fileDownloadedPath, 'utf8');
-      expect(csv2geojson).toHaveBeenCalledWith(csvContent, false);
-      expect(parserData.deleteFile).toHaveBeenCalledWith(fileDownloadedPath);
-      expect(result.geojson.features).toHaveLength(1);
-      expect(result.geojson).toEqual(expectedGeoJson);
+      await expect(parserData.handle(request)).rejects.toThrow('Error while parsing the data');
     });
   });
 });

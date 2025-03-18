@@ -42,7 +42,8 @@ export class InsertLocationData extends AbstractHandler<ChainType> {
   }
 
   async handle(request: ChainType): Promise<ChainType> {
-    const values = request.geojson.features.map((feature) => feature.properties);
+    const { locations: values } = request;
+
     const { organization_database: organizationDatabase, listTable } =
       request.request as RequestNewList;
     const ListEntity = new EntitySchema<ListSchemaType>({

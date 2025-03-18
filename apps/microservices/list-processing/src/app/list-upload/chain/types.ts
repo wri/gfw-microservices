@@ -11,13 +11,16 @@ export interface ChainEvent {
 }
 
 export type AttributeType = {
-  [x: string]: string;
+  field: string;
+  type: string;
+  value: unknown;
+  custom?: boolean;
 };
 
 export type ChainType = {
   geojson?: FeatureCollection;
   request: RequestNewList | PreviewListRequest;
-  attributes?: ListAttributesRecord[];
+  locations?: Feature['properties'][];
 };
 
 export type ListAttributesRow = {

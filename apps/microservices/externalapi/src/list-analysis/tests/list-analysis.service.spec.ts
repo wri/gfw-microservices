@@ -822,7 +822,16 @@ describe('ListAnalysisService', () => {
           errorDetails: 'Error 2',
         },
       ];
-
+      const mockResult = [
+        {
+          'Location Name': 'Location 1',
+          Details: 'Error 1',
+        },
+        {
+          'Location Name': 'Location 2',
+          Details: 'Error 2',
+        },
+      ];
       const mockList = {
         id: 1,
         listTableName: 'test_list_table',
@@ -846,7 +855,7 @@ describe('ListAnalysisService', () => {
         organizationId: 1,
       });
 
-      expect(result).toEqual(mockLocationsWithErrors);
+      expect(result).toEqual(mockResult);
     });
 
     it('should throw NOT_FOUND with correct message when organization does not exist', async () => {

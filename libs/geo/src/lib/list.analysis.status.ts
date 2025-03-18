@@ -20,7 +20,7 @@ import {
   analysisTypesOptionsNewNames,
   analysisIdsOptionsMap,
   MAPSPAM_COMMODITY,
-  GadmFeatureFlagName,
+  GADM_FEATURE_FLAG_NAME,
 } from '@wri-monorepos/constants';
 import { S3Service } from '@wri-monorepos/aws';
 import {
@@ -569,7 +569,7 @@ type GadmFeatureFlag = {
 export const getGadmFeatrueFlag = async (organizationDb: string): Promise<GadmFeatureFlag> => {
   const gadmResult: GadmFeatureFlag = { gadm: 3.6 };
   try {
-    const gadmFeatureFlagName = await searchForFeatureFlag(organizationDb, GadmFeatureFlagName);
+    const gadmFeatureFlagName = await searchForFeatureFlag(organizationDb, GADM_FEATURE_FLAG_NAME);
 
     if (gadmFeatureFlagName?.flagState === true) {
       gadmResult.gadm = 4.1;

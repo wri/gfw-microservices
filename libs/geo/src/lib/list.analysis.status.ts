@@ -20,6 +20,7 @@ import {
   analysisTypesOptionsNewNames,
   analysisIdsOptionsMap,
   MAPSPAM_COMMODITY,
+  GadmFeatureFlagName,
 } from '@wri-monorepos/constants';
 import { S3Service } from '@wri-monorepos/aws';
 import {
@@ -313,19 +314,15 @@ export const handleCreateAnalysis = async (
     const activityLogRepository = connectionLibSql.getRepository(ActivityLog);
 
     //Search for FeatureFlag
-    const { getFeatureFlagsForCurrentOrg, getClientIdByClientStoreDatabaseName } =
-      await featureFlagsService();
-    const orgId = await getClientIdByClientStoreDatabaseName(organizationDb);
-    const flags = await getFeatureFlagsForCurrentOrg(orgId);
-
-    const uploadListLpFlag = flags.find(
-      (f) => f.flagId === 'PermanentFlagExpeditedAnalysis'
-    ) as FeatureFlag;
-
-    //Add FeatureFlag to data
+    const uploadListLpFlag = await searchForFeatureFlag( organizationDb,'PermanentFlagExpeditedAnalysis')
+    
+    // Add FeatureFlag to data
     if (uploadListLpFlag?.flagState === true) {
       data['expedited_analysis'] = true;
     }
+
+    // Add GadmFeatureFlag to data
+    data['gadm'] = await getGadmFeatrueFlag(organizationDb);
 
     const microserviceEnvironment = process.env.MICROSERVICES_ENV;
     const { listName, userEmail: testUserEmail } = await getTestFlowDetails(
@@ -340,7 +337,7 @@ export const handleCreateAnalysis = async (
       await runMockAnalysisFlow(organizationDb, listId);
       return 'OK';
     }
-
+    // Get GADM parameter
     const response = await axios.post(url, data, {
       headers: {
         'Content-Type': 'application/json',
@@ -563,4 +560,43 @@ const saveAnalysisStatusErrorInfo = async (
   const connection = await clientStoreConnection.getConnection(organizationDb);
   const listAnalysisStatusRepository = await connection.getRepository(ListsAnalysisStatus);
   await listAnalysisStatusRepository.update({ listId, analysisId }, { errorInfo, status });
+};
+
+type GadmFeatureFlag = {
+  gadm: number;
+};
+
+export const getGadmFeatrueFlag = async (organizationDb: string): Promise<GadmFeatureFlag> => {
+  const gadmResult: GadmFeatureFlag = { gadm: 3.6 };
+  try {
+    const gadmFeatureFlagName = await searchForFeatureFlag(organizationDb, GadmFeatureFlagName);
+
+    if (gadmFeatureFlagName?.flagState === true) {
+      gadmResult.gadm = 4.1;
+    }
+
+    return gadmResult;
+  } catch (error) {
+    Logger.error('getGadmFeatrueFlag', error.message || error);
+    return gadmResult;
+  }
+};
+
+const searchForFeatureFlag = async (
+  organizationDb: string,
+  featureFlagName: string
+): Promise<FeatureFlag> => {
+  try {
+    //Search for FeatureFlag
+    const { getFeatureFlagsForCurrentOrg, getClientIdByClientStoreDatabaseName } =
+      await featureFlagsService();
+    const orgId = await getClientIdByClientStoreDatabaseName(organizationDb);
+    const flags = await getFeatureFlagsForCurrentOrg(orgId);
+
+    const uploadListLpFlag = flags.find((f) => f.flagId === featureFlagName) as FeatureFlag;
+    return uploadListLpFlag;
+  } catch (error) {
+    Logger.error('searchForFeatrueFlag', error.message || error);
+    return null;
+  }
 };

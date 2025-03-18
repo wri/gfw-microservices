@@ -50,3 +50,5 @@ export const analysisTypesOptionsNewNames = [
 export const analysisIdsOptionsMap = {
   [ListAnalysisIds.FCD]: ['PalmRisk'],
 };
+
+export const GadmFeatureFlagName = 'GadmFeatureFlagName4_1';

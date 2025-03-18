@@ -314,10 +314,10 @@ export const handleCreateAnalysis = async (
     const activityLogRepository = connectionLibSql.getRepository(ActivityLog);
 
     //Search for FeatureFlag
-    const uploadListLpFlag = await searchForFeatureFlag( organizationDb,'PermanentFlagExpeditedAnalysis')
+    const expeditedAnalysisFlag = await searchForFeatureFlag( organizationDb,'PermanentFlagExpeditedAnalysis')
     
     // Add FeatureFlag to data
-    if (uploadListLpFlag?.flagState === true) {
+    if (expeditedAnalysisFlag?.flagState === true) {
       data['expedited_analysis'] = true;
     }
 
@@ -593,8 +593,8 @@ const searchForFeatureFlag = async (
     const orgId = await getClientIdByClientStoreDatabaseName(organizationDb);
     const flags = await getFeatureFlagsForCurrentOrg(orgId);
 
-    const uploadListLpFlag = flags.find((f) => f.flagId === featureFlagName) as FeatureFlag;
-    return uploadListLpFlag;
+    const searchedFeatureFlag = flags.find((f) => f.flagId === featureFlagName) as FeatureFlag;
+    return searchedFeatureFlag;
   } catch (error) {
     Logger.error('searchForFeatrueFlag', error.message || error);
     return null;

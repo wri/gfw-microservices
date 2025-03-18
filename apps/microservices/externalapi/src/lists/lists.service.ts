@@ -40,9 +40,10 @@ export class ListService {
       }
       // There is some trash in DevCo db that has the errorFileStoragePath as 'none' so we need to check if it is different from 'none'
       if (listStatus.errorFileStoragePath && listStatus.errorFileStoragePath.includes('s3://')) {
-        listStatus.errorFileStoragePath = await this.getPresignedUrl(
-          listStatus.errorFileStoragePath
-        );
+        const s3Path = listStatus.errorFileStoragePath;
+        const [, bucket, ...keyParts] = s3Path.split('/');
+        const key = keyParts.join('/');
+        listStatus.errorFileStoragePath = await this.getPresignedUrl(key, bucket);
       } else {
         listStatus.errorFileStoragePath = null;
       }
@@ -68,22 +69,19 @@ export class ListService {
     const organization = await this.organizationService.findOrganizationById(organizationId);
     return organization;
   }
-  private async getPresignedUrl(fileName: string) {
-    const fileUrl = fileName.split('s3://').pop();
-    const [bucket, environment, subPath, filenameWithExtensin] = fileUrl.split('/');
-    const [filename, extension] = filenameWithExtensin.split('.');
+  private async getPresignedUrl(key: string, bucket: string): Promise<string> {
+    const keyParts = key.split('/');
+    const environment = keyParts[0];
+    const subPath = keyParts.slice(1, -1).join('/');
+    const [filename, extension] = keyParts[keyParts.length - 1].split('.');
 
-    try {
-      return await this.s3Service.getFileSignedUrlDynamicEnvironment(
-        filename,
-        extension,
-        bucket,
-        environment,
-        subPath
-      );
-    } catch (error) {
-      throw new Error(`[uploadFileToS3] Failed to upload file to bucket. ${error.message}`);
-    }
+    return await this.s3Service.getFileSignedUrlDynamicEnvironment(
+      filename,
+      extension,
+      bucket,
+      environment,
+      subPath || undefined
+    );
   }
   async getListInfo(organizationId: number, listId: number): Promise<ListInfoResponse> {
     try {

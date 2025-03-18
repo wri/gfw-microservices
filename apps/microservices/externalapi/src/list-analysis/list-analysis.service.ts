@@ -9,7 +9,7 @@ import {
 } from '@nestjs/common';
 import { AnalysesGenerateRequest, ListAnalysisResponse } from './list-analysis.dto';
 import { UserService } from './user.service';
-import { ExternalUpload } from './external-upload.entity';
+
 import { ConfigService } from '@nestjs/config';
 import axios from 'axios';
 import { generateRandomFilename } from '@wri-monorepos/shared';
@@ -49,6 +49,7 @@ import {
   ListSchemaType,
   ClientStoreConnection,
   ListsAnalysisStatus,
+  ExternalUpload,
 } from '@wri-monorepos/sql';
 const LIST_INITIAL_STATUS = 'Pending';
 const MIN_FILE_SIZE_IN_BYTES = 70; // single location CSV file size
@@ -199,7 +200,7 @@ export class ListAnalysisService {
   }: {
     listId: number;
     organizationId: number;
-  }): Promise<Array<{ locationName: string; errorDetails: string }>> {
+  }): Promise<Array<{ ['Location Name']: string; Details: string }>> {
     try {
       const organization = await this.organizationService.findOrganizationById(organizationId);
       if (!organization) {
@@ -234,7 +235,10 @@ export class ListAnalysisService {
         },
       });
 
-      return locationsWithErrors;
+      return locationsWithErrors.map((location) => ({
+        'Location Name': location.locationName,
+        Details: location.errorDetails,
+      }));
     } catch (error) {
       if (error instanceof HttpException) {
         throw error;
@@ -595,7 +599,7 @@ export class ListAnalysisService {
       listId,
       organizationId,
       organizationDetails.organizationDb,
-      userEmail,
+      userEmail ? true : false,
       organization_user_id,
       organizationDetails.subscriptionStatusId
     );

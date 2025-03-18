@@ -225,7 +225,7 @@ export function UploadLocationPreview() {
               <TableHead sx={{ background: theme.palette.background.default }}>
                 <TableRow>
                   {columns.map((column) => (
-                    <TableCell key={column}>{LabelNameTable[column]}</TableCell>
+                    <TableCell key={column}>{LabelNameTable[column] || column}</TableCell>
                   ))}
                 </TableRow>
               </TableHead>

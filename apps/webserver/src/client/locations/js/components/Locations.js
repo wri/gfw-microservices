@@ -20,7 +20,6 @@ import { addList, changeView, changeAddType } from '../actions/locationActions';
 import { resetScroll } from '../utils/scroll.utils';
 
 import '../../css/locations.scss';
-import ShareListModal from './ShareList/ShareListModal';
 import { UploadLocationRouter } from './newLocationUpload/UploadLocationRouter';
 import { UploadLocationProvider } from './newLocationUpload/contexts';
 import featureFlags from '../../../../utils/general.utils';
@@ -58,7 +57,6 @@ class Locations extends Component {
       gfwInfoFromMap: false, // will switch to an object if this is activated!
       userListInfoFromMap: false, // same as above!
       drawnGeom: false, // same as above!
-      shareView: false,
       adminArea: false,
       B2BsharedListEnabled: false,
       mapData: locationDataToAddFromMap?.mapData,
@@ -110,10 +108,6 @@ class Locations extends Component {
 
   storeDidUpdate = () => {
     this.setState(store.getState());
-  };
-
-  getCurrentLists = () => {
-    return this.state.selectedLists;
   };
 
   getGeomFromMap = (isAddingLocationFromMap) => {
@@ -199,7 +193,7 @@ class Locations extends Component {
       this.setState({ drawnGeom: mapData, isLoading: false });
 
       if (isUploadListUiAvailable) {
-        this.props.history.push('/upload-location/configure-list');
+        this.props.history.replace('/upload-location/by-polygon');
       } else {
         store.dispatch(changeView('add'));
         this.props.history.push('/add');
@@ -273,7 +267,7 @@ class Locations extends Component {
 
   navigateToAddView = (gfwInfoFromMap, gfwList) => {
     if (isUploadListUiAvailable) {
-      this.props.history.push('/upload-location/configure-list');
+      this.props.history.replace('/upload-location/by-polygon');
     } else {
       let addType = this.state.activeTemplate === 'investment' ? 'investment' : 'commodity';
       if (gfwInfoFromMap.gfwData.listName === universalMillList) {
@@ -285,23 +279,6 @@ class Locations extends Component {
       store.dispatch(changeView('add'));
       this.props.history.push('/add');
     }
-  };
-
-  showShareList = (show) => {
-    if (show) {
-      gtag('event', 'Back to list view link clicked', {
-        event_category: 'Sharing',
-        event_label: 'user clicked on the back to list view link from the sharing page',
-      });
-    } else {
-      gtag('event', 'list table share', {
-        event_category: 'Lists Click',
-        event_label: 'user clicked share list',
-      });
-    }
-    this.setState({
-      shareView: show,
-    });
   };
 
   render() {
@@ -321,7 +298,6 @@ class Locations extends Component {
       gfwInfoFromMap,
       drawnGeom,
       isLoading,
-      shareView,
       adminArea,
       B2BsharedListEnabled,
       geomFromMap,
@@ -341,24 +317,11 @@ class Locations extends Component {
       userSharedLists,
     } = this.props;
 
-    const selectedList = selectedLists.length > 0 ? selectedLists[0] : null;
-
     const allLists = userLists.concat(userSharedLists);
-
-    const showShareListModal = shareView && B2BsharedListEnabled;
 
     return (
       <Page links={pageOptions.links} active="locations">
         <ModalLoader open={isLoading} />
-        {showShareListModal && (
-          <ShareListModal
-            usersList={usersList}
-            selectedList={selectedList}
-            isOpen={showShareListModal}
-            onClose={() => this.showShareList(false)}
-            currentUser={userInfo}
-          />
-        )}
         <Switch>
           <Route path="/add">
             <AddLocation
@@ -396,7 +359,6 @@ class Locations extends Component {
               selectedFolder={selectedFolder}
               history={history}
               currentUser={userInfo}
-              showShareList={this.showShareList}
             />
           </Route>
           <Route path="/gfw">
@@ -436,7 +398,6 @@ class Locations extends Component {
               userFolders={userFolders}
               userLists={userLists}
               locationCount={locationCount}
-              showShareList={this.showShareList}
               userSharedLists={userSharedLists}
               usersList={usersList} // Contains all users
               B2BsharedListEnabled={B2BsharedListEnabled}

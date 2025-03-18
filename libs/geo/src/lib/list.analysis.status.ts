@@ -17,7 +17,7 @@ import {
   GEO_TRELLIS__ANALYZE_LIST_QA,
   GEO_TRELLIS__ANALYZE_LIST_STAGING,
   listStatus,
-  analysisTypesOptions,
+  analysisTypesOptionsNewNames,
   analysisIdsOptionsMap,
   MAPSPAM_COMMODITY,
 } from '@wri-monorepos/constants';
@@ -222,7 +222,7 @@ export const handleCreateAnalysis = async (
   listId: number,
   organizationId: number,
   organizationDb: string,
-  userEmail: string,
+  sendEmail: boolean,
   organization_user_id: number,
   subscriptionStatusId: number,
   reanalyze = true
@@ -306,7 +306,7 @@ export const handleCreateAnalysis = async (
       processing_limit: processingLimit,
       analysis_types: analysisTypes,
       reanalyze,
-      send_email: userEmail ? true : false,
+      send_email: sendEmail,
     };
     const connectionLibSql = await clientStoreConnection.getConnection(organizationDb);
 
@@ -397,7 +397,7 @@ export const deleteListAnalysisStatusBy = async (
 
 export const getAnalysisTypesFromIds = (analysisIds: string[]) => {
   const analysisIdSet = new Set(analysisIds);
-  return analysisTypesOptions.reduce((result, { id }) => {
+  return analysisTypesOptionsNewNames.reduce((result, { id }) => {
     result[id] = analysisIdSet.has(id);
     return result;
   }, {} as Record<string, boolean>);
@@ -407,7 +407,7 @@ export const extractAnalysisTypes = (listAnalysisStatusData: ListsAnalysisStatus
   const analysisStatusMap = new Map(
     listAnalysisStatusData.map(({ analysisId }) => [analysisId, true])
   );
-  return analysisTypesOptions.reduce((result, { id }) => {
+  return analysisTypesOptionsNewNames.reduce((result, { id }) => {
     result[id] = analysisStatusMap.has(id);
     return result;
   }, {} as Record<string, boolean>);

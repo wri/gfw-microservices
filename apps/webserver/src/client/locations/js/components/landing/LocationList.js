@@ -5,7 +5,7 @@ import { locationsPage, userAccessLevel, SAVED_LOCATIONS } from '../../../../com
 import CustomDialog from '../../../../common/js/components/CustomDialog/CustomDialog';
 
 import fetch from '../../../../common/js/utils/fetch';
-import { addList, changeView, resetList } from '../../actions/locationActions';
+import { changeView } from '../../actions/locationActions';
 import ManageListFolderDialog from './ManageListFolderDialog';
 import store from '../../store';
 import {
@@ -94,7 +94,7 @@ export default class LocationList extends Component {
   };
 
   shareList = (e, list) => {
-    const { list: listProps, showShareList } = this.props;
+    const { list: listProps } = this.props;
     const { folder } = listProps;
     if (folder) {
       // if the user clicked on the map option from a folder
@@ -108,10 +108,7 @@ export default class LocationList extends Component {
         event_label: 'Share',
       });
     }
-
-    store.dispatch(resetList());
-    store.dispatch(addList(list));
-    showShareList(true);
+    window.location.href = `/list-details?id=${list.id}&shareView`;
   };
 
   render() {

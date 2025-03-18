@@ -63,6 +63,7 @@ class LocationsPage {
     listByName: (name) => cy.contains(name),
     typeAnalisyscheckBox: (number: number) => cy.get('input[type="checkbox"]').eq(number),
     submitAnalisys: () => cy.contains('Submit Analysis'),
+    saveAsDraft: () => cy.contains('Save As Draft'),
     confirmAnalisysBtn: () => cy.get('.MuiDialogActions-root > .MuiButton-contained'),
     pointBtn: () =>
       cy.get(
@@ -142,6 +143,9 @@ class LocationsPage {
   }
   clickOnSubmitAnalisys() {
     this.elements.submitAnalisys().click();
+  }
+  clickOnSaveAsDraft() {
+    this.elements.saveAsDraft().click();
   }
   clickOnConfirmAnalisysBtn() {
     this.elements.confirmAnalisysBtn().click();

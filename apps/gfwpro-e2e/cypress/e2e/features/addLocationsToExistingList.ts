@@ -32,7 +32,12 @@ describe('Add Locations to Existing List', () => {
     locationsPage.addLatitude(latitude);
     locationsPage.addLongitude(longitude);
     locationsPage.clickOnConfirmActionBtn();
-    locationsPage.clickOnSubmitAnalisys();
+    cy.intercept(
+      'POST',
+      'https://sampleserver6.arcgisonline.com/arcgis/rest/services/Utilities/Geometry/GeometryServer/areasAndLengths'
+    ).as('fetchRequest');
+    cy.wait('@fetchRequest', { timeout: 15000 }).its('response.statusCode').should('eq', 200);
+    locationsPage.clickOnSaveAsDraft();
     locationsPage.clickOnConfirmActionBtn();
   });
   Then('I should see the location added successfully', () => {

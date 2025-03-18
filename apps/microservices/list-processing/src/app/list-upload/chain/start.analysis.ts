@@ -1,8 +1,8 @@
-import { ClientStoreConnection, Lists } from '@wri-monorepos/sql';
+import { DataSource } from 'typeorm';
+import { ClientStoreConnection, Lists, ListsAnalysisStatus } from '@wri-monorepos/sql';
 import { AbstractHandler, ChainType, RequestNewList } from './types';
 import { handleCreateAnalysis } from '@wri-monorepos/geo';
 import { listStatus } from '@wri-monorepos/constants';
-
 import { Logger } from '@nestjs/common';
 
 export class StartAnalysis extends AbstractHandler<ChainType> {
@@ -14,19 +14,21 @@ export class StartAnalysis extends AbstractHandler<ChainType> {
     this.clientStoreConnection = clientStoreConnection;
   }
 
-  async getListStatus(organizationDatabase: string, list_id: number) {
-    const connection = await this.clientStoreConnection.getConnection(organizationDatabase);
+  private async getListStatus(
+    list_id: number,
+    connection: DataSource
+  ): Promise<{ listStatusId: number }> {
     const listRepository = connection.getRepository(Lists);
     const { listStatusId } = await listRepository.findOne({ where: { id: list_id } });
-    return listStatusId;
+    return { listStatusId };
   }
 
   private async isDraftList(
     saveAsDraft: boolean,
-    organizationDatabase: string,
-    listId: number
+    listId: number,
+    connection: DataSource
   ): Promise<boolean> {
-    const listStatusId = await this.getListStatus(organizationDatabase, listId);
+    const { listStatusId } = await this.getListStatus(listId, connection);
     if (saveAsDraft || listStatusId === listStatus.Draft) {
       return true;
     }
@@ -54,13 +56,19 @@ export class StartAnalysis extends AbstractHandler<ChainType> {
       analysisIds,
     } = request.request as RequestNewList;
 
-    const isDraft = await this.isDraftList(saveAsDraft, organization_database, listId);
+    const connection = await this.clientStoreConnection.getConnection(organization_database);
+    const listsAnalysisStatusRepository = connection.getRepository(ListsAnalysisStatus);
+
+    const isDraft = await this.isDraftList(saveAsDraft, listId, connection);
     if (isDraft) {
       this.logger.debug(`List ${listId} is set as draft so going to skip analysis`);
       return request;
     }
 
     this.validateGeoJsonFeatures(request.geojson.features);
+
+    this.logger.debug(`Deleting analysis status records for listId: ${listId}`);
+    await listsAnalysisStatusRepository.delete({ listId });
 
     const analysisTypesToProcess = analysisIds.join(',');
     const result = await handleCreateAnalysis(

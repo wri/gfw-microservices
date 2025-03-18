@@ -1,5 +1,5 @@
 import { StartAnalysis } from './start.analysis';
-import { ClientStoreConnection, Lists, User } from '@wri-monorepos/sql';
+import { ClientStoreConnection, Lists, ListsAnalysisStatus, User } from '@wri-monorepos/sql';
 import { handleCreateAnalysis } from '@wri-monorepos/geo';
 import { listStatus } from '@wri-monorepos/constants';
 import { ChainType } from './types';
@@ -14,6 +14,7 @@ describe('StartAnalysis', () => {
   let mockConnection: any;
   let mockListRepository: any;
   let mockUserRepository: any;
+  let mockListsAnalysisStatusRepository: any;
 
   beforeEach(() => {
     // Reset all mocks
@@ -26,6 +27,9 @@ describe('StartAnalysis', () => {
     mockUserRepository = {
       findOne: jest.fn(),
     };
+    mockListsAnalysisStatusRepository = {
+      delete: jest.fn(),
+    };
     mockConnection = {
       getRepository: jest.fn((entity) => {
         if (entity === Lists) {
@@ -33,6 +37,9 @@ describe('StartAnalysis', () => {
         }
         if (entity === User) {
           return mockUserRepository;
+        }
+        if (entity === ListsAnalysisStatus) {
+          return mockListsAnalysisStatusRepository;
         }
       }),
     };
@@ -119,17 +126,6 @@ describe('StartAnalysis', () => {
       await expect(startAnalysis.handle(mockRequest)).rejects.toThrow(
         'Failed to start analysis: Error'
       );
-    });
-  });
-
-  describe('helper methods', () => {
-    it('should get list status correctly', async () => {
-      mockListRepository.findOne.mockResolvedValue({ listStatusId: listStatus.Active });
-
-      const status = await startAnalysis.getListStatus('test_db', 123);
-
-      expect(status).toBe(listStatus.Active);
-      expect(mockListRepository.findOne).toHaveBeenCalledWith({ where: { id: 123 } });
     });
   });
 });

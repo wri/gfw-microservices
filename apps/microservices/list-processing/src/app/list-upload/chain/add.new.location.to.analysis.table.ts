@@ -38,12 +38,10 @@ export class AddNewLocationToAnalysisTable extends AbstractHandler<ChainType> {
       AnalysisEntity,
     ]);
 
-    const dataToInsert = locationIds.map((locationId) => {
-      return {
-        locationId,
-        locationStatusId: 1,
-      };
-    });
+    const dataToInsert = locationIds.map((locationId) => ({
+      locationId,
+      locationStatusId: 1,
+    }));
 
     try {
       for (let i = 0; i < dataToInsert.length; i += BATCH_SIZE) {

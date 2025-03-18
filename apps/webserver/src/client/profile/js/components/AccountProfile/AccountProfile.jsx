@@ -14,7 +14,7 @@ export default class AccountProfile extends Component {
     super(props);
     const { currentUser } = props;
     const classifications = this.props.currentAccount.classification_ids
-      .split(',')
+      ?.split(',')
       .map((classification) => {
         const classId = parseInt(classification);
         const data = this.props.classificationsData.find((d) => d.id === classId);
@@ -216,7 +216,7 @@ export default class AccountProfile extends Component {
           org_website: this.state.organization_website,
           parent_org_name: this.state.organization_parent,
           is_subsidiary: this.state.organization_is_subsidiary,
-          arr_org_classification_ids: this.state.classifications.map((c) => c.value),
+          arr_org_classification_ids: this.state.classifications?.map((c) => c.value),
           policyUploadList: this.state.policyUploadList,
           policyNames: this.state.policyNames,
           overwrite: this.overwrite,
@@ -377,8 +377,15 @@ export default class AccountProfile extends Component {
   };
 
   render() {
-    const { dialogOpen, dialogFileOpen, dialogTitle, dialogMessage, updating, updatingPolicy } =
-      this.state;
+    const {
+      dialogOpen,
+      dialogFileOpen,
+      dialogTitle,
+      dialogMessage,
+      updating,
+      updatingPolicy,
+      classifications,
+    } = this.state;
     const action = this.shouldCloseDialog;
     const actionOverwrite = this.shouldOverwrite;
     const dialogContent =
@@ -563,7 +570,7 @@ export default class AccountProfile extends Component {
                 name="account_id"
                 id="account_classifications"
                 onChange={this.classChange}
-                value={this.state.classifications}
+                value={classifications}
                 isMulti
                 isSearchable
                 maxMenuHeight={150}

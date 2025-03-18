@@ -44,6 +44,12 @@ export class StartAnalysis extends AbstractHandler<ChainType> {
     }
   }
 
+  private async deleteAllAnalysisStatusFromCurrentList(connection: DataSource, listId: number) {
+    const listsAnalysisStatusRepository = connection.getRepository(ListsAnalysisStatus);
+    this.logger.debug(`Deleting analysis status records for listId: ${listId}`);
+    await listsAnalysisStatusRepository.delete({ listId });
+  }
+
   async handle(request: ChainType): Promise<ChainType> {
     const {
       organization_database,
@@ -57,7 +63,6 @@ export class StartAnalysis extends AbstractHandler<ChainType> {
     } = request.request as RequestNewList;
 
     const connection = await this.clientStoreConnection.getConnection(organization_database);
-    const listsAnalysisStatusRepository = connection.getRepository(ListsAnalysisStatus);
 
     const isDraft = await this.isDraftList(saveAsDraft, listId, connection);
     if (isDraft) {
@@ -67,8 +72,7 @@ export class StartAnalysis extends AbstractHandler<ChainType> {
 
     this.validateGeoJsonFeatures(request.geojson.features);
 
-    this.logger.debug(`Deleting analysis status records for listId: ${listId}`);
-    await listsAnalysisStatusRepository.delete({ listId });
+    await this.deleteAllAnalysisStatusFromCurrentList(connection, listId);
 
     const analysisTypesToProcess = analysisIds.join(',');
     const result = await handleCreateAnalysis(

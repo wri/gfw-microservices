@@ -114,7 +114,7 @@ export class ClientStoreConnection {
     // eslint-disable-next-line @typescript-eslint/ban-types
     entities?: MixedList<Function | string | EntitySchema>
   ): Promise<DataSource> {
-    if (entities === undefined) {
+    if (!entities) {
       entities = database === 'gfwpro' ? systemEntities : organizationEntities;
     }
     const entityType = ClientStoreConnection.getConnectionType(entities);

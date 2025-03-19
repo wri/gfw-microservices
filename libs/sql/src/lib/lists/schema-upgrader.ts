@@ -45,8 +45,8 @@ export async function upgradeListSchema(args: SchemaUpgraderArgs) {
   try {
     const clientStoreConnection = new ClientStoreConnection();
     const connection = await clientStoreConnection.getConnection(clientDb);
-    const listRepository = connection.getRepository(Lists);
-    const list = await listRepository.findOne({
+    const listsRepository = connection.getRepository(Lists);
+    const list = await listsRepository.findOne({
       where: { id: listId },
     });
 
@@ -85,11 +85,14 @@ export async function upgradeListSchema(args: SchemaUpgraderArgs) {
           const record = listLocations[index];
 
           const locAttrObj = validListAttrs.reduce((acc, key) => {
+            if (record[key] === null) {
+              return acc;
+            }
             acc[key] = `${record[key]}`;
             return acc;
           }, {} as Record<string, unknown>);
 
-          const attrValue = validListAttrs.length ? `'${JSON.stringify(locAttrObj)}'` : 'NULL';
+          const attrValue = Object.keys(locAttrObj).length ? `'${JSON.stringify(locAttrObj)}'` : 'NULL';
 
           const updateQuery = `UPDATE [${list.listTableName}] 
             SET [attributes] = {ATTR_VALUE}  
@@ -123,17 +126,13 @@ export async function upgradeListSchema(args: SchemaUpgraderArgs) {
 
       logger.log(`Writing list.[Commodity] = ${listCommmodity} from template: ${templateName}`);
       logger.log(`Updating list version ${list.version} to ${LIST_VERSION_POST_UPGRADE}`);
-      await listRepository.update(
+      await listsRepository.update(
         { id: listId },
         {
           Commodity: listCommmodity,
           version: LIST_VERSION_POST_UPGRADE,
         }
       );
-
-      logger.log(`Unlocking list`);
-      await new UspSetListUnlocked().run(clientDb, list.id);
-      logger.log(`Done.`);
     } else {
       logger.log(`List already in version 2, no op.`);
     }
@@ -142,5 +141,9 @@ export async function upgradeListSchema(args: SchemaUpgraderArgs) {
   } catch (error) {
     Logger.error(`Schema Upgrader Failed`, error.stack || error);
     throw error;
+  } finally {
+    logger.log(`Unlocking list`);
+    await new UspSetListUnlocked().run(clientDb, listId);
+    logger.log(`Done.`);
   }
 }

@@ -3,12 +3,7 @@ import { Logger } from '@nestjs/common';
 import { ListAttributes, ListSchema, ListSchemaType } from '../entity';
 import { ClientStoreConnection, SQLUtils } from '../util';
 import { TemplateMetadata } from '../queries';
-import {
-  COMMODITY_MAP_SPAM,
-  MAPSPAM_COMMODITY,
-  GHG_PREFIX,
-  MAPSPAM_CODES,
-} from './comMapSpam';
+import { COMMODITY_MAP_SPAM, MAPSPAM_COMMODITY, GHG_PREFIX, MAPSPAM_CODES } from './comMapSpam';
 
 export function inferType(value: unknown): string {
   if (value === null) {
@@ -41,7 +36,8 @@ export function getFormattedAttributes({
   return {
     list_id: listId,
     attribute_name: attributeField,
-    attribute_type: inferType(fieldValue) === 'number' ? ListsAttrsTypes.Number : ListsAttrsTypes.Text,
+    attribute_type:
+      inferType(fieldValue) === 'number' ? ListsAttrsTypes.Number : ListsAttrsTypes.Text,
   };
 }
 export function getListsLocsColumnsToExclude() {

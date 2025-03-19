@@ -92,7 +92,9 @@ export async function upgradeListSchema(args: SchemaUpgraderArgs) {
             return acc;
           }, {} as Record<string, unknown>);
 
-          const attrValue = Object.keys(locAttrObj).length ? `'${JSON.stringify(locAttrObj)}'` : 'NULL';
+          const attrValue = Object.keys(locAttrObj).length
+            ? `'${JSON.stringify(locAttrObj)}'`
+            : 'NULL';
 
           const updateQuery = `UPDATE [${list.listTableName}] 
             SET [attributes] = {ATTR_VALUE}  

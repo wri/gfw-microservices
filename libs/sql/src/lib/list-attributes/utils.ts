@@ -5,7 +5,7 @@ import { ClientStoreConnection, SQLUtils } from '../util';
 import { TemplateMetadata } from '../queries';
 import {
   COMMODITY_MAP_SPAM,
-  COMMODITY_MAP_SPAM_CODES_FOR_HUMANS,
+  MAPSPAM_COMMODITY,
   GHG_PREFIX,
   MAPSPAM_CODES,
 } from './comMapSpam';
@@ -142,7 +142,7 @@ function getGHGCodesMap(): GHGCodeMapping[] {
 
   return Object.keys(codeMap).map((code: keyof typeof MAPSPAM_CODES) => ({
     value: code,
-    label: COMMODITY_MAP_SPAM_CODES_FOR_HUMANS[code],
+    label: MAPSPAM_COMMODITY[code],
     commodities: codeMap[code] || [],
   }));
 }

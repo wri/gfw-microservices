@@ -26,6 +26,6 @@ export class ConvertCommodityToMapsPamCode extends AbstractHandler<ChainType> {
     }
 
     const commodityMapSpam = COMMODITY_MAP_SPAM[commodity.toLocaleLowerCase().trim()];
-    return commodityMapSpam ? commodityMapSpam : `GFWP_${commodity.replace(/ /g, '_')}`;
+    return commodityMapSpam ? commodityMapSpam : `GFWP_${commodity.replace(/\s+/g, '_')}`;
   }
 }

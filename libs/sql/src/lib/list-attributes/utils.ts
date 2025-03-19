@@ -30,7 +30,7 @@ export function inferType(value: unknown): string {
   return typeof value;
 }
 enum ListsAttrsTypes {
-  Int = 1,
+  Number = 1,
   Text = 2,
 }
 export function getFormattedAttributes({
@@ -41,7 +41,7 @@ export function getFormattedAttributes({
   return {
     list_id: listId,
     attribute_name: attributeField,
-    attribute_type: inferType(fieldValue) === 'number' ? ListsAttrsTypes.Int : ListsAttrsTypes.Text,
+    attribute_type: inferType(fieldValue) === 'number' ? ListsAttrsTypes.Number : ListsAttrsTypes.Text,
   };
 }
 export function getListsLocsColumnsToExclude() {

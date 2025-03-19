@@ -5,7 +5,7 @@
  * 3 - Update Lists.version=2 for given list_id
  * –––––––––––––––––––––––––––––––––––––––
  * @notes for the [Commodity] column values:
- * — Multiple is not supported in v1
+ * — Multiple is not supported in v1, lists with templates using investment will use GFWP_Miltiple
  * — Other is stored as GFWP_Other
  * — Commodity=GFWP_Unknown is not supported
  * — API default when uploading lists will be Commodity=Unknown unless user specifies otherwise
@@ -76,37 +76,39 @@ export async function upgradeListSchema(args: SchemaUpgraderArgs) {
       );
       logger.log(`List Locations found: ${listLocations.length}`);
 
-      const validListAttrs = Object.keys(listLocations[0] ?? {}).filter(
-        (col) => !columnsToExclude.includes(col)
-      );
+      if (listLocations.length) {
+        const validListAttrs = Object.keys(listLocations[0] ?? {}).filter(
+          (col) => !columnsToExclude.includes(col)
+        );
 
-      for (let index = 0; index < listLocations.length; index++) {
-        const record = listLocations[index];
+        for (let index = 0; index < listLocations.length; index++) {
+          const record = listLocations[index];
 
-        const locAttrObj = validListAttrs.reduce((acc, key) => {
-          acc[key] = `${record[key]}`;
-          return acc;
-        }, {} as Record<string, unknown>);
+          const locAttrObj = validListAttrs.reduce((acc, key) => {
+            acc[key] = `${record[key]}`;
+            return acc;
+          }, {} as Record<string, unknown>);
 
-        const attrValue = validListAttrs.length ? `'${JSON.stringify(locAttrObj)}'` : 'NULL';
+          const attrValue = validListAttrs.length ? `'${JSON.stringify(locAttrObj)}'` : 'NULL';
 
-        const updateQuery = `UPDATE [${list.listTableName}] 
-          SET [attributes] = {ATTR_VALUE}  
-          WHERE [location_id] = ${record['location_id']}`.replace('{ATTR_VALUE}', attrValue);
+          const updateQuery = `UPDATE [${list.listTableName}] 
+            SET [attributes] = {ATTR_VALUE}  
+            WHERE [location_id] = ${record['location_id']}`.replace('{ATTR_VALUE}', attrValue);
 
-        await SQLUtils.queryDBFirstRow<undefined>(clientDb, updateQuery);
+          await SQLUtils.queryDBFirstRow<undefined>(clientDb, updateQuery);
+        }
+
+        const listAttrsToSave = validListAttrs.map((attributeField) =>
+          getFormattedAttributes({
+            listId,
+            attributeField,
+            fieldValue: listLocations[0]?.[attributeField],
+          })
+        );
+
+        // save into ListAttributes tables, handles constraints
+        await saveListAttributes(clientDb, listAttrsToSave);
       }
-
-      const listAttrsToSave = validListAttrs.map((attributeField) =>
-        getFormattedAttributes({
-          listId,
-          attributeField,
-          fieldValue: listLocations[0]?.[attributeField],
-        })
-      );
-
-      // save into ListAttributes tables, handles constraints
-      await saveListAttributes(clientDb, listAttrsToSave);
 
       /**
        * @step 2
@@ -117,7 +119,7 @@ export async function upgradeListSchema(args: SchemaUpgraderArgs) {
        * Update Lists.version=2 for given list_id
        */
       const templateName = await getTemplateName(list.templateId);
-      const listCommmodity = await getCommodityCodeFromTemplate(templateName, list.Commodity);
+      const listCommmodity = getCommodityCodeFromTemplate(templateName, list.Commodity);
 
       logger.log(`Writing list.[Commodity] = ${listCommmodity} from template: ${templateName}`);
       logger.log(`Updating list version ${list.version} to ${LIST_VERSION_POST_UPGRADE}`);

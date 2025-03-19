@@ -1,8 +1,8 @@
 export const MAP_SPAM_COMMODITY = {
+  COCO: 'Cocoa',
   COFF: 'Coffee',
-  COCO: 'Cocoa Generic',
-  OILP: 'Palm Oil Generic',
+  OILP: 'Palm Oil',
   RUBB: 'Rubber',
-  SOYB: 'Soy Generic',
+  SOYB: 'Soy',
   SUGC: 'Sugar Cane',
 };

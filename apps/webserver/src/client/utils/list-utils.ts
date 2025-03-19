@@ -9,5 +9,5 @@ export const getCommodityName = (commodity?: string) => {
     return MAP_SPAM_COMMODITY[commodity];
   }
 
-  return commodity.startsWith('GFWP_') ? commodity.slice(5) : '';
+  return commodity.startsWith('GFWP_') ? commodity.slice(5).replaceAll('_', ' ') : '';
 };

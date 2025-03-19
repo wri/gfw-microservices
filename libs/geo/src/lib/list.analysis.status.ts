@@ -314,8 +314,11 @@ export const handleCreateAnalysis = async (
     const activityLogRepository = connectionLibSql.getRepository(ActivityLog);
 
     //Search for FeatureFlag
-    const expeditedAnalysisFlag = await searchForFeatureFlag( organizationDb,'PermanentFlagExpeditedAnalysis')
-    
+    const expeditedAnalysisFlag = await searchForFeatureFlag(
+      organizationDb,
+      'PermanentFlagExpeditedAnalysis'
+    );
+
     // Add FeatureFlag to data
     if (expeditedAnalysisFlag?.flagState === true) {
       data['expedited_analysis'] = true;
@@ -337,7 +340,7 @@ export const handleCreateAnalysis = async (
       await runMockAnalysisFlow(organizationDb, listId);
       return 'OK';
     }
-    // Get GADM parameter
+
     const response = await axios.post(url, data, {
       headers: {
         'Content-Type': 'application/json',
@@ -562,17 +565,13 @@ const saveAnalysisStatusErrorInfo = async (
   await listAnalysisStatusRepository.update({ listId, analysisId }, { errorInfo, status });
 };
 
-type GadmFeatureFlag = {
-  gadm: number;
-};
-
-export const getGadmFeatrueFlag = async (organizationDb: string): Promise<GadmFeatureFlag> => {
-  const gadmResult: GadmFeatureFlag = { gadm: 3.6 };
+export const getGadmFeatrueFlag = async (organizationDb: string): Promise<number> => {
+  let gadmResult = 3.6;
   try {
     const gadmFeatureFlagName = await searchForFeatureFlag(organizationDb, GADM_FEATURE_FLAG_NAME);
 
     if (gadmFeatureFlagName?.flagState === true) {
-      gadmResult.gadm = 4.1;
+      gadmResult = 4.1;
     }
 
     return gadmResult;

@@ -48,13 +48,13 @@ export class ListService {
         } else {
           listStatus.errorFileStoragePath = null;
         }
-      } catch (e) {
-        this.logger.error('Error getting presigned url', e);
+      } catch (error) {
+        this.logger.error('Error getting presigned url', error.stack || error);
         listStatus.errorFileStoragePath = 'Error getting presigned url';
       }
       return listStatus;
-    } catch (e) {
-      this.logger.error('List status not found.', e);
+    } catch (error) {
+      this.logger.error('List status not found.', error.stack || error);
       return null;
     }
   }

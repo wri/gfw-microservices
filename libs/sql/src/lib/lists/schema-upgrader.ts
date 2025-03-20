@@ -50,100 +50,99 @@ export async function upgradeListSchema(args: SchemaUpgraderArgs) {
       where: { id: listId },
     });
 
-    if (list.version !== LIST_VERSION_POST_UPGRADE) {
-      logger.log(`Locking list`);
-      await new UspSetListLocked().run(clientDb, list.id, userId);
-
-      /**
-       * @step 1
-       * Write list-xxx.attributes based on own list-xxx columns
-       *
-       * – Get all locations from the DB
-       * – Traverse and get all list-xxxx.attributes that are not included in list.schema
-       * – Update the same list-xxxx table with a json string, format: {"column": "value"}
-       * – grab the list-xxxx attributes object
-       * – save the object inside the attributes column as a json string
-       * – save valid list attributes into [ListAttributes] by checking if they exists first
-       */
-      const columnsToExclude = getListsLocsColumnsToExclude();
-      logger.log(
-        `Writing list-xxx.attributes based on own list-xxx columns. Excluding Columns: ${columnsToExclude}`
-      );
-
-      const listLocations = await SQLUtils.queryDB<unknown[]>(
-        clientDb,
-        `SELECT * FROM [${list.listTableName}]`
-      );
-      logger.log(`List Locations found: ${listLocations.length}`);
-
-      if (listLocations.length) {
-        const validListAttrs = Object.keys(listLocations[0] ?? {}).filter(
-          (col) => !columnsToExclude.includes(col)
-        );
-
-        for (let index = 0; index < listLocations.length; index++) {
-          const record = listLocations[index];
-
-          const locAttrObj = validListAttrs.reduce((acc, key) => {
-            if (record[key] === null) {
-              return acc;
-            }
-            acc[key] = `${record[key]}`;
-            return acc;
-          }, {} as Record<string, unknown>);
-
-          const attrValue = Object.keys(locAttrObj).length
-            ? `'${JSON.stringify(locAttrObj)}'`
-            : 'NULL';
-
-          const updateQuery = `UPDATE [${list.listTableName}] 
-            SET [attributes] = {ATTR_VALUE}  
-            WHERE [location_id] = ${record['location_id']}`.replace('{ATTR_VALUE}', attrValue);
-
-          await SQLUtils.queryDBFirstRow<undefined>(clientDb, updateQuery);
-        }
-
-        const listAttrsToSave = validListAttrs.map((attributeField) =>
-          getFormattedAttributes({
-            listId,
-            attributeField,
-            fieldValue: listLocations[0]?.[attributeField],
-          })
-        );
-
-        // save into ListAttributes tables, handles constraints
-        await saveListAttributes(clientDb, listAttrsToSave);
-      }
-
-      /**
-       * @step 2
-       * Write Lists.Commodity based on Lists.template_id for given list_id
-       * see {@link https://gfw.atlassian.net/browse/GPV-3983}
-       *
-       * @step 3
-       * Update Lists.version=2 for given list_id
-       */
-      const templateName = await getTemplateName(list.templateId);
-      const listCommmodity = getCommodityCodeFromTemplate(templateName, list.Commodity);
-
-      logger.log(`Writing list.[Commodity] = ${listCommmodity} from template: ${templateName}`);
-      logger.log(`Updating list version ${list.version} to ${LIST_VERSION_POST_UPGRADE}`);
-      await listsRepository.update(
-        { id: listId },
-        {
-          Commodity: listCommmodity,
-          version: LIST_VERSION_POST_UPGRADE,
-        }
-      );
-
-      return await listsRepository.findOne({
-        where: { id: listId },
-      });
-    } else {
+    if (list.version === LIST_VERSION_POST_UPGRADE) {
       logger.log(`List already in version 2, no op.`);
+      return list;
     }
 
-    return list;
+    logger.log(`Locking list`);
+    await new UspSetListLocked().run(clientDb, list.id, userId);
+
+    /**
+     * @step 1
+     * Write list-xxx.attributes based on own list-xxx columns
+     *
+     * – Get all locations from the DB
+     * – Traverse and get all list-xxxx.attributes that are not included in list.schema
+     * – Update the same list-xxxx table with a json string, format: {"column": "value"}
+     * – grab the list-xxxx attributes object
+     * – save the object inside the attributes column as a json string
+     * – save valid list attributes into [ListAttributes] by checking if they exists first
+     */
+    const columnsToExclude = getListsLocsColumnsToExclude();
+    logger.log(
+      `Writing list-xxx.attributes based on own list-xxx columns. Excluding Columns: ${columnsToExclude}`
+    );
+
+    const listLocations = await SQLUtils.queryDB<unknown[]>(
+      clientDb,
+      `SELECT * FROM [${list.listTableName}]`
+    );
+    logger.log(`List Locations found: ${listLocations.length}`);
+
+    if (listLocations.length) {
+      const validListAttrs = Object.keys(listLocations[0] ?? {}).filter(
+        (col) => !columnsToExclude.includes(col)
+      );
+
+      for (let index = 0; index < listLocations.length; index++) {
+        const record = listLocations[index];
+
+        const locAttrObj = validListAttrs.reduce((acc, key) => {
+          if (record[key] === null) {
+            return acc;
+          }
+          acc[key] = `${record[key]}`;
+          return acc;
+        }, {} as Record<string, unknown>);
+
+        const attrValue = Object.keys(locAttrObj).length
+          ? `'${JSON.stringify(locAttrObj)}'`
+          : 'NULL';
+
+        const updateQuery = `UPDATE [${list.listTableName}] 
+          SET [attributes] = {ATTR_VALUE}  
+          WHERE [location_id] = ${record['location_id']}`.replace('{ATTR_VALUE}', attrValue);
+
+        await SQLUtils.queryDBFirstRow<undefined>(clientDb, updateQuery);
+      }
+
+      const listAttrsToSave = validListAttrs.map((attributeField) =>
+        getFormattedAttributes({
+          listId,
+          attributeField,
+          fieldValue: listLocations[0]?.[attributeField],
+        })
+      );
+
+      // save into ListAttributes tables, handles constraints
+      await saveListAttributes(clientDb, listAttrsToSave);
+    }
+
+    /**
+     * @step 2
+     * Write Lists.Commodity based on Lists.template_id for given list_id
+     * see {@link https://gfw.atlassian.net/browse/GPV-3983}
+     *
+     * @step 3
+     * Update Lists.version=2 for given list_id
+     */
+    const templateName = await getTemplateName(list.templateId);
+    const listCommmodity = getCommodityCodeFromTemplate(templateName, list.Commodity);
+
+    logger.log(`Writing list.[Commodity] = ${listCommmodity} from template: ${templateName}`);
+    logger.log(`Updating list version ${list.version} to ${LIST_VERSION_POST_UPGRADE}`);
+    await listsRepository.update(
+      { id: listId },
+      {
+        Commodity: listCommmodity,
+        version: LIST_VERSION_POST_UPGRADE,
+      }
+    );
+
+    return await listsRepository.findOne({
+      where: { id: listId },
+    });
   } catch (error) {
     Logger.error(`Schema Upgrader Failed`, error.stack || error);
     throw error;

@@ -5,6 +5,7 @@ import IconButton from '../../../../../common/js/components/IconButton';
 import IconTimes from '../../../../../common/js/components/icon/IconTimes';
 import { locationsPage } from '../../../../../common/js/config';
 import { numberWithCommas } from '../../../../../locations/js/utils/locationsTableUtils';
+import { getCommodityName } from '../../../../../utils/list-utils';
 
 const transifex = Transifex.live.translateText;
 
@@ -24,6 +25,8 @@ function LocationsSummary({
 
   const listLength = selectedList?.list_locations_count;
   let countriesSelected = [];
+
+  const commodityName = getCommodityName(selectedList?.Commodity);
 
   if (!isGfwProList) {
     countriesSelected =
@@ -62,6 +65,7 @@ function LocationsSummary({
               }
             }}
           >
+            {commodityName && <span>{commodityName} •</span>}
             <span>{`${numberOfFilteredLocations} ${numberWithCommas(
               listLength
             )} total locations • `}</span>

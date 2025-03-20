@@ -43,15 +43,6 @@ export const COMMODITY_MAP_SPAM = {
   ['soy generic']: MAPSPAM_CODES.SOYB,
 };
 
-export const COMMODITY_MAP_SPAM_CODES_FOR_HUMANS = {
-  [MAPSPAM_CODES.COFF]: 'Coffee',
-  [MAPSPAM_CODES.COCO]: 'Cocoa Generic',
-  [MAPSPAM_CODES.OILP]: 'Palm Oil Generic',
-  [MAPSPAM_CODES.RUBB]: 'Rubber',
-  [MAPSPAM_CODES.SOYB]: 'Soy Generic',
-  [MAPSPAM_CODES.SUGC]: 'Sugar Cane',
-};
-
 export const MAPSPAM_COMMODITY = {
   [MAPSPAM_CODES.COFF]: 'Coffee',
   [MAPSPAM_CODES.COCO]: 'Cocoa Generic',

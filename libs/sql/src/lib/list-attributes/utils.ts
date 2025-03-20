@@ -1,36 +1,22 @@
 import { EntitySchema } from 'typeorm';
 import { Logger } from '@nestjs/common';
-import { ListAttributes, ListSchema, ListSchemaType } from '../entity';
-import { ClientStoreConnection, SQLUtils } from '../util';
-import { TemplateMetadata } from '../queries';
-import {
-  COMMODITY_MAP_SPAM,
-  COMMODITY_MAP_SPAM_CODES_FOR_HUMANS,
-  GHG_PREFIX,
-  MAPSPAM_CODES,
-} from './comMapSpam';
+import { ListAttributes, ListSchema, ListSchemaType, ListTemplate } from '../entity';
+import { ClientStoreConnection } from '../util';
+import { COMMODITY_MAP_SPAM, MAPSPAM_COMMODITY, GHG_PREFIX, MAPSPAM_CODES } from './comMapSpam';
+
 
 export function inferType(value: unknown): string {
   if (value === null) {
     return 'string';
   }
-  if (Array.isArray(value)) {
-    return 'string';
-  }
-  if (typeof value === 'object') {
-    return 'string';
-  }
   if (typeof value === 'number') {
-    if (Number.isInteger(value)) {
-      return 'number';
-    } else {
-      return 'string';
-    }
+    return typeof value;
+  } else {
+    return 'string';
   }
-  return typeof value;
 }
 enum ListsAttrsTypes {
-  Int = 1,
+  Number = 1,
   Text = 2,
 }
 export function getFormattedAttributes({
@@ -41,7 +27,8 @@ export function getFormattedAttributes({
   return {
     list_id: listId,
     attribute_name: attributeField,
-    attribute_type: inferType(fieldValue) === 'number' ? ListsAttrsTypes.Int : ListsAttrsTypes.Text,
+    attribute_type:
+      inferType(fieldValue) === 'number' ? ListsAttrsTypes.Number : ListsAttrsTypes.Text,
   };
 }
 export function getListsLocsColumnsToExclude() {
@@ -63,17 +50,12 @@ export async function saveListAttributes(clientDb, attributes: ListAttributesRec
   try {
     // insert new attributes with Typeorm listAttributes entity
     const clientStore = new ClientStoreConnection();
-    const connection = await clientStore.getConnection(clientDb, [ListAttributes]);
+    const connection = await clientStore.getConnection(clientDb);
+    const listAttributesRepository = connection.getRepository(ListAttributes);
 
     Logger.log(`Inserting ${attributes.length} into [ListAttributes]`);
 
-    await connection
-      .createQueryBuilder()
-      .insert()
-      .into(ListAttributes)
-      .values(attributes)
-      .orIgnore()
-      .execute();
+    await listAttributesRepository.save(attributes);
   } catch (error) {
     // throwing errors for PrimaryKey constraints is likely more efficient than checking the db if they exists, less roundtrips
     if (error?.message.includes('Violation of PRIMARY KEY constraint')) {
@@ -86,9 +68,14 @@ export async function saveListAttributes(clientDb, attributes: ListAttributesRec
 }
 
 export async function getTemplateName(listTemplateId: number) {
-  const templateData = await SQLUtils.queryDB<TemplateMetadata[]>('gfwpro', 'getTemplateMetadata');
-  const template = templateData.find(({ template_id }) => template_id === listTemplateId);
-  return template.template_name;
+  const clientStoreConnection = new ClientStoreConnection();
+  const connection = await clientStoreConnection.getConnection('gfwpro');
+  const templatesRepository = connection.getRepository(ListTemplate);
+
+  const templateData = await templatesRepository.findOne({
+    where: { id: listTemplateId },
+  });
+  return templateData.templateName;
 }
 
 function searchCommodityCodeFromTerm(searchTerm: string) {
@@ -142,7 +129,7 @@ function getGHGCodesMap(): GHGCodeMapping[] {
 
   return Object.keys(codeMap).map((code: keyof typeof MAPSPAM_CODES) => ({
     value: code,
-    label: COMMODITY_MAP_SPAM_CODES_FOR_HUMANS[code],
+    label: MAPSPAM_COMMODITY[code],
     commodities: codeMap[code] || [],
   }));
 }

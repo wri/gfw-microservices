@@ -46,7 +46,7 @@ export async function upgradeListSchema(args: SchemaUpgraderArgs) {
     const clientStoreConnection = new ClientStoreConnection();
     const connection = await clientStoreConnection.getConnection(clientDb);
     const listsRepository = connection.getRepository(Lists);
-    const list = await listsRepository.findOne({
+    let list = await listsRepository.findOne({
       where: { id: listId },
     });
 
@@ -135,6 +135,10 @@ export async function upgradeListSchema(args: SchemaUpgraderArgs) {
           version: LIST_VERSION_POST_UPGRADE,
         }
       );
+
+      return await listsRepository.findOne({
+        where: { id: listId },
+      });
     } else {
       logger.log(`List already in version 2, no op.`);
     }

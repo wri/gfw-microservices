@@ -444,6 +444,50 @@ describe('ListService', () => {
       expectedResultWithErroPath.errorFileStoragePath
     );
   });
+  it('Should fail when try to format errorFileStoragePath', async () => {
+    const listId = 123;
+    const organizationId = 1;
+    const repositoryResult = expectedResult;
+    repositoryResult['errorFileStoragePath'] =
+      's3://bucketname/enviroment/status/erro_name.file_extension';
+
+    const expectedResultWithErroPath = {
+      ...repositoryResult,
+      errorFileStoragePath: 'Error getting presigned url',
+    };
+    organizationService.findOrganizationById = jest.fn().mockResolvedValue({
+      id: 1,
+      organizationName: 'ABC Corp',
+      organizationDb: ':memory:',
+      organizationStatusId: 1,
+      organizationActivatedTime: new Date(),
+      renewalTime: new Date(),
+      subscriptionStatusId: 1,
+    });
+    clientStoreConnection.getConnection = jest.fn().mockResolvedValue({
+      getRepository: () => ({
+        findOneBy: () => ({ ...repositoryResult }),
+      }),
+    });
+    saveActivityLogEndpoint.saveActivityLogEndpoint = jest.fn().mockResolvedValue(true);
+
+    // Should throw error when try to get pre signed url
+    mockS3Service.getFileSignedUrlDynamicEnvironment = jest
+      .fn()
+      .mockRejectedValue(new Error('Error getting presigned url'));
+    const result = await listService.getList({ organizationId, listId });
+
+    const resultWithDatesTransformed = {};
+    for (const prop in result) {
+      const value = result[prop];
+      resultWithDatesTransformed[prop] =
+        value instanceof Date ? value.toLocaleDateString('en-US') : value;
+    }
+    expect(resultWithDatesTransformed).toEqual(expectedResultWithErroPath);
+    expect(resultWithDatesTransformed['errorFileStoragePath']).toEqual(
+      expectedResultWithErroPath.errorFileStoragePath
+    );
+  });
   it('Should not find List', async () => {
     const listId = 123;
     const organizationId = 1;

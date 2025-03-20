@@ -50,6 +50,7 @@ export class ListService {
         }
       } catch (e) {
         this.logger.error('Error getting presigned url', e);
+        listStatus.errorFileStoragePath = 'Error getting presigned url';
       }
       return listStatus;
     } catch (e) {

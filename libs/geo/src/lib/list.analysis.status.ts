@@ -313,16 +313,8 @@ export const handleCreateAnalysis = async (
 
     const activityLogRepository = connectionLibSql.getRepository(ActivityLog);
 
-    //Search for FeatureFlag
-    const expeditedAnalysisFlag = await searchForFeatureFlag(
-      organizationDb,
-      'PermanentFlagExpeditedAnalysis'
-    );
-
     // Add FeatureFlag to data
-    if (expeditedAnalysisFlag?.flagState === true) {
-      data['expedited_analysis'] = true;
-    }
+    data['expedited_analysis'] = await getExpeditedAnalysisFlag(organizationDb);
 
     // Add GadmFeatureFlag to data
     data['gadm'] = await getGadmFeatrueFlag(organizationDb);
@@ -536,8 +528,8 @@ export const isGHGCommodityValid = async (id: number, organizationDb: string): P
 
     return true;
   } catch (error) {
-    Logger.error('validateGHGCommodity', error.message || error);
-    throw new BadRequestException(error.message || error);
+    Logger.error('validateGHGCommodity', error.stack || error);
+    throw new BadRequestException(error.stack || error);
   }
 };
 
@@ -576,8 +568,26 @@ export const getGadmFeatrueFlag = async (organizationDb: string): Promise<number
 
     return gadmResult;
   } catch (error) {
-    Logger.error('getGadmFeatrueFlag', error.message || error);
+    Logger.error('getGadmFeatrueFlag', error.stack || error);
     return gadmResult;
+  }
+};
+
+const getExpeditedAnalysisFlag = async (organizationDb: string): Promise<boolean> => {
+  let expeditedAnalysisFlag = false;
+  try {
+    const expeditedAnalysisFlagName = await searchForFeatureFlag(
+      organizationDb,
+      'PermanentFlagExpeditedAnalysis'
+    );
+
+    if (expeditedAnalysisFlagName?.flagState === true) {
+      expeditedAnalysisFlag = true;
+    }
+    return expeditedAnalysisFlag;
+  } catch (error) {
+    Logger.error('getExpeditedAnalysisFlag', error.stack || error);
+    return expeditedAnalysisFlag;
   }
 };
 
@@ -595,7 +605,7 @@ const searchForFeatureFlag = async (
     const searchedFeatureFlag = flags.find((f) => f.flagId === featureFlagName) as FeatureFlag;
     return searchedFeatureFlag;
   } catch (error) {
-    Logger.error('searchForFeatrueFlag', error.message || error);
+    Logger.error('searchForFeatrueFlag', error.stack || error);
     return null;
   }
 };

@@ -39,17 +39,22 @@ export class ListService {
         return null;
       }
       // There is some trash in DevCo db that has the errorFileStoragePath as 'none' so we need to check if it is different from 'none'
-      if (listStatus.errorFileStoragePath && listStatus.errorFileStoragePath.includes('s3://')) {
-        const s3Path = listStatus.errorFileStoragePath;
-        const [, bucket, ...keyParts] = s3Path.split('/');
-        const key = keyParts.join('/');
-        listStatus.errorFileStoragePath = await this.getPresignedUrl(key, bucket);
-      } else {
-        listStatus.errorFileStoragePath = null;
+      try {
+        if (listStatus.errorFileStoragePath && listStatus.errorFileStoragePath.includes('s3://')) {
+          const s3Path = listStatus.errorFileStoragePath.split('s3://').pop();
+          const [bucket, ...keyParts] = s3Path.split('/');
+          const key = keyParts.join('/');
+          listStatus.errorFileStoragePath = await this.getPresignedUrl(key, bucket);
+        } else {
+          listStatus.errorFileStoragePath = null;
+        }
+      } catch (error) {
+        this.logger.error('Error getting presigned url', error.stack || error);
+        listStatus.errorFileStoragePath = 'Error getting presigned url';
       }
       return listStatus;
-    } catch (e) {
-      this.logger.error('List status not found.', e);
+    } catch (error) {
+      this.logger.error('List status not found.', error.stack || error);
       return null;
     }
   }

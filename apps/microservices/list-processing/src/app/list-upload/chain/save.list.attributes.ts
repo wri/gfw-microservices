@@ -1,5 +1,5 @@
 import { AbstractHandler, ChainType, RequestNewList } from './types';
-import { ListAttributesRecord, saveListAttributes } from '@wri-monorepos/sql';
+import { saveListAttributes } from '@wri-monorepos/sql';
 import { Logger } from '@nestjs/common';
 
 export class SaveListAttributes extends AbstractHandler<ChainType> {

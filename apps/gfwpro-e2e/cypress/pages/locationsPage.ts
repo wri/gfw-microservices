@@ -1,5 +1,21 @@
 class LocationsPage {
   elements = {
+    singleLocationBtn: () => cy.get('#AddSingleLocation'),
+    continueBtn: () => cy.contains('Continue'),
+    comodityBtn: () => cy.get('.commodity-option-label'),
+    cattleGenericOptionBtn: () =>
+      cy.get('.locations-upload-step__suboptions-container > :nth-child(3) > label'),
+    addListToExistingBtn: () => cy.get('.locations-adding > :nth-child(2) > :nth-child(1) > label'),
+    selectExistingList: (name) => cy.get('#add-to-existing-list').select(name),
+    drawAShapeBtn: () => cy.get(':nth-child(2) > .add-location-method__label'),
+    addCoordinatesBtn: () => cy.get('[data-testid="AddLocationIcon"]'),
+    longitudeCoordinate: () => cy.get('[data-testid="longitude-input-0"]'),
+    latitudeCoordinate: () => cy.get('[data-testid="latitude-input-0"]'),
+    locationClassification: () => cy.get('.block-label > .dropdown-group > select').eq(0),
+    locationName: () => cy.get('#location-name'),
+    titleAddedLocation: () => cy.contains('Location Added'),
+    descriptionAddedLocation: (nameList) =>
+      cy.contains(`You have successfully added location to ${nameList}`),
     addLocationsBtn: () => cy.contains('Add locations'),
     addLocations2Btn: () => cy.get('.side-panel > :nth-child(2) > button'),
     fileUploadBtn: () => cy.get('.upload-location-options__main-content__options > :nth-child(2)'),
@@ -46,7 +62,8 @@ class LocationsPage {
       cy.get('.my-lists-list li').filter(':has(.DiagnosticStatusDraft__label)').first(),
     listByName: (name) => cy.contains(name),
     typeAnalisyscheckBox: (number: number) => cy.get('input[type="checkbox"]').eq(number),
-    submitAnalisys: () => cy.get('.MuiButton-containedPrimary'),
+    submitAnalisys: () => cy.contains('Submit Analysis'),
+    saveAsDraft: () => cy.contains('Save As Draft'),
     confirmAnalisysBtn: () => cy.get('.MuiDialogActions-root > .MuiButton-contained'),
     pointBtn: () =>
       cy.get(
@@ -127,6 +144,9 @@ class LocationsPage {
   clickOnSubmitAnalisys() {
     this.elements.submitAnalisys().click();
   }
+  clickOnSaveAsDraft() {
+    this.elements.saveAsDraft().click();
+  }
   clickOnConfirmAnalisysBtn() {
     this.elements.confirmAnalisysBtn().click();
   }
@@ -187,6 +207,43 @@ class LocationsPage {
   clickOnAddLocationsBtn() {
     this.elements.addLocationsBtn().click();
   }
+  clickOnSingleLocationBtn() {
+    this.elements.singleLocationBtn().click();
+  }
+  clickOnContinueBtn() {
+    this.elements.continueBtn().click();
+  }
+  clickOnComodityBtn() {
+    this.elements.comodityBtn().click();
+  }
+  clickOnCattleGeneriOptionBtn() {
+    this.elements.cattleGenericOptionBtn().click();
+  }
+  clickOnAddListToExistingListBtn() {
+    this.elements.addListToExistingBtn().click();
+  }
+  selectExistingListOption(name) {
+    this.elements.selectExistingList(name);
+  }
+  clickOndrawAShapeOptionBtn() {
+    this.elements.drawAShapeBtn().click();
+  }
+  clickOnAddCoordinatesnBtn() {
+    this.elements.addCoordinatesBtn().click();
+  }
+  addLongitude(longitude) {
+    this.elements.longitudeCoordinate().type(longitude);
+  }
+  addLatitude(latitude) {
+    this.elements.latitudeCoordinate().type(latitude);
+  }
+  selectLocationClassification(option) {
+    this.elements.locationClassification().select(option);
+  }
+  addLocationName(name) {
+    this.elements.locationName().type(name);
+  }
+
   clickOnAddLocations2Btn() {
     this.elements.addLocations2Btn().click();
   }

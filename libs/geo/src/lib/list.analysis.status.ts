@@ -20,6 +20,7 @@ import {
   analysisTypesOptionsNewNames,
   analysisIdsOptionsMap,
   MAPSPAM_COMMODITY,
+  GADM_FEATURE_FLAG_NAME,
 } from '@wri-monorepos/constants';
 import { S3Service } from '@wri-monorepos/aws';
 import {
@@ -312,20 +313,11 @@ export const handleCreateAnalysis = async (
 
     const activityLogRepository = connectionLibSql.getRepository(ActivityLog);
 
-    //Search for FeatureFlag
-    const { getFeatureFlagsForCurrentOrg, getClientIdByClientStoreDatabaseName } =
-      await featureFlagsService();
-    const orgId = await getClientIdByClientStoreDatabaseName(organizationDb);
-    const flags = await getFeatureFlagsForCurrentOrg(orgId);
+    // Add FeatureFlag to data
+    data['expedited_analysis'] = await getExpeditedAnalysisFlag(organizationDb);
 
-    const uploadListLpFlag = flags.find(
-      (f) => f.flagId === 'PermanentFlagExpeditedAnalysis'
-    ) as FeatureFlag;
-
-    //Add FeatureFlag to data
-    if (uploadListLpFlag?.flagState === true) {
-      data['expedited_analysis'] = true;
-    }
+    // Add GadmFeatureFlag to data
+    data['gadm'] = await getGadmFeatrueFlag(organizationDb);
 
     const microserviceEnvironment = process.env.MICROSERVICES_ENV;
     const { listName, userEmail: testUserEmail } = await getTestFlowDetails(
@@ -536,8 +528,8 @@ export const isGHGCommodityValid = async (id: number, organizationDb: string): P
 
     return true;
   } catch (error) {
-    Logger.error('validateGHGCommodity', error.message || error);
-    throw new BadRequestException(error.message || error);
+    Logger.error('validateGHGCommodity', error.stack || error);
+    throw new BadRequestException(error.stack || error);
   }
 };
 
@@ -563,4 +555,57 @@ const saveAnalysisStatusErrorInfo = async (
   const connection = await clientStoreConnection.getConnection(organizationDb);
   const listAnalysisStatusRepository = await connection.getRepository(ListsAnalysisStatus);
   await listAnalysisStatusRepository.update({ listId, analysisId }, { errorInfo, status });
+};
+
+export const getGadmFeatrueFlag = async (organizationDb: string): Promise<number> => {
+  let gadmResult = 3.6;
+  try {
+    const gadmFeatureFlagName = await searchForFeatureFlag(organizationDb, GADM_FEATURE_FLAG_NAME);
+
+    if (gadmFeatureFlagName?.flagState === true) {
+      gadmResult = 4.1;
+    }
+
+    return gadmResult;
+  } catch (error) {
+    Logger.error('getGadmFeatrueFlag', error.stack || error);
+    return gadmResult;
+  }
+};
+
+const getExpeditedAnalysisFlag = async (organizationDb: string): Promise<boolean> => {
+  let expeditedAnalysisFlag = false;
+  try {
+    const expeditedAnalysisFlagName = await searchForFeatureFlag(
+      organizationDb,
+      'PermanentFlagExpeditedAnalysis'
+    );
+
+    if (expeditedAnalysisFlagName?.flagState === true) {
+      expeditedAnalysisFlag = true;
+    }
+    return expeditedAnalysisFlag;
+  } catch (error) {
+    Logger.error('getExpeditedAnalysisFlag', error.stack || error);
+    return expeditedAnalysisFlag;
+  }
+};
+
+const searchForFeatureFlag = async (
+  organizationDb: string,
+  featureFlagName: string
+): Promise<FeatureFlag> => {
+  try {
+    //Search for FeatureFlag
+    const { getFeatureFlagsForCurrentOrg, getClientIdByClientStoreDatabaseName } =
+      await featureFlagsService();
+    const orgId = await getClientIdByClientStoreDatabaseName(organizationDb);
+    const flags = await getFeatureFlagsForCurrentOrg(orgId);
+
+    const searchedFeatureFlag = flags.find((f) => f.flagId === featureFlagName) as FeatureFlag;
+    return searchedFeatureFlag;
+  } catch (error) {
+    Logger.error('searchForFeatrueFlag', error.stack || error);
+    return null;
+  }
 };

@@ -1,6 +1,6 @@
 import { EntitySchema } from 'typeorm';
 import { Logger } from '@nestjs/common';
-import { ListAttributes, ListSchema, ListSchemaType } from '../entity';
+import { ListAttributes, ListSchema, ListSchemaType, ListTemplate } from '../entity';
 import { ClientStoreConnection, SQLUtils } from '../util';
 import { TemplateMetadata } from '../queries';
 import { COMMODITY_MAP_SPAM, MAPSPAM_COMMODITY, GHG_PREFIX, MAPSPAM_CODES } from './comMapSpam';
@@ -82,9 +82,14 @@ export async function saveListAttributes(clientDb, attributes: ListAttributesRec
 }
 
 export async function getTemplateName(listTemplateId: number) {
-  const templateData = await SQLUtils.queryDB<TemplateMetadata[]>('gfwpro', 'getTemplateMetadata');
-  const template = templateData.find(({ template_id }) => template_id === listTemplateId);
-  return template.template_name;
+  const clientStoreConnection = new ClientStoreConnection();
+  const connection = await clientStoreConnection.getConnection('gfwpro');
+  const templatesRepository = connection.getRepository(ListTemplate);
+
+  const templateData = await templatesRepository.findOne({
+    where: { id: listTemplateId },
+  });
+  return templateData.templateName;
 }
 
 function searchCommodityCodeFromTerm(searchTerm: string) {

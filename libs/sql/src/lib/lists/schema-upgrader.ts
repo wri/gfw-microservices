@@ -46,7 +46,7 @@ export async function upgradeListSchema(args: SchemaUpgraderArgs) {
     const clientStoreConnection = new ClientStoreConnection();
     const connection = await clientStoreConnection.getConnection(clientDb);
     const listsRepository = connection.getRepository(Lists);
-    let list = await listsRepository.findOne({
+    const list = await listsRepository.findOne({
       where: { id: listId },
     });
 

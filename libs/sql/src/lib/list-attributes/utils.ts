@@ -8,20 +8,11 @@ export function inferType(value: unknown): string {
   if (value === null) {
     return 'string';
   }
-  if (Array.isArray(value)) {
-    return 'string';
-  }
-  if (typeof value === 'object') {
-    return 'string';
-  }
   if (typeof value === 'number') {
-    if (Number.isInteger(value)) {
-      return 'number';
-    } else {
-      return 'string';
-    }
+    return typeof value;
+  } else {
+    return 'string';
   }
-  return typeof value;
 }
 enum ListsAttrsTypes {
   Number = 1,

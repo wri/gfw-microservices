@@ -4,7 +4,6 @@ import { ListAttributes, ListSchema, ListSchemaType, ListTemplate } from '../ent
 import { ClientStoreConnection } from '../util';
 import { COMMODITY_MAP_SPAM, MAPSPAM_COMMODITY, GHG_PREFIX, MAPSPAM_CODES } from './comMapSpam';
 
-
 export function inferType(value: unknown): string {
   if (value === null) {
     return 'string';

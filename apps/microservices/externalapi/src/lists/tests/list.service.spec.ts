@@ -18,7 +18,7 @@ import { SaveActivityLogEndpoint } from '../../list-analysis/utils/saveActivityL
 import { ClientStoreConnection, Lists } from '@wri-monorepos/sql';
 
 // Mock do S3Service
-const errorFileStoragePath = 's3://bucketname/enviroment/status/erro_name.file_extension';
+const errorFileStoragePath = 's3://bucketname/enviroment/status/erro_name_result.file_extension';
 const mockS3Service = {
   getFileSignedUrlDynamicEnvironment: jest.fn().mockResolvedValue(errorFileStoragePath),
 };
@@ -429,6 +429,7 @@ describe('ListService', () => {
         findOneBy: () => ({ ...repositoryResult }),
       }),
     });
+    saveActivityLogEndpoint.saveActivityLogEndpoint = jest.fn().mockResolvedValue(true);
 
     const result = await listService.getList({ organizationId, listId });
 
@@ -438,8 +439,10 @@ describe('ListService', () => {
       resultWithDatesTransformed[prop] =
         value instanceof Date ? value.toLocaleDateString('en-US') : value;
     }
-    saveActivityLogEndpoint.saveActivityLogEndpoint = jest.fn().mockResolvedValue(true);
     expect(resultWithDatesTransformed).toEqual(expectedResultWithErroPath);
+    expect(resultWithDatesTransformed['errorFileStoragePath']).toEqual(
+      expectedResultWithErroPath.errorFileStoragePath
+    );
   });
   it('Should not find List', async () => {
     const listId = 123;

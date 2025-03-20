@@ -1,4 +1,4 @@
-import { Feature, FeatureCollection } from '@wri-monorepos/geo';
+import { FeatureCollection } from '@wri-monorepos/geo';
 import { Logger } from '@nestjs/common';
 import { performance } from 'perf_hooks';
 import { updateListsUploadStatus } from '../shared/update.lists.upload.status';
@@ -11,16 +11,13 @@ export interface ChainEvent {
 }
 
 export type AttributeType = {
-  field: string;
-  type: string;
-  value: unknown;
-  custom?: boolean;
+  [x: string]: string;
 };
 
 export type ChainType = {
   geojson?: FeatureCollection;
   request: RequestNewList | PreviewListRequest;
-  locations?: Feature['properties'][];
+  attributes?: ListAttributesRecord[];
 };
 
 export type ListAttributesRow = {

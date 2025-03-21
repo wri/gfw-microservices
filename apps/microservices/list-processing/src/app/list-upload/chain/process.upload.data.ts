@@ -26,7 +26,7 @@ export class ProcessUploadData extends AbstractHandler<ChainType> {
   }
 
   getFeatureAttributes(featurePayload: Feature): string {
-    const validAttrs = this.getValidAttribtes(Object.keys(featurePayload.properties));
+    const validAttrs = this.getValidAttribtes(Object.keys(featurePayload.properties || {}));
 
     this.logger.log(`Processing list-xxx.attributes. Excluding Columns: ${this.columnsToExclude}`);
 
@@ -50,18 +50,24 @@ export class ProcessUploadData extends AbstractHandler<ChainType> {
     commodity: string,
     request: ChainType
   ): Promise<Feature> {
-    feature = await this.convertPoint2Polygon.convertFeature(feature, request);
+    if (!feature.properties) {
+      return feature;
+    }
 
+    feature = await this.convertPoint2Polygon.convertFeature(feature, request);
     const { properties } = feature;
+
     properties.attributes = this.getFeatureAttributes(feature);
-    properties.geometry = this.getFeatureGeometry(feature);
+    const geometry = this.getFeatureGeometry(feature);
     properties.locationId = locationId;
     properties.commodity = commodity;
 
     return Object.assign({}, feature, {
       properties: {
         ...properties,
+        geometry,
       },
+      geometry,
     });
   }
 
@@ -75,7 +81,7 @@ export class ProcessUploadData extends AbstractHandler<ChainType> {
     return Commodity;
   }
 
-  async getProcessedFeature(features: Feature[], commodity, request): Promise<Feature[]> {
+  async getProcessedFeatures(features: Feature[], commodity, request): Promise<Feature[]> {
     return await Promise.all(
       features.map(async (feature, index) => {
         try {
@@ -83,12 +89,16 @@ export class ProcessUploadData extends AbstractHandler<ChainType> {
         } catch (error) {
           this.logger.error(`Error processing feature`, error.stack || error);
           this.logger.debug(feature);
+          throw error;
         }
       })
     );
   }
 
   getFeatPropAttrs(request: ChainType) {
+    if (!request.geojson.features[0]) {
+      return [];
+    }
     const { list_id } = request.request as RequestNewList;
     const validAttrs = this.getValidAttribtes(
       Object.keys(request.geojson.features[0]?.properties ?? {})
@@ -115,7 +125,7 @@ export class ProcessUploadData extends AbstractHandler<ChainType> {
 
     const commodity = await this.getListCommodity(organization_database, list_id);
 
-    request.geojson.features = await this.getProcessedFeature(prevFeatures, commodity, request);
+    request.geojson.features = await this.getProcessedFeatures(prevFeatures, commodity, request);
     request.attributes = this.getFeatPropAttrs(request);
 
     return request;

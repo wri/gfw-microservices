@@ -86,7 +86,6 @@ describe('InsertLocationData', () => {
           },
         ],
       } as FeatureCollection,
-      locations: locationsDataMock,
     };
 
     await insertLocationData.handle(input);

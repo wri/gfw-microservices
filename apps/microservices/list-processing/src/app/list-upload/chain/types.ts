@@ -4,12 +4,6 @@ import { performance } from 'perf_hooks';
 import { updateListsUploadStatus } from '../shared/update.lists.upload.status';
 import { formatDurationStr, formatHeapUsed } from '../shared/performance.utils';
 
-export interface ChainEvent {
-  eventId?: string;
-  config?: unknown;
-  payload?: ChainType;
-}
-
 export type AttributeType = {
   [x: string]: string;
 };
@@ -20,21 +14,11 @@ export type ChainType = {
   attributes?: ListAttributesRecord[];
 };
 
-export type ListAttributesRow = {
-  field: string;
-  type: string;
-  value: string | number | unknown;
-  custom?: boolean;
-};
-
 export interface ListAttributesRecord {
   list_id: number;
   attribute_name: string;
   attribute_type: number;
 }
-export type ListAttributesRecords = {
-  [key: string]: ListAttributesRow;
-};
 
 export interface PreviewListRequest {
   path: string;

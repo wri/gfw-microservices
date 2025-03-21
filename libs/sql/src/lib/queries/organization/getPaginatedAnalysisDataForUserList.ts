@@ -219,9 +219,57 @@ BEGIN
 	END
 	IF @where_clauses <>''
 	 SET @AnalysisFilters = @AnalysisFilters + 'AND' + @where_clauses
+
+
+DECLARE @jsonColumns TABLE (ColumnName NVARCHAR(255));
+
+-- Add all columns that need parsing
+INSERT INTO @jsonColumns (ColumnName)
+VALUES
+    ('commodity_threat_deforestation_level'),
+    ('commodity_threat_peat_level'),
+    ('commodity_threat_protected_areas_level'),
+    ('commodity_threat_fires_level'),
+    ('commodity_value_forest_extent_level'),
+    ('commodity_value_peat_level'),
+    ('commodity_value_protected_areas_level'),
+    ('commodity_value_overall_level'),
+    ('commodity_threat_overall_level'),
+    ('commodity_mill_priority_level');
+
+DECLARE @parsedColumns NVARCHAR(MAX) = '';
+
+DECLARE @columnName NVARCHAR(255);
+DECLARE column_cursor CURSOR FOR SELECT ColumnName FROM @jsonColumns;
+
+OPEN column_cursor;
+FETCH NEXT FROM column_cursor INTO @columnName;
+
+WHILE @@FETCH_STATUS = 0
+BEGIN
+    DECLARE @parsedColumn NVARCHAR(MAX);
+
+    SET @parsedColumn = '
+        (SELECT TOP 1 CAST(value AS INT)
+         FROM OPENJSON(' + @columnName + ')
+         ORDER BY [key] DESC
+        ) AS ' + @columnName + '_parsed';
+
+    -- Append to @parsedColumns
+    IF @parsedColumns = ''
+        SET @parsedColumns = @parsedColumn;
+    ELSE
+        SET @parsedColumns = @parsedColumns + ', ' + @parsedColumn;
+
+    FETCH NEXT FROM column_cursor INTO @columnName;
+END
+
+CLOSE column_cursor;
+DEALLOCATE column_cursor;
+
 	-- Return data from both tables
 	SET @SQL = @SQL + ' MyAnalysisTable AS(
-							SELECT {LIST_ID} As analysis_list_id, {TEMPLATE_ID} As template_id, {ANALYSIS_COLUMNS}
+							SELECT {LIST_ID} As analysis_list_id, {TEMPLATE_ID} As template_id, {ANALYSIS_COLUMNS}, ' + @parsedColumns + '
 							FROM [{ANALYSIS_TABLE}] A
 							WHERE ' + @AnalysisFilters + '
 						)

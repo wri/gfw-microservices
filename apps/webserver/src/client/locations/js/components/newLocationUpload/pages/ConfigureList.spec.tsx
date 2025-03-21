@@ -1,5 +1,5 @@
 import React from 'react';
-import { cleanup, render, screen } from '@testing-library/react';
+import { cleanup, render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { ConfigureList } from './ConfigureList';
 import { UploadType, UserList } from '../types';
@@ -53,7 +53,7 @@ const mockUserLists: UserList[] = [
     id: 5829,
     user_id: 10053,
     template_id: 10, //cattle
-    list_name: 'cattle 1',
+    list_name: 'Cattle 1',
     list_status_id: 2,
     location_classification: '',
     listAnalysesStatus: [
@@ -174,6 +174,44 @@ describe('ConfigureList', () => {
     expect(screen.queryByText(/enter custom commodity/i)).not.toBeInTheDocument();
     expect(mockHistoryPush).toHaveBeenCalledWith('SUMMARY_AND_SUBMIT');
   }, 15100);
+
+  it('should show validations for list name field', async () => {
+    render(<ConfigureList userLists={mockUserLists} />);
+
+    const commodityDropdown = screen.getAllByRole('combobox')[0];
+
+    await userEvent.click(commodityDropdown);
+    await userEvent.click(screen.getByRole('option', { name: /cattle/i }));
+
+    const newListNameInput = screen.getByPlaceholderText(/name your new list/i);
+    await userEvent.type(newListNameInput, 'cattle 1');
+
+    const nextButton = screen.getByRole('button', { name: /next/i });
+    await userEvent.click(nextButton);
+
+    await waitFor(() => {
+      expect(screen.queryByText(/this list name already exists/i)).toBeInTheDocument();
+    });
+
+    await userEvent.clear(newListNameInput);
+    await userEvent.type(newListNameInput, 'invalid list name +');
+
+    await waitFor(() => {
+      expect(
+        screen.queryByText(/only letters, numbers, and spaces are allowed/i)
+      ).toBeInTheDocument();
+    });
+
+    expect(mockHistoryPush).not.toHaveBeenCalledWith('SUMMARY_AND_SUBMIT');
+
+    await userEvent.clear(newListNameInput);
+    await userEvent.type(newListNameInput, 'valid list name');
+    await userEvent.click(nextButton);
+
+    await waitFor(() => {
+      expect(mockHistoryPush).toHaveBeenCalledWith('SUMMARY_AND_SUBMIT');
+    });
+  }, 10000);
 
   it('should allow entering a new list name', async () => {
     render(<ConfigureList userLists={mockUserLists} />);

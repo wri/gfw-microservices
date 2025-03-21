@@ -27,49 +27,58 @@ import { UserList } from '../types';
 import { typeOfAnalysisMap, commodities } from '../utils/constants';
 import { useFetch } from '../../../../../hooks';
 import debounce from 'lodash/debounce';
+import { fetchListsByCommodity } from '../../../../../api';
 
 type CommoditiesType = (typeof commodities)[keyof typeof commodities];
 const commodityValues = Object.values(commodities) as [CommoditiesType, ...CommoditiesType[]];
 
-const schema = z
-  .object({
-    commodity: z.enum(commodityValues),
-    newListName: z
-      .string()
-      .trim()
-      .regex(/^[a-zA-Z0-9 ]*$/, 'Only letters, numbers, and spaces are allowed'),
-    existingListName: z.string(),
-    FCD: z.coerce.boolean(),
-    palmRiskAssessment: z.coerce.boolean(),
-    ALERTS: z.coerce.boolean(),
-    AFI: z.coerce.boolean(),
-    customCommodity: z.string().optional(),
-  })
-  .refine((data) => data.newListName !== '' || data.existingListName !== '', {
-    message: 'You must provide at least one list name.',
-    path: ['noListNameProvided'],
-  })
-  .refine(
-    (data) =>
-      !(
-        data.commodity === 'Other' &&
-        (!data.customCommodity || data.customCommodity.trim() === '')
-      ),
-    {
-      path: ['customCommodity'],
-    }
-  );
-
-type FormFields = z.infer<typeof schema>;
-
 // @userLists param will be deprecated when new endpoint for typeOfAnalysis is released
 export function ConfigureList({ userLists }: { userLists: UserList[] }) {
+  const schema = z
+    .object({
+      commodity: z.enum(commodityValues),
+      newListName: z
+        .string()
+        .trim()
+        .regex(/^[a-zA-Z0-9 ]*$/, 'Only letters, numbers, and spaces are allowed'),
+      existingListName: z.string(),
+      FCD: z.coerce.boolean(),
+      palmRiskAssessment: z.coerce.boolean(),
+      ALERTS: z.coerce.boolean(),
+      AFI: z.coerce.boolean(),
+      customCommodity: z.string().optional(),
+    })
+    .refine((data) => data.newListName !== '' || data.existingListName !== '', {
+      message: 'You must provide at least one list name.',
+      path: ['noListNameProvided'],
+    })
+    .refine(
+      (data) =>
+        !(
+          data.commodity === 'Other' &&
+          (!data.customCommodity || data.customCommodity.trim() === '')
+        ),
+      {
+        path: ['customCommodity'],
+      }
+    )
+    .refine(
+      (data) =>
+        !userLists.some((list) => list.list_name.toLowerCase() === data.newListName.toLowerCase()),
+      {
+        message: 'This list name already exists',
+        path: ['newListName'],
+      }
+    );
+
+  type FormFields = z.infer<typeof schema>;
   const history = useHistory();
   const {
     handleSubmit,
     control,
     formState: { errors },
     setValue,
+    setError,
     reset,
     watch,
   } = useForm<FormFields>({
@@ -99,25 +108,21 @@ export function ConfigureList({ userLists }: { userLists: UserList[] }) {
   const { data: validLists = [], isLoading, request } = useFetch<{ id: number; name: string }[]>();
 
   const selectedCommodity = watch('commodity') as CommoditiesType;
-
   useEffect(() => {
     if (!selectedCommodity || selectedCommodity === 'Other') {
       return;
     }
 
-    fetchCommodityNames(selectedCommodity);
+    getListsByCommodity(selectedCommodity);
   }, [selectedCommodity]);
 
-  const fetchCommodityNames = (selectedCommodity: string) => {
-    request({
-      method: 'GET',
-      url: `/api/list/by-commodity?commodity=${selectedCommodity.toLowerCase()}`,
-    });
+  const getListsByCommodity = (selectedCommodity: string) => {
+    fetchListsByCommodity(request, selectedCommodity);
   };
 
-  const debouncedFetchCommodityNames = useCallback(
+  const debouncedGetListsByCommodity = useCallback(
     debounce((selectedCommodity: string) => {
-      fetchCommodityNames(selectedCommodity);
+      getListsByCommodity(selectedCommodity);
     }, 1000),
     []
   );
@@ -154,7 +159,7 @@ export function ConfigureList({ userLists }: { userLists: UserList[] }) {
       return;
     }
 
-    debouncedFetchCommodityNames(customCommodity);
+    debouncedGetListsByCommodity(customCommodity);
   }, [customCommodity]);
 
   const handleAnalysisChange = (
@@ -176,7 +181,7 @@ export function ConfigureList({ userLists }: { userLists: UserList[] }) {
   const onSubmit = (data: FormFields) => {
     // this should never happen due to form validation, but just in case...
     if (data.commodity === 'Other' && !data.customCommodity) {
-      console.error('invalid custom commodity', data.customCommodity);
+      setError('customCommodity', { message: 'Invalid custom commodity' });
       return;
     }
 

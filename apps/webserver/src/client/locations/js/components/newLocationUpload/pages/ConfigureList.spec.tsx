@@ -175,7 +175,7 @@ describe('ConfigureList', () => {
     expect(mockHistoryPush).toHaveBeenCalledWith('SUMMARY_AND_SUBMIT');
   }, 15100);
 
-  it('should show validations for list name field', async () => {
+  it('should show validations for new list name field', async () => {
     render(<ConfigureList userLists={mockUserLists} />);
 
     const commodityDropdown = screen.getAllByRole('combobox')[0];

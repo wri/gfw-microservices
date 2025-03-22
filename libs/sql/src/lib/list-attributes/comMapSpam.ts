@@ -45,9 +45,9 @@ export const COMMODITY_MAP_SPAM = {
 
 export const MAPSPAM_COMMODITY = {
   [MAPSPAM_CODES.COFF]: 'Coffee',
-  [MAPSPAM_CODES.COCO]: 'Cocoa Generic',
-  [MAPSPAM_CODES.OILP]: 'Palm Oil Generic',
+  [MAPSPAM_CODES.COCO]: 'Cocoa',
+  [MAPSPAM_CODES.OILP]: 'Palm Oil',
   [MAPSPAM_CODES.RUBB]: 'Rubber',
-  [MAPSPAM_CODES.SOYB]: 'Soy Generic',
+  [MAPSPAM_CODES.SOYB]: 'Soy',
   [MAPSPAM_CODES.SUGC]: 'Sugar Cane',
 };

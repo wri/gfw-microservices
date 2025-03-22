@@ -31,8 +31,8 @@ export class ProcessUploadData extends AbstractHandler<ChainType> {
     this.logger.log(`Processing list-xxx.attributes. Excluding Columns: ${this.columnsToExclude}`);
 
     const locAttrObj = validAttrs.reduce((acc, key) => {
-      if (key) {
-        acc[key] = featurePayload.properties[key] ? `${featurePayload.properties[key]}` : '';
+      if (key && featurePayload.properties[key] !== null) {
+        acc[key] = `${featurePayload.properties[key]}`;
       }
       return acc;
     }, {} as AttributeType);

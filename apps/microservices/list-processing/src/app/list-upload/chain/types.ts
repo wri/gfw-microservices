@@ -1,33 +1,17 @@
-import { Feature, FeatureCollection } from '@wri-monorepos/geo';
+import { FeatureCollection } from '@wri-monorepos/geo';
 import { Logger } from '@nestjs/common';
 import { performance } from 'perf_hooks';
 import { updateListsUploadStatus } from '../shared/update.lists.upload.status';
 import { formatDurationStr, formatHeapUsed } from '../shared/performance.utils';
 
-export interface ChainEvent {
-  eventId?: string;
-  config?: unknown;
-  payload?: ChainType;
-}
-
 export type AttributeType = {
-  field: string;
-  type: string;
-  value: unknown;
-  custom?: boolean;
+  [x: string]: string;
 };
 
 export type ChainType = {
   geojson?: FeatureCollection;
   request: RequestNewList | PreviewListRequest;
-  locations?: Feature['properties'][];
-};
-
-export type ListAttributesRow = {
-  field: string;
-  type: string;
-  value: string | number | unknown;
-  custom?: boolean;
+  attributes?: ListAttributesRecord[];
 };
 
 export interface ListAttributesRecord {
@@ -35,9 +19,6 @@ export interface ListAttributesRecord {
   attribute_name: string;
   attribute_type: number;
 }
-export type ListAttributesRecords = {
-  [key: string]: ListAttributesRow;
-};
 
 export interface PreviewListRequest {
   path: string;

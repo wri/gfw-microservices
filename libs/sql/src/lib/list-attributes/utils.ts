@@ -5,14 +5,7 @@ import { ClientStoreConnection } from '../util';
 import { COMMODITY_MAP_SPAM, MAPSPAM_COMMODITY, GHG_PREFIX, MAPSPAM_CODES } from './comMapSpam';
 
 export function inferType(value: unknown): string {
-  if (value === null) {
-    return 'string';
-  }
-  if (typeof value === 'number') {
-    return typeof value;
-  } else {
-    return 'string';
-  }
+  return typeof value === 'number' ? 'number' : 'string';
 }
 enum ListsAttrsTypes {
   Number = 1,

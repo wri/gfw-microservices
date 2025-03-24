@@ -15,6 +15,7 @@ import { logExecutionTime } from './chain/shared';
 import { WriteLocationCount } from './chain/write.location.count';
 import { SaveListAttributes } from './chain/save.list.attributes';
 import { ProcessUploadData } from './chain/process.upload.data';
+import { ClientStoreConnection, Lists } from '@wri-monorepos/sql';
 
 import fastq from 'fastq';
 import type { queue, done } from 'fastq';
@@ -96,6 +97,25 @@ export class StartAnalysisService {
 
   @logExecutionTime(StartAnalysisService.name)
   async run(request: RequestLargeListProcess): Promise<ResponseLargeListProcess> {
+    const { list_id: listId, commodity, organization_database: clientDatabase } = request;
+    if (listId) {
+      const listExistAtClientStore = await checkIfListExistAndCommodityIsTheSame(
+        listId,
+        commodity,
+        clientDatabase
+      );
+      if (!listExistAtClientStore) {
+        this.logger.warn(`List not found with id ${listId} at client store`);
+        throw new Error(`List not found with id ${listId} at client store`);
+      } else {
+        this.logger.log(`List ${listId} found at client store`);
+        return {
+          executionArn: '',
+          startDate: new Date().toISOString(),
+        };
+      }
+    }
+
     const q: queue<WorkerType> = fastq(worker, 2);
 
     q.push({
@@ -109,3 +129,23 @@ export class StartAnalysisService {
     };
   }
 }
+
+export const checkIfListExistAndCommodityIsTheSame = async (listId, commodity, clientDatabase) => {
+  const clientStoreConnection = new ClientStoreConnection();
+  const connection = await clientStoreConnection.getConnection(clientDatabase);
+  const existingList = await connection.getRepository(Lists).findOne({
+    where: {
+      id: listId,
+    },
+  });
+
+  if (!existingList) {
+    return false;
+  }
+
+  if (existingList.Commodity !== commodity) {
+    return false;
+  }
+
+  return true;
+};

@@ -48,7 +48,9 @@ export class ReadmeMergeServices {
       // Writing the result to an output file
       const outputFile = `${outputFilePath}/README.csv`;
 
-      fs.writeFileSync(outputFile, newHeader + '\n');
+      // Write the new header if provided
+      fs.writeFileSync(outputFile, newHeader ? newHeader + '\n' : '');
+
       // Store all lines and headers from all files
       const allLines: string[] = [];
       let oldHeader = '';

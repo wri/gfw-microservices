@@ -21,6 +21,8 @@ import {
   analysisIdsOptionsMap,
   MAPSPAM_COMMODITY,
   GADM_FEATURE_FLAG_NAME,
+  CURRENT_GADM_VALUE,
+  NEW_GADM_VALUE,
 } from '@wri-monorepos/constants';
 import { S3Service } from '@wri-monorepos/aws';
 import {
@@ -557,13 +559,13 @@ const saveAnalysisStatusErrorInfo = async (
   await listAnalysisStatusRepository.update({ listId, analysisId }, { errorInfo, status });
 };
 
-export const getGadmFeatrueFlag = async (organizationDb: string): Promise<number> => {
-  let gadmResult = 3.6;
+export const getGadmFeatrueFlag = async (organizationDb: string): Promise<string> => {
+  let gadmResult = CURRENT_GADM_VALUE;
   try {
     const gadmFeatureFlagName = await searchForFeatureFlag(organizationDb, GADM_FEATURE_FLAG_NAME);
 
     if (gadmFeatureFlagName?.flagState === true) {
-      gadmResult = 4.1;
+      gadmResult = NEW_GADM_VALUE;
     }
 
     return gadmResult;

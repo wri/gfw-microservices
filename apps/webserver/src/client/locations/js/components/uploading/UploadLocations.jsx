@@ -206,6 +206,8 @@ class UploadLocations extends Component {
   };
 
   batchGeoms = (geojson) => {
+    // limit batches to 200 to avoid socket limits in lambda
+    const maxBatchSize = 200;
     geojson.features.sort((a, b) => a.properties.longitude - b.properties.longitude);
 
     const geojsonBatches = [];
@@ -214,24 +216,31 @@ class UploadLocations extends Component {
       longitudeRanges.push({
         min: l,
         max: l + 9.9999999,
-        geo: {
-          type: 'FeatureCollection',
-          features: [],
-        },
+        features: [],
       });
     }
 
     geojson.features.forEach((feat) => {
       longitudeRanges.forEach((range) => {
         if (feat.properties.Longitude >= range.min && feat.properties.Longitude < range.max) {
-          range.geo.features.push(feat);
+          if (range.features.length === maxBatchSize) {
+            geojsonBatches.push({
+              type: 'FeatureCollection',
+              features: range.features,
+            });
+            range.features = [];
+          }
+          range.features.push(feat);
         }
       });
     });
 
     longitudeRanges.forEach((range) => {
-      if (range.geo.features.length > 0) {
-        geojsonBatches.push(range.geo);
+      if (range.features.length > 0) {
+        geojsonBatches.push({
+          type: 'FeatureCollection',
+          features: range.features,
+        });
       }
     });
 

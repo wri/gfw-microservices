@@ -49,12 +49,8 @@ export class ReadmeMergeServices {
       const outputFile = `${outputFilePath}/README.csv`;
 
       // Write the new header if provided
-      if (newHeader) {
-        fs.writeFileSync(outputFile, newHeader + '\n');
-      } else {
-        // Create the file but not insert a break line, header will be added later
-        fs.writeFileSync(outputFile, '');
-      }
+      const headerContent = newHeader ? `${newHeader}\n` : '';
+      fs.writeFileSync(outputFile, headerContent);
 
       // Store all lines and headers from all files
       const allLines: string[] = [];

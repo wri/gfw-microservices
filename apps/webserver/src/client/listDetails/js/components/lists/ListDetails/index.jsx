@@ -2020,6 +2020,11 @@ export default class ListDetails extends Component {
     const urlRegex = /^[^:]+:\/\/.+/;
     const isListWithErrors = urlRegex.test(selectedLists[0]?.error_file_storage_path);
 
+    const diagnosticButtonLabel = selectedLocations?.length
+      ? 'Location Diagnostic'
+      : 'List diagnostic';
+
+    const translatedDiagnosticButtonLabel = Transifex.live.translateText(diagnosticButtonLabel);
     return (
       <ThemeProvider>
         <div className="list-details">
@@ -2273,9 +2278,7 @@ export default class ListDetails extends Component {
                                 onClick={() => this.viewDiagnostic()}
                                 startIcon={<QueryStats />}
                               >
-                                {selectedLocations?.length
-                                  ? 'Location Diagnostic'
-                                  : 'List diagnostic'}
+                                {translatedDiagnosticButtonLabel}
                               </MaterialButton>
                             )}
                             {locationsWithError?.length > 0 && (

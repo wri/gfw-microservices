@@ -42,10 +42,14 @@ function LocationsSummary({
     countriesSelected.length > 3
       ? countriesSelected.slice(0, 3).join(', ').replaceAll('null', '--')
       : countriesString;
+
+  const showingText = Transifex.live.translateText('Showing');
+  const ofText = Transifex.live.translateText('of');
   const numberOfFilteredLocations =
     numberOfResults && numberOfResults < selectedList.list_locations_count
-      ? `Showing ${numberWithCommas(numberOfResults)} of`
+      ? `${showingText} ${numberWithCommas(numberOfResults)} ${ofText}`
       : '';
+  const totalLocationsText = Transifex.live.translateText('total locations • ');
 
   return (
     <header className="list-detail-header__info-container">
@@ -68,7 +72,7 @@ function LocationsSummary({
             {commodityName && <span>{commodityName} •</span>}
             <span>{`${numberOfFilteredLocations} ${numberWithCommas(
               listLength
-            )} total locations • `}</span>
+            )} ${totalLocationsText}`}</span>
 
             {countriesSelected.length <= 3 && countriesStringSummary}
             {countriesSelected.length > 3 && (

@@ -8,8 +8,10 @@ function DraftListWrapper(props) {
 
   const submitForAnalysis = () => {
     const { list } = props;
+    const analysisTypes = list.listAnalysesStatus.map((analysis) => analysis.analysisId);
+
     setIsAnalyzing(true);
-    return requestGeoTrellisAnalyzeList(list)
+    requestGeoTrellisAnalyzeList(list, true, analysisTypes.join(','))
       .then(() => {
         gtag('event', 'Submit List', {
           event_category: 'Submit',

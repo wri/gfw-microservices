@@ -331,7 +331,11 @@ const ListActions = ({
         dialogTitle={locationsPage.lists.submitListDialog.title}
         dialogMessage={locationsPage.lists.submitListDialog.message}
         dialogActionConfirm={() => {
-          requestGeoTrellisAnalyzeList(selectedList)
+          const analysisTypes = selectedList.listAnalysesStatus.map(
+            (analysis) => analysis.analysisId
+          );
+
+          requestGeoTrellisAnalyzeList(selectedList, false, analysisTypes.join(','))
             .then(() => {
               gtag('event', 'Submit List', {
                 event_category: 'Submit',

@@ -109,10 +109,6 @@ export class StartAnalysisService {
         throw new Error(`List not found with id ${listId} at client store`);
       } else {
         this.logger.log(`List ${listId} found at client store`);
-        return {
-          executionArn: '',
-          startDate: new Date().toISOString(),
-        };
       }
     }
 
@@ -136,14 +132,11 @@ export const checkIfListExistAndCommodityIsTheSame = async (listId, commodity, c
   const existingList = await connection.getRepository(Lists).findOne({
     where: {
       id: listId,
+      Commodity: `GFWP_${commodity}`,
     },
   });
 
   if (!existingList) {
-    return false;
-  }
-
-  if (existingList.Commodity !== commodity) {
     return false;
   }
 

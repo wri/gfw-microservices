@@ -15,6 +15,7 @@ import { logExecutionTime } from './chain/shared';
 import { WriteLocationCount } from './chain/write.location.count';
 import { SaveListAttributes } from './chain/save.list.attributes';
 import { ProcessUploadData } from './chain/process.upload.data';
+import { ClientStoreConnection, Lists } from '@wri-monorepos/sql';
 
 import fastq from 'fastq';
 import type { queue, done } from 'fastq';
@@ -32,8 +33,17 @@ type WorkerType = {
   config: ConfigService<ServerConfigType, true>;
 };
 
+async function clearErrorFile(organizationDatabase: string, listId: number) {
+  const connection = await new ClientStoreConnection().getConnection(organizationDatabase);
+  const listRepository = connection.getRepository(Lists);
+  await listRepository.update({ id: listId }, { errorFileStoragePath: null });
+}
+
 async function worker(input: WorkerType, cb: done) {
-  const { organization_database: organizationDatabase } = input.request;
+  const { organization_database: organizationDatabase, list_id: listId } = input.request;
+
+  // Clear any existing error file before starting analysis
+  await clearErrorFile(organizationDatabase, listId);
 
   const chainType: ChainType = {
     request: input.request,

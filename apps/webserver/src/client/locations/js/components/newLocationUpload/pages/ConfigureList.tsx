@@ -32,45 +32,37 @@ import { fetchListsByCommodity } from '../../../../../api';
 type CommoditiesType = (typeof commodities)[keyof typeof commodities];
 const commodityValues = Object.values(commodities) as [CommoditiesType, ...CommoditiesType[]];
 
+const schema = z
+  .object({
+    commodity: z.enum(commodityValues),
+    newListName: z
+      .string()
+      .trim()
+      .regex(/^[a-zA-Z0-9 ]*$/, 'Only letters, numbers, and spaces are allowed'),
+    existingListName: z.string(),
+    FCD: z.coerce.boolean(),
+    PalmRisk: z.coerce.boolean(),
+    ALERTS: z.coerce.boolean(),
+    AFI: z.coerce.boolean(),
+    customCommodity: z.string().optional(),
+  })
+  .refine((data) => data.newListName !== '' || data.existingListName !== '', {
+    message: 'You must provide at least one list name.',
+    path: ['noListNameProvided'],
+  })
+  .refine(
+    (data) =>
+      !(
+        data.commodity === 'Other' &&
+        (!data.customCommodity || data.customCommodity.trim() === '')
+      ),
+    {
+      path: ['customCommodity'],
+    }
+  );
+
 // @userLists param will be deprecated when new endpoint for typeOfAnalysis is released
 export function ConfigureList({ userLists }: { userLists: UserList[] }) {
-  const schema = z
-    .object({
-      commodity: z.enum(commodityValues),
-      newListName: z
-        .string()
-        .trim()
-        .regex(/^[a-zA-Z0-9 ]*$/, 'Only letters, numbers, and spaces are allowed'),
-      existingListName: z.string(),
-      FCD: z.coerce.boolean(),
-      palmRiskAssessment: z.coerce.boolean(),
-      ALERTS: z.coerce.boolean(),
-      AFI: z.coerce.boolean(),
-      customCommodity: z.string().optional(),
-    })
-    .refine((data) => data.newListName !== '' || data.existingListName !== '', {
-      message: 'You must provide at least one list name.',
-      path: ['noListNameProvided'],
-    })
-    .refine(
-      (data) =>
-        !(
-          data.commodity === 'Other' &&
-          (!data.customCommodity || data.customCommodity.trim() === '')
-        ),
-      {
-        path: ['customCommodity'],
-      }
-    )
-    .refine(
-      (data) =>
-        !userLists.some((list) => list.list_name.toLowerCase() === data.newListName.toLowerCase()),
-      {
-        message: 'This list name already exists',
-        path: ['newListName'],
-      }
-    );
-
   type FormFields = z.infer<typeof schema>;
   const history = useHistory();
   const {
@@ -87,7 +79,7 @@ export function ConfigureList({ userLists }: { userLists: UserList[] }) {
       commodity: '' as CommoditiesType,
       newListName: '',
       existingListName: '',
-      palmRiskAssessment: false,
+      PalmRisk: false,
       FCD: false,
       ALERTS: false,
       AFI: false,
@@ -171,10 +163,10 @@ export function ConfigureList({ userLists }: { userLists: UserList[] }) {
   ) => {
     field.onChange(e.target.checked);
 
-    if (id === 'palmRiskAssessment' && e.target.checked) {
+    if (id === 'PalmRisk' && e.target.checked) {
       setValue('FCD', true);
     } else if (id === 'FCD' && !e.target.checked) {
-      setValue('palmRiskAssessment', false);
+      setValue('PalmRisk', false);
     }
   };
 
@@ -192,7 +184,7 @@ export function ConfigureList({ userLists }: { userLists: UserList[] }) {
         ? { name: data.existingListName ?? '', ...existingList.current }
         : null,
       typeOfAnalysis: {
-        palmRiskAssessment: data.palmRiskAssessment,
+        PalmRisk: data.PalmRisk,
         FCD: data.FCD,
         AFI: data.AFI,
         ALERTS: data.ALERTS,
@@ -390,9 +382,9 @@ export function ConfigureList({ userLists }: { userLists: UserList[] }) {
         </Typography>
         <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1, mt: 1 }}>
           {typeOfAnalysisMap
-            .filter((x) => selectedCommodity === 'Palm oil' || x.id !== 'palmRiskAssessment')
+            .filter((x) => selectedCommodity === 'Palm oil' || x.id !== 'PalmRisk')
             .map(({ id, label, description }) => {
-              const isPalmRisk = id === 'palmRiskAssessment';
+              const isPalmRisk = id === 'PalmRisk';
               return (
                 <Controller
                   key={id}

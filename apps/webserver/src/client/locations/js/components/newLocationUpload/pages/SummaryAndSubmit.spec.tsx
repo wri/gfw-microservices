@@ -72,7 +72,7 @@ describe('SummaryAndSubmit', () => {
       clearUploadType: mockClearUploadType,
       uploadLocationState: {
         newListName: '',
-        existingList: { name: 'List created last year', id: 1 },
+        existingList: { name: 'List created last year', id: 1, analysisIds: [] },
         commodity: 'sugar-cane',
         typeOfAnalysis: {
           AFI: false,

@@ -34,6 +34,7 @@ import { useHistory } from '../hooks';
 import { NavBar } from '../components';
 import { useFetch } from '../../../../../hooks';
 import { VALID_UPLOAD_FILE_FORMATS } from '../utils/constants';
+import { fetchListPreview } from '../../../../../api';
 
 export function UploadLocationPreview() {
   const {
@@ -80,13 +81,9 @@ export function UploadLocationPreview() {
   };
 
   const getPreviewData = async () => {
-    request({
-      method: 'GET',
-      url: '/api/list/preview',
-      params: {
-        path: uploadedFile?.keyFile,
-      },
-    });
+    if (uploadedFile?.keyFile) {
+      fetchListPreview(request, uploadedFile.keyFile);
+    }
   };
 
   const getMissingFieldsNames = (errors: string[], fileExtension: string) => {

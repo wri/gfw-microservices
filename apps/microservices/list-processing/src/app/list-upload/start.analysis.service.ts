@@ -27,6 +27,7 @@ import { AddNewLocationToAnalysisTable } from './chain/add.new.location.to.analy
 import { ConvertGeojsonProperties } from './chain/convert.geojson.properties';
 import { PutListAsDraft } from './chain/put.list.as.draft';
 import { GenerateErrorFile } from './chain/generate.error.file';
+import { ConvertCommodityToMapsPamCode } from './chain/convert.commodity.mapspam';
 
 type WorkerType = {
   request: RequestLargeListProcess;
@@ -106,6 +107,21 @@ export class StartAnalysisService {
 
   @logExecutionTime(StartAnalysisService.name)
   async run(request: RequestLargeListProcess): Promise<ResponseLargeListProcess> {
+    const { list_id: listId, commodity, organization_database: clientDatabase } = request;
+    if (listId) {
+      const listExistAtClientStore = await checkIfListExistAndCommodityIsTheSame(
+        listId,
+        commodity,
+        clientDatabase
+      );
+      if (!listExistAtClientStore) {
+        this.logger.warn(`List not found with id ${listId} at client store`);
+        throw new Error(`List not found with id ${listId} at client store`);
+      } else {
+        this.logger.log(`List ${listId} found at client store`);
+      }
+    }
+
     const q: queue<WorkerType> = fastq(worker, 2);
 
     q.push({
@@ -119,3 +135,23 @@ export class StartAnalysisService {
     };
   }
 }
+
+export const checkIfListExistAndCommodityIsTheSame = async (listId, commodity, clientDatabase) => {
+  const clientStoreConnection = new ClientStoreConnection();
+  const connection = await clientStoreConnection.getConnection(clientDatabase);
+
+  const commodityMapSpam = ConvertCommodityToMapsPamCode.getCommodityName(commodity);
+
+  const existingList = await connection.getRepository(Lists).findOne({
+    where: {
+      id: listId,
+      Commodity: commodityMapSpam,
+    },
+  });
+
+  if (!existingList) {
+    return false;
+  }
+
+  return true;
+};

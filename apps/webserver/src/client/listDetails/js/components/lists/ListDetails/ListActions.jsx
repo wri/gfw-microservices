@@ -335,7 +335,7 @@ const ListActions = ({
             (analysis) => analysis.analysisId
           );
 
-          requestGeoTrellisAnalyzeList(selectedList, false, analysisTypes.join(','))
+          requestGeoTrellisAnalyzeList(selectedList, analysisTypes.join(','))
             .then(() => {
               gtag('event', 'Submit List', {
                 event_category: 'Submit',

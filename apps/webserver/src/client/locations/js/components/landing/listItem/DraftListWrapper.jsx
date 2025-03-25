@@ -11,7 +11,7 @@ function DraftListWrapper(props) {
     const analysisTypes = list.listAnalysesStatus.map((analysis) => analysis.analysisId);
 
     setIsAnalyzing(true);
-    requestGeoTrellisAnalyzeList(list, true, analysisTypes.join(','))
+    requestGeoTrellisAnalyzeList(list, analysisTypes.join(','))
       .then(() => {
         gtag('event', 'Submit List', {
           event_category: 'Submit',

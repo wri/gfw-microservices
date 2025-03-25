@@ -9,7 +9,7 @@ import { GEO_TRELLIS_ANALYZE_LIST } from '../../../../config/config/locations.co
  * @param {boolean} [reanalyze=false] - Set to true if list needs to be reanalyzed
  * @return {AxiosPromise} - Promise
  */
-export const requestGeoTrellisAnalyzeList = (list, reanalyze = false, analysisTypes) => {
+export const requestGeoTrellisAnalyzeList = (list, analysisTypes, reanalyze = false) => {
   const data = {
     list,
     reanalyze,

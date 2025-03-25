@@ -96,6 +96,7 @@ describe('StartAnalysisService', () => {
       user_id: 1,
       startAnalysis: true,
       saveAsDraft: false,
+      commodity: 'cocoa',
     };
 
     // Mock the repository to return null (list not found)

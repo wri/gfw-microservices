@@ -27,6 +27,7 @@ import { AddNewLocationToAnalysisTable } from './chain/add.new.location.to.analy
 import { ConvertGeojsonProperties } from './chain/convert.geojson.properties';
 import { PutListAsDraft } from './chain/put.list.as.draft';
 import { GenerateErrorFile } from './chain/generate.error.file';
+import { ConvertCommodityToMapsPamCode } from './chain/convert.commodity.mapspam';
 
 type WorkerType = {
   request: RequestLargeListProcess;
@@ -129,10 +130,13 @@ export class StartAnalysisService {
 export const checkIfListExistAndCommodityIsTheSame = async (listId, commodity, clientDatabase) => {
   const clientStoreConnection = new ClientStoreConnection();
   const connection = await clientStoreConnection.getConnection(clientDatabase);
+
+  const commodityMapSpam = ConvertCommodityToMapsPamCode.getCommodityName(commodity);
+
   const existingList = await connection.getRepository(Lists).findOne({
     where: {
       id: listId,
-      Commodity: `GFWP_${commodity}`,
+      Commodity: commodityMapSpam,
     },
   });
 

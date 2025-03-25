@@ -1,5 +1,7 @@
 import { cloneRow, formatPct, isJSON, validatePct } from '../shared/functions';
 
+const MIN_YEAR = 2008;
+
 export function argentinaDeforestationParser({ operation, data, dataRow, csvData }) {
   const { composites } = operation;
 
@@ -40,6 +42,10 @@ export function argentinaDeforestationParser({ operation, data, dataRow, csvData
       }
 
       Object.keys(yearlyData).forEach((year) => {
+        if (Number(year) < MIN_YEAR) {
+          return;
+        }
+
         const currentRow = cloneRow(dataRow);
         rowValue = yearlyData[year];
 

@@ -6,7 +6,7 @@ export const typeOfAnalysisMap = [
   ...analysisTypesOptionsNewNames.slice(0, 1),
   ...analysisTypesOptionsNewNames.slice(2, 3),
   {
-    id: 'palmRiskAssessment',
+    id: 'PalmRisk',
     label: 'Include Palm Risk Assessment',
     shortLabel: '',
     description: 'Commodity-specific risk analysis for palm oil mills',

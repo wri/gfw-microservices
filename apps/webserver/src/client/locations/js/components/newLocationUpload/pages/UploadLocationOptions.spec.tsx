@@ -20,7 +20,7 @@ jest.mocked(useUploadLocation).mockReturnValue({
       AFI: true,
       ALERTS: true,
       FCD: true,
-      palmRiskAssessment: true,
+      PalmRisk: true,
     },
     area: { measurementUnit: 'hectares', size: 0 },
     coordinates: [{ latitude: 1.1, longitude: 1.1 }],

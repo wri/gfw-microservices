@@ -34,7 +34,7 @@ jest.mocked(useUploadLocation).mockReturnValue({
       AFI: true,
       ALERTS: true,
       FCD: true,
-      palmRiskAssessment: true,
+      PalmRisk: true,
     },
     area: { measurementUnit: 'hectares', size: 0 },
     coordinates: [{ latitude: 1.1, longitude: 1.1 }],
@@ -361,7 +361,7 @@ describe('ConfigureList', () => {
       newListName: 'My new List 3',
       existingList: null,
       typeOfAnalysis: {
-        palmRiskAssessment: false,
+        PalmRisk: false,
         FCD: false,
         AFI: false,
         ALERTS: true,

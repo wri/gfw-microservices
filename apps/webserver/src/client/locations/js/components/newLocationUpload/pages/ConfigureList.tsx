@@ -32,37 +32,45 @@ import { fetchListsByCommodity } from '../../../../../api';
 type CommoditiesType = (typeof commodities)[keyof typeof commodities];
 const commodityValues = Object.values(commodities) as [CommoditiesType, ...CommoditiesType[]];
 
-const schema = z
-  .object({
-    commodity: z.enum(commodityValues),
-    newListName: z
-      .string()
-      .trim()
-      .regex(/^[a-zA-Z0-9 ]*$/, 'Only letters, numbers, and spaces are allowed'),
-    existingListName: z.string(),
-    FCD: z.coerce.boolean(),
-    PalmRisk: z.coerce.boolean(),
-    ALERTS: z.coerce.boolean(),
-    AFI: z.coerce.boolean(),
-    customCommodity: z.string().optional(),
-  })
-  .refine((data) => data.newListName !== '' || data.existingListName !== '', {
-    message: 'You must provide at least one list name.',
-    path: ['noListNameProvided'],
-  })
-  .refine(
-    (data) =>
-      !(
-        data.commodity === 'Other' &&
-        (!data.customCommodity || data.customCommodity.trim() === '')
-      ),
-    {
-      path: ['customCommodity'],
-    }
-  );
-
 // @userLists param will be deprecated when new endpoint for typeOfAnalysis is released
 export function ConfigureList({ userLists }: { userLists: UserList[] }) {
+  const schema = z
+    .object({
+      commodity: z.enum(commodityValues),
+      newListName: z
+        .string()
+        .trim()
+        .regex(/^[a-zA-Z0-9 ]*$/, 'Only letters, numbers, and spaces are allowed'),
+      existingListName: z.string(),
+      FCD: z.coerce.boolean(),
+      PalmRisk: z.coerce.boolean(),
+      ALERTS: z.coerce.boolean(),
+      AFI: z.coerce.boolean(),
+      customCommodity: z.string().optional(),
+    })
+    .refine((data) => data.newListName !== '' || data.existingListName !== '', {
+      message: 'You must provide at least one list name.',
+      path: ['noListNameProvided'],
+    })
+    .refine(
+      (data) =>
+        !(
+          data.commodity === 'Other' &&
+          (!data.customCommodity || data.customCommodity.trim() === '')
+        ),
+      {
+        path: ['customCommodity'],
+      }
+    )
+    .refine(
+      (data) =>
+        !userLists.some((list) => list.list_name.toLowerCase() === data.newListName.toLowerCase()),
+      {
+        message: 'This list name already exists',
+        path: ['newListName'],
+      }
+    );
+
   type FormFields = z.infer<typeof schema>;
   const history = useHistory();
   const {

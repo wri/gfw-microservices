@@ -26,7 +26,7 @@ export const regionConstants = {
     informationBubbleId: 'tree_cover_loss_arg_otbn_yearly',
     downloadId: 'argentina',
     diagnosticTitle: 'OTBN Overlap',
-    startYear: 2008,
+    startYear: 2008, // IMPORTANT: If modifying, sync with backend constants file: /libs/constants/src/lib/diagnostic-constants.ts
     endYear: 2023,
   },
   colombia: {

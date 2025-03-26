@@ -35,7 +35,7 @@ type WorkerType = {
   emailService: EmailService;
 };
 
-async function clearErrorFile(organizationDatabase: string, listId: number) {
+export async function clearErrorFile(organizationDatabase: string, listId: number) {
   const connection = await new ClientStoreConnection().getConnection(organizationDatabase);
   const listRepository = connection.getRepository(Lists);
   await listRepository.update({ id: listId }, { errorFileStoragePath: null });

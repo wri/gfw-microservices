@@ -25,6 +25,8 @@ export const serverConfigSchema = z.object({
   GFW_DATA_API_KEY: z.string(),
 
   LATEST_COMMIT: z.string().optional(),
+
+  SES_SENDER_EMAIL: z.string().email(),
 });
 
 export type ServerConfigType = z.infer<typeof serverConfigSchema>;

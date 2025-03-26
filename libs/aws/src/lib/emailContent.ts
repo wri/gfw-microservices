@@ -60,6 +60,14 @@ export function createEmailContent<CustomFilter>(
         body: 'DOWNLOAD FILE',
       },
     },
+    listUploadError: {
+      icon: 'https://dpptfqp76xood.cloudfront.net/images/error_black_24dp.png',
+      title: 'Unable to process',
+      body: [
+        `<p>Diagnostic and List View calculations failed for the GFW Pro list <span style="font-weight: bold; color: rgba(0, 0, 0, 0.73);">${listName}</span>.</p>`,
+        `<p>Try again and if the problem persists please contact GFW Pro support at <a href="mailto:gfwprosupport@wri.org">gfwprosupport@wri.org</a> for further information.</p>`,
+      ],
+    },
   };
 
   return emailMessage[type];

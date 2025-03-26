@@ -15,7 +15,7 @@ export type UploadLocationState = {
   newListName: string | null;
   typeOfAnalysis: {
     FCD: boolean;
-    palmRiskAssessment: boolean;
+    PalmRisk: boolean;
     ALERTS: boolean;
     AFI: boolean;
   };
@@ -36,7 +36,7 @@ type UploadLocationType = {
     existingList: { id: number; name: string; analysisIds: string[] } | null;
     newListName: string | null;
     typeOfAnalysis: {
-      palmRiskAssessment: boolean;
+      PalmRisk: boolean;
       FCD: boolean;
       AFI: boolean;
       ALERTS: boolean;
@@ -69,7 +69,7 @@ type UploadLocationAction =
         existingList: { id: number; name: string; analysisIds: string[] } | null;
         newListName: string | null;
         typeOfAnalysis: {
-          palmRiskAssessment: boolean;
+          PalmRisk: boolean;
           FCD: boolean;
           AFI: boolean;
           ALERTS: boolean;
@@ -109,7 +109,7 @@ const uploadLocationInitialState: UploadLocationState = {
   existingList: null,
   newListName: null,
   typeOfAnalysis: {
-    palmRiskAssessment: false,
+    PalmRisk: false,
     FCD: false,
     AFI: false,
     ALERTS: false,
@@ -168,7 +168,7 @@ export function UploadLocationProvider({ children }: UploadLocationProviderProps
     existingList: { id: number; name: string; analysisIds: string[] } | null;
     newListName: string | null;
     typeOfAnalysis: {
-      palmRiskAssessment: boolean;
+      PalmRisk: boolean;
       FCD: boolean;
       AFI: boolean;
       ALERTS: boolean;

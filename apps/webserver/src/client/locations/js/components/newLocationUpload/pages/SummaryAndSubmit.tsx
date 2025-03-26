@@ -166,17 +166,17 @@ export function SummaryAndSubmit() {
           </Typography>
           <Box component="ul" sx={{ color: 'text.secondary' }}>
             {Object.entries(uploadLocationState.typeOfAnalysis)
-              .filter(([key, isChecked]) => isChecked && key !== 'palmRiskAssessment')
+              .filter(([key, isChecked]) => isChecked && key !== 'PalmRisk')
               .map(([key]) => {
                 const analysis = analysisTypesOptionsNewNames.find((x) => x.id === key);
 
-                const isPalmRiskAssessmentIncluded =
-                  analysis?.id === 'FCD' && uploadLocationState.typeOfAnalysis.palmRiskAssessment;
+                const isPalmRiskIncluded =
+                  analysis?.id === 'FCD' && uploadLocationState.typeOfAnalysis.PalmRisk;
 
                 return (
                   <li key={key}>
                     <Typography variant="caption">{analysis?.label}</Typography>
-                    {isPalmRiskAssessmentIncluded && (
+                    {isPalmRiskIncluded && (
                       <Typography variant="caption"> (Includes Palm Risk Assessment)</Typography>
                     )}
                   </li>

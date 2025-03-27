@@ -229,6 +229,7 @@ export const locationsPage = {
     allLocations: 'All Locations',
     investment: 'Investment',
     commodity: 'Commodity',
+    commodityType: 'Commodity Type',
     locations: 'Locations',
     titleLocation: ' location',
     titleLocations: ' locations',

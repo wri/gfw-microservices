@@ -1,0 +1,27 @@
+.locations-summary {
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  word-break: break-word;
+}
+
+.countries-popover {
+  max-width: 500px;
+
+  &__inner {
+    padding: 1.4rem;
+  }
+
+  &__prompt {
+    margin: 0;
+  }
+}
+
+.country-name-extend {
+  &:hover {
+    text-decoration: underline;
+    cursor: pointer;
+  }
+}

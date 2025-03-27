@@ -172,4 +172,82 @@ describe('ArgentinaDeforestation Parser', () => {
       ['Argentina Deforestation Data', 'Country', 2.2, '2023', 3.3, '66.67'],
     ]);
   });
+
+  it('Excludes data from before 2008 on csv', () => {
+    const newInput = {
+      ...input,
+      data: {
+        country_specific_deforestation_classified_region_yearly:
+          '{"ARG":{"Category III":{"2022":3.1,"2023":4.2}}}',
+        country_specific_deforestation_landmark_yearly:
+          '{"ARG":{"Not Reported":{"2002":5.1,"2023":6.2}}}',
+        country_specific_deforestation_wdpa_yearly:
+          '{"ARG":{"Category VI":{"2005":7.1,"2023":8.2}}}',
+        country_specific_deforestation_yearly: '{"ARG": {"2022":1.1,"2023":2.2}}',
+      },
+    };
+    const csvData = argentinaDeforestationParser(newInput);
+
+    const expected = [
+      ['Argentina Deforestation Data', 'Country', 1.1, '2022', 3.3, '33.33'],
+      ['Argentina Deforestation Data', 'Country', 2.2, '2023', 3.3, '66.67'],
+      ['Argentina Deforestation Data', 'OTBN - Category III', 3.1, '2022', 7.3, '42.47'],
+      ['Argentina Deforestation Data', 'OTBN - Category III', 4.2, '2023', 7.3, '57.53'],
+      [
+        'Argentina Deforestation Data',
+        'Argentina Protected Areas - Category VI',
+        7.1,
+        '2022',
+        15.3,
+        '46.41',
+      ],
+      [
+        'Argentina Deforestation Data',
+        'Argentina Protected Areas - Category VI',
+        8.2,
+        '2023',
+        15.3,
+        '53.59',
+      ],
+      [
+        'Argentina Deforestation Data',
+        'Indigenous territories - Not Reported',
+        5.1,
+        '2022',
+        11.3,
+        '45.13',
+      ],
+      [
+        'Argentina Deforestation Data',
+        'Indigenous territories - Not Reported',
+        6.2,
+        '2023',
+        11.3,
+        '54.87',
+      ],
+      ['Argentina Deforestation Data', 'Country', 1.1, '2022', 3.3, '33.33'],
+      ['Argentina Deforestation Data', 'Country', 2.2, '2023', 3.3, '66.67'],
+      ['Argentina Deforestation Data', 'OTBN - Category III', 3.1, '2022', 7.3, '42.47'],
+      ['Argentina Deforestation Data', 'OTBN - Category III', 4.2, '2023', 7.3, '57.53'],
+      [
+        'Argentina Deforestation Data',
+        'Argentina Protected Areas - Category VI',
+        8.2,
+        '2023',
+        15.3,
+        '53.59',
+      ],
+      [
+        'Argentina Deforestation Data',
+        'Indigenous territories - Not Reported',
+        6.2,
+        '2023',
+        11.3,
+        '54.87',
+      ],
+      ['Argentina Deforestation Data', 'Country', 1.1, '2022', 3.3, '33.33'],
+      ['Argentina Deforestation Data', 'Country', 2.2, '2023', 3.3, '66.67'],
+    ];
+    expect(csvData).toStrictEqual(expected);
+  });
 });

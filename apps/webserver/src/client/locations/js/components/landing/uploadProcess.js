@@ -138,6 +138,7 @@ function uploadProcess(list, uploadFileToS3, largeListFile, isExistingList, anal
     ...newList,
     uploadFileToS3,
     largeListFile,
+    commodity: '', // old upload ignores commodity
   });
 }
 

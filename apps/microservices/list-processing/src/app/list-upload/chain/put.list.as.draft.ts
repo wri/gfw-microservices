@@ -28,6 +28,7 @@ export class PutListAsDraft extends AbstractHandler<ChainType> {
       analysisIds,
       list_name,
       hasUnanalyzableError = false,
+      isExternalAPIProcess = false,
     } = request as RequestNewList;
 
     if (saveAsDraft) {
@@ -41,15 +42,16 @@ export class PutListAsDraft extends AbstractHandler<ChainType> {
         await this.putListAsDraft(organization_database, list_id);
         await this.setListAnalysisStatusAsDraft(organization_database, list_id, analysisIds);
 
-        const userEmail = await getUserEmail(organization_database, user_id);
-
-        this.emailService.sendEmail(
-          this.config.get('SES_SENDER_EMAIL'),
-          [userEmail],
-          'Error Submitting for Analysis',
-          'listUploadError',
-          { listName: list_name }
-        );
+        if (isExternalAPIProcess) {
+          const userEmail = await getUserEmail(organization_database, user_id);
+          this.emailService.sendEmail(
+            this.config.get('SES_SENDER_EMAIL'),
+            [userEmail],
+            'Error Submitting for Analysis',
+            'listUploadError',
+            { listName: list_name }
+          );
+        }
       }
 
       return {

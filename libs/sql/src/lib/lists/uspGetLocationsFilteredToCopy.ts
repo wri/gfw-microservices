@@ -1,6 +1,7 @@
 import { SQLUtils } from '../util/sql.utils';
 import { Injectable } from '@nestjs/common';
 import * as sql from 'mssql';
+import { SQL_CONFIG } from '../config/config';
 
 @Injectable()
 export class UspGetLocationsFilteredToCopy {
@@ -42,12 +43,39 @@ export class UspGetLocationsFilteredToCopy {
         type: sql.NVarChar(255),
         value: searchString || null,
       },
+
+      {
+        field: 'OrderByColumn',
+        type: sql.NVarChar(255),
+        value: 'Location Name',
+      },
+      {
+        field: 'Order',
+        type: sql.NVarChar(255),
+        value: 'ASC',
+      },
+      {
+        field: 'Geometry',
+        type: sql.Bit,
+        value: 1,
+      },
     ];
 
-    return await SQLUtils.queryDB<Promise<unknown[]>>(
-      databaseName,
-      'uspGetLocationsFilteredToCopy',
-      parameters
-    );
+    const connection = new SQLUtils({ ...SQL_CONFIG, database: databaseName });
+    await connection.connect();
+    try {
+      const result = (await connection.executeQuery(
+        'uspGetLocationsFilteredToCopy',
+        parameters
+      )) as unknown[];
+      connection.disconnect();
+      if (Array.isArray(result) && result.length > 0) {
+        return result;
+      }
+      return [result];
+    } catch (error) {
+      connection.disconnect();
+      throw new Error(error);
+    }
   }
 }

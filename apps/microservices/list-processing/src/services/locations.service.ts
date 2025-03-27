@@ -77,7 +77,7 @@ export class LocationService {
 
   MoveLocations = async ({
     listId: selectedListId,
-    selectedListLocationClasification,
+    selectedListLocationClassification,
     customAttributesNames,
     userListNames,
     action,
@@ -166,7 +166,7 @@ export class LocationService {
         await this.handleNewListCreation({
           newListName,
           templateId,
-          selectedListLocationClasification,
+          selectedListLocationClassification,
           userId,
           customAttributesNames: EMPTY_CUSTOM_ATTRIBUTES,
           clientDatabase,
@@ -230,7 +230,7 @@ export class LocationService {
   handleNewListCreation = async ({
     newListName,
     templateId,
-    selectedListLocationClasification,
+    selectedListLocationClassification,
     userId,
     customAttributesNames,
     clientDatabase,
@@ -254,7 +254,7 @@ export class LocationService {
     const createdUserList = await listCreation.createNewList(
       newListName,
       templateId,
-      selectedListLocationClasification,
+      selectedListLocationClassification,
       userId,
       customAttributesNames,
       clientDatabase,

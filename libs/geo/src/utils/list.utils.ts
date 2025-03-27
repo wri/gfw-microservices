@@ -139,6 +139,9 @@ export function createfeaturePropsForCommodity(locationData, customAttributeName
     properties['Latitude'] = feature.Latitude;
     properties['Longitude'] = feature.Longitude;
 
+    properties['attributes'] = feature.attributes || JSON.stringify({});
+    properties['ErrorDetails'] = feature.errorDetails || '';
+
     if (!properties['Accuracy Rating of Location Entered']) {
       properties['Accuracy Rating of Location Entered'] = null; //"Don't Know";
     }
@@ -185,6 +188,9 @@ export function createFeaturePropsForNonCommodity(locationData) {
     if (!properties['Investment Name']) {
       properties['Investment Name'] = feature['Location Name'];
     }
+
+    properties['attributes'] = feature.attributes || {};
+    properties['errorDetails'] = feature.errorDetails || '';
 
     featProps.push(properties);
   });

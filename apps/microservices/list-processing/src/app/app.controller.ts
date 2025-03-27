@@ -48,6 +48,7 @@ import { BadRequestExceptionResponse } from './types/apiResponses';
 import { ConfigService } from '@nestjs/config';
 import { ServerConfigType } from '../validators/server-config';
 import { FeatureFlagEnabledGuard } from '../guards/feature.flag.enabled.guard';
+import { ListCopyMoveService } from './list-copy-move/list.copy.move.service';
 
 /*
   This controller will be deprecated in the future
@@ -60,6 +61,8 @@ export class AppController {
     protected readonly listService: ListService,
     protected readonly locationService: LocationService,
     protected readonly listPaginationService: ListPaginationService,
+
+    protected readonly listCopyMoveService: ListCopyMoveService,
     protected readonly config: ConfigService<ServerConfigType, true>
   ) {}
 
@@ -132,7 +135,7 @@ export class AppController {
     @Body()
     request: CopyOrMoveLargeListRequestLLP
   ) {
-    return this.locationService.MoveLocations(request);
+    return this.listCopyMoveService.run(request);
   }
 
   @Get('/paginated-list-data')

@@ -101,7 +101,7 @@ export enum TargetListType {
 
 export interface CopyOrMoveLargeListRequest {
   listId: number;
-  selectedListLocationClasification: string;
+  selectedListLocationClassification: string;
   customAttributesNames: string[];
   userListNames: string[];
   action: ActionType;

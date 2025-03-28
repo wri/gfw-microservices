@@ -18,6 +18,7 @@ export const analysisTypes = {
   DEFORESTATION_KPIS: 'AFI',
   ALERTS: 'ALERTS',
   GREENHOUSE_GAS_EMISSIONS: 'GHG',
+  PALM_RISK: 'PalmRisk',
 };
 
 export const analysisTypesOptionsNewNames = [

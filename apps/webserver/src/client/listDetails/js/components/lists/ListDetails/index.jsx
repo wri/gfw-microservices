@@ -2037,6 +2037,7 @@ export default class ListDetails extends Component {
                 this.setState({ isChangeTypeOfAnalysisModalOpen: open })
               }
               isChangeTypeOfAnalysisModalOpen={this.state.isChangeTypeOfAnalysisModalOpen}
+              commodity={selectedList?.Commodity}
             />
           )}
           {!isGfwList && (

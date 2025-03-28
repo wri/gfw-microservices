@@ -56,6 +56,7 @@ function FailedList({
         listAnalysesStatus={listAnalysesStatus}
         setIsChangeTypeOfAnalysisModalOpen={setIsChangeTypeOfAnalysisModalOpen}
         isChangeTypeOfAnalysisModalOpen={isChangeTypeOfAnalysisModalOpen}
+        commodity={list?.Commodity}
       />
 
       <li className="locations-list locations-list--failed" onClick={goToListDetails}>

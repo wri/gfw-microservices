@@ -1,18 +1,11 @@
-import { analysisTypesOptionsNewNames } from '../../../../../../config/env/analysisTypes.constants';
+import {
+  analysisTypesOptionsNewNames,
+  palmRiskAnalysis,
+} from '../../../../../../config/env/analysisTypes.constants';
 
 export const VALID_UPLOAD_FILE_FORMATS = ['csv', 'xls', 'xlsx', 'zip', 'kml', 'kmz'];
 
-export const typeOfAnalysisMap = [
-  ...analysisTypesOptionsNewNames.slice(0, 1),
-  ...analysisTypesOptionsNewNames.slice(2, 3),
-  {
-    id: 'PalmRisk',
-    label: 'Include Palm Risk Assessment',
-    shortLabel: '',
-    description: 'Commodity-specific risk analysis for palm oil mills',
-  },
-  ...analysisTypesOptionsNewNames.slice(1, 2),
-] as const;
+export const typeOfAnalysisMap = [...analysisTypesOptionsNewNames, palmRiskAnalysis];
 
 export const commodities = {
   cattle: 'Cattle',

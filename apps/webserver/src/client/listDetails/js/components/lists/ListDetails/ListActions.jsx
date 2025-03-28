@@ -202,7 +202,7 @@ const ListActions = ({
                 </Button>
               </div>
             )}
-            {!isSearchBarOpen && (
+            {!isSearchBarOpen && !isGfwList && (
               <Button
                 sx={blackButtonStyle}
                 startIcon={<Add height="14px" />}

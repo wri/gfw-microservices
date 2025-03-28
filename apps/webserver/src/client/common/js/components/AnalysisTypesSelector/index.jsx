@@ -2,21 +2,42 @@ import React from 'react';
 import { Typography, Box, Link, Checkbox, FormControlLabel, FormGroup } from '@mui/material';
 import { ThemeProvider } from '../../../../styles/ThemeProvider';
 import { locationsPage } from '../../config';
-import { analysisTypesOptionsNewNames } from '../../../../../config/env/analysisTypes.constants';
+import {
+  analysisTypes,
+  analysisTypesOptionsNewNames,
+  palmRiskAnalysis,
+} from '../../../../../config/env/analysisTypes.constants';
 import BetaTag from '../BetaTag';
 
 import './AnalysisTypesSelector.scss';
 
-function AnalysisTypesSelector({ selectedAnalyses, setSelectedAnalyses }) {
+const getUpdatedSelection = (selectedAnalyses, selectedAnalysisId) => {
+  const isAnalysisBeingRemoved = selectedAnalyses.includes(selectedAnalysisId);
+
+  if (isAnalysisBeingRemoved) {
+    return selectedAnalysisId === analysisTypes.FOREST_CHANGE_DIAGNOSTICS
+      ? selectedAnalyses.filter(
+          (selectedType) =>
+            selectedType !== analysisTypes.PALM_RISK &&
+            selectedType !== analysisTypes.FOREST_CHANGE_DIAGNOSTICS
+        )
+      : selectedAnalyses.filter((selectedType) => selectedType !== selectedAnalysisId);
+  } else {
+    return selectedAnalysisId === analysisTypes.PALM_RISK
+      ? [...selectedAnalyses, analysisTypes.PALM_RISK, analysisTypes.FOREST_CHANGE_DIAGNOSTICS]
+      : [...selectedAnalyses, selectedAnalysisId];
+  }
+};
+
+function AnalysisTypesSelector({ selectedAnalyses, setSelectedAnalyses, commodity }) {
   const handleAnalyzesSelection = (selectedAnalysisId) => {
-    let selection;
-    if (selectedAnalyses.includes(selectedAnalysisId)) {
-      selection = selectedAnalyses.filter((selectedType) => selectedType !== selectedAnalysisId);
-    } else {
-      selection = [...selectedAnalyses, selectedAnalysisId];
-    }
-    setSelectedAnalyses(selection);
+    setSelectedAnalyses(getUpdatedSelection(selectedAnalyses, selectedAnalysisId));
   };
+
+  const analysisOptions =
+    commodity === 'OILP'
+      ? [...analysisTypesOptionsNewNames, palmRiskAnalysis]
+      : analysisTypesOptionsNewNames;
 
   return (
     <ThemeProvider>
@@ -30,7 +51,7 @@ function AnalysisTypesSelector({ selectedAnalyses, setSelectedAnalyses }) {
           </Link>
         </Typography>
         <br />
-        {analysisTypesOptionsNewNames.map(({ id, label, description }) => (
+        {analysisOptions.map(({ id, label, description }) => (
           <div key={id}>
             <FormControlLabel
               control={
@@ -39,7 +60,7 @@ function AnalysisTypesSelector({ selectedAnalyses, setSelectedAnalyses }) {
                   onChange={() => handleAnalyzesSelection(id)}
                 />
               }
-              style={{ marginRight: 0, marginBottom: 15 }}
+              sx={{ mr: 0, mb: 1.5, ml: id === analysisTypes.PALM_RISK ? 2 : 0 }}
               label={
                 <>
                   <Box display="flex" alignItems="center" gap={1}>

@@ -10,6 +10,7 @@ export const analysisTypes = {
   FOREST_CHANGE_DIAGNOSTICS: 'FCD',
   DEFORESTATION_KPIS: 'AFI',
   ALERTS: 'ALERTS',
+  PALM_RISK: 'PalmRisk',
 } as const;
 
 export const analysisTypesOptionsNewNames = [
@@ -32,3 +33,10 @@ export const analysisTypesOptionsNewNames = [
     description: 'Annual tree cover loss since 2001 + additional contextual and regional datasets',
   },
 ];
+
+export const palmRiskAnalysis = {
+  id: analysisTypes.PALM_RISK,
+  label: 'Include Palm Risk Assessment',
+  shortLabel: '',
+  description: 'Commodity-specific risk analysis for palm oil mills',
+};

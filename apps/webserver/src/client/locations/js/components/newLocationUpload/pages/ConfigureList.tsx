@@ -28,6 +28,7 @@ import { typeOfAnalysisMap, commodities } from '../utils/constants';
 import { useFetch } from '../../../../../hooks';
 import debounce from 'lodash/debounce';
 import { fetchListsByCommodity } from '../../../../../api';
+import { analysisTypes } from '../../../../../../config/env/analysisTypes.constants';
 
 type CommoditiesType = (typeof commodities)[keyof typeof commodities];
 const commodityValues = Object.values(commodities) as [CommoditiesType, ...CommoditiesType[]];
@@ -171,10 +172,10 @@ export function ConfigureList({ userLists }: { userLists: UserList[] }) {
   ) => {
     field.onChange(e.target.checked);
 
-    if (id === 'PalmRisk' && e.target.checked) {
+    if (id === analysisTypes.PALM_RISK && e.target.checked) {
       setValue('FCD', true);
     } else if (id === 'FCD' && !e.target.checked) {
-      setValue('PalmRisk', false);
+      setValue(analysisTypes.PALM_RISK, false);
     }
   };
 
@@ -390,9 +391,9 @@ export function ConfigureList({ userLists }: { userLists: UserList[] }) {
         </Typography>
         <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1, mt: 1 }}>
           {typeOfAnalysisMap
-            .filter((x) => selectedCommodity === 'Palm oil' || x.id !== 'PalmRisk')
+            .filter((x) => selectedCommodity === 'Palm oil' || x.id !== analysisTypes.PALM_RISK)
             .map(({ id, label, description }) => {
-              const isPalmRisk = id === 'PalmRisk';
+              const isPalmRisk = id === analysisTypes.PALM_RISK;
               return (
                 <Controller
                   key={id}

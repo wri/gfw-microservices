@@ -187,19 +187,12 @@ export class AccountUsersAnalysisUsageFileService extends IFileGenerator {
 
   private async uploadFileToS3(filePath: string) {
     try {
-      const [fileName, fileExtension] = filePath.split('.');
-      // TODO: should we refactor `sendFiletoS3` to take dynamic file paths instead of fixed `/tmp`?
-      await this.s3Service.sendFiletoS3(
-        fileName.replace('/tmp/', ''),
-        fileExtension,
-        'text/csv',
-        this.configService.get('AWS_TMP_BUCKET', { infer: true })
-      );
-      return await this.s3Service.getFileSignedUrl(
-        fileName.replace('/tmp/', ''),
-        fileExtension,
-        this.configService.get('AWS_TMP_BUCKET', { infer: true })
-      );
+      const key = path.basename(filePath).split('.')[0];
+      const s3Bucket = this.configService.get('AWS_TMP_BUCKET', { infer: true });
+      const s3Key = `${process.env.NODE_ENV}/${key}.csv`;
+      await this.s3Service.writeFileToS3(filePath, 'text/csv', s3Bucket, s3Key);
+
+      return await this.s3Service.getFileSignedUrl(key, 'csv', s3Bucket);
     } catch (error) {
       throw new Error(`[uploadFileToS3] Failed to upload file to bucket. ${error.message}`);
     }

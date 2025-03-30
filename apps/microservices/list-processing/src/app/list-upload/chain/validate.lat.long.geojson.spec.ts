@@ -136,7 +136,7 @@ describe('ValidateLatLongGeojson', () => {
       expect(result.geojson.features.length).toBe(1);
     });
 
-    it('should handle invalid GeoJSON', async () => {
+    it('should handle GeoJSON with invalid coordinates', async () => {
       const input: ChainType = {
         request: {
           organization_database: 'test_db',
@@ -163,6 +163,81 @@ describe('ValidateLatLongGeojson', () => {
       expect(result.geojson.features.length).toBe(1);
       expect(result.geojson.features[0].properties.errorDetails).toStrictEqual([
         'Invalid coordinates',
+      ]);
+    });
+
+    it('should fail open (not closed) polygon', async () => {
+      const input: ChainType = {
+        request: {
+          organization_database: 'test_db',
+          path: 'path',
+        },
+        geojson: {
+          type: 'FeatureCollection',
+          features: [
+            {
+              type: 'Feature',
+              geometry: {
+                type: 'Polygon',
+                coordinates: [
+                  [
+                    [0, 0],
+                    [2, 2],
+                    [2, 0],
+                    [0, 2],
+                  ],
+                ],
+              },
+              properties: {
+                country: 'Brazil',
+              },
+            },
+          ],
+        },
+      };
+
+      const result = await validator.handle(input);
+      expect(result.geojson.features.length).toBe(1);
+      expect(result.geojson.features[0].properties.errorDetails).toStrictEqual([
+        'Invalid polygon geometry',
+      ]);
+    });
+
+    it('should fail self-intersecting polygon', async () => {
+      const input: ChainType = {
+        request: {
+          organization_database: 'test_db',
+          path: 'path',
+        },
+        geojson: {
+          type: 'FeatureCollection',
+          features: [
+            {
+              type: 'Feature',
+              geometry: {
+                type: 'Polygon',
+                coordinates: [
+                  [
+                    [0, 0],
+                    [2, 2],
+                    [2, 0],
+                    [0, 2],
+                    [0, 0],
+                  ],
+                ],
+              },
+              properties: {
+                country: 'Brazil',
+              },
+            },
+          ],
+        },
+      };
+
+      const result = await validator.handle(input);
+      expect(result.geojson.features.length).toBe(1);
+      expect(result.geojson.features[0].properties.errorDetails).toStrictEqual([
+        'Invalid polygon geometry',
       ]);
     });
   });

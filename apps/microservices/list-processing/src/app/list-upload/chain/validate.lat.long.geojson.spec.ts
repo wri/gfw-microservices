@@ -10,27 +10,27 @@ describe('ValidateLatLongGeojson', () => {
 
   describe('isValidLatitude', () => {
     it('should return true for valid latitudes', () => {
-      expect(validator.isValidLatitude(0)).toBe(true);
-      expect(validator.isValidLatitude(90)).toBe(true);
-      expect(validator.isValidLatitude(-90)).toBe(true);
+      expect(ValidateLatLongGeojson.isValidLatitude(0)).toBe(true);
+      expect(ValidateLatLongGeojson.isValidLatitude(90)).toBe(true);
+      expect(ValidateLatLongGeojson.isValidLatitude(-90)).toBe(true);
     });
 
     it('should return false for invalid latitudes', () => {
-      expect(validator.isValidLatitude(91)).toBe(false);
-      expect(validator.isValidLatitude(-91)).toBe(false);
+      expect(ValidateLatLongGeojson.isValidLatitude(91)).toBe(false);
+      expect(ValidateLatLongGeojson.isValidLatitude(-91)).toBe(false);
     });
   });
 
   describe('isValidLongitude', () => {
     it('should return true for valid longitudes', () => {
-      expect(validator.isValidLongitude(0)).toBe(true);
-      expect(validator.isValidLongitude(180)).toBe(true);
-      expect(validator.isValidLongitude(-180)).toBe(true);
+      expect(ValidateLatLongGeojson.isValidLongitude(0)).toBe(true);
+      expect(ValidateLatLongGeojson.isValidLongitude(180)).toBe(true);
+      expect(ValidateLatLongGeojson.isValidLongitude(-180)).toBe(true);
     });
 
     it('should return false for invalid longitudes', () => {
-      expect(validator.isValidLongitude(181)).toBe(false);
-      expect(validator.isValidLongitude(-181)).toBe(false);
+      expect(ValidateLatLongGeojson.isValidLongitude(181)).toBe(false);
+      expect(ValidateLatLongGeojson.isValidLongitude(-181)).toBe(false);
     });
   });
 
@@ -64,17 +64,17 @@ describe('ValidateLatLongGeojson', () => {
   describe('validateCoordinates', () => {
     it('should return true for valid coordinates', () => {
       const coordinates = [[0, 0]];
-      expect(validator.validateCoordinates(coordinates, 'Argentina')).toBe(true);
+      expect(validator.validateCoordinates(coordinates, 'Argentina')).toBe('');
     });
 
     it('should return false for invalid coordinates', () => {
       const coordinates = [[200, 0]];
-      expect(validator.validateCoordinates(coordinates, 'Argentina')).toBe(false);
+      expect(validator.validateCoordinates(coordinates, 'Argentina')).toBe('Invalid coordinates');
     });
 
     it('should handle nested coordinates', () => {
       const coordinates = [[[0, 0]]];
-      expect(validator.validateCoordinates(coordinates, 'Argentina')).toBe(true);
+      expect(validator.validateCoordinates(coordinates, 'Argentina')).toBe('');
     });
   });
 
@@ -105,7 +105,7 @@ describe('ValidateLatLongGeojson', () => {
       const result = await validator.handle(input);
       expect(result.geojson.features.length).toBe(1);
       expect(result.geojson.features[0].properties.errorDetails).toStrictEqual([
-        'Invalid coordinates',
+        'Invalid location',
       ]);
     });
 

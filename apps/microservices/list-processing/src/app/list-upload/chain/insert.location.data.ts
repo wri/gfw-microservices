@@ -17,6 +17,8 @@ export class InsertLocationData extends AbstractHandler<ChainType> {
   private convertErrorDetails(locations) {
     return locations.map((location) => {
       if (location && Array.isArray(location.errorDetails)) {
+        const uniqueErrors = new Set(location.errorDetails);
+        location.errorDetails = Array.from(uniqueErrors);
         location.errorDetails = location.errorDetails.join(', ');
       }
       return location;

@@ -29,9 +29,8 @@ export enum CSVInputTypes {
 
 export const BooleanStringZod = z.preprocess((val) => val === 'true', z.boolean()).default(false);
 
-export const BasicFieldsFileRequestSchema = z.object({
+export const CommonRequestSchema = z.object({
   file: z.string().trim().optional().describe('File path or identifier'),
-  listId: z.coerce.number().int().positive().describe('Unique identifier for the list'),
   key: z.string().trim().optional().describe('API key or access token'),
   userEmail: z.string().trim().email().optional().describe('Email address of the requesting user'),
   type: z.nativeEnum(CSVInputTypes).describe('Type of CSV input being processed'),
@@ -40,6 +39,10 @@ export const BasicFieldsFileRequestSchema = z.object({
     .trim()
     .optional()
     .describe('Database identifier for the organization'),
+});
+
+export const BasicFieldsFileRequestSchema = CommonRequestSchema.extend({
+  listId: z.coerce.number().int().positive().describe('Unique identifier for the list'),
   isGFWList: BooleanStringZod.describe('Whether this is a GFW list'),
 });
 
@@ -104,9 +107,9 @@ export const ListFieldsFileRequestSchema = BasicFieldsFileRequestSchema.extend({
   templateId: z.number().int().positive().optional(),
 });
 
-export const AccountUsersUsageRequestSchema = BasicFieldsFileRequestSchema.extend({
-  startDate: z.string().trim().datetime().optional(),
-  endDate: z.string().trim().datetime().optional(),
+export const AccountUsersUsageRequestSchema = CommonRequestSchema.extend({
+  startDate: z.string().trim().date().optional(),
+  endDate: z.string().trim().date().optional(),
 }).refine(
   (data) => {
     if (data.startDate && data.endDate) {

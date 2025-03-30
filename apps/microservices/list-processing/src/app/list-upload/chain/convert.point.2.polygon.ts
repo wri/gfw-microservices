@@ -1,6 +1,7 @@
 import { Logger } from '@nestjs/common';
 import { AbstractHandler, ChainType, RequestNewList } from './types';
 import { Feature, Polygon } from '@wri-monorepos/geo';
+import { ValidateLatLongGeojson } from './validate.lat.long.geojson';
 
 // ArcGIS imports are ESM only imports, and this code is transpiled into commonJS
 // so we need to use eval to import these modules
@@ -83,30 +84,37 @@ export class ConvertPoint2Polygon extends AbstractHandler<ChainType> {
       analysisRadius,
     };
   }
-  q;
+
   async convertFeature(feature: Feature, input: ChainType): Promise<Feature> {
     const { geometry, properties } = feature;
 
     if (geometry.type === 'Point') {
       const { coordinates } = geometry;
       const [longitude, latitude] = coordinates;
-      const { analysisArea, analysisRadius } = this.validateAndCalculate(
-        Number(properties.analysisArea),
-        Number(properties.analysisRadius)
-      );
-      const polygon = await this.geomFromLatLongRadiusArea(latitude, longitude, analysisRadius);
-      delete feature.properties.geometry;
-      if (polygon !== null && polygon !== undefined && polygon.rings.length > 0) {
-        (feature.geometry as Polygon).coordinates = polygon.rings;
-        (feature.geometry as Polygon).type = 'Polygon';
-        feature.properties.analysisArea = analysisArea;
-        feature.properties.analysisRadius = analysisRadius;
+
+      if (ValidateLatLongGeojson.isValidLatLong(latitude, longitude)) {
+        const { analysisArea, analysisRadius } = this.validateAndCalculate(
+          Number(properties.analysisArea),
+          Number(properties.analysisRadius)
+        );
+        const polygon = await this.geomFromLatLongRadiusArea(latitude, longitude, analysisRadius);
+        delete feature.properties.geometry;
+        if (polygon !== null && polygon !== undefined && polygon.rings.length > 0) {
+          (feature.geometry as Polygon).coordinates = polygon.rings;
+          (feature.geometry as Polygon).type = 'Polygon';
+          feature.properties.analysisArea = analysisArea;
+          feature.properties.analysisRadius = analysisRadius;
+        } else {
+          feature.properties.errorDetails = feature.properties.errorDetails || [];
+          (input.request as RequestNewList).hasUnanalyzableError = true;
+          (feature.properties.errorDetails as Array<string>).push(
+            'Error: Unable to convert point to polygon'
+          );
+        }
       } else {
         feature.properties.errorDetails = feature.properties.errorDetails || [];
         (input.request as RequestNewList).hasUnanalyzableError = true;
-        (feature.properties.errorDetails as Array<string>).push(
-          'Error: Unable to convert point to polygon'
-        );
+        (feature.properties.errorDetails as Array<string>).push('Invalid coordinates');
       }
     }
 

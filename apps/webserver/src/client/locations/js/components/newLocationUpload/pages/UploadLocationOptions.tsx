@@ -32,7 +32,10 @@ export function UploadLocationOptions() {
           <Typography variant="body2" className="upload-location-options__main-content__subtitle">
             GFW Pro allows users to upload their data in multiple ways.
           </Typography>
-          <ExternalHelperResource text="How to format your location data for GFW Pro" url="#" />
+          <ExternalHelperResource
+            text="How to format your location data for GFW Pro"
+            url="https://globalforestwatch.org/help/gfw-pro/guides/complete-selected-template"
+          />
         </div>
         <div className="upload-location-options__main-content__options">
           <Typography variant="body2">

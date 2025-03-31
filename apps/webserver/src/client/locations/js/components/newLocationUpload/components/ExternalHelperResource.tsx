@@ -19,6 +19,7 @@ export function ExternalHelperResource({ text, url }: ExternalHelperResourceProp
         textDecoration: 'none',
       }}
       href={url}
+      target="_blank"
     >
       <Support fontSize="small" />
       <Typography variant="body2" color="primary" lineHeight="0">

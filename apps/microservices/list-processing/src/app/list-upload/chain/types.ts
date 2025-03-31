@@ -1,4 +1,4 @@
-import { FeatureCollection } from '@wri-monorepos/geo';
+import { Feature, FeatureCollection } from '@wri-monorepos/geo';
 import { Logger } from '@nestjs/common';
 import { performance } from 'perf_hooks';
 import { updateListsUploadStatus } from '../shared/update.lists.upload.status';
@@ -93,6 +93,13 @@ export abstract class AbstractHandler<T> implements Handler<T> {
         const chainInput = (result as ChainType).request as RequestNewList;
         chainInput.hasUnanalyzableError = true;
         if (chainInput.preview) {
+          const geoJsonOut = (result as ChainType).geojson as FeatureCollection;
+          const fakeErrFeature = {
+            properties: { errorDetails: error.message },
+            geometry: null,
+            type: 'Feature',
+          };
+          geoJsonOut.features.push(fakeErrFeature as Feature);
           break;
         }
       }

@@ -99,7 +99,7 @@ const mockUserLists: UserList[] = [
 beforeEach(() => {
   (useFetch as jest.Mock).mockReturnValue({
     data: [
-      { id: 5829, name: 'cattle 1' },
+      { id: 5829, name: 'Cattle 1' },
       { id: 5830, name: 'best list of cocoa 1' },
       { id: 5831, name: 'best list of cocoa 2' },
     ],
@@ -212,6 +212,37 @@ describe('ConfigureList', () => {
       expect(mockHistoryPush).toHaveBeenCalledWith('SUMMARY_AND_SUBMIT');
     });
   }, 15100);
+
+  it('should show message when no existing lists are found for the chosen commodity', async () => {
+    render(<ConfigureList userLists={[]} />);
+
+    (useFetch as jest.Mock).mockReturnValueOnce({
+      data: [],
+      isLoading: false,
+      request: jest.fn(),
+      error: null,
+    });
+
+    const commodityDropdown = screen.getAllByRole('combobox')[0];
+
+    await userEvent.click(commodityDropdown);
+    await userEvent.click(screen.getByRole('option', { name: /rubber/i }));
+
+    await waitFor(() => {
+      expect(
+        screen.queryByText(/no matching list found for the chosen commodity/i)
+      ).toBeInTheDocument();
+    });
+
+    await userEvent.click(commodityDropdown);
+    await userEvent.click(screen.getByRole('option', { name: /cattle/i }));
+
+    await waitFor(() => {
+      expect(
+        screen.queryByText(/no matching list found for the chosen commodity/i)
+      ).not.toBeInTheDocument();
+    });
+  }, 10000);
 
   it('should allow entering a new list name', async () => {
     render(<ConfigureList userLists={mockUserLists} />);

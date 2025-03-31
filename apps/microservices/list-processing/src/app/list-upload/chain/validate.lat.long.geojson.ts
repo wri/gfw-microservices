@@ -1,5 +1,7 @@
 import { Logger } from '@nestjs/common';
 import { AbstractHandler, ChainType, RequestNewList } from './types';
+import * as turf from '@turf/turf';
+import { Feature, Polygon } from 'geojson';
 
 export class ValidateLatLongGeojson extends AbstractHandler<ChainType> {
   private readonly logger = new Logger(ValidateLatLongGeojson.name);
@@ -66,11 +68,12 @@ export class ValidateLatLongGeojson extends AbstractHandler<ChainType> {
     return '';
   }
 
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  validatePolygon(_geometry: unknown): boolean {
-    // Implement polygon validation logic (e.g., check for open or self-intersecting polygons)
-    // This is a placeholder for actual polygon validation logic
-    return true; // Replace with actual validation
+  validatePolygon(feature: Feature): boolean {
+    if (!turf.booleanValid(feature)) {
+      return false;
+    }
+    const kinks = turf.kinks(feature as Feature<Polygon>);
+    return kinks.features.length === 0;
   }
 
   async handle(input: ChainType): Promise<ChainType> {
@@ -95,7 +98,7 @@ export class ValidateLatLongGeojson extends AbstractHandler<ChainType> {
           }
 
           if (geometry.type === 'Polygon' || geometry.type === 'MultiPolygon') {
-            if (!this.validatePolygon(geometry)) {
+            if (!this.validatePolygon(feature as Feature)) {
               feature.properties.errorDetails = feature.properties.errorDetails || [];
               (input.request as RequestNewList).hasUnanalyzableError = true;
               (feature.properties.errorDetails as Array<string>).push('Invalid polygon geometry');

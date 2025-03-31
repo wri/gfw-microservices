@@ -68,7 +68,7 @@
     "@smithy/node-http-handler": "^2.1.8",
     "@ssut/nestjs-sqs": "^2.2.0",
     "@testing-library/user-event": "^14.5.2",
-    "@turf/turf": "^6.5.0",
+    "@turf/turf": "^7.2.0",
     "@types/lodash": "^4.14.202",
     "@types/mssql": "^8.1.1",
     "@types/node": "^20.5.9",

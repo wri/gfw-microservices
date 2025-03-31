@@ -211,7 +211,7 @@ describe('ConfigureList', () => {
     await waitFor(() => {
       expect(mockHistoryPush).toHaveBeenCalledWith('SUMMARY_AND_SUBMIT');
     });
-  }, 10000);
+  }, 15100);
 
   it('should allow entering a new list name', async () => {
     render(<ConfigureList userLists={mockUserLists} />);

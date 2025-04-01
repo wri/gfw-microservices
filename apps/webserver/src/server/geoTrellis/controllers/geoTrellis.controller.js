@@ -19,6 +19,9 @@ export const geoTrellisAnalyzeListController = async (req, res) => {
   const { id: listID } = list;
 
   try {
+    if (!analysisTypes) {
+      throw new Error(`Something went wrong. Missing analysisTypes`);
+    }
     // Set list status ID to be Pending
     await ListManager.setListStatus(req, listID, listStatus.Pending);
 

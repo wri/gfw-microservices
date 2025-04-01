@@ -149,7 +149,7 @@ describe('Shapefile Service', () => {
   const filters = {
     listId: 5642,
     listName: 'WRI',
-    key: 'tmp-shapefile',
+    key: 'tmp-geom',
     templateId: 13,
     combinedColumnsSplitted: [],
     selectedLocationsList: [],

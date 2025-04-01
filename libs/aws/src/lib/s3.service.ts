@@ -24,11 +24,11 @@ export class S3Service {
     });
   }
 
-  async sendFiletoS3(key: string, fileExtension: string, contentType: string, bucket: string) {
-    const fileContent = await fs.promises.readFile(`/tmp/${key}.${fileExtension}`);
+  async writeFileToS3(filePath: string, contentType: string, bucket: string, s3Key: string) {
+    const fileContent = await fs.promises.readFile(filePath);
     const params = {
       Bucket: bucket,
-      Key: `${process.env.NODE_ENV}/${key}.${fileExtension}`,
+      Key: s3Key,
       Body: fileContent,
       ContentType: contentType,
     };

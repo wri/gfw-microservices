@@ -2,7 +2,7 @@ import { Injectable, Logger } from '@nestjs/common';
 import { RequestLargeListProcess, ResponseLargeListProcess } from '../../models';
 import { ConfigService } from '@nestjs/config';
 import { ServerConfigType } from '../../validators/server-config';
-import { S3Service } from '@wri-monorepos/aws';
+import { EmailService, S3Service } from '@wri-monorepos/aws';
 import { AbstractHandler, ChainType } from './chain/types';
 import { DownloadS3File } from './chain/download.s3.file';
 import { ParserData } from './chain/parser.data';
@@ -15,6 +15,7 @@ import { logExecutionTime } from './chain/shared';
 import { WriteLocationCount } from './chain/write.location.count';
 import { SaveListAttributes } from './chain/save.list.attributes';
 import { ProcessUploadData } from './chain/process.upload.data';
+import { ClientStoreConnection, Lists } from '@wri-monorepos/sql';
 
 import fastq from 'fastq';
 import type { queue, done } from 'fastq';
@@ -25,14 +26,26 @@ import { ValidateLocationName } from './chain/validate.location.name';
 import { AddNewLocationToAnalysisTable } from './chain/add.new.location.to.analysis.table';
 import { ConvertGeojsonProperties } from './chain/convert.geojson.properties';
 import { PutListAsDraft } from './chain/put.list.as.draft';
+import { GenerateErrorFile } from './chain/generate.error.file';
+import { ConvertCommodityToMapsPamCode } from './chain/convert.commodity.mapspam';
 
 type WorkerType = {
   request: RequestLargeListProcess;
   config: ConfigService<ServerConfigType, true>;
+  emailService: EmailService;
 };
 
+export async function clearErrorFile(organizationDatabase: string, listId: number) {
+  const connection = await new ClientStoreConnection().getConnection(organizationDatabase);
+  const listRepository = connection.getRepository(Lists);
+  await listRepository.update({ id: listId }, { errorFileStoragePath: null });
+}
+
 async function worker(input: WorkerType, cb: done) {
-  const { organization_database: organizationDatabase } = input.request;
+  const { organization_database: organizationDatabase, list_id: listId } = input.request;
+
+  // Clear any existing error file before starting analysis
+  await clearErrorFile(organizationDatabase, listId);
 
   const chainType: ChainType = {
     request: input.request,
@@ -61,7 +74,8 @@ async function worker(input: WorkerType, cb: done) {
   const validateLocationName = new ValidateLocationName();
   const addNewLocationToAnalysisTable = new AddNewLocationToAnalysisTable();
   const convertGeojsonProperties = new ConvertGeojsonProperties();
-  const putListAsDraft = new PutListAsDraft();
+  const putListAsDraft = new PutListAsDraft(input.config, input.emailService);
+  const generateErrorFile = new GenerateErrorFile(s3Service, input.config);
 
   downloadS3File
     .setNext(parseData)
@@ -77,6 +91,7 @@ async function worker(input: WorkerType, cb: done) {
     .setNext(insertLocationData)
     .setNext(saveListAttributes)
     .setNext(writeLocationCount)
+    .setNext(generateErrorFile)
     .setNext(addNewLocationToAnalysisTable)
     .setNext(startAnalysis);
 
@@ -89,15 +104,34 @@ async function worker(input: WorkerType, cb: done) {
 export class StartAnalysisService {
   private readonly logger = new Logger(StartAnalysisService.name);
 
-  constructor(private readonly config: ConfigService<ServerConfigType, true>) {}
+  constructor(
+    private readonly config: ConfigService<ServerConfigType, true>,
+    private readonly emailService: EmailService
+  ) {}
 
   @logExecutionTime(StartAnalysisService.name)
   async run(request: RequestLargeListProcess): Promise<ResponseLargeListProcess> {
+    const { list_id: listId, commodity, organization_database: clientDatabase } = request;
+    if (listId) {
+      const listExistAtClientStore = await checkIfListExistAndCommodityIsTheSame(
+        listId,
+        commodity,
+        clientDatabase
+      );
+      if (!listExistAtClientStore) {
+        this.logger.warn(`List not found with id ${listId} at client store`);
+        throw new Error(`List not found with id ${listId} at client store`);
+      } else {
+        this.logger.log(`List ${listId} found at client store`);
+      }
+    }
+
     const q: queue<WorkerType> = fastq(worker, 2);
 
     q.push({
       request,
       config: this.config,
+      emailService: this.emailService,
     });
 
     return {
@@ -106,3 +140,25 @@ export class StartAnalysisService {
     };
   }
 }
+
+export const checkIfListExistAndCommodityIsTheSame = async (listId, commodity, clientDatabase) => {
+  const clientStoreConnection = new ClientStoreConnection();
+  const connection = await clientStoreConnection.getConnection(clientDatabase);
+
+  const whereClause: Record<string, unknown> = {
+    id: listId,
+  };
+
+  const commodityMapSpam = ConvertCommodityToMapsPamCode.getCommodityName(commodity);
+  whereClause.Commodity = commodityMapSpam;
+
+  const existingList = await connection.getRepository(Lists).findOne({
+    where: whereClause,
+  });
+
+  if (!existingList) {
+    return false;
+  }
+
+  return true;
+};

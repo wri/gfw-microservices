@@ -41,6 +41,7 @@ describe('upload-process', () => {
         listName: 'llp gfw pro 205806022023',
         analysisIds: ['FCD', 'ALERTS'],
         saveAsDraft: false,
+        commodity: '',
       })
       .reply(200, {
         user_id: 10033,
@@ -67,6 +68,7 @@ describe('upload-process', () => {
         listName: 'llp gfw pro 205806022023',
         saveAsDraft: false,
         analysisTypesParam: { FCD: true, ALERTS: true },
+        commodity: '',
       })
       .reply(200, {
         ResponseMetadata: {
@@ -121,6 +123,7 @@ describe('upload-process', () => {
         listName: 'llp gfw pro 205806022023',
         saveAsDraft: false,
         analysisTypesParam: { FCD: true, ALERTS: true },
+        commodity: '',
       })
       .reply(200, {
         ResponseMetadata: {

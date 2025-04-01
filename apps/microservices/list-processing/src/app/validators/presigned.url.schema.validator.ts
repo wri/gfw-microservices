@@ -45,7 +45,7 @@ export const requestLargeListProcessSchema = z.object({
   analysisIds: z.array(z.string()).optional(),
   subscriptionStatusId: z.number().optional(),
   listStatusId: z.number().optional(),
-  commodity: z.string().optional(),
+  commodity: z.string(),
 });
 
 export const requestTriggerProcessLargeListSchema = z.object({

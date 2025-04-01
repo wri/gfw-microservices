@@ -4,13 +4,11 @@ import {
   Logger,
   NotFoundException,
 } from '@nestjs/common';
-import { Lists } from './lists.entity';
-import { ClientStoreConnection } from '../shared/client-store-connection';
 import { OrganizationService } from '../list-analysis/organization.service';
 import { Organization } from '../api-keys/organization.entity';
 import { S3Service } from '@wri-monorepos/aws';
 import { ListInfoResponse } from '../list-analysis/list-upload-new.dto';
-import { SaveActivityLogEndpoint } from '../list-analysis/utils/saveActivityLogEndpoint';
+import { ClientStoreConnection, Lists } from '@wri-monorepos/sql';
 
 @Injectable()
 export class ListService {
@@ -18,8 +16,7 @@ export class ListService {
   constructor(
     private clientStoreConnection: ClientStoreConnection,
     private organizationService: OrganizationService,
-    private s3Service: S3Service,
-    private saveActivityLogEndpoint: SaveActivityLogEndpoint
+    private s3Service: S3Service
   ) {}
   // Replace this with actual database or external service calls
   async getList({
@@ -42,16 +39,22 @@ export class ListService {
         return null;
       }
       // There is some trash in DevCo db that has the errorFileStoragePath as 'none' so we need to check if it is different from 'none'
-      if (listStatus.errorFileStoragePath && listStatus.errorFileStoragePath.includes('s3://')) {
-        listStatus.errorFileStoragePath = await this.getPresignedUrl(
-          listStatus.errorFileStoragePath
-        );
-      } else {
-        listStatus.errorFileStoragePath = null;
+      try {
+        if (listStatus.errorFileStoragePath && listStatus.errorFileStoragePath.includes('s3://')) {
+          const s3Path = listStatus.errorFileStoragePath.split('s3://').pop();
+          const [bucket, ...keyParts] = s3Path.split('/');
+          const key = keyParts.join('/');
+          listStatus.errorFileStoragePath = await this.getPresignedUrl(key, bucket);
+        } else {
+          listStatus.errorFileStoragePath = null;
+        }
+      } catch (error) {
+        this.logger.error('Error getting presigned url', error.stack || error);
+        listStatus.errorFileStoragePath = 'Error getting presigned url';
       }
       return listStatus;
-    } catch (e) {
-      this.logger.error('List status not found.', e);
+    } catch (error) {
+      this.logger.error('List status not found.', error.stack || error);
       return null;
     }
   }
@@ -71,22 +74,19 @@ export class ListService {
     const organization = await this.organizationService.findOrganizationById(organizationId);
     return organization;
   }
-  private async getPresignedUrl(fileName: string) {
-    const fileUrl = fileName.split('s3://').pop();
-    const [bucket, environment, subPath, filenameWithExtensin] = fileUrl.split('/');
-    const [filename, extension] = filenameWithExtensin.split('.');
+  private async getPresignedUrl(key: string, bucket: string): Promise<string> {
+    const keyParts = key.split('/');
+    const environment = keyParts[0];
+    const subPath = keyParts.slice(1, -1).join('/');
+    const [filename, extension] = keyParts[keyParts.length - 1].split('.');
 
-    try {
-      return await this.s3Service.getFileSignedUrlDynamicEnvironment(
-        filename,
-        extension,
-        bucket,
-        environment,
-        subPath
-      );
-    } catch (error) {
-      throw new Error(`[uploadFileToS3] Failed to upload file to bucket. ${error.message}`);
-    }
+    return await this.s3Service.getFileSignedUrlDynamicEnvironment(
+      filename,
+      extension,
+      bucket,
+      environment,
+      subPath || undefined
+    );
   }
   async getListInfo(organizationId: number, listId: number): Promise<ListInfoResponse> {
     try {

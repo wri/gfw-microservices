@@ -1,4 +1,5 @@
 import { cloneRow, formatPct, isJSON, validatePct } from '../shared/functions';
+import { DIAGNOSTIC_ANALYSIS_PERIOD } from '@wri-monorepos/constants';
 
 export function argentinaDeforestationParser({ operation, data, dataRow, csvData }) {
   const { composites } = operation;
@@ -40,6 +41,10 @@ export function argentinaDeforestationParser({ operation, data, dataRow, csvData
       }
 
       Object.keys(yearlyData).forEach((year) => {
+        if (Number(year) < DIAGNOSTIC_ANALYSIS_PERIOD.ARGENTINA_START_YEAR) {
+          return;
+        }
+
         const currentRow = cloneRow(dataRow);
         rowValue = yearlyData[year];
 

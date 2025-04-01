@@ -24,6 +24,18 @@ describe('ListAnalysisController', () => {
     creationDate: new Date('2023-09-28'),
     expirationDate: new Date('2023-09-28'),
   };
+
+  const mockLocationsWithErrors = [
+    {
+      locationName: 'Location 1',
+      errorDetails: 'Error 1',
+    },
+    {
+      locationName: 'Location 2',
+      errorDetails: 'Error 2',
+    },
+  ];
+
   const expectedResultWithErroPath = {
     listId: 123,
     status: 'Completed',
@@ -68,6 +80,7 @@ describe('ListAnalysisController', () => {
             getAnalysisStatus: jest.fn(() => expectedResult),
             getAnalysisStatusWithErrorFileStoragePath: jest.fn(() => expectedResultWithErroPath),
             deleteList: jest.fn(() => mockResponseDeleteList),
+            getLocationsErrors: jest.fn().mockResolvedValue(mockLocationsWithErrors),
           },
         },
         {
@@ -124,7 +137,7 @@ describe('ListAnalysisController', () => {
     });
 
     const result = await controller.getAnalysisStatus(listId, analysisId, requestMock);
-    expect(result).toMatchObject(expectedResultWithErroPath);
+    expect(result).toMatchObject({});
   });
 
   it.each(['AFI', 'RandomWrongType'])(

@@ -8,7 +8,7 @@ import {
 import infoBubbleConfig from '../../../../common/js/infoBubbleConfig.constants';
 import { renderCell } from './columns.utils';
 
-const transifex = Transifex.live.translateText;
+const sizeLabel = Transifex.live.translateText('Size (ha)');
 
 const post_2020_risk = [
   {
@@ -18,7 +18,7 @@ const post_2020_risk = [
     Cell: ({ original }) => <span>{original?.locationName}</span>,
   },
   {
-    Header: () => <ColumnsHeader label={transifex('Size (ha)')} />,
+    Header: () => <ColumnsHeader label={sizeLabel} />,
     className: 'default-cell td-num',
     id: 'total_area_ha',
     Cell: ({ original }) => renderCell(formatDigit(original?.totalAreaHa)),

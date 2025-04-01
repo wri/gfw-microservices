@@ -13,7 +13,7 @@ import {
 } from '@wri-monorepos/sql';
 import { IFileGenerator } from './i.file.generator';
 import { ACCOUNT_USERS_USAGE_CSV_HEADER } from '../shared/constants';
-import { analysisTypesOptions } from '@wri-monorepos/constants';
+import { analysisTypesOptionsNewNames } from '@wri-monorepos/constants';
 import { ServerConfigType } from '../../validators/server-config';
 
 @Injectable()
@@ -187,26 +187,19 @@ export class AccountUsersAnalysisUsageFileService extends IFileGenerator {
 
   private async uploadFileToS3(filePath: string) {
     try {
-      const [fileName, fileExtension] = filePath.split('.');
-      // TODO: should we refactor `sendFiletoS3` to take dynamic file paths instead of fixed `/tmp`?
-      await this.s3Service.sendFiletoS3(
-        fileName.replace('/tmp/', ''),
-        fileExtension,
-        'text/csv',
-        this.configService.get('AWS_TMP_BUCKET', { infer: true })
-      );
-      return await this.s3Service.getFileSignedUrl(
-        fileName.replace('/tmp/', ''),
-        fileExtension,
-        this.configService.get('AWS_TMP_BUCKET', { infer: true })
-      );
+      const key = path.basename(filePath).split('.')[0];
+      const s3Bucket = this.configService.get('AWS_TMP_BUCKET', { infer: true });
+      const s3Key = `${process.env.NODE_ENV}/${key}.csv`;
+      await this.s3Service.writeFileToS3(filePath, 'text/csv', s3Bucket, s3Key);
+
+      return await this.s3Service.getFileSignedUrl(key, 'csv', s3Bucket);
     } catch (error) {
       throw new Error(`[uploadFileToS3] Failed to upload file to bucket. ${error.message}`);
     }
   }
 
   private getAnalysisTypeShortLabel(analysisTypeId: string) {
-    const analysisType = analysisTypesOptions.find(
+    const analysisType = analysisTypesOptionsNewNames.find(
       (analysisOpt) => analysisOpt.id === analysisTypeId
     );
     return analysisType ? analysisType.shortLabel : '';

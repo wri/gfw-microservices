@@ -17,6 +17,8 @@ export class InsertLocationData extends AbstractHandler<ChainType> {
   private convertErrorDetails(locations) {
     return locations.map((location) => {
       if (location && Array.isArray(location.errorDetails)) {
+        const uniqueErrors = new Set(location.errorDetails);
+        location.errorDetails = Array.from(uniqueErrors);
         location.errorDetails = location.errorDetails.join(', ');
       }
       return location;
@@ -42,8 +44,7 @@ export class InsertLocationData extends AbstractHandler<ChainType> {
   }
 
   async handle(request: ChainType): Promise<ChainType> {
-    const { locations: values } = request;
-
+    const values = request.geojson.features.map((feature) => feature.properties);
     const { organization_database: organizationDatabase, listTable } =
       request.request as RequestNewList;
     const ListEntity = new EntitySchema<ListSchemaType>({

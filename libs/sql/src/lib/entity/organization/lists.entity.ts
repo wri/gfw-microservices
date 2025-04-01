@@ -53,10 +53,10 @@ export class Lists {
   @Column({ name: 'dashboard_last_results', nullable: true })
   dashboardLastResults: Date;
 
-  @Column({ name: 'vector_tiles_storage_path' })
+  @Column({ name: 'vector_tiles_storage_path', length: 300 })
   vectorTilesStoragePath: string;
 
-  @Column({ name: 'error_file_storage_path', nullable: true })
+  @Column({ name: 'error_file_storage_path', nullable: true, length: 300 })
   errorFileStoragePath: string;
 
   @Column({ name: 'vector_tiles_last_updated' })

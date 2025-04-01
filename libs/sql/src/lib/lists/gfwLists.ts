@@ -5,7 +5,7 @@ import {
   Logger,
   NotFoundException,
 } from '@nestjs/common';
-import { EntityTarget, FindOptionsWhere, Raw } from 'typeorm';
+import { EntityTarget } from 'typeorm';
 import {
   ListsPalmOilMills,
   ListGFWLists,
@@ -19,6 +19,8 @@ import {
   ListProtectedAreas,
   ListAdministrativeAreas,
 } from '../entity';
+
+const systemDatabase = 'gfwpro';
 
 export class GfwLists {
   private readonly logger = new Logger('List processing service');
@@ -64,85 +66,13 @@ export class GfwLists {
     return ATTRIBUTES_LIST_TABLE_NAMES[list_id] || ATTRIBUTES_LIST_TABLE;
   }
 
-  async getConnection(organizationDatabase: string) {
-    return await this.clientStoreConnection.getConnection(organizationDatabase);
+  async getConnection() {
+    return await this.clientStoreConnection.getConnection(systemDatabase);
   }
 
-  async getAnalysisDataForGFWList(
-    pageNum: number,
-    pageSize: number,
-    list_id: number,
-    organizationDatabase: string,
-    ids: number[] = []
-  ) {
+  async getListAnalysisTableName(list_id: number): Promise<ListGFWLists> {
     try {
-      const connection = await this.getConnection(organizationDatabase);
-      const listTableName = await this.getListAnalysisTableName(list_id, organizationDatabase);
-
-      const listRepository = connection.getRepository(
-        this.getAnalysisTableNameEntity(listTableName.list_analysis_table_name)
-      );
-
-      const take = pageSize === 0 ? this.DEFAULT_PAGE_SIZE : pageSize;
-      const skip = pageNum > 0 ? pageNum * take : this.DEFAULT_PAGE_NUM;
-
-      let items, count;
-      const where: FindOptionsWhere<
-        | AnalysisPalmOilMills
-        | AnalysisAdministrativesAreas
-        | AnalysisOilPalmConcessions
-        | AnalysisProtectedAreas
-        | AnalysisRspoOilPalmConcessions
-      > = {};
-      if (ids.length > 0) {
-        // If ids array is not empty, apply the where clause
-        [items, count] = await listRepository.findAndCount({
-          where: {
-            ...where,
-            LocationId: Raw((alias) => `${alias} IN (:...names)`, {
-              names: ids,
-            }),
-          },
-          skip,
-          take,
-          order: {
-            LocationId: 'DESC',
-          },
-        });
-      } else {
-        [items, count] = await listRepository.findAndCount({
-          skip,
-          take,
-          order: {
-            LocationId: 'DESC',
-          },
-        });
-      }
-      if (!items) {
-        this.logger.error(`${listTableName.list_analysis_table_name}: lists not found`);
-        throw new NotFoundException(
-          `${listTableName.list_analysis_table_name} with list_id ${list_id} not found.`
-        );
-      }
-      const itemsWithListId = items.map((item) => {
-        return { ...item, list_id };
-      });
-      const number_of_pages = Math.ceil(count / take);
-      return [itemsWithListId, count, number_of_pages];
-    } catch (error) {
-      throw new InternalServerErrorException(
-        `Error getAnalysisDataForGFWList for gfwList id ${list_id}`,
-        error.message
-      );
-    }
-  }
-
-  async getListAnalysisTableName(
-    list_id: number,
-    organizationDatabase: string
-  ): Promise<ListGFWLists> {
-    try {
-      const connection = await this.getConnection(organizationDatabase);
+      const connection = await this.getConnection();
       const listRepository = await connection.getRepository(ListGFWLists);
       const listName = await listRepository.findOne({ where: { id: list_id } });
       return listName;
@@ -155,8 +85,15 @@ export class GfwLists {
     list_id: number,
     pageNum = 0,
     pageSize = 0,
-    organizationDatabase: string,
-    filters,
+    filters: {
+      selectedCountry?: string;
+      selectedState?: string;
+      selectedSubState?: string;
+      hasError: boolean;
+      selectedDesignation?: string;
+      selectedDesignationType?: string;
+      selectedIUCN?: string;
+    },
     filterString = '',
     tableSortedBy,
     tableSortedDesc
@@ -166,7 +103,7 @@ export class GfwLists {
     }
 
     try {
-      const connection = await this.getConnection(organizationDatabase);
+      const connection = await this.getConnection();
       const listRepository = connection.getRepository(this.getAttributesListEntity(list_id));
 
       const take = pageSize === 0 ? this.DEFAULT_PAGE_SIZE : pageSize;
@@ -174,19 +111,23 @@ export class GfwLists {
 
       const queryBuilder = listRepository.createQueryBuilder();
 
-      if (filters.selectedCountry && filters.selectedCountry !== '') {
+      if (filters.selectedCountry) {
         queryBuilder.andWhere('Country = :country', { country: filters.selectedCountry });
       }
 
-      if (filters.selectedState && filters.selectedState !== '') {
+      if (filters.selectedState) {
         queryBuilder.andWhere('State = :state', { state: filters.selectedState });
       }
 
-      if (filters.selectedSubState && filters.selectedSubState !== '') {
+      if (filters.selectedSubState) {
         queryBuilder.andWhere('"Sub State" = :subState', { subState: filters.selectedSubState });
       }
 
-      if (filters.selectedDesignation && filters.selectedDesignation !== '') {
+      if (filters.hasError) {
+        queryBuilder.andWhere('ErrorDetails IS NOT NULL AND LEN(ErrorDetails) > 0');
+      }
+
+      if (filters.selectedDesignation) {
         queryBuilder.andWhere('Designation = :designation', {
           designation: filters.selectedDesignation,
         });
@@ -198,7 +139,7 @@ export class GfwLists {
         });
       }
 
-      if (filters.selectedIUCN && filters.selectedIUCN !== '') {
+      if (filters.selectedIUCN) {
         queryBuilder.andWhere('"IUCN CAT" = :iucnCat', { iucnCat: filters.selectedIUCN });
       }
 

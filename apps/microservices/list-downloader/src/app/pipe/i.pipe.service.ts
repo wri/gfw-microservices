@@ -81,12 +81,11 @@ export abstract class IPipeService {
 
   public async uploadFileToS3(filters: BasicFieldsFileRequest) {
     const { key } = filters;
-    await this.s3Service.sendFiletoS3(
-      key,
-      'zip',
-      'application/zip',
-      this.configService.get('AWS_TMP_BUCKET', { infer: true })
-    );
+    const filePath = `/tmp/${key}.zip`;
+    const s3Bucket = this.configService.get('AWS_TMP_BUCKET', { infer: true });
+    const s3Key = `${process.env.NODE_ENV}/${key}.zip`;
+
+    await this.s3Service.writeFileToS3(filePath, 'application/zip', s3Bucket, s3Key);
     return await this.s3Service.getFileSignedUrl(
       key,
       'zip',

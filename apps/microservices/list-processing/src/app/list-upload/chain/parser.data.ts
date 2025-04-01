@@ -83,6 +83,38 @@ export class ParserData extends AbstractHandler<ChainType> {
     return geojson;
   };
 
+  private removeTemplateLines(geojson: FeatureCollection): FeatureCollection {
+    if (!geojson || !geojson.features) {
+      return geojson;
+    }
+
+    return {
+      ...geojson,
+      features: geojson.features.filter((feature) => {
+        if (!feature.properties?.locationName) {
+          return false;
+        }
+
+        // Remove template lines
+        const templateStrings = [
+          'Mandatory',
+          'String',
+          'name of the location',
+          'POPULATE WITH DATA BELOW THIS LINE',
+        ];
+        if (
+          templateStrings.some((template) =>
+            (feature.properties?.locationName as string)?.includes(template)
+          )
+        ) {
+          return false;
+        }
+
+        return true;
+      }),
+    };
+  }
+
   async handle(request: ChainType): Promise<ChainType> {
     const { fileDownloadedPath, preview = false } = request.request as PreviewListRequest;
     const fileExtension = path.extname(fileDownloadedPath);
@@ -93,7 +125,7 @@ export class ParserData extends AbstractHandler<ChainType> {
       '.xls': this.xls2geojson,
       '.xlsx': this.xls2geojson,
       '.kml': this.kml2geojson,
-      '.kmz': this.kmz2geojson, // Added support for KMZ files
+      '.kmz': this.kmz2geojson,
       '.json': this.json2geojson,
       '.geojson': this.json2geojson,
     };
@@ -105,10 +137,11 @@ export class ParserData extends AbstractHandler<ChainType> {
 
     try {
       const geoJson = await dataParser[fileExtension](fileDownloadedPath, preview);
+      const cleanedGeoJson = this.removeTemplateLines(geoJson);
       this.logger.log('Data parsed successfully');
 
       this.deleteFile(fileDownloadedPath);
-      return { ...request, geojson: geoJson };
+      return { ...request, geojson: cleanedGeoJson };
     } catch (error) {
       this.logger.error(
         `Error while parsing the data from file: ${fileDownloadedPath}`,

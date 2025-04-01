@@ -9,7 +9,7 @@ export class ConvertCommodityToMapsPamCode extends AbstractHandler<ChainType> {
     this.logger.log('Converting commodity name to MAPSPAM code');
     const { commodity } = request.request as RequestNewList;
 
-    const commodityName = this.getCommodityName(commodity);
+    const commodityName = ConvertCommodityToMapsPamCode.getCommodityName(commodity);
 
     return {
       ...request,
@@ -20,12 +20,12 @@ export class ConvertCommodityToMapsPamCode extends AbstractHandler<ChainType> {
     };
   }
 
-  private getCommodityName(commodity: string): string {
+  static getCommodityName(commodity: string): string {
     if (Object.values(COMMODITY_MAP_SPAM).includes(commodity)) {
       return commodity;
     }
 
     const commodityMapSpam = COMMODITY_MAP_SPAM[commodity.toLocaleLowerCase().trim()];
-    return commodityMapSpam ? commodityMapSpam : `GFWP_${commodity.replace(/ /g, '_')}`;
+    return commodityMapSpam ? commodityMapSpam : `GFWP_${commodity.replace(/\s+/g, '_')}`;
   }
 }

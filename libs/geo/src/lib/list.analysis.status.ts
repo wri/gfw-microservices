@@ -1,10 +1,12 @@
-import { Logger } from '@nestjs/common';
+import { BadRequestException, Logger } from '@nestjs/common';
 import {
   ActivityLog,
   ClientStoreConnection,
   FeatureFlag,
   Lists,
   ListsAnalysisStatus,
+  ListSchema,
+  ListSchemaType,
   SQLUtils,
   User,
 } from '@wri-monorepos/sql';
@@ -15,9 +17,12 @@ import {
   GEO_TRELLIS__ANALYZE_LIST_QA,
   GEO_TRELLIS__ANALYZE_LIST_STAGING,
   listStatus,
-  analysisTypesOptions,
+  analysisTypesOptionsNewNames,
   analysisIdsOptionsMap,
   MAPSPAM_COMMODITY,
+  GADM_FEATURE_FLAG_NAME,
+  CURRENT_GADM_VALUE,
+  NEW_GADM_VALUE,
 } from '@wri-monorepos/constants';
 import { S3Service } from '@wri-monorepos/aws';
 import {
@@ -31,6 +36,7 @@ import axios from 'axios';
 import { flatten } from 'lodash';
 import { updateListsAnalysisStatus } from './list.analysis.status/updateListAnalysisStatus';
 import { mockAnalysisFlow } from '../mock';
+import { EntitySchema } from 'typeorm';
 
 export const MARK_IS_TEST_LIST = 'e2e_automation';
 export const MARK_IS_TEST_USER = 'dt_';
@@ -219,7 +225,7 @@ export const handleCreateAnalysis = async (
   listId: number,
   organizationId: number,
   organizationDb: string,
-  userEmail: string,
+  sendEmail: boolean,
   organization_user_id: number,
   subscriptionStatusId: number,
   reanalyze = true
@@ -264,7 +270,7 @@ export const handleCreateAnalysis = async (
             { listId, analysisId },
             {
               status: listStatus.Pending,
-              s3Url: null,
+              s3URL: null,
               bundleCreationTime: null,
               expirationTime: null,
               errorInfo: null,
@@ -303,26 +309,17 @@ export const handleCreateAnalysis = async (
       processing_limit: processingLimit,
       analysis_types: analysisTypes,
       reanalyze,
-      send_email: userEmail ? true : false,
+      send_email: sendEmail,
     };
     const connectionLibSql = await clientStoreConnection.getConnection(organizationDb);
 
     const activityLogRepository = connectionLibSql.getRepository(ActivityLog);
 
-    //Search for FeatureFlag
-    const { getFeatureFlagsForCurrentOrg, getClientIdByClientStoreDatabaseName } =
-      await featureFlagsService();
-    const orgId = await getClientIdByClientStoreDatabaseName(organizationDb);
-    const flags = await getFeatureFlagsForCurrentOrg(orgId);
+    // Add FeatureFlag to data
+    data['expedited_analysis'] = await getExpeditedAnalysisFlag(organizationDb);
 
-    const uploadListLpFlag = flags.find(
-      (f) => f.flagId === 'PermanentFlagExpeditedAnalysis'
-    ) as FeatureFlag;
-
-    //Add FeatureFlag to data
-    if (uploadListLpFlag?.flagState === true) {
-      data['expedited_analysis'] = true;
-    }
+    // Add GadmFeatureFlag to data
+    data['gadm'] = await getGadmFeatrueFlag(organizationDb);
 
     const microserviceEnvironment = process.env.MICROSERVICES_ENV;
     const { listName, userEmail: testUserEmail } = await getTestFlowDetails(
@@ -394,7 +391,7 @@ export const deleteListAnalysisStatusBy = async (
 
 export const getAnalysisTypesFromIds = (analysisIds: string[]) => {
   const analysisIdSet = new Set(analysisIds);
-  return analysisTypesOptions.reduce((result, { id }) => {
+  return analysisTypesOptionsNewNames.reduce((result, { id }) => {
     result[id] = analysisIdSet.has(id);
     return result;
   }, {} as Record<string, boolean>);
@@ -404,7 +401,7 @@ export const extractAnalysisTypes = (listAnalysisStatusData: ListsAnalysisStatus
   const analysisStatusMap = new Map(
     listAnalysisStatusData.map(({ analysisId }) => [analysisId, true])
   );
-  return analysisTypesOptions.reduce((result, { id }) => {
+  return analysisTypesOptionsNewNames.reduce((result, { id }) => {
     result[id] = analysisStatusMap.has(id);
     return result;
   }, {} as Record<string, boolean>);
@@ -456,6 +453,16 @@ export const isGHGCommodityValid = async (id: number, organizationDb: string): P
     const listData = await listRepository.findOne({
       where: { id },
     });
+
+    // Get list.xxx repository
+    const ListEntity = new EntitySchema<ListSchemaType>({
+      ...ListSchema,
+      name: listData.listTableName,
+    });
+    const connection = await clientStoreConnection.getConnection(organizationDb, [ListEntity]);
+    const listTableNameRepository = await connection.getRepository(ListEntity);
+    const listTableName = await listTableNameRepository.findBy({ commodity: listData.Commodity });
+
     if (!listData) {
       Logger.error('validateGHGCommodity', `List ${id} not found`);
       throw new Error(`List ${id} not found`);
@@ -464,25 +471,67 @@ export const isGHGCommodityValid = async (id: number, organizationDb: string): P
     // ListData.version = 2 won't have commodities with null values, take care of it when version 2 is implemented
     // verify if list has no commodity
     if (listData.Commodity === null && listData.version > 1) {
-      throw new Error('missing commodity');
-    } else if (listData.Commodity === null) {
       Logger.log('validateGHGCommodity', `List ${id} has no commodity`);
-      return true;
+      await saveAnalysisStatusErrorInfo(
+        organizationDb,
+        id,
+        'Invalid GHG Commodity',
+        listStatus.Inactive,
+        'GHG'
+      );
+      throw new Error('Invalid GHG Commodity');
     }
     // verify if list has a non valid GHG commodity
     if (!isValidMapSpamCommodity(listData.Commodity)) {
-      Logger.log(
-        `Invalid commodity in list ${listData.id} - ${listData.listName} for GHG Analysis`
+      Logger.log('Invalid GHG Commodity');
+      await saveAnalysisStatusErrorInfo(
+        organizationDb,
+        id,
+        'Invalid GHG Commodity',
+        listStatus.Inactive,
+        'GHG'
       );
-      throw new Error(
-        `Invalid commodity in list ${listData.id} - ${listData.listName} for GHG Analysis`
-      );
+      throw new Error('Invalid GHG Commodity');
+    }
+    try {
+      if (listData.Commodity === 'GFWP_Other') {
+        if (listTableName.length == 0) {
+          Logger.log('Invalid GHG Commodity');
+          await saveAnalysisStatusErrorInfo(
+            organizationDb,
+            id,
+            'Invalid GHG Commodity',
+            listStatus.Inactive,
+            'GHG'
+          );
+          throw new Error('Invalid GHG Commodity');
+        }
+        const hasYield = listTableName.every((element) => {
+          const attributes = JSON.parse(element.attributes || '[]');
+          return attributes.some((item) => item.field === 'yield' && parseFloat(item.value) > 0);
+        });
+        // Verify if has yield for all locations
+        if (!hasYield) {
+          Logger.log('Missing Yield Values');
+          await saveAnalysisStatusErrorInfo(
+            organizationDb,
+            id,
+            'Missing Yield Values',
+            listStatus.Inactive,
+            'GHG'
+          );
+          throw new Error('Missing Yield Values');
+        }
+      }
+    } catch (error) {
+      Logger.warn(error.stack || error);
+      throw error;
     }
 
     return true;
   } catch (error) {
-    Logger.error('validateGHGCommodity', error.message || error);
-    throw error;
+    Logger.error('validateGHGCommodity', error.stack || error);
+    throw new BadRequestException(error.stack || error);
   }
 };
 
@@ -494,4 +543,71 @@ export const isValidMapSpamCommodity = (Commodity: string): boolean => {
     return true;
   }
   return false;
+};
+
+//Saves the error info in the database based on the analysisId and listId
+const saveAnalysisStatusErrorInfo = async (
+  organizationDb: string,
+  listId: number,
+  errorInfo: string,
+  status: number,
+  analysisId: string
+) => {
+  const clientStoreConnection = new ClientStoreConnection();
+  const connection = await clientStoreConnection.getConnection(organizationDb);
+  const listAnalysisStatusRepository = await connection.getRepository(ListsAnalysisStatus);
+  await listAnalysisStatusRepository.update({ listId, analysisId }, { errorInfo, status });
+};
+
+export const getGadmFeatrueFlag = async (organizationDb: string): Promise<string> => {
+  let gadmResult = CURRENT_GADM_VALUE;
+  try {
+    const gadmFeatureFlagName = await searchForFeatureFlag(organizationDb, GADM_FEATURE_FLAG_NAME);
+
+    if (gadmFeatureFlagName?.flagState === true) {
+      gadmResult = NEW_GADM_VALUE;
+    }
+
+    return gadmResult;
+  } catch (error) {
+    Logger.error('getGadmFeatrueFlag', error.stack || error);
+    return gadmResult;
+  }
+};
+
+const getExpeditedAnalysisFlag = async (organizationDb: string): Promise<boolean> => {
+  let expeditedAnalysisFlag = false;
+  try {
+    const expeditedAnalysisFlagName = await searchForFeatureFlag(
+      organizationDb,
+      'PermanentFlagExpeditedAnalysis'
+    );
+
+    if (expeditedAnalysisFlagName?.flagState === true) {
+      expeditedAnalysisFlag = true;
+    }
+    return expeditedAnalysisFlag;
+  } catch (error) {
+    Logger.error('getExpeditedAnalysisFlag', error.stack || error);
+    return expeditedAnalysisFlag;
+  }
+};
+
+const searchForFeatureFlag = async (
+  organizationDb: string,
+  featureFlagName: string
+): Promise<FeatureFlag> => {
+  try {
+    //Search for FeatureFlag
+    const { getFeatureFlagsForCurrentOrg, getClientIdByClientStoreDatabaseName } =
+      await featureFlagsService();
+    const orgId = await getClientIdByClientStoreDatabaseName(organizationDb);
+    const flags = await getFeatureFlagsForCurrentOrg(orgId);
+
+    const searchedFeatureFlag = flags.find((f) => f.flagId === featureFlagName) as FeatureFlag;
+    return searchedFeatureFlag;
+  } catch (error) {
+    Logger.error('searchForFeatrueFlag', error.stack || error);
+    return null;
+  }
 };

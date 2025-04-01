@@ -16,7 +16,7 @@ export class WriteLocationCount extends AbstractHandler<ChainType> {
     // Calculate the number of valid features
     const listSize =
       request.geojson.features?.filter(
-        (feature) => !feature?.properties?.error && feature?.properties?.gadmid
+        (feature) => !feature?.properties?.errorDetails && feature?.properties?.gadmid
       ).length || 0;
 
     let connection;
@@ -25,8 +25,12 @@ export class WriteLocationCount extends AbstractHandler<ChainType> {
       connection = await this.clientStoreConnection.getConnection(organization_database);
       const listRepository = connection.getRepository(Lists);
 
+      const list = await listRepository.findOne({ where: { id: listId } });
+
+      const totalLocations = (list.listLocationsCount || 0) + listSize;
+
       // Update the list's location count
-      await listRepository.update({ id: listId }, { listLocationsCount: listSize });
+      await listRepository.update({ id: listId }, { listLocationsCount: totalLocations });
 
       this.logger.log(`Updated list ${listId} with ${listSize} locations.`);
     } catch (error) {

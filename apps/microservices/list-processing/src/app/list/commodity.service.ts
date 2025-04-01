@@ -11,6 +11,7 @@ import {
 } from '@wri-monorepos/sql';
 import { EntitySchema, Raw, Repository } from 'typeorm';
 import { CommodityResponse, ListResponse } from './types';
+import { ConvertCommodityToMapsPamCode } from '../list-upload/chain/convert.commodity.mapspam';
 
 @Injectable()
 export class CommodityService {
@@ -69,7 +70,7 @@ export class CommodityService {
     listId: number
   ): Promise<{ commodity: string; listTableName: string; templateId: number }> {
     const clientStoreConnection = new ClientStoreConnection();
-    const connection = await clientStoreConnection.getConnection(organizationDatabase, [Lists]);
+    const connection = await clientStoreConnection.getConnection(organizationDatabase);
     const listRepository = connection.getRepository(Lists);
     const { Commodity, listTableName, templateId } = await listRepository.findOne({
       where: { id: listId },
@@ -116,13 +117,14 @@ export class CommodityService {
           {
             Commodity: Raw(
               (alias) =>
-                `LOWER(${alias}) COLLATE Latin1_General_CI_AI = LOWER(:commodity) COLLATE Latin1_General_CI_AI`,
-              { commodity }
+                `LOWER(${alias}) COLLATE Latin1_General_CI_AI = LOWER(:commodity) COLLATE Latin1_General_CI_AI`, // makes the commodity name lower case and removes accents, so that "Maíz" matches "maiz", for example
+              { commodity: ConvertCommodityToMapsPamCode.getCommodityName(commodity) }
             ),
           },
           listTemplate ? { templateId: listTemplate.id } : null,
         ].filter(Boolean),
         select: ['id', 'listName'],
+        order: { listName: 'ASC' },
       });
 
       return lists.map((list) => ({ id: list.id, name: list.listName }));

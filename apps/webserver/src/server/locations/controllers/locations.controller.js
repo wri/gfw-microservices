@@ -21,9 +21,7 @@ const { formatListLocationDataForFilter } = require('../utils/locations.utils');
 const { getCurrentDateTimeFormatted } = require('../../vectorTiles/utils/vectorTile.utils');
 const sqlUtils = require('../../../config/privateutils/sql.utils');
 const sql = require('mssql');
-const {
-  getFilterOptionsForUserLists,
-} = require('../../../../../../libs/sql/src/lib/queries/organization/getFilterOptionsForUserLists');
+const { getFilterOptionsForUserLists } = require('@wri-monorepos/sql');
 
 // Config
 const { getGeoJSONGeometry } = require('../../../config/privateutils/location.utils');

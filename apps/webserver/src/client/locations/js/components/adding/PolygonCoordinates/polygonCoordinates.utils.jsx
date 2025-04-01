@@ -72,7 +72,7 @@ export const extractCoordinates = (geometry) => {
 
 export const addCoordinateTextFromPoint = (mapView, point) => {
   const textSymbol = new TextSymbol({
-    text: `${point.longitude.toFixed(3)}, ${point.latitude.toFixed(3)}`,
+    text: `${point.latitude.toFixed(3)}, ${point.longitude.toFixed(3)}`,
     color: 'black',
     haloColor: 'white',
     haloSize: '2px',

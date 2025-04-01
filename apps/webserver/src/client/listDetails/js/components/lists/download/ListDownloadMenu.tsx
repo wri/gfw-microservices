@@ -33,7 +33,7 @@ interface HandleMenuClickParams {
   type: 'input';
 }
 
-const ListDownloadMenu: React.FC<ListDownloadMenuProps> = ({
+function ListDownloadMenu({
   combinedColumns,
   currentUser,
   filters,
@@ -48,7 +48,7 @@ const ListDownloadMenu: React.FC<ListDownloadMenuProps> = ({
   allLocationsSelected,
   isGfwList,
   isHoverMenu = false,
-}) => {
+}: ListDownloadMenuProps) {
   const [dialogOpen, setDialogOpen] = useState(false);
   const [anchorEl, setAnchorEl] = useState<undefined | HTMLElement>(undefined);
   const isMenuOpen = Boolean(anchorEl);
@@ -104,13 +104,18 @@ const ListDownloadMenu: React.FC<ListDownloadMenuProps> = ({
     }
   };
 
-  const downloadEnabled = !isDownloadDisabledForThisList(selectedList);
+  const isDownloadEnabled = !isDownloadDisabledForThisList(selectedList);
   const isSourceFileDownloadEnabled =
     !isGfwList && currentUser.access_level_id !== userAccessLevel.VIEWER;
 
-  if (!downloadEnabled) {
+  if (!isDownloadEnabled) {
     return <></>;
   }
+  const errorFileStoragePath =
+    selectedList?.error_file_storage_path && selectedList.error_file_storage_path !== 'None'
+      ? selectedList.error_file_storage_path
+      : null;
+
   return (
     <>
       {isHoverMenu ? (
@@ -135,6 +140,15 @@ const ListDownloadMenu: React.FC<ListDownloadMenuProps> = ({
 
       <Popover anchorEl={anchorEl} open={isMenuOpen} onRequestClose={handleClose}>
         <Menu>
+          {errorFileStoragePath && (
+            <MenuItem
+              primaryText="Download error file CSV"
+              data-cy="download-error-file"
+              href={`/locations/downloadErrorFile?fileKey=${errorFileStoragePath}`}
+              target="_blank"
+            />
+          )}
+
           {isSourceFileDownloadEnabled && (
             <MenuItem
               primaryText="Location(s) CSV"
@@ -161,6 +175,6 @@ const ListDownloadMenu: React.FC<ListDownloadMenuProps> = ({
       <ConfirmDialog open={dialogOpen} setDialogOpen={setDialogOpen} />
     </>
   );
-};
+}
 
 export default ListDownloadMenu;

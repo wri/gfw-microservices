@@ -22,4 +22,37 @@ describe('Test convert KML File to GeoJSON', () => {
       'Invalid KML: No <kml> tag found'
     );
   });
+
+  it('correctly extracts properties from KML file', async () => {
+    const kmlContent = `
+      <kml xmlns="http://www.opengis.net/kml/2.2">
+        <Document>
+          <Placemark>
+            <ExtendedData>
+              <SchemaData>
+                <SimpleData name="Location Name">SosoSoy0</SimpleData>
+                <SimpleData name="Company ID">1</SimpleData>
+                <SimpleData name="Cadaster ID">CAR_12345</SimpleData>
+                <SimpleData name="Volume">200</SimpleData>
+                <SimpleData name="Owner Name">Ike</SimpleData>
+              </SchemaData>
+            </ExtendedData>
+            <Point><coordinates>-50.217219,-24.663267</coordinates></Point>
+          </Placemark>
+        </Document>
+      </kml>
+    `;
+
+    const result = await kml2GeoJSON(kmlContent);
+
+    expect(result.type).toBe('FeatureCollection');
+    expect(result.features.length).toBe(1);
+    expect(result.features[0].properties).toMatchObject({
+      'Location Name': 'SosoSoy0',
+      'Company ID': '1',
+      'Cadaster ID': 'CAR_12345',
+      Volume: '200',
+      'Owner Name': 'Ike',
+    });
+  });
 });

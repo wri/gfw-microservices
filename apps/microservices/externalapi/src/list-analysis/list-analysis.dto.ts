@@ -13,7 +13,7 @@ export class ListAnalysisResponse {
   status: string;
 
   @ApiProperty()
-  errorsDetails: string[];
+  errorsDetails: Array<unknown>;
 
   @ApiProperty()
   resultUrl: string;

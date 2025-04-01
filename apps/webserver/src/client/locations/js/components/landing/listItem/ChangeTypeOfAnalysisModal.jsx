@@ -38,6 +38,7 @@ function ChangeTypeOfAnalysisModal({
   setIsChangeTypeOfAnalysisModalOpen,
   isChangeTypeOfAnalysisModalOpen,
   listAnalysesStatus,
+  commodity,
 }) {
   const initialAnalysisSelection = listAnalysesStatus.map(({ analysisId }) => analysisId);
   const [selectedAnalysis, setSelectedAnalysis] = useState(initialAnalysisSelection);
@@ -75,8 +76,8 @@ function ChangeTypeOfAnalysisModal({
         id: listId,
         list_name: listName,
       },
-      true,
-      analysisTypesForRequest.join()
+      analysisTypesForRequest.join(),
+      true
     );
   };
 
@@ -124,6 +125,7 @@ function ChangeTypeOfAnalysisModal({
             <AnalysisTypesSelector
               selectedAnalyses={selectedAnalysis}
               setSelectedAnalyses={setSelectedAnalysis}
+              commodity={commodity}
             />
           </CardContent>
           <CardActions>

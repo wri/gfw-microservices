@@ -4,30 +4,14 @@ import { performance } from 'perf_hooks';
 import { updateListsUploadStatus } from '../shared/update.lists.upload.status';
 import { formatDurationStr, formatHeapUsed } from '../shared/performance.utils';
 
-export interface ChainEvent {
-  eventId?: string;
-  config?: unknown;
-  payload?: ChainType;
-}
-
 export type AttributeType = {
-  field: string;
-  type: string;
-  value: unknown;
-  custom?: boolean;
+  [x: string]: string;
 };
 
 export type ChainType = {
   geojson?: FeatureCollection;
   request: RequestNewList | PreviewListRequest;
-  locations?: Feature['properties'][];
-};
-
-export type ListAttributesRow = {
-  field: string;
-  type: string;
-  value: string | number | unknown;
-  custom?: boolean;
+  attributes?: ListAttributesRecord[];
 };
 
 export interface ListAttributesRecord {
@@ -35,9 +19,6 @@ export interface ListAttributesRecord {
   attribute_name: string;
   attribute_type: number;
 }
-export type ListAttributesRecords = {
-  [key: string]: ListAttributesRow;
-};
 
 export interface PreviewListRequest {
   path: string;
@@ -112,6 +93,13 @@ export abstract class AbstractHandler<T> implements Handler<T> {
         const chainInput = (result as ChainType).request as RequestNewList;
         chainInput.hasUnanalyzableError = true;
         if (chainInput.preview) {
+          const geoJsonOut = (result as ChainType).geojson as FeatureCollection;
+          const fakeErrFeature = {
+            properties: { errorDetails: error.message },
+            geometry: null,
+            type: 'Feature',
+          };
+          geoJsonOut.features.push(fakeErrFeature as Feature);
           break;
         }
       }

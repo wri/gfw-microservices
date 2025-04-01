@@ -18,31 +18,8 @@ export const analysisTypes = {
   DEFORESTATION_KPIS: 'AFI',
   ALERTS: 'ALERTS',
   GREENHOUSE_GAS_EMISSIONS: 'GHG',
+  PALM_RISK: 'PalmRisk',
 };
-
-// update these constant names when isListDetailsPageRedesignAvailable feature flag is removed
-export const analysisTypesOptions = [
-  {
-    id: analysisTypes.FOREST_CHANGE_DIAGNOSTICS,
-    label: 'Forest Change Global',
-    shortLabel: 'Forest Change',
-  },
-  {
-    id: analysisTypes.DEFORESTATION_KPIS,
-    label: 'Deforestation Reporting (cutoff date 2020)',
-    shortLabel: 'Reporting',
-  },
-  {
-    id: analysisTypes.ALERTS,
-    label: 'NEAR-REAL TIME ALERTS (INTEGRATED ALERTS, VIIRS)',
-    shortLabel: 'Alerts',
-  },
-  {
-    id: analysisTypes.GREENHOUSE_GAS_EMISSIONS,
-    label: 'Greenhouse Gas Emissions',
-    shortLabel: 'GHG',
-  },
-];
 
 export const analysisTypesOptionsNewNames = [
   {
@@ -63,8 +40,18 @@ export const analysisTypesOptionsNewNames = [
     shortLabel: 'Post-2000',
     description: 'Annual tree cover loss since 2001 + additional contextual and regional datasets',
   },
+  {
+    id: analysisTypes.GREENHOUSE_GAS_EMISSIONS,
+    label: 'Greenhouse Gas Emissions',
+    shortLabel: 'GHG',
+    description: 'Greenhouse gas emissions from deforestation and forest degradation',
+  },
 ];
 
 export const analysisIdsOptionsMap = {
   [ListAnalysisIds.FCD]: ['PalmRisk'],
 };
+
+export const GADM_FEATURE_FLAG_NAME = 'GadmFeatureFlagName4_1';
+export const CURRENT_GADM_VALUE = '3.6';
+export const NEW_GADM_VALUE = '4.1';

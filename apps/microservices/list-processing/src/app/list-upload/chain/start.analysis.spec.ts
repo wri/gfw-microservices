@@ -100,7 +100,7 @@ describe('StartAnalysis', () => {
         123,
         456,
         'test_db',
-        '',
+        true,
         1,
         1,
         false

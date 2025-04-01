@@ -7,8 +7,7 @@ import { ListActivityTypesEnum } from '@wri-monorepos/constants';
 import { LIST_ANALISYS_ENDPOINT_NAMES, PREPARE_UPLOAD } from '../../config';
 import { UserRoutes } from '../../api-keys/user-route.entity';
 import { Repository } from 'typeorm';
-import { ClientStoreConnection } from '../../shared/client-store-connection';
-import { ConfigService } from '@nestjs/config';
+import { ClientStoreConnection } from '@wri-monorepos/sql';
 
 describe('SaveActivityLogEndpoint', () => {
   let clientStoreConnection: ClientStoreConnection;
@@ -16,7 +15,6 @@ describe('SaveActivityLogEndpoint', () => {
   let userEmail: string;
   let organizationDetails: Organization;
   let userRepository: Repository<UserRoutes>;
-  let configService: ConfigService;
   const organization_user_id = 1;
   beforeEach(() => {
     organizationDetails = {
@@ -29,7 +27,7 @@ describe('SaveActivityLogEndpoint', () => {
       subscriptionStatusId: 1,
     };
     userEmail = 'userEmail';
-    clientStoreConnection = new ClientStoreConnection(configService);
+    clientStoreConnection = new ClientStoreConnection();
     userService = new UserService(userRepository);
   });
   describe('saveActivityLogEndpoint', () => {

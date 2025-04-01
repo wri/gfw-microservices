@@ -5,16 +5,15 @@ import {
   InternalServerErrorException,
   Logger,
   NotFoundException,
+  HttpException,
 } from '@nestjs/common';
 import { AnalysesGenerateRequest, ListAnalysisResponse } from './list-analysis.dto';
 import { UserService } from './user.service';
-import { ExternalUpload } from './external-upload.entity';
+
 import { ConfigService } from '@nestjs/config';
 import axios from 'axios';
 import { generateRandomFilename } from '@wri-monorepos/shared';
-import { ClientStoreConnection } from '../shared/client-store-connection';
 import { OrganizationService } from './organization.service';
-import { ListsAnalysisStatus } from './list-analysis-status.entity';
 import { transformExternalUpload } from './transformers';
 import {
   ListUploadNewErrorResponse,
@@ -31,7 +30,6 @@ import {
   ListActivityTypesEnum,
   listStatus,
 } from '@wri-monorepos/constants';
-import { SqsService } from '@ssut/nestjs-sqs';
 import {
   CREATE_ANALYSIS,
   DELETE_LIST,
@@ -44,12 +42,14 @@ import { generateAnalysisTemplate } from '../shared/generate-templates';
 import { ListService } from '../lists/lists.service';
 import { ServerConfigType } from '../validators/server-config';
 import { SaveActivityLogEndpoint } from './utils/saveActivityLogEndpoint';
-import { handleCreateAnalysis, isValidMapSpamCommodity } from '@wri-monorepos/geo';
-import { EntitySchema } from 'typeorm';
+import { handleCreateAnalysis } from '@wri-monorepos/geo';
+import { EntitySchema, IsNull, Not } from 'typeorm';
 import {
   ListSchema,
   ListSchemaType,
-  ClientStoreConnection as ClientStoreConnectionSql,
+  ClientStoreConnection,
+  ListsAnalysisStatus,
+  ExternalUpload,
 } from '@wri-monorepos/sql';
 const LIST_INITIAL_STATUS = 'Pending';
 const MIN_FILE_SIZE_IN_BYTES = 70; // single location CSV file size
@@ -81,7 +81,6 @@ export class ListAnalysisService {
     private userService: UserService,
     private clientStoreConnection: ClientStoreConnection,
     private organizationService: OrganizationService,
-    private readonly sqsService: SqsService,
     private readonly listService: ListService,
     private readonly saveActivityLogEndpoint: SaveActivityLogEndpoint
   ) {
@@ -193,6 +192,62 @@ export class ListAnalysisService {
       }
     }
     return analysisStatus;
+  }
+
+  async getLocationsErrors({
+    listId,
+    organizationId,
+  }: {
+    listId: number;
+    organizationId: number;
+  }): Promise<Array<{ ['Location Name']: string; Details: string }>> {
+    try {
+      const organization = await this.organizationService.findOrganizationById(organizationId);
+      if (!organization) {
+        throw new HttpException({ errorDetails: 'Organization not found' }, HttpStatus.NOT_FOUND);
+      }
+
+      const list = await this.listService.getList({
+        listId,
+        organizationId,
+      });
+
+      if (!list) {
+        throw new HttpException({ errorDetails: 'List not found' }, HttpStatus.NOT_FOUND);
+      }
+
+      const listTable = list.listTableName;
+
+      const ListEntity = new EntitySchema<ListSchemaType>({
+        ...ListSchema,
+        name: listTable,
+      });
+
+      const connection = await this.clientStoreConnection.getConnection(
+        organization.organizationDb,
+        [ListEntity]
+      );
+      const listTableNameRepository = connection.getRepository(ListEntity);
+      const locationsWithErrors = await listTableNameRepository.find({
+        select: ['locationName', 'errorDetails'],
+        where: {
+          errorDetails: Not(IsNull()),
+        },
+      });
+
+      return locationsWithErrors.map((location) => ({
+        'Location Name': location.locationName,
+        Details: location.errorDetails,
+      }));
+    } catch (error) {
+      if (error instanceof HttpException) {
+        throw error;
+      }
+      throw new HttpException(
+        { errorDetails: error.message || 'Failed to retrieve list errors' },
+        HttpStatus.INTERNAL_SERVER_ERROR
+      );
+    }
   }
 
   async prepareUpload({
@@ -366,6 +421,7 @@ export class ListAnalysisService {
         path: saveListToProcess.data.s3_location,
         list_name: newListDetails.listName,
         analysisIds: newListDetails.analysisIDs,
+        commodity: newListDetails.commodity || '', // commodity still not required in EAPI
         // Forcing template_type because only cocoa_generic is supported
         // LP verifies the field is a string
         template_type: 'cocoa_generic',
@@ -530,8 +586,6 @@ export class ListAnalysisService {
     userEmail: string,
     organization_user_id: number
   ) {
-    await this.validateGHGAnalysis(listId, organizationId, analysisId);
-
     const organizationDetails = await this.getOrganizationDetails(organizationId);
 
     await this.saveActivityLogEndpoint.saveActivityLogEndpoint(
@@ -546,93 +600,11 @@ export class ListAnalysisService {
       listId,
       organizationId,
       organizationDetails.organizationDb,
-      userEmail,
+      userEmail ? true : false,
       organization_user_id,
       organizationDetails.subscriptionStatusId
     );
 
     return response;
-  }
-  private async validateGHGAnalysis(
-    listId: number,
-    organizationId: number,
-    analysisId: string
-  ): Promise<boolean> {
-    if (analysisId !== 'GHG') {
-      return true;
-    } else {
-      const lists = await this.listService.getList({
-        listId,
-        organizationId,
-      });
-
-      if (!lists) {
-        Logger.warn(`List ${lists} not found`);
-        throw new BadRequestException(`List not found`);
-      }
-
-      if (!lists.Commodity) {
-        Logger.warn('Commodity not valid');
-        throw new BadRequestException(`No commodity specified for ${lists.listName}`);
-      }
-
-      // Validate if commodity is valid one
-      if (!isValidMapSpamCommodity(lists.Commodity)) {
-        Logger.log('Commodity not valid');
-        throw new BadRequestException(
-          `List commodity ${lists.Commodity} for ${lists.listName} not supported for GHG Analysis`
-        );
-      }
-      try {
-        if (lists.Commodity === 'GFWP_Other') {
-          // Get List-XXX attributes for list that has commodity as Other
-          const ListEntity = new EntitySchema<ListSchemaType>({
-            ...ListSchema,
-            name: lists.listTableName,
-          });
-          const organization = await this.getOrganizationDetails(organizationId);
-          const clientStoreConnectionSql = new ClientStoreConnectionSql();
-          const connection = await clientStoreConnectionSql.getConnection(
-            organization.organizationDb,
-            [ListEntity]
-          );
-          const listTableNameRepository = await connection.getRepository(ListEntity);
-          const listTableName = await listTableNameRepository.findBy({ commodity: 'GFWP_Other' });
-
-          if (listTableName.length > 0) {
-            let hasYield = 0;
-            listTableName.forEach((element) => {
-              JSON.parse(element.attributes || '[]').map((item) => {
-                if (item['field'] === 'yield' && parseFloat(item['value']) > 0) {
-                  Logger.log('There is yield');
-                  hasYield += 1;
-                }
-              });
-            });
-            // Verify if has yield for all locations
-            if (hasYield < listTableName.length) {
-              Logger.log('Commodity not valid');
-              throw new BadRequestException(
-                `List ${lists.listName} not supported for GHG Analysis missing yield for some locations`
-              );
-            }
-          } else {
-            Logger.log('Commodity not valid');
-            throw new BadRequestException(`List ${lists.listName} not supported for GHG Analysis`);
-          }
-        }
-      } catch (error) {
-        Logger.warn(error.stack || error);
-        if (error instanceof BadRequestException) {
-          throw error;
-        } else {
-          throw new BadRequestException(
-            `List ${lists.listName} not supported for GHG Analysis`,
-            error
-          );
-        }
-      }
-      return true;
-    }
   }
 }

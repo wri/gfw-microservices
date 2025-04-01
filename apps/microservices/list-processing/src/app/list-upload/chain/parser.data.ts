@@ -93,14 +93,15 @@ export class ParserData extends AbstractHandler<ChainType> {
       features: geojson.features.filter((feature) => {
         // Remove template lines
         const templateStrings = [
-          'Mandatory',
-          'String',
+          'mandatory',
+          'string',
           'name of the location',
-          'POPULATE WITH DATA BELOW THIS LINE',
+          'name of the',
+          'populate with data below this line',
         ];
         if (
           templateStrings.some((template) =>
-            (feature.properties?.locationName as string)?.includes(template)
+            (feature.properties?.locationName as string)?.toLocaleLowerCase().includes(template)
           )
         ) {
           return false;

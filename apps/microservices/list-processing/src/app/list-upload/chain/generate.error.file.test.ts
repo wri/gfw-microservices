@@ -21,7 +21,7 @@ describe('GenerateErrorFile', () => {
         {
           provide: S3Service,
           useValue: {
-            putObject: jest.fn().mockResolvedValue(undefined),
+            writeFileToS3: jest.fn().mockResolvedValue(undefined),
             getFileSignedUrl: jest.fn().mockResolvedValue('https://test-url.com'),
           },
         },
@@ -91,11 +91,11 @@ describe('GenerateErrorFile', () => {
       expectedFilePath,
       '"Location Name","Details"\n"Location 1","Invalid latitude; Missing field"\n"Location 2","Invalid coordinates"'
     );
-    expect(s3Service.putObject).toHaveBeenCalledWith(
-      expectedS3Key,
+    expect(s3Service.writeFileToS3).toHaveBeenCalledWith(
       expectedFilePath,
+      'text/csv',
       'test-bucket',
-      'text/csv'
+      expectedS3Key
     );
     expect(configService.get).toHaveBeenCalledWith('LARGE_PROCESSING_LIST_ERROR_BUCKET', {
       infer: true,
@@ -119,7 +119,7 @@ describe('GenerateErrorFile', () => {
     await handler.handle(mockInput);
 
     expect(fs.promises.writeFile).not.toHaveBeenCalled();
-    expect(s3Service.putObject).not.toHaveBeenCalled();
+    expect(s3Service.writeFileToS3).not.toHaveBeenCalled();
   });
 
   afterEach(() => {

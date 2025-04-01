@@ -1,14 +1,14 @@
 const buildSQSMessage = (args) => {
-  const { fileName, userEmail, orgDbName, startDate, endDate } = args;
+  const { fileName, userEmail, organizationDatabase, startDate, endDate } = args;
 
   return {
-    fileName,
+    file: fileName,
     key: fileName,
     type: 'accountUsersUsage',
-    startDate: startDate,
-    endDate: endDate,
-    organizationDatabase: orgDbName,
-    userEmail: userEmail,
+    startDate,
+    endDate,
+    organizationDatabase,
+    userEmail,
   };
 };
 

@@ -18,28 +18,6 @@
   margin-top: $space-small;
 }
 
-/////////////////////////
-// Country names, Flagged
-/////////////////////////
-.countries-popover {
-  max-width: 500px;
-
-  &__inner {
-    padding: $space-comfortable;
-  }
-
-  &__prompt {
-    margin: 0;
-  }
-}
-
-.country-name-extend {
-  &:hover {
-    text-decoration: underline;
-    cursor: pointer;
-  }
-}
-
 .flag-count {
   font-size: $font-size-large;
 }

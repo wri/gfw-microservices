@@ -27,49 +27,59 @@ import { UserList } from '../types';
 import { typeOfAnalysisMap, commodities } from '../utils/constants';
 import { useFetch } from '../../../../../hooks';
 import debounce from 'lodash/debounce';
+import { fetchListsByCommodity } from '../../../../../api';
+import { analysisTypes } from '../../../../../../config/env/analysisTypes.constants';
 
 type CommoditiesType = (typeof commodities)[keyof typeof commodities];
 const commodityValues = Object.values(commodities) as [CommoditiesType, ...CommoditiesType[]];
 
-const schema = z
-  .object({
-    commodity: z.enum(commodityValues),
-    newListName: z
-      .string()
-      .trim()
-      .regex(/^[a-zA-Z0-9 ]*$/, 'Only letters, numbers, and spaces are allowed'),
-    existingListName: z.string(),
-    FCD: z.coerce.boolean(),
-    palmRiskAssessment: z.coerce.boolean(),
-    ALERTS: z.coerce.boolean(),
-    AFI: z.coerce.boolean(),
-    customCommodity: z.string().optional(),
-  })
-  .refine((data) => data.newListName !== '' || data.existingListName !== '', {
-    message: 'You must provide at least one list name.',
-    path: ['noListNameProvided'],
-  })
-  .refine(
-    (data) =>
-      !(
-        data.commodity === 'Other' &&
-        (!data.customCommodity || data.customCommodity.trim() === '')
-      ),
-    {
-      path: ['customCommodity'],
-    }
-  );
-
-type FormFields = z.infer<typeof schema>;
-
 // @userLists param will be deprecated when new endpoint for typeOfAnalysis is released
 export function ConfigureList({ userLists }: { userLists: UserList[] }) {
+  const schema = z
+    .object({
+      commodity: z.enum(commodityValues),
+      newListName: z
+        .string()
+        .trim()
+        .regex(/^[a-zA-Z0-9 ]*$/, 'Only letters, numbers, and spaces are allowed'),
+      existingListName: z.string(),
+      FCD: z.coerce.boolean(),
+      PalmRisk: z.coerce.boolean(),
+      ALERTS: z.coerce.boolean(),
+      AFI: z.coerce.boolean(),
+      customCommodity: z.string().optional(),
+    })
+    .refine((data) => data.newListName !== '' || data.existingListName !== '', {
+      message: 'You must provide at least one list name.',
+      path: ['noListNameProvided'],
+    })
+    .refine(
+      (data) =>
+        !(
+          data.commodity === 'Other' &&
+          (!data.customCommodity || data.customCommodity.trim() === '')
+        ),
+      {
+        path: ['customCommodity'],
+      }
+    )
+    .refine(
+      (data) =>
+        !userLists.some((list) => list.list_name.toLowerCase() === data.newListName.toLowerCase()),
+      {
+        message: 'This list name already exists',
+        path: ['newListName'],
+      }
+    );
+
+  type FormFields = z.infer<typeof schema>;
   const history = useHistory();
   const {
     handleSubmit,
     control,
     formState: { errors },
     setValue,
+    setError,
     reset,
     watch,
   } = useForm<FormFields>({
@@ -78,7 +88,7 @@ export function ConfigureList({ userLists }: { userLists: UserList[] }) {
       commodity: '' as CommoditiesType,
       newListName: '',
       existingListName: '',
-      palmRiskAssessment: false,
+      PalmRisk: false,
       FCD: false,
       ALERTS: false,
       AFI: false,
@@ -96,28 +106,24 @@ export function ConfigureList({ userLists }: { userLists: UserList[] }) {
     existingListName: '',
   });
 
-  const { data: validLists = [], isLoading, request } = useFetch<{ id: number; name: string }[]>();
+  const { data: validLists, isLoading, request } = useFetch<{ id: number; name: string }[]>();
 
   const selectedCommodity = watch('commodity') as CommoditiesType;
-
   useEffect(() => {
     if (!selectedCommodity || selectedCommodity === 'Other') {
       return;
     }
 
-    fetchCommodityNames(selectedCommodity);
+    getListsByCommodity(selectedCommodity);
   }, [selectedCommodity]);
 
-  const fetchCommodityNames = (selectedCommodity: string) => {
-    request({
-      method: 'GET',
-      url: `/api/list/by-commodity?commodity=${selectedCommodity.toLowerCase()}`,
-    });
+  const getListsByCommodity = (selectedCommodity: string) => {
+    fetchListsByCommodity(request, selectedCommodity);
   };
 
-  const debouncedFetchCommodityNames = useCallback(
+  const debouncedGetListsByCommodity = useCallback(
     debounce((selectedCommodity: string) => {
-      fetchCommodityNames(selectedCommodity);
+      getListsByCommodity(selectedCommodity);
     }, 1000),
     []
   );
@@ -128,9 +134,10 @@ export function ConfigureList({ userLists }: { userLists: UserList[] }) {
       onChange: (value: string) => void;
     }
   ) => {
-    if (validLists === null) {
+    if (!validLists) {
       return;
     }
+
     const value = e.target.value || '';
     setFormFields((v) => ({ ...v, existingListName: value }));
     field.onChange(value);
@@ -154,7 +161,7 @@ export function ConfigureList({ userLists }: { userLists: UserList[] }) {
       return;
     }
 
-    debouncedFetchCommodityNames(customCommodity);
+    debouncedGetListsByCommodity(customCommodity);
   }, [customCommodity]);
 
   const handleAnalysisChange = (
@@ -166,17 +173,17 @@ export function ConfigureList({ userLists }: { userLists: UserList[] }) {
   ) => {
     field.onChange(e.target.checked);
 
-    if (id === 'palmRiskAssessment' && e.target.checked) {
+    if (id === analysisTypes.PALM_RISK && e.target.checked) {
       setValue('FCD', true);
     } else if (id === 'FCD' && !e.target.checked) {
-      setValue('palmRiskAssessment', false);
+      setValue(analysisTypes.PALM_RISK, false);
     }
   };
 
   const onSubmit = (data: FormFields) => {
     // this should never happen due to form validation, but just in case...
     if (data.commodity === 'Other' && !data.customCommodity) {
-      console.error('invalid custom commodity', data.customCommodity);
+      setError('customCommodity', { message: 'Invalid custom commodity' });
       return;
     }
 
@@ -187,7 +194,7 @@ export function ConfigureList({ userLists }: { userLists: UserList[] }) {
         ? { name: data.existingListName ?? '', ...existingList.current }
         : null,
       typeOfAnalysis: {
-        palmRiskAssessment: data.palmRiskAssessment,
+        PalmRisk: data.PalmRisk,
         FCD: data.FCD,
         AFI: data.AFI,
         ALERTS: data.ALERTS,
@@ -349,12 +356,12 @@ export function ConfigureList({ userLists }: { userLists: UserList[] }) {
               return (
                 <FormControl error={!!error} sx={{ flex: '1' }}>
                   <Select
-                    disabled={validLists.length === 0 || !!formFields.newListName}
+                    disabled={Boolean(!validLists?.length || formFields.newListName)}
                     size="small"
                     value={formFields.existingListName}
                     onChange={(e) => handleChangeExistingListName(e, field)}
                   >
-                    {validLists.map(({ id, name }) => (
+                    {validLists?.map(({ id, name }) => (
                       <MenuItem key={id} value={name}>
                         {name}
                       </MenuItem>
@@ -362,6 +369,11 @@ export function ConfigureList({ userLists }: { userLists: UserList[] }) {
                   </Select>
                   {!!error && (
                     <FormHelperText>{error.message ?? 'Enter the list name'}</FormHelperText>
+                  )}
+                  {validLists?.length === 0 && !error && (
+                    <FormHelperText>
+                      {'No matching list found for the chosen commodity.'}
+                    </FormHelperText>
                   )}
                 </FormControl>
               );
@@ -385,9 +397,9 @@ export function ConfigureList({ userLists }: { userLists: UserList[] }) {
         </Typography>
         <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1, mt: 1 }}>
           {typeOfAnalysisMap
-            .filter((x) => selectedCommodity === 'Palm oil' || x.id !== 'palmRiskAssessment')
+            .filter((x) => selectedCommodity === 'Palm oil' || x.id !== analysisTypes.PALM_RISK)
             .map(({ id, label, description }) => {
-              const isPalmRisk = id === 'palmRiskAssessment';
+              const isPalmRisk = id === analysisTypes.PALM_RISK;
               return (
                 <Controller
                   key={id}

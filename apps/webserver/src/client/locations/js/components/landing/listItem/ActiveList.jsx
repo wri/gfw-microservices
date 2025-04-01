@@ -118,6 +118,7 @@ function ActiveList({
         listAnalysesStatus={listAnalysesStatus}
         setIsChangeTypeOfAnalysisModalOpen={setIsChangeTypeOfAnalysisModalOpen}
         isChangeTypeOfAnalysisModalOpen={isChangeTypeOfAnalysisModalOpen}
+        commodity={list?.Commodity}
       />
 
       <li

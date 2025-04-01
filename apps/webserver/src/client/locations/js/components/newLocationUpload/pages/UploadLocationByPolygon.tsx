@@ -224,7 +224,10 @@ export function UploadLocationByPolygon({
           GFW Pro allows users to create polygon data for analysis view drawing a boundary on the
           map or defining a polygon via its coordinates vertices.
         </Typography>
-        <ExternalHelperResource text="How to format your location data for GFW Pro" url="#" />
+        <ExternalHelperResource
+          text="How to format your location data for GFW Pro"
+          url="https://globalforestwatch.org/help/gfw-pro/guides/upload-locations-lists"
+        />
 
         <Box sx={{ display: 'flex', gap: 0.75, mt: 3 }}>
           <Typography variant="subtitle2" sx={{ fontWeight: '500' }}>

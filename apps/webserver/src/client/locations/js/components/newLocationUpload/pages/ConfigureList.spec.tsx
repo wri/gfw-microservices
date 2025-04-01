@@ -1,5 +1,5 @@
 import React from 'react';
-import { cleanup, render, screen } from '@testing-library/react';
+import { cleanup, render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { ConfigureList } from './ConfigureList';
 import { UploadType, UserList } from '../types';
@@ -34,7 +34,7 @@ jest.mocked(useUploadLocation).mockReturnValue({
       AFI: true,
       ALERTS: true,
       FCD: true,
-      palmRiskAssessment: true,
+      PalmRisk: true,
     },
     area: { measurementUnit: 'hectares', size: 0 },
     coordinates: [{ latitude: 1.1, longitude: 1.1 }],
@@ -53,7 +53,7 @@ const mockUserLists: UserList[] = [
     id: 5829,
     user_id: 10053,
     template_id: 10, //cattle
-    list_name: 'cattle 1',
+    list_name: 'Cattle 1',
     list_status_id: 2,
     location_classification: '',
     listAnalysesStatus: [
@@ -99,7 +99,7 @@ const mockUserLists: UserList[] = [
 beforeEach(() => {
   (useFetch as jest.Mock).mockReturnValue({
     data: [
-      { id: 5829, name: 'cattle 1' },
+      { id: 5829, name: 'Cattle 1' },
       { id: 5830, name: 'best list of cocoa 1' },
       { id: 5831, name: 'best list of cocoa 2' },
     ],
@@ -174,6 +174,75 @@ describe('ConfigureList', () => {
     expect(screen.queryByText(/enter custom commodity/i)).not.toBeInTheDocument();
     expect(mockHistoryPush).toHaveBeenCalledWith('SUMMARY_AND_SUBMIT');
   }, 15100);
+
+  it('should show validations for new list name field', async () => {
+    render(<ConfigureList userLists={mockUserLists} />);
+
+    const commodityDropdown = screen.getAllByRole('combobox')[0];
+
+    await userEvent.click(commodityDropdown);
+    await userEvent.click(screen.getByRole('option', { name: /cattle/i }));
+
+    const newListNameInput = screen.getByPlaceholderText(/name your new list/i);
+    await userEvent.type(newListNameInput, 'cattle 1');
+
+    const nextButton = screen.getByRole('button', { name: /next/i });
+    await userEvent.click(nextButton);
+
+    await waitFor(() => {
+      expect(screen.queryByText(/this list name already exists/i)).toBeInTheDocument();
+    });
+
+    await userEvent.clear(newListNameInput);
+    await userEvent.type(newListNameInput, 'invalid list name +');
+
+    await waitFor(() => {
+      expect(
+        screen.queryByText(/only letters, numbers, and spaces are allowed/i)
+      ).toBeInTheDocument();
+    });
+
+    expect(mockHistoryPush).not.toHaveBeenCalledWith('SUMMARY_AND_SUBMIT');
+
+    await userEvent.clear(newListNameInput);
+    await userEvent.type(newListNameInput, 'valid list name');
+    await userEvent.click(nextButton);
+
+    await waitFor(() => {
+      expect(mockHistoryPush).toHaveBeenCalledWith('SUMMARY_AND_SUBMIT');
+    });
+  }, 15100);
+
+  it('should show message when no existing lists are found for the chosen commodity', async () => {
+    render(<ConfigureList userLists={[]} />);
+
+    (useFetch as jest.Mock).mockReturnValueOnce({
+      data: [],
+      isLoading: false,
+      request: jest.fn(),
+      error: null,
+    });
+
+    const commodityDropdown = screen.getAllByRole('combobox')[0];
+
+    await userEvent.click(commodityDropdown);
+    await userEvent.click(screen.getByRole('option', { name: /rubber/i }));
+
+    await waitFor(() => {
+      expect(
+        screen.queryByText(/no matching list found for the chosen commodity/i)
+      ).toBeInTheDocument();
+    });
+
+    await userEvent.click(commodityDropdown);
+    await userEvent.click(screen.getByRole('option', { name: /cattle/i }));
+
+    await waitFor(() => {
+      expect(
+        screen.queryByText(/no matching list found for the chosen commodity/i)
+      ).not.toBeInTheDocument();
+    });
+  }, 10000);
 
   it('should allow entering a new list name', async () => {
     render(<ConfigureList userLists={mockUserLists} />);
@@ -323,7 +392,7 @@ describe('ConfigureList', () => {
       newListName: 'My new List 3',
       existingList: null,
       typeOfAnalysis: {
-        palmRiskAssessment: false,
+        PalmRisk: false,
         FCD: false,
         AFI: false,
         ALERTS: true,

@@ -144,6 +144,14 @@ export class ReadmeService {
             this.getPathDir(key),
             listName
           )
+        : // Format GHG readme file
+        type === 'ghg'
+        ? this.readmeMergeServices.processFiles(
+            [this.getSourceDir(returnFileToCopy[type]())],
+            null,
+            this.getPathDir(key),
+            listName
+          )
         : returnFileToCopy[type](filters);
 
     if (!fileToCopy) {

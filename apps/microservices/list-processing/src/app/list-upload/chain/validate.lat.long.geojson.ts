@@ -1,19 +1,30 @@
 import { Logger } from '@nestjs/common';
 import { AbstractHandler, ChainType, RequestNewList } from './types';
+import * as turf from '@turf/turf';
+import { Feature, Polygon } from 'geojson';
 
 export class ValidateLatLongGeojson extends AbstractHandler<ChainType> {
   private readonly logger = new Logger(ValidateLatLongGeojson.name);
 
-  isValidLatitude(lat: number): boolean {
+  public static isValidLatitude(lat: number): boolean {
     return lat >= -90 && lat <= 90;
   }
 
-  isValidLongitude(lon: number): boolean {
+  public static isValidLongitude(lon: number): boolean {
     return lon >= -180 && lon <= 180;
   }
 
-  isNumeric(value: any): boolean {
+  public static isNumeric(value: any): boolean {
     return !isNaN(value) && isFinite(value);
+  }
+
+  public static isValidLatLong(lat: number, lon: number): boolean {
+    return (
+      this.isNumeric(lat) &&
+      this.isNumeric(lon) &&
+      this.isValidLatitude(lat) &&
+      this.isValidLongitude(lon)
+    );
   }
 
   isValidCountry(country: string): boolean {
@@ -26,47 +37,43 @@ export class ValidateLatLongGeojson extends AbstractHandler<ChainType> {
     );
   }
 
-  validateCoordinates(coordinates: any, country: string): boolean {
+  validateCoordinates(coordinates: any, country: string): string {
     // Check if coordinates is a single point (array of two numbers)
     if (Array.isArray(coordinates) && coordinates.length === 2) {
       const [lon, lat] = coordinates;
-      return (
-        this.isNumeric(lat) &&
-        this.isNumeric(lon) &&
-        this.isValidLatitude(lat) &&
-        this.isValidLongitude(lon) &&
-        this.isValidCountry(country)
-      );
+      if (!ValidateLatLongGeojson.isValidLatLong(lat, lon)) {
+        return 'Invalid coordinates';
+      }
+      return this.isValidCountry(country) ? '' : 'Invalid location';
     }
 
     // Otherwise, assume it's an array of points or nested arrays
     for (const coord of coordinates) {
       if (Array.isArray(coord[0])) {
         // If the first element is an array, it's a nested structure (e.g., Polygon)
-        if (!this.validateCoordinates(coord, country)) {
-          return false;
+        const coordResult = this.validateCoordinates(coord, country);
+        if (coordResult !== '') {
+          return coordResult;
         }
       } else {
         const [lon, lat] = coord;
-        if (
-          !this.isNumeric(lat) ||
-          !this.isNumeric(lon) ||
-          !this.isValidLatitude(lat) ||
-          !this.isValidLongitude(lon) ||
-          !this.isValidCountry(country)
-        ) {
-          return false;
+        if (!ValidateLatLongGeojson.isValidLatLong(lat, lon)) {
+          return 'Invalid coordinates';
+        }
+        if (!this.isValidCountry(country)) {
+          return 'Invalid location';
         }
       }
     }
-    return true;
+    return '';
   }
 
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  validatePolygon(_geometry: unknown): boolean {
-    // Implement polygon validation logic (e.g., check for open or self-intersecting polygons)
-    // This is a placeholder for actual polygon validation logic
-    return true; // Replace with actual validation
+  validatePolygon(feature: Feature): boolean {
+    if (!turf.booleanValid(feature)) {
+      return false;
+    }
+    const kinks = turf.kinks(feature as Feature<Polygon>);
+    return kinks.features.length === 0;
   }
 
   async handle(input: ChainType): Promise<ChainType> {
@@ -83,14 +90,15 @@ export class ValidateLatLongGeojson extends AbstractHandler<ChainType> {
         const geometry = feature.geometry;
 
         if (geometry && 'coordinates' in geometry) {
-          if (!this.validateCoordinates(geometry.coordinates, country)) {
+          const coordResult = this.validateCoordinates(geometry.coordinates, country);
+          if (coordResult !== '') {
             feature.properties.errorDetails = feature.properties.errorDetails || [];
             (input.request as RequestNewList).hasUnanalyzableError = true;
-            (feature.properties.errorDetails as Array<string>).push('Invalid coordinates');
+            (feature.properties.errorDetails as Array<string>).push(coordResult);
           }
 
           if (geometry.type === 'Polygon' || geometry.type === 'MultiPolygon') {
-            if (!this.validatePolygon(geometry)) {
+            if (!this.validatePolygon(feature as Feature)) {
               feature.properties.errorDetails = feature.properties.errorDetails || [];
               (input.request as RequestNewList).hasUnanalyzableError = true;
               (feature.properties.errorDetails as Array<string>).push('Invalid polygon geometry');

@@ -108,6 +108,7 @@ function DraftList({
         listAnalysesStatus={listAnalysesStatus}
         setIsChangeTypeOfAnalysisModalOpen={setIsChangeTypeOfAnalysisModalOpen}
         isChangeTypeOfAnalysisModalOpen={isChangeTypeOfAnalysisModalOpen}
+        commodity={list?.Commodity}
       />
 
       <li

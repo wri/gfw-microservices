@@ -77,10 +77,10 @@ describe('UploadLocationByFile', () => {
     ).toBeInTheDocument();
     expect(screen.getByText(/csv or excel files/i)).toBeInTheDocument();
     expect(
-      screen.getByText(/zip file containing a shapefile \(shp, dbf, shx, and prj\)/i)
+      screen.getByText(/zip file containing a shape file \(shp, dbf, shx, and prj\)/i)
     ).toBeInTheDocument();
     expect(
-      screen.getByText(/zip file containing a shapefile \(shp, dbf, shx, and prj\)/i)
+      screen.getByText(/zip file containing a shape file \(shp, dbf, shx, and prj\)/i)
     ).toBeInTheDocument();
     expect(screen.getByText('Next')).toBeDisabled();
   });

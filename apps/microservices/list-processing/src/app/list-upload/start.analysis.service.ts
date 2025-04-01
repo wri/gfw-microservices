@@ -2,7 +2,7 @@ import { Injectable, Logger } from '@nestjs/common';
 import { RequestLargeListProcess, ResponseLargeListProcess } from '../../models';
 import { ConfigService } from '@nestjs/config';
 import { ServerConfigType } from '../../validators/server-config';
-import { S3Service } from '@wri-monorepos/aws';
+import { EmailService, S3Service } from '@wri-monorepos/aws';
 import { AbstractHandler, ChainType } from './chain/types';
 import { DownloadS3File } from './chain/download.s3.file';
 import { ParserData } from './chain/parser.data';
@@ -32,9 +32,10 @@ import { ConvertCommodityToMapsPamCode } from './chain/convert.commodity.mapspam
 type WorkerType = {
   request: RequestLargeListProcess;
   config: ConfigService<ServerConfigType, true>;
+  emailService: EmailService;
 };
 
-async function clearErrorFile(organizationDatabase: string, listId: number) {
+export async function clearErrorFile(organizationDatabase: string, listId: number) {
   const connection = await new ClientStoreConnection().getConnection(organizationDatabase);
   const listRepository = connection.getRepository(Lists);
   await listRepository.update({ id: listId }, { errorFileStoragePath: null });
@@ -73,7 +74,7 @@ async function worker(input: WorkerType, cb: done) {
   const validateLocationName = new ValidateLocationName();
   const addNewLocationToAnalysisTable = new AddNewLocationToAnalysisTable();
   const convertGeojsonProperties = new ConvertGeojsonProperties();
-  const putListAsDraft = new PutListAsDraft();
+  const putListAsDraft = new PutListAsDraft(input.config, input.emailService);
   const generateErrorFile = new GenerateErrorFile(s3Service, input.config);
 
   downloadS3File
@@ -103,7 +104,10 @@ async function worker(input: WorkerType, cb: done) {
 export class StartAnalysisService {
   private readonly logger = new Logger(StartAnalysisService.name);
 
-  constructor(private readonly config: ConfigService<ServerConfigType, true>) {}
+  constructor(
+    private readonly config: ConfigService<ServerConfigType, true>,
+    private readonly emailService: EmailService
+  ) {}
 
   @logExecutionTime(StartAnalysisService.name)
   async run(request: RequestLargeListProcess): Promise<ResponseLargeListProcess> {
@@ -127,6 +131,7 @@ export class StartAnalysisService {
     q.push({
       request,
       config: this.config,
+      emailService: this.emailService,
     });
 
     return {
@@ -140,13 +145,15 @@ export const checkIfListExistAndCommodityIsTheSame = async (listId, commodity, c
   const clientStoreConnection = new ClientStoreConnection();
   const connection = await clientStoreConnection.getConnection(clientDatabase);
 
+  const whereClause: Record<string, unknown> = {
+    id: listId,
+  };
+
   const commodityMapSpam = ConvertCommodityToMapsPamCode.getCommodityName(commodity);
+  whereClause.Commodity = commodityMapSpam;
 
   const existingList = await connection.getRepository(Lists).findOne({
-    where: {
-      id: listId,
-      Commodity: commodityMapSpam,
-    },
+    where: whereClause,
   });
 
   if (!existingList) {

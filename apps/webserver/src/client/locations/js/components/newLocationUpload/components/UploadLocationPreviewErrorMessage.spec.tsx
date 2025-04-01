@@ -71,7 +71,7 @@ describe('UploadLocationPreviewErrorMessage', () => {
     expect(screen.getByText(/there were platform issues loading your data/i)).toBeInTheDocument();
   });
 
-  it('triggers onRetryUpload when Retry upload is clicked', async () => {
+  it('should trigger onRetryUpload when retry upload is clicked', async () => {
     const error = {
       message: 'Error',
       errors: ['Error while parsing the data'],
@@ -90,7 +90,7 @@ describe('UploadLocationPreviewErrorMessage', () => {
     expect(mockRetryUpload).toHaveBeenCalled();
   });
 
-  it('triggers onRetryPreviewData when try again button is clicked', async () => {
+  it('should trigger onRetryPreviewData when try again button is clicked', async () => {
     render(
       <UploadLocationPreviewErrorMessage
         error={{ message: '', errors: [] }}

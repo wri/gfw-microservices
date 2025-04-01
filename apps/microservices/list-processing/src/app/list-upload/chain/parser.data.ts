@@ -101,7 +101,7 @@ export class ParserData extends AbstractHandler<ChainType> {
         ];
         if (
           templateStrings.some((template) =>
-            (feature.properties?.locationName as string)?.toLocaleLowerCase().includes(template)
+            (feature.properties?.locationName as string)?.toLocaleLowerCase().startsWith(template)
           )
         ) {
           return false;

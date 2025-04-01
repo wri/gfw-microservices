@@ -149,10 +149,8 @@ export const checkIfListExistAndCommodityIsTheSame = async (listId, commodity, c
     id: listId,
   };
 
-  if (commodity) {
-    const commodityMapSpam = ConvertCommodityToMapsPamCode.getCommodityName(commodity);
-    whereClause.Commodity = commodityMapSpam;
-  }
+  const commodityMapSpam = ConvertCommodityToMapsPamCode.getCommodityName(commodity);
+  whereClause.Commodity = commodityMapSpam;
 
   const existingList = await connection.getRepository(Lists).findOne({
     where: whereClause,

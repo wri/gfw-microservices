@@ -185,7 +185,7 @@ export function UploadLocationByFile() {
             >
               It looks like the file you uploaded isn't one of GFW Pro's accepted file types. GFW
               Pro supports <b>.csv</b>, <b>.xlsl</b>, <b>.kml</b>, <b>.kmz</b> and a <b>.zip</b>{' '}
-              containing a <b>shapeFile</b>. Please try again with a compatible file format.
+              containing a <b>shape file</b>. Please try again with a compatible file format.
             </Typography>
           )}
           {(fileAttachState === FileAttachState.UnsupportedType ||
@@ -249,7 +249,7 @@ export function UploadLocationByFile() {
                 </li>
                 <li>
                   <Typography variant="caption">
-                    ZIP file containing a shapefile (SHP, DBF, SHX, and PRJ)
+                    ZIP file containing a shape file (SHP, DBF, SHX, and PRJ)
                   </Typography>
                 </li>
                 <li>

@@ -44,14 +44,17 @@ export class PutListAsDraft extends AbstractHandler<ChainType> {
 
         if (!isExternalAPIProcess && user_id) {
           const userEmail = await getUserEmail(organization_database, user_id);
-          this.emailService.sendEmail(
-            this.config.get('SES_SENDER_EMAIL'),
-            [userEmail],
-            'Error Submitting for Analysis',
-            'listUploadError',
-            { listName: list_name }
-          );
-        }
+          try {
+            await this.emailService.sendEmail(
+              this.config.get('SES_SENDER_EMAIL'),
+              [userEmail],
+              'Error Submitting for Analysis',
+              'listUploadError',
+              { listName: list_name }
+            );
+          } catch (error) {
+            this.logger.error('Failed to send email', error);
+          }
       }
 
       return {

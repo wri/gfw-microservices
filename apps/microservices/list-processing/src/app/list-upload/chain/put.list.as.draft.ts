@@ -53,19 +53,20 @@ export class PutListAsDraft extends AbstractHandler<ChainType> {
               { listName: list_name }
             );
           } catch (error) {
-            this.logger.error('Failed to send email', error);
+            this.logger.error('Failed to send email', error.stack || error);
           }
-      }
+        }
 
-      return {
-        ...input,
-        request: { ...request, saveAsDraft: true },
-      };
+        return {
+          ...input,
+          request: { ...request, saveAsDraft: true },
+        };
+      }
+      return input;
     }
-    return input;
   }
 
-  async putListAsDraft(organizationDatabase: string, list_id: number) {
+  async putListAsDraft(organizationDatabase, list_id) {
     this.logger.log(`Putting list ${list_id} status as draft`);
     const connection = await new ClientStoreConnection().getConnection(organizationDatabase);
     const listRepository = connection.getRepository(Lists);

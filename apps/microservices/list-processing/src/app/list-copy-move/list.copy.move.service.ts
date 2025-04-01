@@ -9,6 +9,12 @@ import {
 } from '@wri-monorepos/sql';
 import { CheckListNameIsValid } from '@wri-monorepos/geo';
 import { SetListDraftStatus } from './shared/put.list.as.draft';
+import { handleNewListCreation } from './handler/list.creation';
+import { handleExistingListUpdate } from './handler/existing.list.update';
+import { handleSourceListDeletion } from './handler/source.list.deletion';
+import { assembleGeojson } from './shared/assemble.geojson';
+import { createFeatureProps } from './shared/create.feature.props';
+import { deleteGeoJSONFeatureProperties } from './shared/delete.geojson.feature.properties';
 
 @Injectable()
 export class ListCopyMoveService {
@@ -85,6 +91,11 @@ export class ListCopyMoveService {
       analysisAreaMax: filters.analysisAreaMax,
       searchString: filters.searchString,
     });
+
+    const featProps = createFeatureProps(locationData);
+    this.logger.log('Assembling GEO JSON');
+    const geojson = await assembleGeojson(featProps, locationData);
+    deleteGeoJSONFeatureProperties(geojson);
 
     if (listType === TargetListType.New) {
       await handleNewListCreation();

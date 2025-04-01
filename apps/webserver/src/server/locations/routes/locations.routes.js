@@ -701,7 +701,6 @@ module.exports = (app, limiter) => {
               listID,
               filters
             );
-            console.log("🚀 ~ app.get ~ listManagerResult:", listManagerResult)
             numberOfPages = listManagerResult.numberOfPages;
             numberOfResults = listManagerResult.numberOfResults;
             maximumAnalysisAreaInTheList = listManagerResult.maximumAnalysisAreaInTheList;

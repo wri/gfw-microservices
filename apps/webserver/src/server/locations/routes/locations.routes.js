@@ -586,7 +586,7 @@ module.exports = (app, limiter) => {
     const hasError = hasErrorParam === 'true';
 
     const VALID_ANALYSIS_TYPES = ['FCD', 'ALERTS', 'AFI'];
-    console.log('• analysisId.toUpperCase() ', analysisId.toUpperCase());
+
     // Verify if analysisId is a valid analysis type
     if (!VALID_ANALYSIS_TYPES.includes(analysisId.toUpperCase())) {
       return res.status(400).send({

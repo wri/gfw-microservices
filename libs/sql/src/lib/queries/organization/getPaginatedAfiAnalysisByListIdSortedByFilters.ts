@@ -8,6 +8,7 @@
 export const getPaginatedAfiAnalysisByListIdSortedByFilters = `
 DECLARE @list_table NVARCHAR(150)
 DECLARE @listName  NVARCHAR(150)
+DECLARE @listVersion INT
 DECLARE @SQL NVARCHAR(MAX)
 DECLARE @Filters NVARCHAR(MAX) = ''
 DECLARE @AnalysisFilters NVARCHAR(MAX) = '1=1'
@@ -20,152 +21,146 @@ DECLARE @ltColumns NVARCHAR(MAX) = '[Location Name], Country, State, [Sub State]
 DECLARE @calculatedColumns NVARCHAR(MAX) = 'protectedAreasPercent, landmarkPercent, naturalForestLossPercent, jrcNaturalForestLossPercent';
 
 
-SELECT @list_table = list_table_name, @listName = list_Name 
-FROM [Lists] 
-WHERE id = @listId
+SELECT 
+    @list_table = [list_table_name], 
+    @listName = [list_Name],
+    @listVersion = [version]
+FROM [Lists] WHERE id = @listId
 
+----------------------------------------------------------------------------------
+-- 1) Version 1
+----------------------------------------------------------------------------------
 
-DECLARE @locationColumns NVARCHAR(MAX) = '';
+IF @listVersion != 2
+BEGIN
+    DECLARE @locationColumns NVARCHAR(MAX) = '';
+    -- we first check if these columns exist
+    DECLARE @OptionalColumns TABLE (ColumnName NVARCHAR(255));
+    INSERT INTO @OptionalColumns (ColumnName)
+    VALUES
+        ('Latitude'),
+        ('Longitude'),
+        ('Volume'),
+        ('Certification'),
+        ('Company ID'),
+        ('Time Horizon'),
+        ('Start Date'),
+        ('End Date'),
+        ('Supplier Name'),
+        ('Facility Name'),
+        ('Refinery Name'),
+        ('Owner Name'),
+        ('Owner ID'),
+        ('Company Name'),
+        ('Analysis Radius'),
+        ('Analysis Area');
 
--- we first check if these columns exist
-DECLARE @OptionalColumns TABLE (ColumnName NVARCHAR(255));
-INSERT INTO @OptionalColumns (ColumnName)
-VALUES
-    ('Latitude'),
-    ('Longitude'),
-    ('Volume'),
-    ('Certification'),
-    ('Company ID'),
-    ('Time Horizon'),
-    ('Start Date'),
-    ('End Date'),
-    ('Supplier Name'),
-    ('Facility Name'),
-    ('Refinery Name'),
-    ('Owner Name'),
-    ('Owner ID'),
-    ('Company Name'),
-    ('Analysis Radius'),
-    ('Analysis Area');
+    -- construct dynamically the query with the existent columns
+    SELECT @locationColumns +=
+        CASE
+            WHEN EXISTS (
+                SELECT 1
+                FROM INFORMATION_SCHEMA.COLUMNS
+                WHERE TABLE_NAME = @list_table AND COLUMN_NAME = ColumnName
+            )
+            THEN ' lt.' + QUOTENAME(ColumnName) + ' AS ' + QUOTENAME(ColumnName) + ', '
+            ELSE ''
+        END
+    FROM @OptionalColumns;
 
--- construct dynamically the query with the existent columns
-SELECT @locationColumns +=
-    CASE
+    DECLARE @LocationNameColumn NVARCHAR(MAX) = '';
+    SET @LocationNameColumn = CASE
         WHEN EXISTS (
             SELECT 1
             FROM INFORMATION_SCHEMA.COLUMNS
-            WHERE TABLE_NAME = @list_table 
-              AND COLUMN_NAME = ColumnName
+            WHERE TABLE_NAME = @list_table
+            AND COLUMN_NAME = 'Location Name'
         )
-        THEN ' lt.' + QUOTENAME(ColumnName) + ' AS ' + QUOTENAME(ColumnName) + ', '
+        THEN 'lt.[Location Name] as locationName, lt.[Location Name] as [Location Name], '
+        WHEN EXISTS (
+            SELECT 1
+            FROM INFORMATION_SCHEMA.COLUMNS
+            WHERE TABLE_NAME = @list_table
+            AND COLUMN_NAME = 'Investment Name'
+        )
+        THEN 'lt.[Investment Name] as locationName, lt.[Investment Name] as [Location Name], '
         ELSE ''
-    END
-FROM @OptionalColumns;
+    END;
 
-DECLARE @LocationNameColumn NVARCHAR(MAX) = '';
-SET @LocationNameColumn = CASE
-    WHEN EXISTS (
-        SELECT 1
-        FROM INFORMATION_SCHEMA.COLUMNS
-        WHERE TABLE_NAME = @list_table
-          AND COLUMN_NAME = 'Location Name'
-    )
-    THEN 'lt.[Location Name] as locationName, lt.[Location Name] as [Location Name], '
-    WHEN EXISTS (
-        SELECT 1
-        FROM INFORMATION_SCHEMA.COLUMNS
-        WHERE TABLE_NAME = @list_table
-          AND COLUMN_NAME = 'Investment Name'
-    )
-    THEN 'lt.[Investment Name] as locationName, lt.[Investment Name] as [Location Name], '
-    ELSE ''
-END;
+    SET @SQL = 'SELECT ' +
+                ' @listId as listId,' +
+                ' @listName as listName,' +
+                ' ISNULL(afi.location_id, 0) as locationId, '+
+                ' ISNULL(afi.gadm_id, 0) AS gadmId, '+
+                ' ISNULL(afi.natural_land_area, 0) AS coverageHA, '+
+                ' ISNULL(afi.natural_land_deforested_area, 0) AS naturalForestLossHA, '+
+                ' ISNULL(afi.total_area_ha, 0) AS totalAreaHa, '+
+                ' ISNULL(afi.status_code, 0) as statusCode, '+
+                ' ISNULL(afi.location_error, 0) as locationError, '+
+                ' ISNULL(afi.negligible_risk, 0) AS negligibleRisk ,'+
+                ' ISNULL(afi.jrc_land_area, 0) AS jrcLandAreaHA ,'+
+                ' ISNULL(afi.jrc_land_deforested_area, 0) AS jrcNaturalForestLossHA ,'+
+                ' ISNULL(afi.jrc_forest_loss_by_year, 0) AS jrcForestLossByYear ,'+
+                ' ISNULL(afi.natural_forest_loss_by_year, 0) AS naturalForestLossByYear ,'+
+                ' ISNULL(afi.protected_areas_area, 0) AS protectedAreasHA ,'+
+                ' ISNULL(afi.landmark_area, 0) AS landmarkHA ,' +
 
-SET @SQL = 'SELECT ' +
-            ' @listId as listId,' +
-            ' @listName as listName,' +
-            ' ISNULL(afi.location_id, 0) as locationId,' +
-            ' ISNULL(afi.gadm_id, 0) AS gadmId,' +
-            ' ISNULL(afi.natural_land_area, 0) AS coverageHA,' +
-            ' ISNULL(afi.natural_land_deforested_area, 0) AS naturalForestLossHA,' +
-            ' ISNULL(afi.total_area_ha, 0) AS totalAreaHa,' +
-            ' ISNULL(afi.status_code, 0) as statusCode,' +
-            ' ISNULL(afi.location_error, 0) as locationError,' +
-            ' ISNULL(afi.negligible_risk, 0) AS negligibleRisk,' +
-            ' ISNULL(afi.jrc_land_area, 0) AS jrcLandAreaHA,' +
-            ' ISNULL(afi.jrc_land_deforested_area, 0) AS jrcNaturalForestLossHA,' +
-            ' ISNULL(afi.jrc_forest_loss_by_year, 0) AS jrcForestLossByYear,' +
-            ' ISNULL(afi.natural_forest_loss_by_year, 0) AS naturalForestLossByYear,' +
-            ' ISNULL(afi.protected_areas_area, 0) AS protectedAreasHA,' +
-            ' ISNULL(afi.landmark_area, 0) AS landmarkHA,' +
-            @LocationNameColumn +
-            ' lt.Country as country,' +
-            ' lt.State as state,' +
-            ' lt.[Sub State] as subState,' +
-            ' lt.ErrorDetails as errorDetails,' +
-            @locationColumns +
-            ' CASE WHEN ISNULL(afi.total_area_ha, 0) = 0 THEN 0 ELSE (afi.protected_areas_area * 100.0 / afi.total_area_ha) END AS protectedAreasPercent,' +
-            ' CASE WHEN ISNULL(afi.total_area_ha, 0) = 0 THEN 0 ELSE (afi.landmark_area * 100.0 / afi.total_area_ha) END AS landmarkPercent,' +
-            ' CASE WHEN ISNULL(afi.total_area_ha, 0) = 0 THEN 0 ELSE (afi.natural_land_deforested_area * 100.0 / afi.total_area_ha) END AS naturalForestLossPercent,' +
-            ' CASE WHEN ISNULL(afi.total_area_ha, 0) = 0 THEN 0 ELSE (afi.jrc_land_deforested_area * 100.0 / afi.total_area_ha) END AS jrcNaturalForestLossPercent,' +
-            ' JSON_QUERY(lt.attributes) as attributes,  -- (NEW) include the entire attributes JSON\n' +
-            ' COUNT(*) OVER () AS totalRows ' +
-            'FROM AFIAnalysis afi ' +
-            'JOIN dbo.[' + @list_table + '] lt ON lt.location_id = afi.location_id ' +
-            'WHERE afi.location_id > 0 AND afi.list_id = @listId';
+                @LocationNameColumn +
 
--- ADD Filters
-IF @Country IS NOT NULL
-    SET @Filters += ' AND lt.Country = @Country';
+                ' lt.Country as country ,' +
+                ' lt.State as state,' +
+                ' lt.[Sub State] as subState, ' +
+                ' lt.ErrorDetails as errorDetails, ' +
 
-IF @State IS NOT NULL
-    SET @Filters += ' AND lt.State = @State';
+                @locationColumns +
 
-IF @SubState IS NOT NULL
-    SET @Filters += ' AND lt.[Sub State] = @SubState';
+                ' CASE WHEN ISNULL(afi.total_area_ha, 0) = 0 THEN 0 ELSE (afi.protected_areas_area * 100.0 / afi.total_area_ha) END AS protectedAreasPercent, ' +
+                ' CASE WHEN ISNULL(afi.total_area_ha, 0) = 0 THEN 0 ELSE (afi.landmark_area * 100.0 / afi.total_area_ha) END AS landmarkPercent, ' +
+                ' CASE WHEN ISNULL(afi.total_area_ha, 0) = 0 THEN 0 ELSE (afi.natural_land_deforested_area * 100.0 / afi.total_area_ha) END AS naturalForestLossPercent, ' +
+                ' CASE WHEN ISNULL(afi.total_area_ha, 0) = 0 THEN 0 ELSE (afi.jrc_land_deforested_area * 100.0 / afi.total_area_ha) END AS jrcNaturalForestLossPercent, ' +
 
-IF @hasError IS NOT NULL
-    SET @Filters += ' AND lt.ErrorDetails IS NOT NULL AND LEN(lt.ErrorDetails) > 0';
+                ' COUNT(*) OVER () AS totalRows ' +
+                'FROM AFIAnalysis afi JOIN dbo.['+@list_table+'] lt ON lt.location_id = afi.location_id WHERE afi.location_id > 0 AND afi.list_id = @listId';
 
-IF @selectedSupplier IS NOT NULL
-    SET @Filters += ' AND lt.[Supplier Name] = @selectedSupplier';
 
-IF @selectedSecondSupplier IS NOT NULL
-    SET @Filters += ' AND lt.[Second Supplier Name] = @selectedSecondSupplier';
+    -- ADD Filters
+    IF @Country IS NOT NULL
+        SET @Filters = + @Filters + ' AND lt.Country = @Country'
 
-IF @selectedParentCompany IS NOT NULL
-    SET @Filters += ' AND lt.[Parent Company] = @selectedParentCompany';
+    IF @State IS NOT NULL
+        SET @Filters = + @Filters + ' AND lt.State = @State'
 
-IF @showRSPOCertified = 1
-    SET @Filters += ' AND lt.[RSPO Model] = 1';
+        IF @SubState IS NOT NULL
+        SET @Filters = + @Filters + ' AND lt.[Sub State] = @SubState'
+        IF @hasError IS NOT NULL
+            SET @Filters = + @Filters + ' AND lt.ErrorDetails IS NOT NULL AND LEN(lt.ErrorDetails) > 0'
+        IF @selectedSupplier IS NOT NULL
+            SET @Filters = + @Filters + ' AND lt.[Supplier Name] = @selectedSupplier'
+    IF @selectedSecondSupplier IS NOT NULL
+        SET @Filters = + @Filters + ' AND lt.[Second Supplier Name] = @selectedSecondSupplier'
+    IF @selectedParentCompany IS NOT NULL
+        SET @Filters = + @Filters + ' AND lt.[Parent Company] = @selectedParentCompany'
+    IF @showRSPOCertified = 1
+        SET @Filters = + @Filters + ' AND lt.[RSPO Model] = 1'
 
--- END Filters
+        -- END Filters
 
--- (NEW) add attributes to the search condition as well
-IF (@SearchString IS NOT NULL)
-    SET @SQL += ' AND (lt.Country LIKE @SearchString ' +
-                '  OR lt.State LIKE @SearchString ' +
-                '  OR lt.[Location Name] LIKE @SearchString ' +
-                '  OR lt.attributes LIKE @SearchString) ';
+    IF (@SearchString IS NOT NULL)
+    SET @SQL = @SQL + ' AND lt.Country LIKE @SearchString OR lt.State LIKE @SearchString OR lt.[Location Name] LIKE @SearchString ';
 
-IF (@Filters IS NOT NULL)
-    SET @SQL += @Filters;
+    if (@Filters IS NOT NULL)
+    SET @SQL = @SQL + @Filters;
 
-DECLARE @isValidSortColumn BIT = 0;
+    DECLARE @isValidSortColumn BIT = 0;
 
--- Check if sortByAttribute exists in afiColumns or ltColumns
-IF CHARINDEX(@sortByAttribute, @afiColumns) > 0
-   OR CHARINDEX(@sortByAttribute, @ltColumns) > 0
-   OR CHARINDEX(@sortByAttribute, @calculatedColumns) > 0
-BEGIN
-    SET @isValidSortColumn = 1;
-END
+    -- Check if sortByAttribute exists in afiColumns or ltColumns
+    IF CHARINDEX(@sortByAttribute, @afiColumns) > 0
+    OR CHARINDEX(@sortByAttribute, @ltColumns) > 0
+    OR CHARINDEX(@sortByAttribute, @calculatedColumns) > 0
+        SET @isValidSortColumn = 1;
 
-IF @orderType IS NOT NULL 
-   AND @sortByAttribute IS NOT NULL 
-   AND @isValidSortColumn = 1
-BEGIN
-    SET @SQL += ' ORDER BY ' +
+    IF @orderType IS NOT NULL AND @sortByAttribute IS NOT NULL AND @isValidSortColumn = 1
+        SET @SQL = @SQL + ' ORDER BY ' +
                 CASE
                     WHEN CHARINDEX(@sortByAttribute, @afiColumns) > 0
                         THEN 'afi.' + QUOTENAME(@sortByAttribute)
@@ -173,48 +168,127 @@ BEGIN
                         THEN 'lt.' + QUOTENAME(@sortByAttribute)
                     ELSE QUOTENAME(@sortByAttribute) -- sorted by a calculated column
                 END + ' ' + @orderType;
+    ELSE
+        SET @SQL = @SQL + ' ORDER BY afi.negligible_risk ASC, afi.natural_land_deforested_area DESC';
+
+
+    IF @RowsOfPage > 0 AND @PageNumber > 0
+        SET @SQL = @SQL +' OFFSET (@PageNumber-1)*@RowsOfPage ROWS FETCH NEXT @RowsOfPage ROWS ONLY';
+
+    EXEC sp_executesql @SQL,
+        N'@listId INT, @listName NVARCHAR(150), @rowsOfPage INT, @pageNumber INT, @Country NVARCHAR(255), @State NVARCHAR(255), @SubState NVARCHAR(255), @hasError BIT, @selectedSupplier NVARCHAR(255), @selectedSecondSupplier NVARCHAR(255), @selectedParentCompany NVARCHAR(255), @showRSPOCertified BIT, @SearchString NVARCHAR(255), @orderType NVARCHAR(255), @sortByAttribute NVARCHAR(255)',
+        @listId=@listId, @listName=@listName,@rowsOfPage=@rowsOfPage, @pageNumber=@pageNumber, @Country=@Country, @State=@State, @SubState=@SubState, @hasError=@hasError,@selectedSupplier=@selectedSupplier, @selectedSecondSupplier=@selectedSecondSupplier, @selectedParentCompany=@selectedParentCompany, @showRSPOCertified=@showRSPOCertified, @SearchString=@SearchString, @orderType=@orderType, @sortByAttribute=@sortByAttribute;
 END
 ELSE
 BEGIN
-    SET @SQL += ' ORDER BY afi.negligible_risk ASC, afi.natural_land_deforested_area DESC';
-END
+    ----------------------------------------------------------------------------------
+    -- 2) Version 2 (NEW)
+    ----------------------------------------------------------------------------------
+    SET @SQL = N'
+        SELECT
+            @listId                AS listId,
+            @listName              AS listName,
+            ISNULL(afi.location_id, 0)              AS locationId,
+            ISNULL(afi.gadm_id, 0)                  AS gadmId,
+            ISNULL(afi.natural_land_area, 0)        AS coverageHA,
+            ISNULL(afi.natural_land_deforested_area, 0) AS naturalForestLossHA,
+            ISNULL(afi.total_area_ha, 0)            AS totalAreaHa,
+            ISNULL(afi.status_code, 0)              AS statusCode,
+            ISNULL(afi.location_error, 0)           AS locationError,
+            ISNULL(afi.negligible_risk, 0)          AS negligibleRisk,
+            ISNULL(afi.jrc_land_area, 0)            AS jrcLandAreaHA,
+            ISNULL(afi.jrc_land_deforested_area, 0) AS jrcNaturalForestLossHA,
+            ISNULL(afi.jrc_forest_loss_by_year, 0)  AS jrcForestLossByYear,
+            ISNULL(afi.natural_forest_loss_by_year, 0) AS naturalForestLossByYear,
+            ISNULL(afi.protected_areas_area, 0)     AS protectedAreasHA,
+            ISNULL(afi.landmark_area, 0)            AS landmarkHA,
 
-IF @RowsOfPage > 0 AND @PageNumber > 0
-    SET @SQL += ' OFFSET (@PageNumber-1)*@RowsOfPage ROWS FETCH NEXT @RowsOfPage ROWS ONLY';
+            -- these fields are 
+            lt.[Location Name]                      AS locationName,
+            lt.Country                              AS country,
+            lt.State                                AS state,
+            lt.[Sub State]                          AS subState,
+            lt.[ErrorDetails]                       AS errorDetails,
 
-EXEC sp_executesql @SQL,
-    N'@listId INT,
-      @listName NVARCHAR(150),
-      @rowsOfPage INT,
-      @pageNumber INT,
-      @Country NVARCHAR(255),
-      @State NVARCHAR(255),
-      @SubState NVARCHAR(255),
-      @hasError BIT,
-      @selectedSupplier NVARCHAR(255),
-      @selectedSecondSupplier NVARCHAR(255),
-      @selectedParentCompany NVARCHAR(255),
-      @showRSPOCertified BIT,
-      @SearchString NVARCHAR(255),
-      @orderType NVARCHAR(255),
-      @sortByAttribute NVARCHAR(255)',
-    @listId=@listId,
-    @listName=@listName,
-    @rowsOfPage=@rowsOfPage,
-    @pageNumber=@pageNumber,
-    @Country=@Country,
-    @State=@State,
-    @SubState=@SubState,
-    @hasError=@hasError,
-    @selectedSupplier=@selectedSupplier,
-    @selectedSecondSupplier=@selectedSecondSupplier,
-    @selectedParentCompany=@selectedParentCompany,
-    @showRSPOCertified=@showRSPOCertified,
-    @SearchString=@SearchString,
-    @orderType=@orderType,
-    @sortByAttribute=@sortByAttribute;
+            CASE WHEN ISNULL(afi.total_area_ha, 0) = 0 THEN 0
+                ELSE (afi.protected_areas_area * 100.0 / afi.total_area_ha)
+            END AS protectedAreasPercent,
+
+            CASE WHEN ISNULL(afi.total_area_ha, 0) = 0 THEN 0
+                ELSE (afi.landmark_area * 100.0 / afi.total_area_ha)
+            END AS landmarkPercent,
+
+            CASE WHEN ISNULL(afi.total_area_ha, 0) = 0 THEN 0
+                ELSE (afi.natural_land_deforested_area * 100.0 / afi.total_area_ha)
+            END AS naturalForestLossPercent,
+
+            CASE WHEN ISNULL(afi.total_area_ha, 0) = 0 THEN 0
+                ELSE (afi.jrc_land_deforested_area * 100.0 / afi.total_area_ha)
+            END AS jrcNaturalForestLossPercent,
+
+            COUNT(*) OVER () AS totalRows
+
+        FROM AFIAnalysis afi
+        JOIN dbo.[' + @list_table + '] lt
+        ON lt.location_id = afi.location_id
+        WHERE afi.location_id > 0
+        AND afi.list_id = @listId
+    '
+
+    -- ADD Filters
+	IF @Country IS NOT NULL
+	  SET @Filters = + @Filters + ' AND lt.Country = @Country'
+
+    IF @State IS NOT NULL
+        SET @Filters = + @Filters + ' AND lt.State = @State'
+    IF @SubState IS NOT NULL
+        SET @Filters = + @Filters + ' AND lt.[Sub State] = @SubState'
+    IF @hasError IS NOT NULL
+        SET @Filters = + @Filters + ' AND lt.ErrorDetails IS NOT NULL AND LEN(lt.ErrorDetails) > 0'
+    IF @selectedSupplier IS NOT NULL
+        SET @Filters = + @Filters + ' AND CAST(JSON_VALUE(lt.attributes, ''$.[""Supplier Name""]'') AS NVARCHAR(150)) = @selectedSupplier'
+    IF @selectedSecondSupplier IS NOT NULL
+        SET @Filters = + @Filters + ' AND CAST(JSON_VALUE(lt.attributes, ''$.[""Second Supplier Name""]'') AS NVARCHAR(255)) = @selectedSecondSupplier'
+    IF @selectedParentCompany IS NOT NULL
+        SET @Filters = + @Filters + ' AND CAST(JSON_VALUE(lt.attributes, ''$.[""Parent Company""]'') AS NVARCHAR(255)) = @selectedParentCompany'
+    IF @showRSPOCertified = 1
+        SET @Filters = + @Filters + ' AND CAST(JSON_VALUE(lt.attributes, ''$.[""RSPO Model""]'') AS INT) = 1'
+    -- END Filters
+
+    IF (@SearchString IS NOT NULL)
+        SET @SQL = @SQL + ' AND lt.Country LIKE @SearchString OR lt.State LIKE @SearchString OR lt.[Location Name] LIKE @SearchString '
+
+    IF (@Filters IS NOT NULL)
+        SET @SQL = @SQL + @Filters;
+
+    -- Check if sortByAttribute exists in afiColumns or ltColumns
+    IF CHARINDEX(@sortByAttribute, @afiColumns) > 0
+    OR CHARINDEX(@sortByAttribute, @ltColumns) > 0
+    OR CHARINDEX(@sortByAttribute, @calculatedColumns) > 0
+        SET @isValidSortColumn = 1;
+
+    IF @orderType IS NOT NULL AND @sortByAttribute IS NOT NULL AND @isValidSortColumn = 1
+        SET @SQL = @SQL + ' ORDER BY ' +
+            CASE
+                WHEN CHARINDEX(@sortByAttribute, @afiColumns) > 0
+                    THEN 'afi.' + QUOTENAME(@sortByAttribute)
+                WHEN CHARINDEX(@sortByAttribute, @ltColumns) > 0
+                    THEN 'lt.' + QUOTENAME(@sortByAttribute)
+                ELSE QUOTENAME(@sortByAttribute) -- sorted by a calculated column
+            END + ' ' + @orderType;
+    ELSE
+        SET @SQL = @SQL + ' ORDER BY afi.negligible_risk ASC, afi.natural_land_deforested_area DESC';
+
+
+    IF @RowsOfPage > 0 AND @PageNumber > 0
+        SET @SQL = @SQL +' OFFSET (@PageNumber-1)*@RowsOfPage ROWS FETCH NEXT @RowsOfPage ROWS ONLY';
+
+    EXEC sp_executesql @SQL,
+        N'@listId INT, @listName NVARCHAR(150), @rowsOfPage INT, @pageNumber INT, @Country NVARCHAR(255), @State NVARCHAR(255), @SubState NVARCHAR(255), @hasError BIT, @selectedSupplier NVARCHAR(255), @selectedSecondSupplier NVARCHAR(255), @selectedParentCompany NVARCHAR(255), @showRSPOCertified BIT, @SearchString NVARCHAR(255), @orderType NVARCHAR(255), @sortByAttribute NVARCHAR(255)',
+        @listId=@listId, @listName=@listName,@rowsOfPage=@rowsOfPage, @pageNumber=@pageNumber, @Country=@Country, @State=@State, @SubState=@SubState, @hasError=@hasError,@selectedSupplier=@selectedSupplier, @selectedSecondSupplier=@selectedSecondSupplier, @selectedParentCompany=@selectedParentCompany, @showRSPOCertified=@showRSPOCertified, @SearchString=@SearchString, @orderType=@orderType, @sortByAttribute=@sortByAttribute;
+
+END;
 `;
-
 
 /**
  * This query to get paginated AFI Analysis for a list by location

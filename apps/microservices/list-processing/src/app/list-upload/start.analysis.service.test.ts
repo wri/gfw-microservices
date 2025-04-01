@@ -1,10 +1,10 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { StartAnalysisService } from './start.analysis.service';
-import { S3Service } from '@wri-monorepos/aws';
+import { StartAnalysisService, clearErrorFile } from './start.analysis.service';
+import { S3Service, EmailService } from '@wri-monorepos/aws';
 import { ConfigService } from '@nestjs/config';
 import { RequestLargeListProcess } from '../../models';
 import { csv2geojson } from './parser/csv2geojson.parser';
-import { ClientStoreConnection } from '@wri-monorepos/sql';
+import { ClientStoreConnection, Lists } from '@wri-monorepos/sql';
 
 jest.mock('./parser/csv2geojson.parser', () => ({
   csv2geojson: jest.fn(),
@@ -40,6 +40,12 @@ describe('StartAnalysisService', () => {
           provide: ConfigService,
           useValue: {
             get: jest.fn(),
+          },
+        },
+        {
+          provide: EmailService,
+          useValue: {
+            sendEmail: jest.fn(),
           },
         },
       ],
@@ -113,5 +119,27 @@ describe('StartAnalysisService', () => {
     await expect(service.run(request)).rejects.toThrow(
       'List not found with id 999 at client store'
     );
+  });
+
+  describe('clearErrorFile', () => {
+    it('should clear the error file storage path for a given list', async () => {
+      const organizationDatabase = 'test-database';
+      const listId = 123;
+      const mockUpdate = jest.fn();
+      const mockRepository = {
+        update: mockUpdate,
+      };
+      const mockConnection = {
+        getRepository: jest.fn().mockReturnValue(mockRepository),
+      };
+      (ClientStoreConnection as unknown as jest.Mock).mockImplementation(() => ({
+        getConnection: jest.fn().mockResolvedValue(mockConnection),
+      }));
+
+      await clearErrorFile(organizationDatabase, listId);
+
+      expect(mockConnection.getRepository).toHaveBeenCalledWith(Lists);
+      expect(mockUpdate).toHaveBeenCalledWith({ id: listId }, { errorFileStoragePath: null });
+    });
   });
 });

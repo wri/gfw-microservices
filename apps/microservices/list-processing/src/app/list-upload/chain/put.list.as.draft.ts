@@ -56,14 +56,14 @@ export class PutListAsDraft extends AbstractHandler<ChainType> {
             this.logger.error('Failed to send email', error.stack || error);
           }
         }
-
-        return {
-          ...input,
-          request: { ...request, saveAsDraft: true },
-        };
       }
-      return input;
+
+      return {
+        ...input,
+        request: { ...request, saveAsDraft: true },
+      };
     }
+    return input;
   }
 
   async putListAsDraft(organizationDatabase, list_id) {

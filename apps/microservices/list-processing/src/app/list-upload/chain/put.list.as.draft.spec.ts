@@ -91,6 +91,7 @@ describe('PutListAsDraft', () => {
         saveAsDraft: false,
         hasUnanalyzableError: true,
         // missing organization_database and list_id
+        user_id: 123,
       } as RequestNewList,
     };
 

@@ -92,7 +92,10 @@ export function UploadLocationByPoint() {
           GFW Pro allows to create location data for analysis by defining a point and radius with
           one of the methods below.
         </Typography>
-        <ExternalHelperResource text="How to format your location data for GFW Pro" url="#" />
+        <ExternalHelperResource
+          text="How to format your location data for GFW Pro"
+          url="https://globalforestwatch.org/help/gfw-pro/guides/upload-locations-lists​"
+        />
 
         <Box sx={{ display: 'flex', gap: 0.75, mt: 3 }}>
           <Typography variant="subtitle2" sx={{ fontWeight: '500' }}>

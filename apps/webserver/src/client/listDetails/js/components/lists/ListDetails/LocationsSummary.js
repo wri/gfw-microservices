@@ -6,6 +6,7 @@ import IconTimes from '../../../../../common/js/components/icon/IconTimes';
 import { locationsPage } from '../../../../../common/js/config';
 import { numberWithCommas } from '../../../../../locations/js/utils/locationsTableUtils';
 import { getCommodityName } from '../../../../../utils/list-utils';
+import './LocationsSummary.scss';
 
 const transifex = Transifex.live.translateText;
 
@@ -28,20 +29,23 @@ function LocationsSummary({
 
   const commodityName = getCommodityName(selectedList?.Commodity);
 
+  // If the custom text exceeds 30 characters, truncate the text with an ellipsis ("...")
+  const truncatedCommodityName =
+    commodityName?.length > 30 ? commodityName.slice(0, 30) + '...' : commodityName;
+
   if (!isGfwProList) {
     countriesSelected =
       listLocationsCount < selectedList.list_locations_count
         ? countries
-        : Object.keys(filterValues);
+        : Object.keys(filterValues).filter((key) => key !== 'null');
   } else {
     countriesSelected = countries;
   }
-  let countriesString = countriesSelected.join(', ');
-  countriesString = countriesString.replaceAll('null', '--');
+
+  const countriesString = countriesSelected.join(', ');
+
   const countriesStringSummary =
-    countriesSelected.length > 3
-      ? countriesSelected.slice(0, 3).join(', ').replaceAll('null', '--')
-      : countriesString;
+    countriesSelected.length > 3 ? countriesSelected.slice(0, 3).join(', ') : countriesString;
 
   const showingText = Transifex.live.translateText('Showing');
   const ofText = Transifex.live.translateText('of');
@@ -52,60 +56,62 @@ function LocationsSummary({
   const totalLocationsText = Transifex.live.translateText('total locations • ');
 
   return (
-    <header className="list-detail-header__info-container">
-      <div>
-        {shareView && (
-          <span>
-            <IconShare height="16px" />
-            <span> {transifex(locationsPage.lists.share)}</span>
-            <span className="bullet-divider">•</span>
-          </span>
-        )}
-        {listLength > 0 && (
-          <div
-            onClick={(e) => {
-              if (countriesSelected.length > 3) {
-                toggleCountriesPopover(e);
-              }
-            }}
-          >
-            {commodityName && <span>{commodityName} •</span>}
-            <span>{`${numberOfFilteredLocations} ${numberWithCommas(
-              listLength
-            )} ${totalLocationsText}`}</span>
+    <header className="locations-summary">
+      {shareView && (
+        <span>
+          <IconShare height="16px" />
+          <span> {transifex(locationsPage.lists.share)}</span>
+          <span className="bullet-divider">•</span>
+        </span>
+      )}
+      {listLength > 0 && (
+        <div
+          onClick={(e) => {
+            if (countriesSelected.length > 3) {
+              toggleCountriesPopover(e);
+            }
+          }}
+        >
+          {truncatedCommodityName && <span>{truncatedCommodityName} •</span>}
+          <span>{`${numberOfFilteredLocations} ${numberWithCommas(
+            listLength
+          )} ${totalLocationsText}`}</span>
 
-            {countriesSelected.length <= 3 && countriesStringSummary}
-            {countriesSelected.length > 3 && (
-              <span className="country-name-extend">
-                {countriesStringSummary}…
-                <Popover
-                  className="countries-popover dialog"
-                  open={openCountriesPopover}
-                  anchorEl={anchorElCountries}
-                  anchorOrigin={{ horizontal: 'left', vertical: 'bottom' }}
-                  targetOrigin={{ horizontal: 'left', vertical: 'top' }}
-                  onRequestClose={closeCountriesPopover}
-                >
-                  <div className="countries-popover__inner">
-                    <div className="countries-popover__header dialog__header">
-                      <h1 className="countries-popover__title dialog__title">
-                        {transifex(locationsPage.lists.titlePopoverCountries)}
-                      </h1>
-                      <IconButton
-                        icon={<IconTimes />}
-                        title={transifex(locationsPage.lists.closePopover)}
-                        onClick={closeCountriesPopover}
-                        size="medium"
-                      />
-                    </div>
-                    <p className="countries-popover__list dialog__prompt">{countriesString}</p>
+          {countriesSelected.length <= 3 && countriesStringSummary}
+          {countriesSelected.length > 3 && (
+            <span className="country-name-extend">
+              {countriesStringSummary}…
+              <Popover
+                className="countries-popover dialog"
+                open={openCountriesPopover}
+                anchorEl={anchorElCountries}
+                anchorOrigin={{ horizontal: 'left', vertical: 'bottom' }}
+                targetOrigin={{ horizontal: 'left', vertical: 'top' }}
+                onRequestClose={closeCountriesPopover}
+              >
+                <div className="countries-popover__inner">
+                  <div className="countries-popover__header dialog__header">
+                    <h3 className="countries-popover__title dialog__title">
+                      {transifex(locationsPage.lists.titlePopoverCountries)}
+                    </h3>
+                    <IconButton
+                      icon={<IconTimes />}
+                      title={transifex(locationsPage.lists.closePopover)}
+                      onClick={closeCountriesPopover}
+                      size="medium"
+                    />
                   </div>
-                </Popover>
-              </span>
-            )}
-          </div>
-        )}
-      </div>
+                  <p className="countries-popover__list dialog__prompt">{countriesString}</p>
+                  {commodityName && (
+                    <p className="countries-popover__list dialog__prompt">{`
+                      ${transifex(locationsPage.lists.commodityType)}: ${commodityName}`}</p>
+                  )}
+                </div>
+              </Popover>
+            </span>
+          )}
+        </div>
+      )}
     </header>
   );
 }

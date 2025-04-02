@@ -80,15 +80,29 @@ export function DataTemplates({ handleClose }: DataTemplatesProps) {
         data, then upload into GFW Pro.
       </Typography>
       <Box sx={{ display: 'flex', gap: 3 }}>
-        <ExternalHelperResource text="How to format your location data for GFW Pro" url="#" />
-        <ExternalHelperResource text="Learn more about GFW Pro templates" url="#" />
+        <ExternalHelperResource
+          text="How to format your location data for GFW Pro"
+          url="https://globalforestwatch.org/help/gfw-pro/guides/complete-selected-template"
+        />
+        <ExternalHelperResource
+          text="Learn more about GFW Pro templates"
+          url="https://globalforestwatch.org/help/gfw-pro/guides/select-correct-template"
+        />
       </Box>
 
       <Box
         sx={{ mt: 6, mx: 'auto', width: '600px', display: 'flex', flexDirection: 'column', gap: 1 }}
       >
         {templateOptions.map(
-          ({ title, Icon, template, bestForText, requiredFieldsText, filename }) => {
+          ({
+            title,
+            Icon,
+            template,
+            bestForText,
+            requiredFieldsText,
+            filename,
+            helpCenterLink,
+          }) => {
             const isSelected = selectedTemplate === template;
             const isHovered = hoveredTemplate === template;
             const isAlreadyDownloaded = downloadedTemplates.includes(template);
@@ -228,7 +242,10 @@ export function DataTemplates({ handleClose }: DataTemplatesProps) {
                       data in Pro).
                     </Typography>
                   </Box>
-                  <ExternalHelperResource text="How to format shapefile data" url="#" />
+                  <ExternalHelperResource
+                    text="How to format shapefile data"
+                    url={helpCenterLink}
+                  />
                 </AccordionDetails>
               </Accordion>
             );
@@ -272,6 +289,7 @@ const templateOptions: {
   bestForText: string | ReactElement;
   requiredFieldsText: ReactElement;
   filename: string;
+  helpCenterLink: string;
 }[] = [
   {
     template: Template.PolygonShapeFile,
@@ -291,6 +309,7 @@ const templateOptions: {
       </>
     ),
     filename: 'GFWPro-PolygonShapefile.zip',
+    helpCenterLink: 'https://globalforestwatch.org/help/gfw-pro/guides/prepare-shapefiles-upload​',
   },
   {
     template: Template.Kml,
@@ -307,6 +326,8 @@ const templateOptions: {
       </>
     ),
     filename: 'GFWPro-KML.kml',
+    helpCenterLink:
+      'https://globalforestwatch.org/help/gfw-pro/guides/prepare-kml-kmz-files-upload​',
   },
   {
     template: Template.Spreadsheet,
@@ -339,6 +360,7 @@ const templateOptions: {
       </>
     ),
     filename: 'GFWPro-Spreadsheet.csv',
+    helpCenterLink: 'https://globalforestwatch.org/help/gfw-pro/guides/select-correct-template​',
   },
   {
     template: Template.PointShapeFile,
@@ -366,6 +388,7 @@ const templateOptions: {
       </>
     ),
     filename: 'GFWPro-PointShapefile.zip',
+    helpCenterLink: 'https://globalforestwatch.org/help/gfw-pro/guides/prepare-shapefiles-upload​',
   },
   {
     template: Template.ListOfPalmMillIds,
@@ -409,5 +432,6 @@ const templateOptions: {
       </>
     ),
     filename: 'GFWPro-PalmMillIDs.csv',
+    helpCenterLink: 'https://globalforestwatch.org/help/gfw-pro/guides/upload-locations-lists​',
   },
 ];

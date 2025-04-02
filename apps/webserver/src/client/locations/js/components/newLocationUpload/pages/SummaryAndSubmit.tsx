@@ -15,7 +15,10 @@ import { useHistory } from '../hooks';
 import { LoadingModal, PillButton } from '../../../../../components';
 import { useUploadLocation } from '../contexts';
 import { NavBar } from '../components';
-import { analysisTypesOptionsNewNames } from '../../../../../../config/env/analysisTypes.constants';
+import {
+  analysisTypes,
+  analysisTypesOptionsNewNames,
+} from '../../../../../../config/env/analysisTypes.constants';
 import { commodities } from '../utils/constants';
 import { uploadFileToS3 } from '../utils/upload';
 import { uploadProcessByPrevUploadedFile } from '../../landing/uploadProcess';
@@ -166,7 +169,7 @@ export function SummaryAndSubmit() {
           </Typography>
           <Box component="ul" sx={{ color: 'text.secondary' }}>
             {Object.entries(uploadLocationState.typeOfAnalysis)
-              .filter(([key, isChecked]) => isChecked && key !== 'PalmRisk')
+              .filter(([key, isChecked]) => isChecked && key !== analysisTypes.PALM_RISK)
               .map(([key]) => {
                 const analysis = analysisTypesOptionsNewNames.find((x) => x.id === key);
 

@@ -11,27 +11,14 @@ import {
   Typography,
   useTheme,
 } from '@mui/material';
-import {
-  ArrowBackIos,
-  ArrowForwardIos,
-  Close,
-  DriveFolderUpload,
-  Replay,
-  Report,
-} from '@mui/icons-material';
-import { getFileExtension } from '../../../../../utils';
+import { ArrowBackIos, ArrowForwardIos, Close, Replay } from '@mui/icons-material';
 
 import { LocationListType } from '../types';
 import { LoadingModal, PillButton } from '../../../../../components';
-import {
-  getTableColumns,
-  LabelNameTable,
-  LabelNameTableZip,
-  uploadFileToS3,
-} from '../utils/upload';
+import { getTableColumns, LabelNameTable, uploadFileToS3 } from '../utils/upload';
 import { useUploadLocation } from '../contexts';
 import { useHistory } from '../hooks';
-import { NavBar } from '../components';
+import { NavBar, UploadLocationPreviewErrorMessage } from '../components';
 import { useFetch } from '../../../../../hooks';
 import { VALID_UPLOAD_FILE_FORMATS } from '../utils/constants';
 import { fetchListPreview } from '../../../../../api';
@@ -86,25 +73,7 @@ export function UploadLocationPreview() {
     }
   };
 
-  const getMissingFieldsNames = (errors: string[], fileExtension: string) => {
-    if (!errors.length) {
-      return '';
-    }
-
-    const fields = errors[0].split(':')?.[1];
-    if (!fields) {
-      return '';
-    }
-
-    const map = fileExtension === '.zip' ? LabelNameTableZip : LabelNameTable;
-    return fields
-      .replaceAll(' ', '')
-      .split(',')
-      .map((field) => map[field as keyof typeof map] || '')
-      .join(', ');
-  };
   const columns = getTableColumns(data?.features);
-  const fileExtension = getFileExtension(uploadedFile?.keyFile);
 
   return (
     <>
@@ -154,59 +123,11 @@ export function UploadLocationPreview() {
         {isLoading ? (
           <Skeleton variant="rounded" sx={{ height: '460px' }} />
         ) : error ? (
-          <>
-            {error.message === 'Validation errors found in the data' ? (
-              <Box
-                sx={{
-                  display: 'flex',
-                  flexDirection: 'column',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  height: '354px',
-                  margin: '1.5rem 0 0.75rem',
-                  borderRadius: 1,
-                  border: `2px solid ${theme.palette.error.main}`,
-                  backgroundColor: 'error.light',
-                  position: 'relative',
-                  px: 25,
-                }}
-              >
-                <Box sx={{ position: 'relative' }}>
-                  <DriveFolderUpload
-                    sx={{ color: `${theme.palette.error.main}80`, fontSize: '5.25rem' }}
-                  />
-                  <Report
-                    color="error"
-                    sx={{ position: 'absolute', fontSize: '2rem', left: '57px' }}
-                  />
-                </Box>
-                <Typography variant="h6">Missing required fields</Typography>
-                <Typography
-                  variant="caption"
-                  sx={{ color: theme.palette.text.secondary, my: 1, textAlign: 'center' }}
-                >
-                  Your {fileExtension} file is missing the following obligatory fields:{' '}
-                  {getMissingFieldsNames(error.errors, fileExtension)}. Please check the required
-                  fields in the Data Templates and update your file before re-uploading it.
-                </Typography>
-                <Typography
-                  variant="body2"
-                  color="error"
-                  onClick={() => fileInputRef.current?.click()}
-                  sx={{ cursor: 'pointer', textDecoration: 'underline' }}
-                >
-                  Retry upload
-                </Typography>
-              </Box>
-            ) : (
-              <Box sx={{ margin: 'auto' }}>
-                <Typography variant="h6">There were platform issues loading your data.</Typography>
-                <PillButton onClick={getPreviewData} sx={{ margin: 'auto' }}>
-                  Click here to try again
-                </PillButton>
-              </Box>
-            )}
-          </>
+          <UploadLocationPreviewErrorMessage
+            error={error}
+            onRetryUpload={() => fileInputRef.current?.click()}
+            onRetryPreviewData={getPreviewData}
+          />
         ) : (
           <Box sx={{ maxHeight: '460px', overflow: 'auto' }}>
             <Table

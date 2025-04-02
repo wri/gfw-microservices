@@ -54,7 +54,7 @@ export class GenerateErrorFile extends AbstractHandler<ChainType> {
           infer: true,
         });
         const key = `${process.env.NODE_ENV}/failed/${fileName}`;
-        await this.s3Service.putObject(key, errorFilePath, bucket, 'text/csv');
+        await this.s3Service.writeFileToS3(errorFilePath, 'text/csv', bucket, key);
         const s3Path = `s3://${bucket}/${key}`;
 
         await this.setListErrorFileStoragePath(organizationDatabase, listId, s3Path);

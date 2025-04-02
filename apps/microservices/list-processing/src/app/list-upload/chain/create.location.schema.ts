@@ -2,7 +2,7 @@ import { SQLUtils } from '@wri-monorepos/sql';
 import { AbstractHandler, ChainType, RequestNewList } from './types';
 import * as sql from 'mssql';
 import { Logger } from '@nestjs/common';
-import { listStatus } from '@wri-monorepos/constants';
+import { analysisTypes, listStatus } from '@wri-monorepos/constants';
 
 export class CreateLocationSchema extends AbstractHandler<ChainType> {
   private readonly logger = new Logger(CreateLocationSchema.name);
@@ -70,10 +70,10 @@ export class CreateLocationSchema extends AbstractHandler<ChainType> {
     analysisIds: string[]
   ): Promise<void> {
     try {
-      const isPalmRiskIncluded = analysisIds.includes('PalmRisk');
+      const isPalmRiskIncluded = analysisIds.includes(analysisTypes.PALM_RISK);
       await Promise.all(
         analysisIds
-          .filter((analysisId) => analysisId !== 'PalmRisk')
+          .filter((analysisId) => analysisId !== analysisTypes.PALM_RISK)
           .map(async (analysisId) => {
             const parameters = [
               this.createSqlParameter('ListID', sql.Int, listId),
@@ -82,7 +82,9 @@ export class CreateLocationSchema extends AbstractHandler<ChainType> {
             ];
 
             if (isPalmRiskIncluded && analysisId === 'FCD') {
-              parameters.push(this.createSqlParameter('options', sql.NVarChar(32), 'PalmRisk'));
+              parameters.push(
+                this.createSqlParameter('options', sql.NVarChar(32), analysisTypes.PALM_RISK)
+              );
             }
 
             return await SQLUtils.queryDB(

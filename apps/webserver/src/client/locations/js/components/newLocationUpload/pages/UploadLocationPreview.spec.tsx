@@ -30,7 +30,10 @@ jest.mock('../hooks', () => ({
   useHistory: () => ({ goBack: mockHistoryGoBack, push: mockHistoryPush }),
 }));
 
-jest.mock('../components', () => ({ NavBar: () => <span /> }));
+jest.mock('../components', () => ({
+  NavBar: () => <span />,
+  UploadLocationPreviewErrorMessage: () => <span data-testid="upload-error-message" />,
+}));
 
 jest.mock('../../../../../hooks', () => ({
   useFetch: jest.fn(),
@@ -84,6 +87,7 @@ describe('UploadLocationPreview', () => {
       keyFile: 'file',
       url: 'url',
     });
+    expect(screen.queryByTestId('upload-error-message')).not.toBeInTheDocument();
 
     await userEvent.click(screen.getByRole('button', { name: /next/i }));
 
@@ -104,12 +108,7 @@ describe('UploadLocationPreview', () => {
 
     render(<UploadLocationPreview />);
 
-    expect(screen.getByText('Missing required fields')).toBeInTheDocument();
-    expect(
-      screen.getByText(
-        /your \.zip file is missing the following obligatory fields: location_n, analysis_r, analysis_a\. please check the required fields in the data templates and update your file before re-uploading it\./i
-      )
-    ).toBeInTheDocument();
+    expect(screen.getByTestId('upload-error-message')).toBeInTheDocument();
 
     expect(screen.getByRole('button', { name: /next/i })).toBeDisabled();
   });

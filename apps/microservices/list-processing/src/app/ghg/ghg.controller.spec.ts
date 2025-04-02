@@ -136,7 +136,7 @@ describe('[GET] /ghg/:listId/data-per-page', () => {
           {
             listId: 5692,
             listName: 'Test WRI List',
-            locationId: 5631,
+            locationId: 'location name',
             totalAreaHa: 0,
             statusCode: 200,
             locationError: null,
@@ -159,7 +159,7 @@ describe('[GET] /ghg/:listId/data-per-page', () => {
       {
         listId: 5692,
         listName: 'Test WRI List',
-        locationId: 5631,
+        locationId: 'location name',
         totalAreaHa: 0,
         statusCode: 200,
         locationError: null,

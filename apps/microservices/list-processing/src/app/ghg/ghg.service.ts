@@ -1,10 +1,17 @@
-import { ClientStoreConnection, GHGAnalyses, Lists } from '@wri-monorepos/sql';
+import {
+  ClientStoreConnection,
+  GHGAnalyses,
+  Lists,
+  ListSchema,
+  ListSchemaType,
+} from '@wri-monorepos/sql';
 import { Injectable, Logger } from '@nestjs/common';
+import { EntitySchema } from 'typeorm';
 
 interface GHGAnalysisData {
   listId: number;
   listName: string;
-  locationId: number;
+  locationId: string;
   totalAreaHa: number;
   statusCode: number;
   locationError: string;
@@ -63,7 +70,29 @@ export class GHGService {
       });
 
       const ListRepository = await connection.getRepository(Lists);
-      const { listName, Commodity } = await ListRepository.findOne({ where: { id: listId } });
+      const { listName, Commodity, listTableName } = await ListRepository.findOne({
+        where: { id: listId },
+      });
+
+      // Convert locationId into locationName
+      const ListEntity = new EntitySchema<ListSchemaType>({
+        ...ListSchema,
+        name: listTableName,
+      });
+
+      const connectionLocationName = await this.clientStoreConnection.getConnection(
+        clientDatabase,
+        [ListEntity]
+      );
+      const listTableNameRepository = await connectionLocationName.getRepository(ListEntity);
+
+      this.logger.log(`Getting Location Names for listId: ${listId}`);
+      const locationNames = await listTableNameRepository.find({
+        select: {
+          locationId: true,
+          locationName: true,
+        },
+      });
 
       return data.map((item) => {
         const {
@@ -80,7 +109,7 @@ export class GHGService {
         return {
           listId,
           listName,
-          locationId,
+          locationId: this.getLocationNameById(locationNames, locationId),
           totalAreaHa,
           statusCode,
           locationError,
@@ -95,5 +124,9 @@ export class GHGService {
       this.logger.error(`listId: ${listId} , pageNumber: ${pageNumber} error: ${e}`);
       return [];
     }
+  }
+  getLocationNameById(locations: any[], id: number): string | null {
+    const matchingLocation = locations.find((loc) => loc.locationId === id);
+    return matchingLocation ? matchingLocation.locationName : null;
   }
 }

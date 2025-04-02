@@ -107,10 +107,16 @@ describe('GHG - service', () => {
       },
     ];
     const listId = 1;
-    clientStoreConnection.getConnection = jest.fn().mockResolvedValueOnce({
+    clientStoreConnection.getConnection = jest.fn().mockResolvedValue({
       getRepository: () => ({
         findAndCount: () => [mockData, mockData.length],
         findOne: () => ({ listName: 'mockedListName', Commodity: 'COCOA' }),
+        find: () => [
+          { locationName: 'Brazil1', locationId: 1 },
+          { locationName: 'brazil2', locationId: 2 },
+          { locationName: 'arg3 landmark', locationId: 3 },
+          { locationName: 'arg4 wdpa', locationId: 4 },
+        ],
       }),
       options: {
         database: 'mock_db',
@@ -125,7 +131,7 @@ describe('GHG - service', () => {
       {
         listId: listId,
         listName: 'mockedListName',
-        locationId: 2,
+        locationId: 'brazil2',
         totalAreaHa: 1.2921,
         statusCode: 2,
         locationError: null,
@@ -138,7 +144,7 @@ describe('GHG - service', () => {
       {
         listId: 1,
         listName: 'mockedListName',
-        locationId: 3,
+        locationId: 'arg3 landmark',
         totalAreaHa: 1.1921,
         statusCode: 2,
         locationError: null,

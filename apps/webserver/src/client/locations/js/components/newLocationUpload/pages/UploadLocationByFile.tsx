@@ -1,5 +1,5 @@
 import React, { DragEvent, useEffect, useState } from 'react';
-import { Box, Card, Modal, Typography, useTheme } from '@mui/material';
+import { Box, Card, Typography, useTheme } from '@mui/material';
 import { ArrowForwardIos, Close } from '@mui/icons-material';
 
 import { PillButton } from '../../../../../components';
@@ -21,7 +21,7 @@ export function UploadLocationByFile() {
 
   const { clearUploadType, addFile } = useUploadLocation();
 
-  const [isDataTemplateModalOpen, setIsDataTemplateModalOpen] = useState(false);
+  const [isDataTemplateDialogOpen, setIsDataTemplateDialogOpen] = useState(false);
   const [file, setFile] = useState<File | null>(null);
   const [fileAttachState, setFileAttachState] = useState<FileAttachState>(FileAttachState.NoFile);
   const [dragCounter, setDragCounter] = useState(0); // used to prevent dragleave event from firing when dragging over children
@@ -129,7 +129,7 @@ export function UploadLocationByFile() {
           data formatted for GFW Pro, just upload it below.
         </Typography>
 
-        <PillButton variant="contained" onClick={() => setIsDataTemplateModalOpen(true)}>
+        <PillButton variant="contained" onClick={() => setIsDataTemplateDialogOpen(true)}>
           Data templates
         </PillButton>
         <Box
@@ -286,9 +286,10 @@ export function UploadLocationByFile() {
           </PillButton>
         </Box>
 
-        <Modal open={isDataTemplateModalOpen} onClose={() => setIsDataTemplateModalOpen(false)}>
-          <DataTemplates handleClose={() => setIsDataTemplateModalOpen(false)} />
-        </Modal>
+        <DataTemplates
+          isOpen={isDataTemplateDialogOpen}
+          onClose={() => setIsDataTemplateDialogOpen(false)}
+        />
       </Card>
     </>
   );

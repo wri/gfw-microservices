@@ -135,7 +135,11 @@ export class AppController {
     @Body()
     request: CopyOrMoveLargeListRequestLLP
   ) {
-    return this.listCopyMoveService.run(request);
+    const { isUploadListLpEnabled = false } = request;
+    if (isUploadListLpEnabled) {
+      return this.listCopyMoveService.run(request);
+    }
+    return this.locationService.MoveLocations(request);
   }
 
   @Get('/paginated-list-data')

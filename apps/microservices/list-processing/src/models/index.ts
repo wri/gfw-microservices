@@ -180,6 +180,9 @@ export class CopyOrMoveLargeListRequestLLP implements CopyOrMoveLargeListRequest
   filters: ListFilters;
   @ApiProperty()
   srcListAnalysisTable: string;
+
+  @ApiProperty()
+  isUploadListLpEnabled: boolean;
 }
 
 export class getPaginatedListDataRequest {

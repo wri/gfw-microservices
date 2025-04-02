@@ -5,36 +5,29 @@ import {
   TargetListType,
   upgradeListSchema,
   UspGetLocationsFilteredToCopy,
-  UspSetListLocked,
 } from '@wri-monorepos/sql';
-import { CheckListNameIsValid } from '@wri-monorepos/geo';
+import { CheckListNameIsValid, getListAnalysisStatusByListId } from '@wri-monorepos/geo';
 import { SetListDraftStatus } from './shared/put.list.as.draft';
 import { handleNewListCreation } from './handler/list.creation';
-import { handleExistingListUpdate } from './handler/existing.list.update';
 import { handleSourceListDeletion } from './handler/source.list.deletion';
 import { assembleGeojson } from './shared/assemble.geojson';
 import { createFeatureProps } from './shared/create.feature.props';
 import { deleteGeoJSONFeatureProperties } from './shared/delete.geojson.feature.properties';
+import { handleExistingListUpdate } from './handler/existing.list.update';
 
 @Injectable()
 export class ListCopyMoveService {
   private readonly logger = new Logger(ListCopyMoveService.name);
   async run(request: CopyOrMoveLargeListRequestLLP) {
-    // Lists to be unlocked after the process
-    const unlock = [];
     this.logger.log('Starting list copy/move flow');
     const {
       listId: selectedListId,
-      selectedListLocationClassification,
-      customAttributesNames,
       userListNames,
       action,
       listType,
       listName: newListName,
       targetList: moveToList,
       selectedLocations,
-      addType,
-      // activeTemplate,
       commodityType,
       templateData,
       saveAsDraft: isSaveAsDraft,
@@ -54,8 +47,6 @@ export class ListCopyMoveService {
       listId: selectedListId,
       userId: userId,
     });
-    await new UspSetListLocked().run(clientDatabase, selectedListId, userId);
-    unlock.push(selectedListId);
 
     if (listType !== TargetListType.New) {
       this.logger.log('Copy/Move to an existing list');
@@ -64,9 +55,11 @@ export class ListCopyMoveService {
         listId: moveToList.id,
         userId: userId,
       });
-      await new UspSetListLocked().run(clientDatabase, moveToList.id, userId);
-      unlock.push(moveToList.id);
     }
+
+    // Grab the analysis that was ran for the existing list.
+    const listAnalyses = await getListAnalysisStatusByListId(clientDatabase, selectedListId);
+    const analysisIds = listAnalyses.map((analysis) => analysis.analysisId);
 
     const listName = listType === TargetListType.New ? newListName : moveToList?.list_name;
     CheckListNameIsValid(listType, listName, userListNames);
@@ -80,7 +73,7 @@ export class ListCopyMoveService {
       await SetListDraftStatus(clientDatabase, selectedListId, gfwListId);
     }
 
-    // Lock the source and target lists
+    // Getting the existing data for the source list
     const locationData = await new UspGetLocationsFilteredToCopy().run(clientDatabase, {
       listID: selectedListId,
       selectedLocations: allLocationsSelected ? null : selectedLocations.join(),
@@ -97,14 +90,49 @@ export class ListCopyMoveService {
     const geojson = await assembleGeojson(featProps, locationData);
     deleteGeoJSONFeatureProperties(geojson);
 
+    // We are copying or moving to a new list so creating the new table
     if (listType === TargetListType.New) {
-      await handleNewListCreation();
-    } else {
-      await handleExistingListUpdate();
+      const { list_id } = await handleNewListCreation({
+        listName,
+        userId,
+        clientDatabase,
+        analysisIds,
+        templateData: templateData as unknown as Array<{ template_id: number; commodity: string }>,
+        gfwListId,
+        commodity: commodityType,
+        saveAsDraft: isSaveAsDraft,
+      });
+      this.logger.log(`list created with id: ${list_id}`);
+      moveToList.id = list_id;
     }
 
+    await handleExistingListUpdate({
+      clientDatabase,
+      selectedListId,
+      moveToList,
+      userId,
+      action,
+      isSaveAsDraft,
+      finalGeojson: geojson,
+      commodityType,
+      srcListAnalysisTable,
+      selectedLocations,
+      gfwListId,
+      organizationId,
+      analysisIds,
+      subscriptionStatusId,
+    });
+
     if (action === ActionType.Move) {
-      await handleSourceListDeletion();
+      await handleSourceListDeletion({
+        clientDatabase,
+        selectedListId,
+        userId,
+        gfwListId,
+        allLocationsSelected,
+        filters,
+        selectedLocations,
+      });
     }
 
     return {

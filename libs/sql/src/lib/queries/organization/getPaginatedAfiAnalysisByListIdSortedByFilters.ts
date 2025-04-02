@@ -131,17 +131,17 @@ BEGIN
         SET @Filters = + @Filters + ' AND lt.State = @State'
 
         IF @SubState IS NOT NULL
-        SET @Filters = + @Filters + ' AND lt.[Sub State] = @SubState'
+            SET @Filters = + @Filters + ' AND lt.[Sub State] = @SubState'
         IF @hasError IS NOT NULL
             SET @Filters = + @Filters + ' AND lt.ErrorDetails IS NOT NULL AND LEN(lt.ErrorDetails) > 0'
         IF @selectedSupplier IS NOT NULL
             SET @Filters = + @Filters + ' AND lt.[Supplier Name] = @selectedSupplier'
-    IF @selectedSecondSupplier IS NOT NULL
-        SET @Filters = + @Filters + ' AND lt.[Second Supplier Name] = @selectedSecondSupplier'
-    IF @selectedParentCompany IS NOT NULL
-        SET @Filters = + @Filters + ' AND lt.[Parent Company] = @selectedParentCompany'
-    IF @showRSPOCertified = 1
-        SET @Filters = + @Filters + ' AND lt.[RSPO Model] = 1'
+        IF @selectedSecondSupplier IS NOT NULL                                                          
+            SET @Filters = + @Filters + ' AND lt.[Second Supplier Name] = @selectedSecondSupplier'
+        IF @selectedParentCompany IS NOT NULL
+            SET @Filters = + @Filters + ' AND lt.[Parent Company] = @selectedParentCompany'
+        IF @showRSPOCertified = 1
+            SET @Filters = + @Filters + ' AND lt.[RSPO Model] = 1'
 
         -- END Filters
 

@@ -92,7 +92,7 @@ export class ParserData extends AbstractHandler<ChainType> {
       /mandatory/g,
       /^string/g,
       /^name of the/g,
-      /populate with data below this line/g
+      /populate with data below this line/g,
     ];
 
     return {

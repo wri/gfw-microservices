@@ -88,6 +88,13 @@ export class ParserData extends AbstractHandler<ChainType> {
       return geojson;
     }
 
+    const templatePatterns = [
+      /mandatory/g,
+      /^string/g,
+      /^name of the/g,
+      /populate with data below this line/g
+    ];
+
     return {
       ...geojson,
       features: geojson.features.filter((feature) => {

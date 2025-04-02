@@ -130,4 +130,34 @@ module.exports = (app, limiter) => {
       });
     }
   });
+
+  app.get('/map/gadm-admininstrative-boundaries', (req, res) => {
+    const { query } = req;
+    const { countryCode } = query;
+
+    let sql;
+
+    if (countryCode) {
+      sql = `SELECT name_1, gid_1 FROM data WHERE adm_level='1' AND gid_0='${countryCode}' ORDER BY name_1`;
+    } else {
+      sql = `SELECT name_0, gid_0 as iso FROM data WHERE adm_level='0' AND name_0 IS NOT NULL ORDER BY name_0`;
+    }
+
+    fetch(
+      'https://data-api.globalforestwatch.org/dataset/gadm_administrative_boundaries/v4.1.64/query/json',
+      {
+        method: 'POST',
+        headers: {
+          'x-api-key': process.env.GADM_ADMINISTRATIVE_BOUNDARIES_API_KEY,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ sql }),
+      }
+    )
+      .then((response) => response.json())
+      .then((response) => {
+        res.send(response);
+      })
+      .catch((error) => console.error('Error:', error));
+  });
 };

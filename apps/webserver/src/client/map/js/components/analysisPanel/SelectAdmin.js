@@ -1,42 +1,34 @@
+import React, { Component } from 'react';
 import { executeQueryJSON } from '@arcgis/core/rest/query';
 import Query from '@arcgis/core/rest/support/Query';
-import React, { Component } from 'react';
+import MenuItem from '@mui/material/MenuItem';
+import Select from '@mui/material/Select';
 import { updateAdminSelections } from '../../actions/mapActions';
 import * as analysisActions from '../../actions/analysisActions';
 import store from '../../store';
 import GfwButton from '../../../../common/js/components/GfwButton';
-import GfwSelect from '../../../../common/js/components/GfwSelect';
-import { getGadmService } from '../../../../common/js/utils/getGadmService.utils';
+import {
+  getGadmService,
+  getListOfCountries,
+  getListOfStatesOrProvinces,
+} from '../../../../common/js/utils/getGadmService.utils';
+import { ThemeProvider } from '../../../../styles/ThemeProvider';
 
 export default class SelectAdmin extends Component {
   constructor(props) {
     super(props);
     this.state = {
       countryOptions: [],
-      countryObjects: [],
-      smallerOptions: [],
+      stateOrProvinceOptions: [],
       filterStr: '',
     };
   }
 
   // When the component mounts - query all countries to populate country level dropdown
   componentDidMount() {
-    const queryUrl =
-      'https://gfwpro-gis.globalforestwatch.org/arcgis/rest/services/GADM36_admin/MapServer/6';
-
-    const query = new Query();
-    query.where = '1=1';
-    query.returnGeometry = false;
-    query.outFields = ['name_0', 'iso'];
-    query.returnDistinctValues = true;
-    executeQueryJSON(queryUrl, query).then((res) => {
-      const uniqueCountries = [];
-      res.features.map((feature) => uniqueCountries.push(feature.attributes.name_0));
-      const uniqueAttributes = [...new Set(res.features.map((item) => item.attributes))];
-      uniqueCountries.sort();
+    getListOfCountries().then(({ countryOptions }) => {
       this.setState({
-        countryOptions: uniqueCountries,
-        countryObjects: uniqueAttributes,
+        countryOptions,
       });
     });
   }
@@ -44,101 +36,83 @@ export default class SelectAdmin extends Component {
   // If a country was chosen (and different) - query to determine it's sub-admin area to populate sub-level dropdown
   componentDidUpdate(prevProps) {
     if (prevProps.adminSelections.country !== this.props.adminSelections.country) {
-      const queryUrl =
-        'https://gfwpro-gis.globalforestwatch.org/arcgis/rest/services/GADM36_admin/MapServer/5';
-      const query = new Query();
-      // we need to add an extra single quote to scape country names with apostrophes (Côte d'Ivoire)
-      const scapedCountryName = this.props.adminSelections.country.replace(/'/g, "''");
-      query.where = `name_0='${scapedCountryName}'`;
-      query.returnGeometry = false;
-      query.outFields = ['name_1', 'id_1']; // 'gadmid'
-      query.returnDistinctValues = true;
-      executeQueryJSON(queryUrl, query).then((res) => {
-        const uniqueSubs = [
-          ...new Set(
-            res.features
-              .filter((item) => item.attributes.name_1)
-              .map((item) => item.attributes.name_1)
-          ),
-        ];
-        const uniqueAttributes = [
-          ...new Set(
-            res.features.filter((item) => item.attributes.name_1).map((item) => item.attributes)
-          ),
-        ];
-        uniqueSubs.sort();
-        this.setState({
-          smallerOptions: uniqueSubs,
-          smallerObjects: uniqueAttributes,
-        });
-      });
+      getListOfStatesOrProvinces(this.props.adminSelections.countryISO).then(
+        ({ stateOrProvinceOptions }) => {
+          this.setState({
+            stateOrProvinceOptions,
+          });
+        }
+      );
     }
   }
 
   setCountry = (evt) => {
+    const selectedISO = evt.target.value;
+    const selectedCountry = this.state.countryOptions.find((c) => c.iso === selectedISO);
+
+    this.setState({ selectedCountry, selectedStateOrProvince: '' });
+
     store.dispatch(
       updateAdminSelections({
-        country: evt.value,
-        smallerRegion: '',
+        country: selectedCountry.name_0,
+        countryISO: selectedCountry.iso,
+        stateOrProvince: '',
       })
     );
 
     this.props.setAdmin({
-      country: evt.value,
-      smallerRegion: '',
+      country: selectedCountry.name_0,
+      countryISO: selectedCountry.iso,
+      stateOrProvince: '',
     });
   };
 
-  setSmaller = (evt) => {
+  setStateOrProvince = (evt) => {
+    const selectedGid1 = evt.target.value;
+    const selectedStateOrProvince = this.state.stateOrProvinceOptions.find(
+      (c) => c.gid_1 === selectedGid1
+    );
+
+    this.setState({ selectedStateOrProvince: selectedGid1 });
+
     store.dispatch(
       updateAdminSelections({
-        country: this.props.adminSelections.country,
-        smallerRegion: evt.value,
+        country: this.state.selectedCountry.name_0,
+        stateOrProvince: selectedStateOrProvince.name_1,
       })
     );
 
     this.props.setAdmin({
-      smallerRegion: evt.value,
+      stateOrProvince: selectedStateOrProvince.name_1,
     });
   };
 
   analyzeAdmin = () => {
-    const abbrev = this.state.countryObjects
-      ? this.state.countryObjects.filter((obj) => obj.name_0 === this.props.adminSelections.country)
-      : [];
-    let regionAbbrev;
-    if (this.props.adminSelections.smallerRegion && this.state.smallerObjects) {
-      regionAbbrev = this.state.smallerObjects.filter(
-        (obj) => obj.name_1 === this.props.adminSelections.smallerRegion
-      );
-    }
+    const { selectedStateOrProvince, selectedCountry, stateOrProvinceOptions } = this.state;
 
-    if (regionAbbrev && regionAbbrev[0] && abbrev[0]) {
-      this.props.analyzeAdmin({
-        country: abbrev[0].iso,
-        region: regionAbbrev[0].id_1,
-      });
-      store.dispatch(
-        analysisActions.setAnalysisAdminArea({
-          country: abbrev[0].iso,
-          region: regionAbbrev[0].id_1,
-        })
-      );
-    } else if (abbrev[0]) {
-      this.props.analyzeAdmin({
-        country: abbrev[0].iso,
-        region: '',
-      });
-      store.dispatch(
-        analysisActions.setAnalysisAdminArea({
-          country: abbrev[0].iso,
-          region: '',
-        })
-      );
-    }
+    const selectedCountryISO = selectedCountry.iso;
+
+    // the /dataApi/analysisAdminRegion endpoint expects the index of the state / province
+    // TODO update the endpoint so we send the gid_1 instead
+    const region = selectedStateOrProvince
+      ? stateOrProvinceOptions.findIndex((c) => c.gid_1 === selectedStateOrProvince) + 1
+      : '';
+
+    this.props.analyzeAdmin({
+      country: selectedCountryISO,
+      region,
+    });
+
+    store.dispatch(
+      analysisActions.setAnalysisAdminArea({
+        country: selectedCountryISO,
+        region,
+      })
+    );
   };
 
   subscribeAdmin = () => {
+    // TODO: update to GADM 4.1
     const adminServiceURL = getGadmService();
     const { adminSelections } = this.props;
 
@@ -146,8 +120,8 @@ export default class SelectAdmin extends Component {
 
     const query = new Query();
     query.where =
-      adminSelections.smallerRegion.length !== 0
-        ? `name_0 = '${adminSelections.country}' AND name_1 = '${adminSelections.smallerRegion}'`
+      adminSelections.stateOrProvince.length !== 0
+        ? `name_0 = '${adminSelections.country}' AND name_1 = '${adminSelections.stateOrProvince}'`
         : `name_0 = '${adminSelections.country}'`;
 
     query.returnGeometry = false;
@@ -159,13 +133,13 @@ export default class SelectAdmin extends Component {
       if (gadmId !== '') {
         const gadmLevels = gadmId.split('.');
         gadmId =
-          adminSelections.smallerRegion === ''
+          adminSelections.stateOrProvince === ''
             ? gadmLevels[0]
             : `${gadmLevels[0]}.${gadmLevels[1]}`;
       }
       this.props.subscribeAdmin({
         country: this.props.adminSelections.country,
-        region: this.props.adminSelections.smallerRegion,
+        region: this.props.adminSelections.stateOrProvince,
         gadmId,
       });
     });
@@ -175,101 +149,110 @@ export default class SelectAdmin extends Component {
     this.setState({ filterStr: evt.target.value });
   };
 
-  clearCountryDropdown = () => {
-    store.dispatch(
-      updateAdminSelections({
-        country: '',
-        smallerRegion: '',
-      })
-    );
-
-    this.setState({ filterStr: '' });
-  };
-
-  clearSmallerDropdown = () => {
-    store.dispatch(
-      updateAdminSelections({
-        country: this.props.adminSelections.country,
-        smallerRegion: '',
-      })
-    );
-  };
-
   render() {
-    const { countryOptions, filterStr } = this.state;
-    const filteredSmallerOptions = this.state.smallerOptions.filter(
-      (e) => e.toLowerCase().includes(filterStr.toLowerCase()) || ''
-    );
+    const {
+      countryOptions,
+      filterStr,
+      stateOrProvinceOptions,
+      selectedStateOrProvince,
+      selectedCountry,
+    } = this.state;
     const { analysisResults } = this.props;
+    const filteredStateOrProvinceNames = stateOrProvinceOptions.filter(
+      ({ name_1 }) => !!name_1?.toLowerCase().includes(filterStr.toLowerCase())
+    );
 
     return (
-      <div className="aa">
-        <div className="locations-add-subpage__content">
-          <div className="select-administrative-region__country-dropdown dropdown-group">
-            <GfwSelect
-              className="width__200"
-              value={this.props.adminSelections.country}
-              options={countryOptions}
-              onChange={this.setCountry}
-              placeholder="Select Country"
-            />
-            {this.props.adminSelections.country && (
-              <button className="gfw-button clear-button-map" onClick={this.clearCountryDropdown}>
-                <span>x</span>
-              </button>
+      <ThemeProvider>
+        <div className="aa">
+          <div className="locations-add-subpage__content">
+            <div className="select-administrative-region__country-dropdown dropdown-group">
+              <Select
+                sx={{ width: 200 }}
+                value={selectedCountry?.iso || ''}
+                onChange={this.setCountry}
+                displayEmpty
+                renderValue={(selected) =>
+                  selected
+                    ? countryOptions.find((c) => c.iso === selected)?.name_0
+                    : 'SELECT COUNTRY'
+                }
+              >
+                <MenuItem value="" disabled>
+                  SELECT COUNTRY
+                </MenuItem>
+                {countryOptions.map(({ iso, name_0 }) => (
+                  <MenuItem key={iso} value={iso}>
+                    {name_0}
+                  </MenuItem>
+                ))}
+              </Select>
+            </div>
+            {selectedCountry && (
+              <div
+                className={`region-countries-search-container ${
+                  this.props.adminSelections.country ? '' : 'hidden'
+                }`}
+              >
+                <svg className="svg-icon">
+                  <use xlinkHref="#icon-control-search" />
+                </svg>
+                <input
+                  className="region-countries-search"
+                  value={filterStr}
+                  onChange={this.searchCountries}
+                />
+              </div>
             )}
+            <div
+              className={`select-administrative-region__smaller-region-dropdown ${
+                this.props.adminSelections.country ? '' : 'hidden'
+              } dropdown-group`}
+            >
+              {selectedCountry && (
+                <Select
+                  sx={{ width: 200 }}
+                  value={selectedStateOrProvince || ''}
+                  onChange={this.setStateOrProvince}
+                  displayEmpty
+                  renderValue={(selected) =>
+                    selected
+                      ? this.state.stateOrProvinceOptions.find((c) => c.gid_1 === selected)?.name_1
+                      : 'Select State/Province'
+                  }
+                >
+                  <MenuItem value="" disabled>
+                    Select State/Province
+                  </MenuItem>
+                  {filteredStateOrProvinceNames.map(({ gid_1, name_1 }) => (
+                    <MenuItem key={gid_1} value={gid_1}>
+                      {name_1}
+                    </MenuItem>
+                  ))}
+                </Select>
+              )}
+            </div>
           </div>
           <div
-            className={`region-countries-search-container ${
-              this.props.adminSelections.country ? '' : 'hidden'
+            className={`select-administrative-region-actions ${
+              analysisResults && analysisResults.data ? 'hidden' : ''
             }`}
           >
-            <svg className="svg-icon">
-              <use xlinkHref="#icon-control-search" />
-            </svg>
-            <input
-              className="region-countries-search"
-              value={filterStr}
-              onChange={this.searchCountries}
+            <GfwButton
+              classNames="AnalysisPanel__button btn-green text__semi-bold-12"
+              value="ANALYZE"
+              disabled={this.props.adminSelections.country === ''}
+              onClick={this.analyzeAdmin}
+            />
+            <GfwButton
+              classNames="AnalysisPanel__button btn-green text__semi-bold-12"
+              value="ADD LOCATION"
+              disabled={this.props.adminSelections.country === ''}
+              onClick={this.subscribeAdmin}
             />
           </div>
-          <div
-            className={`select-administrative-region__smaller-region-dropdown ${
-              this.props.adminSelections.country ? '' : 'hidden'
-            } dropdown-group`}
-          >
-            <GfwSelect
-              value={this.props.adminSelections.smallerRegion}
-              options={filteredSmallerOptions}
-              onChange={this.setSmaller}
-              placeholder="Select State/Province"
-            />
-            {this.props.adminSelections.smallerRegion && (
-              <button className="gfw-button clear-button-map" onClick={this.clearSmallerDropdown}>
-                <span>x</span>
-              </button>
-            )}
-          </div>
         </div>
-        <div
-          className={`select-administrative-region-actions ${
-            analysisResults && analysisResults.data ? 'hidden' : ''
-          }`}
-        >
-          <GfwButton
-            classNames="AnalysisPanel__button btn-green text__semi-bold-12"
-            value="ANALYZE"
-            disabled={this.props.adminSelections.country === ''}
-            onClick={this.analyzeAdmin}
-          />
-          <GfwButton
-            classNames="AnalysisPanel__button btn-green text__semi-bold-12"
-            value="ADD LOCATION"
-            disabled={this.props.adminSelections.country === ''}
-            onClick={this.subscribeAdmin}
-          />
-        </div>
-      </div>
+      </ThemeProvider>
     );
   }
 }

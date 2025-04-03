@@ -6,6 +6,7 @@
  * @pageNumber AS INT
  */
 export const getPaginatedAfiAnalysisByListIdSortedByFilters = `
+DECLARE @analysis_table NVARCHAR(150)
 DECLARE @list_table NVARCHAR(150)
 DECLARE @listName  NVARCHAR(150)
 DECLARE @SQL NVARCHAR(MAX)
@@ -20,7 +21,7 @@ DECLARE @ltColumns NVARCHAR(MAX) = '[Location Name], Country, State, [Sub State]
 DECLARE @calculatedColumns NVARCHAR(MAX) = 'protectedAreasPercent, landmarkPercent, naturalForestLossPercent, jrcNaturalForestLossPercent';
 
 
-SELECT @list_table = list_table_name, @listName=list_Name FROM [Lists] WHERE id = @listId
+SELECT @list_table = list_table_name, @listName = list_Name, @analysis_table = list_analysis_table_name FROM [Lists] WHERE id = @listId
 
 
 DECLARE @locationColumns NVARCHAR(MAX) = '';
@@ -85,7 +86,7 @@ SET @SQL = 'SELECT ' +
             ' ISNULL(afi.gadm_id, 0) AS gadmId, '+
             ' ISNULL(afi.natural_land_area, 0) AS coverageHA, '+
             ' ISNULL(afi.natural_land_deforested_area, 0) AS naturalForestLossHA, '+
-            ' ISNULL(afi.total_area_ha, 0) AS totalAreaHa, '+
+            ' ISNULL(anlt.total_area, 0) AS totalAreaHa, ' +  -- Adjusted for "anlt" table
             ' ISNULL(afi.status_code, 0) as statusCode, '+
             ' ISNULL(afi.location_error, 0) as locationError, '+
             ' ISNULL(afi.negligible_risk, 0) AS negligibleRisk ,'+
@@ -111,8 +112,10 @@ SET @SQL = 'SELECT ' +
             ' CASE WHEN ISNULL(afi.total_area_ha, 0) = 0 THEN 0 ELSE (afi.jrc_land_deforested_area * 100.0 / afi.total_area_ha) END AS jrcNaturalForestLossPercent, ' +
 
             ' COUNT(*) OVER () AS totalRows ' +
-            'FROM AFIAnalysis afi JOIN dbo.['+@list_table+'] lt ON lt.location_id = afi.location_id WHERE afi.location_id > 0 AND afi.list_id = @listId';
-
+            'FROM AFIAnalysis afi ' +
+            'JOIN dbo.['+@list_table+'] lt ON lt.location_id = afi.location_id ' +
+            'LEFT JOIN ['+@analysis_table+'] anlt ON anlt.location_id = afi.location_id ' +  -- LEFT JOIN for "anlt"
+            'WHERE afi.location_id > 0 AND afi.list_id = @listId';
 
 -- ADD Filters
 	IF @Country IS NOT NULL

@@ -52,12 +52,13 @@ EXEC sp_executesql @SQL,
  * @pageNumber AS INT
  */
 export const getPaginatedAfiAnalysisLocationLevel = `
+DECLARE @analysis_table NVARCHAR(150)
 DECLARE @list_table NVARCHAR(150)
 DECLARE @listName  NVARCHAR(150)
 DECLARE @SQL NVARCHAR(MAX)
 DECLARE @locationColumn NVARCHAR(100)
 
-SELECT @list_table = list_table_name, @listName = list_Name FROM [Lists] WHERE id = @listId
+SELECT @list_table = list_table_name, @listName = list_Name, @analysis_table = list_analysis_table_name FROM [Lists] WHERE id = @listId
 
 IF COL_LENGTH('dbo.' + @list_table, 'Location Name') IS NOT NULL
 BEGIN
@@ -75,6 +76,7 @@ SET @SQL = 'SELECT  ' +
 ' afi.gadm_id AS gadmId, ' +
 ' afi.natural_land_area AS coverageHA, ' +
 ' afi.natural_land_deforested_area AS naturalForestLossHA, ' +
+' anlt.total_area AS totalAreaHa, ' +  -- Adjusted for "anlt" table
 ' afi.total_area_ha AS totalAreaHa, ' +
 ' afi.status_code as statusCode, ' +
 ' afi.location_error as locationError, ' +
@@ -89,9 +91,11 @@ SET @SQL = 'SELECT  ' +
 ' lt.Country as country, ' +
 ' lt.State as state, ' +
 ' lt.[Sub State] as subState ' +
-'FROM AFIAnalysis afi JOIN dbo.[' + @list_table + '] lt ON lt.location_id = afi.location_id ' +
-'WHERE afi.location_id > 0 AND afi.list_id = @listId'
-
+'FROM AFIAnalysis afi ' +
+'JOIN dbo.['+@list_table+'] lt ON lt.location_id = afi.location_id ' +
+'LEFT JOIN ['+@analysis_table+'] anlt ON anlt.location_id = afi.location_id ' +  -- LEFT JOIN for "anlt"
+'WHERE afi.location_id > 0 AND afi.list_id = @listId';
+            
 
 SET @SQL = @SQL + ' ORDER BY afi.negligible_risk ASC, afi.natural_land_deforested_area DESC ' +
                 'OFFSET (@pageNumber) * @rowsOfPage ROWS FETCH NEXT @rowsOfPage ROWS ONLY';

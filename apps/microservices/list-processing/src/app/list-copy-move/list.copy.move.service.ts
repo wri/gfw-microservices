@@ -27,7 +27,7 @@ export class ListCopyMoveService {
         action,
         listType,
         listName: newListName,
-        targetList: moveToList,
+        targetList,
         selectedLocations,
         commodityType,
         saveAsDraft: isSaveAsDraft,
@@ -40,6 +40,8 @@ export class ListCopyMoveService {
         filters,
         srcListAnalysisTable,
       } = request;
+
+      let moveToList = {...targetList,};
 
       // Upgrade the list schema to the latest version
       await upgradeListSchema({
@@ -83,6 +85,8 @@ export class ListCopyMoveService {
         analysisAreaMin: filters.analysisAreaMin,
         analysisAreaMax: filters.analysisAreaMax,
         searchString: filters.searchString,
+        locationLogic: null,
+        columnsToReturn: null,
       });
 
       const featProps = createFeatureProps(locationData);
@@ -102,7 +106,11 @@ export class ListCopyMoveService {
           saveAsDraft: isSaveAsDraft,
         });
         this.logger.log(`list created with id: ${list_id}`);
-        moveToList.id = list_id;
+        moveToList =
+        {
+          ...moveToList,
+          id: list_id
+        };
       }
 
       await handleExistingListUpdate({

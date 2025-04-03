@@ -1,7 +1,7 @@
 import { SQLUtils } from '../util/sql.utils';
 import { Injectable } from '@nestjs/common';
 import * as sql from 'mssql';
-import { getLocationsFilteredToCopy } from '../queries';
+import { GetLocationsCopyMoveType, getLocationsFilteredToCopy } from '../queries';
 
 @Injectable()
 export class UspGetLocationsFilteredToCopy {
@@ -82,7 +82,11 @@ export class UspGetLocationsFilteredToCopy {
       },
     ];
 
-    const result = SQLUtils.queryDB(databaseName, getLocationsFilteredToCopy, parameters);
+    const result = await SQLUtils.queryDB<GetLocationsCopyMoveType>(
+      databaseName,
+      getLocationsFilteredToCopy,
+      parameters
+    );
 
     return [result];
   }

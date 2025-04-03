@@ -44,7 +44,7 @@ export class LocationService {
     private geoService: GeoService,
     private readonly config: ConfigService<ServerConfigType, true>,
 
-    private readonly listCopyMoveService: ListCopyMoveService,
+    private readonly listCopyMoveService: ListCopyMoveService
   ) {}
   assembleGeojson = (featProps, uploadingData): Promise<GeoJson> => {
     return new Promise<GeoJson>((resolve, reject) => {

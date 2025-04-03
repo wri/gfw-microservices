@@ -41,7 +41,7 @@ export class ListCopyMoveService {
         srcListAnalysisTable,
       } = request;
 
-      let moveToList = {...targetList,};
+      let moveToList = { ...targetList };
 
       // Upgrade the list schema to the latest version
       await upgradeListSchema({
@@ -106,10 +106,9 @@ export class ListCopyMoveService {
           saveAsDraft: isSaveAsDraft,
         });
         this.logger.log(`list created with id: ${list_id}`);
-        moveToList =
-        {
+        moveToList = {
           ...moveToList,
-          id: list_id
+          id: list_id,
         };
       }
 

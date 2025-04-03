@@ -2,11 +2,13 @@ import * as sql from 'mssql';
 /**
  * @function getDataType
  * @summary Converts text to sql data type object
- * @param {String} type - the text type to convert and return
+ * @param {Object} column - the column name and type to convert and return
  * @return {Object} the SQL data type
  */
-export const getDataType = (type) => {
+export const getDataType = (column) => {
+  const type = column.DATA_TYPE;
   let dataType = null;
+  let strLength = null;
   switch (type) {
     case 'geometry':
       //dataType = sql.Geometry;
@@ -35,7 +37,9 @@ export const getDataType = (type) => {
       dataType = sql.Text;
       break;
     case 'nvarchar':
-      dataType = sql.NVarChar(150);
+      strLength =
+        column.CHARACTER_MAXIMUM_LENGTH === -1 ? sql.MAX : column.CHARACTER_MAXIMUM_LENGTH;
+      dataType = sql.NVarChar(strLength || 150);
       break;
     case 'binary':
       //dataType = sql.NVarChar(150);

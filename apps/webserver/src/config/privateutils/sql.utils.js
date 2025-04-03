@@ -389,11 +389,13 @@ export const appendLog = async (logDB, sqlQueryName, params) => {
  * @function getDataType
  * @summary Converts text to sql data type object
  * @param {Object} req - Manadatory first parameter to pass the request object into the function in case session info is required.
- * @param {String} type - the text type to convert and return
+ * @param {Object} column - the column name and type to convert and return
  * @return {Object} the SQL data type
  */
-export const getDataType = (req, type) => {
+export const getDataType = (req, column) => {
+  const type = column.DATA_TYPE;
   let dataType = null;
+  let strLength = null;
   switch (type) {
     case 'geometry':
       // dataType = sql.Geometry;
@@ -422,7 +424,9 @@ export const getDataType = (req, type) => {
       // dataType = sql.Text;
       break;
     case 'nvarchar':
-      dataType = sql.NVarChar(150);
+      strLength =
+        column.CHARACTER_MAXIMUM_LENGTH === -1 ? sql.MAX : column.CHARACTER_MAXIMUM_LENGTH;
+      dataType = sql.NVarChar(strLength || 150);
       break;
     case 'binary':
       dataType = sql.NVarChar(150);

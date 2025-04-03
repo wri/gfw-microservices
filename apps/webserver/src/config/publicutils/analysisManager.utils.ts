@@ -617,6 +617,15 @@ export async function getAFIListAnalyses(list_id, page, pageSize, clientDatabase
     value: sortByAttribute,
   });
 
+  const attributeColumns = await getListAttributesForJsonCastStr(clientDatabase, list_id);
+  const joinedAttributeColumns = attributeColumns.join(',');
+
+  parameters.push({
+    field: 'jsonAttributeColumns',
+    type: sql.NVarChar(sql.MAX),
+    value: joinedAttributeColumns,
+  });
+
   const listAnalyses = await SQLUtilsLibSql.queryDB<PaginatedAfiAnalysisByListIdSortedByFilters[]>(
     clientDatabase,
     getPaginatedAfiAnalysisByListIdSortedByFilters,
@@ -626,16 +635,6 @@ export async function getAFIListAnalyses(list_id, page, pageSize, clientDatabase
   const numberOfResults = listAnalyses?.[0]?.totalRows;
 
   const formattedListAnalyses = listAnalyses.map((analysis) => {
-    const listAttributes = analysis.version === 2 && analysis.attributes ? JSON.parse(analysis.attributes) : {};
-
-    if (!Array.isArray(listAttributes) && Object.keys(listAttributes).length) {
-      Object.keys(listAttributes).map((attKey) => {
-        if (!analysis[attKey]) {
-          analysis[attKey] = listAttributes[attKey];
-        }
-      })
-    }
-
     return {
       ...analysis,
       list_id: analysis.listId,
@@ -786,4 +785,32 @@ function sumAccumulatedAlerts(analysis, alertType): number {
       .reduce((acc, [, value]) => acc + (value as number), 0);
   }
   return accIntegratedAlerts;
+}
+enum ListsAttrsTypes {
+  Number = 1,
+  Text = 2,
+}
+async function getListAttributesForJsonCastStr(clientDb, listId) {
+  const { version } = await SQLUtilsLibSql.queryDBFirstRow<{ version: number }>(
+    clientDb,
+    `SELECT [version] as version FROM [Lists] WHERE [id] = ${listId}`
+  );
+
+  if (version != 2) {
+    return [];
+  }
+
+  const listAttributes = await SQLUtilsLibSql.queryDB<
+    { attribute_name: string; attribute_type: number }[]
+  >(
+    clientDb,
+    `SELECT [attribute_name], [attribute_type] FROM [ListAttributes] WHERE [list_id] = ${listId}`
+  );
+  console.log('🚀 ~ getListAttributesForJsonCastStr ~ listAttributes:', listAttributes);
+
+  return listAttributes.map((attrRecord) => {
+    const fieldTypeCast =
+      attrRecord['attribute_type'] === ListsAttrsTypes.Number ? 'INT' : 'NVARCHAR(MAX)';
+    return ` CAST(JSON_VALUE(lt.attributes, ''$.[""${attrRecord['attribute_name']}""]'') as ${fieldTypeCast})`;
+  });
 }

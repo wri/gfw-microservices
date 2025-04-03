@@ -61,7 +61,7 @@ export class ConvertPoint2Polygon extends AbstractHandler<ChainType> {
     const pi = Math.PI;
 
     if (!analysisArea && !analysisRadius) {
-      throw Error('Error: At least one of analysisArea or analysisRadius must be valid.');
+      throw Error('At least one of analysisArea or analysisRadius must be valid');
     } else if (analysisArea) {
       // Calculate radius from area
       const kilosSquared = analysisArea / 100;
@@ -93,22 +93,27 @@ export class ConvertPoint2Polygon extends AbstractHandler<ChainType> {
       const [longitude, latitude] = coordinates;
 
       if (ValidateLatLongGeojson.isValidLatLong(latitude, longitude)) {
-        const { analysisArea, analysisRadius } = this.validateAndCalculate(
-          Number(properties.analysisArea),
-          Number(properties.analysisRadius)
-        );
-        const polygon = await this.geomFromLatLongRadiusArea(latitude, longitude, analysisRadius);
-        delete feature.properties.geometry;
-        if (polygon !== null && polygon !== undefined && polygon.rings.length > 0) {
-          (feature.geometry as Polygon).coordinates = polygon.rings;
-          (feature.geometry as Polygon).type = 'Polygon';
-          feature.properties.analysisArea = analysisArea;
-          feature.properties.analysisRadius = analysisRadius;
-        } else {
+        try {
+          const { analysisArea, analysisRadius } = this.validateAndCalculate(
+            Number(properties.analysisArea),
+            Number(properties.analysisRadius)
+          );
+          const polygon = await this.geomFromLatLongRadiusArea(latitude, longitude, analysisRadius);
+          delete feature.properties.geometry;
+          if (polygon !== null && polygon !== undefined && polygon.rings.length > 0) {
+            (feature.geometry as Polygon).coordinates = polygon.rings;
+            (feature.geometry as Polygon).type = 'Polygon';
+            feature.properties.analysisArea = analysisArea;
+            feature.properties.analysisRadius = analysisRadius;
+          } else {
+            throw new Error('Invalid geometry');
+          }
+        } catch (error) {
+          this.logger.error('Error converting point to polygon', error.stack || error);
           feature.properties.errorDetails = feature.properties.errorDetails || [];
           (input.request as RequestNewList).hasUnanalyzableError = true;
           (feature.properties.errorDetails as Array<string>).push(
-            'Error: Unable to convert point to polygon'
+            'Unable to convert point to polygon' + error.message
           );
         }
       } else {

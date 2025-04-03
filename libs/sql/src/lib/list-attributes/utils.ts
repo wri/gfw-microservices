@@ -28,9 +28,12 @@ export function getListsLocsColumnsToExclude() {
     ...ListSchema,
   });
 
-  return Object.keys(options.columns).map((keyAcc) => {
-    return options.columns[keyAcc].name;
+  const allKeys = Object.keys(options.columns).map((keyAcc) => {
+    // exclude both human and camelCase names
+    return [options.columns[keyAcc].name, keyAcc];
   });
+
+  return allKeys.flat();
 }
 
 export interface ListAttributesRecord {

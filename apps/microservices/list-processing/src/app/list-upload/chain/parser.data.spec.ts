@@ -86,8 +86,10 @@ describe('ParserData', () => {
 
       const result = parserData['removeTemplateLines'](inputGeoJson);
 
-      expect(result.features).toHaveLength(1);
+      expect(result.features).toHaveLength(3);
       expect(result.features[0].properties.locationName).toBe('Valid Location');
+      expect(result.features[1].properties.locationName).toBe(null);
+      expect(result.features[2].properties.locationName).toBe(undefined);
     });
 
     it('should handle empty or invalid GeoJSON', () => {

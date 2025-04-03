@@ -77,7 +77,6 @@ SET @SQL = 'SELECT  ' +
 ' afi.natural_land_area AS coverageHA, ' +
 ' afi.natural_land_deforested_area AS naturalForestLossHA, ' +
 ' anlt.total_area AS totalAreaHa, ' +  -- Adjusted for "anlt" table
-' afi.total_area_ha AS totalAreaHa, ' +
 ' afi.status_code as statusCode, ' +
 ' afi.location_error as locationError, ' +
 ' afi.negligible_risk AS negligibleRisk, ' +

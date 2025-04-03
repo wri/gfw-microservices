@@ -795,6 +795,7 @@ describe('AppController', () => {
             location_type_name: 'Commodity',
           },
         ],
+        isUploadListLpEnabled: true,
       };
 
       await locationService.MoveLocations(request);

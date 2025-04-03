@@ -1,17 +1,12 @@
 import { createGeoJSON } from '@wri-monorepos/shared';
 import { CreateListNameSchema, getDataType, GetWKTGeometry } from '@wri-monorepos/shared';
 import * as sql from 'mssql';
-import { SQLUtils } from '@wri-monorepos/sql';
+import { SQLUtils, GetTableColumnsType } from '@wri-monorepos/sql';
 import { Injectable, Logger } from '@nestjs/common';
 import { Feature } from '../lib/type';
 
 interface MaxId {
   max_id?: number;
-}
-
-interface ColumnType {
-  COLUMN_NAME: string;
-  DATA_TYPE: string;
 }
 
 const SQL_CONFIG = {
@@ -53,10 +48,7 @@ export class ListBulkCopy {
       ...SQL_CONFIG,
       database: databaseName,
     };
-    Logger.log(
-      `Upload bulk locations with configuration: ${JSON.stringify(clientConnectionConfiguration)}`,
-      'ListBulkCopy'
-    );
+    Logger.log(`Upload bulk locations to list id=${list_id}`, 'ListBulkCopy');
 
     const connection = new SQLUtils(clientConnectionConfiguration);
     await connection.connect();
@@ -69,7 +61,6 @@ export class ListBulkCopy {
         geojson,
         commodity,
       });
-
     const objTable = new sql.Table(list.list_table);
     objTable.create = createTable;
     // Add all columns to the table.
@@ -181,7 +172,7 @@ export class ListBulkCopy {
     // 2. Get Columns from list/table
     const sqlGetTableColumnsParameters = [{ field: 'list_id', type: sql.Int, value: list_id }];
 
-    const columns = await connection.executeQuery<Promise<ColumnType[]>>(
+    const columns = await connection.executeQuery<Promise<GetTableColumnsType[]>>(
       'uspGetTableColumns',
       sqlGetTableColumnsParameters
     );
@@ -196,7 +187,7 @@ export class ListBulkCopy {
       columns.forEach((column) => {
         const col = {
           field: column.COLUMN_NAME,
-          type: getDataType(column.DATA_TYPE),
+          type: getDataType(column),
           value: undefined,
         };
         if (Object.hasOwnProperty.call(feature.properties, column.COLUMN_NAME)) {

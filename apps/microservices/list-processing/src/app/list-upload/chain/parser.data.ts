@@ -91,10 +91,6 @@ export class ParserData extends AbstractHandler<ChainType> {
     return {
       ...geojson,
       features: geojson.features.filter((feature) => {
-        if (!feature.properties?.locationName) {
-          return false;
-        }
-
         // Remove template lines
         const templateStrings = [
           'Mandatory',

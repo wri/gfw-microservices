@@ -36,6 +36,10 @@ export function UploadLocationPreview() {
     { features: LocationListType[] },
     { message: string; errors: string[] }
   >();
+  const [apiRequestError, setApiRequestError] = useState<{
+    message: string;
+    errors: string[];
+  } | null>(null);
   const fileInputRef = useRef<HTMLInputElement | null>(null);
 
   const [iLoadingFileUpload, setIsLoadingFileUpload] = useState(false);
@@ -51,10 +55,12 @@ export function UploadLocationPreview() {
   const handleFileUpload = async (selectedFile: File) => {
     try {
       setIsLoadingFileUpload(true);
+      setApiRequestError(null);
       const uploadedData = await uploadFileToS3(selectedFile);
       addFile(uploadedData);
     } catch (err) {
       console.error('Upload error:', err);
+      setApiRequestError({ message: '', errors: [''] });
     } finally {
       setIsLoadingFileUpload(false);
     }
@@ -76,9 +82,9 @@ export function UploadLocationPreview() {
   const columns = getTableColumns(data?.features);
 
   return (
-    <>
+    <Box sx={{ height: '92vh', display: 'flex', flexDirection: 'column' }}>
       <NavBar />
-      <Card sx={{ pt: 1, px: 2, pb: 2, display: 'flex', flexDirection: 'column', height: '634px' }}>
+      <Card sx={{ pt: 1, px: 2, pb: 2, display: 'flex', flexDirection: 'column' }}>
         <Box
           sx={{
             display: 'flex',
@@ -121,15 +127,21 @@ export function UploadLocationPreview() {
         </Box>
 
         {isLoading ? (
-          <Skeleton variant="rounded" sx={{ height: '460px' }} />
+          <Skeleton variant="rounded" sx={{ height: '500px', mb: 2 }} />
         ) : error ? (
           <UploadLocationPreviewErrorMessage
             error={error}
             onRetryUpload={() => fileInputRef.current?.click()}
             onRetryPreviewData={getPreviewData}
           />
+        ) : apiRequestError ? (
+          <UploadLocationPreviewErrorMessage
+            error={apiRequestError}
+            onRetryUpload={() => fileInputRef.current?.click()}
+            onRetryPreviewData={getPreviewData}
+          />
         ) : (
-          <Box sx={{ maxHeight: '460px', overflow: 'auto' }}>
+          <Box sx={{ overflow: 'auto', mb: 2 }}>
             <Table
               stickyHeader
               aria-label="sticky table"
@@ -206,6 +218,6 @@ export function UploadLocationPreview() {
         </Box>
         <LoadingModal isLoading={iLoadingFileUpload} />
       </Card>
-    </>
+    </Box>
   );
 }

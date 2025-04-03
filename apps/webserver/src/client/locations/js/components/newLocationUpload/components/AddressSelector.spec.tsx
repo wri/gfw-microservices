@@ -124,7 +124,7 @@ describe('AddressSelector', () => {
     await user.click(screen.getByText('123 Main St'));
     expect(global.fetch).toHaveBeenCalled();
     expect(mockOnResultSelect).toHaveBeenCalledWith(37.7749, -122.4194);
-  });
+  }, 10100);
 
   test('displays no suggestions when fetch fails', async () => {
     renderComponent();

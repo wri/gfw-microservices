@@ -45,7 +45,7 @@ export async function saveListAttributes(clientDb, attributes: ListAttributesRec
   try {
     // insert new attributes with Typeorm listAttributes entity
     const clientStore = new ClientStoreConnection();
-    const connection = await clientStore.getConnection(clientDb, [ListAttributes]);
+    const connection = await clientStore.getConnection(clientDb);
     const listAttributesRepository = connection.getRepository(ListAttributes);
 
     Logger.log(`Inserting ${attributes.length} into [ListAttributes]`);

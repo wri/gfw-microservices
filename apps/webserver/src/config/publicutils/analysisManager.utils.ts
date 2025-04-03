@@ -626,6 +626,16 @@ export async function getAFIListAnalyses(list_id, page, pageSize, clientDatabase
   const numberOfResults = listAnalyses?.[0]?.totalRows;
 
   const formattedListAnalyses = listAnalyses.map((analysis) => {
+    const listAttributes = analysis.version === 2 && analysis.attributes ? JSON.parse(analysis.attributes) : {};
+
+    if (!Array.isArray(listAttributes) && Object.keys(listAttributes).length) {
+      Object.keys(listAttributes).map((attKey) => {
+        if (!analysis[attKey]) {
+          analysis[attKey] = listAttributes[attKey];
+        }
+      })
+    }
+
     return {
       ...analysis,
       list_id: analysis.listId,

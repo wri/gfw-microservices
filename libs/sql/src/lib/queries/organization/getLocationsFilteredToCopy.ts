@@ -16,7 +16,7 @@
  * @param Geometry Int
  **/
 
-export const getListNameSchema = `
+export const getLocationsFilteredToCopy = `
 	DECLARE @columnsList NVARCHAR(1000)
 	DECLARE @listLocationTableName NVARCHAR(1000)
 	DECLARE @listAnalysisTableName NVARCHAR(1000)

@@ -16,7 +16,7 @@ import { ActivityLog, LargeLists, Lists } from '../entity';
 const logger = new Logger('ClientDatabaseOperationsManager');
 
 const DEFAULT_ROWS_REQUESTED = 200000;
-export const ListStatus = {
+const ListStatus = {
   Pending: 1,
   Active: 2,
   Inactive: 3,

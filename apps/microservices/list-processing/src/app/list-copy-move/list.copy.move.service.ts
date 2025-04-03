@@ -20,124 +20,126 @@ export class ListCopyMoveService {
   private readonly logger = new Logger(ListCopyMoveService.name);
   async run(request: CopyOrMoveLargeListRequestLLP) {
     this.logger.log('Starting list copy/move flow');
-    const {
-      listId: selectedListId,
-      userListNames,
-      action,
-      listType,
-      listName: newListName,
-      targetList: moveToList,
-      selectedLocations,
-      commodityType,
-      templateData,
-      saveAsDraft: isSaveAsDraft,
-      userId,
-      clientDatabase,
-      organizationId,
-      subscriptionStatusId,
-      gfwListId,
-      allLocationsSelected = false,
-      filters,
-      srcListAnalysisTable,
-    } = request;
+    try {
+      const {
+        listId: selectedListId,
+        userListNames,
+        action,
+        listType,
+        listName: newListName,
+        targetList: moveToList,
+        selectedLocations,
+        commodityType,
+        saveAsDraft: isSaveAsDraft,
+        userId,
+        clientDatabase,
+        organizationId,
+        subscriptionStatusId,
+        gfwListId,
+        allLocationsSelected = false,
+        filters,
+        srcListAnalysisTable,
+      } = request;
 
-    // Upgrade the list schema to the latest version
-    await upgradeListSchema({
-      clientDb: clientDatabase,
-      listId: selectedListId,
-      userId: userId,
-    });
-
-    if (listType !== TargetListType.New) {
-      this.logger.log('Copy/Move to an existing list');
+      // Upgrade the list schema to the latest version
       await upgradeListSchema({
         clientDb: clientDatabase,
-        listId: moveToList.id,
+        listId: selectedListId,
         userId: userId,
       });
-    }
 
-    // Grab the analysis that was ran for the existing list.
-    const listAnalyses = await getListAnalysisStatusByListId(clientDatabase, selectedListId);
-    const analysisIds = listAnalyses.map((analysis) => analysis.analysisId);
+      if (listType !== TargetListType.New) {
+        this.logger.log('Copy/Move to an existing list');
+        await upgradeListSchema({
+          clientDb: clientDatabase,
+          listId: moveToList.id,
+          userId: userId,
+        });
+      }
 
-    const listName = listType === TargetListType.New ? newListName : moveToList?.list_name;
-    CheckListNameIsValid(listType, listName, userListNames);
+      // Grab the analysis that was ran for the existing list.
+      const listAnalyses = await getListAnalysisStatusByListId(clientDatabase, selectedListId);
+      const analysisIds = listAnalyses.map((analysis) => analysis.analysisId);
 
-    this.logger.log('Gathering information for locations');
+      const listName = listType === TargetListType.New ? newListName : moveToList?.list_name;
+      CheckListNameIsValid(listType, listName, userListNames);
 
-    if (action === ActionType.Move) {
-      this.logger.log(
-        `Changing source list (${selectedListId}) status to draft because locations will be moved`
-      );
-      await SetListDraftStatus(clientDatabase, selectedListId, gfwListId);
-    }
+      this.logger.log('Gathering information for locations');
 
-    // Getting the existing data for the source list
-    const locationData = await new UspGetLocationsFilteredToCopy().run(clientDatabase, {
-      listID: selectedListId,
-      selectedLocations: allLocationsSelected ? null : selectedLocations.join(),
-      country: filters.country,
-      state: filters.state,
-      subState: filters.subState,
-      analysisAreaMin: filters.analysisAreaMin,
-      analysisAreaMax: filters.analysisAreaMax,
-      searchString: filters.searchString,
-    });
+      if (action === ActionType.Move) {
+        this.logger.log(
+          `Changing source list (${selectedListId}) status to draft because locations will be moved`
+        );
+        await SetListDraftStatus(clientDatabase, selectedListId, gfwListId);
+      }
 
-    const featProps = createFeatureProps(locationData);
-    this.logger.log('Assembling GEO JSON');
-    const geojson = await assembleGeojson(featProps, locationData);
-    deleteGeoJSONFeatureProperties(geojson);
-
-    // We are copying or moving to a new list so creating the new table
-    if (listType === TargetListType.New) {
-      const { list_id } = await handleNewListCreation({
-        listName,
-        userId,
-        clientDatabase,
-        analysisIds,
-        templateData: templateData as unknown as Array<{ template_id: number; commodity: string }>,
-        gfwListId,
-        commodity: commodityType,
-        saveAsDraft: isSaveAsDraft,
+      // Getting the existing data for the source list
+      const locationData = await new UspGetLocationsFilteredToCopy().run(clientDatabase, {
+        listID: selectedListId,
+        selectedLocations: allLocationsSelected ? null : selectedLocations.join(),
+        country: filters.country,
+        state: filters.state,
+        subState: filters.subState,
+        analysisAreaMin: filters.analysisAreaMin,
+        analysisAreaMax: filters.analysisAreaMax,
+        searchString: filters.searchString,
       });
-      this.logger.log(`list created with id: ${list_id}`);
-      moveToList.id = list_id;
-    }
 
-    await handleExistingListUpdate({
-      clientDatabase,
-      selectedListId,
-      moveToList,
-      userId,
-      action,
-      isSaveAsDraft,
-      finalGeojson: geojson,
-      commodityType,
-      srcListAnalysisTable,
-      selectedLocations,
-      gfwListId,
-      organizationId,
-      analysisIds,
-      subscriptionStatusId,
-    });
+      const featProps = createFeatureProps(locationData);
+      this.logger.log('Assembling GEO JSON');
+      const geojson = await assembleGeojson(featProps, locationData);
+      deleteGeoJSONFeatureProperties(geojson);
 
-    if (action === ActionType.Move) {
-      await handleSourceListDeletion({
+      // We are copying or moving to a new list so creating the new table
+      if (listType === TargetListType.New) {
+        const { list_id } = await handleNewListCreation({
+          listName,
+          userId,
+          clientDatabase,
+          analysisIds,
+          gfwListId,
+          commodity: commodityType,
+          saveAsDraft: isSaveAsDraft,
+        });
+        this.logger.log(`list created with id: ${list_id}`);
+        moveToList.id = list_id;
+      }
+
+      await handleExistingListUpdate({
         clientDatabase,
         selectedListId,
+        moveToList,
         userId,
-        gfwListId,
-        allLocationsSelected,
-        filters,
+        action,
+        isSaveAsDraft,
+        finalGeojson: geojson,
+        commodityType,
+        srcListAnalysisTable,
         selectedLocations,
+        gfwListId,
+        organizationId,
+        analysisIds,
+        subscriptionStatusId,
       });
-    }
 
-    return {
-      success: true,
-      action,
-    };
+      if (action === ActionType.Move) {
+        await handleSourceListDeletion({
+          clientDatabase,
+          selectedListId,
+          userId,
+          gfwListId,
+          allLocationsSelected,
+          filters,
+          selectedLocations,
+        });
+      }
+
+      return {
+        success: true,
+        action,
+      };
+    } catch (error) {
+      this.logger.log(`Error during the copy and move flow ${error.stack || error}`);
+    }
   }
 }

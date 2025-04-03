@@ -11,7 +11,7 @@ class OrganizeGreenHouseGasEmissionsResponse extends Transform {
     }
     const {
       listName,
-      locationId,
+      locationName,
       totalAreaHa,
       commodity,
       co2EmissionsFactor,
@@ -29,8 +29,8 @@ class OrganizeGreenHouseGasEmissionsResponse extends Transform {
       ? commodityHumanReadable.replace('GFWP_', '')
       : null;
 
-    if (listName && locationId && totalAreaHa && commodity && combinedEmissionsFactor) {
-      const sharedInfo = [listName, locationId, totalAreaHa, commodityHumanReadable, 'dLUC'];
+    if (listName && locationName && totalAreaHa && commodity && combinedEmissionsFactor) {
+      const sharedInfo = [listName, locationName, totalAreaHa, commodityHumanReadable, 'dLUC'];
 
       const co2Emissions = JSON.parse(co2EmissionsFactor || '{}');
       const ch4Emissions = JSON.parse(ch4EmissionsFactor || '{}');

@@ -5737,7 +5737,7 @@ export const ghgAnalysesData = [
   {
     listId: 5642,
     listName: 'kgTestCG3 927 all',
-    locationId: 2,
+    locationName: 'location name 2',
     totalAreaHa: 1256.1646821446757,
     statusCode: 2,
     locationError: null,
@@ -5750,7 +5750,7 @@ export const ghgAnalysesData = [
   {
     listId: 5642,
     listName: 'kgTestCG3 927 all',
-    locationId: 3,
+    locationName: 'location name 3',
     totalAreaHa: 1256.4203696590005,
     statusCode: 2,
     locationError: null,
@@ -5763,7 +5763,7 @@ export const ghgAnalysesData = [
   {
     listId: 5642,
     listName: 'kgTestCG3 927 all',
-    locationId: 1,
+    locationName: 'location name 1',
     totalAreaHa: 1256.217339121448,
     statusCode: 2,
     locationError: null,
@@ -5779,7 +5779,7 @@ export const ghgAnalysesDataIncompleteRow = [
   {
     listId: 5642,
     listName: 'kgTestCG3 927 all',
-    locationId: 2,
+    locationName: 'location name 2',
     totalAreaHa: 1256.1646821446757,
     statusCode: 2,
     locationError: null,
@@ -5792,7 +5792,7 @@ export const ghgAnalysesDataIncompleteRow = [
   {
     listId: 5642,
     listName: 'kgTestCG3 927 all',
-    locationId: 3,
+    locationName: 'location name 3',
     totalAreaHa: 1256.4203696590005,
     statusCode: 2,
     co2EmissionsFactor: '{"2021":50.8186,"2022":58.1142,"2023":510.0}',
@@ -5803,7 +5803,7 @@ export const ghgAnalysesDataIncompleteRow = [
   {
     listId: 5642,
     listName: 'kgTestCG3 927 all',
-    locationId: 1,
+    locationName: 'location name 1',
     totalAreaHa: 1256.217339121448,
     statusCode: 2,
     locationError: null,

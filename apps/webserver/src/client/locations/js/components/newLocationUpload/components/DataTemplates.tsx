@@ -1,13 +1,14 @@
 import './DataTemplates.scss';
 import React, { ReactElement, useState } from 'react';
-
 import {
   Accordion,
   AccordionDetails,
   AccordionSummary,
   Box,
+  Dialog,
+  DialogActions,
+  DialogContent,
   IconButton,
-  SxProps,
   Typography,
   useTheme,
 } from '@mui/material';
@@ -29,7 +30,8 @@ import { PillButton } from '../../../../../components';
 import { aws_templates } from '../../../../../common/js/config';
 
 type DataTemplatesProps = {
-  handleClose: () => void;
+  isOpen: boolean;
+  onClose: () => void;
 };
 
 enum Template {
@@ -40,7 +42,7 @@ enum Template {
   ListOfPalmMillIds,
 }
 
-export function DataTemplates({ handleClose }: DataTemplatesProps) {
+export function DataTemplates({ isOpen, onClose }: DataTemplatesProps) {
   const theme = useTheme();
   const [selectedTemplate, setSelectedTemplate] = useState<Template | null>(null);
   const [hoveredTemplate, setHoveredTemplate] = useState<Template | null>(null);
@@ -64,223 +66,225 @@ export function DataTemplates({ handleClose }: DataTemplatesProps) {
   const isAtLeastOneItemDownloaded = downloadedTemplates.length === 0;
 
   return (
-    <Box sx={mainContainerStyle}>
-      <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-        <Typography variant="h6">Download a template</Typography>
-        <IconButton onClick={handleClose}>
-          <Close fontSize="medium" />
-        </IconButton>
-      </Box>
-      <Typography
-        variant="caption"
-        color={theme.palette.text.secondary}
-        sx={{ marginTop: 2, marginBottom: 3 }}
-      >
-        Select a data type to view details and download a template. Use the template to format yours
-        data, then upload into GFW Pro.
-      </Typography>
-      <Box sx={{ display: 'flex', gap: 3 }}>
-        <ExternalHelperResource
-          text="How to format your location data for GFW Pro"
-          url="https://globalforestwatch.org/help/gfw-pro/guides/complete-selected-template"
-        />
-        <ExternalHelperResource
-          text="Learn more about GFW Pro templates"
-          url="https://globalforestwatch.org/help/gfw-pro/guides/select-correct-template"
-        />
-      </Box>
-
+    <Dialog
+      open={isOpen}
+      onClose={onClose}
+      sx={{
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        mt: 5,
+        '& .MuiDialog-paper': {
+          maxWidth: '850px',
+        },
+      }}
+    >
       <Box
-        sx={{ mt: 6, mx: 'auto', width: '600px', display: 'flex', flexDirection: 'column', gap: 1 }}
+        sx={{
+          display: 'flex',
+          flexDirection: 'column',
+          flex: 1,
+          pt: 2,
+          px: 3,
+          pb: 3,
+        }}
       >
-        {templateOptions.map(
-          ({
-            title,
-            Icon,
-            template,
-            bestForText,
-            requiredFieldsText,
-            filename,
-            helpCenterLink,
-          }) => {
-            const isSelected = selectedTemplate === template;
-            const isHovered = hoveredTemplate === template;
-            const isAlreadyDownloaded = downloadedTemplates.includes(template);
+        <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+          <Typography variant="h6">Download a template</Typography>
+          <IconButton onClick={onClose}>
+            <Close fontSize="medium" />
+          </IconButton>
+        </Box>
+        <Typography variant="caption" color={theme.palette.text.secondary}>
+          Select a data type to view details and download a template. Use the template to format
+          your data, then upload into GFW Pro.
+        </Typography>
+        <Box sx={{ display: 'flex', gap: 3, mt: 2 }}>
+          <ExternalHelperResource
+            text="How to format your location data for GFW Pro"
+            url="https://globalforestwatch.org/help/gfw-pro/guides/complete-selected-template"
+          />
+          <ExternalHelperResource
+            text="Learn more about GFW Pro templates"
+            url="https://globalforestwatch.org/help/gfw-pro/guides/select-correct-template"
+          />
+        </Box>
+        <DialogContent sx={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
+          {templateOptions.map(
+            ({
+              title,
+              Icon,
+              template,
+              bestForText,
+              requiredFieldsText,
+              filename,
+              helpCenterLink,
+            }) => {
+              const isSelected = selectedTemplate === template;
+              const isHovered = hoveredTemplate === template;
+              const isAlreadyDownloaded = downloadedTemplates.includes(template);
 
-            return (
-              <Accordion
-                key={template}
-                expanded={isSelected}
-                onChange={() => handleSelectTemplate(template)}
-                onMouseEnter={() => setHoveredTemplate(template)}
-                onMouseLeave={() => setHoveredTemplate(null)}
-                disableGutters
-                sx={{
-                  border: '1px solid #E5E5E5',
-                  borderRadius: 1,
-                  boxShadow: 'none',
-                  '&::before': {
-                    display: 'none',
-                  },
-                  transition: '0.5s ease',
-                  '&:hover': {
-                    backgroundColor: theme.palette.background.default,
-                  },
-                }}
-              >
-                <AccordionSummary
-                  sx={{ backgroundColor: isSelected ? theme.palette.primary.light : 'none' }}
-                >
-                  <Box
-                    sx={{
-                      display: 'flex',
-                      alignItems: 'center',
-                      gap: 1.5,
-                    }}
-                  >
-                    <Icon />
-                    <Typography>{title}</Typography>
-                  </Box>
-
-                  {!isSelected ? (
-                    <>
-                      {isAlreadyDownloaded && (
-                        <Box
-                          sx={{
-                            display: 'flex',
-                            alignItems: 'center',
-                            ml: 'auto',
-                          }}
-                        >
-                          <Check fontSize="medium" />
-                        </Box>
-                      )}
-                      {isHovered && !isAlreadyDownloaded && (
-                        <Box
-                          sx={{
-                            display: 'flex',
-                            alignItems: 'center',
-                            ml: 'auto',
-                            color: theme.palette.primary.main,
-                          }}
-                        >
-                          <Typography>See more</Typography>
-                        </Box>
-                      )}
-                    </>
-                  ) : (
-                    <>
-                      {!isAlreadyDownloaded ? (
-                        <PillButton
-                          variant="contained"
-                          startIcon={<Download />}
-                          sx={{ ml: 'auto' }}
-                          onClick={(e) => handleDownloadTemplate(e, template, filename)}
-                        >
-                          <Typography variant="caption" sx={{ fontWeight: 'medium' }}>
-                            Download
-                          </Typography>
-                        </PillButton>
-                      ) : (
-                        <PillButton
-                          variant="contained"
-                          startIcon={<DownloadDone />}
-                          sx={{ ml: 'auto' }}
-                          onClick={(e) => e.stopPropagation()}
-                        />
-                      )}
-                    </>
-                  )}
-                </AccordionSummary>
-                <AccordionDetails
+              return (
+                <Accordion
+                  key={template}
+                  expanded={isSelected}
+                  onChange={() => handleSelectTemplate(template)}
+                  onMouseEnter={() => setHoveredTemplate(template)}
+                  onMouseLeave={() => setHoveredTemplate(null)}
+                  disableGutters
                   sx={{
-                    backgroundColor: theme.palette.background.default,
-                    borderTop: '1px solid #E5E5E5',
-                    padding: 2,
+                    border: '1px solid #E5E5E5',
+                    borderRadius: 1,
+                    boxShadow: 'none',
+                    '&::before': {
+                      display: 'none',
+                    },
+                    transition: '0.5s ease',
+                    '&:hover': {
+                      backgroundColor: theme.palette.background.default,
+                    },
                   }}
                 >
-                  <Box sx={{ ml: 4 }}>
-                    <Box sx={{ display: 'flex', gap: 2 }}>
-                      <Box sx={{ flex: '3', maxHeight: '150px', pr: 2, overflow: 'auto' }}>
-                        <Typography
-                          variant="caption"
-                          sx={{ display: 'block', mb: 1.5, fontWeight: 'medium' }}
-                        >
-                          Best for
-                        </Typography>
-                        <Typography
-                          variant="caption"
-                          color={theme.palette.text.secondary}
-                          className="data-templates"
-                        >
-                          {bestForText}
-                        </Typography>
-                      </Box>
-                      <Box sx={{ flex: '5', maxHeight: '150px', pr: 4, overflow: 'auto' }}>
-                        <Typography
-                          variant="caption"
-                          sx={{ display: 'block', mb: 1.5, fontWeight: 'medium' }}
-                        >
-                          Required fields
-                        </Typography>
-                        <Typography
-                          variant="caption"
-                          color={theme.palette.text.secondary}
-                          className="data-templates"
-                        >
-                          {requiredFieldsText}
-                        </Typography>
-                      </Box>
-                    </Box>
-                    <Typography
-                      variant="caption"
-                      color={theme.palette.text.secondary}
-                      sx={{ my: 2, display: 'inline-block' }}
+                  <AccordionSummary
+                    sx={{ backgroundColor: isSelected ? theme.palette.primary.light : 'none' }}
+                  >
+                    <Box
+                      sx={{
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: 1.5,
+                      }}
                     >
-                      You may also include additional fields of your choice (whatever numerical or
-                      text fields are helpful for you to have available when viewing your location
-                      data in Pro).
-                    </Typography>
-                  </Box>
-                  <ExternalHelperResource
-                    text="How to format shapefile data"
-                    url={helpCenterLink}
-                  />
-                </AccordionDetails>
-              </Accordion>
-            );
-          }
-        )}
-      </Box>
+                      <Icon />
+                      <Typography>{title}</Typography>
+                    </Box>
 
-      <PillButton
-        onClick={handleClose}
-        variant="contained"
-        color="info"
-        startIcon={isAtLeastOneItemDownloaded ? <Close /> : null}
-        sx={{ alignSelf: 'end', mt: 'auto' }}
-      >
-        {isAtLeastOneItemDownloaded ? 'Cancel' : 'Done'}
-      </PillButton>
-    </Box>
+                    {!isSelected ? (
+                      <>
+                        {isAlreadyDownloaded && (
+                          <Box
+                            sx={{
+                              display: 'flex',
+                              alignItems: 'center',
+                              ml: 'auto',
+                            }}
+                          >
+                            <Check fontSize="medium" />
+                          </Box>
+                        )}
+                        {isHovered && !isAlreadyDownloaded && (
+                          <Box
+                            sx={{
+                              display: 'flex',
+                              alignItems: 'center',
+                              ml: 'auto',
+                              color: theme.palette.primary.main,
+                            }}
+                          >
+                            <Typography>See more</Typography>
+                          </Box>
+                        )}
+                      </>
+                    ) : (
+                      <>
+                        {!isAlreadyDownloaded ? (
+                          <PillButton
+                            variant="contained"
+                            startIcon={<Download />}
+                            sx={{ ml: 'auto' }}
+                            onClick={(e) => handleDownloadTemplate(e, template, filename)}
+                          >
+                            <Typography variant="caption" sx={{ fontWeight: 'medium' }}>
+                              Download
+                            </Typography>
+                          </PillButton>
+                        ) : (
+                          <PillButton
+                            variant="contained"
+                            startIcon={<DownloadDone />}
+                            sx={{ ml: 'auto' }}
+                            onClick={(e) => e.stopPropagation()}
+                          />
+                        )}
+                      </>
+                    )}
+                  </AccordionSummary>
+                  <AccordionDetails
+                    sx={{
+                      backgroundColor: theme.palette.background.default,
+                      borderTop: '1px solid #E5E5E5',
+                      padding: 2,
+                    }}
+                  >
+                    <Box sx={{ ml: 4 }}>
+                      <Box sx={{ display: 'flex', gap: 2 }}>
+                        <Box sx={{ flex: '3', maxHeight: '150px', pr: 2, overflow: 'auto' }}>
+                          <Typography
+                            variant="caption"
+                            sx={{ display: 'block', mb: 1.5, fontWeight: 'medium' }}
+                          >
+                            Best for
+                          </Typography>
+                          <Typography
+                            variant="caption"
+                            color={theme.palette.text.secondary}
+                            className="data-templates"
+                          >
+                            {bestForText}
+                          </Typography>
+                        </Box>
+                        <Box sx={{ flex: '5', maxHeight: '150px', pr: 4, overflow: 'auto' }}>
+                          <Typography
+                            variant="caption"
+                            sx={{ display: 'block', mb: 1.5, fontWeight: 'medium' }}
+                          >
+                            Required fields
+                          </Typography>
+                          <Typography
+                            variant="caption"
+                            color={theme.palette.text.secondary}
+                            className="data-templates"
+                          >
+                            {requiredFieldsText}
+                          </Typography>
+                        </Box>
+                      </Box>
+                      <Typography
+                        variant="caption"
+                        color={theme.palette.text.secondary}
+                        sx={{ my: 2, display: 'inline-block' }}
+                      >
+                        You may also include additional fields of your choice (whatever numerical or
+                        text fields are helpful for you to have available when viewing your location
+                        data in Pro).
+                      </Typography>
+                    </Box>
+                    <ExternalHelperResource
+                      text="How to format shape file data"
+                      url={helpCenterLink}
+                    />
+                  </AccordionDetails>
+                </Accordion>
+              );
+            }
+          )}
+        </DialogContent>
+
+        <DialogActions sx={{ mt: 'auto' }}>
+          <PillButton
+            onClick={onClose}
+            variant="contained"
+            color="info"
+            startIcon={isAtLeastOneItemDownloaded ? <Close /> : null}
+            sx={{ alignSelf: 'end', mt: 'auto' }}
+          >
+            {isAtLeastOneItemDownloaded ? 'Cancel' : 'Done'}
+          </PillButton>
+        </DialogActions>
+      </Box>
+    </Dialog>
   );
 }
-
-const mainContainerStyle: SxProps = {
-  display: 'flex',
-  flexDirection: 'column',
-  position: 'absolute',
-  top: '50%',
-  left: '50%',
-  transform: 'translate(-50%, -50%)',
-  width: '870px',
-  height: '850px',
-  bgcolor: 'background.paper',
-  borderRadius: '4px',
-  boxShadow: 24,
-  padding: 3,
-  paddingTop: 2,
-};
 
 const templateOptions: {
   template: Template;

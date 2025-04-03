@@ -79,7 +79,7 @@ const errorMessageBuilder = ({
   error: { errors: string[] };
   fileExtension: string;
 }) => {
-  const mainError = error.errors[0];
+  const mainError = error?.errors?.[0];
 
   if (mainError?.startsWith('Missing mandatory fields:')) {
     return {

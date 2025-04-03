@@ -54,12 +54,12 @@ describe('ParserData', () => {
           {
             type: 'Feature',
             geometry: { type: 'Point', coordinates: [1, 1] },
-            properties: { locationName: 'Mandatory Field' },
+            properties: { locationName: 'Mandatory \n' },
           },
           {
             type: 'Feature',
             geometry: { type: 'Point', coordinates: [2, 2] },
-            properties: { locationName: 'String Template' },
+            properties: { locationName: ' String ' },
           },
           {
             type: 'Feature',

@@ -247,6 +247,11 @@ export class GADMService extends AbstractHandler<ChainType> {
     const { path, preview = false } = request.request as PreviewListRequest;
     const { features } = geojson as FeatureCollection;
 
+    if ((request.request as RequestNewList).hasUnanalyzableError) {
+      // Skip GADM if there is already an error in the request
+      return request;
+    }
+
     const results = await this.asyncPoolAll(POOL_SIZE, features, this.composeResults);
 
     if (results.some((result) => result?.hasUnanalyzableError)) {

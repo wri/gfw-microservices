@@ -120,7 +120,7 @@ SET @SQL = 'SELECT ' +
             ' + 
             -- conditionally add a comma + @JsonAttributeColumns if it's not empty
             N' ' + CASE WHEN @JsonAttributeColumns IS NOT NULL AND LEN(@JsonAttributeColumns) > 0
-                        THEN @JsonAttributeColumns + ','
+                        THEN ',' + @JsonAttributeColumns + ','
                         ELSE ''
                 END + N'
 

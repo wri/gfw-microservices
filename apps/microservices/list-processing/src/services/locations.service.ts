@@ -98,10 +98,14 @@ export class LocationService {
     allLocationsSelected = false,
     filters,
     srcListAnalysisTable,
+    isUploadListLpEnabled,
   }: CopyOrMoveLargeListRequest) => {
     const unlock = [];
     try {
       this.logger.log(`Applied Filters ${JSON.stringify(filters)}`);
+      if (customAttributesNames.length === 0 && isUploadListLpEnabled) {
+        customAttributesNames.push('attributes');
+      }
 
       // Validate list name
       const listName = listType === TargetListType.New ? newListName : moveToList?.list_name;

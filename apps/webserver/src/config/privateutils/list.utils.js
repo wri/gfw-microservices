@@ -232,7 +232,7 @@ const uploadBulkLocations = (req, list_id, list_name, geojson, commodity, attrib
           columns.forEach((column) => {
             let col = {
               field: column.COLUMN_NAME,
-              type: sqlUtils.getDataType(req, column.DATA_TYPE),
+              type: sqlUtils.getDataType(req, column),
               value: undefined,
             };
             if (feature.properties.hasOwnProperty(column.COLUMN_NAME)) {

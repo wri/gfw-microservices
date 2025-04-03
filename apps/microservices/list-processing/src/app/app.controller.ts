@@ -130,16 +130,18 @@ export class AppController {
   }
 
   @Post('/CopyOrMoveLargeList')
+  @UseGuards(new FeatureFlagEnabledGuard('UploadListLp'))
   @UsePipes(new ZodValidationPipe(copyOrMoveLargeListRequestSchema))
   CopyOrMoveLargeList(
     @Body()
-    request: CopyOrMoveLargeListRequestLLP
+    request: CopyOrMoveLargeListRequestLLP,
+    @Request() req?
   ) {
-    const { isUploadListLpEnabled = false } = request;
-    if (isUploadListLpEnabled) {
-      return this.listCopyMoveService.run(request);
-    }
-    return this.locationService.MoveLocations(request);
+    const { featureFlag } = req;
+    return this.locationService.MoveLocations({
+      ...request,
+      isUploadListLpEnabled: featureFlag.enabled,
+    });
   }
 
   @Get('/paginated-list-data')

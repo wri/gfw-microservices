@@ -122,4 +122,5 @@ export interface CopyOrMoveLargeListRequest {
   allLocationsSelected: boolean;
   filters: ListFilters;
   srcListAnalysisTable: string;
+  isUploadListLpEnabled: boolean;
 }

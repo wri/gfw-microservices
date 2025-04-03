@@ -11,7 +11,7 @@ import { AppService } from './app.service';
 import { ConfigModule } from '@nestjs/config';
 import { ListService } from '../services/list.service';
 import { INestApplication } from '@nestjs/common';
-import { ListCopyMoveModule } from './list-copy-move'
+import { ListCopyMoveModule } from './list-copy-move';
 import request from 'supertest';
 import {
   ClientStoreConnection,
@@ -72,7 +72,7 @@ describe('AppController', () => {
           isGlobal: true,
         }),
         SqlModule,
-        ListCopyMoveModule
+        ListCopyMoveModule,
       ],
       controllers: [AppController],
       providers: [

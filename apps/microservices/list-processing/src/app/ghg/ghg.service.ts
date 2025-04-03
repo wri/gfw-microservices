@@ -11,7 +11,7 @@ import { EntitySchema } from 'typeorm';
 interface GHGAnalysisData {
   listId: number;
   listName: string;
-  locationId: string;
+  locationName: string;
   totalAreaHa: number;
   statusCode: number;
   locationError: string;
@@ -109,7 +109,7 @@ export class GHGService {
         return {
           listId,
           listName,
-          locationId: this.getLocationNameById(locationNames, locationId),
+          locationName: this.getLocationNameById(locationNames, locationId),
           totalAreaHa,
           statusCode,
           locationError,

@@ -131,7 +131,7 @@ describe('GHG - service', () => {
       {
         listId: listId,
         listName: 'mockedListName',
-        locationId: 'brazil2',
+        locationName: 'brazil2',
         totalAreaHa: 1.2921,
         statusCode: 2,
         locationError: null,
@@ -144,7 +144,7 @@ describe('GHG - service', () => {
       {
         listId: 1,
         listName: 'mockedListName',
-        locationId: 'arg3 landmark',
+        locationName: 'arg3 landmark',
         totalAreaHa: 1.1921,
         statusCode: 2,
         locationError: null,

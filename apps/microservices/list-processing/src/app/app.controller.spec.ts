@@ -11,6 +11,7 @@ import { AppService } from './app.service';
 import { ConfigModule } from '@nestjs/config';
 import { ListService } from '../services/list.service';
 import { INestApplication } from '@nestjs/common';
+import { ListCopyMoveModule } from './list-copy-move'
 import request from 'supertest';
 import {
   ClientStoreConnection,
@@ -71,6 +72,7 @@ describe('AppController', () => {
           isGlobal: true,
         }),
         SqlModule,
+        ListCopyMoveModule
       ],
       controllers: [AppController],
       providers: [
@@ -316,7 +318,7 @@ describe('AppController', () => {
       const userId = 10034; // Ismael ID
       const request: CopyOrMoveLargeListRequest = {
         listId: 961,
-        selectedListLocationClasification: 'Supply Shed',
+        selectedListLocationClassification: 'Supply Shed',
         customAttributesNames: [],
         userListNames: [],
         action: ActionType.Copy,

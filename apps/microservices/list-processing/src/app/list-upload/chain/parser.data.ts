@@ -89,32 +89,17 @@ export class ParserData extends AbstractHandler<ChainType> {
     }
 
     const templatePatterns = [
-      /mandatory/g,
-      /^string/g,
-      /^name of the/g,
-      /populate with data below this line/g,
+      /^Mandatory$/,
+      /^String$/,
+      /^[nN]ame of the /,
+      /^POPULATE WITH DATA BELOW THIS LINE$/,
     ];
 
     return {
       ...geojson,
       features: geojson.features.filter((feature) => {
-        // Remove template lines
-        const templateStrings = [
-          'mandatory',
-          'string',
-          'name of the location',
-          'name of the',
-          'populate with data below this line',
-        ];
-        if (
-          templateStrings.some((template) =>
-            (feature.properties?.locationName as string)?.toLocaleLowerCase().startsWith(template)
-          )
-        ) {
-          return false;
-        }
-
-        return true;
+        const locationName = (feature.properties.locationName as string)?.trim();
+        return !templatePatterns.some((pattern) => pattern.test(locationName));
       }),
     };
   }

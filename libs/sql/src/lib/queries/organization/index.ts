@@ -57,3 +57,5 @@ export * from './getFilterOptionsForUserLists';
 export * from './getTableColumns';
 export * from './getLocationsFilteredToCopy';
 export * from './getPaginatedGHGAnalysisByListId';
+export * from './addListToAnalyses';
+export * from './createListTable';

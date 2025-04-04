@@ -5,11 +5,8 @@ import { MenuItem, Select } from '@mui/material';
 import { updateAdminSelections } from '../../actions/mapActions';
 import * as analysisActions from '../../actions/analysisActions';
 import GfwButton from '../../../../common/js/components/GfwButton';
-import {
-  getGadmService,
-  getListOfCountries,
-  getListOfStatesOrProvinces,
-} from '../../../../common/js/utils/getGadmService.utils';
+import { getGadmService } from '../../../../common/js/utils/getGadmService.utils';
+import { getListOfCountries, getListOfStatesOrProvinces } from '../../../../api/map';
 import { ThemeProvider } from '../../../../styles/ThemeProvider';
 import store from '../../store';
 

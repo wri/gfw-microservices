@@ -11,34 +11,3 @@ export const getGadmService = () => {
     ? GADM_SERVICE__PROD
     : GADM_SERVICE__STAGING;
 };
-
-export const getListOfCountries = () => {
-  return fetch('/map/gadm-admininstrative-boundaries', {
-    method: 'GET',
-    credentials: 'same-origin',
-    headers: {
-      'Content-Type': 'application/json',
-    },
-  })
-    .then((response) => response.json())
-    .then(({ data }) => {
-      return {
-        countryOptions: data,
-      };
-    });
-};
-export const getListOfStatesOrProvinces = (countryCode) => {
-  return fetch(`/map/gadm-admininstrative-boundaries?countryCode=${countryCode}`, {
-    method: 'GET',
-    credentials: 'same-origin',
-    headers: {
-      'Content-Type': 'application/json',
-    },
-  })
-    .then((response) => response.json())
-    .then(({ data }) => {
-      return {
-        stateOrProvinceOptions: data,
-      };
-    });
-};

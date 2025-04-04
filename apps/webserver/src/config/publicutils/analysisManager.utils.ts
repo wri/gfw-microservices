@@ -35,9 +35,13 @@ import {
   DashboardDataPaginated,
   CountDashboardDataType,
   getCountDashboardData,
+  Lists,
+  ClientStoreConnection,
+  ListAttributes,
 } from '@wri-monorepos/sql';
 
 import { DIAGNOSTIC_ANALYSIS_PERIOD } from '@wri-monorepos/constants';
+import { Logger } from '@nestjs/common';
 
 /** @function {getAnalysisDataForUserList}
  *   @summary Function to return analysis data for a user list.
@@ -617,6 +621,15 @@ export async function getAFIListAnalyses(list_id, page, pageSize, clientDatabase
     value: sortByAttribute,
   });
 
+  const attributeColumns = await getListAttributesForJsonCastStr(clientDatabase, list_id);
+  const joinedAttributeColumns = attributeColumns.join(',');
+
+  parameters.push({
+    field: 'jsonAttributeColumns',
+    type: sql.NVarChar(sql.MAX),
+    value: joinedAttributeColumns,
+  });
+
   const listAnalyses = await SQLUtilsLibSql.queryDB<PaginatedAfiAnalysisByListIdSortedByFilters[]>(
     clientDatabase,
     getPaginatedAfiAnalysisByListIdSortedByFilters,
@@ -776,4 +789,38 @@ function sumAccumulatedAlerts(analysis, alertType): number {
       .reduce((acc, [, value]) => acc + (value as number), 0);
   }
   return accIntegratedAlerts;
+}
+enum ListsAttrsTypes {
+  Number = 1,
+  Text = 2,
+}
+async function getListAttributesForJsonCastStr(clientDb, listId) {
+  try {
+    const clientStoreConnection = new ClientStoreConnection();
+    const connection = await clientStoreConnection.getConnection(clientDb);
+    const listsRepository = connection.getRepository(Lists);
+
+    const list = await listsRepository.findOne({
+      where: { id: listId },
+    });
+
+    if (list.version !== 2) {
+      return [];
+    }
+
+    const listAttributesRepository = connection.getRepository(ListAttributes);
+
+    const listAttributes = await listAttributesRepository.find({
+      where: { list_id: listId },
+    });
+
+    return listAttributes.map((attrRecord) => {
+      const fieldTypeCast =
+        attrRecord.attribute_type === ListsAttrsTypes.Number ? 'INT' : 'NVARCHAR(MAX)';
+      return `CAST(JSON_VALUE(lt.attributes, '$."${attrRecord.attribute_name}"') AS ${fieldTypeCast}) AS [${attrRecord.attribute_name}]`;
+    });
+  } catch (error) {
+    Logger.warn(`getListAttributesForJsonCastStr`, error.stack || error);
+    return [];
+  }
 }

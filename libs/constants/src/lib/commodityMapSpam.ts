@@ -22,9 +22,9 @@ export const COMMODITY_MAP_SPAM = {
 
 export const MAPSPAM_COMMODITY = {
   COFF: 'Coffee',
-  COCO: 'Cocoa Generic',
-  OILP: 'Palm Oil Generic',
+  COCO: 'Cocoa',
+  OILP: 'Palm Oil',
   RUBB: 'Rubber',
-  SOYB: 'Soy Generic',
+  SOYB: 'Soy',
   SUGC: 'Sugar Cane',
 };

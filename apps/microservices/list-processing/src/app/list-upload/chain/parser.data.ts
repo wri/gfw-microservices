@@ -93,6 +93,7 @@ export class ParserData extends AbstractHandler<ChainType> {
       /^String$/,
       /^[nN]ame of the /,
       /^POPULATE WITH DATA BELOW THIS LINE$/,
+      /^cocoa farm name$/,
     ];
 
     return {

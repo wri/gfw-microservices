@@ -93,8 +93,8 @@ export function UploadLocationByPoint() {
           one of the methods below.
         </Typography>
         <ExternalHelperResource
-          text="How to format your location data for GFW Pro"
-          url="https://globalforestwatch.org/help/gfw-pro/guides/upload-locations-lists​"
+          text="How to define point and radius data on GFW Pro"
+          url="https://globalforestwatch.org/help/gfw-pro/guides/upload-locations-lists"
         />
 
         <Box sx={{ display: 'flex', gap: 0.75, mt: 3 }}>

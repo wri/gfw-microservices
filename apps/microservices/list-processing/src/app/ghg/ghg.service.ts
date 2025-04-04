@@ -66,7 +66,7 @@ export class GHGService {
           FROM GHGAnalyses ghg 
           INNER JOIN [${listTableName}] o ON ghg.location_id = o.location_id
           WHERE ghg.list_id = ${listId}
-          ORDER BY ghg.list_id
+          ORDER BY ghg.location_id
           OFFSET ${offset} ROWS
           FETCH NEXT ${rowsPerPage} ROWS ONLY;
         `;

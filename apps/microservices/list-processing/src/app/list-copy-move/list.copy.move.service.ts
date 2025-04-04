@@ -109,6 +109,7 @@ export class ListCopyMoveService {
         moveToList = {
           ...moveToList,
           id: list_id,
+          list_name: listName,
         };
       }
 

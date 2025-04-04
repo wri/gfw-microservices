@@ -19,7 +19,7 @@ export class UspGetLocationsFilteredToCopy {
       locationLogic,
       columnsToReturn,
     }
-  ): Promise<unknown[]> {
+  ): Promise<GetLocationsCopyMoveType[]> {
     const parameters = [
       { field: 'listID', type: sql.Int, value: listID },
       {
@@ -82,12 +82,12 @@ export class UspGetLocationsFilteredToCopy {
       },
     ];
 
-    const result = await SQLUtils.queryDB<GetLocationsCopyMoveType>(
+    const result = await SQLUtils.queryDB<GetLocationsCopyMoveType[]>(
       databaseName,
       getLocationsFilteredToCopy,
       parameters
     );
 
-    return [result];
+    return result;
   }
 }

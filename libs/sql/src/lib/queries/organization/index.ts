@@ -56,3 +56,4 @@ export * from './copyLocationAnalysis';
 export * from './getFilterOptionsForUserLists';
 export * from './getTableColumns';
 export * from './getLocationsFilteredToCopy';
+export * from './getPaginatedGHGAnalysisByListId';

@@ -795,7 +795,6 @@ enum ListsAttrsTypes {
   Text = 2,
 }
 async function getListAttributesForJsonCastStr(clientDb, listId) {
-  const logger = new Logger(`List Version Handling`);
   try {
     const clientStoreConnection = new ClientStoreConnection();
     const connection = await clientStoreConnection.getConnection(clientDb);
@@ -806,11 +805,9 @@ async function getListAttributesForJsonCastStr(clientDb, listId) {
     });
 
     if (list.version !== 2) {
-      logger.log(`Version ${list.version}, no op.`);
       return [];
     }
 
-    logger.log(`Including columns for list ${list.version}`);
     const listAttributesRepository = connection.getRepository(ListAttributes);
 
     const listAttributes = await listAttributesRepository.find({
@@ -823,6 +820,7 @@ async function getListAttributesForJsonCastStr(clientDb, listId) {
       return `CAST(JSON_VALUE(lt.attributes, '$."${attrRecord.attribute_name}"') AS ${fieldTypeCast}) AS [${attrRecord.attribute_name}]`;
     });
   } catch (error) {
-    logger.error(`Something went wrong handling attributes for list`, error.stack || error);
+    Logger.warn(`getListAttributesForJsonCastStr`, error.stack || error);
+    return [];
   }
 }

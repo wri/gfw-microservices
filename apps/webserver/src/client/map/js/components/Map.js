@@ -20,6 +20,7 @@ import SpatialReference from '@arcgis/core/geometry/SpatialReference';
 import CustomDialog from '../../../common/js/components/CustomDialog/CustomDialog';
 
 import { addCoordinateTextFromPoint } from '../../../locations/js/components/adding/PolygonCoordinates/polygonCoordinates.utils';
+import featureFlags from '../../../../utils/general.utils';
 
 import store from '../store';
 import {
@@ -78,7 +79,7 @@ import { identifyPoints, queryAdmin, queryExtent } from '../utils/LayerUtils';
 import { getBBoxAndGeostoreIDs, getVectorTileStyle } from '../utils/gfw-api.utils';
 import setVectorTileLayerForFilteredList from '../utils/setVectorTileLayerForFilteredList';
 import setVectorTileLayerForFullList from '../utils/setVectorTileLayerForFullList';
-import { getLocationGeometry } from '../utils/map.utils';
+import { getLocationGeometry, getBasemapConfiguration } from '../utils/map.utils';
 import { constructLayerObject } from '../../../common/js/utils/layer.utils';
 import { getMapLayerIdFromGFWListName } from '../../../common/js/utils/gfw.utils';
 import { updateInteractiveLayers } from '../utils/layerUpdates.utils';
@@ -168,6 +169,8 @@ const mapStyle = {
 
 let currentAnalysisCall;
 
+const { isGadm41Available } = featureFlags;
+
 class Map extends Component {
   constructor(props) {
     super(props);
@@ -247,17 +250,23 @@ class Map extends Component {
 
     this.setEsriDefaults();
 
-    const esriMap = new EsriMap();
-
     const queryParams = getQueryParams(this.props.location.search);
 
     const { latitude, longitude, zoom } = queryParams;
 
-    esriMap.add(
-      new VectorTileLayer(mapPage.basemaps[0].customVectorUrl, {
-        id: mapPage.basemaps[0].id,
-      })
-    );
+    let esriMap;
+    if (isGadm41Available) {
+      esriMap = new EsriMap({
+        basemap: getBasemapConfiguration(),
+      });
+    } else {
+      esriMap = new EsriMap();
+      esriMap.add(
+        new VectorTileLayer(mapPage.basemaps[0].customVectorUrl, {
+          id: mapPage.basemaps[0].id,
+        })
+      );
+    }
 
     const mapviewCenter = latitude && longitude ? [longitude, latitude] : DEFAULT_MAPVIEW_CENTER;
 
@@ -265,6 +274,11 @@ class Map extends Component {
       container: this.refs.mapView,
       center: mapviewCenter,
       zoom: zoom ? zoom - 1 : 3,
+      background: isGadm41Available
+        ? {
+            color: '#b9defa',
+          }
+        : {},
       map: esriMap,
       ui: {
         components: ['attribution'],
@@ -565,6 +579,7 @@ class Map extends Component {
       if (!landsatLayer.visible) {
         this.changeBasemap('landsat');
       }
+
       const duplicate = landsatLayer;
       if (this.view.zoom >= 12) {
         duplicate.urlTemplate = `https://production-api.globalforestwatch.org/v2/landsat-tiles/${landsatYear}/{level}/{col}/{row}.png`;
@@ -716,7 +731,9 @@ class Map extends Component {
     };
 
     this.addProLayers(view);
-    this.addCustomBasemaps(view);
+    if (!isGadm41Available) {
+      this.addCustomBasemaps(view);
+    }
     this.view = view;
 
     this.goToOriginalPoint = () => {

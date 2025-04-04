@@ -1,4 +1,4 @@
-import React, { DragEvent, useEffect, useState } from 'react';
+import React, { DragEvent, useEffect, useRef, useState } from 'react';
 import { Box, Card, Typography, useTheme } from '@mui/material';
 import { ArrowForwardIos, Close } from '@mui/icons-material';
 
@@ -25,6 +25,7 @@ export function UploadLocationByFile() {
   const [file, setFile] = useState<File | null>(null);
   const [fileAttachState, setFileAttachState] = useState<FileAttachState>(FileAttachState.NoFile);
   const [dragCounter, setDragCounter] = useState(0); // used to prevent dragleave event from firing when dragging over children
+  const fileInputRef = useRef<HTMLInputElement | null>(null);
 
   useEffect(() => {
     if (!file) {
@@ -76,6 +77,13 @@ export function UploadLocationByFile() {
 
     if (dragCounter === 1) {
       setFileAttachState(FileAttachState.NoFile);
+    }
+  };
+
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const selectedFile = e.target.files?.[0] ?? null;
+    if (selectedFile) {
+      setFile(selectedFile);
     }
   };
 
@@ -135,6 +143,7 @@ export function UploadLocationByFile() {
         <Box
           component="form"
           role="form"
+          onClick={() => isNoFileAttached && fileInputRef.current?.click()}
           onDrop={fileUpload}
           onDragEnter={handleFormDragEnter}
           onDragLeave={handleFormDragLeave}
@@ -149,28 +158,12 @@ export function UploadLocationByFile() {
             margin: '1.5rem 0 0.75rem',
             borderRadius: 1,
             ...getStyleProps(),
+            cursor: isNoFileAttached ? 'pointer' : 'default',
+            marginRight: 0,
           }}
         >
-          <label
-            htmlFor="file-input"
-            style={{ cursor: isNoFileAttached ? 'pointer' : 'default', marginRight: 0 }}
-          >
-            <UploadByFileFolderIcon fileAttachState={fileAttachState} />
-            {isNoFileAttached && (
-              <input
-                type="file"
-                id="file-input"
-                name="file-input"
-                data-testid="file-input"
-                accept={VALID_UPLOAD_FILE_FORMATS.map((f) => `.${f}`).join(', ')}
-                style={{ display: 'none' }}
-                onChange={(e) => {
-                  const file = e.target.files?.[0] ?? null;
-                  setFile(file);
-                }}
-              />
-            )}
-          </label>
+          <UploadByFileFolderIcon fileAttachState={fileAttachState} />
+
           <UploadByFileInstructions fileAttachState={fileAttachState} />
           {(fileAttachState === FileAttachState.Uploading ||
             fileAttachState === FileAttachState.Uploaded) && (
@@ -191,29 +184,14 @@ export function UploadLocationByFile() {
           {(fileAttachState === FileAttachState.UnsupportedType ||
             fileAttachState === FileAttachState.UploadFailed) && (
             <>
-              <PillButton variant="text">
-                <label
-                  htmlFor="file-input"
-                  style={{
-                    cursor: 'pointer',
-                    textTransform: 'none',
-                    textDecoration: 'underline',
-                    color: theme.palette.error.main,
-                  }}
-                >
-                  Upload again
-                </label>
+              <PillButton
+                variant="text"
+                color="error"
+                onClick={() => fileInputRef.current?.click()}
+                sx={{ mt: 1 }}
+              >
+                Upload again
               </PillButton>
-              <input
-                type="file"
-                id="file-input"
-                accept={VALID_UPLOAD_FILE_FORMATS.map((f) => `.${f}`).join(', ')}
-                style={{ display: 'none' }}
-                onChange={(e) => {
-                  const file = e.target.files?.[0] ?? null;
-                  setFile(file);
-                }}
-              />
             </>
           )}
           {isNoFileAttached && (
@@ -259,6 +237,14 @@ export function UploadLocationByFile() {
             </Box>
           )}
         </Box>
+        <input
+          type="file"
+          ref={fileInputRef}
+          accept={VALID_UPLOAD_FILE_FORMATS.map((f) => `.${f}`).join(', ')}
+          style={{ display: 'none' }}
+          onChange={handleFileChange}
+          data-testid="file-input"
+        />
 
         <Box
           sx={{

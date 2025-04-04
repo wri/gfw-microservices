@@ -180,6 +180,7 @@ export function createFeaturePropsForNonCommodity(locationData) {
     properties['Buffer Zones'] = '';
     properties['Latitude'] = feature.Latitude;
     properties['Longitude'] = feature.Longitude;
+    properties['Geometry'] = feature.geometry;
 
     if (!properties['Accuracy Rating of Location Entered']) {
       properties['Accuracy Rating of Location Entered'] = null; //"Don't Know";

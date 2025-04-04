@@ -52,7 +52,7 @@ export class AddNewLocationToAnalysisTable extends AbstractHandler<ChainType> {
         await this.insertBatch(connection, AnalysisEntity, batch);
       }
 
-      return super.handle(request);
+      return request;
     } catch (error) {
       throw new Error(`Failed to handle input: ${error.message}`);
     }

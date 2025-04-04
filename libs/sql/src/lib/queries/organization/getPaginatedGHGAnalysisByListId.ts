@@ -51,7 +51,6 @@ export class GHGAnalysisDataByListId {
   totalAreaHa: number;
   statusCode: number;
   locationError: string;
-  commodity: string;
   emissionsFactorByYear: string;
   efCo2ByYear: string;
   efCh4ByYear: string;

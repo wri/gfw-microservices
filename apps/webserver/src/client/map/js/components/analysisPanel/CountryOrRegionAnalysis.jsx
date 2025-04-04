@@ -87,6 +87,7 @@ const CountryOrRegionAnalysis = ({
   };
 
   const handleSubscribeAdmin = () => {
+    // TODO: update to GADM 4.1
     const adminServiceURL = getGadmService();
 
     const queryUrl = adminServiceURL;

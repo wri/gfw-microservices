@@ -225,7 +225,7 @@ export function UploadLocationByPolygon({
           map or defining a polygon via its coordinates vertices.
         </Typography>
         <ExternalHelperResource
-          text="How to format your location data for GFW Pro"
+          text="How to define polygon data on GFW Pro"
           url="https://globalforestwatch.org/help/gfw-pro/guides/upload-locations-lists"
         />
 

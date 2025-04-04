@@ -27,7 +27,7 @@ import { UserList } from '../types';
 import { typeOfAnalysisMap, commodities } from '../utils/constants';
 import { useFetch } from '../../../../../hooks';
 import debounce from 'lodash/debounce';
-import { fetchListsByCommodity } from '../../../../../api';
+import { fetchListsByCommodity } from '../../../../../api/list';
 import { analysisTypes } from '../../../../../../config/env/analysisTypes.constants';
 
 type CommoditiesType = (typeof commodities)[keyof typeof commodities];

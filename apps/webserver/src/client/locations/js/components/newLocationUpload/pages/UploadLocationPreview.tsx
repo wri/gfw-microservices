@@ -21,7 +21,7 @@ import { useHistory } from '../hooks';
 import { NavBar, UploadLocationPreviewErrorMessage } from '../components';
 import { useFetch } from '../../../../../hooks';
 import { VALID_UPLOAD_FILE_FORMATS } from '../utils/constants';
-import { fetchListPreview } from '../../../../../api';
+import { fetchListPreview } from '../../../../../api/list';
 
 export function UploadLocationPreview() {
   const {

@@ -14,7 +14,7 @@ describe('OrganizeGreenHouseGasEmissionsResponse', () => {
       {
         listId: 5642,
         listName: 'kgTestCG3 927 all',
-        locationId: 2,
+        locationName: 'location name 2',
         totalAreaHa: 1256.1646821446757,
         statusCode: 2,
         locationError: null,
@@ -26,7 +26,7 @@ describe('OrganizeGreenHouseGasEmissionsResponse', () => {
         expect(data).toEqual([
           [
             'kgTestCG3 927 all',
-            2,
+            'location name 2',
             1256.1646821446757,
             'Soybeans',
             'dLUC',
@@ -38,7 +38,7 @@ describe('OrganizeGreenHouseGasEmissionsResponse', () => {
           ],
           [
             'kgTestCG3 927 all',
-            2,
+            'location name 2',
             1256.1646821446757,
             'Soybeans',
             'dLUC',
@@ -48,7 +48,18 @@ describe('OrganizeGreenHouseGasEmissionsResponse', () => {
             228.1142,
             '2022',
           ],
-          ['kgTestCG3 927 all', 2, 1256.1646821446757, 'Soybeans', 'dLUC', 0, 0, 0, 0, '2023'],
+          [
+            'kgTestCG3 927 all',
+            'location name 2',
+            1256.1646821446757,
+            'Soybeans',
+            'dLUC',
+            0,
+            0,
+            0,
+            0,
+            '2023',
+          ],
         ]);
       }
     );
@@ -60,7 +71,7 @@ describe('OrganizeGreenHouseGasEmissionsResponse', () => {
       {
         listId: 5642,
         listName: 'kgTestCG3 927 all',
-        locationId: 2,
+        locationName: 'location name 2',
         totalAreaHa: 1256.1646821446757,
         statusCode: 2,
         locationError: null,

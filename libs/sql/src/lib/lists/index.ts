@@ -11,3 +11,4 @@ export * from './getListByFilters';
 export * from './updateListsAnalysisStatus';
 export * from './gfwLists';
 export * from './schema-upgrader';
+export * from './uspResetListStatus';

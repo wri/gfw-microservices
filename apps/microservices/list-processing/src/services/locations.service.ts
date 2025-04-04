@@ -33,6 +33,7 @@ import {
   updateListsAnalysisStatus,
 } from '@wri-monorepos/sql';
 import { ProcessingLimitException } from '../app/app.exceptions';
+import { ListCopyMoveService } from '../app/list-copy-move/list.copy.move.service';
 
 const EMPTY_CUSTOM_ATTRIBUTES = [];
 
@@ -41,7 +42,9 @@ export class LocationService {
   private readonly logger = new Logger(LocationService.name);
   constructor(
     private geoService: GeoService,
-    private readonly config: ConfigService<ServerConfigType, true>
+    private readonly config: ConfigService<ServerConfigType, true>,
+
+    private readonly listCopyMoveService: ListCopyMoveService
   ) {}
   assembleGeojson = (featProps, uploadingData): Promise<GeoJson> => {
     return new Promise<GeoJson>((resolve, reject) => {
@@ -75,9 +78,17 @@ export class LocationService {
     });
   };
 
-  MoveLocations = async ({
+  MoveLocations = async (params: CopyOrMoveLargeListRequest) => {
+    const { isUploadListLpEnabled } = params;
+    if (isUploadListLpEnabled) {
+      return this.listCopyMoveService.run(params);
+    }
+    return this.MoveLocationsDeprecated(params);
+  };
+
+  MoveLocationsDeprecated = async ({
     listId: selectedListId,
-    selectedListLocationClasification,
+    selectedListLocationClassification,
     customAttributesNames,
     userListNames,
     action,
@@ -122,6 +133,8 @@ export class LocationService {
         analysisAreaMin: filters.analysisAreaMin,
         analysisAreaMax: filters.analysisAreaMax,
         searchString: filters.searchString,
+        locationLogic: null,
+        columnsToReturn: null,
       });
 
       if (action === ActionType.Move) {
@@ -170,7 +183,7 @@ export class LocationService {
         await this.handleNewListCreation({
           newListName,
           templateId,
-          selectedListLocationClasification,
+          selectedListLocationClassification,
           userId,
           customAttributesNames: EMPTY_CUSTOM_ATTRIBUTES,
           clientDatabase,
@@ -234,7 +247,7 @@ export class LocationService {
   handleNewListCreation = async ({
     newListName,
     templateId,
-    selectedListLocationClasification,
+    selectedListLocationClassification,
     userId,
     customAttributesNames,
     clientDatabase,
@@ -258,7 +271,7 @@ export class LocationService {
     const createdUserList = await listCreation.createNewList(
       newListName,
       templateId,
-      selectedListLocationClasification,
+      selectedListLocationClassification,
       userId,
       customAttributesNames,
       clientDatabase,

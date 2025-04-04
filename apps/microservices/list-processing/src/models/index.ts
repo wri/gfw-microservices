@@ -139,7 +139,7 @@ export class CopyOrMoveLargeListRequestLLP implements CopyOrMoveLargeListRequest
   @ApiProperty()
   listId: number;
   @ApiProperty()
-  selectedListLocationClasification: string;
+  selectedListLocationClassification: string;
   @ApiProperty()
   customAttributesNames: string[];
   @ApiProperty()
@@ -180,6 +180,7 @@ export class CopyOrMoveLargeListRequestLLP implements CopyOrMoveLargeListRequest
   filters: ListFilters;
   @ApiProperty()
   srcListAnalysisTable: string;
+
   @ApiProperty()
   isUploadListLpEnabled: boolean;
 }

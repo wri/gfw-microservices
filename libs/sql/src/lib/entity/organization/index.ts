@@ -9,6 +9,7 @@ import { AFIAnalysis } from './afiAnalysis.entity';
 import { LargeLists } from './largeLists.entity';
 import { GHGAnalyses } from './ghgAnalyses.entity';
 import { ExternalUpload } from './externalUpload.entity';
+import { ListAttributes } from './listAttributes.entity';
 
 export * from './lists.entity';
 export * from './activityLog.entity';
@@ -37,4 +38,5 @@ export const organizationEntities = [
   LargeLists,
   GHGAnalyses,
   ExternalUpload,
+  ListAttributes,
 ];

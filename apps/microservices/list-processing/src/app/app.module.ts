@@ -28,6 +28,7 @@ import { AwsModule } from '@wri-monorepos/aws';
 import { HealthModule } from './health/health.module';
 import { ListModule } from './list';
 import { GHGModule } from './ghg';
+import { ListCopyMoveModule } from './list-copy-move';
 
 @Module({
   imports: [
@@ -46,6 +47,7 @@ import { GHGModule } from './ghg';
     HealthModule,
     ListModule,
     GHGModule,
+    ListCopyMoveModule,
   ],
   controllers: [AppController],
   providers: [

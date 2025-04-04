@@ -1,6 +1,7 @@
 import { SQLUtils } from '../util/sql.utils';
 import { Injectable } from '@nestjs/common';
 import * as sql from 'mssql';
+import { GetLocationsCopyMoveType, getLocationsFilteredToCopy } from '../queries';
 
 @Injectable()
 export class UspGetLocationsFilteredToCopy {
@@ -15,6 +16,8 @@ export class UspGetLocationsFilteredToCopy {
       analysisAreaMin,
       analysisAreaMax,
       searchString,
+      locationLogic,
+      columnsToReturn,
     }
   ): Promise<unknown[]> {
     const parameters = [
@@ -42,12 +45,49 @@ export class UspGetLocationsFilteredToCopy {
         type: sql.NVarChar(255),
         value: searchString || null,
       },
+      {
+        field: 'LocationLogic',
+        type: sql.NVarChar(255),
+        value: locationLogic || null,
+      },
+      {
+        field: 'ColumnsToReturn',
+        type: sql.NVarChar(255),
+        value: columnsToReturn || null,
+      },
+      {
+        field: 'LocationStatement',
+        type: sql.NVarChar(255),
+        value: null,
+      },
+      {
+        field: 'LocationIds',
+        type: sql.NVarChar(255),
+        value: null,
+      },
+      {
+        field: 'OrderByColumn',
+        type: sql.NVarChar(255),
+        value: 'Location Name',
+      },
+      {
+        field: 'Order',
+        type: sql.NVarChar(255),
+        value: 'ASC',
+      },
+      {
+        field: 'Geometry',
+        type: sql.Bit,
+        value: 1,
+      },
     ];
 
-    return await SQLUtils.queryDB<Promise<unknown[]>>(
+    const result = await SQLUtils.queryDB<GetLocationsCopyMoveType>(
       databaseName,
-      'uspGetLocationsFilteredToCopy',
+      getLocationsFilteredToCopy,
       parameters
     );
+
+    return [result];
   }
 }

@@ -1,0 +1,354 @@
+/*
+ * @param listID INT,
+ * @param OrderByColumn String,
+ * @param Order String,
+ * @param SubState String,
+ * @param Country String,
+ * @param State String,
+ * @param AnalysisAreaMin Int,
+ * @param AnalysisAreaMax Int,
+ * @param LocationLogic String,
+ * @param LocationIds String,
+ * @param LocationStatement String,
+ * @param ColumnsToReturn String,
+ * @param SearchString String,
+ * @param SelectedLocations String,
+ * @param Geometry Int
+ **/
+
+export const getLocationsFilteredToCopy = `
+	DECLARE @columnsList NVARCHAR(1000)
+	DECLARE @listLocationTableName NVARCHAR(1000)
+	DECLARE @listAnalysisTableName NVARCHAR(1000)
+	DECLARE @ListColumnsWhereclause NVARCHAR(MAX) = 'AND [name] NOT IN (''Geometry'', ''location_id'')'
+	DECLARE @AnalysisColumnsWhereclause NVARCHAR(MAX) = 'AND [name] NOT IN (''Geometry'')'
+	DECLARE @listLocationTableCols NVARCHAR(MAX)
+	DECLARE @listAnalysisTableCols NVARCHAR(MAX)
+	DECLARE @template_id INT
+	DECLARE @PRESQL NVARCHAR(MAX)
+	DECLARE @presql_list_params NVARCHAR(MAX) = '@list_location_table_cols_query VARCHAR(MAX) OUTPUT';
+	DECLARE @presql_analysis_params NVARCHAR(MAX) = '@analysis_location_table_cols_query VARCHAR(MAX) OUTPUT';
+	DECLARE @list_location_table_cols_output NVARCHAR(MAX);
+	DECLARE @analysis_location_table_cols_output NVARCHAR(MAX);
+	DECLARE @SQL NVARCHAR(MAX)
+	DECLARE @Filters NVARCHAR(MAX) = ''
+	DECLARE @AnalysisFilters NVARCHAR(MAX) = '1=1'
+
+
+	SET NOCOUNT ON
+	-- Obtain the location table name and the analysis table name for the list.
+	SELECT @listLocationTableName = list_table_name, @listAnalysisTableName = list_analysis_table_name, @template_id = template_id FROM dbo.Lists WHERE id = @listID
+
+
+	-- Default column location name is not found
+	IF @OrderByColumn = 'Location Name'
+	BEGIN
+		IF COL_LENGTH(@listLocationTableName, 'Location Name') IS NULL
+		BEGIN
+			SET @OrderByColumn = '[Investment Name]'
+		END
+		ELSE
+		BEGIN
+			SET @OrderByColumn = '[Location Name]'
+		END
+	END
+	IF @OrderByColumn = 'Investment Name'
+	BEGIN
+		IF COL_LENGTH(@listLocationTableName, 'Investment Name') IS NULL
+		BEGIN
+			SET @OrderByColumn = '[Location Name]'
+		END
+		ELSE
+		BEGIN
+			SET @OrderByColumn = '[Investment Name]'
+		END
+	END
+
+	IF @OrderByColumn NOT IN ('Investment Name', 'Location Name', '[Investment Name]','[Location Name]')
+	BEGIN
+		SET @OrderByColumn = '['+@OrderByColumn+']'
+	END
+	-- Obtain the needed columns from the List Location Table. (All but Geometry)
+
+	IF @ColumnsToReturn IS NOT NULL
+	BEGIN
+		WITH ColumnsCTE AS (
+			SELECT TRIM(value) AS cols FROM STRING_SPLIT(@ColumnsToReturn, ',')
+		)
+
+		SELECT @columnsList = CONCAT('''', STRING_AGG(cols, ''', '''), '''')
+		FROM ColumnsCTE;
+
+		SET @ListColumnsWhereclause = CONCAT(@ListColumnsWhereclause, ' ', 'AND [name] IN (''Location Name'', ''Investment Name'', ''Country'', ''State'', ''Sub State'', ', @columnsList, ')')
+		SET @AnalysisColumnsWhereclause = CONCAT(@AnalysisColumnsWhereclause, ' ', 'AND [name] IN (''location_id'', ''total_area'', ', @columnsList, ')')
+
+	END
+
+	SET @PRESQL = N'SELECT @list_location_table_cols_query = STUFF(
+		  (
+			SELECT ''], L.['' + [name] FROM sys.columns
+			WHERE
+			  [object_id] = (SELECT [object_id] FROM sys.objects WHERE [name] = ''{LIST_LOCATION_TABLE_NAME}'')
+			  {WHERE_CLAUSE}
+			  FOR XML PATH('''')
+		  ),1,3,'''') + '']''';
+	SET @PRESQL = REPLACE(@PRESQL, '{LIST_LOCATION_TABLE_NAME}', @listLocationTableName)
+	SET @PRESQL = REPLACE(@PRESQL, '{WHERE_CLAUSE}', @ListColumnsWhereclause);
+
+	EXEC sp_executesql @PRESQL, @presql_list_params, @list_location_table_cols_query = @list_location_table_cols_output OUTPUT;
+
+
+	SET @SQL = N'; WITH MyListTable AS (SELECT {LIST_ID} As list_id, {LOCATION_COLUMNS}, location_id as list_location_id'
+	IF @Geometry = 1
+	BEGIN
+	  SET @SQL = @SQL + ', Geometry.ToString() As [WKTGeometry]'
+	END
+
+	SET @SQL = @SQL + ' FROM [{LOCATION_TABLE}] L), ';
+
+	SET @PRESQL = N'SELECT @analysis_location_table_cols_query = STUFF(
+		  (
+			SELECT ''], A.['' + [name] FROM sys.columns
+			WHERE
+			  [object_id] = (SELECT [object_id] FROM sys.objects WHERE [name] = ''{LIST_ANALYSIS_TABLE_NAME}'')
+			  {WHERE_CLAUSE}
+			  FOR XML PATH('''')
+		  ),1,3,'''') + '']''';
+	SET @PRESQL = REPLACE(@PRESQL, '{LIST_ANALYSIS_TABLE_NAME}', @listAnalysisTableName)
+	SET @PRESQL = REPLACE(@PRESQL, '{WHERE_CLAUSE}', @AnalysisColumnsWhereclause);
+
+	EXEC sp_executesql @PRESQL, @presql_analysis_params, @analysis_location_table_cols_query = @analysis_location_table_cols_output OUTPUT;
+
+	-- Obtain the needed columns from the List Analysis Table. (All but List ID)
+	SELECT @listAnalysisTableCols = STUFF(
+	  (
+		SELECT '], A.[' + [name] FROM sys.columns
+		WHERE
+		  [object_id] = (SELECT [object_id] FROM sys.objects WHERE [name] = @listAnalysisTableName)
+		  AND [name] NOT IN ('id')
+		  FOR XML PATH('')
+	  ),1,3,'') + ']';
+
+
+	-- ADD Filters
+	IF @Country IS NOT NULL
+	  SET @Filters = + @Filters + ' AND Country = @Country'
+
+	IF @State IS NOT NULL
+	  SET @Filters = + @Filters + ' AND State = @State'
+
+	IF @SubState IS NOT NULL
+	  SET @Filters = + @Filters + ' AND [Sub State] = @SubState'
+
+	IF @LocationLogic IS NOT NULL AND @LocationIds IS NOT NULL
+	BEGIN
+		IF CHARINDEX('IN', @LocationLogic) > 0
+			BEGIN
+				SET @LocationStatement = 'AND location_id ' + @LocationLogic + ' (' + @LocationIds + ')'
+				SET @Filters = CONCAT(@Filters, ' ', @LocationStatement);
+			END
+		IF CHARINDEX('BETWEEN', @LocationLogic) > 0
+			BEGIN
+				DECLARE @BetweenLogic NVARCHAR(1000) = ' AND location_id ' + @LocationLogic;
+				WITH LocationIdsCTE AS (
+					SELECT value AS locations FROM STRING_SPLIT(@LocationIds, ',')
+				)
+
+				SELECT @LocationStatement = STRING_AGG(locations, @BetweenLogic)
+				FROM LocationIdsCTE;
+
+				SET @Filters = CONCAT(@Filters,' AND location_id ', @LocationLogic, ' ', @LocationStatement);
+			END
+	END
+
+	IF @SearchString IS NOT NULL
+	BEGIN
+
+		SELECT @listLocationTableCols = STUFF(
+		  (
+			SELECT '], [' + [name] FROM sys.columns
+			WHERE
+			  [object_id] = (SELECT [object_id] FROM sys.objects WHERE [name] = @listLocationTableName)
+			  AND [name] NOT IN ('Geometry', 'location_id')
+				AND user_type_id IN (SELECT user_type_id FROM sys.types WHERE name IN ('char', 'nchar', 'varchar', 'nvarchar'))
+			  FOR XML PATH('')
+		  ),1,3,' ') + ']';
+
+		DECLARE @SearchLogic NVARCHAR(MAX) = 'CONCAT({LIST_TABLE_CHAR_COLS}) LIKE ''%{SEARCH_STRING}%'' ';
+		SET @SearchLogic = REPLACE(@SearchLogic, '{LIST_TABLE_CHAR_COLS}', @listLocationTableCols);
+		SET @SearchLogic = REPLACE(@SearchLogic, '{SEARCH_STRING}', @SearchString);
+		--PRINT @SearchLogic;
+		SET @Filters = CONCAT(@Filters,' AND ', @SearchLogic);
+	END
+
+
+	IF ISNUMERIC( @AnalysisAreaMin ) = 1 AND ISNUMERIC( @AnalysisAreaMax ) = 1
+	BEGIN
+
+		IF @AnalysisAreaMin < 0 AND @AnalysisAreaMin < @AnalysisAreaMax
+			BEGIN
+				RAISERROR ('Invalid @AnalysisAreaMin', -1, 1);
+			END
+		IF @AnalysisAreaMax < 0 AND @AnalysisAreaMax > @AnalysisAreaMin
+			BEGIN
+				RAISERROR ('Invalid @AnalysisAreaMax', -1, 1);
+			END
+		SET @AnalysisFilters = 'total_area BETWEEN {ANALYSIS_AREA_MIN} AND {ANALYSIS_AREA_MAX}';
+		SET @AnalysisFilters = REPLACE(@AnalysisFilters, '{ANALYSIS_AREA_MIN}', @AnalysisAreaMin);
+		SET @AnalysisFilters = REPLACE(@AnalysisFilters, '{ANALYSIS_AREA_MAX}', @AnalysisAreaMax);
+	END
+
+	IF @SelectedLocations IS NOT NULL
+	BEGIN
+		SET @Filters = CONCAT(@Filters,' AND location_id IN(',@SelectedLocations ,')');
+	END
+
+	-- END Filters
+
+	-- Return data from both tables
+	SET @SQL = @SQL + ' MyAnalysisTable AS(
+							SELECT {LIST_ID} As analysis_list_id, {TEMPLATE_ID} As template_id, {ANALYSIS_COLUMNS}
+							FROM [{ANALYSIS_TABLE}] A
+							WHERE ' + @AnalysisFilters + '
+						)
+						SELECT * FROM MyListTable
+						INNER JOIN MyAnalysisTable ON MyListTable.list_id = MyAnalysisTable.analysis_list_id AND MyListTable.list_location_id = MyAnalysisTable.location_id
+						WHERE 1=1 '+@Filters+'
+						ORDER BY '+ @OrderByColumn + ' '+ @Order
+
+	SET @SQL = REPLACE(@SQL, '{TEMPLATE_ID}', @template_id);
+	SET @SQL = REPLACE(@SQL, '{LIST_ID}', @listID);
+	SET @SQL = REPLACE(@SQL, '{LOCATION_COLUMNS}', @list_location_table_cols_output);
+	SET @SQL = REPLACE(@SQL, '{LOCATION_TABLE}', @listLocationTableName);
+	SET @SQL = REPLACE(@SQL, '{ANALYSIS_COLUMNS}', @analysis_location_table_cols_output);
+	SET @SQL = REPLACE(@SQL, '{ANALYSIS_TABLE}', @listAnalysisTableName);
+
+	EXEC sp_executesql @SQL,
+			  N'@OrderByColumn NVARCHAR(MAX), @Order NVARCHAR(5), @Country NVARCHAR(150), @State NVARCHAR(150), @SubState NVARCHAR(150), @AnalysisAreaMin INT, @AnalysisAreaMax INT',
+			  @OrderByColumn=@OrderByColumn, @Order=@Order, @Country=@Country, @State=@State, @SubState=@SubState, @AnalysisAreaMin=@AnalysisAreaMin, @AnalysisAreaMax=@AnalysisAreaMax;
+`;
+
+export interface GetLocationsCopyMoveType {
+  list_id: number;
+  'Location Name': string;
+  Latitude: number;
+  Longitude: number;
+  'Analysis Radius': number;
+  'Analysis Area': number;
+  Commodity: string;
+  'Location Classification': string;
+  Volume: number;
+  'Company ID': string;
+  'Cadaster ID': string;
+  'Owner Name': string;
+  'Owner ID': string;
+  'Company Name': string;
+  'Company Contact': string;
+  'Facility Name': string;
+  'Facility E-mail': string;
+  Certification: string;
+  'Start Date': string;
+  'End Date': string;
+  'Time Horizon': string;
+  'Accuracy Rating of Location Entered': number;
+  Country: string;
+  State: string;
+  'Sub State': string;
+  'Wind Barrier': string;
+  'Riparian Buffers': string;
+  'Buffer Zones': string;
+  gadmid: string;
+  attributes: string;
+  flag_general: number;
+  flag_gran_chaco: number;
+  flag_glad: number;
+  flag_forma: number;
+  flag_viirs: number;
+  flag_terrai: number;
+  ErrorDetails: string;
+  list_location_id: number;
+  WKTGeometry: string;
+  analysis_list_id: number;
+  template_id: number;
+  location_id: number;
+  location_status_id: number;
+  tree_cover_loss_total_yearly: string;
+  tree_cover_loss_primary_forest_yearly: string;
+  tree_cover_loss_peat_yearly: string;
+  tree_cover_loss_intact_forest_yearly: string;
+  tree_cover_loss_protected_areas_yearly: string;
+  tree_cover_loss_sea_landcover_yearly: string;
+  tree_cover_loss_idn_landcover_yearly: string;
+  tree_cover_loss_idn_primary_forest_yearly: string;
+  tree_cover_loss_soy_yearly: string;
+  tree_cover_loss_idn_legal_yearly: string;
+  tree_cover_loss_idn_forest_moratorium_yearly: string;
+  tree_cover_loss_prodes_yearly: string;
+  tree_cover_loss_prodes_wdpa_yearly: string;
+  tree_cover_loss_prodes_primary_forest_yearly: string;
+  tree_cover_loss_brazil_biomes_yearly: string;
+  tree_cover_extent_total: number;
+  tree_cover_extent_primary_forest: number;
+  tree_cover_extent_protected_areas: number;
+  tree_cover_extent_peat: number;
+  tree_cover_extent_intact_forest: number;
+  natural_habitat_primary: number;
+  natural_habitat_intact_forest: number;
+  natural_habitat_global_land_cover: string;
+  total_area: number;
+  protected_areas_area: number;
+  critical_habitat_alliance_zero: number;
+  indigenous_people_land_rights: number;
+  peat_area: number;
+  fires_counts_monthly: string;
+  soy_total_area: string;
+  soy_pre2001_nonforest_area: number;
+  brazil_biomes: string;
+  idn_legal_area: string;
+  sea_landcover_area: string;
+  idn_landcover_area: string;
+  idn_forest_moratorium_area: number;
+  south_america_presence: string;
+  legal_amazon_presence: string;
+  brazil_biomes_presence: string;
+  cerrado_biome_presence: string;
+  southeast_asia_presence: string;
+  indonesia_presence: string;
+  commodity_threat_deforestation_level: string;
+  commodity_threat_peat_level: string;
+  commodity_threat_protected_areas_level: string;
+  commodity_threat_fires_level: string;
+  commodity_threat_overall_level: string;
+  commodity_value_forest_extent_level: string;
+  commodity_value_peat_level: string;
+  commodity_value_protected_areas_level: string;
+  commodity_value_overall_level: string;
+  commodity_value_forest_extent: string;
+  commodity_value_peat: string;
+  commodity_value_protected_areas: string;
+  commodity_mill_priority_level: string;
+  commodity_mill_priority_score: string;
+  commodity_value_overall_score: string;
+  commodity_threat_deforestation: string;
+  commodity_threat_peat: string;
+  commodity_threat_protected_areas: string;
+  commodity_threat_fires: string;
+  commodity_threat_overall_score: string;
+  dissolved_data_location_info: string;
+  tree_cover_loss_arg_otbn_yearly: string;
+  arg_otbn_area: string;
+  argentina_presence: string;
+  protected_areas_by_category_area: string;
+  landmark_by_category_area: string;
+  country_specific_deforestation_yearly: string;
+  country_specific_deforestation_wdpa_yearly: string;
+  country_specific_deforestation_landmark_yearly: string;
+  country_specific_deforestation_classified_region_yearly: string;
+  tree_cover_loss_by_country_yearly: string;
+  tree_cover_loss_by_country_wdpa_yearly: string;
+  tree_cover_loss_by_country_landmark_yearly: string;
+  country_area: string;
+  classified_region_area: string;
+  tree_cover_loss_by_country_classified_region_yearly: string;
+  location_error: string;
+}

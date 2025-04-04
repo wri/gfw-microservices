@@ -197,19 +197,6 @@ export class ListBulkCopy {
             col.value = GetWKTGeometry(feature.geometry);
           }
         } else {
-          /**
-           *  Extra column to keep track
-              { COLUMN_NAME: 'Geometry', DATA_TYPE: 'geometry' }
-              { COLUMN_NAME: 'location_id', DATA_TYPE: 'int' }
-              { COLUMN_NAME: 'attributes', DATA_TYPE: 'nvarchar' }
-              { COLUMN_NAME: 'flag_general', DATA_TYPE: 'int' }
-              { COLUMN_NAME: 'flag_gran_chaco', DATA_TYPE: 'int' }
-              { COLUMN_NAME: 'flag_glad', DATA_TYPE: 'int' }
-              { COLUMN_NAME: 'flag_forma', DATA_TYPE: 'int' }
-              { COLUMN_NAME: 'flag_viirs', DATA_TYPE: 'int' }
-              { COLUMN_NAME: 'flag_terrai', DATA_TYPE: 'int' }
-              { COLUMN_NAME: 'ErrorDetails', DATA_TYPE: 'nvarchar' }
-           */
           if (column.COLUMN_NAME === 'location_id') {
             col.value = primary_key;
           } else if (commodity && column.COLUMN_NAME === 'Commodity') {
@@ -222,8 +209,6 @@ export class ListBulkCopy {
           } else if (column.COLUMN_NAME === 'ErrorDetails') {
             col.type = sql.NVarChar(256);
             col.value = '';
-          } else if (column.COLUMN_NAME.includes('flag_')) {
-            col.value = 0;
           }
         }
         row.push(col);

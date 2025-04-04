@@ -35,9 +35,13 @@ import {
   DashboardDataPaginated,
   CountDashboardDataType,
   getCountDashboardData,
+  Lists,
+  ClientStoreConnection,
+  ListAttributes,
 } from '@wri-monorepos/sql';
 
 import { DIAGNOSTIC_ANALYSIS_PERIOD } from '@wri-monorepos/constants';
+import { Logger } from '@nestjs/common';
 
 /** @function {getAnalysisDataForUserList}
  *   @summary Function to return analysis data for a user list.
@@ -791,26 +795,34 @@ enum ListsAttrsTypes {
   Text = 2,
 }
 async function getListAttributesForJsonCastStr(clientDb, listId) {
-  const { version } = await SQLUtilsLibSql.queryDBFirstRow<{ version: number }>(
-    clientDb,
-    `SELECT [version] as version FROM [Lists] WHERE [id] = ${listId}`
-  );
+  const logger = new Logger(`List Version Handling`);
+  try {
+    const clientStoreConnection = new ClientStoreConnection();
+    const connection = await clientStoreConnection.getConnection(clientDb);
+    const listsRepository = connection.getRepository(Lists);
 
-  if (version != 2) {
-    return [];
+    const list = await listsRepository.findOne({
+      where: { id: listId },
+    });
+
+    if (list.version !== 2) {
+      logger.log(`Version ${list.version}, no op.`);
+      return [];
+    }
+
+    logger.log(`Including columns for list ${list.version}`);
+    const listAttributesRepository = connection.getRepository(ListAttributes);
+
+    const listAttributes = await listAttributesRepository.find({
+      where: { list_id: listId },
+    });
+
+    return listAttributes.map((attrRecord) => {
+      const fieldTypeCast =
+        attrRecord.attribute_type === ListsAttrsTypes.Number ? 'INT' : 'NVARCHAR(MAX)';
+      return `CAST(JSON_VALUE(lt.attributes, '$."${attrRecord.attribute_name}"') AS ${fieldTypeCast}) AS [${attrRecord.attribute_name}]`;
+    });
+  } catch (error) {
+    logger.error(`Something went wrong handling attributes for list`, error.stack || error);
   }
-
-  const listAttributes = await SQLUtilsLibSql.queryDB<
-    { attribute_name: string; attribute_type: number }[]
-  >(
-    clientDb,
-    `SELECT [attribute_name], [attribute_type] FROM [ListAttributes] WHERE [list_id] = ${listId}`
-  );
-  console.log('🚀 ~ getListAttributesForJsonCastStr ~ listAttributes:', listAttributes);
-
-  return listAttributes.map((attrRecord) => {
-    const fieldTypeCast =
-      attrRecord['attribute_type'] === ListsAttrsTypes.Number ? 'INT' : 'NVARCHAR(MAX)';
-    return ` CAST(JSON_VALUE(lt.attributes, ''$.[""${attrRecord['attribute_name']}""]'') as ${fieldTypeCast})`;
-  });
 }

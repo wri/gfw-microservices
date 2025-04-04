@@ -118,7 +118,8 @@ export function DataTemplates({ isOpen, onClose }: DataTemplatesProps) {
               bestForText,
               requiredFieldsText,
               filename,
-              helpCenterLink,
+              helpCenterLinkText,
+              helpCenterLinkUrl,
             }) => {
               const isSelected = selectedTemplate === template;
               const isHovered = hoveredTemplate === template;
@@ -259,10 +260,7 @@ export function DataTemplates({ isOpen, onClose }: DataTemplatesProps) {
                         data in Pro).
                       </Typography>
                     </Box>
-                    <ExternalHelperResource
-                      text="How to format shape file data"
-                      url={helpCenterLink}
-                    />
+                    <ExternalHelperResource text={helpCenterLinkText} url={helpCenterLinkUrl} />
                   </AccordionDetails>
                 </Accordion>
               );
@@ -293,7 +291,8 @@ const templateOptions: {
   bestForText: string | ReactElement;
   requiredFieldsText: ReactElement;
   filename: string;
-  helpCenterLink: string;
+  helpCenterLinkText: string;
+  helpCenterLinkUrl: string;
 }[] = [
   {
     template: Template.PolygonShapeFile,
@@ -313,7 +312,9 @@ const templateOptions: {
       </>
     ),
     filename: 'GFWPro-PolygonShapefile.zip',
-    helpCenterLink: 'https://globalforestwatch.org/help/gfw-pro/guides/prepare-shapefiles-upload​',
+    helpCenterLinkText: 'How to format polygon shape file data',
+    helpCenterLinkUrl:
+      'https://globalforestwatch.org/help/gfw-pro/guides/prepare-shapefiles-upload',
   },
   {
     template: Template.Kml,
@@ -330,8 +331,9 @@ const templateOptions: {
       </>
     ),
     filename: 'GFWPro-KML.kml',
-    helpCenterLink:
-      'https://globalforestwatch.org/help/gfw-pro/guides/prepare-kml-kmz-files-upload​',
+    helpCenterLinkText: 'How to format KML data',
+    helpCenterLinkUrl:
+      'https://globalforestwatch.org/help/gfw-pro/guides/prepare-kml-kmz-files-upload',
   },
   {
     template: Template.Spreadsheet,
@@ -364,7 +366,8 @@ const templateOptions: {
       </>
     ),
     filename: 'GFWPro-Spreadsheet.csv',
-    helpCenterLink: 'https://globalforestwatch.org/help/gfw-pro/guides/select-correct-template​',
+    helpCenterLinkText: 'How to format spreadsheet data',
+    helpCenterLinkUrl: 'https://globalforestwatch.org/help/gfw-pro/guides/select-correct-template',
   },
   {
     template: Template.PointShapeFile,
@@ -392,7 +395,9 @@ const templateOptions: {
       </>
     ),
     filename: 'GFWPro-PointShapefile.zip',
-    helpCenterLink: 'https://globalforestwatch.org/help/gfw-pro/guides/prepare-shapefiles-upload​',
+    helpCenterLinkText: 'How to format point shape file data',
+    helpCenterLinkUrl:
+      'https://globalforestwatch.org/help/gfw-pro/guides/prepare-shapefiles-upload',
   },
   {
     template: Template.ListOfPalmMillIds,
@@ -436,6 +441,7 @@ const templateOptions: {
       </>
     ),
     filename: 'GFWPro-PalmMillIDs.csv',
-    helpCenterLink: 'https://globalforestwatch.org/help/gfw-pro/guides/upload-locations-lists​',
+    helpCenterLinkText: 'How to format a list palm mill IDs',
+    helpCenterLinkUrl: 'https://globalforestwatch.org/help/gfw-pro/guides/upload-locations-lists',
   },
 ];

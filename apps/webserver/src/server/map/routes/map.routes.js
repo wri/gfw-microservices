@@ -131,33 +131,43 @@ module.exports = (app, limiter) => {
     }
   });
 
-  app.get('/map/gadm-admininstrative-boundaries', (req, res) => {
-    const { query } = req;
-    const { countryCode } = query;
+  app.get('/map/gadm-admininstrative-boundaries', async (req, res) => {
+    try {
+      const { countryCode } = req.query;
+      let sql;
 
-    let sql;
+      // Only allow uppercase A-Z letters and max 3 characters (ISO Alpha-3)
+      const isValidISO = /^[A-Z]{2,3}$/.test(countryCode);
 
-    if (countryCode) {
-      sql = `SELECT name_1, gid_1 FROM data WHERE adm_level='1' AND gid_0='${countryCode}' ORDER BY name_1`;
-    } else {
-      sql = `SELECT name_0, gid_0 as iso FROM data WHERE adm_level='0' AND name_0 IS NOT NULL ORDER BY name_0`;
-    }
-
-    fetch(
-      'https://data-api.globalforestwatch.org/dataset/gadm_administrative_boundaries/v4.1.64/query/json',
-      {
-        method: 'POST',
-        headers: {
-          'x-api-key': process.env.GADM_ADMINISTRATIVE_BOUNDARIES_API_KEY,
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ sql }),
+      if (countryCode && isValidISO) {
+        sql = `SELECT name_1, gid_1 FROM data WHERE adm_level='1' AND gid_0='${countryCode}' ORDER BY name_1`;
+      } else if (!countryCode) {
+        sql = `SELECT name_0, gid_0 as iso FROM data WHERE adm_level='0' AND name_0 IS NOT NULL ORDER BY name_0`;
+      } else {
+        return res.status(400).json({ error: 'Invalid country code format' });
       }
-    )
-      .then((response) => response.json())
-      .then((response) => {
-        res.send(response);
-      })
-      .catch((error) => console.error('Error:', error));
+
+      const response = await fetch(
+        'https://data-api.globalforestwatch.org/dataset/gadm_administrative_boundaries/v4.1.64/query/json',
+        {
+          method: 'POST',
+          headers: {
+            'x-api-key': process.env.GADM_ADMINISTRATIVE_BOUNDARIES_API_KEY,
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ sql }),
+        }
+      );
+
+      if (!response.ok) {
+        throw new Error(`Failed to fetch data: ${response.statusText}`);
+      }
+
+      const data = await response.json();
+      res.json(data);
+    } catch (error) {
+      console.error('Error:', error);
+      res.status(500).json({ error: 'An error occurred while processing your request' });
+    }
   });
 };

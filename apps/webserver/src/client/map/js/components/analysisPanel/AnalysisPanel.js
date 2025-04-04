@@ -29,9 +29,12 @@ import GfwButton from '../../../../common/js/components/GfwButton';
 import GfwSelect from '../../../../common/js/components/GfwSelect';
 import { PlanetTilesOptions } from './PlanetTilesOptions/PlanetTilesOptions';
 import MapRecenterButton from '../modals/MapRecenterButton';
-
-import store from '../../store';
 import { PLANET_BASEMAP } from '../../config/map.config';
+import store from '../../store';
+import CountryOrRegionAnalysis from './CountryOrRegionAnalysis';
+import featureFlags from '../../../../../utils/general.utils';
+
+const { isGadm41Available } = featureFlags;
 
 const {
   gladAlertsID,
@@ -548,13 +551,23 @@ export default class AnalysisPanel extends Component {
               className={`analysis__body__subitem ${activeAnalysis === 'region' ? '' : 'hidden'}`}
             >
               <ModalLoader position="absolute" size={60} open={spinnerOn} />
-              <SelectAdmin
-                setAdmin={this.setAdmin}
-                analysisResults={analysisResults}
-                analyzeAdmin={analyzeAdmin}
-                adminSelections={adminSelections}
-                subscribeAdmin={this.subscribeAdmin}
-              />
+              {isGadm41Available ? (
+                <CountryOrRegionAnalysis
+                  setAdmin={this.setAdmin}
+                  analysisResults={analysisResults}
+                  analyzeAdmin={analyzeAdmin}
+                  adminSelections={adminSelections}
+                  subscribeAdmin={this.subscribeAdmin}
+                />
+              ) : (
+                <SelectAdmin
+                  setAdmin={this.setAdmin}
+                  analysisResults={analysisResults}
+                  analyzeAdmin={analyzeAdmin}
+                  adminSelections={adminSelections}
+                  subscribeAdmin={this.subscribeAdmin}
+                />
+              )}
             </div>
             <div
               className={`analysis__body__results ${

@@ -54,3 +54,5 @@ export * from './getListLocations';
 export * from './getSimplifiedListLocations';
 export * from './copyLocationAnalysis';
 export * from './getFilterOptionsForUserLists';
+export * from './addListToAnalyses';
+export * from './createListTable';

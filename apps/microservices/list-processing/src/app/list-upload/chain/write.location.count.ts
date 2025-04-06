@@ -15,9 +15,7 @@ export class WriteLocationCount extends AbstractHandler<ChainType> {
 
     // Calculate the number of valid features
     const listSize =
-      request.geojson.features?.filter(
-        (feature) => !feature?.properties?.errorDetails && feature?.properties?.gadmid
-      ).length || 0;
+      request.geojson.features?.filter((feature) => feature?.properties?.gadmid).length || 0;
 
     let connection;
 

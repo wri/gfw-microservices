@@ -1,19 +1,11 @@
 import { Logger } from '@nestjs/common';
-import { listStatus } from '@wri-monorepos/constants';
 import {
-  getAnalysisTypesFromIds,
+  handleCreateAnalysis,
   PerformCopyAnalysis,
   PerformLocationsBulkCopy,
   UnlockLists,
 } from '@wri-monorepos/geo';
-import { checkProcessingLimits } from '@wri-monorepos/shared';
-import {
-  requestAnalysisProcess,
-  UnlockListAndSaveAsDraft,
-  updateListsAnalysisStatus,
-  UspSetListLocked,
-} from '@wri-monorepos/sql';
-import { ProcessingLimitException } from '../../app.exceptions';
+import { UnlockListAndSaveAsDraft, UspSetListLocked } from '@wri-monorepos/sql';
 
 const logger = new Logger(`handleExistingListUpdate`);
 
@@ -88,32 +80,19 @@ const handleProcessingLimits = async ({
   userId,
   analysisIds,
 }) => {
-  const { isListLocationOverLimit, processingLimit } = await checkProcessingLimits({
-    organizationDb: clientDatabase,
-    organizationId,
-    subscriptionStatusId,
+  const analysisTypesToProcess = analysisIds.join(',');
+  const result = await handleCreateAnalysis(
+    analysisTypesToProcess,
     listId,
-  });
+    organizationId,
+    clientDatabase,
+    false,
+    userId,
+    subscriptionStatusId,
+    false
+  );
 
-  if (isListLocationOverLimit) {
-    await updateListsAnalysisStatus(clientDatabase, {
-      listId,
-      errorInfo: 'Exceeded Analysis Limit',
-      status: listStatus.Inactive,
-    });
-    throw new ProcessingLimitException();
+  if (result !== 'OK' && result !== 'Created') {
+    throw new Error(`Failed to start analysis: ${result}`);
   }
-  const analysis_types = getAnalysisTypesFromIds(analysisIds);
-  const postData = {
-    list_id: listId,
-    user_id: userId,
-    organization_id: organizationId,
-    reanalyze: false,
-    processing_limit: processingLimit,
-    analysis_types,
-  };
-  const analysisUrl = process.env.AWS_ANALYSIS_LAMBDA_URL;
-  const analysisRequestResponse = await requestAnalysisProcess(analysisUrl, postData);
-  const jsonResponse = await analysisRequestResponse.json();
-  logger.log(`Analysis request response: ${JSON.stringify(jsonResponse)}`);
 };

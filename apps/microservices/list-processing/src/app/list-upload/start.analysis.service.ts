@@ -10,7 +10,7 @@ import { GADMService } from './chain/gadm.service';
 import { InsertLocationData } from './chain/insert.location.data';
 import { ValidateLatLongGeojson } from './chain/validate.lat.long.geojson';
 import { StartAnalysis } from './chain/start.analysis';
-import { SQLUtils } from '@wri-monorepos/sql';
+import { SQLUtils, upgradeListSchema } from '@wri-monorepos/sql';
 import { logExecutionTime } from './chain/shared';
 import { WriteLocationCount } from './chain/write.location.count';
 import { SaveListAttributes } from './chain/save.list.attributes';
@@ -111,7 +111,12 @@ export class StartAnalysisService {
 
   @logExecutionTime(StartAnalysisService.name)
   async run(request: RequestLargeListProcess): Promise<ResponseLargeListProcess> {
-    const { list_id: listId, commodity, organization_database: clientDatabase } = request;
+    const {
+      list_id: listId,
+      commodity,
+      organization_database: clientDatabase,
+      user_id: userId,
+    } = request;
     if (listId) {
       const listExistAtClientStore = await checkIfListExistAndCommodityIsTheSame(
         listId,
@@ -125,6 +130,13 @@ export class StartAnalysisService {
         this.logger.log(`List ${listId} found at client store`);
       }
     }
+
+    // Upgrade the list schema to the latest version
+    await upgradeListSchema({
+      clientDb: clientDatabase,
+      listId: listId,
+      userId: userId,
+    });
 
     const q: queue<WorkerType> = fastq(worker, 2);
 

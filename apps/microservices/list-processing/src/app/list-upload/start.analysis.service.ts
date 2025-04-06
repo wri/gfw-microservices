@@ -128,15 +128,14 @@ export class StartAnalysisService {
         throw new Error(`List not found with id ${listId} at client store`);
       } else {
         this.logger.log(`List ${listId} found at client store`);
+        // Upgrade the list schema to the latest version
+        await upgradeListSchema({
+          clientDb: clientDatabase,
+          listId: listId,
+          userId: userId,
+        });
       }
     }
-
-    // Upgrade the list schema to the latest version
-    await upgradeListSchema({
-      clientDb: clientDatabase,
-      listId: listId,
-      userId: userId,
-    });
 
     const q: queue<WorkerType> = fastq(worker, 2);
 

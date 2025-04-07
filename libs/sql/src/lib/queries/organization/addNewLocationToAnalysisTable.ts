@@ -16,30 +16,23 @@ SET @listTableName = (
     WHERE id = @list_id
 )
 
--- Insert New Rows into Analysis Table.
-DECLARE @TEMPLATE NVARCHAR(1000)
-DECLARE @SQL NVARCHAR(1000)
-SET @TEMPLATE = ''''
-    INSERT INTO [{ANALYSIS_TABLE}](location_id, location_status_id)
-        SELECT location_id, 1
-        FROM [{LIST_TABLE}]
-        WHERE location_id > {START_LOCATION_ID}
-''''
-SET @SQL = REPLACE(@TEMPLATE, ''''{ANALYSIS_TABLE}'''', @analyisTableName)
-SET @SQL = REPLACE(@SQL, ''''{LIST_TABLE}'''', @listTableName)
-SET @SQL = REPLACE(@SQL, ''''{START_LOCATION_ID}'''', @start_location_id)
+DECLARE @SQL NVARCHAR(MAX)
+SET @SQL = 
+    'INSERT INTO [' + @analyisTableName + '](location_id, location_status_id)
+     SELECT location_id, 1
+     FROM [' + @listTableName + ']
+     WHERE location_id > ' + CAST(@start_location_id AS NVARCHAR)
 EXEC sp_executesql @SQL
 
-DECLARE @TEMPLATE2 NVARCHAR(1000)
-DECLARE @SQL2 NVARCHAR(1000)
-
-SET @TEMPLATE2 = ''''
-    SELECT location_id, Geometry.ToString() as WKTGeometry
-    FROM [{LIST_TABLE}]
-    WHERE location_id > {START_LOCATION_ID}
-''''
-
-SET @SQL2 = REPLACE(@TEMPLATE2, ''''{LIST_TABLE}'''', @listTableName)
-SET @SQL2 = REPLACE(@SQL2, ''''{START_LOCATION_ID}'''', @start_location_id)
+DECLARE @SQL2 NVARCHAR(MAX)
+SET @SQL2 = 
+    'SELECT location_id, Geometry.ToString() as WKTGeometry
+     FROM [' + @listTableName + ']
+     WHERE location_id > ' + CAST(@start_location_id AS NVARCHAR)
 EXEC sp_executesql @SQL2
 `;
+
+export interface newLocation {
+  location_id: number;
+  WKTGeometry: string;
+}

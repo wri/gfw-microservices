@@ -9,7 +9,5 @@ SET datetime = @datetime
 WHERE
     admin_id = @admin_id AND
     user_id = @user_id AND
-    list_id = @list_id'')'
-SET @SQL = REPLACE(@TEMPLATE, '{DATABASENAME}', @OrgdbName)
-EXEC sp_executesql @SQL
+    list_id = @list_id
 `;

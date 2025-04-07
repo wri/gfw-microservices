@@ -13,11 +13,6 @@ DECLARE @locationColumn NVARCHAR(100)
 
 SELECT @list_table = list_table_name , @listName = list_Name FROM [Lists] WHERE id = @listId
 
-IF COL_LENGTH('dbo.' + @list_table, 'Location Name') IS NOT NULL
-BEGIN
-    SET @locationColumn = 'lt.[Location Name]'
-END
-
 SET @SQL = 'SELECT  ' +
 ' @listId as listId,' +
 ' @listName as listName,' +
@@ -28,7 +23,7 @@ SET @SQL = 'SELECT  ' +
 ' ghg.emissions_factor_by_year as emissionsFactorByYear, ' +
 ' ghg.ef_co2_by_year as efCo2ByYear, ' +
 ' ghg.ef_ch4_by_year as efCh4ByYear, ' +
-@locationColumn + ' as locationName,  '+ 
+' lt.[Location Name] as locationName,  '+ 
 ' ghg.ef_n2o_by_year as efN2oByYear ' +
 
 

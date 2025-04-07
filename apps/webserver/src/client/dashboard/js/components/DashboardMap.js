@@ -7,6 +7,8 @@ import Button from '../../../common/js/components/Button';
 import ZoomIcon from 'material-ui/svg-icons/action/zoom-out';
 import isEqual from 'lodash/isEqual';
 import InfoBubble from '../../../common/js/components/InfoBubble';
+import featureFlags from '../../../../utils/general.utils';
+import { getBasemapConfiguration } from '../../../map/js/utils/map.utils';
 
 // REDUX - Store
 import store from '../store';
@@ -97,21 +99,35 @@ export default class DashboardMap extends Component {
       ],
     });
 
-    const basemap = new Basemap({
-      baseLayers: [layer],
-      id: 'ADMIN-BASEMAP',
-      title: 'ADMIN-BASEMAP',
-    });
+    const { isGadm41Available } = featureFlags;
 
-    const map = new EsriMap({
-      basemap: basemap,
-    });
+    let map;
+    if (isGadm41Available) {
+      map = new EsriMap({
+        basemap: getBasemapConfiguration(),
+      });
+    } else {
+      const basemap = new Basemap({
+        baseLayers: [layer],
+        id: 'ADMIN-BASEMAP',
+        title: 'ADMIN-BASEMAP',
+      });
+
+      map = new EsriMap({
+        basemap,
+      });
+    }
 
     const view = new MapView({
       container: this.refs.dashboardMap,
-      map: map,
-      zoom: 10, // Sets zoom level based on level of detail (LOD)
-      center: [15, 30], // Sets center point of view using longitude,latitude
+      map,
+      background: isGadm41Available
+        ? {
+            color: '#b9defa',
+          }
+        : {},
+      zoom: isGadm41Available ? 1 : 10,
+      center: [15, 30],
       ui: {
         components: [],
       },

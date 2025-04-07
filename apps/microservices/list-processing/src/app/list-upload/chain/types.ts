@@ -11,7 +11,6 @@ export type AttributeType = {
 export type ChainType = {
   geojson?: FeatureCollection;
   request: RequestNewList | PreviewListRequest;
-  attributes?: ListAttributesRecord[];
 };
 
 export interface ListAttributesRecord {

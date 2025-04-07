@@ -4,6 +4,7 @@ import {
   Lists,
   getListsLocsColumnsToExclude,
   getFormattedAttributes,
+  saveListAttributes,
 } from '@wri-monorepos/sql';
 import { Logger } from '@nestjs/common';
 import { Feature } from '@wri-monorepos/geo';
@@ -50,6 +51,7 @@ export class ProcessUploadData extends AbstractHandler<ChainType> {
     commodity: string,
     request: ChainType
   ): Promise<Feature> {
+    const { list_id, organization_database: orgDb } = request.request as RequestNewList;
     if (!feature.properties) {
       return feature;
     }
@@ -58,6 +60,10 @@ export class ProcessUploadData extends AbstractHandler<ChainType> {
     const { properties } = feature;
 
     properties.attributes = this.getFeatureAttributes(feature);
+
+    const listAttributesRecords = this.getFeatPropAttrs(feature, list_id);
+    await saveListAttributes(orgDb, listAttributesRecords);
+
     const geometry = this.getFeatureGeometry(feature);
     properties.locationId = locationId;
     properties.commodity = commodity;
@@ -95,20 +101,14 @@ export class ProcessUploadData extends AbstractHandler<ChainType> {
     );
   }
 
-  getFeatPropAttrs(request: ChainType) {
-    if (!request.geojson.features[0]) {
-      return [];
-    }
-    const { list_id } = request.request as RequestNewList;
-    const validAttrs = this.getValidAttribtes(
-      Object.keys(request.geojson.features[0]?.properties ?? {})
-    );
+  getFeatPropAttrs(featurePayload: Feature, list_id) {
+    const validAttrs = this.getValidAttribtes(Object.keys(featurePayload?.properties ?? {}));
 
     return validAttrs.map((attributeField) =>
       getFormattedAttributes({
         listId: list_id,
         attributeField,
-        fieldValue: request.geojson.features[0]?.properties[attributeField] ?? '',
+        fieldValue: featurePayload?.properties[attributeField] ?? '',
       })
     );
   }
@@ -124,9 +124,7 @@ export class ProcessUploadData extends AbstractHandler<ChainType> {
     this.logger.log(`Processing features: ${prevFeatures.length}`);
 
     const commodity = await this.getListCommodity(organization_database, list_id);
-
     request.geojson.features = await this.getProcessedFeatures(prevFeatures, commodity, request);
-    request.attributes = this.getFeatPropAttrs(request);
 
     return request;
   }

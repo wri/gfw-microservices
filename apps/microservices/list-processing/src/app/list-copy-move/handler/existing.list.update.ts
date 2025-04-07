@@ -56,43 +56,25 @@ export const handleExistingListUpdate = async ({
   if (isSaveAsDraft) {
     await UnlockListAndSaveAsDraft(clientDatabase, moveToList.id, gfwListId);
   } else {
-    await handleProcessingLimits({
-      clientDatabase,
+    const analysisTypesToProcess = analysisIds.join(',');
+    const result = await handleCreateAnalysis(
+      analysisTypesToProcess,
+      moveToList.id,
       organizationId,
-      subscriptionStatusId,
-      listId: moveToList.id,
+      clientDatabase,
+      true,
       userId,
-      analysisIds,
-    });
+      subscriptionStatusId,
+      false
+    );
+
+    if (result !== 'OK' && result !== 'Created') {
+      throw new Error(`Failed to start analysis: ${result}`);
+    }
   }
 
   if (unlock.length > 0) {
     await UnlockLists(clientDatabase, unlock);
     logger.log(`Lists unlocked: ${unlock.join()}`, 'LocationsService');
-  }
-};
-
-const handleProcessingLimits = async ({
-  clientDatabase,
-  organizationId,
-  subscriptionStatusId,
-  listId,
-  userId,
-  analysisIds,
-}) => {
-  const analysisTypesToProcess = analysisIds.join(',');
-  const result = await handleCreateAnalysis(
-    analysisTypesToProcess,
-    listId,
-    organizationId,
-    clientDatabase,
-    false,
-    userId,
-    subscriptionStatusId,
-    false
-  );
-
-  if (result !== 'OK' && result !== 'Created') {
-    throw new Error(`Failed to start analysis: ${result}`);
   }
 };

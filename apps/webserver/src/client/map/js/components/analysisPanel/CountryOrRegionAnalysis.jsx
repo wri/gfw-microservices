@@ -1,11 +1,8 @@
 import React, { useState, useEffect } from 'react';
-import { executeQueryJSON } from '@arcgis/core/rest/query';
-import Query from '@arcgis/core/rest/support/Query';
 import { MenuItem, Select } from '@mui/material';
 import { updateAdminSelections } from '../../actions/mapActions';
 import * as analysisActions from '../../actions/analysisActions';
 import GfwButton from '../../../../common/js/components/GfwButton';
-import { getGadmService } from '../../../../common/js/utils/getGadmService.utils';
 import { getListOfCountries, getListOfStatesOrProvinces } from '../../../../api/map';
 import { ThemeProvider } from '../../../../styles/ThemeProvider';
 import store from '../../store';
@@ -21,7 +18,7 @@ const CountryOrRegionAnalysis = ({
   const [stateOrProvinceOptions, setStateOrProvinceOptions] = useState([]);
   const [filterStr, setFilterStr] = useState('');
   const [selectedCountry, setSelectedCountry] = useState(null);
-  const [selectedStateOrProvince, setSelectedStateOrProvince] = useState('');
+  const [selectedStateOrProvince, setSelectedStateOrProvince] = useState(null);
 
   useEffect(() => {
     getListOfCountries().then(({ countryOptions }) => {
@@ -41,7 +38,7 @@ const CountryOrRegionAnalysis = ({
     const selectedISO = evt.target.value;
     const country = countryOptions.find((c) => c.iso === selectedISO);
     setSelectedCountry(country);
-    setSelectedStateOrProvince('');
+    setSelectedStateOrProvince(null);
 
     const adminUpdate = {
       country: country.name_0,
@@ -56,7 +53,7 @@ const CountryOrRegionAnalysis = ({
   const handleSetStateOrProvince = (evt) => {
     const gid = evt.target.value;
     const province = stateOrProvinceOptions.find((p) => p.gid_1 === gid);
-    setSelectedStateOrProvince(gid);
+    setSelectedStateOrProvince(province);
 
     store.dispatch(
       updateAdminSelections({
@@ -72,7 +69,7 @@ const CountryOrRegionAnalysis = ({
 
   const handleAnalyzeAdmin = () => {
     const region = selectedStateOrProvince
-      ? stateOrProvinceOptions.findIndex((c) => c.gid_1 === selectedStateOrProvince) + 1
+      ? stateOrProvinceOptions.findIndex((c) => c.gid_1 === selectedStateOrProvince?.gid_1) + 1
       : '';
     analyzeAdmin({
       country: selectedCountry.iso,
@@ -87,35 +84,12 @@ const CountryOrRegionAnalysis = ({
   };
 
   const handleSubscribeAdmin = () => {
-    // TODO: update to GADM 4.1
-    const adminServiceURL = getGadmService();
-
-    const queryUrl = adminServiceURL;
-
-    const query = new Query();
-    query.where =
-      adminSelections.stateOrProvince.length !== 0
-        ? `name_0 = '${adminSelections.country}' AND name_1 = '${adminSelections.stateOrProvince}'`
-        : `name_0 = '${adminSelections.country}'`;
-
-    query.returnGeometry = false;
-    query.outFields = ['gadmid']; // ['name_0', 'name_1', 'name_2', 'gadmid'];// 'gadmid'
-
-    executeQueryJSON(queryUrl, query).then((res) => {
-      let gadmId =
-        res && res.features && res.features.length > 0 ? res.features[0].attributes.gadmid : '';
-      if (gadmId !== '') {
-        const gadmLevels = gadmId.split('.');
-        gadmId =
-          adminSelections.stateOrProvince === ''
-            ? gadmLevels[0]
-            : `${gadmLevels[0]}.${gadmLevels[1]}`;
-      }
-      subscribeAdmin({
-        country: adminSelections.country,
-        region: adminSelections.stateOrProvince,
-        gadmId,
-      });
+    // the endpoint /locations/getGFWListLocationsGlobalId expects the gadm id until the underscore
+    const baseGadmId = selectedStateOrProvince?.gid_1.split('_')[0];
+    subscribeAdmin({
+      country: selectedCountry?.name_0,
+      region: selectedStateOrProvince?.name_1,
+      gadmId: baseGadmId,
     });
   };
 
@@ -164,7 +138,7 @@ const CountryOrRegionAnalysis = ({
               <div className="select-administrative-region__smaller-region-dropdown dropdown-group">
                 <Select
                   sx={{ width: 200 }}
-                  value={selectedStateOrProvince}
+                  value={selectedStateOrProvince?.gid_1 || ''}
                   onChange={handleSetStateOrProvince}
                   displayEmpty
                   renderValue={(selected) =>

@@ -1,5 +1,14 @@
-import { ClientStoreConnection, GHGAnalyses, Lists } from '@wri-monorepos/sql';
+import {
+  ClientStoreConnection,
+  getPaginatedGHGAnalysisLocationLevel,
+  GHGAnalyses,
+  GHGAnalysisDataByListId,
+  Lists,
+  SQLUtils,
+} from '@wri-monorepos/sql';
 import { Injectable, Logger } from '@nestjs/common';
+import * as sql from 'mssql';
+
 interface GHGAnalysisData {
   listId: number;
   listName: string;
@@ -55,22 +64,21 @@ export class GHGService {
     const connection = await this.clientStoreConnection.getConnection(clientDatabase);
     try {
       const ListRepository = await connection.getRepository(Lists);
-      const { listName, Commodity, listTableName } = await ListRepository.findOne({
+      const { listName, Commodity } = await ListRepository.findOne({
         where: { id: listId },
       });
 
-      const offset = pageNumber * rowsPerPage;
+      const parameters = [
+        { field: 'listId', type: sql.Int, value: listId },
+        { field: 'rowsOfPage', type: sql.Int, value: rowsPerPage },
+        { field: 'pageNumber', type: sql.Int, value: pageNumber },
+      ];
 
-      const sql = `
-          SELECT ghg.list_id as listId, ghg.location_id as locationId, ghg.total_area_ha as totalAreaHa, ghg.status_code as statusCode, ghg.location_error as locationError, ghg.emissions_factor_by_year as emissionsFactorByYear, ghg.ef_co2_by_year as efCo2ByYear, ghg.ef_ch4_by_year as efCh4ByYear, ghg.ef_n2o_by_year as efN2oByYear, o.[Location Name] AS locationName 
-          FROM GHGAnalyses ghg 
-          INNER JOIN [${listTableName}] o ON ghg.location_id = o.location_id
-          WHERE ghg.list_id = ${listId}
-          ORDER BY ghg.location_id
-          OFFSET ${offset} ROWS
-          FETCH NEXT ${rowsPerPage} ROWS ONLY;
-        `;
-      const data = await connection.query(sql);
+      const data = await SQLUtils.queryDB<GHGAnalysisDataByListId[]>(
+        clientDatabase,
+        getPaginatedGHGAnalysisLocationLevel,
+        parameters
+      );
 
       return data.map((item) => {
         const {

@@ -1,4 +1,4 @@
-import { ClientStoreConnection, GHGAnalyses, Lists } from '@wri-monorepos/sql';
+import { ClientStoreConnection, GHGAnalyses, Lists, SQLUtils } from '@wri-monorepos/sql';
 import { GHGService } from './ghg.service';
 import { Test, TestingModule } from '@nestjs/testing';
 import { DataSource } from 'typeorm';
@@ -108,34 +108,6 @@ describe('GHG - service', () => {
     ];
     const listId = 1;
     clientStoreConnection.getConnection = jest.fn().mockResolvedValue({
-      query: jest.fn().mockResolvedValue([
-        {
-          efCh4ByYear: '{}',
-          efCo2ByYear: '{}',
-          emissionsFactorByYear: '{"2021":0.5839,"2022":0.1825,"2023":0.3258}',
-          Commodity: 'COCOA',
-          listId: 1,
-          listName: 'mockedListName',
-          locationError: null,
-          locationName: 'brazil2',
-          efN2oByYear: '{}',
-          statusCode: 2,
-          totalAreaHa: 1.2921,
-        },
-        {
-          efCh4ByYear: '{}',
-          efCo2ByYear: '{}',
-          emissionsFactorByYear: '{"2021":0.5839,"2022":0.1825,"2023":0.4258}',
-          Commodity: 'COCOA',
-          listId: 1,
-          listName: 'mockedListName',
-          locationError: null,
-          locationName: 'arg3 landmark',
-          efN2oByYear: '{}',
-          statusCode: 2,
-          totalAreaHa: 1.1921,
-        },
-      ]),
       getRepository: () => ({
         findAndCount: () => [mockData, mockData.length],
         findOne: () => ({ listName: 'mockedListName', Commodity: 'COCOA' }),
@@ -145,6 +117,34 @@ describe('GHG - service', () => {
       },
     });
 
+    jest.spyOn(SQLUtils, 'queryDB').mockResolvedValueOnce([
+      {
+        efCh4ByYear: '{}',
+        efCo2ByYear: '{}',
+        emissionsFactorByYear: '{"2021":0.5839,"2022":0.1825,"2023":0.3258}',
+        Commodity: 'COCOA',
+        listId: 1,
+        listName: 'mockedListName',
+        locationError: null,
+        locationName: 'brazil2',
+        efN2oByYear: '{}',
+        statusCode: 2,
+        totalAreaHa: 1.2921,
+      },
+      {
+        efCh4ByYear: '{}',
+        efCo2ByYear: '{}',
+        emissionsFactorByYear: '{"2021":0.5839,"2022":0.1825,"2023":0.4258}',
+        Commodity: 'COCOA',
+        listId: 1,
+        listName: 'mockedListName',
+        locationError: null,
+        locationName: 'arg3 landmark',
+        efN2oByYear: '{}',
+        statusCode: 2,
+        totalAreaHa: 1.1921,
+      },
+    ]);
     const response = await ghgService.getGHGDataPerPage(listId, {
       clientDatabase: 'mockDatabase',
       rowsPerPage: 2,

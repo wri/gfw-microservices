@@ -58,3 +58,4 @@ export * from './getTableColumns';
 export * from './getLocationsFilteredToCopy';
 export * from './addListToAnalyses';
 export * from './createListTable';
+export * from './addNewLocationToAnalysisTable';

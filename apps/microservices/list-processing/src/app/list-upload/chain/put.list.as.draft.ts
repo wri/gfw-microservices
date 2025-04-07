@@ -1,6 +1,6 @@
 import { Logger } from '@nestjs/common';
 import { AbstractHandler, ChainType, RequestNewList } from './types';
-import { ClientStoreConnection, Lists, ListsAnalysisStatus } from '@wri-monorepos/sql';
+import { ClientStoreConnection, ListsAnalysisStatus, UspResetListStatus } from '@wri-monorepos/sql';
 import { listStatus } from '@wri-monorepos/constants';
 import { In } from 'typeorm';
 import { getUserEmail } from '../shared/user.utils';
@@ -66,11 +66,9 @@ export class PutListAsDraft extends AbstractHandler<ChainType> {
     return input;
   }
 
-  async putListAsDraft(organizationDatabase, list_id) {
+  async putListAsDraft(organizationDatabase, list_id, gfwListId = undefined) {
     this.logger.log(`Putting list ${list_id} status as draft`);
-    const connection = await new ClientStoreConnection().getConnection(organizationDatabase);
-    const listRepository = connection.getRepository(Lists);
-    await listRepository.update({ id: list_id }, { listStatusId: listStatus.Draft });
+    return new UspResetListStatus().run(organizationDatabase, list_id, listStatus.Draft, gfwListId);
   }
 
   async setListAnalysisStatusAsDraft(

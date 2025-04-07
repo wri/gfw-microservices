@@ -56,6 +56,6 @@ export const handleSourceListDeletion = async ({
       filters.analysisAreaMax,
       filters.searchString
     );
-    await putListAsDraft.putListAsDraft(clientDatabase, selectedListId);
+    await putListAsDraft.putListAsDraft(clientDatabase, selectedListId, gfwListId);
   }
 };

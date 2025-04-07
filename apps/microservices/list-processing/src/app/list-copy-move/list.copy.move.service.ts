@@ -82,7 +82,7 @@ export class ListCopyMoveService {
         this.logger.log(
           `Changing source list (${selectedListId}) status to draft because locations will be moved`
         );
-        await putListAsDraft.putListAsDraft(clientDatabase, selectedListId);
+        await putListAsDraft.putListAsDraft(clientDatabase, selectedListId, gfwListId);
       }
 
       // Getting the existing data for the source list

@@ -1,4 +1,6 @@
 import _isEmpty from 'lodash/isEmpty';
+import VectorTileLayer from '@arcgis/core/layers/VectorTileLayer';
+import Basemap from '@arcgis/core/Basemap';
 
 // Utils
 import {
@@ -41,3 +43,75 @@ export async function getLocationGeometry(props, mapView, selectedList) {
 
   return geometry;
 }
+
+export const getBasemapConfiguration = () => {
+  const undisputedBoundariesStyle = {
+    version: 8,
+    sources: {
+      gadm_administrative_boundaries_undisputed: {
+        type: 'vector',
+        tiles: [
+          'https://tiles.globalforestwatch.org/gadm_administrative_boundaries_undisputed/v4.1.65/default/{z}/{x}/{y}.pbf',
+        ],
+        tileSize: 512,
+      },
+    },
+    layers: [
+      {
+        id: 'gadm_fill',
+        type: 'fill',
+        source: 'gadm_administrative_boundaries_undisputed',
+        'source-layer': 'gadm_administrative_boundaries_undisputed',
+        paint: {
+          'fill-color': 'white',
+          'fill-outline-color': 'gray',
+        },
+      },
+    ],
+  };
+
+  const undisputedBoundariesLayer = new VectorTileLayer({
+    style: undisputedBoundariesStyle,
+    visible: true,
+  });
+
+  const disputedBoundariesStyle = {
+    version: 8,
+    sources: {
+      gadm_administrative_boundaries_disputed: {
+        type: 'vector',
+        tiles: [
+          'https://tiles.globalforestwatch.org/gadm_administrative_boundaries_disputed/v4.1.65/default/{z}/{x}/{y}.pbf',
+        ],
+        tileSize: 512,
+      },
+    },
+    layers: [
+      {
+        id: 'gadm_fill',
+        type: 'fill',
+        source: 'gadm_administrative_boundaries_disputed',
+        'source-layer': 'gadm_administrative_boundaries_disputed',
+        paint: {
+          'fill-color': 'white',
+          'fill-outline-color': 'gray',
+        },
+      },
+    ],
+  };
+
+  const disputedBoundariesLayer = new VectorTileLayer({
+    style: disputedBoundariesStyle,
+    visible: true,
+  });
+
+  const labelsLayer = new VectorTileLayer({
+    portalItem: { id: 'ba52238d338745b1a355407ec9df6768' }, // Light Gray Canvas Labels
+  });
+
+  const customBasemap = new Basemap({
+    referenceLayers: [labelsLayer],
+    baseLayers: [disputedBoundariesLayer, undisputedBoundariesLayer],
+  });
+  return customBasemap;
+};

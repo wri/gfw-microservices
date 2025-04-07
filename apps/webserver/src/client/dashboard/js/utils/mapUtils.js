@@ -24,6 +24,7 @@ import {
   getTimeframeProperty,
   TIMEFRAME_RANGE,
 } from './dashboard-date.utils';
+import featureFlags from '../../../../utils/general.utils';
 
 function initializeMap(view) {
   store.dispatch(saveView(view));
@@ -567,7 +568,10 @@ function updateLayer(
           map.remove(oldLayer);
         }
 
-        handleBaseLayer(map, zoomLevel);
+        const { isGadm41Available } = featureFlags;
+        if (!isGadm41Available) {
+          handleBaseLayer(map, zoomLevel);
+        }
 
         const graphics = createGraphics(features);
         const layer = createLayer(graphics);

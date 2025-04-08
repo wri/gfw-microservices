@@ -274,11 +274,11 @@ class Map extends Component {
       container: this.refs.mapView,
       center: mapviewCenter,
       zoom: zoom ? zoom - 1 : 3,
-      background: isGadm41Available
-        ? {
-            color: '#b9defa',
-          }
-        : {},
+      ...(isGadm41Available && {
+        background: {
+          color: '#b9defa',
+        },
+      }),
       map: esriMap,
       ui: {
         components: ['attribution'],

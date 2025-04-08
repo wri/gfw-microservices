@@ -3,6 +3,7 @@
  * 1 - Write list-xxx.attributes based on other list-xxx columns
  * 2 - Write Lists.Commodity based on Lists.template_id for given list_id
  * 3 - Update Lists.version=2 for given list_id
+ * 4 - Handle ListsAnalysisStatus.options based on template_id+locationClassification
  * –––––––––––––––––––––––––––––––––––––––
  * @notes for the [Commodity] column values:
  * — Multiple is not supported in v1, lists with templates using investment will use GFWP_Miltiple
@@ -23,7 +24,7 @@ import { Logger } from '@nestjs/common';
 import { ClientStoreConnection, SQLUtils } from '../util';
 import { UspSetListUnlocked } from './uspSetListUnlocked';
 import { UspSetListLocked } from './uspSetListLocked';
-import { Lists } from '../entity';
+import { Lists, ListsAnalysisStatus } from '../entity';
 import {
   getCommodityCodeFromTemplate,
   getFormattedAttributes,
@@ -139,6 +140,26 @@ export async function upgradeListSchema(args: SchemaUpgraderArgs) {
         version: LIST_VERSION_POST_UPGRADE,
       }
     );
+
+    /**
+     * @step 4
+     * Handle ListsAnalysisStatus.options given template_id and locationClassification
+     * see {@link https://gfw.atlassian.net/browse/GPV-4274}
+     */
+    const lowerLocationClass = list.locationClassification.toLowerCase();
+    if (list.templateId === 2 || (list.templateId === 5 && lowerLocationClass === 'supply shed')) {
+      logger.log(`Handling ListsAnalysisStatus.options for list.`);
+      const listAnalisisStatusRepo = connection.getRepository(ListsAnalysisStatus);
+      await listAnalisisStatusRepo.update(
+        {
+          listId: list.id,
+          analysisId: 'FCD',
+        },
+        {
+          options: 'PalmRisk',
+        }
+      );
+    }
 
     return await listsRepository.findOne({
       where: { id: listId },

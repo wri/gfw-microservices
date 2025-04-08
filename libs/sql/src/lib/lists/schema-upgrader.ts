@@ -146,7 +146,7 @@ export async function upgradeListSchema(args: SchemaUpgraderArgs) {
      * Handle ListsAnalysisStatus.options given template_id and locationClassification
      * see {@link https://gfw.atlassian.net/browse/GPV-4274}
      */
-    const lowerLocationClass = list.locationClassification.toLowerCase();
+    const lowerLocationClass = list.locationClassification?.toLowerCase();
     if (list.templateId === 2 || (list.templateId === 5 && lowerLocationClass === 'supply shed')) {
       logger.log(`Handling ListsAnalysisStatus.options for list.`);
       const listAnalisisStatusRepo = connection.getRepository(ListsAnalysisStatus);

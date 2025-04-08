@@ -22,12 +22,12 @@ export class ProcessUploadData extends AbstractHandler<ChainType> {
     this.columnsToExclude = getListsLocsColumnsToExclude();
   }
 
-  getValidAttribtes(properties: string[]): string[] {
+  getValidAttributes(properties: string[]): string[] {
     return properties.filter((col) => !['', ...this.columnsToExclude].includes(col));
   }
 
   getFeatureAttributes(featurePayload: Feature): string {
-    const validAttrs = this.getValidAttribtes(Object.keys(featurePayload.properties || {}));
+    const validAttrs = this.getValidAttributes(Object.keys(featurePayload.properties || {}));
 
     this.logger.log(`Processing list-xxx.attributes. Excluding Columns: ${this.columnsToExclude}`);
 
@@ -102,7 +102,7 @@ export class ProcessUploadData extends AbstractHandler<ChainType> {
   }
 
   getFeatPropAttrs(featurePayload: Feature, list_id) {
-    const validAttrs = this.getValidAttribtes(Object.keys(featurePayload?.properties ?? {}));
+    const validAttrs = this.getValidAttributes(Object.keys(featurePayload?.properties ?? {}));
 
     return validAttrs.map((attributeField) =>
       getFormattedAttributes({

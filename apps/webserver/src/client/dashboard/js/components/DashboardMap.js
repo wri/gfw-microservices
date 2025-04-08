@@ -121,11 +121,11 @@ export default class DashboardMap extends Component {
     const view = new MapView({
       container: this.refs.dashboardMap,
       map,
-      background: isGadm41Available
-        ? {
-            color: '#b9defa',
-          }
-        : {},
+      ...(isGadm41Available && {
+        background: {
+          color: '#b9defa',
+        },
+      }),
       zoom: isGadm41Available ? 1 : 10,
       center: [15, 30],
       ui: {

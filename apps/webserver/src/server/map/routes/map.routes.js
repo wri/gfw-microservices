@@ -152,7 +152,7 @@ module.exports = (app, limiter) => {
         {
           method: 'POST',
           headers: {
-            'x-api-key': process.env.GADM_ADMINISTRATIVE_BOUNDARIES_API_KEY,
+            'x-api-key': process.env.GFW_DATA_API_KEY,
             'Content-Type': 'application/json',
           },
           body: JSON.stringify({ sql }),

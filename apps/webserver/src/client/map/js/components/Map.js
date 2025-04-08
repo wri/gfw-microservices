@@ -731,9 +731,8 @@ class Map extends Component {
     };
 
     this.addProLayers(view);
-    if (!isGadm41Available) {
-      this.addCustomBasemaps(view);
-    }
+    this.addCustomBasemaps(view);
+
     this.view = view;
 
     this.goToOriginalPoint = () => {
@@ -2413,15 +2412,18 @@ class Map extends Component {
 
   changeBasemap = (id) => {
     mapPage.basemaps.forEach((basemap) => {
-      if (basemap.customUrl || basemap.customVectorUrl) {
+      const isCustom = basemap.customUrl || basemap.customVectorUrl;
+      const isTarget = basemap.id === id;
+
+      if (isCustom) {
         const bmLayer = this.view.map.findLayerById(basemap.id);
-        if (basemap.id === id) {
-          bmLayer.visible = true;
-          this.view.map.basemap = '';
-        } else {
-          bmLayer.visible = false;
+        if (bmLayer) {
+          bmLayer.visible = isTarget;
         }
-      } else if (basemap.id === id) {
+        if (isTarget) {
+          this.view.map.basemap = '';
+        }
+      } else if (isTarget) {
         this.view.map.basemap = id;
       }
     });

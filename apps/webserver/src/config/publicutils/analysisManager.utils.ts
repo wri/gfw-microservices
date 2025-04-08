@@ -375,7 +375,7 @@ export const getListAnalyses = (req, list_id) => {
  *   @param  {String}    list_name - Name of the list
  *   @param  {Object}    geojson - A geojson used for the analysis
  */
-export const requestAnalysis = async (req, list_name, geojson = {}) => {
+export const requestAnalysis = async (req, list_name, geojson: { type?: string } = {}) => {
   // Required to request analysis
   const organization_database = req.session.organization_database;
 
@@ -386,11 +386,7 @@ export const requestAnalysis = async (req, list_name, geojson = {}) => {
   if (typeof geojson === 'object' && Object.keys(geojson).length === 0) {
     // Perform a list analysis
     analysisUtils.analyzeList(req, list);
-  } else if (
-    typeof geojson === 'object' &&
-    geojson.hasOwnProperty('type') &&
-    geojson['type'] === 'FeatureCollection'
-  ) {
+  } else if (geojson?.type === 'FeatureCollection') {
     // Perform a location analysis
     analysisUtils.analyzeLocation(req, organization_database, list, geojson);
   } else {
@@ -486,6 +482,7 @@ export async function getDraftListLocationData(list_id, page, pageSize, clientDa
     selectedSecondSupplier,
     selectedParentCompany,
     showRSPOCertified,
+    hasError,
   } = filters;
 
   const parameters = [
@@ -525,6 +522,11 @@ export async function getDraftListLocationData(list_id, page, pageSize, clientDa
       field: 'SubState',
       type: sql.NVarChar(255),
       value: subState !== '' && subState ? subState : null,
+    },
+    {
+      field: 'hasError',
+      type: sql.Bit(),
+      value: hasError ? hasError : null,
     },
   ];
 

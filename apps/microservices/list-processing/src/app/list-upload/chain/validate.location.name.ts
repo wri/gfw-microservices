@@ -1,5 +1,5 @@
 import { Logger } from '@nestjs/common';
-import { AbstractHandler, ChainType, PreviewListRequest } from './types';
+import { AbstractHandler, ChainType } from './types';
 import { Feature } from '@wri-monorepos/geo';
 
 export class ValidateLocationName extends AbstractHandler<ChainType> {
@@ -16,18 +16,11 @@ export class ValidateLocationName extends AbstractHandler<ChainType> {
     return name.replace(/\n/g, '').trim();
   }
 
-  public validateAndFormatLocationName(location: Feature, preview: boolean): void {
+  public validateAndFormatLocationName(location: Feature): void {
     const originalName = (location.properties.locationName as string) || '';
     const formattedName = this.formatLocationName(originalName);
 
     if (!this.isValidLocationName(formattedName)) {
-      location.properties.errorDetails = location.properties.errorDetails || [];
-      if (!location.properties.errorDetails) {
-        location.properties.errorDetails = [];
-      }
-      if (!preview) {
-        (location.properties.errorDetails as Array<string>).push('Invalid location name');
-      }
       // Remove offending characters (non-alphanumeric and non-space)
       location.properties.locationName = formattedName.replace(/[^a-zA-Z0-9\s]/g, '');
     } else {
@@ -37,14 +30,13 @@ export class ValidateLocationName extends AbstractHandler<ChainType> {
 
   async handle(input: ChainType): Promise<ChainType> {
     const { geojson } = input;
-    const { preview = false } = input.request as PreviewListRequest;
 
     if (!Array.isArray(geojson.features)) {
       throw new Error('Invalid input format: locations should be an array');
     }
 
     for (const feature of geojson.features) {
-      this.validateAndFormatLocationName(feature, preview);
+      this.validateAndFormatLocationName(feature);
     }
 
     return input;

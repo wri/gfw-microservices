@@ -28,42 +28,46 @@ const CountryOrRegionAnalysis = ({
 
   useEffect(() => {
     if (adminSelections.country) {
-      getListOfStatesOrProvinces(adminSelections.countryISO).then(({ stateOrProvinceOptions }) => {
+      getListOfStatesOrProvinces(adminSelections.gadmId).then(({ stateOrProvinceOptions }) => {
         setStateOrProvinceOptions(stateOrProvinceOptions);
       });
     }
   }, [adminSelections.country]);
 
   const handleSetCountry = (evt) => {
-    const selectedISO = evt.target.value;
-    const country = countryOptions.find((c) => c.iso === selectedISO);
+    const selectedGadmId = evt.target.value;
+    const country = countryOptions.find((c) => c.gid_0 === selectedGadmId);
+
     setSelectedCountry(country);
     setSelectedStateOrProvince(null);
 
     const adminUpdate = {
       country: country.name_0,
-      countryISO: country.iso,
+      gadmId: country.gid_0,
       stateOrProvince: '',
     };
 
     store.dispatch(updateAdminSelections(adminUpdate));
-    setAdmin(adminUpdate);
+    setAdmin(country.name_0);
   };
 
   const handleSetStateOrProvince = (evt) => {
     const gid = evt.target.value;
-    const province = stateOrProvinceOptions.find((p) => p.gid_1 === gid);
-    setSelectedStateOrProvince(province);
+    const stateOrProvince = stateOrProvinceOptions.find((p) => p.gid_1 === gid);
+    setSelectedStateOrProvince(stateOrProvince);
+
+    const baseGadmId = stateOrProvince?.gid_1.split('_')[0];
 
     store.dispatch(
       updateAdminSelections({
         country: selectedCountry.name_0,
-        stateOrProvince: province.name_1,
+        stateOrProvince: stateOrProvince.name_1,
+        gadmId: baseGadmId,
       })
     );
 
     setAdmin({
-      stateOrProvince: province.name_1,
+      stateOrProvince: stateOrProvince.name_1,
     });
   };
 
@@ -72,12 +76,12 @@ const CountryOrRegionAnalysis = ({
       ? stateOrProvinceOptions.findIndex((c) => c.gid_1 === selectedStateOrProvince?.gid_1) + 1
       : '';
     analyzeAdmin({
-      country: selectedCountry.iso,
+      country: selectedCountry.gid_0,
       region,
     });
     store.dispatch(
       analysisActions.setAnalysisAdminArea({
-        country: selectedCountry.iso,
+        country: selectedCountry.gid_0,
         region,
       })
     );
@@ -104,18 +108,20 @@ const CountryOrRegionAnalysis = ({
           <div className="select-administrative-region__country-dropdown dropdown-group">
             <Select
               sx={{ width: 200 }}
-              value={selectedCountry?.iso || ''}
+              value={selectedCountry?.gid_0 || ''}
               onChange={handleSetCountry}
               displayEmpty
               renderValue={(selected) =>
-                selected ? countryOptions.find((c) => c.iso === selected)?.name_0 : 'SELECT COUNTRY'
+                selected
+                  ? countryOptions.find((c) => c.gid_0 === selected)?.name_0
+                  : 'SELECT COUNTRY'
               }
             >
               <MenuItem value="" disabled>
                 SELECT COUNTRY
               </MenuItem>
-              {countryOptions.map(({ iso, name_0 }) => (
-                <MenuItem key={iso} value={iso}>
+              {countryOptions.map(({ gid_0, name_0 }) => (
+                <MenuItem key={gid_0} value={gid_0}>
                   {name_0}
                 </MenuItem>
               ))}

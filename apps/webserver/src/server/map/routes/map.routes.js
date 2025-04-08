@@ -142,7 +142,7 @@ module.exports = (app, limiter) => {
       if (countryCode && isValidISO) {
         sql = `SELECT name_1, gid_1 FROM data WHERE adm_level='1' AND gid_0='${countryCode}' ORDER BY name_1`;
       } else if (!countryCode) {
-        sql = `SELECT name_0, gid_0 as iso FROM data WHERE adm_level='0' AND name_0 IS NOT NULL ORDER BY name_0`;
+        sql = `SELECT name_0, gid_0 FROM data WHERE adm_level='0' AND name_0 IS NOT NULL ORDER BY name_0`;
       } else {
         return res.status(400).json({ error: 'Invalid country code format' });
       }

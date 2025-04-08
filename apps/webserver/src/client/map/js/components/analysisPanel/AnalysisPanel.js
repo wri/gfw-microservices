@@ -247,10 +247,6 @@ export default class AnalysisPanel extends Component {
     this.props.setGeometry();
   };
 
-  toggleShare = () => {
-    console.log('clicked');
-  };
-
   openDownload = () => {
     //Find the layer that we are running analysis on and open said layer's download link
     //In the case of tree cover loss and gain we may have two layers active so we always access the 0 index just to be on the safe side
@@ -313,11 +309,19 @@ export default class AnalysisPanel extends Component {
       });
     });
   };
+  addNewLocation = () => {
+    const { adminSelections } = this.props;
 
-  setAdmin = (adminState) => {
-    //TODO: We need a globalId somehow!
-    this.setState(adminState);
-    const name = adminState.smallerRegion ? adminState.smallerRegion : adminState.country;
+    const { country, stateOrProvince, gadmId } = adminSelections;
+
+    this.subscribeAdmin({
+      country: country,
+      region: stateOrProvince,
+      gadmId: gadmId,
+    });
+  };
+
+  setAdmin = (name) => {
     this.props.setLocationName(name);
   };
 
@@ -443,10 +447,19 @@ export default class AnalysisPanel extends Component {
     }
 
     let totalCountLabel = '';
-    if (adminSelections && adminSelections.smallerRegion) {
-      totalCountLabel = `for ${adminSelections.smallerRegion}`;
-    } else if (adminSelections && adminSelections.country) {
-      totalCountLabel = `for ${adminSelections.country}`;
+
+    if (isGadm41Available) {
+      if (adminSelections?.stateOrProvince) {
+        totalCountLabel = `for ${adminSelections.stateOrProvince}`;
+      } else if (adminSelections?.country) {
+        totalCountLabel = `for ${adminSelections.country}`;
+      }
+    } else {
+      if (adminSelections && adminSelections.smallerRegion) {
+        totalCountLabel = `for ${adminSelections.smallerRegion}`;
+      } else if (adminSelections && adminSelections.country) {
+        totalCountLabel = `for ${adminSelections.country}`;
+      }
     }
 
     //TODO: Make sure that when our 'analysis__body__results' is hidden, the whole panel doesn't constrict and get small, we still need to see our cancel button!
@@ -618,13 +631,12 @@ export default class AnalysisPanel extends Component {
                 <GfwButton
                   classNames="AnalysisPanel__button btn-green text__semi-bold-12"
                   value="Add New Location"
-                  onClick={() => this.discernGadm()}
+                  onClick={() => (isGadm41Available ? this.addNewLocation() : this.discernGadm())}
                 />
               </div>
               <div className="analysis-panel-button-wrap">
                 <FlatButton
                   onClick={this.openDownload}
-                  id="downloadDataFooter"
                   className="analysis__nav__item analysis-footer-click"
                   icon={
                     <span>
@@ -640,22 +652,7 @@ export default class AnalysisPanel extends Component {
                   }
                 />
                 <FlatButton
-                  onClick={this.toggleShare}
-                  id="shareFooter"
-                  className="analysis__nav__item-share analysis-footer-click analysis-footer-click-share"
-                  icon={
-                    <span>
-                      <span
-                        className="module-tabs footer-tabs pointer"
-                        id="share-footer-icon"
-                      ></span>
-                      <span className="analysis-footer-label share-label"></span>
-                    </span>
-                  }
-                />
-                <FlatButton
                   onClick={this.discardAnalysis}
-                  id="discardAnalysisFooter"
                   className="analysis__nav__item analysis-footer-click"
                   icon={
                     <span>

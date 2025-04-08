@@ -414,25 +414,13 @@ $lightGray: rgba(158, 158, 158, 0.3);
   height: 36px;
 }
 
-.analysis-footer-click-share {
-  padding-top: 8px !important;
-  height: 100% !important;
-}
-
 .analysis-footer-label {
   text-transform: uppercase;
   font-size: 9px;
+  width: 100%;
   position: absolute;
   top: 10px;
-  &.download-data-label {
-    left: 15px;
-  }
-  &.share-label {
-    left: 40px;
-  }
-  &.discard-label {
-    left: 10px;
-  }
+  left: 0px;
 }
 
 .locations-upload-multiple {

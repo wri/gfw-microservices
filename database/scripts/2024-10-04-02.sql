@@ -13,6 +13,7 @@ FETCH NEXT FROM TableCursor INTO @TableName;
 
 WHILE @@FETCH_STATUS = 0
 BEGIN
+    SET @TableName = QUOTENAME(@TableName)
     -- Check if the column 'attributes' exists
     IF NOT EXISTS (
         SELECT 1 
@@ -22,7 +23,7 @@ BEGIN
     )
     BEGIN
         -- Build SQL to add 'attributes' column
-        SET @SQL = 'ALTER TABLE ' + QUOTENAME(@TableName) + ' ADD attributes NVARCHAR(MAX);';
+        SET @SQL = 'ALTER TABLE ' + @TableName + ' ADD attributes NVARCHAR(MAX);';
         PRINT 'Adding attributes column to ' + @TableName;
         EXEC sp_executesql @SQL;
     END

@@ -58,7 +58,7 @@ describe('GHGAnalysis', () => {
     'should create new list with uploaded input',
     async () => {
       const uploadId = prepareUploadRes.data.uploadId;
-      const listName = `e2e_automation_${new Date().toISOString()}`;
+      const listName = `e2e_automation_${new Date().toISOString().replace(/\./g, '')}`;
       uploadNewRes = await postRedirectHeaders(
         `${BASE_URL}/api/v1/list/upload_new`,
         {
@@ -158,14 +158,14 @@ describe('GHGAnalysis', () => {
     'should create new list with GHG Analysis',
     async () => {
       const uploadId = prepareUploadRes.data.uploadId;
-      const listName = `e2e_automation_GHG_${new Date().toISOString()}`;
+      const listName = `e2e_automation_GHG_${new Date().toISOString().replace(/\./g, '')}`;
       uploadNewRes = await postRedirectHeaders(
         `${BASE_URL}/api/v1/list/upload_new`,
         {
           uploadId,
           listName,
           analysisIDs: 'FCD',
-          commodity: 'Cocoa Generic',
+          commodity: 'Cocoa',
         },
         {
           headers: {
@@ -208,8 +208,9 @@ describe('GHGAnalysis', () => {
         );
         expect(res.status).toBe(201);
         expect(res.data).toBeTruthy();
-      } catch (err) {
-        console.log(err);
+      } catch (error) {
+        console.error('GHG error', error.stack || error, error.response.data);
+        throw error;
       }
       deleteList(uploadNewRes.data.listId);
     },
@@ -236,7 +237,7 @@ describe('GHGAnalysis', () => {
     'should create new list missing yields',
     async () => {
       const uploadId = prepareUploadRes.data.uploadId;
-      const listName = `e2e_automation_GHG_2_${new Date().toISOString()}`;
+      const listName = `e2e_automation_GHG_2_${new Date().toISOString().replace(/\./g, '')}`;
       uploadNewRes = await postRedirectHeaders(
         `${BASE_URL}/api/v1/list/upload_new`,
         {

@@ -44,12 +44,15 @@ export class ValidateMandatoryFields extends AbstractHandler<ChainType> {
 
     // Check if the file is a zip shapefile and determine the geometry type
     if (['.zip', '.json', '.geojson'].includes(fileExtension)) {
-      this.validateMultiType(geojson);
+      if (!this.validateMultiType(geojson)) {
+        (input.request as RequestNewList).hasUnanalyzableError = true;
+      }
     } else {
       geojson.features.forEach((feature) => {
         const missingFields = fieldsToCheck.filter((field) => !(field in feature.properties));
         if (missingFields.length > 0) {
           feature.properties.errorDetails = feature.properties.errorDetails || [];
+          (input.request as RequestNewList).hasUnanalyzableError = true;
           (feature.properties.errorDetails as Array<string>).push(
             `Missing mandatory fields: ${missingFields.join(', ')}`
           );
@@ -60,7 +63,8 @@ export class ValidateMandatoryFields extends AbstractHandler<ChainType> {
     return input;
   }
 
-  private validateMultiType(geojson: any) {
+  private validateMultiType(geojson: any): boolean {
+    let hasUnanalyzableError = false;
     geojson.features.forEach((feature) => {
       const geometryType = feature.geometry.type;
       let fieldsToCheck: string[];
@@ -76,10 +80,12 @@ export class ValidateMandatoryFields extends AbstractHandler<ChainType> {
       const missingFields = fieldsToCheck.filter((field) => !(field in feature.properties));
       if (missingFields.length > 0) {
         feature.properties.errorDetails = feature.properties.errorDetails || [];
+        hasUnanalyzableError = true;
         (feature.properties.errorDetails as Array<string>).push(
           `Missing mandatory fields: ${missingFields.join(', ')}`
         );
       }
     });
+    return !hasUnanalyzableError;
   }
 }

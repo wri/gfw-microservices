@@ -65,6 +65,7 @@ describe('ProcessUploadData', () => {
 
   describe('getFeatureAttributes', () => {
     it('should return JSON string of valid attributes, excluding columns', () => {
+      const list_id = 123;
       const mockFeature: Feature = {
         type: 'Feature',
         geometry: { type: 'Point', coordinates: [0, 0] },
@@ -76,7 +77,7 @@ describe('ProcessUploadData', () => {
         },
       };
 
-      const result = processUploadData.getFeatureAttributes(mockFeature);
+      const result = processUploadData.processFeatureAttributes(mockFeature, list_id);
       const parsed = JSON.parse(result);
 
       expect(parsed).toHaveProperty('valid_col', 'some_value');
@@ -137,71 +138,6 @@ describe('ProcessUploadData', () => {
       >;
       const instance = ClientStoreConnectionMock.mock.results[0].value;
       expect(instance.getConnection).toHaveBeenCalledWith('some_org_db');
-    });
-  });
-
-  describe('getFeatPropAttrs', () => {
-    it('should return formatted attributes for the first feature in the request', () => {
-      const mockListId = 123;
-      const mockRequest: ChainType = {
-        request: {
-          list_id: 123,
-          organization_database: 'org_db',
-        } as RequestNewList,
-        geojson: {
-          type: 'FeatureCollection',
-          features: [
-            {
-              type: 'Feature',
-              geometry: { type: 'Point', coordinates: [0, 0] },
-              properties: {
-                foo: 'bar',
-                amount: 123,
-                excluded_col: 'excluded_value',
-              },
-            },
-          ],
-        },
-      };
-
-      const attrs = processUploadData.getFeatPropAttrs(mockRequest.geojson.features[0], mockListId);
-
-      expect(attrs).toEqual(
-        expect.arrayContaining([
-          {
-            list_id: 123,
-            attribute_name: 'foo',
-            attribute_type: 2,
-          },
-          {
-            list_id: 123,
-            attribute_name: 'amount',
-            attribute_type: 1,
-          },
-        ])
-      );
-
-      expect(attrs.length).toBe(3);
-    });
-
-    it('should return an empty array if the first feature is missing', () => {
-      const mockListId = 123;
-      const mockRequestNoFeatures: ChainType = {
-        request: {
-          list_id: 123,
-          organization_database: 'org_db',
-        } as RequestNewList,
-        geojson: {
-          type: 'FeatureCollection',
-          features: [],
-        },
-      };
-
-      const attrs = processUploadData.getFeatPropAttrs(
-        mockRequestNoFeatures.geojson.features[0],
-        mockListId
-      );
-      expect(attrs).toEqual([]);
     });
   });
 

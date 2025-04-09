@@ -10,9 +10,7 @@ jest.mock('@mui/icons-material', () => ({
   CheckCircle: (props: any) => <span data-testid="CheckCircle" {...props} />,
 }));
 
-afterEach(() => {
-  cleanup();
-});
+afterEach(cleanup);
 
 describe('UploadByFileFolderIcon', () => {
   it('renders DriveFolderUpload icon for NoFile state', () => {

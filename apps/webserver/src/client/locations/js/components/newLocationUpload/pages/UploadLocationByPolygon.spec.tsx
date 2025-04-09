@@ -48,15 +48,13 @@ describe('UploadLocationByPolygon', () => {
         addGraphicToMap: jest.fn(),
       };
     });
+
+    render(<UploadLocationByPolygon />);
   });
 
-  afterEach(() => {
-    cleanup();
-  });
+  afterEach(cleanup);
 
   it('should render the component with form elements', async () => {
-    render(<UploadLocationByPolygon />);
-
     expect(
       screen.getByText(
         /gfw pro allows users to create polygon data for analysis view drawing a boundary on the map or defining a polygon via its coordinates vertices\./i
@@ -75,10 +73,8 @@ describe('UploadLocationByPolygon', () => {
   });
 
   it('should go to next page if all fields are provided', async () => {
-    render(<UploadLocationByPolygon />);
-
-    const locationNameField = screen.getByRole('textbox');
-    await userEvent.type(locationNameField, 'new location 123');
+    const locationName = screen.getByRole('textbox');
+    await userEvent.type(locationName, 'new location 123');
 
     await userEvent.click(
       screen.getByRole('button', {
@@ -111,8 +107,6 @@ describe('UploadLocationByPolygon', () => {
   }, 50100);
 
   it('should show missing mandatory fields', async () => {
-    render(<UploadLocationByPolygon />);
-
     await userEvent.click(
       screen.getByRole('button', {
         name: /enter polygon coordinates/i,
@@ -126,8 +120,8 @@ describe('UploadLocationByPolygon', () => {
     );
     expect(screen.getByText(/enter location name/i)).toBeInTheDocument();
 
-    const locationNameField = screen.getByRole('textbox');
-    await userEvent.type(locationNameField, 'new location 123');
+    const locationName = screen.getByRole('textbox');
+    await userEvent.type(locationName, 'new location 123');
     expect(screen.queryByText(/enter location name/i)).not.toBeInTheDocument();
 
     expect(
@@ -149,9 +143,63 @@ describe('UploadLocationByPolygon', () => {
     ).toHaveLength(6);
   }, 15100);
 
-  it('should allow adding and removing coordinate fields', async () => {
-    render(<UploadLocationByPolygon />);
+  describe('location name validation', () => {
+    beforeEach(async () => {
+      await userEvent.click(
+        screen.getByRole('button', {
+          name: /enter polygon coordinates/i,
+        })
+      );
+    });
 
+    it('should show error for special characters in location name', async () => {
+      const locationName = screen.getByRole('textbox');
+      await userEvent.type(locationName, 'location name with special char #');
+
+      await userEvent.click(
+        screen.getByRole('button', {
+          name: /next/i,
+        })
+      );
+
+      expect(
+        screen.queryByText(/only letters, numbers, and spaces are allowed/i)
+      ).toBeInTheDocument();
+    });
+
+    it('should show error for leading or trailing spaces in location name', async () => {
+      const locationName = screen.getByRole('textbox');
+      await userEvent.type(locationName, ' location name with leading space');
+
+      await userEvent.click(
+        screen.getByRole('button', {
+          name: /next/i,
+        })
+      );
+
+      expect(screen.queryByText(/leading or trailing spaces are not allowed/i)).toBeInTheDocument();
+    });
+
+    it('should not show error for a valid location name', async () => {
+      const locationName = screen.getByRole('textbox');
+      await userEvent.type(locationName, 'valid location name');
+
+      await userEvent.click(
+        screen.getByRole('button', {
+          name: /next/i,
+        })
+      );
+
+      expect(
+        screen.queryByText(/only letters, numbers, and spaces are allowed/i)
+      ).not.toBeInTheDocument();
+      expect(
+        screen.queryByText(/leading or trailing spaces are not allowed/i)
+      ).not.toBeInTheDocument();
+    });
+  });
+
+  it('should allow adding and removing coordinate fields', async () => {
     await userEvent.click(
       screen.getByRole('button', {
         name: /enter polygon coordinates/i,
@@ -173,8 +221,6 @@ describe('UploadLocationByPolygon', () => {
   }, 15100);
 
   it('should call clearUploadType on cancel', async () => {
-    render(<UploadLocationByPolygon />);
-
     await userEvent.click(screen.getByRole('button', { name: /cancel/i }));
     expect(mockClearUploadType).toHaveBeenCalled();
   });

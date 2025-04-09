@@ -36,9 +36,7 @@ jest.mocked(useUploadLocation).mockReturnValue({
   updateSaveMode: jest.fn(),
 });
 
-afterEach(() => {
-  cleanup();
-});
+afterEach(cleanup);
 
 describe('UploadLocationOptions', () => {
   it('should render correctly', () => {

@@ -21,10 +21,7 @@ describe('AddressSelector', () => {
     );
   };
 
-  beforeEach(() => {
-    jest.clearAllMocks();
-    cleanup();
-  });
+  afterEach(cleanup);
 
   test('renders input field and no error by default', () => {
     renderComponent();

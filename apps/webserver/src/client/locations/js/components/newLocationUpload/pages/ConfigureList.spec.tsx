@@ -109,9 +109,7 @@ beforeEach(() => {
   });
 });
 
-afterEach(() => {
-  cleanup();
-});
+afterEach(cleanup);
 
 describe('ConfigureList', () => {
   it('should render the form fields correctly', () => {

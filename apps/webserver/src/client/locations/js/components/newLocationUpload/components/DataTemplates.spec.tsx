@@ -12,9 +12,7 @@ jest.mock('@mui/icons-material', () => {
   };
 });
 
-afterEach(() => {
-  cleanup();
-});
+afterEach(cleanup);
 
 describe('DataTemplates', () => {
   const handleCloseMock = jest.fn();

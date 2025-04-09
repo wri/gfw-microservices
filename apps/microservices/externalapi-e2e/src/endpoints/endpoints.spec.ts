@@ -151,13 +151,13 @@ describe('API Endpoints', () => {
       'should create new list with uploaded input',
       async () => {
         const uploadId = prepareUploadRes.data.uploadId;
-        const listName = `e2e_automation_${new Date().toISOString()}`;
+        const listName = `e2e_automation_${new Date().toISOString().replace(/\./g, '')}`;
         uploadNewRes = await postRedirectHeaders(
           `${BASE_URL}/api/v1/list/upload_new`,
           {
             uploadId,
             listName,
-            templateId: 13,
+            commodity: 'Cocoa',
             analysisIDs: 'FCD',
           },
           {
@@ -186,22 +186,27 @@ describe('API Endpoints', () => {
     it(
       'should create a geojson file for download',
       async () => {
-        const res = await postRedirectHeaders(
-          `${BASE_URL}/api/v1/list/${list}/analysis/DefReport/generate`,
-          {
-            userEmail: email,
-            outputType: 'verifiableCredential',
-          },
-          {
-            headers: {
-              'Content-Type': 'application/json',
-              'x-api-key': API_TOKEN,
+        try {
+          const res = await postRedirectHeaders(
+            `${BASE_URL}/api/v1/list/${list}/analysis/DefReport/generate`,
+            {
+              userEmail: email,
+              outputType: 'verifiableCredential',
             },
-          }
-        );
+            {
+              headers: {
+                'Content-Type': 'application/json',
+                'x-api-key': API_TOKEN,
+              },
+            }
+          );
 
-        expect(res.status).toBe(201);
-        expect(res.data).toBe('');
+          expect(res.status).toBe(201);
+          expect(res.data).toBe('');
+        } catch (error) {
+          console.error('endpoints error', error.stack || error, error.response.data);
+          throw error;
+        }
       },
       30 * 1000
     );

@@ -98,21 +98,28 @@ SET @SQL = 'SELECT ' +
 
 -- ADD Filters
 	IF @Country IS NOT NULL
-	  SET @Filters = + @Filters + ' AND lt.Country = @Country'
+        SET @Filters = + @Filters + ' AND lt.Country = @Country'
 
-  IF @State IS NOT NULL
-	  SET @Filters = + @Filters + ' AND lt.State = @State'
+    IF @State IS NOT NULL
+        SET @Filters = + @Filters + ' AND lt.State = @State'
 
-	IF @SubState IS NOT NULL
-	  SET @Filters = + @Filters + ' AND lt.[Sub State] = @SubState'
+    IF @SubState IS NOT NULL
+        SET @Filters = + @Filters + ' AND lt.[Sub State] = @SubState'
+
+    IF @hasError IS NOT NULL
+        SET @Filters += ' AND lt.ErrorDetails IS NOT NULL AND LEN(lt.ErrorDetails) > 0';
+
 	IF @selectedSupplier IS NOT NULL
         SET @Filters = + @Filters + ' AND lt.[Supplier Name] = @selectedSupplier'
-  IF @selectedSecondSupplier IS NOT NULL
-      SET @Filters = + @Filters + ' AND lt.[Second Supplier Name] = @selectedSecondSupplier'
-  IF @selectedParentCompany IS NOT NULL
-      SET @Filters = + @Filters + ' AND lt.[Parent Company] = @selectedParentCompany'
-  IF @showRSPOCertified = 1
-      SET @Filters = + @Filters + ' AND lt.[RSPO Model] = 1'
+
+    IF @selectedSecondSupplier IS NOT NULL
+        SET @Filters = + @Filters + ' AND lt.[Second Supplier Name] = @selectedSecondSupplier'
+
+    IF @selectedParentCompany IS NOT NULL
+        SET @Filters = + @Filters + ' AND lt.[Parent Company] = @selectedParentCompany'
+
+    IF @showRSPOCertified = 1
+        SET @Filters = + @Filters + ' AND lt.[RSPO Model] = 1'
 
 	-- END Filters
 
@@ -141,8 +148,36 @@ IF @RowsOfPage > 0 AND @PageNumber > 0
 
 
 EXEC sp_executesql @SQL,
-     N'@listId INT, @listName NVARCHAR(150), @rowsOfPage INT, @pageNumber INT, @Country NVARCHAR(255), @State NVARCHAR(255), @SubState NVARCHAR(255), @selectedSupplier NVARCHAR(255), @selectedSecondSupplier NVARCHAR(255), @selectedParentCompany NVARCHAR(255), @showRSPOCertified BIT, @SearchString NVARCHAR(255), @orderType NVARCHAR(255), @sortByAttribute NVARCHAR(255)',
-     @listId=@listId, @listName=@listName,@rowsOfPage=@rowsOfPage, @pageNumber=@pageNumber, @Country=@Country, @State=@State, @SubState=@SubState, @selectedSupplier=@selectedSupplier, @selectedSecondSupplier=@selectedSecondSupplier, @selectedParentCompany=@selectedParentCompany, @showRSPOCertified=@showRSPOCertified, @SearchString=@SearchString, @orderType=@orderType, @sortByAttribute=@sortByAttribute;
+N'@listId INT, 
+    @listName NVARCHAR(150), 
+    @rowsOfPage INT, 
+    @pageNumber INT, 
+    @Country NVARCHAR(255), 
+    @State NVARCHAR(255), 
+    @SubState NVARCHAR(255), 
+    @hasError BIT,
+    @selectedSupplier NVARCHAR(255), 
+    @selectedSecondSupplier NVARCHAR(255), 
+    @selectedParentCompany NVARCHAR(255), 
+    @showRSPOCertified BIT, 
+    @SearchString NVARCHAR(255), 
+    @orderType NVARCHAR(255), 
+    @sortByAttribute NVARCHAR(255)',
+@listId                 = @listId, 
+@listName               = @listName,
+@rowsOfPage             = @rowsOfPage, 
+@pageNumber             = @pageNumber, 
+@Country                = @Country,
+@State                  = @State, 
+@SubState               = @SubState, 
+@hasError               = @hasError,
+@selectedSupplier       = @selectedSupplier,
+@selectedSecondSupplier = @selectedSecondSupplier,
+@selectedParentCompany  = @selectedParentCompany, 
+@showRSPOCertified      = @showRSPOCertified, 
+@SearchString           = @SearchString, 
+@orderType              = @orderType, 
+@sortByAttribute        = @sortByAttribute;
 `;
 export class PaginatedLocationsByListIdSortedByFilters {
   listId: number;

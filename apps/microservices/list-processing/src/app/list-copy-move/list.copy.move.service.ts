@@ -7,16 +7,24 @@ import {
   UspGetLocationsFilteredToCopy,
 } from '@wri-monorepos/sql';
 import { CheckListNameIsValid, getListAnalysisStatusByListId } from '@wri-monorepos/geo';
-import { SetListDraftStatus } from './shared/put.list.as.draft';
 import { handleNewListCreation } from './handler/list.creation';
 import { handleSourceListDeletion } from './handler/source.list.deletion';
 import { assembleGeojson } from './shared/assemble.geojson';
 import { createFeatureProps } from './shared/create.feature.props';
 import { deleteGeoJSONFeatureProperties } from './shared/delete.geojson.feature.properties';
 import { handleExistingListUpdate } from './handler/existing.list.update';
+import { ConfigService } from '@nestjs/config';
+import { ServerConfigType } from '../../validators/server-config';
+import { EmailService } from '@wri-monorepos/aws';
+import { PutListAsDraft } from '../list-upload/chain/put.list.as.draft';
 
 @Injectable()
 export class ListCopyMoveService {
+  constructor(
+    private readonly config: ConfigService<ServerConfigType, true>,
+    private readonly emailService: EmailService
+  ) {}
+
   private readonly logger = new Logger(ListCopyMoveService.name);
   async run(request: CopyOrMoveLargeListRequestLLP) {
     this.logger.log('Starting list copy/move flow');
@@ -42,6 +50,8 @@ export class ListCopyMoveService {
       } = request;
 
       let moveToList = { ...targetList };
+
+      const putListAsDraft = new PutListAsDraft(this.config, this.emailService);
 
       // Upgrade the list schema to the latest version
       await upgradeListSchema({
@@ -72,7 +82,7 @@ export class ListCopyMoveService {
         this.logger.log(
           `Changing source list (${selectedListId}) status to draft because locations will be moved`
         );
-        await SetListDraftStatus(clientDatabase, selectedListId, gfwListId);
+        await putListAsDraft.putListAsDraft(clientDatabase, selectedListId, gfwListId);
       }
 
       // Getting the existing data for the source list
@@ -139,6 +149,7 @@ export class ListCopyMoveService {
           allLocationsSelected,
           filters,
           selectedLocations,
+          putListAsDraft,
         });
       }
 

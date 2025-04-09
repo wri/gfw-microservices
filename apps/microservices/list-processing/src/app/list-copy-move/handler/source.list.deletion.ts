@@ -1,9 +1,27 @@
 import { Logger } from '@nestjs/common';
 import { BulkDeleteLocations, DeleteList, UspSetListLocked } from '@wri-monorepos/sql';
-import { SetListDraftStatus } from '../shared/put.list.as.draft';
 import { ListHasFiltersApplies } from '@wri-monorepos/geo';
+import { PutListAsDraft } from '../../list-upload/chain/put.list.as.draft';
 
 const logger = new Logger('handleSourceListDeletion');
+
+type HandleSourceListDeletionParams = {
+  clientDatabase: string;
+  selectedListId: number;
+  userId: number;
+  gfwListId: number;
+  allLocationsSelected: boolean;
+  filters: {
+    country?: string;
+    state?: string;
+    subState?: string;
+    analysisAreaMin?: number;
+    analysisAreaMax?: number;
+    searchString?: string;
+  };
+  selectedLocations: unknown[];
+  putListAsDraft: PutListAsDraft;
+};
 
 export const handleSourceListDeletion = async ({
   clientDatabase,
@@ -13,7 +31,8 @@ export const handleSourceListDeletion = async ({
   allLocationsSelected,
   filters,
   selectedLocations,
-}) => {
+  putListAsDraft,
+}: HandleSourceListDeletionParams) => {
   logger.log('Checking if source list needs to be deleted when move action is selected');
   await new UspSetListLocked().run(clientDatabase, selectedListId, userId);
 
@@ -37,6 +56,6 @@ export const handleSourceListDeletion = async ({
       filters.analysisAreaMax,
       filters.searchString
     );
-    await SetListDraftStatus(clientDatabase, selectedListId, gfwListId);
+    await putListAsDraft.putListAsDraft(clientDatabase, selectedListId, gfwListId);
   }
 };

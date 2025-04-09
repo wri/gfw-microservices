@@ -53,7 +53,7 @@ Cypress.Commands.add('login', (email: string, password: string, verifyToken = 'u
 Cypress.Commands.add('loginUI', () => {
   const deployment = Cypress.env('deployment');
   const credentials = Cypress.env(deployment);
-  cy.visit(`https://pro-${deployment}.globalforestwatch.org/`);
+  cy.visit(Cypress.config().baseUrl);
   cy.contains('Log in').click();
   cy.get('input').eq(0).type(credentials.username);
   cy.get('input').eq(1).type(credentials.password);

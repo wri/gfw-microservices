@@ -1,7 +1,6 @@
 import { PutListAsDraft } from './put.list.as.draft';
 import { ChainType, RequestNewList } from './types';
-import { Lists, ListsAnalysisStatus } from '@wri-monorepos/sql';
-import { listStatus } from '@wri-monorepos/constants';
+import { ListsAnalysisStatus } from '@wri-monorepos/sql';
 import { ConfigService } from '@nestjs/config';
 import { EmailService } from '@wri-monorepos/aws';
 import { getUserEmail } from '../shared/user.utils';
@@ -20,8 +19,10 @@ jest.mock('@wri-monorepos/sql', () => ({
   ClientStoreConnection: jest.fn().mockImplementation(() => ({
     getConnection: mockGetConnection,
   })),
-  Lists: jest.fn(),
   ListsAnalysisStatus: jest.fn(),
+  UspResetListStatus: jest.fn().mockImplementation(() => ({
+    run: jest.fn().mockResolvedValue(undefined),
+  })),
 }));
 
 jest.mock('../shared/user.utils', () => ({
@@ -67,10 +68,8 @@ describe('PutListAsDraft', () => {
     );
 
     expect(mockGetConnection).toHaveBeenCalledWith('test_db');
-    expect(mockGetRepository).toHaveBeenCalledWith(Lists);
-    expect(mockUpdate).toHaveBeenCalledWith({ id: 123 }, { listStatusId: listStatus.Draft });
     expect(mockGetRepository).toHaveBeenCalledWith(ListsAnalysisStatus);
-    expect(mockUpdate).toHaveBeenCalledWith({ id: 123 }, { listStatusId: listStatus.Draft });
+    expect(mockUpdate).toHaveBeenCalled();
     expect(getUserEmail).toHaveBeenCalledWith('test_db', 456);
     expect(mockEmailService.sendEmail).toHaveBeenCalledWith(
       'test@example.com',

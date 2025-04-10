@@ -25,8 +25,8 @@ const gfwListsSizeColumn = (list_id) => {
           ),
           accessor: (d) => d,
           Cell: (row) => {
-            const isValidArea = checkValid(row.original.Size);
-            const formattedArea = isValidArea ? formatDigit(row.original.Size) : 0;
+            const isValidArea = checkValid(row.original.total_area);
+            const formattedArea = isValidArea ? formatDigit(row.original.total_area) : 0;
             return formattedArea;
           },
           className: 'td-num',
@@ -45,8 +45,8 @@ const gfwListsSizeColumn = (list_id) => {
           ),
           accessor: (d) => d,
           Cell: (row) => {
-            const isValidArea = checkValid(row.original?.['Analysis Area']);
-            const formattedArea = isValidArea ? formatDigit(row.original?.['Analysis Area']) : 0;
+            const isValidArea = checkValid(row.original?.total_area);
+            const formattedArea = isValidArea ? formatDigit(row.original?.total_area) : 0;
             return formattedArea;
           },
           className: 'td-num',

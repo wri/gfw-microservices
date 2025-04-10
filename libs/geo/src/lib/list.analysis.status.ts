@@ -19,7 +19,6 @@ import {
   listStatus,
   analysisTypesOptionsNewNames,
   analysisIdsOptionsMap,
-  MAPSPAM_COMMODITY,
   GADM_FEATURE_FLAG_NAME,
   CURRENT_GADM_VALUE,
   NEW_GADM_VALUE,

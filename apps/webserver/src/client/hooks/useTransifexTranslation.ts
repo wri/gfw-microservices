@@ -1,5 +1,17 @@
 import { useState, useEffect } from 'react';
 
+declare global {
+  interface Window {
+    Transifex?: {
+      live: {
+        translateText: (text: string) => string;
+        onAfterTranslate: (callback: () => void) => void;
+        off?: (event: string, callback: () => void) => void;
+      };
+    };
+  }
+}
+
 export function useTransifexTranslation(text) {
   const [translatedText, setTranslatedText] = useState(text);
 
@@ -22,7 +34,7 @@ export function useTransifexTranslation(text) {
     window.Transifex.live.onAfterTranslate(handleTranslationUpdate);
 
     return () => {
-      window.Transifex.live.off?.('onAfterTranslate', handleTranslationUpdate);
+      window.Transifex?.live.off?.('onAfterTranslate', handleTranslationUpdate);
     };
   }, [text]);
 

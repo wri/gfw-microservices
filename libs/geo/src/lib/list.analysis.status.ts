@@ -481,18 +481,7 @@ export const isGHGCommodityValid = async (id: number, organizationDb: string): P
       );
       throw new Error('Invalid GHG Commodity');
     }
-    // verify if list has a non valid GHG commodity
-    // if (!isValidMapSpamCommodity(listData.Commodity)) {
-    //   Logger.log('Invalid GHG Commodity');
-    //   await saveAnalysisStatusErrorInfo(
-    //     organizationDb,
-    //     id,
-    //     'Invalid GHG Commodity',
-    //     listStatus.Inactive,
-    //     'GHG'
-    //   );
-    //   throw new Error('Invalid GHG Commodity');
-    // }
+
     try {
       if (listData.Commodity.startsWith('GFWP_')) {
         if (listTableName.length == 0) {
@@ -535,16 +524,6 @@ export const isGHGCommodityValid = async (id: number, organizationDb: string): P
     Logger.error('validateGHGCommodity', error.stack || error);
     throw new BadRequestException(error.stack || error);
   }
-};
-
-export const isValidMapSpamCommodity = (Commodity: string): boolean => {
-  if (Object.keys(MAPSPAM_COMMODITY).includes(Commodity)) {
-    return true;
-  }
-  if (Commodity === 'GFWP_Other') {
-    return true;
-  }
-  return false;
 };
 
 //Saves the error info in the database based on the analysisId and listId

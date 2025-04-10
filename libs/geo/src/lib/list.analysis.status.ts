@@ -483,7 +483,7 @@ export const isGHGCommodityValid = async (id: number, organizationDb: string): P
     }
 
     try {
-      if (listData.Commodity.startsWith('GFWP_')) {
+      if (listData.Commodity?.startsWith('GFWP_')) {
         if (listTableName.length == 0) {
           Logger.log('Invalid GHG Commodity');
           await saveAnalysisStatusErrorInfo(

@@ -10,9 +10,7 @@ jest.mock('../contexts', () => ({
   useUploadLocation: jest.fn(),
 }));
 
-afterEach(() => {
-  cleanup();
-});
+afterEach(cleanup);
 
 describe('NavBar', () => {
   it('should render steps for file upload when uploadType is ByFile', () => {

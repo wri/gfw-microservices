@@ -35,11 +35,9 @@ describe('UploadLocationByPoint', () => {
     render(<UploadLocationByPoint />);
   });
 
-  afterEach(() => {
-    cleanup();
-  });
+  afterEach(cleanup);
 
-  it('should validate mandatory fields for coordinates location type ', async () => {
+  it('should validate mandatory fields for coordinates location type', async () => {
     await userEvent.click(
       screen.getByRole('button', {
         name: /enter coordinates/i,
@@ -81,7 +79,7 @@ describe('UploadLocationByPoint', () => {
     expect(mockHistoryPush).not.toHaveBeenCalled();
   });
 
-  it('should validate mandatory fields for address location type ', async () => {
+  it('should validate mandatory fields for address location type', async () => {
     await userEvent.click(
       screen.getByRole('button', {
         name: /enter address/i,
@@ -101,6 +99,62 @@ describe('UploadLocationByPoint', () => {
     expect(screen.getByText(/enter the area size/i)).toBeInTheDocument();
 
     expect(mockHistoryPush).not.toHaveBeenCalled();
+  });
+
+  describe('location name validation', () => {
+    beforeEach(async () => {
+      await userEvent.click(
+        screen.getByRole('button', {
+          name: /enter address/i,
+        })
+      );
+    });
+
+    it('should show error for special characters in location name', async () => {
+      const locationName = screen.getByRole('textbox');
+      await userEvent.type(locationName, 'location name with special char #');
+
+      await userEvent.click(
+        screen.getByRole('button', {
+          name: /next/i,
+        })
+      );
+
+      expect(
+        screen.queryByText(/only letters, numbers, and spaces are allowed/i)
+      ).toBeInTheDocument();
+    });
+
+    it('should show error for leading or trailing spaces in location name', async () => {
+      const locationName = screen.getByRole('textbox');
+      await userEvent.type(locationName, ' location name with leading space');
+
+      await userEvent.click(
+        screen.getByRole('button', {
+          name: /next/i,
+        })
+      );
+
+      expect(screen.queryByText(/leading or trailing spaces are not allowed/i)).toBeInTheDocument();
+    });
+
+    it('should not show error for a valid location name', async () => {
+      const locationName = screen.getByRole('textbox');
+      await userEvent.type(locationName, 'valid location name');
+
+      await userEvent.click(
+        screen.getByRole('button', {
+          name: /next/i,
+        })
+      );
+
+      expect(
+        screen.queryByText(/only letters, numbers, and spaces are allowed/i)
+      ).not.toBeInTheDocument();
+      expect(
+        screen.queryByText(/leading or trailing spaces are not allowed/i)
+      ).not.toBeInTheDocument();
+    });
   });
 
   it('should submit valid data for coordinates', async () => {

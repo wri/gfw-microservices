@@ -23,6 +23,7 @@ import { locationsPage, userAccessLevel } from '../../../../../common/js/config'
 import { updateFolders } from '../../../../../locations/js/actions/locationActions';
 import { getFolders } from 'locations/js/components/landing/foldersApi';
 import { requestGeoTrellisAnalyzeList } from '../../../../../locations/js/utils/requestUtils';
+import { useTransifexTranslation } from '../../../../../hooks';
 import store from '../../../../../locations/js/store';
 import './ListActions.scss';
 
@@ -120,6 +121,21 @@ const ListActions = ({
     !showMultipleSelectionBulkActions &&
     !isSearchBarOpen;
 
+  const viewMapButtonLabel = showMultipleSelectionBulkActions
+    ? useTransifexTranslation('Location(s) Map')
+    : useTransifexTranslation('List Map');
+  const searchInputLabel = useTransifexTranslation('Type your search and press Enter...');
+  const updateAnalysisButtonLabel = useTransifexTranslation('Update Analysis');
+  const submitAnalysisButtonLabel = useTransifexTranslation('Submit Analysis');
+  const addLocationsButtonLabel = useTransifexTranslation('Add Locations');
+
+  const folderActionButtonLabel = isInFolder
+    ? useTransifexTranslation(locationsPage.lists.manage)
+    : useTransifexTranslation(locationsPage.lists.addToFolder);
+  const deleteButtonLabel = useTransifexTranslation('Delete');
+  const shareButtonLabel = useTransifexTranslation('Share');
+  const copyMoveButtonLabel = useTransifexTranslation(isGfwList ? 'Copy' : 'Copy/Move');
+
   return (
     <>
       <Paper className="list-actions">
@@ -155,7 +171,7 @@ const ListActions = ({
                 value={searchInputValue}
                 onChange={(event) => handleSearchInputChange(event.target.value)}
                 onKeyDown={handleSearchInputKeyDown}
-                placeholder="Type your search and press Enter..."
+                placeholder={searchInputLabel}
                 inputProps={{ 'aria-label': 'Type your search and press Enter' }}
               />
             </>
@@ -168,7 +184,7 @@ const ListActions = ({
                 sx={greenButtonStyle}
                 data-cy={showMultipleSelectionBulkActions ? 'locations-map' : 'full-list-map'}
               >
-                {showMultipleSelectionBulkActions ? <>Location(s) Map</> : <>List Map</>}
+                {viewMapButtonLabel}
               </Button>
             )}
 
@@ -179,7 +195,7 @@ const ListActions = ({
                   onClick={toggleReRunAnalysisDialog}
                   startIcon={<Replay height="14px" />}
                 >
-                  Update Analysis
+                  {updateAnalysisButtonLabel}
                 </Button>
                 <CustomDialog
                   open={rerunDialogState}
@@ -198,7 +214,7 @@ const ListActions = ({
                   variant="primary"
                   onClick={handleDraftSubmit}
                 >
-                  Submit Analysis
+                  {submitAnalysisButtonLabel}
                 </Button>
               </div>
             )}
@@ -208,7 +224,7 @@ const ListActions = ({
                 startIcon={<Add height="14px" />}
                 href="/locations?redirect-to-add-locations=true"
               >
-                Add locations
+                {addLocationsButtonLabel}
               </Button>
             )}
 
@@ -219,7 +235,7 @@ const ListActions = ({
                   onClick={() => setIsManageListFolderOpen(true)}
                   sx={blackButtonStyle}
                 >
-                  {isInFolder ? locationsPage.lists.manage : locationsPage.lists.addToFolder}
+                  {folderActionButtonLabel}
                 </Button>
                 <ManageListFolderDialog
                   isOpen={isManageListFolderOpen}
@@ -256,7 +272,7 @@ const ListActions = ({
                   startIcon={<FolderShared height="14px" />}
                   data-cy="share-list"
                 >
-                  Share
+                  {shareButtonLabel}
                 </Button>
               </div>
             )}
@@ -268,7 +284,7 @@ const ListActions = ({
                 variant="primary"
                 onClick={promptMoveSelectedLocations}
               >
-                {isGfwList ? 'Copy' : 'Copy/Move'}
+                {copyMoveButtonLabel}
               </Button>
             )}
 
@@ -301,7 +317,7 @@ const ListActions = ({
                 variant="primary"
                 onClick={promptDeleteSelectedLocations}
               >
-                Delete
+                {deleteButtonLabel}
               </Button>
             )}
           </Stack>

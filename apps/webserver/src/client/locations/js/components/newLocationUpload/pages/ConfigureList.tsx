@@ -29,6 +29,7 @@ import { useFetch } from '../../../../../hooks';
 import debounce from 'lodash/debounce';
 import { fetchListsByCommodity } from '../../../../../api/list';
 import { analysisTypes } from '../../../../../../config/env/analysisTypes.constants';
+import { alphanumericWithSpaceSchema } from '../utils/schema';
 
 type CommoditiesType = (typeof commodities)[keyof typeof commodities];
 const commodityValues = Object.values(commodities) as [CommoditiesType, ...CommoditiesType[]];
@@ -38,10 +39,7 @@ export function ConfigureList({ userLists }: { userLists: UserList[] }) {
   const schema = z
     .object({
       commodity: z.enum(commodityValues),
-      newListName: z
-        .string()
-        .trim()
-        .regex(/^[a-zA-Z0-9 ]*$/, 'Only letters, numbers, and spaces are allowed'),
+      newListName: alphanumericWithSpaceSchema,
       existingListName: z.string(),
       FCD: z.coerce.boolean(),
       PalmRisk: z.coerce.boolean(),

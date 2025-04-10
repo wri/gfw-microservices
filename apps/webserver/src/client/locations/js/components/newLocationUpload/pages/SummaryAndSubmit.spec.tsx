@@ -41,9 +41,7 @@ jest.mock('../components', () => ({
   NavBar: () => <span />,
 }));
 
-afterEach(() => {
-  cleanup();
-});
+afterEach(cleanup);
 
 describe('SummaryAndSubmit', () => {
   it('should render correct information when creating a new list with all analysis types selected', () => {

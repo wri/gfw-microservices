@@ -56,9 +56,7 @@ describe('UploadLocationPreview', () => {
     });
   });
 
-  afterEach(() => {
-    cleanup();
-  });
+  afterEach(cleanup);
 
   it('should render the component correctly', () => {
     render(<UploadLocationPreview />);

@@ -44,9 +44,7 @@ describe('UploadLocationByFile', () => {
     });
   });
 
-  afterEach(() => {
-    cleanup();
-  });
+  afterEach(cleanup);
 
   it('should render the component correctly', () => {
     render(

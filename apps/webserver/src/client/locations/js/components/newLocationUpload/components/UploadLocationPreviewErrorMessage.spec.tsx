@@ -7,9 +7,7 @@ describe('UploadLocationPreviewErrorMessage', () => {
   const mockRetryPreviewData = jest.fn();
   const mockRetryUpload = jest.fn();
 
-  afterEach(() => {
-    cleanup();
-  });
+  afterEach(cleanup);
 
   it('should render missing mandatory fields error message', () => {
     const error = {

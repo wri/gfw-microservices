@@ -508,7 +508,9 @@ export const isGHGCommodityValid = async (id: number, organizationDb: string): P
         }
         const hasYield = listTableName.every((element) => {
           const attributes = JSON.parse(element.attributes || '[]');
-          return attributes.some((item) => item.field === 'yield' && parseFloat(item.value) > 0);
+            return Object.entries(attributes).some(
+            ([key, value]) => key === 'yield' && parseFloat(value as string) > 0
+            );
         });
         // Verify if has yield for all locations
         if (!hasYield) {

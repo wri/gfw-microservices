@@ -196,7 +196,7 @@ export class GADMService extends AbstractHandler<ChainType> {
 
       return data;
     } catch (error) {
-      console.error(`Error fetching GADM data`);
+      this.logger.error(`Error fetching GADM data`, error);
       return null;
     }
   };
@@ -323,12 +323,12 @@ export class GADMService extends AbstractHandler<ChainType> {
       // Skip GADM if there is already an error in the request
       return request;
     }
-    let results;
-    if (gadm41FeatureFlag?.flagState) {
-      results = await this.asyncPoolAll(POOL_SIZE, features, this.composeResultsWithGadmData);
-    } else {
-      results = await this.asyncPoolAll(POOL_SIZE, features, this.composeResults);
-    }
+
+    const method = gadm41FeatureFlag?.flagState
+      ? this.composeResultsWithGadmData
+      : this.composeResults;
+
+    const results = await this.asyncPoolAll(POOL_SIZE, features, method);
 
     if (results.some((result) => result?.hasUnanalyzableError)) {
       (request.request as RequestNewList).hasUnanalyzableError = true;

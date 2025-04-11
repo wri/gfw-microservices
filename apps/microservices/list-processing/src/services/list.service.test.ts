@@ -28,15 +28,26 @@ describe('ListService - Start Analysis Process For List', () => {
     };
 
     configServiceMock = {
-      // Mock the methods you need from ConfigService
+      get: jest.fn().mockImplementation((key) => {
+        if (key === 'LARGE_PROCESSING_LIST_BUCKET') {
+          return 'test-bucket';
+        }
+        return undefined;
+      }),
     };
 
     startAnalysisService = {
-      run: jest.fn(),
+      run: jest.fn().mockResolvedValue({
+        executionArn: 'test-arn',
+        startDate: new Date().toISOString(),
+      }),
     } as unknown as StartAnalysisService;
 
     deprecatedStartAnalysisService = {
-      run: jest.fn(),
+      run: jest.fn().mockResolvedValue({
+        executionArn: 'test-arn',
+        startDate: new Date().toISOString(),
+      }),
     } as unknown as DeprecatedStartAnalysisService;
 
     createLargeListService = {
@@ -148,5 +159,80 @@ describe('ListService - Start Analysis Process For List', () => {
 
     expect(startAnalysisService.run).not.toHaveBeenCalledWith(request);
     expect(deprecatedStartAnalysisService.run).toHaveBeenCalled();
+  });
+
+  describe('startAnalysisProcessForList', () => {
+    it('should replace S3 path prefix with empty string when UploadListLp flag is enabled', async () => {
+      const request: RequestLargeListProcess = {
+        organization_id: 1,
+        subscription_status_id: 1,
+        organization_database: 'test-database',
+        list_id: 1,
+        path: 's3://test-bucket/test-file.csv',
+        template_type: 'test-type',
+        user_id: 1,
+        startAnalysis: true,
+        saveAsDraft: false,
+        commodity: 'cocoa',
+      };
+
+      const mockFlags = [
+        {
+          flagId: 'UploadListLp',
+          flagState: true,
+        },
+      ] as FeatureFlag[];
+
+      (featureFlagsService as jest.Mock).mockResolvedValue({
+        getFeatureFlagsForCurrentOrg: jest.fn().mockResolvedValue(mockFlags),
+      });
+
+      const result = await service.startAnalysisProcessForList(request);
+
+      expect(configServiceMock.get).toHaveBeenCalledWith('LARGE_PROCESSING_LIST_BUCKET', {
+        infer: true,
+      });
+      expect(request.path).toBe('test-file.csv');
+      expect(startAnalysisService.run).toHaveBeenCalledWith(request);
+      expect(result).toEqual({
+        executionArn: 'test-arn',
+        startDate: expect.any(String),
+      });
+    });
+
+    it('should not modify path when UploadListLp flag is disabled', async () => {
+      const request: RequestLargeListProcess = {
+        organization_id: 1,
+        subscription_status_id: 1,
+        organization_database: 'test-database',
+        list_id: 1,
+        path: 's3://test-bucket/test-file.csv',
+        template_type: 'test-type',
+        user_id: 1,
+        startAnalysis: true,
+        saveAsDraft: false,
+        commodity: 'cocoa',
+      };
+
+      const mockFlags = [
+        {
+          flagId: 'UploadListLp',
+          flagState: false,
+        },
+      ] as FeatureFlag[];
+
+      (featureFlagsService as jest.Mock).mockResolvedValue({
+        getFeatureFlagsForCurrentOrg: jest.fn().mockResolvedValue(mockFlags),
+      });
+
+      const result = await service.startAnalysisProcessForList(request);
+
+      expect(request.path).toBe('s3://test-bucket/test-file.csv');
+      expect(deprecatedStartAnalysisService.run).toHaveBeenCalledWith(request);
+      expect(result).toEqual({
+        executionArn: 'test-arn',
+        startDate: expect.any(String),
+      });
+    });
   });
 });

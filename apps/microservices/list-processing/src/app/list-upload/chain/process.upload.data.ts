@@ -30,7 +30,7 @@ export class ProcessUploadData extends AbstractHandler<ChainType> {
     return properties.filter((col) => !['', ...this.columnsToExclude].includes(col));
   }
 
-  processFeatureAttributes(featurePayload: Feature, list_id: number) {
+  processFeatureAttributes(featurePayload: Feature, listId: number) {
     this.logger.log(`Processing list-xxx.attributes. Excluding Columns: ${this.columnsToExclude}`);
 
     const validAttrs = this.getValidAttributes(Object.keys(featurePayload.properties || {}));
@@ -43,29 +43,24 @@ export class ProcessUploadData extends AbstractHandler<ChainType> {
         attributesJson[attributeField] = String(rawValue);
       }
 
-      if (!this.listsAttributesRecords.has(attributeField)) {
-        this.listsAttributesRecords.set(
-          attributeField,
-          getFormattedAttributes({
-            listId: list_id,
-            attributeField,
-            fieldValue: rawValue ?? '',
-          })
-        );
-      } else {
-        // check if we need to upgrade a numeric type to text
-        const existingRecord = this.listsAttributesRecords.get(attributeField);
+      const newRecord = getFormattedAttributes({
+        listId,
+        attributeField,
+        fieldValue: rawValue ?? '',
+      });
 
-        if (existingRecord && existingRecord.attribute_type === ListsAttrsTypes.Number) {
-          this.listsAttributesRecords.set(
-            attributeField,
-            getFormattedAttributes({
-              listId: list_id,
-              attributeField,
-              fieldValue: String(rawValue),
-            })
-          );
-        }
+      const existingRecord = this.listsAttributesRecords.get(attributeField);
+
+      if (!existingRecord) {
+        this.listsAttributesRecords.set(attributeField, newRecord);
+        continue;
+      }
+
+      if (
+        existingRecord.attribute_type === ListsAttrsTypes.Number &&
+        newRecord.attribute_type === ListsAttrsTypes.Text
+      ) {
+        this.listsAttributesRecords.set(attributeField, newRecord);
       }
     }
 

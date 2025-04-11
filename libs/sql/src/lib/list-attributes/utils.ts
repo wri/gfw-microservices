@@ -7,7 +7,7 @@ import { COMMODITY_MAP_SPAM, MAPSPAM_COMMODITY, GHG_PREFIX, MAPSPAM_CODES } from
 export function inferType(value: unknown): string {
   return typeof value === 'number' ? 'number' : 'string';
 }
-enum ListsAttrsTypes {
+export enum ListsAttrsTypes {
   Number = 1,
   Text = 2,
 }

@@ -1979,6 +1979,7 @@ export default class ListDetails extends Component {
       listViewOptions.push(FOREST_CHANGE_VIEW);
     }
 
+    // checkValidViewCommodity() is for backward compatibility
     if (checkValidViewCommodity(selectedLists, listData) || isPalmRiskActive) {
       listViewOptions.push(COMMODITY_RISK_VIEW);
     }

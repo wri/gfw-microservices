@@ -20,12 +20,11 @@ import { SqsService } from '@ssut/nestjs-sqs';
 import { SaveActivityLogEndpoint } from '../utils/saveActivityLogEndpoint';
 import { checkProcessingLimits } from '@wri-monorepos/shared';
 import { listStatus } from '@wri-monorepos/constants';
-import { handleCreateAnalysis, isValidMapSpamCommodity } from '@wri-monorepos/geo';
+import { handleCreateAnalysis } from '@wri-monorepos/geo';
 import { ClientStoreConnection, Lists, ListsAnalysisStatus } from '@wri-monorepos/sql';
 
 jest.mock('@wri-monorepos/geo', () => ({
   handleCreateAnalysis: jest.fn().mockResolvedValue('true value'),
-  isValidMapSpamCommodity: jest.fn(),
 }));
 
 jest.mock('@wri-monorepos/shared', () => ({
@@ -774,7 +773,6 @@ describe('ListAnalysisService', () => {
 
     const mockedhandleCreateAnalysis = { statusText: 'mockedEmailResponse' };
     (handleCreateAnalysis as jest.Mock).mockResolvedValue(mockedhandleCreateAnalysis);
-    (isValidMapSpamCommodity as jest.Mock).mockReturnValue(true);
 
     listService.getList = jest.fn().mockResolvedValue({
       templateId: 13,

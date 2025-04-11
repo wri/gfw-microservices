@@ -19,7 +19,7 @@ export class InsertLocationData extends AbstractHandler<ChainType> {
       if (location && Array.isArray(location.errorDetails)) {
         const uniqueErrors = new Set(location.errorDetails);
         location.errorDetails = Array.from(uniqueErrors);
-        location.errorDetails = location.errorDetails.join(', ');
+        location.errorDetails = location.errorDetails.join('; ');
       }
       return location;
     });

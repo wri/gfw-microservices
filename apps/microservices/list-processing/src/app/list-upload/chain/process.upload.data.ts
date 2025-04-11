@@ -9,6 +9,7 @@ import { Logger } from '@nestjs/common';
 import { Feature } from '@wri-monorepos/geo';
 import { GeoJSONGeometry, stringify } from 'wellknown';
 import { ConvertPoint2Polygon } from './convert.point.2.polygon';
+import * as turf from '@turf/turf';
 
 export class ProcessUploadData extends AbstractHandler<ChainType> {
   private readonly logger = new Logger(ProcessUploadData.name);
@@ -85,7 +86,25 @@ export class ProcessUploadData extends AbstractHandler<ChainType> {
     return await Promise.all(
       features.map(async (feature, index) => {
         try {
-          return await this.processFeature(feature, index + 1, commodity, request);
+          if (
+            (feature.geometry.type === 'Polygon' || feature.geometry.type === 'MultiPolygon') &&
+            feature.properties.analysisArea == 0
+          ) {
+            const area = turf.area(feature);
+            // Convert from square meters to hectares
+            feature.properties.analysisArea = area / 10000;
+          }
+
+          const processedFeature = await this.processFeature(
+            feature,
+            index + 1,
+            commodity,
+            request
+          );
+
+          // Calculate area for polygon features
+
+          return processedFeature;
         } catch (error) {
           this.logger.error(`Error processing feature`, error.stack || error);
           this.logger.debug(feature);

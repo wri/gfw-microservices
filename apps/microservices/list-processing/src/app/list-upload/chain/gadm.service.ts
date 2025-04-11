@@ -196,7 +196,7 @@ export class GADMService extends AbstractHandler<ChainType> {
 
       return data;
     } catch (error) {
-      this.logger.error(`Error fetching GADM data`, error);
+      this.logger.error(`Error fetching GADM data`, error.response?.data || error.stack);
       return null;
     }
   };

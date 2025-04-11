@@ -95,17 +95,6 @@ const checkColumnListFC = (accessor) => {
   );
 };
 
-const classNameForListStatus = (listStatus) => {
-  switch (listStatus) {
-    case 1: // Pending
-      return 'locations-list--inactive';
-    case 3: // Inactive
-      return 'locations-list--failed';
-    default:
-      return '';
-  }
-};
-
 const checkColumnListCR = (accessor) => {
   return (
     accessor === 'total_area' ||
@@ -396,7 +385,6 @@ module.exports = {
   checkColumnListPA,
   checkColumnListGFWFC,
   checkColumnListGFWCR,
-  classNameForListStatus,
   containsPunctuation,
   getListFilteredLocations,
   compareSelectedAndVisibleLocations,

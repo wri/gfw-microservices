@@ -621,12 +621,12 @@ export async function getAFIListAnalyses(list_id, page, pageSize, clientDatabase
     value: sortByAttribute,
   });
 
-  const listJsondAttributes = await getListJsonAttributesColumnsSqlParam(clientDatabase, list_id);
+  const listJsonAttributes = await getListJsonAttributesColumnsSqlParam(clientDatabase, list_id);
 
   parameters.push({
     field: 'jsonAttributeColumns',
     type: sql.NVarChar(sql.MAX),
-    value: listJsondAttributes,
+    value: listJsonAttributes,
   });
 
   const listAnalyses = await SQLUtilsLibSql.queryDB<PaginatedAfiAnalysisByListIdSortedByFilters[]>(

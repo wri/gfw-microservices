@@ -774,7 +774,7 @@ export const getPaginatedAnalysisDataForUserList = (
       },
     ];
 
-    const { organization_db: clientDatabase } = req.session;
+    const { organization_database: clientDatabase } = req.session;
     const listJsondAttributes = await getListJsonAttributesColumnsSqlParam(clientDatabase, listID);
 
     parameters.push({

@@ -3,11 +3,14 @@ import { GADMService } from './gadm.service';
 import { S3Service } from '@wri-monorepos/aws';
 import { Feature } from '@wri-monorepos/geo';
 import { ChainType } from './types';
+import { featureFlagsService } from '@wri-monorepos/shared';
 
 jest.mock('@wri-monorepos/aws');
 jest.mock('@aws-sdk/client-lambda');
 jest.mock('@esri/arcgis-rest-feature-service');
-
+jest.mock('@wri-monorepos/shared', () => ({
+  featureFlagsService: jest.fn(),
+}));
 describe('GADMService', () => {
   let service: GADMService;
 
@@ -17,6 +20,15 @@ describe('GADMService', () => {
     }).compile();
 
     service = module.get<GADMService>(GADMService);
+
+    (featureFlagsService as jest.Mock).mockResolvedValue({
+      getFeatureFlagsForCurrentOrg: jest.fn().mockResolvedValue([
+        {
+          flagId: 'gadm41',
+          flagState: false,
+        },
+      ]),
+    });
   });
 
   it('should be defined', () => {

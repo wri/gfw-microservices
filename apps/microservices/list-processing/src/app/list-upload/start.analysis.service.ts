@@ -13,7 +13,6 @@ import { StartAnalysis } from './chain/start.analysis';
 import { SQLUtils, upgradeListSchema } from '@wri-monorepos/sql';
 import { logExecutionTime } from './chain/shared';
 import { WriteLocationCount } from './chain/write.location.count';
-import { SaveListAttributes } from './chain/save.list.attributes';
 import { ProcessUploadData } from './chain/process.upload.data';
 import { ClientStoreConnection, Lists } from '@wri-monorepos/sql';
 
@@ -65,7 +64,6 @@ async function worker(input: WorkerType, cb: done) {
   const gadmService = new GADMService();
   const validateLatLongGeojson = new ValidateLatLongGeojson();
   const insertLocationData = new InsertLocationData();
-  const saveListAttributes = new SaveListAttributes();
   const writeLocationCount = new WriteLocationCount();
   const listSchemaName = new ListSchemaName(false);
   const startAnalysis = new StartAnalysis();
@@ -89,7 +87,6 @@ async function worker(input: WorkerType, cb: done) {
     .setNext(processUploadData)
     .setNext(putListAsDraft) // depends on gadmService and validateLatLongGeojson
     .setNext(insertLocationData)
-    .setNext(saveListAttributes)
     .setNext(writeLocationCount)
     .setNext(generateErrorFile)
     .setNext(addNewLocationToAnalysisTable)

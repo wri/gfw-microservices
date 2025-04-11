@@ -17,11 +17,17 @@ BEGIN
 	DECLARE @SQL NVARCHAR(MAX)
 	DECLARE @Filters NVARCHAR(MAX) = ''
 	DECLARE @AnalysisFilters NVARCHAR(MAX) = '1=1'
+	DECLARE @listVersion INT
 	DECLARE @where_clauses NVARCHAR(max) = '';
 
 	SET NOCOUNT ON
 	-- Obtain the location table name and the analysis table name for the list.
-	SELECT @listLocationTableName = list_table_name, @listAnalysisTableName = list_analysis_table_name, @template_id = template_id FROM dbo.Lists WHERE id = @listID
+	SELECT 
+		@listLocationTableName = list_table_name
+		, @listAnalysisTableName = list_analysis_table_name
+		, @template_id = template_id 
+		, @listVersion = version 
+	FROM dbo.Lists WHERE id = @listID
 
 
 	-- Default column location name is not found
@@ -70,7 +76,7 @@ BEGIN
 
 	SET @PRESQL = N'SELECT @list_location_table_cols_query = STUFF(
 		  (
-			SELECT ''], L.['' + [name] FROM sys.columns
+			SELECT ''], lt.['' + [name] FROM sys.columns
 			WHERE
 			  [object_id] = (SELECT [object_id] FROM sys.objects WHERE [name] = ''{LIST_LOCATION_TABLE_NAME}'')
 			  {WHERE_CLAUSE}
@@ -81,13 +87,21 @@ BEGIN
 
 	EXEC sp_executesql @PRESQL, @presql_list_params, @list_location_table_cols_query = @list_location_table_cols_output OUTPUT;
 
+	IF @listVersion >= 2
+		BEGIN
+				IF @jsonAttributeColumns IS NOT NULL
+				BEGIN
+					SET @list_location_table_cols_output = @list_location_table_cols_output + ', ' + @jsonAttributeColumns;
+				END
+		END
+
 	SET @SQL = N'; WITH MyListTable AS (SELECT {LIST_ID} As list_id, {LOCATION_COLUMNS}, location_id as list_location_id'
 	IF @Geometry = 1
 	BEGIN
 	  SET @SQL = @SQL + ', Geometry.ToString() As [WKTGeometry]'
 	END
 
-	SET @SQL = @SQL + ' FROM [{LOCATION_TABLE}] L), ';
+	SET @SQL = @SQL + ' FROM [{LOCATION_TABLE}] lt), ';
 
 	SET @PRESQL = N'SELECT @analysis_location_table_cols_query = STUFF(
 		  (
@@ -291,8 +305,8 @@ DEALLOCATE column_cursor;
 
 
 	EXEC sp_executesql @SQL,
-			  N'@PageNumber INT, @RowsOfPage INT, @OrderByColumn NVARCHAR(MAX), @Order NVARCHAR(5), @Country NVARCHAR(150), @State NVARCHAR(150), @SubState NVARCHAR(150), @AnalysisAreaMin INT, @AnalysisAreaMax INT,@selectedSupplier NVARCHAR(150),@selectedSecondSupplier NVARCHAR(150),@selectedParentCompany NVARCHAR(150),@showRSPOCertified BIT,@selectedOverallThreats NVARCHAR(150),@selectedOverallValues NVARCHAR(150),@selectedMillPriority NVARCHAR(150)',
-			  @PageNumber=@PageNumber, @RowsOfPage=@RowsOfPage, @OrderByColumn=@OrderByColumn, @Order=@Order, @Country=@Country, @State=@State, @SubState=@SubState, @AnalysisAreaMin=@AnalysisAreaMin, @AnalysisAreaMax=@AnalysisAreaMax,@selectedSupplier=@selectedSupplier,@selectedSecondSupplier=@selectedSecondSupplier,@selectedParentCompany=@selectedParentCompany,@showRSPOCertified=@showRSPOCertified,@selectedOverallThreats=@selectedOverallThreats,@selectedOverallValues=@selectedOverallValues,@selectedMillPriority=@selectedMillPriority;
+			  N'@PageNumber INT, @RowsOfPage INT, @OrderByColumn NVARCHAR(MAX), @Order NVARCHAR(5), @Country NVARCHAR(150), @State NVARCHAR(150), @SubState NVARCHAR(150), @AnalysisAreaMin INT, @AnalysisAreaMax INT,@selectedSupplier NVARCHAR(150),@selectedSecondSupplier NVARCHAR(150),@selectedParentCompany NVARCHAR(150),@showRSPOCertified BIT,@selectedOverallThreats NVARCHAR(150),@selectedOverallValues NVARCHAR(150),@selectedMillPriority NVARCHAR(150),@jsonAttributeColumns NVARCHAR(MAX)',
+			  @PageNumber=@PageNumber, @RowsOfPage=@RowsOfPage, @OrderByColumn=@OrderByColumn, @Order=@Order, @Country=@Country, @State=@State, @SubState=@SubState, @AnalysisAreaMin=@AnalysisAreaMin, @AnalysisAreaMax=@AnalysisAreaMax,@selectedSupplier=@selectedSupplier,@selectedSecondSupplier=@selectedSecondSupplier,@selectedParentCompany=@selectedParentCompany,@showRSPOCertified=@showRSPOCertified,@selectedOverallThreats=@selectedOverallThreats,@selectedOverallValues=@selectedOverallValues,@selectedMillPriority=@selectedMillPriority,@jsonAttributeColumns=@jsonAttributeColumns;
 
 END
 `;

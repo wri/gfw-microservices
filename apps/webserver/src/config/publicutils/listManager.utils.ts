@@ -61,7 +61,13 @@ const rollbackUtils = require(path.resolve('./config/privateutils/rollback.utils
 const locationUtils = require(path.resolve('./config/privateutils/location.utils'));
 const { listStatusOrderByWorse } = require(path.resolve('./config/env/listStatuses.constants'));
 import { listStatus } from '@wri-monorepos/constants';
-import { SqlParamType, AnalysisDataType, ListsType, DeleteListTypeOrm } from '@wri-monorepos/sql';
+import {
+  SqlParamType,
+  AnalysisDataType,
+  ListsType,
+  DeleteListTypeOrm,
+  getListJsonAttributesColumnsSqlParam,
+} from '@wri-monorepos/sql';
 import { getAllListsAnalysisStatus, setSelectedAnalyses } from '@wri-monorepos/geo';
 import type { ListsAnalysisStatus } from '@wri-monorepos/sql';
 
@@ -720,7 +726,7 @@ export const getPaginatedAnalysisDataForUserList = (
     subState = null;
   }
 
-  return new Promise((resolve, reject) => {
+  return new Promise(async (resolve, reject) => {
     const parameters = [
       { field: 'listID', type: sql.Int, value: listID },
       { field: 'PageNumber', type: sql.Int, value: page || null },
@@ -767,6 +773,16 @@ export const getPaginatedAnalysisDataForUserList = (
         value: JSON.stringify(selectedMillPriority) || null,
       },
     ];
+
+    const { organization_db: clientDatabase } = req.session;
+    const listJsondAttributes = await getListJsonAttributesColumnsSqlParam(clientDatabase, listID);
+
+    parameters.push({
+      field: 'jsonAttributeColumns',
+      type: sql.NVarChar(sql.MAX),
+      value: listJsondAttributes,
+    });
+
     sqlUtils
       .executeOrganizationStoredProcedure(req, 'uspGetPaginatedAnalysisDataForUserList', parameters)
       .then((recordsets) => {

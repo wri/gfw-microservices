@@ -53,10 +53,8 @@ export class ProcessUploadData extends AbstractHandler<ChainType> {
 
       if (!existingRecord) {
         this.listsAttributesRecords.set(attributeField, newRecord);
-        continue;
-      }
-
-      if (
+      } else if (
+        // we upgrade number in older locations to text if later locations have text
         existingRecord.attribute_type === ListsAttrsTypes.Number &&
         newRecord.attribute_type === ListsAttrsTypes.Text
       ) {

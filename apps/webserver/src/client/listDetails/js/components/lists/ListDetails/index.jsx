@@ -1913,7 +1913,7 @@ export default class ListDetails extends Component {
     const analysisMapping = {
       [FOREST_CHANGE_VIEW]: analysisTypes.FOREST_CHANGE_DIAGNOSTICS,
       [POST_2020_RISK_ASSESSMENT_VIEW]: analysisTypes.DEFORESTATION_KPIS,
-      [COMMODITY_RISK_VIEW]: analysisTypes.ALERTS,
+      [COMMODITY_RISK_VIEW]: analysisTypes.PALM_RISK,
     };
 
     const compareAnalysisStatus = (id, statusToCompareWith) =>
@@ -1969,21 +1969,22 @@ export default class ListDetails extends Component {
     const isEditActionAvailable =
       !isGfwList && !selectedListIsShared && currentUser.access_level_id !== userAccessLevel.VIEWER;
 
-    const isPost2000TreeCoverLossActive = listAnalysesStatus?.some(
-      ({ analysisId }) => analysisId === analysisTypes.FOREST_CHANGE_DIAGNOSTICS
-    );
-    if (isPost2000TreeCoverLossActive || isGfwList) {
+    const analysisIds = listAnalysesStatus?.map(({ analysisId }) => analysisId) || [];
+
+    const isFcdActive = analysisIds.includes(analysisTypes.FOREST_CHANGE_DIAGNOSTICS);
+    const isPalmRiskActive = analysisIds.includes(analysisTypes.PALM_RISK);
+    const isAfiActive = analysisIds.includes(analysisTypes.DEFORESTATION_KPIS);
+
+    if (isFcdActive || isGfwList) {
       listViewOptions.push(FOREST_CHANGE_VIEW);
     }
 
-    if (checkValidViewCommodity(selectedLists, listData)) {
+    // checkValidViewCommodity() is for backward compatibility
+    if (checkValidViewCommodity(selectedLists, listData) || isPalmRiskActive) {
       listViewOptions.push(COMMODITY_RISK_VIEW);
     }
 
-    const isPost2020RiskActive = listAnalysesStatus?.some(
-      ({ analysisId }) => analysisId === analysisTypes.DEFORESTATION_KPIS
-    );
-    if (isPost2020RiskActive) {
+    if (isAfiActive) {
       listViewOptions.push(POST_2020_RISK_ASSESSMENT_VIEW);
     }
 

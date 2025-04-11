@@ -19,7 +19,6 @@ import {
   listStatus,
   analysisTypesOptionsNewNames,
   analysisIdsOptionsMap,
-  MAPSPAM_COMMODITY,
   GADM_FEATURE_FLAG_NAME,
   CURRENT_GADM_VALUE,
   NEW_GADM_VALUE,
@@ -481,20 +480,9 @@ export const isGHGCommodityValid = async (id: number, organizationDb: string): P
       );
       throw new Error('Invalid GHG Commodity');
     }
-    // verify if list has a non valid GHG commodity
-    if (!isValidMapSpamCommodity(listData.Commodity)) {
-      Logger.log('Invalid GHG Commodity');
-      await saveAnalysisStatusErrorInfo(
-        organizationDb,
-        id,
-        'Invalid GHG Commodity',
-        listStatus.Inactive,
-        'GHG'
-      );
-      throw new Error('Invalid GHG Commodity');
-    }
+
     try {
-      if (listData.Commodity === 'GFWP_Other') {
+      if (listData.Commodity?.startsWith('GFWP_')) {
         if (listTableName.length == 0) {
           Logger.log('Invalid GHG Commodity');
           await saveAnalysisStatusErrorInfo(
@@ -508,7 +496,9 @@ export const isGHGCommodityValid = async (id: number, organizationDb: string): P
         }
         const hasYield = listTableName.every((element) => {
           const attributes = JSON.parse(element.attributes || '[]');
-          return attributes.some((item) => item.field === 'yield' && parseFloat(item.value) > 0);
+          return Object.entries(attributes).some(
+            ([key, value]) => key === 'yield' && parseFloat(value as string) > 0
+          );
         });
         // Verify if has yield for all locations
         if (!hasYield) {
@@ -533,16 +523,6 @@ export const isGHGCommodityValid = async (id: number, organizationDb: string): P
     Logger.error('validateGHGCommodity', error.stack || error);
     throw new BadRequestException(error.stack || error);
   }
-};
-
-export const isValidMapSpamCommodity = (Commodity: string): boolean => {
-  if (Object.keys(MAPSPAM_COMMODITY).includes(Commodity)) {
-    return true;
-  }
-  if (Commodity === 'GFWP_Other') {
-    return true;
-  }
-  return false;
 };
 
 //Saves the error info in the database based on the analysisId and listId

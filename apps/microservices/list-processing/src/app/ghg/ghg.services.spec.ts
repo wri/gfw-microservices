@@ -181,6 +181,7 @@ describe('GHG - service', () => {
   });
   it(`Should not find GHG data for an inexistent ID`, async () => {
     const listId = 2;
+    jest.spyOn(SQLUtils, 'queryDB').mockResolvedValueOnce([]);
     clientStoreConnection.getConnection = jest.fn().mockResolvedValueOnce({
       getRepository: () => ({
         findAndCount: () => [[], 0],

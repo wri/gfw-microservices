@@ -6,6 +6,7 @@ import {
   getFormattedAttributes,
   saveListAttributes,
   ListAttributesRecord,
+  ListsAttrsTypes,
 } from '@wri-monorepos/sql';
 import { Logger } from '@nestjs/common';
 import { Feature } from '@wri-monorepos/geo';
@@ -51,6 +52,20 @@ export class ProcessUploadData extends AbstractHandler<ChainType> {
             fieldValue: rawValue ?? '',
           })
         );
+      } else {
+        // check if we need to upgrade a numeric type to text
+        const existingRecord = this.listsAttributesRecords.get(attributeField);
+
+        if (existingRecord && existingRecord.attribute_type === ListsAttrsTypes.Number) {
+          this.listsAttributesRecords.set(
+            attributeField,
+            getFormattedAttributes({
+              listId: list_id,
+              attributeField,
+              fieldValue: String(rawValue),
+            })
+          );
+        }
       }
     }
 

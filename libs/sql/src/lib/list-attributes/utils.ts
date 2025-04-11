@@ -1,6 +1,6 @@
 import { EntitySchema } from 'typeorm';
 import { Logger } from '@nestjs/common';
-import { ListAttributes, Lists, ListSchema, ListSchemaType, ListTemplate } from '../entity';
+import { ListAttributes, ListSchema, ListSchemaType, ListTemplate } from '../entity';
 import { ClientStoreConnection } from '../util';
 import { COMMODITY_MAP_SPAM, MAPSPAM_COMMODITY, GHG_PREFIX, MAPSPAM_CODES } from './comMapSpam';
 

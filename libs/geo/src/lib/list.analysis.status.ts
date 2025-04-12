@@ -526,7 +526,7 @@ export const isGHGCommodityValid = async (id: number, organizationDb: string): P
 
     return true;
   } catch (error) {
-    Logger.error('validateGHGCommodity', error.stack || error);
+    Logger.error('validateYields', error.stack || error);
     throw new BadRequestException(error.stack || error);
   }
 };

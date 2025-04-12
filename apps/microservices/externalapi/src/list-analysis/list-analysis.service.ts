@@ -391,7 +391,7 @@ export class ListAnalysisService {
         throwCustomErrorResponse(error.response?.data?.message, HttpStatus.BAD_REQUEST);
       }
 
-      this.logger.error('create large list internal error', error);
+      this.logger.error('create large list internal error', error.response?.data || error.stack);
       throwCustomErrorResponse('Internal server error', HttpStatus.INTERNAL_SERVER_ERROR);
     }
     const listId = largeListCreated.data.list_id;

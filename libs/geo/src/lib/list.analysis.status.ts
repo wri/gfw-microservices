@@ -494,14 +494,8 @@ export const isGHGCommodityValid = async (id: number, organizationDb: string): P
           );
           throw new Error('Invalid GHG Commodity');
         }
-        const hasYield = listTableName.every((element) => {
-          const attributes = JSON.parse(element.attributes || '[]');
-          return Object.entries(attributes).some(
-            ([key, value]) => key === 'yield' && parseFloat(value as string) > 0
-          );
-        });
         // Verify if has yield for all locations
-        if (!hasYield) {
+        if (!validateYields(listTableName, false)) {
           Logger.log('Missing Yield Values');
           await saveAnalysisStatusErrorInfo(
             organizationDb,
@@ -511,6 +505,18 @@ export const isGHGCommodityValid = async (id: number, organizationDb: string): P
             'GHG'
           );
           throw new Error('Missing Yield Values');
+        }
+      } else {
+        if (!validateYields(listTableName, true)) {
+          Logger.log('Some yield has non-numeric value');
+          await saveAnalysisStatusErrorInfo(
+            organizationDb,
+            id,
+            'Some yield has non-numeric value',
+            listStatus.Inactive,
+            'GHG'
+          );
+          throw new Error('Some yield has non-numeric value');
         }
       }
     } catch (error) {
@@ -522,6 +528,25 @@ export const isGHGCommodityValid = async (id: number, organizationDb: string): P
   } catch (error) {
     Logger.error('validateGHGCommodity', error.stack || error);
     throw new BadRequestException(error.stack || error);
+  }
+};
+
+// Validate yields
+const validateYields = (listAttributes: ListSchemaType[], nullIsAvailable: boolean): boolean => {
+  try {
+    return listAttributes.every((element) => {
+      const attributes = JSON.parse(element.attributes || '{}');
+      const yieldValue = attributes['yield'];
+      // Ensure that MapsPam Commodities do not need to have yield values
+      if (yieldValue === undefined || yieldValue === null) {
+        return nullIsAvailable;
+      }
+      // Check if yield value is a number
+      return !isNaN(parseFloat(yieldValue));
+    });
+  } catch (error) {
+    Logger.error('validateGHGCommodity', error.stack || error);
+    return false;
   }
 };
 

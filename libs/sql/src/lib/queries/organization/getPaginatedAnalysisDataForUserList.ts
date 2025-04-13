@@ -89,7 +89,7 @@ BEGIN
 
 	IF @listVersion >= 2
 		BEGIN
-				IF @jsonAttributeColumns IS NOT NULL
+				IF @jsonAttributeColumns IS NOT NULL AND @jsonAttributeColumns <> ''
 				BEGIN
 					SET @list_location_table_cols_output = @list_location_table_cols_output + ', ' + @jsonAttributeColumns;
 				END

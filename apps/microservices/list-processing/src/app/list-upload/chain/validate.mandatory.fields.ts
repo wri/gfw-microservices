@@ -2,6 +2,45 @@ import { Logger } from '@nestjs/common';
 import { AbstractHandler, ChainType, RequestNewList } from './types';
 import * as path from 'path';
 
+export const convertProperties = (feature) => {
+  const mapping = {
+    Investment: 'locationName',
+    'Investment Name': 'locationName',
+    Location_N: 'locationName',
+    'Location Name': 'locationName',
+    Latitude: 'latitude',
+    Longitude: 'longitude',
+    Analysis_R: 'analysisRadius',
+    'Analysis Radius': 'analysisRadius',
+    Analysis_A: 'analysisArea',
+    'Analysis Area': 'analysisArea',
+    Location_C: 'Location Classification',
+    Company_ID: 'Company ID',
+    Volume: 'Volume',
+    Owner_Name: 'Owner Name',
+    Owner_ID: 'Owner ID',
+    Company_Na: 'Company Name',
+    Supplier_N: 'Supplier Name',
+    Facility_N: 'Facility Name',
+    Refinery_N: 'Refinery Name',
+    Certificat: 'Certification',
+    Time_Horiz: 'Time Horizon',
+    Start_Date: 'Start Date',
+    End_Date: 'End Date',
+  };
+
+  const newProperties = {};
+  for (const [key, value] of Object.entries(feature.properties)) {
+    const newKey = mapping[key] || key;
+    newProperties[newKey] = value;
+  }
+
+  return {
+    ...feature,
+    properties: newProperties,
+  };
+};
+
 const mandatoryFields = {
   zip: {
     '.polygon': ['locationName'],
@@ -41,6 +80,8 @@ export class ValidateMandatoryFields extends AbstractHandler<ChainType> {
     if (!fieldsToCheck) {
       throw new Error(`Invalid file extension: ${fileExtension}`);
     }
+
+    geojson.features = geojson.features.map((feature) => convertProperties(feature));
 
     // Check if the file is a zip shapefile and determine the geometry type
     if (['.zip', '.json', '.geojson'].includes(fileExtension)) {

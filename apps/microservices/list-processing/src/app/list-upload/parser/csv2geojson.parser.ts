@@ -16,32 +16,6 @@ export const csv2geojson = async (
   preview = false,
   includeLatLon = true
 ): Promise<FeatureCollection> => {
-  const toCamelCase = (str: string) => {
-    return str
-      .toLowerCase()
-      .trim()
-      .replace(/(?:^\w|[A-Z]|\b\w|\s+)/g, (match, index) =>
-        index === 0 ? match.toLowerCase() : match.toUpperCase()
-      )
-      .replace(/\s+/g, '');
-  };
-
-  const transformKeysToCamelCase = (obj: unknown) => {
-    if (typeof obj !== 'object' || obj === null) {
-      return obj; // Return if obj is not an object
-    }
-
-    if (Array.isArray(obj)) {
-      return obj.map((item) => transformKeysToCamelCase(item)); // Recursively handle arrays
-    }
-
-    return Object.keys(obj).reduce((acc, key) => {
-      const camelCaseKey = toCamelCase(key);
-      acc[camelCaseKey] = transformKeysToCamelCase(obj[key]); // Recursively handle nested objects
-      return acc;
-    }, {});
-  };
-
   const standardizeLocationData = (data: LocationData): LocationData => {
     const latitudeKeys = ['Latitude', 'latitude', 'lat', 'Lat'];
     const longitudeKeys = ['Longitude', 'longitude', 'long', 'Lon', 'lng'];
@@ -134,7 +108,6 @@ export const csv2geojson = async (
     (data as Array<LocationData>).forEach((row: LocationData) => {
       row = standardizeLocationData(row);
       row = createGeometry(row, includeLatLon);
-      row = transformKeysToCamelCase(row);
 
       if (row['errorDetails']) {
         logger.error(row['errorDetails']);

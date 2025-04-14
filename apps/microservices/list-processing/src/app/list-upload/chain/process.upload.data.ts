@@ -9,7 +9,6 @@ import { Logger } from '@nestjs/common';
 import { Feature } from '@wri-monorepos/geo';
 import { GeoJSONGeometry, stringify } from 'wellknown';
 import { ConvertPoint2Polygon } from './convert.point.2.polygon';
-import * as turf from '@turf/turf';
 
 export class ProcessUploadData extends AbstractHandler<ChainType> {
   private readonly logger = new Logger(ProcessUploadData.name);
@@ -22,12 +21,12 @@ export class ProcessUploadData extends AbstractHandler<ChainType> {
     this.columnsToExclude = getListsLocsColumnsToExclude();
   }
 
-  getValidAttribtes(properties: string[]): string[] {
+  getValidAttributes(properties: string[]): string[] {
     return properties.filter((col) => !['', ...this.columnsToExclude].includes(col));
   }
 
   getFeatureAttributes(featurePayload: Feature): string {
-    const validAttrs = this.getValidAttribtes(Object.keys(featurePayload.properties || {}));
+    const validAttrs = this.getValidAttributes(Object.keys(featurePayload.properties || {}));
 
     this.logger.log(`Processing list-xxx.attributes. Excluding Columns: ${this.columnsToExclude}`);
 
@@ -86,15 +85,6 @@ export class ProcessUploadData extends AbstractHandler<ChainType> {
     return await Promise.all(
       features.map(async (feature, index) => {
         try {
-          if (
-            (feature.geometry.type === 'Polygon' || feature.geometry.type === 'MultiPolygon') &&
-            feature.properties.analysisArea == 0
-          ) {
-            const area = turf.area(feature);
-            // Convert from square meters to hectares
-            feature.properties.analysisArea = area / 10000;
-          }
-
           const processedFeature = await this.processFeature(
             feature,
             index + 1,
@@ -103,7 +93,6 @@ export class ProcessUploadData extends AbstractHandler<ChainType> {
           );
 
           // Calculate area for polygon features
-
           return processedFeature;
         } catch (error) {
           this.logger.error(`Error processing feature`, error.stack || error);
@@ -119,7 +108,7 @@ export class ProcessUploadData extends AbstractHandler<ChainType> {
       return [];
     }
     const { list_id } = request.request as RequestNewList;
-    const validAttrs = this.getValidAttribtes(
+    const validAttrs = this.getValidAttributes(
       Object.keys(request.geojson.features[0]?.properties ?? {})
     );
 

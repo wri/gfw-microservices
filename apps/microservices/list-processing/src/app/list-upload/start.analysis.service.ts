@@ -28,6 +28,7 @@ import { ConvertGeojsonProperties } from './chain/convert.geojson.properties';
 import { PutListAsDraft } from './chain/put.list.as.draft';
 import { GenerateErrorFile } from './chain/generate.error.file';
 import { ConvertCommodityToMapsPamCode } from './chain/convert.commodity.mapspam';
+import { AdjustGeoData } from './chain/adjust.geo.data';
 
 type WorkerType = {
   request: RequestLargeListProcess;
@@ -76,6 +77,7 @@ async function worker(input: WorkerType, cb: done) {
   const convertGeojsonProperties = new ConvertGeojsonProperties();
   const putListAsDraft = new PutListAsDraft(input.config, input.emailService);
   const generateErrorFile = new GenerateErrorFile(s3Service, input.config);
+  const adjustGeoData = new AdjustGeoData();
 
   downloadS3File
     .setNext(parseData)
@@ -84,6 +86,7 @@ async function worker(input: WorkerType, cb: done) {
     .setNext(validateMandatoryFields)
     .setNext(validateLocationName)
     .setNext(convertPoint2Polygon)
+    .setNext(adjustGeoData)
     .setNext(gadmService) // depends on convertPoint2Polygon
     .setNext(validateLatLongGeojson) // depends on gadmService
     .setNext(processUploadData)

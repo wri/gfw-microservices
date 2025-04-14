@@ -6,7 +6,6 @@ import { IFeatureSet, IGeometry, queryFeatures } from '@esri/arcgis-rest-feature
 import { LambdaClient, InvokeCommand, InvocationType } from '@aws-sdk/client-lambda';
 import { NodeHttpHandler } from '@smithy/node-http-handler';
 import { S3Service } from '@wri-monorepos/aws';
-import * as turf from '@turf/turf';
 
 const PRODUCTION_ENVIRONMENTS = ['production', 'ProdV2'];
 const POOL_SIZE = 5;
@@ -76,70 +75,13 @@ export class GADMService extends AbstractHandler<ChainType> {
       : GADM_SERVICE__STAGING;
   };
 
-  getLatLngFromFeature = (feature: Feature) => {
-    if (
-      feature.properties.longitude !== undefined &&
-      feature.properties.latitude !== undefined &&
-      feature.properties.longitude !== null &&
-      feature.properties.latitude !== null
-    ) {
-      return {
-        longitude: feature.properties.longitude as number,
-        latitude: feature.properties.latitude as number,
-      };
-    }
-
-    try {
-      const centroid = turf.centroid(feature.geometry as unknown as turf.AllGeoJSON);
-      return {
-        longitude: centroid.geometry.coordinates[0],
-        latitude: centroid.geometry.coordinates[1],
-      };
-    } catch (e) {
-      this.logger.error('Error in getting centroid from polygon', e);
-    }
-
-    if (
-      feature.geometry &&
-      feature.geometry.type === 'Polygon' &&
-      feature.geometry.coordinates.length > 0
-    ) {
-      // Assuming the coordinates are in the format [ [ [x1, y1], [x2, y2], ... ] ]
-      const firstPoint = Array.isArray(feature.geometry.coordinates[0][0])
-        ? feature.geometry.coordinates[0][0]
-        : feature.geometry.coordinates[0];
-      return {
-        longitude: firstPoint[0] as number,
-        latitude: firstPoint[1] as number,
-      };
-    }
-    if (
-      feature.geometry &&
-      feature.geometry.type === 'Point' &&
-      feature.geometry.coordinates.length > 0
-    ) {
-      // Assuming the coordinates are in the format [ [ [x1, y1], [x2, y2], ... ] ]
-      const firstPoint = feature.geometry.coordinates;
-      return {
-        longitude: firstPoint[0],
-        latitude: firstPoint[1],
-      };
-    }
-
-    return {
-      latitude: 0,
-      longitude: 0,
-      hasUnanalyzableError: true,
-    };
-  };
-
   /**
    * Function to perform a GET request using axios.
    * @param {Feature} feature - The feature object containing properties and geometry.
    * @returns {Promise<IFeatureSet>} - A promise that resolves to the query result.
    */
   async queryGADM(feature: Feature): Promise<IFeatureSet> {
-    const { latitude, longitude, hasUnanalyzableError } = this.getLatLngFromFeature(feature);
+    const { latitude, longitude, hasUnanalyzableError } = feature.properties;
 
     if (hasUnanalyzableError) {
       throw new Error('Feature does not have valid longitude/latitude or geometry.');

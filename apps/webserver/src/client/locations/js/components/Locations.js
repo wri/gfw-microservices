@@ -87,14 +87,12 @@ class Locations extends Component {
     });
 
     const searchParams = new URLSearchParams(location.search);
-    const redirectUrl = searchParams.get('redirect-to-add-locations');
+    const redirectTo = searchParams.get('redirectTo');
 
-    if (redirectUrl) {
-      if (isUploadListUiAvailable) {
-        history.replace('/upload-location');
-      } else {
-        store.dispatch(changeView('add'));
-        history.replace('/add');
+    if (redirectTo) {
+      history.replace(`/${redirectTo}`);
+      if (!isUploadListUiAvailable) {
+        store.dispatch(changeView(redirectTo));
       }
     }
   }

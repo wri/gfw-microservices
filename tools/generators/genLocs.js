@@ -33,7 +33,7 @@ function outputHeader(fileName) {
   if (format === 'CSV') {
     headerString = 'Location Name,Latitude,Longitude,Analysis Radius,Analysis Area';
     if (attributes) {
-      headerString += ',Attr1';
+      headerString += ',Attr bC 1';
     }
     headerString += '\n';
     if (polygon) {
@@ -45,9 +45,9 @@ function outputHeader(fileName) {
 <Document id="root_doc">
 <Schema name="pro_kml_schema" id="pro_kml_schema">
 <SimpleField name="Location Name" type="string"></SimpleField>
-<SimpleField name="Analysis_R" type="string"></SimpleField>\n`;
+<SimpleField name="Analysis Radius" type="string"></SimpleField>\n`;
     if (attributes) {
-      headerString += '<SimpleField name="Attr1" type="string"></SimpleField>\n';
+      headerString += '<SimpleField name="Attr bC 1" type="string"></SimpleField>\n';
     }
     headerString += `</Schema>
 <Folder><name>pro_kml_schema</name>`;
@@ -76,11 +76,9 @@ function outputLocation(fileName, locName, lat, lon) {
 	<Style><LineStyle><color>ff0000ff</color></LineStyle><PolyStyle><fill>0</fill></PolyStyle></Style>
 	<ExtendedData><SchemaData schemaUrl="#pro_kml_schema">
 		<SimpleData name="Location Name">${locName}</SimpleData>`;
-      locString += polygon
-        ? ''
-        : `<SimpleData name="Analysis_R">${radius}</SimpleData><SimpleData name="Analysis_A">0</SimpleData>`;
+      locString += polygon ? '' : `<SimpleData name="Analysis Radius">${radius}</SimpleData>`;
       if (attributes) {
-        locString += `\n<SimpleData name="Attr1">${randomAttr}</SimpleData>`;
+        locString += `\n<SimpleData name="Attr bC 1">${randomAttr}</SimpleData>`;
       }
       locString += '</SchemaData></ExtendedData>\n';
       if (polygon) {
@@ -102,10 +100,11 @@ function outputLocation(fileName, locName, lat, lon) {
       locString += `      {
         "type": "Feature",
         "properties": {"Location Name": "${locName}"`;
-      locString += polygon ? '},\n' : `,"Analysis Radius": ${radius},"Analysis Area": 0},\n`;
+      locString += polygon ? '},\n' : `,"Analysis Radius": ${radius},"Analysis Area": 0`;
       if (attributes) {
-        locString += `        "Attr1": "${randomAttr}",\n`;
+        locString += `,"Attr bC 1": "${randomAttr}"`;
       }
+      locString += '},\n';
       if (polygon) {
         locString += `        "geometry": {
           "type": "Polygon",

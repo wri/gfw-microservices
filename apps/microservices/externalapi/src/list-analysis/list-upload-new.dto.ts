@@ -44,7 +44,7 @@ export class ListUploadNewErrorResponse {
 
 export const prepareUploadRequestSchema = z.object({
   userEmail: z.string().email(),
-  fileType: z.enum(['csv', 'xlsx', 'zip']),
+  fileType: z.enum(['csv', 'xlsx', 'zip', 'kml', 'kmz', 'json', 'geojson']),
 });
 
 export type PrepareUploadRequestSchema = z.infer<typeof prepareUploadRequestSchema>;

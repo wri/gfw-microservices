@@ -26,6 +26,7 @@ import { requestGeoTrellisAnalyzeList } from '../../../../../locations/js/utils/
 import { useTransifexTranslation } from '../../../../../hooks';
 import store from '../../../../../locations/js/store';
 import './ListActions.scss';
+import featureFlags from '../../../../../../utils/general.utils';
 
 const ListActions = ({
   selectedList,
@@ -82,6 +83,8 @@ const ListActions = ({
     },
   };
   const [isSearchBarOpen, setIsSearchBarOpen] = useState(false);
+  const { isUploadListUiAvailable } = featureFlags;
+  const redirectUploadLocationUrl = isUploadListUiAvailable ? 'upload-location' : 'add';
 
   const closeSearchBarHandler = () => {
     setIsSearchBarOpen(false);
@@ -222,7 +225,7 @@ const ListActions = ({
               <Button
                 sx={blackButtonStyle}
                 startIcon={<Add height="14px" />}
-                href="/locations?redirect-to-add-locations=true"
+                href={`/locations?redirectTo=${redirectUploadLocationUrl}`}
               >
                 {addLocationsButtonLabel}
               </Button>

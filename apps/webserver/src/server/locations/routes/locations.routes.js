@@ -1490,6 +1490,10 @@ module.exports = (app, limiter) => {
       });
   });
 
+  app.get(['/locations/upload-location', '/locations/upload-location/*'], (_, res) => {
+    res.redirect('/locations?redirectTo=upload-location');
+  });
+
   app.get('/locations/*', (_, res) => {
     res.redirect('/locations');
   });

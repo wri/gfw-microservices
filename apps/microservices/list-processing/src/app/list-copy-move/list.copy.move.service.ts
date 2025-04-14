@@ -24,11 +24,13 @@ import { PutListAsDraft } from '../list-upload/chain/put.list.as.draft';
 import { ProcessUploadData } from '../list-upload/chain/process.upload.data';
 import { ConvertGeojsonProperties } from '../list-upload/chain/convert.geojson.properties';
 import { AbstractHandler } from '../list-upload/chain/types';
+import { CommodityService } from '../list/commodity.service';
 @Injectable()
 export class ListCopyMoveService {
   constructor(
     private readonly config: ConfigService<ServerConfigType, true>,
-    private readonly emailService: EmailService
+    private readonly emailService: EmailService,
+    private readonly commodityService: CommodityService
   ) {}
 
   private readonly logger = new Logger(ListCopyMoveService.name);
@@ -120,8 +122,10 @@ export class ListCopyMoveService {
           clientDatabase,
           analysisIds,
           gfwListId,
+          selectedListId,
           commodity: commodityType,
           saveAsDraft: isSaveAsDraft,
+          commodityService: this.commodityService,
         });
         this.logger.log(`list created with id: ${list_id}`);
         moveToList = {

@@ -1,21 +1,33 @@
 import { GeoJson, GeoService } from '@wri-monorepos/geo';
 
-const expandAttributes = (attributes) => {
-  const jsonArray = JSON.parse(attributes);
+const isEmpty = (str) => {
+  return !str || str.length === 0 || !str.trim(); //check if string is null, empty, or contains only whitespace
+};
 
+const expandAttributes = (attributes) => {
   const convertedObject = {};
 
-  jsonArray.forEach((item) => {
-    let value = item.value;
+  if (isEmpty(attributes)) {
+    return convertedObject;
+  }
 
-    if (item.type === 'number') {
-      value = Number(value); // Convert to number if type is "number"
-    }
+  const jsonArray = JSON.parse(attributes);
 
-    convertedObject[item.field] = value;
-  });
+  try {
+    jsonArray.forEach((item) => {
+      let value = item.value;
 
-  return convertedObject;
+      if (item.type === 'number') {
+        value = Number(value); // Convert to number if type is "number"
+      }
+
+      convertedObject[item.field] = value;
+    });
+
+    return convertedObject;
+  } catch (error) {
+    return convertedObject;
+  }
 };
 
 export const assembleGeojson = async (featProps, uploadingData): Promise<GeoJson> => {

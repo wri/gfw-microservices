@@ -1,5 +1,3 @@
-// src/example/example.service.ts
-
 import { Injectable, Logger } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import {
@@ -111,14 +109,16 @@ export class CommodityService {
       const connection = await clientStoreConnection.getConnection(organizationDatabase, [Lists]);
       const listRepository = connection.getRepository(Lists);
 
-      // TODO: remove the case sensitivity when ticket 3983 is done
+      const commodityName =
+        ConvertCommodityToMapsPamCode.getCommodityName(commodity) || commodity.replace(/\s+/g, '_');
+
       const lists = await listRepository.find({
         where: [
           {
             Commodity: Raw(
               (alias) =>
-                `LOWER(${alias}) COLLATE Latin1_General_CI_AI = LOWER(:commodity) COLLATE Latin1_General_CI_AI`, // makes the commodity name lower case and removes accents, so that "Maíz" matches "maiz", for example
-              { commodity: ConvertCommodityToMapsPamCode.getCommodityName(commodity) }
+                `${alias} COLLATE Latin1_General_CI_AI = :commodity COLLATE Latin1_General_CI_AI`, // ignores case and accents, so that "Maíz" matches "maiz"
+              { commodity: commodityName }
             ),
           },
           listTemplate ? { templateId: listTemplate.id } : null,

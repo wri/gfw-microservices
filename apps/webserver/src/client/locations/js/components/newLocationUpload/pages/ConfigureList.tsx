@@ -24,7 +24,7 @@ import { PillButton } from '../../../../../components';
 import { useUploadLocation } from '../contexts';
 import { NavBar } from '../components';
 import { UserList } from '../types';
-import { typeOfAnalysisMap, commodities } from '../utils/constants';
+import { typeOfAnalysisMap, commodities, customCommodities } from '../utils/constants';
 import { useFetch } from '../../../../../hooks';
 import debounce from 'lodash/debounce';
 import { fetchListsByCommodity } from '../../../../../api/list';
@@ -112,7 +112,11 @@ export function ConfigureList({ userLists }: { userLists: UserList[] }) {
       return;
     }
 
-    getListsByCommodity(selectedCommodity);
+    const commodityKey = customCommodities.includes(selectedCommodity)
+      ? `GFWP_${selectedCommodity}`
+      : selectedCommodity;
+
+    getListsByCommodity(commodityKey);
   }, [selectedCommodity]);
 
   const getListsByCommodity = (selectedCommodity: string) => {
@@ -159,7 +163,7 @@ export function ConfigureList({ userLists }: { userLists: UserList[] }) {
       return;
     }
 
-    debouncedGetListsByCommodity(customCommodity);
+    debouncedGetListsByCommodity(`GFWP_${customCommodity}`);
   }, [customCommodity]);
 
   const handleAnalysisChange = (

@@ -80,7 +80,8 @@ export class ListService {
     const uploadListLpFlag = flags.find((f) => f.flagId === 'UploadListLp') as FeatureFlag;
 
     if (uploadListLpFlag.flagState) {
-      request.path = request.path.replace('s3://gfwpro-lpl-dev/', '');
+      const bucket = this.config.get('LARGE_PROCESSING_LIST_BUCKET', { infer: true });
+      request.path = request.path.replace(`s3://${bucket}/`, '');
       return this.startAnalysisService.run(request);
     }
     return this.deprecatedStartAnalysisService.run(request);

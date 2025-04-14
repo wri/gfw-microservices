@@ -11,7 +11,6 @@ export type AttributeType = {
 export type ChainType = {
   geojson?: FeatureCollection;
   request: RequestNewList | PreviewListRequest;
-  attributes?: ListAttributesRecord[];
 };
 
 export interface ListAttributesRecord {
@@ -92,14 +91,14 @@ export abstract class AbstractHandler<T> implements Handler<T> {
         );
         const chainInput = (result as ChainType).request as RequestNewList;
         chainInput.hasUnanalyzableError = true;
+        const geoJsonOut = (result as ChainType).geojson as FeatureCollection;
+        const fakeErrFeature = {
+          properties: { errorDetails: error.message },
+          geometry: {} as any,
+          type: 'Feature',
+        };
+        geoJsonOut.features.push(fakeErrFeature as Feature);
         if (chainInput.preview) {
-          const geoJsonOut = (result as ChainType).geojson as FeatureCollection;
-          const fakeErrFeature = {
-            properties: { errorDetails: error.message },
-            geometry: null,
-            type: 'Feature',
-          };
-          geoJsonOut.features.push(fakeErrFeature as Feature);
           break;
         }
       }

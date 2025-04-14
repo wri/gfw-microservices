@@ -7,7 +7,7 @@ import { COMMODITY_MAP_SPAM, MAPSPAM_COMMODITY, GHG_PREFIX, MAPSPAM_CODES } from
 export function inferType(value: unknown): string {
   return typeof value === 'number' ? 'number' : 'string';
 }
-enum ListsAttrsTypes {
+export enum ListsAttrsTypes {
   Number = 1,
   Text = 2,
 }
@@ -127,4 +127,31 @@ function getGHGCodesMap(): GHGCodeMapping[] {
     label: MAPSPAM_COMMODITY[code],
     commodities: codeMap[code] || [],
   }));
+}
+export async function getListsAttributes(clientDatabase: string, findOptions) {
+  try {
+    const clientStoreConnection = new ClientStoreConnection();
+    const connection = await clientStoreConnection.getConnection(clientDatabase);
+    const listAttributesRepository = connection.getRepository(ListAttributes);
+
+    return await listAttributesRepository.find(findOptions);
+  } catch (error) {
+    Logger.warn(`getListsAttributes`, error.stack || error);
+    return [];
+  }
+}
+export async function getListJsonAttributesColumnsSqlParam(clientDatabase: string, listId: number) {
+  const listAttributesRecords = await getListsAttributes(clientDatabase, {
+    where: {
+      list_id: listId,
+    },
+  });
+
+  const castStringArr = listAttributesRecords.map((attrRecord) => {
+    const fieldTypeCast =
+      attrRecord.attribute_type === ListsAttrsTypes.Number ? 'INT' : 'NVARCHAR(MAX)';
+    return `CAST(JSON_VALUE(lt.attributes, '$."${attrRecord.attribute_name}"') AS ${fieldTypeCast}) AS [${attrRecord.attribute_name}]`;
+  });
+
+  return castStringArr.join(',');
 }

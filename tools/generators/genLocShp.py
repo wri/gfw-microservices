@@ -34,8 +34,8 @@ schemaPoint = {
 }
 
 if args.attributes:
-    schemaPoly["properties"] += [("Attr1", "str")]
-    schemaPoint["properties"] += [("Attr1", "str")]
+    schemaPoly["properties"] += [("Attr bC 1", "str")]
+    schemaPoint["properties"] += [("Attr bC 1", "str")]
 
 # open a fiona object
 shpFile = fiona.open(
@@ -70,7 +70,7 @@ def genLoc(locName, lat, lon):
         baseObj["properties"]["Analysis_Radius"] = .1
         baseObj["properties"]["Analysis_Area"] = 0
     if args.attributes:
-        baseObj["properties"]["Attr1"] = 'A' + ''.join(random.choices('0123456789', k=3))
+        baseObj["properties"]["Attr bC 1"] = 'A' + ''.join(random.choices('0123456789', k=3))
     return baseObj
 
 startLat = -13.0

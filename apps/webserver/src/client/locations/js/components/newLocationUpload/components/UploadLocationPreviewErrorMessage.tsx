@@ -91,7 +91,7 @@ const errorMessageBuilder = ({
     };
   }
 
-  if (mainError === 'Error while parsing the data') {
+  if (mainError?.startsWith('Error while parsing the data')) {
     return {
       title: 'Invalid file',
       body: 'Your file is invalid. Please try another one.',

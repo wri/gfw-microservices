@@ -1,5 +1,9 @@
 #!/bin/bash
 
+# This script creates a release tag for the specified microservice and environment.
+# Usage: ./create-release.sh [branch] [microservice] [environment]
+# Example: ./create-release.sh release-candidate-76 LP STG
+
 # Function to create a release tag using GitHub CLI
 create_release() {
   local service=$1

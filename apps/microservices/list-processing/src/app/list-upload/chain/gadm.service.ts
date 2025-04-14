@@ -6,6 +6,8 @@ import { IFeatureSet, IGeometry, queryFeatures } from '@esri/arcgis-rest-feature
 import { LambdaClient, InvokeCommand, InvocationType } from '@aws-sdk/client-lambda';
 import { NodeHttpHandler } from '@smithy/node-http-handler';
 import { S3Service } from '@wri-monorepos/aws';
+import { featureFlagsService } from '@wri-monorepos/shared';
+import { FeatureFlag } from '@wri-monorepos/sql';
 
 const PRODUCTION_ENVIRONMENTS = ['production', 'ProdV2'];
 const POOL_SIZE = 5;
@@ -104,9 +106,67 @@ export class GADMService extends AbstractHandler<ChainType> {
     return response;
   }
 
+  getGadmData = async (feature: Feature) => {
+    const { latitude, longitude, hasUnanalyzableError } = feature.properties;
+    if (hasUnanalyzableError) {
+      throw new Error('Feature does not have valid longitude/latitude or geometry.');
+    }
+
+    const geometry = {
+      type: 'Point',
+      coordinates: [longitude, latitude],
+    };
+    const sql = "SELECT gid_2, name_0, name_1, name_2 FROM mytable WHERE adm_level='2'";
+    try {
+      const response = await fetch(
+        'https://data-api.globalforestwatch.org/dataset/gadm_administrative_boundaries/v4.1.64/query/json',
+        {
+          method: 'POST',
+          headers: {
+            'x-api-key': process.env.GFW_DATA_API_KEY,
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ sql, geometry }),
+        }
+      );
+
+      if (!response.ok) {
+        throw new Error(`Failed to fetch data: ${response.statusText}`);
+      }
+
+      const { data } = await response.json();
+
+      return data;
+    } catch (error) {
+      this.logger.error(`Error fetching GADM data`, error.response?.data || error.stack);
+      return null;
+    }
+  };
+
+  addGeoReferenceData = async (feature: Feature) => {
+    try {
+      const response = await this.getGadmData(feature);
+
+      if (response.length) {
+        feature.properties = {
+          ...feature.properties,
+          subState: response[0].name_2,
+          state: response[0].name_1,
+          country: response[0].name_0,
+          gadmid: response[0].gid_2.split('_')[0],
+        };
+      }
+    } catch (e) {
+      this.logger.error('Error in queryGADM', e.stack || e.message);
+      return {
+        hasUnanalyzableError: true,
+      };
+    }
+  };
   getGeoReferenceData = async (feature: Feature) => {
     try {
       const response = await this.queryGADM(feature);
+
       if (response.features && response.features.length > 0) {
         feature.properties = {
           ...feature.properties,
@@ -175,6 +235,10 @@ export class GADMService extends AbstractHandler<ChainType> {
     await this.getGeoReferenceData(feature);
   };
 
+  composeResultsWithGadmData = async (feature: Feature) => {
+    await this.addGeoReferenceData(feature);
+  };
+
   async asyncPoolAll(...args) {
     const results = [];
     for await (const undefRet of asyncPool(...args)) {
@@ -186,6 +250,14 @@ export class GADMService extends AbstractHandler<ChainType> {
 
   async handle(request: ChainType): Promise<ChainType> {
     const { geojson } = request;
+
+    const { organization_id } = request.request as RequestNewList;
+
+    const { getFeatureFlagsForCurrentOrg } = await featureFlagsService();
+    const flags = await getFeatureFlagsForCurrentOrg(organization_id);
+
+    const gadm41FeatureFlag = flags.find((f) => f.flagId === 'gadm41') as FeatureFlag;
+
     const { path, preview = false } = request.request as PreviewListRequest;
     const { features } = geojson as FeatureCollection;
 
@@ -194,7 +266,11 @@ export class GADMService extends AbstractHandler<ChainType> {
       return request;
     }
 
-    const results = await this.asyncPoolAll(POOL_SIZE, features, this.composeResults);
+    const method = gadm41FeatureFlag?.flagState
+      ? this.composeResultsWithGadmData
+      : this.composeResults;
+
+    const results = await this.asyncPoolAll(POOL_SIZE, features, method);
 
     if (results.some((result) => result?.hasUnanalyzableError)) {
       (request.request as RequestNewList).hasUnanalyzableError = true;

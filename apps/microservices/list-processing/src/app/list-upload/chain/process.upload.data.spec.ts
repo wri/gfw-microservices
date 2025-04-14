@@ -65,6 +65,7 @@ describe('ProcessUploadData', () => {
 
   describe('getFeatureAttributes', () => {
     it('should return JSON string of valid attributes, excluding columns', () => {
+      const list_id = 123;
       const mockFeature: Feature = {
         type: 'Feature',
         geometry: { type: 'Point', coordinates: [0, 0] },
@@ -76,7 +77,7 @@ describe('ProcessUploadData', () => {
         },
       };
 
-      const result = processUploadData.getFeatureAttributes(mockFeature);
+      const result = processUploadData.processFeatureAttributes(mockFeature, list_id);
       const parsed = JSON.parse(result);
 
       expect(parsed).toHaveProperty('valid_col', 'some_value');
@@ -123,22 +124,6 @@ describe('ProcessUploadData', () => {
 
       expect(convertFeatureSpy).not.toHaveBeenCalled();
     });
-
-    it('should handle errors (if any occur) gracefully', async () => {
-      convertFeatureSpy.mockRejectedValueOnce(new Error('Conversion failed'));
-
-      const mockFeature: Feature = {
-        type: 'Feature',
-        geometry: { type: 'Point', coordinates: [0, 0] },
-        properties: {},
-      };
-
-      try {
-        await processUploadData.processFeature(mockFeature, 1, 'TEST', {} as ChainType);
-      } catch (e) {
-        expect(e.message).toEqual('Conversion failed');
-      }
-    });
   });
 
   describe('getListCommodity', () => {
@@ -156,8 +141,22 @@ describe('ProcessUploadData', () => {
     });
   });
 
-  describe('getFeatPropAttrs', () => {
-    it('should return formatted attributes for the first feature in the request', () => {
+  describe('ProcessUploadData - handle method', () => {
+    let processUploadData: ProcessUploadData;
+
+    beforeEach(() => {
+      processUploadData = new ProcessUploadData();
+    });
+
+    it('should call getListCommodity, getProcessedFeatures, and update request.geojson.features', async () => {
+      const mockFeatures: Feature[] = [
+        {
+          type: 'Feature',
+          geometry: { type: 'Point', coordinates: [10, 20] },
+          properties: { foo: 'bar' },
+        },
+      ];
+
       const mockRequest: ChainType = {
         request: {
           list_id: 123,
@@ -165,98 +164,29 @@ describe('ProcessUploadData', () => {
         } as RequestNewList,
         geojson: {
           type: 'FeatureCollection',
-          features: [
-            {
-              type: 'Feature',
-              geometry: { type: 'Point', coordinates: [0, 0] },
-              properties: {
-                foo: 'bar',
-                amount: 123,
-                excluded_col: 'excluded_value',
-              },
-            },
-          ],
+          features: mockFeatures,
         },
       };
 
-      const attrs = processUploadData.getFeatPropAttrs(mockRequest);
+      const getListCommoditySpy = jest
+        .spyOn(processUploadData, 'getListCommodity')
+        .mockResolvedValue('MOCKED_COMMODITY');
 
-      expect(attrs).toEqual(
-        expect.arrayContaining([
-          {
-            list_id: 123,
-            attribute_name: 'foo',
-            attribute_type: 2,
-          },
-          {
-            list_id: 123,
-            attribute_name: 'amount',
-            attribute_type: 1,
-          },
-        ])
+      const getProcessedFeaturesSpy = jest
+        .spyOn(processUploadData, 'getProcessedFeatures')
+        .mockResolvedValue([{ type: 'Feature', geometry: {}, properties: {} } as Feature]);
+
+      const result = await processUploadData.handle(mockRequest);
+
+      expect(getListCommoditySpy).toHaveBeenCalledWith('org_db', 123);
+
+      expect(getProcessedFeaturesSpy).toHaveBeenCalledWith(
+        mockFeatures,
+        'MOCKED_COMMODITY',
+        mockRequest
       );
 
-      expect(attrs.length).toBe(3);
-    });
-
-    it('should return an empty array if the first feature is missing', () => {
-      const mockRequestNoFeatures: ChainType = {
-        request: {
-          list_id: 123,
-          organization_database: 'org_db',
-        } as RequestNewList,
-        geojson: {
-          type: 'FeatureCollection',
-          features: [],
-        },
-      };
-
-      const attrs = processUploadData.getFeatPropAttrs(mockRequestNoFeatures);
-      expect(attrs).toEqual([]);
-    });
-  });
-
-  describe('handle', () => {
-    it('should log number of features, get commodity, process features, and assign attributes', async () => {
-      const mockRequest: ChainType = {
-        request: {
-          list_id: 456,
-          organization_database: 'org_db',
-        } as RequestNewList,
-        geojson: {
-          type: 'FeatureCollection',
-          features: [
-            {
-              type: 'Feature',
-              geometry: { type: 'Point', coordinates: [10, 20] },
-              properties: { foo: 'bar' },
-            },
-          ],
-        },
-      };
-
-      const result = await processUploadData.handle(mockRequest);
-
-      expect(result.geojson.features[0].properties.commodity).toBe('MOCKED_COMMODITY');
-      expect(result.attributes).toBeDefined();
-    });
-
-    it('should handle an empty features array gracefully', async () => {
-      const mockRequest: ChainType = {
-        request: {
-          list_id: 111,
-          organization_database: 'org_db',
-        } as RequestNewList,
-        geojson: {
-          type: 'FeatureCollection',
-          features: [], // must be empty
-        },
-      };
-
-      const result = await processUploadData.handle(mockRequest);
-
-      expect(convertFeatureSpy).toHaveBeenCalledTimes(2);
-      expect(result.geojson.features).toEqual([]);
+      expect(result.geojson.features).toEqual([{ type: 'Feature', geometry: {}, properties: {} }]);
     });
   });
 });

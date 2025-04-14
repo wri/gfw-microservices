@@ -4,6 +4,9 @@ import {
   Lists,
   getListsLocsColumnsToExclude,
   getFormattedAttributes,
+  saveListAttributes,
+  ListAttributesRecord,
+  ListsAttrsTypes,
 } from '@wri-monorepos/sql';
 import { Logger } from '@nestjs/common';
 import { Feature } from '@wri-monorepos/geo';
@@ -14,30 +17,52 @@ export class ProcessUploadData extends AbstractHandler<ChainType> {
   private readonly logger = new Logger(ProcessUploadData.name);
   private convertPoint2Polygon: ConvertPoint2Polygon;
   private columnsToExclude: string[];
+  private listsAttributesRecords: Map<string, ListAttributesRecord>;
 
   constructor() {
     super();
     this.convertPoint2Polygon = new ConvertPoint2Polygon();
     this.columnsToExclude = getListsLocsColumnsToExclude();
+    this.listsAttributesRecords = new Map();
   }
 
   getValidAttributes(properties: string[]): string[] {
     return properties.filter((col) => !['', ...this.columnsToExclude].includes(col));
   }
 
-  getFeatureAttributes(featurePayload: Feature): string {
-    const validAttrs = this.getValidAttributes(Object.keys(featurePayload.properties || {}));
-
+  processFeatureAttributes(featurePayload: Feature, listId: number) {
     this.logger.log(`Processing list-xxx.attributes. Excluding Columns: ${this.columnsToExclude}`);
 
-    const locAttrObj = validAttrs.reduce((acc, key) => {
-      if (key && featurePayload.properties[key] !== null) {
-        acc[key] = `${featurePayload.properties[key]}`;
-      }
-      return acc;
-    }, {} as AttributeType);
+    const validAttrs = this.getValidAttributes(Object.keys(featurePayload.properties || {}));
+    const attributesJson: AttributeType = {};
 
-    return JSON.stringify(locAttrObj);
+    for (const attributeField of validAttrs) {
+      const rawValue = featurePayload.properties[attributeField];
+
+      if (rawValue !== null) {
+        attributesJson[attributeField] = String(rawValue);
+      }
+
+      const newRecord = getFormattedAttributes({
+        listId,
+        attributeField,
+        fieldValue: rawValue ?? '',
+      });
+
+      const existingRecord = this.listsAttributesRecords.get(attributeField);
+
+      if (!existingRecord) {
+        this.listsAttributesRecords.set(attributeField, newRecord);
+      } else if (
+        // we upgrade number in older locations to text if later locations have text
+        existingRecord.attribute_type === ListsAttrsTypes.Number &&
+        newRecord.attribute_type === ListsAttrsTypes.Text
+      ) {
+        this.listsAttributesRecords.set(attributeField, newRecord);
+      }
+    }
+
+    return JSON.stringify(attributesJson);
   }
 
   getFeatureGeometry(featurePayload: Feature): string {
@@ -54,13 +79,15 @@ export class ProcessUploadData extends AbstractHandler<ChainType> {
       return feature;
     }
 
+    const { list_id } = request.request as RequestNewList;
     feature = await this.convertPoint2Polygon.convertFeature(feature, request);
     const { properties } = feature;
 
-    properties.attributes = this.getFeatureAttributes(feature);
-    const geometry = this.getFeatureGeometry(feature);
+    properties.attributes = this.processFeatureAttributes(feature, list_id);
     properties.locationId = locationId;
     properties.commodity = commodity;
+
+    const geometry = this.getFeatureGeometry(feature);
 
     return Object.assign({}, feature, {
       properties: {
@@ -132,9 +159,11 @@ export class ProcessUploadData extends AbstractHandler<ChainType> {
     this.logger.log(`Processing features: ${prevFeatures.length}`);
 
     const commodity = await this.getListCommodity(organization_database, list_id);
-
     request.geojson.features = await this.getProcessedFeatures(prevFeatures, commodity, request);
-    request.attributes = this.getFeatPropAttrs(request);
+
+    if (this.listsAttributesRecords.size > 0) {
+      await saveListAttributes(organization_database, [...this.listsAttributesRecords.values()]);
+    }
 
     return request;
   }

@@ -110,6 +110,11 @@ export class UspGetPaginatedAnalysisDataForUserList {
         type: sql.NVarChar(255),
         value: selectedMillPriority || null,
       },
+      {
+        field: 'jsonAttributeColumns',
+        type: sql.NVarChar(sql.MAX),
+        value: null,
+      },
     ];
 
     const query = SQLUtils.isSystemDatabase(databaseName)

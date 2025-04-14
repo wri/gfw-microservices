@@ -7,6 +7,7 @@ import {
   saveListAttributes,
   ListAttributesRecord,
   ListsAttrsTypes,
+  getListAttributes,
 } from '@wri-monorepos/sql';
 import { Logger } from '@nestjs/common';
 import { Feature } from '@wri-monorepos/geo';
@@ -122,6 +123,14 @@ export class ProcessUploadData extends AbstractHandler<ChainType> {
     );
   }
 
+  async getExistingListAttributes(organization_database: string, list_id: number) {
+    const listAttributes = await getListAttributes(organization_database, list_id);
+
+    listAttributes.map((attribute) => {
+      this.listsAttributesRecords.set(attribute.attribute_name, attribute);
+    });
+  }
+
   /**
    * @summary it should process parsed data into attributes
    * @param request ChainType
@@ -131,6 +140,8 @@ export class ProcessUploadData extends AbstractHandler<ChainType> {
     const { list_id, organization_database } = request.request as RequestNewList;
     const { features: prevFeatures = [] } = request.geojson;
     this.logger.log(`Processing features: ${prevFeatures.length}`);
+
+    await this.getExistingListAttributes(organization_database, list_id);
 
     const commodity = await this.getListCommodity(organization_database, list_id);
     request.geojson.features = await this.getProcessedFeatures(prevFeatures, commodity, request);

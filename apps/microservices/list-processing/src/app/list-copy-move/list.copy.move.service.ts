@@ -6,7 +6,11 @@ import {
   upgradeListSchema,
   UspGetLocationsFilteredToCopy,
 } from '@wri-monorepos/sql';
-import { CheckListNameIsValid, getListAnalysisStatusByListId } from '@wri-monorepos/geo';
+import {
+  CheckListNameIsValid,
+  FeatureCollection,
+  getListAnalysisStatusByListId,
+} from '@wri-monorepos/geo';
 import { handleNewListCreation } from './handler/list.creation';
 import { handleSourceListDeletion } from './handler/source.list.deletion';
 import { assembleGeojson } from './shared/assemble.geojson';
@@ -17,7 +21,9 @@ import { ConfigService } from '@nestjs/config';
 import { ServerConfigType } from '../../validators/server-config';
 import { EmailService } from '@wri-monorepos/aws';
 import { PutListAsDraft } from '../list-upload/chain/put.list.as.draft';
-
+import { ProcessUploadData } from '../list-upload/chain/process.upload.data';
+import { ConvertGeojsonProperties } from '../list-upload/chain/convert.geojson.properties';
+import { AbstractHandler } from '../list-upload/chain/types';
 @Injectable()
 export class ListCopyMoveService {
   constructor(
@@ -27,7 +33,9 @@ export class ListCopyMoveService {
 
   private readonly logger = new Logger(ListCopyMoveService.name);
   async run(request: CopyOrMoveLargeListRequestLLP) {
-    this.logger.log('Starting list copy/move flow');
+    const processUploadData = new ProcessUploadData();
+    const convertGeojsonProperties = new ConvertGeojsonProperties();
+
     try {
       const {
         listId: selectedListId,
@@ -152,6 +160,23 @@ export class ListCopyMoveService {
           putListAsDraft,
         });
       }
+
+      const chainType = {
+        request: {
+          list_id: moveToList.id,
+          organization_database: clientDatabase,
+          isExternalAPIProcess: false,
+          organization_id: organizationId,
+          subscription_status_id: subscriptionStatusId,
+          hasUnanalyzableError: false,
+          path: '',
+        },
+        geojson: geojson as FeatureCollection,
+      };
+
+      convertGeojsonProperties.setNext(processUploadData);
+
+      await AbstractHandler.runFullChain(convertGeojsonProperties, chainType);
 
       return {
         success: true,

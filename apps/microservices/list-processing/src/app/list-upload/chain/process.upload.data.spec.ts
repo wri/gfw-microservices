@@ -28,6 +28,11 @@ jest.mock('@wri-monorepos/sql', () => ({
       attribute_type: typeof fieldValue === 'number' ? 1 : 2,
     };
   }),
+  getListAttributes: jest.fn().mockResolvedValue([
+    { attribute_name: 'attr1', attribute_type: 1 },
+    { attribute_name: 'attr2', attribute_type: 2 },
+  ]),
+  saveListAttributes: jest.fn().mockResolvedValue(undefined),
 }));
 
 jest.mock('wellknown', () => ({
@@ -138,6 +143,28 @@ describe('ProcessUploadData', () => {
       >;
       const instance = ClientStoreConnectionMock.mock.results[0].value;
       expect(instance.getConnection).toHaveBeenCalledWith('some_org_db');
+    });
+  });
+
+  describe('getExistingListAttributes', () => {
+    it('should load and store existing list attributes', async () => {
+      const organization_database = 'test_db';
+      const list_id = 123;
+
+      // Clear the map before test
+      (processUploadData as any).listsAttributesRecords.clear();
+
+      await processUploadData.getExistingListAttributes(organization_database, list_id);
+
+      // Verify getListAttributes was called with correct parameters
+      const { getListAttributes } = jest.requireMock('@wri-monorepos/sql');
+      expect(getListAttributes).toHaveBeenCalledWith(organization_database, list_id);
+
+      // Verify attributes were stored in the map
+      const records = (processUploadData as any).listsAttributesRecords;
+      expect(records.size).toBe(2);
+      expect(records.get('attr1')).toEqual({ attribute_name: 'attr1', attribute_type: 1 });
+      expect(records.get('attr2')).toEqual({ attribute_name: 'attr2', attribute_type: 2 });
     });
   });
 

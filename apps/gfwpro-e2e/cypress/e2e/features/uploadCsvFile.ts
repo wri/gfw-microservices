@@ -2,7 +2,7 @@ import { Given, Then, When } from '@badeball/cypress-cucumber-preprocessor';
 import LocationsPage from '../../pages/locationsPage';
 
 describe('Upload File Csv', () => {
-  const csv = 'CG9.csv';
+  const filePath = 'cypress/fixtures/uploadCsv.xlsx';
   const timestamp = Date.now();
   const listToUploadSingleLocation = `uploadfilecsv${timestamp}`;
   const locationPage = new LocationsPage();
@@ -28,8 +28,23 @@ describe('Upload File Csv', () => {
   });
 
   When('I click on the Drop file button and drag a CSV file', () => {
-    cy.uploadFile(csv, 'application/vnd.google-earth.csv+xml');
+    cy.get('[data-testid="file-input"]').invoke('show').selectFile(filePath);
+    // cy.uploadFile(csv);
     locationPage.clickOnNextBtn();
+  });
+
+  Then('I should see a list preview', () => {
+    locationPage.elements.titleListPreview().should('be.visible');
+    locationPage.elements.backBtn().should('be.visible');
+    locationPage.elements.cancelBtn().should('be.visible');
+    locationPage.elements.titleListPreview().should('be.visible');
+    locationPage.elements.locationNameColumn().should('be.visible');
+    locationPage.elements.analysisRadiusColumn().should('be.visible');
+    locationPage.elements.analysisAreaColumn().should('be.visible');
+    locationPage.elements.latitudeColumn().should('be.visible');
+    locationPage.elements.longitudeColumn().should('be.visible');
+    locationPage.elements.stateColumn().should('exist');
+    locationPage.elements.countryColumn().should('exist');
     locationPage.clickOnNextBtn();
   });
 

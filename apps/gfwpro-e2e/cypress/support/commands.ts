@@ -15,13 +15,13 @@ declare namespace Cypress {
     loginUI(): void;
     login(email: string, password: string, verifyToken?: string): void;
     visitAndVerifyLoad(url: string, options?: Partial<Cypress.VisitOptions>): void;
-    uploadFile(fileName: string, mimeType: string): Chainable<void>;
+    uploadFile(fileName: string): Chainable<void>;
   }
 }
 
 Cypress.Commands.add('uploadFile', (fileName, mimeType = '') => {
   cy.fixture(fileName, 'base64').then((fileContent) => {
-    cy.get('#file-input').attachFile({
+    cy.get('[data-testid="file-input"]').attachFile({
       fileContent,
       fileName,
       mimeType,

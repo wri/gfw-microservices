@@ -70,6 +70,7 @@ export class ListAnalysisController {
     const errorsDetails = await this.listAnalysisService.getLocationsErrors({
       listId,
       organizationId,
+      analysisId,
     });
 
     return {

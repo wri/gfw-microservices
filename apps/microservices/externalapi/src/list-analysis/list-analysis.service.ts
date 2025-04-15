@@ -50,7 +50,12 @@ import {
   ClientStoreConnection,
   ListsAnalysisStatus,
   ExternalUpload,
+  SQLUtils,
+  GHGAnalysisDataByListId,
+  getPaginatedGHGAnalysisLocationLevel,
 } from '@wri-monorepos/sql';
+import * as sql from 'mssql';
+
 const LIST_INITIAL_STATUS = 'Pending';
 const MIN_FILE_SIZE_IN_BYTES = 70; // single location CSV file size
 
@@ -197,9 +202,11 @@ export class ListAnalysisService {
   async getLocationsErrors({
     listId,
     organizationId,
+    analysisId,
   }: {
     listId: number;
     organizationId: number;
+    analysisId?: string;
   }): Promise<Array<{ ['Location Name']: string; Details: string }>> {
     try {
       const organization = await this.organizationService.findOrganizationById(organizationId);
@@ -234,6 +241,15 @@ export class ListAnalysisService {
           errorDetails: Not(IsNull()),
         },
       });
+      let ghgLocationErrors = [];
+      if (analysisId === 'GHG') {
+        // Get GHG location errors
+        ghgLocationErrors = await this.getGhgLocationErrors(listId, organization.organizationDb);
+
+        if (ghgLocationErrors.length > 0) {
+          locationsWithErrors.push(...ghgLocationErrors);
+        }
+      }
 
       return locationsWithErrors.map((location) => ({
         'Location Name': location.locationName,
@@ -606,5 +622,34 @@ export class ListAnalysisService {
     );
 
     return response;
+  }
+  async getGhgLocationErrors(
+    listId: number,
+    clientDatabase: string
+  ): Promise<Array<{ locationName: string; errorDetails: string }>> {
+    const parameters = [
+      { field: 'listId', type: sql.Int, value: listId },
+      { field: 'rowsOfPage', type: sql.Int, value: 2000 },
+      { field: 'pageNumber', type: sql.Int, value: 0 },
+    ];
+
+    const data = await SQLUtils.queryDB<GHGAnalysisDataByListId[]>(
+      clientDatabase,
+      getPaginatedGHGAnalysisLocationLevel,
+      parameters
+    );
+    if (data) {
+      return data.reduce((errors, item) => {
+        if (item.locationError) {
+          errors.push({
+            locationName: item.locationName,
+            errorDetails: item.locationError,
+          });
+        }
+        return errors;
+      }, []);
+    } else {
+      return [];
+    }
   }
 }

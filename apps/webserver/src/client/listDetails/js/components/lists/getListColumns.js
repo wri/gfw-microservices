@@ -15,6 +15,7 @@ const transifex = Transifex.live.translateText;
 // Set columns that can be added/removed
 export const getListColumns = (locationData, customAttributes, selectedLists) => {
   const columnNames = [];
+  const listHiddenColumns = ['version', 'attributes'];
   const priorities = ['high', 'medium', 'low', ''];
   const isListExcluded = isDownloadDisabledForThisList(selectedLists[0]);
 
@@ -145,5 +146,5 @@ export const getListColumns = (locationData, customAttributes, selectedLists) =>
     });
   }
 
-  return columnNames;
+  return columnNames.filter((col) => !listHiddenColumns.includes(col.accessor));
 };

@@ -1,12 +1,12 @@
-import { ConvertCommodityToMapsPamCode } from './convert.commodity.mapspam';
+import { ConvertCommodityToMapSpamCode } from './convert.commodity.mapspam';
 import { COMMODITY_MAP_SPAM } from '@wri-monorepos/constants';
 import { ChainType, RequestNewList } from './types';
 
-describe('ConvertCommodityToMapsPamCode', () => {
-  let handler: ConvertCommodityToMapsPamCode;
+describe('ConvertCommodityToMapSpamCode', () => {
+  let handler: ConvertCommodityToMapSpamCode;
 
   beforeEach(() => {
-    handler = new ConvertCommodityToMapsPamCode();
+    handler = new ConvertCommodityToMapSpamCode();
   });
 
   it('should return the same request if commodity is "Other"', async () => {

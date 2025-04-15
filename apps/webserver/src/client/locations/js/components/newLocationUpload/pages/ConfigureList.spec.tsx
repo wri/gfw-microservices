@@ -14,6 +14,8 @@ jest.mock('../../../../../hooks', () => ({
   useFetch: jest.fn(),
 }));
 
+jest.mock('lodash/debounce', () => (_) => _);
+
 const mockHistoryPush = jest.fn();
 const mockHistoryGoBack = jest.fn();
 jest.mock('../hooks', () => ({
@@ -96,6 +98,8 @@ const mockUserLists: UserList[] = [
   },
 ];
 
+const useFetchRequest = jest.fn();
+
 beforeEach(() => {
   (useFetch as jest.Mock).mockReturnValue({
     data: [
@@ -104,12 +108,12 @@ beforeEach(() => {
       { id: 5831, name: 'best list of cocoa 2' },
     ],
     isLoading: false,
-    request: jest.fn(),
+    request: useFetchRequest,
     error: null,
   });
-});
 
-afterEach(cleanup);
+  cleanup();
+});
 
 describe('ConfigureList', () => {
   it('should render the form fields correctly', () => {
@@ -263,6 +267,12 @@ describe('ConfigureList', () => {
       })
     );
 
+    expect(useFetchRequest).toHaveBeenLastCalledWith(
+      expect.objectContaining({
+        url: '/api/list/by-commodity?commodity=cocoa',
+      })
+    );
+
     const existingListSelect = screen.getAllByRole('combobox')[1];
 
     await userEvent.click(existingListSelect);
@@ -398,4 +408,45 @@ describe('ConfigureList', () => {
     });
     expect(mockHistoryPush).toHaveBeenCalledWith('SUMMARY_AND_SUBMIT');
   }, 10100);
+
+  it('should call api adding gfpw_ in the beginning for custom commodities', async () => {
+    render(<ConfigureList userLists={mockUserLists} />);
+
+    const commodityDropdown = screen.getAllByRole('combobox')[0];
+
+    await userEvent.click(commodityDropdown);
+    await userEvent.click(screen.getByRole('option', { name: /cattle/i }));
+    expect(useFetchRequest).toHaveBeenLastCalledWith(
+      expect.objectContaining({
+        url: '/api/list/by-commodity?commodity=gfwp_cattle',
+      })
+    );
+
+    await userEvent.click(commodityDropdown);
+    await userEvent.click(screen.getByRole('option', { name: /pulp and paper/i }));
+    expect(useFetchRequest).toHaveBeenLastCalledWith(
+      expect.objectContaining({
+        url: '/api/list/by-commodity?commodity=gfwp_pulp and paper',
+      })
+    );
+
+    await userEvent.click(commodityDropdown);
+    await userEvent.click(screen.getByRole('option', { name: /multiple/i }));
+    expect(useFetchRequest).toHaveBeenLastCalledWith(
+      expect.objectContaining({
+        url: '/api/list/by-commodity?commodity=gfwp_multiple',
+      })
+    );
+
+    await userEvent.click(commodityDropdown);
+    await userEvent.click(screen.getByRole('option', { name: /other/i }));
+    const customCommodityInput = screen.getByTestId('custom-commodity-input');
+    await userEvent.type(customCommodityInput, 'corn');
+
+    expect(useFetchRequest).toHaveBeenLastCalledWith(
+      expect.objectContaining({
+        url: '/api/list/by-commodity?commodity=gfwp_corn',
+      })
+    );
+  }, 10000);
 });

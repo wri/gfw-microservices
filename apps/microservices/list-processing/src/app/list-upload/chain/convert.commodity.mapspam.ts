@@ -2,8 +2,8 @@ import { Logger } from '@nestjs/common';
 import { AbstractHandler, ChainType, RequestNewList } from './types';
 import { COMMODITY_MAP_SPAM } from '@wri-monorepos/constants';
 
-export class ConvertCommodityToMapsPamCode extends AbstractHandler<ChainType> {
-  private readonly logger = new Logger(ConvertCommodityToMapsPamCode.name);
+export class ConvertCommodityToMapSpamCode extends AbstractHandler<ChainType> {
+  private readonly logger = new Logger(ConvertCommodityToMapSpamCode.name);
 
   async handle(request: ChainType): Promise<ChainType> {
     this.logger.log('Converting commodity name to MAPSPAM code');
@@ -21,7 +21,7 @@ export class ConvertCommodityToMapsPamCode extends AbstractHandler<ChainType> {
   }
 
   private getCommodityDB(commodity: string) {
-    const commodityName = ConvertCommodityToMapsPamCode.getCommoditySpamName(commodity);
+    const commodityName = ConvertCommodityToMapSpamCode.getCommoditySpamName(commodity);
 
     return commodityName || `GFWP_${commodity.replace(/\s+/g, '_')}`;
   }

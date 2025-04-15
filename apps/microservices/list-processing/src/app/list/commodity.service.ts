@@ -9,7 +9,7 @@ import {
 } from '@wri-monorepos/sql';
 import { EntitySchema, Raw, Repository } from 'typeorm';
 import { CommodityResponse, ListResponse } from './types';
-import { ConvertCommodityToMapsPamCode } from '../list-upload/chain/convert.commodity.mapspam';
+import { ConvertCommodityToMapSpamCode } from '../list-upload/chain/convert.commodity.mapspam';
 
 @Injectable()
 export class CommodityService {
@@ -110,7 +110,7 @@ export class CommodityService {
       const listRepository = connection.getRepository(Lists);
 
       const commodityName =
-        ConvertCommodityToMapsPamCode.getCommoditySpamName(commodity) ||
+        ConvertCommodityToMapSpamCode.getCommoditySpamName(commodity) ||
         commodity.replace(/\s+/g, '_');
 
       const lists = await listRepository.find({

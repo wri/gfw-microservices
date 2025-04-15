@@ -22,6 +22,8 @@ export class GADMService extends AbstractHandler<ChainType> {
 
   LAMBDA_HTTP_TIMEOUT_MS = 5 * 60 * 1000; // 5 minutes
 
+  private BATCH_SIZE = 200;
+
   putObject = async (objectName, object) => {
     const s3Service = new S3Service();
 
@@ -184,12 +186,17 @@ export class GADMService extends AbstractHandler<ChainType> {
     }
   };
 
-  clipToLand = async (geojson, request): Promise<{ geojson: FeatureCollection }> => {
+  private async processBatch(batch: Feature[], request: ChainType): Promise<Feature[]> {
     const s3ObjectsToDelete = [];
-    const objectName = `gadm-${new Date().getTime()}`;
+    const objectName = `gadm-${new Date().getTime()}-${Math.random().toString(36).substring(7)}`;
 
     try {
-      const location_info = await this.putObject(objectName, { geojson: geojson });
+      const batchGeoJSON = {
+        type: 'FeatureCollection',
+        features: batch,
+      };
+
+      const location_info = await this.putObject(objectName, { geojson: batchGeoJSON });
       const s3Info = {
         bucket: process.env.AWS_ANALYSIS_BUCKET,
         key: location_info,
@@ -224,11 +231,36 @@ export class GADMService extends AbstractHandler<ChainType> {
 
       await Promise.all(s3ObjectsToDelete.map((obj) => this.delObject(obj.bucket, obj.key)));
 
-      return s3Object;
+      return s3Object.geojson.features;
     } catch (e) {
       (request.request as RequestNewList).hasUnanalyzableError = true;
-      this.logger.warn('Error in clipToLand:', e.stack || e);
+      this.logger.warn('Error in processBatch:', e.stack || e);
+      return batch; // Return original features if processing fails
     }
+  }
+
+  clipToLand = async (geojson, request): Promise<{ geojson: FeatureCollection }> => {
+    const { features } = geojson as FeatureCollection;
+    const processedFeatures: Feature[] = [];
+
+    // Process features in batches
+    for (let i = 0; i < features.length; i += this.BATCH_SIZE) {
+      const batch = features.slice(i, i + this.BATCH_SIZE);
+      try {
+        const processedBatch = await this.processBatch(batch, request);
+        processedFeatures.push(...processedBatch);
+      } catch (e) {
+        this.logger.warn('Error processing batch:', e);
+        processedFeatures.push(...batch); // Add original features if processing fails
+      }
+    }
+
+    return {
+      geojson: {
+        type: 'FeatureCollection',
+        features: processedFeatures,
+      },
+    };
   };
 
   composeResults = async (feature: Feature) => {

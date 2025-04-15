@@ -6,7 +6,7 @@ import { SQLUtils } from '@wri-monorepos/sql';
 import { ListSchemaName } from './chain/list.schema.name';
 import { CreateListLevelData } from './chain/create.list.level.data';
 import { CreateLocationSchema } from './chain/create.location.schema';
-import { ConvertCommodityToMapsPamCode } from './chain/convert.commodity.mapspam';
+import { ConvertCommodityToMapSpamCode } from './chain/convert.commodity.mapspam';
 
 @Injectable()
 export class CreateLargeListService {
@@ -46,17 +46,17 @@ export class CreateLargeListService {
     const connection = new SQLUtils();
     await connection.connect(clientDatabase);
 
-    const convertCommodityToMapsPamCode = new ConvertCommodityToMapsPamCode();
+    const convertCommodityToMapSpamCode = new ConvertCommodityToMapSpamCode();
     const listSchemaName = new ListSchemaName();
     const createListLevelData = new CreateListLevelData();
     const createLocationSchema = new CreateLocationSchema(connection);
 
-    convertCommodityToMapsPamCode
+    convertCommodityToMapSpamCode
       .setNext(listSchemaName)
       .setNext(createListLevelData)
       .setNext(createLocationSchema);
 
-    chainType = await AbstractHandler.runFullChain(convertCommodityToMapsPamCode, chainType);
+    chainType = await AbstractHandler.runFullChain(convertCommodityToMapSpamCode, chainType);
     await connection.disconnect();
 
     return {

@@ -26,7 +26,7 @@ import { AddNewLocationToAnalysisTable } from './chain/add.new.location.to.analy
 import { ConvertGeojsonProperties } from './chain/convert.geojson.properties';
 import { PutListAsDraft } from './chain/put.list.as.draft';
 import { GenerateErrorFile } from './chain/generate.error.file';
-import { ConvertCommodityToMapsPamCode } from './chain/convert.commodity.mapspam';
+import { ConvertCommodityToMapSpamCode } from './chain/convert.commodity.mapspam';
 import { AdjustGeoData } from './chain/adjust.geo.data';
 
 type WorkerType = {
@@ -160,7 +160,7 @@ export const checkIfListExistAndCommodityIsTheSame = async (listId, commodity, c
     id: listId,
   };
 
-  const commodityMapSpam = ConvertCommodityToMapsPamCode.getCommodityName(commodity);
+  const commodityMapSpam = ConvertCommodityToMapSpamCode.getCommoditySpamName(commodity);
   whereClause.Commodity = commodityMapSpam;
 
   const existingList = await connection.getRepository(Lists).findOne({

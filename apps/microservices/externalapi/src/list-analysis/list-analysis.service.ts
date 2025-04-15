@@ -52,7 +52,7 @@ import {
   ExternalUpload,
   SQLUtils,
   GHGAnalysisDataByListId,
-  getPaginatedGHGAnalysisLocationLevel,
+  getGHGLocationErrorsByListId,
 } from '@wri-monorepos/sql';
 import * as sql from 'mssql';
 
@@ -246,6 +246,7 @@ export class ListAnalysisService {
         // Get GHG location errors
         ghgLocationErrors = await this.getGhgLocationErrors(listId, organization.organizationDb);
 
+        // We would have a problem if there are overlaps for errors already reported in locationWithErrors and new errors being added by ghgLocationErrors.
         if (ghgLocationErrors.length > 0) {
           locationsWithErrors.push(...ghgLocationErrors);
         }
@@ -627,15 +628,11 @@ export class ListAnalysisService {
     listId: number,
     clientDatabase: string
   ): Promise<Array<{ locationName: string; errorDetails: string }>> {
-    const parameters = [
-      { field: 'listId', type: sql.Int, value: listId },
-      { field: 'rowsOfPage', type: sql.Int, value: 2000 },
-      { field: 'pageNumber', type: sql.Int, value: 0 },
-    ];
+    const parameters = [{ field: 'listId', type: sql.Int, value: listId }];
 
     const data = await SQLUtils.queryDB<GHGAnalysisDataByListId[]>(
       clientDatabase,
-      getPaginatedGHGAnalysisLocationLevel,
+      getGHGLocationErrorsByListId,
       parameters
     );
     if (data) {

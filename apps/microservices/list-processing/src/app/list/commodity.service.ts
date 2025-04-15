@@ -110,7 +110,8 @@ export class CommodityService {
       const listRepository = connection.getRepository(Lists);
 
       const commodityName =
-        ConvertCommodityToMapsPamCode.getCommodityName(commodity) || commodity.replace(/\s+/g, '_');
+        ConvertCommodityToMapsPamCode.getCommoditySpamName(commodity) ||
+        commodity.replace(/\s+/g, '_');
 
       const lists = await listRepository.find({
         where: [

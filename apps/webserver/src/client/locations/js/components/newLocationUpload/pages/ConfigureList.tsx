@@ -112,11 +112,11 @@ export function ConfigureList({ userLists }: { userLists: UserList[] }) {
       return;
     }
 
-    const commodityKey = customCommodities.includes(selectedCommodity)
+    const commodityDB = customCommodities.includes(selectedCommodity)
       ? `GFWP_${selectedCommodity}`
       : selectedCommodity;
 
-    getListsByCommodity(commodityKey);
+    getListsByCommodity(commodityDB);
   }, [selectedCommodity]);
 
   const getListsByCommodity = (selectedCommodity: string) => {

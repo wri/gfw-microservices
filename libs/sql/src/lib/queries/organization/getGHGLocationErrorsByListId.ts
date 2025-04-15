@@ -28,10 +28,12 @@ SET @SQL = 'SELECT  ' +
 
 
 'FROM GHGAnalyses ghg JOIN dbo.[' + @list_table + '] lt ON lt.location_id = ghg.location_id ' +
-'WHERE ghg.location_id > 0 AND ghg.list_id = @listId' AND ghg.location_error IS NOT NULL
+'WHERE ghg.location_id > 0 AND ghg.list_id = @listId AND ghg.location_error IS NOT NULL'
 
+
+SET @SQL = @SQL + ' ORDER BY ghg.location_id ASC';
 
 EXEC sp_executesql @SQL,
-     N'@listId INT, @listName NVARCHAR(150),
+     N'@listId INT, @listName NVARCHAR(150)',
      @listId = @listId, @listName = @listName;
 `;

@@ -1,9 +1,10 @@
 /**
  * @summary update list schema from version 1 to 2
  * 1 - Write list-xxx.attributes based on other list-xxx columns
- * 2 - Write Lists.Commodity based on Lists.template_id for given list_id
- * 3 - Update Lists.version=2 for given list_id
- * 4 - Handle ListsAnalysisStatus.options based on template_id+locationClassification
+ * 2 - Remove list-xxxx.[columns] not in list.entity columns
+ * 3 - Write Lists.Commodity based on Lists.template_id for given list_id
+ * 4 - Update Lists.version=2 for given list_id
+ * 5 - Handle ListsAnalysisStatus.options based on template_id+locationClassification
  * –––––––––––––––––––––––––––––––––––––––
  * @notes for the [Commodity] column values:
  * — Multiple is not supported in v1, lists with templates using investment will use GFWP_Miltiple
@@ -26,6 +27,7 @@ import { UspSetListUnlocked } from './uspSetListUnlocked';
 import { UspSetListLocked } from './uspSetListLocked';
 import { Lists, ListsAnalysisStatus } from '../entity';
 import {
+  getColumnsToDelete,
   getCommodityCodeFromTemplate,
   getFormattedAttributes,
   getListsLocsColumnsToExclude,
@@ -72,7 +74,9 @@ export async function upgradeListSchema(args: SchemaUpgraderArgs) {
      */
     const columnsToExclude = getListsLocsColumnsToExclude();
     logger.log(
-      `Writing list-xxx.attributes based on own list-xxx columns. Excluding Columns: ${columnsToExclude}`
+      `Writing list-xxx.attributes based on own list-xxx columns. Excluding Columns: ${columnsToExclude.join(
+        ', '
+      )}`
     );
 
     const listLocations = await SQLUtils.queryDB<unknown[]>(
@@ -116,16 +120,48 @@ export async function upgradeListSchema(args: SchemaUpgraderArgs) {
         })
       );
 
-      // save into ListAttributes tables, handles constraints
       await saveListAttributes(clientDb, listAttrsToSave);
+
+      /**
+       * @step 2
+       * Delete list-xxxx columns outside of entity
+       *
+       * because column names are not consistent across lists version<2
+       * we'll do the old sys.columns to grab the coluns in a raw query
+       * and we'll send the columns to exclude in a string
+       */
+      const columnsToDelete = await getColumnsToDelete(
+        clientDb,
+        list.listTableName,
+        columnsToExclude
+      );
+
+      if (columnsToDelete.length) {
+        logger.log(
+          `Dropping the following columns from [${list.listTableName}]: ${columnsToDelete.join(
+            ', '
+          )}`
+        );
+
+        const dropStatement = `
+          ALTER TABLE [${list.listTableName}]
+          DROP COLUMN ${columnsToDelete.map((col) => `[${col}]`).join(', ')}
+        `;
+
+        await SQLUtils.queryDBFirstRow(clientDb, dropStatement);
+      } else {
+        logger.log(
+          `No columns to drop in [${list.listTableName}]! Everything matches the entity definition.`
+        );
+      }
     }
 
     /**
-     * @step 2
+     * @step 3
      * Write Lists.Commodity based on Lists.template_id for given list_id
      * see {@link https://gfw.atlassian.net/browse/GPV-3983}
      *
-     * @step 3
+     * @step 4
      * Update Lists.version=2 for given list_id
      */
     const templateName = await getTemplateName(list.templateId);

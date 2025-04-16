@@ -7,6 +7,7 @@ import { AbstractHandler, ChainType } from './chain/types';
 import { DownloadS3File } from './chain/download.s3.file';
 import { ParserData } from './chain/parser.data';
 import { GADMService } from './chain/gadm.service';
+import { ClipToLandService } from './chain/clipToLand.service';
 import { InsertLocationData } from './chain/insert.location.data';
 import { ValidateLatLongGeojson } from './chain/validate.lat.long.geojson';
 import { StartAnalysis } from './chain/start.analysis';
@@ -63,6 +64,7 @@ async function worker(input: WorkerType, cb: done) {
   const parseData = new ParserData();
   const processUploadData = new ProcessUploadData();
   const gadmService = new GADMService();
+  const clipToLandService = new ClipToLandService();
   const validateLatLongGeojson = new ValidateLatLongGeojson();
   const insertLocationData = new InsertLocationData();
   const writeLocationCount = new WriteLocationCount();
@@ -86,7 +88,8 @@ async function worker(input: WorkerType, cb: done) {
     .setNext(convertPoint2Polygon)
     .setNext(adjustGeoData)
     .setNext(gadmService) // depends on convertPoint2Polygon
-    .setNext(validateLatLongGeojson) // depends on gadmService
+    .setNext(validateLatLongGeojson) // depends on gadmService, must be before clipToLandService
+    .setNext(clipToLandService)
     .setNext(processUploadData)
     .setNext(putListAsDraft) // depends on gadmService and validateLatLongGeojson
     .setNext(insertLocationData)

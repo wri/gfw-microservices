@@ -127,7 +127,7 @@ export async function upgradeListSchema(args: SchemaUpgraderArgs) {
        * Delete list-xxxx columns outside of entity
        *
        * because column names are not consistent across lists version<2
-       * we'll do the old sys.columns to grab the coluns in a raw query
+       * we'll do the old sys.columns to grab the columns in a raw query
        * and we'll send the columns to exclude in a string
        */
       const columnsToDelete = await getColumnsToDelete(

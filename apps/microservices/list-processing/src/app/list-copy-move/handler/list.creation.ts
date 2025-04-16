@@ -22,11 +22,12 @@ export const handleNewListCreation = async (param: CreateListRequest) => {
     param.selectedListId
   );
 
-  const commodityHumanReadable = ConvertCommodityToMapSpamCode.getCommoditySpamName(commodity);
+  const commodityName =
+    ConvertCommodityToMapSpamCode.getCommoditySpamName(commodity) || commodity.replace(/\s+/g, '_');
 
   const createLargeListService = new CreateLargeListService();
   return await createLargeListService.run({
     ...param,
-    commodity: commodityHumanReadable,
+    commodity: commodityName,
   });
 };

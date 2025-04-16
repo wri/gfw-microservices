@@ -31,7 +31,8 @@ export const convertProperties = (feature) => {
 
   const newProperties = {};
   for (const [key, value] of Object.entries(feature.properties)) {
-    const newKey = mapping[key] || key;
+    const trimmedKey = key?.trim();
+    const newKey = mapping[trimmedKey] || trimmedKey;
     newProperties[newKey] = value;
   }
 

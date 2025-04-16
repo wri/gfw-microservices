@@ -1,34 +1,29 @@
 import { GeoJson, GeoService } from '@wri-monorepos/geo';
-import { getListAttributes, ListAttributes } from '@wri-monorepos/sql';
+import { getListAttributes, ListAttributes, ListsAttrsTypes } from '@wri-monorepos/sql';
 
 const isEmpty = (str) => {
   return !str || str.length === 0 || !str.trim(); //check if string is null, empty, or contains only whitespace
 };
 
-const expandAttributes = (attributes: string, extraFields: Array<ListAttributes>) => {
-  const convertedObject = {};
+const expandAttributes = (locAttributes: string, listAttrFields: Array<ListAttributes>) => {
+  const expandedProps = {};
 
-  if (isEmpty(attributes)) {
-    return convertedObject;
+  if (isEmpty(locAttributes)) {
+    return expandedProps;
   }
 
-  const jsonObject = JSON.parse(attributes);
+  const jsonParsedAttributes = JSON.parse(locAttributes);
+  listAttrFields.forEach((item) => {
+    const value = jsonParsedAttributes[item.attribute_name];
 
-  try {
-    extraFields.forEach((item) => {
-      let value = jsonObject[item.attribute_name];
+    if (value !== undefined && value !== null) {
+      const isNumber = item.attribute_type === ListsAttrsTypes.Number;
+      // The actual value does not matter, just need anything that's number or text
+      expandedProps[item.attribute_name] = isNumber ? 1 : 'a';
+    }
+  });
 
-      if (item.attribute_type === 1) {
-        value = Number(value); // Convert to number if type is "number"
-      }
-
-      convertedObject[item.attribute_name] = value;
-    });
-
-    return convertedObject;
-  } catch (error) {
-    return convertedObject;
-  }
+  return expandedProps;
 };
 
 export const assembleGeojson = async (
@@ -58,8 +53,12 @@ export const assembleGeojson = async (
 
       getListAttributes(clientDatabase, listId).then((extraFields) => {
         filteredLocations.forEach((location, j) => {
+          // These features will be sent to processUploadData to add any new attributes
+          // that are not in the destination list, but processUploadData expects the
+          // attributes to be directly in the properties object instead of attributes
+          // field in the properties object.  So, we need to expand the attributes
+          // field into the properties object.
           const attributes = expandAttributes(location.properties.attributes, extraFields);
-
           geojson.features.push({
             type: 'Feature',
             properties: {

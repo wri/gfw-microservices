@@ -170,6 +170,10 @@ export class ListCopyMoveService {
         });
       }
 
+      // To update ListAttributes of destination list with new data, we need to
+      // run processUploadData (among other things, it automatically upgrades type
+      // from number to text), but that requires convertGeojsonProperties, so run
+      // that first.
       const chainType = {
         request: {
           list_id: moveToList.id,

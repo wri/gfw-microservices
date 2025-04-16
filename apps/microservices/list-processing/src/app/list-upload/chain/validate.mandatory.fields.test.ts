@@ -321,4 +321,36 @@ describe('convertProperties', () => {
       },
     });
   });
+
+  it('should trim property keys', () => {
+    const mockFeature = {
+      type: 'Feature',
+      geometry: {
+        type: 'Point',
+        coordinates: [100, 0],
+      },
+      properties: {
+        ' Location_N': 'Test Location',
+        'Latitude ': 0,
+        ' Longitude ': 100,
+        ' custom property ': 'value',
+      },
+    };
+
+    const result = convertProperties(mockFeature);
+
+    expect(result).toEqual({
+      type: 'Feature',
+      geometry: {
+        type: 'Point',
+        coordinates: [100, 0],
+      },
+      properties: {
+        locationName: 'Test Location',
+        latitude: 0,
+        longitude: 100,
+        'custom property': 'value',
+      },
+    });
+  });
 });

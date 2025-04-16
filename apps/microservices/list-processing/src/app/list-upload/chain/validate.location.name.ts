@@ -17,7 +17,7 @@ export class ValidateLocationName extends AbstractHandler<ChainType> {
   }
 
   public validateAndFormatLocationName(location: Feature): void {
-    const originalName = (location.properties.locationName as string) || '';
+    const originalName = String(location.properties.locationName) || '';
     const formattedName = this.formatLocationName(originalName);
 
     if (!this.isValidLocationName(formattedName)) {

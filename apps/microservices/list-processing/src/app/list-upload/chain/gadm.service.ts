@@ -3,9 +3,6 @@ import { AbstractHandler, ChainType, PreviewListRequest, RequestNewList } from '
 import asyncPool from 'tiny-async-pool';
 import { Feature, FeatureCollection } from '@wri-monorepos/geo';
 import { IFeatureSet, IGeometry, queryFeatures } from '@esri/arcgis-rest-feature-service';
-import { LambdaClient, InvokeCommand, InvocationType } from '@aws-sdk/client-lambda';
-import { NodeHttpHandler } from '@smithy/node-http-handler';
-import { S3Service } from '@wri-monorepos/aws';
 import { featureFlagsService } from '@wri-monorepos/shared';
 import { FeatureFlag } from '@wri-monorepos/sql';
 
@@ -19,59 +16,6 @@ const GADM_SERVICE__STAGING =
 
 export class GADMService extends AbstractHandler<ChainType> {
   logger = new Logger(GADMService.name);
-
-  LAMBDA_HTTP_TIMEOUT_MS = 5 * 60 * 1000; // 5 minutes
-
-  private BATCH_SIZE = 200;
-
-  putObject = async (objectName, object) => {
-    const s3Service = new S3Service();
-
-    const filePath = `${process.env.NODE_ENV}/${objectName}.geojson`;
-
-    await s3Service.putObject(
-      filePath,
-      JSON.stringify(object),
-      process.env.AWS_ANALYSIS_BUCKET,
-      'application/json'
-    );
-    return filePath;
-  };
-
-  getObject = async (bucket, key) => {
-    const s3Service = new S3Service();
-    return await s3Service.getObjectAsJson(bucket, key);
-  };
-
-  delObject = async (bucket, key) => {
-    const s3Service = new S3Service();
-
-    await s3Service.deleteObject(key, bucket);
-  };
-
-  invokeLambda = async (FunctionName: string, payload: object = {}) => {
-    const client = new LambdaClient({
-      apiVersion: '2015-03-31',
-      region: 'us-east-1',
-      requestHandler: new NodeHttpHandler({
-        requestTimeout: this.LAMBDA_HTTP_TIMEOUT_MS,
-      }),
-    });
-
-    const functionName = `${FunctionName}-${process.env.NODE_ENV}`;
-    const payloadString = JSON.stringify(payload);
-    const parameters = {
-      FunctionName: functionName,
-      Payload: Buffer.from(payloadString), // Ensure payload is a Buffer
-      InvocationType: InvocationType.RequestResponse, // Explicitly use the enum
-    };
-    Logger.log('FunctionName', functionName);
-
-    const command = new InvokeCommand(parameters);
-    const { Payload: LambdaPayload } = await client.send(command);
-    const result = Buffer.from(LambdaPayload).toString();
-    return { Payload: result };
-  };
 
   getGadmServiceUrl = () => {
     return PRODUCTION_ENVIRONMENTS.includes(process.env.NODE_ENV)
@@ -186,83 +130,6 @@ export class GADMService extends AbstractHandler<ChainType> {
     }
   };
 
-  private async processBatch(batch: Feature[], request: ChainType): Promise<Feature[]> {
-    const s3ObjectsToDelete = [];
-    const objectName = `gadm-${new Date().getTime()}-${Math.random().toString(36).substring(7)}`;
-
-    try {
-      const batchGeoJSON = {
-        type: 'FeatureCollection',
-        features: batch,
-      };
-
-      const location_info = await this.putObject(objectName, { geojson: batchGeoJSON });
-      const s3Info = {
-        bucket: process.env.AWS_ANALYSIS_BUCKET,
-        key: location_info,
-      };
-      s3ObjectsToDelete.push(s3Info);
-
-      const lambdaResult = await this.invokeLambda('controller-admin-areas', {
-        receipt_handle: 'NOTARECEIPT',
-        s3_location_info: s3Info,
-        layer: 'gadm',
-        dissolve_aoi: false,
-        post_process_aoi: false,
-      });
-
-      const { Payload } = lambdaResult;
-      const { bucket, key, errorMessageStr } = JSON.parse(Payload);
-      let errorMessage = errorMessageStr || '';
-
-      try {
-        errorMessage = JSON.parse(errorMessageStr);
-      } catch (e) {
-        void e; // ignore any JSON parsing errors
-      }
-
-      if (errorMessage.length || Object.keys(errorMessage).length) {
-        this.logger.log(errorMessage);
-        throw new Error('Has error property');
-      }
-
-      s3ObjectsToDelete.push({ bucket, key });
-      const s3Object = await this.getObject(bucket, key);
-
-      await Promise.all(s3ObjectsToDelete.map((obj) => this.delObject(obj.bucket, obj.key)));
-
-      return s3Object.geojson.features;
-    } catch (e) {
-      (request.request as RequestNewList).hasUnanalyzableError = true;
-      this.logger.warn('Error in processBatch:', e.stack || e);
-      return batch; // Return original features if processing fails
-    }
-  }
-
-  clipToLand = async (geojson, request): Promise<{ geojson: FeatureCollection }> => {
-    const { features } = geojson as FeatureCollection;
-    const processedFeatures: Feature[] = [];
-
-    // Process features in batches
-    for (let i = 0; i < features.length; i += this.BATCH_SIZE) {
-      const batch = features.slice(i, i + this.BATCH_SIZE);
-      try {
-        const processedBatch = await this.processBatch(batch, request);
-        processedFeatures.push(...processedBatch);
-      } catch (e) {
-        this.logger.warn('Error processing batch:', e);
-        processedFeatures.push(...batch); // Add original features if processing fails
-      }
-    }
-
-    return {
-      geojson: {
-        type: 'FeatureCollection',
-        features: processedFeatures,
-      },
-    };
-  };
-
   composeResults = async (feature: Feature) => {
     await this.getGeoReferenceData(feature);
   };
@@ -290,7 +157,7 @@ export class GADMService extends AbstractHandler<ChainType> {
 
     const gadm41FeatureFlag = flags.find((f) => f.flagId === 'gadm41') as FeatureFlag;
 
-    const { path, preview = false } = request.request as PreviewListRequest;
+    const { path } = request.request as PreviewListRequest;
     const { features } = geojson as FeatureCollection;
 
     if ((request.request as RequestNewList).hasUnanalyzableError) {
@@ -309,11 +176,6 @@ export class GADMService extends AbstractHandler<ChainType> {
     }
 
     this.logger.debug('GADMService - done with getGeoReferenceData for', path);
-    // We should not call clip to land if we are in the preview mode.
-    if (!preview) {
-      const response = await this.clipToLand(geojson, request);
-      request.geojson = response.geojson;
-    }
     return request;
   }
 }

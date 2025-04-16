@@ -256,6 +256,6 @@ const errorDetailsMap = {
     'This location is not on land. Please ensure your geometry is accurate and in the WGS 84 projection.',
   'Invalid area':
     'This location does not have a valid analysis radius or area defined. Analysis radius (in Km) or analysis area (in Ha) must be defined as a positive integer.',
-  'Invalid geometry':
+  'Invalid polygon geometry':
     'This location has invalid geometry. Please make sure all the polygons in your data are closed and have no self-intersections.',
 };

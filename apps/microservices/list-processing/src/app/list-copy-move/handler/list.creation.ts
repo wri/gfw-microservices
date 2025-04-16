@@ -1,3 +1,4 @@
+import { ConvertCommodityToMapSpamCode } from '../../list-upload/chain/convert.commodity.mapspam';
 import { CreateLargeListService } from '../../list-upload/create.large.list.service';
 import { CommodityService } from '../../list/commodity.service';
 
@@ -21,7 +22,7 @@ export const handleNewListCreation = async (param: CreateListRequest) => {
     param.selectedListId
   );
 
-  const commodityHumanReadable = commodity?.replace('GFWP_', '');
+  const commodityHumanReadable = ConvertCommodityToMapSpamCode.getCommoditySpamName(commodity);
 
   const createLargeListService = new CreateLargeListService();
   return await createLargeListService.run({

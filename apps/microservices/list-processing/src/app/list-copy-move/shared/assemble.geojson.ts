@@ -1,27 +1,28 @@
 import { GeoJson, GeoService } from '@wri-monorepos/geo';
+import { getListAttributes, ListAttributes } from '@wri-monorepos/sql';
 
 const isEmpty = (str) => {
   return !str || str.length === 0 || !str.trim(); //check if string is null, empty, or contains only whitespace
 };
 
-const expandAttributes = (attributes) => {
+const expandAttributes = (attributes: string, extraFields: Array<ListAttributes>) => {
   const convertedObject = {};
 
   if (isEmpty(attributes)) {
     return convertedObject;
   }
 
-  const jsonArray = JSON.parse(attributes);
+  const jsonObject = JSON.parse(attributes);
 
   try {
-    jsonArray.forEach((item) => {
-      let value = item.value;
+    extraFields.forEach((item) => {
+      let value = jsonObject[item.attribute_name];
 
-      if (item.type === 'number') {
+      if (item.attribute_type === 1) {
         value = Number(value); // Convert to number if type is "number"
       }
 
-      convertedObject[item.field] = value;
+      convertedObject[item.attribute_name] = value;
     });
 
     return convertedObject;
@@ -30,7 +31,12 @@ const expandAttributes = (attributes) => {
   }
 };
 
-export const assembleGeojson = async (featProps, uploadingData): Promise<GeoJson> => {
+export const assembleGeojson = async (
+  featProps,
+  uploadingData,
+  clientDatabase,
+  listId
+): Promise<GeoJson> => {
   const geoService = new GeoService();
   return new Promise<GeoJson>((resolve, reject) => {
     const geojson: GeoJson = {
@@ -50,20 +56,22 @@ export const assembleGeojson = async (featProps, uploadingData): Promise<GeoJson
         return selectedLocationsIDs.indexOf(location.properties.location_id) > -1;
       });
 
-      filteredLocations.forEach((location, j) => {
-        const attributes = expandAttributes(location.properties.attributes);
+      getListAttributes(clientDatabase, listId).then((extraFields) => {
+        filteredLocations.forEach((location, j) => {
+          const attributes = expandAttributes(location.properties.attributes, extraFields);
 
-        geojson.features.push({
-          type: 'Feature',
-          properties: {
-            ...featProps[j],
-            ...attributes,
-          },
-          geometry: location.geometry,
+          geojson.features.push({
+            type: 'Feature',
+            properties: {
+              ...featProps[j],
+              ...attributes,
+            },
+            geometry: location.geometry,
+          });
         });
-      });
 
-      resolve(geojson);
+        resolve(geojson);
+      });
     }
   });
 };

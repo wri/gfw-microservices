@@ -8,7 +8,6 @@ import { NodeHttpHandler } from '@smithy/node-http-handler';
 import { S3Service } from '@wri-monorepos/aws';
 import { featureFlagsService } from '@wri-monorepos/shared';
 import { FeatureFlag } from '@wri-monorepos/sql';
-import * as turf from '@turf/turf';
 
 const PRODUCTION_ENVIRONMENTS = ['production', 'ProdV2'];
 const POOL_SIZE = 5;
@@ -22,6 +21,8 @@ export class GADMService extends AbstractHandler<ChainType> {
   logger = new Logger(GADMService.name);
 
   LAMBDA_HTTP_TIMEOUT_MS = 5 * 60 * 1000; // 5 minutes
+
+  private BATCH_SIZE = 200;
 
   putObject = async (objectName, object) => {
     const s3Service = new S3Service();
@@ -78,70 +79,13 @@ export class GADMService extends AbstractHandler<ChainType> {
       : GADM_SERVICE__STAGING;
   };
 
-  getLatLngFromFeature = (feature: Feature) => {
-    if (
-      feature.properties.longitude !== undefined &&
-      feature.properties.latitude !== undefined &&
-      feature.properties.longitude !== null &&
-      feature.properties.latitude !== null
-    ) {
-      return {
-        longitude: feature.properties.longitude as number,
-        latitude: feature.properties.latitude as number,
-      };
-    }
-
-    try {
-      const centroid = turf.centroid(feature.geometry as unknown as turf.AllGeoJSON);
-      return {
-        longitude: centroid.geometry.coordinates[0],
-        latitude: centroid.geometry.coordinates[1],
-      };
-    } catch (e) {
-      this.logger.error('Error in getting centroid from polygon', e);
-    }
-
-    if (
-      feature.geometry &&
-      feature.geometry.type === 'Polygon' &&
-      feature.geometry.coordinates.length > 0
-    ) {
-      // Assuming the coordinates are in the format [ [ [x1, y1], [x2, y2], ... ] ]
-      const firstPoint = Array.isArray(feature.geometry.coordinates[0][0])
-        ? feature.geometry.coordinates[0][0]
-        : feature.geometry.coordinates[0];
-      return {
-        longitude: firstPoint[0] as number,
-        latitude: firstPoint[1] as number,
-      };
-    }
-    if (
-      feature.geometry &&
-      feature.geometry.type === 'Point' &&
-      feature.geometry.coordinates.length > 0
-    ) {
-      // Assuming the coordinates are in the format [ [ [x1, y1], [x2, y2], ... ] ]
-      const firstPoint = feature.geometry.coordinates;
-      return {
-        longitude: firstPoint[0],
-        latitude: firstPoint[1],
-      };
-    }
-
-    return {
-      latitude: 0,
-      longitude: 0,
-      hasUnanalyzableError: true,
-    };
-  };
-
   /**
    * Function to perform a GET request using axios.
    * @param {Feature} feature - The feature object containing properties and geometry.
    * @returns {Promise<IFeatureSet>} - A promise that resolves to the query result.
    */
   async queryGADM(feature: Feature): Promise<IFeatureSet> {
-    const { latitude, longitude, hasUnanalyzableError } = this.getLatLngFromFeature(feature);
+    const { latitude, longitude, hasUnanalyzableError } = feature.properties;
 
     if (hasUnanalyzableError) {
       throw new Error('Feature does not have valid longitude/latitude or geometry.');
@@ -165,7 +109,7 @@ export class GADMService extends AbstractHandler<ChainType> {
   }
 
   getGadmData = async (feature: Feature) => {
-    const { latitude, longitude, hasUnanalyzableError } = this.getLatLngFromFeature(feature);
+    const { latitude, longitude, hasUnanalyzableError } = feature.properties;
     if (hasUnanalyzableError) {
       throw new Error('Feature does not have valid longitude/latitude or geometry.');
     }
@@ -242,12 +186,17 @@ export class GADMService extends AbstractHandler<ChainType> {
     }
   };
 
-  clipToLand = async (geojson, request): Promise<{ geojson: FeatureCollection }> => {
+  private async processBatch(batch: Feature[], request: ChainType): Promise<Feature[]> {
     const s3ObjectsToDelete = [];
-    const objectName = `gadm-${new Date().getTime()}`;
+    const objectName = `gadm-${new Date().getTime()}-${Math.random().toString(36).substring(7)}`;
 
     try {
-      const location_info = await this.putObject(objectName, { geojson: geojson });
+      const batchGeoJSON = {
+        type: 'FeatureCollection',
+        features: batch,
+      };
+
+      const location_info = await this.putObject(objectName, { geojson: batchGeoJSON });
       const s3Info = {
         bucket: process.env.AWS_ANALYSIS_BUCKET,
         key: location_info,
@@ -282,11 +231,36 @@ export class GADMService extends AbstractHandler<ChainType> {
 
       await Promise.all(s3ObjectsToDelete.map((obj) => this.delObject(obj.bucket, obj.key)));
 
-      return s3Object;
+      return s3Object.geojson.features;
     } catch (e) {
       (request.request as RequestNewList).hasUnanalyzableError = true;
-      this.logger.warn('Error in clipToLand:', e.stack || e);
+      this.logger.warn('Error in processBatch:', e.stack || e);
+      return batch; // Return original features if processing fails
     }
+  }
+
+  clipToLand = async (geojson, request): Promise<{ geojson: FeatureCollection }> => {
+    const { features } = geojson as FeatureCollection;
+    const processedFeatures: Feature[] = [];
+
+    // Process features in batches
+    for (let i = 0; i < features.length; i += this.BATCH_SIZE) {
+      const batch = features.slice(i, i + this.BATCH_SIZE);
+      try {
+        const processedBatch = await this.processBatch(batch, request);
+        processedFeatures.push(...processedBatch);
+      } catch (e) {
+        this.logger.warn('Error processing batch:', e);
+        processedFeatures.push(...batch); // Add original features if processing fails
+      }
+    }
+
+    return {
+      geojson: {
+        type: 'FeatureCollection',
+        features: processedFeatures,
+      },
+    };
   };
 
   composeResults = async (feature: Feature) => {

@@ -113,12 +113,38 @@ export class ProcessUploadData extends AbstractHandler<ChainType> {
     return await Promise.all(
       features.map(async (feature, index) => {
         try {
-          return await this.processFeature(feature, index + 1, commodity, request);
+          const processedFeature = await this.processFeature(
+            feature,
+            index + 1,
+            commodity,
+            request
+          );
+
+          // Calculate area for polygon features
+          return processedFeature;
         } catch (error) {
           this.logger.error(`Error processing feature`, error.stack || error);
           this.logger.debug(feature);
           throw error;
         }
+      })
+    );
+  }
+
+  getFeatPropAttrs(request: ChainType) {
+    if (!request.geojson.features[0]) {
+      return [];
+    }
+    const { list_id } = request.request as RequestNewList;
+    const validAttrs = this.getValidAttributes(
+      Object.keys(request.geojson.features[0]?.properties ?? {})
+    );
+
+    return validAttrs.map((attributeField) =>
+      getFormattedAttributes({
+        listId: list_id,
+        attributeField,
+        fieldValue: request.geojson.features[0]?.properties[attributeField] ?? '',
       })
     );
   }

@@ -111,7 +111,7 @@ export class ListCopyMoveService {
 
       const featProps = createFeatureProps(locationData);
       this.logger.log('Assembling GEO JSON');
-      const geojson = await assembleGeojson(featProps, locationData);
+      const geojson = await assembleGeojson(featProps, locationData, clientDatabase, moveToList.id);
       deleteGeoJSONFeatureProperties(geojson);
 
       // We are copying or moving to a new list so creating the new table

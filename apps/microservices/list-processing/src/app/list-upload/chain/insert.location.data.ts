@@ -65,7 +65,7 @@ export class InsertLocationData extends AbstractHandler<ChainType> {
         await this.insertBatch(connection, ListEntity, batch);
       }
 
-      return super.handle(request);
+      return request;
     } catch (error) {
       throw new Error(`Failed to handle input: ${error.stack || error}`);
     }

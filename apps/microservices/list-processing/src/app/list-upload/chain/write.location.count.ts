@@ -32,7 +32,7 @@ export class WriteLocationCount extends AbstractHandler<ChainType> {
       // Update the list's location count
       await listRepository.update({ id: listId }, { listLocationsCount: totalLocations });
 
-      this.logger.log(`Updated list ${listId} with ${listSize} locations.`);
+      this.logger.log(`Updated list ${listId} with ${totalLocations} locations.`);
     } catch (error) {
       this.logger.error(`Failed to update list ${listId}: ${error.message}`);
       throw error; // Re-throw the error after logging

@@ -19,3 +19,5 @@ export const commodities = {
   multiple: 'Multiple',
   other: 'Other',
 } as const;
+
+export const customCommodities = ['Cattle', 'Pulp and paper', 'Multiple'];

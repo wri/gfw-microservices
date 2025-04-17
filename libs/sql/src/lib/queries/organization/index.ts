@@ -67,3 +67,4 @@ export * from './createNewUser';
 export * from './deactivateAllShareInternalList';
 export * from './deactivateShareInternalList';
 export * from './deletePolicy';
+export * from './getGHGLocationErrorsByListId';

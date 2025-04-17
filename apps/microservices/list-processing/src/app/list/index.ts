@@ -8,6 +8,6 @@ import { CommodityService } from './commodity.service';
   imports: [TypeOrmModule.forFeature([ListTemplate], 'default'), SqlModule],
   controllers: [CommodityController],
   providers: [CommodityService],
-  exports: [],
+  exports: [CommodityService],
 })
 export class ListModule {}

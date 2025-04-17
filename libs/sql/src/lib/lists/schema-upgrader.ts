@@ -165,14 +165,14 @@ export async function upgradeListSchema(args: SchemaUpgraderArgs) {
      * Update Lists.version=2 for given list_id
      */
     const templateName = await getTemplateName(list.templateId);
-    const listCommmodity = getCommodityCodeFromTemplate(templateName, list.Commodity);
+    const listCommodity = getCommodityCodeFromTemplate(templateName, list.Commodity);
 
-    logger.log(`Writing list.[Commodity] = ${listCommmodity} from template: ${templateName}`);
+    logger.log(`Writing list.[Commodity] = ${listCommodity} from template: ${templateName}`);
     logger.log(`Updating list version ${list.version} to ${LIST_VERSION_POST_UPGRADE}`);
     await listsRepository.update(
       { id: listId },
       {
-        Commodity: listCommmodity,
+        Commodity: listCommodity,
         version: LIST_VERSION_POST_UPGRADE,
       }
     );

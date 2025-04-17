@@ -170,7 +170,7 @@ export async function upgradeListSchema(args: SchemaUpgraderArgs) {
     let listCommodity = getCommodityCodeFromTemplate(templateName, list.Commodity);
 
     // Check if the list was uploaded by EAPI
-    const wasUploadedByEAPI = checkIfListWasUploadByEAPI(clientDb, list.id);
+    const wasUploadedByEAPI = await checkIfListWasUploadByEAPI(clientDb, list.id);
     if (templateName === 'Cocoa Generic' && wasUploadedByEAPI) {
       listCommodity = `${GHG_PREFIX}_Unknown`;
     }

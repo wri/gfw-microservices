@@ -29,13 +29,18 @@ const getUpdatedSelection = (selectedAnalyses, selectedAnalysisId) => {
   }
 };
 
-function AnalysisTypesSelector({ selectedAnalyses, setSelectedAnalyses, commodity }) {
+function AnalysisTypesSelector({
+  selectedAnalyses,
+  setSelectedAnalyses,
+  commodity,
+  isPalmOilBackwardComp,
+}) {
   const handleAnalyzesSelection = (selectedAnalysisId) => {
     setSelectedAnalyses(getUpdatedSelection(selectedAnalyses, selectedAnalysisId));
   };
 
   const analysisOptions =
-    commodity === 'OILP'
+    commodity === 'OILP' || isPalmOilBackwardComp
       ? [...analysisTypesOptionsNewNames, palmRiskAnalysis]
       : analysisTypesOptionsNewNames;
 

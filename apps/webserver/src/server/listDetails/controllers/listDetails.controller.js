@@ -51,7 +51,6 @@ export const listDetails = (req, res, data) => {
     .then((results) => {
       const [
         templateData,
-
         userLists,
         userInfo,
         locationCount,

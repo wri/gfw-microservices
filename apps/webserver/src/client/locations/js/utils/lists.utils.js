@@ -14,7 +14,7 @@ import { listStatus } from '../../../../config/env/listStatuses.constants';
 
 // Check to see which views should be enabled
 const checkValidViewCommodity = (selectedLists, listData) => {
-  if (selectedLists.length > 0 && listData.length > 0) {
+  if (selectedLists?.length > 0 && listData?.length > 0) {
     if (!selectedLists[0].isGlobalForestWatchList) {
       // This is a user list
       const { template_id, location_classification } = selectedLists[0];

@@ -34,6 +34,8 @@ import {
   getTemplateName,
   saveListAttributes,
 } from '../list-attributes';
+import { checkIfListWasUploadByEAPI } from '../account/getCheckIFListWasUploadByEAPI';
+import { GHG_PREFIX } from '../list-attributes/comMapSpam';
 
 const LIST_VERSION_POST_UPGRADE = 2;
 
@@ -165,8 +167,13 @@ export async function upgradeListSchema(args: SchemaUpgraderArgs) {
      * Update Lists.version=2 for given list_id
      */
     const templateName = await getTemplateName(list.templateId);
-    const listCommodity = getCommodityCodeFromTemplate(templateName, list.Commodity);
+    let listCommodity = getCommodityCodeFromTemplate(templateName, list.Commodity);
 
+    // Check if the list was uploaded by EAPI
+    const wasUploadedByEAPI = checkIfListWasUploadByEAPI(clientDb, list.id);
+    if (templateName === 'Cocoa Generic' && wasUploadedByEAPI) {
+      listCommodity = `${GHG_PREFIX}_Unknown`;
+    }
     logger.log(`Writing list.[Commodity] = ${listCommodity} from template: ${templateName}`);
     logger.log(`Updating list version ${list.version} to ${LIST_VERSION_POST_UPGRADE}`);
     await listsRepository.update(

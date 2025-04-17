@@ -62,6 +62,31 @@ export async function saveListAttributes(clientDb, attributes: ListAttributesRec
   }
 }
 
+export async function getListAttributes(clientDb, listId: number) {
+  try {
+    // insert new attributes with Typeorm listAttributes entity
+    const clientStore = new ClientStoreConnection();
+    const connection = await clientStore.getConnection(clientDb);
+    const listAttributesRepository = connection.getRepository(ListAttributes);
+
+    const listAttributes = await listAttributesRepository.find({
+      where: {
+        list_id: listId,
+      },
+    });
+
+    return listAttributes;
+  } catch (error) {
+    // throwing errors for PrimaryKey constraints is likely more efficient than checking the db if they exists, less roundtrips
+    if (error?.message.includes('Violation of PRIMARY KEY constraint')) {
+      Logger.log(`Constraint violation handled for `, error.stack || error);
+    } else {
+      Logger.error(`Something went wrong executing query.`, error.stack || error);
+      throw error;
+    }
+  }
+}
+
 export async function getTemplateName(listTemplateId: number) {
   const clientStoreConnection = new ClientStoreConnection();
   const connection = await clientStoreConnection.getConnection('gfwpro');

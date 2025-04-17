@@ -1,7 +1,7 @@
 import { EntitySchema } from 'typeorm';
 import { Logger } from '@nestjs/common';
 import { ListAttributes, ListSchema, ListSchemaType, ListTemplate } from '../entity';
-import { ClientStoreConnection } from '../util';
+import { ClientStoreConnection, SQLUtils } from '../util';
 import { COMMODITY_MAP_SPAM, MAPSPAM_COMMODITY, GHG_PREFIX, MAPSPAM_CODES } from './comMapSpam';
 
 export function inferType(value: unknown): string {
@@ -179,4 +179,24 @@ export async function getListJsonAttributesColumnsSqlParam(clientDatabase: strin
   });
 
   return castStringArr.join(',');
+}
+
+export async function getColumnsToDelete(
+  clientDb: string,
+  tableName: string,
+  columnsToExclude: string[]
+): Promise<string[]> {
+  const excludeClause = columnsToExclude.map((colName) => `'${colName}'`).join(',');
+
+  const sql = `
+    SELECT c.name as colName
+    FROM sys.columns c
+    JOIN sys.objects o ON c.object_id = o.object_id
+    WHERE 
+      o.name = '${tableName}'
+      AND c.name NOT IN (${excludeClause})
+  `;
+  const rows = await SQLUtils.queryDB<{ colName: string }[]>(clientDb, sql);
+
+  return rows.map((row) => row.colName);
 }

@@ -5,10 +5,9 @@
  */
 export const getGHGLocationErrorsByListId = `
 DECLARE @list_table NVARCHAR(150)
-DECLARE @listName  NVARCHAR(150)
 DECLARE @SQL NVARCHAR(MAX)
 
-SELECT @list_table = list_table_name , @listName = list_Name FROM [Lists] WHERE id = @listId
+SELECT @list_table = list_table_name  FROM [Lists] WHERE id = @listId
 
 SET @SQL = 'SELECT  ' +
 ' ghg.location_error as locationError, ' +
@@ -22,6 +21,6 @@ SET @SQL = 'SELECT  ' +
 SET @SQL = @SQL + ' ORDER BY ghg.location_id ASC';
 
 EXEC sp_executesql @SQL,
-     N'@listId INT, @listName NVARCHAR(150)',
-     @listId = @listId, @listName = @listName;
+     N'@listId INT',
+     @listId = @listId;
 `;

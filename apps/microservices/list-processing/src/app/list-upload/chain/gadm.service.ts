@@ -93,7 +93,7 @@ export class GADMService extends AbstractHandler<ChainType> {
     try {
       const response = await this.getGadmData(feature);
 
-      if (response.length) {
+      if (response.length && response[0].gid_2) {
         feature.properties = {
           ...feature.properties,
           subState: response[0].name_2,

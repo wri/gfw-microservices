@@ -13,7 +13,7 @@ export async function checkIfListWasUploadByEAPI(
   listId: number
 ): Promise<Boolean> {
   try {
-    const parameters = [{ field: 'list_id', type: sql.Int, value: listId }];
+    const parameters = [{ field: 'listId', type: sql.Int, value: listId }];
 
     const result = await SQLUtils.queryDB<OrganizationUsersAnalysisUsageExportResponse[]>(
       orgDbName,

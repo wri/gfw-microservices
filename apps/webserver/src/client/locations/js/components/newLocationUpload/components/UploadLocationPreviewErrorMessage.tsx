@@ -79,9 +79,9 @@ const errorMessageBuilder = ({
   error: { errors: string[] };
   fileExtension: string;
 }) => {
-  const mainError = error?.errors?.[0];
+  const firstError = error?.errors?.[0];
 
-  if (mainError?.startsWith('Missing mandatory fields:')) {
+  if (firstError?.startsWith('Missing mandatory fields:')) {
     return {
       title: 'Missing required fields',
       body: `Your ${fileExtension} file is missing the following obligatory fields: ${getMissingFieldsNames(
@@ -91,7 +91,14 @@ const errorMessageBuilder = ({
     };
   }
 
-  if (mainError?.startsWith('Error while parsing the data')) {
+  if (firstError?.startsWith('Invalid latitude or longitude')) {
+    return {
+      title: 'Invalid file',
+      body: 'Invalid latitude or longitude.',
+    };
+  }
+
+  if (firstError?.startsWith('Error while parsing the data')) {
     return {
       title: 'Invalid file',
       body: 'Your file is invalid. Please try another one.',

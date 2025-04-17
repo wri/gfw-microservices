@@ -32,6 +32,28 @@ describe('UploadLocationPreviewErrorMessage', () => {
     ).toBeInTheDocument();
   });
 
+  it('should render invalid coordinates error message', () => {
+    const error = {
+      message: 'Error',
+      errors: [
+        'Invalid latitude or longitude: undefined, undefined',
+        'Missing mandatory fields: latitude, longitude',
+      ],
+    };
+
+    render(
+      <UploadLocationPreviewErrorMessage
+        error={error}
+        keyFile="data.csv"
+        onRetryUpload={mockRetryUpload}
+        onRetryPreviewData={mockRetryPreviewData}
+      />
+    );
+
+    expect(screen.getByText(/invalid file/i)).toBeInTheDocument();
+    expect(screen.getByText(/invalid latitude or longitude/i)).toBeInTheDocument();
+  });
+
   it('should render invalid file error message', () => {
     const error = {
       message: 'Error',

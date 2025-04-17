@@ -50,7 +50,12 @@ import {
   ClientStoreConnection,
   ListsAnalysisStatus,
   ExternalUpload,
+  SQLUtils,
+  GHGAnalysisDataByListId,
+  getGHGLocationErrorsByListId,
 } from '@wri-monorepos/sql';
+import * as sql from 'mssql';
+
 const LIST_INITIAL_STATUS = 'Pending';
 const MIN_FILE_SIZE_IN_BYTES = 70; // single location CSV file size
 
@@ -197,9 +202,11 @@ export class ListAnalysisService {
   async getLocationsErrors({
     listId,
     organizationId,
+    analysisId,
   }: {
     listId: number;
     organizationId: number;
+    analysisId?: string;
   }): Promise<Array<{ ['Location Name']: string; Details: string }>> {
     try {
       const organization = await this.organizationService.findOrganizationById(organizationId);
@@ -234,6 +241,16 @@ export class ListAnalysisService {
           errorDetails: Not(IsNull()),
         },
       });
+      let ghgLocationErrors = [];
+      if (analysisId === 'GHG') {
+        // Get GHG location errors
+        ghgLocationErrors = await this.getGhgLocationErrors(listId, organization.organizationDb);
+
+        // We would have a problem if there are overlaps for errors already reported in locationWithErrors and new errors being added by ghgLocationErrors.
+        if (ghgLocationErrors.length > 0) {
+          locationsWithErrors.push(...ghgLocationErrors);
+        }
+      }
 
       return locationsWithErrors.map((location) => ({
         'Location Name': location.locationName,
@@ -606,5 +623,30 @@ export class ListAnalysisService {
     );
 
     return response;
+  }
+  async getGhgLocationErrors(
+    listId: number,
+    clientDatabase: string
+  ): Promise<Array<{ locationName: string; errorDetails: string }>> {
+    const parameters = [{ field: 'listId', type: sql.Int, value: listId }];
+
+    const data = await SQLUtils.queryDB<GHGAnalysisDataByListId[]>(
+      clientDatabase,
+      getGHGLocationErrorsByListId,
+      parameters
+    );
+    if (data) {
+      return data.reduce((errors, item) => {
+        if (item.locationError) {
+          errors.push({
+            locationName: item.locationName,
+            errorDetails: item.locationError,
+          });
+        }
+        return errors;
+      }, []);
+    } else {
+      return [];
+    }
   }
 }

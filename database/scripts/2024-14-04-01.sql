@@ -3,7 +3,7 @@
 CREATE TABLE dbo.ConverterStatus (
     [id] INT IDENTITY(1,1) PRIMARY KEY CLUSTERED,
     [name] NVARCHAR(32) NOT NULL,
-    [start_time] DATETIME NOT NULL,
+    [start_time] DATETIME NULL,
     [status] NVARCHAR(MAX) NULL,
     [organization_id] INT NULL,
     [list_id] INT NULL

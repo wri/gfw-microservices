@@ -62,22 +62,19 @@ export class ConvertPoint2Polygon extends AbstractHandler<ChainType> {
 
     if (!analysisArea && !analysisRadius) {
       throw Error('At least one of analysisArea or analysisRadius must be valid');
+    } else if (analysisArea < 0 || analysisRadius < 0) {
+      throw Error('analysisArea and analysisRadius cannot be negative');
     } else if (analysisArea) {
       // Calculate radius from area
       const kilosSquared = analysisArea / 100;
-      const radius = Math.sqrt(kilosSquared / pi);
-      return {
-        analysisRadius: radius,
-        analysisArea,
-      };
+      analysisRadius = Math.sqrt(kilosSquared / pi);
     } else if (analysisRadius) {
       // Calculate area from radius
       const kiloArea = pi * Math.pow(analysisRadius, 2);
-      const area = kiloArea * 100;
-      return {
-        analysisArea: area,
-        analysisRadius,
-      };
+      analysisArea = kiloArea * 100;
+    }
+    if (analysisRadius > 3 * 1000) {
+      throw Error('analysisRadius cannot be greater than 3000 km');
     }
     return {
       analysisArea,
@@ -109,11 +106,11 @@ export class ConvertPoint2Polygon extends AbstractHandler<ChainType> {
             throw new Error('Invalid geometry');
           }
         } catch (error) {
-          this.logger.error('Error converting point to polygon', error.stack || error);
+          this.logger.error('Error converting point to polygon: ', error.stack || error);
           feature.properties.errorDetails = feature.properties.errorDetails || [];
           (input.request as RequestNewList).hasUnanalyzableError = true;
           (feature.properties.errorDetails as Array<string>).push(
-            'Unable to convert point to polygon' + error.message
+            'Unable to convert point to polygon: ' + error.message
           );
         }
       } else {

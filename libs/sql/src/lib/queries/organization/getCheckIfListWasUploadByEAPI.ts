@@ -2,7 +2,7 @@
  * Check if the list was uploaded by EAPI
  * @listId INT
  */
-export const getCheckIfListWasUploadByEAPI = `
+export const getListIfEAPIExportUpload = `
 DECLARE @SQL NVARCHAR(MAX)
 
 SET @SQL = 'SELECT '+
@@ -16,6 +16,6 @@ EXEC sp_executesql @SQL,
     N'@listId INT',
     @listId = @listId;
 `;
-export interface getCheckIfListWasUploadByEAPIExport {
+export interface getListIfEAPIExportUploadExport {
   ListId: number;
 }

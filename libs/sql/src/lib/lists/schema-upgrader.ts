@@ -34,7 +34,7 @@ import {
   getTemplateName,
   saveListAttributes,
 } from '../list-attributes';
-import { checkIfListWasUploadByEAPI } from '../account/getCheckIFListWasUploadByEAPI';
+import { getListIfEAPIExportUpload } from './getListIfEAPIExportUpload';
 import { GHG_PREFIX } from '../list-attributes/comMapSpam';
 
 const LIST_VERSION_POST_UPGRADE = 2;
@@ -170,7 +170,7 @@ export async function upgradeListSchema(args: SchemaUpgraderArgs) {
     let listCommodity = getCommodityCodeFromTemplate(templateName, list.Commodity);
 
     // Check if the list was uploaded by EAPI
-    const wasUploadedByEAPI = await checkIfListWasUploadByEAPI(clientDb, list.id);
+    const wasUploadedByEAPI = await getListIfEAPIExportUpload(clientDb, list.id);
     if (templateName === 'Cocoa Generic' && wasUploadedByEAPI) {
       listCommodity = `${GHG_PREFIX}_Unknown`;
     }

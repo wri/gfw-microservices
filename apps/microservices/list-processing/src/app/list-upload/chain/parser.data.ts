@@ -8,6 +8,7 @@ import * as path from 'path';
 import { xls2geojson } from '../parser/xls2GeoJSON.parser';
 import { kml2GeoJSON } from '../parser/kml2GeoJSON.parser';
 import AdmZip from 'adm-zip';
+import { convertProperties } from './validate.mandatory.fields';
 
 export class ParserData extends AbstractHandler<ChainType> {
   private readonly logger = new Logger(ParserData.name);
@@ -99,6 +100,7 @@ export class ParserData extends AbstractHandler<ChainType> {
     return {
       ...geojson,
       features: geojson.features.filter((feature) => {
+        feature = convertProperties(feature);
         // convert locationName to string if it is not already and not null or undefined
         if (
           typeof feature.properties.locationName !== 'string' &&

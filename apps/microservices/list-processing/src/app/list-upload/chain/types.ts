@@ -76,7 +76,7 @@ export abstract class AbstractHandler<T> implements Handler<T> {
       const start = performance.now();
       try {
         result = await nextJob.handle(result);
-        AbstractHandler.updateListsUploadStatus(
+        await AbstractHandler.updateListsUploadStatus(
           result as ChainType,
           `${nextJob.constructor.name} successfully executed`
         );
@@ -84,7 +84,7 @@ export abstract class AbstractHandler<T> implements Handler<T> {
         Logger.error(
           `Error in ${nextJob.constructor.name}: ${error.stack || error.message || error}`
         );
-        AbstractHandler.updateListsUploadStatus(
+        await AbstractHandler.updateListsUploadStatus(
           result as ChainType,
           `Error in ${nextJob.constructor.name}`,
           error.message

@@ -79,6 +79,9 @@ export class ValidateLatLongGeojson extends AbstractHandler<ChainType> {
   async handle(input: ChainType): Promise<ChainType> {
     const { geojson } = input;
 
+    if ((input.request as RequestNewList).hasUnanalyzableError) {
+      return input;
+    }
     if (!geojson.type || !geojson.features) {
       throw new Error('Invalid GeoJSON format');
     }

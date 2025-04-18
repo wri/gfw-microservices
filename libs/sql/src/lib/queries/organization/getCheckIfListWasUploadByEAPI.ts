@@ -1,6 +1,5 @@
 /**
- * Gets the analysis usage for organization users without aggregation
- * The command requires the following parameters:
+ * Check if the list was uploaded by EAPI
  * @listId INT
  */
 export const getCheckIfListWasUploadByEAPI = `

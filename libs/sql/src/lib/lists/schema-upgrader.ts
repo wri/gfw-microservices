@@ -27,12 +27,14 @@ import { UspSetListUnlocked } from './uspSetListUnlocked';
 import { UspSetListLocked } from './uspSetListLocked';
 import { Lists, ListsAnalysisStatus } from '../entity';
 import {
-  getColumnsToDelete,
+  getListLocationsColumnsToDelete,
   getCommodityCodeFromTemplate,
   getFormattedAttributes,
   getListsLocsColumnsToExclude,
   getTemplateName,
   saveListAttributes,
+  setListLocationNameIfIsInvestment,
+  updateListLocationAttributes,
 } from '../list-attributes';
 
 const LIST_VERSION_POST_UPGRADE = 2;
@@ -64,54 +66,44 @@ export async function upgradeListSchema(args: SchemaUpgraderArgs) {
     /**
      * @step 1
      * Write list-xxx.attributes based on own list-xxx columns
-     *
+     * 
      * – Get all locations from the DB
      * – Traverse and get all list-xxxx.attributes that are not included in list.schema
      * – Update the same list-xxxx table with a json string, format: {"column": "value"}
      * – grab the list-xxxx attributes object
      * – save the object inside the attributes column as a json string
      * – save valid list attributes into [ListAttributes] by checking if they exists first
-     */
+     * 
+     * @step 2
+     * Delete list-xxxx columns outside of entity
+     * – because column names are not consistent across lists version<2
+     * – we'll do the old sys.columns to grab the columns in a raw query
+     * – and we'll send the columns to exclude in a string
+    */
     const columnsToExclude = getListsLocsColumnsToExclude();
     logger.log(
       `Writing list-xxx.attributes based on own list-xxx columns. Excluding Columns: ${columnsToExclude.join(
         ', '
       )}`
     );
-
-    const listLocations = await SQLUtils.queryDB<unknown[]>(
+    const columnsToDelete = await getListLocationsColumnsToDelete(
       clientDb,
-      `SELECT * FROM [${list.listTableName}]`
+      list.listTableName,
+      columnsToExclude
     );
-    logger.log(`List Locations found: ${listLocations.length}`);
 
+    if (columnsToDelete.includes('Investment Name')) {
+      logger.log(`Setting [Location Name] for Investment List`);
+      await setListLocationNameIfIsInvestment(clientDb, list.listTableName);
+    }
+
+    const listLocations = await updateListLocationAttributes(clientDb, list, columnsToExclude);
+    
     if (listLocations.length) {
       const validListAttrs = Object.keys(listLocations[0] ?? {}).filter(
         (col) => !columnsToExclude.includes(col)
       );
-
-      for (let index = 0; index < listLocations.length; index++) {
-        const record = listLocations[index];
-
-        const locAttrObj = validListAttrs.reduce((acc, key) => {
-          if (record[key] === null) {
-            return acc;
-          }
-          acc[key] = `${record[key]}`;
-          return acc;
-        }, {} as Record<string, unknown>);
-
-        const attrValue = Object.keys(locAttrObj).length
-          ? `'${JSON.stringify(locAttrObj)}'`
-          : 'NULL';
-
-        const updateQuery = `UPDATE [${list.listTableName}] 
-          SET [attributes] = {ATTR_VALUE}  
-          WHERE [location_id] = ${record['location_id']}`.replace('{ATTR_VALUE}', attrValue);
-
-        await SQLUtils.queryDBFirstRow<undefined>(clientDb, updateQuery);
-      }
-
+    
       const listAttrsToSave = validListAttrs.map((attributeField) =>
         getFormattedAttributes({
           listId,
@@ -121,20 +113,6 @@ export async function upgradeListSchema(args: SchemaUpgraderArgs) {
       );
 
       await saveListAttributes(clientDb, listAttrsToSave);
-
-      /**
-       * @step 2
-       * Delete list-xxxx columns outside of entity
-       *
-       * because column names are not consistent across lists version<2
-       * we'll do the old sys.columns to grab the columns in a raw query
-       * and we'll send the columns to exclude in a string
-       */
-      const columnsToDelete = await getColumnsToDelete(
-        clientDb,
-        list.listTableName,
-        columnsToExclude
-      );
 
       if (columnsToDelete.length) {
         logger.log(

@@ -1,6 +1,6 @@
 import { EntitySchema } from 'typeorm';
 import { Logger } from '@nestjs/common';
-import { ListAttributes, ListSchema, ListSchemaType, ListTemplate } from '../entity';
+import { ListAttributes, Lists, ListSchema, ListSchemaType, ListTemplate } from '../entity';
 import { ClientStoreConnection, SQLUtils } from '../util';
 import { COMMODITY_MAP_SPAM, MAPSPAM_COMMODITY, GHG_PREFIX, MAPSPAM_CODES } from './comMapSpam';
 
@@ -181,7 +181,7 @@ export async function getListJsonAttributesColumnsSqlParam(clientDatabase: strin
   return castStringArr.join(',');
 }
 
-export async function getColumnsToDelete(
+export async function getListLocationsColumnsToDelete(
   clientDb: string,
   tableName: string,
   columnsToExclude: string[]
@@ -199,4 +199,53 @@ export async function getColumnsToDelete(
   const rows = await SQLUtils.queryDB<{ colName: string }[]>(clientDb, sql);
 
   return rows.map((row) => row.colName);
+}
+
+export async function updateListLocationAttributes(clientDb: string, list: Lists, columnsToExclude: unknown[]) {
+  const listLocations = await SQLUtils.queryDB<unknown[]>(
+    clientDb,
+    `SELECT * FROM [${list.listTableName}]`
+  );
+  Logger.log(`List Locations found: ${listLocations.length}`);
+
+  if (listLocations.length) {
+    const validListAttrs = Object.keys(listLocations[0] ?? {}).filter(
+      (col) => !columnsToExclude.includes(col)
+    );
+
+    for (let index = 0; index < listLocations.length; index++) {
+      const record = listLocations[index];
+
+      const locAttrObj = validListAttrs.reduce((acc, key) => {
+        if (record[key] === null) {
+          return acc;
+        }
+        acc[key] = `${record[key]}`;
+        return acc;
+      }, {} as Record<string, unknown>);
+
+      const attrValue = Object.keys(locAttrObj).length
+        ? `'${JSON.stringify(locAttrObj)}'`
+        : 'NULL';
+
+      const updateQuery = `UPDATE [${list.listTableName}] 
+        SET [attributes] = {ATTR_VALUE}  
+        WHERE [location_id] = ${record['location_id']}`.replace('{ATTR_VALUE}', attrValue);
+
+      await SQLUtils.queryDBFirstRow<undefined>(clientDb, updateQuery);
+    }
+  }
+  return listLocations;
+}
+
+export async function setListLocationNameIfIsInvestment(clientDb: string, listTableName: string) {
+  const storedProcedure = `DECLARE @tbl sysname = QUOTENAME('${listTableName}');
+
+IF COL_LENGTH('dbo.' + @tbl, 'Location Name') IS NULL
+    EXEC('ALTER TABLE dbo.' + @tbl + ' ADD [Location Name] NVARCHAR(150) NULL;');
+
+EXEC('UPDATE dbo.' + @tbl + ' SET [Location Name] = [Investment Name];');
+`;
+
+  return await SQLUtils.queryDBFirstRow(clientDb, storedProcedure);
 }

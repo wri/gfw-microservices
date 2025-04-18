@@ -40,7 +40,12 @@ export const convertShapefileToGeoJSON = async (zipFilePath: string): Promise<an
       })
       .catch((error) => {
         // Clean up extracted files in case of error
-        files.forEach((file) => fs.unlinkSync(path.join(extractedFolder, file)));
+        try {
+          files.forEach((file) => fs.unlinkSync(path.join(extractedFolder, file)));
+        } catch (error) {
+          console.error(error.stack || error);
+          reject(error);
+        }
         reject(error);
       });
   });

@@ -215,7 +215,7 @@ const WrappedReactTable = ({
       return '';
     }
 
-    return errorDetailsMap?.[errorDetails] || 'Server error';
+    return errorDetailsMap[errorDetails] || 'Server error';
   };
 
   return (

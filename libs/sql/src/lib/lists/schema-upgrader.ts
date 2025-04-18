@@ -1,7 +1,7 @@
 /**
  * @summary update list schema from version 1 to 2
- * 1 - Write list-xxx.attributes based on other list-xxx columns
- * 2 - Remove list-xxxx.[columns] not in list.entity columns
+ * 1 - Get entity based columns definitions. Get rest of current list-xxxx columns.Check if is Investment and needs adjustment
+ * 2 - Handle list locations atts. Delete columns outside entity
  * 3 - Write Lists.Commodity based on Lists.template_id for given list_id
  * 4 - Update Lists.version=2 for given list_id
  * 5 - Handle ListsAnalysisStatus.options based on template_id+locationClassification
@@ -29,12 +29,10 @@ import { Lists, ListsAnalysisStatus } from '../entity';
 import {
   getListLocationsColumnsToDelete,
   getCommodityCodeFromTemplate,
-  getFormattedAttributes,
   getListsLocsColumnsToExclude,
   getTemplateName,
-  saveListAttributes,
   setListLocationNameIfIsInvestment,
-  updateListLocationAttributes,
+  handleListLocationAttributes,
 } from '../list-attributes';
 
 const LIST_VERSION_POST_UPGRADE = 2;
@@ -65,21 +63,10 @@ export async function upgradeListSchema(args: SchemaUpgraderArgs) {
 
     /**
      * @step 1
-     * Write list-xxx.attributes based on own list-xxx columns
-     * 
-     * – Get all locations from the DB
-     * – Traverse and get all list-xxxx.attributes that are not included in list.schema
-     * – Update the same list-xxxx table with a json string, format: {"column": "value"}
-     * – grab the list-xxxx attributes object
-     * – save the object inside the attributes column as a json string
-     * – save valid list attributes into [ListAttributes] by checking if they exists first
-     * 
-     * @step 2
-     * Delete list-xxxx columns outside of entity
-     * – because column names are not consistent across lists version<2
-     * – we'll do the old sys.columns to grab the columns in a raw query
-     * – and we'll send the columns to exclude in a string
-    */
+     * Get entity based columns definitions
+     * Get rest of current list-xxxx columns
+     * Check if is Investment and needs adjustment
+     */
     const columnsToExclude = getListsLocsColumnsToExclude();
     logger.log(
       `Writing list-xxx.attributes based on own list-xxx columns. Excluding Columns: ${columnsToExclude.join(
@@ -91,47 +78,33 @@ export async function upgradeListSchema(args: SchemaUpgraderArgs) {
       list.listTableName,
       columnsToExclude
     );
-
     if (columnsToDelete.includes('Investment Name')) {
       logger.log(`Setting [Location Name] for Investment List`);
       await setListLocationNameIfIsInvestment(clientDb, list.listTableName);
     }
 
-    const listLocations = await updateListLocationAttributes(clientDb, list, columnsToExclude);
-    
-    if (listLocations.length) {
-      const validListAttrs = Object.keys(listLocations[0] ?? {}).filter(
-        (col) => !columnsToExclude.includes(col)
-      );
-    
-      const listAttrsToSave = validListAttrs.map((attributeField) =>
-        getFormattedAttributes({
-          listId,
-          attributeField,
-          fieldValue: listLocations[0]?.[attributeField],
-        })
+    /**
+     * @step 2
+     * Handle list locations atts
+     * Delete columns outside entity
+     */
+    await handleListLocationAttributes(clientDb, list, columnsToExclude);
+
+    if (columnsToDelete.length) {
+      logger.log(
+        `Dropping the following columns from [${list.listTableName}]: ${columnsToDelete.join(', ')}`
       );
 
-      await saveListAttributes(clientDb, listAttrsToSave);
+      const dropStatement = `
+        ALTER TABLE [${list.listTableName}]
+        DROP COLUMN ${columnsToDelete.map((col) => `[${col}]`).join(', ')}
+      `;
 
-      if (columnsToDelete.length) {
-        logger.log(
-          `Dropping the following columns from [${list.listTableName}]: ${columnsToDelete.join(
-            ', '
-          )}`
-        );
-
-        const dropStatement = `
-          ALTER TABLE [${list.listTableName}]
-          DROP COLUMN ${columnsToDelete.map((col) => `[${col}]`).join(', ')}
-        `;
-
-        await SQLUtils.queryDBFirstRow(clientDb, dropStatement);
-      } else {
-        logger.log(
-          `No columns to drop in [${list.listTableName}]! Everything matches the entity definition.`
-        );
-      }
+      await SQLUtils.queryDBFirstRow(clientDb, dropStatement);
+    } else {
+      logger.log(
+        `No columns to drop in [${list.listTableName}]! Everything matches the entity definition.`
+      );
     }
 
     /**
@@ -156,7 +129,7 @@ export async function upgradeListSchema(args: SchemaUpgraderArgs) {
     );
 
     /**
-     * @step 4
+     * @step 5
      * Handle ListsAnalysisStatus.options given template_id and locationClassification
      * see {@link https://gfw.atlassian.net/browse/GPV-4274}
      */

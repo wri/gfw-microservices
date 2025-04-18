@@ -200,8 +200,23 @@ export async function getListLocationsColumnsToDelete(
 
   return rows.map((row) => row.colName);
 }
-
-export async function updateListLocationAttributes(clientDb: string, list: Lists, columnsToExclude: unknown[]) {
+/**
+ * – Get all locations from the DB
+ * – Traverse and get all list-xxxx.attributes that are not included in list.schema
+ * – Update the same list-xxxx table with a json string, format: {"column": "value"}
+ * – grab the list-xxxx attributes object
+ * – save the object inside the attributes column as a json string
+ * – save valid list attributes into [ListAttributes] by checking if they exists first
+ * @param clientDb
+ * @param list
+ * @param columnsToExclude
+ * @returns listLocations[]
+ */
+export async function handleListLocationAttributes(
+  clientDb: string,
+  list: Lists,
+  columnsToExclude: unknown[]
+) {
   const listLocations = await SQLUtils.queryDB<unknown[]>(
     clientDb,
     `SELECT * FROM [${list.listTableName}]`
@@ -209,12 +224,10 @@ export async function updateListLocationAttributes(clientDb: string, list: Lists
   Logger.log(`List Locations found: ${listLocations.length}`);
 
   if (listLocations.length) {
-    const validListAttrs = Object.keys(listLocations[0] ?? {}).filter(
-      (col) => !columnsToExclude.includes(col)
-    );
-
     for (let index = 0; index < listLocations.length; index++) {
       const record = listLocations[index];
+
+      const validListAttrs = Object.keys(record).filter((col) => !columnsToExclude.includes(col));
 
       const locAttrObj = validListAttrs.reduce((acc, key) => {
         if (record[key] === null) {
@@ -224,15 +237,23 @@ export async function updateListLocationAttributes(clientDb: string, list: Lists
         return acc;
       }, {} as Record<string, unknown>);
 
-      const attrValue = Object.keys(locAttrObj).length
-        ? `'${JSON.stringify(locAttrObj)}'`
-        : 'NULL';
+      const attrValue = Object.keys(locAttrObj).length ? `'${JSON.stringify(locAttrObj)}'` : 'NULL';
 
       const updateQuery = `UPDATE [${list.listTableName}] 
         SET [attributes] = {ATTR_VALUE}  
         WHERE [location_id] = ${record['location_id']}`.replace('{ATTR_VALUE}', attrValue);
 
       await SQLUtils.queryDBFirstRow<undefined>(clientDb, updateQuery);
+
+      const listAttrsToSave = validListAttrs.map((attributeField) =>
+        getFormattedAttributes({
+          listId: list.id,
+          attributeField,
+          fieldValue: record[attributeField],
+        })
+      );
+
+      await saveListAttributes(clientDb, listAttrsToSave);
     }
   }
   return listLocations;

@@ -49,32 +49,32 @@ describe('ParserData', () => {
           {
             type: 'Feature',
             geometry: { type: 'Point', coordinates: [0, 0] },
-            properties: { locationName: 'Valid Location' },
+            properties: { 'Location Name': 'Valid Location' },
           },
           {
             type: 'Feature',
             geometry: { type: 'Point', coordinates: [1, 1] },
-            properties: { locationName: 'Mandatory \n' },
+            properties: { 'Location Name': 'Mandatory \n' },
           },
           {
             type: 'Feature',
             geometry: { type: 'Point', coordinates: [2, 2] },
-            properties: { locationName: ' String ' },
+            properties: { 'Location Name': ' String ' },
           },
           {
             type: 'Feature',
             geometry: { type: 'Point', coordinates: [3, 3] },
-            properties: { locationName: 'name of the location' },
+            properties: { 'Location Name': 'name of the location' },
           },
           {
             type: 'Feature',
             geometry: { type: 'Point', coordinates: [4, 4] },
-            properties: { locationName: 'POPULATE WITH DATA BELOW THIS LINE' },
+            properties: { 'Location Name': 'POPULATE WITH DATA BELOW THIS LINE' },
           },
           {
             type: 'Feature',
             geometry: { type: 'Point', coordinates: [5, 5] },
-            properties: { locationName: null },
+            properties: { 'Location Name': null },
           },
           {
             type: 'Feature',
@@ -85,11 +85,10 @@ describe('ParserData', () => {
       };
 
       const result = parserData['removeTemplateLines'](inputGeoJson);
-
       expect(result.features).toHaveLength(3);
-      expect(result.features[0].properties.locationName).toBe('Valid Location');
-      expect(result.features[1].properties.locationName).toBe(null);
-      expect(result.features[2].properties.locationName).toBe(undefined);
+      expect(result.features[0].properties['Location Name']).toBe('Valid Location');
+      expect(result.features[1].properties['Location Name']).toBe(null);
+      expect(result.features[2].properties['Location Name']).toBe(undefined);
     });
 
     it('should handle empty or invalid GeoJSON', () => {

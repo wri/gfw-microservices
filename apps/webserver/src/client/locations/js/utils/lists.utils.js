@@ -14,22 +14,23 @@ import { listStatus } from '../../../../config/env/listStatuses.constants';
 
 // Check to see which views should be enabled
 const checkValidViewCommodity = (selectedLists, listData) => {
-  if (selectedLists?.length > 0 && listData?.length > 0) {
-    if (!selectedLists[0].isGlobalForestWatchList) {
-      // This is a user list
-      const { template_id, location_classification } = selectedLists[0];
-      const location = listData[0];
-      const locationClassification =
-        location?.['Location Classification']?.toLowerCase() ??
-        location_classification?.toLowerCase();
-      return template_id === 2 || (template_id === 5 && locationClassification === 'supply shed');
-    }
-    // This is a GFW list
-    return (
-      selectedLists[0].list_name === 'Palm Oil Mills' && selectedLists[0].isGlobalForestWatchList
-    );
+  if (!Array.isArray(selectedLists) || selectedLists.length === 0) {
+    return false;
   }
-  return false;
+
+  const [selectedList] = selectedLists;
+
+  if (!selectedList.isGlobalForestWatchList) {
+    const { template_id, location_classification } = selectedList;
+    const location = listData?.[0];
+    const locationClassification =
+      location?.['Location Classification']?.toLowerCase() ??
+      location_classification?.toLowerCase();
+
+    return template_id === 2 || (template_id === 5 && locationClassification === 'supply shed');
+  }
+
+  return selectedList.list_name === 'Palm Oil Mills';
 };
 
 const checkColumnListDraftList = (accessor) => {

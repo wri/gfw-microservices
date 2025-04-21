@@ -9,7 +9,6 @@ import { finished } from 'stream/promises';
 import { IPipeService } from '../pipe/i.pipe.service';
 import { ListFieldsFileRequest } from '@wri-monorepos/sql';
 
-import { columnsListName, columnsTemplateId } from '../shared/constants';
 import { FilterSelection } from '../transform/filter.selection';
 import { FilterObject } from '../transform/filter.object';
 import { FormatNumber } from '../transform/format.number';
@@ -24,15 +23,12 @@ export class InputService extends IPipeService {
   private fileStream: fs.WriteStream;
 
   async start(filters: ListFieldsFileRequest) {
-    const { listId, key, templateId, combinedColumnsSplitted, listName } = filters;
+    const { listId, key, listName } = filters;
     this.logger.log(`(${listId}) - Starting stream to process data`);
     this.inputStream = new PassThrough({ objectMode: true });
-
-    const fields =
-      columnsTemplateId[templateId] ?? columnsListName[templateId] ?? columnsTemplateId[14];
-    let allFields = [...fields, ...combinedColumnsSplitted];
-    allFields = [...new Set(allFields)];
-
+    
+    const { fields: allFields } = filters;
+    
     this.organizeStream(filters, allFields);
     fs.writeFileSync(`/tmp/wri-${key}/${listName}_input.csv`, `${allFields.join(',')}\n`);
     await this.startEmail(filters);

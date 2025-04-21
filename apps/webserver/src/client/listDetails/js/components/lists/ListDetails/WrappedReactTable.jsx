@@ -210,7 +210,13 @@ const WrappedReactTable = ({
     };
   }
 
-  const getErrorDetails = (errorDetails) => errorDetailsMap?.[errorDetails] ?? '';
+  const getErrorDetails = (errorDetails) => {
+    if (!errorDetails) {
+      return '';
+    }
+
+    return errorDetailsMap[errorDetails] || 'Server error';
+  };
 
   return (
     <ReactTable
@@ -258,4 +264,8 @@ const errorDetailsMap = {
     'This location does not have a valid analysis radius or area defined. Analysis radius (in Km) or analysis area (in Ha) must be defined as a positive integer.',
   'Invalid polygon geometry':
     'This location has invalid geometry. Please make sure all the polygons in your data are closed and have no self-intersections.',
+  'Unable to convert point to polygon: At least one of analysisArea or analysisRadius must be valid':
+    'No analysis value is defined. Please define either an analysis radius, or an analysis area.',
+  'Unable to convert point to polygon: analysisRadius cannot be greater than 3000 km':
+    'The defined analysis radius is too big. Valid analysis radius must be smaller than 3000 km.',
 };

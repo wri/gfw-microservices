@@ -1044,7 +1044,7 @@ export default class ListDetails extends Component {
       }
 
       if (!this.areAllAnalysesDraft() && analysisData.length > 0) {
-        let analysisList = [];
+        let analysisList;
         if (
           selectedLists[0].list_name === 'Protected Areas' ||
           selectedLists[0].list_name === 'Administrative Areas'
@@ -1079,8 +1079,7 @@ export default class ListDetails extends Component {
     const { list_analysis, location_analyses } = listData;
 
     if (location_analyses) {
-      const locationData = location_analyses[0];
-      const analysisData = location_analyses[1];
+      const [locationData, analysisData] = location_analyses || [];
 
       if (locationData?.length) {
         const data = this.setListData(locationData, analysisData);

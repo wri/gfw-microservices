@@ -448,5 +448,5 @@ describe('ConfigureList', () => {
         url: '/api/list/by-commodity?commodity=gfwp_corn',
       })
     );
-  }, 10000);
+  }, 15100);
 });

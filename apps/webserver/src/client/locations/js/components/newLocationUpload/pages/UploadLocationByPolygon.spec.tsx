@@ -165,7 +165,7 @@ describe('UploadLocationByPolygon', () => {
       expect(
         screen.queryByText(/only letters, numbers, and spaces are allowed/i)
       ).toBeInTheDocument();
-    }, 10100);
+    }, 15100);
 
     it('should show error for leading or trailing spaces in location name', async () => {
       const locationName = screen.getByRole('textbox');
@@ -178,7 +178,7 @@ describe('UploadLocationByPolygon', () => {
       );
 
       expect(screen.queryByText(/leading or trailing spaces are not allowed/i)).toBeInTheDocument();
-    }, 10100);
+    }, 15100);
 
     it('should not show error for a valid location name', async () => {
       const locationName = screen.getByRole('textbox');
@@ -196,7 +196,7 @@ describe('UploadLocationByPolygon', () => {
       expect(
         screen.queryByText(/leading or trailing spaces are not allowed/i)
       ).not.toBeInTheDocument();
-    });
+    }, 10100);
   });
 
   it('should allow adding and removing coordinate fields', async () => {

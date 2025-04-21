@@ -74,8 +74,15 @@ export const csv2geojson = async (
         isNaN(latitude) ||
         isNaN(longitude))
     ) {
+      data['latitude'] = null;
+      data['longitude'] = null;
       return {
         ...data,
+        geometry: {
+          // fake geometry so followon chains can run
+          type: 'Point',
+          coordinates: [0, 0],
+        },
         errorDetails: [`Invalid latitude or longitude: ${latitude}, ${longitude}`],
       };
     }

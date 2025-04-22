@@ -8,6 +8,7 @@ import {
   getPaginatedAnalysisDataForUserList,
   getPaginatedAnalysisDataForGFWList,
 } from '../queries';
+import { getListJsonAttributesColumnsSqlParam } from '../list-attributes';
 
 @Injectable()
 export class UspGetPaginatedAnalysisDataForUserList {
@@ -110,16 +111,28 @@ export class UspGetPaginatedAnalysisDataForUserList {
         type: sql.NVarChar(255),
         value: selectedMillPriority || null,
       },
-      {
-        field: 'jsonAttributeColumns',
-        type: sql.NVarChar(sql.MAX),
-        value: null,
-      },
     ];
+
+    const jsonAttributesParam = {
+      field: 'jsonAttributeColumns',
+      type: sql.NVarChar(sql.MAX),
+      value: null,
+    };
+
+    if (!SQLUtils.isSystemDatabase(databaseName)) {
+      const jsonAttributesColumns = await getListJsonAttributesColumnsSqlParam(
+        databaseName,
+        listId
+      );
+      jsonAttributesParam.value = jsonAttributesColumns;
+    }
+
+    parameters.push(jsonAttributesParam);
 
     const query = SQLUtils.isSystemDatabase(databaseName)
       ? getPaginatedAnalysisDataForGFWList
       : getPaginatedAnalysisDataForUserList;
+
     return await SQLUtils.queryDB<AnalysisDataType[]>(databaseName, query, parameters);
   }
 }

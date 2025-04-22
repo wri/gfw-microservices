@@ -22,6 +22,7 @@ export interface ListFieldsFileRequest extends BasicFieldsFileRequest {
   analysisAreaMin?: number;
   analysisAreaOperator?: string;
   combinedColumns?: string;
+  //TODO: Correct spelling: "combinedColumnsSplit"
   combinedColumnsSplitted?: Array<string>;
   country?: string;
   fields?: Array<string>;

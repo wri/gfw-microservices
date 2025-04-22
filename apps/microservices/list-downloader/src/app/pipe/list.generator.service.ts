@@ -1,8 +1,14 @@
 import { Logger, Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import * as asyncPool from 'tiny-async-pool';
+import { EntitySchema } from 'typeorm';
 
-import { ListFieldsFileRequest, UspGetListAnalysis } from '@wri-monorepos/sql';
+import {
+  ListFieldsFileRequest,
+  UspGetListAnalysis,
+  ListSchemaType,
+  ListSchema,
+} from '@wri-monorepos/sql';
 import { InputService } from '../files/input.service';
 import { GeometryService } from '../files/geometry.service';
 import { DashboardService } from './dashboard.service';
@@ -41,14 +47,14 @@ export class ListGeneratorService extends IFileGenerator {
     let arrayOfPages = Array.from(Array(numberOfPages).keys());
     arrayOfPages = arrayOfPages.map((value) => value + 1);
 
-    // extra columns selected by the user that he have to add
+    // Add any additional columns the user selected
     const notAllowedValues = ['', undefined, 'all'];
     const combinedColumnsSplitted = notAllowedValues.includes(combinedColumns)
       ? []
       : combinedColumns.split(',');
     const fields = await this.getListOfFields(filters);
 
-    // extra columns  considering that the user filter by location
+    // Include extra columns when filtering by location
     const selectedLocationsList = notAllowedValues.includes(selectedLocations)
       ? []
       : selectedLocations.split(',').map((x) => parseInt(x, 10));
@@ -65,7 +71,7 @@ export class ListGeneratorService extends IFileGenerator {
       listLevelAnalysis,
       // has to add the following parameter to bring the geometry from the database, use only for shapefile
       geometry: file === 'shapefile' ? 1 : 0,
-      ...fields,
+      fields,
     };
 
     const service = this.defineService(filters);
@@ -74,7 +80,6 @@ export class ListGeneratorService extends IFileGenerator {
 
     const composeResults = async (i: number) => {
       const newFilters = { ...filters, page: i };
-
       const analysisData = await this.analysisDataService.getDataPaginated(newFilters);
 
       await service.process(analysisData, newFilters);
@@ -107,11 +112,35 @@ export class ListGeneratorService extends IFileGenerator {
     };
 
     const analysisData = await this.analysisDataService.getDataPaginated(newFilters);
-    const [element] = analysisData;
+    const [firstAnalysisDataRow] = analysisData;
 
-    return {
-      fields: Object.keys(element ?? {}),
-      templateId: element?.template_id,
-    };
+    let attributesFields;
+
+    try {
+      const parsedAttrs = JSON.parse(firstAnalysisDataRow.attributes || '{}');
+      attributesFields = Object.keys(parsedAttrs);
+    } catch (e) {
+      console.error(
+        'Invalid JSON in firstAnalysisDataRow.attributes:',
+        firstAnalysisDataRow?.attributes
+      );
+      attributesFields = [];
+    }
+
+    return this.getListLocationsStructure(attributesFields);
+  }
+
+  getListLocationsStructure(attributesList: string[]): string[] {
+    const fieldsToExclude = new Set(['attributes', 'ErrorDetails', 'location_id']);
+
+    const { options } = new EntitySchema<ListSchemaType>({
+      ...ListSchema,
+    });
+
+    const entityFields = Object.values(options.columns)
+      .map((col) => col.name)
+      .filter((columnName) => !fieldsToExclude.has(columnName));
+
+    return entityFields.concat(attributesList ?? []);
   }
 }

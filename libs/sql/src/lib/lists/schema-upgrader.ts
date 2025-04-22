@@ -7,7 +7,7 @@
  * 5 - Handle ListsAnalysisStatus.options based on template_id+locationClassification
  * –––––––––––––––––––––––––––––––––––––––
  * @notes for the [Commodity] column values:
- * — Multiple is not supported in v1, lists with templates using investment will use GFWP_Miltiple
+ * — Multiple is not supported in v1, lists with templates using investment will use GFWP_Multiple
  * — Other is stored as GFWP_Other
  * — Commodity=GFWP_Unknown is not supported
  * — API default when uploading lists will be Commodity=Unknown unless user specifies otherwise

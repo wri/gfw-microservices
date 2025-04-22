@@ -335,6 +335,7 @@ export interface AnalysisDataType {
   'Accuracy Rating of Location Entered': string;
   Country: string;
   State: string;
+  attributes?: string;
   'Sub State': string;
   'Wind Barrier': string;
   'Riparian Buffers': string;

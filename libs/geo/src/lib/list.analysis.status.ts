@@ -296,10 +296,26 @@ export const handleCreateAnalysis = async (
           )
         : listAnalysisStatusData
     );
-
-    if ('GHG' in analysisTypes && analysisTypes['GHG']) {
-      // Check if commodity is valid for GHG Analysis
-      await isGHGCommodityValid(listId, organizationDb);
+    try {
+      if ('GHG' in analysisTypes && analysisTypes['GHG']) {
+        // Check if commodity is valid for GHG Analysis
+        await isGHGCommodityValid(listId, organizationDb);
+      }
+    } catch (error) {
+      // Check if has only GHG analysis
+      const analysisTypesKeys = Object.keys(analysisTypes);
+      const hasOnlyGHGAnalysis = analysisTypesKeys.length === 1 && analysisTypesKeys[0] === 'GHG';
+      if (hasOnlyGHGAnalysis) {
+        await updateListsAnalysisStatus(organizationDb, {
+          listId: listId,
+          errorInfo: 'Invalid GHG Commodity',
+          status: listStatus.Inactive,
+        });
+        throw new Error('Invalid GHG Commodity');
+      } else {
+        // Remove GHG analysis from the list
+        delete analysisTypes['GHG'];
+      }
     }
     const data = {
       list_id: listId,

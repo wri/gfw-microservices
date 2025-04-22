@@ -7,8 +7,6 @@ export class AdjustGeoData extends AbstractHandler<ChainType> {
   private readonly logger = new Logger(AdjustGeoData.name);
 
   async handle(request: ChainType): Promise<ChainType> {
-    this.logger.log('Converting commodity name to MAPSPAM code');
-
     const { geojson } = request;
     const { features } = geojson as FeatureCollection;
 

@@ -82,9 +82,9 @@ describe('Input Service', () => {
     const lines = csvData.toString().split('\n');
     expect(lines).toStrictEqual([
       'Location Name,Latitude,Longitude,Analysis Radius,Analysis Area,Commodity,Country,State,Sub State,Location Classification,Company ID,ID,Volume,Parent Company,Supplier Name,Refinery Name,Second Supplier Name,Second Refinery Name,Verified?,Oil Type,RSPO Model,Certification,Direct FFB,Other FFB,Associated Smallholder FFB,Independent Smallholder FFB,Start Date,End Date,Time Horizon,Accuracy Rating of Location Entered,Wind Barrier,Riparian Buffers,Buffer Zones,Alternative Mill Name,Group Name',
-      'LN1,-2.4,101.16,,542407.85,Palm Oil,Indonesia,Bengkulu,Mukomuko,Supply Shed,n/a,PO1000008174,0,USAHA SAWIT MANDIRI,,,,,,, ,None,0,0,0,0,,,,0,,,, ,SUPERVENTURE',
-      'LN2,17,81.47,,785078.85,Palm Oil,India,Andhra Pradesh,West Godavari,Supply Shed,n/a,PO1000008590,0,3F OIL PALM AGROTECH,,,,,,, ,None,0,0,0,0,,,,0,,,, ,UNKNOWN',
-      'LN3,4.29,-72.13,,785078.93,Palm Oil,Colombia,Meta,Puerto Gaitán,Supply Shed,n/a,PO1000008347,0,ABAGO S.A.S.,,,,,,, ,None,0,0,0,0,,,,0,,,,BRAGANZA,UNKNOWN',
+      'L1,-8.9,-67,,1255.83,Cocoa,Brazil,Amazonas,Lábrea,Property,,,0,,,,,,,,,,,,,,,,,0,,,,,',
+      'L2,-8.7,-66.8,,1255.83,Cocoa,Brazil,Amazonas,Lábrea,Property,,,0,,,,,,,,,,,,,,,,,0,,,,,',
+      'L3,-9.4,-67.8,,1255.83,Cocoa,Brazil,Acre,Porto Acre,Property,,,0,,,,,,,,,,,,,,,,,0,,,,,',
       '',
     ]);
   });
@@ -105,7 +105,7 @@ describe('Input Service', () => {
     const lines = csvData.toString().split('\n');
     expect(lines).toStrictEqual([
       'Location Name,Latitude,Longitude,Analysis Radius,Analysis Area,Commodity,Country,State,Sub State,Location Classification,Company ID,ID,Volume,Parent Company,Supplier Name,Refinery Name,Second Supplier Name,Second Refinery Name,Verified?,Oil Type,RSPO Model,Certification,Direct FFB,Other FFB,Associated Smallholder FFB,Independent Smallholder FFB,Start Date,End Date,Time Horizon,Accuracy Rating of Location Entered,Wind Barrier,Riparian Buffers,Buffer Zones,Alternative Mill Name,Group Name',
-      'LN3,4.29,-72.13,,785078.93,Palm Oil,Colombia,Meta,Puerto Gaitán,Supply Shed,n/a,PO1000008347,0,ABAGO S.A.S.,,,,,,, ,None,0,0,0,0,,,,0,,,,BRAGANZA,UNKNOWN',
+      'L2,-8.7,-66.8,,1255.83,Cocoa,Brazil,Amazonas,Lábrea,Property,,,0,,,,,,,,,,,,,,,,,0,,,,,',
       '',
     ]);
   });
@@ -126,9 +126,9 @@ describe('Input Service', () => {
     const lines = csvData.toString().split('\n');
     expect(lines).toStrictEqual([
       'Location Name,Latitude,Longitude,Analysis Radius,Analysis Area,Commodity,Country,State,Sub State,Location Classification,Company ID,ID,Volume,Parent Company,Supplier Name,Refinery Name,Second Supplier Name,Second Refinery Name,Verified?,Oil Type,RSPO Model,Certification,Direct FFB,Other FFB,Associated Smallholder FFB,Independent Smallholder FFB,Start Date,End Date,Time Horizon,Accuracy Rating of Location Entered,Wind Barrier,Riparian Buffers,Buffer Zones,Alternative Mill Name,Group Name',
-      'LN1,-2.4,101.16,,542407.85,Palm Oil,Indonesia,Bengkulu,Mukomuko,Supply Shed,n/a,PO1000008174,0,USAHA SAWIT MANDIRI,,,,,,, ,None,0,0,0,0,,,,0,,,, ,SUPERVENTURE',
-      'LN2,17,81.47,,785078.85,Palm Oil,India,Andhra Pradesh,West Godavari,Supply Shed,n/a,PO1000008590,0,3F OIL PALM AGROTECH,,,,,,, ,None,0,0,0,0,,,,0,,,, ,UNKNOWN',
-      'LN3,4.29,-72.13,,785078.93,Palm Oil,Colombia,Meta,Puerto Gaitán,Supply Shed,n/a,PO1000008347,0,ABAGO S.A.S.,,,,,,, ,None,0,0,0,0,,,,0,,,,BRAGANZA,UNKNOWN',
+      'L1,-8.9,-67,,1255.83,Cocoa,Brazil,Amazonas,Lábrea,Property,,,0,,,,,,,,,,,,,,,,,0,,,,,',
+      'L2,-8.7,-66.8,,1255.83,Cocoa,Brazil,Amazonas,Lábrea,Property,,,0,,,,,,,,,,,,,,,,,0,,,,,',
+      'L3,-9.4,-67.8,,1255.83,Cocoa,Brazil,Acre,Porto Acre,Property,,,0,,,,,,,,,,,,,,,,,0,,,,,',
       '',
     ]);
   });

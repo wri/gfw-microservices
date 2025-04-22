@@ -9,12 +9,48 @@ describe('Input Service', () => {
   const inputService = new InputService();
 
   const filters = {
-    listId: 5642,
+    listId: 6013,
     key: 'tmp-input',
-    templateId: 13,
-    combinedColumnsSplitted: [],
+    combinedColumnsSplit: [],
     selectedLocationsList: [],
     listName: 'WRI',
+    fields: [
+      'Location Name',
+      'Latitude',
+      'Longitude',
+      'Analysis Radius',
+      'Analysis Area',
+      'Commodity',
+      'Country',
+      'State',
+      'Sub State',
+      'Location Classification',
+      'Company ID',
+      'ID',
+      'Volume',
+      'Parent Company',
+      'Supplier Name',
+      'Refinery Name',
+      'Second Supplier Name',
+      'Second Refinery Name',
+      'Verified?',
+      'Oil Type',
+      'RSPO Model',
+      'Certification',
+      'Direct FFB',
+      'Other FFB',
+      'Associated Smallholder FFB',
+      'Independent Smallholder FFB',
+      'Start Date',
+      'End Date',
+      'Time Horizon',
+      'Accuracy Rating of Location Entered',
+      'Wind Barrier',
+      'Riparian Buffers',
+      'Buffer Zones',
+      'Alternative Mill Name',
+      'Group Name',
+    ],
   };
 
   const dir = `/tmp/wri-${filters.key}`;
@@ -45,10 +81,10 @@ describe('Input Service', () => {
     const csvData = fs.readFileSync(`${dir}/${filters.listName}_input.csv`, 'utf8');
     const lines = csvData.toString().split('\n');
     expect(lines).toStrictEqual([
-      'Location Name,Latitude,Longitude,Analysis Radius,Analysis Area,Location Classification,Company ID,Volume,Owner Name,Owner ID,Company Name,Supplier Name,Facility Name,Refinery Name,Certification,Start Date,End Date,Time Horizon',
-      'L1,-8.9,-67,,1255.83,Property,,0,,,,,,,,,,',
-      'L2,-8.7,-66.8,,1255.83,Property,,0,,,,,,,,,,',
-      'L3,-9.4,-67.8,,1255.83,Property,,0,,,,,,,,,,',
+      'Location Name,Latitude,Longitude,Analysis Radius,Analysis Area,Commodity,Country,State,Sub State,Location Classification,Company ID,ID,Volume,Parent Company,Supplier Name,Refinery Name,Second Supplier Name,Second Refinery Name,Verified?,Oil Type,RSPO Model,Certification,Direct FFB,Other FFB,Associated Smallholder FFB,Independent Smallholder FFB,Start Date,End Date,Time Horizon,Accuracy Rating of Location Entered,Wind Barrier,Riparian Buffers,Buffer Zones,Alternative Mill Name,Group Name',
+      'LN1,-2.4,101.16,,542407.85,Palm Oil,Indonesia,Bengkulu,Mukomuko,Supply Shed,n/a,PO1000008174,0,USAHA SAWIT MANDIRI,,,,,,, ,None,0,0,0,0,,,,0,,,, ,SUPERVENTURE',
+      'LN2,17,81.47,,785078.85,Palm Oil,India,Andhra Pradesh,West Godavari,Supply Shed,n/a,PO1000008590,0,3F OIL PALM AGROTECH,,,,,,, ,None,0,0,0,0,,,,0,,,, ,UNKNOWN',
+      'LN3,4.29,-72.13,,785078.93,Palm Oil,Colombia,Meta,Puerto Gaitán,Supply Shed,n/a,PO1000008347,0,ABAGO S.A.S.,,,,,,, ,None,0,0,0,0,,,,0,,,,BRAGANZA,UNKNOWN',
       '',
     ]);
   });
@@ -68,8 +104,8 @@ describe('Input Service', () => {
     const csvData = fs.readFileSync(filePath, 'utf8');
     const lines = csvData.toString().split('\n');
     expect(lines).toStrictEqual([
-      'Location Name,Latitude,Longitude,Analysis Radius,Analysis Area,Location Classification,Company ID,Volume,Owner Name,Owner ID,Company Name,Supplier Name,Facility Name,Refinery Name,Certification,Start Date,End Date,Time Horizon',
-      'L2,-8.7,-66.8,,1255.83,Property,,0,,,,,,,,,,',
+      'Location Name,Latitude,Longitude,Analysis Radius,Analysis Area,Commodity,Country,State,Sub State,Location Classification,Company ID,ID,Volume,Parent Company,Supplier Name,Refinery Name,Second Supplier Name,Second Refinery Name,Verified?,Oil Type,RSPO Model,Certification,Direct FFB,Other FFB,Associated Smallholder FFB,Independent Smallholder FFB,Start Date,End Date,Time Horizon,Accuracy Rating of Location Entered,Wind Barrier,Riparian Buffers,Buffer Zones,Alternative Mill Name,Group Name',
+      'LN3,4.29,-72.13,,785078.93,Palm Oil,Colombia,Meta,Puerto Gaitán,Supply Shed,n/a,PO1000008347,0,ABAGO S.A.S.,,,,,,, ,None,0,0,0,0,,,,0,,,,BRAGANZA,UNKNOWN',
       '',
     ]);
   });
@@ -77,7 +113,7 @@ describe('Input Service', () => {
   test('when want to add more columns', async () => {
     const newFilters = {
       ...filters,
-      combinedColumnsSplitted: ['Country'],
+      combinedColumnsSplit: ['Country'],
     };
 
     inputService.start(newFilters);
@@ -89,10 +125,10 @@ describe('Input Service', () => {
     const csvData = fs.readFileSync(filePath, 'utf8');
     const lines = csvData.toString().split('\n');
     expect(lines).toStrictEqual([
-      'Location Name,Latitude,Longitude,Analysis Radius,Analysis Area,Location Classification,Company ID,Volume,Owner Name,Owner ID,Company Name,Supplier Name,Facility Name,Refinery Name,Certification,Start Date,End Date,Time Horizon,Country',
-      'L1,-8.9,-67,,1255.83,Property,,0,,,,,,,,,,,Brazil',
-      'L2,-8.7,-66.8,,1255.83,Property,,0,,,,,,,,,,,Brazil',
-      'L3,-9.4,-67.8,,1255.83,Property,,0,,,,,,,,,,,Brazil',
+      'Location Name,Latitude,Longitude,Analysis Radius,Analysis Area,Commodity,Country,State,Sub State,Location Classification,Company ID,ID,Volume,Parent Company,Supplier Name,Refinery Name,Second Supplier Name,Second Refinery Name,Verified?,Oil Type,RSPO Model,Certification,Direct FFB,Other FFB,Associated Smallholder FFB,Independent Smallholder FFB,Start Date,End Date,Time Horizon,Accuracy Rating of Location Entered,Wind Barrier,Riparian Buffers,Buffer Zones,Alternative Mill Name,Group Name',
+      'LN1,-2.4,101.16,,542407.85,Palm Oil,Indonesia,Bengkulu,Mukomuko,Supply Shed,n/a,PO1000008174,0,USAHA SAWIT MANDIRI,,,,,,, ,None,0,0,0,0,,,,0,,,, ,SUPERVENTURE',
+      'LN2,17,81.47,,785078.85,Palm Oil,India,Andhra Pradesh,West Godavari,Supply Shed,n/a,PO1000008590,0,3F OIL PALM AGROTECH,,,,,,, ,None,0,0,0,0,,,,0,,,, ,UNKNOWN',
+      'LN3,4.29,-72.13,,785078.93,Palm Oil,Colombia,Meta,Puerto Gaitán,Supply Shed,n/a,PO1000008347,0,ABAGO S.A.S.,,,,,,, ,None,0,0,0,0,,,,0,,,,BRAGANZA,UNKNOWN',
       '',
     ]);
   });
@@ -105,7 +141,7 @@ describe('Input Service', () => {
     const csvData = fs.readFileSync(filePath, 'utf8');
     const lines = csvData.toString().split('\n');
     expect(lines).toStrictEqual([
-      'Location Name,Latitude,Longitude,Analysis Radius,Analysis Area,Location Classification,Company ID,Volume,Owner Name,Owner ID,Company Name,Supplier Name,Facility Name,Refinery Name,Certification,Start Date,End Date,Time Horizon',
+      'Location Name,Latitude,Longitude,Analysis Radius,Analysis Area,Commodity,Country,State,Sub State,Location Classification,Company ID,ID,Volume,Parent Company,Supplier Name,Refinery Name,Second Supplier Name,Second Refinery Name,Verified?,Oil Type,RSPO Model,Certification,Direct FFB,Other FFB,Associated Smallholder FFB,Independent Smallholder FFB,Start Date,End Date,Time Horizon,Accuracy Rating of Location Entered,Wind Barrier,Riparian Buffers,Buffer Zones,Alternative Mill Name,Group Name',
       '',
     ]);
   });
@@ -118,7 +154,7 @@ describe('Input Service', () => {
     const csvData = fs.readFileSync(filePath, 'utf8');
     const lines = csvData.toString().split('\n');
     expect(lines).toStrictEqual([
-      'Location Name,Latitude,Longitude,Analysis Radius,Analysis Area,Location Classification,Company ID,Volume,Owner Name,Owner ID,Company Name,Supplier Name,Facility Name,Refinery Name,Certification,Start Date,End Date,Time Horizon',
+      'Location Name,Latitude,Longitude,Analysis Radius,Analysis Area,Commodity,Country,State,Sub State,Location Classification,Company ID,ID,Volume,Parent Company,Supplier Name,Refinery Name,Second Supplier Name,Second Refinery Name,Verified?,Oil Type,RSPO Model,Certification,Direct FFB,Other FFB,Associated Smallholder FFB,Independent Smallholder FFB,Start Date,End Date,Time Horizon,Accuracy Rating of Location Entered,Wind Barrier,Riparian Buffers,Buffer Zones,Alternative Mill Name,Group Name',
       '',
     ]);
   });

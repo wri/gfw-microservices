@@ -23,12 +23,13 @@ export class InputService extends IPipeService {
   private fileStream: fs.WriteStream;
 
   async start(filters: ListFieldsFileRequest) {
-    const { listId, key, listName } = filters;
+    const { listId, key, listName, fields = [], combinedColumnsSplitted = [] } = filters;
     this.logger.log(`(${listId}) - Starting stream to process data`);
     this.inputStream = new PassThrough({ objectMode: true });
-    
-    const { fields: allFields } = filters;
-    
+
+    let allFields = [...fields, ...combinedColumnsSplitted];
+    allFields = [...new Set(allFields)];
+
     this.organizeStream(filters, allFields);
     fs.writeFileSync(`/tmp/wri-${key}/${listName}_input.csv`, `${allFields.join(',')}\n`);
     await this.startEmail(filters);

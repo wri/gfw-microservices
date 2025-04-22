@@ -110,17 +110,20 @@ export class UspGetPaginatedAnalysisDataForUserList {
         field: 'selectedMillPriority',
         type: sql.NVarChar(255),
         value: selectedMillPriority || null,
-      }
+      },
     ];
 
     const jsonAttributesParam = {
       field: 'jsonAttributeColumns',
       type: sql.NVarChar(sql.MAX),
       value: null,
-    }
+    };
 
     if (!SQLUtils.isSystemDatabase(databaseName)) {
-      const jsonAttributesColumns = await getListJsonAttributesColumnsSqlParam(databaseName, listId);
+      const jsonAttributesColumns = await getListJsonAttributesColumnsSqlParam(
+        databaseName,
+        listId
+      );
       jsonAttributesParam.value = jsonAttributesColumns;
     }
 
@@ -129,7 +132,7 @@ export class UspGetPaginatedAnalysisDataForUserList {
     const query = SQLUtils.isSystemDatabase(databaseName)
       ? getPaginatedAnalysisDataForGFWList
       : getPaginatedAnalysisDataForUserList;
-    
+
     return await SQLUtils.queryDB<AnalysisDataType[]>(databaseName, query, parameters);
   }
 }

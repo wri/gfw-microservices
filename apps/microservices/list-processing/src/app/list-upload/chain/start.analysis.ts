@@ -1,6 +1,6 @@
 import { ClientStoreConnection, Lists } from '@wri-monorepos/sql';
 import { AbstractHandler, ChainType, RequestNewList } from './types';
-import { handleCreateAnalysis } from '@wri-monorepos/geo';
+import { handleCreateAnalysis, setListAnalysisStatus } from '@wri-monorepos/geo';
 import { listStatus } from '@wri-monorepos/constants';
 
 import { Logger } from '@nestjs/common';
@@ -44,7 +44,7 @@ export class StartAnalysis extends AbstractHandler<ChainType> {
 
   async handle(request: ChainType): Promise<ChainType> {
     const {
-      organization_database,
+      organization_database: organizationDatabase,
       user_id,
       list_id: listId,
       isExternalAPIProcess,
@@ -54,7 +54,10 @@ export class StartAnalysis extends AbstractHandler<ChainType> {
       analysisIds,
     } = request.request as RequestNewList;
 
-    const isDraft = await this.isDraftList(saveAsDraft, organization_database, listId);
+    const analysisTypesToProcess = analysisIds.join(',');
+
+    await setListAnalysisStatus(organizationDatabase, listId, analysisTypesToProcess);
+    const isDraft = await this.isDraftList(saveAsDraft, organizationDatabase, listId);
     if (isDraft) {
       this.logger.debug(`List ${listId} is set as draft so going to skip analysis`);
       return request;
@@ -62,12 +65,11 @@ export class StartAnalysis extends AbstractHandler<ChainType> {
 
     this.validateGeoJsonFeatures(request.geojson.features);
 
-    const analysisTypesToProcess = analysisIds.join(',');
     const result = await handleCreateAnalysis(
       analysisTypesToProcess,
       listId,
       organizationId,
-      organization_database,
+      organizationDatabase,
       !isExternalAPIProcess,
       user_id,
       subscriptionStatusId,

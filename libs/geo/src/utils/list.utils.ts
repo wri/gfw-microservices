@@ -4,9 +4,11 @@ import {
   GetTableAnalysisColumnsById,
   UnlockList,
   ListsAnalysisStatus,
+  ClientStoreConnection,
 } from '@wri-monorepos/sql';
 import { ListBulkCopy } from './ListBulkCopy';
 import * as sql from 'mssql';
+import { listStatus } from '@wri-monorepos/constants';
 
 const LIST_STATUS = {
   LIST_STATUS_PENDING: 1,
@@ -303,7 +305,7 @@ export const createFeatureProps = (
 };
 
 export const GetTemplateId = (templateData) => {
-  return templateData ? templateData[0].template_id : -1;
+  return templateData && templateData.length > 0 ? templateData[0].template_id : -1;
 };
 
 export const UnlockLists = (clientDatabase: string, listsIds: number[]) => {
@@ -418,5 +420,42 @@ export async function getListAnalysisStatus(
     clientDatabase,
     'getListAnalysisStatusById',
     parameters
+  );
+}
+
+export async function setListAnalysisStatus(organizationDb, listId, analysisTypesToProcess) {
+  const clientStoreConnection = new ClientStoreConnection();
+  const connection = await clientStoreConnection.getConnection(organizationDb);
+  const listAnalysisStatusRepository = connection.getRepository(ListsAnalysisStatus);
+
+  const analysisTypesToUpdate = analysisTypesToProcess.split(',');
+
+  await Promise.all(
+    analysisTypesToUpdate.map(async (analysisId) => {
+      const listAnalysisStatusToUpdate = await listAnalysisStatusRepository.findBy({
+        listId,
+        analysisId,
+      });
+
+      if (listAnalysisStatusToUpdate.length === 0) {
+        await listAnalysisStatusRepository.save({
+          listId,
+          analysisId,
+          status: listStatus.Pending,
+          updateTime: new Date().toISOString(),
+        });
+      } else {
+        await listAnalysisStatusRepository.update(
+          { listId, analysisId },
+          {
+            status: listStatus.Pending,
+            s3URL: null,
+            bundleCreationTime: null,
+            expirationTime: null,
+            errorInfo: null,
+          }
+        );
+      }
+    })
   );
 }

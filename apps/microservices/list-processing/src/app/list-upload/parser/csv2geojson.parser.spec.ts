@@ -112,11 +112,18 @@ describe('csv2geojson', () => {
             type: 'Feature',
           },
           {
-            geometry: undefined,
+            geometry: {
+              type: 'Point',
+              coordinates: [0, 0],
+            },
             properties: {
               errorDetails: ['Invalid latitude or longitude: invalid, -121.5'],
-              latitude: 'invalid',
-              longitude: -121.5,
+              latitude: null,
+              longitude: null,
+              geometry: {
+                type: 'Point',
+                coordinates: [0, 0],
+              },
             },
             type: 'Feature',
           },
@@ -194,22 +201,36 @@ describe('csv2geojson', () => {
       expect(result).toStrictEqual({
         features: [
           {
-            geometry: undefined,
+            geometry: {
+              type: 'Point',
+              coordinates: [0, 0],
+            },
             properties: {
               errorDetails: ['Invalid latitude or longitude: null, null'],
               latitude: null,
               longitude: null,
+              geometry: {
+                type: 'Point',
+                coordinates: [0, 0],
+              },
               Property1: 1,
               Property2: null,
             },
             type: 'Feature',
           },
           {
-            geometry: undefined,
+            geometry: {
+              type: 'Point',
+              coordinates: [0, 0],
+            },
             properties: {
               errorDetails: ['Invalid latitude or longitude: null, null'],
               latitude: null,
               longitude: null,
+              geometry: {
+                type: 'Point',
+                coordinates: [0, 0],
+              },
               Property1: null,
               Property2: 2,
             },
@@ -229,18 +250,36 @@ describe('csv2geojson', () => {
       expect(result).toStrictEqual({
         features: [
           {
-            geometry: undefined,
+            geometry: {
+              type: 'Point',
+              coordinates: [0, 0],
+            },
             properties: {
               errorDetails: ['Invalid latitude or longitude: undefined, undefined'],
+              latitude: null,
+              longitude: null,
+              geometry: {
+                type: 'Point',
+                coordinates: [0, 0],
+              },
               Property1: 1,
               Property2: null,
             },
             type: 'Feature',
           },
           {
-            geometry: undefined,
+            geometry: {
+              type: 'Point',
+              coordinates: [0, 0],
+            },
             properties: {
               errorDetails: ['Invalid latitude or longitude: undefined, undefined'],
+              latitude: null,
+              longitude: null,
+              geometry: {
+                type: 'Point',
+                coordinates: [0, 0],
+              },
               Property1: null,
               Property2: 2,
             },

@@ -1,6 +1,6 @@
 import { EntitySchema } from 'typeorm';
 import { Logger } from '@nestjs/common';
-import { ListAttributes, ListSchema, ListSchemaType, ListTemplate } from '../entity';
+import { ListAttributes, Lists, ListSchema, ListSchemaType, ListTemplate } from '../entity';
 import { ClientStoreConnection, SQLUtils } from '../util';
 import { COMMODITY_MAP_SPAM, MAPSPAM_COMMODITY, GHG_PREFIX, MAPSPAM_CODES } from './comMapSpam';
 
@@ -181,7 +181,7 @@ export async function getListJsonAttributesColumnsSqlParam(clientDatabase: strin
   return castStringArr.join(',');
 }
 
-export async function getColumnsToDelete(
+export async function getListLocationsColumnsToDelete(
   clientDb: string,
   tableName: string,
   columnsToExclude: string[]
@@ -199,4 +199,75 @@ export async function getColumnsToDelete(
   const rows = await SQLUtils.queryDB<{ colName: string }[]>(clientDb, sql);
 
   return rows.map((row) => row.colName);
+}
+/**
+ * – Get all locations from the DB
+ * – Traverse and get all list-xxxx.attributes that are not included in list.schema
+ * – Update the same list-xxxx table with a json string, format: {"column": "value"}
+ * – grab the list-xxxx attributes object
+ * – save the object inside the attributes column as a json string
+ * – save valid list attributes into [ListAttributes] by checking if they exists first
+ * @param clientDb
+ * @param list
+ * @param columnsToExclude
+ * @returns listLocations[]
+ */
+export async function handleListLocationAttributes(
+  clientDb: string,
+  list: Lists,
+  columnsToExclude: unknown[]
+) {
+  const listLocations = await SQLUtils.queryDB<unknown[]>(
+    clientDb,
+    `SELECT * FROM [${list.listTableName}]`
+  );
+  Logger.log(`List Locations found: ${listLocations.length}`);
+
+  if (listLocations.length) {
+    for (let index = 0; index < listLocations.length; index++) {
+      const record = listLocations[index];
+
+      const validListAttrs = Object.keys(record).filter((col) => !columnsToExclude.includes(col));
+
+      const locAttrObj = validListAttrs.reduce((acc, key) => {
+        if (record[key] === null) {
+          return acc;
+        }
+        acc[key] = `${record[key]}`;
+        return acc;
+      }, {} as Record<string, unknown>);
+
+      const attrValue = Object.keys(locAttrObj).length ? `'${JSON.stringify(locAttrObj)}'` : 'NULL';
+
+      const updateQuery = `UPDATE [${list.listTableName}] 
+        SET [attributes] = {ATTR_VALUE}  
+        WHERE [location_id] = ${record['location_id']}`.replace('{ATTR_VALUE}', attrValue);
+
+      await SQLUtils.queryDBFirstRow<undefined>(clientDb, updateQuery);
+
+      const listAttrsToSave = validListAttrs.map((attributeField) =>
+        getFormattedAttributes({
+          listId: list.id,
+          attributeField,
+          fieldValue: record[attributeField],
+        })
+      );
+
+      await saveListAttributes(clientDb, listAttrsToSave);
+    }
+  }
+  return listLocations;
+}
+
+export async function setListLocationNameIfIsInvestment(clientDb: string, listTableName: string) {
+  const sqlCmd = `
+DECLARE @tbl sysname = QUOTENAME('${listTableName}');
+
+IF COL_LENGTH('dbo.' + @tbl, 'Location Name') IS NULL
+   AND COL_LENGTH('dbo.' + @tbl, 'Investment Name') IS NOT NULL
+BEGIN
+    EXEC('EXEC sp_rename ''dbo.' + @tbl + '.[Investment Name]'', ''Location Name'', ''COLUMN'';');
+END
+`;
+  return await SQLUtils.queryDBFirstRow(clientDb, sqlCmd);
 }

@@ -4789,7 +4789,7 @@ GO
 CREATE PROCEDURE uspGetAdministrativeAreasInfo
 AS
 SELECT DISTINCT Country, State, [Sub State]
-FROM [list-administrativeAreas]
+FROM [list-administrativeAreas36]
 GO
 
 CREATE PROCEDURE uspGetProtectedAreasInfo
@@ -4810,7 +4810,7 @@ DECLARE @SQL NVARCHAR(MAX)
 SET @SQL = 'SELECT
 					[id],[Location Name],[Country],[State],[Sub State],[Latitude],[Longitude],[Location Classification],[Size],[gadmid],[location_id]
 				FROM
-					[gfwpro].[dbo].[list-administrativeAreas]
+					[gfwpro].[dbo].[list-administrativeAreas36]
 				WHERE
 				Country = @country'
 
@@ -4947,7 +4947,7 @@ CREATE PROCEDURE uspUpdateAdministrativeAreas
   @LocationName NVARCHAR(150),
   @location_id INT
 AS
-INSERT INTO [temp-list-administrativeAreas]
+INSERT INTO [temp-list-administrativeAreas36]
   (
   [Country],
   [State],
@@ -5561,11 +5561,11 @@ CREATE PROCEDURE dbo.uspGetAdministrativeAreaAttributes
 AS
 IF @location_ids IS NULL OR @location_ids = ''
          SELECT 1 AS [list_id], id, [Location Name], Country, State, [Sub State], Latitude, Longitude, [Location Classification], Size, location_id
-FROM [list-administrativeAreas]
+FROM [list-administrativeAreas36]
     ELSE
         BEGIN
   DECLARE @SQL NVARCHAR(MAX)
-  SET @SQL = 'SELECT 1 AS [list_id],id,[Location Name],Country,State,[Sub State],Latitude,Longitude,[Location Classification],Size,location_id FROM [list-administrativeAreas] WHERE location_id IN ({LOCATION_IDS})'
+  SET @SQL = 'SELECT 1 AS [list_id],id,[Location Name],Country,State,[Sub State],Latitude,Longitude,[Location Classification],Size,location_id FROM [list-administrativeAreas36] WHERE location_id IN ({LOCATION_IDS})'
   SET @SQL = REPLACE(@SQL, '{LOCATION_IDS}', @location_ids)
   EXEC sp_executesql @SQL
 END
@@ -5636,11 +5636,11 @@ CREATE PROCEDURE dbo.uspGetAdministrativeAreasGeom
 AS
 IF @location_ids IS NULL OR @location_ids = ''
         SELECT 1 as [list_id], location_id, Geometry.ToString() as [WKTGeometry]
-FROM [list-administrativeAreas]
+FROM [list-administrativeAreas36]
     ELSE
         BEGIN
   DECLARE @SQL NVARCHAR(MAX)
-  SET @SQL = 'SELECT 1 as [list_id], location_id, Geometry.ToString() as [WKTGeometry] FROM [list-administrativeAreas] WHERE location_id IN ({LOCATION_IDS})'
+  SET @SQL = 'SELECT 1 as [list_id], location_id, Geometry.ToString() as [WKTGeometry] FROM [list-administrativeAreas36] WHERE location_id IN ({LOCATION_IDS})'
   SET @SQL = REPLACE(@SQL, '{LOCATION_IDS}', @location_ids)
   EXEC sp_executesql @SQL
 END
@@ -5856,17 +5856,17 @@ AS
 IF @global_ids IS NULL OR @global_ids = ''
 		BEGIN
   SELECT 1 AS [list_id], [Location Name], [Country], [State], [Sub State], [gadmid], [Latitude], [Longitude], [Location Classification], [Size], [location_id]
-  FROM [list-administrativeAreas]
+  FROM [list-administrativeAreas36]
   SELECT *
   FROM [analysis-administrativeAreas]
 END
 	ELSE
 		DECLARE @LIST_SQL NVARCHAR(MAX)
-SET @LIST_SQL = 'SELECT 1 AS [list_id],[Location Name],[Country],[State],[Sub State],[gadmid],[Latitude],[Longitude],[Location Classification],[Size],[location_id] FROM [list-administrativeAreas] WHERE gadmid IN ({GADMIDS})'
+SET @LIST_SQL = 'SELECT 1 AS [list_id],[Location Name],[Country],[State],[Sub State],[gadmid],[Latitude],[Longitude],[Location Classification],[Size],[location_id] FROM [list-administrativeAreas36] WHERE gadmid IN ({GADMIDS})'
 SET @LIST_SQL = REPLACE(@LIST_SQL, '{GADMIDS}', @global_ids)
 EXEC sp_executesql @LIST_SQL
 DECLARE @ANALYSIS_SQL NVARCHAR(MAX)
-SET @ANALYSIS_SQL = 'SELECT * FROM [analysis-administrativeAreas] WHERE location_id IN (SELECT location_id FROM [list-administrativeAreas] WHERE gadmid IN ({GADMIDS}))'
+SET @ANALYSIS_SQL = 'SELECT * FROM [analysis-administrativeAreas] WHERE location_id IN (SELECT location_id FROM [list-administrativeAreas36] WHERE gadmid IN ({GADMIDS}))'
 SET @ANALYSIS_SQL = REPLACE(@ANALYSIS_SQL, '{GADMIDS}', @global_ids)
 EXEC sp_executesql @ANALYSIS_SQL
 GO
@@ -5940,7 +5940,7 @@ AS
 
 	SELECT SUM (row_count) AS TotalRows FROM sys.dm_db_partition_stats
 
-	WHERE object_id=OBJECT_ID(@listLocationTableName)   
+	WHERE object_id=OBJECT_ID(@listLocationTableName)
 
 	AND (index_id=0 or index_id=1);
 
@@ -6017,11 +6017,11 @@ SELECT @listLocationTableCols = STUFF(
       FOR XML PATH('')
   ),1,3,'') + ']';
 
-SET @SQL = N';WITH MyListTable AS (SELECT {LIST_ID} As list_id, {LOCATION_COLUMNS}, location_id as list_location_id'      
+SET @SQL = N';WITH MyListTable AS (SELECT {LIST_ID} As list_id, {LOCATION_COLUMNS}, location_id as list_location_id'
 IF @Geometry = 1
 BEGIN
   SET @SQL = @SQL + ', Geometry.ToString() As [WKTGeometry]'
-END     
+END
 
 SET @SQL = @SQL + ' FROM [{LOCATION_TABLE}] L), ';
 DECLARE @listAnalysisTableCols NVARCHAR(MAX)
@@ -6037,13 +6037,13 @@ SELECT @listAnalysisTableCols = STUFF(
   ),1,3,'') + ']';
 
 -- ADD Filters
-IF @Country IS NOT NULL 
+IF @Country IS NOT NULL
   SET @Filters = + @Filters + ' AND Country = @Country'
 
-IF @State IS NOT NULL 
+IF @State IS NOT NULL
   SET @Filters = + @Filters + ' AND State = @State'
 
-IF @SubState IS NOT NULL 
+IF @SubState IS NOT NULL
   SET @Filters = + @Filters + ' AND [Sub State] = @SubState'
 
 IF ISNUMERIC( @AnalysisAreaFilter ) = 1
@@ -6052,17 +6052,17 @@ BEGIN
   PRINT @AnalysisAreaFilter
   print 'test-' + Convert(varchar(50), @AnalysisAreaFilter);
   IF @AnalysisAreaOperator NOT IN('>=', '<=', '<', '>')
-    RAISERROR ('Invalid @AnalysisAreaOperator', -1, 1); 
+    RAISERROR ('Invalid @AnalysisAreaOperator', -1, 1);
   SET @Filters = + @Filters + ' AND [Analysis Area] ' + @AnalysisAreaOperator + ' @AnalysisAreaFilter '
 END
 -- END Filters
 
 -- Return data from both tables
-SET @SQL = @SQL + ' MyAnalysisTable AS(SELECT {LIST_ID} As analysis_list_id, {TEMPLATE_ID} As template_id, {ANALYSIS_COLUMNS} FROM [{ANALYSIS_TABLE}] A) 
-          SELECT * FROM MyListTable INNER JOIN MyAnalysisTable ON MyListTable.list_id = MyAnalysisTable.analysis_list_id AND  MyListTable.list_location_id = MyAnalysisTable.location_id 
+SET @SQL = @SQL + ' MyAnalysisTable AS(SELECT {LIST_ID} As analysis_list_id, {TEMPLATE_ID} As template_id, {ANALYSIS_COLUMNS} FROM [{ANALYSIS_TABLE}] A)
+          SELECT * FROM MyListTable INNER JOIN MyAnalysisTable ON MyListTable.list_id = MyAnalysisTable.analysis_list_id AND  MyListTable.list_location_id = MyAnalysisTable.location_id
           WHERE 1=1 '+@Filters+'
           ORDER BY '+@OrderByColumn + ' '+@Order+' OFFSET (@PageNumber-1)*@RowsOfPage ROWS FETCH NEXT @RowsOfPage ROWS ONLY';
-PRINT @Filters  
+PRINT @Filters
 -- MyListTable.[Location Name]
 
 SET @SQL = REPLACE(@SQL, '{TEMPLATE_ID}', @template_id);
@@ -6073,7 +6073,7 @@ SET @SQL = REPLACE(@SQL, '{ANALYSIS_COLUMNS}', @listAnalysisTableCols);
 SET @SQL = REPLACE(@SQL, '{ANALYSIS_TABLE}', @listAnalysisTableName);
 
 print @SQL
-EXEC sp_executesql @SQL, 
+EXEC sp_executesql @SQL,
           N'@PageNumber INT, @RowsOfPage INT, @OrderByColumn AS NVARCHAR(MAX), @Order AS NVARCHAR(5), @Country AS NVARCHAR(150), @State AS NVARCHAR(150), @SubState AS NVARCHAR(150), @AnalysisAreaFilter AS float, @AnalysisAreaOperator AS VARCHAR(10)',
           @PageNumber=@PageNumber, @RowsOfPage=@RowsOfPage, @OrderByColumn=@OrderByColumn, @Order=@Order, @Country=@Country, @State=@State, @SubState=@SubState, @AnalysisAreaFilter=@AnalysisAreaFilter, @AnalysisAreaOperator=@AnalysisAreaOperator;
 

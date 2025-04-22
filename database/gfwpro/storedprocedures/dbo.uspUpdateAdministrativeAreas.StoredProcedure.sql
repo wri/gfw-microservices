@@ -28,7 +28,7 @@ CREATE PROCEDURE [dbo].[uspUpdateAdministrativeAreas]
 	@LocationName NVARCHAR(150),
 	@location_id INT
 AS
-	INSERT INTO [temp-list-administrativeAreas] (
+	INSERT INTO [temp-list-administrativeAreas36] (
 	[Country],
 	[State],
 	[Sub State],

@@ -260,7 +260,7 @@ export async function handleListLocationAttributes(
 }
 
 export async function setListLocationNameIfIsInvestment(clientDb: string, listTableName: string) {
-  const storedProcedure = `DECLARE @tbl sysname = QUOTENAME('${listTableName}');
+  const sqlCmd = `DECLARE @tbl sysname = QUOTENAME('${listTableName}');
 
 IF COL_LENGTH('dbo.' + @tbl, 'Location Name') IS NULL
     EXEC('ALTER TABLE dbo.' + @tbl + ' ADD [Location Name] NVARCHAR(150) NULL;');
@@ -268,5 +268,5 @@ IF COL_LENGTH('dbo.' + @tbl, 'Location Name') IS NULL
 EXEC('UPDATE dbo.' + @tbl + ' SET [Location Name] = [Investment Name];');
 `;
 
-  return await SQLUtils.queryDBFirstRow(clientDb, storedProcedure);
+  return await SQLUtils.queryDBFirstRow(clientDb, sqlCmd);
 }

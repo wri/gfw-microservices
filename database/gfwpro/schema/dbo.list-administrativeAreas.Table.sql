@@ -10,12 +10,12 @@
 */
 USE [gfwpro]
 GO
-/****** Object:  Table [dbo].[list-administrativeAreas]    Script Date: 4/4/2023 7:47:27 PM ******/
+/****** Object:  Table [dbo].[list-administrativeAreas36]    Script Date: 4/4/2023 7:47:27 PM ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
 GO
-CREATE TABLE [dbo].[list-administrativeAreas](
+CREATE TABLE [dbo].[list-administrativeAreas36](
 	[Location Name] [nvarchar](150) NULL,
 	[Country] [nvarchar](150) NULL,
 	[State] [nvarchar](150) NULL,

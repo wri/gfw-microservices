@@ -28,7 +28,7 @@ AS
 	SET @SQL = 'SELECT
 					[id],[Location Name],[Country],[State],[Sub State],[Latitude],[Longitude],[Location Classification],[Size],[gadmid],[location_id]
 				FROM
-					[gfwpro].[dbo].[list-administrativeAreas]
+					[gfwpro].[dbo].[list-administrativeAreas36]
 				WHERE
 				Country = @country'
 

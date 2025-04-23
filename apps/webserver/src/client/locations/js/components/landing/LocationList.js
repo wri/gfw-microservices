@@ -150,7 +150,7 @@ export default class LocationList extends Component {
     const hasLockStatus = !!list.lock_status && !!list.lock_user_id;
 
     const showSharedColumn = list.sharedWith || list.sharedList;
-    const isPalmOilBackwardComp = checkValidViewCommodity([list]);
+    const isPalmOilBackwardComp = checkValidViewCommodity(list);
 
     const listStatusComponent = (list) => {
       if (isAnalyzingStatus(list.list_status_id) || hasLockStatus) {

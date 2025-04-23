@@ -12,17 +12,16 @@ import {
 } from '../../../common/js/constants/lists.constants';
 import { listStatus } from '../../../../config/env/listStatuses.constants';
 
+const PALM_OIL_MILLS = 'Palm Oil Mills';
+
 // Check to see which views should be enabled
-const checkValidViewCommodity = (selectedLists, listData) => {
-  if (!Array.isArray(selectedLists) || selectedLists.length === 0) {
+const checkValidViewCommodity = (list, location) => {
+  if (!list) {
     return false;
   }
 
-  const [selectedList] = selectedLists;
-
-  if (!selectedList.isGlobalForestWatchList) {
-    const { template_id, location_classification } = selectedList;
-    const location = listData?.[0];
+  if (!list.isGlobalForestWatchList) {
+    const { template_id, location_classification } = list;
     const locationClassification =
       location?.['Location Classification']?.toLowerCase() ??
       location_classification?.toLowerCase();
@@ -30,7 +29,7 @@ const checkValidViewCommodity = (selectedLists, listData) => {
     return template_id === 2 || (template_id === 5 && locationClassification === 'supply shed');
   }
 
-  return selectedList.list_name === 'Palm Oil Mills';
+  return list.list_name === PALM_OIL_MILLS;
 };
 
 const checkColumnListDraftList = (accessor) => {
@@ -110,7 +109,7 @@ const checkColumnListCR = (accessor) => {
 };
 
 const checkColumnListGFWFC = (list_name, accessor) => {
-  if (list_name === 'Palm Oil Mills') {
+  if (list_name === PALM_OIL_MILLS) {
     return (
       checkColumnListFC(accessor) ||
       accessor === 'Parent Company' ||
@@ -152,7 +151,7 @@ const checkColumnListPA = (list_name, accessor) => {
 };
 
 const checkColumnListGFWCR = (list_name, accessor) => {
-  if (list_name === 'Palm Oil Mills') {
+  if (list_name === PALM_OIL_MILLS) {
     return (
       checkColumnListCR(accessor) ||
       accessor === 'RSPO Model' ||
@@ -235,7 +234,7 @@ const getGFWListLocationIDs = (gfwList, location) => {
         serverLayerId: location['Sub State'] ? '4' : location.State ? '5' : '6',
       };
       break;
-    case 'Palm Oil Mills':
+    case PALM_OIL_MILLS:
       id = location[gfwListsLocationID[gfwList].location_field];
       break;
     default:

@@ -1978,7 +1978,7 @@ export default class ListDetails extends Component {
       listViewOptions.push(FOREST_CHANGE_VIEW);
     }
 
-    const isPalmOilBackwardComp = checkValidViewCommodity(selectedLists, listData);
+    const isPalmOilBackwardComp = checkValidViewCommodity(selectedLists?.[0], listData?.[0]);
     if (isPalmOilBackwardComp || isPalmRiskActive) {
       listViewOptions.push(COMMODITY_RISK_VIEW);
     }

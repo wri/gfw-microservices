@@ -423,7 +423,12 @@ export async function getListAnalysisStatus(
   );
 }
 
-export async function setListAnalysisStatus(organizationDb, listId, analysisTypesToProcess) {
+export async function setListAnalysisStatus(
+  organizationDb,
+  listId,
+  analysisTypesToProcess,
+  status = listStatus.Pending
+) {
   const clientStoreConnection = new ClientStoreConnection();
   const connection = await clientStoreConnection.getConnection(organizationDb);
   const listAnalysisStatusRepository = connection.getRepository(ListsAnalysisStatus);
@@ -441,14 +446,14 @@ export async function setListAnalysisStatus(organizationDb, listId, analysisType
         await listAnalysisStatusRepository.save({
           listId,
           analysisId,
-          status: listStatus.Pending,
+          status,
           updateTime: new Date().toISOString(),
         });
       } else {
         await listAnalysisStatusRepository.update(
           { listId, analysisId },
           {
-            status: listStatus.Pending,
+            status,
             s3URL: null,
             bundleCreationTime: null,
             expirationTime: null,

@@ -30,7 +30,7 @@ import {
   featureFlagsService,
 } from '@wri-monorepos/shared';
 import * as sql from 'mssql';
-import { getListAnalysisStatus } from '../utils/list.utils';
+import { getListAnalysisStatus, setListAnalysisStatus } from '../utils/list.utils';
 import axios from 'axios';
 import { flatten } from 'lodash';
 import { updateListsAnalysisStatus } from './list.analysis.status/updateListAnalysisStatus';
@@ -244,40 +244,8 @@ export const handleCreateAnalysis = async (
       subscriptionStatusId,
       listId,
     });
-    const clientStoreConnection = new ClientStoreConnection();
-    const connection = await clientStoreConnection.getConnection(organizationDb);
-    const listAnalysisStatusRepository = connection.getRepository(ListsAnalysisStatus);
 
-    const analysisTypesToUpdate = analysisTypesToProcess.split(',');
-
-    await Promise.all(
-      analysisTypesToUpdate.map(async (analysisId) => {
-        const listAnalysisStatusToUpdate = await listAnalysisStatusRepository.findBy({
-          listId,
-          analysisId,
-        });
-
-        if (listAnalysisStatusToUpdate.length === 0) {
-          await listAnalysisStatusRepository.save({
-            listId,
-            analysisId,
-            status: listStatus.Pending,
-            updateTime: new Date().toISOString(),
-          });
-        } else {
-          await listAnalysisStatusRepository.update(
-            { listId, analysisId },
-            {
-              status: listStatus.Pending,
-              s3URL: null,
-              bundleCreationTime: null,
-              expirationTime: null,
-              errorInfo: null,
-            }
-          );
-        }
-      })
-    );
+    setListAnalysisStatus(organizationDb, listId, analysisTypesToProcess);
 
     if (isListLocationOverLimit) {
       await updateListsAnalysisStatus(organizationDb, {
@@ -310,6 +278,8 @@ export const handleCreateAnalysis = async (
       reanalyze,
       send_email: sendEmail,
     };
+
+    const clientStoreConnection = new ClientStoreConnection();
     const connectionLibSql = await clientStoreConnection.getConnection(organizationDb);
 
     const activityLogRepository = connectionLibSql.getRepository(ActivityLog);

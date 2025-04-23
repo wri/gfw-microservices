@@ -147,7 +147,7 @@ export class ListCopyMoveService {
         userId,
         action,
         isSaveAsDraft,
-        finalGeojson: geojson,
+        finalGeojson: geojson as FeatureCollection,
         commodityType,
         srcListAnalysisTable,
         selectedLocations,

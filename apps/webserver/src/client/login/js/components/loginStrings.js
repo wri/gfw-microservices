@@ -1,5 +1,5 @@
 const loginStrings = {
-  appTitleText: 'Achieve supply chain sustainability with analytics that deliver impact.',
+  appTitleText: 'Achieve supply chain sustainability with analytics that drive impact.',
   appRequestAccount: 'Request an Account',
   appLearnMore: 'Learn more about Pro',
   moreInfo: {

@@ -21,6 +21,11 @@ import { checkProcessingLimits, readAnalysesLastModifiedTime } from '@wri-monore
 import { analysisTypesOptionsNewNames, listStatus } from '@wri-monorepos/constants';
 import * as sql from 'mssql';
 import { getListAnalysisStatus } from '../utils/list.utils';
+import axios from 'axios';
+
+jest.mock('axios', () => ({
+  post: jest.fn(),
+}));
 
 jest.mock('../utils/list.utils', () => ({
   getListAnalysisStatus: jest.fn(),
@@ -49,9 +54,6 @@ jest.mock('@wri-monorepos/aws', () => ({
 
 jest.mock('@wri-monorepos/shared', () => ({
   readAnalysesLastModifiedTime: jest.fn(),
-}));
-
-jest.mock('@wri-monorepos/shared', () => ({
   checkProcessingLimits: jest.fn(),
 }));
 
@@ -634,13 +636,15 @@ describe('list.analysis.status.ts', () => {
             getRepository: jest.fn().mockReturnValue({
               findBy: jest.fn().mockResolvedValue([true]),
               update: jest.fn(),
+              save: jest.fn(),
             }),
           }),
         };
       });
-      
+
       jest.spyOn(LAS, 'isGHGCommodityValid').mockResolvedValueOnce(true);
 
+      (axios.post as jest.Mock).mockResolvedValue({ statusText: 'Ok' });
       const result = await handleCreateAnalysis(
         fakeAnalysisIds,
         fakeListId,
@@ -651,12 +655,7 @@ describe('list.analysis.status.ts', () => {
         99,
         false
       );
-      expect(result).toHaveBeenCalledWith(
-        fakeClientDatabase,
-        fakeListId,
-        fakeAnalysisIds,
-        fakeAnalysisStatus
-      );
+     expect(result).toEqual('Ok')
     });
   });
 });

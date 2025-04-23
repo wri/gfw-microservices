@@ -677,7 +677,7 @@ export default class ListDetails extends Component {
         const copyLocationsRequestBody = {
           listId: selectedList.id,
           srcListAnalysisTable: selectedList.list_analysis_table_name,
-          selectedListLocationClasification: selectedList.location_classification,
+          selectedListLocationClassification: selectedList.location_classification,
           customAttributesNames: [],
           userListNames,
           action: selectedMoveOrCopy,

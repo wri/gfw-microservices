@@ -6,7 +6,7 @@ const getAvailableDiagnostics = (listData, selectedLists) => {
   if (!forestChangeDisabled) {
     availableDiagnostics.push({ value: 'forest_change', label: 'Forest change' });
   }
-  const commodityRiskDisabled = !checkValidViewCommodity(selectedLists, listData);
+  const commodityRiskDisabled = !checkValidViewCommodity(selectedLists?.[0], listData?.[0]);
   if (!commodityRiskDisabled) {
     availableDiagnostics.push({
       value: 'commodity_risk',

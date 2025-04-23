@@ -59,7 +59,7 @@ export const requestTriggerProcessLargeListSchema = z.object({
 
 export const copyOrMoveLargeListRequestSchema = z.object({
   listId: z.coerce.number(),
-  selectedListLocationClasification: z.string(),
+  selectedListLocationClassification: z.string(),
   customAttributesNames: z.array(z.string()),
   userListNames: z.array(z.string()),
   action: z.nativeEnum(ActionType),

@@ -964,7 +964,7 @@ describe('AppController', () => {
   it('Should failed zod validations when receiving an unknown action type at CopyOrMoveLargeList endpoint', async () => {
     const bodyPost = {
       listId: 2,
-      selectedListLocationClasification: 'string',
+      selectedListLocationClassification: 'string',
       customAttributesNames: ['string'],
       userListNames: ['string'],
       action: 'wrong_action',

@@ -45,13 +45,13 @@ export async function getLocationGeometry(props, mapView, selectedList) {
 }
 
 export const getBasemapConfiguration = () => {
-  const undisputedBoundariesStyle = {
+  const gadmAdministrativeBoundariesStyle = {
     version: 8,
     sources: {
-      gadm_administrative_boundaries_undisputed: {
+      gadm_administrative_boundaries: {
         type: 'vector',
         tiles: [
-          'https://tiles.globalforestwatch.org/gadm_administrative_boundaries_undisputed/v4.1.65/default/{z}/{x}/{y}.pbf',
+          'https://tiles.globalforestwatch.org/gadm_administrative_boundaries/v4.1.84/default/{z}/{x}/{y}.pbf',
         ],
         tileSize: 512,
       },
@@ -60,8 +60,8 @@ export const getBasemapConfiguration = () => {
       {
         id: 'gadm_fill',
         type: 'fill',
-        source: 'gadm_administrative_boundaries_undisputed',
-        'source-layer': 'gadm_administrative_boundaries_undisputed',
+        source: 'gadm_administrative_boundaries',
+        'source-layer': 'gadm_administrative_boundaries',
         paint: {
           'fill-color': 'white',
           'fill-outline-color': 'gray',
@@ -70,38 +70,8 @@ export const getBasemapConfiguration = () => {
     ],
   };
 
-  const undisputedBoundariesLayer = new VectorTileLayer({
-    style: undisputedBoundariesStyle,
-    visible: true,
-  });
-
-  const disputedBoundariesStyle = {
-    version: 8,
-    sources: {
-      gadm_administrative_boundaries_disputed: {
-        type: 'vector',
-        tiles: [
-          'https://tiles.globalforestwatch.org/gadm_administrative_boundaries_disputed/v4.1.65/default/{z}/{x}/{y}.pbf',
-        ],
-        tileSize: 512,
-      },
-    },
-    layers: [
-      {
-        id: 'gadm_fill',
-        type: 'fill',
-        source: 'gadm_administrative_boundaries_disputed',
-        'source-layer': 'gadm_administrative_boundaries_disputed',
-        paint: {
-          'fill-color': 'white',
-          'fill-outline-color': 'gray',
-        },
-      },
-    ],
-  };
-
-  const disputedBoundariesLayer = new VectorTileLayer({
-    style: disputedBoundariesStyle,
+  const gadmAdministrativeBoundariesLayer = new VectorTileLayer({
+    style: gadmAdministrativeBoundariesStyle,
     visible: true,
   });
 
@@ -111,7 +81,7 @@ export const getBasemapConfiguration = () => {
 
   const customBasemap = new Basemap({
     referenceLayers: [labelsLayer],
-    baseLayers: [disputedBoundariesLayer, undisputedBoundariesLayer],
+    baseLayers: [gadmAdministrativeBoundariesLayer],
   });
   return customBasemap;
 };

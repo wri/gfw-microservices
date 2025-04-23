@@ -4,15 +4,27 @@ import {
   getAllListsAnalysisStatus,
   getAnalysisTypesFromIds,
   getListAnalysisStatusByListId,
+  handleCreateAnalysis,
+  isGHGCommodityValid,
   resolveListAnalysisStatuses,
   setSelectedAnalyses,
   updateListAnalysis,
 } from './list.analysis.status';
 import * as LAS from './list.analysis.status';
-import { ListsAnalysisStatus, SQLUtils } from '@wri-monorepos/sql';
-import { readAnalysesLastModifiedTime } from '@wri-monorepos/shared';
+import {
+  ClientStoreConnection,
+  ListsAnalysisStatus,
+  SQLUtils,
+  updateListsAnalysisStatus,
+} from '@wri-monorepos/sql';
+import { checkProcessingLimits, readAnalysesLastModifiedTime } from '@wri-monorepos/shared';
 import { analysisTypesOptionsNewNames, listStatus } from '@wri-monorepos/constants';
 import * as sql from 'mssql';
+import { getListAnalysisStatus } from '../utils/list.utils';
+
+jest.mock('../utils/list.utils', () => ({
+  getListAnalysisStatus: jest.fn(),
+}));
 
 jest.mock('@nestjs/common', () => ({
   ...jest.requireActual('@nestjs/common'),
@@ -27,6 +39,8 @@ jest.mock('@wri-monorepos/sql', () => ({
   SQLUtils: {
     queryDB: jest.fn(),
   },
+  ClientStoreConnection: jest.fn(),
+  updateListsAnalysisStatus: jest.fn(),
 }));
 
 jest.mock('@wri-monorepos/aws', () => ({
@@ -35,6 +49,10 @@ jest.mock('@wri-monorepos/aws', () => ({
 
 jest.mock('@wri-monorepos/shared', () => ({
   readAnalysesLastModifiedTime: jest.fn(),
+}));
+
+jest.mock('@wri-monorepos/shared', () => ({
+  checkProcessingLimits: jest.fn(),
 }));
 
 const mockAnalysisStatusData = [
@@ -576,6 +594,68 @@ describe('list.analysis.status.ts', () => {
           stack: expect.any(String),
           listAnalysisStatuses: input,
         })
+      );
+    });
+  });
+  describe('handleCreateAnalysis', () => {
+    beforeEach(() => {
+      jest.clearAllMocks();
+    });
+
+    it('should call handleCreateAnalysis with the correct parameters', async () => {
+      const fakeClientDatabase = 'mockClientDB';
+      const fakeListId = 123;
+      const fakeAnalysisIds = 'GHG,FCD';
+      const fakeAnalysisStatus = listStatus.Pending;
+
+      (checkProcessingLimits as jest.Mock).mockResolvedValue({
+        isListLocationOverLimit: false,
+        processingLimit: 1000,
+      });
+
+      (getListAnalysisStatus as jest.Mock).mockResolvedValue([
+        {
+          listId: 1,
+          analysisId: 'FCD',
+          status: 5,
+          options: 'PalmRisk',
+        },
+        {
+          listId: 1,
+          analysisId: 'GHG',
+          status: 5,
+          options: '',
+        },
+      ]);
+      (updateListsAnalysisStatus as jest.Mock).mockResolvedValue(true);
+      (ClientStoreConnection as unknown as jest.Mock).mockImplementation(() => {
+        return {
+          getConnection: jest.fn().mockResolvedValue({
+            getRepository: jest.fn().mockReturnValue({
+              findBy: jest.fn().mockResolvedValue([true]),
+              update: jest.fn(),
+            }),
+          }),
+        };
+      });
+      
+      jest.spyOn(LAS, 'isGHGCommodityValid').mockResolvedValueOnce(true);
+
+      const result = await handleCreateAnalysis(
+        fakeAnalysisIds,
+        fakeListId,
+        123,
+        fakeClientDatabase,
+        false,
+        234,
+        99,
+        false
+      );
+      expect(result).toHaveBeenCalledWith(
+        fakeClientDatabase,
+        fakeListId,
+        fakeAnalysisIds,
+        fakeAnalysisStatus
       );
     });
   });

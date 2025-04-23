@@ -1,13 +1,7 @@
 import { Logger } from '@nestjs/common';
 import { AbstractHandler, RequestNewList } from './types';
 import { ChainType } from './types';
-import {
-  AnalysisSchema,
-  AnalysisSchemaType,
-  ClientStoreConnection,
-  ListSchema,
-  ListSchemaType,
-} from '@wri-monorepos/sql';
+import { AnalysisSchema, AnalysisSchemaType, ClientStoreConnection } from '@wri-monorepos/sql';
 import { DataSource, EntitySchema } from 'typeorm';
 
 const BATCH_SIZE = 1000;
@@ -32,18 +26,17 @@ export class AddNewLocationToAnalysisTable extends AbstractHandler<ChainType> {
       name: analysisTable,
     });
 
-    const locationIds = await this.getAllLocationIds(request);
-
-    const connection = await this.clientStoreConnection.getConnection(organizationDatabase, [
-      AnalysisEntity,
-    ]);
-
-    const dataToInsert = locationIds.map((locationId) => {
+    const dataToInsert = request.geojson.features.map(({ properties }) => {
+      const { locationId } = properties;
       return {
         locationId,
         locationStatusId: 1,
       };
     });
+
+    const connection = await this.clientStoreConnection.getConnection(organizationDatabase, [
+      AnalysisEntity,
+    ]);
 
     try {
       for (let i = 0; i < dataToInsert.length; i += BATCH_SIZE) {
@@ -81,26 +74,5 @@ export class AddNewLocationToAnalysisTable extends AbstractHandler<ChainType> {
     `;
 
     await connection.query(sql);
-  }
-
-  async getAllLocationIds(request: ChainType) {
-    const { organization_database: organizationDatabase, listTable } =
-      request.request as RequestNewList;
-    const ListEntity = new EntitySchema<ListSchemaType>({
-      ...ListSchema,
-      name: listTable,
-    });
-
-    const connection = await this.clientStoreConnection.getConnection(organizationDatabase, [
-      ListEntity,
-    ]);
-    const ids = await connection
-      .createQueryBuilder()
-      .select('list.locationId')
-      .from(ListEntity, 'list')
-      .getRawMany();
-
-    // Extracting the locationIds from the result
-    return ids.map((entity) => entity.list_location_id);
   }
 }

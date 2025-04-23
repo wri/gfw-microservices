@@ -13,6 +13,7 @@ import { Logger } from '@nestjs/common';
 import { Feature } from '@wri-monorepos/geo';
 import { GeoJSONGeometry, stringify } from 'wellknown';
 import { ConvertPoint2Polygon } from './convert.point.2.polygon';
+import { getMaxLocationId } from '../shared/list.utils';
 
 export class ProcessUploadData extends AbstractHandler<ChainType> {
   private readonly logger = new Logger(ProcessUploadData.name);
@@ -80,11 +81,11 @@ export class ProcessUploadData extends AbstractHandler<ChainType> {
       return feature;
     }
 
-    const { list_id } = request.request as RequestNewList;
+    const { list_id: listId } = request.request as RequestNewList;
     feature = await this.convertPoint2Polygon.convertFeature(feature, request);
     const { properties } = feature;
 
-    properties.attributes = this.processFeatureAttributes(feature, list_id);
+    properties.attributes = this.processFeatureAttributes(feature, listId);
     properties.locationId = locationId;
     properties.commodity = commodity;
 
@@ -110,12 +111,19 @@ export class ProcessUploadData extends AbstractHandler<ChainType> {
   }
 
   async getProcessedFeatures(features: Feature[], commodity, request): Promise<Feature[]> {
+    const { list_id: listId, organization_database: organizationDatabase } =
+      request.request as RequestNewList;
+
+    const clientStoreConnection = new ClientStoreConnection();
+    const listLocationsCount =
+      (await getMaxLocationId(clientStoreConnection, organizationDatabase, listId)) ?? 0;
+
     return await Promise.all(
       features.map(async (feature, index) => {
         try {
           const processedFeature = await this.processFeature(
             feature,
-            index + 1,
+            listLocationsCount + index + 1,
             commodity,
             request
           );

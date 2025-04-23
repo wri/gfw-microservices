@@ -1,6 +1,7 @@
 import { Logger } from '@nestjs/common';
 import { AbstractHandler, ChainType, RequestNewList } from './types';
 import { ClientStoreConnection, Lists } from '@wri-monorepos/sql';
+import { getTotalLocationCount } from '../shared/list.utils';
 
 export class WriteLocationCount extends AbstractHandler<ChainType> {
   private readonly logger = new Logger(WriteLocationCount.name);
@@ -19,15 +20,16 @@ export class WriteLocationCount extends AbstractHandler<ChainType> {
         (feature) => !feature?.properties?.errorDetails && feature?.properties?.gadmid
       ).length || 0;
 
-    let connection;
-
     try {
-      connection = await this.clientStoreConnection.getConnection(organization_database);
+      const connection = await this.clientStoreConnection.getConnection(organization_database);
       const listRepository = connection.getRepository(Lists);
 
-      const list = await listRepository.findOne({ where: { id: listId } });
-
-      const totalLocations = (list.listLocationsCount || 0) + listSize;
+      const listLocationsCount = await getTotalLocationCount(
+        this.clientStoreConnection,
+        organization_database,
+        listId
+      );
+      const totalLocations = (listLocationsCount || 0) + listSize;
 
       // Update the list's location count
       await listRepository.update({ id: listId }, { listLocationsCount: totalLocations });

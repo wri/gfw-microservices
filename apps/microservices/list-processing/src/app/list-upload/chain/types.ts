@@ -47,6 +47,7 @@ export interface RequestNewList extends PreviewListRequest {
   subscription_status_id: number;
 
   hasUnanalyzableError: boolean;
+  locations?: number[];
 }
 
 interface Handler<T> {

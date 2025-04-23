@@ -56,9 +56,9 @@ export class StartAnalysis extends AbstractHandler<ChainType> {
 
     const analysisTypesToProcess = analysisIds.join(',');
 
-    await setListAnalysisStatus(organizationDatabase, listId, analysisTypesToProcess);
     const isDraft = await this.isDraftList(saveAsDraft, organizationDatabase, listId);
     if (isDraft) {
+      await setListAnalysisStatus(organizationDatabase, listId, analysisTypesToProcess);
       this.logger.debug(`List ${listId} is set as draft so going to skip analysis`);
       return request;
     }

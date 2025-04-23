@@ -1,5 +1,6 @@
 import { Logger } from '@nestjs/common';
 import {
+  FeatureCollection,
   handleCreateAnalysis,
   PerformCopyAnalysis,
   PerformLocationsBulkCopy,
@@ -9,72 +10,122 @@ import { UnlockListAndSaveAsDraft, UspSetListLocked } from '@wri-monorepos/sql';
 
 const logger = new Logger(`handleExistingListUpdate`);
 
-export const handleExistingListUpdate = async ({
-  clientDatabase,
-  selectedListId,
-  moveToList,
-  userId,
-  action,
-  isSaveAsDraft,
-  finalGeojson,
-  commodityType,
-  srcListAnalysisTable,
-  selectedLocations,
-  gfwListId,
-  organizationId,
-  analysisIds,
-  subscriptionStatusId,
-}) => {
-  // Lists to be unlocked after the process
-  const unlock = [];
+interface ListUpdateParams {
+  clientDatabase: string;
+  selectedListId: number;
+  moveToList: {
+    id: number;
+    list_name: string;
+  };
+  userId: number;
+  action: string;
+  isSaveAsDraft: boolean;
+  finalGeojson: FeatureCollection;
+  commodityType: string;
+  srcListAnalysisTable: string;
+  selectedLocations: number[];
+  gfwListId: number;
+  organizationId: number;
+  analysisIds: string[];
+  subscriptionStatusId: number;
+}
 
-  await new UspSetListLocked().run(clientDatabase, selectedListId, userId);
-  unlock.push(selectedListId);
-  await new UspSetListLocked().run(clientDatabase, moveToList.id, userId);
-  unlock.push(moveToList.id);
+const validateInput = (params: ListUpdateParams) => {
+  if (!params.selectedListId || !params.moveToList?.id) {
+    throw new Error('Invalid list IDs provided');
+  }
+  if (!params.userId) {
+    throw new Error('User ID is required');
+  }
+  if (!params.finalGeojson) {
+    throw new Error('Geojson data is required');
+  }
+};
 
-  logger.log(`Performing ${action} for existing list`);
-  const destLocationIds = await PerformLocationsBulkCopy(
-    moveToList.id,
-    moveToList.list_name,
-    false,
+const lockLists = async (clientDatabase: string, listIds: number[], userId: number) => {
+  for (const listId of listIds) {
+    await new UspSetListLocked().run(clientDatabase, listId, userId);
+  }
+};
+
+export const handleExistingListUpdate = async (params: ListUpdateParams) => {
+  const {
+    clientDatabase,
+    selectedListId,
+    moveToList,
+    userId,
+    action,
+    isSaveAsDraft,
     finalGeojson,
     commodityType,
-    clientDatabase
-  );
-
-  logger.log(`Copy location analysis for existing list`);
-  await PerformCopyAnalysis(
-    clientDatabase,
     srcListAnalysisTable,
-    selectedListId,
-    moveToList.id,
     selectedLocations,
-    destLocationIds
-  );
+    gfwListId,
+    organizationId,
+    analysisIds,
+    subscriptionStatusId,
+  } = params;
 
-  if (isSaveAsDraft) {
-    await UnlockListAndSaveAsDraft(clientDatabase, moveToList.id, gfwListId);
-  } else {
-    const analysisTypesToProcess = analysisIds.join(',');
-    const result = await handleCreateAnalysis(
-      analysisTypesToProcess,
+  validateInput(params);
+
+  // Lists to be unlocked after the process
+  const listsToUnlock = [selectedListId, moveToList.id];
+
+  try {
+    logger.log(`Starting ${action} process for list ${selectedListId} to ${moveToList.id}`);
+
+    await lockLists(clientDatabase, listsToUnlock, userId);
+
+    logger.log(`Performing ${action} for existing list`);
+    const destLocationIds = await PerformLocationsBulkCopy(
       moveToList.id,
-      organizationId,
-      clientDatabase,
-      true,
-      userId,
-      subscriptionStatusId,
-      false
+      moveToList.list_name,
+      false,
+      finalGeojson,
+      commodityType,
+      clientDatabase
     );
 
-    if (result !== 'OK' && result !== 'Created') {
-      throw new Error(`Failed to start analysis: ${result}`);
-    }
-  }
+    logger.log(`Copying location analysis for existing list`);
+    await PerformCopyAnalysis(
+      clientDatabase,
+      srcListAnalysisTable,
+      selectedListId,
+      moveToList.id,
+      selectedLocations,
+      destLocationIds
+    );
 
-  if (unlock.length > 0) {
-    await UnlockLists(clientDatabase, unlock);
-    logger.log(`Lists unlocked: ${unlock.join()}`, 'LocationsService');
+    if (isSaveAsDraft) {
+      logger.log(`Saving list ${moveToList.id} as draft`);
+      await UnlockListAndSaveAsDraft(clientDatabase, moveToList.id, gfwListId);
+    } else {
+      logger.log(`Creating analysis for list ${moveToList.id}`);
+      const analysisTypesToProcess = analysisIds.join(',');
+      const result = await handleCreateAnalysis(
+        analysisTypesToProcess,
+        moveToList.id,
+        organizationId,
+        clientDatabase,
+        true,
+        userId,
+        subscriptionStatusId,
+        false
+      );
+
+      if (result !== 'OK' && result !== 'Created') {
+        throw new Error(`Failed to start analysis: ${result}`);
+      }
+    }
+
+    logger.log(`Successfully completed ${action} process`);
+  } catch (error) {
+    logger.error(`Error during ${action} process: ${error.message}`, error.stack);
+    throw error;
+  } finally {
+    if (listsToUnlock.length > 0) {
+      logger.log(`Unlocking lists: ${listsToUnlock.join(', ')}`);
+      await UnlockLists(clientDatabase, listsToUnlock);
+    }
   }
 };

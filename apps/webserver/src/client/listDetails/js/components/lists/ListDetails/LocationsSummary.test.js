@@ -9,6 +9,10 @@ afterEach(() => {
   jest.clearAllMocks();
 });
 
+jest.mock('../../../../../hooks', () => ({
+  useTransifexTranslation: jest.fn((key) => key),
+}));
+
 describe('LocationsSummary Component', () => {
   const defaultProps = {
     anchorElCountries: null,
@@ -29,10 +33,9 @@ describe('LocationsSummary Component', () => {
   const renderWithTheme = (component) => render(<ThemeProvider>{component}</ThemeProvider>);
 
   test('renders the correct location and country summary', () => {
-    renderWithTheme(<LocationsSummary {...defaultProps} />);
-
-    expect(screen.getByText('Showing 3 of 4 total locations •')).toBeInTheDocument();
-    expect(screen.getByText('Brazil, Colombia, Peru', { exact: false })).toBeInTheDocument();
+    const { container } = renderWithTheme(<LocationsSummary {...defaultProps} />);
+    expect(container.textContent).toContain('Showing 3 of 4 total locations');
+    expect(container.textContent).toContain('Brazil, Colombia, Peru');
   });
 
   test('displays the popover when the country list is clicked', () => {

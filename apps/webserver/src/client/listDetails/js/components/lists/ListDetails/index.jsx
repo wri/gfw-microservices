@@ -1978,8 +1978,8 @@ export default class ListDetails extends Component {
       listViewOptions.push(FOREST_CHANGE_VIEW);
     }
 
-    // checkValidViewCommodity() is for backward compatibility
-    if (checkValidViewCommodity(selectedLists, listData) || isPalmRiskActive) {
+    const isPalmOilBackwardComp = checkValidViewCommodity(selectedLists?.[0], listData?.[0]);
+    if (isPalmOilBackwardComp || isPalmRiskActive) {
       listViewOptions.push(COMMODITY_RISK_VIEW);
     }
 
@@ -2038,6 +2038,7 @@ export default class ListDetails extends Component {
               }
               isChangeTypeOfAnalysisModalOpen={this.state.isChangeTypeOfAnalysisModalOpen}
               commodity={selectedList?.Commodity}
+              isPalmOilBackwardComp={isPalmOilBackwardComp}
             />
           )}
           {!isGfwList && (

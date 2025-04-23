@@ -39,6 +39,7 @@ function ChangeTypeOfAnalysisModal({
   isChangeTypeOfAnalysisModalOpen,
   listAnalysesStatus,
   commodity,
+  isPalmOilBackwardComp,
 }) {
   const initialAnalysisSelection = listAnalysesStatus.map(({ analysisId }) => analysisId);
   const [selectedAnalysis, setSelectedAnalysis] = useState(initialAnalysisSelection);
@@ -126,6 +127,7 @@ function ChangeTypeOfAnalysisModal({
               selectedAnalyses={selectedAnalysis}
               setSelectedAnalyses={setSelectedAnalysis}
               commodity={commodity}
+              isPalmOilBackwardComp={isPalmOilBackwardComp}
             />
           </CardContent>
           <CardActions>

@@ -44,6 +44,7 @@ function DraftList({
   userIsAdmin,
   submitForAnalysis,
   setManageListFolderOpen,
+  isPalmOilBackwardComp,
 }) {
   const [menuAnchorEl, setMenuAnchorEl] = useState(null);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -109,6 +110,7 @@ function DraftList({
         setIsChangeTypeOfAnalysisModalOpen={setIsChangeTypeOfAnalysisModalOpen}
         isChangeTypeOfAnalysisModalOpen={isChangeTypeOfAnalysisModalOpen}
         commodity={list?.Commodity}
+        isPalmOilBackwardComp={isPalmOilBackwardComp}
       />
 
       <li

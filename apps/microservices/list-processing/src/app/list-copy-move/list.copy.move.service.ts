@@ -25,7 +25,6 @@ import { ProcessUploadData } from '../list-upload/chain/process.upload.data';
 import { ConvertGeojsonProperties } from '../list-upload/chain/convert.geojson.properties';
 import { AbstractHandler } from '../list-upload/chain/types';
 import { CommodityService } from '../list/commodity.service';
-import { mergeSourceDestinyListAttributes } from './handler/merge.attributes';
 @Injectable()
 export class ListCopyMoveService {
   constructor(
@@ -191,8 +190,6 @@ export class ListCopyMoveService {
       convertGeojsonProperties.setNext(processUploadData);
 
       await AbstractHandler.runFullChain(convertGeojsonProperties, chainType);
-
-      await mergeSourceDestinyListAttributes(clientDatabase, selectedListId, moveToList.id);
 
       return {
         success: true,

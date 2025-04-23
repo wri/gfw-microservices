@@ -303,9 +303,8 @@ export const handleCreateAnalysis = async (
       }
     } catch (error) {
       Logger.error('Error during GHG commodity validation', error.stack || error);
-      // Check if has only GHG analysis
-      const hasOnlyGHGAnalysis = Object.keys(analysisTypes).every((key) =>
-        key === 'GHG' ? analysisTypes[key] : !analysisTypes[key]
+      const hasOnlyGHGAnalysis = Object.entries(analysisTypes).every(([key, value]) =>
+        key === 'GHG' ? value : !value
       );
       if (hasOnlyGHGAnalysis) {
         await updateListsAnalysisStatus(organizationDb, {
@@ -315,7 +314,6 @@ export const handleCreateAnalysis = async (
         });
         throw new Error(`Invalid GHG Commodity: ${error.stack || error}`);
       } else {
-        // Remove GHG analysis from the list
         delete analysisTypes['GHG'];
       }
     }

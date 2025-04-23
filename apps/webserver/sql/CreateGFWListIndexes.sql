@@ -1,9 +1,9 @@
 -- Indexes for Administrative Areas
 CREATE NONCLUSTERED INDEX IX_list_administrativeAreas_1
-ON [list-administrativeAreas] ([location_id]);
+ON [list-administrativeAreas36] ([location_id]);
 
 CREATE NONCLUSTERED INDEX IX_list_administrativeAreas_2
-ON [list-administrativeAreas] ([Country], [State], [Sub State]);
+ON [list-administrativeAreas36] ([Country], [State], [Sub State]);
 
 CREATE NONCLUSTERED INDEX IX_analysis_administrativeAreas_1
 ON [analysis-administrativeAreas] ([location_id]);

@@ -31,7 +31,7 @@ SET @SQL = ' SELECT afi.list_id as listId, '+
     ' AA.[State] as state,  '+
     ' AA.[Sub State] as subState  '+
     ' FROM [AFIAnalysis] afi  '+
-    ' LEFT JOIN gfwpro.dbo.[list-administrativeAreas] AA ON AA.gadmid = afi.gadm_id  '+
+    ' LEFT JOIN gfwpro.dbo.[list-administrativeAreas36] AA ON AA.gadmid = afi.gadm_id  '+
     ' WHERE afi.list_id = @listId ';
 
 SET @SQL = @SQL + ' AND  afi.location_id < 0  AND afi.gadm_id IS NOT NULL';
@@ -84,8 +84,8 @@ SET @SQL = 'SELECT  ' +
 ' afi.jrc_forest_loss_by_year AS jrcForestLossByYear, ' +
 ' afi.natural_forest_loss_by_year AS naturalForestLossByYear, ' +
 ' afi.protected_areas_area AS protectedAreasArea, ' +
-' afi.landmark_area AS landmarkArea, ' + 
-@locationColumn + ' as locationName, ' + 
+' afi.landmark_area AS landmarkArea, ' +
+@locationColumn + ' as locationName, ' +
 ' lt.Country as country, ' +
 ' lt.State as state, ' +
 ' lt.[Sub State] as subState ' +

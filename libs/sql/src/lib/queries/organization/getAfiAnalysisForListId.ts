@@ -18,7 +18,7 @@ SELECT TOP 100
     AA.[State] as state,
     AA.[Sub State] as subState
   FROM [AFIAnalysis] AF
-  LEFT JOIN gfwpro.dbo.[list-administrativeAreas] AA ON AA.gadmid = AF.gadm_id
+  LEFT JOIN gfwpro.dbo.[list-administrativeAreas36] AA ON AA.gadmid = AF.gadm_id
 `;
 
 export const getAfiAnalysisForListId = `

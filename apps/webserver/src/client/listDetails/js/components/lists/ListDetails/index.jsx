@@ -1824,8 +1824,15 @@ export default class ListDetails extends Component {
 
   getAnalysisLastUpdatedDate(listAnalysesStatus) {
     const updateTime = Array.isArray(listAnalysesStatus) && listAnalysesStatus[0]?.updateTime;
-
-    return updateTime ? `Analysis updated: ${formatDateForCurrentBrowserLanguage(updateTime)}` : '';
+    const analysisUpdatedString = Transifex.live.translateText('Analysis updated');
+    return updateTime ? (
+      <>
+        <span>{analysisUpdatedString}</span>
+        <span>{`: ${formatDateForCurrentBrowserLanguage(updateTime)}`}</span>
+      </>
+    ) : (
+      ''
+    );
   }
   render() {
     const {

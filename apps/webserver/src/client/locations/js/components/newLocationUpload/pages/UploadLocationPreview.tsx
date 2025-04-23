@@ -34,10 +34,9 @@ export function UploadLocationPreview() {
 
   const { data, isLoading, request, error } = useFetch<
     { features: LocationListType[] },
-    { message: string; errors: string[] }
+    { errors: string[] }
   >();
   const [apiRequestError, setApiRequestError] = useState<{
-    message: string;
     errors: string[];
   } | null>(null);
   const fileInputRef = useRef<HTMLInputElement | null>(null);
@@ -60,7 +59,7 @@ export function UploadLocationPreview() {
       addFile(uploadedData);
     } catch (err) {
       console.error('Upload error:', err);
-      setApiRequestError({ message: '', errors: [''] });
+      setApiRequestError({ errors: [''] });
     } finally {
       setIsLoadingFileUpload(false);
     }
@@ -80,6 +79,12 @@ export function UploadLocationPreview() {
   };
 
   const columns = getTableColumns(data?.features);
+
+  useEffect(() => {
+    if (data?.features.length === 0) {
+      setApiRequestError({ errors: ['Empty data file'] });
+    }
+  }, [data]);
 
   return (
     <Box sx={{ height: '92vh', display: 'flex', flexDirection: 'column' }}>

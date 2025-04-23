@@ -30,10 +30,17 @@ jest.mock('../hooks', () => ({
   useHistory: () => ({ goBack: mockHistoryGoBack, push: mockHistoryPush }),
 }));
 
-jest.mock('../components', () => ({
-  NavBar: () => <span />,
-  UploadLocationPreviewErrorMessage: () => <span data-testid="upload-error-message" />,
-}));
+let mockUploadLocationPreviewErrorMessage: jest.Mock;
+
+jest.mock('../components', () => {
+  mockUploadLocationPreviewErrorMessage = jest.fn(() => (
+    <span data-testid="upload-error-message" />
+  ));
+  return {
+    NavBar: () => <span />,
+    UploadLocationPreviewErrorMessage: mockUploadLocationPreviewErrorMessage,
+  };
+});
 
 jest.mock('../../../../../hooks', () => ({
   useFetch: jest.fn(),
@@ -98,7 +105,6 @@ describe('UploadLocationPreview', () => {
       isLoading: false,
       request: jest.fn(),
       error: {
-        message: 'Validation errors found in the data',
         errors: ['Missing mandatory fields: locationName, analysisRadius, analysisArea'],
       },
     });
@@ -106,7 +112,12 @@ describe('UploadLocationPreview', () => {
 
     render(<UploadLocationPreview />);
 
-    expect(screen.getByTestId('upload-error-message')).toBeInTheDocument();
+    const lastCallArgs = mockUploadLocationPreviewErrorMessage.mock.calls.at(-1)?.[0];
+    expect(lastCallArgs).toEqual(
+      expect.objectContaining({
+        error: { errors: ['Missing mandatory fields: locationName, analysisRadius, analysisArea'] },
+      })
+    );
 
     expect(screen.getByRole('button', { name: /next/i })).toBeDisabled();
   });
@@ -134,5 +145,23 @@ describe('UploadLocationPreview', () => {
     render(<UploadLocationPreview />);
 
     expect(screen.getByTestId('skeleton')).toBeInTheDocument();
+  });
+
+  it('should pass the empty data file error to <UploadLocationPreviewErrorMessage />', () => {
+    (useFetch as jest.Mock).mockReturnValue({
+      data: { features: [] },
+      isLoading: false,
+      request: jest.fn(),
+      error: null,
+    });
+
+    render(<UploadLocationPreview />);
+
+    const lastCallArgs = mockUploadLocationPreviewErrorMessage.mock.calls.at(-1)?.[0];
+    expect(lastCallArgs).toEqual(
+      expect.objectContaining({
+        error: { errors: ['Empty data file'] },
+      })
+    );
   });
 });

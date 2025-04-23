@@ -673,7 +673,7 @@ export const mapLayers = [
           },
           'css-url':
             'https://github.com/Vizzuality/gfw/blob/develop/app/assets/javascripts/map/cartocss/style.cartocss',
-          url: 'https://tiles.globalforestwatch.org/gfw_integrated_alerts/latest/default/{z}/{x}/{y}.png',
+          url: 'https://tiles.globalforestwatch.org/gfw_integrated_alerts/latest/dynamic/{z}/{x}/{y}.png',
           useCors: true,
           metadata: 'https://www.globalforestwatch.org/api/metadata/gfw_integrated_alerts',
         },

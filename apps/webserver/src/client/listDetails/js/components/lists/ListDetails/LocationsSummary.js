@@ -6,6 +6,7 @@ import IconTimes from '../../../../../common/js/components/icon/IconTimes';
 import { locationsPage } from '../../../../../common/js/config';
 import { numberWithCommas } from '../../../../../locations/js/utils/locationsTableUtils';
 import { getCommodityName } from '../../../../../utils/list-utils';
+import { useTransifexTranslation } from '../../../../../hooks';
 import './LocationsSummary.scss';
 
 const transifex = Transifex.live.translateText;
@@ -47,14 +48,19 @@ function LocationsSummary({
   const countriesStringSummary =
     countriesSelected.length > 3 ? countriesSelected.slice(0, 3).join(', ') : countriesString;
 
-  const showingText = Transifex.live.translateText('Showing');
-  const ofText = Transifex.live.translateText('of');
+  const showingText = useTransifexTranslation('Showing');
+  const ofText = useTransifexTranslation('of');
   const numberOfFilteredLocations =
-    numberOfResults && numberOfResults < selectedList.list_locations_count
-      ? `${showingText} ${numberWithCommas(numberOfResults)} ${ofText}`
-      : '';
-  const totalLocationsText = Transifex.live.translateText('total locations • ');
-
+    numberOfResults && numberOfResults < selectedList.list_locations_count ? (
+      <>
+        <span>{showingText}</span>
+        <span>{` ${numberWithCommas(numberOfResults)} `}</span>
+        <span>{ofText}</span>
+      </>
+    ) : (
+      <></>
+    );
+  const totalLocationsText = useTransifexTranslation('total locations');
   return (
     <header className="locations-summary">
       {shareView && (
@@ -73,9 +79,10 @@ function LocationsSummary({
           }}
         >
           {truncatedCommodityName && <span>{truncatedCommodityName} •</span>}
-          <span>{`${numberOfFilteredLocations} ${numberWithCommas(
-            listLength
-          )} ${totalLocationsText}`}</span>
+          <span>{numberOfFilteredLocations}</span>
+          <span>{` ${numberWithCommas(listLength)} `}</span>
+          <span>{totalLocationsText}</span>
+          <span>{` • `}</span>
 
           {countriesSelected.length <= 3 && countriesStringSummary}
           {countriesSelected.length > 3 && (

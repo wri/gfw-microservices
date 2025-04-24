@@ -298,7 +298,6 @@ export const handleCreateAnalysis = async (
     );
     try {
       if ('GHG' in analysisTypes && analysisTypes['GHG']) {
-        // Check if commodity is valid for GHG Analysis
         await isGHGCommodityValid(listId, organizationDb);
       }
     } catch (error) {

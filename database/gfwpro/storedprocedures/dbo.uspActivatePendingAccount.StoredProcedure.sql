@@ -191,7 +191,7 @@ AS
    SET @TEMPLATE = 'CREATE TABLE [{DATABASENAME}].[dbo].[ListAttributes]
        (
      [list_id] INT NOT NULL,
-     [attribute_name] NVARCHAR(64) NOT NULL,
+     [attribute_name] NVARCHAR(64) COLLATE SQL_Latin1_General_CP1_CI_AS NOT NULL,
      [attribute_type] INT NOT NULL,
      CONSTRAINT [PK_ListAttributes] PRIMARY KEY ([list_id],[attribute_name])
    )'

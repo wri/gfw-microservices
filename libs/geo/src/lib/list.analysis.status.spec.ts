@@ -635,7 +635,7 @@ describe('list.analysis.status.ts', () => {
           getConnection: jest.fn().mockResolvedValue({
             getRepository: jest.fn().mockReturnValue({
               findBy: jest.fn().mockResolvedValue([true]),
-              findOne: jest.fn().mockResolvedValue({listName: 'test'}),
+              findOne: jest.fn().mockResolvedValue({ listName: 'test' }),
               update: jest.fn(),
               save: jest.fn(),
             }),
@@ -735,7 +735,7 @@ describe('list.analysis.status.ts', () => {
           getConnection: jest.fn().mockResolvedValue({
             getRepository: jest.fn().mockReturnValue({
               findBy: jest.fn().mockResolvedValue([true]),
-              findOne: jest.fn().mockResolvedValue({listName: 'test'}),
+              findOne: jest.fn().mockResolvedValue({ listName: 'test' }),
               update: jest.fn(),
               save: jest.fn(),
             }),

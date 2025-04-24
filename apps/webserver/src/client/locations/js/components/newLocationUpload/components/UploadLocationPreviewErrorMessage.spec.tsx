@@ -34,7 +34,6 @@ describe('UploadLocationPreviewErrorMessage', () => {
 
   it('should render invalid coordinates error message', () => {
     const error = {
-      message: 'Error',
       errors: [
         'Invalid latitude or longitude: undefined, undefined',
         'Missing mandatory fields: latitude, longitude',
@@ -56,7 +55,6 @@ describe('UploadLocationPreviewErrorMessage', () => {
 
   it('should render invalid file error message', () => {
     const error = {
-      message: 'Error',
       errors: ['Error while parsing the data'],
     };
 
@@ -73,9 +71,30 @@ describe('UploadLocationPreviewErrorMessage', () => {
     expect(screen.getByText(/your file is invalid. Please try another one./i)).toBeInTheDocument();
   });
 
+  it('should render empty file error message', () => {
+    const error = {
+      errors: ['Empty data file'],
+    };
+
+    render(
+      <UploadLocationPreviewErrorMessage
+        error={error}
+        keyFile="data.csv"
+        onRetryUpload={mockRetryUpload}
+        onRetryPreviewData={mockRetryPreviewData}
+      />
+    );
+
+    expect(screen.getByText(/empty data file/i)).toBeInTheDocument();
+    expect(
+      screen.getByText(
+        /Your data file is empty. Please ensure your data file contains at least one location before re-uploading./i
+      )
+    ).toBeInTheDocument();
+  });
+
   it('should render platform error message for unknown errors', () => {
     const error = {
-      message: 'Error',
       errors: ['Random error'],
     };
 
@@ -93,7 +112,6 @@ describe('UploadLocationPreviewErrorMessage', () => {
 
   it('should trigger onRetryUpload when retry upload is clicked', async () => {
     const error = {
-      message: 'Error',
       errors: ['Error while parsing the data'],
     };
 
@@ -113,7 +131,7 @@ describe('UploadLocationPreviewErrorMessage', () => {
   it('should trigger onRetryPreviewData when try again button is clicked', async () => {
     render(
       <UploadLocationPreviewErrorMessage
-        error={{ message: '', errors: [] }}
+        error={{ errors: [] }}
         onRetryUpload={mockRetryUpload}
         onRetryPreviewData={mockRetryPreviewData}
       />

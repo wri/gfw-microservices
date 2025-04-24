@@ -1,7 +1,7 @@
 import React from 'react';
 import ColumnsHeader from '../../components/columns/ColumnsHeader';
 import {
-  renderPercentajeValueWithIndicator,
+  renderPercentageValueWithIndicator,
   renderFormattedDeforestationValueWithIndicator,
   formatDigit,
 } from '../../../../locations/js/utils/locationsTableUtils';
@@ -35,7 +35,7 @@ const post_2020_risk = [
     accessor: 'naturalForestLossPercent',
 
     Cell: ({ original }) => (
-      <span>{renderPercentajeValueWithIndicator(original?.naturalForestLossPercent)}</span>
+      <span>{renderPercentageValueWithIndicator(original?.naturalForestLossPercent)}</span>
     ),
   },
 
@@ -50,7 +50,7 @@ const post_2020_risk = [
     accessor: 'jrcNaturalForestLossPercent',
 
     Cell: ({ original }) => (
-      <span>{renderPercentajeValueWithIndicator(original?.jrcNaturalForestLossPercent)}</span>
+      <span>{renderPercentageValueWithIndicator(original?.jrcNaturalForestLossPercent)}</span>
     ),
   },
 
@@ -98,7 +98,7 @@ const post_2020_risk = [
     className: 'default-cell td-num',
     accessor: 'landmarkPercent',
     Cell: ({ original }) => (
-      <span>{renderPercentajeValueWithIndicator(original?.landmarkPercent)}</span>
+      <span>{renderPercentageValueWithIndicator(original?.landmarkPercent)}</span>
     ),
   },
 
@@ -127,7 +127,7 @@ const post_2020_risk = [
     className: 'default-cell td-num',
     accessor: 'protectedAreasPercent',
     Cell: ({ original }) => (
-      <span>{renderPercentajeValueWithIndicator(original?.protectedAreasPercent)}</span>
+      <span>{renderPercentageValueWithIndicator(original?.protectedAreasPercent)}</span>
     ),
   },
   {
@@ -160,7 +160,6 @@ const post_2020_risk = [
     Header: () => <ColumnsHeader label="Sub State" />,
     accessor: 'subState',
     className: 'default-cell td-num',
-
     Cell: ({ original }) => <span>{original?.subState}</span>,
   },
 

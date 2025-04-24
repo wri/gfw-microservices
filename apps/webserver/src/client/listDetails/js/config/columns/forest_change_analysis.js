@@ -8,7 +8,7 @@ import {
   getValue,
   getValidatedValue,
   sortByStatus,
-  normalizeColunmData,
+  normalizeColumnData,
   locationIsActive,
   calculateAndFormatTotalDeforestation,
 } from '../../../../locations/js/utils/locationsTableUtils';
@@ -90,8 +90,8 @@ const forest_change_analysis = [
           const sortStatus = sortByStatus(a, b);
           if (sortStatus == 2) {
             return (
-              normalizeColunmData(a.tree_cover_loss_total_yearly) -
-              normalizeColunmData(b.tree_cover_loss_total_yearly)
+              normalizeColumnData(a.tree_cover_loss_total_yearly) -
+              normalizeColumnData(b.tree_cover_loss_total_yearly)
             );
           }
 
@@ -135,8 +135,8 @@ const forest_change_analysis = [
           const sortStatus = sortByStatus(a, b);
           if (sortStatus == 2) {
             return (
-              normalizeColunmData(a.tree_cover_loss_primary_forest_yearly) -
-              normalizeColunmData(b.tree_cover_loss_primary_forest_yearly)
+              normalizeColumnData(a.tree_cover_loss_primary_forest_yearly) -
+              normalizeColumnData(b.tree_cover_loss_primary_forest_yearly)
             );
           }
 

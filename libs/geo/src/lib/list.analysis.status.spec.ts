@@ -5,7 +5,6 @@ import {
   getAnalysisTypesFromIds,
   getListAnalysisStatusByListId,
   handleCreateAnalysis,
-  isGHGCommodityValid,
   resolveListAnalysisStatuses,
   setSelectedAnalyses,
   updateListAnalysis,
@@ -43,9 +42,10 @@ jest.mock('@nestjs/common', () => ({
 jest.mock('@wri-monorepos/sql', () => ({
   SQLUtils: {
     queryDB: jest.fn(),
+    queryDBFirstRow: jest.fn().mockResolvedValue(true),
   },
   ClientStoreConnection: jest.fn(),
-  updateListsAnalysisStatus: jest.fn(),
+  updateListsAnalysisStatus: jest.fn().mockResolvedValue(true),
 }));
 
 jest.mock('@wri-monorepos/aws', () => ({
@@ -604,11 +604,10 @@ describe('list.analysis.status.ts', () => {
       jest.clearAllMocks();
     });
 
-    it('should call handleCreateAnalysis with the correct parameters', async () => {
+    it('should create analysis correctly', async () => {
       const fakeClientDatabase = 'mockClientDB';
       const fakeListId = 123;
       const fakeAnalysisIds = 'GHG,FCD';
-      const fakeAnalysisStatus = listStatus.Pending;
 
       (checkProcessingLimits as jest.Mock).mockResolvedValue({
         isListLocationOverLimit: false,
@@ -655,7 +654,108 @@ describe('list.analysis.status.ts', () => {
         99,
         false
       );
-     expect(result).toEqual('Ok')
+      expect(result).toEqual('Ok');
+    });
+
+    it('should not create analysis when has only GHG analysis and isGHGCommodityValid check fails', async () => {
+      const fakeClientDatabase = 'mockClientDB';
+      const fakeListId = 123;
+      const fakeAnalysisIds = 'GHG,FCD';
+
+      (checkProcessingLimits as jest.Mock).mockResolvedValue({
+        isListLocationOverLimit: false,
+        processingLimit: 1000,
+      });
+
+      (getListAnalysisStatus as jest.Mock).mockResolvedValue([
+        {
+          listId: 1,
+          analysisId: 'GHG',
+          status: 5,
+          options: '',
+        },
+      ]);
+      (ClientStoreConnection as unknown as jest.Mock).mockImplementation(() => {
+        return {
+          getConnection: jest.fn().mockResolvedValue({
+            getRepository: jest.fn().mockReturnValue({
+              findBy: jest.fn().mockResolvedValue([true]),
+              update: jest.fn(),
+              save: jest.fn(),
+            }),
+          }),
+        };
+      });
+
+      jest
+        .spyOn(LAS, 'isGHGCommodityValid')
+        .mockRejectedValue(new Error('GHG commodity not valid'));
+
+      await expect(
+        handleCreateAnalysis(
+          fakeAnalysisIds,
+          fakeListId,
+          123,
+          fakeClientDatabase,
+          false,
+          234,
+          99,
+          false
+        )
+      ).rejects.toBeInstanceOf(Error);
+    });
+    it('should not create analysis when has only GHG analysis and isGHGCommodityValid check fails', async () => {
+      const fakeClientDatabase = 'mockClientDB';
+      const fakeListId = 123;
+      const fakeAnalysisIds = 'GHG,FCD';
+
+      (checkProcessingLimits as jest.Mock).mockResolvedValue({
+        isListLocationOverLimit: false,
+        processingLimit: 1000,
+      });
+
+      (getListAnalysisStatus as jest.Mock).mockResolvedValue([
+        {
+          listId: 1,
+          analysisId: 'GHG',
+          status: 5,
+          options: '',
+        },
+        {
+          listId: 1,
+          analysisId: 'FCD',
+          status: 5,
+          options: '',
+        },
+      ]);
+      (ClientStoreConnection as unknown as jest.Mock).mockImplementation(() => {
+        return {
+          getConnection: jest.fn().mockResolvedValue({
+            getRepository: jest.fn().mockReturnValue({
+              findBy: jest.fn().mockResolvedValue([true]),
+              update: jest.fn(),
+              save: jest.fn(),
+            }),
+          }),
+        };
+      });
+
+      jest
+        .spyOn(LAS, 'isGHGCommodityValid')
+        .mockRejectedValue(new Error('GHG commodity not valid'));
+
+      (axios.post as jest.Mock).mockResolvedValue({ statusText: 'Ok' });
+      const result = await handleCreateAnalysis(
+        fakeAnalysisIds,
+        fakeListId,
+        123,
+        fakeClientDatabase,
+        false,
+        234,
+        99,
+        false
+      );
+      expect(result).toEqual('Ok');
     });
   });
 });

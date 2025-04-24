@@ -28,6 +28,7 @@ jest.mock('axios', () => ({
 
 jest.mock('../utils/list.utils', () => ({
   getListAnalysisStatus: jest.fn(),
+  setListAnalysisStatus: jest.fn(),
 }));
 
 jest.mock('@nestjs/common', () => ({

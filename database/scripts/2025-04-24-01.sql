@@ -35,26 +35,10 @@ BEGIN
     RETURN;
 END
 
-/*-----------------------------------------------------
-  2. Abort if data has case-insensitive already
------------------------------------------------------*/
-IF EXISTS (
-    SELECT list_id,
-           LOWER(attribute_name) AS dup_name,
-           COUNT(*)             AS cnt
-    FROM   dbo.ListAttributes
-    GROUP  BY list_id, LOWER(attribute_name)
-    HAVING COUNT(*) > 1
-)
-BEGIN
-    RAISERROR('Aborted: already exist that differ only by case. Resolve them first.',16,1);
-    RETURN;
-END
-
 BEGIN TRANSACTION;
 
 /*-----------------------------------------------------
-  4. Drop the primary key
+  2. Drop the primary key
 -----------------------------------------------------*/
 SELECT @pkName = kc.name
 FROM   sys.key_constraints AS kc
@@ -69,7 +53,7 @@ BEGIN
 END
 
 /*-----------------------------------------------------
-  5. Alter the column collation
+  3. Alter the column collation
 -----------------------------------------------------*/
 SET @sql = N'ALTER TABLE ' + QUOTENAME(@schema) + N'.' + QUOTENAME(@table)
          + N' ALTER COLUMN ' + QUOTENAME(@column)
@@ -77,7 +61,7 @@ SET @sql = N'ALTER TABLE ' + QUOTENAME(@schema) + N'.' + QUOTENAME(@table)
 EXEC (@sql);
 
 /*-----------------------------------------------------
-  6. Re-create the primary key
+  4. Re-create the primary key
 -----------------------------------------------------*/
 IF @pkName IS NOT NULL
 BEGIN

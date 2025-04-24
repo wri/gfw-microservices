@@ -54,65 +54,6 @@ END
 BEGIN TRANSACTION;
 
 /*-----------------------------------------------------
-  3. Capture foreign keys that reference the column
------------------------------------------------------*/
-IF OBJECT_ID('tempdb..#FK') IS NOT NULL DROP TABLE #FK;
-CREATE TABLE #FK
-(
-    id         int IDENTITY(1,1) PRIMARY KEY,
-    drop_sql   nvarchar(max) NOT NULL,
-    create_sql nvarchar(max) NOT NULL
-);
-
-INSERT #FK (drop_sql, create_sql)
-SELECT
-    N'ALTER TABLE ' + QUOTENAME(SCHEMA_NAME(pt.schema_id))
-                   + N'.' + QUOTENAME(pt.name)
-                   + N' DROP CONSTRAINT ' + QUOTENAME(fk.name) + N';',
-
-    N'ALTER TABLE ' + QUOTENAME(SCHEMA_NAME(pt.schema_id))
-                   + N'.' + QUOTENAME(pt.name)
-                   + N' ADD CONSTRAINT ' + QUOTENAME(fk.name)
-                   + N' FOREIGN KEY ('
-                   + STUFF((
-                       SELECT N', ' + QUOTENAME(pc.name)
-                       FROM   sys.foreign_key_columns AS fkc2
-                       JOIN   sys.columns AS pc
-                              ON pc.object_id = fkc2.parent_object_id
-                             AND pc.column_id = fkc2.parent_column_id
-                       WHERE  fkc2.constraint_object_id = fk.object_id
-                       ORDER  BY fkc2.constraint_column_id
-                       FOR XML PATH(''), TYPE).value('.','nvarchar(max)')
-                     ,1,2,N'')
-                   + N') REFERENCES '
-                   + QUOTENAME(@schema) + N'.' + QUOTENAME(@table) + N' ('
-                   + STUFF((
-                       SELECT N', ' + QUOTENAME(rc.name)
-                       FROM   sys.foreign_key_columns AS fkc2
-                       JOIN   sys.columns AS rc
-                              ON rc.object_id = fkc2.referenced_object_id
-                             AND rc.column_id = fkc2.referenced_column_id
-                       WHERE  fkc2.constraint_object_id = fk.object_id
-                       ORDER  BY fkc2.constraint_column_id
-                       FOR XML PATH(''), TYPE).value('.','nvarchar(max)')
-                     ,1,2,N'')
-                   + N') ON DELETE ' + fk.delete_referential_action_desc
-                   + N' ON UPDATE ' + fk.update_referential_action_desc + N';'
-FROM   sys.foreign_keys AS fk
-JOIN   sys.tables       AS pt ON pt.object_id = fk.parent_object_id
-WHERE  fk.referenced_object_id = OBJECT_ID(QUOTENAME(@schema) + N'.' + QUOTENAME(@table));
-
-/*-- Drop the referencing FKs --*/
-DECLARE @i int = 1, @cnt int, @drop_sql nvarchar(max);
-SELECT @cnt = COUNT(*) FROM #FK;
-WHILE @i <= @cnt
-BEGIN
-    SELECT @drop_sql = drop_sql FROM #FK WHERE id = @i;
-    EXEC (@drop_sql);
-    SET @i += 1;
-END
-
-/*-----------------------------------------------------
   4. Drop the primary key
 -----------------------------------------------------*/
 SELECT @pkName = kc.name
@@ -144,19 +85,6 @@ BEGIN
              + N' ADD CONSTRAINT ' + QUOTENAME(@pkName)
              + N' PRIMARY KEY CLUSTERED (list_id, ' + QUOTENAME(@column) + N');';
     EXEC (@sql);
-END
-
-/*-----------------------------------------------------
-  7. Re-create the foreign keys
------------------------------------------------------*/
-SET @i = 1;
-DECLARE @create_sql nvarchar(max);
-SELECT @cnt = COUNT(*) FROM #FK;
-WHILE @i <= @cnt
-BEGIN
-    SELECT @create_sql = create_sql FROM #FK WHERE id = @i;
-    EXEC (@create_sql);
-    SET @i += 1;
 END
 
 COMMIT TRANSACTION;

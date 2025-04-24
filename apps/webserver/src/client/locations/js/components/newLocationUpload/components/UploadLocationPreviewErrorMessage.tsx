@@ -12,7 +12,7 @@ export function UploadLocationPreviewErrorMessage({
   onRetryPreviewData,
   onRetryUpload,
 }: {
-  error: { message: string; errors: string[] };
+  error: { errors: string[] };
   keyFile?: string;
   onRetryUpload: () => void;
   onRetryPreviewData: () => void;
@@ -102,6 +102,13 @@ const errorMessageBuilder = ({
     return {
       title: 'Invalid file',
       body: 'Your file is invalid. Please try another one.',
+    };
+  }
+
+  if (firstError === 'Empty data file') {
+    return {
+      title: 'Empty data file',
+      body: 'Your data file is empty. Please ensure your data file contains at least one location before re-uploading.',
     };
   }
 

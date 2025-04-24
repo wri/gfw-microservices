@@ -4,15 +4,32 @@ import {
   getAllListsAnalysisStatus,
   getAnalysisTypesFromIds,
   getListAnalysisStatusByListId,
+  handleCreateAnalysis,
   resolveListAnalysisStatuses,
   setSelectedAnalyses,
   updateListAnalysis,
 } from './list.analysis.status';
 import * as LAS from './list.analysis.status';
-import { ListsAnalysisStatus, SQLUtils } from '@wri-monorepos/sql';
-import { readAnalysesLastModifiedTime } from '@wri-monorepos/shared';
+import {
+  ClientStoreConnection,
+  ListsAnalysisStatus,
+  SQLUtils,
+  updateListsAnalysisStatus,
+} from '@wri-monorepos/sql';
+import { checkProcessingLimits, readAnalysesLastModifiedTime } from '@wri-monorepos/shared';
 import { analysisTypesOptionsNewNames, listStatus } from '@wri-monorepos/constants';
 import * as sql from 'mssql';
+import { getListAnalysisStatus } from '../utils/list.utils';
+import axios from 'axios';
+
+jest.mock('axios', () => ({
+  post: jest.fn(),
+}));
+
+jest.mock('../utils/list.utils', () => ({
+  getListAnalysisStatus: jest.fn(),
+  setListAnalysisStatus: jest.fn(),
+}));
 
 jest.mock('@nestjs/common', () => ({
   ...jest.requireActual('@nestjs/common'),
@@ -26,7 +43,10 @@ jest.mock('@nestjs/common', () => ({
 jest.mock('@wri-monorepos/sql', () => ({
   SQLUtils: {
     queryDB: jest.fn(),
+    queryDBFirstRow: jest.fn().mockResolvedValue(true),
   },
+  ClientStoreConnection: jest.fn(),
+  updateListsAnalysisStatus: jest.fn().mockResolvedValue(true),
 }));
 
 jest.mock('@wri-monorepos/aws', () => ({
@@ -35,6 +55,7 @@ jest.mock('@wri-monorepos/aws', () => ({
 
 jest.mock('@wri-monorepos/shared', () => ({
   readAnalysesLastModifiedTime: jest.fn(),
+  checkProcessingLimits: jest.fn(),
 }));
 
 const mockAnalysisStatusData = [
@@ -577,6 +598,165 @@ describe('list.analysis.status.ts', () => {
           listAnalysisStatuses: input,
         })
       );
+    });
+  });
+  describe('handleCreateAnalysis', () => {
+    beforeEach(() => {
+      jest.clearAllMocks();
+    });
+
+    it('should create analysis correctly', async () => {
+      const fakeClientDatabase = 'mockClientDB';
+      const fakeListId = 123;
+      const fakeAnalysisIds = 'GHG,FCD';
+
+      (checkProcessingLimits as jest.Mock).mockResolvedValue({
+        isListLocationOverLimit: false,
+        processingLimit: 1000,
+      });
+
+      (getListAnalysisStatus as jest.Mock).mockResolvedValue([
+        {
+          listId: 1,
+          analysisId: 'FCD',
+          status: 5,
+          options: 'PalmRisk',
+        },
+        {
+          listId: 1,
+          analysisId: 'GHG',
+          status: 5,
+          options: '',
+        },
+      ]);
+      (updateListsAnalysisStatus as jest.Mock).mockResolvedValue(true);
+      (ClientStoreConnection as unknown as jest.Mock).mockImplementation(() => {
+        return {
+          getConnection: jest.fn().mockResolvedValue({
+            getRepository: jest.fn().mockReturnValue({
+              findBy: jest.fn().mockResolvedValue([true]),
+              update: jest.fn(),
+              save: jest.fn(),
+            }),
+          }),
+        };
+      });
+
+      jest.spyOn(LAS, 'isGHGCommodityValid').mockResolvedValueOnce(true);
+
+      (axios.post as jest.Mock).mockResolvedValue({ statusText: 'Ok' });
+      const result = await handleCreateAnalysis(
+        fakeAnalysisIds,
+        fakeListId,
+        123,
+        fakeClientDatabase,
+        false,
+        234,
+        99,
+        false
+      );
+      expect(result).toEqual('Ok');
+    });
+
+    it('should not create analysis when has only GHG analysis and isGHGCommodityValid check fails', async () => {
+      const fakeClientDatabase = 'mockClientDB';
+      const fakeListId = 123;
+      const fakeAnalysisIds = 'GHG,FCD';
+
+      (checkProcessingLimits as jest.Mock).mockResolvedValue({
+        isListLocationOverLimit: false,
+        processingLimit: 1000,
+      });
+
+      (getListAnalysisStatus as jest.Mock).mockResolvedValue([
+        {
+          listId: 1,
+          analysisId: 'GHG',
+          status: 5,
+          options: '',
+        },
+      ]);
+      (ClientStoreConnection as unknown as jest.Mock).mockImplementation(() => {
+        return {
+          getConnection: jest.fn().mockResolvedValue({
+            getRepository: jest.fn().mockReturnValue({
+              findBy: jest.fn().mockResolvedValue([true]),
+              update: jest.fn(),
+              save: jest.fn(),
+            }),
+          }),
+        };
+      });
+
+      jest
+        .spyOn(LAS, 'isGHGCommodityValid')
+        .mockRejectedValue(new Error('GHG commodity not valid'));
+
+      await expect(
+        handleCreateAnalysis(
+          fakeAnalysisIds,
+          fakeListId,
+          123,
+          fakeClientDatabase,
+          false,
+          234,
+          99,
+          false
+        )
+      ).rejects.toBeInstanceOf(Error);
+    });
+    it('should not create analysis when has only GHG analysis and isGHGCommodityValid check fails', async () => {
+      const fakeClientDatabase = 'mockClientDB';
+      const fakeListId = 123;
+      const fakeAnalysisIds = 'GHG,FCD';
+
+      (checkProcessingLimits as jest.Mock).mockResolvedValue({
+        isListLocationOverLimit: false,
+        processingLimit: 1000,
+      });
+
+      (getListAnalysisStatus as jest.Mock).mockResolvedValue([
+        {
+          listId: 1,
+          analysisId: 'GHG',
+          status: 5,
+          options: '',
+        },
+        {
+          listId: 1,
+          analysisId: 'FCD',
+          status: 5,
+          options: '',
+        },
+      ]);
+      (ClientStoreConnection as unknown as jest.Mock).mockImplementation(() => {
+        return {
+          getConnection: jest.fn().mockResolvedValue({
+            getRepository: jest.fn().mockReturnValue({
+              findBy: jest.fn().mockResolvedValue([true]),
+              update: jest.fn(),
+              save: jest.fn(),
+            }),
+          }),
+        };
+      });
+
+      jest
+        .spyOn(LAS, 'isGHGCommodityValid')
+        .mockRejectedValue(new Error('GHG commodity not valid'));
+
+      (axios.post as jest.Mock).mockResolvedValue({ statusText: 'Ok' });
+      const result = await handleCreateAnalysis(
+        fakeAnalysisIds,
+        fakeListId,
+        123,
+        fakeClientDatabase,
+        false,
+        234,
+        99,
+        false
+      );
+      expect(result).toEqual('Ok');
     });
   });
 });

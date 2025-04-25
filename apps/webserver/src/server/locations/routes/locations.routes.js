@@ -1351,6 +1351,10 @@ module.exports = (app, limiter) => {
       const response = await axios.post(`${LISTS_MICROSERVICE_URL}/process-list`, payload);
       logger.info('ProcessList LP response.data', response.data);
 
+      if (saveAsDraft) {
+        return res.send({});
+      }
+
       const emailResponse = await AWSSES.sendEmail__ListSubmittedForAnalysis(
         req,
         listName,

@@ -62,7 +62,7 @@ export class GADMService extends AbstractHandler<ChainType> {
       type: 'Point',
       coordinates: [longitude, latitude],
     };
-    const sql = "SELECT gid_2, name_0, name_1, name_2 FROM mytable WHERE adm_level='2'";
+    const sql = "SELECT gid_1, gid_2, name_0, name_1, name_2 FROM mytable WHERE adm_level='2'";
     try {
       const response = await fetch(
         'https://data-api.globalforestwatch.org/dataset/gadm_administrative_boundaries/v4.1.64/query/json',
@@ -93,13 +93,15 @@ export class GADMService extends AbstractHandler<ChainType> {
     try {
       const response = await this.getGadmData(feature);
 
-      if (response.length && response[0].gid_2) {
+      if (response.length) {
+        // some locations (e.g. Libya) don't have gid_2, so use gid_1 instead
+        const fullGid = response[0].gid_2 || response[0].gid_1 || '';
         feature.properties = {
           ...feature.properties,
-          subState: response[0].name_2,
+          subState: response[0].name_2 || '',
           state: response[0].name_1,
           country: response[0].name_0,
-          gadmid: response[0].gid_2.split('_')[0],
+          gadmid: fullGid.split('_')[0],
         };
       }
     } catch (e) {

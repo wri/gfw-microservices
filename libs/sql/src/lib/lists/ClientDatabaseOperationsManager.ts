@@ -12,7 +12,7 @@ import { UspResetListStatus } from './uspResetListStatus';
 import { UspDeleteList } from './uspDeleteList';
 import { InternalServerErrorException, Logger, NotFoundException } from '@nestjs/common';
 import { UspDeleteLocationIdsFilteredDataForUserList } from './uspDeleteLocationIdsFilteredDataForUserList';
-import { ActivityLog, LargeLists, Lists } from '../entity';
+import { ActivityLog, GHGAnalyses, LargeLists, Lists } from '../entity';
 const logger = new Logger('ClientDatabaseOperationsManager');
 
 const DEFAULT_ROWS_REQUESTED = 200000;
@@ -409,6 +409,23 @@ export class DeleteListTypeOrm {
           this.logger.error('DeleteList failure AFIAnalysis', error);
           throw new InternalServerErrorException({
             message: `Failed to delete AFIAnalysis ${list_id}`,
+            code: 603,
+          });
+        }
+        // Delete GHGAnalyses
+        try {
+          const GHGAnalysesRepository = connection.getRepository(GHGAnalyses);
+          const ghgAnalysesFound = await GHGAnalysesRepository.findOne({
+            where: { listId: list_id },
+          });
+          if (ghgAnalysesFound) {
+            await GHGAnalysesRepository.delete({ listId: list_id });
+            this.logger.log(`GHGAnalyses row with listId ${list_id} was deleted`);
+          }
+        } catch (error) {
+          this.logger.error('DeleteList failure GHGAnalysis', error);
+          throw new InternalServerErrorException({
+            message: `Failed to delete GHGAnalysis ${list_id}`,
             code: 603,
           });
         }

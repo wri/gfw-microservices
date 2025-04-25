@@ -6,42 +6,54 @@
  * @pageNumber AS INT
  */
 export const getPaginatedAfiAnalysisListLevel = `
-DECLARE @listName  NVARCHAR(150)
-DECLARE @SQL NVARCHAR(MAX)
+DECLARE @listName  NVARCHAR(150);
+DECLARE @SQL NVARCHAR(MAX);
+DECLARE @tableName NVARCHAR(100);
 
-SELECT  @listName=list_Name   FROM [Lists] WHERE id = @listId
+SELECT @listName = list_Name FROM [Lists] WHERE id = @listId;
 
-SET @SQL = ' SELECT afi.list_id as listId, '+
-    ' @listName as listName, ' +
-    ' afi.location_id as locationId, '+
-    ' afi.gadm_id AS gadmId, '+
-    ' afi.natural_land_area AS coverageHA, '+
-    ' afi.natural_land_deforested_area AS naturalForestLossHA, '+
-    ' afi.total_area_ha AS totalAreaHa, '+
-    ' afi.status_code as statusCode, '+
-    ' afi.location_error as locationError, '+
-    ' afi.negligible_risk AS negligibleRisk,  '+
-    ' afi.jrc_land_area AS jrcLandAreaHA ,'+
-    ' afi.jrc_land_deforested_area AS jrcLandDeforestedAreaHA ,'+
-    ' afi.jrc_forest_loss_by_year AS jrcForestLossByYear ,'+
-    ' afi.natural_forest_loss_by_year AS naturalForestLossByYear ,'+
-    ' afi.protected_areas_area AS protectedAreasArea ,'+
-    ' afi.landmark_area AS landmarkArea ,' +
-    ' AA.[Country] as country,  '+
-    ' AA.[State] as state,  '+
-    ' AA.[Sub State] as subState  '+
-    ' FROM [AFIAnalysis] afi  '+
-    ' LEFT JOIN gfwpro.dbo.[list-administrativeAreas36] AA ON AA.gadmid = afi.gadm_id  '+
-    ' WHERE afi.list_id = @listId ';
+IF EXISTS (
+    SELECT TOP 1 1 FROM [AFIAnalysis]
+    WHERE list_id = @listId AND gadm_id LIKE '4%'
+)
+    SET @tableName = 'gfwpro.dbo.[list-administrativeAreas41]';
+ELSE
+    SET @tableName = 'gfwpro.dbo.[list-administrativeAreas36]';
 
-SET @SQL = @SQL + ' AND  afi.location_id < 0  AND afi.gadm_id IS NOT NULL';
+SET @SQL = '
+SELECT
+    afi.list_id as listId,
+    @listName as listName,
+    afi.location_id as locationId,
+    afi.gadm_id AS gadmId,
+    afi.natural_land_area AS coverageHA,
+    afi.natural_land_deforested_area AS naturalForestLossHA,
+    afi.total_area_ha AS totalAreaHa,
+    afi.status_code as statusCode,
+    afi.location_error as locationError,
+    afi.negligible_risk AS negligibleRisk,
+    afi.jrc_land_area AS jrcLandAreaHA,
+    afi.jrc_land_deforested_area AS jrcLandDeforestedAreaHA,
+    afi.jrc_forest_loss_by_year AS jrcForestLossByYear,
+    afi.natural_forest_loss_by_year AS naturalForestLossByYear,
+    afi.protected_areas_area AS protectedAreasArea,
+    afi.landmark_area AS landmarkArea,
+    AA.[Country] as country,
+    AA.[State] as state,
+    AA.[Sub State] as subState
+FROM [AFIAnalysis] afi
+LEFT JOIN ' + @tableName + ' AA ON AA.gadmid = afi.gadm_id
+WHERE afi.list_id = @listId
+  AND afi.location_id < 0
+  AND afi.gadm_id IS NOT NULL
+ORDER BY afi.negligible_risk ASC, afi.natural_land_deforested_area DESC
+OFFSET (@pageNumber)*@rowsOfPage ROWS FETCH NEXT @rowsOfPage ROWS ONLY;
+';
 
-SET @SQL = @SQL + ' ORDER BY afi.negligible_risk ASC, afi.natural_land_deforested_area DESC OFFSET (@pageNumber)*@rowsOfPage ROWS FETCH NEXT @rowsOfPage ROWS ONLY';
-
-PRINT @SQL
 EXEC sp_executesql @SQL,
-    N'@listId INT, @rowsOfPage INT, @pageNumber INT, @listName VARCHAR(150)',
-    @listId=@listId,@rowsOfPage=@rowsOfPage, @pageNumber=@pageNumber,  @listName=@listName;
+    N'@listId INT, @rowsOfPage INT, @pageNumber INT, @listName NVARCHAR(150)',
+    @listId=@listId, @rowsOfPage=@rowsOfPage, @pageNumber=@pageNumber, @listName=@listName;
+
 `;
 
 /**

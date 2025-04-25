@@ -412,7 +412,7 @@ export class DeleteListTypeOrm {
             code: 603,
           });
         }
-        // Delete GHGAnalysis
+        // Delete GHGAnalyses
         try {
           const GHGAnalysesRepository = connection.getRepository(GHGAnalyses);
           const ghgAnalysesFound = await GHGAnalysesRepository.findOne({

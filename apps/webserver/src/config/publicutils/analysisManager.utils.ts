@@ -483,6 +483,8 @@ export async function getDraftListLocationData(list_id, page, pageSize, clientDa
     hasError,
   } = filters;
 
+  const listJsonAttributes = await getListJsonAttributesColumnsSqlParam(clientDatabase, list_id);
+
   const parameters = [
     { field: 'listId', type: sql.Int, value: list_id },
     { field: 'rowsOfPage', type: sql.Int, value: pageSize },
@@ -525,6 +527,11 @@ export async function getDraftListLocationData(list_id, page, pageSize, clientDa
       field: 'hasError',
       type: sql.Bit(),
       value: hasError ? hasError : null,
+    },
+    {
+      field: 'jsonAttributeColumns',
+      type: sql.NVarChar(sql.MAX),
+      value: listJsonAttributes,
     },
   ];
 

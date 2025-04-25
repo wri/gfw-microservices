@@ -8,6 +8,7 @@
 export const getPaginatedLocationsByListIdSortedByFilters = `
 DECLARE @list_table NVARCHAR(150)
 DECLARE @listName  NVARCHAR(150)
+DECLARE @listVersion INT;
 DECLARE @SQL NVARCHAR(MAX)
 DECLARE @Filters NVARCHAR(MAX) = ''
 DECLARE @AnalysisFilters NVARCHAR(MAX) = '1=1'
@@ -17,10 +18,12 @@ DECLARE @listLocationTableName NVARCHAR(1000)
 
 DECLARE @ltColumns NVARCHAR(MAX) = '[Location Name], Country, State, [Sub State]';
 
-
-SELECT @list_table = list_table_name, @listName=list_Name FROM [Lists] WHERE id = @listId
-
-
+SELECT
+    @list_table = [list_table_name],
+    @listName   = [list_Name],
+    @listVersion= [version]
+FROM [Lists]
+WHERE id = @listId;
 
 DECLARE @locationColumns NVARCHAR(MAX) = '';
 
@@ -78,6 +81,14 @@ SET @LocationNameColumn = CASE
     THEN 'lt.[Investment Name] as locationName, '
     ELSE ''
 END;
+
+IF @listVersion >= 2
+    BEGIN
+            IF @jsonAttributeColumns IS NOT NULL AND @jsonAttributeColumns <> ''
+            BEGIN
+                SET @locationColumns = @locationColumns + @jsonAttributeColumns + ', ';
+            END
+    END
 
 SET @SQL = 'SELECT ' +
             ' @listId as listId,' +

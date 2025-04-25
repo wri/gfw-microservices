@@ -6,54 +6,51 @@
  * @pageNumber AS INT
  */
 export const getPaginatedAfiAnalysisListLevel = `
-DECLARE @listName  NVARCHAR(150);
-DECLARE @SQL NVARCHAR(MAX);
-DECLARE @tableName NVARCHAR(100);
+DECLARE @listName NVARCHAR(150);
 
 SELECT @listName = list_Name FROM [Lists] WHERE id = @listId;
 
-IF EXISTS (
-    SELECT TOP 1 1 FROM [AFIAnalysis]
-    WHERE list_id = @listId AND gadm_id LIKE '4%'
-)
-    SET @tableName = 'gfwpro.dbo.[list-administrativeAreas41]';
-ELSE
-    SET @tableName = 'gfwpro.dbo.[list-administrativeAreas36]';
-
-SET @SQL = '
 SELECT
     afi.list_id as listId,
     @listName as listName,
     afi.location_id as locationId,
     afi.gadm_id AS gadmId,
-    afi.natural_land_area AS coverageHA,
-    afi.natural_land_deforested_area AS naturalForestLossHA,
-    afi.total_area_ha AS totalAreaHa,
+    CASE WHEN afi.gadm_id LIKE '4%' THEN CAST(1 AS BIT) ELSE CAST(0 AS BIT) END AS usesGadm4,
+    ISNULL(afi.natural_land_area, 0) AS coverageHA,
+    ISNULL(afi.natural_land_deforested_area, 0) AS naturalForestLossHA,
+    ISNULL(afi.total_area_ha, 0) AS totalAreaHa,
     afi.status_code as statusCode,
     afi.location_error as locationError,
     afi.negligible_risk AS negligibleRisk,
-    afi.jrc_land_area AS jrcLandAreaHA,
-    afi.jrc_land_deforested_area AS jrcLandDeforestedAreaHA,
+    ISNULL(afi.jrc_land_area, 0) AS jrcLandAreaHA,
+    ISNULL(afi.jrc_land_deforested_area, 0) AS jrcLandDeforestedAreaHA,
     afi.jrc_forest_loss_by_year AS jrcForestLossByYear,
     afi.natural_forest_loss_by_year AS naturalForestLossByYear,
-    afi.protected_areas_area AS protectedAreasArea,
-    afi.landmark_area AS landmarkArea,
+    ISNULL(afi.protected_areas_area, 0) AS protectedAreasArea,
+    ISNULL(afi.landmark_area, 0) AS landmarkArea,
     AA.[Country] as country,
     AA.[State] as state,
     AA.[Sub State] as subState
 FROM [AFIAnalysis] afi
-LEFT JOIN ' + @tableName + ' AA ON AA.gadmid = afi.gadm_id
+OUTER APPLY (
+    SELECT TOP 1 gadmid, [Country], [State], [Sub State]
+    FROM (
+        SELECT gadmid, [Country], [State], [Sub State]
+        FROM gfwpro.dbo.[list-administrativeAreas41]
+        WHERE gadmid = afi.gadm_id AND afi.gadm_id LIKE '4%'
+
+        UNION ALL
+
+        SELECT gadmid, [Country], [State], [Sub State]
+        FROM gfwpro.dbo.[list-administrativeAreas36]
+        WHERE gadmid = afi.gadm_id AND afi.gadm_id NOT LIKE '4%'
+    ) AS Combined
+) AS AA
 WHERE afi.list_id = @listId
   AND afi.location_id < 0
   AND afi.gadm_id IS NOT NULL
 ORDER BY afi.negligible_risk ASC, afi.natural_land_deforested_area DESC
 OFFSET (@pageNumber)*@rowsOfPage ROWS FETCH NEXT @rowsOfPage ROWS ONLY;
-';
-
-EXEC sp_executesql @SQL,
-    N'@listId INT, @rowsOfPage INT, @pageNumber INT, @listName NVARCHAR(150)',
-    @listId=@listId, @rowsOfPage=@rowsOfPage, @pageNumber=@pageNumber, @listName=@listName;
-
 `;
 
 /**

@@ -293,6 +293,7 @@ export const getAFIAnalysisForListId = (req, listId, locationId) => {
     sqlUtils
       .executeOrganizationStoredProcedure(req, queryName, queryParams)
       .then((recordsets) => {
+        console.log(recordsets);
         resolve(recordsets);
       })
       .catch((error) => {

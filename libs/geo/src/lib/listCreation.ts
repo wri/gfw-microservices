@@ -3,6 +3,8 @@ import { Injectable } from '@nestjs/common';
 import * as sql from 'mssql';
 import { CreateListNameSchema } from '@wri-monorepos/shared';
 import process = require('process');
+import { setListAnalysisStatus } from '../utils/list.utils';
+
 const PENDING_STATUS_ID = 1;
 const DRAFT_STATUS_ID = 4;
 export interface CreateListResult {
@@ -211,27 +213,11 @@ export class SPSListCreation {
         },
       ]);
 
-      await Promise.all(
-        analysisIds.map(
-          async (analysisId) =>
-            await clientConnection.executeQuery('createListAnalysisStatus', [
-              {
-                field: 'ListID',
-                type: sql.Int,
-                value: createListResult.list_id,
-              },
-              {
-                field: 'AnalysisID',
-                type: sql.NVarChar(150),
-                value: analysisId,
-              },
-              {
-                field: 'Status',
-                type: sql.Int,
-                value: list_status_id,
-              },
-            ])
-        )
+      await setListAnalysisStatus(
+        clientDatabase,
+        createListResult.list_id,
+        analysisIds,
+        list_status_id
       );
       //await clientConnection.disconnect();
       //await mainConnection.disconnect();

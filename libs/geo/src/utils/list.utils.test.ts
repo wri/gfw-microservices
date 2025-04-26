@@ -1,3 +1,6 @@
+import * as sinon from 'sinon';
+import { DataSource } from 'typeorm';
+import { ListsAnalysisStatus } from '@wri-monorepos/sql';
 import {
   getListStatusId,
   ContainsPunctuation,
@@ -11,6 +14,7 @@ import {
   CheckListNameIsValid,
   createFeatureProps,
   GetTemplateId,
+  setListAnalysisStatus,
 } from './list.utils';
 
 describe('List Utils', () => {
@@ -302,6 +306,98 @@ describe('List Utils', () => {
       expect(nonCommodityResult).toBeDefined();
       expect(commodityResult.length).toBe(1);
       expect(nonCommodityResult.length).toBe(1);
+    });
+  });
+
+  describe('setListAnalysisStatus', () => {
+    class LASMockRepository {
+      findBy = jest.fn(() => ({ length: 0 }));
+      save = jest.fn();
+    }
+    const baseValues = {
+      errorInfo: null,
+      updateTime: expect.any(String),
+      s3URL: null,
+      expirationTime: null,
+      bundleCreationTime: null,
+      options: null,
+    };
+
+    beforeEach(() => {
+      jest.clearAllMocks();
+      sinon.restore();
+    });
+    it('should create analysis status records', async () => {
+      const lasMock = new LASMockRepository();
+      sinon
+        .stub(DataSource.prototype, 'getRepository')
+        .withArgs(ListsAnalysisStatus)
+        .returns(lasMock);
+
+      await setListAnalysisStatus('clientDatabase', 1, ['analysis1'], 2);
+      expect(lasMock.findBy).toHaveBeenCalledWith({
+        listId: 1,
+        analysisId: 'analysis1',
+      });
+      expect(lasMock.save).toHaveBeenCalledWith({
+        listId: 1,
+        analysisId: 'analysis1',
+        status: 2,
+        ...baseValues,
+      });
+    });
+
+    it('should not create a status record for PalmRisk, but should pass options="PalmRisk" if FCD is also present', async () => {
+      const lasMock = new LASMockRepository();
+      sinon
+        .stub(DataSource.prototype, 'getRepository')
+        .withArgs(ListsAnalysisStatus)
+        .returns(lasMock);
+
+      // both "FCD" and "PalmRisk" in the array (along with "analysisX" to show multiple IDs).
+      const analysisIds = ['analysisX', 'FCD', 'PalmRisk'];
+
+      await setListAnalysisStatus('clientDatabase', 100, analysisIds, 200);
+      expect(lasMock.findBy).toHaveBeenCalledTimes(2);
+
+      // 1) For "analysisX" (no options parameter):
+      expect(lasMock.save).toHaveBeenNthCalledWith(1, {
+        listId: 100,
+        analysisId: 'analysisX',
+        status: 200,
+        ...baseValues,
+      });
+
+      // 2) For "FCD" (with options="PalmRisk"):
+      expect(lasMock.save).toHaveBeenNthCalledWith(2, {
+        listId: 100,
+        analysisId: 'FCD',
+        status: 200,
+        ...baseValues,
+        options: 'PalmRisk',
+      });
+    });
+
+    it('should not include options if PalmRisk is not in the array, even if FCD is present', async () => {
+      const lasMock = new LASMockRepository();
+      sinon
+        .stub(DataSource.prototype, 'getRepository')
+        .withArgs(ListsAnalysisStatus)
+        .returns(lasMock);
+
+      const analysisIds = ['analysisX', 'FCD'];
+
+      await setListAnalysisStatus('clientDatabase', 10, analysisIds, 20);
+
+      expect(lasMock.findBy).toHaveBeenCalledTimes(2);
+
+      // check that for FCD, no 'options' field is present
+      expect(lasMock.save).toHaveBeenNthCalledWith(2, {
+        listId: 10,
+        analysisId: 'FCD',
+        status: 20,
+        ...baseValues,
+      });
     });
   });
 });

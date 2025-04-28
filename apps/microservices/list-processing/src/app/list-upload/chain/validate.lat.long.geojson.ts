@@ -14,7 +14,7 @@ export class ValidateLatLongGeojson extends AbstractHandler<ChainType> {
     return lon >= -180 && lon <= 180;
   }
 
-  public static isNumeric(value: any): boolean {
+  public static isNumeric(value: number): boolean {
     return !isNaN(value) && isFinite(value);
   }
 
@@ -98,6 +98,7 @@ export class ValidateLatLongGeojson extends AbstractHandler<ChainType> {
             feature.properties.errorDetails = feature.properties.errorDetails || [];
             (input.request as RequestNewList).hasUnanalyzableError = true;
             (feature.properties.errorDetails as Array<string>).push(coordResult);
+            continue;
           }
 
           if (geometry.type === 'Polygon' || geometry.type === 'MultiPolygon') {

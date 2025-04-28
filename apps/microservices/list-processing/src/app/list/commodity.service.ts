@@ -7,7 +7,7 @@ import {
   ListSchemaType,
   ListTemplate,
 } from '@wri-monorepos/sql';
-import { EntitySchema, Raw, Repository } from 'typeorm';
+import { EntitySchema, Raw, Repository, In } from 'typeorm';
 import { CommodityResponse, ListResponse } from './types';
 import { ConvertCommodityToMapSpamCode } from '../list-upload/chain/convert.commodity.mapspam';
 
@@ -122,13 +122,11 @@ export class CommodityService {
 
       // Get all templates for the commodity if it's in our mapping
       templateNames = [...templateNames, commodityName];
-      const templates = await Promise.all(
-        templateNames.map((name) =>
-          this.listTemplateRepository.findOne({
-            where: { templateName: name },
-          })
-        )
-      );
+      const templates = await this.listTemplateRepository.find({
+        where: {
+          templateName: In(templateNames),
+        },
+      });
 
       const validTemplates = templates.filter(Boolean);
 

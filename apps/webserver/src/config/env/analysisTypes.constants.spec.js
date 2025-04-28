@@ -3,16 +3,12 @@ import * as webserverConstants from './analysisTypes.constants';
 
 describe('Compare webserver and libs analysisTypes constants', () => {
   it('Compare webserver and libs analysisTypes', () => {
-    // For GHG V1 only EAPI will have GHG analysis
-    const filteredAnalysisTypes = { ...analysisTypes };
-    delete filteredAnalysisTypes.GREENHOUSE_GAS_EMISSIONS;
-    expect(webserverConstants.analysisTypes).toEqual(filteredAnalysisTypes);
+    expect(webserverConstants.analysisTypes).toEqual(analysisTypes);
   });
 
   it('Compare webserver and libs analysisTypesOptionsNewNames', () => {
-    // For GHG V1 only EAPI will have GHG analysis
     expect(webserverConstants.analysisTypesOptionsNewNames).toEqual(
-      analysisTypesOptionsNewNames.slice(0, -1)
+      analysisTypesOptionsNewNames.slice(0)
     );
   });
 });

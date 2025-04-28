@@ -109,9 +109,10 @@ export default class ListDetails extends Component {
     const isFcdActive = analysisIds.includes(analysisTypes.FOREST_CHANGE_DIAGNOSTICS);
     const isPalmRiskActive = analysisIds.includes(analysisTypes.PALM_RISK);
     const isAfiActive = analysisIds.includes(analysisTypes.DEFORESTATION_KPIS);
-    const isGHGActive = analysisIds.includes(analysisTypes.GHG);
+    const isGHGActive = analysisIds.includes(analysisTypes.GREENHOUSE_GAS_EMISSIONS);
 
-    const isOnlyGHGActive = analysisIds.length === 1 && analysisIds[0] === analysisTypes.GHG;
+    const isOnlyGHGActive =
+      analysisIds.length === 1 && analysisIds[0] === analysisTypes.GREENHOUSE_GAS_EMISSIONS;
 
     this.state = {
       bannerContent: '',

@@ -10,8 +10,8 @@ export const analysisTypes = {
   FOREST_CHANGE_DIAGNOSTICS: 'FCD',
   DEFORESTATION_KPIS: 'AFI',
   ALERTS: 'ALERTS',
+  GREENHOUSE_GAS_EMISSIONS: 'GHG',
   PALM_RISK: 'PalmRisk',
-  GHG: 'GHG',
 } as const;
 
 export const analysisTypesOptionsNewNames = [
@@ -34,10 +34,10 @@ export const analysisTypesOptionsNewNames = [
     description: 'Annual tree cover loss since 2001 + additional contextual and regional datasets',
   },
   {
-    id: analysisTypes.GHG,
+    id: analysisTypes.GREENHOUSE_GAS_EMISSIONS,
     label: 'Greenhouse Gas Emissions',
     shortLabel: 'GHG',
-    description: 'Deforestation-related Greenhouse Gas Emissions for crop sourcing locations',
+    description: 'Greenhouse gas emissions from deforestation and forest degradation',
   },
 ];
 

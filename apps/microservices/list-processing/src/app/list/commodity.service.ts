@@ -7,9 +7,17 @@ import {
   ListSchemaType,
   ListTemplate,
 } from '@wri-monorepos/sql';
-import { EntitySchema, Raw, Repository } from 'typeorm';
+import { EntitySchema, Raw, Repository, In } from 'typeorm';
 import { CommodityResponse, ListResponse } from './types';
 import { ConvertCommodityToMapSpamCode } from '../list-upload/chain/convert.commodity.mapspam';
+
+// Mapping of commodity names to their template IDs
+const COMMODITY_TEMPLATE_MAP = {
+  'palm oil': ['palm oil mill', 'palm smallholder farm', 'palm oil generic'],
+  soy: ['soy silo', 'soy farm', 'soy generic'],
+  gfwp_cattle: ['cattle ranch', 'cattle generic'],
+  cocoa: ['cocoa farm', 'cocoa generic'],
+};
 
 @Injectable()
 export class CommodityService {
@@ -102,27 +110,36 @@ export class CommodityService {
     organizationDatabase: string;
   }): Promise<Array<ListResponse>> {
     try {
-      const listTemplate = await this.listTemplateRepository.findOne({
-        where: { templateName: commodity },
-      });
       const clientStoreConnection = new ClientStoreConnection();
       const connection = await clientStoreConnection.getConnection(organizationDatabase, [Lists]);
       const listRepository = connection.getRepository(Lists);
 
+      let templateNames = COMMODITY_TEMPLATE_MAP[commodity];
+
       const commodityName =
         ConvertCommodityToMapSpamCode.getCommoditySpamName(commodity) ||
         commodity.replace(/\s+/g, '_');
+
+      // Get all templates for the commodity if it's in our mapping
+      templateNames = [...templateNames, commodityName];
+      const templates = await this.listTemplateRepository.find({
+        where: {
+          templateName: In(templateNames),
+        },
+      });
+
+      const validTemplates = templates.filter(Boolean);
 
       const lists = await listRepository.find({
         where: [
           {
             Commodity: Raw(
               (alias) =>
-                `${alias} COLLATE Latin1_General_CI_AI = :commodity COLLATE Latin1_General_CI_AI`, // ignores case and accents, so that "Maíz" matches "maiz"
+                `${alias} COLLATE Latin1_General_CI_AI = :commodity COLLATE Latin1_General_CI_AI`,
               { commodity: commodityName }
             ),
           },
-          listTemplate ? { templateId: listTemplate.id } : null,
+          ...validTemplates.map((template) => ({ templateId: template.id })),
         ].filter(Boolean),
         select: ['id', 'listName'],
         order: { listName: 'ASC' },

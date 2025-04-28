@@ -8,7 +8,7 @@ import {
 } from '@wri-monorepos/sql';
 import { ListBulkCopy } from './ListBulkCopy';
 import * as sql from 'mssql';
-import { listStatus } from '@wri-monorepos/constants';
+import { listStatus, analysisTypes } from '@wri-monorepos/constants';
 
 const LIST_STATUS = {
   LIST_STATUS_PENDING: 1,
@@ -424,43 +424,57 @@ export async function getListAnalysisStatus(
 }
 
 export async function setListAnalysisStatus(
-  organizationDb,
-  listId,
-  analysisTypesToProcess,
-  status = listStatus.Pending
+  clientDatabase: string,
+  listId: number,
+  analysisIds: string[],
+  status: number = listStatus.Pending
 ) {
   const clientStoreConnection = new ClientStoreConnection();
-  const connection = await clientStoreConnection.getConnection(organizationDb);
+  const connection = await clientStoreConnection.getConnection(clientDatabase);
   const listAnalysisStatusRepository = connection.getRepository(ListsAnalysisStatus);
 
-  const analysisTypesToUpdate = analysisTypesToProcess.split(',');
-
+  const isPalmRiskIncluded = analysisIds.includes(analysisTypes.PALM_RISK);
   await Promise.all(
-    analysisTypesToUpdate.map(async (analysisId) => {
-      const listAnalysisStatusToUpdate = await listAnalysisStatusRepository.findBy({
-        listId,
-        analysisId,
-      });
-
-      if (listAnalysisStatusToUpdate.length === 0) {
-        await listAnalysisStatusRepository.save({
+    analysisIds
+      .filter((analysisId) => analysisId !== analysisTypes.PALM_RISK)
+      .map(async (analysisId) => {
+        const listAnalysisStatusToUpdate = await listAnalysisStatusRepository.findBy({
           listId,
           analysisId,
-          status,
-          updateTime: new Date().toISOString(),
         });
-      } else {
-        await listAnalysisStatusRepository.update(
-          { listId, analysisId },
-          {
-            status,
-            s3URL: null,
-            bundleCreationTime: null,
-            expirationTime: null,
-            errorInfo: null,
-          }
-        );
-      }
-    })
+
+        const value = {
+          status,
+          errorInfo: null,
+          updateTime: new Date().toISOString(),
+          s3URL: null,
+          expirationTime: null,
+          bundleCreationTime: null,
+          options: null,
+        };
+        if (isPalmRiskIncluded && analysisId === 'FCD') {
+          value.options = analysisTypes.PALM_RISK;
+        }
+
+        if (listAnalysisStatusToUpdate.length === 0) {
+          await listAnalysisStatusRepository.save({
+            listId,
+            analysisId,
+            ...value,
+          });
+        } else {
+          await listAnalysisStatusRepository.update({ listId, analysisId }, value);
+        }
+      })
   );
+}
+
+export async function setListAnalysisStatusByTypes(
+  clientDatabase: string,
+  listId: number,
+  analysisTypesToProcess: string,
+  status: number = listStatus.Pending
+) {
+  const analysisTypesToUpdate = analysisTypesToProcess.split(',');
+  return await setListAnalysisStatus(clientDatabase, listId, analysisTypesToUpdate, status);
 }

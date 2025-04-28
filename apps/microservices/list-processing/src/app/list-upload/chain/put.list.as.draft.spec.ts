@@ -5,8 +5,11 @@ import { ConfigService } from '@nestjs/config';
 import { EmailService } from '@wri-monorepos/aws';
 import { getUserEmail } from '../shared/user.utils';
 
-const mockUpdate = jest.fn().mockResolvedValue(undefined);
-const mockGetRepository = jest.fn().mockImplementation(() => ({ update: mockUpdate }));
+const mockFindBy = jest.fn().mockResolvedValue({ length: 0 });
+const mockSave = jest.fn().mockResolvedValue(undefined);
+const mockGetRepository = jest
+  .fn()
+  .mockImplementation(() => ({ findBy: mockFindBy, save: mockSave }));
 const mockGetConnection = jest.fn().mockReturnValue({ getRepository: mockGetRepository });
 const mockConfig = {
   get: jest.fn().mockReturnValue('test@example.com'),
@@ -69,7 +72,7 @@ describe('PutListAsDraft', () => {
 
     expect(mockGetConnection).toHaveBeenCalledWith('test_db');
     expect(mockGetRepository).toHaveBeenCalledWith(ListsAnalysisStatus);
-    expect(mockUpdate).toHaveBeenCalled();
+    expect(mockSave).toHaveBeenCalled();
     expect(getUserEmail).toHaveBeenCalledWith('test_db', 456);
     expect(mockEmailService.sendEmail).toHaveBeenCalledWith(
       'test@example.com',

@@ -2,7 +2,8 @@ import { SQLUtils } from '@wri-monorepos/sql';
 import { AbstractHandler, ChainType, RequestNewList } from './types';
 import * as sql from 'mssql';
 import { Logger } from '@nestjs/common';
-import { analysisTypes, listStatus } from '@wri-monorepos/constants';
+import { listStatus } from '@wri-monorepos/constants';
+import { setListAnalysisStatus } from '@wri-monorepos/geo';
 
 export class CreateLocationSchema extends AbstractHandler<ChainType> {
   private readonly logger = new Logger(CreateLocationSchema.name);
@@ -63,42 +64,6 @@ export class CreateLocationSchema extends AbstractHandler<ChainType> {
     await this.executeQueryWithParams<void>(connection, 'uspCreateAnalysisTable', parameters);
   }
 
-  public async createAnalysisStatusRecords(
-    clientDatabase: string,
-    listId: number,
-    listStatusId: number,
-    analysisIds: string[]
-  ): Promise<void> {
-    try {
-      const isPalmRiskIncluded = analysisIds.includes(analysisTypes.PALM_RISK);
-      await Promise.all(
-        analysisIds
-          .filter((analysisId) => analysisId !== analysisTypes.PALM_RISK)
-          .map(async (analysisId) => {
-            const parameters = [
-              this.createSqlParameter('ListID', sql.Int, listId),
-              this.createSqlParameter('AnalysisID', sql.NVarChar(150), analysisId),
-              this.createSqlParameter('Status', sql.Int, listStatusId),
-            ];
-
-            if (isPalmRiskIncluded && analysisId === 'FCD') {
-              parameters.push(
-                this.createSqlParameter('options', sql.NVarChar(32), analysisTypes.PALM_RISK)
-              );
-            }
-
-            return await SQLUtils.queryDB(
-              clientDatabase,
-              'uspCreateListAnalysisStatus',
-              parameters
-            );
-          })
-      );
-    } catch (error) {
-      throw new Error(`Failed to create analysis status records: ${error.message}`);
-    }
-  }
-
   async handle(request: ChainType): Promise<ChainType> {
     const {
       list_id: listId,
@@ -122,12 +87,7 @@ export class CreateLocationSchema extends AbstractHandler<ChainType> {
       `Creating analysis status records for list ${listId} in ${organization_database}`
     );
 
-    await this.createAnalysisStatusRecords(
-      organization_database,
-      listId,
-      listStatusId,
-      analysisIds
-    );
+    await setListAnalysisStatus(organization_database, listId, analysisIds, listStatusId);
     this.logger.log(
       `Created analysis status records for list ${listId} in ${organization_database}`
     );

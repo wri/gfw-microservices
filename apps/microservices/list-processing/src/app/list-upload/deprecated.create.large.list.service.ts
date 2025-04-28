@@ -2,7 +2,7 @@ import { BadRequestException, Injectable, Logger } from '@nestjs/common';
 import { CreateListRequest } from '../../models';
 import { ConfigService } from '@nestjs/config';
 import { ServerConfigType } from '../../validators/server-config';
-import { createListAnalysis, CreateListResult } from '@wri-monorepos/geo';
+import { setListAnalysisStatus, CreateListResult } from '@wri-monorepos/geo';
 import {
   ClientStoreConnection,
   getListByFilters,
@@ -355,7 +355,7 @@ export class DeprecatedCreateLargeListService {
     analysisIds: Array<string>
   ) {
     try {
-      await createListAnalysis(clientDatabase, listId, analysisIds, listStatusId);
+      await setListAnalysisStatus(clientDatabase, listId, analysisIds, listStatusId);
     } catch (error) {
       throw new Error('Failed create analysis status records: ' + error.message);
     }

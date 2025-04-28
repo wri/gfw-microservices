@@ -86,7 +86,7 @@ const WrappedReactTable = ({
 
   const toggleableColumns = listColumns.map((column) => column.accessor);
 
-  const tableColumns = combinedColumns.slice();
+  const tableColumns = [...combinedColumns];
   tableColumns.forEach((col) => {
     if (col.accessor === 'checkbox') {
       return;

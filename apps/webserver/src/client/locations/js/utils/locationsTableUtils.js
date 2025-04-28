@@ -172,7 +172,7 @@ export const formatDeforestationValueByDisplayType = (rawValue, treeCoverExtentT
   return deforestationDisplayValue;
 };
 
-export const renderPercentajeValueWithIndicator = (rawValue) => {
+export const renderPercentageValueWithIndicator = (rawValue) => {
   let formattedValue;
 
   if (rawValue === 0) {
@@ -275,7 +275,7 @@ export const getLastYear = (data) => {
   return parseFloat(lastValue);
 };
 
-export const normalizeColunmData = (data) => {
+export const normalizeColumnData = (data) => {
   return Object.values(JSON.parse(data)).reduce((columnA, columnB) => columnA + columnB, 0);
 };
 

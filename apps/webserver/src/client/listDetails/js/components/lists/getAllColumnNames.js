@@ -55,7 +55,7 @@ const getAllColumnNames = (
 
   if (areAllAnalysesDraft) {
     const draftStateColumns = columns.draft_state_columns.slice();
-    columnNames.combinedColumns = [checkbox, ...draftStateColumns];
+    columnNames.combinedColumns = [checkbox, ...draftStateColumns, ...columnNames.list];
   } else if (listView === FOREST_CHANGE_VIEW) {
     const { columns: forestChangeAnalysisColumns, ...forestChangeAnalysisRestOfProperties } =
       columns.forest_change_analysis[1];
@@ -95,7 +95,7 @@ const getAllColumnNames = (
     ];
   } else if (listView === POST_2020_RISK_ASSESSMENT_VIEW) {
     const analysis = columns.post_2020_risk.slice();
-    columnNames.combinedColumns = [checkbox, ...analysis];
+    columnNames.combinedColumns = [checkbox, ...analysis, ...columnNames.list];
   }
 
   return columnNames;

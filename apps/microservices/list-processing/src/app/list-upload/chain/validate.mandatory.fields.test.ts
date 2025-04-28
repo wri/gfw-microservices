@@ -353,4 +353,36 @@ describe('convertProperties', () => {
       },
     });
   });
+
+  it('should convert expected numeric values', () => {
+    const mockFeature = {
+      type: 'Feature',
+      geometry: {
+        type: 'Point',
+        coordinates: [-100, 12],
+      },
+      properties: {
+        ' Location_N': 'Test Location',
+        'Latitude ': '\0 \n12',
+        ' Longitude ': '-100\t',
+        ' custom property ': 'value',
+      },
+    };
+
+    const result = convertProperties(mockFeature);
+
+    expect(result).toEqual({
+      type: 'Feature',
+      geometry: {
+        type: 'Point',
+        coordinates: [-100, 12],
+      },
+      properties: {
+        locationName: 'Test Location',
+        latitude: 12,
+        longitude: -100,
+        'custom property': 'value',
+      },
+    });
+  });
 });

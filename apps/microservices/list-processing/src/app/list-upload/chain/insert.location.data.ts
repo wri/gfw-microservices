@@ -39,7 +39,7 @@ export class InsertLocationData extends AbstractHandler<ChainType> {
         .orIgnore()
         .execute();
     } catch (error) {
-      throw new Error(`Failed to insert batch: ${error.message}`);
+      throw new Error(`Failed to insert batch: ${error.stack || error}`);
     }
   }
 

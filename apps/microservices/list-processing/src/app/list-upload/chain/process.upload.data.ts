@@ -33,7 +33,8 @@ export class ProcessUploadData extends AbstractHandler<ChainType> {
   }
 
   processFeatureAttributes(featurePayload: Feature, listId: number) {
-    this.logger.log(`Processing list-xxx.attributes. Excluding Columns: ${this.columnsToExclude}`);
+    // commenting this out for now because it is too verbose
+    // this.logger.log(`Processing list-xxx.attributes. Excluding Columns: ${this.columnsToExclude}`);
 
     const validAttrs = this.getValidAttributes(Object.keys(featurePayload.properties || {}));
     const attributesJson: AttributeType = {};

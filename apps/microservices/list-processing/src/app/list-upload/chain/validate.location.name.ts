@@ -12,8 +12,8 @@ export class ValidateLocationName extends AbstractHandler<ChainType> {
   }
 
   public formatLocationName(name: string): string {
-    // Remove newlines and trim whitespace
-    return name.replace(/\n/g, '').trim();
+    // Remove newlines, nulls, and trim whitespace
+    return name.replace(/[\n\0]/g, '').trim();
   }
 
   public validateAndFormatLocationName(location: Feature): void {

@@ -1,10 +1,10 @@
 import { Logger } from '@nestjs/common';
 import { AbstractHandler, ChainType, RequestNewList } from './types';
-import { ClientStoreConnection, ListsAnalysisStatus, UspResetListStatus } from '@wri-monorepos/sql';
+import { UspResetListStatus } from '@wri-monorepos/sql';
 import { listStatus } from '@wri-monorepos/constants';
-import { In } from 'typeorm';
 import { getUserEmail } from '../shared/user.utils';
 import { EmailService } from '@wri-monorepos/aws';
+import { setListAnalysisStatus } from '@wri-monorepos/geo';
 import { ServerConfigType } from '../../../validators/server-config';
 import { ConfigService } from '@nestjs/config';
 
@@ -40,7 +40,7 @@ export class PutListAsDraft extends AbstractHandler<ChainType> {
 
       if (organization_database && list_id) {
         await this.putListAsDraft(organization_database, list_id);
-        await this.setListAnalysisStatusAsDraft(organization_database, list_id, analysisIds);
+        await setListAnalysisStatus(organization_database, list_id, analysisIds, listStatus.Draft);
 
         if (!isExternalAPIProcess && user_id) {
           const userEmail = await getUserEmail(organization_database, user_id);
@@ -69,18 +69,5 @@ export class PutListAsDraft extends AbstractHandler<ChainType> {
   async putListAsDraft(organizationDatabase, list_id, gfwListId = undefined) {
     this.logger.log(`Putting list ${list_id} status as draft`);
     return new UspResetListStatus().run(organizationDatabase, list_id, listStatus.Draft, gfwListId);
-  }
-
-  async setListAnalysisStatusAsDraft(
-    organizationDatabase: string,
-    list_id: number,
-    analysisIds: string[]
-  ) {
-    const connection = await new ClientStoreConnection().getConnection(organizationDatabase);
-    const listAnalysisStatusRepository = connection.getRepository(ListsAnalysisStatus);
-    await listAnalysisStatusRepository.update(
-      { listId: list_id, analysisId: In(analysisIds) },
-      { status: listStatus.Draft }
-    );
   }
 }

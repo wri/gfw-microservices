@@ -1,6 +1,6 @@
 import { ClientStoreConnection, Lists } from '@wri-monorepos/sql';
 import { AbstractHandler, ChainType, RequestNewList } from './types';
-import { handleCreateAnalysis, setListAnalysisStatus } from '@wri-monorepos/geo';
+import { handleCreateAnalysis, setListAnalysisStatusByTypes } from '@wri-monorepos/geo';
 import { listStatus } from '@wri-monorepos/constants';
 
 import { Logger } from '@nestjs/common';
@@ -58,7 +58,7 @@ export class StartAnalysis extends AbstractHandler<ChainType> {
 
     const isDraft = await this.isDraftList(saveAsDraft, organizationDatabase, listId);
     if (isDraft) {
-      await setListAnalysisStatus(
+      await setListAnalysisStatusByTypes(
         organizationDatabase,
         listId,
         analysisTypesToProcess,

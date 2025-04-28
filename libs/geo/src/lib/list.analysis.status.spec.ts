@@ -19,7 +19,8 @@ import {
 import { checkProcessingLimits, readAnalysesLastModifiedTime } from '@wri-monorepos/shared';
 import { analysisTypesOptionsNewNames, listStatus } from '@wri-monorepos/constants';
 import * as sql from 'mssql';
-import { getListAnalysisStatus } from '../utils/list.utils';
+import * as LU from '../utils/list.utils';
+const getListAnalysisStatus = LU.getListAnalysisStatus;
 import axios from 'axios';
 
 jest.mock('axios', () => ({
@@ -29,6 +30,7 @@ jest.mock('axios', () => ({
 jest.mock('../utils/list.utils', () => ({
   getListAnalysisStatus: jest.fn(),
   setListAnalysisStatus: jest.fn(),
+  setListAnalysisStatusByTypes: jest.fn(),
 }));
 
 jest.mock('@nestjs/common', () => ({
@@ -187,11 +189,9 @@ describe('list.analysis.status.ts', () => {
 
     it('should call createListAnalysis if no data exists on getListAnalysisStatusByListId', async () => {
       jest.spyOn(LAS, 'getListAnalysisStatusByListId').mockResolvedValueOnce([]);
-      jest.spyOn(LAS, 'createListAnalysis').mockResolvedValueOnce(undefined);
 
-      const createListAnalysisSpy = jest
-        .spyOn(jest.requireActual('./list.analysis.status'), 'createListAnalysis')
-
+      const setListAnalysisStatus = jest
+        .spyOn(LU, 'setListAnalysisStatus')
         .mockResolvedValueOnce(undefined);
 
       const updateListAnalysisSpy = jest
@@ -206,7 +206,7 @@ describe('list.analysis.status.ts', () => {
       );
 
       expect(getListAnalysisStatusByListId).toHaveBeenCalledWith(fakeClientDatabase, fakeListId);
-      expect(createListAnalysisSpy).toHaveBeenCalledWith(
+      expect(setListAnalysisStatus).toHaveBeenCalledWith(
         fakeClientDatabase,
         fakeListId,
         fakeAnalysisIds,
@@ -224,8 +224,8 @@ describe('list.analysis.status.ts', () => {
         .spyOn(jest.requireActual('./list.analysis.status'), 'getListAnalysisStatusByListId')
         .mockResolvedValueOnce(mockExistingStatusData);
 
-      const createListAnalysisSpy = jest
-        .spyOn(jest.requireActual('./list.analysis.status'), 'createListAnalysis')
+      const setListAnalysisStatus = jest
+        .spyOn(LU, 'setListAnalysisStatus')
         .mockResolvedValueOnce(undefined);
 
       const updateListAnalysisSpy = jest
@@ -246,7 +246,7 @@ describe('list.analysis.status.ts', () => {
         fakeAnalysisIds,
         mockExistingStatusData
       );
-      expect(createListAnalysisSpy).not.toHaveBeenCalled();
+      expect(setListAnalysisStatus).not.toHaveBeenCalled();
     });
   });
 
@@ -269,14 +269,14 @@ describe('list.analysis.status.ts', () => {
       const deleteSpy = jest
         .spyOn(jest.requireActual('./list.analysis.status'), 'deleteListAnalysisStatusBy')
         .mockResolvedValue(undefined);
-      const createSpy = jest
-        .spyOn(jest.requireActual('./list.analysis.status'), 'createListAnalysis')
+      const setListAnalysisStatus = jest
+        .spyOn(LU, 'setListAnalysisStatus')
         .mockResolvedValue(undefined);
 
       await updateListAnalysis(fakeClientDatabase, fakeListId, analysisIds, analysisStatusData);
 
       expect(deleteSpy).not.toHaveBeenCalled();
-      expect(createSpy).not.toHaveBeenCalled();
+      expect(setListAnalysisStatus).not.toHaveBeenCalled();
     });
 
     it('should delete analysis IDs in analysisStatusData but not in analysisIds', async () => {
@@ -292,8 +292,8 @@ describe('list.analysis.status.ts', () => {
       const deleteSpy = jest
         .spyOn(jest.requireActual('./list.analysis.status'), 'deleteListAnalysisStatusBy')
         .mockResolvedValue(undefined);
-      const createSpy = jest
-        .spyOn(jest.requireActual('./list.analysis.status'), 'createListAnalysis')
+      const setListAnalysisStatus = jest
+        .spyOn(LU, 'setListAnalysisStatus')
         .mockResolvedValue(undefined);
 
       await updateListAnalysis(fakeClientDatabase, fakeListId, analysisIds, analysisStatusData);
@@ -305,7 +305,7 @@ describe('list.analysis.status.ts', () => {
         'FCDOption1',
         expect.any(Boolean)
       );
-      expect(createSpy).not.toHaveBeenCalled();
+      expect(setListAnalysisStatus).not.toHaveBeenCalled();
     });
 
     it('should create analysis IDs in analysisIds but not in analysisStatusData', async () => {
@@ -320,15 +320,15 @@ describe('list.analysis.status.ts', () => {
       const deleteSpy = jest
         .spyOn(jest.requireActual('./list.analysis.status'), 'deleteListAnalysisStatusBy')
         .mockResolvedValue(undefined);
-      const createSpy = jest
-        .spyOn(jest.requireActual('./list.analysis.status'), 'createListAnalysis')
+      const setListAnalysisStatus = jest
+        .spyOn(LU, 'setListAnalysisStatus')
         .mockResolvedValue(undefined);
 
       await updateListAnalysis(fakeClientDatabase, fakeListId, analysisIds, analysisStatusData);
 
       // FCDOption1 is not in analysisStatusData, so it should be created
-      expect(createSpy).toHaveBeenCalledTimes(1);
-      expect(createSpy).toHaveBeenCalledWith(
+      expect(setListAnalysisStatus).toHaveBeenCalledTimes(1);
+      expect(setListAnalysisStatus).toHaveBeenCalledWith(
         fakeClientDatabase,
         fakeListId,
         ['FCDOption1'],
@@ -351,8 +351,8 @@ describe('list.analysis.status.ts', () => {
       const deleteSpy = jest
         .spyOn(jest.requireActual('./list.analysis.status'), 'deleteListAnalysisStatusBy')
         .mockResolvedValue(undefined);
-      const createSpy = jest
-        .spyOn(jest.requireActual('./list.analysis.status'), 'createListAnalysis')
+      const setListAnalysisStatus = jest
+        .spyOn(LU, 'setListAnalysisStatus')
         .mockResolvedValue(undefined);
 
       await updateListAnalysis(fakeClientDatabase, fakeListId, analysisIds, analysisStatusData);
@@ -364,8 +364,8 @@ describe('list.analysis.status.ts', () => {
         'OldAnalysis',
         expect.any(Boolean)
       );
-      expect(createSpy).toHaveBeenCalledTimes(1);
-      expect(createSpy).toHaveBeenCalledWith(
+      expect(setListAnalysisStatus).toHaveBeenCalledTimes(1);
+      expect(setListAnalysisStatus).toHaveBeenCalledWith(
         fakeClientDatabase,
         fakeListId,
         ['NewAnalysis'],

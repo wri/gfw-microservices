@@ -1,5 +1,4 @@
 export * from './checkIfListIsEmpty';
-export * from './createListAnalysisStatus';
 export * from './deleteList';
 export * from './deleteLocation';
 export * from './deleteLocationIdsFilteredDataForUserList';

@@ -17,6 +17,7 @@ import {
   GEO_TRELLIS__ANALYZE_LIST_QA,
   GEO_TRELLIS__ANALYZE_LIST_STAGING,
   listStatus,
+  analysisTypes,
   analysisTypesOptionsNewNames,
   analysisIdsOptionsMap,
   GADM_FEATURE_FLAG_NAME,
@@ -30,7 +31,11 @@ import {
   featureFlagsService,
 } from '@wri-monorepos/shared';
 import * as sql from 'mssql';
-import { getListAnalysisStatus, setListAnalysisStatus } from '../utils/list.utils';
+import {
+  getListAnalysisStatus,
+  setListAnalysisStatus,
+  setListAnalysisStatusByTypes,
+} from '../utils/list.utils';
 import axios from 'axios';
 import { flatten } from 'lodash';
 import { updateListsAnalysisStatus } from './list.analysis.status/updateListAnalysisStatus';
@@ -41,53 +46,6 @@ export const MARK_IS_TEST_LIST = 'e2e_automation';
 export const MARK_IS_TEST_USER = 'dt_';
 
 const environmentAllowTestFlow = ['DEVELOPMENT', 'LATEST', 'QA', 'STAGING'];
-
-export const createListAnalysis = async (
-  clientDatabase: string,
-  listId: number,
-  analysisIds: string[],
-  analysisStatus: string | number
-) => {
-  try {
-    const isPalmRiskIncluded = analysisIds.includes('PalmRisk');
-    await Promise.all(
-      analysisIds
-        .filter((analysisId) => analysisId !== 'PalmRisk')
-        .map(async (analysisId) => {
-          const parameters = [
-            {
-              field: 'ListID',
-              type: sql.Int,
-              value: listId,
-            },
-            {
-              field: 'AnalysisID',
-              type: sql.NVarChar(150),
-              value: analysisId,
-            },
-            {
-              field: 'Status',
-              type: sql.Int,
-              value: analysisStatus,
-            },
-          ];
-
-          if (isPalmRiskIncluded && analysisId === 'FCD') {
-            parameters.push({
-              field: 'options',
-              type: sql.NVarChar(32),
-              value: 'PalmRisk',
-            });
-          }
-
-          return await SQLUtils.queryDB(clientDatabase, 'createListAnalysisStatus', parameters);
-        })
-    );
-  } catch (error) {
-    Logger.error('Create list analysis', error.stack || error);
-    throw error;
-  }
-};
 
 export const getAllListsAnalysisStatus = async (
   clientDatabase: string
@@ -132,7 +90,7 @@ export const setSelectedAnalyses = async (
 ) => {
   const analysisStatusData = await getListAnalysisStatusByListId(clientDatabase, listId);
   if (!analysisStatusData || analysisStatusData.length === 0) {
-    await createListAnalysis(clientDatabase, listId, analysisIds, analysisStatus);
+    await setListAnalysisStatus(clientDatabase, listId, analysisIds, analysisStatus);
   } else {
     await updateListAnalysis(clientDatabase, listId, analysisIds, analysisStatusData);
   }
@@ -214,7 +172,7 @@ export const updateListAnalysis = async (
 
   for (const element of analysisIds) {
     if (!analysisDataIds.includes(element)) {
-      await createListAnalysis(clientDatabase, listId, [element], listStatus.Pending);
+      await setListAnalysisStatus(clientDatabase, listId, [element], listStatus.Pending);
     }
   }
 };
@@ -245,7 +203,7 @@ export const handleCreateAnalysis = async (
       listId,
     });
 
-    setListAnalysisStatus(organizationDb, listId, analysisTypesToProcess);
+    setListAnalysisStatusByTypes(organizationDb, listId, analysisTypesToProcess);
 
     if (isListLocationOverLimit) {
       await updateListsAnalysisStatus(organizationDb, {
@@ -406,7 +364,9 @@ export async function resolveListAnalysisStatuses(listAnalysisStatuses: ListsAna
       const originalAnalysisIdLastModified = lastModifiedMap.get(analysisId);
 
       const analysisIdsToPush =
-        analysisId === 'FCD' && options === 'PalmRisk' ? ['FCD', 'PalmRisk'] : [analysisId];
+        analysisId === 'FCD' && options === analysisTypes.PALM_RISK
+          ? ['FCD', analysisTypes.PALM_RISK]
+          : [analysisId];
 
       for (const id of analysisIdsToPush) {
         results.push({

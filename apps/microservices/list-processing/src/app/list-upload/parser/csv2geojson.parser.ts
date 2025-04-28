@@ -11,6 +11,12 @@ interface LocationData {
 
 const logger = new Logger('CSV2GeoJSONParser');
 
+// fake geometry so followon chains can proceed.  This location is in the ocean, so not valid.
+const fakeGeometry: Geometry = {
+  type: 'Point',
+  coordinates: [0, 0],
+};
+
 export const csv2geojson = async (
   csvContent: string,
   preview = false,
@@ -78,11 +84,7 @@ export const csv2geojson = async (
       data['longitude'] = null;
       return {
         ...data,
-        geometry: {
-          // fake geometry so followon chains can run
-          type: 'Point',
-          coordinates: [0, 0],
-        },
+        geometry: fakeGeometry,
         errorDetails: [`Invalid latitude or longitude: ${latitude}, ${longitude}`],
       };
     }
@@ -97,20 +99,30 @@ export const csv2geojson = async (
   };
 
   const convertToGeoJSON = async (results, reject, resolve) => {
-    let { data } = results;
-    const { errors } = results;
-    if (errors.length > 0) {
-      logger.error(errors);
-      reject(errors);
-    }
-
-    // if has palm oil id need to fill the lat long
-    data = await palmOilCsvAdjust(data);
-
     const geoJson: GeoJson = {
       type: 'FeatureCollection',
       features: [],
     };
+
+    let { data } = results;
+    const { errors } = results;
+    if (errors.length > 0) {
+      logger.error(errors);
+      errors.forEach((error) => {
+        geoJson.features.push({
+          type: 'Feature',
+          properties: {
+            'Location Name': `Row ${error.row}`,
+            errorDetails: [error.message],
+          },
+          geometry: fakeGeometry,
+        });
+      });
+      return resolve(geoJson);
+    }
+
+    // if has palm oil id need to fill the lat long
+    data = await palmOilCsvAdjust(data);
 
     (data as Array<LocationData>).forEach((row: LocationData) => {
       row = standardizeLocationData(row);

@@ -182,6 +182,19 @@ describe('csv2geojson', () => {
     });
   });
 
+  it('should return an error for missing fields', (done) => {
+    const csvData = 'Name,Longitude,Latitude\nA,1';
+    csv2geojson(csvData).then((result) => {
+      const { features } = result as FeatureCollection;
+      expect(features.length).toBe(1);
+      expect(features[0].properties['Location Name']).toBe('Row 0');
+      expect(features[0].properties['errorDetails']).toStrictEqual([
+        'Too few fields: expected 3 fields but parsed 2',
+      ]);
+      done();
+    });
+  });
+
   it('should handle empty input correctly', (done) => {
     const csvData = '';
 

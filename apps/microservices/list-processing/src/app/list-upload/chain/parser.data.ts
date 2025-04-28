@@ -147,7 +147,7 @@ export class ParserData extends AbstractHandler<ChainType> {
         `Error while parsing the data from file: ${fileDownloadedPath}`,
         error.stack
       );
-      throw new Error('Error while parsing the data: ' + error.message);
+      throw new Error('Error while parsing the data: ' + error.stack || error);
     }
   }
 }

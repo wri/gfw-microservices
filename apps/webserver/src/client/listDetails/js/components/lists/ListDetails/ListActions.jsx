@@ -67,6 +67,7 @@ const ListActions = ({
   listView,
   isLoading,
   isGfwList,
+  isOnlyGHGActive,
 }) => {
   const blackButtonStyle = {
     color: 'black',
@@ -106,7 +107,8 @@ const ListActions = ({
     getIsDiagnosticStatusDraft(selectedList) &&
     !selectedList?.isGlobalForestWatchList &&
     !isSearchBarOpen &&
-    !isListSubmittedForAnalysis;
+    !isListSubmittedForAnalysis &&
+    !isOnlyGHGActive;
 
   const isUpdateAnalysisAvailable =
     (currentUser.access_level_id === userAccessLevel.ADMIN ||

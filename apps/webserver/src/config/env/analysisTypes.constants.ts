@@ -11,6 +11,7 @@ export const analysisTypes = {
   DEFORESTATION_KPIS: 'AFI',
   ALERTS: 'ALERTS',
   PALM_RISK: 'PalmRisk',
+  GHG: 'GHG',
 } as const;
 
 export const analysisTypesOptionsNewNames = [
@@ -31,6 +32,12 @@ export const analysisTypesOptionsNewNames = [
     label: 'Post-2000 Forest Change',
     shortLabel: 'Post-2000',
     description: 'Annual tree cover loss since 2001 + additional contextual and regional datasets',
+  },
+  {
+    id: analysisTypes.GHG,
+    label: 'Greenhouse Gas Emissions',
+    shortLabel: 'GHG',
+    description: 'Deforestation-related Greenhouse Gas Emissions for crop sourcing locations',
   },
 ];
 

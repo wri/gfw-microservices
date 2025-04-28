@@ -1,7 +1,6 @@
 import React, { Component } from 'react';
 import { Typography, Grid, Button as MaterialButton, Stack, Paper, Box } from '@mui/material';
 import Button from 'common/js/components/Button';
-
 import { ArrowBack, NotListedLocation, QueryStats, Warning } from '@mui/icons-material';
 import CustomDialog from 'common/js/components/CustomDialog/CustomDialog';
 import { maxLocations } from 'locations/js/utils/upload.utils';
@@ -76,6 +75,7 @@ import WrappedReactTable from './WrappedReactTable';
 import AnalysisStatusBanners from './AnalysisStatusBanners';
 import AnalysisFailedMessage from './AnalysisFailedMessage';
 import AnalysisInProgressMessage from './AnalysisInProgressMessage';
+import GHGBanner from './GHGBanner';
 import { ThemeProvider } from '../../../../../styles/ThemeProvider';
 
 // CONSTANTS
@@ -102,6 +102,16 @@ export default class ListDetails extends Component {
     super(props);
 
     const { selectedLists } = this.props;
+    const selectedList = selectedLists.length > 0 ? selectedLists[0] : null;
+    const listAnalysesStatus = selectedList ? selectedList.listAnalysesStatus : [];
+    const analysisIds = listAnalysesStatus?.map(({ analysisId }) => analysisId) || [];
+
+    const isFcdActive = analysisIds.includes(analysisTypes.FOREST_CHANGE_DIAGNOSTICS);
+    const isPalmRiskActive = analysisIds.includes(analysisTypes.PALM_RISK);
+    const isAfiActive = analysisIds.includes(analysisTypes.DEFORESTATION_KPIS);
+    const isGHGActive = analysisIds.includes(analysisTypes.GHG);
+
+    const isOnlyGHGActive = analysisIds.length === 1 && analysisIds[0] === analysisTypes.GHG;
 
     this.state = {
       bannerContent: '',
@@ -148,6 +158,11 @@ export default class ListDetails extends Component {
       visibleColumns: [],
       isChangeTypeOfAnalysisModalOpen: false,
       isListSubmittedForAnalysis: false,
+      isFcdActive,
+      isPalmRiskActive,
+      isAfiActive,
+      isGHGActive,
+      isOnlyGHGActive,
     };
   }
 
@@ -837,6 +852,7 @@ export default class ListDetails extends Component {
     selectedNewOrExisting,
   }) => {
     const { selectedLocations, selectedMoveOrCopy, selectedLists } = this.props;
+    const { isOnlyGHGActive } = this.state;
 
     const isGfwList = selectedLists[0]?.isGlobalForestWatchList;
     if (selectedLocations.length > maxLocations) {
@@ -894,6 +910,7 @@ export default class ListDetails extends Component {
                 this.setState({ isSaveAsDraft: false, showSubmitModal: true });
               }}
               disabled={
+                isOnlyGHGActive &&
                 selectedNewOrExisting === 'new' &&
                 (!newListName || isNewListNameDuplicate || isNewListNameValid)
               }
@@ -1197,13 +1214,14 @@ export default class ListDetails extends Component {
 
   areAllAnalysesDraft = () => {
     const { selectedLists } = this.props;
+    const { isOnlyGHGActive } = this.state;
     const listAnalysesStatus = selectedLists[0]?.listAnalysesStatus || [];
 
     // also true if there are no analyses selected
     const areAllAnalysesDraft = listAnalysesStatus.every(
       (item) => item.status === listStatus.Draft
     );
-    return areAllAnalysesDraft && !selectedLists[0].isGlobalForestWatchList;
+    return (isOnlyGHGActive || areAllAnalysesDraft) && !selectedLists[0].isGlobalForestWatchList;
   };
 
   getUserLocationData = (list_id, page = 0) => {
@@ -1896,6 +1914,11 @@ export default class ListDetails extends Component {
       isListSubmittedForAnalysis,
       currentAdminAreas,
       pAreas,
+      isFcdActive,
+      isPalmRiskActive,
+      isAfiActive,
+      isGHGActive,
+      isOnlyGHGActive,
     } = this.state;
 
     const selectedList = selectedLists.length > 0 ? selectedLists[0] : null;
@@ -1975,12 +1998,6 @@ export default class ListDetails extends Component {
     const isEditActionAvailable =
       !isGfwList && !selectedListIsShared && currentUser.access_level_id !== userAccessLevel.VIEWER;
 
-    const analysisIds = listAnalysesStatus?.map(({ analysisId }) => analysisId) || [];
-
-    const isFcdActive = analysisIds.includes(analysisTypes.FOREST_CHANGE_DIAGNOSTICS);
-    const isPalmRiskActive = analysisIds.includes(analysisTypes.PALM_RISK);
-    const isAfiActive = analysisIds.includes(analysisTypes.DEFORESTATION_KPIS);
-
     if (isFcdActive || isGfwList) {
       listViewOptions.push(FOREST_CHANGE_VIEW);
     }
@@ -2032,6 +2049,7 @@ export default class ListDetails extends Component {
       : 'List diagnostic';
 
     const translatedDiagnosticButtonLabel = Transifex.live.translateText(diagnosticButtonLabel);
+
     return (
       <ThemeProvider>
         <div className="list-details">
@@ -2058,6 +2076,7 @@ export default class ListDetails extends Component {
               isAnalysisFailedByExceededAnalysisLimit={isAnalysisFailedByExceededAnalysisLimit}
               isListSubmittedForAnalysis={isListSubmittedForAnalysis}
               isListWithErrors={isListWithErrors}
+              isOnlyGHGActive={isOnlyGHGActive}
             />
           )}
           {bannerContent && (
@@ -2167,6 +2186,8 @@ export default class ListDetails extends Component {
 
             <div className="flex-grid">
               <section className="list-details-container">
+                {isGHGActive && <GHGBanner />}
+
                 {/* Shared lists view */}
                 {shareView ? (
                   <>
@@ -2232,6 +2253,7 @@ export default class ListDetails extends Component {
                         this.setState({ isLoading: loading });
                       }}
                       isGfwList={isGfwList}
+                      isOnlyGHGActive={isOnlyGHGActive}
                     />
 
                     <div style={{ display: 'flex', justifyContent: 'space-between' }}>

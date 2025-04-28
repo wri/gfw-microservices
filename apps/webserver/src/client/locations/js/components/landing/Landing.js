@@ -1,10 +1,12 @@
 import React, { Component } from 'react';
-import Dialog from 'material-ui/Dialog';
+import { Dialog } from 'material-ui';
+import { Box, Typography } from '@mui/material';
 import { withRouter } from 'react-router-dom';
 import Banner from '../../../../common/js/components/Banners/Banner';
 import UsageNearLimitBanner from '../../../../common/js/components/Banners/UsageNearLimitBanner';
 import UsageReachedLimitBanner from '../../../../common/js/components/Banners/UsageReachedLimitBanner';
 import Button from '../../../../common/js/components/Button';
+import { ExternalHelperResource, PillButton } from '../../../../components';
 import LinkButton from '../../../../common/js/components/LinkButton';
 import ModalLoader from '../../../../common/js/components/Loaders/ModalLoader';
 import { locationsPage, userAccessLevel } from '../../../../common/js/config';
@@ -355,59 +357,93 @@ class Landing extends Component {
 
         <ModalLoader open={isLoading} />
 
-        <section className="locations-body flex-grid">
-          <aside className="col side-panel">
-            {currentUser.access_level_id !== userAccessLevel.VIEWER && (
-              <>
-                <Button
-                  className="side-panel__button"
-                  label={locationsPage.landing.addLocations}
-                  icon={<IconPlus height="10px" />}
-                  onClick={() => this.setState({ addLocationDialogOpen: true })}
-                  fullWidth
-                  variant="primary"
-                />
-                {isUploadListUiAvailable && (
+        <section
+          className={`locations-body ${
+            isUploadListUiAvailable && 'locations-body--new-upload'
+          } flex-grid`}
+        >
+          {!isUploadListUiAvailable && (
+            <aside className="col side-panel">
+              {currentUser.access_level_id !== userAccessLevel.VIEWER && (
+                <>
                   <Button
                     className="side-panel__button"
-                    label="Add locations (alpha)"
+                    label={locationsPage.landing.addLocations}
                     icon={<IconPlus height="10px" />}
-                    onClick={() => {
-                      const { history } = this.props;
-                      history.push('/upload-location');
-                    }}
+                    onClick={() => this.setState({ addLocationDialogOpen: true })}
                     fullWidth
                     variant="primary"
                   />
-                )}
-              </>
-            )}
-            <SidebarTemplateDownload language={language} />
-            <SavedLocationsSummary
-              counts={[
-                {
-                  label: `${locationsPage.landing.investments}`,
-                  count: counts.InvestmentCount,
-                },
-                {
-                  label: `${locationsPage.landing.commodities}`,
-                  count: counts.CommodityCount,
-                },
-                {
-                  label: `${locationsPage.landing.total}`,
-                  count: counts.TotalCount,
-                },
-              ]}
-            />
-          </aside>
+                </>
+              )}
+              <SidebarTemplateDownload language={language} />
+              <SavedLocationsSummary
+                counts={[
+                  {
+                    label: `${locationsPage.landing.investments}`,
+                    count: counts.InvestmentCount,
+                  },
+                  {
+                    label: `${locationsPage.landing.commodities}`,
+                    count: counts.CommodityCount,
+                  },
+                  {
+                    label: `${locationsPage.landing.total}`,
+                    count: counts.TotalCount,
+                  },
+                ]}
+              />
+            </aside>
+          )}
           <section className="col main-panel">
             <section className="gfw-lists">
-              <h2 className="gfw-lists__title">{locationsPage.landing.gfwLists}</h2>
+              {isUploadListUiAvailable && (
+                <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 2 }}>
+                  <Typography variant="h5">Welcome!</Typography>
+                  <Box
+                    sx={{
+                      display: 'flex',
+                      flexDirection: 'column',
+                      alignItems: 'center',
+                      gap: 1.5,
+                    }}
+                  >
+                    <PillButton
+                      variant="contained"
+                      startIcon={<IconPlus height="10px" />}
+                      onClick={() => {
+                        const { history } = this.props;
+                        history.push('/upload-location');
+                      }}
+                    >
+                      Add locations
+                    </PillButton>
+                    <ExternalHelperResource
+                      text="How to format your data"
+                      url="https://globalforestwatch.org/help/gfw-pro/guides/upload-locations-lists"
+                      color="text.secondary"
+                    />
+                  </Box>
+                </Box>
+              )}
+              {isUploadListUiAvailable ? (
+                <Typography variant="h6" sx={{ mb: 1 }}>
+                  {locationsPage.landing.gfwLists}
+                </Typography>
+              ) : (
+                <h2 className="gfw-lists__title">{locationsPage.landing.gfwLists}</h2>
+              )}
+
               <div className="gfw-lists__inner">{gfwListsMapped}</div>
             </section>
             <section className="my-locations-section">
               <div className="my-locations__header">
-                <div className="my-locations__title">{locationsPage.landing.myLocations}</div>
+                {isUploadListUiAvailable ? (
+                  <Typography variant="h6">{locationsPage.landing.myLocations}</Typography>
+                ) : (
+                  <div className="my-locations__title">{locationsPage.landing.myLocations}</div>
+                )}
+
                 <ListsFilter value={userListFilterText} onChange={onChangeListsFilter} />
               </div>
               {(userFoldersFiltered.length > 0 || userListsFiltered.length > 0) &&

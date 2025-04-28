@@ -30,8 +30,8 @@ import useMediaQuery from '@mui/material/useMediaQuery';
 import { TransitionGroup } from 'react-transition-group';
 import { v4 as uuidv4 } from 'uuid';
 
-import { ExternalHelperResource, LocationTypeButton, NavBar } from '../components';
-import { PillButton } from '../../../../../components';
+import { LocationTypeButton, NavBar } from '../components';
+import { ExternalHelperResource, PillButton } from '../../../../../components';
 import { coordinateSchema, locationNameSchema } from '../utils/schema';
 import { createGeometryAndGraphic } from '../../adding/PolygonCoordinates/polygonCoordinates.utils';
 import { useMap } from '../hooks';

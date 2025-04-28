@@ -3,9 +3,7 @@
 import React from 'react';
 import { render } from 'react-dom';
 import { BrowserRouter as Router } from 'react-router-dom';
-import lightBaseTheme from 'material-ui/styles/baseThemes/lightBaseTheme';
-import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
-import getMuiTheme from 'material-ui/styles/getMuiTheme';
+import { ThemeProvider } from '../styles/ThemeProvider';
 
 import Locations from './js/components/Locations';
 import { NO_MESSAGE } from './js/utils/history.utils';
@@ -74,10 +72,8 @@ if (FileReader.prototype.readAsBinaryString === undefined) {
   };
 }
 
-lightBaseTheme.fontFamily = 'Fira Sans, sans-serif';
-
 const App = () => (
-  <MuiThemeProvider muiTheme={getMuiTheme(lightBaseTheme)}>
+  <ThemeProvider>
     <AppErrorFallback>
       <Router
         basename="/locations"
@@ -104,7 +100,7 @@ const App = () => (
         />
       </Router>
     </AppErrorFallback>
-  </MuiThemeProvider>
+  </ThemeProvider>
 );
 
 render(<App />, document.getElementById('locations-mount'));

@@ -1,14 +1,20 @@
 import React from 'react';
 
+import type { SvgIconProps } from '@mui/material/SvgIcon';
 import { Typography, Link } from '@mui/material';
 import { Support, NorthEast } from '@mui/icons-material';
 
 type ExternalHelperResourceProps = {
   text: string;
   url: string;
+  color?: SvgIconProps['color'];
 };
 
-export function ExternalHelperResource({ text, url }: ExternalHelperResourceProps) {
+export function ExternalHelperResource({
+  text,
+  url,
+  color = 'primary',
+}: ExternalHelperResourceProps) {
   return (
     <Link
       sx={{
@@ -17,12 +23,13 @@ export function ExternalHelperResource({ text, url }: ExternalHelperResourceProp
         gap: '0.25rem',
         width: 'fit-content',
         textDecoration: 'none',
+        color,
       }}
       href={url}
       target="_blank"
     >
       <Support fontSize="small" />
-      <Typography variant="body2" color="primary" lineHeight="0">
+      <Typography variant="body2" color={color} lineHeight="0">
         {text}
       </Typography>
       <NorthEast fontSize="small" />

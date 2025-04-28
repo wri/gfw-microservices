@@ -30,6 +30,7 @@ jest.mocked(useUploadLocation).mockReturnValue({
   setUploadLocationConfigureList: jest.fn(),
   addFile: jest.fn(),
   updateSaveMode: jest.fn(),
+  selectUploadType: jest.fn(),
 });
 
 const mockGoBack = jest.fn();
@@ -89,6 +90,7 @@ describe('SummaryAndSubmit', () => {
       setUploadLocationConfigureList: jest.fn(),
       addFile: jest.fn(),
       updateSaveMode: jest.fn(),
+      selectUploadType: jest.fn(),
     });
 
     render(<SummaryAndSubmit />);

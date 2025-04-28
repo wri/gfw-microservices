@@ -11,7 +11,9 @@ jest.mock('../hooks', () => ({
 }));
 
 jest.mock('../contexts');
+const mockSelectUploadType = jest.fn();
 jest.mocked(useUploadLocation).mockReturnValue({
+  selectUploadType: mockSelectUploadType,
   uploadLocationState: {
     newListName: 'Random list name 123',
     existingList: null,
@@ -71,7 +73,9 @@ describe('UploadLocationOptions', () => {
       });
 
       expect(mockHistoryPush).not.toHaveBeenCalled();
+      expect(mockSelectUploadType).not.toHaveBeenCalled();
       await userEvent.click(button);
+      expect(mockSelectUploadType).toHaveBeenCalledWith(expectedUploadType);
       expect(mockHistoryPush).toHaveBeenCalledWith(expectedRoute);
     }
   );

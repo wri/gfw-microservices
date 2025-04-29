@@ -135,7 +135,8 @@ describe('CommodityService', () => {
 
       jest.spyOn(listTemplateRepository, 'findOne').mockImplementation((options) => {
         const template = mockTemplates.find(
-          (t) => t.templateName === (options.where as any).templateName
+          (t) =>
+            t.templateName === (options.where as unknown as { templateName: string }).templateName
         );
         return Promise.resolve(template);
       });
@@ -175,6 +176,26 @@ describe('CommodityService', () => {
 
       const result = await service.getListsByCommodity({ commodity, organizationDatabase });
       expect(result).toEqual([]);
+    });
+  });
+
+  describe('getCommodityFromTemplate', () => {
+    it('should return the correct commodity for a given template name', () => {
+      expect(service.getCommodityFromTemplate('palm oil mill')).toBe('palm oil');
+      expect(service.getCommodityFromTemplate('palm smallholder farm')).toBe('palm oil');
+      expect(service.getCommodityFromTemplate('soy silo')).toBe('soy');
+      expect(service.getCommodityFromTemplate('cattle ranch')).toBe('gfwp_cattle');
+      expect(service.getCommodityFromTemplate('cocoa farm')).toBe('cocoa');
+    });
+
+    it('should handle case insensitivity', () => {
+      expect(service.getCommodityFromTemplate('PALM OIL MILL')).toBe('palm oil');
+      expect(service.getCommodityFromTemplate('Palm Oil Mill')).toBe('palm oil');
+    });
+
+    it('should return the input template name if no match is found', () => {
+      expect(service.getCommodityFromTemplate('unknown template')).toBe('unknown template');
+      expect(service.getCommodityFromTemplate('')).toBe('');
     });
   });
 });

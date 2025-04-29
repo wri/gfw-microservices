@@ -114,9 +114,11 @@ export class CommodityService {
       const connection = await clientStoreConnection.getConnection(organizationDatabase, [Lists]);
       const listRepository = connection.getRepository(Lists);
 
-      let templateNames = COMMODITY_TEMPLATE_MAP[commodity];
+      let commodityName = this.getCommodityFromTemplate(commodity);
 
-      const commodityName =
+      let templateNames = COMMODITY_TEMPLATE_MAP[commodityName] || [];
+
+      commodityName =
         ConvertCommodityToMapSpamCode.getCommoditySpamName(commodity) ||
         commodity.replace(/\s+/g, '_');
 
@@ -154,5 +156,21 @@ export class CommodityService {
 
   async getAllTemplates(): Promise<ListTemplate[]> {
     return await this.listTemplateRepository.find();
+  }
+
+  getCommodityFromTemplate(templateName: string): string {
+    if (!templateName) {
+      return templateName;
+    }
+
+    const normalizedTemplateName = templateName.toLowerCase();
+
+    for (const [commodity, templates] of Object.entries(COMMODITY_TEMPLATE_MAP)) {
+      if (templates.some((template) => template.toLowerCase() === normalizedTemplateName)) {
+        return commodity;
+      }
+    }
+
+    return templateName;
   }
 }

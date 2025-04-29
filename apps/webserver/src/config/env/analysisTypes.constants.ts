@@ -10,6 +10,7 @@ export const analysisTypes = {
   FOREST_CHANGE_DIAGNOSTICS: 'FCD',
   DEFORESTATION_KPIS: 'AFI',
   ALERTS: 'ALERTS',
+  GREENHOUSE_GAS_EMISSIONS: 'GHG',
   PALM_RISK: 'PalmRisk',
 } as const;
 
@@ -31,6 +32,12 @@ export const analysisTypesOptionsNewNames = [
     label: 'Post-2000 Forest Change',
     shortLabel: 'Post-2000',
     description: 'Annual tree cover loss since 2001 + additional contextual and regional datasets',
+  },
+  {
+    id: analysisTypes.GREENHOUSE_GAS_EMISSIONS,
+    label: 'Greenhouse Gas Emissions',
+    shortLabel: 'GHG',
+    description: 'Greenhouse gas emissions from deforestation and forest degradation',
   },
 ];
 

@@ -15,6 +15,7 @@ export default function AnalysisStatusBanners({
   isAnalysisFailedByExceededAnalysisLimit,
   isListSubmittedForAnalysis,
   isListWithErrors,
+  isOnlyGHGActive,
 }) {
   const theme = useTheme();
 
@@ -66,6 +67,7 @@ export default function AnalysisStatusBanners({
     {
       condition:
         !isListWithErrors &&
+        !isOnlyGHGActive &&
         ((isDiagnosticStatusDraft && !isListSubmittedForAnalysis) ||
           isAnalysisFailedByExceededAnalysisLimit),
       title: 'DRAFT',

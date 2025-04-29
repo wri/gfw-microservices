@@ -1,3 +1,4 @@
+import { Logger } from '@nestjs/common';
 import { SQLUtils } from '../util/sql.utils';
 import * as sql from 'mssql';
 
@@ -8,19 +9,21 @@ interface UpdateListsAnalysisStatusParams {
   listId: number;
   errorInfo: string;
   status: number;
+  options?: string;
 }
 /**
  * @summary updates ListsAnalysisStatus row for specific list + analysis_id combination
  */
 export async function updateListsAnalysisStatus(
   databaseName: string,
-  { listId, errorInfo, status }: UpdateListsAnalysisStatusParams
+  { listId, errorInfo, status, options }: UpdateListsAnalysisStatusParams
 ) {
   try {
     const parameters = [
       { field: 'ListID', type: sql.Int, value: listId },
       { field: 'ErrorInfo', type: sql.VarChar(2000), value: errorInfo },
       { field: 'Status', type: sql.Int, value: status },
+      { field: 'options', type: sql.Int, value: options ?? null },
     ];
     return await SQLUtils.queryDBFirstRow<boolean>(
       databaseName,
@@ -28,6 +31,7 @@ export async function updateListsAnalysisStatus(
       parameters
     );
   } catch (error) {
+    Logger.log('Update lists analysis status', error.stack || error);
     throw new Error(error);
   }
 }

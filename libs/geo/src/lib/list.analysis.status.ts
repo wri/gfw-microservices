@@ -8,6 +8,7 @@ import {
   ListSchema,
   ListSchemaType,
   SQLUtils,
+  updateListsAnalysisStatus,
   User,
 } from '@wri-monorepos/sql';
 import {
@@ -38,7 +39,6 @@ import {
 } from '../utils/list.utils';
 import axios from 'axios';
 import { flatten } from 'lodash';
-import { updateListsAnalysisStatus } from './list.analysis.status/updateListAnalysisStatus';
 import { mockAnalysisFlow } from '../mock';
 import { EntitySchema } from 'typeorm';
 

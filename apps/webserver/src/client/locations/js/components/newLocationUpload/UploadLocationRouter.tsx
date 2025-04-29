@@ -3,7 +3,6 @@ import React, { useRef } from 'react';
 import { Route, Switch } from 'react-router-dom';
 import { Box } from '@mui/material';
 
-import { ThemeProvider } from '../../../../styles/ThemeProvider';
 import {
   UploadLocationByFile,
   UploadLocationByPolygon,
@@ -38,26 +37,24 @@ type UploadLocationRouterProps = {
 export function UploadLocationRouter({ userLists, geoFromMap }: UploadLocationRouterProps) {
   const polygonFromMapPage = useRef(geoFromMap);
   return (
-    <ThemeProvider>
-      <Box
-        className="new-location-upload"
-        sx={{ mt: 1.5, mx: 'auto', maxWidth: '1025px', minWidth: '300px' }}
-      >
-        <Switch>
-          <Route path={UploadLocationRoutes.OPTIONS} component={UploadLocationOptions} exact />
-          <Route path={UploadLocationRoutes.UPLOAD_BY_FILE} component={UploadLocationByFile} />
-          <Route path={UploadLocationRoutes.UPLOAD_BY_POLYGON}>
-            <UploadLocationByPolygon polygonFromMapPage={polygonFromMapPage} />
-          </Route>
-          <Route path={UploadLocationRoutes.UPLOAD_BY_POINT} component={UploadLocationByPoint} />
-          <Route path={UploadLocationRoutes.PREVIEW} component={UploadLocationPreview} />
-          <Route path={UploadLocationRoutes.CONFIGURE_LIST}>
-            <ConfigureList userLists={userLists} />
-          </Route>
-          <Route path={UploadLocationRoutes.SUMMARY_AND_SUBMIT} component={SummaryAndSubmit} />
-          <Route path={UploadLocationRoutes.SUBMISSION_SUCCESS} component={SubmissionSuccess} />
-        </Switch>
-      </Box>
-    </ThemeProvider>
+    <Box
+      className="new-location-upload"
+      sx={{ mt: 1.5, mx: 'auto', maxWidth: '1025px', minWidth: '300px' }}
+    >
+      <Switch>
+        <Route path={UploadLocationRoutes.OPTIONS} component={UploadLocationOptions} exact />
+        <Route path={UploadLocationRoutes.UPLOAD_BY_FILE} component={UploadLocationByFile} />
+        <Route path={UploadLocationRoutes.UPLOAD_BY_POLYGON}>
+          <UploadLocationByPolygon polygonFromMapPage={polygonFromMapPage} />
+        </Route>
+        <Route path={UploadLocationRoutes.UPLOAD_BY_POINT} component={UploadLocationByPoint} />
+        <Route path={UploadLocationRoutes.PREVIEW} component={UploadLocationPreview} />
+        <Route path={UploadLocationRoutes.CONFIGURE_LIST}>
+          <ConfigureList userLists={userLists} />
+        </Route>
+        <Route path={UploadLocationRoutes.SUMMARY_AND_SUBMIT} component={SummaryAndSubmit} />
+        <Route path={UploadLocationRoutes.SUBMISSION_SUCCESS} component={SubmissionSuccess} />
+      </Switch>
+    </Box>
   );
 }

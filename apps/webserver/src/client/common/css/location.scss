@@ -3,6 +3,10 @@
   max-width: 1024px;
   padding: $space-large 0;
 
+  &--new-upload {
+    padding-top: $space-comfortable;
+  }
+
   .section-title-large {
     font-size: $font-size-x-large;
   }

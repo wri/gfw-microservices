@@ -6,9 +6,9 @@ import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
 
 import { useHistory } from '../hooks';
-import { LocationTypeButton, ExternalHelperResource, NavBar, AddressSelector } from '../components';
+import { LocationTypeButton, NavBar, AddressSelector } from '../components';
 import HectareKilometerSwitch from '../../adding/HectareKilometerSwitch';
-import { PillButton } from '../../../../../components';
+import { ExternalHelperResource, PillButton } from '../../../../../components';
 import { MeasurementUnit } from '../types';
 import { coordinateSchema, locationNameSchema } from '../utils/schema';
 import { useUploadLocation } from '../contexts';

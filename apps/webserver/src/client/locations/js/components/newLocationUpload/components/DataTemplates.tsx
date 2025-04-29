@@ -25,8 +25,7 @@ import {
   Timeline,
 } from '@mui/icons-material';
 
-import { ExternalHelperResource } from '.';
-import { PillButton } from '../../../../../components';
+import { ExternalHelperResource, PillButton } from '../../../../../components';
 import { aws_templates } from '../../../../../common/js/config';
 
 type DataTemplatesProps = {

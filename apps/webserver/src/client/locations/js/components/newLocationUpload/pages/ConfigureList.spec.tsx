@@ -48,6 +48,7 @@ jest.mocked(useUploadLocation).mockReturnValue({
   setUploadLocationByPolygon: jest.fn(),
   addFile: jest.fn(),
   updateSaveMode: jest.fn(),
+  selectUploadType: jest.fn(),
 });
 
 const mockUserLists: UserList[] = [

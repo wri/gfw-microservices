@@ -1,11 +1,20 @@
 import {
+  analysisTypes,
   analysisTypesOptionsNewNames,
   palmRiskAnalysis,
 } from '../../../../../../config/env/analysisTypes.constants';
 
 export const VALID_UPLOAD_FILE_FORMATS = ['csv', 'xls', 'xlsx', 'zip', 'kml', 'kmz'];
 
-export const typeOfAnalysisMap = [...analysisTypesOptionsNewNames.slice(0, 3), palmRiskAnalysis];
+export const typeOfAnalysisMap = [
+  ...analysisTypesOptionsNewNames.filter(
+    (x) =>
+      x.id === analysisTypes.DEFORESTATION_KPIS ||
+      x.id === analysisTypes.ALERTS ||
+      x.id === analysisTypes.FOREST_CHANGE_DIAGNOSTICS
+  ),
+  palmRiskAnalysis,
+];
 
 export const commodities = {
   cattle: 'Cattle',

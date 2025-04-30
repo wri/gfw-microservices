@@ -410,7 +410,7 @@ describe('ConfigureList', () => {
     expect(mockHistoryPush).toHaveBeenCalledWith('SUMMARY_AND_SUBMIT');
   }, 10100);
 
-  it('should call api adding gfpw_ in the beginning for custom commodities', async () => {
+  it('should call api adding gfwp_ in the beginning for custom commodities', async () => {
     render(<ConfigureList userLists={mockUserLists} />);
 
     const commodityDropdown = screen.getAllByRole('combobox')[0];
@@ -450,4 +450,12 @@ describe('ConfigureList', () => {
       })
     );
   }, 15100);
+
+  it('should only show the three available types of analysis', () => {
+    render(<ConfigureList userLists={mockUserLists} />);
+
+    const amountOfTypesOfAnalysis = screen.getAllByRole('checkbox');
+
+    expect(amountOfTypesOfAnalysis.length).toBe(3);
+  });
 });

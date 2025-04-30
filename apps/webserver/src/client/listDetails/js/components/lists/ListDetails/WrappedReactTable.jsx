@@ -215,7 +215,20 @@ const WrappedReactTable = ({
       return '';
     }
 
-    return errorDetailsMap[errorDetails] || 'Server error';
+    return errorsMap[errorDetails] || 'Server error';
+  };
+
+  const getLocationError = (locationErrorJson) => {
+    if (!locationErrorJson) {
+      return '';
+    }
+
+    try {
+      const [firstError] = JSON.parse(locationErrorJson);
+      return firstError ? 'AnalysisError' : '';
+    } catch {
+      return '';
+    }
   };
 
   return (
@@ -224,7 +237,13 @@ const WrappedReactTable = ({
       {...reactTableOptions}
       TrComponent={(props) => {
         return (
-          <Tooltip title={getErrorDetails(props.rowInfo?.ErrorDetails)} arrow placement="left">
+          <Tooltip
+            title={getErrorDetails(
+              props.rowInfo?.ErrorDetails || getLocationError(props.rowInfo?.location_error)
+            )}
+            arrow
+            placement="top-start"
+          >
             <span>
               <CustomRow
                 isGfwList={isGfwList}
@@ -257,7 +276,7 @@ const WrappedReactTable = ({
 
 export default WrappedReactTable;
 
-const errorDetailsMap = {
+const errorsMap = {
   'Invalid location':
     'This location is not on land. Please ensure your geometry is accurate and in the WGS 84 projection.',
   'Invalid area':
@@ -268,4 +287,5 @@ const errorDetailsMap = {
     'No analysis value is defined. Please define either an analysis radius, or an analysis area.',
   'Unable to convert point to polygon: analysisRadius cannot be greater than 3000 km':
     'The defined analysis radius is too big. Valid analysis radius must be smaller than 3000 km.',
+  AnalysisError: 'Your location failed analysis due to its size or geometry.',
 };

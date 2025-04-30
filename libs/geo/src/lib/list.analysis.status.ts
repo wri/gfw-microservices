@@ -235,13 +235,7 @@ export const handleCreateAnalysis = async (
         key === 'GHG' ? value : !value
       );
       if (hasOnlyGHGAnalysis) {
-        await updateListsAnalysisStatus(organizationDb, {
-          listId: listId,
-          errorInfo: 'Invalid GHG Commodity',
-          status: listStatus.Inactive,
-          analysisIds: Object.keys(analysisTypes),
-        });
-        throw new Error(`Invalid GHG Commodity: ${error.stack || error}`);
+        throw error;
       } else {
         delete analysisTypes['GHG'];
       }
@@ -476,7 +470,14 @@ export const isGHGCommodityValid = async (id: number, organizationDb: string): P
     return true;
   } catch (error) {
     Logger.error('validateYields', error.stack || error);
-    throw new BadRequestException(error.stack || error);
+    await saveAnalysisStatusErrorInfo(
+      organizationDb,
+      id,
+      error.message,
+      listStatus.Inactive,
+      'GHG'
+    );
+    throw new BadRequestException(error.message || error.stack || error);
   }
 };
 
@@ -491,11 +492,14 @@ const validateYields = (listAttributes: ListSchemaType[], nullIsAvailable: boole
         return nullIsAvailable;
       }
       // Check if yield value is a number
-      return !isNaN(parseFloat(yieldValue));
+      if (isNaN(parseFloat(yieldValue))) {
+        throw new Error('Some yield has non-numeric value');
+      }
+      return true;
     });
   } catch (error) {
     Logger.error('validateGHGCommodity', error.stack || error);
-    return false;
+    throw error;
   }
 };
 

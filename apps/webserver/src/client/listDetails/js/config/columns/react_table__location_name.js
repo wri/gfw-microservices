@@ -2,9 +2,7 @@ import React from 'react';
 import { locationsPage } from '../../../../common/js/config';
 import { columnHeaders } from './columnHeaders.constants';
 import CustomTooltip from '../../../../common/js/components/CustomTooltip/CustomTooltip';
-import FailedTooltip from '../../../../common/js/components/CustomTooltip/FailedTooltip';
 import ColumnsHeader from '../../components/columns/ColumnsHeader';
-import { listStatus } from '../../../../../config/env/listStatuses.constants';
 
 const react_table__location_name = [
   {
@@ -43,39 +41,6 @@ const react_table__location_name = [
             </span>
             <span className="DiagnosticStatusDraft__label_table">
               <CustomTooltip placement="top" label="" tooltipMessage={tooltipMessage} />
-            </span>
-          </span>
-        );
-      }
-      if (cellInfo.original.location_status_id === listStatus.Inactive) {
-        // failed location
-        return (
-          <span
-            title={cellInfo.original['Location Name'] || cellInfo.original['Investment Name']}
-            style={{
-              display: 'grid',
-              gridTemplateColumns: '1fr auto',
-              justifyContent: 'space-between',
-              fontStyle: 'italic',
-              color: '#404041',
-            }}
-          >
-            <span
-              style={{
-                textOverflow: 'ellipsis',
-                overflow: 'hidden',
-              }}
-            >
-              {cellInfo.original['Location Name'] || cellInfo.original['Investment Name']}
-            </span>
-
-            <span className="my-lists-summary__icon-container">
-              <FailedTooltip
-                placement="top"
-                label=""
-                tooltipMessage={locationsPage.columns.tooltipMessage}
-                reason="failed-location"
-              />
             </span>
           </span>
         );

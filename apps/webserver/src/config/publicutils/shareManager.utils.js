@@ -15,7 +15,6 @@ import { mergeListsWithAnalysisId } from './listManager.utils';
  *
  ********************************************************************/
 // Imports required for this module.
-const Q = require('q');
 const path = require('path');
 const sql = require('mssql');
 const langResources = require(path.resolve('./config/langResources'));
@@ -27,130 +26,104 @@ import { getSharedListByUser as getSharedListByUserQuery } from '@wri-monorepos/
 
 /** @function {shareInternalList}
  *  @summary Adding user to internal shared DB table
- *  @param  {Object} req - Manadatory first parameter to pass the request object into the function in case session info is required.
+ *  @param  {Object} req - Mandatory first parameter to pass the request object into the function in case session info is required.
  *  @param {number} admin_id - The sharing admin's id
  *  @param {number} user_id - Who the list is being shared to
  *  @param {number} list_id - The list of interest
  *  return {Promise} Returns promise object. If successful, recordsets, otherwise, error object
  */
-export const shareInternalList = (req, admin_id, user_id, list_id) => {
-  let hasError = false;
-  const shareInternalListResult = new Promise((resolve, reject) => {
-    Q.fcall(() => {
-      // Only admins are allowed to share lists
-      if (!UserManager.isAdministrator(req)) {
-        const errMessage = langResources.getResourceString('userisNotAnAdmin');
-        throw new errorUtils.createErrorMessage(
-          req,
-          errorUtils.ERROR_CODES.userNotAdmin,
-          errMessage,
-          errMessage
-        );
-      } else {
-        const params = [
-          {
-            field: 'admin_id',
-            type: sql.Int,
-            value: admin_id,
-          },
-          {
-            field: 'user_id',
-            type: sql.Int,
-            value: user_id,
-          },
-          {
-            field: 'list_id',
-            type: sql.Int,
-            value: list_id,
-          },
-          {
-            field: 'datetime',
-            type: sql.DateTime,
-            value: new Date(),
-          },
-        ];
-        return sqlUtils.executeOrganizationStoredProcedure(req, 'uspShareInternalList', params);
-      }
-    })
-      .catch((errorMessage) => {
-        hasError = true;
-        const errorObject = errorUtils.createErrorMessage(
-          req,
-          errorUtils.ERROR_CODES.failedToShareInternal,
-          'Failed request to share list',
-          errorMessage
-        );
-        reject(errorObject);
-      })
-      .done(() => {
-        if (!hasError) {
-          resolve(true);
-        }
-      });
-  });
-  return shareInternalListResult;
+export const shareInternalList = async (req, admin_id, user_id, list_id) => {
+  // Only admins are allowed to share lists
+  if (!UserManager.isAdministrator(req)) {
+    const errMessage = langResources.getResourceString('userisNotAnAdmin');
+    throw new errorUtils.createErrorMessage(
+      req,
+      errorUtils.ERROR_CODES.userNotAdmin,
+      errMessage,
+      errMessage
+    );
+  }
+  const params = [
+    {
+      field: 'admin_id',
+      type: sql.Int,
+      value: admin_id,
+    },
+    {
+      field: 'user_id',
+      type: sql.Int,
+      value: user_id,
+    },
+    {
+      field: 'list_id',
+      type: sql.Int,
+      value: list_id,
+    },
+    {
+      field: 'datetime',
+      type: sql.DateTime,
+      value: new Date(),
+    },
+  ];
+  try {
+    await sqlUtils.executeOrganizationStoredProcedure(req, 'uspShareInternalList', params);
+    return true;
+  } catch (errorMessage) {
+    const errorObject = errorUtils.createErrorMessage(
+      req,
+      errorUtils.ERROR_CODES.failedToShareInternal,
+      'Failed request to share list',
+      errorMessage
+    );
+    throw errorObject;
+  }
 };
 
 /** @function {activateShareInternalList}
  *   @summary Updates pending status of shared list to active
- *   @param {Object}  req - Manadatory first parameter to pass the request object into the function in case session info is required.
+ *   @param {Object}  req - Mandatory first parameter to pass the request object into the function in case session info is required.
  *   @param {number} admin_id - The sharing admin's id
  *   @param {number} user_id - Who the list is being shared to
  *   @param {number} list_id - The list of interest
  *   @param {Date} datetime - Date list was created
  *   @return {Promise} Returns promise object. If successful, recordsets, otherwise, error object
  */
-export const activateShareInternalList = (req, admin_id, user_id, list_id, datetime) => {
-  let hasError = false;
-  // Create promise object to return
-  const activateShareInternalListResult = new Promise((resolve, reject) => {
-    Q.fcall(() => {
-      // parameters for stored procedure
-      const params = [
-        {
-          field: 'admin_id',
-          type: sql.Int,
-          value: admin_id,
-        },
-        {
-          field: 'user_id',
-          type: sql.Int,
-          value: user_id,
-        },
-        {
-          field: 'list_id',
-          type: sql.Int,
-          value: list_id,
-        },
-        {
-          field: 'datetime',
-          type: sql.DateTime,
-          value: datetime,
-        },
-      ];
-      return sqlUtils.executeOrganizationStoredProcedure(
-        req,
-        'uspActivateShareInternalList',
-        params
-      );
-    })
-      .catch((errorMessage) => {
-        hasError = true;
-        const errorObject = errorUtils.createErrorMessage(
-          req,
-          errorUtils.ERROR_CODES.failedToShareInternal,
-          'Failed to activate list share',
-          errorMessage
-        );
-        reject(errorObject);
-      })
-      .done(() => {
-        if (!hasError) {
-          resolve(true);
-        }
-      });
-  });
-  return activateShareInternalListResult;
+export const activateShareInternalList = async (req, admin_id, user_id, list_id, datetime) => {
+  // parameters for stored procedure
+  const params = [
+    {
+      field: 'admin_id',
+      type: sql.Int,
+      value: admin_id,
+    },
+    {
+      field: 'user_id',
+      type: sql.Int,
+      value: user_id,
+    },
+    {
+      field: 'list_id',
+      type: sql.Int,
+      value: list_id,
+    },
+    {
+      field: 'datetime',
+      type: sql.DateTime,
+      value: datetime,
+    },
+  ];
+  try {
+    await sqlUtils.executeOrganizationStoredProcedure(req, 'uspActivateShareInternalList', params);
+    return true;
+  } catch (errorMessage) {
+    const errorObject = errorUtils.createErrorMessage(
+      req,
+      errorUtils.ERROR_CODES.failedToShareInternal,
+      'Failed to activate list share',
+      errorMessage
+    );
+    throw errorObject;
+  }
 };
 
 /** @function {deactivateShareInternalList}
@@ -160,57 +133,45 @@ export const activateShareInternalList = (req, admin_id, user_id, list_id, datet
  *   @param  {number} list_id - The list of interest
  *   @return {Promise} Returns promise object. If successful, recordsets, otherwise, error object
  */
-export const deactivateShareInternalList = (req, user_id, list_id) => {
-  let hasError = false;
-  // Create promise object to return
-  const deactivateShareInternalListResult = new Promise((resolve, reject) => {
-    Q.fcall(() => {
-      if (!UserManager.isAdministrator(req)) {
-        const errMessage = langResources.getResourceString('userisNotAnAdmin');
-        throw new errorUtils.createErrorMessage(
-          req,
-          errorUtils.ERROR_CODES.userNotAdmin,
-          errMessage,
-          errMessage
-        );
-      } else {
-        // parameters for stored procedure
-        const params = [
-          {
-            field: 'user_id',
-            type: sql.Int,
-            value: user_id,
-          },
-          {
-            field: 'list_id',
-            type: sql.Int,
-            value: list_id,
-          },
-        ];
-        return sqlUtils.executeOrganizationStoredProcedure(
-          req,
-          'uspDeactivateShareInternalList',
-          params
-        );
-      }
-    })
-      .catch((errorMessage) => {
-        hasError = true;
-        const errorObject = errorUtils.createErrorMessage(
-          req,
-          errorUtils.ERROR_CODES.failedToShareInternal,
-          'Failed to deactivate list share',
-          errorMessage
-        );
-        reject(errorObject);
-      })
-      .done(() => {
-        if (!hasError) {
-          resolve(true);
-        }
-      });
-  });
-  return deactivateShareInternalListResult;
+export const deactivateShareInternalList = async (req, user_id, list_id) => {
+  if (!UserManager.isAdministrator(req)) {
+    const errMessage = langResources.getResourceString('userisNotAnAdmin');
+    throw new errorUtils.createErrorMessage(
+      req,
+      errorUtils.ERROR_CODES.userNotAdmin,
+      errMessage,
+      errMessage
+    );
+  }
+  // parameters for stored procedure
+  const params = [
+    {
+      field: 'user_id',
+      type: sql.Int,
+      value: user_id,
+    },
+    {
+      field: 'list_id',
+      type: sql.Int,
+      value: list_id,
+    },
+  ];
+  try {
+    await sqlUtils.executeOrganizationStoredProcedure(
+      req,
+      'uspDeactivateShareInternalList',
+      params
+    );
+    return true;
+  } catch (errorMessage) {
+    const errorObject = errorUtils.createErrorMessage(
+      req,
+      errorUtils.ERROR_CODES.failedToShareInternal,
+      'Failed to deactivate list share',
+      errorMessage
+    );
+    throw errorObject;
+  }
 };
 
 /** @function {deactivateShareInternalList}
@@ -220,235 +181,165 @@ export const deactivateShareInternalList = (req, user_id, list_id) => {
  *   @param  {number} list_id - The list of interest
  *   @return {Promise} Returns promise object. If successful, recordsets, otherwise, error object
  */
-export const deactivateAllShareInternalList = (req, users_id, list_id) => {
-  let hasError = false;
-  // Create promise object to return
-  const deactivateShareInternalListResult = new Promise((resolve, reject) => {
-    Q.fcall(() => {
-      if (!UserManager.isAdministrator(req)) {
-        const errMessage = langResources.getResourceString('userisNotAnAdmin');
-        throw new errorUtils.createErrorMessage(
-          req,
-          errorUtils.ERROR_CODES.userNotAdmin,
-          errMessage,
-          errMessage
-        );
-      } else {
-        // parameters for stored procedure
-        const params = [
-          {
-            field: 'user_id',
-            type: sql.VarChar,
-            value: users_id,
-          },
-          {
-            field: 'list_id',
-            type: sql.Int,
-            value: list_id,
-          },
-        ];
-        return sqlUtils.executeOrganizationStoredProcedure(
-          req,
-          'uspDeactivateAllShareInternalList',
-          params
-        );
-      }
-    })
-      .catch((errorMessage) => {
-        hasError = true;
-        const errorObject = errorUtils.createErrorMessage(
-          req,
-          errorUtils.ERROR_CODES.failedToShareInternal,
-          'Failed to deactivate list share',
-          errorMessage
-        );
-        reject(errorObject);
-      })
-      .done(() => {
-        if (!hasError) {
-          resolve(true);
-        }
-      });
-  });
-  return deactivateShareInternalListResult;
+export const deactivateAllShareInternalList = async (req, users_id, list_id) => {
+  if (!UserManager.isAdministrator(req)) {
+    const errMessage = langResources.getResourceString('userisNotAnAdmin');
+    throw new errorUtils.createErrorMessage(
+      req,
+      errorUtils.ERROR_CODES.userNotAdmin,
+      errMessage,
+      errMessage
+    );
+  }
+  // parameters for stored procedure
+  const params = [
+    {
+      field: 'user_id',
+      type: sql.VarChar,
+      value: users_id,
+    },
+    {
+      field: 'list_id',
+      type: sql.Int,
+      value: list_id,
+    },
+  ];
+  try {
+    await sqlUtils.executeOrganizationStoredProcedure(
+      req,
+      'uspDeactivateAllShareInternalList',
+      params
+    );
+    return true;
+  } catch (errorMessage) {
+    const errorObject = errorUtils.createErrorMessage(
+      req,
+      errorUtils.ERROR_CODES.failedToShareInternal,
+      'Failed to deactivate list share',
+      errorMessage
+    );
+    throw errorObject;
+  }
 };
 
 /** @function {getUserInternalShareLists}
  *   @summary Get shared lists for a specific user
- *   @param  {Object} req - Manadatory first parameter to pass the request object into the function in case session info is required.
+ *   @param  {Object} req - Mandatory first parameter to pass the request object into the function in case session info is required.
  *   @param {number} user_id - The sharing user's id
  *   @return {Promise<any[]>} Returns list of user shared lists
  */
-export const getUserInternalShareLists = (req, user_id) => {
-  let hasError = false;
-  // Create promise object to return
-  const getUserInternalShareListsResult = new Promise((resolve, reject) => {
-    Q.fcall(() => {
-      // parameters for stored procedure
-      const params = [
-        {
-          field: 'user_id',
-          type: sql.Int,
-          value: user_id,
-        },
-      ];
-      return sqlUtils.executeOrganizationStoredProcedure(
-        req,
-        'uspGetUserInternalShareLists',
-        params
-      );
-    })
-      .catch((errorMessage) => {
-        hasError = true;
-        const errorObject = errorUtils.createErrorMessage(
-          req,
-          errorUtils.ERROR_CODES.failedToGetShared,
-          'Failed get user shared lists',
-          errorMessage
-        );
-        reject(errorObject);
-      })
-      .done((recordsets) => {
-        if (!hasError) {
-          resolve(recordsets);
-        }
-      });
-  });
-  return getUserInternalShareListsResult;
+export const getUserInternalShareLists = async (req, user_id) => {
+  // parameters for stored procedure
+  const params = [
+    {
+      field: 'user_id',
+      type: sql.Int,
+      value: user_id,
+    },
+  ];
+  try {
+    return await sqlUtils.executeOrganizationStoredProcedure(
+      req,
+      'uspGetUserInternalShareLists',
+      params
+    );
+  } catch (errorMessage) {
+    const errorObject = errorUtils.createErrorMessage(
+      req,
+      errorUtils.ERROR_CODES.failedToGetShared,
+      'Failed get user shared lists',
+      errorMessage
+    );
+    throw errorObject;
+  }
 };
 
 /** @function {getSharedListDataByUser}
  *   @summary Get shared lists for a specific user
- *   @param  {Object} req - Manadatory first parameter to pass the request object into the function in case session info is required.
+ *   @param  {Object} req - Mandatory first parameter to pass the request object into the function in case session info is required.
  *   @param {number} user_id - The sharing user's id
  *   @return {Promise<>} Returns list of user shared lists
  */
-export const getSharedListDataByUser = (req, user_id) => {
-  let hasError = false;
-  // Create promise object to return
-  return new Promise((resolve, reject) => {
-    Q.fcall(() => {
-      // parameters for stored procedure
-      const params = [
-        {
-          field: 'userID',
-          type: sql.Int,
-          value: user_id,
-        },
-      ];
-      return sqlUtils.executeOrganizationQuery(req, getSharedListByUserQuery, params);
-    })
-      .catch((errorMessage) => {
-        hasError = true;
-        const errorObject = errorUtils.createErrorMessage(
-          req,
-          errorUtils.ERROR_CODES.failedToGetShared,
-          'Failed get user shared lists',
-          errorMessage
-        );
-        reject(errorObject);
-      })
-      .done((recordsets) => {
-        if (!hasError) {
-          resolve(recordsets);
-        }
-      });
-  });
+export const getSharedListDataByUser = async (req, user_id) => {
+  // parameters for stored procedure
+  const params = [
+    {
+      field: 'userID',
+      type: sql.Int,
+      value: user_id,
+    },
+  ];
+  try {
+    return await sqlUtils.executeOrganizationQuery(req, getSharedListByUserQuery, params);
+  } catch (errorMessage) {
+    const errorObject = errorUtils.createErrorMessage(
+      req,
+      errorUtils.ERROR_CODES.failedToGetShared,
+      'Failed get user shared lists',
+      errorMessage
+    );
+    throw errorObject;
+  }
 };
 
-export const getSharedListDataByUserWithAnalysisStatus = (req, user_id) => {
-  return new Promise((resolve, reject) => {
-    const promises = [
-      getSharedListDataByUser(req, user_id),
-      getAllListsAnalysisStatus(req.session.organization_database),
-    ];
-    Promise.all(promises)
-      .then((results) => {
-        const [orgLists, listAnalysisStatuses] = results;
-        mergeListsWithAnalysisId(orgLists, listAnalysisStatuses);
-        resolve(orgLists);
-      })
-      .catch((error) => reject(error));
-  });
+export const getSharedListDataByUserWithAnalysisStatus = async (req, user_id) => {
+  const [orgLists, listAnalysisStatuses] = await Promise.all([
+    getSharedListDataByUser(req, user_id),
+    getAllListsAnalysisStatus(req.session.organization_database),
+  ]);
+  mergeListsWithAnalysisId(orgLists, listAnalysisStatuses);
+  return orgLists;
 };
 
 /** @function {getUserPendingInternalShareLists}
  *   @summary Get pending shared lists for a specific user
- *   @param  {Object}  req - Manadatory first parameter to pass the request object into the function in case session info is required.
+ *   @param  {Object}  req - Mandatory first parameter to pass the request object into the function in case session info is required.
  *   @param  {number} user_id - The sharing user's id
  *   @return {Promise<any[]>} Returns list of user shared lists
  */
-export const getUserPendingInternalShareLists = (req, user_id) => {
-  let hasError = false;
-  // Create promise object to return
-  const getUserPendingInternalShareListsResult = new Promise((resolve, reject) => {
-    Q.fcall(() => {
-      // parameters for stored procedure
-      const params = [
-        {
-          field: 'user_id',
-          type: sql.Int,
-          value: user_id,
-        },
-      ];
-      return sqlUtils.executeOrganizationStoredProcedure(
-        req,
-        'uspGetUserPendingInternalShareLists',
-        params
-      );
-    })
-      .catch((errorMessage) => {
-        hasError = true;
-        const errorObject = errorUtils.createErrorMessage(
-          req,
-          errorUtils.ERROR_CODES.failedToGetShared,
-          'Failed get user pending shared lists',
-          errorMessage
-        );
-        reject(errorObject);
-      })
-      .done((recordsets) => {
-        if (!hasError) {
-          resolve(recordsets);
-        }
-      });
-  });
-  return getUserPendingInternalShareListsResult;
+export const getUserPendingInternalShareLists = async (req, user_id) => {
+  // parameters for stored procedure
+  const params = [
+    {
+      field: 'user_id',
+      type: sql.Int,
+      value: user_id,
+    },
+  ];
+  try {
+    return await sqlUtils.executeOrganizationStoredProcedure(
+      req,
+      'uspGetUserPendingInternalShareLists',
+      params
+    );
+  } catch (errorMessage) {
+    const errorObject = errorUtils.createErrorMessage(
+      req,
+      errorUtils.ERROR_CODES.failedToGetShared,
+      'Failed get user pending shared lists',
+      errorMessage
+    );
+    throw errorObject;
+  }
 };
 
 /** @function {adminInternalLists}
  *   @summary Get all shared lists for organization
- *   @param  {Object}   req - Manadatory first parameter to pass the request object into the function in case session info is required.
+ *   @param  {Object}   req - Mandatory first parameter to pass the request object into the function in case session info is required.
  *   @return {Promise<any[]>} Returns list of all shared lists
  */
-export const getAdminInternalLists = (req) => {
-  let hasError = false;
-  // Create promise object to return
-  const getAdminInternalListsResult = new Promise((resolve, reject) => {
-    Q.fcall(() => {
-      if (!UserManager.isAdministrator(req)) {
-        const errMessage = langResources.getResourceString('userisNotAnAdmin');
-        throw new errorUtils.createErrorMessage(
-          req,
-          errorUtils.ERROR_CODES.userNotAdmin,
-          errMessage,
-          errMessage
-        );
-      } else {
-        return sqlUtils.executeOrganizationStoredProcedure(req, 'uspAdminInternalLists');
-      }
-    })
-      .catch((errorMessage) => {
-        hasError = true;
-        reject(errorMessage);
-      })
-      .done((recordsets) => {
-        if (!hasError) {
-          resolve(recordsets);
-        }
-      });
-  });
-  return getAdminInternalListsResult;
+export const getAdminInternalLists = async (req) => {
+  if (!UserManager.isAdministrator(req)) {
+    const errMessage = langResources.getResourceString('userisNotAnAdmin');
+    throw new errorUtils.createErrorMessage(
+      req,
+      errorUtils.ERROR_CODES.userNotAdmin,
+      errMessage,
+      errMessage
+    );
+  }
+
+  return await sqlUtils.executeOrganizationStoredProcedure(req, 'uspAdminInternalLists');
 };
 
 /** @function {adminInternalLists}
@@ -457,45 +348,30 @@ export const getAdminInternalLists = (req) => {
  *   @param {number} list_id -  The list of interest
  *   @return {Promise<any>} Returns all users for shared list
  */
-export const getAllUsersForSharedList = (req, list_id) => {
-  let hasError = false;
-  // Create promise object to return
-  return new Promise((resolve, reject) => {
-    Q.fcall(() => {
-      if (!UserManager.isAdministrator(req)) {
-        const errMessage = langResources.getResourceString('userisNotAnAdmin');
-        throw new errorUtils.createErrorMessage(
-          req,
-          errorUtils.ERROR_CODES.userNotAdmin,
-          errMessage,
-          errMessage
-        );
-      } else {
-        // parameters for stored procedure
-        const params = [
-          {
-            field: 'list_id',
-            type: sql.Int,
-            value: list_id,
-          },
-        ];
-        return sqlUtils.executeOrganizationStoredProcedure(
-          req,
-          'uspGetUsersInternalShareLists',
-          params
-        );
-      }
-    })
-      .catch((errorMessage) => {
-        hasError = true;
-        reject(errorMessage);
-      })
-      .done((recordsets) => {
-        if (!hasError) {
-          resolve(recordsets);
-        }
-      });
-  });
+export const getAllUsersForSharedList = async (req, list_id) => {
+  if (!UserManager.isAdministrator(req)) {
+    const errMessage = langResources.getResourceString('userisNotAnAdmin');
+    throw new errorUtils.createErrorMessage(
+      req,
+      errorUtils.ERROR_CODES.userNotAdmin,
+      errMessage,
+      errMessage
+    );
+  }
+  // parameters for stored procedure
+  const params = [
+    {
+      field: 'list_id',
+      type: sql.Int,
+      value: list_id,
+    },
+  ];
+
+  return await sqlUtils.executeOrganizationStoredProcedure(
+    req,
+    'uspGetUsersInternalShareLists',
+    params
+  );
 };
 
 /**

@@ -5,7 +5,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import fetch from 'node-fetch';
 import { AppController } from './app.controller';
 import * as fs from 'fs';
-import uniqId from 'uniqid';
+import { v4 as uuidv4 } from 'uuid';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { AppService } from './app.service';
 import { ConfigModule } from '@nestjs/config';
@@ -230,7 +230,7 @@ describe('AppController', () => {
   describe('Large list process', () => {
     xit('Start large list process', async () => {
       const appController = app.get<AppController>(AppController);
-      const listName = `Implementation For LargeListProccess${uniqId()}`;
+      const listName = `Implementation For LargeListProcess${uuidv4()}`;
       const userId = 22;
       const requestLargeListCreation: RequestTriggerProcessLargeList = {
         client_database: targetDatabase,
@@ -248,11 +248,11 @@ describe('AppController', () => {
     });
   });
 
-  describe('Whole Process to upload large list and trigguer the proccess', () => {
-    xit('Upload file, Save the list and trigguer the proccess', async () => {
+  describe('Whole Process to upload large list and trigger the process', () => {
+    xit('Upload file, Save the list and trigger the process', async () => {
       const appController = app.get<AppController>(AppController);
       // Variables to be used for test
-      const listName = `Implementation For LargeListProccess${uniqId()}`;
+      const listName = `Implementation For LargeListProcess${uuidv4()}`;
       const userId = 10034; // Ismael ID
 
       // Generate presigned URL to upload file
@@ -284,19 +284,19 @@ describe('AppController', () => {
         organization_id: 10,
         saveAsDraft: false,
       };
-      const trigguerProccessResult = await appController.triggerProcessLargeList(
+      const triggerProcessResult = await appController.triggerProcessLargeList(
         requestLargeListProcess
       );
 
-      expect(trigguerProccessResult).toEqual({
+      expect(triggerProcessResult).toEqual({
         list_id: expect.any(Number),
       });
 
-      const trigguerLargeListProcessResult = await appController.processLargeList({
+      const triggerLargeListProcessResult = await appController.processLargeList({
         organization_id: 1,
         organization_database: 'clientstore-DevCo',
         subscription_status_id: 1,
-        list_id: trigguerProccessResult.list_id,
+        list_id: triggerProcessResult.list_id,
         path: presignedURL.fileS3Route,
         template_type: 'cocoa_generic',
         user_id: userId,
@@ -304,7 +304,7 @@ describe('AppController', () => {
         saveAsDraft: false,
       });
 
-      expect(trigguerLargeListProcessResult).toEqual({
+      expect(triggerLargeListProcessResult).toEqual({
         executionArn: expect.any(String),
         startDate: expect.any(Number),
       });
@@ -314,7 +314,7 @@ describe('AppController', () => {
   describe('Whole Process to copy a full list and save as draft', () => {
     xit('copy all locations from a list and save as draft', async () => {
       const locationService = app.get<LocationService>(LocationService);
-      const listName = `Copy entire list to new test ${uniqId()}`;
+      const listName = `Copy entire list to new test ${uuidv4()}`;
       const userId = 10034; // Ismael ID
       const request: CopyOrMoveLargeListRequest = {
         listId: 961,

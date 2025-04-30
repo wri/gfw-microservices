@@ -4,7 +4,7 @@ import { ThemeProvider } from '../../../../styles/ThemeProvider';
 import { locationsPage } from '../../config';
 import {
   analysisTypes,
-  analysisTypesOptionsNewNames,
+  analysisTypesForUI,
   palmRiskAnalysis,
 } from '../../../../../config/env/analysisTypes.constants';
 import BetaTag from '../BetaTag';
@@ -41,8 +41,8 @@ function AnalysisTypesSelector({
 
   const analysisOptions =
     commodity === 'OILP' || isPalmOilBackwardComp
-      ? [...analysisTypesOptionsNewNames, palmRiskAnalysis]
-      : analysisTypesOptionsNewNames;
+      ? [...analysisTypesForUI, palmRiskAnalysis]
+      : analysisTypesForUI;
 
   return (
     <ThemeProvider>

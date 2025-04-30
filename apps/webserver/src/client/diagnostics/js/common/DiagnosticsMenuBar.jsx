@@ -4,10 +4,7 @@ import Button from '../../../common/js/components/Button';
 import IconReport from '../../../common/js/components/icon/IconReport';
 import IconDownload from '../../../common/js/components/icon/IconDownload';
 import printDiagnosticsReport from './printDiagnosticsReport';
-import {
-  analysisTypes,
-  analysisTypesOptionsNewNames,
-} from '../../../../config/env/analysisTypes.constants';
+import { analysisTypes, analysisTypesForUI } from '../../../../config/env/analysisTypes.constants';
 import { listStatus } from '../../../../config/env/listStatuses.constants';
 import './DiagnosticsMenuBar.scss';
 
@@ -52,7 +49,7 @@ function DiagnosticsMenuBar({
 
   const diagnosticOptions = activeAnalysesIds.map((analysisId) => ({
     value: analysisId,
-    label: analysisTypesOptionsNewNames.find(({ id }) => id === analysisId)?.label,
+    label: analysisTypesForUI.find(({ id }) => id === analysisId)?.label,
   }));
 
   const redirectToSelectedDiagnostics = (diagnostics) => {

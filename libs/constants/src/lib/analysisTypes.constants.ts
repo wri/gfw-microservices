@@ -27,24 +27,28 @@ export const analysisTypesOptionsNewNames = [
     label: 'Post-2020 Risk Assessment',
     shortLabel: 'Post-2020',
     description: 'Deforestation in natural forest since 2021 + additional contextual datasets',
+    showInUI: true,
   },
   {
     id: analysisTypes.ALERTS,
     label: 'Recent Deforestation Alerts',
     shortLabel: 'Alerts',
     description: 'Recent deforestation alerts, updated weekly',
+    showInUI: true,
   },
   {
     id: analysisTypes.FOREST_CHANGE_DIAGNOSTICS,
     label: 'Post-2000 Forest Change',
     shortLabel: 'Post-2000',
     description: 'Annual tree cover loss since 2001 + additional contextual and regional datasets',
+    showInUI: true,
   },
   {
     id: analysisTypes.GREENHOUSE_GAS_EMISSIONS,
     label: 'Greenhouse Gas Emissions',
     shortLabel: 'GHG',
     description: 'Greenhouse gas emissions from deforestation and forest degradation',
+    showInUI: false,
   },
 ];
 

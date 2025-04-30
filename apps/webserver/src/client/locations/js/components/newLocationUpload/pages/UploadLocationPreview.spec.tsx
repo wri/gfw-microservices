@@ -163,5 +163,7 @@ describe('UploadLocationPreview', () => {
         error: { errors: ['Empty data file'] },
       })
     );
+
+    expect(screen.getByRole('button', { name: /next/i })).toBeDisabled();
   });
 });

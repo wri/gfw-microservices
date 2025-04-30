@@ -57,7 +57,6 @@ describe('Argentina Layers Parser', () => {
       ['Argentina OTBN', 'cat3', 3, 20],
       ['Argentina OTBN', 'cat4', 4, 26.666666666666668],
       ['Argentina OTBN', 'cat5', 5, 33.33333333333333],
-      ['Argentina OTBN', 'Non-Overlap', 0, 0],
     ]);
   });
 
@@ -88,7 +87,6 @@ describe('Argentina Layers Parser', () => {
       ['Argentina OTBN', 'cat1', 1, 6.666666666666667],
       ['Argentina OTBN', 'cat2', 2, 13.333333333333334],
       ['Argentina OTBN', 'Other', 12, 80],
-      ['Argentina OTBN', 'Non-Overlap', 0, 0],
     ]);
   });
 
@@ -130,7 +128,6 @@ describe('Argentina Layers Parser', () => {
     expect(csvData).toStrictEqual([
       ['Argentina OTBN', 'cat1', 1, 20],
       ['Argentina OTBN', 'Other', 5, 100],
-      ['Argentina OTBN', 'Non-Overlap', -1, -20],
       ['Argentina Protected Areas', 'cat1', 1, 20],
       ['Argentina Protected Areas', 'cat2', 2, 40],
       ['Argentina Protected Areas', 'Non-Overlap', 2, 40],
@@ -177,7 +174,6 @@ describe('Argentina Layers Parser', () => {
     expect(csvData).toStrictEqual([
       ['Argentina OTBN', 'cat1', 1, 20],
       ['Argentina OTBN', 'Other', 5, 100],
-      ['Argentina OTBN', 'Non-Overlap', -1, -20],
       ['Argentina Protected Areas', 'cat1', 1, 20],
       ['Argentina Protected Areas', 'cat2', 2, 40],
       ['Argentina Protected Areas', 'Non-Overlap', 2, 40],
@@ -213,7 +209,6 @@ describe('Argentina Layers Parser', () => {
       ['test', 'wri', 1, 'Argentina OTBN', 'cat1', 1, 6.666666666666667],
       ['test', 'wri', 1, 'Argentina OTBN', 'cat2', 2, 13.333333333333334],
       ['test', 'wri', 1, 'Argentina OTBN', 'Other', 12, 80],
-      ['test', 'wri', 1, 'Argentina OTBN', 'Non-Overlap', 0, 0],
     ]);
   });
 
@@ -243,12 +238,7 @@ describe('Argentina Layers Parser', () => {
       csvData,
     });
 
-    expect(csvData).toStrictEqual([
-      ['wri', 1, 'Argentina OTBN', 'cat1', 0, 0],
-      ['wri', 1, 'Argentina OTBN', 'cat2', 0, 0],
-      ['wri', 1, 'Argentina OTBN', 'Other', 0, 0],
-      ['wri', 1, 'Argentina OTBN', 'Non-Overlap', 0, 0],
-    ]);
+    expect(csvData).toStrictEqual([]);
   });
 
   it('should return data from ARG obj when fields are in country format', () => {
@@ -286,11 +276,9 @@ describe('Argentina Layers Parser', () => {
       ['wri', 1, 'Argentina Protected Areas', 'cat1', 10, 20],
       ['wri', 1, 'Argentina Protected Areas', 'cat2', 35, 70],
       ['wri', 1, 'Argentina Protected Areas', 'cat3', 5, 10],
-      ['wri', 1, 'Argentina Protected Areas', 'Non-Overlap', 0, 0],
       ['wri', 1, 'Argentina Indigenous Territories', 'dog1', 30, 60],
       ['wri', 1, 'Argentina Indigenous Territories', 'dog2', 5, 10],
       ['wri', 1, 'Argentina Indigenous Territories', 'dog3', 15, 30],
-      ['wri', 1, 'Argentina Indigenous Territories', 'Non-Overlap', 0, 0],
     ]);
   });
 });

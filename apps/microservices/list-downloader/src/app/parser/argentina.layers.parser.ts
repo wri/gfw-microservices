@@ -46,15 +46,14 @@ class ArgentinaLayerUtil {
     this.layerData = Object.entries(parsedData);
   }
 
-  getSumOfValues() {
-    const values = this.layerData.reduce((acc: number, [, value]) => {
+  // calculates sum of values from the provided data array, defaulting to all layerData.
+  accumulateEntryValues(data = this.layerData) {
+    return data.reduce((acc: number, [, value]) => {
       if (typeof value === 'number') {
         acc += value;
       }
       return acc;
-    }, 0) as number;
-
-    return values;
+    }, 0);
   }
 
   applyKeyFormatting(key: string, attribute: string) {
@@ -75,26 +74,15 @@ class ArgentinaLayerUtil {
     if (!limit || this.layerData.length <= limit) {
       return this;
     }
-    // sort by column
-    const sortedLayerData = this.layerData.sort((a, b) => {
-      if (a[ENTRY_VALUE_INDEX] < b[ENTRY_VALUE_INDEX]) {
-        return -1;
-      } else if (a[ENTRY_VALUE_INDEX] > b[ENTRY_VALUE_INDEX]) {
-        return 1;
-      } else {
-        return 0;
-      }
-    });
+    // sort (asc) by entry value
+    const sortedLayerData = this.layerData.sort(
+      (a, b) => a[ENTRY_VALUE_INDEX] - b[ENTRY_VALUE_INDEX]
+    );
 
     const sliceToInclude = sortedLayerData.slice(0, limit - 1);
     const sliceToExclude = sortedLayerData.slice(limit - 1);
 
-    const groupedOtherValues = sliceToExclude.reduce((acc, [, value]) => {
-      if (typeof value === 'number') {
-        acc = acc + value;
-      }
-      return acc;
-    }, 0);
+    const groupedOtherValues = this.accumulateEntryValues(sliceToExclude);
 
     this.layerData = [...sliceToInclude, ['Other', groupedOtherValues]];
 
@@ -102,15 +90,22 @@ class ArgentinaLayerUtil {
   }
 
   /**
-   * inserts into layerData the non-overlap values from data
+   * inserts into layerData the non-overlap values from data if greater than zero
+   * clears all entries if all values are zero
    * @returns this
    */
   handleNonOverlapDifference() {
     const totalArea = getTotalArea(this.data, 'ARG');
-    const sumOfValues = this.getSumOfValues();
-
+    const sumOfValues = this.accumulateEntryValues();
     const nonOverlapValue = totalArea - sumOfValues;
-    this.layerData.push(['Non-Overlap', nonOverlapValue]);
+
+    if (sumOfValues === 0) {
+      this.layerData = [];
+    }
+
+    if (nonOverlapValue > 0) {
+      this.layerData.push(['Non-Overlap', nonOverlapValue]);
+    }
 
     return this;
   }

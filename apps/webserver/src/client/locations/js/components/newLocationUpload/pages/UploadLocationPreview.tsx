@@ -216,7 +216,7 @@ export function UploadLocationPreview() {
             variant="contained"
             startIcon={<ArrowForwardIos />}
             onClick={() => history.push('CONFIGURE_LIST')}
-            disabled={isLoading || !data?.features || !!error}
+            disabled={isLoading || !data?.features || !!error || !!apiRequestError}
           >
             Next
           </PillButton>

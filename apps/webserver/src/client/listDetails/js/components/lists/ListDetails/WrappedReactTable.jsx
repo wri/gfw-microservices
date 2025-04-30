@@ -287,6 +287,5 @@ const errorsMap = {
     'No analysis value is defined. Please define either an analysis radius, or an analysis area.',
   'Unable to convert point to polygon: analysisRadius cannot be greater than 3000 km':
     'The defined analysis radius is too big. Valid analysis radius must be smaller than 3000 km.',
-  AnalysisError:
-    'Your location failed analysis due to its size or geometry. Take a look at our Help Center materials for guidance on how to fix analysis failures.',
+  AnalysisError: 'Your location failed analysis due to its size or geometry.',
 };

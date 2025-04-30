@@ -5,7 +5,7 @@ import {
 
 export const VALID_UPLOAD_FILE_FORMATS = ['csv', 'xls', 'xlsx', 'zip', 'kml', 'kmz'];
 
-export const typeOfAnalysisMap = [...analysisTypesOptionsNewNames, palmRiskAnalysis];
+export const typeOfAnalysisMap = [...analysisTypesOptionsNewNames.slice(0, 3), palmRiskAnalysis];
 
 export const commodities = {
   cattle: 'Cattle',

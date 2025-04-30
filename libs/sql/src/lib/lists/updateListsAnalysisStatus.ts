@@ -30,12 +30,12 @@ export async function updateListsAnalysisStatus(
 
     const whereClause = {
       listId,
-      ...(analysisIds && { analysisId: In(analysisIds) })
+      ...(analysisIds && { analysisId: In(analysisIds) }),
     };
 
     await repository.update(whereClause, {
       errorInfo,
-      status
+      status,
     });
 
     return true;

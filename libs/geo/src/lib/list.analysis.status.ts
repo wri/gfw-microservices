@@ -205,14 +205,6 @@ export const handleCreateAnalysis = async (
 
     setListAnalysisStatusByTypes(organizationDb, listId, analysisTypesToProcess);
 
-    if (isListLocationOverLimit) {
-      await updateListsAnalysisStatus(organizationDb, {
-        listId: listId,
-        errorInfo: 'Exceeded Analysis Limit',
-        status: listStatus.Inactive,
-      });
-      throw new Error(`Analysis limit reached`);
-    }
     const listAnalysisStatusData = await getListAnalysisStatus(organizationDb, listId);
 
     const analysisTypes = extractAnalysisTypes(
@@ -222,6 +214,17 @@ export const handleCreateAnalysis = async (
           )
         : listAnalysisStatusData
     );
+
+    if (isListLocationOverLimit) {
+      await updateListsAnalysisStatus(organizationDb, {
+        listId: listId,
+        errorInfo: 'Exceeded Analysis Limit',
+        status: listStatus.Inactive,
+        analysisIds: Object.keys(analysisTypes),
+      });
+      throw new Error(`Analysis limit reached`);
+    }
+
     try {
       if ('GHG' in analysisTypes && analysisTypes['GHG']) {
         await isGHGCommodityValid(listId, organizationDb);
@@ -236,6 +239,7 @@ export const handleCreateAnalysis = async (
           listId: listId,
           errorInfo: 'Invalid GHG Commodity',
           status: listStatus.Inactive,
+          analysisIds: Object.keys(analysisTypes),
         });
         throw new Error(`Invalid GHG Commodity: ${error.stack || error}`);
       } else {

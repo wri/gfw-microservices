@@ -60,20 +60,21 @@ export class DeprecatedStartAnalysisService {
       listId: request.list_id,
     });
 
-    if (isListLocationOverLimit) {
-      await updateListsAnalysisStatus(request.organization_database, {
-        listId: request.list_id,
-        errorInfo: 'Exceeded Analysis Limit',
-        status: listStatus.Inactive,
-      });
-      throw new ProcessingLimitException();
-    }
-
     const listAnalysisStatusData = await getListAnalysisStatusByListId(
       request.organization_database,
       request.list_id
     );
     const analysis_types = extractAnalysisTypes(listAnalysisStatusData);
+
+    if (isListLocationOverLimit) {
+      await updateListsAnalysisStatus(request.organization_database, {
+        listId: request.list_id,
+        errorInfo: 'Exceeded Analysis Limit',
+        status: listStatus.Inactive,
+        analysisIds: Object.keys(analysis_types),
+      });
+      throw new ProcessingLimitException();
+    }
 
     const payloadBody = {
       ...llpRequest,

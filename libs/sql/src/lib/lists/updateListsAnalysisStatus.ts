@@ -1,6 +1,7 @@
 import { Logger } from '@nestjs/common';
-import { SQLUtils } from '../util/sql.utils';
-import * as sql from 'mssql';
+import { ClientStoreConnection } from '../util/typeORM.utils';
+import { ListsAnalysisStatus } from '../entity/organization/lists.analysis.status.entity';
+import { In } from 'typeorm';
 
 /**
  * This file is a duplicate of {@link {libs/geo/src/lib/list.analysis.status/updateListAnalysisStatus.ts}}
@@ -9,29 +10,37 @@ interface UpdateListsAnalysisStatusParams {
   listId: number;
   errorInfo: string;
   status: number;
-  options?: string;
+  analysisIds?: string[];
 }
 /**
- * @summary updates ListsAnalysisStatus row for specific list + analysis_id combination
+ * @summary updates ListsAnalysisStatus rows for specific list and analysis IDs
  */
 export async function updateListsAnalysisStatus(
   databaseName: string,
-  { listId, errorInfo, status, options }: UpdateListsAnalysisStatusParams
+  { listId, errorInfo, status, analysisIds }: UpdateListsAnalysisStatusParams
 ) {
+  if (!listId || !status) {
+    throw new Error('listId and status must be non-zero values');
+  }
+
   try {
-    const parameters = [
-      { field: 'ListID', type: sql.Int, value: listId },
-      { field: 'ErrorInfo', type: sql.VarChar(2000), value: errorInfo },
-      { field: 'Status', type: sql.Int, value: status },
-      { field: 'options', type: sql.Int, value: options ?? null },
-    ];
-    return await SQLUtils.queryDBFirstRow<boolean>(
-      databaseName,
-      'updateListAnalysisStatus',
-      parameters
-    );
+    const clientStoreConnection = new ClientStoreConnection();
+    const connection = await clientStoreConnection.getConnection(databaseName);
+    const repository = connection.getRepository(ListsAnalysisStatus);
+
+    const whereClause = {
+      listId,
+      ...(analysisIds && { analysisId: In(analysisIds) })
+    };
+
+    await repository.update(whereClause, {
+      errorInfo,
+      status
+    });
+
+    return true;
   } catch (error) {
-    Logger.log('Update lists analysis status', error.stack || error);
-    throw new Error(error);
+    Logger.error('Update lists analysis status', error.stack || error);
+    throw error;
   }
 }

@@ -4,7 +4,7 @@ import {
   ListsUploadStatus,
   SQLUtils,
 } from '@wri-monorepos/sql';
-import { Logger, InternalServerErrorException, BadRequestException } from '@nestjs/common';
+import { Logger, InternalServerErrorException } from '@nestjs/common';
 import { Injectable } from '@nestjs/common';
 import { CreateListRequest, RequestLargeListProcess, ResponseLargeListProcess } from '../models';
 import { ConfigService } from '@nestjs/config';

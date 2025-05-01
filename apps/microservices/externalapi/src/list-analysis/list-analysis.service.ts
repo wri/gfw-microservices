@@ -363,6 +363,7 @@ export class ListAnalysisService {
     newListDetails: ListUploadNewRequestSchema,
     organizationId: number
   ): Promise<ListUploadNewResponse | ListUploadNewErrorResponse> {
+    
     if (!newListDetails.templateId) {
       newListDetails['templateId'] = deduceActiveId['cocoaGeneric'];
     }
@@ -378,7 +379,7 @@ export class ListAnalysisService {
     } else {
       newListDetails.commodity = 'Unknown';
     }
-    
+
     const externalUpload = await externalUploadRepository.findOne({
       where: { id: parseInt(newListDetails.uploadId) },
     });

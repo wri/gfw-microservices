@@ -1,5 +1,4 @@
 import axios from 'axios';
-import { DATA_API_URL } from '../../../common/js/config';
 // ###########################################################################################
 // API Documentation
 // * https://data-api.globalforestwatch.org/

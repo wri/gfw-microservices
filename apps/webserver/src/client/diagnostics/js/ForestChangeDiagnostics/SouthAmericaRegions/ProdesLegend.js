@@ -1,5 +1,4 @@
 import React from 'react';
-import { v1 as uuidv1 } from 'uuid';
 import _sum from 'lodash/sum';
 
 import { formatNum, prettifyNum } from '../../../../common/js/utils/diagnostics.utils';
@@ -22,7 +21,7 @@ const ProdesLegend = ({ data }) => {
   return (
     <React.Fragment>
       {PRODES_HIGHCHARTS_BAR_CONFIGS.map((config) => (
-        <tr key={uuidv1()} className="locations-diagnostics-table__row child">
+        <tr key={crypto.randomUUID()} className="locations-diagnostics-table__row child">
           <td className="locations-diagnostics-table__column indent legend-square-label">
             <div className="legend-square" style={{ backgroundColor: config.color }} />
             <span>{config.label}</span>

@@ -1,6 +1,6 @@
 import { Injectable, Logger } from '@nestjs/common';
 import * as jsonld from 'jsonld';
-import { v4 as uuidv4 } from 'uuid';
+import { randomUUID } from 'crypto';
 import { GeoJson } from './types/verifiable-credential.model';
 import * as cache from 'memory-cache';
 let vc, Ed25519Signature2018, Ed25519VerificationKey2018;
@@ -30,7 +30,7 @@ export class VerifiableCredentialService {
           'https://geojson.org/geojson-ld/geojson-context.jsonld',
           `${BASE_URL}/geojson-defreport.jsonld`,
         ],
-        id: `urn:uuid:${uuidv4()}`,
+        id: `urn:uuid:${randomUUID()}`,
         type: ['VerifiableCredential'],
         issuer: `${BASE_URL}/vc-issuer/1`,
         issuanceDate: issuanceDate,

@@ -3,7 +3,6 @@ import Card from '@mui/material/Card';
 import CardContent from '@mui/material/CardContent';
 import Highcharts from 'highcharts';
 import _range from 'lodash/range';
-import { v1 as uuidv1 } from 'uuid';
 import ProdesLegend from './SouthAmericaRegions/ProdesLegend';
 import DiagnosticsChartHeader from '../common/DiagnosticsChartHeader';
 import {
@@ -718,7 +717,7 @@ export default class SouthAmericaRegionsWithoutArgentina extends Component {
       const totalLoss = value;
       const formatedTotalLoss = prettifyNum(formatNum(totalLoss));
       return (
-        <React.Fragment key={uuidv1()}>
+        <React.Fragment key={crypto.randomUUID()}>
           <tr
             key={`south-america__${category}`}
             className={`locations-diagnostics-table__row ${child ? 'child' : 'parent'}`}

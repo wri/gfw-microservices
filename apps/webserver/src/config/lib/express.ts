@@ -5,18 +5,18 @@ import type { RedisClientType } from 'redis';
 import { createClient } from 'redis';
 const session = require('express-session');
 import RedisStore from 'connect-redis';
-const { v1: uuidv1 } = require('uuid');
+import { randomUUID } from 'crypto';
 
 const bodyParser = require('body-parser');
 const favicon = require('serve-favicon');
-const logger = require('../privateutils/logger.utils');
+import * as logger from '../privateutils/logger.utils';
 import * as express from 'express';
 import { Application, Request, Response, NextFunction } from 'express';
 const helmet = require('helmet');
 const path = require('path');
 const rateLimiterUtil = require('./limiter-util');
 import config from '../config';
-const { PRODUCTION_ENVIRONMENTS } = require('../config/environments.config');
+import { PRODUCTION_ENVIRONMENTS } from '../config/environments.config';
 import * as expressRateLimit from 'express-rate-limit';
 import * as redisRateLimit from 'rate-limit-redis';
 
@@ -120,7 +120,7 @@ const configureSession = (app: Application) => {
     unset: 'destroy',
     resave: false,
     genid: function (req: Request) {
-      return uuidv1();
+      return randomUUID();
     },
   };
   if (!unitTestMode) {
@@ -172,7 +172,7 @@ const configureStaticAssetPath = (app: Application) => {
  * @param {Express.Application} app
  */
 const configureServerRoutes = (app: Application, limiter: any) => {
-  config.files.routes.forEach((route: String) => require(path.resolve(route))(app, limiter));
+  config.files.routes.forEach((route: string) => require(path.resolve(route))(app, limiter));
 };
 
 /**
@@ -208,7 +208,6 @@ const configureErrorRoutes = (app: Application) => {
 // Redis based limiter suitable for all server routes
 // The passed in limitConfig object specifies the windowMs and max values and is typically
 // either middlewares.rateLimitAuthenticated or middlewares.rateLimitUnauthenticated
-// @ts-ignore:next-line
 const redisBasedLimiter = (limitConfig) => {
   return expressRateLimit.rateLimit({
     standardHeaders: true, // Return rate limit info in the `RateLimit-*` headers
@@ -246,7 +245,7 @@ export const initialize = (app: Application) => {
       configureSession(app); //TODO: Bake in a DB connection to our SQL Server via its API
       // Configure passport
       // configurePassport(app); //TODO: Bake in security via AWS Cognito, nothing to do with Mongo or mongoose
-      // Configure Hemlet security headers
+      // Configure Helmet security headers
       configureHelmetHeaders(app);
       // Set path for static assets
       configureStaticAssetPath(app);

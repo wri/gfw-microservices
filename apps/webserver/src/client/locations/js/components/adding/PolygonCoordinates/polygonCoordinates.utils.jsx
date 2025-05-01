@@ -2,10 +2,14 @@ import SimpleFillSymbol from '@arcgis/core/symbols/SimpleFillSymbol';
 import Graphic from '@arcgis/core/Graphic';
 import Point from '@arcgis/core/geometry/Point';
 import TextSymbol from '@arcgis/core/symbols/TextSymbol';
-import { v4 as uuidv4 } from 'uuid';
 import { getPointGeometry, getPolygonGeometry } from './geometries';
 
-export const newCoordinate = () => ({ id: uuidv4(), latitude: '', longitude: '', errors: {} });
+export const newCoordinate = () => ({
+  id: crypto.randomUUID(),
+  latitude: '',
+  longitude: '',
+  errors: {},
+});
 
 export const isValidLatitude = (value) => value !== null && value >= -90 && value <= 90;
 export const isValidLongitude = (value) => value !== null && value >= -180 && value <= 180;
@@ -60,7 +64,7 @@ export const extractCoordinates = (geometry) => {
   if (numberOfVertices > 1) {
     const rings = geometry.rings[0];
     return rings.map(([longitude, latitude]) => ({
-      id: uuidv4(),
+      id: crypto.randomUUID(),
       latitude,
       longitude,
       errors: {},

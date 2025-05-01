@@ -1,6 +1,6 @@
 const fs = require('fs');
 const path = require('path');
-const { v4: uuidV4 } = require('uuid');
+const { randomUUID } = require('crypto');
 
 // Utils
 const { createTempGeojsonFiles } = require('./vectorTileGeojson.utils');
@@ -59,7 +59,7 @@ exports.generateAndStoreVectorTiles = async (req, listID) => {
       }
     }
   }
-  const uuidString = uuidV4().replace(/-/g, '_');
+  const uuidString = randomUUID().replace(/-/g, '_');
   const tempFilesPath = path.join(VECTOR_TILES_TEMP_LOCATION, `list-${listID}`);
   const numberOfLocations = listInfo.list_locations_count;
 

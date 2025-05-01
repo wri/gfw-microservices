@@ -19,7 +19,7 @@ SELECT
     ISNULL(afi.natural_land_area, 0) AS coverageHA,
     ISNULL(afi.natural_land_deforested_area, 0) AS naturalForestLossHA,
     ISNULL(afi.total_area_ha, 0) AS totalAreaHa,
-    afi.status_code as statusCode,
+    afi.status_code as locationStatusId,
     afi.location_error as locationError,
     afi.negligible_risk AS negligibleRisk,
     ISNULL(afi.jrc_land_area, 0) AS jrcLandAreaHA,
@@ -85,7 +85,7 @@ SET @SQL = 'SELECT  ' +
 ' afi.natural_land_area AS coverageHA, ' +
 ' afi.natural_land_deforested_area AS naturalForestLossHA, ' +
 ' afi.total_area_ha AS totalAreaHa, ' +
-' afi.status_code as statusCode, ' +
+' afi.status_code as locationStatusId, ' +
 ' afi.location_error as locationError, ' +
 ' afi.negligible_risk AS negligibleRisk, ' +
 ' afi.jrc_land_area AS jrcLandAreaHA, ' +
@@ -98,6 +98,7 @@ SET @SQL = 'SELECT  ' +
 ' lt.Country as country, ' +
 ' lt.State as state, ' +
 ' lt.[Sub State] as subState ' +
+' lt.ErrorDetails as errorDetails ' +
 'FROM AFIAnalysis afi JOIN dbo.[' + @list_table + '] lt ON lt.location_id = afi.location_id ' +
 'WHERE afi.location_id > 0 AND afi.list_id = @listId'
 
@@ -128,7 +129,8 @@ export class AfiAnalysisByListId {
   negligibleRisk: number;
   protectedAreasArea: number;
   state: string;
-  statusCode: number;
+  locationStatusId: number;
+  errorDetails: string;
   subState: string;
   totalAreaHA: number;
 }

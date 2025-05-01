@@ -20,8 +20,8 @@ DECLARE @afiColumns NVARCHAR(MAX) = 'location_id, gadm_id, natural_land_area, na
 DECLARE @ltColumns NVARCHAR(MAX) = '[Location Name], Country, State, [Sub State]';
 DECLARE @calculatedColumns NVARCHAR(MAX) = 'protectedAreasPercent, landmarkPercent, naturalForestLossPercent, jrcNaturalForestLossPercent';
 
-SELECT 
-    @list_table = [list_table_name], 
+SELECT
+    @list_table = [list_table_name],
     @listName   = [list_Name],
     @listVersion= [version]
 FROM [Lists]
@@ -83,7 +83,7 @@ SET @LocationNameColumn =
     END;
 
 SET @SQL = N'
-SELECT 
+SELECT
     @listId AS listId,
     @listName AS listName,
     ISNULL(afi.location_id, 0) AS locationId,
@@ -91,8 +91,8 @@ SELECT
     ISNULL(afi.natural_land_area, 0) AS coverageHA,
     ISNULL(afi.natural_land_deforested_area, 0) AS naturalForestLossHA,
     ISNULL(afi.total_area_ha, 0) AS totalAreaHa,
-    ISNULL(afi.status_code, 0) AS statusCode,
-    ISNULL(afi.location_error, 0) AS locationError,
+    ISNULL(afi.status_code, NULL) AS locationStatusId,
+    ISNULL(afi.location_error, NULL) AS locationError,
     ISNULL(afi.negligible_risk, 0) AS negligibleRisk,
     ISNULL(afi.jrc_land_area, 0) AS jrcLandAreaHA,
     ISNULL(afi.jrc_land_deforested_area, 0) AS jrcNaturalForestLossHA,
@@ -127,7 +127,7 @@ SELECT
          ELSE (afi.jrc_land_deforested_area * 100.0 / afi.total_area_ha)
     END AS jrcNaturalForestLossPercent,
 
-    ' + 
+    ' +
     N' ' + CASE WHEN @JsonAttributeColumns IS NOT NULL AND LEN(@JsonAttributeColumns) > 0
                 THEN @JsonAttributeColumns + ','
                 ELSE ''
@@ -137,7 +137,7 @@ SELECT
 
 FROM AFIAnalysis afi
 JOIN dbo.[' + @list_table + N'] lt ON lt.location_id = afi.location_id
-WHERE afi.location_id > 0 
+WHERE afi.location_id > 0
   AND afi.list_id = @listId
 ';
 
@@ -248,7 +248,7 @@ export class PaginatedAfiAnalysisByListIdSortedByFilters {
   coverageHA: number;
   naturalForestLossHA: number;
   totalAreaHa: number;
-  statusCode: number;
+  locationStatusId: number;
   locationError: number;
   negligibleRisk: number;
   jrcLandAreaHA: number;

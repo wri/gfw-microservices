@@ -370,8 +370,11 @@ export class ListAnalysisService {
     const organizationConnection = await this.createOrganizationConnection(organizationDetails);
     const externalUploadRepository = organizationConnection.getRepository(ExternalUpload);
 
-    // Check if feature Flag is enabled
-    if (!(await searchForFeatureFlag(organizationDetails.organizationName, 'UploadListLp'))) {
+    // Check if has no commodity spefied and feature Flag is enabled
+    if (
+      typeof newListDetails.commodity === 'undefined' &&
+      (await searchForFeatureFlag(organizationDetails.organizationDb, 'UploadListLp'))
+    ) {
       throwCustomErrorResponse('Missing Commodity value', HttpStatus.BAD_REQUEST);
     }
     const externalUpload = await externalUploadRepository.findOne({

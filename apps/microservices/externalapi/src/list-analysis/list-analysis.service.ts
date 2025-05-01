@@ -363,7 +363,6 @@ export class ListAnalysisService {
     newListDetails: ListUploadNewRequestSchema,
     organizationId: number
   ): Promise<ListUploadNewResponse | ListUploadNewErrorResponse> {
-    
     if (!newListDetails.templateId) {
       newListDetails['templateId'] = deduceActiveId['cocoaGeneric'];
     }
@@ -372,12 +371,16 @@ export class ListAnalysisService {
     const externalUploadRepository = organizationConnection.getRepository(ExternalUpload);
 
     // Check if has no commodity spefied and feature Flag is enabled
-    if (await searchForFeatureFlag(organizationDetails.organizationDb, 'UploadListLp')) {
-      if (typeof newListDetails.commodity === 'undefined') {
-        throwCustomErrorResponse('Missing Commodity value', HttpStatus.BAD_REQUEST);
+    try {
+      if (await searchForFeatureFlag(organizationDetails.organizationDb, 'UploadListLp')) {
+        if (typeof newListDetails.commodity === 'undefined') {
+          throwCustomErrorResponse('Missing Commodity value', HttpStatus.BAD_REQUEST);
+        }
+      } else {
+        newListDetails.commodity = 'Unknown';
       }
-    } else {
-      newListDetails.commodity = 'Unknown';
+    } catch (error) {
+      return error;
     }
 
     const externalUpload = await externalUploadRepository.findOne({

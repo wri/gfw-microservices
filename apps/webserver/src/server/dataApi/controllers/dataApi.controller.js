@@ -1,10 +1,7 @@
 /* eslint-disable object-shorthand */
 /* eslint-disable camelcase */
 import axios from 'axios';
-const path = require('path');
-const sql = require('mssql');
 const axiosRetry = require('axios-retry');
-const sqlUtils = require(path.resolve('./config/privateutils/sql.utils'));
 const logger = require('../../../config/privateutils/logger.utils');
 import { getGFWListLocationsGeom } from '../../../config/publicutils/gfwListManager.utils';
 

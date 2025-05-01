@@ -38,8 +38,8 @@ describe('PutListAsDraft', () => {
           organization_id: 1,
           subscription_status_id: 1,
           hasUnanalyzableError: false,
-          path: '/test/path'
-        } as RequestNewList
+          path: '/test/path',
+        } as RequestNewList,
       };
 
       const result = await service.handle(input);
@@ -57,8 +57,8 @@ describe('PutListAsDraft', () => {
           isExternalAPIProcess: false,
           organization_id: 1,
           subscription_status_id: 1,
-          path: '/test/path'
-        } as RequestNewList
+          path: '/test/path',
+        } as RequestNewList,
       };
 
       const result = await service.handle(input);
@@ -84,8 +84,8 @@ describe('PutListAsDraft', () => {
           isExternalAPIProcess: false,
           organization_id: 1,
           subscription_status_id: 1,
-          path: '/test/path'
-        } as RequestNewList
+          path: '/test/path',
+        } as RequestNewList,
       };
 
       const result = await service.handle(input);
@@ -129,8 +129,8 @@ describe('PutListAsDraft', () => {
           isExternalAPIProcess: true,
           organization_id: 1,
           subscription_status_id: 1,
-          path: '/test/path'
-        } as RequestNewList
+          path: '/test/path',
+        } as RequestNewList,
       };
 
       const result = await service.handle(input);
@@ -161,8 +161,8 @@ describe('PutListAsDraft', () => {
           isExternalAPIProcess: false,
           organization_id: 1,
           subscription_status_id: 1,
-          path: '/test/path'
-        } as RequestNewList
+          path: '/test/path',
+        } as RequestNewList,
       };
 
       const result = await service.handle(input);

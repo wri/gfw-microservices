@@ -78,16 +78,6 @@ export class ListService {
     const flags = await getFeatureFlagsForCurrentOrg(request.organization_id);
 
     const uploadListLpFlag = flags.find((f) => f.flagId === 'UploadListLp') as FeatureFlag;
-    // Check if has no commodity spefied and feature Flag is enabled
-
-    if (
-      (typeof request.commodity === 'undefined' ||
-        request.commodity === '' ||
-        request.commodity === null) &&
-      uploadListLpFlag.flagState
-    ) {
-      throw new BadRequestException('Missing Commodity value');
-    }
 
     if (uploadListLpFlag.flagState) {
       const bucket = this.config.get('LARGE_PROCESSING_LIST_BUCKET', { infer: true });

@@ -1,7 +1,6 @@
 import React, { Component } from 'react';
 import { AutoSizer, CellMeasurer, CellMeasurerCache, MultiGrid } from 'react-virtualized';
 import * as PropTypes from 'prop-types';
-import { v1 as uuidv1 } from 'uuid';
 import IconExclamationTriangle from '../../../../../common/js/components/icon/IconExclamationTriangle';
 import createMultiGridHeaders from './createMultiGridHeaders';
 import { MultiGridCellCheckbox } from './MultiGridCellCheckbox';
@@ -64,7 +63,7 @@ class MultiGridTable extends Component {
 
   _handleTrackCellUpdates = (location_id) => {
     const { trackCellUpdates } = this.state;
-    trackCellUpdates[location_id] = uuidv1();
+    trackCellUpdates[location_id] = crypto.randomUUID();
     this.setState(trackCellUpdates);
   };
 

@@ -28,7 +28,6 @@ import {
 } from '@mui/icons-material';
 import useMediaQuery from '@mui/material/useMediaQuery';
 import { TransitionGroup } from 'react-transition-group';
-import { v4 as uuidv4 } from 'uuid';
 
 import { LocationTypeButton, NavBar } from '../components';
 import { ExternalHelperResource, PillButton } from '../../../../../components';
@@ -134,7 +133,7 @@ export function UploadLocationByPolygon({
 
       setCoordinates(
         coordinates.map((coordinate) => ({
-          id: uuidv4(),
+          id: crypto.randomUUID(),
           ...coordinate,
         }))
       );

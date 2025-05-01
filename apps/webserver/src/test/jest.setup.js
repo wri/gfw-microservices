@@ -1,10 +1,24 @@
+/* eslint-disable @typescript-eslint/ban-ts-comment */
 import jsdom from 'jest-environment-jsdom';
 import renderer from 'react-test-renderer';
 import { jest } from '@jest/globals';
+import { randomUUID } from 'crypto';
 
 const isClient = !!global.window;
 
 if (isClient) {
+  if (!global.crypto) {
+    global.crypto = {
+      subtle: undefined,
+      getRandomValues: () => {
+        throw new Error('getRandomValues is not implemented in this test environment');
+      },
+      randomUUID,
+    };
+  }
+  if (!global.crypto.randomUUID) {
+    global.crypto.randomUUID = randomUUID;
+  }
   global.renderer = renderer;
   global.jsdom = jsdom;
   // @ts-ignore
@@ -74,8 +88,8 @@ if (isClient) {
     return {
       Consumer: {
         create: () => ({
-          on: () => {},
-          start: () => {},
+          on: () => ({}),
+          start: () => ({}),
         }),
       },
     };

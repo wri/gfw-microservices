@@ -5,7 +5,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import fetch from 'node-fetch';
 import { AppController } from './app.controller';
 import * as fs from 'fs';
-import { v4 as uuidv4 } from 'uuid';
+import { randomUUID } from 'crypto';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { AppService } from './app.service';
 import { ConfigModule } from '@nestjs/config';
@@ -230,7 +230,7 @@ describe('AppController', () => {
   describe('Large list process', () => {
     xit('Start large list process', async () => {
       const appController = app.get<AppController>(AppController);
-      const listName = `Implementation For LargeListProcess${uuidv4()}`;
+      const listName = `Implementation For LargeListProcess${randomUUID()}`;
       const userId = 22;
       const requestLargeListCreation: RequestTriggerProcessLargeList = {
         client_database: targetDatabase,
@@ -252,7 +252,7 @@ describe('AppController', () => {
     xit('Upload file, Save the list and trigger the process', async () => {
       const appController = app.get<AppController>(AppController);
       // Variables to be used for test
-      const listName = `Implementation For LargeListProcess${uuidv4()}`;
+      const listName = `Implementation For LargeListProcess${randomUUID()}`;
       const userId = 10034; // Ismael ID
 
       // Generate presigned URL to upload file
@@ -314,7 +314,7 @@ describe('AppController', () => {
   describe('Whole Process to copy a full list and save as draft', () => {
     xit('copy all locations from a list and save as draft', async () => {
       const locationService = app.get<LocationService>(LocationService);
-      const listName = `Copy entire list to new test ${uuidv4()}`;
+      const listName = `Copy entire list to new test ${randomUUID()}`;
       const userId = 10034; // Ismael ID
       const request: CopyOrMoveLargeListRequest = {
         listId: 961,

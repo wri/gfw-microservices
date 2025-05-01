@@ -1,7 +1,6 @@
 import { useEffect, useState } from 'react';
 import EsriMap from '@arcgis/core/Map';
 import MapView from '@arcgis/core/views/MapView';
-import { v4 as uuidv4 } from 'uuid';
 import SketchViewModel from '@arcgis/core/widgets/Sketch/SketchViewModel';
 import Graphic from '@arcgis/core/Graphic';
 import Polygon from '@arcgis/core/geometry/Polygon';
@@ -95,4 +94,4 @@ export const useMap = (shouldLoadMap: boolean, initialAmountOfCoordinates: numbe
   };
 };
 
-const generateEmptyCoordinate = () => ({ id: uuidv4(), latitude: '', longitude: '' });
+const generateEmptyCoordinate = () => ({ id: crypto.randomUUID(), latitude: '', longitude: '' });

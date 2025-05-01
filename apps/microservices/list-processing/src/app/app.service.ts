@@ -1,7 +1,7 @@
 import { Injectable, InternalServerErrorException, Logger } from '@nestjs/common';
 import { S3Client, PutObjectCommand, GetObjectCommand } from '@aws-sdk/client-s3';
 import { DataSource } from 'typeorm';
-import { v4 as uuidv4 } from 'uuid';
+import { randomUUID } from 'crypto';
 import { ResponsePreSignedURLModel, ResponseObjectPresignedURLModel } from '../models';
 import { ClientStoreConnection, ActivityLog, DeleteListTypeOrm } from '@wri-monorepos/sql';
 import { LockListService } from '../services/lock.list.service';
@@ -41,7 +41,7 @@ export class AppService {
     contentType: string,
     replaceFile = false
   ): Promise<ResponsePreSignedURLModel> {
-    const keyFile = replaceFile ? key : `${uuidv4()}-${key}`;
+    const keyFile = replaceFile ? key : `${randomUUID()}-${key}`;
     const largeProcessingListBucket = this.config.get('LARGE_PROCESSING_LIST_BUCKET', {
       infer: true,
     });

@@ -12,10 +12,6 @@ jest.mock('@arcgis/core/symbols/SimpleFillSymbol');
 jest.mock('@arcgis/core/Graphic');
 jest.mock('./geometries');
 
-jest.mock('uuid', () => ({
-  v4: jest.fn().mockReturnValue('mock-uuid'),
-}));
-
 jest.mock('@arcgis/core/symbols/SimpleFillSymbol', () => {
   return jest.fn().mockImplementation(() => {
     return {
@@ -37,16 +33,20 @@ jest.mock('@arcgis/core/Graphic', () => {
   });
 });
 
-jest.mock('uuid', () => ({
-  v4: jest.fn().mockReturnValue('mock-uuid'),
-}));
+beforeAll(() => {
+  jest.spyOn(global.crypto, 'randomUUID').mockReturnValue('mock-random-uuid');
+});
+
+afterAll(() => {
+  global.crypto.randomUUID.mockRestore();
+});
 
 describe('PolygonCoordinatesInput utilities', () => {
   describe('newCoordinate', () => {
     it('should create a new coordinate object with a unique id', () => {
       const result = newCoordinate();
       expect(result).toEqual({
-        id: 'mock-uuid',
+        id: 'mock-random-uuid',
         latitude: '',
         longitude: '',
         errors: {},
@@ -97,11 +97,11 @@ describe('PolygonCoordinatesInput utilities', () => {
       };
 
       const expectedCoordinates = [
-        { id: 'mock-uuid', latitude: 0, longitude: 100, errors: {} },
-        { id: 'mock-uuid', latitude: 0, longitude: 101, errors: {} },
-        { id: 'mock-uuid', latitude: 1, longitude: 101, errors: {} },
-        { id: 'mock-uuid', latitude: 1, longitude: 100, errors: {} },
-        { id: 'mock-uuid', latitude: 0, longitude: 100, errors: {} },
+        { id: 'mock-random-uuid', latitude: 0, longitude: 100, errors: {} },
+        { id: 'mock-random-uuid', latitude: 0, longitude: 101, errors: {} },
+        { id: 'mock-random-uuid', latitude: 1, longitude: 101, errors: {} },
+        { id: 'mock-random-uuid', latitude: 1, longitude: 100, errors: {} },
+        { id: 'mock-random-uuid', latitude: 0, longitude: 100, errors: {} },
       ];
 
       const result = extractCoordinates(geometry);

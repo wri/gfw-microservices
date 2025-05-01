@@ -371,12 +371,14 @@ export class ListAnalysisService {
     const externalUploadRepository = organizationConnection.getRepository(ExternalUpload);
 
     // Check if has no commodity spefied and feature Flag is enabled
-    if (
-      typeof newListDetails.commodity === 'undefined' &&
-      (await searchForFeatureFlag(organizationDetails.organizationDb, 'UploadListLp'))
-    ) {
-      throwCustomErrorResponse('Missing Commodity value', HttpStatus.BAD_REQUEST);
+    if (await searchForFeatureFlag(organizationDetails.organizationDb, 'UploadListLp')) {
+      if (typeof newListDetails.commodity === 'undefined') {
+        throwCustomErrorResponse('Missing Commodity value', HttpStatus.BAD_REQUEST);
+      }
+    } else {
+      newListDetails.commodity = 'Unknown';
     }
+    
     const externalUpload = await externalUploadRepository.findOne({
       where: { id: parseInt(newListDetails.uploadId) },
     });
@@ -405,10 +407,8 @@ export class ListAnalysisService {
         user_id: externalUpload.userId,
         client_database: organizationDetails.organizationDb,
         analysisIds: newListDetails.analysisIDs,
+        commodity: newListDetails.commodity,
       };
-      if (newListDetails.commodity) {
-        data['commodity'] = newListDetails.commodity;
-      }
       largeListCreated = await axios.post(`${this.LLP_BASE_URL}/api/create-large-list`, data);
     } catch (error) {
       if (error?.response?.status === HttpStatus.BAD_REQUEST) {

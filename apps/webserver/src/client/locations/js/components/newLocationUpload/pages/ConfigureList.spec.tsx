@@ -171,12 +171,21 @@ describe('ConfigureList', () => {
     await userEvent.click(nextButton);
     expect(screen.queryByText(/enter custom commodity/i)).toBeInTheDocument();
 
+    expect(screen.queryByText(/select at least one type of analysis/i)).toBeInTheDocument();
+
     const customCommodityInput = screen.getByTestId('custom-commodity-input');
     await userEvent.type(customCommodityInput, 'corn');
+    await userEvent.click(
+      screen.getByRole('checkbox', {
+        name: /post-2020 risk assessment deforestation in natural forest since 2021 \+ additional contextual datasets/i,
+      })
+    );
+
     await userEvent.click(nextButton);
     expect(screen.queryByText(/enter custom commodity/i)).not.toBeInTheDocument();
+    expect(screen.queryByText(/select at least one type of analysis/i)).not.toBeInTheDocument();
     expect(mockHistoryPush).toHaveBeenCalledWith('SUMMARY_AND_SUBMIT');
-  }, 15100);
+  }, 20000);
 
   it('should show validations for new list name field', async () => {
     render(<ConfigureList userLists={mockUserLists} />);
@@ -209,12 +218,19 @@ describe('ConfigureList', () => {
 
     await userEvent.clear(newListNameInput);
     await userEvent.type(newListNameInput, 'valid list name');
+
+    await userEvent.click(
+      screen.getByRole('checkbox', {
+        name: /post-2000 forest change annual tree cover loss since 2001 \+ additional contextual and regional datasets/i,
+      })
+    );
+
     await userEvent.click(nextButton);
 
     await waitFor(() => {
       expect(mockHistoryPush).toHaveBeenCalledWith('SUMMARY_AND_SUBMIT');
     });
-  }, 15100);
+  }, 20000);
 
   it('should show message when no existing lists are found for the chosen commodity', async () => {
     render(<ConfigureList userLists={[]} />);

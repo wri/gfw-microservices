@@ -68,7 +68,10 @@ export function ConfigureList({ userLists }: { userLists: UserList[] }) {
         message: 'This list name already exists',
         path: ['newListName'],
       }
-    );
+    )
+    .refine((data) => data.AFI || data.ALERTS || data.FCD, {
+      path: ['noAnalysisSelected'],
+    });
 
   type FormFields = z.infer<typeof schema>;
   const history = useHistory();
@@ -205,6 +208,7 @@ export function ConfigureList({ userLists }: { userLists: UserList[] }) {
 
     history.push('SUMMARY_AND_SUBMIT');
   };
+  const noAnalysisSelectedError = 'noAnalysisSelected' in errors ? errors.noAnalysisSelected : null;
 
   return (
     <>
@@ -431,6 +435,11 @@ export function ConfigureList({ userLists }: { userLists: UserList[] }) {
                 />
               );
             })}
+          {noAnalysisSelectedError && (
+            <FormHelperText sx={{ color: 'error.main' }}>
+              <Typography variant="body2">Select at least one type of analysis.</Typography>
+            </FormHelperText>
+          )}
         </Box>
         <Box
           sx={{

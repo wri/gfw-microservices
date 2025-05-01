@@ -1,122 +1,190 @@
-import { PutListAsDraft } from './put.list.as.draft';
-import { ChainType, RequestNewList } from './types';
-import { ListsAnalysisStatus } from '@wri-monorepos/sql';
 import { ConfigService } from '@nestjs/config';
+import { PutListAsDraft } from './put.list.as.draft';
 import { EmailService } from '@wri-monorepos/aws';
+import { listStatus } from '@wri-monorepos/constants';
+import { UspResetListStatus } from '@wri-monorepos/sql';
+import { setListAnalysisStatus } from '@wri-monorepos/geo';
 import { getUserEmail } from '../shared/user.utils';
+import { ChainType, RequestNewList } from './types';
 
-const mockFindBy = jest.fn().mockResolvedValue({ length: 0 });
-const mockSave = jest.fn().mockResolvedValue(undefined);
-const mockGetRepository = jest
-  .fn()
-  .mockImplementation(() => ({ findBy: mockFindBy, save: mockSave }));
-const mockGetConnection = jest.fn().mockReturnValue({ getRepository: mockGetRepository });
-const mockConfig = {
-  get: jest.fn().mockReturnValue('test@example.com'),
-} as unknown as ConfigService;
-const mockEmailService = {
-  sendEmail: jest.fn(),
-} as unknown as EmailService;
-
-jest.mock('@wri-monorepos/sql', () => ({
-  ClientStoreConnection: jest.fn().mockImplementation(() => ({
-    getConnection: mockGetConnection,
-  })),
-  ListsAnalysisStatus: jest.fn(),
-  UspResetListStatus: jest.fn().mockImplementation(() => ({
-    run: jest.fn().mockResolvedValue(undefined),
-  })),
-}));
-
-jest.mock('../shared/user.utils', () => ({
-  getUserEmail: jest.fn().mockResolvedValue('user@example.com'),
-}));
+jest.mock('@wri-monorepos/sql');
+jest.mock('@wri-monorepos/geo');
+jest.mock('../shared/user.utils');
 
 describe('PutListAsDraft', () => {
-  let handler: PutListAsDraft;
+  let service: PutListAsDraft;
+
+  const mockConfigService = {
+    get: jest.fn().mockReturnValue('test@example.com'),
+  } as unknown as ConfigService;
+
+  const mockEmailService = {
+    sendEmail: jest.fn().mockResolvedValue(undefined),
+  } as unknown as EmailService;
 
   beforeEach(() => {
+    service = new PutListAsDraft(mockConfigService, mockEmailService);
     jest.clearAllMocks();
-    handler = new PutListAsDraft(mockConfig, mockEmailService);
   });
 
-  it('should return input if saveAsDraft is true', async () => {
-    const input: ChainType = {
-      request: { saveAsDraft: true } as RequestNewList,
-    };
+  describe('handle', () => {
+    it('should return input unchanged when saveAsDraft is true', async () => {
+      const input: ChainType = {
+        request: {
+          saveAsDraft: true,
+          organization_database: 'test_db',
+          list_id: 123,
+          isExternalAPIProcess: false,
+          organization_id: 1,
+          subscription_status_id: 1,
+          hasUnanalyzableError: false,
+          path: '/test/path'
+        } as RequestNewList
+      };
 
-    const result = await handler.handle(input);
-    expect(result).toBe(input);
-    expect(mockGetConnection).not.toHaveBeenCalled();
-  });
+      const result = await service.handle(input);
 
-  it('should update status to draft if hasUnanalyzableError is true', async () => {
-    const input: ChainType = {
-      request: {
-        saveAsDraft: false,
-        hasUnanalyzableError: true,
-        organization_database: 'test_db',
-        list_id: 123,
-        user_id: 456,
-        analysisIds: ['analysis1'],
-        list_name: 'Test List',
-      } as RequestNewList,
-    };
+      expect(result).toEqual(input);
+    });
 
-    const loggerSpy = jest.spyOn(handler['logger'], 'error');
-    const result = await handler.handle(input);
+    it('should return input unchanged when hasUnanalyzableError is false', async () => {
+      const input: ChainType = {
+        request: {
+          saveAsDraft: false,
+          hasUnanalyzableError: false,
+          organization_database: 'test_db',
+          list_id: 123,
+          isExternalAPIProcess: false,
+          organization_id: 1,
+          subscription_status_id: 1,
+          path: '/test/path'
+        } as RequestNewList
+      };
 
-    expect(loggerSpy).toHaveBeenCalledWith(
-      'Should put list as draft, has invalid coordinates or polygon geometry'
-    );
+      const result = await service.handle(input);
 
-    expect(mockGetConnection).toHaveBeenCalledWith('test_db');
-    expect(mockGetRepository).toHaveBeenCalledWith(ListsAnalysisStatus);
-    expect(mockSave).toHaveBeenCalled();
-    expect(getUserEmail).toHaveBeenCalledWith('test_db', 456);
-    expect(mockEmailService.sendEmail).toHaveBeenCalledWith(
-      'test@example.com',
-      ['user@example.com'],
-      'Error Submitting for Analysis',
-      'listUploadError',
-      { listName: 'Test List' }
-    );
-    expect(result).toEqual({
-      ...input,
-      request: { ...input.request, saveAsDraft: true },
+      expect(result).toEqual(input);
+    });
+
+    it('should handle unanalyzable error and send email notification', async () => {
+      const mockUserEmail = 'user@example.com';
+      (getUserEmail as jest.Mock).mockResolvedValue(mockUserEmail);
+      (UspResetListStatus.prototype.run as jest.Mock).mockResolvedValue(undefined);
+      (setListAnalysisStatus as jest.Mock).mockResolvedValue(undefined);
+
+      const input: ChainType = {
+        request: {
+          saveAsDraft: false,
+          hasUnanalyzableError: true,
+          organization_database: 'test_db',
+          list_id: 123,
+          user_id: 456,
+          analysisIds: ['analysis1'],
+          list_name: 'Test List',
+          isExternalAPIProcess: false,
+          organization_id: 1,
+          subscription_status_id: 1,
+          path: '/test/path'
+        } as RequestNewList
+      };
+
+      const result = await service.handle(input);
+
+      expect(UspResetListStatus.prototype.run).toHaveBeenCalledWith(
+        'test_db',
+        123,
+        listStatus.Draft,
+        undefined
+      );
+      expect(setListAnalysisStatus).toHaveBeenCalledWith(
+        'test_db',
+        123,
+        ['analysis1'],
+        listStatus.Draft
+      );
+      expect(getUserEmail).toHaveBeenCalledWith('test_db', 456);
+      expect((result.request as RequestNewList).saveAsDraft).toBe(true);
+      expect(mockEmailService.sendEmail).toHaveBeenCalledWith(
+        'test@example.com',
+        [mockUserEmail],
+        'Error Submitting for Analysis',
+        'listUploadError',
+        { listName: 'Test List' }
+      );
+    });
+
+    it('should not send email when isExternalAPIProcess is true', async () => {
+      (UspResetListStatus.prototype.run as jest.Mock).mockResolvedValue(undefined);
+      (setListAnalysisStatus as jest.Mock).mockResolvedValue(undefined);
+
+      const input: ChainType = {
+        request: {
+          saveAsDraft: false,
+          hasUnanalyzableError: true,
+          organization_database: 'test_db',
+          list_id: 123,
+          user_id: 456,
+          analysisIds: ['analysis1'],
+          list_name: 'Test List',
+          isExternalAPIProcess: true,
+          organization_id: 1,
+          subscription_status_id: 1,
+          path: '/test/path'
+        } as RequestNewList
+      };
+
+      const result = await service.handle(input);
+
+      expect(UspResetListStatus.prototype.run).toHaveBeenCalled();
+      expect(setListAnalysisStatus).toHaveBeenCalled();
+      expect(getUserEmail).not.toHaveBeenCalled();
+      expect(mockEmailService.sendEmail).not.toHaveBeenCalled();
+      expect((result.request as RequestNewList).saveAsDraft).toBe(true);
+    });
+
+    it('should handle email sending failure gracefully', async () => {
+      const mockUserEmail = 'user@example.com';
+      (getUserEmail as jest.Mock).mockResolvedValue(mockUserEmail);
+      (UspResetListStatus.prototype.run as jest.Mock).mockResolvedValue(undefined);
+      (setListAnalysisStatus as jest.Mock).mockResolvedValue(undefined);
+      (mockEmailService.sendEmail as jest.Mock).mockRejectedValueOnce(new Error('Email failed'));
+
+      const input: ChainType = {
+        request: {
+          saveAsDraft: false,
+          hasUnanalyzableError: true,
+          organization_database: 'test_db',
+          list_id: 123,
+          user_id: 456,
+          analysisIds: ['analysis1'],
+          list_name: 'Test List',
+          isExternalAPIProcess: false,
+          organization_id: 1,
+          subscription_status_id: 1,
+          path: '/test/path'
+        } as RequestNewList
+      };
+
+      const result = await service.handle(input);
+
+      expect(UspResetListStatus.prototype.run).toHaveBeenCalled();
+      expect(setListAnalysisStatus).toHaveBeenCalled();
+      expect((result.request as RequestNewList).saveAsDraft).toBe(true);
     });
   });
 
-  it('should set saveAsDraft true but not update status if required fields are missing', async () => {
-    const input: ChainType = {
-      request: {
-        saveAsDraft: false,
-        hasUnanalyzableError: true,
-        // missing organization_database and list_id
-        user_id: 123,
-      } as RequestNewList,
-    };
+  describe('putListAsDraft', () => {
+    it('should call UspResetListStatus with correct parameters', async () => {
+      (UspResetListStatus.prototype.run as jest.Mock).mockResolvedValue(undefined);
 
-    const result = await handler.handle(input);
-    expect(mockGetConnection).not.toHaveBeenCalled();
-    expect(result).toEqual({
-      ...input,
-      request: { ...input.request, saveAsDraft: true },
+      await service.putListAsDraft('test_db', 123, 'gfw123');
+
+      expect(UspResetListStatus.prototype.run).toHaveBeenCalledWith(
+        'test_db',
+        123,
+        listStatus.Draft,
+        'gfw123'
+      );
     });
-  });
-
-  it('should return input unchanged if hasUnanalyzableError is false', async () => {
-    const input: ChainType = {
-      request: {
-        saveAsDraft: false,
-        hasUnanalyzableError: false,
-        organization_database: 'test_db',
-        list_id: 123,
-      } as RequestNewList,
-    };
-
-    const result = await handler.handle(input);
-    expect(result).toBe(input);
-    expect(mockGetConnection).not.toHaveBeenCalled();
   });
 });

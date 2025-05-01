@@ -1,4 +1,4 @@
-import { BadRequestException, Logger } from '@nestjs/common';
+import { Logger } from '@nestjs/common';
 import {
   extractAnalysisTypes,
   getAllListsAnalysisStatus,
@@ -22,7 +22,6 @@ import * as sql from 'mssql';
 import * as LU from '../utils/list.utils';
 const getListAnalysisStatus = LU.getListAnalysisStatus;
 import axios from 'axios';
-import { never } from 'zod';
 
 jest.mock('axios', () => ({
   post: jest.fn(),
@@ -824,6 +823,103 @@ describe('list.analysis.status.ts', () => {
           locationId: 4,
           attributes:
             '{"analysisArea":"3.14159","analysisRadius":"0.09999995776679782","country":"Argentina","latitude":"-27.0401","locationClassification":"Property","locationName":"arg4 wdpa","longitude":"-65.85","state":"Tucumán","subState":"Monteros"}',
+          errorDetails: null,
+        },
+      ];
+      (ClientStoreConnection as unknown as jest.Mock).mockImplementation(() => {
+        return {
+          getConnection: jest.fn().mockResolvedValue({
+            getRepository: jest.fn().mockReturnValue({
+              findBy: jest.fn().mockResolvedValue(fakeLocation),
+              findOne: jest.fn().mockResolvedValue({
+                listName: 'test',
+                Commodity: 'GFWP_fake_commodity',
+                version: 2,
+              }),
+              update: jest.fn(),
+              save: jest.fn(),
+            }),
+          }),
+        };
+      });
+
+      (axios.post as jest.Mock).mockResolvedValue({ statusText: 'Ok' });
+      expect(
+        handleCreateAnalysis(
+          fakeAnalysisIds,
+          fakeListId,
+          123,
+          fakeClientDatabase,
+          false,
+          234,
+          99,
+          false
+        )
+      ).rejects.toThrow('Missing Yield Values');
+    });
+
+    it('should throw error "Missing Yield Values" when has only GHG analysis and commodity is defined as non MapSpam Commodity but some locations has no yield', async () => {
+      const fakeClientDatabase = 'mockClientDB';
+      const fakeListId = 123;
+      const fakeAnalysisIds = 'GHG,FCD';
+
+      (checkProcessingLimits as jest.Mock).mockResolvedValue({
+        isListLocationOverLimit: false,
+        processingLimit: 1000,
+      });
+
+      (getListAnalysisStatus as jest.Mock).mockResolvedValue([
+        {
+          listId: 1,
+          analysisId: 'GHG',
+          status: 5,
+          options: '',
+        },
+      ]);
+      const fakeLocation = [
+        {
+          locationName: 'fake_location_1',
+          commodity: 'GFWP_fake_commodity',
+          country: 'Brazil',
+          state: 'Amazonas',
+          subState: 'Lábrea',
+          gadmid: 'BRA.4.34',
+          locationId: 1,
+          attributes:
+            '{"analysisArea":"314.1592653589793","analysisRadius":"1","country":"Brazil","latitude":"-8.9001","locationClassification":"Property","locationName":"Brazil1","longitude":"-67","state":"Amazonas","subState":"Lábrea","yield":"10"}',
+          errorDetails: null,
+        },
+        {
+          locationName: 'fake_location_2',
+          commodity: 'GFWP_fake_commodity',
+          country: 'Brazil',
+          state: 'Amazonas',
+          subState: 'Lábrea',
+          gadmid: 'BRA.4.34',
+          locationId: 2,
+          attributes:
+            '{"analysisArea":"1","analysisRadius":"0.05641895835477563","country":"Brazil","latitude":"-8.7001","locationClassification":"Property","locationName":"brazil2","longitude":"-66.8","state":"Amazonas","subState":"Lábrea"}',
+          errorDetails: null,
+        },
+        {
+          locationName: 'fake_location_3',
+          commodity: 'GFWP_fake_commodity',
+          gadmid: 'ARG.21.19',
+          locationId: 3,
+          attributes:
+            '{"analysisArea":"1727.5696541906611","analysisRadius":"2.345","country":"Argentina","latitude":"-29.8001","locationClassification":"Property","locationName":"arg3 landmark","longitude":"-60.2","state":"Santa Fe","subState":"Vera","yield":"10"}',
+          errorDetails: null,
+        },
+        {
+          locationName: 'fake_location_4',
+          commodity: 'GFWP_fake_commodity',
+          country: 'Argentina',
+          state: 'Tucumán',
+          subState: 'Monteros',
+          gadmid: 'ARG.24.11',
+          locationId: 4,
+          attributes:
+            '{"analysisArea":"3.14159","analysisRadius":"0.09999995776679782","country":"Argentina","latitude":"-27.0401","locationClassification":"Property","locationName":"arg4 wdpa","longitude":"-65.85","state":"Tucumán","subState":"Monteros","yield":"10"}',
           errorDetails: null,
         },
       ];

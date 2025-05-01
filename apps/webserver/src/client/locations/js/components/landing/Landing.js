@@ -419,7 +419,7 @@ class Landing extends Component {
                       Add locations
                     </PillButton>
                     <ExternalHelperResource
-                      text="How to format your data"
+                      text="How to add your data"
                       url="https://globalforestwatch.org/help/gfw-pro/guides/upload-locations-lists"
                       color="text.secondary"
                     />

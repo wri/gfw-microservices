@@ -12,10 +12,6 @@ jest.mock('@arcgis/core/symbols/SimpleFillSymbol');
 jest.mock('@arcgis/core/Graphic');
 jest.mock('./geometries');
 
-jest.mock('uuid', () => ({
-  v4: jest.fn().mockReturnValue('mock-uuid'),
-}));
-
 jest.mock('@arcgis/core/symbols/SimpleFillSymbol', () => {
   return jest.fn().mockImplementation(() => {
     return {
@@ -37,9 +33,13 @@ jest.mock('@arcgis/core/Graphic', () => {
   });
 });
 
-jest.mock('uuid', () => ({
-  v4: jest.fn().mockReturnValue('mock-uuid'),
-}));
+beforeAll(() => {
+  jest.spyOn(global.crypto, 'randomUUID').mockReturnValue('mock-uuid');
+});
+
+afterAll(() => {
+  global.crypto.randomUUID.mockRestore();
+});
 
 describe('PolygonCoordinatesInput utilities', () => {
   describe('newCoordinate', () => {

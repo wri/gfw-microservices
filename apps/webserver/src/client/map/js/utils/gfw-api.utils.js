@@ -17,15 +17,13 @@ import { DATA_API_URL } from '../../../common/js/config';
  * @param {String} date - Date to query ['latest', 'v202010]
  * @return {Promise<any>}
  */
-export const getBBoxAndGeostoreIDs = async (GFW_LIST, QUERY_FIELD, IDs, date) => {
+export const getBBoxAndGeostoreIDs = async (listId, locationIds) => {
   const config = {
     method: 'POST',
-    url: `${DATA_API_URL}/dataApi/getBBoxAndGeostoreIDs/`,
-    params: {
-      GFW_LIST: GFW_LIST,
-      QUERY_FIELD: QUERY_FIELD,
-      IDs: IDs.toString(),
-      date: date,
+    url: `/dataApi/getBBoxAndGeostoreIDs/`,
+    data: {
+      listId,
+      locationIds,
     },
   };
 

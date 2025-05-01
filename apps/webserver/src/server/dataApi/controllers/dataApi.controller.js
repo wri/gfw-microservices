@@ -1,9 +1,12 @@
 /* eslint-disable object-shorthand */
 /* eslint-disable camelcase */
 import axios from 'axios';
+const path = require('path');
+const sql = require('mssql');
 const axiosRetry = require('axios-retry');
-
+const sqlUtils = require(path.resolve('./config/privateutils/sql.utils'));
 const logger = require('../../../config/privateutils/logger.utils');
+import { getGFWListLocationsGeom } from '../../../config/publicutils/gfwListManager.utils';
 
 const {
   GFW_API_URL__DATASET,
@@ -582,45 +585,27 @@ export const getPalmOilMillLatLong = async (req, res) => {
  * @param {Object} req - Express request
  * @param {Object} res - Express response
  */
-export const getBBoxAndGeostoreIDs = (req, res) => {
-  const { GFW_LIST, QUERY_FIELD, IDs, date } = req.query;
-  logger.info(`/dataApi/getBBoxAndGeostoreIDs/ - Request => QUERY: ${JSON.stringify(req.query)}`);
+export const getBBoxAndGeostoreIDs = async (req, res) => {
+  const { listId, locationIds } = req.body;
+  logger.info(`/dataApi/getBBoxAndGeostoreIDs/ - Request => BODY: ${JSON.stringify(req.body)}`);
 
-  const formattedIDs = `'${IDs.split(',').join("','")}'`;
+  try {
+    const locationsData = await getGFWListLocationsGeom(req, listId, locationIds);
+    res.status(200).json(locationsData);
+  } catch (error) {
+    const errorStatus = error?.response?.status || 422;
+    const responseError = {
+      errors: [
+        {
+          detail: error?.message,
+          status: errorStatus,
+        },
+      ],
+    };
 
-  const config = {
-    method: 'get',
-    url: `${GFW_API_URL__DATASET}/${GFW_LIST}/${date}/query`,
-    headers: HEADERS_API_KEY,
-    params: {
-      sql: `select gfw_geostore_id, gfw_bbox from data where ${QUERY_FIELD} in (${formattedIDs})`,
-    },
-  };
-
-  axios(config)
-    .then((response) => {
-      const responseSuccess = {
-        data: response.data.data,
-        status: response.status,
-      };
-
-      logger.info('/dataApi/getBBoxAndGeostoreIDs/ - Request Success');
-      res.status(200).json(responseSuccess);
-    })
-    .catch((error) => {
-      const errorStatus = error?.response?.status || 422;
-      const responseError = {
-        errors: [
-          {
-            detail: error?.message,
-            status: errorStatus,
-          },
-        ],
-      };
-
-      logger.error(
-        `/dataApi/getBBoxAndGeostoreIDs/ - Request Error => ${JSON.stringify(responseError)}`
-      );
-      res.status(errorStatus).json(responseError);
-    });
+    logger.error(
+      `/dataApi/getBBoxAndGeostoreIDs/ - Request Error => ${JSON.stringify(responseError)}`
+    );
+    res.status(errorStatus).json(responseError);
+  }
 };

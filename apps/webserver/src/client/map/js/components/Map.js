@@ -6,6 +6,7 @@ import EsriMap from '@arcgis/core/Map';
 import Extent from '@arcgis/core/geometry/Extent';
 import * as GeometryEngine from '@arcgis/core/geometry/geometryEngine';
 import Graphic from '@arcgis/core/Graphic';
+import Polygon from '@arcgis/core/geometry/Polygon';
 import GraphicsLayer from '@arcgis/core/layers/GraphicsLayer';
 import MapView from '@arcgis/core/views/MapView';
 import Point from '@arcgis/core/geometry/Point';
@@ -14,7 +15,6 @@ import SimpleFillSymbol from '@arcgis/core/symbols/SimpleFillSymbol';
 import SketchViewModel from '@arcgis/core/widgets/Sketch/SketchViewModel';
 import VectorTileLayer from '@arcgis/core/layers/VectorTileLayer';
 import WebTileLayer from '@arcgis/core/layers/WebTileLayer';
-import esriConfig from '@arcgis/core/config';
 import { webMercatorToGeographic } from '@arcgis/core/geometry/support/webMercatorUtils';
 import SpatialReference from '@arcgis/core/geometry/SpatialReference';
 import CustomDialog from '../../../common/js/components/CustomDialog/CustomDialog';
@@ -44,12 +44,7 @@ import {
 } from '../actions/mapActions';
 import * as analysisActions from '../actions/analysisActions';
 
-import {
-  DATA_API_URL,
-  locationsPage,
-  mapPage,
-  supportedGeostoreAnalysis,
-} from '../../../common/js/config';
+import { DATA_API_URL, mapPage, supportedGeostoreAnalysis } from '../../../common/js/config';
 import {
   proLayers,
   vectorEnabledLayers,
@@ -85,7 +80,6 @@ import { getMapLayerIdFromGFWListName } from '../../../common/js/utils/gfw.utils
 import { updateInteractiveLayers } from '../utils/layerUpdates.utils';
 import sortMapArray from './sortMapArray';
 import { getQueryParams } from './getQueryParams';
-
 import AnalysisPanel from './analysisPanel/AnalysisPanel';
 import ControlPanel from './controls/ControlPanel';
 import Warning from './controls/Warning';
@@ -248,8 +242,6 @@ class Map extends Component {
   componentDidMount() {
     this.unsubscribe = store.subscribe(this.storeDidUpdate);
 
-    this.setEsriDefaults();
-
     const queryParams = getQueryParams(this.props.location.search);
 
     const { latitude, longitude, zoom } = queryParams;
@@ -324,7 +316,7 @@ class Map extends Component {
     } = this.state;
 
     const queryParams = getQueryParams(this.props.location.search);
-    const { gfwListName } = queryParams;
+    const { gfwListName } = queryParams; // TODO: fix or remove this workflow because this param is never received
 
     updateInteractiveLayers(this.view.map, prevState, this.state);
 
@@ -695,15 +687,6 @@ class Map extends Component {
       this.analyzeAdmin(adminArea);
     }
   }
-
-  setEsriDefaults = () => {
-    esriConfig.request.interceptors.push({
-      urls: [locationsPage.add.protectedAreasUrl, locationsPage.add.protectedServicesUrl],
-      before: (params) => {
-        params.requestOptions.query.token = locationsPage.add.protectedAreas[location.hostname];
-      },
-    });
-  };
 
   showLayerModal = (layerInfo) => {
     store.dispatch(showLoading(''));
@@ -1853,18 +1836,62 @@ class Map extends Component {
       try {
         if (locationIDs.length < 200) {
           // Zoom to locations only if we have less than 200 locations
-          const { data } = await getBBoxAndGeostoreIDs(GFW_LIST, QUERY_FIELD, locationIDs, date);
 
-          if (data && data.data.length !== 0 && data.status === 200) {
-            const locations = data.data;
+          const queryParams = getQueryParams(this.props.location.search);
+          const { listId } = queryParams;
 
-            // Zoom to locations
-            const extents = locations.map((item) => {
-              return new Extent(...item.gfw_bbox);
+          const { data } = await getBBoxAndGeostoreIDs(listId, locationIDs);
+
+          const polyGraphics = [];
+          const extents = [];
+
+          data.features.forEach((location) => {
+            let feature = location;
+
+            const esriJson = geojsonUtil.geojsonToArcGIS(feature.geometry);
+
+            const polygon = new Polygon({
+              rings: esriJson.rings,
+              spatialReference: { wkid: 4326 },
             });
-            this.mapView.goTo(extents);
-          } else {
-            console.log('Zooming to GFW List locations failed.');
+
+            if (polygon.extent) {
+              extents.push(polygon.extent);
+            }
+
+            const polyGraphic = new Graphic({
+              geometry: polygon,
+              symbol: fillSymbolDefault,
+            });
+
+            polyGraphics.push(polyGraphic);
+          });
+
+          const polyLayer = new GraphicsLayer({
+            graphics: polyGraphics,
+          });
+          this.view.map.add(polyLayer);
+
+          if (extents.length > 0) {
+            let combinedExtent = extents[0];
+            for (let i = 1; i < extents.length; i++) {
+              combinedExtent = combinedExtent.union(extents[i]);
+            }
+            this.goToOriginalPoint = () => {
+              this.view.goTo(
+                {
+                  target: combinedExtent.expand(1.2),
+                },
+                { duration: 1000 }
+              );
+            };
+
+            this.view.goTo(
+              {
+                target: combinedExtent.expand(1.2),
+              },
+              { duration: 1000 }
+            );
           }
         }
       } catch (e) {
@@ -1927,7 +1954,6 @@ class Map extends Component {
       }
       const [listToSelect] = gfwLists.filter((gfwList) => gfwList.id === listId);
       const listName = listToSelect.list_name;
-      store.dispatch(addList(listToSelect));
 
       const mapLayer = getMapLayerIdFromGFWListName(listName);
 
@@ -1935,13 +1961,9 @@ class Map extends Component {
         store.dispatch(toggleLayer(mapLayer));
       }
 
-      if (!listToSelect.length) {
-        return;
-      }
-
       const gfwListVisibleMapLayerId = getMapLayerIdFromGFWListName(listName);
-
       hashLayersToAdd.push(gfwListVisibleMapLayerId);
+
       if (listId === 1) {
         // administrative areas
         if (selectedLocations?.length > 0) {
@@ -1992,6 +2014,7 @@ class Map extends Component {
         name: listName,
         isGfwList: true,
       };
+
       // set name and selected locations in banner
       this.setState({
         transitionListData,

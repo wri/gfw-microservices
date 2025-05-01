@@ -953,10 +953,6 @@ export const locationsPage = {
       'pro.globalforestwatch.org':
         'MCrBhmBWwyPefdQamP74oGxZkDeWMoeP5qSUlKkeYxMInNyuC7e2Sg_5Cz70d8UQU4Y5lEALv2dedpuGo5Dv3A..',
     },
-    protectedAreasUrl:
-      'https://gis-gfw.wri.org/arcgis/rest/services/cached/wdpa_protected_areas/MapServer',
-    protectedServicesUrl:
-      'https://gis-gfw.wri.org/arcgis/rest/services/protected_services/MapServer',
     accuracyDescription:
       'Please select one of the accuracy levels that best describes the commodity or investment locations',
     address: 'Address',

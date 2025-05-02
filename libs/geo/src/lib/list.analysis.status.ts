@@ -150,7 +150,7 @@ const runMockAnalysisFlow = async (
   });
 };
 
-export const updateListAnalysis = async (
+export const deleteListAnalyses = async (
   clientDatabase: string,
   listId: number,
   analysisIds: string[],
@@ -169,12 +169,31 @@ export const updateListAnalysis = async (
       );
     }
   }
+};
+
+export const addListAnalyses = async (
+  clientDatabase: string,
+  listId: number,
+  analysisIds: string[],
+  analysisStatusData: ListsAnalysisStatus[]
+) => {
+  const analysisDataIds = analysisStatusData.map((analysis) => analysis.analysisId);
 
   for (const element of analysisIds) {
     if (!analysisDataIds.includes(element)) {
       await setListAnalysisStatus(clientDatabase, listId, [element], listStatus.Pending);
     }
   }
+};
+
+export const updateListAnalysis = async (
+  clientDatabase: string,
+  listId: number,
+  analysisIds: string[],
+  analysisStatusData: ListsAnalysisStatus[]
+) => {
+  await deleteListAnalyses(clientDatabase, listId, analysisIds, analysisStatusData);
+  await addListAnalyses(clientDatabase, listId, analysisIds, analysisStatusData);
 };
 
 export const handleCreateAnalysis = async (

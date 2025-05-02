@@ -9,6 +9,7 @@ import {
 import { ListBulkCopy } from './ListBulkCopy';
 import * as sql from 'mssql';
 import { listStatus, analysisTypes } from '@wri-monorepos/constants';
+import { deleteListAnalyses } from '../lib/list.analysis.status';
 
 const LIST_STATUS = {
   LIST_STATUS_PENDING: 1,
@@ -433,16 +434,19 @@ export async function setListAnalysisStatus(
   const connection = await clientStoreConnection.getConnection(clientDatabase);
   const listAnalysisStatusRepository = connection.getRepository(ListsAnalysisStatus);
 
+  // Get current analysis statuses
+  const currentAnalysisStatuses = await listAnalysisStatusRepository.findBy({
+    listId,
+  });
+
+  await deleteListAnalyses(clientDatabase, listId, analysisIds, currentAnalysisStatuses);
+
+  // Update status for all analysis types
   const isPalmRiskIncluded = analysisIds.includes(analysisTypes.PALM_RISK);
   await Promise.all(
     analysisIds
       .filter((analysisId) => analysisId !== analysisTypes.PALM_RISK)
       .map(async (analysisId) => {
-        const listAnalysisStatusToUpdate = await listAnalysisStatusRepository.findBy({
-          listId,
-          analysisId,
-        });
-
         const value = {
           status,
           errorInfo: null,
@@ -456,15 +460,7 @@ export async function setListAnalysisStatus(
           value.options = analysisTypes.PALM_RISK;
         }
 
-        if (listAnalysisStatusToUpdate.length === 0) {
-          await listAnalysisStatusRepository.save({
-            listId,
-            analysisId,
-            ...value,
-          });
-        } else {
-          await listAnalysisStatusRepository.update({ listId, analysisId }, value);
-        }
+        await listAnalysisStatusRepository.update({ listId, analysisId }, value);
       })
   );
 }

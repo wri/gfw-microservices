@@ -2448,7 +2448,7 @@ export const profilePage = {
   },
 };
 
-export const PLANET_TILE_LAYER_INITIAL = 'planet_medres_normalized_analytic_2020-10_mosaic';
+export const PLANET_TILE_LAYER_INITIAL = 'global_monthly_2025_03_mosaic';
 
 export const mapPage = {
   drawTitle: 'Draw a Shape',

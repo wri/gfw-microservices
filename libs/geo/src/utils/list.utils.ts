@@ -9,7 +9,7 @@ import {
 import { ListBulkCopy } from './ListBulkCopy';
 import * as sql from 'mssql';
 import { listStatus, analysisTypes } from '@wri-monorepos/constants';
-import { deleteListAnalyses, updateListAnalysis } from '../lib/list.analysis.status';
+import { deleteListAnalyses } from '../lib/list.analysis.status';
 
 const LIST_STATUS = {
   LIST_STATUS_PENDING: 1,

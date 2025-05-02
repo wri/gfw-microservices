@@ -1292,7 +1292,7 @@ module.exports = (app, limiter) => {
         organization_id: req.session.organization_id,
         analysisIds,
         saveAsDraft: saveAsDraft || false,
-        commodity: commodity,
+        commodity: commodity || 'Unknown',
       })
       .then((response) => {
         res.send({ user_id: userId, list_id: response.data.list_id });

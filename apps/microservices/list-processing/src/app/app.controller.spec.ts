@@ -948,6 +948,7 @@ describe('AppController', () => {
       user_id: 0,
       client_database: 'string',
       analysisIds: [0],
+      commodity: 'Sugar Cane',
     };
     const expectedResult = [
       {

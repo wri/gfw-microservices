@@ -17,17 +17,17 @@ export const PlanetTilesOptions = () => {
   useEffect(() => {
     axios.get(`${window.location.origin}/map/getPlanetTilesInfo`).then((response) => {
       const tilesInfo = response.data.mosaics
-        .filter((tile) => tile.name.includes('planet_medres_normalized_analytic'))
-        .map((tile) =>
-          tile.name
-            .replace('planet_medres_normalized_analytic_', '')
-            .replace('_mosaic', '')
-            .split('_')
-            .map((tileInfo) => ({
-              tileName: tile.name,
-              label: moment(tileInfo).format('MMM YYYY'),
-            }))
-        );
+        .filter((tile) => tile.name.includes('global_monthly'))
+        .map((tile) => {
+          // sample tile name: global_monthly_2023-01_mosaic
+          const match = tile.name.match(/\d{4}_\d{2}/);
+          const yearAndMonth = match && match[0]?.replace(/_/g, '-');
+          const res = {
+            tileName: tile.name,
+            label: moment(yearAndMonth).format('MMM YYYY'),
+          };
+          return res;
+        });
       setPlanetTiles(tilesInfo.reverse());
     });
 
@@ -57,9 +57,8 @@ export const PlanetTilesOptions = () => {
         {planetTiles &&
           planetTiles.map((tileInfo) => {
             return (
-              <option key={tileInfo[0].tileName} value={tileInfo[0].tileName}>
-                {tileInfo[0].label}
-                {tileInfo.length > 1 && ` - ${tileInfo[1].label}`}
+              <option key={tileInfo.tileName} value={tileInfo.tileName}>
+                {tileInfo.label}
               </option>
             );
           })}

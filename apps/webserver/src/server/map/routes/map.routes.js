@@ -59,7 +59,10 @@ module.exports = (app, limiter) => {
         res.send(results.data);
       })
       .catch((error) => {
-        console.log('getPlanetTilesInfo Error:', error);
+        logger.error(`getPlanetTilesInfo Error`, {
+          response: error.response ? error.response.data?.toString() : null,
+          error: error.stack || error,
+        });
         res.send({ message: '/map/getPlanetTilesInfo failed' });
       });
   });
@@ -83,6 +86,7 @@ module.exports = (app, limiter) => {
         logger.error(`POST /map/getPlanetTile/`, {
           params: req.params,
           query: querystring.stringify(req.query),
+          response: error.response ? error.response.data?.toString() : null,
           error: error.stack || error,
         });
         res.send({ message: '/map/getPlanetTile failed' });

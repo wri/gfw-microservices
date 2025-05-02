@@ -80,6 +80,7 @@ describe('ListService - Start Analysis Process For List', () => {
       user_id: 1,
       startAnalysis: true,
       saveAsDraft: false,
+      commodity: 'cocoa',
     };
 
     const flags: FeatureFlag[] = [
@@ -126,6 +127,7 @@ describe('ListService - Start Analysis Process For List', () => {
       user_id: 1,
       startAnalysis: true,
       saveAsDraft: false,
+      commodity: 'cocoa',
     };
 
     const flags: FeatureFlag[] = [

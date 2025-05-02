@@ -440,8 +440,6 @@ export async function setListAnalysisStatus(
   });
 
   await deleteListAnalyses(clientDatabase, listId, analysisIds, currentAnalysisStatuses);
-  // Use updateListAnalysis to handle both adding and removing analysis types
-  await updateListAnalysis(clientDatabase, listId, analysisIds, currentAnalysisStatuses);
 
   // Update status for all analysis types
   const isPalmRiskIncluded = analysisIds.includes(analysisTypes.PALM_RISK);

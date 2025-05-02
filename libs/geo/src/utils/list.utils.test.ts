@@ -370,16 +370,32 @@ describe('List Utils', () => {
         currentAnalysisStatuses
       );
 
-      // Verify updateListAnalysis was called with empty array
-      expect(listAnalysisStatus.updateListAnalysis).toHaveBeenCalledWith(
-        'clientDatabase',
-        1,
-        [],
-        currentAnalysisStatuses
+      // Verify repository update was called
+      expect(mockRepository.update).toHaveBeenCalledWith(
+        { listId: 1, analysisId: 'FCD' },
+        {
+          status: listStatus.Pending,
+          errorInfo: null,
+          updateTime: expect.any(String),
+          s3URL: null,
+          expirationTime: null,
+          bundleCreationTime: null,
+          options: null,
+        }
       );
 
-      // Verify no status updates were called
-      expect(mockRepository.update).not.toHaveBeenCalled();
+      expect(mockRepository.update).toHaveBeenCalledWith(
+        { listId: 1, analysisId: 'DefReport' },
+        {
+          status: listStatus.Pending,
+          errorInfo: null,
+          updateTime: expect.any(String),
+          s3URL: null,
+          expirationTime: null,
+          bundleCreationTime: null,
+          options: null,
+        }
+      );
     });
   });
 });

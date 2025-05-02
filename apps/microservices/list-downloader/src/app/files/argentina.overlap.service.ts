@@ -1,3 +1,4 @@
+import * as fs from 'fs';
 import { Injectable, Scope } from '@nestjs/common';
 import { ListFieldsFileRequest } from '@wri-monorepos/sql';
 
@@ -15,13 +16,33 @@ export class ArgentinaOverlapService extends DashboardHandleDownload {
   start(filters: ListFieldsFileRequest) {
     if (shouldGenerateArgentinaCsv(filters)) {
       super.start(filters, 'argentinaOverlap', 'argentina_overlap');
+
+      // Checks if list has been analyzed before new analysis was implemented
+      const isAnalysisObsolete = this.checkIfAnalysisIsObsolete(filters);
+      if (isAnalysisObsolete) {
+        this.writeCsvErrorHeader(filters, 'argentina_overlap');
+      }
     }
   }
 
   process(data, filters: ListFieldsFileRequest) {
-    if (shouldGenerateArgentinaCsv(filters)) {
+    const isAnalysisObsolete = this.checkIfAnalysisIsObsolete(filters);
+
+    if (shouldGenerateArgentinaCsv(filters) && !isAnalysisObsolete) {
       super.process(data, filters);
     }
+  }
+
+  protected writeCsvErrorHeader(filters: ListFieldsFileRequest, fileSuffix: string) {
+    const filePath = `/tmp/wri-${filters.key}/${filters.listName}_${fileSuffix}.csv`;
+    const errorHeader = `"error"`;
+    const errorMessage = `"Error details: list '${filters.listName}' has been analyzed using an obsolete process."`;
+
+    fs.writeFileSync(filePath, `${errorHeader}\n${errorMessage}\n`);
+  }
+
+  checkIfAnalysisIsObsolete(filters: ListFieldsFileRequest): boolean {
+    return filters.listLevelAnalysis?.country_area === null;
   }
 
   generateAggregate(table: string, list_name: string, listLevelAnalysis) {

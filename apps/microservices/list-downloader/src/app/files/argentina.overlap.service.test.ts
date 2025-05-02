@@ -122,4 +122,38 @@ describe('Argentina Overlap Service', () => {
       '',
     ]);
   });
+
+  test('Returns true if analysis is obsolete (country_area is null)', () => {
+    const filtersMock = {
+      ...filters,
+      listLevelAnalysis: {
+        ...filters.listLevelAnalysis,
+        country_area: null,
+      },
+    };
+
+    expect(argentinaOverlap.checkIfAnalysisIsObsolete(filtersMock)).toBe(true);
+  });
+
+  test('Returns csv with error if analysis is obsolete', async () => {
+    const filtersMock = {
+      ...filters,
+      listLevelAnalysis: {
+        ...filters.listLevelAnalysis,
+        country_area: null,
+      },
+    };
+
+    argentinaOverlap.start(filtersMock);
+    argentinaOverlap.process(argentinaLocationData, filtersMock);
+
+    await argentinaOverlap.finish(filtersMock);
+
+    const csvData = readCsvData(filePath);
+    expect(csvData).toStrictEqual([
+      '"error"',
+      '"Error details: list \'WRI\' has been analyzed using an obsolete process."',
+      '',
+    ]);
+  });
 });

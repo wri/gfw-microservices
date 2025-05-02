@@ -370,7 +370,48 @@ describe('List Utils', () => {
         currentAnalysisStatuses
       );
 
-      // Verify repository update was called
+      // Verify repository update was not called since analysisIds is empty
+      expect(mockRepository.update).not.toHaveBeenCalled();
+    });
+
+    it('should update status for provided analysis types', async () => {
+      const currentAnalysisStatuses = [
+        { listId: 1, analysisId: 'FCD', status: listStatus.Active } as ListsAnalysisStatus,
+        { listId: 1, analysisId: 'DefReport', status: listStatus.Active } as ListsAnalysisStatus,
+      ];
+
+      // Setup repository mock
+      const mockRepository = {
+        findBy: jest.fn().mockResolvedValue(currentAnalysisStatuses),
+        save: jest.fn(),
+        update: jest.fn(),
+      };
+
+      // Setup connection mock
+      const mockConnection = {
+        getRepository: jest.fn().mockReturnValue(mockRepository),
+      };
+
+      // Setup ClientStoreConnection mock
+      const mockClientStoreConnection = {
+        getConnection: jest.fn().mockResolvedValue(mockConnection),
+      };
+      (ClientStoreConnection as unknown as jest.Mock).mockImplementation(
+        () => mockClientStoreConnection
+      );
+
+      // Call setListAnalysisStatus with analysis types
+      await setListAnalysisStatus('clientDatabase', 1, ['FCD', 'DefReport'], listStatus.Pending);
+
+      // Verify deleteListAnalyses was called
+      expect(listAnalysisStatus.deleteListAnalyses).toHaveBeenCalledWith(
+        'clientDatabase',
+        1,
+        ['FCD', 'DefReport'],
+        currentAnalysisStatuses
+      );
+
+      // Verify repository update was called for each analysis type
       expect(mockRepository.update).toHaveBeenCalledWith(
         { listId: 1, analysisId: 'FCD' },
         {

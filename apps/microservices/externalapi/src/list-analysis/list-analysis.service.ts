@@ -370,7 +370,6 @@ export class ListAnalysisService {
     const organizationConnection = await this.createOrganizationConnection(organizationDetails);
     const externalUploadRepository = organizationConnection.getRepository(ExternalUpload);
 
-    // Check if has no commodity spefied and feature Flag is enabled
     try {
       if (await searchForFeatureFlag(organizationDetails.organizationDb, 'UploadListLp')) {
         if (typeof newListDetails.commodity === 'undefined') {

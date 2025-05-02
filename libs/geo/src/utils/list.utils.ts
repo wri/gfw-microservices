@@ -9,7 +9,7 @@ import {
 import { ListBulkCopy } from './ListBulkCopy';
 import * as sql from 'mssql';
 import { listStatus, analysisTypes } from '@wri-monorepos/constants';
-import { updateListAnalysis } from '../lib/list.analysis.status';
+import { deleteListAnalyses, updateListAnalysis } from '../lib/list.analysis.status';
 
 const LIST_STATUS = {
   LIST_STATUS_PENDING: 1,
@@ -439,6 +439,7 @@ export async function setListAnalysisStatus(
     listId,
   });
 
+  await deleteListAnalyses(clientDatabase, listId, analysisIds, currentAnalysisStatuses);
   // Use updateListAnalysis to handle both adding and removing analysis types
   await updateListAnalysis(clientDatabase, listId, analysisIds, currentAnalysisStatuses);
 

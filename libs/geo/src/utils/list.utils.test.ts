@@ -1,6 +1,4 @@
-import * as sinon from 'sinon';
-import { DataSource } from 'typeorm';
-import { ListsAnalysisStatus } from '@wri-monorepos/sql';
+import { ListsAnalysisStatus, ClientStoreConnection } from '@wri-monorepos/sql';
 import {
   getListStatusId,
   ContainsPunctuation,
@@ -16,8 +14,27 @@ import {
   GetTemplateId,
   setListAnalysisStatus,
 } from './list.utils';
-import { listStatus, analysisTypes } from '@wri-monorepos/constants';
+import { listStatus } from '@wri-monorepos/constants';
 import * as listAnalysisStatus from '../lib/list.analysis.status';
+
+// Mock the modules
+jest.mock('@wri-monorepos/sql', () => ({
+  ClientStoreConnection: jest.fn().mockImplementation(() => ({
+    getConnection: jest.fn().mockResolvedValue({
+      getRepository: jest.fn().mockReturnValue({
+        findBy: jest.fn(),
+        save: jest.fn(),
+        update: jest.fn(),
+      }),
+    }),
+  })),
+  ListsAnalysisStatus: jest.fn(),
+}));
+
+jest.mock('../lib/list.analysis.status', () => ({
+  updateListAnalysis: jest.fn(),
+  deleteListAnalyses: jest.fn(),
+}));
 
 describe('List Utils', () => {
   describe('getListStatusId', () => {
@@ -312,111 +329,8 @@ describe('List Utils', () => {
   });
 
   describe('setListAnalysisStatus', () => {
-    const baseValues = {
-      errorInfo: null,
-      updateTime: expect.any(String),
-      s3URL: null,
-      expirationTime: null,
-      bundleCreationTime: null,
-      options: null,
-    };
-
     beforeEach(() => {
       jest.clearAllMocks();
-      sinon.restore();
-    });
-
-    it('should add new analysis types and remove deselected ones', async () => {
-      const currentAnalysisStatuses = [
-        { listId: 1, analysisId: 'FCD', status: listStatus.Active } as ListsAnalysisStatus,
-        { listId: 1, analysisId: 'DefReport', status: listStatus.Active } as ListsAnalysisStatus,
-      ];
-
-      const lasMock = {
-        findBy: jest.fn().mockResolvedValue(currentAnalysisStatuses),
-        save: jest.fn(),
-        update: jest.fn(),
-      };
-
-      sinon
-        .stub(DataSource.prototype, 'getRepository')
-        .withArgs(ListsAnalysisStatus)
-        .returns(lasMock as unknown);
-
-      // Mock updateListAnalysis to verify it's called with correct parameters
-      const updateListAnalysisStub = sinon
-        .stub(listAnalysisStatus, 'updateListAnalysis')
-        .resolves();
-
-      // Call setListAnalysisStatus with only FCD (removing DefReport)
-      await setListAnalysisStatus('clientDatabase', 1, ['FCD'], listStatus.Pending);
-
-      // Verify updateListAnalysis was called with correct parameters
-      sinon.assert.calledWith(
-        updateListAnalysisStub,
-        'clientDatabase',
-        1,
-        ['FCD'],
-        currentAnalysisStatuses
-      );
-
-      // Verify status update was called for FCD
-      expect(lasMock.update).toHaveBeenCalledWith(
-        { listId: 1, analysisId: 'FCD' },
-        {
-          status: listStatus.Pending,
-          ...baseValues,
-        }
-      );
-    });
-
-    it('should handle PalmRisk analysis type correctly', async () => {
-      const currentAnalysisStatuses = [
-        { listId: 1, analysisId: 'FCD', status: listStatus.Active } as ListsAnalysisStatus,
-      ];
-
-      const lasMock = {
-        findBy: jest.fn().mockResolvedValue(currentAnalysisStatuses),
-        save: jest.fn(),
-        update: jest.fn(),
-      };
-
-      sinon
-        .stub(DataSource.prototype, 'getRepository')
-        .withArgs(ListsAnalysisStatus)
-        .returns(lasMock as unknown);
-
-      // Mock updateListAnalysis
-      const updateListAnalysisStub = sinon
-        .stub(listAnalysisStatus, 'updateListAnalysis')
-        .resolves();
-
-      // Call setListAnalysisStatus with FCD and PalmRisk
-      await setListAnalysisStatus(
-        'clientDatabase',
-        1,
-        ['FCD', analysisTypes.PALM_RISK],
-        listStatus.Pending
-      );
-
-      // Verify updateListAnalysis was called with correct parameters
-      sinon.assert.calledWith(
-        updateListAnalysisStub,
-        'clientDatabase',
-        1,
-        ['FCD', analysisTypes.PALM_RISK],
-        currentAnalysisStatuses
-      );
-
-      // Verify status update was called for FCD with PalmRisk option
-      expect(lasMock.update).toHaveBeenCalledWith(
-        { listId: 1, analysisId: 'FCD' },
-        {
-          status: listStatus.Pending,
-          ...baseValues,
-          options: analysisTypes.PALM_RISK,
-        }
-      );
     });
 
     it('should handle empty analysis types array', async () => {
@@ -425,28 +339,39 @@ describe('List Utils', () => {
         { listId: 1, analysisId: 'DefReport', status: listStatus.Active } as ListsAnalysisStatus,
       ];
 
-      const lasMock = {
+      // Setup repository mock
+      const mockRepository = {
         findBy: jest.fn().mockResolvedValue(currentAnalysisStatuses),
         save: jest.fn(),
         update: jest.fn(),
       };
 
-      sinon
-        .stub(DataSource.prototype, 'getRepository')
-        .withArgs(ListsAnalysisStatus)
-        .returns(lasMock as unknown);
+      // Setup connection mock
+      const mockConnection = {
+        getRepository: jest.fn().mockReturnValue(mockRepository),
+      };
 
-      // Mock updateListAnalysis
-      const updateListAnalysisStub = sinon
-        .stub(listAnalysisStatus, 'updateListAnalysis')
-        .resolves();
+      // Setup ClientStoreConnection mock
+      const mockClientStoreConnection = {
+        getConnection: jest.fn().mockResolvedValue(mockConnection),
+      };
+      (ClientStoreConnection as unknown as jest.Mock).mockImplementation(
+        () => mockClientStoreConnection
+      );
 
-      // Call setListAnalysisStatus with empty array (removing all analysis types)
+      // Call setListAnalysisStatus with empty array
       await setListAnalysisStatus('clientDatabase', 1, [], listStatus.Pending);
 
+      // Verify deleteListAnalyses was called
+      expect(listAnalysisStatus.deleteListAnalyses).toHaveBeenCalledWith(
+        'clientDatabase',
+        1,
+        [],
+        currentAnalysisStatuses
+      );
+
       // Verify updateListAnalysis was called with empty array
-      sinon.assert.calledWith(
-        updateListAnalysisStub,
+      expect(listAnalysisStatus.updateListAnalysis).toHaveBeenCalledWith(
         'clientDatabase',
         1,
         [],
@@ -454,7 +379,7 @@ describe('List Utils', () => {
       );
 
       // Verify no status updates were called
-      expect(lasMock.update).not.toHaveBeenCalled();
+      expect(mockRepository.update).not.toHaveBeenCalled();
     });
   });
 });

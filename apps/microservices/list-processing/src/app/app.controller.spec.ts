@@ -218,6 +218,7 @@ describe('AppController', () => {
         user_id: 10011,
         startAnalysis: true,
         saveAsDraft: false,
+        commodity: 'cocoa',
       });
 
       expect(result).toEqual({
@@ -302,6 +303,7 @@ describe('AppController', () => {
         user_id: userId,
         startAnalysis: true,
         saveAsDraft: false,
+        commodity: 'cocoa',
       });
 
       expect(triggerLargeListProcessResult).toEqual({
@@ -946,6 +948,7 @@ describe('AppController', () => {
       user_id: 0,
       client_database: 'string',
       analysisIds: [0],
+      commodity: 'Sugar Cane',
     };
     const expectedResult = [
       {

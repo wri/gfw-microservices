@@ -1416,8 +1416,8 @@ export default class ListDetails extends Component {
       // those selections and ignoring any filters or search strings
       if (gfwList) {
         locationIds = listData
-          .filter((d) => selectedLocations.indexOf(d.location_id) > -1)
-          .map((location) => getGFWListLocationIDs(gfwList, location));
+          .filter((d) => selectedLocations.includes(d.location_id))
+          .map(({ location_id }) => location_id);
       } else {
         locationIds = selectedLocations;
       }
@@ -1506,6 +1506,7 @@ export default class ListDetails extends Component {
       isSharedList,
       ...(isEveryRowSelected || showFullListMap ? {} : { selectedLocations: locationIds }),
     };
+
     redirectToMap(sendData);
     gtag('event', 'Header button click', {
       event_category: 'Lists Click',

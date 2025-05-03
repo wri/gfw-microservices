@@ -22,6 +22,11 @@ jest.mock('../hooks', () => ({
   useHistory: () => ({ push: mockHistoryPush, goBack: mockHistoryGoBack }),
 }));
 
+jest.mock('@mui/material', () => ({
+  ...jest.requireActual('@mui/material'),
+  Dialog: () => jest.fn(),
+}));
+
 jest.mock('../contexts');
 const mockSetUploadLocationConfigureList = jest.fn();
 const mockClearUploadType = jest.fn();
@@ -171,10 +176,14 @@ describe('ConfigureList', () => {
     await userEvent.click(nextButton);
     expect(screen.queryByText(/enter custom commodity/i)).toBeInTheDocument();
 
-    expect(screen.queryByText(/select at least one type of analysis/i)).toBeInTheDocument();
-
     const customCommodityInput = screen.getByTestId('custom-commodity-input');
     await userEvent.type(customCommodityInput, 'corn');
+
+    await userEvent.click(nextButton);
+    expect(screen.queryByText(/enter custom commodity/i)).not.toBeInTheDocument();
+
+    expect(mockHistoryPush).not.toHaveBeenCalledWith('SUMMARY_AND_SUBMIT');
+
     await userEvent.click(
       screen.getByRole('checkbox', {
         name: /post-2020 risk assessment deforestation in natural forest since 2021 \+ additional contextual datasets/i,
@@ -182,8 +191,6 @@ describe('ConfigureList', () => {
     );
 
     await userEvent.click(nextButton);
-    expect(screen.queryByText(/enter custom commodity/i)).not.toBeInTheDocument();
-    expect(screen.queryByText(/select at least one type of analysis/i)).not.toBeInTheDocument();
     expect(mockHistoryPush).toHaveBeenCalledWith('SUMMARY_AND_SUBMIT');
   }, 20000);
 

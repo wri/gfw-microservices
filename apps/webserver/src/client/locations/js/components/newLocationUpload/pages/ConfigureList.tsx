@@ -13,6 +13,10 @@ import {
   Typography,
   SelectChangeEvent,
   Skeleton,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogActions,
 } from '@mui/material';
 import { ArrowBackIos, ArrowForwardIos, Close } from '@mui/icons-material';
 import { useForm, Controller, FieldError } from 'react-hook-form';
@@ -98,6 +102,7 @@ export function ConfigureList({ userLists }: { userLists: UserList[] }) {
   });
   const { clearUploadType, setUploadLocationConfigureList } = useUploadLocation();
   const existingList = useRef<{ id: number; analysisIds: string[] }>({ id: 0, analysisIds: [] });
+  const [isConfirmationDialogOpen, setIsConfirmationDialogOpen] = useState(false);
 
   const [formFields, setFormFields] = useState<{
     newListName: string;
@@ -209,6 +214,12 @@ export function ConfigureList({ userLists }: { userLists: UserList[] }) {
     history.push('SUMMARY_AND_SUBMIT');
   };
   const noAnalysisSelectedError = 'noAnalysisSelected' in errors ? errors.noAnalysisSelected : null;
+
+  useEffect(() => {
+    if (noAnalysisSelectedError) {
+      setIsConfirmationDialogOpen(true);
+    }
+  }, [noAnalysisSelectedError]);
 
   return (
     <>
@@ -435,11 +446,6 @@ export function ConfigureList({ userLists }: { userLists: UserList[] }) {
                 />
               );
             })}
-          {noAnalysisSelectedError && (
-            <FormHelperText sx={{ color: 'error.main' }}>
-              <Typography variant="body2">Select at least one type of analysis.</Typography>
-            </FormHelperText>
-          )}
         </Box>
         <Box
           sx={{
@@ -473,6 +479,28 @@ export function ConfigureList({ userLists }: { userLists: UserList[] }) {
           </PillButton>
         </Box>
       </Card>
+      <Dialog open={isConfirmationDialogOpen}>
+        <DialogTitle>
+          <Typography variant="h6">Select an analysis to continue</Typography>
+        </DialogTitle>
+        <DialogContent sx={{ textAlign: 'justify' }}>
+          <Typography variant="body2">
+            To complete your list configuration, please select at least one analysis type. This
+            ensures your submission will be processed successfully.
+          </Typography>
+        </DialogContent>
+        <DialogActions sx={{ ml: 'auto', pb: 2 }}>
+          <PillButton
+            sx={{ color: 'info.contrastText' }}
+            onClick={() => setIsConfirmationDialogOpen(false)}
+          >
+            Cancel
+          </PillButton>
+          <PillButton variant="contained" onClick={() => setIsConfirmationDialogOpen(false)}>
+            Select Analysis
+          </PillButton>
+        </DialogActions>
+      </Dialog>
     </>
   );
 }

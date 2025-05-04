@@ -91,8 +91,8 @@ SELECT
     ISNULL(afi.natural_land_area, 0) AS coverageHA,
     ISNULL(afi.natural_land_deforested_area, 0) AS naturalForestLossHA,
     ISNULL(afi.total_area_ha, 0) AS totalAreaHa,
-    ISNULL(afi.status_code, NULL) AS locationStatusId,
-    ISNULL(afi.location_error, NULL) AS locationError,
+    afi.status_code AS analysisStatusId,
+    afi.location_error AS analysisError,
     ISNULL(afi.negligible_risk, 0) AS negligibleRisk,
     ISNULL(afi.jrc_land_area, 0) AS jrcLandAreaHA,
     ISNULL(afi.jrc_land_deforested_area, 0) AS jrcNaturalForestLossHA,
@@ -248,8 +248,8 @@ export class PaginatedAfiAnalysisByListIdSortedByFilters {
   coverageHA: number;
   naturalForestLossHA: number;
   totalAreaHa: number;
-  locationStatusId: number;
-  locationError: number;
+  analysisStatusId: number;
+  analysisError: number;
   negligibleRisk: number;
   jrcLandAreaHA: number;
   jrcNaturalForestLossHA: number;

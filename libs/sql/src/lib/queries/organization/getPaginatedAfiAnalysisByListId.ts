@@ -19,8 +19,8 @@ SELECT
     ISNULL(afi.natural_land_area, 0) AS coverageHA,
     ISNULL(afi.natural_land_deforested_area, 0) AS naturalForestLossHA,
     ISNULL(afi.total_area_ha, 0) AS totalAreaHa,
-    afi.status_code as locationStatusId,
-    afi.location_error as locationError,
+    afi.status_code as analysisStatusId,
+    afi.location_error as analysisError,
     afi.negligible_risk AS negligibleRisk,
     ISNULL(afi.jrc_land_area, 0) AS jrcLandAreaHA,
     ISNULL(afi.jrc_land_deforested_area, 0) AS jrcLandDeforestedAreaHA,
@@ -85,8 +85,8 @@ SET @SQL = 'SELECT  ' +
 ' afi.natural_land_area AS coverageHA, ' +
 ' afi.natural_land_deforested_area AS naturalForestLossHA, ' +
 ' afi.total_area_ha AS totalAreaHa, ' +
-' afi.status_code as locationStatusId, ' +
-' afi.location_error as locationError, ' +
+' afi.status_code as analysisStatusId, ' +
+' afi.location_error as analysisError, ' +
 ' afi.negligible_risk AS negligibleRisk, ' +
 ' afi.jrc_land_area AS jrcLandAreaHA, ' +
 ' afi.jrc_land_deforested_area AS jrcLandDeforestedAreaHA, ' +
@@ -121,7 +121,7 @@ export class AfiAnalysisByListId {
   landmarkArea: number;
   listId: number;
   listName: string;
-  locationError: string;
+  analysisError: string;
   locationId: number;
   locationName?: string;
   naturalForestLossByYear: string;
@@ -129,7 +129,7 @@ export class AfiAnalysisByListId {
   negligibleRisk: number;
   protectedAreasArea: number;
   state: string;
-  locationStatusId: number;
+  analysisStatusId: number;
   errorDetails: string;
   subState: string;
   totalAreaHA: number;

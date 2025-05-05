@@ -344,6 +344,16 @@ describe('List Utils', () => {
         findBy: jest.fn().mockResolvedValue(currentAnalysisStatuses),
         save: jest.fn(),
         update: jest.fn(),
+        findOne: jest.fn().mockImplementation(({ where }) => {
+          if (where.analysisId === 'FCD' || where.analysisId === 'DefReport') {
+            return Promise.resolve({
+              listId: 1,
+              analysisId: where.analysisId,
+              status: listStatus.Active,
+            });
+          }
+          return Promise.resolve(null);
+        }),
       };
 
       // Setup connection mock
@@ -385,6 +395,16 @@ describe('List Utils', () => {
         findBy: jest.fn().mockResolvedValue(currentAnalysisStatuses),
         save: jest.fn(),
         update: jest.fn(),
+        findOne: jest.fn().mockImplementation(({ where }) => {
+          if (where.analysisId === 'FCD' || where.analysisId === 'DefReport') {
+            return Promise.resolve({
+              listId: 1,
+              analysisId: where.analysisId,
+              status: listStatus.Active,
+            });
+          }
+          return Promise.resolve(null);
+        }),
       };
 
       // Setup connection mock
@@ -412,7 +432,8 @@ describe('List Utils', () => {
       );
 
       // Verify repository update was called for each analysis type
-      expect(mockRepository.update).toHaveBeenCalledWith(
+      expect(mockRepository.update).toHaveBeenNthCalledWith(
+        1,
         { listId: 1, analysisId: 'FCD' },
         {
           status: listStatus.Pending,
@@ -425,7 +446,8 @@ describe('List Utils', () => {
         }
       );
 
-      expect(mockRepository.update).toHaveBeenCalledWith(
+      expect(mockRepository.update).toHaveBeenNthCalledWith(
+        2,
         { listId: 1, analysisId: 'DefReport' },
         {
           status: listStatus.Pending,

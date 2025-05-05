@@ -66,6 +66,9 @@ export function RegionChartByCountry({ listId, data, fireDownload, country, tota
 
   const [countryPieChartsData, setCountryPieChartsData] = useState({});
 
+  const isArgentinaAnalysisLegacy = data.country_area === null;
+  const shouldHideArgentinaPieCharts = (country === regionIds.ARGENTINA) && isArgentinaAnalysisLegacy;
+
   function handleDateRangeChange(newDateRange) {
     setDateRange(newDateRange);
   }
@@ -214,12 +217,15 @@ export function RegionChartByCountry({ listId, data, fireDownload, country, tota
             endYear={endYear}
           />
 
-          <PieChart
-            data={argentinaPieChartData}
-            chartLabels={otbnPieChart.chartLabels}
-            title={diagnosticTitle}
-            informationBubbleId={informationBubbleId}
-          />
+          {
+            !shouldHideArgentinaPieCharts &&
+            <PieChart
+              data={argentinaPieChartData}
+              chartLabels={otbnPieChart.chartLabels}
+              title={diagnosticTitle}
+              informationBubbleId={informationBubbleId}
+            />
+          }
         </>
       )}
 
@@ -248,7 +254,7 @@ export function RegionChartByCountry({ listId, data, fireDownload, country, tota
         </>
       )}
 
-      {showProtectedAreasPieChart && (
+      {showProtectedAreasPieChart && !shouldHideArgentinaPieCharts && (
         <PieChart
           data={protectedAreasPieChartFormattedData}
           chartLabels={wdpaOverlapCountry.chartLabels}
@@ -260,7 +266,7 @@ export function RegionChartByCountry({ listId, data, fireDownload, country, tota
           }
         />
       )}
-      {showIndigenousTerritoriesPieChart && (
+      {showIndigenousTerritoriesPieChart && !shouldHideArgentinaPieCharts && (
         <PieChart
           data={indigenousTerritoriesPieChartFormattedData}
           preview={true}

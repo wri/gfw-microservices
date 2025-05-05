@@ -1,4 +1,6 @@
 import { ArgentinaOverlapService } from './argentina.overlap.service';
+import { DashboardHandleDownload } from '../pipe/dashboard.handle.download';
+
 import { describe, expect, test, jest, beforeAll, beforeEach, afterEach } from '@jest/globals';
 import { argentinaListLevelData, argentinaLocationData } from '../shared/mock.data';
 
@@ -123,37 +125,24 @@ describe('Argentina Overlap Service', () => {
     ]);
   });
 
-  test('Returns true if analysis is obsolete (country_area is null)', () => {
-    const filtersMock = {
-      ...filters,
-      listLevelAnalysis: {
-        ...filters.listLevelAnalysis,
-        country_area: null,
-      },
-    };
+  test('Does not start the overlap process if analysis is Legacy', () => {
+    const filtersMock = { ...filters };
+    filtersMock.listLevelAnalysis.country_area = null;
 
-    expect(argentinaOverlap.checkIfAnalysisIsObsolete(filtersMock)).toBe(true);
+    const dashboardHandleDownloadSpy = jest.spyOn(DashboardHandleDownload.prototype, 'start');
+    argentinaOverlap.start(filtersMock);
+
+    expect(dashboardHandleDownloadSpy).not.toHaveBeenCalled();
   });
 
-  test('Returns csv with error if analysis is obsolete', async () => {
-    const filtersMock = {
-      ...filters,
-      listLevelAnalysis: {
-        ...filters.listLevelAnalysis,
-        country_area: null,
-      },
-    };
+  test('Does not generate csv if analysis is Legacy', async () => {
+    const filtersMock = { ...filters };
+    filtersMock.listLevelAnalysis.country_area = null;
 
-    argentinaOverlap.start(filtersMock);
-    argentinaOverlap.process(argentinaLocationData, filtersMock);
-
+    const dashboardHandleDownloadSpy = jest.spyOn(DashboardHandleDownload.prototype, 'finish');
+    
     await argentinaOverlap.finish(filtersMock);
 
-    const csvData = readCsvData(filePath);
-    expect(csvData).toStrictEqual([
-      '"error"',
-      '"Error details: list \'WRI\' has been analyzed using an obsolete process."',
-      '',
-    ]);
+    expect(dashboardHandleDownloadSpy).not.toHaveBeenCalled();
   });
 });

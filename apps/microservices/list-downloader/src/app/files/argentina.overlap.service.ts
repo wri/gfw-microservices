@@ -1,4 +1,3 @@
-import * as fs from 'fs';
 import { Injectable, Scope } from '@nestjs/common';
 import { ListFieldsFileRequest } from '@wri-monorepos/sql';
 
@@ -16,33 +15,30 @@ export class ArgentinaOverlapService extends DashboardHandleDownload {
   start(filters: ListFieldsFileRequest) {
     if (shouldGenerateArgentinaCsv(filters)) {
       super.start(filters, 'argentinaOverlap', 'argentina_overlap');
-
-      // Checks if list has been analyzed before new analysis was implemented
-      const isAnalysisObsolete = this.checkIfAnalysisIsObsolete(filters);
-      if (isAnalysisObsolete) {
-        this.writeCsvErrorHeader(filters, 'argentina_overlap');
-      }
     }
   }
 
   process(data, filters: ListFieldsFileRequest) {
-    const isAnalysisObsolete = this.checkIfAnalysisIsObsolete(filters);
-
-    if (shouldGenerateArgentinaCsv(filters) && !isAnalysisObsolete) {
+    if (shouldGenerateArgentinaCsv(filters)) {
       super.process(data, filters);
     }
   }
 
-  protected writeCsvErrorHeader(filters: ListFieldsFileRequest, fileSuffix: string) {
-    const filePath = `/tmp/wri-${filters.key}/${filters.listName}_${fileSuffix}.csv`;
-    const errorHeader = `"error"`;
-    const errorMessage = `"Error details: list '${filters.listName}' has been analyzed using an obsolete process."`;
+  async finish(filters: ListFieldsFileRequest) {
+    const { selectedLocationsList } = filters;
 
-    fs.writeFileSync(filePath, `${errorHeader}\n${errorMessage}\n`);
-  }
-
-  checkIfAnalysisIsObsolete(filters: ListFieldsFileRequest): boolean {
-    return filters.listLevelAnalysis?.country_area === null;
+    if (shouldGenerateArgentinaCsv(filters)) {
+      this.logger.log('Argentina Overlap Service finish');
+      if (selectedLocationsList.length != 1) {
+        generateCSV(
+          filters,
+          'argentinaOverlapAggregate',
+          'argentina_overlap_aggregate',
+          this.generateAggregate
+        );
+      }
+      await super.finish(filters);
+    }
   }
 
   generateAggregate(table: string, list_name: string, listLevelAnalysis) {
@@ -68,22 +64,5 @@ export class ArgentinaOverlapService extends DashboardHandleDownload {
     csvData = formatter.run(csvData);
 
     return csvData;
-  }
-
-  async finish(filters: ListFieldsFileRequest) {
-    const { selectedLocationsList } = filters;
-
-    if (shouldGenerateArgentinaCsv(filters)) {
-      this.logger.log('Argentina Overlap Service finish');
-      if (selectedLocationsList.length != 1) {
-        generateCSV(
-          filters,
-          'argentinaOverlapAggregate',
-          'argentina_overlap_aggregate',
-          this.generateAggregate
-        );
-      }
-      await super.finish(filters);
-    }
   }
 }

@@ -385,4 +385,36 @@ describe('convertProperties', () => {
       },
     });
   });
+
+  it('should remove nulls and trim string from non numeric fields', () => {
+    const mockFeature = {
+      type: 'Feature',
+      geometry: {
+        type: 'Point',
+        coordinates: [-100, 12],
+      },
+      properties: {
+        locationName: 'Test Location 2',
+        'Location Classification': 'Loc Classifi. \0\0\0\0    ',
+        'Company ID': 'company ID     ',
+        'custom property': 'my custom prop \0\0\0\0    ',
+      },
+    };
+
+    const result = convertProperties(mockFeature);
+
+    expect(result).toEqual({
+      type: 'Feature',
+      geometry: {
+        type: 'Point',
+        coordinates: [-100, 12],
+      },
+      properties: {
+        locationName: 'Test Location 2',
+        'Location Classification': 'Loc Classifi.',
+        'Company ID': 'company ID',
+        'custom property': 'my custom prop',
+      },
+    });
+  });
 });

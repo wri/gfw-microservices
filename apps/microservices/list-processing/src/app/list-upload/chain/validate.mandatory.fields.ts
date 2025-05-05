@@ -2,10 +2,19 @@ import { Logger } from '@nestjs/common';
 import { AbstractHandler, ChainType, RequestNewList } from './types';
 import * as path from 'path';
 
+const expectedNumberFields = ['latitude', 'longitude', 'analysisArea', 'analysisRadius'];
+
+const removeNullCharacterAndTrim = (properties: Record<string, any>) => {
+  Object.entries(properties).forEach(([field, value]) => {
+    if (typeof value === 'string' && !expectedNumberFields.includes(field)) {
+      properties[field] = value.replace(/[\0]/g, '').trim();
+    }
+  });
+};
+
 // unfortunately, this "download shapefile" function from old Pro code generates
 // numeric attributes as strings, so we need to convert them to numbers
 const convertExpectedNumbers = (properties: Record<string, any>) => {
-  const expectedNumberFields = ['latitude', 'longitude', 'analysisArea', 'analysisRadius'];
   expectedNumberFields.forEach((field) => {
     if (
       properties[field] !== undefined &&
@@ -50,7 +59,7 @@ export const convertProperties = (feature) => {
     const newKey = mapping[trimmedKey] || trimmedKey;
     newProperties[newKey] = value;
   }
-
+  removeNullCharacterAndTrim(newProperties);
   convertExpectedNumbers(newProperties);
   return {
     ...feature,

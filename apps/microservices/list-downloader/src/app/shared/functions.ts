@@ -127,7 +127,12 @@ export const shouldGenerateArgentinaCsv = ({
   const isArgentinaDataAvailable = !isEmptyObject(argOtbnArea) || totalArea > 0;
   const isAnalysisLegacy = country_area === null;
 
-  return VALID_TYPES.includes(type) && listView === 'forest_change' && isArgentinaDataAvailable && !isAnalysisLegacy;
+  return (
+    VALID_TYPES.includes(type) &&
+    listView === 'forest_change' &&
+    isArgentinaDataAvailable &&
+    !isAnalysisLegacy
+  );
 };
 
 export const shouldGenerateColombiaCsv = ({

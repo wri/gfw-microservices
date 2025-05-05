@@ -1,7 +1,11 @@
 import React from 'react';
 import { listStatus } from '../../../../config/env/listStatuses.constants';
 
-const getAnalysisAvailabilityMessage = (listStatusId, listAnalysesStatus, isLegacyAnalysis = false) => {
+const getAnalysisAvailabilityMessage = (
+  listStatusId,
+  listAnalysesStatus,
+  isLegacyAnalysis = false
+) => {
   const { Pending, Draft } = listStatus;
   const analysisId = new URLSearchParams(location.search).get('type');
 

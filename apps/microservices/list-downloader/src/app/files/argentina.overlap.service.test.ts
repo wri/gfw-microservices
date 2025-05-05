@@ -140,7 +140,7 @@ describe('Argentina Overlap Service', () => {
     filtersMock.listLevelAnalysis.country_area = null;
 
     const dashboardHandleDownloadSpy = jest.spyOn(DashboardHandleDownload.prototype, 'finish');
-    
+
     await argentinaOverlap.finish(filtersMock);
 
     expect(dashboardHandleDownloadSpy).not.toHaveBeenCalled();

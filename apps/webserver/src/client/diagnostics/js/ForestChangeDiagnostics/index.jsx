@@ -88,11 +88,7 @@ function ForestChangeDiagnostics({ popover, infoBubbleCache }) {
 
     const { list_status_id, listAnalysesStatus } = selectedList;
 
-    return getAnalysisAvailabilityMessage(
-      list_status_id,
-      listAnalysesStatus,
-      isLegacyAnalysis
-    );
+    return getAnalysisAvailabilityMessage(list_status_id, listAnalysesStatus, isLegacyAnalysis);
   }, [selectedList, isLegacyAnalysis]);
 
   return (

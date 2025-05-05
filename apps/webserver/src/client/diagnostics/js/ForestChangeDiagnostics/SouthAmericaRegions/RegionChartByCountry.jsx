@@ -67,7 +67,7 @@ export function RegionChartByCountry({ listId, data, fireDownload, country, tota
   const [countryPieChartsData, setCountryPieChartsData] = useState({});
 
   const isArgentinaAnalysisLegacy = data.country_area === null;
-  const shouldHideArgentinaPieCharts = (country === regionIds.ARGENTINA) && isArgentinaAnalysisLegacy;
+  const shouldHideArgentinaPieCharts = country === regionIds.ARGENTINA && isArgentinaAnalysisLegacy;
 
   function handleDateRangeChange(newDateRange) {
     setDateRange(newDateRange);
@@ -217,15 +217,14 @@ export function RegionChartByCountry({ listId, data, fireDownload, country, tota
             endYear={endYear}
           />
 
-          {
-            !shouldHideArgentinaPieCharts &&
+          {!shouldHideArgentinaPieCharts && (
             <PieChart
               data={argentinaPieChartData}
               chartLabels={otbnPieChart.chartLabels}
               title={diagnosticTitle}
               informationBubbleId={informationBubbleId}
             />
-          }
+          )}
         </>
       )}
 

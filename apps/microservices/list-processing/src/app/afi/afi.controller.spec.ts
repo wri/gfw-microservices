@@ -154,8 +154,8 @@ describe('[GET] /afi/:listId/data-per-page', () => {
             naturalForestLossHA: 0,
             totalAreaHA: 0,
             negligibleRisk: 80,
-            statusCode: 200,
-            locationError: null,
+            analysisStatusId: 200,
+            analysisError: null,
             locationName: 'WRI Forest Atlas',
             country: 'Brazil',
             state: 'Acre',
@@ -166,6 +166,7 @@ describe('[GET] /afi/:listId/data-per-page', () => {
             protectedAreasArea: 2,
             naturalForestLossByYear: '{}',
             jrcForestLossByYear: '{}',
+            errorDetails: null,
           },
         ]);
       });
@@ -189,8 +190,8 @@ describe('[GET] /afi/:listId/data-per-page', () => {
         naturalForestLossHA: 0,
         totalAreaHA: 0,
         negligibleRisk: 80,
-        statusCode: 200,
-        locationError: null,
+        analysisStatusId: 200,
+        analysisError: null,
         locationName: 'WRI Forest Atlas',
         country: 'Brazil',
         state: 'Acre',
@@ -201,6 +202,7 @@ describe('[GET] /afi/:listId/data-per-page', () => {
         protectedAreasArea: 2,
         naturalForestLossByYear: '{}',
         jrcForestLossByYear: '{}',
+        errorDetails: null,
       },
     ]);
 

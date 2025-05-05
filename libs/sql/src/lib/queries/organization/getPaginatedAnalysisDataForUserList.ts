@@ -22,11 +22,11 @@ BEGIN
 
 	SET NOCOUNT ON
 	-- Obtain the location table name and the analysis table name for the list.
-	SELECT 
+	SELECT
 		@listLocationTableName = list_table_name
 		, @listAnalysisTableName = list_analysis_table_name
-		, @template_id = template_id 
-		, @listVersion = version 
+		, @template_id = template_id
+		, @listVersion = version
 	FROM dbo.Lists WHERE id = @listID
 
 
@@ -116,6 +116,8 @@ BEGIN
 
 	EXEC sp_executesql @PRESQL, @presql_analysis_params, @analysis_location_table_cols_query = @analysis_location_table_cols_output OUTPUT;
 
+
+
 	SELECT @listAnalysisTableCols = STUFF(
 	  (
 		SELECT '], A.[' + [name] FROM sys.columns
@@ -123,7 +125,7 @@ BEGIN
 		  [object_id] = (SELECT [object_id] FROM sys.objects WHERE [name] = @listAnalysisTableName)
 		  AND [name] NOT IN ('id')
 		  FOR XML PATH('')
-	  ),1,3,'') + ']';
+	  ),1,3,'') + '], A.location_status_id as analysisStatusId, A.location_error as analysisError';
 
 
 	-- ADD Filters

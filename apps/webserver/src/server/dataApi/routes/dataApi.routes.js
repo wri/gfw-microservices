@@ -52,7 +52,7 @@ module.exports = (app, limiter) => {
 
   app.post('/dataApi/getBBoxAndGeostoreIDs/', controller.getBBoxAndGeostoreIDs);
 
-  app.get('/data-api/lat-long-lookups', async (req, res) => {
+  app.get('/dataApi/lat-long-lookups', async (req, res) => {
     try {
       const descriptionData = await describeLatLongLookups();
 

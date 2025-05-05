@@ -1,6 +1,6 @@
 import axios from 'axios';
 import { Logger } from "@nestjs/common";
-import { IdLookupFn, IdTypeHandler } from ".";
+import { IdLookupFn } from ".";
 import { parse } from 'wellknown';
 
 const logger = new Logger('uml.lat.long.lookup');
@@ -56,7 +56,7 @@ const getPalmOilMillLatLongChunk = async (millsChunk) => {
   }
 };
 
-export const getUniversalMillLatLong: IdTypeHandler = async (data) => {
+export const getUniversalMillLatLong = async (data) => {
   logger.log(`getPalmOilMillLatLong - total ${data?.length} locations`);
 
   if (!data?.length) {
@@ -80,9 +80,13 @@ export const getUniversalMillLatLong: IdTypeHandler = async (data) => {
   return fullResult;
 };
 
-
 export const umlLookUp: IdLookupFn = async (ids) => {
-  const sqlIds = ids.map((id) => `'${id}'`).join(',');
+  let result = {};
+
+  const sqlIds = ids.map((id) => {
+    result[id] = {};
+    return `'${id}'`
+  }).join(',');
 
   try {
     const response = await axios.get(UML_DATAAPI_URL, {
@@ -95,25 +99,33 @@ export const umlLookUp: IdLookupFn = async (ids) => {
     });
 
     if (response.data.data.length > 0) {
-      const entries = response.data.data.map((record => {
-        return [record.uml_id, {geometry: parse(record.geom)}]
-      }));
-
-      return Object.fromEntries(entries);
+      response.data.data.forEach((found) => {
+        if (result[found.uml_id]) {
+          result[found.uml_id] = {
+            geometry: parse(found.geom)
+          };
+        }
+      });
+    } 
+    if (response.data.data.length < ids.length) {
+      ids.forEach((id) => {
+        if (!result[id].geometry) {
+          result[id] = {
+            errorDetails: `UML LookUp: did not found lat/long for ${id}`
+          }
+        }
+      });
     }
-
-    const notFound = ids.map((id) => [id, {
-      errorDetails: `No lat/long found for ${id}`
-    }]);
-
-    return Object.fromEntries(notFound);
   } catch (error) {
     logger.error(`umlLookUp failed for ${sqlIds}`, error.stack || error);
-    const errored = ids.map((id) => [id, {
-      errorDetails: `lat/long lookup failed for ${id}`
-    }]);
-    return Object.fromEntries(errored);
+    ids.forEach((id) => {
+      result[id] = {
+        errorDetails: `UML lat/long lookup failed for ${id}`
+      }
+    });
   }
+
+  return result;
 };
 
 export const describeUmlLookup = async () => {
@@ -125,7 +137,6 @@ export const describeUmlLookup = async () => {
       },
       params: {
         sql: `select * from data limit 5`,
-        // sql: `select uml_id,ST_AsText(geom) as geom, gfw_geojson from data limit 5`,
       },
     });
 
@@ -137,14 +148,15 @@ export const describeUmlLookup = async () => {
     }, {});
 
     /**
+     * SELECT uml_id,ST_AsText(geom) as geom, gfw_geojson FROM data LIMIT 5
      * geom => geometry binary
      * ST_AsText(geom) => geometry text parsable by wellknown
      * gfw_geojson => is equal wellknown.parse(ST_AsText(geom))?
      */
     // const parsedGeoms = data.map((row) => {
-      // return {
-        // geom: parse(row.geom),
-      // }
+    //   return {
+    //     geom: parse(row.geom),
+    //   }
     // });
 
     return {

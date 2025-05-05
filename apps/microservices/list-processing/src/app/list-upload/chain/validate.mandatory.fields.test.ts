@@ -386,7 +386,7 @@ describe('convertProperties', () => {
     });
   });
 
-  it('should remove nulls and trim string from standard fields', () => {
+  it('should remove nulls and trim string from non numeric fields', () => {
     const mockFeature = {
       type: 'Feature',
       geometry: {
@@ -397,6 +397,7 @@ describe('convertProperties', () => {
         locationName: 'Test Location 2',
         'Location Classification': 'Loc Classifi. \0\0\0\0    ',
         'Company ID': 'company ID     ',
+        'custom property': 'my custom prop \0\0\0\0    ',
       },
     };
 
@@ -412,6 +413,7 @@ describe('convertProperties', () => {
         locationName: 'Test Location 2',
         'Location Classification': 'Loc Classifi.',
         'Company ID': 'company ID',
+        'custom property': 'my custom prop',
       },
     });
   });

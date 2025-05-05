@@ -1,8 +1,6 @@
 import { Logger } from "@nestjs/common";
-import { getUniversalMillLatLong, describeUmlLookup, umlLookUp } from "./uml.lat.long.lookup";
-import axios from "axios";
-import { carLookup, describeCarLookup, getCarIdLatLong } from "./carid.lat.long.lookup";
-import { Geometry, GeoJson, FeatureCollection } from '@wri-monorepos/geo';
+import { umlLookUp, describeUmlLookup } from "./uml.lat.long.lookup";
+import { carLookup, describeCarLookup } from "./carid.lat.long.lookup";
 
 const logger = new Logger('csv.id.based.system');
 
@@ -12,18 +10,15 @@ export enum CSV_ID_TYPES {
 }
 
 type Data = Record<string, unknown>;
-export type IdLookupFn = (ids: Data[]) =>
-  Promise<Record<string, { geometry?: Geometry } | { errorDetails?: string }>>;
+
+export type IdLookupFn = (ids: string[]) =>
+  Promise<{[ID: string]: { geometry?: '', errorDetails?: 'string' }}>;
 
 export type IdTypeOptions = {
-  data?: Data[],
   handler: IdLookupFn,
   chunkSize: number,
   column: string;
 };
-export type IdTypeHandler = (
-  data: Data[]
-) => Promise<Record<string, unknown>[]>;
 
 const ID_TYPE_HANDLER: Record<string, IdTypeOptions> = {
   [CSV_ID_TYPES.UML]: {
@@ -38,60 +33,44 @@ const ID_TYPE_HANDLER: Record<string, IdTypeOptions> = {
   },
 };
 
-// todo: make a parametrized function similar to getPalmOilMillLatLong for the chunking/bacthing
 export const applyLookUpByChunks = async (
   data: Data[],
   idType: string,
-  lookup: IdLookupFn,
-  column: string = 'ID',
-  chunkSize: number = 100
+  options: IdTypeOptions
 ) => {
+  const { handler: lookup, column, chunkSize } = options;
   let result = []
+
   for (let i = 0; i < data.length; i += chunkSize) {
     const chunkMax = Math.min(data.length, i + chunkSize);
     const chunk = data.slice(i, chunkMax);
+    logger.log(`${idType} LookUp Chunk ${i}/${chunkMax}`);
 
-    try {
-      const chunkResp = await lookup(
-        chunk.map((r) => r[column] as Data) // { id: geometry }
-      );           
+    const chunkResp = await lookup(
+      chunk.map((row) => row[column] as string) // {id:{geometry?, errorDetails?}}
+    );
 
-      chunk.forEach((r: Data) => {
-        const match = chunkResp[r[column] as string];
-        if (match) {
-          r.geometry = match.geom;
-        }
-        // const geometry = result[r[column] as string];
-        // if (geometry) {
-        //   r.geometry = geometry.geom as Geometry
-        // } else {
-        //   (r as any).errorDetails = [`${idType} lookup: IDs ${ids} not found`];
-        // }
-      });
-    } catch (err: any) {
-      // Tag whole chunk on catastrophic failure
-      chunk.forEach(
-        (r) =>
-          ((r as any).errorDetails = [`${idType} lookup failed: ${err?.message}`])
-      );
-    }
+    result.concat(
+      chunk.map((row) => {
+        return Object.assign({}, row, chunkResp[row[column] as string] ?? {});
+      })
+    );
   }
-};
 
+  return result;
+};
 
 export const resolveLatLongHandlerByIdType = async (
   idType: string,
   data: Record<string, unknown>[]
 ): Promise<Record<string, unknown>[]> => {
   const key = idType.trim().toUpperCase();
-  const { handler, column, chunkSize } = ID_TYPE_HANDLER[key];
-
-  if (!handler) {
+  if (!ID_TYPE_HANDLER[key]) {
     throw new Error(`No lat/long support for ID ${idType}`);
   }
 
   logger.log(`Handling lat/long based from ID Type: ${idType}`);
-  return applyLookUpByChunks(data, key, handler, column, chunkSize);
+  return applyLookUpByChunks(data, key, ID_TYPE_HANDLER[key]);
 };
 
 export const idBasedSystemHandler = async (data: Record<string, unknown>[]): Promise<Record<string, unknown>[]> => {
@@ -120,13 +99,8 @@ export const idBasedSystemHandler = async (data: Record<string, unknown>[]): Pro
         return;
       };
 
-      // either (a) mutate the rows in-place *or* (b) return copies.
-      const maybeNewRows = await resolveLatLongHandlerByIdType(key, rows);
-
-      // If copies were returned, fold them back into the original array (keeps order)
-      if (Array.isArray(maybeNewRows) && maybeNewRows !== rows) {
-        maybeNewRows.forEach((updated, i) => Object.assign(rows[i], updated));
-      }
+      const possibleUpdates = await resolveLatLongHandlerByIdType(key, rows);
+      possibleUpdates.forEach((updated, i) => Object.assign(rows[i], updated));
     })
   );
 

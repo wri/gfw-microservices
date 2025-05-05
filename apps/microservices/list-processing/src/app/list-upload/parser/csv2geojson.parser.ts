@@ -127,8 +127,11 @@ export const csv2geojson = async (
     data = await csvLatLongIdBasedTransformer(data);
 
     (data as Array<LocationData>).forEach((row: LocationData) => {
-      row = standardizeLocationData(row);
-      row = createGeometry(row, includeLatLon);
+      // geometries are included in csvLatLongIdBasedTransformer 
+      if (!row['geometry']) {
+        row = standardizeLocationData(row);
+        row = createGeometry(row, includeLatLon);
+      }
 
       if (row['errorDetails']) {
         logger.error(row['errorDetails']);

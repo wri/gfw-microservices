@@ -82,6 +82,7 @@ export function ConfigureList({ userLists }: { userLists: UserList[] }) {
   const {
     handleSubmit,
     control,
+    register,
     formState: { errors },
     setValue,
     setError,
@@ -281,21 +282,13 @@ export function ConfigureList({ userLists }: { userLists: UserList[] }) {
                 </Typography>
               </Box>
 
-              <Controller
-                name="customCommodity"
-                control={control}
-                render={({ field }) => {
-                  return (
-                    <TextField
-                      size="small"
-                      sx={{ flex: '1' }}
-                      error={!!errors.customCommodity}
-                      helperText={errors.customCommodity ? 'Enter custom commodity' : ''}
-                      InputProps={{ inputProps: { 'data-testid': 'custom-commodity-input' } }}
-                      {...field}
-                    />
-                  );
-                }}
+              <TextField
+                size="small"
+                sx={{ flex: '1' }}
+                error={!!errors.customCommodity}
+                helperText={errors.customCommodity ? 'Enter custom commodity' : ''}
+                InputProps={{ inputProps: { 'data-testid': 'custom-commodity-input' } }}
+                {...register('customCommodity')}
               />
             </>
           )}

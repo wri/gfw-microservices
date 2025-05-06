@@ -460,7 +460,20 @@ export async function setListAnalysisStatus(
           value.options = analysisTypes.PALM_RISK;
         }
 
-        await listAnalysisStatusRepository.update({ listId, analysisId }, value);
+        // Check if record exists
+        const existingRecord = await listAnalysisStatusRepository.findOne({
+          where: { listId, analysisId },
+        });
+
+        if (existingRecord) {
+          await listAnalysisStatusRepository.update({ listId, analysisId }, value);
+        } else {
+          await listAnalysisStatusRepository.save({
+            listId,
+            analysisId,
+            ...value,
+          });
+        }
       })
   );
 }

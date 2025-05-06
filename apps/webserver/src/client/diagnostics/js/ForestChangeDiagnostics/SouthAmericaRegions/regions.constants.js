@@ -41,6 +41,9 @@ export const regionConstants = {
 
 const nonOverlapAreaColor = 'rgb(200,200,200)';
 
+export const legacyAnalysisErrorMessage =
+  'Not all data visualizations are displayed because your list is out of date. Please update your analysis to view additional data charts.';
+
 export const chartDatasetConfigs = {
   otbn: {
     id: 'otbn',

@@ -707,7 +707,7 @@ export default class Diagnostics extends Component {
       ? ArgentinaDownloadConfirmationMessage
       : null;
 
-    // TODO: refactor all callsites of getAvailableDiagnostics to use selectedList instead of the first element of its plural
+    // TODO: refactor all calls to getAvailableDiagnostics to use selectedList instead of the first element of its plural
     const availableDiagnostics = getAvailableDiagnostics(listData, [selectedList]);
 
     const showListViewTabs = availableDiagnostics.length > 1;

@@ -24,6 +24,23 @@ export class ArgentinaOverlapService extends DashboardHandleDownload {
     }
   }
 
+  async finish(filters: ListFieldsFileRequest) {
+    const { selectedLocationsList } = filters;
+
+    if (shouldGenerateArgentinaCsv(filters)) {
+      this.logger.log('Argentina Overlap Service finish');
+      if (selectedLocationsList.length != 1) {
+        generateCSV(
+          filters,
+          'argentinaOverlapAggregate',
+          'argentina_overlap_aggregate',
+          this.generateAggregate
+        );
+      }
+      await super.finish(filters);
+    }
+  }
+
   generateAggregate(table: string, list_name: string, listLevelAnalysis) {
     let csvData = [];
     const dataRow = [];
@@ -47,22 +64,5 @@ export class ArgentinaOverlapService extends DashboardHandleDownload {
     csvData = formatter.run(csvData);
 
     return csvData;
-  }
-
-  async finish(filters: ListFieldsFileRequest) {
-    const { selectedLocationsList } = filters;
-
-    if (shouldGenerateArgentinaCsv(filters)) {
-      this.logger.log('Argentina Overlap Service finish');
-      if (selectedLocationsList.length != 1) {
-        generateCSV(
-          filters,
-          'argentinaOverlapAggregate',
-          'argentina_overlap_aggregate',
-          this.generateAggregate
-        );
-      }
-      await super.finish(filters);
-    }
   }
 }

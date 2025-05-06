@@ -121,12 +121,18 @@ export const shouldGenerateArgentinaCsv = ({
 }: ListFieldsFileRequest) => {
   const VALID_TYPES = ['argentina', 'everything'];
 
-  const { arg_otbn_area } = listLevelAnalysis;
+  const { arg_otbn_area, country_area } = listLevelAnalysis;
   const argOtbnArea = JSON.parse(arg_otbn_area || '{}');
   const totalArea = getTotalArea(listLevelAnalysis, 'ARG');
   const isArgentinaDataAvailable = !isEmptyObject(argOtbnArea) || totalArea > 0;
+  const isAnalysisLegacy = country_area === null;
 
-  return VALID_TYPES.includes(type) && listView === 'forest_change' && isArgentinaDataAvailable;
+  return (
+    VALID_TYPES.includes(type) &&
+    listView === 'forest_change' &&
+    isArgentinaDataAvailable &&
+    !isAnalysisLegacy
+  );
 };
 
 export const shouldGenerateColombiaCsv = ({

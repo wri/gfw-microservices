@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { connect } from 'react-redux';
 import Diagnostics from './Diagnostics';
 import { diagnosticsStrings } from '../../../common/js/config';
@@ -15,9 +15,10 @@ function ForestChangeDiagnostics({ popover, infoBubbleCache }) {
   const [selectedList, setSelectedList] = useState({});
   const [spatialData, setSpatialData] = useState({});
   const [listLocationsIds, setListLocationsIds] = useState([]);
-  const [listLevelAnalysis, setLstLevelAnalysis] = useState();
+  const [listLevelAnalysis, setListLevelAnalysis] = useState();
   const [processedListData, setProcessedListData] = useState();
   const [selectedLocationData, setSelectedLocationData] = useState();
+  const [isLegacyAnalysis, setIsLegacyAnalysis] = useState(false);
 
   const listId = parseInt(query.get('listId'), 10);
   const locationId = parseInt(query.get('locationId'), 10) || null;
@@ -60,7 +61,7 @@ function ForestChangeDiagnostics({ popover, infoBubbleCache }) {
         setProcessedListData(processedListData);
         setSpatialData(spatialData);
         setListLocationsIds(listLocationsIds);
-        setLstLevelAnalysis(listLevelAnalysis);
+        setListLevelAnalysis(listLevelAnalysis);
         setSelectedLocationData(processedListData[0]);
         setIsLoading(false);
       })
@@ -71,19 +72,29 @@ function ForestChangeDiagnostics({ popover, infoBubbleCache }) {
       });
   }, [listId]);
 
+  useEffect(() => {
+    if (listLevelAnalysis != null) {
+      const hasCountryArea = listLevelAnalysis[0]?.country_area !== null;
+      setIsLegacyAnalysis(!hasCountryArea);
+    }
+  }, [listLevelAnalysis]);
+
   const { displayPopover, bubbleData, popoverLoading, anchorEl } = popover;
 
-  const { list_status_id, listAnalysesStatus } = selectedList;
+  const { DiagnosticsStatusMessage, isListBeingAnalyzed } = useMemo(() => {
+    if (!selectedList?.list_status_id) {
+      return { DiagnosticsStatusMessage: null, isListBeingAnalyzed: false };
+    }
 
-  const { DiagnosticsStatusMessage, isListBeingAnalyzed } = getAnalysisAvailabilityMessage(
-    list_status_id,
-    listAnalysesStatus
-  );
+    const { list_status_id, listAnalysesStatus } = selectedList;
+
+    return getAnalysisAvailabilityMessage(list_status_id, listAnalysesStatus, isLegacyAnalysis);
+  }, [selectedList, isLegacyAnalysis]);
 
   return (
     <>
       <LoadingModal isLoading={isLoading} />
-      {!isLoading && DiagnosticsStatusMessage && DiagnosticsStatusMessage}
+      {!isLoading && DiagnosticsStatusMessage}
       {!isLoading && !selectedList && !processedListData && (
         <div
           style={{

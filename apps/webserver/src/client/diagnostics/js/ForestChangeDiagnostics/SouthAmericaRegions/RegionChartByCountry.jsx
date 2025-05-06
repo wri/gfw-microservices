@@ -13,6 +13,7 @@ import {
   chartDatasetConfigs,
   regionConstants,
   chartDatasetConfigsColombia,
+  legacyAnalysisErrorMessage,
 } from './regions.constants';
 import { getBarChartData } from './getBarChartData';
 import { useQuery } from '../../../../common/js/hooks';
@@ -65,6 +66,9 @@ export function RegionChartByCountry({ listId, data, fireDownload, country, tota
   });
 
   const [countryPieChartsData, setCountryPieChartsData] = useState({});
+
+  const isArgentinaAnalysisLegacy = data.country_area === null;
+  const shouldHideArgentinaPieCharts = country === regionIds.ARGENTINA && isArgentinaAnalysisLegacy;
 
   function handleDateRangeChange(newDateRange) {
     setDateRange(newDateRange);
@@ -214,12 +218,16 @@ export function RegionChartByCountry({ listId, data, fireDownload, country, tota
             endYear={endYear}
           />
 
-          <PieChart
-            data={argentinaPieChartData}
-            chartLabels={otbnPieChart.chartLabels}
-            title={diagnosticTitle}
-            informationBubbleId={informationBubbleId}
-          />
+          {shouldHideArgentinaPieCharts ? (
+            <div>{legacyAnalysisErrorMessage}</div>
+          ) : (
+            <PieChart
+              data={argentinaPieChartData}
+              chartLabels={otbnPieChart.chartLabels}
+              title={diagnosticTitle}
+              informationBubbleId={informationBubbleId}
+            />
+          )}
         </>
       )}
 
@@ -248,30 +256,34 @@ export function RegionChartByCountry({ listId, data, fireDownload, country, tota
         </>
       )}
 
-      {showProtectedAreasPieChart && (
-        <PieChart
-          data={protectedAreasPieChartFormattedData}
-          chartLabels={wdpaOverlapCountry.chartLabels}
-          title={wdpaOverlapCountry.diagnosticTitle}
-          informationBubbleId={
-            country !== regionIds.COLOMBIA
-              ? wdpaOverlapCountry.informationBubbleId
-              : wdpaOverlapCountry.informationBubbleColId
-          }
-        />
-      )}
-      {showIndigenousTerritoriesPieChart && (
-        <PieChart
-          data={indigenousTerritoriesPieChartFormattedData}
-          preview={true}
-          chartLabels={landmarkOverlapCountry.chartLabels}
-          title={landmarkOverlapCountry.diagnosticTitle}
-          informationBubbleId={
-            country !== regionIds.COLOMBIA
-              ? landmarkOverlapCountry.informationBubbleId
-              : landmarkOverlapCountry.informationBubbleColId
-          }
-        />
+      {!shouldHideArgentinaPieCharts && (
+        <>
+          {showProtectedAreasPieChart && (
+            <PieChart
+              data={protectedAreasPieChartFormattedData}
+              chartLabels={wdpaOverlapCountry.chartLabels}
+              title={wdpaOverlapCountry.diagnosticTitle}
+              informationBubbleId={
+                country !== regionIds.COLOMBIA
+                  ? wdpaOverlapCountry.informationBubbleId
+                  : wdpaOverlapCountry.informationBubbleColId
+              }
+            />
+          )}
+          {showIndigenousTerritoriesPieChart && (
+            <PieChart
+              data={indigenousTerritoriesPieChartFormattedData}
+              preview={true}
+              chartLabels={landmarkOverlapCountry.chartLabels}
+              title={landmarkOverlapCountry.diagnosticTitle}
+              informationBubbleId={
+                country !== regionIds.COLOMBIA
+                  ? landmarkOverlapCountry.informationBubbleId
+                  : landmarkOverlapCountry.informationBubbleColId
+              }
+            />
+          )}
+        </>
       )}
     </>
   );

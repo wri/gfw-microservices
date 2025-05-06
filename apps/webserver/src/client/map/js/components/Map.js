@@ -2297,6 +2297,9 @@ class Map extends Component {
       } else {
         const listData = JSON.parse(request.responseText);
         const { transitionListData } = this.state;
+        this.goToOriginalPoint = () => {
+          setVectorTileLayerForFullList(listData, transitionListData, this.view);
+        }
         setVectorTileLayerForFullList(listData, transitionListData, this.view);
       }
     };

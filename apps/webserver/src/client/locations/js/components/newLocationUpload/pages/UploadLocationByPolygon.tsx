@@ -74,7 +74,7 @@ export function UploadLocationByPolygon({
   const {
     handleSubmit: handleSubmitLocationName,
     formState: { errors: errorsLocationName },
-    register,
+    register: registerLocationName,
   } = useForm<FormFieldsLocationName>({ resolver: zodResolver(locationSchema) });
 
   const {
@@ -244,7 +244,7 @@ export function UploadLocationByPolygon({
           error={!!errorsLocationName.locationName}
           helperText={errorsLocationName.locationName?.message}
           inputRef={locationNameRef}
-          {...register('locationName')}
+          {...registerLocationName('locationName')}
         />
 
         <Typography variant="subtitle2" sx={{ mt: 2, fontWeight: '500' }}>

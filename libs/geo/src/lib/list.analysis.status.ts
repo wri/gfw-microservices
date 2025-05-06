@@ -222,7 +222,7 @@ export const handleCreateAnalysis = async (
       listId,
     });
 
-    setListAnalysisStatusByTypes(organizationDb, listId, analysisTypesToProcess);
+    await setListAnalysisStatusByTypes(organizationDb, listId, analysisTypesToProcess);
 
     const listAnalysisStatusData = await getListAnalysisStatus(organizationDb, listId);
 

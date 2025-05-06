@@ -2299,7 +2299,7 @@ class Map extends Component {
         const { transitionListData } = this.state;
         this.goToOriginalPoint = () => {
           setVectorTileLayerForFullList(listData, transitionListData, this.view);
-        }
+        };
         setVectorTileLayerForFullList(listData, transitionListData, this.view);
       }
     };

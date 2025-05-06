@@ -94,7 +94,7 @@ export const umlLookUp: IdLookupFn = async (ids) => {
         'x-api-key': process.env.GFW_DATA_API_KEY,
       },
       params:  {
-        sql: `select uml_id,ST_AsText(geom) as geom, gfw_geojson from data where uml_id in (${sqlIds})`,
+        sql: `select uml_id,latitude,longitude from data where uml_id in (${sqlIds})`,
       },
     });
 
@@ -102,7 +102,8 @@ export const umlLookUp: IdLookupFn = async (ids) => {
       response.data.data.forEach((found) => {
         if (result[found.uml_id]) {
           result[found.uml_id] = {
-            geometry: parse(found.geom)
+            latitude: found.latitude,
+            longitude: found.longitude
           };
         }
       });

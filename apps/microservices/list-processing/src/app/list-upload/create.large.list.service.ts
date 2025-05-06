@@ -15,7 +15,7 @@ export class CreateLargeListService {
     userId,
     clientDatabase,
     analysisIds,
-    templateId = 13,
+    templateId = 0,
     gfwListId = null,
     commodity = 'Unknown',
     saveAsDraft = false,

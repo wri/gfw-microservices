@@ -160,17 +160,24 @@ describe('UploadLocationByPoint', () => {
   it('should submit valid data for coordinates', async () => {
     await userEvent.click(screen.getByRole('button', { name: /enter coordinates/i }));
 
-    await userEvent.type(screen.getByLabelText(/latitude/i), '12.3456');
-    await userEvent.type(screen.getByLabelText(/longitude/i), '-45.6789');
+    await userEvent.type(screen.getByRole('spinbutton', { name: /latitude/i }), '12.3456');
+    await userEvent.type(screen.getByRole('spinbutton', { name: /longitude/i }), '-45.6789');
     await userEvent.type(screen.getByRole('textbox'), 'Test Location');
 
     const view = screen.getByTestId('area-size');
-    await userEvent.type(within(view).getByRole('spinbutton'), '100');
+    const areaSize = within(view).getByRole('spinbutton');
+    await userEvent.type(areaSize, '100');
+
+    screen.logTestingPlaygroundURL();
 
     const viewDistanceMetrics = screen.getByTestId('hectare-kilometer-switch');
     await userEvent.click(within(viewDistanceMetrics).getByText(/km/i));
 
-    await userEvent.click(screen.getByText(/next/i));
+    await userEvent.click(
+      screen.getByRole('button', {
+        name: /next/i,
+      })
+    );
 
     expect(setUploadLocationByPoint).toHaveBeenCalledWith({
       locationName: 'Test Location',
@@ -181,7 +188,11 @@ describe('UploadLocationByPoint', () => {
   }, 15100);
 
   it('should call clearUploadType when cancel button is clicked', async () => {
-    await userEvent.click(screen.getByText(/cancel/i));
+    await userEvent.click(
+      screen.getByRole('button', {
+        name: /cancel/i,
+      })
+    );
     expect(clearUploadType).toHaveBeenCalled();
   });
 });

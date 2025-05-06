@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { z } from 'zod';
-import { useForm, Controller } from 'react-hook-form';
+import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import {
   Box,
@@ -73,13 +73,13 @@ export function UploadLocationByPolygon({
 
   const {
     handleSubmit: handleSubmitLocationName,
-    control: controlLocationName,
     formState: { errors: errorsLocationName },
+    register,
   } = useForm<FormFieldsLocationName>({ resolver: zodResolver(locationSchema) });
 
   const {
     handleSubmit: handleSubmitCoordinates,
-    control: controlCoordinates,
+    register: registerCoordinates,
     formState: { errors: errorsCoordinates },
     setValue: setValueCoordinates,
     reset: resetCoordinates,
@@ -237,23 +237,14 @@ export function UploadLocationByPolygon({
           </Typography>
         </Box>
 
-        <Controller
-          name="locationName"
-          defaultValue=""
-          control={controlLocationName}
-          render={({ field }) => {
-            return (
-              <TextField
-                size="small"
-                placeholder="Location name"
-                fullWidth
-                error={!!errorsLocationName.locationName}
-                helperText={errorsLocationName.locationName?.message}
-                inputRef={locationNameRef}
-                {...field}
-              />
-            );
-          }}
+        <TextField
+          size="small"
+          placeholder="Location name"
+          fullWidth
+          error={!!errorsLocationName.locationName}
+          helperText={errorsLocationName.locationName?.message}
+          inputRef={locationNameRef}
+          {...register('locationName')}
         />
 
         <Typography variant="subtitle2" sx={{ mt: 2, fontWeight: '500' }}>
@@ -324,7 +315,7 @@ export function UploadLocationByPolygon({
 
                 <List>
                   <TransitionGroup>
-                    {coordinates.map(({ id, latitude, longitude }, index) => {
+                    {coordinates.map(({ id }, index) => {
                       return (
                         <Collapse key={id}>
                           <ListItem
@@ -334,53 +325,39 @@ export function UploadLocationByPolygon({
                             <Typography sx={{ minWidth: '1rem', marginTop: 1 }}>
                               {index + 1}
                             </Typography>
-                            <Controller
-                              name={`coordinates.${id}.latitude`}
-                              control={controlCoordinates}
-                              rules={{ required: true }}
-                              render={({ field }) => (
-                                <TextField
-                                  label="Latitude"
-                                  variant="outlined"
-                                  type="number"
-                                  size="small"
-                                  value={latitude}
-                                  onChange={(e) => {
-                                    field.onChange(e);
-                                    handleUpdateCoordinate(id, 'latitude', e.target.value);
-                                  }}
-                                  error={!!errorsCoordinates.coordinates?.[id]?.latitude}
-                                  helperText={
-                                    errorsCoordinates.coordinates?.[id]?.latitude
-                                      ? COORDINATE_ERROR_MESSAGE
-                                      : ''
-                                  }
-                                />
-                              )}
+                            <TextField
+                              label="Latitude"
+                              variant="outlined"
+                              type="number"
+                              size="small"
+                              error={!!errorsCoordinates.coordinates?.[id]?.latitude}
+                              helperText={
+                                errorsCoordinates.coordinates?.[id]?.latitude
+                                  ? COORDINATE_ERROR_MESSAGE
+                                  : ''
+                              }
+                              {...registerCoordinates(`coordinates.${id}.latitude`, {
+                                required: true,
+                                onChange: (e) =>
+                                  handleUpdateCoordinate(id, 'latitude', e.target.value),
+                              })}
                             />
-                            <Controller
-                              name={`coordinates.${id}.longitude`}
-                              control={controlCoordinates}
-                              rules={{ required: true }}
-                              render={({ field }) => (
-                                <TextField
-                                  label="Longitude"
-                                  variant="outlined"
-                                  type="number"
-                                  size="small"
-                                  value={longitude}
-                                  onChange={(e) => {
-                                    field.onChange(e);
-                                    handleUpdateCoordinate(id, 'longitude', e.target.value);
-                                  }}
-                                  error={!!errorsCoordinates.coordinates?.[id]?.longitude}
-                                  helperText={
-                                    errorsCoordinates.coordinates?.[id]?.longitude
-                                      ? COORDINATE_ERROR_MESSAGE
-                                      : ''
-                                  }
-                                />
-                              )}
+                            <TextField
+                              label="Longitude"
+                              variant="outlined"
+                              type="number"
+                              size="small"
+                              error={!!errorsCoordinates.coordinates?.[id]?.longitude}
+                              helperText={
+                                errorsCoordinates.coordinates?.[id]?.longitude
+                                  ? COORDINATE_ERROR_MESSAGE
+                                  : ''
+                              }
+                              {...registerCoordinates(`coordinates.${id}.longitude`, {
+                                required: true,
+                                onChange: (e) =>
+                                  handleUpdateCoordinate(id, 'longitude', e.target.value),
+                              })}
                             />
                             {coordinates.length > MIN_AMOUNT_OF_COORDINATES ? (
                               <IconButton

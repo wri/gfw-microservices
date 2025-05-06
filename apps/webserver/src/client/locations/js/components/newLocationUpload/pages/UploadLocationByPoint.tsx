@@ -40,6 +40,7 @@ export function UploadLocationByPoint() {
     handleSubmit,
     control,
     formState: { errors },
+    register,
     setValue,
   } = useForm<FormFields>({
     resolver: zodResolver(uploadByPointSchema),
@@ -106,20 +107,12 @@ export function UploadLocationByPoint() {
           </Typography>
         </Box>
 
-        <Controller
-          name="locationName"
-          control={control}
-          render={({ field }) => {
-            return (
-              <TextField
-                size="small"
-                fullWidth
-                error={!!errors.locationName}
-                helperText={errors.locationName?.message}
-                {...field}
-              />
-            );
-          }}
+        <TextField
+          size="small"
+          fullWidth
+          error={!!errors.locationName}
+          helperText={errors.locationName?.message}
+          {...register('locationName')}
         />
 
         <Typography variant="subtitle2" sx={{ mt: 2 }}>
@@ -177,37 +170,26 @@ export function UploadLocationByPoint() {
                   </Typography>
 
                   <Box sx={{ display: 'flex', gap: 1 }}>
-                    <Controller
-                      name="latitude"
-                      control={control}
-                      render={({ field }) => (
-                        <TextField
-                          label="Latitude"
-                          variant="outlined"
-                          type="number"
-                          fullWidth
-                          size="small"
-                          error={!!errors.latitude}
-                          helperText={errors.latitude?.message}
-                          {...field}
-                        />
-                      )}
+                    <TextField
+                      label="Latitude"
+                      variant="outlined"
+                      type="number"
+                      fullWidth
+                      size="small"
+                      error={!!errors.latitude}
+                      helperText={errors.latitude?.message}
+                      {...register('latitude')}
                     />
-                    <Controller
-                      name="longitude"
-                      control={control}
-                      render={({ field }) => (
-                        <TextField
-                          label="Longitude"
-                          variant="outlined"
-                          type="number"
-                          fullWidth
-                          size="small"
-                          error={!!errors.longitude}
-                          helperText={errors.longitude?.message}
-                          {...field}
-                        />
-                      )}
+
+                    <TextField
+                      label="Longitude"
+                      variant="outlined"
+                      type="number"
+                      fullWidth
+                      size="small"
+                      error={!!errors.longitude}
+                      helperText={errors.longitude?.message}
+                      {...register('longitude')}
                     />
                   </Box>
                 </Box>
@@ -250,21 +232,15 @@ export function UploadLocationByPoint() {
                     mt: 2,
                   }}
                 >
-                  <Controller
-                    control={control}
-                    name="areaSize"
-                    render={({ field }) => (
-                      <TextField
-                        variant="outlined"
-                        type="number"
-                        size="small"
-                        sx={{ flex: 1 }}
-                        error={!!errors.areaSize}
-                        helperText={errors.areaSize?.message}
-                        data-testid="area-size"
-                        {...field}
-                      />
-                    )}
+                  <TextField
+                    variant="outlined"
+                    type="number"
+                    size="small"
+                    sx={{ flex: 1 }}
+                    error={!!errors.areaSize}
+                    helperText={errors.areaSize?.message}
+                    data-testid="area-size"
+                    {...register('areaSize')}
                   />
                   <Controller
                     control={control}

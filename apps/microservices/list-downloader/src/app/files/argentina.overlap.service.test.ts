@@ -1,4 +1,6 @@
 import { ArgentinaOverlapService } from './argentina.overlap.service';
+import { DashboardHandleDownload } from '../pipe/dashboard.handle.download';
+
 import { describe, expect, test, jest, beforeAll, beforeEach, afterEach } from '@jest/globals';
 import { argentinaListLevelData, argentinaLocationData } from '../shared/mock.data';
 
@@ -121,5 +123,26 @@ describe('Argentina Overlap Service', () => {
       'List Name,Location Name,Data Layer,Sub-Layer,Overlap with Sub-layer (Ha),Overlap with Sub-Layer (%)',
       '',
     ]);
+  });
+
+  test('Does not start the overlap process if analysis is Legacy', () => {
+    const filtersMock = { ...filters };
+    filtersMock.listLevelAnalysis.country_area = null;
+
+    const dashboardHandleDownloadSpy = jest.spyOn(DashboardHandleDownload.prototype, 'start');
+    argentinaOverlap.start(filtersMock);
+
+    expect(dashboardHandleDownloadSpy).not.toHaveBeenCalled();
+  });
+
+  test('Does not generate csv if analysis is Legacy', async () => {
+    const filtersMock = { ...filters };
+    filtersMock.listLevelAnalysis.country_area = null;
+
+    const dashboardHandleDownloadSpy = jest.spyOn(DashboardHandleDownload.prototype, 'finish');
+
+    await argentinaOverlap.finish(filtersMock);
+
+    expect(dashboardHandleDownloadSpy).not.toHaveBeenCalled();
   });
 });

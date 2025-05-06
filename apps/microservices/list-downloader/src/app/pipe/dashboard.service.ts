@@ -28,7 +28,7 @@ export class DashboardService extends IPipeService {
   private readonly logger = new Logger(DashboardService.name);
 
   constructor(
-    private readonly forestLoos: ForestLossService,
+    private readonly forestLoss: ForestLossService,
     private readonly historicPercentService: HistoricPercentService,
     private readonly forestChangeDiagnosticLocationSummaryService: ForestChangeDiagnosticLocationSummaryService,
     private readonly forestChangeDiagnosticListSummaryService: ForestChangeDiagnosticListSummaryService,
@@ -51,7 +51,7 @@ export class DashboardService extends IPipeService {
   async start(filters: ListFieldsFileRequest) {
     await this.startEmail(filters);
 
-    this.forestLoos.start(filters);
+    this.forestLoss.start(filters);
     this.historicPercentService.start(filters);
     this.forestChangeDiagnosticLocationSummaryService.start(filters);
     this.forestChangeDiagnosticListSummaryService.start(filters);
@@ -70,7 +70,7 @@ export class DashboardService extends IPipeService {
   }
 
   async process(data, filters: ListFieldsFileRequest) {
-    this.forestLoos.process(data, filters);
+    this.forestLoss.process(data, filters);
     this.historicPercentService.process(data, filters);
     this.forestChangeDiagnosticLocationSummaryService.process(data, filters);
     this.forestChangeDiagnosticListSummaryService.process(data, filters);
@@ -91,8 +91,8 @@ export class DashboardService extends IPipeService {
   async finish(filters: ListFieldsFileRequest) {
     const { key } = filters;
 
-    this.logger.log(`(${key}) - Waiting all stream to finish`);
-    await this.forestLoos.finish(filters);
+    this.logger.log(`(${key}) - Waiting all streams to finish`);
+    await this.forestLoss.finish(filters);
     await this.historicPercentService.finish(filters);
     await this.forestChangeDiagnosticLocationSummaryService.finish(filters);
     await this.forestChangeDiagnosticListSummaryService.finish(filters);

@@ -170,26 +170,38 @@ export function UploadLocationByPoint() {
                   </Typography>
 
                   <Box sx={{ display: 'flex', gap: 1 }}>
-                    <TextField
-                      label="Latitude"
-                      variant="outlined"
-                      type="number"
-                      fullWidth
-                      size="small"
-                      error={!!errors.latitude}
-                      helperText={errors.latitude?.message}
-                      {...register('latitude')}
+                    <Controller
+                      name="latitude"
+                      control={control}
+                      render={({ field }) => (
+                        <TextField
+                          label="Latitude"
+                          variant="outlined"
+                          type="number"
+                          fullWidth
+                          size="small"
+                          error={!!errors.latitude}
+                          helperText={errors.latitude?.message}
+                          {...field}
+                        />
+                      )}
                     />
 
-                    <TextField
-                      label="Longitude"
-                      variant="outlined"
-                      type="number"
-                      fullWidth
-                      size="small"
-                      error={!!errors.longitude}
-                      helperText={errors.longitude?.message}
-                      {...register('longitude')}
+                    <Controller
+                      name="longitude"
+                      control={control}
+                      render={({ field }) => (
+                        <TextField
+                          label="Longitude"
+                          variant="outlined"
+                          type="number"
+                          fullWidth
+                          size="small"
+                          error={!!errors.longitude}
+                          helperText={errors.longitude?.message}
+                          {...field}
+                        />
+                      )}
                     />
                   </Box>
                 </Box>

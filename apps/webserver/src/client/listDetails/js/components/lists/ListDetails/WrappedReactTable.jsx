@@ -45,18 +45,29 @@ const WrappedReactTable = ({
   const theme = useTheme();
 
   const setRowProps = (state, rowInfo) => {
-    // determine row background color based on location status
     function returnBgColor(id) {
-      if (rowInfo.original.ErrorDetails) {
-        return 'rgb(255,247,237)';
+      if (
+        rowInfo.original.ErrorDetails ||
+        rowInfo.original.location_error ||
+        rowInfo.original.analysisError ||
+        id === listStatus.Inactive
+      ) {
+        return 'rgba(242, 78, 30, 0.25)';
       }
 
-      return id === listStatus.Inactive ? 'rgba(242, 78, 30, 0.25)' : '';
+      return '';
     }
 
-    // determine row text color based on location status
     function returnFgColor(id) {
-      return id === listStatus.Inactive ? theme.palette.error.main : '';
+      if (
+        rowInfo.original.ErrorDetails ||
+        rowInfo.original.location_error ||
+        rowInfo.original.analysisError ||
+        id === listStatus.Inactive
+      ) {
+        return theme.palette.error.main;
+      }
+      return '';
     }
     return {
       style: {
@@ -218,13 +229,13 @@ const WrappedReactTable = ({
     return errorsMap[errorDetails] || 'Server error';
   };
 
-  const getLocationError = (locationErrorJson) => {
-    if (!locationErrorJson) {
+  const getAnalysisError = (analysisErrorJson) => {
+    if (!analysisErrorJson) {
       return '';
     }
 
     try {
-      const [firstError] = JSON.parse(locationErrorJson);
+      const [firstError] = JSON.parse(analysisErrorJson);
       return firstError ? 'AnalysisError' : '';
     } catch {
       return '';
@@ -239,7 +250,8 @@ const WrappedReactTable = ({
         return (
           <Tooltip
             title={getErrorDetails(
-              props.rowInfo?.ErrorDetails || getLocationError(props.rowInfo?.location_error)
+              props.rowInfo?.ErrorDetails ||
+                getAnalysisError(props.rowInfo?.location_error || props.rowInfo?.analysisError)
             )}
             arrow
             placement="top-start"

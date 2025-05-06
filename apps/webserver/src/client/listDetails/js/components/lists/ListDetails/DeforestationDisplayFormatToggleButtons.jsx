@@ -40,6 +40,7 @@ function DeforestationDisplayFormatToggleButtons() {
         sx={{
           ...getButtonStyles(DISPLAY_FORMAT_HECTARES),
           borderLeft: 'none',
+          borderRadius: 0,
         }}
         onClick={() => store.dispatch(toggleDeforestationDisplayFormat(DISPLAY_FORMAT_HECTARES))}
         data-cy="deforestation-display-hectares-format-button"

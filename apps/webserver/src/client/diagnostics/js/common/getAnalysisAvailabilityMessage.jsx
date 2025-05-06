@@ -23,7 +23,7 @@ const getAnalysisAvailabilityMessage = (
 
   let message;
   if (isLegacyAnalysis) {
-    message = `Your list is out of date. This means that some Argentina-specific data will not display and Argentina-specific files will not be included when downloading CSV files. Please update the analysis on this list to access complete Argentina data.`;
+    message = 'Your list is out of date. This means that some Argentina-specific data will not display and Argentina-specific files will not be included when downloading CSV files. Please update the analysis on this list to access complete Argentina data.';
   } else {
     message = messagesMap[listStatusId];
   }

@@ -1,7 +1,7 @@
 import lightBaseTheme from 'material-ui/styles/baseThemes/lightBaseTheme';
 import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
 import getMuiTheme from 'material-ui/styles/getMuiTheme';
-import Verify from './js/components/Verify';
+import Verify from './js/components/verify';
 import { render } from 'react-dom';
 import React from 'react';
 

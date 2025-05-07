@@ -1,7 +1,7 @@
 import React from 'react';
 import Highcharts from 'highcharts';
 import useHookWithRefCallback from '../../../common/useHookWithRefCallback';
-import { chartDatasetConfigs } from '../../SouthAmericaRegions/regions.constants';
+import { chartDatasetConfigs } from '../../SouthAmericaRegions/regions-constants';
 
 const transifex = Transifex.live.translateText;
 

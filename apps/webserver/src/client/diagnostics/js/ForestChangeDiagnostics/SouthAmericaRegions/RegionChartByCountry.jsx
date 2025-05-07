@@ -14,7 +14,7 @@ import {
   regionConstants,
   chartDatasetConfigsColombia,
   legacyAnalysisErrorMessage,
-} from './regions.constants';
+} from './regions-constants';
 import { getBarChartData } from './getBarChartData';
 import { useQuery } from '../../../../common/js/hooks';
 import {
@@ -24,7 +24,7 @@ import {
 } from './barChart.utils';
 import '../../common/DiagnosticsChartContainer.scss';
 
-import { regionIds } from './regions.constants';
+import { regionIds } from './regions-constants';
 import { BarChartTreeCoverLossColombia } from './BarChartTreeCoverLossColombia';
 
 export function RegionChartByCountry({ listId, data, fireDownload, country, totalArea }) {

@@ -1,6 +1,6 @@
 import { geomFromLatLongRadiusArea } from './geomFromPoint';
 
-describe('CoordinateInputRow', () => {
+describe('geomFromLatLongRadiusArea', () => {
   it('should error on invalid latitude', () => {
     try {
       geomFromLatLongRadiusArea('a', 1, 2, 3);

@@ -1,4 +1,4 @@
-import { filterPerStatus } from '../../js/components/B2bSharingPanel/B2BConnection.utils';
+import { filterPerStatus } from './B2BConnection.utils';
 
 const defaultData = [
   { id: 1, status: 'pending' },

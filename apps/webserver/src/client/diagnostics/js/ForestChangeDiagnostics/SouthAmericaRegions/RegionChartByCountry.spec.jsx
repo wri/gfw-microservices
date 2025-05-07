@@ -1,7 +1,7 @@
 import React from 'react';
 import { render, screen, waitFor, cleanup } from '@testing-library/react';
-import { RegionChartByCountry } from '../../../../diagnostics/js/ForestChangeDiagnostics/SouthAmericaRegions/RegionChartByCountry';
-import { regionIds } from '../../../../diagnostics/js/ForestChangeDiagnostics/SouthAmericaRegions/regions.constants';
+import { RegionChartByCountry } from './RegionChartByCountry';
+import { regionIds } from './regions-constants';
 import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
 import { BrowserRouter } from 'react-router-dom';
 import { MOCK_COUNTRY_DATA } from './mockCountryData';

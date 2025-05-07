@@ -90,7 +90,7 @@ describe('PolygonCoordinatesInput Component', () => {
     cleanup();
     jest.clearAllMocks();
   });
-  test('opens PolygonCoordinatesInput modal', () => {
+  it('opens PolygonCoordinatesInput modal', () => {
     // Check if the modal is initially closed
     expect(screen.queryByTestId('polygon-coordinates-modal')).not.toBeInTheDocument();
 
@@ -101,7 +101,7 @@ describe('PolygonCoordinatesInput Component', () => {
     expect(screen.queryByTestId('polygon-coordinates-modal')).toBeInTheDocument();
   });
 
-  test('validates coordinates input', async () => {
+  it('validates coordinates input', async () => {
     const button = screen.queryByTestId('polygon-coordinates-button');
     fireEvent.click(button);
 
@@ -118,7 +118,7 @@ describe('PolygonCoordinatesInput Component', () => {
     expect(screen.getByText('Invalid longitude')).toBeInTheDocument();
   });
 
-  test('allows adding new rows of coordinates input', () => {
+  it('allows adding new rows of coordinates input', () => {
     const button = screen.queryByTestId('polygon-coordinates-button');
     fireEvent.click(button);
 
@@ -141,7 +141,7 @@ describe('PolygonCoordinatesInput Component', () => {
     expect(longitudeInputs).toHaveLength(4);
   });
 
-  test('allows removing a row of coordinates input', () => {
+  it('allows removing a row of coordinates input', () => {
     const button = screen.queryByTestId('polygon-coordinates-button');
     fireEvent.click(button);
 
@@ -165,7 +165,7 @@ describe('PolygonCoordinatesInput Component', () => {
     expect(removeRowButtons).toHaveLength(4);
   });
 
-  test('allows adding coordinates and submits a point geometry', async () => {
+  it('allows adding coordinates and submits a point geometry', async () => {
     const button = screen.queryByTestId('polygon-coordinates-button');
     fireEvent.click(button);
 
@@ -200,7 +200,7 @@ describe('PolygonCoordinatesInput Component', () => {
     });
   });
 
-  test('allows setting a custom radius and submits a point geometry', async () => {
+  it('allows setting a custom radius and submits a point geometry', async () => {
     const button = screen.queryByTestId('polygon-coordinates-button');
     fireEvent.click(button);
 
@@ -250,7 +250,7 @@ describe('PolygonCoordinatesInput Component', () => {
     });
   });
 
-  test(
+  it(
     'allows adding multiple coordinates and submits a polygon geometry',
     async () => {
       const button = screen.queryByTestId('polygon-coordinates-button');

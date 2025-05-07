@@ -8,7 +8,7 @@ import { sortOrderOption } from '../../../locations/js/utils/locationsTableUtils
 
 const runSortTests = (sortMethod) => {
   describe('sortMethod', () => {
-    it('should return area diference when both status are active', () => {
+    it('should return area difference when both status are active', () => {
       const response = sortMethod(ActiveLocationOne, ActiveLocationTwo);
       expect(response).toBe(2);
     });

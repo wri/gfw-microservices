@@ -1,9 +1,9 @@
 import React from 'react';
 import { render, screen } from '@testing-library/react';
-import PieChart from '../../../js/common/PieChart/index';
+import PieChart from './index';
 import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
 
-describe('PieChart Component', () => {
+describe('PieChart', () => {
   it('renders the component correctly with non-zero total area', () => {
     const data = {
       1: 20,

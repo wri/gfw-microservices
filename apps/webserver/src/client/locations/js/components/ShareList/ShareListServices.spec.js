@@ -3,7 +3,7 @@ import {
   addUserToSharedListService,
   removeUserFromSharedListService,
   removeAllUsersFromSharedListService,
-} from '../../../js/components/ShareList/ShareListServices';
+} from './ShareListServices';
 
 import fetch from '../../../../common/js/utils/fetch';
 import { getFormattedDateTime } from '../../../../common/js/utils/dateTime';
@@ -35,7 +35,7 @@ describe('Shared List Services', () => {
     jest.clearAllMocks();
   });
 
-  test('updateSharedListUsersService should update state correctly', async () => {
+  it('updateSharedListUsersService should update state correctly', async () => {
     fetch.mockResolvedValue([{ user_id: 1, datetime: '2024-01-01T00:00:00Z' }]);
 
     await updateSharedListUsersService(self);
@@ -58,7 +58,7 @@ describe('Shared List Services', () => {
     });
   });
 
-  test('addUserToSharedListService should update state correctly', async () => {
+  it('addUserToSharedListService should update state correctly', async () => {
     fetch.mockResolvedValue({ success: true });
 
     const selectedUser = { id: 4, name: 'New User' };
@@ -84,7 +84,7 @@ describe('Shared List Services', () => {
     });
   });
 
-  test('removeUserFromSharedListService should update state correctly', async () => {
+  it('removeUserFromSharedListService should update state correctly', async () => {
     fetch.mockResolvedValue({ success: true });
 
     const userToRemove = { user_id: 1 };
@@ -120,7 +120,7 @@ describe('Shared List Services', () => {
     });
   });
 
-  test('removeAllUsersFromSharedListService should update state correctly', async () => {
+  it('removeAllUsersFromSharedListService should update state correctly', async () => {
     fetch.mockResolvedValue({ success: true });
 
     const SharedListUsers = [

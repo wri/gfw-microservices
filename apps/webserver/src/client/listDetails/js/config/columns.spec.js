@@ -2,7 +2,7 @@ import columns from './columns';
 import {
   ActiveLocationOne,
   ActiveLocationTwo,
-  PedingLocation,
+  PendingLocation,
 } from '../../../locations/tests/mockedData';
 import { sortOrderOption } from '../../../locations/js/utils/locationsTableUtils';
 
@@ -14,17 +14,17 @@ const runSortTests = (sortMethod) => {
     });
 
     it('should return same value when both status locations are not active', () => {
-      const response = sortMethod(PedingLocation, PedingLocation);
+      const response = sortMethod(PendingLocation, PendingLocation);
       expect(response).toBe(sortOrderOption.sameValue);
     });
 
     it('should keep same order when just first status locations is active', () => {
-      const response = sortMethod(ActiveLocationOne, PedingLocation);
+      const response = sortMethod(ActiveLocationOne, PendingLocation);
       expect(response).toBe(sortOrderOption.keep);
     });
 
     it('should invert order when just second status locations is active', () => {
-      const response = sortMethod(PedingLocation, ActiveLocationOne);
+      const response = sortMethod(PendingLocation, ActiveLocationOne);
       expect(response).toBe(sortOrderOption.invert);
     });
   });

@@ -50,7 +50,7 @@ export const ActiveLocationTwo = {
   commodity_value_overall_level: '{"2021": 3}',
 };
 
-export const PedingLocation = {
+export const PendingLocation = {
   location_status_id: listStatus.Pending,
   total_area: 3,
   tree_cover_extent_total: 3,

@@ -1,12 +1,12 @@
 import React from 'react';
 import { render } from '@testing-library/react';
-import Chart from '../../../js/common/PieChart/Chart';
+import Chart from './Chart';
 
 jest.mock('highcharts', () => ({
   chart: jest.fn(),
 }));
 
-describe('Chart Component', () => {
+describe('Chart', () => {
   it('renders the chart correctly', () => {
     const data = {
       1: 20,

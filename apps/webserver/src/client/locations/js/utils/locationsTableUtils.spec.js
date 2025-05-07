@@ -6,9 +6,9 @@ import {
   checkValid,
   numberWithCommas,
   sortOrderOption,
-} from '../../js/utils/locationsTableUtils';
+} from './locationsTableUtils';
 import { listStatus } from '../../../../config/env/listStatuses.constants';
-import { ActiveLocationOne, PedingLocation } from '../mockedData';
+import { ActiveLocationOne, PendingLocation } from '../../tests/mockedData';
 
 describe('listStatus', () => {
   it('when Calls Pending return 1', () => {
@@ -79,7 +79,7 @@ describe('sortByNone', () => {
 });
 
 describe('sortByStatus', () => {
-  it('should return area diference when both status are active', () => {
+  it('should return area difference when both status are active', () => {
     const locationA = {
       location_status_id: listStatus.Active,
     };
@@ -132,16 +132,16 @@ describe('locationIsActive', () => {
   });
 
   it('should return false when location status is not active', () => {
-    expect(locationIsActive(PedingLocation)).toBe(false);
+    expect(locationIsActive(PendingLocation)).toBe(false);
   });
 });
 
 describe('checkValid', () => {
-  it('Shuold return true when data is not empty', () => {
+  it('Should return true when data is not empty', () => {
     expect(checkValid('asdf')).toBe(true);
   });
 
-  it('Shuold return false when data is empty', () => {
+  it('Should return false when data is empty', () => {
     expect(checkValid('')).toBe(false);
     expect(checkValid(' ')).toBe(false);
     expect(checkValid('{}')).toBe(false);
@@ -151,7 +151,7 @@ describe('checkValid', () => {
 });
 
 describe('numberWithCommas', () => {
-  it('Shuold return number has a string with comas', () => {
+  it('Should return number has a string with comas', () => {
     expect(numberWithCommas(100)).toBe('100');
     expect(numberWithCommas(1000)).toBe('1,000');
     expect(numberWithCommas(10000)).toBe('10,000');

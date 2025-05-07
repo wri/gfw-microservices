@@ -1,7 +1,7 @@
 import {
   afiDiagnosticsChartsColors,
   afiDiagnosticsCategories,
-} from '../../js/AfiDiagnostics/afiDiagnosticsChartsColors.constants';
+} from './afiDiagnosticsChartsColors.constants';
 
 test('afiDiagnosticsChartsColors should be defined correctly', () => {
   expect(afiDiagnosticsChartsColors).toEqual({

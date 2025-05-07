@@ -52,6 +52,7 @@ import {
   exclusiveDrawLayers,
   exclusiveLayers,
   visibleLayers as visibleLayersConstants,
+  gfwListsZoomTargets,
 } from '../../../common/js/proLayers.config';
 import { mapLayersMenu } from '../../../common/js/mapLayersMenu.config';
 import {
@@ -1874,29 +1875,7 @@ class Map extends Component {
             };
           }
         } else {
-          const mapLayer = gfwLayer.id;
-
-          if (mapLayer === protectedAreas) {
-            zoomTarget = {
-              target: [15, 27],
-              zoom: 2,
-            };
-          } else if (mapLayer === oilPalmConcessions) {
-            zoomTarget = {
-              target: [113.7, -0.9],
-              zoom: 2,
-            };
-          } else if (mapLayer === universalMillList) {
-            zoomTarget = {
-              target: [38.75, 8.35],
-              zoom: 2,
-            };
-          } else if (mapLayer === rspoConcessions) {
-            zoomTarget = {
-              target: [42.43, 8.94],
-              zoom: 2,
-            };
-          }
+          zoomTarget = gfwListsZoomTargets[gfwLayer.id];
         }
 
         this.goToOriginalPoint = () => {

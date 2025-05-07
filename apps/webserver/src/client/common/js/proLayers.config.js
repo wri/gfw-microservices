@@ -126,3 +126,10 @@ export const downloadLinks = {
   [proLayers.viirsActiveFiresID]:
     'https://earthdata.nasa.gov/earth-observation-data/near-real-time/firms/active-fire-data',
 };
+
+export const gfwListsZoomTargets = {
+  [proLayers.protectedAreas]: { target: [15, 27], zoom: 2 },
+  [proLayers.oilPalmConcessions]: { target: [113.7, -0.9], zoom: 2 },
+  [proLayers.universalMillList]: { target: [38.75, 8.35], zoom: 2 },
+  [proLayers.rspoConcessions]: { target: [42.43, 8.94], zoom: 2 },
+};

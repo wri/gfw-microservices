@@ -12,7 +12,7 @@ import AppErrorFallback from '../common/js/components/Errors/AppErrorFallback';
 
 // *** POPOVER ISSUE FIX ***
 // there is a known issue when using material ui v<1 with React Fiber (React v16).
-// the popoverPreReneder file is a workaround that modifies the
+// the popoverPreRender file is a workaround that modifies the
 // material ui Popover's prototype to delay the opening of the modal
 // and get rid of the flash at position 0,0 before moving to the anchor element.
 // this issue will not be fixed for material ui v<1 since v1 is a complete rebuild

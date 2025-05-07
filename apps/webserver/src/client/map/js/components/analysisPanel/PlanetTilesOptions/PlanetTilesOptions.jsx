@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import moment from 'moment';
 
-import store from '../../../../../map/js/store';
+import store from '../../../store';
 import { updatePlanetTileLayer, updatePlanetTileColor } from '../../../actions/mapActions';
 
 import './PlanetTilesOptions.scss';

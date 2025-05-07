@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { RegionChartByCountry } from './RegionChartByCountry';
 import RegionChartsTabs from './RegionChartsTabs';
 import SouthAmericaRegionsWithoutArgentina from '../SouthAmericaRegionsWithoutArgentina';
-import { regionsTabs, regionIds } from './regions.constants';
+import { regionsTabs, regionIds } from './regions-constants';
 
 function RegionChartsContainer({
   listId,

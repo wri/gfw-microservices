@@ -1,5 +1,5 @@
 import React from 'react';
-import { chartDatasetConfigs } from '../../SouthAmericaRegions/regions.constants';
+import { chartDatasetConfigs } from '../../SouthAmericaRegions/regions-constants';
 import {
   prettifyNum,
   formatNum,

@@ -132,6 +132,7 @@ export async function upgradeListSchema(args: SchemaUpgraderArgs) {
       {
         Commodity: listCommodity,
         version: LIST_VERSION_POST_UPGRADE,
+        templateId: 0,
       }
     );
 

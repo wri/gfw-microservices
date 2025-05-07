@@ -1,7 +1,7 @@
 import React from 'react';
-import { render, screen, cleanup } from '@testing-library/react';
+import { render, screen, cleanup, fireEvent } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import AnalysisFailedMessage from '../js/components/lists/ListDetails/AnalysisFailedMessage';
+import AnalysisFailedMessage from './AnalysisFailedMessage';
 import '@testing-library/jest-dom';
 
 afterEach(() => {
@@ -12,7 +12,30 @@ afterEach(() => {
 describe('AnalysisFailedMessage Component', () => {
   const mockToggleReRunAnalysisDialog = jest.fn();
 
-  test('renders the component with correct elements', () => {
+  it('renders the error icon, title, message, and support link', () => {
+    render(<AnalysisFailedMessage toggleReRunAnalysisDialog={jest.fn()} />);
+
+    expect(screen.getByText('Analysis has failed')).toBeInTheDocument();
+    expect(
+      screen.getByText('To receive results, resubmit this list for analysis.')
+    ).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: /try again/i })).toBeInTheDocument();
+    expect(screen.getByRole('link', { name: /gfwprosupport@wri.org/i })).toHaveAttribute(
+      'href',
+      'mailto:gfwprosupport@wri.org'
+    );
+  });
+
+  it('calls toggleReRunAnalysisDialog when the "TRY AGAIN" button is clicked', () => {
+    const mockToggle = jest.fn();
+    render(<AnalysisFailedMessage toggleReRunAnalysisDialog={mockToggle} />);
+
+    fireEvent.click(screen.getByRole('button', { name: /try again/i }));
+
+    expect(mockToggle).toHaveBeenCalledTimes(1);
+  });
+
+  it('renders the component with correct elements', () => {
     render(<AnalysisFailedMessage toggleReRunAnalysisDialog={mockToggleReRunAnalysisDialog} />);
 
     // Verify icon is present
@@ -36,7 +59,7 @@ describe('AnalysisFailedMessage Component', () => {
     );
   });
 
-  test('calls toggleReRunAnalysisDialog when the button is clicked', async () => {
+  it('calls toggleReRunAnalysisDialog when the button is clicked', async () => {
     render(<AnalysisFailedMessage toggleReRunAnalysisDialog={mockToggleReRunAnalysisDialog} />);
 
     const user = userEvent.setup();

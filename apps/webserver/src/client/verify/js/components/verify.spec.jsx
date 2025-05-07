@@ -1,6 +1,6 @@
 import React from 'react';
 import { render, fireEvent, waitFor, cleanup } from '@testing-library/react';
-import Verify from '../js/components/Verify';
+import Verify from './Verify';
 import mock from 'xhr-mock';
 
 describe('Test Verify Component', () => {

@@ -1,15 +1,15 @@
 import React from 'react';
 import { render, screen, cleanup } from '@testing-library/react';
 import '@testing-library/jest-dom';
-import AnalysisInProgressMessage from '../js/components/lists/ListDetails/AnalysisInProgressMessage';
+import AnalysisInProgressMessage from './AnalysisInProgressMessage';
 
 afterEach(() => {
   cleanup();
   jest.clearAllMocks();
 });
 
-describe('AnalysisInProgressMessage Component', () => {
-  test('renders the component with correct elements', () => {
+describe('AnalysisInProgressMessage', () => {
+  it('renders the component with correct elements', () => {
     render(<AnalysisInProgressMessage />);
 
     // Verifies that the CircularProgress is present

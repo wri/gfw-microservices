@@ -13,7 +13,7 @@ jest.mock('../../../../../hooks', () => ({
   useTransifexTranslation: jest.fn((key) => key),
 }));
 
-describe('LocationsSummary Component', () => {
+describe('LocationsSummary', () => {
   const defaultProps = {
     anchorElCountries: null,
     closeCountriesPopover: jest.fn(),
@@ -32,13 +32,13 @@ describe('LocationsSummary Component', () => {
 
   const renderWithTheme = (component) => render(<ThemeProvider>{component}</ThemeProvider>);
 
-  test('renders the correct location and country summary', () => {
+  it('renders the correct location and country summary', () => {
     const { container } = renderWithTheme(<LocationsSummary {...defaultProps} />);
     expect(container.textContent).toContain('Showing 3 of 4 total locations');
     expect(container.textContent).toContain('Brazil, Colombia, Peru');
   });
 
-  test('displays the popover when the country list is clicked', () => {
+  it('displays the popover when the country list is clicked', () => {
     renderWithTheme(<LocationsSummary {...defaultProps} />);
 
     const countrySummary = screen.getByText('Brazil, Colombia, Peru…');
@@ -47,7 +47,7 @@ describe('LocationsSummary Component', () => {
     expect(defaultProps.toggleCountriesPopover).toHaveBeenCalled();
   });
 
-  test('does not display the share icon when shareView is false', () => {
+  it('does not display the share icon when shareView is false', () => {
     renderWithTheme(<LocationsSummary {...defaultProps} shareView={false} />);
 
     expect(screen.queryByTestId('icon-share')).not.toBeInTheDocument();

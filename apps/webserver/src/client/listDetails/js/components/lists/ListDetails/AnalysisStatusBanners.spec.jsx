@@ -1,7 +1,7 @@
 import React from 'react';
 import { render, screen, cleanup } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import AnalysisStatusBanners from '../js/components/lists/ListDetails/AnalysisStatusBanners';
+import AnalysisStatusBanners from './AnalysisStatusBanners';
 import '@testing-library/jest-dom';
 
 afterEach(() => {
@@ -9,7 +9,7 @@ afterEach(() => {
   jest.clearAllMocks();
 });
 
-jest.mock('../js/components/lists/ListDetails/AlertBanner', () => (props) => (
+jest.mock('../../../../js/components/lists/ListDetails/AlertBanner', () => (props) => (
   <div data-testid="alert-banner">
     <span>{props.title}</span>
     <span>{props.message}</span>
@@ -17,7 +17,7 @@ jest.mock('../js/components/lists/ListDetails/AlertBanner', () => (props) => (
   </div>
 ));
 
-describe('AnalysisStatusBanners Component', () => {
+describe('AnalysisStatusBanners', () => {
   const defaultProps = {
     isDiagnosticStatusDraft: false,
     hasLocationWithErrors: false,
@@ -28,7 +28,7 @@ describe('AnalysisStatusBanners Component', () => {
     isListSubmittedForAnalysis: false,
   };
 
-  test('renders a banner when there are location errors', () => {
+  it('renders a banner when there are location errors', () => {
     render(
       <AnalysisStatusBanners
         {...defaultProps}
@@ -46,7 +46,7 @@ describe('AnalysisStatusBanners Component', () => {
     ).toBeInTheDocument();
   });
 
-  test('renders a banner for failed analysis', () => {
+  it('renders a banner for failed analysis', () => {
     render(<AnalysisStatusBanners {...defaultProps} isFailedAnalysis={true} />);
 
     expect(screen.getByText('Analysis has failed')).toBeInTheDocument();
@@ -55,7 +55,7 @@ describe('AnalysisStatusBanners Component', () => {
     ).toBeInTheDocument();
   });
 
-  test('renders a banner for usage limit exceeded', () => {
+  it('renders a banner for usage limit exceeded', () => {
     render(
       <AnalysisStatusBanners {...defaultProps} isAnalysisFailedByExceededAnalysisLimit={true} />
     );
@@ -64,7 +64,7 @@ describe('AnalysisStatusBanners Component', () => {
     expect(screen.getByText('Usage limit exceeded')).toBeInTheDocument();
   });
 
-  test('renders a banner for draft state', () => {
+  it('renders a banner for draft state', () => {
     render(
       <AnalysisStatusBanners
         {...defaultProps}
@@ -81,7 +81,7 @@ describe('AnalysisStatusBanners Component', () => {
     ).toBeInTheDocument();
   });
 
-  test('calls the correct function when a button is clicked', async () => {
+  it('calls the correct function when a button is clicked', async () => {
     const openDraftSubmitDialog = jest.fn();
 
     render(
@@ -99,7 +99,7 @@ describe('AnalysisStatusBanners Component', () => {
     expect(openDraftSubmitDialog).toHaveBeenCalledTimes(1);
   });
 
-  test('renders a banner when there is error in list level', () => {
+  it('renders a banner when there is error in list level', () => {
     render(
       <AnalysisStatusBanners
         {...defaultProps}
@@ -118,7 +118,7 @@ describe('AnalysisStatusBanners Component', () => {
     ).toBeInTheDocument();
   });
 
-  test('renders no banners if no conditions are met', () => {
+  it('renders no banners if no conditions are met', () => {
     render(<AnalysisStatusBanners {...defaultProps} />);
 
     expect(screen.queryByTestId('alert-banner')).not.toBeInTheDocument();

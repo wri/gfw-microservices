@@ -13,7 +13,8 @@ import {
 import { useUploadLocation } from '../contexts';
 import { uploadFileToS3 } from '../utils/upload';
 import { useHistory } from '../hooks';
-import { FileAttachState } from '../types';
+import { FileAttachState, UploadType } from '../types';
+import { DATA_CY } from '../../../../../utils/constants';
 
 export function UploadLocationByFile() {
   const theme = useTheme();
@@ -256,6 +257,7 @@ export function UploadLocationByFile() {
         >
           <PillButton
             variant="contained"
+            data-cy={DATA_CY.NEW_UPLOAD_WORKFLOW[UploadType.ByFile].LOCATION_CANCEL}
             color="info"
             startIcon={<Close />}
             onClick={clearUploadType}
@@ -264,6 +266,7 @@ export function UploadLocationByFile() {
           </PillButton>
           <PillButton
             variant="contained"
+            data-cy={DATA_CY.NEW_UPLOAD_WORKFLOW[UploadType.ByFile].LOCATION_NEXT}
             startIcon={<ArrowForwardIos />}
             onClick={() => history.push('PREVIEW')}
             disabled={fileAttachState !== FileAttachState.Uploaded}

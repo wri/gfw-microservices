@@ -23,6 +23,7 @@ import { commodities } from '../utils/constants';
 import { uploadFileToS3 } from '../utils/upload';
 import { uploadProcessByPrevUploadedFile } from '../../landing/uploadProcess';
 import { UploadType } from '../types';
+import { DATA_CY } from '../../../../../utils/constants';
 
 export function SummaryAndSubmit() {
   const history = useHistory();
@@ -221,6 +222,7 @@ export function SummaryAndSubmit() {
             variant="contained"
             color="info"
             startIcon={<Close />}
+            data-cy={DATA_CY.NEW_UPLOAD_WORKFLOW[uploadLocationState.uploadType!].CONFIGURE_CANCEL}
             onClick={clearUploadType}
           >
             Cancel

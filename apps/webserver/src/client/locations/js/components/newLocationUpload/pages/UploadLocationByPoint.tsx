@@ -9,9 +9,10 @@ import { useHistory } from '../hooks';
 import { LocationTypeButton, NavBar, AddressSelector } from '../components';
 import HectareKilometerSwitch from '../../adding/HectareKilometerSwitch';
 import { ExternalHelperResource, PillButton } from '../../../../../components';
-import { MeasurementUnit } from '../types';
+import { MeasurementUnit, UploadType } from '../types';
 import { coordinateSchema, locationNameSchema } from '../utils/schema';
 import { useUploadLocation } from '../contexts';
+import { DATA_CY } from '../../../../../utils/constants';
 
 enum LocationFormat {
   Coordinates,
@@ -307,6 +308,7 @@ export function UploadLocationByPoint() {
                 variant="contained"
                 color="info"
                 startIcon={<Close />}
+                data-cy={DATA_CY.NEW_UPLOAD_WORKFLOW[UploadType.ByPoint].LOCATION_CANCEL}
                 onClick={clearUploadType}
               >
                 Cancel
@@ -316,6 +318,7 @@ export function UploadLocationByPoint() {
                 variant="contained"
                 startIcon={<ArrowForwardIos />}
                 disabled={locationFormat === null}
+                data-cy={DATA_CY.NEW_UPLOAD_WORKFLOW[UploadType.ByPoint].LOCATION_NEXT}
               >
                 Next
               </PillButton>

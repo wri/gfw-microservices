@@ -179,13 +179,53 @@ export class CommodityService {
     commodity: string,
     clientDatabase: string
   ): Promise<boolean> {
-    const { commodity: listCommodity } = await this.getCommodityFromExistingList(
-      clientDatabase,
-      listId
-    );
-    // Remove GFWP_ prefix if it exists
-    const dbCommodity = listCommodity ? listCommodity.replace('GFWP_', '') : listCommodity;
+    const clientStoreConnection = new ClientStoreConnection();
+    const connection = await clientStoreConnection.getConnection(clientDatabase, [Lists]);
+    const listRepository = connection.getRepository(Lists);
 
-    return dbCommodity === commodity;
+    const commodityLowerCase = commodity.toLocaleLowerCase();
+
+    let commodityName = this.getCommodityFromTemplate(commodityLowerCase);
+
+    let templateNames = COMMODITY_TEMPLATE_MAP[commodityName] || [];
+
+    commodityName =
+      ConvertCommodityToMapSpamCode.getCommoditySpamName(commodity) ||
+      commodity.replace(/\s+/g, '_');
+
+    // Get all templates for the commodity if it's in our mapping
+    templateNames = [...templateNames, commodityName];
+    const templates = await this.listTemplateRepository.find({
+      where: {
+        templateName: In(templateNames),
+      },
+    });
+
+    const validTemplates = templates.filter(Boolean);
+
+    const lists = await listRepository.find({
+      where: [
+        {
+          id: listId,
+          ...(commodityName && {
+            Commodity: Raw(
+              (alias) =>
+                `${alias} COLLATE Latin1_General_CI_AI = :commodity COLLATE Latin1_General_CI_AI`,
+              { commodity: commodityName }
+            ),
+          }),
+        },
+        ...(validTemplates?.length > 0
+          ? validTemplates.map((template) => ({
+              id: listId, // Keep the id condition
+              templateId: template.id,
+            }))
+          : []),
+      ].filter(Boolean),
+      select: ['id', 'listName'],
+      order: { listName: 'ASC' },
+    });
+
+    return lists.length > 0;
   }
 }

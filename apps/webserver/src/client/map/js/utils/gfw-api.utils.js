@@ -51,17 +51,23 @@ export const getVectorTileStyle = async (
   gfwVectorTileUrl,
   gfwVectorTileStyle
 ) => {
-  const layers = gfwVectorTileStyle.layers.map((layer) => ({
-    id: layer.id,
-    source: GFW_LIST,
-    'source-layer': GFW_LIST,
-    type: layer.typeName,
-    paint: layer.paint,
-    filter: layer.filter
-      ? [...layer.filter, ['in', QUERY_FIELD, ...IDs]]
-      : ['all', ['in', QUERY_FIELD, ...IDs]],
-  }));
+  const layers = gfwVectorTileStyle.layers.map((layer) => {
+    const layerConfig = {
+      id: layer.id,
+      source: GFW_LIST,
+      'source-layer': GFW_LIST,
+      type: layer.typeName,
+      paint: layer.paint,
+    };
 
+    if (IDs.length > 0) {
+      layerConfig.filter = layer.filter
+        ? [...layer.filter, ['in', QUERY_FIELD, ...IDs]]
+        : ['all', ['in', QUERY_FIELD, ...IDs]];
+    }
+
+    return layerConfig;
+  });
   return {
     version: 8,
     sources: {

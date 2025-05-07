@@ -52,6 +52,7 @@ import {
   exclusiveDrawLayers,
   exclusiveLayers,
   visibleLayers as visibleLayersConstants,
+  gfwListsZoomTargets,
 } from '../../../common/js/proLayers.config';
 import { mapLayersMenu } from '../../../common/js/mapLayersMenu.config';
 import {
@@ -512,7 +513,6 @@ class Map extends Component {
       } else {
         // Active GFW Layer "activeGFWLayer" is Tile Layer. No sublayers on selected layer
         // In that case we need to add Custom Vector Tile Layer
-
         activeGFWLayer?.when((gfwLayer) => {
           this._setCustomGfwVectorTileLayer(locationsIDs, gfwListName, gfwLayer);
         });
@@ -1804,19 +1804,10 @@ class Map extends Component {
       const gfwVectorTileStyle = gfwLayer.styleRepository;
       const vectorTileUrlChunks = gfwVectorTileUrl.replace(regExpDomainName, '').split('/');
       const GFW_LIST = vectorTileUrlChunks[1];
-      let date = vectorTileUrlChunks[2];
       let QUERY_FIELD = 'gfw_geostore_id';
 
       if (gfwListName === 'Palm Oil Mills') {
         QUERY_FIELD = 'uml_id';
-      }
-
-      if (gfwListName === 'Protected Areas') {
-        // TODO: Currently latest date is not in sync. Check if this needs to be updated and remove at some point in future
-        const PROTECTED_AREAS_DATE = 'v202106';
-        // const PROTECTED_AREAS_DATE = 'v202408.1'; // verify if this should map mapLayers
-        gfwVectorTileUrl = gfwVectorTileUrl.replace(date, PROTECTED_AREAS_DATE);
-        date = PROTECTED_AREAS_DATE;
       }
 
       // Create Custom GFW Vector Tile Layer
@@ -1834,8 +1825,9 @@ class Map extends Component {
       gfwLayer.opacity = 0;
 
       try {
-        if (locationIDs.length < 200) {
-          // Zoom to locations only if we have less than 200 locations
+        let zoomTarget;
+        if (locationIDs.length && locationIDs.length < 200) {
+          // Zoom to locations only if we have less than 200 locations and more than 0
 
           const queryParams = getQueryParams(this.props.location.search);
           const { listId } = queryParams;
@@ -1877,23 +1869,20 @@ class Map extends Component {
             for (let i = 1; i < extents.length; i++) {
               combinedExtent = combinedExtent.union(extents[i]);
             }
-            this.goToOriginalPoint = () => {
-              this.view.goTo(
-                {
-                  target: combinedExtent.expand(1.2),
-                },
-                { duration: 1000 }
-              );
-            };
 
-            this.view.goTo(
-              {
-                target: combinedExtent.expand(1.2),
-              },
-              { duration: 1000 }
-            );
+            zoomTarget = {
+              target: combinedExtent.expand(1.2),
+            };
           }
+        } else {
+          zoomTarget = gfwListsZoomTargets[gfwLayer.id];
         }
+
+        this.goToOriginalPoint = () => {
+          this.view.goTo(zoomTarget);
+        };
+
+        this.view.goTo(zoomTarget);
       } catch (e) {
         console.log(e);
         throw new Error('Fetching Zoom in BBOX values for GFW List locations failed.');
@@ -2000,7 +1989,7 @@ class Map extends Component {
         }
       } else {
         gfwListDefinitions[gfwListVisibleMapLayerId] = [];
-        selectedLocations.forEach((gfwLocation) => {
+        selectedLocations?.forEach((gfwLocation) => {
           gfwListDefinitions[gfwListVisibleMapLayerId].push(gfwLocation);
         });
       }
@@ -2221,23 +2210,6 @@ class Map extends Component {
 
         if (layerAlreadyVisible && layerAlreadyVisible === mapLayer) {
           store.dispatch(updateGFWLocations({}));
-        }
-
-        // zoom to the layer's extent
-        if (mapLayer === protectedAreas) {
-          this.view.goTo({
-            target: [15, 27],
-            zoom: 2,
-          });
-        } else {
-          const activeGFWLayer = this.state.mapLayers.filter((l) => l.id === mapLayer)[0];
-          const url = `${activeGFWLayer.url}/${activeGFWLayer.layerId}`;
-
-          queryExtent(url).then((extent) => {
-            if (extent) {
-              this.view.goTo(extent);
-            }
-          });
         }
 
         // set the selected list to the selected GFW list

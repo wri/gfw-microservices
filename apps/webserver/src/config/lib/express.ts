@@ -7,7 +7,6 @@ const session = require('express-session');
 import RedisStore from 'connect-redis';
 import { randomUUID } from 'crypto';
 
-const bodyParser = require('body-parser');
 const favicon = require('serve-favicon');
 import * as logger from '../privateutils/logger.utils';
 import * as express from 'express';
@@ -63,8 +62,8 @@ const configureMiddleware = (app: Application) => {
   // Setup favicon
   app.use(favicon('./server/core/pro-fav.png'));
   // Setup body parser
-  app.use(bodyParser.urlencoded({ limit: '1024mb', extended: true }));
-  app.use(bodyParser.json({ limit: '1024mb' }));
+  app.use(express.urlencoded({ limit: '1024mb', extended: true }));
+  app.use(express.json({ limit: '1024mb' }));
   // Setup methodOverride so I can use put and delete
   app.use(methodOverride());
 

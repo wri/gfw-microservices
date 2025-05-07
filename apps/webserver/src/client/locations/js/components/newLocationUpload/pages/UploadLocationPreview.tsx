@@ -22,10 +22,11 @@ import { NavBar, UploadLocationPreviewErrorMessage } from '../components';
 import { useFetch } from '../../../../../hooks';
 import { VALID_UPLOAD_FILE_FORMATS } from '../utils/constants';
 import { fetchListPreview } from '../../../../../api/list';
+import { DATA_CY } from '../../../../../utils/constants';
 
 export function UploadLocationPreview() {
   const {
-    uploadLocationState: { uploadedFile },
+    uploadLocationState: { uploadedFile, uploadType },
     clearUploadType,
     addFile,
   } = useUploadLocation();
@@ -208,6 +209,7 @@ export function UploadLocationPreview() {
             variant="contained"
             color="info"
             startIcon={<Close />}
+            data-cy={DATA_CY.NEW_UPLOAD_WORKFLOW[uploadType!].PREVIEW_CANCEL}
             onClick={clearUploadType}
           >
             Cancel
@@ -215,6 +217,7 @@ export function UploadLocationPreview() {
           <PillButton
             variant="contained"
             startIcon={<ArrowForwardIos />}
+            data-cy={DATA_CY.NEW_UPLOAD_WORKFLOW[uploadType!].PREVIEW_NEXT}
             onClick={() => history.push('CONFIGURE_LIST')}
             disabled={isLoading || !data?.features || !!error || !!apiRequestError}
           >

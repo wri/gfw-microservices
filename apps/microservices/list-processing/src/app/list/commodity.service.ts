@@ -102,6 +102,32 @@ export class CommodityService {
     };
   }
 
+  private async getCommodityAndTemplates(commodity: string): Promise<{
+    commodityName: string;
+    validTemplates: ListTemplate[];
+  }> {
+    const commodityLowerCase = commodity.toLowerCase();
+    let commodityName = this.getCommodityFromTemplate(commodityLowerCase);
+    let templateNames = COMMODITY_TEMPLATE_MAP[commodityName] || [];
+
+    commodityName =
+      ConvertCommodityToMapSpamCode.getCommoditySpamName(commodity) ||
+      commodity.replace(/\s+/g, '_');
+
+    // Get all templates for the commodity if it's in our mapping
+    templateNames = [...templateNames, commodityName];
+    const templates = await this.listTemplateRepository.find({
+      where: {
+        templateName: In(templateNames),
+      },
+    });
+
+    return {
+      commodityName,
+      validTemplates: templates.filter(Boolean),
+    };
+  }
+
   async getListsByCommodity({
     commodity,
     organizationDatabase,
@@ -114,23 +140,7 @@ export class CommodityService {
       const connection = await clientStoreConnection.getConnection(organizationDatabase, [Lists]);
       const listRepository = connection.getRepository(Lists);
 
-      let commodityName = this.getCommodityFromTemplate(commodity);
-
-      let templateNames = COMMODITY_TEMPLATE_MAP[commodityName] || [];
-
-      commodityName =
-        ConvertCommodityToMapSpamCode.getCommoditySpamName(commodity) ||
-        commodity.replace(/\s+/g, '_');
-
-      // Get all templates for the commodity if it's in our mapping
-      templateNames = [...templateNames, commodityName];
-      const templates = await this.listTemplateRepository.find({
-        where: {
-          templateName: In(templateNames),
-        },
-      });
-
-      const validTemplates = templates.filter(Boolean);
+      const { commodityName, validTemplates } = await this.getCommodityAndTemplates(commodity);
 
       const lists = await listRepository.find({
         where: [
@@ -183,25 +193,7 @@ export class CommodityService {
     const connection = await clientStoreConnection.getConnection(clientDatabase, [Lists]);
     const listRepository = connection.getRepository(Lists);
 
-    const commodityLowerCase = commodity.toLocaleLowerCase();
-
-    let commodityName = this.getCommodityFromTemplate(commodityLowerCase);
-
-    let templateNames = COMMODITY_TEMPLATE_MAP[commodityName] || [];
-
-    commodityName =
-      ConvertCommodityToMapSpamCode.getCommoditySpamName(commodity) ||
-      commodity.replace(/\s+/g, '_');
-
-    // Get all templates for the commodity if it's in our mapping
-    templateNames = [...templateNames, commodityName];
-    const templates = await this.listTemplateRepository.find({
-      where: {
-        templateName: In(templateNames),
-      },
-    });
-
-    const validTemplates = templates.filter(Boolean);
+    const { commodityName, validTemplates } = await this.getCommodityAndTemplates(commodity);
 
     const lists = await listRepository.find({
       where: [
@@ -217,7 +209,7 @@ export class CommodityService {
         },
         ...(validTemplates?.length > 0
           ? validTemplates.map((template) => ({
-              id: listId, // Keep the id condition
+              id: listId,
               templateId: template.id,
             }))
           : []),

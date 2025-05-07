@@ -56,7 +56,7 @@ describe('StartAnalysisService', () => {
   let s3Service: S3Service;
   let emailService: EmailService;
   let configService: ConfigService;
-  let listTemplateRepository: any;
+  let listTemplateRepository: unknown;
   let mockDataSource: DataSource;
 
   beforeEach(async () => {
@@ -75,20 +75,20 @@ describe('StartAnalysisService', () => {
     // Create service stubs
     s3Service = {
       writeS3fileIntoTmp: sandbox.stub().resolves(),
-    } as any;
+    } as unknown as S3Service;
 
     emailService = {
       sendEmail: sandbox.stub().resolves(),
-    } as any;
+    } as unknown as EmailService;
 
     configService = {
       get: sandbox.stub().returns('test-value'),
-    } as any;
+    } as unknown as ConfigService;
 
     commodityService = {
       checkIfListExistAndCommodityIsTheSame: sandbox.stub().resolves(true),
       getCommodityFromExistingList: sandbox.stub().resolves('cocoa'),
-    } as any;
+    } as unknown as CommodityService;
 
     // Create mock data source with repository methods
     const mockRepository = {

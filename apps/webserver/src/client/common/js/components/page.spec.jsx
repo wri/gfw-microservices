@@ -1,7 +1,7 @@
 import React from 'react';
 import { render, cleanup, waitFor } from '@testing-library/react';
 import { act } from 'react-dom/test-utils';
-import Page from '../js/components/Page';
+import Page from './Page';
 
 describe('Test Page Component', () => {
   afterEach(() => {

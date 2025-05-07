@@ -2,7 +2,7 @@ import React, { useEffect } from 'react';
 import { render, screen } from '@testing-library/react';
 import '@testing-library/jest-dom';
 import catchContainer from './catchContainer';
-import sendSlackNotification from '../../../../common/js/utils/sendSlackNotification';
+import sendSlackNotification from '../../utils/sendSlackNotification';
 
 jest.mock('../../../../common/js/utils/sendSlackNotification');
 
@@ -28,7 +28,7 @@ const ThrowError = () => {
   return <>ThrowError</>;
 };
 
-describe('Error Boundary', () => {
+describe('ErrorBoundary', () => {
   beforeEach(() => {
     jest.clearAllMocks();
   });

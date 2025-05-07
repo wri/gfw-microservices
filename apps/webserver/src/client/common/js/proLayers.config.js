@@ -46,7 +46,7 @@ export const proLayers = {
   rspoConcessions: 'RSPO Concessions', // GFW list
   oilPalmConcessions: 'Oil Palm Concessions', // GFW list
   protectedAreas: 'WDPA Esri', // GFW list
-  universalMillList: 'Universal Mill List', // GFW list
+  universalMillList: 'Universal Mill List', // GFW list: Palm Oil Mills
 
   // the next are not layers present in the map layer API as the previous ones
   // but they are constants that we use through the application

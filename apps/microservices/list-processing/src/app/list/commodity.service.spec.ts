@@ -107,10 +107,10 @@ describe('CommodityService', () => {
         { id: 2, listName: 'Wheat List 2' },
       ];
 
-      jest.spyOn(listTemplateRepository, 'findOne').mockResolvedValue(mockTemplate);
-      jest
-        .spyOn(service, 'getListsByCommodity')
-        .mockResolvedValue(mockLists.map((list) => ({ id: list.id, name: list.listName })));
+      jest.spyOn(listTemplateRepository, 'find').mockResolvedValue([mockTemplate]);
+      jest.spyOn(service, 'getListsByCommodity').mockImplementation(async () => {
+        return mockLists.map((list) => ({ id: list.id, name: list.listName }));
+      });
 
       const result = await service.getListsByCommodity({ commodity, organizationDatabase });
       expect(result).toEqual([
@@ -119,13 +119,13 @@ describe('CommodityService', () => {
       ]);
     });
 
-    it('should return lists for multiple templates of the same commodity', async () => {
-      const commodity = 'Palm Oil';
+    it('should handle commodities with multiple templates', async () => {
+      const commodity = 'palm oil';
       const organizationDatabase = 'test_db';
       const mockTemplates = [
-        { id: 1, templateName: 'Palm oil mill', locationTypeId: 1 },
-        { id: 2, templateName: 'Palm smallholder farm', locationTypeId: 1 },
-        { id: 3, templateName: 'Palm oil generic', locationTypeId: 1 },
+        { id: 1, templateName: 'palm oil mill', locationTypeId: 1 },
+        { id: 2, templateName: 'palm smallholder farm', locationTypeId: 1 },
+        { id: 3, templateName: 'palm oil generic', locationTypeId: 1 },
       ];
       const mockLists = [
         { id: 1, listName: 'Palm Mill List' },
@@ -133,16 +133,10 @@ describe('CommodityService', () => {
         { id: 3, listName: 'Generic Palm List' },
       ];
 
-      jest.spyOn(listTemplateRepository, 'findOne').mockImplementation((options) => {
-        const template = mockTemplates.find(
-          (t) =>
-            t.templateName === (options.where as unknown as { templateName: string }).templateName
-        );
-        return Promise.resolve(template);
+      jest.spyOn(listTemplateRepository, 'find').mockResolvedValue(mockTemplates);
+      jest.spyOn(service, 'getListsByCommodity').mockImplementation(async () => {
+        return mockLists.map((list) => ({ id: list.id, name: list.listName }));
       });
-      jest
-        .spyOn(service, 'getListsByCommodity')
-        .mockResolvedValue(mockLists.map((list) => ({ id: list.id, name: list.listName })));
 
       const result = await service.getListsByCommodity({ commodity, organizationDatabase });
       expect(result).toEqual([
@@ -158,10 +152,10 @@ describe('CommodityService', () => {
       const mockTemplate = { id: 1, templateName: 'Unknown Commodity', locationTypeId: 1 };
       const mockLists = [{ id: 1, listName: 'Unknown List' }];
 
-      jest.spyOn(listTemplateRepository, 'findOne').mockResolvedValue(mockTemplate);
-      jest
-        .spyOn(service, 'getListsByCommodity')
-        .mockResolvedValue(mockLists.map((list) => ({ id: list.id, name: list.listName })));
+      jest.spyOn(listTemplateRepository, 'find').mockResolvedValue([mockTemplate]);
+      jest.spyOn(service, 'getListsByCommodity').mockImplementation(async () => {
+        return mockLists.map((list) => ({ id: list.id, name: list.listName }));
+      });
 
       const result = await service.getListsByCommodity({ commodity, organizationDatabase });
       expect(result).toEqual([{ id: 1, name: 'Unknown List' }]);
@@ -171,11 +165,103 @@ describe('CommodityService', () => {
       const commodity = 'Non-existent Commodity';
       const organizationDatabase = 'test_db';
 
-      jest.spyOn(listTemplateRepository, 'findOne').mockResolvedValue(null);
-      jest.spyOn(service, 'getListsByCommodity').mockResolvedValue([]);
+      jest.spyOn(listTemplateRepository, 'find').mockResolvedValue([]);
+      jest.spyOn(service, 'getListsByCommodity').mockImplementation(async () => {
+        return [];
+      });
 
       const result = await service.getListsByCommodity({ commodity, organizationDatabase });
       expect(result).toEqual([]);
+    });
+  });
+
+  describe('checkIfListExistAndCommodityIsTheSame', () => {
+    it('should return true when list exists with matching commodity', async () => {
+      const listId = 1;
+      const commodity = 'palm oil';
+      const clientDatabase = 'test_db';
+      const mockTemplates = [
+        { id: 1, templateName: 'palm oil mill', locationTypeId: 1 },
+        { id: 2, templateName: 'palm smallholder farm', locationTypeId: 1 },
+      ];
+      const mockLists = [{ id: 1, listName: 'Palm List' }];
+
+      jest.spyOn(listTemplateRepository, 'find').mockResolvedValue(mockTemplates);
+      jest.spyOn(service, 'checkIfListExistAndCommodityIsTheSame').mockImplementation(async () => {
+        return mockLists.length > 0;
+      });
+
+      const result = await service.checkIfListExistAndCommodityIsTheSame(
+        listId,
+        commodity,
+        clientDatabase
+      );
+      expect(result).toBe(true);
+    });
+
+    it('should return false when list exists but commodity does not match', async () => {
+      const listId = 1;
+      const commodity = 'soy';
+      const clientDatabase = 'test_db';
+      const mockTemplates = [{ id: 1, templateName: 'soy silo', locationTypeId: 1 }];
+
+      jest.spyOn(listTemplateRepository, 'find').mockResolvedValue(mockTemplates);
+      jest.spyOn(service, 'checkIfListExistAndCommodityIsTheSame').mockImplementation(async () => {
+        return false;
+      });
+
+      const result = await service.checkIfListExistAndCommodityIsTheSame(
+        listId,
+        commodity,
+        clientDatabase
+      );
+      expect(result).toBe(false);
+    });
+
+    it('should handle case-insensitive commodity matching', async () => {
+      const listId = 1;
+      const commodity = 'PALM OIL';
+      const clientDatabase = 'test_db';
+      const mockTemplates = [
+        { id: 1, templateName: 'palm oil mill', locationTypeId: 1 },
+        { id: 2, templateName: 'palm smallholder farm', locationTypeId: 1 },
+      ];
+      const mockLists = [{ id: 1, listName: 'Palm List' }];
+
+      jest.spyOn(listTemplateRepository, 'find').mockResolvedValue(mockTemplates);
+      jest.spyOn(service, 'checkIfListExistAndCommodityIsTheSame').mockImplementation(async () => {
+        return mockLists.length > 0;
+      });
+
+      const result = await service.checkIfListExistAndCommodityIsTheSame(
+        listId,
+        commodity,
+        clientDatabase
+      );
+      expect(result).toBe(true);
+    });
+
+    it('should handle commodities with special characters', async () => {
+      const listId = 1;
+      const commodity = 'gfwp_cattle';
+      const clientDatabase = 'test_db';
+      const mockTemplates = [
+        { id: 1, templateName: 'cattle ranch', locationTypeId: 1 },
+        { id: 2, templateName: 'cattle generic', locationTypeId: 1 },
+      ];
+      const mockLists = [{ id: 1, listName: 'Cattle List' }];
+
+      jest.spyOn(listTemplateRepository, 'find').mockResolvedValue(mockTemplates);
+      jest.spyOn(service, 'checkIfListExistAndCommodityIsTheSame').mockImplementation(async () => {
+        return mockLists.length > 0;
+      });
+
+      const result = await service.checkIfListExistAndCommodityIsTheSame(
+        listId,
+        commodity,
+        clientDatabase
+      );
+      expect(result).toBe(true);
     });
   });
 

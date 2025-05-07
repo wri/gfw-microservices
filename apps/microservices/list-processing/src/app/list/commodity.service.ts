@@ -1,5 +1,4 @@
-import { Injectable, Logger } from '@nestjs/common';
-import { InjectRepository } from '@nestjs/typeorm';
+import { Injectable, Logger, forwardRef, Inject } from '@nestjs/common';
 import {
   ClientStoreConnection,
   Lists,
@@ -10,6 +9,7 @@ import {
 import { EntitySchema, Raw, Repository, In } from 'typeorm';
 import { CommodityResponse, ListResponse } from './types';
 import { ConvertCommodityToMapSpamCode } from '../list-upload/chain/convert.commodity.mapspam';
+import { getRepositoryToken } from '@nestjs/typeorm';
 
 // Mapping of commodity names to their template IDs
 const COMMODITY_TEMPLATE_MAP = {
@@ -22,7 +22,7 @@ const COMMODITY_TEMPLATE_MAP = {
 @Injectable()
 export class CommodityService {
   constructor(
-    @InjectRepository(ListTemplate, 'default')
+    @Inject(forwardRef(() => getRepositoryToken(ListTemplate, 'default')))
     private readonly listTemplateRepository: Repository<ListTemplate>
   ) {}
 
@@ -102,6 +102,32 @@ export class CommodityService {
     };
   }
 
+  private async getCommodityAndTemplates(commodity: string): Promise<{
+    commodityName: string;
+    validTemplates: ListTemplate[];
+  }> {
+    const commodityLowerCase = commodity.toLowerCase();
+    let commodityName = this.getCommodityFromTemplate(commodityLowerCase);
+    let templateNames = COMMODITY_TEMPLATE_MAP[commodityName] || [];
+
+    commodityName =
+      ConvertCommodityToMapSpamCode.getCommoditySpamName(commodity) ||
+      commodity.replace(/\s+/g, '_');
+
+    // Get all templates for the commodity if it's in our mapping
+    templateNames = [...templateNames, commodityName];
+    const templates = await this.listTemplateRepository.find({
+      where: {
+        templateName: In(templateNames),
+      },
+    });
+
+    return {
+      commodityName,
+      validTemplates: templates.filter(Boolean),
+    };
+  }
+
   async getListsByCommodity({
     commodity,
     organizationDatabase,
@@ -114,23 +140,7 @@ export class CommodityService {
       const connection = await clientStoreConnection.getConnection(organizationDatabase, [Lists]);
       const listRepository = connection.getRepository(Lists);
 
-      let commodityName = this.getCommodityFromTemplate(commodity);
-
-      let templateNames = COMMODITY_TEMPLATE_MAP[commodityName] || [];
-
-      commodityName =
-        ConvertCommodityToMapSpamCode.getCommoditySpamName(commodity) ||
-        commodity.replace(/\s+/g, '_');
-
-      // Get all templates for the commodity if it's in our mapping
-      templateNames = [...templateNames, commodityName];
-      const templates = await this.listTemplateRepository.find({
-        where: {
-          templateName: In(templateNames),
-        },
-      });
-
-      const validTemplates = templates.filter(Boolean);
+      const { commodityName, validTemplates } = await this.getCommodityAndTemplates(commodity);
 
       const lists = await listRepository.find({
         where: [
@@ -172,5 +182,42 @@ export class CommodityService {
     }
 
     return templateName;
+  }
+
+  async checkIfListExistAndCommodityIsTheSame(
+    listId: number,
+    commodity: string,
+    clientDatabase: string
+  ): Promise<boolean> {
+    const clientStoreConnection = new ClientStoreConnection();
+    const connection = await clientStoreConnection.getConnection(clientDatabase, [Lists]);
+    const listRepository = connection.getRepository(Lists);
+
+    const { commodityName, validTemplates } = await this.getCommodityAndTemplates(commodity);
+
+    const lists = await listRepository.find({
+      where: [
+        {
+          id: listId,
+          ...(commodityName && {
+            Commodity: Raw(
+              (alias) =>
+                `${alias} COLLATE Latin1_General_CI_AI = :commodity COLLATE Latin1_General_CI_AI`,
+              { commodity: commodityName }
+            ),
+          }),
+        },
+        ...(validTemplates?.length > 0
+          ? validTemplates.map((template) => ({
+              id: listId,
+              templateId: template.id,
+            }))
+          : []),
+      ].filter(Boolean),
+      select: ['id', 'listName'],
+      order: { listName: 'ASC' },
+    });
+
+    return lists.length > 0;
   }
 }

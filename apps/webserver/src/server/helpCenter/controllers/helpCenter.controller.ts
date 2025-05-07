@@ -3,9 +3,9 @@ import {
   InitiateAuthCommand,
   InitiateAuthCommandInput,
 } from '@aws-sdk/client-cognito-identity-provider';
-import config from '../../../config/env/common';
+import * as config from '../../../config/env/common';
 import logger from '../../../config/privateutils/logger.utils';
-const client = new CognitoIdentityProviderClient({ region: config.AWSVars.region });
+const cognitoClient = new CognitoIdentityProviderClient({ region: config.AWSVars.region });
 
 export const helpCenter = async (req, res) => {
   const { username, password } = req.body;
@@ -21,9 +21,9 @@ export const helpCenter = async (req, res) => {
 
   try {
     const command = new InitiateAuthCommand(params);
-    const response = await client.send(command);
+    const response = await cognitoClient.send(command);
 
-    logger.info('Helpcenter authentication succeeded.');
+    logger.info('Help Center authentication succeeded.');
     res.json({
       success: true,
       token: response.AuthenticationResult?.AccessToken,
@@ -36,7 +36,7 @@ export const helpCenter = async (req, res) => {
         ? 'Password reset required. Try logging in via the main website.'
         : 'Authentication failed';
 
-    logger.error(`Helpcenter authentication failed: ${JSON.stringify(err)}`);
+    logger.error(`Help Center authentication failed: ${JSON.stringify(err)}`);
     res.status(403).json({
       success: false,
       message: errorMsg,

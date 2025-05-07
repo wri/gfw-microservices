@@ -4,7 +4,7 @@ import { Card, CardContent } from '@mui/material';
 import BarChart from '../../common/BarChart';
 import { SelectorWithTwoLevels } from './SelectorWithTwoLevels';
 import { SelectorWithOneLevel } from './SelectorWithOneLevel';
-import { chartDatasetConfigsColombia, regionConstants } from './regions.constants';
+import { chartDatasetConfigsColombia, regionConstants } from './regions-constants';
 import { getBarChartData, getBarChartDataWithTwoLevels } from './getBarChartData';
 import { updateCheckedLabelsForChartDatasetConfig } from './barChart.utils';
 

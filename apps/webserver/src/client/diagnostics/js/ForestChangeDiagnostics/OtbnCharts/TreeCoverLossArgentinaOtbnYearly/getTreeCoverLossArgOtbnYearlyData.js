@@ -1,6 +1,6 @@
 import _range from 'lodash/range';
 import _isEmpty from 'lodash/isEmpty';
-import { chartDatasetConfigs } from '../../SouthAmericaRegions/regions.constants';
+import { chartDatasetConfigs } from '../../SouthAmericaRegions/regions-constants';
 
 const getTreeCoverLossArgOtbnYearlyData = (
   data,

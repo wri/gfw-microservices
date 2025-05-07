@@ -1,8 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import Card from '@mui/material/Card';
+import { Card, Modal, Button } from '@mui/material';
 import AddLocationIcon from '@mui/icons-material/AddLocation';
-import Modal from '@mui/material/Modal';
-import Button from '@mui/material/Button';
 import GfwButton from '../../../../../common/js/components/GfwButton';
 import CoordinateInputsContainer from './CoordinateInputsContainer';
 import SetArea from '../SetArea';

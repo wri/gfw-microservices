@@ -4,14 +4,14 @@ const defaultLanguageID = 'en';
 //Language Strings.
 const langResources = {
   en: {
-    userisNotAnAdmin: 'User is not an Administrator.',
-    userExistInOrg: 'User is already registered in this organization.',
+    userIsNotAnAdmin: 'User is not an Administrator.',
+    userExistsInOrg: 'User is already registered in this organization.',
     loginFailed: 'Incorrect username or password. Please try again.',
     accountDisabled: 'User has been disabled. Please reset your password.',
     InvalidSession: 'Invalid Session. Please login.',
     verificationFailed: 'Validation failed for the verification code.',
     AuthenticationFailure: 'Critical error in authentication, please contact support.',
-    invaidInitialPasswordChange: 'User does not require an initial password change.',
+    invalidInitialPasswordChange: 'User does not require an initial password change.',
     criticalError: 'Critical Error! Please contact your local IT Administrator.',
     executeSystemStoredProcedure: 'Failed to execute system stored procedure in database.',
     executeOrganizationStoredProcedure:

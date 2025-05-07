@@ -31,12 +31,12 @@ const path = require('path');
 import config from '../config';
 
 const langResources = require(path.resolve('./config/langResources'));
-const AWSSES = require(path.resolve('./config/privateutils/ses.utils'));
+const awsSes = require(path.resolve('./config/privateutils/ses.utils'));
+const awsCognito = require(path.resolve('./config/privateutils/cognito.utils'));
 const sqlUtils = require(path.resolve('./config/privateutils/sql.utils'));
 const logger = require(path.resolve('./config/privateutils/logger.utils'));
 const errorUtils = require(path.resolve('./config/privateutils/error.utils'));
-const AWSCognito = require(path.resolve('./config/privateutils/cognito.utils'));
-const SpeakEasy = require(path.resolve('./config/privateutils/speakeasy.utils'));
+const speakEasy = require(path.resolve('./config/privateutils/speakeasy.utils'));
 const rollbackUtils = require(path.resolve('./config/privateutils/rollback.utils'));
 const { listStatusDescriptions, listStatus } = require(path.resolve(
   './config/env/listStatuses.constants'
@@ -140,7 +140,7 @@ export function getStatuses() {
 /**
  * @function getUserEmail
  * @summary Returns User Email from session vars
- * @param  {Object}   req - Manadatory first parameter to pass the request object into the function in case session info is required.
+ * @param  {Object}   req - Mandatory first parameter to pass the request object into the function in case session info is required.
  * @return  String of user_email
  */
 export function getUserEmail(req) {
@@ -150,7 +150,7 @@ export function getUserEmail(req) {
 /**
  * @function isAdministrator
  * @summary Checks if the current user is an administrator.
- * @param  {Object}   req - Manadatory first parameter to pass the request object into the function in case session info is required.
+ * @param  {Object}   req - Mandatory first parameter to pass the request object into the function in case session info is required.
  * @return  true if administrator, false otherwise.
  */
 export function isAdministrator(req) {
@@ -175,7 +175,7 @@ export function isEditor(req) {
 /**
  * @function isProManager
  * @summary Checks if the current user is a Pro Manager.
- * @param  {Object}   req - Manadatory first parameter to pass the request object into the function in case session info is required.
+ * @param  {Object}   req - Mandatory first parameter to pass the request object into the function in case session info is required.
  * @return  true if Pro Manager, false otherwise.
  */
 export function isProManager(req) {
@@ -188,7 +188,7 @@ export function isProManager(req) {
 /**
  * @function activateUser
  * @summary Activates a User that is pending.
- * @param  {Object}   req - Manadatory first parameter to pass the request object into the function in case session info is required.
+ * @param  {Object}   req - Mandatory first parameter to pass the request object into the function in case session info is required.
  * @param  {Number}   user_id A number containing the user ID of the user you want to activate.
  * @param  {String}   user_email A string containing the user email of the user you want to activate.
  * @return  A promise that resolves to true if user is successfully, rejected otherwise.
@@ -205,7 +205,7 @@ export const activateUser = (
     let organizationName;
     // Make sure the user is an Administrator before making the call.
     if (!isAdministrator(req)) {
-      const errMessage = langResources.getResourceString('userisNotAnAdmin');
+      const errMessage = langResources.getResourceString('userIsNotAnAdmin');
       throw new errorUtils.createErrorMessage(
         req,
         errorUtils.ERROR_CODES.userNotAdmin,
@@ -232,11 +232,11 @@ export const activateUser = (
         // Set User Status in the Routes Table.
         return sqlUtils.executeSystemStoredProcedure(req, 'uspSetUserRouteStatus', parameters);
       })
-      .then((recordsets) => {
-        const [record] = recordsets;
+      .then((recordSets) => {
+        const [record] = recordSets;
         organizationName = record.organization_name;
         // Create a new secret for the user in case it is needed. Default authentication preference to be 0 - email
-        const secret = SpeakEasy.createSecret(req);
+        const secret = speakEasy.createSecret(req);
         const parameters = [
           { field: 'UserSecret', type: sql.VarChar(50), value: secret },
           { field: 'UserEmail', type: sql.NVarChar(50), value: user_email },
@@ -246,26 +246,26 @@ export const activateUser = (
       })
       .then(() => {
         // Check if the account exists in Cognito.
-        return AWSCognito.userExists(req, user_email);
+        return awsCognito.userExists(req, user_email);
       })
-      .then((user_exists) => {
-        if (user_exists) {
+      .then((doesUserExist) => {
+        if (doesUserExist) {
           const subject = 'Welcome to Global Forest Watch Pro!';
           const content = {
             organization_name: organizationName,
             first_name,
             last_name,
           };
-          const msg = AWSSES.createBodyContent(
+          const msg = awsSes.createBodyContent(
             req,
             config.platformVars.emailType.INVITATION,
             content
           );
           // Send the token via email to the user.
-          return AWSSES.sendEmail(req, config.AWSVars.ses.sender, [user_email], subject, msg);
+          return awsSes.sendEmail(req, config.AWSVars.ses.sender, [user_email], subject, msg);
         }
         // Create new user in Cognito.
-        return AWSCognito.createUser(req, user_email, false, unit_test);
+        return awsCognito.createUser(req, user_email, false, unit_test);
       })
       .then(() => {
         logger.logActivity(
@@ -290,7 +290,7 @@ export const activateUser = (
 /**
  * @function deActivateUser
  * @summary Deactivates a User that is active/pending.
- * @param  {Object}   req - Manadatory first parameter to pass the request object into the function in case session info is required.
+ * @param  {Object}   req - Mandatory first parameter to pass the request object into the function in case session info is required.
  * @param  {Number}   user_id A number containing the user ID of the user you want to deactivate.
  * @return  A promise that resolves to true if user is successfully deactivated, rejected otherwise.
  */
@@ -348,7 +348,7 @@ export const deactivateUser = (req, user_id) => {
 /**
  * @function createNewUser
  * @summary Creates new user.
- * @param  {Object}   req - Manadatory first parameter to pass the request object into the function in case session info is required.
+ * @param  {Object}   req - Mandatory first parameter to pass the request object into the function in case session info is required.
  * @param  {String}   user_first_name - First Name of the user
  * @param  {String}   user_middle_initial - Middle Initial of the new user
  * @param  {String}   user_last_name - Last Name of the new user
@@ -400,10 +400,10 @@ export const createNewUser = (
     // Check whether the user exists in the current organization.
     sqlUtils
       .executeOrganizationStoredProcedure(req, 'uspGetUserInfoByEmail', params)
-      .then((recordsets) => {
+      .then((recordSets) => {
         // If the user already exists, return an error.
-        if (recordsets.length > 0) {
-          const errMessage = langResources.getResourceString('userExistInOrg');
+        if (recordSets.length) {
+          const errMessage = langResources.getResourceString('userExistsInOrg');
           throw new errorUtils.createErrorMessage(
             req,
             errorUtils.ERROR_CODES.userExists,
@@ -447,24 +447,24 @@ export const createNewUser = (
           return sqlUtils.executeOrganizationStoredProcedure(req, 'uspCreateNewUser', parameters);
         }
       })
-      .then((recordsets) => {
-        const [user] = recordsets;
+      .then((recordSets) => {
+        const [user] = recordSets;
         user_id = user.NewUserID;
         uspCreateNewUser = true;
         // Must declare before due to func structure
         uspCreateNewUserRoute = true;
         // Recordset received after creating user in organization.
-        if (recordsets.length > 0) {
+        if (recordSets.length) {
           const parameters = [
             { field: 'userEmail', type: sql.NVarChar(50), value: user_email },
             { field: 'orgID', type: sql.Int, value: req.session.organization_id },
-            { field: 'OrgUserID', type: sql.Int, value: recordsets[0].NewUserID },
+            { field: 'OrgUserID', type: sql.Int, value: recordSets[0].NewUserID },
             { field: 'OrgUserStatusID', type: sql.Int, value: listStatus.Pending },
           ];
           // Add to User Routes.
           return sqlUtils.executeSystemStoredProcedure(req, 'uspCreateNewUserRoute', parameters);
         }
-        const errMessage = langResources.getResourceString('userExistInOrg');
+        const errMessage = langResources.getResourceString('userExistsInOrg');
         throw new errorUtils.createErrorMessage(
           req,
           errorUtils.ERROR_CODES.userExists,
@@ -508,7 +508,7 @@ export const createNewUser = (
  * @function updateUserInfo
  * @summary Updates user information.
  * @param  {Object}   params
- *  param  {Object}   req - Manadatory first parameter to pass the request object into the function in case session info is required.
+ *  param  {Object}   req - Mandatory first parameter to pass the request object into the function in case session info is required.
  *  param  {Number}   user_id - Number specifying the user id. Need to provide to set user info.
  *  param  {String}   user_first_name - First Name of the user
  *  param  {String}   user_middle_initial - Middle Initial of the new user
@@ -600,8 +600,8 @@ export const updateUserInfo = ({
 /**
  * @function setStatus
  * @summary Sets the Status of the user.
- * @param  {Object}   req - Manadatory first parameter to pass the request object into the function in case session info is required.
- * @return  true if successfull, false otherwise.
+ * @param  {Object}   req - Mandatory first parameter to pass the request object into the function in case session info is required.
+ * @return  true if successful, false otherwise.
  */
 export const setStatus = (req, status_id) => {
   return new Promise((resolve, reject) => {
@@ -645,11 +645,11 @@ export const getUserSecret = (req, email) => {
     ];
     sqlUtils
       .executeSystemStoredProcedure(req, 'uspGetUserSecret', parameters)
-      .then((recordsets) => {
+      .then((recordSets) => {
         // There should be one and only one user secret return anything else is prone to error
-        if (recordsets.length === 1) {
-          const { user_secret } = recordsets[0];
-          const secret = SpeakEasy.getSecret(user_secret, email);
+        if (recordSets.length === 1) {
+          const { user_secret } = recordSets[0];
+          const secret = speakEasy.getSecret(user_secret, email);
           resolve(secret);
           // Error
         } else {
@@ -674,5 +674,5 @@ export const getUserSecret = (req, email) => {
  * @summary Initializes the Account Manager module.
  */
 export const initialize = () => {
-  return AWSCognito.initialize();
+  return awsCognito.initialize();
 };

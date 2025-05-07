@@ -1,5 +1,4 @@
-import { Injectable, Logger } from '@nestjs/common';
-import { InjectRepository } from '@nestjs/typeorm';
+import { Injectable, Logger, forwardRef, Inject } from '@nestjs/common';
 import {
   ClientStoreConnection,
   Lists,
@@ -10,6 +9,7 @@ import {
 import { EntitySchema, Raw, Repository, In } from 'typeorm';
 import { CommodityResponse, ListResponse } from './types';
 import { ConvertCommodityToMapSpamCode } from '../list-upload/chain/convert.commodity.mapspam';
+import { getRepositoryToken } from '@nestjs/typeorm';
 
 // Mapping of commodity names to their template IDs
 const COMMODITY_TEMPLATE_MAP = {
@@ -22,7 +22,7 @@ const COMMODITY_TEMPLATE_MAP = {
 @Injectable()
 export class CommodityService {
   constructor(
-    @InjectRepository(ListTemplate, 'default')
+    @Inject(forwardRef(() => getRepositoryToken(ListTemplate, 'default')))
     private readonly listTemplateRepository: Repository<ListTemplate>
   ) {}
 
@@ -172,5 +172,20 @@ export class CommodityService {
     }
 
     return templateName;
+  }
+
+  async checkIfListExistAndCommodityIsTheSame(
+    listId: number,
+    commodity: string,
+    clientDatabase: string
+  ): Promise<boolean> {
+    const { commodity: listCommodity } = await this.getCommodityFromExistingList(
+      clientDatabase,
+      listId
+    );
+    // Remove GFWP_ prefix if it exists
+    const dbCommodity = listCommodity ? listCommodity.replace('GFWP_', '') : listCommodity;
+
+    return dbCommodity === commodity;
   }
 }

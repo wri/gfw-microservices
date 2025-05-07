@@ -138,7 +138,11 @@ export function UploadLocationByFile() {
           data formatted for GFW Pro, just upload it below.
         </Typography>
 
-        <PillButton variant="contained" onClick={() => setIsDataTemplateDialogOpen(true)}>
+        <PillButton
+          variant="contained"
+          data-cy={DATA_CY.NEW_UPLOAD_WORKFLOW.DATA_TEMPLATES}
+          onClick={() => setIsDataTemplateDialogOpen(true)}
+        >
           Data templates
         </PillButton>
         <Box

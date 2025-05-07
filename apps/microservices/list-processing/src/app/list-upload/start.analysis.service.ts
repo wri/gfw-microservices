@@ -1,4 +1,4 @@
-import { Injectable, Logger } from '@nestjs/common';
+import { Injectable, Logger, forwardRef, Inject } from '@nestjs/common';
 import { RequestLargeListProcess, ResponseLargeListProcess } from '../../models';
 import { ConfigService } from '@nestjs/config';
 import { ServerConfigType } from '../../validators/server-config';
@@ -27,8 +27,8 @@ import { AddNewLocationToAnalysisTable } from './chain/add.new.location.to.analy
 import { ConvertGeojsonProperties } from './chain/convert.geojson.properties';
 import { PutListAsDraft } from './chain/put.list.as.draft';
 import { GenerateErrorFile } from './chain/generate.error.file';
-import { ConvertCommodityToMapSpamCode } from './chain/convert.commodity.mapspam';
 import { AdjustGeoData } from './chain/adjust.geo.data';
+import { CommodityService } from '../list/commodity.service';
 
 type WorkerType = {
   request: RequestLargeListProcess;
@@ -109,6 +109,8 @@ export class StartAnalysisService {
 
   constructor(
     private readonly config: ConfigService<ServerConfigType, true>,
+    @Inject(forwardRef(() => CommodityService))
+    private readonly commodityService: CommodityService,
     private readonly emailService: EmailService
   ) {}
 
@@ -121,11 +123,12 @@ export class StartAnalysisService {
       user_id: userId,
     } = request;
     if (listId) {
-      const listExistAtClientStore = await checkIfListExistAndCommodityIsTheSame(
-        listId,
-        commodity,
-        clientDatabase
-      );
+      const listExistAtClientStore =
+        await this.commodityService.checkIfListExistAndCommodityIsTheSame(
+          listId,
+          commodity,
+          clientDatabase
+        );
       if (!listExistAtClientStore) {
         this.logger.warn(`List not found with id ${listId} at client store`);
         throw new Error(`List not found with id ${listId} at client store`);
@@ -154,25 +157,3 @@ export class StartAnalysisService {
     };
   }
 }
-
-export const checkIfListExistAndCommodityIsTheSame = async (listId, commodity, clientDatabase) => {
-  const clientStoreConnection = new ClientStoreConnection();
-  const connection = await clientStoreConnection.getConnection(clientDatabase);
-
-  const whereClause: Record<string, unknown> = {
-    id: listId,
-  };
-
-  const commodityMapSpam = ConvertCommodityToMapSpamCode.getCommoditySpamName(commodity);
-  whereClause.Commodity = commodityMapSpam;
-
-  const existingList = await connection.getRepository(Lists).findOne({
-    where: whereClause,
-  });
-
-  if (!existingList) {
-    return false;
-  }
-
-  return true;
-};

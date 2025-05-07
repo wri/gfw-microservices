@@ -11,9 +11,10 @@ import { PreviewListUploadController } from './preview.list.upload.controller';
 import { PreviewListUploadService } from './preview.list.upload.service';
 import { DeprecatedCreateLargeListService } from './deprecated.create.large.list.service';
 import { CreateLargeListService } from './create.large.list.service';
+import { ListModule } from '../list';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([ListTemplate], 'default'), SqlModule, AwsModule],
+  imports: [TypeOrmModule.forFeature([ListTemplate], 'default'), SqlModule, AwsModule, ListModule],
   controllers: [ValidateCSVController, PreviewListUploadController],
   providers: [
     ValidateCSVService,

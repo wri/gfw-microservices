@@ -5,9 +5,9 @@ import lightBaseTheme from 'material-ui/styles/baseThemes/lightBaseTheme';
 import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
 import getMuiTheme from 'material-ui/styles/getMuiTheme';
 
-import Header from '../js/components/Header';
+import Header from '.';
 
-describe('Test Header Component', () => {
+describe('Header', () => {
   afterEach(() => {
     cleanup();
     jest.clearAllMocks();

@@ -1,7 +1,7 @@
 import React from 'react';
 import { render, screen, fireEvent, cleanup } from '@testing-library/react';
 import '@testing-library/jest-dom/extend-expect';
-import CustomDialog from '../js/components/CustomDialog/CustomDialog';
+import CustomDialog from './CustomDialog';
 import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
 
 describe('CustomDialog', () => {

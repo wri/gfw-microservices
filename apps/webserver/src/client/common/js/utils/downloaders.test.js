@@ -1,4 +1,4 @@
-import { downloadCSV, downloadResults, downloadZIP } from '../../js/utils/downloaders';
+import { downloadCSV, downloadResults, downloadZIP } from './downloaders';
 import JSZip from 'jszip';
 import FileSaver from 'file-saver';
 

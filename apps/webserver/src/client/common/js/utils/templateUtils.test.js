@@ -1,4 +1,4 @@
-import { deduceActiveName, deduceActiveId } from '../../js/utils/templateUtils';
+import { deduceActiveName, deduceActiveId } from './templateUtils';
 
 describe('deduceActiveName', () => {
   it('should return the correct template name for palmMill', () => {

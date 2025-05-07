@@ -1,4 +1,4 @@
-import geoUtils from '../../js/utils/arcgis-to-geojson';
+import geoUtils from './arcgis-to-geojson';
 
 describe('geoUtils', () => {
   describe('arcgisToGeoJSON', () => {

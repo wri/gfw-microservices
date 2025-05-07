@@ -1,9 +1,9 @@
 import { render, cleanup } from '@testing-library/react';
 import React from 'react';
 
-import LoadingWheel from '../js/components/Loaders/LoadingWheel';
+import LoadingWheel from './LoadingWheel';
 
-describe('Test Loading Wheel Component', () => {
+describe('LoadingWheel', () => {
   afterEach(() => {
     cleanup();
     jest.clearAllMocks();

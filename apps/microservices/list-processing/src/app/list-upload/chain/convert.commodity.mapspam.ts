@@ -21,9 +21,15 @@ export class ConvertCommodityToMapSpamCode extends AbstractHandler<ChainType> {
   }
 
   private getCommodityDB(commodity: string) {
-    const commodityName = ConvertCommodityToMapSpamCode.getCommoditySpamName(commodity);
+    const commoditySpamName = ConvertCommodityToMapSpamCode.getCommoditySpamName(commodity);
+    if (commoditySpamName) {
+      return commoditySpamName;
+    }
+    if (commodity.startsWith('GFWP_')) {
+      return commodity;
+    }
 
-    return commodityName || `GFWP_${commodity.replace(/\s+/g, '_')}`;
+    return `GFWP_${commodity.replace(/\s+/g, '_')}`;
   }
 
   static getCommoditySpamName(commodity: string): string | undefined {

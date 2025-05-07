@@ -9,7 +9,7 @@
  * - COMMODITY_MAP_SPAM
  * - MAPSPAM_COMMODITY
  */
-export const GHG_PREFIX = 'GFWP_';
+export const GHG_PREFIX = 'GFWP';
 
 export enum MAPSPAM_CODES {
   COCO = 'COCO',

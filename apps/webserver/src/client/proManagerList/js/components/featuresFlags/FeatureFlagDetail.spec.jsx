@@ -1,11 +1,11 @@
 import React from 'react';
 import { cleanup, screen, render, fireEvent } from '@testing-library/react';
 import '@testing-library/jest-dom/extend-expect';
-import FeatureFlagDetail from '../../js/components/featuresFlags/FeatureFlagDetail';
-import { useFeatureFlagStateContext } from '../../js/components/featuresFlags/FeatureFlagStateContext';
+import FeatureFlagDetail from './FeatureFlagDetail';
+import { useFeatureFlagStateContext } from './FeatureFlagStateContext';
 import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
 
-jest.mock('../../js/components/featuresFlags/FeatureFlagStateContext');
+jest.mock('./FeatureFlagStateContext');
 
 const mockFeatureFlagContext = {
   selectedFeatureFlag: {
@@ -31,7 +31,7 @@ const mockFeatureFlagContext = {
   upsertFeatureFlagByFlagId: jest.fn(),
 };
 
-jest.mock('../../js/components/featuresFlags/AddCompany', () => ({
+jest.mock('./AddCompany', () => ({
   __esModule: true,
   default: jest.fn(() => <div data-testid="addCompanyMock">AddCompany Mock</div>),
 }));
@@ -39,8 +39,8 @@ jest.mock('../../js/components/featuresFlags/AddCompany', () => ({
 useFeatureFlagStateContext.mockReturnValue(mockFeatureFlagContext);
 afterEach(cleanup);
 
-describe('FeatureFlagDetail Component', () => {
-  test('renders component with selectedFeatureFlag', () => {
+describe('FeatureFlagDetail', () => {
+  it('renders component with selectedFeatureFlag', () => {
     render(
       <MuiThemeProvider>
         <FeatureFlagDetail />
@@ -59,7 +59,7 @@ describe('FeatureFlagDetail Component', () => {
     expect(switchElement[0]).toBeChecked();
   });
 
-  test('handles switch change', () => {
+  it('handles switch change', () => {
     render(
       <MuiThemeProvider>
         <FeatureFlagDetail />

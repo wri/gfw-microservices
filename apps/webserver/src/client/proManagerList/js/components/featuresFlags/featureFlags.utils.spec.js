@@ -3,7 +3,7 @@ import {
   getFeatureFlagsByFlagId,
   upsertFeatureFlag,
   getAccountListData,
-} from '../../js/components/featuresFlags/featureFlags.utils';
+} from './featureFlags.utils';
 
 jest.mock('node-fetch');
 
@@ -13,7 +13,7 @@ beforeEach(() => {
   jest.resetAllMocks();
 });
 
-test('getAllFeatureFlags fetches data correctly', async () => {
+it('getAllFeatureFlags fetches data correctly', async () => {
   const mockData = { data: [{ flagId: 'TestFlag', flagState: true }] };
   global.fetch = jest.fn().mockResolvedValueOnce(new Response(JSON.stringify(mockData)));
 
@@ -23,7 +23,7 @@ test('getAllFeatureFlags fetches data correctly', async () => {
   expect(result).toEqual(mockData.data);
 });
 
-test('getFeatureFlagsByFlagId fetches data correctly', async () => {
+it('getFeatureFlagsByFlagId fetches data correctly', async () => {
   const mockData = { data: [{ flagId: 'TestFlag', flagState: true }] };
   global.fetch = jest.fn().mockResolvedValueOnce(new Response(JSON.stringify(mockData)));
 
@@ -33,7 +33,7 @@ test('getFeatureFlagsByFlagId fetches data correctly', async () => {
   expect(result).toEqual(mockData.data);
 });
 
-test('upsertFeatureFlag sends correct data and returns result', async () => {
+it('upsertFeatureFlag sends correct data and returns result', async () => {
   const mockData = { data: { flagId: 'TestFlag', flagState: true } };
   global.fetch = jest.fn().mockResolvedValueOnce(new Response(JSON.stringify(mockData)));
 
@@ -55,7 +55,7 @@ test('upsertFeatureFlag sends correct data and returns result', async () => {
   expect(result).toEqual(mockData.data);
 });
 
-test('getAccountListData fetches data correctly', async () => {
+it('getAccountListData fetches data correctly', async () => {
   const mockData = [{ organization_id: 1, organization_name: 'Org 1' }];
   global.fetch = jest.fn().mockResolvedValueOnce(new Response(JSON.stringify(mockData)));
 

@@ -1,7 +1,7 @@
 import React from 'react';
 import catchContainer from './catchContainer';
-import sendSlackNotification from '../../../../common/js/utils/sendSlackNotification';
-import Button from '../../../../common/js/components/GfwButton';
+import sendSlackNotification from '../../utils/sendSlackNotification';
+import Button from '../GfwButton';
 import './ErrorPage.scss';
 
 const isProduction = process.env.NODE_ENV === 'production' || process.env.NODE_ENV === 'staging';

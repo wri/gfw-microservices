@@ -1,9 +1,9 @@
 import React from 'react';
 import { cleanup, render, screen } from '@testing-library/react';
 import '@testing-library/jest-dom/extend-expect';
-import AddCompany from '../../js/components/featuresFlags/AddCompany';
+import AddCompany from './AddCompany';
 
-jest.mock('../../js/components/featuresFlags/FeatureFlagStateContext', () => ({
+jest.mock('./FeatureFlagStateContext', () => ({
   useFeatureFlagStateContext: jest.fn(() => ({
     accountList: [
       { organization_id: 1, organization_name: 'Org 1' },
@@ -16,7 +16,9 @@ jest.mock('../../js/components/featuresFlags/FeatureFlagStateContext', () => ({
 
 afterEach(cleanup);
 
-test('renders AddCompany component', () => {
-  render(<AddCompany />);
-  expect(screen.getByText('+ ADD')).toBeInTheDocument();
+describe('AddCompany', () => {
+  it('should render correctly', () => {
+    render(<AddCompany />);
+    expect(screen.getByText('+ ADD')).toBeInTheDocument();
+  });
 });

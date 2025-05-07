@@ -23,6 +23,7 @@ import { commodities } from '../utils/constants';
 import { uploadFileToS3 } from '../utils/upload';
 import { uploadProcessByPrevUploadedFile } from '../../landing/uploadProcess';
 import { UploadType } from '../types';
+import { DATA_CY } from '../../../../../utils/constants';
 
 export function SummaryAndSubmit() {
   const history = useHistory();
@@ -221,6 +222,7 @@ export function SummaryAndSubmit() {
             variant="contained"
             color="info"
             startIcon={<Close />}
+            data-cy={DATA_CY.NEW_UPLOAD_WORKFLOW[uploadLocationState.uploadType!].SUBMIT_CANCEL}
             onClick={clearUploadType}
           >
             Cancel
@@ -270,7 +272,16 @@ export function SummaryAndSubmit() {
           </Typography>
         </DialogContent>
         <DialogActions sx={{ mr: 'auto', ml: 1.5, pb: 2 }}>
-          <PillButton variant="contained" sx={{ width: '150px' }} onClick={uploadList}>
+          <PillButton
+            variant="contained"
+            sx={{ width: '150px' }}
+            data-cy={
+              isDraftUpload.current
+                ? DATA_CY.NEW_UPLOAD_WORKFLOW[uploadLocationState.uploadType!].SUBMIT_DRAFT
+                : DATA_CY.NEW_UPLOAD_WORKFLOW[uploadLocationState.uploadType!].SUBMIT_ANALYSIS
+            }
+            onClick={uploadList}
+          >
             Ok
           </PillButton>
           <PillButton

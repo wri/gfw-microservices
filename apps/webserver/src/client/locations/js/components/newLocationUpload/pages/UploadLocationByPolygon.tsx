@@ -37,7 +37,8 @@ import { useMap } from '../hooks';
 import LocationMapDrawer from '../../adding/LocationMapDrawer';
 import { useUploadLocation } from '../contexts';
 import { useHistory } from '../hooks';
-import { PolygonFromMapPage } from '../types';
+import { PolygonFromMapPage, UploadType } from '../types';
+import { DATA_CY } from '../../../../../utils/constants';
 
 const MIN_AMOUNT_OF_COORDINATES = 3;
 const MAX_AMOUNT_OF_COORDINATES = 10;
@@ -437,6 +438,7 @@ export function UploadLocationByPolygon({
             variant="contained"
             color="info"
             startIcon={<Close />}
+            data-cy={DATA_CY.NEW_UPLOAD_WORKFLOW[UploadType.ByPolygon].LOCATION_CANCEL}
             onClick={clearUploadType}
           >
             Cancel
@@ -445,6 +447,7 @@ export function UploadLocationByPolygon({
             type="submit"
             variant="contained"
             startIcon={<ArrowForwardIos />}
+            data-cy={DATA_CY.NEW_UPLOAD_WORKFLOW[UploadType.ByPolygon].LOCATION_NEXT}
             disabled={locationFormat === null}
           >
             Next

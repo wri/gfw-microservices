@@ -1,6 +1,6 @@
+import React, { useEffect, useState } from 'react';
 import { Button } from '@mui/base';
 import FmdGoodIcon from '@mui/icons-material/FmdGood';
-import React, { useEffect, useState } from 'react';
 
 import './mapRecenterButton.scss';
 

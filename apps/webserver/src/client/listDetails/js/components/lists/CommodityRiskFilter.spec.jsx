@@ -4,12 +4,12 @@ import { render, cleanup } from '@testing-library/react';
 import getMuiTheme from 'material-ui/styles/getMuiTheme';
 import lightBaseTheme from 'material-ui/styles/baseThemes/lightBaseTheme';
 import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
-import { defaultFilterValues } from '../../listDetails/js/components/lists/defaultFilterValues';
-import CommodityRiskFilter from '../../listDetails/js/components/lists/CommodityRiskFilter';
+import { defaultFilterValues } from './defaultFilterValues';
+import CommodityRiskFilter from './CommodityRiskFilter';
 
-import { LIST_DATA_BRAZIL } from './test-config';
+import { LIST_DATA_BRAZIL } from '../../../../locations/tests/test-config';
 
-describe('Test List Section Component', () => {
+describe('CommodityRiskFilter', () => {
   afterEach(() => {
     cleanup();
     jest.clearAllMocks();

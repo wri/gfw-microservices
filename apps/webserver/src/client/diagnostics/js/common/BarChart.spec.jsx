@@ -1,6 +1,6 @@
 import React from 'react';
 import { render } from '@testing-library/react';
-import BarChart from '../../js/common/BarChart';
+import BarChart from './BarChart';
 
 jest.mock('highcharts', () => ({
   chart: jest.fn(),

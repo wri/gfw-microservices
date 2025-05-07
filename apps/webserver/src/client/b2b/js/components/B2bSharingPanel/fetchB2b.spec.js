@@ -1,4 +1,4 @@
-import httpRequest from './../../../common/js/utils/httpRequest';
+import httpRequest from '../../../../common/js/utils/httpRequest';
 import {
   getConnections,
   sendInvitation,
@@ -6,7 +6,7 @@ import {
   cancelConnection,
   rejectConnection,
   getOrgsList,
-} from './../../js/components/B2bSharingPanel/fetchB2b';
+} from './fetchB2b';
 
 const email = 'test@example.com';
 const mockedResponse = [];
@@ -20,7 +20,7 @@ const updateBody = {
 
 global.fetch = jest.fn(() => Promise.resolve([]));
 
-jest.mock('./../../../common/js/utils/httpRequest', () => ({
+jest.mock('./../../../../common/js/utils/httpRequest', () => ({
   fetchJSON: jest.fn(() => Promise.resolve(mockedResponse)),
   fetchForm: jest.fn(() => Promise.resolve(mockedResponse)),
   fetchGet: jest.fn(() => Promise.resolve(mockedResponse)),

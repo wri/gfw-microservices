@@ -1,6 +1,10 @@
-import columns from '../../../listDetails/js/config/columns';
-import { ActiveLocationOne, ActiveLocationTwo, PedingLocation } from '../mockedData';
-import { sortOrderOption } from '../../js/utils/locationsTableUtils';
+import columns from './columns';
+import {
+  ActiveLocationOne,
+  ActiveLocationTwo,
+  PedingLocation,
+} from '../../../locations/tests/mockedData';
+import { sortOrderOption } from '../../../locations/js/utils/locationsTableUtils';
 
 const runSortTests = (sortMethod) => {
   describe('sortMethod', () => {

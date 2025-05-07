@@ -222,7 +222,7 @@ export function SummaryAndSubmit() {
             variant="contained"
             color="info"
             startIcon={<Close />}
-            data-cy={DATA_CY.NEW_UPLOAD_WORKFLOW[uploadLocationState.uploadType!].CONFIGURE_CANCEL}
+            data-cy={DATA_CY.NEW_UPLOAD_WORKFLOW[uploadLocationState.uploadType!].SUBMIT_CANCEL}
             onClick={clearUploadType}
           >
             Cancel
@@ -272,7 +272,16 @@ export function SummaryAndSubmit() {
           </Typography>
         </DialogContent>
         <DialogActions sx={{ mr: 'auto', ml: 1.5, pb: 2 }}>
-          <PillButton variant="contained" sx={{ width: '150px' }} onClick={uploadList}>
+          <PillButton
+            variant="contained"
+            sx={{ width: '150px' }}
+            data-cy={
+              isDraftUpload.current
+                ? DATA_CY.NEW_UPLOAD_WORKFLOW[uploadLocationState.uploadType!].SUBMIT_DRAFT
+                : DATA_CY.NEW_UPLOAD_WORKFLOW[uploadLocationState.uploadType!].SUBMIT_ANALYSIS
+            }
+            onClick={uploadList}
+          >
             Ok
           </PillButton>
           <PillButton

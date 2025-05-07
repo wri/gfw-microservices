@@ -14,6 +14,7 @@ import { useUploadLocation } from '../contexts';
 import { useHistory } from '../hooks';
 import { ExternalHelperResource } from '../../../../../components';
 import { UploadType } from '../types';
+import { DATA_CY } from '../../../../../utils/constants';
 
 export function UploadLocationOptions() {
   const history = useHistory();
@@ -47,6 +48,7 @@ export function UploadLocationOptions() {
 
           <Button
             className="upload-location-options__button"
+            data-cy={DATA_CY.NEW_UPLOAD_WORKFLOW[UploadType.ByFile].ADD}
             onClick={() => {
               selectUploadType(UploadType.ByFile);
               history.push('UPLOAD_BY_FILE');
@@ -64,6 +66,7 @@ export function UploadLocationOptions() {
             <div>
               <Button
                 className="upload-location-options__button"
+                data-cy={DATA_CY.NEW_UPLOAD_WORKFLOW[UploadType.ByPoint].ADD}
                 onClick={() => {
                   selectUploadType(UploadType.ByPoint);
                   history.push('UPLOAD_BY_POINT');
@@ -75,6 +78,7 @@ export function UploadLocationOptions() {
 
               <Button
                 className="upload-location-options__button"
+                data-cy={DATA_CY.NEW_UPLOAD_WORKFLOW[UploadType.ByPolygon].ADD}
                 onClick={() => {
                   selectUploadType(UploadType.ByPolygon);
                   history.push('UPLOAD_BY_POLYGON');

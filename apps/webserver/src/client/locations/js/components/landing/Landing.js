@@ -46,6 +46,7 @@ import {
 import getCookie from '../../../../common/js/utils/getCookie';
 import getAccountUsagePercentage from './getAccountUsagePercentage';
 import featureFlags from '../../../../../utils/general.utils';
+import { DATA_CY } from '../../../../utils/constants';
 
 class Landing extends Component {
   constructor(props) {
@@ -411,6 +412,7 @@ class Landing extends Component {
                     <PillButton
                       variant="contained"
                       startIcon={<IconPlus height="10px" />}
+                      data-cy={DATA_CY.NEW_UPLOAD_WORKFLOW.ADD}
                       onClick={() => {
                         const { history } = this.props;
                         history.push('/upload-location');

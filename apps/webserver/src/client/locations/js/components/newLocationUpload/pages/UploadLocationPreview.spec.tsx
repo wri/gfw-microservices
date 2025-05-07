@@ -6,6 +6,7 @@ import { useUploadLocation } from '../contexts';
 import { useFetch } from '../../../../../hooks';
 import { uploadFileToS3 } from '../utils/upload';
 import { getFileExtension } from '../../../../../utils';
+import { UploadType } from '../types';
 
 jest.mock('../contexts', () => ({
   useUploadLocation: jest.fn(),
@@ -48,7 +49,7 @@ jest.mock('../../../../../hooks', () => ({
 
 describe('UploadLocationPreview', () => {
   const mockUseUploadLocation = {
-    uploadLocationState: { uploadedFileUrl: 'test.csv' },
+    uploadLocationState: { uploadedFileUrl: 'test.csv', uploadType: UploadType.ByFile },
     clearUploadType: jest.fn(),
     addFile: jest.fn(),
   };

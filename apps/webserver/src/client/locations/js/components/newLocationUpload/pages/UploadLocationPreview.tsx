@@ -217,7 +217,7 @@ export function UploadLocationPreview() {
           <PillButton
             variant="contained"
             startIcon={<ArrowForwardIos />}
-            data-cy={DATA_CY.NEW_UPLOAD_WORKFLOW[uploadType!].ADD}
+            data-cy={DATA_CY.NEW_UPLOAD_WORKFLOW[uploadType!].PREVIEW_NEXT}
             onClick={() => history.push('CONFIGURE_LIST')}
             disabled={isLoading || !data?.features || !!error || !!apiRequestError}
           >

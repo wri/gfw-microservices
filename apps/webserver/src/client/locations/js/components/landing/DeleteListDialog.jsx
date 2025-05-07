@@ -33,7 +33,7 @@ export default class DeleteListDialog extends Component {
     const strings = locationsPage.lists;
 
     return (
-      <React.Fragment>
+      <>
         <Dialog
           open={isOpen}
           modal={false}
@@ -75,7 +75,7 @@ export default class DeleteListDialog extends Component {
             onOkButtonPress={this.onFailedClose}
           />
         )}
-      </React.Fragment>
+      </>
     );
   }
 

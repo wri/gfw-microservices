@@ -1,62 +1,67 @@
-import { Test, TestingModule } from '@nestjs/testing';
-import { ConfigModule } from '@nestjs/config';
-import { NaturalForestLossService, OtherKpisService } from '../files';
-import { AnalysisAfiDataService } from '../data/analysis.afi.data.service';
-import { EmailService, S3Service } from '@wri-monorepos/aws';
-import tsMockito from 'ts-mockito';
+import * as fs from 'fs';
+import { PassThrough } from 'stream';
+import { Logger } from '@nestjs/common';
 import { DashboardHandleDownload } from './dashboard.handle.download';
+import { ListFieldsFileRequest } from '@wri-monorepos/sql';
+import { EXCEL_TEMPLATES, EXCEL_TEMPLATE_HEADERS } from '../shared/constants';
+import { ConvertObject2CSV } from '../transform/convert.object.2.csv';
 
-describe('AccountUsersAnalysisUsageFileGenerator', () => {
-  let fileGenerator: DashboardHandleDownload;
-  const mockNaturalForestLossService = {
-    startEmail: jest.fn().mockResolvedValue('mocked result'),
-    finishProcess: jest.fn().mockResolvedValue('mocked result'),
-  };
-  beforeEach(async () => {
-    const module: TestingModule = await Test.createTestingModule({
-      imports: [
-        ConfigModule.forRoot({
-          envFilePath: ['.env', '.env.production'],
-          isGlobal: true,
-        }),
-      ],
-      providers: [
-        DashboardHandleDownload,
-        AnalysisAfiDataService,
-        {
-          provide: NaturalForestLossService,
-          useValue: mockNaturalForestLossService,
-        },
-        OtherKpisService,
-        { provide: EmailService, useValue: tsMockito.mock(EmailService) },
-        S3Service,
-      ],
-    }).compile();
+jest.mock('fs', () => ({
+  ...jest.requireActual('fs'),
+  writeFileSync: jest.fn(),
+  createWriteStream: jest.fn(() => ({
+    on: jest.fn(),
+    end: jest.fn(),
+    destroy: jest.fn(),
+  })),
+}));
 
-    fileGenerator = module.get<DashboardHandleDownload>(DashboardHandleDownload);
-  });
+jest.mock('stream/promises', () => ({
+  finished: jest.fn().mockResolvedValue(undefined),
+}));
 
-  afterEach(() => {
+jest.mock('../transform/convert.object.2.csv');
+
+describe('DashboardHandleDownload', () => {
+  let service: DashboardHandleDownload;
+  let mockFilters: ListFieldsFileRequest;
+
+  beforeEach(() => {
+    service = new DashboardHandleDownload();
+    mockFilters = {
+      listId: 123,
+      key: 'example-key',
+      listName: 'example-list',
+      selectedLocationsList: [],
+      listLevelAnalysis: false,
+    } as unknown as ListFieldsFileRequest;
+
     jest.clearAllMocks();
   });
-  afterAll(() => {
-    jest.restoreAllMocks();
+
+  it('should start the download process and write the CSV header', () => {
+    const mockTable = 'exampleTable';
+    const mockFileSuffix = 'exampleSuffix';
+    EXCEL_TEMPLATES[mockTable] = [];
+    EXCEL_TEMPLATE_HEADERS[mockTable] = ['header1', 'header2'];
+
+    service.start(mockFilters, mockTable, mockFileSuffix);
+
+    expect(fs.writeFileSync).toHaveBeenCalledWith(
+      `/tmp/wri-example-key/example-list_exampleSuffix.csv`,
+      'header1,header2\n'
+    );
   });
 
-  describe('start', () => {
-    it('should start process', async () => {
-      const mockFilters = {
-        organizationDatabase: 'example-database',
-        userEmail: 'user@example.com',
-        startDate: '2024-01-01',
-        endDate: '2024-01-31',
-        key: 'example-file.csv',
-        file: 'shapefile',
-        type: 'afiVC',
-      };
-      await expect(fileGenerator.start(mockFilters, 'mock_table', 'mock-sulfix')).rejects.toThrow(
-        Error
-      );
-    });
+  it('should process data and write to the stream', () => {
+    const mockData = [{ field1: 'value1' }, { field2: 'value2' }];
+    const writeSpy = jest.spyOn(PassThrough.prototype, 'write');
+
+    service.start(mockFilters, 'exampleTable', 'exampleSuffix');
+    service.process(mockData, mockFilters);
+
+    expect(writeSpy).toHaveBeenCalledTimes(2);
+    expect(writeSpy).toHaveBeenCalledWith({ list_name: 'example-list', field1: 'value1' });
+    expect(writeSpy).toHaveBeenCalledWith({ list_name: 'example-list', field2: 'value2' });
   });
 });

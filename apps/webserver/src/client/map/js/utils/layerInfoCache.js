@@ -10,7 +10,7 @@ const _cache = {};
  * @param {string} url - api url plus technical name, e.g. urls.metadataApi + '/tree_cover_loss'
  * @return promise
  */
-function getMetadataTask(metadataID) {
+function getMetadataTask(metadataId) {
   return new Promise((resolve) => {
     const request = new XMLHttpRequest();
 
@@ -23,7 +23,7 @@ function getMetadataTask(metadataID) {
       resolve(false);
     };
 
-    request.open('POST', `${DATA_API_URL}/dataApi/getMetadataTaskData/${metadataID}`);
+    request.open('POST', `${DATA_API_URL}/dataApi/getMetadataTaskData/${metadataId}`);
     request.send();
   });
 }

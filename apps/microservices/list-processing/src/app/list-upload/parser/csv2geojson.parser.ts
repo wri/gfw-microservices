@@ -3,8 +3,6 @@ import * as Papa from 'papaparse';
 import sexagesimal from '@mapbox/sexagesimal';
 import { Logger } from '@nestjs/common';
 import { Geometry, GeoJson, FeatureCollection } from '@wri-monorepos/geo';
-// todo: organize/delete file below
-// import { palmOilCsvAdjust } from './palm.oil.csv.adjust';
 import { csvLatLongIdBasedTransformer } from '@wri-monorepos/shared';
 
 interface LocationData {
@@ -127,7 +125,7 @@ export const csv2geojson = async (
     data = await csvLatLongIdBasedTransformer(data);
 
     (data as Array<LocationData>).forEach((row: LocationData) => {
-      // geometries are included in csvLatLongIdBasedTransformer 
+      // geometries are included in csvLatLongIdBasedTransformer
       if (!row['geometry']) {
         row = standardizeLocationData(row);
         row = createGeometry(row, includeLatLon);

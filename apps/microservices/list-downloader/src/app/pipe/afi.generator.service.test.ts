@@ -1,85 +1,153 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { ConfigService } from '@nestjs/config';
-import { NaturalForestLossService, OtherKpisService } from '../files';
-import { AnalysisAfiDataService } from '../data/analysis.afi.data.service';
-import { EmailService, S3Service } from '@wri-monorepos/aws';
-import tsMockito from 'ts-mockito';
+import { Logger } from '@nestjs/common';
 import { AfiGeneratorService } from './afi.generator.service';
-import { TypeOrmModule } from '@nestjs/typeorm';
+import { AnalysisAfiDataService } from '../data/analysis.afi.data.service';
+import { NaturalForestLossService, OtherKpisService } from '../files';
+import { getAllFilesAndZip } from '../shared/file.utils';
+import { BasicFieldsFileRequest } from '@wri-monorepos/sql';
 
-describe('AccountUsersAnalysisUsageFileGenerator', () => {
-  let fileGenerator: AfiGeneratorService;
-  let naturalForestLostService: NaturalForestLossService;
-  let module: TestingModule;
-  beforeAll(async () => {
-    module = await Test.createTestingModule({
-      imports: [
-        TypeOrmModule.forRoot({
-          name: 'default',
-          type: 'sqlite',
-          database: ':memory:',
-          synchronize: true,
-          logging: true,
-        }),
-        TypeOrmModule.forFeature([], 'default'),
-      ],
+jest.mock('../shared/file.utils', () => ({
+  getAllFilesAndZip: jest.fn(),
+}));
+
+describe('AfiGeneratorService', () => {
+  let service: AfiGeneratorService;
+  let mockAnalysisAfiDataService: jest.Mocked<AnalysisAfiDataService>;
+  let mockNaturalForestLossService: jest.Mocked<NaturalForestLossService>;
+  let mockOtherKpisService: jest.Mocked<OtherKpisService>;
+
+  beforeEach(async () => {
+    mockAnalysisAfiDataService = {
+      getNumberOfPages: jest.fn(),
+      getDataPaginated: jest.fn(),
+    } as unknown as jest.Mocked<AnalysisAfiDataService>;
+
+    mockNaturalForestLossService = {
+      startEmail: jest.fn(),
+      start: jest.fn(),
+      process: jest.fn(),
+      finish: jest.fn(),
+      finishProcess: jest.fn(),
+    } as unknown as jest.Mocked<NaturalForestLossService>;
+
+    mockOtherKpisService = {
+      start: jest.fn(),
+      process: jest.fn(),
+      finish: jest.fn(),
+    } as unknown as jest.Mocked<OtherKpisService>;
+
+    const module: TestingModule = await Test.createTestingModule({
       providers: [
         AfiGeneratorService,
-        AnalysisAfiDataService,
-        NaturalForestLossService,
-        OtherKpisService,
-        { provide: EmailService, useValue: tsMockito.mock(EmailService) },
-        S3Service,
-        ConfigService,
+        { provide: AnalysisAfiDataService, useValue: mockAnalysisAfiDataService },
+        { provide: NaturalForestLossService, useValue: mockNaturalForestLossService },
+        { provide: OtherKpisService, useValue: mockOtherKpisService },
+        { provide: Logger, useValue: new Logger() },
       ],
     }).compile();
+
+    service = module.get<AfiGeneratorService>(AfiGeneratorService);
   });
-  beforeEach(async () => {
-    naturalForestLostService = await module.resolve<NaturalForestLossService>(
-      NaturalForestLossService
-    );
-    fileGenerator = module.get<AfiGeneratorService>(AfiGeneratorService);
-    jest.clearAllMocks();
-  });
+
   afterEach(() => {
     jest.clearAllMocks();
   });
-  afterAll(() => {
-    jest.restoreAllMocks();
+
+  it('should call all necessary methods in makeFile', async () => {
+    const mockFilters: BasicFieldsFileRequest = {
+      organizationDatabase: 'example-database',
+      userEmail: 'user@example.com',
+      key: 'example-file.csv',
+      file: 'shapefile',
+      type: 'afiVC',
+      listId: 123,
+    };
+
+    mockAnalysisAfiDataService.getNumberOfPages.mockResolvedValue(2);
+    mockAnalysisAfiDataService.getDataPaginated.mockResolvedValue([
+      {
+        country: '',
+        coverageHA: 0,
+        gadmId: '',
+        jrcForestLossByYear: '',
+        jrcLandAreaHA: 0,
+        jrcLandDeforestedArea: 0,
+        landmarkArea: 0,
+        listId: 0,
+        listName: '',
+        analysisError: '',
+        locationId: 0,
+        naturalForestLossByYear: '',
+        naturalForestLossHA: 0,
+        negligibleRisk: 0,
+        protectedAreasArea: 0,
+        state: '',
+        analysisStatusId: 0,
+        errorDetails: '',
+        subState: '',
+        totalAreaHA: 0,
+      },
+    ]);
+
+    await service.makeFile(mockFilters);
+
+    expect(mockNaturalForestLossService.startEmail).toHaveBeenCalledWith(mockFilters);
+    expect(mockNaturalForestLossService.start).toHaveBeenCalledTimes(2); // For 'location' and 'list'
+    expect(mockOtherKpisService.start).toHaveBeenCalledTimes(2);
+    expect(mockAnalysisAfiDataService.getNumberOfPages).toHaveBeenCalledWith(mockFilters, 0);
+    expect(mockAnalysisAfiDataService.getNumberOfPages).toHaveBeenCalledWith(mockFilters, 1);
+    expect(mockAnalysisAfiDataService.getDataPaginated).toHaveBeenCalledTimes(4); // 2 pages * 2 suffixes
+    expect(mockNaturalForestLossService.process).toHaveBeenCalledTimes(4);
+    expect(mockOtherKpisService.process).toHaveBeenCalledTimes(4);
+    expect(mockNaturalForestLossService.finish).toHaveBeenCalledTimes(2);
+    expect(mockOtherKpisService.finish).toHaveBeenCalledTimes(2);
+    expect(getAllFilesAndZip).toHaveBeenCalledWith(mockFilters);
+    expect(mockNaturalForestLossService.finishProcess).toHaveBeenCalledWith(mockFilters);
   });
 
-  describe('makeFile', () => {
-    it('should not run make file', async () => {
-      const mockFilters = {
-        organizationDatabase: 'example-database',
-        userEmail: 'user@example.com',
-        startDate: '2024-01-01',
-        endDate: '2024-01-31',
-        key: 'example-file.csv',
-        file: 'shapefile',
-        type: 'afiVC',
-      };
-      naturalForestLostService.start = jest.fn().mockResolvedValueOnce(true);
-      await expect(fileGenerator.makeFile(mockFilters)).rejects.toThrow(Error);
-    });
+  it('should log the number of pages during runAfiFileGeneration', async () => {
+    const mockFilters: BasicFieldsFileRequest = {
+      organizationDatabase: 'example-database',
+      userEmail: 'user@example.com',
+      key: 'example-file.csv',
+      file: 'shapefile',
+      type: 'afiVC',
+      listId: 123,
+    };
 
-    it('should not run composeResults', async () => {
-      const mockFilters = {
-        organizationDatabase: 'example-database',
-        userEmail: 'user@example.com',
-        startDate: '2024-01-01',
-        endDate: '2024-01-31',
-        key: 'example-file.csv',
-        file: 'shapefile',
-        type: 'afiVC',
-      };
-      naturalForestLostService.startEmail = jest.fn().mockResolvedValueOnce(true);
+    mockAnalysisAfiDataService.getNumberOfPages.mockResolvedValue(3);
+    mockAnalysisAfiDataService.getDataPaginated.mockResolvedValue([
+      {
+        country: '',
+        coverageHA: 0,
+        gadmId: '',
+        jrcForestLossByYear: '',
+        jrcLandAreaHA: 0,
+        jrcLandDeforestedArea: 0,
+        landmarkArea: 0,
+        listId: 0,
+        listName: '',
+        analysisError: '',
+        locationId: 0,
+        naturalForestLossByYear: '',
+        naturalForestLossHA: 0,
+        negligibleRisk: 0,
+        protectedAreasArea: 0,
+        state: '',
+        analysisStatusId: 0,
+        errorDetails: '',
+        subState: '',
+        totalAreaHA: 0,
+      },
+    ]);
 
-      await expect(
-        fileGenerator['runAfiFileGeneration']({
-          ...mockFilters,
-        })
-      ).rejects.toThrow(Error);
-    });
+    const loggerSpy = jest.spyOn(service['logger'], 'log');
+
+    await service['runAfiFileGeneration'](mockFilters, 'location');
+
+    expect(loggerSpy).toHaveBeenCalledWith('(123) - Number of pages: 3');
+    expect(loggerSpy).toHaveBeenCalledWith('(123) - Get page of number 0 from database');
+    expect(loggerSpy).toHaveBeenCalledWith('(123) - Get page of number 1 from database');
+    expect(loggerSpy).toHaveBeenCalledWith('(123) - Get page of number 2 from database');
   });
 });

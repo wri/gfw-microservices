@@ -193,5 +193,20 @@ describe('AccountUsersAnalysisUsageFileGenerator', () => {
       });
       expect(result).toBe('/tmp/example-database/example-file.csv');
     });
+    it(' should notifyUserFileGenerationSuccess', async () => {
+      const mockFilters = {
+        organizationDatabase: 'example-database',
+        userEmail: 'email@email',
+        startDate: '2024-01-01',
+        endDate: '2024-01-31',
+        key: 'example-file.csv',
+      };
+      const fileLocation = 's3://example-bucket/example-file.csv';
+      const result = await fileGenerator['notifyUserFileGenerationSuccess']({
+        emailTo: mockFilters.userEmail,
+        fileLocation,
+      });
+      expect(result).toBeUndefined();
+    });
   });
 });

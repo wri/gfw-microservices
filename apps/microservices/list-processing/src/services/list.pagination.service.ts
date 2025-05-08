@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, Inject } from '@nestjs/common';
 import { getNumberOfPagesPaginatedListDataRequest, getPaginatedListDataRequest } from '../models';
 import {
   UspGetAnalysisDataCountForUserList,
@@ -8,7 +8,9 @@ import {
 @Injectable()
 export class ListPaginationService {
   constructor(
+    @Inject('UspGetPaginatedAnalysisDataForUserList')
     private uspGetPaginatedAnalysisDataForUserList: UspGetPaginatedAnalysisDataForUserList,
+    @Inject('UspGetAnalysisDataCountForUserList')
     private uspGetAnalysisDataCountForUserList: UspGetAnalysisDataCountForUserList
   ) {}
 

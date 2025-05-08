@@ -39,6 +39,14 @@ jest.mock('@wri-monorepos/shared', () => {
   };
 });
 
+const mockUspGetPaginatedAnalysisDataForUserList = {
+  run: jest.fn(),
+};
+
+const mockUspGetAnalysisDataCountForUserList = {
+  run: jest.fn(),
+};
+
 describe('AppController', () => {
   let app: INestApplication;
   let appService: AppService;
@@ -49,15 +57,6 @@ describe('AppController', () => {
   });
 
   beforeAll(async () => {
-    /*app = await Test.createTestingModule({
-      controllers: [AppController],
-      providers: [AppService, LargeListService, LocationService, GeoService],
-      imports: [
-        AppModule,
-        ConfigModule.forRoot({ isGlobal: true }),
-        TypeOrmModule.forRootAsync({ useClass: DatabaseService }),
-      ],
-    }).compile();*/
     const module: TestingModule = await Test.createTestingModule({
       imports: [
         TypeOrmModule.forRoot({
@@ -96,6 +95,14 @@ describe('AppController', () => {
           },
         },
         ListPaginationService,
+        {
+          provide: 'UspGetPaginatedAnalysisDataForUserList',
+          useValue: mockUspGetPaginatedAnalysisDataForUserList,
+        },
+        {
+          provide: 'UspGetAnalysisDataCountForUserList',
+          useValue: mockUspGetAnalysisDataCountForUserList,
+        },
         {
           provide: FeatureFlagEnabledGuard,
           useValue: {

@@ -1,19 +1,23 @@
 /* global classificationsData, commoditiesData, geographiesData, titlesData */
 
+import lightBaseTheme from 'material-ui/styles/baseThemes/lightBaseTheme';
+import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
+import getMuiTheme from 'material-ui/styles/getMuiTheme';
 import Account from './js/components/Account';
 import { render } from 'react-dom';
 import React from 'react';
-import { ThemeProvider } from '../styles';
+
+lightBaseTheme.fontFamily = 'Fira Sans, sans-serif';
 
 const App = () => (
-  <ThemeProvider>
+  <MuiThemeProvider muiTheme={getMuiTheme(lightBaseTheme)}>
     <Account
       classificationsData={classificationsData}
       commoditiesData={commoditiesData}
       geographiesData={geographiesData}
       titlesData={titlesData}
     />
-  </ThemeProvider>
+  </MuiThemeProvider>
 );
 
 render(<App />, document.getElementById('account-mount'));

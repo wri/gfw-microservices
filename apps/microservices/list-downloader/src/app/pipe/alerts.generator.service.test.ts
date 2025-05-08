@@ -43,13 +43,14 @@ describe('AlertsGeneratorService', () => {
 
   it('should call all necessary methods in makeFile', async () => {
     const mockFilters: AlertFieldsFileRequest = {
-        listId: 123,
-        selectedTimeframe: AlertsTimeframes.MONTH,
-        selectedAlert: ''
+      listId: 123,
+      selectedTimeframe: AlertsTimeframes.MONTH,
+      selectedAlert: '',
     };
 
     mockAlertsDataService.getNumberOfPages.mockResolvedValue(2);
-    mockAlertsDataService.getDataPaginated.mockResolvedValue([{
+    mockAlertsDataService.getDataPaginated.mockResolvedValue([
+      {
         list_id: 0,
         location_id: 0,
         gadm_id: '',
@@ -76,8 +77,9 @@ describe('AlertsGeneratorService', () => {
         gadmid_0_lon: 0,
         location_lat: 0,
         location_lon: 0,
-        location_name: ''
-    }]);
+        location_name: '',
+      },
+    ]);
 
     await service.makeFile(mockFilters);
 
@@ -90,13 +92,14 @@ describe('AlertsGeneratorService', () => {
 
   it('should log the number of pages during makeFile', async () => {
     const mockFilters: AlertFieldsFileRequest = {
-        listId: 123,
-        selectedTimeframe: AlertsTimeframes.MONTH,
-        selectedAlert: ''
+      listId: 123,
+      selectedTimeframe: AlertsTimeframes.MONTH,
+      selectedAlert: '',
     };
 
     mockAlertsDataService.getNumberOfPages.mockResolvedValue(3);
-    mockAlertsDataService.getDataPaginated.mockResolvedValue([{
+    mockAlertsDataService.getDataPaginated.mockResolvedValue([
+      {
         list_id: 0,
         location_id: 0,
         gadm_id: '',
@@ -123,8 +126,9 @@ describe('AlertsGeneratorService', () => {
         gadmid_0_lon: 0,
         location_lat: 0,
         location_lon: 0,
-        location_name: ''
-    }]);
+        location_name: '',
+      },
+    ]);
 
     const loggerSpy = jest.spyOn(service['logger'], 'log');
 
@@ -138,13 +142,14 @@ describe('AlertsGeneratorService', () => {
 
   it('should set startDate and endDate if not provided in filters', async () => {
     const mockFilters: AlertFieldsFileRequest = {
-        listId: 123,
-        selectedTimeframe: AlertsTimeframes.MONTH,
-        selectedAlert: ''
+      listId: 123,
+      selectedTimeframe: AlertsTimeframes.MONTH,
+      selectedAlert: '',
     };
 
     mockAlertsDataService.getNumberOfPages.mockResolvedValue(1);
-    mockAlertsDataService.getDataPaginated.mockResolvedValue([{
+    mockAlertsDataService.getDataPaginated.mockResolvedValue([
+      {
         list_id: 0,
         location_id: 0,
         gadm_id: '',
@@ -171,8 +176,9 @@ describe('AlertsGeneratorService', () => {
         gadmid_0_lon: 0,
         location_lat: 0,
         location_lon: 0,
-        location_name: ''
-    }]);
+        location_name: '',
+      },
+    ]);
 
     await service.makeFile(mockFilters);
 

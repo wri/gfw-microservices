@@ -64,28 +64,30 @@ describe('AfiGeneratorService', () => {
     };
 
     mockAnalysisAfiDataService.getNumberOfPages.mockResolvedValue(2);
-    mockAnalysisAfiDataService.getDataPaginated.mockResolvedValue([{
-      country: '',
-      coverageHA: 0,
-      gadmId: '',
-      jrcForestLossByYear: '',
-      jrcLandAreaHA: 0,
-      jrcLandDeforestedArea: 0,
-      landmarkArea: 0,
-      listId: 0,
-      listName: '',
-      analysisError: '',
-      locationId: 0,
-      naturalForestLossByYear: '',
-      naturalForestLossHA: 0,
-      negligibleRisk: 0,
-      protectedAreasArea: 0,
-      state: '',
-      analysisStatusId: 0,
-      errorDetails: '',
-      subState: '',
-      totalAreaHA: 0
-    }])
+    mockAnalysisAfiDataService.getDataPaginated.mockResolvedValue([
+      {
+        country: '',
+        coverageHA: 0,
+        gadmId: '',
+        jrcForestLossByYear: '',
+        jrcLandAreaHA: 0,
+        jrcLandDeforestedArea: 0,
+        landmarkArea: 0,
+        listId: 0,
+        listName: '',
+        analysisError: '',
+        locationId: 0,
+        naturalForestLossByYear: '',
+        naturalForestLossHA: 0,
+        negligibleRisk: 0,
+        protectedAreasArea: 0,
+        state: '',
+        analysisStatusId: 0,
+        errorDetails: '',
+        subState: '',
+        totalAreaHA: 0,
+      },
+    ]);
 
     await service.makeFile(mockFilters);
 
@@ -114,28 +116,30 @@ describe('AfiGeneratorService', () => {
     };
 
     mockAnalysisAfiDataService.getNumberOfPages.mockResolvedValue(3);
-    mockAnalysisAfiDataService.getDataPaginated.mockResolvedValue([{
-      country: '',
-      coverageHA: 0,
-      gadmId: '',
-      jrcForestLossByYear: '',
-      jrcLandAreaHA: 0,
-      jrcLandDeforestedArea: 0,
-      landmarkArea: 0,
-      listId: 0,
-      listName: '',
-      analysisError: '',
-      locationId: 0,
-      naturalForestLossByYear: '',
-      naturalForestLossHA: 0,
-      negligibleRisk: 0,
-      protectedAreasArea: 0,
-      state: '',
-      analysisStatusId: 0,
-      errorDetails: '',
-      subState: '',
-      totalAreaHA: 0
-    }])
+    mockAnalysisAfiDataService.getDataPaginated.mockResolvedValue([
+      {
+        country: '',
+        coverageHA: 0,
+        gadmId: '',
+        jrcForestLossByYear: '',
+        jrcLandAreaHA: 0,
+        jrcLandDeforestedArea: 0,
+        landmarkArea: 0,
+        listId: 0,
+        listName: '',
+        analysisError: '',
+        locationId: 0,
+        naturalForestLossByYear: '',
+        naturalForestLossHA: 0,
+        negligibleRisk: 0,
+        protectedAreasArea: 0,
+        state: '',
+        analysisStatusId: 0,
+        errorDetails: '',
+        subState: '',
+        totalAreaHA: 0,
+      },
+    ]);
 
     const loggerSpy = jest.spyOn(service['logger'], 'log');
 

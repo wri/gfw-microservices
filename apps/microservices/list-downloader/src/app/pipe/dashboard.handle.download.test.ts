@@ -1,10 +1,8 @@
 import * as fs from 'fs';
 import { PassThrough } from 'stream';
-import { Logger } from '@nestjs/common';
 import { DashboardHandleDownload } from './dashboard.handle.download';
 import { ListFieldsFileRequest } from '@wri-monorepos/sql';
 import { EXCEL_TEMPLATES, EXCEL_TEMPLATE_HEADERS } from '../shared/constants';
-import { ConvertObject2CSV } from '../transform/convert.object.2.csv';
 
 jest.mock('fs', () => ({
   ...jest.requireActual('fs'),

@@ -7,7 +7,6 @@ import { UspGetListAnalysis } from '@wri-monorepos/sql';
 import { EmailService, S3Service } from '@wri-monorepos/aws';
 import tsMockito from 'ts-mockito';
 
-
 describe('AccountUsersAnalysisUsageFileGenerator', () => {
   let fileGenerator: AfiVcGeneratorService;
   beforeEach(async () => {
@@ -20,16 +19,15 @@ describe('AccountUsersAnalysisUsageFileGenerator', () => {
       ],
       providers: [
         AfiVcGeneratorService,
-        AnalysisAfiDataService,
+        { provide: AnalysisAfiDataService, useValue: AnalysisAfiDataService },
         AfiGeometryService,
         UspGetListAnalysis,
         AnalysisDataService,
         { provide: EmailService, useValue: tsMockito.mock(EmailService) },
-        S3Service
+        S3Service,
       ],
     })
- 
-      .compile();
+    .compile();
 
     fileGenerator = module.get<AfiVcGeneratorService>(AfiVcGeneratorService);
   });
@@ -69,7 +67,7 @@ describe('AccountUsersAnalysisUsageFileGenerator', () => {
       expect(result).toBeUndefined();
     });
 
-    it('should run runAfiFileGeneration', async () => {
+    it('should run composeResults', async () => {
       const mockFilters = {
         organizationDatabase: 'example-database',
         userEmail: 'user@example.com',

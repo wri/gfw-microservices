@@ -1,14 +1,15 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { ClipToLandService } from './clipToLand.service';
 import { S3Service } from '@wri-monorepos/aws';
-import { Feature } from '@wri-monorepos/geo';
-import { ChainType } from './types';
+import { FeatureCollection } from '@wri-monorepos/geo';
+import { ChainType, RequestNewList } from './types';
 
 jest.mock('@wri-monorepos/aws');
 jest.mock('@aws-sdk/client-lambda');
 jest.mock('@wri-monorepos/shared', () => ({
   featureFlagsService: jest.fn(),
 }));
+
 describe('ClipToLandService', () => {
   let service: ClipToLandService;
 
@@ -45,26 +46,45 @@ describe('ClipToLandService', () => {
         properties: {},
         geometry: { type: 'Point', coordinates: [0, 0] },
       });
-      const geojson = {
+      const geojson: FeatureCollection = {
         type: 'FeatureCollection',
         features,
       };
       const request = {
-        request: { list_id: 1, organization_database: 'test', path: 'test' },
+        request: { list_id: 1, organization_database: 'test', path: 'test' } as RequestNewList,
       };
 
-      // Mock processBatch to return processed features
-      jest.spyOn(service as any, 'processBatch').mockImplementation(async (batch: Feature[]) => {
-        return batch.map((feature) => ({
-          ...feature,
-          properties: { ...feature.properties, processed: true },
-        }));
+      // Mock S3 and Lambda methods
+      jest.spyOn(service, 'putObject').mockResolvedValue('test-key');
+      jest.spyOn(service, 'invokeLambda').mockResolvedValue({
+        Payload: JSON.stringify({
+          bucket: 'test-bucket',
+          key: 'test-key',
+          errorMessageStr: '',
+        }),
       });
 
-      const result = await service.clipToLand(geojson, request);
+      let batchCounter = 0;
+      jest.spyOn(service, 'getObject').mockImplementation(async () => {
+        // Return the same batch of features that was sent
+        const batchSize = 200;
+        const start = batchCounter * batchSize;
+        const end = Math.min(start + batchSize, features.length);
+        const batchFeatures = features.slice(start, end).map((f) => ({
+          ...f,
+          properties: { ...f.properties, processed: true },
+        }));
+        batchCounter++;
+        return {
+          geojson: {
+            type: 'FeatureCollection',
+            features: batchFeatures,
+          },
+        };
+      });
+      jest.spyOn(service, 'delObject').mockResolvedValue(undefined);
 
-      // Verify processBatch was called 3 times (500/200 = 2.5, rounded up to 3)
-      expect((service as any).processBatch).toHaveBeenCalledTimes(3);
+      const result = await service.clipToLand(geojson, request);
 
       // Verify all features were processed
       expect(result.geojson.features).toHaveLength(500);
@@ -72,12 +92,12 @@ describe('ClipToLandService', () => {
     });
 
     it('should handle empty feature collection', async () => {
-      const geojson = {
+      const geojson: FeatureCollection = {
         type: 'FeatureCollection',
         features: [],
       };
       const request = {
-        request: { list_id: 1, organization_database: 'test', path: 'test' },
+        request: { list_id: 1, organization_database: 'test', path: 'test' } as RequestNewList,
       };
 
       const result = await service.clipToLand(geojson, request);
@@ -92,93 +112,22 @@ describe('ClipToLandService', () => {
         properties: {},
         geometry: { type: 'Point', coordinates: [0, 0] },
       });
-      const geojson = {
+      const geojson: FeatureCollection = {
         type: 'FeatureCollection',
         features,
       };
       const request = {
-        request: { list_id: 1, organization_database: 'test', path: 'test' },
-      };
-
-      let callCount = 0;
-      // Mock processBatch to simulate an error in the second batch
-      jest.spyOn(service as any, 'processBatch').mockImplementation(async (batch: Feature[]) => {
-        callCount++;
-        if (callCount === 2) {
-          throw new Error('Batch processing failed');
-        }
-        return batch;
-      });
-
-      const result = await service.clipToLand(geojson, request);
-
-      // Verify processBatch was called 3 times
-      expect(callCount).toBe(2);
-
-      // Verify result contains all original features
-      expect(result.geojson.features).toHaveLength(300);
-    });
-  });
-
-  describe('processBatch', () => {
-    it('should process a batch of features', async () => {
-      const batch = Array(100).fill({
-        type: 'Feature',
-        properties: {},
-        geometry: { type: 'Point', coordinates: [0, 0] },
-      });
-      const request = {
-        request: { list_id: 1, organization_database: 'test', path: 'test' },
-      };
-
-      // Mock S3 and Lambda methods
-      jest.spyOn(service, 'putObject').mockResolvedValue('test-key');
-      jest.spyOn(service, 'invokeLambda').mockResolvedValue({
-        Payload: JSON.stringify({
-          bucket: 'test-bucket',
-          key: 'test-key',
-          errorMessageStr: '',
-        }),
-      });
-      jest.spyOn(service, 'getObject').mockResolvedValue({
-        geojson: {
-          type: 'FeatureCollection',
-          features: batch.map((f) => ({
-            ...f,
-            properties: { ...f.properties, processed: true },
-          })),
-        },
-      });
-      jest.spyOn(service, 'delObject').mockResolvedValue(undefined);
-
-      const result = await (service as any).processBatch(batch, request);
-
-      expect(result).toHaveLength(100);
-      expect(result.every((f) => f.properties.processed)).toBe(true);
-      expect(service.putObject).toHaveBeenCalled();
-      expect(service.invokeLambda).toHaveBeenCalled();
-      expect(service.getObject).toHaveBeenCalled();
-      expect(service.delObject).toHaveBeenCalledTimes(2);
-    });
-
-    it('should handle errors and return original features', async () => {
-      const batch = Array(100).fill({
-        type: 'Feature',
-        properties: {},
-        geometry: { type: 'Point', coordinates: [0, 0] },
-      });
-      const request = {
-        request: { list_id: 1, organization_database: 'test', path: 'test' },
+        request: { list_id: 1, organization_database: 'test', path: 'test' } as RequestNewList,
       };
 
       // Mock Lambda to throw error
       jest.spyOn(service, 'invokeLambda').mockRejectedValue(new Error('Lambda error'));
 
-      const result = await (service as any).processBatch(batch, request);
+      const result = await service.clipToLand(geojson, request);
 
-      expect(result).toHaveLength(100);
-      expect(result).toEqual(batch);
-      expect((request.request as any).hasUnanalyzableError).toBe(true);
+      // Verify result contains all original features
+      expect(result.geojson.features).toHaveLength(300);
+      expect(request.request.hasUnanalyzableError).toBe(true);
     });
   });
 });

@@ -2103,8 +2103,7 @@ export const mapLayers = [
         type: 'tileLayer',
         body: {
           useCors: true,
-          metadata:
-            'https://production-api.globalforestwatch.org/v1/gfw-metadata/idn_land_cover_metadata',
+          metadata: 'idn_land_cover_metadata',
           url: 'https://tiles.globalforestwatch.org/idn_land_cover_2017/v201807/default/{z}/{x}/{y}.png',
         },
       },

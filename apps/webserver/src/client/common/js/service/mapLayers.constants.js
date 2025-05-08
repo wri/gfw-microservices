@@ -2117,11 +2117,10 @@ export const mapLayers = [
                 color: '#4CAF50',
                 name: 'Primary forest',
               },
-              /* not present in pro but shown in flagship
               {
                 color: '#A6F25B',
                 name: 'Secondary forest',
-              },*/
+              },
               {
                 color: '#E5E5A4',
                 name: 'Plantation forest',
@@ -2138,11 +2137,10 @@ export const mapLayers = [
                 color: '#DB6F3C',
                 name: 'Other land',
               },
-              /* not present in pro but shown in flagship
               {
                 color: '#000000',
                 name: 'Settlement area',
-              },*/
+              },
               {
                 color: '#AEEEEE',
                 name: 'Wetland',

@@ -223,6 +223,70 @@ describe('ValidateMandatoryFields', () => {
 
     await expect(validator.handle(input)).rejects.toThrow('Invalid file extension: .txt');
   });
+
+  it('should remove nulls and trim string from non numeric fields', () => {
+    const mockFeature = {
+      type: 'Feature',
+      geometry: {
+        type: 'Point',
+        coordinates: [-100, 12],
+      },
+      properties: {
+        locationName: 'Test Location 2',
+        'Location Classification': 'Loc Classifi. \0\0\0\0    ',
+        'Company ID': 'company ID     ',
+        'custom property': 'my custom prop \0\0\0\0    ',
+      },
+    } as Feature;
+
+    const result = convertProperties(mockFeature);
+
+    expect(result).toEqual({
+      type: 'Feature',
+      geometry: {
+        type: 'Point',
+        coordinates: [-100, 12],
+      },
+      properties: {
+        locationName: 'Test Location 2',
+        'Location Classification': 'Loc Classifi.',
+        'Company ID': 'company ID',
+        'custom property': 'my custom prop',
+      },
+    });
+  });
+
+  it('should convert expected numeric values', () => {
+    const mockFeature = {
+      type: 'Feature',
+      geometry: {
+        type: 'Point',
+        coordinates: [-100, 12],
+      },
+      properties: {
+        ' Location_N': 'Test Location',
+        'Latitude ': '\0 \n12',
+        ' Longitude ': '-100\t',
+        ' custom property ': 'value',
+      },
+    } as Feature;
+
+    const result = convertProperties(mockFeature);
+
+    expect(result).toEqual({
+      type: 'Feature',
+      geometry: {
+        type: 'Point',
+        coordinates: [-100, 12],
+      },
+      properties: {
+        locationName: 'Test Location',
+        latitude: 12,
+        longitude: -100,
+        'custom property': 'value',
+      },
+    });
+  });
 });
 
 describe('convertProperties', () => {

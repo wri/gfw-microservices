@@ -1,13 +1,16 @@
-import React from 'react';
-import { render } from 'react-dom';
-
+import lightBaseTheme from 'material-ui/styles/baseThemes/lightBaseTheme';
+import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
+import getMuiTheme from 'material-ui/styles/getMuiTheme';
 import Forgot from './js/components/Forgot';
-import { ThemeProvider } from '../styles';
+import { render } from 'react-dom';
+import React from 'react';
+
+lightBaseTheme.fontFamily = 'Fira Sans, sans-serif';
 
 const App = () => (
-  <ThemeProvider>
+  <MuiThemeProvider muiTheme={getMuiTheme(lightBaseTheme)}>
     <Forgot />
-  </ThemeProvider>
+  </MuiThemeProvider>
 );
 
 render(<App />, document.getElementById('forgot-mount'));

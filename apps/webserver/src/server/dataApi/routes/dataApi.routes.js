@@ -52,13 +52,10 @@ module.exports = (app, limiter) => {
 
   app.post('/dataApi/getBBoxAndGeostoreIDs/', controller.getBBoxAndGeostoreIDs);
 
-  app.get('/dataApi/lat-long-lookups', async (req, res) => {
-    try {
+  if (process.env.NODE_ENV !== 'ProdV2') {
+    app.get('/dataApi/lat-long-lookups', async (req, res) => {
       const descriptionData = await describeLatLongLookups();
-
       res.status(200).send(descriptionData);
-    } catch (error) {
-      throw error;
-    }
-  });
+    });
+  }
 };

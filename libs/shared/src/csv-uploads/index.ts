@@ -1,35 +1,36 @@
-import { Logger } from "@nestjs/common";
-import { umlLookUp, describeUmlLookup } from "./uml.lat.long.lookup";
-import { carLookup, describeCarLookup } from "./carid.lat.long.lookup";
+import { Logger } from '@nestjs/common';
+import { umlLookUp, describeUmlLookup } from './uml.lat.long.lookup';
+import { carLookup, describeCarLookup } from './carid.lat.long.lookup';
 
 const logger = new Logger('csv.id.based.system');
 
 export enum CSV_ID_TYPES {
   UML = 'UML',
-  CAR = 'CAR'
+  CAR = 'CAR',
 }
 
 type Data = Record<string, unknown>;
 
-export type IdLookupFn = (ids: string[]) =>
-  Promise<{[ID: string]: { geometry?: '', errorDetails?: 'string' }}>;
+export type IdLookupFn = (
+  ids: string[]
+) => Promise<{ [ID: string]: { geometry?: ''; errorDetails?: 'string' } }>;
 
 export type IdTypeOptions = {
-  handler: IdLookupFn,
-  chunkSize: number,
+  handler: IdLookupFn;
+  chunkSize: number;
   column: string;
 };
 
 const ID_TYPE_HANDLER: Record<string, IdTypeOptions> = {
   [CSV_ID_TYPES.UML]: {
     handler: umlLookUp,
-    chunkSize: 100,
-    column: 'ID'
+    chunkSize: 1000,
+    column: 'ID',
   },
   [CSV_ID_TYPES.CAR]: {
     handler: carLookup,
     chunkSize: 500,
-    column: 'ID'
+    column: 'ID',
   },
 };
 
@@ -37,23 +38,25 @@ export const applyLookUpByChunks = async (
   data: Data[],
   idType: string,
   options: IdTypeOptions
-) => {
+): Promise<Record<string, unknown>[]> => {
   const { handler: lookup, column, chunkSize } = options;
-  let result = []
+  const result = [];
 
   for (let i = 0; i < data.length; i += chunkSize) {
     const chunkMax = Math.min(data.length, i + chunkSize);
     const chunk = data.slice(i, chunkMax);
-    logger.log(`${idType} LookUp Chunk ${i}/${chunkMax}`);
+    logger.log(`${idType} LookUp Chunk Size: ${chunk.length}`);
 
     const chunkResp = await lookup(
-      chunk.map((row) => row[column] as string) // {id:{geometry?, errorDetails?}}
+      chunk.map((row) => row[column] as string) // {id:{latitude?, longitude?, geometry?, errorDetails?}}
     );
 
-    result.concat(
-      chunk.map((row) => {
-        return Object.assign({}, row, chunkResp[row[column] as string] ?? {});
-      })
+    result.push(
+      chunk.map((row) =>
+        Object.assign(row, {
+          ...(chunkResp[row[column] as string] ?? {}),
+        })
+      )
     );
   }
 
@@ -70,10 +73,15 @@ export const resolveLatLongHandlerByIdType = async (
   }
 
   logger.log(`Handling lat/long based from ID Type: ${idType}`);
-  return applyLookUpByChunks(data, key, ID_TYPE_HANDLER[key]);
+  const possibleUpdates = await applyLookUpByChunks(data, key, ID_TYPE_HANDLER[key]);
+
+  possibleUpdates.forEach((updated, i) => Object.assign(data[i], updated));
+  return data;
 };
 
-export const idBasedSystemHandler = async (data: Record<string, unknown>[]): Promise<Record<string, unknown>[]> => {
+export const idBasedSystemHandler = async (
+  data: Record<string, unknown>[]
+): Promise<Record<string, unknown>[]> => {
   const groups: Record<string, Record<string, unknown>[]> = {};
   data.forEach((row) => {
     const rawKey = (row['ID Type'] as string | undefined) ?? '';
@@ -97,10 +105,9 @@ export const idBasedSystemHandler = async (data: Record<string, unknown>[]): Pro
       // skip empty system
       if (key === '') {
         return;
-      };
+      }
 
-      const possibleUpdates = await resolveLatLongHandlerByIdType(key, rows);
-      possibleUpdates.forEach((updated, i) => Object.assign(rows[i], updated));
+      await resolveLatLongHandlerByIdType(key, rows);
     })
   );
 
@@ -137,12 +144,12 @@ export const csvLatLongIdBasedTransformer = async (
 export const describeLatLongLookups = async () => {
   const ID_TYPE_HANDLER = {
     [CSV_ID_TYPES.UML]: describeUmlLookup,
-    [CSV_ID_TYPES.CAR]: describeCarLookup
+    [CSV_ID_TYPES.CAR]: describeCarLookup,
   };
 
   return await Promise.all(
     Object.keys(ID_TYPE_HANDLER).map(async (idType) => {
-      return {[idType]: await ID_TYPE_HANDLER[idType]()};
+      return { [idType]: await ID_TYPE_HANDLER[idType]() };
     })
   );
-}
+};

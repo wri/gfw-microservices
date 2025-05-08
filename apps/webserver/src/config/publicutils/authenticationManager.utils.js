@@ -289,7 +289,7 @@ export const setOrgSessions = async (req, org) => {
     );
 
     if (!userInfo) {
-      const userMessage = langResources.getResourceString('AuthenticationFailure');
+      const userMessage = langResources.getResourceString('authenticationFailure');
       const sysMessage = `CRITICAL ERROR: Obtaining user access level for ${req.session.user_email}`;
       throw errorUtils.createErrorMessage(
         req,
@@ -354,7 +354,7 @@ export const verifyLogin = async (req, userToken) => {
 
   // Check session validity
   if (!req.session.user_email) {
-    const userMessage = langResources.getResourceString('InvalidSession');
+    const userMessage = langResources.getResourceString('invalidSession');
     throw errorUtils.createErrorMessage(
       req,
       errorUtils.ERROR_CODES.userNotAdmin,
@@ -389,7 +389,7 @@ export const verifyLogin = async (req, userToken) => {
     );
 
     if (!recordSets.length) {
-      const userMessage = langResources.getResourceString('AuthenticationFailure');
+      const userMessage = langResources.getResourceString('authenticationFailure');
       const sysMessage = `CRITICAL ERROR: Obtaining user info for ${req.session.user_email}`;
       throw errorUtils.createErrorMessage(
         req,
@@ -402,7 +402,7 @@ export const verifyLogin = async (req, userToken) => {
     if (recordSets.length === 1) {
       const organization = recordSets[0];
       if (organization.organization_status_id === orgAccountStatus.Inactive) {
-        const userMessage = langResources.getResourceString('AuthenticationFailure');
+        const userMessage = langResources.getResourceString('authenticationFailure');
         const sysMessage = `${organization.organization_name} is deactivated`;
         throw errorUtils.createErrorMessage(
           req,

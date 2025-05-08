@@ -298,7 +298,7 @@ export const deactivateUser = (req, user_id) => {
   return new Promise((resolve, reject) => {
     // Make sure the user is an Administrator before making the call.
     if (!isAdministrator(req)) {
-      const errMessage = langResources.getResourceString('userisNotAnAdmin');
+      const errMessage = langResources.getResourceString('userIsNotAnAdmin');
       throw new errorUtils.createErrorMessage(
         req,
         errorUtils.ERROR_CODES.userNotAdmin,
@@ -387,7 +387,7 @@ export const createNewUser = (
   return new Promise((resolve, reject) => {
     // Make sure the user is an Administrator before making the call.
     if (!isAdministrator(req)) {
-      const errMessage = langResources.getResourceString('userisNotAnAdmin');
+      const errMessage = langResources.getResourceString('userIsNotAnAdmin');
       throw new errorUtils.createErrorMessage(
         req,
         errorUtils.ERROR_CODES.userNotAdmin,

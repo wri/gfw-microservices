@@ -35,7 +35,7 @@ import { getSharedListByUser as getSharedListByUserQuery } from '@wri-monorepos/
 export const shareInternalList = async (req, admin_id, user_id, list_id) => {
   // Only admins are allowed to share lists
   if (!UserManager.isAdministrator(req)) {
-    const errMessage = langResources.getResourceString('userisNotAnAdmin');
+    const errMessage = langResources.getResourceString('userIsNotAnAdmin');
     throw new errorUtils.createErrorMessage(
       req,
       errorUtils.ERROR_CODES.userNotAdmin,
@@ -135,7 +135,7 @@ export const activateShareInternalList = async (req, admin_id, user_id, list_id,
  */
 export const deactivateShareInternalList = async (req, user_id, list_id) => {
   if (!UserManager.isAdministrator(req)) {
-    const errMessage = langResources.getResourceString('userisNotAnAdmin');
+    const errMessage = langResources.getResourceString('userIsNotAnAdmin');
     throw new errorUtils.createErrorMessage(
       req,
       errorUtils.ERROR_CODES.userNotAdmin,
@@ -183,7 +183,7 @@ export const deactivateShareInternalList = async (req, user_id, list_id) => {
  */
 export const deactivateAllShareInternalList = async (req, users_id, list_id) => {
   if (!UserManager.isAdministrator(req)) {
-    const errMessage = langResources.getResourceString('userisNotAnAdmin');
+    const errMessage = langResources.getResourceString('userIsNotAnAdmin');
     throw new errorUtils.createErrorMessage(
       req,
       errorUtils.ERROR_CODES.userNotAdmin,
@@ -330,7 +330,7 @@ export const getUserPendingInternalShareLists = async (req, user_id) => {
  */
 export const getAdminInternalLists = async (req) => {
   if (!UserManager.isAdministrator(req)) {
-    const errMessage = langResources.getResourceString('userisNotAnAdmin');
+    const errMessage = langResources.getResourceString('userIsNotAnAdmin');
     throw new errorUtils.createErrorMessage(
       req,
       errorUtils.ERROR_CODES.userNotAdmin,
@@ -350,7 +350,7 @@ export const getAdminInternalLists = async (req) => {
  */
 export const getAllUsersForSharedList = async (req, list_id) => {
   if (!UserManager.isAdministrator(req)) {
-    const errMessage = langResources.getResourceString('userisNotAnAdmin');
+    const errMessage = langResources.getResourceString('userIsNotAnAdmin');
     throw new errorUtils.createErrorMessage(
       req,
       errorUtils.ERROR_CODES.userNotAdmin,

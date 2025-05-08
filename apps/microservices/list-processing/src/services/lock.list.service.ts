@@ -13,17 +13,17 @@ export class LockListService {
     list_id: number,
     organization_user_id: number
   ): Promise<boolean> {
-    const connection = await this.clientStoreConnection.getConnection(organizationDatabase);
-    const listRepository = connection.getRepository(Lists);
-    const { lockStatus } = (await listRepository.findOne({ where: { id: list_id } })) ?? {
-      lockStatus: '',
-    };
-
-    if (lockStatus !== null) {
-      return false;
-    }
-
     try {
+      const connection = await this.clientStoreConnection.getConnection(organizationDatabase);
+      const listRepository = connection.getRepository(Lists);
+      const { lockStatus } = (await listRepository.findOne({ where: { id: list_id } })) ?? {
+        lockStatus: '',
+      };
+
+      if (lockStatus !== null) {
+        return false;
+      }
+
       await listRepository.update(
         { id: list_id },
         { lockStatus: new Date(), lockUserId: organization_user_id }
@@ -42,18 +42,19 @@ export class LockListService {
     list_id: number,
     organization_user_id: number
   ): Promise<boolean> {
-    const connection = await this.clientStoreConnection.getConnection(organizationDatabase);
-    const listRepository = connection.getRepository(Lists);
-    const list = await listRepository.findOne({ where: { id: list_id } });
-    if (!list) {
-      return false;
-    }
-    const { lockStatus, lockUserId } = list;
-
-    if (lockStatus !== null && lockUserId !== organization_user_id) {
-      return false;
-    }
     try {
+      const connection = await this.clientStoreConnection.getConnection(organizationDatabase);
+      const listRepository = connection.getRepository(Lists);
+      const list = await listRepository.findOne({ where: { id: list_id } });
+      if (!list) {
+        return false;
+      }
+      const { lockStatus, lockUserId } = list;
+
+      if (lockStatus !== null && lockUserId !== organization_user_id) {
+        return false;
+      }
+
       await listRepository.update(
         { id: list_id },
         { lockStatus: null, lockUserId: organization_user_id }

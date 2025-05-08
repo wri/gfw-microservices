@@ -1,10 +1,11 @@
 import { Logger } from '@nestjs/common';
 import { AbstractHandler, ChainType, RequestNewList } from './types';
 import * as path from 'path';
+import { Feature, FeatureCollection } from '@wri-monorepos/geo';
 
 const expectedNumberFields = ['latitude', 'longitude', 'analysisArea', 'analysisRadius'];
 
-const removeNullCharacterAndTrim = (properties: Record<string, any>) => {
+const removeNullCharacterAndTrim = (properties: Record<string, string | number>) => {
   Object.entries(properties).forEach(([field, value]) => {
     if (typeof value === 'string' && !expectedNumberFields.includes(field)) {
       properties[field] = value.replace(/[\0]/g, '').trim();
@@ -14,7 +15,7 @@ const removeNullCharacterAndTrim = (properties: Record<string, any>) => {
 
 // unfortunately, this "download shapefile" function from old Pro code generates
 // numeric attributes as strings, so we need to convert them to numbers
-const convertExpectedNumbers = (properties: Record<string, any>) => {
+const convertExpectedNumbers = (properties: Record<string, string | number>) => {
   expectedNumberFields.forEach((field) => {
     if (
       properties[field] !== undefined &&
@@ -26,8 +27,8 @@ const convertExpectedNumbers = (properties: Record<string, any>) => {
   });
 };
 
-export const convertProperties = (feature) => {
-  const mapping = {
+export const convertProperties = (feature: Feature): Feature => {
+  const mapping: Record<string, string> = {
     Investment: 'locationName',
     'Investment Name': 'locationName',
     Location_N: 'locationName',
@@ -53,11 +54,11 @@ export const convertProperties = (feature) => {
     End_Date: 'End Date',
   };
 
-  const newProperties = {};
+  const newProperties: Record<string, string | number> = {};
   for (const [key, value] of Object.entries(feature.properties)) {
     const trimmedKey = key?.trim();
     const newKey = mapping[trimmedKey] || trimmedKey;
-    newProperties[newKey] = value;
+    newProperties[newKey] = value as string | number;
   }
   removeNullCharacterAndTrim(newProperties);
   convertExpectedNumbers(newProperties);
@@ -130,7 +131,7 @@ export class ValidateMandatoryFields extends AbstractHandler<ChainType> {
     return input;
   }
 
-  private validateMultiType(geojson: any): boolean {
+  private validateMultiType(geojson: FeatureCollection): boolean {
     let hasUnanalyzableError = false;
     geojson.features.forEach((feature) => {
       const geometryType = feature.geometry.type;

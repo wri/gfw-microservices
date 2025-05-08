@@ -10,11 +10,8 @@ const _cache = {};
  * @param {string} url - api url plus technical name, e.g. urls.metadataApi + '/tree_cover_loss'
  * @return promise
  */
-function getMetadataTask(url) {
+function getMetadataTask(metadataID) {
   return new Promise((resolve) => {
-    const metadataUrlPartsList = url.split('/');
-    const metadataID = metadataUrlPartsList[metadataUrlPartsList.length - 1];
-
     const request = new XMLHttpRequest();
 
     request.addEventListener('load', () => {

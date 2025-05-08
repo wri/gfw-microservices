@@ -16,7 +16,7 @@ describe('AccountUsersAnalysisUsageFileGenerator', () => {
   let fileGenerator: AccountUsersAnalysisUsageFileService;
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   let mockEmailService: EmailService;
-  let mockS3Service: S3Service;
+
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
       imports: [
@@ -43,7 +43,7 @@ describe('AccountUsersAnalysisUsageFileGenerator', () => {
   afterEach(() => {
     jest.clearAllMocks();
   });
-  afterAll (() => {
+  afterAll(() => {
     jest.restoreAllMocks();
   });
   describe('makeFile', () => {
@@ -161,7 +161,6 @@ describe('AccountUsersAnalysisUsageFileGenerator', () => {
     });
 
     it('should uploadFileToS3 correctly', async () => {
-     
       const result = await fileGenerator['uploadFileToS3'](
         '/tmp/example-database/example-file.csv'
       );
@@ -169,10 +168,12 @@ describe('AccountUsersAnalysisUsageFileGenerator', () => {
     });
 
     it('should throw an error when uploading to S3', async () => {
-      jest.spyOn(mockS3ServiceOverride, 'getFileSignedUrl').mockRejectedValue(new Error('S3 upload error'));
-      await expect ( fileGenerator['uploadFileToS3'](
-        '/tmp/example-database/example-file.csv'
-      )).rejects.toThrow('S3 upload error');
+      jest
+        .spyOn(mockS3ServiceOverride, 'getFileSignedUrl')
+        .mockRejectedValue(new Error('S3 upload error'));
+      await expect(
+        fileGenerator['uploadFileToS3']('/tmp/example-database/example-file.csv')
+      ).rejects.toThrow('S3 upload error');
     });
 
     it('should generate generateCsvFile', async () => {
@@ -184,7 +185,7 @@ describe('AccountUsersAnalysisUsageFileGenerator', () => {
         on: jest.fn(),
         pipe: jest.fn(),
       } as unknown as fs.ReadStream);
-     
+
       const result = await fileGenerator['generateCsvFile']({
         fileName: 'example-file.csv',
         directory: 'example-database',

@@ -1,12 +1,12 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { ConfigModule } from '@nestjs/config';
-import { Logger } from '@nestjs/common';
-import * as tsMockito from 'ts-mockito';
-import { EmailService, S3Service } from '@wri-monorepos/aws';
 import { AnalysisAfiDataService, AnalysisDataService } from '../data';
 import { AfiGeometryService } from '../files';
 import { AfiVcGeneratorService } from './afi.vc.generator.service';
 import { UspGetListAnalysis } from '@wri-monorepos/sql';
+import { EmailService, S3Service } from '@wri-monorepos/aws';
+import tsMockito from 'ts-mockito';
+
 
 describe('AccountUsersAnalysisUsageFileGenerator', () => {
   let fileGenerator: AfiVcGeneratorService;
@@ -24,20 +24,23 @@ describe('AccountUsersAnalysisUsageFileGenerator', () => {
         AfiGeometryService,
         UspGetListAnalysis,
         AnalysisDataService,
-        Logger,
         { provide: EmailService, useValue: tsMockito.mock(EmailService) },
-        S3Service,
+        S3Service
       ],
-    }).compile();
+    })
+ 
+      .compile();
 
     fileGenerator = module.get<AfiVcGeneratorService>(AfiVcGeneratorService);
   });
+
   afterEach(() => {
     jest.clearAllMocks();
   });
   afterAll(() => {
     jest.restoreAllMocks();
   });
+
   describe('makeFile', () => {
     it('should run make file', async () => {
       const mockFilters = {
@@ -63,6 +66,22 @@ describe('AccountUsersAnalysisUsageFileGenerator', () => {
         });
 
       const result = await fileGenerator.makeFile(mockFilters);
+      expect(result).toBeUndefined();
+    });
+
+    it('should run runAfiFileGeneration', async () => {
+      const mockFilters = {
+        organizationDatabase: 'example-database',
+        userEmail: 'user@example.com',
+        startDate: '2024-01-01',
+        endDate: '2024-01-31',
+        key: 'example-file.csv',
+        file: 'shapefile',
+        type: 'afiVC',
+      };
+      const result = await fileGenerator['defineService']({
+        ...mockFilters,
+      });
       expect(result).toBeUndefined();
     });
   });

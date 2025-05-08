@@ -1,5 +1,6 @@
+import React from 'react';
 import { checkValid, formatDigit } from '../../../../locations/js/utils/locationsTableUtils';
-import { GFW_LISTS_NUMBER_CONSTANTS } from './../../../../../config/env/gfwLists.constants';
+import { GFW_LISTS_NUMBER_CONSTANTS } from '../../../../../config/env/gfwLists.constants';
 
 // Extract the numerical values of types of GFW_LISTS from the constant, and place them in set.
 const gfwListsTypesIdNumericValues = new Set(Object.values(GFW_LISTS_NUMBER_CONSTANTS));

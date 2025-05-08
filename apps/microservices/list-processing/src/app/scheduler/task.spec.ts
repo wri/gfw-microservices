@@ -63,7 +63,7 @@ describe('Task', () => {
       expect(logSpy).toHaveBeenCalledTimes(2);
       expect(logSpy).toHaveBeenNthCalledWith(
         1,
-        expect.stringContaining('Performing daily tasks, executed at: 2024-01-01 00:00:00')
+        expect.stringContaining('Performing daily tasks, executed at: 2024-01-01 03:00:00')
       );
       expect(logSpy).toHaveBeenNthCalledWith(2, expect.stringMatching(/Random delay: \d+ ms/));
     });

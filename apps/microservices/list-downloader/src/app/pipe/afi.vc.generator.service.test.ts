@@ -26,8 +26,7 @@ describe('AccountUsersAnalysisUsageFileGenerator', () => {
         { provide: EmailService, useValue: tsMockito.mock(EmailService) },
         S3Service,
       ],
-    })
-    .compile();
+    }).compile();
 
     fileGenerator = module.get<AfiVcGeneratorService>(AfiVcGeneratorService);
   });

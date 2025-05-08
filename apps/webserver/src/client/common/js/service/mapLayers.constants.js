@@ -2115,56 +2115,46 @@ export const mapLayers = [
             color: '#c6a541',
             categories: [
               {
-                color: '#ddb400',
-                name: 'Agriculture',
-              },
-              {
-                color: '#d6d549',
-                name: 'Bare land',
-              },
-              {
-                color: '#94b5ff',
-                name: 'Body of water',
-              },
-              {
-                color: '#b35fc4',
-                name: 'Estate crop plantation',
-              },
-              {
-                color: '#cfe6ff',
-                name: 'Fish pond',
-              },
-              {
-                color: '#fdffac',
-                name: 'Grassland/shrub',
-              },
-              {
-                color: '#000000',
-                name: 'Mining',
-              },
-              {
-                color: '#d4cfbf',
-                name: 'No data',
-              },
-              {
-                color: '#8abc65',
+                color: '#4CAF50',
                 name: 'Primary forest',
               },
+              /* not present in pro but shown in flagship
               {
-                color: '#ddffac',
+                color: '#A6F25B',
                 name: 'Secondary forest',
+              },*/
+              {
+                color: '#E5E5A4',
+                name: 'Plantation forest',
               },
               {
-                color: '#f5babf',
-                name: 'Settlement',
+                color: '#6C7526',
+                name: 'Grass land',
               },
               {
-                color: '#7da19b',
-                name: 'Swamp',
+                color: '#C49A6C',
+                name: 'Cropland',
               },
               {
-                color: '#91773f',
-                name: 'Timber plantation',
+                color: '#DB6F3C',
+                name: 'Other land',
+              },
+              /* not present in pro but shown in flagship
+              {
+                color: '#000000',
+                name: 'Settlement area',
+              },*/
+              {
+                color: '#AEEEEE',
+                name: 'Wetland',
+              },
+              {
+                color: '#D3D3D3',
+                name: 'Unknown',
+              },
+              {
+                color: '#3A80C2',
+                name: 'Bodies of water',
               },
             ],
             name: 'Land cover Indonesia',

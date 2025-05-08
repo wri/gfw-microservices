@@ -6,6 +6,11 @@ import { CommodityService } from './commodity.service';
 import { BadRequestException } from '@nestjs/common';
 import { CommodityResponse } from './types';
 
+interface CommodityQueryParams {
+  listId: number;
+  organizationDatabase: string;
+}
+
 describe('CommodityController', () => {
   let controller: CommodityController;
   let service: CommodityService;
@@ -33,7 +38,7 @@ describe('CommodityController', () => {
     };
     jest.spyOn(service, 'getCommodityFromExistingList').mockResolvedValue(mockResponse);
 
-    const queryParam = { listId: 1, organizationDatabase: 'test_db' };
+    const queryParam: CommodityQueryParams = { listId: 1, organizationDatabase: 'test_db' };
     const result = await controller.findOne(queryParam);
 
     expect(result).toEqual(mockResponse);
@@ -47,6 +52,8 @@ describe('CommodityController', () => {
 
     const queryParam = { listId: 'invalid', organizationDatabase: 'test_db' };
 
-    await expect(controller.findOne(queryParam as any)).rejects.toThrow(BadRequestException);
+    await expect(controller.findOne(queryParam as unknown as CommodityQueryParams)).rejects.toThrow(
+      BadRequestException
+    );
   });
 });

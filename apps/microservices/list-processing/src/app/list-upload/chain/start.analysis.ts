@@ -2,6 +2,7 @@ import { ClientStoreConnection, Lists } from '@wri-monorepos/sql';
 import { AbstractHandler, ChainType, RequestNewList } from './types';
 import { handleCreateAnalysis, setListAnalysisStatusByTypes } from '@wri-monorepos/geo';
 import { listStatus } from '@wri-monorepos/constants';
+import { Feature } from '@wri-monorepos/geo';
 
 import { Logger } from '@nestjs/common';
 
@@ -33,7 +34,7 @@ export class StartAnalysis extends AbstractHandler<ChainType> {
     return false;
   }
 
-  private validateGeoJsonFeatures(features: any[]): void {
+  private validateGeoJsonFeatures(features: Feature[]): void {
     const listSizeWithoutError = features?.filter(
       (feature) => !feature?.properties?.error && feature?.properties?.gadmid
     ).length;

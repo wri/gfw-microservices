@@ -1,6 +1,7 @@
 import { ClientStoreConnection, Lists } from '@wri-monorepos/sql';
 import { Repository } from 'typeorm';
 import { LockListService } from './lock.list.service';
+import { InternalServerErrorException } from '@nestjs/common';
 
 const LIST_DATE = {
   id: 5407,
@@ -27,6 +28,7 @@ const LIST_DATE = {
 describe('Lock List Service', () => {
   let listsRepository: Repository<Lists>;
   let lockListService: LockListService;
+  let clientStoreConnection: ClientStoreConnection;
 
   beforeEach(async () => {
     process.env.NODE_ENV = 'test';
@@ -35,7 +37,7 @@ describe('Lock List Service', () => {
     process.env.MSSQL_PASSWORD = 'test';
     process.env.MSSQL_HOSTNAME = 'localhost';
 
-    const clientStoreConnection = new ClientStoreConnection();
+    clientStoreConnection = new ClientStoreConnection();
     const database = process.env.MSSQL_DATABASE;
     const connection = await clientStoreConnection.getConnection(database);
     lockListService = new LockListService(clientStoreConnection);
@@ -136,5 +138,97 @@ describe('Lock List Service', () => {
     expect(accomplishTask).toBeFalsy();
     expect(list).toBeNull();
     await listsRepository.delete({ id: 5407 });
+  });
+
+  it('should throw InternalServerErrorException when lockList fails', async () => {
+    await listsRepository.insert({
+      ...LIST_DATE,
+    });
+
+    // Mock the repository to throw an error
+    jest.spyOn(listsRepository, 'update').mockRejectedValueOnce(new Error('Database error'));
+
+    await expect(lockListService.lockList(':memory:', 5407, 10)).rejects.toThrow(
+      InternalServerErrorException
+    );
+    await listsRepository.delete({ id: 5407 });
+  });
+
+  it('should throw InternalServerErrorException when unlockList fails', async () => {
+    await listsRepository.insert({
+      ...LIST_DATE,
+      lockStatus: '2023-03-15T17:08:40.180Z',
+      lockUserId: 10,
+    });
+
+    // Mock the repository to throw an error
+    jest.spyOn(listsRepository, 'update').mockRejectedValueOnce(new Error('Database error'));
+
+    await expect(lockListService.unlockList(':memory:', 5407, 10)).rejects.toThrow(
+      InternalServerErrorException
+    );
+    await listsRepository.delete({ id: 5407 });
+  });
+
+  it('should handle null lockStatus in lockList', async () => {
+    await listsRepository.insert({
+      ...LIST_DATE,
+      lockStatus: null,
+    });
+
+    const accomplishTask = await lockListService.lockList(':memory:', 5407, 10);
+
+    const { lockStatus, lockUserId } = await listsRepository.findOne({ where: { id: 5407 } });
+
+    expect(accomplishTask).toBeTruthy();
+    expect(lockStatus).toBeDefined();
+    expect(lockUserId).toBe(10);
+    await listsRepository.delete({ id: 5407 });
+  });
+
+  it('should handle null lockStatus in unlockList', async () => {
+    await listsRepository.insert({
+      ...LIST_DATE,
+      lockStatus: null,
+    });
+
+    const accomplishTask = await lockListService.unlockList(':memory:', 5407, 10);
+
+    const { lockStatus, lockUserId } = await listsRepository.findOne({ where: { id: 5407 } });
+
+    expect(accomplishTask).toBeTruthy();
+    expect(lockStatus).toBeNull();
+    expect(lockUserId).toBe(10);
+    await listsRepository.delete({ id: 5407 });
+  });
+
+  it('should handle database connection error in lockList', async () => {
+    // Mock the clientStoreConnection to throw an error
+    jest
+      .spyOn(clientStoreConnection, 'getConnection')
+      .mockRejectedValueOnce(new Error('Connection error'));
+
+    const promise = lockListService.lockList(':memory:', 5407, 10);
+    await expect(promise).rejects.toThrow(InternalServerErrorException);
+    const error = await promise.catch((e) => e);
+    expect(error.response).toStrictEqual({
+      message: 'Failed to lock list 5407',
+      code: 610,
+    });
+  });
+
+  it('should handle database connection error in unlockList', async () => {
+    // Mock the clientStoreConnection to throw an error
+    jest
+      .spyOn(clientStoreConnection, 'getConnection')
+      .mockRejectedValueOnce(new Error('Connection error'));
+
+    const promise = lockListService.unlockList(':memory:', 5407, 10);
+    await expect(promise).rejects.toThrow(InternalServerErrorException);
+    const error = await promise.catch((e) => e);
+    expect(error.response).toStrictEqual({
+      message: 'Failed to unlock list 5407',
+      code: 610,
+    });
   });
 });

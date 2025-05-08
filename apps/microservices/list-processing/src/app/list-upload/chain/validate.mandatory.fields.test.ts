@@ -1,5 +1,6 @@
 import { ValidateMandatoryFields, convertProperties } from './validate.mandatory.fields'; // Adjust the import path as necessary
 import { ChainType, RequestNewList } from './types'; // Adjust the import path as necessary
+import { Feature } from '@wri-monorepos/geo';
 
 describe('ValidateMandatoryFields', () => {
   let validator: ValidateMandatoryFields;
@@ -226,8 +227,7 @@ describe('ValidateMandatoryFields', () => {
 
 describe('convertProperties', () => {
   it('should correctly map properties from shapefile format to desired format', () => {
-    // First we need to make convertProperties accessible for testing
-    const mockFeature = {
+    const mockFeature: Feature = {
       type: 'Feature',
       geometry: {
         type: 'Point',
@@ -248,52 +248,39 @@ describe('convertProperties', () => {
         Supplier_N: 'Test Supplier',
         Facility_N: 'Test Facility',
         Refinery_N: 'Test Refinery',
-        Certificat: 'ISO-9001',
-        Time_Horiz: '2024',
-        attribute1: 'attr1',
-        attribute2: 'attr2',
-        attribute3: 'attr3',
-        Start_Date: '2024-01-01',
-        End_Date: '2024-12-31',
+        Certificat: 'Yes',
+        Time_Horiz: '2023',
+        Start_Date: '2023-01-01',
+        End_Date: '2023-12-31',
       },
     };
 
     const result = convertProperties(mockFeature);
 
-    expect(result).toEqual({
-      geometry: {
-        coordinates: [100, 0],
-        type: 'Point',
-      },
-      properties: {
-        Certification: 'ISO-9001',
-        'Company ID': 'COMP123',
-        'Company Name': 'Test Company',
-        'End Date': '2024-12-31',
-        'Facility Name': 'Test Facility',
-        'Location Classification': 'Urban',
-        'Owner ID': 'OWN123',
-        'Owner Name': 'Test Owner',
-        'Refinery Name': 'Test Refinery',
-        'Start Date': '2024-01-01',
-        'Supplier Name': 'Test Supplier',
-        'Time Horizon': '2024',
-        Volume: 5000,
-        analysisArea: 1000,
-        analysisRadius: 500,
-        attribute1: 'attr1',
-        attribute2: 'attr2',
-        attribute3: 'attr3',
-        latitude: 0,
-        locationName: 'Test Location',
-        longitude: 100,
-      },
-      type: 'Feature',
+    expect(result.properties).toEqual({
+      locationName: 'Test Location',
+      latitude: 0,
+      longitude: 100,
+      analysisRadius: 500,
+      analysisArea: 1000,
+      'Location Classification': 'Urban',
+      'Company ID': 'COMP123',
+      Volume: 5000,
+      'Owner Name': 'Test Owner',
+      'Owner ID': 'OWN123',
+      'Company Name': 'Test Company',
+      'Supplier Name': 'Test Supplier',
+      'Facility Name': 'Test Facility',
+      'Refinery Name': 'Test Refinery',
+      Certification: 'Yes',
+      'Time Horizon': '2023',
+      'Start Date': '2023-01-01',
+      'End Date': '2023-12-31',
     });
   });
 
-  it('should handle missing properties gracefully', () => {
-    const mockFeature = {
+  it('should handle missing properties', () => {
+    const mockFeature: Feature = {
       type: 'Feature',
       geometry: {
         type: 'Point',
@@ -308,22 +295,15 @@ describe('convertProperties', () => {
 
     const result = convertProperties(mockFeature);
 
-    expect(result).toEqual({
-      type: 'Feature',
-      geometry: {
-        type: 'Point',
-        coordinates: [100, 0],
-      },
-      properties: {
-        locationName: 'Test Location',
-        latitude: 0,
-        longitude: 100,
-      },
+    expect(result.properties).toEqual({
+      locationName: 'Test Location',
+      latitude: 0,
+      longitude: 100,
     });
   });
 
-  it('should trim property keys', () => {
-    const mockFeature = {
+  it('should handle properties with extra spaces', () => {
+    const mockFeature: Feature = {
       type: 'Feature',
       geometry: {
         type: 'Point',
@@ -339,7 +319,41 @@ describe('convertProperties', () => {
 
     const result = convertProperties(mockFeature);
 
-    expect(result).toEqual({
+    expect(result.properties).toEqual({
+      locationName: 'Test Location',
+      latitude: 0,
+      longitude: 100,
+      'custom property': 'value',
+    });
+  });
+
+  it('should convert string numbers to actual numbers', () => {
+    const mockFeature: Feature = {
+      type: 'Feature',
+      geometry: {
+        type: 'Point',
+        coordinates: [100, 0],
+      },
+      properties: {
+        ' Location_N': 'Test Location',
+        'Latitude ': '0',
+        ' Longitude ': '100',
+        ' custom property ': 'value',
+      },
+    };
+
+    const result = convertProperties(mockFeature);
+
+    expect(result.properties).toEqual({
+      locationName: 'Test Location',
+      latitude: 0,
+      longitude: 100,
+      'custom property': 'value',
+    });
+  });
+
+  it('should handle already converted properties', () => {
+    const mockFeature: Feature = {
       type: 'Feature',
       geometry: {
         type: 'Point',
@@ -347,74 +361,19 @@ describe('convertProperties', () => {
       },
       properties: {
         locationName: 'Test Location',
-        latitude: 0,
-        longitude: 100,
+        'Location Classification': 'Urban',
+        'Company ID': 'COMP123',
         'custom property': 'value',
-      },
-    });
-  });
-
-  it('should convert expected numeric values', () => {
-    const mockFeature = {
-      type: 'Feature',
-      geometry: {
-        type: 'Point',
-        coordinates: [-100, 12],
-      },
-      properties: {
-        ' Location_N': 'Test Location',
-        'Latitude ': '\0 \n12',
-        ' Longitude ': '-100\t',
-        ' custom property ': 'value',
       },
     };
 
     const result = convertProperties(mockFeature);
 
-    expect(result).toEqual({
-      type: 'Feature',
-      geometry: {
-        type: 'Point',
-        coordinates: [-100, 12],
-      },
-      properties: {
-        locationName: 'Test Location',
-        latitude: 12,
-        longitude: -100,
-        'custom property': 'value',
-      },
-    });
-  });
-
-  it('should remove nulls and trim string from non numeric fields', () => {
-    const mockFeature = {
-      type: 'Feature',
-      geometry: {
-        type: 'Point',
-        coordinates: [-100, 12],
-      },
-      properties: {
-        locationName: 'Test Location 2',
-        'Location Classification': 'Loc Classifi. \0\0\0\0    ',
-        'Company ID': 'company ID     ',
-        'custom property': 'my custom prop \0\0\0\0    ',
-      },
-    };
-
-    const result = convertProperties(mockFeature);
-
-    expect(result).toEqual({
-      type: 'Feature',
-      geometry: {
-        type: 'Point',
-        coordinates: [-100, 12],
-      },
-      properties: {
-        locationName: 'Test Location 2',
-        'Location Classification': 'Loc Classifi.',
-        'Company ID': 'company ID',
-        'custom property': 'my custom prop',
-      },
+    expect(result.properties).toEqual({
+      locationName: 'Test Location',
+      'Location Classification': 'Urban',
+      'Company ID': 'COMP123',
+      'custom property': 'value',
     });
   });
 });

@@ -2,12 +2,15 @@ import * as shapefile from 'shapefile';
 import * as unzipper from 'unzipper';
 import * as fs from 'fs';
 import * as path from 'path';
+import { FeatureCollection } from '@wri-monorepos/geo';
 
 import { promisify } from 'util';
 
 const mkdtemp = promisify(fs.mkdtemp);
 
-export const convertShapefileToGeoJSON = async (zipFilePath: string): Promise<any> => {
+export const convertShapefileToGeoJSON = async (
+  zipFilePath: string
+): Promise<FeatureCollection> => {
   const extractedFolder =
     process.env.NODE_ENV !== 'test'
       ? await mkdtemp(path.join('/tmp/', 'shapefile-'))
@@ -36,7 +39,7 @@ export const convertShapefileToGeoJSON = async (zipFilePath: string): Promise<an
         // Clean up extracted files
         files.forEach((file) => fs.unlinkSync(path.join(extractedFolder, file)));
 
-        resolve(geojson);
+        resolve(geojson as FeatureCollection);
       })
       .catch((error) => {
         // Clean up extracted files in case of error

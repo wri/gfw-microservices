@@ -3,6 +3,10 @@ import { PreviewListUploadController } from './preview.list.upload.controller';
 import { PreviewListUploadService } from './preview.list.upload.service';
 import { FeatureCollection } from '@wri-monorepos/geo';
 
+interface PreviewRequest {
+  path: string;
+}
+
 describe('ListUploadController', () => {
   let previewListUploadController: PreviewListUploadController;
   let previewListUploadService: PreviewListUploadService;
@@ -35,7 +39,7 @@ describe('ListUploadController', () => {
 
       jest.spyOn(previewListUploadService, 'previewData').mockResolvedValue(mockFeatureCollection);
 
-      const request = { path: '/valid/path' };
+      const request: PreviewRequest = { path: '/valid/path' };
       const result = await previewListUploadController.preview(request);
 
       expect(result).toEqual(mockFeatureCollection);
@@ -46,7 +50,7 @@ describe('ListUploadController', () => {
       const request = { path: 123 }; // Invalid path type
 
       try {
-        await previewListUploadController.preview(request as any);
+        await previewListUploadController.preview(request as unknown as PreviewRequest);
       } catch (error) {
         expect(error).toBeInstanceOf(Error);
         expect(error.message).toContain('Invalid input');

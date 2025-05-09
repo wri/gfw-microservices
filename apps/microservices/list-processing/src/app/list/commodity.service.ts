@@ -110,9 +110,11 @@ export class CommodityService {
     let commodityName = this.getCommodityFromTemplate(commodityLowerCase);
     let templateNames = COMMODITY_TEMPLATE_MAP[commodityName] || [];
 
-    commodityName =
-      ConvertCommodityToMapSpamCode.getCommoditySpamName(commodity) ||
-      commodity.replace(/\s+/g, '_');
+    commodityName = ConvertCommodityToMapSpamCode.getCommoditySpamName(commodity);
+    if (!commodityName) {
+      commodityName = commodityLowerCase.startsWith('gfwp_') ? commodity : 'GFWP_' + commodity;
+      commodityName = commodityName.replace(/\s+/g, '_');
+    }
 
     // Get all templates for the commodity if it's in our mapping
     templateNames = [...templateNames, commodityName];

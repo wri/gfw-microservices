@@ -35,7 +35,7 @@ export const updateListsUploadStatus = async (
   }
 };
 
-const getMetadata = async (): Promise<{ taskARN: string }> => {
+export const getMetadata = async (): Promise<{ taskARN: string }> => {
   const env: string = process.env.MICROSERVICES_ENV;
 
   if (env == undefined || ['test', 'dev', 'development', 'latest'].includes(env.toLowerCase())) {

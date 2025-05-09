@@ -20,7 +20,7 @@ export const mapLayers = [
         type: 'Vector.Layer',
         body: {
           useCors: true,
-          metadata: 'https://production-api.globalforestwatch.org/v1/gfw-metadata/idn_forest_area',
+          metadata: 'idn_forest_area',
           url: 'https://tiles.globalforestwatch.org/idn_forest_area/v201709/default/root.json',
         },
       },
@@ -107,8 +107,7 @@ export const mapLayers = [
             'https://github.com/Vizzuality/gfw/blob/develop/app/assets/javascripts/map/cartocss/style.cartocss',
           url: 'https://tiles.globalforestwatch.org/umd_glad_landsat_alerts_coverage/v2014/default/root.json',
           useCors: true,
-          metadata:
-            'https://production-api.globalforestwatch.org/v1/gfw-metadata/umd_landsat_alerts',
+          metadata: 'umd_landsat_alerts',
         },
       },
       legendConfig: {
@@ -157,8 +156,7 @@ export const mapLayers = [
         type: 'Vector.Layer',
         body: {
           useCors: true,
-          metadata:
-            'https://production-api.globalforestwatch.org/v1/gfw-metadata/landmark_icls_2020',
+          metadata: 'landmark_icls_2020',
           url: 'https://tiles.globalforestwatch.org/gfw_indigenous_community_and_indicative_lands/v202408/default/root.json',
         },
       },
@@ -226,7 +224,7 @@ export const mapLayers = [
         type: 'Vector.Layer',
         body: {
           useCors: true,
-          metadata: 'https://api.resourcewatch.org/v1/gfw-metadata/prodes',
+          metadata: 'prodes',
           url: 'https://tiles.globalforestwatch.org/inpe_prodes/v202107/default/root.json',
         },
       },
@@ -273,7 +271,7 @@ export const mapLayers = [
         type: 'Vector.Layer',
         body: {
           useCors: true,
-          metadata: 'https://api.resourcewatch.org/v1/gfw-metadata/prodes',
+          metadata: 'gfw-metadata/prodes',
           url: 'https://tiles.globalforestwatch.org/inpe_prodes/v202107/default/root.json',
         },
       },
@@ -331,8 +329,7 @@ export const mapLayers = [
             'https://github.com/Vizzuality/gfw/blob/develop/app/assets/javascripts/map/cartocss/style.cartocss',
           url: 'https://tiles.globalforestwatch.org/umd_glad_landsat_alerts/latest/default/{z}/{x}/{y}.png',
           useCors: true,
-          metadata:
-            'https://production-api.globalforestwatch.org/v1/gfw-metadata/umd_landsat_alerts',
+          metadata: 'umd_landsat_alerts',
         },
       },
       legendConfig: {
@@ -386,8 +383,7 @@ export const mapLayers = [
         type: 'Vector.Layer',
         body: {
           useCors: true,
-          metadata:
-            'https://production-api.globalforestwatch.org/v1/gfw-metadata/rspo_oil_palm_2019',
+          metadata: 'rspo_oil_palm_2019',
           url: 'https://tiles.globalforestwatch.org/rspo_oil_palm/v20200114/default/root.json',
         },
       },
@@ -432,7 +428,7 @@ export const mapLayers = [
         type: 'Vector.Layer',
         body: {
           useCors: true,
-          metadata: 'https://production-api.globalforestwatch.org/v1/gfw-metadata/gfw_oil_palm',
+          metadata: 'gfw_oil_palm',
           url: 'https://tiles.globalforestwatch.org/gfw_oil_palm/v20191031/default/root.json',
         },
       },
@@ -479,7 +475,7 @@ export const mapLayers = [
         type: 'tileLayer',
         body: {
           useCors: true,
-          metadata: 'https://api.resourcewatch.org/v1/gfw-metadata/gfw_peatlands',
+          metadata: 'gfw_peatlands',
           url: 'https://tiles.globalforestwatch.org/gfw_peatlands/v20200807/is/{z}/{x}/{y}.png',
         },
       },
@@ -519,7 +515,7 @@ export const mapLayers = [
         type: 'Vector.Layer',
         body: {
           useCors: true,
-          metadata: 'https://gis-gfw.wri.org/metadata/idn_forest_moratorium',
+          metadata: 'idn_forest_moratorium',
           url: 'https://tiles.globalforestwatch.org/idn_forest_moratorium/latest/default/root.json',
         },
       },
@@ -576,7 +572,7 @@ export const mapLayers = [
         type: 'Vector.Layer',
         body: {
           useCors: true,
-          metadata: 'https://api.resourcewatch.org/v1/gfw-metadata/wdpa_licensed_protected_areas',
+          metadata: 'wdpa_licensed_protected_areas',
           url: 'https://tiles.globalforestwatch.org/wdpa_licensed_protected_areas/v202502/default/root.json',
         },
       },
@@ -675,7 +671,7 @@ export const mapLayers = [
             'https://github.com/Vizzuality/gfw/blob/develop/app/assets/javascripts/map/cartocss/style.cartocss',
           url: 'https://tiles.globalforestwatch.org/gfw_integrated_alerts/latest/dynamic/{z}/{x}/{y}.png',
           useCors: true,
-          metadata: 'https://www.globalforestwatch.org/api/metadata/gfw_integrated_alerts',
+          metadata: 'gfw_integrated_alerts',
         },
       },
       legendConfig: {
@@ -730,8 +726,7 @@ export const mapLayers = [
       layerConfig: {
         body: {
           url: 'https://tiles.globalforestwatch.org/gfw_planted_forests/v20230911/default/{z}/{x}/{y}.png',
-          metadata:
-            'https://production-api.globalforestwatch.org/v1/gfw-metadata/gfw_planted_forests',
+          metadata: 'gfw_planted_forests',
           useCors: true,
         },
         type: 'tileLayer',
@@ -825,8 +820,7 @@ export const mapLayers = [
       env: 'production',
       layerConfig: {
         body: {
-          metadata:
-            'https://production-api.globalforestwatch.org/v1/gfw-metadata/aboveground_biomass',
+          metadata: 'aboveground_biomass',
           url: 'http://storage.googleapis.com/earthenginepartners-wri/whrc-hansen-carbon-{thresh}-{z}/{x}/{y}.png',
           useCors: true,
           'css-url':
@@ -977,8 +971,7 @@ export const mapLayers = [
       layerConfig: {
         type: 'tileLayer',
         body: {
-          metadata:
-            'https://production-api.globalforestwatch.org/v1/gfw-metadata/tree_biomass_loss',
+          metadata: 'tree_biomass_loss',
           'css-url':
             'https://github.com/Vizzuality/gfw-climate/blob/develop/app/assets/javascripts/map/views/layers/BiomassLossLayer.js',
           url: 'http://storage.googleapis.com/earthenginepartners-wri/whrc-hansen-carbon-{thresh}-{z}/{x}/{y}.png',
@@ -1022,7 +1015,7 @@ export const mapLayers = [
         type: 'Vector.Layer',
         body: {
           useCors: true,
-          metadata: 'https://production-api.globalforestwatch.org/v1/gfw-metadata/cmr_oil_palm',
+          metadata: 'cmr_oil_palm',
           url: 'https://tiles.globalforestwatch.org/wri_cmr_agro_industrial_zones/v2019/default/root.json',
         },
       },
@@ -1062,7 +1055,7 @@ export const mapLayers = [
         type: 'Vector.Layer',
         body: {
           useCors: true,
-          metadata: 'https://production-api.globalforestwatch.org/v1/gfw-metadata/uml',
+          metadata: 'uml',
           url: 'https://tiles.globalforestwatch.org/gfw_universal_mill_list/v202410/default/root.json',
         },
       },
@@ -1118,7 +1111,7 @@ export const mapLayers = [
             'https://github.com/Vizzuality/gfw/blob/develop/app/assets/javascripts/map/cartocss/style.cartocss',
           url: 'https://tiles.globalforestwatch.org/wur_radd_alerts/latest/default/{z}/{x}/{y}.png',
           useCors: true,
-          metadata: 'https://production-api.globalforestwatch.org/v1/gfw-metadata/wur_radd_alerts',
+          metadata: 'wur_radd_alerts',
         },
       },
       legendConfig: {
@@ -1175,7 +1168,7 @@ export const mapLayers = [
         body: {
           useCors: true,
           url: 'https://tiles.globalforestwatch.org/gfwpro_negligible_risk_analysis/v20241021/default/root.json',
-          metadata: 'https://api.resourcewatch.org/v1/gfw-metadata/gfwpro_negligible_risk_analysis',
+          metadata: 'gfwpro_negligible_risk_analysis',
         },
       },
       legendConfig: {
@@ -1233,7 +1226,7 @@ export const mapLayers = [
         body: {
           useCors: true,
           url: 'https://tiles.globalforestwatch.org/sbtn_natural_forests_map/v202504/default_pro/{z}/{x}/{y}.png',
-          metadata: 'https://api.resourcewatch.org/v1/gfw-metadata/sbtn_natural_forests_map',
+          metadata: 'sbtn_natural_forests_map',
         },
       },
       legendConfig: {
@@ -1283,7 +1276,7 @@ export const mapLayers = [
         type: 'Vector.Layer',
         body: {
           useCors: true,
-          metadata: 'https://production-api.globalforestwatch.org/v1/gfw-metadata/bra_biomes',
+          metadata: 'bra_biomes',
           url: 'https://tiles.globalforestwatch.org/ibge_bra_biomes/v2004/default/root.json',
         },
       },
@@ -1349,7 +1342,7 @@ export const mapLayers = [
         type: 'tileLayer',
         body: {
           url: 'https://tiles.globalforestwatch.org/col_frontera_agricola/v2024/category/{z}/{x}/{y}.png',
-          metadata: 'https://api.resourcewatch.org/v1/gfw-metadata/col_frontera_agricola',
+          metadata: 'col_frontera_agricola',
           useCors: true,
         },
       },
@@ -1409,7 +1402,7 @@ export const mapLayers = [
             dataMaxZoom: 12,
             threshold: 30,
           },
-          metadata: 'https://production-api.globalforestwatch.org/v1/gfw-metadata/tree_cover',
+          metadata: 'tree_cover',
           minzoom: 3,
         },
         params_config: [],
@@ -1468,7 +1461,7 @@ export const mapLayers = [
           'css-url':
             'https://github.com/Vizzuality/gfw/blob/develop/app/assets/javascripts/map/cartocss/style.cartocss',
           useCors: true,
-          metadata: 'https://api.resourcewatch.org/v1/gfw-metadata/umd_soy_planted_area',
+          metadata: 'umd_soy_planted_area',
           url: 'https://tiles.globalforestwatch.org/umd_soy_planted_area/v3/{year}/{z}/{x}/{y}.png',
         },
       },
@@ -1514,8 +1507,7 @@ export const mapLayers = [
       env: 'production',
       layerConfig: {
         body: {
-          metadata:
-            'https://production-api.globalforestwatch.org/v1/gfw-metadata/global_landcover_2015',
+          metadata: 'global_landcover_2015',
           useCors: true,
           url: 'https://s3.amazonaws.com/wri-tiles/global-landcover-2015/{z}/{x}/{y}.png',
         },
@@ -1599,8 +1591,7 @@ export const mapLayers = [
       env: 'production',
       layerConfig: {
         body: {
-          metadata:
-            'https://production-api.globalforestwatch.org/v1/gfw-metadata/intact_forest_landscapes_change',
+          metadata: 'intact_forest_landscapes_change',
           useCors: true,
           url: 'https://tiles.globalforestwatch.org/ifl_intact_forest_landscapes/v2018/default/root.json',
         },
@@ -1666,7 +1657,7 @@ export const mapLayers = [
           'css-url':
             'https://github.com/Vizzuality/gfw/blob/3be365eadf2ce0c58a8bb65b5a187abe27482a6e/app/assets/javascripts/map/views/layers/LossLayer.js',
           useCors: true,
-          metadata: 'http://api.resourcewatch.org/v1/gfw-metadata/umd_tree_cover_loss_v1.11',
+          metadata: 'umd_tree_cover_loss_v1.11',
           url: 'https://storage.googleapis.com/wri-public/Hansen_16/tiles/hansen_world/v1/tc{thresh}/{z}/{x}/{y}.png',
         },
       },
@@ -1712,7 +1703,7 @@ export const mapLayers = [
         type: 'featureLayer',
         body: {
           useCors: true,
-          metadata: 'https://production-api.globalforestwatch.org/v1/gfw-metadata/idn_peat_lands',
+          metadata: 'idn_peat_lands',
           url: 'https://gis-gfw.wri.org/arcgis/rest/services/country_data/asia/MapServer/10',
         },
       },
@@ -1752,7 +1743,7 @@ export const mapLayers = [
       layerConfig: {
         body: {
           format: 'image/png',
-          metadata: 'https://production-api.globalforestwatch.org/v1/gfw-metadata/tree_cover_gain',
+          metadata: 'tree_cover_gain',
           useCors: true,
           maxzoom: 12,
           minzoom: 3,
@@ -1799,8 +1790,7 @@ export const mapLayers = [
         type: 'featureLayer',
         body: {
           url: 'https://gis-gfw.wri.org/arcgis/rest/services/commodities/MapServer/10',
-          metadata:
-            'https://production-api.globalforestwatch.org/v1/gfw-metadata/se_asia_landcover',
+          metadata: 'se_asia_landcover',
           useCors: true,
         },
       },
@@ -1903,8 +1893,7 @@ export const mapLayers = [
         type: 'tileLayer',
         body: {
           useCors: true,
-          metadata:
-            'https://production-api.globalforestwatch.org/v1/gfw-metadata/regional_primary_forests',
+          metadata: 'regional_primary_forests',
           url: 'https://production-api.globalforestwatch.org/v1/layer/41086554-5ca5-456c-80dd-f6bee61bc45f/tile/gee/{z}/{x}/{y}',
         },
       },
@@ -1962,7 +1951,7 @@ export const mapLayers = [
             'https://github.com/Vizzuality/gfw/blob/develop/app/assets/javascripts/map/cartocss/style.cartocss',
           url: 'https://tiles.globalforestwatch.org/wur_radd_coverage/v20211016/default/{z}/{x}/{y}.png',
           useCors: true,
-          metadata: 'https://production-api.globalforestwatch.org/v1/gfw-metadata/wur_radd_alerts',
+          metadata: 'wur_radd_alerts',
         },
       },
       legendConfig: {
@@ -2011,8 +2000,7 @@ export const mapLayers = [
         body: {
           url: 'https://tiles.globalforestwatch.org/umd_glad_landsat_alerts_coverage/v2024/default/root.json',
           useCors: true,
-          metadata:
-            'https://production-api.globalforestwatch.org/v1/gfw-metadata/umd_landsat_alerts',
+          metadata: 'umd_landsat_alerts',
         },
       },
       legendConfig: {
@@ -2054,7 +2042,7 @@ export const mapLayers = [
         type: 'Vector.Layer',
         body: {
           url: 'https://tiles.globalforestwatch.org/nasa_viirs_fire_alerts/latest/dynamic/{start_date}/{end_date}/VectorTileServer',
-          metadata: 'https://production-api.globalforestwatch.org/v1/gfw-metadata/viirs_fires',
+          metadata: 'viirs_fires',
           useCors: true,
         },
       },
@@ -2186,7 +2174,7 @@ export const mapLayers = [
         type: 'tileLayer',
         body: {
           url: 'https://tiles.globalforestwatch.org/jrc_global_forest_cover/v2020/default2/{z}/{x}/{y}.png',
-          metadata: 'https://api.resourcewatch.org/v1/gfw-metadata/jrc_global_forest_cover',
+          metadata: 'jrc_global_forest_cover',
         },
       },
       legendConfig: {
@@ -2229,7 +2217,7 @@ export const mapLayers = [
         type: 'tileLayer',
         body: {
           url: 'https://tiles.globalforestwatch.org/arg_native_forest_land_plan/v202212/default/{z}/{x}/{y}.png',
-          metadata: 'https://api.resourcewatch.org/v1/gfw-metadata/arg_native_forest_land_plan',
+          metadata: 'arg_native_forest_land_plan',
         },
       },
       legendConfig: {
@@ -2360,7 +2348,7 @@ export const mapLayers = [
             'https://github.com/Vizzuality/gfw/blob/develop/app/assets/javascripts/map/cartocss/style.cartocss',
           url: 'https://tiles.globalforestwatch.org/umd_glad_sentinel2_alerts_coverage/latest/default/{z}/{x}/{y}.png',
           useCors: true,
-          metadata: 'https://www.globalforestwatch.org/api/metadata/umd_glad_sentinel2_alerts',
+          metadata: 'umd_glad_sentinel2_alerts',
         },
       },
       legendConfig: {
@@ -2409,7 +2397,7 @@ export const mapLayers = [
         body: {
           url: 'https://tiles.globalforestwatch.org/arg_otbn_forest_loss/v2022/year/{z}/{x}/{y}.png',
           useCors: true,
-          metadata: 'https://api.resourcewatch.org/v1/gfw-metadata/arg_otbn_forest_loss',
+          metadata: 'arg_otbn_forest_loss',
         },
       },
       legendConfig: {
@@ -2536,7 +2524,7 @@ export const mapLayers = [
             'https://github.com/Vizzuality/gfw/blob/develop/app/assets/javascripts/map/cartocss/style.cartocss',
           url: 'https://tiles.globalforestwatch.org/umd_glad_sentinel2_alerts/latest/default/{z}/{x}/{y}.png',
           useCors: true,
-          metadata: 'https://www.globalforestwatch.org/api/metadata/umd_glad_sentinel2_alerts',
+          metadata: 'umd_glad_sentinel2_alerts',
         },
       },
       legendConfig: {

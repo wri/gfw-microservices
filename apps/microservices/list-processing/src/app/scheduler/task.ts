@@ -13,7 +13,9 @@ export class Task {
   @Cron('0 0 3 * * *')
   async performingDailyTasks() {
     this.logger.log(
-      `Performing daily tasks, executed at: ${moment(new Date()).format('YYYY-MM-DD HH:mm:ss')}`
+      `Performing daily tasks, executed at: ${moment(new Date())
+        .utc()
+        .format('YYYY-MM-DD HH:mm:ss')}`
     );
 
     // Random delay between 0 and 1 hour

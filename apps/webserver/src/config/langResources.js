@@ -4,14 +4,14 @@ const defaultLanguageID = 'en';
 //Language Strings.
 const langResources = {
   en: {
-    userisNotAnAdmin: 'User is not an Administrator.',
-    userExistInOrg: 'User is already registered in this organization.',
+    userIsNotAnAdmin: 'User is not an Administrator.',
+    userExistsInOrg: 'User is already registered in this organization.',
     loginFailed: 'Incorrect username or password. Please try again.',
     accountDisabled: 'User has been disabled. Please reset your password.',
-    InvalidSession: 'Invalid Session. Please login.',
+    invalidSession: 'Invalid Session. Please login.',
     verificationFailed: 'Validation failed for the verification code.',
-    AuthenticationFailure: 'Critical error in authentication, please contact support.',
-    invaidInitialPasswordChange: 'User does not require an initial password change.',
+    authenticationFailure: 'Critical error in authentication, please contact support.',
+    invalidInitialPasswordChange: 'User does not require an initial password change.',
     criticalError: 'Critical Error! Please contact your local IT Administrator.',
     executeSystemStoredProcedure: 'Failed to execute system stored procedure in database.',
     executeOrganizationStoredProcedure:
@@ -37,53 +37,19 @@ const langResources = {
     missingFolderName: 'Make sure to add a folder name to the request.',
     missingSourceFolderId: 'Please make sure to include the source folder ID in the request.',
     missingDestinationFolderId:
-      'Please make sure to include the desination folder ID in the request.',
+      'Please make sure to include the destination folder ID in the request.',
   },
 };
 
-function getResourceStringOLD(resource_id, language_id) {
-  console.log('Resource ID: ', resource_id);
-  console.log('Language ID: ', language_id);
-
-  //Check if the resource id is undefined or empty
-  if (resource_id === undefined || resource_id.length === 0) {
-    return '';
-  }
-  //Check if the language ID passed is not valid.
-  else if (language_id === undefined || language_id.length === 0) {
-    language_id = defaultLanguageID;
-  }
-
-  console.log('Resource ID: ', resource_id);
-  console.log('Language ID: ', language_id);
-
-  try {
-    //Check if the resource is available in the language requested.
-    if (langResources[language_id][resource_id] !== 'undefined') {
-      return langResources[language_id][resource_id];
-    } else if (langResources[defaultLanguageID][resource_id] !== 'undefined') {
-      return langResources[defaultLanguageID][resource_id];
-    } else {
-      return '';
-    }
-  } catch (err) {
-    console.log('ERROR: ', err);
-  }
-}
-
 function getResourceString(resource_id) {
   //Check if the resource id is undefined or empty
-  if (resource_id === undefined || resource_id.length === 0) {
+  if (!resource_id || !resource_id.length || !langResources[defaultLanguageID]?.[resource_id]) {
     return '';
   }
 
   try {
-    //Check if the resource is available in the language requested.
-    if (langResources[defaultLanguageID][resource_id] !== 'undefined') {
-      return langResources[defaultLanguageID][resource_id];
-    } else {
-      return '';
-    }
+    // Check if the resource is available in the language requested.
+    return langResources[defaultLanguageID][resource_id] || '';
   } catch (err) {
     console.log('ERROR: ', err);
   }
@@ -92,6 +58,5 @@ function getResourceString(resource_id) {
 //exporting the functions.
 module.exports = {
   getResourceString: getResourceString,
-  getResourceStringOLD: getResourceStringOLD,
   defaultLanguageID: defaultLanguageID,
 };

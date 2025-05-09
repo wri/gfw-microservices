@@ -248,3 +248,4 @@ export const verbose = logger.verbose.bind(logger);
 export const info = logger.info.bind(logger);
 export const warn = logger.warn.bind(logger);
 export const error = logger.error.bind(logger);
+export default logger;

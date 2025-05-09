@@ -22,19 +22,25 @@ export class ValidateCSVService {
       `Starting validating the file ${fileName} with the following templateId ${templateId} `
     );
     const bucket = this.config.get('LARGE_PROCESSING_LIST_BUCKET', { infer: true });
-    const fileDownloadedPath = await this.s3Service.writeS3fileIntoTmp(fileName, bucket);
-    this.logger.log(`Downloaded the file and write it into ${fileDownloadedPath}`);
-    const locationData = await csv2Json().fromFile(fileDownloadedPath);
+    let fileDownloadedPath: string;
+    try {
+      fileDownloadedPath = await this.s3Service.writeS3fileIntoTmp(fileName, bucket);
+      this.logger.log(`Downloaded the file and write it into ${fileDownloadedPath}`);
+      const locationData = await csv2Json().fromFile(fileDownloadedPath);
 
-    const templateName = await this.getTemplateName(templateId);
-    if (!templateName) {
-      return ['was not possible to find a template with the informed id.'];
+      const templateName = await this.getTemplateName(templateId);
+      if (!templateName) {
+        return ['was not possible to find a template with the informed id.'];
+      }
+
+      const errorList = validateLocation(locationData, templateName);
+      return errorList;
+    } finally {
+      if (fileDownloadedPath) {
+        this.logger.log('Removing the file');
+        this.removeFile(fileDownloadedPath);
+      }
     }
-
-    const errorList = validateLocation(locationData, templateName);
-    this.logger.log('Removing the file');
-    this.removeFile(fileDownloadedPath);
-    return errorList;
   }
 
   removeFile(fileNameAndPath: string) {

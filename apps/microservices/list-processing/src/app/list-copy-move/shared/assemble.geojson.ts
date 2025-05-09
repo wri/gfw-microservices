@@ -12,16 +12,21 @@ const expandAttributes = (locAttributes: string, listAttrFields: Array<ListAttri
     return expandedProps;
   }
 
-  const jsonParsedAttributes = JSON.parse(locAttributes);
-  listAttrFields.forEach((item) => {
-    const value = jsonParsedAttributes[item.attribute_name];
+  try {
+    const jsonParsedAttributes = JSON.parse(locAttributes);
+    listAttrFields.forEach((item) => {
+      const value = jsonParsedAttributes[item.attribute_name];
 
-    if (value !== undefined && value !== null) {
-      const isNumber = item.attribute_type === ListsAttrsTypes.Number;
-      // The actual value does not matter, just need anything that's number or text
-      expandedProps[item.attribute_name] = isNumber ? 1 : 'a';
-    }
-  });
+      if (value !== undefined && value !== null) {
+        const isNumber = item.attribute_type === ListsAttrsTypes.Number;
+        // The actual value does not matter, just need anything that's number or text
+        expandedProps[item.attribute_name] = isNumber ? 1 : 'a';
+      }
+    });
+  } catch (error) {
+    // If JSON parsing fails, return empty props
+    return expandedProps;
+  }
 
   return expandedProps;
 };

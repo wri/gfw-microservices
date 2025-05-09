@@ -35,6 +35,9 @@ export class ValidateCSVService {
 
       const errorList = validateLocation(locationData, templateName);
       return errorList;
+    } catch (error) {
+      this.logger.error(`Error validating the file ${fileName}: ${error.stack || error}`);
+      throw error;
     } finally {
       if (fileDownloadedPath) {
         this.logger.log('Removing the file');

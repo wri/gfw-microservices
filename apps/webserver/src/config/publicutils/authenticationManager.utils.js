@@ -136,7 +136,6 @@ export const login = async (req, username, password, isProManagerLogin = false) 
 
   try {
     const userInfo = await awsCognito.getUserInfo(normalizedUsername, USER_POOL_ID);
-    console.log('🪵 ~ authenticationManager.utils.js ~ login ~ USER_POOL_ID:', USER_POOL_ID);
 
     const authenticationResponse = await awsCognito.authenticateUser(
       req,
@@ -627,12 +626,13 @@ export const changePassword = async (req, previousPassword, proposedPassword) =>
 
 /**
  *   @function {getUserInfo}
- *   @summary Retrieves the user's information and authentication preferences based on session data.
- *   @param  {Object}   req - Mandatory first parameter to pass the request object into the function in case session info is required.
- *   @return {Promise} A Promise that resolves with the combined user info and authentication preferences, or rejects with a formatted error object.
+ *   @summary Obtains the user information for the current user.
+ *   @param  {Object} req - Mandatory first parameter to pass the request object into the function in case session info is required.
+ *   @return {Object} JSON object providing the user info.
  */
-export const getUserInfo = async (req) => {
-  try {
+export const getUserInfo = (req) => {
+  return new Promise((resolve, reject) => {
+    // Retrieve organization user information and System Auth pref information
     const organizationParameters = [
       { field: 'userID', type: sql.Int, value: req.session.organization_user_id },
     ];
@@ -640,29 +640,31 @@ export const getUserInfo = async (req) => {
       { field: 'organization_id', type: sql.Int, value: req.session.organization_id },
       { field: 'user_email', type: sql.NVarChar(150), value: req.session.user_email },
     ];
-
-    const [organizationResults, systemResults] = await Promise.all([
+    Promise.all([
       sqlUtils.executeOrganizationStoredProcedure(req, 'uspGetUserInfo', organizationParameters),
       sqlUtils.executeSystemStoredProcedure(
         req,
         'uspGetUserAuthenticationPreferences',
         systemParameters
       ),
-    ]);
-
-    const [userInfo] = organizationResults;
-    const [authenticationPreference] = systemResults;
-
-    return { ...userInfo, ...authenticationPreference };
-  } catch (errorMsg) {
-    const errorObject = errorUtils.createErrorMessage(
-      req,
-      errorUtils.ERROR_CODES.failedToGetUserInfo,
-      'Failed to get user info:',
-      errorMsg
-    );
-    throw errorObject;
-  }
+    ])
+      .then((results) => {
+        const [organizationResults, systemResults] = results;
+        const [userInfo] = organizationResults;
+        const [authenticationPreference] = systemResults;
+        const information = Object.assign(userInfo, authenticationPreference);
+        resolve(information);
+      })
+      .catch((errorMessage) => {
+        const errorObject = errorUtils.createErrorMessage(
+          req,
+          errorUtils.ERROR_CODES.failedToGetUserInfo,
+          'Failed to get user info',
+          errorMessage
+        );
+        reject(errorObject);
+      });
+  });
 };
 
 /**

@@ -222,11 +222,11 @@ export const deactivateAllShareInternalList = async (req, users_id, list_id) => 
   }
 };
 
-/** @function {getUserInternalShareLists}
- *   @summary Get shared lists for a specific user
- *   @param  {Object} req - Mandatory first parameter to pass the request object into the function in case session info is required.
- *   @param {number} user_id - The sharing user's id
- *   @return {Promise<any[]>} Returns list of user shared lists
+/**
+ * @summary Get shared lists for a specific user
+ * @param {Object} req - Request object (with session info)
+ * @param {number} user_id - The sharing user's id
+ * @returns {Promise<any[]>} List of user shared lists
  */
 export const getUserInternalShareLists = async (req, user_id) => {
   // parameters for stored procedure

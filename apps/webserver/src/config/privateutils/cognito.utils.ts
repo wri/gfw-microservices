@@ -368,7 +368,6 @@ const handleLoginFailure = async (req, email) => {
  *  @return {Promise} Returns a promise detailing success or failure of authenticateUser
  */
 const authenticateUser = async (req, email, password, userInfoAttributes) => {
-  console.log('🪵 ~ cognito.utils.ts ~ authenticateUser ~ userInfoAttributes:', userInfoAttributes);
   const currentDate = new Date();
 
   const updatedAttribute = userInfoAttributes.find(
@@ -409,7 +408,7 @@ const authenticateUser = async (req, email, password, userInfoAttributes) => {
 
   try {
     const response = await cognitoClient.send(command);
-    console.log('🪵 ~ cognito.utils.ts ~ authenticateUser ~ response:', response);
+
     // On success, update the authentication result
     authResult.authenticationStatus = AUTH_STATUS.Authenticated;
     authResult.token = response.AuthenticationResult.AccessToken;

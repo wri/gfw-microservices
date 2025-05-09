@@ -2,7 +2,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { ClipToLandService } from './clipToLand.service';
 import { S3Service } from '@wri-monorepos/aws';
 import { FeatureCollection } from '@wri-monorepos/geo';
-import { ChainType, RequestNewList } from './types';
+import { ChainType, RequestNewList, PreviewListRequest } from './types';
 
 jest.mock('@wri-monorepos/aws');
 jest.mock('@aws-sdk/client-lambda');
@@ -36,6 +36,96 @@ describe('ClipToLandService', () => {
         .mockResolvedValue({ geojson: { type: 'FeatureCollection', features: [] } });
       const result = await service.handle(input);
       expect(result.geojson).toEqual({ type: 'FeatureCollection', features: [] });
+    });
+
+    it('should skip processing in preview mode', async () => {
+      const input: ChainType = {
+        geojson: { type: 'FeatureCollection', features: [] },
+        request: {
+          list_id: 1,
+          organization_database: 'test',
+          path: 'test',
+          preview: true,
+        } as PreviewListRequest,
+      };
+      const clipToLandSpy = jest.spyOn(service, 'clipToLand');
+      const result = await service.handle(input);
+      expect(clipToLandSpy).not.toHaveBeenCalled();
+      expect(result.geojson).toEqual(input.geojson);
+    });
+
+    it('should skip processing if hasUnanalyzableError is true', async () => {
+      const input: ChainType = {
+        geojson: { type: 'FeatureCollection', features: [] },
+        request: {
+          list_id: 1,
+          organization_database: 'test',
+          path: 'test',
+          hasUnanalyzableError: true,
+        } as RequestNewList,
+      };
+      const clipToLandSpy = jest.spyOn(service, 'clipToLand');
+      const result = await service.handle(input);
+      expect(clipToLandSpy).not.toHaveBeenCalled();
+      expect(result.geojson).toEqual(input.geojson);
+    });
+  });
+
+  describe('S3 operations', () => {
+    let s3Service: jest.Mocked<S3Service>;
+
+    beforeEach(() => {
+      s3Service = new S3Service() as jest.Mocked<S3Service>;
+      (S3Service as jest.Mock).mockImplementation(() => s3Service);
+    });
+
+    it('should put object to S3', async () => {
+      const objectName = 'test-object';
+      const object = { test: 'data' };
+      s3Service.putObject.mockResolvedValue(undefined);
+
+      const result = await service.putObject(objectName, object);
+      expect(result).toContain(process.env.NODE_ENV);
+      expect(result).toContain(objectName);
+      expect(s3Service.putObject).toHaveBeenCalledWith(
+        expect.stringContaining(objectName),
+        JSON.stringify(object),
+        process.env.AWS_ANALYSIS_BUCKET,
+        'application/json'
+      );
+    });
+
+    it('should get object from S3', async () => {
+      const bucket = 'test-bucket';
+      const key = 'test-key';
+      const expectedData = { test: 'data' };
+      s3Service.getObjectAsJson.mockResolvedValue(expectedData);
+
+      const result = await service.getObject(bucket, key);
+      expect(result).toEqual(expectedData);
+      expect(s3Service.getObjectAsJson).toHaveBeenCalledWith(bucket, key);
+    });
+
+    it('should delete object from S3', async () => {
+      const bucket = 'test-bucket';
+      const key = 'test-key';
+      s3Service.deleteObject.mockResolvedValue(undefined);
+
+      await expect(service.delObject(bucket, key)).resolves.not.toThrow();
+      expect(s3Service.deleteObject).toHaveBeenCalledWith(key, bucket);
+    });
+  });
+
+  describe('Lambda operations', () => {
+    it('should invoke Lambda function', async () => {
+      const functionName = 'test-function';
+      const payload = { test: 'data' };
+      const expectedResponse = { Payload: JSON.stringify({ result: 'success' }) };
+
+      jest.spyOn(service, 'invokeLambda').mockResolvedValue(expectedResponse);
+
+      const result = await service.invokeLambda(functionName, payload);
+      expect(result).toEqual(expectedResponse);
     });
   });
 
@@ -127,6 +217,34 @@ describe('ClipToLandService', () => {
 
       // Verify result contains all original features
       expect(result.geojson.features).toHaveLength(300);
+      expect(request.request.hasUnanalyzableError).toBe(true);
+    });
+
+    it('should handle Lambda error response with error message', async () => {
+      const features = Array(200).fill({
+        type: 'Feature',
+        properties: {},
+        geometry: { type: 'Point', coordinates: [0, 0] },
+      });
+      const geojson: FeatureCollection = {
+        type: 'FeatureCollection',
+        features,
+      };
+      const request = {
+        request: { list_id: 1, organization_database: 'test', path: 'test' } as RequestNewList,
+      };
+
+      jest.spyOn(service, 'putObject').mockResolvedValue('test-key');
+      jest.spyOn(service, 'invokeLambda').mockResolvedValue({
+        Payload: JSON.stringify({
+          bucket: 'test-bucket',
+          key: 'test-key',
+          errorMessageStr: JSON.stringify({ error: 'Test error' }),
+        }),
+      });
+
+      const result = await service.clipToLand(geojson, request);
+      expect(result.geojson.features).toHaveLength(200);
       expect(request.request.hasUnanalyzableError).toBe(true);
     });
   });

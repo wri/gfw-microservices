@@ -204,4 +204,33 @@ describe('AlertsRepository', () => {
       expect(result).toEqual(mockDashboardData);
     });
   });
+
+  describe('findDashboardTimestampByListId', () => {
+    it('should return dashboard timestamps for a client list', async () => {
+      const listId = 1;
+      const clientDatabase = 'test-db';
+      const mockList = {
+        dashboardLastResults: new Date(),
+        dashboardLastSubmit: new Date(),
+      };
+
+      const mockConnection = {
+        getRepository: jest.fn().mockReturnValue({
+          findOne: jest.fn().mockResolvedValue(mockList),
+        }),
+      };
+
+      jest
+        .spyOn(repository as any, 'createOrganizationConnection')
+        .mockResolvedValue(mockConnection);
+
+      const result = await repository.findDashboardTimestampByListId(listId, clientDatabase);
+
+      expect(result).toEqual({
+        dashboardLastResults: mockList.dashboardLastResults,
+        dashboardLastSubmit: mockList.dashboardLastSubmit,
+      });
+      expect(repository['createOrganizationConnection']).toHaveBeenCalledWith(clientDatabase);
+    });
+  });
 });

@@ -13,7 +13,7 @@ import {
 } from '@mui/material';
 import { ArrowBackIos, ArrowForwardIos, Close, Replay } from '@mui/icons-material';
 
-import { LocationListType } from '../types';
+import { LocationListType, UploadType } from '../types';
 import { LoadingModal, PillButton } from '../../../../../components';
 import { getTableColumns, LabelNameTable, uploadFileToS3 } from '../utils/upload';
 import { useUploadLocation } from '../contexts';
@@ -26,7 +26,7 @@ import { DATA_CY } from '../../../../../utils/constants';
 
 export function UploadLocationPreview() {
   const {
-    uploadLocationState: { uploadedFile, uploadType },
+    uploadLocationState: { uploadedFile },
     clearUploadType,
     addFile,
   } = useUploadLocation();
@@ -118,6 +118,7 @@ export function UploadLocationPreview() {
             color="info"
             disabled={isLoading || iLoadingFileUpload}
             startIcon={<Replay />}
+            data-cy={DATA_CY.NEW_UPLOAD_WORKFLOW[UploadType.ByFile].PREVIEW_RETRY}
             onClick={() => fileInputRef.current?.click()}
           >
             Retry upload
@@ -209,7 +210,7 @@ export function UploadLocationPreview() {
             variant="contained"
             color="info"
             startIcon={<Close />}
-            data-cy={DATA_CY.NEW_UPLOAD_WORKFLOW[uploadType!].PREVIEW_CANCEL}
+            data-cy={DATA_CY.NEW_UPLOAD_WORKFLOW[UploadType.ByFile].PREVIEW_CANCEL}
             onClick={clearUploadType}
           >
             Cancel
@@ -217,7 +218,7 @@ export function UploadLocationPreview() {
           <PillButton
             variant="contained"
             startIcon={<ArrowForwardIos />}
-            data-cy={DATA_CY.NEW_UPLOAD_WORKFLOW[uploadType!].PREVIEW_NEXT}
+            data-cy={DATA_CY.NEW_UPLOAD_WORKFLOW[UploadType.ByFile].PREVIEW_NEXT}
             onClick={() => history.push('CONFIGURE_LIST')}
             disabled={isLoading || !data?.features || !!error || !!apiRequestError}
           >

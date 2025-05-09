@@ -18,7 +18,7 @@
   "dependencies": {
     "@arcgis/core": "~4.20.2",
     "@aws-sdk/client-api-gateway": "^3.616.0",
-    "@aws-sdk/client-cognito-identity-provider": "^3.427.0",
+    "@aws-sdk/client-cognito-identity-provider": "^3.804.0",
     "@aws-sdk/client-lambda": "^3.616.0",
     "@aws-sdk/client-s3": "^3.427.0",
     "@aws-sdk/client-ses": "^3.427.0",
@@ -73,7 +73,6 @@
     "@types/mssql": "^8.1.1",
     "@types/node": "^20.5.9",
     "adm-zip": "^0.5.16",
-    "amazon-cognito-identity-js": "1.19.0",
     "archiver": "^5.3.1",
     "async-mutex": "^0.4.0",
     "autoprefixer": "10.4.15",

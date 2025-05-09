@@ -24,12 +24,12 @@ const sql = require('mssql');
 import config from '../config';
 
 const langResources = require(path.resolve('./config/langResources'));
-const AWSSES = require(path.resolve('./config/privateutils/ses.utils'));
+const awsSes = require(path.resolve('./config/privateutils/ses.utils'));
 const sqlUtils = require(path.resolve('./config/privateutils/sql.utils'));
 const Helper = require(path.resolve('./config/publicutils/helper.utils'));
 const errorUtils = require(path.resolve('./config/privateutils/error.utils'));
-const AWSCognito = require(path.resolve('./config/privateutils/cognito.utils'));
-const SpeakEasy = require(path.resolve('./config/privateutils/speakeasy.utils'));
+const awsCognito = require(path.resolve('./config/privateutils/cognito.utils'));
+const speakEasy = require(path.resolve('./config/privateutils/speakeasy.utils'));
 const rollbackUtils = require(path.resolve('./config/privateutils/rollback.utils'));
 const UserManager = require(path.resolve('./config/publicutils/userManager.utils'));
 const PolicyManager = require(path.resolve('./config/publicutils/policyManager.utils'));
@@ -45,7 +45,7 @@ const logger = require(path.resolve('./config/privateutils/logger.utils'));
 /**
  * @function getAllAccountsList
  * @summary Gets an array of All Accounts.
- * @param  {Object}   req - Manadatory first parameter to pass the request object into the function in case session info is required.
+ * @param  {Object}   req - Mandatory first parameter to pass the request object into the function in case session info is required.
  * @returns returns an Array of objects, where each object is info on the accounts.
  */
 const getAllAccountsList = (req) => {
@@ -83,7 +83,7 @@ const getAllAccountsList = (req) => {
 /**
  * @function getAllUsersList
  * @summary Gets an array of All Users.
- * @param  {Object}   req - Manadatory first parameter to pass the request object into the function in case session info is required.
+ * @param  {Object}   req - Mandatory first parameter to pass the request object into the function in case session info is required.
  * @returns returns an Array of objects, where each object is info on the accounts.
  */
 const getAllUsersList = (req) => {
@@ -119,9 +119,9 @@ const getAllUsersList = (req) => {
 
 /** @function {activatePendingAccount}
  *   @summary Activates a Pending Account
- *   @param  {Object}  req - Manadatory first parameter to pass the request object into the function in case session info is required.
+ *   @param  {Object}  req - Mandatory first parameter to pass the request object into the function in case session info is required.
  *   @param  {number}  pendingaccount_id An integer specifying the pending account ID.
- *   @return {Promise} return a promise obect. If successful,
+ *   @return {Promise} return a promise object. If successful,
  *                   the promise resolves to true, otherwise, an
  *                   an error object is returned in the reject.
  */
@@ -260,7 +260,7 @@ const activatePendingAccount = (req, pendingaccount_id, unit_test = false) => {
           );
         }
 
-        const secret = SpeakEasy.createSecret(req);
+        const secret = speakEasy.createSecret(req);
         const timestamp = new Date();
         const params = [
           { field: 'PendingAccountID', type: sql.Int, value: pendingaccount_id },
@@ -291,7 +291,7 @@ const activatePendingAccount = (req, pendingaccount_id, unit_test = false) => {
         return PolicyManager.movePolicy(req, pendingaccount_id, orgID);
       })
       .then(() => {
-        return userExists === 0 ? AWSCognito.createUser(req, userEmail, false, unit_test) : null;
+        return userExists === 0 ? awsCognito.createUser(req, userEmail, false, unit_test) : null;
       })
       .then(() => {
         const parameters = [
@@ -305,13 +305,13 @@ const activatePendingAccount = (req, pendingaccount_id, unit_test = false) => {
       })
       .then(() => {
         const subject = 'GFW Pro Account Activated';
-        const msg = AWSSES.createBodyContent(
+        const msg = awsSes.createBodyContent(
           req,
           config.platformVars.emailType.ORGANIZATION_APPROVED,
           content,
           'success'
         );
-        return AWSSES.sendEmail(req, config.AWSVars.ses.sender, [userEmail], subject, msg);
+        return awsSes.sendEmail(req, config.AWSVars.ses.sender, [userEmail], subject, msg);
       })
       .then(() => {
         resolve(true);
@@ -337,13 +337,13 @@ const activatePendingAccount = (req, pendingaccount_id, unit_test = false) => {
  * @DEPRECATED in favor of {publicutils/accountManager.utils.js}
  * @function updatePendingAccount
  * @summary Creates a request for a new account in the database.
- * @param  {Object}   req - Manadatory first parameter to pass the request object into the function in case session info is required.
+ * @param  {Object}   req - Mandatory first parameter to pass the request object into the function in case session info is required.
  * @param  {String}   org_id - Organization ID
  * @param  {String}   org_name - Organization name
  * @param  {String}   org_address - Organization Address.
  * @param  {String}   org_website - URL for the Organization's website.
  * @param  {String}   parent_org_name - Name of the parent organization, if there is one.
- * @param  {Boolean}  is_subsidiary - Is the organiation a subsidiary? (If yes, parent name is mandatory)
+ * @param  {Boolean}  is_subsidiary - Is the organization a subsidiary? (If yes, parent name is mandatory)
  * @param  {Array}    arr_org_classification_ids - Classification(s) of the organizations.
  * @return {Promise<Boolean>} True if successful, false otherwise.
  */
@@ -397,7 +397,7 @@ const updatePendingAccount = (
 /**
  * @function updatePendingAccountUser
  * @summary Creates a request for a new account in the database.
- * @param  {Object}   req - Manadatory first parameter to pass the request object into the function in case session info is required.
+ * @param  {Object}   req - Mandatory first parameter to pass the request object into the function in case session info is required.
  * @param  {String}   user_id - User id
  * @param  {String}   user_first_name - First Name of the manager (Administrative User)
  * @param  {String}   user_middle_initial - Middle Initial of the manager (Administrative User)
@@ -457,9 +457,9 @@ const updatePendingAccountUser = (
 /**
 * @function deletePendingAccountRequest
 * @summary Deletes a Pending Account
-* @param  {Object}   req - Manadatory first parameter to pass the request object into the function in case session info is required.
+* @param  {Object}   req - Mandatory first parameter to pass the request object into the function in case session info is required.
 * @param {number}  pendingaccount_id An integer specifying the pending account ID.
-* @return {Promise} return a promise obect. If successful,
+* @return {Promise} return a promise object. If successful,
 
 *                   the promise resolves to true, otherwise, an
 *                   an error object is returned in the reject.
@@ -500,8 +500,8 @@ const deletePendingAccountRequest = (req, pendingaccount_id) => {
 /**
  * @function deleteOrganization
  * @summary Deletes an organization
- * @param  {Object}   req - Manadatory first parameter to pass the request object into the function in case session info is required.
- * @return {Promise} return a promise obect. If successful,
+ * @param  {Object}   req - Mandatory first parameter to pass the request object into the function in case session info is required.
+ * @return {Promise} return a promise object. If successful,
  *                   the promise resolves to true, otherwise, an
  *                   an error object is returned in the reject.
  */
@@ -539,8 +539,8 @@ const deleteOrganization = (req, orgName) => {
 /**
  * @function deleteUser
  * @summary Deletes a User from the db
- * @param  {Object}   req - Manadatory first parameter to pass the request object into the function in case session info is required.
- * @return {Promise} return a promise obect. If successful,
+ * @param  {Object}   req - Mandatory first parameter to pass the request object into the function in case session info is required.
+ * @return {Promise} return a promise object. If successful,
  *                   the promise resolves to true, otherwise, an
  *                   an error object is returned in the reject.
  */
@@ -640,10 +640,6 @@ const deactivateAccount = (request, organization_id) => {
         value: orgAccountStatus.Inactive,
       },
     ];
-    // Promise.all([
-    //   sqlUtils.executeSystemStoredProcedure(req, 'uspSetOrganizationStatus', parameters),
-    //   sqlUtils.executeSystemStoredProcedure(req, 'uspSetOrganizationUserStatus', parameters)
-    // ])
     sqlUtils
       .executeSystemStoredProcedure(request, 'uspSetOrganizationStatus', parameters)
       .then(() => resolve(true))
@@ -667,7 +663,7 @@ const getAccountSubscriptionStatus = (request, organizationId) => {
         const errorObject = errorUtils.createErrorMessage(
           request,
           errorUtils.ERROR_CODES.failedToGetAccountSubscriptionStatus,
-          `Failed to retreive account subscription status`,
+          `Failed to retrieve account subscription status`,
           error
         );
         reject(errorObject);

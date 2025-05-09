@@ -2092,7 +2092,7 @@ export const mapLayers = [
         body: {
           useCors: true,
           metadata: 'idn_land_cover_metadata',
-          url: 'https://tiles.globalforestwatch.org/idn_land_cover_2017/v201807/dynamic/{z}/{x}/{y}.png',
+          url: 'https://tiles.globalforestwatch.org/idn_land_cover_2017/v201807/default/{z}/{x}/{y}.png',
         },
       },
       legendConfig: {
@@ -2105,11 +2105,10 @@ export const mapLayers = [
                 color: '#4CAF50',
                 name: 'Primary forest',
               },
-              /* not present in pro but shown in flagship
               {
                 color: '#A6F25B',
                 name: 'Secondary forest',
-              },*/
+              },
               {
                 color: '#E5E5A4',
                 name: 'Plantation forest',
@@ -2126,11 +2125,10 @@ export const mapLayers = [
                 color: '#DB6F3C',
                 name: 'Other land',
               },
-              /* not present in pro but shown in flagship
               {
                 color: '#000000',
                 name: 'Settlement area',
-              },*/
+              },
               {
                 color: '#AEEEEE',
                 name: 'Wetland',

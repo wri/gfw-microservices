@@ -6,6 +6,7 @@ import {
   ListSchemaType,
   ListTemplate,
 } from '@wri-monorepos/sql';
+import { MAPSPAM_COMMODITY } from '@wri-monorepos/constants';
 import { EntitySchema, Raw, Repository, In } from 'typeorm';
 import { CommodityResponse, ListResponse } from './types';
 import { ConvertCommodityToMapSpamCode } from '../list-upload/chain/convert.commodity.mapspam';
@@ -102,13 +103,19 @@ export class CommodityService {
     };
   }
 
-  private async getCommodityAndTemplates(commodity: string): Promise<{
+  async getCommodityAndTemplates(commodity: string): Promise<{
     commodityName: string;
     validTemplates: ListTemplate[];
   }> {
     const commodityLowerCase = commodity.toLowerCase();
     let commodityName = this.getCommodityFromTemplate(commodityLowerCase);
-    let templateNames = COMMODITY_TEMPLATE_MAP[commodityName] || [];
+    let templateNames = COMMODITY_TEMPLATE_MAP[commodityName];
+    // If commodity is already MAPSAPM code, get all the templates for that commodity
+    if (MAPSPAM_COMMODITY[commodity] && !templateNames) {
+      templateNames = COMMODITY_TEMPLATE_MAP[MAPSPAM_COMMODITY[commodity].toLowerCase()];
+    } else if (!templateNames) {
+      templateNames = [];
+    }
 
     commodityName = ConvertCommodityToMapSpamCode.getCommoditySpamName(commodity);
     if (!commodityName) {
@@ -130,6 +137,9 @@ export class CommodityService {
     };
   }
 
+  // frontend calls this with mapspam code for copy/move from new lists,
+  // but with human readable name when uploading new locations.
+  // getCommodityAndTemplates() handles both cases
   async getListsByCommodity({
     commodity,
     organizationDatabase,

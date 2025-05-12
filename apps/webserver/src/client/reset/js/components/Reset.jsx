@@ -1,10 +1,11 @@
-import Page from '../../../common/js/components/Page';
 import React, { Component } from 'react';
-import Dialog from 'material-ui/Dialog';
-import SubHeader from '../../../common/js/components/SubHeader';
-import Button from '../../../common/js/components/Button';
-import LinkButton from '../../../common/js/components/LinkButton';
+import { Box, Divider, Dialog, DialogTitle, DialogContent, DialogActions } from '@mui/material';
 import '../../css/reset.scss';
+
+import Page from '../../../common/js/components/Page';
+import SubHeader from '../../../common/js/components/SubHeader';
+import { Link, PillButton } from '../../../components';
+
 import httpRequest from '../../../common/js/utils/httpRequest';
 import { isPasswordValid } from '../../../common/js/utils/passwordValidations';
 
@@ -59,13 +60,13 @@ export default class Reset extends Component {
       this.setState({
         dialogOpen: true,
         dialogTitle: 'Enter email',
-        dialogMessage: 'Pleaes enter your email address.',
+        dialogMessage: 'Please enter your email address.',
       });
     } else if (verifyCode.value.length === 0) {
       this.setState({
         dialogOpen: true,
         dialogTitle: 'Enter Verification Code',
-        dialogMessage: 'Pleaes enter your verification code.',
+        dialogMessage: 'Please enter your verification code.',
       });
     } else {
       if (matching && valid) {
@@ -144,21 +145,20 @@ export default class Reset extends Component {
     if (dialogTitle === 'Success') {
       action = this.shouldRedirect;
     }
-    const defaultAction = [
-      <Button variant="primary" label="OK" keyboardFocused={true} onClick={action} />,
-    ];
+
     const matching = this.state.newPass === this.state.confirm;
     return (
       <Page links={pageOptions.links} active="reset">
-        <Dialog
-          paperClassName="dialog-paper"
-          open={dialogOpen}
-          title={dialogTitle}
-          actions={defaultAction}
-          onRequestClose={action}
-        >
-          {dialogMessage}
+        <Dialog open={dialogOpen} onClose={action} classes={{ paper: 'dialog-paper' }}>
+          <DialogTitle>{dialogTitle}</DialogTitle>
+          <DialogContent>{dialogMessage}</DialogContent>
+          <DialogActions>
+            <PillButton variant="contained" size="small" autoFocus onClick={action}>
+              OK
+            </PillButton>
+          </DialogActions>
         </Dialog>
+
         <SubHeader header="Password Reset" />
         <section className="profile-body">
           <p>Enter your email address, verification code, and new password to reset</p>
@@ -231,14 +231,18 @@ export default class Reset extends Component {
             />
           </div>
 
-          <div className="buttons-container">
-            <Button
-              onClick={this.toggleShow}
-              label={this.state.type === 'input' ? 'Hide' : 'Show'}
-            />
-            <Button variant="primary" onClick={this.submit} label="Submit" />
-            <LinkButton onClick={this.back} label="Back" />
-          </div>
+          <Divider sx={{ mt: 3, mb: 2 }} />
+          <Box sx={{ display: 'flex', gap: 2, alignItems: 'center' }}>
+            <PillButton variant="contained" color="info" size="small" onClick={this.toggleShow}>
+              {this.state.type === 'input' ? 'Hide' : 'Show'}
+            </PillButton>
+            <PillButton variant="contained" size="small" onClick={this.submit}>
+              Submit
+            </PillButton>
+            <Link href="/" sx={{ color: 'text.primary', fontWeight: '500' }}>
+              Back
+            </Link>
+          </Box>
         </section>
       </Page>
     );

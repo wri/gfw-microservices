@@ -6,19 +6,21 @@ const ProManager = require(path.resolve('./config/publicutils/proManager.utils')
 const UserManager = require(path.resolve('./config/publicutils/userManager.utils'));
 const PolicyManager = require(path.resolve('./config/publicutils/policyManager.utils'));
 const { orgAccountStatus } = require(path.resolve('./config/env/orgAccountStatus.constants'));
+
 import {
   getAccountSubscriptionLimits,
   getAccountExtraLimits,
   combineOrganizationLimits,
   getAccountRolloverLimits,
 } from '@wri-monorepos/shared';
+
 import { getAccountRenewalTime } from '@wri-monorepos/sql';
+
 /**
  * @function proManagerList
  * @param {Express.Request} req - Express request object
  * @param res - Express response object
  */
-
 export const proManagerList = (req, res) => {
   res.render('proManagerList', {
     common: compiledAssets.js.common,

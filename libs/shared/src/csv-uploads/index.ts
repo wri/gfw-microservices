@@ -1,6 +1,6 @@
 import { Logger } from '@nestjs/common';
-import { umlLookUp, describeUmlLookup } from './uml.lat.long.lookup';
-import { carLookup, describeCarLookup } from './carid.lat.long.lookup';
+import { umlLookUp } from './uml.lat.long.lookup';
+import { carLookup } from './carid.lat.long.lookup';
 
 const logger = new Logger('csv.id.based.system');
 
@@ -139,17 +139,4 @@ export const csvLatLongIdBasedTransformer = async (
   }
 
   return data;
-};
-
-export const describeLatLongLookups = async () => {
-  const ID_TYPE_HANDLER = {
-    [CSV_ID_TYPES.UML]: describeUmlLookup,
-    [CSV_ID_TYPES.CAR]: describeCarLookup,
-  };
-
-  return await Promise.all(
-    Object.keys(ID_TYPE_HANDLER).map(async (idType) => {
-      return { [idType]: await ID_TYPE_HANDLER[idType]() };
-    })
-  );
 };

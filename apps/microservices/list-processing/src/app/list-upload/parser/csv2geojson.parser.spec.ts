@@ -1,8 +1,14 @@
 import { csv2geojson } from './csv2geojson.parser';
-import { FeatureCollection } from '@wri-monorepos/geo'; // Adjust the import according to your file structure
+import { FeatureCollection } from '@wri-monorepos/geo';
 import axios from 'axios';
+import carIdResponseMock from './carId-response-mock';
+import { parse } from 'wellknown';
 
 jest.mock('axios');
+
+beforeEach(() => {
+  jest.clearAllMocks();
+});
 
 describe('csv2geojson', () => {
   it('should correctly convert CSV data to GeoJSON format', (done) => {
@@ -340,6 +346,39 @@ describe('csv2geojson', () => {
               latitude: 5.641362,
               'Location Name': 'Palm Mill Name',
               longitude: 118.166868,
+            },
+            type: 'Feature',
+          },
+        ],
+        type: 'FeatureCollection',
+      });
+      done();
+    });
+  });
+
+  it('Get lat long from Brazil CARID', (done) => {
+    const csvData =
+      'Location Name,ID Type,ID,Analysis Radius,Analysis Area\r\nPalm Mill Name,CAR,TO-1701903-BDF7049077694A9A8FFB13E1D88EE3F5,10,';
+
+    jest.spyOn(axios, 'get').mockResolvedValue({
+      data: {
+        data: [carIdResponseMock],
+      },
+    });
+
+    csv2geojson(csvData).then((result) => {
+      const expectedGeom = parse(carIdResponseMock.geom);
+      expect(result).toStrictEqual({
+        features: [
+          {
+            geometry: expectedGeom,
+            properties: {
+              'Analysis Area': null,
+              'Analysis Radius': 10,
+              geometry: expectedGeom,
+              'ID Type': 'CAR',
+              ID: 'TO-1701903-BDF7049077694A9A8FFB13E1D88EE3F5',
+              'Location Name': 'Palm Mill Name',
             },
             type: 'Feature',
           },

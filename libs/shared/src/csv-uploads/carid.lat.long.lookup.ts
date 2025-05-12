@@ -5,7 +5,7 @@ import { parse } from 'wellknown';
 
 const logger = new Logger('car.lat.long.lookup');
 
-const UML_DATAAPI_URL = `${process.env.GFW_DATASET_API_URL}/sfb_bra_sicar/v202401/query/json`;
+const DATA_API_URL = `${process.env.GFW_DATASET_API_URL}/sfb_bra_sicar/v202401/query/json`;
 
 export const carLookup: IdLookupFn = async (ids) => {
   const result = {};
@@ -18,10 +18,13 @@ export const carLookup: IdLookupFn = async (ids) => {
     .join(',');
 
   try {
-    const response = await axios.get(UML_DATAAPI_URL, {
-      headers: { 'x-api-key': process.env.GFW_DATA_API_KEY },
+    const response = await axios.get(DATA_API_URL, {
+      headers: {
+        'x-api-key': process.env.GFW_DATA_API_KEY,
+        'Content-Type': 'application/json',
+      },
       params: {
-        sql: `SELECT cd_imovel,ST_AsText(geom) as geom, gfw_geojson FROM mytable WHERE cd_imovel IN (${sqlIds})`,
+        sql: `SELECT cd_imovel,ST_AsText(geom) as geom,gfw_geojson FROM mytable WHERE cd_imovel IN (${sqlIds})`,
       },
     });
 
@@ -58,13 +61,13 @@ export const carLookup: IdLookupFn = async (ids) => {
 
 export const describeCarLookup = async () => {
   try {
-    const response = await axios.get(UML_DATAAPI_URL, {
+    const response = await axios.get(DATA_API_URL, {
       headers: {
         'x-api-key': process.env.GFW_DATA_API_KEY,
         'Content-Type': 'application/json',
       },
       params: {
-        sql: `select * from mytable limit 5`,
+        sql: `SELECT cd_imovel,ST_AsText(geom) as geom, gfw_geojson FROM mytable LIMIT 5`,
       },
     });
 
@@ -84,7 +87,7 @@ export const describeCarLookup = async () => {
     // const parsedGeoms = data.map((row) => {
     //   return {
     //     geom: parse(row.geom),
-    //   }
+    //   };
     // });
 
     return {

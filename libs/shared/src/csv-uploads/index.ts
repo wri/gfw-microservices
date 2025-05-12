@@ -40,7 +40,7 @@ export const applyLookUpByChunks = async (
   options: IdTypeOptions
 ): Promise<Record<string, unknown>[]> => {
   const { handler: lookup, column, chunkSize } = options;
-  const result = [];
+  const updates = [];
 
   for (let i = 0; i < data.length; i += chunkSize) {
     const chunkMax = Math.min(data.length, i + chunkSize);
@@ -51,16 +51,16 @@ export const applyLookUpByChunks = async (
       chunk.map((row) => row[column] as string) // {id:{latitude?, longitude?, geometry?, errorDetails?}}
     );
 
-    result.push(
-      chunk.map((row) =>
+    chunk.forEach((row) => {
+      updates.push(
         Object.assign(row, {
           ...(chunkResp[row[column] as string] ?? {}),
         })
-      )
-    );
+      );
+    });
   }
 
-  return result;
+  return updates;
 };
 
 export const resolveLatLongHandlerByIdType = async (
@@ -75,7 +75,7 @@ export const resolveLatLongHandlerByIdType = async (
   logger.log(`Handling lat/long based from ID Type: ${idType}`);
   const possibleUpdates = await applyLookUpByChunks(data, key, ID_TYPE_HANDLER[key]);
 
-  possibleUpdates.forEach((updated, i) => Object.assign(data[i], updated));
+  data.forEach((row, i) => Object.assign(row, possibleUpdates[i]));
   return data;
 };
 
@@ -131,11 +131,11 @@ export const csvLatLongIdBasedTransformer = async (
       return data;
     }
 
-    return idBasedSystemHandler(data);
+    return await idBasedSystemHandler(data);
   }
 
   if (isIdPresent) {
-    return resolveLatLongHandlerByIdType('UML', data);
+    return await resolveLatLongHandlerByIdType('UML', data);
   }
 
   return data;

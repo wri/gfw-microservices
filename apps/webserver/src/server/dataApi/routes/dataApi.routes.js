@@ -4,7 +4,6 @@ const middlewares = require(path.resolve('./config/publicutils/middlewares'));
 const rateLimiterUtil = require(path.resolve('./config/lib/limiter-util'));
 
 const controller = require('../controllers/dataApi.controller');
-const { describeLatLongLookups } = require('@wri-monorepos/shared');
 
 module.exports = (app, limiter) => {
   /**
@@ -51,11 +50,4 @@ module.exports = (app, limiter) => {
   app.post('/dataApi/getPalmOilMillLatLong/', controller.getPalmOilMillLatLong);
 
   app.post('/dataApi/getBBoxAndGeostoreIDs/', controller.getBBoxAndGeostoreIDs);
-
-  if (process.env.NODE_ENV !== 'ProdV2') {
-    app.get('/dataApi/lat-long-lookups', async (req, res) => {
-      const descriptionData = await describeLatLongLookups();
-      res.status(200).send(descriptionData);
-    });
-  }
 };

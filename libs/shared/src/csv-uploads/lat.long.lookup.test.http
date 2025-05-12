@@ -1,6 +1,6 @@
 
 ### Describe lat/Long look ups
-GET https://localhost:8443/data-api/lat-long-lookups
+GET https://localhost:8443/dataApi/lat-long-lookups
 Content-Type: application/json
 Cookie: gfwpro.globalforestwatch.org={{gfwpro_token}}
 # =======================================

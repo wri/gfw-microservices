@@ -1,14 +1,14 @@
 import React, { Component } from 'react';
-import Dialog from 'material-ui/Dialog';
+import { Box, Dialog, DialogTitle, DialogContent, DialogActions } from '@mui/material';
+import { West } from '@mui/icons-material';
+import '../../css/verify.scss';
+
 import Page from '../../../common/js/components/Page';
 import { verifyCodePage } from '../../../common/js/config';
-import Button from '../../../common/js/components/Button';
-import IconArrowLeft from '../../../common/js/components/icon/IconArrowLeft';
-import LinkButton from '../../../common/js/components/LinkButton';
 import httpRequest from '../../../common/js/utils/httpRequest';
 import ModalLoader from '../../../common/js/components/Loaders/ModalLoader';
 import getFeatureFlags from '../../../../utils/getFeatureFlags';
-import '../../css/verify.scss';
+import { PillButton, Link } from '../../../components';
 
 const pageOptions = {
   links: {
@@ -56,10 +56,6 @@ export default class Verify extends Component {
         }
       });
     });
-  };
-
-  back = () => {
-    window.location.href = '/';
   };
 
   submit = () => {
@@ -113,57 +109,61 @@ export default class Verify extends Component {
     const { token, dialogOpen, dialogTitle, dialogMessage, showModalLoader } = this.state;
     const action = this.shouldCloseDialog;
 
-    const defaultAction = [
-      <Button variant="primary" label="OK" keyboardFocused onClick={action} />,
-    ];
-
     return (
       <Page links={pageOptions.links} active="verify">
         <ModalLoader open={showModalLoader} />
-        <Dialog
-          paperClassName="dialog-paper"
-          open={dialogOpen}
-          title={dialogTitle}
-          actions={defaultAction}
-          onRequestClose={action}
-        >
-          {dialogMessage}
+        <Dialog classes={{ paper: 'dialog-paper' }} open={dialogOpen} onClose={action}>
+          <DialogTitle>{dialogTitle}</DialogTitle>
+          <DialogContent>{dialogMessage}</DialogContent>
+          <DialogActions>
+            <PillButton variant="contained" size="small" autoFocus onClick={action}>
+              OK
+            </PillButton>
+          </DialogActions>
         </Dialog>
         <div className="profile-body verify-section">
           <section className="section-container">
-            <LinkButton
-              className="verify-section__back-button back-button"
-              onClick={this.back}
-              icon={<IconArrowLeft height="10px" />}
-              label={verifyCodePage.backButtonLabel}
-            />
-            <div className="verify-section__header">
+            <Box sx={{ display: 'flex', gap: 1, alignItems: 'center' }}>
+              <West fontSize="8" />
+              <Link
+                variant="contained"
+                className="verify-section__back-button back-button"
+                href="/"
+              >
+                {verifyCodePage.backButtonLabel}
+              </Link>
+            </Box>
+            <Box sx={{ mb: 4 }}>
               <h1 className="verify-section__title">{verifyCodePage.pageTitle}</h1>
               <p className="verify-section__prompt">{verifyCodePage.pagePrompt}</p>
-            </div>
-            <div className="verify-section__input-container">
-              <label htmlFor="verification-code" className="block-label">
-                {verifyCodePage.inputLabel}
-              </label>
+            </Box>
+            <label htmlFor="verification-code" className="block-label">
+              {verifyCodePage.inputLabel}
+            </label>
+            <Box sx={{ display: 'flex', gap: 3 }}>
               <input
                 id="verification-code"
                 data-cy="verifyToken"
                 value={token}
                 onChange={this.updateToken}
-                onKeyPress={this.handleKeyPress}
+                onKeyDown={this.handleKeyPress}
                 ref={this.tokenInputRef}
               />
-              <Button
+              <PillButton
+                variant="contained"
+                size="small"
                 className="verify-section__verify-button"
                 data-cy="verifyButton"
-                variant="primary"
                 onClick={this.submit}
-                label={verifyCodePage.buttonLabel}
-              />
-            </div>
+              >
+                {verifyCodePage.buttonLabel}
+              </PillButton>
+            </Box>
             <p className="verify-section__resend-prompt">
-              {verifyCodePage.newCodeString1}{' '}
-              <LinkButton onClick={this.resendToken} label={verifyCodePage.newCodeString2} />
+              {verifyCodePage.newCodeString1}
+              <Link onClick={this.resendToken} sx={{ ml: 0.5 }}>
+                {verifyCodePage.newCodeString2}
+              </Link>
             </p>
           </section>
         </div>

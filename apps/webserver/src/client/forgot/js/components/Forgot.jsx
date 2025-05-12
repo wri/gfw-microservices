@@ -1,12 +1,12 @@
-import Page from '../../../common/js/components/Page';
 import React, { Component } from 'react';
-import Dialog from 'material-ui/Dialog';
-import Button from '../../../common/js/components/Button';
-import LinkButton from '../../../common/js/components/LinkButton';
+
+import '../../css/forgot.scss';
+import Page from '../../../common/js/components/Page';
+import { Box, Dialog, DialogTitle, DialogContent, DialogActions, Divider } from '@mui/material';
 import SubHeader from '../../../common/js/components/SubHeader';
 import httpRequest from '../../../common/js/utils/httpRequest';
 import forgotStrings from './forgotStrings';
-import '../../css/forgot.scss';
+import { PillButton, Link } from '../../../components';
 
 const pageOptions = {
   links: {
@@ -27,10 +27,6 @@ export default class Forgot extends Component {
 
   updateEmail = (evt) => {
     this.setState({ email: evt.target.value });
-  };
-
-  back = () => {
-    window.location.href = '/';
   };
 
   handleDialog = (title, message) => {
@@ -92,29 +88,31 @@ export default class Forgot extends Component {
     if (dialogTitle === 'Success') {
       action = this.shouldRedirect;
     }
-    const defaultAction = [
-      <Button variant="primary" label="OK" keyboardFocused={true} onClick={action} />,
-    ];
 
     return (
       <Page links={pageOptions.links} active="forgot">
-        <Dialog
-          paperClassName="dialog-paper"
-          open={dialogOpen}
-          title={dialogTitle}
-          actions={defaultAction}
-          onRequestClose={action}
-        >
-          {dialogMessage}
+        <Dialog classes={{ paper: 'dialog-paper' }} open={dialogOpen} onClose={action}>
+          <DialogTitle>{dialogTitle}</DialogTitle>
+          <DialogContent>{dialogMessage}</DialogContent>
+          <DialogActions>
+            <PillButton variant="contained" size="small" autoFocus onClick={action}>
+              OK
+            </PillButton>
+          </DialogActions>
         </Dialog>
         <SubHeader header="GFW Pro Forgot Password" />
         <section className="profile-body">
           <label className="block-label">Enter your email address to reset your password</label>
           <input value={this.state.email} onChange={this.updateEmail} ref="email" />
-          <div className="buttons-container">
-            <Button variant="primary" onClick={this.submit} label="Reset" />
-            <LinkButton onClick={this.back} label="Back" />
-          </div>
+          <Divider sx={{ mt: 3, mb: 2 }} />
+          <Box sx={{ display: 'flex', gap: 2, alignItems: 'center' }}>
+            <PillButton variant="contained" size="small" onClick={this.submit}>
+              Reset
+            </PillButton>
+            <Link href="/" sx={{ color: 'text.primary', fontWeight: '500' }}>
+              Back
+            </Link>
+          </Box>
         </section>
       </Page>
     );

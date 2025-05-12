@@ -1,16 +1,13 @@
-import lightBaseTheme from 'material-ui/styles/baseThemes/lightBaseTheme';
-import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
-import getMuiTheme from 'material-ui/styles/getMuiTheme';
-import Reset from './js/components/Reset';
-import { render } from 'react-dom';
 import React from 'react';
+import { render } from 'react-dom';
 
-lightBaseTheme.fontFamily = 'Fira Sans, sans-serif';
+import { ThemeProvider } from '../styles';
+import Reset from './js/components/Reset';
 
 const App = () => (
-  <MuiThemeProvider muiTheme={getMuiTheme(lightBaseTheme)}>
+  <ThemeProvider>
     <Reset />
-  </MuiThemeProvider>
+  </ThemeProvider>
 );
 
 render(<App />, document.getElementById('reset-mount'));

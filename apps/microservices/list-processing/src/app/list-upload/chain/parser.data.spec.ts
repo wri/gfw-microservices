@@ -8,8 +8,23 @@ import { convertShapefileToGeoJSON } from '../parser/shp2GeoJson.parser';
 import { xls2geojson } from '../parser/xls2GeoJSON.parser';
 import { kml2GeoJSON } from '../parser/kml2GeoJSON.parser';
 import AdmZip from 'adm-zip';
+import type * as fsType from 'fs';
 
-jest.mock('fs');
+jest.mock('fs', () => {
+  const actualFs: typeof fsType = jest.requireActual('fs');
+
+  return {
+    __esModule: true, // keep ESM interop happy
+    ...actualFs, // everything else stays real
+    readFileSync: jest.fn(),
+    writeFileSync: jest.fn(),
+    promises: {
+      ...actualFs.promises,
+      access: jest.fn(),
+    },
+  };
+});
+
 jest.mock('../parser/csv2geojson.parser');
 jest.mock('../parser/shp2GeoJson.parser');
 jest.mock('../parser/xls2GeoJSON.parser');

@@ -37,20 +37,18 @@ export const getBBoxAndGeostoreIDs = async (listId, locationIds) => {
 
 /**
  * Get Vector Tile Style
- * @param {String} GFW_LIST - GFW list ['gfw_oil_palm', 'rspo_oil_palm', 'wdpa_protected_areas']
- * @param {String} QUERY_FIELD - Query field ['gfw_geostore_id' || 'uml_id']
  * @param {String[]} IDs - Geostore/Palm Oil Mills IDs
- * @param {String} gfwVectorTileUrl - Active GFW Vector Tile
- * @param {Object} gfwVectorTileStyle - GFW Vector Tile Style
+ * @param {Object} gfwLayer - GFW Map Layer
  * @return {Object} - GFW Vector Tile Style
  */
-export const getVectorTileStyle = async (
-  GFW_LIST,
-  QUERY_FIELD,
-  IDs,
-  gfwVectorTileUrl,
-  gfwVectorTileStyle
-) => {
+export const getVectorTileStyle = async (IDs, gfwLayer) => {
+  const QUERY_FIELD = 'gfw_geostore_id';
+  const gfwVectorTileUrl = gfwLayer.url;
+  const regExpDomainName = /^.*\/\/[^/]+/;
+  const gfwVectorTileStyle = gfwLayer.styleRepository;
+  const vectorTileUrlChunks = gfwVectorTileUrl.replace(regExpDomainName, '').split('/');
+  const GFW_LIST = vectorTileUrlChunks[1];
+
   const layers = gfwVectorTileStyle.layers.map((layer) => {
     const layerConfig = {
       id: layer.id,

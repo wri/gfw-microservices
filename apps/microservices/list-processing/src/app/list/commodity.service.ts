@@ -112,7 +112,7 @@ export class CommodityService {
     let templateNames = COMMODITY_TEMPLATE_MAP[commodityName];
     // If commodity is already MAPSAPM code, get all the templates for that commodity
     if (MAPSPAM_COMMODITY[commodity] && !templateNames) {
-      templateNames = COMMODITY_TEMPLATE_MAP[MAPSPAM_COMMODITY[commodity].toLowerCase()];
+      templateNames = COMMODITY_TEMPLATE_MAP[MAPSPAM_COMMODITY[commodity].toLowerCase()] || [];
     } else if (!templateNames) {
       templateNames = [];
     }

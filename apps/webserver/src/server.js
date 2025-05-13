@@ -20,8 +20,26 @@ const logger = winston.createLogger({ transports: [new winston.transports.Consol
 logger.info('Starting the application');
 
 process.on('SIGINT', () => {
-  console.log('Stopping container');
+  console.log('Stopping container for SIGINT');
   exit(0);
+});
+process.on('SIGTERM', () => {
+  console.log('Stopping container for SIGTERM');
+  exit(0);
+});
+
+process.on('uncaughtException', (err) => {
+  console.error('Uncaught Exception:', err?.stack || err);
+  process.exit(1);
+});
+
+process.on('unhandledRejection', (reason, promise) => {
+  console.error('Unhandled Rejection at:', promise, 'reason:', reason);
+  process.exit(1);
+});
+
+process.on('exit', (code) => {
+  console.log(`About to exit with code: ${code}`);
 });
 
 // Validate the NODE_ENV and set a default if not provided

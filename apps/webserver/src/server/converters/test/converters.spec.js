@@ -7,7 +7,7 @@ describe('getConverters', () => {
     const req = {};
     const res = {
       status: jest.fn().mockReturnThis(),
-      json: jest.fn()
+      json: jest.fn(),
     };
 
     // Call the controller

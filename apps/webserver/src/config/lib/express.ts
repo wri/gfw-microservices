@@ -171,7 +171,12 @@ const configureStaticAssetPath = (app: Application) => {
  * @param {Express.Application} app
  */
 const configureServerRoutes = (app: Application, limiter: any) => {
-  config.files.routes.forEach((route: string) => require(path.resolve(route))(app, limiter));
+  config.files.routes.forEach((route: string) => {
+    const routeModule = require(path.resolve(route));
+    // This allows to gradually migrate route files from CommonJS to ESM.
+    const handler = routeModule.default || routeModule;
+    handler(app, limiter); // fine
+  });
 };
 
 /**

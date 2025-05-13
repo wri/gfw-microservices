@@ -5,8 +5,8 @@ global.process = {
   ...global.process,
   env: {
     ...global.process.env,
-    NODE_ENV: 'test'
-  }
+    NODE_ENV: 'test',
+  },
 };
 
 // Mock path resolution
@@ -22,22 +22,22 @@ jest.mock('path', () => ({
       './config/privateutils/rollback.utils': '../privateutils/rollback.utils',
       './config/publicutils/userManager.utils': './userManager.utils',
       './config/privateutils/logger.utils': '../privateutils/logger.utils',
-      './config/privateutils/list.utils': '../privateutils/list.utils'
+      './config/privateutils/list.utils': '../privateutils/list.utils',
     };
     return pathMap[path] || path;
-  })
+  }),
 }));
 
 // Mock config module
 jest.mock('../config', () => ({
   default: {
     database: {
-      name: 'test_db'
+      name: 'test_db',
     },
     assets: {
-      path: '/test/assets'
-    }
-  }
+      path: '/test/assets',
+    },
+  },
 }));
 
 // Mock winston logger
@@ -46,25 +46,25 @@ jest.mock('winston', () => ({
     error: jest.fn(),
     info: jest.fn(),
     warn: jest.fn(),
-    debug: jest.fn()
-  })
+    debug: jest.fn(),
+  }),
 }));
 
 // Mock required modules
 jest.mock('../privateutils/sql.utils', () => ({
   executeOrganizationStoredProcedure: jest.fn(),
-  executeOrganizationQuery: jest.fn()
+  executeOrganizationQuery: jest.fn(),
 }));
 
 jest.mock('../privateutils/logger.utils', () => ({
   error: jest.fn(),
   info: jest.fn(),
   warn: jest.fn(),
-  debug: jest.fn()
+  debug: jest.fn(),
 }));
 
 jest.mock('../privateutils/list.utils', () => ({
-  mergeListsWithAnalysisId: jest.fn()
+  mergeListsWithAnalysisId: jest.fn(),
 }));
 
 jest.mock('../privateutils/error.utils', () => ({
@@ -74,36 +74,36 @@ jest.mock('../privateutils/error.utils', () => ({
   ERROR_CODES: {
     userNotAdmin: 'USER_NOT_ADMIN',
     failedToShareInternal: 'FAILED_TO_SHARE_INTERNAL',
-    failedToGetShared: 'FAILED_TO_GET_SHARED'
-  }
+    failedToGetShared: 'FAILED_TO_GET_SHARED',
+  },
 }));
 
 jest.mock('../langResources', () => ({
-  getResourceString: jest.fn().mockReturnValue('Test error message')
+  getResourceString: jest.fn().mockReturnValue('Test error message'),
 }));
 
 jest.mock('./userManager.utils', () => ({
-  isAdministrator: jest.fn().mockReturnValue(true)
+  isAdministrator: jest.fn().mockReturnValue(true),
 }));
 
 jest.mock('./listManager.utils', () => ({
-  mergeListsWithAnalysisId: jest.fn()
+  mergeListsWithAnalysisId: jest.fn(),
 }));
 
 // Mock external packages
 jest.mock('@wri-monorepos/geo', () => ({
-  getAllListsAnalysisStatus: jest.fn().mockResolvedValue([])
+  getAllListsAnalysisStatus: jest.fn().mockResolvedValue([]),
 }));
 
 jest.mock('@wri-monorepos/sql', () => ({
-  getSharedListByUser: jest.fn().mockReturnValue('SELECT * FROM shared_lists')
+  getSharedListByUser: jest.fn().mockReturnValue('SELECT * FROM shared_lists'),
 }));
 
 // Mock the shareManager.utils module
 jest.mock('./shareManager.utils', () => ({
   findSharedListsInsideOrganization: jest.fn((sharedListsRecords, allLists) => {
-    return allLists.filter(list =>
-      sharedListsRecords.some(record => record.list_id === list.id)
+    return allLists.filter((list) =>
+      sharedListsRecords.some((record) => record.list_id === list.id)
     );
   }),
   shareListWithUser: jest.fn(async (req, res) => {
@@ -140,7 +140,7 @@ jest.mock('./shareManager.utils', () => ({
     } catch (error) {
       res.status(500).json({ error: 'Test error message' });
     }
-  })
+  }),
 }));
 
 // Now import the module
@@ -150,14 +150,11 @@ describe('shareManager.utils', () => {
   describe('findSharedListsInsideOrganization', () => {
     it('should correctly filter shared lists', () => {
       // Arrange
-      const sharedListsRecords = [
-        { list_id: 1 },
-        { list_id: 2 }
-      ];
+      const sharedListsRecords = [{ list_id: 1 }, { list_id: 2 }];
       const allLists = [
         { id: 1, name: 'List 1' },
         { id: 2, name: 'List 2' },
-        { id: 3, name: 'List 3' }
+        { id: 3, name: 'List 3' },
       ];
 
       // Act
@@ -167,20 +164,17 @@ describe('shareManager.utils', () => {
       expect(result).toHaveLength(2);
       expect(result).toEqual([
         { id: 1, name: 'List 1' },
-        { id: 2, name: 'List 2' }
+        { id: 2, name: 'List 2' },
       ]);
     });
 
     it('should return empty array when no shared lists match', () => {
       // Arrange
-      const sharedListsRecords = [
-        { list_id: 4 },
-        { list_id: 5 }
-      ];
+      const sharedListsRecords = [{ list_id: 4 }, { list_id: 5 }];
       const allLists = [
         { id: 1, name: 'List 1' },
         { id: 2, name: 'List 2' },
-        { id: 3, name: 'List 3' }
+        { id: 3, name: 'List 3' },
       ];
 
       // Act
@@ -213,15 +207,15 @@ describe('shareManager.utils', () => {
       mockReq = {
         body: {
           listId: 123,
-          userId: 456
+          userId: 456,
         },
         user: {
-          id: 789
-        }
+          id: 789,
+        },
       };
       mockRes = {
         status: jest.fn().mockReturnThis(),
-        json: jest.fn()
+        json: jest.fn(),
       };
     });
 
@@ -256,7 +250,7 @@ describe('shareManager.utils', () => {
       // Assert
       expect(mockRes.status).toHaveBeenCalledWith(500);
       expect(mockRes.json).toHaveBeenCalledWith({
-        error: 'Test error message'
+        error: 'Test error message',
       });
     });
   });
@@ -269,15 +263,15 @@ describe('shareManager.utils', () => {
       mockReq = {
         body: {
           listId: 123,
-          organizationId: 456
+          organizationId: 456,
         },
         user: {
-          id: 789
-        }
+          id: 789,
+        },
       };
       mockRes = {
         status: jest.fn().mockReturnThis(),
-        json: jest.fn()
+        json: jest.fn(),
       };
     });
 
@@ -312,7 +306,7 @@ describe('shareManager.utils', () => {
       // Assert
       expect(mockRes.status).toHaveBeenCalledWith(500);
       expect(mockRes.json).toHaveBeenCalledWith({
-        error: 'Test error message'
+        error: 'Test error message',
       });
     });
   });
@@ -324,12 +318,12 @@ describe('shareManager.utils', () => {
     beforeEach(() => {
       mockReq = {
         user: {
-          id: 789
-        }
+          id: 789,
+        },
       };
       mockRes = {
         status: jest.fn().mockReturnThis(),
-        json: jest.fn()
+        json: jest.fn(),
       };
     });
 
@@ -337,7 +331,7 @@ describe('shareManager.utils', () => {
       // Arrange
       const mockLists = [
         { id: 1, name: 'List 1' },
-        { id: 2, name: 'List 2' }
+        { id: 2, name: 'List 2' },
       ];
       const sqlUtils = require('../privateutils/sql.utils');
       sqlUtils.executeOrganizationQuery.mockResolvedValueOnce(mockLists);
@@ -363,7 +357,7 @@ describe('shareManager.utils', () => {
       // Assert
       expect(mockRes.status).toHaveBeenCalledWith(500);
       expect(mockRes.json).toHaveBeenCalledWith({
-        error: 'Test error message'
+        error: 'Test error message',
       });
     });
 

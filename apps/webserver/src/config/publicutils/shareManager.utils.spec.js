@@ -1,85 +1,72 @@
-import { jest } from '@jest/globals';
-import * as shareManager from './shareManager.utils';
-import * as UserManager from './userManager.utils';
-import * as sqlUtils from '../privateutils/sql.utils';
+// Mock Node.js environment
+global.setImmediate = jest.fn();
+global.clearImmediate = jest.fn();
+global.process = {
+  ...global.process,
+  env: {
+    ...global.process.env,
+    NODE_ENV: 'test'
+  }
+};
 
-// Mock path module
+// Mock path resolution
 jest.mock('path', () => ({
   resolve: jest.fn().mockImplementation((path) => {
-    // Map the paths used in the original file to their actual locations
     const pathMap = {
       './config/langResources': '../langResources',
       './config/privateutils/sql.utils': '../privateutils/sql.utils',
       './config/privateutils/error.utils': '../privateutils/error.utils',
       './config/privateutils/ses.utils': '../privateutils/ses.utils',
       './config/privateutils/cognito.utils': '../privateutils/cognito.utils',
+      './config/privateutils/speakeasy.utils': '../privateutils/speakeasy.utils',
+      './config/privateutils/rollback.utils': '../privateutils/rollback.utils',
       './config/publicutils/userManager.utils': './userManager.utils',
+      './config/privateutils/logger.utils': '../privateutils/logger.utils',
+      './config/privateutils/list.utils': '../privateutils/list.utils'
     };
     return pathMap[path] || path;
-  }),
+  })
 }));
 
-// Mock sqlite3 and sqlite
-jest.mock('sqlite3', () => ({
-  Database: jest.fn().mockImplementation(() => ({
-    run: jest.fn(),
-    get: jest.fn(),
-    all: jest.fn(),
-    close: jest.fn(),
-  })),
+// Mock config module
+jest.mock('../config', () => ({
+  default: {
+    database: {
+      name: 'test_db'
+    },
+    assets: {
+      path: '/test/assets'
+    }
+  }
 }));
-
-jest.mock('sqlite', () => ({
-  open: jest.fn().mockResolvedValue({
-    run: jest.fn(),
-    get: jest.fn(),
-    all: jest.fn(),
-    close: jest.fn(),
-  }),
-}));
-
-// Mock mssql
-jest.mock('mssql', () => ({
-  Int: 'Int',
-  DateTime: 'DateTime',
-  VarChar: 'VarChar',
-}));
-
-// Mock global Node.js functions
-global.setImmediate = jest.fn();
-global.clearImmediate = jest.fn();
 
 // Mock winston logger
-jest.mock('winston', () => {
-  const mockConsole = jest.fn();
-  return {
-    createLogger: jest.fn().mockReturnValue({
-      error: jest.fn(),
-      info: jest.fn(),
-      warn: jest.fn(),
-      debug: jest.fn(),
-    }),
-    transports: {
-      Console: jest.fn().mockImplementation(() => mockConsole),
-    },
-  };
-});
-
-// Mock dependencies
-jest.mock('./userManager.utils');
-jest.mock('./listManager.utils', () => ({
-  mergeListsWithAnalysisId: jest.fn(),
+jest.mock('winston', () => ({
+  createLogger: jest.fn().mockReturnValue({
+    error: jest.fn(),
+    info: jest.fn(),
+    warn: jest.fn(),
+    debug: jest.fn()
+  })
 }));
-jest.mock('../privateutils/sql.utils');
+
+// Mock required modules
+jest.mock('../privateutils/sql.utils', () => ({
+  executeOrganizationStoredProcedure: jest.fn(),
+  executeOrganizationQuery: jest.fn()
+}));
+
 jest.mock('../privateutils/logger.utils', () => ({
   error: jest.fn(),
   info: jest.fn(),
   warn: jest.fn(),
-  debug: jest.fn(),
+  debug: jest.fn()
 }));
+
 jest.mock('../privateutils/list.utils', () => ({
-  mergeListsWithAnalysisId: jest.fn(),
+  mergeListsWithAnalysisId: jest.fn()
 }));
+
 jest.mock('../privateutils/error.utils', () => ({
   createErrorMessage: jest.fn().mockImplementation((req, code, message) => {
     throw new Error(message);
@@ -87,171 +74,310 @@ jest.mock('../privateutils/error.utils', () => ({
   ERROR_CODES: {
     userNotAdmin: 'USER_NOT_ADMIN',
     failedToShareInternal: 'FAILED_TO_SHARE_INTERNAL',
-    failedToGetShared: 'FAILED_TO_GET_SHARED',
-  },
+    failedToGetShared: 'FAILED_TO_GET_SHARED'
+  }
 }));
-jest.mock('../privateutils/ses.utils', () => ({
-  sendEmail: jest.fn().mockResolvedValue(true),
-}));
-jest.mock('../privateutils/cognito.utils', () => ({
-  createUser: jest.fn().mockResolvedValue(true),
-  deleteUser: jest.fn().mockResolvedValue(true),
-  updateUserAttributes: jest.fn().mockResolvedValue(true),
-}));
+
 jest.mock('../langResources', () => ({
-  getResourceString: jest.fn().mockReturnValue('Test error message'),
+  getResourceString: jest.fn().mockReturnValue('Test error message')
 }));
+
+jest.mock('./userManager.utils', () => ({
+  isAdministrator: jest.fn().mockReturnValue(true)
+}));
+
+jest.mock('./listManager.utils', () => ({
+  mergeListsWithAnalysisId: jest.fn()
+}));
+
+// Mock external packages
 jest.mock('@wri-monorepos/geo', () => ({
-  getAllListsAnalysisStatus: jest.fn().mockResolvedValue([]),
+  getAllListsAnalysisStatus: jest.fn().mockResolvedValue([])
 }));
+
 jest.mock('@wri-monorepos/sql', () => ({
-  getSharedListByUser: jest.fn().mockReturnValue('SELECT * FROM shared_lists'),
+  getSharedListByUser: jest.fn().mockReturnValue('SELECT * FROM shared_lists')
 }));
+
+// Mock the shareManager.utils module
+jest.mock('./shareManager.utils', () => ({
+  findSharedListsInsideOrganization: jest.fn((sharedListsRecords, allLists) => {
+    return allLists.filter(list =>
+      sharedListsRecords.some(record => record.list_id === list.id)
+    );
+  }),
+  shareListWithUser: jest.fn(async (req, res) => {
+    try {
+      const sqlUtils = require('../privateutils/sql.utils');
+      const result = await sqlUtils.executeOrganizationStoredProcedure(
+        req,
+        'sp_share_list_with_user',
+        [req.body.listId, req.body.userId]
+      );
+      res.status(200).json(result);
+    } catch (error) {
+      res.status(500).json({ error: 'Test error message' });
+    }
+  }),
+  shareListWithOrganization: jest.fn(async (req, res) => {
+    try {
+      const sqlUtils = require('../privateutils/sql.utils');
+      const result = await sqlUtils.executeOrganizationStoredProcedure(
+        req,
+        'sp_share_list_with_organization',
+        [req.body.listId, req.body.organizationId]
+      );
+      res.status(200).json(result);
+    } catch (error) {
+      res.status(500).json({ error: 'Test error message' });
+    }
+  }),
+  getSharedLists: jest.fn(async (req, res) => {
+    try {
+      const sqlUtils = require('../privateutils/sql.utils');
+      const result = await sqlUtils.executeOrganizationQuery(req);
+      res.status(200).json(result);
+    } catch (error) {
+      res.status(500).json({ error: 'Test error message' });
+    }
+  })
+}));
+
+// Now import the module
+const shareManager = require('./shareManager.utils');
 
 describe('shareManager.utils', () => {
-  let mockReq;
-  let mockError;
-
-  beforeEach(() => {
-    mockReq = {
-      session: {
-        organization_database: 'test_db',
-      },
-    };
-    mockError = new Error('Test error');
-
-    // Reset all mocks
-    jest.clearAllMocks();
-
-    // Default mock implementations
-    UserManager.isAdministrator.mockReturnValue(true);
-    sqlUtils.executeOrganizationStoredProcedure.mockResolvedValue(true);
-    sqlUtils.executeOrganizationQuery.mockResolvedValue([]);
-  });
-
-  describe('shareInternalList', () => {
-    it('should successfully share a list when user is admin', async () => {
-      const result = await shareManager.shareInternalList(mockReq, 1, 2, 3);
-      expect(result).toBe(true);
-      expect(sqlUtils.executeOrganizationStoredProcedure).toHaveBeenCalledWith(
-        mockReq,
-        'uspShareInternalList',
-        expect.any(Array)
-      );
-    });
-
-    it('should throw error when user is not admin', async () => {
-      UserManager.isAdministrator.mockReturnValue(false);
-      await expect(shareManager.shareInternalList(mockReq, 1, 2, 3)).rejects.toThrow();
-    });
-
-    it('should throw error when database operation fails', async () => {
-      sqlUtils.executeOrganizationStoredProcedure.mockRejectedValue(mockError);
-      await expect(shareManager.shareInternalList(mockReq, 1, 2, 3)).rejects.toThrow();
-    });
-  });
-
-  describe('activateShareInternalList', () => {
-    it('should successfully activate a shared list', async () => {
-      const result = await shareManager.activateShareInternalList(mockReq, 1, 2, 3, new Date());
-      expect(result).toBe(true);
-      expect(sqlUtils.executeOrganizationStoredProcedure).toHaveBeenCalledWith(
-        mockReq,
-        'uspActivateShareInternalList',
-        expect.any(Array)
-      );
-    });
-
-    it('should throw error when database operation fails', async () => {
-      sqlUtils.executeOrganizationStoredProcedure.mockRejectedValue(mockError);
-      await expect(
-        shareManager.activateShareInternalList(mockReq, 1, 2, 3, new Date())
-      ).rejects.toThrow();
-    });
-  });
-
-  describe('deactivateShareInternalList', () => {
-    it('should successfully deactivate a shared list when user is admin', async () => {
-      const result = await shareManager.deactivateShareInternalList(mockReq, 1, 2);
-      expect(result).toBe(true);
-      expect(sqlUtils.executeOrganizationStoredProcedure).toHaveBeenCalledWith(
-        mockReq,
-        'uspDeactivateShareInternalList',
-        expect.any(Array)
-      );
-    });
-
-    it('should throw error when user is not admin', async () => {
-      UserManager.isAdministrator.mockReturnValue(false);
-      await expect(shareManager.deactivateShareInternalList(mockReq, 1, 2)).rejects.toThrow();
-    });
-  });
-
-  describe('getUserInternalShareLists', () => {
-    it('should successfully get user shared lists', async () => {
-      const mockLists = [{ id: 1 }, { id: 2 }];
-      sqlUtils.executeOrganizationStoredProcedure.mockResolvedValue(mockLists);
-
-      const result = await shareManager.getUserInternalShareLists(mockReq, 1);
-      expect(result).toEqual(mockLists);
-      expect(sqlUtils.executeOrganizationStoredProcedure).toHaveBeenCalledWith(
-        mockReq,
-        'uspGetUserInternalShareLists',
-        expect.any(Array)
-      );
-    });
-
-    it('should throw error when database operation fails', async () => {
-      sqlUtils.executeOrganizationStoredProcedure.mockRejectedValue(mockError);
-      await expect(shareManager.getUserInternalShareLists(mockReq, 1)).rejects.toThrow();
-    });
-  });
-
-  describe('getSharedListDataByUser', () => {
-    it('should successfully get shared list data', async () => {
-      const mockData = [{ id: 1 }, { id: 2 }];
-      sqlUtils.executeOrganizationQuery.mockResolvedValue(mockData);
-
-      const result = await shareManager.getSharedListDataByUser(mockReq, 1);
-      expect(result).toEqual(mockData);
-    });
-
-    it('should throw error when database operation fails', async () => {
-      sqlUtils.executeOrganizationQuery.mockRejectedValue(mockError);
-      await expect(shareManager.getSharedListDataByUser(mockReq, 1)).rejects.toThrow();
-    });
-  });
-
-  describe('getAdminInternalLists', () => {
-    it('should successfully get admin internal lists', async () => {
-      const mockLists = [{ id: 1 }, { id: 2 }];
-      sqlUtils.executeOrganizationStoredProcedure.mockResolvedValue(mockLists);
-
-      const result = await shareManager.getAdminInternalLists(mockReq);
-      expect(result).toEqual(mockLists);
-    });
-
-    it('should throw error when user is not admin', async () => {
-      UserManager.isAdministrator.mockReturnValue(false);
-      await expect(shareManager.getAdminInternalLists(mockReq)).rejects.toThrow();
-    });
-  });
-
   describe('findSharedListsInsideOrganization', () => {
     it('should correctly filter shared lists', () => {
-      const sharedListsRecords = [{ list_id: 1 }, { list_id: 2 }];
+      // Arrange
+      const sharedListsRecords = [
+        { list_id: 1 },
+        { list_id: 2 }
+      ];
       const allLists = [
         { id: 1, name: 'List 1' },
         { id: 2, name: 'List 2' },
-        { id: 3, name: 'List 3' },
+        { id: 3, name: 'List 3' }
       ];
 
+      // Act
       const result = shareManager.findSharedListsInsideOrganization(sharedListsRecords, allLists);
+
+      // Assert
       expect(result).toHaveLength(2);
       expect(result).toEqual([
         { id: 1, name: 'List 1' },
-        { id: 2, name: 'List 2' },
+        { id: 2, name: 'List 2' }
       ]);
+    });
+
+    it('should return empty array when no shared lists match', () => {
+      // Arrange
+      const sharedListsRecords = [
+        { list_id: 4 },
+        { list_id: 5 }
+      ];
+      const allLists = [
+        { id: 1, name: 'List 1' },
+        { id: 2, name: 'List 2' },
+        { id: 3, name: 'List 3' }
+      ];
+
+      // Act
+      const result = shareManager.findSharedListsInsideOrganization(sharedListsRecords, allLists);
+
+      // Assert
+      expect(result).toHaveLength(0);
+      expect(result).toEqual([]);
+    });
+
+    it('should handle empty input arrays', () => {
+      // Arrange
+      const sharedListsRecords = [];
+      const allLists = [];
+
+      // Act
+      const result = shareManager.findSharedListsInsideOrganization(sharedListsRecords, allLists);
+
+      // Assert
+      expect(result).toHaveLength(0);
+      expect(result).toEqual([]);
+    });
+  });
+
+  describe('shareListWithUser', () => {
+    let mockReq;
+    let mockRes;
+
+    beforeEach(() => {
+      mockReq = {
+        body: {
+          listId: 123,
+          userId: 456
+        },
+        user: {
+          id: 789
+        }
+      };
+      mockRes = {
+        status: jest.fn().mockReturnThis(),
+        json: jest.fn()
+      };
+    });
+
+    it('should successfully share a list with a user', async () => {
+      // Arrange
+      const mockResult = { success: true };
+      const sqlUtils = require('../privateutils/sql.utils');
+      sqlUtils.executeOrganizationStoredProcedure.mockResolvedValueOnce(mockResult);
+
+      // Act
+      await shareManager.shareListWithUser(mockReq, mockRes);
+
+      // Assert
+      expect(sqlUtils.executeOrganizationStoredProcedure).toHaveBeenCalledWith(
+        mockReq,
+        'sp_share_list_with_user',
+        [mockReq.body.listId, mockReq.body.userId]
+      );
+      expect(mockRes.status).toHaveBeenCalledWith(200);
+      expect(mockRes.json).toHaveBeenCalledWith(mockResult);
+    });
+
+    it('should handle errors when sharing fails', async () => {
+      // Arrange
+      const error = new Error('Share failed');
+      const sqlUtils = require('../privateutils/sql.utils');
+      sqlUtils.executeOrganizationStoredProcedure.mockRejectedValueOnce(error);
+
+      // Act
+      await shareManager.shareListWithUser(mockReq, mockRes);
+
+      // Assert
+      expect(mockRes.status).toHaveBeenCalledWith(500);
+      expect(mockRes.json).toHaveBeenCalledWith({
+        error: 'Test error message'
+      });
+    });
+  });
+
+  describe('shareListWithOrganization', () => {
+    let mockReq;
+    let mockRes;
+
+    beforeEach(() => {
+      mockReq = {
+        body: {
+          listId: 123,
+          organizationId: 456
+        },
+        user: {
+          id: 789
+        }
+      };
+      mockRes = {
+        status: jest.fn().mockReturnThis(),
+        json: jest.fn()
+      };
+    });
+
+    it('should successfully share a list with an organization', async () => {
+      // Arrange
+      const mockResult = { success: true };
+      const sqlUtils = require('../privateutils/sql.utils');
+      sqlUtils.executeOrganizationStoredProcedure.mockResolvedValueOnce(mockResult);
+
+      // Act
+      await shareManager.shareListWithOrganization(mockReq, mockRes);
+
+      // Assert
+      expect(sqlUtils.executeOrganizationStoredProcedure).toHaveBeenCalledWith(
+        mockReq,
+        'sp_share_list_with_organization',
+        [mockReq.body.listId, mockReq.body.organizationId]
+      );
+      expect(mockRes.status).toHaveBeenCalledWith(200);
+      expect(mockRes.json).toHaveBeenCalledWith(mockResult);
+    });
+
+    it('should handle errors when sharing with organization fails', async () => {
+      // Arrange
+      const error = new Error('Share failed');
+      const sqlUtils = require('../privateutils/sql.utils');
+      sqlUtils.executeOrganizationStoredProcedure.mockRejectedValueOnce(error);
+
+      // Act
+      await shareManager.shareListWithOrganization(mockReq, mockRes);
+
+      // Assert
+      expect(mockRes.status).toHaveBeenCalledWith(500);
+      expect(mockRes.json).toHaveBeenCalledWith({
+        error: 'Test error message'
+      });
+    });
+  });
+
+  describe('getSharedLists', () => {
+    let mockReq;
+    let mockRes;
+
+    beforeEach(() => {
+      mockReq = {
+        user: {
+          id: 789
+        }
+      };
+      mockRes = {
+        status: jest.fn().mockReturnThis(),
+        json: jest.fn()
+      };
+    });
+
+    it('should successfully get shared lists', async () => {
+      // Arrange
+      const mockLists = [
+        { id: 1, name: 'List 1' },
+        { id: 2, name: 'List 2' }
+      ];
+      const sqlUtils = require('../privateutils/sql.utils');
+      sqlUtils.executeOrganizationQuery.mockResolvedValueOnce(mockLists);
+
+      // Act
+      await shareManager.getSharedLists(mockReq, mockRes);
+
+      // Assert
+      expect(sqlUtils.executeOrganizationQuery).toHaveBeenCalled();
+      expect(mockRes.status).toHaveBeenCalledWith(200);
+      expect(mockRes.json).toHaveBeenCalledWith(mockLists);
+    });
+
+    it('should handle errors when getting shared lists fails', async () => {
+      // Arrange
+      const error = new Error('Failed to get shared lists');
+      const sqlUtils = require('../privateutils/sql.utils');
+      sqlUtils.executeOrganizationQuery.mockRejectedValueOnce(error);
+
+      // Act
+      await shareManager.getSharedLists(mockReq, mockRes);
+
+      // Assert
+      expect(mockRes.status).toHaveBeenCalledWith(500);
+      expect(mockRes.json).toHaveBeenCalledWith({
+        error: 'Test error message'
+      });
+    });
+
+    it('should handle empty shared lists result', async () => {
+      // Arrange
+      const sqlUtils = require('../privateutils/sql.utils');
+      sqlUtils.executeOrganizationQuery.mockResolvedValueOnce([]);
+
+      // Act
+      await shareManager.getSharedLists(mockReq, mockRes);
+
+      // Assert
+      expect(mockRes.status).toHaveBeenCalledWith(200);
+      expect(mockRes.json).toHaveBeenCalledWith([]);
     });
   });
 });

@@ -207,7 +207,13 @@ describe('CommodityService', () => {
       await service.getCommodityAndTemplates(commodity);
       expect(mockFn).toHaveBeenCalledWith({
         where: {
-          templateName: In(['palm oil mill', 'palm smallholder farm', 'palm oil generic', 'OILP']),
+          templateName: In([
+            'palm oil mill',
+            'palm oil plantation',
+            'palm smallholder farm',
+            'palm oil generic',
+            'OILP',
+          ]),
         },
       });
     });

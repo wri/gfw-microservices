@@ -120,7 +120,7 @@ describe('ValidateMandatoryFields', () => {
     };
 
     const result = await validator.handle(input);
-    expect(result.geojson.features[0].properties.errorDetails[0]).toContain(
+    expect(result.geojson.features[0].properties.errorDetails).toContain(
       'Missing mandatory fields: analysisRadius, analysisArea'
     );
   });
@@ -286,6 +286,181 @@ describe('ValidateMandatoryFields', () => {
         'custom property': 'value',
       },
     });
+  });
+
+  it('should validate point shapefile with only analysisRadius', async () => {
+    const input: ChainType = {
+      request: {
+        fileDownloadedPath: 'path/to/file.zip',
+      } as RequestNewList,
+      geojson: {
+        type: 'FeatureCollection',
+        features: [
+          {
+            type: 'Feature',
+            geometry: { type: 'Point', coordinates: [0, 0] },
+            properties: {
+              locationName: 'Test Location',
+              analysisRadius: 100,
+            },
+          },
+        ],
+      },
+    };
+
+    const result = await validator.handle(input);
+    expect(result.geojson.features[0].properties).not.toHaveProperty('errorDetails');
+  });
+
+  it('should validate point shapefile with only analysisArea', async () => {
+    const input: ChainType = {
+      request: {
+        fileDownloadedPath: 'path/to/file.zip',
+      } as RequestNewList,
+      geojson: {
+        type: 'FeatureCollection',
+        features: [
+          {
+            type: 'Feature',
+            geometry: { type: 'Point', coordinates: [0, 0] },
+            properties: {
+              locationName: 'Test Location',
+              analysisArea: 200,
+            },
+          },
+        ],
+      },
+    };
+
+    const result = await validator.handle(input);
+    expect(result.geojson.features[0].properties).not.toHaveProperty('errorDetails');
+  });
+
+  it('should validate CSV file with only analysisRadius', async () => {
+    const input: ChainType = {
+      request: {
+        fileDownloadedPath: 'path/to/file.csv',
+      } as RequestNewList,
+      geojson: {
+        type: 'FeatureCollection',
+        features: [
+          {
+            type: 'Feature',
+            geometry: { type: 'Point', coordinates: [0, 0] },
+            properties: {
+              locationName: 'Test Location',
+              latitude: 10,
+              longitude: 20,
+              analysisRadius: 100,
+            },
+          },
+        ],
+      },
+    };
+
+    const result = await validator.handle(input);
+    expect(result.geojson.features[0].properties).not.toHaveProperty('errorDetails');
+  });
+
+  it('should validate CSV file with only analysisArea', async () => {
+    const input: ChainType = {
+      request: {
+        fileDownloadedPath: 'path/to/file.csv',
+      } as RequestNewList,
+      geojson: {
+        type: 'FeatureCollection',
+        features: [
+          {
+            type: 'Feature',
+            geometry: { type: 'Point', coordinates: [0, 0] },
+            properties: {
+              locationName: 'Test Location',
+              latitude: 10,
+              longitude: 20,
+              analysisArea: 200,
+            },
+          },
+        ],
+      },
+    };
+
+    const result = await validator.handle(input);
+    expect(result.geojson.features[0].properties).not.toHaveProperty('errorDetails');
+  });
+
+  it('should add error details when both analysisRadius and analysisArea are missing in point shapefile', async () => {
+    const input: ChainType = {
+      request: {
+        fileDownloadedPath: 'path/to/file.zip',
+      } as RequestNewList,
+      geojson: {
+        type: 'FeatureCollection',
+        features: [
+          {
+            type: 'Feature',
+            geometry: { type: 'Point', coordinates: [0, 0] },
+            properties: {
+              locationName: 'Test Location',
+            },
+          },
+        ],
+      },
+    };
+
+    const result = await validator.handle(input);
+    expect(result.geojson.features[0].properties.errorDetails).toContain(
+      'Missing mandatory fields: analysisRadius, analysisArea'
+    );
+  });
+
+  it('should add error details when both analysisRadius and analysisArea are missing in CSV file', async () => {
+    const input: ChainType = {
+      request: {
+        fileDownloadedPath: 'path/to/file.csv',
+      } as RequestNewList,
+      geojson: {
+        type: 'FeatureCollection',
+        features: [
+          {
+            type: 'Feature',
+            geometry: { type: 'Point', coordinates: [0, 0] },
+            properties: {
+              locationName: 'Test Location',
+              latitude: 10,
+              longitude: 20,
+            },
+          },
+        ],
+      },
+    };
+
+    const result = await validator.handle(input);
+    expect(result.geojson.features[0].properties.errorDetails).toContain(
+      'Missing mandatory fields: analysisRadius, analysisArea'
+    );
+  });
+
+  it('should not validate analysisRadius or analysisArea for KML files', async () => {
+    const input: ChainType = {
+      request: {
+        fileDownloadedPath: 'path/to/file.kml',
+      } as RequestNewList,
+      geojson: {
+        type: 'FeatureCollection',
+        features: [
+          {
+            type: 'Feature',
+            geometry: { type: 'Point', coordinates: [0, 0] },
+            properties: {
+              locationName: 'Test Location',
+            },
+          },
+        ],
+      },
+    };
+
+    const result = await validator.handle(input);
+    expect(result.geojson.features[0].properties).not.toHaveProperty('errorDetails');
   });
 });
 

@@ -1,18 +1,14 @@
 /* global userEmail */
 
-import lightBaseTheme from 'material-ui/styles/baseThemes/lightBaseTheme';
-import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
-import getMuiTheme from 'material-ui/styles/getMuiTheme';
+import React from 'react';
 import Change from './js/components/Change';
 import { render } from 'react-dom';
-import React from 'react';
-
-lightBaseTheme.fontFamily = 'Fira Sans, sans-serif';
+import { ThemeProvider } from '../styles';
 
 const App = () => (
-  <MuiThemeProvider muiTheme={getMuiTheme(lightBaseTheme)}>
+  <ThemeProvider>
     <Change userEmail={userEmail} />
-  </MuiThemeProvider>
+  </ThemeProvider>
 );
 
 render(<App />, document.getElementById('change-mount'));

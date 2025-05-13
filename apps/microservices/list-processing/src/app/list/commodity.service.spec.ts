@@ -4,7 +4,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { CommodityService } from './commodity.service';
 import { getRepositoryToken } from '@nestjs/typeorm';
 import { ListTemplate } from '@wri-monorepos/sql';
-import { Repository } from 'typeorm';
+import { Repository, In } from 'typeorm';
 import { ClientStoreConnection } from '@wri-monorepos/sql';
 
 describe('CommodityService', () => {
@@ -207,6 +207,18 @@ describe('CommodityService', () => {
 
       const result = await service.getListsByCommodity({ commodity, organizationDatabase });
       expect(result).toEqual([{ id: 1, name: 'Cattle List' }]);
+    });
+
+    it('getCommodityAndTemplates should handle mapspam codes', async () => {
+      const commodity = 'OILP';
+      const mockFn = (listTemplateRepository.find = jest.fn().mockResolvedValue([]));
+
+      await service.getCommodityAndTemplates(commodity);
+      expect(mockFn).toHaveBeenCalledWith({
+        where: {
+          templateName: In(['palm oil mill', 'palm smallholder farm', 'palm oil generic', 'OILP']),
+        },
+      });
     });
   });
 

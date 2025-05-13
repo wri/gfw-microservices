@@ -71,7 +71,7 @@ import ModalLoader from '../../../common/js/components/Loaders/ModalLoader';
 import utils from '../utils/AppUtils';
 import layerInfoCache from '../utils/layerInfoCache';
 import { layerFactory } from '../utils/LayerFactory';
-import { identifyPoints, queryAdmin, queryExtent } from '../utils/LayerUtils';
+import { identifyPoints, queryAdmin } from '../utils/LayerUtils';
 import { getBBoxAndGeostoreIDs, getVectorTileStyle } from '../utils/gfw-api.utils';
 import setVectorTileLayerForFilteredList from '../utils/setVectorTileLayerForFilteredList';
 import setVectorTileLayerForFullList from '../utils/setVectorTileLayerForFullList';
@@ -98,7 +98,6 @@ import InfoModal from './modals/InfoModal';
 import LayerModal from './modals/LayerModal';
 import SearchModal from './modals/SearchModal';
 import { selectList } from '../../../locations/js/actions/locationActions';
-import { gfwListsLocationID } from '../../../listDetails/js/components/lists/Lists.config';
 import { FailedPopupDialog } from '../../../locations/js/components/landing/FailedPopupDialog';
 import {
   deforestationAlertsIds,
@@ -316,9 +315,6 @@ class Map extends Component {
       planetTileColor,
     } = this.state;
 
-    const queryParams = getQueryParams(this.props.location.search);
-    const { gfwListName } = queryParams; // TODO: fix or remove this workflow because this param is never received
-
     updateInteractiveLayers(this.view.map, prevState, this.state);
 
     if (prevState.visibleLayers.length < visibleLayers.length) {
@@ -487,36 +483,14 @@ class Map extends Component {
     } else if (Object.keys(prevState.gfwListDef).length < Object.keys(gfwListDef).length) {
       // Adding GFW list layer to Sidebar panel
 
-      const locationDefaultID = gfwListName
-        ? gfwListsLocationID[gfwListName].arcgis_field
-        : 'globalid';
       const activeLayerId = Object.keys(gfwListDef)[0];
       const activeGFWLayer = this.view.map.findLayerById(activeLayerId);
       this.activeGFWLayer = activeGFWLayer;
       const locationsIDs = gfwListDef[activeLayerId];
 
-      if (activeGFWLayer?.sublayers) {
-        const defExpression =
-          activeLayerId === oilPalmConcessions || activeLayerId === universalMillList
-            ? locationDefaultID + ' IN (' + locationsIDs.map((id) => "'" + id + "'") + ')'
-            : locationDefaultID + ' IN (' + locationsIDs.map((id) => "'{" + id + "}'") + ')';
-
-        let url;
-        activeGFWLayer.sublayers.items.forEach((sublayer) => {
-          url = sublayer.url;
-          sublayer.definitionExpression = defExpression;
-        });
-
-        queryExtent(url, defExpression).then((extent) => {
-          this.view.goTo(extent);
-        });
-      } else {
-        // Active GFW Layer "activeGFWLayer" is Tile Layer. No sublayers on selected layer
-        // In that case we need to add Custom Vector Tile Layer
-        activeGFWLayer?.when((gfwLayer) => {
-          this._setCustomGfwVectorTileLayer(locationsIDs, gfwListName, gfwLayer);
-        });
-      }
+      activeGFWLayer?.when((gfwLayer) => {
+        this._setCustomGfwVectorTileLayer(locationsIDs, gfwLayer);
+      });
     }
 
     if (
@@ -1298,30 +1272,6 @@ class Map extends Component {
     }
   };
 
-  legacyAnalysisCall = (microserviceUrl, geojson) => {
-    currentAnalysisCall = new XMLHttpRequest();
-    currentAnalysisCall.onload = () => {
-      this.setState({ spinnerOn: false });
-      if (currentAnalysisCall) {
-        store.dispatch(updateAnalysis(JSON.parse(currentAnalysisCall.response)));
-      }
-      currentAnalysisCall = '';
-    };
-
-    currentAnalysisCall.onerror = (err) => {
-      console.log('Request Error:', err);
-      const details = {
-        dialogTitle: 'Analysis Failure',
-        dialogMessage: 'The analysis call on this custom feature failed.',
-      };
-      this.cancelAnalysis(details);
-    };
-
-    currentAnalysisCall.open('POST', microserviceUrl);
-    currentAnalysisCall.setRequestHeader('Content-Type', 'application/json');
-    currentAnalysisCall.send(JSON.stringify({ geojson: geojson }));
-  };
-
   geostoreAnalysisCall = async (totalAreaHa, type, geostoreID, origin = 'rw') => {
     this.setState({ spinnerOn: true });
 
@@ -1572,8 +1522,6 @@ class Map extends Component {
       locationName: locationName ? locationName : 'Custom Polygon', //TODO: use this if cant get a Name off of the graphic??
     });
 
-    //For certain layers we want to use geostore analysis approach, we still able to use the old enpoints for those datasets
-    //that are not following the new standard
     if (supportedGeostoreAnalysis.includes(microservice.type)) {
       this.geostoreAnalysisCall(
         geostoreResponse.data.attributes.areaHa,
@@ -1581,8 +1529,6 @@ class Map extends Component {
         geostoreID,
         origin
       );
-    } else {
-      this.legacyAnalysisCall(microservice.microservice, geojson);
     }
   };
 
@@ -1798,28 +1744,11 @@ class Map extends Component {
     );
 
     // Add selected Geostore IDs GFW Vector Tile layer
-    this._setCustomGfwVectorTileLayer = async (locationIDs, gfwListName, gfwLayer) => {
-      let gfwVectorTileUrl = gfwLayer.url;
-      const regExpDomainName = /^.*\/\/[^/]+/;
-      const gfwVectorTileStyle = gfwLayer.styleRepository;
-      const vectorTileUrlChunks = gfwVectorTileUrl.replace(regExpDomainName, '').split('/');
-      const GFW_LIST = vectorTileUrlChunks[1];
-      let QUERY_FIELD = 'gfw_geostore_id';
-
-      if (gfwListName === 'Palm Oil Mills') {
-        QUERY_FIELD = 'uml_id';
-      }
-
+    this._setCustomGfwVectorTileLayer = async (locationIDs, gfwLayer) => {
       // Create Custom GFW Vector Tile Layer
       this.customGfwVectorTileLayer = new VectorTileLayer({
         id: `${gfwLayer.id} - Custom`,
-        style: await getVectorTileStyle(
-          GFW_LIST,
-          QUERY_FIELD,
-          locationIDs,
-          gfwVectorTileUrl,
-          gfwVectorTileStyle
-        ),
+        style: await getVectorTileStyle(locationIDs, gfwLayer),
       });
       view.map.add(this.customGfwVectorTileLayer);
       gfwLayer.opacity = 0;
@@ -2332,8 +2261,6 @@ class Map extends Component {
       this.setState({ spinnerOn: false });
     }
     store.dispatch(updateAnalysis({}));
-    console.log('currentAnalysisCall', currentAnalysisCall); //TODO: is .abort a function??;
-    currentAnalysisCall.abort();
     this.view.graphics.removeAll();
   };
 

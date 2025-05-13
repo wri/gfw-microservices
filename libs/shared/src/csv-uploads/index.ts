@@ -72,7 +72,6 @@ export const resolveLatLongHandlerByIdType = async (
     throw new Error(`No lat/long support for ID ${idType}`);
   }
 
-  logger.log(`Handling lat/long based from ID Type: ${idType}`);
   const possibleUpdates = await applyLookUpByChunks(data, key, ID_TYPE_HANDLER[key]);
 
   data.forEach((row, i) => Object.assign(row, possibleUpdates[i]));

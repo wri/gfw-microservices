@@ -4,7 +4,8 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { CommodityService } from './commodity.service';
 import { getRepositoryToken } from '@nestjs/typeorm';
 import { ListTemplate } from '@wri-monorepos/sql';
-import { Repository } from 'typeorm';
+import { Repository, In } from 'typeorm';
+import { ClientStoreConnection } from '@wri-monorepos/sql';
 
 describe('CommodityService', () => {
   let service: CommodityService;
@@ -172,6 +173,43 @@ describe('CommodityService', () => {
 
       const result = await service.getListsByCommodity({ commodity, organizationDatabase });
       expect(result).toEqual([]);
+    });
+
+    it('should handle database errors gracefully and return empty array', async () => {
+      const commodity = 'Wheat';
+      const organizationDatabase = 'test_db';
+
+      jest.spyOn(listTemplateRepository, 'find').mockRejectedValue(new Error('Database error'));
+
+      const result = await service.getListsByCommodity({ commodity, organizationDatabase });
+      expect(result).toEqual([]);
+    });
+
+    it('should handle special characters in commodity names', async () => {
+      const commodity = 'GFWP_Cattle';
+      const organizationDatabase = 'test_db';
+      const mockTemplate = { id: 1, templateName: 'cattle ranch', locationTypeId: 1 };
+      const mockLists = [{ id: 1, listName: 'Cattle List' }];
+
+      jest.spyOn(listTemplateRepository, 'find').mockResolvedValue([mockTemplate]);
+      jest.spyOn(service, 'getListsByCommodity').mockImplementation(async () => {
+        return mockLists.map((list) => ({ id: list.id, name: list.listName }));
+      });
+
+      const result = await service.getListsByCommodity({ commodity, organizationDatabase });
+      expect(result).toEqual([{ id: 1, name: 'Cattle List' }]);
+    });
+
+    it('getCommodityAndTemplates should handle mapspam codes', async () => {
+      const commodity = 'OILP';
+      const mockFn = (listTemplateRepository.find = jest.fn().mockResolvedValue([]));
+
+      await service.getCommodityAndTemplates(commodity);
+      expect(mockFn).toHaveBeenCalledWith({
+        where: {
+          templateName: In(['palm oil mill', 'palm smallholder farm', 'palm oil generic', 'OILP']),
+        },
+      });
     });
   });
 

@@ -14,7 +14,7 @@ import { getRepositoryToken } from '@nestjs/typeorm';
 
 // Mapping of commodity names to their template IDs
 const COMMODITY_TEMPLATE_MAP = {
-  'palm oil': ['palm oil mill', 'palm smallholder farm', 'palm oil generic'],
+  'palm oil': ['palm oil mill', 'palm oil plantation', 'palm smallholder farm', 'palm oil generic'],
   soy: ['soy silo', 'soy farm', 'soy generic'],
   gfwp_cattle: ['cattle ranch', 'cattle generic'],
   cocoa: ['cocoa farm', 'cocoa generic'],

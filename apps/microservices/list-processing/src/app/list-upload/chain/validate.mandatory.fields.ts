@@ -118,6 +118,22 @@ export class ValidateMandatoryFields extends AbstractHandler<ChainType> {
     } else {
       geojson.features.forEach((feature) => {
         const missingFields = fieldsToCheck.filter((field) => !(field in feature.properties));
+
+        // If both analysisRadius and analysisArea are in the mandatory fields
+        if (fieldsToCheck.includes('analysisRadius') && fieldsToCheck.includes('analysisArea')) {
+          // Remove both from missing fields if at least one is present
+          if ('analysisRadius' in feature.properties || 'analysisArea' in feature.properties) {
+            const index = missingFields.indexOf('analysisRadius');
+            if (index > -1) {
+              missingFields.splice(index, 1);
+            }
+            const index2 = missingFields.indexOf('analysisArea');
+            if (index2 > -1) {
+              missingFields.splice(index2, 1);
+            }
+          }
+        }
+
         if (missingFields.length > 0) {
           feature.properties.errorDetails = feature.properties.errorDetails || [];
           (input.request as RequestNewList).hasUnanalyzableError = true;
@@ -142,10 +158,26 @@ export class ValidateMandatoryFields extends AbstractHandler<ChainType> {
       } else if (geometryType === 'Point') {
         fieldsToCheck = mandatoryFields['zip']['.point'];
       } else {
-        return; // Skip if geometry type is neither polygon nor point
+        return;
       }
 
       const missingFields = fieldsToCheck.filter((field) => !(field in feature.properties));
+
+      // If both analysisRadius and analysisArea are in the mandatory fields
+      if (fieldsToCheck.includes('analysisRadius') && fieldsToCheck.includes('analysisArea')) {
+        // Remove both from missing fields if at least one is present
+        if ('analysisRadius' in feature.properties || 'analysisArea' in feature.properties) {
+          const index = missingFields.indexOf('analysisRadius');
+          if (index > -1) {
+            missingFields.splice(index, 1);
+          }
+          const index2 = missingFields.indexOf('analysisArea');
+          if (index2 > -1) {
+            missingFields.splice(index2, 1);
+          }
+        }
+      }
+
       if (missingFields.length > 0) {
         feature.properties.errorDetails = feature.properties.errorDetails || [];
         hasUnanalyzableError = true;

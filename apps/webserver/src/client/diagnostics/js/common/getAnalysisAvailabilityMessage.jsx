@@ -1,5 +1,6 @@
 import React from 'react';
 import { listStatus } from '../../../../config/env/listStatuses.constants';
+import { formatDateForCurrentBrowserLanguage } from '../../../common/js/utils/format';
 
 const getAnalysisAvailabilityMessage = (
   listStatusId,
@@ -14,7 +15,7 @@ const getAnalysisAvailabilityMessage = (
 
   const isListBeingAnalyzed = listStatusId === Pending;
 
-  const formattedUpdateTime = new Date(updateTime).toLocaleString();
+  const formattedUpdateTime = formatDateForCurrentBrowserLanguage(updateTime);
   const messagesMap = {
     [Pending]:
       'List is analyzing. You will receive an email once analysis is complete and can reload the page to access the diagnostics.',

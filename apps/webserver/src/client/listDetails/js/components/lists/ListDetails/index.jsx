@@ -1842,8 +1842,11 @@ export default class ListDetails extends Component {
     }
   }
 
-  getAnalysisLastUpdatedDate(listAnalysesStatus) {
-    const updateTime = Array.isArray(listAnalysesStatus) && listAnalysesStatus[0]?.updateTime;
+  getAnalysisLastUpdatedDate(listAnalysesStatus, analysisIdOfCurrentTab) {
+    const currentAnalysis = listAnalysesStatus?.find(
+      (item) => item.analysisId === analysisIdOfCurrentTab
+    );
+    const updateTime = currentAnalysis?.updateTime;
     const analysisUpdatedString = Transifex.live.translateText('Analysis updated');
     return updateTime ? (
       <>
@@ -2338,12 +2341,12 @@ export default class ListDetails extends Component {
                                 </Typography>
                               </Box>
                             )}
-
-                            {!this.areAllAnalysesDraft() && (
-                              <span className="list-analysis-actions__analysis-date">
-                                {this.getAnalysisLastUpdatedDate(listAnalysesStatus)}
-                              </span>
-                            )}
+                            <span className="list-analysis-actions__analysis-date">
+                              {this.getAnalysisLastUpdatedDate(
+                                listAnalysesStatus,
+                                analysisIdOfCurrentTab
+                              )}
+                            </span>
                           </div>
                           <Filter
                             filterCount={filterCount}

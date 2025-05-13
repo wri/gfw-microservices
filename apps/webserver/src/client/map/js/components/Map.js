@@ -1463,7 +1463,6 @@ class Map extends Component {
   };
 
   analyzeCustom = async (graphic, origin) => {
-    console.log('analyzeCustom');
     // Need to convert to geographic coordinates;
     const { geometry, attributes } = graphic;
 

@@ -92,11 +92,39 @@ const mandatoryFields = {
 export class ValidateMandatoryFields extends AbstractHandler<ChainType> {
   private readonly logger = new Logger(ValidateMandatoryFields.name);
 
+  private validateFeature(feature: Feature, fieldsToCheck: string[]): boolean {
+    const missingFields = fieldsToCheck.filter((field) => !(field in feature.properties));
+
+    // If both analysisRadius and analysisArea are in the mandatory fields
+    if (fieldsToCheck.includes('analysisRadius') && fieldsToCheck.includes('analysisArea')) {
+      // Remove both from missing fields if at least one is present
+      if ('analysisRadius' in feature.properties || 'analysisArea' in feature.properties) {
+        const index = missingFields.indexOf('analysisRadius');
+        if (index > -1) {
+          missingFields.splice(index, 1);
+        }
+        const index2 = missingFields.indexOf('analysisArea');
+        if (index2 > -1) {
+          missingFields.splice(index2, 1);
+        }
+      }
+    }
+
+    if (missingFields.length > 0) {
+      feature.properties.errorDetails = feature.properties.errorDetails || [];
+      (feature.properties.errorDetails as Array<string>).push(
+        `Missing mandatory fields: ${missingFields.join(', ')}`
+      );
+      return false;
+    }
+
+    return true;
+  }
+
   async handle(input: ChainType): Promise<ChainType> {
     const { request, geojson } = input;
-    const { fileDownloadedPath } = request as RequestNewList; // Assuming fileDownloadedPath contains the path of the file
+    const { fileDownloadedPath } = request as RequestNewList;
 
-    // Extract the file extension
     const fileExtension = path.extname(fileDownloadedPath);
     const baseExtension = ['.zip', '.json', '.geojson'].includes(fileExtension)
       ? fileExtension.replace('.', '')
@@ -110,38 +138,20 @@ export class ValidateMandatoryFields extends AbstractHandler<ChainType> {
 
     geojson.features = geojson.features.map((feature) => convertProperties(feature));
 
-    // Check if the file is a zip shapefile and determine the geometry type
     if (['.zip', '.json', '.geojson'].includes(fileExtension)) {
       if (!this.validateMultiType(geojson)) {
         (input.request as RequestNewList).hasUnanalyzableError = true;
       }
     } else {
+      let hasError = false;
       geojson.features.forEach((feature) => {
-        const missingFields = fieldsToCheck.filter((field) => !(field in feature.properties));
-
-        // If both analysisRadius and analysisArea are in the mandatory fields
-        if (fieldsToCheck.includes('analysisRadius') && fieldsToCheck.includes('analysisArea')) {
-          // Remove both from missing fields if at least one is present
-          if ('analysisRadius' in feature.properties || 'analysisArea' in feature.properties) {
-            const index = missingFields.indexOf('analysisRadius');
-            if (index > -1) {
-              missingFields.splice(index, 1);
-            }
-            const index2 = missingFields.indexOf('analysisArea');
-            if (index2 > -1) {
-              missingFields.splice(index2, 1);
-            }
-          }
-        }
-
-        if (missingFields.length > 0) {
-          feature.properties.errorDetails = feature.properties.errorDetails || [];
-          (input.request as RequestNewList).hasUnanalyzableError = true;
-          (feature.properties.errorDetails as Array<string>).push(
-            `Missing mandatory fields: ${missingFields.join(', ')}`
-          );
+        if (!this.validateFeature(feature, fieldsToCheck)) {
+          hasError = true;
         }
       });
+      if (hasError) {
+        (input.request as RequestNewList).hasUnanalyzableError = true;
+      }
     }
 
     return input;
@@ -161,29 +171,8 @@ export class ValidateMandatoryFields extends AbstractHandler<ChainType> {
         return;
       }
 
-      const missingFields = fieldsToCheck.filter((field) => !(field in feature.properties));
-
-      // If both analysisRadius and analysisArea are in the mandatory fields
-      if (fieldsToCheck.includes('analysisRadius') && fieldsToCheck.includes('analysisArea')) {
-        // Remove both from missing fields if at least one is present
-        if ('analysisRadius' in feature.properties || 'analysisArea' in feature.properties) {
-          const index = missingFields.indexOf('analysisRadius');
-          if (index > -1) {
-            missingFields.splice(index, 1);
-          }
-          const index2 = missingFields.indexOf('analysisArea');
-          if (index2 > -1) {
-            missingFields.splice(index2, 1);
-          }
-        }
-      }
-
-      if (missingFields.length > 0) {
-        feature.properties.errorDetails = feature.properties.errorDetails || [];
+      if (!this.validateFeature(feature, fieldsToCheck)) {
         hasUnanalyzableError = true;
-        (feature.properties.errorDetails as Array<string>).push(
-          `Missing mandatory fields: ${missingFields.join(', ')}`
-        );
       }
     });
     return !hasUnanalyzableError;

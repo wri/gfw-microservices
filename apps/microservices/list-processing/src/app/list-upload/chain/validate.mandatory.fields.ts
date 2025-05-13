@@ -1,6 +1,7 @@
 import { Logger } from '@nestjs/common';
 import { AbstractHandler, ChainType, RequestNewList } from './types';
 import * as path from 'path';
+import { Feature } from '@wri-monorepos/geo';
 
 const expectedNumberFields = ['latitude', 'longitude', 'analysisArea', 'analysisRadius'];
 

@@ -419,7 +419,11 @@ export const isGHGCommodityValid = async (
     const listData = await listRepository.findOne({
       where: { id },
     });
-
+    
+    if (!listData) {
+      Logger.error('validateGHGCommodity', `List ${id} not found`);
+      throw new Error(`List ${id} not found`);
+    }
     // Get list.xxx repository
     const ListEntity = new EntitySchema<ListSchemaType>({
       ...ListSchema,
@@ -429,10 +433,6 @@ export const isGHGCommodityValid = async (
     const listTableNameRepository = await connection.getRepository(ListEntity);
     const listTableName = await listTableNameRepository.findBy({ commodity: listData.Commodity });
 
-    if (!listData) {
-      Logger.error('validateGHGCommodity', `List ${id} not found`);
-      throw new Error(`List ${id} not found`);
-    }
     // Upgrade list version
     if (listData.version < 2) {
       try {

@@ -435,12 +435,17 @@ export const isGHGCommodityValid = async (
     }
     // Upgrade list version
     if (listData.version < 2) {
-      Logger.log('Upgrading', `List ${id} to version 2`);
-      await upgradeListSchema({
-        clientDb: organizationDb,
-        listId: id,
-        userId: organization_user_id,
-      });
+      try {
+        Logger.log('Upgrading', `List ${id} to version 2`);
+        await upgradeListSchema({
+          clientDb: organizationDb,
+          listId: id,
+          userId: organization_user_id,
+        });
+      } catch (error) {
+        Logger.error('validateGHGCommodity', `Error upgrading list ${id} to version 2: ${error}`);
+        throw new Error(`Error upgrading list ${id} to version 2: ${error}`);
+      }
     }
     // ListData.version = 2 won't have commodities with null values, take care of it when version 2 is implemented
     // verify if list has no commodity

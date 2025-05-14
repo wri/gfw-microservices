@@ -9,6 +9,7 @@ import {
   ListSchemaType,
   SQLUtils,
   updateListsAnalysisStatus,
+  upgradeListSchema,
   User,
 } from '@wri-monorepos/sql';
 import {
@@ -246,7 +247,7 @@ export const handleCreateAnalysis = async (
 
     try {
       if ('GHG' in analysisTypes && analysisTypes['GHG']) {
-        await isGHGCommodityValid(listId, organizationDb);
+        await isGHGCommodityValid(listId, organizationDb, organization_user_id);
       }
     } catch (error) {
       Logger.error('Error during GHG commodity validation', error.stack || error);
@@ -405,7 +406,11 @@ export async function resolveListAnalysisStatuses(listAnalysisStatuses: ListsAna
   }
 }
 
-export const isGHGCommodityValid = async (id: number, organizationDb: string): Promise<boolean> => {
+export const isGHGCommodityValid = async (
+  id: number,
+  organizationDb: string,
+  organization_user_id: number
+): Promise<boolean> => {
   // Get list data
   try {
     const clientStoreConnection = new ClientStoreConnection();
@@ -428,7 +433,15 @@ export const isGHGCommodityValid = async (id: number, organizationDb: string): P
       Logger.error('validateGHGCommodity', `List ${id} not found`);
       throw new Error(`List ${id} not found`);
     }
-
+    // Upgrade list version
+    if (listData.version < 2) {
+      Logger.log('Upgrading', `List ${id} to version 2`);
+      await upgradeListSchema({
+        clientDb: organizationDb,
+        listId: id,
+        userId: organization_user_id,
+      });
+    }
     // ListData.version = 2 won't have commodities with null values, take care of it when version 2 is implemented
     // verify if list has no commodity
     if (listData.Commodity === null && listData.version > 1) {

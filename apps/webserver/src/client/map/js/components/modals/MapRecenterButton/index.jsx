@@ -1,8 +1,9 @@
 import React, { useEffect, useState } from 'react';
-import { Button } from '@mui/base';
 import FmdGoodIcon from '@mui/icons-material/FmdGood';
+import { PillButton } from '../../../../../components';
 
 import './mapRecenterButton.scss';
+import { ThemeProvider } from '../../../../../styles/ThemeProvider';
 
 const MapRecenterButton = ({
   selectedList = [],
@@ -19,19 +20,20 @@ const MapRecenterButton = ({
   }, [selectedList]);
 
   return (
-    <>
+    <ThemeProvider>
       {showButton && !isMapMoving && !isMapCentered && (
-        <Button
+        <PillButton
+          variant="contained"
+          size="small"
           data-testid="map-center-button"
           onClick={goToOriginalPoint}
-          className="gfw-button btn-green center-button"
-          style={{ marginTop: '20px' }}
+          sx={{ mt: 2, mx: 'auto' }}
         >
           <FmdGoodIcon />
           back to location (s)
-        </Button>
+        </PillButton>
       )}
-    </>
+    </ThemeProvider>
   );
 };
 

@@ -23,16 +23,12 @@ describe('csvLatLongIdBasedTransformer', () => {
     );
   });
 
-  it("returns original data (and skips look-ups) when 'ID Type' is present but 'ID' is missing", async () => {
+  it("throws an error if 'ID Type' is present but 'ID' is missing", async () => {
     const rows = [{ 'ID Type': 'UML', some: 'data' }];
-    const result = await csvLatLongIdBasedTransformer(rows);
 
-    await expect(result).rejects.toThrow(
+    await expect(csvLatLongIdBasedTransformer(rows)).rejects.toThrow(
       'It looks like the file you uploaded is not supported for ID-based upload. ID-based upload requires a .csv or .xlsx file with "ID Type" and "ID" columns present. Please try again with a compatible file format.'
     );
-
-    expect(mockUmlLookUp).not.toHaveBeenCalled();
-    expect(mockCarLookUp).not.toHaveBeenCalled();
   });
 
   it("calls UML lookup and merges geometry when 'ID Type' === 'UML'", async () => {

@@ -68,3 +68,4 @@ export * from './deactivateShareInternalList';
 export * from './deletePolicy';
 export * from './getCheckIfListWasUploadByEAPI';
 export * from './getGHGLocationErrorsByListId';
+export * from './getListAnalysis';

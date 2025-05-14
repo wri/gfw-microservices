@@ -109,9 +109,7 @@ export default class Forgot extends Component {
             <PillButton variant="contained" size="small" onClick={this.submit}>
               Reset
             </PillButton>
-            <Link href="/" sx={{ color: 'text.primary', fontWeight: '500' }}>
-              Back
-            </Link>
+            <Link href="/">Back</Link>
           </Box>
         </section>
       </Page>

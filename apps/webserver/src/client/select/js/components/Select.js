@@ -1,9 +1,10 @@
 import React, { Component } from 'react';
+import '../../css/select.scss';
+
 import Page from '../../../common/js/components/Page';
 import SubHeader from '../../../common/js/components/SubHeader';
-import GfwButton from '../../../common/js/components/GfwButton';
 import getFeatureFlags from '../../../../utils/getFeatureFlags';
-import '../../css/select.scss';
+import { PillButton } from '../../../components';
 
 const pageOptions = {
   links: {
@@ -112,11 +113,9 @@ export default class Select extends Component {
             <tbody>{accountsList}</tbody>
           </table>
           <div className="buttons-container">
-            <GfwButton
-              classNames="btn-green"
-              onClick={() => this.submit(organization)}
-              value="Submit"
-            />
+            <PillButton variant="contained" size="small" onClick={() => this.submit(organization)}>
+              Submit
+            </PillButton>
           </div>
         </div>
       </Page>

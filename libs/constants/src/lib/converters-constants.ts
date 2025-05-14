@@ -6,5 +6,4 @@ export const CONVERTER_NAMES = {
 
 export type ConverterName = (typeof CONVERTER_NAMES)[keyof typeof CONVERTER_NAMES];
 
-// Creates list to loop over
-export const AllConverterNames: ConverterName[] = Object.values(CONVERTER_NAMES);
+export const ConverterNamesList: ConverterName[] = Object.values(CONVERTER_NAMES);

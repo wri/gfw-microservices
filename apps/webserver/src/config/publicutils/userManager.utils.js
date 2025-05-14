@@ -30,16 +30,17 @@ const sql = require('mssql');
 const path = require('path');
 import config from '../config';
 
-const langResources = require(path.resolve('./config/langResources'));
-const awsSes = require(path.resolve('./config/privateutils/ses.utils'));
-const awsCognito = require(path.resolve('./config/privateutils/cognito.utils'));
-const sqlUtils = require(path.resolve('./config/privateutils/sql.utils'));
-const logger = require(path.resolve('./config/privateutils/logger.utils'));
-const errorUtils = require(path.resolve('./config/privateutils/error.utils'));
-const speakEasy = require(path.resolve('./config/privateutils/speakeasy.utils'));
-const rollbackUtils = require(path.resolve('./config/privateutils/rollback.utils'));
+const langResources = require(path.resolve(__dirname, '../langResources'));
+const awsSes = require(path.resolve(__dirname, '../privateutils/ses.utils'));
+const awsCognito = require(path.resolve(__dirname, '../privateutils/cognito.utils'));
+const sqlUtils = require(path.resolve(__dirname, '../privateutils/sql.utils'));
+const logger = require(path.resolve(__dirname, '../privateutils/logger.utils'));
+const errorUtils = require(path.resolve(__dirname, '../privateutils/error.utils'));
+const speakEasy = require(path.resolve(__dirname, '../privateutils/speakeasy.utils'));
+const rollbackUtils = require(path.resolve(__dirname, '../privateutils/rollback.utils'));
 const { listStatusDescriptions, listStatus } = require(path.resolve(
-  './config/env/listStatuses.constants'
+  __dirname,
+  '../env/listStatuses.constants'
 ));
 
 import { UserAccessLevel } from '@wri-monorepos/constants';
@@ -179,10 +180,7 @@ export function isEditor(req) {
  * @return  true if Pro Manager, false otherwise.
  */
 export function isProManager(req) {
-  if (req.session.ispromanager !== undefined && req.session.ispromanager === true) {
-    return true;
-  }
-  return false;
+  return req.session.ispromanager === true;
 }
 
 /**

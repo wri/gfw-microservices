@@ -9,7 +9,6 @@
  *   @function {getAllAccountsList}
  *   @function {getAllUsersList}
  *   @function {activatePendingAccount}
- *   @function {updatePendingAccount}
  *   @function {updatePendingAccountUser}
  *   @function {deletePendingAccountRequest}
  *   @function {deactivateAccount}
@@ -23,24 +22,24 @@ const path = require('path');
 const sql = require('mssql');
 import config from '../config';
 
-const langResources = require(path.resolve('./config/langResources'));
-const awsSes = require(path.resolve('./config/privateutils/ses.utils'));
-const sqlUtils = require(path.resolve('./config/privateutils/sql.utils'));
-const Helper = require(path.resolve('./config/publicutils/helper.utils'));
-const errorUtils = require(path.resolve('./config/privateutils/error.utils'));
-const awsCognito = require(path.resolve('./config/privateutils/cognito.utils'));
-const speakEasy = require(path.resolve('./config/privateutils/speakeasy.utils'));
-const rollbackUtils = require(path.resolve('./config/privateutils/rollback.utils'));
-const UserManager = require(path.resolve('./config/publicutils/userManager.utils'));
-const PolicyManager = require(path.resolve('./config/publicutils/policyManager.utils'));
-const AccountManager = require(path.resolve('./config/publicutils/accountManager.utils'));
+const langResources = require(path.resolve(__dirname, '../langResources'));
+const awsSes = require(path.resolve(__dirname, '../privateutils/ses.utils'));
+const sqlUtils = require(path.resolve(__dirname, '../privateutils/sql.utils'));
+const Helper = require(path.resolve(__dirname, '../publicutils/helper.utils'));
+const errorUtils = require(path.resolve(__dirname, '../privateutils/error.utils'));
+const awsCognito = require(path.resolve(__dirname, '../privateutils/cognito.utils'));
+const speakEasy = require(path.resolve(__dirname, '../privateutils/speakeasy.utils'));
+const rollbackUtils = require(path.resolve(__dirname, '../privateutils/rollback.utils'));
+const UserManager = require(path.resolve(__dirname, '../publicutils/userManager.utils'));
+const PolicyManager = require(path.resolve(__dirname, '../publicutils/policyManager.utils'));
+const AccountManager = require(path.resolve(__dirname, '../publicutils/accountManager.utils'));
 import {
   setOrganizationCustomAnalysisLimits,
   setGlobalAnalysisLimit,
   setOrganizationRenewalTime,
 } from '@wri-monorepos/sql';
-const { orgAccountStatus } = require(path.resolve('./config/env/orgAccountStatus.constants'));
-const logger = require(path.resolve('./config/privateutils/logger.utils'));
+const { orgAccountStatus } = require(path.resolve(__dirname, '../env/orgAccountStatus.constants'));
+const logger = require(path.resolve(__dirname, '../privateutils/logger.utils'));
 
 /**
  * @function getAllAccountsList
@@ -132,6 +131,7 @@ const activatePendingAccount = (req, pendingaccount_id, unit_test = false) => {
     let userExists = 0;
     let orgID = 0;
     let content = {};
+
     // Get data for emails
     const titles = UserManager.getTitles(req);
     const commodities = UserManager.getCommodities(req);
@@ -167,7 +167,7 @@ const activatePendingAccount = (req, pendingaccount_id, unit_test = false) => {
             {}
           );
         }
-        // if not, grab the pending account info
+
         const parameters = [
           { field: 'pendingaccount_id', type: sql.Int, value: pendingaccount_id },
         ];
@@ -201,6 +201,7 @@ const activatePendingAccount = (req, pendingaccount_id, unit_test = false) => {
           arr_user_geography_ids: [],
           arr_user_commodity_ids: [],
         };
+
         const userParameters = [{ field: 'pending_user_id', type: sql.Int, value: userID }];
         const orgParameters = [
           { field: 'pending_organization_id', type: sql.Int, value: pendingaccount_id },
@@ -227,6 +228,7 @@ const activatePendingAccount = (req, pendingaccount_id, unit_test = false) => {
       .then((recordsets) => {
         const [commodityRecords, geographyRecords, policyRecords, classificationRecords] =
           recordsets;
+
         const policyArray = policyRecords.map((policy) => policy.document_name);
         const classificationArray = classificationRecords
           .map((classification) => classification.classification_id)
@@ -237,6 +239,7 @@ const activatePendingAccount = (req, pendingaccount_id, unit_test = false) => {
         const geographyArray = geographyRecords
           .map((geography) => geography.geography_id)
           .map((id) => geographies.find((geography) => geography.id === id));
+
         content.policyNames = policyArray;
         content.arr_org_classification_ids = classificationArray.every(Helper.isUndefined)
           ? []
@@ -775,7 +778,6 @@ module.exports = {
   getAllAccountsList,
   getAllUsersList,
   activatePendingAccount,
-  updatePendingAccount,
   updatePendingAccountUser,
   deletePendingAccountRequest,
   deleteOrganization,

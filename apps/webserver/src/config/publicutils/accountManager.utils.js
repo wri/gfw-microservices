@@ -1,3 +1,4 @@
+// @ts-nocheck
 /* eslint-disable no-param-reassign */
 /* eslint-disable consistent-return */
 /* eslint-disable camelcase */
@@ -22,13 +23,13 @@ const path = require('path');
 const sql = require('mssql');
 import config from '../config';
 
-const AWSSES = require(path.resolve('./config/privateutils/ses.utils'));
-const sqlUtils = require(path.resolve('./config/privateutils/sql.utils'));
-const errorUtils = require(path.resolve('./config/privateutils/error.utils'));
-const rollbackUtils = require(path.resolve('./config/privateutils/rollback.utils'));
-const PolicyManager = require(path.resolve('./config/publicutils/policyManager.utils'));
-const logger = require(path.resolve('./config/privateutils/logger.utils'));
-const snsUtils = require(path.resolve('./config/privateutils/sns.utils.js'));
+const AWSSES = require('../privateutils/ses.utils');
+const sqlUtils = require('../privateutils/sql.utils');
+const errorUtils = require('../privateutils/error.utils');
+const rollbackUtils = require('../privateutils/rollback.utils');
+const PolicyManager = require('../publicutils/policyManager.utils');
+const logger = require('../privateutils/logger.utils');
+const snsUtils = require('../privateutils/sns.utils');
 // Local Variables.
 const lstClassifications = [
   { id: 1, classification_name: 'Commercial Bank' },

@@ -23,18 +23,20 @@ describe('csvLatLongIdBasedTransformer', () => {
     );
   });
 
-  it("returns original data (and skips look‑ups) when 'ID Type' is present but 'ID' is missing", async () => {
+  it("returns original data (and skips look-ups) when 'ID Type' is present but 'ID' is missing", async () => {
     const rows = [{ 'ID Type': 'UML', some: 'data' }];
     const result = await csvLatLongIdBasedTransformer(rows);
 
-    expect(result).toBe(rows); // same reference – function is non‑destructive
+    await expect(result).rejects.toThrow(
+      'It looks like the file you uploaded is not supported for ID-based upload. ID-based upload requires a .csv or .xlsx file with "ID Type" and "ID" columns present. Please try again with a compatible file format.'
+    );
+
     expect(mockUmlLookUp).not.toHaveBeenCalled();
     expect(mockCarLookUp).not.toHaveBeenCalled();
   });
 
-  it("calls UML lookup and merges geometry when 'ID Type' === 'UML'", async () => {
+  it("calls UML lookup and merges geometry when 'ID Type' === 'UML'", async () => {
     mockUmlLookUp.mockImplementation(async (ids: string[]) => {
-      console.log('🚀 ~ mockUmlLookUp.mockImplementation ~ ids:', ids);
       return ids.reduce((o, id) => ({ ...o, [id]: { geometry: `geom-${id}` } }), {});
     }) as unknown;
 
@@ -45,7 +47,7 @@ describe('csvLatLongIdBasedTransformer', () => {
     expect(result[0].geometry).toBe('geom-123');
   });
 
-  it("calls CAR lookup and merges geometry when 'ID Type' === 'CAR'", async () => {
+  it("calls CAR lookup and merges geometry when 'ID Type' === 'CAR'", async () => {
     mockCarLookUp.mockImplementation(async (ids: string[]) =>
       ids.reduce((o, id) => ({ ...o, [id]: { geometry: `geom-${id}` } }), {})
     );
@@ -57,7 +59,7 @@ describe('csvLatLongIdBasedTransformer', () => {
     expect(result[0].geometry).toBe('geom-ABC');
   });
 
-  it("defaults to UML lookup when 'ID' exists but the 'ID Type' column is absent", async () => {
+  it("defaults to UML lookup when 'ID' exists but the 'ID Type' column is absent", async () => {
     mockUmlLookUp.mockResolvedValue({ '321': { geometry: 'geom-321' } as unknown });
 
     const rows = [{ ID: '321' }];
@@ -67,7 +69,7 @@ describe('csvLatLongIdBasedTransformer', () => {
     expect(result[0].geometry).toBe('geom-321');
   });
 
-  it('throws for an unsupported ID Type', async () => {
+  it('throws for an unsupported ID Type', async () => {
     const rows = [{ 'ID Type': 'XYZ', ID: '999' }];
 
     await expect(csvLatLongIdBasedTransformer(rows)).rejects.toThrow(
@@ -97,7 +99,7 @@ describe('csvLatLongIdBasedTransformer', () => {
     expect(result.every((r) => r.geometry === 'geom')).toBe(true);
   });
 
-  it('returns data unchanged when neither ID nor ID Type columns are present', async () => {
+  it('returns data unchanged when neither ID nor ID Type columns are present', async () => {
     const rows = [{ label: 'foo' }];
     const result = await csvLatLongIdBasedTransformer(rows);
 

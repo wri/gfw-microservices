@@ -175,7 +175,7 @@ const configureServerRoutes = (app: Application, limiter: any) => {
     const routeModule = require(path.resolve(route));
     // This allows to gradually migrate route files from CommonJS to ESM.
     const handler = routeModule.default || routeModule;
-    handler(app, limiter); // fine
+    handler(app, limiter);
   });
 };
 

@@ -174,7 +174,7 @@ export async function getListJsonAttributesColumnsSqlParam(clientDatabase: strin
 
   const castStringArr = listAttributesRecords.map((attrRecord) => {
     const fieldTypeCast =
-      attrRecord.attribute_type === ListsAttrsTypes.Number ? 'INT' : 'NVARCHAR(MAX)';
+      attrRecord.attribute_type === ListsAttrsTypes.Number ? 'DECIMAL(18, 6)' : 'NVARCHAR(MAX)';
     return `CAST(JSON_VALUE(lt.attributes, '$."${attrRecord.attribute_name}"') AS ${fieldTypeCast}) AS [${attrRecord.attribute_name}]`;
   });
 

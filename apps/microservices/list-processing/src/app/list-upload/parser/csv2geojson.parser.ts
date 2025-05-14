@@ -1,9 +1,8 @@
 import * as Papa from 'papaparse';
-
 import sexagesimal from '@mapbox/sexagesimal';
 import { Logger } from '@nestjs/common';
 import { Geometry, GeoJson, FeatureCollection } from '@wri-monorepos/geo';
-import { palmOilCsvAdjust } from './palm.oil.csv.adjust';
+import { csvLatLongIdBasedTransformer } from '@wri-monorepos/shared';
 
 interface LocationData {
   [key: string]: string | number | undefined | object;
@@ -121,12 +120,15 @@ export const csv2geojson = async (
       return resolve(geoJson);
     }
 
-    // if has palm oil id need to fill the lat long
-    data = await palmOilCsvAdjust(data);
+    // id based system
+    data = await csvLatLongIdBasedTransformer(data);
 
     (data as Array<LocationData>).forEach((row: LocationData) => {
-      row = standardizeLocationData(row);
-      row = createGeometry(row, includeLatLon);
+      // geometries are included in csvLatLongIdBasedTransformer
+      if (!row['geometry']) {
+        row = standardizeLocationData(row);
+        row = createGeometry(row, includeLatLon);
+      }
 
       if (row['errorDetails']) {
         logger.error(row['errorDetails']);

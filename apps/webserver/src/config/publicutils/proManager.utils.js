@@ -337,67 +337,6 @@ const activatePendingAccount = (req, pendingaccount_id, unit_test = false) => {
 };
 
 /**
- * @DEPRECATED in favor of {publicutils/accountManager.utils.js}
- * @function updatePendingAccount
- * @summary Creates a request for a new account in the database.
- * @param  {Object}   req - Mandatory first parameter to pass the request object into the function in case session info is required.
- * @param  {String}   org_id - Organization ID
- * @param  {String}   org_name - Organization name
- * @param  {String}   org_address - Organization Address.
- * @param  {String}   org_website - URL for the Organization's website.
- * @param  {String}   parent_org_name - Name of the parent organization, if there is one.
- * @param  {Boolean}  is_subsidiary - Is the organization a subsidiary? (If yes, parent name is mandatory)
- * @param  {Array}    arr_org_classification_ids - Classification(s) of the organizations.
- * @return {Promise<Boolean>} True if successful, false otherwise.
- */
-const updatePendingAccount = (
-  req,
-  org_id,
-  org_name,
-  org_address,
-  org_website,
-  parent_org_name,
-  is_subsidiary,
-  arr_org_classification_ids,
-  policyList,
-  policyNames
-) => {
-  return new Promise((resolve, reject) => {
-    const params = [
-      { field: 'orgID', type: sql.Int, value: org_id },
-      { field: 'orgName', type: sql.NVarChar(200), value: org_name.trim() },
-      { field: 'orgAddress', type: sql.NVarChar(200), value: org_address },
-      { field: 'orgWebsite', type: sql.NVarChar(200), value: org_website },
-      { field: 'isSubsidiary', type: sql.Bit, value: is_subsidiary },
-      { field: 'orgParent', type: sql.NVarChar(200), value: parent_org_name },
-      {
-        field: 'classification_ids',
-        type: sql.NVarChar(200),
-        value: arr_org_classification_ids.toString(),
-      },
-    ];
-    sqlUtils
-      .executeSystemStoredProcedure(req, 'uspUpdatePendingAccount', params)
-      .then(() => {
-        // Upload policy documents!
-        return PolicyManager.uploadPendingPolicies(req, org_id, policyList, policyNames);
-      })
-      .then(() => {
-        resolve(true);
-      })
-      .catch((err) => {
-        const errorObject = errorUtils.createErrorMessage(
-          req,
-          errorUtils.ERROR_CODES.failedToUpdatePendingAccount,
-          'Failed to update pending account',
-          err
-        );
-        reject(errorObject);
-      });
-  });
-};
-
-/**
  * @function updatePendingAccountUser
  * @summary Creates a request for a new account in the database.
  * @param  {Object}   req - Mandatory first parameter to pass the request object into the function in case session info is required.

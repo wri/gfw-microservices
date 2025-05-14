@@ -1,10 +1,10 @@
-import Page from '../../../common/js/components/Page';
 import React, { Component } from 'react';
-import Dialog from 'material-ui/Dialog';
+import { Box, Divider, Dialog, DialogTitle, DialogContent, DialogActions } from '@mui/material';
+
+import Page from '../../../common/js/components/Page';
 import SubHeader from '../../../common/js/components/SubHeader';
-import Button from '../../../common/js/components/Button';
-import LinkButton from '../../../common/js/components/LinkButton';
 import '../../css/change.scss';
+import { Link, PillButton } from '../../../components';
 
 import { isPasswordValid } from '../../../common/js/utils/passwordValidations';
 
@@ -38,10 +38,6 @@ export default class Change extends Component {
 
   confirmNew = (evt) => {
     this.setState({ confirm: evt.target.value });
-  };
-
-  back = () => {
-    window.location.href = '/';
   };
 
   submit = () => {
@@ -111,20 +107,17 @@ export default class Change extends Component {
     if (dialogTitle === 'Success') {
       action = this.shouldRedirect;
     }
-    const defaultAction = [
-      <Button variant="primary" label="OK" keyboardFocused={true} onClick={action} />,
-    ];
 
     return (
       <Page links={pageOptions.links} active="change">
-        <Dialog
-          paperClassName="dialog-paper"
-          open={dialogOpen}
-          title={dialogTitle}
-          actions={defaultAction}
-          onRequestClose={action}
-        >
-          {dialogMessage}
+        <Dialog open={dialogOpen} onClose={action} classes={{ paper: 'dialog-paper' }}>
+          <DialogTitle>{dialogTitle}</DialogTitle>
+          <DialogContent>{dialogMessage}</DialogContent>
+          <DialogActions>
+            <PillButton variant="contained" size="small" autoFocus onClick={action}>
+              OK
+            </PillButton>
+          </DialogActions>
         </Dialog>
         <SubHeader header="Fill out this form to reset your password" />
         <section className="profile-body">
@@ -174,14 +167,16 @@ export default class Change extends Component {
               onChange={this.confirmNew}
             />
           </div>
-          <div className="buttons-container">
-            <Button
-              onClick={this.toggleShow}
-              label={this.state.type === 'input' ? 'Hide' : 'Show'}
-            />
-            <Button variant="primary" onClick={this.submit} label="Submit" />
-            <LinkButton onClick={this.back} label="Back" />
-          </div>
+          <Divider sx={{ mt: 3, mb: 2 }} />
+          <Box sx={{ display: 'flex', gap: 2, alignItems: 'center' }}>
+            <PillButton variant="contained" size="small" onClick={this.toggleShow}>
+              {this.state.type === 'input' ? 'Hide' : 'Show'}
+            </PillButton>
+            <PillButton variant="contained" size="small" onClick={this.submit}>
+              Submit
+            </PillButton>
+            <Link href="/">Back</Link>
+          </Box>
         </section>
       </Page>
     );

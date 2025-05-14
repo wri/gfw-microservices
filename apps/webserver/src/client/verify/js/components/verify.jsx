@@ -125,13 +125,7 @@ export default class Verify extends Component {
           <section className="section-container">
             <Box sx={{ display: 'flex', gap: 1, alignItems: 'center' }}>
               <West fontSize="8" />
-              <Link
-                variant="contained"
-                className="verify-section__back-button back-button"
-                href="/"
-              >
-                {verifyCodePage.backButtonLabel}
-              </Link>
+              <Link href="/">{verifyCodePage.backButtonLabel}</Link>
             </Box>
             <Box sx={{ mb: 4 }}>
               <h1 className="verify-section__title">{verifyCodePage.pageTitle}</h1>

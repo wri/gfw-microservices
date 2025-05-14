@@ -239,9 +239,7 @@ export default class Reset extends Component {
             <PillButton variant="contained" size="small" onClick={this.submit}>
               Submit
             </PillButton>
-            <Link href="/" sx={{ color: 'text.primary', fontWeight: '500' }}>
-              Back
-            </Link>
+            <Link href="/">Back</Link>
           </Box>
         </section>
       </Page>

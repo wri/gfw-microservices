@@ -128,7 +128,7 @@ export const csvLatLongIdBasedTransformer = async (
     if (!isIdPresent) {
       // bad template ⇒ @see [GPV-4403] for messaging
       throw new Error(
-        `It looks like the file you uploaded is not supported for ID-based upload. ID-based upload requires a .csv or .xlsx file with 'ID Type' and 'ID' columns present. Please try again with a compatible file format.`
+        'It looks like the file you uploaded is not supported for ID-based upload. ID-based upload requires a .csv or .xlsx file with "ID Type" and "ID" columns present. Please try again with a compatible file format.'
       );
     }
 

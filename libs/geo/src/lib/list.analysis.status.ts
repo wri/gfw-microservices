@@ -444,6 +444,13 @@ export const isGHGCommodityValid = async (
         });
       } catch (error) {
         Logger.error('validateGHGCommodity', `Error upgrading list ${id} to version 2: ${error}`);
+        await saveAnalysisStatusErrorInfo(
+          organizationDb,
+          id,
+          `Error upgrading list ${id} to version 2`,
+          listStatus.Inactive,
+          'GHG'
+        );
         throw new Error(`Error upgrading list ${id} to version 2: ${error}`);
       }
     }

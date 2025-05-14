@@ -23,7 +23,7 @@ module.exports = (app, limiter) => {
    * @memberof Router
    */
 
-  // All methods must under /pro-manager must pass through middleware
+  // All methods under /pro-manager must pass through middleware
   const routeMiddlewares = [middlewares.checkProManagerAuthentication];
   if (rateLimiterUtil.useRateLimiter()) {
     routeMiddlewares.push(limiter(middlewares.rateLimitAuthenticated));

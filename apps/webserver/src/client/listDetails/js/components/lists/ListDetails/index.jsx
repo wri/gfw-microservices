@@ -41,7 +41,6 @@ import {
   checkColumnListGFWCR,
   checkColumnListGFWFC,
   checkColumnListPA,
-  getGFWListLocationIDs,
   getListFilteredLocations,
   dataCleanup,
   getTemplateData,

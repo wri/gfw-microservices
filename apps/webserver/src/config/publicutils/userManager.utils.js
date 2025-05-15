@@ -180,7 +180,7 @@ export function isEditor(req) {
  * @return  true if Pro Manager, false otherwise.
  */
 export function isProManager(req) {
-  return req.session.ispromanager === true;
+  return req.session?.ispromanager === true;
 }
 
 /**

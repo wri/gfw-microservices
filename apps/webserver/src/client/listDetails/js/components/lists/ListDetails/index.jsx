@@ -76,6 +76,7 @@ import AnalysisStatusBanners from './AnalysisStatusBanners';
 import AnalysisFailedMessage from './AnalysisFailedMessage';
 import AnalysisInProgressMessage from './AnalysisInProgressMessage';
 import GHGBanner from './GHGBanner';
+import { getActiveAnalysisFlags } from '../../../utils/listDetails.utils';
 import { ThemeProvider } from '../../../../../styles/ThemeProvider';
 
 // CONSTANTS
@@ -84,7 +85,6 @@ import { listStatus } from '../../../../../../config/env/listStatuses.constants'
 import { GFW_LISTS_NUMBER_CONSTANTS } from '../../../../../../config/env/gfwLists.constants';
 import { getListFilterValues } from '../getListFilterValues';
 import getAllColumnNames from '../getAllColumnNames';
-import { defaultFilterValues } from '../defaultFilterValues';
 import { analysisTypes } from '../../../../../../config/env/analysisTypes.constants';
 import {
   FOREST_CHANGE_VIEW,
@@ -104,15 +104,9 @@ export default class ListDetails extends Component {
     const { selectedLists } = this.props;
     const selectedList = selectedLists.length > 0 ? selectedLists[0] : null;
     const listAnalysesStatus = selectedList ? selectedList.listAnalysesStatus : [];
-    const analysisIds = listAnalysesStatus?.map(({ analysisId }) => analysisId) || [];
 
-    const isFcdActive = analysisIds.includes(analysisTypes.FOREST_CHANGE_DIAGNOSTICS);
-    const isPalmRiskActive = analysisIds.includes(analysisTypes.PALM_RISK);
-    const isAfiActive = analysisIds.includes(analysisTypes.DEFORESTATION_KPIS);
-    const isGHGActive = analysisIds.includes(analysisTypes.GREENHOUSE_GAS_EMISSIONS);
-
-    const isOnlyGHGActive =
-      analysisIds.length === 1 && analysisIds[0] === analysisTypes.GREENHOUSE_GAS_EMISSIONS;
+    const { isFcdActive, isPalmRiskActive, isAfiActive, isGHGActive, isOnlyGHGActive } =
+      getActiveAnalysisFlags(listAnalysesStatus);
 
     this.state = {
       bannerContent: '',
@@ -310,16 +304,6 @@ export default class ListDetails extends Component {
     }
   };
 
-  // If given a filter's name and its current value, determine whether that filter is different than
-  // the filter's preconfigured default value..
-  isFilterValueDifferentThanDefault = ([filterName, val]) => {
-    // It's the case that [] !== [], so we need special handling for arrays.
-    if (Array.isArray(val)) {
-      return val.toString() !== defaultFilterValues[filterName].toString();
-    }
-    return val !== defaultFilterValues[filterName];
-  };
-
   showGFWUnselectedDialog = () => {
     this.setState({
       dialogOpen: true,
@@ -334,19 +318,6 @@ export default class ListDetails extends Component {
       window.location.reload();
     } else {
       this.setState({ dialogOpen: false });
-    }
-  };
-
-  // reload the view with the new selected list
-  updateSelectedLists = (listID, gfwList) => {
-    const { selectedLists } = this.props;
-    if (selectedLists[0].id !== listID) {
-      this.setState({ isLoading: true });
-      gtag('event', 'List in side panel clicked', {
-        event_category: 'List View Click',
-        event_label: `user clicked on ${listID}`,
-      });
-      window.location = `/list-details?id=${listID}${gfwList ? '&gfw=true' : ''}`;
     }
   };
 
@@ -1867,13 +1838,11 @@ export default class ListDetails extends Component {
       filterCount,
       filteredLocationData,
       filters,
-      folders,
       listData,
       listView,
       selectedLists,
       selectedLocations,
       shareView,
-      showShareList,
       templateData,
       userSharedLists,
       usersList,
@@ -2210,7 +2179,6 @@ export default class ListDetails extends Component {
                 ) : (
                   <>
                     <ListActions
-                      selectedList={selectedList}
                       viewMap={this.viewMap}
                       currentUser={currentUser}
                       toggleReRunAnalysisDialog={this.toggleReRunAnalysisDialog}
@@ -2219,9 +2187,6 @@ export default class ListDetails extends Component {
                       isManageListFolderOpen={isManageListFolderOpen}
                       setIsManageListFolderOpen={(value) => {
                         this.setState({ isManageListFolderOpen: value });
-                      }}
-                      showShareList={() => {
-                        showShareList(true);
                       }}
                       handleDraftSubmit={(e) => this.handleDraftSubmit(e)}
                       draftSubmitDialogOpen={draftSubmitDialogOpen}
@@ -2233,7 +2198,6 @@ export default class ListDetails extends Component {
                         this.setState({ isListSubmittedForAnalysis: value });
                       }}
                       isInFolder={isInFolder}
-                      folders={folders}
                       userIsOwner={userIsOwner}
                       setState={this.setState}
                       searchInputValue={searchInputValue}
@@ -2247,17 +2211,13 @@ export default class ListDetails extends Component {
                       promptMoveSelectedLocations={this.promptMoveSelectedLocations}
                       canDelete={canDelete}
                       promptDeleteSelectedLocations={this.promptDeleteSelectedLocations}
-                      filters={filters}
                       listFilterStr={filterString}
                       tableSortedBy={tableSortedBy}
                       tableSortedDesc={tableSortedDesc}
                       visibleColumns={visibleColumns}
-                      selectedLocations={selectedLocations}
-                      listView={listView}
                       isLoading={(loading) => {
                         this.setState({ isLoading: loading });
                       }}
-                      isGfwList={isGfwList}
                       isOnlyGHGActive={isOnlyGHGActive}
                     />
 

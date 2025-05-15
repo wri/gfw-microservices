@@ -3,6 +3,8 @@
 import React from 'react';
 import { render } from 'react-dom';
 import { BrowserRouter } from 'react-router-dom';
+import { Provider } from 'react-redux';
+import store from '../locations/js/store';
 import lightBaseTheme from 'material-ui/styles/baseThemes/lightBaseTheme';
 import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
 import getMuiTheme from 'material-ui/styles/getMuiTheme';
@@ -76,24 +78,26 @@ lightBaseTheme.fontFamily = 'Fira Sans, sans-serif';
 
 const App = () => {
   return (
-    <MuiThemeProvider muiTheme={getMuiTheme(lightBaseTheme)}>
-      <AppErrorFallback>
-        <BrowserRouter basename="/list-details">
-          <Locations
-            templateData={templateData}
-            userLists={userLists} //Contains all lists that users have created
-            userSharedLists={userSharedLists}
-            locationCount={locationCount}
-            userInfo={userInfo}
-            usersList={usersList} //Contains all users
-            organizationId={organizationId}
-            gfwLists={gfwLists}
-            listStatuses={listStatuses}
-            fromMap={fromMap}
-          />
-        </BrowserRouter>
-      </AppErrorFallback>
-    </MuiThemeProvider>
+    <Provider store={store}>
+      <MuiThemeProvider muiTheme={getMuiTheme(lightBaseTheme)}>
+        <AppErrorFallback>
+          <BrowserRouter basename="/list-details">
+            <Locations
+              templateData={templateData}
+              userLists={userLists} //Contains all lists that users have created
+              userSharedLists={userSharedLists}
+              locationCount={locationCount}
+              userInfo={userInfo}
+              usersList={usersList} //Contains all users
+              organizationId={organizationId}
+              gfwLists={gfwLists}
+              listStatuses={listStatuses}
+              fromMap={fromMap}
+            />
+          </BrowserRouter>
+        </AppErrorFallback>
+      </MuiThemeProvider>
+    </Provider>
   );
 };
 

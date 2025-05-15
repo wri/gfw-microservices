@@ -35,11 +35,7 @@ jest.mocked(useUploadLocation).mockReturnValue({
 
 const mockGoBack = jest.fn();
 jest.mock('../hooks', () => ({
-  useHistory: () => ({
-    goBack: mockGoBack,
-    push: jest.fn(),
-    ...jest.requireActual('react-router-dom').useHistory(),
-  }),
+  useHistory: () => ({ goBack: mockGoBack }),
 }));
 
 jest.mock('../components', () => ({

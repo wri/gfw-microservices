@@ -51,6 +51,8 @@
     "^account(.*)$": "<rootDir>/client/account$1",
     "^activityLog(.*)$": "<rootDir>/client/activityLog$1",
     "^admin(.*)$": "<rootDir>/client/admin$1",
+    "^analytics(.*)$": "<rootDir>/client/analytics$1",
+    "^b2b(.*)$": "<rootDir>/client/b2b$1",
     "^change(.*)$": "<rootDir>/client/change$1",
     "^changeExist(.*)$": "<rootDir>/client/changeExist$1",
     "^common(.*)$": "<rootDir>/client/common$1",

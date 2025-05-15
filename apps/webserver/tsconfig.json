@@ -3,10 +3,11 @@
   "files": [],
   "compilerOptions": {
     "jsx": "react-jsx",
-    "lib": ["es2021", "dom"],
-    "target": "es2021",
+    "lib": ["ES2021", "DOM", "DOM.Iterable"],
+    "target": "ES2021",
     "incremental": true,
-    "esModuleInterop": true
+    "esModuleInterop": true,
+    "noUncheckedIndexedAccess": true
   },
   "include": [],
   "references": [{ "path": "./tsconfig.app.json" }, { "path": "./tsconfig.spec.json" }]

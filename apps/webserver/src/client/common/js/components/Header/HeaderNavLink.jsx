@@ -1,4 +1,3 @@
-import React from 'react';
 import * as PropTypes from 'prop-types';
 
 function HeaderNavLink({ active, link, label, className = '' }) {

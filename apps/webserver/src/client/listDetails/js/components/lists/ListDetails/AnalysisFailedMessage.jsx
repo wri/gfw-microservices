@@ -1,4 +1,3 @@
-import React from 'react';
 import { Container, Box, Typography, Button, Link } from '@mui/material';
 import ReportGmailerrorredIcon from '@mui/icons-material/ReportGmailerrorred';
 

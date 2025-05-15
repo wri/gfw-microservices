@@ -1,4 +1,3 @@
-import React from 'react';
 import { Select, MenuItem, FormControl, InputLabel, Grid } from '@mui/material';
 import { locationsPage } from '../../../../../../common/js/config';
 import { selectStyle } from './filterStyles';

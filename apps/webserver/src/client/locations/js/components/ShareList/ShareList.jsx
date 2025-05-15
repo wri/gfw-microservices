@@ -1,4 +1,3 @@
-import React from 'react';
 import Select from 'react-select';
 import { getFormattedDateTime } from '../../../../common/js/utils/dateTime';
 import ShareListDialog from './ShareListDialog';

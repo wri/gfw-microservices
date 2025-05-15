@@ -1,4 +1,3 @@
-import React from 'react';
 import { render, fireEvent, waitFor, cleanup } from '@testing-library/react';
 import Verify from './verify';
 import mock from 'xhr-mock';

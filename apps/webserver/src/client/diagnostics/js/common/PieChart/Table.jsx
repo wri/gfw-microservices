@@ -1,4 +1,3 @@
-import React from 'react';
 import { prettifyNum, formatNum, formatPct } from '../../../../common/js/utils/diagnostics.utils';
 import './ChartLegendsTable.scss';
 import BetaTag from '../../../../common/js/components/BetaTag';

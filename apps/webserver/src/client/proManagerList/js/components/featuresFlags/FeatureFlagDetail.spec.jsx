@@ -1,4 +1,3 @@
-import React from 'react';
 import { cleanup, screen, render, fireEvent } from '@testing-library/react';
 import '@testing-library/jest-dom/extend-expect';
 import FeatureFlagDetail from './FeatureFlagDetail';

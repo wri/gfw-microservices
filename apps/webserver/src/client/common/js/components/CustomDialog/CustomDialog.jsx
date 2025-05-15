@@ -1,4 +1,4 @@
-import React from 'react';
+import { isValidElement } from 'react';
 import Dialog from 'material-ui/Dialog';
 
 import Button from '../Button';
@@ -20,7 +20,7 @@ export default function CustomDialog({
       contentStyle={{ opacity: 1 }}
       actions={[
         <div className="list-diagnostics-dialog__actions">
-          {React.isValidElement(dialogActionConfirm) ? (
+          {isValidElement(dialogActionConfirm) ? (
             <>{dialogActionConfirm}</>
           ) : (
             <Button
@@ -35,7 +35,7 @@ export default function CustomDialog({
       ]}
       onRequestClose={closeAction}
     >
-      {React.isValidElement(dialogMessage) ? (
+      {isValidElement(dialogMessage) ? (
         <>{dialogMessage}</>
       ) : (
         <div dangerouslySetInnerHTML={{ __html: dialogMessage }}></div>

@@ -1,4 +1,3 @@
-import React from 'react';
 import { StateMock } from '@react-mock/state';
 import { render, cleanup } from '@testing-library/react';
 import getMuiTheme from 'material-ui/styles/getMuiTheme';

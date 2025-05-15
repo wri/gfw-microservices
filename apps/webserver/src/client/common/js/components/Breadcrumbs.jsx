@@ -1,5 +1,3 @@
-import React from 'react';
-
 import '../../css/breadcrumbs.scss';
 
 function insertSeparators(items, className, separator) {

@@ -1,4 +1,3 @@
-import React from 'react';
 import { listStatus } from '../../../../config/env/listStatuses.constants';
 import store from '../store';
 import {

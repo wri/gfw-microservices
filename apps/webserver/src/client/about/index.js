@@ -2,7 +2,7 @@ import lightBaseTheme from 'material-ui/styles/baseThemes/lightBaseTheme';
 import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
 import getMuiTheme from 'material-ui/styles/getMuiTheme';
 import { render } from 'react-dom';
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import About from './component/About';
 import { GFW_PRO_USER_GUIDE } from '../common/js/config';
 import { BrowserRouter } from 'react-router-dom';

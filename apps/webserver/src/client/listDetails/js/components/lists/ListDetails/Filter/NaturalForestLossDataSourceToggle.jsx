@@ -1,4 +1,3 @@
-import React from 'react';
 import { FormControl, InputLabel, MenuItem, Select, Stack } from '@mui/material';
 import { toggleNaturalForestLossDataSource } from '../../../../../../locations/js/actions/locationActions';
 import store from '../../../../../../locations/js/store';

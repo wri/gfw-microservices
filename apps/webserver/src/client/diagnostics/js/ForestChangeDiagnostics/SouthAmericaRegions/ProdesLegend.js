@@ -1,4 +1,3 @@
-import React from 'react';
 import _sum from 'lodash/sum';
 
 import { formatNum, prettifyNum } from '../../../../common/js/utils/diagnostics.utils';

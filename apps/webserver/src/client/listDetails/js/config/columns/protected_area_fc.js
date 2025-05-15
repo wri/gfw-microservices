@@ -1,4 +1,3 @@
-import React from 'react';
 import { columnHeaders } from './columnHeaders.constants';
 import ColumnsHeader from '../../components/columns/ColumnsHeader';
 import { renderCell } from './columns.utils';

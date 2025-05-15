@@ -1,4 +1,3 @@
-import React from 'react';
 import Banner from './Banner';
 import { locationsPage } from '../../config';
 

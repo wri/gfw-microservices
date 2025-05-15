@@ -1,6 +1,5 @@
 import './UploadLocationOptions.scss';
 
-import React from 'react';
 import { Typography, Card, IconButton, Button } from '@mui/material';
 import {
   UploadFileTwoTone,

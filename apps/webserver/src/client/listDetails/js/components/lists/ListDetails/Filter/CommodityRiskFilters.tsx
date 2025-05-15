@@ -1,4 +1,3 @@
-import React from 'react';
 import { Grid, Checkbox, FormControlLabel, FormGroup } from '@mui/material';
 import { DefaultFilterValues } from '../../DefaultFilterValuesType';
 

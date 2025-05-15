@@ -1,4 +1,3 @@
-import React from 'react';
 import { checkValid, formatDigit } from '../../../../locations/js/utils/locationsTableUtils';
 import { GFW_LISTS_NUMBER_CONSTANTS } from '../../../../../config/env/gfwLists.constants';
 

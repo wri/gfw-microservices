@@ -1,4 +1,3 @@
-import React from 'react';
 import { render } from 'react-dom';
 import Page from '../common/js/components/Page';
 import ProfileContextProvider from './js/ProfileStateContext';

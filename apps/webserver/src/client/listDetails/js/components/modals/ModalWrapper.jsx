@@ -1,4 +1,3 @@
-import React from 'react';
 import IconButton from '../../../../common/js/components/IconButton';
 import IconTimes from '../../../../common/js/components/icon/IconTimes';
 

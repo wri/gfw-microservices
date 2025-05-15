@@ -1,4 +1,3 @@
-import React from 'react';
 import Chip from '@mui/material/Chip';
 import RefreshIcon from '@mui/icons-material/Refresh';
 import { analysisTypesOptionsNewNames } from '../../../../../../config/env/analysisTypes.constants';

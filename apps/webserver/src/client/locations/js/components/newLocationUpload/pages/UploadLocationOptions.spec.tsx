@@ -1,4 +1,3 @@
-import React from 'react';
 import { cleanup, render, screen, within } from '@testing-library/react';
 import { UploadLocationOptions } from '.';
 import { useUploadLocation } from '../contexts';

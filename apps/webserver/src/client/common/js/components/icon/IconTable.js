@@ -1,5 +1,3 @@
-import React from 'react';
-
 const IconTable = (props) => (
   <svg width="14" height="13" viewBox="0 0 14 13" fill="currentColor" {...props}>
     <path

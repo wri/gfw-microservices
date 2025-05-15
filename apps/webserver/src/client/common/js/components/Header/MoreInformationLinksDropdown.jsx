@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import ClickAwayListener from '@mui/material/ClickAwayListener';
 import IconButton from 'material-ui/IconButton';
 import Icon from '@material-ui/core/Icon';

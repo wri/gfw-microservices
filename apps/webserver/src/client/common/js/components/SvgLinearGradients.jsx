@@ -1,5 +1,3 @@
-import React from 'react';
-
 const SvgLinearGradients = ({ start, middle, end, width, height }) => {
   return (
     <svg

@@ -1,5 +1,3 @@
-import React from 'react';
-
 function UsersTable({ userSortingCategory, userDir, usersList, sortUserTable, searchUsers }) {
   return (
     <div>

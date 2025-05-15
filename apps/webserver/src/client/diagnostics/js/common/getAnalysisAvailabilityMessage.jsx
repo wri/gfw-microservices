@@ -1,4 +1,3 @@
-import React from 'react';
 import { listStatus } from '../../../../config/env/listStatuses.constants';
 import { formatDateForCurrentBrowserLanguage } from '../../../common/js/utils/format';
 

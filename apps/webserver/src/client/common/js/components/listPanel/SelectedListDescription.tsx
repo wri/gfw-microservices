@@ -1,4 +1,3 @@
-import React from 'react';
 import { useSelector } from 'react-redux';
 import { numberWithCommas } from '../../../../locations/js/utils/locationsTableUtils';
 

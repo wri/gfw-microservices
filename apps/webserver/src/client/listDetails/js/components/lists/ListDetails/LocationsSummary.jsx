@@ -1,4 +1,3 @@
-import React from 'react';
 import Popover from 'material-ui/Popover';
 import IconShare from '../../../../../common/js/components/icon/IconShare';
 import IconButton from '../../../../../common/js/components/IconButton';

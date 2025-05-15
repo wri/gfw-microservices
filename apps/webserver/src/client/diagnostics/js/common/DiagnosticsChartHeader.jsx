@@ -1,4 +1,3 @@
-import React from 'react';
 import DownloadForOfflineIcon from '@mui/icons-material/DownloadForOffline';
 import InfoBubble from '../../../common/js/components/InfoBubble';
 import './DiagnosticsChartHeader.scss';

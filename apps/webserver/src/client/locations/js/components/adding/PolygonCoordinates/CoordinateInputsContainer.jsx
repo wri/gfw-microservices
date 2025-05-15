@@ -1,4 +1,3 @@
-import React from 'react';
 import { Grid, Button, Tab, Tabs } from '@mui/material';
 import { List, AutoSizer } from 'react-virtualized';
 import IconPlus from '../../../../../common/js/components/icon/IconPlus';

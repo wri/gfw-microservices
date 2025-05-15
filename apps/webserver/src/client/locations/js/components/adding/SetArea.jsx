@@ -1,4 +1,3 @@
-import React from 'react';
 import { withStyles } from '@material-ui/core/styles';
 import { Card, Grid, Radio } from '@mui/material';
 import HectareKilometerSwitch from './HectareKilometerSwitch';

@@ -1,4 +1,3 @@
-import React from 'react';
 import { columnHeaders } from './columnHeaders.constants';
 import { checkValid } from '../../../../locations/js/utils/locationsTableUtils';
 import ColumnsHeader from '../../components/columns/ColumnsHeader';

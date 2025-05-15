@@ -38,7 +38,6 @@ import {
   toggleLayer,
   turnLayerOff,
   toggleHighConfidenceAlertsForDeforestationAlertsLayers,
-  updateAdminSelections,
   updateAnalysis,
   updateGFWLocations,
 } from '../actions/mapActions';
@@ -488,9 +487,13 @@ class Map extends Component {
       this.activeGFWLayer = activeGFWLayer;
       const locationsIDs = gfwListDef[activeLayerId];
 
-      activeGFWLayer?.when((gfwLayer) => {
-        this._setCustomGfwVectorTileLayer(locationsIDs, gfwLayer);
-      });
+      if (activeGFWLayer) {
+        activeGFWLayer?.when((gfwLayer) => {
+          this._setCustomGfwVectorTileLayer(locationsIDs, gfwLayer);
+        });
+      } else {
+        this._setCustomGfwVectorTileLayer(locationsIDs);
+      }
     }
 
     if (
@@ -1745,14 +1748,15 @@ class Map extends Component {
 
     // Add selected Geostore IDs GFW Vector Tile layer
     this._setCustomGfwVectorTileLayer = async (locationIDs, gfwLayer) => {
-      // Create Custom GFW Vector Tile Layer
-      this.customGfwVectorTileLayer = new VectorTileLayer({
-        id: `${gfwLayer.id} - Custom`,
-        style: await getVectorTileStyle(locationIDs, gfwLayer),
-      });
-      view.map.add(this.customGfwVectorTileLayer);
-      gfwLayer.opacity = 0;
-
+      if (gfwLayer) {
+        // Create Custom GFW Vector Tile Layer
+        this.customGfwVectorTileLayer = new VectorTileLayer({
+          id: `${gfwLayer.id} - Custom`,
+          style: await getVectorTileStyle(locationIDs, gfwLayer),
+        });
+        view.map.add(this.customGfwVectorTileLayer);
+        gfwLayer.opacity = 0;
+      }
       try {
         let zoomTarget;
         if (locationIDs.length && locationIDs.length < 200) {
@@ -1803,7 +1807,7 @@ class Map extends Component {
               target: combinedExtent.expand(1.2),
             };
           }
-        } else {
+        } else if (gfwLayer) {
           zoomTarget = gfwListsZoomTargets[gfwLayer.id];
         }
 
@@ -1850,6 +1854,10 @@ class Map extends Component {
       ymax,
     } = queryParams;
 
+    if (!listId) {
+      return; // if there is no list id in the get params, exit this function
+    }
+
     let alertsMapExtent;
     if (xmin && ymin && xmax && ymax) {
       alertsMapExtent = new Extent({
@@ -1870,58 +1878,17 @@ class Map extends Component {
       if (!listId || listId < 1 || listId > 5) {
         return; // if the list is not found, exit this function
       }
+
       const [listToSelect] = gfwLists.filter((gfwList) => gfwList.id === listId);
       const listName = listToSelect.list_name;
-
-      const mapLayer = getMapLayerIdFromGFWListName(listName);
-
-      if (mapLayer) {
-        store.dispatch(toggleLayer(mapLayer));
-      }
 
       const gfwListVisibleMapLayerId = getMapLayerIdFromGFWListName(listName);
       hashLayersToAdd.push(gfwListVisibleMapLayerId);
 
-      if (listId === 1) {
-        // administrative areas
-        if (selectedLocations?.length > 0) {
-          // only for 'Administrative Areas', the selectedLocations is not an array but an object:
-          // const { gadmid, serverLayerId } = location;
-          // see the function queryAdmin in /src/client/map/js/utils/LayerUtils.js
-          // TODO: send the location ids only, and get gadmid / serverLayerId in the map view
-          // or use another property in sendData to send these
-          const parsedSelectedLocations = JSON.parse(selectedLocations[0])[0];
-          queryAdmin(parsedSelectedLocations).then((adminArea) => {
-            store.dispatch(analysisActions.setAnalysis('analysis'));
-            store.dispatch(analysisActions.setActiveAnalysis('region'));
-            store.dispatch(
-              analysisActions.setAnalysisAdminArea({
-                country: adminArea.country,
-                region: adminArea.region,
-              })
-            );
-            this.view.goTo(adminArea);
-            this.goToOriginalPoint = () => {
-              this.view.goTo(adminArea);
-            };
-
-            this.analyzeAdmin(adminArea);
-
-            store.dispatch(
-              updateAdminSelections({
-                country: adminArea.countryText,
-                smallerRegion: adminArea.stateText,
-                subregion: adminArea.substateText,
-              })
-            );
-          });
-        }
-      } else {
-        gfwListDefinitions[gfwListVisibleMapLayerId] = [];
-        selectedLocations?.forEach((gfwLocation) => {
-          gfwListDefinitions[gfwListVisibleMapLayerId].push(gfwLocation);
-        });
-      }
+      gfwListDefinitions[gfwListVisibleMapLayerId] = [];
+      selectedLocations?.forEach((gfwLocation) => {
+        gfwListDefinitions[gfwListVisibleMapLayerId].push(gfwLocation);
+      });
 
       this.updateSelectedLists(listToSelect);
 
@@ -1940,10 +1907,6 @@ class Map extends Component {
 
       // is user list
     } else {
-      if (!listId) {
-        return; // if there is no list id in the get params, exit this function
-      }
-
       const { userLists, userSharedLists } = this.props;
 
       const listToSearch = isSharedList ? userSharedLists[0] : userLists;

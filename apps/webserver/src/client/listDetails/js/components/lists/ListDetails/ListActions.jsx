@@ -14,6 +14,7 @@ import {
   Delete,
   Add,
 } from '@mui/icons-material/';
+import redirectToMap from '../../../../../common/js/utils/redirect';
 
 import ListDownloadMenu from '../download/ListDownloadMenu';
 import { EditListBulkActionButton } from '../EditList/EditListBulkActionButton';
@@ -28,10 +29,12 @@ import { useTransifexTranslation } from '../../../../../hooks';
 import store from '../../../../../locations/js/store';
 import './ListActions.scss';
 import featureFlags from '../../../../../../utils/general.utils';
+import { gfwListNames } from '../../../../../common/js/constants/lists.constants';
+import { GFW_LISTS_NUMBER_CONSTANTS } from '../../../../../../config/env/gfwLists.constants';
 
 const ListActions = ({
   selectedList,
-  viewMap,
+  userSharedLists,
   currentUser,
   toggleReRunAnalysisDialog,
   rerunDialogState,
@@ -69,6 +72,7 @@ const ListActions = ({
   isLoading,
   isGfwList,
   isOnlyGHGActive,
+  isEveryRowSelected,
 }) => {
   const blackButtonStyle = {
     color: 'black',
@@ -93,6 +97,24 @@ const ListActions = ({
     handleSearchInputChange('');
   };
 
+  const viewMap = ({ showFullListMap }) => {
+    const isGfwList = selectedList.isGlobalForestWatchList;
+    const isSharedList =
+      selectedList &&
+      userSharedLists?.map((userSharedList) => userSharedList.id).includes(selectedList.id);
+
+    const sendData = {
+      listId: selectedList.id,
+      isGfwList,
+      isSharedList,
+      ...(isEveryRowSelected || showFullListMap ? {} : { selectedLocations }),
+    };
+    redirectToMap(sendData);
+    gtag('event', 'Header button click', {
+      event_category: 'Lists Click',
+      event_label: 'user is re-directed to the map page via a Lists Header button click',
+    });
+  };
   const isShareOptionAvailable =
     currentUser.access_level_id === userAccessLevel.ADMIN &&
     selectedList &&
@@ -130,6 +152,13 @@ const ListActions = ({
   const viewMapButtonLabel = showMultipleSelectionBulkActions
     ? useTransifexTranslation('Location(s) Map')
     : useTransifexTranslation('List Map');
+
+  const { ADMINISTRATIVE_AREAS } = GFW_LISTS_NUMBER_CONSTANTS;
+  const isMapAvailable = !(
+    selectedList.isGlobalForestWatchList &&
+    selectedList?.list_name === gfwListNames[ADMINISTRATIVE_AREAS - 1]
+  );
+
   const searchInputLabel = useTransifexTranslation('Type your search and press Enter...');
   const updateAnalysisButtonLabel = useTransifexTranslation('Update Analysis');
   const submitAnalysisButtonLabel = useTransifexTranslation('Submit Analysis');
@@ -183,7 +212,7 @@ const ListActions = ({
             </>
           )}
           <Stack alignItems="center" direction="row">
-            {!isSearchBarOpen && (
+            {!isSearchBarOpen && isMapAvailable && (
               <Button
                 onClick={() => viewMap({ showFullListMap: !showMultipleSelectionBulkActions })}
                 startIcon={<Public />}

@@ -1,8 +1,9 @@
-import { render } from 'react-dom';
+import { createRoot } from 'react-dom/client';
+import './css/profile.scss';
+
 import Page from '../common/js/components/Page';
 import ProfileContextProvider from './js/ProfileStateContext';
 import Profile from './js/Profile';
-import './css/profile.scss';
 import AppErrorFallback from '../common/js/components/Errors/AppErrorFallback';
 
 const pageOptions = {
@@ -23,7 +24,9 @@ function App() {
   );
 }
 
-render(<App />, document.getElementById('profile-mount'));
+const container = document.getElementById('profile-mount');
+const root = createRoot(container);
+root.render(<App />);
 
 if (module.hot) {
   module.hot.accept();

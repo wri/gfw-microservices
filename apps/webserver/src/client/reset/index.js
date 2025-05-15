@@ -1,4 +1,4 @@
-import { render } from 'react-dom';
+import { createRoot } from 'react-dom/client';
 
 import { ThemeProvider } from '../styles';
 import Reset from './js/components/Reset';
@@ -9,7 +9,9 @@ const App = () => (
   </ThemeProvider>
 );
 
-render(<App />, document.getElementById('reset-mount'));
+const container = document.getElementById('reset-mount');
+const root = createRoot(container);
+root.render(<App />);
 
 if (module.hot) {
   module.hot.accept();

@@ -1,6 +1,8 @@
-import Login from './js/components/Login';
-import { render } from 'react-dom';
-
+import { createRoot } from 'react-dom/client';
 import './css/login.scss';
 
-render(<Login />, document.getElementById('mount'));
+import Login from './js/components/Login';
+
+const container = document.getElementById('mount');
+const root = createRoot(container);
+root.render(<Login />);

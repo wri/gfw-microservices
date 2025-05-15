@@ -1,7 +1,8 @@
 /* global userEmail */
 
+import { createRoot } from 'react-dom/client';
+
 import Change from './js/components/Change';
-import { render } from 'react-dom';
 import { ThemeProvider } from '../styles';
 
 const App = () => (
@@ -10,7 +11,9 @@ const App = () => (
   </ThemeProvider>
 );
 
-render(<App />, document.getElementById('change-mount'));
+const container = document.getElementById('change-mount');
+const root = createRoot(container);
+root.render(<App />);
 
 if (module.hot) {
   module.hot.accept();

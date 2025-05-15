@@ -1,6 +1,6 @@
 /* global templateData, templateDropdowns, userLists, userSharedLists, userInfo, usersList, organizationId, locationCount, orgLists, gfwLists,  fromMap, listStatuses */
 
-import { render } from 'react-dom';
+import { createRoot } from 'react-dom/client';
 import { BrowserRouter as Router } from 'react-router-dom';
 import { ThemeProvider } from '../styles/ThemeProvider';
 
@@ -102,7 +102,9 @@ const App = () => (
   </ThemeProvider>
 );
 
-render(<App />, document.getElementById('locations-mount'));
+const container = document.getElementById('locations-mount');
+const root = createRoot(container);
+root.render(<App />);
 
 if (module.hot) {
   module.hot.accept();

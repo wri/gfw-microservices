@@ -1,6 +1,6 @@
 /* global templateData, userLists, userSharedLists, userInfo, usersList, organizationId, locationCount, gfwLists, fromMap, listStatuses */
 
-import { render } from 'react-dom';
+import { createRoot } from 'react-dom/client';
 import { BrowserRouter } from 'react-router-dom';
 import { Provider } from 'react-redux';
 import store from '../locations/js/store';
@@ -100,7 +100,9 @@ const App = () => {
   );
 };
 
-render(<App />, document.getElementById('list-details-mount'));
+const container = document.getElementById('list-details-mount');
+const root = createRoot(container);
+root.render(<App />);
 
 if (module.hot) {
   module.hot.accept();

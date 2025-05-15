@@ -1,5 +1,5 @@
-import React, { useEffect } from 'react';
-import { renderToString } from 'react-dom/server';
+import { useEffect } from 'react';
+import { renderToStaticMarkup } from 'react-dom/server';
 
 const transifex = Transifex.live.translateText;
 
@@ -54,7 +54,7 @@ export default function BarChart({
       tooltip: {
         headerFormat: '<table>',
         pointFormatter() {
-          return renderToString(
+          return renderToStaticMarkup(
             <BarCharTooltip
               {...this}
               rawBarChartData={rawBarChartData}

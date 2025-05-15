@@ -1,6 +1,6 @@
 /* global userLists, locationCount, accessLevel, subscription_status_id, gfwLists, userSharedLists, fromMap, userInfo */
 
-import { render } from 'react-dom';
+import { createRoot } from 'react-dom/client';
 import { Provider } from 'react-redux';
 
 import { ThemeProvider } from '../styles';
@@ -24,7 +24,9 @@ const App = () => (
   </ThemeProvider>
 );
 
-render(<App />, document.getElementById('dashboard-mount'));
+const container = document.getElementById('dashboard-mount');
+const root = createRoot(container);
+root.render(<App />);
 
 if (module.hot) {
   module.hot.accept();

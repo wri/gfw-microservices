@@ -1,10 +1,11 @@
 /* global userID */
-import React, { useEffect, useState } from 'react';
-import { render } from 'react-dom';
+import { useEffect, useState } from 'react';
+import { createRoot } from 'react-dom/client';
 import lightBaseTheme from 'material-ui/styles/baseThemes/lightBaseTheme';
 import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
 import getMuiTheme from 'material-ui/styles/getMuiTheme';
-import CircularProgress from '@mui/material/CircularProgress';
+import { CircularProgress } from '@mui/material';
+
 import UserProfile from './js/components/UserProfile';
 import Page from '../common/js/components/Page';
 
@@ -92,7 +93,9 @@ function App() {
   );
 }
 
-render(<App />, document.getElementById('user-profile-mount'));
+const container = document.getElementById('user-profile-mount');
+const root = createRoot(container);
+root.render(<App />);
 
 if (module.hot) {
   module.hot.accept();

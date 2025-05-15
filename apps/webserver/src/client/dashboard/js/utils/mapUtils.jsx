@@ -1,4 +1,4 @@
-import { render } from 'react-dom';
+import { createRoot } from 'react-dom/client';
 import _uniq from 'lodash/uniq';
 import isEmpty from 'lodash/isEmpty';
 import Graphic from '@arcgis/core/Graphic';
@@ -137,7 +137,9 @@ function createPopup(graphic) {
     </div>
   );
   const node = document.createElement('div');
-  render(content, node);
+
+  const root = createRoot(node);
+  root.render(content);
   return node;
 }
 

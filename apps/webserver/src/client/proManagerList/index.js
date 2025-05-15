@@ -1,8 +1,9 @@
+import { createRoot } from 'react-dom/client';
 import { BrowserRouter } from 'react-router-dom';
-import { render } from 'react-dom';
 import lightBaseTheme from 'material-ui/styles/baseThemes/lightBaseTheme';
 import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
 import getMuiTheme from 'material-ui/styles/getMuiTheme';
+
 import ProManagerPanel from './js/components/ProManagerPanel';
 import Page from '../common/js/components/Page';
 import AppErrorFallback from '../common/js/components/Errors/AppErrorFallback';
@@ -28,7 +29,9 @@ function App() {
   );
 }
 
-render(<App />, document.getElementById('proManagerList-mount'));
+const container = document.getElementById('proManagerList-mount');
+const root = createRoot(container);
+root.render(<App />);
 
 if (module.hot) {
   module.hot.accept();

@@ -1,3 +1,8 @@
+import { TextEncoder, TextDecoder } from 'util';
+
+global.TextEncoder = TextEncoder;
+global.TextDecoder = TextDecoder;
+
 /* eslint-disable @typescript-eslint/ban-ts-comment */
 import jsdom from 'jest-environment-jsdom';
 import renderer from 'react-test-renderer';

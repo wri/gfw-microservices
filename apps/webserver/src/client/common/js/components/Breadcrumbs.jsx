@@ -1,3 +1,4 @@
+import { Children, isValidElement } from 'react';
 import '../../css/breadcrumbs.scss';
 
 function insertSeparators(items, className, separator) {
@@ -39,8 +40,8 @@ const Breadcrumbs = ({
   separator = '/',
   separatorClass = 'breadcrumb__separator',
 }) => {
-  const allItems = React.Children.toArray(children)
-    .filter((child) => React.isValidElement(child))
+  const allItems = Children.toArray(children)
+    .filter((child) => isValidElement(child))
     .map((child, index) => (
       <li className={itemClass} key={`child-${index}`}>
         {child}

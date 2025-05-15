@@ -1,3 +1,4 @@
+import { Component } from 'react';
 import Select from 'react-select';
 import { getFormattedDateTime } from '../../../../common/js/utils/dateTime';
 import ShareListDialog from './ShareListDialog';
@@ -31,7 +32,7 @@ const getAccessLevelTitle = function (shareUser) {
   return userTitle;
 };
 
-class ShareList extends React.Component {
+class ShareList extends Component {
   constructor(props) {
     super(props);
     const selectedList = props.selectedList;
@@ -108,7 +109,7 @@ class ShareList extends React.Component {
     return (
       <div>
         {SharedListUsers && (
-          <React.Fragment>
+          <>
             <ShareListDialog
               onRequestClose={this._handleAddUserToSharedListDialogMessage}
               onButtonConfirm={this._addUserToSharedList}
@@ -250,7 +251,7 @@ class ShareList extends React.Component {
                 </tbody>
               </table>
             </section>
-          </React.Fragment>
+          </>
         )}
       </div>
     );

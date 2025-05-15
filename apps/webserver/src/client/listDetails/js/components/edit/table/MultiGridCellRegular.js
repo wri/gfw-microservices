@@ -1,4 +1,4 @@
-import React, { PureComponent } from 'react';
+import { PureComponent, Fragment } from 'react';
 
 import { locationsPage } from '../../../../../common/js/config';
 import { fieldValidations } from '../../../../../locations/js/utils/validations';
@@ -273,7 +273,7 @@ export class MultiGridCellRegular extends PureComponent {
             valid ? 'valid-td' : 'invalid-td'
           }`}
         >
-          <React.Fragment>
+          <Fragment>
             <input
               onChange={(evt) => {
                 _handleTrackCellUpdates(feature['location_id']);
@@ -294,7 +294,7 @@ export class MultiGridCellRegular extends PureComponent {
                 showErrorMessage={showErrorMessage}
               />
             )}
-          </React.Fragment>
+          </Fragment>
           <div className="locations-grid-cell__icon-container">
             <IconEdit className="locations-grid-cell__icon" />
           </div>

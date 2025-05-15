@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState, FC } from 'react';
 import {
   Select,
   Box,
@@ -47,7 +47,7 @@ interface UserListCommodityRiskFilterProps {
   isListFiltered: boolean;
 }
 
-const UserListCommodityRiskFilter: React.FC<UserListCommodityRiskFilterProps> = ({
+const UserListCommodityRiskFilter: FC<UserListCommodityRiskFilterProps> = ({
   isFilterModalVisible,
   filterValues,
   parentCompanyOptionsForFilter,

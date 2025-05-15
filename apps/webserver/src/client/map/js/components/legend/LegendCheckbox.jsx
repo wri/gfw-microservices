@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import { Component } from 'react';
 import store from '../../store';
 import _range from 'lodash/range';
 import {
@@ -177,7 +177,7 @@ export default class LegendCheckbox extends Component {
     const { soyYear } = store.getState();
     const years = _range(soyPlantedYearsRange[0], soyPlantedYearsRange[1] + 1);
     return (
-      <React.Fragment>
+      <>
         <ul className="layer-legend">{layer.legendConfig.items.map(this.layerLegendMap)}</ul>
         <div className="soy-year-picker">
           <p className="layer-legend-message">{'Displaying Soy planted area in'}</p>
@@ -191,7 +191,7 @@ export default class LegendCheckbox extends Component {
             />
           </div>
         </div>
-      </React.Fragment>
+      </>
     );
   };
 

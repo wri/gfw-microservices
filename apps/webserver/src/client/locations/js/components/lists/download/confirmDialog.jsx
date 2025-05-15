@@ -1,3 +1,4 @@
+import { isValidElement } from 'react';
 import { Dialog, DialogTitle, DialogContent, IconButton } from '@mui/material';
 import { Close } from '@mui/icons-material';
 
@@ -13,7 +14,7 @@ export default function ConfirmDialog({
     "You have selected a list file for download. Please check your email for your data's download link.";
 
   const isValidCustomConfirmationMessage =
-    CustomDownloadConfirmationMessage && React.isValidElement(CustomDownloadConfirmationMessage());
+    CustomDownloadConfirmationMessage && isValidElement(CustomDownloadConfirmationMessage());
 
   return (
     <Dialog open={open} onClose={() => setDialogOpen(false)}>

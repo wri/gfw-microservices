@@ -1,6 +1,6 @@
 /* global field */
 
-import React, { Component } from 'react';
+import React, { Component, isValidElement } from 'react';
 import Dialog from 'material-ui/Dialog';
 import getMuiTheme from 'material-ui/styles/getMuiTheme';
 import Point from '@arcgis/core/geometry/Point';
@@ -1912,13 +1912,13 @@ export default class AddLocation extends Component {
     }
 
     const dialogContent =
-      typeof dialogMessage === 'string' || React.isValidElement(dialogMessage)
+      typeof dialogMessage === 'string' || isValidElement(dialogMessage)
         ? [dialogMessage]
         : dialogMessage.map(this.generateMessages);
     const investmentTemplateTypes = this.state.investmentTemplates.filter((t) => t.id == 6)[0];
     const hasGeometry = geometry && geometry.type;
 
-    if (dialogEmail && !React.isValidElement(dialogMessage)) {
+    if (dialogEmail && !isValidElement(dialogMessage)) {
       dialogContent.push(this.generateEmailText());
     }
 

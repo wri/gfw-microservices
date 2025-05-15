@@ -1,4 +1,4 @@
-import * as React from 'react';
+import { Fragment } from 'react';
 import ReportIcon from '@mui/icons-material/Report';
 import EditNoteIcon from '@mui/icons-material/EditNote';
 import SpeedIcon from '@mui/icons-material/Speed';
@@ -108,9 +108,9 @@ export default function AnalysisStatusBanners({
       {alertsConfig.map(
         (alert, index) =>
           alert.condition && (
-            <React.Fragment key={index}>
+            <Fragment key={index}>
               <AlertBanner {...alert} />
-            </React.Fragment>
+            </Fragment>
           )
       )}
     </>

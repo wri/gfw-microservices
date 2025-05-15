@@ -1,3 +1,4 @@
+import { Fragment } from 'react';
 import Checkbox from '@mui/material/Checkbox';
 import { formatNum, prettifyNum } from '../../../../common/js/utils/diagnostics.utils';
 import InfoBubble from '../../../../common/js/components/InfoBubble';
@@ -40,7 +41,7 @@ export function SelectorWithOneLevel({
           const totalLoss = calculateTotalLossForAllCategories(data, dateRange);
 
           return (
-            <React.Fragment key={optionId}>
+            <Fragment key={optionId}>
               <tr>
                 <th data-cy={dataCy}>
                   <input
@@ -115,7 +116,7 @@ export function SelectorWithOneLevel({
                     );
                   }
                 )}
-            </React.Fragment>
+            </Fragment>
           );
         }
       )}

@@ -1,3 +1,4 @@
+import { Fragment } from 'react';
 import { withStyles } from '@material-ui/core/styles';
 import { Card, Grid, Radio } from '@mui/material';
 import HectareKilometerSwitch from './HectareKilometerSwitch';
@@ -44,7 +45,7 @@ const SetArea = ({
           <label>{defineRadiusHeader}</label>
         </Grid>
         {Object.values(NEW_LOCATION_AREA_OPTIONS).map(({ id, label, hint }) => (
-          <React.Fragment key={id}>
+          <Fragment key={id}>
             <Grid item xs={1}>
               <GfwRadio
                 type="radio"
@@ -62,7 +63,7 @@ const SetArea = ({
               <div>{label}</div>
               <div className="set-area__radio-label-description">{hint}</div>
             </Grid>
-          </React.Fragment>
+          </Fragment>
         ))}
 
         {selectedAreaRadioOption === NEW_LOCATION_AREA_OPTIONS.CUSTOM.id && (

@@ -65,7 +65,7 @@ afterEach(() => {
   jest.clearAllMocks();
 });
 
-describe.skip('ListDetails', () => {
+describe('ListDetails', () => {
   const defaultProps = {
     templateData: [],
     userLists: [],

@@ -518,13 +518,22 @@ class Landing extends Component {
                     src={NoResultsIllustration}
                   />
                   <AddLocationsPrompt key={language} languageCode={language} />
-                  <Button
-                    className="no-lists__button"
-                    icon={<IconPlus height="10px" />}
-                    label={locationsPage.landing.addLocations}
-                    onClick={() => this.setState({ addLocationDialogOpen: true })}
-                    variant="primary"
-                  />
+                  <PillButton
+                    variant="contained"
+                    size="small"
+                    startIcon={<IconPlus height="10px" />}
+                    sx={{ mx: 'auto' }}
+                    onClick={() => {
+                      if (isUploadListUiAvailable) {
+                        const { history } = this.props;
+                        history.push('/upload-location');
+                      } else {
+                        this.setState({ addLocationDialogOpen: true });
+                      }
+                    }}
+                  >
+                    {locationsPage.landing.addLocations}
+                  </PillButton>
                 </div>
               )}
               {/* SEARCH: NO RESULTS */}

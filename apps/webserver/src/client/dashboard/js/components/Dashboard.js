@@ -1,10 +1,11 @@
-import Page from '../../../common/js/components/Page';
 import React, { Component } from 'react';
 import moment from 'moment';
-import CustomDialog from '../../../common/js/components/CustomDialog/CustomDialog';
-import ReportIcon from 'material-ui/svg-icons/action/description';
-import DownloadIcon from 'material-ui/svg-icons/file/file-download';
 import isEmpty from 'lodash/isEmpty';
+
+import { Description, FileDownload } from '@mui/icons-material';
+
+import Page from '../../../common/js/components/Page';
+import CustomDialog from '../../../common/js/components/CustomDialog/CustomDialog';
 
 import store from '../store';
 import {
@@ -37,7 +38,7 @@ import { loaderMessages } from '../../../common/js/config';
 import { listStatus } from '../../../../config/env/listStatuses.constants';
 import ConfirmDialog from '../../../locations/js/components/lists/download/confirmDialog';
 import fetch from '../../../common/js/utils/fetch';
-import { LoadingModal } from '../../../components';
+import { LoadingModal, PillButton } from '../../../components';
 
 import '../../css/dashboard.scss';
 
@@ -344,20 +345,26 @@ export default class Dashboard extends Component {
               <div style={{ cursor: 'auto' }}>
                 <span>{`Last updated: ${this.state.lastUpdatedDashboard} GMT`}</span>
               </div>
-              <div onClick={() => this.printReport()} className="dashboard-subnav__control">
-                <ReportIcon color="#b9b9bb" />
-                <span>Report</span>
-              </div>
-              <div
-                className={`dashboard-subnav__control ${isEmpty(rawData) ? 'hidden' : ''}`}
+              <PillButton
+                startIcon={<Description />}
+                size="small"
+                color="info"
+                onClick={this.printReport}
+              >
+                Report
+              </PillButton>
+              <PillButton
+                startIcon={<FileDownload />}
+                size="small"
+                hidden={isEmpty(rawData)}
+                color="info"
                 onClick={() => {
                   downloadDashboard();
                   this.setState({ isLoading: true, isOpenDownloadDialog: true });
                 }}
               >
-                <DownloadIcon color="#b9b9bb" />
-                <span>Download</span>
-              </div>
+                Download
+              </PillButton>
             </div>
           </div>
         </div>

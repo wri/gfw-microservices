@@ -1,7 +1,6 @@
 import React from 'react';
-import Dialog from 'material-ui/Dialog';
-import IconTimes from 'common/js/components/icon/IconTimes';
-import IconButton from 'common/js/components/IconButton';
+import { Dialog, DialogTitle, DialogContent, IconButton } from '@mui/material';
+import { Close } from '@mui/icons-material';
 
 const transifex = Transifex.live.translateText;
 
@@ -18,16 +17,26 @@ export default function ConfirmDialog({
     CustomDownloadConfirmationMessage && React.isValidElement(CustomDownloadConfirmationMessage());
 
   return (
-    <Dialog open={open} onRequestClose={() => setDialogOpen(false)}>
-      <div className="dialog__header" data-cy="download-dialog">
-        <h1 className="dialog__title">{transifex(DOWNLOAD_TITLE)}</h1>
-        <IconButton icon={<IconTimes />} onClick={() => setDialogOpen(false)} size="large" />
-      </div>
-      {isValidCustomConfirmationMessage ? (
-        <CustomDownloadConfirmationMessage />
-      ) : (
-        <div className="dialog__prompt">{transifex(DOWNLOAD_MESSAGE)}</div>
-      )}
+    <Dialog open={open} onClose={() => setDialogOpen(false)}>
+      <DialogTitle>{transifex(DOWNLOAD_TITLE)}</DialogTitle>
+      <IconButton
+        aria-label="close"
+        sx={{
+          position: 'absolute',
+          right: 8,
+          top: 8,
+        }}
+        onClick={() => setDialogOpen(false)}
+      >
+        <Close />
+      </IconButton>
+      <DialogContent>
+        {isValidCustomConfirmationMessage ? (
+          <CustomDownloadConfirmationMessage />
+        ) : (
+          <div className="dialog__prompt">{transifex(DOWNLOAD_MESSAGE)}</div>
+        )}
+      </DialogContent>
     </Dialog>
   );
 }

@@ -570,7 +570,7 @@ describe('Pro Manager Utils Tests', () => {
     });
 
     it('should resolve with the subscription status when the database operation is successful', async () => {
-      const mockResult = { status: 'active' }; 
+      const mockResult = { status: 'active' };
       sqlUtils.executeSystemStoredProcedure.mockResolvedValue(mockResult); // Mock successful database operation
 
       await expect(getAccountSubscriptionStatus(mockReq, organizationId)).resolves.toEqual(

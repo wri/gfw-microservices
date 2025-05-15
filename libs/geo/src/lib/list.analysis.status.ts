@@ -409,7 +409,7 @@ export async function resolveListAnalysisStatuses(listAnalysisStatuses: ListsAna
 export const isGHGCommodityValid = async (
   id: number,
   organizationDb: string,
-  organization_user_id: number
+  userId: number
 ): Promise<boolean> => {
   // Get list data
   try {
@@ -440,7 +440,7 @@ export const isGHGCommodityValid = async (
         await upgradeListSchema({
           clientDb: organizationDb,
           listId: id,
-          userId: organization_user_id,
+          userId,
         });
       } catch (error) {
         Logger.error('validateGHGCommodity', `Error upgrading list ${id} to version 2: ${error}`);

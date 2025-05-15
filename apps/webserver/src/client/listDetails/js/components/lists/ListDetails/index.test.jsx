@@ -3,6 +3,18 @@ import { render, cleanup, screen } from '@testing-library/react';
 import '@testing-library/jest-dom';
 import ListDetails from './index';
 
+// Mock componentDidMount to prevent network requests
+ListDetails.prototype.componentDidMount = jest.fn();
+
+// Mock axios to prevent network requests
+jest.mock('axios', () => {
+  const mockAxios = jest.fn().mockResolvedValue({ data: {} });
+  mockAxios.post = jest.fn().mockResolvedValue({ data: {} });
+  mockAxios.put = jest.fn().mockResolvedValue({});
+  mockAxios.get = jest.fn().mockResolvedValue({ data: {} });
+  return mockAxios;
+});
+
 // Mock the components used in ListDetails
 jest.mock('./AnalysisStatusBanners', () => () => <div data-testid="analysis-status-banners" />);
 jest.mock('./ListActions', () => () => <div data-testid="list-actions" />);

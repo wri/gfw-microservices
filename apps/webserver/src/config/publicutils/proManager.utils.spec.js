@@ -1,24 +1,21 @@
 /**
  * @jest-environment node
  */
-const {
-  activatePendingAccount,
-  getAllAccountsList,
-  getAllUsersList,
-} = require('./proManager.utils');
 
 jest.mock('./policyManager.utils');
 jest.mock('./accountManager.utils');
 jest.mock('./userManager.utils');
 jest.mock('../langResources');
-jest.mock('../publicutils/helper.utils');
 
 jest.mock('../privateutils/speakeasy.utils');
 jest.mock('../privateutils/cognito.utils');
 jest.mock('../privateutils/ses.utils');
-jest.mock('../privateutils/rollback.utils');
 jest.mock('../privateutils/error.utils');
-jest.mock('../privateutils/logger.utils');
+jest.mock('../privateutils/sql.utils', () => ({
+  executeSystemStoredProcedure: jest.fn(),
+  executeSystemQuery: jest.fn(),
+}));
+
 jest.mock('../env/orgAccountStatus.constants', () => ({
   orgAccountStatus: {
     Pending: 1,
@@ -33,25 +30,37 @@ jest.mock('@wri-monorepos/sql', () => ({
   setOrganizationRenewalTime: jest.fn(),
 }));
 
-jest.mock('../privateutils/sql.utils', () => ({
-  executeSystemStoredProcedure: jest.fn(),
-  executeSystemQuery: jest.fn(),
-}));
+const {
+  activatePendingAccount,
+  deactivateAccount,
+  deleteOrganization,
+  deletePendingAccount,
+  deletePendingAccountRequest,
+  deleteUser,
+  getAccountSubscriptionStatus,
+  getAllAccountsList,
+  getAllUsersList,
+  reactivateAccount,
+  updateAccountAnalysisLimits,
+  updateAccountSubscriptionStatus,
+  updateGlobalAnalysisLimits,
+  updatePendingAccountUser,
+} = require('./proManager.utils');
 
 const UserManager = require('./userManager.utils');
 const AccountManager = require('./accountManager.utils');
 const PolicyManager = require('./policyManager.utils');
 const langResources = require('../langResources');
-const Helper = require('../publicutils/helper.utils');
-const config = require('../config');
-
 const errorUtils = require('../privateutils/error.utils');
 const sqlUtils = require('../privateutils/sql.utils');
 const awsCognito = require('../privateutils/cognito.utils');
 const awsSes = require('../privateutils/ses.utils');
-const rollbackUtils = require('../privateutils/rollback.utils');
 const speakEasy = require('../privateutils/speakeasy.utils');
 const { orgAccountStatus } = require('../env/orgAccountStatus.constants');
+const {
+  setOrganizationCustomAnalysisLimits,
+  setGlobalAnalysisLimit,
+} = require('@wri-monorepos/sql');
 
 describe('Pro Manager Utils Tests', () => {
   describe('getAllAccountsList', () => {
@@ -65,7 +74,7 @@ describe('Pro Manager Utils Tests', () => {
       jest.clearAllMocks();
     });
 
-    it('rejects if user is not a Pro Manager', async () => {
+    it('should reject if user is not a Pro Manager', async () => {
       UserManager.isProManager = jest.fn().mockReturnValue(false);
       const errorObj = { message: 'not pro' };
 
@@ -78,15 +87,13 @@ describe('Pro Manager Utils Tests', () => {
       expect(createErrorMessage).toHaveBeenCalled();
     });
 
-    it('resolves with account list if user is Pro Manager', async () => {
-      // Mock the UserManager function
+    it('should resolve with account list if user is Pro Manager', async () => {
       UserManager.isProManager = jest.fn().mockReturnValue(true);
 
       // Mock the results to be returned by the stored procedure
       const mockResults = [{ id: 1 }, { id: 2 }];
       sqlUtils.executeSystemStoredProcedure = jest.fn().mockResolvedValue(mockResults);
 
-      // Log req to ensure it's set up properly
       const req = {
         session: {
           ispromanager: true,
@@ -96,10 +103,10 @@ describe('Pro Manager Utils Tests', () => {
         },
       };
       const result = await getAllAccountsList(req);
-      expect(result).toEqual(mockResults); // Check if the result matches
+      expect(result).toEqual(mockResults);
     });
 
-    it('rejects if stored procedure throws', async () => {
+    it('should reject if stored procedure throws', async () => {
       UserManager.isProManager = jest.fn().mockReturnValue(true);
 
       const err = new Error('Database error');
@@ -124,7 +131,7 @@ describe('Pro Manager Utils Tests', () => {
       jest.clearAllMocks();
     });
 
-    it('rejects if user is not a Pro Manager', async () => {
+    it('should reject if user is not a Pro Manager', async () => {
       UserManager.isProManager.mockReturnValue(false);
       langResources.getResourceString.mockReturnValue('Not authorized');
       errorUtils.createErrorMessage.mockReturnValue({ message: 'user not pro' });
@@ -140,7 +147,7 @@ describe('Pro Manager Utils Tests', () => {
       );
     });
 
-    it('resolves with user list if user is a Pro Manager', async () => {
+    it('should resolve with user list if user is a Pro Manager', async () => {
       UserManager.isProManager.mockReturnValue(true);
       const mockData = [{ id: 1, name: 'Alice' }];
       sqlUtils.executeSystemStoredProcedure.mockResolvedValue(mockData);
@@ -154,7 +161,7 @@ describe('Pro Manager Utils Tests', () => {
       expect(result).toEqual(mockData);
     });
 
-    it('rejects if stored procedure throws error', async () => {
+    it('should reject if stored procedure throws error', async () => {
       UserManager.isProManager.mockReturnValue(true);
       const error = new Error('DB failure');
       sqlUtils.executeSystemStoredProcedure.mockRejectedValue(error);
@@ -184,16 +191,14 @@ describe('Pro Manager Utils Tests', () => {
       jest.clearAllMocks();
     });
 
-    it('resolves successfully with valid input', async () => {
+    it('should resolve successfully with valid input', async () => {
       const pendingaccount_id = 123;
       const mockReq = {
         session: { user_email: 'admin@example.com' },
       };
 
-      // Mock UserManager.isProManager to return true
       jest.spyOn(UserManager, 'isProManager').mockReturnValue(true);
 
-      // Mock get helper functions
       jest.spyOn(UserManager, 'getTitles').mockReturnValue([{ id: 1, title: 'Manager' }]);
       jest
         .spyOn(UserManager, 'getCommodities')
@@ -205,80 +210,64 @@ describe('Pro Manager Utils Tests', () => {
         .spyOn(AccountManager, 'getClassifications')
         .mockReturnValue([{ id: 30, classification_name: 'Private' }]);
 
-      // Mock stored procedure for uspGetAllAccountsList
       jest
         .spyOn(sqlUtils, 'executeSystemStoredProcedure')
         .mockImplementation((req, spName, params) => {
-          if (spName === 'uspGetAllAccountsList') {
-            return Promise.resolve([
-              {
-                organization_id: pendingaccount_id,
-                organization_name: 'TestOrg',
-                organization_status_id: orgAccountStatus.Pending,
-              },
-            ]);
+          switch (spName) {
+            case 'uspGetAllAccountsList':
+              return Promise.resolve([
+                {
+                  organization_id: pendingaccount_id,
+                  organization_name: 'TestOrg',
+                  organization_status_id: orgAccountStatus.Pending,
+                },
+              ]);
+            case 'uspGetPendingAccountInformation':
+              return Promise.resolve([
+                {
+                  id: 1,
+                  title_id: 1,
+                  other_title: '',
+                  first_name: 'John',
+                  last_name: 'Test',
+                  email: 'john@example.com',
+                  phone: '1234567890',
+                  organization_name: 'TestOrg',
+                  organization_is_subsidiary: false,
+                  organization_parent: '',
+                  organization_website: '',
+                  organization_address: '',
+                },
+              ]);
+            case 'uspGetPendingUserCommodities':
+              return Promise.resolve([{ commodity_id: 10 }]);
+            case 'uspGetPendingUserGeographies':
+              return Promise.resolve([{ geography_id: 20 }]);
+            case 'uspGetPendingAccountPolicies':
+              return Promise.resolve([{ document_name: 'Policy1' }]);
+            case 'uspGetPendingAccountClassification':
+              return Promise.resolve([{ classification_id: 30 }]);
+            case 'uspActivatePendingAccount':
+              return Promise.resolve([
+                { ManagerEmail: 'john@example.com', UserExists: 0, orgID: 777 },
+              ]);
+            case 'uspRemovePendingOrganization':
+              return Promise.resolve([]);
+            default:
+              return Promise.resolve([]);
           }
-
-          if (spName === 'uspGetPendingAccountInformation') {
-            return Promise.resolve([
-              {
-                id: 1,
-                title_id: 1,
-                other_title: '',
-                first_name: 'John',
-                last_name: 'Doe',
-                email: 'john@example.com',
-                phone: '1234567890',
-                organization_name: 'TestOrg',
-                organization_is_subsidiary: false,
-                organization_parent: '',
-                organization_website: '',
-                organization_address: '',
-              },
-            ]);
-          }
-
-          if (spName === 'uspGetPendingUserCommodities') {
-            return Promise.resolve([{ commodity_id: 10 }]);
-          }
-
-          if (spName === 'uspGetPendingUserGeographies') {
-            return Promise.resolve([{ geography_id: 20 }]);
-          }
-
-          if (spName === 'uspGetPendingAccountPolicies') {
-            return Promise.resolve([{ document_name: 'Policy1' }]);
-          }
-
-          if (spName === 'uspGetPendingAccountClassification') {
-            return Promise.resolve([{ classification_id: 30 }]);
-          }
-
-          if (spName === 'uspActivatePendingAccount') {
-            return Promise.resolve([
-              { ManagerEmail: 'john@example.com', UserExists: 0, orgID: 777 },
-            ]);
-          }
-
-          if (spName === 'uspRemovePendingOrganization') {
-            return Promise.resolve([]);
-          }
-
-          return Promise.resolve([]);
         });
 
-      // Mock supporting calls
       jest.spyOn(sqlUtils, 'executeSystemQuery').mockResolvedValue(undefined);
       jest.spyOn(PolicyManager, 'movePolicy').mockResolvedValue(undefined);
       jest.spyOn(awsCognito, 'createUser').mockResolvedValue(undefined);
       jest.spyOn(awsSes, 'sendEmail').mockResolvedValue(true);
       jest.spyOn(speakEasy, 'createSecret').mockReturnValue('fake-secret');
 
-      // Run and assert
       await expect(activatePendingAccount(mockReq, pendingaccount_id, true)).resolves.toBe(true);
     });
 
-    it('rejects if user is not a Pro Manager', async () => {
+    it('should reject if user is not a Pro Manager', async () => {
       UserManager.isProManager.mockReturnValue(false);
       langResources.getResourceString.mockReturnValue('Access denied');
       const fakeError = { error: 'Not a Pro Manager' };
@@ -289,7 +278,7 @@ describe('Pro Manager Utils Tests', () => {
       );
     });
 
-    it('rejects if organization name already exists', async () => {
+    it('should reject if organization name already exists', async () => {
       sqlUtils.executeSystemStoredProcedure.mockResolvedValueOnce([
         { id: 1, title: 'Example Org', organization_status_id: orgAccountStatus.Pending },
       ]);
@@ -302,6 +291,455 @@ describe('Pro Manager Utils Tests', () => {
 
       await expect(activatePendingAccount(mockReq, pendingaccount_id, true)).rejects.toEqual(
         new errorUtils.createErrorMessage('Organization name already exists')
+      );
+    });
+  });
+
+  describe('updatePendingAccountUser', () => {
+    const mockReq = {};
+    const user_id = 123;
+    const user_first_name = 'John';
+    const user_middle_initial = '';
+    const user_last_name = 'Test';
+    const user_email = 'john@example.com';
+    const user_phone = '123-456-7890';
+    const user_title_id = 1;
+    const other_title = 'Manager';
+    const arr_user_geography_ids = [1, 2, 3];
+    const arr_user_commodity_ids = [4, 5, 6];
+
+    it('should resolve successfully when the stored procedure executes without errors', async () => {
+      sqlUtils.executeSystemStoredProcedure.mockResolvedValueOnce(true);
+
+      await expect(
+        updatePendingAccountUser(
+          mockReq,
+          user_id,
+          user_first_name,
+          user_middle_initial,
+          user_last_name,
+          user_email,
+          user_phone,
+          user_title_id,
+          other_title,
+          arr_user_geography_ids,
+          arr_user_commodity_ids
+        )
+      ).resolves.toBe(true);
+    });
+
+    it('should reject with an error message when the stored procedure fails', async () => {
+      const error = new Error('Database error');
+      sqlUtils.executeSystemStoredProcedure.mockRejectedValueOnce(error);
+
+      const errorMessage = new errorUtils.createErrorMessage(
+        mockReq,
+        errorUtils.ERROR_CODES.failedToUpdatePendingAccountUser,
+        'Failed to update pending account user',
+        error
+      );
+
+      await expect(
+        updatePendingAccountUser(
+          mockReq,
+          user_id,
+          user_first_name,
+          user_middle_initial,
+          user_last_name,
+          user_email,
+          user_phone,
+          user_title_id,
+          other_title,
+          arr_user_geography_ids,
+          arr_user_commodity_ids
+        )
+      ).rejects.toEqual(errorMessage);
+    });
+  });
+
+  describe('deletePendingAccountRequest', () => {
+    const mockReq = {
+      session: { user_email: 'testuser@example.com' },
+    };
+    const pendingaccount_id = 123;
+
+    it('should reject if the user is not a Pro Manager', async () => {
+      UserManager.isProManager.mockReturnValueOnce(false);
+
+      const userMessage = 'User not a Pro Manager';
+      const sysMessage = `UserEmail: ${mockReq.session.user_email} is not a GFW Pro Root User.`;
+      const errorObject = new errorUtils.createErrorMessage(
+        mockReq,
+        errorUtils.ERROR_CODES.userNotProManager,
+        userMessage,
+        sysMessage
+      );
+
+      await expect(deletePendingAccountRequest(mockReq, pendingaccount_id)).rejects.toEqual(
+        errorObject
+      );
+    });
+
+    it('should resolve successfully when the stored procedure executes without errors', async () => {
+      UserManager.isProManager.mockReturnValueOnce(true);
+      sqlUtils.executeSystemStoredProcedure.mockResolvedValueOnce(true);
+
+      await expect(deletePendingAccountRequest(mockReq, pendingaccount_id)).resolves.toBe(true);
+    });
+
+    it('should reject with an error message when the stored procedure fails', async () => {
+      UserManager.isProManager.mockReturnValueOnce(true);
+
+      const error = new Error('Database error');
+      sqlUtils.executeSystemStoredProcedure.mockRejectedValueOnce(error);
+
+      const errorMessage = new errorUtils.createErrorMessage(
+        mockReq,
+        errorUtils.ERROR_CODES.failedToDeletePendingAccountRequest,
+        'Failed to delete pending account request',
+        error
+      );
+
+      await expect(deletePendingAccountRequest(mockReq, pendingaccount_id)).rejects.toEqual(
+        errorMessage
+      );
+    });
+  });
+
+  describe('deleteOrganization', () => {
+    const mockReq = {
+      session: { user_email: 'testuser@example.com' },
+    };
+    const orgName = 'Test Organization';
+
+    it('should reject if the user is not a Pro Manager', async () => {
+      UserManager.isProManager.mockReturnValueOnce(false);
+
+      const userMessage = 'User not a Pro Manager';
+      const sysMessage = `UserEmail: ${mockReq.session.user_email} is not a GFW Pro Root User.`;
+      const errorObject = new errorUtils.createErrorMessage(
+        mockReq,
+        errorUtils.ERROR_CODES.userNotProManager,
+        userMessage,
+        sysMessage
+      );
+
+      await expect(deleteOrganization(mockReq, orgName)).rejects.toEqual(errorObject);
+    });
+
+    it('should resolve successfully when the stored procedure executes without errors', async () => {
+      UserManager.isProManager.mockReturnValueOnce(true);
+      sqlUtils.executeSystemStoredProcedure.mockResolvedValueOnce(true);
+
+      await expect(deleteOrganization(mockReq, orgName)).resolves.toBe(true);
+    });
+
+    it('should reject with an error message when the stored procedure fails', async () => {
+      UserManager.isProManager.mockReturnValueOnce(true);
+
+      const error = new Error('Database error');
+      sqlUtils.executeSystemStoredProcedure.mockRejectedValueOnce(error);
+
+      const errorMessage = new errorUtils.createErrorMessage(
+        mockReq,
+        errorUtils.ERROR_CODES.failedToDeleteOrganization,
+        'Failed to delete organization',
+        error
+      );
+
+      await expect(deleteOrganization(mockReq, orgName)).rejects.toEqual(errorMessage);
+    });
+  });
+
+  describe('deleteUser', () => {
+    const mockReq = {
+      session: { user_email: 'testuser@example.com' },
+    };
+    const email = 'userToDelete@example.com';
+
+    it('should reject if the user is not a Pro Manager', async () => {
+      UserManager.isProManager.mockReturnValueOnce(false);
+
+      const userMessage = 'User not a Pro Manager';
+      const sysMessage = `UserEmail: ${mockReq.session.user_email} is not a GFW Pro Root User.`;
+      const errorObject = new errorUtils.createErrorMessage(
+        mockReq,
+        errorUtils.ERROR_CODES.userNotProManager,
+        userMessage,
+        sysMessage
+      );
+
+      await expect(deleteUser(mockReq, email)).rejects.toEqual(errorObject);
+    });
+
+    it('should resolve successfully when the stored procedure executes without errors', async () => {
+      UserManager.isProManager.mockReturnValueOnce(true);
+      sqlUtils.executeSystemStoredProcedure.mockResolvedValueOnce(true);
+
+      await expect(deleteUser(mockReq, email)).resolves.toBe(true);
+    });
+
+    it('should reject with an error message when the stored procedure fails', async () => {
+      UserManager.isProManager.mockReturnValueOnce(true);
+
+      const error = new Error('Database error'); // Mock the stored procedure to reject with an error
+      sqlUtils.executeSystemStoredProcedure.mockRejectedValueOnce(error);
+
+      const errorMessage = new errorUtils.createErrorMessage(
+        mockReq,
+        errorUtils.ERROR_CODES.failedToDeleteUser,
+        'Failed to delete user',
+        error
+      );
+
+      await expect(deleteUser(mockReq, email)).rejects.toEqual(errorMessage);
+    });
+  });
+
+  describe('deletePendingAccount', () => {
+    const mockReq = {};
+    const organization_id = 123;
+
+    it('should resolve successfully when the stored procedure executes without errors', async () => {
+      sqlUtils.executeSystemStoredProcedure.mockResolvedValueOnce(true);
+
+      await expect(deletePendingAccount(mockReq, organization_id)).resolves.toBe(true);
+    });
+
+    it('should reject with an error message when the stored procedure fails', async () => {
+      const error = new Error('Database error');
+      sqlUtils.executeSystemStoredProcedure.mockRejectedValueOnce(error);
+
+      const errorMessage = new errorUtils.createErrorMessage(
+        mockReq,
+        errorUtils.ERROR_CODES.failedToDeleteOrganization,
+        'Failed to delete pending account.',
+        error
+      );
+
+      await expect(deletePendingAccount(mockReq, organization_id)).rejects.toEqual(errorMessage);
+    });
+  });
+
+  describe('reactivateAccount', () => {
+    const mockReq = {};
+    const organization_id = 123;
+
+    it('should resolve successfully when the stored procedure executes without errors', async () => {
+      sqlUtils.executeSystemStoredProcedure.mockResolvedValueOnce(true);
+
+      await expect(reactivateAccount(mockReq, organization_id)).resolves.toBe(true);
+    });
+
+    it('should reject with an error when the stored procedure fails', async () => {
+      const error = new Error('Database error');
+      sqlUtils.executeSystemStoredProcedure.mockRejectedValueOnce(error);
+
+      await expect(reactivateAccount(mockReq, organization_id)).rejects.toEqual(error);
+    });
+  });
+
+  describe('deactivateAccount', () => {
+    let mockReq;
+    const organization_id = 123;
+
+    beforeEach(() => {
+      mockReq = { session: { user_email: 'test@example.com' } };
+    });
+
+    it('should resolve successfully when the account is deactivated', async () => {
+      sqlUtils.executeSystemStoredProcedure.mockResolvedValue(true);
+
+      await expect(deactivateAccount(mockReq, organization_id)).resolves.toBe(true);
+    });
+
+    it('should reject with an error if the database operation fails', async () => {
+      const mockError = new Error('Database error');
+      sqlUtils.executeSystemStoredProcedure.mockRejectedValue(mockError);
+
+      await expect(deactivateAccount(mockReq, organization_id)).rejects.toThrow(mockError);
+    });
+  });
+
+  describe('getAccountSubscriptionStatus', () => {
+    let mockReq;
+    const organizationId = 123;
+
+    beforeEach(() => {
+      mockReq = { session: { user_email: 'test@example.com' } };
+    });
+
+    it('should resolve with the subscription status when the database operation is successful', async () => {
+      const mockResult = { status: 'active' }; 
+      sqlUtils.executeSystemStoredProcedure.mockResolvedValue(mockResult); // Mock successful database operation
+
+      await expect(getAccountSubscriptionStatus(mockReq, organizationId)).resolves.toEqual(
+        mockResult
+      );
+    });
+  });
+
+  describe('updateAccountSubscriptionStatus', () => {
+    const mockReq = { user: { id: 123 } };
+    const organizationId = 1;
+    const newSubscriptionStatusId = 2;
+
+    beforeEach(() => {
+      jest.clearAllMocks();
+    });
+
+    it('should resolve true when stored procedure succeeds', async () => {
+      sqlUtils.executeSystemStoredProcedure.mockResolvedValue();
+
+      await expect(
+        updateAccountSubscriptionStatus(mockReq, organizationId, newSubscriptionStatusId)
+      ).resolves.toBe(true);
+
+      expect(sqlUtils.executeSystemStoredProcedure).toHaveBeenCalledWith(
+        mockReq,
+        'uspSetOrganizationSubscriptionStatus',
+        [
+          { field: 'organizationId', type: expect.anything(), value: organizationId },
+          {
+            field: 'subscriptionStatusId',
+            type: expect.anything(),
+            value: newSubscriptionStatusId,
+          },
+        ]
+      );
+    });
+
+    it('should reject with an error object when stored procedure fails', async () => {
+      const mockError = new Error('Database failure');
+      const expectedError = { error: 'error example' };
+
+      sqlUtils.executeSystemStoredProcedure.mockRejectedValue(mockError);
+      errorUtils.createErrorMessage.mockReturnValue(expectedError);
+
+      await expect(
+        updateAccountSubscriptionStatus(mockReq, organizationId, newSubscriptionStatusId)
+      ).rejects.toEqual(expectedError);
+
+      expect(errorUtils.createErrorMessage).toHaveBeenCalledWith(
+        mockReq,
+        errorUtils.ERROR_CODES.failedToUpdateAccountSubscriptionStatus,
+        'Failed to update account subscription status',
+        mockError
+      );
+    });
+  });
+
+  describe('updateGlobalAnalysisLimits', () => {
+    const mockReq = { user: { id: 123 } };
+    const payload = {
+      subscriptionStatusId: 1,
+      MaxAreaPerList: 100.5,
+      MaxAreaAnalyzeablePerYear: 500.25,
+      max_locations_per_year: 10,
+    };
+
+    beforeEach(() => {
+      jest.clearAllMocks();
+    });
+
+    it('should resolve with payload when query succeeds', async () => {
+      sqlUtils.executeSystemQuery.mockResolvedValue();
+
+      await expect(updateGlobalAnalysisLimits(mockReq, payload)).resolves.toEqual(payload);
+
+      expect(sqlUtils.executeSystemQuery).toHaveBeenCalledWith(setGlobalAnalysisLimit, [
+        {
+          field: 'subscriptionStatusId',
+          type: expect.anything(),
+          value: payload.subscriptionStatusId,
+        },
+        { field: 'MaxAreaPerList', type: expect.anything(), value: payload.MaxAreaPerList },
+        {
+          field: 'MaxAreaAnalyzeablePerYear',
+          type: expect.anything(),
+          value: payload.MaxAreaAnalyzeablePerYear,
+        },
+        {
+          field: 'max_locations_per_year',
+          type: expect.anything(),
+          value: payload.max_locations_per_year,
+        },
+      ]);
+    });
+
+    it('throws an error object when query fails', async () => {
+      const mockError = new Error('DB failure');
+      const formattedError = { error: 'formatted error' };
+
+      sqlUtils.executeSystemQuery.mockRejectedValue(mockError);
+      errorUtils.createErrorMessage.mockReturnValue(formattedError);
+
+      await expect(updateGlobalAnalysisLimits(mockReq, payload)).rejects.toThrow(
+        new Error(formattedError)
+      );
+
+      expect(errorUtils.createErrorMessage).toHaveBeenCalledWith(
+        mockReq,
+        errorUtils.ERROR_CODES.failedToUpdateGlobalAnalysisLimit,
+        'Failed to update global analysis limit',
+        mockError
+      );
+    });
+  });
+
+  describe('updateAccountAnalysisLimits', () => {
+    const mockReq = { user: { id: 42 } };
+    const payload = {
+      organizationId: 10,
+      MaxAreaPerList: 123.45,
+      MaxAreaAnalyzeablePerYear: 678.9,
+      max_locations_per_year: 50,
+    };
+
+    beforeEach(() => {
+      jest.clearAllMocks();
+    });
+
+    it('should resolve with payload when query succeeds', async () => {
+      sqlUtils.executeSystemQuery.mockResolvedValue();
+
+      await expect(updateAccountAnalysisLimits(mockReq, payload)).resolves.toEqual(payload);
+
+      expect(sqlUtils.executeSystemQuery).toHaveBeenCalledWith(
+        setOrganizationCustomAnalysisLimits,
+        [
+          { field: 'OrgID', type: expect.anything(), value: payload.organizationId },
+          { field: 'MaxAreaPerList', type: expect.anything(), value: payload.MaxAreaPerList },
+          {
+            field: 'MaxAreaAnalyzeablePerYear',
+            type: expect.anything(),
+            value: payload.MaxAreaAnalyzeablePerYear,
+          },
+          {
+            field: 'max_locations_per_year',
+            type: expect.anything(),
+            value: payload.max_locations_per_year,
+          },
+        ]
+      );
+    });
+
+    it('throws an error object when query fails', async () => {
+      const dbError = new Error('DB failure');
+      const formattedError = { error: 'formatted error' };
+
+      sqlUtils.executeSystemQuery.mockRejectedValue(dbError);
+      errorUtils.createErrorMessage.mockReturnValue(formattedError);
+
+      await expect(updateAccountAnalysisLimits(mockReq, payload)).rejects.toThrow(
+        new Error(formattedError)
+      );
+
+      expect(errorUtils.createErrorMessage).toHaveBeenCalledWith(
+        mockReq,
+        errorUtils.ERROR_CODES.failedToUpdateAccountCustomAnalysisLimits,
+        'Failed to update account custom analysis limits',
+        dbError
       );
     });
   });

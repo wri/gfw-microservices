@@ -1,4 +1,3 @@
-import React from 'react';
 import Button from '@mui/material/Button';
 import { toggleDeforestationDisplayFormat } from '../../../../../locations/js/actions/locationActions';
 import store from '../../../../../locations/js/store';

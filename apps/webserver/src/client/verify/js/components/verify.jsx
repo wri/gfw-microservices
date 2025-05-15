@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import { Component, createRef } from 'react';
 import { Box, Dialog, DialogTitle, DialogContent, DialogActions } from '@mui/material';
 import { West } from '@mui/icons-material';
 import '../../css/verify.scss';
@@ -26,7 +26,7 @@ export default class Verify extends Component {
       dialogMessage: '',
       showModalLoader: false,
     };
-    this.tokenInputRef = React.createRef();
+    this.tokenInputRef = createRef();
   }
 
   componentDidMount() {

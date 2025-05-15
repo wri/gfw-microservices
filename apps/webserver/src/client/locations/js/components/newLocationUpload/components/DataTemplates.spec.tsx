@@ -1,4 +1,3 @@
-import React from 'react';
 import { render, screen, within, cleanup } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { DataTemplates } from './DataTemplates';

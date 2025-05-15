@@ -1,4 +1,3 @@
-import React from 'react';
 import { cleanup, render, screen } from '@testing-library/react';
 import { userEvent } from '@testing-library/user-event';
 import { UploadLocationPreviewErrorMessage } from './UploadLocationPreviewErrorMessage';
@@ -23,7 +22,6 @@ describe('UploadLocationPreviewErrorMessage', () => {
         onRetryPreviewData={mockRetryPreviewData}
       />
     );
-    screen.logTestingPlaygroundURL();
 
     expect(
       screen.getByText(

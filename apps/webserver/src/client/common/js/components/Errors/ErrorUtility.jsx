@@ -1,4 +1,3 @@
-import React from 'react';
 import catchContainer from './catchContainer';
 import './ErrorPage.scss';
 

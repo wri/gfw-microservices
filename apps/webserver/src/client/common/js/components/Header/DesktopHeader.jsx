@@ -1,4 +1,3 @@
-import React from 'react';
 import HeaderNavLink from './HeaderNavLink';
 import NewFeatureNotifications from './NewFeatureNotifications';
 import AccountDropDownMenu from './AccountDropDownMenu';

@@ -1,5 +1,3 @@
-import React from 'react';
-
 import { Box, useTheme } from '@mui/material';
 import { FileAttachState } from '../types';
 import { CheckCircle, Downloading, DriveFolderUpload, Report } from '@mui/icons-material';

@@ -1,5 +1,3 @@
-import React from 'react';
-
 import { locationsPage } from '../../../../common/js/config';
 import IconSearch from '../../../../common/js/components/icon/IconSearch';
 import IconTimes from '../../../../common/js/components/icon/IconTimes';

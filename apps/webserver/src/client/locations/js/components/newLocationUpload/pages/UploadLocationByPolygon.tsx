@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState, MutableRefObject } from 'react';
 import { z } from 'zod';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -62,7 +62,7 @@ type FormFieldsLocationName = z.infer<typeof locationSchema>;
 export function UploadLocationByPolygon({
   polygonFromMapPage,
 }: {
-  polygonFromMapPage?: React.MutableRefObject<PolygonFromMapPage | undefined>;
+  polygonFromMapPage?: MutableRefObject<PolygonFromMapPage | undefined>;
 }) {
   const theme = useTheme();
   const history = useHistory();

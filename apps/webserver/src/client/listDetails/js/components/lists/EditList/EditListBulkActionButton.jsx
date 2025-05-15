@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import { Component } from 'react';
 import * as PropTypes from 'prop-types';
 import { Button } from '@mui/material';
 import EditIcon from '@mui/icons-material/Edit';
@@ -29,7 +29,7 @@ export class EditListBulkActionButton extends Component {
     const { isModalOpen } = this.state;
 
     return (
-      <React.Fragment>
+      <>
         <EditListDialog onRequestClose={this.modalClose} open={isModalOpen} />
 
         <div
@@ -45,7 +45,7 @@ export class EditListBulkActionButton extends Component {
             Edit
           </Button>
         </div>
-      </React.Fragment>
+      </>
     );
   }
 }

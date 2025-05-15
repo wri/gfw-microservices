@@ -1,4 +1,3 @@
-import React from 'react';
 import { theme } from '../../../../../styles/theme';
 import { Box, Typography } from '@mui/material';
 import { DriveFolderUpload, Report } from '@mui/icons-material';

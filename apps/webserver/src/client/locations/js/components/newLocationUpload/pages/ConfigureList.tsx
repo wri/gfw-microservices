@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useRef, useState, ChangeEvent } from 'react';
 import {
   Box,
   Card,
@@ -181,7 +181,7 @@ export function ConfigureList({ userLists }: { userLists: UserList[] }) {
   }, [customCommodity]);
 
   const handleAnalysisChange = (
-    e: React.ChangeEvent<HTMLInputElement>,
+    e: ChangeEvent<HTMLInputElement>,
     field: {
       onChange: (value: boolean) => void;
     },
@@ -261,7 +261,7 @@ export function ConfigureList({ userLists }: { userLists: UserList[] }) {
                   value={field.value || ''}
                   onChange={(e) => {
                     const value = (e.target.value as CommoditiesType) || '';
-                    reset({ commodity: value });
+                    reset({ commodity: value as CommoditiesType });
                     setFormFields((v) => ({ ...v, existingListName: '' }));
                     field.onChange(value);
                   }}

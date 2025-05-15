@@ -1,4 +1,4 @@
-import React, { DragEvent, useEffect, useRef, useState } from 'react';
+import { DragEvent, useEffect, useRef, useState, ChangeEvent } from 'react';
 import { Box, Card, Typography, useTheme } from '@mui/material';
 import { ArrowForwardIos, Close } from '@mui/icons-material';
 
@@ -81,7 +81,7 @@ export function UploadLocationByFile() {
     }
   };
 
-  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleFileChange = (e: ChangeEvent<HTMLInputElement>) => {
     const selectedFile = e.target.files?.[0] ?? null;
     if (selectedFile) {
       setFile(selectedFile);

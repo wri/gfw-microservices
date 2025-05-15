@@ -1,4 +1,4 @@
-import React from 'react';
+import { ChangeEvent } from 'react';
 import { Grid, Checkbox, FormControlLabel, FormGroup } from '@mui/material';
 import { DefaultFilterValues } from '../../DefaultFilterValuesType';
 
@@ -15,15 +15,15 @@ function CommodityRiskFilters({
   selectedMillPriority,
   handleCheckboxChange,
 }: CommodityRiskFiltersProps) {
-  const changeOverallThreats = (evt: React.ChangeEvent<HTMLInputElement>) => {
+  const changeOverallThreats = (evt: ChangeEvent<HTMLInputElement>) => {
     handleCheckboxChange('selectedOverallThreats', evt.target.value);
   };
 
-  const changeOverallValues = (evt: React.ChangeEvent<HTMLInputElement>) => {
+  const changeOverallValues = (evt: ChangeEvent<HTMLInputElement>) => {
     handleCheckboxChange('selectedOverallValues', evt.target.value);
   };
 
-  const changeMillPriority = (evt: React.ChangeEvent<HTMLInputElement>) => {
+  const changeMillPriority = (evt: ChangeEvent<HTMLInputElement>) => {
     handleCheckboxChange('selectedMillPriority', evt.target.value);
   };
   return (

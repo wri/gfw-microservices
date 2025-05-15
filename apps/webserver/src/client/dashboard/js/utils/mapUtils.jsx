@@ -1,4 +1,3 @@
-import React from 'react';
 import { render } from 'react-dom';
 import _uniq from 'lodash/uniq';
 import isEmpty from 'lodash/isEmpty';

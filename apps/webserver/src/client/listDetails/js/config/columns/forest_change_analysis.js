@@ -1,4 +1,3 @@
-import React from 'react';
 import InfoBubble from '../../../../common/js/components/InfoBubble';
 import { columnHeaders } from './columnHeaders.constants';
 import ColumnsHeader from '../../components/columns/ColumnsHeader';

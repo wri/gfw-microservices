@@ -1,5 +1,3 @@
-import React from 'react';
-
 const IconMapMarker = (props) => (
   <svg width="11" height="14" viewBox="0 0 11 14" fill="currentColor" {...props}>
     <path

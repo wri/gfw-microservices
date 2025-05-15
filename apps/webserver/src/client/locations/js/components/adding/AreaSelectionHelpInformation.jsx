@@ -1,4 +1,3 @@
-import React from 'react';
 import { Card, CardContent, Typography } from '@mui/material';
 import LightbulbIcon from '@mui/icons-material/Lightbulb';
 import { locationsPage } from '../../../../common/js/config';

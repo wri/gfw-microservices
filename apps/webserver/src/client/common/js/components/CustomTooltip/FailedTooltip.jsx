@@ -1,4 +1,3 @@
-import React from 'react';
 import { withStyles } from '@material-ui/core/styles';
 import ReportIcon from '@mui/icons-material/Report';
 import Tooltip from '@material-ui/core/Tooltip';

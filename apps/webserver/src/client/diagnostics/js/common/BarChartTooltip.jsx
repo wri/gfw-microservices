@@ -1,4 +1,3 @@
-import React from 'react';
 import { prettifyNum, formatNum } from '../../../common/js/utils/diagnostics.utils';
 import './BarChartTooltip.scss';
 

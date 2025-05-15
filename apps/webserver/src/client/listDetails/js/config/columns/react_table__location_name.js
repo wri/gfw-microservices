@@ -1,4 +1,3 @@
-import React from 'react';
 import { locationsPage } from '../../../../common/js/config';
 import { columnHeaders } from './columnHeaders.constants';
 import CustomTooltip from '../../../../common/js/components/CustomTooltip/CustomTooltip';

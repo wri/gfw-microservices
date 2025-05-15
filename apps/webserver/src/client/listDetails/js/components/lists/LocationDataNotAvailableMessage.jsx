@@ -1,4 +1,3 @@
-import React from 'react';
 import { isAnalyzingStatus, isFailedList } from '../../../../locations/js/utils/lists.utils';
 import { locationsPage } from '../../../../common/js/config';
 

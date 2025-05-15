@@ -1,4 +1,3 @@
-import React from 'react';
 import { featureFlagsStrings } from '../../../../common/js/config';
 import Grid from '@mui/material/Grid';
 import Typography from '@mui/material/Typography';

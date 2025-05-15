@@ -1,5 +1,3 @@
-import React from 'react';
-
 const IconBan = (props) => (
   <svg width="14px" height="14px" viewBox="0 0 14 14" fill="currentColor" {...props}>
     <g fillRule="evenodd">

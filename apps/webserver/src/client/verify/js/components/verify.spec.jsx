@@ -1,4 +1,3 @@
-import React from 'react';
 import { render, fireEvent, waitFor, cleanup } from '@testing-library/react';
 import Verify from './verify';
 import mock from 'xhr-mock';
@@ -79,6 +78,6 @@ describe('Test Verify Component', () => {
 
     await getAndClickVerifyButton();
 
-    waitFor(() => expect(window.location.href).toEqual('/verify'));
+    await waitFor(() => expect(window.location.href).toEqual('/verify'));
   });
 });

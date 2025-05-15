@@ -1,5 +1,3 @@
-import React from 'react';
-
 const IconArrowRight = (props) => (
   <svg width="14px" height="8px" viewBox="0 0 14 8" fill="currentColor" {...props}>
     <polygon

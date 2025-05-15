@@ -1,4 +1,3 @@
-import React from 'react';
 import './DiagnosticsHeaderInfo.scss';
 
 function SingleLocationDiagnosticsHeaderInfo({ selectedListName, currentLocation }) {

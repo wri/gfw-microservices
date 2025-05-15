@@ -1,4 +1,3 @@
-import React from 'react';
 import { Paper, Popover } from 'material-ui';
 import PopoverAnimationDefault from 'material-ui/Popover/PopoverAnimationDefault';
 

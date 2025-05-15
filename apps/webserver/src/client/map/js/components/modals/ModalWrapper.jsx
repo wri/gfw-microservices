@@ -1,4 +1,3 @@
-import React from 'react';
 /**
  * Should be wrapped in a component with relative or absolute position
  */

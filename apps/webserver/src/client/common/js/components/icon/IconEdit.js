@@ -1,5 +1,3 @@
-import React from 'react';
-
 const IconEdit = (props) => (
   <svg width="14" height="14" viewBox="0 0 14 14" fill="currentColor" {...props}>
     <path

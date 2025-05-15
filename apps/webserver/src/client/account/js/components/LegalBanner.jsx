@@ -1,4 +1,3 @@
-import React from 'react';
 import Card from '@material-ui/core/Card';
 import CardContent from '@mui/material/CardContent';
 import { licenseAgreement, priceSheet } from '../../../common/js/config';

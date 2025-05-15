@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, FC, ChangeEvent } from 'react';
 import {
   Select,
   Box,
@@ -26,14 +26,14 @@ interface GFWProtectedForestChangeFilterProps {
   isFilterModalVisible: boolean;
 }
 
-const GFWProtectedForestChangeFilter: React.FC<GFWProtectedForestChangeFilterProps> = ({
+const GFWProtectedForestChangeFilter: FC<GFWProtectedForestChangeFilterProps> = ({
   protectedAreas,
   isFilterModalVisible,
 }) => {
   const initialState: DefaultFilterValues = store.getState().filters;
   const [state, setState] = useState<DefaultFilterValues>(initialState);
 
-  const onCountryChange = (evt: React.ChangeEvent<{ value: unknown }>) => {
+  const onCountryChange = (evt: ChangeEvent<{ value: unknown }>) => {
     setState({
       ...state,
       selectedCountry: evt.target.value as string,

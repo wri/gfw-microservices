@@ -1,4 +1,3 @@
-import React from 'react';
 import { cleanup, render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { UploadLocationPreview } from './UploadLocationPreview';
@@ -31,7 +30,8 @@ jest.mock('../hooks', () => ({
   useHistory: () => ({ goBack: mockHistoryGoBack, push: mockHistoryPush }),
 }));
 
-let mockUploadLocationPreviewErrorMessage: jest.Mock;
+// eslint-disable-next-line no-var
+var mockUploadLocationPreviewErrorMessage: jest.Mock; // jest.mock() is hoisted, so we need to use a 'var' for it to be hoisted as well
 
 jest.mock('../components', () => {
   mockUploadLocationPreviewErrorMessage = jest.fn(() => (

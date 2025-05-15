@@ -1,4 +1,4 @@
-import React from 'react';
+import { FC } from 'react';
 import { useSelector } from 'react-redux';
 import { numberWithCommas } from '../../../../locations/js/utils/locationsTableUtils';
 
@@ -24,7 +24,7 @@ interface SelectedListDescriptionProps {
   listContext?: 'map' | 'dashboard';
 }
 
-const SelectedListDescription: React.FC<SelectedListDescriptionProps> = ({
+const SelectedListDescription: FC<SelectedListDescriptionProps> = ({
   totalNumberOfLocationsInAccount = 0,
   userSharedLists = [],
   redirectToAlerts,

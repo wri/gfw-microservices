@@ -1,4 +1,4 @@
-import React from 'react';
+import { useState } from 'react';
 import Popover from '@material-ui/core/Popover';
 import { makeStyles } from '@material-ui/core/styles';
 
@@ -16,7 +16,7 @@ const useStyles = makeStyles((theme) => ({
 
 export default function CustomPopover({ label, popoverMessage }) {
   const classes = useStyles();
-  const [anchorEl, setAnchorEl] = React.useState(null);
+  const [anchorEl, setAnchorEl] = useState(null);
 
   const handlePopoverOpen = (event) => {
     setAnchorEl(event.currentTarget);

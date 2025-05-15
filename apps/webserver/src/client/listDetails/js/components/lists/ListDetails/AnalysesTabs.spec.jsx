@@ -1,4 +1,3 @@
-import React from 'react';
 import { render, screen, fireEvent, cleanup } from '@testing-library/react';
 import AnalysesTabs from './AnalysesTabs';
 import { analysisTypes } from '../../../../../../config/env/analysisTypes.constants';

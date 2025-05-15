@@ -1,5 +1,5 @@
 import './DataTemplates.scss';
-import React, { ReactElement, useState } from 'react';
+import { ReactElement, useState, MouseEvent } from 'react';
 import {
   Accordion,
   AccordionDetails,
@@ -52,7 +52,7 @@ export function DataTemplates({ isOpen, onClose }: DataTemplatesProps) {
   };
 
   const handleDownloadTemplate = (
-    e: React.MouseEvent<HTMLButtonElement>,
+    e: MouseEvent<HTMLButtonElement>,
     template: Template,
     filename: string
   ) => {

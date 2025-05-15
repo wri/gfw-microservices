@@ -1,4 +1,3 @@
-import React from 'react';
 import { useProfileContext } from '../../ProfileStateContext';
 import Card from '@mui/material/Card';
 import CardContent from '@mui/material/CardContent';

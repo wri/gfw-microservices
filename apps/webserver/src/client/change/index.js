@@ -1,6 +1,5 @@
 /* global userEmail */
 
-import React from 'react';
 import Change from './js/components/Change';
 import { render } from 'react-dom';
 import { ThemeProvider } from '../styles';

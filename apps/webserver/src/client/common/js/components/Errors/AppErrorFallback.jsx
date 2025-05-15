@@ -1,4 +1,3 @@
-import React from 'react';
 import catchContainer from './catchContainer';
 import sendSlackNotification from '../../utils/sendSlackNotification';
 import Button from '../GfwButton';

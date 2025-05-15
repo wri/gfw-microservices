@@ -1,4 +1,3 @@
-import React from 'react';
 import { afiDiagnosticsChartsColors } from '../afiDiagnosticsChartsColors.constants';
 import { prettifyNum, formatNum, formatPct } from '../../../../common/js/utils/diagnostics.utils';
 import './CategoryCheckbox.scss';

@@ -1,5 +1,5 @@
 import * as PropTypes from 'prop-types';
-import React, { Component } from 'react';
+import { Component } from 'react';
 import '../../../css/banner.scss';
 import IconButton from '../IconButton';
 import IconCheck from '../icon/IconCheck';

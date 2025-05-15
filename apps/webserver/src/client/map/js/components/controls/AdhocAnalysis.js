@@ -1,4 +1,3 @@
-import React from 'react';
 import DatePickerControl from './DatePickerControl';
 import { setGLADStartDate, setGLADEndDate } from '../../actions/analysisActions';
 import store from '../../store';

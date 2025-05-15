@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import Menu from 'material-ui/Menu';
 import IconButton from 'material-ui/IconButton';
 import Popover from 'material-ui/Popover';

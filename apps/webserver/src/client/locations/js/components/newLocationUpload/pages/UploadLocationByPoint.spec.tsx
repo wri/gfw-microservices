@@ -1,4 +1,3 @@
-import React from 'react';
 import { cleanup, render, screen, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { UploadLocationByPoint } from './UploadLocationByPoint';
@@ -167,8 +166,6 @@ describe('UploadLocationByPoint', () => {
     const view = screen.getByTestId('area-size');
     const areaSize = within(view).getByRole('spinbutton');
     await userEvent.type(areaSize, '100');
-
-    screen.logTestingPlaygroundURL();
 
     const viewDistanceMetrics = screen.getByTestId('hectare-kilometer-switch');
     await userEvent.click(within(viewDistanceMetrics).getByText(/km/i));

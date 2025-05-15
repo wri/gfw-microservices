@@ -14,18 +14,17 @@
  *
  ********************************************************************/
 // Imports required for this module
-const path = require('path');
 const sql = require('mssql');
 const { S3, GetObjectCommand } = require('@aws-sdk/client-s3');
 const { Upload } = require('@aws-sdk/lib-storage');
 
 import config from '../config';
-const sqlUtils = require(path.resolve('./config/privateutils/sql.utils'));
-const langResources = require(path.resolve('./config/langResources'));
-const errorUtils = require(path.resolve('./config/privateutils/error.utils'));
-const UserManager = require(path.resolve('./config/publicutils/userManager.utils'));
-const rollbackUtils = require(path.resolve('./config/privateutils/rollback.utils'));
-const logger = require(path.resolve('./config/privateutils/logger.utils'));
+const sqlUtils = require('../privateutils/sql.utils');
+const langResources = require('../langResources');
+const errorUtils = require('../privateutils/error.utils');
+const UserManager = require('../publicutils/userManager.utils');
+const rollbackUtils = require('../privateutils/rollback.utils');
+const logger = require('../privateutils/logger.utils');
 
 const s3 = new S3();
 

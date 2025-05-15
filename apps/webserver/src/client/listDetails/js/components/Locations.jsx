@@ -1,12 +1,12 @@
 import React, { Component } from 'react';
 import { withRouter } from 'react-router-dom';
+import { connect } from 'react-redux';
 import Page from '../../../common/js/components/Page';
 import { userAccessLevel, locationsPage } from '../../../common/js/config';
 import ModalLoader from '../../../common/js/components/Loaders/ModalLoader';
 import EditList from './edit/EditList';
 import onListFromViewToList from '../utils/redirect';
 import ListDetails from './lists/ListDetails';
-import store from '../../../locations/js/store';
 import '../../../locations/css/locations.scss';
 
 const pageOptions = {
@@ -24,14 +24,11 @@ class Locations extends Component {
       userListInfoFromMap: false, // same as above!
       drawnGeom: false, // same as above!
       shareView: false,
-      ...store.getState(),
     };
   }
 
   componentDidMount() {
     const { location, userLists, gfwLists, canopyModalVisible, userSharedLists } = this.props;
-
-    this.unsubscribe = store.subscribe(this.storeDidUpdate);
 
     let listToRedirect;
 
@@ -57,16 +54,10 @@ class Locations extends Component {
   }
 
   componentWillUnmount() {
-    this.unsubscribe();
-
     if (this.unloadHistory) {
       this.unloadHistory();
     }
   }
-
-  storeDidUpdate = () => {
-    this.setState(store.getState());
-  };
 
   stopLoading = () => {
     this.setState({
@@ -92,7 +83,17 @@ class Locations extends Component {
   };
 
   render() {
+    const { gfwInfoFromMap, userListInfoFromMap, isLoading, shareView } = this.state;
+
     const {
+      history,
+      templateData,
+      userLists,
+      userInfo,
+      organizationId,
+      gfwLists,
+      usersList,
+      userSharedLists,
       view,
       listView,
       addType,
@@ -106,21 +107,6 @@ class Locations extends Component {
       filteredData,
       selectedLocations,
       selectedAndVisibleLocations,
-      gfwInfoFromMap,
-      userListInfoFromMap,
-      isLoading,
-      shareView,
-    } = this.state;
-
-    const {
-      history,
-      templateData,
-      userLists,
-      userInfo,
-      organizationId,
-      gfwLists,
-      usersList,
-      userSharedLists,
     } = this.props;
 
     const selectedList = selectedLists.length > 0 ? selectedLists[0] : null;
@@ -215,4 +201,4 @@ class Locations extends Component {
   }
 }
 
-export default withRouter(Locations);
+export default connect((state) => state)(withRouter(Locations));

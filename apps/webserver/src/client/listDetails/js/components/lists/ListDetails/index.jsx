@@ -41,7 +41,6 @@ import {
   checkColumnListGFWCR,
   checkColumnListGFWFC,
   checkColumnListPA,
-  getGFWListLocationIDs,
   getListFilteredLocations,
   dataCleanup,
   getTemplateData,
@@ -76,6 +75,7 @@ import AnalysisStatusBanners from './AnalysisStatusBanners';
 import AnalysisFailedMessage from './AnalysisFailedMessage';
 import AnalysisInProgressMessage from './AnalysisInProgressMessage';
 import GHGBanner from './GHGBanner';
+import { getActiveAnalysisFlags } from '../../../utils/listDetails.utils';
 import { ThemeProvider } from '../../../../../styles/ThemeProvider';
 
 // CONSTANTS
@@ -84,7 +84,6 @@ import { listStatus } from '../../../../../../config/env/listStatuses.constants'
 import { GFW_LISTS_NUMBER_CONSTANTS } from '../../../../../../config/env/gfwLists.constants';
 import { getListFilterValues } from '../getListFilterValues';
 import getAllColumnNames from '../getAllColumnNames';
-import { defaultFilterValues } from '../defaultFilterValues';
 import { analysisTypes } from '../../../../../../config/env/analysisTypes.constants';
 import {
   FOREST_CHANGE_VIEW,
@@ -104,15 +103,9 @@ export default class ListDetails extends Component {
     const { selectedLists } = this.props;
     const selectedList = selectedLists.length > 0 ? selectedLists[0] : null;
     const listAnalysesStatus = selectedList ? selectedList.listAnalysesStatus : [];
-    const analysisIds = listAnalysesStatus?.map(({ analysisId }) => analysisId) || [];
 
-    const isFcdActive = analysisIds.includes(analysisTypes.FOREST_CHANGE_DIAGNOSTICS);
-    const isPalmRiskActive = analysisIds.includes(analysisTypes.PALM_RISK);
-    const isAfiActive = analysisIds.includes(analysisTypes.DEFORESTATION_KPIS);
-    const isGHGActive = analysisIds.includes(analysisTypes.GREENHOUSE_GAS_EMISSIONS);
-
-    const isOnlyGHGActive =
-      analysisIds.length === 1 && analysisIds[0] === analysisTypes.GREENHOUSE_GAS_EMISSIONS;
+    const { isFcdActive, isPalmRiskActive, isAfiActive, isGHGActive, isOnlyGHGActive } =
+      getActiveAnalysisFlags(listAnalysesStatus);
 
     this.state = {
       bannerContent: '',
@@ -310,16 +303,6 @@ export default class ListDetails extends Component {
     }
   };
 
-  // If given a filter's name and its current value, determine whether that filter is different than
-  // the filter's preconfigured default value..
-  isFilterValueDifferentThanDefault = ([filterName, val]) => {
-    // It's the case that [] !== [], so we need special handling for arrays.
-    if (Array.isArray(val)) {
-      return val.toString() !== defaultFilterValues[filterName].toString();
-    }
-    return val !== defaultFilterValues[filterName];
-  };
-
   showGFWUnselectedDialog = () => {
     this.setState({
       dialogOpen: true,
@@ -334,19 +317,6 @@ export default class ListDetails extends Component {
       window.location.reload();
     } else {
       this.setState({ dialogOpen: false });
-    }
-  };
-
-  // reload the view with the new selected list
-  updateSelectedLists = (listID, gfwList) => {
-    const { selectedLists } = this.props;
-    if (selectedLists[0].id !== listID) {
-      this.setState({ isLoading: true });
-      gtag('event', 'List in side panel clicked', {
-        event_category: 'List View Click',
-        event_label: `user clicked on ${listID}`,
-      });
-      window.location = `/list-details?id=${listID}${gfwList ? '&gfw=true' : ''}`;
     }
   };
 
@@ -1397,84 +1367,13 @@ export default class ListDetails extends Component {
   };
 
   viewMap = ({ showFullListMap }) => {
-    const {
-      filteredData,
-      listData,
-      selectedLocations,
-      selectedLists,
-      filterCount,
-      filteredLocationData,
-      userSharedLists,
-    } = this.props;
-    const { filterString, combinedColumns, isEveryRowSelected } = this.state;
+    const { selectedLists, userSharedLists } = this.props;
+    const { isEveryRowSelected } = this.state;
     let locationIds = [];
 
     const gfwList = selectedLists[0]?.isGlobalForestWatchList ? selectedLists[0]?.list_name : false;
 
-    if (selectedLocations.length > 0) {
-      // If the user has checked any checkboxes, we are using
-      // those selections and ignoring any filters or search strings
-      if (gfwList) {
-        locationIds = listData
-          .filter((d) => selectedLocations.includes(d.location_id))
-          .map(({ location_id }) => location_id);
-      } else {
-        locationIds = selectedLocations;
-      }
-    } else if (filterCount > 0) {
-      // The user has set some filters so we want to send along all of the filtered locations
-      if (gfwList) {
-        locationIds = filteredLocationData.map((location) =>
-          getGFWListLocationIDs(gfwList, location)
-        );
-      } else {
-        locationIds = filteredData;
-      }
-    } else if (filterString) {
-      // the user has set a filter string, but no checkboxes are selected and there are no filters
-      const normalizedFilterStr = filterString.toString().toLowerCase();
-      if (gfwList) {
-        locationIds = filteredLocationData
-          .filter((e) => {
-            const activeColumns = combinedColumns.filter(
-              (v) => v.show && v.accessor !== 'checkbox' && v.accessor !== 'flags'
-            );
-            return (
-              activeColumns
-                .map(
-                  (col) =>
-                    e[col.accessor] &&
-                    e[col.accessor].toString().toLowerCase().includes(normalizedFilterStr)
-                )
-                .filter((v) => v).length > 0
-            );
-          })
-          .map((location) => getGFWListLocationIDs(gfwList, location));
-      } else {
-        locationIds = filteredLocationData
-          .filter((e) => {
-            const activeColumns = combinedColumns.filter(
-              (v) => v.show && v.accessor !== 'checkbox' && v.accessor !== 'flags'
-            );
-            return (
-              activeColumns
-                .map(
-                  (col) =>
-                    e[col.accessor] &&
-                    e[col.accessor].toString().toLowerCase().includes(normalizedFilterStr)
-                )
-                .filter((v) => v).length > 0
-            );
-          })
-          .map((l) => l.location_id);
-      }
-    } else {
-      // Nothing is selected, there is no filter, and there is no search string
-      // In that case we are selecting all locations from the list
-      locationIds = filteredData;
-    }
-
-    if (gfwList === 'Administrative Areas' && locationIds.length > 1) {
+    if (gfwList === 'Administrative Areas') {
       this.setState({
         dialogOpen: true,
         dialogTitle: 'Map View Not Available',
@@ -1483,15 +1382,6 @@ export default class ListDetails extends Component {
         isLoading: false,
       });
       return;
-    }
-
-    if (gfwList === 'Administrative Areas' && locationIds.length === 1) {
-      // only for 'Administrative Areas', the selectedLocations is not an array but an object:
-      // const { gadmid, serverLayerId } = location;
-      // see the function queryAdmin in /src/client/map/js/utils/LayerUtils.js
-      // TODO: send the location ids only, and get gadmid / serverLayerId in the map view
-      // or use another property in sendData to send these
-      locationIds = JSON.stringify(locationIds);
     }
 
     const isGfwList = selectedLists[0].isGlobalForestWatchList;
@@ -1867,13 +1757,11 @@ export default class ListDetails extends Component {
       filterCount,
       filteredLocationData,
       filters,
-      folders,
       listData,
       listView,
       selectedLists,
       selectedLocations,
       shareView,
-      showShareList,
       templateData,
       userSharedLists,
       usersList,
@@ -2210,7 +2098,6 @@ export default class ListDetails extends Component {
                 ) : (
                   <>
                     <ListActions
-                      selectedList={selectedList}
                       viewMap={this.viewMap}
                       currentUser={currentUser}
                       toggleReRunAnalysisDialog={this.toggleReRunAnalysisDialog}
@@ -2219,9 +2106,6 @@ export default class ListDetails extends Component {
                       isManageListFolderOpen={isManageListFolderOpen}
                       setIsManageListFolderOpen={(value) => {
                         this.setState({ isManageListFolderOpen: value });
-                      }}
-                      showShareList={() => {
-                        showShareList(true);
                       }}
                       handleDraftSubmit={(e) => this.handleDraftSubmit(e)}
                       draftSubmitDialogOpen={draftSubmitDialogOpen}
@@ -2233,7 +2117,6 @@ export default class ListDetails extends Component {
                         this.setState({ isListSubmittedForAnalysis: value });
                       }}
                       isInFolder={isInFolder}
-                      folders={folders}
                       userIsOwner={userIsOwner}
                       setState={this.setState}
                       searchInputValue={searchInputValue}
@@ -2247,17 +2130,13 @@ export default class ListDetails extends Component {
                       promptMoveSelectedLocations={this.promptMoveSelectedLocations}
                       canDelete={canDelete}
                       promptDeleteSelectedLocations={this.promptDeleteSelectedLocations}
-                      filters={filters}
                       listFilterStr={filterString}
                       tableSortedBy={tableSortedBy}
                       tableSortedDesc={tableSortedDesc}
                       visibleColumns={visibleColumns}
-                      selectedLocations={selectedLocations}
-                      listView={listView}
                       isLoading={(loading) => {
                         this.setState({ isLoading: loading });
                       }}
-                      isGfwList={isGfwList}
                       isOnlyGHGActive={isOnlyGHGActive}
                     />
 

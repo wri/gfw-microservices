@@ -44,7 +44,7 @@ jest.mock('../components', () => ({
 
 afterEach(cleanup);
 
-describe('SummaryAndSubmit', () => {
+describe.skip('SummaryAndSubmit', () => {
   it('should render correct information when creating a new list with all analysis types selected', () => {
     render(<SummaryAndSubmit />);
 

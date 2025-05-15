@@ -1367,10 +1367,7 @@ export default class ListDetails extends Component {
   };
 
   viewMap = ({ showFullListMap }) => {
-    const {
-      selectedLists,
-      userSharedLists,
-    } = this.props;
+    const { selectedLists, userSharedLists } = this.props;
     const { isEveryRowSelected } = this.state;
     let locationIds = [];
 

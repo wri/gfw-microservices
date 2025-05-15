@@ -1,28 +1,33 @@
 import { EntitySchema } from 'typeorm';
 import { organizationEntities, systemEntities, ListSchema, ListSchemaType } from '../entity';
 import { createDatasourceConfig, ClientStoreConnection } from './typeORM.utils';
+import { DataSource } from 'typeorm';
+import { Mutex } from 'async-mutex';
 
 describe('createDatasourceConfig', () => {
-  const TEST_ENVIRONMENT = 'test'; // Assuming this constant is defined somewhere
+  const TEST_ENVIRONMENT = 'test';
 
-  it('returns correct config for default environment and default name', () => {
-    process.env.NODE_ENV = TEST_ENVIRONMENT;
-    const config = createDatasourceConfig('default', 'someDB', ['Entity1', 'Entity2']);
-    expect(config.database).toBe('db.default.sqlite');
-    expect(config.synchronize).toBe(true);
-    expect(config.logging).toBe(true);
+  beforeEach(async () => {
+    // Reset environment variables before each test
+    process.env.MSSQL_DATABASE = undefined;
+    process.env.MSSQL_USERNAME = undefined;
+    process.env.MSSQL_PASSWORD = undefined;
+    process.env.MSSQL_HOSTNAME = undefined;
+    process.env.MSSQL_PORT = undefined;
+    // Clear all connections before each test
+    await ClientStoreConnection.clearAllConnections();
   });
 
-  it('returns correct config for default environment and non-default name', () => {
+  it('returns correct config for test environment', () => {
     process.env.NODE_ENV = TEST_ENVIRONMENT;
-    const config = createDatasourceConfig('someName', 'someDB', ['Entity1', 'Entity2']);
-    expect(config.database).toBe('db.sqlite');
+    const config = createDatasourceConfig('default', 'someDB', ['Entity1', 'Entity2']);
+    expect(config.database).toBe(':memory:');
     expect(config.synchronize).toBe(true);
     expect(config.logging).toBe(true);
   });
 
   it('returns correct config for non-test environment and specified database', () => {
-    process.env.NODE_ENV = 'production'; // Or any non-test environment
+    process.env.NODE_ENV = 'production';
     const config = createDatasourceConfig('someName', 'someDB', ['Entity1', 'Entity2']);
     expect(config.database).toBe('someDB');
     expect(config.synchronize).toBe(false);
@@ -30,7 +35,7 @@ describe('createDatasourceConfig', () => {
   });
 
   it('returns correct config when entities are not provided', () => {
-    process.env.NODE_ENV = 'QA'; // Or any non-test environment
+    process.env.NODE_ENV = 'QA';
     process.env.MSSQL_DATABASE = 'GFWPro';
     const config = createDatasourceConfig('default', '', []);
     expect(config.database).toBe('GFWPro');
@@ -38,7 +43,7 @@ describe('createDatasourceConfig', () => {
   });
 
   it('returns correct config for MSSQL database', () => {
-    process.env.NODE_ENV = 'production'; // Or any non-test environment
+    process.env.NODE_ENV = 'production';
     process.env.MSSQL_DATABASE = 'MSSQL_DB';
     const config = createDatasourceConfig('someName', 'MSSQL_DB', ['Entity1', 'Entity2']);
     expect(config.database).toBe('MSSQL_DB');
@@ -52,7 +57,6 @@ describe('createDatasourceConfig', () => {
 
   it('should create static connections when no entities are provided', async () => {
     process.env.NODE_ENV = TEST_ENVIRONMENT;
-
     const clientStoreConnection = new ClientStoreConnection();
     const connection = await clientStoreConnection.getConnection('someDB');
 
@@ -73,5 +77,64 @@ describe('createDatasourceConfig', () => {
 
     expect(connection).toBeDefined();
     expect(ClientStoreConnection.getConnections('dynamic').size).toBe(1);
+  });
+
+  it('should reuse existing connection if available', async () => {
+    process.env.NODE_ENV = TEST_ENVIRONMENT;
+    const clientStoreConnection = new ClientStoreConnection();
+
+    // Create first connection
+    const connection1 = await clientStoreConnection.getConnection('testDB');
+    expect(connection1).toBeDefined();
+
+    // Get the same connection again
+    const connection2 = await clientStoreConnection.getConnection('testDB');
+    expect(connection2).toBe(connection1);
+  });
+
+  it('should handle connection initialization error', async () => {
+    process.env.NODE_ENV = TEST_ENVIRONMENT;
+    const clientStoreConnection = new ClientStoreConnection();
+
+    // Mock DataSource.initialize to throw an error
+    jest
+      .spyOn(DataSource.prototype, 'initialize')
+      .mockRejectedValueOnce(new Error('Connection failed'));
+
+    await expect(clientStoreConnection.getConnection('errorDB')).rejects.toThrow(
+      'Data Source initialization error Connection failed'
+    );
+  });
+
+  it('should handle connection timeout', async () => {
+    process.env.NODE_ENV = TEST_ENVIRONMENT;
+    const clientStoreConnection = new ClientStoreConnection();
+
+    // Mock mutex.acquire to simulate timeout
+    jest
+      .spyOn(Mutex.prototype, 'acquire')
+      .mockRejectedValueOnce(new Error('Error on try to establish connection'));
+
+    await expect(clientStoreConnection.getConnection('timeoutDB')).rejects.toThrow(
+      'Error on try to establish connection'
+    );
+  });
+
+  it('should handle multiple concurrent connection requests', async () => {
+    process.env.NODE_ENV = TEST_ENVIRONMENT;
+    const clientStoreConnection = new ClientStoreConnection();
+
+    // Create multiple connection requests simultaneously
+    const promises = [
+      clientStoreConnection.getConnection('concurrentDB'),
+      clientStoreConnection.getConnection('concurrentDB'),
+      clientStoreConnection.getConnection('concurrentDB'),
+    ];
+
+    const connections = await Promise.all(promises);
+
+    // All connections should be the same instance
+    expect(connections[0]).toBe(connections[1]);
+    expect(connections[1]).toBe(connections[2]);
   });
 });

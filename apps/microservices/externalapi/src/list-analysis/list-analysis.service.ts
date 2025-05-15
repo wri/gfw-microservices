@@ -43,7 +43,7 @@ import { ListService } from '../lists/lists.service';
 import { ServerConfigType } from '../validators/server-config';
 import { SaveActivityLogEndpoint } from './utils/saveActivityLogEndpoint';
 import { handleCreateAnalysis } from '@wri-monorepos/geo';
-import { EntitySchema, IsNull, Not } from 'typeorm';
+import { EntitySchema, Raw } from 'typeorm';
 import {
   ListSchema,
   ListSchemaType,
@@ -239,7 +239,7 @@ export class ListAnalysisService {
       const locationsWithErrors = await listTableNameRepository.find({
         select: ['locationName', 'errorDetails'],
         where: {
-          errorDetails: Not(IsNull()),
+          errorDetails: Raw((alias) => `${alias} IS NOT NULL AND ${alias} != ''`),
         },
       });
       let ghgLocationErrors = [];

@@ -156,7 +156,8 @@ const ListActions = ({
   const { ADMINISTRATIVE_AREAS } = GFW_LISTS_NUMBER_CONSTANTS;
   const isMapAvailable = !(
     selectedList.isGlobalForestWatchList &&
-    selectedList?.list_name === gfwListNames[ADMINISTRATIVE_AREAS - 1]
+    selectedList?.list_name === gfwListNames[ADMINISTRATIVE_AREAS - 1] &&
+    selectedLocations.length < 1
   );
 
   const searchInputLabel = useTransifexTranslation('Type your search and press Enter...');

@@ -15,6 +15,7 @@ import {
   ListsAnalysisStatus,
   SQLUtils,
   updateListsAnalysisStatus,
+  upgradeListSchema,
 } from '@wri-monorepos/sql';
 import { checkProcessingLimits, readAnalysesLastModifiedTime } from '@wri-monorepos/shared';
 import { analysisTypesOptionsNewNames, listStatus } from '@wri-monorepos/constants';
@@ -49,6 +50,7 @@ jest.mock('@wri-monorepos/sql', () => ({
   },
   ClientStoreConnection: jest.fn(),
   updateListsAnalysisStatus: jest.fn().mockResolvedValue(true),
+  upgradeListSchema: jest.fn().mockResolvedValue(true),
 }));
 
 jest.mock('@wri-monorepos/aws', () => ({
@@ -706,6 +708,7 @@ describe('list.analysis.status.ts', () => {
         )
       ).rejects.toBeInstanceOf(Error);
     });
+
     it('should not create analysis when has only GHG analysis and isGHGCommodityValid check fails', async () => {
       const fakeClientDatabase = 'mockClientDB';
       const fakeListId = 123;
@@ -1146,6 +1149,202 @@ describe('list.analysis.status.ts', () => {
         false
       );
       expect(result).toEqual('Ok');
+    });
+    it('should upgrade list version and generate GHG Analysis', async () => {
+      const fakeClientDatabase = 'mockClientDB';
+      const fakeListId = 123;
+      const fakeAnalysisIds = 'GHG,FCD';
+
+      (checkProcessingLimits as jest.Mock).mockResolvedValue({
+        isListLocationOverLimit: false,
+        processingLimit: 1000,
+      });
+
+      (getListAnalysisStatus as jest.Mock).mockResolvedValue([
+        {
+          listId: 1,
+          analysisId: 'GHG',
+          status: 5,
+          options: '',
+        },
+      ]);
+      const fakeLocation = [
+        {
+          locationName: 'fake_location_1',
+          commodity: 'GFWP_fake_commodity',
+          country: 'Brazil',
+          state: 'Amazonas',
+          subState: 'Lábrea',
+          gadmid: 'BRA.4.34',
+          locationId: 1,
+          attributes:
+            '{"analysisArea":"314.1592653589793","analysisRadius":"1","country":"Brazil","latitude":"-8.9001","locationClassification":"Property","locationName":"Brazil1","longitude":"-67","state":"Amazonas","subState":"Lábrea","yield":"10"}',
+          errorDetails: null,
+        },
+        {
+          locationName: 'fake_location_2',
+          commodity: 'GFWP_fake_commodity',
+          country: 'Brazil',
+          state: 'Amazonas',
+          subState: 'Lábrea',
+          gadmid: 'BRA.4.34',
+          locationId: 2,
+          attributes:
+            '{"analysisArea":"1","analysisRadius":"0.05641895835477563","country":"Brazil","latitude":"-8.7001","locationClassification":"Property","locationName":"brazil2","longitude":"-66.8","state":"Amazonas","subState":"Lábrea","yield":"10.7"}',
+          errorDetails: null,
+        },
+        {
+          locationName: 'fake_location_3',
+          commodity: 'GFWP_fake_commodity',
+          gadmid: 'ARG.21.19',
+          locationId: 3,
+          attributes:
+            '{"analysisArea":"1727.5696541906611","analysisRadius":"2.345","country":"Argentina","latitude":"-29.8001","locationClassification":"Property","locationName":"arg3 landmark","longitude":"-60.2","state":"Santa Fe","subState":"Vera","yield":"2.45"}',
+          errorDetails: null,
+        },
+        {
+          locationName: 'fake_location_4',
+          commodity: 'GFWP_fake_commodity',
+          country: 'Argentina',
+          state: 'Tucumán',
+          subState: 'Monteros',
+          gadmid: 'ARG.24.11',
+          locationId: 4,
+          attributes:
+            '{"analysisArea":"3.14159","analysisRadius":"0.09999995776679782","country":"Argentina","latitude":"-27.0401","locationClassification":"Property","locationName":"arg4 wdpa","longitude":"-65.85","state":"Tucumán","subState":"Monteros","yield":"3.45"}',
+          errorDetails: null,
+        },
+      ];
+      (ClientStoreConnection as unknown as jest.Mock).mockImplementation(() => {
+        return {
+          getConnection: jest.fn().mockResolvedValue({
+            getRepository: jest.fn().mockReturnValue({
+              findBy: jest.fn().mockResolvedValue(fakeLocation),
+              findOne: jest.fn().mockResolvedValue({
+                listName: 'test',
+                Commodity: 'GFWP_fake_commodity',
+                version: 1,
+              }),
+              update: jest.fn(),
+              save: jest.fn(),
+            }),
+          }),
+        };
+      });
+
+      (axios.post as jest.Mock).mockResolvedValue({ statusText: 'Ok' });
+      (upgradeListSchema as jest.Mock).mockResolvedValue(true);
+
+      const result = await handleCreateAnalysis(
+        fakeAnalysisIds,
+        fakeListId,
+        123,
+        fakeClientDatabase,
+        false,
+        234,
+        99,
+        false
+      );
+      expect(result).toEqual('Ok');
+    });
+    it('should  fail to upgrade list version and throw error', async () => {
+      const fakeClientDatabase = 'mockClientDB';
+      const fakeListId = 123;
+      const fakeAnalysisIds = 'GHG,FCD';
+
+      (checkProcessingLimits as jest.Mock).mockResolvedValue({
+        isListLocationOverLimit: false,
+        processingLimit: 1000,
+      });
+
+      (getListAnalysisStatus as jest.Mock).mockResolvedValue([
+        {
+          listId: 1,
+          analysisId: 'GHG',
+          status: 5,
+          options: '',
+        },
+      ]);
+      const fakeLocation = [
+        {
+          locationName: 'fake_location_1',
+          commodity: 'GFWP_fake_commodity',
+          country: 'Brazil',
+          state: 'Amazonas',
+          subState: 'Lábrea',
+          gadmid: 'BRA.4.34',
+          locationId: 1,
+          attributes:
+            '{"analysisArea":"314.1592653589793","analysisRadius":"1","country":"Brazil","latitude":"-8.9001","locationClassification":"Property","locationName":"Brazil1","longitude":"-67","state":"Amazonas","subState":"Lábrea","yield":"10"}',
+          errorDetails: null,
+        },
+        {
+          locationName: 'fake_location_2',
+          commodity: 'GFWP_fake_commodity',
+          country: 'Brazil',
+          state: 'Amazonas',
+          subState: 'Lábrea',
+          gadmid: 'BRA.4.34',
+          locationId: 2,
+          attributes:
+            '{"analysisArea":"1","analysisRadius":"0.05641895835477563","country":"Brazil","latitude":"-8.7001","locationClassification":"Property","locationName":"brazil2","longitude":"-66.8","state":"Amazonas","subState":"Lábrea","yield":"10.7"}',
+          errorDetails: null,
+        },
+        {
+          locationName: 'fake_location_3',
+          commodity: 'GFWP_fake_commodity',
+          gadmid: 'ARG.21.19',
+          locationId: 3,
+          attributes:
+            '{"analysisArea":"1727.5696541906611","analysisRadius":"2.345","country":"Argentina","latitude":"-29.8001","locationClassification":"Property","locationName":"arg3 landmark","longitude":"-60.2","state":"Santa Fe","subState":"Vera","yield":"2.45"}',
+          errorDetails: null,
+        },
+        {
+          locationName: 'fake_location_4',
+          commodity: 'GFWP_fake_commodity',
+          country: 'Argentina',
+          state: 'Tucumán',
+          subState: 'Monteros',
+          gadmid: 'ARG.24.11',
+          locationId: 4,
+          attributes:
+            '{"analysisArea":"3.14159","analysisRadius":"0.09999995776679782","country":"Argentina","latitude":"-27.0401","locationClassification":"Property","locationName":"arg4 wdpa","longitude":"-65.85","state":"Tucumán","subState":"Monteros","yield":"3.45"}',
+          errorDetails: null,
+        },
+      ];
+      (ClientStoreConnection as unknown as jest.Mock).mockImplementation(() => {
+        return {
+          getConnection: jest.fn().mockResolvedValue({
+            getRepository: jest.fn().mockReturnValue({
+              findBy: jest.fn().mockResolvedValue(fakeLocation),
+              findOne: jest.fn().mockResolvedValue({
+                listName: 'test',
+                Commodity: 'GFWP_fake_commodity',
+                version: 1,
+              }),
+              update: jest.fn(),
+              save: jest.fn(),
+            }),
+          }),
+        };
+      });
+
+      (axios.post as jest.Mock).mockResolvedValue({ statusText: 'Ok' });
+      (upgradeListSchema as jest.Mock).mockRejectedValue(
+        new Error('Failed to upgrade list schema')
+      );
+      expect(
+        handleCreateAnalysis(
+          fakeAnalysisIds,
+          fakeListId,
+          123,
+          fakeClientDatabase,
+          false,
+          234,
+          99,
+          false
+        )
+      ).rejects.toThrow('Failed to upgrade list schema');
     });
   });
 });

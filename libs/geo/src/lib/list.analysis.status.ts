@@ -9,6 +9,7 @@ import {
   ListSchemaType,
   SQLUtils,
   updateListsAnalysisStatus,
+  upgradeListSchema,
   User,
 } from '@wri-monorepos/sql';
 import {
@@ -246,7 +247,7 @@ export const handleCreateAnalysis = async (
 
     try {
       if ('GHG' in analysisTypes && analysisTypes['GHG']) {
-        await isGHGCommodityValid(listId, organizationDb);
+        await isGHGCommodityValid(listId, organizationDb, organization_user_id);
       }
     } catch (error) {
       Logger.error('Error during GHG commodity validation', error.stack || error);
@@ -405,7 +406,11 @@ export async function resolveListAnalysisStatuses(listAnalysisStatuses: ListsAna
   }
 }
 
-export const isGHGCommodityValid = async (id: number, organizationDb: string): Promise<boolean> => {
+export const isGHGCommodityValid = async (
+  id: number,
+  organizationDb: string,
+  userId: number
+): Promise<boolean> => {
   // Get list data
   try {
     const clientStoreConnection = new ClientStoreConnection();
@@ -415,6 +420,10 @@ export const isGHGCommodityValid = async (id: number, organizationDb: string): P
       where: { id },
     });
 
+    if (!listData) {
+      Logger.error('validateGHGCommodity', `List ${id} not found`);
+      throw new Error(`List ${id} not found`);
+    }
     // Get list.xxx repository
     const ListEntity = new EntitySchema<ListSchemaType>({
       ...ListSchema,
@@ -424,14 +433,30 @@ export const isGHGCommodityValid = async (id: number, organizationDb: string): P
     const listTableNameRepository = await connection.getRepository(ListEntity);
     const listTableName = await listTableNameRepository.findBy({ commodity: listData.Commodity });
 
-    if (!listData) {
-      Logger.error('validateGHGCommodity', `List ${id} not found`);
-      throw new Error(`List ${id} not found`);
+    // Upgrade list version
+    if (listData.version < 2) {
+      try {
+        Logger.log('Upgrading', `List ${id} to version 2`);
+        await upgradeListSchema({
+          clientDb: organizationDb,
+          listId: id,
+          userId,
+        });
+      } catch (error) {
+        Logger.error('validateGHGCommodity', `Error upgrading list ${id} to version 2: ${error}`);
+        await saveAnalysisStatusErrorInfo(
+          organizationDb,
+          id,
+          `Error upgrading list ${id} to version 2`,
+          listStatus.Inactive,
+          'GHG'
+        );
+        throw new Error(`Error upgrading list ${id} to version 2: ${error}`);
+      }
     }
-
     // ListData.version = 2 won't have commodities with null values, take care of it when version 2 is implemented
     // verify if list has no commodity
-    if (listData.Commodity === null && listData.version > 1) {
+    else if (listData.Commodity === null && listData.version > 1) {
       Logger.log('validateGHGCommodity', `List ${id} has no commodity`);
       await saveAnalysisStatusErrorInfo(
         organizationDb,

@@ -2,7 +2,7 @@ import '../../../../common/css/_irsBase.scss';
 import '../../../../common/css/_irsStyle.scss';
 
 import { mapPage } from '../../../../common/js/config';
-import React, { Component } from 'react';
+import { Component } from 'react';
 
 const lossOptions = [];
 

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { marked } from 'marked';
 import { fetchInfoBubble, saveInfoBubbleCache, getInfoBubbleCache } from './infoBubble.utils';
 

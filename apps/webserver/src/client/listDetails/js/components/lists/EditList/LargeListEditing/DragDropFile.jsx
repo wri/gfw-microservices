@@ -1,4 +1,4 @@
-import React, { useState, useRef } from 'react';
+import { useState, useRef } from 'react';
 import DriveFolderUploadIcon from '@mui/icons-material/DriveFolderUpload';
 import { locationsPage } from '../../../../../../common/js/config';
 import './DragDropFile.scss';

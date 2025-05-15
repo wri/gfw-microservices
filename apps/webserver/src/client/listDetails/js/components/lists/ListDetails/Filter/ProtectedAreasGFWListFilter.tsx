@@ -1,4 +1,4 @@
-import React, { useState, FC, ChangeEvent } from 'react';
+import { useState, FC, ChangeEvent } from 'react';
 import {
   Select,
   Box,

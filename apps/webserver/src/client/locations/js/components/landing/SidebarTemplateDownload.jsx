@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import { Component } from 'react';
 
 import Button from '../../../../common/js/components/Button';
 import IconButton from '../../../../common/js/components/IconButton';

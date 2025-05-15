@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import { Component } from 'react';
 import Papa from 'papaparse';
 import * as XLSX from 'xlsx';
 import Dialog from 'material-ui/Dialog';

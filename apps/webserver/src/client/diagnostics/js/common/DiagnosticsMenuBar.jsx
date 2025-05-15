@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import GfwSelect from '../../../common/js/components/GfwSelect';
 import Button from '../../../common/js/components/Button';
 import IconReport from '../../../common/js/components/icon/IconReport';

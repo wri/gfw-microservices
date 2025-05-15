@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import { Component } from 'react';
 /**
  * Error Boundary HOC
  * Returns a component type to catch errors from its child down

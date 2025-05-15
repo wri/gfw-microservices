@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import { Component } from 'react';
 import { AutoSizer, CellMeasurer, CellMeasurerCache, MultiGrid } from 'react-virtualized';
 import * as PropTypes from 'prop-types';
 import IconExclamationTriangle from '../../../../../common/js/components/icon/IconExclamationTriangle';

@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import { Component } from 'react';
 import fetch from '../../../../common/js/utils/fetch';
 import Button from '../../../../common/js/components/Button';
 import CustomDialog from '../../../../common/js/components/CustomDialog/CustomDialog';

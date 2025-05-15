@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import { Component } from 'react';
 import isEqual from 'lodash/isEqual';
 import Highcharts from 'highcharts';
 import moment from 'moment';

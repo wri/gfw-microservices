@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import { Component } from 'react';
 
 import { fieldValidations } from '../../../../locations/js/utils/validations';
 import { locationsPage } from '../../../../common/js/config';

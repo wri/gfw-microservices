@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import { Component } from 'react';
 import { getIsDiagnosticStatusDraft } from '../../../../listDetails/js/utils/draft.utils';
 import { locationsPage, userAccessLevel, SAVED_LOCATIONS } from '../../../../common/js/config';
 import { checkValidViewCommodity } from '../../utils/lists.utils';

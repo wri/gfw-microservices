@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { connect } from 'react-redux';
 import Diagnostics from './Diagnostics';
 import { diagnosticsStrings } from '../../../common/js/config';

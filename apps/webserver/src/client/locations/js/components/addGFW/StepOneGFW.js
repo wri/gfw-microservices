@@ -1,7 +1,7 @@
 import { changeAddType, changeTemplate } from '../../actions/locationActions';
 import { locationsPage } from '../../../../common/js/config';
 import store from '../../store';
-import React, { Component } from 'react';
+import { Component } from 'react';
 
 export default class StepOneGFW extends Component {
   changeAddType = (evt) => {

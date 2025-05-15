@@ -1,7 +1,7 @@
 import { fieldValidations } from '../../utils/validations';
 import { locationsPage } from '../../../../common/js/config';
 import downloaders from '../../../../common/js/utils/downloaders';
-import React, { Component } from 'react';
+import { Component } from 'react';
 import { deduceActiveName } from '../../../../common/js/utils/templateUtils';
 import MultiGridTable from '../../../../listDetails/js/components/edit/table/MultiGridTable';
 import { _getFeatures } from '../../../../listDetails/js/components/edit/table/MultiGridTable.util';

@@ -2,7 +2,7 @@ import { locationsPage } from '../../../../common/js/config';
 import DescribeInvestment from '../adding/DescribeInvestment';
 import DescribeLocation from '../adding/DescribeLocation';
 
-import React, { Component } from 'react';
+import { Component } from 'react';
 
 export default class StepTwo extends Component {
   constructor(props) {

@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import { Component } from 'react';
 import Grid from '@mui/material/Grid';
 import Page from '../../../common/js/components/Page';
 import Select from 'react-select';

@@ -2,7 +2,7 @@ import { createRoot } from 'react-dom/client';
 import lightBaseTheme from 'material-ui/styles/baseThemes/lightBaseTheme';
 import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
 import getMuiTheme from 'material-ui/styles/getMuiTheme';
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import More from './component/More';
 import { GFW_PRO_HELP_CENTER__LINK } from '../common/js/config';
 

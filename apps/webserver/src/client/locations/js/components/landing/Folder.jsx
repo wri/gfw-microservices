@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import { Component } from 'react';
 import IconButton from '../../../../common/js/components/IconButton';
 import IconMenuDots from '../../../../common/js/components/icon/IconMenuDots';
 import Divider from 'material-ui/Divider';

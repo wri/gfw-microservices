@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import { Component } from 'react';
 import store from '../../store';
 import { toggleLayer, showLoading, getLayerInfo } from '../../actions/mapActions';
 import { toggleClarkLabsLayers } from '../../actions/analysisActions';

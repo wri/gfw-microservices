@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import { Component } from 'react';
 import Search from '@arcgis/core/widgets/Search';
 import Point from '@arcgis/core/geometry/Point';
 import WebMap from '@arcgis/core/WebMap';

@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import { Component } from 'react';
 import '../../css/select.scss';
 
 import Page from '../../../common/js/components/Page';

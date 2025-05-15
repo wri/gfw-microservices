@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import { Component } from 'react';
 import Select from 'react-select';
 import Dialog from 'material-ui/Dialog';
 import Button from '../../../../common/js/components/Button';

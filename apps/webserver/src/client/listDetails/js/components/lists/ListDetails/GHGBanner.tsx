@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { Alert } from '@mui/material';
 import GHGIcon from '../../../../../common/images/CO2.svg';
 

@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import * as _ from 'lodash';
 import AccountsListsTable from './AccountsListsTable';
 import '../../../css/proManagerList.scss';

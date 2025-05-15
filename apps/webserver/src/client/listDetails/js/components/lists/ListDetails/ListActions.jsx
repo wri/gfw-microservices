@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { connect } from 'react-redux';
 import InputBase from '@mui/material/InputBase';
 import IconButton from '@mui/material/IconButton';
 import { Stack, Button, Paper } from '@mui/material';
@@ -380,4 +381,19 @@ const ListActions = ({
   );
 };
 
-export default ListActions;
+const mapStateToProps = (state) => ({
+  selectedList: state.selectedLists[0],
+  folders: state.userFolders,
+  filters: state.filters,
+  selectedLocations: state.selectedLocations,
+  listView: state.listView,
+  isGfwList: state.selectedLists[0]?.isGlobalForestWatchList,
+});
+
+const mapDispatchToProps = (dispatch) => ({
+  showShareList: (value) => dispatch({ type: 'SHOW_SHARE_LIST', payload: value }),
+  updateSelectedLocations: (locations) =>
+    dispatch({ type: 'UPDATE_SELECTED_LOCATIONS', payload: locations }),
+});
+
+export default connect(mapStateToProps, mapDispatchToProps)(ListActions);

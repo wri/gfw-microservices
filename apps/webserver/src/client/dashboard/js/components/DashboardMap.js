@@ -3,15 +3,14 @@ import EsriMap from '@arcgis/core/Map';
 import Basemap from '@arcgis/core/Basemap';
 import MapView from '@arcgis/core/views/MapView';
 import MapImageLayer from '@arcgis/core/layers/MapImageLayer';
-import Button from '../../../common/js/components/Button';
-import ZoomIcon from 'material-ui/svg-icons/action/zoom-out';
 import isEqual from 'lodash/isEqual';
+import { ZoomOut } from '@mui/icons-material';
+import '../../css/_dashboardMap.scss';
+
+import store from '../store';
 import InfoBubble from '../../../common/js/components/InfoBubble';
 import featureFlags from '../../../../utils/general.utils';
 import { getBasemapConfiguration } from '../../../map/js/utils/map.utils';
-
-// REDUX - Store
-import store from '../store';
 import {
   decrementZoomLevel,
   saveMap,
@@ -19,18 +18,10 @@ import {
   updateLocationFilter,
   selectAdmin,
 } from '../actions/dashboardActions';
-
-// Components
 import SvgLinearGradients from '../../../common/js/components/SvgLinearGradients';
-
-// Utils
 import mapUtils, { getAlertsTotal } from '../utils/mapUtils';
-
-// Configs
 import { dashboardPage } from '../../../common/js/config';
-
-// Styles
-import '../../css/_dashboardMap.scss';
+import { PillButton } from '../../../components';
 
 export default class DashboardMap extends Component {
   constructor(props) {
@@ -244,24 +235,27 @@ export default class DashboardMap extends Component {
         {/* Map footer elements */}
         <div className="flex-grid align-center space-between dashboard-section__padding dashboard-legend__container">
           <div className="flex-grid-column dashboard__click-to-zoom">
-            <Button
-              label="Zoom Out"
-              icon={<ZoomIcon />}
+            <PillButton
+              startIcon={<ZoomOut />}
+              variant="contained"
+              color="info"
               onClick={() => {
                 const { zoomLevel, selectedAdmin } = this.props;
-                let previwSelectedAdmin = selectedAdmin.split('.');
-                previwSelectedAdmin.pop();
-                previwSelectedAdmin = previwSelectedAdmin.join('.');
+                let previewSelectedAdmin = selectedAdmin.split('.');
+                previewSelectedAdmin.pop();
+                previewSelectedAdmin = previewSelectedAdmin.join('.');
 
-                store.dispatch(selectAdmin(previwSelectedAdmin));
+                store.dispatch(selectAdmin(previewSelectedAdmin));
                 store.dispatch(decrementZoomLevel());
-                store.dispatch(setZoomLevelTotal(getAlertsTotal(previwSelectedAdmin, zoomLevel)));
+                store.dispatch(setZoomLevelTotal(getAlertsTotal(previewSelectedAdmin, zoomLevel)));
                 gtag('event', 'Dashboard Map zoom out button clicked', {
                   event_category: 'Dashboard Click',
                   event_label: 'User click on a Zoom Out button',
                 });
               }}
-            />
+            >
+              Zoom out
+            </PillButton>
             <p>Click on a bubble to zoom in.</p>
           </div>
           <div className="legend-container flex-grid space-between align-center">

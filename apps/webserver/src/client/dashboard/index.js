@@ -2,27 +2,13 @@
 import React from 'react';
 import { render } from 'react-dom';
 import { Provider } from 'react-redux';
-import lightBaseTheme from 'material-ui/styles/baseThemes/lightBaseTheme';
-import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
-import getMuiTheme from 'material-ui/styles/getMuiTheme';
+
+import { ThemeProvider } from '../styles';
 import Dashboard from './js/components/Dashboard';
 import store from './js/store';
 
-// *** POPOVER ISSUE FIX ***
-// there is a known issue when using material ui v<1 with React Fiber (React v16).
-// the popoverPreReneder file is a workaround that modifies the
-// material ui Popover's prototype to delay the opening of the modal
-// and get rid of the flash at position 0,0 before moving to the anchor element.
-// this issue will not be fixed for material ui v<1 since v1 is a complete rebuild
-// and addresses this.
-// more info here https://github.com/mui-org/material-ui/issues/8040
-
-import '../common/popoverPreRender';
-
-lightBaseTheme.fontFamily = 'Fira Sans, sans-serif';
-
 const App = () => (
-  <MuiThemeProvider muiTheme={getMuiTheme(lightBaseTheme)}>
+  <ThemeProvider>
     <Provider store={store}>
       <Dashboard
         userLists={userLists}
@@ -35,7 +21,7 @@ const App = () => (
         userInfo={userInfo}
       />
     </Provider>
-  </MuiThemeProvider>
+  </ThemeProvider>
 );
 
 render(<App />, document.getElementById('dashboard-mount'));

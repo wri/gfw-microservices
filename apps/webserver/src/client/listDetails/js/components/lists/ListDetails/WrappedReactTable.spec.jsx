@@ -1,4 +1,3 @@
-import React from 'react';
 import { render } from '@testing-library/react';
 import WrappedReactTable from './WrappedReactTable';
 import ReactTable from 'react-table';

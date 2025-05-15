@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, FC } from 'react';
 import {
   Select,
   MenuItem,
@@ -32,7 +32,7 @@ interface GFWListFilterProps {
   isListFiltered: boolean;
 }
 
-const GFWListFilter: React.FC<GFWListFilterProps> = ({
+const GFWListFilter: FC<GFWListFilterProps> = ({
   list_name,
   filterValues,
   parentCompanyOptionsForFilter,

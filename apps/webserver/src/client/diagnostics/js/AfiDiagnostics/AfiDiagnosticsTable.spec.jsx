@@ -1,4 +1,3 @@
-import React from 'react';
 import { cleanup, render, screen } from '@testing-library/react';
 import AfiDiagnosticsTable from './AfiDiagnosticsTable';
 import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';

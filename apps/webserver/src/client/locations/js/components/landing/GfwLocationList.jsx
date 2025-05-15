@@ -1,5 +1,3 @@
-import React from 'react';
-
 import { numberWithCommas } from '../../utils/locationsTableUtils';
 import IconArrowRight from '../../../../common/js/components/icon/IconArrowRight';
 

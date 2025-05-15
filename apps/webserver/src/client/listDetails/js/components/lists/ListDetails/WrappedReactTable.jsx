@@ -1,4 +1,3 @@
-import React from 'react';
 import ReactTable from 'react-table';
 import { Tooltip, useTheme } from '@mui/material';
 import cloneDeep from 'lodash/cloneDeep';

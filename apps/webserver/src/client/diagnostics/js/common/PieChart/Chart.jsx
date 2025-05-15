@@ -1,4 +1,3 @@
-import React from 'react';
 import Highcharts from 'highcharts';
 import useHookWithRefCallback from '../useHookWithRefCallback';
 

@@ -1,5 +1,3 @@
-import React from 'react';
-
 function getLabel(option) {
   return String(typeof option === 'object' ? option.label : option);
 }

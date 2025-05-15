@@ -1,4 +1,4 @@
-import React from 'react';
+import { Fragment } from 'react';
 import _sum from 'lodash/sum';
 
 import { formatNum, prettifyNum } from '../../../../common/js/utils/diagnostics.utils';
@@ -19,7 +19,7 @@ const ProdesLegend = ({ data }) => {
   });
 
   return (
-    <React.Fragment>
+    <Fragment>
       {PRODES_HIGHCHARTS_BAR_CONFIGS.map((config) => (
         <tr key={crypto.randomUUID()} className="locations-diagnostics-table__row child">
           <td className="locations-diagnostics-table__column indent legend-square-label">
@@ -31,7 +31,7 @@ const ProdesLegend = ({ data }) => {
           </td>
         </tr>
       ))}
-    </React.Fragment>
+    </Fragment>
   );
 };
 

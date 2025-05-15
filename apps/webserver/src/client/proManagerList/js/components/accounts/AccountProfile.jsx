@@ -1,4 +1,3 @@
-import React from 'react';
 import GfwButton from '../../../../common/js/components/GfwButton';
 import DialogProvider from '../../../../common/js/components/Dialog';
 import Grid from '@mui/material/Grid';

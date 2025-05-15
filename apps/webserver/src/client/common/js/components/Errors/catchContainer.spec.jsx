@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import { useEffect } from 'react';
 import { render, screen } from '@testing-library/react';
 import '@testing-library/jest-dom';
 import catchContainer from './catchContainer';

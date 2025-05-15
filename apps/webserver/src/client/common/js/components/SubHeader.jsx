@@ -1,5 +1,3 @@
-import React from 'react';
-
 const SubHeader = (props) => (
   <div className={`page-header ${props.headerClassname ? props.headerClassname : ''}`}>
     <div className={`page-title-container ${props.titleClassname ? props.titleClassname : ''}`}>

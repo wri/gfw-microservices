@@ -1,4 +1,3 @@
-import React from 'react';
 import { locationsPage } from '../../../../common/js/config';
 import { deduceActiveId, deduceActiveName } from '../../../../common/js/utils/templateUtils';
 import { buildDropdownOptions } from '../../../../common/js/utils/buildDropdownOptions';

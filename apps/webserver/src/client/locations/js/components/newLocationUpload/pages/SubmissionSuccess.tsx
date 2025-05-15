@@ -1,4 +1,3 @@
-import React from 'react';
 import { useUploadLocation } from '../contexts';
 import { ArrowBack, Home, PendingTwoTone } from '@mui/icons-material';
 import { Box, Card, IconButton, Typography } from '@mui/material';

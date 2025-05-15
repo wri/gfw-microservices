@@ -1,4 +1,3 @@
-import React from 'react';
 import { render, screen } from '@testing-library/react';
 import PieChart from './index';
 import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';

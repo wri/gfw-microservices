@@ -1,6 +1,6 @@
 import Page from '../../../common/js/components/Page';
 import Dialog from 'material-ui/Dialog';
-import React, { Component } from 'react';
+import { Component } from 'react';
 import Button from '../../../common/js/components/Button';
 import '../../css/admin.scss';
 import httpRequest from '../../../common/js/utils/httpRequest';

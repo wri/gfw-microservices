@@ -1,4 +1,3 @@
-import React from 'react';
 import { cleanup, render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { ConfigureList } from './ConfigureList';
@@ -24,7 +23,7 @@ jest.mock('../hooks', () => ({
 
 jest.mock('@mui/material', () => ({
   ...jest.requireActual('@mui/material'),
-  Dialog: () => jest.fn(),
+  Dialog: () => <div data-testid="mock-dialog" />,
 }));
 
 jest.mock('../contexts');

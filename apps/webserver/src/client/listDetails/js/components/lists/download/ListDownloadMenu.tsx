@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState, MouseEvent } from 'react';
 import {
   Download as DownloadIcon,
   ExpandMore as ExpandMoreIcon,
@@ -53,7 +53,7 @@ function ListDownloadMenu({
   const [anchorEl, setAnchorEl] = useState<undefined | HTMLElement>(undefined);
   const isMenuOpen = Boolean(anchorEl);
 
-  const handleOpenMenu = (event: React.MouseEvent<HTMLButtonElement>) => {
+  const handleOpenMenu = (event: MouseEvent<HTMLButtonElement>) => {
     setAnchorEl(event.currentTarget);
   };
 

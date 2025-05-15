@@ -1,4 +1,3 @@
-import React from 'react';
 import { GFW_PRO_HELP_CENTER__LINK } from '../../../../../common/js/config';
 
 /**

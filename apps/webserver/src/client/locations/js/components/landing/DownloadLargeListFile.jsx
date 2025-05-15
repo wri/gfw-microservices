@@ -1,4 +1,3 @@
-import React from 'react';
 import WarningTwoToneIcon from '@mui/icons-material/WarningTwoTone';
 import RaisedButton from 'material-ui/RaisedButton';
 import { locationsPage } from '../../../../common/js/config';

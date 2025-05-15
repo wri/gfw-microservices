@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import aboutStrings from './aboutStrings';
 import Page from '../../common/js/components/Page';
 import { useQuery } from '../../common/js/hooks';

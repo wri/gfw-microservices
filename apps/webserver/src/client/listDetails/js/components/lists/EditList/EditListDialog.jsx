@@ -1,4 +1,3 @@
-import React from 'react';
 import * as PropTypes from 'prop-types';
 import Dialog from 'material-ui/Dialog';
 import { IconClose } from '../../../../../common/js/components/icon/IconClose';

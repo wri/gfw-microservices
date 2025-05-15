@@ -1,4 +1,3 @@
-import React from 'react';
 import { useHistory } from 'react-router';
 import Breadcrumbs from '../../../common/js/components/Breadcrumbs';
 import LinkButton from '../../../common/js/components/LinkButton';

@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import { Fragment, Component } from 'react';
 import Card from '@mui/material/Card';
 import CardContent from '@mui/material/CardContent';
 import Highcharts from 'highcharts';
@@ -717,7 +717,7 @@ export default class SouthAmericaRegionsWithoutArgentina extends Component {
       const totalLoss = value;
       const formatedTotalLoss = prettifyNum(formatNum(totalLoss));
       return (
-        <React.Fragment key={crypto.randomUUID()}>
+        <Fragment key={crypto.randomUUID()}>
           <tr
             key={`south-america__${category}`}
             className={`locations-diagnostics-table__row ${child ? 'child' : 'parent'}`}
@@ -750,7 +750,7 @@ export default class SouthAmericaRegionsWithoutArgentina extends Component {
               data={this.props.getYearlyData('tree_cover_loss_prodes_yearly', startYear, endYear)}
             />
           )}
-        </React.Fragment>
+        </Fragment>
       );
     });
   };

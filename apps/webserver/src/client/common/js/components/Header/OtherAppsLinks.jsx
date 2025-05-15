@@ -1,4 +1,3 @@
-import React from 'react';
 import Icon from '@material-ui/core/Icon';
 import { nav } from '../../config';
 import logoGfw from './images/logo_gfw.svg';

@@ -1,5 +1,3 @@
-import React from 'react';
-
 import type { SvgIconProps } from '@mui/material/SvgIcon';
 import { Typography, Link } from '@mui/material';
 import { Support, NorthEast } from '@mui/icons-material';

@@ -1,4 +1,3 @@
-import React from 'react';
 import Grid from '@mui/material/Grid';
 import FormControl from '@mui/material/FormControl';
 import SelectField from '@mui/material/Select';

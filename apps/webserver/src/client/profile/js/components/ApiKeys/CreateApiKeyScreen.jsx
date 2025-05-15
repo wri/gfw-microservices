@@ -1,4 +1,3 @@
-import React from 'react';
 import Icon from '@material-ui/core/Icon';
 import Button from '../../../../common/js/components/Button';
 import IconPlus from '../../../../common/js/components/icon/IconPlus';

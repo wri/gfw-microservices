@@ -1,4 +1,3 @@
-import React from 'react';
 import { render, screen, fireEvent, cleanup } from '@testing-library/react';
 import AlertBanner from './AlertBanner';
 import userEvent from '@testing-library/user-event';

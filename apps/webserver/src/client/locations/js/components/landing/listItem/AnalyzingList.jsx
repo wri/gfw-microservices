@@ -1,4 +1,3 @@
-import React from 'react';
 import GroupsIcon from '@mui/icons-material/Groups';
 import PublicIcon from '@mui/icons-material/Public';
 import IconUsers from '../../../../../common/js/components/icon/IconUsers';

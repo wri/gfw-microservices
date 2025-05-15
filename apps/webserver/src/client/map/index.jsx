@@ -1,5 +1,5 @@
 /* global userLists, locationCount, gfwLists, userInfo, userSharedLists */
-import React from 'react';
+
 import moment from 'moment';
 import { render } from 'react-dom';
 import { BrowserRouter } from 'react-router-dom';

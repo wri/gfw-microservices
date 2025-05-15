@@ -1,4 +1,4 @@
-import React, { useState, useRef } from 'react';
+import { useState, useRef } from 'react';
 import { PortableText } from '@portabletext/react';
 import Popper from '@material-ui/core/Popper';
 import Icon from '@material-ui/core/Icon';

@@ -1,4 +1,3 @@
-import React from 'react';
 import { Typography, Box, Link, Checkbox, FormControlLabel, FormGroup } from '@mui/material';
 import { ThemeProvider } from '../../../../styles/ThemeProvider';
 import { locationsPage } from '../../config';

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState, FC } from 'react';
 import {
   Select,
   Box,
@@ -47,7 +47,7 @@ interface UserListCommodityRiskFilterProps {
   isListFiltered: boolean;
 }
 
-const UserListCommodityRiskFilter: React.FC<UserListCommodityRiskFilterProps> = ({
+const UserListCommodityRiskFilter: FC<UserListCommodityRiskFilterProps> = ({
   isFilterModalVisible,
   filterValues,
   parentCompanyOptionsForFilter,
@@ -117,7 +117,7 @@ const UserListCommodityRiskFilter: React.FC<UserListCommodityRiskFilterProps> = 
 
   const handleCheckboxChange = (key: keyof DefaultFilterValues, value: string) => {
     setState((prevState) => {
-      const currentList = Array.isArray(prevState[key]) ? prevState[key] : []; // makes sure it's and array
+      const currentList = Array.isArray(prevState[key]) ? (prevState[key] as string[]) : [];
       const updatedList = currentList.includes(value)
         ? currentList.filter((item) => item !== value) // delete value if already set
         : [...currentList, value]; // adds value if not present

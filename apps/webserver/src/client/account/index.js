@@ -5,7 +5,6 @@ import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
 import getMuiTheme from 'material-ui/styles/getMuiTheme';
 import Account from './js/components/Account';
 import { render } from 'react-dom';
-import React from 'react';
 
 lightBaseTheme.fontFamily = 'Fira Sans, sans-serif';
 

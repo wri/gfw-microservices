@@ -1,5 +1,4 @@
 import * as PropTypes from 'prop-types';
-import React from 'react';
 
 export function MultiGridCellCheckboxAll(props) {
   return (

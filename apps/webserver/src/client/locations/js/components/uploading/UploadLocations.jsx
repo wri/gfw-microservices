@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import { Component, isValidElement } from 'react';
 import { Route, Switch, withRouter } from 'react-router-dom';
 import Dialog from 'material-ui/Dialog';
 import cloneDeep from 'lodash/cloneDeep';
@@ -1391,11 +1391,11 @@ class UploadLocations extends Component {
     const dialogContent =
       dialogTitle === locationsPage.add.errors.notAllLocationsValid.title ||
       typeof dialogMessage === 'string' ||
-      React.isValidElement(dialogMessage)
+      isValidElement(dialogMessage)
         ? dialogMessage
         : dialogMessage.map(this.generateMessages);
 
-    if (dialogEmail && !React.isValidElement(dialogMessage)) {
+    if (dialogEmail && !isValidElement(dialogMessage)) {
       dialogContent.push(this.generateEmailText());
     }
 

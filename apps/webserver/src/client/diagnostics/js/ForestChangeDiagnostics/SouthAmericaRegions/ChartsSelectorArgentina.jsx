@@ -1,4 +1,3 @@
-import React from 'react';
 import { SelectorWithOneLevel } from './SelectorWithOneLevel';
 
 function ChartsSelectorArgentina({

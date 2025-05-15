@@ -1,4 +1,3 @@
-import React from 'react';
 import * as PropTypes from 'prop-types';
 import Dialog from 'material-ui/Dialog';
 import Button from '../../../../common/js/components/Button';

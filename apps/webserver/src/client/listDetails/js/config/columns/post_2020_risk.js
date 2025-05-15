@@ -1,4 +1,3 @@
-import React from 'react';
 import ColumnsHeader from '../../components/columns/ColumnsHeader';
 import {
   renderPercentageValueWithIndicator,

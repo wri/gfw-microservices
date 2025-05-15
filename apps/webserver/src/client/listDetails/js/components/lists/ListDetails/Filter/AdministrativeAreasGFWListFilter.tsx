@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState, FC } from 'react';
 import {
   Select,
   MenuItem,
@@ -27,7 +27,7 @@ interface AdministrativeAreasGFWListFilterProps {
   isFilterModalVisible: boolean;
 }
 
-const AdministrativeAreasGFWListFilter: React.FC<AdministrativeAreasGFWListFilterProps> = ({
+const AdministrativeAreasGFWListFilter: FC<AdministrativeAreasGFWListFilterProps> = ({
   adminAreas,
   isFilterModalVisible,
 }) => {

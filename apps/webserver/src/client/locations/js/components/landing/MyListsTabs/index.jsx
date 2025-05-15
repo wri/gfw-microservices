@@ -1,4 +1,3 @@
-import React from 'react';
 import { MY_LISTS, MY_SHARED_LISTS, LISTS_SHARED_WITH_ME } from './MyListsTabs.constants';
 import { locationsPage } from '../../../../../common/js/config';
 import './MyListsTabs.scss';

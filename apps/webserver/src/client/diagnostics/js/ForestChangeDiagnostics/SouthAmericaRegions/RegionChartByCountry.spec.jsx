@@ -1,4 +1,3 @@
-import React from 'react';
 import { render, screen, waitFor, cleanup } from '@testing-library/react';
 import { RegionChartByCountry } from './RegionChartByCountry';
 import { regionIds } from './regions-constants';

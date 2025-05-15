@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState, Fragment } from 'react';
 import { formatNum, prettifyNum } from '../../../../common/js/utils/diagnostics.utils';
 import InfoBubble from '../../../../common/js/components/InfoBubble';
 import {
@@ -100,7 +100,7 @@ export function SelectorWithTwoLevels({
           const isSubLayerCollapsed = collapsedSubLayers[id];
 
           return (
-            <React.Fragment key={id}>
+            <Fragment key={id}>
               <tr
                 className={`chart-legends-table__first-level-legend ${
                   index > 0 ? 'chart-legends-table__first-level-legend--with-padding-top' : ''
@@ -149,7 +149,7 @@ export function SelectorWithTwoLevels({
                     </tr>
                   );
                 })}
-            </React.Fragment>
+            </Fragment>
           );
         })}
     </>

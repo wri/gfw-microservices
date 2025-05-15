@@ -1,6 +1,5 @@
 /* global templateData, templateDropdowns, userLists, userSharedLists, userInfo, usersList, organizationId, locationCount, orgLists, gfwLists,  fromMap, listStatuses */
 
-import React from 'react';
 import { render } from 'react-dom';
 import { BrowserRouter as Router } from 'react-router-dom';
 import { ThemeProvider } from '../styles/ThemeProvider';

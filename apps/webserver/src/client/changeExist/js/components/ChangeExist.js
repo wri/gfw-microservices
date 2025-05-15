@@ -1,5 +1,5 @@
 import Page from '../../../common/js/components/Page';
-import React, { Component } from 'react';
+import { Component } from 'react';
 import Dialog from 'material-ui/Dialog';
 import SubHeader from '../../../common/js/components/SubHeader';
 import Button from '../../../common/js/components/Button';

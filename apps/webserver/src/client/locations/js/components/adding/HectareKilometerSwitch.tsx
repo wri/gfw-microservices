@@ -1,4 +1,3 @@
-import React from 'react';
 import './HectareKilometerSwitch.scss';
 
 const HectareKilometerSwitch = ({ setMeasurementUnit, measurementUnit }) => {

@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { IconButton, Stepper, Step, StepLabel, Typography, Box } from '@mui/material';
 import { ArrowBack } from '@mui/icons-material';
 

@@ -1,4 +1,3 @@
-import React from 'react';
 import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
 import { render, fireEvent, waitFor, screen, cleanup } from '@testing-library/react';
 import '@testing-library/jest-dom';

@@ -1,5 +1,3 @@
-import React from 'react';
-
 const stylesheet = {
   loadingWheel: {
     transform: 'translate(-50%, -50%)',

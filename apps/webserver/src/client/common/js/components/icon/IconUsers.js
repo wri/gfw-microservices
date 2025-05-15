@@ -1,5 +1,3 @@
-import React from 'react';
-
 const IconUsers = (props) => (
   <svg width="18px" height="13px" viewBox="0 0 18 13" fill="currentColor" {...props}>
     <g fillRule="evenodd">

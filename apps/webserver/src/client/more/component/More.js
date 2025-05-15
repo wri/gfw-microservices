@@ -1,4 +1,3 @@
-import React from 'react';
 import Page from '../../common/js/components/Page';
 import './More.scss';
 

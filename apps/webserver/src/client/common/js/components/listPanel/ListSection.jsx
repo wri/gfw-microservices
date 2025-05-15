@@ -1,4 +1,3 @@
-import React from 'react';
 import ListPanel from './ListPanel';
 import SelectedListDescription from './SelectedListDescription';
 import '../../../../map/css/controlPanel.scss';

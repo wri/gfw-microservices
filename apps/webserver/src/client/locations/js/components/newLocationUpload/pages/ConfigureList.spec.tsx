@@ -23,7 +23,7 @@ jest.mock('../hooks', () => ({
 
 jest.mock('@mui/material', () => ({
   ...jest.requireActual('@mui/material'),
-  Dialog: () => jest.fn(),
+  Dialog: () => <div data-testid="mock-dialog" />,
 }));
 
 jest.mock('../contexts');

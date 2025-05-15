@@ -7,6 +7,15 @@ import { uploadFileToS3 } from '../utils/upload';
 import { getFileExtension } from '../../../../../utils';
 import { UploadType } from '../types';
 
+const mockUploadLocationPreviewErrorMessage = jest.fn(() => (
+  <span data-testid="upload-error-message" />
+)) as jest.Mock;
+
+jest.mock('../components', () => ({
+  NavBar: () => <span />,
+  UploadLocationPreviewErrorMessage: mockUploadLocationPreviewErrorMessage,
+}));
+
 jest.mock('../contexts', () => ({
   useUploadLocation: jest.fn(),
 }));
@@ -29,18 +38,6 @@ const mockHistoryPush = jest.fn();
 jest.mock('../hooks', () => ({
   useHistory: () => ({ goBack: mockHistoryGoBack, push: mockHistoryPush }),
 }));
-
-let mockUploadLocationPreviewErrorMessage: jest.Mock;
-
-jest.mock('../components', () => {
-  mockUploadLocationPreviewErrorMessage = jest.fn(() => (
-    <span data-testid="upload-error-message" />
-  ));
-  return {
-    NavBar: () => <span />,
-    UploadLocationPreviewErrorMessage: mockUploadLocationPreviewErrorMessage,
-  };
-});
 
 jest.mock('../../../../../hooks', () => ({
   useFetch: jest.fn(),

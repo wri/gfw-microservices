@@ -261,7 +261,7 @@ export function ConfigureList({ userLists }: { userLists: UserList[] }) {
                   value={field.value || ''}
                   onChange={(e) => {
                     const value = (e.target.value as CommoditiesType) || '';
-                    reset({ commodity: value });
+                    reset({ commodity: value as CommoditiesType });
                     setFormFields((v) => ({ ...v, existingListName: '' }));
                     field.onChange(value);
                   }}

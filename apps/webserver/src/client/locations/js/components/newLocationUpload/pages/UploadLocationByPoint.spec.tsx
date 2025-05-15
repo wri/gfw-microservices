@@ -167,8 +167,6 @@ describe('UploadLocationByPoint', () => {
     const areaSize = within(view).getByRole('spinbutton');
     await userEvent.type(areaSize, '100');
 
-    screen.logTestingPlaygroundURL();
-
     const viewDistanceMetrics = screen.getByTestId('hectare-kilometer-switch');
     await userEvent.click(within(viewDistanceMetrics).getByText(/km/i));
 

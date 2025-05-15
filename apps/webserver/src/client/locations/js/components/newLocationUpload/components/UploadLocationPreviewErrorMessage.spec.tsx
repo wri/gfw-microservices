@@ -22,7 +22,6 @@ describe('UploadLocationPreviewErrorMessage', () => {
         onRetryPreviewData={mockRetryPreviewData}
       />
     );
-    screen.logTestingPlaygroundURL();
 
     expect(
       screen.getByText(

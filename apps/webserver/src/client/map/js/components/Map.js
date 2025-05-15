@@ -70,7 +70,7 @@ import ModalLoader from '../../../common/js/components/Loaders/ModalLoader';
 import utils from '../utils/AppUtils';
 import layerInfoCache from '../utils/layerInfoCache';
 import { layerFactory } from '../utils/LayerFactory';
-import { identifyPoints, queryAdmin } from '../utils/LayerUtils';
+import { identifyPoints } from '../utils/LayerUtils';
 import { getBBoxAndGeostoreIDs, getVectorTileStyle } from '../utils/gfw-api.utils';
 import setVectorTileLayerForFilteredList from '../utils/setVectorTileLayerForFilteredList';
 import setVectorTileLayerForFullList from '../utils/setVectorTileLayerForFullList';

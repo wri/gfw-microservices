@@ -629,7 +629,8 @@ export class ListAnalysisService {
       organizationDetails.organizationDb,
       userEmail ? true : false,
       organization_user_id,
-      organizationDetails.subscriptionStatusId
+      organizationDetails.subscriptionStatusId,
+      true
     );
 
     return response;

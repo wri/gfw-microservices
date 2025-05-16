@@ -205,7 +205,7 @@ export const handleCreateAnalysis = async (
   sendEmail: boolean,
   organization_user_id: number,
   subscriptionStatusId: number,
-  reanalyze = true
+  reanalyze = false
 ) => {
   const geoTrellisUrlsByEnv = {
     qa: GEO_TRELLIS__ANALYZE_LIST_QA,

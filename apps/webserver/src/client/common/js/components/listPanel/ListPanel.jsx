@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { locationsPage, userAccessLevel } from '../../config';
 import { numberWithCommas } from '../../../../locations/js/utils/locationsTableUtils';
 import store from '../../../../dashboard/js/store';

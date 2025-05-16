@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import { Component } from 'react';
 import Select from 'react-select';
 import { locationsPage } from '../../../../common/js/config';
 import GfwSelect from '../../../../common/js/components/GfwSelect';

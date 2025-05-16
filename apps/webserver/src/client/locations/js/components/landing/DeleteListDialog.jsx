@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import { Component } from 'react';
 import Dialog from 'material-ui/Dialog';
 import * as httpRequest from '../../../../common/js/utils/httpRequest';
 import Button from '../../../../common/js/components/Button';

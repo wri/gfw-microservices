@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import { Component } from 'react';
 import Polygon from '@arcgis/core/geometry/Polygon';
 import SpatialReference from '@arcgis/core/geometry/SpatialReference';
 import * as geometryEngine from '@arcgis/core/geometry/geometryEngine';

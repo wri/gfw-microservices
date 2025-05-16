@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import { Component } from 'react';
 import '../../../css/navigator.scss';
 
 import { locationsPage } from '../../../../common/js/config';

@@ -1,5 +1,5 @@
 // import Page from 'common/js/components/Page';
-import React, { Component } from 'react';
+import { Component } from 'react';
 // import store from 'common/js/store';
 // import {viewCreated} from 'common/js/actions/commonActions';
 import '../../css/manager.scss';

@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import { useEffect } from 'react';
 import _range from 'lodash/range';
 
 function DateRangeSilder({ id, setDateRange, startYear, endYear }) {

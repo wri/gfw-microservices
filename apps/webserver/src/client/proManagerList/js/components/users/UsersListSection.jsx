@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import UsersListTable from './UsersListTable';
 import '../../../css/proManagerList.scss';
 

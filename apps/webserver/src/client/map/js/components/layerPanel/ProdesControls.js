@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import { Component } from 'react';
 
 import '../../../../common/css/_irsBase.scss';
 import '../../../../common/css/_irsStyle.scss';

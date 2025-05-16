@@ -1,6 +1,6 @@
 /* global subscription_status_id */
 
-import React, { useState, useRef, useEffect } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import LocationOn from '@mui/icons-material/LocationOn';
 import TableChart from '@mui/icons-material/TableChart';
 import TableView from '@mui/icons-material/TableView';

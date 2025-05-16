@@ -1,5 +1,5 @@
 import { locationsPage } from '../../../../common/js/config';
-import React, { Component } from 'react';
+import { Component } from 'react';
 import ModalLoader from '../../../../common/js/components/Loaders/ModalLoader';
 
 const stylesheet = {

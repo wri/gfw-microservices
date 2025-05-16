@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import { Component } from 'react';
 import { Typography, Grid, Button as MaterialButton, Stack, Paper, Box } from '@mui/material';
 import Button from 'common/js/components/Button';
 import { ArrowBack, NotListedLocation, QueryStats, Warning } from '@mui/icons-material';

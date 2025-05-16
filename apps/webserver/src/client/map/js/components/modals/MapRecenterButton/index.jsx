@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import FmdGoodIcon from '@mui/icons-material/FmdGood';
 import { PillButton } from '../../../../../components';
 

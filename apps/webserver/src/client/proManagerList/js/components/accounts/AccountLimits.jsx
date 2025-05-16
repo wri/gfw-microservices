@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import Typography from '@mui/material/Typography';
 import GfwButton from '../../../../common/js/components/GfwButton';
 import {

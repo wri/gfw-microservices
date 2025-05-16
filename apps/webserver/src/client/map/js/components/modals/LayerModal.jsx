@@ -1,7 +1,7 @@
 import ModalWrapper from './ModalWrapper';
 import { showLayerInfo, getLayerInfo } from '../../actions/mapActions';
 import store from '../../store';
-import React, { Component } from 'react';
+import { Component } from 'react';
 
 export default class Modal extends Component {
   renderMetadata(info) {

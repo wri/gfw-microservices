@@ -3,7 +3,7 @@ import { toggleCanopyModal, updateCanopyDensity } from '../../actions/mapActions
 import store from '../../store';
 import '../../../../common/css/_irsBase.scss';
 import '../../../../common/css/_irsStyle.scss';
-import React, { Component } from 'react';
+import { Component } from 'react';
 
 export default class CanopyModal extends Component {
   componentDidMount() {

@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import { Component } from 'react';
 import Dialog from 'material-ui/Dialog';
 import fetch from '../../../../common/js/utils/fetch';
 import Button from '../../../../common/js/components/Button';

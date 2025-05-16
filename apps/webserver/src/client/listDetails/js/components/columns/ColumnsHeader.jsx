@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import InfoBubble from '../../../../common/js/components/InfoBubble';
 
 const sanitizeLabel = (label) => label.replace(/\s+/g, '-');

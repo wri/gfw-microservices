@@ -40,15 +40,10 @@ export class AdjustGeoData extends AbstractHandler<ChainType> {
   };
 
   getLatLngFromFeature = (feature: Feature) => {
-    if (
-      feature.properties.longitude !== undefined &&
-      feature.properties.latitude !== undefined &&
-      feature.properties.longitude !== null &&
-      feature.properties.latitude !== null
-    ) {
+    if (feature.properties.longitude && feature.properties.latitude) {
       return {
-        longitude: feature.properties.longitude as number,
-        latitude: feature.properties.latitude as number,
+        longitude: Number(feature.properties.longitude),
+        latitude: Number(feature.properties.latitude),
       };
     }
 

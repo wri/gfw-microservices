@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import MenuItem from 'material-ui/MenuItem';
 import ArrowRightIcon from 'material-ui/svg-icons/navigation/chevron-right';
 import { locationsPage } from 'common/js/config';

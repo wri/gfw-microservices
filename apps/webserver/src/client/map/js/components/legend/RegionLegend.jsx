@@ -1,5 +1,5 @@
 import '../../../css/map.scss';
-import React, { Component } from 'react';
+import { Component } from 'react';
 import LegendCheckbox from './LegendCheckbox';
 import { proLayers } from '../../../../common/js/proLayers.config';
 import LegendSection from './LegendSection';

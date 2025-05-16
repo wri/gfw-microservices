@@ -3,7 +3,7 @@ import { toggleSearch } from '../../actions/mapActions';
 import store from '../../store';
 import Search from '@arcgis/core/widgets/Search';
 import FeatureLayer from '@arcgis/core/layers/FeatureLayer';
-import React, { Component } from 'react';
+import { Component } from 'react';
 import { proLayers } from '../../../../common/js/proLayers.config';
 
 const tabs = ['Search', 'Coordinates', 'Decimal Degrees'];

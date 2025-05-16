@@ -1,6 +1,6 @@
 /* global field */
 
-import React, { Component, isValidElement } from 'react';
+import { Component, isValidElement } from 'react';
 import Dialog from 'material-ui/Dialog';
 import getMuiTheme from 'material-ui/styles/getMuiTheme';
 import Point from '@arcgis/core/geometry/Point';

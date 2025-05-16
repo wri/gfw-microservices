@@ -3,7 +3,7 @@ import { toggleLayer } from '../../actions/mapActions';
 import LegendCheckbox from './LegendCheckbox';
 import RegionLegend from './RegionLegend';
 import '../../../css/map.scss';
-import React, { Component } from 'react';
+import { Component } from 'react';
 import LegendSection from './LegendSection';
 import { proLayers } from '../../../../common/js/proLayers.config';
 

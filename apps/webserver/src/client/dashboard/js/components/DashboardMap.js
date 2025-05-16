@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import { Component } from 'react';
 import EsriMap from '@arcgis/core/Map';
 import Basemap from '@arcgis/core/Basemap';
 import MapView from '@arcgis/core/views/MapView';

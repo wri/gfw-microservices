@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import { Component } from 'react';
 import { Box, Divider, Dialog, DialogTitle, DialogContent, DialogActions } from '@mui/material';
 import '../../css/reset.scss';
 

@@ -1,4 +1,4 @@
-import React, { useState, useCallback } from 'react';
+import { useState, useCallback } from 'react';
 import Modal from '@material-ui/core/Modal';
 import Button from 'common/js/components/Button';
 import CheckCircleOutlineIcon from '@mui/icons-material/CheckCircleOutline';

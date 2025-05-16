@@ -1,4 +1,4 @@
-import React, { Fragment } from 'react';
+import { Fragment } from 'react';
 import Grid from '@mui/material/Grid';
 import { profilePage } from '../../../../common/js/config';
 import AccountUsageContainer from './AccountUsageContent';

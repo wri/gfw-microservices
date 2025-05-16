@@ -3,7 +3,7 @@ import { toggleShareModal } from '../../actions/mapActions';
 import store from '../../store';
 import utils from '../../utils/AppUtils';
 import { mapPage } from '../../../../common/js/config';
-import React, { Component } from 'react';
+import { Component } from 'react';
 
 const windowOptions = 'toolbar=0,status=0,height=650,width=450';
 

@@ -1,6 +1,6 @@
 import { setFireDays } from '../../actions/mapActions';
 import store from '../../store';
-import React, { Component } from 'react';
+import { Component } from 'react';
 
 export default class FiresControls extends Component {
   setFiresTimeline(evt) {

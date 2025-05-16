@@ -1,6 +1,6 @@
 import { executeQueryJSON } from '@arcgis/core/rest/query';
 import Query from '@arcgis/core/rest/support/Query';
-import React, { Component } from 'react';
+import { Component } from 'react';
 import { updateAdminSelections } from '../../actions/mapActions';
 import * as analysisActions from '../../actions/analysisActions';
 import store from '../../store';

@@ -1,5 +1,5 @@
 import React from 'react';
-import { render, screen } from '@testing-library/react';
+import { render, screen, cleanup } from '@testing-library/react';
 import { Provider } from 'react-redux';
 import { createStore } from 'redux';
 import { ThemeProvider, createTheme } from '@mui/material/styles';
@@ -72,7 +72,7 @@ describe('ListActions', () => {
   let store;
 
   const mockFunction = jest.fn();
-
+  afterEach(cleanup);
   beforeEach(() => {
     store = createStore(() => ({
       ...mockStore,

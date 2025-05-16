@@ -55,7 +55,6 @@ import {
 } from '../../../utils/lists-redux.utils';
 import LargeListEditing from '../EditList/LargeListEditing/LargeListEditing';
 import ShareList from '../../../../../locations/js/components/ShareList/ShareList';
-import redirectToMap from '../../../../../common/js/utils/redirect';
 import { FailedPopupDialog } from '../../../../../locations/js/components/landing/FailedPopupDialog';
 import {
   getIsDiagnosticStatusDraft,
@@ -1366,44 +1365,6 @@ export default class ListDetails extends Component {
     window.location.href = `/diagnostics?${queryString}`;
   };
 
-  viewMap = ({ showFullListMap }) => {
-    const { selectedLists, userSharedLists } = this.props;
-    const { isEveryRowSelected } = this.state;
-    let locationIds = [];
-
-    const gfwList = selectedLists[0]?.isGlobalForestWatchList ? selectedLists[0]?.list_name : false;
-
-    if (gfwList === 'Administrative Areas') {
-      this.setState({
-        dialogOpen: true,
-        dialogTitle: 'Map View Not Available',
-        dialogContent:
-          'To view administrative areas on the map, navigate to the Map View tab and click the area you would like to see.',
-        isLoading: false,
-      });
-      return;
-    }
-
-    const isGfwList = selectedLists[0].isGlobalForestWatchList;
-    const isSharedList =
-      selectedLists &&
-      userSharedLists &&
-      userSharedLists.map((userSharedList) => userSharedList.id).includes(selectedLists[0].id);
-
-    const sendData = {
-      listId: selectedLists[0].id,
-      isGfwList,
-      isSharedList,
-      ...(isEveryRowSelected || showFullListMap ? {} : { selectedLocations: locationIds }),
-    };
-
-    redirectToMap(sendData);
-    gtag('event', 'Header button click', {
-      event_category: 'Lists Click',
-      event_label: 'user is re-directed to the map page via a Lists Header button click',
-    });
-  };
-
   handleSearchInputChange = (newValue) => {
     const { selectedLists } = this.props;
     const { filterString } = this.state;
@@ -2098,7 +2059,6 @@ export default class ListDetails extends Component {
                 ) : (
                   <>
                     <ListActions
-                      viewMap={this.viewMap}
                       currentUser={currentUser}
                       toggleReRunAnalysisDialog={this.toggleReRunAnalysisDialog}
                       rerunDialogState={rerunDialogState}
@@ -2138,6 +2098,8 @@ export default class ListDetails extends Component {
                         this.setState({ isLoading: loading });
                       }}
                       isOnlyGHGActive={isOnlyGHGActive}
+                      isEveryRowSelected={isEveryRowSelected}
+                      userSharedLists={userSharedLists}
                     />
 
                     <div style={{ display: 'flex', justifyContent: 'space-between' }}>

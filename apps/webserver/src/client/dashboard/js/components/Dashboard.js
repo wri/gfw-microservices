@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import { Component } from 'react';
 import moment from 'moment';
 import isEmpty from 'lodash/isEmpty';
 

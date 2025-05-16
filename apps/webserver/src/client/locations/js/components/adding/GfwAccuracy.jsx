@@ -1,5 +1,5 @@
 import { locationsPage } from '../../../../common/js/config';
-import React, { Component } from 'react';
+import { Component } from 'react';
 
 export default class GfwAccuracy extends Component {
   createOptions = (option, i) => {

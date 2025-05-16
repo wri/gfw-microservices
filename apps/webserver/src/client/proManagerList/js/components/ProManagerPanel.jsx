@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { withRouter } from 'react-router-dom';
 import UsersListSection from './users/UsersListSection';
 import UserDetailSection from './users/UserDetailSection';

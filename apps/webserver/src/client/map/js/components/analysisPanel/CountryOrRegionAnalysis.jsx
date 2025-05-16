@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { MenuItem, Select } from '@mui/material';
 import { updateAdminSelections } from '../../actions/mapActions';
 import * as analysisActions from '../../actions/analysisActions';

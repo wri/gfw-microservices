@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { Card, Modal, Button } from '@mui/material';
 import AddLocationIcon from '@mui/icons-material/AddLocation';
 import GfwButton from '../../../../../common/js/components/GfwButton';

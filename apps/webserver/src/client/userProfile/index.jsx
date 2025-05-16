@@ -1,5 +1,5 @@
 /* global userID */
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { render } from 'react-dom';
 import lightBaseTheme from 'material-ui/styles/baseThemes/lightBaseTheme';
 import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';

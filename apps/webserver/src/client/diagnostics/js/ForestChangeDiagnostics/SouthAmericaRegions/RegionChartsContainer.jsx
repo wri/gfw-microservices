@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { RegionChartByCountry } from './RegionChartByCountry';
 import RegionChartsTabs from './RegionChartsTabs';
 import SouthAmericaRegionsWithoutArgentina from '../SouthAmericaRegionsWithoutArgentina';

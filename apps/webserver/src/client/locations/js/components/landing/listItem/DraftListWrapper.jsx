@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import AnalyzingList from './AnalyzingList';
 import DraftList from './DraftList';
 import { requestGeoTrellisAnalyzeList } from '../../../utils/requestUtils';

@@ -1,5 +1,5 @@
 import store from '../store';
-import React, { Component } from 'react';
+import { Component } from 'react';
 
 import IconButton from 'material-ui/IconButton';
 import InfoIcon from 'material-ui/svg-icons/action/info';

@@ -1,7 +1,7 @@
 import * as analysisActions from '../../actions/analysisActions';
 import store from '../../store';
 import '../../../css/controlPanel.scss';
-import React, { Component } from 'react';
+import { Component } from 'react';
 
 export default class ControlPanel extends Component {
   toggleWarning = () => {

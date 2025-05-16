@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import { Component } from 'react';
 import { Dialog } from 'material-ui';
 import { Box, Typography } from '@mui/material';
 import { withRouter } from 'react-router-dom';

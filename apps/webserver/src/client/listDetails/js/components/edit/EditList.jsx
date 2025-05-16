@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import { Component } from 'react';
 
 import store from '../../../../locations/js/store';
 import { changeView } from '../../../../locations/js/actions/locationActions';

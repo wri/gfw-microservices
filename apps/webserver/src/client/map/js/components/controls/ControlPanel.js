@@ -3,7 +3,7 @@
 import { togglePanels, toggleSearch } from '../../actions/mapActions';
 import store from '../../store';
 import '../../../css/controlPanel.scss';
-import React, { Component } from 'react';
+import { Component } from 'react';
 
 const animationOptions = { duration: 300 };
 

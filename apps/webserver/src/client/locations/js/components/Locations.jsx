@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import { Component } from 'react';
 import { Route, Switch, withRouter } from 'react-router-dom';
 
 import Page from '../../../common/js/components/Page';

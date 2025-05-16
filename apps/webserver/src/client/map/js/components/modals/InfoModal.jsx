@@ -2,7 +2,7 @@ import ModalWrapper from './ModalWrapper';
 import { showLayerInfo } from '../../actions/mapActions';
 import store from '../../store';
 import { mapPage } from '../../../../common/js/config';
-import React, { Component } from 'react';
+import { Component } from 'react';
 
 export default class InfoModal extends Component {
   close = () => {

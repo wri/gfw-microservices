@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import { Component } from 'react';
 import Dialog from 'material-ui/Dialog';
 import Select from 'react-select';
 import qr from 'qrcode';

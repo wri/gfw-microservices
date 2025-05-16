@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import { Component } from 'react';
 import { Carousel } from 'react-responsive-carousel';
 import Dialog from 'material-ui/Dialog';
 import loginStrings from './loginStrings';

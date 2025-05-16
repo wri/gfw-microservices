@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import Accordion from '@mui/material/Accordion';
 import LanguageIcon from '@mui/icons-material/Language';
 import AccordionSummary from '@mui/material/AccordionSummary';

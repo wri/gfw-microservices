@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import { Component } from 'react';
 
 const PRIVACY_POLICY_LINK = 'https://www.wri.org/about/privacy-policy';
 

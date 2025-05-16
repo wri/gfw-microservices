@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import Button from '../../../../../../common/js/components/Button';
 import CustomTooltip from '../../../../../../common/js/components/CustomTooltip/CustomTooltip';
 import CustomDialog from '../../../../../../common/js/components/CustomDialog/CustomDialog';

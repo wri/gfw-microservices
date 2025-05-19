@@ -19,8 +19,7 @@ const CLEAR_CONNECTION_TIMEOUT = {
 
 type CreateTypeOrmSystemModuleProps = {
   name: string;
-  // eslint-disable-next-line @typescript-eslint/ban-types
-  imports?: Array<Type<any> | DynamicModule | Promise<DynamicModule> | ForwardReference>;
+  imports?: Array<Type<unknown> | DynamicModule | Promise<DynamicModule> | ForwardReference>;
 };
 
 export interface ConnectionCacheItem {
@@ -28,20 +27,18 @@ export interface ConnectionCacheItem {
   timeout: NodeJS.Timeout;
 }
 
-// eslint-disable-next-line @typescript-eslint/ban-types
+type EntityType = Type<unknown> | string | EntitySchema<unknown>;
+
 export const createDatasourceConfig = (
   name: string,
   database: string,
-  // eslint-disable-next-line @typescript-eslint/ban-types
-  entities: MixedList<Function | string | EntitySchema>
+  entities: MixedList<EntityType>
 ): TypeOrmModuleOptions => {
   const env = process.env.NODE_ENV;
 
   let databaseName = '';
-  if (env === TEST_ENVIRONMENT && name === 'default') {
-    databaseName = 'db.default.sqlite';
-  } else if (env === TEST_ENVIRONMENT) {
-    databaseName = 'db.sqlite';
+  if (env === TEST_ENVIRONMENT) {
+    databaseName = ':memory:'; // Always use in-memory database for tests
   } else if (env !== TEST_ENVIRONMENT && database !== '' && database !== undefined) {
     databaseName = database;
   } else {
@@ -100,8 +97,7 @@ const dynamicConnections: Map<string, ConnectionCacheItem> = new Map();
 
 @Injectable()
 export class ClientStoreConnection {
-  // eslint-disable-next-line @typescript-eslint/ban-types
-  public static getConnectionType(entities: MixedList<Function | string | EntitySchema>) {
+  public static getConnectionType(entities: MixedList<EntityType>) {
     return entities === organizationEntities || entities === systemEntities ? 'static' : 'dynamic';
   }
 
@@ -109,11 +105,27 @@ export class ClientStoreConnection {
     return type === 'dynamic' ? dynamicConnections : staticConnections;
   }
 
-  async getConnection(
-    database: string,
-    // eslint-disable-next-line @typescript-eslint/ban-types
-    entities?: MixedList<Function | string | EntitySchema>
-  ): Promise<DataSource> {
+  public static async clearAllConnections(): Promise<void> {
+    // Clear static connections
+    for (const [connectionId, cached] of staticConnections.entries()) {
+      staticConnections.delete(connectionId);
+      clearTimeout(cached.timeout);
+      if (cached.connection.isInitialized) {
+        await cached.connection.destroy();
+      }
+    }
+
+    // Clear dynamic connections
+    for (const [connectionId, cached] of dynamicConnections.entries()) {
+      dynamicConnections.delete(connectionId);
+      clearTimeout(cached.timeout);
+      if (cached.connection.isInitialized) {
+        await cached.connection.destroy();
+      }
+    }
+  }
+
+  async getConnection(database: string, entities?: MixedList<EntityType>): Promise<DataSource> {
     if (!entities) {
       entities = database === 'gfwpro' ? systemEntities : organizationEntities;
     }
@@ -129,9 +141,12 @@ export class ClientStoreConnection {
       const cached = mapToInsert.get(connectionId);
       // reset timeout from now to prevent destroying connection while it's being used
       clearTimeout(cached.timeout);
-      cached.timeout = setTimeout(() => {
-        this.clearCache(connectionId, entityType);
+      const timeout = setTimeout(() => {
+        this.clearCache(connectionId, entityType).catch((error) => {
+          Logger.error(`Error clearing cache for ${connectionId}:`, error);
+        });
       }, CLEAR_CONNECTION_TIMEOUT[entityType]);
+      cached.timeout = timeout;
       return mapToInsert.get(connectionId).connection;
     }
 
@@ -149,11 +164,15 @@ export class ClientStoreConnection {
       const connectionDb = new DataSource(datasourceConfig);
       const dbConnection = await connectionDb.initialize();
 
+      const timeout = setTimeout(() => {
+        this.clearCache(connectionId, entityType).catch((error) => {
+          Logger.error(`Error clearing cache for ${connectionId}:`, error);
+        });
+      }, CLEAR_CONNECTION_TIMEOUT[entityType]);
+
       mapToInsert.set(connectionId, {
         connection: dbConnection,
-        timeout: setTimeout(() => {
-          this.clearCache(connectionId, entityType);
-        }, CLEAR_CONNECTION_TIMEOUT[entityType]),
+        timeout,
       });
 
       Logger.log(`Data Source ${database} has been initialized`);
@@ -173,8 +192,11 @@ export class ClientStoreConnection {
     const mapToUse = ClientStoreConnection.getConnections(entityType);
     const cached = mapToUse.get(connectionId);
     if (cached) {
+      clearTimeout(cached.timeout);
       mapToUse.delete(connectionId);
-      await cached.connection.destroy();
+      if (cached.connection.isInitialized) {
+        await cached.connection.destroy();
+      }
     }
   }
 }

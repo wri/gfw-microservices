@@ -1,7 +1,10 @@
 import React from 'react';
-import { render, cleanup, screen } from '@testing-library/react';
+import { render, cleanup, screen, act } from '@testing-library/react';
 import '@testing-library/jest-dom';
 import ListDetails from './index';
+import { analysisTypes } from '../../../../../../config/env/analysisTypes.constants';
+import { updateSelectedLocations } from './listActions';
+import { FOREST_CHANGE_VIEW } from './listViews.constants';
 
 // Mock componentDidMount to prevent network requests
 ListDetails.prototype.componentDidMount = jest.fn();
@@ -39,26 +42,6 @@ jest.mock('material-ui/Tabs', () => ({ Tabs: () => <div />, Tab: () => <div /> }
 jest.mock('material-ui/Card', () => ({ Card: () => <div />, CardText: () => <div /> }));
 jest.mock('material-ui/FlatButton', () => () => <div />);
 jest.mock('material-ui/Toolbar', () => ({ Toolbar: () => <div />, ToolbarGroup: () => <div /> }));
-
-// Mock react-redux
-jest.mock('react-redux', () => ({
-  connect: () => (Component) => Component,
-}));
-
-// Mock global gtag
-global.gtag = jest.fn();
-
-// Mock Transifex
-global.Transifex = {
-  live: {
-    onAfterTranslate: jest.fn(),
-    off: jest.fn(),
-    translateText: jest.fn((text) => text),
-  },
-};
-
-// Mock LocationsSummary component
-jest.mock('./LocationsSummary', () => () => <div data-testid="locations-summary" />);
 
 afterEach(() => {
   cleanup();
@@ -108,6 +91,28 @@ describe('ListDetails', () => {
     isListWithErrors: false,
   };
 
+  it('renders LocationDataNotAvailableMessage when analysis is failed', () => {
+    const props = {
+      ...defaultProps,
+      selectedLists: [
+        {
+          id: 1,
+          list_name: 'Test List',
+          isGlobalForestWatchList: false,
+          user_id: 1,
+          listAnalysesStatus: [],
+          isFailed: true,
+        },
+      ],
+      isListSubmittedForAnalysis: true,
+    };
+
+    const { getByTestId } = render(<ListDetails {...props} />);
+
+    // Verify that LocationDataNotAvailableMessage is rendered
+    expect(getByTestId('location-data-not-available')).toBeInTheDocument();
+  });
+
   it('renders without crashing', () => {
     render(<ListDetails {...defaultProps} />);
 
@@ -129,6 +134,125 @@ describe('ListDetails', () => {
 
     // When shareView is false, we should see the ListActions component
     expect(screen.getByTestId('list-actions')).toBeInTheDocument();
+  });
+
+  it('shows warning box when there are locations with errors', () => {
+    const props = {
+      ...defaultProps,
+      selectedLists: [
+        {
+          id: 1,
+          list_name: 'Test List',
+          isGlobalForestWatchList: false,
+          user_id: 1,
+          listAnalysesStatus: [
+            {
+              analysisId: analysisTypes.FOREST_CHANGE_DIAGNOSTICS,
+              status: 'active',
+            },
+          ],
+        },
+      ],
+      listData: [
+        {
+          id: 1,
+          name: 'Test Location',
+          ErrorDetails: 'Test error details',
+        },
+      ],
+      listView: FOREST_CHANGE_VIEW,
+      listViewOptions: [FOREST_CHANGE_VIEW],
+    };
+
+    const { container } = render(<ListDetails {...props} />);
+
+    // Verify that the warning box is rendered
+    const warningBox = container.querySelector('.MuiBox-root');
+    expect(warningBox).toBeInTheDocument();
+    expect(warningBox).toHaveStyle('background-color: #FEEEDB');
+
+    // Verify the warning message content using a flexible matcher
+    const warningMessage = screen.getByText((content, element) => {
+      const hasText = (el) => el.textContent === 'We have found 1 error in your locations';
+      const elementHasText = hasText(element);
+      const childrenDontHaveText = Array.from(element.children).every((child) => !hasText(child));
+      return elementHasText && childrenDontHaveText;
+    });
+    expect(warningMessage).toBeInTheDocument();
+
+    // Verify the warning icon
+    const warningIcon = screen.getByTestId('WarningIcon');
+    expect(warningIcon).toBeInTheDocument();
+  });
+
+  it('updates selected locations when checkbox is clicked', () => {
+    // Mock dispatch
+    const mockDispatch = jest.fn();
+
+    // Create props with initial selected locations
+    const props = {
+      ...defaultProps,
+      selectedLocations: [1, 2, 3],
+      filteredData: [{ id: 1 }, { id: 2 }, { id: 3 }, { id: 4 }],
+      filteredLocationData: [{ id: 1 }, { id: 2 }, { id: 3 }, { id: 4 }],
+    };
+
+    // Create component instance
+    const component = new ListDetails(props);
+
+    // Test deselecting location 2
+    component.setLocationCheckbox(2);
+
+    // Verify dispatch was called with updated locations
+    expect(mockDispatch).toHaveBeenCalledWith(updateSelectedLocations([1, 3]));
+  });
+
+  describe('loadLocationView', () => {
+    it('calls getAdministrativeAreasInfo for Administrative Areas list', () => {
+      const component = new ListDetails({
+        selectedLists: [
+          {
+            list_name: 'Administrative Areas',
+          },
+        ],
+      });
+
+      component.getAdministrativeAreasInfo = jest.fn();
+      component.loadLocationView();
+      expect(component.getAdministrativeAreasInfo).toHaveBeenCalled();
+    });
+
+    it('calls getUserLocationData for user lists', () => {
+      const component = new ListDetails({
+        selectedLists: [
+          {
+            list_name: 'Test List',
+            isGlobalForestWatchList: false,
+            id: 123,
+          },
+        ],
+      });
+
+      component.getUserLocationData = jest.fn();
+      component.loadLocationView();
+      expect(component.getUserLocationData).toHaveBeenCalledWith(123);
+    });
+
+    it('calls getGFWLocationData for GFW lists', () => {
+      const component = new ListDetails({
+        selectedLists: [
+          {
+            list_name: 'GFW List',
+            isGlobalForestWatchList: true,
+            id: 456,
+          },
+        ],
+      });
+
+      component.getGFWLocationData = jest.fn();
+      component.loadLocationView();
+      expect(component.getGFWLocationData).toHaveBeenCalledWith(456);
+    });
   });
 
   it('displays analysis status correctly', () => {

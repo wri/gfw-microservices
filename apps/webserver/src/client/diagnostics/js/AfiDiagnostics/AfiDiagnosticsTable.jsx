@@ -1,11 +1,5 @@
-import * as React from 'react';
-import Table from '@mui/material/Table';
-import TableBody from '@mui/material/TableBody';
-import TableCell from '@mui/material/TableCell';
-import TableHead from '@mui/material/TableHead';
-import TableRow from '@mui/material/TableRow';
-import Card from '@mui/material/Card';
-import CardContent from '@mui/material/CardContent';
+import { Card, CardContent, Table, TableBody, TableCell, TableHead, TableRow } from '@mui/material';
+
 import InfoBubble from '../../../common/js/components/InfoBubble';
 import { forestLossDatasetIds } from './forestLossDatasets.constants';
 import infoBubbleConfig from '../../../common/js/infoBubbleConfig.constants';

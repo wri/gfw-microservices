@@ -1,6 +1,6 @@
-import Icon from '@material-ui/core/Icon';
-import Button from '../../../../common/js/components/Button';
-import IconPlus from '../../../../common/js/components/icon/IconPlus';
+import { Api, Add } from '@mui/icons-material';
+
+import { PillButton } from '../../../../components';
 
 export default function CreateApiKeyScreen({ fetchApiKeys, setIsLoading }) {
   const createApiKey = () => {
@@ -20,19 +20,21 @@ export default function CreateApiKeyScreen({ fetchApiKeys, setIsLoading }) {
 
   return (
     <div style={{ textAlign: 'center' }}>
-      <Icon style={{ color: '#999999', fontSize: '70px' }} height="60px">
+      <Api style={{ color: '#999999', fontSize: '70px' }} height="60px">
         api
-      </Icon>
+      </Api>
       <h3>Create your API Key</h3>
       <div>API keys allows users to access your API and view data from your locations.</div>
       <br />
-      <Button
-        variant="primary"
-        className="users-section__action-button"
+      <PillButton
+        variant="contained"
+        size="small"
         onClick={createApiKey}
-        icon={<IconPlus height="10px" />}
-        label="Create"
-      />
+        startIcon={<Add />}
+        sx={{ mx: 'auto' }}
+      >
+        Create
+      </PillButton>
     </div>
   );
 }

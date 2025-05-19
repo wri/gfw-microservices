@@ -1,7 +1,7 @@
 import { useState } from 'react';
+import { Grid, Container } from '@mui/material';
+
 import SideBarMenu from '../../common/js/components/SideBarMenu';
-import Grid from '@mui/material/Grid';
-import Container from '@mui/material/Container';
 import { useProfileContext } from './ProfileStateContext';
 import AccountProfileContainer from './components/AccountProfile';
 import UserProfileManagerContainer from './components/UserProfileManager';

@@ -1,9 +1,6 @@
-import Card from '@mui/material/Card';
-import Grid from '@mui/material/Grid';
-import Typography from '@mui/material/Typography';
-import CardContent from '@mui/material/CardContent';
-import { styled } from '@mui/material/styles';
+import { Card, Grid, Typography, CardContent, styled } from '@mui/material';
 import LinearProgress, { linearProgressClasses } from '@mui/material/LinearProgress';
+
 import { formatNumber } from '../../../../common/js/utils/format';
 import InfoBubble from '../../../../common/js/components/InfoBubble';
 

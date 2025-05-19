@@ -1,14 +1,16 @@
-import { Fragment } from 'react';
-import { styled } from '@mui/material/styles';
-import Switch from '@mui/material/Switch';
-import Grid from '@mui/material/Grid';
-import TableContainer from '@mui/material/TableContainer';
-import Table from '@mui/material/Table';
-import TableHead from '@mui/material/TableHead';
-import TableBody from '@mui/material/TableBody';
-import TableCell, { tableCellClasses } from '@mui/material/TableCell';
-import TableRow from '@mui/material/TableRow';
 import moment from 'moment';
+import {
+  Grid,
+  Switch,
+  Table,
+  TableHead,
+  TableBody,
+  TableRow,
+  TableContainer,
+  styled,
+} from '@mui/material';
+import TableCell, { tableCellClasses } from '@mui/material/TableCell';
+
 import AddCompany from './AddCompany';
 import { useFeatureFlagStateContext } from './FeatureFlagStateContext';
 import InfoBubble from '../../../../common/js/components/InfoBubble';
@@ -40,7 +42,7 @@ function FeatureFlagDetail() {
   };
 
   return selectedFeatureFlag ? (
-    <Fragment>
+    <>
       <Grid
         container
         style={{ padding: '20px 0', boxShadow: '0px 1px 0px 0px rgba(0, 0, 0, 0.13) inset' }}
@@ -136,7 +138,7 @@ function FeatureFlagDetail() {
           <AddCompany />
         </Grid>
       </Grid>
-    </Fragment>
+    </>
   ) : null;
 }
 

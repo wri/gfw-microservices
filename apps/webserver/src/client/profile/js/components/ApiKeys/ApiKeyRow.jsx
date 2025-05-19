@@ -1,6 +1,5 @@
 import { useState, useEffect } from 'react';
-import TableCell from '@mui/material/TableCell';
-import TableRow from '@mui/material/TableRow';
+import { TableCell, TableRow } from '@mui/material';
 import ContentCopyIcon from '@mui/icons-material/ContentCopy';
 
 const COPIED_TO_CLIPBOARD_NOTIFICATION_TIME = 2000;

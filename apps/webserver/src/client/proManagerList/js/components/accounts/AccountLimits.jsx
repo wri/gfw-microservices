@@ -1,16 +1,14 @@
 import { useState, useEffect } from 'react';
-import Typography from '@mui/material/Typography';
-import GfwButton from '../../../../common/js/components/GfwButton';
+import { Typography, TextField, Grid, InputLabel, styled } from '@mui/material';
+
+import { PillButton } from '../../../../components';
 import {
   accountLimitsStrings,
   subscriptionStatusOptions,
   SUBSCRIPTION_STATUSES,
 } from '../../../../common/js/config';
 import SettingSection from '../../../../common/js/components/SettingSection';
-import Grid from '@mui/material/Grid';
-import TextField from '@mui/material/TextField';
-import InputLabel from '@mui/material/InputLabel';
-import { styled } from '@mui/material/styles';
+
 import DialogProvider, { useDialog } from '../../../../common/js/components/Dialog';
 
 const fontStyles = {
@@ -75,10 +73,6 @@ function AccountLimitsGlobal({ setIsLoading }) {
         },
       };
     });
-  };
-
-  const back = () => {
-    window.location.href = '/pro-manager-list';
   };
 
   const updateGlobalAnalysisLimits = (payload) => {
@@ -166,7 +160,9 @@ function AccountLimitsGlobal({ setIsLoading }) {
         <Typography sx={fontStyles} variant="h2">
           {accountLimitsStrings.pageHeading}
         </Typography>
-        <GfwButton classNames="btn-green" onClick={back} value="Back to Profile Manager" />
+        <PillButton variant="contained" size="small" href="/pro-manager-list">
+          Back to Profile Manager
+        </PillButton>
       </Grid>
       <SettingSection subHeading={accountLimitsStrings.stantardSubscriptionSection}>
         <Grid sx={{ marginBottom: '1.5rem' }} container spacing={2}>
@@ -245,12 +241,14 @@ function AccountLimitsGlobal({ setIsLoading }) {
         </Grid>
         <Grid container spacing={2} rowSpacing={2}>
           <Grid item sm={6} xs={12}>
-            <GfwButton
-              classNames={`btn-green`}
+            <PillButton
+              variant="contained"
+              size="small"
               disabled={!formHasChanges}
               onClick={() => updateGlobalAnalysisLimits(globalLimitsFormData)}
-              value="Update Limits"
-            />
+            >
+              Update Limits
+            </PillButton>
           </Grid>
         </Grid>
       </SettingSection>

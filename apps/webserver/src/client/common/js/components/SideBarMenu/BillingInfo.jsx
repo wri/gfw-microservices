@@ -1,31 +1,36 @@
-import Card from '@mui/material/Card';
-import CardContent from '@mui/material/CardContent';
+import { Card, CardContent } from '@mui/material';
 import './SideBarMenu.scss';
+
+import { PillButton, Link } from '../../../../components';
 
 function BillingInfo() {
   return (
-    <Card variant="outlined" style={{ marginTop: '20px' }}>
-      <CardContent>
+    <Card variant="outlined" sx={{ mt: 2.5 }}>
+      <CardContent sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 1 }}>
         <p style={{ textAlign: 'center' }}>
           Contact our sales team to purchase additional Usage units or other available services
         </p>
-        <a className="gfw-button btn-green btn-width-full" href="mailto:gfwprosales@wri.org">
+        <PillButton
+          variant="contained"
+          size="small"
+          fullWidth
+          sx={{ mb: 2 }}
+          href="mailto:gfwprosales@wri.org"
+        >
           Email Sales
-        </a>
-        <a
-          className="side-bar-link"
+        </PillButton>
+        <Link
           target="_blank"
           href="https://www.globalforestwatch.org/help/guides/global-forest-watch-pro-price-sheet/"
         >
           Price List
-        </a>
-        <a
-          className="side-bar-link"
+        </Link>
+        <Link
           target="_blank"
           href="https://www.globalforestwatch.org/help/gfw-pro/faq-subscription-fee-model-faq/"
         >
           Fee Model FAQ
-        </a>
+        </Link>
       </CardContent>
     </Card>
   );

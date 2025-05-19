@@ -1,9 +1,9 @@
 import { Component } from 'react';
+import { Box } from '@mui/material';
+import { Add, Search } from '@mui/icons-material';
+
+import { Link, PillButton } from '../../../../components';
 import { profilePage } from '../../../../common/js/config';
-import Button from '../../../../common/js/components/Button';
-import LinkButton from '../../../../common/js/components/LinkButton';
-import IconPlus from '../../../../common/js/components/icon/IconPlus';
-import IconSearch from '../../../../common/js/components/icon/IconSearch';
 
 class UserProfileManager extends Component {
   constructor(props) {
@@ -16,14 +16,6 @@ class UserProfileManager extends Component {
 
   searchUsers = (evt) => {
     this.setState({ filterStr: evt.target.value });
-  };
-
-  createNew = () => {
-    window.location.href = '/user-profile';
-  };
-
-  goToUser = (user_id) => {
-    window.location.href = `/user-profile?user_id=${user_id}`;
   };
 
   createRow = (row, i) => {
@@ -43,11 +35,10 @@ class UserProfileManager extends Component {
     return (
       <tr key={i}>
         <td id="last_name">
-          <LinkButton
-            className="verify-section__back-button back-button"
+          <Link
+            href={`/user-profile?user_id=${user_id}`}
             onClick={() => this.goToUser(user_id)}
-            label={`${first_name} ${middle_initial} ${last_name}`}
-          />
+          >{`${first_name} ${middle_initial} ${last_name}`}</Link>
         </td>
         <td id="email" className="user-table-td">
           {email}
@@ -202,10 +193,6 @@ class UserProfileManager extends Component {
     return access.toLowerCase().indexOf(this.state.filterStr.toLowerCase()) > -1;
   };
 
-  showLog = () => {
-    window.location.href = '/activity-log';
-  };
-
   render() {
     const filteredElements = this.state.users.filter((e) => {
       return (
@@ -224,7 +211,7 @@ class UserProfileManager extends Component {
       <section className="section-container users-section">
         <div className="users-section__action-bar">
           <div className="input-search users-section__search-input">
-            <IconSearch className="input-search__icon" />
+            <Search className="input-search__icon" sx={{ height: '15px', left: '5px' }} />
             <input
               type="search"
               className="input-search__input"
@@ -232,20 +219,21 @@ class UserProfileManager extends Component {
               onChange={this.searchUsers}
             />
           </div>
+          <Box sx={{ display: 'flex', gap: 1 }}>
+            <PillButton variant="contained" size="small" color="info" href="/activity-log">
+              {profilePage.profileManager.viewActivityLog}
+            </PillButton>
 
-          <Button
-            className="users-section__log-button"
-            onClick={this.showLog}
-            label={profilePage.profileManager.viewActivityLog}
-          />
-
-          <Button
-            variant="primary"
-            className="users-section__action-button"
-            onClick={this.createNew}
-            icon={<IconPlus height="10px" />}
-            label={profilePage.profileManager.createNew}
-          />
+            <PillButton
+              variant="contained"
+              size="small"
+              onClick={this.createNew}
+              href="/user-profile"
+              startIcon={<Add height="10px" />}
+            >
+              {profilePage.profileManager.createNew}
+            </PillButton>
+          </Box>
         </div>
 
         <div className="gfw-table-container">

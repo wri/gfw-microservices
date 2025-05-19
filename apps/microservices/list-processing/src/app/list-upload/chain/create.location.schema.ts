@@ -70,17 +70,17 @@ export class CreateLocationSchema extends AbstractHandler<ChainType> {
       listTable,
       organization_database,
       analysisTable,
-      saveAsDraft,
+      saveAsDraft: shouldSaveAsDraft,
       analysisIds,
     } = request.request as RequestNewList;
 
     this.logger.log(`Creating list table ${listTable} in ${organization_database}`);
     const tableStructure =
-      '[Location Name] NVARCHAR(150), [Latitude] FLOAT, [Longitude] FLOAT, [Analysis Radius] FLOAT, [Analysis Area] FLOAT, [Commodity] NVARCHAR(150), [Country] NVARCHAR(150), [State] NVARCHAR(150), [Sub State] NVARCHAR(150), [gadmid] NVARCHAR(150), [Geometry] geometry, [location_id] INT, [attributes] NVARCHAR(MAX), [ErrorDetails] NVARCHAR(256) NULL';
+      '[Location Name] NVARCHAR(150), [Latitude] FLOAT, [Longitude] FLOAT, [Analysis Radius] FLOAT, [Analysis Area] FLOAT, [Commodity] NVARCHAR(150), [Country] NVARCHAR(150), [State] NVARCHAR(150), [Sub State] NVARCHAR(150), [gadmid] NVARCHAR(150), [Geometry] geometry, [attributes] NVARCHAR(MAX), [ErrorDetails] NVARCHAR(256) NULL';
 
     await this.createListTableInDatabase(this.clientStoreConnection, listTable, tableStructure);
 
-    const listStatusId = saveAsDraft ? listStatus.Draft : listStatus.Pending;
+    const listStatusId = shouldSaveAsDraft ? listStatus.Draft : listStatus.Pending;
 
     await this.createAnalysisTableInDatabase(this.clientStoreConnection, analysisTable);
     this.logger.log(

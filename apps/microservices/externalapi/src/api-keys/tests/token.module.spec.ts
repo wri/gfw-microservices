@@ -1,4 +1,3 @@
-import { ExternalAPIKey } from '../external-api-key.entity';
 import { Test, TestingModule } from '@nestjs/testing';
 import { TypeOrmModule, getRepositoryToken } from '@nestjs/typeorm';
 import { ServiceException } from '@smithy/smithy-client';
@@ -7,9 +6,9 @@ import { TokenService } from '../token.service';
 import { Organization } from '../organization.entity';
 import { TokenMockRepository, UserMockRepository } from './token.mock.service';
 import { ConfigModule } from '@nestjs/config';
-import { UserRoutes } from '../user-route.entity';
 import * as sinon from 'sinon';
 import { NotFoundException } from '@nestjs/common';
+import { ExternalAPIKey, UserRoutes } from '@wri-monorepos/sql';
 
 const TEST_NEW_ORGANIZATION_ID = 10;
 const TEST_ORGANIZATION_ID = 9;

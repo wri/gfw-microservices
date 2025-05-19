@@ -2,16 +2,15 @@
 
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { ExternalAPIKey } from './external-api-key.entity';
 import { TokenService } from './token.service';
 
 import { AuthService } from './auth.service';
 import { APIKeyController } from './api-key.controller';
 import { Organization } from './organization.entity';
 import { ConfigModule, ConfigService } from '@nestjs/config';
-import { UserRoutes } from './user-route.entity';
 import { S3Client } from '@aws-sdk/client-s3';
 import { ServerConfigType } from '../validators/server-config';
+import { ExternalAPIKey, UserRoutes } from '@wri-monorepos/sql';
 
 @Module({
   imports: [

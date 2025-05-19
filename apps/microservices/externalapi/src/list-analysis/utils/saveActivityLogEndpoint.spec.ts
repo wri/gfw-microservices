@@ -5,9 +5,8 @@ import { InternalServerErrorException } from '@nestjs/common';
 import { Organization } from '../../api-keys/organization.entity';
 import { ListActivityTypesEnum } from '@wri-monorepos/constants';
 import { LIST_ANALISYS_ENDPOINT_NAMES, PREPARE_UPLOAD } from '../../config';
-import { UserRoutes } from '../../api-keys/user-route.entity';
 import { Repository } from 'typeorm';
-import { ClientStoreConnection } from '@wri-monorepos/sql';
+import { ClientStoreConnection, UserRoutes } from '@wri-monorepos/sql';
 
 describe('SaveActivityLogEndpoint', () => {
   let clientStoreConnection: ClientStoreConnection;

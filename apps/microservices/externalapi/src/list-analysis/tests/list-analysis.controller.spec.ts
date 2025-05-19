@@ -4,13 +4,11 @@ import { ListAnalysisService } from '../list-analysis.service';
 import { createRequest } from 'node-mocks-http'; // Import the necessary library
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { Organization } from '../../api-keys/organization.entity';
-import { UserRoutes } from '../../api-keys/user-route.entity';
-import { ExternalAPIKey } from '../../api-keys/external-api-key.entity';
 import { ConfigModule } from '@nestjs/config';
 import * as request from 'supertest';
 import { BadRequestException, INestApplication } from '@nestjs/common';
 import { ListService } from '../../lists/lists.service';
-import { SqlModule } from '@wri-monorepos/sql';
+import { ExternalAPIKey, SqlModule, UserRoutes } from '@wri-monorepos/sql';
 
 describe('ListAnalysisController', () => {
   let controller: ListAnalysisController;

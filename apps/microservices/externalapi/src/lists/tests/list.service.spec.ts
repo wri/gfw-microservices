@@ -2,8 +2,6 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { Organization } from '../../api-keys/organization.entity';
 import { ConfigModule } from '@nestjs/config';
-import { ExternalAPIKey } from '../../api-keys/external-api-key.entity';
-import { UserRoutes } from '../../api-keys/user-route.entity';
 import * as sinon from 'sinon';
 import { DataSource } from 'typeorm';
 import { ListAnalysisMessageModule } from '../../list-analysis-message-handler';
@@ -15,7 +13,7 @@ import { ListAnalysisService } from '../../list-analysis/list-analysis.service';
 import { S3Service } from '@wri-monorepos/aws';
 import { NotFoundException } from '@nestjs/common';
 import { SaveActivityLogEndpoint } from '../../list-analysis/utils/saveActivityLogEndpoint';
-import { ClientStoreConnection, Lists } from '@wri-monorepos/sql';
+import { ClientStoreConnection, ExternalAPIKey, Lists, UserRoutes } from '@wri-monorepos/sql';
 
 // Mock do S3Service
 const errorFileStoragePath = 's3://bucketname/enviroment/status/erro_name_result.file_extension';

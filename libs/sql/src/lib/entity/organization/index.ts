@@ -10,6 +10,8 @@ import { LargeLists } from './largeLists.entity';
 import { GHGAnalyses } from './ghgAnalyses.entity';
 import { ExternalUpload } from './externalUpload.entity';
 import { ListAttributes } from './listAttributes.entity';
+import { UserRoutes } from './user-route.entity';
+import { ExternalAPIKey } from './external-api-key.entity';
 
 export * from './lists.entity';
 export * from './activityLog.entity';
@@ -25,6 +27,8 @@ export * from './listAttributes.entity';
 export * from './largeLists.entity';
 export * from './ghgAnalyses.entity';
 export * from './externalUpload.entity';
+export * from './user-route.entity';
+export * from './external-api-key.entity';
 
 export const organizationEntities = [
   Lists,
@@ -39,4 +43,6 @@ export const organizationEntities = [
   GHGAnalyses,
   ExternalUpload,
   ListAttributes,
+  UserRoutes,
+  ExternalAPIKey,
 ];

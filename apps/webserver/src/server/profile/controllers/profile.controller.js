@@ -1,12 +1,12 @@
 const path = require('path');
-
+const fs = require('fs');
 import config from '../../../config/config';
 const { compiledAssets } = config;
 const AccountManager = require(path.resolve('./config/publicutils/accountManager.utils'));
 const UserManager = require(path.resolve('./config/publicutils/userManager.utils'));
 const AuthManager = require(path.resolve('./config/publicutils/authenticationManager.utils'));
 const PolicyManager = require(path.resolve('./config/publicutils/policyManager.utils'));
-import { getAccountRenewalTime } from '@wri-monorepos/sql';
+import { checkStoredProcedureTsImplementation, getAccountRenewalTime } from '@wri-monorepos/sql';
 /**
  * @function profile
  * @param {Express.Request} req - Express request object
@@ -31,6 +31,7 @@ export const profileInfo = (req, res) => {
       PolicyManager.getPolicyList(req),
       AuthManager.getUserInfo(req),
       getAccountRenewalTime(req.session.organization_id),
+      checkStoredProcedureTsImplementation(req.session.organization_database),
     ];
 
     Promise.all(promises)

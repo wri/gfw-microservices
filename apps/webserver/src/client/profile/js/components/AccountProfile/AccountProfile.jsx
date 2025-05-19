@@ -561,7 +561,12 @@ export default class AccountProfile extends Component {
                   >
                     {profilePage.profileManager.policyDelete}
                   </PillButton>
-                  <PillButton variant="contained" size="small" onClick={this.downloadPolicies}>
+                  <PillButton
+                    variant="contained"
+                    color="info"
+                    size="small"
+                    onClick={this.downloadPolicies}
+                  >
                     {profilePage.profileManager.policyDownload}
                   </PillButton>
                 </Box>

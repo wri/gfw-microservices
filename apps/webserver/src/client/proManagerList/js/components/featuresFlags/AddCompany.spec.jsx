@@ -18,6 +18,6 @@ afterEach(cleanup);
 describe('AddCompany', () => {
   it('should render correctly', () => {
     render(<AddCompany />);
-    expect(screen.getByText('+ ADD')).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: /add/i })).toBeInTheDocument();
   });
 });

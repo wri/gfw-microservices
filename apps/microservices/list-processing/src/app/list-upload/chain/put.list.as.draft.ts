@@ -36,7 +36,7 @@ export class PutListAsDraft extends AbstractHandler<ChainType> {
     }
 
     if (hasUnanalyzableError) {
-      this.logger.error('Should put list as draft, has invalid coordinates or polygon geometry');
+      this.logger.error('Should put list as draft');
 
       if (organization_database && list_id) {
         await this.putListAsDraft(organization_database, list_id);

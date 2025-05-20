@@ -121,7 +121,20 @@ export const csv2geojson = async (
     }
 
     // id based system
-    data = await csvLatLongIdBasedTransformer(data);
+    try {
+      data = await csvLatLongIdBasedTransformer(data);
+    } catch (error) {
+      logger.error('Error looking up ID', error.stack || error);
+      geoJson.features.push({
+        type: 'Feature',
+        properties: {
+          'Location Name': 'Unknown',
+          errorDetails: [error.message],
+        },
+        geometry: fakeGeometry,
+      });
+      return resolve(geoJson);
+    }
 
     (data as Array<LocationData>).forEach((row: LocationData) => {
       // geometries are included in csvLatLongIdBasedTransformer

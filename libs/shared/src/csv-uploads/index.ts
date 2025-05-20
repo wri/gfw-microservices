@@ -83,7 +83,7 @@ export const idBasedSystemHandler = async (
 ): Promise<Record<string, unknown>[]> => {
   const groups: Record<string, Record<string, unknown>[]> = {};
   data.forEach((row) => {
-    const rawKey = (row['ID Type'] as string | undefined) ?? '';
+    const rawKey = String((row['ID Type'] as string | undefined) ?? '');
     let key = rawKey.trim().toUpperCase();
 
     if (!key) {

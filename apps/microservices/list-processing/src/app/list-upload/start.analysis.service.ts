@@ -83,10 +83,10 @@ async function worker(input: WorkerType, cb: done) {
     .setNext(parseData)
     .setNext(convertGeojsonProperties)
     .setNext(listSchemaName)
-    .setNext(validateMandatoryFields)
+    .setNext(adjustGeoData)
+    .setNext(validateMandatoryFields) // depends on centroid calculation in adjustGeoData
     .setNext(validateLocationName)
     .setNext(convertPoint2Polygon)
-    .setNext(adjustGeoData)
     .setNext(gadmService) // depends on convertPoint2Polygon
     .setNext(validateLatLongGeojson) // depends on gadmService, must be before clipToLandService
     .setNext(clipToLandService)

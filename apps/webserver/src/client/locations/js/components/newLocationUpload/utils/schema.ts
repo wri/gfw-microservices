@@ -4,7 +4,10 @@ const validCoordinateFormat = /^-?\d+\.\d+$/;
 
 export const alphanumericWithSpaceSchema = z
   .string()
-  .regex(/^[a-zA-Z0-9 ]*$/, 'Only letters, numbers, and spaces are allowed')
+  .regex(
+    /^[a-zA-Z0-9 [\]().\-_]*$/,
+    'Only letters, numbers, spaces, and special characters []().-_. are allowed'
+  )
   .refine((val) => val === val.trim(), {
     message: 'Leading or trailing spaces are not allowed',
   });

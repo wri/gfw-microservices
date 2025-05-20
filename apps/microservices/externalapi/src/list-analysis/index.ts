@@ -5,7 +5,6 @@ import { ListAnalysisService } from './list-analysis.service';
 import { ListUploadController } from './list-upload.controller';
 import { UserService } from './user.service';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { Organization } from '../api-keys/organization.entity';
 import { ListService } from '../lists/lists.service';
 import { OrganizationService } from './organization.service';
 import { S3Service } from '@wri-monorepos/aws';
@@ -17,6 +16,7 @@ import {
   ClientStoreConnection,
   ExternalAPIKey,
   Lists,
+  Organization,
   UserRoutes,
 } from '@wri-monorepos/sql';
 @Module({

@@ -6,15 +6,14 @@ import { TokenService } from './token.service';
 
 import { AuthService } from './auth.service';
 import { APIKeyController } from './api-key.controller';
-import { Organization } from './organization.entity';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { S3Client } from '@aws-sdk/client-s3';
 import { ServerConfigType } from '../validators/server-config';
-import { ExternalAPIKey, UserRoutes } from '@wri-monorepos/sql';
+import { ExternalAPIKey, FeatureFlag, Organization, UserRoutes } from '@wri-monorepos/sql';
 
 @Module({
   imports: [
-    TypeOrmModule.forFeature([Organization, ExternalAPIKey, UserRoutes], 'default'),
+    TypeOrmModule.forFeature([Organization, ExternalAPIKey, UserRoutes, FeatureFlag], 'default'),
     ConfigModule,
   ],
   providers: [

@@ -3,12 +3,17 @@ import { ListAnalysisController } from '../list-analysis.controller';
 import { ListAnalysisService } from '../list-analysis.service';
 import { createRequest } from 'node-mocks-http'; // Import the necessary library
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { Organization } from '../../api-keys/organization.entity';
 import { ConfigModule } from '@nestjs/config';
 import * as request from 'supertest';
 import { BadRequestException, INestApplication } from '@nestjs/common';
 import { ListService } from '../../lists/lists.service';
-import { ExternalAPIKey, SqlModule, UserRoutes } from '@wri-monorepos/sql';
+import {
+  ExternalAPIKey,
+  FeatureFlag,
+  Organization,
+  SqlModule,
+  UserRoutes,
+} from '@wri-monorepos/sql';
 
 describe('ListAnalysisController', () => {
   let controller: ListAnalysisController;
@@ -61,9 +66,12 @@ describe('ListAnalysisController', () => {
           database: ':memory:',
           synchronize: true,
           logging: true,
-          entities: [Organization, UserRoutes, ExternalAPIKey],
+          entities: [Organization, UserRoutes, ExternalAPIKey, FeatureFlag],
         }),
-        TypeOrmModule.forFeature([Organization, ExternalAPIKey, UserRoutes], 'default'),
+        TypeOrmModule.forFeature(
+          [Organization, ExternalAPIKey, UserRoutes, FeatureFlag],
+          'default'
+        ),
         ConfigModule.forRoot({
           envFilePath: ['.env', '.env.production'],
           isGlobal: true,

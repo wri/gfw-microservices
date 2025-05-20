@@ -2,7 +2,6 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { ListAnalysisService } from '../list-analysis.service';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { Organization } from '../../api-keys/organization.entity';
 import { ConfigModule } from '@nestjs/config';
 import { UserService } from '../user.service';
 import { OrganizationService } from '../organization.service';
@@ -22,8 +21,10 @@ import { handleCreateAnalysis } from '@wri-monorepos/geo';
 import {
   ClientStoreConnection,
   ExternalAPIKey,
+  FeatureFlag,
   Lists,
   ListsAnalysisStatus,
+  Organization,
   UserRoutes,
 } from '@wri-monorepos/sql';
 
@@ -64,9 +65,19 @@ describe('ListAnalysisService', () => {
           database: ':memory:',
           synchronize: true,
           logging: true,
-          entities: [Organization, UserRoutes, ExternalAPIKey, Lists, ListsAnalysisStatus],
+          entities: [
+            Organization,
+            UserRoutes,
+            ExternalAPIKey,
+            Lists,
+            ListsAnalysisStatus,
+            FeatureFlag,
+          ],
         }),
-        TypeOrmModule.forFeature([Organization, ExternalAPIKey, UserRoutes], 'default'),
+        TypeOrmModule.forFeature(
+          [Organization, ExternalAPIKey, UserRoutes, FeatureFlag],
+          'default'
+        ),
         ConfigModule.forRoot({
           envFilePath: ['.env', '.env.production'],
           isGlobal: true,

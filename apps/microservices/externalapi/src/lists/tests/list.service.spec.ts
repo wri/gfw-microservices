@@ -1,6 +1,5 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { Organization } from '../../api-keys/organization.entity';
 import { ConfigModule } from '@nestjs/config';
 import * as sinon from 'sinon';
 import { DataSource } from 'typeorm';
@@ -13,7 +12,14 @@ import { ListAnalysisService } from '../../list-analysis/list-analysis.service';
 import { S3Service } from '@wri-monorepos/aws';
 import { NotFoundException } from '@nestjs/common';
 import { SaveActivityLogEndpoint } from '../../list-analysis/utils/saveActivityLogEndpoint';
-import { ClientStoreConnection, ExternalAPIKey, Lists, UserRoutes } from '@wri-monorepos/sql';
+import {
+  ClientStoreConnection,
+  ExternalAPIKey,
+  FeatureFlag,
+  Lists,
+  Organization,
+  UserRoutes,
+} from '@wri-monorepos/sql';
 
 // Mock do S3Service
 const errorFileStoragePath = 's3://bucketname/enviroment/status/erro_name_result.file_extension';
@@ -316,9 +322,12 @@ describe('ListService', () => {
           database: ':memory:',
           synchronize: true,
           logging: true,
-          entities: [Organization, UserRoutes, ExternalAPIKey, Lists],
+          entities: [Organization, UserRoutes, ExternalAPIKey, Lists, FeatureFlag],
         }),
-        TypeOrmModule.forFeature([Organization, ExternalAPIKey, UserRoutes], 'default'),
+        TypeOrmModule.forFeature(
+          [Organization, ExternalAPIKey, UserRoutes, FeatureFlag],
+          'default'
+        ),
         ConfigModule.forRoot({
           envFilePath: ['.env', '.env.production'],
           isGlobal: true,

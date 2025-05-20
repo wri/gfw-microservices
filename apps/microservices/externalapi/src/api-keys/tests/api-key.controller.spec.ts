@@ -9,9 +9,8 @@ import { APIGateway } from '@aws-sdk/client-api-gateway';
 import { APIKeyController } from '../api-key.controller';
 import { TokenService } from '../token.service';
 import { TokenMockRepository, UserMockRepository } from './token.mock.service';
-import { Organization } from '../organization.entity';
 import { ConfigModule } from '@nestjs/config';
-import { ExternalAPIKey, UserRoutes } from '@wri-monorepos/sql';
+import { ExternalAPIKey, FeatureFlag, Organization, UserRoutes } from '@wri-monorepos/sql';
 
 describe('api-key', () => {
   let app: INestApplication;
@@ -25,9 +24,12 @@ describe('api-key', () => {
           type: 'sqlite',
           database: ':memory:',
           synchronize: true,
-          entities: [Organization, ExternalAPIKey, UserRoutes],
+          entities: [Organization, ExternalAPIKey, UserRoutes, FeatureFlag],
         }),
-        TypeOrmModule.forFeature([Organization, ExternalAPIKey, UserRoutes], 'default'),
+        TypeOrmModule.forFeature(
+          [Organization, ExternalAPIKey, UserRoutes, FeatureFlag],
+          'default'
+        ),
         ConfigModule.forRoot({
           envFilePath: ['.env', '.env.production'],
           isGlobal: true,

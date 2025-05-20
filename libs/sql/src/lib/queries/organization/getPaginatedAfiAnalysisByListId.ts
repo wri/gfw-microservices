@@ -97,7 +97,7 @@ SET @SQL = 'SELECT  ' +
 @locationColumn + ' as locationName, ' +
 ' lt.Country as country, ' +
 ' lt.State as state, ' +
-' lt.[Sub State] as subState, ' +
+' lt.[Sub State] as subState ' +
 ' lt.ErrorDetails as errorDetails ' +
 'FROM AFIAnalysis afi JOIN dbo.[' + @list_table + '] lt ON lt.location_id = afi.location_id ' +
 'WHERE afi.location_id > 0 AND afi.list_id = @listId'

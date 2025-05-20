@@ -18,7 +18,7 @@ export default function ConfirmDialog({
 
   return (
     <Dialog open={open} onClose={() => setDialogOpen(false)}>
-      <DialogTitle>{transifex(DOWNLOAD_TITLE)}</DialogTitle>
+      <DialogTitle data-cy="download-dialog">{transifex(DOWNLOAD_TITLE)}</DialogTitle>
       <IconButton
         aria-label="close"
         sx={{

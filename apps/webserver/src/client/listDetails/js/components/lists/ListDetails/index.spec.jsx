@@ -3,8 +3,9 @@ import { render, cleanup, screen } from '@testing-library/react';
 import '@testing-library/jest-dom';
 import ListDetails from './index';
 import { analysisTypes } from '../../../../../../config/env/analysisTypes.constants';
-import { updateSelectedLocations } from './listActions';
+import { updateSelectedLocations } from '../../../../../locations/js/actions/locationActions';
 import { FOREST_CHANGE_VIEW } from './listViews.constants';
+import store from '../../../../../locations/js/store';
 
 // Mock componentDidMount to prevent network requests
 ListDetails.prototype.componentDidMount = jest.fn();
@@ -17,6 +18,9 @@ jest.mock('axios', () => {
   mockAxios.get = jest.fn().mockResolvedValue({ data: {} });
   return mockAxios;
 });
+
+// Mock global gtag
+global.gtag = jest.fn();
 
 // Mock the components used in ListDetails
 jest.mock('./AnalysisStatusBanners', () => () => <div data-testid="analysis-status-banners" />);
@@ -186,8 +190,9 @@ describe('ListDetails', () => {
   });
 
   it('updates selected locations when checkbox is clicked', () => {
-    // Mock dispatch
+    // Mock store dispatch
     const mockDispatch = jest.fn();
+    store.dispatch = mockDispatch;
 
     // Create props with initial selected locations
     const props = {
@@ -195,15 +200,22 @@ describe('ListDetails', () => {
       selectedLocations: [1, 2, 3],
       filteredData: [{ id: 1 }, { id: 2 }, { id: 3 }, { id: 4 }],
       filteredLocationData: [{ id: 1 }, { id: 2 }, { id: 3 }, { id: 4 }],
+      selectedLists: [{ id: 1, isGlobalForestWatchList: false }],
+      filterString: '',
     };
 
     // Create component instance
     const component = new ListDetails(props);
 
+    // Initialize required state
+    component.state = {
+      combinedColumns: [{ id: 'location_id' }],
+    };
+
     // Test deselecting location 2
     component.setLocationCheckbox(2);
 
-    // Verify dispatch was called with updated locations
+    // Verify store dispatch was called with updated locations
     expect(mockDispatch).toHaveBeenCalledWith(updateSelectedLocations([1, 3]));
   });
 

@@ -1,4 +1,9 @@
-import { alphanumericWithSpaceSchema, locationNameSchema, coordinateSchema } from './schema';
+import {
+  alphanumericWithSpaceSchema,
+  locationNameSchema,
+  coordinateSchema,
+  locationNameWithSpecialCharsSchema,
+} from './schema';
 
 describe('Schema Validation', () => {
   describe('alphanumericWithSpaceSchema', () => {
@@ -6,14 +11,15 @@ describe('Schema Validation', () => {
       expect(alphanumericWithSpaceSchema.safeParse('abc123').success).toBe(true);
       expect(alphanumericWithSpaceSchema.safeParse('ABC123').success).toBe(true);
       expect(alphanumericWithSpaceSchema.safeParse('123').success).toBe(true);
+      expect(alphanumericWithSpaceSchema.safeParse('abc 123').success).toBe(true);
     });
 
-    it('should accept strings with allowed special characters', () => {
-      expect(alphanumericWithSpaceSchema.safeParse('test[123]').success).toBe(true);
-      expect(alphanumericWithSpaceSchema.safeParse('test(123)').success).toBe(true);
-      expect(alphanumericWithSpaceSchema.safeParse('test-123').success).toBe(true);
-      expect(alphanumericWithSpaceSchema.safeParse('test_123').success).toBe(true);
-      expect(alphanumericWithSpaceSchema.safeParse('test.123').success).toBe(true);
+    it('should reject strings with special characters', () => {
+      expect(alphanumericWithSpaceSchema.safeParse('test[123]').success).toBe(false);
+      expect(alphanumericWithSpaceSchema.safeParse('test(123)').success).toBe(false);
+      expect(alphanumericWithSpaceSchema.safeParse('test-123').success).toBe(false);
+      expect(alphanumericWithSpaceSchema.safeParse('test_123').success).toBe(false);
+      expect(alphanumericWithSpaceSchema.safeParse('test.123').success).toBe(false);
     });
 
     it('should reject strings with leading or trailing spaces', () => {
@@ -23,11 +29,29 @@ describe('Schema Validation', () => {
         expect(result.error.issues[0].message).toBe('Leading or trailing spaces are not allowed');
       }
     });
+  });
+
+  describe('locationNameWithSpecialCharsSchema', () => {
+    it('should accept strings with allowed special characters', () => {
+      expect(locationNameWithSpecialCharsSchema.safeParse('test[123]').success).toBe(true);
+      expect(locationNameWithSpecialCharsSchema.safeParse('test(123)').success).toBe(true);
+      expect(locationNameWithSpecialCharsSchema.safeParse('test-123').success).toBe(true);
+      expect(locationNameWithSpecialCharsSchema.safeParse('test_123').success).toBe(true);
+      expect(locationNameWithSpecialCharsSchema.safeParse('test.123').success).toBe(true);
+    });
 
     it('should reject strings with disallowed special characters', () => {
-      expect(alphanumericWithSpaceSchema.safeParse('test@123').success).toBe(false);
-      expect(alphanumericWithSpaceSchema.safeParse('test#123').success).toBe(false);
-      expect(alphanumericWithSpaceSchema.safeParse('test$123').success).toBe(false);
+      expect(locationNameWithSpecialCharsSchema.safeParse('test@123').success).toBe(false);
+      expect(locationNameWithSpecialCharsSchema.safeParse('test#123').success).toBe(false);
+      expect(locationNameWithSpecialCharsSchema.safeParse('test$123').success).toBe(false);
+    });
+
+    it('should reject strings with leading or trailing spaces', () => {
+      const result = locationNameWithSpecialCharsSchema.safeParse(' test123');
+      expect(result.success).toBe(false);
+      if (!result.success) {
+        expect(result.error.issues[0].message).toBe('Leading or trailing spaces are not allowed');
+      }
     });
   });
 

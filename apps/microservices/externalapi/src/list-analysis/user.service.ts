@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { UserRoutes } from '../api-keys/user-route.entity';
+import { UserRoutes } from '@wri-monorepos/sql';
 import { Repository } from 'typeorm';
 
 @Injectable()

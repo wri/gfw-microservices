@@ -1,5 +1,5 @@
+import { ExternalAPIKey } from '@wri-monorepos/sql';
 import { ViewApiKeyResponse } from './dtos';
-import { ExternalAPIKey } from './external-api-key.entity';
 
 export function transformApiKey(apiKey: ExternalAPIKey): ViewApiKeyResponse {
   return {

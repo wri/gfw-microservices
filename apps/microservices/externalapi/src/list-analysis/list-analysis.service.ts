@@ -21,7 +21,6 @@ import {
   ListUploadNewResponse,
   PrepareUploadRequestSchema,
 } from './list-upload-new.dto';
-import { Organization } from '../api-keys/organization.entity';
 import { S3Client, GetObjectCommand } from '@aws-sdk/client-s3';
 import { throwCustomErrorResponse } from './utils/throw-custom-error-response';
 import {
@@ -54,6 +53,7 @@ import {
   GHGAnalysisDataByListId,
   getGHGLocationErrorsByListId,
   FeatureFlag,
+  Organization,
 } from '@wri-monorepos/sql';
 import * as sql from 'mssql';
 

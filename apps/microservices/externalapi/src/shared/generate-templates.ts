@@ -1,5 +1,5 @@
 import { generateRandomFilename } from '@wri-monorepos/shared';
-import { Organization } from '../api-keys/organization.entity';
+import { Organization } from '@wri-monorepos/sql';
 import * as tmp from 'tmp';
 
 export const generateAnalysisTemplate = ({

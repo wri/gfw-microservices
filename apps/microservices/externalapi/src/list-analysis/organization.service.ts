@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
+import { Organization } from '@wri-monorepos/sql';
 import { Repository } from 'typeorm';
-import { Organization } from '../api-keys/organization.entity';
 
 @Injectable()
 export class OrganizationService {

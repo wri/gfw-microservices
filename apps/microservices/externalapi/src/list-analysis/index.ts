@@ -5,16 +5,20 @@ import { ListAnalysisService } from './list-analysis.service';
 import { ListUploadController } from './list-upload.controller';
 import { UserService } from './user.service';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { Organization } from '../api-keys/organization.entity';
-import { ExternalAPIKey } from '../api-keys/external-api-key.entity';
-import { UserRoutes } from '../api-keys/user-route.entity';
 import { ListService } from '../lists/lists.service';
 import { OrganizationService } from './organization.service';
 import { S3Service } from '@wri-monorepos/aws';
 import { ConfigService } from '@nestjs/config';
 import { ServerConfigType } from '../validators/server-config';
 import { SaveActivityLogEndpoint } from './utils/saveActivityLogEndpoint';
-import { ActivityLog, ClientStoreConnection, Lists } from '@wri-monorepos/sql';
+import {
+  ActivityLog,
+  ClientStoreConnection,
+  ExternalAPIKey,
+  Lists,
+  Organization,
+  UserRoutes,
+} from '@wri-monorepos/sql';
 @Module({
   imports: [
     TypeOrmModule.forFeature(

@@ -5,10 +5,9 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import { OrganizationService } from '../list-analysis/organization.service';
-import { Organization } from '../api-keys/organization.entity';
 import { S3Service } from '@wri-monorepos/aws';
 import { ListInfoResponse } from '../list-analysis/list-upload-new.dto';
-import { ClientStoreConnection, Lists } from '@wri-monorepos/sql';
+import { ClientStoreConnection, Lists, Organization } from '@wri-monorepos/sql';
 
 @Injectable()
 export class ListService {

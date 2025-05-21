@@ -1,7 +1,6 @@
 import { Injectable } from '@nestjs/common';
-import { ExternalAPIKey } from '../external-api-key.entity';
+import { ExternalAPIKey, UserRoutes } from '@wri-monorepos/sql';
 import { FindManyOptions, QueryFailedError } from 'typeorm';
-import { UserRoutes } from '../user-route.entity';
 
 @Injectable()
 export class TokenMockRepository {

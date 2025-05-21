@@ -8,9 +8,6 @@ import {
 import { ListAnalysisService } from '../list-analysis.service';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { ExternalAPIKey } from '../../api-keys/external-api-key.entity';
-import { Organization } from '../../api-keys/organization.entity';
-import { UserRoutes } from '../../api-keys/user-route.entity';
 import { UserService } from '../user.service';
 import { OrganizationService } from '../organization.service';
 import axios from 'axios';
@@ -27,7 +24,14 @@ import { ListService } from '../../lists/lists.service';
 import { S3Service } from '@wri-monorepos/aws';
 //import { } from '@ssut/nestjs-sqs';
 import { SaveActivityLogEndpoint } from '../utils/saveActivityLogEndpoint';
-import { ClientStoreConnection, ExternalUpload } from '@wri-monorepos/sql';
+import {
+  ClientStoreConnection,
+  ExternalAPIKey,
+  ExternalUpload,
+  FeatureFlag,
+  Organization,
+  UserRoutes,
+} from '@wri-monorepos/sql';
 
 // Mock ConfigService
 const mockConfigService = {
@@ -150,9 +154,12 @@ describe('ListUploadController', () => {
           database: ':memory:',
           synchronize: true,
           logging: true,
-          entities: [Organization, ExternalAPIKey, UserRoutes],
+          entities: [Organization, ExternalAPIKey, UserRoutes, FeatureFlag],
         }),
-        TypeOrmModule.forFeature([ExternalAPIKey, Organization, UserRoutes], 'default'),
+        TypeOrmModule.forFeature(
+          [ExternalAPIKey, Organization, UserRoutes, FeatureFlag],
+          'default'
+        ),
         ListAnalysisMessageModule,
         ConfigModule.forRoot({
           envFilePath: ['.env', '.env.production'],

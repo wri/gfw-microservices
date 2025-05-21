@@ -1,8 +1,7 @@
 import { UserService } from '../user.service';
 import { Injectable } from '@nestjs/common';
-import { Organization } from '../../api-keys/organization.entity';
 import { ListActivityTypesEnum } from '@wri-monorepos/constants';
-import { ActivityLog, ClientStoreConnection } from '@wri-monorepos/sql';
+import { ActivityLog, ClientStoreConnection, Organization } from '@wri-monorepos/sql';
 @Injectable()
 export class SaveActivityLogEndpoint {
   constructor(

@@ -2,12 +2,10 @@
 import { SaveActivityLogEndpoint } from './saveActivityLogEndpoint';
 import { UserService } from '../user.service';
 import { InternalServerErrorException } from '@nestjs/common';
-import { Organization } from '../../api-keys/organization.entity';
 import { ListActivityTypesEnum } from '@wri-monorepos/constants';
 import { LIST_ANALISYS_ENDPOINT_NAMES, PREPARE_UPLOAD } from '../../config';
-import { UserRoutes } from '../../api-keys/user-route.entity';
 import { Repository } from 'typeorm';
-import { ClientStoreConnection } from '@wri-monorepos/sql';
+import { ClientStoreConnection, Organization, UserRoutes } from '@wri-monorepos/sql';
 
 describe('SaveActivityLogEndpoint', () => {
   let clientStoreConnection: ClientStoreConnection;
@@ -19,12 +17,13 @@ describe('SaveActivityLogEndpoint', () => {
   beforeEach(() => {
     organizationDetails = {
       id: 1,
-      organizationActivatedTime: 9999,
+      organizationActivatedTime: new Date(),
       organizationDb: 'organizationDb',
       organizationName: 'organizationName',
       organizationStatusId: 1,
       renewalTime: new Date(),
       subscriptionStatusId: 1,
+      featureFlags: [],
     };
     userEmail = 'userEmail';
     clientStoreConnection = new ClientStoreConnection();

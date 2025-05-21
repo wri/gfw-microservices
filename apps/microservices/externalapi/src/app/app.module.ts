@@ -10,13 +10,9 @@ const envModule = ConfigModule.forRoot({
 });
 
 import { Module, MiddlewareConsumer } from '@nestjs/common';
-import { AppController } from './app.controller';
 import { TokenModule } from '../api-keys';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { ListsAnalysisModule } from '../list-analysis';
-import { ExternalAPIKey } from '../api-keys/external-api-key.entity';
-import { Organization } from '../api-keys/organization.entity';
-import { UserRoutes } from '../api-keys/user-route.entity';
 import { EntitySchema } from 'typeorm';
 import {
   TEST_ENVIRONMENT,
@@ -29,17 +25,18 @@ import { ApiKeyMiddleware } from '../middleware/api.middleware';
 import { ListAnalysisMessageModule } from '../list-analysis-message-handler';
 import { HealthModule } from '../health/health.module';
 import { HttpModule } from '@nestjs/axios';
+import { ExternalAPIKey, FeatureFlag, Organization, UserRoutes } from '@wri-monorepos/sql';
 
 @Module({
   imports: [
     envModule,
     HttpModule,
-    createTypeOrmModule('default', [Organization, ExternalAPIKey, UserRoutes]),
+    createTypeOrmModule('default', [Organization, ExternalAPIKey, UserRoutes, FeatureFlag]),
     TokenModule,
     ListsAnalysisModule,
     HealthModule,
   ],
-  controllers: [AppController],
+  controllers: [],
   providers: [],
 })
 export class AppModule {

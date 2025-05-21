@@ -2,10 +2,7 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { ListAnalysisService } from '../list-analysis.service';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { Organization } from '../../api-keys/organization.entity';
 import { ConfigModule } from '@nestjs/config';
-import { ExternalAPIKey } from '../../api-keys/external-api-key.entity';
-import { UserRoutes } from '../../api-keys/user-route.entity';
 import { UserService } from '../user.service';
 import { OrganizationService } from '../organization.service';
 import * as sinon from 'sinon';
@@ -21,7 +18,15 @@ import { SaveActivityLogEndpoint } from '../utils/saveActivityLogEndpoint';
 import { checkProcessingLimits } from '@wri-monorepos/shared';
 import { listStatus } from '@wri-monorepos/constants';
 import { handleCreateAnalysis } from '@wri-monorepos/geo';
-import { ClientStoreConnection, Lists, ListsAnalysisStatus } from '@wri-monorepos/sql';
+import {
+  ClientStoreConnection,
+  ExternalAPIKey,
+  FeatureFlag,
+  Lists,
+  ListsAnalysisStatus,
+  Organization,
+  UserRoutes,
+} from '@wri-monorepos/sql';
 
 jest.mock('@wri-monorepos/geo', () => ({
   handleCreateAnalysis: jest.fn().mockResolvedValue('true value'),
@@ -60,9 +65,19 @@ describe('ListAnalysisService', () => {
           database: ':memory:',
           synchronize: true,
           logging: true,
-          entities: [Organization, UserRoutes, ExternalAPIKey, Lists, ListsAnalysisStatus],
+          entities: [
+            Organization,
+            UserRoutes,
+            ExternalAPIKey,
+            Lists,
+            ListsAnalysisStatus,
+            FeatureFlag,
+          ],
         }),
-        TypeOrmModule.forFeature([Organization, ExternalAPIKey, UserRoutes], 'default'),
+        TypeOrmModule.forFeature(
+          [Organization, ExternalAPIKey, UserRoutes, FeatureFlag],
+          'default'
+        ),
         ConfigModule.forRoot({
           envFilePath: ['.env', '.env.production'],
           isGlobal: true,

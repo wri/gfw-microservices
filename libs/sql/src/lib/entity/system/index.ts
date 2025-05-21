@@ -13,6 +13,8 @@ import { AnalysisOilPalmConcessions } from './analysisOilPalmConcessions';
 import { AnalysisPalmOilMills } from './analysisPalmOilMills.entity';
 import { AnalysisProtectedAreas } from './analysisProtectedAreas';
 import { AnalysisRspoOilPalmConcessions } from './analysisRspoPalmConcessions';
+import { UserRoutes } from './user-route.entity';
+import { ExternalAPIKey } from './external-api-key.entity';
 
 export * from './organization.entity';
 export * from './gfw.list.entity';
@@ -29,6 +31,8 @@ export * from './analysisOilPalmConcessions';
 export * from './analysisPalmOilMills.entity';
 export * from './analysisProtectedAreas';
 export * from './analysisRspoPalmConcessions';
+export * from './user-route.entity';
+export * from './external-api-key.entity';
 
 export const systemEntities = [
   Organization,
@@ -46,4 +50,6 @@ export const systemEntities = [
   AnalysisPalmOilMills,
   AnalysisProtectedAreas,
   AnalysisRspoOilPalmConcessions,
+  UserRoutes,
+  ExternalAPIKey,
 ];

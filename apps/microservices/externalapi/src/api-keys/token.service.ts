@@ -7,7 +7,6 @@ import {
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { ExternalAPIKey } from './external-api-key.entity';
 import {
   APIGateway,
   CreateApiKeyCommandInput,
@@ -16,8 +15,8 @@ import {
 } from '@aws-sdk/client-api-gateway';
 import { ConfigService } from '@nestjs/config';
 import { transformApiKey, transformApiKeys } from './transformers';
-import { UserRoutes } from './user-route.entity';
 import { ViewApiKeyResponse } from './dtos';
+import { ExternalAPIKey, UserRoutes } from '@wri-monorepos/sql';
 const DEFAULT_API_GROUP = 'FCD';
 const DEFAULT_KEY_TYPE = 'API_KEY';
 @Injectable()

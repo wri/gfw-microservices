@@ -1,15 +1,13 @@
-import { ExternalAPIKey } from '../external-api-key.entity';
 import { Test, TestingModule } from '@nestjs/testing';
 import { TypeOrmModule, getRepositoryToken } from '@nestjs/typeorm';
 import { ServiceException } from '@smithy/smithy-client';
 import { APIGateway } from '@aws-sdk/client-api-gateway';
 import { TokenService } from '../token.service';
-import { Organization } from '../organization.entity';
 import { TokenMockRepository, UserMockRepository } from './token.mock.service';
 import { ConfigModule } from '@nestjs/config';
-import { UserRoutes } from '../user-route.entity';
 import * as sinon from 'sinon';
 import { NotFoundException } from '@nestjs/common';
+import { ExternalAPIKey, FeatureFlag, Organization, UserRoutes } from '@wri-monorepos/sql';
 
 const TEST_NEW_ORGANIZATION_ID = 10;
 const TEST_ORGANIZATION_ID = 9;
@@ -36,9 +34,12 @@ describe('Test Token Module', () => {
           database: ':memory:',
           synchronize: true,
           logging: true,
-          entities: [Organization, ExternalAPIKey, UserRoutes],
+          entities: [Organization, ExternalAPIKey, UserRoutes, FeatureFlag],
         }),
-        TypeOrmModule.forFeature([Organization, ExternalAPIKey, UserRoutes], 'default'),
+        TypeOrmModule.forFeature(
+          [Organization, ExternalAPIKey, UserRoutes, FeatureFlag],
+          'default'
+        ),
         ConfigModule.forRoot({
           envFilePath: ['.env', '.env.production'],
           isGlobal: true,

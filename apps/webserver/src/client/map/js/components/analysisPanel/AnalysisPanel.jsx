@@ -51,29 +51,25 @@ const {
 export default class AnalysisPanel extends Component {
   constructor(props) {
     super(props);
-    const initalAnalysisLayersVisible =
-      visibleLayersConstants.some((layer) => exclusiveLayers.includes(layer)) &&
-      props.userInfo.access_level_id !== 3;
+    
+    const areInitialAnalysisLayersVisible = this.checkInitialAnalysisVisibility(props);
+
     this.state = {
-      analysisDisabled: !initalAnalysisLayersVisible,
+      isAnalysisDisabled: !areInitialAnalysisLayersVisible,
       activeBasemap: 'national-geographic',
       activeAnalysis: props.activeAnalysis,
       dndActive: false,
-      isLoading: false,
       country: '',
       smallerRegion: '',
     };
   }
 
   componentDidMount() {
-    const initalAnalysisLayersVisible =
-      visibleLayersConstants.some((layer) => exclusiveLayers.includes(layer)) &&
-      this.props.userInfo.access_level_id !== 3;
-    if (initalAnalysisLayersVisible) {
-      store.dispatch(analysisActions.setAnalysis('analysis'));
-    } else {
-      store.dispatch(analysisActions.setAnalysis(''));
-    }
+    const areInitialAnalysisLayersVisible = this.checkInitialAnalysisVisibility(this.props);
+
+    store.dispatch(
+      analysisActions.setAnalysis(areInitialAnalysisLayersVisible ? 'analysis' : '')
+    );
   }
 
   componentDidUpdate(prevProps) {
@@ -92,7 +88,7 @@ export default class AnalysisPanel extends Component {
       (!prevRaddLayerVisible && currentRaddLayerVisible)
     ) {
       this.setState({
-        analysisDisabled: true,
+        isAnalysisDisabled: true,
       });
       store.dispatch(analysisActions.setAnalysis(''));
     } else if (
@@ -100,7 +96,7 @@ export default class AnalysisPanel extends Component {
       this.props.userInfo.access_level_id !== 3
     ) {
       this.setState({
-        analysisDisabled: false,
+        isAnalysisDisabled: false,
       });
     } else if (
       prevRaddLayerVisible &&
@@ -108,7 +104,7 @@ export default class AnalysisPanel extends Component {
       this.props.userInfo.access_level_id !== 3
     ) {
       this.setState({
-        analysisDisabled: false,
+        isAnalysisDisabled: false,
       });
     }
   }
@@ -118,6 +114,13 @@ export default class AnalysisPanel extends Component {
     if (nextProps.activeAnalysis !== this.state.activeAnalysis) {
       this.setState({ activeAnalysis: nextProps.activeAnalysis });
     }
+  }
+
+  checkInitialAnalysisVisibility(props) {
+    return (
+      visibleLayersConstants.some((layer) => exclusiveLayers.includes(layer)) &&
+      props.userInfo.access_level_id !== 3
+    );
   }
 
   showBasemapInfo = (evt) => {
@@ -213,7 +216,9 @@ export default class AnalysisPanel extends Component {
 
     const newAnalysis = isAnalysisHeader ? 'analysis' : isBasemapHeader ? 'basemap' : null;
 
-    if (!newAnalysis) return;
+    if (!newAnalysis) { 
+      return;
+    }
 
     if (newAnalysis === selectedAnalysis) {
       if (drawingActive && newAnalysis === 'analysis') {
@@ -396,11 +401,11 @@ export default class AnalysisPanel extends Component {
       adminSelections,
       panelsVisible,
       selectedAnalysis,
-      spinnerOn,
+      spinnerOn: isSpinnerVisible,
       visibleLayers,
       prodesDateRange,
     } = this.props;
-    const { analysisDisabled, activeAnalysis } = this.state;
+    const { isAnalysisDisabled, activeAnalysis } = this.state;
     let className = 'analysis-tools ';
     if (!panelsVisible) {
       className += ' hidden';
@@ -480,21 +485,21 @@ export default class AnalysisPanel extends Component {
               id="analysisHeader"
               className={`analysis__nav__item analysis-header-click ${
                 selectedAnalysis === 'analysis' ? 'selected-analysis' : ''
-              } ${analysisDisabled ? 'disabled-analysis disabled-header' : ''}`}
+              } ${isAnalysisDisabled ? 'disabled-analysis disabled-header' : ''}`}
               label=""
               icon={
                 <span
                   className={`module-tabs header-tabs analysis-header-click ${
-                    analysisDisabled ? 'disabled-header' : ''
+                    isAnalysisDisabled ? 'disabled-header' : ''
                   }`}
                   id="analysis-header-icon"
                 >
                   <svg
-                    className={`analysis-header-click ${analysisDisabled ? 'disabled-header' : ''}`}
+                    className={`analysis-header-click ${isAnalysisDisabled ? 'disabled-header' : ''}`}
                   >
                     <use
                       className={`analysis-header-click ${
-                        analysisDisabled ? 'disabled-header' : ''
+                        isAnalysisDisabled ? 'disabled-header' : ''
                       }`}
                       xlinkHref="#icon-tab-analysis"
                     />
@@ -544,7 +549,7 @@ export default class AnalysisPanel extends Component {
                 {mapPage.countryTitle}
               </li>
             </ul>
-            <div className={`analysis__body__cancel__button ${spinnerOn ? '' : 'hidden'}`}>
+            <div className={`analysis__body__cancel__button ${isSpinnerVisible ? '' : 'hidden'}`}>
               <GfwButton
                 classNames="AnalysisPanel__button btn-red text__semi-bold-12"
                 value="Cancel Analysis"
@@ -557,7 +562,7 @@ export default class AnalysisPanel extends Component {
               }`}
             >
               <div className="analysis__body__instructions">
-                <ModalLoader position="absolute" size={60} open={spinnerOn} />
+                <ModalLoader position="absolute" size={60} open={isSpinnerVisible} />
                 {mapPage.drawInstructions}
               </div>
               <div className="analysis__body__draw__button">
@@ -571,7 +576,7 @@ export default class AnalysisPanel extends Component {
             <div
               className={`analysis__body__subitem ${activeAnalysis === 'region' ? '' : 'hidden'}`}
             >
-              <ModalLoader position="absolute" size={60} open={spinnerOn} />
+              <ModalLoader position="absolute" size={60} open={isSpinnerVisible} />
               {isGadm41Available ? (
                 <CountryOrRegionAnalysis
                   setAdmin={this.setAdmin}
@@ -592,7 +597,7 @@ export default class AnalysisPanel extends Component {
             </div>
             <div
               className={`analysis__body__results ${
-                analysisResults.data && !spinnerOn ? '' : 'hidden'
+                analysisResults.data && !isSpinnerVisible ? '' : 'hidden'
               }`}
             >
               <p className="analysis__body__results__label">

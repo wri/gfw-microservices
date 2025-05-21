@@ -51,7 +51,7 @@ const {
 export default class AnalysisPanel extends Component {
   constructor(props) {
     super(props);
-    
+
     const areInitialAnalysisLayersVisible = this.checkInitialAnalysisVisibility(props);
 
     this.state = {
@@ -67,9 +67,7 @@ export default class AnalysisPanel extends Component {
   componentDidMount() {
     const areInitialAnalysisLayersVisible = this.checkInitialAnalysisVisibility(this.props);
 
-    store.dispatch(
-      analysisActions.setAnalysis(areInitialAnalysisLayersVisible ? 'analysis' : '')
-    );
+    store.dispatch(analysisActions.setAnalysis(areInitialAnalysisLayersVisible ? 'analysis' : ''));
   }
 
   componentDidUpdate(prevProps) {
@@ -216,7 +214,7 @@ export default class AnalysisPanel extends Component {
 
     const newAnalysis = isAnalysisHeader ? 'analysis' : isBasemapHeader ? 'basemap' : null;
 
-    if (!newAnalysis) { 
+    if (!newAnalysis) {
       return;
     }
 
@@ -495,7 +493,9 @@ export default class AnalysisPanel extends Component {
                   id="analysis-header-icon"
                 >
                   <svg
-                    className={`analysis-header-click ${isAnalysisDisabled ? 'disabled-header' : ''}`}
+                    className={`analysis-header-click ${
+                      isAnalysisDisabled ? 'disabled-header' : ''
+                    }`}
                   >
                     <use
                       className={`analysis-header-click ${

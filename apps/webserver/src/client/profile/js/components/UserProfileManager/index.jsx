@@ -1,6 +1,5 @@
 import { useProfileContext } from '../../ProfileStateContext';
-import Card from '@mui/material/Card';
-import CardContent from '@mui/material/CardContent';
+import { Card, CardContent } from '@mui/material';
 import UserProfileManager from './UserProfileManager';
 
 export default function UserProfileManagerContainer() {

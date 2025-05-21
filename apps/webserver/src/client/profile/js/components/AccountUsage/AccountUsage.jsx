@@ -1,5 +1,5 @@
 import { Fragment } from 'react';
-import Grid from '@mui/material/Grid';
+import { Grid } from '@mui/material';
 import { profilePage } from '../../../../common/js/config';
 import AccountUsageContainer from './AccountUsageContent';
 

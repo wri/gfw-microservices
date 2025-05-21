@@ -1,18 +1,19 @@
-import { Component } from 'react';
+import { Component, createRef } from 'react';
 import Select from 'react-select';
-import Dialog from 'material-ui/Dialog';
-import Button from '../../../../common/js/components/Button';
-import LinkButton from '../../../../common/js/components/LinkButton';
+import { Box, Dialog, DialogTitle, DialogActions, DialogContent } from '@mui/material';
+
+import { PillButton } from '../../../../components';
 import GfwSelect from '../../../../common/js/components/GfwSelect';
 import { profilePage } from '../../../../common/js/config';
 import { fieldValidations } from '../../utils/validations';
 
 export default class AccountProfile extends Component {
-  ovewrite = false;
+  overwrite = false;
 
   constructor(props) {
     super(props);
     const { currentUser } = props;
+    this.fileInputRef = createRef();
     const classifications = this.props.currentAccount.classification_ids
       ?.split(',')
       .map((classification) => {
@@ -393,45 +394,37 @@ export default class AccountProfile extends Component {
     const defaultFileAction = updatingPolicy
       ? []
       : [
-          <div className="button-container">
-            <Button
-              variant="primary"
-              className="overwrite-button"
-              label="Overwrite"
-              keyboardFocused
-              onClick={actionOverwrite}
-            />
-            <LinkButton label="Cancel" onClick={action} />
-          </div>,
+          <Box sx={{ display: 'flex', gap: 1 }}>
+            <PillButton variant="contained" size="small" autoFocus onClick={actionOverwrite}>
+              Overwrite
+            </PillButton>
+            <PillButton variant="contained" size="small" color="info" onClick={action}>
+              Cancel
+            </PillButton>
+          </Box>,
         ];
     const defaultAction = updating
       ? []
       : [
           <div>
-            <Button variant="primary" label="Ok" keyboardFocused onClick={action} />
+            <PillButton variant="contained" size="small" autoFocus onClick={action}>
+              OK
+            </PillButton>
           </div>,
         ];
     const options = this.props.classificationsData.map(this.createClassOptions);
     const policyOptions = this.props.policyList.map(this.createPolicyOptions);
     return (
       <div>
-        <Dialog
-          paperClassName="dialog-paper"
-          open={dialogOpen}
-          title={dialogTitle}
-          actions={defaultAction}
-          onRequestClose={action}
-        >
-          {dialogContent}
+        <Dialog open={dialogOpen} onClose={action}>
+          <DialogTitle>{dialogTitle}</DialogTitle>
+          <DialogContent>{dialogContent}</DialogContent>
+          <DialogActions>{defaultAction}</DialogActions>
         </Dialog>
-        <Dialog
-          paperClassName="dialog-paper"
-          open={dialogFileOpen}
-          title={dialogTitle}
-          actions={defaultFileAction}
-          onRequestClose={action}
-        >
-          {dialogMessage}
+        <Dialog open={dialogFileOpen} onClose={action}>
+          <DialogTitle>{dialogTitle}</DialogTitle>
+          <DialogContent>{dialogMessage}</DialogContent>
+          <DialogActions>{defaultFileAction}</DialogActions>
         </Dialog>
 
         <section className="section-container">
@@ -514,24 +507,38 @@ export default class AccountProfile extends Component {
               </span>
               <form method="post" encType="multipart/form-data">
                 <div className="upload-policy-container">
-                  <label htmlFor="uploadPolicy" className="gfw-button btn-green btn-width-12rem">
-                    {profilePage.profileManager.policyUpload}{' '}
-                    <span>{`${
-                      this.state.policyNames.length === 0
+                  {(() => {
+                    const { policyNames } = this.state;
+                    const documentLabel =
+                      policyNames.length === 0
                         ? ''
-                        : this.state.policyNames.length === 1
+                        : policyNames.length === 1
                         ? ': 1 document'
-                        : `: ${this.state.policyNames.length} documents`
-                    }`}</span>
-                    <input
-                      id="uploadPolicy"
-                      name="org_policy"
-                      type="file"
-                      onChange={this.updatePolicy}
-                      className="hidden"
-                      multiple
-                    />
-                  </label>
+                        : `: ${policyNames.length} documents`;
+
+                    return (
+                      <PillButton
+                        variant="contained"
+                        size="small"
+                        onClick={() => this.fileInputRef.current?.click()}
+                        sx={{ mt: 1 }}
+                      >
+                        {profilePage.profileManager.policyUpload}
+                        {documentLabel}
+                      </PillButton>
+                    );
+                  })()}
+
+                  <input
+                    id="uploadPolicy"
+                    name="org_policy"
+                    ref={this.fileInputRef}
+                    type="file"
+                    onChange={this.updatePolicy}
+                    className="hidden"
+                    style={{ display: 'none' }}
+                    multiple
+                  />
                 </div>
                 <Select
                   options={policyOptions}
@@ -545,17 +552,24 @@ export default class AccountProfile extends Component {
                   isSearchable
                   maxMenuHeight={150}
                 />
-                <div className="policies-delete-download">
-                  <Button
-                    variant="danger"
+                <Box sx={{ display: 'flex', gap: 1, mt: 2 }}>
+                  <PillButton
+                    variant="outlined"
+                    size="small"
+                    color="error"
                     onClick={this.deletePolicies}
-                    label={profilePage.profileManager.policyDelete}
-                  />
-                  <Button
+                  >
+                    {profilePage.profileManager.policyDelete}
+                  </PillButton>
+                  <PillButton
+                    variant="contained"
+                    color="info"
+                    size="small"
                     onClick={this.downloadPolicies}
-                    label={profilePage.profileManager.policyDownload}
-                  />
-                </div>
+                  >
+                    {profilePage.profileManager.policyDownload}
+                  </PillButton>
+                </Box>
               </form>
             </div>
 
@@ -593,7 +607,9 @@ export default class AccountProfile extends Component {
           </div>
         </section>
         <div className="profile-button-container">
-          <Button variant="primary" onClick={this.updateAccount} label="Save changes" />
+          <PillButton variant="contained" size="small" onClick={this.updateAccount}>
+            Save changes
+          </PillButton>
         </div>
       </div>
     );

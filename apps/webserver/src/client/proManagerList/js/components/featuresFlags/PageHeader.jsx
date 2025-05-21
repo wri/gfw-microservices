@@ -1,15 +1,8 @@
-import { featureFlagsStrings } from '../../../../common/js/config';
-import Grid from '@mui/material/Grid';
-import Typography from '@mui/material/Typography';
-import GfwButton from '../../../../common/js/components/GfwButton';
-import { useFeatureFlagStateContext } from './FeatureFlagStateContext';
+import { Grid, Typography } from '@mui/material';
 
-const fontStyles = {
-  fontFamily: 'Fira Sans, sans-serif',
-  fontWeight: 500,
-  color: '#555555',
-  fontSize: '22px',
-};
+import { PillButton } from '../../../../components';
+import { featureFlagsStrings } from '../../../../common/js/config';
+import { useFeatureFlagStateContext } from './FeatureFlagStateContext';
 
 function PageHeader() {
   const { selectedFeatureFlag, setSelectedFeatureFlag } = useFeatureFlagStateContext();
@@ -20,12 +13,14 @@ function PageHeader() {
 
   return (
     <Grid container justifyContent="space-between" sx={{ marginBottom: '1.5rem' }}>
-      <Typography sx={fontStyles} variant="h3">
+      <Typography variant="h5">
         {featureFlagsStrings.pageHeading}{' '}
         {selectedFeatureFlag?.flagId ? '/ ' + selectedFeatureFlag?.flagId : ''}
       </Typography>
       {selectedFeatureFlag?.flagId ? (
-        <GfwButton classNames="btn-green" onClick={handleBack} value="Back to Profile Manager" />
+        <PillButton variant="contained" size="small" onClick={handleBack}>
+          Back to profile manager
+        </PillButton>
       ) : null}
     </Grid>
   );

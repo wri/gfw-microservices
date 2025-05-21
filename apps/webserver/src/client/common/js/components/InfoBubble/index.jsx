@@ -1,6 +1,7 @@
 import { useState } from 'react';
-import IconButton from 'material-ui/IconButton';
-import InfoIcon from 'material-ui/svg-icons/action/info';
+
+import { IconButton } from '@mui/material';
+import { Info } from '@mui/icons-material';
 import InfoBubbleBase from './InfoBubbleBase';
 import InfoBubbleContent from './InfoBubbleContent';
 import Popover from 'material-ui/Popover';
@@ -22,14 +23,8 @@ export default function InfoBubble({ children, infoBubbleId }) {
 
   return (
     <div style={{ display: 'inline-block' }}>
-      <IconButton
-        style={{ padding: 0, width: 15, height: 15, marginLeft: '10px', verticalAlign: 'middle' }}
-        iconStyle={{ padding: 0, width: 15, height: 15 }}
-        className="metadata-info-button"
-        onClick={handleOpen}
-        id={infoBubbleId}
-      >
-        <InfoIcon color="gray" />
+      <IconButton onClick={handleOpen} id={infoBubbleId} size="small" sx={{ ml: 1 }}>
+        <Info fontSize="inherit" />
       </IconButton>
       <Popover
         open={showBubble}

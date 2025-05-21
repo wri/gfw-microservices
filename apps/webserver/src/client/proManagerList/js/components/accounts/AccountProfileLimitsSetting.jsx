@@ -1,15 +1,11 @@
 import { Fragment, useState } from 'react';
-import { styled } from '@mui/material/styles';
-import Grid from '@mui/material/Grid';
-import TextField from '@mui/material/TextField';
-import InputLabel from '@mui/material/InputLabel';
-import GfwButton from '../../../../common/js/components/GfwButton';
+import { Grid, TextField, InputLabel, Typography, Divider, styled } from '@mui/material';
+
 import { useDialog } from '../../../../common/js/components/Dialog';
 import { accountProfileStrings } from '../../../../common/js/config';
 import { useAccountDetail } from './AccountDetailSection';
 import { ACCOUNT_ORG_STATUSES } from '../../../../common/js/constants/orgAccountStatuses';
-import Typography from '@mui/material/Typography';
-import Divider from '@mui/material/Divider';
+import { PillButton } from '../../../../components';
 
 const fontStyles = {
   fontFamily: 'Fira Sans, sans-serif',
@@ -231,12 +227,14 @@ export default function AccountProfileLimitsSetting() {
       </Grid>
       <Grid container spacing={2} rowSpacing={2}>
         <Grid item sm={6} xs={12}>
-          <GfwButton
-            classNames={`btn-green ${!isEditingDisabled ? 'button-disabled' : ''}`}
+          <PillButton
+            variant="contained"
+            size="small"
             disabled={!isEditingDisabled}
             onClick={() => updateAccountProfileLimits(accountLimitsFormData)}
-            value={`Add Limits`}
-          />
+          >
+            Add Limits
+          </PillButton>
         </Grid>
       </Grid>
     </Fragment>

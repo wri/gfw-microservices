@@ -1,10 +1,13 @@
-import Table from '@mui/material/Table';
-import TableCell from '@mui/material/TableCell';
-import TableHead from '@mui/material/TableHead';
-import TableBody from '@mui/material/TableBody';
-import TableRow from '@mui/material/TableRow';
-import TableContainer from '@mui/material/TableContainer';
-import Paper from '@mui/material/Paper';
+import {
+  Table,
+  TableCell,
+  TableHead,
+  TableBody,
+  TableRow,
+  TableContainer,
+  Paper,
+} from '@mui/material';
+
 import ApiKeyRow from './ApiKeyRow';
 
 export default function ApiKeysTable({ keys, deleteKey }) {

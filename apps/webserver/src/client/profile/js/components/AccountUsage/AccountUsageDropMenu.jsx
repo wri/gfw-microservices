@@ -1,8 +1,6 @@
 import { useState } from 'react';
-import IconButton from '@mui/material/IconButton';
-import Menu from '@mui/material/Menu';
-import MenuItem from '@mui/material/MenuItem';
-import MoreVertIcon from '@mui/icons-material/MoreVert';
+import { IconButton, Menu, MenuItem } from '@mui/material';
+import { MoreVert } from '@mui/icons-material';
 
 export default function AccountUsageDropMenu(props) {
   const [anchorEl, setAnchorEl] = useState(null);
@@ -24,7 +22,7 @@ export default function AccountUsageDropMenu(props) {
   return (
     <div style={{ float: 'right' }}>
       <IconButton style={{ padding: 0 }} onClick={handleClick}>
-        <MoreVertIcon />
+        <MoreVert />
       </IconButton>
 
       <Menu anchorEl={anchorEl} open={open} onClose={handleClose}>

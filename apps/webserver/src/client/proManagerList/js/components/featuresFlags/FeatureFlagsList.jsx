@@ -1,12 +1,7 @@
-import { styled } from '@mui/material/styles';
-import Grid from '@mui/material/Grid';
-import TableContainer from '@mui/material/TableContainer';
-import Table from '@mui/material/Table';
-import TableHead from '@mui/material/TableHead';
-import TableBody from '@mui/material/TableBody';
+import { Grid, Table, TableHead, TableBody, TableRow, TableContainer, styled } from '@mui/material';
 import TableCell, { tableCellClasses } from '@mui/material/TableCell';
-import TableRow from '@mui/material/TableRow';
 import moment from 'moment';
+
 import { useFeatureFlagStateContext } from './FeatureFlagStateContext';
 
 const StyledTableCell = styled(TableCell)(() => ({

@@ -1,5 +1,7 @@
 import { useState } from 'react';
 import { withRouter } from 'react-router-dom';
+import { Box, Grid } from '@mui/material';
+
 import UsersListSection from './users/UsersListSection';
 import UserDetailSection from './users/UserDetailSection';
 import AccountsListSection from './accounts/AccountsListSection';
@@ -10,8 +12,6 @@ import { proManagerPanelTabs } from './proManagerPanelTabs';
 import LatestCommits from './LatestCommits';
 import FeatureFlags from './featuresFlags/index';
 import AccountLimits from './accounts/AccountLimits';
-import Grid from '@mui/material/Grid';
-import Box from '@mui/material/Box';
 import { LoadingModal } from '../../../components';
 
 function ProManagerPanel({ location }) {

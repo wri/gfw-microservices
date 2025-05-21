@@ -27,7 +27,7 @@ import { useHistory } from '../hooks';
 import { PillButton } from '../../../../../components';
 import { useUploadLocation } from '../contexts';
 import { NavBar } from '../components';
-import { UserList } from '../types';
+import { UserList, UploadType } from '../types';
 import { typeOfAnalysisMap, commodities, customCommodities } from '../utils/constants';
 import { useFetch } from '../../../../../hooks';
 import debounce from 'lodash/debounce';
@@ -107,6 +107,7 @@ export function ConfigureList({ userLists }: { userLists: UserList[] }) {
     setUploadLocationConfigureList,
     uploadLocationState: { uploadType },
   } = useUploadLocation();
+
   const existingList = useRef<{ id: number; analysisIds: string[] }>({ id: 0, analysisIds: [] });
   const [isConfirmationDialogOpen, setIsConfirmationDialogOpen] = useState(false);
 
@@ -468,7 +469,7 @@ export function ConfigureList({ userLists }: { userLists: UserList[] }) {
             variant="contained"
             color="info"
             startIcon={<Close />}
-            data-cy={DATA_CY.NEW_UPLOAD_WORKFLOW[uploadType!].CONFIGURE_CANCEL}
+            data-cy={DATA_CY.NEW_UPLOAD_WORKFLOW[uploadType!]?.CONFIGURE_CANCEL}
             onClick={clearUploadType}
           >
             Cancel
@@ -476,7 +477,7 @@ export function ConfigureList({ userLists }: { userLists: UserList[] }) {
           <PillButton
             type="submit"
             variant="contained"
-            data-cy={DATA_CY.NEW_UPLOAD_WORKFLOW[uploadType!].CONFIGURE_NEXT}
+            data-cy={DATA_CY.NEW_UPLOAD_WORKFLOW[uploadType!]?.CONFIGURE_NEXT}
             startIcon={<ArrowForwardIos />}
           >
             Next

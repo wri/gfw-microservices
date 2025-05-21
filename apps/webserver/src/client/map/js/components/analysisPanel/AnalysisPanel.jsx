@@ -1,4 +1,8 @@
 import { Component } from 'react';
+import Query from '@arcgis/core/rest/support/Query';
+import FlatButton from 'material-ui/FlatButton';
+import _intersection from 'lodash/intersection';
+import { executeQueryJSON } from '@arcgis/core/rest/query';
 
 import {
   showBasemapInfo,
@@ -10,8 +14,9 @@ import {
   updateLandsatYear,
 } from '../../actions/mapActions';
 import * as analysisActions from '../../actions/analysisActions';
-import { executeQueryJSON } from '@arcgis/core/rest/query';
-import Query from '@arcgis/core/rest/support/Query';
+import SelectAdmin from './SelectAdmin';
+import utils from '../../utils/AppUtils';
+
 import { mapPage } from '../../../../common/js/config';
 import {
   proLayers,
@@ -20,13 +25,9 @@ import {
   downloadLinks,
 } from '../../../../common/js/proLayers.config';
 import ModalLoader from '../../../../common/js/components/Loaders/ModalLoader';
-import FlatButton from 'material-ui/FlatButton';
-import SelectAdmin from './SelectAdmin';
-import utils from '../../utils/AppUtils';
-import _intersection from 'lodash/intersection';
-
 import GfwButton from '../../../../common/js/components/GfwButton';
 import GfwSelect from '../../../../common/js/components/GfwSelect';
+
 import { PlanetTilesOptions } from './PlanetTilesOptions/PlanetTilesOptions';
 import MapRecenterButton from '../modals/MapRecenterButton';
 import { PLANET_BASEMAP } from '../../config/map.config';
@@ -203,27 +204,37 @@ export default class AnalysisPanel extends Component {
   };
 
   toggleAnalysis = (evt) => {
-    let newAnalysis;
-    if (evt.target.classList.contains('analysis-header-click')) {
-      newAnalysis = 'analysis';
-    } else if (evt.target.classList.contains('basemap-header-click')) {
-      newAnalysis = 'basemap';
-    }
+    const { selectedAnalysis, drawingActive, analysisWarning } = this.props;
+    const targetClasses = evt.target.classList;
 
-    if (newAnalysis === this.props.selectedAnalysis) {
-      if (this.props.drawingActive && newAnalysis === 'analysis') {
+    const isAnalysisHeader = targetClasses.contains('analysis-header-click');
+    const isBasemapHeader = targetClasses.contains('basemap-header-click');
+    const isDisabled = targetClasses.contains('disabled-header');
+
+    const newAnalysis = isAnalysisHeader ? 'analysis' : isBasemapHeader ? 'basemap' : null;
+
+    if (!newAnalysis) return;
+
+    if (newAnalysis === selectedAnalysis) {
+      if (drawingActive && newAnalysis === 'analysis') {
         this.startDrawing();
       }
       store.dispatch(analysisActions.setAnalysis(''));
-    } else if (evt.target.classList.contains('disabled-header') === false) {
+      return;
+    }
+
+    if (!isDisabled) {
       store.dispatch(analysisActions.setAnalysis(newAnalysis));
-    } else if (evt.target.classList.contains('disabled-header') && !this.props.analysisWarning) {
+      return;
+    }
+
+    if (!analysisWarning) {
       store.dispatch(analysisActions.toggleWarning());
       setTimeout(() => {
         if (this.props.analysisWarning) {
           store.dispatch(analysisActions.toggleWarning());
         }
-      }, 5000); //close the warning if it is still showing after 5 seconds of inactivity
+      }, 5000);
     }
   };
 
@@ -309,9 +320,9 @@ export default class AnalysisPanel extends Component {
       });
     });
   };
+
   addNewLocation = () => {
     const { adminSelections } = this.props;
-
     const { country, stateOrProvince, gadmId } = adminSelections;
 
     this.subscribeAdmin({
@@ -391,7 +402,7 @@ export default class AnalysisPanel extends Component {
     } = this.props;
     const { analysisDisabled, activeAnalysis } = this.state;
     let className = 'analysis-tools ';
-    if (panelsVisible === false) {
+    if (!panelsVisible) {
       className += ' hidden';
     }
     const drawingLabel = drawingActive ? 'Cancel' : 'Start Drawing';
@@ -402,67 +413,64 @@ export default class AnalysisPanel extends Component {
     let value = 0;
     let additionalValue, additionalLabel;
 
-    if (analysisResults && analysisResults.data) {
-      const attributes = analysisResults.data.attributes;
-      if (visibleLayers.indexOf(treeCoverLossID) > -1) {
-        if (attributes.total) {
-          totalSelected = this.numberWithCommas(parseFloat(attributes.total.areaHa).toFixed(2));
-          value = this.numberWithCommas(parseFloat(attributes.total.loss).toFixed(2));
-        } else {
-          totalSelected = this.numberWithCommas(parseFloat(attributes.areaHa).toFixed(2));
-          value = this.numberWithCommas(parseFloat(attributes.loss).toFixed(2));
-        }
-      } else if (visibleLayers.indexOf(treeCoverGainID) > -1) {
-        if (attributes.total) {
-          totalSelected = this.numberWithCommas(parseFloat(attributes.total.areaHa).toFixed(2));
-          value = this.numberWithCommas(parseFloat(attributes.total.gain).toFixed(2));
-        } else {
-          totalSelected = this.numberWithCommas(parseFloat(attributes.areaHa).toFixed(2));
-          value = this.numberWithCommas(parseFloat(attributes.gain).toFixed(2));
-        }
+    if (analysisResults?.data) {
+      const { attributes } = analysisResults.data;
+
+      const format = (val, fixed = 2) => this.numberWithCommas(parseFloat(val).toFixed(fixed));
+
+      const isVisible = (layerID) => visibleLayers.includes(layerID);
+
+      if (isVisible(treeCoverLossID)) {
+        const source = attributes.total || attributes;
+        totalSelected = format(source.areaHa);
+        value = format(source.loss);
+      } else if (isVisible(treeCoverGainID)) {
+        const source = attributes.total || attributes;
+        totalSelected = format(source.areaHa);
+        value = format(source.gain);
         valueLabel = 'GAIN';
-      } else if (visibleLayers.indexOf(prodesDeforestationID) > -1) {
-        totalSelected = this.numberWithCommas(parseFloat(attributes.areaHa).toFixed(2));
-        value = this.numberWithCommas(parseFloat(attributes.value).toFixed(2));
+      } else if (isVisible(prodesDeforestationID)) {
+        totalSelected = format(attributes.areaHa);
+        value = format(attributes.value);
         valueLabel = `PRODES TREE COVER LOSS (${prodesDateRange.startYear}-${prodesDateRange.endYear})`;
-      } else if (visibleLayers.indexOf(treeBiomassLossID) > -1) {
-        totalSelected = this.numberWithCommas(parseFloat(attributes.areaHa).toFixed(2));
-        value = this.numberWithCommas(parseFloat(attributes.biomassLoss).toFixed(2));
+      } else if (isVisible(treeBiomassLossID)) {
+        totalSelected = format(attributes.areaHa);
+        value = format(attributes.biomassLoss);
         valueLabel = treeBiomassLossID;
-        additionalValue = this.numberWithCommas(parseFloat(attributes.biomass).toFixed(2));
+        additionalValue = format(attributes.biomass);
         additionalLabel = 'Total Biomass';
-      } else if (visibleLayers.indexOf(gladAlertsID) > -1) {
-        totalSelected = this.numberWithCommas(parseFloat(attributes.areaHa).toFixed(2));
-        value = this.numberWithCommas(parseFloat(attributes.value).toFixed(2));
+      } else if (isVisible(gladAlertsID)) {
+        totalSelected = format(attributes.areaHa);
+        value = format(attributes.value);
         valueLabel = 'GLAD';
-      } else if (visibleLayers.indexOf(viirsActiveFiresID) > -1) {
-        totalSelected = this.numberWithCommas(parseFloat(attributes.areaHa).toFixed(2));
+      } else if (isVisible(viirsActiveFiresID)) {
+        totalSelected = format(attributes.areaHa);
         value = this.numberWithCommas(parseFloat(attributes.value));
         valueLabel = 'VIIRS';
-      } else if (visibleLayers.indexOf(treeCoverID) > -1) {
-        totalSelected = this.numberWithCommas(parseFloat(attributes.areaHa).toFixed(2));
-        value = this.numberWithCommas(parseFloat(attributes.treeExtent).toFixed(2));
+      } else if (isVisible(treeCoverID)) {
+        totalSelected = format(attributes.areaHa);
+        value = format(attributes.treeExtent);
         valueLabel = 'COVER';
       }
     }
 
     let totalCountLabel = '';
+    const { country, stateOrProvince, smallerRegion } = adminSelections || {};
 
     if (isGadm41Available) {
-      if (adminSelections?.stateOrProvince) {
-        totalCountLabel = `for ${adminSelections.stateOrProvince}`;
-      } else if (adminSelections?.country) {
-        totalCountLabel = `for ${adminSelections.country}`;
+      if (stateOrProvince) {
+        totalCountLabel = `for ${stateOrProvince}`;
+      } else if (country) {
+        totalCountLabel = `for ${country}`;
       }
     } else {
-      if (adminSelections && adminSelections.smallerRegion) {
-        totalCountLabel = `for ${adminSelections.smallerRegion}`;
-      } else if (adminSelections && adminSelections.country) {
-        totalCountLabel = `for ${adminSelections.country}`;
+      if (smallerRegion) {
+        totalCountLabel = `for ${smallerRegion}`;
+      } else if (country) {
+        totalCountLabel = `for ${country}`;
       }
     }
 
-    //TODO: Make sure that when our 'analysis__body__results' is hidden, the whole panel doesn't constrict and get small, we still need to see our cancel button!
     return (
       <div className="analysis-tools__container">
         <div className={className}>
@@ -584,7 +592,7 @@ export default class AnalysisPanel extends Component {
             </div>
             <div
               className={`analysis__body__results ${
-                analysisResults.data && spinnerOn === false ? '' : 'hidden'
+                analysisResults.data && !spinnerOn ? '' : 'hidden'
               }`}
             >
               <p className="analysis__body__results__label">

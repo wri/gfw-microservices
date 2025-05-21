@@ -2,7 +2,7 @@ import { z } from 'zod';
 
 const validCoordinateFormat = /^-?\d+\.\d+$/;
 
-const createStringSchema = (regex: RegExp, message: string) =>
+const buildTrimmedRegexStringSchema = (regex: RegExp, message: string) =>
   z
     .string()
     .regex(regex, message)
@@ -10,12 +10,12 @@ const createStringSchema = (regex: RegExp, message: string) =>
       message: 'Leading or trailing spaces are not allowed',
     });
 
-export const alphanumericWithSpaceSchema = createStringSchema(
+export const alphanumericWithSpaceSchema = buildTrimmedRegexStringSchema(
   /^[a-zA-Z0-9 ]*$/,
   'Only letters, numbers, and spaces are allowed'
 );
 
-export const extendedLocationNameSchema = createStringSchema(
+export const extendedLocationNameSchema = buildTrimmedRegexStringSchema(
   /^[a-zA-Z0-9 [\]().\-_]*$/,
   'Only letters, numbers, spaces, and []().-_ are allowed'
 );

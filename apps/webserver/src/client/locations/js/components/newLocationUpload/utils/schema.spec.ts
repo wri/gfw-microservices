@@ -1,8 +1,4 @@
-import {
-  alphanumericWithSpaceSchema,
-  locationNameSchema,
-  coordinateSchema,
-} from './schema';
+import { alphanumericWithSpaceSchema, locationNameSchema, coordinateSchema } from './schema';
 
 describe('Schema Validation', () => {
   describe('alphanumericWithSpaceSchema', () => {
@@ -31,7 +27,9 @@ describe('Schema Validation', () => {
       expect(bothSpaces.success).toBe(false);
 
       if (!leadingSpace.success) {
-        expect(leadingSpace.error.issues[0].message).toBe('Leading or trailing spaces are not allowed');
+        expect(leadingSpace.error.issues[0].message).toBe(
+          'Leading or trailing spaces are not allowed'
+        );
       }
     });
   });
@@ -62,7 +60,9 @@ describe('Schema Validation', () => {
       expect(bothSpaces.success).toBe(false);
 
       if (!leadingSpace.success) {
-        expect(leadingSpace.error.issues[0].message).toBe('Leading or trailing spaces are not allowed');
+        expect(leadingSpace.error.issues[0].message).toBe(
+          'Leading or trailing spaces are not allowed'
+        );
       }
     });
 

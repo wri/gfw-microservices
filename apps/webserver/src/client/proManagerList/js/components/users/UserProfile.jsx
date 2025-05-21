@@ -1,11 +1,11 @@
 import { Component } from 'react';
-import Dialog from 'material-ui/Dialog';
+import { Dialog } from '@mui/material';
 import Select from 'react-select';
 import qr from 'qrcode';
+
+import { PillButton } from '../../../../components';
 import { profilePage } from '../../../../common/js/config';
-import Button from '../../../../common/js/components/Button';
 import { fieldValidations } from '../../../../profile/js/utils/validations';
-import GfwButton from '../../../../common/js/components/GfwButton';
 import '../../../css/profile.scss';
 
 export default class UserProfile extends Component {
@@ -199,10 +199,6 @@ export default class UserProfile extends Component {
         email: this.state.email,
       })
     );
-  };
-
-  back = () => {
-    window.location.href = '/pro-manager-list?tab=users';
   };
 
   createGeogOptions = (option) => {
@@ -408,7 +404,11 @@ export default class UserProfile extends Component {
     }
     const defaultAction = updating
       ? []
-      : [<Button variant="primary" label="OK" keyboardFocused={true} onClick={action} />];
+      : [
+          <PillButton variant="contained" size="small" autoFocus onClick={action}>
+            Ok
+          </PillButton>,
+        ];
 
     const statusOptions = profilePage.userProfile.statusOptions.map(this.createStatusOptions);
     const accessOptions = profilePage.userProfile.accessOptions.map(this.createAccessOptions);
@@ -435,7 +435,9 @@ export default class UserProfile extends Component {
 
         <div className="flex-grid space-between align-center">
           <h3 className="section-title-normal">Contact Information</h3>
-          <GfwButton classNames="btn-green" onClick={this.back} value="Back to Profile Manager" />
+          <PillButton variant="contained" size="small" href="/pro-manager-list?tab=users">
+            Back to profile manager
+          </PillButton>
         </div>
 
         <section className="section-container">
@@ -709,31 +711,39 @@ export default class UserProfile extends Component {
 
         <div className="profile-button-container justify-end">
           {this.props.userOnly ? null : (
-            <GfwButton classNames="btn-green" onClick={this.back} value="Cancel" />
+            <PillButton variant="contained" size="small" href="/pro-manager-list?tab=users">
+              Cancel
+            </PillButton>
           )}
           {this.props.userOnly ? null : (
-            <GfwButton
-              classNames={`btn-green ${this.state.status_id === 2 ? 'button-disabled' : ''}`}
+            <PillButton
+              variant="contained"
+              size="small"
               disabled={this.state.status_id === 2}
               onClick={this.activateUser}
-              value="Activate"
-            />
+            >
+              Activate
+            </PillButton>
           )}
 
           {this.props.userOnly ? null : (
-            <GfwButton
-              classNames={`btn-green ${this.state.status_id === 3 ? 'button-disabled' : ''}`}
+            <PillButton
+              variant="contained"
+              size="small"
               disabled={this.state.status_id === 3}
               onClick={this.deactivateUser}
-              value="Deactivate"
-            />
+            >
+              Deactivate
+            </PillButton>
           )}
-          <GfwButton
-            classNames={`btn-green ${this.props.disable ? 'button-disabled' : ''}`}
+          <PillButton
+            variant="contained"
+            size="small"
             disabled={this.props.disable}
             onClick={this.updateUser}
-            value="Save"
-          />
+          >
+            Save
+          </PillButton>
         </div>
       </div>
     );

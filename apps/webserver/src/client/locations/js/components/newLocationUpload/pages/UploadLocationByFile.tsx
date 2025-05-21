@@ -188,16 +188,14 @@ export function UploadLocationByFile() {
           )}
           {(fileAttachState === FileAttachState.UnsupportedType ||
             fileAttachState === FileAttachState.UploadFailed) && (
-            <>
-              <PillButton
-                variant="text"
-                color="error"
-                onClick={() => fileInputRef.current?.click()}
-                sx={{ mt: 1 }}
-              >
-                Upload again
-              </PillButton>
-            </>
+            <PillButton
+              variant="text"
+              color="error"
+              onClick={() => fileInputRef.current?.click()}
+              sx={{ mt: 1 }}
+            >
+              Upload again
+            </PillButton>
           )}
           {isNoFileAttached && (
             <Box

@@ -1,8 +1,6 @@
-import Grid from '@mui/material/Grid';
-import FormControl from '@mui/material/FormControl';
-import SelectField from '@mui/material/Select';
-import MenuItem from '@mui/material/MenuItem';
-import GfwButton from '../../../../common/js/components/GfwButton';
+import { Grid, FormControl, Select, MenuItem } from '@mui/material';
+
+import { PillButton } from '../../../../components';
 import { useDialog } from '../../../../common/js/components/Dialog';
 import { ACCOUNT_ORG_STATUSES } from '../../../../common/js/constants/orgAccountStatuses';
 import { useAccountDetail } from './AccountDetailSection';
@@ -128,7 +126,7 @@ export default function AccountStatusSetting() {
     <Grid container spacing={2} rowSpacing={2}>
       <Grid item sm={6} xs={12}>
         <FormControl fullWidth>
-          <SelectField
+          <Select
             size="small"
             disabled
             required
@@ -141,34 +139,37 @@ export default function AccountStatusSetting() {
             <MenuItem value={1}>Pending</MenuItem>
             <MenuItem value={2}>Active</MenuItem>
             <MenuItem value={3}>Inactive</MenuItem>
-          </SelectField>
+          </Select>
         </FormControl>
       </Grid>
-      <Grid item sm={6} xs={12}>
-        <GfwButton
-          classNames={`btn-green ${
-            organization_status_id === ACCOUNT_ORG_STATUSES['ACTIVE'] ? 'button-disabled' : ''
-          }`}
+      <Grid sx={{ display: 'flex', alignItems: 'end', ml: 2, gap: 1 }}>
+        <PillButton
+          variant="contained"
+          size="small"
           disabled={organization_status_id === ACCOUNT_ORG_STATUSES['ACTIVE']}
           onClick={activateAccount}
-          value="Activate"
-        />
+        >
+          Activate
+        </PillButton>
         {organization_status_id === ACCOUNT_ORG_STATUSES['PENDING'] ? null : (
-          <GfwButton
-            classNames={`btn-green ${
-              organization_status_id === ACCOUNT_ORG_STATUSES['INACTIVE'] ? 'button-disabled' : ''
-            }`}
+          <PillButton
+            variant="contained"
+            size="small"
             disabled={organization_status_id === ACCOUNT_ORG_STATUSES['INACTIVE']}
             onClick={deactivateAccount}
-            value="Deactivate"
-          />
+          >
+            Deactivate
+          </PillButton>
         )}
         {organization_status_id === ACCOUNT_ORG_STATUSES['PENDING'] && (
-          <GfwButton
-            classNames={`btn-green ${organization_status_id === 1 ? '' : 'hidden'}`}
+          <PillButton
+            variant="contained"
+            size="small"
             onClick={deleteAccountRequest}
-            value="Delete"
-          />
+            sx={{ visibility: organization_status_id === 1 ? '' : 'hidden' }}
+          >
+            Delete
+          </PillButton>
         )}
       </Grid>
     </Grid>

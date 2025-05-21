@@ -1,13 +1,15 @@
 import { useEffect, useState } from 'react';
-import Table from '@mui/material/Table';
-import TableBody from '@mui/material/TableBody';
-import TableCell from '@mui/material/TableCell';
-import TableContainer from '@mui/material/TableContainer';
-import TableHead from '@mui/material/TableHead';
-import TableRow from '@mui/material/TableRow';
-import Paper from '@mui/material/Paper';
-import { styled } from '@mui/material/styles';
-import Alert from '@mui/material/Alert';
+import {
+  Alert,
+  Table,
+  TableBody,
+  TableCell,
+  TableContainer,
+  TableHead,
+  TableRow,
+  Paper,
+  styled,
+} from '@mui/material';
 
 import InlineLoader from '../../../../common/js/components/Loaders/InlineLoader';
 import AccountUsage from './AccountUsage';

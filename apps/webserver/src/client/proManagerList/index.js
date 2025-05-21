@@ -1,13 +1,11 @@
 import { BrowserRouter } from 'react-router-dom';
 import { render } from 'react-dom';
-import lightBaseTheme from 'material-ui/styles/baseThemes/lightBaseTheme';
-import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
-import getMuiTheme from 'material-ui/styles/getMuiTheme';
+
+import { ThemeProvider } from '../styles';
 import ProManagerPanel from './js/components/ProManagerPanel';
 import Page from '../common/js/components/Page';
 import AppErrorFallback from '../common/js/components/Errors/AppErrorFallback';
 
-lightBaseTheme.fontFamily = 'Fira Sans, sans-serif';
 const pageOptions = {
   links: {
     logout: true,
@@ -16,7 +14,7 @@ const pageOptions = {
 
 function App() {
   return (
-    <MuiThemeProvider muiTheme={getMuiTheme(lightBaseTheme)}>
+    <ThemeProvider>
       <AppErrorFallback>
         <BrowserRouter basename="/pro-manager-list">
           <Page links={pageOptions.links} active="pro-manager">
@@ -24,7 +22,7 @@ function App() {
           </Page>
         </BrowserRouter>
       </AppErrorFallback>
-    </MuiThemeProvider>
+    </ThemeProvider>
   );
 }
 

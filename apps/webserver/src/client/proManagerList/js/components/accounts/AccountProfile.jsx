@@ -1,7 +1,6 @@
-import GfwButton from '../../../../common/js/components/GfwButton';
+import { Box, Grid } from '@mui/material';
+
 import DialogProvider from '../../../../common/js/components/Dialog';
-import Grid from '@mui/material/Grid';
-import Box from '@mui/material/Box';
 import SettingSection from '../../../../common/js/components/SettingSection';
 import AccountProfileFormSetting from './AccountProfileFormSetting';
 import AccountStatusSetting from './AccountStatusSetting';
@@ -11,13 +10,10 @@ import { accountProfileStrings } from '../../../../common/js/config';
 import AccountProfileLimitsSetting from './AccountProfileLimitsSetting';
 import { useAccountDetail } from './AccountDetailSection';
 import { ACCOUNT_ORG_STATUSES } from '../../../../common/js/constants/orgAccountStatuses';
+import { PillButton } from '../../../../components';
 
 export default function AccountProfile() {
   const { users, currentAccount, statusData, accessData } = useAccountDetail();
-
-  const back = () => {
-    window.location.href = '/pro-manager-list?tab=accounts';
-  };
 
   const isAccountStatusActive =
     currentAccount.organization_status_id === ACCOUNT_ORG_STATUSES['ACTIVE'];
@@ -25,7 +21,9 @@ export default function AccountProfile() {
   return (
     <DialogProvider>
       <Grid container justifyContent="end" sx={{ marginBottom: '1.5rem' }}>
-        <GfwButton classNames="btn-green" onClick={back} value="Back to Profile Manager" />
+        <PillButton variant="contained" size="small" href="/pro-manager-list?tab=accounts">
+          Back to profile manager
+        </PillButton>
       </Grid>
       <SettingSection heading={accountProfileStrings.sectionTitles.profileForm}>
         <AccountProfileFormSetting />

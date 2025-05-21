@@ -1,4 +1,3 @@
-import * as React from 'react';
 import { Alert, Box, Stack, Typography } from '@mui/material';
 import { PillButton } from '../../../../../components';
 

@@ -1,6 +1,6 @@
 import { useState, createContext, useContext } from 'react';
-import Button from '../Button';
-import Dialog from 'material-ui/Dialog';
+import { Dialog, DialogTitle, DialogActions, DialogContent } from '@mui/material';
+import { PillButton } from '../../../../components';
 
 const DialogContext = createContext();
 
@@ -42,26 +42,27 @@ export default function DialogProvider({ children }) {
       }}
     >
       <Dialog
-        paperClassName="dialog-paper"
+        classes={{ paper: 'dialog-paper' }}
         open={isDialogOpen}
-        title={dialogTitle}
-        actions={[
-          <div>
-            <Button
-              label="Close"
-              disabled={isDialogActionDisabled}
-              keyboardFocused
-              onClick={() => {
-                setIsDialogOpen(false);
-              }}
-            />
-          </div>,
-        ]}
-        onRequestClose={() => setIsDialogOpen(false)}
+        onClose={() => setIsDialogOpen(false)}
       >
-        {Array.isArray(dialogMessage)
-          ? dialogMessage.map((str, indx) => <p key={`dialog-message-${indx}`}>{str}</p>)
-          : dialogMessage}
+        <DialogTitle>{dialogTitle}</DialogTitle>
+        <DialogContent>
+          {Array.isArray(dialogMessage)
+            ? dialogMessage.map((str, indx) => <p key={`dialog-message-${indx}`}>{str}</p>)
+            : dialogMessage}
+        </DialogContent>
+        <DialogActions>
+          <PillButton
+            variant="contained"
+            size="small"
+            disabled={isDialogActionDisabled}
+            autoFocus
+            onClick={() => setIsDialogOpen(false)}
+          >
+            Close
+          </PillButton>
+        </DialogActions>
       </Dialog>
       {children}
     </DialogContext.Provider>

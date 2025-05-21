@@ -2,7 +2,6 @@ import { cleanup, screen, render, fireEvent } from '@testing-library/react';
 import '@testing-library/jest-dom/extend-expect';
 import FeatureFlagDetail from './FeatureFlagDetail';
 import { useFeatureFlagStateContext } from './FeatureFlagStateContext';
-import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
 
 jest.mock('./FeatureFlagStateContext');
 
@@ -40,11 +39,7 @@ afterEach(cleanup);
 
 describe('FeatureFlagDetail', () => {
   it('renders component with selectedFeatureFlag', () => {
-    render(
-      <MuiThemeProvider>
-        <FeatureFlagDetail />
-      </MuiThemeProvider>
-    );
+    render(<FeatureFlagDetail />);
 
     expect(screen.getByText('FEATURE DETAILS')).toBeInTheDocument();
     expect(screen.getByText('Name')).toBeInTheDocument();
@@ -59,11 +54,7 @@ describe('FeatureFlagDetail', () => {
   });
 
   it('handles switch change', () => {
-    render(
-      <MuiThemeProvider>
-        <FeatureFlagDetail />
-      </MuiThemeProvider>
-    );
+    render(<FeatureFlagDetail />);
     const switchElement = screen.getAllByRole('checkbox');
     fireEvent.click(switchElement[0]);
 

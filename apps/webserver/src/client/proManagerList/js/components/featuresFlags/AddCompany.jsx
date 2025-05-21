@@ -1,15 +1,18 @@
-import { Fragment, useState } from 'react';
-import Button from '@mui/material/Button';
-import Dialog from '@mui/material/Dialog';
-import Autocomplete from '@mui/material/Autocomplete';
-import TextField from '@mui/material/TextField';
-import DialogActions from '@mui/material/DialogActions';
-import DialogContent from '@mui/material/DialogContent';
-import DialogTitle from '@mui/material/DialogTitle';
+import { useState } from 'react';
+import {
+  Box,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogTitle,
+  Autocomplete,
+  TextField,
+} from '@mui/material';
+import { Add } from '@mui/icons-material';
+
+import { PillButton } from '../../../../components';
 import { useFeatureFlagStateContext } from './FeatureFlagStateContext';
 import { featureFlagsStrings } from '../../../../common/js/config';
-import GfwButton from '../../../../common/js/components/GfwButton';
-import Box from '@mui/material/Box';
 
 const formatAccountListDataOptions = (data) => {
   return data.map(({ organization_id, organization_name }) => ({
@@ -39,8 +42,10 @@ function AddCompany() {
   };
 
   return (
-    <Fragment>
-      <GfwButton classNames="btn-white" onClick={handleOpen} value="+ ADD" />
+    <>
+      <PillButton size="small" startIcon={<Add />} onClick={handleOpen}>
+        Add
+      </PillButton>
       <Dialog
         open={isOpen}
         onClose={handleClose}
@@ -83,16 +88,20 @@ function AddCompany() {
           />
         </DialogContent>
         <DialogActions>
-          <Button onClick={handleClose}>close</Button>
-          <GfwButton
-            classNames="btn-green"
+          <PillButton variant="contained" size="small" color="info" onClick={handleClose}>
+            Close
+          </PillButton>
+          <PillButton
+            variant="contained"
+            size="small"
             disabled={!selectedAccountOption}
             onClick={handleAccountSelection}
-            value="ADD"
-          />
+          >
+            Add
+          </PillButton>
         </DialogActions>
       </Dialog>
-    </Fragment>
+    </>
   );
 }
 

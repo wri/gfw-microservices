@@ -1,15 +1,18 @@
 import { Fragment, useState, useEffect } from 'react';
 import Select from 'react-select';
-import { styled } from '@mui/material/styles';
-import Grid from '@mui/material/Grid';
-import TextField from '@mui/material/TextField';
-import InputLabel from '@mui/material/InputLabel';
-import FormControlLabel from '@mui/material/FormControlLabel';
-import Checkbox from '@mui/material/Checkbox';
-import FormControl from '@mui/material/FormControl';
-import SelectField from '@mui/material/Select';
-import MenuItem from '@mui/material/MenuItem';
-import GfwButton from '../../../../common/js/components/GfwButton';
+import {
+  Grid,
+  TextField,
+  InputLabel,
+  Checkbox,
+  FormControl,
+  FormControlLabel,
+  Select as SelectMui,
+  MenuItem,
+  styled,
+} from '@mui/material';
+
+import { PillButton } from '../../../../components';
 import { profilePage } from '../../../../common/js/config';
 import { fieldValidations } from '../../../../profile/js/utils/validations';
 import { useDialog } from '../../../../common/js/components/Dialog';
@@ -354,7 +357,7 @@ export default function AccountProfileFormSetting() {
               {accountProfileStrings.accountFormLabels.subscription_status_id}
             </FieldLabel>
             <FormControl fullWidth>
-              <SelectField
+              <SelectMui
                 size="small"
                 disabled={accountData.organization_status_id === ACCOUNT_ORG_STATUSES['PENDING']}
                 required
@@ -376,7 +379,7 @@ export default function AccountProfileFormSetting() {
                     {subsOptions.label}
                   </MenuItem>
                 ))}
-              </SelectField>
+              </SelectMui>
             </FormControl>
           </Grid>
         </Grid>
@@ -384,11 +387,14 @@ export default function AccountProfileFormSetting() {
       <Grid container spacing={2} rowSpacing={2}>
         <Grid item sm={6} xs={12}>
           <div className="account-profile-submit-button-container">
-            <GfwButton
-              classNames={`btn-green ${isEditingDisabled ? 'hide' : ''}`}
+            <PillButton
+              variant="contained"
+              size="small"
+              classNames={`${isEditingDisabled ? 'hide' : ''}`}
               onClick={() => updateProAccount(accountFormData)}
-              value="Save"
-            />
+            >
+              Save
+            </PillButton>
           </div>
         </Grid>
       </Grid>

@@ -4,7 +4,6 @@ import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { TokenService } from './token.service';
 
-import { AuthService } from './auth.service';
 import { APIKeyController } from './api-key.controller';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { S3Client } from '@aws-sdk/client-s3';
@@ -18,7 +17,6 @@ import { ExternalAPIKey, FeatureFlag, Organization, UserRoutes } from '@wri-mono
   ],
   providers: [
     TokenService,
-    AuthService,
     {
       provide: '',
       inject: [ConfigService],
@@ -33,7 +31,7 @@ import { ExternalAPIKey, FeatureFlag, Organization, UserRoutes } from '@wri-mono
       },
     },
   ],
-  exports: [TokenService, AuthService],
+  exports: [TokenService],
   controllers: [APIKeyController],
 })
 export class TokenModule {}

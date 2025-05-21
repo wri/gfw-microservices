@@ -10,7 +10,6 @@ const envModule = ConfigModule.forRoot({
 });
 
 import { Module, MiddlewareConsumer } from '@nestjs/common';
-import { AppController } from './app.controller';
 import { TokenModule } from '../api-keys';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { ListsAnalysisModule } from '../list-analysis';
@@ -37,7 +36,7 @@ import { ExternalAPIKey, FeatureFlag, Organization, UserRoutes } from '@wri-mono
     ListsAnalysisModule,
     HealthModule,
   ],
-  controllers: [AppController],
+  controllers: [],
   providers: [],
 })
 export class AppModule {

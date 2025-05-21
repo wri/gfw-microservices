@@ -41,6 +41,8 @@ import { generateCentroidGraphic } from '../../../common/js/utils/esri.utils';
 import getAvailableDiagnostics from './getAvailableDiagnostics';
 import { handleGfwProListVectorTileLayer } from '../../../common/js/utils/gfw.utils';
 import { getSingleLocationData } from './diagnostic.utils';
+import { getBasemapConfiguration } from '../../../map/js/utils/map.utils';
+import featureFlags from '../../../../utils/general.utils';
 
 // Configs
 import { DATA_API_URL, locationsPage, treeCoverLossTilesUrl } from '../../../common/js/config';
@@ -128,9 +130,20 @@ export default class Diagnostics extends Component {
   componentDidMount() {
     this.getHighchartColors();
 
-    this.esriMap = new EsriMap({
-      basemap: 'topo',
-    });
+    const { isGadm41Available } = featureFlags;
+
+    let esriMap;
+    if (isGadm41Available) {
+      esriMap = new EsriMap({
+        basemap: getBasemapConfiguration(),
+      });
+    } else {
+      esriMap = new EsriMap({
+        basemap: 'topo',
+      });
+    }
+
+    this.esriMap = esriMap;
 
     this.mapView = new MapView({
       container: this.mapContainer,

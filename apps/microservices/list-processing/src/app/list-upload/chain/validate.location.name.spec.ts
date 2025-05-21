@@ -24,6 +24,21 @@ describe('ValidateLocationName', () => {
       const result = validator.formatLocationName('Location\0Name');
       expect(result).toBe('LocationName');
     });
+
+    it('should handle multiple newlines and spaces', () => {
+      const result = validator.formatLocationName('\n\nLocation\n\nName\n\n');
+      expect(result).toBe('LocationName');
+    });
+
+    it('should handle empty string', () => {
+      const result = validator.formatLocationName('');
+      expect(result).toBe('');
+    });
+
+    it('should handle string with only whitespace', () => {
+      const result = validator.formatLocationName('   \n  \0  ');
+      expect(result).toBe('');
+    });
   });
 
   describe('isValidLocationName', () => {
@@ -31,12 +46,36 @@ describe('ValidateLocationName', () => {
       expect(validator['isValidLocationName']('Location 123')).toBe(true);
       expect(validator['isValidLocationName']('Test Name')).toBe(true);
       expect(validator['isValidLocationName']('123')).toBe(true);
+      expect(validator['isValidLocationName']('a')).toBe(true);
+      expect(validator['isValidLocationName']('A')).toBe(true);
+      expect(validator['isValidLocationName']('0')).toBe(true);
     });
 
-    it('should return false for names with special characters', () => {
+    it('should return true for names with allowed special characters', () => {
+      expect(validator['isValidLocationName']('Location[Name]')).toBe(true);
+      expect(validator['isValidLocationName']('Test-Name')).toBe(true);
+      expect(validator['isValidLocationName']('Name(123)')).toBe(true);
+      expect(validator['isValidLocationName']('Location.Name')).toBe(true);
+      expect(validator['isValidLocationName']('Location_Name')).toBe(true);
+      expect(validator['isValidLocationName']('Test[123]-Name(456)')).toBe(true);
+      expect(validator['isValidLocationName']('Test.Name_123')).toBe(true);
+    });
+
+    it('should return false for names with non-allowed special characters', () => {
       expect(validator['isValidLocationName']('Location@Name')).toBe(false);
-      expect(validator['isValidLocationName']('Test-Name')).toBe(false);
+      expect(validator['isValidLocationName']('Test#Name')).toBe(false);
       expect(validator['isValidLocationName']('Name!')).toBe(false);
+      expect(validator['isValidLocationName']('Name$')).toBe(false);
+      expect(validator['isValidLocationName']('Name%')).toBe(false);
+      expect(validator['isValidLocationName']('Name&')).toBe(false);
+      expect(validator['isValidLocationName']('Name*')).toBe(false);
+      expect(validator['isValidLocationName']('Name+')).toBe(false);
+      expect(validator['isValidLocationName']('Name=')).toBe(false);
+      expect(validator['isValidLocationName']('Name/')).toBe(false);
+    });
+
+    it('should handle empty string', () => {
+      expect(validator['isValidLocationName']('')).toBe(true);
     });
   });
 
@@ -51,14 +90,34 @@ describe('ValidateLocationName', () => {
       expect(feature.properties.locationName).toBe('Test Location');
     });
 
-    it('should remove special characters from invalid names', () => {
+    it('should preserve allowed special characters', () => {
       const feature: Feature = {
         type: 'Feature',
-        properties: { locationName: 'Test@Location!' },
+        properties: { locationName: 'Test[Location]-Name(123)' },
         geometry: { type: 'Point', coordinates: [0, 0] },
       };
       validator.validateAndFormatLocationName(feature);
-      expect(feature.properties.locationName).toBe('TestLocation');
+      expect(feature.properties.locationName).toBe('Test[Location]-Name(123)');
+    });
+
+    it('should remove non-allowed special characters while preserving allowed ones', () => {
+      const feature: Feature = {
+        type: 'Feature',
+        properties: { locationName: 'Test@Location[Name]-123' },
+        geometry: { type: 'Point', coordinates: [0, 0] },
+      };
+      validator.validateAndFormatLocationName(feature);
+      expect(feature.properties.locationName).toBe('TestLocation[Name]-123');
+    });
+
+    it('should handle null properties', () => {
+      const feature: Feature = {
+        type: 'Feature',
+        properties: null,
+        geometry: { type: 'Point', coordinates: [0, 0] },
+      };
+      validator.validateAndFormatLocationName(feature);
+      expect(feature.properties).toEqual({ locationName: '' });
     });
 
     it('should handle empty or undefined names', () => {
@@ -69,6 +128,16 @@ describe('ValidateLocationName', () => {
       };
       validator.validateAndFormatLocationName(feature);
       expect(feature.properties.locationName).toBe('undefined');
+    });
+
+    it('should handle complex mixed cases', () => {
+      const feature: Feature = {
+        type: 'Feature',
+        properties: { locationName: '  Test@Location[Name]-123(456).789_ABC  \n' },
+        geometry: { type: 'Point', coordinates: [0, 0] },
+      };
+      validator.validateAndFormatLocationName(feature);
+      expect(feature.properties.locationName).toBe('TestLocation[Name]-123(456).789_ABC');
     });
   });
 
@@ -120,6 +189,48 @@ describe('ValidateLocationName', () => {
       await expect(validator.handle(input)).rejects.toThrow(
         'Invalid input format: locations should be an array'
       );
+    });
+
+    it('should handle empty features array', async () => {
+      const mockRequest: PreviewListRequest = {
+        path: '/test/path',
+        preview: true,
+      };
+
+      const input: ChainType = {
+        request: mockRequest,
+        geojson: {
+          type: 'FeatureCollection',
+          features: [],
+        },
+      };
+
+      const result = await validator.handle(input);
+      expect(result).toEqual(input);
+    });
+
+    it('should handle features with missing properties', async () => {
+      const mockRequest: PreviewListRequest = {
+        path: '/test/path',
+        preview: true,
+      };
+
+      const input: ChainType = {
+        request: mockRequest,
+        geojson: {
+          type: 'FeatureCollection',
+          features: [
+            {
+              type: 'Feature',
+              properties: {},
+              geometry: { type: 'Point', coordinates: [0, 0] },
+            },
+          ],
+        },
+      };
+
+      const result = await validator.handle(input);
+      expect(result.geojson.features[0].properties.locationName).toBe('undefined');
     });
   });
 });

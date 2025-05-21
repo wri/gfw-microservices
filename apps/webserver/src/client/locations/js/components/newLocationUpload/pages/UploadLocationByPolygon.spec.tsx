@@ -162,7 +162,7 @@ describe('UploadLocationByPolygon', () => {
       );
 
       expect(
-        screen.queryByText(/only letters, numbers, and spaces are allowed/i)
+        screen.queryByText(/only letters, numbers, spaces, and \[\]\(\)\.-_ are allowed/i)
       ).toBeInTheDocument();
     }, 15100);
 
@@ -190,7 +190,7 @@ describe('UploadLocationByPolygon', () => {
       );
 
       expect(
-        screen.queryByText(/only letters, numbers, and spaces are allowed/i)
+        screen.queryByText(/only letters, numbers, spaces, and \[\]\(\)\.-_ are allowed/i)
       ).not.toBeInTheDocument();
       expect(
         screen.queryByText(/leading or trailing spaces are not allowed/i)

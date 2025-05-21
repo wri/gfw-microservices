@@ -2,7 +2,6 @@ import {
   alphanumericWithSpaceSchema,
   locationNameSchema,
   coordinateSchema,
-  locationNameWithSpecialCharsSchema,
 } from './schema';
 
 describe('Schema Validation', () => {
@@ -23,43 +22,48 @@ describe('Schema Validation', () => {
     });
 
     it('should reject strings with leading or trailing spaces', () => {
-      const result = alphanumericWithSpaceSchema.safeParse(' test123');
-      expect(result.success).toBe(false);
-      if (!result.success) {
-        expect(result.error.issues[0].message).toBe('Leading or trailing spaces are not allowed');
-      }
-    });
-  });
+      const leadingSpace = alphanumericWithSpaceSchema.safeParse(' test123');
+      const trailingSpace = alphanumericWithSpaceSchema.safeParse('test123 ');
+      const bothSpaces = alphanumericWithSpaceSchema.safeParse(' test123 ');
 
-  describe('locationNameWithSpecialCharsSchema', () => {
-    it('should accept strings with allowed special characters', () => {
-      expect(locationNameWithSpecialCharsSchema.safeParse('test[123]').success).toBe(true);
-      expect(locationNameWithSpecialCharsSchema.safeParse('test(123)').success).toBe(true);
-      expect(locationNameWithSpecialCharsSchema.safeParse('test-123').success).toBe(true);
-      expect(locationNameWithSpecialCharsSchema.safeParse('test_123').success).toBe(true);
-      expect(locationNameWithSpecialCharsSchema.safeParse('test.123').success).toBe(true);
-    });
+      expect(leadingSpace.success).toBe(false);
+      expect(trailingSpace.success).toBe(false);
+      expect(bothSpaces.success).toBe(false);
 
-    it('should reject strings with disallowed special characters', () => {
-      expect(locationNameWithSpecialCharsSchema.safeParse('test@123').success).toBe(false);
-      expect(locationNameWithSpecialCharsSchema.safeParse('test#123').success).toBe(false);
-      expect(locationNameWithSpecialCharsSchema.safeParse('test$123').success).toBe(false);
-    });
-
-    it('should reject strings with leading or trailing spaces', () => {
-      const result = locationNameWithSpecialCharsSchema.safeParse(' test123');
-      expect(result.success).toBe(false);
-      if (!result.success) {
-        expect(result.error.issues[0].message).toBe('Leading or trailing spaces are not allowed');
+      if (!leadingSpace.success) {
+        expect(leadingSpace.error.issues[0].message).toBe('Leading or trailing spaces are not allowed');
       }
     });
   });
 
   describe('locationNameSchema', () => {
-    it('should accept valid location names', () => {
+    it('should accept valid location names with extended characters', () => {
       expect(locationNameSchema.safeParse('Farm 123').success).toBe(true);
       expect(locationNameSchema.safeParse('Farm[123]').success).toBe(true);
       expect(locationNameSchema.safeParse('Farm(123)').success).toBe(true);
+      expect(locationNameSchema.safeParse('Farm-123').success).toBe(true);
+      expect(locationNameSchema.safeParse('Farm_123').success).toBe(true);
+      expect(locationNameSchema.safeParse('Farm.123').success).toBe(true);
+    });
+
+    it('should reject invalid special characters', () => {
+      expect(locationNameSchema.safeParse('Farm@123').success).toBe(false);
+      expect(locationNameSchema.safeParse('Farm#123').success).toBe(false);
+      expect(locationNameSchema.safeParse('Farm$123').success).toBe(false);
+    });
+
+    it('should reject strings with leading or trailing spaces', () => {
+      const leadingSpace = locationNameSchema.safeParse(' Farm[123]');
+      const trailingSpace = locationNameSchema.safeParse('Farm[123] ');
+      const bothSpaces = locationNameSchema.safeParse(' Farm[123] ');
+
+      expect(leadingSpace.success).toBe(false);
+      expect(trailingSpace.success).toBe(false);
+      expect(bothSpaces.success).toBe(false);
+
+      if (!leadingSpace.success) {
+        expect(leadingSpace.error.issues[0].message).toBe('Leading or trailing spaces are not allowed');
+      }
     });
 
     it('should reject empty strings', () => {

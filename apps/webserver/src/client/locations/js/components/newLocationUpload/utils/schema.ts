@@ -2,23 +2,22 @@ import { z } from 'zod';
 
 const validCoordinateFormat = /^-?\d+\.\d+$/;
 
-const createStringSchema = (regex: RegExp, errorMessage: string) => {
-  return z
+const createStringSchema = (regex: RegExp, message: string) =>
+  z
     .string()
-    .regex(regex, errorMessage)
+    .regex(regex, message)
     .refine((val) => val === val.trim(), {
       message: 'Leading or trailing spaces are not allowed',
     });
-};
 
 export const alphanumericWithSpaceSchema = createStringSchema(
   /^[a-zA-Z0-9 ]*$/,
   'Only letters, numbers, and spaces are allowed'
 );
 
-export const locationNameWithSpecialCharsSchema = createStringSchema(
+export const extendedLocationNameSchema = createStringSchema(
   /^[a-zA-Z0-9 [\]().\-_]*$/,
-  'Only letters, numbers, spaces, and special characters []().-_. are allowed'
+  'Only letters, numbers, spaces, and []().-_ are allowed'
 );
 
 export const coordinateSchema = z.object({
@@ -50,9 +49,6 @@ export const coordinateSchema = z.object({
     ),
 });
 
-export const locationNameSchema = locationNameWithSpecialCharsSchema.refine(
-  (val) => val.trim() !== '',
-  {
-    message: 'Enter location name',
-  }
-);
+export const locationNameSchema = extendedLocationNameSchema.refine((val) => val.trim() !== '', {
+  message: 'Enter location name',
+});

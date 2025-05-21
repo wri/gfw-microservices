@@ -1,7 +1,7 @@
 import { Logger } from '@nestjs/common';
 import { SQLUtils } from '../util';
 import * as sql from 'mssql';
-import manifest = require('../queries/organization/sp-orgs-manifest.json');
+import * as manifest from '../queries/organization/orgs-sp-manifest.json';
 
 export async function checkStoredProcedureTsImplementation(clientDb: string) {
   const logger = new Logger('check.org.ts.sp');
@@ -10,19 +10,7 @@ export async function checkStoredProcedureTsImplementation(clientDb: string) {
    * 1️⃣  Gather procedure names from the manifest if exists
    * ----------------------------------------------------------------*/
   const spNames = manifest.files as string[];
-  // The list we send to SQL must include the exact DB proc names (with `usp`)
-  // const spNamesWithPrefix: string[] = tsFiles.map((f) => path.basename(f, '.ts'));
-
-  // For logging we also keep a prettier version: strip `usp` + lowercase first char
-  // const spNamesPretty: string[] = spNamesWithPrefix.map((name) => {
-  //   if (/^usp/i.test(name)) {
-  //     const raw = name.substring(3);
-  //     return raw.charAt(0).toLowerCase() + raw.slice(1);
-  //   }
-  //   return name.charAt(0).toLowerCase() + name.slice(1);
-  // });
-
-  // logger.debug(`Procedures found in code: ${spNamesPretty.join(', ')}`);
+  logger.debug(`Procedures found in code: ${spNames.join(', ')}`);
 
   /* ------------------------------------------------------------------
    * 2️⃣  Prepare SQL + parameters

@@ -6,9 +6,14 @@ export class ValidateLocationName extends AbstractHandler<ChainType> {
   private readonly logger = new Logger(ValidateLocationName.name);
 
   private isValidLocationName(name: string): boolean {
-    // Check if the name contains only alphanumeric characters and spaces
-    const alphanumericSpaceRegex = /^[a-zA-Z0-9\s]+$/;
-    return alphanumericSpaceRegex.test(name);
+    // Empty string is considered valid
+    if (!name) {
+      return true;
+    }
+
+    // Check if the name contains alphanumeric characters, spaces, and allowed special characters
+    const validCharsRegex = /^[a-zA-Z0-9\s[\]().\-_]+$/;
+    return validCharsRegex.test(name);
   }
 
   public formatLocationName(name: string): string {
@@ -17,12 +22,21 @@ export class ValidateLocationName extends AbstractHandler<ChainType> {
   }
 
   public validateAndFormatLocationName(location: Feature): void {
-    const originalName = String(location.properties.locationName) || '';
+    // Handle null properties
+    if (!location.properties) {
+      location.properties = { locationName: '' };
+      return;
+    }
+
+    const originalName =
+      location.properties.locationName === undefined
+        ? 'undefined'
+        : String(location.properties.locationName || '');
     const formattedName = this.formatLocationName(originalName);
 
     if (!this.isValidLocationName(formattedName)) {
-      // Remove offending characters (non-alphanumeric and non-space)
-      location.properties.locationName = formattedName.replace(/[^a-zA-Z0-9\s]/g, '');
+      // Remove offending characters (non-alphanumeric, non-space, and non-allowed special characters)
+      location.properties.locationName = formattedName.replace(/[^a-zA-Z0-9\s[\]().\-_]/g, '');
     } else {
       location.properties.locationName = formattedName; // Store the cleaned name
     }

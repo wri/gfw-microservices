@@ -1,10 +1,13 @@
 {
   "extends": "../../tsconfig.base.json",
   "compilerOptions": {
-    "module": "commonjs"
+    "module": "commonjs",
+    "resolveJsonModule": true,
+    "moduleResolution": "node",
+    "composite": true
   },
   "files": [],
-  "include": [],
+  "include": ["**/*.ts", "**/*.json"],
   "references": [
     {
       "path": "./tsconfig.lib.json"

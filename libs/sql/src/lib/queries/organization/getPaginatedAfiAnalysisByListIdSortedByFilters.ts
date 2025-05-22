@@ -177,11 +177,50 @@ IF (@Filters IS NOT NULL)
 
 DECLARE @isValidSortColumn BIT = 0;
 
+-- Check if sortByAttribute exists in regular columns
 IF CHARINDEX(@sortByAttribute, @afiColumns) > 0
    OR CHARINDEX(@sortByAttribute, @ltColumns) > 0
    OR CHARINDEX(@sortByAttribute, @calculatedColumns) > 0
 BEGIN
     SET @isValidSortColumn = 1;
+END;
+
+-- Check if sortByAttribute is in JsonAttributeColumns
+IF @JsonAttributeColumns IS NOT NULL AND LEN(@JsonAttributeColumns) > 0
+BEGIN
+    -- Extract attribute names from JsonAttributeColumns
+    DECLARE @jsonAttributeNames TABLE (AttributeName NVARCHAR(255));
+
+    -- Parse the JsonAttributeColumns string to get attribute names
+    -- Format is typically: CAST(JSON_VALUE(lt.attributes, '$."attr1"') AS type) AS [attr1], ...
+    DECLARE @tempJsonColumns NVARCHAR(MAX) = @JsonAttributeColumns;
+    DECLARE @startPos INT, @endPos INT;
+
+    WHILE LEN(@tempJsonColumns) > 0
+    BEGIN
+        SET @startPos = CHARINDEX('AS [', @tempJsonColumns);
+        IF @startPos > 0
+        BEGIN
+            SET @startPos = @startPos + 4;
+            SET @endPos = CHARINDEX(']', @tempJsonColumns, @startPos);
+            IF @endPos > 0
+            BEGIN
+                INSERT INTO @jsonAttributeNames
+                SELECT SUBSTRING(@tempJsonColumns, @startPos, @endPos - @startPos);
+                SET @tempJsonColumns = SUBSTRING(@tempJsonColumns, @endPos + 1, LEN(@tempJsonColumns));
+            END
+            ELSE
+                BREAK;
+        END
+        ELSE
+            BREAK;
+    END
+
+    -- Check if sortByAttribute is in the JSON attributes
+    IF EXISTS (SELECT 1 FROM @jsonAttributeNames WHERE AttributeName = @sortByAttribute)
+    BEGIN
+        SET @isValidSortColumn = 1;
+    END
 END;
 
 IF @orderType IS NOT NULL
@@ -194,6 +233,8 @@ BEGIN
                      THEN 'afi.' + QUOTENAME(@sortByAttribute)
                 WHEN CHARINDEX(@sortByAttribute, @ltColumns) > 0
                      THEN 'lt.' + QUOTENAME(@sortByAttribute)
+                WHEN EXISTS (SELECT 1 FROM @jsonAttributeNames WHERE AttributeName = @sortByAttribute)
+                     THEN 'JSON_VALUE(lt.attributes, ''$."' + @sortByAttribute + '"'')'
                 ELSE QUOTENAME(@sortByAttribute)
             END
             + ' ' + @orderType;

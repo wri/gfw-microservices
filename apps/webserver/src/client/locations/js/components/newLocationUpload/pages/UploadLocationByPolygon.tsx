@@ -67,7 +67,7 @@ export function UploadLocationByPolygon({
   const theme = useTheme();
   const history = useHistory();
 
-  const { clearUploadType, setUploadLocationByPolygon } = useUploadLocation();
+  const { clearUploadType, setUploadLocationByPolygon, selectUploadType } = useUploadLocation();
   const isRegularScreenSize = useMediaQuery(theme.breakpoints.up('sm'));
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const locationNameRef = useRef<HTMLInputElement | null>(null);
@@ -180,6 +180,7 @@ export function UploadLocationByPolygon({
   };
 
   const onSubmitFullForm = ({ locationName }: FormFieldsLocationName) => {
+    selectUploadType(UploadType.ByPolygon);
     try {
       const coordinatesString = coordinates.map(({ latitude, longitude }) => ({
         latitude: latitude.toString(),

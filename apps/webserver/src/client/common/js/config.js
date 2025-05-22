@@ -2454,9 +2454,8 @@ export const mapPage = {
     {
       id: 'custom-default',
       label: 'Default',
-      customVectorUrl: `${pro_AWS_base}/basemaps/basemap-default.json`,
-      // customVectorUrl: 'https://gist.githubusercontent.com/apatterson0617/839b5fa4605afe9153c7a4405032c949/raw/a6d347df7c20cdb8bb60ed480641bf84a0672b5c/basemap-default.json',
-      default: true,
+      customVectorUrl:
+        'https://tiles.globalforestwatch.org/gadm_administrative_boundaries/v4.1.84/default/{z}/{x}/{y}.pbf',
       content:
         '<div class="basemap-modal-title">DEFAULT</div><p>The default base map is derived from Google Maps and shows political boundaries, major geological features, and other key areas of interest. Read the terms of service <a href="https://www.google.com/help/terms_maps.html" target="_blank">here</a>.</p>',
     },

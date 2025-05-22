@@ -234,7 +234,7 @@ BEGIN
                 WHEN CHARINDEX(@sortByAttribute, @ltColumns) > 0
                      THEN 'lt.' + QUOTENAME(@sortByAttribute)
                 WHEN EXISTS (SELECT 1 FROM @jsonAttributeNames WHERE AttributeName = @sortByAttribute)
-                     THEN 'JSON_VALUE(lt.attributes, ''$."' + @sortByAttribute + '"'')'
+                     THEN 'ISNULL(JSON_VALUE(lt.attributes, ''$."' + @sortByAttribute + '"''), '''')'
                 ELSE QUOTENAME(@sortByAttribute)
             END
             + ' ' + @orderType;

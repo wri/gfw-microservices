@@ -9,8 +9,7 @@ class AlertsPage {
     subtitle: () => cy.get('.subtitle'),
     downloadConfirmationTitle: () => cy.get('[data-cy="download-dialog"]'),
     downloadConfirmationMessage: () => cy.get('.dialog__prompt'),
-    downloadConfirmationCloseBtn: () =>
-      cy.get('[data-cy="download-dialog"]').find('[type="button"]'),
+    downloadConfirmationCloseBtn: () => cy.get('[data-testid="CloseIcon"]'),
     weekRadioBtn: () => cy.contains('Week'),
     monthRadioBtn: () => cy.contains('Month'),
     quarterRadioBtn: () => cy.contains('Quarter'),

@@ -31,7 +31,7 @@ class ListDetailsPage {
       cy.contains(
         "You have selected a list file for download. Please check your email for your data's download link."
       ),
-    closeAlertDownloadBtn: () => cy.get('[data-cy="download-dialog"]').find('button').first(),
+    closeAlertDownloadBtn: () => cy.get('[data-testid="CloseIcon"]'),
     listByName: (name) => cy.contains('.list-item', name),
     post2020Tab: () => cy.get('[data-cy="post-2020-tab"]'),
     post2000Tab: () => cy.get('[data-cy="post-2000-tab"]'),

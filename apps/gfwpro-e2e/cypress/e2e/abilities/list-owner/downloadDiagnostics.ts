@@ -18,7 +18,7 @@ Then('I am able to download percentage tree of forest', () => {
   if (!cy.get('[data-cy="download-dialog"]').should('be.visible')) {
     cy.get('.diagnostics-chart-header').get('[data-testid="DownloadForOfflineIcon"]').eq(1).click();
   } else {
-    cy.get('[data-cy="download-dialog"]').find('button').first().click();
+    cy.get('[data-testid="CloseIcon"]').click();
     cy.get('.diagnostics-chart-header').get('[data-testid="DownloadForOfflineIcon"]').eq(1).click();
   }
 });
@@ -27,7 +27,7 @@ Then('I am able to download percentage of historic area lost', () => {
   if (!cy.get('[data-cy="download-dialog"]').should('be.visible')) {
     cy.get('.diagnostics-chart-header').get('[data-testid="DownloadForOfflineIcon"]').eq(2).click();
   } else {
-    cy.get('[data-cy="download-dialog"]').find('button').first().click();
+    cy.get('[data-testid="CloseIcon"]').click();
     cy.get('.diagnostics-chart-header').get('[data-testid="DownloadForOfflineIcon"]').eq(2).click();
   }
 });
@@ -36,7 +36,7 @@ Then('I am able to download tree cover loss', () => {
   if (!cy.get('[data-cy="download-dialog"]').should('be.visible')) {
     cy.get('.diagnostics-chart-header').get('[data-testid="DownloadForOfflineIcon"]').eq(3).click();
   } else {
-    cy.get('[data-cy="download-dialog"]').find('button').first().click();
+    cy.get('[data-testid="CloseIcon"]').click();
     cy.get('.diagnostics-chart-header').get('[data-testid="DownloadForOfflineIcon"]').eq(3).click();
   }
 });
@@ -46,7 +46,7 @@ Then('I am able to download tree cover loss on argentina otbn', () => {
     cy.get('.MuiTabs-root').find('button').last().click();
     cy.get('.diagnostics-chart-header').get('[data-testid="DownloadForOfflineIcon"]').eq(4).click();
   } else {
-    cy.get('[data-cy="download-dialog"]').find('button').first().click();
+    cy.get('[data-testid="CloseIcon"]').click();
     cy.get('.MuiTabs-root').find('button').last().click();
     cy.get('.diagnostics-chart-header')
       .get('[data-testid="DownloadForOfflineIcon"]')

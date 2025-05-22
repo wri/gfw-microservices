@@ -1542,7 +1542,8 @@ class Map extends Component {
   goToLocations = () => {
     const { esriJson, locationName, globalIds, activeGFWList, selectedMapFeatureAttributes } =
       this.state;
-    this.setState({ spinnerOn: true });
+
+    this.setState({ spinnerOn: false });
     const geoString = JSON.stringify(esriJson);
 
     const requestObject = {

@@ -17,6 +17,7 @@ const mockClearUploadType = jest.fn();
 jest.mock('../contexts', () => ({
   useUploadLocation: () => ({
     setUploadLocationByPolygon: jest.fn(),
+    selectUploadType: jest.fn(),
     clearUploadType: mockClearUploadType,
   }),
 }));

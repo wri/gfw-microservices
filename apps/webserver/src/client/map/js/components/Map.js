@@ -2310,10 +2310,12 @@ class Map extends Component {
           bmLayer.visible = isTarget;
         }
         if (isTarget) {
-          this.view.map.basemap = '';
+          this.view.map.basemap = null;
         }
       } else if (isTarget) {
         this.view.map.basemap = id;
+      } else if (id === 'custom-default') {
+        this.view.map.basemap = getBasemapConfiguration();
       }
     });
 

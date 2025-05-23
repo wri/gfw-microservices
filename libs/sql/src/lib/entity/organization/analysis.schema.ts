@@ -10,6 +10,8 @@ export const AnalysisSchema = {
     locationId: {
       type: Number,
       name: 'location_id',
+      nullable: false,
+      unique: true,
     },
     locationStatusId: {
       type: Number,

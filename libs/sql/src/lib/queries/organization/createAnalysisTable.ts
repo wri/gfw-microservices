@@ -9,7 +9,7 @@ BEGIN
 	SET @TEMPLATE = '
 		CREATE TABLE [{TABLE_NAME}]
 		(
-			[location_id] INT NOT NULL PRIMARY KEY,
+			[location_id] INT UNIQUE
 			[location_status_id] INT NOT NULL,
 
 			[tree_cover_loss_total_yearly] NVARCHAR(MAX) DEFAULT ''{}'',

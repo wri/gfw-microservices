@@ -188,39 +188,7 @@ END;
 -- Check if sortByAttribute is in JsonAttributeColumns
 IF @JsonAttributeColumns IS NOT NULL AND LEN(@JsonAttributeColumns) > 0
 BEGIN
-    -- Extract attribute names from JsonAttributeColumns
-    DECLARE @jsonAttributeNames TABLE (AttributeName NVARCHAR(255));
-
-    -- Parse the JsonAttributeColumns string to get attribute names
-    -- Format is typically: CAST(JSON_VALUE(lt.attributes, '$."attr1"') AS type) AS [attr1], ...
-    DECLARE @tempJsonColumns NVARCHAR(MAX) = @JsonAttributeColumns;
-    DECLARE @startPos INT, @endPos INT;
-
-    WHILE LEN(@tempJsonColumns) > 0
-    BEGIN
-        SET @startPos = CHARINDEX('AS [', @tempJsonColumns);
-        IF @startPos > 0
-        BEGIN
-            SET @startPos = @startPos + 4;
-            SET @endPos = CHARINDEX(']', @tempJsonColumns, @startPos);
-            IF @endPos > 0
-            BEGIN
-                INSERT INTO @jsonAttributeNames
-                SELECT SUBSTRING(@tempJsonColumns, @startPos, @endPos - @startPos);
-                SET @tempJsonColumns = SUBSTRING(@tempJsonColumns, @endPos + 1, LEN(@tempJsonColumns));
-            END
-            ELSE
-                BREAK;
-        END
-        ELSE
-            BREAK;
-    END
-
-    -- Check if sortByAttribute is in the JSON attributes
-    IF EXISTS (SELECT 1 FROM @jsonAttributeNames WHERE AttributeName = @sortByAttribute)
-    BEGIN
-        SET @isValidSortColumn = 1;
-    END
+    SET @isValidSortColumn = 1;
 END;
 
 IF @orderType IS NOT NULL
@@ -242,28 +210,29 @@ BEGIN
                      THEN 'afi.' + QUOTENAME(@sortByAttribute)
                 WHEN CHARINDEX(@sortByAttribute, @ltColumns) > 0
                      THEN 'lt.' + QUOTENAME(@sortByAttribute)
-                WHEN EXISTS (SELECT 1 FROM @jsonAttributeNames WHERE AttributeName = @sortByAttribute)
-                     THEN 'CASE
-                            WHEN ISJSON(lt.attributes) = 1 AND JSON_VALUE(lt.attributes, ''' + @jsonPath + ''') IS NOT NULL
-                            THEN CASE
-                                   WHEN ISNUMERIC(JSON_VALUE(lt.attributes, ''' + @jsonPath + ''')) = 1 THEN 0
-                                   ELSE 1
-                                 END
-                            ELSE 2
-                          END,
-                          CASE
-                            WHEN ISNUMERIC(JSON_VALUE(lt.attributes, ''' + @jsonPath + ''')) = 1
-                            THEN CAST(JSON_VALUE(lt.attributes, ''' + @jsonPath + ''') AS DECIMAL(18,2))
-                            ELSE NULL
-                          END,
-                          CASE
-                            WHEN ISNUMERIC(JSON_VALUE(lt.attributes, ''' + @jsonPath + ''')) = 0
-                            THEN JSON_VALUE(lt.attributes, ''' + @jsonPath + ''')
-                            ELSE NULL
-                          END'
-                ELSE QUOTENAME(@sortByAttribute)
-            END
-            + ' ' + @orderType;
+                ELSE 'CASE
+                        WHEN ISJSON(lt.attributes) = 1 AND JSON_VALUE(lt.attributes, ''' + @jsonPath + ''') IS NOT NULL
+                        THEN CASE
+                               WHEN ISNUMERIC(JSON_VALUE(lt.attributes, ''' + @jsonPath + ''')) = 1 THEN 0
+                               ELSE 1
+                             END
+                        ELSE 2
+                      END,
+                      CASE
+                        WHEN ISNUMERIC(JSON_VALUE(lt.attributes, ''' + @jsonPath + ''')) = 1
+                        THEN CASE
+                               WHEN ''' + @orderType + ''' = ''DESC''
+                               THEN -CAST(JSON_VALUE(lt.attributes, ''' + @jsonPath + ''') AS DECIMAL(18,2))
+                               ELSE CAST(JSON_VALUE(lt.attributes, ''' + @jsonPath + ''') AS DECIMAL(18,2))
+                             END
+                        ELSE NULL
+                      END,
+                      CASE
+                        WHEN ISNUMERIC(JSON_VALUE(lt.attributes, ''' + @jsonPath + ''')) = 0
+                        THEN JSON_VALUE(lt.attributes, ''' + @jsonPath + ''')
+                        ELSE NULL
+                      END ' + @orderType
+            END;
 END
 ELSE
 BEGIN

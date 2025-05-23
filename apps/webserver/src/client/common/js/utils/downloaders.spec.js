@@ -1,4 +1,4 @@
-import { downloadCSV, downloadResults, downloadZIP } from './downloaders';
+import { downloadCSV, downloadZIP } from './downloaders';
 import JSZip from 'jszip';
 import FileSaver from 'file-saver';
 
@@ -27,19 +27,6 @@ describe('CSV and ZIP Download Utils', () => {
       ];
 
       downloadCSV(csvData);
-
-      expect(navigator.msSaveOrOpenBlob).toHaveBeenCalled();
-    });
-  });
-
-  describe('downloadResults', () => {
-    it('should use msSaveOrOpenBlob if available', () => {
-      const csvData = [
-        ['col1', 'col2'],
-        ['val1', 'val2'],
-      ];
-
-      downloadResults(csvData);
 
       expect(navigator.msSaveOrOpenBlob).toHaveBeenCalled();
     });

@@ -15,60 +15,33 @@ const _createCSVBlobUrl = (CSVString) => {
     : window.webkitURL.createObjectURL(csvBlob);
 };
 
-const downloadResults = (csvData) => {
-  let csvContent = '';
-  csvData.forEach(function (dataRow) {
-    const dataString = dataRow.join(',');
-    csvContent += dataString + '\n';
-  });
-
-  const blobUri = _createCSVBlobUrl(csvContent);
-  const link = document.createElement('a');
-  link.setAttribute('href', blobUri);
-  link.setAttribute('download', 'download.csv');
-
-  document.body.appendChild(link);
-
-  if (navigator.msSaveOrOpenBlob) {
-    csvContent = '';
-    csvData.forEach(function (dataRow) {
-      const dataString = dataRow.join(',');
-      csvContent += dataString + '\n';
-    });
-    const blob = new Blob([csvContent], { type: 'text/csv' });
-    navigator.msSaveOrOpenBlob(blob, 'download.csv');
-  } else {
-    link.click();
-  }
-  document.body.removeChild(link);
-};
+const _generateCSVContent = (csvData) =>
+  csvData.map((row) => row.join(',')).join('\n');
 
 export const downloadCSV = (csvData) => {
-  let csvContent = '';
-  csvData.forEach(function (dataRow) {
-    const dataString = dataRow.join(',');
-    csvContent += dataString + '\n';
-  });
+  const csvContent = _generateCSVContent(csvData);
+
+  if (navigator.msSaveOrOpenBlob) {
+    const blob = new Blob([csvContent], { type: 'text/csv' });
+    navigator.msSaveOrOpenBlob(blob, 'download.csv');
+    return;
+  }
 
   const blobUri = _createCSVBlobUrl(csvContent);
   const link = document.createElement('a');
   link.setAttribute('href', blobUri);
   link.setAttribute('download', 'download.csv');
 
-  document.body.appendChild(link);
-
-  if (navigator.msSaveOrOpenBlob) {
-    csvContent = '';
-    csvData.forEach(function (dataRow) {
-      const dataString = dataRow.join(',');
-      csvContent += dataString + '\n';
-    });
-    const blob = new Blob([csvContent], { type: 'text/csv' });
-    navigator.msSaveOrOpenBlob(blob, 'download.csv');
-  } else {
+  let isAppended = false;
+  try {
+    document.body.appendChild(link);
+    isAppended = true;
     link.click();
+  } finally {
+    if (isAppended) {
+      document.body.removeChild(link);
+    }
   }
-  document.body.removeChild(link);
 };
 
 export const downloadZIP = (csvDataArr, names) => {
@@ -89,10 +62,4 @@ export const downloadZIP = (csvDataArr, names) => {
   promise.then((res) => {
     FileSaver.saveAs(res, 'result.zip');
   });
-};
-
-module.exports = {
-  downloadCSV,
-  downloadResults,
-  downloadZIP,
 };

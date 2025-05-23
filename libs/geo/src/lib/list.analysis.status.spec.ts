@@ -958,7 +958,7 @@ describe('list.analysis.status.ts', () => {
       ).rejects.toThrow('Missing Yield Values');
     });
 
-    it('should throw error "Some yield has non-numeric value" when has only GHG analysis and commodity is defined as non MapSpam Commodity but has non-numeric value for some locations', async () => {
+    it('should throw error "Non-numeric yield values" when has only GHG analysis and commodity is defined as non MapSpam Commodity but has non-numeric value for some locations', async () => {
       const fakeClientDatabase = 'mockClientDB';
       const fakeListId = 123;
       const fakeAnalysisIds = 'GHG,FCD';
@@ -1052,7 +1052,7 @@ describe('list.analysis.status.ts', () => {
           99,
           false
         )
-      ).rejects.toThrow('Some yield has non-numeric value');
+      ).rejects.toThrow('Non-numeric yield values');
     });
 
     it('should create analysis when has only GHG analysis and commodity is defined as non MapSpam Commodity  and has yield for all locations', async () => {

@@ -537,7 +537,7 @@ const validateYields = (listAttributes: ListSchemaType[], nullIsAvailable: boole
       }
       // Check if yield value is a number
       if (isNaN(parseFloat(yieldValue))) {
-        throw new Error('Some yield has non-numeric value');
+        throw new Error('Non-numeric yield values');
       }
       return true;
     });

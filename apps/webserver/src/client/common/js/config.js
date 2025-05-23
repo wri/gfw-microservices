@@ -21,8 +21,6 @@ export const GADM_SERVICE__STAGING =
 // Geostore admin URL
 export const baseGeostoreURL = 'https://production-api.globalforestwatch.org/v2/geostore/';
 
-export const convertURL = 'https://production-api.globalforestwatch.org/v2/ogr/convert';
-
 export const oversizedUploadText =
   'Lists are limited to a maximum of 1,500 locations. Please cancel this edit and ensure your final list will contain no more than 1,500 locations.';
 
@@ -137,7 +135,6 @@ export const locationsPage = {
     howToGuideFooter: () =>
       `<span>View resources on our <a target="_blank" href=${GFW_PRO_HELP_CENTER__LINK}>Help Center</a>.</span>`,
   },
-  updatedPalmOilMillUrl: 'https://gis-gfw.wri.org/arcgis/rest/services/commodities/MapServer/34',
   highchartSlugs: [
     'Indonesia-Legal-Classifications',
     'Land-Cover-Southeast-Asia',
@@ -859,43 +856,10 @@ export const locationsPage = {
     errors: {
       cannotBeEditedInBrowser:
         'This column cannot be edited in the browser. Download the file to fix these errors, then re-upload above.',
-      noLocationsSelected: {
-        title: 'No locations selected',
-        message: 'Select locations to upload.',
-      },
-      addTypeRequired: {
-        title: 'You must select a type',
-        message: 'Please pick a type (investment or commodity).',
-      },
-      commodityTypeRequired: {
-        title: 'You must select a commodity type',
-        message: 'Please pick a type.',
-      },
+
       fileExtensionNotSupported: {
         title: 'File extension not supported',
         message: 'The supported file extensions are: csv, xlx, zip, kml, and kmz.',
-      },
-      otherCommodityTypeRequired: {
-        title: 'You must provide a commodity',
-        message: 'Please enter in the name of the commodity you are uploading.',
-      },
-      locationsNotValidated: {
-        title: 'Locations not validated',
-        message:
-          'Please return to Step 3 and look for fields with validation errors. Hover the mouse over each field to see the error, and edit your locations to correct the issues before advancing to Step 4.',
-      },
-      notAllLocationsValid: {
-        title: 'Are you sure?',
-        message: ' from your upload will not be added to GFW Pro.',
-      },
-      endDateBeforeStartDate: {
-        message: 'Please make sure Start Date is earlier than End Date',
-      },
-      missingEndDate: {
-        message: 'Please make sure End Date is included',
-      },
-      missingStartDate: {
-        message: 'Please make sure Start Date is included',
       },
     },
     next: 'Next',
@@ -916,25 +880,14 @@ export const locationsPage = {
     additionalMetadata: 'Additional metadata',
     startDate: 'Start Date',
     endDate: 'End Date',
-    timeHorizonOptions: [
-      { label: 'None', id: '' },
-      { label: '3 months', id: '3 months' },
-      { label: '6 months', id: '6 months' },
-      { label: '1 year', id: '1 year' },
-      { label: 'Custom timeframe', id: 'Time Horizon' },
-    ],
+
     accuracyOptions: [
       { label: 'Very Confident', id: 'very' },
       { label: 'Moderately Confident', id: 'moderately' },
       { label: 'Not Confident', id: 'not' },
       { label: "Don't Know", id: 'idk' },
     ],
-    attrTypes: [
-      { label: 'Integer', id: 'int' },
-      { label: 'Text', id: 'nvarchar(150)' },
-      { label: 'Float', id: 'float' },
-      { label: 'Date', id: 'nvarchar(150)' },
-    ],
+
     protectedAreas: {
       localhost: 'Lz6YLHN1eyIwJNZDNp1IkFglwrO6qQfAwwRGz-KkyrPDyOjRgiP02tf7gQnD0sRy',
       'pro-staging.globalforestwatch.org':
@@ -944,213 +897,34 @@ export const locationsPage = {
       'pro.globalforestwatch.org':
         'MCrBhmBWwyPefdQamP74oGxZkDeWMoeP5qSUlKkeYxMInNyuC7e2Sg_5Cz70d8UQU4Y5lEALv2dedpuGo5Dv3A..',
     },
-    protectedServices: {
-      localhost: 'Lz6YLHN1eyIwJNZDNp1IkFglwrO6qQfAwwRGz-KkyrPDyOjRgiP02tf7gQnD0sRy',
-      'pro-staging.globalforestwatch.org':
-        'P9JirtCtnVDKuuxWwOOzhkjXTZhYZOdOX2lx9ucHcY9bwMkxyvwIq9cm4o7BiH4Cajir0vspLArlORz21jEI7A..',
-      'gfwpro.globalforestwatch.org':
-        'W6ezC-46IViJqpkOg4WvhoLeqgc5XwCY6US2vChHuAf0tSffb4gNXBEkzRwVT5t3gMLrs3TRPUfspw-5Z-dxTQ..',
-      'pro.globalforestwatch.org':
-        'MCrBhmBWwyPefdQamP74oGxZkDeWMoeP5qSUlKkeYxMInNyuC7e2Sg_5Cz70d8UQU4Y5lEALv2dedpuGo5Dv3A..',
-    },
-    accuracyDescription:
-      'Please select one of the accuracy levels that best describes the commodity or investment locations',
+
     address: 'Address',
-    additionalAttributes: 'Additional attributes',
-    additionalAttributeLabel: 'Attribute ',
     optional: '(optional)',
-    additionalFieldsNotSupported:
-      'This template type does not allow for defining additional attributes.',
-    additionalAttributesDescriptionSingle:
-      'Add additional metadata tags to your templates before uploading.',
-    additionalAttributesDescription:
-      'If you used any “define your own attribute” columns in your template, add them here prior to uploading. Column names must match exactly: take note of special characters, spacing, and capitalization.',
-    addToListTitle: 'List',
-    addToListDesc:
-      'Please note that only compatible locations can belong to the same list, i.e. same location classification, same commodity type and/or location template.',
-    addToListInstructions: 'Add to existing',
+
     addToAnExistingList: 'Add to an existing list',
-    createListInstructions: 'Create new',
-    uploadWindText:
-      'Please click if your file includes: wind barriers, riparian areas, and buffer zones',
-    concessionTypes: [
-      {
-        name: 'Logging Concession',
-        id: 'logging',
-      },
-      {
-        name: 'Mining  Concession',
-        id: 'mining',
-      },
-      {
-        name: 'Palm Oil Concession',
-        id: 'palmOil',
-      },
-      {
-        name: 'Wood Fiber Concession',
-        id: 'woodFiber',
-      },
-    ],
   },
   upload: {
     errors: {
-      dataRead: 'Data Read Error',
-      dataProjection: 'Data Projection Error',
-      excelTitle: 'Excel parsing error',
-      excelMessage: 'The Excel file parsed incorrectly. Please upload a valid file.',
-      zipfile: 'Please fix the file and re-upload the correctly formatted template.',
-      uploadErrorTile: 'Upload error occurred',
-      uploadErrorDialogMessage: [
-        'One or more of your locations failed to upload. Please follow the steps below:',
-        '1. Please re-upload your locations, and on Step 3, search for "none" entries in the country, state, or sub-state fields. “None” entries occur when GFW Pro cannot identify a country, state, and sub-state for your uploaded locations.',
-        '2. Check the following potential causes:',
-        '• One or more of the failed locations may be on water. Please remove or correct those locations and re-upload your list.',
-        '• If the issue above has been addressed, and your locations are on land, a system interruption may have occurred. Please re-upload your list.',
-      ],
       uploadErrorDialogDownloadMessageTitle: 'Download error file',
     },
-    maximumLocations: 'Maximum locations:',
-    maximumFilesize: 'Maximum filesize:',
     filetypes: {
       title: 'Accepted filetypes:',
       csv: 'CSV or Excel file',
       zip: 'ZIP file containing a shapefile (SHP, DBF, SHX, and PRJ)',
       kml: 'KML or KMZ',
     },
-    doneMessageDoNotChangeThis: 'Done',
-    noValidDoNotChangeThis: 'No valid WRI_IDs',
-    noValidDialogMessage: 'Please make sure your file contains rows with valid IDs.',
-    locationsAddedDoNotChangeThis: 'Locations added',
-    generatedHeaderFields: [
-      'Commodity',
-      'Accuracy Rating of Location Entered',
-      'Location Classification',
-      'Attribute1',
-      'Attribute2',
-      'Attribute3',
-      'Country',
-      'State',
-      'Sub State',
-      'Wind Barrier',
-      'Riparian Buffers',
-      'Buffer Zones',
-      'gadmid',
-    ],
-    missingAddTypeError: 'You must select either investment or commodity type',
-    stepSidebarLabels: ['Type', 'Additional attributes', 'Upload', 'Save'],
-    stepOneTitle: 'Type',
-    investmentAddType: 'Select this investment’s commodity type:',
-    investmentAddTypeDescription:
-      'Select for any investment in any commodity type. An investment list can contain multiple commodity types.',
-    commodityAddType: 'Select commodity type:',
-    commodityAddTypeDescription:
-      'Select for any commodity supply chain location. Only one type of commodity can be uploaded per template.',
-    stepTwoTitle: 'Add Multiple Locations',
-    stepTwoStepCount: 'Step 2 of 4',
+
     stepThree: {
-      title: 'Upload',
-      finished: 'Finished',
-      reupload: {
-        drag: 'You can re-upload by dragging another file here',
-        divider: 'or, ',
-        chooseAFile: 'choose a file',
-        fromYourComputer: 'from your computer.',
-      },
-      errorInstructions:
-        'Errors in your locations appear below. Edit them directly in the browser or download and edit list, then re-upload.',
       download: 'Download',
-      show: 'Show',
-      locationsWithErrors: 'Locations with errors',
-      locationsAll: 'All locations',
-      locationsAllValidated: 'All locations validated',
     },
-    stepFourTitle: 'Save',
     submit: 'Submit Analysis',
-    successBanner:
-      'New locations have been added. You will receive an email once analysis of the locations is complete, and can reload the page to access the data.',
     list: 'List',
     analysis: 'List Analyses',
     addToExisting: 'Add to existing',
     createNew: 'Create new',
     browse: 'Browse',
-    protectedAreasPlaceholder: 'Search Protected Areas...',
     selectPlaceholder: 'Select…',
-    uploadInstructions: 'Drag & drop file(s) here',
-    inputDivider: 'or',
-    templateOpen: 'CSV or Excel ',
-    templateClose: ' File Template Format',
-    ignoredInvestmentFields: [
-      'Country',
-      'State',
-      'Sub State',
-      'Wind Barrier',
-      'Riparian Buffers',
-      'Buffer Zones',
-      'Investment Name',
-      'Size of Investment',
-      'CCY',
-      'Monitoring Timeframe - Start Date',
-      'Start Date',
-      'End Date',
-      'Monitoring Timeframe - End Date',
-      'Time Horizon',
-      'Accuracy Rating of Location Entered',
-      'Latitude',
-      'Longitude',
-      'Analysis Area',
-      'Analysis Radius',
-      'gadmid',
-    ],
-    ignoredCommodityFields: [
-      'Country',
-      'State',
-      'Sub State',
-      'Wind Barrier',
-      'Riparian Buffers',
-      'Buffer Zones',
-      'Location Name',
-      'Monitoring Timeframe - Start Date',
-      'Start Date',
-      'End Date',
-      'Monitoring Timeframe - End Date',
-      'Time Horizon',
-      'Accuracy Rating of Location Entered',
-      'Latitude',
-      'Longitude',
-      'Analysis Area',
-      'Analysis Radius',
-      'gadmid',
-    ],
-    ignoredMultipleCommodityFields: [
-      'Country',
-      'State',
-      'Sub State',
-      'Wind Barrier',
-      'Riparian Buffers',
-      'Buffer Zones',
-      'Accuracy Rating of Location Entered',
-      'Latitude',
-      'Longitude',
-      'Analysis Area',
-      'Analysis Radius',
-      'gadmid',
-    ],
-    ignoredMultipleInvestmentFields: [
-      'Country',
-      'State',
-      'Sub State',
-      'Wind Barrier',
-      'Riparian Buffers',
-      'Buffer Zones',
-      'Investment Size',
-      'CCY',
-      'Accuracy Rating of Location Entered',
-      'Latitude',
-      'Longitude',
-      'Analysis Area',
-      'Analysis Radius',
-      'gadmid',
-    ],
+
     templateOptions: {
       beef: {
         label: 'Beef Slaughterhouse',
@@ -1890,51 +1664,7 @@ export const locationsPage = {
         ],
       },
     },
-    investmentTemplate: {
-      label: 'Other',
-      id: 'other',
-      fields: [
-        {
-          Tag: 'Commodity',
-          mandatory: true,
-          Value: 'Cattle, cocoa, coffee, palm oil, rubber, pulp and paper, soy, sugar cane, other',
-        },
-        {
-          Tag: 'Company Policy Ranking (for cattle only)',
-          mandatory: true,
-          Value: 'A/B or C',
-        },
-        {
-          Tag: 'Risk Level',
-          mandatory: false,
-          Value: 'High/Medium or Low',
-        },
-        {
-          Tag: 'Counterparty',
-          mandatory: false,
-          Value: '',
-        },
-        {
-          Tag: 'Parent Company or Group',
-          mandatory: false,
-          Value: '',
-        },
-        {
-          Tag: 'Type of Investment',
-          mandatory: false,
-          Value: 'New Investment or Renewal',
-        },
-        {
-          Tag: 'Certification',
-          mandatory: false,
-          Value:
-            'NONE, RSPO, ISPO, MSPO, SAN, ISCC, RTRS, ISCC, AAPRESID, UTZ, Fairtrade, Rainforest Alliance, and Other Standard',
-        },
-      ],
-    },
-    stepThreeTitle: 'Validate Locations',
-    stepThreeDescription:
-      'Check GFW Pro’s automated validation and identify and fix errors in each column to continue with upload.',
+
     show: 'Show',
     showValidated: 'Validated',
     showNotValidated: 'Locations with Errors',
@@ -1988,156 +1718,6 @@ export const locationsPage = {
       {
         name: 'Multiple',
         id: 'multiple',
-      },
-    ],
-    tempFeatures: [
-      {
-        name: 'General Soy Area',
-        lat: 16,
-        lng: 22,
-        analysisRadius: 44,
-        analysisArea: 1000,
-        commodity: 'soy',
-        locationClass: 'property',
-        companyId: 214,
-        volume: 5000,
-        ownerName: 'Michelle Tony',
-        ownerId: 4461,
-        companyName: 'Blue Raster',
-        supplierName: 'Pepco',
-        facilityName: 'Otter Facility',
-        refineryName: 'Sea Refinery',
-        certification: 'Yes',
-        start: '3/13/2016',
-        end: '3/22/2016',
-        time: '1 year',
-        accuracy: 'Very Confident',
-      },
-      {
-        name: 'Soy Area 1!',
-        lat: 16,
-        lng: 22,
-        analysisRadius: 44,
-        analysisArea: 1000,
-        commodity: 'soy',
-        locationClass: 'property',
-        companyId: 214,
-        volume: 5000,
-        ownerName: 'Lucas Cotner',
-        ownerId: 4461,
-        companyName: 'Blue Raster',
-        supplierName: 'Pepco',
-        facilityName: 'Otter Facility',
-        refineryName: 'Sea Refinery',
-        certification: 'Yes',
-        start: '3/13/2016',
-        end: '3/22/2016',
-        time: '1 year',
-        accuracy: 'Very Confident',
-      },
-      {
-        name: 'Soy Area 2',
-        lat: 16,
-        lng: 22,
-        analysisRadius: 44,
-        analysisArea: 1000,
-        commodity: 'soy',
-        locationClass: 'property',
-        companyId: 214,
-        volume: 5000,
-        ownerName: 'Adnan Bilwani',
-        ownerId: 4461,
-        companyName: 'Blue Raster',
-        supplierName: 'Pepco',
-        facilityName: 'Otter Facility',
-        refineryName: 'Sea Refinery',
-        certification: 'Yes',
-        start: '3/13/2016',
-        end: '3/22/2016',
-        time: '1 year',
-        accuracy: 'Very Confident',
-      },
-    ],
-    headerFields: [
-      {
-        Tag: 'Location Name',
-        validation: '',
-      },
-      {
-        Tag: 'Latitude',
-        validation: '',
-      },
-      {
-        Tag: 'Longitude',
-        validation: '',
-      },
-      {
-        Tag: 'Analysis Radius (km)',
-        validation: '',
-      },
-      {
-        Tag: 'Analysis Area (ha)',
-        validation: '',
-      },
-      {
-        Tag: 'Commodity',
-        validation: '',
-      },
-      {
-        Tag: 'Location Classification',
-        validation: '',
-      },
-      {
-        Tag: 'Company ID',
-        validation: '',
-      },
-      {
-        Tag: 'Volume (in megatonnes)',
-        validation: '',
-      },
-      {
-        Tag: 'Owner Name',
-        validation: '',
-      },
-      {
-        Tag: 'Owner ID',
-        validation: '',
-      },
-      {
-        Tag: 'Company Name',
-        validation: '',
-      },
-      {
-        Tag: 'Supplier Name',
-        validation: '',
-      },
-      {
-        Tag: 'Facility Name',
-        validation: '',
-      },
-      {
-        Tag: 'Refinery Name',
-        validation: '',
-      },
-      {
-        Tag: 'Certification',
-        validation: '',
-      },
-      {
-        Tag: 'Start Date',
-        validation: '',
-      },
-      {
-        Tag: 'End Date',
-        validation: '',
-      },
-      {
-        Tag: 'Time Horizon',
-        validation: '',
-      },
-      {
-        Tag: 'Accuracy Rating of Location Entered',
-        validation: '',
       },
     ],
   },

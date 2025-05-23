@@ -15,8 +15,7 @@ const _createCSVBlobUrl = (CSVString) => {
     : window.webkitURL.createObjectURL(csvBlob);
 };
 
-const _generateCSVContent = (csvData) =>
-  csvData.map((row) => row.join(',')).join('\n');
+const _generateCSVContent = (csvData) => csvData.map((row) => row.join(',')).join('\n');
 
 export const downloadCSV = (csvData) => {
   const csvContent = _generateCSVContent(csvData);

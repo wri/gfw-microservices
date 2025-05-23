@@ -227,6 +227,15 @@ IF @orderType IS NOT NULL
    AND @sortByAttribute IS NOT NULL
    AND @isValidSortColumn = 1
 BEGIN
+    -- Validate and sanitize the attribute name
+    DECLARE @jsonPath NVARCHAR(MAX) = '$."' + REPLACE(REPLACE(@sortByAttribute, '"', ''), '''', '') + '"';
+
+    -- Verify the attribute name is valid
+    IF @jsonPath NOT LIKE '$."%"' OR LEN(@jsonPath) < 4
+    BEGIN
+        SET @jsonPath = '$."invalid_attribute"';
+    END
+
     SET @SQL += ' ORDER BY ' +
             CASE
                 WHEN CHARINDEX(@sortByAttribute, @afiColumns) > 0
@@ -234,7 +243,24 @@ BEGIN
                 WHEN CHARINDEX(@sortByAttribute, @ltColumns) > 0
                      THEN 'lt.' + QUOTENAME(@sortByAttribute)
                 WHEN EXISTS (SELECT 1 FROM @jsonAttributeNames WHERE AttributeName = @sortByAttribute)
-                     THEN 'ISNULL(JSON_VALUE(lt.attributes, ''$."' + @sortByAttribute + '"''), '''')'
+                     THEN 'CASE
+                            WHEN ISJSON(lt.attributes) = 1 AND JSON_VALUE(lt.attributes, ''' + @jsonPath + ''') IS NOT NULL
+                            THEN CASE
+                                   WHEN ISNUMERIC(JSON_VALUE(lt.attributes, ''' + @jsonPath + ''')) = 1 THEN 0
+                                   ELSE 1
+                                 END
+                            ELSE 2
+                          END,
+                          CASE
+                            WHEN ISNUMERIC(JSON_VALUE(lt.attributes, ''' + @jsonPath + ''')) = 1
+                            THEN CAST(JSON_VALUE(lt.attributes, ''' + @jsonPath + ''') AS DECIMAL(18,2))
+                            ELSE NULL
+                          END,
+                          CASE
+                            WHEN ISNUMERIC(JSON_VALUE(lt.attributes, ''' + @jsonPath + ''')) = 0
+                            THEN JSON_VALUE(lt.attributes, ''' + @jsonPath + ''')
+                            ELSE NULL
+                          END'
                 ELSE QUOTENAME(@sortByAttribute)
             END
             + ' ' + @orderType;

@@ -291,10 +291,8 @@ class Locations extends Component {
       listData,
       filteredData,
       selectedLocations,
-      gfwInfoFromMap,
       drawnGeom,
       isLoading,
-      adminArea,
       B2BsharedListEnabled,
       geomFromMap,
     } = this.state;

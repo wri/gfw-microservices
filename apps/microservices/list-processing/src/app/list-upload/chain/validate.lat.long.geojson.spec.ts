@@ -240,5 +240,51 @@ describe('ValidateLatLongGeojson', () => {
         'Invalid polygon geometry',
       ]);
     });
+
+    it('should handle multi polygons', async () => {
+      const input: ChainType = {
+        request: {
+          organization_database: 'test_db',
+          path: 'path',
+        },
+        geojson: {
+          type: 'FeatureCollection',
+          features: [
+            {
+              type: 'Feature',
+              geometry: {
+                type: 'MultiPolygon',
+                coordinates: [
+                  [
+                    [
+                      [13.99, -13.01],
+                      [13.99, -12.99],
+                      [14.01, -12.99],
+                      [14.01, -13.01],
+                      [13.99, -13.01],
+                    ],
+                  ],
+                  [
+                    [
+                      [14.99, -14.01],
+                      [14.99, -13.99],
+                      [15.01, -13.99],
+                      [15.01, -14.01],
+                      [14.99, -14.01],
+                    ],
+                  ],
+                ],
+              },
+              properties: {
+                country: 'Angola',
+              },
+            },
+          ],
+        },
+      };
+
+      const result = await validator.handle(input);
+      expect(result.geojson.features.length).toBe(1);
+    });
   });
 });

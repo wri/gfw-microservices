@@ -39,7 +39,7 @@ export class ValidateLatLongGeojson extends AbstractHandler<ChainType> {
 
   validateCoordinates(coordinates: any, country: string): string {
     // Check if coordinates is a single point (array of two numbers)
-    if (Array.isArray(coordinates) && coordinates.length === 2) {
+    if (Array.isArray(coordinates) && coordinates.length === 2 && !Array.isArray(coordinates[0])) {
       const [lon, lat] = coordinates;
       if (!ValidateLatLongGeojson.isValidLatLong(lat, lon)) {
         return 'Invalid coordinates';

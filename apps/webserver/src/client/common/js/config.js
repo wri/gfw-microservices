@@ -135,7 +135,6 @@ export const locationsPage = {
     howToGuideFooter: () =>
       `<span>View resources on our <a target="_blank" href=${GFW_PRO_HELP_CENTER__LINK}>Help Center</a>.</span>`,
   },
-  updatedPalmOilMillUrl: 'https://gis-gfw.wri.org/arcgis/rest/services/commodities/MapServer/34',
   highchartSlugs: [
     'Indonesia-Legal-Classifications',
     'Land-Cover-Southeast-Asia',

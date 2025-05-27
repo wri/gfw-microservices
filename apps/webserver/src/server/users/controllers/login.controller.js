@@ -15,7 +15,6 @@ const logger = require('../../../config/privateutils/logger.utils');
 let counter = 0;
 let firstTime = true;
 export const login = (req, res) => {
-  console.log('process.env.NODE_ENV', process.env.NODE_ENV);
   if (process.env.NODE_ENV !== 'development') {
     counter++;
     if (firstTime) {

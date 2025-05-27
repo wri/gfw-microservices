@@ -19,7 +19,6 @@ IF (@custom_attribute_3 IS NOT NULL)
 
 -- Add system columns
 SET @tableQueryString = CONCAT(@tableQueryString, ', [Geometry] geometry')
-SET @tableQueryString = CONCAT(@tableQueryString, ', [location_id] INT')
 SET @tableQueryString = CONCAT(@tableQueryString, ', [attributes] NVARCHAR(MAX)')
 
 -- Add flagged columns

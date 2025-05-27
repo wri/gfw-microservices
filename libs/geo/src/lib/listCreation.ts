@@ -136,13 +136,6 @@ export class SPSListCreation {
 
       await clientConnection.disconnect();
 
-      /*const command = this.dataSource.createQueryRunner();
-      await command.connect();
-
-      const queryCreateTableResult: QueryCreateTableResult[] =
-        await command.query('uspGetTableQueryString @0', [template_id]);
-      */
-
       const mainConnection = new SQLUtils(sqlMainConfig);
       await mainConnection.connect();
 
@@ -191,7 +184,6 @@ export class SPSListCreation {
 
       clientConnection = new SQLUtils(sqlClientConfig);
       await clientConnection.connect();
-
       await clientConnection.executeQuery('uspCreateListTable', [
         {
           field: 'table_name',

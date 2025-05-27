@@ -68,28 +68,28 @@ export class CreateLocationSchema extends AbstractHandler<ChainType> {
     const {
       list_id: listId,
       listTable,
-      organization_database,
+      organization_database: organizationDatabase,
       analysisTable,
-      saveAsDraft,
+      saveAsDraft: isSavingAsDraft,
       analysisIds,
     } = request.request as RequestNewList;
 
-    this.logger.log(`Creating list table ${listTable} in ${organization_database}`);
+    this.logger.log(`Creating list table ${listTable} in ${organizationDatabase}`);
     const tableStructure =
-      '[Location Name] NVARCHAR(150), [Latitude] FLOAT, [Longitude] FLOAT, [Analysis Radius] FLOAT, [Analysis Area] FLOAT, [Commodity] NVARCHAR(150), [Country] NVARCHAR(150), [State] NVARCHAR(150), [Sub State] NVARCHAR(150), [gadmid] NVARCHAR(150), [Geometry] geometry, [location_id] INT, [attributes] NVARCHAR(MAX), [ErrorDetails] NVARCHAR(256) NULL';
+      '[Location Name] NVARCHAR(150), [Latitude] FLOAT, [Longitude] FLOAT, [Analysis Radius] FLOAT, [Analysis Area] FLOAT, [Commodity] NVARCHAR(150), [Country] NVARCHAR(150), [State] NVARCHAR(150), [Sub State] NVARCHAR(150), [gadmid] NVARCHAR(150), [Geometry] geometry, [attributes] NVARCHAR(MAX), [ErrorDetails] NVARCHAR(256) NULL';
 
     await this.createListTableInDatabase(this.clientStoreConnection, listTable, tableStructure);
 
-    const listStatusId = saveAsDraft ? listStatus.Draft : listStatus.Pending;
+    const listStatusId = isSavingAsDraft ? listStatus.Draft : listStatus.Pending;
 
     await this.createAnalysisTableInDatabase(this.clientStoreConnection, analysisTable);
     this.logger.log(
-      `Creating analysis status records for list ${listId} in ${organization_database}`
+      `Creating analysis status records for list ${listId} in ${organizationDatabase}`
     );
 
-    await setListAnalysisStatus(organization_database, listId, analysisIds, listStatusId);
+    await setListAnalysisStatus(organizationDatabase, listId, analysisIds, listStatusId);
     this.logger.log(
-      `Created analysis status records for list ${listId} in ${organization_database}`
+      `Created analysis status records for list ${listId} in ${organizationDatabase}`
     );
     return request;
   }

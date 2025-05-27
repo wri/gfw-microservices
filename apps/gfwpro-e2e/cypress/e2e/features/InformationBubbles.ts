@@ -15,6 +15,7 @@ describe('Information Bubbles', () => {
 
   When('I navigate to a list diagnostic page', () => {
     locationsPage.clickOnLocationsList('AAT Argentina Points Generic');
+    listDetailsPage.clickOnPost2000Tab();
     listDetailsPage.clickOnListDiagnosticsBtn();
   });
 

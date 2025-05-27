@@ -16,7 +16,8 @@ import { getRepositoryToken } from '@nestjs/typeorm';
 const COMMODITY_TEMPLATE_MAP = {
   'palm oil': ['palm oil mill', 'palm oil plantation', 'palm smallholder farm', 'palm oil generic'],
   soy: ['soy silo', 'soy farm', 'soy generic'],
-  gfwp_cattle: ['cattle ranch', 'cattle generic'],
+  cattle: ['cattle ranch', 'cattle generic', 'beef slaughterhouse'],
+  gfwp_cattle: ['cattle ranch', 'cattle generic', 'beef slaughterhouse'],
   cocoa: ['cocoa farm', 'cocoa generic'],
 };
 

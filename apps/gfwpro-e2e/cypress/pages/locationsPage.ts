@@ -21,18 +21,18 @@ class LocationsPage {
     addLocationsBtn: () => cy.get('[data-cy="nuw_add"]'),
     fileUploadBtn: () => cy.get('.upload-location-options__main-content__options > :nth-child(2)'),
     dataTemplatesBtn: () => cy.get('.MuiPaper-root > :nth-child(5)'),
-    ShapefileOption: () => cy.get('[role="button"]').contains('Polygon Shapefile'),
-    KMLOption: () => cy.get('[role="button"]').contains('KML'),
-    SpreadSheetOption: () => cy.get('[role="button"]').contains('Spreadsheet'),
-    PointShapefileOption: () => cy.get('[role="button"]').contains('Point Shapefile'),
-    ListOfPalmMillIDsOption: () => cy.get('[role="button"]').contains('List of Palm Mill IDs'),
+    shapefileOption: () => cy.get('[role="button"]').contains('Polygon Shapefile'),
+    kmlOption: () => cy.get('[role="button"]').contains('KML'),
+    spreadSheetOption: () => cy.get('[role="button"]').contains('Spreadsheet'),
+    pointShapefileOption: () => cy.get('[role="button"]').contains('Point Shapefile'),
+    listOfPalmMillIDsOption: () => cy.get('[role="button"]').contains('List of Palm Mill IDs'),
     checkBtn: () => cy.get('.MuiAccordionSummary-content > .MuiButtonBase-root'),
     nextBtn: () => cy.contains('Next'),
     selectCommodity: () =>
       cy.get('.css-k008qs > .MuiFormControl-root > .MuiInputBase-root > .MuiSelect-select'),
     searchInput: () => cy.get('.input-search__input'),
     downloadCSVOptionBtn: () => cy.contains('CSV'),
-    MapOptionBtn: () => cy.contains('span[role="menuitem"]', 'Map'),
+    mapOptionBtn: () => cy.contains('span[role="menuitem"]', 'Map'),
     downloadShapefileptionBtn: () => cy.contains('Shapefile'),
     downloadTypeDropdown: () => cy.get('#downloadTypeSelect'),
     downloadTemplateBtn: () => cy.contains('Download'),
@@ -98,7 +98,7 @@ class LocationsPage {
     checkBoxIconBtn: () => cy.get('[data-testid="CheckBoxOutlineBlankIcon"]').eq(0),
     post2020Analysis: () => cy.contains('Post-2020 Risk Assessment'),
     defReportAnalysis: () => cy.contains('Recent Deforestation Alerts'),
-    post2000Analysis: () => cy.contains('Post-2000 Forest Change')
+    post2000Analysis: () => cy.contains('Post-2000 Forest Change'),
   };
 
   verifyLists(lists: string[], exist: boolean) {
@@ -161,7 +161,6 @@ class LocationsPage {
       default:
         break;
     }
-    
   }
   clickOnSubmitAnalisys() {
     this.elements.submitAnalisys().click();
@@ -216,7 +215,7 @@ class LocationsPage {
   }
 
   clickOnMapBtn() {
-    this.elements.MapOptionBtn().click();
+    this.elements.mapOptionBtn().click();
   }
   clickOnDeleteList() {
     cy.contains('Delete').click();
@@ -278,19 +277,19 @@ class LocationsPage {
   }
 
   clickOnShapeFileOptionBtn() {
-    this.elements.ShapefileOption().click();
+    this.elements.shapefileOption().click();
   }
   clickOnKMLOptionBtn() {
-    this.elements.KMLOption().click();
+    this.elements.kmlOption().click();
   }
   clickOnSpreadSheetOptionBtn() {
-    this.elements.SpreadSheetOption().click();
+    this.elements.spreadSheetOption().click();
   }
   clickOnPointShapefileOptionBtn() {
-    this.elements.PointShapefileOption().click();
+    this.elements.pointShapefileOption().click();
   }
   clickOnListOfPalmMillIDsOptionBtn() {
-    this.elements.ListOfPalmMillIDsOption().click();
+    this.elements.listOfPalmMillIDsOption().click();
   }
 
   searchLocation(location: string) {

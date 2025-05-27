@@ -48,8 +48,8 @@ docker build -t gadm-loader .
 Run the script in the image and exit. Bind-mounts current directory.
 
 ```bash
-docker run --rm -v "$PWD":/work \ 
-  gadm-loader \  
+docker run --rm -v "$PWD":/work \
+  gadm-loader \
   /work/gadm41_gdb_to_db2.py /work/gadm.gdb --batch-size 5000 --debug
 
 ```
@@ -77,11 +77,11 @@ memory stays flat (<200 MB even for 400 k polygons).
 
 Highlights
 
-* Constant‑memory: processes one feature at a time, batching rows every
+- Constant‑memory: processes one feature at a time, batching rows every
   `--batch-size` (default 5 000).
-* Live progress: prints rows inserted + rows/sec.
-* Error rows aren’t inserted; a counter is displayed at the end.
-
+- Live progress: prints rows inserted + rows/sec.
+- Error rows aren’t inserted; a counter is displayed at the end.
 
 ---
+
 https://gfw.atlassian.net/browse/GPV-4251

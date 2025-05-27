@@ -5,6 +5,8 @@ class LocationsPage {
     comodityBtn: () => cy.get('.commodity-option-label'),
     cattleGenericOptionBtn: () =>
       cy.get('.locations-upload-step__suboptions-container > :nth-child(3) > label'),
+    existingListDropdown: () =>
+      cy.get('.css-1oen9bp > .MuiFormControl-root > .MuiInputBase-root > .MuiSelect-select'),
     addListToExistingBtn: () => cy.get('.locations-adding > :nth-child(2) > :nth-child(1) > label'),
     selectExistingList: (name) => cy.get('#add-to-existing-list').select(name),
     drawAShapeBtn: () => cy.get(':nth-child(2) > .add-location-method__label'),
@@ -16,25 +18,21 @@ class LocationsPage {
     titleAddedLocation: () => cy.contains('Location Added'),
     descriptionAddedLocation: (nameList) =>
       cy.contains(`You have successfully added location to ${nameList}`),
-    addLocationsBtn: () => cy.contains('Add locations'),
-    addLocations2Btn: () => cy.get('.side-panel > :nth-child(2) > button'),
+    addLocationsBtn: () => cy.get('[data-cy="nuw_add"]'),
     fileUploadBtn: () => cy.get('.upload-location-options__main-content__options > :nth-child(2)'),
     dataTemplatesBtn: () => cy.get('.MuiPaper-root > :nth-child(5)'),
-    ShapefileOption: () => cy.contains('Polygon Shapefile'),
-    KMLOption: () => cy.get('.css-16a0j3s > :nth-child(2) > .MuiButtonBase-root'),
-    SpreadSheetOption: () =>
-      cy.get(
-        ':nth-child(3) > .MuiButtonBase-root > .MuiAccordionSummary-content > .MuiBox-root > .MuiTypography-root'
-      ),
-    PointShapefileOption: () => cy.get(':nth-child(4) > .MuiButtonBase-root'),
-    ListOfPalmOilOption: () => cy.get(':nth-child(5) > .MuiButtonBase-root'),
+    shapefileOption: () => cy.get('[role="button"]').contains('Polygon Shapefile'),
+    kmlOption: () => cy.get('[role="button"]').contains('KML'),
+    spreadSheetOption: () => cy.get('[role="button"]').contains('Spreadsheet'),
+    pointShapefileOption: () => cy.get('[role="button"]').contains('Point Shapefile'),
+    listOfPalmMillIDsOption: () => cy.get('[role="button"]').contains('List of Palm Mill IDs'),
     checkBtn: () => cy.get('.MuiAccordionSummary-content > .MuiButtonBase-root'),
     nextBtn: () => cy.contains('Next'),
     selectCommodity: () =>
       cy.get('.css-k008qs > .MuiFormControl-root > .MuiInputBase-root > .MuiSelect-select'),
     searchInput: () => cy.get('.input-search__input'),
     downloadCSVOptionBtn: () => cy.contains('CSV'),
-    MapOptionBtn: () => cy.contains('span[role="menuitem"]', 'Map'),
+    mapOptionBtn: () => cy.contains('span[role="menuitem"]', 'Map'),
     downloadShapefileptionBtn: () => cy.contains('Shapefile'),
     downloadTypeDropdown: () => cy.get('#downloadTypeSelect'),
     downloadTemplateBtn: () => cy.contains('Download'),
@@ -42,9 +40,8 @@ class LocationsPage {
       cy.get('.MuiAccordionSummary-content > .MuiButtonBase-root'),
     locationNameCell: () => cy.get('.rt-td.cell__Location-Name.default-cell'),
     newNameListCell: () => cy.get('[placeholder="Name your new list"]'),
-    newNameListCellPolygon: () => cy.get('#mui-9'),
-    newNameListCellPoint: () => cy.get('#mui-8'),
-    newNamePolygonListCell: () => cy.get('#mui-1'),
+    newListNameInput: () => cy.get('input[placeholder="Name your new list"]'),
+    newLocationName: () => cy.get('input[name="locationName"]'),
     enterPolygonCoordsBtn: () =>
       cy.get('.css-seoeeh-MuiButtonBase-root-MuiButton-root > .MuiTypography-root'),
     enterPointCoordsBtn: () => cy.get('.css-p6lt5n > :nth-child(1) > .MuiTypography-root'),
@@ -73,6 +70,8 @@ class LocationsPage {
       cy.get(
         '.upload-location-options__main-content__options__other-options > div > :nth-child(2)'
       ),
+    inputLatitudeCoordinates: () => cy.get('input[name="latitude"]'),
+    inputLongitudeCoordinates: () => cy.get('input[name="longitude"]'),
     inputCoordLatitude1: () => cy.get('#mui-2'),
     inputCoordLongitude1: () => cy.get('#mui-3'),
     inputCoordLatitude2: () => cy.get('#mui-4'),
@@ -81,7 +80,7 @@ class LocationsPage {
     inputCoordLongitude3: () => cy.get('#mui-7'),
     inputCoordLongitude: () => cy.get('#mui-5'),
     inputCoordLatitude: () => cy.get('#mui-6'),
-    inputRadiusAroundLoc: () => cy.get('#mui-4'),
+    inputRadiusAroundLocation: () => cy.get('input[name="areaSize"]'),
     fileAddedSuccess: () => cy.contains('File added successfully'),
     titleFinishLegend: () => cy.get('.MuiTypography-subtitle2'),
     titleListPreview: () => cy.contains('List Preview', { timeout: 5000 }),
@@ -97,6 +96,9 @@ class LocationsPage {
     subtitleFinishLegend: () => cy.get('.MuiTypography-caption'),
     returnToLocationBtn: () => cy.get('.MuiPaper-root > .MuiButtonBase-root'),
     checkBoxIconBtn: () => cy.get('[data-testid="CheckBoxOutlineBlankIcon"]').eq(0),
+    post2020Analysis: () => cy.contains('Post-2020 Risk Assessment'),
+    defReportAnalysis: () => cy.contains('Recent Deforestation Alerts'),
+    post2000Analysis: () => cy.contains('Post-2000 Forest Change'),
   };
 
   verifyLists(lists: string[], exist: boolean) {
@@ -124,7 +126,6 @@ class LocationsPage {
   clickOnCheckBoxIcon() {
     this.elements.checkBoxIconBtn().click();
   }
-
   clickOnNextBtn() {
     this.elements.nextBtn().click();
   }
@@ -134,14 +135,11 @@ class LocationsPage {
   typeNewNameList(name: string) {
     this.elements.newNameListCell().type(name);
   }
-  typeNewNameListPolygon(name: string) {
-    this.elements.newNameListCellPolygon().type(name);
+  inputNewListName(name: string) {
+    this.elements.newListNameInput().type(name);
   }
-  typeNewNameListPoint(name: string) {
-    this.elements.newNameListCellPoint().type(name);
-  }
-  typeNewNameLocation(name: string) {
-    this.elements.newNamePolygonListCell().type(name);
+  inputNewLocationName(name: string) {
+    this.elements.newLocationName().type(name);
   }
   ClickOnEnterPolygonCoordsBtn() {
     this.elements.enterPolygonCoordsBtn().click();
@@ -149,8 +147,20 @@ class LocationsPage {
   ClickOnEnterPointCoordsBtn() {
     this.elements.enterPointCoordsBtn().click();
   }
-  selectTypeAnalisys(number: number) {
-    this.elements.typeAnalisyscheckBox(number).click();
+  selectAnalisysType(analysis: string) {
+    switch (analysis) {
+      case 'post-2020':
+        this.elements.post2020Analysis().click();
+        break;
+      case 'defReport':
+        this.elements.defReportAnalysis().click();
+        break;
+      case 'post-2000':
+        this.elements.post2000Analysis().click();
+        break;
+      default:
+        break;
+    }
   }
   clickOnSubmitAnalisys() {
     this.elements.submitAnalisys().click();
@@ -191,21 +201,21 @@ class LocationsPage {
   typeOnInputCoordLong3(longitude: string) {
     this.elements.inputCoordLongitude3().click().type(longitude);
   }
-  typeOnInputPointCoordLong(longitude: string) {
-    this.elements.inputCoordLongitude().click().type(longitude);
+  enterPointLongitude(longitude: string) {
+    this.elements.inputLongitudeCoordinates().click().type(longitude);
   }
-  typeOnInputPointCoordLat(latitude: string) {
-    this.elements.inputCoordLatitude().click().type(latitude);
+  enterPointLatitude(latitude: string) {
+    this.elements.inputLatitudeCoordinates().click().type(latitude);
   }
-  typeOnInputRadiusAroundLoc(radius: string) {
-    this.elements.inputRadiusAroundLoc().click().type(radius);
+  enterRadiusAroundLocation(radius: string) {
+    this.elements.inputRadiusAroundLocation().click().type(radius);
   }
   clickOnConfirmCoods() {
     this.elements.confirmCoordsBtn().click();
   }
 
   clickOnMapBtn() {
-    this.elements.MapOptionBtn().click();
+    this.elements.mapOptionBtn().click();
   }
   clickOnDeleteList() {
     cy.contains('Delete').click();
@@ -236,6 +246,9 @@ class LocationsPage {
   selectExistingListOption(name) {
     this.elements.selectExistingList(name);
   }
+  selectExistingList(name: string) {
+    this.elements.existingListDropdown().click().get(`[data-value="${name}"]`).click();
+  }
   clickOndrawAShapeOptionBtn() {
     this.elements.drawAShapeBtn().click();
   }
@@ -255,9 +268,6 @@ class LocationsPage {
     this.elements.locationName().type(name);
   }
 
-  clickOnAddLocations2Btn() {
-    this.elements.addLocations2Btn().click();
-  }
   clickOnfileUploadBtn() {
     this.elements.fileUploadBtn().click();
   }
@@ -267,19 +277,19 @@ class LocationsPage {
   }
 
   clickOnShapeFileOptionBtn() {
-    this.elements.ShapefileOption().click();
+    this.elements.shapefileOption().click();
   }
   clickOnKMLOptionBtn() {
-    this.elements.KMLOption().click();
+    this.elements.kmlOption().click();
   }
   clickOnSpreadSheetOptionBtn() {
-    this.elements.SpreadSheetOption().click();
+    this.elements.spreadSheetOption().click();
   }
   clickOnPointShapefileOptionBtn() {
-    this.elements.PointShapefileOption().click();
+    this.elements.pointShapefileOption().click();
   }
-  clickOnListOfPalmMillOptionBtn() {
-    this.elements.ListOfPalmOilOption().click();
+  clickOnListOfPalmMillIDsOptionBtn() {
+    this.elements.listOfPalmMillIDsOption().click();
   }
 
   searchLocation(location: string) {

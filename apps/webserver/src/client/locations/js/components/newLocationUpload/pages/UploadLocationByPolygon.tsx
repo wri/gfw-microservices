@@ -332,6 +332,7 @@ export function UploadLocationByPolygon({
                               variant="outlined"
                               type="number"
                               size="small"
+                              data-testid="latitude-input"
                               error={!!errorsCoordinates.coordinates?.[id]?.latitude}
                               helperText={
                                 errorsCoordinates.coordinates?.[id]?.latitude
@@ -349,6 +350,7 @@ export function UploadLocationByPolygon({
                               variant="outlined"
                               type="number"
                               size="small"
+                              data-testid="longitude-input"
                               error={!!errorsCoordinates.coordinates?.[id]?.longitude}
                               helperText={
                                 errorsCoordinates.coordinates?.[id]?.longitude

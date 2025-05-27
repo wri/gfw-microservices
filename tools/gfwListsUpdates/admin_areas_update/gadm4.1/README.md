@@ -67,4 +67,21 @@ python gadm_gdb_to_db.py /path/to/gadm41.gdb
 
 ---
 
+### Notes
+
+Stream‑based ETL for GADM v4.1 → SQL Server.
+Reads the FileGDB feature‑by‑feature with **Fiona only** (no GeoPandas), so
+memory stays flat (<200 MB even for 400 k polygons).
+
+---
+
+Highlights
+
+* Constant‑memory: processes one feature at a time, batching rows every
+  `--batch-size` (default 5 000).
+* Live progress: prints rows inserted + rows/sec.
+* Error rows aren’t inserted; a counter is displayed at the end.
+
+
+---
 https://gfw.atlassian.net/browse/GPV-4251

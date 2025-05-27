@@ -4,168 +4,172 @@ gadm41_gdb_to_db.py
 ====================
 Usage
 -----
-    python3 gadm_gdb_to_mssql.py /path/to/gadm41.gdb [--layer LAYERNAME]
-
-Requirements
-------------
-    pip3 install geopandas fiona pyproj shapely pandas pyodbc
+    python gadm_gdb_to_db.py gadm41.gdb \
+        [--layer LAYER] [--batch-size 5000] [--debug]
 """
 
-import argparse
-import os
-import sys
-from typing import List, Tuple, Optional
+from __future__ import annotations
+import argparse, os, sys, time, collections, math
+from typing import List, Tuple
 
-import geopandas as gpd
-import fiona
-import pandas as pd
-import pyodbc
-import pyproj
+import fiona, pyproj, pyodbc
+from shapely.geometry import shape
 from shapely.ops import transform
-from shapely.geometry.base import BaseGeometry
-import pdb
 
-# ---------------------------------------------------------------------------
-# SQL Server connection settings - EDIT ME
-# ---------------------------------------------------------------------------
+# ───────────────────────────── CONFIG ─────────────────────────────
 SQL_SERVER = ""
 SQL_DATABASE = ""
 SQL_USER = ""
 SQL_PASSWORD = ""
-SQL_DRIVER = "ODBC Driver 18 for SQL Server" 
-TABLE_NAME = "list-administrativeAreas41_new"
-# ---------------------------------------------------------------------------
+SQL_DRIVER   = "ODBC Driver 18 for SQL Server"
+TABLE_NAME   = "list-administrativeAreas41_new"
+BATCH_DEFAULT = 5000
+# ─────────────────────────────────────────────────────────────────
 
-# Equal-area transformation for accurate size (area) calculation
-_TRANSFORMER = pyproj.Transformer.from_crs(4326, 6933, always_xy=True).transform  # EPSG:6933 - World Cylindrical Equal Area
+_transform = pyproj.Transformer.from_crs(4326, 6933, always_xy=True).transform
 
-# ---------------------------------------------------------------------------
-# Helper functions
-# ---------------------------------------------------------------------------
+# -----------------------------------------------------------------
+# Helpers
+# -----------------------------------------------------------------
 
-def _calc_area_ha(geom: BaseGeometry) -> float:
-    """Return area in **hectares** using an equal-area projection."""
-    return transform(_TRANSFORMER, geom).area / 10_000.0  # 1 ha = 10 000 m²
-
-
-def _build_location_name(country: Optional[str], state: Optional[str], sub: Optional[str]) -> str:
-    parts = [p for p in (country, state, sub) if p not in (None, "", "NULL")]
-    return "--".join(parts)
+def _area_ha(geom):
+    return transform(_transform, geom).area / 10_000.0
 
 
-def _derive_gadmid(row) -> Tuple[str, str]:
-    """Return (gadmid, location_classification) from a row."""
-    level = int(row["adm_level"])
+def _loc_name(*parts):
+    return "--".join([p for p in parts if p and p != "NULL"])
+
+
+def _field(rec, *cands):
+    for c in cands:
+        if c in rec: return rec[c]
+        up, lo = c.upper(), c.lower()
+        if up in rec: return rec[up]
+        if lo in rec: return rec[lo]
+    raise KeyError(f"no field in {cands}")
+
+
+def _gadmid(rec):
+    level = int(_field(rec, "level", "adm_level", "ADM_LEVEL"))
+    if "gid" in rec or "GID" in rec:
+        gid_val = _field(rec, "gid")
+        cls = ("Country", "State", "Sub State")[min(level,2)]
+        return gid_val, cls
     if level == 0:
-        return row["gid_0"], "Country"
+        return _field(rec, "gid_0", "GID_0"), "Country"
     if level == 1:
-        return str(row["gid_1"]).replace("_1", ""), "State"
-    # assume level 2 otherwise
-    return str(row["gid_2"]).replace("_2", ""), "Sub State"
+        return str(_field(rec, "gid_1", "GID_1")).removesuffix("_1"), "State"
+    return str(_field(rec, "gid_2", "GID_2")).removesuffix("_2"), "Sub State"
 
-# ---------------------------------------------------------------------------
-# Core ETL routine
-# ---------------------------------------------------------------------------
+# -----------------------------------------------------------------
+# DB helpers
+# -----------------------------------------------------------------
 
-def extract_records(gdb_path: str, layer: Optional[str] = None) -> List[Tuple]:
-    """Read FileGDB and return list of tuples ready for SQL insertion."""
-    if layer is None:
-        layer = fiona.listlayers(gdb_path)[0]
-    gdf = gpd.read_file(gdb_path, layer=layer).to_crs(4326)
-
-    records: List[Tuple] = []
-    for _, feat in gdf.iterrows():
-        try:
-            gadmid, loc_class = _derive_gadmid(feat)
-            country = feat.get("name_0")
-            state = feat.get("name_1")
-            sub_state = feat.get("name_2")
-            loc_name = _build_location_name(country, state, sub_state)
-
-            centroid = feat.geometry.centroid
-            latitude, longitude = centroid.y, centroid.x
-
-            size_ha = _calc_area_ha(feat.geometry)
-
-            records.append(
-                (
-                    loc_name,
-                    country,
-                    state,
-                    sub_state,
-                    gadmid,
-                    latitude,
-                    longitude,
-                    loc_class,
-                    size_ha,
-                    feat.geometry.wkt,
-                    None,  # ErrorDetails
-                )
-            )
-        except Exception as exc:  # catch-all per-row failure
-            records.append(
-                (None, None, None, None, None, None, None, None, None, None, str(exc))
-            )
-    return records
-
-# ---------------------------------------------------------------------------
-# SQL helpers
-# ---------------------------------------------------------------------------
-
-def _connect() -> pyodbc.Connection:
-    """Open a pyodbc connection using the constants above."""
-    conn_str = (
-        f"DRIVER={{{SQL_DRIVER}}};"
-        f"SERVER={SQL_SERVER};DATABASE={SQL_DATABASE};"
-        f"UID={SQL_USER};PWD={SQL_PASSWORD};"
-        "TrustServerCertificate=yes;"
-    )
-    return pyodbc.connect(conn_str, autocommit=False)
+def _connect():
+    return pyodbc.connect(
+        f"DRIVER={{{SQL_DRIVER}}};SERVER={SQL_SERVER};DATABASE={SQL_DATABASE};"+
+        f"UID={SQL_USER};PWD={SQL_PASSWORD};TrustServerCertificate=yes;"+"Encrypt=no;", autocommit=False)
 
 
-def _truncate(cursor: pyodbc.Cursor):
-    cursor.execute(f"TRUNCATE TABLE [dbo].[{TABLE_NAME}]")
+def _truncate(cur):
+    cur.execute(f"TRUNCATE TABLE [dbo].[{TABLE_NAME}]")
 
 
-def _insert(cursor: pyodbc.Cursor, rows: List[Tuple]):
+def _insert(cur, rows: List[Tuple]):
     sql = f"""
     INSERT INTO [dbo].[{TABLE_NAME}] (
-        [Location Name], [Country], [State], [Sub State], [gadmid],
-        [Latitude], [Longitude], [Location Classification], [Size],
-        [Geometry], [ErrorDetails]
+        [Location Name],[Country],[State],[Sub State],[gadmid],
+        [Latitude],[Longitude],[Location Classification],[Size],
+        [Geometry],[ErrorDetails]
     ) VALUES (
-        ?,?,?,?,?,?,?,?, ?,
-        geometry::STGeomFromText(?, 4326),
-        ?
-    )"""
-    cursor.fast_executemany = True  # big performance win
-    cursor.executemany(sql, rows)
+        ?,?,?,?,?,?,?,?, ?, geometry::STGeomFromText(?,4326), ?)
+    """
+    cur.fast_executemany = True
+    # bind **all** string params as NVARCHAR(MAX) → lifts 8000‑byte cap
+    cur.setinputsizes([(pyodbc.SQL_WVARCHAR, 0, 0)] * 11)
+    cur.executemany(sql, rows)
 
-# ---------------------------------------------------------------------------
-# Main entry point
-# ---------------------------------------------------------------------------
+# -----------------------------------------------------------------
+# Main routine
+# -----------------------------------------------------------------
 
 def main():
-    parser = argparse.ArgumentParser(description="Ingest GADM v4.1 FileGDB into SQL Server")
-    parser.add_argument("gdb", help="Path to the *.gdb folder")
-    parser.add_argument("--layer", help="Specific layer name inside the GDB (default: first layer)")
-    args = parser.parse_args()
+    ap = argparse.ArgumentParser(description="Stream GADM FileGDB into SQL Server")
+    ap.add_argument("gdb", help="Path to .gdb directory")
+    ap.add_argument("--layer")
+    ap.add_argument("--batch-size", type=int, default=BATCH_DEFAULT)
+    ap.add_argument("--debug", action="store_true")
+    args = ap.parse_args()
 
-    if not os.path.exists(args.gdb):
-        sys.exit(f"FileGDB not found: {args.gdb}")
+    if not os.path.isdir(args.gdb):
+        sys.exit("✖ .gdb directory not found")
 
-    print("▶ Extracting features …", flush=True)
-    records = extract_records(args.gdb, args.layer)
-    print(f"   {len(records):,} records prepared.")
+    layer = args.layer or fiona.listlayers(args.gdb)[0]
 
-    print("▶ Inserting into SQL Server …", flush=True)
-    with _connect() as conn:
-        cur = conn.cursor()
-        _truncate(cur)
-        _insert(cur, records)
-        conn.commit()
-    print("✔ Done.")
+    print(f"▶ Streaming layer '{layer}' …", flush=True)
+    total_feat = None
+    with fiona.open(args.gdb, layer=layer) as src:
+        try:
+            total_feat = len(src)
+        except Exception:
+            pass  # some drivers don’t support len()
 
+        batch: List[Tuple] = []
+        err_counter = collections.Counter()
+        processed = 0
+        start = time.time()
+
+        with _connect() as conn:
+            cur = conn.cursor()
+            _truncate(cur)
+
+            for rec in src:
+                processed += 1
+                try:
+                    props = rec["properties"]
+                    geom  = shape(rec["geometry"])
+
+                    gadmid, cls = _gadmid(props)
+                    name = _loc_name(_field(props, "name_0", "NAME_0"),
+                                      props.get("NAME_1") or props.get("name_1"),
+                                      props.get("NAME_2") or props.get("name_2"))
+                    cent = geom.centroid
+                    batch.append(
+                        (
+                            name,
+                            _field(props, "name_0", "NAME_0"),
+                            props.get("NAME_1") or props.get("name_1"),
+                            props.get("NAME_2") or props.get("name_2"),
+                            gadmid,
+                            cent.y,
+                            cent.x,
+                            cls,
+                            _area_ha(geom),
+                            geom.wkt,
+                            None,
+                        )
+                    )
+                except Exception as exc:
+                    err_counter[str(exc)] += 1
+                # flush
+                if len(batch) >= args.batch_size:
+                    _insert(cur, batch)
+                    batch.clear()
+                    elapsed = time.time() - start
+                    rate = processed/elapsed if elapsed else 0
+                    pct = (processed/total_feat*100) if total_feat else math.nan
+                    print(f"   • {processed:,} processed  {pct:5.1f}%  {rate:,.0f} row/s", flush=True)
+
+            # final flush
+            if batch:
+                _insert(cur, batch)
+            conn.commit()
+
+    print("🏁 Done. Total rows:", processed)
+    if err_counter:
+        print("• Error rows:")
+        for msg, cnt in err_counter.most_common(10):
+            print(f"   {cnt:>6} × {msg}")
 
 if __name__ == "__main__":
     main()

@@ -48,9 +48,9 @@ docker build -t gadm-loader .
 Run the script in the image and exit. Bind-mounts current directory.
 
 ```bash
-docker run --rm -v "$PWD":/work \
-  gadm-loader \
-  gadm_gdb_to_mssql.py /work/gadm41.gdb
+docker run --rm -v "$PWD":/work \ 
+  gadm-loader \  
+  /work/gadm41_gdb_to_db2.py /work/gadm.gdb --batch-size 5000 --debug
 
 ```
 

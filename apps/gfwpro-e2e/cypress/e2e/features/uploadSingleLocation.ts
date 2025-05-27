@@ -5,8 +5,8 @@ describe('Upload location', () => {
   const timestamp = Date.now();
   const listToUploadPolygonLocation = `uploadPolygonLocation${timestamp}`;
   const listToUploadPointLocation = `uploadPointLocation${timestamp}`;
-  const locationPage = new LocationsPage();
-  Given('I login in the landing page ', () => {
+  const locationsPage = new LocationsPage();
+  Given('I login to the landing page', () => {
     cy.loginUI();
   });
 
@@ -14,51 +14,63 @@ describe('Upload location', () => {
     cy.visit('/locations');
   });
 
-  When('I click on the Add Location button', () => {
-    locationPage.clickOnAddLocations2Btn();
+  When('I click on the Add Locations button', () => {
+    locationsPage.clickOnAddLocationsBtn();
   });
 
   When('I select the Polygon option', () => {
-    locationPage.clickOnPolygonBtn();
+    locationsPage.clickOnPolygonBtn();
   });
   When('I select the Point option', () => {
-    locationPage.clickOnPointBtn();
+    locationsPage.clickOnPointBtn();
   });
 
   When('I complete the polygon form and confirm', () => {
-    locationPage.typeNewNameLocation(listToUploadPolygonLocation);
-    locationPage.ClickOnEnterPolygonCoordsBtn();
-    locationPage.typeOnInputCoordLat1('14.072');
-    locationPage.typeOnInputCoordLong1('-12.928,0');
-    locationPage.typeOnInputCoordLat2('14.072');
-    locationPage.typeOnInputCoordLong2('-12.928,0');
-    locationPage.typeOnInputCoordLat3('14.072');
-    locationPage.typeOnInputCoordLong3('-12.928,0');
-    locationPage.clickOnConfirmCoods();
-    locationPage.clickOnNextBtn();
-    locationPage.selectCommodity('Coffee');
-    locationPage.typeNewNameListPolygon(listToUploadPolygonLocation);
-    locationPage.clickOnNextBtn();
-    locationPage.clickOnSubmitAnalisys();
-    locationPage.clickOnConfirmAnalisysBtn();
-  });
-  When('I complete the point form and confirm', () => {
-    locationPage.typeNewNameLocation(listToUploadPointLocation);
-    locationPage.ClickOnEnterPointCoordsBtn();
-    locationPage.typeOnInputPointCoordLong('-12.928,0');
-    locationPage.typeOnInputPointCoordLat('14.072');
-    locationPage.typeOnInputRadiusAroundLoc('100');
-    locationPage.clickOnNextBtn();
-    locationPage.selectCommodity('Coffee');
-    locationPage.typeNewNameListPoint(listToUploadPointLocation);
-    locationPage.clickOnNextBtn();
-    locationPage.clickOnSubmitAnalisys();
-    locationPage.clickOnConfirmAnalisysBtn();
+    locationsPage.inputNewLocationName(listToUploadPolygonLocation);
+    locationsPage.ClickOnEnterPolygonCoordsBtn();
+    locationsPage.typeOnInputCoordLat1('14.072');
+    locationsPage.typeOnInputCoordLong1('-12.928,0');
+    locationsPage.typeOnInputCoordLat2('14.072');
+    locationsPage.typeOnInputCoordLong2('-12.928,0');
+    locationsPage.typeOnInputCoordLat3('14.072');
+    locationsPage.typeOnInputCoordLong3('-12.928,0');
+    locationsPage.clickOnConfirmCoods();
+    locationsPage.clickOnNextBtn();
   });
 
-  Then('I should see the completion legend', () => {
-    locationPage.elements.titleFinishLegend().should('be.visible');
-    locationPage.elements.subtitleFinishLegend().should('be.visible');
-    locationPage.elements.returnToLocationBtn().should('be.visible');
+  When('I complete the point form and confirm', () => {
+    locationsPage.inputNewLocationName(listToUploadPointLocation);
+    locationsPage.ClickOnEnterPointCoordsBtn();
+    locationsPage.enterPointLongitude('-12.928,0');
+    locationsPage.enterPointLatitude('14.072');
+    locationsPage.enterRadiusAroundLocation('100');
+    locationsPage.clickOnNextBtn();
+  });
+
+  When('I complete the Configure List step for a new Polygon list', () => {
+    locationsPage.selectCommodity('Coffee');
+    locationsPage.inputNewListName(listToUploadPolygonLocation);
+    locationsPage.selectAnalisysType('post-2020');
+    locationsPage.selectAnalisysType('post-2000');
+    locationsPage.clickOnNextBtn();
+  });
+
+  When('I complete the Configure List step for a new Point list', () => {
+    locationsPage.selectCommodity('Coffee');
+    locationsPage.inputNewListName(listToUploadPointLocation);
+    locationsPage.selectAnalisysType('post-2020');
+    locationsPage.selectAnalisysType('post-2000');
+    locationsPage.clickOnNextBtn();
+  });
+
+  When('I submit the list for analysis', () => {
+    locationsPage.clickOnSubmitAnalisys();
+    locationsPage.clickOnConfirmAnalisysBtn();
+  });
+
+  Then('I should see the confirmation message', () => {
+    locationsPage.elements.titleFinishLegend().should('be.visible');
+    locationsPage.elements.subtitleFinishLegend().should('be.visible');
+    locationsPage.elements.returnToLocationBtn().should('be.visible');
   });
 });

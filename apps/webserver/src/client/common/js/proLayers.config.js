@@ -38,7 +38,6 @@ export const proLayers = {
   landCoverSEAsiaID: 'Land Cover Southeast Asia',
   indonesiaForestMoratorium: 'Indonesia Forest Moratorium',
   indonesiaLegalClass: 'Indonesia Forest Area',
-  indonesiaPeatLands: 'Indonesia Peat Lands',
   indonesiaLandCover: 'Indonesia Land Cover',
   colombiaFronteraAgricola: 'Colombia - Frontera Agrícola',
   rspoPalmOilMills: 'rspo-palm-oil-mills',

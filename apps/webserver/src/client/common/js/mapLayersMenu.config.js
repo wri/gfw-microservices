@@ -351,15 +351,7 @@ const regionLayers = [
     countryCode: 'IDN',
     order: 702,
   },
-  {
-    id: proLayers.indonesiaPeatLands,
-    group: 'region',
-    subGroup: '',
-    region: 'southeast-asia',
-    country: 'Indonesia',
-    countryCode: 'IDN',
-    order: 704,
-  },
+
   {
     id: proLayers.indoTreePlantationsSpecies,
     group: 'region',

@@ -185,7 +185,7 @@ BEGIN
     SET @isValidSortColumn = 1;
 END;
 
--- Check if sortByAttribute is in JsonAttributeColumns
+-- Check JsonAttributeColumns is not null and not empty
 IF @JsonAttributeColumns IS NOT NULL AND LEN(@JsonAttributeColumns) > 0
 BEGIN
     SET @isValidSortColumn = 1;

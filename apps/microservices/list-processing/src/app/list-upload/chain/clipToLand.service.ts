@@ -71,6 +71,7 @@ export class ClipToLandService extends AbstractHandler<ChainType> {
         delete feature.properties.geometry;
       }
     });
+    
     try {
       const batchGeoJSON = {
         type: 'FeatureCollection',

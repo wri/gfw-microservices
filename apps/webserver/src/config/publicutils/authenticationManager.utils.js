@@ -162,7 +162,8 @@ export const login = async (req, username, password, isProManagerLogin = false) 
     }
 
     if ([AUTH_STATUS.ResetRequired, AUTH_STATUS.ForceReset].includes(authenticationStatus)) {
-      const userMessage = authenticationStatus;
+      const userMessage =
+        authenticationStatus === AUTH_STATUS.ForceReset ? 'ForceReset' : 'ResetRequired';
       const sysMessage = `Error during User Authentication: Account disabled for ${email}`;
       throw errorUtils.createErrorMessage(
         req,

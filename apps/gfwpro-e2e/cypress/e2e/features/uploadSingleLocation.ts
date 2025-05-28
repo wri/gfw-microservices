@@ -28,13 +28,12 @@ describe('Upload location', () => {
   When('I complete the polygon form and confirm', () => {
     locationsPage.inputNewLocationName(listToUploadPolygonLocation);
     locationsPage.ClickOnEnterPolygonCoordsBtn();
-    locationsPage.typeOnInputCoordLat1('14.072');
-    locationsPage.typeOnInputCoordLong1('-12.928,0');
-    locationsPage.typeOnInputCoordLat2('14.072');
-    locationsPage.typeOnInputCoordLong2('-12.928,0');
-    locationsPage.typeOnInputCoordLat3('14.072');
-    locationsPage.typeOnInputCoordLong3('-12.928,0');
-    locationsPage.clickOnConfirmCoods();
+    locationsPage.enterPolygonCoordinates(
+      ['40.17073587583163', '-71.53876304624565'],
+      ['-40.94207291466536', '-69.00220870969846'],
+      ['-41.75280394531919', '-71.58644199369435']
+    );
+    locationsPage.clickOnConfirmCoordenates();
     locationsPage.clickOnNextBtn();
   });
 

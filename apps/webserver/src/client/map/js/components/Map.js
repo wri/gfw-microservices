@@ -1542,7 +1542,8 @@ class Map extends Component {
   goToLocations = () => {
     const { esriJson, locationName, globalIds, activeGFWList, selectedMapFeatureAttributes } =
       this.state;
-    this.setState({ spinnerOn: true });
+
+    this.setState({ spinnerOn: false });
     const geoString = JSON.stringify(esriJson);
 
     const requestObject = {
@@ -2309,10 +2310,12 @@ class Map extends Component {
           bmLayer.visible = isTarget;
         }
         if (isTarget) {
-          this.view.map.basemap = '';
+          this.view.map.basemap = null;
         }
       } else if (isTarget) {
         this.view.map.basemap = id;
+      } else if (id === 'custom-default') {
+        this.view.map.basemap = getBasemapConfiguration();
       }
     });
 

@@ -9,8 +9,6 @@ import { proLayers } from '../../../common/js/proLayers.config';
 import ModalLoader from '../../../common/js/components/Loaders/ModalLoader';
 import Landing from './landing/Landing';
 import FolderDetail from './landing/FolderDetail';
-import AddLocation from './adding/AddLocation';
-import UploadLocations from './uploading/UploadLocations';
 import AddGFW from './addGFW/AddGFW';
 
 // Store
@@ -293,10 +291,8 @@ class Locations extends Component {
       listData,
       filteredData,
       selectedLocations,
-      gfwInfoFromMap,
       drawnGeom,
       isLoading,
-      adminArea,
       B2BsharedListEnabled,
       geomFromMap,
     } = this.state;
@@ -321,35 +317,6 @@ class Locations extends Component {
       <Page links={pageOptions.links} active="locations">
         <ModalLoader open={isLoading} />
         <Switch>
-          <Route path="/add">
-            <AddLocation
-              gfwInfoFromMap={gfwInfoFromMap}
-              adminArea={adminArea}
-              organizationId={organizationId}
-              geomFromMap={drawnGeom}
-              templateData={templateData}
-              templateDropdowns={templateDropdowns}
-              userLists={userLists}
-              view={view}
-              addType={addType}
-              addMethod={addMethod}
-              activeTemplate={activeTemplate}
-              orgLists={orgLists}
-            />
-          </Route>
-          <Route path="/upload">
-            <UploadLocations
-              organizationId={organizationId}
-              templateData={templateData}
-              templateDropdowns={templateDropdowns}
-              userLists={userLists}
-              view={view}
-              addType={addType}
-              addMethod={addMethod}
-              activeTemplate={activeTemplate}
-              orgLists={orgLists}
-            />
-          </Route>
           <Route path="/folders">
             <FolderDetail
               lists={allLists}

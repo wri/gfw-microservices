@@ -9,7 +9,7 @@ BEGIN
 	SET @TEMPLATE = '
 		CREATE TABLE [{TABLE_NAME}]
 		(
-			[location_id] INT NOT NULL,
+			[location_id] INT UNIQUE,
 			[location_status_id] INT NOT NULL,
 
 			[tree_cover_loss_total_yearly] NVARCHAR(MAX) DEFAULT ''{}'',
@@ -102,7 +102,6 @@ BEGIN
 
 			[location_error] NVARCHAR(MAX),
 
-			INDEX [IX_{TABLE_NAME}_1] NONCLUSTERED(location_id),
 			INDEX [IX_{TABLE_NAME}_2] NONCLUSTERED(location_status_id)
 		)
 	'

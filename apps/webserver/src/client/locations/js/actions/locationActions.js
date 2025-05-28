@@ -1,7 +1,6 @@
 import {
   CURRENT_VIEW,
   ADD_TYPE,
-  ADD_METHOD,
   CHANGE_TEMPLATE,
   UPDATE_FOLDERS,
   SELECT_FOLDER,
@@ -39,10 +38,6 @@ export function changeListView(data) {
 
 export function changeAddType(data) {
   return { type: ADD_TYPE, data };
-}
-
-export function changeAddMethod(data) {
-  return { type: ADD_METHOD, data };
 }
 
 export function changeTemplate(data) {

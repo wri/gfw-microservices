@@ -5,7 +5,7 @@ describe('Upload File Csv', () => {
   const filePath = 'cypress/fixtures/uploadCsv.xlsx';
   const timestamp = Date.now();
   const listToUploadSingleLocation = `uploadfilecsv${timestamp}`;
-  const locationPage = new LocationsPage();
+  const locationsPage = new LocationsPage();
   Given('I login in the landing page', () => {
     cy.loginUI();
   });
@@ -14,52 +14,53 @@ describe('Upload File Csv', () => {
     cy.visit('/locations');
   });
 
-  When('I click on the Add Location button', () => {
-    locationPage.clickOnAddLocations2Btn();
+  When('I click on the Add Locations button', () => {
+    locationsPage.clickOnAddLocationsBtn();
   });
   When('I select the file upload option', () => {
-    locationPage.clickOnfileUploadBtn();
+    locationsPage.clickOnfileUploadBtn();
   });
   When('I select the Polygon option', () => {
-    locationPage.clickOnPolygonBtn();
+    locationsPage.clickOnPolygonBtn();
   });
   When('I select the Point option', () => {
-    locationPage.clickOnPointBtn();
+    locationsPage.clickOnPointBtn();
   });
 
   When('I click on the Drop file button and drag a CSV file', () => {
     cy.get('[data-testid="file-input"]').invoke('show').selectFile(filePath);
     // cy.uploadFile(csv);
-    locationPage.clickOnNextBtn();
+    locationsPage.clickOnNextBtn();
   });
 
   Then('I should see a list preview', () => {
-    locationPage.elements.titleListPreview().should('be.visible');
-    locationPage.elements.backBtn().should('be.visible');
-    locationPage.elements.cancelBtn().should('be.visible');
-    locationPage.elements.titleListPreview().should('be.visible');
-    locationPage.elements.locationNameColumn().should('be.visible');
-    locationPage.elements.analysisRadiusColumn().should('be.visible');
-    locationPage.elements.analysisAreaColumn().should('be.visible');
-    locationPage.elements.latitudeColumn().should('be.visible');
-    locationPage.elements.longitudeColumn().should('be.visible');
-    locationPage.elements.stateColumn().should('exist');
-    locationPage.elements.countryColumn().should('exist');
-    locationPage.clickOnNextBtn();
+    locationsPage.elements.titleListPreview().should('be.visible');
+    locationsPage.elements.backBtn().should('be.visible');
+    locationsPage.elements.cancelBtn().should('be.visible');
+    locationsPage.elements.titleListPreview().should('be.visible');
+    locationsPage.elements.locationNameColumn().should('be.visible');
+    locationsPage.elements.analysisRadiusColumn().should('be.visible');
+    locationsPage.elements.analysisAreaColumn().should('be.visible');
+    locationsPage.elements.latitudeColumn().should('be.visible');
+    locationsPage.elements.longitudeColumn().should('be.visible');
+    locationsPage.elements.stateColumn().should('exist');
+    locationsPage.elements.countryColumn().should('exist');
+    locationsPage.clickOnNextBtn();
   });
 
   Then('I complete the form and confirm the upload', () => {
-    locationPage.selectCommodity('Coffee');
-    locationPage.typeNewNameList(listToUploadSingleLocation);
-    locationPage.clickOnCheckBoxIcon();
-    locationPage.clickOnNextBtn();
-    locationPage.clickOnSubmitAnalisys();
-    locationPage.clickOnConfirmAnalisysBtn();
+    locationsPage.selectCommodity('Coffee');
+    locationsPage.typeNewNameList(listToUploadSingleLocation);
+    locationsPage.selectAnalisysType('post-2020');
+    locationsPage.selectAnalisysType('post-2000');
+    locationsPage.clickOnNextBtn();
+    locationsPage.clickOnSubmitAnalisys();
+    locationsPage.clickOnConfirmAnalisysBtn();
   });
 
-  Then('I should see the completion legend', () => {
-    locationPage.elements.titleFinishLegend().should('be.visible');
-    locationPage.elements.subtitleFinishLegend().should('be.visible');
-    locationPage.elements.returnToLocationBtn().should('be.visible');
+  Then('I should see the confirmation message', () => {
+    locationsPage.elements.titleFinishLegend().should('be.visible');
+    locationsPage.elements.subtitleFinishLegend().should('be.visible');
+    locationsPage.elements.returnToLocationBtn().should('be.visible');
   });
 });

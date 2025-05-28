@@ -3,7 +3,7 @@ import LocationsPage from '../../pages/locationsPage';
 
 import ListDetailsPage from '../../pages/listDetailsPage';
 describe('Maps View', () => {
-  const locationPage = new LocationsPage();
+  const locationsPage = new LocationsPage();
   const listDetailPage = new ListDetailsPage();
 
   When('I login in the landing page', () => {
@@ -16,9 +16,9 @@ describe('Maps View', () => {
   });
 
   Then('I test download list on Locations', () => {
-    locationPage.clickOnMoreOptionsListOK();
-    expect(locationPage.elements.downloadListBtn().should('be.visible'));
-    locationPage.clickOnDownloadList();
+    locationsPage.clickOnMoreOptionsListOK();
+    expect(locationsPage.elements.downloadListBtn().should('be.visible'));
+    locationsPage.clickOnDownloadList();
     expect(listDetailPage.elements.downloadCSVOptionListDetail().should('be.visible'));
     expect(listDetailPage.elements.downloadShapefileptionListDetail().should('be.visible'));
 
@@ -28,9 +28,9 @@ describe('Maps View', () => {
     expect(listDetailPage.elements.descriptionAlertDownloadList().should('be.visible'));
     listDetailPage.clickCloseAlertDownload();
 
-    locationPage.clickOnMoreOptionsListOK();
+    locationsPage.clickOnMoreOptionsListOK();
     //Download Shapefile
-    locationPage.clickOnDownloadList();
+    locationsPage.clickOnDownloadList();
     listDetailPage.clickOnShapefileOption();
     expect(listDetailPage.elements.titleAlertDownloadList().should('be.visible'));
     expect(listDetailPage.elements.descriptionAlertDownloadList().should('be.visible'));
@@ -38,7 +38,7 @@ describe('Maps View', () => {
   });
 
   Then('I test download list into list details', () => {
-    locationPage.clickOnOptionListOK();
+    locationsPage.clickOnOptionListOK();
     listDetailPage.checkOnCheckBoxSelectAll();
     expect(listDetailPage.elements.downloadBtn().should('be.visible'));
     listDetailPage.clickOnDownload();

@@ -958,7 +958,7 @@ describe('list.analysis.status.ts', () => {
       ).rejects.toThrow('Missing Yield Values');
     });
 
-    it('should throw error "Some yield has non-numeric value" when has only GHG analysis and commodity is defined as non MapSpam Commodity but has non-numeric value for some locations', async () => {
+    it('should throw error "Non-numeric yield values" when has only GHG analysis and commodity is defined as non MapSpam Commodity but has non-numeric value for some locations', async () => {
       const fakeClientDatabase = 'mockClientDB';
       const fakeListId = 123;
       const fakeAnalysisIds = 'GHG,FCD';
@@ -1052,9 +1052,104 @@ describe('list.analysis.status.ts', () => {
           99,
           false
         )
-      ).rejects.toThrow('Some yield has non-numeric value');
+      ).rejects.toThrow('Non-numeric yield values');
     });
+    it('should throw error "Non-numeric yield values" when has only GHG analysis and commodity is defined as Other but has non-numeric value for some locations', async () => {
+      const fakeClientDatabase = 'mockClientDB';
+      const fakeListId = 123;
+      const fakeAnalysisIds = 'GHG,FCD';
 
+      (checkProcessingLimits as jest.Mock).mockResolvedValue({
+        isListLocationOverLimit: false,
+        processingLimit: 1000,
+      });
+
+      (getListAnalysisStatus as jest.Mock).mockResolvedValue([
+        {
+          listId: 1,
+          analysisId: 'GHG',
+          status: 5,
+          options: '',
+        },
+      ]);
+      const fakeLocation = [
+        {
+          locationName: 'fake_location_1',
+          commodity: 'Other',
+          country: 'Brazil',
+          state: 'Amazonas',
+          subState: 'Lábrea',
+          gadmid: 'BRA.4.34',
+          locationId: 1,
+          attributes:
+            '{"analysisArea":"314.1592653589793","analysisRadius":"1","country":"Brazil","latitude":"-8.9001","locationClassification":"Property","locationName":"Brazil1","longitude":"-67","state":"Amazonas","subState":"Lábrea","yield":"10"}',
+          errorDetails: null,
+        },
+        {
+          locationName: 'fake_location_2',
+          commodity: 'Other',
+          country: 'Brazil',
+          state: 'Amazonas',
+          subState: 'Lábrea',
+          gadmid: 'BRA.4.34',
+          locationId: 2,
+          attributes:
+            '{"analysisArea":"1","analysisRadius":"0.05641895835477563","country":"Brazil","latitude":"-8.7001","locationClassification":"Property","locationName":"brazil2","longitude":"-66.8","state":"Amazonas","subState":"Lábrea","yield":"10"}',
+          errorDetails: null,
+        },
+        {
+          locationName: 'fake_location_3',
+          commodity: 'Other',
+          gadmid: 'ARG.21.19',
+          locationId: 3,
+          attributes:
+            '{"analysisArea":"1727.5696541906611","analysisRadius":"2.345","country":"Argentina","latitude":"-29.8001","locationClassification":"Property","locationName":"arg3 landmark","longitude":"-60.2","state":"Santa Fe","subState":"Vera","yield":"vera"}',
+          errorDetails: null,
+        },
+        {
+          locationName: 'fake_location_4',
+          commodity: 'Other',
+          country: 'Argentina',
+          state: 'Tucumán',
+          subState: 'Monteros',
+          gadmid: 'ARG.24.11',
+          locationId: 4,
+          attributes:
+            '{"analysisArea":"3.14159","analysisRadius":"0.09999995776679782","country":"Argentina","latitude":"-27.0401","locationClassification":"Property","locationName":"arg4 wdpa","longitude":"-65.85","state":"Tucumán","subState":"Monteros","yield":"10"}',
+          errorDetails: null,
+        },
+      ];
+      (ClientStoreConnection as unknown as jest.Mock).mockImplementation(() => {
+        return {
+          getConnection: jest.fn().mockResolvedValue({
+            getRepository: jest.fn().mockReturnValue({
+              findBy: jest.fn().mockResolvedValue(fakeLocation),
+              findOne: jest.fn().mockResolvedValue({
+                listName: 'test',
+                Commodity: 'Other',
+                version: 2,
+              }),
+              update: jest.fn(),
+              save: jest.fn(),
+            }),
+          }),
+        };
+      });
+
+      (axios.post as jest.Mock).mockResolvedValue({ statusText: 'Ok' });
+      expect(
+        handleCreateAnalysis(
+          fakeAnalysisIds,
+          fakeListId,
+          123,
+          fakeClientDatabase,
+          false,
+          234,
+          99,
+          false
+        )
+      ).rejects.toThrow('Non-numeric yield values');
+    });
     it('should create analysis when has only GHG analysis and commodity is defined as non MapSpam Commodity  and has yield for all locations', async () => {
       const fakeClientDatabase = 'mockClientDB';
       const fakeListId = 123;

@@ -551,9 +551,6 @@ const riskLevelCheck = (str) => {
   }
 };
 
-// Check for custom attributes Attribute1, Attribute2, and Attribute3
-export const customAttributeRegex = /^Attribute([1-3])$/;
-
 export const fieldValidations = {
   name: {
     validations: [alphanumericSpace],

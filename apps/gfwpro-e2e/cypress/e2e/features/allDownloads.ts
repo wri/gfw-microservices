@@ -6,7 +6,7 @@ import AlertsPage from '../../pages/alertsPage';
 import BasePage from '../../pages/basePage';
 
 describe('Locations View', () => {
-  const locationPage = new LocationsPage();
+  const locationsPage = new LocationsPage();
   const listDetailPage = new ListDetailsPage();
   const alertsPage = new AlertsPage();
   const basePage = new BasePage();
@@ -21,11 +21,11 @@ describe('Locations View', () => {
   });
 
   Then('I test download list on Locations', () => {
-    locationPage.clickOnMoreOptionsListOK();
-    expect(locationPage.elements.downloadListBtn().should('be.visible'));
-    locationPage.clickOnDownloadList();
-    expect(locationPage.elements.downloadCSVOptionBtn().should('be.visible'));
-    expect(locationPage.elements.downloadShapefileptionBtn().should('be.visible'));
+    locationsPage.clickOnMoreOptionsListOK();
+    expect(locationsPage.elements.downloadListBtn().should('be.visible'));
+    locationsPage.clickOnDownloadList();
+    expect(locationsPage.elements.downloadCSVOptionBtn().should('be.visible'));
+    expect(locationsPage.elements.downloadShapefileptionBtn().should('be.visible'));
 
     //Download CSV
     listDetailPage.clickOnCSVOption();
@@ -33,9 +33,9 @@ describe('Locations View', () => {
     expect(listDetailPage.elements.descriptionAlertDownloadList().should('be.visible'));
     listDetailPage.clickCloseAlertDownload();
 
-    locationPage.clickOnMoreOptionsListOK();
+    locationsPage.clickOnMoreOptionsListOK();
     //Download Shapefile
-    locationPage.clickOnDownloadList();
+    locationsPage.clickOnDownloadList();
     listDetailPage.clickOnShapefileOption();
     expect(listDetailPage.elements.titleAlertDownloadList().should('be.visible'));
     expect(listDetailPage.elements.descriptionAlertDownloadList().should('be.visible'));
@@ -43,7 +43,7 @@ describe('Locations View', () => {
   });
 
   Then('I test download list into list details', () => {
-    locationPage.clickOnOptionListOK();
+    locationsPage.clickOnOptionListOK();
     listDetailPage.checkOnCheckBoxSelectAll();
     expect(listDetailPage.elements.downloadBtn().should('be.visible'));
     listDetailPage.clickOnDownload();

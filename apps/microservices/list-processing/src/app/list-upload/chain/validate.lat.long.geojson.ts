@@ -1,7 +1,7 @@
 import { Logger } from '@nestjs/common';
 import { AbstractHandler, ChainType, RequestNewList } from './types';
 import * as turf from '@turf/turf';
-import { Feature, Polygon } from 'geojson';
+import { Feature, Polygon, MultiPolygon } from 'geojson';
 
 export class ValidateLatLongGeojson extends AbstractHandler<ChainType> {
   private readonly logger = new Logger(ValidateLatLongGeojson.name);
@@ -39,7 +39,7 @@ export class ValidateLatLongGeojson extends AbstractHandler<ChainType> {
 
   validateCoordinates(coordinates: any, country: string): string {
     // Check if coordinates is a single point (array of two numbers)
-    if (Array.isArray(coordinates) && coordinates.length === 2) {
+    if (Array.isArray(coordinates) && coordinates.length === 2 && !Array.isArray(coordinates[0])) {
       const [lon, lat] = coordinates;
       if (!ValidateLatLongGeojson.isValidLatLong(lat, lon)) {
         return 'Invalid coordinates';
@@ -68,12 +68,57 @@ export class ValidateLatLongGeojson extends AbstractHandler<ChainType> {
     return '';
   }
 
-  validatePolygon(feature: Feature): boolean {
+  validatePolygon(geometry: Polygon): boolean {
+    const feature: Feature<Polygon> = {
+      type: 'Feature',
+      geometry: geometry,
+      properties: {},
+    };
     if (!turf.booleanValid(feature)) {
       return false;
     }
     const kinks = turf.kinks(feature as Feature<Polygon>);
     return kinks.features.length === 0;
+  }
+
+  validateMultiPolygon(geometry: MultiPolygon): boolean {
+    for (let index = 0; index < geometry.coordinates.length; index++) {
+      const polyToValidate: Polygon = {
+        type: 'Polygon',
+        coordinates: geometry.coordinates[index],
+      };
+      // each polygon in MultiPolygon must be valid
+      if (!this.validatePolygon(polyToValidate)) {
+        return false;
+      }
+      // Next we check if the polygon intersects with any of the other polygons in the MultiPolygon
+      const remainingGeoms = geometry.coordinates
+        .slice(0, index)
+        .concat(geometry.coordinates.slice(index + 1));
+      const featureWithRemainingGeoms: Feature<MultiPolygon> = {
+        type: 'Feature',
+        geometry: {
+          type: 'MultiPolygon',
+          coordinates: remainingGeoms,
+        },
+        properties: {},
+      };
+      const featureToValidate: Feature<Polygon> = {
+        type: 'Feature',
+        geometry: polyToValidate,
+        properties: {},
+      };
+      if (
+        turf.intersect({
+          type: 'FeatureCollection',
+          features: [featureToValidate, featureWithRemainingGeoms],
+        })
+      ) {
+        return false;
+      }
+    }
+
+    return true;
   }
 
   async handle(input: ChainType): Promise<ChainType> {
@@ -102,7 +147,14 @@ export class ValidateLatLongGeojson extends AbstractHandler<ChainType> {
           }
 
           if (geometry.type === 'Polygon' || geometry.type === 'MultiPolygon') {
-            if (!this.validatePolygon(feature as Feature)) {
+            let isGeometryValid = true;
+            if (geometry.type === 'Polygon') {
+              isGeometryValid = this.validatePolygon(geometry as unknown as Polygon);
+            } else {
+              // geometry.type === 'MultiPolygon'
+              isGeometryValid = this.validateMultiPolygon(geometry as unknown as MultiPolygon);
+            }
+            if (!isGeometryValid) {
               feature.properties.errorDetails = feature.properties.errorDetails || [];
               (input.request as RequestNewList).hasUnanalyzableError = true;
               (feature.properties.errorDetails as Array<string>).push('Invalid polygon geometry');

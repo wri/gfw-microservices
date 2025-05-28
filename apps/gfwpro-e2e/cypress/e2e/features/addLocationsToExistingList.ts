@@ -14,10 +14,39 @@ describe('Add Locations to Existing List', () => {
     cy.visit('/locations');
   });
 
-  When('I click on Add Location and select the Single Location option', () => {
+  When('I click on Add Location', () => {
     locationsPage.clickOnAddLocationsBtn();
-    locationsPage.clickOnSingleLocationBtn();
-    locationsPage.clickOnContinueBtn();
+  });
+
+  When('I select the Point option', () => {
+    locationsPage.clickOnPointBtn();
+  });
+
+  When('I complete the point form and confirm', () => {
+    locationsPage.inputNewLocationName(locationName);
+    locationsPage.ClickOnEnterPointCoordsBtn();
+    locationsPage.enterPointLongitude('-12.928,0');
+    locationsPage.enterPointLatitude('14.072');
+    locationsPage.enterRadiusAroundLocation('100');
+    locationsPage.clickOnNextBtn();
+  });
+
+  When('I complete the Configure List step for an existing list', () => {
+    locationsPage.selectCommodity('Cattle');
+    locationsPage.selectExistingList(list);
+    locationsPage.selectAnalisysType('defReport');
+    locationsPage.clickOnNextBtn();
+  });
+
+  When('I submit the list for analysis', () => {
+    locationsPage.clickOnSubmitAnalisys();
+    locationsPage.clickOnConfirmAnalisysBtn();
+  });
+
+  Then('I should see the confirmation message', () => {
+    locationsPage.elements.titleFinishLegend().should('be.visible');
+    locationsPage.elements.subtitleFinishLegend().should('be.visible');
+    locationsPage.elements.returnToLocationBtn().should('be.visible');
   });
 
   When('I select the list AAT ADD LOCATION TEST and complete the form', () => {

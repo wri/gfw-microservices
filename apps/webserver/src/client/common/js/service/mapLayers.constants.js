@@ -1684,47 +1684,6 @@ export const mapLayers = [
   },
 
   {
-    id: '6eb669af-5839-4c93-8ee1-9032b100b1d0',
-    type: 'layer',
-    attributes: {
-      name: 'Indonesia Peat Lands',
-      slug: 'Indonesia-Peat-Lands',
-      dataset: '1471aec4-4790-4634-bec0-4a497fd6e4e8',
-      description: 'Indonesia Peat Lands',
-      application: ['gfw-pro'],
-      iso: [],
-      provider: 'featureservice',
-      userId: '596cde70824315350dd0f116',
-      default: true,
-      protected: false,
-      published: true,
-      env: 'production',
-      layerConfig: {
-        type: 'featureLayer',
-        body: {
-          useCors: true,
-          metadata: 'idn_peat_lands',
-          url: 'https://gis-gfw.wri.org/arcgis/rest/services/country_data/asia/MapServer/10',
-        },
-      },
-      legendConfig: {
-        type: 'basic',
-        items: [
-          {
-            name: 'Indonesia peat lands',
-            color: '#253494',
-          },
-        ],
-      },
-      interactionConfig: {},
-      applicationConfig: {},
-      staticImageConfig: {},
-      createdAt: '2021-12-06T22:17:14.455Z',
-      updatedAt: '2021-12-06T22:17:14.456Z',
-    },
-  },
-
-  {
     id: '63c9f38a-8ff4-492b-a4a0-80c437afcd2c',
     type: 'layer',
     attributes: {
@@ -1787,9 +1746,9 @@ export const mapLayers = [
       published: true,
       env: 'production',
       layerConfig: {
-        type: 'featureLayer',
+        type: 'tileLayer',
         body: {
-          url: 'https://gis-gfw.wri.org/arcgis/rest/services/commodities/MapServer/10',
+          url: 'https://tiles.globalforestwatch.org/rspo_southeast_asia_land_cover_2010/v2013/gfwpro/{z}/{x}/{y}.png',
           metadata: 'se_asia_landcover',
           useCors: true,
         },

@@ -240,5 +240,199 @@ describe('ValidateLatLongGeojson', () => {
         'Invalid polygon geometry',
       ]);
     });
+
+    it('should handle multi polygons', async () => {
+      const input: ChainType = {
+        request: {
+          organization_database: 'test_db',
+          path: 'path',
+        },
+        geojson: {
+          type: 'FeatureCollection',
+          features: [
+            {
+              type: 'Feature',
+              geometry: {
+                type: 'MultiPolygon',
+                coordinates: [
+                  [
+                    [
+                      [13.99, -13.01],
+                      [13.99, -12.99],
+                      [14.01, -12.99],
+                      [14.01, -13.01],
+                      [13.99, -13.01],
+                    ],
+                  ],
+                  [
+                    [
+                      [14.99, -14.01],
+                      [14.99, -13.99],
+                      [15.01, -13.99],
+                      [15.01, -14.01],
+                      [14.99, -14.01],
+                    ],
+                  ],
+                ],
+              },
+              properties: {
+                country: 'Angola',
+              },
+            },
+          ],
+        },
+      };
+
+      const result = await validator.handle(input);
+      expect(result.geojson.features.length).toBe(1);
+      expect(result.geojson.features[0].geometry.type).toBe('MultiPolygon');
+      expect(result.geojson.features[0].properties.errorDetails).toBeUndefined();
+    });
+
+    it('should pass shared point', async () => {
+      const input: ChainType = {
+        request: {
+          organization_database: 'test_db',
+          path: 'path',
+        },
+        geojson: {
+          type: 'FeatureCollection',
+          features: [
+            {
+              type: 'Feature',
+              geometry: {
+                type: 'MultiPolygon',
+                coordinates: [
+                  [
+                    [
+                      [13.99, -13.01],
+                      [13.99, -12.99],
+                      [14.01, -12.99],
+                      [14.01, -13.01],
+                      [13.99, -13.01],
+                    ],
+                  ],
+                  [
+                    [
+                      [14.01, -12.99],
+                      [14.01, -12.97],
+                      [14.03, -12.97],
+                      [14.03, -12.99],
+                      [14.01, -12.99],
+                    ],
+                  ],
+                ],
+              },
+              properties: {
+                country: 'Angola',
+              },
+            },
+          ],
+        },
+      };
+
+      const result = await validator.handle(input);
+      expect(result.geojson.features.length).toBe(1);
+      expect(result.geojson.features[0].geometry.type).toBe('MultiPolygon');
+      expect(result.geojson.features[0].properties.errorDetails).toBeUndefined();
+    });
+
+    it('should pass shared line', async () => {
+      const input: ChainType = {
+        request: {
+          organization_database: 'test_db',
+          path: 'path',
+        },
+        geojson: {
+          type: 'FeatureCollection',
+          features: [
+            {
+              type: 'Feature',
+              geometry: {
+                type: 'MultiPolygon',
+                coordinates: [
+                  [
+                    [
+                      [13.99, -13.01],
+                      [13.99, -12.99],
+                      [14.01, -12.99],
+                      [14.01, -13.01],
+                      [13.99, -13.01],
+                    ],
+                  ],
+                  [
+                    [
+                      [14.01, -13.01],
+                      [14.01, -12.99],
+                      [14.03, -12.99],
+                      [14.03, -13.01],
+                      [14.01, -13.01],
+                    ],
+                  ],
+                ],
+              },
+              properties: {
+                country: 'Angola',
+              },
+            },
+          ],
+        },
+      };
+
+      const result = await validator.handle(input);
+      expect(result.geojson.features.length).toBe(1);
+      expect(result.geojson.features[0].geometry.type).toBe('MultiPolygon');
+      expect(result.geojson.features[0].properties.errorDetails).toBeUndefined();
+    });
+
+    it('should fail shared area', async () => {
+      const input: ChainType = {
+        request: {
+          organization_database: 'test_db',
+          path: 'path',
+        },
+        geojson: {
+          type: 'FeatureCollection',
+          features: [
+            {
+              type: 'Feature',
+              geometry: {
+                type: 'MultiPolygon',
+                coordinates: [
+                  [
+                    [
+                      [13.99, -13.01],
+                      [13.99, -12.99],
+                      [14.01, -12.99],
+                      [14.01, -13.01],
+                      [13.99, -13.01],
+                    ],
+                  ],
+                  [
+                    [
+                      [14.001, -13.01],
+                      [14.001, -12.99],
+                      [14.03, -12.99],
+                      [14.03, -13.01],
+                      [14.001, -13.01],
+                    ],
+                  ],
+                ],
+              },
+              properties: {
+                country: 'Angola',
+              },
+            },
+          ],
+        },
+      };
+
+      const result = await validator.handle(input);
+      expect(result.geojson.features.length).toBe(1);
+      expect(result.geojson.features[0].geometry.type).toBe('MultiPolygon');
+      const { errorDetails } = result.geojson.features[0].properties;
+      expect((errorDetails as Array<any>).length).toBe(1);
+      expect(errorDetails[0]).toStrictEqual('Invalid polygon geometry');
+    });
   });
 });

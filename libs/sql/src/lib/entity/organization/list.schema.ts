@@ -58,7 +58,7 @@ export const ListSchema = {
       type: 'int' as ColumnType,
       primary: true,
       name: 'location_id',
-      nullable: true,
+      nullable: false,
     },
     attributes: {
       type: 'varchar' as ColumnType,

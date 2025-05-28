@@ -21,20 +21,20 @@ describe('Downloading Templates', () => {
   });
 
   Then('I should be able to download the Polygon Shapefile template', () => {
-    locationsPage.elements.ShapefileOption().should('be.visible');
+    locationsPage.elements.shapefileOption().should('be.visible');
   });
 
   Then('I should be able to download the KML template', () => {
-    locationsPage.elements.KMLOption().should('be.visible');
+    locationsPage.elements.kmlOption().should('be.visible');
   });
   Then('I should be able to download the SpreadSheet template', () => {
-    locationsPage.elements.SpreadSheetOption().should('be.visible');
+    locationsPage.elements.spreadSheetOption().should('be.visible');
   });
   Then('I should be able to download the Point Shapefile template', () => {
-    locationsPage.elements.PointShapefileOption().should('be.visible');
+    locationsPage.elements.pointShapefileOption().should('be.visible');
   });
   Then('I should be able to download the List of Palm Mill template', () => {
-    locationsPage.elements.ListOfPalmMillIDsOption().should('be.visible');
+    locationsPage.elements.listOfPalmMillIDsOption().should('be.visible');
   });
   When('I click on the Polygon Shapefile option and click the Download button', () => {
     locationsPage.clickOnShapeFileOptionBtn();

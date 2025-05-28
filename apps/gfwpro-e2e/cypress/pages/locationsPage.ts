@@ -26,8 +26,8 @@ class LocationsPage {
     spreadSheetOption: () => cy.get('[role="button"]').contains('Spreadsheet'),
     pointShapefileOption: () => cy.get('[role="button"]').contains('Point Shapefile'),
     listOfPalmMillIDsOption: () => cy.get('[role="button"]').contains('List of Palm Mill IDs'),
-    checkBtn: () => cy.get('.MuiAccordionSummary-content > .MuiButtonBase-root'),
-    nextBtn: () => cy.contains('Next'),
+    checkBtn: () => cy.get('[data-testid="DownloadDoneIcon"]'),
+    nextBtn: () => cy.get('[data-testid="ArrowForwardIosIcon"]'),
     selectCommodity: () =>
       cy.get('.css-k008qs > .MuiFormControl-root > .MuiInputBase-root > .MuiSelect-select'),
     searchInput: () => cy.get('.input-search__input'),
@@ -36,8 +36,7 @@ class LocationsPage {
     downloadShapefileptionBtn: () => cy.contains('Shapefile'),
     downloadTypeDropdown: () => cy.get('#downloadTypeSelect'),
     downloadTemplateBtn: () => cy.contains('Download'),
-    downloadTemplateUploadLocationBtn: () =>
-      cy.get('.MuiAccordionSummary-content > .MuiButtonBase-root'),
+    downloadTemplateUploadLocationBtn: () => cy.get('[data-testid="DownloadIcon"]'),
     locationNameCell: () => cy.get('.rt-td.cell__Location-Name.default-cell'),
     newNameListCell: () => cy.get('[placeholder="Name your new list"]'),
     newListNameInput: () => cy.get('input[placeholder="Name your new list"]'),
@@ -48,8 +47,7 @@ class LocationsPage {
     checkbox: () => '.rt-td.td-checkbox',
     downloadListBtn: () => cy.contains('Download…'),
     confirmActionBtn: () => cy.contains('button', 'OK'),
-    confirmCoordsBtn: () => cy.get('.css-kj9wkw > .MuiButton-contained'),
-
+    confirmCoordenatesBtn: () => cy.get('[data-testid="CheckIcon"]'),
     optionListOK: () =>
       cy
         .get('.my-lists-list li')
@@ -72,6 +70,8 @@ class LocationsPage {
       ),
     inputLatitudeCoordinates: () => cy.get('input[name="latitude"]'),
     inputLongitudeCoordinates: () => cy.get('input[name="longitude"]'),
+    inputLatitudeCoordinatesPolygon: () => cy.get('[data-testid="latitude-input"]'),
+    inputLongitudeCoordinatesPolygon: () => cy.get('[data-testid="longitude-input"]'),
     inputCoordLatitude1: () => cy.get('#mui-2'),
     inputCoordLongitude1: () => cy.get('#mui-3'),
     inputCoordLatitude2: () => cy.get('#mui-4'),
@@ -183,23 +183,11 @@ class LocationsPage {
   clickOnConfirmActionBtn() {
     this.elements.confirmActionBtn().click();
   }
-  typeOnInputCoordLat1(latitude: string) {
-    this.elements.inputCoordLatitude1().click().type(latitude);
-  }
-  typeOnInputCoordLong1(longitude: string) {
-    this.elements.inputCoordLongitude1().click().type(longitude);
-  }
-  typeOnInputCoordLat2(latitude: string) {
-    this.elements.inputCoordLatitude2().click().type(latitude);
-  }
-  typeOnInputCoordLong2(longitude: string) {
-    this.elements.inputCoordLongitude2().click().type(longitude);
-  }
-  typeOnInputCoordLat3(latitude: string) {
-    this.elements.inputCoordLatitude3().click().type(latitude);
-  }
-  typeOnInputCoordLong3(longitude: string) {
-    this.elements.inputCoordLongitude3().click().type(longitude);
+  enterPolygonCoordinates(...coordinates: [string, string][]): void {
+    coordinates.forEach(([latitude, longitude], index) => {
+      this.elements.inputLatitudeCoordinatesPolygon().eq(index).click().type(latitude);
+      this.elements.inputLongitudeCoordinatesPolygon().eq(index).click().type(longitude);
+    });
   }
   enterPointLongitude(longitude: string) {
     this.elements.inputLongitudeCoordinates().click().type(longitude);
@@ -210,8 +198,8 @@ class LocationsPage {
   enterRadiusAroundLocation(radius: string) {
     this.elements.inputRadiusAroundLocation().click().type(radius);
   }
-  clickOnConfirmCoods() {
-    this.elements.confirmCoordsBtn().click();
+  clickOnConfirmCoordenates() {
+    this.elements.confirmCoordenatesBtn().click();
   }
 
   clickOnMapBtn() {

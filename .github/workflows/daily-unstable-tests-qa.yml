@@ -8,7 +8,7 @@ on:
 # nx cache intermittently fails with github actions, likely due to parallelism
 # so disabling the check for now
 env:
-  UNSTABLE: 'apps/gfwpro-e2e/cypress/e2e/features/uploadSingleLocation.feature,apps/gfwpro-e2e/cypress/e2e/features/addLocationsToExistingList.feature'
+  UNSTABLE: ''
   NX_REJECT_UNKNOWN_LOCAL_CACHE: 0
 
 jobs:

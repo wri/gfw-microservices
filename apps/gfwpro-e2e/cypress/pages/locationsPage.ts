@@ -183,7 +183,7 @@ class LocationsPage {
   clickOnConfirmActionBtn() {
     this.elements.confirmActionBtn().click();
   }
-  enterPolygonCoordinates(...coordinates: any[]) {
+  enterPolygonCoordinates(...coordinates: [string, string][]): void {
     coordinates.forEach(([latitude, longitude], index) => {
       this.elements.inputLatitudeCoordinatesPolygon().eq(index).click().type(latitude);
       this.elements.inputLongitudeCoordinatesPolygon().eq(index).click().type(longitude);

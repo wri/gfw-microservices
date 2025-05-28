@@ -36,8 +36,8 @@ module.exports = (app) => {
       const message = AUTH_STATUS_MAP[result.authenticationStatus] || 'Login error';
       res.status(200).send(message);
     } catch (err) {
-      console.error('Login failed:', err);
-      res.status(500).send(String(err.userMessage || err.message));
+      console.error('Login failed:', err.stack || JSON.stringify(err) || err);
+      res.status(401).send(String(err.userMessage || err.message || 'Login failed'));
     }
   });
 

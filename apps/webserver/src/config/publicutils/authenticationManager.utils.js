@@ -159,10 +159,10 @@ export const login = async (req, username, password, isProManagerLogin = false) 
         langResources.getResourceString('loginFailed'),
         `UserEmail: ${email}, Authentication Status: ${authenticationStatus}`
       );
-    }
-
+    } 
+    
     if ([AUTH_STATUS.ResetRequired, AUTH_STATUS.ForceReset].includes(authenticationStatus)) {
-      const userMessage = authenticationStatus;
+      const userMessage = authenticationStatus === AUTH_STATUS.ForceReset ? 'ForceReset' : 'ResetRequired';
       const sysMessage = `Error during User Authentication: Account disabled for ${email}`;
       throw errorUtils.createErrorMessage(
         req,
@@ -170,8 +170,8 @@ export const login = async (req, username, password, isProManagerLogin = false) 
         userMessage,
         sysMessage
       );
-    }
-
+    } 
+    
     if (new Date(authenticationResponse['custom:passwordUpdatedAt']) <= sixMonthsAgo) {
       await awsCognito.adminResetUserPassword(req, normalizedUsername);
       throw errorUtils.createErrorMessage(

@@ -1,8 +1,6 @@
 import { useState, useEffect } from 'react';
-import Card from '@mui/material/Card';
-import CardContent from '@mui/material/CardContent';
-import CardActions from '@mui/material/CardActions';
-import Modal from '@mui/material/Modal';
+import { Card, CardContent, CardActions, Modal } from '@mui/material';
+
 import Button from '../../../../../common/js/components/Button';
 import AnalysisTypesSelector from '../../../../../common/js/components/AnalysisTypesSelector';
 import { requestGeoTrellisAnalyzeList } from '../../../utils/requestUtils';

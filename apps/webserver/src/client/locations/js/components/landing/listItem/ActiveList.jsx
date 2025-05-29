@@ -1,18 +1,18 @@
 import { useState } from 'react';
-import Chip from '@mui/material/Chip';
-import Popover from 'material-ui/Popover';
-import PublicIcon from '@mui/icons-material/Public';
-import GroupsIcon from '@mui/icons-material/Groups';
-import QueryStatsIcon from '@mui/icons-material/QueryStats';
-import PlaceIcon from '@mui/icons-material/Place';
-import ShareIcon from '@mui/icons-material/Share';
-import RefreshIcon from '@mui/icons-material/Refresh';
-import FolderIcon from '@mui/icons-material/Folder';
-import SettingsIcon from '@mui/icons-material/Settings';
-import DeleteIcon from '@mui/icons-material/Delete';
-import Divider from 'material-ui/Divider';
-import Menu from 'material-ui/Menu';
-import MenuItem from 'material-ui/MenuItem';
+import { Chip } from '@mui/material';
+import { Divider, Menu, MenuItem, Popover } from 'material-ui';
+import {
+  Public as PublicIcon,
+  Groups as GroupsIcon,
+  QueryStats as QueryStatsIcon,
+  Place as PlaceIcon,
+  Share as ShareIcon,
+  Refresh as RefreshIcon,
+  Folder as FolderIcon,
+  Settings as SettingsIcon,
+  Delete as DeleteIcon,
+} from '@mui/icons-material';
+
 import Button from '../../../../../common/js/components/Button';
 import IconUsers from '../../../../../common/js/components/icon/IconUsers';
 import IconButton from '../../../../../common/js/components/IconButton';
@@ -76,9 +76,6 @@ function ActiveList({
   };
 
   const clickLocationRow = () => {
-    if (isEmptyList) {
-      return;
-    }
     // clicked a location with a successfully completed analysis; go to it
     gtag('event', 'List click', {
       event_category: 'Landing',
@@ -123,10 +120,7 @@ function ActiveList({
         isPalmOilBackwardComp={isPalmOilBackwardComp}
       />
 
-      <li
-        className={`locations-list ${isEmptyList ? 'locations-list--inactive' : ''}`}
-        onClick={clickLocationRow}
-      >
+      <li className="locations-list" onClick={clickLocationRow}>
         <CustomTooltip
           placement="bottom-end"
           tooltipMessage={getAnalysisLastUpdatedDate()}

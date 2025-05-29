@@ -1,18 +1,18 @@
 import { useState } from 'react';
-import Chip from '@mui/material/Chip';
-import Popover from 'material-ui/Popover';
-import PublicIcon from '@mui/icons-material/Public';
-import GroupsIcon from '@mui/icons-material/Groups';
-import PlaceIcon from '@mui/icons-material/Place';
-import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp';
-import ShareIcon from '@mui/icons-material/Share';
-import QueryStatsIcon from '@mui/icons-material/QueryStats';
-import FolderIcon from '@mui/icons-material/Folder';
-import DeleteIcon from '@mui/icons-material/Delete';
-import SettingsIcon from '@mui/icons-material/Settings';
-import Divider from 'material-ui/Divider';
-import Menu from 'material-ui/Menu';
-import MenuItem from 'material-ui/MenuItem';
+import { Chip } from '@mui/material';
+import { Popover, Divider, Menu, MenuItem } from 'material-ui';
+import {
+  Public as PublicIcon,
+  Groups as GroupsIcon,
+  QueryStats as QueryStatsIcon,
+  Place as PlaceIcon,
+  Share as ShareIcon,
+  Folder as FolderIcon,
+  Settings as SettingsIcon,
+  Delete as DeleteIcon,
+  KeyboardArrowUp as KeyboardArrowUpIcon,
+} from '@mui/icons-material';
+
 import IconUsers from '../../../../../common/js/components/icon/IconUsers';
 import ListDiagnosticStatusDraft from '../components/ListDiagnosticStatusDraft/ListDiagnosticStatusDraft';
 import CustomTooltip from '../../../../../common/js/components/CustomTooltip/CustomTooltip';
@@ -62,14 +62,9 @@ function DraftList({
   const isLargeList = !!large_list_id;
   const hasErrorFile = !!error_file_storage_path;
   const isInFolder = !!folder;
-  const isEmptyList = locations === 0;
-  const isDiagnosticAvaliable = !!list.dashboard_last_results;
+  const isDiagnosticAvailable = !!list.dashboard_last_results;
 
   const clickLocationRow = () => {
-    if (isEmptyList) {
-      return;
-    }
-
     gtag('event', 'List click', {
       event_category: 'Landing',
       event_label: `user clicked on Draft list ${list_name}`,
@@ -114,7 +109,7 @@ function DraftList({
       />
 
       <li
-        className={`locations-list ${isEmptyList ? 'locations-list--inactive' : ''}`}
+        className="locations-list"
         title={locationsPage.landing.draftMessage}
         onClick={clickLocationRow}
       >
@@ -178,7 +173,7 @@ function DraftList({
             targetOrigin={{ vertical: 'top', horizontal: 'right' }}
           >
             <Menu className="context-menu">
-              {isDiagnosticAvaliable && (
+              {isDiagnosticAvailable && (
                 <MenuItem
                   primaryText={locationsPage.lists.diagnostic}
                   leftIcon={<QueryStatsIcon />}

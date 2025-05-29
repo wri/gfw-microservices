@@ -1,14 +1,13 @@
 import { useState } from 'react';
-import PublicIcon from '@mui/icons-material/Public';
-import GroupsIcon from '@mui/icons-material/Groups';
-import FolderIcon from '@mui/icons-material/Folder';
-import DeleteIcon from '@mui/icons-material/Delete';
-import SettingsIcon from '@mui/icons-material/Settings';
-import Divider from 'material-ui/Divider';
-import Dialog from 'material-ui/Dialog';
-import Menu from 'material-ui/Menu';
-import MenuItem from 'material-ui/MenuItem';
-import Popover from 'material-ui/Popover';
+import {
+  Public as PublicIcon,
+  Groups as GroupsIcon,
+  Folder as FolderIcon,
+  Settings as SettingsIcon,
+  Delete as DeleteIcon,
+} from '@mui/icons-material';
+import { Dialog, Popover, Divider, Menu, MenuItem } from 'material-ui';
+
 import DownloadLargeListFile from '../DownloadLargeListFile';
 import IconUsers from '../../../../../common/js/components/icon/IconUsers';
 import IconButton from '../../../../../common/js/components/IconButton';

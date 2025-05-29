@@ -19,7 +19,7 @@ export const updateListsUploadStatus = async (
   const { taskARN } = await getMetadata();
 
   try {
-    let record = await repository.findOne({ where: { listId } });
+    let record = await repository.findOne({ where: { listId, lastSuccessfulStage } });
 
     if (!record) {
       record = new ListsUploadStatus();
@@ -49,15 +49,18 @@ export const getMetadata = async (): Promise<{ taskARN: string }> => {
   }
 };
 
+let cachedTaskARN: string | null = null;
 async function fetchMetadata(): Promise<{ taskARN: string }> {
-  const metadataUrl = 'http://169.254.170.2/v2/metadata';
-  try {
-    const response = await axios.get<MetadataServiceType>(metadataUrl);
-    const data = response.data;
-    const taskARN = data.TaskARN;
-
-    return { taskARN };
-  } catch (error) {
-    throw new Error(`Failed to fetch metadata: ${error.message}`);
+  if (!cachedTaskARN) {
+    const metadataUrl = 'http://169.254.170.2/v2/metadata';
+    try {
+      const response = await axios.get<MetadataServiceType>(metadataUrl);
+      const data = response.data;
+      cachedTaskARN = data.TaskARN;
+    } catch (error) {
+      Logger.error(`Failed to fetch metadata: ${error.message}`);
+      // ignore error so next call will try again
+    }
   }
+  return { taskARN: cachedTaskARN };
 }

@@ -222,6 +222,7 @@ AS
            [list_id] INT NOT NULL,
            [location_id] INT NULL,
            [gadm_id] NVARCHAR(25) NULL,
+           [location_error] NVARCHAR(MAX) NULL,
            [glad_alerts_coverage] NVARCHAR(MAX) NULL,
            [glad_alerts_daily] NVARCHAR(MAX) NULL,
            [glad_alerts_weekly] NVARCHAR(MAX) NULL,
@@ -451,6 +452,7 @@ AS
                    [list_id] [int] NOT NULL,
                    [location_id] [int] NULL,
                    [gadm_id] [nvarchar] (25) COLLATE SQL_Latin1_General_CP1_CI_AS NULL,
+                   [location_error] [nvarchar] (max) COLLATE SQL_Latin1_General_CP1_CI_AS NULL,
                    [glad_alerts_coverage] [nvarchar] (max) COLLATE SQL_Latin1_General_CP1_CI_AS NULL,
                    [glad_alerts_daily] [nvarchar] (max) COLLATE SQL_Latin1_General_CP1_CI_AS NULL,
                    [glad_alerts_weekly] [nvarchar] (max) COLLATE SQL_Latin1_General_CP1_CI_AS NULL,
@@ -2877,7 +2879,8 @@ AS
 
                                /* HANDLE UPDATE, IF EXISTS IN DASHBOARD TABLE */
                                UPDATE TT
-                               SET TT.glad_alerts_coverage = SRC.glad_alerts_coverage
+                               SET TT.location_error = SRC.location_error
+                                   , TT.glad_alerts_coverage = SRC.glad_alerts_coverage
                                    , TT.glad_alerts_daily = SRC.glad_alerts_daily
                                    , TT.glad_alerts_weekly = SRC.glad_alerts_weekly
                                    , TT.glad_alerts_monthly = SRC.glad_alerts_monthly
@@ -2893,9 +2896,9 @@ AS
 
                                /* HANDLE INSERT, IF NOT EXISTS IN DASHBOARD TABLE*/
                                INSERT INTO dbo.[Analyses-Dashboard] (
-                                   list_id, location_id, gadm_id, glad_alerts_coverage, glad_alerts_daily, glad_alerts_weekly, glad_alerts_monthly, viirs_alerts_daily, tree_cover_extent_total
+                                   list_id, location_id, gadm_id, location_error, glad_alerts_coverage, glad_alerts_daily, glad_alerts_weekly, glad_alerts_monthly, viirs_alerts_daily, tree_cover_extent_total
                                )
-                               SELECT list_id, location_id, gadm_id, glad_alerts_coverage, glad_alerts_daily, glad_alerts_weekly, glad_alerts_monthly, viirs_alerts_daily, tree_cover_extent_total
+                               SELECT list_id, location_id, gadm_id, location_error, glad_alerts_coverage, glad_alerts_daily, glad_alerts_weekly, glad_alerts_monthly, viirs_alerts_daily, tree_cover_extent_total
                                FROM @DashboardUpdates SRC
                                WHERE NOT EXISTS(
                                    SELECT *

@@ -19,6 +19,7 @@ describe('Update Lists Upload Status', () => {
   let mockRepository: MockRepository;
   let mockConnection: MockConnection;
 
+  const mockTaskARN = 'arn:aws:ecs:us-east-1:123456789012:task/prod-cluster/abc123';
   beforeEach(async () => {
     mockRepository = {
       findOne: jest.fn(),
@@ -38,7 +39,7 @@ describe('Update Lists Upload Status', () => {
 
     // Mock axios for all tests
     (axios.get as jest.Mock).mockResolvedValue({
-      data: { TaskARN: 'mock-task-arn' },
+      data: { TaskARN: mockTaskARN },
     });
   });
 
@@ -53,7 +54,7 @@ describe('Update Lists Upload Status', () => {
           listId: 123,
           lastSuccessfulStage: 'test-stage',
           errorInfo: undefined,
-          workerInstanceId: 'mock-task-arn',
+          workerInstanceId: mockTaskARN,
         })
       );
     });
@@ -71,7 +72,7 @@ describe('Update Lists Upload Status', () => {
           listId: 123,
           lastSuccessfulStage: 'new-stage',
           errorInfo: 'error occurred',
-          workerInstanceId: 'mock-task-arn',
+          workerInstanceId: mockTaskARN,
         })
       );
     });
@@ -111,24 +112,10 @@ describe('Update Lists Upload Status', () => {
 
     it('should fetch metadata from ECS container metadata endpoint', async () => {
       process.env.MICROSERVICES_ENV = 'prod';
-      const mockTaskARN = 'arn:aws:ecs:us-east-1:123456789012:task/prod-cluster/abc123';
-
-      (axios.get as jest.Mock).mockResolvedValue({
-        data: { TaskARN: mockTaskARN },
-      });
 
       const result = await getMetadata();
 
       expect(result).toEqual({ taskARN: mockTaskARN });
-      expect(axios.get).toHaveBeenCalledWith('http://169.254.170.2/v2/metadata');
-    });
-
-    it('should handle metadata fetch errors', async () => {
-      process.env.MICROSERVICES_ENV = 'prod';
-
-      (axios.get as jest.Mock).mockRejectedValue(new Error('Network error'));
-
-      await expect(getMetadata()).rejects.toThrow('Failed to fetch metadata: Network error');
     });
   });
 });

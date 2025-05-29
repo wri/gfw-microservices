@@ -48,13 +48,17 @@ export const MARK_IS_TEST_USER = 'dt_';
 
 const environmentAllowTestFlow = ['DEVELOPMENT', 'LATEST', 'QA', 'STAGING'];
 
+import { getAllListsAnalysisStatus as getAllListsAnalysisStatusSql } from '@wri-monorepos/sql';
 export const getAllListsAnalysisStatus = async (
-  clientDatabase: string
+  clientDatabase: string,
+  listId = null
 ): Promise<ListsAnalysisStatus[]> => {
   try {
+    const parameters = [{ field: 'list_id', type: sql.Int, value: listId }];
     const analysisStatusData = await SQLUtils.queryDB<ListsAnalysisStatus[]>(
       clientDatabase,
-      'getAllListsAnalysisStatus'
+      getAllListsAnalysisStatusSql,
+      parameters
     );
 
     return await resolveListAnalysisStatuses(analysisStatusData);

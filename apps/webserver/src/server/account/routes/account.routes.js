@@ -15,35 +15,30 @@ module.exports = (app) => {
    */
   app.get('/account', controller.account);
 
-  app.post('/auth/signinpost', (req, res) => {
+  app.post('/auth/signinpost', async (req, res) => {
     console.log('POST /auth/signinpost');
+
+    const AUTH_STATUS_MAP = {
+      1: 'Authenticated',
+      2: 'Unauthenticated',
+      3: 'RequireNewPassword',
+      4: 'ConfirmPassword',
+      5: 'Disabled',
+      6: 'ResetRequired',
+      7: 'ForceReset',
+      8: 'ResendPassword',
+    };
+
     const { username, password } = req.body;
-    AuthManager.login(req, username, password)
-      .then((result) => {
-        if (result.authenticationStatus === 1) {
-          res.send('Authenticated');
-        } else if (result.authenticationStatus === 2) {
-          res.send('Unauthenticated');
-        } else if (result.authenticationStatus === 3) {
-          res.send('RequireNewPassword');
-        } else if (result.authenticationStatus === 4) {
-          res.send('ConfirmPassword');
-        } else if (result.authenticationStatus === 5) {
-          res.send('Disabled');
-        } else if (result.authenticationStatus === 6) {
-          res.send('ResetRequired');
-        } else if (result.authenticationStatus === 7) {
-          res.send('ForceReset');
-        } else if (result.authenticationStatus === 8) {
-          res.send('ResendPassword');
-        } else {
-          res.send('Login error');
-        }
-      })
-      .catch((err) => {
-        res.send(err.userMessage || err.message);
-        console.log('Reject', err);
-      });
+
+    try {
+      const result = await AuthManager.login(req, username, password);
+      const message = AUTH_STATUS_MAP[result.authenticationStatus] || 'Login error';
+      res.status(200).send(message);
+    } catch (err) {
+      console.error('Login failed:', err.stack || JSON.stringify(err) || err);
+      res.status(401).send(String(err.userMessage || err.message || 'Login failed'));
+    }
   });
 
   app.post('/createnewaccount', (req, res) => {

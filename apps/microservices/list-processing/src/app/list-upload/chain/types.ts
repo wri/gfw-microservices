@@ -73,14 +73,14 @@ export abstract class AbstractHandler<T> implements Handler<T> {
   static async runFullChain<T>(chain: AbstractHandler<T>, chainType: T): Promise<T> {
     let nextJob = chain;
     let result: T = chainType;
+    await AbstractHandler.updateListsUploadStatus(
+      result as ChainType,
+      'Starting list upload process'
+    );
     while (nextJob) {
       const start = performance.now();
       try {
         result = await nextJob.handle(result);
-        await AbstractHandler.updateListsUploadStatus(
-          result as ChainType,
-          `${nextJob.constructor.name} successfully executed`
-        );
       } catch (error) {
         Logger.error(
           `Error in ${nextJob.constructor.name}: ${error.stack || error.message || error}`
@@ -108,6 +108,10 @@ export abstract class AbstractHandler<T> implements Handler<T> {
       AbstractHandler.logExecutionTime(start, end, heapUsed, nextJob.constructor.name);
       nextJob = nextJob.nextHandler;
     }
+    await AbstractHandler.updateListsUploadStatus(
+      result as ChainType,
+      'Ending list upload process'
+    );
     return result;
   }
 

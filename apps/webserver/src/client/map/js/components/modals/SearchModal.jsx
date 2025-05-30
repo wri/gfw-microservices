@@ -133,7 +133,6 @@ export default class SearchModal extends Component {
 
   createSearch = () => {
     const { isGadm41Available } = featureFlags;
-    console.log({ isGadm41Available });
     this.searchWidget = new Search({
       view: this.props.mapView,
       container: 'search-widget',

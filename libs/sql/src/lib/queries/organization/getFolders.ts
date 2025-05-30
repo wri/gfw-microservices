@@ -1,3 +1,6 @@
+/**
+ * @param user_id INT
+ */
 export const getFolders = `DECLARE @SQL NVARCHAR(1000)
 BEGIN
   SET @SQL = 'SELECT id, name, last_accessed_at, created_at FROM [dbo].[Folders] WHERE user_id = {USER_ID}'

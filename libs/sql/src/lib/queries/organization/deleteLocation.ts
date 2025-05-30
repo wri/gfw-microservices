@@ -1,3 +1,7 @@
+/**
+ * @param list_id INT
+ * @param location_id INT
+ */
 export const deleteLocation = `
 BEGIN
 	DECLARE @TEMPLATE NVARCHAR(MAX)

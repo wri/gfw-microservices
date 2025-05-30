@@ -1,5 +1,7 @@
 export const getListNameSchema = `SELECT id, user_id, list_name, list_table_name, list_analysis_table_name FROM Lists WHERE id = @list_id`;
-
+/**
+ * @param list_id INT
+ */
 export class ListNameSchema {
   id: number;
   userId: string;

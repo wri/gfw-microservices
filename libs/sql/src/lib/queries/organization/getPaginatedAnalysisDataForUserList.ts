@@ -1,3 +1,28 @@
+/**
+ * @param listID INT
+ * @param PageNumber INT
+ * @param RowsOfPage INT
+ * @param OrderByColumn NVARCHAR(MAX)
+ * @param Order NVARCHAR(5)
+ * @param SubState NVARCHAR(150)
+ * @param Country NVARCHAR(150)
+ * @param State NVARCHAR(150)
+ * @param AnalysisAreaMin INT
+ * @param AnalysisAreaMax INT
+ * @param LocationLogic NVARCHAR(50)
+ * @param LocationIds NVARCHAR(MAX)
+ * @param LocationStatement NVARCHAR(MAX)
+ * @param ColumnsToReturn NVARCHAR(MAX)
+ * @param SearchString NVARCHAR(MAX)
+ * @param Geometry BIT
+ * @param selectedSupplier NVARCHAR(150)
+ * @param selectedSecondSupplier NVARCHAR(150)
+ * @param selectedParentCompany NVARCHAR(150)
+ * @param showRSPOCertified BIT
+ * @param selectedOverallThreats NVARCHAR(150)
+ * @param selectedOverallValues NVARCHAR(150)
+ * @param selectedMillPriority NVARCHAR(150)
+ */
 export const getPaginatedAnalysisDataForUserList = `
 BEGIN
 

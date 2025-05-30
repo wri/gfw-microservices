@@ -1,3 +1,22 @@
+/**
+ * @param userID INT
+ * @param firstName NVARCHAR(35)
+ * @param mi NVARCHAR(2)
+ * @param lastName NVARCHAR(35)
+ * @param email NVARCHAR(50)
+ * @param phone NVARCHAR(50)
+ * @param titleId INT
+ * @param other_title NVARCHAR(150)
+ * @param accessLevelId INT
+ * @param email_subscription BIT
+ * @param commodity_ids VARCHAR(200)
+ * @param geography_ids VARCHAR(200)
+ * @param viirs_email_frequency INT
+ * @param glad_email_frequency INT
+ * @param forma_email_frequency INT
+ * @param terrai_email_frequency INT
+ * @param gran_chaco_email_frequency INT
+ */
 export const updateUser = `
 
 -- Update User in the Users Tables.

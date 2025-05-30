@@ -1,20 +1,20 @@
-/*
- * @param listID INT,
- * @param OrderByColumn String,
- * @param Order String,
- * @param SubState String,
- * @param Country String,
- * @param State String,
- * @param AnalysisAreaMin Int,
- * @param AnalysisAreaMax Int,
- * @param LocationLogic String,
- * @param LocationIds String,
- * @param LocationStatement String,
- * @param ColumnsToReturn String,
- * @param SearchString String,
- * @param SelectedLocations String,
- * @param Geometry Int
- **/
+/**
+ * @param listID INT
+ * @param OrderByColumn STRING
+ * @param Order STRING
+ * @param SubState STRING
+ * @param Country STRING
+ * @param State STRING
+ * @param AnalysisAreaMin INT
+ * @param AnalysisAreaMax INT
+ * @param LocationLogic STRING
+ * @param LocationIds STRING
+ * @param LocationStatement STRING
+ * @param ColumnsToReturn STRING
+ * @param SearchString STRING
+ * @param SelectedLocations STRING
+ * @param Geometry INT
+ */
 
 export const getLocationsFilteredToCopy = `
 	DECLARE @columnsList NVARCHAR(1000)

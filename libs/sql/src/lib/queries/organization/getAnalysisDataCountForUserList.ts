@@ -1,3 +1,19 @@
+/**
+ * @param listID INT
+ * @param Country NVARCHAR(150)
+ * @param State NVARCHAR(150)
+ * @param SubState NVARCHAR(150)
+ * @param AnalysisAreaMin INT
+ * @param AnalysisAreaMax INT
+ * @param SearchString NVARCHAR(MAX)
+ * @param selectedSupplier NVARCHAR(150)
+ * @param selectedSecondSupplier NVARCHAR(150)
+ * @param selectedParentCompany NVARCHAR(150)
+ * @param showRSPOCertified BIT
+ * @param selectedOverallThreats NVARCHAR(150)
+ * @param selectedOverallValues NVARCHAR(150)
+ * @param selectedMillPriority NVARCHAR(150)
+ */
 export const getAnalysisDataCountForUserList = `
 DECLARE @listLocationTableName NVARCHAR(1000)
 DECLARE @listAnalysisTableName NVARCHAR(1000)

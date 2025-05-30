@@ -1,3 +1,6 @@
+/**
+ * @param user_id INT
+ */
 export const getAllFolderItems = `DECLARE @SQL NVARCHAR(1000)
 BEGIN
   SET @SQL = 'SELECT * FROM [dbo].[FolderItems] WHERE folder_id IN (SELECT id FROM [dbo].[Folders] WHERE USER_ID = {USER_ID});'

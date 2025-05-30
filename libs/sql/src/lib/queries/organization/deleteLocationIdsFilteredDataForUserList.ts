@@ -1,3 +1,13 @@
+/**
+ * @param Country NVARCHAR(150)
+ * @param State NVARCHAR(150)
+ * @param SubState NVARCHAR(150)
+ * @param AnalysisAreaMin INT
+ * @param AnalysisAreaMax INT
+ * @param SearchString NVARCHAR(MAX)
+ * @param SelectedLocations NVARCHAR(MAX)
+ * @param Debug BIT
+ */
 export const deleteLocationIdsFilteredDataForUserList = `
 BEGIN
 	DECLARE @listLocationTableName NVARCHAR(1000)

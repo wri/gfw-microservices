@@ -205,4 +205,33 @@ export class AppController {
       userEmail
     );
   }
+
+  @Post('/converters/start/:id')
+  async startConverter(
+    @Param('id') id: number,
+    @Query('organizationId') organizationId?: number
+  ): Promise<string> {
+    // Step 1: Update converter start_time
+    await this.appService.updateConverterStartTime(id);
+
+    // Step 2: Get relevant client stores (ordered by org_id or filtered by organizationId)
+    const clientStore = await this.appService.getClientStoresByOrgId(organizationId);
+    
+    // Step 3: process
+    try {
+      await this.appService.runConverterForClientStores(clientStore);
+
+      const randomDelay = (Math.random() * 1000) + 500;
+      await new Promise((resolve) => setTimeout(resolve, randomDelay));
+    } catch (err) {
+      // Optionally log the error and decide if you want to stop or skip
+      console.error(`Error processing ${clientStore}:`, err);
+      return 'Converter process failed for one or more organizations.';
+    }
+
+    // Step 5: If no errors, update status
+    await this.appService.updateConverterStatus(id, 'OK');
+
+    return 'Converter process completed successfully.';
+  }
 }

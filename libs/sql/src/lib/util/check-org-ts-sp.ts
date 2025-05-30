@@ -1,7 +1,8 @@
 import { Logger } from '@nestjs/common';
 import { SQLUtils } from '../util';
 import * as sql from 'mssql';
-import * as manifest from '../queries/organization/orgs-sp-manifest.json';
+
+const manifest = require('../queries/organization/orgs-sp-manifest.json');
 
 export async function checkStoredProcedureTsImplementation(clientDb: string) {
   const logger = new Logger('check.org.ts.sp');
@@ -52,7 +53,7 @@ export async function checkStoredProcedureTsImplementation(clientDb: string) {
 
     return {
       implementedSp,
-      missingSp,
+      notImplementedSp: missingSp,
     };
   } catch (error) {
     logger.error(error);

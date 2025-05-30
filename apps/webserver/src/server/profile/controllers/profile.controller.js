@@ -35,7 +35,8 @@ export const profileInfo = (req, res) => {
 
     Promise.all(promises)
       .then((results) => {
-        const [accountProfile, usersList, policyList, userInfo, accountRenewalTime] = results;
+        const [accountProfile, usersList, policyList, userInfo, accountRenewalTime, orgSp] =
+          results;
         res.status(200).json({
           organization: accountProfile,
           accountRenewalTime,
@@ -46,6 +47,7 @@ export const profileInfo = (req, res) => {
           common: compiledAssets.js.common,
           profilejs: compiledAssets.js.profile,
           profilecss: compiledAssets.css.profile,
+          orgSp,
         });
       })
       .catch((err) => {

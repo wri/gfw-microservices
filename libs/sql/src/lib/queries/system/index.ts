@@ -32,3 +32,4 @@ export * from './getCountGFWListsDashboardData';
 export * from './setOrganizationRenewalTime';
 export * from './getTableQueryString';
 export * from './getGFWListTableData';
+export * from './getAdministrativeAreaAttributes';

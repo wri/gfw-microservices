@@ -5,6 +5,8 @@ import Search from '@arcgis/core/widgets/Search';
 import FeatureLayer from '@arcgis/core/layers/FeatureLayer';
 import { Component } from 'react';
 import { proLayers } from '../../../../common/js/proLayers.config';
+import createAdminAreasSearchSource from './createAdminAreasSearchSource';
+import './SearchModal.scss';
 
 const tabs = ['Search', 'Coordinates', 'Decimal Degrees'];
 
@@ -56,7 +58,10 @@ export default class SearchModal extends Component {
       view: this.props.mapView,
       container: 'search-widget',
       minSuggestCharacters: 3,
+      includeDefaultSources: false,
+
       sources: [
+        createAdminAreasSearchSource(),
         {
           url: 'https://geocode-api.arcgis.com/arcgis/rest/services/World/GeocodeServer',
           singleLineFieldName: 'SingleLine',
@@ -68,80 +73,6 @@ export default class SearchModal extends Component {
             distance: 50000,
           },
           placeholder: 'Find address or place',
-        },
-        {
-          layer: new FeatureLayer({
-            url: 'https://gfwpro-gis.globalforestwatch.org/arcgis/rest/services/GADM36_admin/MapServer/6',
-            popupTemplate: {
-              title: 'Country: {name_0}',
-            },
-            id: `${proLayers.administrativeAreas}-country`,
-          }),
-          searchFields: ['name_0'],
-          suggestionTemplate: 'Country: {name_0}',
-          outFields: ['name_0'],
-          name: 'Administrative Areas: Countries',
-          placeholder: 'Search country',
-          maxSuggestions: 4,
-        },
-        {
-          layer: new FeatureLayer({
-            url: 'https://gfwpro-gis.globalforestwatch.org/arcgis/rest/services/GADM36_admin/MapServer/5',
-            popupTemplate: {
-              title: 'State: {name_1}',
-              content: [
-                {
-                  type: 'fields',
-                  fieldInfos: [
-                    {
-                      fieldName: 'name_0',
-                      label: 'Country',
-                      visible: true,
-                    },
-                  ],
-                },
-              ],
-            },
-            id: `${proLayers.administrativeAreas}-state`,
-          }),
-          searchFields: ['name_1'],
-          suggestionTemplate: 'Country: {name_0}, State: {name_1}',
-          outFields: ['name_0', 'name_1'],
-          name: 'Administrative Areas: States',
-          placeholder: 'Search state',
-          maxSuggestions: 4,
-        },
-        {
-          layer: new FeatureLayer({
-            url: 'https://gfwpro-gis.globalforestwatch.org/arcgis/rest/services/GADM36_admin/MapServer/4',
-            popupTemplate: {
-              title: 'Sub-State: {name_2}',
-              content: [
-                {
-                  type: 'fields',
-                  fieldInfos: [
-                    {
-                      fieldName: 'name_0',
-                      label: 'Country',
-                      visible: true,
-                    },
-                    {
-                      fieldName: 'name_1',
-                      label: 'State',
-                      visible: true,
-                    },
-                  ],
-                },
-              ],
-            },
-            id: `${proLayers.administrativeAreas}-sub-state`,
-          }),
-          searchFields: ['name_2'],
-          suggestionTemplate: 'Country: {name_0}, State: {name_1}, Sub-State: {name_2}',
-          outFields: ['name_0', 'name_1', 'name_2'],
-          name: 'Administrative Areas: Sub-states',
-          placeholder: 'Search sub-state',
-          maxSuggestions: 4,
         },
         {
           layer: new FeatureLayer({
@@ -203,8 +134,12 @@ export default class SearchModal extends Component {
       ],
     });
 
-    this.searchWidget.on('select-result', () => {
+    this.searchWidget.on('select-result', (event) => {
       store.dispatch(toggleSearch());
+
+      const geometry = event.result.feature.geometry;
+
+      this.props.mapView.goTo(geometry);
     });
 
     let searchContainer;
@@ -239,21 +174,6 @@ export default class SearchModal extends Component {
       animationOptions
     );
     this.close();
-  };
-
-  utmSearch = () => {
-    const values = [this.refs.eastDeg.value, this.refs.northDeg.value, this.refs.zoneDeg.value].map(
-      parseFloat
-    );
-    const directionC = this.refs.directionC.value;
-    console.log(values);
-    console.log(directionC);
-    // const [lat, lng] = values;
-    // if (values.map(isNaN).indexOf(true) > -1) { throw Error('Invalid input(s)'); }
-    // this.props.mapView.goTo({
-    //   center: [lat, lng],
-    //   zoom: 12
-    // }, animationOptions);
   };
 
   coordinateSearch = () => {

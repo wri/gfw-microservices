@@ -137,13 +137,31 @@ module.exports = (app, limiter) => {
 
   app.get('/map/gadm-admininstrative-boundaries', async (req, res) => {
     try {
-      const { countryCode } = req.query;
+      const { countryCode, searchInput } = req.query;
       let sql;
 
       // Only allow uppercase A-Z letters and max 3 characters (ISO Alpha-3)
       const isValidISO = /^[A-Z]{2,3}$/.test(countryCode);
-
-      if (countryCode && isValidISO) {
+      if (searchInput) {
+        sql = `SELECT
+                adm_level, gfw_geojson,
+                name_0, gid_0,
+                name_1, gid_1,
+                name_2, gid_2
+              FROM data
+              WHERE name_0_normalized ILIKE '%${searchInput}%'
+                OR name_1_normalized ILIKE '%${searchInput}%'
+                OR name_2_normalized ILIKE '%${searchInput}%'
+              ORDER BY
+                CASE adm_level
+                  WHEN '0' THEN 0
+                  WHEN '1' THEN 1
+                  WHEN '2' THEN 2
+                  ELSE 3
+                END,
+                name_1
+              LIMIT 4;`;
+      } else if (countryCode && isValidISO) {
         sql = `SELECT name_1, gid_1 FROM data WHERE adm_level='1' AND gid_0='${countryCode}' ORDER BY name_1`;
       } else if (!countryCode) {
         sql = `SELECT name_0, gid_0 FROM data WHERE adm_level='0' AND name_0 IS NOT NULL ORDER BY name_0`;

@@ -1,0 +1,20 @@
+.esri-search--loading::before {
+  content: '';
+  z-index: 100;
+  position: absolute;
+  right: 4.5rem;
+  top: 50%;
+  width: 16px;
+  height: 16px;
+  border: 2px solid #999;
+  border-top-color: transparent;
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+  transform: translateY(-50%);
+}
+
+@keyframes spin {
+  to {
+    transform: translateY(-50%) rotate(360deg);
+  }
+}

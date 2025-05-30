@@ -65,6 +65,13 @@ export class ClipToLandService extends AbstractHandler<ChainType> {
     const s3ObjectsToDelete = [];
     const objectName = `gadm-${new Date().getTime()}-${Math.random().toString(36).substring(7)}`;
 
+    // remove extra geometry properties if they exist
+    batch.forEach((feature) => {
+      if (feature.properties && feature.properties.geometry) {
+        delete feature.properties.geometry;
+      }
+    });
+
     try {
       const batchGeoJSON = {
         type: 'FeatureCollection',
@@ -109,6 +116,12 @@ export class ClipToLandService extends AbstractHandler<ChainType> {
       return s3Object.geojson.features;
     } catch (e) {
       (request.request as RequestNewList).hasUnanalyzableError = true;
+      batch.forEach((feature) => {
+        feature.properties.errorDetails = feature.properties.errorDetails || [];
+        (feature.properties.errorDetails as Array<string>).push(
+          `Potential clipToLand error: ${e.message || e}`
+        );
+      });
       this.logger.warn('Error in processBatch:', e.stack || e);
       return batch; // Return original features if processing fails
     }

@@ -6,11 +6,89 @@ import FeatureLayer from '@arcgis/core/layers/FeatureLayer';
 import { Component } from 'react';
 import { proLayers } from '../../../../common/js/proLayers.config';
 import createAdminAreasSearchSource from './createAdminAreasSearchSource';
+import featureFlags from '../../../../../utils/general.utils';
 import './SearchModal.scss';
 
 const tabs = ['Search', 'Coordinates', 'Decimal Degrees'];
 
 const animationOptions = { duration: 300 };
+
+const gadm36Sources = [
+  {
+    layer: new FeatureLayer({
+      url: 'https://gfwpro-gis.globalforestwatch.org/arcgis/rest/services/GADM36_admin/MapServer/6',
+      popupTemplate: {
+        title: 'Country: {name_0}',
+      },
+      id: `${proLayers.administrativeAreas}-country`,
+    }),
+    searchFields: ['name_0'],
+    suggestionTemplate: 'Country: {name_0}',
+    outFields: ['name_0'],
+    name: 'Administrative Areas: Countries',
+    placeholder: 'Search country',
+    maxSuggestions: 4,
+  },
+  {
+    layer: new FeatureLayer({
+      url: 'https://gfwpro-gis.globalforestwatch.org/arcgis/rest/services/GADM36_admin/MapServer/5',
+      popupTemplate: {
+        title: 'State: {name_1}',
+        content: [
+          {
+            type: 'fields',
+            fieldInfos: [
+              {
+                fieldName: 'name_0',
+                label: 'Country',
+                visible: true,
+              },
+            ],
+          },
+        ],
+      },
+      id: `${proLayers.administrativeAreas}-state`,
+    }),
+    searchFields: ['name_1'],
+    suggestionTemplate: 'Country: {name_0}, State: {name_1}',
+    outFields: ['name_0', 'name_1'],
+    name: 'Administrative Areas: States',
+    placeholder: 'Search state',
+    maxSuggestions: 4,
+  },
+  {
+    layer: new FeatureLayer({
+      url: 'https://gfwpro-gis.globalforestwatch.org/arcgis/rest/services/GADM36_admin/MapServer/4',
+      popupTemplate: {
+        title: 'Sub-State: {name_2}',
+        content: [
+          {
+            type: 'fields',
+            fieldInfos: [
+              {
+                fieldName: 'name_0',
+                label: 'Country',
+                visible: true,
+              },
+              {
+                fieldName: 'name_1',
+                label: 'State',
+                visible: true,
+              },
+            ],
+          },
+        ],
+      },
+      id: `${proLayers.administrativeAreas}-sub-state`,
+    }),
+    searchFields: ['name_2'],
+    suggestionTemplate: 'Country: {name_0}, State: {name_1}, Sub-State: {name_2}',
+    outFields: ['name_0', 'name_1', 'name_2'],
+    name: 'Administrative Areas: Sub-states',
+    placeholder: 'Search sub-state',
+    maxSuggestions: 4,
+  },
+];
 
 // REFERENCE: https://stackoverflow.com/a/5971628
 function dms2Deg(s) {
@@ -54,6 +132,8 @@ export default class SearchModal extends Component {
   }
 
   createSearch = () => {
+    const { isGadm41Available } = featureFlags;
+    console.log({ isGadm41Available });
     this.searchWidget = new Search({
       view: this.props.mapView,
       container: 'search-widget',
@@ -61,7 +141,7 @@ export default class SearchModal extends Component {
       includeDefaultSources: false,
 
       sources: [
-        createAdminAreasSearchSource(),
+        ...(isGadm41Available ? [createAdminAreasSearchSource()] : gadm36Sources),
         {
           url: 'https://geocode-api.arcgis.com/arcgis/rest/services/World/GeocodeServer',
           singleLineFieldName: 'SingleLine',

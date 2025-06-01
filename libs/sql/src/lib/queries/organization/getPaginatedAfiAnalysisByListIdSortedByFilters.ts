@@ -177,16 +177,10 @@ IF (@Filters IS NOT NULL)
 
 DECLARE @isValidSortColumn BIT = 0;
 
--- Check if sortByAttribute exists in regular columns
 IF CHARINDEX(@sortByAttribute, @afiColumns) > 0
    OR CHARINDEX(@sortByAttribute, @ltColumns) > 0
    OR CHARINDEX(@sortByAttribute, @calculatedColumns) > 0
-BEGIN
-    SET @isValidSortColumn = 1;
-END;
-
--- Check JsonAttributeColumns is not null and not empty
-IF @JsonAttributeColumns IS NOT NULL AND LEN(@JsonAttributeColumns) > 0
+   OR (@JsonAttributeColumns IS NOT NULL AND CHARINDEX('AS [' + @sortByAttribute + ']', @JsonAttributeColumns) > 0)
 BEGIN
     SET @isValidSortColumn = 1;
 END;
@@ -195,44 +189,23 @@ IF @orderType IS NOT NULL
    AND @sortByAttribute IS NOT NULL
    AND @isValidSortColumn = 1
 BEGIN
-    -- Validate and sanitize the attribute name
-    DECLARE @jsonPath NVARCHAR(MAX) = '$."' + REPLACE(REPLACE(@sortByAttribute, '"', ''), '''', '') + '"';
-
-    -- Verify the attribute name is valid
-    IF @jsonPath NOT LIKE '$."%"' OR LEN(@jsonPath) < 4
-    BEGIN
-        SET @jsonPath = '$."invalid_attribute"';
-    END
-
     SET @SQL += ' ORDER BY ' +
             CASE
                 WHEN CHARINDEX(@sortByAttribute, @afiColumns) > 0
                      THEN 'afi.' + QUOTENAME(@sortByAttribute)
                 WHEN CHARINDEX(@sortByAttribute, @ltColumns) > 0
                      THEN 'lt.' + QUOTENAME(@sortByAttribute)
-                ELSE 'CASE
-                        WHEN ISJSON(lt.attributes) = 1 AND JSON_VALUE(lt.attributes, ''' + @jsonPath + ''') IS NOT NULL
-                        THEN CASE
-                               WHEN ISNUMERIC(JSON_VALUE(lt.attributes, ''' + @jsonPath + ''')) = 1 THEN 0
-                               ELSE 1
-                             END
-                        ELSE 2
-                      END,
-                      CASE
-                        WHEN ISNUMERIC(JSON_VALUE(lt.attributes, ''' + @jsonPath + ''')) = 1
-                        THEN CASE
-                               WHEN ''' + @orderType + ''' = ''DESC''
-                               THEN -CAST(JSON_VALUE(lt.attributes, ''' + @jsonPath + ''') AS DECIMAL(18,2))
-                               ELSE CAST(JSON_VALUE(lt.attributes, ''' + @jsonPath + ''') AS DECIMAL(18,2))
-                             END
-                        ELSE NULL
-                      END,
-                      CASE
-                        WHEN ISNUMERIC(JSON_VALUE(lt.attributes, ''' + @jsonPath + ''')) = 0
-                        THEN JSON_VALUE(lt.attributes, ''' + @jsonPath + ''')
-                        ELSE NULL
-                      END ' + @orderType
-            END;
+                WHEN CHARINDEX(@sortByAttribute, @calculatedColumns) > 0
+                     THEN QUOTENAME(@sortByAttribute)
+                WHEN CHARINDEX(@sortByAttribute, @JsonAttributeColumns) > 0
+                     THEN CASE
+                          WHEN CHARINDEX('CAST(JSON_VALUE(lt.attributes, ''$."' + @sortByAttribute + '"'') AS DECIMAL', @JsonAttributeColumns) > 0
+                          THEN 'CAST(JSON_VALUE(lt.attributes, ''$."' + @sortByAttribute + '"'') AS DECIMAL(18,6))'
+                          ELSE 'CAST(JSON_VALUE(lt.attributes, ''$."' + @sortByAttribute + '"'') AS NVARCHAR(MAX))'
+                          END
+                ELSE QUOTENAME(@sortByAttribute)
+            END
+            + ' ' + @orderType;
 END
 ELSE
 BEGIN

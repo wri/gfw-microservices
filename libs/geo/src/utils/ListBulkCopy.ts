@@ -85,27 +85,21 @@ export class ListBulkCopy {
     // Execute Bulk Insert
     await new Promise<void>((resolve, reject) => {
       // Create a SQL Connection.
-      const pool = new sql.ConnectionPool(clientConnectionConfiguration, async (err) => {
+      const pool = new sql.ConnectionPool(clientConnectionConfiguration, (err) => {
         if (err) {
           throw err;
         }
         // Get Request Object. Query
         const request = new sql.Request(pool);
-        // Enable identity insert if location_id is an identity column and you want to insert explicit values
-        // await request.query(`SET IDENTITY_INSERT ${list.list_table} ON`);
        
         // Execute Stored Procedure.
         request
           .bulk(objTable)
           .then(() => {
             resolve();
-            //sql.close();
             pool.close();
           })
           .catch((errorMessage) => {
-            //logger.error('Executing Bulk Insert for Table ', list_table_name);
-            //logger.error(errorMessage);
-            //sql.close();
             pool.close();
             reject(errorMessage);
           });

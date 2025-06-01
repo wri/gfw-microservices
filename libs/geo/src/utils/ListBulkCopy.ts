@@ -66,8 +66,7 @@ export class ListBulkCopy {
     // Add all columns to the table.
     for (let nIndex = 0; nIndex < columnNamesArray.length; nIndex++) {
       objTable.columns.add(columnNamesArray[nIndex], columnTypesArray[nIndex], {
-        nullable: true,
-        primary: false,
+        nullable: columnNamesArray[nIndex] === 'location_id'? false:true,
       });
     }
 
@@ -86,13 +85,15 @@ export class ListBulkCopy {
     // Execute Bulk Insert
     await new Promise<void>((resolve, reject) => {
       // Create a SQL Connection.
-      const pool = new sql.ConnectionPool(clientConnectionConfiguration, (err) => {
+      const pool = new sql.ConnectionPool(clientConnectionConfiguration, async (err) => {
         if (err) {
           throw err;
         }
         // Get Request Object. Query
         const request = new sql.Request(pool);
-
+        // Enable identity insert if location_id is an identity column and you want to insert explicit values
+        // await request.query(`SET IDENTITY_INSERT ${list.list_table} ON`);
+       
         // Execute Stored Procedure.
         request
           .bulk(objTable)

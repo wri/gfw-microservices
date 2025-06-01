@@ -520,7 +520,7 @@ export const getAllLists = (req): Promise<ListsType[]> => {
 
     const parameters = [{ field: 'list_id', type: sql.Int, value: null }];
     sqlUtils
-      .executeOrganizationStoredProcedure(req, 'uspGetAllLists', parameters)
+      .executeOrganizationStoredProcedure(req, getAllListsSql, parameters)
       .then((recordsets) => {
         resolve(recordsets);
       })
@@ -1667,7 +1667,8 @@ export const getListByListName = async (req, list_name) => {
  */
 export const getListByIdWithAnalysisId = async (req, listId) => {
   try {
-    return await getUserListsWithAnalysisId(req, listId);
+    const lists = await getUserListsWithAnalysisId(req, listId);
+    return listId ? lists[0] : lists;
   } catch (e) {
     logger.error('getListByIdWithAnalysisId', e.stack || e);
   }

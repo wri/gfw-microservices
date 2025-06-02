@@ -66,7 +66,7 @@ export class ListBulkCopy {
     // Add all columns to the table.
     for (let nIndex = 0; nIndex < columnNamesArray.length; nIndex++) {
       objTable.columns.add(columnNamesArray[nIndex], columnTypesArray[nIndex], {
-        nullable: columnNamesArray[nIndex] === 'location_id'? false:true,
+        nullable: columnNamesArray[nIndex] === 'location_id' ? false : true,
       });
     }
 
@@ -91,7 +91,7 @@ export class ListBulkCopy {
         }
         // Get Request Object. Query
         const request = new sql.Request(pool);
-       
+
         // Execute Stored Procedure.
         request
           .bulk(objTable)

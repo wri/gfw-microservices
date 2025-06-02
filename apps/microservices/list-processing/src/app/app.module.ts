@@ -29,6 +29,7 @@ import { HealthModule } from './health/health.module';
 import { ListModule } from './list';
 import { GHGModule } from './ghg';
 import { ListCopyMoveModule } from './list-copy-move';
+import { ConvertersModule } from './converters';
 
 @Module({
   imports: [
@@ -37,17 +38,18 @@ import { ListCopyMoveModule } from './list-copy-move';
       name: 'default',
       imports: [SchedulerModule],
     }),
-    SqlModule,
-    FCDModule,
     AFIModule,
-    SchedulerModule,
     AlertsModule,
-    ListUploadModule,
     AwsModule,
-    HealthModule,
-    ListModule,
+    ConvertersModule,
+    FCDModule,
     GHGModule,
+    HealthModule,
+    ListUploadModule,
+    ListModule,
     ListCopyMoveModule,
+    SchedulerModule,
+    SqlModule,
   ],
   controllers: [AppController],
   providers: [

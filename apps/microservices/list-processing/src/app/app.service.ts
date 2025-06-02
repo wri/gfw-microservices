@@ -1,4 +1,4 @@
-import { Injectable, InternalServerErrorException, NotFoundException, Logger } from '@nestjs/common';
+import { Injectable, InternalServerErrorException, Logger } from '@nestjs/common';
 import { S3Client, PutObjectCommand, GetObjectCommand } from '@aws-sdk/client-s3';
 import { DataSource } from 'typeorm';
 import { randomUUID } from 'crypto';
@@ -102,7 +102,7 @@ export class AppService {
         const activityLog = new ActivityLog();
         activityLog.userId = organization_user_id;
         activityLog.activityTypeId = 21;
-        const confirmationMessage = `User '${userEmail}' has deleted list (${list_id}).`
+        const confirmationMessage = `User '${userEmail}' has deleted list (${list_id}).`;
         activityLog.activityDescription = confirmationMessage;
         activityLog.activityTime = new Date();
         await activityLogRepository.save(activityLog);
@@ -129,55 +129,5 @@ export class AppService {
         code: 603,
       });
     }
-  }
-  
-  async updateConverterStartTime(converterId: number): Promise<void> {
-    await this.dataSource
-      .createQueryBuilder()
-      .update('ConverterStatus')
-      .set({ start_time: new Date() })
-      .where('id = :id', { id: converterId })
-      .execute();
-  }
-
-  async getClientStoresByOrgId(organizationId?: number): Promise<string[]> {
-    let query = 'SELECT organization_db FROM Organizations';
-    const params: any[] = [];
-
-    if (organizationId) {
-      query += ' WHERE id = ?';
-      params.push(organizationId);
-    } 
-
-    const results = await this.dataSource.query(query, params);
-
-    if (!results.length) {
-      throw new NotFoundException(
-        organizationId
-          ? `Organization with ID: '${organizationId}' not found.`
-          : 'No active client stores found.'
-      );
-    }
-
-    return results.map(row => row.organization_db);
-  }
-
-  async runConverterForClientStores(organizationDb: string[]): Promise<void> {
-    organizationDb.forEach(async (clientStore) => {
-      const activityLog = new ActivityLog();
-      const connection = await this.clientStoreConnection.getConnection(clientStore);
-      const activityLogRepository = connection.getRepository(ActivityLog);
-      await activityLogRepository.save(activityLog);
-    });
-    // TODO: Call converter logic.
-  }
-
-  async updateConverterStatus(converterId: number, status: 'OK' | 'ERROR'): Promise<void> {
-    await this.dataSource
-      .createQueryBuilder()
-      .update('ConverterStatus')
-      .set({ status })
-      .where('id = :id', { id: converterId })
-      .execute();
   }
 }

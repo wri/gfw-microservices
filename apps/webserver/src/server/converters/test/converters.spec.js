@@ -1,5 +1,5 @@
 const { getConverters } = require('../controllers/converters.controller');
-import { CONVERTER_NAMES } from '@wri-monorepos/constants';
+import { ConverterNamesList } from '@wri-monorepos/constants';
 
 describe('getConverters', () => {
   it('should respond with status 200 and the list of converters', () => {
@@ -15,6 +15,6 @@ describe('getConverters', () => {
 
     // Assertions
     expect(res.status).toHaveBeenCalledWith(200);
-    expect(res.json).toHaveBeenCalledWith({ converters: CONVERTER_NAMES });
+    expect(res.json).toHaveBeenCalledWith({ converters: ConverterNamesList });
   });
 });

@@ -35,8 +35,7 @@ BEGIN
 
 		/* HANDLE UPDATE, IF EXISTS IN DASHBOARD TABLE */
 		UPDATE TT
-		SET TT.location_error = SRC.location_error
-			,TT.glad_alerts_coverage = SRC.glad_alerts_coverage
+		SET TT.glad_alerts_coverage = SRC.glad_alerts_coverage
 			, TT.glad_alerts_daily = SRC.glad_alerts_daily
 			, TT.glad_alerts_weekly = SRC.glad_alerts_weekly
 			, TT.glad_alerts_monthly = SRC.glad_alerts_monthly
@@ -52,9 +51,9 @@ BEGIN
 
 		/* HANDLE INSERT, IF NOT EXISTS IN DASHBOARD TABLE*/
 		INSERT INTO dbo.[Analyses-Dashboard] (
-			list_id, location_id, gadm_id, location_error, glad_alerts_coverage, glad_alerts_daily, glad_alerts_weekly, glad_alerts_monthly, viirs_alerts_daily, tree_cover_extent_total
+			list_id, location_id, gadm_id, glad_alerts_coverage, glad_alerts_daily, glad_alerts_weekly, glad_alerts_monthly, viirs_alerts_daily, tree_cover_extent_total
 		)
-		SELECT list_id, location_id, gadm_id, location_error, glad_alerts_coverage, glad_alerts_daily, glad_alerts_weekly, glad_alerts_monthly, viirs_alerts_daily, tree_cover_extent_total
+		SELECT list_id, location_id, gadm_id, glad_alerts_coverage, glad_alerts_daily, glad_alerts_weekly, glad_alerts_monthly, viirs_alerts_daily, tree_cover_extent_total
 		FROM @DashboardUpdates SRC
 		WHERE NOT EXISTS(
 			SELECT *

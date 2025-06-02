@@ -12,6 +12,9 @@ export class AnalysesDashboardEntity {
   @Column({ name: 'location_id', nullable: true })
   locationId: number;
 
+  @Column({ name: 'location_error', type: 'nvarchar', nullable: true })
+  location_error: string;
+
   @Column({ name: 'gadm_id', nullable: true })
   gadmId: string;
 

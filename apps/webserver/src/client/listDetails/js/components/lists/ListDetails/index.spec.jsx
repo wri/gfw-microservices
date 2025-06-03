@@ -7,12 +7,12 @@ import ListDetails from './index';
 jest.mock('../../../../../../config/env/gfwLists.constants', () => ({
   gfwListsNames: {
     1: 'Administrative Areas',
-    2: 'Protected Areas'
+    2: 'Protected Areas',
   },
   GFW_LISTS_NUMBER_CONSTANTS: {
     ADMINISTRATIVE_AREAS: 1,
-    PROTECTED_AREAS: 2
-  }
+    PROTECTED_AREAS: 2,
+  },
 }));
 
 import { analysisTypes } from '../../../../../../config/env/analysisTypes.constants';

@@ -197,12 +197,10 @@ BEGIN
                      THEN 'lt.' + QUOTENAME(@sortByAttribute)
                 WHEN CHARINDEX(@sortByAttribute, @calculatedColumns) > 0
                      THEN QUOTENAME(@sortByAttribute)
-                WHEN CHARINDEX(@sortByAttribute, @JsonAttributeColumns) > 0
-                     THEN CASE
-                          WHEN CHARINDEX('CAST(JSON_VALUE(lt.attributes, ''$."' + @sortByAttribute + '"'') AS DECIMAL', @JsonAttributeColumns) > 0
-                          THEN 'CAST(JSON_VALUE(lt.attributes, ''$."' + @sortByAttribute + '"'') AS DECIMAL(18,6))'
-                          ELSE 'CAST(JSON_VALUE(lt.attributes, ''$."' + @sortByAttribute + '"'') AS NVARCHAR(MAX))'
-                          END
+                WHEN EXISTS (SELECT 1 FROM ListAttributes WHERE list_id = @listId AND attribute_name = @sortByAttribute AND attribute_type = 1)
+                     THEN 'CAST(JSON_VALUE(lt.attributes, ''$."' + @sortByAttribute + '"'') AS DECIMAL(18,6))'
+                WHEN EXISTS (SELECT 1 FROM ListAttributes WHERE list_id = @listId AND attribute_name = @sortByAttribute)
+                     THEN 'CAST(JSON_VALUE(lt.attributes, ''$."' + @sortByAttribute + '"'') AS NVARCHAR(MAX))'
                 ELSE QUOTENAME(@sortByAttribute)
             END
             + ' ' + @orderType;

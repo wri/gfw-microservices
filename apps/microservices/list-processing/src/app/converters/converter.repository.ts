@@ -48,7 +48,7 @@ export class ConverterRepository {
       .insert()
       .into('ConverterStatus')
       .values({
-        id: parentJobId,
+        parent_id: parentJobId,
         organization_id: organizationId,
         list_id: listId,
         status: 'FAILED',

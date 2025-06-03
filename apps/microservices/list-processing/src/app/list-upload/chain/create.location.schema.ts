@@ -76,7 +76,7 @@ export class CreateLocationSchema extends AbstractHandler<ChainType> {
 
     this.logger.log(`Creating list table ${listTable} in ${organizationDatabase}`);
     const tableStructure =
-      '[Location Name] NVARCHAR(150), [Latitude] FLOAT, [Longitude] FLOAT, [Analysis Radius] FLOAT, [Analysis Area] FLOAT, [Commodity] NVARCHAR(150), [Country] NVARCHAR(150), [State] NVARCHAR(150), [Sub State] NVARCHAR(150), [gadmid] NVARCHAR(150), [Geometry] geometry, [attributes] NVARCHAR(MAX), [ErrorDetails] NVARCHAR(256) NULL';
+      '[Location Name] NVARCHAR(150), [Latitude] FLOAT, [Longitude] FLOAT, [Analysis Radius] FLOAT, [Analysis Area] FLOAT, [Commodity] NVARCHAR(150), [Country] NVARCHAR(150), [State] NVARCHAR(150), [Sub State] NVARCHAR(150), [gadmid] NVARCHAR(150), [Geometry] geometry, [location_id] INT PRIMARY KEY, [attributes] NVARCHAR(MAX), [ErrorDetails] NVARCHAR(256) NULL';
 
     await this.createListTableInDatabase(this.clientStoreConnection, listTable, tableStructure);
 

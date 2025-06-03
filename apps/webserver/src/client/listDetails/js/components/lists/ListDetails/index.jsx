@@ -1883,7 +1883,8 @@ export default class ListDetails extends Component {
       selectedList && selectedLocations.length > 0 && !locationDataIsNotAvailable;
 
     const hasLocationWithErrors = !!listData.find(
-      ({ location_status_id }) => location_status_id === listStatus.Inactive
+      ({ location_status_id, analysisStatusId }) =>
+        location_status_id === listStatus.Inactive || analysisStatusId === listStatus.Inactive
     );
 
     const isListDiagnosticButtonVisible =

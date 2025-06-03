@@ -1882,7 +1882,7 @@ export default class ListDetails extends Component {
     const showMultipleSelectionBulkActions =
       selectedList && selectedLocations.length > 0 && !locationDataIsNotAvailable;
 
-    const hasLocationWithErrors = !!listData.find(
+    const hasLocationWithErrors = listData.some(
       ({ location_status_id, analysisStatusId }) =>
         location_status_id === listStatus.Inactive || analysisStatusId === listStatus.Inactive
     );

@@ -48,6 +48,7 @@ const infoBubbleConfig = {
   post2000PrimaryForest: 'post-2000_primary_forest',
   post2000TreeCover: 'post-2000_tree_cover',
   post2000TreeCoverLoss: 'post-2000_tree_cover_loss',
+  administrativeAreasProList: 'administrative_areas_pro_list',
 };
 
 export default infoBubbleConfig;

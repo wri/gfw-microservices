@@ -33,6 +33,8 @@ import CopyMoveModal from '../../modals/CopyMoveModal';
 import fetch from '../../../../../common/js/utils/fetch';
 import httpRequest from '../../../../../common/js/utils/httpRequest';
 import Banner from '../../../../../common/js/components/Banners/Banner';
+import InfoBubble from '../../../../../common/js/components/InfoBubble';
+import infoBubbleConfig from '../../../../../common/js/infoBubbleConfig.constants';
 import {
   checkColumnListDraftList,
   isHiddenColumnInPost2020riskTable,
@@ -80,7 +82,10 @@ import { ThemeProvider } from '../../../../../styles/ThemeProvider';
 // CONSTANTS
 import { defaultMaximumAreaSizeForLocationsFilter } from '../../../../../common/js/constants/lists.constants';
 import { listStatus } from '../../../../../../config/env/listStatuses.constants';
-import { GFW_LISTS_NUMBER_CONSTANTS } from '../../../../../../config/env/gfwLists.constants';
+import {
+  GFW_LISTS_NUMBER_CONSTANTS,
+  gfwListsNames,
+} from '../../../../../../config/env/gfwLists.constants';
 import { getListFilterValues } from '../getListFilterValues';
 import getAllColumnNames from '../getAllColumnNames';
 import { analysisTypes } from '../../../../../../config/env/analysisTypes.constants';
@@ -1015,7 +1020,10 @@ export default class ListDetails extends Component {
       //   flag_viirs: loc.flag_viirs
       // };
 
-      if (selectedLists[0].list_name === 'Administrative Areas') {
+      if (
+        selectedLists[0].list_name ===
+        gfwListsNames[GFW_LISTS_NUMBER_CONSTANTS.ADMINISTRATIVE_AREAS]
+      ) {
         if (loc['Location Name']) {
           const splitsies = loc['Location Name'].split('--');
           if (splitsies.length > 0) {
@@ -1033,8 +1041,10 @@ export default class ListDetails extends Component {
       if (!this.areAllAnalysesDraft() && analysisData.length > 0) {
         let analysisList;
         if (
-          selectedLists[0].list_name === 'Protected Areas' ||
-          selectedLists[0].list_name === 'Administrative Areas'
+          selectedLists[0].list_name ===
+            gfwListsNames[GFW_LISTS_NUMBER_CONSTANTS.PROTECTED_AREAS] ||
+          selectedLists[0].list_name ===
+            gfwListsNames[GFW_LISTS_NUMBER_CONSTANTS.ADMINISTRATIVE_AREAS]
         ) {
           // for protected areas and admin areas we dont match list_ids, just location ids
           [analysisList] = analysisData.filter(
@@ -1517,8 +1527,9 @@ export default class ListDetails extends Component {
     store.dispatch(setFilterCount(0));
     if (
       selectedLists.length > 0 &&
-      (selectedLists[0].list_name === 'Administrative Areas' ||
-        selectedLists[0].list_name === 'Protected Areas')
+      (selectedLists[0].list_name ===
+        gfwListsNames[GFW_LISTS_NUMBER_CONSTANTS.ADMINISTRATIVE_AREAS] ||
+        selectedLists[0].list_name === gfwListsNames[GFW_LISTS_NUMBER_CONSTANTS.PROTECTED_AREAS])
     ) {
       if (filteredData.length > 0) {
         store.dispatch(updateListData([]));
@@ -1679,11 +1690,16 @@ export default class ListDetails extends Component {
   loadLocationView() {
     const { selectedLists } = this.props;
     if (selectedLists.length > 0) {
-      if (selectedLists[0].list_name === 'Administrative Areas') {
+      if (
+        selectedLists[0].list_name ===
+        gfwListsNames[GFW_LISTS_NUMBER_CONSTANTS.ADMINISTRATIVE_AREAS]
+      ) {
         this.getAdministrativeAreasInfo();
       } else if (!selectedLists[0].isGlobalForestWatchList) {
         this.getUserLocationData(selectedLists[0].id);
-      } else if (selectedLists[0].list_name === 'Protected Areas') {
+      } else if (
+        selectedLists[0].list_name === gfwListsNames[GFW_LISTS_NUMBER_CONSTANTS.PROTECTED_AREAS]
+      ) {
         this.getProtectedAreasInfo();
       } else {
         this.getGFWLocationData(selectedLists[0].id);
@@ -1888,8 +1904,8 @@ export default class ListDetails extends Component {
 
     const isListDiagnosticButtonVisible =
       !getIsDraftWithoutDiagnostic(selectedList) &&
-      listName !== 'Administrative Areas' &&
-      listName !== 'Protected Areas' &&
+      listName !== gfwListsNames[GFW_LISTS_NUMBER_CONSTANTS.ADMINISTRATIVE_AREAS] &&
+      listName !== gfwListsNames[GFW_LISTS_NUMBER_CONSTANTS.PROTECTED_AREAS] &&
       (isGfwList || getActiveAnalysisType(listAnalysesStatus)) &&
       selectedLocations?.length < 2;
 
@@ -2021,6 +2037,10 @@ export default class ListDetails extends Component {
                     <span style={{ fontSize: '25px', textTransform: 'capitalize' }}>
                       {listName}
                     </span>
+                    {listName ===
+                      gfwListsNames[GFW_LISTS_NUMBER_CONSTANTS.ADMINISTRATIVE_AREAS] && (
+                      <InfoBubble infoBubbleId={infoBubbleConfig.administrativeAreasProList} />
+                    )}
                   </Stack>
                 </div>
                 <LocationsSummary

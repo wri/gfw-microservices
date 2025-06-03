@@ -1,7 +1,7 @@
 import { CONVERTER_NAMES } from '@wri-monorepos/constants';
 import { upgradeListSchema } from '@wri-monorepos/sql';
 
-type ConverterFunction = (...args: any[]) => Promise<any>;
+export type ConverterFunction = (...args: any[]) => Promise<any>;
 
 const registry: Record<string, ConverterFunction> = {
   [CONVERTER_NAMES.LIST_SCHEMA]: upgradeListSchema,

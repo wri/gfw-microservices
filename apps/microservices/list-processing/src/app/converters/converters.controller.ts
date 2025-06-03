@@ -11,25 +11,17 @@ export class ConvertersController {
     @Param('id') id: number,
     @Query('organizationId') organizationId?: number
   ): Promise<string> {
-    // Step 1: Update converter start_time
-    await this.convertersService.updateConverterStartTime(id);
+    const clientStores = await this.convertersService.getClientStoresByOrgId(organizationId);
 
-    // Step 2: Get relevant client stores
-    const clientStore = await this.convertersService.getClientStoresByOrgId(organizationId);
-
-    // Step 3: process
     try {
-      await this.convertersService.runConverterForClientStores(id, clientStore);
+      await this.convertersService.runConverter(id, clientStores);
     } catch (err) {
-      // Optionally log the error and decide if we'd like to stop or skip
-      console.error(`Error processing ${clientStore}:`, err);
+      console.error(`Error processing ${clientStores}:`, err);
+
       throw new InternalServerErrorException(
         'Converter process failed for one or more organizations.'
       );
     }
-
-    // Step 4: If no errors, update status
-    await this.convertersService.updateConverterStatus(id, 'OK');
 
     return 'Converter process completed successfully.';
   }

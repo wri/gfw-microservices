@@ -18,7 +18,6 @@ export enum MAPSPAM_CODES {
   RUBB = 'RUBB',
   SOYB = 'SOYB',
   SUGC = 'SUGC',
-  RCOF = 'RCOF',
 }
 
 export const COMMODITY_MAP_SPAM = {
@@ -33,12 +32,12 @@ export const COMMODITY_MAP_SPAM = {
   ['palm oil generic']: MAPSPAM_CODES.OILP,
   ['palm smallholder farm']: MAPSPAM_CODES.OILP,
   ['palm oil mill']: MAPSPAM_CODES.OILP,
-  ['robust coffee']: MAPSPAM_CODES.RCOF,
   ['rubber']: MAPSPAM_CODES.RUBB,
   ['soybean']: MAPSPAM_CODES.SOYB,
   ['sugarcane']: MAPSPAM_CODES.SUGC,
   ['sugar cane']: MAPSPAM_CODES.SUGC,
   ['soy']: MAPSPAM_CODES.SOYB,
+  ['soy silo']: MAPSPAM_CODES.SOYB,
   ['soy farm']: MAPSPAM_CODES.SOYB,
   ['soy generic']: MAPSPAM_CODES.SOYB,
 };

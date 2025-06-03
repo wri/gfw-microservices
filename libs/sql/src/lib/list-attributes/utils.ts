@@ -125,6 +125,8 @@ export function getCommodityCodeFromTemplate(templateName: string, userListCommo
     return userSearch.value;
   } else if (userListCommodity) {
     return `${GHG_PREFIX}_${userListCommodity}`;
+  } else if (['Cattle Ranch', 'Cattle Generic', 'Beef Slaughterhouse'].includes(templateName)) {
+    return `${GHG_PREFIX}_Cattle`;
   } else {
     return `${GHG_PREFIX}_Unknown`;
   }

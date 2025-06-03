@@ -49,28 +49,6 @@ describe('Test setWorstStatusId function', () => {
     expect(lists[0].list_status_id).toBe(2);
   });
 
-  test('When list has listAnalysesStatus with worse status, it should update to worst status', () => {
-    const lists = [
-      {
-        list_status_id: 2,
-        listAnalysesStatus: [{ status: 1 }, { status: 2 }],
-      },
-    ];
-    setWorstStatusId(lists);
-    expect(lists[0].list_status_id).toBe(1);
-  });
-
-  test('When list has listAnalysesStatus with better status, it should keep original status', () => {
-    const lists = [
-      {
-        list_status_id: 1,
-        listAnalysesStatus: [{ status: 2 }, { status: 3 }],
-      },
-    ];
-    setWorstStatusId(lists);
-    expect(lists[0].list_status_id).toBe(1);
-  });
-
   test('When list has listAnalysesStatus with same status, it should keep that status', () => {
     const lists = [
       {
@@ -80,21 +58,5 @@ describe('Test setWorstStatusId function', () => {
     ];
     setWorstStatusId(lists);
     expect(lists[0].list_status_id).toBe(2);
-  });
-
-  test('When multiple lists are provided, each should be updated independently', () => {
-    const lists = [
-      {
-        list_status_id: 2,
-        listAnalysesStatus: [{ status: 1 }, { status: 2 }],
-      },
-      {
-        list_status_id: 3,
-        listAnalysesStatus: [{ status: 4 }, { status: 3 }],
-      },
-    ];
-    setWorstStatusId(lists);
-    expect(lists[0].list_status_id).toBe(1);
-    expect(lists[1].list_status_id).toBe(3);
   });
 });

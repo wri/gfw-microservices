@@ -1,8 +1,6 @@
 /**
  * Returns the rows of ListsAnalysisStatus matching the given listId
  * @ListID INT,
- *
- * Returns type ListsAnalysisStatus (same as getAllListsAnalysisStatus)
  */
 
 export const getListAnalysisStatusById = `
@@ -14,5 +12,14 @@ SELECT
   las.UpdateTime AS updateTime,
   las.options AS options
 FROM dbo.[ListsAnalysisStatus] las
-WHERE las.ListID = @ListID;
+WHERE (@ListID IS NULL OR las.ListID = @ListID)
 `;
+
+export interface ListsAnalysisStatusType {
+  listId: number;
+  analysisId: string;
+  status: number;
+  errorInfo: string;
+  updateTime: Date;
+  options: string;
+}

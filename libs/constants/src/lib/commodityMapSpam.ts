@@ -10,12 +10,12 @@ export const COMMODITY_MAP_SPAM = {
   ['palm oil generic']: 'OILP',
   ['palm smallholder farm']: 'OILP',
   ['palm oil mill']: 'OILP',
-  ['robust coffee']: 'RCOF',
   ['rubber']: 'RUBB',
   ['soybean']: 'SOYB',
   ['sugarcane']: 'SUGC',
   ['sugar cane']: 'SUGC',
   ['soy']: 'SOYB',
+  ['soy silo']: 'SOYB',
   ['soy farm']: 'SOYB',
   ['soy generic']: 'SOYB',
 };

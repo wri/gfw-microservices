@@ -67,6 +67,8 @@ import {
   ListsType,
   DeleteListTypeOrm,
   getListJsonAttributesColumnsSqlParam,
+  getAllLists as getAllListsSql,
+  getUsersList as getUsersListSql,
 } from '@wri-monorepos/sql';
 import { getAllListsAnalysisStatus, setSelectedAnalyses } from '@wri-monorepos/geo';
 import type { ListsAnalysisStatus } from '@wri-monorepos/sql';
@@ -400,23 +402,23 @@ const saveAsDraftList = async (
  *   @param  {Object}   req - Manadatory first parameter to pass the request object into the function in case session info is required.
  *   @return {Promise} Returns promise object. If successful, recordsets, otherwise, error object
  */
-export const getUserLists = (req): Promise<ListsType[]> => {
+export const getUserLists = (req, listId = null): Promise<ListsType[]> => {
   return new Promise((resolve, reject) => {
     let promise;
-    const parameters = [];
+    const parameters = [{ field: 'list_id', type: sql.Int, value: listId }];
     // A Super Admin or an Organization Admin are able to view all lists
     if (
       req.session.ispromanager ||
       req.session.user_access_level_id === config.platformVars.accessLevel.Administrator
     ) {
-      promise = sqlUtils.executeOrganizationStoredProcedure(req, 'uspGetAllLists');
+      promise = sqlUtils.executeOrganizationStoredProcedure(req, getAllListsSql, parameters);
     } else {
       parameters.push({
         field: 'user_id',
         type: sql.Int,
         value: req.session.organization_user_id,
       });
-      promise = sqlUtils.executeOrganizationStoredProcedure(req, 'uspGetUserLists', parameters);
+      promise = sqlUtils.executeOrganizationStoredProcedure(req, getUsersListSql, parameters);
     }
     promise
       .then((recordsets) => {
@@ -453,11 +455,11 @@ export const mergeListsWithAnalysisId = (
   });
 };
 
-export const getUserListsWithAnalysisId = async (req): Promise<ListsType[]> => {
+export const getUserListsWithAnalysisId = async (req, listId = null): Promise<ListsType[]> => {
   try {
     const { organization_database } = req.session;
-    const userLists = await getUserLists(req);
-    const listAnalysisStatuses = await getAllListsAnalysisStatus(organization_database);
+    const userLists = await getUserLists(req, listId);
+    const listAnalysisStatuses = await getAllListsAnalysisStatus(organization_database, listId);
 
     mergeListsWithAnalysisId(userLists, listAnalysisStatuses);
 
@@ -515,8 +517,10 @@ export const rerunExistingList = (req) => {
 export const getAllLists = (req): Promise<ListsType[]> => {
   return new Promise((resolve, reject) => {
     // call organizational stored procedure to return all lists tied to the organization.
+
+    const parameters = [{ field: 'list_id', type: sql.Int, value: null }];
     sqlUtils
-      .executeOrganizationStoredProcedure(req, 'uspGetAllLists')
+      .executeOrganizationStoredProcedure(req, getAllListsSql, parameters)
       .then((recordsets) => {
         resolve(recordsets);
       })
@@ -1663,8 +1667,8 @@ export const getListByListName = async (req, list_name) => {
  */
 export const getListByIdWithAnalysisId = async (req, listId) => {
   try {
-    const allLists = await getUserListsWithAnalysisId(req);
-    return allLists.find((list) => list.id === Number(listId));
+    const lists = await getUserListsWithAnalysisId(req, listId);
+    return listId ? lists[0] : lists;
   } catch (e) {
     logger.error('getListByIdWithAnalysisId', e.stack || e);
   }

@@ -1,6 +1,20 @@
+import React from 'react';
 import { render, cleanup, screen } from '@testing-library/react';
 import '@testing-library/jest-dom';
 import ListDetails from './index';
+
+// Mock gfwListsNames
+jest.mock('../../../../../../config/env/gfwLists.constants', () => ({
+  gfwListsNames: {
+    1: 'Administrative Areas',
+    2: 'Protected Areas'
+  },
+  GFW_LISTS_NUMBER_CONSTANTS: {
+    ADMINISTRATIVE_AREAS: 1,
+    PROTECTED_AREAS: 2
+  }
+}));
+
 import { analysisTypes } from '../../../../../../config/env/analysisTypes.constants';
 import { updateSelectedLocations } from '../../../../../locations/js/actions/locationActions';
 import { FOREST_CHANGE_VIEW } from './listViews.constants';
@@ -108,6 +122,7 @@ describe('ListDetails', () => {
         },
       ],
       isListSubmittedForAnalysis: true,
+      listName: 'Test List',
     };
 
     const { getByTestId } = render(<ListDetails {...props} />);

@@ -180,6 +180,7 @@ DECLARE @isValidSortColumn BIT = 0;
 IF CHARINDEX(@sortByAttribute, @afiColumns) > 0
    OR CHARINDEX(@sortByAttribute, @ltColumns) > 0
    OR CHARINDEX(@sortByAttribute, @calculatedColumns) > 0
+   OR (@JsonAttributeColumns IS NOT NULL AND CHARINDEX('AS [' + @sortByAttribute + ']', @JsonAttributeColumns) > 0)
 BEGIN
     SET @isValidSortColumn = 1;
 END;
@@ -194,6 +195,24 @@ BEGIN
                      THEN 'afi.' + QUOTENAME(@sortByAttribute)
                 WHEN CHARINDEX(@sortByAttribute, @ltColumns) > 0
                      THEN 'lt.' + QUOTENAME(@sortByAttribute)
+                WHEN CHARINDEX(@sortByAttribute, @calculatedColumns) > 0
+                     THEN QUOTENAME(@sortByAttribute)
+                WHEN EXISTS (
+                    SELECT 1
+                    FROM ListAttributes
+                    WHERE list_id = @listId
+                    AND attribute_name = @sortByAttribute
+                )
+                     THEN CASE
+                          WHEN (
+                              SELECT attribute_type
+                              FROM ListAttributes
+                              WHERE list_id = @listId
+                              AND attribute_name = @sortByAttribute
+                          ) = 1
+                          THEN 'CAST(JSON_VALUE(lt.attributes, ''$."' + @sortByAttribute + '"'') AS DECIMAL(18,6))'
+                          ELSE 'CAST(JSON_VALUE(lt.attributes, ''$."' + @sortByAttribute + '"'') AS NVARCHAR(MAX))'
+                     END
                 ELSE QUOTENAME(@sortByAttribute)
             END
             + ' ' + @orderType;

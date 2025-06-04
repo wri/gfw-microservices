@@ -5,7 +5,6 @@ ADD
     [parent_id] INT NULL,
     [error_details] NVARCHAR(MAX) NULL;
 
--- Uncomment to add a foreign key constraint:
--- ALTER TABLE dbo.ConverterStatus
--- ADD CONSTRAINT FK_ConverterStatus_Parent
--- FOREIGN KEY (parent_id) REFERENCES dbo.ConverterStatus(id);
+ALTER TABLE dbo.ConverterStatus
+ADD CONSTRAINT FK_ConverterStatus_Parent
+FOREIGN KEY (parent_id) REFERENCES dbo.ConverterStatus(id);

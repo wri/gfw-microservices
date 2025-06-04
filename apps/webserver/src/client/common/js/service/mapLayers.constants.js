@@ -1167,7 +1167,7 @@ export const mapLayers = [
         type: 'Vector.Layer',
         body: {
           useCors: true,
-          url: 'https://tiles.globalforestwatch.org/gfwpro_negligible_risk_analysis/v20241021/default/root.json',
+          url: 'https://tiles.globalforestwatch.org/gfwpro_negligible_risk_analysis/v20250514/default/root.json',
           metadata: 'gfwpro_negligible_risk_analysis',
         },
       },

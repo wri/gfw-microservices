@@ -2,10 +2,11 @@
  * Repository responsible for all direct interactions with the database
  * related to converters.
  */
-
 import { Injectable } from '@nestjs/common';
 import { DataSource } from 'typeorm';
 import { ConverterStatus } from '@wri-monorepos/constants';
+import { Organization } from '@wri-monorepos/sql';
+import { ConverterStatus as ConverterStatusEntity } from '@wri-monorepos/sql';
 
 @Injectable()
 export class ConverterRepository {
@@ -15,17 +16,15 @@ export class ConverterRepository {
    * @returns A list of client store database names.
    */
   async getClientStoresByOrgId(connection: DataSource, organizationId?: number): Promise<string[]> {
-    let query = 'SELECT organization_db FROM Organizations';
-    const params: any[] = [];
+    const orgRepo = connection.getRepository(Organization);
+    const whereClause = organizationId ? { id: organizationId } : {};
 
-    if (organizationId) {
-      query += ' WHERE id = ?';
-      params.push(organizationId);
-    }
+    const organizations = await orgRepo.find({
+      select: ['organizationDb'],
+      where: whereClause,
+    });
 
-    const results: { organization_db: string }[] = await connection.query(query, params);
-
-    return results.map((row) => row.organization_db);
+    return organizations.map((org) => org.organizationDb);
   }
 
   /**
@@ -43,19 +42,14 @@ export class ConverterRepository {
     organizationId: string,
     listId: number
   ): Promise<void> {
-    await connection
-      .createQueryBuilder()
-      .insert()
-      .into('ConverterStatus')
-      .values({
-        parent_id: parentJobId,
-        organization_id: organizationId,
-        list_id: listId,
-        status: 'FAILED',
-        error_details: errorMessage,
-        start_time: new Date(),
-      })
-      .execute();
+    await connection.getRepository(ConverterStatusEntity).insert({
+      parentId: parentJobId,
+      organizationId: Number(organizationId),
+      listId,
+      status: 'FAILED',
+      errorDetails: errorMessage,
+      startTime: new Date(),
+    });
   }
 
   /**
@@ -65,17 +59,16 @@ export class ConverterRepository {
    * @returns The name of the converter.
    */
   async getConverterName(connection: DataSource, id: number): Promise<string> {
-    const result = await connection.query(`
-      SELECT [name]
-      FROM [ConverterStatus]
-      WHERE [id] = ${id}
-    `);
+    const record = await connection.getRepository(ConverterStatusEntity).findOne({
+      select: ['name'],
+      where: { id },
+    });
 
-    if (!result.length) {
+    if (!record) {
       throw new Error(`No ConverterStatus found with ID ${id}`);
     }
 
-    return result[0].name;
+    return record.name;
   }
 
   /**
@@ -86,14 +79,13 @@ export class ConverterRepository {
   async updateConverterStatus(
     connection: DataSource,
     converterId: number,
-    status: ConverterStatus
+    status: ConverterStatus,
+    errorDetails?: string
   ): Promise<void> {
-    await connection
-      .createQueryBuilder()
-      .update('ConverterStatus')
-      .set({ status })
-      .where('id = :id', { id: converterId })
-      .execute();
+    await connection.getRepository(ConverterStatusEntity).update(converterId, {
+      status,
+      errorDetails: errorDetails ?? null,
+    });
   }
 
   /**
@@ -102,10 +94,7 @@ export class ConverterRepository {
    */
   async updateConverterStartTime(connection: DataSource, converterId: number): Promise<void> {
     await connection
-      .createQueryBuilder()
-      .update('ConverterStatus')
-      .set({ start_time: new Date() })
-      .where('id = :id', { id: converterId })
-      .execute();
+      .getRepository(ConverterStatusEntity)
+      .update({ id: converterId }, { startTime: new Date() });
   }
 }

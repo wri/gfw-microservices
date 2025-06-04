@@ -11,12 +11,12 @@ export class ConvertersController {
     @Param('id') id: number,
     @Query('organizationId') organizationId?: number
   ): Promise<string> {
-    const clientStores = await this.convertersService.getClientStoresByOrgId(organizationId);
+    const clientStoreNames = await this.convertersService.getClientStoreNames(organizationId);
 
     try {
-      await this.convertersService.runConverter(id, clientStores);
+      await this.convertersService.runConverter(id, clientStoreNames);
     } catch (err) {
-      console.error(`Error processing ${clientStores}:`, err);
+      console.error(`Error processing ${clientStoreNames}:`, err);
 
       throw new InternalServerErrorException(
         'Converter process failed for one or more organizations.'

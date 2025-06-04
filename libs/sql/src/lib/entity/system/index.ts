@@ -15,6 +15,7 @@ import { AnalysisProtectedAreas } from './analysisProtectedAreas';
 import { AnalysisRspoOilPalmConcessions } from './analysisRspoPalmConcessions';
 import { UserRoutes } from './user-route.entity';
 import { ExternalAPIKey } from './external-api-key.entity';
+import { ConverterStatus } from './converter-status.entity';
 
 export * from './organization.entity';
 export * from './gfw.list.entity';
@@ -33,8 +34,10 @@ export * from './analysisProtectedAreas';
 export * from './analysisRspoPalmConcessions';
 export * from './user-route.entity';
 export * from './external-api-key.entity';
+export * from './converter-status.entity';
 
 export const systemEntities = [
+  ConverterStatus,
   Organization,
   GFWList,
   FeatureFlag,

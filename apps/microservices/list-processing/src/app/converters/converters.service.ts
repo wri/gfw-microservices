@@ -1,7 +1,7 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { DataSource } from 'typeorm';
 
-import { ClientStoreConnection, ActivityLog, Lists } from '@wri-monorepos/sql';
+import { ClientStoreConnection, Lists } from '@wri-monorepos/sql';
 import { ConverterManager, ConverterFunction } from './converter-manager';
 import { ConverterStatus } from '@wri-monorepos/constants';
 import { ConverterRepository } from './converter.repository';
@@ -9,7 +9,7 @@ import { ConverterRepository } from './converter.repository';
 @Injectable()
 export class ConvertersService {
   private readonly logger = new Logger('List processing service');
-  private hasErrors = false;
+  private errors: { clientStore: string; stack: string }[] = [];
   private gfwProConnection?: DataSource; // Cached singleton
 
   constructor(
@@ -37,7 +37,7 @@ export class ConvertersService {
    * @param organizationId The ID of the organization to filter by (optional).
    * @returns A list of client store database names.
    */
-  async getClientStoresByOrgId(organizationId?: number): Promise<string[]> {
+  async getClientStoreNames(organizationId?: number): Promise<string[]> {
     const gfwProConnection = await this.getGfwProConnection();
     return this.converterRepository.getClientStoresByOrgId(gfwProConnection, organizationId);
   }
@@ -48,27 +48,34 @@ export class ConvertersService {
    * @param organizationDbs The list of organization database names to process.
    */
   async runConverter(id: number, organizationDbs: string[]): Promise<void> {
+    this.errors = [];
+
     const { getConverterName, updateConverterStatus, updateConverterStartTime } =
       this.converterRepository;
-    this.hasErrors = false;
 
     const gfwProConnection = await this.getGfwProConnection();
     await updateConverterStartTime(gfwProConnection, id);
 
     try {
       const converterName = await getConverterName(gfwProConnection, id);
-      const converterFn = ConverterManager.get(converterName);
-      if (!converterFn) {
+      const converter = ConverterManager.get(converterName);
+      if (!converter) {
         throw new Error(`Converter function for ${converterName} not found`);
       }
 
-      await this.runConverterAcrossClientStores(organizationDbs, id, converterFn, converterName);
+      await this.runConverterAcrossClientStores(organizationDbs, id, converter, converterName);
 
-      const status = this.hasErrors ? ConverterStatus.PARTIAL : ConverterStatus.COMPLETED;
+      const status = this.errors.length > 0 ? ConverterStatus.PARTIAL : ConverterStatus.COMPLETED;
+      this.logger.log(`Converter ${converterName} finished with status: ${status}`);
       await updateConverterStatus(gfwProConnection, id, status);
     } catch (error) {
-      await updateConverterStatus(gfwProConnection, id, ConverterStatus.FAILED);
-      this.logger.error(`Converter job failed completely: ${error.message}`);
+      await updateConverterStatus(
+        gfwProConnection,
+        id,
+        ConverterStatus.FAILED,
+        error.stack || error.toString()
+      );
+      this.logger.error(`Converter job failed completely: ${(error.stack || error).toString()}`);
       throw error;
     }
   }
@@ -78,31 +85,53 @@ export class ConvertersService {
    * It handles errors for each store individually, continuing processing even if issues arise
    * @param organizationDbs
    * @param converterId
-   * @param converterFn
+   * @param converter
    * @param converterName
    */
   private async runConverterAcrossClientStores(
     organizationDbs: string[],
     converterId: number,
-    converterFn: ConverterFunction,
+    converter: ConverterFunction,
     converterName: string
   ): Promise<void> {
+    const { updateConverterStatus } = this.converterRepository;
+
     for (const clientStore of organizationDbs) {
       try {
-        await this.processListsInClientStore(clientStore, converterId, converterFn);
+        await this.processListsInClientStore(clientStore, converterId, converter);
       } catch (error) {
         this.logger.error(
-          `Error running converter ${converterName} client store ${clientStore}: ${error.message}`
+          `Error running converter ${converterName} for ${clientStore}: ${(
+            error.stack || error
+          ).toString()}`
         );
-        this.hasErrors = true;
+        this.errors.push({ clientStore, stack: error.stack || error.toString() });
       }
-
-      const delay = Math.random() * 1000 + 500;
-      await new Promise((resolve) => setTimeout(resolve, delay));
+      await this.randomDelay(200, 700);
     }
 
-    if (this.hasErrors) {
-      this.logger.error(`Converter ${converterName} encountered some errors during processing.`);
+    if (this.errors.length) {
+      this.logger.error(`Converter ${converterName} encountered errors:`);
+      for (const { clientStore, stack } of this.errors) {
+        this.logger.error(`- ${clientStore}:\n${stack}`);
+      }
+
+      const combinedStacks = this.errors
+        .map((e) => `Client: ${e.clientStore}\n${e.stack}`)
+        .join('\n\n');
+
+      await updateConverterStatus(
+        await this.getGfwProConnection(),
+        converterId,
+        ConverterStatus.PARTIAL,
+        combinedStacks
+      );
+    } else {
+      await updateConverterStatus(
+        await this.getGfwProConnection(),
+        converterId,
+        ConverterStatus.COMPLETED
+      );
     }
   }
 
@@ -110,12 +139,12 @@ export class ConvertersService {
    * Calls the converter function on each client store.
    * @param clientStore The client store to process.
    * @param converterId The ID of the converter being run.
-   * @param converterFn The converter function to execute.
+   * @param converter The converter function to execute.
    */
   private async processListsInClientStore(
     clientStore: string,
     converterId: number,
-    converterFn: ConverterFunction
+    converter: ConverterFunction
   ): Promise<void> {
     const { recordError, updateConverterStatus } = this.converterRepository;
 
@@ -123,29 +152,28 @@ export class ConvertersService {
     let failureCount = 0;
     const gfwProConnection = await this.getGfwProConnection();
     const clientStoreConnection = await this.clientStoreConnection.getConnection(clientStore);
-    const activityLogRepository = gfwProConnection.getRepository(ActivityLog);
 
     const listsRepository = clientStoreConnection.getRepository(Lists);
 
-    await this.logActivityStart(activityLogRepository, converterId, clientStore);
-
-    this.logger.log(`Starting converter ${converterFn.name} for client store: ${clientStore}`);
+    this.logger.log(`Starting converter ${converter.run.name} for client store: ${clientStore}`);
     await this.updateConverterStartTime(converterId);
-    this.logger.log(`Running converter ${converterFn.name} for client store: ${clientStore}`);
+    this.logger.log(`Running converter ${converter.run.name} for client store: ${clientStore}`);
     await updateConverterStatus(gfwProConnection, converterId, ConverterStatus.RUNNING);
 
-    const lists = await listsRepository.find();
+    const lists = await listsRepository.find({
+      where: converter.where || {},
+    });
     if (!lists.length) {
       this.logger.warn(`No lists found in client store ${clientStore}. Skipping.`);
       return;
     }
     this.logger.log(
-      `Found ${lists.length} lists in client store ${clientStore}. Processing with converter ${converterFn.name}`
+      `Found ${lists.length} lists in client store ${clientStore}. Processing with converter ${converter.run.name}`
     );
 
     for (const list of lists) {
       try {
-        await converterFn({
+        await converter.run({
           clientDb: clientStore,
           listId: list.id,
           userId: null /* TODO: we might need to send this to LP endpoint */,
@@ -169,6 +197,8 @@ export class ConvertersService {
           );
           break;
         }
+
+        await this.randomDelay(200, 700); // Random delay between 200ms and 700ms
       }
     }
   }
@@ -178,23 +208,8 @@ export class ConvertersService {
     return this.converterRepository.updateConverterStartTime(gfwProConnection, converterId);
   }
 
-  // Helper methods
-
-  /**
-   * Logs the start of an activity.
-   * @param activityLogRepository The repository to log the activity.
-   * @param converterId The ID of the converter being started.
-   * @param clientStore The client store where the activity is logged.
-   */
-  private async logActivityStart(
-    activityLogRepository: any,
-    converterId: number,
-    clientStore: string
-  ): Promise<void> {
-    const activityLog = new ActivityLog();
-    activityLog.activityTypeId = 42;
-    activityLog.activityDescription = `User started converter ID: ${converterId}, on ${clientStore}`;
-    activityLog.activityTime = new Date();
-    await activityLogRepository.save(activityLog);
+  private async randomDelay(min, max) {
+    const delay = Math.random() * (max - min) + min;
+    return new Promise((resolve) => setTimeout(resolve, delay));
   }
 }

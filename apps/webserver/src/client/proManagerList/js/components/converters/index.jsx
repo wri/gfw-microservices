@@ -1,11 +1,6 @@
-
 function Converters(props) {
   /* props => { isLoading, setIsLoading } */
-  return (
-    <>
-        <span></span>
-    </>
-  );
+  return <>{!props.isLoading && <span></span>}</>;
 }
 
 export default Converters;

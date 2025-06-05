@@ -45,13 +45,16 @@ export const locations = (req, res, data) => {
   const fromMap = data && data.fromMap ? data.fromMap : false;
   const subscriptionStatus = data && data.subscriptionStatus ? data.subscriptionStatus : 1;
 
+  const listPromises = isAdministrator
+    ? [ListManager.getAllListsWithAnalysisId(req)]
+    : [ListManager.getUserListsWithAnalysisId(req), ListManager.getAllListsWithAnalysisId(req)];
+
   const promises = [
     LocationManager.getAllTemplateData(req),
     LocationManager.getAllTemplateDropdowns(req),
-    ListManager.getUserListsWithAnalysisId(req),
+    ...listPromises,
     AuthManager.getUserInfo(req),
     ListManager.getLocationsCount(req),
-    ListManager.getAllListsWithAnalysisId(req),
     GFWlistManager.getGFWLists(req),
     AccountManager.getUsersList(req),
     ShareManager.getUserInternalShareLists(req, req.session.organization_user_id),
@@ -59,17 +62,14 @@ export const locations = (req, res, data) => {
 
   Promise.all(promises)
     .then((results) => {
-      const [
-        templateData,
-        templateDropdowns,
-        userLists,
-        userInfo,
-        locationCount,
-        orgLists,
-        gfwLists,
-        usersList,
-        sharedListsRecords,
-      ] = results;
+      const [templateData, templateDropdowns, ...listResults] = results;
+
+      const userLists = isAdministrator ? listResults[0] : listResults[0];
+      const orgLists = isAdministrator ? listResults[0] : listResults[1];
+      const [userInfo, locationCount, gfwLists, usersList, sharedListsRecords] = listResults.slice(
+        isAdministrator ? 1 : 2
+      );
+
       const listStatuses = UserManager.getStatuses();
 
       const userSharedLists = findSharedListsInsideOrganization(sharedListsRecords, orgLists);

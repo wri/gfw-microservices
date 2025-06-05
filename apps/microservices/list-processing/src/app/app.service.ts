@@ -102,12 +102,13 @@ export class AppService {
         const activityLog = new ActivityLog();
         activityLog.userId = organization_user_id;
         activityLog.activityTypeId = 21;
-        activityLog.activityDescription = `User '${userEmail}' has deleted list (${list_id}).`;
+        const confirmationMessage = `User '${userEmail}' has deleted list (${list_id}).`;
+        activityLog.activityDescription = confirmationMessage;
         activityLog.activityTime = new Date();
         await activityLogRepository.save(activityLog);
 
         // Return message that the list was deleted to user
-        return `User '${userEmail}' has deleted list (${list_id}).`;
+        return confirmationMessage;
       } else {
         throw new InternalServerErrorException({
           message: `Failed to delete list ${list_id}`,
@@ -119,11 +120,12 @@ export class AppService {
       const activityLog = new ActivityLog();
       activityLog.userId = organization_user_id;
       activityLog.activityTypeId = 21;
-      activityLog.activityDescription = `User '${userEmail}' has tried to delete list (${list_id}) but some error occurs ${error.message}.`;
+      const errorDescription = `User '${userEmail}' has tried to delete list (${list_id}) but some error occurs ${error.message}.`;
+      activityLog.activityDescription = errorDescription;
       activityLog.activityTime = new Date();
       await activityLogRepository.save(activityLog);
       throw new InternalServerErrorException({
-        message: `User '${userEmail}' has tried to delete list (${list_id}) but some error occurs ${error.message}.`,
+        message: errorDescription,
         code: 603,
       });
     }

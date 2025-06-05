@@ -466,14 +466,8 @@ export const setWorstStatusId = (lists: ListsType[]) => {
     if (worstStatus === undefined) {
       return;
     }
-    // Only update the status if the worst analysis status is worse than the current list status
-    const currentStatusIndex = listStatusOrderByWorse.indexOf(list.list_status_id);
-    const worstStatusIndex = listStatusOrderByWorse.indexOf(worstStatus);
-    // Update status if the worst analysis status is better (appears later in the order array)
-    // or if it's the same status
-    if (worstStatusIndex >= currentStatusIndex) {
-      list.list_status_id = worstStatus;
-    }
+    // Update status to worst analysis status if available, otherwise keep current status
+    list.list_status_id = worstStatus ?? list.list_status_id;
   });
 };
 

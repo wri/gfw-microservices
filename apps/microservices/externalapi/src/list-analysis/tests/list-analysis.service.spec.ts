@@ -790,7 +790,6 @@ describe('ListAnalysisService', () => {
     (handleCreateAnalysis as jest.Mock).mockResolvedValue(mockedhandleCreateAnalysis);
 
     listService.getList = jest.fn().mockResolvedValue({
-      templateId: 13,
       Commodity: 'COCO',
     });
     saveActivityLogEndpoint.saveActivityLogEndpoint = jest.fn().mockResolvedValue(true);
@@ -798,7 +797,6 @@ describe('ListAnalysisService', () => {
       listId: 123,
       analysisId: analysisTypesToProcess,
       status: listStatus.Pending,
-      templateId: '12',
     };
     clientStoreConnection.getConnection = jest.fn().mockResolvedValue({
       getRepository: () => ({

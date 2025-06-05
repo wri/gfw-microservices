@@ -363,9 +363,6 @@ export class ListAnalysisService {
     newListDetails: ListUploadNewRequestSchema,
     organizationId: number
   ): Promise<ListUploadNewResponse | ListUploadNewErrorResponse> {
-    if (!newListDetails.templateId) {
-      newListDetails['templateId'] = deduceActiveId['cocoaGeneric'];
-    }
     const organizationDetails = await this.getOrganizationDetails(organizationId);
     const organizationConnection = await this.createOrganizationConnection(organizationDetails);
     const externalUploadRepository = organizationConnection.getRepository(ExternalUpload);

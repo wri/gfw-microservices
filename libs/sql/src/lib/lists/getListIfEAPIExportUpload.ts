@@ -17,7 +17,7 @@ export async function getListIfEAPIExportUpload(
 
     const result = await SQLUtils.queryDB<getListIfEAPIExportUploadExport>(
       orgDbName,
-      'getListIfEAPIExportUpload',
+      'getListIfEAPIExportUploadQuery',
       parameters
     );
     if (result[0]?.ListId) {

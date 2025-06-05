@@ -5,6 +5,7 @@ import {
   UnlockList,
   ListsAnalysisStatus,
   ClientStoreConnection,
+  getListIfEAPIExportUpload,
 } from '@wri-monorepos/sql';
 import { ListBulkCopy } from './ListBulkCopy';
 import * as sql from 'mssql';
@@ -438,8 +439,11 @@ export async function setListAnalysisStatus(
   const currentAnalysisStatuses = await listAnalysisStatusRepository.findBy({
     listId,
   });
-
-  await deleteListAnalyses(clientDatabase, listId, analysisIds, currentAnalysisStatuses);
+  // Check if the list was uploaded by EAPI
+  const wasUploadedByEAPI = await getListIfEAPIExportUpload(clientDatabase, listId);
+  if (!wasUploadedByEAPI) {
+    await deleteListAnalyses(clientDatabase, listId, analysisIds, currentAnalysisStatuses);
+  }
 
   // Update status for all analysis types
   const isPalmRiskIncluded = analysisIds.includes(analysisTypes.PALM_RISK);

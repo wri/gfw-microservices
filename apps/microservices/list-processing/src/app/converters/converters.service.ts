@@ -11,6 +11,7 @@ export class ConvertersService {
   private readonly logger = new Logger('List processing service');
   private errors: { clientStore: string; stack: string }[] = [];
   private gfwProConnection?: DataSource; // Cached singleton
+  private MAX_FAILURES = 5; // Maximum failures before stopping processing
 
   constructor(
     private readonly converterRepository: ConverterRepository,
@@ -95,17 +96,26 @@ export class ConvertersService {
     converterName: string
   ): Promise<void> {
     const { updateConverterStatus } = this.converterRepository;
+    let failureCount = 0;
 
     for (const clientStore of organizationDbs) {
       try {
         await this.processListsInClientStore(clientStore, converterId, converter);
       } catch (error) {
+        failureCount++;
         this.logger.error(
           `Error running converter ${converterName} for ${clientStore}: ${(
             error.stack || error
           ).toString()}`
         );
         this.errors.push({ clientStore, stack: error.stack || error.toString() });
+      }
+
+      if (failureCount >= this.MAX_FAILURES) {
+        this.logger.warn(
+          `Failure threshold exceeded (${this.MAX_FAILURES}), stopping further list processing for converter ${converterName}`
+        );
+        break;
       }
       await this.randomDelay(200, 700);
     }
@@ -148,15 +158,14 @@ export class ConvertersService {
   ): Promise<void> {
     const { recordError, updateConverterStatus } = this.converterRepository;
 
-    const MAX_FAILURES = 5;
     let failureCount = 0;
     const gfwProConnection = await this.getGfwProConnection();
     const clientStoreConnection = await this.clientStoreConnection.getConnection(clientStore);
-
     const listsRepository = clientStoreConnection.getRepository(Lists);
 
     this.logger.log(`Starting converter ${converter.run.name} for client store: ${clientStore}`);
     await this.updateConverterStartTime(converterId);
+
     this.logger.log(`Running converter ${converter.run.name} for client store: ${clientStore}`);
     await updateConverterStatus(gfwProConnection, converterId, ConverterStatus.RUNNING);
 
@@ -191,9 +200,9 @@ export class ConvertersService {
           list.id
         );
 
-        if (failureCount >= MAX_FAILURES) {
+        if (failureCount >= this.MAX_FAILURES) {
           this.logger.warn(
-            `Failure threshold exceeded (${MAX_FAILURES}), stopping further list processing for client store ${clientStore}`
+            `Failure threshold exceeded (${this.MAX_FAILURES}), stopping further list processing for client store ${clientStore}`
           );
           break;
         }

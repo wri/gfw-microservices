@@ -478,14 +478,12 @@ export const setWorstStatusId = (lists: ListsType[]) => {
 
 export const getUserListsWithAnalysisId = async (req, listId = null): Promise<ListsType[]> => {
   try {
-    const { organization_database } = req.session;
     const userLists = await getUserLists(req, listId);
-    const listAnalysisStatuses = await getListAnalysisStatusByListId(organization_database, listId);
-
-    mergeListsWithAnalysisId(userLists, listAnalysisStatuses);
+    setWorstStatusId(userLists);
 
     return userLists.map((list) => {
       list.isGlobalForestWatchList = false;
+      list.listAnalysesStatus = JSON.parse((list.listAnalysesStatus as unknown as string) || '[]');
       return list;
     });
   } catch (error) {

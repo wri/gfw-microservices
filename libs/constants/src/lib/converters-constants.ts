@@ -7,3 +7,10 @@ export const CONVERTER_NAMES = {
 export type ConverterName = (typeof CONVERTER_NAMES)[keyof typeof CONVERTER_NAMES];
 
 export const ConverterNamesList: ConverterName[] = Object.values(CONVERTER_NAMES);
+
+export enum ConverterStatus {
+  COMPLETED = 'COMPLETED',
+  RUNNING = 'RUNNING',
+  FAILED = 'FAILED',
+  PARTIAL = 'PARTIAL',
+}

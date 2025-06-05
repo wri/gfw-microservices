@@ -21,5 +21,5 @@ export default (app, limiter) => {
    * @desc Returns a list of available converters
    * @access Pro Manager only
    */
-  app.get('/converter/all', checkProManagerAuthentication, getConverters);
+  app.get('/converter/all', routeMiddlewares, getConverters);
 };

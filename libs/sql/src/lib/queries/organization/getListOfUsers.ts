@@ -1,4 +1,4 @@
-export const getUsersList = `-- Create a Table Variable to store the compiled user data  for the company.
+export const getListOfUsers = `-- Create a Table Variable to store the compiled user data  for the company.
 DECLARE @CompiledUsers TABLE
 (
   [first_name] NVARCHAR(35) NOT NULL,
@@ -93,3 +93,26 @@ CLOSE user_cursor
 DEALLOCATE user_cursor
 
 SELECT * FROM @CompiledUsers`;
+
+export interface ListOfUsersType {
+  first_name: string;
+  middle_initial: string;
+  last_name: string;
+  email: string;
+  phone: string;
+  title_id: number;
+  other_title: string;
+  access_level_id: number;
+  user_commodity_ids: string;
+  user_geography_ids: string;
+  email_subscription: boolean;
+  auth_preference_id: number;
+  status_id: number;
+  activated_time: Date;
+  user_id: number;
+  viirs_email_frequency: number;
+  glad_email_frequency: number;
+  forma_email_frequency: number;
+  terrai_email_frequency: number;
+  gran_chaco_email_frequency: number;
+}

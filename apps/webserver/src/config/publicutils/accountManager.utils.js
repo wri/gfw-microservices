@@ -21,6 +21,7 @@
 // Imports required for this module
 const path = require('path');
 const sql = require('mssql');
+import { getListOfUsers } from '@wri-monorepos/sql';
 import config from '../config';
 
 const AWSSES = require('../privateutils/ses.utils');
@@ -418,7 +419,7 @@ export const getUsersList = (req) => {
   let usersList = [];
   return new Promise((resolve, reject) => {
     sqlUtils
-      .executeOrganizationStoredProcedure(req, 'uspGetUsersList')
+      .executeOrganizationStoredProcedure(req, getListOfUsers)
       .then((recordsets) => {
         // Users list is missing authentication preference which is stored in SYSTEM so retrieve
         usersList = recordsets;

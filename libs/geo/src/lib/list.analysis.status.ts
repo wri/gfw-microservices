@@ -48,7 +48,7 @@ export const MARK_IS_TEST_USER = 'dt_';
 
 const environmentAllowTestFlow = ['DEVELOPMENT', 'LATEST', 'QA', 'STAGING'];
 
-import { getAllListsAnalysisStatus as getAllListsAnalysisStatusSql } from '@wri-monorepos/sql';
+import { getListAnalysisStatusById as getAllListsAnalysisStatusSql } from '@wri-monorepos/sql';
 export const getAllListsAnalysisStatus = async (
   clientDatabase: string,
   listId = null

@@ -70,7 +70,7 @@ import {
   getAllLists as getAllListsSql,
   getUserLists as getUsersListSql,
 } from '@wri-monorepos/sql';
-import { getAllListsAnalysisStatus, setSelectedAnalyses } from '@wri-monorepos/geo';
+import { getListAnalysisStatusByListId, setSelectedAnalyses } from '@wri-monorepos/geo';
 import type { ListsAnalysisStatus } from '@wri-monorepos/sql';
 
 /** @function {createList}
@@ -455,13 +455,26 @@ export const mergeListsWithAnalysisId = (
   });
 };
 
+export const setWorstStatusId = (lists: ListsType[]) => {
+  lists.forEach((list) => {
+    const listAnalysesStatus = JSON.parse(list.listAnalysesStatus as unknown as string) || [];
+    list.listAnalysesStatus = listAnalysesStatus;
+    if (!listAnalysesStatus || !listAnalysesStatus.length) {
+      return;
+    }
+    const worstStatus = getWorstStatusId(listAnalysesStatus);
+    if (worstStatus === undefined) {
+      return;
+    }
+    // Update status to worst analysis status if available, otherwise keep current status
+    list.list_status_id = worstStatus ?? list.list_status_id;
+  });
+};
+
 export const getUserListsWithAnalysisId = async (req, listId = null): Promise<ListsType[]> => {
   try {
-    const { organization_database } = req.session;
     const userLists = await getUserLists(req, listId);
-    const listAnalysisStatuses = await getAllListsAnalysisStatus(organization_database, listId);
-
-    mergeListsWithAnalysisId(userLists, listAnalysisStatuses);
+    setWorstStatusId(userLists);
 
     return userLists.map((list) => {
       list.isGlobalForestWatchList = false;
@@ -538,12 +551,8 @@ export const getAllLists = (req): Promise<ListsType[]> => {
 
 export const getAllListsWithAnalysisId = async (req) => {
   try {
-    const { organization_database } = req.session;
     const orgLists = await getAllLists(req);
-    const listAnalysisStatuses = await getAllListsAnalysisStatus(organization_database);
-
-    mergeListsWithAnalysisId(orgLists, listAnalysisStatuses);
-
+    setWorstStatusId(orgLists);
     return orgLists;
   } catch (error) {
     logger.error('getAllListsWithAnalysisId', error.stack || error);
@@ -553,7 +562,14 @@ export const getAllListsWithAnalysisId = async (req) => {
 
 export const getWorstStatusId = (analysisIds) => {
   // get all status from the analysis list
-  const analysisStatus = analysisIds.map((analysisId) => analysisId.status);
+
+  if (!analysisIds || !analysisIds.length || analysisIds === null) {
+    return undefined;
+  }
+
+  // Check if analysisIds is a string and parse it if needed
+  const parsedAnalysis = typeof analysisIds === 'string' ? JSON.parse(analysisIds) : analysisIds;
+  const analysisStatus = parsedAnalysis.map((analysisId) => analysisId.status);
 
   // iterate over status ordered by worse to better and return
   // the fist that exist inside the analysis list

@@ -78,7 +78,7 @@ const endpointsToTest = [
     requestSchema: {
       uploadId: 'abc123', // Replace with your upload ID
       listName: 'MyList', // Replace with your list name
-      templateId: 2, // Replace with your template ID
+      commodity: 'myComm', // Replace with your commodity
       analysisIDs: 'analysis123', // Replace with your analysis IDs
     },
     httpHeaders: {

@@ -21,7 +21,7 @@ describe('Test New Raw Queries', () => {
     'uspGetUserInfo',
     'uspGetUserStatus',
     'uspGetAllLists',
-    'uspGetUsersList',
+    'uspGetUserLists',
     'uspGetUserInternalShareLists',
     'uspGetFolders',
     'uspGetAllFolderItems',

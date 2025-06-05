@@ -1,4 +1,4 @@
-const { getWorstStatusId } = require('./listManager.utils');
+const { getWorstStatusId, setWorstStatusId } = require('./listManager.utils');
 
 describe('Test getWorstStatusId function', () => {
   test('When it is empty should return undefined', () => {
@@ -34,5 +34,29 @@ describe('Test getWorstStatusId function', () => {
       { status: 2 },
     ]);
     expect(code).toBe(2);
+  });
+});
+
+describe('Test setWorstStatusId function', () => {
+  test('When list has no listAnalysesStatus, it should keep its original status', () => {
+    const lists = [
+      {
+        list_status_id: 2,
+        listAnalysesStatus: JSON.stringify([]),
+      },
+    ];
+    setWorstStatusId(lists);
+    expect(lists[0].list_status_id).toBe(2);
+  });
+
+  test('When list has listAnalysesStatus with same status, it should keep that status', () => {
+    const lists = [
+      {
+        list_status_id: 2,
+        listAnalysesStatus: JSON.stringify([{ status: 2 }, { status: 2 }]),
+      },
+    ];
+    setWorstStatusId(lists);
+    expect(lists[0].list_status_id).toBe(2);
   });
 });

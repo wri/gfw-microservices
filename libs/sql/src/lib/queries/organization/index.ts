@@ -9,7 +9,6 @@ export * from './getAfiAnalysisForListId';
 export * from './getAfiNegligibleRiskStatsForListId';
 export * from './getAllFolderItems';
 export * from './getAllLists';
-export * from './getAllListsAnalysisStatus';
 export * from './getAnalysisDataCountForUserList';
 export * from './getCountAfiAnalysisByListId';
 export * from './getFolders';

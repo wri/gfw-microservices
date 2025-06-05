@@ -8,16 +8,16 @@ const { ADMIN, EDITOR, VIEWER } = userAccessLevel;
  */
 
 export const proManagerPanelTabs = {
+  accounLimits: {
+    id: 'account-limits',
+    icon: 'running_with_errors',
+    title: 'Account Limits',
+    userAccessLevel: [ADMIN, EDITOR, VIEWER],
+  },
   accountProfiles: {
     id: 'accounts',
     icon: 'corporate_fare',
     title: 'Acount Profiles',
-    userAccessLevel: [ADMIN, EDITOR, VIEWER],
-  },
-  userProfiles: {
-    id: 'users',
-    icon: 'people',
-    title: 'User Profiles',
     userAccessLevel: [ADMIN, EDITOR, VIEWER],
   },
   accountUsage: {
@@ -26,10 +26,10 @@ export const proManagerPanelTabs = {
     title: 'Account Usage',
     userAccessLevel: [ADMIN, EDITOR, VIEWER],
   },
-  accounLimits: {
-    id: 'account-limits',
-    icon: 'running_with_errors',
-    title: 'Account Limits',
+  converters: {
+    id: 'converters',
+    icon: 'transform',
+    title: 'Converters',
     userAccessLevel: [ADMIN, EDITOR, VIEWER],
   },
   featureFlags: {
@@ -42,6 +42,12 @@ export const proManagerPanelTabs = {
     id: 'latest-commits',
     icon: 'commit',
     title: 'Latest Commits',
+    userAccessLevel: [ADMIN, EDITOR, VIEWER],
+  },
+  userProfiles: {
+    id: 'users',
+    icon: 'people',
+    title: 'User Profiles',
     userAccessLevel: [ADMIN, EDITOR, VIEWER],
   },
 };

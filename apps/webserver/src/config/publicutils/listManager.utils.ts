@@ -457,7 +457,8 @@ export const mergeListsWithAnalysisId = (
 
 export const setWorstStatusId = (lists: ListsType[]) => {
   lists.forEach((list) => {
-    const listAnalysesStatus = list.listAnalysesStatus;
+    const listAnalysesStatus = JSON.parse(list.listAnalysesStatus as unknown as string) || [];
+    list.listAnalysesStatus = listAnalysesStatus;
     if (!listAnalysesStatus || !listAnalysesStatus.length) {
       return;
     }
@@ -483,7 +484,6 @@ export const getUserListsWithAnalysisId = async (req, listId = null): Promise<Li
 
     return userLists.map((list) => {
       list.isGlobalForestWatchList = false;
-      list.listAnalysesStatus = JSON.parse((list.listAnalysesStatus as unknown as string) || '[]');
       return list;
     });
   } catch (error) {

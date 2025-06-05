@@ -6,12 +6,12 @@ export const getAllLists = `SELECT
     JSON_QUERY((
         SELECT
             las.[options],
-            las.AnalysisID,
+            las.AnalysisID as analysisId,
             las.bundle_creation_time,
             las.ErrorInfo,
             las.expiration_time,
             las.s3_url,
-            las.Status,
+            las.Status as status,
             las.UpdateTime
         FROM ListsAnalysisStatus las
         WHERE las.ListID = LL.list_id

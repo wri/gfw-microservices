@@ -42,7 +42,7 @@ describe('Test setWorstStatusId function', () => {
     const lists = [
       {
         list_status_id: 2,
-        listAnalysesStatus: [],
+        listAnalysesStatus: JSON.stringify([]),
       },
     ];
     setWorstStatusId(lists);
@@ -53,7 +53,7 @@ describe('Test setWorstStatusId function', () => {
     const lists = [
       {
         list_status_id: 2,
-        listAnalysesStatus: [{ status: 2 }, { status: 2 }],
+        listAnalysesStatus: JSON.stringify([{ status: 2 }, { status: 2 }]),
       },
     ];
     setWorstStatusId(lists);

@@ -1,4 +1,4 @@
-import { getConverters } from '../controllers/converters.controller';
+import { getConverters, startConverter } from '../controllers/converters.controller';
 import {
   checkProManagerAuthentication,
   rateLimitAuthenticated,
@@ -22,4 +22,11 @@ export default (app, limiter) => {
    * @access Pro Manager only
    */
   app.get('/converter/all', routeMiddlewares, getConverters);
+
+  /**
+   * @route POST /converter/start
+   * @desc Starts a specific converter by name
+   * @access Pro Manager only
+   */
+  app.post('/converter/start', routeMiddlewares, startConverter);
 };

@@ -37,7 +37,6 @@ describe('ListService', () => {
   const expectedResult = {
     id: listId.toString(),
     userId: 10033,
-    templateId: 5,
     listName: 'list name ',
     listTableName: 'list - table_name',
     listAnalysisTableName: 'analysis - ',

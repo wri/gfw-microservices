@@ -257,7 +257,6 @@ describe('ListUploadController', () => {
     const request: ListUploadNewRequest = {
       uploadId: '123',
       listName: 'Example List',
-      templateId: 456,
       analysisIDs: 'FCD',
       commodity: 'Cocoa Generic',
     };
@@ -278,7 +277,6 @@ describe('ListUploadController', () => {
     const request: ListUploadNewRequest = {
       uploadId: '1234',
       listName: 'Example List',
-      templateId: 456,
       analysisIDs: 'FCD',
       commodity: 'Cocoa Generic',
     };
@@ -319,7 +317,6 @@ describe('ListUploadController', () => {
     const request: ListUploadNewRequest = {
       uploadId: '12345',
       listName: 'Example List',
-      templateId: 456,
       analysisIDs: 'FCD',
       commodity: 'Cocoa Generic',
     };
@@ -360,7 +357,6 @@ describe('ListUploadController', () => {
     const request: ListUploadNewRequest = {
       uploadId: '9999',
       listName: 'Example List',
-      templateId: 456,
       analysisIDs: 'FCD',
       commodity: 'Cocoa Generic',
     };
@@ -402,7 +398,6 @@ describe('ListUploadController', () => {
     const request: ListUploadNewRequest = {
       uploadId: '999',
       listName: 'Example List',
-      templateId: 456,
       analysisIDs: 'FCD',
       commodity: 'Cocoa Generic',
     };
@@ -502,7 +497,6 @@ describe('ListUploadController', () => {
     const request: ListUploadNewRequest = {
       uploadId: '123',
       listName: 'List name duplicated',
-      templateId: 456,
       analysisIDs: 'FCD',
       commodity: 'Cocoa Generic',
     };
@@ -530,7 +524,6 @@ describe('ListUploadController', () => {
       const { statusCode } = await request(app.getHttpServer()).post('/v1/list/upload_new').send({
         uploadId: '999',
         listName: 'Example List',
-        templateId: 456,
         analysisIds,
       });
       expect(statusCode).toBe(400);

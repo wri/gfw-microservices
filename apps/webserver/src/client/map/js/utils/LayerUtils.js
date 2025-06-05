@@ -1,65 +1,7 @@
-import { executeQueryJSON, executeForExtent } from '@arcgis/core/rest/query';
+import { executeForExtent } from '@arcgis/core/rest/query';
 import Query from '@arcgis/core/rest/support/Query';
 import IdentifyParameters from '@arcgis/core/rest/support/IdentifyParameters';
 import { identify } from '@arcgis/core/rest/identify';
-
-export const queryAdmin = (location) => {
-  return new Promise((resolve) => {
-    const { gadmid, serverLayerId } = location;
-    //GADMID comes in these 3 options (e.g. "ABW", "ABW.2", "ABW.2.12") each denotes level
-
-    const adminAreaServices = {
-      0: 'https://gfwpro-gis.globalforestwatch.org/arcgis/rest/services/GADM36_admin/MapServer/6',
-      1: 'https://gfwpro-gis.globalforestwatch.org/arcgis/rest/services/GADM36_admin/MapServer/5',
-      2: 'https://gfwpro-gis.globalforestwatch.org/arcgis/rest/services/GADM36_admin/MapServer/4',
-    };
-
-    const adminUrl = adminAreaServices[gadmid.split('.').length - 1];
-
-    const where = `gadmid = '${gadmid}'`;
-
-    const query = new Query();
-    query.where = where;
-    query.returnGeometry = true;
-    query.outFields = ['iso', 'name_0'];
-
-    if (Number(serverLayerId) < 6) {
-      query.outFields.push('name_1', 'id_1');
-    }
-
-    if (Number(serverLayerId) < 5) {
-      query.outFields.push('name_2');
-    }
-
-    executeQueryJSON(adminUrl, query).then(
-      (res) => {
-        if (res?.features?.length > 0) {
-          const { geometry, attributes } = res.features[0];
-          const country = attributes.iso;
-          const countryText = attributes.name_0;
-          const region = attributes.id_1 || '';
-          const stateText = attributes.name_1 || '';
-          const substateText = attributes.name_2 || '';
-
-          resolve({
-            geometry,
-            country,
-            countryText,
-            region,
-            stateText,
-            substateText,
-          });
-        } else {
-          resolve(false);
-        }
-      },
-      function (error) {
-        console.log(error);
-        resolve(false);
-      }
-    );
-  });
-};
 
 export const queryExtent = (url, defQuery = '1=1') => {
   return new Promise((resolve) => {

@@ -68,7 +68,7 @@ import {
   DeleteListTypeOrm,
   getListJsonAttributesColumnsSqlParam,
   getAllLists as getAllListsSql,
-  getUsersList as getUsersListSql,
+  getUserLists as getUsersListSql,
 } from '@wri-monorepos/sql';
 import { getListAnalysisStatusByListId, setSelectedAnalyses } from '@wri-monorepos/geo';
 import type { ListsAnalysisStatus } from '@wri-monorepos/sql';

@@ -33,3 +33,6 @@ export * from './setOrganizationRenewalTime';
 export * from './getTableQueryString';
 export * from './getGFWListTableData';
 export * from './getAdministrativeAreaAttributes';
+export * from './getAdministrativeAreasGeom';
+export * from './getAdministrativeAreasData';
+export * from './getAdministrativeAreasGlobalId';

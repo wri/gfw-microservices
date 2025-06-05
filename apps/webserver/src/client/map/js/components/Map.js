@@ -677,10 +677,12 @@ class Map extends Component {
   mapLoaded = (view) => {
     const { userInfo } = this.state;
     const { access_level_id } = userInfo;
+
     const popupSubscribeAction = {
       title: 'Add Location',
       id: 'ADD LOCATION',
       className: 'map-popup-subscribe',
+      visible: false,
     };
 
     const popupAnalyzeAction = {
@@ -1718,7 +1720,8 @@ class Map extends Component {
             action.visible =
               (action.id === 'ANALYZE' && currentForestChange) ||
               (action.id === 'ADD LOCATION' &&
-                noLocationLayers.indexOf(selectedFeat.layerName) === -1);
+                noLocationLayers.indexOf(selectedFeat.layerName) === -1 &&
+                selectedFeat.attributes?.adm_level !== '0');
           }
         });
       }

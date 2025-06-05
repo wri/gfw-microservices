@@ -1657,7 +1657,7 @@ export const mapLayers = [
           'css-url':
             'https://github.com/Vizzuality/gfw/blob/3be365eadf2ce0c58a8bb65b5a187abe27482a6e/app/assets/javascripts/map/views/layers/LossLayer.js',
           useCors: true,
-          metadata: 'umd_tree_cover_loss_v1.11',
+          metadata: 'umd_tree_cover_loss_v1.12',
           url: 'https://storage.googleapis.com/wri-public/Hansen_16/tiles/hansen_world/v1/tc{thresh}/{z}/{x}/{y}.png',
         },
       },

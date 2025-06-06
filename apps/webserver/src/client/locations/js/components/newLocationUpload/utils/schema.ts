@@ -52,3 +52,8 @@ export const coordinateSchema = z.object({
 export const locationNameSchema = extendedLocationNameSchema.refine((val) => val.trim() !== '', {
   message: 'Enter location name',
 });
+
+export const listNameSchema = buildTrimmedRegexStringSchema(
+  /^[a-zA-ZÀ-ÿ0-9 \-_]*$/,
+  'Only letters (including accented characters), numbers, spaces, dashes (-), and underscores (_) are allowed'
+);

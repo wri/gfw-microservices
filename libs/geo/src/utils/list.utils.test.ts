@@ -1,7 +1,6 @@
 import {
   ListsAnalysisStatus,
   ClientStoreConnection,
-  getListIfEAPIExportUpload,
 } from '@wri-monorepos/sql';
 import {
   getListStatusId,
@@ -33,7 +32,6 @@ jest.mock('@wri-monorepos/sql', () => ({
     }),
   })),
   ListsAnalysisStatus: jest.fn(),
-  getListIfEAPIExportUpload: jest.fn(),
 }));
 
 jest.mock('../lib/list.analysis.status', () => ({
@@ -426,7 +424,6 @@ describe('List Utils', () => {
 
       // Call setListAnalysisStatus with analysis types
       await setListAnalysisStatus('clientDatabase', 1, ['FCD', 'DefReport'], listStatus.Pending);
-      (getListIfEAPIExportUpload as jest.Mock).mockResolvedValue(false);
       // Verify deleteListAnalyses was called
       expect(listAnalysisStatus.deleteListAnalyses).toHaveBeenCalledWith(
         'clientDatabase',

@@ -40,6 +40,10 @@ import {
   toggleHighConfidenceAlertsForDeforestationAlertsLayers,
   updateAnalysis,
   updateGFWLocations,
+  updateCanopyDensity,
+  updateTreeCoverLossCanopyDensity,
+  toggleCanopyModal,
+  toggleTreeCoverLossCanopyModal,
 } from '../actions/mapActions';
 import * as analysisActions from '../actions/analysisActions';
 
@@ -92,7 +96,7 @@ import LossControls from './layerPanel/LossControls';
 import ProdesControls from './layerPanel/ProdesControls';
 import DrawShapeNoteDetailsModal from './modals/DrawShapeNoteDetailsModal';
 import BasemapModal from './modals/BasemapModal';
-import CanopyModal from './modals/CanopyModal';
+import { CanopyModal } from './modals/CanopyModal';
 import InfoModal from './modals/InfoModal';
 import LayerModal from './modals/LayerModal';
 import SearchModal from './modals/SearchModal';
@@ -2374,10 +2378,12 @@ class Map extends Component {
       visibleLayerInfo,
       visibleBasemapInfo,
       canopyModalVisible,
+      treeCoverLossCanopyModalVisible,
       drawShapeNoteDetailsModalVisible,
       panelsVisible,
       searchVisible,
       canopyDensity,
+      treeCoverLossCanopyDensity,
       drawingActive,
       gladDateRange,
       biomassRange,
@@ -2530,11 +2536,26 @@ class Map extends Component {
         >
           <BasemapModal content={visibleBasemapInfo} />
         </div>
-        <div
-          className={`layer-modal-container modal-wrapper ${canopyModalVisible ? '' : 'hidden'}`}
-        >
-          <CanopyModal content={canopyDensity} />
-        </div>
+        {treeCoverLossCanopyModalVisible && (
+          <div className="layer-modal-container modal-wrapper">
+            <CanopyModal
+              id="tree-cover-loss"
+              sliderValue={treeCoverLossCanopyDensity}
+              onSliderChange={(value) => store.dispatch(updateTreeCoverLossCanopyDensity(value))}
+              onClose={() => store.dispatch(toggleTreeCoverLossCanopyModal())}
+            />
+          </div>
+        )}
+        {canopyModalVisible && (
+          <div className="layer-modal-container modal-wrapper">
+            <CanopyModal
+              id="tree-cover"
+              sliderValue={canopyDensity}
+              onSliderChange={(value) => store.dispatch(updateCanopyDensity(value))}
+              onClose={() => store.dispatch(toggleCanopyModal())}
+            />
+          </div>
+        )}
         <div
           className={`layer-modal-container modal-wrapper ${
             drawShapeNoteDetailsModalVisible ? '' : 'hidden'
@@ -2572,6 +2593,7 @@ class Map extends Component {
           fireDays={fireDays}
           treeCoverLossDateRange={treeCoverLossDateRange}
           canopyDensity={canopyDensity}
+          treeCoverLossCanopyDensity={treeCoverLossCanopyDensity}
           sketchTool={sketchTool}
           setLocationName={this.setLocationName}
           userInfo={userInfo}
@@ -2589,6 +2611,7 @@ class Map extends Component {
         <Legend
           panelsVisible={panelsVisible}
           canopyDensity={canopyDensity}
+          treeCoverLossCanopyDensity={treeCoverLossCanopyDensity}
           iconLoading={iconLoading}
           mapLayers={mapLayers}
           gfwListDef={gfwListDef}

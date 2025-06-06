@@ -2025,7 +2025,7 @@ export const mapPage = {
     facebookUrl: (url) => `https://www.facebook.com/sharer.php?u=${url}`,
   },
   groundBiomassStart: 'Displaying above ground biomass',
-  densityLossStart: 'Displaying loss with ',
+  densityLossStart: 'Displaying cover with ',
   densityLossEnd: ' canopy density.',
   basemaps: [
     {

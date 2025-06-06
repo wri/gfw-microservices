@@ -440,7 +440,7 @@ export async function setListAnalysisStatus(
     listId,
   });
   // Check if the list was uploaded by EAPI
-  if (isFromEAPI) {
+  if (!isFromEAPI) {
     await deleteListAnalyses(clientDatabase, listId, analysisIds, currentAnalysisStatuses);
   }
 
@@ -486,8 +486,14 @@ export async function setListAnalysisStatusByTypes(
   listId: number,
   analysisTypesToProcess: string,
   status: number = listStatus.Pending,
-  isFromEAPI=false
+  isFromEAPI = false
 ) {
   const analysisTypesToUpdate = analysisTypesToProcess.split(',');
-  return await setListAnalysisStatus(clientDatabase, listId, analysisTypesToUpdate, status,isFromEAPI);
+  return await setListAnalysisStatus(
+    clientDatabase,
+    listId,
+    analysisTypesToUpdate,
+    status,
+    isFromEAPI
+  );
 }

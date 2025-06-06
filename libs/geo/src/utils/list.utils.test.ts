@@ -1,7 +1,4 @@
-import {
-  ListsAnalysisStatus,
-  ClientStoreConnection,
-} from '@wri-monorepos/sql';
+import { ListsAnalysisStatus, ClientStoreConnection } from '@wri-monorepos/sql';
 import {
   getListStatusId,
   ContainsPunctuation,
@@ -498,7 +495,13 @@ describe('List Utils', () => {
       );
 
       // Call setListAnalysisStatus with analysis types
-      await setListAnalysisStatus('clientDatabase', 1, ['FCD', 'DefReport'], listStatus.Pending, true);
+      await setListAnalysisStatus(
+        'clientDatabase',
+        1,
+        ['FCD', 'DefReport'],
+        listStatus.Pending,
+        true
+      );
       // Verify deleteListAnalyses was called
       expect(listAnalysisStatus.deleteListAnalyses).not.toHaveBeenCalled();
 

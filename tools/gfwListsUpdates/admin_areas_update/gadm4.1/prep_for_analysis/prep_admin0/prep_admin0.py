@@ -23,10 +23,10 @@ from shapely.ops import transform
 import pyproj
 
 # ─────────── connection constants (override via env) ────────────
-SQL_SERVER   = os.getenv("SQL_SERVER",   "34.194.123.26,65300")
-SQL_DATABASE = os.getenv("SQL_DATABASE", "gfwpro")
-SQL_USER     = os.getenv("SQL_USER",     "GFWProUser")
-SQL_PASSWORD = os.getenv("SQL_PASSWORD", "gtt9MSvs4^gN*J!c")
+SQL_SERVER   = os.getenv("SQL_SERVER",   "")
+SQL_DATABASE = os.getenv("SQL_DATABASE", "")
+SQL_USER     = os.getenv("SQL_USER",     "")
+SQL_PASSWORD = os.getenv("SQL_PASSWORD", "")
 SQL_DRIVER   = "ODBC Driver 18 for SQL Server"
 # ───────────────────────────────────────────────────────────────
 

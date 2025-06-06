@@ -18,10 +18,10 @@ import pandas as pd
 import pyodbc
 
 # ──────────────── connection constants ────────────────
-SQL_SERVER   = "34.194.123.26,65300"
-SQL_DATABASE = "gfwpro"
-SQL_USER     = "GFWProUser"
-SQL_PASSWORD = "gtt9MSvs4^gN*J!c"
+SQL_SERVER   = ""
+SQL_DATABASE = ""
+SQL_USER     = ""
+SQL_PASSWORD = ""
 SQL_DRIVER   = "ODBC Driver 18 for SQL Server"
 # ──────────────────────────────────────────────────────
 

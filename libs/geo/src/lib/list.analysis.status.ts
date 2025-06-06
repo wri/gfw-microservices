@@ -48,16 +48,15 @@ export const MARK_IS_TEST_USER = 'dt_';
 
 const environmentAllowTestFlow = ['DEVELOPMENT', 'LATEST', 'QA', 'STAGING'];
 
-import { getListAnalysisStatusById as getAllListsAnalysisStatusSql } from '@wri-monorepos/sql';
 export const getAllListsAnalysisStatus = async (
   clientDatabase: string,
   listId = null
 ): Promise<ListsAnalysisStatus[]> => {
   try {
-    const parameters = [{ field: 'listID', type: sql.Int, value: listId }];
+    const parameters = [{ field: 'list_id', type: sql.Int, value: listId }];
     const analysisStatusData = await SQLUtils.queryDB<ListsAnalysisStatus[]>(
       clientDatabase,
-      getAllListsAnalysisStatusSql,
+      undefined,
       parameters
     );
 
@@ -76,7 +75,7 @@ export const getListAnalysisStatusByListId = async (
     const parameters = [{ field: 'ListID', type: sql.Int, value: listId }];
     const analysisStatusData = await SQLUtils.queryDB<ListsAnalysisStatus[]>(
       clientDatabase,
-      getAllListsAnalysisStatusSql,
+      'getListAnalysisStatusById',
       parameters
     );
 

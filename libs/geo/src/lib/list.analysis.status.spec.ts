@@ -107,7 +107,7 @@ describe('list.analysis.status.ts', () => {
       const result = await getAllListsAnalysisStatus('clientDatabaseName');
 
       expect(SQLUtils.queryDB).toHaveBeenCalledWith('clientDatabaseName', undefined, [
-        { field: 'list_id', type: sql.Int, value: null },
+        { field: 'listId', type: sql.Int, value: null },
       ]);
       expect(result).toEqual(
         expect.arrayContaining([

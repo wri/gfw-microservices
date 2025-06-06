@@ -14,7 +14,7 @@ export const getAllLists = `SELECT
             las.Status as status,
             las.UpdateTime
         FROM ListsAnalysisStatus las
-        WHERE las.ListID = LL.list_id
+        WHERE las.ListID = L.id
         FOR JSON PATH
     )) AS listAnalysesStatus
 FROM Lists L

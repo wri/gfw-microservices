@@ -74,7 +74,7 @@ response=$(curl -k --header "Content-Type: text/csv" -X PUT -T "$file_path" "$up
 
 # Create a list and trigger the analysis
 list_response=$(post_api_request \
-              "{\"uploadId\": \"$uploadId\", \"listName\": \"TestList000$uploadId\", \"templateId\": 13, \"analysisIDs\": \"Alerts\"}"\
+              "{\"uploadId\": \"$uploadId\", \"listName\": \"TestList000$uploadId\", \"commodity\": "Soy", \"analysisIDs\": \"Alerts\"}"\
               "${BASE_URL}list/upload_new")
 
 echo $list_response

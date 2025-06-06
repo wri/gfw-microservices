@@ -46,6 +46,27 @@ if (!unitTestMode) {
   });
 }
 
+// Middleware to log slow HTTP requests
+function slowRequestLogger(thresholdMs) {
+  return (req, res, next) => {
+    const start = Date.now();
+
+    res.on('finish', () => {
+      const duration = Date.now() - start;
+      if (duration > thresholdMs) {
+        logger.warn('Slow Request:', {
+          method: req.method,
+          url: req.originalUrl,
+          orgId: req.session?.organization_id,
+          duration,
+        });
+      }
+    });
+
+    next();
+  };
+}
+
 /**
  * @function configureMiddleware
  * @summary Configure express middleware
@@ -247,6 +268,8 @@ export const initialize = (app: Application) => {
       configureViewEngine(app);
       // Configure sessions with MongoStore
       configureSession(app); //TODO: Bake in a DB connection to our SQL Server via its API
+      // Log slow requests must come after configureSession so it can log session info
+      app.use(slowRequestLogger(10 * 1000));
       // Configure passport
       // configurePassport(app); //TODO: Bake in security via AWS Cognito, nothing to do with Mongo or mongoose
       // Configure Helmet security headers

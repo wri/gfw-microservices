@@ -13,6 +13,7 @@ import RaddLayer from '../layers/RaddLayer';
 import RaddCoverage from '../layers/RaddCoverage';
 import createGFWIntegratedLayer from '../layers/GFWIntegratedLayer';
 import TreeCoverLossLayer from '../layers/TreeCoverLossLayer';
+import ArgentinianNativeForestsLossLayer from '../layers/ArgentinianNativeForestsLossLayer';
 import TreeCoverGainLayer from '../layers/TreeCoverGainLayer';
 import IndonesiaLandCover from '../layers/IndonesiaLandCover';
 import TreeCoverLayer from '../layers/TreeCoverLayer';
@@ -22,7 +23,7 @@ import WebTileLayer from '@arcgis/core/layers/WebTileLayer';
 import AboveGroundLayer from '../layers/AboveGroundLayer';
 import viirsLayer from '../layers/VIIRSLayerUtil';
 
-import { treeCoverLossTilesUrl, soyPlantedYearsRange } from '../../../common/js/config';
+import { soyPlantedYearsRange } from '../../../common/js/config';
 import { proLayers } from '../../../common/js/proLayers.config';
 const { viirsActiveFiresID, granChacoDeforestationID } = proLayers;
 
@@ -317,11 +318,10 @@ export const layerFactory = function LayersFactory(layersArray, view) {
       case 'loss':
         layers.push(
           new TreeCoverLossLayer({
+            urlTemplate: layer.url,
             id: layer.id,
             visible: layer.visible || false,
             order: layer?.order,
-            urlTemplate: treeCoverLossTilesUrl,
-            view: view,
           })
         );
         break;
@@ -361,7 +361,7 @@ export const layerFactory = function LayersFactory(layersArray, view) {
 
       case 'argentinean-native-forests-loss':
         layers.push(
-          new TreeCoverLossLayer({
+          new ArgentinianNativeForestsLossLayer({
             id: layer.id,
             visible: layer.visible || false,
             order: layer?.order,

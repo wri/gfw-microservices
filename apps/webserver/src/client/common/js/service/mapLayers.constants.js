@@ -1658,7 +1658,7 @@ export const mapLayers = [
             'https://github.com/Vizzuality/gfw/blob/3be365eadf2ce0c58a8bb65b5a187abe27482a6e/app/assets/javascripts/map/views/layers/LossLayer.js',
           useCors: true,
           metadata: 'umd_tree_cover_loss_v1.12',
-          url: 'https://storage.googleapis.com/wri-public/Hansen_16/tiles/hansen_world/v1/tc{thresh}/{z}/{x}/{y}.png',
+          url: 'https://tiles.globalforestwatch.org/umd_tree_cover_loss/v1.12/dynamic/{z}/{x}/{y}.png?start_year={start_year}&end_year={end_year}&tree_cover_density_threshold={thresh}&render_type=true_color',
         },
       },
       legendConfig: {

@@ -320,7 +320,7 @@ export default class Diagnostics extends Component {
     const id = 'tree-cover-loss';
     const urlTemplate = mapLayers.find(({ attributes }) => attributes.slug === id).attributes
       .layerConfig.body.url;
-    console.log(urlTemplate);
+
     const tclLayer = new TreeCoverLossLayer({
       id,
       visible: true,

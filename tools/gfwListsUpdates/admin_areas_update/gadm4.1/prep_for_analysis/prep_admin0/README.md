@@ -19,6 +19,6 @@ docker run --rm -v "$PWD":/work gadm-admin0-grid
 
 ```
 
-## What it does? 
+## What it does?
 
 TBD

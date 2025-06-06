@@ -19,7 +19,7 @@ docker run --rm -v "$PWD":/work gadm-prep
 
 ```
 
-## What it does? 
+## What it does?
 
 After running, three CSVs should appear right next to the script inside `prep_all/`
 because the current directory is bind-mounted into the container.

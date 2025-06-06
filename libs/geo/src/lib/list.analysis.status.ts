@@ -54,7 +54,7 @@ export const getAllListsAnalysisStatus = async (
   listId = null
 ): Promise<ListsAnalysisStatus[]> => {
   try {
-    const parameters = [{ field: 'list_id', type: sql.Int, value: listId }];
+    const parameters = [{ field: 'listID', type: sql.Int, value: listId }];
     const analysisStatusData = await SQLUtils.queryDB<ListsAnalysisStatus[]>(
       clientDatabase,
       getAllListsAnalysisStatusSql,
@@ -76,7 +76,7 @@ export const getListAnalysisStatusByListId = async (
     const parameters = [{ field: 'ListID', type: sql.Int, value: listId }];
     const analysisStatusData = await SQLUtils.queryDB<ListsAnalysisStatus[]>(
       clientDatabase,
-      'getListAnalysisStatusById',
+      getAllListsAnalysisStatusSql,
       parameters
     );
 

@@ -573,7 +573,7 @@ export const mapLayers = [
         body: {
           useCors: true,
           metadata: 'wdpa_licensed_protected_areas',
-          url: 'https://tiles.globalforestwatch.org/wdpa_licensed_protected_areas/v202502/default/root.json',
+          url: 'https://tiles.globalforestwatch.org/wdpa_licensed_protected_areas/v202505/default/root.json',
         },
       },
       legendConfig: {
@@ -630,7 +630,7 @@ export const mapLayers = [
       interactionConfig: {
         type: 'info',
         config: {
-          url: 'https://data-api.globalforestwatch.org/dataset/wdpa_licensed_protected_areas/v202502/features',
+          url: 'https://data-api.globalforestwatch.org/dataset/wdpa_licensed_protected_areas/v202505/features',
         },
       },
       applicationConfig: {},

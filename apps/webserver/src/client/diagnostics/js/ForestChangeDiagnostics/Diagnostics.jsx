@@ -45,7 +45,7 @@ import { getBasemapConfiguration } from '../../../map/js/utils/map.utils';
 import featureFlags from '../../../../utils/general.utils';
 
 // Configs
-import { DATA_API_URL, locationsPage, treeCoverLossTilesUrl } from '../../../common/js/config';
+import { DATA_API_URL, locationsPage } from '../../../common/js/config';
 import { mapLayers } from '../../../common/js/service/mapLayers.constants';
 import {
   highchartColorsIndonesiaLegalClassification2020,

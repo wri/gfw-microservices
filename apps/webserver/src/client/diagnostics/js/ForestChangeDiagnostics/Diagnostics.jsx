@@ -46,6 +46,7 @@ import featureFlags from '../../../../utils/general.utils';
 
 // Configs
 import { DATA_API_URL, locationsPage, treeCoverLossTilesUrl } from '../../../common/js/config';
+import { mapLayers } from '../../../common/js/service/mapLayers.constants';
 import {
   highchartColorsIndonesiaLegalClassification2020,
   highchartColorBackup,
@@ -316,10 +317,14 @@ export default class Diagnostics extends Component {
   };
 
   addTreeCoverLoss = () => {
+    const id = 'tree-cover-loss';
+    const urlTemplate = mapLayers.find(({ attributes }) => attributes.slug === id).attributes
+      .layerConfig.body.url;
+    console.log(urlTemplate);
     const tclLayer = new TreeCoverLossLayer({
-      id: 'tree-cover-loss',
+      id,
       visible: true,
-      urlTemplate: treeCoverLossTilesUrl,
+      urlTemplate,
       view: this.view,
     });
     this.view.map.add(tclLayer);

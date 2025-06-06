@@ -375,7 +375,7 @@ describe('List Utils', () => {
       );
 
       // Call setListAnalysisStatus with empty array
-      await setListAnalysisStatus('clientDatabase', 1, [], listStatus.Pending);
+      await setListAnalysisStatus('clientDatabase', 1, [], listStatus.Pending, false);
       // Verify deleteListAnalyses was called
       expect(listAnalysisStatus.deleteListAnalyses).toHaveBeenCalledWith(
         'clientDatabase',
@@ -500,9 +500,8 @@ describe('List Utils', () => {
         () => mockClientStoreConnection
       );
 
-      (getListIfEAPIExportUpload as jest.Mock).mockResolvedValue(true);
       // Call setListAnalysisStatus with analysis types
-      await setListAnalysisStatus('clientDatabase', 1, ['FCD', 'DefReport'], listStatus.Pending);
+      await setListAnalysisStatus('clientDatabase', 1, ['FCD', 'DefReport'], listStatus.Pending, true);
       // Verify deleteListAnalyses was called
       expect(listAnalysisStatus.deleteListAnalyses).not.toHaveBeenCalled();
 

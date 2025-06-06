@@ -5,7 +5,6 @@ import {
   UnlockList,
   ListsAnalysisStatus,
   ClientStoreConnection,
-  getListIfEAPIExportUpload,
 } from '@wri-monorepos/sql';
 import { ListBulkCopy } from './ListBulkCopy';
 import * as sql from 'mssql';
@@ -429,7 +428,8 @@ export async function setListAnalysisStatus(
   clientDatabase: string,
   listId: number,
   analysisIds: string[],
-  status: number = listStatus.Pending
+  status: number = listStatus.Pending,
+  isFromEAPI = false
 ) {
   const clientStoreConnection = new ClientStoreConnection();
   const connection = await clientStoreConnection.getConnection(clientDatabase);
@@ -440,8 +440,7 @@ export async function setListAnalysisStatus(
     listId,
   });
   // Check if the list was uploaded by EAPI
-  const wasUploadedByEAPI = await getListIfEAPIExportUpload(clientDatabase, listId);
-  if (!wasUploadedByEAPI) {
+  if (isFromEAPI) {
     await deleteListAnalyses(clientDatabase, listId, analysisIds, currentAnalysisStatuses);
   }
 
@@ -486,8 +485,9 @@ export async function setListAnalysisStatusByTypes(
   clientDatabase: string,
   listId: number,
   analysisTypesToProcess: string,
-  status: number = listStatus.Pending
+  status: number = listStatus.Pending,
+  isFromEAPI=false
 ) {
   const analysisTypesToUpdate = analysisTypesToProcess.split(',');
-  return await setListAnalysisStatus(clientDatabase, listId, analysisTypesToUpdate, status);
+  return await setListAnalysisStatus(clientDatabase, listId, analysisTypesToUpdate, status,isFromEAPI);
 }

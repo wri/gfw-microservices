@@ -209,7 +209,8 @@ export const handleCreateAnalysis = async (
   sendEmail: boolean,
   organization_user_id: number,
   subscriptionStatusId: number,
-  reanalyze = false
+  reanalyze = false,
+  isFromEAPI= false,
 ) => {
   const geoTrellisUrlsByEnv = {
     qa: GEO_TRELLIS__ANALYZE_LIST_QA,
@@ -227,7 +228,7 @@ export const handleCreateAnalysis = async (
       listId,
     });
 
-    await setListAnalysisStatusByTypes(organizationDb, listId, analysisTypesToProcess);
+    await setListAnalysisStatusByTypes(organizationDb, listId, analysisTypesToProcess,listStatus.Pending, isFromEAPI);
 
     const listAnalysisStatusData = await getListAnalysisStatus(organizationDb, listId);
 

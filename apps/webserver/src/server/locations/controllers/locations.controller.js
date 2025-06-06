@@ -47,27 +47,32 @@ export const locations = async (req, res, data) => {
 
   try {
     // Prepare queries based on user role - only fetch what's needed
-    const listPromises = isAdministrator
-      ? [ListManager.getAllListsWithAnalysisId(req)]
-      : [ListManager.getUserListsWithAnalysisId(req), ListManager.getAllListsWithAnalysisId(req)];
+    const listPromises = isAdministrator ? [] : [ListManager.getUserListsWithAnalysisId(req)];
 
     // Execute all queries in parallel with optimized data fetching
-    const [templateData, templateDropdowns, ...listResults] = await Promise.all([
+    const results = await Promise.all([
       LocationManager.getAllTemplateData(req),
       LocationManager.getAllTemplateDropdowns(req),
-      ...listPromises,
       AuthManager.getUserInfo(req),
       ListManager.getLocationsCount(req),
       GFWlistManager.getGFWLists(req),
       isAdministrator ? AccountManager.getUsersList(req) : Promise.resolve([]),
       ShareManager.getUserInternalShareLists(req, req.session.organization_user_id),
+      ListManager.getAllListsWithAnalysisId(req),
+      ...listPromises,
     ]);
 
-    const userLists = isAdministrator ? listResults[0] : listResults[0];
-    const orgLists = isAdministrator ? [] : listResults[1];
-    const [userInfo, locationCount, gfwLists, usersList, sharedListsRecords] = listResults.slice(
-      isAdministrator ? 1 : 2
-    );
+    const [
+      templateData,
+      templateDropdowns,
+      userInfo,
+      locationCount,
+      gfwLists,
+      usersList,
+      sharedListsRecords,
+      orgLists,
+      userLists,
+    ] = results;
 
     const listStatuses = UserManager.getStatuses();
     const userSharedLists = findSharedListsInsideOrganization(sharedListsRecords, orgLists);
@@ -82,11 +87,18 @@ export const locations = async (req, res, data) => {
       listStatuses,
 
       // List data - always present but may be empty
-      userLists,
+      userLists: isAdministrator ? orgLists : userLists,
       userSharedLists: isAdministrator ? [] : userSharedLists,
       orgLists: isAdministrator ? [] : orgLists,
-      gfwLists,
-      usersList: isAdministrator ? usersList : [],
+      gfwLists: Array.isArray(gfwLists)
+        ? gfwLists.map((list) => ({
+            id: list.id,
+            list_name: list.list_name,
+            template_id: list.template_id,
+            analysis_id: list.analysis_id,
+          }))
+        : [],
+      usersList: isAdministrator ? usersList : orgLists,
 
       // UI assets
       common: compiledAssets.js.common,

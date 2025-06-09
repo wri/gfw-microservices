@@ -2,10 +2,20 @@ import { Logger } from '@nestjs/common';
 import { AbstractHandler, ChainType, RequestNewList } from './types';
 import { getListByFilters } from '@wri-monorepos/sql';
 
-const createListNameSchema = (list_name) => ({
-  list_table: `list-${list_name.replace(/\s/g, '').toLowerCase()}`,
-  analysis_table: `analysis-${list_name.replace(/\s/g, '').toLowerCase()}`,
-});
+const normalizeListName = (list_name: string): string => {
+  // Convert accented characters to their non-accented equivalents
+  const normalized = list_name.normalize('NFD').replace(/\p{Diacritic}/gu, '');
+  // Remove periods and spaces and convert to lowercase
+  return normalized.replace(/[.\s]/g, '').toLowerCase();
+};
+
+const createListNameSchema = (list_name: string) => {
+  const normalizedName = normalizeListName(list_name);
+  return {
+    list_table: `list-${normalizedName}`,
+    analysis_table: `analysis-${normalizedName}`,
+  };
+};
 
 export class ListSchemaName extends AbstractHandler<ChainType> {
   private readonly logger = new Logger(ListSchemaName.name);

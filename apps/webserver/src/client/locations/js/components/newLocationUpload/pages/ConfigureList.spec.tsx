@@ -216,7 +216,9 @@ describe('ConfigureList', () => {
 
     await waitFor(() => {
       expect(
-        screen.queryByText(/only letters, numbers, and spaces are allowed/i)
+        screen.queryByText(
+          /only letters \(including accented characters\), numbers, spaces, dashes \(-\), and underscores \(_\) are allowed/i
+        )
       ).toBeInTheDocument();
     });
 

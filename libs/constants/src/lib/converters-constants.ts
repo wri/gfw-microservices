@@ -12,5 +12,6 @@ export enum ConverterStatus {
   COMPLETED = 'COMPLETED',
   RUNNING = 'RUNNING',
   FAILED = 'FAILED',
+  STOPPED = 'STOPPED',
   PARTIAL = 'PARTIAL',
 }

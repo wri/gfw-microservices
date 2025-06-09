@@ -24,7 +24,7 @@ export default function AccountProfileContainer() {
           currentAccount={organization || {}}
           classificationsData={classifications}
           currentUser={userInfo}
-          policyList={policyList}
+          policyList={policyList || []}
         />
       </CardContent>
     </Card>

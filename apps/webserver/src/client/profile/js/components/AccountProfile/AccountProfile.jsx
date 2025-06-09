@@ -394,7 +394,7 @@ export default class AccountProfile extends Component {
     const defaultFileAction = updatingPolicy
       ? []
       : [
-          <Box sx={{ display: 'flex', gap: 1 }}>
+          <Box key="1" sx={{ display: 'flex', gap: 1 }}>
             <PillButton variant="contained" size="small" autoFocus onClick={actionOverwrite}>
               Overwrite
             </PillButton>
@@ -406,7 +406,7 @@ export default class AccountProfile extends Component {
     const defaultAction = updating
       ? []
       : [
-          <div>
+          <div key="1">
             <PillButton variant="contained" size="small" autoFocus onClick={action}>
               OK
             </PillButton>

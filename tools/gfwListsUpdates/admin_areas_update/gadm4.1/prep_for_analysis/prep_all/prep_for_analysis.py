@@ -42,7 +42,7 @@ FROM dbo.[list-administrativeAreas41]
 OUTFILES = [
     ("admin2.tsv", lambda df: df[ df["Sub State"].notna() ]),
     ("admin1.tsv", lambda df: df[(df["Sub State"].isna()) & (df["State"].notna())]),
-    ("admin0.tsv", lambda df: df[(df["Sub State"].isna()) & (df["State"].isna()) & (df["Country"].notna())]),
+    # ("admin0.tsv", lambda df: df[(df["Sub State"].isna()) & (df["State"].isna()) & (df["Country"].notna())]),
 ]
 
 TSV_KWARGS = dict(index=False, sep="\t", header=True)

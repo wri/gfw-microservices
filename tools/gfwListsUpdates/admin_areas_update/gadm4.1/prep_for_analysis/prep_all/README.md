@@ -21,5 +21,4 @@ docker run --rm -v "$PWD":/work gadm-prep
 
 ## What it does?
 
-After running, three CSVs should appear right next to the script inside `prep_all/`
-because the current directory is bind-mounted into the container.
+After running, 2 tsv files should appear right next to the script inside `prep_all/` containing the data with admin1 and admin2 levels, ready to be send for analysis.

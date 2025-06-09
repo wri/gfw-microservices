@@ -21,4 +21,4 @@ docker run --rm -v "$PWD":/work gadm-admin0-grid
 
 ## What it does?
 
-TBD
+After running, a tsv file with the diced adminLevel=2 data, should appear right next to the script inside `prep_admin0/`. Should be all it is needed for admin0 geotrellis analysis.

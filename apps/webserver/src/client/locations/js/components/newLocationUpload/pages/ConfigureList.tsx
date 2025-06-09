@@ -33,7 +33,7 @@ import { useFetch } from '../../../../../hooks';
 import debounce from 'lodash/debounce';
 import { fetchListsByCommodity } from '../../../../../api/list';
 import { analysisTypes } from '../../../../../../config/env/analysisTypes.constants';
-import { alphanumericWithSpaceSchema } from '../utils/schema';
+import { listNameSchema } from '../utils/schema';
 import { DATA_CY } from '../../../../../utils/constants';
 
 type CommoditiesType = (typeof commodities)[keyof typeof commodities];
@@ -44,7 +44,7 @@ export function ConfigureList({ userLists }: { userLists: UserList[] }) {
   const schema = z
     .object({
       commodity: z.enum(commodityValues),
-      newListName: alphanumericWithSpaceSchema,
+      newListName: listNameSchema,
       existingListName: z.string(),
       FCD: z.coerce.boolean(),
       PalmRisk: z.coerce.boolean(),

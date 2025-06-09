@@ -370,8 +370,7 @@ describe('List Utils', () => {
       );
 
       // Call setListAnalysisStatus with empty array
-      await setListAnalysisStatus('clientDatabase', 1, [], listStatus.Pending);
-
+      await setListAnalysisStatus('clientDatabase', 1, [], listStatus.Pending, false);
       // Verify deleteListAnalyses was called
       expect(listAnalysisStatus.deleteListAnalyses).toHaveBeenCalledWith(
         'clientDatabase',
@@ -422,7 +421,6 @@ describe('List Utils', () => {
 
       // Call setListAnalysisStatus with analysis types
       await setListAnalysisStatus('clientDatabase', 1, ['FCD', 'DefReport'], listStatus.Pending);
-
       // Verify deleteListAnalyses was called
       expect(listAnalysisStatus.deleteListAnalyses).toHaveBeenCalledWith(
         'clientDatabase',
@@ -430,6 +428,82 @@ describe('List Utils', () => {
         ['FCD', 'DefReport'],
         currentAnalysisStatuses
       );
+
+      // Verify repository update was called for each analysis type
+      expect(mockRepository.update).toHaveBeenNthCalledWith(
+        1,
+        { listId: 1, analysisId: 'FCD' },
+        {
+          status: listStatus.Pending,
+          errorInfo: null,
+          updateTime: expect.any(String),
+          s3URL: null,
+          expirationTime: null,
+          bundleCreationTime: null,
+          options: null,
+        }
+      );
+
+      expect(mockRepository.update).toHaveBeenNthCalledWith(
+        2,
+        { listId: 1, analysisId: 'DefReport' },
+        {
+          status: listStatus.Pending,
+          errorInfo: null,
+          updateTime: expect.any(String),
+          s3URL: null,
+          expirationTime: null,
+          bundleCreationTime: null,
+          options: null,
+        }
+      );
+    });
+    it('should update status for provided analysis types without delete  any analysis', async () => {
+      const currentAnalysisStatuses = [
+        { listId: 1, analysisId: 'FCD', status: listStatus.Active } as ListsAnalysisStatus,
+        { listId: 1, analysisId: 'DefReport', status: listStatus.Active } as ListsAnalysisStatus,
+      ];
+
+      // Setup repository mock
+      const mockRepository = {
+        findBy: jest.fn().mockResolvedValue(currentAnalysisStatuses),
+        save: jest.fn(),
+        update: jest.fn(),
+        findOne: jest.fn().mockImplementation(({ where }) => {
+          if (where.analysisId === 'FCD' || where.analysisId === 'DefReport') {
+            return Promise.resolve({
+              listId: 1,
+              analysisId: where.analysisId,
+              status: listStatus.Active,
+            });
+          }
+          return Promise.resolve(null);
+        }),
+      };
+
+      // Setup connection mock
+      const mockConnection = {
+        getRepository: jest.fn().mockReturnValue(mockRepository),
+      };
+
+      // Setup ClientStoreConnection mock
+      const mockClientStoreConnection = {
+        getConnection: jest.fn().mockResolvedValue(mockConnection),
+      };
+      (ClientStoreConnection as unknown as jest.Mock).mockImplementation(
+        () => mockClientStoreConnection
+      );
+
+      // Call setListAnalysisStatus with analysis types
+      await setListAnalysisStatus(
+        'clientDatabase',
+        1,
+        ['FCD', 'DefReport'],
+        listStatus.Pending,
+        true
+      );
+      // Verify deleteListAnalyses was called
+      expect(listAnalysisStatus.deleteListAnalyses).not.toHaveBeenCalled();
 
       // Verify repository update was called for each analysis type
       expect(mockRepository.update).toHaveBeenNthCalledWith(

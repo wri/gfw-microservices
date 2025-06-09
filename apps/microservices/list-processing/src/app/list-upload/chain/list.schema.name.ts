@@ -4,16 +4,16 @@ import { getListByFilters } from '@wri-monorepos/sql';
 
 const normalizeListName = (list_name: string): string => {
   // Convert accented characters to their non-accented equivalents
-  const normalized = list_name.normalize('NFD').replace(/[\u0300-\u036f]/g, '');
-  // Remove periods and convert to lowercase
-  return normalized.replace(/\./g, '').toLowerCase();
+  const normalized = list_name.normalize('NFD').replace(/\p{Diacritic}/gu, '');
+  // Remove periods and spaces and convert to lowercase
+  return normalized.replace(/[.\s]/g, '').toLowerCase();
 };
 
 const createListNameSchema = (list_name: string) => {
   const normalizedName = normalizeListName(list_name);
   return {
-    list_table: `list-${normalizedName.replace(/\s/g, '')}`,
-    analysis_table: `analysis-${normalizedName.replace(/\s/g, '')}`,
+    list_table: `list-${normalizedName}`,
+    analysis_table: `analysis-${normalizedName}`,
   };
 };
 

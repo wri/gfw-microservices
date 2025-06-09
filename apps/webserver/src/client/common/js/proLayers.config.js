@@ -98,14 +98,6 @@ export const visibleLayers = [
 
 export const layerWarnings = [
   {
-    id: proLayers.treeCoverLossID,
-    title: 'Tree cover loss is not always deforestation',
-    content:
-      '<p class="basemap-modal-title">Tree cover loss is not always deforestation.</p><p>Loss of tree cover may occur for many reasons, including deforestation, fire, and ' +
-      'logging within the course of sustainable forestry operations. In sustainably managed forests, ' +
-      'the “loss” will eventually show up as “gain”, as young trees get large enough to achieve canopy closure.</p>',
-  },
-  {
     id: proLayers.argentineanNativeForestsLoss,
     title:
       '2007-2017 data not fully annualized; interpret with caution. See info bubble for details.',

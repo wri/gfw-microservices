@@ -13,11 +13,13 @@ import {
   SHOW_BASEMAP_INFO,
   SET_FIRE_DAYS,
   TOGGLE_CANOPY_MODAL,
+  TOGGLE_TREE_COVER_LOSS_CANOPY_MODAL,
   TOGGLE_DRAW_SHAPE_NOTE_DETAILS_MODAL,
   TOGGLE_DRAWING,
   TOGGLE_SEARCH,
   TOGGLE_PANELS,
   UPDATE_CANOPY_DENSITY,
+  UPDATE_TREE_COVER_LOSS_CANOPY_DENSITY,
   UPDATE_LANDSAT_YEAR,
   UPDATE_ANALYSIS,
   ADD_LIST,
@@ -51,8 +53,10 @@ const initialLocationState = {
   searchVisible: false,
   panelsVisible: true,
   canopyModalVisible: false,
+  treeCoverLossCanopyModalVisible: false,
   drawShapeNoteDetailsModalVisible: false,
-  canopyDensity: 30,
+  canopyDensity: 10,
+  treeCoverLossCanopyDensity: 10,
   analysisResults: {},
   selectedLists: [],
   fireDays: 7,
@@ -136,6 +140,12 @@ export function showMapLoader(state = initialLocationState.listLoading, action) 
 export function toggleCanopyModal(state = initialLocationState.canopyModalVisible, action) {
   return action.type !== TOGGLE_CANOPY_MODAL ? state : !state;
 }
+export function toggleTreeCoverLossCanopyModal(
+  state = initialLocationState.treeCoverLossCanopyModalVisible,
+  action
+) {
+  return action.type !== TOGGLE_TREE_COVER_LOSS_CANOPY_MODAL ? state : !state;
+}
 
 export function toggleDrawShapeNoteDetailsModal(
   state = initialLocationState.drawShapeNoteDetailsModalVisible,
@@ -153,7 +163,14 @@ export function togglePanels(state = initialLocationState.panelsVisible, action)
 }
 
 export function updateCanopyDensity(state = initialLocationState.canopyDensity, action) {
-  return action.type !== UPDATE_CANOPY_DENSITY ? state : action.data;
+  return action.type !== UPDATE_CANOPY_DENSITY ? state : action.payload;
+}
+
+export function updateTreeCoverLossCanopyDensity(
+  state = initialLocationState.treeCoverLossCanopyDensity,
+  action
+) {
+  return action.type !== UPDATE_TREE_COVER_LOSS_CANOPY_DENSITY ? state : action.payload;
 }
 
 export function updateLandsatYear(state = initialLocationState.landsatYear, action) {

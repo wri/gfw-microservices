@@ -31,13 +31,13 @@ const path = require('path');
 import config from '../config';
 
 const langResources = require(path.resolve(__dirname, '../langResources'));
-const awsSes = require(path.resolve(__dirname, '../privateutils/ses.utils'));
-const awsCognito = require(path.resolve(__dirname, '../privateutils/cognito.utils'));
-const sqlUtils = require(path.resolve(__dirname, '../privateutils/sql.utils'));
-const logger = require(path.resolve(__dirname, '../privateutils/logger.utils'));
-const errorUtils = require(path.resolve(__dirname, '../privateutils/error.utils'));
-const speakEasy = require(path.resolve(__dirname, '../privateutils/speakeasy.utils'));
-const rollbackUtils = require(path.resolve(__dirname, '../privateutils/rollback.utils'));
+const awsSes = require('../privateutils/ses.utils');
+import * as awsCognito from '../privateutils/cognito.utils';
+const sqlUtils = require('../privateutils/sql.utils');
+import * as logger from '../privateutils/logger.utils';
+const errorUtils = require('../privateutils/error.utils');
+const speakEasy = require('../privateutils/speakeasy.utils');
+const rollbackUtils = require('../privateutils/rollback.utils');
 const { listStatusDescriptions, listStatus } = require(path.resolve(
   __dirname,
   '../env/listStatuses.constants'
@@ -204,7 +204,7 @@ export const activateUser = (
     // Make sure the user is an Administrator before making the call.
     if (!isAdministrator(req)) {
       const errMessage = langResources.getResourceString('userIsNotAnAdmin');
-      throw new errorUtils.createErrorMessage(
+      throw errorUtils.createErrorMessage(
         req,
         errorUtils.ERROR_CODES.userNotAdmin,
         errMessage,
@@ -234,7 +234,7 @@ export const activateUser = (
         const [record] = recordSets;
         organizationName = record.organization_name;
         // Create a new secret for the user in case it is needed. Default authentication preference to be 0 - email
-        const secret = speakEasy.createSecret(req);
+        const secret = speakEasy.createSecret();
         const parameters = [
           { field: 'UserSecret', type: sql.VarChar(50), value: secret },
           { field: 'UserEmail', type: sql.NVarChar(50), value: user_email },
@@ -244,7 +244,7 @@ export const activateUser = (
       })
       .then(() => {
         // Check if the account exists in Cognito.
-        return awsCognito.userExists(req, user_email);
+        return awsCognito.userExists(user_email);
       })
       .then((doesUserExist) => {
         if (doesUserExist) {
@@ -297,7 +297,7 @@ export const deactivateUser = (req, user_id) => {
     // Make sure the user is an Administrator before making the call.
     if (!isAdministrator(req)) {
       const errMessage = langResources.getResourceString('userIsNotAnAdmin');
-      throw new errorUtils.createErrorMessage(
+      throw errorUtils.createErrorMessage(
         req,
         errorUtils.ERROR_CODES.userNotAdmin,
         errMessage,
@@ -386,7 +386,7 @@ export const createNewUser = (
     // Make sure the user is an Administrator before making the call.
     if (!isAdministrator(req)) {
       const errMessage = langResources.getResourceString('userIsNotAnAdmin');
-      throw new errorUtils.createErrorMessage(
+      throw errorUtils.createErrorMessage(
         req,
         errorUtils.ERROR_CODES.userNotAdmin,
         errMessage,
@@ -402,7 +402,7 @@ export const createNewUser = (
         // If the user already exists, return an error.
         if (recordSets.length) {
           const errMessage = langResources.getResourceString('userExistsInOrg');
-          throw new errorUtils.createErrorMessage(
+          throw errorUtils.createErrorMessage(
             req,
             errorUtils.ERROR_CODES.userExists,
             errMessage,
@@ -463,7 +463,7 @@ export const createNewUser = (
           return sqlUtils.executeSystemStoredProcedure(req, 'uspCreateNewUserRoute', parameters);
         }
         const errMessage = langResources.getResourceString('userExistsInOrg');
-        throw new errorUtils.createErrorMessage(
+        throw errorUtils.createErrorMessage(
           req,
           errorUtils.ERROR_CODES.userExists,
           errMessage,
@@ -630,7 +630,7 @@ export const setStatus = (req, status_id) => {
  * @function getUserSecret
  * @summary Returns base32 image of QR code to scan for Google Authentication
  * @param {Object} req
- * @return {Promise<String>} - base32 image to use as <img src=BASE32IMG />
+ * @return {Promise<{secret: string; url: string;}>} - base32 image to use as <img src=BASE32IMG />
  */
 export const getUserSecret = (req, email) => {
   return new Promise((resolve, reject) => {

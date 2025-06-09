@@ -1,5 +1,11 @@
 import { Request, Response } from 'express';
 
+import {
+  ClientStoreConnection,
+  ConverterStatus as ConverterStatusEntity,
+} from '@wri-monorepos/sql';
+import { ConverterStatus as ConverterStatusEnum } from '@wri-monorepos/constants';
+
 import { ConverterNamesList, ConverterName } from '@wri-monorepos/constants';
 import { startConverterJob } from '../services/converters.service';
 import logger from '../../../config/privateutils/logger.utils';
@@ -44,5 +50,29 @@ export const startConverter = async (
   } catch (err: any) {
     logger.error(`Failed to start converter ${converterName}:`, err.stack || err);
     res.status(500).json({ error: 'Failed to start converter' });
+  }
+};
+
+/**
+ * @route POST /converter/start
+ * @desc Starts a specific converter by name
+ * @access Pro Manager only
+ */
+export const stopConverter = async (req, res) => { 
+  const { id: converterId } = req.params;
+
+  try {
+    const clientStoreConnection = new ClientStoreConnection();
+    const connection = await clientStoreConnection.getConnection('gfwpro');
+    const converterStatusRepo = connection.getRepository(ConverterStatusEntity);
+
+    await converterStatusRepo.update(converterId, {
+      status: ConverterStatusEnum.STOPPED,
+    });
+
+    logger.info(`Inserted converter with ID: ${converterId}`);
+  } catch (err) {
+    logger.error(`Error stopping converter with ID ${converterId}:`, err);
+    throw new Error('Failed to retrieve inserted converter ID');
   }
 };

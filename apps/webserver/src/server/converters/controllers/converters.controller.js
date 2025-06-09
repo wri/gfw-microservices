@@ -12,7 +12,7 @@ export const getConverters = (req, res) => {
   res.status(200).json({ converters: ConverterNamesList });
 };
 
-export const stopConverter = async (req, res) => { 
+export const stopConverter = async (req, res) => {
   const { id: converterId } = req.params;
 
   try {
@@ -25,6 +25,10 @@ export const stopConverter = async (req, res) => {
     });
 
     logger.info(`Inserted converter with ID: ${converterId}`);
+    res.status(200).json({
+      message: `Converter with ID ${converterId} has been stopped successfully.`,
+      converterId
+    });
   } catch (err) {
     logger.error(`Error stopping converter with ID ${converterId}:`, err);
     throw new Error('Failed to retrieve inserted converter ID');

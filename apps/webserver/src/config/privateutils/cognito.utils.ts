@@ -67,7 +67,7 @@ const getUserInfo = async (email, userPoolId) => {
     const response = await cognitoClient.send(command);
     return response.UserAttributes; // Return user attributes
   } catch (error) {
-    console.error('Error retrieving user info:', error);
+    logger.error('Error retrieving user info:', error);
     throw error;
   }
 };
@@ -675,16 +675,16 @@ const updateUser = async (req, email, attributes) => {
  *  @param {String} email - Cognito Username
  *  @return {Promise} Returns a promise detailing success or failure
  */
-const userExists = async (email) => {
+const userExists = async (email: string) => {
   try {
     // Use getUserInfo to check if the user exists
     await getUserInfo(email, USER_POOL_ID);
     return true;
   } catch (error) {
-    if (error.code === 'UserNotFoundException') {
+    if (error.name === 'UserNotFoundException') {
       return false; // User doesn't exist
     }
-    console.error('Unexpected error:', error);
+    logger.error('Unexpected error:', error);
     throw error; // Rethrow if not a "user not found" error
   }
 };

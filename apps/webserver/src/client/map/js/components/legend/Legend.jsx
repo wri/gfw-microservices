@@ -43,6 +43,7 @@ export default class Legend extends Component {
     <LegendCheckbox
       biomassRange={this.props.biomassRange}
       canopyDensity={this.props.canopyDensity}
+      treeCoverLossCanopyDensity={this.props.treeCoverLossCanopyDensity}
       key={i}
       layer={layer}
       visibleLayers={this.props.visibleLayers}
@@ -101,6 +102,7 @@ export default class Legend extends Component {
               regionLayers={regionLayers}
               visibleRegion={visibleRegion}
               canopyDensity={this.props.canopyDensity}
+              treeCoverLossCanopyDensity={this.props.treeCoverLossCanopyDensity}
               visibleLayers={this.props.visibleLayers}
               iconLoading={this.props.iconLoading}
               toggleLayerVisibility={this.props.toggleLayerVisibility}

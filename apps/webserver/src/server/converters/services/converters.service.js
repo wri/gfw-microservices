@@ -48,7 +48,7 @@ const insertConverterRecord = async (repo, name, organizationId = null) => {
   if (!id) {
     throw new Error('Failed to retrieve inserted converter ID');
   }
-  
+
   logger.info(`Inserted converter with ID: ${id}`);
   return id;
 };

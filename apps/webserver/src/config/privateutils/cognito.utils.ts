@@ -118,7 +118,7 @@ const resetLoginAttributes = async (email, userPoolId) => {
     const result = await cognitoClient.send(command);
     return result;
   } catch (error) {
-    console.error('ERROR: could not update user attributes!', error);
+    logger.error('ERROR: could not update user attributes!', error);
     throw error;
   }
 };
@@ -149,7 +149,7 @@ const setLoginFailCount = async (failureCount, email, userPoolId) => {
     const response = await cognitoClient.send(command);
     return response;
   } catch (error) {
-    console.error('Error: Could not update user attributes!', error);
+    logger.error('Error: Could not update user attributes!', error);
     throw error;
   }
 };
@@ -181,7 +181,7 @@ const handleUserOpeningPasswordDate = async (updatedAt, email, userPoolId) => {
     const data = await cognitoClient.send(command);
     return data;
   } catch (error) {
-    console.error('ERROR: Could not update user attributes!', error);
+    logger.error('ERROR: Could not update user attributes!', error);
     return undefined;
   }
 };
@@ -205,7 +205,7 @@ const lockUserOutOnFailCounts = async (email, userPoolId) => {
     const response = await cognitoClient.send(command);
     return response;
   } catch (error) {
-    console.error('Error: Could not reset user password!:', error);
+    logger.error('Error: Could not reset user password!:', error);
     throw error;
   }
 };
@@ -230,7 +230,7 @@ const confirmUserEmail = async (req, username) => {
     await cognitoClient.send(command);
     return true;
   } catch (error) {
-    console.error('Failed to confirm user email:', error);
+    logger.error('Failed to confirm user email:', error);
     throw error;
   }
 };
@@ -371,7 +371,7 @@ const changePassword = async (req, previousPassword, proposedPassword) => {
     await cognitoClient.send(command);
     return true;
   } catch (error) {
-    console.log('Error changing password:', error);
+    logger.error('Error changing password:', error);
     throw error;
   }
 };
@@ -396,7 +396,7 @@ const deleteUser = async (req, email) => {
     const data = await cognitoClient.send(command);
     return data;
   } catch (error) {
-    console.log('Error deleting user from Cognito:', error);
+    logger.error('Error deleting user from Cognito:', error);
     throw error;
   }
 };
@@ -664,7 +664,7 @@ const setPassword = async (req, email, verificationCode, newPassword) => {
     await cognitoClient.send(command);
     return true; // Successfully set the password
   } catch (err) {
-    console.log('Error setting password', err);
+    logger.error('Error setting password', err);
     return false;
   }
 };
@@ -759,15 +759,15 @@ const resendTemporaryPassword = async (req, email, err) => {
         await createUser(req, email, true, false);
         return true; // Successfully re-sent the temporary password
       } catch (createUserErr) {
-        console.log('Error trying to RESEND temporary password:', createUserErr);
+        logger.error('Error trying to RESEND temporary password:', createUserErr);
         throw createUserErr; // Throw the error to be caught by outer catch block
       }
     } else {
-      console.log('Error AdminResetUserPassword:', err);
+      logger.error('Error AdminResetUserPassword:', err);
       throw err; // Throw error if user is not in FORCE_CHANGE_PASSWORD status
     }
   } catch (getUserInfoErr) {
-    console.log('Error getting user status:', getUserInfoErr);
+    logger.error('Error getting user status:', getUserInfoErr);
     throw getUserInfoErr; // Throw error to be handled outside if necessary
   }
 };
@@ -781,7 +781,7 @@ const resendTemporaryPassword = async (req, email, err) => {
  *  @return {Promise} Returns a promise that resolves to true if successful, provides error object otherwise.
  */
 const requestToResetPassword = async (req, email) => {
-  console.log('Resetting Password');
+  logger.info('Resetting Password');
 
   const params = {
     ClientId: CLIENT_ID,
@@ -795,13 +795,13 @@ const requestToResetPassword = async (req, email) => {
     await cognitoClient.send(command);
     return AUTH_STATUS.ConfirmPassword;
   } catch (error) {
-    console.log('Forgot Password Error:', error);
+    logger.error('Forgot Password Error:', error);
 
     try {
       await resendTemporaryPassword(req, email, error);
       return AUTH_STATUS.ResendPassword;
     } catch (resendErr) {
-      console.log('Resend Error:', resendErr);
+      logger.error('Resend Error:', resendErr);
       throw resendErr;
     }
   }
@@ -827,12 +827,12 @@ const adminResetUserPassword = async (req, email) => {
     await cognitoClient.send(command);
     return true;
   } catch (error) {
-    console.log('Error AdminResetUserPassword:', error);
+    logger.error('Error AdminResetUserPassword:', error);
     try {
       await resendTemporaryPassword(req, email, error);
       return true;
     } catch (resendTemporaryPasswordErr) {
-      console.log('Resend Error:', resendTemporaryPasswordErr);
+      logger.error('Resend Error:', resendTemporaryPasswordErr);
       throw resendTemporaryPasswordErr;
     }
   }
@@ -861,7 +861,7 @@ const updateUser = async (req, email, attributes) => {
     const response = await cognitoClient.send(command);
     return response;
   } catch (error) {
-    console.error('Error updating user:', error);
+    logger.error('Error updating user:', error);
     throw error;
   }
 };
@@ -910,7 +910,7 @@ const confirmForgotPassword = async (req, confirmationCode, newPassword, usernam
     await cognitoClient.send(command);
     return true;
   } catch (error) {
-    console.log('Confirm forgot password error:', error);
+    logger.error('Confirm forgot password error:', error);
     if (error.name === 'ExpiredCodeException' || error.code === 'ExpiredCodeException') {
       return 'ExpiredCodeException';
     }
@@ -938,7 +938,7 @@ const resendConfirmationCode = async (req, username) => {
     await cognitoClient.send(command);
     return true; // Successfully resent the confirmation code
   } catch (error) {
-    console.log('Error re-sending confirmation code:', error);
+    logger.error('Error re-sending confirmation code:', error);
     return false; // Return false on error
   }
 };

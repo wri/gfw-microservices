@@ -72,7 +72,7 @@ function ProManagerPanel({ location }) {
           {selectedTab === proManagerPanelTabs.userProfiles.id && !userDetail && (
             <UsersListSection isLoading={isLoading} setIsLoading={setIsLoading} />
           )}
-          {selectedTab === proManagerPanelTabs.accounLimits.id && (
+          {selectedTab === proManagerPanelTabs.accountLimits.id && (
             <AccountLimits isLoading={isLoading} setIsLoading={setIsLoading} />
           )}
           {selectedTab === proManagerPanelTabs.accountUsage.id && (
@@ -84,7 +84,7 @@ function ProManagerPanel({ location }) {
           {selectedTab === proManagerPanelTabs.featureFlags.id && (
             <FeatureFlags isLoading={isLoading} setIsLoading={setIsLoading} />
           )}
-          {selectedTab === proManagerPanelTabs.featureFlags.id && (
+          {selectedTab === proManagerPanelTabs.converters.id && (
             <Converters isLoading={isLoading} setIsLoading={setIsLoading} />
           )}
         </Box>

@@ -8,7 +8,7 @@ const { ADMIN, EDITOR, VIEWER } = userAccessLevel;
  */
 
 export const proManagerPanelTabs = {
-  accounLimits: {
+  accountLimits: {
     id: 'account-limits',
     icon: 'running_with_errors',
     title: 'Account Limits',
@@ -17,7 +17,7 @@ export const proManagerPanelTabs = {
   accountProfiles: {
     id: 'accounts',
     icon: 'corporate_fare',
-    title: 'Acount Profiles',
+    title: 'Account Profiles',
     userAccessLevel: [ADMIN, EDITOR, VIEWER],
   },
   accountUsage: {

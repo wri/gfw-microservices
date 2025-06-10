@@ -38,6 +38,12 @@ import {
   AdminCreateUserCommandInput,
 } from '@aws-sdk/client-cognito-identity-provider';
 
+// Retry configuration constants
+const RETRY_CONFIG = {
+  MAX_RETRIES: 3,
+  DELAY_MS: 1000,
+} as const;
+
 // Cognito Client singleton instance
 let cognitoClient = null;
 
@@ -298,8 +304,6 @@ const createUser = async (req, email, shouldResendTempPassword = false, isUnitTe
         return cognitoClient.send(command);
       },
       {
-        maxRetries: 3,
-        delay: 1000,
         operationName: 'user creation',
         identifier: hashedEmail,
       }
@@ -312,8 +316,6 @@ const createUser = async (req, email, shouldResendTempPassword = false, isUnitTe
         return confirmUserEmail(req, email);
       },
       {
-        maxRetries: 3,
-        delay: 1000,
         operationName: 'email confirmation',
         identifier: hashedEmail,
       }
@@ -465,19 +467,22 @@ const handleLoginFailure = async (req, email) => {
 const withRetry = async <T>(
   operation: () => Promise<T>,
   options: {
-    maxRetries: number;
-    delay: number;
+    maxRetries?: number;
+    delay?: number;
     operationName: string;
     identifier: string;
   }
 ): Promise<T> => {
-  let retries = options.maxRetries;
+  const maxRetries = options.maxRetries ?? RETRY_CONFIG.MAX_RETRIES;
+  const delay = options.delay ?? RETRY_CONFIG.DELAY_MS;
+  let retries = maxRetries;
+
   while (retries > 0) {
     try {
       logger.info(
         `Attempting ${options.operationName} for ${options.identifier} (attempt ${
-          options.maxRetries - retries + 1
-        }/${options.maxRetries})`
+          maxRetries - retries + 1
+        }/${maxRetries})`
       );
       const result = await operation();
       logger.info(`Successfully completed ${options.operationName} for ${options.identifier}`);
@@ -486,16 +491,16 @@ const withRetry = async <T>(
       if (error.name === 'ServiceUnavailableException' && retries > 1) {
         retries--;
         logger.warn(
-          `Service unavailable for ${options.operationName}, retrying in ${options.delay}ms... (${retries} attempts remaining)`
+          `Service unavailable for ${options.operationName}, retrying in ${delay}ms... (${retries} attempts remaining)`
         );
-        await new Promise((resolve) => setTimeout(resolve, options.delay));
+        await new Promise((resolve) => setTimeout(resolve, delay));
         continue;
       }
       throw error;
     }
   }
   throw new Error(
-    `Failed to complete ${options.operationName} after ${options.maxRetries} attempts`
+    `Failed to complete ${options.operationName} after ${maxRetries} attempts`
   );
 };
 
@@ -554,8 +559,6 @@ const authenticateUser = async (req, email, password, userInfoAttributes) => {
         return cognitoClient.send(command);
       },
       {
-        maxRetries: 3,
-        delay: 1000,
         operationName: 'user authentication',
         identifier: hashedEmail,
       }

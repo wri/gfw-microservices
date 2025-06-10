@@ -499,9 +499,7 @@ const withRetry = async <T>(
       throw error;
     }
   }
-  throw new Error(
-    `Failed to complete ${options.operationName} after ${maxRetries} attempts`
-  );
+  throw new Error(`Failed to complete ${options.operationName} after ${maxRetries} attempts`);
 };
 
 /**

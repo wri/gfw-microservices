@@ -1,3 +1,5 @@
+import { latestTreeCoverLossYearForTclDataInAnalyses } from '../../../../common/js/config';
+
 export const regionIds = {
   ARGENTINA: 'argentina',
   REGIONAL: 'regional',
@@ -27,7 +29,7 @@ export const regionConstants = {
     downloadId: 'argentina',
     diagnosticTitle: 'OTBN Overlap',
     startYear: 2008, // IMPORTANT: If modifying, sync with backend constants file: /libs/constants/src/lib/diagnostic-constants.ts
-    endYear: 2023,
+    endYear: latestTreeCoverLossYearForTclDataInAnalyses,
   },
   colombia: {
     id: 'otbnColombia',
@@ -35,7 +37,7 @@ export const regionConstants = {
     informationBubbleId: '',
     downloadId: 'colombia',
     startYear: 2011,
-    endYear: 2023,
+    endYear: latestTreeCoverLossYearForTclDataInAnalyses,
   },
 };
 

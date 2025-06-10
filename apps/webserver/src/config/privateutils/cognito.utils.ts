@@ -31,9 +31,23 @@ import * as PasswordGenerator from 'generate-password';
 import langResources from '../langResources'; // Adjust the path if necessary
 import * as errorUtils from './error.utils';
 import * as logger from './logger.utils';
+import * as crypto from 'crypto';
+import {
+  InitiateAuthCommandInput,
+  InitiateAuthCommandOutput,
+  AdminCreateUserCommandInput,
+} from '@aws-sdk/client-cognito-identity-provider';
 
 // Cognito Client singleton instance
 let cognitoClient = null;
+
+interface AuthResult {
+  email: string;
+  authenticationStatus: number;
+  token: string;
+  'custom:passwordUpdatedAt': string;
+  session?: string;
+}
 
 /**
  * @function getCognitoClient
@@ -65,7 +79,10 @@ const getUserInfo = async (email, userPoolId) => {
 
   try {
     const response = await cognitoClient.send(command);
-    return response.UserAttributes; // Return user attributes
+    if (!response || !response.UserAttributes) {
+      throw new Error('Invalid response from Cognito');
+    }
+    return response.UserAttributes;
   } catch (error) {
     logger.error('Error retrieving user info:', error);
     throw error;
@@ -219,6 +236,16 @@ const confirmUserEmail = async (req, username) => {
 };
 
 /**
+ * @function hashEmail
+ * @summary Hashes an email address for logging purposes
+ * @param {string} email - The email address to hash
+ * @returns {string} The hashed email address
+ */
+const hashEmail = (email: string): string => {
+  return crypto.createHash('sha256').update(email.toLowerCase()).digest('hex').substring(0, 8);
+};
+
+/**
  *  @function createUser
  *  @summary Create a new user in the identity pool provided.
  *  @param {Object} req - Mandatory first parameter to pass the request object into the function in case session info is required.
@@ -228,6 +255,15 @@ const confirmUserEmail = async (req, username) => {
  *  @return {Promise<Object|Boolean>} Returns result or test output object, depending on context
  */
 const createUser = async (req, email, shouldResendTempPassword = false, isUnitTest = false) => {
+  const hashedEmail = hashEmail(email);
+
+  // Validate email format
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  if (!emailRegex.test(email)) {
+    logger.error('Invalid email format:', hashedEmail);
+    throw new Error('Invalid email format');
+  }
+
   const randomPassword = PasswordGenerator.generate({
     length: 10,
     numbers: true,
@@ -237,22 +273,51 @@ const createUser = async (req, email, shouldResendTempPassword = false, isUnitTe
     exclude: '#%&^"',
   });
 
-  const params: cognito.AdminCreateUserCommandInput = {
+  const currentDate = new Date().toUTCString();
+
+  const params: AdminCreateUserCommandInput = {
     UserPoolId: USER_POOL_ID,
     Username: email,
-    UserAttributes: [{ Name: 'email', Value: email }],
+    UserAttributes: [
+      { Name: 'email', Value: email },
+      { Name: 'custom:fail_count', Value: '0' },
+      { Name: 'custom:passwordUpdatedAt', Value: currentDate },
+    ],
     DesiredDeliveryMediums: ['EMAIL'],
     ForceAliasCreation: false,
     MessageAction: shouldResendTempPassword ? 'RESEND' : undefined,
     TemporaryPassword: randomPassword,
   };
 
-  cognitoClient = getCognitoClient();
-  const command = new cognito.AdminCreateUserCommand(params);
-
   try {
-    await cognitoClient.send(command);
-    const result = await confirmUserEmail(req, email);
+    // Create user with retry logic
+    await withRetry(
+      async () => {
+        cognitoClient = getCognitoClient();
+        const command = new cognito.AdminCreateUserCommand(params);
+        return cognitoClient.send(command);
+      },
+      {
+        maxRetries: 3,
+        delay: 1000,
+        operationName: 'user creation',
+        identifier: hashedEmail,
+      }
+    );
+
+    // Confirm user email with retry logic
+    logger.info(`Confirming email for user ${hashedEmail}`);
+    const result = await withRetry(
+      async () => {
+        return confirmUserEmail(req, email);
+      },
+      {
+        maxRetries: 3,
+        delay: 1000,
+        operationName: 'email confirmation',
+        identifier: hashedEmail,
+      }
+    );
 
     if (isUnitTest) {
       return {
@@ -263,7 +328,24 @@ const createUser = async (req, email, shouldResendTempPassword = false, isUnitTe
 
     return result;
   } catch (error) {
-    console.log('Error creating Cognito user:', error);
+    // Enhanced error handling with detailed logging
+    if (error.name === 'UsernameExistsException') {
+      logger.error(`User creation failed: User with email ${hashedEmail} already exists`);
+      throw new Error(`User with email ${email} already exists`);
+    } else if (error.name === 'InvalidParameterException') {
+      logger.error(`User creation failed: Invalid parameters provided: ${error.message}`);
+      throw new Error(`Invalid parameters provided: ${error.message}`);
+    } else if (error.name === 'ServiceUnavailableException') {
+      logger.error('User creation failed: Cognito service is temporarily unavailable');
+      throw new Error('Cognito service is temporarily unavailable');
+    }
+
+    logger.error('Error creating Cognito user:', {
+      emailHash: hashedEmail,
+      error: error.message,
+      code: error.code,
+      name: error.name,
+    });
     throw error;
   }
 };
@@ -327,11 +409,12 @@ const deleteUser = async (req, email) => {
  * @return {Promise} Returns a promise detailing success or failure of disableUser
  */
 const handleLoginFailure = async (req, email) => {
+  const hashedEmail = hashEmail(email);
   let userInfo;
   try {
     userInfo = await getUserInfo(email, USER_POOL_ID);
   } catch (error) {
-    console.error('Error:', error);
+    logger.error(`Failed to get user info for ${hashedEmail}:`, error);
     throw error;
   }
 
@@ -345,14 +428,23 @@ const handleLoginFailure = async (req, email) => {
   try {
     // Update the fail count in Cognito
     await setLoginFailCount(failureCount, email, USER_POOL_ID);
+    logger.info(`Updated fail count to ${failureCount} for user ${hashedEmail}`);
 
-    // If the failure count exceeds the threshold, "disable" user
+    // If the failure count exceeds the threshold, attempt to lock user
     if (failureCount >= config.platformVars.maxUserLoginRetries) {
-      await lockUserOutOnFailCounts(email, USER_POOL_ID);
+      try {
+        await lockUserOutOnFailCounts(email, USER_POOL_ID);
+        logger.info(
+          `Successfully locked user ${hashedEmail} after ${failureCount} failed attempts`
+        );
+      } catch (lockError) {
+        // If we can't lock the user, log it but don't throw - the fail count is still updated
+        logger.error(`Failed to lock user ${hashedEmail} after max attempts:`, lockError);
+      }
     }
   } catch (error) {
-    console.error('Error updating fail count or disabling user:', error);
-    throw error;
+    logger.error(`Failed to update fail count for user ${hashedEmail}:`, error);
+    // Don't throw here - we want to return the current state even if we couldn't update it
   }
 
   // Return success indicating that the account handling was processed
@@ -360,15 +452,65 @@ const handleLoginFailure = async (req, email) => {
 };
 
 /**
- *  @function authenticateUser
- *  @summary Authenticate User via Cognito
- *  @param {Object} req - Mandatory first parameter to pass the request object into the function in case session info is required.
- *  @param {String} email - The username of the cognito user (should be their email)
- *  @param {String} password - The password given by User
- *  @return {Promise} Returns a promise detailing success or failure of authenticateUser
+ * @function withRetry
+ * @summary Executes a function with retry logic
+ * @param {Function} operation - The async function to execute
+ * @param {Object} options - Retry options
+ * @param {number} options.maxRetries - Maximum number of retry attempts
+ * @param {number} options.delay - Delay between retries in milliseconds
+ * @param {string} options.operationName - Name of the operation for logging
+ * @param {string} options.identifier - Identifier for the operation (e.g., hashed email)
+ * @returns {Promise<any>} The result of the operation
+ */
+const withRetry = async <T>(
+  operation: () => Promise<T>,
+  options: {
+    maxRetries: number;
+    delay: number;
+    operationName: string;
+    identifier: string;
+  }
+): Promise<T> => {
+  let retries = options.maxRetries;
+  while (retries > 0) {
+    try {
+      logger.info(
+        `Attempting ${options.operationName} for ${options.identifier} (attempt ${
+          options.maxRetries - retries + 1
+        }/${options.maxRetries})`
+      );
+      const result = await operation();
+      logger.info(`Successfully completed ${options.operationName} for ${options.identifier}`);
+      return result;
+    } catch (error) {
+      if (error.name === 'ServiceUnavailableException' && retries > 1) {
+        retries--;
+        logger.warn(
+          `Service unavailable for ${options.operationName}, retrying in ${options.delay}ms... (${retries} attempts remaining)`
+        );
+        await new Promise((resolve) => setTimeout(resolve, options.delay));
+        continue;
+      }
+      throw error;
+    }
+  }
+  throw new Error(
+    `Failed to complete ${options.operationName} after ${options.maxRetries} attempts`
+  );
+};
+
+/**
+ * @function authenticateUser
+ * @summary Authenticate User via Cognito
+ * @param {Object} req - Request object
+ * @param {String} email - The username of the cognito user (should be their email)
+ * @param {String} password - The password given by User
+ * @param {Array} userInfoAttributes - User attributes from Cognito
+ * @return {Promise<Object>} Authentication result
  */
 const authenticateUser = async (req, email, password, userInfoAttributes) => {
   const currentDate = new Date();
+  const hashedEmail = hashEmail(email);
 
   const updatedAttribute = userInfoAttributes.find(
     (userAttribute) => userAttribute.Name === 'custom:passwordUpdatedAt'
@@ -376,18 +518,19 @@ const authenticateUser = async (req, email, password, userInfoAttributes) => {
   const failCountAttribute = userInfoAttributes.find(
     (userAttribute) => userAttribute.Name === 'custom:fail_count'
   );
-  const updatedAt = updatedAttribute.Value || currentDate;
+  const updatedAt = updatedAttribute?.Value || currentDate;
 
   if (!updatedAttribute) {
     try {
+      logger.info(`Setting initial password update date for user ${hashedEmail}`);
       await handleUserOpeningPasswordDate(updatedAt, email, USER_POOL_ID);
     } catch (error) {
-      console.log('Error:', error);
+      logger.error(`Failed to set password update date for user ${hashedEmail}:`, error);
       throw error;
     }
   }
 
-  const params: cognito.InitiateAuthCommandInput = {
+  const params: InitiateAuthCommandInput = {
     AuthFlow: 'USER_PASSWORD_AUTH',
     ClientId: CLIENT_ID,
     AuthParameters: {
@@ -396,50 +539,104 @@ const authenticateUser = async (req, email, password, userInfoAttributes) => {
     },
   };
 
-  const authResult = {
+  const authResult: AuthResult = {
     email: email,
     authenticationStatus: AUTH_STATUS.Unauthenticated,
     token: '',
     'custom:passwordUpdatedAt': updatedAt,
   };
 
-  cognitoClient = getCognitoClient();
-  const command = new cognito.InitiateAuthCommand(params);
-
   try {
-    const response = await cognitoClient.send(command);
+    const response = await withRetry<InitiateAuthCommandOutput>(
+      () => {
+        cognitoClient = getCognitoClient();
+        const command = new cognito.InitiateAuthCommand(params);
+        return cognitoClient.send(command);
+      },
+      {
+        maxRetries: 3,
+        delay: 1000,
+        operationName: 'user authentication',
+        identifier: hashedEmail,
+      }
+    );
 
-    // On success, update the authentication result
-    authResult.authenticationStatus = AUTH_STATUS.Authenticated;
-    authResult.token = response.AuthenticationResult.AccessToken;
-    return authResult;
-  } catch (error) {
-    // Password reset is required
-    if (
-      error.name === 'PasswordResetRequiredException' &&
-      failCountAttribute?.Value >= config.platformVars.maxUserLoginRetries
-    ) {
-      authResult.authenticationStatus = AUTH_STATUS.ForceReset;
+    // Handle NEW_PASSWORD_REQUIRED challenge
+    if (response.ChallengeName === 'NEW_PASSWORD_REQUIRED') {
+      logger.info(`User ${hashedEmail} requires new password`);
+      authResult.authenticationStatus = AUTH_STATUS.RequireNewPassword;
+      authResult.session = response.Session;
       return authResult;
-    } else if (error.name === 'PasswordResetRequiredException') {
-      authResult.authenticationStatus = AUTH_STATUS.ResetRequired;
+    }
+
+    // Handle successful authentication
+    if (response.AuthenticationResult) {
+      logger.info(`User ${hashedEmail} successfully authenticated`);
+      authResult.authenticationStatus = AUTH_STATUS.Authenticated;
+      authResult.token = response.AuthenticationResult.AccessToken;
+
+      // Reset fail count on successful login
+      if (failCountAttribute?.Value !== '0') {
+        try {
+          await setLoginFailCount(0, email, USER_POOL_ID);
+          logger.info(`Reset fail count for user ${hashedEmail}`);
+        } catch (error) {
+          logger.error(`Failed to reset fail count for user ${hashedEmail}:`, error);
+          // Don't throw here, as the login was successful
+        }
+      }
+
+      return authResult;
+    }
+
+    // Handle unexpected challenge
+    if (response.ChallengeName) {
+      logger.warn(
+        `Unexpected challenge received for user ${hashedEmail}: ${response.ChallengeName}`
+      );
+      authResult.authenticationStatus = AUTH_STATUS.Unauthenticated;
+      return authResult;
+    }
+
+    throw new Error('No authentication result received from Cognito');
+  } catch (error) {
+    logger.error(`Authentication error for user ${hashedEmail}:`, {
+      error: error.message,
+      code: error.code,
+      name: error.name,
+    });
+
+    // Handle password reset required
+    if (error.name === 'PasswordResetRequiredException') {
+      const failCount = parseInt(failCountAttribute?.Value || '0', 10);
+      if (failCount >= config.platformVars.maxUserLoginRetries) {
+        logger.info(`User ${hashedEmail} requires forced password reset due to max login attempts`);
+        authResult.authenticationStatus = AUTH_STATUS.ForceReset;
+      } else {
+        logger.info(`User ${hashedEmail} requires password reset`);
+        authResult.authenticationStatus = AUTH_STATUS.ResetRequired;
+      }
       return authResult;
     }
 
     // Handle other authentication errors
-    await handleLoginFailure(req, email).catch((e) =>
-      logger.error('Error in handleLoginFailure', e)
-    );
+    try {
+      await handleLoginFailure(req, email);
+      logger.info(`Handled login failure for user ${hashedEmail}`);
+    } catch (loginFailureError) {
+      logger.error(`Failed to handle login failure for user ${hashedEmail}:`, loginFailureError);
+    }
 
     const userMessage = langResources.getResourceString('failedToAuthenticate');
-    const sysMessage = `Error Authenticating User: ${error} \nUsername: ${email}`;
-    const errObj = errorUtils.createErrorMessage(
+    const sysMessage = `Error Authenticating User: ${
+      error.message || error
+    } \nUsername: ${hashedEmail}`;
+    throw errorUtils.createErrorMessage(
       req,
       errorUtils.ERROR_CODES.failedToAuthenticate,
       userMessage,
       sysMessage
     );
-    throw errObj;
   }
 };
 
@@ -519,25 +716,26 @@ const completeNewPasswordChallenge = async (req, oldPassword, newPassword) => {
 
       await cognitoClient.send(challengeCommand);
       return true;
-    } else {
-      // If no challenge is expected, return error
-      const userMessage = langResources.getResourceString('criticalError');
-      const sysMessage = langResources.getResourceString('invalidInitialPasswordChange');
-      throw errorUtils.createErrorMessage(
-        req,
-        errorUtils.ERROR_CODES.userAlreadyConfirmed,
-        userMessage,
-        sysMessage
-      );
     }
-  } catch (err) {
-    const userMessage = langResources.getResourceString('loginFailed');
-    const sysMessage = err;
+
+    // If challenge is not NEW_PASSWORD_REQUIRED, throw error immediately
     throw errorUtils.createErrorMessage(
       req,
       errorUtils.ERROR_CODES.userNotAuthenticated,
-      userMessage,
-      sysMessage
+      langResources.getResourceString('criticalError'),
+      `Unexpected challenge received: ${authResponse.ChallengeName}`
+    );
+  } catch (err) {
+    // If the error is already an error message object, throw it directly
+    if (err.userMessage && err.systemMessage) {
+      throw err;
+    }
+    // Otherwise, create a new error message
+    throw errorUtils.createErrorMessage(
+      req,
+      errorUtils.ERROR_CODES.userNotAuthenticated,
+      langResources.getResourceString('loginFailed'),
+      err
     );
   }
 };
@@ -553,8 +751,9 @@ const completeNewPasswordChallenge = async (req, oldPassword, newPassword) => {
 const resendTemporaryPassword = async (req, email, err) => {
   try {
     const userInfo = await getUserInfo(email, USER_POOL_ID);
+    const userStatus = userInfo.find((attr) => attr.Name === 'UserStatus')?.Value;
 
-    if (userInfo.UserStatus === 'FORCE_CHANGE_PASSWORD') {
+    if (userStatus === 'FORCE_CHANGE_PASSWORD') {
       try {
         // Send another temporary password to the user
         await createUser(req, email, true, false);
@@ -594,12 +793,10 @@ const requestToResetPassword = async (req, email) => {
 
   try {
     await cognitoClient.send(command);
-    // If the command was successful, the verification code is sent to the user
     return AUTH_STATUS.ConfirmPassword;
   } catch (error) {
     console.log('Forgot Password Error:', error);
 
-    // If user is in 'FORCE_CHANGE_PASSWORD' state, attempt to resend temp password
     try {
       await resendTemporaryPassword(req, email, error);
       return AUTH_STATUS.ResendPassword;
@@ -711,12 +908,13 @@ const confirmForgotPassword = async (req, confirmationCode, newPassword, usernam
 
   try {
     await cognitoClient.send(command);
-    return true; // Successfully confirmed the password
+    return true;
   } catch (error) {
-    if (error.code === 'ExpiredCodeException') {
-      return 'ExpiredCodeException'; // Handle specific error code
+    console.log('Confirm forgot password error:', error);
+    if (error.name === 'ExpiredCodeException' || error.code === 'ExpiredCodeException') {
+      return 'ExpiredCodeException';
     }
-    throw error; // Rethrow other errors
+    throw error;
   }
 };
 

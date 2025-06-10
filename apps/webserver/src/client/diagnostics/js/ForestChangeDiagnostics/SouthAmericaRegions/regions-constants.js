@@ -29,7 +29,7 @@ export const regionConstants = {
     downloadId: 'argentina',
     diagnosticTitle: 'OTBN Overlap',
     startYear: 2008, // IMPORTANT: If modifying, sync with backend constants file: /libs/constants/src/lib/diagnostic-constants.ts
-    endYear: latestTreeCoverLossYearForTclDataInAnalyses,
+    endYear: 2023,
   },
   colombia: {
     id: 'otbnColombia',

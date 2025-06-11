@@ -197,6 +197,11 @@ while IFS= read -r branch; do
     # Skip empty lines and HEAD
     [ -z "$branch" ] || [[ "$branch" == "HEAD" ]] && continue
 
+    # Skip if not a release-candidate branch
+    if [[ ! "$branch" =~ ^release-candidate- ]]; then
+        continue
+    fi
+
     # Check if protected
     if is_protected_branch "$branch"; then
         continue

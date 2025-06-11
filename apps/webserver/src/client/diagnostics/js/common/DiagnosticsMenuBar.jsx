@@ -6,6 +6,7 @@ import IconDownload from '../../../common/js/components/icon/IconDownload';
 import printDiagnosticsReport from './printDiagnosticsReport';
 import { analysisTypes, analysisTypesForUI } from '../../../../config/env/analysisTypes.constants';
 import { listStatus } from '../../../../config/env/listStatuses.constants';
+import { analysisTypesOptionsNewNames } from '../../../../config/env/analysisTypes.constants';
 import './DiagnosticsMenuBar.scss';
 
 function DiagnosticsMenuBar({
@@ -47,10 +48,14 @@ function DiagnosticsMenuBar({
       });
   }, []);
 
-  const diagnosticOptions = activeAnalysesIds.map((analysisId) => ({
-    value: analysisId,
-    label: analysisTypesForUI.find(({ id }) => id === analysisId)?.label,
-  }));
+  const diagnosticOptions = activeAnalysesIds
+    .filter(
+      (analysisId) => analysisTypesOptionsNewNames.find(({ id }) => id === analysisId).showInUI
+    )
+    .map((analysisId) => ({
+      value: analysisId,
+      label: analysisTypesForUI.find(({ id }) => id === analysisId)?.label,
+    }));
 
   const redirectToSelectedDiagnostics = (diagnostics) => {
     const locationId = parseInt(new URLSearchParams(location.search).get('locationId'), 10);

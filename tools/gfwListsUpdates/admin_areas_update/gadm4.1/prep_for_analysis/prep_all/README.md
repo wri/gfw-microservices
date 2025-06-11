@@ -22,3 +22,9 @@ docker run --rm -v "$PWD":/work gadm-prep
 ## What it does?
 
 After running, 2 tsv files should appear right next to the script inside `prep_all/` containing the data with admin1 and admin2 levels, ready to be send for analysis.
+
+## On [adminLevel=0] data
+
+This tool will not handle data adminLevel=0 due to the size of the geometries for some countries, like Russia and Canada, making the analysis tool hard to proess.
+
+A different tool, `prep_admin0` was prepared, which loads the admin0 data and adds a gridded (or fishent) layer overlay to the geometries, for geoprocessing.

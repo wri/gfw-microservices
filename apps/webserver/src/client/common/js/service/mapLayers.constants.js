@@ -1,3 +1,5 @@
+import { proLayers } from '../proLayers.config';
+
 export const mapLayers = [
   {
     id: '10750e07-583b-41bb-a46e-ee2f256db7ff',
@@ -2513,7 +2515,7 @@ export const mapLayers = [
     id: '94caf28e-e94e-45bb-981b-e9ee3ab0a615',
     type: 'layer',
     attributes: {
-      name: 'Pasture Recovery Potential',
+      name: proLayers.pastureRecoveryPotential,
       slug: 'Pasture-Recovery-Potential_1',
       dataset: '38af49b0-fb1b-410f-b49b-a8d0ed0dca8c',
       application: ['gfw-pro'],
@@ -2548,7 +2550,7 @@ export const mapLayers = [
                 name: 'Future Degraded',
               },
             ],
-            name: 'Pasture Recovery Potential',
+            name: proLayers.pastureRecoveryPotential,
             color: '#98BD46',
           },
         ],

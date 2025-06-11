@@ -12,7 +12,7 @@ export async function fetchGfwProLayers() {
     if (
       !layerConfiguration ||
       (!isDegradedPastureLayerAvailable &&
-        layerConfiguration.attributes.name === 'Pasture Recovery Potential')
+        layerConfiguration.attributes.name === proLayers.pastureRecoveryPotential)
     ) {
       return;
     }

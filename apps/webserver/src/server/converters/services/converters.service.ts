@@ -1,5 +1,4 @@
 import axios from 'axios';
-
 import {
   ClientStoreConnection,
   ConverterStatus as ConverterStatusEntity,
@@ -8,16 +7,25 @@ import {
 import { ConverterStatus as ConverterStatusEnum } from '@wri-monorepos/constants';
 
 import logger from '../../../config/privateutils/logger.utils';
+import { Repository, InsertResult, UpdateResult } from 'typeorm';
 
-export const startConverterJob = async (converterName, organizationId = null) => {
+interface InsertConverterParams {
+  name: string;
+  organizationId?: number | null;
+}
+
+export const startConverterJob = async (
+  converterName: string,
+  organizationId: number | null = null
+): Promise<number> => {
   const connection = await getDbConnection();
-  const repo = connection.getRepository(ConverterStatusEntity);
+  const repo: Repository<ConverterStatusEntity> = connection.getRepository(ConverterStatusEntity);
 
-  const insertedId = await insertConverterRecord(repo, converterName, organizationId);
+  const insertedId = await insertConverter(repo, { name: converterName, organizationId });
 
   try {
-    await triggerListProcessor(insertedId, organizationId);
-  } catch (err) {
+    await triggerListProcessingConverter(insertedId, organizationId);
+  } catch (err: any) {
     logger.error(`Error triggering LP for converter ${insertedId}:`, err.stack || err);
     await markConverterFailed(repo, insertedId, err.message);
     throw new Error('Failed to trigger downstream converter process');
@@ -33,8 +41,13 @@ const getDbConnection = async () => {
   return clientStoreConnection.getConnection('gfwpro');
 };
 
-const insertConverterRecord = async (repo, name, organizationId = null) => {
-  const result = await repo.insert({
+const insertConverter = async (
+  repo: Repository<ConverterStatusEntity>,
+  params: InsertConverterParams
+): Promise<number> => {
+  const { name, organizationId = null } = params;
+
+  const result: InsertResult = await repo.insert({
     name,
     startTime: null,
     status: ConverterStatusEnum.PENDING,
@@ -53,15 +66,25 @@ const insertConverterRecord = async (repo, name, organizationId = null) => {
   return id;
 };
 
-const triggerListProcessor = async (id, organizationId = null) => {
+const triggerListProcessingConverter = async (
+  id: number,
+  organizationId: number | null = null
+): Promise<void> => {
   const { LISTS_MICROSERVICE_URL } = process.env;
+  if (!LISTS_MICROSERVICE_URL) {
+    throw new Error('LISTS_MICROSERVICE_URL environment variable not set');
+  }
   await axios.post(`${LISTS_MICROSERVICE_URL}/converters/${id}/start`, {
     organizationId,
   });
 };
 
-const markConverterFailed = async (repo, id, message) => {
-  await repo.update(id, {
+const markConverterFailed = async (
+  repo: Repository<ConverterStatusEntity>,
+  id: number,
+  message: string
+): Promise<UpdateResult> => {
+  return repo.update(id, {
     status: ConverterStatusEnum.FAILED,
     errorDetails: message || 'Unknown error',
   });

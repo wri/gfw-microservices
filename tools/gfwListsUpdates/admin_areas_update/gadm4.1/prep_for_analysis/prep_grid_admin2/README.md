@@ -22,4 +22,4 @@ docker run --rm -v "$PWD":/work \
 
 ## What it does?
 
-After running, a directory called `gadm4_1_gridded_shp file should appear right next to the script with the gadm dataset with admin_level=2 and an grided layer overlayed by intersection in one single shapefile. 
+After running, a directory called `gadm4_1_gridded_shp file should appear right next to the script with the gadm dataset with admin_level=2 and an grided layer overlayed by intersection in one single shapefile.

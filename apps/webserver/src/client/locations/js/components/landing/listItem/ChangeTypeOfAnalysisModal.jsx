@@ -75,7 +75,7 @@ function ChangeTypeOfAnalysisModal({
         id: listId,
         list_name: listName,
       },
-      analysisTypesForRequest.join(),
+      selectedAnalysis.join(','),
       true
     );
   };

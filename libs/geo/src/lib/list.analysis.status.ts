@@ -182,13 +182,7 @@ export const addListAnalyses = async (
   analysisIds: string[],
   analysisStatusData: ListsAnalysisStatus[]
 ) => {
-  const analysisDataIds = analysisStatusData.map((analysis) => analysis.analysisId);
-
-  for (const element of analysisIds) {
-    if (!analysisDataIds.includes(element)) {
-      await setListAnalysisStatus(clientDatabase, listId, [element], listStatus.Pending);
-    }
-  }
+  await setListAnalysisStatus(clientDatabase, listId, analysisIds, listStatus.Pending);
 };
 
 export const updateListAnalysis = async (
@@ -197,7 +191,6 @@ export const updateListAnalysis = async (
   analysisIds: string[],
   analysisStatusData: ListsAnalysisStatus[]
 ) => {
-  await deleteListAnalyses(clientDatabase, listId, analysisIds, analysisStatusData);
   await addListAnalyses(clientDatabase, listId, analysisIds, analysisStatusData);
 };
 

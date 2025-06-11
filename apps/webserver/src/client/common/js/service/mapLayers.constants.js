@@ -1,3 +1,5 @@
+import { proLayers } from '../proLayers.config';
+
 export const mapLayers = [
   {
     id: '10750e07-583b-41bb-a46e-ee2f256db7ff',
@@ -2507,6 +2509,57 @@ export const mapLayers = [
       staticImageConfig: {},
       createdAt: '2023-12-11T16:37:08.978Z',
       updatedAt: '2024-06-11T14:02:29.834Z',
+    },
+  },
+  {
+    id: '94caf28e-e94e-45bb-981b-e9ee3ab0a615',
+    type: 'layer',
+    attributes: {
+      name: proLayers.pastureRecoveryPotential,
+      slug: 'Pasture-Recovery-Potential_1',
+      dataset: '38af49b0-fb1b-410f-b49b-a8d0ed0dca8c',
+      application: ['gfw-pro'],
+      iso: [],
+      provider: 'featureservice',
+      userId: '5c533e5cc3b3242d2ed73bc7',
+      default: true,
+      protected: false,
+      published: true,
+      env: 'production',
+      layerConfig: {
+        type: 'tileLayer',
+        body: {
+          useCors: true,
+          url: 'https://tiles.globalforestwatch.org/lapig_degraded_pasture/v20250530/gfwpro/{z}/{x}/{y}.png',
+        },
+      },
+      legendConfig: {
+        items: [
+          {
+            categories: [
+              {
+                color: '#EBD1A4',
+                name: 'Grasslands',
+              },
+              {
+                color: '#CC5C87',
+                name: 'Degraded',
+              },
+              {
+                color: '#7D274B',
+                name: 'Future Degraded',
+              },
+            ],
+            name: proLayers.pastureRecoveryPotential,
+            color: '#98BD46',
+          },
+        ],
+        type: 'basic',
+      },
+      applicationConfig: {},
+      staticImageConfig: {},
+      createdAt: '2021-01-06T15:11:38.457Z',
+      updatedAt: '2021-03-29T14:58:45.072Z',
     },
   },
 ];

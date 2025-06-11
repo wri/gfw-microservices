@@ -26,6 +26,7 @@ export const proLayers = {
   treeCoverID: 'Tree cover 2000',
   cameroonAgroIndustrialZonesID: 'Cameroon agro-industrial zones',
   soyPlantedArea: 'Soy Planted Area',
+  pastureRecoveryPotential: 'Pasture Recovery Potential',
   aboveGroundBiomassId: 'Aboveground live woody biomass density',
   primaryForest: 'Primary Forest',
   treePlantationsSpecies: 'Tree Plantations by species',

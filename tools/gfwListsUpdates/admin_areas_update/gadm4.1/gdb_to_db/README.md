@@ -4,7 +4,7 @@ Tool that reads a FileGDB, process it for GADM4.1 by deriving centroids, coordin
 
 ## What it does
 
-- **Extract** – loads the `gadm41_*.gdb` layer with GeoPandas / GDAL.
+- **Extract** – loads the `gadm*.gdb` layer with GeoPandas / GDAL.
 - **Transform**
 
   - computes centroid `Lat/Lon` (may lie outside multipart polygons).
@@ -21,12 +21,12 @@ Tool that reads a FileGDB, process it for GADM4.1 by deriving centroids, coordin
 
 1. Input data
 
-   - GADM 4.1 FileGeodatabase directory (`gadm41_.gdb/`).
+   - GADM 4.1 FileGeodatabase directory (`gadm.gdb/`).
 
 2. Target database
 
    - Database credentials. Credentials should not be pushed.
-   - [dbo].[list‑administrativeAreas41_new] **already existing** with the columns listed in `gadm_gdb_to_db.py`.
+   - [dbo].[list‑administrativeAreas41_new] **already existing** with the columns listed in `gdb_to_db.py`.
 
 3. Docker (optional)
    - To run script encapsulated inside an image.
@@ -35,7 +35,7 @@ Tool that reads a FileGDB, process it for GADM4.1 by deriving centroids, coordin
 
 ### Set Credentials
 
-> _Edit the connection constants at the top of `gadm_gdb_to_db.py` before running._
+> _Edit the connection constants at the top of `gdb_to_db.py` before running._
 
 ### Docker
 
@@ -50,7 +50,7 @@ Run the script in the image and exit. Bind-mounts current directory.
 ```bash
 docker run --rm -v "$PWD":/work \
   gadm-loader \
-  /work/gadm41_gdb_to_db2.py /work/gadm.gdb --batch-size 5000 --debug
+  /work/gdb_to_db.py /work/gadm.gdb --batch-size 5000 --debug
 
 ```
 
@@ -59,10 +59,10 @@ docker run --rm -v "$PWD":/work \
 ```bash
 # Python
 python -m venv venv && source venv/bin/activate
-pip install geopandas fiona shapely pyproj pandas pyodbc
+pip install geopandas==0.14.* pyodbc fiona shapely pyproj pandas
 
 # Run
-python gadm_gdb_to_db.py /path/to/gadm41.gdb
+python gdb_to_db.py gadm.gdb
 ```
 
 ---
@@ -70,7 +70,7 @@ python gadm_gdb_to_db.py /path/to/gadm41.gdb
 ### Notes
 
 Stream‑based ETL for GADM v4.1 → SQL Server.
-Reads the FileGDB feature‑by‑feature with **Fiona only** (no GeoPandas), so
+Reads the FileGDB feature‑by‑feature with **Fiona only**, so
 memory stays flat (<200 MB even for 400 k polygons).
 
 ---
@@ -78,7 +78,7 @@ memory stays flat (<200 MB even for 400 k polygons).
 Highlights
 
 - Constant‑memory: processes one feature at a time, batching rows every
-  `--batch-size` (default 5 000).
+  `--batch-size` (default 5,000).
 - Live progress: prints rows inserted + rows/sec.
 - Error rows aren’t inserted; a counter is displayed at the end.
 

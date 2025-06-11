@@ -232,6 +232,7 @@ export default class LegendCheckbox extends Component {
           ? 'hidden'
           : '';
     }
+    const isInfoButtonVisible = !!layer.metadataId;
     return (
       <div
         className={`legend-list-item ${layer.group} ${grayed} ${hidden}`}
@@ -264,16 +265,18 @@ export default class LegendCheckbox extends Component {
             </svg>
           </span>
         ) : null}
-        <span
-          className={`info-icon metadata-legend pointer ${
-            iconLoading === layer.id ? 'iconLoading' : ''
-          }`}
-          onClick={this.showInfo}
-        >
-          <svg>
-            <use xlinkHref="#shape-info" />
-          </svg>
-        </span>
+        {isInfoButtonVisible && (
+          <span
+            className={`info-icon metadata-legend pointer ${
+              iconLoading === layer.id ? 'iconLoading' : ''
+            }`}
+            onClick={this.showInfo}
+          >
+            <svg>
+              <use xlinkHref="#shape-info" />
+            </svg>
+          </span>
+        )}
 
         <span className="info-icon pointer" onClick={this.hideLayer}>
           <svg>

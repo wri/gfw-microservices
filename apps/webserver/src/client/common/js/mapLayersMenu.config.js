@@ -1,4 +1,7 @@
 import { proLayers } from './proLayers.config';
+import featureFlags from '../../../utils/general.utils';
+
+const { isDegradedPastureLayerAvailable } = featureFlags;
 
 const forestChangeLayers = [
   {
@@ -198,7 +201,7 @@ const landUseLayers = [
     id: proLayers.rspoConcessions,
     group: 'land-use',
     subGroup: 'concessions',
-    order: 301,
+    order: 300,
     popupTemplate: {
       title: '{plantation}',
       content:
@@ -209,9 +212,15 @@ const landUseLayers = [
     fields: [],
   },
   {
+    id: proLayers.pastureRecoveryPotential,
+    group: 'land-use',
+    subGroup: isDegradedPastureLayerAvailable ? 'production' : 'crop-production',
+    order: 301,
+  },
+  {
     id: proLayers.soyPlantedArea,
     group: 'land-use',
-    subGroup: 'crop-production',
+    subGroup: isDegradedPastureLayerAvailable ? 'production' : 'crop-production',
     order: 302,
   },
   {

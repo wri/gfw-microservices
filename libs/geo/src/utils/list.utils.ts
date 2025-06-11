@@ -488,7 +488,10 @@ export async function setListAnalysisStatusByTypes(
   status: number = listStatus.Pending,
   isFromEAPI = false
 ) {
-  const analysisTypesToUpdate = analysisTypesToProcess.split(',');
+  const analysisTypesToUpdate = analysisTypesToProcess
+    .split(',')
+    .map((type) => type.trim())
+    .filter(Boolean);
   return await setListAnalysisStatus(
     clientDatabase,
     listId,

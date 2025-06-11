@@ -12,14 +12,14 @@ export default class LayerCheckbox extends Component {
     const layerId = layer.id;
 
     if (layerId === clarkLabsAquacultureLandCover) {
-      // hide clarkLabsAquacultureLandCover if hidding this layer
+      // hide clarkLabsAquacultureLandCover if hiding this layer
       if (
         store.getState().clarkLabsLayers &&
         visibleLayers.includes(clarkLabsAquacultureLandCover)
       ) {
         store.dispatch(toggleLayer(clarkLabsAquacultureLandCover));
       }
-      // hide clarkLabsAquacultureLandChange if hidding this layer
+      // hide clarkLabsAquacultureLandChange if hiding this layer
       if (
         store.getState().clarkLabsLayers &&
         visibleLayers.includes(clarkLabsAquacultureLandChange)
@@ -60,6 +60,7 @@ export default class LayerCheckbox extends Component {
     }
 
     const label = layer.legendConfig.items[0].name;
+    const isInfoButtonVisible = !!layer.metadataId;
 
     // {layer.legendConfig.items && layer.legendConfig.items[0] && layer.legendConfig.items[0].notes ? layer.legendConfig.items[0].notes.map(this.showNote) : null}
     return (
@@ -70,16 +71,18 @@ export default class LayerCheckbox extends Component {
         <span onClick={this.toggleLayer.bind(this)} className="layer-checkbox-label pointer">
           {label}
         </span>
-        <span
-          className={`info-icon metadata-layer-panel layer-panel pointer ${
-            this.props.iconLoading === this.props.layer.id ? 'iconLoading' : ''
-          }`}
-          onClick={this.showInfo}
-        >
-          <svg>
-            <use xlinkHref="#shape-info" />
-          </svg>
-        </span>
+        {isInfoButtonVisible && (
+          <span
+            className={`info-icon metadata-layer-panel layer-panel pointer ${
+              this.props.iconLoading === this.props.layer.id ? 'iconLoading' : ''
+            }`}
+            onClick={this.showInfo}
+          >
+            <svg>
+              <use xlinkHref="#shape-info" />
+            </svg>
+          </span>
+        )}
         {layer.legendConfig.items &&
         layer.legendConfig.items[0] &&
         layer.legendConfig.items[0].source ? (

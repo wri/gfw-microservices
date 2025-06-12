@@ -81,10 +81,14 @@ export const csv2geojson = async (
     ) {
       data['latitude'] = null;
       data['longitude'] = null;
+
+      const errorDetails = (data['errorDetails'] as string[]) ?? [
+        `Invalid latitude or longitude: ${latitude}, ${longitude}`,
+      ];
       return {
         ...data,
         geometry: fakeGeometry,
-        errorDetails: [`Invalid latitude or longitude: ${latitude}, ${longitude}`],
+        errorDetails: errorDetails,
       };
     }
 

@@ -2539,15 +2539,15 @@ export const mapLayers = [
             categories: [
               {
                 color: '#EBD1A4',
-                name: 'Grasslands',
+                name: 'Low',
               },
               {
                 color: '#CC5C87',
-                name: 'Degraded',
+                name: 'Medium',
               },
               {
                 color: '#7D274B',
-                name: 'Future Degraded',
+                name: 'High (coming soon)',
               },
             ],
             name: proLayers.pastureRecoveryPotential,

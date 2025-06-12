@@ -671,6 +671,7 @@ module.exports = (app, limiter) => {
             break;
           }
           case 'ALERTS': {
+            // this code is currently not being reached, until we add an Alerts tab to /list-details
             const analysisManagerResult = await AnalysisManager.getDashboardDataPaginatedByList(
               listID,
               page,

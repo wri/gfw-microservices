@@ -1,17 +1,15 @@
-import { getConverters, stopConverter } from '../controllers/converters.controller';
+import { Application, RequestHandler } from 'express';
+
+import { getConverters, startConverter } from '../controllers/converters.controller';
 import {
   checkProManagerAuthentication,
   rateLimitAuthenticated,
 } from '../../../config/publicutils/middlewares';
 import { useRateLimiter } from '../../../config/lib/limiter-util';
 
-/**
- * @name exports
- * @static
- * @summary Converters Routes
- */
-export default (app, limiter) => {
-  const routeMiddlewares = [checkProManagerAuthentication];
+export default function converterRoutes(app: Application, limiter: (opts: any) => RequestHandler) {
+  const routeMiddlewares: RequestHandler[] = [checkProManagerAuthentication];
+
   if (useRateLimiter()) {
     routeMiddlewares.push(limiter(rateLimitAuthenticated));
   }
@@ -24,10 +22,9 @@ export default (app, limiter) => {
   app.get('/converter/all', routeMiddlewares, getConverters);
 
   /**
-   * @route POST /converter/:id/stop
-   * @desc Stops execution of a specific converter by ID
+   * @route POST /converter/start
+   * @desc Starts a specific converter by name
    * @access Pro Manager only
-   * @param {number} id - The ID of the converter
    */
-  app.post('/converter/:id/stop', routeMiddlewares, stopConverter);
-};
+  app.post('/converter/start', routeMiddlewares, startConverter);
+}

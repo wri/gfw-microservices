@@ -26,9 +26,12 @@ export const startConverterJob = async (
   try {
     await triggerListProcessingConverter(insertedId, organizationId);
   } catch (err: any) {
-    logger.error(`Error triggering LP for converter ${insertedId}:`, err.stack || err);
-    await markConverterFailed(repo, insertedId, err.message);
-    throw new Error('Failed to trigger downstream converter process');
+    const errorMessage = err?.response?.data || err?.message || 'Unknown error';
+
+    logger.error(`Error triggering LP for converter ${insertedId}:`, errorMessage);
+
+    await markConverterFailed(repo, insertedId, errorMessage);
+    throw new Error('Failed to trigger list proc. converter process');
   }
 
   return insertedId;

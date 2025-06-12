@@ -6,6 +6,11 @@ import { parse } from 'wellknown';
 
 jest.mock('axios');
 
+const fakeGeometry = {
+  type: 'Point',
+  coordinates: [0, 0],
+};
+
 beforeEach(() => {
   jest.clearAllMocks();
 });
@@ -385,6 +390,34 @@ describe('csv2geojson', () => {
         ],
         type: 'FeatureCollection',
       });
+      done();
+    });
+  });
+
+  it('should limit to 20 rows when preview is true', (done) => {
+    // Create CSV with 25 rows
+    const header = 'Latitude,Longitude,Location Name\n';
+    const rows = Array(25).fill('38.5,-120.0,Test Location\n').join('');
+    const csvData = header + rows;
+
+    csv2geojson(csvData, true).then((result) => {
+      expect(result.features.length).toBe(20); // Should only process 20 rows
+      expect(result.features[0].properties['Location Name']).toBe('Test Location');
+      expect(result.features[19].properties['Location Name']).toBe('Test Location');
+      done();
+    });
+  });
+
+  it('should generate error details when invalid coordinates are provided', (done) => {
+    const csvData = 'Longitude,Latitude\ninvalid,invalid';
+
+    csv2geojson(csvData).then((result) => {
+      expect(result.features[0].properties.errorDetails).toEqual([
+        'Invalid latitude or longitude: invalid, invalid',
+      ]);
+      expect(result.features[0].properties.latitude).toBeNull();
+      expect(result.features[0].properties.longitude).toBeNull();
+      expect(result.features[0].geometry).toEqual(fakeGeometry);
       done();
     });
   });

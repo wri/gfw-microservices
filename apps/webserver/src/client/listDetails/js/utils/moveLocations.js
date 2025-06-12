@@ -12,6 +12,7 @@ import {
 import geojsonUtil from '../../../common/js/utils/arcgis-to-geojson';
 import { saveAsDraftListConfig } from '../../../../config/config/locations.config';
 import { analysisTypes } from '../../../../config/env/analysisTypes.constants';
+import { GFW_LISTS_NUMBER_CONSTANTS } from '../../../../config/env/gfwLists.constants';
 
 const filterValidTemplates = (template, activeTemplate, addType, commodityType) => {
   let templateId = 1;
@@ -120,9 +121,14 @@ const assembleGfwListGeojson = (featProps, geometries) => {
   };
 
   geometries.features.forEach((feature) => {
-    const property = featProps.find((prop) => {
-      return prop.location_id === feature.properties.location_id;
-    });
+    const property = featProps.find(
+      (prop) => prop?.location_id === feature?.properties?.location_id
+    );
+
+    if (!property) {
+      console.warn(`No match for location_id: ${feature?.properties?.location_id}`);
+      throw new Error('Matching property not found.');
+    }
 
     // Removing temporary location_id that was used to map with geoms
     delete property.location_id;
@@ -141,6 +147,7 @@ const assembleGfwListGeojson = (featProps, geometries) => {
     const area = geometryEngine.geodesicArea(esriGeometry, 'hectares');
     const lastFeature = geojson.features[geojson.features.length - 1];
     lastFeature.properties['Analysis Area'] = area;
+
     if (!lastFeature.properties['Analysis Radius']) {
       lastFeature.properties['Analysis Radius'] = 0;
     }
@@ -462,7 +469,14 @@ const saveGfwListLocations = (
 
     getGFWListLocationGeom(selectedLists[0].id, ids)
       .then((geoms) => {
-        const geojson = assembleGfwListGeojson(featProps, geoms);
+        let geojson;
+        try {
+          geojson = assembleGfwListGeojson(featProps, geoms);
+        } catch (err) {
+          console.warn('Error assembling GFW list GeoJSON:', err);
+          reject(err);
+          return;
+        }
 
         if (listName) {
           const request = new XMLHttpRequest();
@@ -505,16 +519,11 @@ const saveGfwListLocations = (
             // rspo, pom, and opc need to have palm analysis if commodity type - their location classification must be a supply shed
 
             let location_classification;
-            if (gfwListId === 1) {
-              // GFW List
-              // id = 1: Administrative Areas
+            if (gfwListId === GFW_LISTS_NUMBER_CONSTANTS.ADMINISTRATIVE_AREAS) {
+              // GFW List id=1: Administrative Areas
               location_classification = 'Administrative Area';
             } else {
-              // GFW Lists
-              // id = 2: Oil Palm Concessions
-              // id = 3: Palm Oil Mills
-              // id = 4: Protected Areas
-              // id = 5: RSPO Palm Concessions
+              // GFW Lists ids=2-5: OPC, POM, Protected Areas, and RSPO
               location_classification = 'Supply Shed';
             }
 

@@ -5,7 +5,7 @@
  */
 module.exports = {
   scripts: 'server/*/scripts/**/*.js',
-  routes: 'server/*/routes/**/*.js',
+  routes: 'server/*/routes/**/*.{js,ts}',
   build: 'client/*/build.config.js',
   mocha: 'server/*/tests/**/*.js',
   clientJest: 'client/**/*.{spec,test}.{js,ts,jsx,tsx}',

@@ -1,4 +1,4 @@
-import moment from 'moment';
+import * as moment from 'moment';
 
 export interface AccountSubscriptionDates {
   startDate: string;

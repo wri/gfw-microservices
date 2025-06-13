@@ -19,11 +19,11 @@ describe('calculateAccountSubscriptionDates', () => {
     const result = calculateAccountSubscriptionDates(renewalTime);
 
     // The start date should be the beginning of the current subscription year
-    expect(result.startDate).toBe('2023-12-31');
+    expect(result.startDate).toBe('2024-01-01');
     // The end date should be tomorrow (current date + 1 day)
     expect(result.endDate).toBe('2024-03-16');
     // The subscription year end should be one year from the start date
-    expect(result.subscriptionYearEnd).toBe('December 31, 2024');
+    expect(result.subscriptionYearEnd).toBe("January 1, 2025");
   });
 
   it('should calculate correct dates for a renewal time in the future', () => {
@@ -31,11 +31,11 @@ describe('calculateAccountSubscriptionDates', () => {
     const result = calculateAccountSubscriptionDates(renewalTime);
 
     // The start date should be the beginning of the previous subscription year
-    expect(result.startDate).toBe('2023-05-31');
+    expect(result.startDate).toBe('2023-06-01');
     // The end date should be tomorrow (current date + 1 day)
     expect(result.endDate).toBe('2024-03-16');
     // The subscription year end should be one year from the start date
-    expect(result.subscriptionYearEnd).toBe('May 31, 2024');
+    expect(result.subscriptionYearEnd).toBe('June 1, 2024');
   });
 
   it('should handle renewal time on the same day', () => {
@@ -43,11 +43,11 @@ describe('calculateAccountSubscriptionDates', () => {
     const result = calculateAccountSubscriptionDates(renewalTime);
 
     // The start date should be the beginning of the current subscription year
-    expect(result.startDate).toBe('2024-03-14');
+    expect(result.startDate).toBe('2024-03-15');
     // The end date should be tomorrow (current date + 1 day)
     expect(result.endDate).toBe('2024-03-16');
     // The subscription year end should be one year from the start date
-    expect(result.subscriptionYearEnd).toBe('March 14, 2025');
+    expect(result.subscriptionYearEnd).toBe('March 15, 2025');
   });
 
   it('should handle renewal time exactly one year ago', () => {
@@ -55,11 +55,11 @@ describe('calculateAccountSubscriptionDates', () => {
     const result = calculateAccountSubscriptionDates(renewalTime);
 
     // The start date should be the beginning of the current subscription year
-    expect(result.startDate).toBe('2024-03-14');
+    expect(result.startDate).toBe('2024-03-15');
     // The end date should be tomorrow (current date + 1 day)
     expect(result.endDate).toBe('2024-03-16');
     // The subscription year end should be one year from the start date
-    expect(result.subscriptionYearEnd).toBe('March 14, 2025');
+    expect(result.subscriptionYearEnd).toBe('March 15, 2025');
   });
 
   it('should handle renewal time with different time zones', () => {
@@ -79,11 +79,11 @@ describe('calculateAccountSubscriptionDates', () => {
     const result = calculateAccountSubscriptionDates(renewalTime);
 
     // The start date should be the beginning of the current subscription year
-    expect(result.startDate).toBe('2023-12-31');
+    expect(result.startDate).toBe('2024-01-01');
     // The end date should be tomorrow (current date + 1 day)
     expect(result.endDate).toBe('2024-03-16');
     // The subscription year end should be one year from the start date
-    expect(result.subscriptionYearEnd).toBe('December 31, 2024');
+    expect(result.subscriptionYearEnd).toBe('January 1, 2025');
   });
 
   it('should maintain consistent date calculations across multiple calls', () => {

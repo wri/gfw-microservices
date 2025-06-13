@@ -6,17 +6,23 @@ import moment from 'moment';
  * @returns {Object} Object containing startDate, endDate, and subscriptionYearEnd
  */
 export function calculateAccountSubscriptionDates(renewalTime) {
-  const todayAsEndDay = moment().add(1, 'day').startOf('day');
-  const accountActivationDate = moment(renewalTime).startOf('day');
+  // Convert all dates to UTC to avoid timezone issues
+  const today = moment.utc().startOf('day');
+  const todayAsEndDay = today.clone().add(1, 'day');
+  const accountActivationDate = moment.utc(renewalTime).startOf('day');
 
   // Calculate the start date by finding the most recent renewal date
-  const daysSinceActivation = moment().startOf('day').diff(accountActivationDate, 'days');
+  const daysSinceActivation = today.diff(accountActivationDate, 'days');
   const yearsSinceActivation = Math.floor(daysSinceActivation / 365);
   const accountLatestYearStartDate = accountActivationDate
     .clone()
     .add(yearsSinceActivation, 'years');
 
-  const subscriptionYearEnd = accountLatestYearStartDate.clone().add(1, 'years').format('LL');
+  // Format dates in UTC to ensure consistency
+  const subscriptionYearEnd = accountLatestYearStartDate
+    .clone()
+    .add(1, 'years')
+    .format('LL');
 
   return {
     startDate: accountLatestYearStartDate.format('YYYY-MM-DD'),

@@ -81,7 +81,7 @@ export const getGADM = (req, geojson) => {
           layer: 'gadm',
           dissolve_aoi: false,
           post_process_aoi: false,
-           xApiKeyDataApi: process.env.GFW_DATA_API_KEY,
+          xApiKeyDataApi: process.env.GFW_DATA_API_KEY,
         });
       })
       .then((lambdaResult) => {

@@ -23,7 +23,7 @@ describe('calculateAccountSubscriptionDates', () => {
     // The end date should be tomorrow (current date + 1 day)
     expect(result.endDate).toBe('2024-03-16');
     // The subscription year end should be one year from the start date
-    expect(result.subscriptionYearEnd).toBe("January 1, 2025");
+    expect(result.subscriptionYearEnd).toBe('January 1, 2025');
   });
 
   it('should calculate correct dates for a renewal time in the future', () => {

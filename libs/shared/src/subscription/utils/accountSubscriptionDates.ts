@@ -27,10 +27,7 @@ export function calculateAccountSubscriptionDates(
     .add(yearsSinceActivation, 'years');
 
   // Format dates in UTC to ensure consistency
-  const subscriptionYearEnd = accountLatestYearStartDate
-    .clone()
-    .add(1, 'years')
-    .format('LL');
+  const subscriptionYearEnd = accountLatestYearStartDate.clone().add(1, 'years').format('LL');
 
   return {
     startDate: accountLatestYearStartDate.format('YYYY-MM-DD'),

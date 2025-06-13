@@ -79,9 +79,27 @@ export const getBasemapConfiguration = () => {
     portalItem: { id: 'ba52238d338745b1a355407ec9df6768' }, // Light Gray Canvas Labels
   });
 
+  const lakesLayer = new VectorTileLayer({
+    portalItem: { id: '6d188135dc814d4ea254440a3dd844df' }, // Environment Surface Water and Label
+  });
+
+  lakesLayer.when(() => {
+    lakesLayer.load().then(() => {
+      const styleLayers = lakesLayer.currentStyleInfo?.style?.layers || [];
+
+      styleLayers.forEach((layer) => {
+        if (layer.type === 'fill' && layer.id.toLowerCase().includes('water')) {
+          lakesLayer.setPaintProperties(layer.id, {
+            'fill-color': '#b9defa',
+          });
+        }
+      });
+    });
+  });
+
   const customBasemap = new Basemap({
     referenceLayers: [labelsLayer],
-    baseLayers: [gadmAdministrativeBoundariesLayer],
+    baseLayers: [gadmAdministrativeBoundariesLayer, lakesLayer],
   });
   return customBasemap;
 };

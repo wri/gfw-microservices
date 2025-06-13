@@ -58,7 +58,7 @@ export const startConverter = async (
  * @desc Starts a specific converter by name
  * @access Pro Manager only
  */
-export const stopConverter = async (req, res) => { 
+export const stopConverter = async (req, res) => {
   const { id: converterId } = req.params;
 
   try {
@@ -70,9 +70,15 @@ export const stopConverter = async (req, res) => {
       status: ConverterStatusEnum.STOPPED,
     });
 
-    logger.info(`Inserted converter with ID: ${converterId}`);
+    logger.info(`Stopped converter with ID: ${converterId}`);
+
+    return res.status(200).json({
+      message: `Converter ${converterId} stopped successfully`,
+    });
   } catch (err) {
     logger.error(`Error stopping converter with ID ${converterId}:`, err);
-    throw new Error('Failed to retrieve inserted converter ID');
+    return res.status(500).json({
+      error: 'Failed to stop converter',
+    });
   }
 };

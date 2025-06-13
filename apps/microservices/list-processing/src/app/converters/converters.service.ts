@@ -208,6 +208,17 @@ export class ConvertersService {
         }
 
         await this.randomDelay(200, 700); // Random delay between 200ms and 700ms
+
+        const isStopped = await this.converterRepository.isConverterStopped(
+          gfwProConnection,
+          converterId
+        );
+        if (isStopped) {
+          this.logger.warn(
+            `Converter ${converterId} was stopped manually. Halting list processing.`
+          );
+          break;
+        }
       }
     }
   }

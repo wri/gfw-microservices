@@ -1,10 +1,6 @@
-<<<<<<< HEAD:apps/webserver/src/server/converters/routes/converters.routes.ts
 import { Application, RequestHandler } from 'express';
-
 import { getConverters, startConverter, stopConverter } from '../controllers/converters.controller';
-=======
-import { getConverters, stopConverter } from '../controllers/converters.controller';
->>>>>>> fd173303 (feat(webserver): add success response):apps/webserver/src/server/converters/routes/converters.routes.js
+
 import {
   checkProManagerAuthentication,
   rateLimitAuthenticated,

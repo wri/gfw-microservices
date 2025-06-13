@@ -90,11 +90,25 @@ export class ConverterRepository {
 
   /**
    * Updates the start time of a converter.
+   * @param connection The database connection to use.
    * @param converterId The ID of the converter to update.
    */
   async updateConverterStartTime(connection: DataSource, converterId: number): Promise<void> {
     await connection
       .getRepository(ConverterStatusEntity)
       .update({ id: converterId }, { startTime: new Date() });
+  }
+
+  /**
+   * Checks if a converter is currently stopped.
+   * @param connection The database connection to use.
+   * @param converterId The ID of the converter to check.
+   * @returns A boolean indicating whether the converter is stopped.
+   */
+  async isConverterStopped(connection: DataSource, converterId: number): Promise<boolean> {
+    const currentStatus = await connection
+      .getRepository(ConverterStatusEntity)
+      .findOneBy({ id: converterId });
+    return currentStatus.status === ConverterStatus.STOPPED;
   }
 }

@@ -58,6 +58,7 @@ import {
   gfwListsZoomTargets,
 } from '../../../common/js/proLayers.config';
 import { mapLayersMenu } from '../../../common/js/mapLayersMenu.config';
+
 import {
   centroidHighlightSymb,
   centroidSymbol,
@@ -117,6 +118,7 @@ import {
   PLANET_BASEMAP_REFERENCE_LAYER,
   PLANET_BASEMAP_REFERENCE_LAYER_VECTOR_TILE_STYLE,
   USER_LIST_LOCATIONS_GRAPHICS_LAYER_ID,
+  MAP_WATER_COLOR,
 } from '../config/map.config';
 
 // Services
@@ -271,7 +273,7 @@ class Map extends Component {
       zoom: zoom ? zoom - 1 : 3,
       ...(isGadm41Available && {
         background: {
-          color: '#b9defa',
+          color: MAP_WATER_COLOR,
         },
       }),
       map: esriMap,

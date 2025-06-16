@@ -7,6 +7,7 @@ import {
   getCurrentlySelectedList,
   getSelectedPopupFeatureEsriGraphic,
 } from '../../../common/js/userListLocations/utils/userListLocations.util';
+import { MAP_WATER_COLOR } from '../config/map.config';
 
 /**
  * Get location Geometry from the selected feature
@@ -90,7 +91,7 @@ export const getBasemapConfiguration = () => {
       styleLayers.forEach((layer) => {
         if (layer.type === 'fill' && layer.id.toLowerCase().includes('water')) {
           lakesLayer.setPaintProperties(layer.id, {
-            'fill-color': '#b9defa',
+            'fill-color': MAP_WATER_COLOR,
           });
         }
       });

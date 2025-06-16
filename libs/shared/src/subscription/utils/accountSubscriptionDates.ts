@@ -21,7 +21,7 @@ export function calculateAccountSubscriptionDates(
 
   // Calculate the start date by finding the most recent renewal date
   const daysSinceActivation = today.diff(accountActivationDate, 'days');
-  const yearsSinceActivation = Math.floor(daysSinceActivation / 365);
+  const yearsSinceActivation = Math.floor(daysSinceActivation / 365.25);
   const accountLatestYearStartDate = accountActivationDate
     .clone()
     .add(yearsSinceActivation, 'years');

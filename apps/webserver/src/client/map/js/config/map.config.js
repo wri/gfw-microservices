@@ -13,3 +13,4 @@ export const DEFAULT_MAPVIEW_ZOOM_CENTER = {
   center: DEFAULT_MAPVIEW_CENTER,
   zoom: DEFAULT_MAPVIEW_ZOOM,
 };
+export const MAP_WATER_COLOR = '#b9defa';

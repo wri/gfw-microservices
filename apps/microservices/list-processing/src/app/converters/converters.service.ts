@@ -1,5 +1,5 @@
 import { Injectable, Logger } from '@nestjs/common';
-import { DataSource } from 'typeorm';
+import { DataSource, Repository } from 'typeorm';
 
 import { ClientStoreConnection, Lists } from '@wri-monorepos/sql';
 import { ConverterManager, ConverterFunction } from './converter-manager';
@@ -156,29 +156,31 @@ export class ConvertersService {
     converterId: number,
     converter: ConverterFunction
   ): Promise<void> {
-    const { recordError, updateConverterStatus } = this.converterRepository;
-
-    let failureCount = 0;
     const gfwProConnection = await this.getGfwProConnection();
     const clientStoreConnection = await this.clientStoreConnection.getConnection(clientStore);
     const listsRepository = clientStoreConnection.getRepository(Lists);
+    const { updateConverterStatus } = this.converterRepository;
 
     this.logger.log(`Starting converter ${converter.run.name} for client store: ${clientStore}`);
     await this.updateConverterStartTime(converterId);
-
-    this.logger.log(`Running converter ${converter.run.name} for client store: ${clientStore}`);
     await updateConverterStatus(gfwProConnection, converterId, ConverterStatus.RUNNING);
 
-    const lists = await listsRepository.find({
-      where: converter.where || {},
-    });
+    const lists = await this.fetchListsToConvert(listsRepository, converter.where, clientStore);
     if (!lists.length) {
-      this.logger.warn(`No lists found in client store ${clientStore}. Skipping.`);
       return;
     }
-    this.logger.log(
-      `Found ${lists.length} lists in client store ${clientStore}. Processing with converter ${converter.run.name}`
-    );
+
+    await this.convertLists(lists, clientStore, converterId, converter, gfwProConnection);
+  }
+
+  private async convertLists(
+    lists: Lists[],
+    clientStore: string,
+    converterId: number,
+    converter: ConverterFunction,
+    gfwProConnection: DataSource
+  ): Promise<void> {
+    let failureCount = 0;
 
     for (const list of lists) {
       try {
@@ -187,12 +189,24 @@ export class ConvertersService {
           listId: list.id,
           userId: null /* TODO: we might need to send this to LP endpoint */,
         });
+
+        await this.randomDelay(200, 700);
+
+        const isStopped = await this.converterRepository.isConverterStopped(
+          gfwProConnection,
+          converterId
+        );
+        if (isStopped) {
+          this.logger.warn(`Converter ${converterId} was manually stopped. Halting.`);
+          break;
+        }
       } catch (error) {
         failureCount++;
         this.logger.error(
           `Error processing list ${list.id} in client store ${clientStore}: ${error.message}`
         );
-        await recordError(
+
+        await this.converterRepository.recordError(
           gfwProConnection,
           converterId,
           `Error on list ${list.id}: ${error.message}`,
@@ -202,24 +216,28 @@ export class ConvertersService {
 
         if (failureCount >= this.MAX_FAILURES) {
           this.logger.warn(
-            `Failure threshold exceeded (${this.MAX_FAILURES}), stopping further list processing for client store ${clientStore}`
+            `Failure threshold exceeded (${this.MAX_FAILURES}). Stopping list processing.`
           );
-          break;
-        }
-
-        await this.randomDelay(200, 700); // Random delay between 200ms and 700ms
-
-        const isStopped = await this.converterRepository.isConverterStopped(
-          gfwProConnection,
-          converterId
-        );
-
-        if (isStopped) {
-          this.logger.warn(`Converter ${converterId} was stopped. Halting list processing.`);
           break;
         }
       }
     }
+  }
+
+  private async fetchListsToConvert(
+    repo: Repository<Lists>,
+    whereClause: object | undefined,
+    clientStore: string
+  ): Promise<Lists[]> {
+    const lists = await repo.find({ where: whereClause || {} });
+    if (!lists.length) {
+      this.logger.warn(`No lists found in client store ${clientStore}. Skipping.`);
+    } else {
+      this.logger.log(
+        `Found ${lists.length} lists in client store ${clientStore}. Beginning processing.`
+      );
+    }
+    return lists;
   }
 
   async updateConverterStartTime(converterId: number): Promise<void> {

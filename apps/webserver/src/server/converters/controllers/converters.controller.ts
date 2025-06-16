@@ -1,7 +1,7 @@
 import { Request, Response } from 'express';
 
 import { ConverterNamesList, ConverterName } from '@wri-monorepos/constants';
-import { startConverterJob } from '../services/converters.service';
+import { startConverterJob, markConverterStopped } from '../services/converters.service';
 import logger from '../../../config/privateutils/logger.utils';
 
 interface StartConverterBody {
@@ -44,5 +44,29 @@ export const startConverter = async (
   } catch (err: any) {
     logger.error(`Failed to start converter ${converterName}:`, err.stack || err);
     res.status(500).json({ error: 'Failed to start converter' });
+  }
+};
+
+/**
+ * @route POST /converter/:id/stop
+ * @param {number} id - The ID of the converter to stop
+ * @desc Stops a specific converter by name
+ * @access Pro Manager only
+ */
+export const stopConverter = async (req, res) => {
+  const { id: converterId } = req.params;
+
+  try {
+    await markConverterStopped(Number(converterId));
+    logger.info(`Stopped converter with ID: ${converterId}`);
+
+    return res.status(200).json({
+      message: `Converter ${converterId} stopped successfully`,
+    });
+  } catch (err) {
+    logger.error(`Error stopping converter with ID ${converterId}:`, err);
+    return res.status(500).json({
+      error: 'Failed to stop converter',
+    });
   }
 };

@@ -10,7 +10,7 @@ export const ConverterNamesList: ConverterName[] = Object.values(CONVERTER_NAMES
 
 export enum ConverterStatus {
   PENDING = 'PENDING',
-  STOP = 'STOP',
+  STOPPED = 'STOPPED',
   COMPLETED = 'COMPLETED',
   RUNNING = 'RUNNING',
   FAILED = 'FAILED',

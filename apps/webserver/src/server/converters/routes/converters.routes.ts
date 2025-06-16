@@ -1,6 +1,6 @@
 import { Application, RequestHandler } from 'express';
+import { getConverters, startConverter, stopConverter } from '../controllers/converters.controller';
 
-import { getConverters, startConverter } from '../controllers/converters.controller';
 import {
   checkProManagerAuthentication,
   rateLimitAuthenticated,
@@ -27,4 +27,12 @@ export default function converterRoutes(app: Application, limiter: (opts: any) =
    * @access Pro Manager only
    */
   app.post('/converter/start', routeMiddlewares, startConverter);
+
+  /**
+   * @route POST /converter/:id/stop
+   * @desc Stops execution of a specific converter by ID
+   * @param {number} id - The ID of the converter
+   * @access Pro Manager only
+   */
+  app.post('/converter/:id/stop', routeMiddlewares, stopConverter);
 }

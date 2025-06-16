@@ -1,9 +1,9 @@
 import { Application, RequestHandler } from 'express';
-import { 
-  getConverters, 
-  startConverter, 
-  stopConverter, 
-  getConverterInfo 
+import {
+  getConverters,
+  startConverter,
+  stopConverter,
+  getConverterInfo,
 } from '../controllers/converters.controller';
 
 import {

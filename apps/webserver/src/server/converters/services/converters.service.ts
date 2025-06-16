@@ -37,6 +37,21 @@ export const startConverterJob = async (
   return insertedId;
 };
 
+export const markConverterStopped = async (converterId: number): Promise<void> => {
+  const connection = await getDbConnection();
+  const repo: Repository<ConverterStatusEntity> = connection.getRepository(ConverterStatusEntity);
+  logger.info(`Marking converter ${converterId} as stopped`);
+
+  try {
+    await repo.update(converterId, {
+      status: ConverterStatusEnum.STOPPED,
+    });
+  } catch (err: any) {
+    logger.error(`Failed to mark converter ${converterId} as stopped:`, err.stack || err);
+    throw new Error(`Failed to mark converter ${converterId} as stopped`);
+  }
+};
+
 /** Helper functions **/
 
 const getDbConnection = async () => {

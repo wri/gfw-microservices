@@ -15,11 +15,20 @@ const removeAndAddLayer = (map, layer) => {
   });
 };
 
+const updateMapLayerAccordingToCanopy = (map, canopyDensity, layerId) => {
+  const mapLayer = map.findLayerById(layerId);
+  if (mapLayer) {
+    mapLayer.threshold = canopyDensity;
+    removeAndAddLayer(map, mapLayer);
+  }
+};
+
 export const updateInteractiveLayers = (map, prevState, state) => {
   const {
     showHighConfidenceAlertsOnDeforestationAlertsLayer,
     gladDateRange,
     canopyDensity,
+    treeCoverLossCanopyDensity,
     biomassRange,
     biomassLossDateRange,
     treeCoverLossDateRange,
@@ -62,12 +71,12 @@ export const updateInteractiveLayers = (map, prevState, state) => {
 
   if (prevState.canopyDensity !== canopyDensity) {
     layersWithCanopyDensityThresholdControl.forEach((layerId) => {
-      const mapLayer = map.findLayerById(layerId);
-      if (mapLayer) {
-        mapLayer.threshold = canopyDensity;
-        removeAndAddLayer(map, mapLayer);
-      }
+      updateMapLayerAccordingToCanopy(map, canopyDensity, layerId);
     });
+  }
+
+  if (prevState.treeCoverLossCanopyDensity !== treeCoverLossCanopyDensity) {
+    updateMapLayerAccordingToCanopy(map, treeCoverLossCanopyDensity, treeCoverLossID);
   }
 
   if (

@@ -428,7 +428,8 @@ export async function setListAnalysisStatus(
   clientDatabase: string,
   listId: number,
   analysisIds: string[],
-  status: number = listStatus.Pending
+  status: number = listStatus.Pending,
+  isFromEAPI = false
 ) {
   const clientStoreConnection = new ClientStoreConnection();
   const connection = await clientStoreConnection.getConnection(clientDatabase);
@@ -438,8 +439,10 @@ export async function setListAnalysisStatus(
   const currentAnalysisStatuses = await listAnalysisStatusRepository.findBy({
     listId,
   });
-
-  await deleteListAnalyses(clientDatabase, listId, analysisIds, currentAnalysisStatuses);
+  // Check if the list was uploaded by EAPI
+  if (!isFromEAPI) {
+    await deleteListAnalyses(clientDatabase, listId, analysisIds, currentAnalysisStatuses);
+  }
 
   // Update status for all analysis types
   const isPalmRiskIncluded = analysisIds.includes(analysisTypes.PALM_RISK);
@@ -482,8 +485,18 @@ export async function setListAnalysisStatusByTypes(
   clientDatabase: string,
   listId: number,
   analysisTypesToProcess: string,
-  status: number = listStatus.Pending
+  status: number = listStatus.Pending,
+  isFromEAPI = false
 ) {
-  const analysisTypesToUpdate = analysisTypesToProcess.split(',');
-  return await setListAnalysisStatus(clientDatabase, listId, analysisTypesToUpdate, status);
+  const analysisTypesToUpdate = analysisTypesToProcess
+    .split(',')
+    .map((type) => type.trim())
+    .filter(Boolean);
+  return await setListAnalysisStatus(
+    clientDatabase,
+    listId,
+    analysisTypesToUpdate,
+    status,
+    isFromEAPI
+  );
 }

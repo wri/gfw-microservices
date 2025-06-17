@@ -1,5 +1,4 @@
 import { useState, useEffect } from 'react';
-import moment from 'moment';
 import {
   Divider,
   Table,
@@ -19,6 +18,7 @@ import { accountProfileStrings } from '../../../../../common/js/config';
 import { useAccountDetail } from '../AccountDetailSection';
 import AccountUsage from '../../../../../profile/js/components/AccountUsage/AccountUsage.jsx';
 import { LoadingModal } from '../../../../../components';
+import { calculateAccountSubscriptionDates } from '../../../../../common/js/utils/accountSubscriptionDates';
 
 function AccountDetailUsage() {
   const { currentAccount } = useAccountDetail();
@@ -95,16 +95,12 @@ function AccountUsageInfoBubbles() {
   const { currentAccount } = useAccountDetail();
   const { organization_id: organizationId, renewal_time: renewalTime } = currentAccount;
   const [accountUsageData, setAccountUsageData] = useState(null);
-  const accountActivationDate = moment(renewalTime);
-  const accountLatestYearStartDate = moment(endDayIncludingToday)
-    .clone()
-    .subtract(moment().diff(accountActivationDate, 'days') % 365, 'days');
+
+  const { startDate, endDate } = calculateAccountSubscriptionDates(renewalTime);
 
   useEffect(() => {
     fetch(
-      `/analytics/usage?startDate=${accountLatestYearStartDate.format(
-        'YYYY-MM-DD'
-      )}&endDate=${endDayIncludingToday}&organizationId=${organizationId}`,
+      `/analytics/usage?startDate=${startDate}&endDate=${endDate}&organizationId=${organizationId}`,
       {
         method: 'GET',
         credentials: 'same-origin',

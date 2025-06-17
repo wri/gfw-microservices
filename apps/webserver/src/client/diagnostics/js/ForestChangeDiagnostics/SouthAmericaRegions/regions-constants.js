@@ -1,3 +1,5 @@
+import { latestTreeCoverLossYearForTclDataInAnalyses } from '../../../../common/js/config';
+
 export const regionIds = {
   ARGENTINA: 'argentina',
   REGIONAL: 'regional',
@@ -35,7 +37,7 @@ export const regionConstants = {
     informationBubbleId: '',
     downloadId: 'colombia',
     startYear: 2011,
-    endYear: 2023,
+    endYear: latestTreeCoverLossYearForTclDataInAnalyses,
   },
 };
 

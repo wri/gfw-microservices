@@ -165,6 +165,7 @@ const post_2020_risk = [
   {
     Header: () => <ColumnsHeader label="Company ID" />,
     accessor: 'Company ID',
+    show: false,
     className: 'default-cell td-num',
     Cell: ({ original }) => <span>{original?.['Company ID']}</span>,
   },

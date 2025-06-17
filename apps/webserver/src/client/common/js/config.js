@@ -25,10 +25,10 @@ export const oversizedUploadText =
   'Lists are limited to a maximum of 1,500 locations. Please cancel this edit and ensure your final list will contain no more than 1,500 locations.';
 
 // IF YOU ARE CHANGING THE YEAR, CONSIDER SYNCING WITH libs/constants/src/lib/diagnostic-constants.ts
-export const latestTreeCoverLossYearForTclDataInMap = 2023;
+export const latestTreeCoverLossYearForTclDataInMap = 2024;
 export const latestTreeCoverLossYearCommodityRisk = 2023;
 export const earliestTreeCoverLossYearCommodityRisk = 2002;
-export const latestTreeCoverLossYearForTclDataInAnalyses = 2023;
+export const latestTreeCoverLossYearForTclDataInAnalyses = 2024;
 
 export const soyPlantedYearsRange = [2001, 2022];
 
@@ -2025,7 +2025,7 @@ export const mapPage = {
     facebookUrl: (url) => `https://www.facebook.com/sharer.php?u=${url}`,
   },
   groundBiomassStart: 'Displaying above ground biomass',
-  densityLossStart: 'Displaying loss with ',
+  densityLossStart: 'Displaying cover with ',
   densityLossEnd: ' canopy density.',
   basemaps: [
     {

@@ -96,7 +96,7 @@ export const setSelectedAnalyses = async (
   if (!analysisStatusData || analysisStatusData.length === 0) {
     await setListAnalysisStatus(clientDatabase, listId, analysisIds, analysisStatus);
   } else {
-    await updateListAnalysis(clientDatabase, listId, analysisIds, analysisStatusData);
+    await updateListAnalysis(clientDatabase, listId, analysisIds);
   }
 };
 
@@ -178,26 +178,17 @@ export const deleteListAnalyses = async (
 export const addListAnalyses = async (
   clientDatabase: string,
   listId: number,
-  analysisIds: string[],
-  analysisStatusData: ListsAnalysisStatus[]
+  analysisIds: string[]
 ) => {
-  const analysisDataIds = analysisStatusData.map((analysis) => analysis.analysisId);
-
-  for (const element of analysisIds) {
-    if (!analysisDataIds.includes(element)) {
-      await setListAnalysisStatus(clientDatabase, listId, [element], listStatus.Pending);
-    }
-  }
+  await setListAnalysisStatus(clientDatabase, listId, analysisIds, listStatus.Pending);
 };
 
 export const updateListAnalysis = async (
   clientDatabase: string,
   listId: number,
-  analysisIds: string[],
-  analysisStatusData: ListsAnalysisStatus[]
+  analysisIds: string[]
 ) => {
-  await deleteListAnalyses(clientDatabase, listId, analysisIds, analysisStatusData);
-  await addListAnalyses(clientDatabase, listId, analysisIds, analysisStatusData);
+  await addListAnalyses(clientDatabase, listId, analysisIds);
 };
 
 export const handleCreateAnalysis = async (
@@ -208,7 +199,8 @@ export const handleCreateAnalysis = async (
   sendEmail: boolean,
   organization_user_id: number,
   subscriptionStatusId: number,
-  reanalyze = false
+  reanalyze = false,
+  isFromEAPI = false
 ) => {
   const geoTrellisUrlsByEnv = {
     qa: GEO_TRELLIS__ANALYZE_LIST_QA,
@@ -226,7 +218,13 @@ export const handleCreateAnalysis = async (
       listId,
     });
 
-    await setListAnalysisStatusByTypes(organizationDb, listId, analysisTypesToProcess);
+    await setListAnalysisStatusByTypes(
+      organizationDb,
+      listId,
+      analysisTypesToProcess,
+      listStatus.Pending,
+      isFromEAPI
+    );
 
     const listAnalysisStatusData = await getListAnalysisStatus(organizationDb, listId);
 

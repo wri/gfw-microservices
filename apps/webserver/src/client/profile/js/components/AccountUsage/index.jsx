@@ -13,10 +13,10 @@ import {
 
 import InlineLoader from '../../../../common/js/components/Loaders/InlineLoader';
 import AccountUsage from './AccountUsage';
-import moment from 'moment';
 import { useProfileContext } from '../../ProfileStateContext';
 import AccountUsageDropMenu from './AccountUsageDropMenu';
 import { formatNumber } from '../../../../common/js/utils/format';
+import { calculateAccountSubscriptionDates } from '../../../../common/js/utils/accountSubscriptionDates';
 
 export default function AccountUsageContainer() {
   const { accountRenewalTime } = useProfileContext();
@@ -25,13 +25,9 @@ export default function AccountUsageContainer() {
   const [usageDataperUser, setUsageDataperUser] = useState([]);
   const [messageType, setMessageType] = useState('');
   const [messageText, setMessageText] = useState('');
-  const todayAsEndDay = moment();
-  const accountActivationDate = moment(accountRenewalTime);
-  const accountLatestYearStartDate = todayAsEndDay
-    .clone()
-    .subtract(moment().diff(accountActivationDate, 'days') % 365, 'days');
 
-  const subscriptionYearEnd = accountLatestYearStartDate.clone().add(1, 'years').format('LL');
+  const { startDate, endDate, subscriptionYearEnd } =
+    calculateAccountSubscriptionDates(accountRenewalTime);
 
   const HeaderTableCell = styled(TableCell)(() => ({
     backgroundColor: 'rgba(0, 0, 0, 0.04)',
@@ -48,18 +44,13 @@ export default function AccountUsageContainer() {
   };
 
   useEffect(() => {
-    fetch(
-      `/analytics/myorg/usage?startDate=${accountLatestYearStartDate.format(
-        'YYYY-MM-DD'
-      )}&endDate=${todayAsEndDay.add(1, 'day').format('YYYY-MM-DD')}`,
-      {
-        method: 'GET',
-        credentials: 'same-origin',
-        headers: {
-          'Content-type': 'application/json',
-        },
-      }
-    )
+    fetch(`/analytics/myorg/usage?startDate=${startDate}&endDate=${endDate}`, {
+      method: 'GET',
+      credentials: 'same-origin',
+      headers: {
+        'Content-type': 'application/json',
+      },
+    })
       .then((res) => res.json())
       .then(([usageData]) => {
         setUsageData(usageData);
@@ -71,18 +62,13 @@ export default function AccountUsageContainer() {
   }, []);
 
   useEffect(() => {
-    fetch(
-      `/analytics/myorg/usage/users?startDate=${accountLatestYearStartDate.format(
-        'YYYY-MM-DD'
-      )}&endDate=${todayAsEndDay.add(1, 'day').format('YYYY-MM-DD')}`,
-      {
-        method: 'GET',
-        credentials: 'same-origin',
-        headers: {
-          'Content-type': 'application/json',
-        },
-      }
-    )
+    fetch(`/analytics/myorg/usage/users?startDate=${startDate}&endDate=${endDate}`, {
+      method: 'GET',
+      credentials: 'same-origin',
+      headers: {
+        'Content-type': 'application/json',
+      },
+    })
       .then((res) => res.json())
       .then((data) => {
         setUsageDataperUser(data.organizationUsersAnalysisUsage);

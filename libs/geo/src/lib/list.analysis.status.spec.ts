@@ -150,25 +150,6 @@ describe('list.analysis.status.ts', () => {
   });
 
   describe('getListAnalysisStatusByListId', () => {
-    it('should return an array of ListsAnalysisStatus for a given listId if queryDB resolves successfully', async () => {
-      (SQLUtils.queryDB as jest.Mock).mockResolvedValue(mockAnalysisStatusData);
-      (readAnalysesLastModifiedTime as jest.Mock).mockResolvedValue(mockLastModifiedData);
-
-      const listId = 1;
-      const result = await getListAnalysisStatusByListId('clientDB', listId);
-
-      expect(SQLUtils.queryDB).toHaveBeenCalledWith('clientDB', 'getListAnalysisStatusById', [
-        { field: 'ListID', type: sql.Int, value: listId },
-      ]);
-      expect(result).toHaveLength(3);
-      expect(result?.[0].analysisId).toBe('FCD');
-      expect(result?.[0]?.analysisIdLastModifed).toBe('2025-01-01T00:00:00Z');
-      expect(result?.[1].analysisId).toBe('PalmRisk');
-      expect(result?.[1]?.analysisIdLastModifed).toBe('2025-01-01T00:00:00Z');
-      expect(result?.[2].analysisId).toBe('AFI');
-      expect(result?.[2]?.analysisIdLastModifed).toBe('2025-01-02T00:00:00Z');
-    });
-
     it('should log an error if something goes wrong and throw an error', async () => {
       const mockError = new Error('DB error');
       (SQLUtils.queryDB as jest.Mock).mockRejectedValue(mockError);

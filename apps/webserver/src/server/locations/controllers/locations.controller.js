@@ -98,7 +98,8 @@ export const locations = async (req, res, data) => {
             analysis_id: list.analysis_id,
           }))
         : [],
-      usersList: isAdministrator ? usersList : orgLists,
+      //usersList: isAdministrator ? usersList : orgLists,
+      usersList: isAdministrator ? usersList : [],
 
       // UI assets
       common: compiledAssets.js.common,

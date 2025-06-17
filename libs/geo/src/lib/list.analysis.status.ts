@@ -11,6 +11,7 @@ import {
   updateListsAnalysisStatus,
   upgradeListSchema,
   User,
+  getListAnalysisStatusById as getAllListsAnalysisStatusSql,
 } from '@wri-monorepos/sql';
 import {
   GEO_TRELLIS__ANALYZE_LIST_DEV,
@@ -56,7 +57,7 @@ export const getAllListsAnalysisStatus = async (
     const parameters = [{ field: 'listId', type: sql.Int, value: listId }];
     const analysisStatusData = await SQLUtils.queryDB<ListsAnalysisStatus[]>(
       clientDatabase,
-      undefined,
+      getAllListsAnalysisStatusSql,
       parameters
     );
 
@@ -75,7 +76,7 @@ export const getListAnalysisStatusByListId = async (
     const parameters = [{ field: 'ListID', type: sql.Int, value: listId }];
     const analysisStatusData = await SQLUtils.queryDB<ListsAnalysisStatus[]>(
       clientDatabase,
-      'getListAnalysisStatusById',
+      getAllListsAnalysisStatusSql,
       parameters
     );
 

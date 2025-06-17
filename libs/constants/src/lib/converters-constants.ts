@@ -9,6 +9,8 @@ export type ConverterName = (typeof CONVERTER_NAMES)[keyof typeof CONVERTER_NAME
 export const ConverterNamesList: ConverterName[] = Object.values(CONVERTER_NAMES);
 
 export enum ConverterStatus {
+  PENDING = 'PENDING',
+  STOPPED = 'STOPPED',
   COMPLETED = 'COMPLETED',
   RUNNING = 'RUNNING',
   FAILED = 'FAILED',

@@ -22,6 +22,7 @@ import SvgLinearGradients from '../../../common/js/components/SvgLinearGradients
 import mapUtils, { getAlertsTotal } from '../utils/mapUtils';
 import { dashboardPage } from '../../../common/js/config';
 import { PillButton } from '../../../components';
+import { MAP_WATER_COLOR } from '../../../map/js/config/map.config';
 
 export default class DashboardMap extends Component {
   constructor(props) {
@@ -114,7 +115,7 @@ export default class DashboardMap extends Component {
       map,
       ...(isGadm41Available && {
         background: {
-          color: '#b9defa',
+          color: MAP_WATER_COLOR,
         },
       }),
       zoom: isGadm41Available ? 1 : 10,

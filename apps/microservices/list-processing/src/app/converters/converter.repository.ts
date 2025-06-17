@@ -12,6 +12,7 @@ import { ConverterStatus as ConverterStatusEntity } from '@wri-monorepos/sql';
 export class ConverterRepository {
   /**
    * Retrieves the client stores associated with a given organization ID.
+   * @param connection The database connection to use.
    * @param organizationId The ID of the organization to filter by (optional).
    * @returns A list of client store database names.
    */
@@ -54,7 +55,7 @@ export class ConverterRepository {
 
   /**
    * Retrieves the name of the converter based on its ID.
-   * @param gfwProConnection The connection to the GFW Pro database.
+   * @param connection The connection to the GFW Pro database.
    * @param id The ID of the converter.
    * @returns The name of the converter.
    */
@@ -73,8 +74,11 @@ export class ConverterRepository {
 
   /**
    * Updates the status of a converter.
+   * @param connection The database connection to use.
    * @param converterId The ID of the converter to update.
    * @param status The new status of the converter.
+   * @param errorDetails Optional error details if the status is not successful.
+   * @returns A promise that resolves when the update is complete.
    */
   async updateConverterStatus(
     connection: DataSource,
@@ -90,11 +94,25 @@ export class ConverterRepository {
 
   /**
    * Updates the start time of a converter.
+   * @param connection The database connection to use.
    * @param converterId The ID of the converter to update.
    */
   async updateConverterStartTime(connection: DataSource, converterId: number): Promise<void> {
     await connection
       .getRepository(ConverterStatusEntity)
       .update({ id: converterId }, { startTime: new Date() });
+  }
+
+  /**
+   * Checks if a converter is currently stopped.
+   * @param connection The database connection to use.
+   * @param converterId The ID of the converter to check.
+   * @returns A boolean indicating whether the converter is stopped.
+   */
+  async isConverterStopped(connection: DataSource, converterId: number): Promise<boolean> {
+    const currentStatus = await connection
+      .getRepository(ConverterStatusEntity)
+      .findOneBy({ id: converterId });
+    return currentStatus.status === ConverterStatus.STOPPED;
   }
 }

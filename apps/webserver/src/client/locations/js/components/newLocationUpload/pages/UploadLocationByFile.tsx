@@ -236,6 +236,9 @@ export function UploadLocationByFile() {
                 <li>
                   <Typography variant="caption">KML or KMZ files</Typography>
                 </li>
+                <li>
+                  <Typography variant="caption">GeoJson files</Typography>
+                </li>
               </ul>
             </Box>
           )}

@@ -116,6 +116,7 @@ const CountryOrRegionAnalysis = ({
                   ? countryOptions.find((c) => c.gid_0 === selected)?.name_0
                   : 'SELECT COUNTRY'
               }
+              data-testid="country-or-region-select"
             >
               <MenuItem value="" disabled>
                 SELECT COUNTRY

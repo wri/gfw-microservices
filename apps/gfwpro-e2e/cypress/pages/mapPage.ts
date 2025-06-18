@@ -28,7 +28,7 @@ class MapPage {
     tabBodyInAnalysis: () => cy.get('[class="analysis__body__instructions"]'),
     startDrawBtn: () => cy.contains('Start Drawing'),
     cancelDrawBtn: () => cy.get('[class="analysis__body__draw__button"]'),
-    selectCountryBtn: () => cy.get('[placeholder="Select Country"]'),
+    selectCountryBtn: () => cy.get('[data-testid="country-or-region-select"]'),
     analizeBtn: () =>
       cy.get(
         '[class="gfw-button AnalysisPanel__button btn-green text__semi-bold-12 button-disabled"]'

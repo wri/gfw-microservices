@@ -39,7 +39,13 @@ function ChangeTypeOfAnalysisModal({
   commodity,
   isPalmOilBackwardComp,
 }) {
-  const initialAnalysisSelection = listAnalysesStatus.map(({ analysisId }) => analysisId);
+  const initialAnalysisSelection = [];
+  listAnalysesStatus.forEach(({ analysisId, options }) => {
+    initialAnalysisSelection.push(analysisId);
+    if (analysisId === 'FCD' && options === 'PalmRisk') {
+      initialAnalysisSelection.push('PalmRisk');
+    }
+  });
   const [selectedAnalysis, setSelectedAnalysis] = useState(initialAnalysisSelection);
   const [isAddingAnalysis, setIsAddingAnalysis] = useState(false);
   const [isLoading, setIsLoading] = useState(false);

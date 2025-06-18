@@ -1,7 +1,7 @@
-import { createContext, useContext, useState } from 'react';
+import { createContext, useContext, useState, useCallback } from 'react';
 
 interface ConvertersContextType {
-  convertersList: Array<Record<string, any>>;
+  convertersData: Array<Record<string, any>>;
   isLoading: boolean;
   error: string | null;
   fetchConverters: () => Promise<void>;
@@ -10,26 +10,25 @@ interface ConvertersContextType {
 const ConvertersContext = createContext<ConvertersContextType | undefined>(undefined);
 
 export function ConvertersProvider({ isLoading, setIsLoading, children }) {
-  const [convertersList, setConvertersList] = useState([]);
+  const [convertersData, setConvertersData] = useState([]);
   const [error, setError] = useState(null);
 
-  async function fetchConverters() {
-    setIsLoading(true);
+  const fetchConverters = useCallback(async () => {
     setError(null);
     try {
       const response = await fetch('/converter/all');
       const data = await response.json();
-      console.log('Fetched converters:', data); // <--- Add this
-      setConvertersList(data.converters || []);
+      console.log('Fetched converters:', data);
+      setConvertersData(data || []);
     } catch (e) {
       setError(e.message || 'Failed to fetch converters');
     } finally {
       setIsLoading(false);
     }
-  }
+  }, [setIsLoading]);
 
   return (
-    <ConvertersContext.Provider value={{ convertersList, isLoading, error, fetchConverters }}>
+    <ConvertersContext.Provider value={{ convertersData, isLoading, error, fetchConverters }}>
       {children}
     </ConvertersContext.Provider>
   );

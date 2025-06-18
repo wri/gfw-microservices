@@ -1,14 +1,22 @@
+import { useEffect, useState } from 'react';
 import {
-  useEffect,
-  // useState
-} from 'react';
-import { Grid, Table, TableHead, TableBody, TableRow, TableContainer } from '@mui/material';
+  Grid,
+  Table,
+  TableHead,
+  TableBody,
+  TableRow,
+  TableContainer,
+  TextField,
+} from '@mui/material';
+
 import { useConvertersContext } from './context/ConvertersContext';
 import { StyledTableCell } from '../../common/styledTableCell';
+import { PillButton } from '../../../../components';
+import ConverterRunsTable from './ConverterRunsTable';
 
 export default function ConvertersList() {
-  const { convertersList, isLoading, error, fetchConverters } = useConvertersContext();
-  // const [selectedConverter, setSelectedConverter] = useState(null);
+  const { convertersData, isLoading, error, fetchConverters } = useConvertersContext();
+  const [orgIdInput, setOrgIdInput] = useState('');
 
   useEffect(() => {
     fetchConverters();
@@ -20,7 +28,7 @@ export default function ConvertersList() {
   if (error) {
     return <div>Error: {error}</div>;
   }
-  if (!convertersList.length) {
+  if (!convertersData?.convertersNames.length) {
     return <div>No converters found</div>;
   }
 
@@ -31,26 +39,45 @@ export default function ConvertersList() {
           <TableHead>
             <TableRow>
               <StyledTableCell>Name</StyledTableCell>
-              <StyledTableCell>Details</StyledTableCell>
+              <StyledTableCell>Actions</StyledTableCell>
             </TableRow>
           </TableHead>
           <TableBody>
-            {convertersList.map((row) => (
+            {convertersData?.convertersNames.map((converterName) => (
               <TableRow
-                // onClick={() => setSelectedConverter(row)}
-                key={row}
+                key={converterName}
                 sx={{
                   '&:last-child td, &:last-child th': { border: 0 },
                   cursor: 'pointer',
                 }}
               >
-                <StyledTableCell>{row}</StyledTableCell>
-                <StyledTableCell>{row}</StyledTableCell>
+                <StyledTableCell>{converterName}</StyledTableCell>
+                <StyledTableCell sx={{ display: 'flex', gap: '8px', border: 'none' }}>
+                  <TextField
+                    sx={{ width: '100px' }}
+                    type="number"
+                    name="organizationId"
+                    placeholder="Org. ID (optional)"
+                    value={orgIdInput}
+                    onChange={(e) => setOrgIdInput(e.target.value)}
+                    inputProps={{ 'data-testid': `org-id-${converterName}` }}
+                    size="small"
+                  />
+                  <PillButton
+                    variant="contained"
+                    size="small"
+                    autoFocus
+                    onClick={() => console.log(`Start converter: ${converterName}`)}
+                  >
+                    Start
+                  </PillButton>
+                </StyledTableCell>
               </TableRow>
             ))}
           </TableBody>
         </Table>
       </TableContainer>
+      <ConverterRunsTable converterJobs={convertersData.converterJobs} />
     </Grid>
   );
 }

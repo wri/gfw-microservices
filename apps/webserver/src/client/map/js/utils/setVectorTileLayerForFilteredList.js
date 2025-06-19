@@ -21,8 +21,9 @@ const setVectorTileLayerForFilteredList = async (listData, transitionListData, v
     locationData.push(...list.features);
   });
 
+  const fillGraphics = [];
   locationData.forEach((location) => {
-    const { properties } = location;
+    const { properties, geometry } = location;
     const { Latitude, Longitude } = properties;
 
     if (Latitude && Longitude) {
@@ -30,9 +31,32 @@ const setVectorTileLayerForFilteredList = async (listData, transitionListData, v
 
       centroidGraphics.push(listLocationCentroidGraphic);
     }
+
+    if (geometry?.coordinates) {
+      const polygon = new Polygon({
+        rings: geometry.coordinates,
+        spatialReference: SpatialReference.WGS84,
+      });
+
+      const symbol = new SimpleFillSymbol({
+        color: [151, 189, 61, 0.4],
+        outline: {
+          color: [151, 189, 61, 1],
+          width: 1,
+        },
+      });
+
+      const polygonGraphic = new Graphic({
+        geometry: polygon,
+        symbol,
+        attributes: properties,
+      });
+
+      fillGraphics.push(polygonGraphic);
+    }
   });
 
-  userLayer.addMany([...centroidGraphics]);
+  userLayer.addMany([...centroidGraphics, ...fillGraphics]);
 
   const alertsMapExtent = transitionListData?.alertsMapExtent;
 

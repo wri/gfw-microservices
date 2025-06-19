@@ -70,6 +70,7 @@ export const locations = (req, res, data) => {
         usersList,
         sharedListsRecords,
       ] = results;
+      console.log("[GPV-4556] — gfwLists:", gfwLists)
       const listStatuses = UserManager.getStatuses();
 
       const userSharedLists = findSharedListsInsideOrganization(sharedListsRecords, orgLists);
@@ -92,7 +93,7 @@ export const locations = (req, res, data) => {
         CURRENT_ENVIRONMENT: process.env.NODE_ENV,
         subscriptionStatus,
       });
-    })
+    })  
     .catch((err) => {
       logger.error(`Locations page failed on the server:, ${err}`);
       const markup = compiledAssets.js['login-component']

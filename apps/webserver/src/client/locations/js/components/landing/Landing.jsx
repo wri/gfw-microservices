@@ -276,6 +276,7 @@ class Landing extends Component {
     }
 
     const gfwListsMapped = gfwLists.map(this.createGfwLocationsFromList);
+    console.log("[GPV-4556] — Landing ~ gfwLists:", gfwLists)
 
     const userFoldersFiltered = userFolders
       .filter((folder) => nameContainsText(folder.name, userListFilterText))

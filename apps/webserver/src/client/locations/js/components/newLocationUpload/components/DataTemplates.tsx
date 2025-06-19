@@ -8,6 +8,7 @@ import {
   Dialog,
   DialogActions,
   DialogContent,
+  Divider,
   IconButton,
   Typography,
   useTheme,
@@ -18,7 +19,7 @@ import {
   Description,
   Download,
   DownloadDone,
-  OilBarrel,
+  Info,
   Public,
   ScatterPlotTwoTone,
   SvgIconComponent,
@@ -27,6 +28,7 @@ import {
 
 import { ExternalHelperResource, PillButton } from '../../../../../components';
 import { aws_templates } from '../../../../../common/js/config';
+import { ToggleButtonGroup } from '../../../../../components/ToggleButtonGroup';
 
 type DataTemplatesProps = {
   isOpen: boolean;
@@ -35,10 +37,11 @@ type DataTemplatesProps = {
 
 enum Template {
   PolygonShapeFile,
-  Kml,
-  Spreadsheet,
+  PolygonGeoJson,
+  PolygonKml,
   PointShapeFile,
-  ListOfPalmMillIds,
+  PointGeoJson,
+  PointSpreadsheet,
 }
 
 export function DataTemplates({ isOpen, onClose }: DataTemplatesProps) {
@@ -46,6 +49,10 @@ export function DataTemplates({ isOpen, onClose }: DataTemplatesProps) {
   const [selectedTemplate, setSelectedTemplate] = useState<Template | null>(null);
   const [hoveredTemplate, setHoveredTemplate] = useState<Template | null>(null);
   const [downloadedTemplates, setDownloadedTemplates] = useState<Template[]>([]);
+  const templateTypeOptions = ['All', 'Polygon', 'Point'];
+  const [selectedTemplateType, setSelectedTemplateType] = useState(
+    templateTypeOptions[0].toLocaleLowerCase()
+  );
 
   const handleSelectTemplate = (template: Template) => {
     setSelectedTemplate((prev) => (prev === template ? null : template));
@@ -62,7 +69,12 @@ export function DataTemplates({ isOpen, onClose }: DataTemplatesProps) {
     setDownloadedTemplates((prev) => [...prev, template]);
   };
 
-  const isAtLeastOneItemDownloaded = downloadedTemplates.length === 0;
+  const filteredTemplateOptions =
+    selectedTemplateType === templateTypeOptions[0].toLocaleLowerCase()
+      ? templateOptions
+      : templateOptions.filter((x) =>
+          selectedTemplateType === 'polygon' ? x.isPolygon : !x.isPolygon
+        );
 
   return (
     <Dialog
@@ -74,7 +86,8 @@ export function DataTemplates({ isOpen, onClose }: DataTemplatesProps) {
         justifyContent: 'center',
         mt: 5,
         '& .MuiDialog-paper': {
-          maxWidth: '850px',
+          maxWidth: '700px',
+          minHeight: '540px',
         },
       }}
     >
@@ -83,18 +96,20 @@ export function DataTemplates({ isOpen, onClose }: DataTemplatesProps) {
           display: 'flex',
           flexDirection: 'column',
           flex: 1,
-          pt: 2,
-          px: 3,
-          pb: 3,
+          pt: 0,
+          px: 2,
+          pb: 1,
         }}
       >
         <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-          <Typography variant="h6">Download a template</Typography>
+          <Typography variant="h6">Download data templates</Typography>
           <IconButton onClick={onClose}>
             <Close fontSize="medium" />
           </IconButton>
         </Box>
-        <Typography variant="caption" color={theme.palette.text.secondary}>
+        <Divider sx={{ mb: 2 }} />
+
+        <Typography variant="body1" color={theme.palette.text.secondary}>
           Select a data type to view details and download a template. Use the template to format
           your data, then upload into GFW Pro.
         </Typography>
@@ -108,8 +123,38 @@ export function DataTemplates({ isOpen, onClose }: DataTemplatesProps) {
             url="https://globalforestwatch.org/help/gfw-pro/guides/select-correct-template"
           />
         </Box>
-        <DialogContent sx={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
-          {templateOptions.map(
+        <Box
+          sx={{
+            display: 'flex',
+            gap: 1,
+            border: '1px solid #E5E5E5',
+            borderRadius: '5px',
+            p: 1,
+            mt: 2,
+          }}
+        >
+          <Info fontSize="small" />
+          <Typography variant="caption">
+            Looking to upload locations using IDs like CAR or Palm Oil Mills? Use the <b>By ID</b>{' '}
+            option on the upload page to access those templates.
+          </Typography>
+        </Box>
+        <Box sx={{ mx: 'auto', mt: 3 }}>
+          <ToggleButtonGroup
+            options={templateTypeOptions}
+            selectedOption={selectedTemplateType}
+            onOptionChange={(v) => setSelectedTemplateType(v)}
+          />
+        </Box>
+        <DialogContent
+          sx={{
+            display: 'flex',
+            flexDirection: 'column',
+            gap: 1,
+            px: 0,
+          }}
+        >
+          {filteredTemplateOptions.map(
             ({
               title,
               Icon,
@@ -131,7 +176,6 @@ export function DataTemplates({ isOpen, onClose }: DataTemplatesProps) {
                   onChange={() => handleSelectTemplate(template)}
                   onMouseEnter={() => setHoveredTemplate(template)}
                   onMouseLeave={() => setHoveredTemplate(null)}
-                  disableGutters
                   sx={{
                     border: '1px solid #E5E5E5',
                     borderRadius: 1,
@@ -146,7 +190,12 @@ export function DataTemplates({ isOpen, onClose }: DataTemplatesProps) {
                   }}
                 >
                   <AccordionSummary
-                    sx={{ backgroundColor: isSelected ? theme.palette.primary.light : 'none' }}
+                    sx={{
+                      backgroundColor: isSelected ? theme.palette.primary.light : 'none',
+                      '& .MuiAccordionSummary-content': {
+                        margin: 0,
+                      },
+                    }}
                   >
                     <Box
                       sx={{
@@ -272,10 +321,9 @@ export function DataTemplates({ isOpen, onClose }: DataTemplatesProps) {
             onClick={onClose}
             variant="contained"
             color="info"
-            startIcon={isAtLeastOneItemDownloaded ? <Close /> : null}
             sx={{ alignSelf: 'end', mt: 'auto' }}
           >
-            {isAtLeastOneItemDownloaded ? 'Cancel' : 'Done'}
+            Done
           </PillButton>
         </DialogActions>
       </Box>
@@ -292,6 +340,7 @@ const templateOptions: {
   filename: string;
   helpCenterLinkText: string;
   helpCenterLinkUrl: string;
+  isPolygon: boolean;
 }[] = [
   {
     template: Template.PolygonShapeFile,
@@ -314,11 +363,38 @@ const templateOptions: {
     helpCenterLinkText: 'How to format polygon shape file data',
     helpCenterLinkUrl:
       'https://globalforestwatch.org/help/gfw-pro/guides/prepare-shapefiles-upload',
+    isPolygon: true,
   },
   {
-    template: Template.Kml,
+    template: Template.PolygonGeoJson,
+    Icon: Timeline,
+    title: 'Polygon GeoJSON',
+    bestForText:
+      'If you have sourcing locations with explicit boundaries. Requires formatting in GIS software such as QGIS, or a code-editing software such as Studio Code.',
+    requiredFieldsText: (
+      <>
+        <span>
+          Your polygon GeoJSON must be in the EPSG-4326 WGS 84 projection. The following field must
+          be present in your GeoJSON file:
+        </span>
+        <ul>
+          <li>Location Name (Name of your location)</li>
+        </ul>
+        <span>
+          You may also include additional fields of your choice (whatever numeric or text fields are
+          helpful for you to have available when viewing your data in Pro).
+        </span>
+      </>
+    ),
+    filename: '###.zip',
+    helpCenterLinkText: 'How to format GeoJSON data',
+    helpCenterLinkUrl: '###',
+    isPolygon: true,
+  },
+  {
+    template: Template.PolygonKml,
     Icon: Public,
-    title: 'KML',
+    title: 'Polygon KML',
     bestForText:
       'Best for: If you have sourcing locations with explicit boundaries. This format is often used in conjunction with Google Earth, since Earth exports in KML format. Requires formatting in a text editor such as Notepad++',
     requiredFieldsText: (
@@ -333,40 +409,7 @@ const templateOptions: {
     helpCenterLinkText: 'How to format KML data',
     helpCenterLinkUrl:
       'https://globalforestwatch.org/help/gfw-pro/guides/prepare-kml-kmz-files-upload',
-  },
-  {
-    template: Template.Spreadsheet,
-    Icon: Description,
-    title: 'Spreadsheet',
-    bestForText:
-      'If you have sourcing locations defined via coordinates and want to analyze the area around them. Requires formatting in a spreadsheet editor.',
-    requiredFieldsText: (
-      <>
-        <span>The following fields must be present in your spreadsheet:</span>
-        <ul>
-          <li>Location Name (Name of your locations)</li>
-          <li>
-            Latitude (latitude value of your coordinate data. Coordinate data must be in decimal
-            degrees)
-          </li>
-          <li>
-            Longitude (longitude value of your coordinate data. Coordinate data must be in decimal
-            degrees)
-          </li>
-          <li>
-            Analysis Radius (radius value (KM) that will be used to determine the area of analysis
-            around your coordinate. Only required if Analysis Area is not defined)
-          </li>
-          <li>
-            Analysis Area (area value (HA) that will be used to determine the area of analysis
-            around your coordinate. Only required if Analysis Radius is not defined)
-          </li>
-        </ul>
-      </>
-    ),
-    filename: 'GFWPro-Spreadsheet.csv',
-    helpCenterLinkText: 'How to format spreadsheet data',
-    helpCenterLinkUrl: 'https://globalforestwatch.org/help/gfw-pro/guides/select-correct-template',
+    isPolygon: true,
   },
   {
     template: Template.PointShapeFile,
@@ -397,36 +440,60 @@ const templateOptions: {
     helpCenterLinkText: 'How to format point shape file data',
     helpCenterLinkUrl:
       'https://globalforestwatch.org/help/gfw-pro/guides/prepare-shapefiles-upload',
+    isPolygon: false,
   },
   {
-    template: Template.ListOfPalmMillIds,
-    Icon: OilBarrel,
-    title: 'List of Palm Mill IDs',
-    bestForText: (
-      <>
-        <span>If you wish to upload a list of palm oil mills identified in the</span>{' '}
-        <a
-          href="https://data.globalforestwatch.org/documents/gfw::universal-mill-list/about"
-          target="_blank"
-        >
-          Universal Mill List
-        </a>
-        <span>.</span> <span>Requires formatting in a spreadsheet editor.</span>
-      </>
-    ),
+    template: Template.PointGeoJson,
+    Icon: Timeline,
+    title: 'Point GeoJSON',
+    bestForText:
+      'If you have sourcing locations defined via a coordinate point and an analysis radius or area. Requires formatting in GIS software such as QGIS, or a code-editing software such as Studio Code.',
     requiredFieldsText: (
       <>
-        <span>The following fields must be present in your file:</span>
-        <ul className="data-templates-required-fields-text">
+        <span>
+          Your polygon GeoJSON must be in the EPSG-4326 WGS 84 projection. The following fields must
+          be present in your GeoJSON file:
+        </span>
+        <ul>
+          <li>Location Name (Name of your location)</li>
+          <li>
+            Analysis Radius (Radius value (KM) that will be used to determine the area of analysis
+            around your coordinate. Only required if Analysis Area is not defined)
+          </li>
+          <li>
+            Analysis Area (Area value (HA) that will be used to determine area of analysis around
+            your coordinate. Only required if Analysis Radius is not defined)
+          </li>
+        </ul>
+        <span>
+          You may also include additional fields of your choice (whatever numeric or text fields are
+          helpful for you to have available when viewing your data in Pro).
+        </span>
+      </>
+    ),
+    filename: '###.zip',
+    helpCenterLinkText: 'How to format GeoJSON data',
+    helpCenterLinkUrl: '###',
+    isPolygon: false,
+  },
+  {
+    template: Template.PointSpreadsheet,
+    Icon: Description,
+    title: 'Point Spreadsheet',
+    bestForText:
+      'If you have sourcing locations defined via coordinates and want to analyze the area around them. Requires formatting in a spreadsheet editor.',
+    requiredFieldsText: (
+      <>
+        <span>The following fields must be present in your spreadsheet:</span>
+        <ul>
           <li>Location Name (Name of your locations)</li>
           <li>
-            Palm Mill ID (Palm Mill ID as defined in the {''}
-            <a
-              href="https://data.globalforestwatch.org/documents/gfw::universal-mill-list/about"
-              target="_blank"
-            >
-              Universal Mill List)
-            </a>
+            Latitude (latitude value of your coordinate data. Coordinate data must be in decimal
+            degrees)
+          </li>
+          <li>
+            Longitude (longitude value of your coordinate data. Coordinate data must be in decimal
+            degrees)
           </li>
           <li>
             Analysis Radius (radius value (KM) that will be used to determine the area of analysis
@@ -439,8 +506,9 @@ const templateOptions: {
         </ul>
       </>
     ),
-    filename: 'GFWPro-PalmMillIDs.csv',
-    helpCenterLinkText: 'How to format a list palm mill IDs',
-    helpCenterLinkUrl: 'https://globalforestwatch.org/help/gfw-pro/guides/upload-locations-lists',
+    filename: 'GFWPro-Spreadsheet.csv',
+    helpCenterLinkText: 'How to format spreadsheet data',
+    helpCenterLinkUrl: 'https://globalforestwatch.org/help/gfw-pro/guides/select-correct-template',
+    isPolygon: false,
   },
 ];

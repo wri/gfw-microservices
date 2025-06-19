@@ -6,6 +6,9 @@ import { generateCentroidGraphic } from '../../../common/js/utils/esri.utils';
 import { USER_LIST_LOCATIONS_GRAPHICS_LAYER_ID } from '../config/map.config';
 import { handleUserListLocationsVectorTileLayer } from '../../../common/js/userListLocations/utils/userListLocations.util';
 
+const POLYGON_FILL_COLOR = [151, 189, 61];
+const POLYGON_OUTLINE_COLOR = [151, 189, 61];
+
 const setVectorTileLayerForFilteredList = async (listData, transitionListData, view) => {
   const listID = listData[0].features[0].properties.list_id;
   const locationIDs = listData[0].features.map((feature) => feature.properties.location_id);
@@ -39,9 +42,9 @@ const setVectorTileLayerForFilteredList = async (listData, transitionListData, v
       });
 
       const symbol = new SimpleFillSymbol({
-        color: [151, 189, 61, 0.4],
+        color: [...POLYGON_FILL_COLOR, 0.4],
         outline: {
-          color: [151, 189, 61, 1],
+          color: [...POLYGON_OUTLINE_COLOR, 1],
           width: 1,
         },
       });
@@ -70,9 +73,9 @@ const setVectorTileLayerForFilteredList = async (listData, transitionListData, v
     });
 
     const symbol = new SimpleFillSymbol({
-      color: [151, 189, 61, 0.65],
+      color: [...POLYGON_FILL_COLOR, 0.65],
       outline: {
-        color: [151, 189, 61, 1],
+        color: [...POLYGON_OUTLINE_COLOR, 1],
         width: 1,
       },
     });

@@ -10,7 +10,6 @@ import {
 import SettingSection from '../../../../common/js/components/SettingSection';
 
 import DialogProvider, { useDialog } from '../../../../common/js/components/Dialog';
-import { headingFontStyles } from '../../common/headingFontStyles';
 import FieldLabel from './FieldLabel';
 
 /**
@@ -142,9 +141,7 @@ function AccountLimitsGlobal({ setIsLoading }) {
   return (
     <>
       <Grid container justifyContent="space-between" sx={{ marginBottom: '1.5rem' }}>
-        <Typography sx={(theme) => headingFontStyles(theme)} variant="h2">
-          {accountLimitsStrings.pageHeading}
-        </Typography>
+        <Typography variant="h3">{accountLimitsStrings.pageHeading}</Typography>
         <PillButton variant="contained" size="small" href="/pro-manager-list">
           Back to Profile Manager
         </PillButton>

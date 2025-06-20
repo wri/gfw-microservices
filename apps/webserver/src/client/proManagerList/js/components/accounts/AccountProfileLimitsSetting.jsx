@@ -6,7 +6,6 @@ import { accountProfileStrings } from '../../../../common/js/config';
 import { useAccountDetail } from './AccountDetailSection';
 import { ACCOUNT_ORG_STATUSES } from '../../../../common/js/constants/orgAccountStatuses';
 import { PillButton } from '../../../../components';
-import { headingFontStyles } from '../../common/headingFontStyles';
 import FieldLabel from './FieldLabel';
 
 /**
@@ -95,7 +94,7 @@ export default function AccountProfileLimitsSetting() {
       {/* Subscription Limits */}
       <Grid sx={{ marginBottom: '1.5rem' }} container spacing={2} rowSpacing={2}>
         <Grid item sm={12} xs={12}>
-          <Typography sx={(theme) => headingFontStyles(theme)} variant="body1">
+          <Typography variant="body1">
             {`${subscriptionLimits?.subscription_name ?? ''} ${
               accountProfileStrings.accountLimitsSetting.subHeadingSubscriptionLimits
             }`}
@@ -132,7 +131,7 @@ export default function AccountProfileLimitsSetting() {
       {/* Purchased/Extended Limits */}
       <Grid sx={{ marginBottom: '1.5rem' }} container spacing={2} rowSpacing={2}>
         <Grid item sm={12} xs={12}>
-          <Typography sx={(theme) => headingFontStyles(theme)} variant="body1">
+          <Typography variant="body1">
             {accountProfileStrings.accountLimitsSetting.subHeadingCustomLimits}
           </Typography>
         </Grid>
@@ -173,7 +172,7 @@ export default function AccountProfileLimitsSetting() {
       {/* Add Extra Limits Form */}
       <Grid sx={{ marginBottom: '1.5rem' }} container spacing={2} rowSpacing={2}>
         <Grid item sm={12} xs={12}>
-          <Typography sx={(theme) => headingFontStyles(theme)} variant="body1">
+          <Typography variant="body1">
             {accountProfileStrings.accountLimitsSetting.subHeadingToAddExtraLimits}
           </Typography>
         </Grid>

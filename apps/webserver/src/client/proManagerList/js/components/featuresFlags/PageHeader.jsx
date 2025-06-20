@@ -13,7 +13,7 @@ function PageHeader() {
 
   return (
     <Grid container justifyContent="space-between" sx={{ marginBottom: '1.5rem' }}>
-      <Typography variant="h5">
+      <Typography variant="h3">
         {featureFlagsStrings.pageHeading}{' '}
         {selectedFeatureFlag?.flagId ? '/ ' + selectedFeatureFlag?.flagId : ''}
       </Typography>

@@ -16,7 +16,6 @@ import { oneMonthAgoDate, endDayIncludingToday } from './AccountUsage.utils';
 import { accountProfileStrings } from '../../../../../common/js/config';
 import { numberWithCommas } from '../../../../../locations/js/utils/locationsTableUtils.js';
 import { LoadingModal } from '../../../../../components';
-import { headingFontStyles } from '../../../common/headingFontStyles.js';
 
 function AccountsListUsage({ setIsLoading }) {
   const [startDate, setStartDate] = useState(oneMonthAgoDate);
@@ -48,9 +47,7 @@ function AccountsListUsage({ setIsLoading }) {
   return (
     <section>
       <Grid container justifyContent="space-between" sx={{ marginBottom: '1.5rem' }}>
-        <Typography sx={(theme) => headingFontStyles(theme)} variant="h2">
-          {accountProfileStrings.sectionTitles.accountUsage}
-        </Typography>
+        <Typography variant="h3">{accountProfileStrings.sectionTitles.accountUsage}</Typography>
       </Grid>
 
       <Box sx={{ marginBottom: '1.5rem' }}>

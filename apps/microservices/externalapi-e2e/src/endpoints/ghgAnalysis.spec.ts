@@ -379,7 +379,7 @@ describe('GHGAnalysis', () => {
       'Should not create an GHG Analysis for non MapsPam list missing yields',
       async () => {
         try {
-          const res = await postRedirectHeaders(
+          await postRedirectHeaders(
             `${BASE_URL}/api/v1/list/${uploadNewRes.data.listId}/analysis/GHG/analyze`,
             {
               userEmail: email,

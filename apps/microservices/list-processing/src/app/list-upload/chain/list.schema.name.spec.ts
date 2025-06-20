@@ -127,6 +127,29 @@ describe('ListSchema', () => {
     expect(request.analysisTable).toBe('analysis-testlist123');
   });
 
+  it('should preserve square brackets and parentheses in list name', async () => {
+    const listName = 'Test[List](123)';
+    const input: ChainType = {
+      request: {
+        user_id: 1,
+        list_name: listName,
+        organization_database: 'test-db',
+        template_id: 1,
+        path: 'path',
+        commodity: 'COCO',
+        saveAsDraft: false,
+      },
+    };
+
+    (getListByFilters as jest.Mock).mockResolvedValue(false);
+
+    const response = await listSchema.handle(input);
+    const request = response.request as RequestNewList;
+
+    expect(request.listTable).toBe('list-test[list](123)');
+    expect(request.analysisTable).toBe('analysis-test[list](123)');
+  });
+
   it('should call super.handle with correct parameters if list name does not exist', async () => {
     const listName = 'NewList';
 

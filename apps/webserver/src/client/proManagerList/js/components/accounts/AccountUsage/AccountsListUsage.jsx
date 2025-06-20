@@ -10,18 +10,13 @@ import Paper from '@mui/material/Paper';
 import Grid from '@mui/material/Grid';
 import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
+
 import DateRangeSelector from './DateRangeSelector';
 import { oneMonthAgoDate, endDayIncludingToday } from './AccountUsage.utils';
 import { accountProfileStrings } from '../../../../../common/js/config';
 import { numberWithCommas } from '../../../../../locations/js/utils/locationsTableUtils.js';
 import { LoadingModal } from '../../../../../components';
-
-const fontStyles = {
-  fontFamily: 'Fira Sans, sans-serif',
-  textTransform: 'uppercase',
-  color: '#555555',
-  fontSize: '28px',
-};
+import { headingFontStyles } from '../../../common/headingFontStyles.js';
 
 function AccountsListUsage({ setIsLoading }) {
   const [startDate, setStartDate] = useState(oneMonthAgoDate);
@@ -53,7 +48,7 @@ function AccountsListUsage({ setIsLoading }) {
   return (
     <section>
       <Grid container justifyContent="space-between" sx={{ marginBottom: '1.5rem' }}>
-        <Typography sx={fontStyles} variant="h2">
+        <Typography sx={(theme) => headingFontStyles(theme)} variant="h2">
           {accountProfileStrings.sectionTitles.accountUsage}
         </Typography>
       </Grid>

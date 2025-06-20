@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Typography, TextField, Grid, InputLabel, styled } from '@mui/material';
+import { Typography, TextField, Grid } from '@mui/material';
 
 import { PillButton } from '../../../../components';
 import {
@@ -10,23 +10,8 @@ import {
 import SettingSection from '../../../../common/js/components/SettingSection';
 
 import DialogProvider, { useDialog } from '../../../../common/js/components/Dialog';
-
-const fontStyles = {
-  fontFamily: 'Fira Sans, sans-serif',
-  textTransform: 'uppercase',
-  color: '#555555',
-  fontSize: '28px',
-};
-
-const FieldLabel = styled(InputLabel)({
-  fontFamily: 'Fira Sans, sans-serif',
-  textTransform: 'uppercase',
-  color: '#555555',
-  fontWeight: 500,
-  lineHeight: '1.2',
-  fontSize: '14px',
-  marginBottom: '5px',
-});
+import { headingFontStyles } from '../../common/headingFontStyles';
+import FieldLabel from './FieldLabel';
 
 /**
  * @summary {[subscription_status_id]: defaultFields}
@@ -157,7 +142,7 @@ function AccountLimitsGlobal({ setIsLoading }) {
   return (
     <>
       <Grid container justifyContent="space-between" sx={{ marginBottom: '1.5rem' }}>
-        <Typography sx={fontStyles} variant="h2">
+        <Typography sx={(theme) => headingFontStyles(theme)} variant="h2">
           {accountLimitsStrings.pageHeading}
         </Typography>
         <PillButton variant="contained" size="small" href="/pro-manager-list">

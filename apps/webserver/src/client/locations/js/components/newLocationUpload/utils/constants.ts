@@ -3,7 +3,7 @@ import {
   palmRiskAnalysis,
 } from '../../../../../../config/env/analysisTypes.constants';
 
-export const VALID_UPLOAD_FILE_FORMATS = ['csv', 'xls', 'xlsx', 'zip', 'kml', 'kmz'];
+export const VALID_UPLOAD_FILE_FORMATS = ['csv', 'xls', 'xlsx', 'zip', 'kml', 'kmz', 'geojson'];
 
 export const typeOfAnalysisMap = [...analysisTypesForUI, palmRiskAnalysis];
 

@@ -6,6 +6,7 @@ import {
   markConverterStopped,
   getConverterJobs,
 } from '../services/converters.service';
+
 import logger from '../../../config/privateutils/logger.utils';
 
 interface StartConverterBody {
@@ -75,5 +76,30 @@ export const stopConverter = async (req, res) => {
     return res.status(500).json({
       error: 'Failed to stop converter',
     });
+  }
+};
+
+export const getConverterInfo = async (
+  req: Request<{ id: string }>,
+  res: Response
+): Promise<void> => {
+  const { id } = req.params;
+
+  const parentId = parseInt(id, 10);
+  if (isNaN(parentId)) {
+    res.status(400).json({ error: 'Invalid converter ID' });
+    return;
+  }
+
+  try {
+    const converterInfo = await getConverterJobInfo(parentId);
+    if (!converterInfo) {
+      res.status(404).json({ error: `Converter with ID ${parentId} not found` });
+      return;
+    }
+    res.status(200).json(converterInfo);
+  } catch (err) {
+    logger.error(`Failed to fetch converter info for ID ${id}:`, err);
+    res.status(500).json({ error: err.message || 'Internal server error fetching converter info' });
   }
 };

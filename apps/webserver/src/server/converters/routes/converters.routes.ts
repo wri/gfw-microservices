@@ -1,5 +1,10 @@
 import { Application, RequestHandler } from 'express';
-import { getConverters, startConverter, stopConverter } from '../controllers/converters.controller';
+import {
+  getConverters,
+  startConverter,
+  stopConverter,
+  getConverterInfo,
+} from '../controllers/converters.controller';
 
 import {
   checkProManagerAuthentication,
@@ -35,4 +40,11 @@ export default function converterRoutes(app: Application, limiter: (opts: any) =
    * @access Pro Manager only
    */
   app.post('/converter/:id/stop', routeMiddlewares, stopConverter);
+
+  /**
+   * @route GET /converter/:id/info
+   * @desc Returns information about a specific converter by ID
+   * @access Pro Manager only
+   */
+  app.get('/converter/:id/info', routeMiddlewares, getConverterInfo);
 }

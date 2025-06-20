@@ -56,7 +56,7 @@ function AfiDiagnosticsTable({
                 {!isLocationLevel && (
                   <>
                     <TableCell align="right">{row.country}</TableCell>
-                    <TableCell align="right">{row.subState}</TableCell>
+                    <TableCell align="right">{row.subState || '--'}</TableCell>
                   </>
                 )}
                 {isSbtnSelected ? (

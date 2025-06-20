@@ -49,6 +49,6 @@ export const locationNameSchema = extendedLocationNameSchema.refine((val) => val
 });
 
 export const listNameSchema = buildTrimmedRegexStringSchema(
-  /^[a-zA-ZÀ-ÿ0-9 \-_]*$/,
-  'Only letters (including accented characters), numbers, spaces, dashes (-), and underscores (_) are allowed'
+  /^[a-zA-ZÀ-ÿ0-9 [\]()\-_]*$/,
+  'Only letters (including accented characters), numbers, spaces, brackets [], parentheses (), dashes (-), and underscores (_) are allowed'
 );

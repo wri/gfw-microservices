@@ -5,7 +5,7 @@ import {
   startConverterJob,
   markConverterStopped,
   getConverterJobs,
-  getConverterJobInfo
+  getConverterJobInfo,
 } from '../services/converters.service';
 
 import logger from '../../../config/privateutils/logger.utils';

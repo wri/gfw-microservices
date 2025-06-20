@@ -89,6 +89,8 @@ export class GfwLists {
       selectedCountry?: string;
       selectedState?: string;
       selectedSubState?: string;
+      selectedStates?: string[];
+      selectedSubStates?: string[];
       hasError: boolean;
       selectedDesignation?: string;
       selectedDesignationType?: string;
@@ -115,12 +117,30 @@ export class GfwLists {
         queryBuilder.andWhere('Country = :country', { country: filters.selectedCountry });
       }
 
+      if (
+        filters.selectedStates &&
+        Array.isArray(filters.selectedStates) &&
+        filters.selectedStates.length > 0
+      ) {
+        queryBuilder.andWhere('State IN (:...states)', { states: filters.selectedStates });
+      }
+
       if (filters.selectedState) {
         queryBuilder.andWhere('State = :state', { state: filters.selectedState });
       }
 
       if (filters.selectedSubState) {
         queryBuilder.andWhere('"Sub State" = :subState', { subState: filters.selectedSubState });
+      }
+
+      if (
+        filters.selectedSubStates &&
+        Array.isArray(filters.selectedSubStates) &&
+        filters.selectedSubStates.length > 0
+      ) {
+        queryBuilder.andWhere(`"Sub State" IN (:...subStates)`, {
+          subStates: filters.selectedSubStates,
+        });
       }
 
       if (filters.hasError) {

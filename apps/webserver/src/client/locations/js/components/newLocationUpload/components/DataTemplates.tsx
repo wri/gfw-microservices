@@ -1,5 +1,5 @@
 import './DataTemplates.scss';
-import { ReactElement, useState, MouseEvent } from 'react';
+import { ReactElement, useState, MouseEvent, ElementType, FC } from 'react';
 import {
   Accordion,
   AccordionDetails,
@@ -21,10 +21,9 @@ import {
   DownloadDone,
   Info,
   Public,
-  ScatterPlotTwoTone,
-  SvgIconComponent,
-  Timeline,
 } from '@mui/icons-material';
+import GeoJsonIcon from '../../../../../assets/icons/geojson-icon.svg';
+import ShapeFileIcon from '../../../../../assets/icons/shapefile-icon.svg';
 
 import { ExternalHelperResource, PillButton } from '../../../../../components';
 import { aws_templates } from '../../../../../common/js/config';
@@ -43,6 +42,10 @@ enum Template {
   PointGeoJson,
   PointSpreadsheet,
 }
+
+const ImgIcon: FC<{ src: string; alt: string }> = ({ src, alt }) => (
+  <img src={src} alt={alt} style={{ height: '28px', width: '28px', marginLeft: '2px' }} />
+);
 
 export function DataTemplates({ isOpen, onClose }: DataTemplatesProps) {
   const theme = useTheme();
@@ -333,7 +336,7 @@ export function DataTemplates({ isOpen, onClose }: DataTemplatesProps) {
 
 const templateOptions: {
   template: Template;
-  Icon: SvgIconComponent;
+  Icon: ElementType;
   title: string;
   bestForText: string | ReactElement;
   requiredFieldsText: ReactElement;
@@ -344,7 +347,7 @@ const templateOptions: {
 }[] = [
   {
     template: Template.PolygonShapeFile,
-    Icon: Timeline,
+    Icon: () => <ImgIcon src={ShapeFileIcon} alt="Shapefile Icon" />,
     title: 'Polygon Shapefile',
     bestForText:
       'If you have sourcing locations with explicit boundaries. Requires formatting in a GIS software such as QGIS.',
@@ -367,7 +370,7 @@ const templateOptions: {
   },
   {
     template: Template.PolygonGeoJson,
-    Icon: Timeline,
+    Icon: () => <ImgIcon src={GeoJsonIcon} alt="GeoJson Icon" />,
     title: 'Polygon GeoJSON',
     bestForText:
       'If you have sourcing locations with explicit boundaries. Requires formatting in GIS software such as QGIS, or a code-editing software such as Studio Code.',
@@ -386,9 +389,9 @@ const templateOptions: {
         </span>
       </>
     ),
-    filename: '###.zip',
+    filename: 'GFWPro-Polygon_GeoJSON.geojson',
     helpCenterLinkText: 'How to format GeoJSON data',
-    helpCenterLinkUrl: '###',
+    helpCenterLinkUrl: 'https://globalforestwatch.org/help/gfw-pro/guides',
     isPolygon: true,
   },
   {
@@ -413,7 +416,7 @@ const templateOptions: {
   },
   {
     template: Template.PointShapeFile,
-    Icon: ScatterPlotTwoTone,
+    Icon: () => <ImgIcon src={ShapeFileIcon} alt="Shapefile Icon" />,
     title: 'Point Shapefile',
     bestForText:
       'If you have sourcing locations defined via coordinates and want to analyze the area around them. Requires formatting in a GIS software such as QGIS.',
@@ -444,7 +447,7 @@ const templateOptions: {
   },
   {
     template: Template.PointGeoJson,
-    Icon: Timeline,
+    Icon: () => <ImgIcon src={GeoJsonIcon} alt="GeoJson Icon" />,
     title: 'Point GeoJSON',
     bestForText:
       'If you have sourcing locations defined via a coordinate point and an analysis radius or area. Requires formatting in GIS software such as QGIS, or a code-editing software such as Studio Code.',
@@ -471,9 +474,9 @@ const templateOptions: {
         </span>
       </>
     ),
-    filename: '###.zip',
+    filename: 'GFWPro-Point_GeoJSON.geojson',
     helpCenterLinkText: 'How to format GeoJSON data',
-    helpCenterLinkUrl: '###',
+    helpCenterLinkUrl: 'https://globalforestwatch.org/help/gfw-pro/guides',
     isPolygon: false,
   },
   {

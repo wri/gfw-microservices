@@ -52,6 +52,33 @@ export const markConverterStopped = async (converterId: number): Promise<void> =
   }
 };
 
+export const getConverterJobInfo = async (parentId: number) => {
+  const connection = await getDbConnection();
+  const repo: Repository<ConverterStatusEntity> = connection.getRepository(ConverterStatusEntity);
+
+  let parentConverter: ConverterStatusEntity | null = null;
+  let childrenConverters: ConverterStatusEntity[] = [];
+
+  try {
+    parentConverter = await repo.findOne({
+      where: { id: parentId },
+    });
+
+    childrenConverters = await repo.find({
+      where: { parentId },
+      order: { id: 'DESC' },
+    });
+  } catch (err: any) {
+    logger.error(`Error fetching converter info for ID ${parentId}:`, err.stack || err);
+    throw new Error('Failed to fetch converter info');
+  }
+
+  return {
+    ...parentConverter,
+    children: childrenConverters,
+  };
+};
+
 /** Helper functions **/
 
 const getDbConnection = async () => {

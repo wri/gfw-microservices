@@ -1,5 +1,3 @@
-/* global userInfo, organizationId */
-
 import { useState, useCallback, useEffect } from 'react';
 import Locations from '../Locations';
 import ModalLoader from '../../../../common/js/components/Loaders/ModalLoader';

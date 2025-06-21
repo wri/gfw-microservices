@@ -56,20 +56,9 @@ module.exports = (app, limiter) => {
 
   app.use('/locations', routeMiddlewares);
 
-  app.get('/locations', (req, res) => {
-    const locationsData = {
-      fromMap: app.get('from-map'),
-      subscriptionStatus: req.session.subscription_status_id,
-    };
-
-    controller.locations(req, res, locationsData);
-    // TODO: investigate if the variable from-map works correctly
-    app.set('from-map', false);
-  });
-
-  app.get('/getUserLists', (req, res) => {
-    controller.getUserLists(req, res);
-  });
+  app.get('/locations', controller.locations);
+  app.get('/api/locations', controller.locationsData);
+  app.get('/getUserLists', controller.getUserLists);
 
   app.post('/locations/addToNewList', (req, res) => {
     console.log('POST /locations/addToNewList');

@@ -1,8 +1,8 @@
 /* global userInfo, organizationId */
 
 import { useState, useCallback, useEffect } from 'react';
-import Locations from './js/components/Locations';
-import ModalLoader from '../common/js/components/Loaders/ModalLoader';
+import Locations from '../Locations';
+import ModalLoader from '../../../../common/js/components/Loaders/ModalLoader';
 
 const LocationsPage = ({ userInfo, organizationId }) => {
   const [templateData, setTemplateData] = useState(null);

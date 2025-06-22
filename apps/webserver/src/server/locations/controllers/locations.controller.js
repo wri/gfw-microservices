@@ -32,7 +32,6 @@ const logger = require('../../../config/privateutils/logger.utils');
 const { sendMessageToQueue } = require('../../downloader');
 const AWSSES = require(path.resolve('./config/privateutils/ses.utils'));
 
-
 /**
  * @function locations
  * @summary

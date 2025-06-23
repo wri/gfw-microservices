@@ -6,20 +6,9 @@ block content
   div#locations-mount
   include ./svg.pug
   script.
-    var templateData = !{JSON.stringify(templateData)};
-    var templateDropdowns = !{JSON.stringify(templateDropdowns)};
-    var userLists = !{JSON.stringify(userLists)};
-    var userSharedLists = !{JSON.stringify(userSharedLists)};
     var userInfo = !{JSON.stringify(userInfo)};
-    var usersList = !{JSON.stringify(usersList)};
     var organizationId = !{JSON.stringify(organizationId)};
-    var locationCount = !{JSON.stringify(locationCount)};
-    var orgLists = !{JSON.stringify(orgLists)};
-    var gfwLists = !{JSON.stringify(gfwLists)};
-    var fromMap = !{JSON.stringify(fromMap)};
-    var listStatuses = !{JSON.stringify(listStatuses)};
     var CURRENT_ENVIRONMENT = !{JSON.stringify(CURRENT_ENVIRONMENT)};
-    var subscription_status_id = !{JSON.stringify(subscriptionStatus)};
     // Set the user ID using signed-in user_id.
     gtag('set', { 'user_id': userInfo.email });
 

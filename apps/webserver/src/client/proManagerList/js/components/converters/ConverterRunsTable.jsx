@@ -24,7 +24,7 @@ export default function ConverterRunsTable({ converterJobs }) {
               <StyledTableCell>ID</StyledTableCell>
               <StyledTableCell>Type</StyledTableCell>
               <StyledTableCell>Status</StyledTableCell>
-              <StyledTableCell>Action/s</StyledTableCell>
+              <StyledTableCell>Action(s)</StyledTableCell>
             </TableRow>
           </TableHead>
           <TableBody>

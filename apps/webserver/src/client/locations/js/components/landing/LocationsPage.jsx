@@ -3,8 +3,8 @@ import Locations from '../Locations';
 import ModalLoader from '../../../../common/js/components/Loaders/ModalLoader';
 
 const LocationsPage = ({ userInfo, organizationId }) => {
-  const [isLoading, setIsLoading] = useState(true);
   const [locationsData, setLocationsData] = useState({});
+  const [isLoading, setIsLoading] = useState(true);
 
   const fetchInitialData = useCallback(() => {
     fetch('/api/locations', {
@@ -61,8 +61,6 @@ const LocationsPage = ({ userInfo, organizationId }) => {
     userLists,
     listStatuses,
   } = locationsData;
-
-  console.count('MyComponent renders');
 
   return isLoading ? (
     <ModalLoader open={true} />

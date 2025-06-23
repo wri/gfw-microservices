@@ -11,6 +11,11 @@ import { CreateLargeListService } from '../app/list-upload/create.large.list.ser
 import { InternalServerErrorException } from '@nestjs/common';
 import { DataSource } from 'typeorm';
 
+interface ServerConfigType {
+  LARGE_PROCESSING_LIST_BUCKET?: string;
+  NODE_ENV?: 'test' | 'development' | 'staging' | 'qa' | 'ProdV2';
+}
+
 jest.mock('@wri-monorepos/shared', () => ({
   featureFlagsService: jest.fn(),
 }));
@@ -63,7 +68,7 @@ describe('ListService - Start Analysis Process For List', () => {
     service = new ListService(
       new ClientStoreConnection(),
       metadataServiceMock as MetadataService,
-      configServiceMock as ConfigService,
+      configServiceMock as ConfigService<ServerConfigType, true>,
       deprecatedStartAnalysisService,
       startAnalysisService,
       deprecatedCreateLargeListService,
@@ -246,7 +251,9 @@ describe('ListService - Create New List', () => {
   let createLargeListService: CreateLargeListService;
   let deprecatedCreateLargeListService: DeprecatedCreateLargeListService;
   let metadataServiceMock: Partial<MetadataService>;
-  let configServiceMock: Partial<ConfigService>;
+  let configServiceMock: Partial<ConfigService<ServerConfigType, true>>;
+  let startAnalysisService: StartAnalysisService;
+  let deprecatedStartAnalysisService: DeprecatedStartAnalysisService;
 
   beforeEach(async () => {
     metadataServiceMock = {
@@ -270,12 +277,24 @@ describe('ListService - Create New List', () => {
       run: jest.fn().mockResolvedValue({ list_id: 123 }),
     } as unknown as DeprecatedCreateLargeListService;
 
+    startAnalysisService = {
+      run: jest
+        .fn()
+        .mockResolvedValue({ executionArn: 'arn', startDate: new Date().toISOString() }),
+    } as unknown as StartAnalysisService;
+
+    deprecatedStartAnalysisService = {
+      run: jest
+        .fn()
+        .mockResolvedValue({ executionArn: 'arn', startDate: new Date().toISOString() }),
+    } as unknown as DeprecatedStartAnalysisService;
+
     service = new ListService(
       new ClientStoreConnection(),
       metadataServiceMock as MetadataService,
-      configServiceMock as ConfigService,
-      {} as DeprecatedStartAnalysisService,
-      {} as StartAnalysisService,
+      configServiceMock as unknown as ConfigService<ServerConfigType, true>,
+      deprecatedStartAnalysisService,
+      startAnalysisService,
       deprecatedCreateLargeListService,
       createLargeListService
     );
@@ -343,7 +362,7 @@ describe('ListService - Create List Tables', () => {
     service = new ListService(
       new ClientStoreConnection(),
       {} as MetadataService,
-      {} as ConfigService,
+      {} as ConfigService<ServerConfigType, true>,
       {} as DeprecatedStartAnalysisService,
       {} as StartAnalysisService,
       deprecatedCreateLargeListService,
@@ -408,7 +427,7 @@ describe('ListService - Update Lists Upload Status', () => {
     service = new ListService(
       clientStoreConnection,
       metadataServiceMock as MetadataService,
-      {} as ConfigService,
+      {} as ConfigService<ServerConfigType, true>,
       {} as DeprecatedStartAnalysisService,
       {} as StartAnalysisService,
       {} as DeprecatedCreateLargeListService,
@@ -493,7 +512,7 @@ describe('ListService - Save List To Process', () => {
     service = new ListService(
       new ClientStoreConnection(),
       metadataServiceMock as MetadataService,
-      configServiceMock as ConfigService,
+      configServiceMock as ConfigService<ServerConfigType, true>,
       {} as DeprecatedStartAnalysisService,
       {} as StartAnalysisService,
       {} as DeprecatedCreateLargeListService,

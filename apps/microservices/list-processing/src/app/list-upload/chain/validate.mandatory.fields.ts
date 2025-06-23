@@ -92,28 +92,61 @@ const mandatoryFields = {
 export class ValidateMandatoryFields extends AbstractHandler<ChainType> {
   private readonly logger = new Logger(ValidateMandatoryFields.name);
 
-  private validateFeature(feature: Feature, fieldsToCheck: string[]): boolean {
-    const missingFields = fieldsToCheck.filter((field) => !(field in feature.properties));
+  /**
+   * Validates if a field value is valid (not null, undefined, or empty string)
+   */
+  private isValidFieldValue(value: any): boolean {
+    if (value === null || value === undefined) {
+      return false;
+    }
 
-    // If both analysisRadius and analysisArea are in the mandatory fields
+    // For strings, check if they're not empty after trimming
+    if (typeof value === 'string') {
+      return value.trim().length > 0;
+    }
+
+    // For numbers, check if they're not NaN
+    if (typeof value === 'number') {
+      return !isNaN(value);
+    }
+
+    return true;
+  }
+
+  /**
+   * Validates if a field exists and has a valid value
+   */
+  private isFieldValid(feature: Feature, field: string): boolean {
+    return field in feature.properties && this.isValidFieldValue(feature.properties[field]);
+  }
+
+  private validateFeature(feature: Feature, fieldsToCheck: string[]): boolean {
+    const missingOrInvalidFields = fieldsToCheck.filter(
+      (field) => !this.isFieldValid(feature, field)
+    );
+
+    // Special handling for analysisRadius and analysisArea - at least one must be present and valid
     if (fieldsToCheck.includes('analysisRadius') && fieldsToCheck.includes('analysisArea')) {
-      // Remove both from missing fields if at least one is present
-      if ('analysisRadius' in feature.properties || 'analysisArea' in feature.properties) {
-        const index = missingFields.indexOf('analysisRadius');
-        if (index > -1) {
-          missingFields.splice(index, 1);
+      const hasValidRadius = this.isFieldValid(feature, 'analysisRadius');
+      const hasValidArea = this.isFieldValid(feature, 'analysisArea');
+
+      // If at least one is valid, remove both from missing fields
+      if (hasValidRadius || hasValidArea) {
+        const radiusIndex = missingOrInvalidFields.indexOf('analysisRadius');
+        if (radiusIndex > -1) {
+          missingOrInvalidFields.splice(radiusIndex, 1);
         }
-        const index2 = missingFields.indexOf('analysisArea');
-        if (index2 > -1) {
-          missingFields.splice(index2, 1);
+        const areaIndex = missingOrInvalidFields.indexOf('analysisArea');
+        if (areaIndex > -1) {
+          missingOrInvalidFields.splice(areaIndex, 1);
         }
       }
     }
 
-    if (missingFields.length > 0) {
+    if (missingOrInvalidFields.length > 0) {
       feature.properties.errorDetails = feature.properties.errorDetails || [];
       (feature.properties.errorDetails as Array<string>).push(
-        `Missing mandatory fields: ${missingFields.join(', ')}`
+        `Missing mandatory fields: ${missingOrInvalidFields.join(', ')}`
       );
       return false;
     }
@@ -163,7 +196,7 @@ export class ValidateMandatoryFields extends AbstractHandler<ChainType> {
       const geometryType = feature.geometry.type;
       let fieldsToCheck: string[];
 
-      if (geometryType === 'Polygon') {
+      if (geometryType === 'Polygon' || geometryType === 'MultiPolygon') {
         fieldsToCheck = mandatoryFields['zip']['.polygon'];
       } else if (geometryType === 'Point') {
         fieldsToCheck = mandatoryFields['zip']['.point'];

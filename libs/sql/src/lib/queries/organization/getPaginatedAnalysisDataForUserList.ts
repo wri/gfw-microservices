@@ -125,7 +125,7 @@ BEGIN
 		  [object_id] = (SELECT [object_id] FROM sys.objects WHERE [name] = @listAnalysisTableName)
 		  AND [name] NOT IN ('id')
 		  FOR XML PATH('')
-	  ),1,3,'') + '], A.location_status_id as analysisStatusId, A.location_error as analysisError';
+	  ),1,3,'') + '], A.location_status_id, A.location_error as analysisError';
 
 
 	-- ADD Filters

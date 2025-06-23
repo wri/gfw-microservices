@@ -2329,12 +2329,7 @@ class Map extends Component {
     });
 
     const planetBasemapReferenceLayer = this.view.map.findLayerById(PLANET_BASEMAP_REFERENCE_LAYER);
-    if (id === PLANET_BASEMAP) {
-      planetBasemapReferenceLayer.visible = true;
-      this.view.map.findLayerById('dark-matter').visible = true;
-    } else {
-      planetBasemapReferenceLayer.visible = false;
-    }
+    planetBasemapReferenceLayer.visible = id === PLANET_BASEMAP;
 
     this.forceUpdate();
     gtag('event', 'basemap change', {

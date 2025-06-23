@@ -60,7 +60,8 @@ const CustomRow = ({
   const { backgroundColor, color } = style;
 
   const isSelectedLocationActive =
-    rowInfo?.location_status_id === listStatus.Active || rowInfo?.statusCode === listStatus.Active;
+    rowInfo?.analysisStatusId === listStatus.Active || rowInfo?.statusCode === listStatus.Active;
+
   const showLocationDiagnosticButton = isGfwList || isSelectedLocationActive;
 
   return (

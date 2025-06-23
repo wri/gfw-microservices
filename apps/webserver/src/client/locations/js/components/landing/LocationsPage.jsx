@@ -3,15 +3,7 @@ import Locations from '../Locations';
 import ModalLoader from '../../../../common/js/components/Loaders/ModalLoader';
 
 const LocationsPage = ({ userInfo, organizationId }) => {
-  const [templateData, setTemplateData] = useState(null);
-  const [templateDropdowns, setTemplateDropdowns] = useState(null);
-  const [userLists, setUserLists] = useState([]);
-  const [locationCount, seLocationCount] = useState(0);
-  const [gfwLists, setGfwLists] = useState([]);
-  const [accountUsers, setAccountUsers] = useState([]);
-  const [userSharedLists, setUserSharedLists] = useState([]);
-  const [orgLists, setOrgLists] = useState([]);
-  const [listStatuses, setListStatuses] = useState([]);
+  const [locationsData, setLocationsData] = useState({});
   const [isLoading, setIsLoading] = useState(true);
 
   const fetchInitialData = useCallback(() => {
@@ -36,15 +28,17 @@ const LocationsPage = ({ userInfo, organizationId }) => {
           listStatuses,
         } = data;
 
-        setTemplateData(templateData);
-        setTemplateDropdowns(templateDropdowns);
-        seLocationCount(locationCount);
-        setGfwLists(gfwLists);
-        setAccountUsers(accountUsers);
-        setUserSharedLists(userSharedLists);
-        setOrgLists(orgLists);
-        setUserLists(userLists);
-        setListStatuses(listStatuses);
+        setLocationsData({
+          templateData,
+          templateDropdowns,
+          locationCount,
+          gfwLists,
+          accountUsers,
+          userSharedLists,
+          orgLists,
+          userLists,
+          listStatuses,
+        });
         setIsLoading(false);
       })
       .catch((error) => {
@@ -55,6 +49,18 @@ const LocationsPage = ({ userInfo, organizationId }) => {
   useEffect(() => {
     fetchInitialData();
   }, []);
+
+  const {
+    templateData,
+    templateDropdowns,
+    locationCount,
+    gfwLists,
+    accountUsers,
+    userSharedLists,
+    orgLists,
+    userLists,
+    listStatuses,
+  } = locationsData;
 
   return isLoading ? (
     <ModalLoader open={true} />

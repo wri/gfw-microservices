@@ -70,8 +70,8 @@ const WrappedReactTable = ({
     }
     return {
       style: {
-        backgroundColor: returnBgColor(rowInfo.original?.analysisStatusId),
-        color: returnFgColor(rowInfo.original?.analysisStatusId),
+        backgroundColor: returnBgColor(rowInfo.original?.location_status_id),
+        color: returnFgColor(rowInfo.original?.location_status_id),
       },
       rowInfo: rowInfo.original,
 

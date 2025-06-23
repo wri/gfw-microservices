@@ -19,6 +19,7 @@ BEGIN
 	DECLARE @AnalysisFilters NVARCHAR(MAX) = '1=1'
 	DECLARE @listVersion INT
 	DECLARE @where_clauses NVARCHAR(max) = '';
+	DECLARE @cleanedOrderByColumn NVARCHAR(MAX) = REPLACE(REPLACE(@OrderByColumn, '[', ''), ']', '')
 
 	SET NOCOUNT ON
 	-- Obtain the location table name and the analysis table name for the list.
@@ -301,22 +302,22 @@ DEALLOCATE column_cursor;
 							WHEN CHARINDEX(@OrderByColumn, @list_location_table_cols_output) > 0
 								THEN 'MyListTable.' + QUOTENAME(REPLACE(REPLACE(@OrderByColumn, '[', ''), ']', ''))
 							WHEN CHARINDEX(@OrderByColumn, @analysis_location_table_cols_output) > 0
-								THEN 'MyAnalysisTable.' + QUOTENAME(REPLACE(REPLACE(@OrderByColumn, '[', ''), ']', ''))
+								THEN 'MyAnalysisTable.' + QUOTENAME(@cleanedOrderByColumn)
 							WHEN EXISTS (
 								SELECT 1
 								FROM ListAttributes
 								WHERE list_id = @listID
-								AND attribute_name = REPLACE(REPLACE(@OrderByColumn, '[', ''), ']', '')
+								AND attribute_name = @cleanedOrderByColumn
 							)
 								THEN CASE
 									WHEN (
 										SELECT attribute_type
 										FROM ListAttributes
 										WHERE list_id = @listID
-										AND attribute_name = REPLACE(REPLACE(@OrderByColumn, '[', ''), ']', '')
+										AND attribute_name = @cleanedOrderByColumn
 									) = 1
-									THEN 'CAST(JSON_VALUE(MyListTable.attributes, ''$."' + REPLACE(REPLACE(@OrderByColumn, '[', ''), ']', '') + '"'') AS DECIMAL(18,6))'
-									ELSE 'CAST(JSON_VALUE(MyListTable.attributes, ''$."' + REPLACE(REPLACE(@OrderByColumn, '[', ''), ']', '') + '"'') AS NVARCHAR(MAX))'
+									THEN 'CAST(JSON_VALUE(MyListTable.attributes, ''$."' + @cleanedOrderByColumn + '"'') AS DECIMAL(18,6))'
+									ELSE 'CAST(JSON_VALUE(MyListTable.attributes, ''$."' + @cleanedOrderByColumn + '"'') AS NVARCHAR(MAX))'
 								END
 							ELSE @OrderByColumn
 						END + ' ' + @Order

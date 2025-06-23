@@ -20,7 +20,7 @@ const react_table__location_name = [
       return 0;
     },
     Cell: (cellInfo) => {
-      if (cellInfo.original.location_status_id === 4) {
+      if (cellInfo.original.analysisStatusId === 4) {
         const tooltipMessage = cellInfo.original.draftNonOwner
           ? locationsPage.columns.notAnalyzedList.nonOwner
           : locationsPage.columns.notAnalyzedList.owner;

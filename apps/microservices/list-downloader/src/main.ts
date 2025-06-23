@@ -1,12 +1,15 @@
 import { Logger } from '@nestjs/common';
 import { NestFactory } from '@nestjs/core';
+import { NestExpressApplication } from '@nestjs/platform-express'; // 👈 add this
 
 import { AppModule } from './app/app.module';
 import { ConfigService } from '@nestjs/config';
 import { ServerConfigType } from './validators/server-config';
 
 async function bootstrap() {
-  const app = await NestFactory.create(AppModule);
+  const app = await NestFactory.create<NestExpressApplication>(AppModule); // 👈 updated
+  app.set('query parser', 'extended');
+
   const globalPrefix = 'api';
   app.setGlobalPrefix(globalPrefix);
 

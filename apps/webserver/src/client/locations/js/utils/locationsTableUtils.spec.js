@@ -81,10 +81,10 @@ describe('sortByNone', () => {
 describe('sortByStatus', () => {
   it('should return area difference when both status are active', () => {
     const locationA = {
-      location_status_id: listStatus.Active,
+      analysisStatusId: listStatus.Active,
     };
     const locationB = {
-      location_status_id: listStatus.Active,
+      analysisStatusId: listStatus.Active,
     };
     const response = sortByStatus(locationA, locationB);
     expect(response).toBe(2);
@@ -92,10 +92,10 @@ describe('sortByStatus', () => {
 
   it('should return 0 when both status locations are not active', () => {
     const a = {
-      location_status_id: 3,
+      analysisStatusId: 3,
     };
     const b = {
-      location_status_id: 4,
+      analysisStatusId: 4,
     };
 
     const response = sortByStatus(a, b);
@@ -104,10 +104,10 @@ describe('sortByStatus', () => {
 
   it('should return 1 when just first status locations is active', () => {
     const a = {
-      location_status_id: listStatus.Active,
+      analysisStatusId: listStatus.Active,
     };
     const b = {
-      location_status_id: listStatus.Pending,
+      analysisStatusId: listStatus.Pending,
     };
 
     const response = sortByStatus(a, b);
@@ -116,10 +116,10 @@ describe('sortByStatus', () => {
 
   it('should return -1 when just second status locations is active', () => {
     const a = {
-      location_status_id: listStatus.Pending,
+      analysisStatusId: listStatus.Pending,
     };
     const b = {
-      location_status_id: listStatus.Active,
+      analysisStatusId: listStatus.Active,
     };
     const response = sortByStatus(a, b);
     expect(response).toBe(sortOrderOption.invert);

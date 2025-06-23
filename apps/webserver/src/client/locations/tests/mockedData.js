@@ -1,7 +1,7 @@
 import { listStatus } from '../../../config/env/listStatuses.constants';
 
 export const ActiveLocationOne = {
-  location_status_id: listStatus.Active,
+  analysisStatusId: listStatus.Active,
   total_area: 5,
   tree_cover_extent_total: 5,
   tree_cover_loss_total_yearly: '{"2021": 5}',
@@ -26,7 +26,7 @@ export const ActiveLocationOne = {
 };
 
 export const ActiveLocationTwo = {
-  location_status_id: listStatus.Active,
+  analysisStatusId: listStatus.Active,
   total_area: 3,
   tree_cover_extent_total: 3,
   tree_cover_loss_total_yearly: '{"2021": 3}',
@@ -51,7 +51,7 @@ export const ActiveLocationTwo = {
 };
 
 export const PendingLocation = {
-  location_status_id: listStatus.Pending,
+  analysisStatusId: listStatus.Pending,
   total_area: 3,
   tree_cover_extent_total: 3,
   tree_cover_loss_total_yearly: '{"2021": 3}',

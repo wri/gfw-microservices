@@ -60,8 +60,6 @@ describe('Maps View', () => {
     mapPage.clickOnOptionSatelliteBaseMap();
     mapPage.clickOnOptionoptionLandsatBaseMap();
     mapPage.clickOnOptionOpenStreetBaseMap();
-    mapPage.clickOnOptionDarkMatterBaseMap();
-    mapPage.clickOnOptionPositronBaseMap();
     mapPage.clickOnOptionHybridBaseMap();
     mapPage.clickOnOptionTreeHeightBaseMap();
     mapPage.clickOnOptionPlanetBaseMap();

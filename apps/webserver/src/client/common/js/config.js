@@ -2070,20 +2070,6 @@ export const mapPage = {
         'released with an open-content license. Data can be edited or downloaded at <a href="http://www.openstreetmap.org/" target="_blank">http://www.openstreetmap.org/</a>',
     },
     {
-      id: 'dark-matter',
-      label: 'Dark Matter',
-      customUrl: 'http://a.basemaps.cartocdn.com/dark_nolabels/{level}/{col}/{row}.png', // TODO: Over https when its available!
-      content:
-        '<div class="basemap-modal-title">Dark Matter</div><p>Dark Matter is a base map developed by <a href="http://cartodb.com/attributions#basemaps" target="_blank">CartoDB</a>, with <a href="http://www.openstreetmap.org/" target="_blank">OpenStreetMap</a>, and <a href="http://www.naturalearthdata.com/" target="_blank">natural earth</a> data.</p>',
-    },
-    {
-      id: 'positron',
-      label: 'Positron',
-      customUrl: 'http://a.basemaps.cartocdn.com/light_nolabels/{level}/{col}/{row}.png', // TODO: Over https when its available!
-      content:
-        '<div class="basemap-modal-title">Positron</div><p>Positron is a base map developed by <a href="http://cartodb.com/attributions#basemaps" target="_blank">CartoDB</a>, with <a href="http://www.openstreetmap.org/" target="_blank">OpenStreetMap</a>, and <a href="http://www.naturalearthdata.com/" target="_blank">natural earth</a> data.</p>',
-    },
-    {
       id: 'hybrid',
       label: 'Hybrid',
       customUrl: 'https://mt1.google.com/vt/lyrs=s&x={col}&y={row}&z={level}',

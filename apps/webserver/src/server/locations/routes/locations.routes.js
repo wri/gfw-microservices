@@ -1074,19 +1074,6 @@ module.exports = (app, limiter) => {
       });
   });
 
-  app.post('/locations/gadm', (req, res) => {
-    console.log('POST /locations/gadm');
-    const { geojson } = req.body;
-    LocationManager.getGADM(req, geojson)
-      .then((clippedGeoJSON) => {
-        res.send(clippedGeoJSON);
-      })
-      .catch((e) => {
-        console.log(e);
-        res.send(false);
-      });
-  });
-
   app.get('/locations/downloadShape', (req, res) => {
     console.log('GET: /locations/downloadShape');
     const { list_id, list_name, locations_ids, isGFWList, includedColumns } = req.query;

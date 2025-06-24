@@ -2132,6 +2132,7 @@ export const accountProfileStrings = {
     limitsSetting: 'Account Limits',
     accountUsers: 'Users',
     accountUsage: 'Account Usage',
+    accountProfiles: 'Account Profiles',
   },
   accountUsageLabels: {
     organizationName: 'Organization Name',

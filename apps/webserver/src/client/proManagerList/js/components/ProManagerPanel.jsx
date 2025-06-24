@@ -6,7 +6,7 @@ import AccountDetailSection from './accounts/AccountDetailSection';
 import AccountLimits from './accounts/AccountLimits';
 import AccountsListSection from './accounts/AccountsListSection';
 import AccountsListUsage from './accounts/AccountUsage/AccountsListUsage';
-import Converters from './converters';
+import Converters from './converters/ConvertersPage';
 import FeatureFlags from './featuresFlags/index';
 import UsersListSection from './users/UsersListSection';
 import UserDetailSection from './users/UserDetailSection';

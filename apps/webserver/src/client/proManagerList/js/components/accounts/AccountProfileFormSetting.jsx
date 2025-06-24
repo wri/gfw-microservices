@@ -3,13 +3,11 @@ import Select from 'react-select';
 import {
   Grid,
   TextField,
-  InputLabel,
   Checkbox,
   FormControl,
   FormControlLabel,
   Select as SelectMui,
   MenuItem,
-  styled,
 } from '@mui/material';
 
 import { PillButton } from '../../../../components';
@@ -19,16 +17,7 @@ import { useDialog } from '../../../../common/js/components/Dialog';
 import { ACCOUNT_ORG_STATUSES } from '../../../../common/js/constants/orgAccountStatuses';
 import { accountProfileStrings, subscriptionStatusOptions } from '../../../../common/js/config';
 import { useAccountDetail } from './AccountDetailSection';
-
-const FieldLabel = styled(InputLabel)({
-  fontFamily: 'Fira Sans, sans-serif',
-  textTransform: 'uppercase',
-  color: '#555555',
-  fontWeight: 500,
-  lineHeight: '1.2',
-  fontSize: '14px',
-  marginBottom: '5px',
-});
+import FieldLabel from './FieldLabel';
 
 const disabledStyles = {
   '&.Mui-disabled': {

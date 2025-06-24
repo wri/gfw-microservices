@@ -7,11 +7,13 @@
     "target": "ES2021",
     "incremental": true,
     "esModuleInterop": true,
-    "noUncheckedIndexedAccess": true
+    "noUncheckedIndexedAccess": true,
+    "composite": true,
+    "strict": false,
   },
+  "include": ["**/*"],
   "references": [
     { "path": "./tsconfig.app.json" },
     { "path": "./tsconfig.spec.json" },
-    { "path": "./tsconfig.client.json" }
   ]
 }

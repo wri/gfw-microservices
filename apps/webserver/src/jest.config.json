@@ -70,10 +70,5 @@
     "^userProfile(.*)$": "<rootDir>/client/userProfile$1",
     "^verify(.*)$": "<rootDir>/client/verify$1"
   },
-  "resolver": "<rootDir>/test/common/resolver.js",
-  "globals": {
-    "ts-jest": {
-      "tsconfig": "<rootDir>/../tsconfig.client.json"
-    }
-  }
+  "resolver": "<rootDir>/test/common/resolver.js"
 }

@@ -48,7 +48,7 @@ export default function ConverterRunsTable({ converterJobs, onViewJobDetails }) 
                   }}
                 >
                   <StyledTableCell>{job.id}</StyledTableCell>
-                  <StyledTableCell>{job.type}</StyledTableCell>
+                  <StyledTableCell>{job.name}</StyledTableCell>
                   <StyledTableCell>{job.status}</StyledTableCell>
                   <StyledTableCell sx={{ display: 'flex', gap: '8px' }}>
                     <PillButton

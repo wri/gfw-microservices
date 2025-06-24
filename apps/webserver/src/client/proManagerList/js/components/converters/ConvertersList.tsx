@@ -50,7 +50,7 @@ export default function ConvertersList({ setIsLoading, onViewJobDetails }) {
           <TableHead>
             <TableRow>
               <StyledTableCell>Name</StyledTableCell>
-              <StyledTableCell>Actions</StyledTableCell>
+              <StyledTableCell>Action(s)</StyledTableCell>
             </TableRow>
           </TableHead>
           <TableBody>

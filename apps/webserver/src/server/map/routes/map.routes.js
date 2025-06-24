@@ -196,16 +196,15 @@ module.exports = (app, limiter) => {
   app.get('/map/landmark_indigenous_and_community_lands', async (req, res) => {
     try {
       const { searchInput } = req.query;
-      let sql;
-      if (searchInput) {
-        sql = `SELECT
+
+      if (!searchInput) {
+        return res.status(400).json({ error: 'Invalid name format' });
+      }
+      const sql = `SELECT
                 *
               FROM data
               WHERE name ILIKE '%${searchInput}%'
               LIMIT 4;`;
-      } else {
-        return res.status(400).json({ error: 'Invalid name format' });
-      }
 
       const response = await fetch(
         'https://data-api.globalforestwatch.org/dataset/landmark_indigenous_and_community_lands/v202405/query/json',

@@ -1,11 +1,12 @@
+import { Component } from 'react';
 import ModalWrapper from './ModalWrapper';
 import { toggleSearch } from '../../actions/mapActions';
 import store from '../../store';
 import Search from '@arcgis/core/widgets/Search';
 import FeatureLayer from '@arcgis/core/layers/FeatureLayer';
-import { Component } from 'react';
 import { proLayers } from '../../../../common/js/proLayers.config';
 import createAdminAreasSearchSource from './createAdminAreasSearchSource';
+import createLandmarkIndigenousAndCommuintyLandsSearchSource from './createLandmarkIndigenousAndCommuintyLandsSearchSource';
 import featureFlags from '../../../../../utils/general.utils';
 import './SearchModal.scss';
 
@@ -140,7 +141,12 @@ export default class SearchModal extends Component {
       includeDefaultSources: false,
 
       sources: [
-        ...(isGadm41Available ? [createAdminAreasSearchSource()] : gadm36Sources),
+        ...(isGadm41Available
+          ? [
+              createAdminAreasSearchSource(),
+              createLandmarkIndigenousAndCommuintyLandsSearchSource(),
+            ]
+          : gadm36Sources),
         {
           url: 'https://geocode-api.arcgis.com/arcgis/rest/services/World/GeocodeServer',
           singleLineFieldName: 'SingleLine',
@@ -199,16 +205,6 @@ export default class SearchModal extends Component {
           outFields: ['name', 'orig_name', 'globalid'],
           name: 'Protected Areas',
           placeholder: 'Search Protected Areas',
-        },
-        {
-          layer: new FeatureLayer({
-            url: 'https://gis-gfw.wri.org/arcgis/rest/services/people/MapServer/1',
-          }),
-          searchFields: ['name'],
-          suggestionTemplate: 'Name: {name}',
-          outFields: ['name'],
-          name: 'Land Rights',
-          placeholder: 'Search Land Rights',
         },
       ],
     });

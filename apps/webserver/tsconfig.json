@@ -7,7 +7,7 @@
     "target": "ES2021",
     "incremental": true,
     "esModuleInterop": true,
-    "noUncheckedIndexedAccess": true,
+    "noUncheckedIndexedAccess": true
   },
   "include": ["**/*"]
 }

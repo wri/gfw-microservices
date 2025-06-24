@@ -10,16 +10,20 @@ import {
   Typography,
 } from '@mui/material';
 
-// import { useConvertersContext } from './context/ConvertersContext';
 import { StyledTableCell } from '../../common/styledTableCell';
 import { PillButton } from '../../../../components';
 import ConverterRunsTable from './ConverterRunsTable';
 import { useFetch } from '../../../../hooks';
 import { fetchConverters } from '../../../../api/converter';
 
-export default function ConvertersList({ setIsLoading }) {
+interface ConverterData {
+  convertersNames: string[];
+  converterJobs: any[]; // replace `any` with actual type if you have it
+}
+
+export default function ConvertersList({ setIsLoading, onViewJobDetails }) {
   const [orgIdInput, setOrgIdInput] = useState('');
-  const { data: convertersData, error, isLoading, request } = useFetch();
+  const { data: convertersData, error, isLoading, request } = useFetch<ConverterData>();
 
   useEffect(() => {
     fetchConverters(request);
@@ -32,7 +36,7 @@ export default function ConvertersList({ setIsLoading }) {
   if (isLoading) {
     return <div>Loading converters...</div>;
   }
-  if (!convertersData?.convertersNames?.length) {
+  if (!convertersData || !convertersData.convertersNames?.length) {
     return <div>No converters found</div>;
   }
 
@@ -41,7 +45,7 @@ export default function ConvertersList({ setIsLoading }) {
       <Typography variant="subtitle1" marginBottom={1}>
         Available
       </Typography>
-      <TableContainer marginTop={2}>
+      <TableContainer>
         <Table>
           <TableHead>
             <TableRow>
@@ -84,7 +88,10 @@ export default function ConvertersList({ setIsLoading }) {
           </TableBody>
         </Table>
       </TableContainer>
-      <ConverterRunsTable converterJobs={convertersData.converterJobs} />
+      <ConverterRunsTable
+        converterJobs={convertersData.converterJobs}
+        onViewJobDetails={onViewJobDetails}
+      />
     </Grid>
   );
 }

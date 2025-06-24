@@ -11,7 +11,7 @@ import {
 import { PillButton } from '../../../../components';
 import { StyledTableCell } from '../../common/styledTableCell';
 
-export default function ConverterRunsTable({ converterJobs }) {
+export default function ConverterRunsTable({ converterJobs, onViewJobDetails }) {
   return (
     <>
       <Typography variant="subtitle1" marginTop={3} marginBottom={1}>
@@ -55,7 +55,7 @@ export default function ConverterRunsTable({ converterJobs }) {
                       size="small"
                       onClick={(e) => {
                         e.stopPropagation(); // prevent row click
-                        window.location.href = `/converter-jobs/${job.id}`;
+                        onViewJobDetails(job.id);
                       }}
                     >
                       View

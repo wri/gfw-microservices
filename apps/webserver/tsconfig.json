@@ -8,12 +8,8 @@
     "incremental": true,
     "esModuleInterop": true,
     "noUncheckedIndexedAccess": true,
-    "composite": true,
-    "strict": false,
+    "composite": true
   },
   "include": ["**/*"],
-  "references": [
-    { "path": "./tsconfig.app.json" },
-    { "path": "./tsconfig.spec.json" },
-  ]
+  "references": [{ "path": "./tsconfig.app.json" }, { "path": "./tsconfig.spec.json" }]
 }

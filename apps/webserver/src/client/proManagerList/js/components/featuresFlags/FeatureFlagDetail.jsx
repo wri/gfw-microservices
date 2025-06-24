@@ -9,21 +9,16 @@ import {
   TableContainer,
   styled,
 } from '@mui/material';
-import TableCell, { tableCellClasses } from '@mui/material/TableCell';
 
 import AddCompany from './AddCompany';
 import { useFeatureFlagStateContext } from './FeatureFlagStateContext';
 import InfoBubble from '../../../../common/js/components/InfoBubble';
+import { StyledTableCell } from '../../common/styledTableCell';
 
-const StyledTableCell = styled(TableCell)(() => ({
-  fontFamily: 'Fira Sans, sans-serif',
-  [`&.${tableCellClasses.head}`]: {
-    fontWeight: 'bold',
-  },
-  [`&.${tableCellClasses.body}`]: {
-    color: '#4e4e4ede',
-  },
-}));
+const gridSectionStyle = {
+  padding: '20px 0',
+  boxShadow: '0px 1px 0px 0px rgba(0, 0, 0, 0.13) inset',
+};
 
 const StyledSwitch = styled(Switch)(() => ({
   '& .MuiSwitch-switchBase.Mui-checked': {
@@ -43,10 +38,7 @@ function FeatureFlagDetail() {
 
   return selectedFeatureFlag ? (
     <>
-      <Grid
-        container
-        style={{ padding: '20px 0', boxShadow: '0px 1px 0px 0px rgba(0, 0, 0, 0.13) inset' }}
-      >
+      <Grid container style={gridSectionStyle}>
         <Grid item xs={6}>
           <label>FEATURE DETAILS</label>
         </Grid>
@@ -55,10 +47,7 @@ function FeatureFlagDetail() {
           <div style={{ marginTop: '20px' }}>{selectedFeatureFlag.flagId}</div>
         </Grid>
       </Grid>
-      <Grid
-        container
-        style={{ padding: '20px 0', boxShadow: '0px 1px 0px 0px rgba(0, 0, 0, 0.13) inset' }}
-      >
+      <Grid container style={gridSectionStyle}>
         <Grid item xs={6}>
           <label>STATUS</label>
         </Grid>
@@ -77,10 +66,7 @@ function FeatureFlagDetail() {
           </label>
         </Grid>
       </Grid>
-      <Grid
-        container
-        style={{ padding: '20px 0', boxShadow: '0px 1px 0px 0px rgba(0, 0, 0, 0.13) inset' }}
-      >
+      <Grid container style={gridSectionStyle}>
         <Grid item xs={6}>
           <label>ACCOUNTS</label>
         </Grid>

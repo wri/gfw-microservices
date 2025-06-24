@@ -4,6 +4,7 @@ import { ConverterNamesList, ConverterName } from '@wri-monorepos/constants';
 import {
   startConverterJob,
   markConverterStopped,
+  getConverterJobs,
   getConverterJobInfo,
 } from '../services/converters.service';
 
@@ -19,8 +20,11 @@ interface StartConverterBody {
  * @desc Returns a list of available converters
  * @access Pro Manager only
  */
-export const getConverters = (req: Request, res: Response): void => {
-  res.status(200).json({ converters: ConverterNamesList });
+export const getConverters = async (req: Request, res: Response): Promise<void> => {
+  res.status(200).json({
+    convertersNames: ConverterNamesList,
+    converterJobs: await getConverterJobs(),
+  });
 };
 
 /**

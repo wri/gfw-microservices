@@ -1,3 +1,6 @@
+import { Typography } from '@mui/material';
+import { accountProfileStrings } from '../../../../common/js/config';
+
 function AccountsListsTable({
   accountSortingCategory,
   accountDir,
@@ -9,7 +12,9 @@ function AccountsListsTable({
     <div>
       <section>
         <div className="flex-grid space-between align-center">
-          <h2 className="section-title-normal">Account Profiles</h2>
+          <Typography sx={{ margin: '1rem 0' }} variant="h3">
+            {accountProfileStrings.sectionTitles.accountProfiles}
+          </Typography>
         </div>
         <input onChange={searchAccts} placeholder="Search for account" className="space-element" />
         <table>

@@ -1,28 +1,12 @@
 import { Fragment, useState } from 'react';
-import { Grid, TextField, InputLabel, Typography, Divider, styled } from '@mui/material';
+import { Grid, TextField, Typography, Divider } from '@mui/material';
 
 import { useDialog } from '../../../../common/js/components/Dialog';
 import { accountProfileStrings } from '../../../../common/js/config';
 import { useAccountDetail } from './AccountDetailSection';
 import { ACCOUNT_ORG_STATUSES } from '../../../../common/js/constants/orgAccountStatuses';
 import { PillButton } from '../../../../components';
-
-const fontStyles = {
-  fontFamily: 'Fira Sans, sans-serif',
-  textTransform: 'uppercase',
-  color: '#555555',
-  fontWeight: 500,
-};
-
-const FieldLabel = styled(InputLabel)({
-  fontFamily: 'Fira Sans, sans-serif',
-  textTransform: 'uppercase',
-  color: '#555555',
-  fontWeight: 400,
-  lineHeight: '1.2',
-  fontSize: '14px',
-  marginBottom: '5px',
-});
+import FieldLabel from './FieldLabel';
 
 /**
  * @Summary Displays and Manage Account Profile Limits Form Setting
@@ -110,7 +94,7 @@ export default function AccountProfileLimitsSetting() {
       {/* Subscription Limits */}
       <Grid sx={{ marginBottom: '1.5rem' }} container spacing={2} rowSpacing={2}>
         <Grid item sm={12} xs={12}>
-          <Typography sx={fontStyles} variant="body1">
+          <Typography variant="body1">
             {`${subscriptionLimits?.subscription_name ?? ''} ${
               accountProfileStrings.accountLimitsSetting.subHeadingSubscriptionLimits
             }`}
@@ -147,7 +131,7 @@ export default function AccountProfileLimitsSetting() {
       {/* Purchased/Extended Limits */}
       <Grid sx={{ marginBottom: '1.5rem' }} container spacing={2} rowSpacing={2}>
         <Grid item sm={12} xs={12}>
-          <Typography sx={fontStyles} variant="body1">
+          <Typography variant="body1">
             {accountProfileStrings.accountLimitsSetting.subHeadingCustomLimits}
           </Typography>
         </Grid>
@@ -188,7 +172,7 @@ export default function AccountProfileLimitsSetting() {
       {/* Add Extra Limits Form */}
       <Grid sx={{ marginBottom: '1.5rem' }} container spacing={2} rowSpacing={2}>
         <Grid item sm={12} xs={12}>
-          <Typography sx={fontStyles} variant="body1">
+          <Typography variant="body1">
             {accountProfileStrings.accountLimitsSetting.subHeadingToAddExtraLimits}
           </Typography>
         </Grid>

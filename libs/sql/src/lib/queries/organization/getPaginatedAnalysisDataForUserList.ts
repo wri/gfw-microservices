@@ -19,6 +19,7 @@ BEGIN
 	DECLARE @AnalysisFilters NVARCHAR(MAX) = '1=1'
 	DECLARE @listVersion INT
 	DECLARE @where_clauses NVARCHAR(max) = '';
+	DECLARE @cleanedOrderByColumn NVARCHAR(MAX) = REPLACE(REPLACE(@OrderByColumn, '[', ''), ']', '')
 
 	SET NOCOUNT ON
 	-- Obtain the location table name and the analysis table name for the list.
@@ -292,7 +293,34 @@ DEALLOCATE column_cursor;
 						SELECT * FROM MyListTable
 						INNER JOIN MyAnalysisTable ON MyListTable.list_id = MyAnalysisTable.analysis_list_id AND MyListTable.list_location_id = MyAnalysisTable.location_id
 						WHERE 1=1 '+@Filters+'
-						ORDER BY '+@OrderByColumn+' '+@Order
+						ORDER BY ' +
+						CASE
+							WHEN @OrderByColumn = 'Location Name' OR @OrderByColumn = '[Location Name]'
+								THEN 'MyListTable.[Location Name]'
+							WHEN @OrderByColumn = 'Investment Name' OR @OrderByColumn = '[Investment Name]'
+								THEN 'MyListTable.[Investment Name]'
+							WHEN CHARINDEX(@OrderByColumn, @list_location_table_cols_output) > 0
+								THEN 'MyListTable.' + QUOTENAME(REPLACE(REPLACE(@OrderByColumn, '[', ''), ']', ''))
+							WHEN CHARINDEX(@OrderByColumn, @analysis_location_table_cols_output) > 0
+								THEN 'MyAnalysisTable.' + QUOTENAME(@cleanedOrderByColumn)
+							WHEN EXISTS (
+								SELECT 1
+								FROM ListAttributes
+								WHERE list_id = @listID
+								AND attribute_name = @cleanedOrderByColumn
+							)
+								THEN CASE
+									WHEN (
+										SELECT attribute_type
+										FROM ListAttributes
+										WHERE list_id = @listID
+										AND attribute_name = @cleanedOrderByColumn
+									) = 1
+									THEN 'CAST(JSON_VALUE(MyListTable.attributes, ''$."' + @cleanedOrderByColumn + '"'') AS DECIMAL(18,6))'
+									ELSE 'CAST(JSON_VALUE(MyListTable.attributes, ''$."' + @cleanedOrderByColumn + '"'') AS NVARCHAR(MAX))'
+								END
+							ELSE @OrderByColumn
+						END + ' ' + @Order
 	IF @RowsOfPage > 0 AND @PageNumber > 0
 		SET @SQL = @SQL +' OFFSET (@PageNumber-1)*@RowsOfPage ROWS FETCH NEXT @RowsOfPage ROWS ONLY';
 	--PRINT @SQL

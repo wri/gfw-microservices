@@ -7,6 +7,7 @@ import AccountLimits from './accounts/AccountLimits';
 import AccountsListSection from './accounts/AccountsListSection';
 import AccountsListUsage from './accounts/AccountUsage/AccountsListUsage';
 import Converters from './converters/ConvertersPage';
+import ConverterDetailsPage from './converters/ConverterDetailsPage';
 import FeatureFlags from './featuresFlags/index';
 import UsersListSection from './users/UsersListSection';
 import UserDetailSection from './users/UserDetailSection';
@@ -18,6 +19,12 @@ import { LoadingModal } from '../../../components';
 
 function ProManagerPanel({ location }) {
   const [isLoading, setIsLoading] = useState(true);
+
+  const pathname = location.pathname;
+  if (pathname.startsWith('/converter-job/')) {
+    const id = pathname.split('/converter-job/')[1];
+    return <ConverterDetailsPage id={id} />;
+  }
 
   const defaultTab = proManagerPanelTabs.accountProfiles.id;
   const selectedTab = new URLSearchParams(location.search).get('tab') || defaultTab;

@@ -100,14 +100,20 @@ exports.getListMbtileInfo = async (req, res) => {
       await getMBTileFromS3Bucket(listVectorTileS3Path);
     }
     new MBTiles(`${localMbtileFilePath}?mode=ro`, (err, mbtiles) => {
+      console.log("🚀 ~ newMBTiles ~ err:", err)
       mbtiles.getInfo((getInfoError, data) => {
+        console.log("🚀 ~ mbtiles.getInfo ~ getInfoError:", getInfoError)
         res.status(200).json({
-          bounds: data?.bounds || [],
+          bounds: data?.bounds,
           maxZoom: data?.maxzoom || 0,
           minZoom: data?.minzoom || 0,
           listMbtileFileName: mbtileFileName,
           listMbtileFileNameOnly: mbtileFileNameOnly,
           success: data?.filesize,
+          error: {
+            err,
+            getInfoError
+          }
         });
       });
     });

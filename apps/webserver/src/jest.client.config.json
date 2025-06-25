@@ -1,0 +1,69 @@
+{
+  "displayName": "client",
+  "clearMocks": true,
+  "collectCoverageFrom": ["<rootDir>/client/**/*.{js,jsx,ts,tsx}"],
+  "coverageDirectory": "../../../coverage/apps/webserver/client",
+  "coverageReporters": ["json", "text", "lcov", "clover", "cobertura"],
+  "coverageThreshold": {
+    "global": {
+      "branches": 1,
+      "functions": 1,
+      "lines": 1,
+      "statements": 1
+    }
+  },
+  "moduleFileExtensions": ["js", "json", "jsx", "ts", "tsx"],
+  "setupFiles": ["@testing-library/react/dont-cleanup-after-each"],
+  "setupFilesAfterEnv": ["./test/jest.setup.js", "@testing-library/jest-dom/extend-expect"],
+  "testEnvironment": "jest-environment-jsdom",
+  "testMatch": [
+    "<rootDir>/client/**/*.{spec,test}.{js,ts,jsx,tsx}",
+    "<rootDir>/test/fitness/**/*.{spec,test}.{js,ts,jsx,tsx}"
+  ],
+  "transform": {
+    ".+\\.(css|css!|styl|less|sass|scss|png|jpg|ttf|woff|woff2)$": "jest-transform-stub",
+    "^.+\\.(js|jsx)?$": "babel-jest",
+    "^.+\\.(ts|tsx)$": "ts-jest"
+  },
+  "transformIgnorePatterns": ["node_modules/(?!(@arcgis|@esri|@stencil)/)"],
+  "moduleNameMapper": {
+    "^axios$": "<rootDir>/../../../node_modules/axios/dist/node/axios.cjs",
+    "^mapshaper$": "<rootDir>/../../../node_modules/mapshaper/mapshaper.js",
+    "\\.(css|scss)$": "<rootDir>/test/__mocks__/object.js",
+    "\\.(jpe?g|png|gif|svg)$": "<rootDir>/test/__mocks__/object.js",
+    "@arcgis/core/symbols/SimpleFillSymbol": "<rootDir>/test/__mocks__/SimpleFillSymbol.js",
+    "@arcgis": "<rootDir>/test/__mocks__/object.js",
+    "@wri-monorepos/constants": "<rootDir>/../../../libs/constants/src/index.ts",
+    "src/client/map/js/layers(.*)$": "<rootDir>/test/__mocks__/constructor.js",
+    "map/js/layers/TreeCoverLossLayer": "<rootDir>/test/__mocks__/constructor.js",
+    "^tests(.*)$": "<rootDir>/test/client/tests$1",
+    "^about(.*)$": "<rootDir>/client/about$1",
+    "^account(.*)$": "<rootDir>/client/account$1",
+    "^activityLog(.*)$": "<rootDir>/client/activityLog$1",
+    "^admin(.*)$": "<rootDir>/client/admin$1",
+    "^change(.*)$": "<rootDir>/client/change$1",
+    "^changeExist(.*)$": "<rootDir>/client/changeExist$1",
+    "^common(.*)$": "<rootDir>/client/common$1",
+    "^dashboard(.*)$": "<rootDir>/client/dashboard$1",
+    "^diagnostics(.*)$": "<rootDir>/client/diagnostics$1",
+    "^forgot(.*)$": "<rootDir>/client/forgot$1",
+    "^listDetails(.*)$": "<rootDir>/client/listDetails$1",
+    "^locations(.*)$": "<rootDir>/client/locations$1",
+    "^login(.*)$": "<rootDir>/client/login$1",
+    "^manager(.*)$": "<rootDir>/client/manager$1",
+    "^map(.*)$": "<rootDir>/client/map$1",
+    "^more(.*)$": "<rootDir>/client/more$1",
+    "^profile(.*)$": "<rootDir>/client/profile$1",
+    "^proManagerList(.*)$": "<rootDir>/client/proManagerList$1",
+    "^reset(.*)$": "<rootDir>/client/reset$1",
+    "^select(.*)$": "<rootDir>/client/select$1",
+    "^userProfile(.*)$": "<rootDir>/client/userProfile$1",
+    "^verify(.*)$": "<rootDir>/client/verify$1"
+  },
+  "resolver": "<rootDir>/test/common/resolver.js",
+  "globals": {
+    "ts-jest": {
+      "tsconfig": "<rootDir>/client/tsconfig.json"
+    }
+  }
+}

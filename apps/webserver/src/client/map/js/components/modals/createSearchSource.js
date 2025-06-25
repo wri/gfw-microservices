@@ -3,21 +3,18 @@ import store from '../../store';
 import { showMapLoader } from '../../actions/mapActions';
 import { createResultsGraphic } from './searchUtils';
 
-function createLandmarkIndigenousAndCommuintyLandsSearchSource() {
+function createSearchSource(sourceName, url, displayName) {
   return new SearchSource({
-    name: 'Indigenous or Community land area',
+    name: sourceName,
     placeholder: 'Enter name',
 
     async getSuggestions(params) {
-      const response = await fetch(
-        `/map/landmark_indigenous_and_community_lands?searchInput=${params.suggestTerm}`
-      );
+      const response = await fetch(`${url}?searchInput=${params.suggestTerm}`);
       const { data } = await response.json();
-      console.log({ data });
       return data.map((item) => ({
         sourceIndex: 0,
         key: item,
-        text: item.name,
+        text: displayName(item),
       }));
     },
 
@@ -32,8 +29,8 @@ function createLandmarkIndigenousAndCommuintyLandsSearchSource() {
       try {
         return [
           {
-            name: item.name,
-            feature: createResultsGraphic(item),
+            name: displayName(item),
+            feature: await createResultsGraphic(item),
           },
         ];
       } catch (err) {
@@ -46,4 +43,4 @@ function createLandmarkIndigenousAndCommuintyLandsSearchSource() {
   });
 }
 
-export default createLandmarkIndigenousAndCommuintyLandsSearchSource;
+export default createSearchSource;

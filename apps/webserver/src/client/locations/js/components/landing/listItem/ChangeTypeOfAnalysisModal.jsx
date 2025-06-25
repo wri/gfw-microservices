@@ -66,12 +66,15 @@ function ChangeTypeOfAnalysisModal({
   };
 
   const requestAnalysisForSelectedTypes = () => {
+    const analysisTypesForRequest = selectedAnalysis.filter(
+      (analysis) => !initialAnalysisSelection.includes(analysis)
+    );
     return requestGeoTrellisAnalyzeList(
       {
         id: listId,
         list_name: listName,
       },
-      selectedAnalysis.join(','),
+      analysisTypesForRequest.join(),
       true
     );
   };

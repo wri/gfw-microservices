@@ -240,16 +240,16 @@ DECLARE @jsonColumns TABLE (
 -- Add all columns with unique aliases to handle case sensitivity
 INSERT INTO @jsonColumns (ColumnName, AliasName)
 VALUES
-    ('commodity_threat_deforestation_level', 'threat_deforestation_cs'),
-    ('commodity_threat_peat_level', 'threat_peat_cs'),
-    ('commodity_threat_protected_areas_level', 'threat_protected_areas_cs'),
-    ('commodity_threat_fires_level', 'threat_fires_cs'),
-    ('commodity_value_forest_extent_level', 'value_forest_extent_cs'),
-    ('commodity_value_peat_level', 'value_peat_cs'),
-    ('commodity_value_protected_areas_level', 'value_protected_areas_cs'),
-    ('commodity_value_overall_level', 'value_overall_cs'),
-    ('commodity_threat_overall_level', 'threat_overall_cs'),
-    ('commodity_mill_priority_level', 'mill_priority_cs');
+    ('commodity_threat_deforestation_level', 'commodity_threat_deforestation_level'),
+    ('commodity_threat_peat_level', 'commodity_threat_peat_level'),
+    ('commodity_threat_protected_areas_level', 'commodity_threat_protected_areas_level'),
+    ('commodity_threat_fires_level', 'commodity_threat_fires_level'),
+    ('commodity_value_forest_extent_level', 'commodity_value_forest_extent_level'),
+    ('commodity_value_peat_level', 'commodity_value_peat_level'),
+    ('commodity_value_protected_areas_level', 'commodity_value_protected_areas_level'),
+    ('commodity_value_overall_level', 'commodity_value_overall_level'),
+    ('commodity_threat_overall_level', 'commodity_threat_overall_level'),
+    ('commodity_mill_priority_level', 'commodity_mill_priority_level');
 
 DECLARE @parsedColumns NVARCHAR(MAX) = '';
 

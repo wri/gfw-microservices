@@ -9,5 +9,6 @@
     "esModuleInterop": true,
     "noUncheckedIndexedAccess": true
   },
-  "include": ["**/*"]
+  "include": [],
+  "references": [{ "path": "./tsconfig.app.json" }, { "path": "./tsconfig.spec.json" }]
 }

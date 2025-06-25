@@ -1,4 +1,4 @@
-import * as fs   from 'fs';
+import * as fs from 'fs';
 import * as path from 'path';
 import * as sql from 'mssql';
 import { Logger } from '@nestjs/common';
@@ -7,8 +7,8 @@ import { SQLUtils } from '../util';
 const manifest = require('../queries/organization/orgs-sp-manifest.json');
 
 export const dumpOrgSpFromDb = async (orgDb: string) => {
-  const spNames = (manifest.spTsFiles as string[])      // ['createAnalysisTable', …]
-  /** 
+  const spNames = manifest.spTsFiles as string[]; // ['createAnalysisTable', …]
+  /**
    * ------------------------------------------------
    * 1️⃣  prepare query
    * ------------------------------------------------
@@ -21,13 +21,15 @@ export const dumpOrgSpFromDb = async (orgDb: string) => {
       AND name NOT IN (@list)
   `;
 
-  const sqlParameters = [{
-    field: 'list',
-    type: sql.NVarChar(sql.MAX),
-    value: spNames.join(',')
-  }];
+  const sqlParameters = [
+    {
+      field: 'list',
+      type: sql.NVarChar(sql.MAX),
+      value: spNames.join(','),
+    },
+  ];
 
-  /** 
+  /**
    * ------------------------------------------------
    * 2️⃣  pull definitions
    * ------------------------------------------------
@@ -39,17 +41,14 @@ export const dumpOrgSpFromDb = async (orgDb: string) => {
       sqlParameters
     );
 
-    /** 
+    /**
      * ------------------------------------------------
      * 3️⃣  write ts files
      * ------------------------------------------------
      */
     result.forEach((file) => {
       const { name, definition } = formatProcedureRow(file);
-      const outDir  = path.resolve(
-        process.cwd(),
-        'libs/sql/src/lib/queries/organization/dumped'
-      );
+      const outDir = path.resolve(process.cwd(), 'libs/sql/src/lib/queries/organization/dumped');
       if (!fs.existsSync(path.join(outDir, `${name}.ts`))) {
         // fs.mkdirSync(outDir, { recursive: true });
         fs.writeFileSync(path.join(outDir, `${name}.ts`), definition);
@@ -59,7 +58,7 @@ export const dumpOrgSpFromDb = async (orgDb: string) => {
   } catch (error) {
     Logger.error(error);
   }
-}
+};
 
 /**
  * Converts one row from
@@ -74,9 +73,10 @@ export const dumpOrgSpFromDb = async (orgDb: string) => {
  * <SQL body (everything after the first AS)>
  * `;
  */
-export function formatProcedureRow(
-  row: { name: string; definition: string }
-): { name: string, definition: string } {
+export function formatProcedureRow(row: { name: string; definition: string }): {
+  name: string;
+  definition: string;
+} {
   const { name: spName, definition } = row;
 
   /* ---------- 1. split header/body ----------------------------------- */
@@ -85,28 +85,26 @@ export function formatProcedureRow(
     // fallback – give the whole thing if no AS found
     return {
       name: spName,
-      definition: `export const ${spName} = \`\n${definition.replace(/`/g, '\\`')}\n\`;`
+      definition: `export const ${spName} = \`\n${definition.replace(/`/g, '\\`')}\n\`;`,
     };
   }
   const header = definition.slice(0, asIdx);
-  const body   = definition.slice(asIdx + 2)        // skip “AS”
-                          .replace(/^[\s\r\n]+/, '') // trim leading space/newlines
-                          .replace(/`/g, '\\`')      // escape back-ticks
-                          .replace(/\$\{/g, '$\\{'); // escape ${}
+  const body = definition
+    .slice(asIdx + 2) // skip “AS”
+    .replace(/^[\s\r\n]+/, '') // trim leading space/newlines
+    .replace(/`/g, '\\`') // escape back-ticks
+    .replace(/\$\{/g, '$\\{'); // escape ${}
 
   /* ---------- 2. parameter block ------------------------------------- */
   // take everything after the PROCEDURE name up to AS
   let paramsBlock = header.split(/PROCEDURE/i)[1] ?? '';
   // drop the proc name itself (handles [dbo].uspX, dbo.uspX, uspX)
-  paramsBlock = paramsBlock.replace(
-    /^\s*(?:\[[^\]]+\]\.)?(?:dbo\.)?(usp[\w$]+)\s*/i,
-    ''
-  );
+  paramsBlock = paramsBlock.replace(/^\s*(?:\[[^\]]+\]\.)?(?:dbo\.)?(usp[\w$]+)\s*/i, '');
 
   // split on commas that are *not* inside parentheses
   const params: string[] = [];
   let depth = 0,
-    chunk  = '';
+    chunk = '';
   for (const ch of paramsBlock) {
     if (ch === '(') depth++;
     if (ch === ')') depth--;
@@ -126,9 +124,7 @@ export function formatProcedureRow(
       : '/** (no parameters) */';
 
   /* ---------- 4. constant name -------------------------------------- */
-  const constName = spName
-    .replace(/^usp/i, '')
-    .replace(/^./, (c) => c.toLowerCase());
+  const constName = spName.replace(/^usp/i, '').replace(/^./, (c) => c.toLowerCase());
 
   /* ---------- 5. return formatted block ----------------------------- */
   return {
@@ -136,6 +132,6 @@ export function formatProcedureRow(
     definition: `${jsDoc}
 export const ${constName} = \`
 ${body}
-\`;`
+\`;`,
   };
 }

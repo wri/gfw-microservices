@@ -124,17 +124,17 @@ export default class SearchModal extends Component {
               ),
               createSearchSource(
                 'Universal Mill List',
-                'map/gfw_universal_mill_list',
+                '/map/gfw_universal_mill_list',
                 (item) => item.mill_name
               ),
               createSearchSource(
                 'Indigenous or Community land area',
-                'map/landmark_indigenous_and_community_lands',
+                '/map/landmark_indigenous_and_community_lands',
                 (item) => item.name
               ),
               createSearchSource(
                 'Protected Areas',
-                'map/wdpa_licensed_protected_areas',
+                '/map/wdpa_licensed_protected_areas',
                 (item) => item.name
               ),
             ]

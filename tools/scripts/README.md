@@ -35,21 +35,25 @@ gh auth login
 Creates a release candidate branch by cherry-picking specific PRs from the develop branch.
 
 **Usage:**
+
 ```bash
 ./create-release-candidate.sh <sprint_number> <last_pr> <cherry_picks>
 ```
 
 **Parameters:**
+
 - `sprint_number` - Sprint number (e.g., 80)
 - `last_pr` - Last PR number (e.g., 1985)
 - `cherry_picks` - Comma-separated list of PRs to cherry-pick
 
 **Example:**
+
 ```bash
 ./create-release-candidate.sh 80 1985 "1988,1991,1995,2002,TODO: 2008,2011"
 ```
 
 **Features:**
+
 - Automatically clones the repository
 - Creates a release candidate branch (`release-candidate-{sprint_number}`)
 - Cherry-picks specified PRs
@@ -58,6 +62,7 @@ Creates a release candidate branch by cherry-picking specific PRs from the devel
 - Pushes the branch to remote
 
 **Output:**
+
 - Creates branch: `release-candidate-{sprint_number}`
 - Provides branch URL for easy access
 - Shows summary of processed cherry-picks
@@ -67,16 +72,19 @@ Creates a release candidate branch by cherry-picking specific PRs from the devel
 Creates release tags and GitHub releases for specified microservices and environments.
 
 **Usage:**
+
 ```bash
 ./create-release.sh [branch] [microservice] [environment]
 ```
 
 **Parameters:**
+
 - `branch` - Source branch (default: `develop`)
 - `microservice` - Service name or `ALL` (default: `ALL`)
 - `environment` - Environment: `QA`, `STG`, or `PROD` (default: `QA`)
 
 **Examples:**
+
 ```bash
 # Create releases for all services in QA environment from develop branch
 ./create-release.sh
@@ -92,6 +100,7 @@ Creates release tags and GitHub releases for specified microservices and environ
 ```
 
 **Supported Microservices:**
+
 - `WEB` - Web service
 - `LP` - Landing Page service
 - `EAPI` - External API service
@@ -99,10 +108,12 @@ Creates release tags and GitHub releases for specified microservices and environ
 - `ALL` - All services (default)
 
 **Tag Format:**
+
 - Format: `{SERVICE}-{ENV}-V{NNN}`
 - Examples: `WEB-QA-V001`, `LP-STG-V002`, `EAPI-PROD-V003`
 
 **Features:**
+
 - Automatically increments version numbers
 - Creates both Git tags and GitHub releases
 - Supports multiple environments
@@ -113,16 +124,19 @@ Creates release tags and GitHub releases for specified microservices and environ
 Deletes branches older than a specified number of months to keep the repository clean.
 
 **Usage:**
+
 ```bash
 ./delete-old-branches.sh [OPTIONS]
 ```
 
 **Options:**
+
 - `-d, --dry-run` - Show what would be deleted without actually deleting
 - `-m, --months N` - Number of months old (default: 2)
 - `-h, --help` - Show help message
 
 **Examples:**
+
 ```bash
 # Delete branches older than 2 months (default)
 ./delete-old-branches.sh
@@ -139,6 +153,7 @@ Deletes branches older than a specified number of months to keep the repository 
 
 **Protected Branches:**
 The following branches are never deleted:
+
 - `main`
 - `master`
 - `develop`
@@ -147,6 +162,7 @@ The following branches are never deleted:
 - `production`
 
 **Features:**
+
 - Analyzes both local and remote branches
 - Focuses on `release-candidate-*` branches for remote deletion
 - Provides detailed colored output
@@ -159,20 +175,24 @@ The following branches are never deleted:
 ### Complete Release Process
 
 1. **Create Release Candidate:**
+
    ```bash
    ./create-release-candidate.sh 80 1985 "1988,1991,1995,2002"
    ```
 
 2. **Test the Release Candidate:**
+
    - Review the created branch
    - Run tests and validation
 
 3. **Create Release Tags:**
+
    ```bash
    ./create-release.sh release-candidate-80 ALL QA
    ```
 
 4. **Promote to Production:**
+
    ```bash
    ./create-release.sh release-candidate-80 ALL PROD
    ```
@@ -202,6 +222,7 @@ The following branches are never deleted:
 ### Getting Help
 
 Each script includes built-in help:
+
 ```bash
 ./create-release-candidate.sh
 ./create-release.sh

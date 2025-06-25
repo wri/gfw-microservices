@@ -21,7 +21,7 @@
     "<rootDir>/test/fitness/**/*.{spec,test}.{js,ts,jsx,tsx}"
   ],
   "transform": {
-    ".+\\.(css|css!|styl|less|sass|scss|png|jpg|ttf|woff|woff2)$": "jest-transform-stub",
+    ".+\\.(css|css!|scss|png|jpg|ttf|woff)$": "jest-transform-stub",
     "^.+\\.(js|jsx)?$": "babel-jest",
     "^.+\\.(ts|tsx)$": "ts-jest"
   },

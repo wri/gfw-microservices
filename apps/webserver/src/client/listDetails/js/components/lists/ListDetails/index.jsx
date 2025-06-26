@@ -1808,7 +1808,7 @@ export default class ListDetails extends Component {
         : [];
 
     const listName = selectedList ? selectedList.list_name : '';
-    const listAnalysesStatus = selectedList ? selectedList.listAnalysesStatus ?? [] : [];
+    const listAnalysesStatus = selectedList?.listAnalysesStatus ?? [];
 
     const isGfwList = selectedList.isGlobalForestWatchList;
 

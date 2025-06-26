@@ -18,25 +18,25 @@ describe('DataTemplates', () => {
 
   it('should render the component correctly', () => {
     render(<DataTemplates onClose={handleCloseMock} isOpen={true} />);
-    expect(screen.getByText('Download a template')).toBeInTheDocument();
+    expect(screen.getByText('Download data templates')).toBeInTheDocument();
   });
 
-  it('should close the modal when the cancel button is clicked', async () => {
+  it('should close the modal when the done button is clicked', async () => {
     render(<DataTemplates onClose={handleCloseMock} isOpen={true} />);
 
-    await userEvent.click(screen.getByRole('button', { name: /cancel/i }));
+    await userEvent.click(screen.getByRole('button', { name: /done/i }));
     expect(handleCloseMock).toHaveBeenCalledTimes(1);
   });
 
   it('should download a template when the download button is clicked', async () => {
     render(<DataTemplates onClose={handleCloseMock} isOpen={true} />);
 
-    const accordionItem = screen.getByText('Spreadsheet');
+    const accordionItem = screen.getByText(/point spreadsheet/i);
     await userEvent.click(accordionItem);
 
-    const button = screen.getByRole('button', {
-      name: /spreadsheet download/i,
-    });
+    const button = screen.getAllByRole('button', {
+      name: /download/i,
+    })[1];
 
     window.open = jest.fn();
     await userEvent.click(within(button).getByText(/download/i));
@@ -46,7 +46,7 @@ describe('DataTemplates', () => {
   it('should show a check icon after downloading a template', async () => {
     render(<DataTemplates onClose={handleCloseMock} isOpen={true} />);
 
-    const accordionItem = screen.getByText('KML');
+    const accordionItem = screen.getByText(/polygon kml/i);
     await userEvent.click(accordionItem);
 
     const button = screen.getByRole('button', {
@@ -66,19 +66,4 @@ describe('DataTemplates', () => {
     await userEvent.hover(screen.getByText('Point Shapefile'));
     expect(screen.getByText('See more')).toBeInTheDocument();
   });
-
-  it('should change the button text to "Done" after downloading at least one template', async () => {
-    render(<DataTemplates onClose={handleCloseMock} isOpen={true} />);
-
-    const accordionItem = screen.getByText('List of Palm Mill IDs');
-    await userEvent.click(accordionItem);
-
-    const button = screen.getByRole('button', {
-      name: /list of palm mill ids download/i,
-    });
-
-    window.open = jest.fn();
-    await userEvent.click(within(button).getByText(/download/i));
-    expect(screen.getByRole('button', { name: /done/i })).toBeInTheDocument();
-  }, 10100);
 });

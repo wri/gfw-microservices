@@ -29,7 +29,7 @@
             "output": "apps/webserver"
           },
           {
-            "glob": "tsconfig.client.json",
+            "glob": "client/tsconfig.json",
             "input": "apps/webserver/",
             "output": "apps/webserver"
           },

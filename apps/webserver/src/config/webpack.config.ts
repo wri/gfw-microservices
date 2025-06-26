@@ -44,7 +44,7 @@ export default (): webpack.Configuration => {
             transpileOnly: true,
             happyPackMode: true,
             compilerOptions: { noEmit: false, sourceMap: isDevelopment },
-            configFile: 'tsconfig.client.json',
+            configFile: 'client/tsconfig.json',
           },
         },
       ],

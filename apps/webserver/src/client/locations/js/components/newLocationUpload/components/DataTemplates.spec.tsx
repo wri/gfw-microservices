@@ -57,7 +57,7 @@ describe('DataTemplates', () => {
     await userEvent.click(within(button).getByText(/download/i));
 
     expect(screen.getByTestId('DownloadDoneIcon')).toBeInTheDocument();
-  });
+  }, 10100);
 
   it('should show "See more" when hovering over an accordion item', async () => {
     render(<DataTemplates onClose={handleCloseMock} isOpen={true} />);

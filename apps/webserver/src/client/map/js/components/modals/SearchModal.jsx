@@ -90,6 +90,41 @@ const gadm36Sources = [
     placeholder: 'Search sub-state',
     maxSuggestions: 4,
   },
+  {
+    layer: new FeatureLayer({
+      url: 'https://gis-gfw.wri.org/arcgis/rest/services/commodities/MapServer/25',
+      id: `${proLayers.oilPalmConcessions}_feat`,
+    }),
+    searchFields: ['name', 'company', 'group_comp', 'subgroup'],
+    suggestionTemplate:
+      'Mill Name: {name}, Company: {company}, Group: {group_comp}, Subgroup: {subgroup}',
+    outFields: ['name', 'company', 'group_comp', 'subgroup', 'globalid'],
+    name: 'Oil Palm Concessions',
+    placeholder: 'Search Oil Palm Concessions',
+  },
+  {
+    layer: new FeatureLayer({
+      url: 'https://gis-gfw.wri.org/arcgis/rest/services/commodities/MapServer/25',
+      id: `${proLayers.rspoConcessions}_feat`,
+    }),
+    searchFields: ['name', 'company', 'group_comp', 'subgroup'],
+    suggestionTemplate:
+      'Mill Name: {name}, Company: {company}, Group: {group_comp}, Subgroup: {subgroup}',
+    outFields: ['name', 'company', 'group_comp', 'subgroup', 'globalid'],
+    name: 'RSPO Concessions',
+    placeholder: 'Search RSPO Concessions',
+  },
+  {
+    layer: new FeatureLayer({
+      url: 'https://gis-gfw.wri.org/arcgis/rest/services/conservation/MapServer/7',
+      id: `${proLayers.protectedAreas}_feat`,
+    }),
+    searchFields: ['name', 'orig_name'],
+    suggestionTemplate: 'Name: {name}, Original Name: {orig_name}',
+    outFields: ['name', 'orig_name', 'globalid'],
+    name: 'Protected Areas',
+    placeholder: 'Search Protected Areas',
+  },
 ];
 
 export default class SearchModal extends Component {
@@ -150,41 +185,6 @@ export default class SearchModal extends Component {
             distance: 50000,
           },
           placeholder: 'Find address or place',
-        },
-        {
-          layer: new FeatureLayer({
-            url: 'https://gis-gfw.wri.org/arcgis/rest/services/commodities/MapServer/25',
-            id: `${proLayers.oilPalmConcessions}_feat`,
-          }),
-          searchFields: ['name', 'company', 'group_comp', 'subgroup'],
-          suggestionTemplate:
-            'Mill Name: {name}, Company: {company}, Group: {group_comp}, Subgroup: {subgroup}',
-          outFields: ['name', 'company', 'group_comp', 'subgroup', 'globalid'],
-          name: 'Oil Palm Concessions',
-          placeholder: 'Search Oil Palm Concessions',
-        },
-        {
-          layer: new FeatureLayer({
-            url: 'https://gis-gfw.wri.org/arcgis/rest/services/commodities/MapServer/25',
-            id: `${proLayers.rspoConcessions}_feat`,
-          }),
-          searchFields: ['name', 'company', 'group_comp', 'subgroup'],
-          suggestionTemplate:
-            'Mill Name: {name}, Company: {company}, Group: {group_comp}, Subgroup: {subgroup}',
-          outFields: ['name', 'company', 'group_comp', 'subgroup', 'globalid'],
-          name: 'RSPO Concessions',
-          placeholder: 'Search RSPO Concessions',
-        },
-        {
-          layer: new FeatureLayer({
-            url: 'https://gis-gfw.wri.org/arcgis/rest/services/conservation/MapServer/7',
-            id: `${proLayers.protectedAreas}_feat`,
-          }),
-          searchFields: ['name', 'orig_name'],
-          suggestionTemplate: 'Name: {name}, Original Name: {orig_name}',
-          outFields: ['name', 'orig_name', 'globalid'],
-          name: 'Protected Areas',
-          placeholder: 'Search Protected Areas',
         },
       ],
     });

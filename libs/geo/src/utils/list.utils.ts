@@ -467,15 +467,17 @@ export async function setListAnalysisStatus(
         const existingRecord = await listAnalysisStatusRepository.findOne({
           where: { listId, analysisId },
         });
-
-        if (existingRecord) {
-          await listAnalysisStatusRepository.update({ listId, analysisId }, value);
-        } else {
-          await listAnalysisStatusRepository.save({
-            listId,
-            analysisId,
-            ...value,
-          });
+        // Update or save GHG record only for EAPI
+        if (isFromEAPI || analysisId !== analysisTypes.GREENHOUSE_GAS_EMISSIONS) {
+          if (existingRecord) {
+            await listAnalysisStatusRepository.update({ listId, analysisId }, value);
+          } else {
+            await listAnalysisStatusRepository.save({
+              listId,
+              analysisId,
+              ...value,
+            });
+          }
         }
       })
   );

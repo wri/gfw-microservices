@@ -1,7 +1,10 @@
 import { useEffect, useState } from 'react';
+import { useLocation } from 'react-router-dom';
 import {
   Box,
+  Chip,
   Grid,
+  Stack,
   Table,
   TableBody,
   TableRow,
@@ -9,9 +12,6 @@ import {
   TableContainer,
   TableHead,
   Typography,
-  Chip,
-  Divider,
-  Stack,
 } from '@mui/material';
 import moment from 'moment';
 
@@ -30,6 +30,7 @@ interface ConverterJobInfo {
   startTime: Date;
   status: string;
   id: number;
+  name: string;
   organizationId: number | null;
   parentId: number | null;
   listId: number | null;
@@ -37,25 +38,22 @@ interface ConverterJobInfo {
 }
 
 export default function ConverterDetailsPage() {
-  const [jobId, setJobId] = useState<number>();
+  const { search } = useLocation();
+  const params = new URLSearchParams(search);
+  const idParam = params.get('id');
+  const idAsNumber = idParam ? Number(idParam) : NaN;
+
+  const [jobId, setJobId] = useState<number | null>(null);
   const { data: converterJobInfo, error, isLoading, request } = useFetch<ConverterJobInfo>();
 
   useEffect(() => {
-    const pathParts = window.location.pathname.split('/');
-    const idSegment = pathParts[pathParts.length - 1]; // assumes ID is last
-    const idAsNumber = Number(idSegment);
-
     if (!isNaN(idAsNumber)) {
       setJobId(idAsNumber);
-      fetchConverterInfo(request, idAsNumber); // your data fetch
+      fetchConverterInfo(request, idAsNumber);
     } else {
-      console.warn('Invalid ID in URL:', idSegment);
+      console.warn('Invalid or missing ID in URL:', idParam);
     }
-  }, []);
-
-  useEffect(() => {
-    console.log('converterJobInfo: ', converterJobInfo);
-  }, [converterJobInfo]);
+  }, [idAsNumber, request, idParam]);
 
   if (isLoading) {
     return <div>Loading...</div>;
@@ -63,75 +61,91 @@ export default function ConverterDetailsPage() {
   if (error) {
     return <div>Could not load converter details</div>;
   }
+  if (!jobId) {
+    return <div>No converter ID specified.</div>;
+  }
 
   return (
-    <Grid>
-      <Box>
+    <Grid container>
+      <Box marginBottom={4}>
         <Typography variant="h4">Converter Details</Typography>
-        <Stack direction="row" spacing={1} marginTop={2}>
-          <Chip label={`ID: ${jobId}`} variant="outlined" />
-          <Chip
-            label={`Start Time: ${moment(converterJobInfo?.startTime).format(
-              'MMMM D, YYYY h:mm A'
-            )}`}
-            variant="outlined"
-          />
+        <Stack direction="row" spacing={3} marginTop={2}>
           {converterJobInfo?.status && (
             <Chip
-              label={converterJobInfo?.status}
-              color={STATUS_STYLE_MAP[converterJobInfo?.status]}
+              label={converterJobInfo.status}
+              color={STATUS_STYLE_MAP[converterJobInfo.status]}
               variant="filled"
             />
           )}
+          <Stack direction="row" spacing={0.5}>
+            <Typography paddingTop="3px">
+              <b>Type: </b>
+              {converterJobInfo?.name}
+            </Typography>
+          </Stack>
+          <Stack direction="row" spacing={0.5}>
+            <Typography paddingTop="3px">
+              <b>ID: </b>
+            </Typography>
+            <Chip label={jobId} variant="outlined" />
+          </Stack>
+          <Stack direction="row" spacing={0.5}>
+            <Typography paddingTop="3px">
+              <b>Start Time: </b>
+              {moment(converterJobInfo?.startTime).format('MMMM D, YYYY h:mm A')}
+            </Typography>
+          </Stack>
         </Stack>
       </Box>
-      <Divider>Failed Child Conversion Jobs</Divider>
-      <TableContainer>
-        <Table>
-          <TableHead>
-            <TableRow>
-              <StyledTableCell>ID</StyledTableCell>
-              <StyledTableCell>Type</StyledTableCell>
-              <StyledTableCell>Status</StyledTableCell>
-              <StyledTableCell>Error Details</StyledTableCell>
-              <StyledTableCell>Organization ID</StyledTableCell>
-              <StyledTableCell>Table ID</StyledTableCell>
-            </TableRow>
-          </TableHead>
-          <TableBody>
-            {!converterJobInfo?.children.length ? (
+      <Grid container direction="column">
+        <Typography variant="h6">Failed Child Conversion Jobs</Typography>
+        <TableContainer>
+          <Table>
+            <TableHead>
               <TableRow>
-                <TableCell
-                  colSpan={4}
-                  align="center"
-                  sx={{ py: 4, fontStyle: 'italic', color: 'gray' }}
-                >
-                  No conversions present errors.
-                </TableCell>
+                <StyledTableCell>ID</StyledTableCell>
+                <StyledTableCell>Type</StyledTableCell>
+                <StyledTableCell>Status</StyledTableCell>
+                <StyledTableCell>Error Details</StyledTableCell>
+                <StyledTableCell>Organization ID</StyledTableCell>
+                <StyledTableCell>Table ID</StyledTableCell>
               </TableRow>
-            ) : (
-              converterJobInfo?.children.map((job) => (
-                <TableRow key={job.id} sx={{ '&:last-child td, &:last-child th': { border: 0 } }}>
-                  <StyledTableCell>{job.id}</StyledTableCell>
-                  <StyledTableCell>{job.name}</StyledTableCell>
-                  <StyledTableCell>
-                    {job.status && (
-                      <Chip
-                        label={job.status}
-                        color={STATUS_STYLE_MAP[job.status]}
-                        variant="filled"
-                      />
-                    )}
-                  </StyledTableCell>
-                  <StyledTableCell>{job.errorDetails}</StyledTableCell>
-                  <StyledTableCell>{job.organizationId}</StyledTableCell>
-                  <StyledTableCell>{job.tableId}</StyledTableCell>
+            </TableHead>
+            <TableBody>
+              {!converterJobInfo?.children.length ? (
+                <TableRow>
+                  <TableCell
+                    colSpan={6}
+                    align="center"
+                    sx={{ py: 4, fontStyle: 'italic', color: 'gray' }}
+                  >
+                    No conversions present errors.
+                  </TableCell>
                 </TableRow>
-              ))
-            )}
-          </TableBody>
-        </Table>
-      </TableContainer>
+              ) : (
+                converterJobInfo.children.map((job) => (
+                  <TableRow key={job.id} sx={{ '&:last-child td, &:last-child th': { border: 0 } }}>
+                    <TableCell size="small">{job.id}</TableCell>
+                    <TableCell size="small">{job.name}</TableCell>
+                    <TableCell size="small">
+                      {job.status && (
+                        <Chip
+                          label={job.status}
+                          color={STATUS_STYLE_MAP[job.status]}
+                          variant="filled"
+                        />
+                      )}
+                    </TableCell>
+                    <TableCell size="small">{job.errorDetails}</TableCell>
+                    <TableCell size="small">{job.organizationId}</TableCell>
+                    <TableCell size="small">{job.tableId}</TableCell>
+                  </TableRow>
+                ))
+              )}
+            </TableBody>
+          </Table>
+        </TableContainer>
+      </Grid>
     </Grid>
   );
 }

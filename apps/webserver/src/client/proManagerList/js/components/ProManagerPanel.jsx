@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { withRouter } from 'react-router-dom';
+import { useLocation } from 'react-router-dom';
 import { Box, Grid } from '@mui/material';
 
 import AccountDetailSection from './accounts/AccountDetailSection';
@@ -7,45 +7,83 @@ import AccountLimits from './accounts/AccountLimits';
 import AccountsListSection from './accounts/AccountsListSection';
 import AccountsListUsage from './accounts/AccountUsage/AccountsListUsage';
 import Converters from './converters/ConvertersPage';
-import ConverterDetailsPage from './converters/ConverterDetailsPage';
 import FeatureFlags from './featuresFlags/index';
 import UsersListSection from './users/UsersListSection';
 import UserDetailSection from './users/UserDetailSection';
-
 import SideBarMenu from '../../../common/js/components/SideBarMenu';
 import LatestCommits from './LatestCommits';
 import { proManagerPanelTabs } from './proManagerPanelTabs';
 import { LoadingModal } from '../../../components';
+import { PRO_MANAGER_PATH } from '../common/paths';
 
-function ProManagerPanel({ location }) {
-  const [isLoading, setIsLoading] = useState(true);
-
-  const pathname = location.pathname;
-  if (pathname.startsWith('/converter-job/')) {
-    const id = pathname.split('/converter-job/')[1];
-    return <ConverterDetailsPage id={id} />;
-  }
+function useProManagerParams() {
+  const { search } = useLocation();
+  const params = new URLSearchParams(search);
 
   const defaultTab = proManagerPanelTabs.accountProfiles.id;
-  const selectedTab = new URLSearchParams(location.search).get('tab') || defaultTab;
-  const organizationId = parseInt(new URLSearchParams(location.search).get('organizationId'), 10);
-  const userId = parseInt(new URLSearchParams(location.search).get('userId'), 10);
-  const organizationName = new URLSearchParams(location.search).get('organizationName');
+  const tabFromUrl = params.get('tab');
+  const selectedTab = tabFromUrl || defaultTab;
+
+  const converterJobId =
+    selectedTab === proManagerPanelTabs.converters.id ? params.get('id') : null;
+
+  return {
+    organizationId: parseInt(params.get('organizationId') || '', 10),
+    userId: parseInt(params.get('userId') || '', 10),
+    organizationName: params.get('organizationName'),
+    selectedTab,
+    converterJobId,
+  };
+}
+
+export default function ProManagerPanel() {
+  const [isLoading, setIsLoading] = useState(true);
+  const { selectedTab, organizationId, userId, organizationName } = useProManagerParams();
 
   const userDetail = userId && organizationId;
   const accountDetail = organizationName && organizationId;
 
-  const setSelectedTab = (tab) => {
-    window.location.href = `/pro-manager-list?tab=${tab}`;
+  const sharedProps = { isLoading, setIsLoading };
+
+  const setSelectedTab = (tabId) => {
+    window.location.href = `${PRO_MANAGER_PATH}?tab=${tabId}`;
   };
 
+  function renderPanel() {
+    switch (selectedTab) {
+      case proManagerPanelTabs.converters.id:
+        return <Converters {...sharedProps} />;
+      case proManagerPanelTabs.accountProfiles.id:
+        return accountDetail ? (
+          <AccountDetailSection
+            {...sharedProps}
+            organizationId={organizationId}
+            organizationName={organizationName}
+          />
+        ) : (
+          <AccountsListSection {...sharedProps} />
+        );
+      case proManagerPanelTabs.userProfiles.id:
+        return userDetail ? (
+          <UserDetailSection {...sharedProps} organizationId={organizationId} userId={userId} />
+        ) : (
+          <UsersListSection {...sharedProps} />
+        );
+      case proManagerPanelTabs.accountLimits.id:
+        return <AccountLimits {...sharedProps} />;
+      case proManagerPanelTabs.accountUsage.id:
+        return <AccountsListUsage {...sharedProps} />;
+      case proManagerPanelTabs.latestCommits.id:
+        return <LatestCommits {...sharedProps} />;
+      case proManagerPanelTabs.featureFlags.id:
+        return <FeatureFlags {...sharedProps} />;
+      default:
+        return null;
+    }
+  }
+
   return (
-    <Grid
-      container
-      className="pro-manager-panel"
-      spacing={4}
-      sx={{ padding: '1.5rem', backgroundColor: '#fff' }}
-    >
+    <Grid container className="pro-manager-panel" spacing={4} sx={{ padding: '1.5rem' }}>
       <Grid item xs={12} sm={3}>
         <SideBarMenu
           menuTitle="Pro Manager"
@@ -56,49 +94,9 @@ function ProManagerPanel({ location }) {
         />
       </Grid>
       <Grid item xs={12} sm={9}>
-        <Box>
-          {selectedTab === proManagerPanelTabs.accountProfiles.id && accountDetail && (
-            <AccountDetailSection
-              isLoading={isLoading}
-              setIsLoading={setIsLoading}
-              organizationId={organizationId}
-              organizationName={organizationName}
-            />
-          )}
-          {selectedTab === proManagerPanelTabs.accountProfiles.id && !accountDetail && (
-            <AccountsListSection isLoading={isLoading} setIsLoading={setIsLoading} />
-          )}
-          {selectedTab === proManagerPanelTabs.userProfiles.id && userDetail && (
-            <UserDetailSection
-              isLoading={isLoading}
-              setIsLoading={setIsLoading}
-              organizationId={organizationId}
-              userId={userId}
-            />
-          )}
-          {selectedTab === proManagerPanelTabs.userProfiles.id && !userDetail && (
-            <UsersListSection isLoading={isLoading} setIsLoading={setIsLoading} />
-          )}
-          {selectedTab === proManagerPanelTabs.accountLimits.id && (
-            <AccountLimits isLoading={isLoading} setIsLoading={setIsLoading} />
-          )}
-          {selectedTab === proManagerPanelTabs.accountUsage.id && (
-            <AccountsListUsage isLoading={isLoading} setIsLoading={setIsLoading} />
-          )}
-          {selectedTab === proManagerPanelTabs.latestCommits.id && (
-            <LatestCommits isLoading={isLoading} setIsLoading={setIsLoading} />
-          )}
-          {selectedTab === proManagerPanelTabs.featureFlags.id && (
-            <FeatureFlags isLoading={isLoading} setIsLoading={setIsLoading} />
-          )}
-          {selectedTab === proManagerPanelTabs.converters.id && (
-            <Converters isLoading={isLoading} setIsLoading={setIsLoading} />
-          )}
-        </Box>
+        <Box>{renderPanel()}</Box>
         <LoadingModal isLoading={isLoading} />
       </Grid>
     </Grid>
   );
 }
-
-export default withRouter(ProManagerPanel);

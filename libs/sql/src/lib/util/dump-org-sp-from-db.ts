@@ -3,7 +3,7 @@ import * as path from 'path';
 import * as sql from 'mssql';
 import { Logger } from '@nestjs/common';
 import { SQLUtils } from '../util';
-
+// eslint-disable-next-line @typescript-eslint/no-var-requires
 const manifest = require('../queries/organization/orgs-sp-manifest.json');
 
 export const dumpOrgSpFromDb = async (orgDb: string) => {
@@ -106,16 +106,24 @@ export function formatProcedureRow(row: { name: string; definition: string }): {
   let depth = 0,
     chunk = '';
   for (const ch of paramsBlock) {
-    if (ch === '(') depth++;
-    if (ch === ')') depth--;
+    if (ch === '(') {
+      depth++;
+    }
+    if (ch === ')') {
+      depth--;
+    }
     if (ch === ',' && depth === 0) {
-      if (chunk.trim()) params.push(chunk.trim());
+      if (chunk.trim()) {
+        params.push(chunk.trim());
+      }
       chunk = '';
     } else {
       chunk += ch;
     }
   }
-  if (chunk.trim()) params.push(chunk.trim());
+  if (chunk.trim()) {
+    params.push(chunk.trim());
+  }
 
   /* ---------- 3. build JSDoc ---------------------------------------- */
   const jsDoc =

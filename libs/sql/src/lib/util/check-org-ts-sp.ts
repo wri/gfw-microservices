@@ -2,6 +2,7 @@ import { Logger } from '@nestjs/common';
 import { SQLUtils } from '../util';
 import * as sql from 'mssql';
 
+// eslint-disable-next-line @typescript-eslint/no-var-requires
 const manifest = require('../queries/organization/orgs-sp-manifest.json');
 
 export async function checkStoredProcedureTsImplementation(clientDb: string) {

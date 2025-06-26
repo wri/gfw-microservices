@@ -96,18 +96,35 @@ exports.getListMbtileInfo = async (req, res) => {
     const mbtileFileName = path.basename(listVectorTileS3Path);
     const mbtileFileNameOnly = path.basename(mbtileFileName, MBTILE_EXTENSION);
     const localMbtileFilePath = path.join(VECTOR_TILES_LOCATION, mbtileFileName);
+
     if (!fs.existsSync(localMbtileFilePath)) {
       await getMBTileFromS3Bucket(listVectorTileS3Path);
     }
+
+    // check and wait for file to be ready
+    await waitForMbtileReady(localMbtileFilePath);
+
     new MBTiles(`${localMbtileFilePath}?mode=ro`, (err, mbtiles) => {
+      if (err) {
+        logger.error(`new MBTiles Error on ${localMbtileFilePath}?mode=ro`, err);
+      }
+
       mbtiles.getInfo((getInfoError, data) => {
+        if (getInfoError) {
+          logger.error(`mbtiles.getInfo Error`, getInfoError);
+        }
+
         res.status(200).json({
-          bounds: data?.bounds || [],
+          bounds: data?.bounds, // an empty array makes the map go blank
           maxZoom: data?.maxzoom || 0,
           minZoom: data?.minzoom || 0,
           listMbtileFileName: mbtileFileName,
           listMbtileFileNameOnly: mbtileFileNameOnly,
           success: data?.filesize,
+          errors: {
+            mbTileError: err,
+            getInfoError,
+          },
         });
       });
     });
@@ -118,3 +135,24 @@ exports.getListMbtileInfo = async (req, res) => {
     });
   }
 };
+
+async function waitForMbtileReady(filePath, retries = 5, delay = 500) {
+  return new Promise((resolve, reject) => {
+    if (retries <= 0) {
+      return reject(new Error('MBTiles file is still empty or incomplete after multiple checks.'));
+    }
+
+    setTimeout(() => {
+      try {
+        const fileStats = fs.statSync(filePath);
+        if (fileStats.size > 0) {
+          return resolve();
+        } else {
+          resolve(waitForMbtileReady(filePath, retries - 1, delay));
+        }
+      } catch (error) {
+        return reject(error);
+      }
+    }, delay);
+  });
+}

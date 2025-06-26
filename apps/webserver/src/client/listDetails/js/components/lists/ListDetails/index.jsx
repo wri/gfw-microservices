@@ -1808,7 +1808,7 @@ export default class ListDetails extends Component {
         : [];
 
     const listName = selectedList ? selectedList.list_name : '';
-    const listAnalysesStatus = selectedList ? selectedList.listAnalysesStatus : [];
+    const listAnalysesStatus = selectedList ? selectedList.listAnalysesStatus ?? [] : [];
 
     const isGfwList = selectedList.isGlobalForestWatchList;
 
@@ -1876,11 +1876,10 @@ export default class ListDetails extends Component {
     if (isFcdActive || isGfwList) {
       listViewOptions.push(FOREST_CHANGE_VIEW);
     }
-
     const isPalmOilBackwardComp = checkValidViewCommodity(selectedLists?.[0], listData?.[0]);
     if (isPalmOilBackwardComp || isPalmRiskActive) {
       listViewOptions.push(COMMODITY_RISK_VIEW);
-      if (!listAnalysesStatus.some(({ analysisId }) => analysisId === 'PalmRisk')) {
+      if (!listAnalysesStatus?.some(({ analysisId }) => analysisId === 'PalmRisk')) {
         listAnalysesStatus.push({ analysisId: 'PalmRisk' });
       }
     }

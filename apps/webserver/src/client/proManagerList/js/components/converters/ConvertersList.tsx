@@ -18,7 +18,7 @@ import { fetchConverters } from '../../../../api/converter';
 
 interface ConverterData {
   convertersNames: string[];
-  converterJobs: any[]; // replace `any` with actual type if you have it
+  converterJobs: any[];
 }
 
 export default function ConvertersList({ setIsLoading, onViewJobDetails }) {

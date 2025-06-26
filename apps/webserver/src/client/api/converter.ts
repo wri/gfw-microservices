@@ -8,3 +8,13 @@ export const fetchConverters = (
     method: 'GET',
   });
 };
+
+export const fetchConverterInfo = (
+  request: (config?: ExtendedAxiosRequestConfig) => Promise<void>,
+  converterId: number
+) => {
+  return request({
+    url: `/converter/${converterId}/info`,
+    method: 'GET',
+  });
+};

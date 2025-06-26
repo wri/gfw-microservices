@@ -1,0 +1,51 @@
+{
+  "clearMocks": true,
+  "collectCoverageFrom": ["<rootDir>/{config,server}/**/*.{js,ts}"],
+  "coverageDirectory": "../../../coverage/apps/webserver",
+  "coverageReporters": ["json", "text", "lcov", "clover", "cobertura"],
+  "coverageThreshold": {
+    "global": {
+      "branches": 1,
+      "functions": 1,
+      "lines": 1,
+      "statements": 1
+    }
+  },
+  "moduleFileExtensions": ["js", "json", "ts"],
+  "modulePathIgnorePatterns": [
+    "<rootDir>/node_modules/",
+    "<rootDir>/node_modules/@arcgis",
+    "<rootDir>/dist/*"
+  ],
+  "setupFilesAfterEnv": ["./test/jest.setup.js", "@testing-library/jest-dom/extend-expect"],
+  "testEnvironment": "jest-environment-jsdom",
+  "testMatch": [
+    "<rootDir>/server/**/*.{spec,test}.{js,ts}",
+    "<rootDir>/config/**/*.{spec,test}.{js,ts}"
+  ],
+  "transform": {
+    ".+\\.(css|css!|styl|less|sass|scss|png|jpg|ttf|woff|woff2)$": "jest-transform-stub",
+    "^.+\\.(js)?$": "babel-jest",
+    "^.+\\.(ts)$": "ts-jest"
+  },
+  "transformIgnorePatterns": ["node_modules/(?!(@arcgis|@esri|@stencil)/)"],
+  "moduleNameMapper": {
+    "^axios$": "<rootDir>/../../../node_modules/axios/dist/node/axios.cjs",
+    "^mapshaper$": "<rootDir>/../../../node_modules/mapshaper/mapshaper.js",
+    "@arcgis/core/symbols/SimpleFillSymbol": "<rootDir>/test/__mocks__/SimpleFillSymbol.js",
+    "@arcgis": "<rootDir>/test/__mocks__/object.js",
+    "map/js/layers/TreeCoverLossLayer": "<rootDir>/test/__mocks__/constructor.js",
+    "^tests(.*)$": "<rootDir>/test/client/tests$1",
+    "@wri-monorepos/constants": "<rootDir>/../../../libs/constants/src/index.ts",
+    "@wri-monorepos/shared": "<rootDir>/../../../libs/shared/src/index.ts",
+    "@wri-monorepos/sql": "<rootDir>/../../../libs/sql/src/index.ts",
+    "@wri-monorepos/geo": "<rootDir>/../../../libs/geo/src/index.ts",
+    "@wri-monorepos/aws": "<rootDir>/../../../libs/aws/src/index.ts"
+  },
+  "resolver": "<rootDir>/test/common/resolver.js",
+  "globals": {
+    "ts-jest": {
+      "tsconfig": "<rootDir>/../tsconfig.json"
+    }
+  }
+}

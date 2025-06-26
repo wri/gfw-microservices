@@ -66,46 +66,6 @@ export const getAllTemplateDropdowns = (req) => {
   });
 };
 
-export const getGADM = (req, geojson) => {
-  return new Promise((resolve, reject) => {
-    const s3ObjectsToDelete = [];
-    const objectName = `gadm-${new Date().getTime()}`;
-    s3Utils
-      .put(objectName, { geojson: geojson })
-      .then((location_s3_info) => {
-        s3ObjectsToDelete.push(location_s3_info);
-
-        return lambdaUtils.invoke('controller-admin-areas', {
-          receipt_handle: 'NOTARECEIPT',
-          s3_location_info: location_s3_info,
-          layer: 'gadm',
-          dissolve_aoi: false,
-          post_process_aoi: false,
-        });
-      })
-      .then((lambdaResult) => {
-        const { Payload } = lambdaResult;
-        const { bucket, key, errorMessage } = JSON.parse(Payload);
-
-        if (errorMessage) {
-          console.log(errorMessage);
-          throw new Error('Has error property');
-        }
-
-        s3ObjectsToDelete.push({ bucket, key });
-        return s3Utils.get(bucket, key);
-      })
-      .then((s3Object) => {
-        Promise.all(s3ObjectsToDelete.map((obj) => s3Utils.del(obj.bucket, obj.key)));
-        resolve(s3Object);
-      })
-      .catch((e) => {
-        console.log(e);
-        reject(e);
-      });
-  });
-};
-
 /**
  * Handling Certification column
  * @param {String} column - Column name

@@ -48,7 +48,7 @@ export default function ConverterRunsTable({ convertersData, onViewJobDetails })
                   }}
                 >
                   <TableCell size="small">{job.id}</TableCell>
-                  <TableCell size="small">{convertersData.convertersNames[job.name]}</TableCell>
+                  <TableCell size="small">{job.name}</TableCell>
                   <TableCell size="small">{job.status}</TableCell>
                   <TableCell size="small" sx={{ display: 'flex', gap: '8px' }}>
                     <PillButton

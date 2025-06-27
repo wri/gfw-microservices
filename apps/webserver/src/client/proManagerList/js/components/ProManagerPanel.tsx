@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, ReactNode } from 'react';
 import { useLocation } from 'react-router-dom';
 import { Box, Grid } from '@mui/material';
 
@@ -21,8 +21,7 @@ function useProManagerParams() {
   const params = new URLSearchParams(search);
 
   const defaultTab = proManagerPanelTabs.accountProfiles.id;
-  const tabFromUrl = params.get('tab');
-  const selectedTab = tabFromUrl || defaultTab;
+  const selectedTab = params.get('tab') || defaultTab;
 
   const converterJobId =
     selectedTab === proManagerPanelTabs.converters.id ? params.get('id') : null;
@@ -50,36 +49,35 @@ export default function ProManagerPanel() {
   };
 
   function renderPanel() {
-    switch (selectedTab) {
-      case proManagerPanelTabs.converters.id:
-        return <Converters {...sharedProps} />;
-      case proManagerPanelTabs.accountProfiles.id:
-        return accountDetail ? (
-          <AccountDetailSection
-            {...sharedProps}
-            organizationId={organizationId}
-            organizationName={organizationName}
-          />
-        ) : (
-          <AccountsListSection {...sharedProps} />
-        );
-      case proManagerPanelTabs.userProfiles.id:
-        return userDetail ? (
-          <UserDetailSection {...sharedProps} organizationId={organizationId} userId={userId} />
-        ) : (
-          <UsersListSection {...sharedProps} />
-        );
-      case proManagerPanelTabs.accountLimits.id:
-        return <AccountLimits {...sharedProps} />;
-      case proManagerPanelTabs.accountUsage.id:
-        return <AccountsListUsage {...sharedProps} />;
-      case proManagerPanelTabs.latestCommits.id:
-        return <LatestCommits {...sharedProps} />;
-      case proManagerPanelTabs.featureFlags.id:
-        return <FeatureFlags {...sharedProps} />;
-      default:
-        return null;
+    const panels: Record<string, ReactNode> = {
+      [proManagerPanelTabs.converters.id]: <Converters {...sharedProps} />,
+      [proManagerPanelTabs.accountLimits.id]: <AccountLimits {...sharedProps} />,
+      [proManagerPanelTabs.accountUsage.id]: <AccountsListUsage {...sharedProps} />,
+      [proManagerPanelTabs.latestCommits.id]: <LatestCommits {...sharedProps} />,
+      [proManagerPanelTabs.featureFlags.id]: <FeatureFlags {...sharedProps} />,
+    };
+
+    if (selectedTab === proManagerPanelTabs.accountProfiles.id) {
+      return accountDetail ? (
+        <AccountDetailSection
+          {...sharedProps}
+          organizationId={organizationId}
+          organizationName={organizationName}
+        />
+      ) : (
+        <AccountsListSection {...sharedProps} />
+      );
     }
+
+    if (selectedTab === proManagerPanelTabs.userProfiles.id) {
+      return userDetail ? (
+        <UserDetailSection {...sharedProps} organizationId={organizationId} userId={userId} />
+      ) : (
+        <UsersListSection {...sharedProps} />
+      );
+    }
+
+    return panels[selectedTab] || null;
   }
 
   return (

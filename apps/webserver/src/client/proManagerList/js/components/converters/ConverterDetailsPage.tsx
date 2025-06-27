@@ -1,7 +1,6 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, ReactNode } from 'react';
 import { useLocation } from 'react-router-dom';
 import {
-  Box,
   Chip,
   Grid,
   Stack,
@@ -18,24 +17,17 @@ import moment from 'moment';
 import { fetchConverterInfo } from '../../../../api/converter';
 import { useFetch } from '../../../../hooks';
 import { StyledTableCell } from '../../common/styledTableCell';
+import { LoadingModal } from '../../../../components';
+import { ConverterJob } from './types/converters';
 
 const STATUS_STYLE_MAP = {
   STOPPED: 'warning',
-  COMPLETE: 'success',
-  PARTIAL: 'warning',
   PENDING: 'primary',
+  COMPLETED: 'success',
+  RUNNING: 'primary',
+  PARTIAL: 'warning',
+  FAILED: 'error',
 };
-
-interface ConverterJobInfo {
-  startTime: Date;
-  status: string;
-  id: number;
-  name: string;
-  organizationId: number | null;
-  parentId: number | null;
-  listId: number | null;
-  children: any[];
-}
 
 export default function ConverterDetailsPage() {
   const { search } = useLocation();
@@ -44,7 +36,7 @@ export default function ConverterDetailsPage() {
   const idAsNumber = idParam ? Number(idParam) : NaN;
 
   const [jobId, setJobId] = useState<number | null>(null);
-  const { data: converterJobInfo, error, isLoading, request } = useFetch<ConverterJobInfo>();
+  const { data: converterJob, error, isLoading, request } = useFetch<ConverterJob>();
 
   useEffect(() => {
     if (!isNaN(idAsNumber)) {
@@ -56,7 +48,7 @@ export default function ConverterDetailsPage() {
   }, [idAsNumber, request, idParam]);
 
   if (isLoading) {
-    return <div>Loading...</div>;
+    return <LoadingModal isLoading={isLoading} />;
   }
   if (error) {
     return <div>Could not load converter details</div>;
@@ -67,37 +59,24 @@ export default function ConverterDetailsPage() {
 
   return (
     <Grid container>
-      <Box marginBottom={4}>
-        <Typography variant="h4">Converter Details</Typography>
-        <Stack direction="row" spacing={3} marginTop={2}>
-          {converterJobInfo?.status && (
-            <Chip
-              label={converterJobInfo.status}
-              color={STATUS_STYLE_MAP[converterJobInfo.status]}
-              variant="filled"
-            />
-          )}
-          <Stack direction="row" spacing={0.5}>
-            <Typography paddingTop="3px">
-              <b>Type: </b>
-              {converterJobInfo?.name}
-            </Typography>
-          </Stack>
-          <Stack direction="row" spacing={0.5}>
-            <Typography paddingTop="3px">
-              <b>ID: </b>
-            </Typography>
-            <Chip label={jobId} variant="outlined" />
-          </Stack>
-          <Stack direction="row" spacing={0.5}>
-            <Typography paddingTop="3px">
-              <b>Start Time: </b>
-              {moment(converterJobInfo?.startTime).format('MMMM D, YYYY h:mm A')}
-            </Typography>
-          </Stack>
-        </Stack>
-      </Box>
-      <Grid container direction="column">
+      <Typography variant="h4">Converter Details</Typography>
+      <Grid container sx={{ display: 'flex', flexDirection: 'row', gap: 3, mt: 2 }}>
+        {converterJob?.status && (
+          <Chip
+            label={converterJob.status}
+            color={STATUS_STYLE_MAP[converterJob.status]}
+            variant="filled"
+          />
+        )}
+        <LabelRow label="Type:">{converterJob?.name}</LabelRow>
+        <LabelRow label="ID:">
+          <Chip label={jobId} variant="outlined" />
+        </LabelRow>
+        <LabelRow label="Start Time:">
+          {moment(converterJob?.startTime).format('MMMM D, YYYY h:mm A')}
+        </LabelRow>
+      </Grid>
+      <Grid container direction="column" sx={{ mt: '25px' }}>
         <Typography variant="h6">Failed Child Conversion Jobs</Typography>
         <TableContainer>
           <Table>
@@ -112,7 +91,7 @@ export default function ConverterDetailsPage() {
               </TableRow>
             </TableHead>
             <TableBody>
-              {!converterJobInfo?.children.length ? (
+              {!converterJob?.children.length ? (
                 <TableRow>
                   <TableCell
                     colSpan={6}
@@ -123,7 +102,7 @@ export default function ConverterDetailsPage() {
                   </TableCell>
                 </TableRow>
               ) : (
-                converterJobInfo.children.map((job) => (
+                converterJob.children.map((job) => (
                   <TableRow key={job.id} sx={{ '&:last-child td, &:last-child th': { border: 0 } }}>
                     <TableCell size="small">{job.id}</TableCell>
                     <TableCell size="small">{job.name}</TableCell>
@@ -149,3 +128,12 @@ export default function ConverterDetailsPage() {
     </Grid>
   );
 }
+
+const LabelRow = ({ label, children }: { label: string; children: ReactNode }) => (
+  <Stack sx={{ flexDirection: 'row', gap: '4px', alignContent: 'center' }}>
+    <Typography sx={{ paddingTop: '3px' }}>
+      <b>{label} </b>
+      {children}
+    </Typography>
+  </Stack>
+);

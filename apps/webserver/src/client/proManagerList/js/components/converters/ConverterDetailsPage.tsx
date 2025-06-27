@@ -1,6 +1,7 @@
 import { useEffect, useState, ReactNode } from 'react';
 import { useLocation } from 'react-router-dom';
 import {
+  Box,
   Chip,
   Grid,
   Stack,
@@ -12,7 +13,6 @@ import {
   TableHead,
   Typography,
 } from '@mui/material';
-import moment from 'moment';
 
 import { fetchConverterInfo } from '../../../../api/converter';
 import { useFetch } from '../../../../hooks';
@@ -72,9 +72,7 @@ export default function ConverterDetailsPage() {
         <LabelRow label="ID:">
           <Chip label={jobId} variant="outlined" />
         </LabelRow>
-        <LabelRow label="Start Time:">
-          {moment(converterJob?.startTime).format('MMMM D, YYYY h:mm A')}
-        </LabelRow>
+        <LabelRow label="Start Time:">{formatDate(converterJob?.startTime)}</LabelRow>
       </Grid>
       <Grid container direction="column" sx={{ mt: '25px' }}>
         <Typography variant="h6">Failed Child Conversion Jobs</Typography>
@@ -132,8 +130,21 @@ export default function ConverterDetailsPage() {
 const LabelRow = ({ label, children }: { label: string; children: ReactNode }) => (
   <Stack sx={{ flexDirection: 'row', gap: '4px', alignContent: 'center' }}>
     <Typography sx={{ paddingTop: '3px' }}>
-      <b>{label} </b>
+      <Box sx={{ fontWeight: 500, paddingRight: '5px', display: 'inline' }}>{label}</Box>
       {children}
     </Typography>
   </Stack>
 );
+
+const formatDate = (date) => {
+  const dateObj = new Date(date);
+
+  return dateObj.toLocaleString('en-US', {
+    month: 'long',
+    day: 'numeric',
+    year: 'numeric',
+    hour: 'numeric',
+    minute: '2-digit',
+    hour12: true,
+  });
+};

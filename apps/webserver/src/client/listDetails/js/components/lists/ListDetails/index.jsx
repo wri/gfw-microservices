@@ -154,7 +154,7 @@ export default class ListDetails extends Component {
       parentCompanyOptionsForFilter: [],
       supplierNameOptionsForFilter: [],
       secondSupplierNameOptionsForFilter: [],
-      tableSortedBy: selectedLists[0].isGlobalForestWatchList ? 'Location Name' : 'Investment Name',
+      tableSortedBy: 'Location Name',
       tableSortedDesc: false,
       numberOfResults: undefined,
       displayLargeListEditingModal: false,

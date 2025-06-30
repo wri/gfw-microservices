@@ -1,6 +1,7 @@
 import Graphic from '@arcgis/core/Graphic';
 import Polygon from '@arcgis/core/geometry/Polygon';
 import Point from '@arcgis/core/geometry/Point';
+import Multipoint from '@arcgis/core/geometry/Multipoint';
 import * as geometryEngine from '@arcgis/core/geometry/geometryEngine';
 
 export const createResultsGraphic = async (item) => {
@@ -41,6 +42,21 @@ export const createResultsGraphic = async (item) => {
       type: 'simple-marker',
       color: [0, 120, 255, 1],
       size: 8,
+      outline: {
+        color: [255, 255, 255, 1],
+        width: 1,
+      },
+    };
+  } else if (geojson.type === 'MultiPoint') {
+    geometry = new Multipoint({
+      points: geojson.coordinates,
+      spatialReference,
+    });
+
+    symbol = {
+      type: 'simple-marker',
+      color: [0, 120, 255, 1],
+      size: 6,
       outline: {
         color: [255, 255, 255, 1],
         width: 1,

@@ -304,15 +304,15 @@ class Map extends Component {
         return;
       }
 
-      // wait for the layer to renderize
+      // Wait a moment to ensure rendering
       await new Promise((r) => setTimeout(r, 100));
 
       isFixingZoom = true;
 
-      // temporal zoom-out
+      // Step 1: temporary zoom-out
       await this.mapView.goTo({ center, zoom: 9 }, { animate: false });
 
-      // short delay y and zoom in to the  original point
+      // Step 2: short delay and return to original zoom
       await new Promise((r) => setTimeout(r, 120));
       await this.mapView.goTo({ center, zoom: currentZoom }, { animate: false });
 

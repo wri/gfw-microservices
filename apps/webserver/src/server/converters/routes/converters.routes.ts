@@ -21,7 +21,7 @@ export default function converterRoutes(app: Application, limiter: (opts: any) =
 
   /**
    * @route GET /converters
-   * @desc Returns a list of available converters
+   * @desc Returns a list of available converters and converter jobs.
    * @access Pro Manager only
    */
   app.get('/converter/all', routeMiddlewares, getConverters);

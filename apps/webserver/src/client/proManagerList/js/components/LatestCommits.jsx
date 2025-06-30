@@ -27,13 +27,13 @@ export const getLatestCommits = async () => {
 function LatestCommits({ setIsLoading }) {
   const [latestCommitsData, setLatestCommitsData] = useState(defaultData);
 
-  const commitfFormat = (commitName) => {
+  const formatCommit = (commitName) => {
     if (commitName == 'N/A') {
-      return 'can not show the latest commit';
+      return 'cannot show the latest commit';
     }
 
     if (commitName == 'dev') {
-      return "you are running a local server use 'git log' to see your last commits";
+      return "you are running a local server, use 'git log' to see your last commits";
     }
 
     return commitName;
@@ -48,22 +48,22 @@ function LatestCommits({ setIsLoading }) {
 
   return (
     <>
-      <h3>commits</h3>
+      <h3>Latest Commits</h3>
       <p>
         <label>API:</label> <br />
-        {commitfFormat(latestCommitsData['EAPI'])}
+        {formatCommit(latestCommitsData['EAPI'])}
       </p>
       <p>
         <label>Web Server:</label> <br />
-        {commitfFormat(latestCommitsData['WEB'])}
+        {formatCommit(latestCommitsData['WEB'])}
       </p>
       <p>
         <label>List Downloader:</label> <br />
-        {commitfFormat(latestCommitsData['LD'])}
+        {formatCommit(latestCommitsData['LD'])}
       </p>
       <p>
         <label>List Processing:</label> <br />
-        {commitfFormat(latestCommitsData['LP'])}
+        {formatCommit(latestCommitsData['LP'])}
       </p>
     </>
   );

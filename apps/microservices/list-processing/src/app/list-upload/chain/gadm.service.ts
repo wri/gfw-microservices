@@ -5,9 +5,19 @@ import { Feature, FeatureCollection } from '@wri-monorepos/geo';
 import { IFeatureSet, IGeometry, queryFeatures } from '@esri/arcgis-rest-feature-service';
 import { featureFlagsService } from '@wri-monorepos/shared';
 import { FeatureFlag } from '@wri-monorepos/sql';
+import axios from 'axios';
+import axiosRetry from 'axios-retry';
 
+axiosRetry(axios, {
+  retries: 3,
+  retryDelay: axiosRetry.exponentialDelay,
+  retryCondition: (error) => {
+    // axios-retry normally does not retry POSTs, so using a custom condition
+    return axiosRetry.isRetryableError(error);
+  },
+});
 const PRODUCTION_ENVIRONMENTS = ['production', 'ProdV2'];
-const POOL_SIZE = 5;
+const POOL_SIZE = 20;
 
 const GADM_SERVICE__PROD =
   'https://gfwpro-gis.globalforestwatch.org/arcgis/rest/services/GADM36_admin_2_gridded/MapServer/0'; // Only for production
@@ -64,25 +74,22 @@ export class GADMService extends AbstractHandler<ChainType> {
     };
     const sql = "SELECT gid_1, gid_2, name_0, name_1, name_2 FROM mytable WHERE adm_level='2'";
     try {
-      const response = await fetch(
+      const response = await axios.post(
         'https://data-api.globalforestwatch.org/dataset/gadm_administrative_boundaries/v4.1.64/query/json',
+        { sql, geometry },
         {
-          method: 'POST',
           headers: {
             'x-api-key': process.env.GFW_DATA_API_KEY,
             'Content-Type': 'application/json',
           },
-          body: JSON.stringify({ sql, geometry }),
         }
       );
 
-      if (!response.ok) {
+      if (response.status !== 200) {
         throw new Error(`Failed to fetch data: ${response.statusText}`);
       }
 
-      const { data } = await response.json();
-
-      return data;
+      return response.data?.data;
     } catch (error) {
       this.logger.error(`Error fetching GADM data`, error.response?.data || error.stack);
       return null;
@@ -143,7 +150,6 @@ export class GADMService extends AbstractHandler<ChainType> {
   async asyncPoolAll(...args) {
     const results = [];
     for await (const undefRet of asyncPool(...args)) {
-      // disabling log because it is too verbose -- logs every iteration
       results.push(undefRet);
     }
     return results;

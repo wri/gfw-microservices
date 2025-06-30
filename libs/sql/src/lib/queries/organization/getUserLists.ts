@@ -9,7 +9,7 @@ export const getUserLists = `
             las.expiration_time,
             las.s3_url,
             las.Status as status,
-            las.UpdateTime
+            las.UpdateTime as updateTime
         FROM ListsAnalysisStatus las
         WHERE las.ListID = L.id
         FOR JSON PATH

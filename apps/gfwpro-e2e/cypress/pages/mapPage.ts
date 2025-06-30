@@ -42,8 +42,6 @@ class MapPage {
     optionSatelliteBaseMapBtn: () => cy.get('[id="satellite"]'),
     optionLandsatBaseMapBtn: () => cy.get('[id="landsat"]'),
     optionOpenStreeBaseMapBtn: () => cy.get('[id="osm"]'),
-    optionDarkMatterBaseMapBtn: () => cy.get('[id="dark-matter"]'),
-    optionPositronBaseMapBtn: () => cy.get('[id="positron"]'),
     optionHybridBaseMapBtn: () => cy.get('[id="hybrid"]'),
     optionTreeHeightBaseMapBtn: () => cy.get('[id="tree-height"]'),
     optionPlanetBaseMapBtn: () => cy.get('[id="planet-basemap"]'),
@@ -133,12 +131,6 @@ class MapPage {
   }
   clickOnOptionOpenStreetBaseMap() {
     this.elements.optionOpenStreeBaseMapBtn().click();
-  }
-  clickOnOptionDarkMatterBaseMap() {
-    this.elements.optionDarkMatterBaseMapBtn().click();
-  }
-  clickOnOptionPositronBaseMap() {
-    this.elements.optionPositronBaseMapBtn().click();
   }
   clickOnOptionHybridBaseMap() {
     this.elements.optionHybridBaseMapBtn().click();

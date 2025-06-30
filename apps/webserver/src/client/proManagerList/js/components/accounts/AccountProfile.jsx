@@ -11,6 +11,7 @@ import AccountProfileLimitsSetting from './AccountProfileLimitsSetting';
 import { useAccountDetail } from './AccountDetailSection';
 import { ACCOUNT_ORG_STATUSES } from '../../../../common/js/constants/orgAccountStatuses';
 import { PillButton } from '../../../../components';
+import { PRO_MANAGER_PATH } from '../../common/paths';
 
 export default function AccountProfile() {
   const { users, currentAccount, statusData, accessData } = useAccountDetail();
@@ -21,7 +22,7 @@ export default function AccountProfile() {
   return (
     <DialogProvider>
       <Grid container justifyContent="end" sx={{ marginBottom: '1.5rem' }}>
-        <PillButton variant="contained" size="small" href="/pro-manager-list?tab=accounts">
+        <PillButton variant="contained" size="small" href={`${PRO_MANAGER_PATH}?tab=accounts`}>
           Back to profile manager
         </PillButton>
       </Grid>

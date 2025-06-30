@@ -1,6 +1,7 @@
 export const CONVERTER_NAMES = {
   LIST_SCHEMA: 'List Schema',
   GADM_VERSION: 'GADM Version',
+  DELETE_MALFORMED_LISTS: 'Delete Malformed Lists',
   EXAMPLE_CONVERTER: 'Example Converter',
 } as const;
 

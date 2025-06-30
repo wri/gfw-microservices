@@ -4,7 +4,7 @@ import {
   ConverterStatus as ConverterStatusEntity,
 } from '@wri-monorepos/sql';
 
-import { ConverterStatus as ConverterStatusEnum } from '@wri-monorepos/constants';
+import { ConverterStatus as ConverterStatusEnum, CONVERTER_NAMES } from '@wri-monorepos/constants';
 
 import logger from '../../../config/privateutils/logger.utils';
 import { Repository, InsertResult, UpdateResult } from 'typeorm';
@@ -52,6 +52,28 @@ export const markConverterStopped = async (converterId: number): Promise<void> =
   }
 };
 
+export const getConverterJobs = async (): Promise<ConverterStatusEntity[]> => {
+  const connection = await getDbConnection();
+  const repo: Repository<ConverterStatusEntity> = connection.getRepository(ConverterStatusEntity);
+  logger.info('Fetching all converter jobs');
+
+  // Limiting the number of jobs returned to 50 & only fetching top-level (parent) jobs.
+  try {
+    return await repo.find({
+      take: 50, // Limit the number of jobs returned
+      order: {
+        startTime: 'DESC',
+      },
+      where: {
+        parentId: null, // Only top-level jobs
+      },
+    });
+  } catch (err: any) {
+    logger.error('Failed to fetch converter jobs:', err.stack || err);
+    throw new Error('Failed to fetch converter jobs');
+  }
+};
+
 export const getConverterJobInfo = async (parentId: number) => {
   const connection = await getDbConnection();
   const repo: Repository<ConverterStatusEntity> = connection.getRepository(ConverterStatusEntity);
@@ -75,6 +97,7 @@ export const getConverterJobInfo = async (parentId: number) => {
 
   return {
     ...parentConverter,
+    name: CONVERTER_NAMES[parentConverter.name],
     children: childrenConverters,
   };
 };

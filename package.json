@@ -70,6 +70,7 @@
     "@types/lodash": "^4.14.202",
     "@types/mssql": "^8.1.1",
     "@types/node": "^20.5.9",
+    "@xmldom/xmldom": "^0.9.8",
     "adm-zip": "^0.5.16",
     "archiver": "^5.3.1",
     "async-mutex": "^0.4.0",
@@ -153,7 +154,6 @@
     "wellknown": "^0.5.0",
     "winston": "^3.11.0",
     "xlsx": "https://cdn.sheetjs.com/xlsx-0.20.0/xlsx-0.20.0.tgz",
-    "xmldom": "^0.6.0",
     "zod": "3.24.1",
     "zod-validation-error": "^2.1.0"
   },

@@ -1,9 +1,11 @@
 import { Test, TestingModule } from '@nestjs/testing';
+import axios from 'axios';
 import { GADMService } from './gadm.service';
 import { Feature } from '@wri-monorepos/geo';
 import { ChainType, RequestNewList } from './types';
 import { featureFlagsService } from '@wri-monorepos/shared';
 
+jest.mock('axios');
 jest.mock('@esri/arcgis-rest-feature-service');
 jest.mock('@wri-monorepos/shared', () => ({
   featureFlagsService: jest.fn(),
@@ -93,7 +95,7 @@ describe('GADMService', () => {
         properties: { longitude: 0, latitude: 0 },
         geometry: { type: 'Point', coordinates: [0, 0] },
       };
-      global.fetch = jest.fn().mockRejectedValue(new Error('Network error'));
+      (axios.post as jest.Mock).mockRejectedValue(new Error('Network error'));
       const result = await service.getGadmData(feature);
       expect(result).toBeNull();
     });
@@ -107,10 +109,7 @@ describe('GADMService', () => {
       const mockData = [
         { gid_1: '123', gid_2: '456', name_0: 'Country', name_1: 'State', name_2: 'Substate' },
       ];
-      global.fetch = jest.fn().mockResolvedValue({
-        ok: true,
-        json: () => Promise.resolve({ data: mockData }),
-      });
+      (axios.post as jest.Mock).mockResolvedValue({ status: 200, data: { data: mockData } });
       const result = await service.getGadmData(feature);
       expect(result).toEqual(mockData);
     });

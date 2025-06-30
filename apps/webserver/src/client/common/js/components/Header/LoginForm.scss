@@ -42,4 +42,11 @@
       width: 50%;
     }
   }
+  &__label {
+    display: block;
+    text-transform: capitalize;
+    font-size: 14px;
+    font-weight: 400;
+    margin-bottom: 5px;
+  }
 }

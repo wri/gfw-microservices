@@ -1,359 +1,223 @@
 export const getPaginatedAnalysisDataForUserList = `
 BEGIN
-
-	DECLARE @columnsList NVARCHAR(1000)
 	DECLARE @listLocationTableName NVARCHAR(1000)
 	DECLARE @listAnalysisTableName NVARCHAR(1000)
-	DECLARE @ListColumnsWhereclause NVARCHAR(MAX) = 'AND [name] NOT IN (''Geometry'', ''location_id'')'
-	DECLARE @AnalysisColumnsWhereclause NVARCHAR(MAX) = 'AND [name] NOT IN (''Geometry'')'
-	DECLARE @listLocationTableCols NVARCHAR(MAX)
-	DECLARE @listAnalysisTableCols NVARCHAR(MAX)
 	DECLARE @template_id INT
-	DECLARE @PRESQL NVARCHAR(MAX)
-	DECLARE @presql_list_params NVARCHAR(MAX) = '@list_location_table_cols_query VARCHAR(MAX) OUTPUT';
-	DECLARE @presql_analysis_params NVARCHAR(MAX) = '@analysis_location_table_cols_query VARCHAR(MAX) OUTPUT';
-	DECLARE @list_location_table_cols_output NVARCHAR(MAX);
-	DECLARE @analysis_location_table_cols_output NVARCHAR(MAX);
+	DECLARE @listVersion INT
+	DECLARE @list_location_table_cols_output NVARCHAR(MAX)
+	DECLARE @analysis_location_table_cols_output NVARCHAR(MAX)
 	DECLARE @SQL NVARCHAR(MAX)
 	DECLARE @Filters NVARCHAR(MAX) = ''
 	DECLARE @AnalysisFilters NVARCHAR(MAX) = '1=1'
-	DECLARE @listVersion INT
-	DECLARE @where_clauses NVARCHAR(max) = '';
+	DECLARE @where_clauses NVARCHAR(MAX) = ''
 	DECLARE @cleanedOrderByColumn NVARCHAR(MAX) = REPLACE(REPLACE(@OrderByColumn, '[', ''), ']', '')
 
 	SET NOCOUNT ON
-	-- Obtain the location table name and the analysis table name for the list.
+
+	-- Get list metadata
 	SELECT
-		@listLocationTableName = list_table_name
-		, @listAnalysisTableName = list_analysis_table_name
-		, @template_id = template_id
-		, @listVersion = version
+		@listLocationTableName = list_table_name,
+		@listAnalysisTableName = list_analysis_table_name,
+		@template_id = template_id,
+		@listVersion = version
 	FROM dbo.Lists WHERE id = @listID
 
+	-- Handle default column ordering
+	IF @OrderByColumn = 'Location Name' AND COL_LENGTH(@listLocationTableName, 'Location Name') IS NULL
+		SET @OrderByColumn = '[Investment Name]'
+	ELSE IF @OrderByColumn = 'Location Name'
+		SET @OrderByColumn = '[Location Name]'
+	ELSE IF @OrderByColumn = 'Investment Name' AND COL_LENGTH(@listLocationTableName, 'Investment Name') IS NULL
+		SET @OrderByColumn = '[Location Name]'
+	ELSE IF @OrderByColumn = 'Investment Name'
+		SET @OrderByColumn = '[Investment Name]'
+	ELSE IF @OrderByColumn NOT IN ('Investment Name', 'Location Name', '[Investment Name]','[Location Name]')
+		SET @OrderByColumn = '[' + @OrderByColumn + ']'
 
-	-- Default column location name is not found
-	IF @OrderByColumn = 'Location Name'
-	BEGIN
-		IF COL_LENGTH(@listLocationTableName, 'Location Name') IS NULL
-		BEGIN
-			SET @OrderByColumn = '[Investment Name]'
-		END
-		ELSE
-		BEGIN
-			SET @OrderByColumn = '[Location Name]'
-		END
-	END
-	IF @OrderByColumn = 'Investment Name'
-	BEGIN
-		IF COL_LENGTH(@listLocationTableName, 'Investment Name') IS NULL
-		BEGIN
-			SET @OrderByColumn = '[Location Name]'
-		END
-		ELSE
-		BEGIN
-			SET @OrderByColumn = '[Investment Name]'
-		END
-	END
-
-	IF @OrderByColumn NOT IN ('Investment Name', 'Location Name', '[Investment Name]','[Location Name]')
-	BEGIN
-		SET @OrderByColumn = '['+@OrderByColumn+']'
-	END
-	-- Obtain the needed columns from the List Location Table. (All but Geometry)
-
+	-- Build column list for location table
+	DECLARE @ListColumnsWhereclause NVARCHAR(MAX) = 'AND [name] NOT IN (''Geometry'', ''location_id'')'
 	IF @ColumnsToReturn IS NOT NULL
 	BEGIN
-		WITH ColumnsCTE AS (
-			SELECT TRIM(value) AS cols FROM STRING_SPLIT(@ColumnsToReturn, ',')
-		)
-
-		SELECT @columnsList = CONCAT('''', STRING_AGG(cols, ''', '''), '''')
-		FROM ColumnsCTE;
-
-		SET @ListColumnsWhereclause = CONCAT(@ListColumnsWhereclause, ' ', 'AND [name] IN (''Location Name'', ''Investment Name'', ''Country'', ''State'', ''Sub State'', ', @columnsList, ')')
-
-
+		WITH ColumnsCTE AS (SELECT TRIM(value) AS cols FROM STRING_SPLIT(@ColumnsToReturn, ','))
+		SELECT @ListColumnsWhereclause = @ListColumnsWhereclause + ' AND [name] IN (''Location Name'', ''Investment Name'', ''Country'', ''State'', ''Sub State'', ' +
+			CONCAT('''', STRING_AGG(cols, ''', '''), '''') + ')'
+		FROM ColumnsCTE
 	END
 
-	SET @PRESQL = N'SELECT @list_location_table_cols_query = STUFF(
-		  (
-			SELECT ''], lt.['' + [name] FROM sys.columns
-			WHERE
-			  [object_id] = (SELECT [object_id] FROM sys.objects WHERE [name] = ''{LIST_LOCATION_TABLE_NAME}'')
-			  {WHERE_CLAUSE}
-			  FOR XML PATH('''')
-		  ),1,3,'''') + '']''';
-	SET @PRESQL = REPLACE(@PRESQL, '{LIST_LOCATION_TABLE_NAME}', @listLocationTableName)
-	SET @PRESQL = REPLACE(@PRESQL, '{WHERE_CLAUSE}', @ListColumnsWhereclause);
+	-- Get location table columns
+	DECLARE @locationColumnsSQL NVARCHAR(MAX)
+	SET @locationColumnsSQL = N'SELECT @list_location_table_cols_query = STUFF((
+		SELECT ''], lt.['' + [name] FROM sys.columns
+		WHERE [object_id] = (SELECT [object_id] FROM sys.objects WHERE [name] = @tableName)
+		' + @ListColumnsWhereclause + '
+		FOR XML PATH('''')
+	),1,3,'''') + '']'''
 
-	EXEC sp_executesql @PRESQL, @presql_list_params, @list_location_table_cols_query = @list_location_table_cols_output OUTPUT;
+	EXEC sp_executesql @locationColumnsSQL,
+		N'@tableName NVARCHAR(1000), @list_location_table_cols_query NVARCHAR(MAX) OUTPUT',
+		@tableName = @listLocationTableName,
+		@list_location_table_cols_query = @list_location_table_cols_output OUTPUT
 
-	IF @listVersion >= 2
-		BEGIN
-				IF @jsonAttributeColumns IS NOT NULL AND @jsonAttributeColumns <> ''
-				BEGIN
-					SET @list_location_table_cols_output = @list_location_table_cols_output + ', ' + @jsonAttributeColumns;
-				END
-		END
+	-- Add JSON attributes for version 2+
+	IF @listVersion >= 2 AND @jsonAttributeColumns IS NOT NULL AND @jsonAttributeColumns <> ''
+		SET @list_location_table_cols_output = @list_location_table_cols_output + ', ' + @jsonAttributeColumns
 
-	SET @PRESQL = N'SELECT @analysis_location_table_cols_query = STUFF(
-		  (
+	-- Get analysis table columns
+	EXEC sp_executesql
+		N'SELECT @analysis_location_table_cols_query = STUFF((
 			SELECT ''], A.['' + [name] FROM sys.columns
-			WHERE
-			  [object_id] = (SELECT [object_id] FROM sys.objects WHERE [name] = ''{LIST_ANALYSIS_TABLE_NAME}'')
-			  {WHERE_CLAUSE}
-			  FOR XML PATH('''')
-		  ),1,3,'''') + '']''';
-	SET @PRESQL = REPLACE(@PRESQL, '{LIST_ANALYSIS_TABLE_NAME}', @listAnalysisTableName)
-	SET @PRESQL = REPLACE(@PRESQL, '{WHERE_CLAUSE}', @AnalysisColumnsWhereclause);
+			WHERE [object_id] = (SELECT [object_id] FROM sys.objects WHERE [name] = @tableName)
+			AND [name] NOT IN (''Geometry'')
+			FOR XML PATH('''')
+		),1,3,'''') + '']''',
+		N'@tableName NVARCHAR(1000), @analysis_location_table_cols_query NVARCHAR(MAX) OUTPUT',
+		@tableName = @listAnalysisTableName,
+		@analysis_location_table_cols_query = @analysis_location_table_cols_output OUTPUT
 
-	EXEC sp_executesql @PRESQL, @presql_analysis_params, @analysis_location_table_cols_query = @analysis_location_table_cols_output OUTPUT;
+	-- Build location filters
+	IF @Country IS NOT NULL SET @Filters = @Filters + ' AND Country = @Country'
+	IF @State IS NOT NULL SET @Filters = @Filters + ' AND State = @State'
+	IF @SubState IS NOT NULL SET @Filters = @Filters + ' AND [Sub State] = @SubState'
+	IF @selectedSupplier IS NOT NULL SET @Filters = @Filters + ' AND [Supplier Name] = @selectedSupplier'
+	IF @selectedSecondSupplier IS NOT NULL SET @Filters = @Filters + ' AND [Second Supplier Name] = @selectedSecondSupplier'
+	IF @selectedParentCompany IS NOT NULL SET @Filters = @Filters + ' AND [Parent Company] = @selectedParentCompany'
+	IF @showRSPOCertified = 1 SET @Filters = @Filters + ' AND [RSPO Model] = 1'
 
-
-
-	SELECT @listAnalysisTableCols = STUFF(
-	  (
-		SELECT '], A.[' + [name] FROM sys.columns
-		WHERE
-		  [object_id] = (SELECT [object_id] FROM sys.objects WHERE [name] = @listAnalysisTableName)
-		  AND [name] NOT IN ('id')
-		  FOR XML PATH('')
-	  ),1,3,'') + '], A.location_status_id, A.location_error as analysisError';
-
-
-	-- ADD Filters
-	IF @Country IS NOT NULL
-	  SET @Filters = + @Filters + ' AND lt.Country = @Country'
-
-	IF @State IS NOT NULL
-	  SET @Filters = + @Filters + ' AND lt.State = @State'
-
-	IF @SubState IS NOT NULL
-	  SET @Filters = + @Filters + ' AND lt.[Sub State] = @SubState'
-	IF @selectedSupplier IS NOT NULL
-        SET @Filters = + @Filters + ' AND lt.[Supplier Name] = @selectedSupplier'
-    IF @selectedSecondSupplier IS NOT NULL
-        SET @Filters = + @Filters + ' AND lt.[Second Supplier Name] = @selectedSecondSupplier'
-    IF @selectedParentCompany IS NOT NULL
-        SET @Filters = + @Filters + ' AND lt.[Parent Company] = @selectedParentCompany'
-    IF @showRSPOCertified = 1
-        SET @Filters = + @Filters + ' AND lt.[RSPO Model] = 1'
+	-- Handle location logic
 	IF @LocationLogic IS NOT NULL AND @LocationIds IS NOT NULL
 	BEGIN
 		IF CHARINDEX('IN', @LocationLogic) > 0
-			BEGIN
-				SET @LocationStatement = 'AND lt.location_id ' + @LocationLogic + ' (' + @LocationIds + ')'
-				SET @Filters = CONCAT(@Filters, ' ', @LocationStatement);
-			END
-		IF CHARINDEX('BETWEEN', @LocationLogic) > 0
-			BEGIN
-				DECLARE @BetweenLogic NVARCHAR(1000) = ' AND lt.location_id ' + @LocationLogic;
-				WITH LocationIdsCTE AS (
-					SELECT value AS locations FROM STRING_SPLIT(@LocationIds, ',')
-				)
-
-				SELECT @LocationStatement = STRING_AGG(locations, @BetweenLogic)
-				FROM LocationIdsCTE;
-
-				SET @Filters = CONCAT(@Filters,' AND lt.location_id ', @LocationLogic, ' ', @LocationStatement);
-			END
+			SET @Filters = @Filters + ' AND location_id ' + @LocationLogic + ' (' + @LocationIds + ')'
+		ELSE IF CHARINDEX('BETWEEN', @LocationLogic) > 0
+		BEGIN
+			DECLARE @betweenClause NVARCHAR(MAX) = ''
+			SELECT @betweenClause = STUFF((
+				SELECT ' AND location_id ' + @LocationLogic + ' ' + locations
+				FROM (SELECT value AS locations FROM STRING_SPLIT(@LocationIds, ',')) AS LocationIdsCTE
+				FOR XML PATH('')
+			), 1, 4, '')
+			SET @Filters = @Filters + ' AND location_id ' + @LocationLogic + ' ' + @betweenClause
+		END
 	END
 
+	-- Handle search string
 	IF @SearchString IS NOT NULL
 	BEGIN
+		DECLARE @listLocationTableCols NVARCHAR(MAX)
+		SELECT @listLocationTableCols = STUFF((
+			SELECT '], [' + [name] FROM sys.columns
+			WHERE [object_id] = (SELECT [object_id] FROM sys.objects WHERE [name] = @listLocationTableName)
+			AND [name] NOT IN ('Geometry', 'location_id')
+			AND user_type_id IN (SELECT user_type_id FROM sys.types WHERE name IN ('char', 'nchar', 'varchar', 'nvarchar'))
+			FOR XML PATH('')
+		),1,3,' ') + ']'
 
-		SELECT @listLocationTableCols = STUFF(
-		  (
-			SELECT '], lt.[' + [name] FROM sys.columns
-			WHERE
-			  [object_id] = (SELECT [object_id] FROM sys.objects WHERE [name] = @listLocationTableName)
-			  AND [name] NOT IN ('Geometry', 'location_id')
-				AND user_type_id IN (SELECT user_type_id FROM sys.types WHERE name IN ('char', 'nchar', 'varchar', 'nvarchar'))
-			  FOR XML PATH('')
-		  ),1,3,' ') + ']';
-
-		DECLARE @SearchLogic NVARCHAR(MAX) = 'CONCAT({LIST_TABLE_CHAR_COLS}) LIKE ''%{SEARCH_STRING}%'' ';
-		SET @SearchLogic = REPLACE(@SearchLogic, '{LIST_TABLE_CHAR_COLS}', @listLocationTableCols);
-		SET @SearchLogic = REPLACE(@SearchLogic, '{SEARCH_STRING}', @SearchString);
-		--PRINT @SearchLogic;
-		SET @Filters = CONCAT(@Filters,' AND ', @SearchLogic);
+		SET @Filters = @Filters + ' AND CONCAT(' + @listLocationTableCols + ') LIKE ''%' + @SearchString + '%'''
 	END
 
-
-	IF ISNUMERIC( @AnalysisAreaMin ) = 1 AND ISNUMERIC( @AnalysisAreaMax ) = 1
+	-- Handle analysis area filters
+	IF ISNUMERIC(@AnalysisAreaMin) = 1 AND ISNUMERIC(@AnalysisAreaMax) = 1
 	BEGIN
-		--PRINT 'Analysis Filter';
-		--PRINT 'TEST-' + CONVERT(VARCHAR(50), @AnalysisAreaMin) + ' TO ' + CONVERT(VARCHAR(50), @AnalysisAreaMax);
-		IF @AnalysisAreaMin < 0 AND @AnalysisAreaMin < @AnalysisAreaMax
-			BEGIN
-				RAISERROR ('Invalid @AnalysisAreaMin', -1, 1);
-			END
-		IF @AnalysisAreaMax < 0 AND @AnalysisAreaMax > @AnalysisAreaMin
-			BEGIN
-				RAISERROR ('Invalid @AnalysisAreaMax', -1, 1);
-			END
-		SET @AnalysisFilters = 'total_area BETWEEN {ANALYSIS_AREA_MIN} AND {ANALYSIS_AREA_MAX}';
-		SET @AnalysisFilters = REPLACE(@AnalysisFilters, '{ANALYSIS_AREA_MIN}', @AnalysisAreaMin);
-		SET @AnalysisFilters = REPLACE(@AnalysisFilters, '{ANALYSIS_AREA_MAX}', @AnalysisAreaMax);
-		--PRINT @AnalysisFilters;
+		IF @AnalysisAreaMin < 0 OR @AnalysisAreaMax < 0
+			RAISERROR ('Invalid analysis area values', -1, 1)
+		SET @AnalysisFilters = 'total_area BETWEEN ' + CAST(@AnalysisAreaMin AS NVARCHAR(20)) + ' AND ' + CAST(@AnalysisAreaMax AS NVARCHAR(20))
 	END
 
-	-- END Filters
-	-- CASE-SENSITIVE JSON FILTERS
+	-- Handle JSON-based filters
 	IF @selectedOverallThreats IS NOT NULL
-    BEGIN
-        set @where_clauses = '(SELECT TOP 1 CAST(value AS INT) AS last_property
-                                FROM OPENJSON(commodity_threat_overall_level COLLATE Latin1_General_CS_AS)
-                                WHERE [key] = (SELECT TOP 1 [key] FROM OPENJSON(commodity_threat_overall_level COLLATE Latin1_General_CS_AS) ORDER BY [key] DESC)
-                                AND CAST(value AS INT) IN (SELECT CAST(value AS INT) FROM OPENJSON(@selectedOverallThreats COLLATE Latin1_General_CS_AS))) IS NOT NULL'
-    END
-    IF @selectedOverallValues IS NOT NULL
-    BEGIN
-        IF @where_clauses <> ''
-            SET @where_clauses = @where_clauses + ' AND ';
+		SET @where_clauses = '(SELECT TOP 1 CAST(value AS INT) FROM OPENJSON(commodity_threat_overall_level) WHERE [key] = (SELECT TOP 1 [key] FROM OPENJSON(commodity_threat_overall_level) ORDER BY [key] DESC) AND CAST(value AS INT) IN (SELECT CAST(value AS INT) FROM OPENJSON(@selectedOverallThreats))) IS NOT NULL'
 
-                set @where_clauses = @where_clauses + '(SELECT TOP 1 CAST(value AS INT) AS last_property
-                                FROM OPENJSON(commodity_value_overall_level COLLATE Latin1_General_CS_AS)
-                                WHERE [key] = (SELECT TOP 1 [key] FROM OPENJSON(commodity_value_overall_level COLLATE Latin1_General_CS_AS) ORDER BY [key] DESC)
-                                AND CAST(value AS INT) IN (SELECT CAST(value AS INT) FROM OPENJSON(@selectedOverallValues COLLATE Latin1_General_CS_AS))) IS NOT NULL'
-
-    END
-    IF @selectedMillPriority IS NOT NULL
-    BEGIN
-        IF @where_clauses <> ''
-            SET @where_clauses = @where_clauses + ' AND ';
-        set @where_clauses = @where_clauses + '(SELECT TOP 1 CAST(value AS INT) AS last_property
-                            FROM OPENJSON(commodity_mill_priority_level COLLATE Latin1_General_CS_AS)
-                            WHERE [key] = (SELECT TOP 1 [key] FROM OPENJSON(commodity_mill_priority_level COLLATE Latin1_General_CS_AS) ORDER BY [key] DESC)
-                            AND CAST(value AS INT) IN (SELECT CAST(value AS INT) FROM OPENJSON(@selectedMillPriority COLLATE Latin1_General_CS_AS))) IS NOT NULL'
-	END
-	IF @where_clauses <>''
-	 SET @AnalysisFilters = @AnalysisFilters + ' AND ' + @where_clauses
-
-
--- CASE-SENSITIVE JSON COLUMN PARSING WITH UNIQUE ALIASES
-DECLARE @jsonColumns TABLE (
-    ColumnName NVARCHAR(255),
-    AliasName NVARCHAR(255)
-);
-
--- Add all columns with unique aliases to handle case sensitivity
-INSERT INTO @jsonColumns (ColumnName, AliasName)
-VALUES
-    ('commodity_threat_deforestation_level', 'commodity_threat_deforestation_level'),
-    ('commodity_threat_peat_level', 'commodity_threat_peat_level'),
-    ('commodity_threat_protected_areas_level', 'commodity_threat_protected_areas_level'),
-    ('commodity_threat_fires_level', 'commodity_threat_fires_level'),
-    ('commodity_value_forest_extent_level', 'commodity_value_forest_extent_level'),
-    ('commodity_value_peat_level', 'commodity_value_peat_level'),
-    ('commodity_value_protected_areas_level', 'commodity_value_protected_areas_level'),
-    ('commodity_value_overall_level', 'commodity_value_overall_level'),
-    ('commodity_threat_overall_level', 'commodity_threat_overall_level'),
-    ('commodity_mill_priority_level', 'commodity_mill_priority_level');
-
-DECLARE @parsedColumns NVARCHAR(MAX) = '';
-
-DECLARE @columnName NVARCHAR(255);
-DECLARE @aliasName NVARCHAR(255);
-DECLARE column_cursor CURSOR FOR SELECT ColumnName, AliasName FROM @jsonColumns;
-
-OPEN column_cursor;
-FETCH NEXT FROM column_cursor INTO @columnName, @aliasName;
-
-WHILE @@FETCH_STATUS = 0
-BEGIN
-    DECLARE @parsedColumn NVARCHAR(MAX);
-
-    -- Case-sensitive JSON parsing with unique alias
-    SET @parsedColumn = '
-        (SELECT TOP 1 CAST(value AS INT)
-         FROM OPENJSON(' + @columnName + ' COLLATE Latin1_General_CS_AS)
-         ORDER BY [key] COLLATE Latin1_General_CS_AS DESC
-        ) AS ' + @aliasName;
-
-    -- Append to @parsedColumns
-    IF @parsedColumns = ''
-        SET @parsedColumns = @parsedColumn;
-    ELSE
-        SET @parsedColumns = @parsedColumns + ', ' + @parsedColumn;
-
-    FETCH NEXT FROM column_cursor INTO @columnName, @aliasName;
-END
-
-CLOSE column_cursor;
-DEALLOCATE column_cursor;
-
-	-- Build the dynamic SQL without MyListTable CTE
-	SET @SQL = N'
-		WITH MyAnalysisTable AS (
-			SELECT
-				{LIST_ID} AS analysis_list_id,
-				{TEMPLATE_ID} AS template_id,
-				{ANALYSIS_COLUMNS},
-				' + @parsedColumns + '
-			FROM [{ANALYSIS_TABLE}] A
-			WHERE ' + @AnalysisFilters + '
-		)
-		SELECT
-			{LIST_ID} AS list_id,
-			{LOCATION_COLUMNS},
-			lt.location_id AS list_location_id'
-
-	IF @Geometry = 1
+	IF @selectedOverallValues IS NOT NULL
 	BEGIN
-		SET @SQL = @SQL + ', lt.Geometry.ToString() AS [WKTGeometry]'
+		IF @where_clauses <> '' SET @where_clauses = @where_clauses + ' AND '
+		SET @where_clauses = @where_clauses + '(SELECT TOP 1 CAST(value AS INT) FROM OPENJSON(commodity_value_overall_level) WHERE [key] = (SELECT TOP 1 [key] FROM OPENJSON(commodity_value_overall_level) ORDER BY [key] DESC) AND CAST(value AS INT) IN (SELECT CAST(value AS INT) FROM OPENJSON(@selectedOverallValues))) IS NOT NULL'
 	END
 
-	SET @SQL = @SQL + ',
-			MyAnalysisTable.*
+	IF @selectedMillPriority IS NOT NULL
+	BEGIN
+		IF @where_clauses <> '' SET @where_clauses = @where_clauses + ' AND '
+		SET @where_clauses = @where_clauses + '(SELECT TOP 1 CAST(value AS INT) FROM OPENJSON(commodity_mill_priority_level) WHERE [key] = (SELECT TOP 1 [key] FROM OPENJSON(commodity_mill_priority_level) ORDER BY [key] DESC) AND CAST(value AS INT) IN (SELECT CAST(value AS INT) FROM OPENJSON(@selectedMillPriority))) IS NOT NULL'
+	END
+
+	IF @where_clauses <> '' SET @AnalysisFilters = @AnalysisFilters + ' AND ' + @where_clauses
+
+	-- Build parsed JSON columns using STUFF instead of STRING_AGG
+	DECLARE @parsedColumns NVARCHAR(MAX) = ''
+	SELECT @parsedColumns = STUFF((
+		SELECT ', (SELECT TOP 1 CAST(value AS INT) FROM OPENJSON(' + ColumnName + ') ORDER BY [key] DESC) AS ' + ColumnName + '_parsed'
+		FROM (VALUES
+			('commodity_threat_deforestation_level'), ('commodity_threat_peat_level'), ('commodity_threat_protected_areas_level'),
+			('commodity_threat_fires_level'), ('commodity_value_forest_extent_level'), ('commodity_value_peat_level'),
+			('commodity_value_protected_areas_level'), ('commodity_value_overall_level'), ('commodity_threat_overall_level'),
+			('commodity_mill_priority_level')
+		) AS jsonColumns(ColumnName)
+		FOR XML PATH('')
+	), 1, 2, '')
+
+	-- Build and execute final query using template replacement
+	SET @SQL = N'
+	WITH MyListTable AS (
+		SELECT {LIST_ID} As list_id, {LOCATION_COLUMNS}, location_id as list_location_id{GEOMETRY_COLUMN}
 		FROM [{LOCATION_TABLE}] lt
-		INNER JOIN MyAnalysisTable
-			ON {LIST_ID} = MyAnalysisTable.analysis_list_id
-			AND lt.location_id = MyAnalysisTable.location_id
-		WHERE 1=1 ' + @Filters + '
-		ORDER BY ' +
-		CASE
-			WHEN @OrderByColumn = 'Location Name' OR @OrderByColumn = '[Location Name]'
-				THEN 'lt.[Location Name]'
-			WHEN @OrderByColumn = 'Investment Name' OR @OrderByColumn = '[Investment Name]'
-				THEN 'lt.[Investment Name]'
-			WHEN CHARINDEX(@OrderByColumn, @list_location_table_cols_output) > 0
-				THEN 'lt.' + QUOTENAME(REPLACE(REPLACE(@OrderByColumn, '[', ''), ']', ''))
-			WHEN CHARINDEX(@OrderByColumn, @analysis_location_table_cols_output) > 0
-				THEN 'MyAnalysisTable.' + QUOTENAME(@cleanedOrderByColumn)
-			WHEN EXISTS (
-				SELECT 1
-				FROM ListAttributes
-				WHERE list_id = @listID
-				AND attribute_name = @cleanedOrderByColumn COLLATE Latin1_General_CS_AS
-			)
-				THEN CASE
-					WHEN (
-						SELECT attribute_type
-						FROM ListAttributes
-						WHERE list_id = @listID
-						AND attribute_name = @cleanedOrderByColumn COLLATE Latin1_General_CS_AS
-					) = 1
-					THEN 'CAST(JSON_VALUE(lt.attributes COLLATE Latin1_General_CS_AS, ''$."' + @cleanedOrderByColumn + '"'') AS DECIMAL(18,6))'
-					ELSE 'CAST(JSON_VALUE(lt.attributes COLLATE Latin1_General_CS_AS, ''$."' + @cleanedOrderByColumn + '"'') AS NVARCHAR(MAX))'
-				END
-			ELSE @OrderByColumn
-		END + ' ' + @Order
+	), MyAnalysisTable AS (
+		SELECT {LIST_ID} As analysis_list_id, {TEMPLATE_ID} As template_id, {ANALYSIS_COLUMNS}{PARSED_COLUMNS}
+		FROM [{ANALYSIS_TABLE}] A
+		WHERE {ANALYSIS_FILTERS}
+	), CombinedData AS (
+		SELECT *, ROW_NUMBER() OVER (ORDER BY {ORDER_BY}) AS RowNum
+		FROM MyListTable
+		INNER JOIN MyAnalysisTable ON MyListTable.list_id = MyAnalysisTable.analysis_list_id AND MyListTable.list_location_id = MyAnalysisTable.location_id
+		WHERE 1=1 {FILTERS}
+	)
+	SELECT * FROM CombinedData
+	WHERE 1=1 {PAGINATION}'
 
+	-- Ensure all variables have proper values before replacement
+	IF @list_location_table_cols_output IS NULL SET @list_location_table_cols_output = ''
+	IF @analysis_location_table_cols_output IS NULL SET @analysis_location_table_cols_output = ''
+	IF @parsedColumns IS NULL SET @parsedColumns = ''
+	IF @AnalysisFilters IS NULL SET @AnalysisFilters = '1=1'
+	IF @Filters IS NULL SET @Filters = ''
+
+	-- Replace template placeholders
+	SET @SQL = REPLACE(@SQL, '{LIST_ID}', CAST(@listID AS NVARCHAR(20)))
+	SET @SQL = REPLACE(@SQL, '{TEMPLATE_ID}', CAST(@template_id AS NVARCHAR(20)))
+	SET @SQL = REPLACE(@SQL, '{LOCATION_COLUMNS}', @list_location_table_cols_output)
+	SET @SQL = REPLACE(@SQL, '{ANALYSIS_COLUMNS}', @analysis_location_table_cols_output)
+	SET @SQL = REPLACE(@SQL, '{PARSED_COLUMNS}', CASE WHEN @parsedColumns <> '' THEN ', ' + @parsedColumns ELSE '' END)
+	SET @SQL = REPLACE(@SQL, '{LOCATION_TABLE}', @listLocationTableName)
+	SET @SQL = REPLACE(@SQL, '{ANALYSIS_TABLE}', @listAnalysisTableName)
+	SET @SQL = REPLACE(@SQL, '{ANALYSIS_FILTERS}', @AnalysisFilters)
+	SET @SQL = REPLACE(@SQL, '{FILTERS}', @Filters)
+	SET @SQL = REPLACE(@SQL, '{GEOMETRY_COLUMN}', CASE WHEN @Geometry = 1 THEN ', Geometry.ToString() As [WKTGeometry]' ELSE '' END)
+
+	-- Build ORDER BY clause
+	DECLARE @OrderByClause NVARCHAR(MAX)
+	SET @OrderByClause = CASE
+		WHEN @OrderByColumn IN ('Location Name', '[Location Name]') THEN 'MyListTable.[Location Name]'
+		WHEN @OrderByColumn IN ('Investment Name', '[Investment Name]') THEN 'MyListTable.[Investment Name]'
+		WHEN CHARINDEX(@OrderByColumn, @list_location_table_cols_output) > 0 THEN 'MyListTable.' + QUOTENAME(REPLACE(REPLACE(@OrderByColumn, '[', ''), ']', ''))
+		WHEN CHARINDEX(@OrderByColumn, @analysis_location_table_cols_output) > 0 THEN 'MyAnalysisTable.' + QUOTENAME(@cleanedOrderByColumn)
+		WHEN EXISTS (SELECT 1 FROM ListAttributes WHERE list_id = @listID AND attribute_name = @cleanedOrderByColumn) THEN
+			CASE WHEN (SELECT attribute_type FROM ListAttributes WHERE list_id = @listID AND attribute_name = @cleanedOrderByColumn) = 1
+				THEN 'CAST(JSON_VALUE(MyListTable.attributes, ''$."' + @cleanedOrderByColumn + '"'') AS DECIMAL(18,6))'
+				ELSE 'CAST(JSON_VALUE(MyListTable.attributes, ''$."' + @cleanedOrderByColumn + '"'') AS NVARCHAR(MAX))'
+			END
+		ELSE 'MyListTable.list_location_id'
+	END + ' ' + @Order
+
+	SET @SQL = REPLACE(@SQL, '{ORDER_BY}', @OrderByClause)
+
+	-- Add pagination using ROW_NUMBER approach
+	DECLARE @PaginationClause NVARCHAR(MAX) = ''
 	IF @RowsOfPage > 0 AND @PageNumber > 0
-		SET @SQL = @SQL + ' OFFSET (@PageNumber-1)*@RowsOfPage ROWS FETCH NEXT @RowsOfPage ROWS ONLY';
+		SET @PaginationClause = ' AND RowNum BETWEEN ' + CAST((@PageNumber-1)*@RowsOfPage + 1 AS NVARCHAR(20)) + ' AND ' + CAST(@PageNumber*@RowsOfPage AS NVARCHAR(20))
 
-	-- Replace tokens with actual values
-	SET @SQL = REPLACE(@SQL, '{TEMPLATE_ID}', @template_id);
-	SET @SQL = REPLACE(@SQL, '{LIST_ID}', @listID);
-	SET @SQL = REPLACE(@SQL, '{LOCATION_COLUMNS}', @list_location_table_cols_output);
-	SET @SQL = REPLACE(@SQL, '{LOCATION_TABLE}', @listLocationTableName);
-	SET @SQL = REPLACE(@SQL, '{ANALYSIS_COLUMNS}', @analysis_location_table_cols_output);
-	SET @SQL = REPLACE(@SQL, '{ANALYSIS_TABLE}', @listAnalysisTableName);
+	SET @SQL = REPLACE(@SQL, '{PAGINATION}', @PaginationClause)
 
 	EXEC sp_executesql @SQL,
 		N'@PageNumber INT, @RowsOfPage INT, @OrderByColumn NVARCHAR(MAX), @Order NVARCHAR(5), @Country NVARCHAR(150), @State NVARCHAR(150), @SubState NVARCHAR(150), @AnalysisAreaMin INT, @AnalysisAreaMax INT, @selectedSupplier NVARCHAR(150), @selectedSecondSupplier NVARCHAR(150), @selectedParentCompany NVARCHAR(150), @showRSPOCertified BIT, @selectedOverallThreats NVARCHAR(150), @selectedOverallValues NVARCHAR(150), @selectedMillPriority NVARCHAR(150), @jsonAttributeColumns NVARCHAR(MAX)',
-		@PageNumber=@PageNumber, @RowsOfPage=@RowsOfPage, @OrderByColumn=@OrderByColumn, @Order=@Order, @Country=@Country, @State=@State, @SubState=@SubState, @AnalysisAreaMin=@AnalysisAreaMin, @AnalysisAreaMax=@AnalysisAreaMax, @selectedSupplier=@selectedSupplier, @selectedSecondSupplier=@selectedSecondSupplier, @selectedParentCompany=@selectedParentCompany, @showRSPOCertified=@showRSPOCertified, @selectedOverallThreats=@selectedOverallThreats, @selectedOverallValues=@selectedOverallValues, @selectedMillPriority=@selectedMillPriority, @jsonAttributeColumns=@jsonAttributeColumns;
+		@PageNumber, @RowsOfPage, @OrderByColumn, @Order, @Country, @State, @SubState, @AnalysisAreaMin, @AnalysisAreaMax, @selectedSupplier, @selectedSecondSupplier, @selectedParentCompany, @showRSPOCertified, @selectedOverallThreats, @selectedOverallValues, @selectedMillPriority, @jsonAttributeColumns
 
 END
 `;

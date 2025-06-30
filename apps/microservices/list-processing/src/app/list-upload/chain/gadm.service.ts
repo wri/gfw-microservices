@@ -10,16 +10,14 @@ import axiosRetry from 'axios-retry';
 
 axiosRetry(axios, {
   retries: 3,
-  retryDelay: (retryCount) => {
-    return retryCount * 1000;
-  },
+  retryDelay: axiosRetry.exponentialDelay,
   retryCondition: (error) => {
     // axios-retry normally does not retry POSTs, so using a custom condition
     return axiosRetry.isRetryableError(error);
   },
 });
 const PRODUCTION_ENVIRONMENTS = ['production', 'ProdV2'];
-const POOL_SIZE = 5;
+const POOL_SIZE = 20;
 
 const GADM_SERVICE__PROD =
   'https://gfwpro-gis.globalforestwatch.org/arcgis/rest/services/GADM36_admin_2_gridded/MapServer/0'; // Only for production

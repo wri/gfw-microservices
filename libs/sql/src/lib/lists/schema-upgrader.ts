@@ -22,7 +22,7 @@
  * @param userId number
  */
 import { Logger } from '@nestjs/common';
-import { ClientStoreConnection, SQLUtils } from '../util';
+import { ClientStoreConnection } from '../util';
 import { UspSetListUnlocked } from './uspSetListUnlocked';
 import { UspSetListLocked } from './uspSetListLocked';
 import { Lists, ListsAnalysisStatus } from '../entity';
@@ -50,121 +50,138 @@ export async function upgradeListSchema(args: SchemaUpgraderArgs) {
   try {
     const clientStoreConnection = new ClientStoreConnection();
     const connection = await clientStoreConnection.getConnection(clientDb);
-    const listsRepository = connection.getRepository(Lists);
-    const list = await listsRepository.findOne({
-      where: { id: listId },
-    });
+    const queryRunner = connection.createQueryRunner();
+    await queryRunner.connect();
+    await queryRunner.startTransaction();
+    try {
+      const listsRepository = queryRunner.manager.getRepository(Lists);
+      const list = await listsRepository.findOne({
+        where: { id: listId },
+      });
 
-    if (list.version === LIST_VERSION_POST_UPGRADE) {
-      logger.log(`List already in version 2, no op.`);
-      return list;
-    }
-
-    logger.log(`Locking list`);
-    await new UspSetListLocked().run(clientDb, list.id, userId);
-
-    /**
-     * @step 1
-     * Get entity based columns definitions
-     * Get rest of current list-xxxx columns
-     * Check if is Investment and needs adjustment
-     */
-    const columnsToExclude = getListsLocsColumnsToExclude();
-    logger.log(
-      `Writing list-xxx.attributes based on own list-xxx columns. Excluding Columns: ${columnsToExclude.join(
-        ', '
-      )}`
-    );
-    const columnsToDelete = await getListLocationsColumnsToDelete(
-      clientDb,
-      list.listTableName,
-      columnsToExclude
-    );
-    if (columnsToDelete.includes('Investment Name')) {
-      logger.log(`Setting [Location Name] for Investment List`);
-      await setListLocationNameIfIsInvestment(clientDb, list.listTableName);
-    }
-
-    /**
-     * @step 2
-     * Handle list locations atts
-     * Delete columns outside entity
-     */
-    await handleListLocationAttributes(clientDb, list, columnsToExclude);
-
-    if (columnsToDelete.length) {
-      logger.log(
-        `Dropping the following columns from [${list.listTableName}]: ${columnsToDelete.join(', ')}`
-      );
-
-      const dropStatement = `
-        ALTER TABLE [${list.listTableName}]
-        DROP COLUMN ${columnsToDelete.map((col) => `[${col}]`).join(', ')}
-      `;
-
-      await SQLUtils.queryDBFirstRow(clientDb, dropStatement);
-    } else {
-      logger.log(
-        `No columns to drop in [${list.listTableName}]! Everything matches the entity definition.`
-      );
-    }
-
-    /**
-     * @step 3
-     * Write Lists.Commodity based on Lists.template_id for given list_id
-     * see {@link https://gfw.atlassian.net/browse/GPV-3983}
-     *
-     * @step 4
-     * Update Lists.version=2 for given list_id
-     */
-    const templateName = await getTemplateName(list.templateId);
-    let listCommodity = getCommodityCodeFromTemplate(templateName, list.Commodity);
-
-    // Check if the list was uploaded by EAPI
-    const wasUploadedByEAPI = await getListIfEAPIExportUpload(clientDb, list.id);
-    if (templateName === 'Cocoa Generic' && wasUploadedByEAPI) {
-      listCommodity = `${GHG_PREFIX}_Unknown`;
-    }
-    logger.log(`Writing list.[Commodity] = ${listCommodity} from template: ${templateName}`);
-    logger.log(`Updating list version ${list.version} to ${LIST_VERSION_POST_UPGRADE}`);
-    await listsRepository.update(
-      { id: listId },
-      {
-        Commodity: listCommodity,
-        version: LIST_VERSION_POST_UPGRADE,
-        templateId: 0,
+      if (list.version === LIST_VERSION_POST_UPGRADE) {
+        logger.log('List already in version 2, no op.');
+        return list;
       }
-    );
 
-    /**
-     * @step 5
-     * Handle ListsAnalysisStatus.options given template_id and locationClassification
-     * see {@link https://gfw.atlassian.net/browse/GPV-4274}
-     */
-    const lowerLocationClass = list.locationClassification?.toLowerCase();
-    if (list.templateId === 2 || (list.templateId === 5 && lowerLocationClass === 'supply shed')) {
-      logger.log(`Handling ListsAnalysisStatus.options for list.`);
-      const listAnalisisStatusRepo = connection.getRepository(ListsAnalysisStatus);
-      await listAnalisisStatusRepo.update(
+      logger.log('Locking list');
+      await new UspSetListLocked().run(clientDb, list.id, userId);
+
+      /**
+       * @step 1
+       * Get entity based columns definitions
+       * Get rest of current list-xxxx columns
+       * Check if is Investment and needs adjustment
+       */
+      const columnsToExclude = getListsLocsColumnsToExclude();
+      logger.log(
+        `Writing list-xxx.attributes based on own list-xxx columns. Excluding Columns: ${columnsToExclude.join(
+          ', '
+        )}`
+      );
+      const columnsToDelete = await getListLocationsColumnsToDelete(
+        clientDb,
+        list.listTableName,
+        columnsToExclude
+      );
+      if (columnsToDelete.includes('Investment Name')) {
+        logger.log('Setting [Location Name] for Investment List');
+        await setListLocationNameIfIsInvestment(queryRunner, list.listTableName);
+      }
+
+      /**
+       * @step 2
+       * Handle list locations atts
+       * Delete columns outside entity
+       */
+      await handleListLocationAttributes(queryRunner, list, columnsToExclude);
+
+      if (columnsToDelete.length) {
+        logger.log(
+          `Dropping the following columns from [${list.listTableName}]: ${columnsToDelete.join(
+            ', '
+          )}`
+        );
+
+        const dropStatement = `
+          ALTER TABLE [${list.listTableName}]
+          DROP COLUMN ${columnsToDelete.map((col) => `[${col}]`).join(', ')}
+        `;
+
+        await queryRunner.query(dropStatement);
+      } else {
+        logger.log(
+          `No columns to drop in [${list.listTableName}]! Everything matches the entity definition.`
+        );
+      }
+
+      /**
+       * @step 3
+       * Write Lists.Commodity based on Lists.template_id for given list_id
+       * see {@link https://gfw.atlassian.net/browse/GPV-3983}
+       *
+       * @step 4
+       * Update Lists.version=2 for given list_id
+       */
+      const templateName = await getTemplateName(list.templateId);
+      let listCommodity = getCommodityCodeFromTemplate(templateName, list.Commodity);
+
+      // Check if the list was uploaded by EAPI
+      const wasUploadedByEAPI = await getListIfEAPIExportUpload(clientDb, list.id);
+      if (templateName === 'Cocoa Generic' && wasUploadedByEAPI) {
+        listCommodity = `${GHG_PREFIX}_Unknown`;
+      }
+      logger.log(`Writing list.[Commodity] = ${listCommodity} from template: ${templateName}`);
+      logger.log(`Updating list version ${list.version} to ${LIST_VERSION_POST_UPGRADE}`);
+      await listsRepository.update(
+        { id: listId },
         {
-          listId: list.id,
-          analysisId: 'FCD',
-        },
-        {
-          options: 'PalmRisk',
+          Commodity: listCommodity,
+          version: LIST_VERSION_POST_UPGRADE,
+          templateId: 0,
         }
       );
-    }
 
-    return await listsRepository.findOne({
-      where: { id: listId },
-    });
+      /**
+       * @step 5
+       * Handle ListsAnalysisStatus.options given template_id and locationClassification
+       * see {@link https://gfw.atlassian.net/browse/GPV-4274}
+       */
+      const lowerLocationClass = list.locationClassification?.toLowerCase();
+      if (
+        list.templateId === 2 ||
+        (list.templateId === 5 && lowerLocationClass === 'supply shed')
+      ) {
+        logger.log('Handling ListsAnalysisStatus.options for list.');
+        const listAnalysisStatusRepo = queryRunner.manager.getRepository(ListsAnalysisStatus);
+        await listAnalysisStatusRepo.update(
+          {
+            listId: list.id,
+            analysisId: 'FCD',
+          },
+          {
+            options: 'PalmRisk',
+          }
+        );
+      }
+
+      await queryRunner.commitTransaction();
+
+      return await listsRepository.findOne({
+        where: { id: listId },
+      });
+    } catch (error) {
+      await queryRunner.rollbackTransaction();
+      Logger.error('Schema Upgrader Failed', error.stack || error);
+      throw error;
+    } finally {
+      await queryRunner.release();
+      logger.log('Unlocking list');
+      await new UspSetListUnlocked().run(clientDb, listId);
+      logger.log('Done.');
+    }
   } catch (error) {
-    Logger.error(`Schema Upgrader Failed`, error.stack || error);
+    Logger.error('Schema Upgrader Failed', error.stack || error);
     throw error;
-  } finally {
-    logger.log(`Unlocking list`);
-    await new UspSetListUnlocked().run(clientDb, listId);
-    logger.log(`Done.`);
   }
 }

@@ -1,5 +1,5 @@
 import { kml } from '@mapbox/togeojson';
-import { DOMParser } from 'xmldom';
+import { DOMParser } from '@xmldom/xmldom';
 import { Logger } from '@nestjs/common';
 
 export const kml2GeoJSON = async (data: string) => {

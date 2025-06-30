@@ -99,6 +99,8 @@ describe('Schema Validation', () => {
       expect(listNameSchema.safeParse('Listé 123').success).toBe(true);
       expect(listNameSchema.safeParse('Listê 123').success).toBe(true);
       expect(listNameSchema.safeParse('Listà 123').success).toBe(true);
+      expect(listNameSchema.safeParse('List[123]').success).toBe(true);
+      expect(listNameSchema.safeParse('List(123)').success).toBe(true);
     });
 
     it('should reject periods and other special characters', () => {
@@ -106,8 +108,6 @@ describe('Schema Validation', () => {
       expect(listNameSchema.safeParse('List@123').success).toBe(false);
       expect(listNameSchema.safeParse('List#123').success).toBe(false);
       expect(listNameSchema.safeParse('List$123').success).toBe(false);
-      expect(listNameSchema.safeParse('List[123]').success).toBe(false);
-      expect(listNameSchema.safeParse('List(123)').success).toBe(false);
     });
 
     it('should reject strings with leading or trailing spaces', () => {

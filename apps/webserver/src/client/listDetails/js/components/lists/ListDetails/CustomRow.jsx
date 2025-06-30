@@ -61,6 +61,7 @@ const CustomRow = ({
 
   const isSelectedLocationActive =
     rowInfo?.location_status_id === listStatus.Active || rowInfo?.statusCode === listStatus.Active;
+
   const showLocationDiagnosticButton = isGfwList || isSelectedLocationActive;
 
   return (

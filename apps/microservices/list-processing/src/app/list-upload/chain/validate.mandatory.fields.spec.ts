@@ -1072,4 +1072,574 @@ describe('ValidateMandatoryFields', () => {
       });
     });
   });
+
+  describe('isValidFieldValue acceptance criteria', () => {
+    describe('should pass validation for valid values', () => {
+      it('should accept non-empty strings', () => {
+        expect(validator.isValidFieldValue('valid string')).toBe(true);
+        expect(validator.isValidFieldValue('  valid with spaces  ')).toBe(true);
+        expect(validator.isValidFieldValue('0')).toBe(true);
+        expect(validator.isValidFieldValue('false')).toBe(true);
+      });
+
+      it('should accept valid numbers', () => {
+        expect(validator.isValidFieldValue(0)).toBe(true);
+        expect(validator.isValidFieldValue(1)).toBe(true);
+        expect(validator.isValidFieldValue(-1)).toBe(true);
+        expect(validator.isValidFieldValue(3.14)).toBe(true);
+        expect(validator.isValidFieldValue(Number.MAX_SAFE_INTEGER)).toBe(true);
+        expect(validator.isValidFieldValue(Number.MIN_SAFE_INTEGER)).toBe(true);
+      });
+
+      it('should accept boolean values', () => {
+        expect(validator.isValidFieldValue(true)).toBe(true);
+        expect(validator.isValidFieldValue(false)).toBe(true);
+      });
+
+      it('should accept objects and arrays', () => {
+        expect(validator.isValidFieldValue({ key: 'value' })).toBe(true);
+        expect(validator.isValidFieldValue([1, 2, 3])).toBe(true);
+        expect(validator.isValidFieldValue([])).toBe(true);
+        expect(validator.isValidFieldValue({})).toBe(true);
+      });
+
+      it('should accept date objects', () => {
+        expect(validator.isValidFieldValue(new Date())).toBe(true);
+        expect(validator.isValidFieldValue(new Date('2023-01-01'))).toBe(true);
+      });
+    });
+
+    describe('should fail validation for invalid values', () => {
+      it('should reject null and undefined', () => {
+        expect(validator.isValidFieldValue(null)).toBe(false);
+        expect(validator.isValidFieldValue(undefined)).toBe(false);
+      });
+
+      it('should reject empty strings', () => {
+        expect(validator.isValidFieldValue('')).toBe(false);
+        expect(validator.isValidFieldValue('   ')).toBe(false);
+        expect(validator.isValidFieldValue('\t\n\r')).toBe(false);
+      });
+
+      it('should reject invalid numbers', () => {
+        expect(validator.isValidFieldValue(NaN)).toBe(false);
+        expect(validator.isValidFieldValue(Infinity)).toBe(false);
+        expect(validator.isValidFieldValue(-Infinity)).toBe(false);
+      });
+    });
+  });
+
+  describe('Acceptance criteria - Lists that should pass validation', () => {
+    describe('CSV files with valid data', () => {
+      it('should pass validation for CSV with all required fields', async () => {
+        const input: ChainType = {
+          request: {
+            fileDownloadedPath: 'path/to/file.csv',
+          } as RequestNewList,
+          geojson: {
+            type: 'FeatureCollection',
+            features: [
+              {
+                type: 'Feature',
+                geometry: { type: 'Point', coordinates: [0, 0] },
+                properties: {
+                  locationName: 'Test Location',
+                  latitude: 10,
+                  longitude: 20,
+                  analysisRadius: 100,
+                  analysisArea: 200,
+                },
+              },
+            ],
+          },
+        };
+
+        const result = await validator.handle(input);
+        expect(result.geojson.features[0].properties).not.toHaveProperty('errorDetails');
+        expect((result.request as RequestNewList).hasUnanalyzableError).toBeUndefined();
+      });
+
+      it('should pass validation for CSV with only analysisRadius', async () => {
+        const input: ChainType = {
+          request: {
+            fileDownloadedPath: 'path/to/file.csv',
+          } as RequestNewList,
+          geojson: {
+            type: 'FeatureCollection',
+            features: [
+              {
+                type: 'Feature',
+                geometry: { type: 'Point', coordinates: [0, 0] },
+                properties: {
+                  locationName: 'Test Location',
+                  latitude: 10,
+                  longitude: 20,
+                  analysisRadius: 100,
+                },
+              },
+            ],
+          },
+        };
+
+        const result = await validator.handle(input);
+        expect(result.geojson.features[0].properties).not.toHaveProperty('errorDetails');
+        expect((result.request as RequestNewList).hasUnanalyzableError).toBeUndefined();
+      });
+
+      it('should pass validation for CSV with only analysisArea', async () => {
+        const input: ChainType = {
+          request: {
+            fileDownloadedPath: 'path/to/file.csv',
+          } as RequestNewList,
+          geojson: {
+            type: 'FeatureCollection',
+            features: [
+              {
+                type: 'Feature',
+                geometry: { type: 'Point', coordinates: [0, 0] },
+                properties: {
+                  locationName: 'Test Location',
+                  latitude: 10,
+                  longitude: 20,
+                  analysisArea: 200,
+                },
+              },
+            ],
+          },
+        };
+
+        const result = await validator.handle(input);
+        expect(result.geojson.features[0].properties).not.toHaveProperty('errorDetails');
+        expect((result.request as RequestNewList).hasUnanalyzableError).toBeUndefined();
+      });
+
+      it('should pass validation for CSV with zero values', async () => {
+        const input: ChainType = {
+          request: {
+            fileDownloadedPath: 'path/to/file.csv',
+          } as RequestNewList,
+          geojson: {
+            type: 'FeatureCollection',
+            features: [
+              {
+                type: 'Feature',
+                geometry: { type: 'Point', coordinates: [0, 0] },
+                properties: {
+                  locationName: 'Test Location',
+                  latitude: 0,
+                  longitude: 0,
+                  analysisRadius: 0,
+                  analysisArea: 0,
+                },
+              },
+            ],
+          },
+        };
+
+        const result = await validator.handle(input);
+        expect(result.geojson.features[0].properties).not.toHaveProperty('errorDetails');
+        expect((result.request as RequestNewList).hasUnanalyzableError).toBeUndefined();
+      });
+
+      it('should pass validation for CSV with negative values', async () => {
+        const input: ChainType = {
+          request: {
+            fileDownloadedPath: 'path/to/file.csv',
+          } as RequestNewList,
+          geojson: {
+            type: 'FeatureCollection',
+            features: [
+              {
+                type: 'Feature',
+                geometry: { type: 'Point', coordinates: [0, 0] },
+                properties: {
+                  locationName: 'Test Location',
+                  latitude: -90,
+                  longitude: -180,
+                  analysisRadius: -100,
+                  analysisArea: -200,
+                },
+              },
+            ],
+          },
+        };
+
+        const result = await validator.handle(input);
+        expect(result.geojson.features[0].properties).not.toHaveProperty('errorDetails');
+        expect((result.request as RequestNewList).hasUnanalyzableError).toBeUndefined();
+      });
+    });
+
+    describe('Shapefile (ZIP) files with valid data', () => {
+      it('should pass validation for polygon shapefile with locationName', async () => {
+        const input: ChainType = {
+          request: {
+            fileDownloadedPath: 'path/to/file.zip',
+          } as RequestNewList,
+          geojson: {
+            type: 'FeatureCollection',
+            features: [
+              {
+                type: 'Feature',
+                geometry: {
+                  type: 'Polygon',
+                  coordinates: [
+                    [
+                      [0, 0],
+                      [1, 1],
+                      [1, 0],
+                      [0, 0],
+                    ],
+                  ],
+                },
+                properties: {
+                  locationName: 'Test Location',
+                },
+              },
+            ],
+          },
+        };
+
+        const result = await validator.handle(input);
+        expect(result.geojson.features[0].properties).not.toHaveProperty('errorDetails');
+        expect((result.request as RequestNewList).hasUnanalyzableError).toBeUndefined();
+      });
+
+      it('should pass validation for point shapefile with all required fields', async () => {
+        const input: ChainType = {
+          request: {
+            fileDownloadedPath: 'path/to/file.zip',
+          } as RequestNewList,
+          geojson: {
+            type: 'FeatureCollection',
+            features: [
+              {
+                type: 'Feature',
+                geometry: { type: 'Point', coordinates: [0, 0] },
+                properties: {
+                  locationName: 'Test Location',
+                  analysisRadius: 100,
+                  analysisArea: 200,
+                },
+              },
+            ],
+          },
+        };
+
+        const result = await validator.handle(input);
+        expect(result.geojson.features[0].properties).not.toHaveProperty('errorDetails');
+        expect((result.request as RequestNewList).hasUnanalyzableError).toBeUndefined();
+      });
+
+      it('should pass validation for point shapefile with only analysisRadius', async () => {
+        const input: ChainType = {
+          request: {
+            fileDownloadedPath: 'path/to/file.zip',
+          } as RequestNewList,
+          geojson: {
+            type: 'FeatureCollection',
+            features: [
+              {
+                type: 'Feature',
+                geometry: { type: 'Point', coordinates: [0, 0] },
+                properties: {
+                  locationName: 'Test Location',
+                  analysisRadius: 100,
+                },
+              },
+            ],
+          },
+        };
+
+        const result = await validator.handle(input);
+        expect(result.geojson.features[0].properties).not.toHaveProperty('errorDetails');
+        expect((result.request as RequestNewList).hasUnanalyzableError).toBeUndefined();
+      });
+
+      it('should pass validation for point shapefile with only analysisArea', async () => {
+        const input: ChainType = {
+          request: {
+            fileDownloadedPath: 'path/to/file.zip',
+          } as RequestNewList,
+          geojson: {
+            type: 'FeatureCollection',
+            features: [
+              {
+                type: 'Feature',
+                geometry: { type: 'Point', coordinates: [0, 0] },
+                properties: {
+                  locationName: 'Test Location',
+                  analysisArea: 200,
+                },
+              },
+            ],
+          },
+        };
+
+        const result = await validator.handle(input);
+        expect(result.geojson.features[0].properties).not.toHaveProperty('errorDetails');
+        expect((result.request as RequestNewList).hasUnanalyzableError).toBeUndefined();
+      });
+
+      it('should pass validation for MultiPolygon shapefile with locationName', async () => {
+        const input: ChainType = {
+          request: {
+            fileDownloadedPath: 'path/to/file.zip',
+          } as RequestNewList,
+          geojson: {
+            type: 'FeatureCollection',
+            features: [
+              {
+                type: 'Feature',
+                geometry: {
+                  type: 'MultiPolygon',
+                  coordinates: [
+                    [
+                      [
+                        [0, 0],
+                        [1, 1],
+                        [1, 0],
+                        [0, 0],
+                      ],
+                    ],
+                  ],
+                },
+                properties: {
+                  locationName: 'Test Location',
+                },
+              },
+            ],
+          },
+        };
+
+        const result = await validator.handle(input);
+        expect(result.geojson.features[0].properties).not.toHaveProperty('errorDetails');
+        expect((result.request as RequestNewList).hasUnanalyzableError).toBeUndefined();
+      });
+    });
+
+    describe('KML/KMZ files with valid data', () => {
+      it('should pass validation for KML file with locationName', async () => {
+        const input: ChainType = {
+          request: {
+            fileDownloadedPath: 'path/to/file.kml',
+          } as RequestNewList,
+          geojson: {
+            type: 'FeatureCollection',
+            features: [
+              {
+                type: 'Feature',
+                geometry: { type: 'Point', coordinates: [0, 0] },
+                properties: {
+                  locationName: 'Test Location',
+                },
+              },
+            ],
+          },
+        };
+
+        const result = await validator.handle(input);
+        expect(result.geojson.features[0].properties).not.toHaveProperty('errorDetails');
+        expect((result.request as RequestNewList).hasUnanalyzableError).toBeUndefined();
+      });
+
+      it('should pass validation for KMZ file with locationName', async () => {
+        const input: ChainType = {
+          request: {
+            fileDownloadedPath: 'path/to/file.kmz',
+          } as RequestNewList,
+          geojson: {
+            type: 'FeatureCollection',
+            features: [
+              {
+                type: 'Feature',
+                geometry: { type: 'Point', coordinates: [0, 0] },
+                properties: {
+                  locationName: 'Test Location',
+                },
+              },
+            ],
+          },
+        };
+
+        const result = await validator.handle(input);
+        expect(result.geojson.features[0].properties).not.toHaveProperty('errorDetails');
+        expect((result.request as RequestNewList).hasUnanalyzableError).toBeUndefined();
+      });
+    });
+
+    describe('Excel files with valid data', () => {
+      it('should pass validation for XLS file with all required fields', async () => {
+        const input: ChainType = {
+          request: {
+            fileDownloadedPath: 'path/to/file.xls',
+          } as RequestNewList,
+          geojson: {
+            type: 'FeatureCollection',
+            features: [
+              {
+                type: 'Feature',
+                geometry: { type: 'Point', coordinates: [0, 0] },
+                properties: {
+                  locationName: 'Test Location',
+                  latitude: 10,
+                  longitude: 20,
+                  analysisRadius: 100,
+                  analysisArea: 200,
+                },
+              },
+            ],
+          },
+        };
+
+        const result = await validator.handle(input);
+        expect(result.geojson.features[0].properties).not.toHaveProperty('errorDetails');
+        expect((result.request as RequestNewList).hasUnanalyzableError).toBeUndefined();
+      });
+
+      it('should pass validation for XLSX file with all required fields', async () => {
+        const input: ChainType = {
+          request: {
+            fileDownloadedPath: 'path/to/file.xlsx',
+          } as RequestNewList,
+          geojson: {
+            type: 'FeatureCollection',
+            features: [
+              {
+                type: 'Feature',
+                geometry: { type: 'Point', coordinates: [0, 0] },
+                properties: {
+                  locationName: 'Test Location',
+                  latitude: 10,
+                  longitude: 20,
+                  analysisRadius: 100,
+                  analysisArea: 200,
+                },
+              },
+            ],
+          },
+        };
+
+        const result = await validator.handle(input);
+        expect(result.geojson.features[0].properties).not.toHaveProperty('errorDetails');
+        expect((result.request as RequestNewList).hasUnanalyzableError).toBeUndefined();
+      });
+    });
+
+    describe('GeoJSON/JSON files with valid data', () => {
+      it('should pass validation for GeoJSON polygon with locationName', async () => {
+        const input: ChainType = {
+          request: {
+            fileDownloadedPath: 'path/to/file.geojson',
+          } as RequestNewList,
+          geojson: {
+            type: 'FeatureCollection',
+            features: [
+              {
+                type: 'Feature',
+                geometry: {
+                  type: 'Polygon',
+                  coordinates: [
+                    [
+                      [0, 0],
+                      [1, 1],
+                      [1, 0],
+                      [0, 0],
+                    ],
+                  ],
+                },
+                properties: {
+                  locationName: 'Test Location',
+                },
+              },
+            ],
+          },
+        };
+
+        const result = await validator.handle(input);
+        expect(result.geojson.features[0].properties).not.toHaveProperty('errorDetails');
+        expect((result.request as RequestNewList).hasUnanalyzableError).toBeUndefined();
+      });
+
+      it('should pass validation for JSON point with all required fields', async () => {
+        const input: ChainType = {
+          request: {
+            fileDownloadedPath: 'path/to/file.json',
+          } as RequestNewList,
+          geojson: {
+            type: 'FeatureCollection',
+            features: [
+              {
+                type: 'Feature',
+                geometry: { type: 'Point', coordinates: [0, 0] },
+                properties: {
+                  locationName: 'Test Location',
+                  analysisRadius: 100,
+                  analysisArea: 200,
+                },
+              },
+            ],
+          },
+        };
+
+        const result = await validator.handle(input);
+        expect(result.geojson.features[0].properties).not.toHaveProperty('errorDetails');
+        expect((result.request as RequestNewList).hasUnanalyzableError).toBeUndefined();
+      });
+    });
+
+    describe('Multiple features with valid data', () => {
+      it('should pass validation for multiple valid features', async () => {
+        const input: ChainType = {
+          request: {
+            fileDownloadedPath: 'path/to/file.csv',
+          } as RequestNewList,
+          geojson: {
+            type: 'FeatureCollection',
+            features: [
+              {
+                type: 'Feature',
+                geometry: { type: 'Point', coordinates: [0, 0] },
+                properties: {
+                  locationName: 'Location 1',
+                  latitude: 10,
+                  longitude: 20,
+                  analysisRadius: 100,
+                  analysisArea: 200,
+                },
+              },
+              {
+                type: 'Feature',
+                geometry: { type: 'Point', coordinates: [1, 1] },
+                properties: {
+                  locationName: 'Location 2',
+                  latitude: 15,
+                  longitude: 25,
+                  analysisRadius: 150,
+                  analysisArea: 250,
+                },
+              },
+              {
+                type: 'Feature',
+                geometry: { type: 'Point', coordinates: [2, 2] },
+                properties: {
+                  locationName: 'Location 3',
+                  latitude: 20,
+                  longitude: 30,
+                  analysisRadius: 200,
+                  analysisArea: 300,
+                },
+              },
+            ],
+          },
+        };
+
+        const result = await validator.handle(input);
+        result.geojson.features.forEach((feature) => {
+          expect(feature.properties).not.toHaveProperty('errorDetails');
+        });
+        expect((result.request as RequestNewList).hasUnanalyzableError).toBeUndefined();
+      });
+    });
+  });
 });

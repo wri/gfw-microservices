@@ -95,7 +95,7 @@ export class ValidateMandatoryFields extends AbstractHandler<ChainType> {
   /**
    * Validates if a field value is valid (not null, undefined, or empty string)
    */
-  private isValidFieldValue(value: any): boolean {
+  public isValidFieldValue(value: unknown): boolean {
     if (value === null || value === undefined) {
       return false;
     }
@@ -105,9 +105,9 @@ export class ValidateMandatoryFields extends AbstractHandler<ChainType> {
       return value.trim().length > 0;
     }
 
-    // For numbers, check if they're not NaN
+    // For numbers, check if they're not NaN, Infinity, or -Infinity
     if (typeof value === 'number') {
-      return !isNaN(value);
+      return !isNaN(value) && isFinite(value);
     }
 
     return true;
@@ -121,7 +121,7 @@ export class ValidateMandatoryFields extends AbstractHandler<ChainType> {
   }
 
   private validateFeature(feature: Feature, fieldsToCheck: string[]): boolean {
-    const missingOrInvalidFields = fieldsToCheck.filter(
+    let missingOrInvalidFields = fieldsToCheck.filter(
       (field) => !this.isFieldValid(feature, field)
     );
 
@@ -132,14 +132,9 @@ export class ValidateMandatoryFields extends AbstractHandler<ChainType> {
 
       // If at least one is valid, remove both from missing fields
       if (hasValidRadius || hasValidArea) {
-        const radiusIndex = missingOrInvalidFields.indexOf('analysisRadius');
-        if (radiusIndex > -1) {
-          missingOrInvalidFields.splice(radiusIndex, 1);
-        }
-        const areaIndex = missingOrInvalidFields.indexOf('analysisArea');
-        if (areaIndex > -1) {
-          missingOrInvalidFields.splice(areaIndex, 1);
-        }
+        missingOrInvalidFields = missingOrInvalidFields.filter(
+          (field) => field !== 'analysisRadius' && field !== 'analysisArea'
+        );
       }
     }
 

@@ -181,10 +181,23 @@ export class ProcessUploadData extends AbstractHandler<ChainType> {
     const commodity = await this.getListCommodity(organization_database, list_id);
     request.geojson.features = await this.getProcessedFeatures(prevFeatures, commodity, request);
 
-    if (this.listsAttributesRecords.size > 0) {
-      await saveListAttributes(organization_database, [...this.listsAttributesRecords.values()]);
-    }
+    const clientStoreConnection = new ClientStoreConnection();
+    const connection = await clientStoreConnection.getConnection(organization_database);
+    const queryRunner = connection.createQueryRunner();
+    await queryRunner.connect();
+    await queryRunner.startTransaction();
 
-    return request;
+    try {
+      if (this.listsAttributesRecords.size > 0) {
+        await saveListAttributes(queryRunner, [...this.listsAttributesRecords.values()]);
+      }
+      await queryRunner.commitTransaction();
+      return request;
+    } catch (error) {
+      await queryRunner.rollbackTransaction();
+      throw error;
+    } finally {
+      await queryRunner.release();
+    }
   }
 }

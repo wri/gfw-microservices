@@ -1,4 +1,4 @@
-import { EntitySchema } from 'typeorm';
+import { EntitySchema, QueryRunner } from 'typeorm';
 import { Logger } from '@nestjs/common';
 import { ListAttributes, Lists, ListSchema, ListSchemaType, ListTemplate } from '../entity';
 import { ClientStoreConnection, SQLUtils } from '../util';
@@ -41,12 +41,13 @@ export interface ListAttributesRecord {
   attribute_name: string;
   attribute_type: number;
 }
-export async function saveListAttributes(clientDb, attributes: ListAttributesRecord[]) {
+export async function saveListAttributes(
+  queryRunner: QueryRunner,
+  attributes: ListAttributesRecord[]
+) {
   try {
     // insert new attributes with Typeorm listAttributes entity
-    const clientStore = new ClientStoreConnection();
-    const connection = await clientStore.getConnection(clientDb);
-    const listAttributesRepository = connection.getRepository(ListAttributes);
+    const listAttributesRepository = queryRunner.manager.getRepository(ListAttributes);
 
     Logger.log(`Inserting ${attributes.length} into [ListAttributes]`);
 
@@ -215,14 +216,11 @@ export async function getListLocationsColumnsToDelete(
  * @returns listLocations[]
  */
 export async function handleListLocationAttributes(
-  clientDb: string,
+  queryRunner: QueryRunner,
   list: Lists,
   columnsToExclude: unknown[]
 ) {
-  const listLocations = await SQLUtils.queryDB<unknown[]>(
-    clientDb,
-    `SELECT * FROM [${list.listTableName}]`
-  );
+  const listLocations = await queryRunner.query(`SELECT * FROM [${list.listTableName}]`);
   Logger.log(`List Locations found: ${listLocations.length}`);
 
   if (listLocations.length) {
@@ -245,7 +243,7 @@ export async function handleListLocationAttributes(
         SET [attributes] = {ATTR_VALUE}  
         WHERE [location_id] = ${record['location_id']}`.replace('{ATTR_VALUE}', attrValue);
 
-      await SQLUtils.queryDBFirstRow<undefined>(clientDb, updateQuery);
+      await queryRunner.query(updateQuery);
 
       const listAttrsToSave = validListAttrs.map((attributeField) =>
         getFormattedAttributes({
@@ -255,21 +253,30 @@ export async function handleListLocationAttributes(
         })
       );
 
-      await saveListAttributes(clientDb, listAttrsToSave);
+      await saveListAttributes(queryRunner, listAttrsToSave);
     }
   }
   return listLocations;
 }
 
-export async function setListLocationNameIfIsInvestment(clientDb: string, listTableName: string) {
+export async function setListLocationNameIfIsInvestment(
+  queryRunner: QueryRunner,
+  listTableName: string
+) {
+  // the deletion of the 'Investment Name' field will occur in the next step of the main function according to 'columnsToDelete'
   const sqlCmd = `
-DECLARE @tbl sysname = QUOTENAME('${listTableName}');
+  DECLARE @tbl sysname = QUOTENAME('${listTableName}');
 
-IF COL_LENGTH('dbo.' + @tbl, 'Location Name') IS NULL
-   AND COL_LENGTH('dbo.' + @tbl, 'Investment Name') IS NOT NULL
-BEGIN
-    EXEC('EXEC sp_rename ''dbo.' + @tbl + '.[Investment Name]'', ''Location Name'', ''COLUMN'';');
-END
-`;
-  return await SQLUtils.queryDBFirstRow(clientDb, sqlCmd);
+  IF COL_LENGTH('dbo.' + @tbl, 'Location Name') IS NULL
+     AND COL_LENGTH('dbo.' + @tbl, 'Investment Name') IS NOT NULL
+  BEGIN
+    DECLARE @sql NVARCHAR(MAX);
+
+    SET @sql = 'ALTER TABLE dbo.' + @tbl + ' ADD [Location Name] NVARCHAR(MAX);';
+    EXEC sp_executesql @sql;
+
+    SET @sql = 'UPDATE dbo.' + @tbl + ' SET [Location Name] = [Investment Name];';
+    EXEC sp_executesql @sql;
+  END`;
+  await queryRunner.query(sqlCmd);
 }

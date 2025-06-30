@@ -6,11 +6,25 @@ import { S3Service } from '@wri-monorepos/aws';
 import { ConfigService } from '@nestjs/config';
 import { Test } from '@nestjs/testing';
 
+interface ServerConfigType {
+  LARGE_PROCESSING_LIST_ERROR_BUCKET?: string;
+  NODE_ENV?: 'test' | 'development' | 'staging' | 'qa' | 'ProdV2';
+}
+
 describe('GenerateErrorFile', () => {
   let handler: GenerateErrorFile;
   let mockInput: ChainType;
   let s3Service: S3Service;
   let configService: ConfigService;
+
+  const mockConfigService: Partial<ConfigService<ServerConfigType, true>> = {
+    get: jest.fn((key) => {
+      if (key === 'LARGE_PROCESSING_LIST_ERROR_BUCKET') {
+        return 'test-bucket';
+      }
+      return undefined;
+    }),
+  };
 
   beforeEach(async () => {
     process.env.LARGE_PROCESSING_LIST_BUCKET = 'test-bucket';
@@ -27,21 +41,17 @@ describe('GenerateErrorFile', () => {
         },
         {
           provide: ConfigService,
-          useValue: {
-            get: jest.fn((key) => {
-              if (key === 'LARGE_PROCESSING_LIST_ERROR_BUCKET') {
-                return 'test-bucket';
-              }
-              return undefined;
-            }),
-          },
+          useValue: mockConfigService,
         },
       ],
     }).compile();
 
     s3Service = moduleRef.get<S3Service>(S3Service);
-    configService = moduleRef.get<ConfigService>(ConfigService);
-    handler = new GenerateErrorFile(s3Service, configService);
+    configService = moduleRef.get<ConfigService<any, any>>(ConfigService);
+    handler = new GenerateErrorFile(
+      s3Service,
+      configService as unknown as ConfigService<ServerConfigType, true>
+    );
 
     mockInput = {
       geojson: {

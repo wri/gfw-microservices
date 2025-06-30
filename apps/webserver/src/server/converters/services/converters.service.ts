@@ -4,7 +4,7 @@ import {
   ConverterStatus as ConverterStatusEntity,
 } from '@wri-monorepos/sql';
 
-import { ConverterStatus as ConverterStatusEnum } from '@wri-monorepos/constants';
+import { ConverterStatus as ConverterStatusEnum, CONVERTER_NAMES } from '@wri-monorepos/constants';
 
 import logger from '../../../config/privateutils/logger.utils';
 import { Repository, InsertResult, UpdateResult } from 'typeorm';
@@ -97,6 +97,7 @@ export const getConverterJobInfo = async (parentId: number) => {
 
   return {
     ...parentConverter,
+    name: CONVERTER_NAMES[parentConverter.name],
     children: childrenConverters,
   };
 };

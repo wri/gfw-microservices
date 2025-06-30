@@ -7,6 +7,7 @@ import { PillButton } from '../../../../components';
 import { profilePage } from '../../../../common/js/config';
 import { fieldValidations } from '../../../../profile/js/utils/validations';
 import '../../../css/profile.scss';
+import { PRO_MANAGER_PATH } from '../../common/paths';
 
 export default class UserProfile extends Component {
   constructor(props) {
@@ -435,7 +436,7 @@ export default class UserProfile extends Component {
 
         <div className="flex-grid space-between align-center">
           <h3 className="section-title-normal">Contact Information</h3>
-          <PillButton variant="contained" size="small" href="/pro-manager-list?tab=users">
+          <PillButton variant="contained" size="small" href={`${PRO_MANAGER_PATH}?tab=users`}>
             Back to profile manager
           </PillButton>
         </div>
@@ -711,7 +712,7 @@ export default class UserProfile extends Component {
 
         <div className="profile-button-container justify-end">
           {this.props.userOnly ? null : (
-            <PillButton variant="contained" size="small" href="/pro-manager-list?tab=users">
+            <PillButton variant="contained" size="small" href={`${PRO_MANAGER_PATH}?tab=users`}>
               Cancel
             </PillButton>
           )}

@@ -11,6 +11,7 @@ import SettingSection from '../../../../common/js/components/SettingSection';
 
 import DialogProvider, { useDialog } from '../../../../common/js/components/Dialog';
 import FieldLabel from './FieldLabel';
+import { PRO_MANAGER_PATH } from '../../common/paths';
 
 /**
  * @summary {[subscription_status_id]: defaultFields}
@@ -142,7 +143,7 @@ function AccountLimitsGlobal({ setIsLoading }) {
     <>
       <Grid container justifyContent="space-between" sx={{ marginBottom: '1.5rem' }}>
         <Typography variant="h3">{accountLimitsStrings.pageHeading}</Typography>
-        <PillButton variant="contained" size="small" href="/pro-manager-list">
+        <PillButton variant="contained" size="small" href={PRO_MANAGER_PATH}>
           Back to Profile Manager
         </PillButton>
       </Grid>

@@ -47,29 +47,38 @@ BEGIN
 	-- Get location table columns
 	DECLARE @locationColumnsSQL NVARCHAR(MAX)
 	SET @locationColumnsSQL = N'SELECT @list_location_table_cols_query = STUFF((
-		SELECT ''], lt.['' + [name] FROM sys.columns
+		SELECT '', ['' + [name] + '']'' FROM sys.columns
 		WHERE [object_id] = (SELECT [object_id] FROM sys.objects WHERE [name] = @tableName)
 		' + @ListColumnsWhereclause + '
 		FOR XML PATH('''')
-	),1,3,'''') + '']'''
+	),1,2,'''')'
 
 	EXEC sp_executesql @locationColumnsSQL,
 		N'@tableName NVARCHAR(1000), @list_location_table_cols_query NVARCHAR(MAX) OUTPUT',
 		@tableName = @listLocationTableName,
 		@list_location_table_cols_query = @list_location_table_cols_output OUTPUT
 
-	-- Add JSON attributes for version 2+
-	IF @listVersion >= 2 AND @jsonAttributeColumns IS NOT NULL AND @jsonAttributeColumns <> ''
-		SET @list_location_table_cols_output = @list_location_table_cols_output + ', ' + @jsonAttributeColumns
+	-- Add JSON attributes for version 2+ - COMPLETELY DISABLED FOR NOW
+	DECLARE @jsonColumnsWithAlias NVARCHAR(MAX) = ''
+	-- IF @listVersion >= 2 AND @jsonAttributeColumns IS NOT NULL AND @jsonAttributeColumns <> ''
+	-- BEGIN
+	-- 	-- Simple approach: build JSON columns directly
+	-- 	SELECT @jsonColumnsWithAlias = STUFF((
+	-- 		SELECT ', JSON_VALUE(lt.attributes, ''$."' + REPLACE(TRIM(value), '''', '''''') + '"'') AS [' + TRIM(value) + '_attr]'
+	-- 		FROM STRING_SPLIT(@jsonAttributeColumns, ',')
+	-- 		WHERE TRIM(value) <> ''
+	-- 		FOR XML PATH('')
+	-- 	), 1, 2, '')
+	-- END
 
 	-- Get analysis table columns
 	EXEC sp_executesql
 		N'SELECT @analysis_location_table_cols_query = STUFF((
-			SELECT ''], A.['' + [name] FROM sys.columns
+			SELECT '', ['' + [name] + '']'' FROM sys.columns
 			WHERE [object_id] = (SELECT [object_id] FROM sys.objects WHERE [name] = @tableName)
 			AND [name] NOT IN (''Geometry'')
 			FOR XML PATH('''')
-		),1,3,'''') + '']''',
+		),1,2,'''')',
 		N'@tableName NVARCHAR(1000), @analysis_location_table_cols_query NVARCHAR(MAX) OUTPUT',
 		@tableName = @listAnalysisTableName,
 		@analysis_location_table_cols_query = @analysis_location_table_cols_output OUTPUT
@@ -154,23 +163,15 @@ BEGIN
 		FOR XML PATH('')
 	), 1, 2, '')
 
-	-- Build and execute final query using template replacement
-	SET @SQL = N'
-	WITH MyListTable AS (
-		SELECT {LIST_ID} As list_id, {LOCATION_COLUMNS}, location_id as list_location_id{GEOMETRY_COLUMN}
-		FROM [{LOCATION_TABLE}] lt
-	), MyAnalysisTable AS (
-		SELECT {LIST_ID} As analysis_list_id, {TEMPLATE_ID} As template_id, {ANALYSIS_COLUMNS}{PARSED_COLUMNS}
-		FROM [{ANALYSIS_TABLE}] A
-		WHERE {ANALYSIS_FILTERS}
-	), CombinedData AS (
-		SELECT *, ROW_NUMBER() OVER (ORDER BY {ORDER_BY}) AS RowNum
-		FROM MyListTable
-		INNER JOIN MyAnalysisTable ON MyListTable.list_id = MyAnalysisTable.analysis_list_id AND MyListTable.list_location_id = MyAnalysisTable.location_id
-		WHERE 1=1 {FILTERS}
-	)
-	SELECT * FROM CombinedData
-	WHERE 1=1 {PAGINATION}'
+	-- Build ORDER BY clause first
+	DECLARE @OrderByClause NVARCHAR(MAX)
+	SET @OrderByClause = CASE
+		WHEN @OrderByColumn IN ('Location Name', '[Location Name]') THEN '[Location Name]'
+		WHEN @OrderByColumn IN ('Investment Name', '[Investment Name]') THEN '[Investment Name]'
+		WHEN CHARINDEX(@OrderByColumn, @list_location_table_cols_output) > 0 THEN QUOTENAME(REPLACE(REPLACE(@OrderByColumn, '[', ''), ']', ''))
+		WHEN CHARINDEX(@OrderByColumn, @analysis_location_table_cols_output) > 0 THEN QUOTENAME(@cleanedOrderByColumn)
+		ELSE 'list_location_id'
+	END + ' ' + @Order
 
 	-- Ensure all variables have proper values before replacement
 	IF @list_location_table_cols_output IS NULL SET @list_location_table_cols_output = ''
@@ -179,41 +180,82 @@ BEGIN
 	IF @AnalysisFilters IS NULL SET @AnalysisFilters = '1=1'
 	IF @Filters IS NULL SET @Filters = ''
 
-	-- Replace template placeholders
-	SET @SQL = REPLACE(@SQL, '{LIST_ID}', CAST(@listID AS NVARCHAR(20)))
-	SET @SQL = REPLACE(@SQL, '{TEMPLATE_ID}', CAST(@template_id AS NVARCHAR(20)))
-	SET @SQL = REPLACE(@SQL, '{LOCATION_COLUMNS}', @list_location_table_cols_output)
-	SET @SQL = REPLACE(@SQL, '{ANALYSIS_COLUMNS}', @analysis_location_table_cols_output)
-	SET @SQL = REPLACE(@SQL, '{PARSED_COLUMNS}', CASE WHEN @parsedColumns <> '' THEN ', ' + @parsedColumns ELSE '' END)
-	SET @SQL = REPLACE(@SQL, '{LOCATION_TABLE}', @listLocationTableName)
-	SET @SQL = REPLACE(@SQL, '{ANALYSIS_TABLE}', @listAnalysisTableName)
-	SET @SQL = REPLACE(@SQL, '{ANALYSIS_FILTERS}', @AnalysisFilters)
-	SET @SQL = REPLACE(@SQL, '{FILTERS}', @Filters)
-	SET @SQL = REPLACE(@SQL, '{GEOMETRY_COLUMN}', CASE WHEN @Geometry = 1 THEN ', Geometry.ToString() As [WKTGeometry]' ELSE '' END)
+	-- Clean up any trailing commas
+	SET @list_location_table_cols_output = RTRIM(LTRIM(@list_location_table_cols_output))
+	IF RIGHT(@list_location_table_cols_output, 1) = ','
+		SET @list_location_table_cols_output = LEFT(@list_location_table_cols_output, LEN(@list_location_table_cols_output) - 1)
 
-	-- Build ORDER BY clause
-	DECLARE @OrderByClause NVARCHAR(MAX)
-	SET @OrderByClause = CASE
-		WHEN @OrderByColumn IN ('Location Name', '[Location Name]') THEN 'MyListTable.[Location Name]'
-		WHEN @OrderByColumn IN ('Investment Name', '[Investment Name]') THEN 'MyListTable.[Investment Name]'
-		WHEN CHARINDEX(@OrderByColumn, @list_location_table_cols_output) > 0 THEN 'MyListTable.' + QUOTENAME(REPLACE(REPLACE(@OrderByColumn, '[', ''), ']', ''))
-		WHEN CHARINDEX(@OrderByColumn, @analysis_location_table_cols_output) > 0 THEN 'MyAnalysisTable.' + QUOTENAME(@cleanedOrderByColumn)
-		WHEN EXISTS (SELECT 1 FROM ListAttributes WHERE list_id = @listID AND attribute_name = @cleanedOrderByColumn) THEN
-			CASE WHEN (SELECT attribute_type FROM ListAttributes WHERE list_id = @listID AND attribute_name = @cleanedOrderByColumn) = 1
-				THEN 'CAST(JSON_VALUE(MyListTable.attributes, ''$."' + @cleanedOrderByColumn + '"'') AS DECIMAL(18,6))'
-				ELSE 'CAST(JSON_VALUE(MyListTable.attributes, ''$."' + @cleanedOrderByColumn + '"'') AS NVARCHAR(MAX))'
-			END
-		ELSE 'MyListTable.list_location_id'
-	END + ' ' + @Order
+	SET @analysis_location_table_cols_output = RTRIM(LTRIM(@analysis_location_table_cols_output))
+	IF RIGHT(@analysis_location_table_cols_output, 1) = ','
+		SET @analysis_location_table_cols_output = LEFT(@analysis_location_table_cols_output, LEN(@analysis_location_table_cols_output) - 1)
 
-	SET @SQL = REPLACE(@SQL, '{ORDER_BY}', @OrderByClause)
+	SET @parsedColumns = RTRIM(LTRIM(@parsedColumns))
+	IF RIGHT(@parsedColumns, 1) = ','
+		SET @parsedColumns = LEFT(@parsedColumns, LEN(@parsedColumns) - 1)
 
-	-- Add pagination using ROW_NUMBER approach
-	DECLARE @PaginationClause NVARCHAR(MAX) = ''
-	IF @RowsOfPage > 0 AND @PageNumber > 0
-		SET @PaginationClause = ' AND RowNum BETWEEN ' + CAST((@PageNumber-1)*@RowsOfPage + 1 AS NVARCHAR(20)) + ' AND ' + CAST(@PageNumber*@RowsOfPage AS NVARCHAR(20))
+	-- Debug: Print the column outputs to identify the issue
+	PRINT 'Location columns: ' + ISNULL(@list_location_table_cols_output, 'NULL')
+	PRINT 'Analysis columns: ' + ISNULL(@analysis_location_table_cols_output, 'NULL')
+	PRINT 'Parsed columns: ' + ISNULL(@parsedColumns, 'NULL')
+	PRINT 'Order by clause: ' + ISNULL(@OrderByClause, 'NULL')
+	PRINT 'Location columns length: ' + CAST(LEN(ISNULL(@list_location_table_cols_output, '')) AS NVARCHAR(10))
+	PRINT 'Analysis columns length: ' + CAST(LEN(ISNULL(@analysis_location_table_cols_output, '')) AS NVARCHAR(10))
+	PRINT 'Parsed columns length: ' + CAST(LEN(ISNULL(@parsedColumns, '')) AS NVARCHAR(10))
 
-	SET @SQL = REPLACE(@SQL, '{PAGINATION}', @PaginationClause)
+	-- Build and execute final query using template replacement
+	SET @SQL = N'
+	WITH MyListTable AS (
+		SELECT ' + CAST(@listID AS NVARCHAR(20)) + ' As list_id' +
+		CASE WHEN @list_location_table_cols_output IS NOT NULL AND LEN(TRIM(@list_location_table_cols_output)) > 0
+			THEN ', ' + @list_location_table_cols_output
+			ELSE ''
+		END +
+		', location_id as list_location_id' +
+		CASE WHEN @Geometry = 1 THEN ', Geometry.ToString() As [WKTGeometry]' ELSE '' END + '
+		FROM [' + @listLocationTableName + '] lt
+	), MyAnalysisTable AS (
+		SELECT ' + CAST(@listID AS NVARCHAR(20)) + ' As analysis_list_id, ' + CAST(@template_id AS NVARCHAR(20)) + ' As template_id' +
+		CASE WHEN @analysis_location_table_cols_output IS NOT NULL AND LEN(TRIM(@analysis_location_table_cols_output)) > 0
+			THEN ', ' + @analysis_location_table_cols_output
+			ELSE ''
+		END +
+		CASE WHEN @parsedColumns IS NOT NULL AND LEN(TRIM(@parsedColumns)) > 0
+			THEN ', ' + @parsedColumns
+			ELSE ''
+		END + '
+		FROM [' + @listAnalysisTableName + '] A
+		WHERE ' + @AnalysisFilters + '
+	), CombinedData AS (
+		SELECT MyListTable.*, MyAnalysisTable.*, ROW_NUMBER() OVER (ORDER BY ' + @OrderByClause + ') AS RowNum
+		FROM MyListTable
+		INNER JOIN MyAnalysisTable ON MyListTable.list_id = MyAnalysisTable.analysis_list_id AND MyListTable.list_location_id = MyAnalysisTable.location_id
+		WHERE 1=1 ' + @Filters + '
+	)
+	SELECT
+		list_id, list_location_id' +
+		CASE WHEN @list_location_table_cols_output IS NOT NULL AND LEN(TRIM(@list_location_table_cols_output)) > 0
+			THEN ', ' + @list_location_table_cols_output
+			ELSE ''
+		END +
+		CASE WHEN @Geometry = 1 THEN ', [WKTGeometry]' ELSE '' END + ',
+		analysis_list_id, template_id' +
+		CASE WHEN @analysis_location_table_cols_output IS NOT NULL AND LEN(TRIM(@analysis_location_table_cols_output)) > 0
+			THEN ', ' + @analysis_location_table_cols_output
+			ELSE ''
+		END +
+		CASE WHEN @parsedColumns IS NOT NULL AND LEN(TRIM(@parsedColumns)) > 0
+			THEN ', ' + @parsedColumns
+			ELSE ''
+		END + '
+	FROM CombinedData
+	WHERE 1=1 ' +
+	CASE WHEN @RowsOfPage > 0 AND @PageNumber > 0
+		THEN ' AND RowNum BETWEEN ' + CAST((@PageNumber-1)*@RowsOfPage + 1 AS NVARCHAR(20)) + ' AND ' + CAST(@PageNumber*@RowsOfPage AS NVARCHAR(20))
+		ELSE ''
+	END
+
+	-- Debug: Print the final SQL to identify the issue
+	PRINT 'Final SQL: ' + @SQL
 
 	EXEC sp_executesql @SQL,
 		N'@PageNumber INT, @RowsOfPage INT, @OrderByColumn NVARCHAR(MAX), @Order NVARCHAR(5), @Country NVARCHAR(150), @State NVARCHAR(150), @SubState NVARCHAR(150), @AnalysisAreaMin INT, @AnalysisAreaMax INT, @selectedSupplier NVARCHAR(150), @selectedSecondSupplier NVARCHAR(150), @selectedParentCompany NVARCHAR(150), @showRSPOCertified BIT, @selectedOverallThreats NVARCHAR(150), @selectedOverallValues NVARCHAR(150), @selectedMillPriority NVARCHAR(150), @jsonAttributeColumns NVARCHAR(MAX)',

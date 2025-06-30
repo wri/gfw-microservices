@@ -1,4 +1,8 @@
 # Add files here to ignore them from prettier formatting
 
+# Ignore build and coverage output
 /dist
 /coverage
+
+# Ignore lockfile formatting
+package-lock.json

@@ -3,40 +3,30 @@ import { ConfigService } from '@nestjs/config';
 import { ServerConfigType } from '../validators/server-config';
 import { listStatus } from '@wri-monorepos/constants';
 import {
-  CheckListNameIsValid,
   GeoService,
-  GetTemplateId,
   ListHasFiltersApplies,
   PerformCopyAnalysis,
   PerformLocationsBulkCopy,
   UnlockLists,
-  createFeatureProps,
-  deleteGeoJSONFeatureProperties,
   getAnalysisTypesFromIds,
   getListAnalysisStatusByListId,
   SPSListCreation,
   GeoJson,
 } from '@wri-monorepos/geo';
-import { checkProcessingLimits, getFinalGeojson } from '@wri-monorepos/shared';
+import { checkProcessingLimits} from '@wri-monorepos/shared';
 import {
   BulkDeleteLocations,
   CopyOrMoveLargeListRequest,
-  ActionType,
-  TargetListType,
   DeleteList,
   PerformGetLockStatus,
   SetListDrafStatus,
   UnlockListAndSaveAsDraft,
-  UspGetLocationsFilteredToCopy,
   UspSetListLocked,
   requestAnalysisProcess,
   updateListsAnalysisStatus,
 } from '@wri-monorepos/sql';
 import { ProcessingLimitException } from '../app/app.exceptions';
 import { ListCopyMoveService } from '../app/list-copy-move/list.copy.move.service';
-
-const EMPTY_CUSTOM_ATTRIBUTES = [];
-
 @Injectable()
 export class LocationService {
   private readonly logger = new Logger(LocationService.name);
@@ -79,169 +69,7 @@ export class LocationService {
   };
 
   MoveLocations = async (params: CopyOrMoveLargeListRequest) => {
-    const { isUploadListLpEnabled } = params;
-    if (isUploadListLpEnabled) {
       return this.listCopyMoveService.run(params);
-    }
-    return this.MoveLocationsDeprecated(params);
-  };
-
-  MoveLocationsDeprecated = async ({
-    listId: selectedListId,
-    selectedListLocationClassification,
-    customAttributesNames,
-    userListNames,
-    action,
-    listType,
-    listName: newListName,
-    targetList: moveToList,
-    selectedLocations,
-    addType,
-    // activeTemplate,
-    commodityType,
-    templateData,
-    saveAsDraft: isSaveAsDraft,
-    userId,
-    clientDatabase,
-    organizationId,
-    subscriptionStatusId,
-    gfwListId,
-    allLocationsSelected = false,
-    filters,
-    srcListAnalysisTable,
-    isUploadListLpEnabled,
-  }: CopyOrMoveLargeListRequest) => {
-    const unlock = [];
-    try {
-      this.logger.log(`Applied Filters ${JSON.stringify(filters)}`);
-      if (customAttributesNames.length === 0 && isUploadListLpEnabled) {
-        customAttributesNames.push('attributes');
-      }
-
-      // Validate list name
-      const listName = listType === TargetListType.New ? newListName : moveToList?.list_name;
-      CheckListNameIsValid(listType, listName, userListNames);
-
-      // Gather location data
-      this.logger.log('Gathering information for locations');
-      const locationData = await new UspGetLocationsFilteredToCopy().run(clientDatabase, {
-        listID: selectedListId,
-        selectedLocations: allLocationsSelected ? null : selectedLocations.join(),
-        country: filters.country,
-        state: filters.state,
-        subState: filters.subState,
-        analysisAreaMin: filters.analysisAreaMin,
-        analysisAreaMax: filters.analysisAreaMax,
-        searchString: filters.searchString,
-        locationLogic: null,
-        columnsToReturn: null,
-      });
-
-      if (action === ActionType.Move) {
-        this.logger.log(
-          `Changing source list (${selectedListId}) status to draft because locations will be moved`
-        );
-        await SetListDrafStatus(clientDatabase, selectedListId, gfwListId);
-      }
-
-      // Map the location ids
-      selectedLocations = locationData.map(
-        (location: { location_id: number }) => location.location_id
-      );
-
-      // Lock the source and target lists
-      await new UspSetListLocked().run(clientDatabase, selectedListId, userId);
-      unlock.push(selectedListId);
-      if (moveToList) {
-        await new UspSetListLocked().run(clientDatabase, moveToList.id, userId);
-        unlock.push(moveToList.id);
-      }
-
-      // Create Feature Props object
-      this.logger.log('Creating Feature Props object');
-      const templateId = GetTemplateId(templateData);
-      const featProps = createFeatureProps(
-        locationData,
-        addType,
-        templateData,
-        customAttributesNames.join()
-      );
-
-      // Assemble GEO JSON
-      this.logger.log('Assembling GEO JSON');
-      const geojson = await this.assembleGeojson(featProps, locationData);
-      deleteGeoJSONFeatureProperties(geojson);
-
-      // Create final GEO JSON
-      this.logger.log('Creating final GEO JSON for database insertion');
-      const finalGeojson = getFinalGeojson(0, geojson);
-      const listAnalyses = await getListAnalysisStatusByListId(clientDatabase, selectedListId);
-      const analysisIds = listAnalyses.map((analysis) => analysis.analysisId);
-
-      if (listType === TargetListType.New) {
-        // Handle new list creation
-        await this.handleNewListCreation({
-          newListName,
-          templateId,
-          selectedListLocationClassification,
-          userId,
-          customAttributesNames: EMPTY_CUSTOM_ATTRIBUTES,
-          clientDatabase,
-          analysisIds,
-          isSaveAsDraft,
-          finalGeojson,
-          commodityType,
-          selectedListId,
-          srcListAnalysisTable,
-          selectedLocations,
-          organizationId,
-          subscriptionStatusId,
-        });
-      } else {
-        // Handle existing list copy or move
-        await this.handleExistingListUpdate({
-          action,
-          moveToList,
-          finalGeojson,
-          commodityType,
-          clientDatabase,
-          selectedListId,
-          selectedLocations,
-          srcListAnalysisTable,
-          isSaveAsDraft,
-          gfwListId,
-          organizationId,
-          subscriptionStatusId,
-          userId,
-        });
-      }
-
-      // Delete locations from the source list if action is move
-      if (action === ActionType.Move) {
-        await this.handleSourceListDeletion({
-          clientDatabase,
-          selectedListId,
-          userId,
-          gfwListId,
-          allLocationsSelected,
-          filters,
-          selectedLocations,
-        });
-      }
-
-      return {
-        success: true,
-        action,
-      };
-    } catch (error) {
-      this.logger.error(`in MoveLocations: ${error.message}`);
-      if (unlock.length > 0) {
-        await UnlockLists(clientDatabase, unlock);
-        this.logger.log(`Lists unlocked: ${unlock.join()}`, 'LocationsService');
-      }
-      // back to Nest
-      throw error;
-    }
   };
 
   handleNewListCreation = async ({

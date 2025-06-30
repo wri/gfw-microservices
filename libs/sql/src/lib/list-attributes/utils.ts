@@ -263,6 +263,7 @@ export async function setListLocationNameIfIsInvestment(
   queryRunner: QueryRunner,
   listTableName: string
 ) {
+  // the deletion of the 'Investment Name' field will occur in the next step of the main function according to 'columnsToDelete'
   const sqlCmd = `
   DECLARE @tbl sysname = QUOTENAME('${listTableName}');
 

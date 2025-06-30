@@ -11,7 +11,7 @@ import {
 import { PillButton } from '../../../../components';
 import { StyledTableCell } from '../../common/styledTableCell';
 
-export default function ConverterRunsTable({ converterJobs, onViewJobDetails }) {
+export default function ConverterRunsTable({ convertersData, onViewJobDetails }) {
   return (
     <>
       <Typography variant="subtitle1" marginTop={3} marginBottom={1}>
@@ -28,7 +28,7 @@ export default function ConverterRunsTable({ converterJobs, onViewJobDetails }) 
             </TableRow>
           </TableHead>
           <TableBody>
-            {converterJobs.length === 0 ? (
+            {!convertersData?.converterJobs.length ? (
               <TableRow>
                 <TableCell
                   colSpan={4}
@@ -39,7 +39,7 @@ export default function ConverterRunsTable({ converterJobs, onViewJobDetails }) 
                 </TableCell>
               </TableRow>
             ) : (
-              converterJobs.map((job) => (
+              convertersData?.converterJobs.map((job) => (
                 <TableRow
                   key={job.id}
                   sx={{
@@ -47,12 +47,13 @@ export default function ConverterRunsTable({ converterJobs, onViewJobDetails }) 
                     cursor: 'pointer',
                   }}
                 >
-                  <StyledTableCell>{job.id}</StyledTableCell>
-                  <StyledTableCell>{job.name}</StyledTableCell>
-                  <StyledTableCell>{job.status}</StyledTableCell>
-                  <StyledTableCell sx={{ display: 'flex', gap: '8px' }}>
+                  <TableCell size="small">{job.id}</TableCell>
+                  <TableCell size="small">{job.name}</TableCell>
+                  <TableCell size="small">{job.status}</TableCell>
+                  <TableCell size="small" sx={{ display: 'flex', gap: '8px' }}>
                     <PillButton
                       size="small"
+                      variant="outlined"
                       onClick={(e) => {
                         e.stopPropagation(); // prevent row click
                         onViewJobDetails(job.id);
@@ -60,7 +61,7 @@ export default function ConverterRunsTable({ converterJobs, onViewJobDetails }) 
                     >
                       View
                     </PillButton>
-                  </StyledTableCell>
+                  </TableCell>
                 </TableRow>
               ))
             )}

@@ -76,6 +76,7 @@ export default class Admin extends Component {
     return (
       <Page links={pageOptions.links} active="admin">
         <div className="profile-body">
+          <h3>Pro Manager Login</h3>
           <Dialog
             paperClassName="dialog-paper"
             open={dialogOpen}
@@ -86,37 +87,44 @@ export default class Admin extends Component {
             {dialogMessage}
           </Dialog>
           <div>
-            <div>
+            <form
+              onSubmit={(e) => {
+                e.preventDefault();
+                this.signIn(this.state.username, this.state.password);
+              }}
+            >
               <div>
-                <div>Username</div>
+                <label for="username" className="login-form__label">
+                  Username
+                </label>
                 <input
                   value={this.state.username}
                   onChange={(evt) => this.setState({ username: evt.target.value })}
                   name="username"
+                  id="username"
                   className="login-form__input"
                 />
               </div>
               <div>
-                <div>Password</div>
+                <label for="password" className="login-form__label">
+                  Password
+                </label>
                 <input
                   value={this.state.password}
                   type="password"
                   onChange={(evt) => this.setState({ password: evt.target.value })}
                   name="password"
+                  id="password"
                   className="login-form__input"
                 />
               </div>
               <div>
-                <Button
-                  variant="primary"
-                  onClick={() => this.signIn(this.state.username, this.state.password)}
-                  label="Launch GFW Pro"
-                />
+                <Button variant="primary" type="submit" label="Launch GFW Pro" />
               </div>
               {this.state.loginError ? (
                 <div className="login__error">There was a login error!</div>
               ) : null}
-            </div>
+            </form>
           </div>
         </div>
       </Page>

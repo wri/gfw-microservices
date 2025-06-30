@@ -1,50 +1,6 @@
 import { parse as wellknown, stringify } from 'wellknown';
 import { objectHasOwnProperty } from './object';
 
-const EXCLUDE_GFW_LIST_IDS = [4, 5];
-const SALT_NUMBER = 1.131743045982093;
-
-/**
- * Decoding number by dividing with SALT_NUMBER to get original value
- * @param {Number} coordinate - LAT/LONG value to be decoded
- * @return {number} - Decoded LAT/LONG value
- */
-const coordinateDecoder = (coordinate) => {
-  return coordinate / SALT_NUMBER;
-};
-
-export const getFinalGeojson = (gfw_list_id, geojson) => {
-  if (EXCLUDE_GFW_LIST_IDS.includes(gfw_list_id)) {
-    // Geojson Decoder that will process geojson file and return original LAT/LONG values
-    geojson.features = geojson.features.map((location) => {
-      const properties = location.properties;
-      const originalLatitude = coordinateDecoder(properties.Latitude);
-      const originalLongitude = coordinateDecoder(properties.Longitude);
-      if (gfw_list_id === 4) {
-        // If Protected Areas hardcode Commodity to 'Other'
-        properties.Commodity = 'Other';
-      }
-      location.properties = {
-        ...properties,
-        Latitude: originalLatitude,
-        Longitude: originalLongitude,
-      };
-      return location;
-    });
-    // If Admin Areas, hardcode Commodity for each feature to 'Other'
-  } else if (gfw_list_id === 1) {
-    geojson.features = geojson.features.map((location) => {
-      const properties = location.properties;
-      properties.Commodity = 'Other';
-      location.properties = {
-        ...properties,
-      };
-      return location;
-    });
-  }
-  return geojson;
-};
-
 /** @function {GetWKTGeometry}
  * NOT USED - This function
  *   @summary Converts a Geojson to a MSSQL Geometry type

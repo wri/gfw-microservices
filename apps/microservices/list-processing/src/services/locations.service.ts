@@ -13,7 +13,7 @@ import {
   SPSListCreation,
   GeoJson,
 } from '@wri-monorepos/geo';
-import { checkProcessingLimits} from '@wri-monorepos/shared';
+import { checkProcessingLimits } from '@wri-monorepos/shared';
 import {
   BulkDeleteLocations,
   CopyOrMoveLargeListRequest,
@@ -69,7 +69,7 @@ export class LocationService {
   };
 
   MoveLocations = async (params: CopyOrMoveLargeListRequest) => {
-      return this.listCopyMoveService.run(params);
+    return this.listCopyMoveService.run(params);
   };
 
   handleNewListCreation = async ({

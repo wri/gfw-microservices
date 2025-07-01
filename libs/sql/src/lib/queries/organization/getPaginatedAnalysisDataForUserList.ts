@@ -29,7 +29,7 @@ BEGIN
 		, @listAnalysisTableName = list_analysis_table_name
 		, @template_id = template_id
 		, @listVersion = version
-	FROM dbo.Lists WHERE id = @listID
+	FROM dbo.Lists WITH (NOLOCK) WHERE id = @listID
 
 
 	-- Default column location name is not found
@@ -78,9 +78,9 @@ BEGIN
 
 	SET @PRESQL = N'SELECT @list_location_table_cols_query = STUFF(
 		  (
-			SELECT ''], lt.['' + [name] FROM sys.columns
+			SELECT ''], lt.['' + [name] FROM sys.columns WITH (NOLOCK)
 			WHERE
-			  [object_id] = (SELECT [object_id] FROM sys.objects WHERE [name] = ''{LIST_LOCATION_TABLE_NAME}'')
+			  [object_id] = (SELECT [object_id] FROM sys.objects WITH (NOLOCK) WHERE [name] = ''{LIST_LOCATION_TABLE_NAME}'')
 			  {WHERE_CLAUSE}
 			  FOR XML PATH('''')
 		  ),1,3,'''') + '']''';
@@ -99,9 +99,9 @@ BEGIN
 
 	SET @PRESQL = N'SELECT @analysis_location_table_cols_query = STUFF(
 		  (
-			SELECT ''], A.['' + [name] FROM sys.columns
+			SELECT ''], A.['' + [name] FROM sys.columns WITH (NOLOCK)
 			WHERE
-			  [object_id] = (SELECT [object_id] FROM sys.objects WHERE [name] = ''{LIST_ANALYSIS_TABLE_NAME}'')
+			  [object_id] = (SELECT [object_id] FROM sys.objects WITH (NOLOCK) WHERE [name] = ''{LIST_ANALYSIS_TABLE_NAME}'')
 			  {WHERE_CLAUSE}
 			  FOR XML PATH('''')
 		  ),1,3,'''') + '']''';
@@ -112,11 +112,11 @@ BEGIN
 
 
 
-	SELECT @listAnalysisTableCols = STUFF(
+			SELECT @listAnalysisTableCols = STUFF(
 	  (
-		SELECT '], A.[' + [name] FROM sys.columns
+		SELECT '], A.[' + [name] FROM sys.columns WITH (NOLOCK)
 		WHERE
-		  [object_id] = (SELECT [object_id] FROM sys.objects WHERE [name] = @listAnalysisTableName)
+		  [object_id] = (SELECT [object_id] FROM sys.objects WITH (NOLOCK) WHERE [name] = @listAnalysisTableName)
 		  AND [name] NOT IN ('id')
 		  FOR XML PATH('')
 	  ),1,3,'') + '], A.location_status_id, A.location_error as analysisError';
@@ -165,11 +165,11 @@ BEGIN
 
 		SELECT @listLocationTableCols = STUFF(
 		  (
-			SELECT '], lt.[' + [name] FROM sys.columns
+			SELECT '], lt.[' + [name] FROM sys.columns WITH (NOLOCK)
 			WHERE
-			  [object_id] = (SELECT [object_id] FROM sys.objects WHERE [name] = @listLocationTableName)
+			  [object_id] = (SELECT [object_id] FROM sys.objects WITH (NOLOCK) WHERE [name] = @listLocationTableName)
 			  AND [name] NOT IN ('Geometry', 'location_id')
-				AND user_type_id IN (SELECT user_type_id FROM sys.types WHERE name IN ('char', 'nchar', 'varchar', 'nvarchar'))
+				AND user_type_id IN (SELECT user_type_id FROM sys.types WITH (NOLOCK) WHERE name IN ('char', 'nchar', 'varchar', 'nvarchar'))
 			  FOR XML PATH('')
 		  ),1,3,' ') + ']';
 
@@ -284,7 +284,7 @@ END
 CLOSE column_cursor;
 DEALLOCATE column_cursor;
 
-	-- Build the dynamic SQL without MyListTable CTE
+	-- Build the dynamic SQL with optimized CTE and indexing hints
 	SET @SQL = N'
 		WITH MyAnalysisTable AS (
 			SELECT
@@ -292,7 +292,7 @@ DEALLOCATE column_cursor;
 				{TEMPLATE_ID} AS template_id,
 				{ANALYSIS_COLUMNS},
 				' + @parsedColumns + '
-			FROM [{ANALYSIS_TABLE}] A
+			FROM [{ANALYSIS_TABLE}] A WITH (NOLOCK)
 			WHERE ' + @AnalysisFilters + '
 		)
 		SELECT
@@ -307,7 +307,7 @@ DEALLOCATE column_cursor;
 
 	SET @SQL = @SQL + ',
 			MyAnalysisTable.*
-		FROM [{LOCATION_TABLE}] lt
+		FROM [{LOCATION_TABLE}] lt WITH (NOLOCK)
 		INNER JOIN MyAnalysisTable
 			ON {LIST_ID} = MyAnalysisTable.analysis_list_id
 			AND lt.location_id = MyAnalysisTable.location_id
@@ -320,14 +320,14 @@ DEALLOCATE column_cursor;
 				THEN 'lt.[Investment Name]'
 			WHEN EXISTS (
 				SELECT 1
-				FROM ListAttributes
+				FROM ListAttributes WITH (NOLOCK)
 				WHERE list_id = @listID
 				AND attribute_name = @cleanedOrderByColumn COLLATE Latin1_General_CS_AS
 			)
 				THEN CASE
 					WHEN (
 						SELECT attribute_type
-						FROM ListAttributes
+						FROM ListAttributes WITH (NOLOCK)
 						WHERE list_id = @listID
 						AND attribute_name = @cleanedOrderByColumn COLLATE Latin1_General_CS_AS
 					) = 1

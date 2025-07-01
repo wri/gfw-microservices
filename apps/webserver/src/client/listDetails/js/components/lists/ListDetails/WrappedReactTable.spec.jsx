@@ -1,6 +1,7 @@
 import { render } from '@testing-library/react';
 import WrappedReactTable from './WrappedReactTable';
 import ReactTable from 'react-table';
+import columns from '../../../config/columns';
 
 // Mock ReactTable to avoid rendering the actual table
 jest.mock('react-table', () => ({
@@ -40,14 +41,7 @@ describe('WrappedReactTable', () => {
 
   const mockColumns = [
     { accessor: 'checkbox', show: true },
-    { accessor: 'natural_land_deforested_area', show: true },
-    { accessor: 'naturalForestLossPercent', show: true },
-    { accessor: 'jrc_land_deforested_area', show: true },
-    { accessor: 'jrcNaturalForestLossPercent', show: true },
-    { accessor: 'protected_areas_area', show: true },
-    { accessor: 'protectedAreasPercent', show: true },
-    { accessor: 'landmark_area', show: true },
-    { accessor: 'landmarkPercent', show: true },
+    ...columns.post_2020_risk,
   ];
 
   const defaultProps = {

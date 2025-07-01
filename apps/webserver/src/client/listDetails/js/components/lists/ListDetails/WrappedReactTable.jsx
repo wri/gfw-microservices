@@ -95,7 +95,9 @@ const WrappedReactTable = ({
     if (col.accessor === 'checkbox') {
       return;
     }
-    if (toggleableColumns.includes(col.accessor)) {
+    // Only override show property if the column doesn't have its own show logic
+    // and it's in the toggleable columns list
+    if (toggleableColumns.includes(col.accessor) && col.show === undefined) {
       col.show = visibleColumns.includes(col.accessor);
     }
 

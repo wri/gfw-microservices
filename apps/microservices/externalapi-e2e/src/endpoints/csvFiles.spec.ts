@@ -62,7 +62,6 @@ describe('API Endpoints', () => {
 
         console.log('API completed with result:', apiResponse);
         console.log('Files in zip:', zipFileNames);
-        console.log('API completed with result:', apiResponse);
       } catch (error) {
         console.error('Polling failed:', error);
       }

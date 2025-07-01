@@ -90,7 +90,9 @@ const ListActions = ({
   };
   const [isSearchBarOpen, setIsSearchBarOpen] = useState(false);
   const { isUploadListUiAvailable } = featureFlags;
-  const redirectUploadLocationUrl = isUploadListUiAvailable ? 'upload-location' : 'add';
+  const redirectUploadLocationUrl = isUploadListUiAvailable
+    ? `upload-location&fromList=${selectedList?.id}`
+    : 'add';
 
   const closeSearchBarHandler = () => {
     setIsSearchBarOpen(false);

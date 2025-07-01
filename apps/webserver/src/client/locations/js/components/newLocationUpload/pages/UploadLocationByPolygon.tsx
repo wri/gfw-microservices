@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState, MutableRefObject } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { z } from 'zod';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -62,7 +62,7 @@ type FormFieldsLocationName = z.infer<typeof locationSchema>;
 export function UploadLocationByPolygon({
   polygonFromMapPage,
 }: {
-  polygonFromMapPage?: MutableRefObject<PolygonFromMapPage | undefined>;
+  polygonFromMapPage?: PolygonFromMapPage;
 }) {
   const theme = useTheme();
   const history = useHistory();
@@ -112,15 +112,15 @@ export function UploadLocationByPolygon({
   };
 
   useEffect(() => {
-    if (polygonFromMapPage?.current?.geometry) {
+    if (polygonFromMapPage?.geometry) {
       setLocationFormat(LocationFormat.DrawAShape);
     }
   }, []);
 
   useEffect(() => {
     // draw the map one time when it's redirected from the map page
-    if (mapView && polygonFromMapPage?.current?.geometry) {
-      const coordinates = polygonFromMapPage.current.geometry.rings[0].map((coord) => ({
+    if (mapView && polygonFromMapPage?.geometry) {
+      const coordinates = polygonFromMapPage.geometry.rings[0].map((coord) => ({
         longitude: coord[0].toString(),
         latitude: coord[1].toString(),
       }));
@@ -141,7 +141,7 @@ export function UploadLocationByPolygon({
 
       onSubmitCoordinates({ coordinates: formattedCoordinates });
       locationNameRef?.current?.focus();
-      polygonFromMapPage.current = undefined;
+      polygonFromMapPage = undefined;
     }
   }, [mapView]);
 

@@ -22,7 +22,7 @@
  * @param userId number
  */
 import { Logger } from '@nestjs/common';
-import { ClientStoreConnection, SQLUtils } from '../util';
+import { ClientStoreConnection } from '../util';
 import { UspSetListUnlocked } from './uspSetListUnlocked';
 import { UspSetListLocked } from './uspSetListLocked';
 import { Lists, ListsAnalysisStatus } from '../entity';
@@ -36,6 +36,7 @@ import {
 } from '../list-attributes';
 import { getListIfEAPIExportUpload } from './getListIfEAPIExportUpload';
 import { GHG_PREFIX } from '../list-attributes/comMapSpam';
+import { QueryRunner } from 'typeorm';
 
 const LIST_VERSION_POST_UPGRADE = 2;
 
@@ -47,20 +48,26 @@ interface SchemaUpgraderArgs {
 export async function upgradeListSchema(args: SchemaUpgraderArgs) {
   const { clientDb, listId, userId } = args;
   const logger = new Logger(`SchemaUpgrade for ListId: ${listId}`);
+  let queryRunner: QueryRunner;
+
   try {
     const clientStoreConnection = new ClientStoreConnection();
     const connection = await clientStoreConnection.getConnection(clientDb);
-    const listsRepository = connection.getRepository(Lists);
+    queryRunner = connection.createQueryRunner();
+    await queryRunner.connect();
+    await queryRunner.startTransaction();
+
+    const listsRepository = queryRunner.manager.getRepository(Lists);
     const list = await listsRepository.findOne({
       where: { id: listId },
     });
 
     if (list.version === LIST_VERSION_POST_UPGRADE) {
-      logger.log(`List already in version 2, no op.`);
+      logger.log('List already in version 2, no op.');
       return list;
     }
 
-    logger.log(`Locking list`);
+    logger.log('Locking list');
     await new UspSetListLocked().run(clientDb, list.id, userId);
 
     /**
@@ -81,8 +88,8 @@ export async function upgradeListSchema(args: SchemaUpgraderArgs) {
       columnsToExclude
     );
     if (columnsToDelete.includes('Investment Name')) {
-      logger.log(`Setting [Location Name] for Investment List`);
-      await setListLocationNameIfIsInvestment(clientDb, list.listTableName);
+      logger.log('Setting [Location Name] for Investment List');
+      await setListLocationNameIfIsInvestment(queryRunner, list.listTableName);
     }
 
     /**
@@ -90,7 +97,7 @@ export async function upgradeListSchema(args: SchemaUpgraderArgs) {
      * Handle list locations atts
      * Delete columns outside entity
      */
-    await handleListLocationAttributes(clientDb, list, columnsToExclude);
+    await handleListLocationAttributes(queryRunner, list, columnsToExclude);
 
     if (columnsToDelete.length) {
       logger.log(
@@ -102,7 +109,7 @@ export async function upgradeListSchema(args: SchemaUpgraderArgs) {
         DROP COLUMN ${columnsToDelete.map((col) => `[${col}]`).join(', ')}
       `;
 
-      await SQLUtils.queryDBFirstRow(clientDb, dropStatement);
+      await queryRunner.query(dropStatement);
     } else {
       logger.log(
         `No columns to drop in [${list.listTableName}]! Everything matches the entity definition.`
@@ -143,9 +150,9 @@ export async function upgradeListSchema(args: SchemaUpgraderArgs) {
      */
     const lowerLocationClass = list.locationClassification?.toLowerCase();
     if (list.templateId === 2 || (list.templateId === 5 && lowerLocationClass === 'supply shed')) {
-      logger.log(`Handling ListsAnalysisStatus.options for list.`);
-      const listAnalisisStatusRepo = connection.getRepository(ListsAnalysisStatus);
-      await listAnalisisStatusRepo.update(
+      logger.log('Handling ListsAnalysisStatus.options for list.');
+      const listAnalysisStatusRepo = queryRunner.manager.getRepository(ListsAnalysisStatus);
+      await listAnalysisStatusRepo.update(
         {
           listId: list.id,
           analysisId: 'FCD',
@@ -156,15 +163,20 @@ export async function upgradeListSchema(args: SchemaUpgraderArgs) {
       );
     }
 
+    await queryRunner.commitTransaction();
+
     return await listsRepository.findOne({
       where: { id: listId },
     });
   } catch (error) {
-    Logger.error(`Schema Upgrader Failed`, error.stack || error);
+    await queryRunner?.rollbackTransaction();
+    Logger.error('Schema Upgrader Failed', error.stack || error);
     throw error;
   } finally {
-    logger.log(`Unlocking list`);
+    await queryRunner?.release();
+
+    logger.log('Unlocking list');
     await new UspSetListUnlocked().run(clientDb, listId);
-    logger.log(`Done.`);
+    logger.log('Done.');
   }
 }

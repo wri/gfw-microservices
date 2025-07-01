@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import * as _ from 'lodash';
 import AccountsListsTable from './AccountsListsTable';
 import '../../../css/proManagerList.scss';
+import { PRO_MANAGER_PATH } from '../../common/paths';
 
 function AccountsListSection({ isLoading, setIsLoading }) {
   const [promanagerData, setPromanagerData] = useState({});
@@ -87,7 +88,7 @@ function AccountsListSection({ isLoading, setIsLoading }) {
         <td
           className="pro-manager-table-link"
           onClick={() => {
-            window.location.href = `/pro-manager-list?tab=accounts&organizationId=${account.organization_id}&organizationName=${account.organization_name}`;
+            window.location.href = `${PRO_MANAGER_PATH}?tab=accounts&organizationId=${account.organization_id}&organizationName=${account.organization_name}`;
           }}
         >
           {account.organization_name}

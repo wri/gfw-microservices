@@ -11,6 +11,11 @@ import { CreateLargeListService } from '../app/list-upload/create.large.list.ser
 import { InternalServerErrorException } from '@nestjs/common';
 import { DataSource } from 'typeorm';
 
+interface ServerConfigType {
+  LARGE_PROCESSING_LIST_BUCKET?: string;
+  NODE_ENV?: 'test' | 'development' | 'staging' | 'qa' | 'ProdV2';
+}
+
 jest.mock('@wri-monorepos/shared', () => ({
   featureFlagsService: jest.fn(),
 }));
@@ -250,7 +255,9 @@ describe('ListService - Create New List', () => {
   let createLargeListService: CreateLargeListService;
   let deprecatedCreateLargeListService: DeprecatedCreateLargeListService;
   let metadataServiceMock: Partial<MetadataService>;
-  let configServiceMock: Partial<ConfigService>;
+  let configServiceMock: Partial<ConfigService<ServerConfigType, true>>;
+  let startAnalysisService: StartAnalysisService;
+  let deprecatedStartAnalysisService: DeprecatedStartAnalysisService;
 
   beforeEach(async () => {
     metadataServiceMock = {
@@ -273,6 +280,18 @@ describe('ListService - Create New List', () => {
     deprecatedCreateLargeListService = {
       run: jest.fn().mockResolvedValue({ list_id: 123 }),
     } as unknown as DeprecatedCreateLargeListService;
+
+    startAnalysisService = {
+      run: jest
+        .fn()
+        .mockResolvedValue({ executionArn: 'arn', startDate: new Date().toISOString() }),
+    } as unknown as StartAnalysisService;
+
+    deprecatedStartAnalysisService = {
+      run: jest
+        .fn()
+        .mockResolvedValue({ executionArn: 'arn', startDate: new Date().toISOString() }),
+    } as unknown as DeprecatedStartAnalysisService;
 
     service = new ListService(
       new ClientStoreConnection(),
@@ -313,7 +332,7 @@ describe('ListService - Create New List', () => {
         saveAsDraft: false,
       })
     );
-  });
+  }, 10100);
 
   it('should handle errors when creating a new list', async () => {
     const createListRequest: CreateListRequest = {

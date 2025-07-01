@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import UsersListTable from './UsersListTable';
 import '../../../css/proManagerList.scss';
+import { PRO_MANAGER_PATH } from '../../common/paths';
 
 function UsersListSection({ isLoading, setIsLoading }) {
   const [userFilterStr, setUserFilterStr] = useState('');
@@ -63,7 +64,7 @@ function UsersListSection({ isLoading, setIsLoading }) {
           title={`${user.user_id}${user.organization_id}`}
           className="pro-manager-table-link"
           onClick={() => {
-            window.location.href = `/pro-manager-list?tab=users&userId=${user.user_id}&organizationId=${user.organization_id}`;
+            window.location.href = `${PRO_MANAGER_PATH}?tab=users&userId=${user.user_id}&organizationId=${user.organization_id}`;
           }}
         >
           {user.first_name}

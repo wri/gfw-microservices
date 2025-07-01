@@ -17,6 +17,13 @@ jest.mock('@wri-monorepos/sql', () => ({
       getRepository: jest.fn().mockReturnValue({
         findOne: jest.fn().mockResolvedValue({ Commodity: 'MOCKED_COMMODITY' }),
       }),
+      createQueryRunner: jest.fn().mockReturnValue({
+        connect: jest.fn(),
+        startTransaction: jest.fn(),
+        commitTransaction: jest.fn(),
+        rollbackTransaction: jest.fn(),
+        release: jest.fn(),
+      }),
     }),
   })),
   Lists: class {},

@@ -286,6 +286,40 @@ class Map extends Component {
     });
     this.mapView = mapView;
 
+    let lastCenterKey = null;
+    let isFixingZoom = false;
+
+    this.mapView.watch('stationary', async (isStationary) => {
+      // Workaround for missing tiles in the gadm_administrative_boundaries basemap at high zoom levels (max zoom: 10).
+      // When zooming in too far, the layer doesn't render. To fix this, briefly zoom out to load tiles, then zoom back in.
+      if (!isStationary || isFixingZoom) {
+        return;
+      }
+
+      const currentZoom = this.mapView.zoom;
+      const center = this.mapView.center;
+      const centerKey = `${center.latitude.toFixed(5)}_${center.longitude.toFixed(5)}`;
+
+      if (lastCenterKey === centerKey || currentZoom <= 10) {
+        return;
+      }
+
+      // Wait a moment to ensure rendering
+      await new Promise((r) => setTimeout(r, 400));
+
+      isFixingZoom = true;
+
+      // Step 1: temporary zoom-out
+      await this.mapView.goTo({ center, zoom: 9 }, { animate: false });
+
+      // Step 2: short delay and return to original zoom
+      await new Promise((r) => setTimeout(r, 500));
+      await this.mapView.goTo({ center, zoom: currentZoom }, { animate: false });
+
+      lastCenterKey = centerKey;
+      isFixingZoom = false;
+    });
+
     this.eventHandlers.push(this.mapView.on('drag', this.startInteraction));
     this.eventHandlers.push(this.mapView.on('mouse-wheel', this.startInteraction));
     this.eventHandlers.push(this.mapView.on('keyboard', this.startInteraction));

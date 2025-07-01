@@ -1,4 +1,4 @@
-import { ConfigModule, ConfigService } from '@nestjs/config';
+import { ConfigModule } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
 import axios from 'axios';
 
@@ -15,7 +15,6 @@ const filters = {
 
 describe('[AlertsDataService] Get number of pages', () => {
   let service: AlertsDataService;
-  let configService: ConfigService;
 
   process.env.MSSQL_DATABASE = 'test-db';
 
@@ -31,7 +30,6 @@ describe('[AlertsDataService] Get number of pages', () => {
     }).compile();
 
     service = module.get<AlertsDataService>(AlertsDataService);
-    configService = module.get<ConfigService>(ConfigService);
   });
 
   afterEach(() => {
@@ -71,7 +69,6 @@ describe('[AlertsDataService] Get number of pages', () => {
   });
 
   it('When count return 0', async () => {
-    service = new AlertsDataService(configService);
     jest.spyOn(mockedAxios, 'get').mockResolvedValueOnce({ data: 0 });
 
     const value = await service.getNumberOfPages(filters);

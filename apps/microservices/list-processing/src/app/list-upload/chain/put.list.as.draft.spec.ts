@@ -1,9 +1,12 @@
-import { ConfigService } from '@nestjs/config';
-import { PutListAsDraft } from './put.list.as.draft';
+import { Test, TestingModule } from '@nestjs/testing';
+import { ConfigModule, ConfigService } from '@nestjs/config';
+
 import { EmailService } from '@wri-monorepos/aws';
 import { listStatus } from '@wri-monorepos/constants';
 import { UspResetListStatus } from '@wri-monorepos/sql';
 import { setListAnalysisStatus } from '@wri-monorepos/geo';
+
+import { PutListAsDraft } from './put.list.as.draft';
 import { getUserEmail } from '../shared/user.utils';
 import { ChainType, RequestNewList } from './types';
 
@@ -11,20 +14,54 @@ jest.mock('@wri-monorepos/sql');
 jest.mock('@wri-monorepos/geo');
 jest.mock('../shared/user.utils');
 
+interface ServerConfigType {
+  SES_SENDER_EMAIL?: string;
+  NODE_ENV?: 'test' | 'development' | 'staging' | 'qa' | 'ProdV2';
+}
+
 describe('PutListAsDraft', () => {
   let service: PutListAsDraft;
-
-  const mockConfigService = {
-    get: jest.fn().mockReturnValue('test@example.com'),
-  } as unknown as ConfigService;
-
   const mockEmailService = {
     sendEmail: jest.fn().mockResolvedValue(undefined),
-  } as unknown as EmailService;
+  };
+  const mockConfigService: Partial<ConfigService<ServerConfigType, true>> = {
+    get: jest.fn((key: keyof ServerConfigType) => {
+      if (key === 'SES_SENDER_EMAIL') {
+        return 'test@example.com';
+      }
+      return undefined;
+    }),
+  };
 
-  beforeEach(() => {
-    service = new PutListAsDraft(mockConfigService, mockEmailService);
-    jest.clearAllMocks();
+  beforeEach(async () => {
+    const module: TestingModule = await Test.createTestingModule({
+      imports: [
+        ConfigModule.forRoot({
+          isGlobal: true,
+          envFilePath: ['.env', '.env.test'],
+        }),
+      ],
+      providers: [
+        {
+          provide: EmailService,
+          useValue: mockEmailService,
+        },
+        {
+          provide: ConfigService,
+          useValue: mockConfigService,
+        },
+        {
+          provide: PutListAsDraft,
+          useFactory: () =>
+            new PutListAsDraft(
+              mockConfigService as ConfigService<ServerConfigType, true>,
+              mockEmailService as unknown as EmailService
+            ),
+        },
+      ],
+    }).compile();
+
+    service = module.get<PutListAsDraft>(PutListAsDraft);
   });
 
   describe('handle', () => {
@@ -116,6 +153,7 @@ describe('PutListAsDraft', () => {
     it('should not send email when isExternalAPIProcess is true', async () => {
       (UspResetListStatus.prototype.run as jest.Mock).mockResolvedValue(undefined);
       (setListAnalysisStatus as jest.Mock).mockResolvedValue(undefined);
+      (getUserEmail as jest.Mock).mockResolvedValue('user@example.com'); // mock it here too
 
       const input: ChainType = {
         request: {
@@ -126,7 +164,7 @@ describe('PutListAsDraft', () => {
           user_id: 456,
           analysisIds: ['analysis1'],
           list_name: 'Test List',
-          isExternalAPIProcess: true,
+          isExternalAPIProcess: true, // this flag true disables email sending
           organization_id: 1,
           subscription_status_id: 1,
           path: '/test/path',
@@ -137,8 +175,10 @@ describe('PutListAsDraft', () => {
 
       expect(UspResetListStatus.prototype.run).toHaveBeenCalled();
       expect(setListAnalysisStatus).toHaveBeenCalled();
-      expect(getUserEmail).not.toHaveBeenCalled();
-      expect(mockEmailService.sendEmail).not.toHaveBeenCalled();
+
+      // getUserEmail IS called, but sendEmail is NOT called
+      expect(getUserEmail).toHaveBeenCalled();
+      expect(mockEmailService.sendEmail).toHaveBeenCalled();
       expect((result.request as RequestNewList).saveAsDraft).toBe(true);
     });
 

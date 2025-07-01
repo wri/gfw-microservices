@@ -386,7 +386,11 @@ AS
            [area_analyzed_list_ha] [FLOAT] NULL,
            [area_analyzed_locations_ha] [FLOAT] NULL,
            [locations_analyzed] [INT] NULL
-       )'
+       )
+       CREATE NONCLUSTERED INDEX IX_ListId_AnalysisType_StartTime
+       ON [{DATABASENAME}].[dbo].[ListsProcessing] (list_id, analysis_type, analysis_start_time);
+       ';
+
        SET @SQL = REPLACE(@TEMPLATE, '{DATABASENAME}', @OrgdbName)
        EXEC sp_executesql @SQL
        

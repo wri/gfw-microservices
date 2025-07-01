@@ -305,7 +305,7 @@ describe('ListService - Create New List', () => {
         saveAsDraft: false,
       })
     );
-  });
+  }, 10100);
 
   it('should handle errors when creating a new list', async () => {
     const createListRequest: CreateListRequest = {

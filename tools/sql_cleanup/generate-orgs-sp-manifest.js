@@ -55,7 +55,7 @@ const manifest = {
   ),
 };
 
-const json = JSON.stringify(manifest, null, 2);
+const json = JSON.stringify(manifest, null, 2) + '\n';
 if (!fs.existsSync(manifestPath) || fs.readFileSync(manifestPath, 'utf8') !== json) {
   fs.writeFileSync(manifestPath, json);
   console.log(

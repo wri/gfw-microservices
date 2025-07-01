@@ -99,19 +99,24 @@ export class ParserData extends AbstractHandler<ChainType> {
 
     return {
       ...geojson,
-      features: geojson.features.filter((feature) => {
-        feature = convertProperties(feature);
-        // convert locationName to string if it is not already and not null or undefined
-        if (
-          typeof feature.properties.locationName !== 'string' &&
-          feature.properties.locationName !== null &&
-          feature.properties.locationName !== undefined
-        ) {
-          feature.properties.locationName = String(feature.properties.locationName);
-        }
-        const locationName = (feature.properties.locationName as string)?.trim();
-        return !templatePatterns.some((pattern) => pattern.test(locationName));
-      }),
+      features: geojson.features
+        .map((feature) => {
+          feature = convertProperties(feature);
+          // convert locationName to string if it is not already and not null or undefined
+          if (
+            typeof feature.properties.locationName !== 'string' &&
+            feature.properties.locationName !== null &&
+            feature.properties.locationName !== undefined
+          ) {
+            feature.properties.locationName = String(feature.properties.locationName);
+          }
+          const locationName = (feature.properties.locationName as string)?.trim();
+          if (templatePatterns.some((pattern) => pattern.test(locationName))) {
+            return null; // Remove the feature
+          }
+          return feature;
+        })
+        .filter((feature) => feature !== null),
     };
   }
 

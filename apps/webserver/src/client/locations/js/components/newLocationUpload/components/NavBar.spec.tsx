@@ -1,4 +1,4 @@
-import { cleanup, render, screen } from '@testing-library/react';
+import { cleanup, render, screen, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { BrowserRouter } from 'react-router-dom';
 import { NavBar } from '../components/NavBar';
@@ -69,5 +69,29 @@ describe('NavBar', () => {
 
     await userEvent.click(screen.getByRole('button'));
     expect(mockClearUploadType).toHaveBeenCalledTimes(1);
+  });
+
+  it('should trigger the correction action for the back button to map', async () => {
+    (useUploadLocation as jest.Mock).mockReturnValue({
+      clearUploadType: jest.fn(),
+      uploadLocationState: { uploadType: UploadType.ByPoint },
+    });
+
+    render(
+      <BrowserRouter>
+        <NavBar isComingFromMap />
+      </BrowserRouter>
+    );
+
+    expect(
+      screen.getByRole('heading', {
+        name: /map/i,
+      })
+    ).toBeInTheDocument();
+
+    const navigation = screen.getByRole('navigation');
+    const button = within(navigation).getByRole('link');
+
+    expect(button).toHaveAttribute('href', '/map');
   });
 });

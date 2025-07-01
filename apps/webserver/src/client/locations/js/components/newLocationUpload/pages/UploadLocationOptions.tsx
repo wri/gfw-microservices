@@ -1,4 +1,5 @@
 import './UploadLocationOptions.scss';
+import React from 'react';
 
 import { Typography, Card, IconButton, Button } from '@mui/material';
 import {
@@ -12,20 +13,45 @@ import {
 import { useUploadLocation } from '../contexts';
 import { useHistory } from '../hooks';
 import { ExternalHelperResource } from '../../../../../components';
-import { UploadType } from '../types';
+import { UploadType, UserList } from '../types';
 import { DATA_CY } from '../../../../../utils/constants';
 
-export function UploadLocationOptions() {
+type UploadLocationOptionsProps = {
+  fromList?: number;
+  userLists?: UserList[];
+};
+
+export function UploadLocationOptions({ fromList, userLists }: UploadLocationOptionsProps) {
   const history = useHistory();
   const { selectUploadType } = useUploadLocation();
+
+  const getRedirectLocation = (fromList: number) => {
+    if (fromList) {
+      return {
+        href: `/list-details?id=${fromList}`,
+        pageName: userLists.find((l) => l.id === fromList)?.list_name || 'List',
+      };
+    }
+
+    return {
+      href: '/locations',
+      onClick: (e: React.MouseEvent<HTMLAnchorElement, MouseEvent>) => {
+        e.preventDefault();
+        history.push('LOCATIONS');
+      },
+      pageName: 'Locations',
+    };
+  };
+
+  const { pageName, ...backButtonProps } = getRedirectLocation(fromList);
 
   return (
     <div className="upload-location-options">
       <nav>
-        <IconButton onClick={() => history.push('LOCATIONS')}>
+        <IconButton {...backButtonProps}>
           <ArrowBack />
         </IconButton>
-        <Typography variant="h5">Name of the list</Typography>
+        <Typography variant="h5">{pageName}</Typography>
         <ArrowForwardIos fontSize="small" />
         <Typography variant="h5">Add location</Typography>
       </nav>

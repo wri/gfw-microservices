@@ -86,9 +86,16 @@ class Locations extends Component {
 
     const searchParams = new URLSearchParams(location.search);
     const redirectTo = searchParams.get('redirectTo');
+    const fromList = searchParams.get('fromList');
 
     if (redirectTo) {
       history.replace(`/${redirectTo}`);
+      if (fromList) {
+        const parsedFromList = Number(fromList);
+        if (!isNaN(parsedFromList)) {
+          this.setState({ fromList: parsedFromList });
+        }
+      }
       if (!isUploadListUiAvailable) {
         store.dispatch(changeView(redirectTo));
       }
@@ -295,6 +302,7 @@ class Locations extends Component {
       isLoading,
       B2BsharedListEnabled,
       geomFromMap,
+      fromList,
     } = this.state;
 
     const {
@@ -347,7 +355,11 @@ class Locations extends Component {
           </Route>
           <Route path="/upload-location">
             <UploadLocationProvider>
-              <UploadLocationRouter userLists={userLists} geoFromMap={drawnGeom} />
+              <UploadLocationRouter
+                userLists={userLists}
+                geoFromMap={drawnGeom}
+                fromList={fromList}
+              />
             </UploadLocationProvider>
           </Route>
           <Route>

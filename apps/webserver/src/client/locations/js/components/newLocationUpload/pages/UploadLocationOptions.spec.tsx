@@ -79,14 +79,59 @@ describe('UploadLocationOptions', () => {
     }
   );
 
-  it('should trigger the correction action for the back button', async () => {
+  it('should trigger the correction action for the back button to locations', async () => {
     render(<UploadLocationOptions />);
 
+    expect(
+      screen.getByRole('heading', {
+        name: /locations/i,
+      })
+    ).toBeInTheDocument();
+
     const navigation = screen.getByRole('navigation');
-    const button = within(navigation).getByRole('button');
+    const button = within(navigation).getByRole('link');
 
     expect(mockHistoryPush).not.toHaveBeenCalled();
     await userEvent.click(button);
     expect(mockHistoryPush).toHaveBeenCalledWith('LOCATIONS');
+  });
+
+  it('should trigger the correction action for the back button to list details', async () => {
+    render(
+      <UploadLocationOptions
+        fromList={123}
+        userLists={[
+          {
+            id: 111,
+            list_name: 'list1',
+            list_status_id: 1,
+            listAnalysesStatus: [{ analysisId: 'ALERTS', listId: 1 }],
+            location_classification: '',
+            template_id: 1,
+            user_id: 1,
+          },
+          {
+            id: 123,
+            list_name: 'custom list',
+            list_status_id: 1,
+            listAnalysesStatus: [{ analysisId: 'ALERTS', listId: 123 }],
+            location_classification: '',
+            template_id: 1,
+            user_id: 1,
+          },
+        ]}
+      />
+    );
+
+    expect(
+      screen.getByRole('heading', {
+        name: /custom list/i,
+      })
+    ).toBeInTheDocument();
+
+    const navigation = screen.getByRole('navigation');
+    const button = within(navigation).getByRole('link');
+
+    expect(button).toHaveAttribute('href', '/list-details?id=123');
   });
 });

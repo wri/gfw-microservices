@@ -12,8 +12,7 @@
     "start:eapi": "nx serve microservices-externalapi",
     "build": "nx build",
     "test": "nx test",
-    "prepare": "husky install",
-    "preinstall": "npx npm-force-resolutions"
+    "prepare": "husky install"
   },
   "private": true,
   "dependencies": {
@@ -295,8 +294,5 @@
     "*.{json, md, yml}": [
       "nx format:write --uncommitted"
     ]
-  },
-  "resolutions": {
-    "undici": "5.29.0"
   }
 }

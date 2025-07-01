@@ -52,7 +52,7 @@ export const getBasemapConfiguration = () => {
       gadm_administrative_boundaries: {
         type: 'vector',
         tiles: [
-          'https://tiles.globalforestwatch.org/gadm_administrative_boundaries/v4.1.84/default/{z}/{x}/{y}.pbf',
+          'https://tiles.globalforestwatch.org/gadm_administrative_boundaries/v4.1.85/default/{z}/{x}/{y}.pbf',
         ],
         tileSize: 512,
       },

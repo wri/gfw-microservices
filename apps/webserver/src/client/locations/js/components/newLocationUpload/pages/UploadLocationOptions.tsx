@@ -29,7 +29,6 @@ export function UploadLocationOptions({ fromList, userLists }: UploadLocationOpt
     if (fromList) {
       return {
         href: `/list-details?id=${fromList}`,
-        onClick: () => null,
         pageName: userLists.find((l) => l.id === fromList)?.list_name || 'List',
       };
     }

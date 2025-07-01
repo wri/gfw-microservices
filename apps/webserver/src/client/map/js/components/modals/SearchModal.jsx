@@ -147,8 +147,7 @@ export default class SearchModal extends Component {
       view: this.props.mapView,
       container: 'search-widget',
       minSuggestCharacters: 3,
-      includeDefaultSources: false,
-
+      includeDefaultSources: true,
       sources: [
         ...(isGadm41Available
           ? [
@@ -174,18 +173,6 @@ export default class SearchModal extends Component {
               ),
             ]
           : gadm36Sources),
-        {
-          url: 'https://geocode-api.arcgis.com/arcgis/rest/services/World/GeocodeServer',
-          singleLineFieldName: 'SingleLine',
-          outFields: ['Addr_type'],
-          maxSuggestions: 3,
-          name: 'Address Search',
-          localSearchOptions: {
-            minScale: 300000,
-            distance: 50000,
-          },
-          placeholder: 'Find address or place',
-        },
       ],
     });
 

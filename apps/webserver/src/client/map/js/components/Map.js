@@ -305,7 +305,7 @@ class Map extends Component {
       }
 
       // Wait a moment to ensure rendering
-      await new Promise((r) => setTimeout(r, 100));
+      await new Promise((r) => setTimeout(r, 400));
 
       isFixingZoom = true;
 
@@ -313,7 +313,7 @@ class Map extends Component {
       await this.mapView.goTo({ center, zoom: 9 }, { animate: false });
 
       // Step 2: short delay and return to original zoom
-      await new Promise((r) => setTimeout(r, 120));
+      await new Promise((r) => setTimeout(r, 500));
       await this.mapView.goTo({ center, zoom: currentZoom }, { animate: false });
 
       lastCenterKey = centerKey;

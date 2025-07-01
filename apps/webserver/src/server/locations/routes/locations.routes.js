@@ -1471,8 +1471,14 @@ module.exports = (app, limiter) => {
       });
   });
 
-  app.get(['/locations/upload-location', '/locations/upload-location/*'], (_, res) => {
-    res.redirect('/locations?redirectTo=upload-location');
+  app.get(['/locations/upload-location', '/locations/upload-location/*'], (req, res) => {
+    const queryParams = new URLSearchParams(req.query).toString();
+
+    const redirectUrl = `/locations?redirectTo=upload-location${
+      queryParams ? `&${queryParams}` : ''
+    }`;
+
+    res.redirect(redirectUrl);
   });
 
   app.get('/locations/*', (_, res) => {

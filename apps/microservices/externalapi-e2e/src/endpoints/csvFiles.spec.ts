@@ -55,6 +55,11 @@ describe('API Endpoints', () => {
         expect(typeof apiResponse.data.listId).toBe('string');
         expect(apiResponse.data.listId).toBe(list);
         expect(typeof apiResponse.data.status).toBe('string');
+
+        const expectedFileNames = ['_forest_change_diagnostic_list_summary.csv', '_forest_change_diagnostic_location_summary.csv', '_sensitive_areas_loss_forests.csv', '_sensitive_areas_loss_of_forests_aggregate.csv', '_sensitive_areas_percentage_historic_area_lost.csv', '_sensitive_areas_percentage_historic_area_lost_aggregate.csv', '_south_america_loss_of_forests.csv', '_south_america_overlap.csv', '_south_america_overlap_aggregate.csv', '_argentina_overlap.csv', '_argentina_overlap_aggregate.csv', '_argentina_loss_of_forests.csv', '_argentina_loss_of_forests_aggregate.csv', '_colombia_overlap.csv', '_colombia_overlap_aggregate.csv', '_colombia_loss_of_forests.csv', '_colombia_loss_of_forests_aggregate.csv', '_south_east_asia_tcl.csv', '_south_east_asia_tcl_aggregate.csv', '_south_east_asia_overlap.csv', '_south_east_asia_overlap_aggregate.csv'];
+        expect(zipFileNames).toEqual(expect.arrayContaining(expectedFileNames));
+        expect(zipFileNames.length).toBe(expectedFileNames.length);
+
         console.log('API completed with result:', apiResponse);
         console.log('Files in zip:', zipFileNames);
         console.log('API completed with result:', apiResponse);

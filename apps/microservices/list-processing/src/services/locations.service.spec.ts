@@ -3,9 +3,7 @@ import { ConfigService } from '@nestjs/config';
 import { LocationService } from './locations.service';
 import { GeoService } from '@wri-monorepos/geo';
 import { ListCopyMoveService } from '../app/list-copy-move/list.copy.move.service';
-import {
-  createFeatureProps,
-} from '@wri-monorepos/geo';
+import { createFeatureProps } from '@wri-monorepos/geo';
 import {
   CopyOrMoveLargeListRequest,
   ActionType,

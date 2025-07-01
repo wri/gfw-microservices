@@ -57,12 +57,12 @@ export function UploadLocationOptions({
     };
   };
 
-  const { pageName, ...buttonProps } = getRedirectLocation(isComingFromMapPage, fromList);
+  const { pageName, ...backButtonProps } = getRedirectLocation(isComingFromMapPage, fromList);
 
   return (
     <div className="upload-location-options">
       <nav>
-        <IconButton {...buttonProps}>
+        <IconButton {...backButtonProps}>
           <ArrowBack />
         </IconButton>
         <Typography variant="h5">{pageName}</Typography>

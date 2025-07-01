@@ -39,10 +39,7 @@ describe('WrappedReactTable', () => {
     },
   ];
 
-  const mockColumns = [
-    { accessor: 'checkbox', show: true },
-    ...columns.post_2020_risk,
-  ];
+  const mockColumns = [{ accessor: 'checkbox', show: true }, ...columns.post_2020_risk];
 
   const defaultProps = {
     listId: 'list-1',

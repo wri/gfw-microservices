@@ -3,29 +3,15 @@ import { ConfigService } from '@nestjs/config';
 import { LocationService } from './locations.service';
 import { GeoService } from '@wri-monorepos/geo';
 import { ListCopyMoveService } from '../app/list-copy-move/list.copy.move.service';
-import { ProcessingLimitException } from '../app/app.exceptions';
 import {
-  ListHasFiltersApplies,
-  PerformLocationsBulkCopy,
-  UnlockLists,
-  getListAnalysisStatusByListId,
-  SPSListCreation,
   createFeatureProps,
-  getAnalysisTypesFromIds,
 } from '@wri-monorepos/geo';
 import {
   CopyOrMoveLargeListRequest,
   ActionType,
   TargetListType,
-  DeleteList,
-  PerformGetLockStatus,
-  UnlockListAndSaveAsDraft,
-  requestAnalysisProcess,
   UspGetLocationsFilteredToCopy,
-  updateListsAnalysisStatus,
 } from '@wri-monorepos/sql';
-import { checkProcessingLimits } from '@wri-monorepos/shared';
-import { listStatus } from '@wri-monorepos/constants';
 
 jest.mock('@wri-monorepos/geo');
 jest.mock('@wri-monorepos/sql');

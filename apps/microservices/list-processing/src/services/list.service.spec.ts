@@ -19,10 +19,6 @@ interface ServerConfigType {
 jest.mock('@wri-monorepos/shared', () => ({
   featureFlagsService: jest.fn(),
 }));
-interface ServerConfigType {
-  LARGE_PROCESSING_LIST_BUCKET?: string;
-  NODE_ENV?: 'test' | 'development' | 'staging' | 'qa' | 'ProdV2';
-}
 
 describe('ListService - Start Analysis Process For List', () => {
   let service: ListService;
@@ -297,8 +293,8 @@ describe('ListService - Create New List', () => {
       new ClientStoreConnection(),
       metadataServiceMock as MetadataService,
       configServiceMock as ConfigService<ServerConfigType, true>,
-      {} as DeprecatedStartAnalysisService,
-      {} as StartAnalysisService,
+      deprecatedStartAnalysisService,
+      startAnalysisService,
       deprecatedCreateLargeListService,
       createLargeListService
     );

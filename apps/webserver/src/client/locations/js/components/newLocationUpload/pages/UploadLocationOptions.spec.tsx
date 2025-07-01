@@ -96,21 +96,6 @@ describe('UploadLocationOptions', () => {
     expect(mockHistoryPush).toHaveBeenCalledWith('LOCATIONS');
   });
 
-  it('should trigger the correction action for the back button to map', async () => {
-    render(<UploadLocationOptions isComingFromMapPage />);
-
-    expect(
-      screen.getByRole('heading', {
-        name: /map/i,
-      })
-    ).toBeInTheDocument();
-
-    const navigation = screen.getByRole('navigation');
-    const button = within(navigation).getByRole('link');
-
-    expect(button).toHaveAttribute('href', '/map');
-  });
-
   it('should trigger the correction action for the back button to list details', async () => {
     render(
       <UploadLocationOptions

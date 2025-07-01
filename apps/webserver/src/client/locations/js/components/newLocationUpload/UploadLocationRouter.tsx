@@ -46,11 +46,7 @@ export function UploadLocationRouter({
     >
       <Switch>
         <Route path={UploadLocationRoutes.OPTIONS} exact>
-          <UploadLocationOptions
-            isComingFromMapPage={!!geoFromMap}
-            fromList={fromList}
-            userLists={userLists}
-          />
+          <UploadLocationOptions fromList={fromList} userLists={userLists} />
         </Route>
         <Route path={UploadLocationRoutes.UPLOAD_BY_FILE} component={UploadLocationByFile} />
         <Route path={UploadLocationRoutes.UPLOAD_BY_POLYGON}>

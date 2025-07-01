@@ -211,7 +211,7 @@ export function UploadLocationByPolygon({
 
   return (
     <>
-      <NavBar />
+      <NavBar isComingFromMap={!!polygonFromMapPage} />
       <Card
         component="form"
         onSubmit={handleSubmitLocationName(onSubmitFullForm)}

@@ -7,7 +7,11 @@ import { UploadType } from '../types';
 import { useLocation } from 'react-router-dom';
 import { UploadLocationRoutes } from '../UploadLocationRouter';
 
-export function NavBar() {
+type NavBarProps = {
+  isComingFromMap?: boolean;
+};
+
+export function NavBar({ isComingFromMap }: NavBarProps) {
   const {
     clearUploadType,
     uploadLocationState: { uploadType },
@@ -47,11 +51,15 @@ export function NavBar() {
         mb: 4,
       }}
     >
-      <IconButton onClick={clearUploadType} disableRipple>
+      <IconButton
+        onClick={() => (isComingFromMap ? null : clearUploadType())}
+        href={isComingFromMap ? '/map' : null}
+        disableRipple
+      >
         <ArrowBack />
       </IconButton>
       <Typography variant="h5" sx={{ minWidth: 'fit-content' }}>
-        New Location
+        {isComingFromMap ? 'Map' : 'New Location'}
       </Typography>
 
       <Stepper activeStep={activeStep()} sx={{ width: '100%', ml: 8 }}>

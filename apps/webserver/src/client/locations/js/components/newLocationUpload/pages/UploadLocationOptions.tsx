@@ -17,28 +17,15 @@ import { UploadType, UserList } from '../types';
 import { DATA_CY } from '../../../../../utils/constants';
 
 type UploadLocationOptionsProps = {
-  isComingFromMapPage?: boolean;
   fromList?: number;
   userLists?: UserList[];
 };
 
-export function UploadLocationOptions({
-  isComingFromMapPage,
-  fromList,
-  userLists,
-}: UploadLocationOptionsProps) {
+export function UploadLocationOptions({ fromList, userLists }: UploadLocationOptionsProps) {
   const history = useHistory();
   const { selectUploadType } = useUploadLocation();
 
-  const getRedirectLocation = (isFromMap: boolean, fromList: number) => {
-    if (isFromMap) {
-      return {
-        href: '/map',
-        onClick: () => null,
-        pageName: 'Map',
-      };
-    }
-
+  const getRedirectLocation = (fromList: number) => {
     if (fromList) {
       return {
         href: `/list-details?id=${fromList}`,
@@ -57,7 +44,7 @@ export function UploadLocationOptions({
     };
   };
 
-  const { pageName, ...backButtonProps } = getRedirectLocation(isComingFromMapPage, fromList);
+  const { pageName, ...backButtonProps } = getRedirectLocation(fromList);
 
   return (
     <div className="upload-location-options">

@@ -44,22 +44,28 @@ describe('UploadLocationOptions', () => {
     render(<UploadLocationOptions />);
 
     expect(
-      screen.getByText(/gfw pro allows users to upload their data in multiple ways\./i)
+      screen.getAllByRole('heading', {
+        name: /add location/i,
+      })
+    ).toHaveLength(2);
+    expect(
+      screen.getByText(/choose how you want to add your location data\./i)
     ).toBeInTheDocument();
     expect(screen.getByText(/how to format your location data for gfw pro/i)).toBeInTheDocument();
+    expect(screen.getByText(/choose your preferred method/i)).toBeInTheDocument();
+    expect(screen.getByText(/for single or multiple locations upload a file/i)).toBeInTheDocument();
+
+    expect(screen.getByText(/interactive workflows/i)).toBeInTheDocument();
     expect(
-      screen.getByText(/best for multiple location or if your data is contained within a file\./i)
+      screen.getByText(/create locations using shapes or coordinate data/i)
     ).toBeInTheDocument();
-    expect(screen.getByText(/how to format your location data for gfw pro/i)).toBeInTheDocument();
     expect(
-      screen.getByText(
-        /if you would like to enter a single location without uploading a file, you can define your location via one of our interactive workflows:/i
-      )
+      screen.getByText(/create locations using an address or specific coordinates/i)
     ).toBeInTheDocument();
   });
 
   it.each([
-    ['file upload', UploadType.ByFile, 'UPLOAD_BY_FILE'],
+    ['by data file', UploadType.ByFile, 'UPLOAD_BY_FILE'],
     ['point', UploadType.ByPoint, 'UPLOAD_BY_POINT'],
     ['polygon', UploadType.ByPolygon, 'UPLOAD_BY_POLYGON'],
   ])(

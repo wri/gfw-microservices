@@ -118,7 +118,7 @@ export function UploadLocationByFile() {
     <>
       <NavBar />
       <Card sx={{ pt: 1, px: 2, pb: 2 }}>
-        <Typography variant="h6">Prepare & Upload Location data</Typography>
+        <Typography variant="h6">By Data File: Prepare & Upload Location Data</Typography>
         <Typography
           variant="caption"
           color={theme.palette.text.secondary}

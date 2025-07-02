@@ -1,20 +1,21 @@
 import './UploadLocationOptions.scss';
 import React from 'react';
 
-import { Typography, Card, IconButton, Button } from '@mui/material';
-import {
-  UploadFileTwoTone,
-  ScatterPlotTwoTone,
-  Timeline,
-  ArrowBack,
-  ArrowForwardIos,
-} from '@mui/icons-material';
+import { Typography, Card, IconButton, Button, Box } from '@mui/material';
+import { ArrowBack, ArrowForwardIos } from '@mui/icons-material';
 
 import { useUploadLocation } from '../contexts';
 import { useHistory } from '../hooks';
 import { ExternalHelperResource } from '../../../../../components';
 import { UploadType, UserList } from '../types';
 import { DATA_CY } from '../../../../../utils/constants';
+import DataFileIcon from '../../../../../assets/icons/data-file.svg';
+import AddPointIcon from '../../../../../assets/icons/add-point.svg';
+import DrawPolygonIcon from '../../../../../assets/icons/draw-polygon.svg';
+
+const ImgIcon: React.FC<{ src: string; alt: string }> = ({ src, alt }) => (
+  <img src={src} alt={alt} style={{ height: '48px', width: '48px', marginLeft: '2px' }} />
+);
 
 type UploadLocationOptionsProps = {
   fromList?: number;
@@ -56,20 +57,22 @@ export function UploadLocationOptions({ fromList, userLists }: UploadLocationOpt
         <Typography variant="h5">Add location</Typography>
       </nav>
       <Card className="upload-location-options__main-content">
-        <div>
-          <Typography variant="h6">Add Location</Typography>
-          <Typography variant="body2" className="upload-location-options__main-content__subtitle">
-            GFW Pro allows users to upload their data in multiple ways.
-          </Typography>
+        <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
+          <Box>
+            <Typography variant="h6" sx={{ fontWeight: 600 }}>
+              Add Location
+            </Typography>
+            <Typography variant="body2" className="upload-location-options__main-content__subtitle">
+              Choose how you want to add your location data.
+            </Typography>
+          </Box>
           <ExternalHelperResource
             text="How to format your location data for GFW Pro"
             url="https://globalforestwatch.org/help/gfw-pro/guides/complete-selected-template"
           />
-        </div>
+        </Box>
         <div className="upload-location-options__main-content__options">
-          <Typography variant="body2">
-            Best for multiple location or if your data is contained within a file.
-          </Typography>
+          <Typography variant="body2">Choose your preferred method</Typography>
 
           <Button
             className="upload-location-options__button"
@@ -78,29 +81,19 @@ export function UploadLocationOptions({ fromList, userLists }: UploadLocationOpt
               selectUploadType(UploadType.ByFile);
               history.push('UPLOAD_BY_FILE');
             }}
-            startIcon={<UploadFileTwoTone color="primary" fontSize="large" />}
+            startIcon={<ImgIcon src={DataFileIcon} alt="Data file icon" />}
+            sx={{ mt: 2 }}
           >
-            File upload
+            <Box sx={{ mt: 1, lineHeight: 1, textTransform: 'none' }}>
+              <Typography variant="subtitle2">By Data File</Typography>
+              <Typography variant="caption">
+                For single or multiple locations upload a file
+              </Typography>
+            </Box>
           </Button>
           <div className="upload-location-options__main-content__options__other-options">
-            <Typography variant="body2">Or</Typography>
-            <Typography variant="body2">
-              If you would like to enter a single location without uploading a file, you can define
-              your location via one of our interactive workflows:
-            </Typography>
-            <div>
-              <Button
-                className="upload-location-options__button"
-                data-cy={DATA_CY.NEW_UPLOAD_WORKFLOW[UploadType.ByPoint].ADD}
-                onClick={() => {
-                  selectUploadType(UploadType.ByPoint);
-                  history.push('UPLOAD_BY_POINT');
-                }}
-                startIcon={<ScatterPlotTwoTone color="primary" fontSize="large" />}
-              >
-                Point
-              </Button>
-
+            <Typography variant="body2">Interactive workflows</Typography>
+            <Box>
               <Button
                 className="upload-location-options__button"
                 data-cy={DATA_CY.NEW_UPLOAD_WORKFLOW[UploadType.ByPolygon].ADD}
@@ -108,11 +101,33 @@ export function UploadLocationOptions({ fromList, userLists }: UploadLocationOpt
                   selectUploadType(UploadType.ByPolygon);
                   history.push('UPLOAD_BY_POLYGON');
                 }}
-                startIcon={<Timeline color="primary" fontSize="large" />}
+                startIcon={<ImgIcon src={DrawPolygonIcon} alt="Draw polygon icon" />}
               >
-                Polygon
+                <Box sx={{ mt: 1, lineHeight: 1, textTransform: 'none' }}>
+                  <Typography variant="subtitle2">Draw Polygon</Typography>
+                  <Typography variant="caption">
+                    Create locations using shapes or coordinate data
+                  </Typography>
+                </Box>
               </Button>
-            </div>
+
+              <Button
+                className="upload-location-options__button"
+                data-cy={DATA_CY.NEW_UPLOAD_WORKFLOW[UploadType.ByPoint].ADD}
+                onClick={() => {
+                  selectUploadType(UploadType.ByPoint);
+                  history.push('UPLOAD_BY_POINT');
+                }}
+                startIcon={<ImgIcon src={AddPointIcon} alt="Add point icon" />}
+              >
+                <Box sx={{ mt: 1, lineHeight: 1, textTransform: 'none' }}>
+                  <Typography variant="subtitle2">Add Point</Typography>
+                  <Typography variant="caption">
+                    Create locations using an address or specific coordinates
+                  </Typography>
+                </Box>
+              </Button>
+            </Box>
           </div>
         </div>
       </Card>

@@ -1749,22 +1749,31 @@ class Map extends Component {
     // Sort constructed layers
     layers.sort((a, b) => a.order - b.order);
 
-    this.view.popup.watch('selectedFeatureIndex', (index) => {
-      const selectedFeat = this.view.popup.features[index];
-      if (selectedFeat) {
-        const currentForestChange = visibleLayers.some((layer) => exclusiveLayers.includes(layer));
-        this.view.popup.actions.forEach((action) => {
-          if (selectedFeat.layerName === viirsActiveFiresID) {
-            action.visible = false;
-          } else {
-            action.visible =
-              (action.id === 'ANALYZE' && currentForestChange) ||
-              (action.id === 'ADD LOCATION' &&
-                noLocationLayers.indexOf(selectedFeat.layerName) === -1 &&
-                selectedFeat.attributes?.adm_level !== '0');
-          }
-        });
+    this.view.popup.watch('visible', (visible) => {
+      if (!visible) {
+        return;
       }
+
+      const selectedFeat = this.view.popup.selectedFeature || this.view.popup.features?.[0];
+      if (!selectedFeat) {
+        return;
+      }
+
+      const isPointGeometry = selectedFeat.geometry?.type === 'point';
+      const currentForestChange = visibleLayers.some((layer) => exclusiveLayers.includes(layer));
+
+      this.view.popup.actions.forEach((action) => {
+        if (selectedFeat.layerName === viirsActiveFiresID) {
+          action.visible = false;
+        } else {
+          action.visible =
+            (action.id === 'ANALYZE' && currentForestChange && !isPointGeometry) ||
+            (action.id === 'ADD LOCATION' &&
+              noLocationLayers.indexOf(selectedFeat.layerName) === -1 &&
+              selectedFeat.attributes?.adm_level !== '0' &&
+              !isPointGeometry);
+        }
+      });
     });
 
     layersToAdd = layerFactory(

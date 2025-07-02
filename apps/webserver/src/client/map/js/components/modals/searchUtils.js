@@ -11,7 +11,15 @@ export const createResultsGraphic = async (item) => {
   const spatialReference = { wkid: 4326 };
 
   let geometry = null;
-  let symbol = null;
+
+  const symbol = {
+    type: 'simple-fill',
+    color: [0, 120, 255, 0.5],
+    outline: {
+      color: [0, 120, 255, 1],
+      width: 2,
+    },
+  };
 
   if (geojson.type === 'MultiPolygon') {
     const polygons = geojson.coordinates.map((polygonCoords) => {
@@ -22,46 +30,17 @@ export const createResultsGraphic = async (item) => {
     });
 
     geometry = geometryEngine.union(polygons);
-
-    symbol = {
-      type: 'simple-fill',
-      color: [0, 120, 255, 0.3],
-      outline: {
-        color: [0, 120, 255, 1],
-        width: 2,
-      },
-    };
   } else if (geojson.type === 'Point') {
     geometry = new Point({
       x: geojson.coordinates[0],
       y: geojson.coordinates[1],
       spatialReference,
     });
-
-    symbol = {
-      type: 'simple-marker',
-      color: [0, 120, 255, 1],
-      size: 8,
-      outline: {
-        color: [255, 255, 255, 1],
-        width: 1,
-      },
-    };
   } else if (geojson.type === 'MultiPoint') {
     geometry = new Multipoint({
       points: geojson.coordinates,
       spatialReference,
     });
-
-    symbol = {
-      type: 'simple-marker',
-      color: [0, 120, 255, 1],
-      size: 6,
-      outline: {
-        color: [255, 255, 255, 1],
-        width: 1,
-      },
-    };
   } else {
     console.error('Unsupported GeoJSON type:', geojson.type);
     return [];

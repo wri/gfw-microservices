@@ -383,10 +383,6 @@ const templateOptions: {
         <ul>
           <li>Location Name (Name of your location)</li>
         </ul>
-        <span>
-          You may also include additional fields of your choice (whatever numeric or text fields are
-          helpful for you to have available when viewing your data in Pro).
-        </span>
       </>
     ),
     filename: 'GFWPro-Polygon_GeoJSON.geojson',
@@ -468,10 +464,6 @@ const templateOptions: {
             your coordinate. Only required if Analysis Radius is not defined)
           </li>
         </ul>
-        <span>
-          You may also include additional fields of your choice (whatever numeric or text fields are
-          helpful for you to have available when viewing your data in Pro).
-        </span>
       </>
     ),
     filename: 'GFWPro-Point_GeoJSON.geojson',

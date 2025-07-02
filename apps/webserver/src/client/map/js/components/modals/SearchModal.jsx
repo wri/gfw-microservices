@@ -156,25 +156,25 @@ export default class SearchModal extends Component {
                 'Administrative Areas',
                 '/map/gadm-admininstrative-boundaries',
                 getAdministrativeAreaName,
-                0,
+                0
               ),
               createSearchSource(
                 'Universal Mill List',
                 '/map/gfw_universal_mill_list',
                 (item) => item.mill_name,
-                1,
+                1
               ),
               createSearchSource(
                 'Indigenous or Community land area',
                 '/map/landmark_indigenous_and_community_lands',
                 (item) => item.name,
-                2,
+                2
               ),
               createSearchSource(
                 'Protected Areas',
                 '/map/wdpa_licensed_protected_areas',
                 (item) => item.name,
-                3,
+                3
               ),
             ]
           : gadm36Sources),

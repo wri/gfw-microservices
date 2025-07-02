@@ -12,7 +12,13 @@ export const getAllLists = `SELECT
             las.expiration_time,
             las.s3_url,
             las.Status as status,
-            las.UpdateTime as updateTime
+            ISNULL((
+                SELECT TOP (1) LP.analysis_start_time
+                FROM ListsProcessing LP
+                WHERE LP.list_id = las.ListID
+                  AND LP.analysis_type = las.AnalysisID
+                ORDER BY LP.analysis_start_time DESC
+            ), las.UpdateTime) as updateTime
         FROM ListsAnalysisStatus las
         WHERE las.ListID = L.id
         FOR JSON PATH

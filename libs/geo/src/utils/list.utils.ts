@@ -305,10 +305,6 @@ export const createFeatureProps = (
   }
 };
 
-export const GetTemplateId = (templateData) => {
-  return templateData && templateData.length > 0 ? templateData[0].template_id : -1;
-};
-
 export const UnlockLists = (clientDatabase: string, listsIds: number[]) => {
   const listsToUnlock = [];
   for (const listsId of listsIds) {

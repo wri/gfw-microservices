@@ -573,11 +573,11 @@ export class ListAnalysisService {
     );
     try {
       const connection = await this.getOrganizationConnection(organizationId);
-      const listAnalysisStatusRepository = connection.getRepository(Lists);
-      const listAnalysisStatus = await listAnalysisStatusRepository.findOne({
+      const listsRepository = connection.getRepository(Lists);
+      const listFound = await listsRepository.findOne({
         where: { id: listId },
       });
-      if (listAnalysisStatus) {
+      if (listFound) {
         const { data } = await axios.post(
           `${this.LLP_BASE_URL}/api/list/${listId}/delete`,
           {

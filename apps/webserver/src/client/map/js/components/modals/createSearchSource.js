@@ -3,7 +3,7 @@ import store from '../../store';
 import { showMapLoader } from '../../actions/mapActions';
 import { createResultsGraphic } from './searchUtils';
 
-function createSearchSource(sourceName, url, displayName) {
+function createSearchSource(sourceName, url, displayName, sourceIndex) {
   return new SearchSource({
     name: sourceName,
     placeholder: 'Enter name',
@@ -12,7 +12,7 @@ function createSearchSource(sourceName, url, displayName) {
       const response = await fetch(`${url}?searchInput=${params.suggestTerm}`);
       const { data } = await response.json();
       return data.map((item) => ({
-        sourceIndex: 0,
+        sourceIndex, // Needed to distinguish source
         key: item,
         text: displayName(item),
       }));

@@ -6,6 +6,7 @@ import Search from '@arcgis/core/widgets/Search';
 import FeatureLayer from '@arcgis/core/layers/FeatureLayer';
 import { proLayers } from '../../../../common/js/proLayers.config';
 import createSearchSource from './createSearchSource';
+import createWorldGeocodingSource from './createWorldGeocodingSource';
 import { dms2Deg, getAdministrativeAreaName } from './searchUtils';
 import featureFlags from '../../../../../utils/general.utils';
 import './SearchModal.scss';
@@ -147,32 +148,37 @@ export default class SearchModal extends Component {
       view: this.props.mapView,
       container: 'search-widget',
       minSuggestCharacters: 3,
-      includeDefaultSources: true,
+      includeDefaultSources: false,
       sources: [
         ...(isGadm41Available
           ? [
               createSearchSource(
                 'Administrative Areas',
                 '/map/gadm-admininstrative-boundaries',
-                getAdministrativeAreaName
+                getAdministrativeAreaName,
+                0
               ),
               createSearchSource(
                 'Universal Mill List',
                 '/map/gfw_universal_mill_list',
-                (item) => item.mill_name
+                (item) => item.mill_name,
+                1
               ),
               createSearchSource(
                 'Indigenous or Community land area',
                 '/map/landmark_indigenous_and_community_lands',
-                (item) => item.name
+                (item) => item.name,
+                2
               ),
               createSearchSource(
                 'Protected Areas',
                 '/map/wdpa_licensed_protected_areas',
-                (item) => item.name
+                (item) => item.name,
+                3
               ),
             ]
           : gadm36Sources),
+        createWorldGeocodingSource(4),
       ],
     });
 

@@ -12,7 +12,7 @@ function createSearchSource(sourceName, url, displayName, sourceIndex) {
       const response = await fetch(`${url}?searchInput=${params.suggestTerm}`);
       const { data } = await response.json();
       return data.map((item) => ({
-        sourceIndex,
+        sourceIndex, // Needed to distinguish source
         key: item,
         text: displayName(item),
       }));

@@ -1769,7 +1769,7 @@ class Map extends Component {
           action.visible =
             (action.id === 'ANALYZE' && currentForestChange && !isPointGeometry) ||
             (action.id === 'ADD LOCATION' &&
-              noLocationLayers.indexOf(selectedFeat.layerName) === -1 &&
+              !noLocationLayers.includes(selectedFeat.layerName) &&
               selectedFeat.attributes?.adm_level !== '0' &&
               !isPointGeometry);
         }

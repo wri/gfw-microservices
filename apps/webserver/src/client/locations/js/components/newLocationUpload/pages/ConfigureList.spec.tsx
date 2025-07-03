@@ -150,7 +150,7 @@ describe('ConfigureList', () => {
     expect(screen.getByText(/sugar cane/i)).toBeInTheDocument();
   }, 10100);
 
-  xit('should show missing mandatory field errors', async () => {
+  it('should show missing mandatory field errors', async () => {
     render(<ConfigureList userLists={mockUserLists} />);
 
     expect(screen.queryByText(/enter the commodity/i)).not.toBeInTheDocument();
@@ -193,7 +193,7 @@ describe('ConfigureList', () => {
     expect(mockHistoryPush).toHaveBeenCalledWith('SUMMARY_AND_SUBMIT');
   }, 20000);
 
-  xit('should show validations for new list name field', async () => {
+  it('should show validations for new list name field', async () => {
     render(<ConfigureList userLists={mockUserLists} />);
 
     const commodityDropdown = screen.getAllByRole('combobox')[0];
@@ -400,7 +400,7 @@ describe('ConfigureList', () => {
     expect(mockClearUploadType).toHaveBeenCalled();
   });
 
-  xit('should submit the form with valid data', async () => {
+  it('should submit the form with valid data', async () => {
     render(<ConfigureList userLists={mockUserLists} />);
 
     const commodityDropdown = screen.getAllByRole('combobox')[0];

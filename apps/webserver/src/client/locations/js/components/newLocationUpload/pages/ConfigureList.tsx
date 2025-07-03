@@ -19,7 +19,7 @@ import {
   DialogActions,
 } from '@mui/material';
 import { ArrowBackIos, ArrowForwardIos, Close } from '@mui/icons-material';
-import { useForm, Controller, FieldError } from 'react-hook-form';
+import { useForm, Controller } from 'react-hook-form';
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
 
@@ -44,38 +44,56 @@ export function ConfigureList({ userLists }: { userLists: UserList[] }) {
   const schema = z
     .object({
       commodity: z.enum(commodityValues),
-      newListName: listNameSchema,
-      existingListName: z.string(),
+      newListName: listNameSchema.optional(),
+      existingListName: z.string().optional(),
       FCD: z.coerce.boolean(),
       PalmRisk: z.coerce.boolean(),
       ALERTS: z.coerce.boolean(),
       AFI: z.coerce.boolean(),
       customCommodity: z.string().optional(),
     })
-    .refine((data) => data.newListName !== '' || data.existingListName !== '', {
-      message: 'You must provide at least one list name.',
-      path: ['noListNameProvided'],
-    })
-    .refine(
-      (data) =>
-        !(
-          data.commodity === 'Other' &&
-          (!data.customCommodity || data.customCommodity.trim() === '')
-        ),
-      {
-        path: ['customCommodity'],
+    .superRefine((data, ctx) => {
+      if (!data.newListName && !data.existingListName) {
+        ctx.addIssue({
+          path: ['newListName'],
+          code: z.ZodIssueCode.custom,
+          message: 'You must provide at least one list name.',
+        });
+        ctx.addIssue({
+          path: ['existingListName'],
+          code: z.ZodIssueCode.custom,
+          message: 'You must provide at least one list name.',
+        });
       }
-    )
-    .refine(
-      (data) =>
-        !userLists.some((list) => list.list_name.toLowerCase() === data.newListName.toLowerCase()),
-      {
-        message: 'This list name already exists',
-        path: ['newListName'],
+
+      if (
+        data.commodity === 'Other' &&
+        (!data.customCommodity || data.customCommodity.trim() === '')
+      ) {
+        ctx.addIssue({
+          path: ['customCommodity'],
+          code: z.ZodIssueCode.custom,
+          message: 'Enter custom commodity',
+        });
       }
-    )
-    .refine((data) => data.AFI || data.ALERTS || data.FCD, {
-      path: ['noAnalysisSelected'],
+
+      if (
+        userLists.some((list) => list.list_name?.toLowerCase() === data.newListName?.toLowerCase())
+      ) {
+        ctx.addIssue({
+          path: ['newListName'],
+          code: z.ZodIssueCode.custom,
+          message: 'This list name already exists',
+        });
+      }
+
+      if (!data.AFI && !data.ALERTS && !data.FCD) {
+        ctx.addIssue({
+          path: ['noAnalysisSelected'],
+          code: z.ZodIssueCode.custom,
+          message: 'You must select at least one type of analysis.',
+        });
+      }
     });
 
   type FormFields = z.infer<typeof schema>;
@@ -322,9 +340,7 @@ export function ConfigureList({ userLists }: { userLists: UserList[] }) {
             name="newListName"
             control={control}
             render={({ field }) => {
-              const error =
-                ('noListNameProvided' in errors && (errors.noListNameProvided as FieldError)) ||
-                errors.newListName;
+              const error = errors.newListName;
 
               return (
                 <TextField
@@ -351,9 +367,7 @@ export function ConfigureList({ userLists }: { userLists: UserList[] }) {
             name="existingListName"
             control={control}
             render={({ field }) => {
-              const error =
-                ('noListNameProvided' in errors && (errors.noListNameProvided as FieldError)) ||
-                errors.existingListName;
+              const error = errors.existingListName;
 
               if (isLoading) {
                 return (

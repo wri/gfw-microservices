@@ -1,7 +1,7 @@
 import { ListsAnalysisStatus } from '../../entity';
 
 export const getAllLists = `SELECT
-    L.*,
+  L.*,
     LL.large_list_id,
     JSON_QUERY((
         SELECT
@@ -12,14 +12,15 @@ export const getAllLists = `SELECT
             las.expiration_time,
             las.s3_url,
             las.Status as status,
-            ISNULL((
-                SELECT TOP (1) LP.analysis_start_time
-                FROM ListsProcessing LP
-                WHERE LP.list_id = las.ListID
-                  AND LP.analysis_type = las.AnalysisID
-                ORDER BY LP.analysis_start_time DESC
-            ), las.UpdateTime) as updateTime
+            ISNULL(LP.latest_analysis_start_time, las.UpdateTime) as updateTime
         FROM ListsAnalysisStatus las
+        OUTER APPLY (
+            SELECT TOP (1) LP.analysis_start_time AS latest_analysis_start_time
+            FROM ListsProcessing LP
+            WHERE LP.list_id = las.ListID
+              AND LP.analysis_type = las.AnalysisID
+            ORDER BY LP.analysis_start_time DESC
+        ) LP
         WHERE las.ListID = L.id
         FOR JSON PATH
     )) AS listAnalysesStatus

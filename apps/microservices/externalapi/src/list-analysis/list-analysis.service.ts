@@ -54,6 +54,7 @@ import {
   getGHGLocationErrorsByListId,
   FeatureFlag,
   Organization,
+  Lists,
 } from '@wri-monorepos/sql';
 import * as sql from 'mssql';
 
@@ -572,9 +573,9 @@ export class ListAnalysisService {
     );
     try {
       const connection = await this.getOrganizationConnection(organizationId);
-      const listAnalysisStatusRepository = connection.getRepository(ListsAnalysisStatus);
+      const listAnalysisStatusRepository = connection.getRepository(Lists);
       const listAnalysisStatus = await listAnalysisStatusRepository.findOne({
-        where: { listId },
+        where: { id: listId },
       });
       if (listAnalysisStatus) {
         const { data } = await axios.post(

@@ -19,9 +19,9 @@ describe('AnalysisFailedMessage Component', () => {
       screen.getByText('To receive results, resubmit this list for analysis.')
     ).toBeInTheDocument();
     expect(screen.getByRole('button', { name: /try again/i })).toBeInTheDocument();
-    expect(screen.getByRole('link', { name: /gfwprosupport@wri.org/i })).toHaveAttribute(
+    expect(screen.getByRole('link', { name: /GFW Pro support here/i })).toHaveAttribute(
       'href',
-      'mailto:gfwprosupport@wri.org'
+      'https://gfwpro.zendesk.com/hc/en-us/requests/new'
     );
   });
 
@@ -37,24 +37,19 @@ describe('AnalysisFailedMessage Component', () => {
   it('renders the component with correct elements', () => {
     render(<AnalysisFailedMessage toggleReRunAnalysisDialog={mockToggleReRunAnalysisDialog} />);
 
-    // Verify icon is present
     expect(screen.getByTestId('ReportGmailerrorredIcon')).toBeInTheDocument();
 
-    // Verify text content
     expect(screen.getByText('Analysis has failed')).toBeInTheDocument();
     expect(
       screen.getByText('To receive results, resubmit this list for analysis.')
     ).toBeInTheDocument();
 
-    // Verify button
     const button = screen.getByRole('button', { name: 'TRY AGAIN' });
     expect(button).toBeInTheDocument();
 
-    // Verify email link
-    expect(screen.getByText('gfwprosupport@wri.org')).toBeInTheDocument();
-    expect(screen.getByRole('link', { name: 'gfwprosupport@wri.org' })).toHaveAttribute(
+    expect(screen.getByRole('link', { name: /GFW Pro support here/i })).toHaveAttribute(
       'href',
-      'mailto:gfwprosupport@wri.org'
+      'https://gfwpro.zendesk.com/hc/en-us/requests/new'
     );
   });
 

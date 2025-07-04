@@ -1,8 +1,10 @@
 import { Link } from '@mui/material';
+
 import catchContainer from './catchContainer';
 import sendSlackNotification from '../../utils/sendSlackNotification';
 import Button from '../GfwButton';
 import './ErrorPage.scss';
+import { ExternalLinks } from '../../../../utils/constants';
 
 const isProduction = process.env.NODE_ENV === 'production' || process.env.NODE_ENV === 'staging';
 
@@ -14,10 +16,8 @@ const errorPage = {
       <>
         We're sorry, but the page you're looking for is currently unavailable. Please try again
         later. If the problem persists please contact{' '}
-        <Link href="https://gfwpro.zendesk.com/hc/en-us/requests/new" target="_blank">
-          GFW Pro support here
-        </Link>{' '}
-        for further information.
+        <Link href={ExternalLinks.ZendeskSupport}>GFW Pro support here</Link> for further
+        information.
       </>
     ),
   },

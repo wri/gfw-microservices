@@ -1,6 +1,8 @@
 import { Container, Box, Typography, Button, Link } from '@mui/material';
 import ReportGmailerrorredIcon from '@mui/icons-material/ReportGmailerrorred';
 
+import { ExternalLinks } from '../../../../../utils/constants';
+
 const AnalysisFailedMessage = ({ toggleReRunAnalysisDialog }) => {
   return (
     <Container maxWidth="sm">
@@ -39,7 +41,7 @@ const AnalysisFailedMessage = ({ toggleReRunAnalysisDialog }) => {
           If the problem persists please contact
           <br />
           <Link
-            href="https://gfwpro.zendesk.com/hc/en-us/requests/new"
+            href={ExternalLinks.ZendeskSupport}
             color="#F24E1E"
             target="_blank"
             sx={{ textDecoration: 'none' }}

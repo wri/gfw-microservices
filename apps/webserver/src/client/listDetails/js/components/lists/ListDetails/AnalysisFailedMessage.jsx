@@ -36,10 +36,15 @@ const AnalysisFailedMessage = ({ toggleReRunAnalysisDialog }) => {
           </Button>
         </Box>
         <Typography variant="body2">
-          If the problem persists please contact GFW Pro support at
+          If the problem persists please contact
           <br />
-          <Link href="mailto:gfwprosupport@wri.org" color="#F24E1E">
-            gfwprosupport@wri.org
+          <Link
+            href="https://gfwpro.zendesk.com/hc/en-us/requests/new"
+            color="#F24E1E"
+            target="_blank"
+            sx={{ textDecoration: 'none' }}
+          >
+            GFW Pro support here
           </Link>{' '}
           for further information.
         </Typography>

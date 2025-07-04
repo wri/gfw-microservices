@@ -1,3 +1,4 @@
+import { Link } from '@mui/material';
 import catchContainer from './catchContainer';
 import sendSlackNotification from '../../utils/sendSlackNotification';
 import Button from '../GfwButton';
@@ -12,8 +13,11 @@ const errorPage = {
     message: (
       <>
         We're sorry, but the page you're looking for is currently unavailable. Please try again
-        later. If the problem persists, contact our support team at{' '}
-        <a href="mailto:GFWProSupport@wri.org">GFWProSupport@wri.org</a>.
+        later. If the problem persists please contact{' '}
+        <Link href="https://gfwpro.zendesk.com/hc/en-us/requests/new" target="_blank">
+          GFW Pro support here
+        </Link>{' '}
+        for further information.
       </>
     ),
   },

@@ -96,10 +96,10 @@ const setVectorTileLayerForFilteredList = async (listData, transitionListData, v
     const avgLatitude = calculateAverage(latitudes);
     const avgLongitude = calculateAverage(longitudes);
 
-    view.goTo({
+    return {
       center: [avgLongitude, avgLatitude],
       zoom: 3,
-    });
+    };
   }
 };
 

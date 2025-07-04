@@ -22,7 +22,7 @@ import { generateUserListLocationsVectorTileLayerStyle } from './userListLocatio
  * @param {Object} esriMapView - Esri MapView object used to display the map.
  * @param {Array<number>} bounds - Geographical bounds of the vector tile layer, specified as [xmin, ymin, xmax, ymax]. These define the area that the map view will zoom to.
  */
-export function goToUserListLocations(esriMapView, bounds) {
+export function goToUserListLocations(bounds) {
   const [xmin, ymin, xmax, ymax] = bounds;
   const extent = new Extent({
     xmin,
@@ -31,7 +31,7 @@ export function goToUserListLocations(esriMapView, bounds) {
     ymax,
     spatialReference: SpatialReference.WGS84,
   });
-  esriMapView.goTo(extent, { duration: 1000 });
+  return extent;
 }
 
 /**

@@ -224,6 +224,10 @@ class Map extends Component {
 
       drawnCoordinates: [],
       isMapCentered: true,
+      mapCenter: {
+        center: DEFAULT_MAPVIEW_CENTER,
+        zoom: 3,
+      },
     });
     this.eventHandlers = [];
     this.sketchViewModel = null;
@@ -301,29 +305,31 @@ class Map extends Component {
       const centerKey = `${center.latitude.toFixed(5)}_${center.longitude.toFixed(5)}`;
 
       if (lastCenterKey === centerKey || currentZoom <= 10) {
+        this.setState({ isMapMoving: false });
         return;
       }
-
       // Wait a moment to ensure rendering
       await new Promise((r) => setTimeout(r, 400));
-
       isFixingZoom = true;
 
-      // Step 1: temporary zoom-out
-      await this.mapView.goTo({ center, zoom: 9 }, { animate: false });
+      try {
+        // Step 1: temporary zoom-out
+        await this.mapView.goTo({ center, zoom: 9 }, { animate: false });
 
-      // Step 2: short delay and return to original zoom
-      await new Promise((r) => setTimeout(r, 500));
-      await this.mapView.goTo({ center, zoom: currentZoom }, { animate: false });
+        // Step 2: short delay and return to original zoom
+        await new Promise((r) => setTimeout(r, 500));
+        await this.mapView.goTo({ center, zoom: currentZoom }, { animate: false });
 
-      lastCenterKey = centerKey;
-      isFixingZoom = false;
+        lastCenterKey = centerKey;
+      } finally {
+        isFixingZoom = false;
+        this.setState({ isMapMoving: false });
+      }
     });
 
     this.eventHandlers.push(this.mapView.on('drag', this.startInteraction));
     this.eventHandlers.push(this.mapView.on('mouse-wheel', this.startInteraction));
     this.eventHandlers.push(this.mapView.on('keyboard', this.startInteraction));
-    this.eventHandlers.push(this.mapView.watch('stationary', this.stopInteraction));
 
     mapView.when(this.mapLoaded);
   }
@@ -331,12 +337,6 @@ class Map extends Component {
   startInteraction = () => {
     if (!this.state.isMapMoving) {
       this.setState({ isMapMoving: true, isMapCentered: false });
-    }
-  };
-
-  stopInteraction = (stationary) => {
-    if (stationary) {
-      this.setState({ isMapMoving: false });
     }
   };
 
@@ -713,7 +713,11 @@ class Map extends Component {
       store.dispatch(showLayerInfo({}));
     }
   };
+  goToOriginalPoint = () => {
+    const { mapCenter } = this.state;
 
+    this.view.goTo(mapCenter);
+  };
   mapLoaded = (view) => {
     const { userInfo } = this.state;
     const { access_level_id } = userInfo;
@@ -736,13 +740,6 @@ class Map extends Component {
     this.addCustomBasemaps(view);
 
     this.view = view;
-
-    this.goToOriginalPoint = () => {
-      this.view.goTo({
-        center: DEFAULT_MAPVIEW_CENTER,
-        zoom: 3,
-      });
-    };
 
     const customActions = [popupAnalyzeAction];
     if (access_level_id !== 3) {
@@ -1811,7 +1808,7 @@ class Map extends Component {
         gfwLayer.opacity = 0;
       }
       try {
-        let zoomTarget;
+        let mapCenter;
         if (locationIDs.length && locationIDs.length < 200) {
           // Zoom to locations only if we have less than 200 locations and more than 0
 
@@ -1856,19 +1853,19 @@ class Map extends Component {
               combinedExtent = combinedExtent.union(extents[i]);
             }
 
-            zoomTarget = {
+            mapCenter = {
               target: combinedExtent.expand(1.2),
             };
           }
         } else if (gfwLayer) {
-          zoomTarget = gfwListsZoomTargets[gfwLayer.id];
+          mapCenter = gfwListsZoomTargets[gfwLayer.id];
         }
 
-        this.goToOriginalPoint = () => {
-          this.view.goTo(zoomTarget);
-        };
+        if (mapCenter) {
+          this.setState({ mapCenter });
 
-        this.view.goTo(zoomTarget);
+          this.view.goTo(mapCenter);
+        }
       } catch (e) {
         console.log(e);
         throw new Error('Fetching Zoom in BBOX values for GFW List locations failed.');
@@ -2000,24 +1997,30 @@ class Map extends Component {
               },
             ];
             const { transitionListData } = this.state;
-            this.goToOriginalPoint = () => {
-              setVectorTileLayerForFilteredList(
-                selectedLocationsData,
-                transitionListData,
-                this.view
-              );
-            };
 
-            setVectorTileLayerForFilteredList(selectedLocationsData, transitionListData, this.view);
+            setVectorTileLayerForFilteredList(
+              selectedLocationsData,
+              transitionListData,
+              this.view
+            ).then((mapCenter) => {
+              this.setState({ mapCenter });
+
+              this.view.goTo(mapCenter);
+            });
+
             store.dispatch(addList(userList));
             return;
           }
           const { transitionListData } = this.state;
 
-          this.goToOriginalPoint = async () => {
-            setVectorTileLayerForFullList(selectedListData, transitionListData, this.view);
-          };
-          setVectorTileLayerForFullList(selectedListData, transitionListData, this.view);
+          setVectorTileLayerForFullList(selectedListData, transitionListData, this.view).then(
+            (mapCenter) => {
+              this.setState({ mapCenter });
+
+              this.view.goTo(mapCenter);
+            }
+          );
+
           store.dispatch(addList(userList));
         }
         if (hashLayersToAdd.length > 0) {
@@ -2214,10 +2217,11 @@ class Map extends Component {
       } else {
         const listData = JSON.parse(request.responseText);
         const { transitionListData } = this.state;
-        this.goToOriginalPoint = () => {
-          setVectorTileLayerForFullList(listData, transitionListData, this.view);
-        };
-        setVectorTileLayerForFullList(listData, transitionListData, this.view);
+
+        setVectorTileLayerForFullList(listData, transitionListData, this.view).then((mapCenter) => {
+          this.setState({ mapCenter });
+          this.view.goTo(mapCenter);
+        });
       }
     };
     request.onerror = (err) => {

@@ -1,6 +1,7 @@
 export const CONVERTER_NAMES = {
   LIST_SCHEMA: 'List Schema',
   GADM_VERSION: 'GADM Version',
+  DELETE_MALFORMED_LISTS: 'Delete Malformed Lists',
   EXAMPLE_CONVERTER: 'Example Converter',
 } as const;
 
@@ -9,6 +10,8 @@ export type ConverterName = (typeof CONVERTER_NAMES)[keyof typeof CONVERTER_NAME
 export const ConverterNamesList: ConverterName[] = Object.values(CONVERTER_NAMES);
 
 export enum ConverterStatus {
+  PENDING = 'PENDING',
+  STOPPED = 'STOPPED',
   COMPLETED = 'COMPLETED',
   RUNNING = 'RUNNING',
   FAILED = 'FAILED',

@@ -1,18 +1,8 @@
-import { Grid, Table, TableHead, TableBody, TableRow, TableContainer, styled } from '@mui/material';
-import TableCell, { tableCellClasses } from '@mui/material/TableCell';
+import { Grid, Table, TableHead, TableBody, TableRow, TableContainer } from '@mui/material';
 import moment from 'moment';
 
 import { useFeatureFlagStateContext } from './FeatureFlagStateContext';
-
-const StyledTableCell = styled(TableCell)(() => ({
-  fontFamily: 'Fira Sans, sans-serif',
-  [`&.${tableCellClasses.head}`]: {
-    fontWeight: 'bold',
-  },
-  [`&.${tableCellClasses.body}`]: {
-    color: '#4e4e4ede',
-  },
-}));
+import { StyledTableCell } from '../../common/styledTableCell';
 
 function FeatureFlagsList() {
   const { featureFlagsList, selectedFeatureFlag, setSelectedFeatureFlag } =

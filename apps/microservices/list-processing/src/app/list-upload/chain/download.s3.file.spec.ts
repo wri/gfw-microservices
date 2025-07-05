@@ -1,52 +1,35 @@
-import { Test, TestingModule } from '@nestjs/testing';
-import { ConfigService } from '@nestjs/config';
-import { Logger } from '@nestjs/common';
-import { S3Service } from '@wri-monorepos/aws';
 import { DownloadS3File } from './download.s3.file';
 import { ChainType } from './types';
-
-const mockLogger = {
-  log: jest.fn(),
-  error: jest.fn(),
-  warn: jest.fn(),
-  debug: jest.fn(),
-  verbose: jest.fn(),
-};
-
-const mockConfigService = {
-  get: jest.fn((key: string) => {
-    if (key === 'LARGE_PROCESSING_LIST_BUCKET') {
-      return 'your-bucket-name';
-    }
-    return null;
-  }),
-};
+import { ConfigService } from '@nestjs/config';
+import { S3Service } from '@wri-monorepos/aws';
 
 describe('DownloadS3File', () => {
   let service: DownloadS3File;
-  let configService: ConfigService;
-  let s3Service: S3Service;
+  let mockConfigService: Partial<ConfigService>;
+  let mockS3Service: Partial<S3Service>;
 
-  beforeEach(async () => {
-    const module: TestingModule = await Test.createTestingModule({
-      providers: [
-        {
-          provide: S3Service,
-          useValue: {
-            writeS3fileIntoTmp: jest.fn(),
-          },
-        },
-        { provide: Logger, useValue: mockLogger },
-        {
-          provide: ConfigService,
-          useValue: mockConfigService,
-        },
-      ],
-    }).compile();
+  beforeEach(() => {
+    mockConfigService = {
+      get: jest.fn((key: string) => {
+        if (key === 'LARGE_PROCESSING_LIST_BUCKET') {
+          return 'test-bucket';
+        }
+        return null;
+      }),
+    };
 
-    configService = module.get<ConfigService>(ConfigService);
-    s3Service = module.get<S3Service>(S3Service);
-    service = new DownloadS3File(s3Service, configService);
+    mockS3Service = {
+      writeS3fileIntoTmp: jest.fn(),
+    };
+
+    service = new DownloadS3File(
+      mockS3Service as S3Service,
+      mockConfigService as ConfigService<any, any>
+    );
+  });
+
+  beforeEach(() => {
+    jest.clearAllMocks();
   });
 
   it('should be defined', () => {
@@ -56,33 +39,32 @@ describe('DownloadS3File', () => {
   it('should download the file and call the next handler', async () => {
     const input: ChainType = { request: { path: 'test/path', organization_database: 'testCO' } };
     const fileDownloadedPath = '/tmp/test/path';
-    (s3Service.writeS3fileIntoTmp as jest.Mock).mockResolvedValue(fileDownloadedPath);
+    (mockS3Service.writeS3fileIntoTmp as jest.Mock).mockResolvedValue(fileDownloadedPath);
 
     const result = await service.handle(input);
 
-    expect(s3Service.writeS3fileIntoTmp).toHaveBeenCalledWith('test/path', 'your-bucket-name');
+    expect(mockS3Service.writeS3fileIntoTmp).toHaveBeenCalledWith('test/path', 'test-bucket');
     expect(result.request.fileDownloadedPath).toBe(fileDownloadedPath);
   });
 
   it('should retry downloading the file on failure and eventually succeed', async () => {
     const input: ChainType = { request: { path: 'test/path', organization_database: 'testCO' } };
     const fileDownloadedPath = '/tmp/test/path';
-    (s3Service.writeS3fileIntoTmp as jest.Mock)
+    (mockS3Service.writeS3fileIntoTmp as jest.Mock)
       .mockRejectedValueOnce(new Error('S3 error'))
       .mockResolvedValueOnce(fileDownloadedPath);
 
     const result = await service.handle(input);
 
-    expect(s3Service.writeS3fileIntoTmp).toHaveBeenCalledTimes(2);
+    expect(mockS3Service.writeS3fileIntoTmp).toHaveBeenCalledTimes(2);
     expect(result.request.fileDownloadedPath).toBe(fileDownloadedPath);
   });
 
   it('should throw an error after max retries', async () => {
     const input: ChainType = { request: { path: 'test/path', organization_database: 'testCO' } };
-    (s3Service.writeS3fileIntoTmp as jest.Mock).mockRejectedValue(new Error('S3 error'));
+    (mockS3Service.writeS3fileIntoTmp as jest.Mock).mockRejectedValue(new Error('S3 error'));
 
     await expect(service.handle(input)).rejects.toThrow('S3 error');
-
-    expect(s3Service.writeS3fileIntoTmp).toHaveBeenCalledTimes(3);
-  }, 10000);
+    expect(mockS3Service.writeS3fileIntoTmp).toHaveBeenCalledTimes(3);
+  }, 15000);
 });

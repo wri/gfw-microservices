@@ -1,0 +1,89 @@
+import Graphic from '@arcgis/core/Graphic';
+import { showMapLoader } from '../../actions/mapActions';
+import Locator from '@arcgis/core/tasks/Locator';
+import SearchSource from '@arcgis/core/widgets/Search/SearchSource';
+import store from '../../store';
+
+const locator = new Locator({
+  url: 'https://geocode.arcgis.com/arcgis/rest/services/World/GeocodeServer',
+});
+
+function createWorldGeocodingSource(sourceIndex = 999) {
+  return new SearchSource({
+    name: 'World Geocoding Service',
+    placeholder: 'Search for places or addresses',
+
+    async getSuggestions(params) {
+      try {
+        const results = await locator.suggestLocations({
+          text: params.suggestTerm,
+          location: params.location,
+          maxSuggestions: 4,
+        });
+
+        return results.map((result) => ({
+          key: result,
+          text: result.text,
+          sourceIndex, // Needed to distinguish source
+        }));
+      } catch (err) {
+        console.error('Error getting suggestions from geocoder:', err);
+        return [];
+      }
+    },
+
+    async getResults(params) {
+      console.log('WorldGeocodingSource getResults called with:', params);
+      store.dispatch(showMapLoader(true));
+
+      try {
+        const address = params.suggestResult?.key?.text || params.suggestResult?.text;
+
+        if (!address) {
+          console.warning('No address found');
+          return [];
+        }
+
+        const locations = await locator.addressToLocations({
+          address: { SingleLine: address },
+          maxLocations: 1,
+        });
+
+        return locations.map((location) => {
+          const graphic = new Graphic({
+            geometry: location.location,
+            symbol: {
+              type: 'simple-marker',
+              style: 'circle',
+              color: [0, 120, 255, 0.4],
+              size: 12,
+              outline: {
+                color: [0, 120, 255, 1],
+                width: 2,
+              },
+            },
+            attributes: {
+              address: location.address,
+            },
+            popupTemplate: {
+              title: 'Address',
+              content: location.address,
+            },
+          });
+
+          return {
+            name: location.address,
+            feature: graphic,
+          };
+        });
+      } catch (err) {
+        console.error('Error getting results from geocoder:', err);
+        return [];
+      } finally {
+        store.dispatch(showMapLoader(false));
+      }
+    },
+  });
+}
+
+export default createWorldGeocodingSource;

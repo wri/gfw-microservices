@@ -3,29 +3,13 @@ import { ConfigService } from '@nestjs/config';
 import { LocationService } from './locations.service';
 import { GeoService } from '@wri-monorepos/geo';
 import { ListCopyMoveService } from '../app/list-copy-move/list.copy.move.service';
-import { ProcessingLimitException } from '../app/app.exceptions';
-import {
-  ListHasFiltersApplies,
-  PerformLocationsBulkCopy,
-  UnlockLists,
-  getListAnalysisStatusByListId,
-  SPSListCreation,
-  createFeatureProps,
-  getAnalysisTypesFromIds,
-} from '@wri-monorepos/geo';
+import { createFeatureProps } from '@wri-monorepos/geo';
 import {
   CopyOrMoveLargeListRequest,
   ActionType,
   TargetListType,
-  DeleteList,
-  PerformGetLockStatus,
-  UnlockListAndSaveAsDraft,
-  requestAnalysisProcess,
   UspGetLocationsFilteredToCopy,
-  updateListsAnalysisStatus,
 } from '@wri-monorepos/sql';
-import { checkProcessingLimits } from '@wri-monorepos/shared';
-import { listStatus } from '@wri-monorepos/constants';
 
 jest.mock('@wri-monorepos/geo');
 jest.mock('@wri-monorepos/sql');
@@ -158,149 +142,9 @@ describe('LocationService', () => {
       expect(listCopyMoveService.run).toHaveBeenCalledWith(params);
       expect(result).toEqual({ success: true, action: ActionType.Move });
     });
-
-    it('should handle new list creation successfully', async () => {
-      const params = {
-        ...mockParams,
-        listType: TargetListType.New,
-        listName: 'New List',
-      };
-
-      (PerformGetLockStatus as jest.Mock).mockResolvedValue({ lock_status: 'locked' });
-      (SPSListCreation as jest.Mock).mockImplementation(() => ({
-        createNewList: jest.fn().mockResolvedValue({ list_id: 123 }),
-      }));
-      (PerformLocationsBulkCopy as jest.Mock).mockResolvedValue([1, 2]);
-      (getListAnalysisStatusByListId as jest.Mock).mockResolvedValue([{ analysisId: 1 }]);
-      (checkProcessingLimits as jest.Mock).mockResolvedValue({
-        isListLocationOverLimit: false,
-        processingLimit: 100,
-      });
-      (requestAnalysisProcess as jest.Mock).mockResolvedValue({
-        json: () => Promise.resolve({ success: true }),
-      });
-
-      geoService.createGeoJSON.mockReturnValue({
-        type: 'FeatureCollection',
-        features: [
-          { properties: { location_id: 1 }, geometry: { type: 'Point', coordinates: [0, 0] } },
-          { properties: { location_id: 2 }, geometry: { type: 'Point', coordinates: [1, 1] } },
-        ],
-      });
-
-      const result = await service.MoveLocations(params);
-
-      expect(result).toEqual({ success: true, action: ActionType.Move });
-    });
-
-    it('should handle processing limit exceeded', async () => {
-      const params = {
-        ...mockParams,
-        listType: TargetListType.New,
-        listName: 'New List',
-      };
-
-      (PerformGetLockStatus as jest.Mock).mockResolvedValue({ lock_status: 'locked' });
-      (SPSListCreation as jest.Mock).mockImplementation(() => ({
-        createNewList: jest.fn().mockResolvedValue({ list_id: 123 }),
-      }));
-      (PerformLocationsBulkCopy as jest.Mock).mockResolvedValue([1, 2]);
-      (getListAnalysisStatusByListId as jest.Mock).mockResolvedValue([{ analysisId: 1 }]);
-      (checkProcessingLimits as jest.Mock).mockResolvedValue({
-        isListLocationOverLimit: true,
-        processingLimit: 100,
-      });
-      (updateListsAnalysisStatus as jest.Mock).mockResolvedValue(undefined);
-      (getAnalysisTypesFromIds as jest.Mock).mockReturnValue({ type1: true });
-
-      geoService.createGeoJSON.mockReturnValue({
-        type: 'FeatureCollection',
-        features: [
-          { properties: { location_id: 1 }, geometry: { type: 'Point', coordinates: [0, 0] } },
-          { properties: { location_id: 2 }, geometry: { type: 'Point', coordinates: [1, 1] } },
-        ],
-      });
-
-      await expect(service.MoveLocations(params)).rejects.toThrow(ProcessingLimitException);
-      expect(updateListsAnalysisStatus).toHaveBeenCalledWith(mockClientDatabase, {
-        listId: 123,
-        errorInfo: 'Exceeded Analysis Limit',
-        status: listStatus.Inactive,
-      });
-    });
-
-    it('should handle existing list update successfully', async () => {
-      const params = {
-        ...mockParams,
-        listType: TargetListType.Existing,
-        saveAsDraft: true,
-      };
-
-      (PerformLocationsBulkCopy as jest.Mock).mockResolvedValue([1, 2]);
-      (getListAnalysisStatusByListId as jest.Mock).mockResolvedValue([{ analysisId: 1 }]);
-
-      geoService.createGeoJSON.mockReturnValue({
-        type: 'FeatureCollection',
-        features: [
-          { properties: { location_id: 1 }, geometry: { type: 'Point', coordinates: [0, 0] } },
-          { properties: { location_id: 2 }, geometry: { type: 'Point', coordinates: [1, 1] } },
-        ],
-      });
-
-      const result = await service.MoveLocations(params);
-
-      expect(result).toEqual({ success: true, action: ActionType.Move });
-      expect(UnlockListAndSaveAsDraft).toHaveBeenCalled();
-    });
-
-    it('should handle source list deletion when all locations are selected', async () => {
-      const params = {
-        ...mockParams,
-        allLocationsSelected: true,
-      };
-
-      (ListHasFiltersApplies as jest.Mock).mockReturnValue(false);
-      (PerformLocationsBulkCopy as jest.Mock).mockResolvedValue([1, 2]);
-      (getListAnalysisStatusByListId as jest.Mock).mockResolvedValue([{ analysisId: 1 }]);
-      (checkProcessingLimits as jest.Mock).mockResolvedValue({
-        isListLocationOverLimit: false,
-        processingLimit: 100,
-      });
-      (getAnalysisTypesFromIds as jest.Mock).mockReturnValue({ type1: true });
-      (requestAnalysisProcess as jest.Mock).mockResolvedValue({
-        json: () => Promise.resolve({ success: true }),
-      });
-
-      geoService.createGeoJSON.mockReturnValue({
-        type: 'FeatureCollection',
-        features: [
-          { properties: { location_id: 1 }, geometry: { type: 'Point', coordinates: [0, 0] } },
-          { properties: { location_id: 2 }, geometry: { type: 'Point', coordinates: [1, 1] } },
-        ],
-      });
-
-      const result = await service.MoveLocations(params);
-
-      expect(result).toEqual({ success: true, action: ActionType.Move });
-      expect(DeleteList).toHaveBeenCalled();
-    });
-
-    it('should handle errors and unlock lists', async () => {
-      const params = { ...mockParams };
-
-      geoService.createGeoJSON.mockReturnValue({
-        type: 'FeatureCollection',
-        features: [
-          { properties: { location_id: 1 }, geometry: { type: 'Point', coordinates: [0, 0] } },
-          { properties: { location_id: 2 }, geometry: { type: 'Point', coordinates: [1, 1] } },
-        ],
-      });
-
-      (PerformLocationsBulkCopy as jest.Mock).mockRejectedValue(new Error('Test error'));
-
-      await expect(service.MoveLocations(params)).rejects.toThrow('Test error');
-      expect(UnlockLists).toHaveBeenCalled();
-    });
+    /*
+test cases for service.MoveLocations(params) already tested at apps/microservices/list-processing/src/app/list-copy-move/list.copy.move.service.spec.ts
+*/
   });
 
   describe('assembleGeojson', () => {

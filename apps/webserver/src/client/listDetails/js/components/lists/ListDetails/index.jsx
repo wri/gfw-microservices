@@ -107,7 +107,12 @@ export default class ListDetails extends Component {
     const { selectedLists } = this.props;
     const selectedList = selectedLists.length > 0 ? selectedLists[0] : null;
     const listAnalysesStatus = selectedList ? selectedList.listAnalysesStatus : [];
-
+    // Adding PalmRisk analysis to pre selected analys
+    listAnalysesStatus?.forEach(({ analysisId, options }) => {
+      if (analysisId === 'FCD' && options === 'PalmRisk') {
+        listAnalysesStatus.push({ analysisId: 'PalmRisk' });
+      }
+    });
     const { isFcdActive, isPalmRiskActive, isAfiActive, isGHGActive, isOnlyGHGActive } =
       getActiveAnalysisFlags(listAnalysesStatus);
 
@@ -149,7 +154,7 @@ export default class ListDetails extends Component {
       parentCompanyOptionsForFilter: [],
       supplierNameOptionsForFilter: [],
       secondSupplierNameOptionsForFilter: [],
-      tableSortedBy: selectedLists[0].isGlobalForestWatchList ? 'Location Name' : 'Investment Name',
+      tableSortedBy: 'Location Name',
       tableSortedDesc: false,
       numberOfResults: undefined,
       displayLargeListEditingModal: false,
@@ -1803,7 +1808,7 @@ export default class ListDetails extends Component {
         : [];
 
     const listName = selectedList ? selectedList.list_name : '';
-    const listAnalysesStatus = selectedList ? selectedList.listAnalysesStatus : [];
+    const listAnalysesStatus = selectedList?.listAnalysesStatus ?? [];
 
     const isGfwList = selectedList.isGlobalForestWatchList;
 
@@ -1871,10 +1876,12 @@ export default class ListDetails extends Component {
     if (isFcdActive || isGfwList) {
       listViewOptions.push(FOREST_CHANGE_VIEW);
     }
-
     const isPalmOilBackwardComp = checkValidViewCommodity(selectedLists?.[0], listData?.[0]);
     if (isPalmOilBackwardComp || isPalmRiskActive) {
       listViewOptions.push(COMMODITY_RISK_VIEW);
+      if (!listAnalysesStatus?.some(({ analysisId }) => analysisId === 'PalmRisk')) {
+        listAnalysesStatus.push({ analysisId: 'PalmRisk' });
+      }
     }
 
     if (isAfiActive) {

@@ -91,6 +91,7 @@ export class ClipToLandService extends AbstractHandler<ChainType> {
         layer: 'gadm',
         dissolve_aoi: false,
         post_process_aoi: false,
+        xApiKeyDataApi: process.env.GFW_DATA_API_KEY,
       });
 
       const { Payload } = lambdaResult;

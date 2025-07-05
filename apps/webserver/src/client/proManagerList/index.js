@@ -16,7 +16,7 @@ function App() {
   return (
     <ThemeProvider>
       <AppErrorFallback>
-        <BrowserRouter basename="/pro-manager-list">
+        <BrowserRouter>
           <Page links={pageOptions.links} active="pro-manager">
             <ProManagerPanel />
           </Page>

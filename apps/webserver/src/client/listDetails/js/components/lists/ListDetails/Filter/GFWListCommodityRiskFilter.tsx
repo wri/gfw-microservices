@@ -228,7 +228,7 @@ const GFWListCommodityRiskFilter: FC<GFWListCommodityRiskFilterProps> = ({
               display: 'flex',
             }}
           >
-            <PillButton variant="contained" sx={{ ml: 1 }} onClick={onCloseHandler}>
+            <PillButton color="inherit" variant="contained" sx={{ ml: 1 }} onClick={onCloseHandler}>
               Cancel
             </PillButton>
             {isListFiltered && (

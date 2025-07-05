@@ -51,6 +51,11 @@ describe('UploadLocationByFile', () => {
         <UploadLocationByFile />
       </ThemeProvider>
     );
+    expect(
+      screen.getByRole('heading', {
+        name: /by data file: prepare & upload location data/i,
+      })
+    ).toBeInTheDocument();
 
     expect(
       screen.getByText(

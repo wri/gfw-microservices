@@ -1,5 +1,4 @@
 import './index.scss';
-import { useRef } from 'react';
 import { Route, Switch } from 'react-router-dom';
 import { Box } from '@mui/material';
 
@@ -32,20 +31,26 @@ export type RouteType = keyof typeof UploadLocationRoutes;
 type UploadLocationRouterProps = {
   userLists: UserList[];
   geoFromMap?: PolygonFromMapPage;
+  fromList?: number;
 };
 
-export function UploadLocationRouter({ userLists, geoFromMap }: UploadLocationRouterProps) {
-  const polygonFromMapPage = useRef(geoFromMap);
+export function UploadLocationRouter({
+  userLists,
+  geoFromMap,
+  fromList,
+}: UploadLocationRouterProps) {
   return (
     <Box
       className="new-location-upload"
       sx={{ mt: 1.5, mx: 'auto', maxWidth: '1025px', minWidth: '300px' }}
     >
       <Switch>
-        <Route path={UploadLocationRoutes.OPTIONS} component={UploadLocationOptions} exact />
+        <Route path={UploadLocationRoutes.OPTIONS} exact>
+          <UploadLocationOptions fromList={fromList} userLists={userLists} />
+        </Route>
         <Route path={UploadLocationRoutes.UPLOAD_BY_FILE} component={UploadLocationByFile} />
         <Route path={UploadLocationRoutes.UPLOAD_BY_POLYGON}>
-          <UploadLocationByPolygon polygonFromMapPage={polygonFromMapPage} />
+          <UploadLocationByPolygon polygonFromMapPage={geoFromMap} />
         </Route>
         <Route path={UploadLocationRoutes.UPLOAD_BY_POINT} component={UploadLocationByPoint} />
         <Route path={UploadLocationRoutes.PREVIEW} component={UploadLocationPreview} />

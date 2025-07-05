@@ -52,6 +52,7 @@ export default class RegionLegend extends Component {
     return (
       <LegendCheckbox
         canopyDensity={this.props.canopyDensity}
+        treeCoverLossCanopyDensity={this.props.treeCoverLossCanopyDensity}
         key={i}
         layer={layer}
         visibleLayers={this.props.visibleLayers}

@@ -54,6 +54,7 @@ import {
   getGHGLocationErrorsByListId,
   FeatureFlag,
   Organization,
+  Lists,
 } from '@wri-monorepos/sql';
 import * as sql from 'mssql';
 
@@ -572,11 +573,11 @@ export class ListAnalysisService {
     );
     try {
       const connection = await this.getOrganizationConnection(organizationId);
-      const listAnalysisStatusRepository = connection.getRepository(ListsAnalysisStatus);
-      const listAnalysisStatus = await listAnalysisStatusRepository.findOne({
-        where: { listId },
+      const listsRepository = connection.getRepository(Lists);
+      const listFound = await listsRepository.findOne({
+        where: { id: listId },
       });
-      if (listAnalysisStatus) {
+      if (listFound) {
         const { data } = await axios.post(
           `${this.LLP_BASE_URL}/api/list/${listId}/delete`,
           {

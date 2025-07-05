@@ -13,12 +13,14 @@ import {
   SET_FIRE_DAYS,
   UPDATE_ADMIN_SELECTIONS,
   TOGGLE_CANOPY_MODAL,
+  TOGGLE_TREE_COVER_LOSS_CANOPY_MODAL,
   UPDATE_LANDSAT_YEAR,
   TOGGLE_DRAW_SHAPE_NOTE_DETAILS_MODAL,
   TOGGLE_DRAWING,
   TOGGLE_SEARCH,
   TOGGLE_PANELS,
   UPDATE_CANOPY_DENSITY,
+  UPDATE_TREE_COVER_LOSS_CANOPY_DENSITY,
   UPDATE_ANALYSIS,
   ADD_LIST,
   REMOVE_LIST,
@@ -83,8 +85,12 @@ export function showLists(data) {
   return { type: SHOW_LISTS, data };
 }
 
-export function toggleCanopyModal(data) {
-  return { type: TOGGLE_CANOPY_MODAL, data };
+export function toggleCanopyModal() {
+  return { type: TOGGLE_CANOPY_MODAL };
+}
+
+export function toggleTreeCoverLossCanopyModal() {
+  return { type: TOGGLE_TREE_COVER_LOSS_CANOPY_MODAL };
 }
 
 export function toggleDrawShapeNoteDetailsModal() {
@@ -107,8 +113,11 @@ export function setFireDays(data) {
   return { type: SET_FIRE_DAYS, data };
 }
 
-export function updateCanopyDensity(data) {
-  return { type: UPDATE_CANOPY_DENSITY, data };
+export function updateCanopyDensity(payload) {
+  return { type: UPDATE_CANOPY_DENSITY, payload };
+}
+export function updateTreeCoverLossCanopyDensity(payload) {
+  return { type: UPDATE_TREE_COVER_LOSS_CANOPY_DENSITY, payload };
 }
 
 export function updateAnalysis(data) {

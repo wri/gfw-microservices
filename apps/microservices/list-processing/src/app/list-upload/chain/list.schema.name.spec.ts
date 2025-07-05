@@ -1,5 +1,5 @@
 import { ListSchemaName } from './list.schema.name';
-import { AbstractHandler, ChainType } from './types';
+import { AbstractHandler, ChainType, RequestNewList } from './types';
 import { getListByFilters } from '@wri-monorepos/sql';
 import * as sqlite3 from 'sqlite3';
 import { Database, open } from 'sqlite';
@@ -56,6 +56,98 @@ describe('ListSchema', () => {
     };
 
     await expect(listSchema.handle(input)).rejects.toThrow(`List name ${listName} already exists.`);
+  });
+
+  it('should handle accented characters in list name', async () => {
+    const listName = 'Café List';
+    const input: ChainType = {
+      request: {
+        user_id: 1,
+        list_name: listName,
+        organization_database: 'test-db',
+        template_id: 1,
+        path: 'path',
+        commodity: 'COCO',
+        saveAsDraft: false,
+      },
+    };
+
+    (getListByFilters as jest.Mock).mockResolvedValue(false);
+
+    const response = await listSchema.handle(input);
+    const request = response.request as RequestNewList;
+
+    expect(request.listTable).toBe('list-cafelist');
+    expect(request.analysisTable).toBe('analysis-cafelist');
+  });
+
+  it('should handle special characters in list name', async () => {
+    const listName = 'Test-List_123';
+    const input: ChainType = {
+      request: {
+        user_id: 1,
+        list_name: listName,
+        organization_database: 'test-db',
+        template_id: 1,
+        path: 'path',
+        commodity: 'COCO',
+        saveAsDraft: false,
+      },
+    };
+
+    (getListByFilters as jest.Mock).mockResolvedValue(false);
+
+    const response = await listSchema.handle(input);
+    const request = response.request as RequestNewList;
+
+    expect(request.listTable).toBe('list-test-list_123');
+    expect(request.analysisTable).toBe('analysis-test-list_123');
+  });
+
+  it('should remove periods from list name', async () => {
+    const listName = 'Test.List.123';
+    const input: ChainType = {
+      request: {
+        user_id: 1,
+        list_name: listName,
+        organization_database: 'test-db',
+        template_id: 1,
+        path: 'path',
+        commodity: 'COCO',
+        saveAsDraft: false,
+      },
+    };
+
+    (getListByFilters as jest.Mock).mockResolvedValue(false);
+
+    const response = await listSchema.handle(input);
+    const request = response.request as RequestNewList;
+
+    expect(request.listTable).toBe('list-testlist123');
+    expect(request.analysisTable).toBe('analysis-testlist123');
+  });
+
+  it('should preserve square brackets and parentheses in list name', async () => {
+    const listName = 'Test[List](123)';
+    const input: ChainType = {
+      request: {
+        user_id: 1,
+        list_name: listName,
+        organization_database: 'test-db',
+        template_id: 1,
+        path: 'path',
+        commodity: 'COCO',
+        saveAsDraft: false,
+      },
+    };
+
+    (getListByFilters as jest.Mock).mockResolvedValue(false);
+
+    const response = await listSchema.handle(input);
+    const request = response.request as RequestNewList;
+
+    expect(request.listTable).toBe('list-test[list](123)');
+    expect(request.analysisTable).toBe('analysis-test[list](123)');
   });
 
   it('should call super.handle with correct parameters if list name does not exist', async () => {

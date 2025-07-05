@@ -10,11 +10,6 @@ const buildTrimmedRegexStringSchema = (regex: RegExp, message: string) =>
       message: 'Leading or trailing spaces are not allowed',
     });
 
-export const alphanumericWithSpaceSchema = buildTrimmedRegexStringSchema(
-  /^[a-zA-Z0-9 ]*$/,
-  'Only letters, numbers, and spaces are allowed'
-);
-
 export const extendedLocationNameSchema = buildTrimmedRegexStringSchema(
   /^[a-zA-Z0-9 [\]().\-_]*$/,
   'Only letters, numbers, spaces, and []().-_ are allowed'
@@ -52,3 +47,8 @@ export const coordinateSchema = z.object({
 export const locationNameSchema = extendedLocationNameSchema.refine((val) => val.trim() !== '', {
   message: 'Enter location name',
 });
+
+export const listNameSchema = buildTrimmedRegexStringSchema(
+  /^[a-zA-ZÀ-ÿ0-9 [\]()\-_]*$/,
+  'Only letters (including accented characters), numbers, spaces, brackets [], parentheses (), dashes (-), and underscores (_) are allowed'
+);

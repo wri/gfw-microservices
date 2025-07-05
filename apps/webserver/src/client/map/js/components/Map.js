@@ -40,6 +40,10 @@ import {
   toggleHighConfidenceAlertsForDeforestationAlertsLayers,
   updateAnalysis,
   updateGFWLocations,
+  updateCanopyDensity,
+  updateTreeCoverLossCanopyDensity,
+  toggleCanopyModal,
+  toggleTreeCoverLossCanopyModal,
 } from '../actions/mapActions';
 import * as analysisActions from '../actions/analysisActions';
 
@@ -54,6 +58,7 @@ import {
   gfwListsZoomTargets,
 } from '../../../common/js/proLayers.config';
 import { mapLayersMenu } from '../../../common/js/mapLayersMenu.config';
+
 import {
   centroidHighlightSymb,
   centroidSymbol,
@@ -92,7 +97,7 @@ import LossControls from './layerPanel/LossControls';
 import ProdesControls from './layerPanel/ProdesControls';
 import DrawShapeNoteDetailsModal from './modals/DrawShapeNoteDetailsModal';
 import BasemapModal from './modals/BasemapModal';
-import CanopyModal from './modals/CanopyModal';
+import { CanopyModal } from './modals/CanopyModal';
 import InfoModal from './modals/InfoModal';
 import LayerModal from './modals/LayerModal';
 import SearchModal from './modals/SearchModal';
@@ -113,6 +118,7 @@ import {
   PLANET_BASEMAP_REFERENCE_LAYER,
   PLANET_BASEMAP_REFERENCE_LAYER_VECTOR_TILE_STYLE,
   USER_LIST_LOCATIONS_GRAPHICS_LAYER_ID,
+  MAP_WATER_COLOR,
 } from '../config/map.config';
 
 // Services
@@ -218,6 +224,10 @@ class Map extends Component {
 
       drawnCoordinates: [],
       isMapCentered: true,
+      mapCenter: {
+        center: DEFAULT_MAPVIEW_CENTER,
+        zoom: 3,
+      },
     });
     this.eventHandlers = [];
     this.sketchViewModel = null;
@@ -267,7 +277,7 @@ class Map extends Component {
       zoom: zoom ? zoom - 1 : 3,
       ...(isGadm41Available && {
         background: {
-          color: '#b9defa',
+          color: MAP_WATER_COLOR,
         },
       }),
       map: esriMap,
@@ -280,10 +290,46 @@ class Map extends Component {
     });
     this.mapView = mapView;
 
+    let lastCenterKey = null;
+    let isFixingZoom = false;
+
+    this.mapView.watch('stationary', async (isStationary) => {
+      // Workaround for missing tiles in the gadm_administrative_boundaries basemap at high zoom levels (max zoom: 10).
+      // When zooming in too far, the layer doesn't render. To fix this, briefly zoom out to load tiles, then zoom back in.
+      if (!isStationary || isFixingZoom) {
+        return;
+      }
+
+      const currentZoom = this.mapView.zoom;
+      const center = this.mapView.center;
+      const centerKey = `${center.latitude.toFixed(5)}_${center.longitude.toFixed(5)}`;
+
+      if (lastCenterKey === centerKey || currentZoom <= 10) {
+        this.setState({ isMapMoving: false });
+        return;
+      }
+      // Wait a moment to ensure rendering
+      await new Promise((r) => setTimeout(r, 400));
+      isFixingZoom = true;
+
+      try {
+        // Step 1: temporary zoom-out
+        await this.mapView.goTo({ center, zoom: 9 }, { animate: false });
+
+        // Step 2: short delay and return to original zoom
+        await new Promise((r) => setTimeout(r, 500));
+        await this.mapView.goTo({ center, zoom: currentZoom }, { animate: false });
+
+        lastCenterKey = centerKey;
+      } finally {
+        isFixingZoom = false;
+        this.setState({ isMapMoving: false });
+      }
+    });
+
     this.eventHandlers.push(this.mapView.on('drag', this.startInteraction));
     this.eventHandlers.push(this.mapView.on('mouse-wheel', this.startInteraction));
     this.eventHandlers.push(this.mapView.on('keyboard', this.startInteraction));
-    this.eventHandlers.push(this.mapView.watch('stationary', this.stopInteraction));
 
     mapView.when(this.mapLoaded);
   }
@@ -291,12 +337,6 @@ class Map extends Component {
   startInteraction = () => {
     if (!this.state.isMapMoving) {
       this.setState({ isMapMoving: true, isMapCentered: false });
-    }
-  };
-
-  stopInteraction = (stationary) => {
-    if (stationary) {
-      this.setState({ isMapMoving: false });
     }
   };
 
@@ -673,7 +713,11 @@ class Map extends Component {
       store.dispatch(showLayerInfo({}));
     }
   };
+  goToOriginalPoint = () => {
+    const { mapCenter } = this.state;
 
+    this.view.goTo(mapCenter);
+  };
   mapLoaded = (view) => {
     const { userInfo } = this.state;
     const { access_level_id } = userInfo;
@@ -696,13 +740,6 @@ class Map extends Component {
     this.addCustomBasemaps(view);
 
     this.view = view;
-
-    this.goToOriginalPoint = () => {
-      this.view.goTo({
-        center: DEFAULT_MAPVIEW_CENTER,
-        zoom: 3,
-      });
-    };
 
     const customActions = [popupAnalyzeAction];
     if (access_level_id !== 3) {
@@ -1709,22 +1746,31 @@ class Map extends Component {
     // Sort constructed layers
     layers.sort((a, b) => a.order - b.order);
 
-    this.view.popup.watch('selectedFeatureIndex', (index) => {
-      const selectedFeat = this.view.popup.features[index];
-      if (selectedFeat) {
-        const currentForestChange = visibleLayers.some((layer) => exclusiveLayers.includes(layer));
-        this.view.popup.actions.forEach((action) => {
-          if (selectedFeat.layerName === viirsActiveFiresID) {
-            action.visible = false;
-          } else {
-            action.visible =
-              (action.id === 'ANALYZE' && currentForestChange) ||
-              (action.id === 'ADD LOCATION' &&
-                noLocationLayers.indexOf(selectedFeat.layerName) === -1 &&
-                selectedFeat.attributes?.adm_level !== '0');
-          }
-        });
+    this.view.popup.watch('visible', (visible) => {
+      if (!visible) {
+        return;
       }
+
+      const selectedFeat = this.view.popup.selectedFeature || this.view.popup.features?.[0];
+      if (!selectedFeat) {
+        return;
+      }
+
+      const isPointGeometry = selectedFeat.geometry?.type === 'point';
+      const currentForestChange = visibleLayers.some((layer) => exclusiveLayers.includes(layer));
+
+      this.view.popup.actions.forEach((action) => {
+        if (selectedFeat.layerName === viirsActiveFiresID) {
+          action.visible = false;
+        } else {
+          action.visible =
+            (action.id === 'ANALYZE' && currentForestChange && !isPointGeometry) ||
+            (action.id === 'ADD LOCATION' &&
+              !noLocationLayers.includes(selectedFeat.layerName) &&
+              selectedFeat.attributes?.adm_level !== '0' &&
+              !isPointGeometry);
+        }
+      });
     });
 
     layersToAdd = layerFactory(
@@ -1762,7 +1808,7 @@ class Map extends Component {
         gfwLayer.opacity = 0;
       }
       try {
-        let zoomTarget;
+        let mapCenter;
         if (locationIDs.length && locationIDs.length < 200) {
           // Zoom to locations only if we have less than 200 locations and more than 0
 
@@ -1807,19 +1853,19 @@ class Map extends Component {
               combinedExtent = combinedExtent.union(extents[i]);
             }
 
-            zoomTarget = {
+            mapCenter = {
               target: combinedExtent.expand(1.2),
             };
           }
         } else if (gfwLayer) {
-          zoomTarget = gfwListsZoomTargets[gfwLayer.id];
+          mapCenter = gfwListsZoomTargets[gfwLayer.id];
         }
 
-        this.goToOriginalPoint = () => {
-          this.view.goTo(zoomTarget);
-        };
+        if (mapCenter) {
+          this.setState({ mapCenter });
 
-        this.view.goTo(zoomTarget);
+          this.view.goTo(mapCenter);
+        }
       } catch (e) {
         console.log(e);
         throw new Error('Fetching Zoom in BBOX values for GFW List locations failed.');
@@ -1951,24 +1997,30 @@ class Map extends Component {
               },
             ];
             const { transitionListData } = this.state;
-            this.goToOriginalPoint = () => {
-              setVectorTileLayerForFilteredList(
-                selectedLocationsData,
-                transitionListData,
-                this.view
-              );
-            };
 
-            setVectorTileLayerForFilteredList(selectedLocationsData, transitionListData, this.view);
+            setVectorTileLayerForFilteredList(
+              selectedLocationsData,
+              transitionListData,
+              this.view
+            ).then((mapCenter) => {
+              this.setState({ mapCenter });
+
+              this.view.goTo(mapCenter);
+            });
+
             store.dispatch(addList(userList));
             return;
           }
           const { transitionListData } = this.state;
 
-          this.goToOriginalPoint = async () => {
-            setVectorTileLayerForFullList(selectedListData, transitionListData, this.view);
-          };
-          setVectorTileLayerForFullList(selectedListData, transitionListData, this.view);
+          setVectorTileLayerForFullList(selectedListData, transitionListData, this.view).then(
+            (mapCenter) => {
+              this.setState({ mapCenter });
+
+              this.view.goTo(mapCenter);
+            }
+          );
+
           store.dispatch(addList(userList));
         }
         if (hashLayersToAdd.length > 0) {
@@ -2165,10 +2217,11 @@ class Map extends Component {
       } else {
         const listData = JSON.parse(request.responseText);
         const { transitionListData } = this.state;
-        this.goToOriginalPoint = () => {
-          setVectorTileLayerForFullList(listData, transitionListData, this.view);
-        };
-        setVectorTileLayerForFullList(listData, transitionListData, this.view);
+
+        setVectorTileLayerForFullList(listData, transitionListData, this.view).then((mapCenter) => {
+          this.setState({ mapCenter });
+          this.view.goTo(mapCenter);
+        });
       }
     };
     request.onerror = (err) => {
@@ -2323,12 +2376,7 @@ class Map extends Component {
     });
 
     const planetBasemapReferenceLayer = this.view.map.findLayerById(PLANET_BASEMAP_REFERENCE_LAYER);
-    if (id === PLANET_BASEMAP) {
-      planetBasemapReferenceLayer.visible = true;
-      this.view.map.findLayerById('dark-matter').visible = true;
-    } else {
-      planetBasemapReferenceLayer.visible = false;
-    }
+    planetBasemapReferenceLayer.visible = id === PLANET_BASEMAP;
 
     this.forceUpdate();
     gtag('event', 'basemap change', {
@@ -2374,10 +2422,12 @@ class Map extends Component {
       visibleLayerInfo,
       visibleBasemapInfo,
       canopyModalVisible,
+      treeCoverLossCanopyModalVisible,
       drawShapeNoteDetailsModalVisible,
       panelsVisible,
       searchVisible,
       canopyDensity,
+      treeCoverLossCanopyDensity,
       drawingActive,
       gladDateRange,
       biomassRange,
@@ -2530,11 +2580,26 @@ class Map extends Component {
         >
           <BasemapModal content={visibleBasemapInfo} />
         </div>
-        <div
-          className={`layer-modal-container modal-wrapper ${canopyModalVisible ? '' : 'hidden'}`}
-        >
-          <CanopyModal content={canopyDensity} />
-        </div>
+        {treeCoverLossCanopyModalVisible && (
+          <div className="layer-modal-container modal-wrapper">
+            <CanopyModal
+              id="tree-cover-loss"
+              sliderValue={treeCoverLossCanopyDensity}
+              onSliderChange={(value) => store.dispatch(updateTreeCoverLossCanopyDensity(value))}
+              onClose={() => store.dispatch(toggleTreeCoverLossCanopyModal())}
+            />
+          </div>
+        )}
+        {canopyModalVisible && (
+          <div className="layer-modal-container modal-wrapper">
+            <CanopyModal
+              id="tree-cover"
+              sliderValue={canopyDensity}
+              onSliderChange={(value) => store.dispatch(updateCanopyDensity(value))}
+              onClose={() => store.dispatch(toggleCanopyModal())}
+            />
+          </div>
+        )}
         <div
           className={`layer-modal-container modal-wrapper ${
             drawShapeNoteDetailsModalVisible ? '' : 'hidden'
@@ -2572,6 +2637,7 @@ class Map extends Component {
           fireDays={fireDays}
           treeCoverLossDateRange={treeCoverLossDateRange}
           canopyDensity={canopyDensity}
+          treeCoverLossCanopyDensity={treeCoverLossCanopyDensity}
           sketchTool={sketchTool}
           setLocationName={this.setLocationName}
           userInfo={userInfo}
@@ -2589,6 +2655,7 @@ class Map extends Component {
         <Legend
           panelsVisible={panelsVisible}
           canopyDensity={canopyDensity}
+          treeCoverLossCanopyDensity={treeCoverLossCanopyDensity}
           iconLoading={iconLoading}
           mapLayers={mapLayers}
           gfwListDef={gfwListDef}

@@ -40,3 +40,7 @@ export const DATA_CY = {
     },
   },
 };
+
+export const ExternalLinks = {
+  ZendeskSupport: 'https://gfwpro.zendesk.com/hc/en-us/requests/new',
+};

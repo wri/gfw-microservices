@@ -1,11 +1,13 @@
+import { Component } from 'react';
 import ModalWrapper from './ModalWrapper';
 import { toggleSearch } from '../../actions/mapActions';
 import store from '../../store';
 import Search from '@arcgis/core/widgets/Search';
 import FeatureLayer from '@arcgis/core/layers/FeatureLayer';
-import { Component } from 'react';
 import { proLayers } from '../../../../common/js/proLayers.config';
-import createAdminAreasSearchSource from './createAdminAreasSearchSource';
+import createSearchSource from './createSearchSource';
+import createWorldGeocodingSource from './createWorldGeocodingSource';
+import { dms2Deg, getAdministrativeAreaName } from './searchUtils';
 import featureFlags from '../../../../../utils/general.utils';
 import './SearchModal.scss';
 
@@ -14,6 +16,7 @@ const tabs = ['Search', 'Coordinates', 'Decimal Degrees'];
 const animationOptions = { duration: 300 };
 
 const gadm36Sources = [
+  // to be deleted when the isGadm41Available feature flag is removed
   {
     layer: new FeatureLayer({
       url: 'https://gfwpro-gis.globalforestwatch.org/arcgis/rest/services/GADM36_admin/MapServer/6',
@@ -88,34 +91,42 @@ const gadm36Sources = [
     placeholder: 'Search sub-state',
     maxSuggestions: 4,
   },
+  {
+    layer: new FeatureLayer({
+      url: 'https://gis-gfw.wri.org/arcgis/rest/services/commodities/MapServer/25',
+      id: `${proLayers.oilPalmConcessions}_feat`,
+    }),
+    searchFields: ['name', 'company', 'group_comp', 'subgroup'],
+    suggestionTemplate:
+      'Mill Name: {name}, Company: {company}, Group: {group_comp}, Subgroup: {subgroup}',
+    outFields: ['name', 'company', 'group_comp', 'subgroup', 'globalid'],
+    name: 'Oil Palm Concessions',
+    placeholder: 'Search Oil Palm Concessions',
+  },
+  {
+    layer: new FeatureLayer({
+      url: 'https://gis-gfw.wri.org/arcgis/rest/services/commodities/MapServer/25',
+      id: `${proLayers.rspoConcessions}_feat`,
+    }),
+    searchFields: ['name', 'company', 'group_comp', 'subgroup'],
+    suggestionTemplate:
+      'Mill Name: {name}, Company: {company}, Group: {group_comp}, Subgroup: {subgroup}',
+    outFields: ['name', 'company', 'group_comp', 'subgroup', 'globalid'],
+    name: 'RSPO Concessions',
+    placeholder: 'Search RSPO Concessions',
+  },
+  {
+    layer: new FeatureLayer({
+      url: 'https://gis-gfw.wri.org/arcgis/rest/services/conservation/MapServer/7',
+      id: `${proLayers.protectedAreas}_feat`,
+    }),
+    searchFields: ['name', 'orig_name'],
+    suggestionTemplate: 'Name: {name}, Original Name: {orig_name}',
+    outFields: ['name', 'orig_name', 'globalid'],
+    name: 'Protected Areas',
+    placeholder: 'Search Protected Areas',
+  },
 ];
-
-// REFERENCE: https://stackoverflow.com/a/5971628
-function dms2Deg(s) {
-  // Determine if south latitude or west longitude
-  var sw = /[sw]/i.test(s);
-
-  // Determine sign based on sw (south or west is -ve)
-  var f = sw ? -1 : 1;
-
-  // Get into numeric parts
-  var bits = s.match(/[\d.]+/g) || [];
-
-  var result = 0;
-
-  // Convert to decimal degrees
-  for (var i = 0, iLen = bits.length; i < iLen; i++) {
-    // String conversion to number is done by division
-    // To be explicit (not necessary), use
-    //   result += Number(bits[i])/f
-    result += bits[i] / f;
-
-    // Divide degrees by +/- 1, min by +/- 60, sec by +/-3600
-    f *= 60;
-  }
-
-  return result;
-}
 
 export default class SearchModal extends Component {
   constructor(props) {
@@ -138,78 +149,36 @@ export default class SearchModal extends Component {
       container: 'search-widget',
       minSuggestCharacters: 3,
       includeDefaultSources: false,
-
       sources: [
-        ...(isGadm41Available ? [createAdminAreasSearchSource()] : gadm36Sources),
-        {
-          url: 'https://geocode-api.arcgis.com/arcgis/rest/services/World/GeocodeServer',
-          singleLineFieldName: 'SingleLine',
-          outFields: ['Addr_type'],
-          maxSuggestions: 3,
-          name: 'Address Search',
-          localSearchOptions: {
-            minScale: 300000,
-            distance: 50000,
-          },
-          placeholder: 'Find address or place',
-        },
-        {
-          layer: new FeatureLayer({
-            url: 'https://gis-gfw.wri.org/arcgis/rest/services/commodities/MapServer/34',
-            id: `${proLayers.universalMillList}_feat`,
-          }),
-          searchFields: ['mill_name', 'prnt_comp', 'id'],
-          suggestionTemplate:
-            'Mill Name: {mill_name}, Parent Company: {prnt_comp}, Universal Mill Id: {id}',
-          outFields: ['Mill_Name', 'Prnt_Comp', 'ID', 'globalid'],
-          name: 'Universal Mill List',
-          placeholder: 'Search Universal Mill Lists',
-        },
-        {
-          layer: new FeatureLayer({
-            url: 'https://gis-gfw.wri.org/arcgis/rest/services/commodities/MapServer/25',
-            id: `${proLayers.oilPalmConcessions}_feat`,
-          }),
-          searchFields: ['name', 'company', 'group_comp', 'subgroup'],
-          suggestionTemplate:
-            'Mill Name: {name}, Company: {company}, Group: {group_comp}, Subgroup: {subgroup}',
-          outFields: ['name', 'company', 'group_comp', 'subgroup', 'globalid'],
-          name: 'Oil Palm Concessions',
-          placeholder: 'Search Oil Palm Concessions',
-        },
-        {
-          layer: new FeatureLayer({
-            url: 'https://gis-gfw.wri.org/arcgis/rest/services/commodities/MapServer/25',
-            id: `${proLayers.rspoConcessions}_feat`,
-          }),
-          searchFields: ['name', 'company', 'group_comp', 'subgroup'],
-          suggestionTemplate:
-            'Mill Name: {name}, Company: {company}, Group: {group_comp}, Subgroup: {subgroup}',
-          outFields: ['name', 'company', 'group_comp', 'subgroup', 'globalid'],
-          name: 'RSPO Concessions',
-          placeholder: 'Search RSPO Concessions',
-        },
-        {
-          layer: new FeatureLayer({
-            url: 'https://gis-gfw.wri.org/arcgis/rest/services/conservation/MapServer/7',
-            id: `${proLayers.protectedAreas}_feat`,
-          }),
-          searchFields: ['name', 'orig_name'],
-          suggestionTemplate: 'Name: {name}, Original Name: {orig_name}',
-          outFields: ['name', 'orig_name', 'globalid'],
-          name: 'Protected Areas',
-          placeholder: 'Search Protected Areas',
-        },
-        {
-          layer: new FeatureLayer({
-            url: 'https://gis-gfw.wri.org/arcgis/rest/services/people/MapServer/1',
-          }),
-          searchFields: ['name'],
-          suggestionTemplate: 'Name: {name}',
-          outFields: ['name'],
-          name: 'Land Rights',
-          placeholder: 'Search Land Rights',
-        },
+        ...(isGadm41Available
+          ? [
+              createSearchSource(
+                'Administrative Areas',
+                '/map/gadm-admininstrative-boundaries',
+                getAdministrativeAreaName,
+                0
+              ),
+              createSearchSource(
+                'Universal Mill List',
+                '/map/gfw_universal_mill_list',
+                (item) => item.mill_name,
+                1
+              ),
+              createSearchSource(
+                'Indigenous or Community land area',
+                '/map/landmark_indigenous_and_community_lands',
+                (item) => item.name,
+                2
+              ),
+              createSearchSource(
+                'Protected Areas',
+                '/map/wdpa_licensed_protected_areas',
+                (item) => item.name,
+                3
+              ),
+            ]
+          : gadm36Sources),
+        createWorldGeocodingSource(4),
       ],
     });
 

@@ -5,7 +5,7 @@ import { handleUserListLocationsVectorTileLayer } from '../../../common/js/userL
 const setVectorTileLayerForFullList = async (listData, transitionListData, view) => {
   const listID = listData[0].features[0].properties.list_id;
 
-  await handleUserListLocationsVectorTileLayer(view, listID);
+  const mapCenter = await handleUserListLocationsVectorTileLayer(view, listID);
 
   const userLayer = view.map.findLayerById(USER_LIST_LOCATIONS_GRAPHICS_LAYER_ID);
   userLayer.removeAll();
@@ -31,10 +31,7 @@ const setVectorTileLayerForFullList = async (listData, transitionListData, view)
   userLayer.addMany([...centroidGraphics]);
 
   const alertsMapExtent = transitionListData?.alertsMapExtent;
-
-  if (alertsMapExtent) {
-    view.goTo(alertsMapExtent);
-  }
+  return alertsMapExtent || mapCenter;
 };
 
 export default setVectorTileLayerForFullList;

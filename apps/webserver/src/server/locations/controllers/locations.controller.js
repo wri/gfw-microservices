@@ -40,72 +40,97 @@ const AWSSES = require(path.resolve('./config/privateutils/ses.utils'));
  * @param req - Express request object
  * @param res - Express response object
  */
-export const locations = (req, res, data) => {
-  const isAdministrator = UserManager.isAdministrator(req);
-  const fromMap = data && data.fromMap ? data.fromMap : false;
-  const subscriptionStatus = data && data.subscriptionStatus ? data.subscriptionStatus : 1;
+export const locations = async (req, res) => {
+  try {
+    const userInfo = await AuthManager.getUserInfo(req);
 
-  const promises = [
-    LocationManager.getAllTemplateData(req),
-    LocationManager.getAllTemplateDropdowns(req),
-    ListManager.getUserListsWithAnalysisId(req),
-    AuthManager.getUserInfo(req),
-    ListManager.getLocationsCount(req),
-    ListManager.getAllListsWithAnalysisId(req),
-    GFWlistManager.getGFWLists(req),
-    AccountManager.getUsersList(req),
-    ShareManager.getUserInternalShareLists(req, req.session.organization_user_id),
-  ];
+    const renderOptions = {
+      // UI assets
+      common: compiledAssets.js.common,
+      locationsjs: compiledAssets.js.locations,
+      locationscss: compiledAssets.css.locations,
+      // Environment and state
+      userInfo,
+      CURRENT_ENVIRONMENT: process.env.NODE_ENV,
+      organizationId: req.session.organization_id,
+    };
 
-  Promise.all(promises)
-    .then((results) => {
-      const [
-        templateData,
-        templateDropdowns,
-        userLists,
-        userInfo,
-        locationCount,
-        orgLists,
-        gfwLists,
-        usersList,
-        sharedListsRecords,
-      ] = results;
-      const listStatuses = UserManager.getStatuses();
+    res.render('locations', renderOptions);
+  } catch (err) {
+    logger.error(`Locations page failed on the server:, ${err}`);
 
-      const userSharedLists = findSharedListsInsideOrganization(sharedListsRecords, orgLists);
-      res.render('locations', {
-        templateData,
-        templateDropdowns,
-        userLists,
-        userSharedLists: isAdministrator ? [] : userSharedLists,
-        userInfo,
-        organizationId: req.session.organization_id,
-        locationCount,
-        orgLists,
-        gfwLists,
-        usersList: isAdministrator ? usersList : [],
-        common: compiledAssets.js.common,
-        locationsjs: compiledAssets.js.locations,
-        locationscss: compiledAssets.css.locations,
-        fromMap,
-        listStatuses,
-        CURRENT_ENVIRONMENT: process.env.NODE_ENV,
-        subscriptionStatus,
-      });
-    })
-    .catch((err) => {
-      logger.error(`Locations page failed on the server:, ${err}`);
-      const markup = compiledAssets.js['login-component']
-        ? renderToString(createElement(compiledAssets.js['login-component'].default))
-        : '';
-      console.log('Locations page failed on the server:', err);
-      res.render('login', {
-        critical: compiledAssets.css['login/css/login.scss'],
-        common: compiledAssets.js.common,
-        loginjs: compiledAssets.js.login,
-        markup,
-      });
+    const markup = compiledAssets.js['login-component']
+      ? renderToString(createElement(compiledAssets.js['login-component'].default))
+      : '';
+
+    res.render('login', {
+      critical: compiledAssets.css['login/css/login.scss'],
+      common: compiledAssets.js.common,
+      loginjs: compiledAssets.js.login,
+      markup,
     });
+  }
+};
+
+/**
+ * @function locationsData
+ * @param req - Express request object
+ * @param res - Express response object
+ */
+export const locationsData = async (req, res) => {
+  const isAdministrator = UserManager.isAdministrator(req);
+
+  try {
+    const promises = [
+      LocationManager.getAllTemplateData(req),
+      LocationManager.getAllTemplateDropdowns(req),
+      ListManager.getUserListsWithAnalysisId(req),
+      AuthManager.getUserInfo(req),
+      ListManager.getLocationsCount(req),
+      ListManager.getAllListsWithAnalysisId(req),
+      GFWlistManager.getGFWLists(req),
+      isAdministrator ? AccountManager.getUsersList(req) : () => Promise.resolve([]),
+      isAdministrator
+        ? ShareManager.getUserInternalShareLists(req, req.session.organization_user_id)
+        : () => Promise.resolve([]),
+    ];
+    const listStatuses = UserManager.getStatuses();
+
+    const [
+      templateData,
+      templateDropdowns,
+      userLists,
+      userInfo,
+      locationCount,
+      orgLists,
+      gfwLists,
+      usersList,
+      sharedListsRecords,
+    ] = await Promise.all(promises);
+
+    const userSharedLists = findSharedListsInsideOrganization(sharedListsRecords, orgLists);
+
+    res.status(200).send({
+      templateData,
+      templateDropdowns,
+      userLists,
+      userInfo,
+      organizationId: req.session.organization_id,
+      locationCount,
+      orgLists,
+      gfwLists,
+      userSharedLists,
+      usersList,
+      listStatuses,
+      CURRENT_ENVIRONMENT: process.env.NODE_ENV,
+    });
+  } catch (error) {
+    logger.error(`Locations data failed on the server:, ${error}`);
+
+    res.status(500).send({
+      error: 'Failed loading locations page data',
+    });
+  }
 };
 
 /**

@@ -305,10 +305,6 @@ export const createFeatureProps = (
   }
 };
 
-export const GetTemplateId = (templateData) => {
-  return templateData && templateData.length > 0 ? templateData[0].template_id : -1;
-};
-
 export const UnlockLists = (clientDatabase: string, listsIds: number[]) => {
   const listsToUnlock = [];
   for (const listsId of listsIds) {
@@ -467,15 +463,17 @@ export async function setListAnalysisStatus(
         const existingRecord = await listAnalysisStatusRepository.findOne({
           where: { listId, analysisId },
         });
-
-        if (existingRecord) {
-          await listAnalysisStatusRepository.update({ listId, analysisId }, value);
-        } else {
-          await listAnalysisStatusRepository.save({
-            listId,
-            analysisId,
-            ...value,
-          });
+        // Update or save GHG record only for EAPI
+        if (isFromEAPI || analysisId !== analysisTypes.GREENHOUSE_GAS_EMISSIONS) {
+          if (existingRecord) {
+            await listAnalysisStatusRepository.update({ listId, analysisId }, value);
+          } else {
+            await listAnalysisStatusRepository.save({
+              listId,
+              analysisId,
+              ...value,
+            });
+          }
         }
       })
   );
@@ -488,7 +486,10 @@ export async function setListAnalysisStatusByTypes(
   status: number = listStatus.Pending,
   isFromEAPI = false
 ) {
-  const analysisTypesToUpdate = analysisTypesToProcess.split(',');
+  const analysisTypesToUpdate = analysisTypesToProcess
+    .split(',')
+    .map((type) => type.trim())
+    .filter(Boolean);
   return await setListAnalysisStatus(
     clientDatabase,
     listId,

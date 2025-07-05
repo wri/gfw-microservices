@@ -11,7 +11,6 @@ import {
   ListHasFiltersApplies,
   CheckListNameIsValid,
   createFeatureProps,
-  GetTemplateId,
   setListAnalysisStatus,
 } from './list.utils';
 import { listStatus } from '@wri-monorepos/constants';
@@ -173,21 +172,6 @@ describe('List Utils', () => {
 
     it('should not throw error for valid list name', () => {
       expect(() => CheckListNameIsValid('new', 'Test List', [])).not.toThrow();
-    });
-  });
-
-  describe('GetTemplateId', () => {
-    it('should return template id from template data', () => {
-      const templateData = [{ template_id: 123 }];
-      expect(GetTemplateId(templateData)).toBe(123);
-    });
-
-    it('should return -1 when template data is empty', () => {
-      expect(GetTemplateId([])).toBe(-1);
-    });
-
-    it('should return -1 when template data is null', () => {
-      expect(GetTemplateId(null)).toBe(-1);
     });
   });
 

@@ -9,6 +9,7 @@ import {
   getLayerInfo,
   showBasemapInfo,
   toggleCanopyModal,
+  toggleTreeCoverLossCanopyModal,
   updateGFWLocations,
   updateSoyYear,
 } from '../../actions/mapActions';
@@ -23,6 +24,7 @@ const {
   viirsActiveFiresID,
   aboveGroundBiomassId,
   treeBiomassLossID,
+  treeCoverLossID,
   soyPlantedArea,
   clarkLabsAquacultureLandCover,
   clarkLabsAquacultureLandChange,
@@ -119,8 +121,12 @@ export default class LegendCheckbox extends Component {
     }
   };
 
-  toggleCanopyModal = () => {
+  handleToggleCanopyModal = () => {
     store.dispatch(toggleCanopyModal());
+  };
+
+  handleToggleTreeCoverLossCanopyModal = () => {
+    store.dispatch(toggleTreeCoverLossCanopyModal());
   };
 
   toggleLayerVisibility = async () => {
@@ -226,6 +232,7 @@ export default class LegendCheckbox extends Component {
           ? 'hidden'
           : '';
     }
+    const isInfoButtonVisible = !!layer.metadataId;
     return (
       <div
         className={`legend-list-item ${layer.group} ${grayed} ${hidden}`}
@@ -258,16 +265,18 @@ export default class LegendCheckbox extends Component {
             </svg>
           </span>
         ) : null}
-        <span
-          className={`info-icon metadata-legend pointer ${
-            iconLoading === layer.id ? 'iconLoading' : ''
-          }`}
-          onClick={this.showInfo}
-        >
-          <svg>
-            <use xlinkHref="#shape-info" />
-          </svg>
-        </span>
+        {isInfoButtonVisible && (
+          <span
+            className={`info-icon metadata-legend pointer ${
+              iconLoading === layer.id ? 'iconLoading' : ''
+            }`}
+            onClick={this.showInfo}
+          >
+            <svg>
+              <use xlinkHref="#shape-info" />
+            </svg>
+          </span>
+        )}
 
         <span className="info-icon pointer" onClick={this.hideLayer}>
           <svg>
@@ -309,7 +318,7 @@ export default class LegendCheckbox extends Component {
           <p className="layer-legend-message">
             {mapPage.groundBiomassStart}
             <span
-              onClick={this.toggleCanopyModal}
+              onClick={this.handleToggleCanopyModal}
               className="layer-legend-loss-display"
             >{`>${this.props.canopyDensity}%`}</span>
             {mapPage.densityLossEnd}
@@ -319,9 +328,19 @@ export default class LegendCheckbox extends Component {
           <p className="layer-legend-message">
             {mapPage.densityLossStart}
             <span
-              onClick={this.toggleCanopyModal}
+              onClick={this.handleToggleCanopyModal}
               className="layer-legend-loss-display"
             >{`>${this.props.canopyDensity}%`}</span>
+            {mapPage.densityLossEnd}
+          </p>
+        ) : null}
+        {layer.id === treeCoverLossID ? (
+          <p className="layer-legend-message">
+            Displaying loss with
+            <span
+              onClick={this.handleToggleTreeCoverLossCanopyModal}
+              className="layer-legend-loss-display"
+            >{`>${this.props.treeCoverLossCanopyDensity}%`}</span>
             {mapPage.densityLossEnd}
           </p>
         ) : null}
@@ -391,7 +410,7 @@ export default class LegendCheckbox extends Component {
         ) : null}
         {layer.id === viirsActiveFiresID ? (
           <p className="layer-legend-message">
-            For more infromation about this layer{' '}
+            For more information about this layer{' '}
             <a
               href="http://fires.globalforestwatch.org/home/"
               target="_blank"

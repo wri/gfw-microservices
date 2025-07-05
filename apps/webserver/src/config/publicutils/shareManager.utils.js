@@ -381,6 +381,9 @@ export const getAllUsersForSharedList = async (req, list_id) => {
  * @returns {Array} - All user shared lists
  */
 export const findSharedListsInsideOrganization = (sharedListsRecords, allLists) => {
+  if (!Array.isArray(sharedListsRecords) || !Array.isArray(allLists)) {
+    return [];
+  }
   const sharedListsIDs = sharedListsRecords.map((list) => list.list_id);
   return allLists.filter((list) => sharedListsIDs.includes(list.id));
 };

@@ -1,6 +1,7 @@
 import { Inject, Injectable } from '@nestjs/common';
 import {
   DataSource,
+  EntityManager,
   FindManyOptions,
   Repository,
   SelectQueryBuilder,
@@ -87,9 +88,16 @@ export abstract class MultiConnectRepository<T> {
   }
 
   private _mapFieldsToQuery(repository: Repository<T>, query) {
-    const metadata = repository.manager.connection.getMetadata(
-      this.repository.target,
-    );
+    const manager = repository.manager as EntityManager & {
+      dataSource?: DataSource;
+    };
+    const dataSource = manager.dataSource ?? (manager as any).connection;
+
+    if (!dataSource) {
+      throw new Error('Unable to access DataSource from repository manager');
+    }
+
+    const metadata = dataSource.getMetadata(this.repository.target);
     const columns = metadata.columns.reduce((acc, column) => {
       acc[column.propertyName] = column.databaseNameWithoutPrefixes;
       return acc;

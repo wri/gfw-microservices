@@ -91,6 +91,28 @@ describe('UploadLocationPreviewErrorMessage', () => {
     ).toBeInTheDocument();
   });
 
+  it('should render UML ID error message', () => {
+    const error = {
+      errors: ['UML LookUp: did not found lat/long for some-id'],
+    };
+
+    render(
+      <UploadLocationPreviewErrorMessage
+        error={error}
+        keyFile="data.csv"
+        onRetryUpload={mockRetryUpload}
+        onRetryPreviewData={mockRetryPreviewData}
+      />
+    );
+
+    expect(screen.getByText(/invalid file/i)).toBeInTheDocument();
+    expect(
+      screen.getByText(
+        /your location does not have a valid UML ID. Please ensure the ID data you entered exists in the Universal Mill List./i
+      )
+    ).toBeInTheDocument();
+  });
+
   it('should render platform error message for unknown errors', () => {
     const error = {
       errors: ['Random error'],

@@ -11,6 +11,7 @@ import {
   updateListsAnalysisStatus,
   upgradeListSchema,
   User,
+  getListAnalysisStatusById as getAllListsAnalysisStatusSql,
 } from '@wri-monorepos/sql';
 import {
   GEO_TRELLIS__ANALYZE_LIST_DEV,
@@ -48,7 +49,6 @@ export const MARK_IS_TEST_USER = 'dt_';
 
 const environmentAllowTestFlow = ['DEVELOPMENT', 'LATEST', 'QA', 'STAGING'];
 
-import { getListAnalysisStatusById as getAllListsAnalysisStatusSql } from '@wri-monorepos/sql';
 export const getAllListsAnalysisStatus = async (
   clientDatabase: string,
   listId = null
@@ -76,7 +76,7 @@ export const getListAnalysisStatusByListId = async (
     const parameters = [{ field: 'ListID', type: sql.Int, value: listId }];
     const analysisStatusData = await SQLUtils.queryDB<ListsAnalysisStatus[]>(
       clientDatabase,
-      'getListAnalysisStatusById',
+      getAllListsAnalysisStatusSql,
       parameters
     );
 
@@ -97,7 +97,7 @@ export const setSelectedAnalyses = async (
   if (!analysisStatusData || analysisStatusData.length === 0) {
     await setListAnalysisStatus(clientDatabase, listId, analysisIds, analysisStatus);
   } else {
-    await updateListAnalysis(clientDatabase, listId, analysisIds, analysisStatusData);
+    await updateListAnalysis(clientDatabase, listId, analysisIds);
   }
 };
 
@@ -179,26 +179,17 @@ export const deleteListAnalyses = async (
 export const addListAnalyses = async (
   clientDatabase: string,
   listId: number,
-  analysisIds: string[],
-  analysisStatusData: ListsAnalysisStatus[]
+  analysisIds: string[]
 ) => {
-  const analysisDataIds = analysisStatusData.map((analysis) => analysis.analysisId);
-
-  for (const element of analysisIds) {
-    if (!analysisDataIds.includes(element)) {
-      await setListAnalysisStatus(clientDatabase, listId, [element], listStatus.Pending);
-    }
-  }
+  await setListAnalysisStatus(clientDatabase, listId, analysisIds, listStatus.Pending);
 };
 
 export const updateListAnalysis = async (
   clientDatabase: string,
   listId: number,
-  analysisIds: string[],
-  analysisStatusData: ListsAnalysisStatus[]
+  analysisIds: string[]
 ) => {
-  await deleteListAnalyses(clientDatabase, listId, analysisIds, analysisStatusData);
-  await addListAnalyses(clientDatabase, listId, analysisIds, analysisStatusData);
+  await addListAnalyses(clientDatabase, listId, analysisIds);
 };
 
 export const handleCreateAnalysis = async (

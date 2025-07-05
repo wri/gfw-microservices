@@ -56,20 +56,9 @@ module.exports = (app, limiter) => {
 
   app.use('/locations', routeMiddlewares);
 
-  app.get('/locations', (req, res) => {
-    const locationsData = {
-      fromMap: app.get('from-map'),
-      subscriptionStatus: req.session.subscription_status_id,
-    };
-
-    controller.locations(req, res, locationsData);
-    // TODO: investigate if the variable from-map works correctly
-    app.set('from-map', false);
-  });
-
-  app.get('/getUserLists', (req, res) => {
-    controller.getUserLists(req, res);
-  });
+  app.get('/locations', controller.locations);
+  app.get('/api/locations', controller.locationsData);
+  app.get('/getUserLists', controller.getUserLists);
 
   app.post('/locations/addToNewList', (req, res) => {
     console.log('POST /locations/addToNewList');
@@ -671,6 +660,7 @@ module.exports = (app, limiter) => {
             break;
           }
           case 'ALERTS': {
+            // this code is currently not being reached, until we add an Alerts tab to /list-details
             const analysisManagerResult = await AnalysisManager.getDashboardDataPaginatedByList(
               listID,
               page,
@@ -1070,19 +1060,6 @@ module.exports = (app, limiter) => {
       .catch((e) => {
         console.log('Error /locations/getGFWListLocationsGlobalId', e);
         res.send(e);
-      });
-  });
-
-  app.post('/locations/gadm', (req, res) => {
-    console.log('POST /locations/gadm');
-    const { geojson } = req.body;
-    LocationManager.getGADM(req, geojson)
-      .then((clippedGeoJSON) => {
-        res.send(clippedGeoJSON);
-      })
-      .catch((e) => {
-        console.log(e);
-        res.send(false);
       });
   });
 
@@ -1494,8 +1471,14 @@ module.exports = (app, limiter) => {
       });
   });
 
-  app.get(['/locations/upload-location', '/locations/upload-location/*'], (_, res) => {
-    res.redirect('/locations?redirectTo=upload-location');
+  app.get(['/locations/upload-location', '/locations/upload-location/*'], (req, res) => {
+    const queryParams = new URLSearchParams(req.query).toString();
+
+    const redirectUrl = `/locations?redirectTo=upload-location${
+      queryParams ? `&${queryParams}` : ''
+    }`;
+
+    res.redirect(redirectUrl);
   });
 
   app.get('/locations/*', (_, res) => {

@@ -1,39 +1,6 @@
-import { alphanumericWithSpaceSchema, locationNameSchema, coordinateSchema } from './schema';
+import { locationNameSchema, coordinateSchema, listNameSchema } from './schema';
 
 describe('Schema Validation', () => {
-  describe('alphanumericWithSpaceSchema', () => {
-    it('should accept valid alphanumeric strings', () => {
-      expect(alphanumericWithSpaceSchema.safeParse('abc123').success).toBe(true);
-      expect(alphanumericWithSpaceSchema.safeParse('ABC123').success).toBe(true);
-      expect(alphanumericWithSpaceSchema.safeParse('123').success).toBe(true);
-      expect(alphanumericWithSpaceSchema.safeParse('abc 123').success).toBe(true);
-    });
-
-    it('should reject strings with special characters', () => {
-      expect(alphanumericWithSpaceSchema.safeParse('test[123]').success).toBe(false);
-      expect(alphanumericWithSpaceSchema.safeParse('test(123)').success).toBe(false);
-      expect(alphanumericWithSpaceSchema.safeParse('test-123').success).toBe(false);
-      expect(alphanumericWithSpaceSchema.safeParse('test_123').success).toBe(false);
-      expect(alphanumericWithSpaceSchema.safeParse('test.123').success).toBe(false);
-    });
-
-    it('should reject strings with leading or trailing spaces', () => {
-      const leadingSpace = alphanumericWithSpaceSchema.safeParse(' test123');
-      const trailingSpace = alphanumericWithSpaceSchema.safeParse('test123 ');
-      const bothSpaces = alphanumericWithSpaceSchema.safeParse(' test123 ');
-
-      expect(leadingSpace.success).toBe(false);
-      expect(trailingSpace.success).toBe(false);
-      expect(bothSpaces.success).toBe(false);
-
-      if (!leadingSpace.success) {
-        expect(leadingSpace.error.issues[0].message).toBe(
-          'Leading or trailing spaces are not allowed'
-        );
-      }
-    });
-  });
-
   describe('locationNameSchema', () => {
     it('should accept valid location names with extended characters', () => {
       expect(locationNameSchema.safeParse('Farm 123').success).toBe(true);
@@ -121,6 +88,42 @@ describe('Schema Validation', () => {
         longitude: '-120,123456',
       });
       expect(result.success).toBe(false);
+    });
+  });
+
+  describe('listNameSchema', () => {
+    it('should accept valid list names with allowed characters', () => {
+      expect(listNameSchema.safeParse('List 123').success).toBe(true);
+      expect(listNameSchema.safeParse('List-123').success).toBe(true);
+      expect(listNameSchema.safeParse('List_123').success).toBe(true);
+      expect(listNameSchema.safeParse('Listé 123').success).toBe(true);
+      expect(listNameSchema.safeParse('Listê 123').success).toBe(true);
+      expect(listNameSchema.safeParse('Listà 123').success).toBe(true);
+      expect(listNameSchema.safeParse('List[123]').success).toBe(true);
+      expect(listNameSchema.safeParse('List(123)').success).toBe(true);
+    });
+
+    it('should reject periods and other special characters', () => {
+      expect(listNameSchema.safeParse('List.123').success).toBe(false);
+      expect(listNameSchema.safeParse('List@123').success).toBe(false);
+      expect(listNameSchema.safeParse('List#123').success).toBe(false);
+      expect(listNameSchema.safeParse('List$123').success).toBe(false);
+    });
+
+    it('should reject strings with leading or trailing spaces', () => {
+      const leadingSpace = listNameSchema.safeParse(' List123');
+      const trailingSpace = listNameSchema.safeParse('List123 ');
+      const bothSpaces = listNameSchema.safeParse(' List123 ');
+
+      expect(leadingSpace.success).toBe(false);
+      expect(trailingSpace.success).toBe(false);
+      expect(bothSpaces.success).toBe(false);
+
+      if (!leadingSpace.success) {
+        expect(leadingSpace.error.issues[0].message).toBe(
+          'Leading or trailing spaces are not allowed'
+        );
+      }
     });
   });
 });

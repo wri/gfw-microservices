@@ -7,6 +7,7 @@ import {
   getCurrentlySelectedList,
   getSelectedPopupFeatureEsriGraphic,
 } from '../../../common/js/userListLocations/utils/userListLocations.util';
+import { MAP_WATER_COLOR } from '../config/map.config';
 
 /**
  * Get location Geometry from the selected feature
@@ -51,7 +52,7 @@ export const getBasemapConfiguration = () => {
       gadm_administrative_boundaries: {
         type: 'vector',
         tiles: [
-          'https://tiles.globalforestwatch.org/gadm_administrative_boundaries/v4.1.84/default/{z}/{x}/{y}.pbf',
+          'https://tiles.globalforestwatch.org/gadm_administrative_boundaries/v4.1.85/default/{z}/{x}/{y}.pbf',
         ],
         tileSize: 512,
       },
@@ -79,9 +80,27 @@ export const getBasemapConfiguration = () => {
     portalItem: { id: 'ba52238d338745b1a355407ec9df6768' }, // Light Gray Canvas Labels
   });
 
+  const lakesLayer = new VectorTileLayer({
+    portalItem: { id: '6d188135dc814d4ea254440a3dd844df' }, // Environment Surface Water and Label
+  });
+
+  lakesLayer.when(() => {
+    lakesLayer.load().then(() => {
+      const styleLayers = lakesLayer.currentStyleInfo?.style?.layers || [];
+
+      styleLayers.forEach((layer) => {
+        if (layer.type === 'fill' && layer.id.toLowerCase().includes('water')) {
+          lakesLayer.setPaintProperties(layer.id, {
+            'fill-color': MAP_WATER_COLOR,
+          });
+        }
+      });
+    });
+  });
+
   const customBasemap = new Basemap({
     referenceLayers: [labelsLayer],
-    baseLayers: [gadmAdministrativeBoundariesLayer],
+    baseLayers: [gadmAdministrativeBoundariesLayer, lakesLayer],
   });
   return customBasemap;
 };

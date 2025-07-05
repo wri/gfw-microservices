@@ -1,8 +1,14 @@
 const path = require('path');
+const { z } = require('zod');
+
 const controller = require('../controllers/listDetails.controller');
 import { upgradeListSchema } from '@wri-monorepos/sql';
 const middlewares = require(path.resolve('./config/publicutils/middlewares'));
 const rateLimiterUtil = require(path.resolve('./config/lib/limiter-util'));
+
+const querySchema = z.object({
+  listId: z.coerce.number().int().positive('listId must be a positive number'),
+});
 
 /**
  * @name exports
@@ -51,9 +57,15 @@ module.exports = (app, limiter) => {
   });
 
   app.get('/list-details/upgrade-version-2', async (req, res) => {
+    const parseQuery = querySchema.safeParse(req.query);
+    if (!parseQuery.success) {
+      return res.status(400).json({
+        success: false,
+        errors: parseQuery.error.flatten(),
+      });
+    }
     const { organization_database, organization_user_id } = req.session;
-    const { listId } = req.query;
-
+    const { listId } = parseQuery.data;
     try {
       const list = await upgradeListSchema({
         listId,
@@ -66,7 +78,10 @@ module.exports = (app, limiter) => {
       });
     } catch (error) {
       console.error('Schema upgrader test route failed');
-      throw error;
+      res.status(500).send({
+        success: false,
+        message: 'Internal server error while upgrading schema',
+      });
     }
   });
 };

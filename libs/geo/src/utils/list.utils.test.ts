@@ -496,7 +496,7 @@ describe('List Utils', () => {
         setListAnalysisStatus('clientDatabase', 1, ['FCD', 'DefReport'], listStatus.Pending)
       ).rejects.toThrowError('Invalid analysisId: DefReport');
     });
-    it('should update status for provided analysis types without delete  any analysis', async () => {
+    it('should update status for provided analysis types without delete any analysis', async () => {
       const currentAnalysisStatuses = [
         {
           listId: 1,

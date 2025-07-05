@@ -446,6 +446,14 @@ export async function setListAnalysisStatus(
     analysisIds
       .filter((analysisId) => analysisId !== analysisTypes.PALM_RISK)
       .map(async (analysisId) => {
+        // Ensuring analysisId is a valid analysis type
+        const normalizedAnalysisId = Object.values(analysisTypes).find(
+          (type) => type.toLowerCase() === analysisId.toLowerCase()
+        );
+
+        if (!normalizedAnalysisId) {
+          throw new Error(`Invalid analysisId: ${analysisId}`);
+        }
         const value = {
           status,
           errorInfo: null,
@@ -455,22 +463,28 @@ export async function setListAnalysisStatus(
           bundleCreationTime: null,
           options: null,
         };
-        if (isPalmRiskIncluded && analysisId === 'FCD') {
+        if (
+          isPalmRiskIncluded &&
+          normalizedAnalysisId === analysisTypes.FOREST_CHANGE_DIAGNOSTICS
+        ) {
           value.options = analysisTypes.PALM_RISK;
         }
 
         // Check if record exists
         const existingRecord = await listAnalysisStatusRepository.findOne({
-          where: { listId, analysisId },
+          where: { listId, analysisId: normalizedAnalysisId },
         });
         // Update or save GHG record only for EAPI
-        if (isFromEAPI || analysisId !== analysisTypes.GREENHOUSE_GAS_EMISSIONS) {
+        if (isFromEAPI || normalizedAnalysisId !== analysisTypes.GREENHOUSE_GAS_EMISSIONS) {
           if (existingRecord) {
-            await listAnalysisStatusRepository.update({ listId, analysisId }, value);
+            await listAnalysisStatusRepository.update(
+              { listId, analysisId: normalizedAnalysisId },
+              value
+            );
           } else {
             await listAnalysisStatusRepository.save({
               listId,
-              analysisId,
+              analysisId: normalizedAnalysisId,
               ...value,
             });
           }

@@ -60,14 +60,8 @@ class LocationsPage {
     submitAnalisys: () => cy.contains('Submit for analysis'),
     saveAsDraft: () => cy.contains('Save As Draft'),
     confirmAnalisysBtn: () => cy.get('.MuiDialogActions-root > .MuiButton-contained'),
-    pointBtn: () =>
-      cy.get(
-        '.upload-location-options__main-content__options__other-options > div > :nth-child(1)'
-      ),
-    polygonBtn: () =>
-      cy.get(
-        '.upload-location-options__main-content__options__other-options > div > :nth-child(2)'
-      ),
+    pointBtn: () => cy.get('[data-cy="nuw_add_point"]'),
+    polygonBtn: () => cy.get('[data-cy="nuw_add_polygon"]'),
     inputLatitudeCoordinates: () => cy.get('input[name="latitude"]'),
     inputLongitudeCoordinates: () => cy.get('input[name="longitude"]'),
     inputLatitudeCoordinatesPolygon: () => cy.get('[data-testid="latitude-input"]'),

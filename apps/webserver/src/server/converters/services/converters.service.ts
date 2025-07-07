@@ -7,7 +7,7 @@ import {
 import { ConverterStatus as ConverterStatusEnum, CONVERTER_NAMES } from '@wri-monorepos/constants';
 
 import logger from '../../../config/privateutils/logger.utils';
-import { Repository, InsertResult, UpdateResult } from 'typeorm';
+import { Repository, InsertResult, UpdateResult, IsNull } from 'typeorm';
 
 interface InsertConverterParams {
   name: string;
@@ -65,7 +65,7 @@ export const getConverterJobs = async (): Promise<ConverterStatusEntity[]> => {
         startTime: 'DESC',
       },
       where: {
-        parentId: null, // Only top-level jobs
+        parentId: IsNull(), // Only top-level jobs
       },
     });
   } catch (err: any) {

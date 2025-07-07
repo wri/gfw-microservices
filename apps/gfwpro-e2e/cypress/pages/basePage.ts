@@ -8,7 +8,7 @@ class BasePage {
     passwordInput: () => cy.get('[data-cy="desktopHeader"]').find('[data-cy="password"]'),
     loginBtn: () => cy.get('[data-cy="desktopHeader"]').find('[data-cy="loginButton"]'),
     tokenInput: () => cy.get('[data-cy="verifyToken"]'),
-    verifyBtn: () => cy.get('[data-cy="verifyButton"]')
+    verifyBtn: () => cy.get('[data-cy="verifyButton"]'),
   };
 
   navigateToLocationsPage() {

@@ -19,15 +19,7 @@ import { useFetch } from '../../../../hooks';
 import { StyledTableCell } from '../../common/styledTableCell';
 import { LoadingModal } from '../../../../components';
 import { ConverterJob } from './types/converters';
-
-const STATUS_STYLE_MAP = {
-  STOPPED: 'warning',
-  PENDING: 'primary',
-  COMPLETED: 'success',
-  RUNNING: 'primary',
-  PARTIAL: 'warning',
-  FAILED: 'error',
-};
+import { STATUS_STYLE_MAP } from './constants';
 
 export default function ConverterDetailsPage() {
   const { search } = useLocation();

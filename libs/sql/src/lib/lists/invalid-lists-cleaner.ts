@@ -66,8 +66,12 @@ export async function deleteListsWithInvalidLocationId(
     }
 
     const issues = [];
-    if (nullCount) issues.push(`${nullCount} NULLs`);
-    if (dupCount) issues.push(`${dupCount} duplicates`);
+    if (nullCount) {
+      issues.push(`${nullCount} NULLs`);
+    }
+    if (dupCount) {
+      issues.push(`${dupCount} duplicates`);
+    }
     const reason = issues.join(', ');
 
     const message = `${

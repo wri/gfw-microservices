@@ -22,7 +22,6 @@ const registry: Record<string, ConverterFunction> = {
     run: deleteListsWithInvalidCommodityOrTemplate,
   },
   // GADM_VERSION: { run: () => {} },
-  // EXAMPLE_CONVERTER: { run: () => {} },
 };
 
 export class ConverterManager {

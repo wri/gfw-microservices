@@ -1,4 +1,5 @@
 import {
+  Chip,
   Table,
   TableHead,
   TableBody,
@@ -12,6 +13,7 @@ import { PillButton } from '../../../../components';
 import { StyledTableCell } from '../../common/styledTableCell';
 import { stopConverter } from '../../../../api/converter';
 import { useFetch } from '../../../../hooks';
+import { STATUS_STYLE_MAP } from './constants';
 
 export default function ConverterRunsTable({ convertersData, onViewJobDetails }) {
   const { request: stopConverterRequest } = useFetch<{ message: string }, { error: string }>();
@@ -55,12 +57,17 @@ export default function ConverterRunsTable({ convertersData, onViewJobDetails })
                   key={job.id}
                   sx={{
                     '&:last-child td, &:last-child th': { border: 0 },
-                    cursor: 'pointer',
                   }}
                 >
                   <TableCell size="small">{job.id}</TableCell>
                   <TableCell size="small">{job.name}</TableCell>
-                  <TableCell size="small">{job.status}</TableCell>
+                  <TableCell size="small">
+                    <Chip
+                      label={job.status}
+                      color={STATUS_STYLE_MAP[job.status]}
+                      variant="outlined"
+                    />
+                  </TableCell>
                   <TableCell size="small" sx={{ display: 'flex', gap: '8px' }}>
                     <PillButton
                       size="small"

@@ -238,11 +238,10 @@ module.exports = (app, limiter) => {
         return res.status(400).json({ error: 'Invalid name format' });
       }
 
-      const sql = `SELECT * FROM data WHERE mill_name ILIKE '%${searchInput}%' LIMIT 4;`;
+      const sql = `SELECT * FROM data WHERE mill_name ILIKE '${searchInput}%' OR mill_name ILIKE '%${searchInput}%' LIMIT 4;`;
 
       const response = await fetch(
-        'https://data-api.globalforestwatch.org/dataset/gfw_universal_mill_list/latest/query',
-
+        'https://data-api.globalforestwatch.org/dataset/gfw_universal_mill_list/latest/query/json',
         {
           method: 'POST',
           headers: {

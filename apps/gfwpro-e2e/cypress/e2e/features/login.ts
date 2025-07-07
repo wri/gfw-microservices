@@ -1,25 +1,58 @@
 import { When, Then } from '@badeball/cypress-cucumber-preprocessor';
+import BasePage from '../../pages/basePage';
 
-When('I login in the landing page', () => {
-  cy.on('uncaught:exception', () => {
-    // work around for existing errors that otherwise fail the test
-    return false;
-  });
-  cy.visit('/');
+describe('Upload location', () => {
+  const basePage = new BasePage();
 
   const deployment = Cypress.env('deployment');
   const credentials = Cypress.env(deployment);
-  cy.get('[data-cy="desktopHeader"]').then((desktopHeader) => {
-    cy.wrap(desktopHeader).find('[data-cy="loginNav"]').click();
-    cy.wrap(desktopHeader).find('[data-cy="username"]').type(credentials.username);
-    cy.wrap(desktopHeader).find('[data-cy="password"]').type(credentials.password);
-    cy.wrap(desktopHeader).find('[data-cy="loginButton"]').click();
+
+  When('I login as admin', () => {
+    cy.on('uncaught:exception', () => {
+      // work around for existing errors that otherwise fail the test
+      return false;
+    });
+    cy.visit('/');
+
+    basePage.clickOnLoginNav();
+    basePage.fillUsername(credentials.username);
+    basePage.fillPassword(credentials.password);
+    basePage.clickOnLoginBtn();
+    basePage.fillToken(credentials.password);
+    basePage.clickOnVerifyBtn();
   });
 
-  cy.get('[data-cy="verifyToken"]').type(credentials.password);
-  cy.get('[data-cy="verifyButton"]').click();
-});
+  When('I login as viewer', () => {
+    cy.on('uncaught:exception', () => {
+      // work around for existing errors that otherwise fail the test
+      return false;
+    });
+    cy.visit('/');
 
-Then('I should be redirected to locations view', () => {
-  cy.url().should('include', '/locations');
+    basePage.clickOnLoginNav();
+    basePage.fillUsername(credentials.viewer);
+    basePage.fillPassword(credentials.password);
+    basePage.clickOnLoginBtn();
+    basePage.fillToken(credentials.password);
+    basePage.clickOnVerifyBtn();
+  });
+
+  When('I login as editor', () => {
+    cy.on('uncaught:exception', () => {
+      // work around for existing errors that otherwise fail the test
+      return false;
+    });
+    cy.visit('/');
+
+    basePage.clickOnLoginNav();
+    basePage.fillUsername(credentials.editor);
+    basePage.fillPassword(credentials.password);
+    basePage.clickOnLoginBtn();
+    basePage.fillToken(credentials.password);
+    basePage.clickOnVerifyBtn();
+  });
+
+  Then('I should be redirected to locations view', () => {
+    cy.url().should('include', '/locations');
+  });
 });

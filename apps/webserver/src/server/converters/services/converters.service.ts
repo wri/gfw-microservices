@@ -23,18 +23,14 @@ export const startConverterJob = async (
 
   const insertedId = await insertConverter(repo, { name: converterName, organizationId });
 
-  try {
-    await triggerListProcessingConverter(insertedId, organizationId);
-  } catch (err: any) {
+  // Start the long process asynchronously but don't await it
+  triggerListProcessingConverter(insertedId, organizationId).catch(async (err) => {
     const errorMessage = err?.response?.data || err?.message || 'Unknown error';
-
     logger.error(`Error triggering LP for converter ${insertedId}:`, errorMessage);
-
     await markConverterFailed(repo, insertedId, errorMessage);
-    throw new Error('Failed to trigger list proc. converter process');
-  }
+  });
 
-  return insertedId;
+  return insertedId; // Immediately return the ID after insert
 };
 
 export const markConverterStopped = async (converterId: number): Promise<void> => {

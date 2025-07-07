@@ -36,22 +36,35 @@ export default function ConvertersList({ setIsLoading, onViewJobDetails }) {
 
   const {
     error: startError,
-    request: startRequest,
+    request: startConverterRequest,
     // data: startData,         // TODO: Show success message after starting a converter
-    // isLoading: isStarting, // TODO: Show loading state while starting a converter
+    // isLoading: isStarting,   // TODO: Show loading state while starting a converter
   } = useFetch<{ message: string; converterId: string }, { error: string }>();
 
   const handleStart = async (converterName: string) => {
     const organizationId = orgIdInputs[converterName] || null;
+    // Mark as starting immediately
     setStartingIds((prev) => new Set(prev).add(converterName));
+
     try {
-      await startConverter(startRequest, converterName, organizationId);
+      // Fire off startConverter and fetchConverters concurrently
+      const startPromise = startConverter(startConverterRequest, converterName, organizationId);
+      fetchConverters(fetchConvertersRequest); // Kick off fetchConverters but don't await immediately
+      await startPromise;
+    } catch (error) {
+      // handle error here
     } finally {
-      setStartingIds((prev) => {
-        const newSet = new Set(prev);
-        newSet.delete(converterName);
-        return newSet;
-      });
+      setTimeout(() => {
+        setStartingIds((prev) => {
+          // Remove the converter from startingIds after completion
+          const newSet = new Set(prev);
+          newSet.delete(converterName);
+          return newSet;
+        });
+
+        // Trigger a fresh fetch after completion to refresh status accurately
+        fetchConverters(fetchConvertersRequest);
+      }, 5000);
     }
   };
 

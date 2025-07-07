@@ -27,9 +27,22 @@ export async function deleteListsWithInvalidLocationId(
   const queryRunner = conn.createQueryRunner();
   await queryRunner.connect();
 
+  const parseCount = (result: any): number => parseInt(result?.[0]?.count ?? '0', 10);
+
+  const buildNullCountQuery = (table: string) =>
+    `SELECT COUNT(*) as count FROM [${table}] WHERE location_id IS NULL`;
+
+  const buildDuplicateCountQuery = (table: string) => `
+    SELECT COUNT(*) as count FROM (
+      SELECT location_id FROM [${table}]
+      WHERE location_id IS NOT NULL
+      GROUP BY location_id
+      HAVING COUNT(*) > 1
+    ) dup
+  `;
+
   try {
     const listsRepo = queryRunner.manager.getRepository(Lists);
-
     const listRecord = await listsRepo.findOne({
       where: { id: listId },
       select: ['listTableName'],
@@ -40,26 +53,12 @@ export async function deleteListsWithInvalidLocationId(
     }
 
     const dynamicTableName = listRecord.listTableName;
-
-    const nullCountQueryResult = await queryRunner.query(`
-      SELECT COUNT(*) as count FROM [${dynamicTableName}]
-      WHERE location_id IS NULL
-    `);
-
-    const nullCount = parseInt(nullCountQueryResult[0]?.count ?? '0');
-
-    const dupCountResult = await queryRunner.query(`
-      SELECT COUNT(*) as count FROM (
-        SELECT location_id FROM [${dynamicTableName}]
-        WHERE location_id IS NOT NULL
-        GROUP BY location_id
-        HAVING COUNT(*) > 1
-      ) dup
-    `);
-
-    const dupCount = parseInt(dupCountResult[0]?.count ?? '0');
-
     const fullTableName = `[${organizationDbName}].[${dynamicTableName}]`;
+
+    const nullCount = parseCount(await queryRunner.query(buildNullCountQuery(dynamicTableName)));
+    const dupCount = parseCount(
+      await queryRunner.query(buildDuplicateCountQuery(dynamicTableName))
+    );
 
     if (!nullCount && !dupCount) {
       logger.log(`List ${fullTableName} is clean`);
@@ -67,25 +66,73 @@ export async function deleteListsWithInvalidLocationId(
     }
 
     const issues = [];
-    if (nullCount > 0) {
-      issues.push(`${nullCount} NULLs`);
-    }
-    if (dupCount > 0) {
-      issues.push(`${dupCount} duplicates`);
-    }
+    if (nullCount) issues.push(`${nullCount} NULLs`);
+    if (dupCount) issues.push(`${dupCount} duplicates`);
     const reason = issues.join(', ');
 
-    if (isDryRun) {
-      logger.warn(`(Dry Run) Would delete ${fullTableName}: (${reason})`);
-    } else {
-      logger.warn(`Deleting ${fullTableName}: (${reason})`);
+    const message = `${
+      isDryRun ? '(Dry Run) Would delete' : 'Deleting'
+    } ${fullTableName}: (${reason})`;
+    logger.warn(message);
+
+    if (!isDryRun) {
       await queryRunner.query(`DROP TABLE [${dynamicTableName}]`);
-      await listsRepo.delete({ id: listId }); // Remove from Lists table too
+      await listsRepo.delete({ id: listId });
     }
   } catch (error) {
     logger.error(
       `Error processing malformed lists in ${organizationDbName}: ${error.message}`,
-      error.stack
+      (error.stack || error).toString()
+    );
+    throw error;
+  } finally {
+    await queryRunner.release();
+  }
+}
+
+export async function deleteListsWithInvalidCommodityOrTemplate(
+  params: InvalidListsCleanerArgs
+): Promise<void> {
+  const { clientDb: organizationDbName, listId, isDryRun = true } = params;
+  const conn = await new ClientStoreConnection().getConnection(organizationDbName);
+  const queryRunner = conn.createQueryRunner();
+  await queryRunner.connect();
+
+  try {
+    const listsRepo = queryRunner.manager.getRepository(Lists);
+
+    const listRecord = await listsRepo.findOne({
+      where: { id: listId },
+      select: ['listTableName', 'templateId', 'version'],
+    });
+
+    if (!listRecord) {
+      throw new Error(`No list found for ID: ${listId}`);
+    }
+
+    const { listTableName, templateId, version } = listRecord;
+    const fullTableName = `[${organizationDbName}].[${listTableName}]`;
+
+    const isPartlyUpgraded = templateId !== 0 && version === 2;
+
+    if (!isPartlyUpgraded) {
+      logger.log(`List ${fullTableName} is not partly upgraded to version 2`);
+      return;
+    }
+
+    const message = `${
+      isDryRun ? '(Dry Run) Would delete' : 'Deleting'
+    } ${fullTableName}: (template_id=${templateId}, version=${version})`;
+    logger.warn(message);
+
+    if (!isDryRun) {
+      await queryRunner.query(`DROP TABLE [${listTableName}]`);
+      await listsRepo.delete({ id: listId });
+    }
+  } catch (error) {
+    logger.error(
+      `Error processing partly-upgraded v2 lists in ${organizationDbName}: ${error.message}`,
+      (error.stack || error).toString()
     );
     throw error;
   } finally {

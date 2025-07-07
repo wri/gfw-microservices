@@ -19,17 +19,26 @@ export const fetchConverterInfo = (
   });
 };
 
-export const startConverter = (
-  request: (config?: ExtendedAxiosRequestConfig) => Promise<void>,
+export const startConverter = async (
+  request: (config?: ExtendedAxiosRequestConfig) => Promise<any>,
   converterName: string,
   organizationId: string | null
-) => {
-  return request({
+): Promise<{ converterId: string; status: string }> => {
+  const response = await request({
     url: '/converter/start',
     method: 'POST',
-    data: {
-      converterName,
-      organizationId,
-    },
+    data: { converterName, organizationId },
+  });
+
+  return response.data;
+};
+
+export const stopConverter = (
+  request: (config?: ExtendedAxiosRequestConfig) => Promise<void>,
+  converterId: number
+) => {
+  return request({
+    url: `/converter/${converterId}/stop`,
+    method: 'POST',
   });
 };

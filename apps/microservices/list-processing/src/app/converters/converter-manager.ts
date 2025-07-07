@@ -1,5 +1,10 @@
 import { FindOptionsWhere } from 'typeorm';
-import { deleteListsWithInvalidLocationId, upgradeListSchema, Lists } from '@wri-monorepos/sql';
+import {
+  Lists,
+  deleteListsWithInvalidLocationId,
+  deleteListsWithInvalidCommodityOrTemplate,
+  upgradeListSchema,
+} from '@wri-monorepos/sql';
 
 export type ConverterFunction = {
   where?: FindOptionsWhere<Lists>;
@@ -12,6 +17,9 @@ const registry: Record<string, ConverterFunction> = {
   },
   DELETE_INVALID_LOCATION_LISTS: {
     run: deleteListsWithInvalidLocationId,
+  },
+  DELETE_INVALID_COMMODITY_TEMPLATE: {
+    run: deleteListsWithInvalidCommodityOrTemplate,
   },
   // GADM_VERSION: { run: () => {} },
   // EXAMPLE_CONVERTER: { run: () => {} },

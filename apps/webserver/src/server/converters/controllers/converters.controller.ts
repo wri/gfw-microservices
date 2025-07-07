@@ -47,9 +47,12 @@ export const startConverter = async (
     const id = await startConverterJob(converterName, organizationId);
 
     res.status(200).json({
+      // Return success immediately without waiting for processing
       message: `Converter ${converterName} started successfully`,
       converterId: id,
+      status: 'RUNNNING',
     });
+    logger.info(`Started converter ${converterName} with ID: ${id}`);
   } catch (err: any) {
     logger.error(`Failed to start converter ${converterName}:`, err.stack || err);
     res.status(500).json({ error: 'Failed to start converter' });

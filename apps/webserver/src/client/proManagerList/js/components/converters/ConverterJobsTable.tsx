@@ -10,8 +10,19 @@ import {
 
 import { PillButton } from '../../../../components';
 import { StyledTableCell } from '../../common/styledTableCell';
+import { stopConverter } from '../../../../api/converter';
+import { useFetch } from '../../../../hooks';
 
 export default function ConverterRunsTable({ convertersData, onViewJobDetails }) {
+  const { request: stopConverterRequest } = useFetch<{ message: string }, { error: string }>();
+
+  const handleStop = async (jobId) => {
+    // Call the API to stop the converter job
+    // This function should be implemented in the parent component or passed down as a prop
+    console.log(`Stopping job with ID: ${jobId}`);
+    await stopConverter(stopConverterRequest, jobId);
+  };
+
   return (
     <>
       <Typography variant="subtitle1" marginTop={3} marginBottom={1}>
@@ -61,6 +72,18 @@ export default function ConverterRunsTable({ convertersData, onViewJobDetails })
                     >
                       View
                     </PillButton>
+                    {job.status === 'RUNNING' && (
+                      <PillButton
+                        size="small"
+                        variant="outlined"
+                        onClick={(e) => {
+                          e.stopPropagation(); // prevent row click
+                          handleStop(job.id);
+                        }}
+                      >
+                        Stop
+                      </PillButton>
+                    )}
                   </TableCell>
                 </TableRow>
               ))

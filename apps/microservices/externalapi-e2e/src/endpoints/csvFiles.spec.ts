@@ -6,8 +6,8 @@ const API_TOKEN = process.env.API_TOKEN;
 const email = process.env.USER_EMAIL;
 const list = process.env.TEST_LIST;
 describe('Validate CSV Files for FCD', () => {
-
-    it('should generate FCD analysis file', 
+  it(
+    'should generate FCD analysis file',
     async () => {
       try {
         const res = await postRedirectHeaders(
@@ -27,12 +27,14 @@ describe('Validate CSV Files for FCD', () => {
         expect(res.status).toBe(201);
         expect(res.data).toBe('');
       } catch (error) {
-          console.error('endpoints error', error.stack || error, error.response.data);
-          throw error;
+        console.error('endpoints error', error.stack || error, error.response.data);
+        throw error;
       }
-    }, 30 * 1000
+    },
+    30 * 1000
   );
-  it('should validate CSV zip bundle has expected files',
+  it(
+    'should validate CSV zip bundle has expected files',
     async () => {
       try {
         const { apiResponse, zipFileNames } = await pollApiUntilComplete(
@@ -53,21 +55,21 @@ describe('Validate CSV Files for FCD', () => {
         expect(apiResponse.listId).toBe(list);
 
         const expectedFileNames = [
-        'AAT Argentina Polygons Generic_argentina_loss_of_forests.csv',
-        'AAT Argentina Polygons Generic_argentina_loss_of_forests_aggregate.csv',
-        'AAT Argentina Polygons Generic_argentina_overlap.csv',
-        'AAT Argentina Polygons Generic_argentina_overlap_aggregate.csv',
-        'AAT Argentina Polygons Generic_forest_change_diagnostic_list_summary.csv',
-        'AAT Argentina Polygons Generic_forest_change_diagnostic_location_summary.csv',
-        'AAT Argentina Polygons Generic_sensitive_areas_loss_forests.csv',
-        'AAT Argentina Polygons Generic_sensitive_areas_loss_of_forests_aggregate.csv',
-        'AAT Argentina Polygons Generic_sensitive_areas_percentage_historic_area_lost_aggregate.csv',
-        'AAT Argentina Polygons Generic_sensitive_areas_percentage_historic_area_lost.csv',
-        'AAT Argentina Polygons Generic_south_america_loss_of_forests.csv',
-        'AAT Argentina Polygons Generic_south_america_loss_of_forests_aggregate.csv',
-        'AAT Argentina Polygons Generic_south_america_overlap.csv',
-        'AAT Argentina Polygons Generic_south_america_overlap_aggregate.csv',
-        'README.csv'
+          'AAT Argentina Polygons Generic_argentina_loss_of_forests.csv',
+          'AAT Argentina Polygons Generic_argentina_loss_of_forests_aggregate.csv',
+          'AAT Argentina Polygons Generic_argentina_overlap.csv',
+          'AAT Argentina Polygons Generic_argentina_overlap_aggregate.csv',
+          'AAT Argentina Polygons Generic_forest_change_diagnostic_list_summary.csv',
+          'AAT Argentina Polygons Generic_forest_change_diagnostic_location_summary.csv',
+          'AAT Argentina Polygons Generic_sensitive_areas_loss_forests.csv',
+          'AAT Argentina Polygons Generic_sensitive_areas_loss_of_forests_aggregate.csv',
+          'AAT Argentina Polygons Generic_sensitive_areas_percentage_historic_area_lost_aggregate.csv',
+          'AAT Argentina Polygons Generic_sensitive_areas_percentage_historic_area_lost.csv',
+          'AAT Argentina Polygons Generic_south_america_loss_of_forests.csv',
+          'AAT Argentina Polygons Generic_south_america_loss_of_forests_aggregate.csv',
+          'AAT Argentina Polygons Generic_south_america_overlap.csv',
+          'AAT Argentina Polygons Generic_south_america_overlap_aggregate.csv',
+          'README.csv',
         ];
         expect(zipFileNames.sort()).toEqual(expectedFileNames.sort());
 
@@ -76,12 +78,14 @@ describe('Validate CSV Files for FCD', () => {
       } catch (error) {
         console.error('Polling failed:', error);
       }
-    }, 60 * 1000
+    },
+    60 * 1000
   );
 });
 
 describe('Validate CSV Files for DefReport', () => {
-  it('should generate DefReport analysis file', 
+  it(
+    'should generate DefReport analysis file',
     async () => {
       try {
         const res = await postRedirectHeaders(
@@ -101,13 +105,15 @@ describe('Validate CSV Files for DefReport', () => {
         expect(res.status).toBe(201);
         expect(res.data).toBe('');
       } catch (error) {
-          console.error('endpoints error', error.stack || error, error.response.data);
-          throw error;
+        console.error('endpoints error', error.stack || error, error.response.data);
+        throw error;
       }
-    }, 30 * 1000
+    },
+    30 * 1000
   );
 
-  it('should validate CSV zip bundle has expected files',
+  it(
+    'should validate CSV zip bundle has expected files',
     async () => {
       try {
         const { apiResponse, zipFileNames } = await pollApiUntilComplete(
@@ -134,13 +140,14 @@ describe('Validate CSV Files for DefReport', () => {
       } catch (error) {
         console.error('Polling failed:', error);
       }
-    }, 60 * 1000
+    },
+    60 * 1000
   );
 });
 
 describe('Validate CSV Files for Alerts', () => {
-
-  it('should generate Alerts analysis file',
+  it(
+    'should generate Alerts analysis file',
     async () => {
       try {
         const res = await postRedirectHeaders(
@@ -148,8 +155,8 @@ describe('Validate CSV Files for Alerts', () => {
           {
             userEmail: email,
             outputType: 'verifiableCredential',
-            startDate: "01-01-2024",
-            endDate: "07-05-2025"
+            startDate: '01-01-2024',
+            endDate: '07-05-2025',
           },
           {
             headers: {
@@ -162,12 +169,14 @@ describe('Validate CSV Files for Alerts', () => {
         expect(res.status).toBe(201);
         expect(res.data).toBe('');
       } catch (error) {
-          console.error('endpoints error', error.stack || error, error.response.data);
-          throw error;
+        console.error('endpoints error', error.stack || error, error.response.data);
+        throw error;
       }
-    }, 30 * 1000
+    },
+    30 * 1000
   );
-  it('should validate CSV zip bundle has expected files',
+  it(
+    'should validate CSV zip bundle has expected files',
     async () => {
       try {
         const { apiResponse, zipFileNames } = await pollApiUntilComplete(
@@ -188,8 +197,8 @@ describe('Validate CSV Files for Alerts', () => {
         expect(apiResponse.listId).toBe(list);
 
         const expectedFileNames = [
-        'AAT Argentina Polygons Generic_IntegratedAlerts_NaturalForest_Daily.csv',
-        'README.csv'
+          'AAT Argentina Polygons Generic_IntegratedAlerts_NaturalForest_Daily.csv',
+          'README.csv',
         ];
         expect(zipFileNames.sort()).toEqual(expectedFileNames.sort());
 
@@ -198,7 +207,8 @@ describe('Validate CSV Files for Alerts', () => {
       } catch (error) {
         console.error('Polling failed:', error);
       }
-    }, 60 * 1000
+    },
+    60 * 1000
   );
 });
 
@@ -221,7 +231,6 @@ async function pollApiUntilComplete(
   timeoutMs = 10000,
   hasContainingFolder = false
 ): Promise<PollResult> {
-
   const startTime = Date.now();
 
   // eslint-disable-next-line no-constant-condition
@@ -252,7 +261,7 @@ async function pollApiUntilComplete(
 
         const zipResponse = await fetch(result.resultUrl, {
           headers: {
-            'x-api-key': process.env.API_TOKEN
+            'x-api-key': process.env.API_TOKEN,
           },
         });
 
@@ -267,10 +276,15 @@ async function pollApiUntilComplete(
         }
 
         const contentType = zipResponse.headers.get('Content-Type') || 'unknown';
-        if (!contentType.includes('application/zip') && !contentType.includes('application/octet-stream')) {
+        if (
+          !contentType.includes('application/zip') &&
+          !contentType.includes('application/octet-stream')
+        ) {
           const errorText = await zipResponse.text();
           console.error('Invalid zip content type:', { contentType, body: errorText });
-          throw new Error(`Invalid content type: ${contentType}. Expected application/zip or application/octet-stream`);
+          throw new Error(
+            `Invalid content type: ${contentType}. Expected application/zip or application/octet-stream`
+          );
         }
 
         const arrayBuffer = await zipResponse.arrayBuffer();
@@ -286,23 +300,26 @@ async function pollApiUntilComplete(
 
           if (hasContainingFolder) {
             // Extract zip filename from resultUrl (e.g., 'report.zip' -> 'report')
-          const zipFileName = result.resultUrl.split('/').pop()?.replace(/\.zip$/i, '') || '';
-          const folderPrefix = zipFileName ? `${zipFileName}/` : '';
+            const zipFileName =
+              result.resultUrl
+                .split('/')
+                .pop()
+                ?.replace(/\.zip$/i, '') || '';
+            const folderPrefix = zipFileName ? `${zipFileName}/` : '';
 
-          zipFileNames = zipEntries
-            .map((entry) => {
-              // Remove folder prefix if it matches the zip filename
-              if (folderPrefix && entry.entryName.startsWith(folderPrefix)) {
-                return entry.entryName.slice(folderPrefix.length);
-              }
-              return entry.entryName;
-            })
-            .filter((name) => name && !name.endsWith('/')); // Exclude directories and empty names
-
+            zipFileNames = zipEntries
+              .map((entry) => {
+                // Remove folder prefix if it matches the zip filename
+                if (folderPrefix && entry.entryName.startsWith(folderPrefix)) {
+                  return entry.entryName.slice(folderPrefix.length);
+                }
+                return entry.entryName;
+              })
+              .filter((name) => name && !name.endsWith('/')); // Exclude directories and empty names
           } else {
             zipFileNames = zipEntries
-            .map((entry) => entry.entryName)
-            .filter((name) => !name.endsWith('/')); // Exclude directories
+              .map((entry) => entry.entryName)
+              .filter((name) => !name.endsWith('/')); // Exclude directories
           }
 
           if (zipFileNames.length === 0) {
@@ -319,7 +336,11 @@ async function pollApiUntilComplete(
             message: zipError instanceof Error ? zipError.message : zipError,
             stack: zipError instanceof Error ? zipError.stack : undefined,
           });
-          throw new Error(`Failed to process zip file: ${zipError instanceof Error ? zipError.message : 'Unknown error'}`);
+          throw new Error(
+            `Failed to process zip file: ${
+              zipError instanceof Error ? zipError.message : 'Unknown error'
+            }`
+          );
         }
       } else if (result.status === 'Failed') {
         console.error('API status failed:', result);
@@ -330,11 +351,11 @@ async function pollApiUntilComplete(
       await new Promise((resolve) => setTimeout(resolve, pollIntervalMs));
     } catch (error) {
       console.error('Fetch error in pollApiUntilComplete:', {
-      url,
-      message: error instanceof Error ? error.message : error,
-      stack: error instanceof Error ? error.stack : undefined,
-    });
-    throw error;
+        url,
+        message: error instanceof Error ? error.message : error,
+        stack: error instanceof Error ? error.stack : undefined,
+      });
+      throw error;
     }
   }
 }

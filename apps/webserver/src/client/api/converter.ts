@@ -18,3 +18,18 @@ export const fetchConverterInfo = (
     method: 'GET',
   });
 };
+
+export const startConverter = (
+  request: (config?: ExtendedAxiosRequestConfig) => Promise<void>,
+  converterName: string,
+  organizationId: string | null
+) => {
+  return request({
+    url: '/converter/start',
+    method: 'POST',
+    data: {
+      converterName,
+      organizationId,
+    },
+  });
+};

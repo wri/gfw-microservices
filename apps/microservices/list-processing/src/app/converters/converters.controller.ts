@@ -1,4 +1,4 @@
-import { Controller, Post, Param, Query } from '@nestjs/common';
+import { Controller, Post, Param, Body } from '@nestjs/common';
 import { ConvertersService } from './converters.service';
 import { InternalServerErrorException } from '@nestjs/common';
 
@@ -6,17 +6,15 @@ import { InternalServerErrorException } from '@nestjs/common';
 export class ConvertersController {
   constructor(private readonly convertersService: ConvertersService) {}
 
-  @Post('/converters/:id/start')
+  @Post('/:id/start')
   async startConverter(
     @Param('id') id: number,
-    @Query('organizationId') organizationId?: number
+    @Body('organizationId') organizationId?: number
   ): Promise<string> {
-    const clientStoreNames = await this.convertersService.getClientStoreNames(organizationId);
-
     try {
-      await this.convertersService.runConverter(id, clientStoreNames);
+      await this.convertersService.runConverter(id, organizationId);
     } catch (err) {
-      console.error(`Error processing ${clientStoreNames}:`, err);
+      console.error(`Error processing Converter Job with ID: ${id}:`, err);
 
       throw new InternalServerErrorException(
         'Converter process failed for one or more organizations.'

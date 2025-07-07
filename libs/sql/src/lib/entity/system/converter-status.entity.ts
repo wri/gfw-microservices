@@ -21,7 +21,7 @@ export class ConverterStatus {
   listId: number;
 
   @Column({ name: 'parent_id', type: 'int', nullable: true })
-  parentId: number;
+  parentId: number | null;
 
   @Column({ name: 'error_details', type: 'nvarchar', nullable: true })
   errorDetails: string;

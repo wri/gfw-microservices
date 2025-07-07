@@ -1,6 +1,6 @@
 import { Request, Response } from 'express';
 
-import { ConverterNamesList, ConverterName } from '@wri-monorepos/constants';
+import { CONVERTER_NAMES } from '@wri-monorepos/constants';
 import {
   startConverterJob,
   markConverterStopped,
@@ -22,7 +22,7 @@ interface StartConverterBody {
  */
 export const getConverters = async (req: Request, res: Response): Promise<void> => {
   res.status(200).json({
-    convertersNames: ConverterNamesList,
+    convertersNames: CONVERTER_NAMES,
     converterJobs: await getConverterJobs(),
   });
 };
@@ -38,7 +38,7 @@ export const startConverter = async (
 ): Promise<void> => {
   const { converterName, organizationId = null } = req.body;
 
-  if (!ConverterNamesList.includes(converterName as ConverterName)) {
+  if (!(converterName in CONVERTER_NAMES)) {
     res.status(400).json({ error: 'Invalid converter name' });
     return;
   }

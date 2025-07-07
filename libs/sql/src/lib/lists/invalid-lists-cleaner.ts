@@ -14,7 +14,7 @@ import { Lists } from '../entity';
 const logger = new Logger('MalformedListsCleaner');
 
 interface InvalidListsCleanerArgs {
-  organizationDbName: string;
+  clientDb: string;
   listId?: number;
   isDryRun?: boolean;
 }
@@ -22,8 +22,7 @@ interface InvalidListsCleanerArgs {
 export async function deleteListsWithInvalidLocationId(
   params: InvalidListsCleanerArgs
 ): Promise<void> {
-  const { organizationDbName, listId, isDryRun = true } = params;
-
+  const { clientDb: organizationDbName, listId, isDryRun = true } = params;
   const conn = await new ClientStoreConnection().getConnection(organizationDbName);
   const queryRunner = conn.createQueryRunner();
   await queryRunner.connect();
@@ -31,12 +30,16 @@ export async function deleteListsWithInvalidLocationId(
   try {
     const listsRepo = queryRunner.manager.getRepository(Lists);
 
-    const listName = await listsRepo.findOne({
+    const listRecord = await listsRepo.findOne({
       where: { id: listId },
-      select: ['listName'],
+      select: ['listTableName'],
     });
 
-    const dynamicTableName = `list-${listName}`;
+    if (!listRecord) {
+      throw new Error(`No list found for ID: ${listId}`);
+    }
+
+    const dynamicTableName = listRecord.listTableName;
 
     const nullCountQueryResult = await queryRunner.query(`
       SELECT COUNT(*) as count FROM [${dynamicTableName}]
@@ -57,7 +60,8 @@ export async function deleteListsWithInvalidLocationId(
     const dupCount = parseInt(dupCountResult[0]?.count ?? '0');
 
     const fullTableName = `[${organizationDbName}].[${dynamicTableName}]`;
-    if (nullCount === 0 && dupCount === 0) {
+
+    if (!nullCount && !dupCount) {
       logger.log(`List ${fullTableName} is clean`);
       return;
     }

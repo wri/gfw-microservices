@@ -103,7 +103,7 @@ export default function ConverterDetailsPage() {
                 converterJob.children.map((job) => (
                   <TableRow key={job.id} sx={{ '&:last-child td, &:last-child th': { border: 0 } }}>
                     <TableCell size="small">{job.id}</TableCell>
-                    <TableCell size="small">{job.name}</TableCell>
+                    <TableCell size="small">{converterJob?.name}</TableCell>
                     <TableCell size="small">
                       {job.status && (
                         <Chip
@@ -115,7 +115,7 @@ export default function ConverterDetailsPage() {
                     </TableCell>
                     <TableCell size="small">{job.errorDetails}</TableCell>
                     <TableCell size="small">{job.organizationId}</TableCell>
-                    <TableCell size="small">{job.tableId}</TableCell>
+                    <TableCell size="small">{job.listId}</TableCell>
                   </TableRow>
                 ))
               )}

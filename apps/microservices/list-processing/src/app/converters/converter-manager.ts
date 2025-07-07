@@ -1,6 +1,4 @@
 import { FindOptionsWhere } from 'typeorm';
-
-import { CONVERTER_NAMES } from '@wri-monorepos/constants';
 import { deleteListsWithInvalidLocationId, upgradeListSchema, Lists } from '@wri-monorepos/sql';
 
 export type ConverterFunction = {
@@ -9,14 +7,14 @@ export type ConverterFunction = {
 };
 
 const registry: Record<string, ConverterFunction> = {
-  [CONVERTER_NAMES.LIST_SCHEMA]: {
+  LIST_SCHEMA: {
     run: upgradeListSchema,
   },
-  [CONVERTER_NAMES.DELETE_INVALID_LOCATION_LISTS]: {
+  DELETE_INVALID_LOCATION_LISTS: {
     run: deleteListsWithInvalidLocationId,
   },
-  // [CONVERTER_NAMES.GADM_VERSION]: { run: () => {} },
-  // [CONVERTER_NAMES.EXAMPLE_CONVERTER]: { run: () => {} },
+  // GADM_VERSION: { run: () => {} },
+  // EXAMPLE_CONVERTER: { run: () => {} },
 };
 
 export class ConverterManager {

@@ -296,7 +296,7 @@ class Map extends Component {
     this.mapView.watch('stationary', async (isStationary) => {
       // Workaround for missing tiles in the gadm_administrative_boundaries basemap at high zoom levels (max zoom: 10).
       // When zooming in too far, the layer doesn't render. To fix this, briefly zoom out to load tiles, then zoom back in.
-      if (!isStationary || isFixingZoom) {
+      if (!isStationary || isFixingZoom || !this.isProgrammaticMove) {
         return;
       }
 
@@ -314,11 +314,11 @@ class Map extends Component {
 
       try {
         // Step 1: temporary zoom-out
-        await this.mapView.goTo({ center, zoom: 9 }, { animate: false });
+        await this.safeGoTo({ center, zoom: 9 }, { animate: false });
 
         // Step 2: short delay and return to original zoom
         await new Promise((r) => setTimeout(r, 500));
-        await this.mapView.goTo({ center, zoom: currentZoom }, { animate: false });
+        await this.safeGoTo({ center, zoom: currentZoom }, { animate: false });
 
         lastCenterKey = centerKey;
       } finally {
@@ -333,10 +333,29 @@ class Map extends Component {
 
     mapView.when(this.mapLoaded);
   }
-
+  setProgrammaticMove = () => {
+    this.isProgrammaticMove = true;
+    setTimeout(() => {
+      this.isProgrammaticMove = false;
+    }, 1000);
+  };
   startInteraction = () => {
+    if (!this.isProgrammaticMove) {
+      this.isProgrammaticMove = false;
+    }
     if (!this.state.isMapMoving) {
       this.setState({ isMapMoving: true, isMapCentered: false });
+    }
+  };
+
+  safeGoTo = async (target, options = { animate: true }) => {
+    this.isProgrammaticMove = true;
+    try {
+      await this.mapView.goTo(target, options);
+    } finally {
+      setTimeout(() => {
+        this.isProgrammaticMove = false;
+      }, 1000);
     }
   };
 
@@ -716,7 +735,7 @@ class Map extends Component {
   goToOriginalPoint = () => {
     const { mapCenter } = this.state;
 
-    this.view.goTo(mapCenter);
+    this.safeGoTo(mapCenter);
   };
   mapLoaded = (view) => {
     const { userInfo } = this.state;
@@ -1307,7 +1326,7 @@ class Map extends Component {
       });
 
       this.view.graphics.add(customGraphic);
-      this.view.goTo(customGraphic);
+      this.safeGoTo(customGraphic);
       this.analyzeCustom(customGraphic);
     } else {
       this.view.graphics.removeAll();
@@ -1864,7 +1883,7 @@ class Map extends Component {
         if (mapCenter) {
           this.setState({ mapCenter });
 
-          this.view.goTo(mapCenter);
+          this.safeGoTo(mapCenter);
         }
       } catch (e) {
         console.log(e);
@@ -2005,7 +2024,7 @@ class Map extends Component {
             ).then((mapCenter) => {
               this.setState({ mapCenter });
 
-              this.view.goTo(mapCenter);
+              this.safeGoTo(mapCenter);
             });
 
             store.dispatch(addList(userList));
@@ -2017,7 +2036,7 @@ class Map extends Component {
             (mapCenter) => {
               this.setState({ mapCenter });
 
-              this.view.goTo(mapCenter);
+              this.safeGoTo(mapCenter);
             }
           );
 
@@ -2104,7 +2123,7 @@ class Map extends Component {
         longitude,
       });
 
-      this.view.goTo({
+      this.safeGoTo({
         target: point,
         scale: zoom - 1,
       });
@@ -2220,7 +2239,7 @@ class Map extends Component {
 
         setVectorTileLayerForFullList(listData, transitionListData, this.view).then((mapCenter) => {
           this.setState({ mapCenter });
-          this.view.goTo(mapCenter);
+          this.safeGoTo(mapCenter);
         });
       }
     };
@@ -2566,6 +2585,7 @@ class Map extends Component {
             mapView={this.view}
             loaded={this.view && this.view.ready && !!mapLayers.length}
             mapLayers={mapLayers}
+            onProgrammaticMove={this.setProgrammaticMove}
           />
         </div>
         <div

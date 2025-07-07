@@ -518,5 +518,134 @@ describe('List Utils', () => {
         }
       );
     });
+
+    it('should not call deleteListAnalyses if isFromEAPI is true', async () => {
+      const currentAnalysisStatuses = [
+        { listId: 1, analysisId: 'GHG', status: listStatus.Active } as ListsAnalysisStatus,
+      ];
+
+      const mockRepository = {
+        findBy: jest.fn().mockResolvedValue(currentAnalysisStatuses),
+        save: jest.fn(),
+        update: jest.fn(),
+        findOne: jest.fn().mockResolvedValue(null),
+      };
+
+      const mockConnection = {
+        getRepository: jest.fn().mockReturnValue(mockRepository),
+      };
+
+      const mockClientStoreConnection = {
+        getConnection: jest.fn().mockResolvedValue(mockConnection),
+      };
+      (ClientStoreConnection as unknown as jest.Mock).mockImplementation(
+        () => mockClientStoreConnection
+      );
+
+      await setListAnalysisStatus(
+        'clientDatabase',
+        1,
+        ['FCD'],
+        listStatus.Pending,
+        true // isFromEAPI
+      );
+
+      expect(listAnalysisStatus.deleteListAnalyses).not.toHaveBeenCalled();
+    });
+
+    it('should skip GREENHOUSE_GAS_EMISSIONS if not isFromEAPI', async () => {
+      const analysisTypes = {
+        GREENHOUSE_GAS_EMISSIONS: 'GHG',
+      };
+      jest.doMock('@wri-monorepos/constants', () => ({
+        analysisTypes,
+        listStatus: { Pending: 1, Active: 2 },
+      }));
+
+      const currentAnalysisStatuses = [
+        { listId: 1, analysisId: 'GHG', status: listStatus.Active } as ListsAnalysisStatus,
+      ];
+
+      const mockRepository = {
+        findBy: jest.fn().mockResolvedValue(currentAnalysisStatuses),
+        save: jest.fn(),
+        update: jest.fn(),
+        findOne: jest.fn().mockResolvedValue(null),
+      };
+
+      const mockConnection = {
+        getRepository: jest.fn().mockReturnValue(mockRepository),
+      };
+
+      const mockClientStoreConnection = {
+        getConnection: jest.fn().mockResolvedValue(mockConnection),
+      };
+      (ClientStoreConnection as unknown as jest.Mock).mockImplementation(
+        () => mockClientStoreConnection
+      );
+
+      await setListAnalysisStatus(
+        'clientDatabase',
+        1,
+        ['GHG'],
+        listStatus.Pending,
+        false // isFromEAPI
+      );
+
+      // Should not call update or save for GREENHOUSE_GAS_EMISSIONS
+      expect(mockRepository.save).not.toHaveBeenCalled();
+      expect(mockRepository.update).not.toHaveBeenCalled();
+    });
+
+    it('should update GREENHOUSE_GAS_EMISSIONS if isFromEAPI', async () => {
+      const analysisTypes = {
+        GREENHOUSE_GAS_EMISSIONS: 'GHG',
+      };
+      jest.doMock('@wri-monorepos/constants', () => ({
+        analysisTypes,
+        listStatus: { Pending: 1, Active: 2 },
+      }));
+
+      const currentAnalysisStatuses = [
+        { listId: 1, analysisId: 'GHG', status: listStatus.Active } as ListsAnalysisStatus,
+      ];
+
+      const mockRepository = {
+        findBy: jest.fn().mockResolvedValue(currentAnalysisStatuses),
+        save: jest.fn(),
+        update: jest.fn(),
+        findOne: jest.fn().mockResolvedValue({
+          listId: 1,
+          analysisId: 'GHG',
+          status: listStatus.Active,
+        }),
+      };
+
+      const mockConnection = {
+        getRepository: jest.fn().mockReturnValue(mockRepository),
+      };
+
+      const mockClientStoreConnection = {
+        getConnection: jest.fn().mockResolvedValue(mockConnection),
+      };
+      (ClientStoreConnection as unknown as jest.Mock).mockImplementation(
+        () => mockClientStoreConnection
+      );
+
+      await setListAnalysisStatus(
+        'clientDatabase',
+        1,
+        ['GHG'],
+        listStatus.Pending,
+        true // isFromEAPI
+      );
+
+      expect(mockRepository.update).toHaveBeenCalledWith(
+        { listId: 1, analysisId: 'GHG' },
+        expect.objectContaining({
+          status: listStatus.Pending,
+        })
+      );
+    });
   });
 });

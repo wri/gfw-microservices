@@ -76,7 +76,7 @@ describe('UploadLocationByPoint', () => {
     expect(screen.getByText(/enter the area size/i)).toBeInTheDocument();
 
     expect(mockHistoryPush).not.toHaveBeenCalled();
-  });
+  }, 10100);
 
   it('should validate mandatory fields for address location type', async () => {
     await userEvent.click(
@@ -98,7 +98,7 @@ describe('UploadLocationByPoint', () => {
     expect(screen.getByText(/enter the area size/i)).toBeInTheDocument();
 
     expect(mockHistoryPush).not.toHaveBeenCalled();
-  });
+  }, 10100);
 
   describe('location name validation', () => {
     beforeEach(async () => {

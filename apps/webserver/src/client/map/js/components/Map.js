@@ -340,9 +340,6 @@ class Map extends Component {
     }, 1000);
   };
   startInteraction = () => {
-    if (!this.isProgrammaticMove) {
-      this.isProgrammaticMove = false;
-    }
     if (!this.state.isMapMoving) {
       this.setState({ isMapMoving: true, isMapCentered: false });
     }

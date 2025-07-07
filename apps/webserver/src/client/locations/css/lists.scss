@@ -23,34 +23,6 @@
 }
 
 //////////////////////////
-// Select Columns
-/////////////////////////
-.add-columns-list {
-  .select-columns {
-    padding: $space-small;
-
-    &__checkbox-container {
-      padding: $space-compact 0;
-    }
-  }
-  &__footer {
-    display: flex;
-    justify-content: space-between;
-    padding: $space-small 0 0;
-    margin: $space-small $space-small 0;
-    border-top: 1px solid $gfw-light-gray;
-
-    .button {
-      flex: 0 0 48%;
-    }
-
-    .button:first-child {
-      margin-right: 2%;
-    }
-  }
-}
-
-//////////////////////////
 // Side panel Summaries
 /////////////////////////
 

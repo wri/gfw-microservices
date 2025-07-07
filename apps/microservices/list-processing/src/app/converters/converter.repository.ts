@@ -16,20 +16,27 @@ export class ConverterRepository {
    * @param organizationId The ID of the organization to filter by (optional).
    * @returns A list of client store database names.
    */
-  async getClientStoresByOrgId(connection: DataSource, organizationId?: number): Promise<string[]> {
+  async getClientStoresByOrgId(
+    connection: DataSource,
+    organizationId?: number
+  ): Promise<{ id: number; organizationDb: string }[]> {
     const orgRepo = connection.getRepository(Organization);
     const whereClause = organizationId ? { id: organizationId } : {};
 
     const organizations = await orgRepo.find({
-      select: ['organizationDb'],
+      select: ['id', 'organizationDb'], // include 'id' here
       where: whereClause,
     });
 
-    return organizations.map((org) => org.organizationDb);
+    return organizations.map((org) => ({
+      id: org.id,
+      organizationDb: org.organizationDb,
+    }));
   }
 
   /**
    * Records an error in the ConverterStatus table.
+   * @param name The name of the converter that encountered the error.
    * @param connection The database connection to use.
    * @param parentJobId The ID of the parent converter status.
    * @param errorMessage The error message to record.
@@ -37,15 +44,17 @@ export class ConverterRepository {
    * @param listId The ID of the list associated with the error.
    */
   async recordError(
+    name: string,
     connection: DataSource,
     parentJobId: number,
     errorMessage: string,
-    organizationId: string,
+    organizationId: number,
     listId: number
   ): Promise<void> {
     await connection.getRepository(ConverterStatusEntity).insert({
+      name,
       parentId: parentJobId,
-      organizationId: Number(organizationId),
+      organizationId: organizationId,
       listId,
       status: 'FAILED',
       errorDetails: errorMessage,

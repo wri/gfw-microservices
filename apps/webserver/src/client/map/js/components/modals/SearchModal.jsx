@@ -188,6 +188,10 @@ export default class SearchModal extends Component {
       const geometry = event.result.feature.geometry;
 
       this.props.mapView.goTo(geometry);
+
+      if (this.props.onProgrammaticMove) {
+        this.props.onProgrammaticMove();
+      }
     });
 
     let searchContainer;

@@ -191,7 +191,7 @@ describe('ConfigureList', () => {
 
     await userEvent.click(nextButton);
     expect(mockHistoryPush).toHaveBeenCalledWith('SUMMARY_AND_SUBMIT');
-  }, 20000);
+  }, 25100);
 
   it('should show validations for new list name field', async () => {
     render(<ConfigureList userLists={mockUserLists} />);

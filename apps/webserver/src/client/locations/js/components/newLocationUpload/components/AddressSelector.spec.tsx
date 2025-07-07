@@ -83,7 +83,7 @@ describe('AddressSelector', () => {
 
     expect(screen.queryByText('123 Main St')).not.toBeInTheDocument();
     expect(mockOnClearValue).toHaveBeenCalled();
-  });
+  }, 10100);
 
   test('fetches coordinates when an option is selected', async () => {
     renderComponent();

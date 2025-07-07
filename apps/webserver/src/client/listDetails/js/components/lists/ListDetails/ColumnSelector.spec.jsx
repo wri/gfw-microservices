@@ -15,6 +15,9 @@ const mockTransifex = {
 global.Transifex = mockTransifex;
 
 describe('ColumnSelector', () => {
+  beforeAll(() => {
+    global.gtag = jest.fn();
+  });
   const mockSetListColumns = jest.fn();
   const mockListColumns = [
     { accessor: 'name', show: true },
@@ -54,9 +57,33 @@ describe('ColumnSelector', () => {
     const button = screen.getByRole('button');
     fireEvent.click(button);
 
-    expect(screen.getByRole('menu')).toBeInTheDocument();
+    expect(screen.getByText(/name/i)).toBeInTheDocument();
+    expect(screen.getByText(/description/i)).toBeInTheDocument();
+    expect(screen.getByText(/show\/hide table columns/i)).toBeInTheDocument();
+    expect(screen.getByLabelText(/select\/deselect all columns/i)).toBeInTheDocument();
 
-    expect(screen.getByText('name')).toBeInTheDocument();
-    expect(screen.getByText('description')).toBeInTheDocument();
+    expect(screen.getByLabelText(/select\/deselect all columns/i)).toBeInTheDocument();
+  });
+  it('calls setListColumns when a column checkbox is clicked', () => {
+    render(
+      <MuiThemeProvider muiTheme={muiTheme}>
+        <ColumnSelector
+          listColumns={mockListColumns}
+          visibleColumns={mockVisibleColumns}
+          setListColumns={mockSetListColumns}
+        />
+      </MuiThemeProvider>
+    );
+
+    const button = screen.getByRole('button');
+    fireEvent.click(button);
+
+    const descriptionCheckbox = screen.getByLabelText(/description/i);
+    fireEvent.click(descriptionCheckbox);
+
+    expect(mockSetListColumns).toHaveBeenCalledTimes(1);
+
+    const updatedColumns = mockSetListColumns.mock.calls[0][0];
+    expect(updatedColumns).toContain('description');
   });
 });

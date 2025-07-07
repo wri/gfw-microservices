@@ -542,6 +542,8 @@ describe('List Utils', () => {
         () => mockClientStoreConnection
       );
 
+      jest.spyOn(listAnalysisStatus, 'deleteListAnalyses').mockImplementation(jest.fn());
+
       await setListAnalysisStatus(
         'clientDatabase',
         1,
@@ -554,14 +556,6 @@ describe('List Utils', () => {
     });
 
     it('should skip GREENHOUSE_GAS_EMISSIONS if not isFromEAPI', async () => {
-      const analysisTypes = {
-        GREENHOUSE_GAS_EMISSIONS: 'GHG',
-      };
-      jest.doMock('@wri-monorepos/constants', () => ({
-        analysisTypes,
-        listStatus: { Pending: 1, Active: 2 },
-      }));
-
       const currentAnalysisStatuses = [
         { listId: 1, analysisId: 'GHG', status: listStatus.Active } as ListsAnalysisStatus,
       ];
@@ -598,14 +592,6 @@ describe('List Utils', () => {
     });
 
     it('should update GREENHOUSE_GAS_EMISSIONS if isFromEAPI', async () => {
-      const analysisTypes = {
-        GREENHOUSE_GAS_EMISSIONS: 'GHG',
-      };
-      jest.doMock('@wri-monorepos/constants', () => ({
-        analysisTypes,
-        listStatus: { Pending: 1, Active: 2 },
-      }));
-
       const currentAnalysisStatuses = [
         { listId: 1, analysisId: 'GHG', status: listStatus.Active } as ListsAnalysisStatus,
       ];

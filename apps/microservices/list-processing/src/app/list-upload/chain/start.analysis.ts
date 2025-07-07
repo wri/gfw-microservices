@@ -80,7 +80,7 @@ export class StartAnalysis extends AbstractHandler<ChainType> {
       user_id,
       subscriptionStatusId,
       false,
-      isExternalAPIProcess ? true : false
+      isExternalAPIProcess
     );
 
     if (result !== 'OK' && result !== 'Created') {

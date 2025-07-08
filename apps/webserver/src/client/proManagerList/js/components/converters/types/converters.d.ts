@@ -10,6 +10,6 @@ export interface ConverterJob {
 }
 
 export interface ConvertersData {
-  convertersNames: string[];
+  convertersNames: Record<string, string>;
   converterJobs: ConverterJob[];
 }

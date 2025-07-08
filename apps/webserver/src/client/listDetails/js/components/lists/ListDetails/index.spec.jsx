@@ -167,25 +167,22 @@ describe('ListDetails', () => {
       listViewOptions: [FOREST_CHANGE_VIEW],
     };
 
-    const { container } = render(<ListDetails {...props} />);
+    render(<ListDetails {...props} />);
 
-    // Verify that the warning box is rendered
-    const warningBox = container.querySelector('.MuiBox-root');
-    expect(warningBox).toBeInTheDocument();
-    expect(warningBox).toHaveStyle('background-color: #FEEEDB');
-
-    // Verify the warning message content using a flexible matcher
-    const warningMessage = screen.getByText((content, element) => {
-      const hasText = (el) => el.textContent === 'We have found 1 error in your locations';
-      const elementHasText = hasText(element);
-      const childrenDontHaveText = Array.from(element.children).every((child) => !hasText(child));
-      return elementHasText && childrenDontHaveText;
-    });
-    expect(warningMessage).toBeInTheDocument();
-
-    // Verify the warning icon
-    const warningIcon = screen.getByTestId('WarningIcon');
-    expect(warningIcon).toBeInTheDocument();
+    expect(screen.getByText(/1 location/i)).toBeInTheDocument();
+    expect(
+      screen.getByText(
+        /couldn't be analyzed due to invalid data \(based on the first 50 rows in your list\)\. hover over each failed location in the table to view specific errors\. fix errors offline, re-add locations to your list, and resubmit for analysis\. you can delete previously failed locations if desired\./i
+      )
+    ).toBeInTheDocument();
+    expect(
+      screen.getByRole('link', {
+        name: /more details/i,
+      })
+    ).toHaveAttribute(
+      'href',
+      'https://globalforestwatch.org/help/gfw-pro/guides/upload-locations-lists'
+    );
   });
 
   it('updates selected locations when checkbox is clicked', () => {

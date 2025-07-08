@@ -43,4 +43,5 @@ export const DATA_CY = {
 
 export const ExternalLinks = {
   ZendeskSupport: 'https://gfwpro.zendesk.com/hc/en-us/requests/new',
+  UploadListHelpCenter: 'https://globalforestwatch.org/help/gfw-pro/guides/upload-locations-lists',
 };

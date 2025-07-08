@@ -1,10 +1,13 @@
 import { Fragment } from 'react';
-import ReportIcon from '@mui/icons-material/Report';
-import EditNoteIcon from '@mui/icons-material/EditNote';
-import SpeedIcon from '@mui/icons-material/Speed';
-import AlertBanner from './AlertBanner';
-
 import { useTheme } from '@mui/material';
+import {
+  EditNote as EditNoteIcon,
+  Report as ReportIcon,
+  Speed as SpeedIcon,
+  Warning,
+} from '@mui/icons-material';
+
+import AlertBanner from './AlertBanner';
 
 export default function AnalysisStatusBanners({
   isDiagnosticStatusDraft,
@@ -25,7 +28,7 @@ export default function AnalysisStatusBanners({
       title: 'Location errors',
       backgroundColor: theme.palette.error.main,
       color: '#EEE',
-      icon: <ReportIcon style={{ marginRight: '5px' }} fontSize="inherit" />,
+      icon: <ReportIcon fontSize="inherit" />,
       message: (
         <>
           Some of your locations have failed analysis. <br /> This means that these locations won't
@@ -41,7 +44,7 @@ export default function AnalysisStatusBanners({
       title: 'Analysis has failed',
       backgroundColor: theme.palette.error.main,
       color: '#EEE',
-      icon: <ReportIcon style={{ marginRight: '5px' }} fontSize="inherit" />,
+      icon: <ReportIcon fontSize="inherit" />,
       message: <>To receive results, resubmit this list for analysis.</>,
       buttonText: 'Try Again',
       buttonTextColor: theme.palette.error.main,
@@ -52,7 +55,7 @@ export default function AnalysisStatusBanners({
       title: 'Usage limit exceeded',
       backgroundColor: theme.palette.warning.main,
       color: theme.palette.text.primary,
-      icon: <SpeedIcon style={{ marginRight: '5px' }} fontSize="inherit" />,
+      icon: <SpeedIcon fontSize="inherit" />,
       message: (
         <>
           This list failed due to usage limits.
@@ -73,7 +76,7 @@ export default function AnalysisStatusBanners({
       title: 'DRAFT',
       backgroundColor: theme.palette.secondary.main,
       color: '#EEE',
-      icon: <EditNoteIcon sx={{ mr: 0.5 }} fontSize="inherit" />,
+      icon: <EditNoteIcon fontSize="inherit" />,
       message: (
         <>
           Your list is currently in Draft state. To view data for your list, please submit for
@@ -86,20 +89,16 @@ export default function AnalysisStatusBanners({
     },
     {
       condition: isListWithErrors && isDiagnosticStatusDraft,
-      title: 'DRAFT',
-      backgroundColor: theme.palette.warning.main,
+      title: 'Draft - Location Errors Detected',
+      backgroundColor: theme.palette.secondary.light,
       color: theme.palette.text.primary,
-      icon: <EditNoteIcon sx={{ mr: 0.5 }} fontSize="inherit" />,
+      icon: <Warning sx={{ color: theme.palette.secondary.main }} fontSize="inherit" />,
       message: (
         <>
-          Your list is in Draft state because there are errors in your locations. Hover over your
-          locations with errors to understand why they failed. After fixing them offline, you can
-          re-upload them and add them to this list once again for submission.
+          This list is in Draft because it includes locations with errors. Location errors can be
+          corrected offline and re-added to your list. See more detailed instructions below.
         </>
       ),
-      buttonText: 'Submit for Analysis',
-      buttonTextColor: theme.palette.text.primary,
-      onButtonClick: openDraftSubmitDialog,
     },
   ];
 

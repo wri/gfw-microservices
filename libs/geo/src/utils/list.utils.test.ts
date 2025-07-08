@@ -13,7 +13,7 @@ import {
   createFeatureProps,
   setListAnalysisStatus,
 } from './list.utils';
-import { listStatus } from '@wri-monorepos/constants';
+import { analysisTypes, listStatus } from '@wri-monorepos/constants';
 import * as listAnalysisStatus from '../lib/list.analysis.status';
 
 // Mock the modules
@@ -320,7 +320,11 @@ describe('List Utils', () => {
     it('should handle empty analysis types array', async () => {
       const currentAnalysisStatuses = [
         { listId: 1, analysisId: 'FCD', status: listStatus.Active } as ListsAnalysisStatus,
-        { listId: 1, analysisId: 'DefReport', status: listStatus.Active } as ListsAnalysisStatus,
+        {
+          listId: 1,
+          analysisId: analysisTypes.DEFORESTATION_KPIS,
+          status: listStatus.Active,
+        } as ListsAnalysisStatus,
       ];
 
       // Setup repository mock
@@ -329,7 +333,7 @@ describe('List Utils', () => {
         save: jest.fn(),
         update: jest.fn(),
         findOne: jest.fn().mockImplementation(({ where }) => {
-          if (where.analysisId === 'FCD' || where.analysisId === 'DefReport') {
+          if (where.analysisId === 'FCD' || where.analysisId === analysisTypes.DEFORESTATION_KPIS) {
             return Promise.resolve({
               listId: 1,
               analysisId: where.analysisId,
@@ -370,7 +374,11 @@ describe('List Utils', () => {
     it('should update status for provided analysis types', async () => {
       const currentAnalysisStatuses = [
         { listId: 1, analysisId: 'FCD', status: listStatus.Active } as ListsAnalysisStatus,
-        { listId: 1, analysisId: 'DefReport', status: listStatus.Active } as ListsAnalysisStatus,
+        {
+          listId: 1,
+          analysisId: analysisTypes.DEFORESTATION_KPIS,
+          status: listStatus.Active,
+        } as ListsAnalysisStatus,
       ];
 
       // Setup repository mock
@@ -379,7 +387,7 @@ describe('List Utils', () => {
         save: jest.fn(),
         update: jest.fn(),
         findOne: jest.fn().mockImplementation(({ where }) => {
-          if (where.analysisId === 'FCD' || where.analysisId === 'DefReport') {
+          if (where.analysisId === 'FCD' || where.analysisId === analysisTypes.DEFORESTATION_KPIS) {
             return Promise.resolve({
               listId: 1,
               analysisId: where.analysisId,
@@ -404,12 +412,17 @@ describe('List Utils', () => {
       );
 
       // Call setListAnalysisStatus with analysis types
-      await setListAnalysisStatus('clientDatabase', 1, ['FCD', 'DefReport'], listStatus.Pending);
+      await setListAnalysisStatus(
+        'clientDatabase',
+        1,
+        ['FCD', analysisTypes.DEFORESTATION_KPIS],
+        listStatus.Pending
+      );
       // Verify deleteListAnalyses was called
       expect(listAnalysisStatus.deleteListAnalyses).toHaveBeenCalledWith(
         'clientDatabase',
         1,
-        ['FCD', 'DefReport'],
+        ['FCD', analysisTypes.DEFORESTATION_KPIS],
         currentAnalysisStatuses
       );
 
@@ -430,7 +443,7 @@ describe('List Utils', () => {
 
       expect(mockRepository.update).toHaveBeenNthCalledWith(
         2,
-        { listId: 1, analysisId: 'DefReport' },
+        { listId: 1, analysisId: 'AFI' },
         {
           status: listStatus.Pending,
           errorInfo: null,
@@ -442,7 +455,7 @@ describe('List Utils', () => {
         }
       );
     });
-    it('should update status for provided analysis types without delete  any analysis', async () => {
+    it('should not update status for invalid analysis types', async () => {
       const currentAnalysisStatuses = [
         { listId: 1, analysisId: 'FCD', status: listStatus.Active } as ListsAnalysisStatus,
         { listId: 1, analysisId: 'DefReport', status: listStatus.Active } as ListsAnalysisStatus,
@@ -479,10 +492,62 @@ describe('List Utils', () => {
       );
 
       // Call setListAnalysisStatus with analysis types
+      await expect(
+        setListAnalysisStatus('clientDatabase', 1, ['FCD', 'DefReport'], listStatus.Pending)
+      ).rejects.toThrowError('Invalid analysisId: DefReport');
+    });
+    it('should update status for provided analysis types without delete any analysis', async () => {
+      const currentAnalysisStatuses = [
+        {
+          listId: 1,
+          analysisId: analysisTypes.FOREST_CHANGE_DIAGNOSTICS,
+          status: listStatus.Active,
+        } as ListsAnalysisStatus,
+        {
+          listId: 1,
+          analysisId: analysisTypes.DEFORESTATION_KPIS,
+          status: listStatus.Active,
+        } as ListsAnalysisStatus,
+      ];
+
+      // Setup repository mock
+      const mockRepository = {
+        findBy: jest.fn().mockResolvedValue(currentAnalysisStatuses),
+        save: jest.fn(),
+        update: jest.fn(),
+        findOne: jest.fn().mockImplementation(({ where }) => {
+          if (
+            where.analysisId === analysisTypes.FOREST_CHANGE_DIAGNOSTICS ||
+            where.analysisId === analysisTypes.DEFORESTATION_KPIS
+          ) {
+            return Promise.resolve({
+              listId: 1,
+              analysisId: where.analysisId,
+              status: listStatus.Active,
+            });
+          }
+          return Promise.resolve(null);
+        }),
+      };
+
+      // Setup connection mock
+      const mockConnection = {
+        getRepository: jest.fn().mockReturnValue(mockRepository),
+      };
+
+      // Setup ClientStoreConnection mock
+      const mockClientStoreConnection = {
+        getConnection: jest.fn().mockResolvedValue(mockConnection),
+      };
+      (ClientStoreConnection as unknown as jest.Mock).mockImplementation(
+        () => mockClientStoreConnection
+      );
+
+      // Call setListAnalysisStatus with analysis types
       await setListAnalysisStatus(
         'clientDatabase',
         1,
-        ['FCD', 'DefReport'],
+        [analysisTypes.FOREST_CHANGE_DIAGNOSTICS, analysisTypes.DEFORESTATION_KPIS],
         listStatus.Pending,
         true
       );
@@ -506,7 +571,7 @@ describe('List Utils', () => {
 
       expect(mockRepository.update).toHaveBeenNthCalledWith(
         2,
-        { listId: 1, analysisId: 'DefReport' },
+        { listId: 1, analysisId: analysisTypes.DEFORESTATION_KPIS },
         {
           status: listStatus.Pending,
           errorInfo: null,
@@ -516,6 +581,121 @@ describe('List Utils', () => {
           bundleCreationTime: null,
           options: null,
         }
+      );
+    });
+
+    it('should not call deleteListAnalyses if isFromEAPI is true', async () => {
+      const currentAnalysisStatuses = [
+        { listId: 1, analysisId: 'GHG', status: listStatus.Active } as ListsAnalysisStatus,
+      ];
+
+      const mockRepository = {
+        findBy: jest.fn().mockResolvedValue(currentAnalysisStatuses),
+        save: jest.fn(),
+        update: jest.fn(),
+        findOne: jest.fn().mockResolvedValue(null),
+      };
+
+      const mockConnection = {
+        getRepository: jest.fn().mockReturnValue(mockRepository),
+      };
+
+      const mockClientStoreConnection = {
+        getConnection: jest.fn().mockResolvedValue(mockConnection),
+      };
+      (ClientStoreConnection as unknown as jest.Mock).mockImplementation(
+        () => mockClientStoreConnection
+      );
+
+      jest.spyOn(listAnalysisStatus, 'deleteListAnalyses').mockImplementation(jest.fn());
+
+      await setListAnalysisStatus(
+        'clientDatabase',
+        1,
+        ['FCD'],
+        listStatus.Pending,
+        true // isFromEAPI
+      );
+
+      expect(listAnalysisStatus.deleteListAnalyses).not.toHaveBeenCalled();
+    });
+
+    it('should skip GREENHOUSE_GAS_EMISSIONS if not isFromEAPI', async () => {
+      const currentAnalysisStatuses = [
+        { listId: 1, analysisId: 'GHG', status: listStatus.Active } as ListsAnalysisStatus,
+      ];
+
+      const mockRepository = {
+        findBy: jest.fn().mockResolvedValue(currentAnalysisStatuses),
+        save: jest.fn(),
+        update: jest.fn(),
+        findOne: jest.fn().mockResolvedValue(null),
+      };
+
+      const mockConnection = {
+        getRepository: jest.fn().mockReturnValue(mockRepository),
+      };
+
+      const mockClientStoreConnection = {
+        getConnection: jest.fn().mockResolvedValue(mockConnection),
+      };
+      (ClientStoreConnection as unknown as jest.Mock).mockImplementation(
+        () => mockClientStoreConnection
+      );
+
+      await setListAnalysisStatus(
+        'clientDatabase',
+        1,
+        ['GHG'],
+        listStatus.Pending,
+        false // isFromEAPI
+      );
+
+      // Should not call update or save for GREENHOUSE_GAS_EMISSIONS
+      expect(mockRepository.save).not.toHaveBeenCalled();
+      expect(mockRepository.update).not.toHaveBeenCalled();
+    });
+
+    it('should update GREENHOUSE_GAS_EMISSIONS if isFromEAPI', async () => {
+      const currentAnalysisStatuses = [
+        { listId: 1, analysisId: 'GHG', status: listStatus.Active } as ListsAnalysisStatus,
+      ];
+
+      const mockRepository = {
+        findBy: jest.fn().mockResolvedValue(currentAnalysisStatuses),
+        save: jest.fn(),
+        update: jest.fn(),
+        findOne: jest.fn().mockResolvedValue({
+          listId: 1,
+          analysisId: 'GHG',
+          status: listStatus.Active,
+        }),
+      };
+
+      const mockConnection = {
+        getRepository: jest.fn().mockReturnValue(mockRepository),
+      };
+
+      const mockClientStoreConnection = {
+        getConnection: jest.fn().mockResolvedValue(mockConnection),
+      };
+      (ClientStoreConnection as unknown as jest.Mock).mockImplementation(
+        () => mockClientStoreConnection
+      );
+
+      await setListAnalysisStatus(
+        'clientDatabase',
+        1,
+        ['GHG'],
+        listStatus.Pending,
+        true // isFromEAPI
+      );
+
+      expect(mockRepository.update).toHaveBeenCalledWith(
+        { listId: 1, analysisId: 'GHG' },
+        expect.objectContaining({
+          status: listStatus.Pending,
+        })
       );
     });
   });

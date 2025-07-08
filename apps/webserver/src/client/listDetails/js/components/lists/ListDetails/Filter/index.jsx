@@ -202,9 +202,9 @@ export default class Filter extends Component {
           alignItems="center"
           direction="row"
           justifyContent="space-between"
-          sx={{ paddingBottom: '10px' }}
+          sx={{ pt: 2, pb: 0.5 }}
         >
-          <Grid container spacing={3}>
+          <Grid container>
             {isInlineFilterVisible ? (
               <>
                 <Grid container item xs={8} spacing={3}>
@@ -241,6 +241,22 @@ export default class Filter extends Component {
                   {listView === POST_2020_RISK_ASSESSMENT_VIEW && !areAllAnalysesDraft && (
                     <NaturalForestLossDataSourceToggle />
                   )}
+                  {shouldRenderLocationsWithErrorsCheckbox && (
+                    <FormControlLabel
+                      sx={{ pl: 0.75 }}
+                      control={
+                        <Checkbox
+                          checked={this.state.hasError}
+                          onChange={this.changeShowOnlyLocationsWithError}
+                        />
+                      }
+                      label={
+                        <Typography variant="body2" sx={{ textTransform: 'none' }}>
+                          Show only locations with errors
+                        </Typography>
+                      }
+                    />
+                  )}
                 </Grid>
                 <Grid item xs={shouldRenderLocationsWithErrorsCheckbox ? 5 : 7}>
                   {!isCommodityRiskFilterVisible && !areAllAnalysesDraft && (
@@ -249,24 +265,9 @@ export default class Filter extends Component {
                 </Grid>
               </>
             )}
-            <Grid
-              item
-              xs={shouldRenderLocationsWithErrorsCheckbox ? 3 : 1}
-              sx={{ alignSelf: 'center' }}
-            >
+            <Grid item xs={1} sx={{ alignSelf: 'center', marginLeft: 'auto' }}>
               <Box flexGrow={1} />
               <Stack alignItems="center" direction="row">
-                {shouldRenderLocationsWithErrorsCheckbox && (
-                  <FormControlLabel
-                    control={
-                      <Checkbox
-                        checked={this.state.hasError}
-                        onChange={this.changeShowOnlyLocationsWithError}
-                      />
-                    }
-                    label={<Typography variant="span">Show only locations with errors</Typography>}
-                  />
-                )}
                 <MaterialButton
                   data-cy="filter-open-button"
                   sx={{ minWidth: '35px', '& > svg': { margin: 0 } }}

@@ -1,6 +1,6 @@
 const { getConverters } = require('../controllers/converters.controller');
 const { getConverterJobs } = require('../services/converters.service');
-import { ConverterNamesList } from '@wri-monorepos/constants';
+import { CONVERTER_NAMES } from '@wri-monorepos/constants';
 
 // Mock getConverterJobs
 jest.mock('../services/converters.service', () => ({
@@ -23,7 +23,7 @@ describe('getConverters', () => {
 
     expect(res.status).toHaveBeenCalledWith(200);
     expect(res.json).toHaveBeenCalledWith({
-      convertersNames: ConverterNamesList,
+      convertersNames: CONVERTER_NAMES,
       converterJobs: mockJobs,
     });
   });

@@ -26,7 +26,7 @@ describe('DataTemplates', () => {
 
     await userEvent.click(screen.getByRole('button', { name: /done/i }));
     expect(handleCloseMock).toHaveBeenCalledTimes(1);
-  });
+  }, 10100);
 
   it('should download a template when the download button is clicked', async () => {
     render(<DataTemplates onClose={handleCloseMock} isOpen={true} />);

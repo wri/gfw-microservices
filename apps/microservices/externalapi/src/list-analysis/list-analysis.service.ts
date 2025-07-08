@@ -420,6 +420,10 @@ export class ListAnalysisService {
       throwCustomErrorResponse('Internal server error', HttpStatus.INTERNAL_SERVER_ERROR);
     }
     const listId = largeListCreated.data.list_id;
+    if (!listId) {
+      this.logger.error('List ID not found from create-large-list');
+      throwCustomErrorResponse('List ID not found', HttpStatus.INTERNAL_SERVER_ERROR);
+    }
 
     try {
       // save list to process
@@ -470,7 +474,10 @@ export class ListAnalysisService {
     } catch (error) {
       // axios returns useful info in error.response.data
       this.logger.error('UploadNew error', error?.response?.data || error);
-      throw error;
+      throwCustomErrorResponse(
+        'UploadNew: Internal server error',
+        HttpStatus.INTERNAL_SERVER_ERROR
+      );
     }
   }
 

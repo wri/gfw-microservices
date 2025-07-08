@@ -61,6 +61,7 @@ export class ListCopyMoveService {
       subscriptionStatusId,
       gfwListId,
       allLocationsSelected = false,
+      srcListAnalysisTable,
       filters,
     } = request;
 
@@ -118,7 +119,7 @@ export class ListCopyMoveService {
       isSaveAsDraft,
       finalGeojson: geojson as FeatureCollection,
       commodityType,
-      srcListAnalysisTable: 'GFWLists',
+      srcListAnalysisTable,
       selectedLocations,
       gfwListId,
       organizationId,

@@ -221,11 +221,12 @@ interface RecordType {
 export const ComposeCopyQueryStatement = async (
   clientDatabase: string,
   selectedListId: number,
-  srcListAnalysisTable: string
+  srcListAnalysisTable: string,
+  isGFWList = false
 ) => {
-  const tableColumns = await GetTableAnalysisColumnsById(clientDatabase, selectedListId);
+  const tableColumns = await GetTableAnalysisColumnsById(clientDatabase, selectedListId, isGFWList);
 
-  const columns = tableColumns.map((record: RecordType) => record.COLUMN_NAME);
+  const columns = tableColumns?.map((record: RecordType) => record.COLUMN_NAME) ?? [];
   const statement = columns
     .map((column) => `[${column}] = [${srcListAnalysisTable}].[${column}]`)
     .join(',');
@@ -320,12 +321,13 @@ export const PerformCopyAnalysis = async (
   destinationListId: number,
   sourceLocationIds: number[],
   destinationLocationIds: number[],
-  isGFWList: boolean
+  isGFWList = false
 ) => {
   const statement = await ComposeCopyQueryStatement(
     clientDatabase,
     sourceListId,
-    srcListAnalysisTable
+    srcListAnalysisTable,
+    isGFWList
   );
 
   Logger.log(

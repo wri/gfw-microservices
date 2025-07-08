@@ -10,14 +10,17 @@ DECLARE @SRC_TABLE NVARCHAR(150)
 DECLARE @DEST_TABLE NVARCHAR(150)
 DECLARE @SQL NVARCHAR(MAX)
 
-SET @SRC_TABLE = (SELECT list_analysis_table_name FROM gfwpro.dbo.Lists WHERE id = @src_list_id)
+SET @SRC_TABLE = (SELECT list_analysis_table_name FROM gfwpro.dbo.GFWLists WHERE id = @src_list_id)
 SET @DEST_TABLE = (SELECT list_analysis_table_name FROM Lists WHERE id = @dest_list_id)
 
+-- Replace the dynamic table name with the alias
+SET @statement = REPLACE(@statement, '[' + @SRC_TABLE + '].', 'src.')
+
 SET @SQL = '
-    UPDATE [{DEST_TABLE}]
+    UPDATE dest
     SET {STATEMENT}
-    FROM gfwpro.dbo.[{SRC_TABLE}]
-    WHERE gfwpro.dbo.[{SRC_TABLE}].location_id = {SRC_LOCATION_ID} AND [{DEST_TABLE}].location_id = {DEST_LOCATION_ID}
+    FROM [{DEST_TABLE}] dest
+    INNER JOIN gfwpro.dbo.[{SRC_TABLE}] src ON src.location_id = {SRC_LOCATION_ID} AND dest.location_id = {DEST_LOCATION_ID}
 '
 
 SET @SQL = REPLACE(@SQL, '{DEST_TABLE}', @DEST_TABLE)
@@ -25,6 +28,10 @@ SET @SQL = REPLACE(@SQL, '{SRC_TABLE}', @SRC_TABLE)
 SET @SQL = REPLACE(@SQL, '{STATEMENT}', @statement)
 SET @SQL = REPLACE(@SQL, '{SRC_LOCATION_ID}', @src_location_id)
 SET @SQL = REPLACE(@SQL, '{DEST_LOCATION_ID}', @dest_location_id)
+
+-- Optional: Print the SQL to debug
+-- PRINT @SQL
+
 EXEC sp_executesql @SQL
 
 SET @SQL = '

@@ -8,6 +8,7 @@ import {
   Box,
   Alert,
   AlertTitle,
+  Link,
 } from '@mui/material';
 import Button from 'common/js/components/Button';
 import { ArrowBack, NotListedLocation, QueryStats } from '@mui/icons-material';
@@ -110,6 +111,7 @@ import '../../../../../locations/css/locations.scss';
 import '../../../../../locations/css/react-table.scss';
 import './ListDetails.scss';
 import { PillButton } from '../../../../../components';
+import { ExternalLinks } from '../../../../../utils/constants';
 
 export default class ListDetails extends Component {
   constructor(props) {
@@ -2208,12 +2210,13 @@ export default class ListDetails extends Component {
                             <Alert
                               variant="filled"
                               severity="error"
-                              sx={{ backgroundColor: '#ffeeed', color: '#8D0D01' }}
+                              sx={{ backgroundColor: '#FFEEED', color: '#8D0D01' }}
                               action={
                                 <PillButton
                                   variant="contained"
                                   color="info"
                                   sx={{ width: '240px', alignSelf: 'center' }}
+                                  onClick={() => this.setState({ draftSubmitDialogOpen: true })}
                                 >
                                   Add Locations again
                                 </PillButton>
@@ -2221,18 +2224,22 @@ export default class ListDetails extends Component {
                             >
                               <AlertTitle>Location Errors</AlertTitle>
                               <Typography variant="body2">
-                                <strong>{locationsWithError?.length} locations</strong> couldn't be
-                                analyzed due to invalid data (based on the first 50 rows in your
-                                list). Hover over each failed location in the table to view specific
-                                errors. Fix errors offline, re-add locations to your list, and
-                                resubmit for analysis. You can delete previously failed locations if
-                                desired.{' '}
-                                <a
-                                  href="#"
-                                  style={{ color: '#8D0D01', textDecoration: 'underline' }}
+                                <strong>
+                                  {locationsWithError?.length}{' '}
+                                  {locationsWithError?.length === 1 ? ' location' : ' locations'}
+                                </strong>{' '}
+                                couldn't be analyzed due to invalid data (based on the first 50 rows
+                                in your list). Hover over each failed location in the table to view
+                                specific errors. Fix errors offline, re-add locations to your list,
+                                and resubmit for analysis. You can delete previously failed
+                                locations if desired.{' '}
+                                <Link
+                                  href={ExternalLinks.UploadListHelpCenter}
+                                  target="_blank"
+                                  sx={{ color: '#8D0D01', textDecoration: 'underline' }}
                                 >
                                   More details
-                                </a>
+                                </Link>
                               </Typography>
                             </Alert>
                           )}

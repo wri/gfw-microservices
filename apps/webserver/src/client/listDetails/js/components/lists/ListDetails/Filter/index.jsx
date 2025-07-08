@@ -202,9 +202,9 @@ export default class Filter extends Component {
           alignItems="center"
           direction="row"
           justifyContent="space-between"
-          sx={{ paddingBottom: '10px' }}
+          sx={{ pt: 2, pb: 0.5 }}
         >
-          <Grid container spacing={3}>
+          <Grid container>
             {isInlineFilterVisible ? (
               <>
                 <Grid container item xs={8} spacing={3}>
@@ -243,6 +243,7 @@ export default class Filter extends Component {
                   )}
                   {shouldRenderLocationsWithErrorsCheckbox && (
                     <FormControlLabel
+                      sx={{ pl: 0.75 }}
                       control={
                         <Checkbox
                           checked={this.state.hasError}

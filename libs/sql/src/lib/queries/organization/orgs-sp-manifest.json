@@ -6,6 +6,7 @@
     "addPolicy",
     "adminInternalLists",
     "checkIfListIsEmpty",
+    "copyGFWLocationAnalysis",
     "copyLocationAnalysis",
     "createAnalysisTable",
     "createList",
@@ -126,6 +127,7 @@
     "getListLocations",
     "getSimplifiedListLocations",
     "copyLocationAnalysis",
+    "copyGFWLocationAnalysis",
     "getFilterOptionsForUserLists",
     "getTableColumns",
     "getLocationsFilteredToCopy",
@@ -233,6 +235,7 @@
     "uspGetPaginatedAnalysisDataForUserList"
   ],
   "undeletedSpInActivatePendingAccountFile": [
+    "copyGFWLocationAnalysis",
     "createAnalysisTable",
     "createList",
     "deleteLocation",

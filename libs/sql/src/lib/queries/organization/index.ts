@@ -51,6 +51,7 @@ export * from './updateAccountClassifications';
 export * from './getListLocations';
 export * from './getSimplifiedListLocations';
 export * from './copyLocationAnalysis';
+export * from './copyGFWLocationAnalysis';
 export * from './getFilterOptionsForUserLists';
 export * from './getTableColumns';
 export * from './getLocationsFilteredToCopy';

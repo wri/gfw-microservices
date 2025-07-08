@@ -1,7 +1,11 @@
 import { SQLUtils } from '../util/sql.utils';
 import { Injectable } from '@nestjs/common';
 import * as sql from 'mssql';
-import { GetLocationsCopyMoveType, getLocationsFilteredToCopy } from '../queries';
+import {
+  getGFWListsFilteredToCopy,
+  GetLocationsCopyMoveType,
+  getLocationsFilteredToCopy,
+} from '../queries';
 
 @Injectable()
 export class UspGetLocationsFilteredToCopy {
@@ -18,6 +22,7 @@ export class UspGetLocationsFilteredToCopy {
       searchString,
       locationLogic,
       columnsToReturn,
+      isGFWList = false,
     }
   ): Promise<GetLocationsCopyMoveType[]> {
     const parameters = [
@@ -82,11 +87,15 @@ export class UspGetLocationsFilteredToCopy {
       },
     ];
 
-    const result = await SQLUtils.queryDB<GetLocationsCopyMoveType[]>(
-      databaseName,
-      getLocationsFilteredToCopy,
-      parameters
-    );
+    let db = databaseName;
+    let query = getLocationsFilteredToCopy;
+
+    if (isGFWList) {
+      db = process.env.MSSQL_DATABASE;
+      query = getGFWListsFilteredToCopy;
+    }
+
+    const result = await SQLUtils.queryDB<GetLocationsCopyMoveType[]>(db, query, parameters);
 
     return result;
   }

@@ -319,7 +319,8 @@ export const PerformCopyAnalysis = async (
   sourceListId: number,
   destinationListId: number,
   sourceLocationIds: number[],
-  destinationLocationIds: number[]
+  destinationLocationIds: number[],
+  isGFWList: boolean
 ) => {
   const statement = await ComposeCopyQueryStatement(
     clientDatabase,
@@ -376,7 +377,12 @@ export const PerformCopyAnalysis = async (
       },
     ];
 
-    await SQLUtils.queryDB(clientDatabase, 'copyLocationAnalysis', parameters);
+    // GFW List has a different table name for the analysis table
+    if (isGFWList) {
+      await SQLUtils.queryDB(clientDatabase, 'copyGFWLocationAnalysis', parameters);
+    } else {
+      await SQLUtils.queryDB(clientDatabase, 'copyLocationAnalysis', parameters);
+    }
   }
 };
 

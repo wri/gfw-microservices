@@ -35,6 +35,125 @@ export class ListCopyMoveService {
 
   private readonly logger = new Logger(ListCopyMoveService.name);
   async run(request: CopyOrMoveLargeListRequestLLP) {
+    const { gfwListId } = request;
+    if (gfwListId) {
+      return await this.runGfwList(request);
+    }
+    return await this.runUserList(request);
+  }
+
+  async runGfwList(request: CopyOrMoveLargeListRequestLLP) {
+    const processUploadData = new ProcessUploadData();
+    const convertGeojsonProperties = new ConvertGeojsonProperties();
+
+    const {
+      action,
+      userListNames,
+      listType,
+      listName,
+      targetList,
+      selectedLocations,
+      commodityType,
+      saveAsDraft: isSaveAsDraft,
+      userId,
+      clientDatabase,
+      organizationId,
+      subscriptionStatusId,
+      gfwListId,
+      allLocationsSelected = false,
+      filters,
+    } = request;
+
+    CheckListNameIsValid(listType, listName, userListNames);
+
+    this.logger.log('Gathering information for locations');
+
+    // GFW List has only one analysis ID
+    const analysisIds = ['FCD'];
+    let moveToList = { ...targetList };
+
+    const locationData = await new UspGetLocationsFilteredToCopy().run(clientDatabase, {
+      listID: gfwListId,
+      selectedLocations: allLocationsSelected ? null : selectedLocations.join(),
+      country: filters.country,
+      state: filters.state,
+      subState: filters.subState,
+      analysisAreaMin: filters.analysisAreaMin,
+      analysisAreaMax: filters.analysisAreaMax,
+      searchString: filters.searchString,
+      locationLogic: null,
+      columnsToReturn: null,
+      isGFWList: true,
+    });
+
+    const featProps = createFeatureProps(locationData);
+    this.logger.log('Assembling GEO JSON');
+    const geojson = await assembleGeojson(featProps, locationData, clientDatabase, gfwListId);
+    deleteGeoJSONFeatureProperties(geojson);
+
+    const { list_id } = await handleNewListCreation({
+      listName,
+      userId,
+      clientDatabase,
+      analysisIds,
+      gfwListId,
+      selectedListId: gfwListId,
+      commodity: commodityType,
+      saveAsDraft: isSaveAsDraft,
+      commodityService: this.commodityService,
+    });
+    this.logger.log(`list created with id: ${list_id}`);
+    moveToList = {
+      ...moveToList,
+      id: list_id,
+      list_name: listName,
+    };
+
+    await handleExistingListUpdate({
+      clientDatabase,
+      selectedListId: gfwListId,
+      moveToList,
+      userId,
+      action,
+      isSaveAsDraft,
+      finalGeojson: geojson as FeatureCollection,
+      commodityType,
+      srcListAnalysisTable: 'GFWLists',
+      selectedLocations,
+      gfwListId,
+      organizationId,
+      analysisIds,
+      subscriptionStatusId,
+    });
+
+    // To update ListAttributes of destination list with new data, we need to
+    // run processUploadData (among other things, it automatically upgrades type
+    // from number to text), but that requires convertGeojsonProperties, so run
+    // that first.
+    const chainType = {
+      request: {
+        list_id: moveToList.id,
+        organization_database: clientDatabase,
+        isExternalAPIProcess: false,
+        organization_id: organizationId,
+        subscription_status_id: subscriptionStatusId,
+        hasUnanalyzableError: false,
+        path: '',
+      },
+      geojson: geojson as FeatureCollection,
+    };
+
+    convertGeojsonProperties.setNext(processUploadData);
+
+    await AbstractHandler.runFullChain(convertGeojsonProperties, chainType);
+
+    return {
+      success: true,
+      action,
+    };
+  }
+
+  async runUserList(request: CopyOrMoveLargeListRequestLLP) {
     const processUploadData = new ProcessUploadData();
     const convertGeojsonProperties = new ConvertGeojsonProperties();
 

@@ -15,12 +15,17 @@ type CreateListRequest = {
 };
 
 export const handleNewListCreation = async (param: CreateListRequest) => {
-  const { commodityService } = param;
+  const { commodityService, gfwListId, commodity: commoditySource } = param;
 
-  const { commodity } = await commodityService.getCommodityFromExistingList(
-    param.clientDatabase,
-    param.selectedListId
-  );
+  let commodity = commoditySource;
+  if (!gfwListId) {
+    const { commodity: commodityFromExistingList } =
+      await commodityService.getCommodityFromExistingList(
+        param.clientDatabase,
+        param.selectedListId
+      );
+    commodity = commodityFromExistingList;
+  }
 
   const commodityName =
     ConvertCommodityToMapSpamCode.getCommoditySpamName(commodity) || commodity.replace(/\s+/g, '_');

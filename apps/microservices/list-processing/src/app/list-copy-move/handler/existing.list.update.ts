@@ -66,6 +66,8 @@ export const handleExistingListUpdate = async (params: ListUpdateParams) => {
     subscriptionStatusId,
   } = params;
 
+  const isGFWList = gfwListId !== undefined;
+
   validateInput(params);
 
   // Lists to be unlocked after the process
@@ -93,7 +95,8 @@ export const handleExistingListUpdate = async (params: ListUpdateParams) => {
       selectedListId,
       moveToList.id,
       selectedLocations,
-      destLocationIds
+      destLocationIds,
+      isGFWList
     );
 
     if (isSaveAsDraft) {

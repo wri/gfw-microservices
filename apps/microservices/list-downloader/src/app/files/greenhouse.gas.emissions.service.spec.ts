@@ -42,15 +42,15 @@ describe('Green House Gas Emissions Service - [Location level]', () => {
     const lines = csvData.toString().split('\n');
     const expectedResults = [
       'List Name,Location Name,Location Size (Ha),Commodity,Data Layer Name,CO2 Emissions Factor,CH4 Emissions Factor,N2O Emissions Factor,Combined Emissions Factor,Year',
-      'kgTestCG3 927 all,location name 2,1256.1647,Soy,dLUC,20.8186,220.8186,320.8186,120.8186,2021',
-      'kgTestCG3 927 all,location name 2,1256.1647,Soy,dLUC,28.1142,228.1142,328.1142,228.1142,2022',
-      'kgTestCG3 927 all,location name 2,1256.1647,Soy,dLUC,10,20,3,0,2023',
-      'kgTestCG3 927 all,location name 3,1256.4204,Soy,dLUC,40.8186,420.8186,420.8186,148.3792,2021',
-      'kgTestCG3 927 all,location name 3,1256.4204,Soy,dLUC,48.1142,428.1142,428.1142,243.5327,2022',
-      'kgTestCG3 927 all,location name 3,1256.4204,Soy,dLUC,410,420,43,0,2023',
-      'kgTestCG3 927 all,location name 1,1256.2173,Soy,dLUC,50.8186,520.8186,520.8186,148.3792,2021',
-      'kgTestCG3 927 all,location name 1,1256.2173,Soy,dLUC,58.1142,528.1142,528.1142,243.5327,2022',
-      'kgTestCG3 927 all,location name 1,1256.2173,Soy,dLUC,510,520,53,0,2023',
+      '"kgTestCG3 927 all","location name 2",1256.1647,Soy,dLUC,20.8186,220.8186,320.8186,120.8186,2021',
+      '"kgTestCG3 927 all","location name 2",1256.1647,Soy,dLUC,28.1142,228.1142,328.1142,228.1142,2022',
+      '"kgTestCG3 927 all","location name 2",1256.1647,Soy,dLUC,10,20,3,0,2023',
+      '"kgTestCG3 927 all","location name 3",1256.4204,Soy,dLUC,40.8186,420.8186,420.8186,148.3792,2021',
+      '"kgTestCG3 927 all","location name 3",1256.4204,Soy,dLUC,48.1142,428.1142,428.1142,243.5327,2022',
+      '"kgTestCG3 927 all","location name 3",1256.4204,Soy,dLUC,410,420,43,0,2023',
+      '"kgTestCG3 927 all","location name 1",1256.2173,Soy,dLUC,50.8186,520.8186,520.8186,148.3792,2021',
+      '"kgTestCG3 927 all","location name 1",1256.2173,Soy,dLUC,58.1142,528.1142,528.1142,243.5327,2022',
+      '"kgTestCG3 927 all","location name 1",1256.2173,Soy,dLUC,510,520,53,0,2023',
       '',
     ];
     expect(lines).toStrictEqual(expectedResults);
@@ -91,12 +91,12 @@ describe('Green House Gas Emissions Service - [Location level]', () => {
     const lines = csvData.toString().split('\n');
     expect(lines).toStrictEqual([
       'List Name,Location Name,Location Size (Ha),Commodity,Data Layer Name,CO2 Emissions Factor,CH4 Emissions Factor,N2O Emissions Factor,Combined Emissions Factor,Year',
-      'kgTestCG3 927 all,location name 2,1256.1647,Soy,dLUC,50.8186,520.8186,520.8186,120.8186,2021',
-      'kgTestCG3 927 all,location name 2,1256.1647,Soy,dLUC,58.1142,528.1142,528.1142,228.1142,2022',
-      'kgTestCG3 927 all,location name 2,1256.1647,Soy,dLUC,510,520,53,0,2023',
-      'kgTestCG3 927 all,location name 1,1256.2173,Soy,dLUC,50.8186,520.8186,520.8186,148.3792,2021',
-      'kgTestCG3 927 all,location name 1,1256.2173,Soy,dLUC,58.1142,528.1142,528.1142,243.5327,2022',
-      'kgTestCG3 927 all,location name 1,1256.2173,Soy,dLUC,510,53,520,0,2023',
+      '"kgTestCG3 927 all","location name 2",1256.1647,Soy,dLUC,50.8186,520.8186,520.8186,120.8186,2021',
+      '"kgTestCG3 927 all","location name 2",1256.1647,Soy,dLUC,58.1142,528.1142,528.1142,228.1142,2022',
+      '"kgTestCG3 927 all","location name 2",1256.1647,Soy,dLUC,510,520,53,0,2023',
+      '"kgTestCG3 927 all","location name 1",1256.2173,Soy,dLUC,50.8186,520.8186,520.8186,148.3792,2021',
+      '"kgTestCG3 927 all","location name 1",1256.2173,Soy,dLUC,58.1142,528.1142,528.1142,243.5327,2022',
+      '"kgTestCG3 927 all","location name 1",1256.2173,Soy,dLUC,510,53,520,0,2023',
       '',
     ]);
   });

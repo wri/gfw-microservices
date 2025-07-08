@@ -39,8 +39,6 @@ export function saveUsers(state = [], action) {
       const user = state.filter((usr) => usr.user_id === action.user.user_id)[0];
       // Get the index of the user
       const index = state.indexOf(user);
-      console.log('user', user);
-      console.log('index', index);
       if (index > -1) {
         state[index] = Object.assign(user, action.user);
       }

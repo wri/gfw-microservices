@@ -79,7 +79,8 @@ export class StartAnalysis extends AbstractHandler<ChainType> {
       !isExternalAPIProcess,
       user_id,
       subscriptionStatusId,
-      false
+      false,
+      isExternalAPIProcess
     );
 
     if (result !== 'OK' && result !== 'Created') {

@@ -1,5 +1,6 @@
-import { Alert, Box, Stack, Typography } from '@mui/material';
+import { Alert, AlertTitle, Typography } from '@mui/material';
 import { PillButton } from '../../../../../components';
+import { darkenColor } from '../../../../../utils/utils';
 
 export default function AlertBanner({
   title,
@@ -12,34 +13,26 @@ export default function AlertBanner({
   onButtonClick,
 }) {
   return (
-    <Stack
-      sx={{ width: '100%', backgroundColor, alignItems: 'center', display: 'flex' }}
-      spacing={2}
-    >
-      <Alert
-        sx={{
-          backgroundColor,
-          color,
-          display: 'flex',
-          alignItems: 'center',
-          py: 1,
+    <Alert
+      sx={{
+        backgroundColor,
+        color,
+        display: 'flex',
+        alignItems: 'center',
+        py: 1,
+        m: 1,
+        border: `1px solid ${darkenColor(backgroundColor)}`,
+        '& .MuiAlert-message': {
           maxWidth: '1200px',
-        }}
-        icon={
-          <Box
-            sx={{
-              color,
-              display: 'flex',
-              justifyContent: 'center',
-              alignItems: 'center',
-            }}
-          >
-            {icon}
-            {title}
-          </Box>
-        }
-        severity="error"
-        action={
+          margin: 'auto',
+        },
+        '& .MuiAlert-action': {
+          marginRight: 'auto',
+        },
+      }}
+      icon={false}
+      action={
+        onButtonClick && (
           <PillButton
             style={{
               background: 'white',
@@ -54,12 +47,18 @@ export default function AlertBanner({
           >
             {buttonText}
           </PillButton>
-        }
+        )
+      }
+    >
+      <AlertTitle
+        sx={{ color, textTransform: 'none', display: 'flex', alignItems: 'center', gap: 1 }}
       >
-        <Typography variant="body2" sx={{ fontWeight: 'medium' }}>
-          {message}
-        </Typography>
-      </Alert>
-    </Stack>
+        {icon}
+        {title}
+      </AlertTitle>
+      <Typography variant="body2" sx={{ fontWeight: 'medium' }}>
+        {message}
+      </Typography>
+    </Alert>
   );
 }

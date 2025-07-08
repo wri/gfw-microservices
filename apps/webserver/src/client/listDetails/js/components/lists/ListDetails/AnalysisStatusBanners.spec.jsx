@@ -112,7 +112,7 @@ describe('AnalysisStatusBanners', () => {
     expect(screen.getByText('Location errors')).toBeInTheDocument();
     expect(
       screen.getByText(
-        'Your list is in Draft state because there are errors in your locations. Hover over your locations with errors to understand why they failed. After fixing them offline, you can re-upload them and add them to this list once again for submission.'
+        'This list is in Draft because it includes locations with errors. Location errors can be corrected offline and re-added to your list. See more detailed instructions below.'
       )
     ).toBeInTheDocument();
   });

@@ -38,7 +38,7 @@ import LocationMapDrawer from '../../adding/LocationMapDrawer';
 import { useUploadLocation } from '../contexts';
 import { useHistory } from '../hooks';
 import { PolygonFromMapPage, UploadType } from '../types';
-import { DATA_CY } from '../../../../../utils/constants';
+import { DATA_CY, ExternalLinks } from '../../../../../utils/constants';
 
 const MIN_AMOUNT_OF_COORDINATES = 3;
 const MAX_AMOUNT_OF_COORDINATES = 10;
@@ -227,7 +227,7 @@ export function UploadLocationByPolygon({
         </Typography>
         <ExternalHelperResource
           text="How to define polygon data on GFW Pro"
-          url="https://globalforestwatch.org/help/gfw-pro/guides/upload-locations-lists"
+          url={ExternalLinks.UploadListHelpCenter}
         />
 
         <Box sx={{ display: 'flex', gap: 0.75, mt: 3 }}>

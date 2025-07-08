@@ -46,7 +46,7 @@ import {
 import getCookie from '../../../../common/js/utils/getCookie';
 import getAccountUsagePercentage from './getAccountUsagePercentage';
 import featureFlags from '../../../../../utils/general.utils';
-import { DATA_CY } from '../../../../utils/constants';
+import { DATA_CY, ExternalLinks } from '../../../../utils/constants';
 
 class Landing extends Component {
   constructor(props) {
@@ -422,7 +422,7 @@ class Landing extends Component {
                     </PillButton>
                     <ExternalHelperResource
                       text="How to add your data"
-                      url="https://globalforestwatch.org/help/gfw-pro/guides/upload-locations-lists"
+                      url={ExternalLinks.UploadListHelpCenter}
                       color="text.secondary"
                     />
                   </Box>

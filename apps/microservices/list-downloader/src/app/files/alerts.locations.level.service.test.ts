@@ -48,9 +48,9 @@ describe('Alerts Locations Level Service', () => {
     const csvData = readCsvData(filePath);
     expect(csvData).toStrictEqual([
       'List Name,Location Name,Sub State,State,Country,Alert Type,Timeframe,Start Date,End Date,# of Location Level Alerts',
-      'WRI,BRA.12.116_1,Sinop,Mato Grosso,Brazil,Deforestation (Integrated Alerts),WEEK,01 Jan 2021,31 Jan 2021,1008',
-      'WRI,Presidencia de la Plaza,Presidencia de la Plaza,Chaco,Argentina,Deforestation (Integrated Alerts),WEEK,01 Jan 2021,31 Jan 2021,1',
-      'WRI,Sargento Cabral,Sargento Cabral,Chaco,Argentina,Deforestation (Integrated Alerts),WEEK,01 Jan 2021,31 Jan 2021,0',
+      'WRI,BRA.12.116_1,Sinop,"Mato Grosso",Brazil,"Deforestation (Integrated Alerts)",WEEK,"01 Jan 2021","31 Jan 2021",1008',
+      'WRI,"Presidencia de la Plaza","Presidencia de la Plaza",Chaco,Argentina,"Deforestation (Integrated Alerts)",WEEK,"01 Jan 2021","31 Jan 2021",1',
+      'WRI,"Sargento Cabral","Sargento Cabral",Chaco,Argentina,"Deforestation (Integrated Alerts)",WEEK,"01 Jan 2021","31 Jan 2021",0',
       '',
     ]);
   });
@@ -66,9 +66,9 @@ describe('Alerts Locations Level Service', () => {
     const csvData = readCsvData(filePath);
     expect(csvData).toStrictEqual([
       'List Name,Location Name,Sub State,State,Country,Alert Type,Timeframe,Start Date,End Date,# of Location Level Alerts',
-      'WRI,BRA.12.116_1,Sinop,Mato Grosso,Brazil,Deforestation (Integrated Alerts),MONTH,01 Jan 2021,31 Jan 2021,1008',
-      'WRI,Presidencia de la Plaza,Presidencia de la Plaza,Chaco,Argentina,Deforestation (Integrated Alerts),MONTH,01 Jan 2021,31 Jan 2021,1',
-      'WRI,Sargento Cabral,Sargento Cabral,Chaco,Argentina,Deforestation (Integrated Alerts),MONTH,01 Jan 2021,31 Jan 2021,0',
+      'WRI,BRA.12.116_1,Sinop,"Mato Grosso",Brazil,"Deforestation (Integrated Alerts)",MONTH,"01 Jan 2021","31 Jan 2021",1008',
+      'WRI,"Presidencia de la Plaza","Presidencia de la Plaza",Chaco,Argentina,"Deforestation (Integrated Alerts)",MONTH,"01 Jan 2021","31 Jan 2021",1',
+      'WRI,"Sargento Cabral","Sargento Cabral",Chaco,Argentina,"Deforestation (Integrated Alerts)",MONTH,"01 Jan 2021","31 Jan 2021",0',
       '',
     ]);
   });
@@ -84,9 +84,9 @@ describe('Alerts Locations Level Service', () => {
     const csvData = readCsvData(filePath);
     expect(csvData).toStrictEqual([
       'List Name,Location Name,Sub State,State,Country,Alert Type,Timeframe,Start Date,End Date,# of Location Level Alerts',
-      'WRI,BRA.12.116_1,Sinop,Mato Grosso,Brazil,Deforestation (Integrated Alerts),YEAR,01 Jan 2021,31 Jan 2021,1008',
-      'WRI,Presidencia de la Plaza,Presidencia de la Plaza,Chaco,Argentina,Deforestation (Integrated Alerts),YEAR,01 Jan 2021,31 Jan 2021,1',
-      'WRI,Sargento Cabral,Sargento Cabral,Chaco,Argentina,Deforestation (Integrated Alerts),YEAR,01 Jan 2021,31 Jan 2021,0',
+      'WRI,BRA.12.116_1,Sinop,"Mato Grosso",Brazil,"Deforestation (Integrated Alerts)",YEAR,"01 Jan 2021","31 Jan 2021",1008',
+      'WRI,"Presidencia de la Plaza","Presidencia de la Plaza",Chaco,Argentina,"Deforestation (Integrated Alerts)",YEAR,"01 Jan 2021","31 Jan 2021",1',
+      'WRI,"Sargento Cabral","Sargento Cabral",Chaco,Argentina,"Deforestation (Integrated Alerts)",YEAR,"01 Jan 2021","31 Jan 2021",0',
       '',
     ]);
   });
@@ -104,9 +104,9 @@ describe('Alerts Locations Level Service', () => {
     const csvData = readCsvData(filePath);
     expect(csvData).toStrictEqual([
       'List Name,Location Name,Sub State,State,Country,Alert Type,Timeframe,Start Date,End Date,# of Location Level Alerts',
-      'WRI,BRA.12.116_1,Sinop,Mato Grosso,Brazil,FIRES (VIIRS),WEEK,01 Apr 2023,30 Apr 2023,2',
-      'WRI,Presidencia de la Plaza,Presidencia de la Plaza,Chaco,Argentina,FIRES (VIIRS),WEEK,01 Apr 2023,30 Apr 2023,0',
-      'WRI,Sargento Cabral,Sargento Cabral,Chaco,Argentina,FIRES (VIIRS),WEEK,01 Apr 2023,30 Apr 2023,0',
+      'WRI,BRA.12.116_1,Sinop,"Mato Grosso",Brazil,"FIRES (VIIRS)",WEEK,"01 Apr 2023","30 Apr 2023",2',
+      'WRI,"Presidencia de la Plaza","Presidencia de la Plaza",Chaco,Argentina,"FIRES (VIIRS)",WEEK,"01 Apr 2023","30 Apr 2023",0',
+      'WRI,"Sargento Cabral","Sargento Cabral",Chaco,Argentina,"FIRES (VIIRS)",WEEK,"01 Apr 2023","30 Apr 2023",0',
       '',
     ]);
   });

@@ -141,20 +141,6 @@ describe('ConvertObject2CSV', () => {
     );
   });
 
-  test('Should quote string values that contain commas', () => {
-    const convertObject2CSV = new ConvertObject2CSV(['a', 'b', 'c']);
-    convertObject2CSV._transform(
-      [
-        ['hello', 'world,with,commas', 3],
-        ['test', 'simple', 6],
-      ],
-      '',
-      (err, data) => {
-        expect(data).toEqual('hello,"world,with,commas",3\ntest,simple,6\n');
-      }
-    );
-  });
-
   test('Should quote string values that contain multiple commas and spaces', () => {
     const convertObject2CSV = new ConvertObject2CSV(['a', 'b', 'c']);
     convertObject2CSV._transform(

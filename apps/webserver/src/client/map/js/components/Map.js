@@ -349,8 +349,8 @@ class Map extends Component {
     }
   };
 
-  stopInteraction = (stationary) => {
-    if (stationary) {
+  stopInteraction = (isStationary) => {
+    if (isStationary) {
       this.setState({ isMapMoving: false });
     }
   };

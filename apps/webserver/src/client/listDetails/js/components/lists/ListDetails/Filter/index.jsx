@@ -241,6 +241,21 @@ export default class Filter extends Component {
                   {listView === POST_2020_RISK_ASSESSMENT_VIEW && !areAllAnalysesDraft && (
                     <NaturalForestLossDataSourceToggle />
                   )}
+                  {shouldRenderLocationsWithErrorsCheckbox && (
+                    <FormControlLabel
+                      control={
+                        <Checkbox
+                          checked={this.state.hasError}
+                          onChange={this.changeShowOnlyLocationsWithError}
+                        />
+                      }
+                      label={
+                        <Typography variant="body2" sx={{ textTransform: 'none' }}>
+                          Show only locations with errors
+                        </Typography>
+                      }
+                    />
+                  )}
                 </Grid>
                 <Grid item xs={shouldRenderLocationsWithErrorsCheckbox ? 5 : 7}>
                   {!isCommodityRiskFilterVisible && !areAllAnalysesDraft && (
@@ -249,24 +264,9 @@ export default class Filter extends Component {
                 </Grid>
               </>
             )}
-            <Grid
-              item
-              xs={shouldRenderLocationsWithErrorsCheckbox ? 3 : 1}
-              sx={{ alignSelf: 'center' }}
-            >
+            <Grid item xs={1} sx={{ alignSelf: 'center', marginLeft: 'auto' }}>
               <Box flexGrow={1} />
               <Stack alignItems="center" direction="row">
-                {shouldRenderLocationsWithErrorsCheckbox && (
-                  <FormControlLabel
-                    control={
-                      <Checkbox
-                        checked={this.state.hasError}
-                        onChange={this.changeShowOnlyLocationsWithError}
-                      />
-                    }
-                    label={<Typography variant="span">Show only locations with errors</Typography>}
-                  />
-                )}
                 <MaterialButton
                   data-cy="filter-open-button"
                   sx={{ minWidth: '35px', '& > svg': { margin: 0 } }}

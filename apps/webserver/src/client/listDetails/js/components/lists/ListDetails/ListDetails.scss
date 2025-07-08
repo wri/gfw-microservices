@@ -28,7 +28,7 @@ body:has(.list-details) {
   justify-content: space-between;
   align-items: center;
   border-bottom: 1px solid lightgray;
-  padding-bottom: 10px;
+  padding: 10px 0 16px;
   margin-bottom: 10px;
 
   &__analysis-date {
@@ -41,6 +41,7 @@ body:has(.list-details) {
 .ReactTable.lists-react-table {
   position: relative;
   margin: auto;
+  max-width: none;
   .-headerGroups {
     display: none;
   }

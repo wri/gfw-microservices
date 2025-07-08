@@ -164,7 +164,7 @@ const ListActions = ({
 
   const searchInputLabel = useTransifexTranslation('Type your search and press Enter...');
   const updateAnalysisButtonLabel = useTransifexTranslation('Update Analysis');
-  const submitAnalysisButtonLabel = useTransifexTranslation('Submit Analysis');
+  const submitAnalysisButtonLabel = useTransifexTranslation('Re-Analyze List');
   const addLocationsButtonLabel = useTransifexTranslation('Add Locations');
 
   const folderActionButtonLabel = isInFolder
@@ -247,9 +247,8 @@ const ListActions = ({
             {isSubmitOptionAvailable && (
               <div>
                 <Button
-                  sx={greenButtonStyle}
+                  sx={blackButtonStyle}
                   startIcon={<Publish height="14px" />}
-                  variant="primary"
                   onClick={handleDraftSubmit}
                 >
                   {submitAnalysisButtonLabel}

@@ -1,7 +1,16 @@
 import { Component } from 'react';
-import { Typography, Grid, Button as MaterialButton, Stack, Paper, Box } from '@mui/material';
+import {
+  Typography,
+  Grid,
+  Button as MaterialButton,
+  Stack,
+  Paper,
+  Box,
+  Alert,
+  AlertTitle,
+} from '@mui/material';
 import Button from 'common/js/components/Button';
-import { ArrowBack, NotListedLocation, QueryStats, Warning } from '@mui/icons-material';
+import { ArrowBack, NotListedLocation, QueryStats } from '@mui/icons-material';
 import CustomDialog from 'common/js/components/CustomDialog/CustomDialog';
 import { maxLocations } from 'locations/js/utils/upload.utils';
 import LinkButton from 'common/js/components/LinkButton';
@@ -100,6 +109,8 @@ import '../../../../../locations/css/lists.scss';
 import '../../../../../locations/css/locations.scss';
 import '../../../../../locations/css/react-table.scss';
 import './ListDetails.scss';
+import { PillButton } from '../../../../../components';
+
 export default class ListDetails extends Component {
   constructor(props) {
     super(props);
@@ -2186,30 +2197,6 @@ export default class ListDetails extends Component {
                                 {translatedDiagnosticButtonLabel}
                               </MaterialButton>
                             )}
-                            {locationsWithError?.length > 0 && (
-                              <Box
-                                sx={{
-                                  p: 0.5,
-                                  backgroundColor: '#FEEEDB',
-                                  borderRadius: 1,
-                                  display: 'flex',
-                                  alignItems: 'center',
-                                  gap: 1,
-                                }}
-                              >
-                                <Warning
-                                  color="text"
-                                  sx={{
-                                    fontSize: '0.875rem',
-                                  }}
-                                />
-                                <Typography variant="body2">
-                                  We have found <strong>{locationsWithError?.length}</strong>
-                                  {locationsWithError?.length === 1 ? ' error' : ' errors'} in your
-                                  locations
-                                </Typography>
-                              </Box>
-                            )}
                             <span className="list-analysis-actions__analysis-date">
                               {this.getAnalysisLastUpdatedDate(
                                 listAnalysesStatus,
@@ -2217,6 +2204,39 @@ export default class ListDetails extends Component {
                               )}
                             </span>
                           </div>
+                          {locationsWithError?.length > 0 && (
+                            <Alert
+                              variant="filled"
+                              severity="error"
+                              sx={{ backgroundColor: '#ffeeed', color: '#8D0D01' }}
+                              action={
+                                <PillButton
+                                  variant="contained"
+                                  color="info"
+                                  sx={{ width: '240px', alignSelf: 'center' }}
+                                >
+                                  Add Locations again
+                                </PillButton>
+                              }
+                            >
+                              <AlertTitle>Location Errors</AlertTitle>
+                              <Typography variant="body2">
+                                <strong>{locationsWithError?.length} locations</strong> couldn't be
+                                analyzed due to invalid data (based on the first 50 rows in your
+                                list). Hover over each failed location in the table to view specific
+                                errors. Fix errors offline, re-add locations to your list, and
+                                resubmit for analysis. You can delete previously failed locations if
+                                desired.{' '}
+                                <a
+                                  href="#"
+                                  style={{ color: '#8D0D01', textDecoration: 'underline' }}
+                                >
+                                  More details
+                                </a>
+                              </Typography>
+                            </Alert>
+                          )}
+
                           <Filter
                             filterCount={filterCount}
                             filterValues={filterValues}

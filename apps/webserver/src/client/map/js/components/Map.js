@@ -294,6 +294,8 @@ class Map extends Component {
     let isFixingZoom = false;
 
     this.mapView.watch('stationary', async (isStationary) => {
+      this.stopInteraction(isStationary);
+
       // Workaround for missing tiles in the gadm_administrative_boundaries basemap at high zoom levels (max zoom: 10).
       // When zooming in too far, the layer doesn't render. To fix this, briefly zoom out to load tiles, then zoom back in.
       if (!isStationary || isFixingZoom || !this.isProgrammaticMove) {
@@ -333,15 +335,23 @@ class Map extends Component {
 
     mapView.when(this.mapLoaded);
   }
+
   setProgrammaticMove = () => {
     this.isProgrammaticMove = true;
     setTimeout(() => {
       this.isProgrammaticMove = false;
     }, 1000);
   };
+
   startInteraction = () => {
     if (!this.state.isMapMoving) {
       this.setState({ isMapMoving: true, isMapCentered: false });
+    }
+  };
+
+  stopInteraction = (stationary) => {
+    if (stationary) {
+      this.setState({ isMapMoving: false });
     }
   };
 
@@ -731,7 +741,6 @@ class Map extends Component {
   };
   goToOriginalPoint = () => {
     const { mapCenter } = this.state;
-
     this.safeGoTo(mapCenter);
   };
   mapLoaded = (view) => {

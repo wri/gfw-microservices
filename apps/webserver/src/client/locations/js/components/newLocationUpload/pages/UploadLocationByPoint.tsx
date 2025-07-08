@@ -12,7 +12,7 @@ import { ExternalHelperResource, PillButton } from '../../../../../components';
 import { MeasurementUnit, UploadType } from '../types';
 import { coordinateSchema, locationNameSchema } from '../utils/schema';
 import { useUploadLocation } from '../contexts';
-import { DATA_CY } from '../../../../../utils/constants';
+import { DATA_CY, ExternalLinks } from '../../../../../utils/constants';
 
 enum LocationFormat {
   Coordinates,
@@ -96,7 +96,7 @@ export function UploadLocationByPoint() {
         </Typography>
         <ExternalHelperResource
           text="How to define point and radius data on GFW Pro"
-          url="https://globalforestwatch.org/help/gfw-pro/guides/upload-locations-lists"
+          url={ExternalLinks.UploadListHelpCenter}
         />
 
         <Box sx={{ display: 'flex', gap: 0.75, mt: 3 }}>

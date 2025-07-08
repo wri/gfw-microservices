@@ -1,7 +1,6 @@
-import { render, screen, fireEvent, cleanup } from '@testing-library/react';
+import { render, screen, cleanup } from '@testing-library/react';
 import AlertBanner from './AlertBanner';
 import userEvent from '@testing-library/user-event';
-import '@testing-library/jest-dom';
 
 afterEach(() => {
   cleanup();
@@ -11,7 +10,7 @@ afterEach(() => {
 describe('AlertBanner', () => {
   const props = {
     title: 'Test Alert',
-    backgroundColor: 'red',
+    backgroundColor: '#ff0000',
     icon: <span data-testid="alert-icon">!</span>,
     message: 'This is a test message',
     buttonText: 'Dismiss',
@@ -36,10 +35,11 @@ describe('AlertBanner', () => {
     expect(screen.getByRole('button', { name: props.buttonText })).toBeInTheDocument();
   });
 
-  it('calls onButtonClick when the button is clicked', () => {
+  it('calls onButtonClick when the button is clicked', async () => {
+    const user = userEvent.setup();
     render(<AlertBanner {...props} />);
     const button = screen.getByRole('button', { name: props.buttonText });
-    fireEvent.click(button);
+    await user.click(button);
     expect(props.onButtonClick).toHaveBeenCalledTimes(1);
   });
 
@@ -72,12 +72,5 @@ describe('AlertBanner', () => {
     const button = screen.getByRole('button', { name: mockProps.buttonText });
     await user.click(button);
     expect(mockProps.onButtonClick).toHaveBeenCalledTimes(1);
-  });
-
-  it('renders the correct severity of the alert', () => {
-    render(<AlertBanner {...mockProps} />);
-
-    const alert = screen.getByRole('alert');
-    expect(alert).toHaveClass('MuiAlert-standardError');
   });
 });

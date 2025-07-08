@@ -51,7 +51,7 @@ const WrappedReactTable = ({
         rowInfo.original.analysisError ||
         id === listStatus.Inactive
       ) {
-        return 'rgba(242, 78, 30, 0.25)';
+        return '#ffeeed';
       }
 
       return '';

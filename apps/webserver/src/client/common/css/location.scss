@@ -1,7 +1,8 @@
 .locations-body {
   margin: 0 auto;
   max-width: 1024px;
-  padding: $space-large 0;
+  padding-top: $space-normal;
+  padding-bottom: $space-large;
 
   &--new-upload {
     padding-top: $space-comfortable;

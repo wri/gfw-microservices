@@ -221,11 +221,12 @@ interface RecordType {
 export const ComposeCopyQueryStatement = async (
   clientDatabase: string,
   selectedListId: number,
-  srcListAnalysisTable: string
+  srcListAnalysisTable: string,
+  isGFWList = false
 ) => {
-  const tableColumns = await GetTableAnalysisColumnsById(clientDatabase, selectedListId);
+  const tableColumns = await GetTableAnalysisColumnsById(clientDatabase, selectedListId, isGFWList);
 
-  const columns = tableColumns.map((record: RecordType) => record.COLUMN_NAME);
+  const columns = tableColumns?.map((record: RecordType) => record.COLUMN_NAME) ?? [];
   const statement = columns
     .map((column) => `[${column}] = [${srcListAnalysisTable}].[${column}]`)
     .join(',');
@@ -319,12 +320,14 @@ export const PerformCopyAnalysis = async (
   sourceListId: number,
   destinationListId: number,
   sourceLocationIds: number[],
-  destinationLocationIds: number[]
+  destinationLocationIds: number[],
+  isGFWList = false
 ) => {
   const statement = await ComposeCopyQueryStatement(
     clientDatabase,
     sourceListId,
-    srcListAnalysisTable
+    srcListAnalysisTable,
+    isGFWList
   );
 
   Logger.log(
@@ -376,7 +379,12 @@ export const PerformCopyAnalysis = async (
       },
     ];
 
-    await SQLUtils.queryDB(clientDatabase, 'copyLocationAnalysis', parameters);
+    // GFW List has a different table name for the analysis table
+    if (isGFWList) {
+      await SQLUtils.queryDB(clientDatabase, 'copyGFWLocationAnalysis', parameters);
+    } else {
+      await SQLUtils.queryDB(clientDatabase, 'copyLocationAnalysis', parameters);
+    }
   }
 };
 

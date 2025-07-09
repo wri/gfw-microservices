@@ -45,12 +45,16 @@ export const PerformGetLockStatus = (clientDatabase, listId) => {
   });
 };
 
-export const GetTableAnalysisColumnsById = (clientDatabase, listId) => {
+export const GetTableAnalysisColumnsById = (clientDatabase, listId, isGFWList = false) => {
   const listLocationStatus = new UspGetAnalysisColumns();
 
-  return listLocationStatus.run(clientDatabase, {
-    listId: listId,
-  });
+  return listLocationStatus.run(
+    clientDatabase,
+    {
+      listId: listId,
+    },
+    isGFWList
+  );
 };
 
 /**

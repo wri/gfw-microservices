@@ -86,7 +86,8 @@ describe('handleExistingListUpdate', () => {
       mockSelectedListId,
       mockMoveToList.id,
       mockSelectedLocations,
-      mockDestLocationIds
+      mockDestLocationIds,
+      true // isGFWList should be true when gfwListId is defined
     );
 
     expect(UnlockListAndSaveAsDraft).toHaveBeenCalledWith(
@@ -123,6 +124,16 @@ describe('handleExistingListUpdate', () => {
       subscriptionStatusId: mockSubscriptionStatusId,
     });
 
+    expect(PerformCopyAnalysis).toHaveBeenCalledWith(
+      mockClientDatabase,
+      mockSrcListAnalysisTable,
+      mockSelectedListId,
+      mockMoveToList.id,
+      mockSelectedLocations,
+      expect.any(Array),
+      true // isGFWList should be true when gfwListId is defined
+    );
+
     expect(handleCreateAnalysis).toHaveBeenCalledWith(
       'Alerts,FCD',
       mockMoveToList.id,
@@ -132,6 +143,70 @@ describe('handleExistingListUpdate', () => {
       mockUserId,
       mockSubscriptionStatusId,
       false
+    );
+  });
+
+  it('should pass isGFWList as true when gfwListId is defined', async () => {
+    const mockDestLocationIds = [1, 2];
+    (PerformLocationsBulkCopy as jest.Mock).mockResolvedValue(mockDestLocationIds);
+
+    await handleExistingListUpdate({
+      clientDatabase: mockClientDatabase,
+      selectedListId: mockSelectedListId,
+      moveToList: mockMoveToList,
+      userId: mockUserId,
+      action: mockAction,
+      isSaveAsDraft: true,
+      finalGeojson: mockFinalGeojson,
+      commodityType: mockCommodityType,
+      srcListAnalysisTable: mockSrcListAnalysisTable,
+      selectedLocations: mockSelectedLocations,
+      gfwListId: 456, // defined gfwListId
+      organizationId: mockOrganizationId,
+      analysisIds: mockAnalysisIds,
+      subscriptionStatusId: mockSubscriptionStatusId,
+    });
+
+    expect(PerformCopyAnalysis).toHaveBeenCalledWith(
+      mockClientDatabase,
+      mockSrcListAnalysisTable,
+      mockSelectedListId,
+      mockMoveToList.id,
+      mockSelectedLocations,
+      mockDestLocationIds,
+      true // isGFWList should be true when gfwListId is defined
+    );
+  });
+
+  it('should pass isGFWList as false when gfwListId is undefined', async () => {
+    const mockDestLocationIds = [1, 2];
+    (PerformLocationsBulkCopy as jest.Mock).mockResolvedValue(mockDestLocationIds);
+
+    await handleExistingListUpdate({
+      clientDatabase: mockClientDatabase,
+      selectedListId: mockSelectedListId,
+      moveToList: mockMoveToList,
+      userId: mockUserId,
+      action: mockAction,
+      isSaveAsDraft: true,
+      finalGeojson: mockFinalGeojson,
+      commodityType: mockCommodityType,
+      srcListAnalysisTable: mockSrcListAnalysisTable,
+      selectedLocations: mockSelectedLocations,
+      gfwListId: undefined, // undefined gfwListId
+      organizationId: mockOrganizationId,
+      analysisIds: mockAnalysisIds,
+      subscriptionStatusId: mockSubscriptionStatusId,
+    });
+
+    expect(PerformCopyAnalysis).toHaveBeenCalledWith(
+      mockClientDatabase,
+      mockSrcListAnalysisTable,
+      mockSelectedListId,
+      mockMoveToList.id,
+      mockSelectedLocations,
+      mockDestLocationIds,
+      false // isGFWList should be false when gfwListId is undefined
     );
   });
 

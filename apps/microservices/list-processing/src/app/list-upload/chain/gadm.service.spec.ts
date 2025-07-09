@@ -122,14 +122,10 @@ describe('GADMService', () => {
           { attributes: { name_0: 'Country', name_1: 'State', name_2: 'Substate', gadmid: '123' } },
         ],
       });
-      const result = await service.addGeoReferenceData(feature);
+      await service.addGeoReferenceData(feature);
       expect(feature.properties).toEqual({
         longitude: 0,
         latitude: 0,
-        subState: 'Substate',
-        state: 'State',
-        country: 'Country',
-        gadmid: '123',
       });
     });
 

@@ -1,18 +1,6 @@
-import Polygon from '@arcgis/core/geometry/Polygon';
-import SpatialReference from '@arcgis/core/geometry/SpatialReference';
-import * as geometryEngine from '@arcgis/core/geometry/geometryEngine';
-
-import httpRequest from '../../../common/js/utils/httpRequest';
-import { deduceActiveId, deduceActiveName } from '../../../common/js/utils/templateUtils';
-import {
-  containsPunctuation,
-  getListStatusId,
-  getListValidStatus,
-} from '../../../locations/js/utils/lists.utils';
-import geojsonUtil from '../../../common/js/utils/arcgis-to-geojson';
+import { deduceActiveId } from '../../../common/js/utils/templateUtils';
+import { containsPunctuation, getListValidStatus } from '../../../locations/js/utils/lists.utils';
 import { saveAsDraftListConfig } from '../../../../config/config/locations.config';
-import { analysisTypes } from '../../../../config/env/analysisTypes.constants';
-import { GFW_LISTS_NUMBER_CONSTANTS } from '../../../../config/env/gfwLists.constants';
 
 const filterValidTemplates = (template, activeTemplate, addType, commodityType) => {
   let templateId = 1;
@@ -107,139 +95,6 @@ const discernPropValue = (feature, prop) => {
   return propValue;
 };
 
-/**
- * @function assembleGfwListGeojson
- *
- * @param {Array} featProps Properties that need to be merged with the geometries
- * @param {Array} geometries Geometries of the polygons that will be analyzed
- * @summary Merges geometries and properties together to form a geojson
- */
-const assembleGfwListGeojson = (featProps, geometries) => {
-  const geojson = {
-    type: 'FeatureCollection',
-    features: [],
-  };
-
-  geometries.features.forEach((feature) => {
-    const property = featProps.find(
-      (prop) => prop?.location_id === feature?.properties?.location_id
-    );
-
-    if (!property) {
-      console.warn(`No match for location_id: ${feature?.properties?.location_id}`);
-      throw new Error('Matching property not found.');
-    }
-
-    // Removing temporary location_id that was used to map with geoms
-    delete property.location_id;
-
-    geojson.features.push({
-      type: 'Feature',
-      properties: property,
-      geometry: feature.geometry,
-    });
-    const esriJson = geojsonUtil.geojsonToArcGIS(feature);
-    const esriGeometry = new Polygon({
-      rings: esriJson.geometry.rings,
-      spatialReference: SpatialReference.WGS84,
-    });
-
-    const area = geometryEngine.geodesicArea(esriGeometry, 'hectares');
-    const lastFeature = geojson.features[geojson.features.length - 1];
-    lastFeature.properties['Analysis Area'] = area;
-
-    if (!lastFeature.properties['Analysis Radius']) {
-      lastFeature.properties['Analysis Radius'] = 0;
-    }
-  });
-
-  return geojson;
-};
-
-const getGFWListLocationGeom = (list_id, location_ids) => {
-  return new Promise((resolve, reject) => {
-    httpRequest
-      .fetchForm(
-        '/locations/getGFWListLocationGeom',
-        `list_id=${list_id}&location_ids=${location_ids}`
-      )
-      .then((response) => {
-        const geometries = JSON.parse(response);
-        resolve(geometries);
-      })
-      .catch((err) => {
-        console.warn('error with grabbing gfw location data', err);
-        reject(err);
-      });
-  });
-};
-
-const addGfwStepTwoFields = (feature, columnsToAdd, sourceListName, addType) => {
-  feature.checked = false;
-  feature.valid = true;
-
-  columnsToAdd.forEach((column) => {
-    feature[column] = '';
-  });
-
-  if (addType === 'commodity') {
-    if (sourceListName === 'RSPO Palm Concessions') {
-      feature.Certification = 'Yes';
-    } else if (sourceListName === 'Palm Oil Mills') {
-      feature.ID = feature['Mill ID'] ? feature['Mill ID'].toString() : '';
-      delete feature['Mill ID'];
-      feature['Company ID'] = 'n/a';
-      feature['Alternative Mill Name'] = feature['Alternative Name']
-        ? feature['Alternative Name'].toString()
-        : '';
-      delete feature['Alternative Name'];
-    } else if (sourceListName === 'Administrative Areas') {
-      feature['Location Classification'] = 'Administrative Area';
-    } else if (sourceListName === 'Protected Areas') {
-      feature['IUCN Category'] = feature['IUCN CAT'] ? feature['IUCN CAT'].toString() : '';
-      delete feature['IUCN CAT'];
-    }
-
-    if (sourceListName === 'Oil Palm Concessions') {
-      switch (feature.Certification.toLowerCase()) {
-        case 'none':
-          feature.Certification = 'No';
-          break;
-        case '':
-          feature.Certification = '';
-          break;
-        default:
-          feature.Certification = 'Yes';
-      }
-    }
-    // It's an investment
-  } else {
-    // The Protected Areas list has the names on "Location Name" even though it's an investment
-    // when copied.
-    if (!feature['Investment Name'] && feature['Location Name']) {
-      feature['Investment Name'] = feature['Location Name'];
-      feature['Location Name'] = '';
-    }
-  }
-
-  const analysisFields = {
-    'Analysis Radius': '',
-    'Analysis Area': '',
-  };
-  for (const key in feature) {
-    if (key === 'Analysis Radius' || key === 'Analysis Area') {
-      analysisFields[key] = feature[key];
-    }
-  }
-  if (sourceListName === 'Palm Oil Mills') {
-    if (analysisFields['Analysis Radius'] === '' && analysisFields['Analysis Area'] === '') {
-      feature.valid = false;
-      feature.invalidFields.push('Analysis Radius');
-      feature.invalidFields.push('Analysis Area');
-    }
-  }
-};
-
 const saveGfwListLocations = (
   selectedList,
   newListName,
@@ -272,307 +127,106 @@ const saveGfwListLocations = (
       return;
     }
 
-    const customAttributeHeaders =
-      selectedList.list_name === 'Palm Oil Mills'
-        ? [
-            { field: 'Attribute1', custom: 'Alternative Mill Name' },
-            { field: 'Attribute2', custom: 'Group Name' },
-            { field: 'Attribute3', custom: 'Attribute3' },
-          ]
-        : listName === 'Protected Areas'
-        ? [
-            { field: 'Attribute1', custom: 'IUCN Category' },
-            { field: 'Attribute2', custom: 'Designation Type' },
-            { field: 'Attribute3', custom: 'Designation' },
-          ]
-        : [
-            { field: 'Attribute1', custom: 'Attribute1' },
-            { field: 'Attribute2', custom: 'Attribute2' },
-            { field: 'Attribute3', custom: 'Attribute3' },
-          ];
-
-    const featProps = [],
-      ids = [];
-    let templateId;
-    const customAttributes = [];
-
-    if (addType === 'commodity') {
-      let active = activeTemplate;
-
-      if (active === 'investment') {
-        if (commodityType === 'palmOil') {
-          active = 'palmGeneric';
-        } else if (commodityType === 'soy') {
-          active = 'soyGeneric';
-        } else if (commodityType === 'cattle') {
-          active = 'cattleGeneric';
-        } else if (commodityType === 'cocoa') {
-          active = 'cocoaGeneric';
-        }
-      }
-      const template_name = deduceActiveName(active);
-
-      const activeTemplates = [];
-      const customAttributeNames = [];
-
-      templateData.forEach((template) => {
-        if (template.template_name === template_name) {
-          if (template.template_datum_field_name === 'Attribute1') {
-            if (customAttributeHeaders[0].custom !== 'Attribute1') {
-              template.template_datum_field_name_updated = customAttributeHeaders[0].custom;
-              customAttributeNames.push(template.template_datum_field_name_updated);
-            }
-          } else if (template.template_datum_field_name === 'Attribute2') {
-            if (customAttributeHeaders[1].custom !== 'Attribute2') {
-              template.template_datum_field_name_updated = customAttributeHeaders[1].custom;
-              customAttributeNames.push(template.template_datum_field_name_updated);
-            }
-          } else if (template.template_datum_field_name === 'Attribute3') {
-            if (customAttributeHeaders[2].custom !== 'Attribute3') {
-              template.template_datum_field_name_updated = customAttributeHeaders[2].custom;
-              customAttributeNames.push(template.template_datum_field_name_updated);
-            }
-          } else {
-            activeTemplates.push(template);
-          }
-        }
-      });
-
-      const genericFields = [];
-
-      activeTemplates.forEach((template) => {
-        if (
-          template.template_datum_field_name !== 'Attribute1' &&
-          template.template_datum_field_name !== 'Attribute2' &&
-          template.template_datum_field_name !== 'Attribute3'
-        ) {
-          genericFields.push(template.template_datum_field_name);
-        }
-      });
-
-      customAttributeNames.forEach((customAtt) => {
-        customAttributes.push({
-          column_name: customAtt,
-          column_type: 'Text',
-        });
-      });
-
-      templateId = activeTemplates[0].template_id;
-
-      // Figure out which fields are missing from the data we have so we can add them later.
-      const columnsToAdd = [];
-      templateData.forEach((data) => {
-        if (
-          data.template_name === template_name &&
-          uploadingData[0][data.template_datum_field_name] === undefined
-        ) {
-          columnsToAdd.push(data.template_datum_field_name);
-        }
-      });
-
-      uploadingData.forEach((feature) => {
-        addGfwStepTwoFields(feature, columnsToAdd, selectedList.list_name, addType);
-        const properties = {};
-        Object.keys(feature).forEach((prop) => {
-          if (
-            prop !== 'checked' &&
-            prop !== 'valid' &&
-            prop !== 'Attribute1' &&
-            prop !== 'Attribute2' &&
-            prop !== 'Attribute3' &&
-            prop !== 'invalidFields' &&
-            prop !== 'type' &&
-            prop !== 'geometry'
-          ) {
-            if (customAttributeNames.indexOf(prop) > -1) {
-              //it is a custom attribute
-              properties[prop] = feature[prop];
-            } else if (genericFields.indexOf(prop) > -1) {
-              //it is a normal, expected attribute of this template
-              properties[prop] = discernPropValue(feature, prop);
-            }
-          }
-        });
-
-        if (!properties['Start Date']) {
-          properties['Start Date'] = '';
-        }
-        if (!properties['End Date']) {
-          properties['End Date'] = '';
-        }
-
-        properties['Wind Barrier'] = '';
-        properties['Riparian Buffers'] = '';
-        properties['Buffer Zones'] = '';
-        properties.Latitude = feature.Latitude;
-        properties.Longitude = feature.Longitude;
-        properties.Size = feature.Size;
-        properties.location_id = feature.location_id;
-
-        featProps.push(properties);
-        ids.push(feature.location_id);
-      });
-    } else {
-      // Figure out which fields are missing from the data we have so we can add them later.
-      const columnsToAdd = [];
-      templateData.forEach((data) => {
-        if (
-          data.template_name === 'Investment' &&
-          uploadingData[0][data.template_datum_field_name] === undefined
-        ) {
-          columnsToAdd.push(data.template_datum_field_name);
-        }
-      });
-
-      const activeTemplates = templateData.filter((template) => {
-        return template.template_name === 'Investment';
-      });
-
-      templateId = activeTemplates[0].template_id;
-
-      uploadingData.forEach((feature) => {
-        addGfwStepTwoFields(feature, columnsToAdd, selectedList.list_name, addType);
-        const properties = {};
-
-        Object.keys(feature).forEach((prop) => {
-          if (
-            prop !== 'checked' &&
-            prop !== 'valid' &&
-            prop !== 'invalidFields' &&
-            prop !== 'type' &&
-            prop !== 'geometry'
-          ) {
-            properties[prop] = discernPropValue(feature, prop);
-          }
-        });
-
-        if (!properties['Start Date']) {
-          properties['Start Date'] = '';
-        }
-        if (!properties['End Date']) {
-          properties['End Date'] = '';
-        }
-
-        properties['Wind Barrier'] = '';
-        properties['Riparian Buffers'] = '';
-        properties['Buffer Zones'] = '';
-        properties.Latitude = feature.Latitude;
-        properties.Longitude = feature.Longitude;
-        properties.location_id = feature.location_id;
-
-        properties['Analysis Radius'] = '0';
-
-        featProps.push(properties);
-        ids.push(feature.location_id);
-      });
+    // Check if target list would exceed 1500 locations limit
+    if (
+      selectedNewOrExisting === 'existing' &&
+      moveToList &&
+      moveToList.list_locations_count + uploadingData.length > 1500
+    ) {
+      reject('listTooLong');
+      return;
     }
 
-    getGFWListLocationGeom(selectedLists[0].id, ids)
-      .then((geoms) => {
-        let geojson;
-        try {
-          geojson = assembleGfwListGeojson(featProps, geoms);
-        } catch (err) {
-          console.warn('Error assembling GFW list GeoJSON:', err);
-          reject(err);
-          return;
+    // Extract location IDs from uploading data
+    const selectedLocations = uploadingData.map((feature) => feature.location_id);
+
+    // Determine action type (always copy for GFW lists)
+    const action = 'copy';
+
+    // Determine list type
+    const listType = selectedNewOrExisting === 'new' ? 'new' : 'existing';
+
+    // Prepare filters object (empty for GFW lists as they don't use filters)
+    const filters = {
+      country: null,
+      state: null,
+      subState: null,
+      analysisAreaMin: null,
+      analysisAreaMax: null,
+      searchString: null,
+    };
+
+    // Prepare the standardized copy/move request
+    const copyMoveRequest = {
+      listId: selectedLists[0].id,
+      selectedListLocationClassification:
+        selectedList.list_name === 'Administrative Areas' ? 'Administrative Area' : 'Supply Shed',
+      customAttributesNames: [], // GFW lists don't have custom attributes
+      action: action,
+      listType: listType,
+      listName: listName,
+      targetList: selectedNewOrExisting === 'existing' ? moveToList : undefined,
+      selectedLocations: selectedLocations,
+      addType: addType,
+      activeTemplate: activeTemplate,
+      commodityType: commodityType,
+      saveAsDraft: isSaveAsDraft,
+      userId: null, // Will be set by the server
+      clientDatabase: null, // Will be set by the server
+      organizationId: null, // Will be set by the server
+      subscriptionStatusId: null, // Will be set by the server
+      gfwListId: selectedLists[0].id,
+      allLocationsSelected: false,
+      filters: filters,
+      srcListAnalysisTable: selectedList.list_analysis_table_name || null,
+      isUploadListLpEnabled: true,
+      userListNames: userListNames,
+    };
+
+    // Make request to the standardized copy/move endpoint
+    fetch('/locations/cm-large-list', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(copyMoveRequest),
+    })
+      .then((response) => {
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
         }
+        return response.text();
+      })
+      .then((responseText) => {
+        try {
+          const response = JSON.parse(responseText);
 
-        if (listName) {
-          const request = new XMLHttpRequest();
-          request.onload = () => {
-            if (
-              request.responseText === 'LocationAdded' ||
-              request.responseText === 'LocationAppended' ||
-              request.responseText === saveAsDraftListConfig.success
-            ) {
-              resolve(request.responseText);
+          if (response.success) {
+            // Map the response to the expected format
+            if (selectedNewOrExisting === 'new') {
+              resolve('LocationAdded');
             } else {
-              reject(request.responseText);
+              resolve('LocationAppended');
             }
-          };
-
-          request.onerror = (err) => {
-            reject(err);
-            console.warn(`Error: ${err}`);
-          };
-
-          let bigObj;
-          // TODO: we're deleting these properties so that the backend call doesn't throw an error.
-          // Version 1.1 - we need to add the flag properties back in
-          geojson.features.forEach((feature) => {
-            delete feature.properties.list_id;
-            delete feature.properties.location_id;
-            delete feature.properties.flag_forma;
-            delete feature.properties.flag_general;
-            delete feature.properties.flag_glad;
-            delete feature.properties.flag_gran_chaco;
-            delete feature.properties.flag_terrai;
-            delete feature.properties.flag_viirs;
-          });
-
-          const [gfwList] = selectedLists;
-          const { id: gfwListId } = gfwList;
-
-          if (selectedNewOrExisting === 'new') {
-            const list_id = selectedLists[0].id;
-            // rspo, pom, and opc need to have palm analysis if commodity type - their location classification must be a supply shed
-
-            let location_classification;
-            if (gfwListId === GFW_LISTS_NUMBER_CONSTANTS.ADMINISTRATIVE_AREAS) {
-              // GFW List id=1: Administrative Areas
-              location_classification = 'Administrative Area';
-            } else {
-              // GFW Lists ids=2-5: OPC, POM, Protected Areas, and RSPO
-              location_classification = 'Supply Shed';
-            }
-
-            bigObj = {
-              list_id: list_id,
-              list_name: listName,
-              template_id: templateId,
-              geojson: geojson,
-              custom_attributes: customAttributes,
-              location_classification,
-              gfw_list_id: gfwListId,
-              selected_location_ids: geoms.features.map((v) => v.properties.location_id),
-              original_gfw_list: true,
-              list_status_id: getListStatusId(isSaveAsDraft),
-              analysisIds: [analysisTypes.FOREST_CHANGE_DIAGNOSTICS], // GFW lists default to FCD
-            };
-
-            const requestPath = isSaveAsDraft
-              ? saveAsDraftListConfig.route
-              : '/locations/addToNewList';
-            request.open('POST', requestPath, true);
           } else {
-            if (moveToList && moveToList.list_locations_count + geojson.features.length > 1500) {
-              reject('listTooLong');
-              return;
-            }
-
-            bigObj = {
-              list_id: moveToList.id,
-              list_name: listName,
-              table_name: moveToList.list_name,
-              geojson: geojson,
-              gfw_list_id: gfwListId,
-              selected_location_ids: geoms.features.map((v) => v.properties.location_id),
-              appendLocations: true,
-              list_analysis_table_name: moveToList.list_analysis_table_name,
-              original_gfw_list: true,
-              list_status_id: getListStatusId(isSaveAsDraft),
-            };
-            request.open('POST', '/locations/updateExistingList', true);
+            reject(response.error || 'Copy/Move operation failed');
           }
-
-          request.setRequestHeader('Content-Type', 'application/json');
-          request.send(JSON.stringify(bigObj));
+        } catch (err) {
+          // Handle non-JSON responses (legacy format)
+          if (
+            responseText === 'LocationAdded' ||
+            responseText === 'LocationAppended' ||
+            responseText === saveAsDraftListConfig.success
+          ) {
+            resolve(responseText);
+          } else {
+            reject(responseText);
+          }
         }
       })
       .catch((err) => {
         reject(err);
-        console.warn('err', err);
+        console.warn(`Error: ${err}`);
       });
 
     gtag('event', 'Next button clicked', {

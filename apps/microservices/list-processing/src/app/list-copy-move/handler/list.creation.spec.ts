@@ -37,7 +37,7 @@ describe('handleNewListCreation', () => {
     jest.clearAllMocks();
   });
 
-  it('should create a new list with mapped commodity name', async () => {
+  it('should create a new list with mapped commodity name from existing list when gfwListId is not provided', async () => {
     // Arrange
     const mockCommodity = 'Palm Oil';
     const mockMappedCommodity = 'palm_oil';
@@ -57,9 +57,9 @@ describe('handleNewListCreation', () => {
       userId: 123,
       clientDatabase: 'test_db',
       analysisIds: ['analysis1'],
-      gfwListId: 456,
+      gfwListId: 0, // No gfwListId provided, so should get commodity from existing list
       selectedListId: 789,
-      commodity: mockCommodity,
+      commodity: 'Original Commodity', // This should be ignored since gfwListId is falsy
       saveAsDraft: false,
       commodityService: mockCommodityService as CommodityService,
     };
@@ -80,7 +80,7 @@ describe('handleNewListCreation', () => {
     expect(result).toEqual(mockResponse);
   });
 
-  it('should use fallback commodity name when mapping fails', async () => {
+  it('should use fallback commodity name when mapping fails (existing list scenario)', async () => {
     // Arrange
     const mockCommodity = 'Palm Oil';
     const mockResponse: CreateListResult = { list_id: 123 };
@@ -97,9 +97,9 @@ describe('handleNewListCreation', () => {
       userId: 123,
       clientDatabase: 'test_db',
       analysisIds: ['analysis1'],
-      gfwListId: 456,
+      gfwListId: 0, // No gfwListId provided, so should get commodity from existing list
       selectedListId: 789,
-      commodity: mockCommodity,
+      commodity: 'Original Commodity', // This should be ignored since gfwListId is falsy
       saveAsDraft: false,
       commodityService: mockCommodityService as CommodityService,
     };
@@ -108,6 +108,10 @@ describe('handleNewListCreation', () => {
     const result = await handleNewListCreation(params);
 
     // Assert
+    expect(mockCommodityService.getCommodityFromExistingList).toHaveBeenCalledWith(
+      params.clientDatabase,
+      params.selectedListId
+    );
     expect(mockCreateLargeListService.run).toHaveBeenCalledWith({
       ...params,
       commodity: 'Palm_Oil',
@@ -125,7 +129,7 @@ describe('handleNewListCreation', () => {
       userId: 123,
       clientDatabase: 'test_db',
       analysisIds: ['analysis1'],
-      gfwListId: 456,
+      gfwListId: 0, // No gfwListId provided, so should call getCommodityFromExistingList
       selectedListId: 789,
       commodity: 'Palm Oil',
       saveAsDraft: false,
@@ -134,5 +138,74 @@ describe('handleNewListCreation', () => {
 
     // Act & Assert
     await expect(handleNewListCreation(params)).rejects.toThrow('Commodity service error');
+  });
+
+  it('should use provided commodity when gfwListId is provided (gfwlist scenario)', async () => {
+    // Arrange
+    const mockCommodity = 'Cocoa';
+    const mockMappedCommodity = 'cocoa';
+    const mockResponse: CreateListResult = { list_id: 456 };
+
+    (ConvertCommodityToMapSpamCode.getCommoditySpamName as jest.Mock).mockReturnValue(
+      mockMappedCommodity
+    );
+    mockCreateLargeListService.run.mockResolvedValue(mockResponse);
+
+    const params = {
+      listName: 'GFW List Test',
+      userId: 123,
+      clientDatabase: 'test_db',
+      analysisIds: ['analysis1'],
+      gfwListId: 456, // This is provided, so should use commodity directly
+      selectedListId: 789,
+      commodity: mockCommodity,
+      saveAsDraft: false,
+      commodityService: mockCommodityService as CommodityService,
+    };
+
+    // Act
+    const result = await handleNewListCreation(params);
+
+    // Assert
+    expect(mockCommodityService.getCommodityFromExistingList).not.toHaveBeenCalled();
+    expect(ConvertCommodityToMapSpamCode.getCommoditySpamName).toHaveBeenCalledWith(mockCommodity);
+    expect(mockCreateLargeListService.run).toHaveBeenCalledWith({
+      ...params,
+      commodity: mockMappedCommodity,
+    });
+    expect(result).toEqual(mockResponse);
+  });
+
+  it('should use fallback commodity name when mapping fails (gfwlist scenario)', async () => {
+    // Arrange
+    const mockCommodity = 'Soy Bean';
+    const mockResponse: CreateListResult = { list_id: 789 };
+
+    (ConvertCommodityToMapSpamCode.getCommoditySpamName as jest.Mock).mockReturnValue(null);
+    mockCreateLargeListService.run.mockResolvedValue(mockResponse);
+
+    const params = {
+      listName: 'GFW List Test',
+      userId: 123,
+      clientDatabase: 'test_db',
+      analysisIds: ['analysis1'],
+      gfwListId: 456, // This is provided, so should use commodity directly
+      selectedListId: 789,
+      commodity: mockCommodity,
+      saveAsDraft: false,
+      commodityService: mockCommodityService as CommodityService,
+    };
+
+    // Act
+    const result = await handleNewListCreation(params);
+
+    // Assert
+    expect(mockCommodityService.getCommodityFromExistingList).not.toHaveBeenCalled();
+    expect(ConvertCommodityToMapSpamCode.getCommoditySpamName).toHaveBeenCalledWith(mockCommodity);
+    expect(mockCreateLargeListService.run).toHaveBeenCalledWith({
+      ...params,
+      commodity: 'Soy_Bean', // Should use fallback with spaces replaced by underscores
+    });
+    expect(result).toEqual(mockResponse);
   });
 });

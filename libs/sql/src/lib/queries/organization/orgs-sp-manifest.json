@@ -6,6 +6,7 @@
     "addPolicy",
     "adminInternalLists",
     "checkIfListIsEmpty",
+    "copyGFWLocationAnalysis",
     "copyLocationAnalysis",
     "createAnalysisTable",
     "createList",
@@ -26,6 +27,7 @@
     "getAfiNegligibleRiskStatsForListId",
     "getAllFolderItems",
     "getAllLists",
+    "getAnalysisColumns",
     "getAnalysisDataCountForUserList",
     "getAnnualLossFcdData",
     "getCheckIfListWasUploadByEAPI",
@@ -126,6 +128,7 @@
     "getListLocations",
     "getSimplifiedListLocations",
     "copyLocationAnalysis",
+    "copyGFWLocationAnalysis",
     "getFilterOptionsForUserLists",
     "getTableColumns",
     "getLocationsFilteredToCopy",
@@ -143,7 +146,8 @@
     "getCheckIfListWasUploadByEAPI",
     "getGHGLocationErrorsByListId",
     "getListAnalysis",
-    "getUserLists"
+    "getUserLists",
+    "getAnalysisColumns"
   ],
   "matchingFilesAndExports": true,
   "definitionsInActivatePendingAccount": [
@@ -233,6 +237,7 @@
     "uspGetPaginatedAnalysisDataForUserList"
   ],
   "undeletedSpInActivatePendingAccountFile": [
+    "copyGFWLocationAnalysis",
     "createAnalysisTable",
     "createList",
     "deleteLocation",
@@ -240,6 +245,7 @@
     "getActivityLog",
     "getAllFolderItems",
     "getAllLists",
+    "getAnalysisColumns",
     "getAnalysisDataCountForUserList",
     "getFolders",
     "getListNameSchema",

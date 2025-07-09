@@ -36,3 +36,5 @@ export * from './getAdministrativeAreaAttributes';
 export * from './getAdministrativeAreasGeom';
 export * from './getAdministrativeAreasData';
 export * from './getAdministrativeAreasGlobalId';
+export * from './getGFWListsFilteredToCopy';
+export * from './getAnalysisGFWColumns';

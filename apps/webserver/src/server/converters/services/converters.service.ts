@@ -24,10 +24,11 @@ export const startConverterJob = async (
   const insertedId = await insertConverter(repo, { name: converterName, organizationId });
 
   // Start the long process asynchronously but don't await it
-  triggerListProcessingConverter(insertedId, organizationId).catch(async (err) => {
+  triggerConverter(insertedId, organizationId).catch(async (err) => {
     const errorMessage = err?.response?.data || err?.message || 'Unknown error';
     logger.error(`Error triggering LP for converter ${insertedId}:`, errorMessage);
     await markConverterFailed(repo, insertedId, errorMessage);
+    throw new Error('Failed to trigger list proc. converter process');
   });
 
   return insertedId; // Immediately return the ID after insert
@@ -130,25 +131,25 @@ const insertConverter = async (
   return id;
 };
 
-const triggerListProcessingConverter = async (
-  id: number,
+const triggerConverter = async (
+  converterJobId: number,
   organizationId: number | null = null
 ): Promise<void> => {
   const { LISTS_MICROSERVICE_URL } = process.env;
   if (!LISTS_MICROSERVICE_URL) {
     throw new Error('LISTS_MICROSERVICE_URL environment variable not set');
   }
-  await axios.post(`${LISTS_MICROSERVICE_URL}/converters/${id}/start`, {
+  await axios.post(`${LISTS_MICROSERVICE_URL}/converters/${converterJobId}/start`, {
     organizationId,
   });
 };
 
 const markConverterFailed = async (
   repo: Repository<ConverterStatusEntity>,
-  id: number,
+  converterJobId: number,
   message: string
 ): Promise<UpdateResult> => {
-  return repo.update(id, {
+  return repo.update(converterJobId, {
     status: ConverterStatusEnum.FAILED,
     errorDetails: message || 'Unknown error',
   });

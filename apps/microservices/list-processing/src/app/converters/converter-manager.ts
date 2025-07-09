@@ -12,7 +12,8 @@ export type ConverterFunction = {
 };
 
 const registry: Record<string, ConverterFunction> = {
-  LIST_SCHEMA: {
+  UPGRADE_LIST_SCHEMA: {
+    where: { version: 0 },
     run: upgradeListSchema,
   },
   DELETE_INVALID_LOCATION_LISTS: {

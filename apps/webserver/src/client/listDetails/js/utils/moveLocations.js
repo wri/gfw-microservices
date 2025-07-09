@@ -191,43 +191,43 @@ const saveGfwListLocations = (
       },
       body: JSON.stringify(copyMoveRequest),
     })
-    .then(response => {
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
-      }
-      return response.text();
-    })
-    .then(responseText => {
-      try {
-        const response = JSON.parse(responseText);
+      .then((response) => {
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        return response.text();
+      })
+      .then((responseText) => {
+        try {
+          const response = JSON.parse(responseText);
 
-        if (response.success) {
-          // Map the response to the expected format
-          if (selectedNewOrExisting === 'new') {
-            resolve('LocationAdded');
+          if (response.success) {
+            // Map the response to the expected format
+            if (selectedNewOrExisting === 'new') {
+              resolve('LocationAdded');
+            } else {
+              resolve('LocationAppended');
+            }
           } else {
-            resolve('LocationAppended');
+            reject(response.error || 'Copy/Move operation failed');
           }
-        } else {
-          reject(response.error || 'Copy/Move operation failed');
+        } catch (err) {
+          // Handle non-JSON responses (legacy format)
+          if (
+            responseText === 'LocationAdded' ||
+            responseText === 'LocationAppended' ||
+            responseText === saveAsDraftListConfig.success
+          ) {
+            resolve(responseText);
+          } else {
+            reject(responseText);
+          }
         }
-      } catch (err) {
-        // Handle non-JSON responses (legacy format)
-        if (
-          responseText === 'LocationAdded' ||
-          responseText === 'LocationAppended' ||
-          responseText === saveAsDraftListConfig.success
-        ) {
-          resolve(responseText);
-        } else {
-          reject(responseText);
-        }
-      }
-    })
-    .catch(err => {
-      reject(err);
-      console.warn(`Error: ${err}`);
-    });
+      })
+      .catch((err) => {
+        reject(err);
+        console.warn(`Error: ${err}`);
+      });
 
     gtag('event', 'Next button clicked', {
       event_category: 'Add GFW Click',

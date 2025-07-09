@@ -19,7 +19,7 @@ interface ConverterContext {
 
 @Injectable()
 export class ConvertersService {
-  private readonly logger = new Logger('List processing service');
+  private readonly logger = new Logger('List Processing: Converters Service');
   private errors: { clientStore: string; stack: string }[] = [];
   private gfwProConnection?: DataSource; // Cached singleton
   private MAX_FAILURES = 5; // Maximum failures before stopping processing

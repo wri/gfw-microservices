@@ -35,47 +35,8 @@ describe('GADMService', () => {
     expect(service).toBeDefined();
   });
 
-  describe('getGadmServiceUrl', () => {
-    it('should return the correct URL based on environment', () => {
-      process.env.NODE_ENV = 'production';
-      expect(service.getGadmServiceUrl()).toBe(
-        'https://gfwpro-gis.globalforestwatch.org/arcgis/rest/services/GADM36_admin_2_gridded/MapServer/0'
-      );
-      process.env.NODE_ENV = 'development';
-      expect(service.getGadmServiceUrl()).toBe(
-        'https://gfwpro-gis-stg.globalforestwatch.org/arcgis/rest/services/GADM36_admin_2_gridded/MapServer/0'
-      );
-    });
-  });
 
-  describe('queryGADM', () => {
-    it('should throw error for features with unanalyzable error', async () => {
-      const feature: Feature = {
-        type: 'Feature',
-        properties: { hasUnanalyzableError: true },
-        geometry: { type: 'Point', coordinates: [0, 0] },
-      };
-      await expect(service.queryGADM(feature)).rejects.toThrow(
-        'Feature does not have valid longitude/latitude or geometry.'
-      );
-    });
 
-    it('should query GADM service successfully', async () => {
-      const feature: Feature = {
-        type: 'Feature',
-        properties: { longitude: 0, latitude: 0 },
-        geometry: { type: 'Point', coordinates: [0, 0] },
-      };
-      const mockResponse = {
-        features: [
-          { attributes: { name_0: 'Country', name_1: 'State', name_2: 'Substate', gadmid: '123' } },
-        ],
-      };
-      jest.spyOn(service, 'queryGADM').mockResolvedValue(mockResponse);
-      const result = await service.queryGADM(feature);
-      expect(result).toEqual(mockResponse);
-    });
-  });
 
   describe('getGadmData', () => {
     it('should throw error for features with unanalyzable error', async () => {
@@ -149,19 +110,19 @@ describe('GADMService', () => {
     });
   });
 
-  describe('getGeoReferenceData', () => {
+  describe('addGeoReferenceData', () => {
     it('should get geo reference data', async () => {
       const feature: Feature = {
         type: 'Feature',
         properties: { longitude: 0, latitude: 0 },
         geometry: { type: 'Point', coordinates: [0, 0] },
       };
-      jest.spyOn(service, 'queryGADM').mockResolvedValue({
+      jest.spyOn(service, 'getGadmData').mockResolvedValue({
         features: [
           { attributes: { name_0: 'Country', name_1: 'State', name_2: 'Substate', gadmid: '123' } },
         ],
       });
-      await service.getGeoReferenceData(feature);
+      const result = await service.addGeoReferenceData(feature);
       expect(feature.properties).toEqual({
         longitude: 0,
         latitude: 0,
@@ -178,8 +139,8 @@ describe('GADMService', () => {
         properties: { longitude: 0, latitude: 0 },
         geometry: { type: 'Point', coordinates: [0, 0] },
       };
-      jest.spyOn(service, 'queryGADM').mockRejectedValue(new Error('Test error'));
-      const result = await service.getGeoReferenceData(feature);
+      jest.spyOn(service, 'getGadmData').mockRejectedValue(new Error('Test error'));
+      const result = await service.addGeoReferenceData(feature);
       expect(result).toEqual({ hasUnanalyzableError: true });
     });
   });
@@ -191,9 +152,9 @@ describe('GADMService', () => {
         properties: { longitude: 0, latitude: 0 },
         geometry: { type: 'Point', coordinates: [0, 0] },
       };
-      jest.spyOn(service, 'getGeoReferenceData').mockResolvedValue({ hasUnanalyzableError: false });
-      await service.composeResults(feature);
-      expect(service.getGeoReferenceData).toHaveBeenCalledWith(feature);
+      jest.spyOn(service, 'addGeoReferenceData').mockResolvedValue({ hasUnanalyzableError: false });
+      await service.composeResultsWithGadmData(feature);
+      expect(service.addGeoReferenceData).toHaveBeenCalledWith(feature);
     });
   });
 
@@ -266,9 +227,9 @@ describe('GADMService', () => {
         },
       };
 
-      jest.spyOn(service, 'composeResults').mockResolvedValue(undefined);
+      jest.spyOn(service, 'composeResultsWithGadmData').mockResolvedValue(undefined);
       const result = await service.handle(input);
-      expect(service.composeResults).toHaveBeenCalled();
+      expect(service.composeResultsWithGadmData).toHaveBeenCalled();
       expect(result).toEqual(input);
     });
 

@@ -1,7 +1,7 @@
 import * as controller from '../controllers/profile.controller';
 import * as express from 'express';
 import axios from 'axios';
-
+import slackUtils from '../../../config/privateutils/slackNotifications.utils';
 import middlewares from '../../../config/publicutils/middlewares';
 import * as UserManager from '../../../config/publicutils/userManager.utils';
 import * as AccountManager from '../../../config/publicutils/accountManager.utils';
@@ -51,8 +51,26 @@ export = (app, limiter) => {
       .then(() => {
         res.send({ redirect: '/profile' });
       })
-      .catch((err) => {
+      .catch(async (err) => {
         logger.error('POST /profile/activateUser', err);
+
+        const { user_id, user_email, organization_id, user_first_name, user_last_name } =
+          req.session;
+
+        const slackMessage = slackUtils.buildSlackNotificationMessage({
+          url: 'POST /profile/activateUser',
+          stackTrace: JSON.stringify(err),
+          userInfo: {
+            id: user_id,
+            email: user_email,
+            OrgID: organization_id,
+            first_name: user_first_name,
+            last_name: user_last_name,
+          },
+          browserInfo: '',
+        });
+
+        await slackUtils.sendNotification(slackMessage);
         res.send(err);
       });
   });
@@ -64,8 +82,26 @@ export = (app, limiter) => {
       .then(() => {
         res.send({ redirect: '/profile' });
       })
-      .catch((err) => {
+      .catch(async (err) => {
         logger.error('POST /profile/deactivateUser', err);
+
+        const { user_id, user_email, organization_id, user_first_name, user_last_name } =
+          req.session;
+
+        const slackMessage = slackUtils.buildSlackNotificationMessage({
+          url: 'POST /profile/deactivateUser',
+          stackTrace: JSON.stringify(err),
+          userInfo: {
+            id: user_id,
+            email: user_email,
+            OrgID: organization_id,
+            first_name: user_first_name,
+            last_name: user_last_name,
+          },
+          browserInfo: '',
+        });
+
+        await slackUtils.sendNotification(slackMessage);
         res.send(err);
       });
   });

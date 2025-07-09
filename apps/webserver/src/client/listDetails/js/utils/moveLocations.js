@@ -184,10 +184,22 @@ const saveGfwListLocations = (
     };
 
     // Make request to the standardized copy/move endpoint
-    const request = new XMLHttpRequest();
-    request.onload = () => {
+    fetch('/locations/cm-large-list', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(copyMoveRequest),
+    })
+    .then(response => {
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+      return response.text();
+    })
+    .then(responseText => {
       try {
-        const response = JSON.parse(request.responseText);
+        const response = JSON.parse(responseText);
 
         if (response.success) {
           // Map the response to the expected format
@@ -202,25 +214,20 @@ const saveGfwListLocations = (
       } catch (err) {
         // Handle non-JSON responses (legacy format)
         if (
-          request.responseText === 'LocationAdded' ||
-          request.responseText === 'LocationAppended' ||
-          request.responseText === saveAsDraftListConfig.success
+          responseText === 'LocationAdded' ||
+          responseText === 'LocationAppended' ||
+          responseText === saveAsDraftListConfig.success
         ) {
-          resolve(request.responseText);
+          resolve(responseText);
         } else {
-          reject(request.responseText);
+          reject(responseText);
         }
       }
-    };
-
-    request.onerror = (err) => {
+    })
+    .catch(err => {
       reject(err);
       console.warn(`Error: ${err}`);
-    };
-
-    request.open('POST', '/locations/cm-large-list', true);
-    request.setRequestHeader('Content-Type', 'application/json');
-    request.send(JSON.stringify(copyMoveRequest));
+    });
 
     gtag('event', 'Next button clicked', {
       event_category: 'Add GFW Click',

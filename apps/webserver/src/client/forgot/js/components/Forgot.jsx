@@ -13,6 +13,8 @@ const pageOptions = {
   },
 };
 
+const userNotFoundErrorCode = 108;
+
 export default class Forgot extends Component {
   constructor(props) {
     super(props);
@@ -51,7 +53,7 @@ export default class Forgot extends Component {
         if (res) {
           if (res.systemMessage?.code === 'LimitExceededException') {
             this.handleDialog(forgotStrings.resetLimit.title, forgotStrings.resetLimit.message);
-          } else if (res.errorCode === 108) {
+          } else if (res.errorCode === userNotFoundErrorCode) {
             this.handleDialog(forgotStrings.noUser.title, forgotStrings.noUser.message);
           } else if (res.message === 'Success') {
             window.location.href = '/reset'; // if we succeed, redirect to reset page

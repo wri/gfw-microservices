@@ -1,18 +1,19 @@
 import { Component } from 'react';
-
-import '../../css/forgot.scss';
 import Page from '../../../common/js/components/Page';
 import { Box, Dialog, DialogTitle, DialogContent, DialogActions, Divider } from '@mui/material';
 import SubHeader from '../../../common/js/components/SubHeader';
 import httpRequest from '../../../common/js/utils/httpRequest';
 import forgotStrings from './forgotStrings';
 import { PillButton, Link } from '../../../components';
+import '../../css/forgot.scss';
 
 const pageOptions = {
   links: {
     logout: true,
   },
 };
+
+const userNotFoundErrorCode = 108;
 
 export default class Forgot extends Component {
   constructor(props) {
@@ -39,7 +40,6 @@ export default class Forgot extends Component {
   };
 
   submit = () => {
-    console.log('Submitting reset');
     const { email } = this.state;
     httpRequest
       .fetchJSON('/auth/forgot', { email: email })
@@ -53,7 +53,7 @@ export default class Forgot extends Component {
         if (res) {
           if (res.systemMessage?.code === 'LimitExceededException') {
             this.handleDialog(forgotStrings.resetLimit.title, forgotStrings.resetLimit.message);
-          } else if (res.systemMessage === 'User does not exist') {
+          } else if (res.errorCode === userNotFoundErrorCode) {
             this.handleDialog(forgotStrings.noUser.title, forgotStrings.noUser.message);
           } else if (res.message === 'Success') {
             window.location.href = '/reset'; // if we succeed, redirect to reset page
@@ -62,6 +62,10 @@ export default class Forgot extends Component {
               forgotStrings.passwordExpired.title,
               forgotStrings.passwordExpired.message
             );
+          } else if (res.userMessage) {
+            this.handleDialog(forgotStrings.resetError.title, res.userMessage);
+          } else if (res.errorCode) {
+            this.handleDialog(forgotStrings.resetError.title, forgotStrings.resetError.message);
           }
         } else {
           this.handleDialog(forgotStrings.resetError.title, forgotStrings.resetError.message);

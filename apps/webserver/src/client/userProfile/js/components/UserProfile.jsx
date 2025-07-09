@@ -211,30 +211,32 @@ export default class UserProfile extends Component {
           first_name,
           last_name,
         })
-        .then(() => {
-          this.setState(
-            {
+        .then((response) => {
+          const parsedResponse = JSON.parse(response);
+          const { errorCode, userMessage } = parsedResponse;
+
+          if (errorCode) {
+            this.setState({
               showModalLoader: false,
-            },
-            () => {
-              this.setState(
-                {
-                  dialogOpen: true,
-                  dialogTitle: 'User activated',
-                  dialogMessage: `The user ${first_name} ${last_name} has been successfully activated.`,
-                  status_id: 2,
-                },
-                () => {
-                  const userObject = {
-                    user_id: id,
-                    status_id: 2,
-                    activated_time: new Date(),
-                  };
-                  store.dispatch(updateUser(userObject));
-                }
-              );
-            }
-          );
+              dialogOpen: true,
+              dialogTitle: 'Error',
+              dialogMessage: userMessage,
+            });
+          } else {
+            this.setState({
+              showModalLoader: false,
+              dialogOpen: true,
+              dialogTitle: 'User activated',
+              dialogMessage: `The user ${first_name} ${last_name} has been successfully activated.`,
+              status_id: 2,
+            });
+            const userObject = {
+              user_id: id,
+              status_id: 2,
+              activated_time: new Date(),
+            };
+            store.dispatch(updateUser(userObject));
+          }
         });
     });
   };
@@ -273,25 +275,33 @@ export default class UserProfile extends Component {
             name: id,
             email,
           })
-          .then(() => {
-            this.setState(
-              {
+          .then((response) => {
+            const parsedResponse = JSON.parse(response);
+            const { errorCode, userMessage } = parsedResponse;
+
+            if (errorCode) {
+              this.setState({
+                showModalLoader: false,
+                dialogOpen: true,
+                dialogTitle: 'Error',
+                dialogMessage: userMessage,
+              });
+            } else {
+              this.setState({
                 showModalLoader: false,
                 status_id: 3,
                 dialogOpen: true,
                 dialogTitle: 'User deactivated',
                 dialogMessage: `The user ${first_name} ${last_name} has been successfully deactivated.`,
                 updating: false,
-              },
-              () => {
-                store.dispatch(
-                  updateUser({
-                    user_id: id,
-                    status_id: 3,
-                  })
-                );
-              }
-            );
+              });
+              store.dispatch(
+                updateUser({
+                  user_id: id,
+                  status_id: 3,
+                })
+              );
+            }
           });
       });
     }

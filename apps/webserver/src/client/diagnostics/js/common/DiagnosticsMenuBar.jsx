@@ -50,7 +50,7 @@ function DiagnosticsMenuBar({
 
   const diagnosticOptions = activeAnalysesIds
     .filter(
-      (analysisId) => analysisTypesOptionsNewNames.find(({ id }) => id === analysisId).showInUI
+      (analysisId) => analysisTypesOptionsNewNames.find(({ id }) => id === analysisId)?.showInUI
     )
     .map((analysisId) => ({
       value: analysisId,
@@ -75,7 +75,7 @@ function DiagnosticsMenuBar({
     <div className="diagnostics-menu-bar">
       <div className="diagnostics-menu-bar__action-bar">
         <div className="diagnostics-menu-bar__actions-group">
-          {!isLoading && !isGfwList && (
+          {!isLoading && !isGfwList && diagnosticOptions.length && (
             <>
               <label htmlFor="viewToggle">Diagnostic</label>
               <GfwSelect

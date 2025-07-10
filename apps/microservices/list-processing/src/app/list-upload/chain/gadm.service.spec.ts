@@ -35,9 +35,6 @@ describe('GADMService', () => {
     expect(service).toBeDefined();
   });
 
-
-
-
   describe('getGadmData', () => {
     it('should throw error for features with unanalyzable error', async () => {
       const feature: Feature = {

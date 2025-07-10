@@ -66,7 +66,7 @@ export const handleExistingListUpdate = async (params: ListUpdateParams) => {
     subscriptionStatusId,
   } = params;
 
-  const isGFWList = gfwListId !== undefined;
+  const isGFWList = Boolean(gfwListId);
 
   validateInput(params);
 

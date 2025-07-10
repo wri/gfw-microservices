@@ -44,6 +44,8 @@ async function setupNodeEvents(
   return config;
 }
 
+// 60 seconds
+const DEFAULT_COMMAND_TIMEOUT = 60 * 1000;
 export default defineConfig({
   video: true,
   viewportWidth: 1800,
@@ -66,7 +68,7 @@ export default defineConfig({
         ? `https://pro-${process.env.CYPRESS_ENV}.globalforestwatch.org`
         : 'https://localhost:8443',
     specPattern: '**/*.feature',
-    defaultCommandTimeout: parseInt(process.env['CYPRESS_TIMEOUT']) || 60100,
+    defaultCommandTimeout: parseInt(process.env['CYPRESS_TIMEOUT']) || DEFAULT_COMMAND_TIMEOUT,
     scrollBehavior: 'center',
   },
 });

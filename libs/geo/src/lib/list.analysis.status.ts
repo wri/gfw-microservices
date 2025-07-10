@@ -189,7 +189,7 @@ export const updateListAnalysis = async (
   clientDatabase: string,
   listId: number,
   analysisIds: string[],
-  analysisStatus: number
+  analysisStatus: number = listStatus.Pending
 ) => {
   await addListAnalyses(clientDatabase, listId, analysisIds, analysisStatus);
 };

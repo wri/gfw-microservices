@@ -2,7 +2,7 @@ export const CONVERTER_NAMES = {
   LIST_SCHEMA: 'List Schema',
   GADM_VERSION: 'GADM Version',
   DELETE_INVALID_LOCATION_LISTS: 'Delete Invalid Location Lists',
-  EXAMPLE_CONVERTER: 'Example Converter',
+  DELETE_INVALID_COMMODITY_TEMPLATE: 'Delete Lists With Invalid Commodity Or Template',
 } as const;
 
 export type ConverterName = (typeof CONVERTER_NAMES)[keyof typeof CONVERTER_NAMES];

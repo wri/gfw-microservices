@@ -46,8 +46,7 @@ describe('Validate CSV Files for FCD', () => {
             },
           },
           2000, // Poll every 2 seconds
-          60000, // Timeout after 60 seconds
-          true
+          60000 // Timeout after 60 seconds
         );
         expect(apiResponse.status).toBe('Completed');
         expect(apiResponse).toHaveProperty('listId');
@@ -188,8 +187,7 @@ describe('Validate CSV Files for Alerts', () => {
             },
           },
           2000, // Poll every 2 seconds
-          60000, // Timeout after 60 seconds
-          true
+          60000 // Timeout after 60 seconds
         );
         expect(apiResponse.status).toBe('Completed');
         expect(apiResponse).toHaveProperty('listId');
@@ -200,6 +198,42 @@ describe('Validate CSV Files for Alerts', () => {
           'AAT Argentina Polygons Generic_IntegratedAlerts_NaturalForest_Daily.csv',
           'README.csv',
         ];
+        expect(zipFileNames.sort()).toEqual(expectedFileNames.sort());
+
+        console.log('API completed with result:', apiResponse);
+        console.log('Files in zip:', zipFileNames);
+      } catch (error) {
+        console.error('Polling failed:', error);
+      }
+    },
+    60 * 1000
+  );
+});
+
+describe('Validate CSV Files for GHG', () => {
+  it(
+    'should validate CSV bundle file has expected files',
+    async () => {
+      const listId = '8695';
+      const listName = 'GHG Analysis List';
+      try {
+        const { apiResponse, zipFileNames } = await pollApiUntilComplete(
+          `${BASE_URL}/api/v1/list/${listId}/analysis/GHG/status`,
+          {
+            method: 'GET',
+            headers: {
+              'x-api-key': API_TOKEN,
+            },
+          },
+          2000, // Poll every 2 seconds
+          60000 // Timeout after 60 seconds
+        );
+        expect(apiResponse.status).toBe('Completed');
+        expect(apiResponse).toHaveProperty('listId');
+        expect(typeof apiResponse.listId).toBe('string');
+        expect(apiResponse.listId).toBe(listId);
+
+        const expectedFileNames = [`${listName}_green_house_gas_emissions.csv`, 'README.csv'];
         expect(zipFileNames.sort()).toEqual(expectedFileNames.sort());
 
         console.log('API completed with result:', apiResponse);
@@ -228,8 +262,7 @@ async function pollApiUntilComplete(
   url: string,
   options = {},
   pollIntervalMs = 1000,
-  timeoutMs = 10000,
-  hasContainingFolder = false
+  timeoutMs = 10000
 ): Promise<PollResult> {
   const startTime = Date.now();
 
@@ -296,31 +329,9 @@ async function pollApiUntilComplete(
         try {
           const zip = new AdmZip(Buffer.from(arrayBuffer));
           const zipEntries = zip.getEntries();
-          let zipFileNames: string[];
-
-          if (hasContainingFolder) {
-            // Extract zip filename from resultUrl (e.g., 'report.zip' -> 'report')
-            const zipFileName =
-              result.resultUrl
-                .split('/')
-                .pop()
-                ?.replace(/\.zip$/i, '') || '';
-            const folderPrefix = zipFileName ? `${zipFileName}/` : '';
-
-            zipFileNames = zipEntries
-              .map((entry) => {
-                // Remove folder prefix if it matches the zip filename
-                if (folderPrefix && entry.entryName.startsWith(folderPrefix)) {
-                  return entry.entryName.slice(folderPrefix.length);
-                }
-                return entry.entryName;
-              })
-              .filter((name) => name && !name.endsWith('/')); // Exclude directories and empty names
-          } else {
-            zipFileNames = zipEntries
-              .map((entry) => entry.entryName)
-              .filter((name) => !name.endsWith('/')); // Exclude directories
-          }
+          const zipFileNames = zipEntries
+            .map((entry) => entry.entryName)
+            .filter((name) => !name.endsWith('/')); // Exclude directories
 
           if (zipFileNames.length === 0) {
             throw new Error('Zip file contains no files');

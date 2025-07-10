@@ -19,7 +19,7 @@ interface ConverterContext {
 
 @Injectable()
 export class ConvertersService {
-  private readonly logger = new Logger('List processing service');
+  private readonly logger = new Logger(`List Processing: ${ConvertersService.name}`);
   private errors: { clientStore: string; stack: string }[] = [];
   private gfwProConnection?: DataSource; // Cached singleton
   private MAX_FAILURES = 5; // Maximum failures before stopping processing
@@ -63,19 +63,19 @@ export class ConvertersService {
    */
   async runConverter(id: number, organizationId?: number): Promise<void> {
     this.errors = [];
-
-    const { getConverterName, updateConverterStatus, updateConverterStartTime } =
-      this.converterRepository;
-
+    const { getConverterName, updateConverterStartTime } = this.converterRepository;
     const gfwProConnection = await this.getGfwProConnection();
+
     await updateConverterStartTime(gfwProConnection, id);
 
     try {
       const converterName = await getConverterName(gfwProConnection, id);
       const converterFunction = ConverterManager.get(converterName);
+
       if (!converterFunction) {
         throw new Error(`Converter function for ${converterName} not found`);
       }
+
       const converterContext: ConverterContext = {
         id,
         name: converterName,
@@ -83,12 +83,9 @@ export class ConvertersService {
       };
 
       await this.runConverterAcrossClientStores(converterContext, organizationId);
-
-      const status = this.errors.length > 0 ? ConverterStatus.PARTIAL : ConverterStatus.COMPLETED;
-      this.logger.log(`Converter ${converterName} finished with status: ${status}`);
-      await updateConverterStatus(gfwProConnection, id, status);
+      this.logger.log(`Converter ${converterName} finished`);
     } catch (error) {
-      await updateConverterStatus(
+      await this.converterRepository.updateConverterStatus(
         gfwProConnection,
         id,
         ConverterStatus.FAILED,
@@ -110,25 +107,43 @@ export class ConvertersService {
     organizationId?: number
   ): Promise<void> {
     const { updateConverterStatus } = this.converterRepository;
-    let failureCount = 0;
-    const clientStoresInfo: ClientStoreInfo[] = await this.getClientStoreInfo(organizationId);
+    let clientStoreFailureCount = 0;
+    const clientStores: ClientStoreInfo[] = await this.getClientStoreInfo(organizationId);
 
-    for (const clientStoreInfo of clientStoresInfo) {
+    let totalLists = 0;
+    let failedLists = 0;
+
+    for (const clientStoreInfo of clientStores) {
       try {
-        await this.processListsInClientStore(clientStoreInfo, converterContext);
-      } catch (error) {
-        failureCount++;
-        this.logger.error(
-          `Error running converter ${converterContext.name} for ${
-            clientStoreInfo.organizationDb
-          }: ${(error.stack || error).toString()}`
+        const { successCount, failureCount } = await this.processListsInClientStore(
+          clientStoreInfo,
+          converterContext
         );
+
+        totalLists += successCount + failureCount;
+        failedLists += failureCount;
+      } catch (error) {
+        clientStoreFailureCount++;
+
+        /**
+         * We're not counting precisely how many failed if the full store fails
+         * since we only need the total vs failed lists to determine status.
+         */
+        failedLists += 1;
+        totalLists += 1;
+
         this.errors.push({
           clientStore: clientStoreInfo.organizationDb,
           stack: error.stack || error.toString(),
         });
 
-        if (failureCount >= this.MAX_FAILURES) {
+        this.logger.error(
+          `Error running converter ${converterContext.name} for ${
+            clientStoreInfo.organizationDb
+          }: ${(error.stack || error).toString()}`
+        );
+
+        if (clientStoreFailureCount >= this.MAX_FAILURES) {
           this.logger.warn(
             `Failure threshold exceeded (${this.MAX_FAILURES}), stopping further list processing for converter ${converterContext.name}`
           );
@@ -139,12 +154,17 @@ export class ConvertersService {
       await this.randomDelay(200, 700);
     }
 
-    const status =
-      this.errors.length === clientStoresInfo.length
-        ? ConverterStatus.FAILED
-        : this.errors.length > 0
-        ? ConverterStatus.PARTIAL
-        : ConverterStatus.COMPLETED;
+    let status: ConverterStatus;
+
+    if (totalLists === 0) {
+      status = ConverterStatus.COMPLETED; // or maybe SKIPPED if you want a special case
+    } else if (failedLists === 0) {
+      status = ConverterStatus.COMPLETED;
+    } else if (failedLists === totalLists) {
+      status = ConverterStatus.FAILED;
+    } else {
+      status = ConverterStatus.PARTIAL;
+    }
 
     await updateConverterStatus(
       await this.getGfwProConnection(),
@@ -164,7 +184,7 @@ export class ConvertersService {
   private async processListsInClientStore(
     clientStore: ClientStoreInfo,
     converterContext: ConverterContext
-  ): Promise<boolean> {
+  ): Promise<{ successCount: number; failureCount: number }> {
     const gfwProConnection = await this.getGfwProConnection();
     const { id: converterId, function: converterFunction } = converterContext;
 
@@ -186,17 +206,24 @@ export class ConvertersService {
       clientStore.organizationDb
     );
     if (!lists.length) {
-      return;
+      return { successCount: 0, failureCount: 0 };
     }
 
-    await this.convertLists(lists, converterContext, clientStore);
+    const { successCount, failureCount } = await this.convertLists(
+      lists,
+      converterContext,
+      clientStore
+    );
+
+    return { successCount, failureCount };
   }
 
   private async convertLists(
     lists: Lists[],
     converterContext: ConverterContext,
     clientStore: ClientStoreInfo
-  ): Promise<void> {
+  ): Promise<{ successCount: number; failureCount: number }> {
+    let successCount = 0;
     let failureCount = 0;
     const { id: clientStoreId, organizationDb } = clientStore;
     const { id: converterId, name: converterName, function: converterFunction } = converterContext;
@@ -210,6 +237,8 @@ export class ConvertersService {
           listId: list.id,
           userId: null,
         });
+
+        successCount++;
 
         await this.randomDelay(200, 700);
 
@@ -237,15 +266,14 @@ export class ConvertersService {
         );
 
         this.errors.push({ clientStore: organizationDb, stack: error.stack || error.toString() });
-
-        if (failureCount >= this.MAX_FAILURES) {
-          this.logger.warn(
-            `Failure threshold exceeded (${this.MAX_FAILURES}). Stopping list processing.`
-          );
-          break;
-        }
       }
     }
+
+    this.logger.log(
+      `Finished processing ${lists.length} lists in client store ${organizationDb}. Successes: ${successCount}, Failures: ${failureCount}`
+    );
+
+    return { successCount, failureCount };
   }
 
   private async fetchListsToConvert(

@@ -4,7 +4,7 @@ import { ClientStoreConnection, Lists } from '@wri-monorepos/sql';
 
 @Injectable()
 export class LockListService {
-  private readonly logger = new Logger('List processing service');
+  private readonly logger = new Logger('List Processing: Lock List service');
 
   constructor(private readonly clientStoreConnection: ClientStoreConnection) {}
 

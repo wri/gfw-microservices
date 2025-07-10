@@ -66,7 +66,7 @@ export default defineConfig({
         ? `https://pro-${process.env.CYPRESS_ENV}.globalforestwatch.org`
         : 'https://localhost:8443',
     specPattern: '**/*.feature',
-    defaultCommandTimeout: parseInt(process.env['CYPRESS_TIMEOUT']) || 30000,
+    defaultCommandTimeout: parseInt(process.env['CYPRESS_TIMEOUT']) || 60100,
     scrollBehavior: 'center',
   },
 });

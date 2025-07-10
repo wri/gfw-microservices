@@ -30,7 +30,7 @@ export async function deleteListsWithInvalidLocationId(
   const queryRunner = await createConnectedQueryRunner(organizationDbName);
   let listTableName: string | undefined;
 
-  const parseCount = (result: any): number => parseInt(result?.[0]?.count ?? '0', 10);
+  const parseCount = (result: unknown): number => parseInt(result?.[0]?.count ?? '0', 10);
 
   const buildNullCountQuery = (tableName: string) =>
     `SELECT COUNT(*) as count FROM [${tableName}] WHERE location_id IS NULL`;

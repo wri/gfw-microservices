@@ -6,6 +6,12 @@ import {
 } from '../../../../locations/js/utils/locationsTableUtils';
 import infoBubbleConfig from '../../../../common/js/infoBubbleConfig.constants';
 import { renderCell } from './columns.utils';
+import store from '../../../../locations/js/store';
+import {
+  SBTN_NATURAL_FOREST_LOSS,
+  JRC_NATURAL_FOREST_LOSS,
+  DISPLAY_FORMAT_PERCENTAGE,
+} from '../../components/lists/ListDetails/deforestationDisplayFormat.constants';
 
 const sizeLabel = Transifex.live.translateText('Size (ha)');
 
@@ -32,7 +38,13 @@ const post_2020_risk = [
     ),
     className: 'default-cell td-num',
     accessor: 'naturalForestLossPercent',
-
+    show: (() => {
+      const { naturalForestLossDataSource, deforestationDisplayFormat } = store.getState();
+      return (
+        naturalForestLossDataSource === SBTN_NATURAL_FOREST_LOSS &&
+        deforestationDisplayFormat === DISPLAY_FORMAT_PERCENTAGE
+      );
+    })(),
     Cell: ({ original }) => (
       <span>{renderPercentageValueWithIndicator(original?.naturalForestLossPercent)}</span>
     ),
@@ -47,7 +59,13 @@ const post_2020_risk = [
     ),
     className: 'default-cell td-num',
     accessor: 'jrcNaturalForestLossPercent',
-
+    show: (() => {
+      const { naturalForestLossDataSource, deforestationDisplayFormat } = store.getState();
+      return (
+        naturalForestLossDataSource === JRC_NATURAL_FOREST_LOSS &&
+        deforestationDisplayFormat === DISPLAY_FORMAT_PERCENTAGE
+      );
+    })(),
     Cell: ({ original }) => (
       <span>{renderPercentageValueWithIndicator(original?.jrcNaturalForestLossPercent)}</span>
     ),
@@ -62,7 +80,13 @@ const post_2020_risk = [
     ),
     className: 'default-cell td-num',
     accessor: 'natural_land_deforested_area',
-
+    show: (() => {
+      const { naturalForestLossDataSource, deforestationDisplayFormat } = store.getState();
+      return (
+        naturalForestLossDataSource === SBTN_NATURAL_FOREST_LOSS &&
+        deforestationDisplayFormat !== DISPLAY_FORMAT_PERCENTAGE
+      );
+    })(),
     Cell: ({ original }) => {
       const { naturalForestLossHA } = original;
 
@@ -79,7 +103,13 @@ const post_2020_risk = [
     ),
     className: 'default-cell td-num',
     accessor: 'jrc_land_deforested_area',
-
+    show: (() => {
+      const { naturalForestLossDataSource, deforestationDisplayFormat } = store.getState();
+      return (
+        naturalForestLossDataSource === JRC_NATURAL_FOREST_LOSS &&
+        deforestationDisplayFormat !== DISPLAY_FORMAT_PERCENTAGE
+      );
+    })(),
     Cell: ({ original }) => {
       const { jrcNaturalForestLossHA } = original;
 
@@ -96,6 +126,10 @@ const post_2020_risk = [
     ),
     className: 'default-cell td-num',
     accessor: 'landmarkPercent',
+    show: (() => {
+      const { deforestationDisplayFormat } = store.getState();
+      return deforestationDisplayFormat === DISPLAY_FORMAT_PERCENTAGE;
+    })(),
     Cell: ({ original }) => (
       <span>{renderPercentageValueWithIndicator(original?.landmarkPercent)}</span>
     ),
@@ -110,6 +144,10 @@ const post_2020_risk = [
     ),
     className: 'default-cell td-num',
     accessor: 'landmark_area',
+    show: (() => {
+      const { deforestationDisplayFormat } = store.getState();
+      return deforestationDisplayFormat !== DISPLAY_FORMAT_PERCENTAGE;
+    })(),
     Cell: ({ original }) => {
       const { landmarkHA } = original;
       return renderFormattedDeforestationValueWithIndicator(landmarkHA);
@@ -125,6 +163,10 @@ const post_2020_risk = [
     ),
     className: 'default-cell td-num',
     accessor: 'protectedAreasPercent',
+    show: (() => {
+      const { deforestationDisplayFormat } = store.getState();
+      return deforestationDisplayFormat === DISPLAY_FORMAT_PERCENTAGE;
+    })(),
     Cell: ({ original }) => (
       <span>{renderPercentageValueWithIndicator(original?.protectedAreasPercent)}</span>
     ),
@@ -135,75 +177,14 @@ const post_2020_risk = [
     ),
     className: 'default-cell td-num',
     accessor: 'protected_areas_area',
+    show: (() => {
+      const { deforestationDisplayFormat } = store.getState();
+      return deforestationDisplayFormat !== DISPLAY_FORMAT_PERCENTAGE;
+    })(),
     Cell: ({ original }) => {
       const { protectedAreasHA } = original;
       return renderFormattedDeforestationValueWithIndicator(protectedAreasHA);
     },
-  },
-  {
-    Header: () => <ColumnsHeader label="Country" />,
-    accessor: 'country',
-    className: 'default-cell td-num',
-    Cell: ({ original }) => <span>{original?.country}</span>,
-  },
-
-  {
-    Header: () => <ColumnsHeader label="State" />,
-    accessor: 'state',
-    className: 'default-cell td-num',
-    id: 'State',
-    Cell: ({ original }) => <span>{original?.state}</span>,
-  },
-
-  {
-    Header: () => <ColumnsHeader label="Sub State" />,
-    accessor: 'subState',
-    className: 'default-cell td-num',
-    Cell: ({ original }) => <span>{original?.subState}</span>,
-  },
-  {
-    Header: () => <ColumnsHeader label="Analysis Area" />,
-    accessor: 'Analysis Area',
-    show: false,
-    className: 'default-cell td-num',
-    Cell: ({ original }) => <span>{original?.['Analysis Area']}</span>,
-  },
-
-  {
-    Header: () => <ColumnsHeader label="Analysis Radius" />,
-    accessor: 'Analysis Radius',
-    show: false,
-    className: 'default-cell td-num',
-    Cell: ({ original }) => <span>{original?.['Analysis Radius']}</span>,
-  },
-
-  {
-    Header: () => <ColumnsHeader label="Supplier Name" />,
-    accessor: 'Supplier Name',
-    show: false,
-    className: 'default-cell td-num',
-    Cell: ({ original }) => <span>{original?.['Supplier Name']}</span>,
-  },
-  {
-    Header: () => <ColumnsHeader label="Facility Name" />,
-    accessor: 'Facility Name',
-    show: false,
-    className: 'default-cell td-num',
-    Cell: ({ original }) => <span>{original?.['Facility Name']}</span>,
-  },
-  {
-    Header: () => <ColumnsHeader label="Owner Name" />,
-    accessor: 'Owner Name',
-    show: false,
-    className: 'default-cell td-num',
-    Cell: ({ original }) => <span>{original?.['Owner Name']}</span>,
-  },
-  {
-    Header: () => <ColumnsHeader label="Owner ID" />,
-    accessor: 'Owner ID',
-    show: false,
-    className: 'default-cell td-num',
-    Cell: ({ original }) => <span>{original?.['Owner ID']}</span>,
   },
 ];
 

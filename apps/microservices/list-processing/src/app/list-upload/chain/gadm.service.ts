@@ -2,9 +2,6 @@ import { Logger } from '@nestjs/common';
 import { AbstractHandler, ChainType, PreviewListRequest, RequestNewList } from './types';
 import asyncPool from 'tiny-async-pool';
 import { Feature, FeatureCollection } from '@wri-monorepos/geo';
-import { IFeatureSet, IGeometry, queryFeatures } from '@esri/arcgis-rest-feature-service';
-import { featureFlagsService } from '@wri-monorepos/shared';
-import { FeatureFlag } from '@wri-monorepos/sql';
 import axios from 'axios';
 import axiosRetry from 'axios-retry';
 
@@ -16,52 +13,15 @@ axiosRetry(axios, {
     return axiosRetry.isRetryableError(error);
   },
 });
-const PRODUCTION_ENVIRONMENTS = ['production', 'ProdV2'];
 const POOL_SIZE = 20;
-
-const GADM_SERVICE__PROD =
-  'https://gfwpro-gis.globalforestwatch.org/arcgis/rest/services/GADM36_admin_2_gridded/MapServer/0'; // Only for production
-const GADM_SERVICE__STAGING =
-  'https://gfwpro-gis-stg.globalforestwatch.org/arcgis/rest/services/GADM36_admin_2_gridded/MapServer/0';
-
 export class GADMService extends AbstractHandler<ChainType> {
   logger = new Logger(GADMService.name);
-
-  getGadmServiceUrl = () => {
-    return PRODUCTION_ENVIRONMENTS.includes(process.env.NODE_ENV)
-      ? GADM_SERVICE__PROD
-      : GADM_SERVICE__STAGING;
-  };
 
   /**
    * Function to perform a GET request using axios.
    * @param {Feature} feature - The feature object containing properties and geometry.
    * @returns {Promise<IFeatureSet>} - A promise that resolves to the query result.
    */
-  async queryGADM(feature: Feature): Promise<IFeatureSet> {
-    const { latitude, longitude, hasUnanalyzableError } = feature.properties;
-
-    if (hasUnanalyzableError) {
-      throw new Error('Feature does not have valid longitude/latitude or geometry.');
-    }
-
-    const response = (await queryFeatures({
-      url: this.getGadmServiceUrl(),
-      geometry: {
-        x: longitude,
-        y: latitude,
-        spatialReference: {
-          wkid: 4326,
-        },
-      } as IGeometry,
-      geometryType: 'esriGeometryPoint',
-      spatialRel: 'esriSpatialRelIntersects',
-      outFields: ['gadmid', 'name_0', 'name_1', 'name_2'],
-    })) as IFeatureSet;
-
-    return response;
-  }
-
   getGadmData = async (feature: Feature) => {
     const { latitude, longitude, hasUnanalyzableError } = feature.properties;
     if (hasUnanalyzableError) {
@@ -118,30 +78,6 @@ export class GADMService extends AbstractHandler<ChainType> {
       };
     }
   };
-  getGeoReferenceData = async (feature: Feature) => {
-    try {
-      const response = await this.queryGADM(feature);
-
-      if (response.features && response.features.length > 0) {
-        feature.properties = {
-          ...feature.properties,
-          subState: response.features[0].attributes.name_2,
-          state: response.features[0].attributes.name_1,
-          country: response.features[0].attributes.name_0,
-          gadmid: response.features[0].attributes.gadmid,
-        };
-      }
-    } catch (e) {
-      this.logger.error('Error in queryGADM', e.stack || e.message);
-      return {
-        hasUnanalyzableError: true,
-      };
-    }
-  };
-
-  composeResults = async (feature: Feature) => {
-    await this.getGeoReferenceData(feature);
-  };
 
   composeResultsWithGadmData = async (feature: Feature) => {
     await this.addGeoReferenceData(feature);
@@ -158,13 +94,6 @@ export class GADMService extends AbstractHandler<ChainType> {
   async handle(request: ChainType): Promise<ChainType> {
     const { geojson } = request;
 
-    const { organization_id } = request.request as RequestNewList;
-
-    const { getFeatureFlagsForCurrentOrg } = await featureFlagsService();
-    const flags = await getFeatureFlagsForCurrentOrg(organization_id);
-
-    const gadm41FeatureFlag = flags.find((f) => f.flagId === 'gadm41') as FeatureFlag;
-
     const { path } = request.request as PreviewListRequest;
     const { features } = geojson as FeatureCollection;
 
@@ -173,9 +102,7 @@ export class GADMService extends AbstractHandler<ChainType> {
       return request;
     }
 
-    const method = gadm41FeatureFlag?.flagState
-      ? this.composeResultsWithGadmData
-      : this.composeResults;
+    const method = this.composeResultsWithGadmData;
 
     const results = await this.asyncPoolAll(POOL_SIZE, features, method);
 

@@ -1,28 +1,12 @@
 import { useState, useEffect } from 'react';
 import { Card, CardContent, CardActions, Modal } from '@mui/material';
+import isEqual from 'lodash/isEqual';
 import Button from '../../../../../common/js/components/Button';
 import AnalysisTypesSelector from '../../../../../common/js/components/AnalysisTypesSelector';
 import { requestGeoTrellisAnalyzeList } from '../../../utils/requestUtils';
 import { listStatus } from '../../../../../../config/env/listStatuses.constants';
 import InlineLoader from '../../../../../common/js/components/Loaders/InlineLoader';
 import './ChangeTypeOfAnalysisModal.scss';
-
-const areArraysEqual = (arr1, arr2) => {
-  if (arr1.length !== arr2.length) {
-    return false;
-  }
-  const set1 = new Set(arr1);
-  const set2 = new Set(arr2);
-  if (set1.size !== set2.size) {
-    return false;
-  }
-  for (let item of set1) {
-    if (!set2.has(item)) {
-      return false;
-    }
-  }
-  return true;
-};
 
 const AddAnalysisTypeConfirmationMessage = () => {
   return (
@@ -128,7 +112,7 @@ function ChangeTypeOfAnalysisModal({
     setSelectedAnalysis(initialAnalysisSelection);
   };
 
-  const isSelectionUnchanged = areArraysEqual(selectedAnalysis, initialAnalysisSelection);
+  const isSelectionUnchanged = isEqual(selectedAnalysis, initialAnalysisSelection);
 
   const hasDraftInSelection = selectedAnalysis.some((analysisId) => {
     const match = listAnalysesStatus.find((item) => item.analysisId === analysisId);

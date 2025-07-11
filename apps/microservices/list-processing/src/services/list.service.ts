@@ -1,9 +1,4 @@
-import {
-  ClientStoreConnection,
-  FeatureFlag,
-  ListsUploadStatus,
-  SQLUtils,
-} from '@wri-monorepos/sql';
+import { ClientStoreConnection, ListsUploadStatus, SQLUtils } from '@wri-monorepos/sql';
 import { Logger, InternalServerErrorException } from '@nestjs/common';
 import { Injectable } from '@nestjs/common';
 import { CreateListRequest, RequestLargeListProcess, ResponseLargeListProcess } from '../models';
@@ -12,10 +7,7 @@ import * as sql from 'mssql';
 import { RequestSaveLargeListProcessModel, CreateListInsertResultModel } from '../models';
 import { MetadataService as AWSMetadataService } from '@wri-monorepos/aws';
 import { ServerConfigType } from '../validators/server-config';
-import { featureFlagsService } from '@wri-monorepos/shared';
-import { DeprecatedStartAnalysisService } from '../app/list-upload/deprecated.start.analysis.service';
 import { StartAnalysisService } from '../app/list-upload/start.analysis.service';
-import { DeprecatedCreateLargeListService } from '../app/list-upload/deprecated.create.large.list.service';
 import { CreateLargeListService } from '../app/list-upload/create.large.list.service';
 
 type ListRequest = {
@@ -40,9 +32,7 @@ export class ListService {
     private readonly clientStoreConnection: ClientStoreConnection,
     private readonly awsMetadataService: AWSMetadataService,
     private readonly config: ConfigService<ServerConfigType, true>,
-    private readonly deprecatedStartAnalysisService: DeprecatedStartAnalysisService,
     private readonly startAnalysisService: StartAnalysisService,
-    private readonly deprecatedCreateLargeListService: DeprecatedCreateLargeListService,
     private readonly createLargeListService: CreateLargeListService
   ) {}
 
@@ -74,25 +64,13 @@ export class ListService {
   async startAnalysisProcessForList(
     request: RequestLargeListProcess
   ): Promise<ResponseLargeListProcess> {
-    const { getFeatureFlagsForCurrentOrg } = await featureFlagsService();
-    const flags = await getFeatureFlagsForCurrentOrg(request.organization_id);
-
-    const uploadListLpFlag = flags.find((f) => f.flagId === 'UploadListLp') as FeatureFlag;
-
-    if (uploadListLpFlag.flagState) {
-      const bucket = this.config.get('LARGE_PROCESSING_LIST_BUCKET', { infer: true });
-      request.path = request.path.replace(`s3://${bucket}/`, '');
-      return this.startAnalysisService.run(request);
-    }
-    return this.deprecatedStartAnalysisService.run(request);
+    const bucket = this.config.get('LARGE_PROCESSING_LIST_BUCKET', { infer: true });
+    request.path = request.path.replace(`s3://${bucket}/`, '');
+    return this.startAnalysisService.run(request);
   }
 
   async createListTables(request: ListRequest): Promise<CreateListResult> {
-    const { isUploadListLpEnabled } = request;
-    if (isUploadListLpEnabled) {
-      return await this.createLargeListService.run(request);
-    }
-    return await this.deprecatedCreateLargeListService.run(request);
+    return await this.createLargeListService.run(request);
   }
 
   async updateListsUploadStatus(

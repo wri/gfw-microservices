@@ -2,11 +2,9 @@ import { ClientStoreConnection, FeatureFlag, Organization, SQLUtils } from '@wri
 import { RequestLargeListProcess, CreateListRequest } from '../models';
 import { ListService } from './list.service';
 import { StartAnalysisService } from '../app/list-upload/start.analysis.service';
-import { DeprecatedStartAnalysisService } from '../app/list-upload/deprecated.start.analysis.service';
 import { MetadataService } from '@wri-monorepos/aws';
 import { ConfigService } from '@nestjs/config';
 import { featureFlagsService } from '@wri-monorepos/shared';
-import { DeprecatedCreateLargeListService } from '../app/list-upload/deprecated.create.large.list.service';
 import { CreateLargeListService } from '../app/list-upload/create.large.list.service';
 import { InternalServerErrorException } from '@nestjs/common';
 import { DataSource } from 'typeorm';
@@ -23,9 +21,7 @@ jest.mock('@wri-monorepos/shared', () => ({
 describe('ListService - Start Analysis Process For List', () => {
   let service: ListService;
   let startAnalysisService: StartAnalysisService;
-  let deprecatedStartAnalysisService: DeprecatedStartAnalysisService;
   let createLargeListService: CreateLargeListService;
-  let deprecatedCreateLargeListService: DeprecatedCreateLargeListService;
   let metadataServiceMock: Partial<MetadataService>;
   let configServiceMock: Partial<ConfigService>;
 
@@ -50,28 +46,15 @@ describe('ListService - Start Analysis Process For List', () => {
       }),
     } as unknown as StartAnalysisService;
 
-    deprecatedStartAnalysisService = {
-      run: jest.fn().mockResolvedValue({
-        executionArn: 'test-arn',
-        startDate: new Date().toISOString(),
-      }),
-    } as unknown as DeprecatedStartAnalysisService;
-
     createLargeListService = {
       run: jest.fn(),
     } as unknown as CreateLargeListService;
-
-    deprecatedCreateLargeListService = {
-      run: jest.fn(),
-    } as unknown as DeprecatedCreateLargeListService;
 
     service = new ListService(
       new ClientStoreConnection(),
       metadataServiceMock as MetadataService,
       configServiceMock as ConfigService<ServerConfigType, true>,
-      deprecatedStartAnalysisService,
       startAnalysisService,
-      deprecatedCreateLargeListService,
       createLargeListService
     );
   });
@@ -120,54 +103,6 @@ describe('ListService - Start Analysis Process For List', () => {
     await service.startAnalysisProcessForList(request);
 
     expect(startAnalysisService.run).toHaveBeenCalledWith(request);
-    expect(deprecatedStartAnalysisService.run).not.toHaveBeenCalled();
-  });
-
-  it('should call deprecatedStartAnalysisService.run if UploadListLp flag is false', async () => {
-    const request: RequestLargeListProcess = {
-      organization_id: 1,
-      subscription_status_id: 1,
-      organization_database: 'org123',
-      list_id: 1,
-      path: 'test-path',
-      template_type: 'test-type',
-      user_id: 1,
-      startAnalysis: true,
-      saveAsDraft: false,
-      commodity: 'cocoa',
-    };
-
-    const flags: FeatureFlag[] = [
-      {
-        flagId: 'UploadListLp',
-        flagState: false,
-        id: 0,
-        orgId: 0,
-        modifierUserId: 0,
-        updateDateTime: undefined,
-        organization: new Organization(),
-      },
-      {
-        flagId: 'AnotherFlag',
-        flagState: false,
-        id: 0,
-        orgId: 0,
-        modifierUserId: 0,
-        updateDateTime: undefined,
-        organization: new Organization(),
-      },
-    ];
-
-    const mockFunc1 = jest.fn().mockReturnValue(flags);
-
-    (featureFlagsService as jest.Mock).mockResolvedValue({
-      getFeatureFlagsForCurrentOrg: mockFunc1,
-    });
-
-    await service.startAnalysisProcessForList(request);
-
-    expect(startAnalysisService.run).not.toHaveBeenCalledWith(request);
-    expect(deprecatedStartAnalysisService.run).toHaveBeenCalled();
   });
 
   describe('startAnalysisProcessForList', () => {
@@ -236,8 +171,7 @@ describe('ListService - Start Analysis Process For List', () => {
 
       const result = await service.startAnalysisProcessForList(request);
 
-      expect(request.path).toBe('s3://test-bucket/test-file.csv');
-      expect(deprecatedStartAnalysisService.run).toHaveBeenCalledWith(request);
+      expect(request.path).toBe('test-file.csv');
       expect(result).toEqual({
         executionArn: 'test-arn',
         startDate: expect.any(String),
@@ -249,11 +183,9 @@ describe('ListService - Start Analysis Process For List', () => {
 describe('ListService - Create New List', () => {
   let service: ListService;
   let createLargeListService: CreateLargeListService;
-  let deprecatedCreateLargeListService: DeprecatedCreateLargeListService;
   let metadataServiceMock: Partial<MetadataService>;
   let configServiceMock: Partial<ConfigService<ServerConfigType, true>>;
   let startAnalysisService: StartAnalysisService;
-  let deprecatedStartAnalysisService: DeprecatedStartAnalysisService;
 
   beforeEach(async () => {
     metadataServiceMock = {
@@ -273,29 +205,17 @@ describe('ListService - Create New List', () => {
       run: jest.fn().mockResolvedValue({ list_id: 123 }),
     } as unknown as CreateLargeListService;
 
-    deprecatedCreateLargeListService = {
-      run: jest.fn().mockResolvedValue({ list_id: 123 }),
-    } as unknown as DeprecatedCreateLargeListService;
-
     startAnalysisService = {
       run: jest
         .fn()
         .mockResolvedValue({ executionArn: 'arn', startDate: new Date().toISOString() }),
     } as unknown as StartAnalysisService;
 
-    deprecatedStartAnalysisService = {
-      run: jest
-        .fn()
-        .mockResolvedValue({ executionArn: 'arn', startDate: new Date().toISOString() }),
-    } as unknown as DeprecatedStartAnalysisService;
-
     service = new ListService(
       new ClientStoreConnection(),
       metadataServiceMock as MetadataService,
       configServiceMock as ConfigService<ServerConfigType, true>,
-      deprecatedStartAnalysisService,
       startAnalysisService,
-      deprecatedCreateLargeListService,
       createLargeListService
     );
   });
@@ -352,7 +272,6 @@ describe('ListService - Create New List', () => {
 describe('ListService - Create List Tables', () => {
   let service: ListService;
   let createLargeListService: CreateLargeListService;
-  let deprecatedCreateLargeListService: DeprecatedCreateLargeListService;
   let configServiceMock: Partial<ConfigService>;
 
   beforeEach(async () => {
@@ -360,9 +279,6 @@ describe('ListService - Create List Tables', () => {
       run: jest.fn().mockResolvedValue({ list_id: 123 }),
     } as unknown as CreateLargeListService;
 
-    deprecatedCreateLargeListService = {
-      run: jest.fn().mockResolvedValue({ list_id: 456 }),
-    } as unknown as DeprecatedCreateLargeListService;
     configServiceMock = {
       get: jest.fn().mockImplementation((key) => {
         if (key === 'LARGE_PROCESSING_LIST_BUCKET') {
@@ -375,9 +291,7 @@ describe('ListService - Create List Tables', () => {
       new ClientStoreConnection(),
       {} as MetadataService,
       configServiceMock as ConfigService<ServerConfigType, true>,
-      {} as DeprecatedStartAnalysisService,
       {} as StartAnalysisService,
-      deprecatedCreateLargeListService,
       createLargeListService
     );
   });
@@ -395,23 +309,6 @@ describe('ListService - Create List Tables', () => {
     const result = await service.createListTables(request);
     expect(result).toEqual({ list_id: 123 });
     expect(createLargeListService.run).toHaveBeenCalledWith(request);
-    expect(deprecatedCreateLargeListService.run).not.toHaveBeenCalled();
-  });
-
-  it('should use deprecatedCreateLargeListService when isUploadListLpEnabled is false', async () => {
-    const request = {
-      listName: 'test-list',
-      userId: 1,
-      clientDatabase: 'test-db',
-      analysisIds: ['1', '2'],
-      isUploadListLpEnabled: false,
-      saveAsDraft: false,
-    };
-
-    const result = await service.createListTables(request);
-    expect(result).toEqual({ list_id: 456 });
-    expect(deprecatedCreateLargeListService.run).toHaveBeenCalledWith(request);
-    expect(createLargeListService.run).not.toHaveBeenCalled();
   });
 });
 
@@ -447,9 +344,7 @@ describe('ListService - Update Lists Upload Status', () => {
       clientStoreConnection,
       metadataServiceMock as MetadataService,
       configServiceMock as ConfigService<ServerConfigType, true>,
-      {} as DeprecatedStartAnalysisService,
       {} as StartAnalysisService,
-      {} as DeprecatedCreateLargeListService,
       {} as CreateLargeListService
     );
   });
@@ -532,9 +427,7 @@ describe('ListService - Save List To Process', () => {
       new ClientStoreConnection(),
       metadataServiceMock as MetadataService,
       configServiceMock as ConfigService<ServerConfigType, true>,
-      {} as DeprecatedStartAnalysisService,
       {} as StartAnalysisService,
-      {} as DeprecatedCreateLargeListService,
       {} as CreateLargeListService
     );
   });

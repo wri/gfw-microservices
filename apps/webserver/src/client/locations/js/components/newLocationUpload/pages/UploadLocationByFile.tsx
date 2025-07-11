@@ -2,7 +2,7 @@ import { DragEvent, useEffect, useRef, useState, ChangeEvent } from 'react';
 import { Box, Card, Typography, useTheme } from '@mui/material';
 import { ArrowForwardIos, Close } from '@mui/icons-material';
 
-import { PillButton } from '../../../../../components';
+import { PillButton, ExternalHelperResource } from '../../../../../components';
 import { VALID_UPLOAD_FILE_FORMATS } from '../utils/constants';
 import {
   DataTemplates,
@@ -15,7 +15,6 @@ import { uploadFileToS3 } from '../utils/upload';
 import { useHistory } from '../hooks';
 import { FileAttachState, UploadType } from '../types';
 import { DATA_CY, ExternalLinks } from '../../../../../utils/constants';
-import { ExternalHelperResource } from '../../../../../components';
 
 export function UploadLocationByFile() {
   const theme = useTheme();

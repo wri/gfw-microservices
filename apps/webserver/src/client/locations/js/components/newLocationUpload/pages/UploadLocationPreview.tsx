@@ -18,12 +18,11 @@ import { LoadingModal, PillButton } from '../../../../../components';
 import { getTableColumns, LabelNameTable, uploadFileToS3 } from '../utils/upload';
 import { useUploadLocation } from '../contexts';
 import { useHistory } from '../hooks';
-import { NavBar, UploadLocationPreviewErrorMessage } from '../components';
+import { NavBar, UploadLocationPreviewErrorMessage, FileValidationHelper } from '../components';
 import { useFetch } from '../../../../../hooks';
 import { VALID_UPLOAD_FILE_FORMATS } from '../utils/constants';
 import { fetchListPreview } from '../../../../../api/list';
 import { DATA_CY } from '../../../../../utils/constants';
-import { FileValidationHelper } from '../components/FileValidationHelper';
 
 export function UploadLocationPreview() {
   const {

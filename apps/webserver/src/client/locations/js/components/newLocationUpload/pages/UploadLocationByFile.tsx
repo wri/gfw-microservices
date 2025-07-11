@@ -14,7 +14,8 @@ import { useUploadLocation } from '../contexts';
 import { uploadFileToS3 } from '../utils/upload';
 import { useHistory } from '../hooks';
 import { FileAttachState, UploadType } from '../types';
-import { DATA_CY } from '../../../../../utils/constants';
+import { DATA_CY, ExternalLinks } from '../../../../../utils/constants';
+import { NewExternalHelperResource } from '../../../../../components/NewExternalHelperResource';
 
 export function UploadLocationByFile() {
   const theme = useTheme();
@@ -117,8 +118,14 @@ export function UploadLocationByFile() {
   return (
     <>
       <NavBar />
-      <Card sx={{ pt: 1, px: 2, pb: 2 }}>
-        <Typography variant="h6">By Data File: Prepare & Upload Location Data</Typography>
+      <Card sx={{ pt: 1.25, px: 2, pb: 2 }}>
+        <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
+          <Typography variant="h6">By Data File: Prepare & Upload Location Data</Typography>
+          <NewExternalHelperResource
+            text="How to format your location data for GFW Pro"
+            url={ExternalLinks.HowToFormatLocationData}
+          />
+        </Box>
         <Typography
           variant="caption"
           color={theme.palette.text.secondary}

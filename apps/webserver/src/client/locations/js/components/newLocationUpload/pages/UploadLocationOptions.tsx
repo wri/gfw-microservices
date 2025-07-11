@@ -8,7 +8,7 @@ import { useUploadLocation } from '../contexts';
 import { useHistory } from '../hooks';
 import { ExternalHelperResource } from '../../../../../components';
 import { UploadType, UserList } from '../types';
-import { DATA_CY } from '../../../../../utils/constants';
+import { DATA_CY, ExternalLinks } from '../../../../../utils/constants';
 import DataFileIcon from '../../../../../assets/icons/data-file.svg';
 import AddPointIcon from '../../../../../assets/icons/add-point.svg';
 import DrawPolygonIcon from '../../../../../assets/icons/draw-polygon.svg';
@@ -68,7 +68,7 @@ export function UploadLocationOptions({ fromList, userLists }: UploadLocationOpt
           </Box>
           <ExternalHelperResource
             text="How to format your location data for GFW Pro"
-            url="https://globalforestwatch.org/help/gfw-pro/guides/complete-selected-template"
+            url={ExternalLinks.HowToFormatLocationData}
           />
         </Box>
         <div className="upload-location-options__main-content__options">

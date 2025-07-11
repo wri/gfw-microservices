@@ -28,6 +28,7 @@ import ShapeFileIcon from '../../../../../assets/icons/shapefile-icon.svg';
 import { ExternalHelperResource, PillButton } from '../../../../../components';
 import { aws_templates } from '../../../../../common/js/config';
 import { ToggleButtonGroup } from '../../../../../components/ToggleButtonGroup';
+import { ExternalLinks } from '../../../../../utils/constants';
 
 type DataTemplatesProps = {
   isOpen: boolean;
@@ -119,7 +120,7 @@ export function DataTemplates({ isOpen, onClose }: DataTemplatesProps) {
         <Box sx={{ display: 'flex', gap: 3, mt: 2 }}>
           <ExternalHelperResource
             text="How to format your location data for GFW Pro"
-            url="https://globalforestwatch.org/help/gfw-pro/guides/complete-selected-template"
+            url={ExternalLinks.HowToFormatLocationData}
           />
           <ExternalHelperResource
             text="Learn more about GFW Pro templates"

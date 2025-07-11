@@ -1,4 +1,4 @@
-import { cleanup, render, screen, within } from '@testing-library/react';
+import { render, screen, within } from '@testing-library/react';
 import { UploadLocationOptions } from '.';
 import { useUploadLocation } from '../contexts';
 import { UploadType } from '../types';
@@ -36,8 +36,6 @@ jest.mocked(useUploadLocation).mockReturnValue({
   addFile: jest.fn(),
   updateSaveMode: jest.fn(),
 });
-
-afterEach(cleanup);
 
 describe('UploadLocationOptions', () => {
   it('should render correctly', () => {

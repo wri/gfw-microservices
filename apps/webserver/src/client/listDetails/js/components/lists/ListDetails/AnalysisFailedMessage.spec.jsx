@@ -1,12 +1,7 @@
-import { render, screen, cleanup, fireEvent } from '@testing-library/react';
+import { render, screen, fireEvent } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import AnalysisFailedMessage from './AnalysisFailedMessage';
-import '@testing-library/jest-dom';
 
-afterEach(() => {
-  cleanup();
-  jest.clearAllMocks();
-});
+import AnalysisFailedMessage from './AnalysisFailedMessage';
 
 describe('AnalysisFailedMessage Component', () => {
   const mockToggleReRunAnalysisDialog = jest.fn();

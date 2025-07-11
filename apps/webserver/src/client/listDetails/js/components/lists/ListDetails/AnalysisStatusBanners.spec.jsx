@@ -1,12 +1,7 @@
-import { render, screen, cleanup } from '@testing-library/react';
+import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import AnalysisStatusBanners from './AnalysisStatusBanners';
-import '@testing-library/jest-dom';
 
-afterEach(() => {
-  cleanup();
-  jest.clearAllMocks();
-});
+import AnalysisStatusBanners from './AnalysisStatusBanners';
 
 jest.mock('../../../../js/components/lists/ListDetails/AlertBanner', () => (props) => (
   <div data-testid="alert-banner">

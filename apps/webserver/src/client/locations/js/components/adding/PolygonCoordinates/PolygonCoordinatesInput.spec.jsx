@@ -1,6 +1,6 @@
 import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
-import { render, fireEvent, waitFor, screen, cleanup } from '@testing-library/react';
-import '@testing-library/jest-dom';
+import { render, fireEvent, waitFor, screen } from '@testing-library/react';
+
 import PolygonCoordinatesInput from './PolygonCoordinatesInput';
 import * as geometries from './geometries';
 import { NEW_LOCATION_AREA_OPTIONS } from '../areaOptions.constants';
@@ -85,10 +85,7 @@ describe('PolygonCoordinatesInput Component', () => {
       </MuiThemeProvider>
     );
   });
-  afterEach(() => {
-    cleanup();
-    jest.clearAllMocks();
-  });
+
   it('opens PolygonCoordinatesInput modal', () => {
     // Check if the modal is initially closed
     expect(screen.queryByTestId('polygon-coordinates-modal')).not.toBeInTheDocument();

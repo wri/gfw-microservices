@@ -1,4 +1,4 @@
-import { render, screen, waitFor, cleanup } from '@testing-library/react';
+import { render, screen, waitFor } from '@testing-library/react';
 import { RegionChartByCountry } from './RegionChartByCountry';
 import { regionIds } from './regions-constants';
 import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
@@ -39,8 +39,6 @@ global.fetch = jest.fn(() =>
 );
 
 describe('RegionChartByCountry - Argentina', () => {
-  beforeEach(cleanup);
-
   it('should render pie charts for protected areas and indigenous territories', async () => {
     const defaultProps = {
       listId: '1',
@@ -110,8 +108,6 @@ describe('RegionChartByCountry - Argentina', () => {
 });
 
 describe('RegionChartByCountry - Colombia', () => {
-  beforeEach(cleanup);
-
   it('should render pie charts for protected areas and indigenous territories', async () => {
     const defaultProps = {
       listId: '1',

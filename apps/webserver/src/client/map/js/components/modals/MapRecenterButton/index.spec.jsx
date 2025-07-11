@@ -1,16 +1,8 @@
-import { render, screen, fireEvent, cleanup } from '@testing-library/react';
-import '@testing-library/jest-dom';
+import { render, screen, fireEvent } from '@testing-library/react';
+
 import MapRecenterButton from '.';
 
 describe('MapRecenterButton', () => {
-  beforeEach(() => {
-    jest.clearAllMocks();
-  });
-
-  afterEach(() => {
-    cleanup();
-  });
-
   it('should not render the button initially', () => {
     render(<MapRecenterButton selectedList={[]} goToOriginalPoint={jest.fn()} />);
     expect(screen.queryByTestId('map-center-button')).toBeNull();

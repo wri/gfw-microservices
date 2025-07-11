@@ -1,5 +1,5 @@
-import { cleanup, screen, render, fireEvent } from '@testing-library/react';
-import '@testing-library/jest-dom/extend-expect';
+import { screen, render, fireEvent } from '@testing-library/react';
+
 import FeatureFlagDetail from './FeatureFlagDetail';
 import { useFeatureFlagStateContext } from './FeatureFlagStateContext';
 
@@ -35,7 +35,6 @@ jest.mock('./AddCompany', () => ({
 }));
 
 useFeatureFlagStateContext.mockReturnValue(mockFeatureFlagContext);
-afterEach(cleanup);
 
 describe('FeatureFlagDetail', () => {
   it('renders component with selectedFeatureFlag', () => {

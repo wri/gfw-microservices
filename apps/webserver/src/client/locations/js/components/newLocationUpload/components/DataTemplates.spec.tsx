@@ -1,4 +1,4 @@
-import { render, screen, within, cleanup } from '@testing-library/react';
+import { render, screen, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { DataTemplates } from './DataTemplates';
 
@@ -10,8 +10,6 @@ jest.mock('@mui/icons-material', () => {
     DownloadDone: (props: any) => <span data-testid="DownloadDoneIcon" {...props} />,
   };
 });
-
-afterEach(cleanup);
 
 describe('DataTemplates', () => {
   const handleCloseMock = jest.fn();

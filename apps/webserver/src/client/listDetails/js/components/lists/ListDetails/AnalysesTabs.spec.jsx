@@ -1,4 +1,4 @@
-import { render, screen, fireEvent, cleanup } from '@testing-library/react';
+import { render, screen, fireEvent } from '@testing-library/react';
 import AnalysesTabs from './AnalysesTabs';
 import { analysisTypes } from '../../../../../../config/env/analysisTypes.constants';
 import {
@@ -21,8 +21,6 @@ const defaultProps = {
 };
 
 describe('AnalysesTabs', () => {
-  afterEach(cleanup);
-
   it('renders all tabs', () => {
     render(<AnalysesTabs {...defaultProps} />);
     expect(screen.getByText('Palm Risk Assessment')).toBeInTheDocument();

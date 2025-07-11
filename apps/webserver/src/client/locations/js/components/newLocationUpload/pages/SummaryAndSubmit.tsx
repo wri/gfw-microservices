@@ -209,10 +209,9 @@ export function SummaryAndSubmit() {
           }}
         >
           <PillButton
-            variant="contained"
             color="info"
             startIcon={<ArrowBackIos />}
-            onClick={() => history.goBack()}
+            onClick={history.goBack}
             sx={{ mr: 'auto' }}
           >
             Back
@@ -284,10 +283,7 @@ export function SummaryAndSubmit() {
           >
             Ok
           </PillButton>
-          <PillButton
-            sx={{ color: 'info.contrastText' }}
-            onClick={() => setIsConfirmationDialogOpen(false)}
-          >
+          <PillButton color="info" onClick={() => setIsConfirmationDialogOpen(false)}>
             Cancel
           </PillButton>
         </DialogActions>

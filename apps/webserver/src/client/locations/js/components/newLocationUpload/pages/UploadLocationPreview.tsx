@@ -18,7 +18,7 @@ import { LoadingModal, PillButton } from '../../../../../components';
 import { getTableColumns, LabelNameTable, uploadFileToS3 } from '../utils/upload';
 import { useUploadLocation } from '../contexts';
 import { useHistory } from '../hooks';
-import { NavBar, UploadLocationPreviewErrorMessage } from '../components';
+import { NavBar, UploadLocationPreviewErrorMessage, FileValidationHelper } from '../components';
 import { useFetch } from '../../../../../hooks';
 import { VALID_UPLOAD_FILE_FORMATS } from '../utils/constants';
 import { fetchListPreview } from '../../../../../api/list';
@@ -88,9 +88,9 @@ export function UploadLocationPreview() {
   }, [data]);
 
   return (
-    <Box sx={{ height: '92vh', display: 'flex', flexDirection: 'column' }}>
+    <Box sx={{ display: 'flex', flexDirection: 'column' }}>
       <NavBar />
-      <Card sx={{ pt: 1, px: 2, pb: 2, display: 'flex', flexDirection: 'column' }}>
+      <Card sx={{ height: '80vh', pt: 1, px: 2, pb: 2, display: 'flex', flexDirection: 'column' }}>
         <Box
           sx={{
             display: 'flex',
@@ -121,7 +121,7 @@ export function UploadLocationPreview() {
             data-cy={DATA_CY.NEW_UPLOAD_WORKFLOW[UploadType.ByFile].PREVIEW_RETRY}
             onClick={() => fileInputRef.current?.click()}
           >
-            Retry upload
+            Re-upload file
           </PillButton>
           <input
             type="file"
@@ -134,7 +134,7 @@ export function UploadLocationPreview() {
         </Box>
 
         {isLoading ? (
-          <Skeleton variant="rounded" sx={{ height: '500px', mb: 2 }} />
+          <Skeleton variant="rectangular" sx={{ flex: 1 }} />
         ) : error ? (
           <UploadLocationPreviewErrorMessage
             error={error}
@@ -148,7 +148,7 @@ export function UploadLocationPreview() {
             onRetryPreviewData={getPreviewData}
           />
         ) : (
-          <Box sx={{ overflow: 'auto', mb: 2 }}>
+          <Box sx={{ overflow: 'auto' }}>
             <Table
               stickyHeader
               aria-label="sticky table"
@@ -185,6 +185,7 @@ export function UploadLocationPreview() {
             </Table>
           </Box>
         )}
+        {!apiRequestError && <FileValidationHelper sx={{ my: 2 }} />}
 
         <Box
           sx={{
@@ -197,7 +198,6 @@ export function UploadLocationPreview() {
           }}
         >
           <PillButton
-            variant="contained"
             color="info"
             startIcon={<ArrowBackIos />}
             onClick={history.goBack}

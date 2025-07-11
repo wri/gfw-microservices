@@ -423,7 +423,7 @@ class Landing extends Component {
                     <ExternalHelperResource
                       text="How to add your data"
                       url={ExternalLinks.UploadListHelpCenter}
-                      color="text.secondary"
+                      color="info"
                     />
                   </Box>
                 </Box>

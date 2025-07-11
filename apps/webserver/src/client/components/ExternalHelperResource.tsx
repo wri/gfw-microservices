@@ -1,18 +1,26 @@
-import type { SvgIconProps } from '@mui/material/SvgIcon';
-import { Typography, Link } from '@mui/material';
-import { Support, NorthEast } from '@mui/icons-material';
+import { Typography, Link, Theme } from '@mui/material';
+import { OpenInNew } from '@mui/icons-material';
 
 type ExternalHelperResourceProps = {
   text: string;
   url: string;
-  color?: SvgIconProps['color'];
+  color: 'primary' | 'info';
 };
 
-export function ExternalHelperResource({
-  text,
-  url,
-  color = 'primary',
-}: ExternalHelperResourceProps) {
+const colors = {
+  primary: {
+    color: 'primary.dark',
+    backgroundColor: 'primary.light',
+    border: (theme: Theme) => `1px solid ${theme.palette.primary.main}`,
+  },
+  info: {
+    color: 'text.primary',
+    backgroundColor: 'background.default',
+    border: (theme: Theme) => `1px solid ${theme.palette.text.secondary}`,
+  },
+};
+
+export function ExternalHelperResource({ text, url, color }: ExternalHelperResourceProps) {
   return (
     <Link
       sx={{
@@ -20,17 +28,23 @@ export function ExternalHelperResource({
         alignItems: 'center',
         gap: '0.25rem',
         width: 'fit-content',
+        height: 'fit-content',
         textDecoration: 'none',
-        color,
+        borderRadius: 1,
+        py: 0.25,
+        px: 1.5,
+        '&:hover': {
+          textDecoration: 'none',
+        },
+        ...colors[color],
       }}
       href={url}
       target="_blank"
     >
-      <Support fontSize="small" />
-      <Typography variant="body2" color={color} lineHeight="0">
+      <Typography variant="body2" lineHeight="0">
         {text}
       </Typography>
-      <NorthEast fontSize="small" />
+      <OpenInNew fontSize="small" />
     </Link>
   );
 }

@@ -470,10 +470,9 @@ export function ConfigureList({ userLists }: { userLists: UserList[] }) {
           }}
         >
           <PillButton
-            variant="contained"
             color="info"
             startIcon={<ArrowBackIos />}
-            onClick={() => history.goBack()}
+            onClick={history.goBack}
             sx={{ mr: 'auto' }}
           >
             Back
@@ -509,10 +508,7 @@ export function ConfigureList({ userLists }: { userLists: UserList[] }) {
           </Typography>
         </DialogContent>
         <DialogActions sx={{ ml: 'auto', pb: 2 }}>
-          <PillButton
-            sx={{ color: 'info.contrastText' }}
-            onClick={() => setIsConfirmationDialogOpen(false)}
-          >
+          <PillButton color="info" onClick={() => setIsConfirmationDialogOpen(false)}>
             Cancel
           </PillButton>
           <PillButton variant="contained" onClick={() => setIsConfirmationDialogOpen(false)}>

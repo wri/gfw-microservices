@@ -384,6 +384,13 @@ export const findSharedListsInsideOrganization = (sharedListsRecords, allLists) 
   if (!Array.isArray(sharedListsRecords) || !Array.isArray(allLists)) {
     return [];
   }
-  const sharedListsIDs = sharedListsRecords.map((list) => list.list_id);
-  return allLists.filter((list) => sharedListsIDs.includes(list.id));
+
+  // Early return if no shared lists
+  if (sharedListsRecords.length === 0) {
+    return [];
+  }
+
+  // Use Set for O(1) lookup instead of O(n) includes()
+  const sharedListsSet = new Set(sharedListsRecords.map((list) => list.list_id));
+  return allLists.filter((list) => sharedListsSet.has(list.id));
 };

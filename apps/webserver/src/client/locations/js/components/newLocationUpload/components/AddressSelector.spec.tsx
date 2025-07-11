@@ -1,4 +1,4 @@
-import { render, screen, cleanup } from '@testing-library/react';
+import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { FieldError } from 'react-hook-form';
 import { AddressSelector } from './AddressSelector';
@@ -19,8 +19,6 @@ describe('AddressSelector', () => {
       />
     );
   };
-
-  afterEach(cleanup);
 
   test('renders input field and no error by default', () => {
     renderComponent();

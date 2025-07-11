@@ -55,10 +55,6 @@ describe('ListDownloadMenu', () => {
     isHoverMenu: false,
   };
 
-  beforeEach(() => {
-    jest.clearAllMocks();
-  });
-
   it('renders the download button when isHoverMenu is false', () => {
     render(<ListDownloadMenu {...defaultProps} />);
     expect(screen.getByText('Download')).toBeInTheDocument();

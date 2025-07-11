@@ -31,10 +31,6 @@ describe('Shared List Services', () => {
     getFormattedDateTime.mockReturnValue('formattedDate');
   });
 
-  afterEach(() => {
-    jest.clearAllMocks();
-  });
-
   it('updateSharedListUsersService should update state correctly', async () => {
     fetch.mockResolvedValue([{ user_id: 1, datetime: '2024-01-01T00:00:00Z' }]);
 

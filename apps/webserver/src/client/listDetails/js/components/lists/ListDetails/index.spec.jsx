@@ -1,5 +1,5 @@
-import { render, cleanup, screen } from '@testing-library/react';
-import '@testing-library/jest-dom';
+import { render, screen } from '@testing-library/react';
+
 import ListDetails from './index';
 import { analysisTypes } from '../../../../../../config/env/analysisTypes.constants';
 import { updateSelectedLocations } from '../../../../../locations/js/actions/locationActions';
@@ -45,11 +45,6 @@ jest.mock('material-ui/Tabs', () => ({ Tabs: () => <div />, Tab: () => <div /> }
 jest.mock('material-ui/Card', () => ({ Card: () => <div />, CardText: () => <div /> }));
 jest.mock('material-ui/FlatButton', () => () => <div />);
 jest.mock('material-ui/Toolbar', () => ({ Toolbar: () => <div />, ToolbarGroup: () => <div /> }));
-
-afterEach(() => {
-  cleanup();
-  jest.clearAllMocks();
-});
 
 describe('ListDetails', () => {
   const defaultProps = {

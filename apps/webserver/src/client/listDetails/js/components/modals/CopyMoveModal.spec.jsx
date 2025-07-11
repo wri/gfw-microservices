@@ -1,4 +1,4 @@
-import { render, screen, cleanup, act } from '@testing-library/react';
+import { render, screen, act } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import CopyMoveModal from './CopyMoveModal';
 import axios from 'axios';
@@ -27,10 +27,6 @@ beforeAll(() => {
       { id: 5831, name: 'List B' },
     ],
   });
-});
-
-afterEach(() => {
-  cleanup();
 });
 
 describe('CopyMoveModal', () => {

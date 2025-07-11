@@ -1,4 +1,4 @@
-import { cleanup, render, screen } from '@testing-library/react';
+import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { UploadLocationPreview } from './UploadLocationPreview';
 import { useUploadLocation } from '../contexts';
@@ -64,8 +64,6 @@ describe('UploadLocationPreview', () => {
       error: null,
     });
   });
-
-  afterEach(cleanup);
 
   it('should render the component correctly', () => {
     render(<UploadLocationPreview />);

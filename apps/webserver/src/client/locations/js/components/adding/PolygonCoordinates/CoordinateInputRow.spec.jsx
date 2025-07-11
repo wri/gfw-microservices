@@ -1,9 +1,6 @@
-import { render, fireEvent, cleanup } from '@testing-library/react';
+import { render, fireEvent } from '@testing-library/react';
 import CoordinateInputRow from './CoordinateInputRow';
 
-afterEach(() => {
-  cleanup();
-});
 describe('CoordinateInputRow', () => {
   it('should render without crashing', () => {
     const id = '1';

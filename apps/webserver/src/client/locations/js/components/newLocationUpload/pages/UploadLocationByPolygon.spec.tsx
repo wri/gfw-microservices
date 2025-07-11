@@ -1,4 +1,4 @@
-import { cleanup, render, screen, waitFor } from '@testing-library/react';
+import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { UploadLocationByPolygon } from './UploadLocationByPolygon';
 import { useMap } from '../hooks';
@@ -51,8 +51,6 @@ describe('UploadLocationByPolygon', () => {
 
     render(<UploadLocationByPolygon />);
   });
-
-  afterEach(cleanup);
 
   it('should render the component with form elements', async () => {
     expect(

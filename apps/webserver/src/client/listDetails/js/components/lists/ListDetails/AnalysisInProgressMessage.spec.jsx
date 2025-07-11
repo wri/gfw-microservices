@@ -1,11 +1,6 @@
-import { render, screen, cleanup } from '@testing-library/react';
-import '@testing-library/jest-dom';
-import AnalysisInProgressMessage from './AnalysisInProgressMessage';
+import { render, screen } from '@testing-library/react';
 
-afterEach(() => {
-  cleanup();
-  jest.clearAllMocks();
-});
+import AnalysisInProgressMessage from './AnalysisInProgressMessage';
 
 describe('AnalysisInProgressMessage', () => {
   it('renders the component with correct elements', () => {

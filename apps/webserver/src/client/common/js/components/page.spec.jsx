@@ -1,13 +1,8 @@
-import { render, cleanup, waitFor } from '@testing-library/react';
+import { render, waitFor } from '@testing-library/react';
 import { act } from 'react-dom/test-utils';
 import Page from './Page';
 
 describe('Test Page Component', () => {
-  afterEach(() => {
-    cleanup();
-    jest.clearAllMocks();
-  });
-
   it('Rendering the Page component should not throw', () => {
     expect(() => {
       render(<Page />);

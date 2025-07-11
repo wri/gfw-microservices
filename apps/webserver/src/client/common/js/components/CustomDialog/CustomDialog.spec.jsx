@@ -1,14 +1,8 @@
-import { render, screen, fireEvent, cleanup } from '@testing-library/react';
-import '@testing-library/jest-dom/extend-expect';
+import { render, screen, fireEvent } from '@testing-library/react';
 import CustomDialog from './CustomDialog';
 import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
 
 describe('CustomDialog', () => {
-  afterEach(() => {
-    cleanup();
-    jest.clearAllMocks();
-  });
-
   const closeAction = jest.fn();
   const dialogActionConfirm = jest.fn();
   const dialogTitle = 'Test Dialog Title';

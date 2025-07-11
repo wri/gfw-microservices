@@ -1,11 +1,6 @@
-import { render, screen, cleanup } from '@testing-library/react';
+import { render, screen } from '@testing-library/react';
 import AlertBanner from './AlertBanner';
 import userEvent from '@testing-library/user-event';
-
-afterEach(() => {
-  cleanup();
-  jest.clearAllMocks();
-});
 
 describe('AlertBanner', () => {
   const props = {

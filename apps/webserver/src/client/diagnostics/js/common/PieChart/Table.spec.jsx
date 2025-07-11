@@ -1,7 +1,5 @@
-import { cleanup, render, screen } from '@testing-library/react';
+import { render, screen } from '@testing-library/react';
 import Table from './Table';
-
-afterEach(cleanup);
 
 describe('Table', () => {
   it('renders the table correctly with sample data', () => {

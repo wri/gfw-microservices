@@ -127,6 +127,7 @@ export function FileValidationHelper({ sx }: FileValidationHelperProps) {
               backgroundColor: 'background.default',
               borderRadius: 1,
               '& .MuiStepLabel-root': { alignItems: 'start' },
+              '& .MuiStepConnector-vertical': { ml: '15px' },
             }}
           >
             <Step key={1}>

@@ -156,11 +156,13 @@ export class ConvertersService {
 
     let status: ConverterStatus;
 
-    if (totalLists === 0 || failedLists === 0) {  // No lists to process or all succeeded
+    if (totalLists === 0 || failedLists === 0) {
+      // No lists to process or all succeeded
       status = ConverterStatus.COMPLETED;
-    } else if (failedLists === totalLists) {  
+    } else if (failedLists === totalLists) {
       status = ConverterStatus.FAILED;
-    } else {  // Some lists failed but some succeeded
+    } else {
+      // Some lists failed but some succeeded
       status = ConverterStatus.PARTIAL;
     }
 

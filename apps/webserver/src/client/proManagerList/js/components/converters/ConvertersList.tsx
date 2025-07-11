@@ -1,6 +1,8 @@
 import { useEffect, useState } from 'react';
 import {
+  Alert,
   Grid,
+  Snackbar,
   Table,
   TableHead,
   TableBody,
@@ -21,6 +23,7 @@ import { ConvertersData } from './types/converters';
 
 export default function ConvertersList({ setIsLoading, onViewJobDetails }) {
   const [orgIdInputs, setOrgIdInputs] = useState<{ [key: string]: string }>({});
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const {
     data: convertersData,
     error: fetchError,
@@ -34,12 +37,10 @@ export default function ConvertersList({ setIsLoading, onViewJobDetails }) {
     setIsLoading(isLoadingConverters);
   }, []);
 
-  const {
-    error: startError,
-    request: startConverterRequest,
-    // data: startData,         // TODO: Show success message after starting a converter
-    // isLoading: isStarting,   // TODO: Show loading state while starting a converter
-  } = useFetch<{ message: string; converterId: string }, { error: string }>();
+  const { error: startError, request: startConverterRequest } = useFetch<
+    { message: string; converterId: string },
+    { error: string }
+  >();
 
   const handleStart = async (converterName: string) => {
     const organizationId = orgIdInputs[converterName] || null;
@@ -49,16 +50,18 @@ export default function ConvertersList({ setIsLoading, onViewJobDetails }) {
     try {
       // Fire off startConverter and fetchConverters concurrently
       const startPromise = startConverter(startConverterRequest, converterName, organizationId);
-      fetchConverters(fetchConvertersRequest); // Kick off fetchConverters but don't await immediately
+      await fetchConverters(fetchConvertersRequest); // Kick off fetchConverters but don't await immediately
       await startPromise;
     } catch (error) {
-      // handle error here
+      const message = `Failed to start converter: ${
+        error?.error || error?.message || 'Unknown error'
+      }`;
+      setErrorMessage(message);
     } finally {
       setTimeout(() => {
         setStartingIds((prev) => {
-          // Remove the converter from startingIds after completion
           const newSet = new Set(prev);
-          newSet.delete(converterName);
+          newSet.delete(converterName); // Remove the converter from startingIds after completion
           return newSet;
         });
 
@@ -157,6 +160,28 @@ export default function ConvertersList({ setIsLoading, onViewJobDetails }) {
             />
           </>
         )}
+        <Snackbar
+          open={!!errorMessage}
+          autoHideDuration={4000}
+          onClose={() => setErrorMessage(null)}
+          anchorOrigin={{
+            vertical: 'top',
+            horizontal: 'center',
+          }}
+        >
+          <Alert
+            onClose={() => setErrorMessage(null)}
+            severity="error"
+            sx={{
+              mt: 6,
+              backgroundColor: '#FFF7F8',
+              border: '1px solid #F44336',
+              width: '100%',
+            }}
+          >
+            {errorMessage}
+          </Alert>
+        </Snackbar>
       </Grid>
     </Grid>
   );

@@ -1,10 +1,7 @@
-import { render, screen, fireEvent, cleanup } from '@testing-library/react';
+import { render, screen, fireEvent } from '@testing-library/react';
 import CountryStateSubStateFilter from './CountryStateSubStateFilter';
 
 describe('CountryStateSubStateFilter', () => {
-  afterEach(() => {
-    cleanup();
-  });
   const mockOnCountryChange = jest.fn();
   const mockOnStateChange = jest.fn();
   const mockOnSubStateChange = jest.fn();

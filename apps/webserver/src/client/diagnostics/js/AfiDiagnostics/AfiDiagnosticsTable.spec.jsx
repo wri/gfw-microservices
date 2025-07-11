@@ -1,4 +1,4 @@
-import { cleanup, render, screen } from '@testing-library/react';
+import { render, screen } from '@testing-library/react';
 import AfiDiagnosticsTable from './AfiDiagnosticsTable';
 import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
 import { forestLossDatasetIds } from './forestLossDatasets.constants';
@@ -19,8 +19,6 @@ const mockData = [
     negligibleRisk: false,
   },
 ];
-
-afterEach(cleanup);
 
 describe('AfiDiagnosticsTable', () => {
   it('renders table with correct headers', () => {

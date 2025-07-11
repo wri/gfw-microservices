@@ -1,4 +1,4 @@
-import { cleanup, fireEvent, render, screen, waitFor } from '@testing-library/react';
+import { fireEvent, render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { UploadLocationByFile } from './UploadLocationByFile';
 import { useUploadLocation } from '../contexts';
@@ -50,8 +50,6 @@ describe('UploadLocationByFile', () => {
       clearUploadType: mockClearUploadType,
     });
   });
-
-  afterEach(cleanup);
 
   it('should render the component correctly', () => {
     render(

@@ -1,5 +1,4 @@
-import React from 'react';
-import { render, cleanup } from '@testing-library/react';
+import { render } from '@testing-library/react';
 import { Provider } from 'react-redux';
 import { createStore } from 'redux';
 import DeforestationDisplayFormatToggleButtons from './DeforestationDisplayFormatToggleButtons';
@@ -24,7 +23,6 @@ const reducer = (state = initialState, action) => {
 };
 describe('DeforestationDisplayFormatToggleButtons', () => {
   let store;
-  afterEach(cleanup);
   beforeEach(() => {
     store = createStore(reducer);
   });

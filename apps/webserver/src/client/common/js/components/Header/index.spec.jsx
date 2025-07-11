@@ -1,4 +1,4 @@
-import { render, waitFor, cleanup } from '@testing-library/react';
+import { render, waitFor } from '@testing-library/react';
 
 import lightBaseTheme from 'material-ui/styles/baseThemes/lightBaseTheme';
 import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
@@ -7,11 +7,6 @@ import getMuiTheme from 'material-ui/styles/getMuiTheme';
 import Header from '.';
 
 describe('Header', () => {
-  afterEach(() => {
-    cleanup();
-    jest.clearAllMocks();
-  });
-
   it('Should render a simple header wrapped around an app bar', () => {
     const { container, getByText } = render(
       <MuiThemeProvider muiTheme={getMuiTheme(lightBaseTheme)}>

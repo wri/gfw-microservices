@@ -1,13 +1,8 @@
-import { render, cleanup } from '@testing-library/react';
+import { render } from '@testing-library/react';
 
 import LoadingWheel from './LoadingWheel';
 
 describe('LoadingWheel', () => {
-  afterEach(() => {
-    cleanup();
-    jest.clearAllMocks();
-  });
-
   it('Should not throw exception when rendering the ModalWrapper ', () => {
     expect(() => {
       render(<LoadingWheel />);

@@ -1,10 +1,8 @@
-import { cleanup, render, screen } from '@testing-library/react';
+import { render, screen } from '@testing-library/react';
 import { FileValidationHelper } from './FileValidationHelper';
 import userEvent from '@testing-library/user-event';
 
 describe('FileValidationHelper', () => {
-  afterEach(cleanup);
-
   it('should render correctly', () => {
     render(<FileValidationHelper />);
 

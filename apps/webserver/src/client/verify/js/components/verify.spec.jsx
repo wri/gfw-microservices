@@ -1,4 +1,4 @@
-import { render, fireEvent, waitFor, cleanup } from '@testing-library/react';
+import { render, fireEvent, waitFor } from '@testing-library/react';
 import Verify from './verify';
 import mock from 'xhr-mock';
 
@@ -10,12 +10,6 @@ describe('Test Verify Component', () => {
         href: '/verify',
       },
     });
-  });
-
-  afterEach(() => {
-    mock.teardown();
-    cleanup();
-    jest.clearAllMocks();
   });
 
   const getAndClickVerifyButton = async () => {

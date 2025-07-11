@@ -1,12 +1,10 @@
-import { cleanup, render, screen } from '@testing-library/react';
+import { render, screen } from '@testing-library/react';
 import { userEvent } from '@testing-library/user-event';
 import { UploadLocationPreviewErrorMessage } from './UploadLocationPreviewErrorMessage';
 
 describe('UploadLocationPreviewErrorMessage', () => {
   const mockRetryPreviewData = jest.fn();
   const mockRetryUpload = jest.fn();
-
-  afterEach(cleanup);
 
   it('should render missing mandatory fields error message', () => {
     const error = {

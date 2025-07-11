@@ -28,7 +28,7 @@ export function UploadLocationPreviewErrorMessage({
             flexDirection: 'column',
             alignItems: 'center',
             justifyContent: 'center',
-            height: '354px',
+            flex: 1,
             margin: '1.5rem 0 0.75rem',
             borderRadius: 1,
             border: `2px solid ${theme.palette.error.main}`,
@@ -60,11 +60,17 @@ export function UploadLocationPreviewErrorMessage({
           </Typography>
         </Box>
       ) : (
-        <Box sx={{ margin: 'auto' }}>
+        <Box
+          sx={{
+            flex: 1,
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'center',
+            justifyContent: 'center',
+          }}
+        >
           <Typography variant="h6">There were platform issues loading your data.</Typography>
-          <PillButton onClick={onRetryPreviewData} sx={{ margin: 'auto' }}>
-            Click here to try again
-          </PillButton>
+          <PillButton onClick={onRetryPreviewData}>Click here to try again</PillButton>
         </Box>
       )}
     </>

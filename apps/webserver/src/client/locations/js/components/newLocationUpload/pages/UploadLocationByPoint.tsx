@@ -97,6 +97,7 @@ export function UploadLocationByPoint() {
         <ExternalHelperResource
           text="How to define point and radius data on GFW Pro"
           url={ExternalLinks.UploadListHelpCenter}
+          color="info"
         />
 
         <Box sx={{ display: 'flex', gap: 0.75, mt: 3 }}>

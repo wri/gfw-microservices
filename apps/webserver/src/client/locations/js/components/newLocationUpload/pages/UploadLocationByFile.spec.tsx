@@ -14,6 +14,14 @@ jest.mock('../components', () => {
   };
 });
 
+jest.mock('../../../../../components', () => {
+  const { PillButton } = jest.requireActual('../../../../../components');
+  return {
+    PillButton,
+    ExternalHelperResource: () => <span data-testid="external-helper-resource-mock" />,
+  };
+});
+
 jest.mock('@mui/material', () => ({
   ...jest.requireActual('@mui/material'),
   Modal: () => <span />,
@@ -56,6 +64,8 @@ describe('UploadLocationByFile', () => {
         name: /by data file: prepare & upload location data/i,
       })
     ).toBeInTheDocument();
+
+    expect(screen.getByTestId('external-helper-resource-mock')).toBeInTheDocument();
 
     expect(
       screen.getByText(

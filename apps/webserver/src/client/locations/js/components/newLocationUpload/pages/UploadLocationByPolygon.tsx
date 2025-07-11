@@ -228,6 +228,7 @@ export function UploadLocationByPolygon({
         <ExternalHelperResource
           text="How to define polygon data on GFW Pro"
           url={ExternalLinks.UploadListHelpCenter}
+          color="info"
         />
 
         <Box sx={{ display: 'flex', gap: 0.75, mt: 3 }}>

@@ -1,6 +1,6 @@
 import { ConvertCommodityToMapSpamCode } from '../../list-upload/chain/convert.commodity.mapspam';
 import { CreateLargeListService } from '../../list-upload/create.large.list.service';
-import { CommodityService } from '../../list/commodity.service';
+import { CommodityService } from '../../commodity/commodity.service';
 
 type CreateListRequest = {
   listName: string;

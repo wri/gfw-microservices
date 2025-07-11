@@ -1,6 +1,5 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import { ServerConfigType } from '../validators/server-config';
 import { listStatus } from '@wri-monorepos/constants';
 import {
   GeoService,
@@ -25,8 +24,9 @@ import {
   requestAnalysisProcess,
   updateListsAnalysisStatus,
 } from '@wri-monorepos/sql';
-import { ProcessingLimitException } from '../app/app.exceptions';
-import { ListCopyMoveService } from '../app/list-copy-move/list.copy.move.service';
+import { ServerConfigType } from '../../validators/server-config';
+import { ListCopyMoveService } from './list.copy.move.service';
+import { ProcessingLimitException } from '../app.exceptions';
 @Injectable()
 export class LocationService {
   private readonly logger = new Logger(LocationService.name);

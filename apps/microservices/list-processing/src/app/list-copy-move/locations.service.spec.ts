@@ -2,7 +2,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { ConfigService } from '@nestjs/config';
 import { LocationService } from './locations.service';
 import { GeoService } from '@wri-monorepos/geo';
-import { ListCopyMoveService } from '../app/list-copy-move/list.copy.move.service';
+
 import { createFeatureProps } from '@wri-monorepos/geo';
 import {
   CopyOrMoveLargeListRequest,
@@ -10,6 +10,7 @@ import {
   TargetListType,
   UspGetLocationsFilteredToCopy,
 } from '@wri-monorepos/sql';
+import { ListCopyMoveService } from './list.copy.move.service';
 
 jest.mock('@wri-monorepos/geo');
 jest.mock('@wri-monorepos/sql');

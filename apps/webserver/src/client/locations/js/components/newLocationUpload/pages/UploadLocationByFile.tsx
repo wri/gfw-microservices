@@ -15,7 +15,7 @@ import { uploadFileToS3 } from '../utils/upload';
 import { useHistory } from '../hooks';
 import { FileAttachState, UploadType } from '../types';
 import { DATA_CY, ExternalLinks } from '../../../../../utils/constants';
-import { NewExternalHelperResource } from '../../../../../components/NewExternalHelperResource';
+import { ExternalHelperResource } from '../../../../../components';
 
 export function UploadLocationByFile() {
   const theme = useTheme();
@@ -121,9 +121,10 @@ export function UploadLocationByFile() {
       <Card sx={{ pt: 1.25, px: 2, pb: 2 }}>
         <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
           <Typography variant="h6">By Data File: Prepare & Upload Location Data</Typography>
-          <NewExternalHelperResource
+          <ExternalHelperResource
             text="How to format your location data for GFW Pro"
             url={ExternalLinks.HowToFormatLocationData}
+            color="info"
           />
         </Box>
         <Typography

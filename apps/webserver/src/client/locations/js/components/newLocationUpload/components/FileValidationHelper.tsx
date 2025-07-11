@@ -60,12 +60,10 @@ export function FileValidationHelper({ sx }: FileValidationHelperProps) {
     setAnchorEl(event.currentTarget);
   };
 
-  const handleClose = () => {
-    setAnchorEl(null);
-  };
+  const handlePopoverClose = () => setAnchorEl(null);
 
-  const open = Boolean(anchorEl);
-  const id = open ? 'popover' : undefined;
+  const isPopoverOpen = !!anchorEl;
+  const id = isPopoverOpen ? 'popover' : undefined;
 
   return (
     <>
@@ -87,9 +85,9 @@ export function FileValidationHelper({ sx }: FileValidationHelperProps) {
       </ButtonBase>
       <Popover
         id={id}
-        open={open}
+        open={isPopoverOpen}
         anchorEl={anchorEl}
-        onClose={handleClose}
+        onClose={handlePopoverClose}
         anchorOrigin={{
           vertical: 'top',
           horizontal: 'right',
@@ -115,7 +113,7 @@ export function FileValidationHelper({ sx }: FileValidationHelperProps) {
             <Typography variant="body2" sx={{ fontWeight: '500' }}>
               File Validation Process:
             </Typography>
-            <IconButton onClick={handleClose}>
+            <IconButton onClick={handlePopoverClose} aria-label="close file validation popover">
               <Close fontSize="small" />
             </IconButton>
           </Box>

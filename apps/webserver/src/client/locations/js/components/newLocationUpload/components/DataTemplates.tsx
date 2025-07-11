@@ -121,10 +121,12 @@ export function DataTemplates({ isOpen, onClose }: DataTemplatesProps) {
           <ExternalHelperResource
             text="How to format your location data for GFW Pro"
             url={ExternalLinks.HowToFormatLocationData}
+            color="primary"
           />
           <ExternalHelperResource
             text="Learn more about GFW Pro templates"
             url="https://globalforestwatch.org/help/gfw-pro/guides/select-correct-template"
+            color="primary"
           />
         </Box>
         <Box
@@ -312,7 +314,11 @@ export function DataTemplates({ isOpen, onClose }: DataTemplatesProps) {
                         data in Pro).
                       </Typography>
                     </Box>
-                    <ExternalHelperResource text={helpCenterLinkText} url={helpCenterLinkUrl} />
+                    <ExternalHelperResource
+                      text={helpCenterLinkText}
+                      url={helpCenterLinkUrl}
+                      color="info"
+                    />
                   </AccordionDetails>
                 </Accordion>
               );

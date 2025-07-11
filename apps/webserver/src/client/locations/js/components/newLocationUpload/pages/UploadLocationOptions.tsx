@@ -69,6 +69,7 @@ export function UploadLocationOptions({ fromList, userLists }: UploadLocationOpt
           <ExternalHelperResource
             text="How to format your location data for GFW Pro"
             url={ExternalLinks.HowToFormatLocationData}
+            color="info"
           />
         </Box>
         <div className="upload-location-options__main-content__options">

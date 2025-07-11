@@ -1,9 +1,10 @@
 import { useState, useEffect } from 'react';
 import { Card, CardContent, CardActions, Modal } from '@mui/material';
-
+import isEqual from 'lodash/isEqual';
 import Button from '../../../../../common/js/components/Button';
 import AnalysisTypesSelector from '../../../../../common/js/components/AnalysisTypesSelector';
 import { requestGeoTrellisAnalyzeList } from '../../../utils/requestUtils';
+import { listStatus } from '../../../../../../config/env/listStatuses.constants';
 import InlineLoader from '../../../../../common/js/components/Loaders/InlineLoader';
 import './ChangeTypeOfAnalysisModal.scss';
 
@@ -56,12 +57,12 @@ function ChangeTypeOfAnalysisModal({
     }
   }, [selectedAnalysis]);
 
-  const saveSelectedAnalysis = () => {
+  const saveSelectedAnalysis = (saveAsDraft = false) => {
     return fetch(`/api/list/${listId}/selectedAnalyses`, {
       method: 'POST',
       credentials: 'same-origin',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ analysisIds: selectedAnalysis }),
+      body: JSON.stringify({ analysisIds: selectedAnalysis, saveAsDraft }),
     });
   };
 
@@ -76,14 +77,13 @@ function ChangeTypeOfAnalysisModal({
     );
   };
 
-  const finallyCompleteAnalysisTypesUpdate = () => {
-    setIsLoading(false);
-    setIsChangeTypeOfAnalysisModalOpen(false);
-    // we don't have a way to reload the list of lists so we reload the page
-    window.location.href = '/locations';
+  const saveAsDraft = async () => {
+    setIsLoading(true);
+    await saveSelectedAnalysis(true);
+    window.location.reload();
   };
 
-  const updateSelectedAnalysis = () => {
+  const submitSelectedAnalysis = () => {
     setIsLoading(true);
 
     const promises = [saveSelectedAnalysis()];
@@ -94,19 +94,30 @@ function ChangeTypeOfAnalysisModal({
 
     Promise.all(promises)
       .then((results) => {
-        console.log(`updateSelectedAnalysis results`, results);
+        console.log(`submitSelectedAnalysis results`, results);
       })
       .catch((error) => {
         console.warn(error);
         setIsLoading(false);
       })
-      .finally(() => finallyCompleteAnalysisTypesUpdate());
+      .finally(() => {
+        setIsLoading(false);
+        setIsChangeTypeOfAnalysisModalOpen(false);
+        // we don't have a way to reload the list of lists so we reload the page
+        window.location.reload();
+      });
   };
 
   const revertChanges = () => {
     setSelectedAnalysis(initialAnalysisSelection);
   };
 
+  const isSelectionUnchanged = isEqual(selectedAnalysis, initialAnalysisSelection);
+
+  const hasDraftInSelection = selectedAnalysis.some((analysisId) => {
+    const match = listAnalysesStatus.find((item) => item.analysisId === analysisId);
+    return match?.status === listStatus.Draft;
+  });
   return (
     <>
       <Modal
@@ -127,23 +138,37 @@ function ChangeTypeOfAnalysisModal({
           <CardActions>
             {isLoading ? (
               <InlineLoader />
-            ) : isAddingAnalysis ? (
-              <ButtonWithConfirmationPrompt
-                buttonLabel="Submit Analysis"
-                confirmationMessage={<AddAnalysisTypeConfirmationMessage />}
-                disabled={selectedAnalysis.every((analysis) =>
-                  initialAnalysisSelection.includes(analysis)
-                )}
-                onConfirm={updateSelectedAnalysis}
-                onCancel={revertChanges}
-              />
             ) : (
-              <Button
-                variant="primary"
-                disabled={selectedAnalysis.length === initialAnalysisSelection.length}
-                onClick={updateSelectedAnalysis}
-                label="Submit Analysis"
-              />
+              <>
+                {isAddingAnalysis ? (
+                  <ButtonWithConfirmationPrompt
+                    buttonLabel="Submit Analysis"
+                    confirmationMessage={<AddAnalysisTypeConfirmationMessage />}
+                    disabled={selectedAnalysis.every((analysis) =>
+                      initialAnalysisSelection.includes(analysis)
+                    )}
+                    onConfirm={submitSelectedAnalysis}
+                    onCancel={revertChanges}
+                  />
+                ) : (
+                  <>
+                    <Button
+                      variant="primary"
+                      disabled={
+                        !selectedAnalysis.length || (isSelectionUnchanged && !hasDraftInSelection)
+                      }
+                      onClick={submitSelectedAnalysis}
+                      label="Submit Analysis"
+                    />
+                  </>
+                )}
+                <Button
+                  variant="primary"
+                  disabled={isSelectionUnchanged}
+                  onClick={saveAsDraft}
+                  label="Save as Draft"
+                />
+              </>
             )}
           </CardActions>
         </Card>

@@ -225,7 +225,8 @@ describe('list.analysis.status.ts', () => {
       expect(updateListAnalysisSpy).toHaveBeenCalledWith(
         fakeClientDatabase,
         fakeListId,
-        fakeAnalysisIds
+        fakeAnalysisIds,
+        listStatus.Pending
       );
       expect(setListAnalysisStatus).not.toHaveBeenCalled();
     });

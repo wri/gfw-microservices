@@ -99,52 +99,52 @@ jest.mock('@wri-monorepos/sql', () => ({
   getSharedListByUser: jest.fn().mockReturnValue('SELECT * FROM shared_lists'),
 }));
 
-// Mock the shareManager.utils module
-jest.mock('./shareManager.utils', () => ({
-  findSharedListsInsideOrganization: jest.fn((sharedListsRecords, allLists) => {
-    return allLists.filter((list) =>
-      sharedListsRecords.some((record) => record.list_id === list.id)
+// Mock only the functions we need to mock for testing
+const mockShareListWithUser = jest.fn(async (req, res) => {
+  try {
+    const sqlUtils = require('../privateutils/sql.utils');
+    const result = await sqlUtils.executeOrganizationStoredProcedure(
+      req,
+      'sp_share_list_with_user',
+      [req.body.listId, req.body.userId]
     );
-  }),
-  shareListWithUser: jest.fn(async (req, res) => {
-    try {
-      const sqlUtils = require('../privateutils/sql.utils');
-      const result = await sqlUtils.executeOrganizationStoredProcedure(
-        req,
-        'sp_share_list_with_user',
-        [req.body.listId, req.body.userId]
-      );
-      res.status(200).json(result);
-    } catch (error) {
-      res.status(500).json({ error: 'Test error message' });
-    }
-  }),
-  shareListWithOrganization: jest.fn(async (req, res) => {
-    try {
-      const sqlUtils = require('../privateutils/sql.utils');
-      const result = await sqlUtils.executeOrganizationStoredProcedure(
-        req,
-        'sp_share_list_with_organization',
-        [req.body.listId, req.body.organizationId]
-      );
-      res.status(200).json(result);
-    } catch (error) {
-      res.status(500).json({ error: 'Test error message' });
-    }
-  }),
-  getSharedLists: jest.fn(async (req, res) => {
-    try {
-      const sqlUtils = require('../privateutils/sql.utils');
-      const result = await sqlUtils.executeOrganizationQuery(req);
-      res.status(200).json(result);
-    } catch (error) {
-      res.status(500).json({ error: 'Test error message' });
-    }
-  }),
-}));
+    res.status(200).json(result);
+  } catch (error) {
+    res.status(500).json({ error: 'Test error message' });
+  }
+});
 
-// Now import the module
+const mockShareListWithOrganization = jest.fn(async (req, res) => {
+  try {
+    const sqlUtils = require('../privateutils/sql.utils');
+    const result = await sqlUtils.executeOrganizationStoredProcedure(
+      req,
+      'sp_share_list_with_organization',
+      [req.body.listId, req.body.organizationId]
+    );
+    res.status(200).json(result);
+  } catch (error) {
+    res.status(500).json({ error: 'Test error message' });
+  }
+});
+
+const mockGetSharedLists = jest.fn(async (req, res) => {
+  try {
+    const sqlUtils = require('../privateutils/sql.utils');
+    const result = await sqlUtils.executeOrganizationQuery(req);
+    res.status(200).json(result);
+  } catch (error) {
+    res.status(500).json({ error: 'Test error message' });
+  }
+});
+
+// Import the actual module to test findSharedListsInsideOrganization
 const shareManager = require('./shareManager.utils');
+
+// Replace the functions we want to mock
+shareManager.shareListWithUser = mockShareListWithUser;
+shareManager.shareListWithOrganization = mockShareListWithOrganization;
+shareManager.getSharedLists = mockGetSharedLists;
 
 describe('shareManager.utils', () => {
   describe('findSharedListsInsideOrganization', () => {
@@ -189,6 +189,23 @@ describe('shareManager.utils', () => {
       // Arrange
       const sharedListsRecords = [];
       const allLists = [];
+
+      // Act
+      const result = shareManager.findSharedListsInsideOrganization(sharedListsRecords, allLists);
+
+      // Assert
+      expect(result).toHaveLength(0);
+      expect(result).toEqual([]);
+    });
+
+    it('should return empty array when sharedListsRecords is empty but allLists has items', () => {
+      // Arrange
+      const sharedListsRecords = [];
+      const allLists = [
+        { id: 1, name: 'List 1' },
+        { id: 2, name: 'List 2' },
+        { id: 3, name: 'List 3' },
+      ];
 
       // Act
       const result = shareManager.findSharedListsInsideOrganization(sharedListsRecords, allLists);

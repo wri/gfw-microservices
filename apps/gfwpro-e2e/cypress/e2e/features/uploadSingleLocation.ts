@@ -33,7 +33,7 @@ describe('Upload location', () => {
       ['-40.94207291466536', '-69.00220870969846'],
       ['-41.75280394531919', '-71.58644199369435']
     );
-    locationsPage.clickOnConfirmCoordenates();
+    locationsPage.clickOnConfirmCoordinates();
     locationsPage.clickOnNextBtn();
   });
 

@@ -212,7 +212,9 @@ export class ClientStoreConnection {
         mapToUse.delete(connectionId);
         if (cached.connection.isInitialized) {
           // start destroying connection, but do not wait for it because it hangs sometimes
-          cached.connection.destroy();
+          cached.connection.destroy().catch((error) => {
+            Logger.error(`Error destroying connection ${connectionId}:`, error.message, error);
+          });
         }
       }
     } finally {

@@ -5,9 +5,9 @@ import Button from '../../../../../common/js/components/Button';
 import AnalysisTypesSelector from '../../../../../common/js/components/AnalysisTypesSelector';
 import { requestGeoTrellisAnalyzeList } from '../../../utils/requestUtils';
 import { listStatus } from '../../../../../../config/env/listStatuses.constants';
+import { analysisTypes } from '../../../../../../config/env/analysisTypes.constants';
 import InlineLoader from '../../../../../common/js/components/Loaders/InlineLoader';
 import './ChangeTypeOfAnalysisModal.scss';
-
 const AddAnalysisTypeConfirmationMessage = () => {
   return (
     <>
@@ -68,7 +68,9 @@ function ChangeTypeOfAnalysisModal({
 
   const requestAnalysisForSelectedTypes = () => {
     // Filter out GHG analysis before sending to GeoTrellis
-    const analysesForGeoTrellis = selectedAnalysis.filter((analysisId) => analysisId !== 'GHG');
+    const analysesForGeoTrellis = selectedAnalysis.filter(
+      (analysisId) => analysisId !== analysisTypes.GREENHOUSE_GAS_EMISSIONS
+    );
 
     if (analysesForGeoTrellis.length === 0) {
       return Promise.resolve();

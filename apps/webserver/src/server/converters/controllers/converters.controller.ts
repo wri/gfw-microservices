@@ -44,15 +44,17 @@ export const startConverter = async (
   }
 
   try {
-    const id = await startConverterJob(converterName, organizationId);
+    const converterJobId = await startConverterJob(converterName, organizationId);
+    const userId = req.session?.user_id ?? -1;
+    logger.info(`Converter ${converterName} started by user ID: ${userId}`);
 
     res.status(200).json({
       // Return success immediately without waiting for processing
       message: `Converter ${converterName} started successfully`,
-      converterId: id,
+      converterId: converterJobId,
       status: 'RUNNNING',
     });
-    logger.info(`Started converter ${converterName} with ID: ${id}`);
+    logger.info(`Started converter ${converterName} with ID: ${converterJobId}`);
   } catch (err: any) {
     logger.error(`Failed to start converter ${converterName}:`, err.stack || err);
     res.status(500).json({ error: 'Failed to start converter' });

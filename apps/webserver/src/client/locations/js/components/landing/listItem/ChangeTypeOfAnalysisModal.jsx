@@ -67,12 +67,19 @@ function ChangeTypeOfAnalysisModal({
   };
 
   const requestAnalysisForSelectedTypes = () => {
+    // Filter out GHG analysis before sending to GeoTrellis
+    const analysesForGeoTrellis = selectedAnalysis.filter((analysisId) => analysisId !== 'GHG');
+
+    if (analysesForGeoTrellis.length === 0) {
+      return Promise.resolve();
+    }
+
     return requestGeoTrellisAnalyzeList(
       {
         id: listId,
         list_name: listName,
       },
-      selectedAnalysis.join(','),
+      analysesForGeoTrellis.join(','),
       true
     );
   };

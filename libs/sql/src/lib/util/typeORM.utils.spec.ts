@@ -7,6 +7,13 @@ import { Mutex } from 'async-mutex';
 describe('createDatasourceConfig', () => {
   const TEST_ENVIRONMENT = 'test';
 
+  // Helper function to get connection map for testing
+  async function getConnMap(type: string): Promise<Map<string, any>> {
+    const [mapToInsert, release] = await ClientStoreConnection.getConnections(type);
+    release();
+    return mapToInsert;
+  }
+
   beforeEach(async () => {
     // Reset environment variables before each test
     process.env.MSSQL_DATABASE = undefined;
@@ -61,8 +68,8 @@ describe('createDatasourceConfig', () => {
     const connection = await clientStoreConnection.getConnection('someDB');
 
     expect(connection).toBeDefined();
-    expect(ClientStoreConnection.getConnections('dynamic').size).toBe(0);
-    expect(ClientStoreConnection.getConnections('static').size).toBe(1);
+    expect((await getConnMap('dynamic')).size).toBe(0);
+    expect((await getConnMap('static')).size).toBe(1);
   });
 
   it('should create dynamic connections when dynamic entity is provided', async () => {
@@ -76,7 +83,7 @@ describe('createDatasourceConfig', () => {
     const connection = await clientStoreConnection.getConnection('someDB', [ListEntity]);
 
     expect(connection).toBeDefined();
-    expect(ClientStoreConnection.getConnections('dynamic').size).toBe(1);
+    expect((await getConnMap('dynamic')).size).toBe(1);
   });
 
   it('should reuse existing connection if available', async () => {

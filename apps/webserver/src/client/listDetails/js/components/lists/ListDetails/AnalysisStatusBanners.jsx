@@ -8,6 +8,7 @@ import {
 } from '@mui/icons-material';
 
 import AlertBanner from './AlertBanner';
+import { ExternalLinks } from '../../../../../utils/constants';
 
 export default function AnalysisStatusBanners({
   isDiagnosticStatusDraft,
@@ -45,7 +46,19 @@ export default function AnalysisStatusBanners({
       backgroundColor: theme.palette.error.main,
       color: '#EEE',
       icon: <ReportIcon fontSize="inherit" />,
-      message: <>To receive results, resubmit this list for analysis.</>,
+      message: (
+        <>
+          Your list has failed analysis. Read more about how to avoid and address analysis failures{' '}
+          <a
+            href={ExternalLinks.HowToAddressErrorsInUpload}
+            target="_blank"
+            style={{ textDecoration: 'underline' }}
+          >
+            here
+          </a>
+          .
+        </>
+      ),
       buttonText: 'Try Again',
       buttonTextColor: theme.palette.error.main,
       onButtonClick: toggleReRunAnalysisDialog,

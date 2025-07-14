@@ -26,13 +26,13 @@ export const get = async (name, config): Promise<mssql.ConnectionPool> => {
       connectedConnection: connectedConnection,
     };
 
-    const originalClose = connectedConnection.close.bind(connectedConnection);
-    connectedConnection.close = (...args) => {
+    // const originalClose = connectedConnection.close.bind(connectedConnection);
+    connectedConnection.close = () => {
       setTimeout(() => {
         pool.useCount--;
-        if (pool.useCount <= 0) {
-          originalClose(...args);
-        }
+        // if (pool.useCount <= 0) {
+        // originalClose(...args);
+        // }
       }, 60 * 1000); // 1 minute delay before closing the pool
       return Promise.resolve(); // close is expected to return a promise
     };

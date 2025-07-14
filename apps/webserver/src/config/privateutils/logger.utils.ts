@@ -12,11 +12,12 @@
 const util = require('util');
 const sql = require('mssql');
 const winston = require('winston');
-import { Request } from 'express';
 const Transport = require('winston-transport');
+const sqlUtils = require('./sql.utils');
+
+import { Request } from 'express';
 import config from '../config';
 
-const sqlUtils = require('./sql.utils');
 // Important variables
 export const listActivityTypes: Record<string, Record<string, number>> = {
   Account: {
@@ -65,6 +66,29 @@ export const listActivityTypes: Record<string, Record<string, number>> = {
   // new entries should start with value 38
 };
 
+/**
+ * List of Session Variables (Not available until success of VerifyLogin):
+ * @see {@link apps/webserver/src/config/publicutils/authenticationManager.utils.js}
+ */
+declare module 'express-session' {
+  interface SessionData {
+    // (Global)
+    user_email: string;
+    ispromanager: boolean;
+    user_secret: string;
+    user_id: number;
+    // (For Regular Session)
+    organization_id: number;
+    organization_user_id: number;
+    organization_database: string;
+    organization_name: string;
+    user_access_level_id: number;
+    organization_status_id: number;
+    user_first_name: string;
+    user_last_name: string;
+  }
+}
+
 // map from numeric ID to category and activtyType (reverse of listActivityTypes above)
 const listActivityByID: any[] = [];
 Object.keys(listActivityTypes).forEach((category: string) => {
@@ -81,7 +105,10 @@ listActivityByID[23] = { category: 'List', activityType: 'ListShared' };
 listActivityByID[24] = { category: 'List', activityType: 'ListUnShared' };
 listActivityByID[25] = { category: 'List', activityType: 'ListUnSharedWithAll' };
 
-// Custom transport for winston to log to SQL Server
+/**
+ * @class SqlServerTransport
+ *  @description Custom transport for winston to log messages to SQL Server.
+ */
 class SqlServerTransport extends Transport {
   constructor(options: any) {
     super(options);
@@ -102,7 +129,12 @@ class SqlServerTransport extends Transport {
   }
 }
 
-// format arguments in log messages with util.format so top level objects get expanded
+/**
+ * @function formatMeta
+ * @param meta - metadata object that may contain a Symbol.for('splat') property
+ * @summary Formats arguments in log messages with util.format so top level objects get expanded
+ * @returns
+ */
 const formatMeta = (meta: any) => {
   const splat = meta[Symbol.for('splat')];
   if (splat && splat.length) {
@@ -124,8 +156,10 @@ const consoleFormat = winston.format.printf(
     `${timestamp} ${level}: ${label} ${message} ${formatMeta(meta)}`
 );
 
-// sql format is similar to consoleFormat() but without timestamp and level because
-// they are separate columns in the table
+/**
+ * sql format is similar to consoleFormat() but without timestamp and level because
+ * they are separate columns in the table
+ */
 const sqlFormat = winston.format.printf(
   ({ message, label = '', ...meta }: WinstonFormat) => `${label} ${message} ${formatMeta(meta)}`
 );
@@ -152,30 +186,8 @@ if (config.SQLConnection.logDatabase) {
   );
 }
 
-// finally create the logger
+// Finally, create the logger
 const logger = winston.createLogger({ transports });
-
-/**
- * List of Session Variables (Not available till success of VerifyLogin):
- * @see {@link apps/webserver/src/config/publicutils/authenticationManager.utils.js}
- */
-declare module 'express-session' {
-  interface SessionData {
-    // (Global)
-    user_email: string;
-    ispromanager: boolean;
-    user_secret: string;
-    // (For Regular Session)
-    organization_id: number;
-    organization_user_id: number;
-    organization_database: string;
-    ogranization_name: string;
-    user_access_level_id: number;
-    organization_status_id: number;
-    user_first_name: string;
-    user_last_name: string;
-  }
-}
 
 /**
  * @function logActivity

@@ -3,10 +3,11 @@ import { ActivityLog, ClientStoreConnection, DeleteListTypeOrm } from '@wri-mono
 
 @Injectable()
 export class DeleteListService {
+  private readonly logger = new Logger(DeleteListService.name);
+
   constructor(
     private readonly clientStoreConnection: ClientStoreConnection,
-    private readonly deleteListTypeOrm: DeleteListTypeOrm,
-    private readonly logger: Logger
+    private readonly deleteListTypeOrm: DeleteListTypeOrm
   ) {}
 
   async run(

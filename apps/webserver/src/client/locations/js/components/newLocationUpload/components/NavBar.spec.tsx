@@ -1,4 +1,4 @@
-import { cleanup, render, screen, within } from '@testing-library/react';
+import { render, screen, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { BrowserRouter } from 'react-router-dom';
 import { NavBar } from '../components/NavBar';
@@ -8,8 +8,6 @@ import { useUploadLocation } from '../contexts';
 jest.mock('../contexts', () => ({
   useUploadLocation: jest.fn(),
 }));
-
-afterEach(cleanup);
 
 describe('NavBar', () => {
   it('should render steps for file upload when uploadType is ByFile', () => {

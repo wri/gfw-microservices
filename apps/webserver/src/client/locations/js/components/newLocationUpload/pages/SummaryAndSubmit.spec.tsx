@@ -1,4 +1,4 @@
-import { cleanup, render, screen } from '@testing-library/react';
+import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { SummaryAndSubmit } from './SummaryAndSubmit';
 import { useUploadLocation } from '../contexts';
@@ -40,8 +40,6 @@ jest.mock('../hooks', () => ({
 jest.mock('../components', () => ({
   NavBar: () => <span />,
 }));
-
-afterEach(cleanup);
 
 describe('SummaryAndSubmit', () => {
   it('should render correct information when creating a new list with all analysis types selected', () => {

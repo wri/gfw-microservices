@@ -1,12 +1,10 @@
-import { cleanup, render, screen, fireEvent } from '@testing-library/react';
-import '@testing-library/jest-dom/extend-expect';
+import { render, screen, fireEvent } from '@testing-library/react';
+
 import FeatureFlagsList from './FeatureFlagsList';
 import { useFeatureFlagStateContext } from './FeatureFlagStateContext';
 import moment from 'moment/moment';
 
 jest.mock('./FeatureFlagStateContext');
-
-afterEach(cleanup);
 
 describe('FeatureFlagsList', () => {
   it('renders FeatureFlagsList component', () => {

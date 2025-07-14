@@ -1,9 +1,6 @@
-import { render, fireEvent, cleanup } from '@testing-library/react';
+import { render, fireEvent } from '@testing-library/react';
 import CoordinateInputsContainer from './CoordinateInputsContainer';
 
-afterEach(() => {
-  cleanup();
-});
 describe('CoordinateInputsContainer', () => {
   it('should render without crashing', () => {
     const coordinates = [

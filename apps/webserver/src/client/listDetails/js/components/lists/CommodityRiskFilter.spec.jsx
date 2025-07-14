@@ -1,5 +1,5 @@
 import { StateMock } from '@react-mock/state';
-import { render, cleanup } from '@testing-library/react';
+import { render } from '@testing-library/react';
 import getMuiTheme from 'material-ui/styles/getMuiTheme';
 import lightBaseTheme from 'material-ui/styles/baseThemes/lightBaseTheme';
 import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
@@ -9,11 +9,6 @@ import CommodityRiskFilter from './CommodityRiskFilter';
 import { LIST_DATA_BRAZIL } from '../../../../locations/tests/test-config';
 
 describe('CommodityRiskFilter', () => {
-  afterEach(() => {
-    cleanup();
-    jest.clearAllMocks();
-  });
-
   it('Should render CommodityRiskFilter not throw event', () => {
     expect(() => {
       render(

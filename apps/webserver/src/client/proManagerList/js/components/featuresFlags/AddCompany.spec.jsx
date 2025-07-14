@@ -1,5 +1,5 @@
-import { cleanup, render, screen } from '@testing-library/react';
-import '@testing-library/jest-dom/extend-expect';
+import { render, screen } from '@testing-library/react';
+
 import AddCompany from './AddCompany';
 
 jest.mock('./FeatureFlagStateContext', () => ({
@@ -12,8 +12,6 @@ jest.mock('./FeatureFlagStateContext', () => ({
     addFeatureFlagForAccountId: jest.fn(),
   })),
 }));
-
-afterEach(cleanup);
 
 describe('AddCompany', () => {
   it('should render correctly', () => {

@@ -7,6 +7,8 @@ import {
   TableContainer,
   TableCell,
   Typography,
+  Snackbar,
+  Alert,
 } from '@mui/material';
 
 import { PillButton } from '../../../../components';
@@ -14,15 +16,20 @@ import { StyledTableCell } from '../../common/styledTableCell';
 import { stopConverter } from '../../../../api/converter';
 import { useFetch } from '../../../../hooks';
 import { STATUS_STYLE_MAP } from './constants';
+import { useState } from 'react';
 
 export default function ConverterRunsTable({ convertersData, onViewJobDetails }) {
   const { request: stopConverterRequest } = useFetch<{ message: string }, { error: string }>();
+  const [converterStoppedMsg, setConverterStoppedMsg] = useState<string | null>(null);
+  const [converterStopError, setConverterStopError] = useState<string | null>(null);
 
   const handleStop = async (jobId) => {
-    // Call the API to stop the converter job
-    // This function should be implemented in the parent component or passed down as a prop
-    console.log(`Stopping job with ID: ${jobId}`);
-    await stopConverter(stopConverterRequest, jobId);
+    try {
+      await stopConverter(stopConverterRequest, jobId);
+      setConverterStoppedMsg(`Stopped Converter Job ${jobId}`);
+    } catch (error) {
+      setConverterStopError(error?.error || error?.message || `Failed to stop job ${jobId}`);
+    }
   };
 
   return (
@@ -73,7 +80,7 @@ export default function ConverterRunsTable({ convertersData, onViewJobDetails })
                       size="small"
                       variant="outlined"
                       onClick={(e) => {
-                        e.stopPropagation(); // prevent row click
+                        e.stopPropagation();
                         onViewJobDetails(job.id);
                       }}
                     >
@@ -84,7 +91,7 @@ export default function ConverterRunsTable({ convertersData, onViewJobDetails })
                         size="small"
                         variant="outlined"
                         onClick={(e) => {
-                          e.stopPropagation(); // prevent row click
+                          e.stopPropagation();
                           handleStop(job.id);
                         }}
                       >
@@ -98,6 +105,43 @@ export default function ConverterRunsTable({ convertersData, onViewJobDetails })
           </TableBody>
         </Table>
       </TableContainer>
+      <Snackbar
+        open={!!converterStoppedMsg}
+        autoHideDuration={4000}
+        onClose={() => setConverterStoppedMsg(null)}
+        anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
+      >
+        <Alert
+          onClose={() => setConverterStoppedMsg(null)}
+          severity="success"
+          sx={{
+            backgroundColor: '#EDF7D7',
+            border: '1px solid #9FC642',
+            width: '100%',
+          }}
+        >
+          {converterStoppedMsg}
+        </Alert>
+      </Snackbar>
+
+      <Snackbar
+        open={!!converterStopError}
+        autoHideDuration={4000}
+        onClose={() => setConverterStopError(null)}
+        anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
+      >
+        <Alert
+          onClose={() => setConverterStopError(null)}
+          severity="error"
+          sx={{
+            backgroundColor: '#FFF7F8',
+            border: '1px solid #F44336',
+            width: '100%',
+          }}
+        >
+          {converterStopError}
+        </Alert>
+      </Snackbar>
     </>
   );
 }

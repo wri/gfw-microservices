@@ -12,7 +12,7 @@ export const getAllLists = `SELECT
             las.expiration_time,
             las.s3_url,
             las.Status as status,
-            ISNULL(LP.latest_analysis_start_time, las.UpdateTime) as updateTime
+            LP.latest_analysis_start_time as updateTime
         FROM ListsAnalysisStatus las
         OUTER APPLY (
             SELECT TOP (1) LP.analysis_start_time AS latest_analysis_start_time

@@ -150,7 +150,7 @@ export class CommodityService {
   }): Promise<Array<ListResponse>> {
     try {
       const clientStoreConnection = new ClientStoreConnection();
-      const connection = await clientStoreConnection.getConnection(organizationDatabase, [Lists]);
+      const connection = await clientStoreConnection.getConnection(organizationDatabase);
       const listRepository = connection.getRepository(Lists);
 
       const { commodityName, validTemplates } = await this.getCommodityAndTemplates(commodity);
@@ -203,7 +203,7 @@ export class CommodityService {
     clientDatabase: string
   ): Promise<boolean> {
     const clientStoreConnection = new ClientStoreConnection();
-    const connection = await clientStoreConnection.getConnection(clientDatabase, [Lists]);
+    const connection = await clientStoreConnection.getConnection(clientDatabase);
     const listRepository = connection.getRepository(Lists);
 
     const { commodityName, validTemplates } = await this.getCommodityAndTemplates(commodity);

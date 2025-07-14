@@ -1,4 +1,4 @@
-import { cleanup, render, screen } from '@testing-library/react';
+import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { UploadLocationPreview } from './UploadLocationPreview';
 import { useUploadLocation } from '../contexts';
@@ -40,6 +40,7 @@ jest.mock('../components', () => {
   return {
     NavBar: () => <span />,
     UploadLocationPreviewErrorMessage: mockUploadLocationPreviewErrorMessage,
+    FileValidationHelper: () => <span data-testid="file-validation-helper-mock" />,
   };
 });
 
@@ -57,23 +58,25 @@ describe('UploadLocationPreview', () => {
   beforeEach(() => {
     (useUploadLocation as jest.Mock).mockReturnValue(mockUseUploadLocation);
     (useFetch as jest.Mock).mockReturnValue({
-      data: { features: [] },
+      data: { features: [{ location_name: 'location 1' }] },
       isLoading: false,
       request: jest.fn(),
       error: null,
     });
   });
 
-  afterEach(cleanup);
-
   it('should render the component correctly', () => {
     render(<UploadLocationPreview />);
+
     expect(screen.getByText(/list Preview/i)).toBeInTheDocument();
     expect(
       screen.getByText(
         /this is a preview of the first 10 rows of data in your location file\. please review to ensure that fields and data format look as you expect\. if you see any issues, please check \/ correct your file and re-upload\./i
       )
     ).toBeInTheDocument();
+
+    expect(screen.getByRole('button', { name: /re-upload file/i })).toBeInTheDocument();
+    expect(screen.getByTestId('file-validation-helper-mock')).toBeInTheDocument();
   });
 
   it('should handle file upload', async () => {
@@ -166,5 +169,21 @@ describe('UploadLocationPreview', () => {
     );
 
     expect(screen.getByRole('button', { name: /next/i })).toBeDisabled();
+  });
+
+  it('should display error message when useFetch fails with 500', () => {
+    (useFetch as jest.Mock).mockReturnValue({
+      data: { features: [] },
+      isLoading: false,
+      request: jest.fn(),
+      error: {
+        errors: ['Internal server error'],
+      },
+    });
+
+    render(<UploadLocationPreview />);
+
+    expect(screen.getByTestId('upload-error-message')).toBeInTheDocument();
+    expect(screen.queryByTestId('file-validation-helper-mock')).not.toBeInTheDocument();
   });
 });

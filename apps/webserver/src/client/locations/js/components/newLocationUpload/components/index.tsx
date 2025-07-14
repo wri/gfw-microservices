@@ -5,3 +5,4 @@ export { UploadByFileFolderIcon } from './UploadByFileFolderIcon';
 export { UploadByFileInstructions } from './UploadByFileInstructions';
 export { AddressSelector } from './AddressSelector';
 export { UploadLocationPreviewErrorMessage } from './UploadLocationPreviewErrorMessage';
+export { FileValidationHelper } from './FileValidationHelper';

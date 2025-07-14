@@ -76,8 +76,8 @@ describe('API Endpoints', () => {
   });
 
   describe('POST Endpoints', () => {
-    // disabled because re-analyze list takes a while
-    it(
+    // disabled because re-analyze list takes a while and perturbs state for other tests
+    xit(
       'should generate new analysis to existing list',
       async () => {
         const res = await postRedirectHeaders(

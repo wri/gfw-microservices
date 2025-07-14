@@ -15,10 +15,6 @@ describe('CSV and ZIP Download Utils', () => {
     navigator.msSaveOrOpenBlob = jest.fn();
   });
 
-  afterEach(() => {
-    jest.clearAllMocks();
-  });
-
   describe('downloadCSV', () => {
     it('should use msSaveOrOpenBlob if available', () => {
       const csvData = [

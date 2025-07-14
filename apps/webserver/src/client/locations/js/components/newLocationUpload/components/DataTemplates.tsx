@@ -28,6 +28,7 @@ import ShapeFileIcon from '../../../../../assets/icons/shapefile-icon.svg';
 import { ExternalHelperResource, PillButton } from '../../../../../components';
 import { aws_templates } from '../../../../../common/js/config';
 import { ToggleButtonGroup } from '../../../../../components/ToggleButtonGroup';
+import { ExternalLinks } from '../../../../../utils/constants';
 
 type DataTemplatesProps = {
   isOpen: boolean;
@@ -119,11 +120,13 @@ export function DataTemplates({ isOpen, onClose }: DataTemplatesProps) {
         <Box sx={{ display: 'flex', gap: 3, mt: 2 }}>
           <ExternalHelperResource
             text="How to format your location data for GFW Pro"
-            url="https://globalforestwatch.org/help/gfw-pro/guides/complete-selected-template"
+            url={ExternalLinks.HowToFormatLocationData}
+            color="primary"
           />
           <ExternalHelperResource
             text="Learn more about GFW Pro templates"
             url="https://globalforestwatch.org/help/gfw-pro/guides/select-correct-template"
+            color="primary"
           />
         </Box>
         <Box
@@ -311,7 +314,11 @@ export function DataTemplates({ isOpen, onClose }: DataTemplatesProps) {
                         data in Pro).
                       </Typography>
                     </Box>
-                    <ExternalHelperResource text={helpCenterLinkText} url={helpCenterLinkUrl} />
+                    <ExternalHelperResource
+                      text={helpCenterLinkText}
+                      url={helpCenterLinkUrl}
+                      color="info"
+                    />
                   </AccordionDetails>
                 </Accordion>
               );

@@ -13,7 +13,6 @@
     }
   },
   "moduleFileExtensions": ["js", "json", "jsx", "ts", "tsx"],
-  "setupFiles": ["@testing-library/react/dont-cleanup-after-each"],
   "setupFilesAfterEnv": ["./test/jest.setup.js", "@testing-library/jest-dom/extend-expect"],
   "testEnvironment": "jest-environment-jsdom",
   "testMatch": [

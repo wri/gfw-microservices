@@ -1,4 +1,4 @@
-import { render, screen, cleanup } from '@testing-library/react';
+import { render, screen } from '@testing-library/react';
 import { UploadByFileFolderIcon } from './UploadByFileFolderIcon';
 import { FileAttachState } from '../types';
 
@@ -8,8 +8,6 @@ jest.mock('@mui/icons-material', () => ({
   Report: (props: any) => <span data-testid="Report" {...props} />,
   CheckCircle: (props: any) => <span data-testid="CheckCircle" {...props} />,
 }));
-
-afterEach(cleanup);
 
 describe('UploadByFileFolderIcon', () => {
   it('renders DriveFolderUpload icon for NoFile state', () => {

@@ -1,6 +1,6 @@
 import { useEffect } from 'react';
 import { render, screen } from '@testing-library/react';
-import '@testing-library/jest-dom';
+
 import catchContainer from './catchContainer';
 import sendSlackNotification from '../../utils/sendSlackNotification';
 
@@ -29,10 +29,6 @@ const ThrowError = () => {
 };
 
 describe('ErrorBoundary', () => {
-  beforeEach(() => {
-    jest.clearAllMocks();
-  });
-
   test('catches errors and renders the error component', async () => {
     render(
       <ErrorBoundary>

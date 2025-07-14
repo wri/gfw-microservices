@@ -8,7 +8,7 @@ const logger = require('../../../config/privateutils/logger.utils');
 
 const { getListDataFiltered } = require('../utils/listData.utils');
 const listUtils = require(path.resolve('./config/privateutils/list.utils'));
-import { analysisTypes } from '@wri-monorepos/constants';
+import { analysisTypes, listStatus } from '@wri-monorepos/constants';
 import { getListAnalysisStatusByListId, setSelectedAnalyses } from '@wri-monorepos/geo';
 import axios from 'axios';
 
@@ -148,9 +148,12 @@ export const setSelectedAnalysesCtrl = async (req, res) => {
   const { listId } = req.params;
   const { organization_database } = req.session;
 
-  const { analysisIds } = req.body;
+  const { analysisIds, saveAsDraft } = req.body;
 
-  if (analysisIds === undefined || analysisIds === null || analysisIds.length === 0) {
+  if (
+    (analysisIds === undefined || analysisIds === null || analysisIds.length === 0) &&
+    !saveAsDraft
+  ) {
     return res.status(400).json({ message: 'analysisIds is required' });
   }
 
@@ -160,7 +163,8 @@ export const setSelectedAnalysesCtrl = async (req, res) => {
 
   try {
     await listUtils.getListNameSchema(req, listId);
-    await setSelectedAnalyses(organization_database, listId, analysisIds);
+    const analysisStatus = saveAsDraft ? listStatus.Draft : listStatus.Pending;
+    await setSelectedAnalyses(organization_database, listId, analysisIds, analysisStatus);
 
     return res.status(201).json({
       message: 'List analysis selection created successfully',

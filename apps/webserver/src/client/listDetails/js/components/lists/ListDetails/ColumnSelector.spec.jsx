@@ -1,5 +1,4 @@
-import React from 'react';
-import { render, screen, fireEvent, cleanup } from '@testing-library/react';
+import { render, screen, fireEvent } from '@testing-library/react';
 import ColumnSelector from './ColumnSelector';
 import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
 import getMuiTheme from 'material-ui/styles/getMuiTheme';
@@ -25,10 +24,6 @@ describe('ColumnSelector', () => {
     { accessor: 'location_id', show: true },
   ];
   const mockVisibleColumns = [];
-  afterEach(cleanup);
-  beforeEach(() => {
-    mockSetListColumns.mockClear();
-  });
 
   it('renders without crashing', () => {
     render(

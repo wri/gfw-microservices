@@ -1,4 +1,4 @@
-import { cleanup, fireEvent, render, screen, waitFor } from '@testing-library/react';
+import { fireEvent, render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { UploadLocationByFile } from './UploadLocationByFile';
 import { useUploadLocation } from '../contexts';
@@ -11,6 +11,14 @@ jest.mock('../components', () => {
     NavBar: () => <span />,
     UploadByFileFolderIcon: () => <span />,
     UploadByFileInstructions: () => <span />,
+  };
+});
+
+jest.mock('../../../../../components', () => {
+  const { PillButton } = jest.requireActual('../../../../../components');
+  return {
+    PillButton,
+    ExternalHelperResource: () => <span data-testid="external-helper-resource-mock" />,
   };
 });
 
@@ -43,8 +51,6 @@ describe('UploadLocationByFile', () => {
     });
   });
 
-  afterEach(cleanup);
-
   it('should render the component correctly', () => {
     render(
       <ThemeProvider>
@@ -56,6 +62,8 @@ describe('UploadLocationByFile', () => {
         name: /by data file: prepare & upload location data/i,
       })
     ).toBeInTheDocument();
+
+    expect(screen.getByTestId('external-helper-resource-mock')).toBeInTheDocument();
 
     expect(
       screen.getByText(

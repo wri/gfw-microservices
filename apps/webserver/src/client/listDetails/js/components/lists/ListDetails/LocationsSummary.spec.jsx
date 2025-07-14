@@ -1,12 +1,7 @@
-import { render, screen, fireEvent, cleanup } from '@testing-library/react';
+import { render, screen, fireEvent } from '@testing-library/react';
+
 import LocationsSummary from './LocationsSummary';
 import { ThemeProvider } from '../../../../../styles/ThemeProvider';
-import '@testing-library/jest-dom';
-
-afterEach(() => {
-  cleanup();
-  jest.clearAllMocks();
-});
 
 jest.mock('../../../../../hooks', () => ({
   useTransifexTranslation: jest.fn((key) => key),

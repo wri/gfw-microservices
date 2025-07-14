@@ -1,4 +1,4 @@
-import { Body, Controller, Post, UsePipes, Request } from '@nestjs/common';
+import { Body, Controller, Post, UsePipes } from '@nestjs/common';
 import { CopyOrMoveLargeListRequestLLP } from '../../models';
 import { ZodValidationPipe } from '@wri-monorepos/shared';
 import { copyOrMoveLargeListRequestSchema } from '../validators';
@@ -12,13 +12,10 @@ export class ListCopyMoveController {
   @UsePipes(new ZodValidationPipe(copyOrMoveLargeListRequestSchema))
   CopyOrMoveLargeList(
     @Body()
-    request: CopyOrMoveLargeListRequestLLP,
-    @Request() req?
+    request: CopyOrMoveLargeListRequestLLP
   ) {
-    const { featureFlag } = req;
     return this.locationService.MoveLocations({
       ...request,
-      isUploadListLpEnabled: featureFlag.enabled,
     });
   }
 }

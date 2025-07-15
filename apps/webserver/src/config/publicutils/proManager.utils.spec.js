@@ -293,6 +293,88 @@ describe('Pro Manager Utils Tests', () => {
         new errorUtils.createErrorMessage('Organization name already exists')
       );
     });
+
+    it('should call uspActivatePendingAccount and handle filtered users correctly', async () => {
+      const mockReq = { session: { user_email: 'admin@example.com' } };
+      const pendingaccount_id = 123;
+
+      // Mocks for required functions
+      jest.spyOn(UserManager, 'isProManager').mockReturnValue(true);
+      jest.spyOn(UserManager, 'getTitles').mockReturnValue([{ id: 1, title: 'Manager' }]);
+      jest.spyOn(UserManager, 'getCommodities').mockReturnValue([]);
+      jest.spyOn(UserManager, 'getGeographies').mockReturnValue([]);
+      jest.spyOn(AccountManager, 'getClassifications').mockReturnValue([]);
+
+      jest.spyOn(speakEasy, 'createSecret').mockReturnValue('fake-secret');
+      jest.spyOn(PolicyManager, 'movePolicy').mockResolvedValue(undefined);
+      jest.spyOn(awsCognito, 'createUser').mockResolvedValue(undefined);
+      jest.spyOn(sqlUtils, 'executeSystemQuery').mockResolvedValue(undefined);
+      jest.spyOn(awsSes, 'sendEmail').mockResolvedValue(true);
+
+      const activateSpy = jest
+        .spyOn(sqlUtils, 'executeSystemStoredProcedure')
+        .mockImplementation((req, spName, params) => {
+          switch (spName) {
+            case 'uspGetAllAccountsList':
+              return Promise.resolve([
+                {
+                  organization_id: pendingaccount_id,
+                  organization_name: 'TestOrg',
+                  organization_status_id: orgAccountStatus.Pending,
+                },
+                {
+                  organization_id: 999,
+                  organization_name: 'ExistingOrg',
+                  organization_status_id: orgAccountStatus.Active,
+                },
+              ]);
+            case 'uspGetPendingAccountInformation':
+              return Promise.resolve([
+                {
+                  id: 1,
+                  title_id: 1,
+                  other_title: '',
+                  first_name: 'Test',
+                  last_name: 'User',
+                  email: 'test@example.com',
+                  phone: '1234567890',
+                  organization_name: 'TestOrg',
+                  organization_is_subsidiary: false,
+                  organization_parent: '',
+                  organization_website: '',
+                  organization_address: '',
+                },
+              ]);
+            case 'uspGetPendingUserCommodities':
+            case 'uspGetPendingUserGeographies':
+            case 'uspGetPendingAccountPolicies':
+            case 'uspGetPendingAccountClassification':
+              return Promise.resolve([]);
+            case 'uspActivatePendingAccount':
+              return Promise.resolve([
+                {
+                  ManagerEmail: 'test@example.com',
+                  UserExists: 0,
+                  orgID: 555,
+                },
+              ]);
+            case 'uspRemovePendingOrganization':
+              return Promise.resolve([]);
+            default:
+              return Promise.resolve([]);
+          }
+        });
+
+      await expect(activatePendingAccount(mockReq, pendingaccount_id, true)).resolves.toBe(true);
+
+      expect(activateSpy).toHaveBeenCalledWith(
+        mockReq,
+        'uspActivatePendingAccount',
+        expect.arrayContaining([
+          expect.objectContaining({ field: 'PendingAccountID', value: pendingaccount_id }),
+        ])
+      );
+    });
   });
 
   describe('updatePendingAccountUser', () => {

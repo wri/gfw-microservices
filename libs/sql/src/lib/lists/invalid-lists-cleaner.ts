@@ -3,7 +3,7 @@
  * –––––––––––––––––––––––––––––––––––––––
  * @notes
  * - deleteListsWithInvalidLocationId: Deletes lists with NULL location_id or duplicate location_id values
- * - deleteListsWithInvalidCommodityOrTemplate: Deletes lists that are partly upgraded to version 2 with a non-zero template_id
+ * - deleteListsPartlyUpgraded: Deletes lists that are partly upgraded to version 2 with a non-zero template_id
  */
 import { Logger } from '@nestjs/common';
 import { ClientStoreConnection } from '../util';
@@ -92,9 +92,7 @@ export async function deleteListsWithInvalidLocationId(
  * Deletes lists that are partly upgraded to version 2 with a non-zero template_id.
  * These lists are considered invalid.
  */
-export async function deleteListsWithInvalidCommodityOrTemplate(
-  params: InvalidListsCleanerArgs
-): Promise<void> {
+export async function deleteListsPartlyUpgraded(params: InvalidListsCleanerArgs): Promise<void> {
   const { clientDb: organizationDbName, listId, isDryRun = false } = params;
   const queryRunner = await createConnectedQueryRunner(organizationDbName);
   let listTableName: string | undefined;

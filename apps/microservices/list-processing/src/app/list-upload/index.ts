@@ -10,6 +10,7 @@ import { CommodityModule } from '../commodity';
 import { SaveListToProcessService } from './save.list.to.process.service';
 import { DeleteListService } from './delete.list.service';
 import { ListUploadController } from './list-upload.controller';
+import { QueueService } from './queue.service';
 
 @Module({
   imports: [
@@ -27,7 +28,8 @@ import { ListUploadController } from './list-upload.controller';
     SaveListToProcessService,
     DeleteListService,
     DeleteListTypeOrm,
+    QueueService,
   ],
-  exports: [StartAnalysisService, CreateLargeListService],
+  exports: [StartAnalysisService, CreateLargeListService, QueueService],
 })
 export class ListUploadModule {}

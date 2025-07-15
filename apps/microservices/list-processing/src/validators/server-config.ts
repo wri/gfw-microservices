@@ -27,6 +27,9 @@ export const serverConfigSchema = z.object({
   LATEST_COMMIT: z.string().optional(),
 
   SES_SENDER_EMAIL: z.string().email(),
+
+  // Concurrency control
+  LIST_PROCESSING_CONCURRENCY: z.coerce.number().min(1).max(10).default(2),
 });
 
 export type ServerConfigType = z.infer<typeof serverConfigSchema>;

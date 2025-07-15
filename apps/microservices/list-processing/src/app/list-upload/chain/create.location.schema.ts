@@ -74,23 +74,54 @@ export class CreateLocationSchema extends AbstractHandler<ChainType> {
       analysisIds,
     } = request.request as RequestNewList;
 
-    this.logger.log(`Creating list table ${listTable} in ${organizationDatabase}`);
+    this.logger.log(
+      `[List ${listId}] CreateLocationSchema: Starting table creation for ${listTable} in ${organizationDatabase}`
+    );
     const tableStructure =
       '[Location Name] NVARCHAR(150), [Latitude] FLOAT, [Longitude] FLOAT, [Analysis Radius] FLOAT, [Analysis Area] FLOAT, [Commodity] NVARCHAR(150), [Country] NVARCHAR(150), [State] NVARCHAR(150), [Sub State] NVARCHAR(150), [gadmid] NVARCHAR(150), [Geometry] geometry, [location_id] INT PRIMARY KEY, [attributes] NVARCHAR(MAX), [ErrorDetails] NVARCHAR(256) NULL';
 
+    // Step 1: Create list table
+    const listTableStart = Date.now();
+    this.logger.log(
+      `[List ${listId}] CreateLocationSchema: Step 1 - Creating list table ${listTable}`
+    );
     await this.createListTableInDatabase(this.clientStoreConnection, listTable, tableStructure);
+    const listTableDuration = Date.now() - listTableStart;
+    this.logger.log(
+      `[List ${listId}] CreateLocationSchema: Step 1 completed in ${listTableDuration}ms`
+    );
 
     const listStatusId = isSavingAsDraft ? listStatus.Draft : listStatus.Pending;
 
-    await this.createAnalysisTableInDatabase(this.clientStoreConnection, analysisTable);
+    // Step 2: Create analysis table
+    const analysisTableStart = Date.now();
     this.logger.log(
-      `Creating analysis status records for list ${listId} in ${organizationDatabase}`
+      `[List ${listId}] CreateLocationSchema: Step 2 - Creating analysis table ${analysisTable}`
+    );
+    await this.createAnalysisTableInDatabase(this.clientStoreConnection, analysisTable);
+    const analysisTableDuration = Date.now() - analysisTableStart;
+    this.logger.log(
+      `[List ${listId}] CreateLocationSchema: Step 2 completed in ${analysisTableDuration}ms`
     );
 
-    await setListAnalysisStatus(organizationDatabase, listId, analysisIds, listStatusId);
+    // Step 3: Set analysis status records
+    const statusRecordsStart = Date.now();
     this.logger.log(
-      `Created analysis status records for list ${listId} in ${organizationDatabase}`
+      `[List ${listId}] CreateLocationSchema: Step 3 - Creating analysis status records (${
+        analysisIds?.length || 0
+      } analyses)`
     );
+    await setListAnalysisStatus(organizationDatabase, listId, analysisIds, listStatusId);
+    const statusRecordsDuration = Date.now() - statusRecordsStart;
+    this.logger.log(
+      `[List ${listId}] CreateLocationSchema: Step 3 completed in ${statusRecordsDuration}ms`
+    );
+
+    const totalDuration = Date.now() - listTableStart;
+    this.logger.log(
+      `[List ${listId}] CreateLocationSchema: All steps completed in ${totalDuration}ms`
+    );
+
     return request;
   }
 }

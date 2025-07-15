@@ -6,6 +6,7 @@ import { HealthController } from './health.controller';
 import { DataSourceOptions } from 'typeorm';
 import { ConfigModule } from '@nestjs/config/dist';
 import { GitController } from './git.controller';
+import { ListUploadModule } from '../list-upload';
 
 const envModule = ConfigModule.forRoot({
   isGlobal: true,
@@ -32,6 +33,7 @@ const envModule = ConfigModule.forRoot({
         return dbConfig;
       },
     }),
+    ListUploadModule,
   ],
   controllers: [HealthController, GitController],
 })

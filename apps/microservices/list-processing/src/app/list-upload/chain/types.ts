@@ -1,6 +1,7 @@
 import { Feature, FeatureCollection } from '@wri-monorepos/geo';
 import { Logger } from '@nestjs/common';
 import { performance } from 'perf_hooks';
+import { clearTimeout } from 'timers';
 import { updateListsUploadStatus } from '../shared/update.lists.upload.status';
 import { formatDurationStr, formatHeapUsed } from '../shared/performance.utils';
 
@@ -73,23 +74,78 @@ export abstract class AbstractHandler<T> implements Handler<T> {
   static async runFullChain<T>(chain: AbstractHandler<T>, chainType: T): Promise<T> {
     let nextJob = chain;
     let result: T = chainType;
+    let stepCount = 0;
+
     await AbstractHandler.updateListsUploadStatus(
       result as ChainType,
       'Starting list upload process'
     );
+
     while (nextJob) {
+      stepCount++;
+      const handlerName = nextJob.constructor.name;
       const start = performance.now();
+
+      Logger.log(`[Chain Step ${stepCount}] Starting handler: ${handlerName}`);
+
       try {
-        result = await nextJob.handle(result);
+        // Add individual timeout for problematic handlers
+        const HANDLER_TIMEOUTS = {
+          DownloadS3File: 10 * 60 * 1000, // 10 minutes
+          ClipToLandService: 10 * 60 * 1000, // 10 minutes
+          ProcessUploadData: 15 * 60 * 1000, // 15 minutes
+          GADMService: 8 * 60 * 1000, // 8 minutes
+          InsertLocationData: 10 * 60 * 1000, // 10 minutes
+          CreateLocationSchema: 12 * 60 * 1000, // 12 minutes (database heavy)
+          CreateListLevelData: 8 * 60 * 1000, // 8 minutes
+        };
+
+        const timeout = HANDLER_TIMEOUTS[handlerName] || 5 * 60 * 1000; // Default 5 minutes
+
+        let timeoutId: NodeJS.Timeout;
+        let handlerCompleted = false;
+
+        const handlerPromise = nextJob.handle(result);
+        const timeoutPromise = new Promise<never>((_, reject) => {
+          timeoutId = setTimeout(() => {
+            if (!handlerCompleted) {
+              handlerCompleted = true;
+              reject(
+                new Error(`Handler ${handlerName} timeout after ${timeout / 1000 / 60} minutes`)
+              );
+            }
+          }, timeout);
+        });
+
+        try {
+          result = (await Promise.race([handlerPromise, timeoutPromise])) as T;
+          handlerCompleted = true;
+          clearTimeout(timeoutId);
+        } catch (error) {
+          handlerCompleted = true;
+          clearTimeout(timeoutId);
+          throw error;
+        }
+
+        const end = performance.now();
+        const duration = Math.round(end - start);
+        Logger.log(`[Chain Step ${stepCount}] Completed handler: ${handlerName} in ${duration}ms`);
       } catch (error) {
+        const end = performance.now();
+        const duration = Math.round(end - start);
+
         Logger.error(
-          `Error in ${nextJob.constructor.name}: ${error.stack || error.message || error}`
+          `[Chain Step ${stepCount}] Error in ${handlerName} after ${duration}ms: ${
+            error.stack || error.message || error
+          }`
         );
+
         await AbstractHandler.updateListsUploadStatus(
           result as ChainType,
-          `Error in ${nextJob.constructor.name}`,
+          `Error in ${handlerName}`,
           error.message
         );
+
         const chainInput = (result as ChainType).request as RequestNewList;
         chainInput.hasUnanalyzableError = true;
         const geoJsonOut = (result as ChainType).geojson as FeatureCollection;
@@ -103,11 +159,14 @@ export abstract class AbstractHandler<T> implements Handler<T> {
           break;
         }
       }
+
       const end = performance.now();
       const { heapUsed } = process.memoryUsage();
       AbstractHandler.logExecutionTime(start, end, heapUsed, nextJob.constructor.name);
       nextJob = nextJob.nextHandler;
     }
+
+    Logger.log(`[Chain] Completed all ${stepCount} steps successfully`);
     await AbstractHandler.updateListsUploadStatus(
       result as ChainType,
       'Ending list upload process'

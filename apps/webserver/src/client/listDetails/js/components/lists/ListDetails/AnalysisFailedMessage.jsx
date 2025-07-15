@@ -21,7 +21,17 @@ const AnalysisFailedMessage = ({ toggleReRunAnalysisDialog }) => {
           Analysis has failed
         </Typography>
         <Typography variant="body1" gutterBottom>
-          To receive results, resubmit this list for analysis.
+          All your list's locations have failed analysis. Read more about how to avoid and address
+          analysis failures{' '}
+          <Link
+            href={ExternalLinks.HowToAddressErrorsInUpload}
+            color="#F24E1E"
+            target="_blank"
+            sx={{ textDecoration: 'none' }}
+          >
+            here
+          </Link>
+          .
         </Typography>
         <Box mt={3} mb={2}>
           <Button

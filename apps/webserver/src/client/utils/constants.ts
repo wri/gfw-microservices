@@ -46,4 +46,6 @@ export const ExternalLinks = {
   UploadListHelpCenter: 'https://globalforestwatch.org/help/gfw-pro/guides/upload-locations-lists',
   HowToFormatLocationData:
     'https://globalforestwatch.org/help/gfw-pro/guides/complete-selected-template',
+  HowToAddressErrorsInUpload:
+    'https://www.globalforestwatch.org/help/gfw-pro/guides/how-to-address-errors-in-your-uploads',
 };

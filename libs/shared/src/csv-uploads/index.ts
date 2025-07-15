@@ -18,19 +18,22 @@ export type IdLookupFn = (
 export type IdTypeOptions = {
   handler: IdLookupFn;
   chunkSize: number;
-  column: string;
+  columnsWithIdValues: string[];
+  validateColumns?: string[];
 };
 
-const ID_TYPE_HANDLER: Record<string, IdTypeOptions> = {
+export const ID_TYPE_HANDLER: Record<string, IdTypeOptions> = {
   [CSV_ID_TYPES.UML]: {
     handler: umlLookUp,
     chunkSize: 1000,
-    column: 'ID',
+    columnsWithIdValues: ['ID', 'Palm Mill ID'],
+    validateColumns: ['ID', 'Location Name', 'Analysis Radius | Analysis Area'],
   },
   [CSV_ID_TYPES.CAR]: {
     handler: carLookup,
     chunkSize: 500,
-    column: 'ID',
+    columnsWithIdValues: ['ID'],
+    validateColumns: ['ID', 'ID Type', 'Location Name'],
   },
 };
 
@@ -39,8 +42,9 @@ export const applyLookUpByChunks = async (
   idType: string,
   options: IdTypeOptions
 ): Promise<Record<string, unknown>[]> => {
-  const { handler: lookup, column, chunkSize } = options;
+  const { handler: lookup, columnsWithIdValues, chunkSize } = options;
   const updates = [];
+  const column = columnsWithIdValues.find((colName) => !!data[0][colName]);
 
   for (let i = 0; i < data.length; i += chunkSize) {
     const chunkMax = Math.min(data.length, i + chunkSize);
@@ -120,24 +124,64 @@ export const csvLatLongIdBasedTransformer = async (
     throw new Error('Bad CSV Input: No data to process');
   }
   const firstRow = data[0] as Record<string, unknown>;
+  const type = determineIdType(firstRow);
+
+  if (!type) {
+    return data;
+  }
+
+  logger.log(`${type} ID Based List Identified`);
+  const { missingFields, isValid } = validateIdBased(type, firstRow);
+
+  if (!isValid) {
+    throw new Error(`Missing mandatory fields: ${missingFields.join(',')}`);
+  }
+
+  return await idBasedSystemHandler(data);
+};
+
+/**
+ * Decisive columns, more info
+ * @see {@link https://gfw.atlassian.net/browse/GPV-4543}
+ *
+ * @param Object<unknown>
+ * @returns string | boolean
+ */
+export const determineIdType = (firstRow: Record<string, unknown>) => {
   const templateColumns = Object.keys(firstRow);
-  const isIdSystem = templateColumns.includes('ID Type');
-  const isIdPresent = templateColumns.includes('ID');
+  let type: CSV_ID_TYPES | false = false;
 
-  if (isIdSystem) {
-    if (!isIdPresent) {
-      // bad template ⇒ @see [GPV-4403] for messaging
-      throw new Error(
-        'It looks like the file you uploaded is not supported for ID-based upload. ID-based upload requires a .csv or .xlsx file with "ID Type" and "ID" columns present. Please try again with a compatible file format.'
-      );
+  if (templateColumns.length < 1) {
+    return type;
+  }
+
+  const isCarList = templateColumns.includes('ID Type');
+  const isMillList = templateColumns.includes('ID') || templateColumns.includes('MiLL ID');
+
+  if (isCarList) {
+    type = CSV_ID_TYPES.CAR;
+  } else if (isMillList) {
+    type = CSV_ID_TYPES.UML;
+  }
+
+  return type;
+};
+
+export const validateIdBased = (idType: string, firstRow: Record<string, unknown>) => {
+  const { validateColumns } = ID_TYPE_HANDLER[idType];
+  const dataColumns = Object.keys(firstRow);
+
+  const missingFields = validateColumns.filter((validCol) => {
+    // treat ' | ' like an OR
+    if (validCol.includes(' | ')) {
+      return validCol.split(' | ').some((ofTheseColumns) => !dataColumns.includes(ofTheseColumns));
+    } else {
+      return !dataColumns.includes(validCol);
     }
+  });
 
-    return await idBasedSystemHandler(data);
-  }
-
-  if (isIdPresent) {
-    return await resolveLatLongHandlerByIdType('UML', data);
-  }
-
-  return data;
+  return {
+    missingFields,
+    isValid: missingFields.length === 0,
+  };
 };

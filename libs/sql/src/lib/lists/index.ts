@@ -14,3 +14,4 @@ export * from './uspGetListAnalysis';
 export * from './uspGetLocationsFilteredToCopy';
 export * from './uspResetListStatus';
 export * from './uspSetListLocked';
+export * from './getListLocationsDetails';

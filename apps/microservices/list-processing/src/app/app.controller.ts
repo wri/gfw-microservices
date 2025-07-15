@@ -1,15 +1,18 @@
 import {
+  CopyOrMoveLargeListRequestLLP,
+  DeleteListRequest,
+  getNumberOfPagesPaginatedListDataRequest,
   GetObjectPresigned,
+  getPaginatedListDataRequest,
   RequestLargeListProcess,
   RequestPreSignedURLModel,
   RequestSaveLargeListProcessModel,
   RequestTriggerProcessLargeList,
 } from './../models/index';
-import { Controller, Post, Body, UsePipes, UseGuards, Request } from '@nestjs/common';
+import { Controller, Post, Body, UsePipes, UseGuards, Request, BadRequestException, Get, Param, Query } from '@nestjs/common';
 
 import { AppService } from './app.service';
 import { ListService } from '../services/list.service';
-import { LocationService } from './../services/locations.service';
 import { ZodValidationPipe } from '@wri-monorepos/shared';
 import {
   requestPreSignedURLSchema,
@@ -17,12 +20,19 @@ import {
   requestSaveLargeListProcessModelSchema,
   requestLargeListProcessSchema,
   requestTriggerProcessLargeListSchema,
+  copyOrMoveLargeListRequestSchema,
+  getNumberOfPagesPaginatedListDataRequestSchema,
+  getPaginatedListDataRequestSchema,
 } from './validators';
 
 import { ConfigService } from '@nestjs/config';
 import { ServerConfigType } from '../validators/server-config';
 import { FeatureFlagEnabledGuard } from '../guards/feature.flag.enabled.guard';
 import { ListCopyMoveService } from './list-copy-move/list.copy.move.service';
+import { ApiResponse, ApiNotFoundResponse, ApiUnauthorizedResponse, ApiBadRequestResponse } from '@nestjs/swagger';
+import { ListPaginationService } from './list/list.pagination.service';
+import { BadRequestExceptionResponse } from './types/apiResponses';
+import { deleteListBodySchema } from './types/deleteListRequestSchema';
 
 /*
   This controller will be deprecated in the future
@@ -33,8 +43,8 @@ export class AppController {
   constructor(
     protected readonly appService: AppService,
     protected readonly listService: ListService,
-    protected readonly locationService: LocationService,
 
+    protected readonly listPaginationService: ListPaginationService,
     protected readonly listCopyMoveService: ListCopyMoveService,
     protected readonly config: ConfigService<ServerConfigType, true>
   ) {}
@@ -100,5 +110,82 @@ export class AppController {
       commodity: request.commodity,
       saveAsDraft: request.saveAsDraft,
     });
+  }
+
+  @Post('/CopyOrMoveLargeList')
+  @UseGuards(new FeatureFlagEnabledGuard('UploadListLp'))
+  @UsePipes(new ZodValidationPipe(copyOrMoveLargeListRequestSchema))
+  CopyOrMoveLargeList(
+    @Body()
+    request: CopyOrMoveLargeListRequestLLP,
+    @Request() req?
+  ) {
+    const { featureFlag } = req;
+    return this.listCopyMoveService.run({
+      ...request,
+      isUploadListLpEnabled: featureFlag.enabled,
+    });
+  }
+
+  @Get('/paginated-list-data')
+  async getPaginatedListData(
+    @Query(new ZodValidationPipe(getPaginatedListDataRequestSchema))
+    queryParam: getPaginatedListDataRequest
+  ) {
+    this.validatePaginatedRequest(queryParam);
+    const result = await this.listPaginationService.getPaginatedListData(queryParam);
+    return result;
+  }
+
+  @Get('/pages-paginated-list-data')
+  async getNumberOfPagesPaginatedListData(
+    @Query(new ZodValidationPipe(getNumberOfPagesPaginatedListDataRequestSchema))
+    queryParam: getNumberOfPagesPaginatedListDataRequest
+  ) {
+    this.validatePaginatedRequest(queryParam);
+    const result = await this.listPaginationService.getNumberOfPagesPaginatedListData(queryParam);
+    return result;
+  }
+
+  @Get('/paginated-list-data-with-pages')
+  async getPaginatedListDataWithPages(
+    @Query(new ZodValidationPipe(getPaginatedListDataRequestSchema))
+    queryParam: getPaginatedListDataRequest
+  ) {
+    this.validatePaginatedRequest(queryParam);
+    const result = this.listPaginationService.getPaginatedListDataWithPages(queryParam);
+    return result;
+  }
+
+  validatePaginatedRequest(queryParam: getPaginatedListDataRequest) {
+    if (queryParam.listId === undefined || queryParam.listId === null || queryParam.listId === 0) {
+      throw new BadRequestException('listID is required');
+    }
+
+    if (
+      queryParam.organizationDatabase === undefined ||
+      queryParam.organizationDatabase === null ||
+      queryParam.organizationDatabase === ''
+    ) {
+      throw new BadRequestException('organizationDatabase is required');
+    }
+  }
+
+  @ApiResponse({ status: 200, type: String })
+  @ApiNotFoundResponse({ status: 404, type: BadRequestExceptionResponse })
+  @ApiUnauthorizedResponse({ description: 'Unauthorized' })
+  @ApiBadRequestResponse({ description: 'Bad Request' })
+  @Post('/list/:listId/delete')
+  deleteList(
+    @Param('listId') listId: number,
+    @Body(new ZodValidationPipe(deleteListBodySchema)) deleteBodyList: DeleteListRequest
+  ): Promise<string> {
+    const { organizationDatabase, organization_user_id, userEmail } = deleteBodyList;
+    return this.appService.deleteList(
+      listId,
+      organizationDatabase,
+      organization_user_id,
+      userEmail
+    );
   }
 }

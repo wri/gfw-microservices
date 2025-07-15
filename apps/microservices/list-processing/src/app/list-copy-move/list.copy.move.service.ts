@@ -10,6 +10,7 @@ import {
   CheckListNameIsValid,
   FeatureCollection,
   getListAnalysisStatusByListId,
+  ListHasFiltersApplies,
 } from '@wri-monorepos/geo';
 import { handleNewListCreation } from './handler/list.creation';
 import { handleSourceListDeletion } from './handler/source.list.deletion';
@@ -25,6 +26,7 @@ import { ProcessUploadData } from '../list-upload/chain/process.upload.data';
 import { ConvertGeojsonProperties } from '../list-upload/chain/convert.geojson.properties';
 import { AbstractHandler } from '../list-upload/chain/types';
 import { CommodityService } from '../list/commodity.service';
+import { UpdateListAttributesRemoveIdColumns } from '../list-upload/chain/update.list.attributes.remove.id.columns';
 
 interface ProcessingChainParams {
   moveToList: { id: number; list_name: string };
@@ -32,6 +34,8 @@ interface ProcessingChainParams {
   organizationId: number;
   subscriptionStatusId: number;
   geojson: FeatureCollection;
+  sourceListId?: number;
+  isNotDeletingTheSourceList?: boolean;
 }
 
 @Injectable()
@@ -88,6 +92,7 @@ export class ListCopyMoveService {
   }
 
   private async processUploadChain(params: ProcessingChainParams): Promise<void> {
+    const { sourceListId, isNotDeletingTheSourceList } = params;
     const processUploadData = new ProcessUploadData();
     const convertGeojsonProperties = new ConvertGeojsonProperties();
 
@@ -104,7 +109,12 @@ export class ListCopyMoveService {
       geojson: params.geojson,
     };
 
-    convertGeojsonProperties.setNext(processUploadData);
+    const maybeUpdateListAttributes = new UpdateListAttributesRemoveIdColumns({
+        sourceListId,
+        isNotDeletingTheSourceList,
+      });
+
+    convertGeojsonProperties.setNext(processUploadData).setNext(maybeUpdateListAttributes);
     await AbstractHandler.runFullChain(convertGeojsonProperties, chainType);
   }
 
@@ -308,6 +318,10 @@ export class ListCopyMoveService {
         organizationId,
         subscriptionStatusId,
         geojson,
+        sourceListId: selectedListId,
+        isNotDeletingTheSourceList: Boolean(
+          action === ActionType.Move && (!allLocationsSelected || ListHasFiltersApplies(filters))
+        ),
       });
 
       return {

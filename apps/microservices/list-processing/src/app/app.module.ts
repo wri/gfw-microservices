@@ -14,7 +14,6 @@ import { S3Client } from '@aws-sdk/client-s3';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { DeleteListTypeOrm, SqlModule, TypeOrmSystemModule } from '@wri-monorepos/sql';
-import { LocationService } from '../services/locations.service';
 import { ListService } from '../services/list.service';
 import { FCDModule } from './fcd';
 import { SchedulerModule } from './scheduler';
@@ -28,7 +27,8 @@ import { GHGModule } from './ghg';
 import { ListCopyMoveModule } from './list-copy-move';
 import { ConvertersModule } from './converters';
 import { TraceIdMiddleware } from '@wri-monorepos/shared';
-import { GeoModule } from '@wri-monorepos/geo';
+import { GeoModule, GeoService } from '@wri-monorepos/geo';
+import { ListPaginationService } from './list/list.pagination.service';
 
 @Module({
   imports: [
@@ -54,7 +54,8 @@ import { GeoModule } from '@wri-monorepos/geo';
   controllers: [AppController],
   providers: [
     AppService,
-    LocationService,
+    ListPaginationService,
+    GeoService,
     ListService,
     DeleteListTypeOrm,
     {

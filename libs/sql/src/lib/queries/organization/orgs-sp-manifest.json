@@ -31,6 +31,7 @@
     "getAnalysisDataCountForUserList",
     "getAnnualLossFcdData",
     "getCheckIfListWasUploadByEAPI",
+    "getCheckIfListsHasAnyIdType",
     "getCountAfiAnalysisByListId",
     "getCountDashboardData",
     "getDashboardData",
@@ -47,6 +48,7 @@
     "getListNameSchema",
     "getListOfUsers",
     "getLocationsFilteredToCopy",
+    "getMissingJsonPropertiesFromList",
     "getOrganizationUsersAnalysisUsage",
     "getOrganizationUsersUsageExport",
     "getOrganizationYearlyUsageSinceOrgActivatedTime",
@@ -147,7 +149,9 @@
     "getGHGLocationErrorsByListId",
     "getListAnalysis",
     "getUserLists",
-    "getAnalysisColumns"
+    "getAnalysisColumns",
+    "getCheckIfListsHasAnyIdType",
+    "getMissingJsonPropertiesFromList"
   ],
   "matchingFilesAndExports": true,
   "definitionsInActivatePendingAccount": [

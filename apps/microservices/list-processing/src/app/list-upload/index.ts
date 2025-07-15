@@ -1,31 +1,33 @@
 import { Module } from '@nestjs/common';
 import { AwsModule, S3Service } from '@wri-monorepos/aws';
-import { ListTemplate, SqlModule } from '@wri-monorepos/sql';
+import { DeleteListTypeOrm, ListTemplate, SqlModule } from '@wri-monorepos/sql';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { DeprecatedStartAnalysisService } from './deprecated.start.analysis.service';
 import { StartAnalysisService } from './start.analysis.service';
 import { PreviewListUploadController } from './preview.list.upload.controller';
 import { PreviewListUploadService } from './preview.list.upload.service';
-import { DeprecatedCreateLargeListService } from './deprecated.create.large.list.service';
 import { CreateLargeListService } from './create.large.list.service';
-import { ListModule } from '../list';
+import { CommodityModule } from '../commodity';
+import { SaveListToProcessService } from './save.list.to.process.service';
+import { DeleteListService } from './delete.list.service';
+import { ListUploadController } from './list-upload.controller';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([ListTemplate], 'default'), SqlModule, AwsModule, ListModule],
-  controllers: [PreviewListUploadController],
+  imports: [
+    TypeOrmModule.forFeature([ListTemplate], 'default'),
+    SqlModule,
+    AwsModule,
+    CommodityModule,
+  ],
+  controllers: [PreviewListUploadController, ListUploadController],
   providers: [
     S3Service,
-    DeprecatedStartAnalysisService,
     StartAnalysisService,
     PreviewListUploadService,
-    DeprecatedCreateLargeListService,
     CreateLargeListService,
+    SaveListToProcessService,
+    DeleteListService,
+    DeleteListTypeOrm,
   ],
-  exports: [
-    DeprecatedStartAnalysisService,
-    StartAnalysisService,
-    DeprecatedCreateLargeListService,
-    CreateLargeListService,
-  ],
+  exports: [StartAnalysisService, CreateLargeListService],
 })
 export class ListUploadModule {}

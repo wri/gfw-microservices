@@ -1,8 +1,8 @@
 import { handleNewListCreation } from './list.creation';
-import { CommodityService } from '../../list/commodity.service';
+import { CommodityService } from '../../commodity/commodity.service';
 import { ConvertCommodityToMapSpamCode } from '../../list-upload/chain/convert.commodity.mapspam';
 import { CreateLargeListService } from '../../list-upload/create.large.list.service';
-import { CommodityResponse } from '../../list/types';
+import { CommodityResponse } from '../../commodity/types';
 
 interface CreateListResult {
   list_id: number;

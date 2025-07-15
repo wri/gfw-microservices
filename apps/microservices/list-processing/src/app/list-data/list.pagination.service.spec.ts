@@ -5,7 +5,7 @@ import {
   UspGetPaginatedAnalysisDataForUserList,
   AnalysisDataType,
 } from '@wri-monorepos/sql';
-import { getPaginatedListDataRequest } from '../models';
+import { getPaginatedListDataRequest } from '../../models';
 
 describe('ListPaginationService', () => {
   let service: ListPaginationService;

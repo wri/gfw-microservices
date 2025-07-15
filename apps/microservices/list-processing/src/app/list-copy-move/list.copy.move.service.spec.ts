@@ -2,7 +2,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { ListCopyMoveService } from './list.copy.move.service';
 import { ConfigService } from '@nestjs/config';
 import { EmailService } from '@wri-monorepos/aws';
-import { CommodityService } from '../list/commodity.service';
+import { CommodityService } from '../commodity/commodity.service';
 import { ActionType, TargetListType } from '@wri-monorepos/sql';
 
 // Mock all dependencies

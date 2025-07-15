@@ -11,14 +11,8 @@ const envModule = ConfigModule.forRoot({
 
 import { Module } from '@nestjs/common';
 import { S3Client } from '@aws-sdk/client-s3';
-import { AppController } from './app.controller';
-import { AppService } from './app.service';
-import { DeleteListTypeOrm, SqlModule, TypeOrmSystemModule } from '@wri-monorepos/sql';
-import { LocationService } from '../services/locations.service';
-import { ListService } from '../services/list.service';
-import { LockListService } from '../services/lock.list.service';
+import { SqlModule, TypeOrmSystemModule } from '@wri-monorepos/sql';
 import { GeoService } from '@wri-monorepos/geo';
-import { ListPaginationService } from '../services/list.pagination.service';
 import { FCDModule } from './fcd';
 import { SchedulerModule } from './scheduler';
 import { AFIModule } from './afi';
@@ -26,10 +20,11 @@ import { AlertsModule } from './alerts';
 import { ListUploadModule } from './list-upload';
 import { AwsModule } from '@wri-monorepos/aws';
 import { HealthModule } from './health/health.module';
-import { ListModule } from './list';
+import { CommodityModule } from './commodity';
 import { GHGModule } from './ghg';
 import { ListCopyMoveModule } from './list-copy-move';
 import { ConvertersModule } from './converters';
+import { ListDataModule } from './list-data';
 
 @Module({
   imports: [
@@ -46,20 +41,16 @@ import { ConvertersModule } from './converters';
     GHGModule,
     HealthModule,
     ListUploadModule,
-    ListModule,
+    CommodityModule,
+    ListDataModule,
     ListCopyMoveModule,
     SchedulerModule,
     SqlModule,
   ],
-  controllers: [AppController],
+  controllers: [],
   providers: [
-    AppService,
-    ListPaginationService,
-    LocationService,
     GeoService,
-    ListService,
-    LockListService,
-    DeleteListTypeOrm,
+
     {
       provide: 'S3Client',
       inject: [ConfigService],

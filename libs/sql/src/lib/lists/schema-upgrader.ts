@@ -50,6 +50,7 @@ export async function upgradeListSchema(args: SchemaUpgraderArgs) {
   const logger = new Logger(`SchemaUpgrade for ListId: ${listId}`);
   let queryRunner: QueryRunner;
 
+  let success = false;
   try {
     const listsRepository = queryRunner.manager.getRepository(Lists);
     const list = await listsRepository.findOne({
@@ -163,6 +164,7 @@ export async function upgradeListSchema(args: SchemaUpgraderArgs) {
     }
 
     await queryRunner.commitTransaction();
+    success = true;
 
     return await listsRepository.findOne({
       where: { id: listId },
@@ -174,8 +176,16 @@ export async function upgradeListSchema(args: SchemaUpgraderArgs) {
   } finally {
     await queryRunner?.release();
 
-    logger.log('Unlocking list');
-    await new UspSetListUnlocked().run(clientDb, listId);
-    logger.log('Done.');
+    try {
+      if (success) {
+        logger.log('Unlocking list');
+        await new UspSetListUnlocked().run(clientDb, listId);
+        logger.log('Done.');
+      } else {
+        logger.warn('Skipping unlock due to failed transaction');
+      }
+    } catch (unlockErr) {
+      logger.error('Failed to unlock list', unlockErr.stack || unlockErr);
+    }
   }
 }

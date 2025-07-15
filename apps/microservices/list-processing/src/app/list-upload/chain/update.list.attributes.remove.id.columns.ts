@@ -1,20 +1,12 @@
 import { AbstractHandler, ChainType, RequestNewList } from './types';
 import {
   ClientStoreConnection,
-  Lists,
-  getListsLocsColumnsToExclude,
-  getFormattedAttributes,
-  saveListAttributes,
-  ListAttributesRecord,
-  ListsAttrsTypes,
-  getListAttributes,
   ListAttributes,
   getMissingJsonPropertiesFromList,
   MissingPropertiesReturnType,
 } from '@wri-monorepos/sql';
 import { Logger } from '@nestjs/common';
 import { QueryRunner } from 'typeorm';
-import * as sql from 'mssql';
 import { ID_TYPE_HANDLER } from '@wri-monorepos/shared';
 
 const getIdColumnsWithValues = () => {

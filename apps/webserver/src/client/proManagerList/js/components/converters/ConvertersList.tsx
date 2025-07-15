@@ -112,7 +112,6 @@ export default function ConvertersList({ setIsLoading, onViewJobDetails }) {
                       key={converterId}
                       sx={{
                         '&:last-child td, &:last-child th': { border: 0 },
-                        cursor: 'pointer',
                       }}
                     >
                       <TableCell size="small">{converterLabel}</TableCell>

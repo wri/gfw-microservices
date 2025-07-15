@@ -2,7 +2,7 @@ import { FindOptionsWhere } from 'typeorm';
 import {
   Lists,
   deleteListsWithInvalidLocationId,
-  deleteListsWithInvalidCommodityOrTemplate,
+  deleteListsPartlyUpgraded,
   upgradeListSchema,
 } from '@wri-monorepos/sql';
 
@@ -19,8 +19,8 @@ const registry: Record<string, ConverterFunction> = {
   DELETE_INVALID_LOCATION_LISTS: {
     run: deleteListsWithInvalidLocationId,
   },
-  DELETE_INVALID_COMMODITY_TEMPLATE: {
-    run: deleteListsWithInvalidCommodityOrTemplate,
+  DELETE_PARTLY_UPDATED_LISTS: {
+    run: deleteListsPartlyUpgraded,
   },
   // GADM_VERSION: { run: () => {} },
 };

@@ -24,7 +24,7 @@ import { PutListAsDraft } from '../list-upload/chain/put.list.as.draft';
 import { ProcessUploadData } from '../list-upload/chain/process.upload.data';
 import { ConvertGeojsonProperties } from '../list-upload/chain/convert.geojson.properties';
 import { AbstractHandler } from '../list-upload/chain/types';
-import { CommodityService } from '../commodity/commodity.service';
+import { CommodityService } from '../list/commodity.service';
 
 interface ProcessingChainParams {
   moveToList: { id: number; list_name: string };

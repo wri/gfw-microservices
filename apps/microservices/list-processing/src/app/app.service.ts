@@ -2,11 +2,12 @@ import { Injectable, InternalServerErrorException, Logger } from '@nestjs/common
 import { S3Client, PutObjectCommand, GetObjectCommand } from '@aws-sdk/client-s3';
 import { DataSource } from 'typeorm';
 import { randomUUID } from 'crypto';
+import { ResponsePreSignedURLModel, ResponseObjectPresignedURLModel } from '../models';
 import { ClientStoreConnection, ActivityLog, DeleteListTypeOrm } from '@wri-monorepos/sql';
+import { LockListService } from '../services/lock.list.service';
 import { ConfigService } from '@nestjs/config';
+import { ServerConfigType } from '../validators/server-config';
 import { getSignedUrl } from '@aws-sdk/s3-request-presigner';
-import { ServerConfigType } from '../../validators/server-config';
-import { ResponseObjectPresignedURLModel, ResponsePreSignedURLModel } from '../../models';
 
 class MyObject {
   id: number;
@@ -15,7 +16,7 @@ class MyObject {
 }
 
 @Injectable()
-export class ListDataService {
+export class AppService {
   private readonly logger = new Logger('List processing service');
   private readonly s3Client: S3Client;
 
@@ -23,6 +24,7 @@ export class ListDataService {
     private dataSource: DataSource,
     private readonly clientStoreConnection: ClientStoreConnection,
     private readonly deleteListTypeOrm: DeleteListTypeOrm,
+    private readonly lockListService: LockListService,
     protected readonly config: ConfigService<ServerConfigType, true>
   ) {
     this.s3Client = new S3Client({ region: this.config.get('AWS_REGION', { infer: true }) });

@@ -3,7 +3,7 @@ export const CONVERTER_NAMES = {
   GADM_VERSION: 'GADM Version',
   UPGRADE_LIST_SCHEMA: 'Upgrade List Schema to Version 2',
   DELETE_INVALID_LOCATION_LISTS: 'Delete Invalid Location Lists',
-  DELETE_INVALID_COMMODITY_TEMPLATE: 'Delete Lists With Invalid Commodity Or Template',
+  DELETE_PARTLY_UPDATED_LISTS: 'Delete Lists With Invalid Template/Commodity',
 } as const;
 
 export type ConverterName = (typeof CONVERTER_NAMES)[keyof typeof CONVERTER_NAMES];

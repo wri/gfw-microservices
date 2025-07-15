@@ -23,14 +23,12 @@ export const startConverter = async (
   request: (config?: ExtendedAxiosRequestConfig) => Promise<any>,
   converterName: string,
   organizationId: string | null
-): Promise<{ converterId: string; status: string }> => {
-  const response = await request({
+): Promise<void> => {
+  await request({
     url: '/converter/start',
     method: 'POST',
     data: { converterName, organizationId },
   });
-
-  return response.data;
 };
 
 export const stopConverter = (

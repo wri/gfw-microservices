@@ -26,9 +26,10 @@ export const startConverterJob = async (
   // Start the long process asynchronously but don't await it
   triggerConverter(insertedId, organizationId).catch(async (err) => {
     const errorMessage = err?.response?.data || err?.message || 'Unknown error';
-    logger.error(`Error triggering LP for converter ${insertedId}:`, errorMessage);
+    const errorLog = `Error triggering LP for Converter ${insertedId}: ${errorMessage}`;
+    logger.error(errorLog);
     await markConverterFailed(repo, insertedId, errorMessage);
-    throw new Error('Failed to trigger list proc. converter process');
+    throw new Error(errorLog);
   });
 
   return insertedId; // Immediately return the ID after insert
@@ -112,22 +113,37 @@ const insertConverter = async (
 ): Promise<number> => {
   const { name, organizationId = null } = params;
 
-  const result: InsertResult = await repo.insert({
-    name,
-    startTime: null,
-    status: ConverterStatusEnum.PENDING,
-    organizationId,
-    listId: null,
-    parentId: null,
-    errorDetails: null,
-  });
+  const parsedOrganizationId =
+    organizationId === undefined || organizationId === null ? null : Number(organizationId);
+
+  if (isNaN(parsedOrganizationId)) {
+    throw new Error(`Invalid organizationId: ${organizationId}`);
+  }
+  logger.info(`✅ Inserting Converter '${name}' with status PENDING`);
+  let result: InsertResult;
+
+  try {
+    result = await repo.insert({
+      name,
+      startTime: null,
+      status: ConverterStatusEnum.PENDING,
+      organizationId: parsedOrganizationId,
+      listId: null,
+      parentId: null,
+      errorDetails: null,
+    });
+  } catch (err) {
+    const errorMessage = `Failed to in sert converter: ${err instanceof Error ? err.message : err}`;
+    logger.error(`❌ ${errorMessage}`);
+    throw new Error(errorMessage);
+  }
 
   const id = result.identifiers[0]?.id;
   if (!id) {
     throw new Error('Failed to retrieve inserted converter ID');
   }
 
-  logger.info(`Inserted converter with ID: ${id}`);
+  logger.info(`Inserted Converter Job '${name}' with ID: ${id}`);
   return id;
 };
 

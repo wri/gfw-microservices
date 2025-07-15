@@ -52,20 +52,21 @@ export async function upgradeListSchema(args: SchemaUpgraderArgs) {
 
   let success = false;
   try {
+    const clientStoreConnection = new ClientStoreConnection();
+    const connection = await clientStoreConnection.getConnection(clientDb);
+    queryRunner = connection.createQueryRunner();
+    await queryRunner.connect();
+    await queryRunner.startTransaction();
+
     const listsRepository = queryRunner.manager.getRepository(Lists);
     const list = await listsRepository.findOne({
       where: { id: listId },
     });
     if (list.version === LIST_VERSION_POST_UPGRADE) {
       logger.log('List already in version 2, no op.');
+      queryRunner.commitTransaction();
       return list;
     }
-
-    const clientStoreConnection = new ClientStoreConnection();
-    const connection = await clientStoreConnection.getConnection(clientDb);
-    queryRunner = connection.createQueryRunner();
-    await queryRunner.connect();
-    await queryRunner.startTransaction();
 
     logger.log('Locking list');
     await new UspSetListLocked().run(clientDb, list.id, userId);

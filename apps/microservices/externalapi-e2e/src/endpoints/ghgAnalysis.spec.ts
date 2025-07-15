@@ -11,7 +11,7 @@ describe('GHGAnalysis', () => {
   let prepareUploadRes;
   let uploadNewRes;
   const deleteList = async (listId) => {
-    const res = await postRedirectHeaders(
+    await postRedirectHeaders(
       `${BASE_URL}/api/v1/list/${listId}/delete`,
       {
         userEmail: email,
@@ -23,7 +23,6 @@ describe('GHGAnalysis', () => {
         },
       }
     );
-    console.log(res.data)
   };
 
   it(
@@ -103,7 +102,6 @@ describe('GHGAnalysis', () => {
       expect(typeof uploadNewRes.data.status).toBe('string');
       expect(typeof uploadNewRes.data.errorDetails).toBe('string');
       expect(typeof uploadNewRes.data.creationDate).toBe('string');
-      console.log(uploadNewRes.data.listId)
     },
     40 * 1000
   );

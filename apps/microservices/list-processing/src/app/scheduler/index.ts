@@ -7,7 +7,6 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { Organization } from '@wri-monorepos/sql';
 import { ListService } from './list.service';
 import { SqlModule } from '@wri-monorepos/sql';
-import { LockListService } from './lock.list.service';
 
 @Module({
   imports: [
@@ -16,6 +15,6 @@ import { LockListService } from './lock.list.service';
     SqlModule,
   ],
   controllers: [],
-  providers: [Task, UnlockListService, OrganizationService, ListService, LockListService],
+  providers: [Task, UnlockListService, OrganizationService, ListService],
 })
 export class SchedulerModule {}

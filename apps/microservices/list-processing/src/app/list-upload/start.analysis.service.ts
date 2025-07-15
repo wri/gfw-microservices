@@ -28,7 +28,7 @@ import { ConvertGeojsonProperties } from './chain/convert.geojson.properties';
 import { PutListAsDraft } from './chain/put.list.as.draft';
 import { GenerateErrorFile } from './chain/generate.error.file';
 import { AdjustGeoData } from './chain/adjust.geo.data';
-import { CommodityService } from '../commodity/commodity.service';
+import { CommodityService } from '../list/commodity.service';
 
 type WorkerType = {
   request: RequestLargeListProcess;

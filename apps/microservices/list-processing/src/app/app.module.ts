@@ -11,8 +11,14 @@ const envModule = ConfigModule.forRoot({
 
 import { Module } from '@nestjs/common';
 import { S3Client } from '@aws-sdk/client-s3';
-import { SqlModule, TypeOrmSystemModule } from '@wri-monorepos/sql';
+import { AppController } from './app.controller';
+import { AppService } from './app.service';
+import { DeleteListTypeOrm, SqlModule, TypeOrmSystemModule } from '@wri-monorepos/sql';
+import { LocationService } from '../services/locations.service';
+import { ListService } from '../services/list.service';
+import { LockListService } from '../services/lock.list.service';
 import { GeoService } from '@wri-monorepos/geo';
+import { ListPaginationService } from '../services/list.pagination.service';
 import { FCDModule } from './fcd';
 import { SchedulerModule } from './scheduler';
 import { AFIModule } from './afi';
@@ -20,11 +26,10 @@ import { AlertsModule } from './alerts';
 import { ListUploadModule } from './list-upload';
 import { AwsModule } from '@wri-monorepos/aws';
 import { HealthModule } from './health/health.module';
-import { CommodityModule } from './commodity';
+import { ListModule } from './list';
 import { GHGModule } from './ghg';
 import { ListCopyMoveModule } from './list-copy-move';
 import { ConvertersModule } from './converters';
-import { ListDataModule } from './list-data';
 
 @Module({
   imports: [
@@ -41,16 +46,20 @@ import { ListDataModule } from './list-data';
     GHGModule,
     HealthModule,
     ListUploadModule,
-    CommodityModule,
-    ListDataModule,
+    ListModule,
     ListCopyMoveModule,
     SchedulerModule,
     SqlModule,
   ],
-  controllers: [],
+  controllers: [AppController],
   providers: [
+    AppService,
+    ListPaginationService,
+    LocationService,
     GeoService,
-
+    ListService,
+    LockListService,
+    DeleteListTypeOrm,
     {
       provide: 'S3Client',
       inject: [ConfigService],

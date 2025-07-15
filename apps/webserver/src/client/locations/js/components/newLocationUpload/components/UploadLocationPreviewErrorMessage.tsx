@@ -1,9 +1,11 @@
 import { theme } from '../../../../../styles/theme';
 import { Box, Typography } from '@mui/material';
 import { DriveFolderUpload, Report } from '@mui/icons-material';
-import { LabelNameTableZip, LabelNameTable } from '../utils/upload';
+import { LabelNameTableZip, LabelNameTable, LabelNameTableIdType } from '../utils/upload';
 import { PillButton } from '../../../../../components';
 import { getFileExtension } from '../../../../../utils';
+import { useUploadLocation } from '../contexts';
+import { UploadType } from '../types';
 
 export function UploadLocationPreviewErrorMessage({
   error,
@@ -17,7 +19,9 @@ export function UploadLocationPreviewErrorMessage({
   onRetryPreviewData: () => void;
 }) {
   const fileExtension = getFileExtension(keyFile);
-  const errorMessage = errorMessageBuilder({ error, fileExtension });
+  const { uploadLocationState } = useUploadLocation();
+  const { uploadType } = uploadLocationState;
+  const errorMessage = errorMessageBuilder({ error, fileExtension, uploadType });
 
   return (
     <>
@@ -80,18 +84,22 @@ export function UploadLocationPreviewErrorMessage({
 const errorMessageBuilder = ({
   error,
   fileExtension,
+  uploadType,
 }: {
   error: { errors: string[] };
   fileExtension: string;
+  uploadType?: UploadType;
 }) => {
   const firstError = error?.errors?.[0];
+  const isIdBasedError = uploadType === UploadType.ById;
 
   if (firstError?.startsWith('Missing mandatory fields:')) {
     return {
       title: 'Missing required fields',
       body: `Your ${fileExtension} file is missing the following obligatory fields: ${getMissingFieldsNames(
         error.errors,
-        fileExtension
+        fileExtension,
+        isIdBasedError
       )}. Please check the required fields in the Data Templates and update your file before re-uploading it.`,
     };
   }
@@ -141,20 +149,27 @@ const errorMessageBuilder = ({
   return null;
 };
 
-const getMissingFieldsNames = (errors: string[], fileExtension: string) => {
+const getMissingFieldsNames = (
+  errors: string[],
+  fileExtension: string,
+  isByIdWorkflow: boolean = false
+) => {
   if (!errors.length) {
     return '';
   }
 
-  const fields = errors[0].split(':')?.[1];
+  let fields: string[] | string = errors[0].split(':')?.[1];
   if (!fields) {
     return '';
   }
 
-  const map = fileExtension === '.zip' ? LabelNameTableZip : LabelNameTable;
-  return fields
-    .replaceAll(' ', '')
-    .split(',')
-    .map((field) => map[field as keyof typeof map] || '')
-    .join(', ');
+  fields = fields.replaceAll(' ', '').split(',');
+
+  if (fileExtension === '.zip') {
+    return fields.map((field) => LabelNameTableZip[field as keyof typeof map] || '').join(', ');
+  }
+
+  const map = isByIdWorkflow ? LabelNameTableIdType : LabelNameTable;
+
+  return fields.map((field) => map[field as keyof typeof map] || '').join(', ');
 };

@@ -11,6 +11,7 @@ import {
   ConfigureList,
   SummaryAndSubmit,
   SubmissionSuccess,
+  UploadLocationById,
 } from './pages';
 import { PolygonFromMapPage, UserList } from './types';
 
@@ -20,6 +21,7 @@ export const UploadLocationRoutes = {
   UPLOAD_BY_FILE: '/upload-location/by-file',
   UPLOAD_BY_POLYGON: '/upload-location/by-polygon',
   UPLOAD_BY_POINT: '/upload-location/by-point',
+  UPLOAD_BY_ID: '/upload-location/by-id',
   PREVIEW: '/upload-location/preview',
   CONFIGURE_LIST: '/upload-location/configure-list',
   SUMMARY_AND_SUBMIT: '/upload-location/summary-and-submit',
@@ -48,6 +50,7 @@ export function UploadLocationRouter({
         <Route path={UploadLocationRoutes.OPTIONS} exact>
           <UploadLocationOptions fromList={fromList} userLists={userLists} />
         </Route>
+        <Route path={UploadLocationRoutes.UPLOAD_BY_ID} component={UploadLocationById} />
         <Route path={UploadLocationRoutes.UPLOAD_BY_FILE} component={UploadLocationByFile} />
         <Route path={UploadLocationRoutes.UPLOAD_BY_POLYGON}>
           <UploadLocationByPolygon polygonFromMapPage={geoFromMap} />

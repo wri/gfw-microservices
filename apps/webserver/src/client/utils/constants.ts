@@ -38,6 +38,19 @@ export const DATA_CY = {
       SUBMIT_CANCEL: 'nuw_add_polygon_submit_cancel',
       SUBMIT_DRAFT: 'nuw_add_polygon_submit_draft',
     },
+    [UploadType.ById]: {
+      ADD: 'nuw_add_file',
+      LOCATION_NEXT: 'nuw_add_file_location_next',
+      LOCATION_CANCEL: 'nuw_add_file_location_cancel',
+      PREVIEW_NEXT: 'nuw_add_file_preview_next',
+      PREVIEW_RETRY: 'nuw_add_file_preview_retry',
+      PREVIEW_CANCEL: 'nuw_add_file_preview_cancel',
+      CONFIGURE_NEXT: 'nuw_add_file_configure_next',
+      CONFIGURE_CANCEL: 'nuw_add_file_configure_cancel',
+      SUBMIT_ANALYSIS: 'nuw_add_file_submit_analysis',
+      SUBMIT_CANCEL: 'nuw_add_file_submit_cancel',
+      SUBMIT_DRAFT: 'nuw_add_file_submit_draft',
+    },
   },
 };
 

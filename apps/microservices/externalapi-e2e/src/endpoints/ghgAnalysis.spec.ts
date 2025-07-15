@@ -11,7 +11,7 @@ describe('GHGAnalysis', () => {
   let prepareUploadRes;
   let uploadNewRes;
   const deleteList = async (listId) => {
-    await postRedirectHeaders(
+    const res = await postRedirectHeaders(
       `${BASE_URL}/api/v1/list/${listId}/delete`,
       {
         userEmail: email,
@@ -23,6 +23,7 @@ describe('GHGAnalysis', () => {
         },
       }
     );
+    console.log(res.data)
   };
 
   it(
@@ -102,6 +103,7 @@ describe('GHGAnalysis', () => {
       expect(typeof uploadNewRes.data.status).toBe('string');
       expect(typeof uploadNewRes.data.errorDetails).toBe('string');
       expect(typeof uploadNewRes.data.creationDate).toBe('string');
+      console.log(uploadNewRes.data.listId)
     },
     40 * 1000
   );
@@ -124,8 +126,8 @@ describe('GHGAnalysis', () => {
       } catch (err) {
         expect(err.status).toBe(400);
         expect(err.message).toBe('Request failed with status code 400');
-        deleteList(uploadNewRes.data.listId);
       }
+      await deleteList(uploadNewRes.data.listId);
     },
     40 * 1000
   );
@@ -227,7 +229,7 @@ describe('GHGAnalysis', () => {
         console.error('GHG error', error.stack || error, error.response.data);
         throw error;
       }
-      deleteList(uploadNewRes.data.listId);
+      await deleteList(uploadNewRes.data.listId);
     },
     40 * 1000
   );
@@ -332,8 +334,8 @@ describe('GHGAnalysis', () => {
         } catch (err) {
           expect(err.status).toBe(400);
           expect(err.message).toBe('Request failed with status code 400');
-          deleteList(uploadNewRes.data.listId);
         }
+        await deleteList(uploadNewRes.data.listId);
       },
       40 * 1000
     );
@@ -394,8 +396,8 @@ describe('GHGAnalysis', () => {
         } catch (err) {
           expect(err.status).toBe(400);
           expect(err.message).toBe('Request failed with status code 400');
-          deleteList(uploadNewRes.data.listId);
         }
+        await deleteList(uploadNewRes.data.listId);
       },
       40 * 1000
     );

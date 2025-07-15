@@ -4,7 +4,7 @@ import { S3Service, EmailService } from '@wri-monorepos/aws';
 import { ConfigService } from '@nestjs/config';
 import { RequestLargeListProcess } from '../../models';
 import { ListTemplate } from '@wri-monorepos/sql';
-import { CommodityService } from '../commodity/commodity.service';
+import { CommodityService } from '../list/commodity.service';
 import { getRepositoryToken } from '@nestjs/typeorm';
 import sinon from 'sinon';
 import { AbstractHandler } from './chain/types';

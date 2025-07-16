@@ -1,7 +1,6 @@
 import {
   ClientStoreConnection,
   FeatureFlag,
-  ListsUploadStatus,
   SQLUtils,
 } from '@wri-monorepos/sql';
 import { Logger, InternalServerErrorException } from '@nestjs/common';

@@ -111,7 +111,7 @@ describe('csvLatLongIdBasedTransformer', () => {
     });
   });
 
-  describe('NEEDS UPDATE', () => {
+  describe('handle', () => {
     it("calls UML lookup and merges geometry when 'ID Type' === 'UML'", async () => {
       mockUmlLookUp.mockImplementation(async (ids: string[]) => {
         return ids.reduce((o, id) => ({ ...o, [id]: { geometry: `geom-${id}` } }), {});

@@ -11,9 +11,12 @@ import { AppModule } from './app/app.module';
 import { SecurityHeaderMiddleware } from './middleware/security-header.middleware';
 import { ConfigService } from '@nestjs/config';
 import { ServerConfigType } from './validators/server-config';
+import { ConsoleLog } from '@wri-monorepos/shared';
 
 async function bootstrap() {
-  const app = await NestFactory.create<NestExpressApplication>(AppModule);
+  const app = await NestFactory.create<NestExpressApplication>(AppModule, {
+    logger: new ConsoleLog(),
+  });
   app.set('query parser', 'extended');
 
   const globalPrefix = 'api';

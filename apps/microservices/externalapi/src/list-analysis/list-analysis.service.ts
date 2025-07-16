@@ -12,6 +12,7 @@ import { UserService } from './user.service';
 
 import { ConfigService } from '@nestjs/config';
 import axios from 'axios';
+import { configureAxiosWithTraceId } from '@wri-monorepos/shared';
 import { featureFlagsService, generateRandomFilename } from '@wri-monorepos/shared';
 import { OrganizationService } from './organization.service';
 import { transformExternalUpload } from './transformers';
@@ -98,6 +99,9 @@ export class ListAnalysisService {
       secretAccessKey: this.configService.get('AWS_SECRET_ACCESS_KEY'),
       largeProcessingListBucket: this.configService.get('LARGE_PROCESSING_LIST_BUCKET'),
     };
+
+    // Configure axios with trace ID interceptor
+    configureAxiosWithTraceId(axios);
   }
 
   private getEAPIListStatus(listAnalysisStatus: ListsAnalysisStatus) {

@@ -7,6 +7,7 @@ import { OrganizationService } from '../list-analysis/organization.service';
 import { RemoveSQSMessage } from '@wri-monorepos/shared';
 import { Message } from '@aws-sdk/client-sqs';
 import axios from 'axios';
+import { configureAxiosWithTraceId } from '@wri-monorepos/shared';
 import { generateAnalysisTemplate } from '../shared/generate-templates';
 const SUCCESS_STATUS = 2;
 
@@ -17,7 +18,10 @@ export class AnalysisMessageHandler {
   constructor(
     private readonly configService: ConfigService,
     private organizationService: OrganizationService
-  ) {}
+  ) {
+    // Configure axios with trace ID interceptor
+    configureAxiosWithTraceId(axios);
+  }
 
   @SqsMessageHandler(AWS_ANALYSIS_QUEUE_IDENTIFIER, true)
   async handleMessage(messages: Array<Message>) {

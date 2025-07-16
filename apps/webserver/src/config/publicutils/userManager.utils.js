@@ -269,7 +269,7 @@ export const activateUser = (
         logger.logActivity(
           req,
           logger.listActivityTypes.User.UserActivated,
-          `User '${user_email}' has been activated.`
+          `User ID ${user_id} has been activated.`
         );
         resolve(true);
       })
@@ -323,11 +323,11 @@ export const deactivateUser = (req, user_id) => {
         // Set User Status in the Routes Table.
         return sqlUtils.executeSystemStoredProcedure(req, 'uspSetUserRouteStatus', parameters);
       })
-      .then((user) => {
+      .then(() => {
         logger.logActivity(
           req,
           logger.listActivityTypes.User.UserDeactivated,
-          `User '${user[0].user_email}' has been deactivated.`
+          `User ID ${user_id} has been deactivated.`
         );
         resolve(true);
       })
@@ -474,7 +474,7 @@ export const createNewUser = (
         logger.logActivity(
           req,
           logger.listActivityTypes.User.UserCreated,
-          `User '${user_email}' has been created in status "Pending."`
+          `User ID ${user_id} has been created in status "Pending."`
         );
         resolve(user_id);
       })
@@ -579,7 +579,7 @@ export const updateUserInfo = ({
         logger.logActivity(
           req,
           logger.listActivityTypes.User.UserUpdated,
-          `User '${user_email}' info has been updated.`
+          `User ID ${user_id} info has been updated.`
         );
         resolve(true);
       })

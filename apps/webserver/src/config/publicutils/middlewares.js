@@ -64,13 +64,8 @@ const checkAuthentication = (request, response, next) => {
  */
 const checkInactivity = (request, response, next) => {
   const { method, baseUrl } = request;
-  const {
-    last_activity_time,
-    ispromanager,
-    user_first_name,
-    user_last_name,
-    organization_database,
-  } = request.session;
+  const { last_activity_time, ispromanager, organization_user_id, organization_database } =
+    request.session;
   const inactiveLimit = moment().subtract(4, 'hours');
   const lastActiveTimeMoment = moment(last_activity_time);
   const isInactiveSession = baseUrl === '/session' && !last_activity_time ? true : false;
@@ -92,7 +87,7 @@ const checkInactivity = (request, response, next) => {
     } else {
       // organization_database is empty when user logs in with password but without verifying 2FA token
       if (organization_database) {
-        const message = `User ${user_first_name} ${user_last_name} has logged out due to inactivity.`;
+        const message = `User ID ${organization_user_id} has logged out due to inactivity.`;
         logger
           .logActivity(request, logger.listActivityTypes.User.UserLogout, message)
           .finally(() => {

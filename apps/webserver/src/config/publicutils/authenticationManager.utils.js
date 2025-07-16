@@ -308,7 +308,7 @@ export const setOrgSessions = async (req, org) => {
     logger.logActivity(
       req,
       logger.listActivityTypes.User.UserLogin,
-      `User ${req.session.user_first_name} ${req.session.user_last_name} has logged in.`
+      `User ID ${req.session.organization_user_id} has logged in.`
     );
   }
 
@@ -759,7 +759,7 @@ export const resendVerifyToken = async (req) => {
  *   @param  {Object}   req - Mandatory first parameter to pass the request object into the function in case session info is required.
  */
 export const logout = (req) => {
-  const { ispromanager, user_first_name, user_last_name } = req.session;
+  const { ispromanager, organization_user_id } = req.session;
 
   // Log activity if user is not a Pro Manager
   if (!ispromanager) {
@@ -767,7 +767,7 @@ export const logout = (req) => {
     logger.logActivity(
       req,
       logger.listActivityTypes.User.UserLogout,
-      `User ${user_first_name} ${user_last_name} has logged out.`
+      `User ID ${organization_user_id} has logged out.`
     );
   }
 

@@ -318,7 +318,7 @@ const uploadBulkLocations = (req, list_id, list_name, geojson, commodity, attrib
         logger.logActivity(
           req,
           logger.listActivityTypes.List.ListUpdate,
-          `User '${req.session.user_email}' has added new locations to list (${list.list_name}) Analysis Table.`
+          `User ID'${req.session.organization_user_id}' has added new locations to list (${list.list_name}) Analysis Table.`
         );
 
         // Create geojson from recordsets

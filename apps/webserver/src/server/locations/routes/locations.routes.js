@@ -1152,7 +1152,7 @@ module.exports = (app, limiter) => {
         logger.logActivity(
           req,
           logger.listActivityTypes.List.ListShared,
-          `Admin ${admin.first_name} ${admin.last_name} Shared list ${list.list_name} with ${user.name}.`
+          `Admin ${admin.id} Shared list ${list.list_name} user that has ID ${user.user_id}.`
         );
         res.send({ message: 'User Added to internal share table.' });
       })
@@ -1166,14 +1166,14 @@ module.exports = (app, limiter) => {
    * @summary Remove user from internal shared DB table
    */
   app.post('/locations/shareList/removeUser', (req, res) => {
-    const { admin, user, list } = req.body;
+    const { user, list, admin } = req.body;
     shareManager
       .deactivateShareInternalList(req, user.user_id, list.id)
       .then(() => {
         logger.logActivity(
           req,
           logger.listActivityTypes.List.ListUnShared,
-          `Admin ${admin.first_name} ${admin.last_name} UnShared list ${list.list_name} with ${user.name}.`
+          `Admin ${admin.id} UnShared list ${list.list_name} user that has ID ${user.user_id}.`
         );
         res.send({ message: 'User Removed from internal share table.' });
       })
@@ -1187,7 +1187,7 @@ module.exports = (app, limiter) => {
    * @summary Remove All Non Admin or List Owner users from internal shared DB table
    */
   app.post('/locations/shareList/removeAllUsersFromSharedList', (req, res) => {
-    const { admin, users_id, users_name, list } = req.body;
+    const { admin, users_id, list } = req.body;
 
     shareManager
       .deactivateAllShareInternalList(req, users_id, list.id)
@@ -1195,7 +1195,7 @@ module.exports = (app, limiter) => {
         logger.logActivity(
           req,
           logger.listActivityTypes.List.ListUnSharedWithAll,
-          `Admin ${admin.first_name} ${admin.last_name} UnShared list ${list.list_name} with ${users_name}.`
+          `Admin Id ${admin.id} UnShared list ${list.list_name} user that has ID ${users_id} .`
         );
         res.send({ message: 'Users removed from internal shared table.' });
       })

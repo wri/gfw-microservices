@@ -17,9 +17,7 @@ export class AnalysisMessageHandler {
   constructor(
     private readonly configService: ConfigService,
     private organizationService: OrganizationService
-  ) {
-    // Axios trace interceptor is now configured globally in main.ts
-  }
+  ) {}
 
   @SqsMessageHandler(AWS_ANALYSIS_QUEUE_IDENTIFIER, true)
   async handleMessage(messages: Array<Message>) {

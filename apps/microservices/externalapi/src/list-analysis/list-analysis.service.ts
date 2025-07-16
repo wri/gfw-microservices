@@ -98,8 +98,6 @@ export class ListAnalysisService {
       secretAccessKey: this.configService.get('AWS_SECRET_ACCESS_KEY'),
       largeProcessingListBucket: this.configService.get('LARGE_PROCESSING_LIST_BUCKET'),
     };
-
-    // Axios trace interceptor is now configured globally in main.ts
   }
 
   private getEAPIListStatus(listAnalysisStatus: ListsAnalysisStatus) {

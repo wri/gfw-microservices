@@ -1,8 +1,4 @@
-import {
-  ClientStoreConnection,
-  FeatureFlag,
-  SQLUtils,
-} from '@wri-monorepos/sql';
+import { ClientStoreConnection, FeatureFlag, SQLUtils } from '@wri-monorepos/sql';
 import { Logger, InternalServerErrorException } from '@nestjs/common';
 import { Injectable } from '@nestjs/common';
 import { CreateListRequest, RequestLargeListProcess, ResponseLargeListProcess } from '../models';

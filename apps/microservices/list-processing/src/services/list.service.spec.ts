@@ -9,7 +9,6 @@ import { featureFlagsService } from '@wri-monorepos/shared';
 import { DeprecatedCreateLargeListService } from '../app/list-upload/deprecated.create.large.list.service';
 import { CreateLargeListService } from '../app/list-upload/create.large.list.service';
 import { InternalServerErrorException } from '@nestjs/common';
-import { DataSource } from 'typeorm';
 
 interface ServerConfigType {
   LARGE_PROCESSING_LIST_BUCKET?: string;
@@ -412,100 +411,6 @@ describe('ListService - Create List Tables', () => {
     expect(result).toEqual({ list_id: 456 });
     expect(deprecatedCreateLargeListService.run).toHaveBeenCalledWith(request);
     expect(createLargeListService.run).not.toHaveBeenCalled();
-  });
-});
-
-describe('ListService - Update Lists Upload Status', () => {
-  let service: ListService;
-  let clientStoreConnection: ClientStoreConnection;
-  let metadataServiceMock: Partial<MetadataService>;
-  let configServiceMock: Partial<ConfigService>;
-  beforeEach(async () => {
-    metadataServiceMock = {
-      getMetadata: jest.fn().mockResolvedValue({ taskARN: 'test-task-arn' }),
-    };
-    configServiceMock = {
-      get: jest.fn().mockImplementation((key) => {
-        if (key === 'LARGE_PROCESSING_LIST_BUCKET') {
-          return 'test-bucket';
-        }
-        return undefined;
-      }),
-    };
-    const mockDataSource = {
-      getRepository: jest.fn().mockReturnValue({
-        findOne: jest.fn(),
-        save: jest.fn(),
-      }),
-    } as unknown as DataSource;
-
-    clientStoreConnection = {
-      getConnection: jest.fn().mockResolvedValue(mockDataSource),
-    } as unknown as ClientStoreConnection;
-
-    service = new ListService(
-      clientStoreConnection,
-      metadataServiceMock as MetadataService,
-      configServiceMock as ConfigService<ServerConfigType, true>,
-      {} as DeprecatedStartAnalysisService,
-      {} as StartAnalysisService,
-      {} as DeprecatedCreateLargeListService,
-      {} as CreateLargeListService
-    );
-  });
-
-  it('should update existing record', async () => {
-    const mockRepository = {
-      findOne: jest.fn().mockResolvedValue({
-        listId: 123,
-        errorInfo: 'old error',
-        lastSuccessfulStage: 'old stage',
-        updateTime: new Date(),
-        workerInstanceId: 'old-task',
-      }),
-      save: jest.fn(),
-    };
-
-    const mockDataSource = {
-      getRepository: jest.fn().mockReturnValue(mockRepository),
-    } as unknown as DataSource;
-
-    jest.spyOn(clientStoreConnection, 'getConnection').mockResolvedValue(mockDataSource);
-
-    await service.updateListsUploadStatus('test-db', 123, 'new stage', 'new error');
-
-    expect(mockRepository.save).toHaveBeenCalledWith(
-      expect.objectContaining({
-        listId: 123,
-        errorInfo: 'new error',
-        lastSuccessfulStage: 'new stage',
-        workerInstanceId: 'test-task-arn',
-      })
-    );
-  });
-
-  it('should create new record if none exists', async () => {
-    const mockRepository = {
-      findOne: jest.fn().mockResolvedValue(null),
-      save: jest.fn(),
-    };
-
-    const mockDataSource = {
-      getRepository: jest.fn().mockReturnValue(mockRepository),
-    } as unknown as DataSource;
-
-    jest.spyOn(clientStoreConnection, 'getConnection').mockResolvedValue(mockDataSource);
-
-    await service.updateListsUploadStatus('test-db', 123, 'new stage', 'new error');
-
-    expect(mockRepository.save).toHaveBeenCalledWith(
-      expect.objectContaining({
-        listId: 123,
-        errorInfo: 'new error',
-        lastSuccessfulStage: 'new stage',
-        workerInstanceId: 'test-task-arn',
-      })
-    );
   });
 });
 

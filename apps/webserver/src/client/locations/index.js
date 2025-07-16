@@ -1,4 +1,4 @@
-/* global userInfo, organizationId */
+/* global userInfo */
 
 import { render } from 'react-dom';
 import { BrowserRouter as Router } from 'react-router-dom';
@@ -22,7 +22,7 @@ const App = () => (
           callback(false);
         }}
       >
-        <LocationsPage userInfo={userInfo} organizationId={organizationId} />
+        <LocationsPage userInfo={userInfo} />
       </Router>
     </AppErrorFallback>
   </ThemeProvider>

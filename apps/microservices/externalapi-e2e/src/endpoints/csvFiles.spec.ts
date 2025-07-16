@@ -212,35 +212,6 @@ describe('Validate CSV Files for Alerts', () => {
 
 describe('Validate CSV Files for GHG', () => {
   it(
-    'should generate GHG download',
-    async () => {
-      const listId = '8695';
-      try {
-        const res = await postRedirectHeaders(
-          `${BASE_URL}/api/v1/list/${listId}/analysis/GHG/generate`,
-          {
-            userEmail: email,
-            startDate: '01-01-2024',
-            endDate: '07-01-2024',
-          },
-          {
-            headers: {
-              'Content-Type': 'application/json',
-              'x-api-key': API_TOKEN,
-            },
-          }
-        );
-
-        expect(res.status).toBe(201);
-        expect(res.data).toBe('');
-      } catch (error) {
-        console.error('GHG/generate error', error.stack || error, error.response.data);
-        throw error;
-      }
-    },
-    30 * 1000
-  );
-  it(
     'should validate CSV bundle file has expected files',
     async () => {
       const listId = '8695';

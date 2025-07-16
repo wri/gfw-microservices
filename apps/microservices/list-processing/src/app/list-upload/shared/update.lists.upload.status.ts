@@ -24,7 +24,8 @@ export const updateListsUploadStatus = async (
     if (!record) {
       record = new ListsUploadStatus();
     }
-    record.errorInfo = errorInfo;
+    // errorInfo is limited 512 characters in DB
+    record.errorInfo = (errorInfo || '').slice(0, 510);
     record.lastSuccessfulStage = lastSuccessfulStage ?? record.lastSuccessfulStage;
     record.updateTime = new Date();
     record.workerInstanceId = taskARN || '';

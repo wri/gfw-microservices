@@ -6,11 +6,14 @@ import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
 import { AppModule } from './app/app.module';
 import { ConfigService } from '@nestjs/config';
 import { ServerConfigType } from './validators/server-config';
-import { ConsoleLog } from '@wri-monorepos/shared';
+import { ConsoleLog, initializeGlobalAxiosTracing } from '@wri-monorepos/shared';
 
 const SWAGGER_DISABLED_ENVS = ['staging', 'production'];
 
 async function bootstrap() {
+  // Initialize global axios tracing before creating the app
+  initializeGlobalAxiosTracing();
+
   const app = await NestFactory.create<NestExpressApplication>(AppModule, {
     logger: new ConsoleLog(),
   }); // 👈 updated

@@ -4,6 +4,6 @@ export * from './subscription';
 export * from './csv-uploads';
 export * from './trace/trace.context';
 export * from './trace/trace-id.middleware';
-export * from './trace/axios-trace.interceptor';
 export * from './trace/enhanced-logger';
 export * from './trace/console.log.logger';
+export * from './trace/global-axios.config';

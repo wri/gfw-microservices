@@ -325,15 +325,6 @@ export default class ListDetails extends Component {
     }
   };
 
-  showGFWUnselectedDialog = () => {
-    this.setState({
-      dialogOpen: true,
-      dialogTitle: 'No locations selected',
-      dialogContent:
-        'To add locations from a GFW List, you must first select the locations you wish to add.',
-    });
-  };
-
   handleDialogClose = (shouldRefresh) => {
     if (shouldRefresh) {
       window.location.reload();
@@ -1326,48 +1317,25 @@ export default class ListDetails extends Component {
   };
 
   editList = () => {
-    const { selectedLists, selectedLocations } = this.props;
     const { isEveryRowSelected, numberOfPages } = this.state;
-    const selectedList = selectedLists[0];
-    if (!selectedList.isGlobalForestWatchList) {
-      // if all locations where selected and there is more than one page
-      // follow large list editing workflow
-      if (isEveryRowSelected && numberOfPages > 1) {
-        this.setState({
-          displayLargeListEditingModal: true,
-        });
-      } else {
-        this.setState({
-          isLoading: true,
-        });
-
-        this.setAddTypeAndTemplate();
-        store.dispatch(changeView('edit'));
-
-        gtag('event', 'Edit button clicked', {
-          event_category: 'Lists Click',
-          event_label: 'user clicked to enter edit list workflow',
-        });
-      }
-    } else if (selectedLocations.length > maxLocations) {
+    // if all locations where selected and there is more than one page
+    // follow large list editing workflow
+    if (isEveryRowSelected && numberOfPages > 1) {
       this.setState({
-        dialogOpen: true,
-        dialogTitle: locationsPage.lists.copyMoveMessages.ListTooLarge.title,
-        dialogContent: locationsPage.lists.copyMoveMessages.ListTooLarge.message,
-        isSaving: false,
-        refreshPage: false,
+        displayLargeListEditingModal: true,
       });
-    } else if (selectedLocations.length > 0) {
-      // we don't necessarily need a loader here; we aren't making a request, &
-      // step 1 of 3 in the addFromGFW workflow does Not render all the table rows!
-      store.dispatch(changeView('gfw'));
+    } else {
+      this.setState({
+        isLoading: true,
+      });
+
+      this.setAddTypeAndTemplate();
+      store.dispatch(changeView('edit'));
 
       gtag('event', 'Edit button clicked', {
         event_category: 'Lists Click',
-        event_label: 'user clicked to enter add from gfw workflow',
+        event_label: 'user clicked to enter edit list workflow',
       });
-    } else {
-      this.showGFWUnselectedDialog();
     }
   };
 

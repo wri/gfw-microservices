@@ -1666,57 +1666,6 @@ export const locationsPage = {
     showValidated: 'Validated',
     showNotValidated: 'Locations with Errors',
     showAllValidated: 'All',
-    commodityTypeOptions: [
-      {
-        name: 'Cattle',
-        id: 'cattle',
-        commodityTemplate: 'cattleGeneric',
-      },
-      {
-        name: 'Cocoa',
-        id: 'cocoa',
-        commodityTemplate: 'cocoaGeneric',
-      },
-      {
-        name: 'Coffee',
-        id: 'coffee',
-        commodityTemplate: 'generic',
-      },
-      {
-        name: 'Palm Oil',
-        id: 'palmOil',
-        commodityTemplate: 'palmGeneric',
-      },
-      {
-        name: 'Pulp and Paper',
-        id: 'pulp',
-        commodityTemplate: 'generic',
-      },
-      {
-        name: 'Rubber',
-        id: 'rubber',
-        commodityTemplate: 'generic',
-      },
-      {
-        name: 'Soy',
-        id: 'soy',
-        commodityTemplate: 'soyGeneric',
-      },
-      {
-        name: 'Sugar Cane',
-        id: 'sugarCane',
-        commodityTemplate: 'generic',
-      },
-      {
-        name: 'Other',
-        id: 'other',
-        commodityTemplate: 'generic',
-      },
-      {
-        name: 'Multiple',
-        id: 'multiple',
-      },
-    ],
   },
   columns: {
     notAnalyzedList: {

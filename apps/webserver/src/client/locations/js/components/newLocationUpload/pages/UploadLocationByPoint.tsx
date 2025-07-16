@@ -300,8 +300,8 @@ export function UploadLocationByPoint() {
                         color: 'text.secondary',
                       }}
                     >
-                      {measurementSuggestedAreas[measurementUnit].map((x) => (
-                        <li>{x}</li>
+                      {measurementSuggestedAreas[measurementUnit].map((suggestedArea) => (
+                        <li>{suggestedArea}</li>
                       ))}
                     </Box>
                   </Box>

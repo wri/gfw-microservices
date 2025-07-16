@@ -59,9 +59,26 @@ export const getTableColumns = (templateData?: LocationListType[]) => {
     return [];
   }
 
-  return Object.keys(firstItemProperties).filter(
+  const filteredKeys = Object.keys(firstItemProperties).filter(
     (key) => !blackListedFields.includes(key)
-  ) as (keyof typeof LabelNameTable)[];
+  );
+
+  // Remove duplicates by converting to lowercase for comparison
+  const uniqueKeys: string[] = [];
+  const seenLowerCase = new Set<string>();
+
+  filteredKeys.forEach((key) => {
+    const lowerKey = key.toLowerCase();
+    if (!seenLowerCase.has(lowerKey)) {
+      seenLowerCase.add(lowerKey);
+      uniqueKeys.push(key);
+    }
+  });
+
+  // Remove "subState" from the final array
+  const finalKeys = uniqueKeys.filter((key) => key !== 'subState');
+
+  return finalKeys as (keyof typeof LabelNameTable)[];
 };
 
 export const LabelNameTable: {

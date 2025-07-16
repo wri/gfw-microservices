@@ -6,7 +6,7 @@ const logger = new Logger('csv.id.based.system');
 
 // @see {@link https://gfw.atlassian.net/browse/GPV-4541}
 export const UNSUPPORTED_ID_TYPE_MESSAGE =
-  'The defined ID system value %ID% is not recognized by GFW Pro. Please enter a recognized ID system value';
+  'The defined ID system %ID% is not recognized by GFW Pro. Please enter a recognized ID system value';
 
 export enum CSV_ID_TYPES {
   UML = 'UML',

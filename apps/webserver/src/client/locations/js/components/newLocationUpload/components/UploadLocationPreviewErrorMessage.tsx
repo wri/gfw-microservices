@@ -125,10 +125,16 @@ const errorMessageBuilder = ({
   }
 
   // @see {@link https://gfw.atlassian.net/browse/GPV-4541}
+  if (firstError?.startsWith('The defined ID system')) {
+    return {
+      title: 'Invalid file',
+      body: `The defined ID is not recognized by GFW Pro. Please enter a recognized ID system value.`,
+    };
+  }
   if (firstError?.startsWith('CAR LookUp: did not found lat/long for')) {
     return {
       title: 'Invalid file',
-      body: `The defined ID is not recognized by GFW Pro. Please enter a recognized ID system value. ${firstError}`,
+      body: `The defined ID is not recognized by GFW Pro. Please enter a recognized ID system value.`,
     };
   }
 

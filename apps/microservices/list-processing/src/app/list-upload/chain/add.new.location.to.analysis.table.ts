@@ -17,10 +17,17 @@ export class AddNewLocationToAnalysisTable extends AbstractHandler<ChainType> {
   }
 
   async handle(request: ChainType): Promise<ChainType> {
+    const {
+      organization_database: organizationDatabase,
+      analysisTable,
+      hasUnanalyzableError,
+    } = request.request as RequestNewList;
+    if (hasUnanalyzableError) {
+      // Skip analysis table if list is not going to be analyzed
+      return request;
+    }
     this.logger.log('add new locations to the analysis table');
 
-    const { organization_database: organizationDatabase, analysisTable } =
-      request.request as RequestNewList;
     const AnalysisEntity = new EntitySchema<AnalysisSchemaType>({
       ...AnalysisSchema,
       name: analysisTable,
@@ -47,6 +54,9 @@ export class AddNewLocationToAnalysisTable extends AbstractHandler<ChainType> {
 
       return request;
     } catch (error) {
+      Logger.error(
+        `Error during insert ${analysisTable}: ${error.stack || error.message || error}`
+      );
       throw new Error(`Failed to handle input: ${error.message}`);
     }
   }

@@ -53,7 +53,7 @@ describe('Update Lists Upload Status', () => {
         expect.objectContaining({
           listId: 123,
           lastSuccessfulStage: 'test-stage',
-          errorInfo: undefined,
+          errorInfo: '',
           workerInstanceId: mockTaskARN,
         })
       );

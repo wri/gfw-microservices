@@ -54,10 +54,13 @@ export const startConverter = async (
       converterId: converterJobId,
       status: 'RUNNNING',
     });
-    logger.info(`Started converter ${converterName} with ID: ${converterJobId}`);
+    logger.info(`Started converter '${converterName}' with ID: ${converterJobId}`);
   } catch (err: any) {
-    logger.error(`Failed to start converter ${converterName}:`, err.stack || err);
-    res.status(500).json({ error: 'Failed to start converter' });
+    const errorMessage = `Failed to start converter '${converterName}': ${
+      err?.message || err?.stack || String(err) || 'Unknown error'
+    }`;
+    logger.error(errorMessage);
+    res.status(500).json({ error: errorMessage });
   }
 };
 
@@ -72,16 +75,17 @@ export const stopConverter = async (req, res) => {
 
   try {
     await markConverterStopped(Number(converterId));
-    logger.info(`Stopped converter with ID: ${converterId}`);
+    logger.info(`Stopped converter job with ID: ${converterId}`);
 
     return res.status(200).json({
-      message: `Converter ${converterId} stopped successfully`,
+      message: `Converter job ID ${converterId} stopped successfully`,
     });
   } catch (err) {
-    logger.error(`Error stopping converter with ID ${converterId}:`, err);
-    return res.status(500).json({
-      error: 'Failed to stop converter',
-    });
+    const errorMessage = `Error stopping converter job with ID ${converterId}': ${
+      err?.message || err?.stack || String(err) || 'Unknown error'
+    }`;
+    logger.error(errorMessage);
+    return res.status(500).json({ error: errorMessage });
   }
 };
 

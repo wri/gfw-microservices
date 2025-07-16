@@ -16,6 +16,7 @@ async function bootstrap() {
 
   const app = await NestFactory.create<NestExpressApplication>(AppModule, {
     logger: new ConsoleLog(),
+    bufferLogs: true, // Buffer logs until custom logger is initialized to prevent early messages from using default logger
   }); // 👈 updated
   app.set('query parser', 'extended');
 

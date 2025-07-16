@@ -877,14 +877,6 @@ export const locationsPage = {
     additionalMetadata: 'Additional metadata',
     startDate: 'Start Date',
     endDate: 'End Date',
-
-    accuracyOptions: [
-      { label: 'Very Confident', id: 'very' },
-      { label: 'Moderately Confident', id: 'moderately' },
-      { label: 'Not Confident', id: 'not' },
-      { label: "Don't Know", id: 'idk' },
-    ],
-
     protectedAreas: {
       localhost: 'Lz6YLHN1eyIwJNZDNp1IkFglwrO6qQfAwwRGz-KkyrPDyOjRgiP02tf7gQnD0sRy',
       'pro-staging.globalforestwatch.org':

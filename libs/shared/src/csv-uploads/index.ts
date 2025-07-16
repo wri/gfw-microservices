@@ -6,7 +6,7 @@ const logger = new Logger('csv.id.based.system');
 
 // @see {@link https://gfw.atlassian.net/browse/GPV-4541}
 export const UNSUPPORTED_ID_TYPE_MESSAGE =
-  'The defined ID system value %ID% is not recognized by GFW Pro. Please enter a recognized ID system value';
+    'The defined ID system value %ID% is not recognized by GFW Pro. Please enter a recognized ID system value';
 
 export enum CSV_ID_TYPES {
   UML = 'UML',
@@ -77,7 +77,8 @@ export const resolveLatLongHandlerByIdType = async (
 ): Promise<Record<string, unknown>[]> => {
   const key = idType.trim().toUpperCase();
   if (!ID_TYPE_HANDLER[key]) {
-    throw new Error(UNSUPPORTED_ID_TYPE_MESSAGE.replace('%ID%', key));
+    logger.error(UNSUPPORTED_ID_TYPE_MESSAGE.replace("%ID%", key));
+    throw new Error(UNSUPPORTED_ID_TYPE_MESSAGE.replace(' %ID% ', ' '));
   }
 
   const possibleUpdates = await applyLookUpByChunks(data, key, ID_TYPE_HANDLER[key]);
@@ -168,7 +169,8 @@ export const determineIdType = (firstRow: Record<string, unknown>) => {
       .trim()
       .toUpperCase() as CSV_ID_TYPES;
     if (!ID_TYPE_HANDLER[rawKey]) {
-      throw new Error(UNSUPPORTED_ID_TYPE_MESSAGE.replace('%ID%', rawKey));
+      logger.log(UNSUPPORTED_ID_TYPE_MESSAGE.replace('%ID%', rawKey));
+      throw new Error(UNSUPPORTED_ID_TYPE_MESSAGE.replace(' %ID% ', ' '));
     }
     type = rawKey;
   } else if (!idTypeColumn && isMillList) {

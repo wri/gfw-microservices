@@ -376,7 +376,7 @@ export const updateAccountProfile = (
             logger.logActivity(
               req,
               logger.listActivityTypes.Account.AccountUpdated,
-              `User '${req.session.user_email}' has updated account information.`
+              `User ID ${req.session.organization_user_id} has updated account information.`
             );
             resolve(true);
           })

@@ -16,6 +16,7 @@ const HectareKilometerSwitch = ({ setMeasurementUnit, measurementUnit }) => {
         className={`hectare-kilometer-switch__option ${
           measurementUnit === 'hectares' ? 'hectare-kilometer-switch__option--selected' : ''
         }`}
+        role="button"
       >
         <span className="hectare-kilometer-switch__label">HA</span>
       </div>
@@ -23,6 +24,7 @@ const HectareKilometerSwitch = ({ setMeasurementUnit, measurementUnit }) => {
         className={`hectare-kilometer-switch__option ${
           measurementUnit === 'kilometers' ? 'hectare-kilometer-switch__option--selected' : ''
         }`}
+        role="button"
       >
         <span className="hectare-kilometer-switch__label">KM</span>
       </div>

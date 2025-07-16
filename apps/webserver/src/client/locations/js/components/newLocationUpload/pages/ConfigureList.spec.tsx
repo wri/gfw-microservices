@@ -1,5 +1,5 @@
 import { render, screen, waitFor } from '@testing-library/react';
-import userEvent from '@testing-library/user-event';
+import userEvent, { UserEvent } from '@testing-library/user-event';
 import { ConfigureList } from './ConfigureList';
 import { UploadType, UserList } from '../types';
 import { useUploadLocation } from '../contexts';
@@ -105,20 +105,22 @@ const mockUserLists: UserList[] = [
 
 const useFetchRequest = jest.fn();
 
-beforeEach(() => {
-  (useFetch as jest.Mock).mockReturnValue({
-    data: [
-      { id: 5829, name: 'Cattle 1' },
-      { id: 5830, name: 'best list of cocoa 1' },
-      { id: 5831, name: 'best list of cocoa 2' },
-    ],
-    isLoading: false,
-    request: useFetchRequest,
-    error: null,
-  });
-});
-
 describe('ConfigureList', () => {
+  let user: UserEvent;
+  beforeEach(() => {
+    user = userEvent.setup();
+    (useFetch as jest.Mock).mockReturnValue({
+      data: [
+        { id: 5829, name: 'Cattle 1' },
+        { id: 5830, name: 'best list of cocoa 1' },
+        { id: 5831, name: 'best list of cocoa 2' },
+      ],
+      isLoading: false,
+      request: useFetchRequest,
+      error: null,
+    });
+  });
+
   it('should render the form fields correctly', () => {
     render(<ConfigureList userLists={mockUserLists} />);
 
@@ -138,8 +140,8 @@ describe('ConfigureList', () => {
     ).not.toBeInTheDocument();
     const commodityDropdown = screen.getAllByRole('combobox')[0];
 
-    await userEvent.click(commodityDropdown);
-    await userEvent.click(
+    await user.click(commodityDropdown);
+    await user.click(
       screen.getByRole('option', {
         name: /Sugar Cane/i,
       })
@@ -153,41 +155,41 @@ describe('ConfigureList', () => {
 
     expect(screen.queryByText(/enter the commodity/i)).not.toBeInTheDocument();
     const nextButton = screen.getByRole('button', { name: /next/i });
-    await userEvent.click(nextButton);
+    await user.click(nextButton);
     expect(screen.queryByText(/enter the commodity/i)).toBeInTheDocument();
 
     const commodityDropdown = screen.getAllByRole('combobox')[0];
 
     expect(screen.queryByText(/you must provide at least one list name/i)).not.toBeInTheDocument();
-    await userEvent.click(commodityDropdown);
-    await userEvent.click(screen.getByRole('option', { name: /soy/i }));
-    await userEvent.click(nextButton);
+    await user.click(commodityDropdown);
+    await user.click(screen.getByRole('option', { name: /soy/i }));
+    await user.click(nextButton);
     expect(screen.queryByText(/enter the commodity/i)).not.toBeInTheDocument();
     expect(screen.queryAllByText(/you must provide at least one list name/i)).toHaveLength(2);
 
-    await userEvent.click(commodityDropdown);
-    await userEvent.click(screen.getByRole('option', { name: /other/i }));
+    await user.click(commodityDropdown);
+    await user.click(screen.getByRole('option', { name: /other/i }));
     const newListNameInput = screen.getByPlaceholderText(/name your new list/i);
-    await userEvent.type(newListNameInput, 'New list name');
+    await user.type(newListNameInput, 'New list name');
     expect(screen.queryByText(/enter custom commodity/i)).not.toBeInTheDocument();
-    await userEvent.click(nextButton);
+    await user.click(nextButton);
     expect(screen.queryByText(/enter custom commodity/i)).toBeInTheDocument();
 
     const customCommodityInput = screen.getByTestId('custom-commodity-input');
-    await userEvent.type(customCommodityInput, 'corn');
+    await user.type(customCommodityInput, 'corn');
 
-    await userEvent.click(nextButton);
+    await user.click(nextButton);
     expect(screen.queryByText(/enter custom commodity/i)).not.toBeInTheDocument();
 
     expect(mockHistoryPush).not.toHaveBeenCalledWith('SUMMARY_AND_SUBMIT');
 
-    await userEvent.click(
+    await user.click(
       screen.getByRole('checkbox', {
         name: /post-2020 risk assessment deforestation in natural forest since 2021 \+ additional contextual datasets/i,
       })
     );
 
-    await userEvent.click(nextButton);
+    await user.click(nextButton);
     expect(mockHistoryPush).toHaveBeenCalledWith('SUMMARY_AND_SUBMIT');
   }, 25100);
 
@@ -196,21 +198,21 @@ describe('ConfigureList', () => {
 
     const commodityDropdown = screen.getAllByRole('combobox')[0];
 
-    await userEvent.click(commodityDropdown);
-    await userEvent.click(screen.getByRole('option', { name: /cattle/i }));
+    await user.click(commodityDropdown);
+    await user.click(screen.getByRole('option', { name: /cattle/i }));
 
     const newListNameInput = screen.getByPlaceholderText(/name your new list/i);
-    await userEvent.type(newListNameInput, 'cattle 1');
+    await user.type(newListNameInput, 'cattle 1');
 
     const nextButton = screen.getByRole('button', { name: /next/i });
-    await userEvent.click(nextButton);
+    await user.click(nextButton);
 
     await waitFor(() => {
       expect(screen.queryByText(/this list name already exists/i)).toBeInTheDocument();
     });
 
-    await userEvent.clear(newListNameInput);
-    await userEvent.type(newListNameInput, 'invalid list name +');
+    await user.clear(newListNameInput);
+    await user.type(newListNameInput, 'invalid list name +');
 
     await waitFor(() => {
       expect(
@@ -222,16 +224,16 @@ describe('ConfigureList', () => {
 
     expect(mockHistoryPush).not.toHaveBeenCalledWith('SUMMARY_AND_SUBMIT');
 
-    await userEvent.clear(newListNameInput);
-    await userEvent.type(newListNameInput, 'valid list name');
+    await user.clear(newListNameInput);
+    await user.type(newListNameInput, 'valid list name');
 
-    await userEvent.click(
+    await user.click(
       screen.getByRole('checkbox', {
         name: /post-2000 forest change annual tree cover loss since 2001 \+ additional contextual and regional datasets/i,
       })
     );
 
-    await userEvent.click(nextButton);
+    await user.click(nextButton);
 
     await waitFor(() => {
       expect(mockHistoryPush).toHaveBeenCalledWith('SUMMARY_AND_SUBMIT');
@@ -250,8 +252,8 @@ describe('ConfigureList', () => {
 
     const commodityDropdown = screen.getAllByRole('combobox')[0];
 
-    await userEvent.click(commodityDropdown);
-    await userEvent.click(screen.getByRole('option', { name: /rubber/i }));
+    await user.click(commodityDropdown);
+    await user.click(screen.getByRole('option', { name: /rubber/i }));
 
     await waitFor(() => {
       expect(
@@ -259,8 +261,8 @@ describe('ConfigureList', () => {
       ).toBeInTheDocument();
     });
 
-    await userEvent.click(commodityDropdown);
-    await userEvent.click(screen.getByRole('option', { name: /cattle/i }));
+    await user.click(commodityDropdown);
+    await user.click(screen.getByRole('option', { name: /cattle/i }));
 
     await waitFor(() => {
       expect(
@@ -273,7 +275,7 @@ describe('ConfigureList', () => {
     render(<ConfigureList userLists={mockUserLists} />);
 
     const newListNameInput = screen.getByPlaceholderText('Name your new list');
-    await userEvent.type(newListNameInput, 'New List');
+    await user.type(newListNameInput, 'New List');
 
     expect(newListNameInput).toHaveValue('New List');
   });
@@ -283,8 +285,8 @@ describe('ConfigureList', () => {
 
     const commodityDropdown = screen.getAllByRole('combobox')[0];
 
-    await userEvent.click(commodityDropdown);
-    await userEvent.click(
+    await user.click(commodityDropdown);
+    await user.click(
       screen.getByRole('option', {
         name: /Cocoa/i,
       })
@@ -298,8 +300,8 @@ describe('ConfigureList', () => {
 
     const existingListSelect = screen.getAllByRole('combobox')[1];
 
-    await userEvent.click(existingListSelect);
-    await userEvent.click(screen.getByRole('option', { name: /best list of cocoa 1/i }));
+    await user.click(existingListSelect);
+    await user.click(screen.getByRole('option', { name: /best list of cocoa 1/i }));
 
     expect(
       screen.getByRole('checkbox', {
@@ -323,8 +325,8 @@ describe('ConfigureList', () => {
 
     const commodityDropdown = screen.getAllByRole('combobox')[0];
 
-    await userEvent.click(commodityDropdown);
-    await userEvent.click(
+    await user.click(commodityDropdown);
+    await user.click(
       screen.getByRole('option', {
         name: /Cocoa/i,
       })
@@ -332,8 +334,8 @@ describe('ConfigureList', () => {
 
     const existingListSelect = screen.getAllByRole('combobox')[1];
 
-    await userEvent.click(existingListSelect);
-    await userEvent.click(screen.getByRole('option', { name: /best list of cocoa 2/i }));
+    await user.click(existingListSelect);
+    await user.click(screen.getByRole('option', { name: /best list of cocoa 2/i }));
 
     expect(
       screen.getByRole('checkbox', {
@@ -357,20 +359,20 @@ describe('ConfigureList', () => {
 
     const commodityDropdown = screen.getAllByRole('combobox')[0];
 
-    await userEvent.click(commodityDropdown);
-    await userEvent.click(screen.getByRole('option', { name: /palm oil/i }));
+    await user.click(commodityDropdown);
+    await user.click(screen.getByRole('option', { name: /palm oil/i }));
 
     const fcdCheckbox = screen.getByRole('checkbox', {
       name: /post-2000 forest change annual tree cover loss since 2001 \+ additional contextual and regional datasets/i,
     });
     const palmRiskCheckbox = screen.getByRole('checkbox', { name: /palm risk assessment/i });
 
-    await userEvent.click(palmRiskCheckbox);
+    await user.click(palmRiskCheckbox);
 
     expect(palmRiskCheckbox).toBeChecked();
     expect(fcdCheckbox).toBeChecked();
 
-    await userEvent.click(fcdCheckbox);
+    await user.click(fcdCheckbox);
 
     expect(fcdCheckbox).not.toBeChecked();
     expect(palmRiskCheckbox).not.toBeChecked();
@@ -383,7 +385,7 @@ describe('ConfigureList', () => {
       name: /back/i,
     });
 
-    await userEvent.click(backButton);
+    await user.click(backButton);
     expect(mockHistoryGoBack).toHaveBeenCalled();
   });
 
@@ -394,7 +396,7 @@ describe('ConfigureList', () => {
       name: /cancel/i,
     });
 
-    await userEvent.click(cancelButton);
+    await user.click(cancelButton);
     expect(mockClearUploadType).toHaveBeenCalled();
   });
 
@@ -403,20 +405,20 @@ describe('ConfigureList', () => {
 
     const commodityDropdown = screen.getAllByRole('combobox')[0];
 
-    await userEvent.click(commodityDropdown);
-    await userEvent.click(screen.getByRole('option', { name: /cattle/i }));
+    await user.click(commodityDropdown);
+    await user.click(screen.getByRole('option', { name: /cattle/i }));
 
     const newListNameInput = screen.getByPlaceholderText('Name your new list');
-    await userEvent.type(newListNameInput, 'My new List 3');
+    await user.type(newListNameInput, 'My new List 3');
 
-    await userEvent.click(
+    await user.click(
       screen.getByRole('checkbox', {
         name: /recent deforestation alerts recent deforestation alerts, updated weekly/i,
       })
     );
 
     const nextButton = screen.getByRole('button', { name: /next/i });
-    await userEvent.click(nextButton);
+    await user.click(nextButton);
 
     expect(mockSetUploadLocationConfigureList).toHaveBeenCalledWith({
       commodity: 'Cattle',
@@ -437,34 +439,34 @@ describe('ConfigureList', () => {
 
     const commodityDropdown = screen.getAllByRole('combobox')[0];
 
-    await userEvent.click(commodityDropdown);
-    await userEvent.click(screen.getByRole('option', { name: /cattle/i }));
+    await user.click(commodityDropdown);
+    await user.click(screen.getByRole('option', { name: /cattle/i }));
     expect(useFetchRequest).toHaveBeenLastCalledWith(
       expect.objectContaining({
         url: '/api/list/by-commodity?commodity=gfwp_cattle',
       })
     );
 
-    await userEvent.click(commodityDropdown);
-    await userEvent.click(screen.getByRole('option', { name: /pulp and paper/i }));
+    await user.click(commodityDropdown);
+    await user.click(screen.getByRole('option', { name: /pulp and paper/i }));
     expect(useFetchRequest).toHaveBeenLastCalledWith(
       expect.objectContaining({
         url: '/api/list/by-commodity?commodity=gfwp_pulp and paper',
       })
     );
 
-    await userEvent.click(commodityDropdown);
-    await userEvent.click(screen.getByRole('option', { name: /multiple/i }));
+    await user.click(commodityDropdown);
+    await user.click(screen.getByRole('option', { name: /multiple/i }));
     expect(useFetchRequest).toHaveBeenLastCalledWith(
       expect.objectContaining({
         url: '/api/list/by-commodity?commodity=gfwp_multiple',
       })
     );
 
-    await userEvent.click(commodityDropdown);
-    await userEvent.click(screen.getByRole('option', { name: /other/i }));
+    await user.click(commodityDropdown);
+    await user.click(screen.getByRole('option', { name: /other/i }));
     const customCommodityInput = screen.getByTestId('custom-commodity-input');
-    await userEvent.type(customCommodityInput, 'corn');
+    await user.type(customCommodityInput, 'corn');
 
     expect(useFetchRequest).toHaveBeenLastCalledWith(
       expect.objectContaining({

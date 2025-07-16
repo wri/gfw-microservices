@@ -70,6 +70,7 @@ describe('UploadLocationOptions', () => {
     'should trigger the correct actions when clicking %s button',
     async (buttonName, expectedUploadType, expectedRoute) => {
       render(<UploadLocationOptions />);
+      const user = userEvent.setup();
 
       const button = screen.getByRole('button', {
         name: new RegExp(buttonName, 'i'),
@@ -77,7 +78,7 @@ describe('UploadLocationOptions', () => {
 
       expect(mockHistoryPush).not.toHaveBeenCalled();
       expect(mockSelectUploadType).not.toHaveBeenCalled();
-      await userEvent.click(button);
+      await user.click(button);
       expect(mockSelectUploadType).toHaveBeenCalledWith(expectedUploadType);
       expect(mockHistoryPush).toHaveBeenCalledWith(expectedRoute);
     }
@@ -85,6 +86,7 @@ describe('UploadLocationOptions', () => {
 
   it('should trigger the correction action for the back button to locations', async () => {
     render(<UploadLocationOptions />);
+    const user = userEvent.setup();
 
     expect(
       screen.getByRole('heading', {
@@ -96,7 +98,7 @@ describe('UploadLocationOptions', () => {
     const button = within(navigation).getByRole('link');
 
     expect(mockHistoryPush).not.toHaveBeenCalled();
-    await userEvent.click(button);
+    await user.click(button);
     expect(mockHistoryPush).toHaveBeenCalledWith('LOCATIONS');
   });
 

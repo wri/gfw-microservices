@@ -192,7 +192,7 @@ class LocationsPage {
   enterRadiusAroundLocation(radius: string) {
     this.elements.inputRadiusAroundLocation().click().type(radius);
   }
-  clickOnConfirmCoordenates() {
+  clickOnConfirmCoordinates() {
     this.elements.confirmCoordenatesBtn().click();
   }
 

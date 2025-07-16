@@ -22,6 +22,7 @@ import {
   CLIENT_DATABASE,
 } from '../config';
 import { ApiKeyMiddleware } from '../middleware/api.middleware';
+import { TraceIdMiddleware } from '@wri-monorepos/shared';
 import { ListAnalysisMessageModule } from '../list-analysis-message-handler';
 import { HealthModule } from '../health/health.module';
 import { HttpModule } from '@nestjs/axios';
@@ -42,6 +43,10 @@ import { ExternalAPIKey, FeatureFlag, Organization, UserRoutes } from '@wri-mono
 export class AppModule {
   // Configure protected routes
   configure(consumer: MiddlewareConsumer) {
+    // Apply trace ID middleware to all routes
+    consumer.apply(TraceIdMiddleware).forRoutes('*path');
+
+    // Apply API key middleware to protected routes
     consumer
       .apply(ApiKeyMiddleware)
       .forRoutes(

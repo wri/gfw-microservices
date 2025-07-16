@@ -11,7 +11,6 @@ export * from './getOrganizationStatus';
 export * from './getPaginatedAnalysisDataForGFWList';
 export * from './getProtectedAreasInfo';
 export * from './getTemplateMetadata';
-export * from './getTemplatesDropdown';
 export * from './getUserAdminOrganizations';
 export * from './getUserAuthenticationPreferences';
 export * from './getUsersAuthenticationPreferences';

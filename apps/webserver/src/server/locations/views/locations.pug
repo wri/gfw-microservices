@@ -7,7 +7,6 @@ block content
   include ./svg.pug
   script.
     var userInfo = !{JSON.stringify(userInfo)};
-    var organizationId = !{JSON.stringify(organizationId)};
     var CURRENT_ENVIRONMENT = !{JSON.stringify(CURRENT_ENVIRONMENT)};
     // Set the user ID using signed-in user_id.
     gtag('set', { 'user_id': userInfo.email });

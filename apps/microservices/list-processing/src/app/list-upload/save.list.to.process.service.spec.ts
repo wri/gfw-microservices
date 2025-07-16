@@ -15,20 +15,21 @@ jest.mock('@wri-monorepos/sql', () => ({
   },
 }));
 
+// Mock the shared updateListsUploadStatus function
+jest.mock('./shared/update.lists.upload.status', () => ({
+  updateListsUploadStatus: jest.fn(),
+}));
+
 // Mock Logger.error as a static method
 jest.spyOn(Logger, 'error').mockImplementation(jest.fn());
 
-interface MockRepository {
-  findOne: jest.Mock;
-  save: jest.Mock;
-}
+// Import the mocked function for type checking
+import { updateListsUploadStatus } from './shared/update.lists.upload.status';
 
 describe('SaveListToProcessService', () => {
   let service: SaveListToProcessService;
   let awsMetadataService: jest.Mocked<AWSMetadataService>;
-  let clientStoreConnection: jest.Mocked<ClientStoreConnection>;
   let configService: jest.Mocked<ConfigService>;
-  let mockRepository: MockRepository;
 
   const mockListDetails: RequestSaveLargeListProcessModel = {
     list_id: 123,
@@ -39,24 +40,13 @@ describe('SaveListToProcessService', () => {
   };
 
   beforeEach(async () => {
-    // Create mock repository
-    mockRepository = {
-      findOne: jest.fn(),
-      save: jest.fn(),
-    };
-
-    // Create mock connection
-    const mockConnection = {
-      getRepository: jest.fn().mockReturnValue(mockRepository),
-    };
-
     // Create mocked services
     const mockAwsMetadataService = {
       getMetadata: jest.fn(),
     };
 
     const mockClientStoreConnection = {
-      getConnection: jest.fn().mockResolvedValue(mockConnection),
+      getConnection: jest.fn(),
     };
 
     const mockConfigService = {
@@ -83,7 +73,6 @@ describe('SaveListToProcessService', () => {
 
     service = module.get<SaveListToProcessService>(SaveListToProcessService);
     awsMetadataService = module.get(AWSMetadataService);
-    clientStoreConnection = module.get(ClientStoreConnection);
     configService = module.get(ConfigService);
 
     // Setup default mocks
@@ -99,9 +88,7 @@ describe('SaveListToProcessService', () => {
     it('should successfully save list to process and return expected result', async () => {
       // Arrange
       const expectedS3Location = 's3://test-bucket/test-file.csv';
-      const updateListsUploadStatusSpy = jest
-        .spyOn(service, 'updateListsUploadStatus')
-        .mockResolvedValue();
+      (updateListsUploadStatus as jest.Mock).mockResolvedValue(undefined);
       (SQLUtils.queryDB as jest.Mock).mockResolvedValue(undefined);
 
       // Act
@@ -140,7 +127,7 @@ describe('SaveListToProcessService', () => {
           },
         ]
       );
-      expect(updateListsUploadStatusSpy).toHaveBeenCalledWith(
+      expect(updateListsUploadStatus).toHaveBeenCalledWith(
         'test_db',
         123,
         'Save list to process'
@@ -154,16 +141,14 @@ describe('SaveListToProcessService', () => {
     it('should handle error during SQL query and update status with error', async () => {
       // Arrange
       const sqlError = new Error('SQL connection failed');
-      const updateListsUploadStatusSpy = jest
-        .spyOn(service, 'updateListsUploadStatus')
-        .mockResolvedValue();
+      (updateListsUploadStatus as jest.Mock).mockResolvedValue(undefined);
       (SQLUtils.queryDB as jest.Mock).mockRejectedValue(sqlError);
 
       // Act
       const result = await service.run(mockListDetails);
 
       // Assert
-      expect(updateListsUploadStatusSpy).toHaveBeenCalledWith(
+      expect(updateListsUploadStatus).toHaveBeenCalledWith(
         'test_db',
         123,
         null,
@@ -171,154 +156,6 @@ describe('SaveListToProcessService', () => {
       );
       expect(Logger.error).toHaveBeenCalledWith(sqlError);
       expect(result).toBe(sqlError);
-    });
-  });
-
-  describe('updateListsUploadStatus', () => {
-    beforeEach(() => {
-      awsMetadataService.getMetadata.mockResolvedValue({ taskARN: 'test-task-arn' });
-    });
-
-    it('should update existing record when found', async () => {
-      // Arrange
-      const existingRecord = {
-        listId: 123,
-        errorInfo: 'old error',
-        lastSuccessfulStage: 'old stage',
-        updateTime: new Date('2023-01-01'),
-        workerInstanceId: 'old-arn',
-      };
-      mockRepository.findOne.mockResolvedValue(existingRecord);
-      mockRepository.save.mockResolvedValue(existingRecord);
-
-      // Act
-      await service.updateListsUploadStatus('test_db', 123, 'new stage', 'new error');
-
-      // Assert
-      expect(clientStoreConnection.getConnection).toHaveBeenCalledWith('test_db');
-      expect(mockRepository.findOne).toHaveBeenCalledWith({ where: { listId: 123 } });
-      expect(existingRecord.errorInfo).toBe('new error');
-      expect(existingRecord.lastSuccessfulStage).toBe('new stage');
-      expect(existingRecord.workerInstanceId).toBe('test-task-arn');
-      expect(existingRecord.updateTime).toBeInstanceOf(Date);
-      expect(mockRepository.save).toHaveBeenCalledWith(existingRecord);
-    });
-
-    it('should create new record when none exists', async () => {
-      // Arrange
-      mockRepository.findOne.mockResolvedValue(null);
-      mockRepository.save.mockResolvedValue({});
-
-      // Act
-      await service.updateListsUploadStatus('test_db', 123, 'new stage', 'new error');
-
-      // Assert
-      expect(mockRepository.findOne).toHaveBeenCalledWith({ where: { listId: 123 } });
-      expect(mockRepository.save).toHaveBeenCalledWith(
-        expect.objectContaining({
-          listId: 123,
-          errorInfo: 'new error',
-          lastSuccessfulStage: 'new stage',
-          workerInstanceId: 'test-task-arn',
-          updateTime: expect.any(Date),
-        })
-      );
-    });
-
-    it('should use existing lastSuccessfulStage when new stage is null for existing record', async () => {
-      // Arrange
-      const existingRecord = {
-        listId: 123,
-        errorInfo: 'old error',
-        lastSuccessfulStage: 'existing stage',
-        updateTime: new Date('2023-01-01'),
-        workerInstanceId: 'old-arn',
-      };
-      mockRepository.findOne.mockResolvedValue(existingRecord);
-      mockRepository.save.mockResolvedValue(existingRecord);
-
-      // Act
-      await service.updateListsUploadStatus('test_db', 123, null, 'new error');
-
-      // Assert
-      expect(existingRecord.lastSuccessfulStage).toBe('existing stage');
-    });
-
-    it('should truncate error info to 511 characters', async () => {
-      // Arrange
-      const longError = 'a'.repeat(600);
-      const existingRecord = {
-        listId: 123,
-        errorInfo: 'old error',
-        lastSuccessfulStage: 'old stage',
-        updateTime: new Date('2023-01-01'),
-        workerInstanceId: 'old-arn',
-      };
-      mockRepository.findOne.mockResolvedValue(existingRecord);
-      mockRepository.save.mockResolvedValue(existingRecord);
-
-      // Act
-      await service.updateListsUploadStatus('test_db', 123, 'new stage', longError);
-
-      // Assert
-      expect(existingRecord.errorInfo).toBe('a'.repeat(511));
-    });
-
-    it('should handle repository errors and log them', async () => {
-      // Arrange
-      const repositoryError = new Error('Repository error');
-      mockRepository.findOne.mockRejectedValue(repositoryError);
-
-      // Act
-      await service.updateListsUploadStatus('test_db', 123, 'new stage', 'new error');
-
-      // Assert
-      expect(Logger.error).toHaveBeenCalledWith(
-        'Error updating/inserting record:',
-        repositoryError.stack
-      );
-    });
-
-    it('should handle save errors and log them', async () => {
-      // Arrange
-      const existingRecord = {
-        listId: 123,
-        errorInfo: 'old error',
-        lastSuccessfulStage: 'old stage',
-        updateTime: new Date('2023-01-01'),
-        workerInstanceId: 'old-arn',
-      };
-      const saveError = new Error('Save error');
-      mockRepository.findOne.mockResolvedValue(existingRecord);
-      mockRepository.save.mockRejectedValue(saveError);
-
-      // Act
-      await service.updateListsUploadStatus('test_db', 123, 'new stage', 'new error');
-
-      // Assert
-      expect(Logger.error).toHaveBeenCalledWith(
-        'Error updating/inserting record:',
-        saveError.stack
-      );
-    });
-
-    it('should handle undefined error info', async () => {
-      // Arrange
-      const existingRecord = {
-        listId: 123,
-        errorInfo: 'old error',
-        lastSuccessfulStage: 'old stage',
-        updateTime: new Date('2023-01-01'),
-        workerInstanceId: 'old-arn',
-      };
-      mockRepository.findOne.mockResolvedValue(existingRecord);
-      mockRepository.save.mockResolvedValue(existingRecord);
-
-      // Act
-      await service.updateListsUploadStatus('test_db', 123, 'new stage', undefined);
-
-      // Assert
-      expect(existingRecord.errorInfo).toBeUndefined();
     });
   });
 });

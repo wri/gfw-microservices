@@ -4,7 +4,8 @@ import { MetadataService as AWSMetadataService } from '@wri-monorepos/aws';
 import { CreateListInsertResultModel, RequestSaveLargeListProcessModel } from '../../models';
 import { ConfigService } from '@nestjs/config';
 import { ServerConfigType } from '../../validators/server-config';
-import { ClientStoreConnection, ListsUploadStatus, SQLUtils } from '@wri-monorepos/sql';
+import { ClientStoreConnection, SQLUtils } from '@wri-monorepos/sql';
+import { updateListsUploadStatus } from './shared/update.lists.upload.status';
 
 @Injectable()
 export class SaveListToProcessService {
@@ -56,14 +57,14 @@ export class SaveListToProcessService {
         s3_location: fileS3Route,
       };
 
-      await this.updateListsUploadStatus(
+      await updateListsUploadStatus(
         listDetails.client_database,
         listDetails.list_id,
         'Save list to process'
       );
       return dataResult;
     } catch (error) {
-      await this.updateListsUploadStatus(
+      await updateListsUploadStatus(
         listDetails.client_database,
         listDetails.list_id,
         null,
@@ -71,41 +72,6 @@ export class SaveListToProcessService {
       );
       Logger.error(error);
       return error;
-    }
-  }
-
-  async updateListsUploadStatus(
-    clientStore: string,
-    listId: number,
-    lastSuccessfulStage: string,
-    errorInfo?: string
-  ): Promise<void> {
-    const connection = await this.clientStoreConnection.getConnection(clientStore);
-    const repository = connection.getRepository(ListsUploadStatus);
-    const { taskARN } = await this.awsMetadataService.getMetadata();
-    errorInfo = errorInfo?.substring(0, 511);
-
-    try {
-      const existingRecord = await repository.findOne({ where: { listId } });
-
-      if (existingRecord) {
-        existingRecord.errorInfo = errorInfo;
-        existingRecord.lastSuccessfulStage =
-          lastSuccessfulStage ?? existingRecord.lastSuccessfulStage;
-        existingRecord.updateTime = new Date();
-        existingRecord.workerInstanceId = taskARN;
-        await repository.save(existingRecord);
-      } else {
-        const newRecord = new ListsUploadStatus();
-        newRecord.listId = listId;
-        newRecord.errorInfo = errorInfo;
-        newRecord.lastSuccessfulStage = lastSuccessfulStage ?? newRecord.lastSuccessfulStage;
-        newRecord.updateTime = new Date();
-        newRecord.workerInstanceId = taskARN;
-        await repository.save(newRecord);
-      }
-    } catch (error) {
-      Logger.error('Error updating/inserting record:', error.stack);
     }
   }
 }

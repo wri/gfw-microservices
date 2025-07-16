@@ -1607,8 +1607,14 @@ class Map extends Component {
     const { esriJson, locationName, globalIds, activeGFWList, selectedMapFeatureAttributes } =
       this.state;
 
+    // When a location is added from an address search result, its point geometry is converted into a polygon.
+    let geometry =
+      esriJson.type === 'point'
+        ? GeometryEngine.geodesicBuffer(esriJson, 1, 'kilometers')
+        : esriJson;
+
     this.setState({ spinnerOn: false });
-    const geoString = JSON.stringify(esriJson);
+    const geoString = JSON.stringify(geometry);
 
     const requestObject = {
       goToEditList: true,
@@ -1792,8 +1798,7 @@ class Map extends Component {
             (action.id === 'ANALYZE' && currentForestChange && !isPointGeometry) ||
             (action.id === 'ADD LOCATION' &&
               !noLocationLayers.includes(selectedFeat.layerName) &&
-              selectedFeat.attributes?.adm_level !== '0' &&
-              !isPointGeometry);
+              selectedFeat.attributes?.adm_level !== '0');
         }
       });
     });

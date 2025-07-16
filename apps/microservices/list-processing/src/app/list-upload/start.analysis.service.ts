@@ -36,6 +36,8 @@ type WorkerType = {
   emailService: EmailService;
 };
 
+const LIST_UPLOAD_QUEUE_CONCURRENCY = 5;
+
 export async function clearErrorFile(organizationDatabase: string, listId: number) {
   const connection = await new ClientStoreConnection().getConnection(organizationDatabase);
   const listRepository = connection.getRepository(Lists);
@@ -105,14 +107,24 @@ async function worker(input: WorkerType, cb: done) {
 
 @Injectable()
 export class StartAnalysisService {
+  private intervals: NodeJS.Timeout[] = [];
   private readonly logger = new Logger(StartAnalysisService.name);
+  private queue: queue<WorkerType> = fastq(worker, LIST_UPLOAD_QUEUE_CONCURRENCY);
 
   constructor(
     private readonly config: ConfigService<ServerConfigType, true>,
     @Inject(forwardRef(() => CommodityService))
     private readonly commodityService: CommodityService,
     private readonly emailService: EmailService
-  ) {}
+  ) {
+    const intervalId = global.setInterval(() => {
+      const stats = this.getQueueStats();
+      if (stats.running > 0 || stats.length > 0) {
+        this.logger.log(`Queue Health: ${JSON.stringify(stats)}`);
+      }
+    }, 30000); // Log every 30 seconds if there's activity
+    this.intervals.push(intervalId);
+  }
 
   @logExecutionTime(StartAnalysisService.name)
   async run(request: RequestLargeListProcess): Promise<ResponseLargeListProcess> {
@@ -143,9 +155,7 @@ export class StartAnalysisService {
       }
     }
 
-    const q: queue<WorkerType> = fastq(worker, 2);
-
-    q.push({
+    this.queue.push({
       request,
       config: this.config,
       emailService: this.emailService,
@@ -154,6 +164,19 @@ export class StartAnalysisService {
     return {
       executionArn: '',
       startDate: new Date().toISOString(),
+    };
+  }
+
+  onModuleDestroy() {
+    // Clean up all intervals when module is destroyed
+    this.intervals.forEach((intervalId) => global.clearInterval(intervalId));
+  }
+
+  getQueueStats() {
+    return {
+      length: this.queue.length(),
+      running: this.queue.running(),
+      concurrency: this.queue.concurrency,
     };
   }
 }

@@ -203,7 +203,7 @@ const createList = async (
         logger.logActivity(
           req,
           logger.listActivityTypes.List.ListCreated,
-          `User '${req.session.user_email}' has created a list (${list.list_name}) - (${list_id}).`
+          `User ID ${req.session.organization_user_id} created list with ID: ${list_id}`
         );
         resolve(list_id);
       })
@@ -365,7 +365,7 @@ const saveAsDraftList = async (
         logger.logActivity(
           req,
           logger.listActivityTypes.List.ListCreated,
-          `User '${req.session.user_email}' has created a list (${list.list_name}).`
+          `User ID ${req.session.organization_user_id} has created a list.`
         );
         resolve(list_id);
       })
@@ -506,7 +506,7 @@ export const rerunExistingList = (req) => {
         logger.logActivity(
           req,
           logger.listActivityTypes.List.ListAnalyzing,
-          `Rerun process has started for ${list_locations_count} locations in ${list_name}`
+          `User ID ${req.session.organization_user_id} started analysis rerun process for ${list_locations_count} locations`
         );
 
         resolve();
@@ -1024,7 +1024,7 @@ export const uploadToNewList = (
         logger.logActivity(
           req,
           logger.listActivityTypes.List.ListUpdateNew,
-          `User '${req.session.user_email}' has uploaded to new list (${list.list_name}).`
+          `User ID ${req.session.organization_user_id} has uploaded to new list.`
         );
         resolve({ resultGeoJSON, newListID });
       })
@@ -1104,7 +1104,7 @@ export const uploadToNewListAndSaveAsDraft = (
         logger.logActivity(
           req,
           logger.listActivityTypes.List.ListUpdateNew,
-          `User '${req.session.user_email}' has uploaded to new list (${list.list_name}).`
+          `User ID ${req.session.organization_user_id} has uploaded to new list.`
         );
         resolve({ resultGeoJSON: geojson, newListID: listID });
       })
@@ -1151,9 +1151,7 @@ export const updateIndividualLocationsStatusID = (
         logger.logActivity(
           req,
           logger.listActivityTypes.List.ListUpdateNew,
-          `User '${
-            req.session.user_email
-          }' has updated list analysis table (${list_analysis_table_name}) locations IDs (${location_id.toString()}) with location status ID (${location_status_id}).`
+          `User ID ${req.session.organization_user_id} updated list analysis table locations with status ID (${location_status_id}).`
         );
         resolve(true);
       })
@@ -1526,7 +1524,7 @@ export const copyLocations = (
         logger.logActivity(
           req,
           logger.listActivityTypes.List.LocationCopiedToList,
-          `Locations copied (${src_list.list_name}) -> (${dest_list.list_name})`
+          `User ID ${req.session.organization_user_id} copied locations between lists`
         );
 
         resolve(true);
@@ -2052,11 +2050,7 @@ const AnalysisManager = require('./analysisManager.utils');
  * @return {Promise} - Returns a promise that resolves or rejects with an error
  */
 export const deleteListSqlLib = (req, list_id) => {
-  const {
-    user_email: userEmail,
-    organization_user_id,
-    organization_database: organizationDatabase,
-  } = req.session;
+  const { organization_user_id, organization_database: organizationDatabase } = req.session;
   const deleteListTypeOrm = new DeleteListTypeOrm();
   return new Promise((resolve, reject) => {
     getListLockStatus(req, list_id)
@@ -2081,7 +2075,7 @@ export const deleteListSqlLib = (req, list_id) => {
             logger.logActivity(
               req,
               logger.listActivityTypes.List.ListDeleted,
-              `User '${userEmail}' has deleted list (${list.list_name}).`
+              `User ID '${req.session.organization_user_id}' has deleted list (${list.list_name}).`
             );
             resolve(true);
           })

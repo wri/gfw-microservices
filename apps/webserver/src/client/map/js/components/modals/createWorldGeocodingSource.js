@@ -33,7 +33,6 @@ function createWorldGeocodingSource(sourceIndex = 999) {
     },
 
     async getResults(params) {
-      console.log('WorldGeocodingSource getResults called with:', params);
       store.dispatch(showMapLoader(true));
 
       try {

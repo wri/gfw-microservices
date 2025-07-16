@@ -4,16 +4,13 @@
  *                 location data.
  *
  *   @function {getAllTemplateData}
- *   @function {getAllTemplateDropdowns}
  *
  ********************************************************************/
 // Imports required for this module.
 const _ = require('lodash');
 const mapshaper = require('mapshaper');
-import * as s3Utils from '../privateutils/s3.utils';
 import * as sqlUtils from '../privateutils/sql.utils';
 import * as errorUtils from '../privateutils/error.utils';
-import * as lambdaUtils from '../privateutils/lambda.utils';
 const ListManager = require('./listManager.utils');
 const ShareManager = require('./shareManager.utils');
 
@@ -35,30 +32,6 @@ export const getAllTemplateData = (req) => {
           req,
           errorUtils.ERROR_CODES.failedToGetData,
           'Failed to get Template Metadata',
-          errorMessage
-        );
-        reject(errorObject);
-      });
-  });
-};
-
-/** @function {getAllTemplateDropdowns}
- *   @summary Gets a list of all template dropdown values
- *   @param  {Object}   req - Manadatory first parameter to pass the request object into the function in case session info is required.
- *   @return {Promise} Returns promise object. If successful, resolves to array of template metadata, error object otherwise
- */
-export const getAllTemplateDropdowns = (req) => {
-  return new Promise((resolve, reject) => {
-    sqlUtils
-      .executeSystemStoredProcedure(req, 'uspGetTemplatesDropdown', null)
-      .then((recordsets) => {
-        resolve(recordsets);
-      })
-      .catch((errorMessage) => {
-        const errorObject = errorUtils.createErrorMessage(
-          req,
-          errorUtils.ERROR_CODES.failedToGetData,
-          'Failed to get Template Dropdown',
           errorMessage
         );
         reject(errorObject);

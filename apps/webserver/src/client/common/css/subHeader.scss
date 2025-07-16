@@ -30,25 +30,6 @@
   z-index: 1000;
 }
 
-.locations-subpage-header__instructions {
-  padding-top: 1.5rem;
-  margin: 1rem 0;
-  border-top: 1px solid #000;
-  font-size: 14px;
-  font-weight: 400;
-  &.step-four-count {
-    margin: 1rem 0.5rem;
-  }
-}
-
-.locations-subpage-header__description {
-  padding-top: 1.5rem;
-  margin: 0.75rem 0 0.5rem 0.5rem;
-  border-top: 1px solid #000;
-  font-size: 14px;
-  font-weight: 400;
-}
-
 .locations-subpage-map-message__error {
   color: $theme-danger-red;
 }

@@ -4,6 +4,10 @@ import { carLookup } from './carid.lat.long.lookup';
 
 const logger = new Logger('csv.id.based.system');
 
+// @see {@link https://gfw.atlassian.net/browse/GPV-4541}
+export const UNSUPPORTED_ID_TYPE_MESSAGE =
+  'The defined ID system value %ID% is not recognized by GFW Pro. Please enter a recognized ID system value';
+
 export enum CSV_ID_TYPES {
   UML = 'UML',
   CAR = 'CAR',
@@ -73,7 +77,7 @@ export const resolveLatLongHandlerByIdType = async (
 ): Promise<Record<string, unknown>[]> => {
   const key = idType.trim().toUpperCase();
   if (!ID_TYPE_HANDLER[key]) {
-    throw new Error(`No lat/long support for ID ${idType}`);
+    throw new Error(UNSUPPORTED_ID_TYPE_MESSAGE.replace('%ID%', key));
   }
 
   const possibleUpdates = await applyLookUpByChunks(data, key, ID_TYPE_HANDLER[key]);
@@ -155,12 +159,19 @@ export const determineIdType = (firstRow: Record<string, unknown>) => {
     return type;
   }
 
-  const isCarList = templateColumns.includes('ID Type');
-  const isMillList = templateColumns.includes('ID') || templateColumns.includes('MiLL ID');
+  // this could house mixed types but is certainly required for CAR
+  const idTypeColumn = templateColumns.includes('ID Type');
+  const isMillList = templateColumns.includes('ID') || templateColumns.includes('Palm Mill ID');
 
-  if (isCarList) {
-    type = CSV_ID_TYPES.CAR;
-  } else if (isMillList) {
+  if (idTypeColumn) {
+    const rawKey = String((firstRow['ID Type'] as string | undefined) ?? '')
+      .trim()
+      .toUpperCase() as CSV_ID_TYPES;
+    if (!ID_TYPE_HANDLER[rawKey]) {
+      throw new Error(UNSUPPORTED_ID_TYPE_MESSAGE.replace('%ID%', rawKey));
+    }
+    type = rawKey;
+  } else if (!idTypeColumn && isMillList) {
     type = CSV_ID_TYPES.UML;
   }
 
@@ -171,12 +182,12 @@ export const validateIdBased = (idType: string, firstRow: Record<string, unknown
   const { validateColumns } = ID_TYPE_HANDLER[idType];
   const dataColumns = Object.keys(firstRow);
 
-  const missingFields = validateColumns.filter((validCol) => {
+  const missingFields = validateColumns.filter((requiredColumn) => {
     // treat ' | ' like an OR
-    if (validCol.includes(' | ')) {
-      return validCol.split(' | ').some((ofTheseColumns) => !dataColumns.includes(ofTheseColumns));
+    if (requiredColumn.includes(' | ')) {
+      return !dataColumns.some((thisColumn) => requiredColumn.split(' | ').includes(thisColumn));
     } else {
-      return !dataColumns.includes(validCol);
+      return !dataColumns.includes(requiredColumn);
     }
   });
 

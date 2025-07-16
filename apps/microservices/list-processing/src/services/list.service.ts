@@ -1,9 +1,4 @@
-import {
-  ClientStoreConnection,
-  FeatureFlag,
-  ListsUploadStatus,
-  SQLUtils,
-} from '@wri-monorepos/sql';
+import { ClientStoreConnection, FeatureFlag, SQLUtils } from '@wri-monorepos/sql';
 import { Logger, InternalServerErrorException } from '@nestjs/common';
 import { Injectable } from '@nestjs/common';
 import { CreateListRequest, RequestLargeListProcess, ResponseLargeListProcess } from '../models';
@@ -14,6 +9,7 @@ import { MetadataService as AWSMetadataService } from '@wri-monorepos/aws';
 import { ServerConfigType } from '../validators/server-config';
 import { featureFlagsService } from '@wri-monorepos/shared';
 import { DeprecatedStartAnalysisService } from '../app/list-upload/deprecated.start.analysis.service';
+import { updateListsUploadStatus } from '../app/list-upload/shared/update.lists.upload.status';
 import { StartAnalysisService } from '../app/list-upload/start.analysis.service';
 import { DeprecatedCreateLargeListService } from '../app/list-upload/deprecated.create.large.list.service';
 import { CreateLargeListService } from '../app/list-upload/create.large.list.service';
@@ -95,41 +91,6 @@ export class ListService {
     return await this.deprecatedCreateLargeListService.run(request);
   }
 
-  async updateListsUploadStatus(
-    clientStore: string,
-    listId: number,
-    lastSuccessfulStage: string,
-    errorInfo?: string
-  ): Promise<void> {
-    const connection = await this.clientStoreConnection.getConnection(clientStore);
-    const repository = connection.getRepository(ListsUploadStatus);
-    const { taskARN } = await this.awsMetadataService.getMetadata();
-    errorInfo = errorInfo?.substring(0, 511);
-
-    try {
-      const existingRecord = await repository.findOne({ where: { listId } });
-
-      if (existingRecord) {
-        existingRecord.errorInfo = errorInfo;
-        existingRecord.lastSuccessfulStage =
-          lastSuccessfulStage ?? existingRecord.lastSuccessfulStage;
-        existingRecord.updateTime = new Date();
-        existingRecord.workerInstanceId = taskARN;
-        await repository.save(existingRecord);
-      } else {
-        const newRecord = new ListsUploadStatus();
-        newRecord.listId = listId;
-        newRecord.errorInfo = errorInfo;
-        newRecord.lastSuccessfulStage = lastSuccessfulStage ?? newRecord.lastSuccessfulStage;
-        newRecord.updateTime = new Date();
-        newRecord.workerInstanceId = taskARN;
-        await repository.save(newRecord);
-      }
-    } catch (error) {
-      Logger.error('Error updating/inserting record:', error.stack);
-    }
-  }
-
   /**
    * @param name Save list to process
    * @returns
@@ -178,14 +139,14 @@ export class ListService {
         s3_location: fileS3Route,
       };
 
-      await this.updateListsUploadStatus(
+      await updateListsUploadStatus(
         listDetails.client_database,
         listDetails.list_id,
         'Save list to process'
       );
       return dataResult;
     } catch (error) {
-      await this.updateListsUploadStatus(
+      await updateListsUploadStatus(
         listDetails.client_database,
         listDetails.list_id,
         null,

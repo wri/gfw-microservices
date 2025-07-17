@@ -23,7 +23,6 @@ import {
   getTimeframeProperty,
   TIMEFRAME_RANGE,
 } from './dashboard-date.utils';
-import featureFlags from '../../../../utils/general.utils';
 
 function initializeMap(view) {
   store.dispatch(saveView(view));
@@ -139,13 +138,6 @@ function createPopup(graphic) {
   const node = document.createElement('div');
   render(content, node);
   return node;
-}
-
-function handleBaseLayer(map, zoomLevel) {
-  const selectedSublayer = dictionary.zoomLevel_basemapLayerId[zoomLevel];
-  map.basemap.baseLayers.items[0].sublayers.items.forEach((sublayer) => {
-    sublayer.visible = sublayer.id === selectedSublayer;
-  });
 }
 
 function getCentroidGeometries(zoomLevel, data) {
@@ -565,11 +557,6 @@ function updateLayer(
 
         if (oldLayer) {
           map.remove(oldLayer);
-        }
-
-        const { isGadm41Available } = featureFlags;
-        if (!isGadm41Available) {
-          handleBaseLayer(map, zoomLevel);
         }
 
         const graphics = createGraphics(features);

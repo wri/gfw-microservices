@@ -1,15 +1,12 @@
 import { Component } from 'react';
 import EsriMap from '@arcgis/core/Map';
-import Basemap from '@arcgis/core/Basemap';
 import MapView from '@arcgis/core/views/MapView';
-import MapImageLayer from '@arcgis/core/layers/MapImageLayer';
 import isEqual from 'lodash/isEqual';
 import { ZoomOut } from '@mui/icons-material';
 import '../../css/_dashboardMap.scss';
 
 import store from '../store';
 import InfoBubble from '../../../common/js/components/InfoBubble';
-import featureFlags from '../../../../utils/general.utils';
 import { getBasemapConfiguration } from '../../../map/js/utils/map.utils';
 import {
   decrementZoomLevel,
@@ -36,89 +33,19 @@ export default class DashboardMap extends Component {
   }
 
   componentDidMount() {
-    const layer = new MapImageLayer({
-      id: 'BASEMAP',
-      url: 'https://gfwpro-gis.globalforestwatch.org/arcgis/rest/services/GADM36_admin/MapServer',
-      sublayers: [
-        {
-          id: 4,
-          visible: false,
-          renderer: {
-            type: 'simple',
-            symbol: {
-              type: 'simple-fill',
-              color: '#e0e0e0',
-              style: 'solid',
-              outline: {
-                color: 'white',
-                width: '0.5px',
-              },
-            },
-          },
-        },
-        {
-          id: 5,
-          visible: false,
-          renderer: {
-            type: 'simple',
-            symbol: {
-              type: 'simple-fill',
-              color: '#e0e0e0',
-              style: 'solid',
-              outline: {
-                color: 'white',
-                width: '0.5px',
-              },
-            },
-          },
-        },
-        {
-          id: 6,
-          visible: true,
-          renderer: {
-            type: 'simple',
-            symbol: {
-              type: 'simple-fill',
-              color: '#e0e0e0',
-              style: 'solid',
-              outline: {
-                color: 'white',
-                width: '0.5px',
-              },
-            },
-          },
-        },
-      ],
+    const map = new EsriMap({
+      basemap: getBasemapConfiguration(),
     });
-
-    const { isGadm41Available } = featureFlags;
-
-    let map;
-    if (isGadm41Available) {
-      map = new EsriMap({
-        basemap: getBasemapConfiguration(),
-      });
-    } else {
-      const basemap = new Basemap({
-        baseLayers: [layer],
-        id: 'ADMIN-BASEMAP',
-        title: 'ADMIN-BASEMAP',
-      });
-
-      map = new EsriMap({
-        basemap,
-      });
-    }
 
     const view = new MapView({
       container: this.refs.dashboardMap,
       map,
-      ...(isGadm41Available && {
-        background: {
-          color: MAP_WATER_COLOR,
-        },
-      }),
-      zoom: isGadm41Available ? 1 : 10,
+
+      background: {
+        color: MAP_WATER_COLOR,
+      },
+
+      zoom: 1,
       center: [15, 30],
       ui: {
         components: [],

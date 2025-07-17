@@ -1,6 +1,5 @@
 import { Component } from 'react';
 import EsriMap from '@arcgis/core/Map';
-import Basemap from '@arcgis/core/Basemap';
 import MapView from '@arcgis/core/views/MapView';
 import MapImageLayer from '@arcgis/core/layers/MapImageLayer';
 import isEqual from 'lodash/isEqual';
@@ -9,7 +8,6 @@ import '../../css/_dashboardMap.scss';
 
 import store from '../store';
 import InfoBubble from '../../../common/js/components/InfoBubble';
-import featureFlags from '../../../../utils/general.utils';
 import { getBasemapConfiguration } from '../../../map/js/utils/map.utils';
 import {
   decrementZoomLevel,
@@ -91,34 +89,19 @@ export default class DashboardMap extends Component {
       ],
     });
 
-    const { isGadm41Available } = featureFlags;
-
-    let map;
-    if (isGadm41Available) {
-      map = new EsriMap({
-        basemap: getBasemapConfiguration(),
-      });
-    } else {
-      const basemap = new Basemap({
-        baseLayers: [layer],
-        id: 'ADMIN-BASEMAP',
-        title: 'ADMIN-BASEMAP',
-      });
-
-      map = new EsriMap({
-        basemap,
-      });
-    }
+    const map = new EsriMap({
+      basemap: getBasemapConfiguration(),
+    });
 
     const view = new MapView({
       container: this.refs.dashboardMap,
       map,
-      ...(isGadm41Available && {
-        background: {
-          color: MAP_WATER_COLOR,
-        },
-      }),
-      zoom: isGadm41Available ? 1 : 10,
+
+      background: {
+        color: MAP_WATER_COLOR,
+      },
+
+      zoom: 1,
       center: [15, 30],
       ui: {
         components: [],

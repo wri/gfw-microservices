@@ -1,8 +1,6 @@
 import { Component } from 'react';
-import Query from '@arcgis/core/rest/support/Query';
 import FlatButton from 'material-ui/FlatButton';
 import _intersection from 'lodash/intersection';
-import { executeQueryJSON } from '@arcgis/core/rest/query';
 
 import {
   showBasemapInfo,
@@ -14,7 +12,6 @@ import {
   updateLandsatYear,
 } from '../../actions/mapActions';
 import * as analysisActions from '../../actions/analysisActions';
-import SelectAdmin from './SelectAdmin';
 import utils from '../../utils/AppUtils';
 
 import { mapPage } from '../../../../common/js/config';
@@ -33,9 +30,6 @@ import MapRecenterButton from '../modals/MapRecenterButton';
 import { PLANET_BASEMAP } from '../../config/map.config';
 import store from '../../store';
 import CountryOrRegionAnalysis from './CountryOrRegionAnalysis';
-import featureFlags from '../../../../../utils/general.utils';
-
-const { isGadm41Available } = featureFlags;
 
 const {
   gladAlertsID,
@@ -299,31 +293,6 @@ export default class AnalysisPanel extends Component {
     this.props.locationsAfterState(adminObj);
   };
 
-  discernGadm = () => {
-    const prefix =
-      'https://gfwpro-gis.globalforestwatch.org/arcgis/rest/services/GADM36_admin/MapServer';
-    const { adminSelections } = this.props;
-
-    const queryUrl = adminSelections.smallerRegion ? `${prefix}/5` : `${prefix}/6`;
-
-    const query = new Query();
-    query.where = adminSelections.smallerRegion
-      ? `name_0 = '${adminSelections.country}' AND name_1 = '${adminSelections.smallerRegion}'`
-      : `name_0 = '${this.props.adminSelections.country}'`;
-    query.returnGeometry = false;
-    query.outFields = ['gadmid']; //['name_0', 'name_1', 'name_2', 'gadmid'];// 'gadmid'
-
-    executeQueryJSON(queryUrl, query).then((res) => {
-      const gadmId =
-        res && res.features && res.features.length > 0 ? res.features[0].attributes.gadmid : '';
-      this.subscribeAdmin({
-        country: this.props.adminSelections.country,
-        region: this.props.adminSelections.smallerRegion,
-        gadmId: gadmId,
-      });
-    });
-  };
-
   addNewLocation = () => {
     const { adminSelections } = this.props;
     const { country, stateOrProvince, gadmId } = adminSelections;
@@ -458,20 +427,12 @@ export default class AnalysisPanel extends Component {
     }
 
     let totalCountLabel = '';
-    const { country, stateOrProvince, smallerRegion } = adminSelections || {};
+    const { country, stateOrProvince } = adminSelections || {};
 
-    if (isGadm41Available) {
-      if (stateOrProvince) {
-        totalCountLabel = `for ${stateOrProvince}`;
-      } else if (country) {
-        totalCountLabel = `for ${country}`;
-      }
-    } else {
-      if (smallerRegion) {
-        totalCountLabel = `for ${smallerRegion}`;
-      } else if (country) {
-        totalCountLabel = `for ${country}`;
-      }
+    if (stateOrProvince) {
+      totalCountLabel = `for ${stateOrProvince}`;
+    } else if (country) {
+      totalCountLabel = `for ${country}`;
     }
 
     return (
@@ -577,23 +538,14 @@ export default class AnalysisPanel extends Component {
               className={`analysis__body__subitem ${activeAnalysis === 'region' ? '' : 'hidden'}`}
             >
               <ModalLoader position="absolute" size={60} open={isSpinnerVisible} />
-              {isGadm41Available ? (
-                <CountryOrRegionAnalysis
-                  setAdmin={this.setAdmin}
-                  analysisResults={analysisResults}
-                  analyzeAdmin={analyzeAdmin}
-                  adminSelections={adminSelections}
-                  subscribeAdmin={this.subscribeAdmin}
-                />
-              ) : (
-                <SelectAdmin
-                  setAdmin={this.setAdmin}
-                  analysisResults={analysisResults}
-                  analyzeAdmin={analyzeAdmin}
-                  adminSelections={adminSelections}
-                  subscribeAdmin={this.subscribeAdmin}
-                />
-              )}
+
+              <CountryOrRegionAnalysis
+                setAdmin={this.setAdmin}
+                analysisResults={analysisResults}
+                analyzeAdmin={analyzeAdmin}
+                adminSelections={adminSelections}
+                subscribeAdmin={this.subscribeAdmin}
+              />
             </div>
             <div
               className={`analysis__body__results ${
@@ -644,7 +596,7 @@ export default class AnalysisPanel extends Component {
                 <GfwButton
                   classNames="AnalysisPanel__button btn-green text__semi-bold-12"
                   value="Add New Location"
-                  onClick={() => (isGadm41Available ? this.addNewLocation() : this.discernGadm())}
+                  onClick={() => this.addNewLocation()}
                 />
               </div>
               <div className="analysis-panel-button-wrap">

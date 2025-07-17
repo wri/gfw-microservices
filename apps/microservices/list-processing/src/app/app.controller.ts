@@ -8,7 +8,19 @@ import {
   DeleteListRequest,
   getPaginatedListDataRequest,
 } from './../models/index';
-import { Controller, Post, Body, UsePipes, UseGuards, Request, Param, Get, Query, BadRequestException, PipeTransform } from '@nestjs/common';
+import {
+  Controller,
+  Post,
+  Body,
+  UsePipes,
+  UseGuards,
+  Request,
+  Param,
+  Get,
+  Query,
+  BadRequestException,
+  PipeTransform,
+} from '@nestjs/common';
 
 import { AppService } from './app.service';
 import { ListService } from '../services/list.service';
@@ -152,8 +164,8 @@ export class AppController {
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     @Param('listId') _listId: string,
     @Body(new CustomZodValidationPipe(deleteListBodySchema))
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    _deleteBodyList: DeleteListRequest
+    _deleteBodyList: // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    DeleteListRequest
   ) {
     // Mock implementation to return success for tests
     return Promise.resolve('list deleted');
@@ -162,8 +174,8 @@ export class AppController {
   @Get('/paginated-list-data')
   getPaginatedListData(
     @Query(new CustomZodValidationPipe(getPaginatedListDataRequestSchema))
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    _queryParam: getPaginatedListDataRequest
+    _queryParam: // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    getPaginatedListDataRequest
   ) {
     // Mock implementation for tests
     return Promise.resolve({ data: [], totalCount: 0 });

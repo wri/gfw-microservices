@@ -20,7 +20,6 @@ import {
   ActionType,
   TargetListType,
 } from '@wri-monorepos/sql';
-import { ListPaginationService } from '../services/list.pagination.service';
 import { FeatureFlagEnabledGuard } from '../guards/feature.flag.enabled.guard';
 
 jest.mock('@wri-monorepos/shared', () => {
@@ -41,7 +40,6 @@ jest.mock('@wri-monorepos/shared', () => {
 
 describe('AppController', () => {
   let app: INestApplication;
-  let appService: AppService;
   const targetDatabase = 'DevCo'; // change if the database where you want to perform the test is different
 
   beforeEach((): void => {
@@ -95,7 +93,6 @@ describe('AppController', () => {
             }),
           },
         },
-        ListPaginationService,
         {
           provide: FeatureFlagEnabledGuard,
           useValue: {
@@ -108,7 +105,6 @@ describe('AppController', () => {
       .useValue({ canActivate: async () => true })
       .compile();
 
-    appService = module.get<AppService>(AppService);
     app = module.createNestApplication();
     await app.init();
   });
@@ -815,7 +811,6 @@ describe('AppController', () => {
         organizationDatabase: 'MyDb',
       };
 
-      appService.deleteList = jest.fn().mockResolvedValue('list deleted');
       const response = await request(app.getHttpServer())
         .post(`/list/${listId}/delete`)
         .send(deleteBodyList);
@@ -831,7 +826,6 @@ describe('AppController', () => {
         organizationDatabase: 'MyDb',
       };
 
-      appService.deleteList = jest.fn().mockResolvedValue('list deleted');
       const response = await request(app.getHttpServer())
         .delete(`/list/${listId}/delete`)
         .send(deleteBodyList);
@@ -847,7 +841,6 @@ describe('AppController', () => {
         organizationDatabase: 'MyDb',
       };
 
-      appService.deleteList = jest.fn().mockResolvedValue('list deleted');
       const response = await request(app.getHttpServer())
         .get(`/list/${listId}/delete`)
         .send(deleteBodyList);

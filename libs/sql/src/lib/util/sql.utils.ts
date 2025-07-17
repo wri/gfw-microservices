@@ -98,8 +98,10 @@ export class SQLUtils {
       const isSystemQuery = databaseName === SQL_CONFIG.database;
       const queryStr = getQueryStr(isSystemQuery, queryName);
       const allRows = await connection.runRawSingleQuery<T>(queryStr || queryName, parameters);
+      connection.disconnect();
       return allRows as T;
     } catch (error) {
+      connection.disconnect();
       // can't use logger because libs is included in both webserver and microservices
       console.log('Error in queryDB', queryName.slice(0, 100), error);
       throw error;

@@ -50,7 +50,7 @@ export const theme = createTheme({
       700: '#00664D',
     },
     warning: {
-      main: '#FFA500',
+      main: '#FFA500', // TODO should be the same as 500, sync up with design
       100: '#FBF7EA',
       300: '#EEDDA5',
       500: '#A88100',

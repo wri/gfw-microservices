@@ -26,10 +26,11 @@ export const startConverterJob = async (
   // Start the long process asynchronously but don't await it
   triggerConverter(insertedId, organizationId).catch(async (err) => {
     const errorMessage = err?.response?.data || err?.message || 'Unknown error';
-    const errorLog = `Error triggering LP for Converter ${insertedId}: ${errorMessage}`;
+    const errorMessageStr =
+      typeof errorMessage === 'object' ? JSON.stringify(errorMessage) : errorMessage;
+    const errorLog = `Error triggering LP for Converter Job with ID: ${insertedId}: ${errorMessageStr}`;
     logger.error(errorLog);
     await markConverterFailed(repo, insertedId, errorMessage);
-    throw new Error(errorLog);
   });
 
   return insertedId; // Immediately return the ID after insert
@@ -133,7 +134,7 @@ const insertConverter = async (
       errorDetails: null,
     });
   } catch (err) {
-    const errorMessage = `Failed to in sert converter: ${err instanceof Error ? err.message : err}`;
+    const errorMessage = `Failed to insert converter: ${err instanceof Error ? err.message : err}`;
     logger.error(`❌ ${errorMessage}`);
     throw new Error(errorMessage);
   }

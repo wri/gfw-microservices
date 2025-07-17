@@ -66,7 +66,16 @@ export class ConvertersService {
     const { getConverterName, updateConverterStartTime } = this.converterRepository;
     const gfwProConnection = await this.getGfwProConnection();
 
-    await updateConverterStartTime(gfwProConnection, id);
+    try {
+      await updateConverterStartTime(gfwProConnection, id);
+    } catch (error) {
+      const errorMessage = error?.response?.data || error?.message || error || 'Unknown error';
+      const errorLog = `Failed to update converter start time for ID: ${id}: ${
+        typeof errorMessage === 'string' ? errorMessage : JSON.stringify(errorMessage)
+      }`;
+      this.logger.error(errorLog);
+      throw error;
+    }
 
     try {
       const converterName = await getConverterName(gfwProConnection, id);
@@ -195,7 +204,7 @@ export class ConvertersService {
     const { updateConverterStatus } = this.converterRepository;
 
     this.logger.log(
-      `Starting converter ${converterFunction.run.name} for client store: ${clientStore.organizationDb}`
+      `Starting converter '${converterFunction.run.name}' for client store: ${clientStore.organizationDb}`
     );
     await this.updateConverterStartTime(converterId);
     await updateConverterStatus(gfwProConnection, converterId, ConverterStatus.RUNNING);

@@ -3927,6 +3927,7 @@ AS
            DECLARE user_cursor CURSOR FOR
            SELECT first_name, middle_initial, last_name, user_email, phone, user_status_id, title_id, other_title
            FROM GFWProRootUserRoutes
+           WHERE has_customer_access = 1;
 
            -- Loop Through each pending account and create compiled data.
            OPEN user_cursor

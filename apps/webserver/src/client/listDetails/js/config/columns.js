@@ -7,7 +7,7 @@ import oil_palm_concession_fc from './columns/oil_palm_concession_fc';
 import protected_area_fc from './columns/protected_area_fc';
 import location_id from './columns/location_id';
 import react_table__location_name from './columns/react_table__location_name';
-import post_2020_risk from './columns/post_2020_risk';
+import getPost2020Risk from './columns/post_2020_risk';
 import draft_state_columns from './columns/draft_state_columns';
 
 const columns = {
@@ -20,7 +20,9 @@ const columns = {
   protected_area_fc,
   location_id,
   react_table__location_name,
-  post_2020_risk,
+  get post_2020_risk() {
+    return getPost2020Risk();
+  },
   draft_state_columns,
   flags: [
     {

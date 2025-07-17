@@ -1,14 +1,8 @@
 const path = require('path');
-const { z } = require('zod');
 
 const controller = require('../controllers/listDetails.controller');
-import { upgradeListSchema } from '@wri-monorepos/sql';
 const middlewares = require(path.resolve('./config/publicutils/middlewares'));
 const rateLimiterUtil = require(path.resolve('./config/lib/limiter-util'));
-
-const querySchema = z.object({
-  listId: z.coerce.number().int().positive('listId must be a positive number'),
-});
 
 /**
  * @name exports

@@ -17,7 +17,6 @@ import { DeleteListTypeOrm, SqlModule, TypeOrmSystemModule } from '@wri-monorepo
 import { LocationService } from '../services/locations.service';
 import { ListService } from '../services/list.service';
 import { LockListService } from '../services/lock.list.service';
-import { GeoService } from '@wri-monorepos/geo';
 import { ListPaginationService } from '../services/list.pagination.service';
 import { FCDModule } from './fcd';
 import { SchedulerModule } from './scheduler';
@@ -31,6 +30,7 @@ import { GHGModule } from './ghg';
 import { ListCopyMoveModule } from './list-copy-move';
 import { ConvertersModule } from './converters';
 import { TraceIdMiddleware } from '@wri-monorepos/shared';
+import { GeoModule } from '@wri-monorepos/geo';
 
 @Module({
   imports: [
@@ -44,6 +44,7 @@ import { TraceIdMiddleware } from '@wri-monorepos/shared';
     AwsModule,
     ConvertersModule,
     FCDModule,
+    GeoModule,
     GHGModule,
     HealthModule,
     ListUploadModule,
@@ -57,7 +58,6 @@ import { TraceIdMiddleware } from '@wri-monorepos/shared';
     AppService,
     ListPaginationService,
     LocationService,
-    GeoService,
     ListService,
     LockListService,
     DeleteListTypeOrm,

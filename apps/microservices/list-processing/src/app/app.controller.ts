@@ -1,5 +1,4 @@
 import {
-  CopyOrMoveLargeListRequestLLP,
   DeleteListRequest,
   GetObjectPresigned,
   RequestLargeListProcess,
@@ -34,7 +33,6 @@ import {
   requestSaveLargeListProcessModelSchema,
   requestLargeListProcessSchema,
   requestTriggerProcessLargeListSchema,
-  copyOrMoveLargeListRequestSchema,
   getPaginatedListDataRequestSchema,
   getNumberOfPagesPaginatedListDataRequestSchema,
 } from './validators';
@@ -126,21 +124,6 @@ export class AppController {
       isUploadListLpEnabled: featureFlag.enabled,
       commodity: request.commodity,
       saveAsDraft: request.saveAsDraft,
-    });
-  }
-
-  @Post('/CopyOrMoveLargeList')
-  @UseGuards(new FeatureFlagEnabledGuard('UploadListLp'))
-  @UsePipes(new ZodValidationPipe(copyOrMoveLargeListRequestSchema))
-  CopyOrMoveLargeList(
-    @Body()
-    request: CopyOrMoveLargeListRequestLLP,
-    @Request() req?
-  ) {
-    const { featureFlag } = req;
-    return this.locationService.MoveLocations({
-      ...request,
-      isUploadListLpEnabled: featureFlag.enabled,
     });
   }
 

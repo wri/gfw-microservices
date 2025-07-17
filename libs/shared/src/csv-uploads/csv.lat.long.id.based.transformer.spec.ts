@@ -152,7 +152,7 @@ describe('csvLatLongIdBasedTransformer', () => {
       const rows = [{ 'ID Type': 'XYZ', ID: '999' }];
 
       await expect(csvLatLongIdBasedTransformer(rows)).rejects.toThrow(
-        'The defined ID system value is not recognized by GFW Pro. Please enter a recognized ID system value'
+        'The defined ID system is not recognized by GFW Pro. Please enter a recognized ID system value'
       );
       expect(mockUmlLookUp).not.toHaveBeenCalled();
       expect(mockCarLookUp).not.toHaveBeenCalled();
@@ -165,7 +165,7 @@ describe('csvLatLongIdBasedTransformer', () => {
       ];
 
       await expect(csvLatLongIdBasedTransformer(rows)).rejects.toThrow(
-        'The defined ID system value is not recognized by GFW Pro. Please enter a recognized ID system value'
+        'The defined ID system is not recognized by GFW Pro. Please enter a recognized ID system value'
       );
       expect(mockUmlLookUp).not.toHaveBeenCalled();
       expect(mockCarLookUp).toHaveBeenCalled();

@@ -1,9 +1,11 @@
-import { Controller, Post, Param, Body } from '@nestjs/common';
+import { Controller, Post, Param, Body, Logger } from '@nestjs/common';
 import { ConvertersService } from './converters.service';
 import { InternalServerErrorException } from '@nestjs/common';
 
 @Controller('converters')
 export class ConvertersController {
+  private readonly logger = new Logger(ConvertersController.name);
+
   constructor(private readonly convertersService: ConvertersService) {}
 
   @Post('/:id/start')
@@ -14,8 +16,8 @@ export class ConvertersController {
     try {
       await this.convertersService.runConverter(id, organizationId);
     } catch (err) {
-      console.error(`Error processing Converter Job with ID: ${id}:`, err);
-
+      this.logger.error(`Error processing Converter Job with ID: ${id}`, err.stack || err);
+      
       throw new InternalServerErrorException(
         'Converter process failed for one or more organizations.'
       );

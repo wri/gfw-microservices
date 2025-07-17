@@ -114,8 +114,6 @@ const getColumnsWithCurrentState = () => {
       },
       Cell: ({ original }) => {
         const { jrcNaturalForestLossHA } = original;
-        console.log('original', original);
-
         return renderFormattedDeforestationValueWithIndicator(jrcNaturalForestLossHA);
       },
     },

@@ -207,7 +207,6 @@ describe('ListCopyMoveController', () => {
   });
 
   describe('validation', () => {
-
     it('should validate correct request structure', async () => {
       // This test ensures the validation pipe accepts valid requests
       expect(() => {

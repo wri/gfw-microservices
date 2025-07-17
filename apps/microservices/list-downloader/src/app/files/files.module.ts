@@ -33,6 +33,8 @@ import { ColombiaDeforestationService } from './colombia-deforestation.service';
 import { AfiGeometryService } from './afiVC.geometry.service';
 import { ReadmeMergeServices } from '../shared/readme.merge.service';
 import { GreenHouseGasEmissionsService } from './greenhouse.gas.emissions.service';
+import { ListMetadataService } from '../shared/list-metadata.service';
+import { ColumnResolverService } from '../shared/column-resolver.service';
 @Module({
   imports: [AwsModule, SqlModule],
   providers: [
@@ -68,6 +70,8 @@ import { GreenHouseGasEmissionsService } from './greenhouse.gas.emissions.servic
     AfiGeometryService,
     ReadmeMergeServices,
     GreenHouseGasEmissionsService,
+    ListMetadataService,
+    ColumnResolverService,
   ],
   exports: [
     AlertsAdminAreasLevelService,
@@ -102,6 +106,8 @@ import { GreenHouseGasEmissionsService } from './greenhouse.gas.emissions.servic
     AfiGeometryService,
     ReadmeMergeServices,
     GreenHouseGasEmissionsService,
+    ListMetadataService,
+    ColumnResolverService,
   ],
 })
 export class FilesModule {}

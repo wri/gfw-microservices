@@ -2,6 +2,7 @@ import { describe, expect, test } from '@jest/globals';
 import * as fs from 'fs';
 import { createDirectory } from '../shared/file.utils';
 import { AfiGeometryService } from './afiVC.geometry.service';
+import { ColumnResolverService } from '../shared/column-resolver.service';
 
 const geoData = [
   {
@@ -517,7 +518,16 @@ const expectedResult = [
   '',
 ];
 describe('Shapefile Service', () => {
-  const afiGeometryService = new AfiGeometryService();
+  // Mock ColumnResolverService
+  const mockColumnResolverService = {
+    resolveColumns: jest.fn().mockResolvedValue({
+      columns: ['default', 'columns'],
+      source: 'default',
+      resolvedFrom: 'test mock'
+    })
+  } as unknown as ColumnResolverService;
+
+  const afiGeometryService = new AfiGeometryService(mockColumnResolverService);
 
   const filters = {
     listId: 5642,

@@ -31,7 +31,6 @@
     "getAnalysisDataCountForUserList",
     "getAnnualLossFcdData",
     "getCheckIfListWasUploadByEAPI",
-    "getCheckIfListsHasAnyIdType",
     "getCountAfiAnalysisByListId",
     "getCountDashboardData",
     "getDashboardData",
@@ -150,7 +149,6 @@
     "getListAnalysis",
     "getUserLists",
     "getAnalysisColumns",
-    "getCheckIfListsHasAnyIdType",
     "getMissingJsonPropertiesFromList"
   ],
   "matchingFilesAndExports": true,

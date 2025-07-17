@@ -110,9 +110,9 @@ export class ListCopyMoveService {
     };
 
     const maybeUpdateListAttributes = new UpdateListAttributesRemoveIdColumns({
-        sourceListId,
-        isNotDeletingTheSourceList,
-      });
+      sourceListId,
+      isNotDeletingTheSourceList,
+    });
 
     convertGeojsonProperties.setNext(processUploadData).setNext(maybeUpdateListAttributes);
     await AbstractHandler.runFullChain(convertGeojsonProperties, chainType);

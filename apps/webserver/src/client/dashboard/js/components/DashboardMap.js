@@ -1,7 +1,6 @@
 import { Component } from 'react';
 import EsriMap from '@arcgis/core/Map';
 import MapView from '@arcgis/core/views/MapView';
-import MapImageLayer from '@arcgis/core/layers/MapImageLayer';
 import isEqual from 'lodash/isEqual';
 import { ZoomOut } from '@mui/icons-material';
 import '../../css/_dashboardMap.scss';
@@ -34,61 +33,6 @@ export default class DashboardMap extends Component {
   }
 
   componentDidMount() {
-    const layer = new MapImageLayer({
-      id: 'BASEMAP',
-      url: 'https://gfwpro-gis.globalforestwatch.org/arcgis/rest/services/GADM36_admin/MapServer',
-      sublayers: [
-        {
-          id: 4,
-          visible: false,
-          renderer: {
-            type: 'simple',
-            symbol: {
-              type: 'simple-fill',
-              color: '#e0e0e0',
-              style: 'solid',
-              outline: {
-                color: 'white',
-                width: '0.5px',
-              },
-            },
-          },
-        },
-        {
-          id: 5,
-          visible: false,
-          renderer: {
-            type: 'simple',
-            symbol: {
-              type: 'simple-fill',
-              color: '#e0e0e0',
-              style: 'solid',
-              outline: {
-                color: 'white',
-                width: '0.5px',
-              },
-            },
-          },
-        },
-        {
-          id: 6,
-          visible: true,
-          renderer: {
-            type: 'simple',
-            symbol: {
-              type: 'simple-fill',
-              color: '#e0e0e0',
-              style: 'solid',
-              outline: {
-                color: 'white',
-                width: '0.5px',
-              },
-            },
-          },
-        },
-      ],
-    });
-
     const map = new EsriMap({
       basemap: getBasemapConfiguration(),
     });

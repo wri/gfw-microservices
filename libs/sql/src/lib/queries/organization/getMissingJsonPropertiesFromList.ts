@@ -13,7 +13,6 @@ export const getMissingJsonPropertiesFromList = `
   -----------------------------------------------------------------*/
 DECLARE @listTableName NVARCHAR(MAX);
 DECLARE @ListId INT = @0
-DECLARE @JsonProperties NVARCHAR(MAX) = @1
 
 SELECT @listTableName = [list_table_name]
 FROM   dbo.[Lists]
@@ -31,9 +30,9 @@ CREATE TABLE #Props (
 );
 
 INSERT INTO #Props (PropertyName)
-SELECT TRIM([value])
-FROM   OPENJSON(@JsonProperties)
-WHERE  [value] IS NOT NULL;
+SELECT [attribute_name]
+FROM [ListAttributes]
+WHERE [list_id] = @ListId
 
 /* -----------------------------------------------------------------
   4. Dynamic SQL that collects properties never seen in [attributes]

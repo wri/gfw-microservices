@@ -38,14 +38,19 @@ export class ProcessUploadData extends AbstractHandler<ChainType> {
 
     let validAttrs = this.getValidAttributes(Object.keys(featurePayload.properties || {}));
     const attributesJson: AttributeType = {};
-    
+
     // if there are no extra columns, perhaps this is a move operation
-    if (validAttrs.length < 1 && typeof featurePayload.properties.attributes === 'string' && featurePayload.properties.attributes) {
+    if (
+      validAttrs.length < 1 &&
+      typeof featurePayload.properties.attributes === 'string' &&
+      featurePayload.properties.attributes
+    ) {
       const parsedAttributes = JSON.parse(featurePayload.properties.attributes || '{}');
+
       featurePayload.properties = {
         ...featurePayload.properties,
-        ...parsedAttributes
-      }
+        ...parsedAttributes,
+      };
 
       validAttrs = Object.keys(parsedAttributes);
     }

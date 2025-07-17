@@ -1,10 +1,5 @@
 import { AbstractHandler, ChainType, RequestNewList } from './types';
-import {
-  ClientStoreConnection,
-  ListAttributes,
-  getMissingJsonPropertiesFromList,
-  MissingPropertiesReturnType,
-} from '@wri-monorepos/sql';
+import { ClientStoreConnection, getMissingJsonPropertiesFromList } from '@wri-monorepos/sql';
 import { Logger } from '@nestjs/common';
 import { QueryRunner } from 'typeorm';
 import { ID_TYPE_HANDLER } from '@wri-monorepos/shared';
@@ -47,14 +42,10 @@ export class UpdateListAttributesRemoveIdColumns extends AbstractHandler<ChainTy
    * @param listAttributesAsJson json_string
    * @returns string[]
    */
-  async getEmptyJsonProperties(queryRunner: QueryRunner, listAttributesAsJson: string) {
-    const result: MissingPropertiesReturnType = await queryRunner.query(
-      getMissingJsonPropertiesFromList, [this.sourceListId, listAttributesAsJson]
-    );
+  async getEmptyJsonProperties(queryRunner: QueryRunner) {
+    const result = await queryRunner.query(getMissingJsonPropertiesFromList, [this.sourceListId]);
 
-    const { MissingProperties = [] } = result;
-
-    return MissingProperties;
+    return result.map(({ MissingProperties }) => MissingProperties);
   }
 
   /**
@@ -62,39 +53,31 @@ export class UpdateListAttributesRemoveIdColumns extends AbstractHandler<ChainTy
    * @returns input ChainType
    */
   async handle(input: ChainType): Promise<ChainType> {
-    const { listAttributesRecords, organization_database } = input.request as RequestNewList;
+    const { organization_database } = input.request as RequestNewList;
     const clientStoreConnection = new ClientStoreConnection();
     const connection = await clientStoreConnection.getConnection(organization_database);
     const queryRunner = connection.createQueryRunner();
 
     try {
-      if (
-        this.isNotDeletingTheSourceList && 
-        (listAttributesRecords && listAttributesRecords.size > 0) &&
-        this.onlyCheckFor.some((col) => listAttributesRecords.has(col)) // limit to Id Types
-      ) {
+      if (this.isNotDeletingTheSourceList) {
         await queryRunner.connect();
         await queryRunner.startTransaction();
 
-        const listAttributesValues = [...listAttributesRecords.values()].map(({ attribute_name }) => attribute_name);
-        const emptyJsonProperties = await this.getEmptyJsonProperties(
-          queryRunner,
-          JSON.stringify(listAttributesValues)
+        this.logger.log(
+          `Checking if list still contains location data with moving attributes after move`
         );
 
+        const emptyJsonProperties = await this.getEmptyJsonProperties(queryRunner);
+
         /**
-         * If the source list doesn't have more data with the attributes of the locations
-         * we just deleted, that (should) means that these locations were the only containing
-         * this data.
+         * If the source list have locations without these attributes,
+         * deleted them.
          */
         if (emptyJsonProperties.length > 0) {
-          const listAttributesRepository = queryRunner.manager.getRepository(ListAttributes);
-          emptyJsonProperties.forEach(async (attributeName) => {
-            await listAttributesRepository.delete({
-              attribute_name: attributeName,
-              list_id: this.sourceListId,
-            });
-          });
+          this.logger.log(`Attributes without data in source table: ${emptyJsonProperties}`);
+          const attsIn = emptyJsonProperties.map((col) => `'${col}'`).join(',');
+          const deleteQuery = `DELETE FROM [ListAttributes] WHERE [attribute_name] IN (${attsIn}) AND [list_id] = @0`;
+          await queryRunner.query(deleteQuery, [this.sourceListId]);
         }
 
         await queryRunner.commitTransaction();

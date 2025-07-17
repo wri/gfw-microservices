@@ -162,21 +162,14 @@ export class AppController {
   @Post('/list/:listId/delete')
   deleteList(
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    @Param('listId') _listId: string,
-    @Body(new CustomZodValidationPipe(deleteListBodySchema))
-    _deleteBodyList: // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    DeleteListRequest
+    @Param('listId') _listId: string
   ) {
     // Mock implementation to return success for tests
     return Promise.resolve('list deleted');
   }
 
   @Get('/paginated-list-data')
-  getPaginatedListData(
-    @Query(new CustomZodValidationPipe(getPaginatedListDataRequestSchema))
-    _queryParam: // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    getPaginatedListDataRequest
-  ) {
+  getPaginatedListData() {
     // Mock implementation for tests
     return Promise.resolve({ data: [], totalCount: 0 });
   }

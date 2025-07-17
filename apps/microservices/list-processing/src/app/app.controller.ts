@@ -1,33 +1,17 @@
 import {
   CopyOrMoveLargeListRequestLLP,
-  DeleteListRequest,
   GetObjectPresigned,
   RequestLargeListProcess,
   RequestPreSignedURLModel,
   RequestSaveLargeListProcessModel,
   RequestTriggerProcessLargeList,
-  getNumberOfPagesPaginatedListDataRequest,
-  getPaginatedListDataRequest,
 } from './../models/index';
-import {
-  Controller,
-  Post,
-  Get,
-  Body,
-  Query,
-  BadRequestException,
-  Param,
-  UsePipes,
-  UseGuards,
-  Request,
-} from '@nestjs/common';
+import { Controller, Post, Body, UsePipes, UseGuards, Request } from '@nestjs/common';
 
 import { AppService } from './app.service';
 import { ListService } from '../services/list.service';
 import { LocationService } from './../services/locations.service';
-import { ListPaginationService } from '../services/list.pagination.service';
 import { ZodValidationPipe } from '@wri-monorepos/shared';
-import { deleteListBodySchema } from './types/deleteListRequestSchema';
 import {
   requestPreSignedURLSchema,
   getObjectPresignedSchema,
@@ -35,16 +19,8 @@ import {
   requestLargeListProcessSchema,
   requestTriggerProcessLargeListSchema,
   copyOrMoveLargeListRequestSchema,
-  getPaginatedListDataRequestSchema,
-  getNumberOfPagesPaginatedListDataRequestSchema,
 } from './validators';
-import {
-  ApiBadRequestResponse,
-  ApiNotFoundResponse,
-  ApiResponse,
-  ApiUnauthorizedResponse,
-} from '@nestjs/swagger';
-import { BadRequestExceptionResponse } from './types/apiResponses';
+
 import { ConfigService } from '@nestjs/config';
 import { ServerConfigType } from '../validators/server-config';
 import { FeatureFlagEnabledGuard } from '../guards/feature.flag.enabled.guard';
@@ -60,7 +36,6 @@ export class AppController {
     protected readonly appService: AppService,
     protected readonly listService: ListService,
     protected readonly locationService: LocationService,
-    protected readonly listPaginationService: ListPaginationService,
 
     protected readonly listCopyMoveService: ListCopyMoveService,
     protected readonly config: ConfigService<ServerConfigType, true>
@@ -142,67 +117,5 @@ export class AppController {
       ...request,
       isUploadListLpEnabled: featureFlag.enabled,
     });
-  }
-
-  @Get('/paginated-list-data')
-  async getPaginatedListData(
-    @Query(new ZodValidationPipe(getPaginatedListDataRequestSchema))
-    queryParam: getPaginatedListDataRequest
-  ) {
-    this.validatePaginatedRequest(queryParam);
-    const result = await this.listPaginationService.getPaginatedListData(queryParam);
-    return result;
-  }
-
-  @Get('/pages-paginated-list-data')
-  async getNumberOfPagesPaginatedListData(
-    @Query(new ZodValidationPipe(getNumberOfPagesPaginatedListDataRequestSchema))
-    queryParam: getNumberOfPagesPaginatedListDataRequest
-  ) {
-    this.validatePaginatedRequest(queryParam);
-    const result = await this.listPaginationService.getNumberOfPagesPaginatedListData(queryParam);
-    return result;
-  }
-
-  @Get('/paginated-list-data-with-pages')
-  async getPaginatedListDataWithPages(
-    @Query(new ZodValidationPipe(getPaginatedListDataRequestSchema))
-    queryParam: getPaginatedListDataRequest
-  ) {
-    this.validatePaginatedRequest(queryParam);
-    const result = this.listPaginationService.getPaginatedListDataWithPages(queryParam);
-    return result;
-  }
-
-  validatePaginatedRequest(queryParam: getPaginatedListDataRequest) {
-    if (queryParam.listId === undefined || queryParam.listId === null || queryParam.listId === 0) {
-      throw new BadRequestException('listID is required');
-    }
-
-    if (
-      queryParam.organizationDatabase === undefined ||
-      queryParam.organizationDatabase === null ||
-      queryParam.organizationDatabase === ''
-    ) {
-      throw new BadRequestException('organizationDatabase is required');
-    }
-  }
-
-  @ApiResponse({ status: 200, type: String })
-  @ApiNotFoundResponse({ status: 404, type: BadRequestExceptionResponse })
-  @ApiUnauthorizedResponse({ description: 'Unauthorized' })
-  @ApiBadRequestResponse({ description: 'Bad Request' })
-  @Post('/list/:listId/delete')
-  deleteList(
-    @Param('listId') listId: number,
-    @Body(new ZodValidationPipe(deleteListBodySchema)) deleteBodyList: DeleteListRequest
-  ): Promise<string> {
-    const { organizationDatabase, organization_user_id, userEmail } = deleteBodyList;
-    return this.appService.deleteList(
-      listId,
-      organizationDatabase,
-      organization_user_id,
-      userEmail
-    );
   }
 }

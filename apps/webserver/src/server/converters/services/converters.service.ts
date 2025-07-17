@@ -26,7 +26,8 @@ export const startConverterJob = async (
   // Start the long process asynchronously but don't await it
   triggerConverter(insertedId, organizationId).catch(async (err) => {
     const errorMessage = err?.response?.data || err?.message || 'Unknown error';
-    const errorMessageStr = typeof errorMessage === 'object' ? JSON.stringify(errorMessage) : errorMessage;
+    const errorMessageStr =
+      typeof errorMessage === 'object' ? JSON.stringify(errorMessage) : errorMessage;
     const errorLog = `Error triggering LP for Converter Job with ID: ${insertedId}: ${errorMessageStr}`;
     logger.error(errorLog);
     await markConverterFailed(repo, insertedId, errorMessage);

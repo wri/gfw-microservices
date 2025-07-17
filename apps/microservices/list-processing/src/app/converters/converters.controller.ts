@@ -17,7 +17,7 @@ export class ConvertersController {
       await this.convertersService.runConverter(id, organizationId);
     } catch (err) {
       this.logger.error(`Error processing Converter Job with ID: ${id}`, err.stack || err);
-      
+
       throw new InternalServerErrorException(
         'Converter process failed for one or more organizations.'
       );

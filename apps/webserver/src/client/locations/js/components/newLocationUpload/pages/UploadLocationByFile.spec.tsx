@@ -169,6 +169,7 @@ describe('UploadLocationByFile', () => {
   });
 
   it('should navigate to preview page when file upload is successful', async () => {
+    const user = userEvent.setup();
     (uploadFileToS3 as jest.Mock).mockResolvedValue({
       keyFile: 'https://example.com/test.csv',
       fileS3Route: 'fileS3Route',
@@ -192,7 +193,7 @@ describe('UploadLocationByFile', () => {
 
     await waitFor(async () => {
       expect(nextButton).not.toBeDisabled();
-      await userEvent.click(nextButton);
+      await user.click(nextButton);
       expect(mockHistoryPush).toHaveBeenCalledWith('PREVIEW');
     });
   });

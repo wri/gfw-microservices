@@ -9,7 +9,6 @@ import { proLayers } from '../../../common/js/proLayers.config';
 import ModalLoader from '../../../common/js/components/Loaders/ModalLoader';
 import Landing from './landing/Landing';
 import FolderDetail from './landing/FolderDetail';
-import AddGFW from './addGFW/AddGFW';
 
 // Store
 import store from '../store';
@@ -51,7 +50,6 @@ class Locations extends Component {
 
     this.state = {
       isLoading: false,
-      geomFromMap: false,
       gfwInfoFromMap: false, // will switch to an object if this is activated!
       userListInfoFromMap: false, // same as above!
       drawnGeom: false, // same as above!
@@ -292,32 +290,16 @@ class Locations extends Component {
       activeTemplate,
       userFolders,
       selectedFolder,
-      selectedLists,
       canopyModalVisible,
       language,
-      listData,
-      filteredData,
-      selectedLocations,
       drawnGeom,
       isLoading,
       B2BsharedListEnabled,
-      geomFromMap,
       fromList,
     } = this.state;
 
-    const {
-      history,
-      templateData,
-      templateDropdowns,
-      userLists,
-      userInfo,
-      organizationId,
-      locationCount,
-      orgLists,
-      gfwLists,
-      usersList,
-      userSharedLists,
-    } = this.props;
+    const { history, userLists, userInfo, locationCount, gfwLists, usersList, userSharedLists } =
+      this.props;
 
     const allLists = userLists.concat(userSharedLists);
 
@@ -332,25 +314,6 @@ class Locations extends Component {
               selectedFolder={selectedFolder}
               history={history}
               currentUser={userInfo}
-            />
-          </Route>
-          <Route path="/gfw">
-            <AddGFW
-              currentUser={userInfo}
-              organizationId={organizationId}
-              geomFromMap={geomFromMap}
-              templateData={templateData}
-              templateDropdowns={templateDropdowns}
-              userLists={userLists}
-              view={view}
-              addType={addType}
-              addMethod={addMethod}
-              activeTemplate={activeTemplate}
-              orgLists={orgLists}
-              listData={listData}
-              selectedLists={selectedLists}
-              selectedLocations={selectedLocations}
-              filteredData={filteredData}
             />
           </Route>
           <Route path="/upload-location">

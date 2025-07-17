@@ -55,33 +55,4 @@ module.exports = (app, limiter) => {
     app.set('draw-data', '');
     app.set('location-name', '');
   });
-
-  app.get('/list-details/upgrade-version-2', async (req, res) => {
-    const parseQuery = querySchema.safeParse(req.query);
-    if (!parseQuery.success) {
-      return res.status(400).json({
-        success: false,
-        errors: parseQuery.error.flatten(),
-      });
-    }
-    const { organization_database, organization_user_id } = req.session;
-    const { listId } = parseQuery.data;
-    try {
-      const list = await upgradeListSchema({
-        listId,
-        clientDb: organization_database,
-        userId: organization_user_id,
-      });
-      res.status(200).send({
-        success: true,
-        data: list,
-      });
-    } catch (error) {
-      console.error('Schema upgrader test route failed');
-      res.status(500).send({
-        success: false,
-        message: 'Internal server error while upgrading schema',
-      });
-    }
-  });
 };

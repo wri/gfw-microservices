@@ -197,12 +197,7 @@ export class AppController {
     @Param('listId') listId: number,
     @Body(new ZodValidationPipe(deleteListBodySchema)) deleteBodyList: DeleteListRequest
   ): Promise<string> {
-    const { organizationDatabase, organization_user_id, userEmail } = deleteBodyList;
-    return this.appService.deleteList(
-      listId,
-      organizationDatabase,
-      organization_user_id,
-      userEmail
-    );
+    const { organizationDatabase, organization_user_id } = deleteBodyList;
+    return this.appService.deleteList(listId, organizationDatabase, organization_user_id);
   }
 }

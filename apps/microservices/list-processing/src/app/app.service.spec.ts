@@ -73,7 +73,6 @@ describe('AppService', () => {
       const listId = 123;
       const organizationDatabase = 'mockDatabase';
       const organization_user_id = 1;
-      const userEmail = 'email@email.com';
 
       clientStoreConnection.getConnection = jest.fn().mockResolvedValue({
         getRepository: () => ({
@@ -84,14 +83,13 @@ describe('AppService', () => {
         query: () => true,
       });
       await expect(
-        appService.deleteList(listId, organizationDatabase, organization_user_id, userEmail)
+        appService.deleteList(listId, organizationDatabase, organization_user_id)
       ).rejects.toThrowError(InternalServerErrorException);
     });
     it('should throw error on trying to delete a locked list', async () => {
       const listId = 123;
       const organizationDatabase = 'mockDatabase';
       const organization_user_id = 1;
-      const userEmail = 'email@email.com';
       jest.spyOn(lockListService, 'lockList').mockResolvedValue(true);
       const mockList = {
         listId: 123,
@@ -116,14 +114,13 @@ describe('AppService', () => {
       });
 
       await expect(
-        appService.deleteList(listId, organizationDatabase, organization_user_id, userEmail)
+        appService.deleteList(listId, organizationDatabase, organization_user_id)
       ).rejects.toThrowError(InternalServerErrorException);
     });
     it('should throw error on trying to drop database', async () => {
       const listId = 123;
       const organizationDatabase = 'mockDatabase';
       const organization_user_id = 1;
-      const userEmail = 'email@email.com';
       jest.spyOn(lockListService, 'lockList').mockResolvedValue(true);
       const mockList = {
         listId: 123,
@@ -157,14 +154,13 @@ describe('AppService', () => {
       });
 
       await expect(
-        appService.deleteList(listId, organizationDatabase, organization_user_id, userEmail)
+        appService.deleteList(listId, organizationDatabase, organization_user_id)
       ).rejects.toThrowError(InternalServerErrorException);
     });
     it('should delete a list', async () => {
       const listId = 123;
       const organizationDatabase = 'mockDatabase';
       const organization_user_id = 1;
-      const userEmail = 'email@email.com';
       jest.spyOn(lockListService, 'lockList').mockResolvedValue(true);
       const mockList = {
         listId: 123,
@@ -198,10 +194,11 @@ describe('AppService', () => {
       const result = await appService.deleteList(
         listId,
         organizationDatabase,
-        organization_user_id,
-        userEmail
+        organization_user_id
       );
-      expect(result).toEqual(`User '${userEmail}' has deleted list (${mockList.listId}).`);
+      expect(result).toEqual(
+        `User ID ${organization_user_id} has deleted list (${mockList.listId}).`
+      );
     });
   });
 });

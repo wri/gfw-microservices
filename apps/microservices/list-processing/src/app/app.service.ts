@@ -84,8 +84,7 @@ export class AppService {
   async deleteList(
     list_id: number,
     organizationDatabase: string,
-    organization_user_id: number,
-    userEmail: string
+    organization_user_id: number
   ): Promise<string> {
     const connection = await this.clientStoreConnection.getConnection(organizationDatabase);
     const activityLogRepository = connection.getRepository(ActivityLog);
@@ -102,7 +101,7 @@ export class AppService {
         const activityLog = new ActivityLog();
         activityLog.userId = organization_user_id;
         activityLog.activityTypeId = 21;
-        const confirmationMessage = `User '${userEmail}' has deleted list (${list_id}).`;
+        const confirmationMessage = `User ID ${organization_user_id} has deleted list (${list_id}).`;
         activityLog.activityDescription = confirmationMessage;
         activityLog.activityTime = new Date();
         await activityLogRepository.save(activityLog);
@@ -120,7 +119,7 @@ export class AppService {
       const activityLog = new ActivityLog();
       activityLog.userId = organization_user_id;
       activityLog.activityTypeId = 21;
-      const errorDescription = `User '${userEmail}' has tried to delete list (${list_id}) but some error occurs ${error.message}.`;
+      const errorDescription = `User ID ${organization_user_id} has tried to delete list (${list_id}) but some error occurs ${error.message}.`;
       activityLog.activityDescription = errorDescription;
       activityLog.activityTime = new Date();
       await activityLogRepository.save(activityLog);

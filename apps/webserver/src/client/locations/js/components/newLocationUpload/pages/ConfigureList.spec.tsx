@@ -7,7 +7,6 @@ import { useFetch } from '../../../../../hooks';
 
 jest.mock('../components', () => ({
   NavBar: () => <span />,
-  HelperTextWithPopover: () => <span data-testid="helper-text-with-popover" />,
 }));
 
 jest.mock('../../../../../hooks', () => ({

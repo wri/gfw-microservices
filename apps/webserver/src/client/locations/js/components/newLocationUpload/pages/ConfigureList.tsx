@@ -35,6 +35,7 @@ import { fetchListsByCommodity } from '../../../../../api/list';
 import { analysisTypes } from '../../../../../../config/env/analysisTypes.constants';
 import { listNameSchema } from '../utils/schema';
 import { DATA_CY } from '../../../../../utils/constants';
+import { HelperTextWithPopover } from '../../../../../components';
 
 type CommoditiesType = (typeof commodities)[keyof typeof commodities];
 const commodityValues = Object.values(commodities) as [CommoditiesType, ...CommoditiesType[]];
@@ -425,11 +426,13 @@ export function ConfigureList({ userLists }: { userLists: UserList[] }) {
           Select the analysis you would like applied to your data. Note that each analysis selected
           counts towards your account usage limits. See more information here.
         </Typography>
-        <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1, mt: 1 }}>
+        <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1, mt: 2, width: 'fit-content' }}>
           {typeOfAnalysisMap
             .filter((x) => selectedCommodity === 'Palm oil' || x.id !== analysisTypes.PALM_RISK)
             .map(({ id, label, description }) => {
               const isPalmRisk = id === analysisTypes.PALM_RISK;
+              const isAfi = id === analysisTypes.DEFORESTATION_KPIS;
+
               return (
                 <Controller
                   key={id}
@@ -439,16 +442,62 @@ export function ConfigureList({ userLists }: { userLists: UserList[] }) {
                     <FormControlLabel
                       control={
                         <Checkbox
-                          sx={{ py: 0 }}
+                          sx={{
+                            py: 0,
+                          }}
                           checked={!!field.value}
                           onChange={(e) => handleAnalysisChange(e, field, id)}
                           inputRef={field.ref}
                         />
                       }
-                      sx={{ textTransform: 'none', ml: isPalmRisk ? 2 : 0 }}
+                      sx={{
+                        textTransform: 'none',
+                        ml: isPalmRisk ? 2 : 0,
+                        '&:hover': {
+                          cursor: 'default',
+                        },
+                      }}
                       label={
-                        <Box sx={{ lineHeight: 0 }}>
-                          <Typography variant="body2">{label}</Typography>
+                        <Box
+                          sx={{
+                            lineHeight: 0,
+                          }}
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            e.preventDefault();
+                          }}
+                        >
+                          <Box sx={{ display: 'flex', mb: isAfi ? 0.5 : 0 }}>
+                            <Typography variant="body2">{label}</Typography>
+                            {isAfi && (
+                              <HelperTextWithPopover
+                                label={
+                                  <Typography variant="caption" sx={{ fontWeight: 'bold' }}>
+                                    Recommended to support EUDR compliance
+                                  </Typography>
+                                }
+                                sx={{
+                                  px: 1.5,
+                                  py: 0,
+                                  ml: 1,
+                                  borderRadius: 20,
+                                  backgroundColor: (theme) => theme.palette.secondary[200],
+                                }}
+                              >
+                                <Box sx={{ width: (theme) => theme.spacing(37), p: 1 }}>
+                                  <Typography variant="caption">
+                                    Our services do not provide certification or guarantee that any
+                                    deforestation-related activities, data, or supply chains comply
+                                    with the European Union Deforestation Regulation (EUDR).
+                                    Compliance with EUDR requirements remains the sole
+                                    responsibility of the relevant parties, and we recommend
+                                    consulting with appropriate legal and regulatory experts for
+                                    verification and certification.
+                                  </Typography>
+                                </Box>
+                              </HelperTextWithPopover>
+                            )}
+                          </Box>
                           <Typography variant="caption" color="text.secondary">
                             {description}
                           </Typography>

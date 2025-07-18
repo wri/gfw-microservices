@@ -9,9 +9,10 @@ import {
   Alert,
   AlertTitle,
   Link,
+  IconButton,
 } from '@mui/material';
 import Button from 'common/js/components/Button';
-import { ArrowBack, NotListedLocation, QueryStats } from '@mui/icons-material';
+import { ArrowBack, Close, NotListedLocation, QueryStats } from '@mui/icons-material';
 import CustomDialog from 'common/js/components/CustomDialog/CustomDialog';
 import { maxLocations } from 'locations/js/utils/upload.utils';
 import LinkButton from 'common/js/components/LinkButton';
@@ -113,6 +114,7 @@ import './ListDetails.scss';
 import { PillButton } from '../../../../../components';
 import { ExternalLinks } from '../../../../../utils/constants';
 
+const EUDR_BANNER_KEY = 'GFW-is-eudr-banner-dismissed';
 export default class ListDetails extends Component {
   constructor(props) {
     super(props);
@@ -128,6 +130,8 @@ export default class ListDetails extends Component {
     });
     const { isFcdActive, isPalmRiskActive, isAfiActive, isGHGActive, isOnlyGHGActive } =
       getActiveAnalysisFlags(listAnalysesStatus);
+
+    const isEudrBannerDismissed = !!localStorage.getItem(EUDR_BANNER_KEY);
 
     this.state = {
       bannerContent: '',
@@ -179,6 +183,7 @@ export default class ListDetails extends Component {
       isAfiActive,
       isGHGActive,
       isOnlyGHGActive,
+      isEudrBannerDismissed,
     };
   }
 
@@ -1913,31 +1918,33 @@ export default class ListDetails extends Component {
       <ThemeProvider>
         <div className="list-details">
           {!isGfwList && (
-            <ChangeTypeOfAnalysisModal
-              listId={listID}
-              listName={listName}
-              listAnalysesStatus={listAnalysesStatus}
-              setIsChangeTypeOfAnalysisModalOpen={(open) =>
-                this.setState({ isChangeTypeOfAnalysisModalOpen: open })
-              }
-              isChangeTypeOfAnalysisModalOpen={this.state.isChangeTypeOfAnalysisModalOpen}
-              commodity={selectedList?.Commodity}
-              isPalmOilBackwardComp={isPalmOilBackwardComp}
-            />
+            <>
+              <ChangeTypeOfAnalysisModal
+                listId={listID}
+                listName={listName}
+                listAnalysesStatus={listAnalysesStatus}
+                setIsChangeTypeOfAnalysisModalOpen={(open) =>
+                  this.setState({ isChangeTypeOfAnalysisModalOpen: open })
+                }
+                isChangeTypeOfAnalysisModalOpen={this.state.isChangeTypeOfAnalysisModalOpen}
+                commodity={selectedList?.Commodity}
+                isPalmOilBackwardComp={isPalmOilBackwardComp}
+              />
+
+              <AnalysisStatusBanners
+                isDiagnosticStatusDraft={getIsDiagnosticStatusDraft(selectedLists[0])}
+                hasLocationWithErrors={hasLocationWithErrors}
+                openDraftSubmitDialog={() => this.setState({ draftSubmitDialogOpen: true })}
+                toggleReRunAnalysisDialog={this.toggleReRunAnalysisDialog}
+                isFailedAnalysis={isFailedAnalysis}
+                isAnalysisFailedByExceededAnalysisLimit={isAnalysisFailedByExceededAnalysisLimit}
+                isListSubmittedForAnalysis={isListSubmittedForAnalysis}
+                isListWithErrors={isListWithErrors}
+                isOnlyGHGActive={isOnlyGHGActive}
+              />
+            </>
           )}
-          {!isGfwList && (
-            <AnalysisStatusBanners
-              isDiagnosticStatusDraft={getIsDiagnosticStatusDraft(selectedLists[0])}
-              hasLocationWithErrors={hasLocationWithErrors}
-              openDraftSubmitDialog={() => this.setState({ draftSubmitDialogOpen: true })}
-              toggleReRunAnalysisDialog={this.toggleReRunAnalysisDialog}
-              isFailedAnalysis={isFailedAnalysis}
-              isAnalysisFailedByExceededAnalysisLimit={isAnalysisFailedByExceededAnalysisLimit}
-              isListSubmittedForAnalysis={isListSubmittedForAnalysis}
-              isListWithErrors={isListWithErrors}
-              isOnlyGHGActive={isOnlyGHGActive}
-            />
-          )}
+
           {bannerContent && (
             <Banner
               className="lists-banner"
@@ -2004,6 +2011,43 @@ export default class ListDetails extends Component {
           <ModalLoader open={isLoading} />
 
           <section className="locations-body list-detail-page">
+            {!isGfwList && !this.state.isEudrBannerDismissed && (
+              <Alert
+                severity="info"
+                action={
+                  <IconButton
+                    onClick={() => {
+                      localStorage.setItem(EUDR_BANNER_KEY, 1);
+                      this.setState({ isEudrBannerDismissed: true });
+                    }}
+                  >
+                    <Close fontSize="small" />
+                  </IconButton>
+                }
+                sx={{
+                  borderRadius: 1,
+                  mb: 2,
+                  alignItems: 'center',
+                  border: (theme) => `1px solid ${theme.palette.secondary[300]}`,
+                  backgroundColor: (theme) => theme.palette.secondary[100],
+                  color: (theme) => theme.palette.secondary[900],
+                  '& svg': {
+                    color: (theme) => theme.palette.secondary[700],
+                  },
+                  '& .MuiAlert-message': {
+                    display: 'flex',
+                    gap: 0.5,
+                  },
+                }}
+              >
+                <Typography variant="body1" sx={{ fontWeight: '500' }}>
+                  Looking for EUDR-related analyses?
+                </Typography>
+                <Typography variant="body1">
+                  The Post-2020 Risk Assessment is recommended to support EUDR compliance.
+                </Typography>
+              </Alert>
+            )}
             {selectedList && (
               <Stack
                 sx={{ marginBottom: '15px', margin: 'auto', maxWidth: '100%' }}

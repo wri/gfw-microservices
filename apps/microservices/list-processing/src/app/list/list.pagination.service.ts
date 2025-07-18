@@ -1,9 +1,12 @@
 import { Injectable } from '@nestjs/common';
-import { getNumberOfPagesPaginatedListDataRequest, getPaginatedListDataRequest } from '../models';
 import {
   UspGetAnalysisDataCountForUserList,
   UspGetPaginatedAnalysisDataForUserList,
 } from '@wri-monorepos/sql';
+import {
+  getNumberOfPagesPaginatedListDataRequest,
+  getPaginatedListDataRequest,
+} from '../../models';
 
 @Injectable()
 export class ListPaginationService {

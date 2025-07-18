@@ -6,11 +6,9 @@ describe('FileValidationHelper', () => {
   it('should render correctly', () => {
     render(<FileValidationHelper />);
 
-    expect(
-      screen.getByRole('button', {
-        name: /how do we validate your file for upload?/i,
-      })
-    ).toBeInTheDocument();
+    screen.logTestingPlaygroundURL();
+
+    expect(screen.getByText(/how do we validate your file for upload\?/i)).toBeInTheDocument();
   });
 
   it('should trigger popover on button click', async () => {
@@ -18,7 +16,7 @@ describe('FileValidationHelper', () => {
 
     const titleText = /file validation process:/i;
     const button = screen.getByRole('button', {
-      name: /how do we validate your file for upload?/i,
+      name: /open popover/i,
     });
 
     expect(screen.queryByText(titleText)).not.toBeInTheDocument();
@@ -44,7 +42,7 @@ describe('FileValidationHelper', () => {
 
     await userEvent.click(
       screen.getByRole('button', {
-        name: /close file validation popover/i,
+        name: /close popover/i,
       })
     );
 

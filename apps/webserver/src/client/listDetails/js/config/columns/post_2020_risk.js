@@ -131,10 +131,9 @@ const getColumnsWithCurrentState = () => {
         const { deforestationDisplayFormat } = store.getState();
         return deforestationDisplayFormat === DISPLAY_FORMAT_PERCENTAGE;
       },
-      Cell: ({ original }) => {
-        const { landmarkPercent } = original;
-        return <span>{renderPercentageValueWithIndicator(landmarkPercent)}</span>;
-      },
+      Cell: ({ original }) => (
+        <span>{renderPercentageValueWithIndicator(original?.landmarkPercent)}</span>
+      ),
     },
 
     {
@@ -188,5 +187,5 @@ const getColumnsWithCurrentState = () => {
   ];
 };
 
-// Export the columns array directly
-export default getColumnsWithCurrentState();
+// Export the function so it can be called fresh each time
+export default getColumnsWithCurrentState;

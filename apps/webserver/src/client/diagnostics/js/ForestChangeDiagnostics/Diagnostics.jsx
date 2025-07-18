@@ -42,7 +42,6 @@ import getAvailableDiagnostics from './getAvailableDiagnostics';
 import { handleGfwProListVectorTileLayer } from '../../../common/js/utils/gfw.utils';
 import { getSingleLocationData } from './diagnostic.utils';
 import { getBasemapConfiguration } from '../../../map/js/utils/map.utils';
-import featureFlags from '../../../../utils/general.utils';
 
 // Configs
 import { DATA_API_URL, locationsPage } from '../../../common/js/config';
@@ -131,18 +130,9 @@ export default class Diagnostics extends Component {
   componentDidMount() {
     this.getHighchartColors();
 
-    const { isGadm41Available } = featureFlags;
-
-    let esriMap;
-    if (isGadm41Available) {
-      esriMap = new EsriMap({
-        basemap: getBasemapConfiguration(),
-      });
-    } else {
-      esriMap = new EsriMap({
-        basemap: 'topo',
-      });
-    }
+    const esriMap = new EsriMap({
+      basemap: getBasemapConfiguration(),
+    });
 
     this.esriMap = esriMap;
 

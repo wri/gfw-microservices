@@ -158,10 +158,7 @@ const getColumnsWithCurrentState = () => {
 
     {
       Header: () => (
-        <ColumnsHeader
-          label="Protected Areas"
-          infoBubbleId={infoBubbleConfig.post2020ItOverlap}
-        />
+        <ColumnsHeader label="Protected Areas" infoBubbleId={infoBubbleConfig.post2020ItOverlap} />
       ),
       className: 'default-cell td-num',
       accessor: 'protectedAreasPercent',

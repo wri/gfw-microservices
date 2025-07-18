@@ -201,9 +201,9 @@ export class getPaginatedListDataRequest {
   @ApiProperty({ required: false })
   orderType?: string;
   @ApiProperty({ required: false })
-  page?: 0;
+  page?: number;
   @ApiProperty({ required: false })
-  rowsPerPage?: 1000;
+  rowsPerPage?: number;
   @ApiProperty({ required: false })
   sortByAttribute?: string;
   @ApiProperty({ required: false })
@@ -230,7 +230,7 @@ export class getNumberOfPagesPaginatedListDataRequest {
   @ApiProperty({ required: false })
   subState?: string;
   @ApiProperty()
-  rowsPerPage: 1000;
+  rowsPerPage: number;
   @ApiProperty({ required: false })
   analysisAreaMin?: number;
   @ApiProperty({ required: false })

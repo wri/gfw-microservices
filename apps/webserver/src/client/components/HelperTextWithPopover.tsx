@@ -36,7 +36,7 @@ export function HelperTextWithPopover({
         }}
       >
         {label}
-        <IconButton onClick={handlePopoverOpen} sx={{ p: 0 }}>
+        <IconButton onClick={handlePopoverOpen} sx={{ p: 0 }} aria-label="open popover">
           <Info fontSize="small" />
         </IconButton>
       </Box>

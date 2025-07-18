@@ -16,12 +16,6 @@ import { AppService } from './app.service';
 import { DeleteListTypeOrm, SqlModule, TypeOrmSystemModule } from '@wri-monorepos/sql';
 import { LocationService } from '../services/locations.service';
 import { ListService } from '../services/list.service';
-<<<<<<< HEAD
-import { GeoService } from '@wri-monorepos/geo';
-=======
-import { LockListService } from '../services/lock.list.service';
-import { ListPaginationService } from '../services/list.pagination.service';
->>>>>>> develop
 import { FCDModule } from './fcd';
 import { SchedulerModule } from './scheduler';
 import { AFIModule } from './afi';

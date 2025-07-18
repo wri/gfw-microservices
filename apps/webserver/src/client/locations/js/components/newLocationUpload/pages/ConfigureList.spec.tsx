@@ -9,6 +9,11 @@ jest.mock('../components', () => ({
   NavBar: () => <span />,
 }));
 
+jest.mock('../../../../../components', () => ({
+  ...jest.requireActual('../../../../../components'),
+  HelperTextWithPopover: () => <span data-testid="helper-text-with-popover" />,
+}));
+
 jest.mock('../../../../../hooks', () => ({
   useFetch: jest.fn(),
 }));
@@ -128,6 +133,7 @@ describe('ConfigureList', () => {
     expect(screen.getByText('Commodity')).toBeInTheDocument();
     expect(screen.getByText('Define List')).toBeInTheDocument();
     expect(screen.getByText('Type of analysis')).toBeInTheDocument();
+    expect(screen.getByTestId('helper-text-with-popover')).toBeInTheDocument();
   });
 
   it('should allow selecting a commodity', async () => {

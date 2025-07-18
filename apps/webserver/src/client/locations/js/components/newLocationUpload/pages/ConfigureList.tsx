@@ -24,7 +24,7 @@ import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
 
 import { useHistory } from '../hooks';
-import { PillButton } from '../../../../../components';
+import { PillButton, HelperTextWithPopover } from '../../../../../components';
 import { useUploadLocation } from '../contexts';
 import { NavBar } from '../components';
 import { UserList } from '../types';
@@ -35,7 +35,6 @@ import { fetchListsByCommodity } from '../../../../../api/list';
 import { analysisTypes } from '../../../../../../config/env/analysisTypes.constants';
 import { listNameSchema } from '../utils/schema';
 import { DATA_CY } from '../../../../../utils/constants';
-import { HelperTextWithPopover } from '../../../../../components';
 
 type CommoditiesType = (typeof commodities)[keyof typeof commodities];
 const commodityValues = Object.values(commodities) as [CommoditiesType, ...CommoditiesType[]];

@@ -7,10 +7,6 @@ import { useFetch } from '../../../../../hooks';
 
 jest.mock('../components', () => ({
   NavBar: () => <span />,
-}));
-
-jest.mock('../../../../../components', () => ({
-  ...jest.requireActual('../../../../../components'),
   HelperTextWithPopover: () => <span data-testid="helper-text-with-popover" />,
 }));
 
@@ -133,7 +129,6 @@ describe('ConfigureList', () => {
     expect(screen.getByText('Commodity')).toBeInTheDocument();
     expect(screen.getByText('Define List')).toBeInTheDocument();
     expect(screen.getByText('Type of analysis')).toBeInTheDocument();
-    expect(screen.getByTestId('helper-text-with-popover')).toBeInTheDocument();
   });
 
   it('should allow selecting a commodity', async () => {
@@ -191,7 +186,7 @@ describe('ConfigureList', () => {
 
     await user.click(
       screen.getByRole('checkbox', {
-        name: /post-2020 risk assessment deforestation in natural forest since 2021 \+ additional contextual datasets/i,
+        name: /post-2020 risk assessment recommended to support eudr compliance deforestation in natural forest since 2021 \+ additional contextual datasets/i,
       })
     );
 
@@ -311,7 +306,7 @@ describe('ConfigureList', () => {
 
     expect(
       screen.getByRole('checkbox', {
-        name: /post-2020 risk assessment deforestation in natural forest since 2021 \+ additional contextual datasets/i,
+        name: /post-2020 risk assessment recommended to support eudr compliance deforestation in natural forest since 2021 \+ additional contextual datasets/i,
       })
     ).toBeChecked();
     expect(
@@ -345,7 +340,7 @@ describe('ConfigureList', () => {
 
     expect(
       screen.getByRole('checkbox', {
-        name: /post-2020 risk assessment deforestation in natural forest since 2021 \+ additional contextual datasets/i,
+        name: /post-2020 risk assessment recommended to support eudr compliance deforestation in natural forest since 2021 \+ additional contextual datasets/i,
       })
     ).not.toBeChecked();
     expect(

@@ -66,11 +66,12 @@ function AnalysesTabs({
               >
                 <Box sx={{ width: (theme) => theme.spacing(40), p: 1 }}>
                   <Typography variant="caption">
-                    Nunc mollis tempor massa, et aliquet tellus eleifend vitae. Etiam rutrum quam
-                    sit amet ante tristique ultricies. Duis dictum porttitor ipsum ut viverra. Fusce
-                    ut consequat nisl. Fusce tincidunt sollicitudin purus, in lobortis urna faucibus
-                    a. Vestibulum eu turpis rutrum, dignissim augue at, vehicula ipsum. Duis libero
-                    sem, pretium eget ultrices eget, fringilla a sem.
+                    Our services do not provide certification or guarantee that any
+                    deforestation-related activities, data, or supply chains comply with the
+                    European Union Deforestation Regulation (EUDR). Compliance with EUDR
+                    requirements remains the sole responsibility of the relevant parties, and we
+                    recommend consulting with appropriate legal and regulatory experts for
+                    verification and certification.
                   </Typography>
                 </Box>
               </HelperTextWithPopover>

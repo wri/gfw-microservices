@@ -187,7 +187,7 @@ export class ListBulkCopy {
     return { columnNamesArray, columnTypesArray, dataArray, start_location_id: max_id };
   }
 }
-export default function PrepareBulkUpload(
+export function PrepareBulkUpload(
   geojson: { features: Feature[] },
   columns: GetTableColumnsType[],
   commodity: unknown,

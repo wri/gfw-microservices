@@ -1,5 +1,5 @@
-import { ConfigModule, ConfigService } from '@nestjs/config';
-import { ServerConfigType, serverConfigSchema } from '../validators/server-config';
+import { ConfigModule } from '@nestjs/config';
+import { serverConfigSchema } from '../validators/server-config';
 
 // This needs to be at the beginning of the file to ensure that the '.env' file
 // is loaded into process.env before any code reads process.env
@@ -10,12 +10,8 @@ const envModule = ConfigModule.forRoot({
 });
 
 import { Module, MiddlewareConsumer } from '@nestjs/common';
-import { S3Client } from '@aws-sdk/client-s3';
-import { AppController } from './app.controller';
-import { AppService } from './app.service';
-import { DeleteListTypeOrm, SqlModule, TypeOrmSystemModule } from '@wri-monorepos/sql';
-import { LocationService } from '../services/locations.service';
-import { ListService } from '../services/list.service';
+
+import { SqlModule, TypeOrmSystemModule } from '@wri-monorepos/sql';
 import { FCDModule } from './fcd';
 import { SchedulerModule } from './scheduler';
 import { AFIModule } from './afi';
@@ -45,32 +41,14 @@ import { GeoModule } from '@wri-monorepos/geo';
     GeoModule,
     GHGModule,
     HealthModule,
-    ListUploadModule,
-    ListModule,
     ListCopyMoveModule,
+    ListModule,
+    ListUploadModule,
     SchedulerModule,
     SqlModule,
   ],
-  controllers: [AppController],
-  providers: [
-    AppService,
-    LocationService,
-    ListService,
-    DeleteListTypeOrm,
-    {
-      provide: 'S3Client',
-      inject: [ConfigService],
-      useFactory: (configService: ConfigService<ServerConfigType, true>) => {
-        return new S3Client({
-          region: configService.get('AWS_REGION', { infer: true }),
-          credentials: {
-            accessKeyId: configService.get('AWS_ACCESS_KEY_ID', { infer: true }),
-            secretAccessKey: configService.get('AWS_SECRET_ACCESS_KEY', { infer: true }),
-          },
-        });
-      },
-    },
-  ],
+  controllers: [],
+  providers: [],
 })
 export class AppModule {
   configure(consumer: MiddlewareConsumer) {

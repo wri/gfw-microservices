@@ -179,7 +179,6 @@ const saveGfwListLocations = (
       allLocationsSelected: false,
       filters: filters,
       srcListAnalysisTable: selectedList.list_analysis_table_name || null,
-      isUploadListLpEnabled: true,
       userListNames: userListNames,
     };
 

@@ -5,7 +5,7 @@ import {
   UspGetPaginatedAnalysisDataForUserList,
   AnalysisDataType,
 } from '@wri-monorepos/sql';
-import { getPaginatedListDataRequest } from '../models';
+import { getPaginatedListDataRequest } from '../../models';
 
 describe('ListPaginationService', () => {
   let service: ListPaginationService;
@@ -180,6 +180,102 @@ describe('ListPaginationService', () => {
       const result = await service.getPaginatedListData(queryParam);
 
       expect(result).toEqual([]);
+    });
+  });
+
+  describe('getNumberOfPagesPaginatedListData', () => {
+    it('should return number of pages data successfully', async () => {
+      const mockPagesResult = {
+        numberOfPages: 3,
+        numberOfResults: 25,
+        maximumAnalysisAreaInTheList: 1500,
+      };
+      const queryParam = {
+        listId: 1,
+        organizationDatabase: 'test-db',
+        rowsPerPage: 1000,
+        analysisAreaMin: 100,
+        analysisAreaMax: 2000,
+        searchString: 'test search',
+      };
+
+      uspGetAnalysisDataCountForUserList.run.mockResolvedValue(mockPagesResult);
+
+      const result = await service.getNumberOfPagesPaginatedListData(queryParam);
+
+      expect(result).toEqual(mockPagesResult);
+      expect(uspGetAnalysisDataCountForUserList.run).toHaveBeenCalledWith(
+        queryParam.organizationDatabase,
+        queryParam
+      );
+    });
+
+    it('should return empty array when no pages data is found', async () => {
+      const queryParam = {
+        listId: 1,
+        organizationDatabase: 'test-db',
+        rowsPerPage: 1000,
+      };
+
+      uspGetAnalysisDataCountForUserList.run.mockResolvedValue(null);
+
+      const result = await service.getNumberOfPagesPaginatedListData(queryParam);
+
+      expect(result).toEqual([]);
+      expect(uspGetAnalysisDataCountForUserList.run).toHaveBeenCalledWith(
+        queryParam.organizationDatabase,
+        queryParam
+      );
+    });
+
+    it('should handle minimal query parameters', async () => {
+      const mockPagesResult = {
+        numberOfPages: 1,
+        numberOfResults: 5,
+        maximumAnalysisAreaInTheList: 500,
+      };
+      const queryParam = {
+        listId: 2,
+        organizationDatabase: 'minimal-test-db',
+        rowsPerPage: 1000,
+      };
+
+      uspGetAnalysisDataCountForUserList.run.mockResolvedValue(mockPagesResult);
+
+      const result = await service.getNumberOfPagesPaginatedListData(queryParam);
+
+      expect(result).toEqual(mockPagesResult);
+      expect(uspGetAnalysisDataCountForUserList.run).toHaveBeenCalledWith(
+        'minimal-test-db',
+        queryParam
+      );
+    });
+
+    it('should handle optional parameters correctly', async () => {
+      const mockPagesResult = {
+        numberOfPages: 2,
+        numberOfResults: 15,
+        maximumAnalysisAreaInTheList: 800,
+      };
+      const queryParam = {
+        listId: 3,
+        organizationDatabase: 'optional-test-db',
+        rowsPerPage: 1000,
+        subState: 'test-substate',
+        analysisAreaMin: 50,
+        analysisAreaMax: 1000,
+        searchString: 'optional search',
+      };
+
+      uspGetAnalysisDataCountForUserList.run.mockResolvedValue(mockPagesResult);
+
+      const result = await service.getNumberOfPagesPaginatedListData(queryParam);
+
+      expect(result).toEqual(mockPagesResult);
+      expect(uspGetAnalysisDataCountForUserList.run).toHaveBeenCalledWith(
+        queryParam.organizationDatabase,
+        queryParam
+      );
     });
   });
 

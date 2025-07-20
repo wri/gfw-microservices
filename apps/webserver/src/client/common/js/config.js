@@ -12,12 +12,6 @@ export const DATA_API_URL = location.origin;
 // New analysis types that utilize GFW API geostore ID
 export const supportedGeostoreAnalysis = ['tree cover', 'glad', 'tree biomass', 'viirs', 'prodes'];
 
-// GADM Admin Service URL
-export const GADM_SERVICE__PROD =
-  'https://gfwpro-gis.globalforestwatch.org/arcgis/rest/services/GADM36_admin_2_gridded/MapServer/0'; // Only for production
-export const GADM_SERVICE__STAGING =
-  'https://gfwpro-gis-stg.globalforestwatch.org/arcgis/rest/services/GADM36_admin_2_gridded/MapServer/0'; // All others environments
-
 // Geostore admin URL
 export const baseGeostoreURL = 'https://production-api.globalforestwatch.org/v2/geostore/';
 

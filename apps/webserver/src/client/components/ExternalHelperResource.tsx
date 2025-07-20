@@ -9,8 +9,8 @@ type ExternalHelperResourceProps = {
 
 const colors = {
   primary: {
-    color: 'primary.dark',
-    backgroundColor: 'primary.light',
+    color: (theme: Theme) => theme.palette.primary[700],
+    backgroundColor: (theme: Theme) => theme.palette.primary[200],
     border: (theme: Theme) => `1px solid ${theme.palette.primary.main}`,
   },
   info: {

@@ -3,130 +3,14 @@ import ModalWrapper from './ModalWrapper';
 import { toggleSearch } from '../../actions/mapActions';
 import store from '../../store';
 import Search from '@arcgis/core/widgets/Search';
-import FeatureLayer from '@arcgis/core/layers/FeatureLayer';
-import { proLayers } from '../../../../common/js/proLayers.config';
 import createSearchSource from './createSearchSource';
 import createWorldGeocodingSource from './createWorldGeocodingSource';
 import { dms2Deg, getAdministrativeAreaName } from './searchUtils';
-import featureFlags from '../../../../../utils/general.utils';
 import './SearchModal.scss';
 
 const tabs = ['Search', 'Coordinates', 'Decimal Degrees'];
 
 const animationOptions = { duration: 300 };
-
-const gadm36Sources = [
-  // to be deleted when the isGadm41Available feature flag is removed
-  {
-    layer: new FeatureLayer({
-      url: 'https://gfwpro-gis.globalforestwatch.org/arcgis/rest/services/GADM36_admin/MapServer/6',
-      popupTemplate: {
-        title: 'Country: {name_0}',
-      },
-      id: `${proLayers.administrativeAreas}-country`,
-    }),
-    searchFields: ['name_0'],
-    suggestionTemplate: 'Country: {name_0}',
-    outFields: ['name_0'],
-    name: 'Administrative Areas: Countries',
-    placeholder: 'Search country',
-    maxSuggestions: 4,
-  },
-  {
-    layer: new FeatureLayer({
-      url: 'https://gfwpro-gis.globalforestwatch.org/arcgis/rest/services/GADM36_admin/MapServer/5',
-      popupTemplate: {
-        title: 'State: {name_1}',
-        content: [
-          {
-            type: 'fields',
-            fieldInfos: [
-              {
-                fieldName: 'name_0',
-                label: 'Country',
-                visible: true,
-              },
-            ],
-          },
-        ],
-      },
-      id: `${proLayers.administrativeAreas}-state`,
-    }),
-    searchFields: ['name_1'],
-    suggestionTemplate: 'Country: {name_0}, State: {name_1}',
-    outFields: ['name_0', 'name_1'],
-    name: 'Administrative Areas: States',
-    placeholder: 'Search state',
-    maxSuggestions: 4,
-  },
-  {
-    layer: new FeatureLayer({
-      url: 'https://gfwpro-gis.globalforestwatch.org/arcgis/rest/services/GADM36_admin/MapServer/4',
-      popupTemplate: {
-        title: 'Sub-State: {name_2}',
-        content: [
-          {
-            type: 'fields',
-            fieldInfos: [
-              {
-                fieldName: 'name_0',
-                label: 'Country',
-                visible: true,
-              },
-              {
-                fieldName: 'name_1',
-                label: 'State',
-                visible: true,
-              },
-            ],
-          },
-        ],
-      },
-      id: `${proLayers.administrativeAreas}-sub-state`,
-    }),
-    searchFields: ['name_2'],
-    suggestionTemplate: 'Country: {name_0}, State: {name_1}, Sub-State: {name_2}',
-    outFields: ['name_0', 'name_1', 'name_2'],
-    name: 'Administrative Areas: Sub-states',
-    placeholder: 'Search sub-state',
-    maxSuggestions: 4,
-  },
-  {
-    layer: new FeatureLayer({
-      url: 'https://gis-gfw.wri.org/arcgis/rest/services/commodities/MapServer/25',
-      id: `${proLayers.oilPalmConcessions}_feat`,
-    }),
-    searchFields: ['name', 'company', 'group_comp', 'subgroup'],
-    suggestionTemplate:
-      'Mill Name: {name}, Company: {company}, Group: {group_comp}, Subgroup: {subgroup}',
-    outFields: ['name', 'company', 'group_comp', 'subgroup', 'globalid'],
-    name: 'Oil Palm Concessions',
-    placeholder: 'Search Oil Palm Concessions',
-  },
-  {
-    layer: new FeatureLayer({
-      url: 'https://gis-gfw.wri.org/arcgis/rest/services/commodities/MapServer/25',
-      id: `${proLayers.rspoConcessions}_feat`,
-    }),
-    searchFields: ['name', 'company', 'group_comp', 'subgroup'],
-    suggestionTemplate:
-      'Mill Name: {name}, Company: {company}, Group: {group_comp}, Subgroup: {subgroup}',
-    outFields: ['name', 'company', 'group_comp', 'subgroup', 'globalid'],
-    name: 'RSPO Concessions',
-    placeholder: 'Search RSPO Concessions',
-  },
-  {
-    layer: new FeatureLayer({
-      url: 'https://gis-gfw.wri.org/arcgis/rest/services/conservation/MapServer/7',
-      id: `${proLayers.protectedAreas}_feat`,
-    }),
-    searchFields: ['name', 'orig_name'],
-    suggestionTemplate: 'Name: {name}, Original Name: {orig_name}',
-    outFields: ['name', 'orig_name', 'globalid'],
-    name: 'Protected Areas',
-    placeholder: 'Search Protected Areas',
-  },
-];
 
 export default class SearchModal extends Component {
   constructor(props) {
@@ -143,41 +27,37 @@ export default class SearchModal extends Component {
   }
 
   createSearch = () => {
-    const { isGadm41Available } = featureFlags;
     this.searchWidget = new Search({
       view: this.props.mapView,
       container: 'search-widget',
       minSuggestCharacters: 3,
       includeDefaultSources: false,
       sources: [
-        ...(isGadm41Available
-          ? [
-              createSearchSource(
-                'Administrative Areas',
-                '/map/gadm-admininstrative-boundaries',
-                getAdministrativeAreaName,
-                0
-              ),
-              createSearchSource(
-                'Universal Mill List',
-                '/map/gfw_universal_mill_list',
-                (item) => item.mill_name,
-                1
-              ),
-              createSearchSource(
-                'Indigenous or Community land area',
-                '/map/landmark_indigenous_and_community_lands',
-                (item) => item.name,
-                2
-              ),
-              createSearchSource(
-                'Protected Areas',
-                '/map/wdpa_licensed_protected_areas',
-                (item) => item.name,
-                3
-              ),
-            ]
-          : gadm36Sources),
+        createSearchSource(
+          'Administrative Areas',
+          '/map/gadm-admininstrative-boundaries',
+          getAdministrativeAreaName,
+          0
+        ),
+        createSearchSource(
+          'Universal Mill List',
+          '/map/gfw_universal_mill_list',
+          (item) => item.mill_name,
+          1
+        ),
+        createSearchSource(
+          'Indigenous or Community land area',
+          '/map/landmark_indigenous_and_community_lands',
+          (item) => item.name,
+          2
+        ),
+        createSearchSource(
+          'Protected Areas',
+          '/map/wdpa_licensed_protected_areas',
+          (item) => item.name,
+          3
+        ),
+
         createWorldGeocodingSource(4),
       ],
     });

@@ -260,6 +260,13 @@ const timeHorizon = (str) => {
 
 const accuracyOptions = (str) => {
   let returnValue = true;
+  // Workaround for the fact that the string can be a number
+  if (str && typeof str === 'string' && !isNaN(str)) {
+    str = Number(str);
+    if (str !== 0 && str !== 1 && str !== 2 && str !== 3) {
+      returnValue = false;
+    }
+  }
   if (str && typeof str === 'string') {
     if (
       str.toLowerCase() !== 'very confident' &&

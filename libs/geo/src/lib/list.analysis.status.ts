@@ -90,14 +90,16 @@ export const getListAnalysisStatusByListId = async (
 export const setSelectedAnalyses = async (
   clientDatabase: string,
   listId: number,
-  analysisIds: string[],
-  analysisStatus = listStatus.Pending
+  selectedAnalysisIds: string[],
+  statusToApply = listStatus.Pending
 ) => {
-  const analysisStatusData = await getListAnalysisStatusByListId(clientDatabase, listId);
-  if (!analysisStatusData || analysisStatusData.length === 0) {
-    await setListAnalysisStatus(clientDatabase, listId, analysisIds, analysisStatus);
-  } else {
-    await updateListAnalysis(clientDatabase, listId, analysisIds, analysisStatus);
+  const currentAnalyses = await getListAnalysisStatusByListId(clientDatabase, listId);
+  const toUpsert = selectedAnalysisIds;
+
+  await deleteListAnalyses(clientDatabase, listId, selectedAnalysisIds, currentAnalyses);
+
+  if (toUpsert.length > 0) {
+    await setListAnalysisStatus(clientDatabase, listId, toUpsert, statusToApply);
   }
 };
 
@@ -191,7 +193,7 @@ export const updateListAnalysis = async (
   analysisIds: string[],
   analysisStatus: number = listStatus.Pending
 ) => {
-  await addListAnalyses(clientDatabase, listId, analysisIds, analysisStatus);
+  await setListAnalysisStatus(clientDatabase, listId, analysisIds, analysisStatus);
 };
 
 export const handleCreateAnalysis = async (

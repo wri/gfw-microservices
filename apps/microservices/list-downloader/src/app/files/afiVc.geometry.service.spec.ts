@@ -518,13 +518,32 @@ const expectedResult = [
   '',
 ];
 describe('Shapefile Service', () => {
-  // Mock ColumnResolverService
+  // Mock ColumnResolverService - returns COCOA_GENERIC columns (template ID 13)
   const mockColumnResolverService = {
     resolveColumns: jest.fn().mockResolvedValue({
-      columns: ['default', 'columns'],
-      source: 'default',
-      resolvedFrom: 'test mock'
-    })
+      columns: [
+        'Location Name',
+        'Latitude',
+        'Longitude',
+        'Analysis Radius',
+        'Analysis Area',
+        'Location Classification',
+        'Company ID',
+        'Volume',
+        'Owner Name',
+        'Owner ID',
+        'Company Name',
+        'Supplier Name',
+        'Facility Name',
+        'Refinery Name',
+        'Certification',
+        'Start Date',
+        'End Date',
+        'Time Horizon',
+      ],
+      source: 'template',
+      resolvedFrom: 'templateId: 13',
+    }),
   } as unknown as ColumnResolverService;
 
   const afiGeometryService = new AfiGeometryService(mockColumnResolverService);

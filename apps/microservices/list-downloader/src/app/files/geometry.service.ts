@@ -29,7 +29,15 @@ export class GeometryService extends IPipeService {
   }
 
   async start(filters: ListFieldsFileRequest) {
-    const { listId, key, templateId, combinedColumnsSplitted, listName, organizationDatabase, isGFWList } = filters;
+    const {
+      listId,
+      key,
+      templateId,
+      combinedColumnsSplitted,
+      listName,
+      organizationDatabase,
+      isGFWList,
+    } = filters;
     this.logger.log(`(${listId}) - Starting shapefile stream to process data`);
     this.inputStream = new PassThrough({
       objectMode: true,
@@ -53,7 +61,9 @@ export class GeometryService extends IPipeService {
       templateId
     );
 
-    this.logger.log(`(${listId}) - Column resolution: ${columnResolution.resolvedFrom} (source: ${columnResolution.source})`);
+    this.logger.log(
+      `(${listId}) - Column resolution: ${columnResolution.resolvedFrom} (source: ${columnResolution.source})`
+    );
 
     let allFields = [...columnResolution.columns, ...combinedColumnsSplitted];
     allFields = [...new Set(allFields)];

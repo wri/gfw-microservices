@@ -145,13 +145,32 @@ const geoData = [
 ];
 
 describe('Shapefile Service', () => {
-  // Mock ColumnResolverService
+  // Mock ColumnResolverService - returns SOY_FARM columns (template ID 7)
   const mockColumnResolverService = {
     resolveColumns: jest.fn().mockResolvedValue({
-      columns: ['default', 'columns'],
-      source: 'default',
-      resolvedFrom: 'test mock'
-    })
+      columns: [
+        'Location Name',
+        'Latitude',
+        'Longitude',
+        'Analysis Radius',
+        'Analysis Area',
+        'Company ID',
+        'Cadaster ID',
+        'Volume',
+        'Owner Name',
+        'Owner ID',
+        'Facility Name',
+        'Facility E-mail',
+        'Company Name',
+        'Company Contact',
+        'Certification',
+        'Start Date',
+        'End Date',
+        'Time Horizon',
+      ],
+      source: 'template',
+      resolvedFrom: 'templateId: 7',
+    }),
   } as unknown as ColumnResolverService;
 
   const geometryService = new GeometryService(mockColumnResolverService);

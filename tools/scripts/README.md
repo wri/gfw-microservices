@@ -268,9 +268,6 @@ CONCURRENT_REQUESTS=20
 - Automatically generates unique list names with timestamps
 - Monitors analysis status and provides real-time updates
 
-
- 
-
 ### Getting Help
 
 Each script includes built-in help:

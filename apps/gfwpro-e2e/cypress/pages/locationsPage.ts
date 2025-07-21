@@ -90,9 +90,9 @@ class LocationsPage {
     subtitleFinishLegend: () => cy.get('.MuiTypography-caption'),
     returnToLocationBtn: () => cy.get('.MuiPaper-root > .MuiButtonBase-root'),
     checkBoxIconBtn: () => cy.get('[data-testid="CheckBoxOutlineBlankIcon"]').eq(0),
-    post2020Analysis: () => cy.contains('Post-2020 Risk Assessment'),
-    defReportAnalysis: () => cy.contains('Recent Deforestation Alerts'),
-    post2000Analysis: () => cy.contains('Post-2000 Forest Change'),
+    post2020Analysis: () => cy.get('[data-testid="checkbox-afi"]'),
+    defReportAnalysis: () => cy.get('[data-testid="checkbox-alerts"]'),
+    post2000Analysis: () => cy.get('[data-testid="checkbox-fcd"]'),
   };
 
   verifyLists(lists: string[], exist: boolean) {

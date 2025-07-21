@@ -219,6 +219,58 @@ The following branches are never deleted:
 ./create-release.sh release-candidate-81 ALL PROD
 ```
 
+### 4. `gfw_upload.sh`
+
+Performs concurrent uploads and analysis of CSV files to the GFW Pro External API.
+
+**Configuration:**
+
+Before running the script, you must configure the following variables in the script:
+
+- `API_KEY` - Your API key for authentication with the External API
+- `USER_EMAIL` - Your email address for the GFW Pro account
+- `BASE_URL` - The External API base URL (e.g., `https://api.example.com`)
+- `CSV_FILE` - Full path to the CSV file you want to upload
+
+**Usage:**
+
+```bash
+# First, edit the script to set your configuration
+vim gfw_upload.sh
+
+# Set the required variables:
+# API_KEY="your-api-key-here"
+# USER_EMAIL="your.email@example.org"
+# BASE_URL="https://your-external-api-url.com"
+# CSV_FILE="/path/to/your/file.csv"
+
+# Then execute the script
+./gfw_upload.sh
+```
+
+**Configuration Example:**
+
+```bash
+# Configuration
+API_KEY="abc123def456ghi789"
+USER_EMAIL="your.email@example.org"
+BASE_URL="https://external-api.gfw.pro"
+CSV_FILE="/Users/username/data/cocoa_locations.csv"
+ANALYSIS_ID="FCD"
+TEMPLATE_ID=15
+COMMODITY="cocoa generic"
+CONCURRENT_REQUESTS=20
+```
+
+**Features:**
+
+- Runs multiple concurrent upload processes (default: 20)
+- Automatically generates unique list names with timestamps
+- Monitors analysis status and provides real-time updates
+
+
+ 
+
 ### Getting Help
 
 Each script includes built-in help:

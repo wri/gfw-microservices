@@ -3,12 +3,12 @@
 # Configuration
 API_KEY=""
 USER_EMAIL=""
-BASE_URL="http://localhost:3335/api/v1"
+BASE_URL=""
 CSV_FILE=""
 ANALYSIS_ID="FCD"
 TEMPLATE_ID=15
 COMMODITY="cocoa generic"
-CONCURRENT_REQUESTS=10
+CONCURRENT_REQUESTS=20
 
 # Colors for output
 RED='\033[0;31m'
@@ -28,22 +28,24 @@ run_single_upload() {
     local LIST_NAME="test_gust_${PROCESS_ID}_$(date +%m_%d_%H_%M)"
 
     echo -e "${BLUE}[Process $PROCESS_ID] Starting upload process...${NC}"
+    echo -e "${GREEN}[Process $PROCESS_ID] List Name: $LIST_NAME${NC}"
 
     # Step 1: Prepare upload
     echo -e "${YELLOW}[Process $PROCESS_ID] Step 1: Preparing upload...${NC}"
     PREPARE_RESPONSE=$(curl -s -L --post302 -k \
-        -H "x-api-key: $API_KEY" \
-        -H "Content-Type: application/json" \
-        -X POST \
-        --data "{
-            \"userEmail\":\"$USER_EMAIL\",
-            \"fileType\": \"csv\"
-        }" \
-        "$BASE_URL/prepare_upload?userEmail=$USER_EMAIL")
+    -H "x-api-key: $API_KEY" \
+    -H "x-trace-id: $LIST_NAME" \
+    -H "Content-Type: application/json" \
+    -X POST \
+    --data "{
+    \"userEmail\":\"$USER_EMAIL\",
+    \"fileType\": \"csv\"
+    }" \
+    "$BASE_URL/prepare_upload?userEmail=$USER_EMAIL")
 
     if [ $? -ne 0 ]; then
-        echo -e "${RED}[Process $PROCESS_ID] Error: Failed to prepare upload${NC}"
-        return 1
+    echo -e "${RED}[Process $PROCESS_ID] Error: Failed to prepare upload${NC}"
+    return 1
     fi
 
     # Extract uploadId and uploadUrl from response
@@ -51,8 +53,8 @@ run_single_upload() {
     UPLOAD_URL=$(echo $PREPARE_RESPONSE | grep -o '"uploadUrl":"[^"]*' | cut -d'"' -f4)
 
     if [ -z "$UPLOAD_ID" ] || [ -z "$UPLOAD_URL" ]; then
-        echo -e "${RED}[Process $PROCESS_ID] Error: Could not extract uploadId or uploadUrl${NC}"
-        return 1
+    echo -e "${RED}[Process $PROCESS_ID] Error: Could not extract uploadId or uploadUrl${NC}"
+    return 1
     fi
 
     echo -e "${GREEN}[Process $PROCESS_ID] Upload ID: $UPLOAD_ID${NC}"
@@ -60,19 +62,20 @@ run_single_upload() {
     # Step 2: Upload CSV file
     echo -e "${YELLOW}[Process $PROCESS_ID] Step 2: Uploading CSV file...${NC}"
     if [ ! -f "$CSV_FILE" ]; then
-        echo -e "${RED}[Process $PROCESS_ID] Error: CSV file not found at $CSV_FILE${NC}"
-        return 1
+    echo -e "${RED}[Process $PROCESS_ID] Error: CSV file not found at $CSV_FILE${NC}"
+    return 1
     fi
 
     curl -s -k \
-        -H "Content-Type: text/csv" \
-        -X PUT \
-        -T "$CSV_FILE" \
-        "$UPLOAD_URL" > /dev/null
+    -H "Content-Type: text/csv" \
+    -H "x-trace-id: $LIST_NAME" \
+    -X PUT \
+    -T "$CSV_FILE" \
+    "$UPLOAD_URL" > /dev/null
 
     if [ $? -ne 0 ]; then
-        echo -e "${RED}[Process $PROCESS_ID] Error: Failed to upload CSV file${NC}"
-        return 1
+    echo -e "${RED}[Process $PROCESS_ID] Error: Failed to upload CSV file${NC}"
+    return 1
     fi
 
     echo -e "${GREEN}[Process $PROCESS_ID] CSV file uploaded successfully${NC}"
@@ -80,30 +83,31 @@ run_single_upload() {
     # Step 3: Upload the list
     echo -e "${YELLOW}[Process $PROCESS_ID] Step 3: Creating list...${NC}"
     LIST_RESPONSE=$(curl -s -L --post302 -k \
-        -H "x-api-key: $API_KEY" \
-        -H "Content-Type: application/json" \
-        -X POST \
-        --data "{
-            \"userEmail\": \"$USER_EMAIL\",
-            \"uploadId\": \"$UPLOAD_ID\",
-            \"listName\": \"$LIST_NAME\",
-            \"analysisIDs\": \"$ANALYSIS_ID\",
-            \"templateId\":$TEMPLATE_ID,
-            \"commodity\":\"$COMMODITY\"
-        }" \
-        "$BASE_URL/list/upload_new?userEmail=$USER_EMAIL")
+    -H "x-api-key: $API_KEY" \
+    -H "x-trace-id: $LIST_NAME" \
+    -H "Content-Type: application/json" \
+    -X POST \
+    --data "{
+    \"userEmail\": \"$USER_EMAIL\",
+    \"uploadId\": \"$UPLOAD_ID\",
+    \"listName\": \"$LIST_NAME\",
+    \"analysisIDs\": \"$ANALYSIS_ID\",
+    \"templateId\":$TEMPLATE_ID,
+    \"commodity\":\"$COMMODITY\"
+    }" \
+    "$BASE_URL/list/upload_new?userEmail=$USER_EMAIL")
 
     if [ $? -ne 0 ]; then
-        echo -e "${RED}[Process $PROCESS_ID] Error: Failed to create list${NC}"
-        return 1
+    echo -e "${RED}[Process $PROCESS_ID] Error: Failed to create list${NC}"
+    return 1
     fi
 
     # Extract listId from response
     LIST_ID=$(echo $LIST_RESPONSE | grep -o '"listId":"[^"]*' | cut -d'"' -f4)
 
     if [ -z "$LIST_ID" ]; then
-        echo -e "${RED}[Process $PROCESS_ID] Error: Could not extract listId${NC}"
-        return 1
+    echo -e "${RED}[Process $PROCESS_ID] Error: Could not extract listId${NC}"
+    return 1
     fi
 
     echo -e "${GREEN}[Process $PROCESS_ID] List ID: $LIST_ID${NC}"
@@ -115,45 +119,46 @@ run_single_upload() {
     MAX_ATTEMPTS=60
 
     while [ "$STATUS" = "Pending" ] && [ $COUNTER -lt $MAX_ATTEMPTS ]; do
-        echo "[Process $PROCESS_ID] Checking status... (attempt $((COUNTER + 1)))"
+    echo "[Process $PROCESS_ID] Checking status... (attempt $((COUNTER + 1)))"
 
-        STATUS_RESPONSE=$(curl -s \
-            -H "x-api-key: $API_KEY" \
-            -H "Content-Type: application/json" \
-            "$BASE_URL/list/$LIST_ID/analysis/$ANALYSIS_ID/status?userEmail=$USER_EMAIL")
+    STATUS_RESPONSE=$(curl -s \
+    -H "x-api-key: $API_KEY" \
+    -H "x-trace-id: $LIST_NAME" \
+    -H "Content-Type: application/json" \
+    "$BASE_URL/list/$LIST_ID/analysis/$ANALYSIS_ID/status?userEmail=$USER_EMAIL")
 
-        if [ $? -ne 0 ]; then
-            echo -e "${RED}[Process $PROCESS_ID] Error: Failed to check status${NC}"
-            return 1
-        fi
+    if [ $? -ne 0 ]; then
+    echo -e "${RED}[Process $PROCESS_ID] Error: Failed to check status${NC}"
+    return 1
+    fi
 
-        STATUS=$(echo $STATUS_RESPONSE | grep -o '"status":"[^"]*' | cut -d'"' -f4)
+    STATUS=$(echo $STATUS_RESPONSE | grep -o '"status":"[^"]*' | cut -d'"' -f4)
 
-        echo "[Process $PROCESS_ID] Current status: $STATUS"
+    echo "[Process $PROCESS_ID] Current status: $STATUS"
 
-        if [ "$STATUS" = "Completed" ]; then
-            echo -e "${GREEN}[Process $PROCESS_ID] Analysis completed!${NC}"
+    if [ "$STATUS" = "Completed" ]; then
+    echo -e "${GREEN}[Process $PROCESS_ID] Analysis completed!${NC}"
 
-            # Extract result URL
-            RESULT_URL=$(echo $STATUS_RESPONSE | grep -o '"resultUrl":"[^"]*' | cut -d'"' -f4)
-            if [ -n "$RESULT_URL" ]; then
-                echo -e "${GREEN}[Process $PROCESS_ID] Result URL: $RESULT_URL${NC}"
-                echo -e "${YELLOW}[Process $PROCESS_ID] Download: curl -o results_${PROCESS_ID}.zip '$RESULT_URL'${NC}"
-            fi
-            return 0
-        elif [ "$STATUS" = "Failed" ] || [ "$STATUS" = "Error" ]; then
-            echo -e "${RED}[Process $PROCESS_ID] Analysis failed!${NC}"
-            echo "[Process $PROCESS_ID] Response: $STATUS_RESPONSE"
-            return 1
-        fi
+    # Extract result URL
+    RESULT_URL=$(echo $STATUS_RESPONSE | grep -o '"resultUrl":"[^"]*' | cut -d'"' -f4)
+    if [ -n "$RESULT_URL" ]; then
+    echo -e "${GREEN}[Process $PROCESS_ID] Result URL: $RESULT_URL${NC}"
+    echo -e "${YELLOW}[Process $PROCESS_ID] Download: curl -o results_${PROCESS_ID}.zip '$RESULT_URL'${NC}"
+    fi
+    return 0
+    elif [ "$STATUS" = "Failed" ] || [ "$STATUS" = "Error" ]; then
+    echo -e "${RED}[Process $PROCESS_ID] Analysis failed!${NC}"
+    echo "[Process $PROCESS_ID] Response: $STATUS_RESPONSE"
+    return 1
+    fi
 
-        COUNTER=$((COUNTER + 1))
-        sleep 10
+    COUNTER=$((COUNTER + 1))
+    sleep 10
     done
 
     if [ $COUNTER -eq $MAX_ATTEMPTS ]; then
-        echo -e "${RED}[Process $PROCESS_ID] Timeout: Analysis still pending${NC}"
-        return 1
+    echo -e "${RED}[Process $PROCESS_ID] Timeout: Analysis still pending${NC}"
+    return 1
     fi
 }
 
@@ -177,11 +182,11 @@ for i in $(seq 1 $CONCURRENT_REQUESTS); do
     EXIT_CODE=$?
 
     if [ $EXIT_CODE -eq 0 ]; then
-        echo -e "${GREEN}Process $i completed successfully${NC}"
-        SUCCESS_COUNT=$((SUCCESS_COUNT + 1))
+    echo -e "${GREEN}Process $i completed successfully${NC}"
+    SUCCESS_COUNT=$((SUCCESS_COUNT + 1))
     else
-        echo -e "${RED}Process $i failed${NC}"
-        FAILED_COUNT=$((FAILED_COUNT + 1))
+    echo -e "${RED}Process $i failed${NC}"
+    FAILED_COUNT=$((FAILED_COUNT + 1))
     fi
 done
 

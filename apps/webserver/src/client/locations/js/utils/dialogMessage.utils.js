@@ -2,7 +2,6 @@ import {
   appendListConfig,
   copyListConfig,
   moveListConfig,
-  saveAsDraftListConfig,
   saveListConfig,
 } from '../../../../config/config/locations.config';
 
@@ -25,8 +24,6 @@ export function getDialogTitle(responseMessages, numberOfLocations = 1) {
       dialogTitle = saveListConfig.UploadLocationsSingleNewList.dialogTitle;
     } else if (responseMessages === moveListConfig.success) {
       dialogTitle = moveListConfig.UploadLocationsSingleNewList.dialogTitle;
-    } else if (responseMessages === saveAsDraftListConfig.success) {
-      dialogTitle = saveAsDraftListConfig.UploadLocationsSingleNewList.dialogTitle;
     }
   } else {
     if (responseMessages === appendListConfig.success) {
@@ -37,8 +34,6 @@ export function getDialogTitle(responseMessages, numberOfLocations = 1) {
       dialogTitle = saveListConfig.UploadLocationsMultipleNewList.dialogTitle;
     } else if (responseMessages === moveListConfig.success) {
       dialogTitle = moveListConfig.UploadLocationsMultipleNewList.dialogTitle;
-    } else if (responseMessages === saveAsDraftListConfig.success) {
-      dialogTitle = saveAsDraftListConfig.UploadLocationsMultipleNewList.dialogTitle;
     }
   }
 
@@ -87,9 +82,6 @@ export function getDialogContent(
         : moveListConfig.UploadLocationsSingleNewList.saveAsDraft.dialogMessage(
             destinationListName
           );
-    } else if (responseMessages === saveAsDraftListConfig.success) {
-      dialogContent =
-        saveAsDraftListConfig.UploadLocationsSingleNewList.dialogMessage(destinationListName);
     }
   } else {
     if (responseMessages === appendListConfig.success) {
@@ -118,9 +110,6 @@ export function getDialogContent(
         : moveListConfig.UploadLocationsMultipleNewList.saveAsDraft.dialogMessage(
             destinationListName
           );
-    } else if (responseMessages === saveAsDraftListConfig.success) {
-      dialogContent =
-        saveAsDraftListConfig.UploadLocationsMultipleNewList.dialogMessage(destinationListName);
     }
   }
 

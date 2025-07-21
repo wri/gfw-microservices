@@ -102,35 +102,6 @@ const copyListConfig = {
   },
 };
 
-const saveAsDraftListConfig = {
-  route: '/locations/saveAsDraftList',
-  success: 'List saved as Draft.',
-  failed: 'List saving as Draft failed.',
-  copyMoveMessagesLocationAddedAsDraft: {
-    analytics: {
-      title: 'create new list click',
-      message: 'user copied locations from an existing list to create a new Draft list',
-    },
-    title: 'Done',
-    message: 'You have successfully uploaded your locations to a new Draft list.',
-  },
-  // *********************
-  // ** Add to New List **
-  // *********************
-  UploadLocationsSingleNewList: {
-    dialogTitle: saveListConfig.UploadLocationsSingleNewList.dialogTitle,
-    dialogMessage(listName) {
-      return saveListConfig.UploadLocationsSingleNewList.saveAsDraft.dialogMessage(listName);
-    },
-  },
-  UploadLocationsMultipleNewList: {
-    dialogTitle: saveListConfig.UploadLocationsMultipleNewList.dialogTitle,
-    dialogMessage(listName) {
-      return saveListConfig.UploadLocationsMultipleNewList.dialogMessage(listName);
-    },
-  },
-};
-
 exports.GEO_TRELLIS_ANALYZE_LIST = {
   route: '/geoTrellisAnalyzeList',
 };
@@ -140,5 +111,4 @@ exports.DEFAULT_LIST_LOCATIONS_ROWS_REQUESTED = 10000;
 exports.saveListConfig = saveListConfig;
 exports.appendListConfig = appendListConfig;
 exports.copyListConfig = copyListConfig;
-exports.saveAsDraftListConfig = saveAsDraftListConfig;
 exports.moveListConfig = moveListConfig;

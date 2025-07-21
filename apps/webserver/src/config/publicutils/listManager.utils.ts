@@ -5,7 +5,6 @@
  *                 list data.
  *
  * @function {createList}
- * @function {saveAsDraftList}
  * @function {getUserLists}
  * @function {getUserListsWithAnalysisId}
  * @function {rerunExistingList}
@@ -16,7 +15,6 @@
  * @function {getLocationsCount}
  * @function {uploadToExistingList}
  * @function {uploadToNewList}
- * @function {uploadToNewListAndSaveAsDraft}
  * @function {updateIndividualLocationsStatusID}
  * @function {deleteLocations}
  * @function {deleteFilteredLocations}
@@ -208,167 +206,6 @@ const createList = async (
         resolve(list_id);
       })
 
-      .catch((errorMessage) => {
-        // Call appropriate rollbacks
-        if (uspCreateListExecuted) {
-          rollbackUtils.deleteOrganizationTableRow(req, 'Lists', list_id, 'id');
-        }
-        if (uspAddListToAnalysesExecuted) {
-          rollbackUtils.deleteOrganizationTableRow(req, 'Analyses', list_id, 'list_id');
-        }
-        if (uspCreateListTableExecuted) {
-          rollbackUtils.dropOrganizationTable(req, list.list_table);
-        }
-        if (uspCreateAnalysisTableExecuted) {
-          rollbackUtils.dropOrganizationTable(req, list.analysis_table);
-          rollbackUtils.deleteOrganizationTableRow(req, 'ListsAnalysisStatus', list_id, 'ListID');
-        }
-
-        // Create Error Object and reject the error
-        const errorObject = errorUtils.createErrorMessage(
-          req,
-          errorUtils.ERROR_CODES.failedToCreateList,
-          `Failed to create ${list.list_name}`,
-          errorMessage
-        );
-        reject(errorObject);
-      });
-  });
-};
-
-/**
- * Save as Draft List
- *
- * @param {Object} req - Mandatory first parameter to pass the request object into the function in case session info is required.
- * @param {string} list_name - List name (eg. 'Recent Cocoa Generic 35')
- * @param {number} template_id - List template ID (eg. 13)
- * @param {string} location_classification - Location Classification (eg. 'property')
- * @param {number} user_id - User ID of user that is creating list (eg. 1)
- * @param {Object[]} custom_attributes - List of objects with custom_attributes (name and type)
- * @param {string} gfw_list_id - The ID of the GFW List that this new list is associated with
- * @return {Promise<any>}
- */
-const saveAsDraftList = async (
-  req,
-  list_name,
-  template_id,
-  location_classification,
-  user_id,
-  custom_attributes,
-  gfw_list_id,
-  analysisIds = [],
-  commodity = null
-) => {
-  let list_id = null;
-  // Tracking Stored Procedure Executions for rollbacks
-  let uspCreateListExecuted = false;
-  let uspAddListToAnalysesExecuted = false;
-  let uspCreateListTableExecuted = false;
-  let uspCreateAnalysisTableExecuted = false;
-
-  // Transform list name
-  const list = listUtils.createListNameSchema(list_name);
-
-  const custom_attribute_names = custom_attributes
-    ? custom_attributes.map((a) => a.column_name).toString()
-    : [];
-  const custom_attribute_types = custom_attributes
-    ? custom_attributes.map((a) => a.column_type).toString()
-    : [];
-  // When creating new list, status is always Draft when we Save as Draft list
-  const list_status_id = listStatus.Draft;
-
-  return new Promise((resolve, reject) => {
-    // Parameters for stored procedure
-    const parameters = [
-      { field: 'user_id', type: sql.Int, value: user_id },
-      { field: 'template_id', type: sql.Int, value: template_id },
-      { field: 'list_name', type: sql.NVarChar(150), value: list.list_name },
-      { field: 'list_table_name', type: sql.NVarChar(150), value: list.list_table },
-      { field: 'list_analysis_table_name', type: sql.NVarChar(150), value: list.analysis_table },
-      { field: 'list_status_id', type: sql.Int, value: list_status_id },
-      { field: 'location_classification', type: sql.NVarChar(150), value: location_classification },
-      { field: 'custom_attribute_names', type: sql.NVarChar(2000), value: custom_attribute_names },
-      { field: 'custom_attribute_types', type: sql.NVarChar(2000), value: custom_attribute_types },
-      { field: 'associated_gfwlist', type: sql.TinyInt, value: gfw_list_id },
-      {
-        field: 'version',
-        type: sql.Int,
-        value: LIST_UPLOAD_LEGACY_VERSION,
-      },
-      { field: 'commodity', type: sql.NVarChar(150), value: commodity },
-    ];
-
-    sqlUtils
-      .executeOrganizationStoredProcedure(req, 'uspCreateList', parameters)
-      .then((recordsets) => {
-        // Previous Stored Procedure executed
-        uspCreateListExecuted = true;
-
-        // Grabbing list id
-        list_id = recordsets[0].list_id;
-
-        // After the list has been created, insert row into [clientstore].[dbo].[Analyses]
-        const params = [{ field: 'list_id', type: sql.Int, value: list_id }];
-        return sqlUtils.executeOrganizationStoredProcedure(req, 'uspAddListToAnalyses', params);
-      })
-      .then(() => {
-        // Set previously executed stored procedure to true
-        uspAddListToAnalysesExecuted = true;
-
-        // Create table query String
-        const params: SqlParamType[] = [
-          { field: 'template_id', type: sql.Int, value: template_id },
-        ];
-        for (let i = 0; i < 3; i++) {
-          params.push({
-            field: `custom_attribute_${i + 1}`,
-            type: sql.NVarChar(50),
-            value: custom_attributes[i]?.column_name || null,
-          });
-          params.push({
-            field: `custom_attribute_${i + 1}_type`,
-            type: sql.NVarChar(50),
-            value: custom_attributes[i]?.column_type || null,
-          });
-        }
-        return sqlUtils.executeSystemStoredProcedure(req, 'uspGetTableQueryString', params);
-      })
-      .then((recordsets) => {
-        const params = [
-          { field: 'table_name', type: sql.NVarChar(150), value: list.list_table },
-          { field: 'query_string', type: sql.NVarChar(sql.MAX), value: recordsets[0].query_string },
-        ];
-        return sqlUtils.executeOrganizationStoredProcedure(req, 'uspCreateListTable', params);
-      })
-      .then(() => {
-        // Previous Stored Procedure executed
-        uspCreateListTableExecuted = true;
-
-        // create the corresponding analysis table
-        const params = [
-          {
-            field: 'list_analysis_table_name',
-            type: sql.NVarChar(150),
-            value: list.analysis_table,
-          },
-        ];
-        return sqlUtils.executeOrganizationStoredProcedure(req, 'uspCreateAnalysisTable', params);
-      })
-      .then(() => {
-        // Previous Stored Procedure executed
-        uspCreateAnalysisTableExecuted = true;
-        const { organization_database } = req.session;
-        return setSelectedAnalyses(organization_database, list_id, analysisIds, listStatus.Draft);
-      })
-      .then(() => {
-        logger.logActivity(
-          req,
-          logger.listActivityTypes.List.ListCreated,
-          `User ID ${req.session.organization_user_id} has created a list.`
-        );
-        resolve(list_id);
-      })
       .catch((errorMessage) => {
         // Call appropriate rollbacks
         if (uspCreateListExecuted) {
@@ -1027,86 +864,6 @@ export const uploadToNewList = (
           `User ID ${req.session.organization_user_id} has uploaded to new list.`
         );
         resolve({ resultGeoJSON, newListID });
-      })
-      .catch((errorMessage) => {
-        const errorObject = errorUtils.createErrorMessage(
-          req,
-          errorUtils.ERROR_CODES.failedToUploadToNewList,
-          `Failed to append to upload new list ${list.list_name}.`,
-          errorMessage
-        );
-        reject(errorObject);
-      });
-  });
-};
-
-/** @function {uploadToNewListAndSaveAsDraft}
- *   @summary Creates new list and table when user Save list as Draft
- *   @param {Object} req - Mandatory first parameter to pass the request object into the function in case session info is required.
- *   @param {string} list_name - List name (eg. 'Recent Cocoa Generic 35')
- *   @param {number} template_id - List template ID (eg. 13)
- *   @param commodity
- *   @param {string} location_classification - Location Classification (eg. 'property')
- *   @param {array} custom_attributes - array of objects with custom_attributes (name and type)
- *   @param {object} geojson - Feature Collection geometries of all locations
- *   @param {string} gfw_list_id - The ID of the GFW List that this new list is associated with
- *   @return {Promise}
- */
-export const uploadToNewListAndSaveAsDraft = (
-  req,
-  list_name,
-  template_id,
-  commodity,
-  location_classification,
-  custom_attributes,
-  geojson,
-  gfw_list_id,
-  analysisIds,
-  attributes
-) => {
-  const { original_gfw_list } = req.body;
-  const user_id = req.session.organization_user_id;
-  const list = listUtils.createListNameSchema(list_name);
-  let listID;
-
-  return new Promise((resolve, reject) => {
-    saveAsDraftList(
-      req,
-      list_name,
-      template_id,
-      location_classification,
-      user_id,
-      custom_attributes,
-      gfw_list_id,
-      analysisIds
-    )
-      .then((list_id) => {
-        listID = list_id;
-        return uploadToExistingList(req, list_id, list_name, geojson, commodity, attributes);
-      })
-      .then(async (geojson) => {
-        // Getting list analysis table name
-        const { analysis_table } = listUtils.createListNameSchema(list_name);
-
-        // Getting locations IDs
-        const locationsIDs = getLocationIdsFromGeoJSON(geojson);
-
-        if (!original_gfw_list) {
-          // Changing all locations status IDs to be Draft
-          await updateIndividualLocationsStatusID(
-            req,
-            analysis_table,
-            locationsIDs,
-            listStatus.Draft
-          );
-        }
-
-        logger.logActivity(
-          req,
-          logger.listActivityTypes.List.ListUpdateNew,
-          `User ID ${req.session.organization_user_id} has uploaded to new list.`
-        );
-        resolve({ resultGeoJSON: geojson, newListID: listID });
       })
       .catch((errorMessage) => {
         const errorObject = errorUtils.createErrorMessage(

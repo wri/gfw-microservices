@@ -447,6 +447,7 @@ export function ConfigureList({ userLists }: { userLists: UserList[] }) {
                           checked={!!field.value}
                           onChange={(e) => handleAnalysisChange(e, field, id)}
                           inputRef={field.ref}
+                          data-testid={`checkbox-${id.toLocaleLowerCase()}`}
                         />
                       }
                       sx={{

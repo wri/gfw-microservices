@@ -439,15 +439,6 @@ export async function setListAnalysisStatus(
   const connection = await clientStoreConnection.getConnection(clientDatabase);
   const listAnalysisStatusRepository = connection.getRepository(ListsAnalysisStatus);
 
-  // Get current analysis statuses
-  const currentAnalysisStatuses = await listAnalysisStatusRepository.findBy({
-    listId,
-  });
-  // Check if the list was uploaded by EAPI
-  if (!isFromEAPI) {
-    await deleteListAnalyses(clientDatabase, listId, analysisIds, currentAnalysisStatuses);
-  }
-
   // Update status for all analysis types
   const isPalmRiskIncluded = analysisIds.includes(analysisTypes.PALM_RISK);
   await Promise.all(

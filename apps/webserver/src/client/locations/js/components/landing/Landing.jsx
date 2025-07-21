@@ -25,8 +25,6 @@ import ListsFilter from '../lists/ListsFilter';
 import store from '../../store';
 import '../../../css/locations.scss';
 import AddLocationChooser, { CHOICES } from './AddLocationChooser';
-import SavedLocationsSummary from './SavedLocationsSummary';
-import SidebarTemplateDownload from './SidebarTemplateDownload';
 import GfwLocationList from './GfwLocationList';
 import Folder from './Folder';
 import IconPlus from '../../../../common/js/components/icon/IconPlus';
@@ -241,7 +239,6 @@ class Landing extends Component {
       isReachedAccountUsageLimit,
     } = this.state;
     const {
-      locationCount: counts,
       userLists,
       userSharedLists,
       userFolders,
@@ -377,23 +374,6 @@ class Landing extends Component {
                   />
                 </>
               )}
-              <SidebarTemplateDownload language={language} />
-              <SavedLocationsSummary
-                counts={[
-                  {
-                    label: `${locationsPage.landing.investments}`,
-                    count: counts.InvestmentCount,
-                  },
-                  {
-                    label: `${locationsPage.landing.commodities}`,
-                    count: counts.CommodityCount,
-                  },
-                  {
-                    label: `${locationsPage.landing.total}`,
-                    count: counts.TotalCount,
-                  },
-                ]}
-              />
             </aside>
           )}
           <section className="col main-panel">

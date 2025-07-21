@@ -46,15 +46,9 @@ function ChangeTypeOfAnalysisModal({
   const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
-    const isAddingElements = selectedAnalysis.some(
-      (item) => !initialAnalysisSelection.includes(item)
-    );
+    const isAdding = selectedAnalysis.some((item) => !initialAnalysisSelection.includes(item));
 
-    if (isAddingElements) {
-      setIsAddingAnalysis(true);
-    } else if (initialAnalysisSelection.length > selectedAnalysis.length) {
-      setIsAddingAnalysis(false);
-    }
+    setIsAddingAnalysis(isAdding);
   }, [selectedAnalysis]);
 
   const saveSelectedAnalysis = (saveAsDraft = false) => {
@@ -67,10 +61,17 @@ function ChangeTypeOfAnalysisModal({
   };
 
   const requestAnalysisForSelectedTypes = () => {
-    // Filter out GHG analysis before sending to GeoTrellis
-    const analysesForGeoTrellis = selectedAnalysis.filter(
-      (analysisId) => analysisId !== analysisTypes.GREENHOUSE_GAS_EMISSIONS
-    );
+    const analysesForGeoTrellis = selectedAnalysis.filter((id) => {
+      // Filter out GHG analysis before sending to GeoTrellis
+      if (id === analysisTypes.GREENHOUSE_GAS_EMISSIONS) {
+        return false;
+      }
+
+      const prevStatus = listAnalysesStatus.find((a) => a.analysisId === id)?.status;
+
+      // Include only if it is a new analysis or was in draft (needs processing)
+      return !initialAnalysisSelection.includes(id) || prevStatus === listStatus.Draft;
+    });
 
     if (analysesForGeoTrellis.length === 0) {
       return Promise.resolve();
@@ -97,7 +98,35 @@ function ChangeTypeOfAnalysisModal({
 
     const promises = [saveSelectedAnalysis()];
 
-    if (isAddingAnalysis) {
+    const isGeoTrellisNeeded = selectedAnalysis.some((id) => {
+      // Exclude GREENHOUSE_GAS_EMISSIONS from GeoTrellis processing
+      if (id === analysisTypes.GREENHOUSE_GAS_EMISSIONS) {
+        return false;
+      }
+
+      // Get the previous status of this analysis, if any
+      const previousStatus = listAnalysesStatus.find((a) => a.analysisId === id)?.status;
+
+      // Case 1: Analysis is newly added (was not in initial selection)
+      if (!initialAnalysisSelection.includes(id)) {
+        console.log(id, '// Case 1: Analysis is newly added (was not in initial selection)');
+        return true;
+      }
+
+      // Case 2: Analysis was previously saved as Draft — needs to be processed now
+      if (previousStatus === listStatus.Draft) {
+        console.log(
+          previousStatus,
+          '// Case 2: Analysis was previously saved as Draft — needs to be processed now'
+        );
+        return true;
+      }
+
+      // Otherwise, no need to trigger GeoTrellis for this analysis
+      return false;
+    });
+
+    if (isGeoTrellisNeeded) {
       promises.push(requestAnalysisForSelectedTypes());
     }
 
@@ -153,9 +182,9 @@ function ChangeTypeOfAnalysisModal({
                   <ButtonWithConfirmationPrompt
                     buttonLabel="Submit Analysis"
                     confirmationMessage={<AddAnalysisTypeConfirmationMessage />}
-                    disabled={selectedAnalysis.every((analysis) =>
-                      initialAnalysisSelection.includes(analysis)
-                    )}
+                    disabled={
+                      !selectedAnalysis.length || (isSelectionUnchanged && !hasDraftInSelection)
+                    }
                     onConfirm={submitSelectedAnalysis}
                     onCancel={revertChanges}
                   />

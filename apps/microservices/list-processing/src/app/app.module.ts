@@ -9,16 +9,13 @@ const envModule = ConfigModule.forRoot({
   isGlobal: true,
 });
 
-import { Module } from '@nestjs/common';
+import { Module, MiddlewareConsumer } from '@nestjs/common';
 import { S3Client } from '@aws-sdk/client-s3';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { DeleteListTypeOrm, SqlModule, TypeOrmSystemModule } from '@wri-monorepos/sql';
 import { LocationService } from '../services/locations.service';
 import { ListService } from '../services/list.service';
-import { LockListService } from '../services/lock.list.service';
-import { GeoService } from '@wri-monorepos/geo';
-import { ListPaginationService } from '../services/list.pagination.service';
 import { FCDModule } from './fcd';
 import { SchedulerModule } from './scheduler';
 import { AFIModule } from './afi';
@@ -30,6 +27,8 @@ import { ListModule } from './list';
 import { GHGModule } from './ghg';
 import { ListCopyMoveModule } from './list-copy-move';
 import { ConvertersModule } from './converters';
+import { TraceIdMiddleware } from '@wri-monorepos/shared';
+import { GeoModule } from '@wri-monorepos/geo';
 
 @Module({
   imports: [
@@ -43,6 +42,7 @@ import { ConvertersModule } from './converters';
     AwsModule,
     ConvertersModule,
     FCDModule,
+    GeoModule,
     GHGModule,
     HealthModule,
     ListUploadModule,
@@ -54,11 +54,8 @@ import { ConvertersModule } from './converters';
   controllers: [AppController],
   providers: [
     AppService,
-    ListPaginationService,
     LocationService,
-    GeoService,
     ListService,
-    LockListService,
     DeleteListTypeOrm,
     {
       provide: 'S3Client',
@@ -75,4 +72,9 @@ import { ConvertersModule } from './converters';
     },
   ],
 })
-export class AppModule {}
+export class AppModule {
+  configure(consumer: MiddlewareConsumer) {
+    // Apply trace ID middleware to all routes
+    consumer.apply(TraceIdMiddleware).forRoutes('*path');
+  }
+}

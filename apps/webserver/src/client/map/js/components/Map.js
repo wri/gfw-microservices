@@ -20,7 +20,6 @@ import SpatialReference from '@arcgis/core/geometry/SpatialReference';
 import CustomDialog from '../../../common/js/components/CustomDialog/CustomDialog';
 
 import { addCoordinateTextFromPoint } from '../../../locations/js/components/adding/PolygonCoordinates/polygonCoordinates.utils';
-import featureFlags from '../../../../utils/general.utils';
 
 import store from '../store';
 import {
@@ -168,8 +167,6 @@ const mapStyle = {
 
 let currentAnalysisCall;
 
-const { isGadm41Available } = featureFlags;
-
 class Map extends Component {
   constructor(props) {
     super(props);
@@ -255,19 +252,9 @@ class Map extends Component {
 
     const { latitude, longitude, zoom } = queryParams;
 
-    let esriMap;
-    if (isGadm41Available) {
-      esriMap = new EsriMap({
-        basemap: getBasemapConfiguration(),
-      });
-    } else {
-      esriMap = new EsriMap();
-      esriMap.add(
-        new VectorTileLayer(mapPage.basemaps[0].customVectorUrl, {
-          id: mapPage.basemaps[0].id,
-        })
-      );
-    }
+    const esriMap = new EsriMap({
+      basemap: getBasemapConfiguration(),
+    });
 
     const mapviewCenter = latitude && longitude ? [longitude, latitude] : DEFAULT_MAPVIEW_CENTER;
 
@@ -275,11 +262,11 @@ class Map extends Component {
       container: this.refs.mapView,
       center: mapviewCenter,
       zoom: zoom ? zoom - 1 : 3,
-      ...(isGadm41Available && {
-        background: {
-          color: MAP_WATER_COLOR,
-        },
-      }),
+
+      background: {
+        color: MAP_WATER_COLOR,
+      },
+
       map: esriMap,
       ui: {
         components: ['attribution'],
@@ -1607,8 +1594,14 @@ class Map extends Component {
     const { esriJson, locationName, globalIds, activeGFWList, selectedMapFeatureAttributes } =
       this.state;
 
+    // When a location is added from an address search result, its point geometry is converted into a polygon.
+    let geometry =
+      esriJson.type === 'point'
+        ? GeometryEngine.geodesicBuffer(esriJson, 1, 'kilometers')
+        : esriJson;
+
     this.setState({ spinnerOn: false });
-    const geoString = JSON.stringify(esriJson);
+    const geoString = JSON.stringify(geometry);
 
     const requestObject = {
       goToEditList: true,
@@ -1792,8 +1785,7 @@ class Map extends Component {
             (action.id === 'ANALYZE' && currentForestChange && !isPointGeometry) ||
             (action.id === 'ADD LOCATION' &&
               !noLocationLayers.includes(selectedFeat.layerName) &&
-              selectedFeat.attributes?.adm_level !== '0' &&
-              !isPointGeometry);
+              selectedFeat.attributes?.adm_level !== '0');
         }
       });
     });

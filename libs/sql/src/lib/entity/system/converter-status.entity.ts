@@ -11,7 +11,7 @@ export class ConverterStatus {
   @Column({ name: 'start_time', type: 'datetime', nullable: true })
   startTime: Date;
 
-  @Column({ name: 'status', type: 'nvarchar', nullable: true })
+  @Column({ name: 'status', type: 'nvarchar', length: 32, nullable: true })
   status: string;
 
   @Column({ name: 'organization_id', type: 'int', nullable: true })

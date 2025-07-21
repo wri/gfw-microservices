@@ -11,9 +11,16 @@ import { AppModule } from './app/app.module';
 import { SecurityHeaderMiddleware } from './middleware/security-header.middleware';
 import { ConfigService } from '@nestjs/config';
 import { ServerConfigType } from './validators/server-config';
+import { ConsoleLog, initializeGlobalAxiosTracing } from '@wri-monorepos/shared';
 
 async function bootstrap() {
-  const app = await NestFactory.create<NestExpressApplication>(AppModule);
+  // Initialize global axios tracing before creating the app
+  initializeGlobalAxiosTracing();
+
+  const app = await NestFactory.create<NestExpressApplication>(AppModule, {
+    logger: new ConsoleLog(),
+    bufferLogs: true, // Buffer logs until custom logger is initialized to prevent early messages from using default logger
+  });
   app.set('query parser', 'extended');
 
   const globalPrefix = 'api';

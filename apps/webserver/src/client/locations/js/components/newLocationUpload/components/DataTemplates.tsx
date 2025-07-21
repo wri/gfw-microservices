@@ -197,7 +197,7 @@ export function DataTemplates({ isOpen, onClose }: DataTemplatesProps) {
                 >
                   <AccordionSummary
                     sx={{
-                      backgroundColor: isSelected ? theme.palette.primary.light : 'none',
+                      backgroundColor: isSelected ? theme.palette.primary[200] : 'none',
                       '& .MuiAccordionSummary-content': {
                         margin: 0,
                       },

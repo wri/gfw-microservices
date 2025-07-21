@@ -75,7 +75,7 @@ export abstract class AbstractHandler<T> implements Handler<T> {
     let result: T = chainType;
     await AbstractHandler.updateListsUploadStatus(
       result as ChainType,
-      'Starting list upload process'
+      'Starting list upload process - ' + chain.constructor.name
     );
     while (nextJob) {
       const start = performance.now();
@@ -110,7 +110,7 @@ export abstract class AbstractHandler<T> implements Handler<T> {
     }
     await AbstractHandler.updateListsUploadStatus(
       result as ChainType,
-      'Ending list upload process'
+      'Ending list upload process - ' + chain.constructor.name
     );
     return result;
   }

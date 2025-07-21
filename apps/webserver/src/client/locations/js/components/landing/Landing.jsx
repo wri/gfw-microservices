@@ -1,6 +1,7 @@
 import { Component } from 'react';
 import { Dialog } from 'material-ui';
-import { Box, Typography } from '@mui/material';
+import { Alert, AlertTitle, Box, IconButton as IconButtonMui, Typography } from '@mui/material';
+import { Campaign, Close } from '@mui/icons-material';
 import { withRouter } from 'react-router-dom';
 import Banner from '../../../../common/js/components/Banners/Banner';
 import UsageNearLimitBanner from '../../../../common/js/components/Banners/UsageNearLimitBanner';
@@ -48,9 +49,13 @@ import getAccountUsagePercentage from './getAccountUsagePercentage';
 import featureFlags from '../../../../../utils/general.utils';
 import { DATA_CY, ExternalLinks } from '../../../../utils/constants';
 
+const EUDR_BANNER_KEY = 'GFW-is-landing-eudr-banner-dismissed';
 class Landing extends Component {
   constructor(props) {
     super(props);
+
+    const isEudrBannerDismissed = !!localStorage.getItem(EUDR_BANNER_KEY);
+
     this.state = {
       addLocationDialogOpen: false,
       bannerContent: '',
@@ -66,6 +71,7 @@ class Landing extends Component {
       listsSharedWithMe: [],
       isReachingAccountUsageLimit: false,
       isReachedAccountUsageLimit: false,
+      isEudrBannerDismissed,
     };
   }
 
@@ -428,6 +434,46 @@ class Landing extends Component {
                   </Box>
                 </Box>
               )}
+
+              {!this.state.isEudrBannerDismissed && (
+                <Alert
+                  severity="info"
+                  iconMapping={{
+                    info: <Campaign />,
+                  }}
+                  action={
+                    <IconButtonMui
+                      onClick={() => {
+                        localStorage.setItem(EUDR_BANNER_KEY, 1);
+                        this.setState({ isEudrBannerDismissed: true });
+                      }}
+                      disableRipple
+                    >
+                      <Close sx={{ color: (theme) => theme.palette.text.primary }} />
+                    </IconButtonMui>
+                  }
+                  sx={{
+                    borderRadius: 1,
+                    mb: 2,
+                    border: (theme) => `1px solid ${theme.palette.secondary[300]}`,
+                    backgroundColor: (theme) => theme.palette.secondary[100],
+                    color: (theme) => theme.palette.secondary[900],
+                    '& svg': {
+                      color: (theme) => theme.palette.secondary[700],
+                    },
+                  }}
+                >
+                  <AlertTitle>
+                    <Typography variant="body1" sx={{ fontWeight: 'bold' }}>
+                      Looking for EUDR-related analyses?
+                    </Typography>
+                  </AlertTitle>
+                  <Typography variant="body1">
+                    The Post-2020 Risk Assessment is recommended to support EUDR compliance.
+                  </Typography>
+                </Alert>
+              )}
+
               {isUploadListUiAvailable ? (
                 <Typography variant="h6" sx={{ mb: 1 }}>
                   {locationsPage.landing.gfwLists}

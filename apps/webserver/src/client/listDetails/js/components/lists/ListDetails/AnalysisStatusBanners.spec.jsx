@@ -45,8 +45,19 @@ describe('AnalysisStatusBanners', () => {
 
     expect(screen.getByText('Analysis has failed')).toBeInTheDocument();
     expect(
-      screen.getByText('To receive results, resubmit this list for analysis.')
+      screen.getByText(
+        /your list has failed analysis\. read more about how to avoid and address analysis failures \./i
+      )
     ).toBeInTheDocument();
+
+    expect(
+      screen.getByRole('link', {
+        name: /here/i,
+      })
+    ).toHaveAttribute(
+      'href',
+      'https://www.globalforestwatch.org/help/gfw-pro/guides/how-to-address-errors-in-your-uploads'
+    );
   });
 
   it('renders a banner for usage limit exceeded', () => {
@@ -54,7 +65,6 @@ describe('AnalysisStatusBanners', () => {
       <AnalysisStatusBanners {...defaultProps} isAnalysisFailedByExceededAnalysisLimit={true} />
     );
 
-    expect(screen.getByText('Usage limit exceeded')).toBeInTheDocument();
     expect(screen.getByText('Usage limit exceeded')).toBeInTheDocument();
   });
 

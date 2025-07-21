@@ -1,5 +1,5 @@
 import { render, screen } from '@testing-library/react';
-import userEvent from '@testing-library/user-event';
+import userEvent, { UserEvent } from '@testing-library/user-event';
 import { UploadLocationPreview } from './UploadLocationPreview';
 import { useUploadLocation } from '../contexts';
 import { useFetch } from '../../../../../hooks';
@@ -55,7 +55,10 @@ describe('UploadLocationPreview', () => {
     addFile: jest.fn(),
   };
 
+  let user: UserEvent;
   beforeEach(() => {
+    user = userEvent.setup();
+
     (useUploadLocation as jest.Mock).mockReturnValue(mockUseUploadLocation);
     (useFetch as jest.Mock).mockReturnValue({
       data: { features: [{ location_name: 'location 1' }] },
@@ -89,7 +92,7 @@ describe('UploadLocationPreview', () => {
     const fileInput = screen.getByTestId('file-input');
     const file = new File(['dummy content'], 'test.csv', { type: 'text/csv' });
 
-    await userEvent.upload(fileInput, file);
+    await user.upload(fileInput, file);
 
     expect(mockUseUploadLocation.addFile).toHaveBeenCalledWith({
       fileS3Route: 'fileS3Route',
@@ -98,7 +101,7 @@ describe('UploadLocationPreview', () => {
     });
     expect(screen.queryByTestId('upload-error-message')).not.toBeInTheDocument();
 
-    await userEvent.click(screen.getByRole('button', { name: /next/i }));
+    await user.click(screen.getByRole('button', { name: /next/i }));
 
     expect(mockHistoryPush).toHaveBeenCalledWith('CONFIGURE_LIST');
   });
@@ -128,13 +131,13 @@ describe('UploadLocationPreview', () => {
 
   it('should navigate back when Back button is clicked', async () => {
     render(<UploadLocationPreview />);
-    await userEvent.click(screen.getByRole('button', { name: /back/i }));
+    await user.click(screen.getByRole('button', { name: /back/i }));
     expect(mockHistoryGoBack).toHaveBeenCalled();
   });
 
   it('should clear upload type when Cancel button is clicked', async () => {
     render(<UploadLocationPreview />);
-    await userEvent.click(screen.getByRole('button', { name: /cancel/i }));
+    await user.click(screen.getByRole('button', { name: /cancel/i }));
     expect(mockUseUploadLocation.clearUploadType).toHaveBeenCalled();
   });
 

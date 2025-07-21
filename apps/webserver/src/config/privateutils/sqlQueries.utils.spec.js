@@ -9,7 +9,6 @@ describe('Test New Raw Queries', () => {
     'uspGetVerifiedUserRouteInfo',
     'uspGetOrganizationStatus',
     'uspGetTemplateMetadata',
-    'uspGetTemplatesDropdown',
     'uspGetUserAuthenticationPreferences',
     'uspGetUsersAuthenticationPreferences',
     'uspGetLocationsCount',

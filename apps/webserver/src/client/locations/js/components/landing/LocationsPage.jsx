@@ -2,7 +2,7 @@ import { useState, useCallback, useEffect } from 'react';
 import Locations from '../Locations';
 import ModalLoader from '../../../../common/js/components/Loaders/ModalLoader';
 
-const LocationsPage = ({ userInfo, organizationId }) => {
+const LocationsPage = ({ userInfo }) => {
   const [locationsData, setLocationsData] = useState({});
   const [isLoading, setIsLoading] = useState(true);
 
@@ -50,33 +50,18 @@ const LocationsPage = ({ userInfo, organizationId }) => {
     fetchInitialData();
   }, []);
 
-  const {
-    templateData,
-    templateDropdowns,
-    locationCount,
-    gfwLists,
-    accountUsers,
-    userSharedLists,
-    orgLists,
-    userLists,
-    listStatuses,
-  } = locationsData;
+  const { locationCount, gfwLists, accountUsers, userSharedLists, userLists } = locationsData;
 
   return isLoading ? (
     <ModalLoader open={true} />
   ) : (
     <Locations
-      templateData={templateData}
-      templateDropdowns={templateDropdowns}
       userLists={userLists} //Contains all lists that users have created
       userSharedLists={userSharedLists}
       locationCount={locationCount}
       userInfo={userInfo}
       usersList={accountUsers} //Contains all users
-      organizationId={organizationId}
-      orgLists={orgLists}
       gfwLists={gfwLists}
-      listStatuses={listStatuses}
     />
   );
 };

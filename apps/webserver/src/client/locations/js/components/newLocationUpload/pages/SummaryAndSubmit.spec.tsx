@@ -113,16 +113,18 @@ describe('SummaryAndSubmit', () => {
   });
 
   it('should call history.goBack when back button is clicked', async () => {
+    const user = userEvent.setup();
     render(<SummaryAndSubmit />);
 
-    await userEvent.click(screen.getByRole('button', { name: /back/i }));
+    await user.click(screen.getByRole('button', { name: /back/i }));
     expect(mockGoBack).toHaveBeenCalled();
   });
 
   it('should call clearUploadType when cancel button is clicked', async () => {
+    const user = userEvent.setup();
     render(<SummaryAndSubmit />);
 
-    await userEvent.click(screen.getByRole('button', { name: /cancel/i }));
+    await user.click(screen.getByRole('button', { name: /cancel/i }));
     expect(mockClearUploadType).toHaveBeenCalled();
   });
 });

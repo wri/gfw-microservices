@@ -58,6 +58,19 @@ export function UploadLocationByPoint() {
     setValue('longitude', '');
   }, [locationFormat]);
 
+  const measurementSuggestedAreas = {
+    hectares: [
+      '785,000 hectares for palm oil mills',
+      '283,000 hectares for soy silos',
+      '80-102,000 hectares for cocoa warehouses',
+    ],
+    kilometers: [
+      '50 km for palm oil mills',
+      '30 km for soy silos',
+      '0.5-18 km for cocoa warehouses',
+    ],
+  };
+
   const [measurementUnit, setMeasurementUnit] = useState<MeasurementUnit>('hectares');
 
   const handleClearAddress = () => {
@@ -287,9 +300,9 @@ export function UploadLocationByPoint() {
                         color: 'text.secondary',
                       }}
                     >
-                      <li>785,000 {measurementUnit} for palm oil mills</li>
-                      <li>283,000 {measurementUnit} for soy silos</li>
-                      <li>80-102,000 {measurementUnit} for cocoa warehouses</li>
+                      {measurementSuggestedAreas[measurementUnit].map((suggestedArea) => (
+                        <li>{suggestedArea}</li>
+                      ))}
                     </Box>
                   </Box>
                 </Box>

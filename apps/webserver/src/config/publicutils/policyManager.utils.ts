@@ -305,7 +305,7 @@ export const deletePolicies = (req, policyList) => {
         logger.logActivity(
           req,
           logger.listActivityTypes.Account.AccountUpdated,
-          'Policies have been removed.'
+          `User ID ${req.session.organization_user_id} has removed policies.`
         );
         resolve(true);
       })

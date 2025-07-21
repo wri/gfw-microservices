@@ -12,12 +12,6 @@ export const DATA_API_URL = location.origin;
 // New analysis types that utilize GFW API geostore ID
 export const supportedGeostoreAnalysis = ['tree cover', 'glad', 'tree biomass', 'viirs', 'prodes'];
 
-// GADM Admin Service URL
-export const GADM_SERVICE__PROD =
-  'https://gfwpro-gis.globalforestwatch.org/arcgis/rest/services/GADM36_admin_2_gridded/MapServer/0'; // Only for production
-export const GADM_SERVICE__STAGING =
-  'https://gfwpro-gis-stg.globalforestwatch.org/arcgis/rest/services/GADM36_admin_2_gridded/MapServer/0'; // All others environments
-
 // Geostore admin URL
 export const baseGeostoreURL = 'https://production-api.globalforestwatch.org/v2/geostore/';
 
@@ -877,14 +871,6 @@ export const locationsPage = {
     additionalMetadata: 'Additional metadata',
     startDate: 'Start Date',
     endDate: 'End Date',
-
-    accuracyOptions: [
-      { label: 'Very Confident', id: 'very' },
-      { label: 'Moderately Confident', id: 'moderately' },
-      { label: 'Not Confident', id: 'not' },
-      { label: "Don't Know", id: 'idk' },
-    ],
-
     protectedAreas: {
       localhost: 'Lz6YLHN1eyIwJNZDNp1IkFglwrO6qQfAwwRGz-KkyrPDyOjRgiP02tf7gQnD0sRy',
       'pro-staging.globalforestwatch.org':
@@ -1666,57 +1652,6 @@ export const locationsPage = {
     showValidated: 'Validated',
     showNotValidated: 'Locations with Errors',
     showAllValidated: 'All',
-    commodityTypeOptions: [
-      {
-        name: 'Cattle',
-        id: 'cattle',
-        commodityTemplate: 'cattleGeneric',
-      },
-      {
-        name: 'Cocoa',
-        id: 'cocoa',
-        commodityTemplate: 'cocoaGeneric',
-      },
-      {
-        name: 'Coffee',
-        id: 'coffee',
-        commodityTemplate: 'generic',
-      },
-      {
-        name: 'Palm Oil',
-        id: 'palmOil',
-        commodityTemplate: 'palmGeneric',
-      },
-      {
-        name: 'Pulp and Paper',
-        id: 'pulp',
-        commodityTemplate: 'generic',
-      },
-      {
-        name: 'Rubber',
-        id: 'rubber',
-        commodityTemplate: 'generic',
-      },
-      {
-        name: 'Soy',
-        id: 'soy',
-        commodityTemplate: 'soyGeneric',
-      },
-      {
-        name: 'Sugar Cane',
-        id: 'sugarCane',
-        commodityTemplate: 'generic',
-      },
-      {
-        name: 'Other',
-        id: 'other',
-        commodityTemplate: 'generic',
-      },
-      {
-        name: 'Multiple',
-        id: 'multiple',
-      },
-    ],
   },
   columns: {
     notAnalyzedList: {

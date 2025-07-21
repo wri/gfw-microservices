@@ -181,7 +181,6 @@ export class ListBulkCopy {
       geojson,
       columns,
       commodity,
-      max_id,
       primary_key
     );
     return { columnNamesArray, columnTypesArray, dataArray, start_location_id: max_id };
@@ -191,7 +190,6 @@ export function PrepareBulkUpload(
   geojson: { features: Feature[] },
   columns: GetTableColumnsType[],
   commodity: unknown,
-  max_id: number,
   primary_key = 1
 ) {
   const bulkUploadPayload = [];
@@ -233,5 +231,5 @@ export function PrepareBulkUpload(
   const columnNamesArray = bulkUploadPayload[0].map((col) => col.field);
   const columnTypesArray = bulkUploadPayload[0].map((col) => col.type);
   const dataArray = bulkUploadPayload.map((row) => row.map((item) => item.value));
-  return { columnNamesArray, columnTypesArray, dataArray, start_location_id: max_id };
+  return { columnNamesArray, columnTypesArray, dataArray };
 }

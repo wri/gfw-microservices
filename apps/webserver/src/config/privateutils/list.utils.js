@@ -16,7 +16,8 @@ const sqlUtils = require(path.resolve('./config/privateutils/sql.utils'));
 const locationUtils = require(path.resolve('./config/privateutils/location.utils'));
 const logger = require(path.resolve('./config/privateutils/logger.utils'));
 const errorUtils = require(path.resolve('./config/privateutils/error.utils'));
-import { PrepareBulkUpload } from '@wri-monorepos/geo';
+const { PrepareBulkUpload } = require('@wri-monorepos/geo');
+
 /** @function {copySingleLocation}
  *   @summary Copy Location from one list to another
  *   @param  {Object} req - Manadatory first parameter to pass the request object into the function in case session info is required.
@@ -231,7 +232,6 @@ const uploadBulkLocations = (req, list_id, list_name, geojson, commodity, attrib
           geojson,
           columns,
           commodity,
-          max_id,
           primary_key
         );
 

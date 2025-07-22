@@ -10,6 +10,7 @@ import {
   POST_2020_RISK_ASSESSMENT_VIEW,
 } from './listViews.constants';
 import { HelperTextWithPopover } from '../../../../../components';
+import { ReusableText } from '../../../../../utils/constants';
 
 function AnalysesTabs({
   listView,
@@ -65,14 +66,7 @@ function AnalysesTabs({
                 }}
               >
                 <Box sx={{ width: (theme) => theme.spacing(40), p: 1 }}>
-                  <Typography variant="caption">
-                    Our services do not provide certification or guarantee that any
-                    deforestation-related activities, data, or supply chains comply with the
-                    European Union Deforestation Regulation (EUDR). Compliance with EUDR
-                    requirements remains the sole responsibility of the relevant parties, and we
-                    recommend consulting with appropriate legal and regulatory experts for
-                    verification and certification.
-                  </Typography>
+                  <Typography variant="caption">{ReusableText.EudrLegalDisclaimer}</Typography>
                 </Box>
               </HelperTextWithPopover>
             </Box>

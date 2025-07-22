@@ -59,32 +59,10 @@ const setVectorTileLayerForFilteredList = async (listData, transitionListData, v
     }
   });
 
-  userLayer.addMany([...centroidGraphics, ...fillGraphics]);
-
   const alertsMapExtent = transitionListData?.alertsMapExtent;
 
-  if (alertsMapExtent) {
-    view.goTo(alertsMapExtent);
-  } else if (locationData.length === 1) {
-    const selectedLocationCoordinates = locationData[0]?.geometry?.coordinates;
-    const geometry = new Polygon({
-      rings: selectedLocationCoordinates,
-      spatialReference: SpatialReference.WGS84,
-    });
-
-    const symbol = new SimpleFillSymbol({
-      color: [...POLYGON_FILL_COLOR, 0.65],
-      outline: {
-        color: [...POLYGON_OUTLINE_COLOR, 1],
-        width: 1,
-      },
-    });
-
-    const graphic = new Graphic({
-      geometry,
-      symbol,
-    });
-    view.goTo(graphic);
+  if (alertsMapExtent || locationData.length === 1) {
+    return fillGraphics;
   } else if (locationData?.length > 1) {
     // Calculate the average latitude and longitude for centering
     const latitudes = locationData.map((location) => location.properties.Latitude);

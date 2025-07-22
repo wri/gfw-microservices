@@ -7,6 +7,7 @@ import {
   palmRiskAnalysis,
 } from '../../../../../config/env/analysisTypes.constants';
 import { HelperTextWithPopover } from '../../../../components';
+import { ReusedTexts } from '../../../../utils/constants';
 
 import './AnalysisTypesSelector.scss';
 
@@ -95,12 +96,7 @@ function AnalysisTypesSelector({
                       >
                         <Box sx={{ width: (theme) => theme.spacing(35), p: 1 }}>
                           <Typography variant="caption">
-                            Our services do not provide certification or guarantee that any
-                            deforestation-related activities, data, or supply chains comply with the
-                            European Union Deforestation Regulation (EUDR). Compliance with EUDR
-                            requirements remains the sole responsibility of the relevant parties,
-                            and we recommend consulting with appropriate legal and regulatory
-                            experts for verification and certification.
+                            {ReusedTexts.EudrLegalDisclaimer}
                           </Typography>
                         </Box>
                       </HelperTextWithPopover>

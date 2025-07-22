@@ -38,6 +38,7 @@ jest.mock('../hooks', () => ({
 }));
 
 jest.mock('../components', () => ({
+  FileValidationHelper: () => <span data-testid="file-validation-helper" />,
   NavBar: () => <span />,
 }));
 
@@ -61,6 +62,7 @@ describe('SummaryAndSubmit', () => {
         /please note that all analysis submission count towards your usage limits\. see more information \./i
       )
     ).toBeInTheDocument();
+    expect(screen.getByTestId('file-validation-helper')).toBeInTheDocument();
   });
 
   it('should render correctly for existing list and only Alerts analysis selected', () => {

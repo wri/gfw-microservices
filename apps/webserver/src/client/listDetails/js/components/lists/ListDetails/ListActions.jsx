@@ -73,6 +73,7 @@ const ListActions = ({
   isGfwList,
   isOnlyGHGActive,
   isEveryRowSelected,
+  isDraftWithoutDiagnostic,
 }) => {
   const blackButtonStyle = {
     color: 'black',
@@ -164,7 +165,9 @@ const ListActions = ({
 
   const searchInputLabel = useTransifexTranslation('Type your search and press Enter...');
   const updateAnalysisButtonLabel = useTransifexTranslation('Update Analysis');
-  const submitAnalysisButtonLabel = useTransifexTranslation('Re-Analyze List');
+  const submitAnalysisButtonLabel = useTransifexTranslation(
+    isDraftWithoutDiagnostic ? 'Submit Analysis' : 'Re-Analyze List'
+  );
   const addLocationsButtonLabel = useTransifexTranslation('Add Locations');
 
   const folderActionButtonLabel = isInFolder

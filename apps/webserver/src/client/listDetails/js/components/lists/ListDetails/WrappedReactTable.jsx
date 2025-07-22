@@ -1,6 +1,8 @@
+import { useTheme, Tooltip } from '@mui/material';
+import { Info } from '@mui/icons-material';
 import ReactTable from 'react-table';
-import { Tooltip, useTheme } from '@mui/material';
 import cloneDeep from 'lodash/cloneDeep';
+
 import columns from '../../../config/columns';
 import CustomRow from './CustomRow';
 import { listStatus } from '../../../../../../config/env/listStatuses.constants';
@@ -45,7 +47,7 @@ const WrappedReactTable = ({
         rowInfo.original.analysisError ||
         id === listStatus.Inactive
       ) {
-        return '#ffeeed';
+        return theme.palette.error[100];
       }
 
       return '';
@@ -102,6 +104,24 @@ const WrappedReactTable = ({
     }
 
     col.defaultSortDesc = true;
+
+    if (col.id === 'Location Name') {
+      col.Cell = ({ row }) => {
+        const error = getErrorDetails(
+          row?.ErrorDetails || getAnalysisError(row?.location_error || row?.analysisError)
+        );
+        return (
+          <div style={{ display: 'flex', alignItems: 'center' }}>
+            <span>{getLocationName(row)}</span>
+            {error && (
+              <Tooltip title={error} arrow placement="right">
+                <Info fontSize="small" sx={{ color: 'text.primary', ml: 1 }} />
+              </Tooltip>
+            )}
+          </div>
+        );
+      };
+    }
 
     const max = Math.max(
       ...filteredLists.map((v) =>
@@ -203,38 +223,31 @@ const WrappedReactTable = ({
       {...reactTableOptions}
       TrComponent={(props) => {
         return (
-          <Tooltip
-            title={getErrorDetails(
+          <CustomRow
+            isGfwList={isGfwList}
+            listId={listId}
+            isSharedList={isSharedList}
+            rowInfo={props.rowInfo}
+            viewDiagnostic={viewDiagnostic}
+            isDeleteButtonAvailable={isDeleteButtonAvailable}
+            promptDeleteSelectedLocations={promptDeleteSelectedLocations}
+            isEditActionAvailable={isEditActionAvailable}
+            editList={editList}
+            copyMoveAction={copyMoveAction}
+            isCopyMoveActionAvailable={isCopyMoveActionAvailable}
+            visibleColumns={visibleColumns}
+            currentUser={currentUser}
+            listView={listView}
+            selectedList={selectedList}
+            setIsLoading={setIsLoading}
+            style={props.style}
+            error={getErrorDetails(
               props.rowInfo?.ErrorDetails ||
                 getAnalysisError(props.rowInfo?.location_error || props.rowInfo?.analysisError)
             )}
-            arrow
-            placement="top-start"
           >
-            <span>
-              <CustomRow
-                isGfwList={isGfwList}
-                listId={listId}
-                isSharedList={isSharedList}
-                rowInfo={props.rowInfo}
-                viewDiagnostic={viewDiagnostic}
-                isDeleteButtonAvailable={isDeleteButtonAvailable}
-                promptDeleteSelectedLocations={promptDeleteSelectedLocations}
-                isEditActionAvailable={isEditActionAvailable}
-                editList={editList}
-                copyMoveAction={copyMoveAction}
-                isCopyMoveActionAvailable={isCopyMoveActionAvailable}
-                visibleColumns={visibleColumns}
-                currentUser={currentUser}
-                listView={listView}
-                selectedList={selectedList}
-                setIsLoading={setIsLoading}
-                style={props.style}
-              >
-                {props.children}
-              </CustomRow>
-            </span>
-          </Tooltip>
+            {props.children}
+          </CustomRow>
         );
       }}
     />
@@ -242,6 +255,8 @@ const WrappedReactTable = ({
 };
 
 export default WrappedReactTable;
+
+const getLocationName = (obj) => obj['Location Name'] || obj.locationName || obj.Location_N;
 
 const errorsMap = {
   'Invalid location':

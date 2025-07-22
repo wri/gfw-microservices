@@ -48,9 +48,6 @@ export async function saveListAttributes(
   try {
     // insert new attributes with Typeorm listAttributes entity
     const listAttributesRepository = queryRunner.manager.getRepository(ListAttributes);
-
-    Logger.log(`Inserting ${attributes.length} into [ListAttributes]`);
-
     await listAttributesRepository.save(attributes);
   } catch (error) {
     // throwing errors for PrimaryKey constraints is likely more efficient than checking the db if they exists, less roundtrips
@@ -237,11 +234,13 @@ export async function handleListLocationAttributes(
         return acc;
       }, {} as Record<string, unknown>);
 
-      const attrValue = Object.keys(locAttrObj).length ? `'${JSON.stringify(locAttrObj)}'` : 'NULL';
+      const attrValue = Object.keys(locAttrObj).length
+        ? `'${JSON.stringify(locAttrObj).replace(/'/g, "''")}'`
+        : 'NULL';
 
-      const updateQuery = `UPDATE [${list.listTableName}] 
-        SET [attributes] = {ATTR_VALUE}  
-        WHERE [location_id] = ${record['location_id']}`.replace('{ATTR_VALUE}', attrValue);
+      const updateQuery = `UPDATE [${list.listTableName}]
+        SET [attributes] = ${attrValue}
+        WHERE [location_id] = ${record['location_id']}`;
 
       await queryRunner.query(updateQuery);
 

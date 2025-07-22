@@ -28,6 +28,7 @@ import { ListCopyMoveModule } from './list-copy-move';
 import { ConvertersModule } from './converters';
 import { TraceIdMiddleware } from '@wri-monorepos/shared';
 import { GeoModule, GeoService } from '@wri-monorepos/geo';
+import { LocationService } from '../services/locations.service';
 import { ListPaginationService } from './list/list.pagination.service';
 
 @Module({
@@ -54,6 +55,7 @@ import { ListPaginationService } from './list/list.pagination.service';
   controllers: [AppController],
   providers: [
     AppService,
+    LocationService,
     ListPaginationService,
     GeoService,
     ListService,

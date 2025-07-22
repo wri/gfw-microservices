@@ -17,6 +17,7 @@ const getIdColumnsWithValues = () => {
 interface UpdateListAttributesRemoveIdColumnsParams {
   sourceListId: number;
   isNotDeletingTheSourceList: boolean;
+  clientStoreConnection?: ClientStoreConnection;
 }
 export class UpdateListAttributesRemoveIdColumns extends AbstractHandler<ChainType> {
   private readonly logger = new Logger(UpdateListAttributesRemoveIdColumns.name);
@@ -24,13 +25,15 @@ export class UpdateListAttributesRemoveIdColumns extends AbstractHandler<ChainTy
   private isNotDeletingTheSourceList: boolean;
   private onlyCheckFor: string[];
   private sourceListId: number;
+  private clientStoreConnection: ClientStoreConnection;
 
   constructor(params: UpdateListAttributesRemoveIdColumnsParams) {
     super();
-    const { isNotDeletingTheSourceList, sourceListId } = params;
+    const { isNotDeletingTheSourceList, sourceListId, clientStoreConnection } = params;
     this.sourceListId = sourceListId;
     this.isNotDeletingTheSourceList = isNotDeletingTheSourceList;
     this.onlyCheckFor = getIdColumnsWithValues();
+    this.clientStoreConnection = clientStoreConnection || new ClientStoreConnection();
   }
 
   /**
@@ -45,6 +48,10 @@ export class UpdateListAttributesRemoveIdColumns extends AbstractHandler<ChainTy
   async getEmptyJsonProperties(queryRunner: QueryRunner) {
     const result = await queryRunner.query(getMissingJsonPropertiesFromList, [this.sourceListId]);
 
+    if (!result) {
+      return [];
+    }
+
     return result.map(({ MissingProperties }) => MissingProperties);
   }
 
@@ -53,9 +60,12 @@ export class UpdateListAttributesRemoveIdColumns extends AbstractHandler<ChainTy
    * @returns input ChainType
    */
   async handle(input: ChainType): Promise<ChainType> {
+    if (!this.isNotDeletingTheSourceList) {
+      return input;
+    }
+
     const { organization_database } = input.request as RequestNewList;
-    const clientStoreConnection = new ClientStoreConnection();
-    const connection = await clientStoreConnection.getConnection(organization_database);
+    const connection = await this.clientStoreConnection.getConnection(organization_database);
     const queryRunner = connection.createQueryRunner();
 
     try {
@@ -85,7 +95,7 @@ export class UpdateListAttributesRemoveIdColumns extends AbstractHandler<ChainTy
     } catch (error) {
       this.logger.log('Error hanlding UpdateListAttributesRemoveIdColumns', error.stack || error);
       await queryRunner.rollbackTransaction();
-      throw new error();
+      throw error;
     } finally {
       await queryRunner.release();
     }

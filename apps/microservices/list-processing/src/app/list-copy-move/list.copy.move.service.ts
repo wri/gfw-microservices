@@ -93,8 +93,13 @@ export class ListCopyMoveService {
 
   private async processUploadChain(params: ProcessingChainParams): Promise<void> {
     const { sourceListId, isNotDeletingTheSourceList } = params;
+
     const processUploadData = new ProcessUploadData();
     const convertGeojsonProperties = new ConvertGeojsonProperties();
+    const maybeUpdateListAttributes = new UpdateListAttributesRemoveIdColumns({
+      sourceListId,
+      isNotDeletingTheSourceList,
+    });
 
     const chainType = {
       request: {
@@ -108,11 +113,6 @@ export class ListCopyMoveService {
       },
       geojson: params.geojson,
     };
-
-    const maybeUpdateListAttributes = new UpdateListAttributesRemoveIdColumns({
-      sourceListId,
-      isNotDeletingTheSourceList,
-    });
 
     convertGeojsonProperties.setNext(processUploadData).setNext(maybeUpdateListAttributes);
     await AbstractHandler.runFullChain(convertGeojsonProperties, chainType);
@@ -207,7 +207,6 @@ export class ListCopyMoveService {
       organizationId,
       subscriptionStatusId,
     } = request;
-
     CheckListNameIsValid(listType, listName, userListNames);
 
     this.logger.log('Gathering information for locations');
@@ -298,7 +297,6 @@ export class ListCopyMoveService {
       const moveToList = await this.createOrUpdateTargetList(request, analysisIds, selectedListId);
 
       await this.updateExistingList(request, moveToList, geojson, analysisIds, selectedListId);
-
       if (action === ActionType.Move) {
         await handleSourceListDeletion({
           clientDatabase,
@@ -322,7 +320,7 @@ export class ListCopyMoveService {
         isNotDeletingTheSourceList: Boolean(
           action === ActionType.Move && (!allLocationsSelected || ListHasFiltersApplies(filters))
         ),
-      });
+      } as any);
 
       return {
         success: true,

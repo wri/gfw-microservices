@@ -1,7 +1,14 @@
 import { Component } from 'react';
 import { Dialog } from 'material-ui';
-import { Alert, AlertTitle, Box, IconButton as IconButtonMui, Typography } from '@mui/material';
-import { Campaign, Close } from '@mui/icons-material';
+import {
+  Alert,
+  AlertTitle,
+  Box,
+  IconButton as IconButtonMui,
+  Typography,
+  Popover,
+} from '@mui/material';
+import { Campaign, Close, Info } from '@mui/icons-material';
 import { withRouter } from 'react-router-dom';
 import Banner from '../../../../common/js/components/Banners/Banner';
 import UsageNearLimitBanner from '../../../../common/js/components/Banners/UsageNearLimitBanner';
@@ -45,7 +52,7 @@ import {
 import getCookie from '../../../../common/js/utils/getCookie';
 import getAccountUsagePercentage from './getAccountUsagePercentage';
 import featureFlags from '../../../../../utils/general.utils';
-import { DATA_CY, ExternalLinks } from '../../../../utils/constants';
+import { DATA_CY, ExternalLinks, ReusableText } from '../../../../utils/constants';
 
 const EUDR_BANNER_KEY = 'GFW-is-landing-eudr-banner-dismissed';
 class Landing extends Component {
@@ -70,6 +77,7 @@ class Landing extends Component {
       isReachingAccountUsageLimit: false,
       isReachedAccountUsageLimit: false,
       isEudrBannerDismissed,
+      anchorEl: null,
     };
   }
 
@@ -118,6 +126,14 @@ class Landing extends Component {
       console.error('Invalid choice chosen for AddLocationsChooser:', choice);
       this.setState({ addLocationDialogOpen: false });
     }
+  };
+
+  handlePopoverOpen = (event) => {
+    this.setState({ anchorEl: event.currentTarget });
+  };
+
+  handlePopoverClose = () => {
+    this.setState({ anchorEl: null });
   };
 
   handleDialogClose = () => {
@@ -254,6 +270,8 @@ class Landing extends Component {
       language,
       B2BsharedListEnabled,
     } = this.props;
+
+    const isPopoverOpen = !!this.state.anchorEl;
 
     const { isUploadListUiAvailable } = featureFlags;
 
@@ -443,13 +461,44 @@ class Landing extends Component {
                     },
                   }}
                 >
-                  <AlertTitle>
-                    <Typography variant="body1" sx={{ fontWeight: 'bold' }}>
-                      Looking for EUDR-related analyses?
+                  <AlertTitle sx={{ display: 'flex' }}>
+                    <Typography variant="body1" sx={{ fontWeight: 500 }}>
+                      New: Looking for EUDR-related analyses?
                     </Typography>
+                    <IconButtonMui
+                      onClick={this.handlePopoverOpen}
+                      sx={{ p: 0, ml: 0.75 }}
+                      aria-label="open popover"
+                    >
+                      <Info fontSize="small" />
+                    </IconButtonMui>
+                    <Popover
+                      id={isPopoverOpen ? 'popover' : undefined}
+                      open={isPopoverOpen}
+                      anchorEl={this.state.anchorEl}
+                      onClose={this.handlePopoverClose}
+                      anchorOrigin={{
+                        vertical: 'top',
+                        horizontal: 'right',
+                      }}
+                      slotProps={{
+                        paper: {
+                          sx: {
+                            ml: 1,
+                          },
+                        },
+                      }}
+                    >
+                      <Box sx={{ width: (theme) => theme.spacing(40), p: 1 }}>
+                        <Typography variant="caption">
+                          {ReusableText.EudrLegalDisclaimer}
+                        </Typography>
+                      </Box>
+                    </Popover>
                   </AlertTitle>
                   <Typography variant="body1">
-                    The Post-2020 Risk Assessment is recommended to support EUDR compliance.
+                    Enable the Post-2020 Risk Assessment when uploading new locations, or add it to
+                    an existing list via Change Analyses.
                   </Typography>
                 </Alert>
               )}

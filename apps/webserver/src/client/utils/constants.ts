@@ -49,3 +49,8 @@ export const ExternalLinks = {
   HowToAddressErrorsInUpload:
     'https://www.globalforestwatch.org/help/gfw-pro/guides/how-to-address-errors-in-your-uploads',
 };
+
+export const ReusableText = {
+  EudrLegalDisclaimer:
+    'Our services do not provide certification or guarantee that any deforestation-related activities, data, or supply chains comply with the European Union Deforestation Regulation (EUDR). Compliance with EUDR requirements remains the sole responsibility of the relevant parties, and we recommend consulting with appropriate legal and regulatory experts for verification and certification. ',
+};

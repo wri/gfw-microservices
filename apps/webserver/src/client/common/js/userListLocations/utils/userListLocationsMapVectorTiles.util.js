@@ -52,7 +52,7 @@ export function generateUserListLocationsVectorTileLayerStyle(mbtileLayerName, l
         source: 'local',
         'source-layer': mbtileLayerName,
         paint: {
-          'fill-color': 'rgba(178,255,0,0)',
+          'fill-color': 'rgba(151,189,61,0.4)',
           'fill-outline-color': 'rgba(151,189,61,0)',
         },
         filter: getVectorTileLayerHighLightFilterMultipleLocations(locationIDs),
@@ -63,8 +63,8 @@ export function generateUserListLocationsVectorTileLayerStyle(mbtileLayerName, l
         source: 'local',
         'source-layer': mbtileLayerName,
         paint: {
-          'fill-color': 'rgba(3, 255, 255, 0.25)',
-          'fill-outline-color': 'rgb(3, 255, 255)',
+          'fill-color': 'rgba(151,189,61,1)',
+          'fill-outline-color': 'rgba(151,189,61,1)',
         },
         filter: getVectorTileLayerHighLightFilter(''),
       },

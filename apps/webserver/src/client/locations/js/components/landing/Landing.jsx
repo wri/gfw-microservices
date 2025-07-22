@@ -52,7 +52,7 @@ import {
 import getCookie from '../../../../common/js/utils/getCookie';
 import getAccountUsagePercentage from './getAccountUsagePercentage';
 import featureFlags from '../../../../../utils/general.utils';
-import { DATA_CY, ExternalLinks, ReusedTexts } from '../../../../utils/constants';
+import { DATA_CY, ExternalLinks, ReusableText } from '../../../../utils/constants';
 
 const EUDR_BANNER_KEY = 'GFW-is-landing-eudr-banner-dismissed';
 class Landing extends Component {
@@ -490,7 +490,9 @@ class Landing extends Component {
                       }}
                     >
                       <Box sx={{ width: (theme) => theme.spacing(40), p: 1 }}>
-                        <Typography variant="caption">{ReusedTexts.EudrLegalDisclaimer}</Typography>
+                        <Typography variant="caption">
+                          {ReusableText.EudrLegalDisclaimer}
+                        </Typography>
                       </Box>
                     </Popover>
                   </AlertTitle>

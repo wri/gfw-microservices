@@ -34,7 +34,7 @@ import debounce from 'lodash/debounce';
 import { fetchListsByCommodity } from '../../../../../api/list';
 import { analysisTypes } from '../../../../../../config/env/analysisTypes.constants';
 import { listNameSchema } from '../utils/schema';
-import { DATA_CY, ReusedTexts } from '../../../../../utils/constants';
+import { DATA_CY, ReusableText } from '../../../../../utils/constants';
 
 type CommoditiesType = (typeof commodities)[keyof typeof commodities];
 const commodityValues = Object.values(commodities) as [CommoditiesType, ...CommoditiesType[]];
@@ -486,7 +486,7 @@ export function ConfigureList({ userLists }: { userLists: UserList[] }) {
                               >
                                 <Box sx={{ width: (theme) => theme.spacing(37), p: 1 }}>
                                   <Typography variant="caption">
-                                    {ReusedTexts.EudrLegalDisclaimer}
+                                    {ReusableText.EudrLegalDisclaimer}
                                   </Typography>
                                 </Box>
                               </HelperTextWithPopover>

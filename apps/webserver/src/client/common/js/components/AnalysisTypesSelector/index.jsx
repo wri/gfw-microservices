@@ -7,7 +7,7 @@ import {
   palmRiskAnalysis,
 } from '../../../../../config/env/analysisTypes.constants';
 import { HelperTextWithPopover } from '../../../../components';
-import { ReusedTexts } from '../../../../utils/constants';
+import { ReusableText } from '../../../../utils/constants';
 
 import './AnalysisTypesSelector.scss';
 
@@ -96,7 +96,7 @@ function AnalysisTypesSelector({
                       >
                         <Box sx={{ width: (theme) => theme.spacing(35), p: 1 }}>
                           <Typography variant="caption">
-                            {ReusedTexts.EudrLegalDisclaimer}
+                            {ReusableText.EudrLegalDisclaimer}
                           </Typography>
                         </Box>
                       </HelperTextWithPopover>

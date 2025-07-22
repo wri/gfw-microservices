@@ -10,7 +10,7 @@ import {
   POST_2020_RISK_ASSESSMENT_VIEW,
 } from './listViews.constants';
 import { HelperTextWithPopover } from '../../../../../components';
-import { ReusedTexts } from '../../../../../utils/constants';
+import { ReusableText } from '../../../../../utils/constants';
 
 function AnalysesTabs({
   listView,
@@ -66,7 +66,7 @@ function AnalysesTabs({
                 }}
               >
                 <Box sx={{ width: (theme) => theme.spacing(40), p: 1 }}>
-                  <Typography variant="caption">{ReusedTexts.EudrLegalDisclaimer}</Typography>
+                  <Typography variant="caption">{ReusableText.EudrLegalDisclaimer}</Typography>
                 </Box>
               </HelperTextWithPopover>
             </Box>

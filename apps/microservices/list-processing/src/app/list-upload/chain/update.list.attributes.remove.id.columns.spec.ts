@@ -82,7 +82,9 @@ describe('UpdateListAttributesRemoveIdColumns', () => {
     };
     const emptyJsonProperties = ['id1', 'id2'];
     mockQueryRunner.query
-      .mockResolvedValueOnce(emptyJsonProperties.map((MissingProperties) => ({ MissingProperties })))
+      .mockResolvedValueOnce(
+        emptyJsonProperties.map((MissingProperties) => ({ MissingProperties }))
+      )
       .mockResolvedValueOnce(undefined); // for delete
 
     await handler.handle(input);

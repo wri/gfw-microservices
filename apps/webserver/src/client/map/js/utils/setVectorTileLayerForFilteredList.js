@@ -61,7 +61,9 @@ const setVectorTileLayerForFilteredList = async (listData, transitionListData, v
 
   const alertsMapExtent = transitionListData?.alertsMapExtent;
 
-  if (alertsMapExtent || locationData.length === 1) {
+  if (alertsMapExtent) {
+    view.goTo(alertsMapExtent);
+  } else if (locationData.length === 1) {
     return fillGraphics;
   } else if (locationData?.length > 1) {
     // Calculate the average latitude and longitude for centering

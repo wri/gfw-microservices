@@ -47,6 +47,7 @@
     "getListNameSchema",
     "getListOfUsers",
     "getLocationsFilteredToCopy",
+    "getMissingJsonPropertiesFromList",
     "getOrganizationUsersAnalysisUsage",
     "getOrganizationUsersUsageExport",
     "getOrganizationYearlyUsageSinceOrgActivatedTime",
@@ -147,7 +148,8 @@
     "getGHGLocationErrorsByListId",
     "getListAnalysis",
     "getUserLists",
-    "getAnalysisColumns"
+    "getAnalysisColumns",
+    "getMissingJsonPropertiesFromList"
   ],
   "matchingFilesAndExports": true,
   "definitionsInActivatePendingAccount": [

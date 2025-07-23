@@ -182,7 +182,7 @@ export class CopyOrMoveLargeListRequestLLP implements CopyOrMoveLargeListRequest
   srcListAnalysisTable: string;
 
   @ApiProperty()
-  isUploadListLpEnabled: boolean;
+  isUploadListLpEnabled?: boolean;
 }
 
 export class getPaginatedListDataRequest {

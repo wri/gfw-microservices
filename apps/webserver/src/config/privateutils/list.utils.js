@@ -223,12 +223,7 @@ const uploadBulkLocations = (req, list_id, list_name, geojson, commodity, attrib
         );
       })
       .then((columns) => {
-        /**
-         * TODO GPV-3786
-         * duplicated code
-         */
-
-        const { columnNamesArray, columnTypesArray, dataArray } = PrepareBulkUpload(
+          const { columnNamesArray, columnTypesArray, dataArray } = PrepareBulkUpload(
           geojson,
           columns,
           commodity,

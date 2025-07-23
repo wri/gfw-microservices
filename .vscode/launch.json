@@ -45,23 +45,6 @@
       "env": {
         "NODE_ENV": "development"
       }
-    },
-    {
-      "name": "Debug Test",
-      "request": "launch",
-      "type": "node",
-      "runtimeExecutable": "npx",
-      "runtimeArgs": [
-        "nx",
-        "test",
-        "microservices-list-processing",
-        "--testFile=apps/microservices/list-processing/src/services/list.service.spec.ts"
-      ],
-      "console": "integratedTerminal",
-      "cwd": "${workspaceFolder}/apps/microservices/list-processing",
-      "env": {
-        "NODE_ENV": "development"
-      }
     }
   ]
 }

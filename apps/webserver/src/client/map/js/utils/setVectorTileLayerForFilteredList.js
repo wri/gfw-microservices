@@ -58,7 +58,7 @@ const setVectorTileLayerForFilteredList = async (listData, transitionListData, v
       fillGraphics.push(polygonGraphic);
     }
   });
-
+  userLayer.addMany([...centroidGraphics]);
   const alertsMapExtent = transitionListData?.alertsMapExtent;
 
   if (alertsMapExtent) {

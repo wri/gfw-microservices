@@ -167,8 +167,7 @@
     "aws-sdk": false,
     "xlsx": "https://cdn.sheetjs.com/xlsx-0.20.0/xlsx-0.20.0.tgz",
     "cross-spawn": "^6.0.6",
-    "formidable": "^3.5.1",
-    "stylus": "0.0.1-security"
+    "formidable": "^3.5.1"
   },
   "devDependencies": {
     "@babel/helpers": "^7.26.10",

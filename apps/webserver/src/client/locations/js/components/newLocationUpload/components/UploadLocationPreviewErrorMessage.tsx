@@ -149,11 +149,7 @@ const errorMessageBuilder = ({
   return null;
 };
 
-const getMissingFieldsNames = (
-  errors: string[],
-  fileExtension: string,
-  isByIdWorkflow: boolean = false
-) => {
+const getMissingFieldsNames = (errors: string[], fileExtension: string, isByIdWorkflow = false) => {
   if (!errors.length) {
     return '';
   }

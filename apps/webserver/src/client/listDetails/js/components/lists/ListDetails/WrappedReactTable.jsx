@@ -89,6 +89,11 @@ const WrappedReactTable = ({
       },
     };
   };
+  function extractRowError(row) {
+    return getErrorDetails(
+      row?.ErrorDetails || getAnalysisError(row?.location_error || row?.analysisError)
+    );
+  }
 
   const toggleableColumns = listColumns.map((column) => column.accessor);
 
@@ -107,9 +112,7 @@ const WrappedReactTable = ({
 
     if (col.id === 'Location Name') {
       col.Cell = ({ row }) => {
-        const error = getErrorDetails(
-          row?.ErrorDetails || getAnalysisError(row?.location_error || row?.analysisError)
-        );
+        const error = extractRowError(row);
         return (
           <div style={{ display: 'flex', alignItems: 'center' }}>
             <span>{getLocationName(row)}</span>

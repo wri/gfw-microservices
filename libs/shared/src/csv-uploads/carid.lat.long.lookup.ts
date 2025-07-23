@@ -51,7 +51,10 @@ export const carLookup: IdLookupFn = async (ids) => {
     logger.error(`carLookup failed for ${sqlIds}`, error.stack || error);
     ids.forEach((id) => {
       result[id] = {
-        errorDetails: [`CAR lat/long lookup failed for ${id}`],
+        errorDetails: [
+          `${error.name}: ${error.message}`,
+          `There was an error in the CAR lat/long lookup for ${id}`,
+        ],
       };
     });
   }

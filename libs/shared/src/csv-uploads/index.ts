@@ -31,7 +31,7 @@ export const ID_TYPE_HANDLER: Record<string, IdTypeOptions> = {
     handler: umlLookUp,
     chunkSize: 1000,
     columnsWithIdValues: ['ID', 'Palm Mill ID'],
-    validateColumns: ['ID', 'Location Name', 'Analysis Radius | Analysis Area'],
+    validateColumns: ['ID | Palm Mill ID', 'Location Name', 'Analysis Radius | Analysis Area'],
   },
   [CSV_ID_TYPES.CAR]: {
     handler: carLookup,

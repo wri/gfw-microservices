@@ -1,6 +1,7 @@
 import { render, screen } from '@testing-library/react';
 import { userEvent } from '@testing-library/user-event';
 import { UploadLocationPreviewErrorMessage } from './UploadLocationPreviewErrorMessage';
+import { UploadLocationProvider } from '../contexts/UploadLocationContext';
 
 describe('UploadLocationPreviewErrorMessage', () => {
   const mockRetryPreviewData = jest.fn();
@@ -13,12 +14,14 @@ describe('UploadLocationPreviewErrorMessage', () => {
     };
 
     render(
-      <UploadLocationPreviewErrorMessage
-        error={error}
-        keyFile="data.csv"
-        onRetryUpload={mockRetryUpload}
-        onRetryPreviewData={mockRetryPreviewData}
-      />
+      <UploadLocationProvider>
+        <UploadLocationPreviewErrorMessage
+          error={error}
+          keyFile="data.csv"
+          onRetryUpload={mockRetryUpload}
+          onRetryPreviewData={mockRetryPreviewData}
+        />
+      </UploadLocationProvider>
     );
 
     expect(
@@ -37,12 +40,14 @@ describe('UploadLocationPreviewErrorMessage', () => {
     };
 
     render(
-      <UploadLocationPreviewErrorMessage
-        error={error}
-        keyFile="data.csv"
-        onRetryUpload={mockRetryUpload}
-        onRetryPreviewData={mockRetryPreviewData}
-      />
+      <UploadLocationProvider>
+        <UploadLocationPreviewErrorMessage
+          error={error}
+          keyFile="data.csv"
+          onRetryUpload={mockRetryUpload}
+          onRetryPreviewData={mockRetryPreviewData}
+        />
+      </UploadLocationProvider>
     );
 
     expect(screen.getByText(/invalid file/i)).toBeInTheDocument();
@@ -55,12 +60,14 @@ describe('UploadLocationPreviewErrorMessage', () => {
     };
 
     render(
-      <UploadLocationPreviewErrorMessage
-        error={error}
-        keyFile="data.csv"
-        onRetryUpload={mockRetryUpload}
-        onRetryPreviewData={mockRetryPreviewData}
-      />
+      <UploadLocationProvider>
+        <UploadLocationPreviewErrorMessage
+          error={error}
+          keyFile="data.csv"
+          onRetryUpload={mockRetryUpload}
+          onRetryPreviewData={mockRetryPreviewData}
+        />
+      </UploadLocationProvider>
     );
 
     expect(screen.getByText(/invalid file/i)).toBeInTheDocument();
@@ -73,12 +80,14 @@ describe('UploadLocationPreviewErrorMessage', () => {
     };
 
     render(
-      <UploadLocationPreviewErrorMessage
-        error={error}
-        keyFile="data.csv"
-        onRetryUpload={mockRetryUpload}
-        onRetryPreviewData={mockRetryPreviewData}
-      />
+      <UploadLocationProvider>
+        <UploadLocationPreviewErrorMessage
+          error={error}
+          keyFile="data.csv"
+          onRetryUpload={mockRetryUpload}
+          onRetryPreviewData={mockRetryPreviewData}
+        />
+      </UploadLocationProvider>
     );
 
     expect(screen.getByText(/empty data file/i)).toBeInTheDocument();
@@ -95,12 +104,14 @@ describe('UploadLocationPreviewErrorMessage', () => {
     };
 
     render(
-      <UploadLocationPreviewErrorMessage
-        error={error}
-        keyFile="data.csv"
-        onRetryUpload={mockRetryUpload}
-        onRetryPreviewData={mockRetryPreviewData}
-      />
+      <UploadLocationProvider>
+        <UploadLocationPreviewErrorMessage
+          error={error}
+          keyFile="data.csv"
+          onRetryUpload={mockRetryUpload}
+          onRetryPreviewData={mockRetryPreviewData}
+        />
+      </UploadLocationProvider>
     );
 
     expect(screen.getByText(/invalid file/i)).toBeInTheDocument();
@@ -117,12 +128,14 @@ describe('UploadLocationPreviewErrorMessage', () => {
     };
 
     render(
-      <UploadLocationPreviewErrorMessage
-        error={error}
-        keyFile="data.csv"
-        onRetryUpload={mockRetryUpload}
-        onRetryPreviewData={mockRetryPreviewData}
-      />
+      <UploadLocationProvider>
+        <UploadLocationPreviewErrorMessage
+          error={error}
+          keyFile="data.csv"
+          onRetryUpload={mockRetryUpload}
+          onRetryPreviewData={mockRetryPreviewData}
+        />
+      </UploadLocationProvider>
     );
 
     expect(screen.getByText(/there were platform issues loading your data/i)).toBeInTheDocument();
@@ -134,12 +147,14 @@ describe('UploadLocationPreviewErrorMessage', () => {
     };
 
     render(
-      <UploadLocationPreviewErrorMessage
-        error={error}
-        keyFile="data.csv"
-        onRetryUpload={mockRetryUpload}
-        onRetryPreviewData={mockRetryPreviewData}
-      />
+      <UploadLocationProvider>
+        <UploadLocationPreviewErrorMessage
+          error={error}
+          keyFile="data.csv"
+          onRetryUpload={mockRetryUpload}
+          onRetryPreviewData={mockRetryPreviewData}
+        />
+      </UploadLocationProvider>
     );
 
     await userEvent.click(screen.getByText(/retry upload/i));
@@ -148,11 +163,13 @@ describe('UploadLocationPreviewErrorMessage', () => {
 
   it('should trigger onRetryPreviewData when try again button is clicked', async () => {
     render(
-      <UploadLocationPreviewErrorMessage
-        error={{ errors: [] }}
-        onRetryUpload={mockRetryUpload}
-        onRetryPreviewData={mockRetryPreviewData}
-      />
+      <UploadLocationProvider>
+        <UploadLocationPreviewErrorMessage
+          error={{ errors: [] }}
+          onRetryUpload={mockRetryUpload}
+          onRetryPreviewData={mockRetryPreviewData}
+        />
+      </UploadLocationProvider>
     );
 
     await userEvent.click(

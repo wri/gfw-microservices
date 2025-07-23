@@ -3,6 +3,7 @@
   "version": "0.0.0",
   "license": "MIT",
   "scripts": {
+    "preinstall": "npx npm-force-resolutions",
     "cypress:open:qa": "cd ./apps/gfwpro-e2e && CYPRESS_ENV=qa cypress open ",
     "cypress:open:staging": "cd ./apps/gfwpro-e2e && CYPRESS_ENV=staging cypress open ",
     "cypress:spec:qa": "nx e2e gfwpro-e2e --configuration=qa --headed --spec '**/.feature'",
@@ -284,6 +285,9 @@
   },
   "engines": {
     "node": "20.11.1"
+  },
+  "resolutions": {
+    "stylus": "npm:empty-npm-package@1.0.0"
   },
   "lint-staged": {
     "{apps,libs,tools}/**/*.{ts, js, jsx, json}": [

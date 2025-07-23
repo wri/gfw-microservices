@@ -41,7 +41,13 @@ describe('AnalysisStatusBanners', () => {
   });
 
   it('renders a banner for failed analysis', () => {
-    render(<AnalysisStatusBanners {...defaultProps} isFailedAnalysis={true} />);
+    render(
+      <AnalysisStatusBanners
+        {...defaultProps}
+        isFailedAnalysis={true}
+        isAnalysisFailedByExceededAnalysisLimit={false}
+      />
+    );
 
     expect(screen.getByText('Analysis has failed')).toBeInTheDocument();
     expect(

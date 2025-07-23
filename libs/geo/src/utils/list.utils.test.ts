@@ -319,7 +319,11 @@ describe('List Utils', () => {
 
     it('should handle empty analysis types array', async () => {
       const currentAnalysisStatuses = [
-        { listId: 1, analysisId: 'FCD', status: listStatus.Active } as ListsAnalysisStatus,
+        {
+          listId: 1,
+          analysisId: analysisTypes.FOREST_CHANGE_DIAGNOSTICS,
+          status: listStatus.Active,
+        } as ListsAnalysisStatus,
         {
           listId: 1,
           analysisId: analysisTypes.DEFORESTATION_KPIS,
@@ -333,7 +337,10 @@ describe('List Utils', () => {
         save: jest.fn(),
         update: jest.fn(),
         findOne: jest.fn().mockImplementation(({ where }) => {
-          if (where.analysisId === 'FCD' || where.analysisId === analysisTypes.DEFORESTATION_KPIS) {
+          if (
+            where.analysisId === analysisTypes.FOREST_CHANGE_DIAGNOSTICS ||
+            where.analysisId === analysisTypes.DEFORESTATION_KPIS
+          ) {
             return Promise.resolve({
               listId: 1,
               analysisId: where.analysisId,
@@ -358,23 +365,14 @@ describe('List Utils', () => {
       );
 
       // Call setListAnalysisStatus with empty array
-      await setListAnalysisStatus('clientDatabase', 1, [], listStatus.Pending, false);
+      await setListAnalysisStatus('clientDatabase', 1, [], listStatus.Active);
 
-      // Verify deleteListAnalyses was called with the current analysis statuses
-      expect(deleteListAnalyses).toHaveBeenCalledWith(
-        'clientDatabase',
-        1,
-        [],
-        currentAnalysisStatuses
-      );
-
-      // Verify setListAnalysisStatus was called with the correct parameters
-      expect(setListAnalysisStatus).toHaveBeenCalledWith(
-        'clientDatabase',
-        1,
-        [],
-        listStatus.Pending
-      );
+      // Verify no operations were performed
+      expect(mockRepository.findBy).not.toHaveBeenCalled();
+      expect(mockRepository.findOne).not.toHaveBeenCalled();
+      expect(mockRepository.save).not.toHaveBeenCalled();
+      expect(mockRepository.update).not.toHaveBeenCalled();
+      expect(() => setListAnalysisStatus('clientDatabase', 1, [], listStatus.Active)).not.toThrow();
     });
 
     it('should update status for provided analysis types', async () => {

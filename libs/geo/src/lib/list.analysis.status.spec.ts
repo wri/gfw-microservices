@@ -196,7 +196,7 @@ describe('list.analysis.status.ts', () => {
       );
       expect(updateListAnalysisSpy).not.toHaveBeenCalled();
     });
-    it('should call updateListAnalysis if data exists on getListAnalysisStatusByListId', async () => {
+    it('should call deleteListAnalyses and setListAnalysisStatus if data exists on getListAnalysisStatusByListId', async () => {
       const mockExistingStatusData = [
         { analysisId: 'PalmRisk', status: listStatus.Pending /* or some numeric value */ },
         { analysisId: 'FCD', status: listStatus.Pending },
@@ -210,8 +210,8 @@ describe('list.analysis.status.ts', () => {
         .spyOn(LU, 'setListAnalysisStatus')
         .mockResolvedValueOnce(undefined);
 
-      const updateListAnalysisSpy = jest
-        .spyOn(jest.requireActual('./list.analysis.status'), 'updateListAnalysis')
+      const deleteListAnalysesSpy = jest
+        .spyOn(jest.requireActual('./list.analysis.status'), 'deleteListAnalyses')
         .mockResolvedValueOnce(undefined);
 
       await setSelectedAnalyses(
@@ -222,13 +222,18 @@ describe('list.analysis.status.ts', () => {
       );
 
       expect(getListAnalysisStatusByListId).toHaveBeenCalledWith(fakeClientDatabase, fakeListId);
-      expect(updateListAnalysisSpy).toHaveBeenCalledWith(
+      expect(setListAnalysisStatus).toHaveBeenCalledWith(
         fakeClientDatabase,
         fakeListId,
         fakeAnalysisIds,
-        listStatus.Pending
+        fakeAnalysisStatus
       );
-      expect(setListAnalysisStatus).not.toHaveBeenCalled();
+      expect(deleteListAnalysesSpy).toHaveBeenCalledWith(
+        fakeClientDatabase,
+        fakeListId,
+        fakeAnalysisIds,
+        mockExistingStatusData
+      );
     });
   });
 

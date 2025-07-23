@@ -6,7 +6,8 @@ import {
   analysisTypesForUI,
   palmRiskAnalysis,
 } from '../../../../../config/env/analysisTypes.constants';
-import BetaTag from '../BetaTag';
+import { HelperTextWithPopover } from '../../../../components';
+import { ReusableText } from '../../../../utils/constants';
 
 import './AnalysisTypesSelector.scss';
 
@@ -50,7 +51,7 @@ function AnalysisTypesSelector({
         <Typography variant="caption">
           Select which type(s) of data analysis you'd like to be available for this list. Note that
           analysis processing counts towards your account usage limits. See more information{' '}
-          <Link href="/about?section=Fees" underline="none">
+          <Link href="/about?section=Fees" underline="none" target="_blank">
             here.
           </Link>
         </Typography>
@@ -66,13 +67,43 @@ function AnalysisTypesSelector({
               }
               sx={{ mr: 0, mb: 1.5, ml: id === analysisTypes.PALM_RISK ? 2 : 0 }}
               label={
-                <>
+                <Box
+                  sx={{ '&:hover': { cursor: 'default' } }}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    e.preventDefault();
+                  }}
+                >
                   <Box display="flex" alignItems="center" gap={1}>
                     <Typography variant="body1">{label}</Typography>
-                    {id === 'AFI' && <BetaTag>(PREVIEW)</BetaTag>}
+                    {id === 'AFI' && (
+                      <HelperTextWithPopover
+                        label={
+                          <Typography
+                            variant="caption"
+                            sx={{ fontWeight: 'bold', textTransform: 'none' }}
+                          >
+                            Recommended to support EUDR compliance
+                          </Typography>
+                        }
+                        sx={{
+                          px: 1.5,
+                          py: 0.25,
+                          ml: 1,
+                          borderRadius: 20,
+                          backgroundColor: (theme) => theme.palette.secondary[200],
+                        }}
+                      >
+                        <Box sx={{ width: (theme) => theme.spacing(35), p: 1 }}>
+                          <Typography variant="caption">
+                            {ReusableText.EudrLegalDisclaimer}
+                          </Typography>
+                        </Box>
+                      </HelperTextWithPopover>
+                    )}
                   </Box>
                   {description && <Typography variant="caption">{description}</Typography>}
-                </>
+                </Box>
               }
             />
           </div>

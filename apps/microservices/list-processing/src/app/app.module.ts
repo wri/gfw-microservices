@@ -14,11 +14,7 @@ import { S3Client } from '@aws-sdk/client-s3';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { DeleteListTypeOrm, SqlModule, TypeOrmSystemModule } from '@wri-monorepos/sql';
-import { LocationService } from '../services/locations.service';
 import { ListService } from '../services/list.service';
-import { LockListService } from '../services/lock.list.service';
-import { GeoService } from '@wri-monorepos/geo';
-import { ListPaginationService } from '../services/list.pagination.service';
 import { FCDModule } from './fcd';
 import { SchedulerModule } from './scheduler';
 import { AFIModule } from './afi';
@@ -31,6 +27,9 @@ import { GHGModule } from './ghg';
 import { ListCopyMoveModule } from './list-copy-move';
 import { ConvertersModule } from './converters';
 import { TraceIdMiddleware } from '@wri-monorepos/shared';
+import { GeoModule, GeoService } from '@wri-monorepos/geo';
+import { LocationService } from '../services/locations.service';
+import { ListPaginationService } from './list/list.pagination.service';
 
 @Module({
   imports: [
@@ -44,6 +43,7 @@ import { TraceIdMiddleware } from '@wri-monorepos/shared';
     AwsModule,
     ConvertersModule,
     FCDModule,
+    GeoModule,
     GHGModule,
     HealthModule,
     ListUploadModule,
@@ -55,11 +55,10 @@ import { TraceIdMiddleware } from '@wri-monorepos/shared';
   controllers: [AppController],
   providers: [
     AppService,
-    ListPaginationService,
     LocationService,
+    ListPaginationService,
     GeoService,
     ListService,
-    LockListService,
     DeleteListTypeOrm,
     {
       provide: 'S3Client',

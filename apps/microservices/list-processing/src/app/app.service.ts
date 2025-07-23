@@ -1,10 +1,9 @@
-import { Injectable, InternalServerErrorException, Logger } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 import { S3Client, PutObjectCommand, GetObjectCommand } from '@aws-sdk/client-s3';
 import { DataSource } from 'typeorm';
 import { randomUUID } from 'crypto';
 import { ResponsePreSignedURLModel, ResponseObjectPresignedURLModel } from '../models';
-import { ClientStoreConnection, ActivityLog, DeleteListTypeOrm } from '@wri-monorepos/sql';
-import { LockListService } from '../services/lock.list.service';
+import { ClientStoreConnection, DeleteListTypeOrm } from '@wri-monorepos/sql';
 import { ConfigService } from '@nestjs/config';
 import { ServerConfigType } from '../validators/server-config';
 import { getSignedUrl } from '@aws-sdk/s3-request-presigner';
@@ -24,7 +23,6 @@ export class AppService {
     private dataSource: DataSource,
     private readonly clientStoreConnection: ClientStoreConnection,
     private readonly deleteListTypeOrm: DeleteListTypeOrm,
-    private readonly lockListService: LockListService,
     protected readonly config: ConfigService<ServerConfigType, true>
   ) {
     this.s3Client = new S3Client({ region: this.config.get('AWS_REGION', { infer: true }) });
@@ -78,56 +76,5 @@ export class AppService {
     await queryRunner.startTransaction();
     const result = await queryRunner.connection.getRepository(MyObject).find();
     return result;
-  }
-
-  //Deletes a list from Lists table, and list's attribute and analysis table
-  async deleteList(
-    list_id: number,
-    organizationDatabase: string,
-    organization_user_id: number,
-    userEmail: string
-  ): Promise<string> {
-    const connection = await this.clientStoreConnection.getConnection(organizationDatabase);
-    const activityLogRepository = connection.getRepository(ActivityLog);
-
-    try {
-      // await DeleteList(organizationDatabase, list_id, organization_user_id);
-      const deleteResult = await this.deleteListTypeOrm.delete(
-        organizationDatabase,
-        list_id,
-        organization_user_id
-      );
-      if (deleteResult) {
-        // Save log at ActivityLog table
-        const activityLog = new ActivityLog();
-        activityLog.userId = organization_user_id;
-        activityLog.activityTypeId = 21;
-        const confirmationMessage = `User '${userEmail}' has deleted list (${list_id}).`;
-        activityLog.activityDescription = confirmationMessage;
-        activityLog.activityTime = new Date();
-        await activityLogRepository.save(activityLog);
-
-        // Return message that the list was deleted to user
-        return confirmationMessage;
-      } else {
-        throw new InternalServerErrorException({
-          message: `Failed to delete list ${list_id}`,
-          code: 610,
-        });
-      }
-    } catch (error) {
-      this.logger.error('DeleteList failure', error);
-      const activityLog = new ActivityLog();
-      activityLog.userId = organization_user_id;
-      activityLog.activityTypeId = 21;
-      const errorDescription = `User '${userEmail}' has tried to delete list (${list_id}) but some error occurs ${error.message}.`;
-      activityLog.activityDescription = errorDescription;
-      activityLog.activityTime = new Date();
-      await activityLogRepository.save(activityLog);
-      throw new InternalServerErrorException({
-        message: errorDescription,
-        code: 603,
-      });
-    }
   }
 }

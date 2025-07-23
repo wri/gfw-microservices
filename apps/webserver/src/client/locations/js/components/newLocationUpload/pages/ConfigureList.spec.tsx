@@ -185,7 +185,7 @@ describe('ConfigureList', () => {
 
     await user.click(
       screen.getByRole('checkbox', {
-        name: /post-2020 risk assessment deforestation in natural forest since 2021 \+ additional contextual datasets/i,
+        name: /post-2020 risk assessment recommended to support eudr compliance deforestation in natural forest since 2021 \+ additional contextual datasets/i,
       })
     );
 
@@ -305,7 +305,7 @@ describe('ConfigureList', () => {
 
     expect(
       screen.getByRole('checkbox', {
-        name: /post-2020 risk assessment deforestation in natural forest since 2021 \+ additional contextual datasets/i,
+        name: /post-2020 risk assessment recommended to support eudr compliance deforestation in natural forest since 2021 \+ additional contextual datasets/i,
       })
     ).toBeChecked();
     expect(
@@ -339,7 +339,7 @@ describe('ConfigureList', () => {
 
     expect(
       screen.getByRole('checkbox', {
-        name: /post-2020 risk assessment deforestation in natural forest since 2021 \+ additional contextual datasets/i,
+        name: /post-2020 risk assessment recommended to support eudr compliance deforestation in natural forest since 2021 \+ additional contextual datasets/i,
       })
     ).not.toBeChecked();
     expect(

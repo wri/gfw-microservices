@@ -1,6 +1,4 @@
-import Tabs from '@mui/material/Tabs';
-import Tab from '@mui/material/Tab';
-import CircularProgress from '@mui/material/CircularProgress';
+import { Box, CircularProgress, Tab, Tabs, Typography } from '@mui/material';
 import {
   analysisTypes,
   analysisTypesOptionsNewNames,
@@ -11,6 +9,8 @@ import {
   FOREST_CHANGE_VIEW,
   POST_2020_RISK_ASSESSMENT_VIEW,
 } from './listViews.constants';
+import { HelperTextWithPopover } from '../../../../../components';
+import { ReusableText } from '../../../../../utils/constants';
 
 function AnalysesTabs({
   listView,
@@ -51,7 +51,26 @@ function AnalysesTabs({
         <Tab
           icon={getStatusIcon(post2020RiskAssessmentStatus)}
           iconPosition="start"
-          label={getAnalysisLabel(analysisTypes.DEFORESTATION_KPIS)}
+          label={
+            <Box sx={{ display: 'flex', gap: 1 }}>
+              <Typography>{getAnalysisLabel(analysisTypes.DEFORESTATION_KPIS)}</Typography>
+              <HelperTextWithPopover
+                label={<Typography x={{ fontWeight: 500 }}>EUDR</Typography>}
+                sx={{
+                  backgroundColor: (theme) => theme.palette.secondary[200],
+                  borderRadius: 20,
+                  px: 1,
+                  '&:hover': {
+                    cursor: 'default',
+                  },
+                }}
+              >
+                <Box sx={{ width: (theme) => theme.spacing(40), p: 1 }}>
+                  <Typography variant="caption">{ReusableText.EudrLegalDisclaimer}</Typography>
+                </Box>
+              </HelperTextWithPopover>
+            </Box>
+          }
           value={POST_2020_RISK_ASSESSMENT_VIEW}
           data-cy="post-2020-tab"
           sx={{

@@ -223,7 +223,7 @@ const uploadBulkLocations = (req, list_id, list_name, geojson, commodity, attrib
         );
       })
       .then((columns) => {
-          const { columnNamesArray, columnTypesArray, dataArray } = PrepareBulkUpload(
+        const { columnNamesArray, columnTypesArray, dataArray } = PrepareBulkUpload(
           geojson,
           columns,
           commodity,

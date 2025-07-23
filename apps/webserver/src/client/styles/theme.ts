@@ -8,8 +8,6 @@ export const theme = createTheme({
   palette: {
     primary: {
       main: '#9FC642', // same as 500
-      dark: '#516E10',
-      light: '#EDF7D7',
       contrastText: '#1A210B',
       100: '#FBFFF2',
       200: '#EDF7D7',
@@ -23,7 +21,7 @@ export const theme = createTheme({
     },
     secondary: {
       main: '#58A9CD', // TODO should be the same as 500, sync up with design team
-      light: '#d4eafc',
+      light: '#D4EAFC',
       contrastText: '#1A210B',
       100: '#F6F5FF',
       200: '#E8E6FB',

@@ -1,23 +1,17 @@
-import { useState, ElementType, MouseEvent } from 'react';
+import { ElementType } from 'react';
 import {
   Typography,
-  ButtonBase,
-  SxProps,
-  Theme,
-  Popover,
   Box,
   Stepper,
   Step,
   StepLabel,
-  IconButton,
   StepIconProps,
   styled,
+  SxProps,
+  Theme,
 } from '@mui/material';
-import { Check, Close, Info, Email, Publish } from '@mui/icons-material';
-
-interface FileValidationHelperProps {
-  sx?: SxProps<Theme>;
-}
+import { Check, Email, Publish } from '@mui/icons-material';
+import { HelperTextWithPopover } from '../../../../../components';
 
 const ColorStepIconRoot = styled(Box)<{
   ownerState: { completed?: boolean; active?: boolean };
@@ -35,9 +29,9 @@ const ColorStepIconRoot = styled(Box)<{
     {
       props: ({ ownerState }) => ownerState.active || ownerState.completed,
       style: {
-        border: `2px solid ${theme.palette.primary.dark}`,
-        backgroundColor: theme.palette.primary.main,
-        color: theme.palette.primary.dark,
+        border: `2px solid ${theme.palette.primary[700]}`,
+        backgroundColor: theme.palette.primary[500],
+        color: theme.palette.primary[700],
       },
     },
   ],
@@ -53,51 +47,27 @@ function ColorStepIcon(props: StepIconProps, Icon: ElementType) {
   );
 }
 
+interface FileValidationHelperProps {
+  sx?: SxProps<Theme>;
+}
+
 export function FileValidationHelper({ sx }: FileValidationHelperProps) {
-  const [anchorEl, setAnchorEl] = useState<HTMLButtonElement | null>(null);
-
-  const handleClick = (event: MouseEvent<HTMLButtonElement>) => {
-    setAnchorEl(event.currentTarget);
-  };
-
-  const handlePopoverClose = () => setAnchorEl(null);
-
-  const isPopoverOpen = !!anchorEl;
-  const id = isPopoverOpen ? 'popover' : undefined;
-
   return (
     <>
-      <ButtonBase
+      <HelperTextWithPopover
+        label={
+          <Typography variant="caption" sx={{ color: (theme) => theme.palette.primary[700] }}>
+            How do we validate your file for upload?
+          </Typography>
+        }
+        isCloseButtonVisible
         sx={{
-          backgroundColor: 'primary.light',
-          width: 'fit-content',
+          backgroundColor: (theme) => theme.palette.primary[200],
           borderRadius: 1,
+          width: 'fit-content',
           px: 1.5,
           py: 0.5,
           ...sx,
-        }}
-        onClick={handleClick}
-      >
-        <Typography variant="caption" sx={{ color: 'primary.dark' }}>
-          How do we validate your file for upload?
-        </Typography>
-        <Info fontSize="small" sx={{ ml: 1 }} />
-      </ButtonBase>
-      <Popover
-        id={id}
-        open={isPopoverOpen}
-        anchorEl={anchorEl}
-        onClose={handlePopoverClose}
-        anchorOrigin={{
-          vertical: 'top',
-          horizontal: 'right',
-        }}
-        slotProps={{
-          paper: {
-            sx: {
-              ml: 1,
-            },
-          },
         }}
       >
         <Box sx={{ width: '320px' }}>
@@ -107,15 +77,12 @@ export function FileValidationHelper({ sx }: FileValidationHelperProps) {
               alignItems: 'center',
               justifyContent: 'space-between',
               p: 1,
-              backgroundColor: 'primary.light',
+              backgroundColor: (theme) => theme.palette.primary[200],
             }}
           >
             <Typography variant="body2" sx={{ fontWeight: '500' }}>
               File Validation Process:
             </Typography>
-            <IconButton onClick={handlePopoverClose} aria-label="close file validation popover">
-              <Close fontSize="small" />
-            </IconButton>
           </Box>
 
           <Stepper
@@ -158,7 +125,7 @@ export function FileValidationHelper({ sx }: FileValidationHelperProps) {
             </Step>
           </Stepper>
         </Box>
-      </Popover>
+      </HelperTextWithPopover>
     </>
   );
 }

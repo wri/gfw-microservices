@@ -48,35 +48,7 @@ export async function saveListAttributes(
   try {
     // insert new attributes with Typeorm listAttributes entity
     const listAttributesRepository = queryRunner.manager.getRepository(ListAttributes);
-
-    Logger.log(`Inserting ${attributes.length} into [ListAttributes]`);
-
     await listAttributesRepository.save(attributes);
-  } catch (error) {
-    // throwing errors for PrimaryKey constraints is likely more efficient than checking the db if they exists, less roundtrips
-    if (error?.message.includes('Violation of PRIMARY KEY constraint')) {
-      Logger.log(`Constraint violation handled for `, error.stack || error);
-    } else {
-      Logger.error(`Something went wrong executing query.`, error.stack || error);
-      throw error;
-    }
-  }
-}
-
-export async function getListAttributes(clientDb, listId: number) {
-  try {
-    // insert new attributes with Typeorm listAttributes entity
-    const clientStore = new ClientStoreConnection();
-    const connection = await clientStore.getConnection(clientDb);
-    const listAttributesRepository = connection.getRepository(ListAttributes);
-
-    const listAttributes = await listAttributesRepository.find({
-      where: {
-        list_id: listId,
-      },
-    });
-
-    return listAttributes;
   } catch (error) {
     // throwing errors for PrimaryKey constraints is likely more efficient than checking the db if they exists, less roundtrips
     if (error?.message.includes('Violation of PRIMARY KEY constraint')) {
@@ -156,32 +128,38 @@ function getGHGCodesMap(): GHGCodeMapping[] {
     commodities: codeMap[code] || [],
   }));
 }
-export async function getListsAttributes(clientDatabase: string, findOptions) {
+
+export async function getListAttributes(clientDatabase: string, listId: number) {
   try {
     const clientStoreConnection = new ClientStoreConnection();
     const connection = await clientStoreConnection.getConnection(clientDatabase);
     const listAttributesRepository = connection.getRepository(ListAttributes);
 
-    return await listAttributesRepository.find(findOptions);
+    return await listAttributesRepository.find({
+      where: {
+        list_id: listId,
+      },
+    });
   } catch (error) {
-    Logger.warn(`getListsAttributes`, error.stack || error);
-    return [];
+    Logger.error(`Something went wrong at getListAttributes`, error.stack || error);
+    throw error;
   }
 }
+
 export async function getListJsonAttributesColumnsSqlParam(clientDatabase: string, listId: number) {
-  const listAttributesRecords = await getListsAttributes(clientDatabase, {
-    where: {
-      list_id: listId,
-    },
-  });
+  try {
+    const listAttributesRecords = await getListAttributes(clientDatabase, listId);
 
-  const castStringArr = listAttributesRecords.map((attrRecord) => {
-    const fieldTypeCast =
-      attrRecord.attribute_type === ListsAttrsTypes.Number ? 'DECIMAL(18, 6)' : 'NVARCHAR(MAX)';
-    return `CAST(JSON_VALUE(lt.attributes, '$."${attrRecord.attribute_name}"') AS ${fieldTypeCast}) AS [${attrRecord.attribute_name}]`;
-  });
+    const castStringArr = listAttributesRecords.map((attrRecord) => {
+      const fieldTypeCast =
+        attrRecord.attribute_type === ListsAttrsTypes.Number ? 'DECIMAL(18, 6)' : 'NVARCHAR(MAX)';
+      return `CAST(JSON_VALUE(lt.attributes, '$."${attrRecord.attribute_name}"') AS ${fieldTypeCast}) AS [${attrRecord.attribute_name}]`;
+    });
 
-  return castStringArr.join(',');
+    return castStringArr.join(',');
+  } catch (error) {
+    return '';
+  }
 }
 
 export async function getListLocationsColumnsToDelete(
@@ -237,11 +215,13 @@ export async function handleListLocationAttributes(
         return acc;
       }, {} as Record<string, unknown>);
 
-      const attrValue = Object.keys(locAttrObj).length ? `'${JSON.stringify(locAttrObj)}'` : 'NULL';
+      const attrValue = Object.keys(locAttrObj).length
+        ? `'${JSON.stringify(locAttrObj).replace(/'/g, "''")}'`
+        : 'NULL';
 
-      const updateQuery = `UPDATE [${list.listTableName}] 
-        SET [attributes] = {ATTR_VALUE}  
-        WHERE [location_id] = ${record['location_id']}`.replace('{ATTR_VALUE}', attrValue);
+      const updateQuery = `UPDATE [${list.listTableName}]
+        SET [attributes] = ${attrValue}
+        WHERE [location_id] = ${record['location_id']}`;
 
       await queryRunner.query(updateQuery);
 

@@ -48,6 +48,7 @@ export interface RequestNewList extends PreviewListRequest {
 
   hasUnanalyzableError: boolean;
   locations?: number[];
+  listAttributesRecords?: Map<string, ListAttributesRecord>;
 }
 
 interface Handler<T> {

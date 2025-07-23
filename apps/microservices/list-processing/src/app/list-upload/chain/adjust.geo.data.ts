@@ -48,7 +48,7 @@ export class AdjustGeoData extends AbstractHandler<ChainType> {
     }
 
     try {
-      const centroid = turf.centroid(feature.geometry as unknown as turf.AllGeoJSON);
+      const centroid = turf.centerOfMass(feature.geometry as unknown as turf.AllGeoJSON);
       return {
         longitude: centroid.geometry.coordinates[0],
         latitude: centroid.geometry.coordinates[1],

@@ -59,27 +59,14 @@ const setVectorTileLayerForFilteredList = async (listData, transitionListData, v
     }
   });
 
+  userLayer.addMany([...centroidGraphics]);
+
   const alertsMapExtent = transitionListData?.alertsMapExtent;
 
   if (alertsMapExtent) {
     view.goTo(alertsMapExtent);
-  } else if (locationData.length === 1) {
+  } else if (locationData.length) {
     return fillGraphics;
-  } else if (locationData?.length > 1) {
-    // Calculate the average latitude and longitude for centering
-    const latitudes = locationData.map((location) => location.properties.Latitude);
-    const longitudes = locationData.map((location) => location.properties.Longitude);
-
-    const calculateAverage = (values) =>
-      values.reduce((sum, value) => sum + value, 0) / values.length;
-
-    const avgLatitude = calculateAverage(latitudes);
-    const avgLongitude = calculateAverage(longitudes);
-
-    return {
-      center: [avgLongitude, avgLatitude],
-      zoom: 3,
-    };
   }
 };
 

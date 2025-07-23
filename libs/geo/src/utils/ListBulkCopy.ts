@@ -173,59 +173,18 @@ export class ListBulkCopy {
       sqlGetTableColumnsParameters
     );
 
-    const bulkUploadPayload = [];
     /**
      * TODO GPV-3786
      * duplicated code
      * @note this code is ahead
      */
-    geojson.features.forEach((feature) => {
-      const row = [];
-      columns.forEach((column) => {
-        const col = {
-          field: column.COLUMN_NAME,
-          type: getDataType(column),
-          value: undefined,
-          isNullable: column.IS_NULLABLE === 'YES',
-        };
-        if (Object.hasOwnProperty.call(feature.properties, column.COLUMN_NAME)) {
-          col.value = feature.properties[column.COLUMN_NAME];
 
-          if (column.COLUMN_NAME === 'Geometry') {
-            col.value = GetWKTGeometry(feature.geometry);
-          }
-        } else {
-          if (column.COLUMN_NAME === 'location_id') {
-            col.value = primary_key;
-          } else if (commodity && column.COLUMN_NAME === 'Commodity') {
-            col.value = commodity;
-          } else if (column.COLUMN_NAME === 'Geometry') {
-            col.value = GetWKTGeometry(feature.geometry);
-          } else if (column.COLUMN_NAME === 'attributes') {
-            col.type = sql.NVarChar(sql.MAX);
-            col.value = '';
-          } else if (column.COLUMN_NAME === 'ErrorDetails') {
-            col.type = sql.NVarChar(256);
-            col.value = '';
-          }
-        }
-        row.push(col);
-      });
-      bulkUploadPayload.push(row);
-      // Increment key for next feature
-      primary_key += 1;
-    });
-
-    const columnsInfo = bulkUploadPayload[0].map((col) => ({
-      name: col.field,
-      type: col.type,
-      isNullable: col.isNullable,
-    }));
-
-    const columnNamesArray = bulkUploadPayload[0].map((col) => col.field);
-    const columnTypesArray = bulkUploadPayload[0].map((col) => col.type);
-    const dataArray = bulkUploadPayload.map((row) => row.map((item) => item.value));
-
+    const { columnsInfo, columnNamesArray, columnTypesArray, dataArray } = PrepareBulkUpload(
+      geojson,
+      columns,
+      commodity,
+      primary_key
+    );
     return {
       columnsInfo,
       columnNamesArray,
@@ -234,4 +193,59 @@ export class ListBulkCopy {
       start_location_id: max_id,
     };
   }
+}
+export function PrepareBulkUpload(
+  geojson: { features: Feature[] },
+  columns: GetTableColumnsType[],
+  commodity: unknown,
+  primary_key = 1
+) {
+  const bulkUploadPayload = [];
+  geojson.features.forEach((feature) => {
+    const row = [];
+    columns.forEach((column) => {
+      const col = {
+        field: column.COLUMN_NAME,
+        type: getDataType(column),
+        value: undefined,
+        isNullable: column.IS_NULLABLE === 'YES',
+      };
+      if (Object.hasOwnProperty.call(feature.properties, column.COLUMN_NAME)) {
+        col.value = feature.properties[column.COLUMN_NAME];
+
+        if (column.COLUMN_NAME === 'Geometry') {
+          col.value = GetWKTGeometry(feature.geometry);
+        }
+      } else {
+        if (column.COLUMN_NAME === 'location_id') {
+          col.value = primary_key;
+        } else if (commodity && column.COLUMN_NAME === 'Commodity') {
+          col.value = commodity;
+        } else if (column.COLUMN_NAME === 'Geometry') {
+          col.value = GetWKTGeometry(feature.geometry);
+        } else if (column.COLUMN_NAME === 'attributes') {
+          col.type = sql.NVarChar(sql.MAX);
+          col.value = '';
+        } else if (column.COLUMN_NAME === 'ErrorDetails') {
+          col.type = sql.NVarChar(256);
+          col.value = '';
+        }
+      }
+      row.push(col);
+    });
+    bulkUploadPayload.push(row);
+    // Increment key for next feature
+    primary_key += 1;
+  });
+
+  const columnsInfo = bulkUploadPayload[0].map((col) => ({
+    name: col.field,
+    type: col.type,
+    isNullable: col.isNullable,
+  }));
+
+  const columnNamesArray = bulkUploadPayload[0].map((col) => col.field);
+  const columnTypesArray = bulkUploadPayload[0].map((col) => col.type);
+  const dataArray = bulkUploadPayload.map((row) => row.map((item) => item.value));
+  return { columnsInfo, columnNamesArray, columnTypesArray, dataArray };
 }

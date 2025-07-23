@@ -9,7 +9,6 @@ import {
 import { ListBulkCopy } from './ListBulkCopy';
 import * as sql from 'mssql';
 import { listStatus, analysisTypes } from '@wri-monorepos/constants';
-import { deleteListAnalyses } from '../lib/list.analysis.status';
 
 const LIST_STATUS = {
   LIST_STATUS_PENDING: 1,
@@ -438,15 +437,6 @@ export async function setListAnalysisStatus(
   const clientStoreConnection = new ClientStoreConnection();
   const connection = await clientStoreConnection.getConnection(clientDatabase);
   const listAnalysisStatusRepository = connection.getRepository(ListsAnalysisStatus);
-
-  // Get current analysis statuses
-  const currentAnalysisStatuses = await listAnalysisStatusRepository.findBy({
-    listId,
-  });
-  // Check if the list was uploaded by EAPI
-  if (!isFromEAPI) {
-    await deleteListAnalyses(clientDatabase, listId, analysisIds, currentAnalysisStatuses);
-  }
 
   // Update status for all analysis types
   const isPalmRiskIncluded = analysisIds.includes(analysisTypes.PALM_RISK);

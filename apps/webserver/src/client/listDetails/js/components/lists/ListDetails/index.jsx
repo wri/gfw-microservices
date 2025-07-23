@@ -2153,6 +2153,13 @@ export default class ListDetails extends Component {
                       isOnlyGHGActive={isOnlyGHGActive}
                       isEveryRowSelected={isEveryRowSelected}
                       userSharedLists={userSharedLists}
+                      isDraftWithoutDiagnostic={
+                        !isListWithErrors &&
+                        !isOnlyGHGActive &&
+                        ((getIsDiagnosticStatusDraft(selectedLists[0]) &&
+                          !isListSubmittedForAnalysis) ||
+                          isAnalysisFailedByExceededAnalysisLimit)
+                      }
                     />
 
                     <div style={{ display: 'flex', justifyContent: 'space-between' }}>
@@ -2222,7 +2229,10 @@ export default class ListDetails extends Component {
                             <Alert
                               variant="filled"
                               severity="error"
-                              sx={{ backgroundColor: '#FFEEED', color: '#8D0D01' }}
+                              sx={{
+                                backgroundColor: (theme) => theme.palette.error[100],
+                                color: (theme) => theme.palette.error[700],
+                              }}
                               action={
                                 <PillButton
                                   variant="contained"
@@ -2248,7 +2258,10 @@ export default class ListDetails extends Component {
                                 <Link
                                   href={ExternalLinks.UploadListHelpCenter}
                                   target="_blank"
-                                  sx={{ color: '#8D0D01', textDecoration: 'underline' }}
+                                  sx={{
+                                    color: (theme) => theme.palette.error[700],
+                                    textDecoration: 'underline',
+                                  }}
                                 >
                                   More details
                                 </Link>

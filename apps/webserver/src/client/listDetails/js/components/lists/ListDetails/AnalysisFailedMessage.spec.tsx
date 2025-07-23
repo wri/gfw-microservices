@@ -22,7 +22,7 @@ describe('AnalysisFailedMessage', () => {
     expect(errorMessage).toBeInTheDocument();
     expect(within(errorMessage).getByRole('link', { name: /here/i })).toHaveAttribute(
       'href',
-      'https://www.globalforestwatch.org/help/gfw-pro/guides/how-to-address-errors-in-your-uploads'
+      'https://globalforestwatch.org/help/gfw-pro/guides/how-to-address-errors-in-your-uploads'
     );
 
     await user.click(screen.getByRole('button', { name: /try again/i }));

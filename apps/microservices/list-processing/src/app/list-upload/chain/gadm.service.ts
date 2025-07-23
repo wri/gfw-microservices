@@ -36,11 +36,13 @@ const createRateLimiter = () => {
     if (requests.length >= maxRequests) {
       // Wait until the oldest request is more than 1 minute old
       const oldestRequest = requests[0];
-      if (timeWindow - (now - oldestRequest) > 500) {
-        await new Promise((resolve) => setTimeout(resolve, 500));
+      const SHORT_WAIT = 500; // 500ms short wait to avoid busy waiting
+      const BUFFER_TIME_MS = 100; // Buffer time to ensure we don't hit the limit
+      if (timeWindow - (now - oldestRequest) > SHORT_WAIT) {
+        await new Promise((resolve) => setTimeout(resolve, SHORT_WAIT));
       } else {
         await new Promise((resolve) =>
-          setTimeout(resolve, timeWindow - (now - oldestRequest) + 100)
+          setTimeout(resolve, timeWindow - (now - oldestRequest) + BUFFER_TIME_MS)
         );
       }
       return waitForSlot(); // Check again after waiting
@@ -52,6 +54,7 @@ const createRateLimiter = () => {
 
 const rateLimiter = createRateLimiter();
 const POOL_SIZE = 20; // Increased pool size since we have higher rate limit
+const DEFAULT_DELAY = 500;
 export class GADMService extends AbstractHandler<ChainType> {
   logger = new Logger(GADMService.name);
 
@@ -101,10 +104,9 @@ export class GADMService extends AbstractHandler<ChainType> {
       // If it's a rate limit error, the axios-retry will handle it
       // For other errors, add a small delay before rethrowing
       if (error.response?.status !== 429) {
-        await new Promise((resolve) => setTimeout(resolve, 500));
+        await new Promise((resolve) => setTimeout(resolve, DEFAULT_DELAY));
       }
 
-      this.logger.error(`Error fetching GADM data`, error.response?.data || error.stack);
       return null;
     }
   };

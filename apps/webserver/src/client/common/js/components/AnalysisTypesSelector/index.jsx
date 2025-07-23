@@ -23,9 +23,7 @@ const getUpdatedSelection = (selectedAnalyses, selectedAnalysisId) => {
         )
       : selectedAnalyses.filter((selectedType) => selectedType !== selectedAnalysisId);
   } else {
-    return selectedAnalysisId === analysisTypes.PALM_RISK
-      ? [...selectedAnalyses, analysisTypes.PALM_RISK, analysisTypes.FOREST_CHANGE_DIAGNOSTICS]
-      : [...selectedAnalyses, selectedAnalysisId];
+    return [...selectedAnalyses, selectedAnalysisId];
   }
 };
 
@@ -63,6 +61,10 @@ function AnalysisTypesSelector({
                 <Checkbox
                   checked={selectedAnalyses.includes(id)}
                   onChange={() => handleAnalyzesSelection(id)}
+                  disabled={
+                    id === analysisTypes.PALM_RISK &&
+                    !selectedAnalyses.includes(analysisTypes.FOREST_CHANGE_DIAGNOSTICS)
+                  }
                 />
               }
               sx={{ mr: 0, mb: 1.5, ml: id === analysisTypes.PALM_RISK ? 2 : 0 }}

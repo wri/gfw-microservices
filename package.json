@@ -154,8 +154,7 @@
     "winston": "^3.11.0",
     "xlsx": "https://cdn.sheetjs.com/xlsx-0.20.0/xlsx-0.20.0.tgz",
     "zod": "3.24.1",
-    "zod-validation-error": "^2.1.0",
-    "stylus": "file:./libs/vendor/stylus-0.59.0.tar.gz"
+    "zod-validation-error": "^2.1.0"
   },
   "overrides": {
     "d3-interpolate": {
@@ -169,8 +168,7 @@
     "xlsx": "https://cdn.sheetjs.com/xlsx-0.20.0/xlsx-0.20.0.tgz",
     "cross-spawn": "^6.0.6",
     "formidable": "^3.5.1",
-
-    "stylus": "file:./libs/vendor/stylus-0.59.0.tar.gz"
+    "stylus": "github:stylus/stylus#0.59.0"
   },
   "devDependencies": {
     "@babel/helpers": "^7.26.10",

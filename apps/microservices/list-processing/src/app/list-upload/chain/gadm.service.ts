@@ -6,14 +6,52 @@ import axios from 'axios';
 import axiosRetry from 'axios-retry';
 
 axiosRetry(axios, {
-  retries: 3,
-  retryDelay: axiosRetry.exponentialDelay,
+  retries: 5,
+  retryDelay: (retryCount, error) => {
+    // Handle rate limiting (429) with longer delays
+    if (error.response?.status === 429) {
+      return Math.pow(2, retryCount) * 2000; // 2s, 4s, 8s, 16s, 32s
+    }
+    // Handle other retryable errors with exponential backoff
+    return axiosRetry.exponentialDelay(retryCount, error);
+  },
   retryCondition: (error) => {
-    // axios-retry normally does not retry POSTs, so using a custom condition
-    return axiosRetry.isRetryableError(error);
+    // Retry on rate limiting (429) and other retryable errors
+    return axiosRetry.isRetryableError(error) || error.response?.status === 429;
   },
 });
-const POOL_SIZE = 20;
+
+// Rate limiter: 180 requests per minute
+const createRateLimiter = () => {
+  const requests: number[] = [];
+  const maxRequests = 180;
+  const timeWindow = 60000; // 1 minute in milliseconds
+
+  return async function waitForSlot(): Promise<void> {
+    const now = Date.now();
+
+    // Remove requests older than 1 minute
+    requests.splice(0, requests.length, ...requests.filter((time) => now - time < timeWindow));
+
+    if (requests.length >= maxRequests) {
+      // Wait until the oldest request is more than 1 minute old
+      const oldestRequest = requests[0];
+      if (timeWindow - (now - oldestRequest) > 500) {
+        await new Promise((resolve) => setTimeout(resolve, 500));
+      } else {
+        await new Promise((resolve) =>
+          setTimeout(resolve, timeWindow - (now - oldestRequest) + 100)
+        );
+      }
+      return waitForSlot(); // Check again after waiting
+    }
+
+    requests.push(now);
+  };
+};
+
+const rateLimiter = createRateLimiter();
+const POOL_SIZE = 20; // Increased pool size since we have higher rate limit
 export class GADMService extends AbstractHandler<ChainType> {
   logger = new Logger(GADMService.name);
 
@@ -33,7 +71,11 @@ export class GADMService extends AbstractHandler<ChainType> {
       coordinates: [longitude, latitude],
     };
     const sql = "SELECT gid_1, gid_2, name_0, name_1, name_2 FROM mytable WHERE adm_level='2'";
+
     try {
+      // Wait for rate limiter before making request
+      await rateLimiter();
+
       const response = await axios.post(
         'https://data-api.globalforestwatch.org/dataset/gadm_administrative_boundaries/v4.1.64/query/json',
         { sql, geometry },
@@ -51,6 +93,17 @@ export class GADMService extends AbstractHandler<ChainType> {
 
       return response.data?.data;
     } catch (error) {
+      this.logger.error(
+        `Error fetching GADM data for feature at ${latitude}, ${longitude}`,
+        error.response?.data?.message || error.stack
+      );
+
+      // If it's a rate limit error, the axios-retry will handle it
+      // For other errors, add a small delay before rethrowing
+      if (error.response?.status !== 429) {
+        await new Promise((resolve) => setTimeout(resolve, 500));
+      }
+
       this.logger.error(`Error fetching GADM data`, error.response?.data || error.stack);
       return null;
     }

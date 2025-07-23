@@ -71,3 +71,4 @@ export * from './getGHGLocationErrorsByListId';
 export * from './getListAnalysis';
 export * from './getUserLists';
 export * from './getAnalysisColumns';
+export * from './getMissingJsonPropertiesFromList';

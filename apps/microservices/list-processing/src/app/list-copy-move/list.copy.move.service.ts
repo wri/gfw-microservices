@@ -10,6 +10,7 @@ import {
   CheckListNameIsValid,
   FeatureCollection,
   getListAnalysisStatusByListId,
+  ListHasFiltersApplies,
 } from '@wri-monorepos/geo';
 import { handleNewListCreation } from './handler/list.creation';
 import { handleSourceListDeletion } from './handler/source.list.deletion';
@@ -25,6 +26,7 @@ import { ProcessUploadData } from '../list-upload/chain/process.upload.data';
 import { ConvertGeojsonProperties } from '../list-upload/chain/convert.geojson.properties';
 import { AbstractHandler } from '../list-upload/chain/types';
 import { CommodityService } from '../list/commodity.service';
+import { UpdateListAttributesRemoveIdColumns } from '../list-upload/chain/update.list.attributes.remove.id.columns';
 
 interface ProcessingChainParams {
   moveToList: { id: number; list_name: string };
@@ -32,6 +34,8 @@ interface ProcessingChainParams {
   organizationId: number;
   subscriptionStatusId: number;
   geojson: FeatureCollection;
+  sourceListId?: number;
+  isNotDeletingTheSourceList?: boolean;
 }
 
 @Injectable()
@@ -88,8 +92,14 @@ export class ListCopyMoveService {
   }
 
   private async processUploadChain(params: ProcessingChainParams): Promise<void> {
+    const { sourceListId, isNotDeletingTheSourceList } = params;
+
     const processUploadData = new ProcessUploadData();
     const convertGeojsonProperties = new ConvertGeojsonProperties();
+    const maybeUpdateListAttributes = new UpdateListAttributesRemoveIdColumns({
+      sourceListId,
+      isNotDeletingTheSourceList,
+    });
 
     const chainType = {
       request: {
@@ -104,7 +114,7 @@ export class ListCopyMoveService {
       geojson: params.geojson,
     };
 
-    convertGeojsonProperties.setNext(processUploadData);
+    convertGeojsonProperties.setNext(processUploadData).setNext(maybeUpdateListAttributes);
     await AbstractHandler.runFullChain(convertGeojsonProperties, chainType);
   }
 
@@ -197,7 +207,6 @@ export class ListCopyMoveService {
       organizationId,
       subscriptionStatusId,
     } = request;
-
     CheckListNameIsValid(listType, listName, userListNames);
 
     this.logger.log('Gathering information for locations');
@@ -288,7 +297,6 @@ export class ListCopyMoveService {
       const moveToList = await this.createOrUpdateTargetList(request, analysisIds, selectedListId);
 
       await this.updateExistingList(request, moveToList, geojson, analysisIds, selectedListId);
-
       if (action === ActionType.Move) {
         await handleSourceListDeletion({
           clientDatabase,
@@ -308,7 +316,11 @@ export class ListCopyMoveService {
         organizationId,
         subscriptionStatusId,
         geojson,
-      });
+        sourceListId: selectedListId,
+        isNotDeletingTheSourceList: Boolean(
+          action === ActionType.Move && (!allLocationsSelected || ListHasFiltersApplies(filters))
+        ),
+      } as any);
 
       return {
         success: true,

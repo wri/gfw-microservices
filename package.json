@@ -157,6 +157,7 @@
     "zod-validation-error": "^2.1.0"
   },
   "overrides": {
+    "stylus": "0.0.1-security",
     "d3-interpolate": {
       "d3-color": ">=3.1.0"
     },

@@ -1,4 +1,4 @@
-import { DragEvent, useEffect, useRef, useState, ChangeEvent } from 'react';
+import { useFileUpload } from '../hooks/useFileUpload';
 import { Box, Card, Typography, useTheme } from '@mui/material';
 import { ArrowForwardIos, Close } from '@mui/icons-material';
 
@@ -11,82 +11,28 @@ import {
   UploadByFileInstructions,
 } from '../components';
 import { useUploadLocation } from '../contexts';
-import { uploadFileToS3 } from '../utils/upload';
 import { useHistory } from '../hooks';
 import { FileAttachState, UploadType } from '../types';
 import { DATA_CY, ExternalLinks } from '../../../../../utils/constants';
+import { useState } from 'react';
 
 export function UploadLocationByFile() {
   const theme = useTheme();
   const history = useHistory();
-
   const { clearUploadType, addFile } = useUploadLocation();
-
   const [isDataTemplateDialogOpen, setIsDataTemplateDialogOpen] = useState(false);
-  const [file, setFile] = useState<File | null>(null);
-  const [fileAttachState, setFileAttachState] = useState<FileAttachState>(FileAttachState.NoFile);
-  const [dragCounter, setDragCounter] = useState(0); // used to prevent dragleave event from firing when dragging over children
-  const fileInputRef = useRef<HTMLInputElement | null>(null);
-
-  useEffect(() => {
-    if (!file) {
-      return;
-    }
-
-    const uploadFile = async () => {
-      try {
-        setFileAttachState(FileAttachState.Uploading);
-        const data = await uploadFileToS3(file);
-        addFile(data);
-        setFileAttachState(FileAttachState.Uploaded);
-      } catch (err: unknown) {
-        setFileAttachState(FileAttachState.UploadFailed);
-      }
-    };
-
-    uploadFile();
-  }, [file]);
-
-  const fileUpload = (event: DragEvent<HTMLFormElement>) => {
-    event.preventDefault();
-
-    const target = event.target as HTMLInputElement;
-    const attachedFile = target.files?.[0] || event.dataTransfer?.files?.[0];
-    if (!attachedFile) {
-      return;
-    }
-
-    const fileExtension = attachedFile.name.split('.').pop()?.toLowerCase();
-
-    if (!fileExtension || !VALID_UPLOAD_FILE_FORMATS.includes(fileExtension)) {
-      setFileAttachState(FileAttachState.UnsupportedType);
-      return;
-    }
-
-    setFile(attachedFile);
-  };
-
-  const handleFormDragEnter = (event: DragEvent<HTMLFormElement>) => {
-    event.preventDefault();
-    setDragCounter((prev) => prev + 1);
-    setFileAttachState(FileAttachState.DragOver);
-  };
-
-  const handleFormDragLeave = (event: DragEvent<HTMLFormElement>) => {
-    event.preventDefault();
-    setDragCounter((prev) => Math.max(prev - 1, 0));
-
-    if (dragCounter === 1) {
-      setFileAttachState(FileAttachState.NoFile);
-    }
-  };
-
-  const handleFileChange = (e: ChangeEvent<HTMLInputElement>) => {
-    const selectedFile = e.target.files?.[0] ?? null;
-    if (selectedFile) {
-      setFile(selectedFile);
-    }
-  };
+  const {
+    file,
+    fileAttachState,
+    fileInputRef,
+    fileUpload,
+    handleFormDragEnter,
+    handleFormDragLeave,
+    handleFileChange,
+  } = useFileUpload({
+    validFileFormats: VALID_UPLOAD_FILE_FORMATS,
+    onUploadSuccess: addFile,
+  });
 
   const getStyleProps = () => {
     switch (fileAttachState) {

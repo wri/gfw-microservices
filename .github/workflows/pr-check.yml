@@ -118,6 +118,9 @@ jobs:
 
       - name: Run Test
         run: npx nx affected --target=test --parallel=3 --configuration=ci --coverage
+      
+      - name: Clean up .npmrc
+        run: rm -f ~/.npmrc
 
   # Disabled the fitness test github action because the underlying test is already disabled
   # but not deleting this in case we need to re-enable it in the future

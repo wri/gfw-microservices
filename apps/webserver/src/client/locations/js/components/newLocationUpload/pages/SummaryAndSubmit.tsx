@@ -23,7 +23,7 @@ import { commodities } from '../utils/constants';
 import { uploadFileToS3 } from '../utils/upload';
 import { uploadProcessByPrevUploadedFile } from '../../landing/uploadProcess';
 import { UploadType } from '../types';
-import { DATA_CY } from '../../../../../utils/constants';
+import { DATA_CY, ExternalLinks } from '../../../../../utils/constants';
 
 export function SummaryAndSubmit() {
   const history = useHistory();
@@ -191,7 +191,11 @@ export function SummaryAndSubmit() {
             <Typography variant="body2">
               Please note that all analysis submission count towards your usage limits. See more
               information{' '}
-              <Link href="#" sx={{ textDecoration: 'none', color: 'primary.main' }}>
+              <Link
+                href={ExternalLinks.UploadFees}
+                sx={{ textDecoration: 'none', color: 'primary.main' }}
+                target="_blank"
+              >
                 here
               </Link>
               .
@@ -266,7 +270,11 @@ export function SummaryAndSubmit() {
               : 'Please confirm that you wish to submit this list to analysis'}
             . Note that running analysis counts towards your account usage limits. See more
             information{' '}
-            <Link href="#" sx={{ textDecoration: 'none', color: 'primary.main' }}>
+            <Link
+              href={ExternalLinks.UploadFees}
+              sx={{ textDecoration: 'none', color: 'primary.main' }}
+              target="_blank"
+            >
               here
             </Link>
             .

@@ -121,8 +121,8 @@ export function UploadLocationByFile() {
         <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
           <Typography variant="h6">By Data File: Prepare & Upload Location Data</Typography>
           <ExternalHelperResource
-            text="How to format your location data for GFW Pro"
-            url={ExternalLinks.HowToFormatLocationData}
+            text="Step-by-step instructions"
+            url={ExternalLinks.UploadStepByStepInstructions}
             color="info"
           />
         </Box>

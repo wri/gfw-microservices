@@ -67,8 +67,8 @@ export function UploadLocationOptions({ fromList, userLists }: UploadLocationOpt
             </Typography>
           </Box>
           <ExternalHelperResource
-            text="How to format your location data for GFW Pro"
-            url={ExternalLinks.HowToFormatLocationData}
+            text="Step-by-step instructions"
+            url={ExternalLinks.UploadStepByStepInstructions}
             color="info"
           />
         </Box>

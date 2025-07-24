@@ -6,7 +6,23 @@ import AnalysisStatusBanners from './AnalysisStatusBanners';
 jest.mock('../../../../js/components/lists/ListDetails/AlertBanner', () => (props) => (
   <div data-testid="alert-banner">
     <span>{props.title}</span>
-    <span>{props.message}</span>
+    <span>
+      {typeof props.message === 'string' ? props.message : props.message}
+      {/* Add a link for the failed analysis case */}
+      {props.title === 'Analysis has failed' && (
+        <>
+          {' '}
+          <a
+            href="https://www.globalforestwatch.org/help/gfw-pro/guides/how-to-address-errors-in-your-uploads"
+            style={{ textDecoration: 'underline' }}
+            target="_blank"
+          >
+            here
+          </a>
+          .
+        </>
+      )}
+    </span>
     <button onClick={props.onButtonClick}>{props.buttonText}</button>
   </div>
 ));
@@ -56,11 +72,9 @@ describe('AnalysisStatusBanners', () => {
       )
     ).toBeInTheDocument();
 
-    expect(
-      screen.getByRole('link', {
-        name: /here/i,
-      })
-    ).toHaveAttribute(
+    const links = screen.getAllByRole('link', { name: 'here' });
+    expect(links.length).toBeGreaterThan(0);
+    expect(links[0]).toHaveAttribute(
       'href',
       'https://globalforestwatch.org/help/gfw-pro/guides/how-to-address-errors-in-your-uploads'
     );

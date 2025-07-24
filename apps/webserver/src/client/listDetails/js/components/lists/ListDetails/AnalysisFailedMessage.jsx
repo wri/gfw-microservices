@@ -27,6 +27,7 @@ const AnalysisFailedMessage = ({ toggleReRunAnalysisDialog }) => {
             href={ExternalLinks.HowToAddressErrorsInUpload}
             color="#F24E1E"
             target="_blank"
+            component="a"
             sx={{ textDecoration: 'none' }}
           >
             here

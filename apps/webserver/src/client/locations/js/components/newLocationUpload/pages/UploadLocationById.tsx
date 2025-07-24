@@ -41,7 +41,7 @@ export function UploadLocationById() {
       case FileAttachState.Uploading:
         return {
           border: `2px dashed ${theme.palette.primary.main}`,
-          backgroundColor: 'primary.light',
+          backgroundColor: 'primary[200]',
         };
       case FileAttachState.UnsupportedType:
       case FileAttachState.UploadFailed:

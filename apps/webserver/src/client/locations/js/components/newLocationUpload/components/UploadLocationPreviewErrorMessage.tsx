@@ -146,13 +146,6 @@ const errorMessageBuilder = ({
     };
   }
 
-  if (firstError?.startsWith('AxiosError: Request failed with status code 429')) {
-    return {
-      title: 'Something went wrong',
-      body: 'The platform is currently experiencing high traffic and something went wrong with your request. Please try again in a few minutes.',
-    };
-  }
-
   return null;
 };
 

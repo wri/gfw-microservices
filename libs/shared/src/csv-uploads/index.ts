@@ -136,7 +136,7 @@ export const csvLatLongIdBasedTransformer = async (
   }
 
   logger.log(`${type} ID Based List Identified`);
-  const { missingFields, isValid } = validateIdBased(type, firstRow);
+  const { missingFields, isValid } = validateIdBased(type as string, firstRow);
 
   if (!isValid) {
     throw new Error(`Missing mandatory fields: ${missingFields.join(',')}`);

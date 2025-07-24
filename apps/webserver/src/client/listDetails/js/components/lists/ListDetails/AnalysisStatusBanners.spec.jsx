@@ -3,30 +3,6 @@ import userEvent from '@testing-library/user-event';
 
 import AnalysisStatusBanners from './AnalysisStatusBanners';
 
-jest.mock('../../../../js/components/lists/ListDetails/AlertBanner', () => (props) => (
-  <div data-testid="alert-banner">
-    <span>{props.title}</span>
-    <span>
-      {typeof props.message === 'string' ? props.message : props.message}
-      {/* Add a link for the failed analysis case */}
-      {props.title === 'Analysis has failed' && (
-        <>
-          {' '}
-          <a
-            href="https://www.globalforestwatch.org/help/gfw-pro/guides/how-to-address-errors-in-your-uploads"
-            style={{ textDecoration: 'underline' }}
-            target="_blank"
-          >
-            here
-          </a>
-          .
-        </>
-      )}
-    </span>
-    <button onClick={props.onButtonClick}>{props.buttonText}</button>
-  </div>
-));
-
 describe('AnalysisStatusBanners', () => {
   const defaultProps = {
     isDiagnosticStatusDraft: false,

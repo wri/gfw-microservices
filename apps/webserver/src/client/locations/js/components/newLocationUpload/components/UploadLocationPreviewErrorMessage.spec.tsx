@@ -179,4 +179,28 @@ describe('UploadLocationPreviewErrorMessage', () => {
     );
     expect(mockRetryPreviewData).toHaveBeenCalled();
   });
+
+  it('should render CAR LookUp error message', () => {
+    const error = {
+      errors: ['CAR LookUp: did not found lat/long for some-id'],
+    };
+
+    render(
+      <UploadLocationProvider>
+        <UploadLocationPreviewErrorMessage
+          error={error}
+          keyFile="data.csv"
+          onRetryUpload={mockRetryUpload}
+          onRetryPreviewData={mockRetryPreviewData}
+        />
+      </UploadLocationProvider>
+    );
+
+    expect(screen.getByText(/invalid file/i)).toBeInTheDocument();
+    expect(
+      screen.getByText(
+        /The defined ID is not recognized by GFW Pro. Please enter a recognized ID system value./i
+      )
+    ).toBeInTheDocument();
+  });
 });

@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import { useFileUpload } from '../hooks/useFileUpload';
 import { Box, Card, Typography, useTheme } from '@mui/material';
 import { ArrowForwardIos, Close } from '@mui/icons-material';
@@ -14,7 +15,6 @@ import { useUploadLocation } from '../contexts';
 import { useHistory } from '../hooks';
 import { FileAttachState, UploadType } from '../types';
 import { DATA_CY, ExternalLinks } from '../../../../../utils/constants';
-import { useState } from 'react';
 
 export function UploadLocationByFile() {
   const theme = useTheme();

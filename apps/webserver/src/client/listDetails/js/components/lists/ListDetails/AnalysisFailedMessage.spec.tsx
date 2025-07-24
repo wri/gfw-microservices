@@ -21,9 +21,9 @@ describe('AnalysisFailedMessage', () => {
     );
     expect(errorMessage).toBeInTheDocument();
 
-    const link = within(errorMessage).getByText('here');
-    expect(link).toBeInTheDocument();
-    expect(link).toHaveAttribute(
+    const linkByRole = within(errorMessage).getByRole('link', { name: 'here' });
+    expect(linkByRole).toBeInTheDocument();
+    expect(linkByRole).toHaveAttribute(
       'href',
       'https://globalforestwatch.org/help/gfw-pro/guides/how-to-address-errors-in-your-uploads'
     );

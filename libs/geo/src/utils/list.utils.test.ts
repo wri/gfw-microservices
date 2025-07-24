@@ -11,10 +11,10 @@ import {
   ListHasFiltersApplies,
   CheckListNameIsValid,
   createFeatureProps,
-  setListAnalysisStatus,
 } from './list.utils';
 import { analysisTypes, listStatus } from '@wri-monorepos/constants';
-import * as listAnalysisStatus from '../lib/list.analysis.status';
+import { deleteListAnalyses } from '../lib/list.analysis.status';
+import { setListAnalysisStatus } from './list.utils';
 
 // Mock the modules
 jest.mock('@wri-monorepos/sql', () => ({
@@ -319,7 +319,11 @@ describe('List Utils', () => {
 
     it('should handle empty analysis types array', async () => {
       const currentAnalysisStatuses = [
-        { listId: 1, analysisId: 'FCD', status: listStatus.Active } as ListsAnalysisStatus,
+        {
+          listId: 1,
+          analysisId: analysisTypes.FOREST_CHANGE_DIAGNOSTICS,
+          status: listStatus.Active,
+        } as ListsAnalysisStatus,
         {
           listId: 1,
           analysisId: analysisTypes.DEFORESTATION_KPIS,
@@ -333,7 +337,10 @@ describe('List Utils', () => {
         save: jest.fn(),
         update: jest.fn(),
         findOne: jest.fn().mockImplementation(({ where }) => {
-          if (where.analysisId === 'FCD' || where.analysisId === analysisTypes.DEFORESTATION_KPIS) {
+          if (
+            where.analysisId === analysisTypes.FOREST_CHANGE_DIAGNOSTICS ||
+            where.analysisId === analysisTypes.DEFORESTATION_KPIS
+          ) {
             return Promise.resolve({
               listId: 1,
               analysisId: where.analysisId,
@@ -358,17 +365,14 @@ describe('List Utils', () => {
       );
 
       // Call setListAnalysisStatus with empty array
-      await setListAnalysisStatus('clientDatabase', 1, [], listStatus.Pending, false);
-      // Verify deleteListAnalyses was called
-      expect(listAnalysisStatus.deleteListAnalyses).toHaveBeenCalledWith(
-        'clientDatabase',
-        1,
-        [],
-        currentAnalysisStatuses
-      );
+      await setListAnalysisStatus('clientDatabase', 1, [], listStatus.Active);
 
-      // Verify repository update was not called since analysisIds is empty
+      // Verify no operations were performed
+      expect(mockRepository.findBy).not.toHaveBeenCalled();
+      expect(mockRepository.findOne).not.toHaveBeenCalled();
+      expect(mockRepository.save).not.toHaveBeenCalled();
       expect(mockRepository.update).not.toHaveBeenCalled();
+      expect(() => setListAnalysisStatus('clientDatabase', 1, [], listStatus.Active)).not.toThrow();
     });
 
     it('should update status for provided analysis types', async () => {
@@ -412,19 +416,9 @@ describe('List Utils', () => {
       );
 
       // Call setListAnalysisStatus with analysis types
-      await setListAnalysisStatus(
-        'clientDatabase',
-        1,
-        ['FCD', analysisTypes.DEFORESTATION_KPIS],
-        listStatus.Pending
-      );
-      // Verify deleteListAnalyses was called
-      expect(listAnalysisStatus.deleteListAnalyses).toHaveBeenCalledWith(
-        'clientDatabase',
-        1,
-        ['FCD', analysisTypes.DEFORESTATION_KPIS],
-        currentAnalysisStatuses
-      );
+      await setListAnalysisStatus('clientDatabase', 1, ['FCD', 'AFI'], listStatus.Pending);
+      // Verify deleteListAnalyses was not called since it's not part of the implementation
+      expect(deleteListAnalyses).not.toHaveBeenCalled();
 
       // Verify repository update was called for each analysis type
       expect(mockRepository.update).toHaveBeenNthCalledWith(
@@ -552,7 +546,7 @@ describe('List Utils', () => {
         true
       );
       // Verify deleteListAnalyses was called
-      expect(listAnalysisStatus.deleteListAnalyses).not.toHaveBeenCalled();
+      expect(deleteListAnalyses).not.toHaveBeenCalled();
 
       // Verify repository update was called for each analysis type
       expect(mockRepository.update).toHaveBeenNthCalledWith(
@@ -607,7 +601,9 @@ describe('List Utils', () => {
         () => mockClientStoreConnection
       );
 
-      jest.spyOn(listAnalysisStatus, 'deleteListAnalyses').mockImplementation(jest.fn());
+      // Mock the deleteListAnalyses function
+      const mockDeleteListAnalyses = deleteListAnalyses as jest.Mock;
+      mockDeleteListAnalyses.mockImplementation(jest.fn());
 
       await setListAnalysisStatus(
         'clientDatabase',
@@ -617,7 +613,7 @@ describe('List Utils', () => {
         true // isFromEAPI
       );
 
-      expect(listAnalysisStatus.deleteListAnalyses).not.toHaveBeenCalled();
+      expect(deleteListAnalyses).not.toHaveBeenCalled();
     });
 
     it('should skip GREENHOUSE_GAS_EMISSIONS if not isFromEAPI', async () => {

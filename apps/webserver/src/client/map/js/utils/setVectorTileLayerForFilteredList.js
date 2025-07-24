@@ -59,47 +59,14 @@ const setVectorTileLayerForFilteredList = async (listData, transitionListData, v
     }
   });
 
-  userLayer.addMany([...centroidGraphics, ...fillGraphics]);
+  userLayer.addMany([...centroidGraphics]);
 
   const alertsMapExtent = transitionListData?.alertsMapExtent;
 
   if (alertsMapExtent) {
     view.goTo(alertsMapExtent);
-  } else if (locationData.length === 1) {
-    const selectedLocationCoordinates = locationData[0]?.geometry?.coordinates;
-    const geometry = new Polygon({
-      rings: selectedLocationCoordinates,
-      spatialReference: SpatialReference.WGS84,
-    });
-
-    const symbol = new SimpleFillSymbol({
-      color: [...POLYGON_FILL_COLOR, 0.65],
-      outline: {
-        color: [...POLYGON_OUTLINE_COLOR, 1],
-        width: 1,
-      },
-    });
-
-    const graphic = new Graphic({
-      geometry,
-      symbol,
-    });
-    view.goTo(graphic);
-  } else if (locationData?.length > 1) {
-    // Calculate the average latitude and longitude for centering
-    const latitudes = locationData.map((location) => location.properties.Latitude);
-    const longitudes = locationData.map((location) => location.properties.Longitude);
-
-    const calculateAverage = (values) =>
-      values.reduce((sum, value) => sum + value, 0) / values.length;
-
-    const avgLatitude = calculateAverage(latitudes);
-    const avgLongitude = calculateAverage(longitudes);
-
-    return {
-      center: [avgLongitude, avgLatitude],
-      zoom: 3,
-    };
+  } else if (locationData.length) {
+    return fillGraphics;
   }
 };
 

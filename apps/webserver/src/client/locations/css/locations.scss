@@ -713,58 +713,6 @@
 }
 
 // ======================
-//  SavedLocationsSummary
-// ======================
-.saved-locations-summary {
-  border: 1px solid $gfw-light-gray-2;
-  padding: $space-comfortable;
-  border-radius: $border-radius;
-
-  &__title {
-    @include heading(100);
-    margin-top: $space-compact;
-  }
-
-  &__key,
-  &__value {
-    padding: $space-compact 0;
-  }
-
-  &__key {
-    @include text(200, $color: $gfw-x-dark-gray);
-  }
-
-  &__value {
-    @include text(200, $color: $gfw-gray-2);
-    text-align: right;
-    font-variant-numeric: tabular-nums;
-  }
-
-  tbody tr {
-    border-bottom: none;
-  }
-}
-
-// ======================
-//  SidebarTemplateDownload
-// ======================
-.sidebar-template-download {
-  margin-bottom: $space-normal;
-
-  .note-content {
-    margin-bottom: $space-compact;
-
-    &__button {
-      margin-top: $space-small;
-    }
-
-    &__select {
-      width: 100%;
-    }
-  }
-}
-
-// ======================
 //  LandingBanner
 // ======================
 .landing-banner {

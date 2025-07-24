@@ -163,8 +163,9 @@ export const setSelectedAnalysesCtrl = async (req, res) => {
 
   try {
     await listUtils.getListNameSchema(req, listId);
-    const analysisStatus = saveAsDraft ? listStatus.Draft : listStatus.Pending;
-    await setSelectedAnalyses(organization_database, listId, analysisIds, analysisStatus);
+    const statusToApply = saveAsDraft ? listStatus.Draft : listStatus.Pending;
+
+    await setSelectedAnalyses(organization_database, listId, analysisIds, statusToApply);
 
     return res.status(201).json({
       message: 'List analysis selection created successfully',

@@ -52,17 +52,24 @@ jest.mock('@wri-monorepos/geo', () => ({
   getListAnalysisStatusByListId: jest
     .fn()
     .mockResolvedValue([{ analysisId: 'analysis1' }, { analysisId: 'analysis2' }]),
+  ListHasFiltersApplies: jest.fn(),
+}));
+
+jest.mock('../list-upload/chain/update.list.attributes.remove.id.columns', () => ({
+  UpdateListAttributesRemoveIdColumns: jest.fn().mockImplementation(() => ({
+    setNext: jest.fn().mockReturnThis(),
+  })),
 }));
 
 jest.mock('../list-upload/chain/process.upload.data', () => ({
   ProcessUploadData: jest.fn().mockImplementation(() => ({
-    setNext: jest.fn(),
+    setNext: jest.fn().mockReturnThis(),
   })),
 }));
 
 jest.mock('../list-upload/chain/convert.geojson.properties', () => ({
   ConvertGeojsonProperties: jest.fn().mockImplementation(() => ({
-    setNext: jest.fn(),
+    setNext: jest.fn().mockReturnThis(),
   })),
 }));
 
@@ -352,53 +359,165 @@ describe('ListCopyMoveService', () => {
   });
 
   describe('runUserList', () => {
-    it('should successfully copy to a new list', async () => {
-      const mockRequest = createMockRequest();
-      const result = await service.runUserList(mockRequest);
-      expect(result).toEqual({
-        success: true,
-        action: ActionType.Copy,
+    describe('copy', () => {
+      it('should successfully copy to a new list', async () => {
+        const mockRequest = createMockRequest();
+        const result = await service.runUserList(mockRequest);
+        expect(result).toEqual({
+          success: true,
+          action: ActionType.Copy,
+        });
+      });
+
+      it('should successfully copy to an existing list', async () => {
+        const copyToExistingRequest = createMockRequest({
+          listType: TargetListType.Existing,
+        });
+
+        const result = await service.runUserList(copyToExistingRequest);
+        expect(result).toEqual({
+          success: true,
+          action: ActionType.Copy,
+        });
+      });
+
+      it('should handle copying with allLocationsSelected', async () => {
+        const allLocationsRequest = createMockRequest({
+          allLocationsSelected: true,
+          selectedLocations: [],
+        });
+
+        const result = await service.runUserList(allLocationsRequest);
+        expect(result).toEqual({
+          success: true,
+          action: ActionType.Copy,
+        });
+      });
+
+      it('should handle copying as draft', async () => {
+        const draftRequest = createMockRequest({
+          saveAsDraft: true,
+        });
+
+        const result = await service.runUserList(draftRequest);
+        expect(result).toEqual({
+          success: true,
+          action: ActionType.Copy,
+        });
+      });
+
+      it('should handle copying with different commodity type', async () => {
+        const differentCommodityRequest = createMockRequest({
+          commodityType: 'different-commodity',
+        });
+
+        const result = await service.runUserList(differentCommodityRequest);
+        expect(result).toEqual({
+          success: true,
+          action: ActionType.Copy,
+        });
       });
     });
+    describe('move', () => {
+      it('should successfully move to a new list', async () => {
+        const moveToNewRequest = createMockRequest({
+          action: ActionType.Move,
+          listType: TargetListType.New,
+        });
 
-    it('should successfully copy to an existing list', async () => {
-      const copyToExistingRequest = createMockRequest({
-        listType: TargetListType.Existing,
+        const result = await service.runUserList(moveToNewRequest);
+        expect(result).toEqual({
+          success: true,
+          action: ActionType.Move,
+        });
       });
 
-      const result = await service.runUserList(copyToExistingRequest);
-      expect(result).toEqual({
-        success: true,
-        action: ActionType.Copy,
+      it('should successfully move to an existing list', async () => {
+        const moveRequest = createMockRequest({
+          action: ActionType.Move,
+          listType: TargetListType.Existing,
+        });
+
+        const result = await service.runUserList(moveRequest);
+        expect(result).toEqual({
+          success: true,
+          action: ActionType.Move,
+        });
+      });
+
+      it('should handle moving with allLocationsSelected', async () => {
+        const allLocationsRequest = createMockRequest({
+          action: ActionType.Move,
+          allLocationsSelected: true,
+          selectedLocations: [],
+        });
+
+        const result = await service.runUserList(allLocationsRequest);
+        expect(result).toEqual({
+          success: true,
+          action: ActionType.Move,
+        });
+      });
+
+      it('should handle moving as draft', async () => {
+        const draftRequest = createMockRequest({
+          action: ActionType.Move,
+          saveAsDraft: true,
+        });
+
+        const result = await service.runUserList(draftRequest);
+        expect(result).toEqual({
+          success: true,
+          action: ActionType.Move,
+        });
+      });
+
+      it('should put source list as draft when moving', async () => {
+        const mockRequest = createMockRequest({
+          action: ActionType.Move,
+        });
+
+        const PutListAsDraft = jest.requireMock(
+          '../list-upload/chain/put.list.as.draft'
+        ).PutListAsDraft;
+        const mockPutListAsDraft = { putListAsDraft: jest.fn() };
+        PutListAsDraft.mockImplementation(() => mockPutListAsDraft);
+
+        await service.runUserList(mockRequest);
+
+        expect(mockPutListAsDraft.putListAsDraft).toHaveBeenCalledWith(
+          mockRequest.clientDatabase,
+          mockRequest.listId,
+          mockRequest.gfwListId
+        );
+      });
+
+      it('should handle source list deletion when moving', async () => {
+        const mockRequest = createMockRequest({
+          action: ActionType.Move,
+        });
+
+        const handleSourceListDeletion = jest.requireMock(
+          './handler/source.list.deletion'
+        ).handleSourceListDeletion;
+
+        await service.runUserList(mockRequest);
+
+        expect(handleSourceListDeletion).toHaveBeenCalledWith({
+          clientDatabase: mockRequest.clientDatabase,
+          selectedListId: mockRequest.listId,
+          userId: mockRequest.userId,
+          gfwListId: mockRequest.gfwListId,
+          allLocationsSelected: mockRequest.allLocationsSelected,
+          filters: mockRequest.filters,
+          selectedLocations: mockRequest.selectedLocations,
+          putListAsDraft: expect.any(Object),
+        });
       });
     });
+  });
 
-    it('should successfully move to a new list', async () => {
-      const moveToNewRequest = createMockRequest({
-        action: ActionType.Move,
-        listType: TargetListType.New,
-      });
-
-      const result = await service.runUserList(moveToNewRequest);
-      expect(result).toEqual({
-        success: true,
-        action: ActionType.Move,
-      });
-    });
-
-    it('should successfully move to an existing list', async () => {
-      const moveRequest = createMockRequest({
-        action: ActionType.Move,
-        listType: TargetListType.Existing,
-      });
-
-      const result = await service.runUserList(moveRequest);
-      expect(result).toEqual({
-        success: true,
-        action: ActionType.Move,
-      });
-    });
-
+  describe.only('Common functionality', () => {
     it('should handle invalid list names', async () => {
       const invalidNameRequest = createMockRequest({
         listName: 'Invalid Name',
@@ -411,70 +530,6 @@ describe('ListCopyMoveService', () => {
 
       const result = await service.runUserList(invalidNameRequest);
       expect(result).toBeUndefined();
-    });
-
-    it('should handle copying with all locations selected', async () => {
-      const allLocationsRequest = createMockRequest({
-        allLocationsSelected: true,
-        selectedLocations: [],
-      });
-
-      const result = await service.runUserList(allLocationsRequest);
-      expect(result).toEqual({
-        success: true,
-        action: ActionType.Copy,
-      });
-    });
-
-    it('should handle moving with all locations selected', async () => {
-      const allLocationsRequest = createMockRequest({
-        action: ActionType.Move,
-        allLocationsSelected: true,
-        selectedLocations: [],
-      });
-
-      const result = await service.runUserList(allLocationsRequest);
-      expect(result).toEqual({
-        success: true,
-        action: ActionType.Move,
-      });
-    });
-
-    it('should handle copying with different commodity type', async () => {
-      const differentCommodityRequest = createMockRequest({
-        commodityType: 'different-commodity',
-      });
-
-      const result = await service.runUserList(differentCommodityRequest);
-      expect(result).toEqual({
-        success: true,
-        action: ActionType.Copy,
-      });
-    });
-
-    it('should handle copying as draft', async () => {
-      const draftRequest = createMockRequest({
-        saveAsDraft: true,
-      });
-
-      const result = await service.runUserList(draftRequest);
-      expect(result).toEqual({
-        success: true,
-        action: ActionType.Copy,
-      });
-    });
-
-    it('should handle moving as draft', async () => {
-      const draftRequest = createMockRequest({
-        action: ActionType.Move,
-        saveAsDraft: true,
-      });
-
-      const result = await service.runUserList(draftRequest);
-      expect(result).toEqual({
-        success: true,
-        action: ActionType.Move,
-      });
     });
 
     it('should upgrade schema for both source and target lists when copying to existing', async () => {
@@ -496,49 +551,6 @@ describe('ListCopyMoveService', () => {
         clientDb: mockRequest.clientDatabase,
         listId: mockRequest.targetList.id,
         userId: mockRequest.userId,
-      });
-    });
-
-    it('should put source list as draft when moving', async () => {
-      const mockRequest = createMockRequest({
-        action: ActionType.Move,
-      });
-
-      const PutListAsDraft = jest.requireMock(
-        '../list-upload/chain/put.list.as.draft'
-      ).PutListAsDraft;
-      const mockPutListAsDraft = { putListAsDraft: jest.fn() };
-      PutListAsDraft.mockImplementation(() => mockPutListAsDraft);
-
-      await service.runUserList(mockRequest);
-
-      expect(mockPutListAsDraft.putListAsDraft).toHaveBeenCalledWith(
-        mockRequest.clientDatabase,
-        mockRequest.listId,
-        mockRequest.gfwListId
-      );
-    });
-
-    it('should handle source list deletion when moving', async () => {
-      const mockRequest = createMockRequest({
-        action: ActionType.Move,
-      });
-
-      const handleSourceListDeletion = jest.requireMock(
-        './handler/source.list.deletion'
-      ).handleSourceListDeletion;
-
-      await service.runUserList(mockRequest);
-
-      expect(handleSourceListDeletion).toHaveBeenCalledWith({
-        clientDatabase: mockRequest.clientDatabase,
-        selectedListId: mockRequest.listId,
-        userId: mockRequest.userId,
-        gfwListId: mockRequest.gfwListId,
-        allLocationsSelected: mockRequest.allLocationsSelected,
-        filters: mockRequest.filters,
-        selectedLocations: mockRequest.selectedLocations,
-        putListAsDraft: expect.any(Object),
       });
     });
 
@@ -566,9 +578,7 @@ describe('ListCopyMoveService', () => {
       const result = await service.runUserList(mockRequest);
       expect(result).toBeUndefined();
     });
-  });
 
-  describe('Common functionality', () => {
     it('should call AbstractHandler.runFullChain for both user and GFW lists', async () => {
       const AbstractHandler = jest.requireMock('../list-upload/chain/types').AbstractHandler;
 

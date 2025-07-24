@@ -153,6 +153,49 @@ describe('AdjustGeoData', () => {
       expect(result).not.toHaveProperty('hasUnanalyzableError');
     });
 
+    it('should calculate center of mass regardless of extraneous points', () => {
+      const feature: Feature = {
+        type: 'Feature',
+        properties: {},
+        geometry: {
+          type: 'Polygon',
+          coordinates: [
+            [
+              [0, 0],
+              [0.1, 0],
+              [0.5, 0],
+              [0.8, 0],
+              [1, 1],
+              [0, 1],
+              [0, 0],
+            ],
+          ],
+        },
+      };
+
+      const result = adjustGeoData.getLatLngFromFeature(feature);
+      expect(result).toHaveProperty('latitude');
+      expect(result).toHaveProperty('longitude');
+      expect(result).not.toHaveProperty('hasUnanalyzableError');
+    });
+
+    it('should return point coordinates for point features', () => {
+      const feature: Feature = {
+        type: 'Feature',
+        properties: {},
+        geometry: {
+          type: 'Point',
+          coordinates: [10, 20],
+        },
+      };
+
+      const result = adjustGeoData.getLatLngFromFeature(feature);
+      expect(result).toEqual({
+        latitude: 20,
+        longitude: 10,
+      });
+    });
+
     it('should return first point coordinates for polygon when centroid fails', () => {
       const feature: Feature = {
         type: 'Feature',
@@ -171,32 +214,15 @@ describe('AdjustGeoData', () => {
         },
       };
 
-      // Mock turf.centroid to throw an error
-      jest.spyOn(turf, 'centroid').mockImplementation(() => {
-        throw new Error('Centroid calculation failed');
+      // Mock turf.centerOfMass to throw an error
+      jest.spyOn(turf, 'centerOfMass').mockImplementation(() => {
+        throw new Error('Center of mass calculation failed');
       });
 
       const result = adjustGeoData.getLatLngFromFeature(feature);
       expect(result).toEqual({
         latitude: 0,
         longitude: 0,
-      });
-    });
-
-    it('should return point coordinates for point features', () => {
-      const feature: Feature = {
-        type: 'Feature',
-        properties: {},
-        geometry: {
-          type: 'Point',
-          coordinates: [10, 20],
-        },
-      };
-
-      const result = adjustGeoData.getLatLngFromFeature(feature);
-      expect(result).toEqual({
-        latitude: 20,
-        longitude: 10,
       });
     });
 

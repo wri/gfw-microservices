@@ -1,6 +1,5 @@
 import { deduceActiveId } from '../../../common/js/utils/templateUtils';
 import { containsPunctuation, getListValidStatus } from '../../../locations/js/utils/lists.utils';
-import { saveAsDraftListConfig } from '../../../../config/config/locations.config';
 
 const filterValidTemplates = (template, activeTemplate, addType, commodityType) => {
   let templateId = 1;
@@ -213,11 +212,7 @@ const saveGfwListLocations = (
           }
         } catch (err) {
           // Handle non-JSON responses (legacy format)
-          if (
-            responseText === 'LocationAdded' ||
-            responseText === 'LocationAppended' ||
-            responseText === saveAsDraftListConfig.success
-          ) {
+          if (responseText === 'LocationAdded' || responseText === 'LocationAppended') {
             resolve(responseText);
           } else {
             reject(responseText);

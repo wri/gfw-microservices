@@ -1,4 +1,5 @@
-export const getTableColumns = `SELECT COLUMN_NAME, DATA_TYPE, CHARACTER_MAXIMUM_LENGTH
+export const getTableColumns = `SELECT 
+IS_NULLABLE, COLUMN_NAME, DATA_TYPE, CHARACTER_MAXIMUM_LENGTH
   FROM INFORMATION_SCHEMA.COLUMNS
   WHERE TABLE_NAME = (
     SELECT list_table_name
@@ -10,4 +11,5 @@ export interface GetTableColumnsType {
   COLUMN_NAME: string;
   DATA_TYPE: string;
   CHARACTER_MAXIMUM_LENGTH: number | null;
+  IS_NULLABLE: string;
 }

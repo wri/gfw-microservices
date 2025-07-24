@@ -2530,7 +2530,7 @@ export const mapLayers = [
         type: 'tileLayer',
         body: {
           useCors: true,
-          url: 'https://tiles.globalforestwatch.org/lapig_degraded_pasture/v20250530/gfwpro/{z}/{x}/{y}.png',
+          url: 'https://tiles.globalforestwatch.org/lapig_degraded_pasture/v20250627/default/{z}/{x}/{y}.png',
         },
       },
       legendConfig: {
@@ -2547,7 +2547,7 @@ export const mapLayers = [
               },
               {
                 color: '#7D274B',
-                name: 'High (coming soon)',
+                name: 'High',
               },
             ],
             name: proLayers.pastureRecoveryPotential,

@@ -56,7 +56,7 @@ describe('AnalysisStatusBanners', () => {
       })
     ).toHaveAttribute(
       'href',
-      'https://www.globalforestwatch.org/help/gfw-pro/guides/how-to-address-errors-in-your-uploads'
+      'https://globalforestwatch.org/help/gfw-pro/guides/how-to-address-errors-in-your-uploads'
     );
   });
 

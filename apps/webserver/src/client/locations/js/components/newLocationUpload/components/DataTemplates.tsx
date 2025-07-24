@@ -510,7 +510,8 @@ const templateOptions: {
     ),
     filename: 'GFWPro-Spreadsheet.csv',
     helpCenterLinkText: 'How to format spreadsheet data',
-    helpCenterLinkUrl: 'https://globalforestwatch.org/help/gfw-pro/guides/select-correct-template',
+    helpCenterLinkUrl:
+      'https://globalforestwatch.org/help/gfw-pro/guides/complete-selected-template',
     isPolygon: false,
   },
 ];

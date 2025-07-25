@@ -12,7 +12,7 @@ axiosRetry(axios, {
     if (error.response?.status === 429) {
       return Math.pow(2, retryCount) * 2000; // 2s, 4s, 8s, 16s, 32s
     }
-    // Handle other retryable errors with exponential backoff
+    // axios-retry normally does not retry POSTs, so using a custom condition
     return axiosRetry.exponentialDelay(retryCount, error);
   },
   retryCondition: (error) => {

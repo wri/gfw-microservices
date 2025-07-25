@@ -64,8 +64,6 @@ describe('UploadLocationByType', () => {
     };
 
     beforeEach(() => {
-      jest.clearAllMocks();
-      jest.resetAllMocks();
       (useUploadLocation as jest.Mock).mockReturnValue(baseContext);
     });
 
@@ -107,8 +105,6 @@ describe('UploadLocationByType', () => {
     };
 
     beforeEach(() => {
-      jest.clearAllMocks();
-      jest.resetAllMocks();
       (useUploadLocation as jest.Mock).mockReturnValue(baseContext);
     });
 
@@ -159,11 +155,13 @@ describe('UploadLocationByType', () => {
         dataTransfer: { files: [file] },
       });
 
-      expect(
-        screen.getByText(
-          /it looks like the file you uploaded isn't one of gfw pro's accepted file types\. gfw pro supports , , , and a containing a \. please try again with a compatible file format\./i
-        )
-      ).toBeInTheDocument();
+      await waitFor(() => {
+        expect(
+          screen.getByText(
+            /it looks like the file you uploaded isn't one of gfw pro's accepted file types\. gfw pro supports , , , and a containing a \. please try again with a compatible file format\./i
+          )
+        ).toBeInTheDocument();
+      });
 
       expect(screen.getByRole('button', { name: /upload again/i })).toBeInTheDocument();
     });

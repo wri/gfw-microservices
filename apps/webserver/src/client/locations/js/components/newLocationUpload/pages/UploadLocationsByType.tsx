@@ -91,8 +91,13 @@ export function UploadLocationsByType() {
         'Prepare your data in a format accepted by GFW Pro to upload your locations by file.',
       instructions:
         'Before uploading your data, it must be formatted according to a GFW Pro template. Click on “Data Templates” to learn more about data formatting and download templates. If you already have your data formatted for GFW Pro, just upload it below.',
-      unsupportedTypeMsg:
-        'It looks like the file you uploaded is not supported for file-based upload. File-based upload requires a .csv or .xlsl file. Please try again with a compatible file format.',
+      unsupportedTypeMsg: (
+        <>
+          It looks like the file you uploaded isn't one of GFW Pro's accepted file types. GFW Pro
+          supports <b>.csv</b>, <b>.xlsl</b>, <b>.kml</b>, <b>.kmz</b> and a <b>.zip</b> containing
+          a <b>shape file</b>. Please try again with a compatible file format.
+        </>
+      ),
     },
     [UploadType.ById]: {
       title: 'By ID: Prepare & Upload Location Data',
@@ -102,8 +107,13 @@ export function UploadLocationsByType() {
         'Prepare your data in a format accepted by GFW Pro to upload your ID(s) system based.',
       instructions:
         'Before uploading your data, it must be formatted according to a GFW Pro template. Click on “Data Templates” to learn more about data formatting and download templates. If you already have your data formatted for GFW Pro, just upload it below.',
-      unsupportedTypeMsg:
-        'It looks like the file you uploaded is not supported for ID-based upload. ID-based upload requires a .csv or .xlsl file. Please try again with a compatible file format.',
+      unsupportedTypeMsg: (
+        <>
+          It looks like the file you uploaded is not supported for ID-based upload. ID-based upload
+          requires a <b>.csv</b> or <b>.xlsl</b> file. Please try again with a compatible file
+          format.
+        </>
+      ),
     },
   };
 

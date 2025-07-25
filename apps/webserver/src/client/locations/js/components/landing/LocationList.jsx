@@ -146,9 +146,6 @@ export default class LocationList extends Component {
     const showRerunOpt = (userIsAdmin || (!userIsViewer && userIsOwner)) && locations > 0;
     const showNonOwnerDraft = !userIsAdmin && isShared;
 
-    // list is in lock status, copying or moving locations
-    const hasLockStatus = !!list.lock_status && !!list.lock_user_id;
-
     const showSharedColumn = list.sharedWith || list.sharedList;
     const isPalmOilBackwardComp = checkValidViewCommodity(list);
 

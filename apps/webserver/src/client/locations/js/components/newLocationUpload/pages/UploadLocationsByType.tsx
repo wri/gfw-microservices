@@ -244,7 +244,7 @@ export function UploadLocationsByType() {
         >
           <PillButton
             variant="contained"
-            data-cy={DATA_CY.NEW_UPLOAD_WORKFLOW[UploadType.ByFile].LOCATION_CANCEL}
+            data-cy={DATA_CY.NEW_UPLOAD_WORKFLOW[uploadTypeFromRoute].LOCATION_CANCEL}
             color="info"
             startIcon={<Close />}
             onClick={clearUploadType}
@@ -253,7 +253,7 @@ export function UploadLocationsByType() {
           </PillButton>
           <PillButton
             variant="contained"
-            data-cy={DATA_CY.NEW_UPLOAD_WORKFLOW[UploadType.ByFile].LOCATION_NEXT}
+            data-cy={DATA_CY.NEW_UPLOAD_WORKFLOW[uploadTypeFromRoute].LOCATION_NEXT}
             startIcon={<ArrowForwardIos />}
             onClick={() => history.push('PREVIEW')}
             disabled={fileAttachState !== FileAttachState.Uploaded}

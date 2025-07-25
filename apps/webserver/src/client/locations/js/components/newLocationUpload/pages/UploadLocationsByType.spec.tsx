@@ -129,12 +129,12 @@ describe('UploadLocationByType', () => {
         url: 'url',
       });
 
+      const user = userEvent.setup();
       renderWithRoute('/by-file');
 
-      const dropzone = screen.getByRole('form');
-      fireEvent.drop(dropzone, {
-        dataTransfer: { files: [file] },
-      });
+      // Use userEvent to upload the file
+      const input = screen.getByTestId('file-input') as HTMLInputElement;
+      await user.upload(input, file);
 
       await waitFor(() => {
         expect(uploadFileToS3).toHaveBeenCalledWith(file);
@@ -146,7 +146,7 @@ describe('UploadLocationByType', () => {
       });
     });
 
-    it('should display an error message for unsupported file types', async () => {
+    it('should display an error message for unsupported file types via drag and drop', async () => {
       const file = new File(['dummy content'], 'test.txt', { type: 'text/plain' });
 
       renderWithRoute('/by-file');
@@ -159,24 +159,23 @@ describe('UploadLocationByType', () => {
       await waitFor(() => {
         expect(
           screen.getByText(
-            /it looks like the file you uploaded isn't one of gfw pro's accepted file types\. gfw pro supports , , , and a containing a \. please try again with a compatible file format\./i
+            /looks like the file you uploaded isn't one of GFW Pro's accepted file types/i
           )
         ).toBeInTheDocument();
+        expect(screen.getByRole('button', { name: /upload again/i })).toBeInTheDocument();
       });
-
-      expect(screen.getByRole('button', { name: /upload again/i })).toBeInTheDocument();
     });
 
     it('should allow re-uploading after failure', async () => {
       (uploadFileToS3 as jest.Mock).mockRejectedValue(new Error('Upload failed'));
       const file = new File(['dummy content'], 'test.csv', { type: 'text/csv' });
 
+      const user = userEvent.setup();
       renderWithRoute('/by-file');
 
-      const dropzone = screen.getByRole('form');
-      fireEvent.drop(dropzone, {
-        dataTransfer: { files: [file] },
-      });
+      // Use userEvent to upload the file
+      const input = screen.getByTestId('file-input') as HTMLInputElement;
+      await user.upload(input, file);
 
       await waitFor(() => {
         expect(screen.getByText('Upload again')).toBeInTheDocument();

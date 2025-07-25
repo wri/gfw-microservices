@@ -75,7 +75,6 @@ function ListPanel({
   const createListsRenderer = (list, index) => {
     const listDraftStatus = list.list_status_id === listStatus.Draft;
     const tooltipMessage = selectTooltipMessage(currentUser, list, listDraftStatus, listContext);
-    const IS_LOCK_STATUS = !!(list.lock_status && list.lock_user_id);
 
     const hasAlertsAnalysisActive = list?.listAnalysesStatus?.some(
       ({ status, analysisId }) =>
@@ -83,7 +82,7 @@ function ListPanel({
     );
 
     let className = '';
-    if (list.list_status_id === listStatus.Pending || IS_LOCK_STATUS) {
+    if (list.list_status_id === listStatus.Pending) {
       // Pending
       className = 'locations-list-name__inactive';
     } else if (list.list_status_id === listStatus.Inactive) {
@@ -119,7 +118,7 @@ function ListPanel({
             ? 'locations-selected-list'
             : ''
         }`}
-        onClick={IS_LOCK_STATUS ? undefined : onClickHandler}
+        onClick={onClickHandler}
         aria-hidden="true"
         id={list.list_name}
         key={index}

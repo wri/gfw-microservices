@@ -153,7 +153,7 @@ export default class LocationList extends Component {
     const isPalmOilBackwardComp = checkValidViewCommodity(list);
 
     const listStatusComponent = (list) => {
-      if (isAnalyzingStatus(list.list_status_id) || hasLockStatus) {
+      if (isAnalyzingStatus(list.list_status_id)) {
         return (
           <AnalyzingList
             list={list}

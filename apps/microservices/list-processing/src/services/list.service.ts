@@ -19,7 +19,6 @@ type ListRequest = {
   userId: number;
   clientDatabase: string;
   analysisIds: string[];
-  templateId?: number;
   gfwListId?: number | null;
   isUploadListLpEnabled?: boolean;
   commodity?: string;

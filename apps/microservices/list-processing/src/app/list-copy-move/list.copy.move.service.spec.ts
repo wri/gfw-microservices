@@ -222,10 +222,6 @@ describe('ListCopyMoveService', () => {
     selectedListLocationClassification: '',
     customAttributesNames: [],
     addType: 'ADD',
-    activeTemplate: 'template1',
-    templateId: 'template1',
-    templateVersion: '1.0',
-    templateData: {},
     isUploadListLpEnabled: false,
     ...overrides,
   });

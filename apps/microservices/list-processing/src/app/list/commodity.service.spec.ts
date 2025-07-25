@@ -4,7 +4,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { CommodityService } from './commodity.service';
 import { getRepositoryToken } from '@nestjs/typeorm';
 import { ListTemplate } from '@wri-monorepos/sql';
-import { Repository, In } from 'typeorm';
+import { Repository } from 'typeorm';
 import { ClientStoreConnection } from '@wri-monorepos/sql';
 
 describe('CommodityService', () => {
@@ -37,7 +37,6 @@ describe('CommodityService', () => {
       jest.spyOn(service, 'getListCommodityAndTableName').mockResolvedValue({
         commodity: 'Wheat',
         listTableName: 'some_table',
-        templateId: 1,
       });
 
       jest
@@ -52,7 +51,6 @@ describe('CommodityService', () => {
       jest.spyOn(service, 'getListCommodityAndTableName').mockResolvedValue({
         commodity: 'other',
         listTableName: 'some_table',
-        templateId: 1,
       });
 
       jest.spyOn(service, 'getCommodityFromLocation').mockResolvedValue({ commodity: 'Corn' });
@@ -65,11 +63,10 @@ describe('CommodityService', () => {
       expect(result).toEqual({ commodity: 'Corn' });
     });
 
-    it('should return the template name if both list and location commodities are "other"', async () => {
+    it('should return "No commodity found" if both list and location commodities are "other"', async () => {
       jest.spyOn(service, 'getListCommodityAndTableName').mockResolvedValue({
         commodity: 'other',
         listTableName: 'some_table',
-        templateId: 1,
       });
 
       jest.spyOn(service, 'getCommodityFromLocation').mockResolvedValue({ commodity: 'other' });
@@ -79,14 +76,13 @@ describe('CommodityService', () => {
         .mockResolvedValue([{ id: 1, templateName: 'Template Commodity' } as ListTemplate]);
 
       const result = await service.getCommodityFromExistingList('some_database', 1);
-      expect(result).toEqual({ commodity: 'Template Commodity' });
+      expect(result).toEqual({ commodity: 'No commodity found' });
     });
 
     it('should return "No commodity found" if no commodity is found', async () => {
       jest.spyOn(service, 'getListCommodityAndTableName').mockResolvedValue({
         commodity: 'other',
         listTableName: 'some_table',
-        templateId: 1,
       });
 
       jest.spyOn(service, 'getCommodityFromLocation').mockResolvedValue({ commodity: 'other' });
@@ -208,24 +204,6 @@ describe('CommodityService', () => {
       const result = await service.getListsByCommodity({ commodity, organizationDatabase });
       expect(result).toEqual([{ id: 1, name: 'Cattle List' }]);
     });
-
-    it('getCommodityAndTemplates should handle mapspam codes', async () => {
-      const commodity = 'OILP';
-      const mockFn = (listTemplateRepository.find = jest.fn().mockResolvedValue([]));
-
-      await service.getCommodityAndTemplates(commodity);
-      expect(mockFn).toHaveBeenCalledWith({
-        where: {
-          templateName: In([
-            'palm oil mill',
-            'palm oil plantation',
-            'palm smallholder farm',
-            'palm oil generic',
-            'OILP',
-          ]),
-        },
-      });
-    });
   });
 
   describe('checkIfListExistAndCommodityIsTheSame', () => {
@@ -344,22 +322,6 @@ describe('CommodityService', () => {
         clientDatabase
       );
       expect(result).toBe(false);
-    });
-  });
-
-  describe('getCommodityFromTemplate', () => {
-    it('should handle template names with special characters', () => {
-      // Test with exact template names from COMMODITY_TEMPLATE_MAP
-      expect(service.getCommodityFromTemplate('palm oil mill')).toBe('palm oil');
-      expect(service.getCommodityFromTemplate('palm smallholder farm')).toBe('palm oil');
-      expect(service.getCommodityFromTemplate('soy silo')).toBe('soy');
-      expect(service.getCommodityFromTemplate('cattle ranch')).toBe('gfwp_cattle');
-      expect(service.getCommodityFromTemplate('cocoa farm')).toBe('cocoa');
-    });
-
-    it('should return the input template name if no match is found', () => {
-      expect(service.getCommodityFromTemplate('palm_oil_mill')).toBe('palm_oil_mill');
-      expect(service.getCommodityFromTemplate('unknown-template')).toBe('unknown-template');
     });
   });
 });

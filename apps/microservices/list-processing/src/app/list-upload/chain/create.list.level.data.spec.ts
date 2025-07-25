@@ -60,7 +60,6 @@ describe('CreateList', () => {
       const result = await createList.insertListInListTable(
         mockConnection as SQLUtils,
         1, // userId
-        1, // templateId
         'Test List', // listName
         'test_list_table', // listTable
         'test_analysis_table', // analysisTable
@@ -84,7 +83,6 @@ describe('CreateList', () => {
         createList.insertListInListTable(
           mockConnection as SQLUtils,
           1, // userId
-          1, // templateId
           'Test List', // listName
           'test_list_table', // listTable
           'test_analysis_table', // analysisTable
@@ -132,7 +130,6 @@ describe('CreateList', () => {
           customAttributeTypes: 'attr_types',
           gfwListId: 1,
           user_id: 1,
-          template_id: 1,
           path: 'test_path',
         },
       };
@@ -171,8 +168,7 @@ describe('CreateList', () => {
       expect(insertListInListTableSpy).toHaveBeenCalledWith(
         expect.any(SQLUtils), // connection instance
         1, // userId
-        1, // templateId
-        'Test List', // listName
+        'Test List', // listName (no templateId anymore)
         'test_list_table', // listTable
         'test_analysis_table', // analysisTable
         1, // listStatusId
@@ -198,7 +194,6 @@ describe('CreateList', () => {
           customAttributeTypes: 'attr_types',
           gfwListId: 1,
           user_id: 1,
-          template_id: 1,
           path: 'test_path',
         },
       };

@@ -163,7 +163,6 @@ describe('StartAnalysisService', () => {
       organization_database: 'test-database',
       list_id: 999,
       path: 'test-path',
-      template_type: 'test-type',
       user_id: 1,
       startAnalysis: true,
       saveAsDraft: false,
@@ -182,13 +181,12 @@ describe('StartAnalysisService', () => {
       organization_id: 1,
       subscription_status_id: 1,
       organization_database: 'test-database',
-      list_id: 123,
-      path: 'test-path',
-      template_type: 'test-type',
+      list_id: 1,
+      path: 's3://test-bucket/test-file.csv',
       user_id: 1,
       startAnalysis: true,
       saveAsDraft: false,
-      commodity: 'cocoa',
+      commodity: 'test-commodity',
     };
 
     (commodityService.checkIfListExistAndCommodityIsTheSame as sinon.SinonStub).resolves(true);
@@ -207,7 +205,6 @@ describe('StartAnalysisService', () => {
       organization_database: 'test-database',
       list_id: null,
       path: 'test-path',
-      template_type: 'test-type',
       user_id: 1,
       startAnalysis: true,
       saveAsDraft: false,

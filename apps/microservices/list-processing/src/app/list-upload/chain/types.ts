@@ -36,8 +36,6 @@ export interface RequestNewList extends PreviewListRequest {
   customAttributeTypes?: string;
   gfwListId?: number;
   user_id?: number;
-  template_id?: number;
-  template_type?: string;
   startAnalysis?: boolean;
   list_id?: number;
   analysisIds?: Array<string>;

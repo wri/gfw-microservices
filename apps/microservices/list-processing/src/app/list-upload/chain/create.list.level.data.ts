@@ -38,7 +38,6 @@ export class CreateListLevelData extends AbstractHandler<ChainType> {
   async insertListInListTable(
     connection: SQLUtils,
     userId: number,
-    templateId: number,
     listName: string,
     listTable: string,
     analysisTable: string,
@@ -52,7 +51,6 @@ export class CreateListLevelData extends AbstractHandler<ChainType> {
   ): Promise<CreateListResult> {
     const parameters = [
       this.createSqlParameter('user_id', sql.Int, userId),
-      this.createSqlParameter('template_id', sql.Int, templateId),
       this.createSqlParameter('list_name', sql.NVarChar(150), listName),
       this.createSqlParameter('list_table_name', sql.NVarChar(150), listTable),
       this.createSqlParameter('list_analysis_table_name', sql.NVarChar(150), analysisTable),
@@ -95,7 +93,6 @@ export class CreateListLevelData extends AbstractHandler<ChainType> {
       customAttributeTypes,
       gfwListId,
       user_id: userId,
-      template_id: templateId,
       commodity = '',
     } = request.request as RequestNewList;
 
@@ -116,7 +113,6 @@ export class CreateListLevelData extends AbstractHandler<ChainType> {
       const createListResult = await this.insertListInListTable(
         connection,
         userId,
-        templateId,
         listName,
         listTable,
         analysisTable,

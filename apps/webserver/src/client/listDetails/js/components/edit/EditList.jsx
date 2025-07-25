@@ -47,11 +47,6 @@ export default class EditList extends Component {
     };
   }
 
-  unlockList = () => {
-    const list_id = this.props.selectedLists[0].id;
-    return httpRequest.fetchJSON('/locations/unlockList', { list_id });
-  };
-
   cancelAdd = () => {
     store.dispatch(changeView('lists'));
   };

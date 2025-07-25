@@ -47,16 +47,24 @@ export class PreviewListUploadService {
     const response = await AbstractHandler.runFullChain(downloadS3File, chainType);
 
     // Check for errors in the geojson features
-    const errors = [
+    const allErrors = [
       ...new Set(
         response.geojson.features.flatMap((feature) => feature.properties?.errorDetails || [])
       ),
     ];
 
-    if (errors.length > 0) {
+    // Filter out specific lookup errors that should not cause exceptions
+    const significantErrors = allErrors.filter(
+      (error) =>
+        typeof error === 'string' &&
+        !error.startsWith('UML LookUp: did not found lat/long for') &&
+        !error.startsWith('CAR LookUp: did not found lat/long for')
+    );
+
+    if (significantErrors.length > 0) {
       throw new BadRequestException({
         message: 'Validation errors found in the data',
-        errors,
+        errors: significantErrors,
       });
     }
 

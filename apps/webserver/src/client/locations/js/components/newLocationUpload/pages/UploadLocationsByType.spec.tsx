@@ -1,8 +1,6 @@
-import { render, screen, fireEvent, waitFor } from '@testing-library/react';
-import userEvent from '@testing-library/user-event';
+import { render, screen } from '@testing-library/react';
 import { UploadLocationsByType } from './UploadLocationsByType';
 import { useUploadLocation } from '../contexts';
-import { uploadFileToS3 } from '../utils/upload';
 import { ThemeProvider } from '../../../../../styles/ThemeProvider';
 import { MemoryRouter, Route } from 'react-router-dom';
 

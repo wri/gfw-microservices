@@ -2,6 +2,17 @@ import { render, screen } from '@testing-library/react';
 import { userEvent } from '@testing-library/user-event';
 import { UploadLocationPreviewErrorMessage } from './UploadLocationPreviewErrorMessage';
 import { UploadLocationProvider } from '../contexts/UploadLocationContext';
+import { UploadType } from '../types';
+
+jest.mock('../contexts', () => {
+  const actual = jest.requireActual('../contexts');
+  return {
+    ...actual,
+    useUploadLocation: jest.fn(() => ({
+      uploadLocationState: { uploadType: UploadType.ByFile },
+    })),
+  };
+});
 
 describe('UploadLocationPreviewErrorMessage', () => {
   const mockRetryPreviewData = jest.fn();

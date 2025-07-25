@@ -10,9 +10,9 @@ import {
   ConfigureList,
   SummaryAndSubmit,
   SubmissionSuccess,
+  UploadLocationsByType,
 } from './pages';
 import { PolygonFromMapPage, UserList } from './types';
-import { UploadLocationByType } from './pages/UploadLocationsByType';
 
 export const UploadLocationRoutes = {
   LOCATIONS: '/',
@@ -49,8 +49,8 @@ export function UploadLocationRouter({
         <Route path={UploadLocationRoutes.OPTIONS} exact>
           <UploadLocationOptions fromList={fromList} userLists={userLists} />
         </Route>
-        <Route path={UploadLocationRoutes.UPLOAD_BY_ID} component={UploadLocationByType} />
-        <Route path={UploadLocationRoutes.UPLOAD_BY_FILE} component={UploadLocationByType} />
+        <Route path={UploadLocationRoutes.UPLOAD_BY_ID} component={UploadLocationsByType} />
+        <Route path={UploadLocationRoutes.UPLOAD_BY_FILE} component={UploadLocationsByType} />
         <Route path={UploadLocationRoutes.UPLOAD_BY_POLYGON}>
           <UploadLocationByPolygon polygonFromMapPage={geoFromMap} />
         </Route>

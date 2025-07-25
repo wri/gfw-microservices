@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from 'react';
 import { ArrowForwardIos, Close } from '@mui/icons-material';
 import { Box, Card, Typography, useTheme } from '@mui/material';
+import { useLocation } from 'react-router-dom';
 import { ExternalHelperResource, PillButton } from '../../../../../components';
 import { DATA_CY, ExternalLinks } from '../../../../../utils/constants';
 import {
@@ -15,9 +16,10 @@ import { useFileUpload } from '../hooks/useFileUpload';
 import { FileAttachState, UploadType } from '../types';
 import { VALID_FILE_FORMATS_BY_ID, VALID_UPLOAD_FILE_FORMATS } from '../utils/constants';
 
-export function UploadLocationByType() {
+export function UploadLocationsByType() {
   const theme = useTheme();
   const history = useHistory();
+  const location = useLocation();
 
   const { uploadLocationState, clearUploadType, addFile, selectUploadType } = useUploadLocation();
   const { uploadType } = uploadLocationState;
@@ -105,7 +107,7 @@ export function UploadLocationByType() {
     },
   };
 
-  const config = typeConfig[uploadType];
+  const config = typeConfig[uploadTypeFromRoute];
 
   return (
     <>

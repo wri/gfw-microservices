@@ -7,3 +7,4 @@ export { ConfigureList } from './ConfigureList';
 export { SummaryAndSubmit } from './SummaryAndSubmit';
 export { SubmissionSuccess } from './SubmissionSuccess';
 export { UploadLocationById } from './UploadLocationById';
+export { UploadLocationsByType } from './UploadLocationsByType';

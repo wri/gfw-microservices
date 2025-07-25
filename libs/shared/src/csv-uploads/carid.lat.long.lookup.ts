@@ -2,6 +2,7 @@ import axios from 'axios';
 import { IdLookupFn } from '.';
 import { Logger } from '@nestjs/common';
 import { parse } from 'wellknown';
+import { readLastUpdatedDateSicar } from './read.last.updated.date.sicar';
 
 const logger = new Logger('car.lat.long.lookup');
 
@@ -18,6 +19,7 @@ export const carLookup: IdLookupFn = async (ids) => {
     .join(',');
 
   try {
+    const sicarLastUpdated = await readLastUpdatedDateSicar();
     const response = await axios.get(DATA_API_URL, {
       headers: {
         'x-api-key': process.env.GFW_DATA_API_KEY,
@@ -34,6 +36,9 @@ export const carLookup: IdLookupFn = async (ids) => {
           result[found.cd_imovel] = {
             geometry: parse(found.geom),
           };
+          if (sicarLastUpdated.idDataUpdated) {
+            result[found.cd_imovel]['ID Updated Date'] = sicarLastUpdated.idDataUpdated;
+          }
         }
       });
     }

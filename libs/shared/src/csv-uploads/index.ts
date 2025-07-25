@@ -55,9 +55,7 @@ export const applyLookUpByChunks = async (
     const chunk = data.slice(i, chunkMax);
     logger.log(`${idType} LookUp Chunk Size: ${chunk.length}`);
 
-    const chunkResp = await lookup(
-      chunk.map((row) => row[column] as string) // {id:{latitude?, longitude?, geometry?, errorDetails?}}
-    );
+    const chunkResp = await lookup(chunk.map((row) => row[column] as string));
 
     chunk.forEach((row) => {
       updates.push(

@@ -1,5 +1,5 @@
 import { Injectable, Logger } from '@nestjs/common';
-import { columnsTemplateId, columnsListName, templateColumns } from './constants';
+import { templateColumns } from './constants';
 import { ListMetadata, ListMetadataService } from './list-metadata.service';
 
 export interface ColumnResolution {
@@ -15,18 +15,16 @@ export class ColumnResolverService {
   constructor(private readonly listMetadataService: ListMetadataService) {}
 
   /**
-   * Resolves columns for a list based on its version and metadata
+   * Resolves columns for a list based on its metadata
    * @param listId - The list ID
    * @param organizationDatabase - The organization database name
    * @param isGFWList - Whether this is a GFW list
-   * @param fallbackTemplateId - Fallback templateId if metadata fetch fails
    * @returns Promise<ColumnResolution>
    */
   async resolveColumns(
     listId: number,
     organizationDatabase?: string,
-    isGFWList = false,
-    fallbackTemplateId?: number
+    isGFWList = false
   ): Promise<ColumnResolution> {
     try {
       const metadata = await this.listMetadataService.getListMetadata(
@@ -36,20 +34,15 @@ export class ColumnResolverService {
       );
 
       if (!metadata) {
-        this.logger.warn(`Could not fetch metadata for list ${listId}, using fallback template`);
-        return this.resolveFromTemplate(fallbackTemplateId);
+        this.logger.warn(`Could not fetch metadata for list ${listId}, using generic fallback`);
+        return this.getDefaultColumns();
       }
 
-      // For version 2 lists, use commodity-based resolution
-      if (metadata.version >= 2) {
-        return this.resolveFromCommodity(metadata);
-      }
-
-      // For version 0/1 lists, use template-based resolution
-      return this.resolveFromTemplate(metadata.templateId, metadata.listName);
+      // Use commodity-based resolution for all lists
+      return this.resolveFromCommodity(metadata);
     } catch (error) {
       this.logger.error(`Error resolving columns for list ${listId}:`, error);
-      return this.resolveFromTemplate(fallbackTemplateId);
+      return this.getDefaultColumns();
     }
   }
 
@@ -77,32 +70,13 @@ export class ColumnResolverService {
   }
 
   /**
-   * Resolves columns from template ID (version 0/1 approach)
+   * Returns default columns when metadata is unavailable
    */
-  private resolveFromTemplate(templateId?: number, listName?: string): ColumnResolution {
-    // Try template ID first
-    if (templateId && columnsTemplateId[templateId]) {
-      return {
-        columns: columnsTemplateId[templateId],
-        source: 'template',
-        resolvedFrom: `templateId: ${templateId}`,
-      };
-    }
-
-    // Try list name mapping
-    if (listName && columnsListName[listName]) {
-      return {
-        columns: columnsListName[listName],
-        source: 'template',
-        resolvedFrom: `listName: ${listName}`,
-      };
-    }
-
-    // Default fallback
+  private getDefaultColumns(): ColumnResolution {
     return {
-      columns: columnsTemplateId[14] || templateColumns.COMMODITY_GENERIC,
+      columns: templateColumns.COMMODITY_GENERIC,
       source: 'default',
-      resolvedFrom: 'templateId: 14 (default fallback)',
+      resolvedFrom: 'COMMODITY_GENERIC (default fallback)',
     };
   }
 

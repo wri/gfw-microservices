@@ -35,7 +35,6 @@ describe('ColumnResolverService', () => {
       it('should resolve columns for palm oil commodity', async () => {
         listMetadataService.getListMetadata.mockResolvedValue({
           id: 123,
-          templateId: 0,
           version: 2,
           commodity: 'POIL',
           listName: 'Test List',
@@ -52,7 +51,6 @@ describe('ColumnResolverService', () => {
       it('should resolve columns for soy commodity', async () => {
         listMetadataService.getListMetadata.mockResolvedValue({
           id: 123,
-          templateId: 0,
           version: 2,
           commodity: 'SOYB',
           listName: 'Test List',
@@ -69,7 +67,6 @@ describe('ColumnResolverService', () => {
       it('should resolve columns for cocoa commodity', async () => {
         listMetadataService.getListMetadata.mockResolvedValue({
           id: 123,
-          templateId: 0,
           version: 2,
           commodity: 'COCO',
           listName: 'Test List',
@@ -86,7 +83,6 @@ describe('ColumnResolverService', () => {
       it('should resolve columns for GFWP prefixed commodity', async () => {
         listMetadataService.getListMetadata.mockResolvedValue({
           id: 123,
-          templateId: 0,
           version: 2,
           commodity: 'GFWP_Multiple',
           listName: 'Test List',
@@ -103,7 +99,6 @@ describe('ColumnResolverService', () => {
       it('should default to commodity generic for unknown commodity', async () => {
         listMetadataService.getListMetadata.mockResolvedValue({
           id: 123,
-          templateId: 0,
           version: 2,
           commodity: 'UNKNOWN_COMMODITY',
           listName: 'Test List',
@@ -120,7 +115,6 @@ describe('ColumnResolverService', () => {
       it('should handle version 2 list with no commodity', async () => {
         listMetadataService.getListMetadata.mockResolvedValue({
           id: 123,
-          templateId: 0,
           version: 2,
           commodity: null,
           listName: 'Test List',
@@ -139,41 +133,6 @@ describe('ColumnResolverService', () => {
       it('should resolve columns for template ID 5 (Palm Oil Generic)', async () => {
         listMetadataService.getListMetadata.mockResolvedValue({
           id: 123,
-          templateId: 5,
-          version: 1,
-          commodity: null,
-          listName: 'Test List',
-          locationClassification: 'Supply Shed',
-        });
-
-        const result = await service.resolveColumns(123, 'testdb', false);
-
-        expect(result.source).toBe('template');
-        expect(result.columns).toEqual(templateColumns.PALM_OIL_GENERIC);
-        expect(result.resolvedFrom).toBe('templateId: 5');
-      });
-
-      it('should resolve columns for template ID 13 (Cocoa Generic)', async () => {
-        listMetadataService.getListMetadata.mockResolvedValue({
-          id: 123,
-          templateId: 13,
-          version: 1,
-          commodity: null,
-          listName: 'Test List',
-          locationClassification: 'Supply Shed',
-        });
-
-        const result = await service.resolveColumns(123, 'testdb', false);
-
-        expect(result.source).toBe('template');
-        expect(result.columns).toEqual(templateColumns.COCOA_GENERIC);
-        expect(result.resolvedFrom).toBe('templateId: 13');
-      });
-
-      it('should fall back to default for unknown template ID', async () => {
-        listMetadataService.getListMetadata.mockResolvedValue({
-          id: 123,
-          templateId: 999,
           version: 1,
           commodity: null,
           listName: 'Test List',
@@ -184,7 +143,39 @@ describe('ColumnResolverService', () => {
 
         expect(result.source).toBe('default');
         expect(result.columns).toEqual(templateColumns.COMMODITY_GENERIC);
-        expect(result.resolvedFrom).toBe('templateId: 14 (default fallback)');
+        expect(result.resolvedFrom).toBe('COMMODITY_GENERIC (no commodity specified)');
+      });
+
+      it('should resolve columns for template ID 13 (Cocoa Generic)', async () => {
+        listMetadataService.getListMetadata.mockResolvedValue({
+          id: 123,
+          version: 1,
+          commodity: null,
+          listName: 'Test List',
+          locationClassification: 'Supply Shed',
+        });
+
+        const result = await service.resolveColumns(123, 'testdb', false);
+
+        expect(result.source).toBe('default');
+        expect(result.columns).toEqual(templateColumns.COMMODITY_GENERIC);
+        expect(result.resolvedFrom).toBe('COMMODITY_GENERIC (no commodity specified)');
+      });
+
+      it('should fall back to default for unknown template ID', async () => {
+        listMetadataService.getListMetadata.mockResolvedValue({
+          id: 123,
+          version: 1,
+          commodity: null,
+          listName: 'Test List',
+          locationClassification: 'Supply Shed',
+        });
+
+        const result = await service.resolveColumns(123, 'testdb', false);
+
+        expect(result.source).toBe('default');
+        expect(result.columns).toEqual(templateColumns.COMMODITY_GENERIC);
+        expect(result.resolvedFrom).toBe('COMMODITY_GENERIC (no commodity specified)');
       });
     });
 
@@ -192,21 +183,21 @@ describe('ColumnResolverService', () => {
       it('should handle metadata fetch failure with fallback template', async () => {
         listMetadataService.getListMetadata.mockResolvedValue(null);
 
-        const result = await service.resolveColumns(123, 'testdb', false, 13);
+        const result = await service.resolveColumns(123, 'testdb', false);
 
-        expect(result.source).toBe('template');
-        expect(result.columns).toEqual(templateColumns.COCOA_GENERIC);
-        expect(result.resolvedFrom).toBe('templateId: 13');
+        expect(result.source).toBe('default');
+        expect(result.columns).toEqual(templateColumns.COMMODITY_GENERIC);
+        expect(result.resolvedFrom).toBe('COMMODITY_GENERIC (default fallback)');
       });
 
       it('should handle metadata service error', async () => {
         listMetadataService.getListMetadata.mockRejectedValue(new Error('Database error'));
 
-        const result = await service.resolveColumns(123, 'testdb', false, 5);
+        const result = await service.resolveColumns(123, 'testdb', false);
 
-        expect(result.source).toBe('template');
-        expect(result.columns).toEqual(templateColumns.PALM_OIL_GENERIC);
-        expect(result.resolvedFrom).toBe('templateId: 5');
+        expect(result.source).toBe('default');
+        expect(result.columns).toEqual(templateColumns.COMMODITY_GENERIC);
+        expect(result.resolvedFrom).toBe('COMMODITY_GENERIC (default fallback)');
       });
 
       it('should default to generic when no fallback provided', async () => {
@@ -216,7 +207,7 @@ describe('ColumnResolverService', () => {
 
         expect(result.source).toBe('default');
         expect(result.columns).toEqual(templateColumns.COMMODITY_GENERIC);
-        expect(result.resolvedFrom).toBe('templateId: 14 (default fallback)');
+        expect(result.resolvedFrom).toBe('COMMODITY_GENERIC (default fallback)');
       });
     });
   });

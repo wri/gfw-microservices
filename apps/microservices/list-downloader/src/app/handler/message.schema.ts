@@ -104,7 +104,6 @@ export const ListFieldsFileRequestSchema = BasicFieldsFileRequestSchema.extend({
   sortByAttribute: z.string().trim().optional(),
   state: z.string().trim().optional(),
   subState: z.string().trim().optional(),
-  templateId: z.number().int().positive().optional(),
 });
 
 export const AccountUsersUsageRequestSchema = CommonRequestSchema.extend({

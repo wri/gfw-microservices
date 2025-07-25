@@ -541,8 +541,8 @@ describe('Shapefile Service', () => {
         'End Date',
         'Time Horizon',
       ],
-      source: 'template',
-      resolvedFrom: 'templateId: 13',
+      source: 'commodity',
+      resolvedFrom: 'commodity: GFWP_cocoa -> COCOA_GENERIC',
     }),
   } as unknown as ColumnResolverService;
 
@@ -552,7 +552,6 @@ describe('Shapefile Service', () => {
     listId: 5642,
     listName: 'WRI',
     key: 'tmp-afivc',
-    templateId: 13,
     combinedColumnsSplitted: [],
     selectedLocationsList: [],
   };

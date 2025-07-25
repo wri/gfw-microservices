@@ -6,7 +6,6 @@ import { ServerConfigType } from '../../validators/server-config';
 
 export interface ListMetadata {
   id: number;
-  templateId: number;
   version: number;
   commodity: string | null;
   listName: string;
@@ -40,7 +39,7 @@ export class ListMetadataService {
 
       const list = await listsRepository.findOne({
         where: { id: listId },
-        select: ['id', 'templateId', 'version', 'Commodity', 'listName', 'locationClassification'],
+        select: ['id', 'version', 'Commodity', 'listName', 'locationClassification'],
       });
 
       if (!list) {
@@ -50,7 +49,6 @@ export class ListMetadataService {
 
       return {
         id: list.id,
-        templateId: list.templateId,
         version: list.version,
         commodity: list.Commodity,
         listName: list.listName,

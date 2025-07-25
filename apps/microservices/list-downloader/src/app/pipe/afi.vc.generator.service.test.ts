@@ -201,7 +201,7 @@ describe('AfiVcGeneratorService', () => {
     expect(mockAfiGeometryService.finish).toHaveBeenCalledWith(mockFilters);
   });
 
-  it('should return fields and templateId from the first element of paginated data', async () => {
+  it('should return fields from the first element of paginated data', async () => {
     const mockFilters: ListFieldsFileRequest = {
       listId: 123,
     } as any;
@@ -431,7 +431,6 @@ describe('AfiVcGeneratorService', () => {
         'arg_otbn_area',
         'argentina_presence',
       ],
-      templateId: 0,
     });
   });
 });

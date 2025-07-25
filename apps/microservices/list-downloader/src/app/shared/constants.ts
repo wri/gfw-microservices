@@ -336,31 +336,6 @@ export const templateColumns = {
   ],
 };
 
-export const columnsTemplateId = {
-  1: templateColumns.INVESTMENT,
-  2: templateColumns.PALM_OIL_MILL,
-  3: templateColumns.PALM_OIL_PLANTATION,
-  4: templateColumns.PALM_OIL_SMALLHOLDER_FARM,
-  5: templateColumns.PALM_OIL_GENERIC,
-  6: templateColumns.SOY_SILO,
-  7: templateColumns.SOY_FARM,
-  8: templateColumns.SOY_GENERIC,
-  9: templateColumns.BEEF_SLAUGHTERHOUSE,
-  10: templateColumns.CATTLE_RANCH,
-  11: templateColumns.CATTLE_GENERIC,
-  12: templateColumns.COCOA_FARM,
-  13: templateColumns.COCOA_GENERIC,
-  14: templateColumns.COMMODITY_GENERIC,
-};
-
-export const columnsListName = {
-  'Administrative Areas': templateColumns.COMMODITY_GENERIC,
-  'Protected Areas': templateColumns.COMMODITY_GENERIC,
-  'Oil Palm Concessions': templateColumns.PALM_OIL_GENERIC,
-  'RSPO Palm Concessions': templateColumns.PALM_OIL_GENERIC,
-  'Palm Oil Mills': templateColumns.PALM_OIL_MILL_GFW,
-};
-
 export const resultColumns = {
   tree_cover_extent_total: 'Tree Cover Extent Total',
   tree_cover_extent_primary_forest: 'Tree Cover Extent Primary Forest',

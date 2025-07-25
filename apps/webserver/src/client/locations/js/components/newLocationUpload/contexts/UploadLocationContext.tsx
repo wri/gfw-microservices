@@ -113,7 +113,7 @@ type UploadLocationProviderProps = {
 };
 
 const uploadLocationInitialState: UploadLocationState = {
-  uploadType: null,
+  uploadType: UploadType.ById,
   coordinates: [],
   locationName: '',
   area: { size: 0, measurementUnit: 'hectares' },

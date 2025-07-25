@@ -1,7 +1,6 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useState } from 'react';
 import { ArrowForwardIos, Close } from '@mui/icons-material';
 import { Box, Card, Typography, useTheme } from '@mui/material';
-import { useLocation } from 'react-router-dom';
 import { ExternalHelperResource, PillButton } from '../../../../../components';
 import { DATA_CY, ExternalLinks } from '../../../../../utils/constants';
 import {
@@ -19,28 +18,13 @@ import { VALID_FILE_FORMATS_BY_ID, VALID_UPLOAD_FILE_FORMATS } from '../utils/co
 export function UploadLocationsByType() {
   const theme = useTheme();
   const history = useHistory();
-  const location = useLocation();
 
-  const { uploadLocationState, clearUploadType, addFile, selectUploadType } = useUploadLocation();
+  const { uploadLocationState, clearUploadType, addFile } = useUploadLocation();
   const { uploadType } = uploadLocationState;
   const [isDataTemplateDialogOpen, setIsDataTemplateDialogOpen] = useState(false);
 
   const validFileFormats =
     uploadType === UploadType.ById ? VALID_FILE_FORMATS_BY_ID : VALID_UPLOAD_FILE_FORMATS;
-
-  const uploadTypeFromRoute = useMemo(() => {
-    if (location.pathname.includes('/by-id')) {
-      return UploadType.ById;
-    }
-    return UploadType.ByFile;
-  }, [location.pathname, uploadLocationState.uploadType]);
-
-  // Only update context if type has changed
-  useEffect(() => {
-    if (uploadLocationState.uploadType !== uploadTypeFromRoute) {
-      selectUploadType(uploadTypeFromRoute);
-    }
-  }, [uploadTypeFromRoute]);
 
   const {
     file,
@@ -63,7 +47,7 @@ export function UploadLocationsByType() {
       case FileAttachState.Uploading:
         return {
           border: `2px dashed ${theme.palette.primary.main}`,
-          backgroundColor: 'primary[200]',
+          backgroundColor: theme.palette.primary[200],
         };
       case FileAttachState.UnsupportedType:
       case FileAttachState.UploadFailed:
@@ -88,7 +72,7 @@ export function UploadLocationsByType() {
       helperText: 'How to format your location data for GFW Pro',
       helperUrl: ExternalLinks.HowToFormatLocationData,
       caption:
-        'Prepare your data in a format accepted by GFW Pro to upload your locations by file.',
+        'First, prepare your data in a format accepted by GFW Pro. Then, upload your file(s).',
       instructions:
         'Before uploading your data, it must be formatted according to a GFW Pro template. Click on “Data Templates” to learn more about data formatting and download templates. If you already have your data formatted for GFW Pro, just upload it below.',
       unsupportedTypeMsg: (
@@ -117,7 +101,7 @@ export function UploadLocationsByType() {
     },
   };
 
-  const config = typeConfig[uploadTypeFromRoute];
+  const config = typeConfig[uploadType];
 
   return (
     <>
@@ -231,6 +215,21 @@ export function UploadLocationsByType() {
                 <li>
                   <Typography variant="caption">CSV or Excel files</Typography>
                 </li>
+                {uploadType === UploadType.ByFile && (
+                  <>
+                    <li>
+                      <Typography variant="caption">
+                        ZIP file containing a shape file (SHP, DBF, SHX, and PRJ)
+                      </Typography>
+                    </li>
+                    <li>
+                      <Typography variant="caption">KML or KMZ files</Typography>
+                    </li>
+                    <li>
+                      <Typography variant="caption">GeoJson files</Typography>
+                    </li>
+                  </>
+                )}
               </ul>
             </Box>
           )}
@@ -254,7 +253,7 @@ export function UploadLocationsByType() {
         >
           <PillButton
             variant="contained"
-            data-cy={DATA_CY.NEW_UPLOAD_WORKFLOW[uploadTypeFromRoute].LOCATION_CANCEL}
+            data-cy={DATA_CY.NEW_UPLOAD_WORKFLOW[uploadType].LOCATION_CANCEL}
             color="info"
             startIcon={<Close />}
             onClick={clearUploadType}
@@ -263,7 +262,7 @@ export function UploadLocationsByType() {
           </PillButton>
           <PillButton
             variant="contained"
-            data-cy={DATA_CY.NEW_UPLOAD_WORKFLOW[uploadTypeFromRoute].LOCATION_NEXT}
+            data-cy={DATA_CY.NEW_UPLOAD_WORKFLOW[uploadType].LOCATION_NEXT}
             startIcon={<ArrowForwardIos />}
             onClick={() => history.push('PREVIEW')}
             disabled={fileAttachState !== FileAttachState.Uploaded}

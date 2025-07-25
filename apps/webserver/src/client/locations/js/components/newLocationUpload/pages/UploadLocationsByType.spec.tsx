@@ -5,6 +5,7 @@ import { ThemeProvider } from '../../../../../styles/ThemeProvider';
 import { MemoryRouter, Route } from 'react-router-dom';
 import userEvent from '@testing-library/user-event';
 import { uploadFileToS3 } from '../utils/upload';
+import { UploadType } from '../types';
 
 jest.mock('../components', () => ({
   DataTemplates: () => <span />,
@@ -59,7 +60,7 @@ describe('UploadLocationByType', () => {
     const baseContext = {
       addFile: mockAddFile,
       clearUploadType: mockClearUploadType,
-      uploadLocationState: { uploadType: undefined },
+      uploadLocationState: { uploadType: UploadType.ById },
       selectUploadType: jest.fn(),
     };
 
@@ -100,7 +101,7 @@ describe('UploadLocationByType', () => {
     const baseContext = {
       addFile: mockAddFile,
       clearUploadType: mockClearUploadType,
-      uploadLocationState: { uploadType: undefined },
+      uploadLocationState: { uploadType: UploadType.ByFile },
       selectUploadType: jest.fn(),
     };
 

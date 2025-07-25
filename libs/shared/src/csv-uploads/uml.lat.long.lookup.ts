@@ -50,7 +50,10 @@ export const umlLookUp: IdLookupFn = async (ids) => {
     logger.error(`umlLookUp failed for ${sqlIds}`, error.stack || error);
     ids.forEach((id) => {
       result[id] = {
-        errorDetails: [`UML lat/long lookup failed for ${id}`],
+        errorDetails: [
+          `${error.name}: ${error.message}`,
+          `There was an error in the UML lat/long lookup for ${id}`,
+        ],
       };
     });
   }

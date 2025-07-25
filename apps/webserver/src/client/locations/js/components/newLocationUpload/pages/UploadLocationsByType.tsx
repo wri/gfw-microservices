@@ -1,9 +1,8 @@
-import { DragEvent, useEffect, useRef, useState, ChangeEvent } from 'react';
-import { Box, Card, Typography, useTheme } from '@mui/material';
+import { useState } from 'react';
 import { ArrowForwardIos, Close } from '@mui/icons-material';
-
-import { PillButton, ExternalHelperResource } from '../../../../../components';
-import { VALID_UPLOAD_FILE_FORMATS } from '../utils/constants';
+import { Box, Card, Typography, useTheme } from '@mui/material';
+import { ExternalHelperResource, PillButton } from '../../../../../components';
+import { DATA_CY, ExternalLinks } from '../../../../../utils/constants';
 import {
   DataTemplates,
   NavBar,
@@ -11,82 +10,34 @@ import {
   UploadByFileInstructions,
 } from '../components';
 import { useUploadLocation } from '../contexts';
-import { uploadFileToS3 } from '../utils/upload';
 import { useHistory } from '../hooks';
+import { useFileUpload } from '../hooks/useFileUpload';
 import { FileAttachState, UploadType } from '../types';
-import { DATA_CY, ExternalLinks } from '../../../../../utils/constants';
+import { VALID_FILE_FORMATS_BY_ID, VALID_UPLOAD_FILE_FORMATS } from '../utils/constants';
 
-export function UploadLocationByFile() {
+export function UploadLocationsByType() {
   const theme = useTheme();
   const history = useHistory();
 
-  const { clearUploadType, addFile } = useUploadLocation();
-
+  const { uploadLocationState, clearUploadType, addFile } = useUploadLocation();
+  const { uploadType } = uploadLocationState;
   const [isDataTemplateDialogOpen, setIsDataTemplateDialogOpen] = useState(false);
-  const [file, setFile] = useState<File | null>(null);
-  const [fileAttachState, setFileAttachState] = useState<FileAttachState>(FileAttachState.NoFile);
-  const [dragCounter, setDragCounter] = useState(0); // used to prevent dragleave event from firing when dragging over children
-  const fileInputRef = useRef<HTMLInputElement | null>(null);
 
-  useEffect(() => {
-    if (!file) {
-      return;
-    }
+  const validFileFormats =
+    uploadType === UploadType.ById ? VALID_FILE_FORMATS_BY_ID : VALID_UPLOAD_FILE_FORMATS;
 
-    const uploadFile = async () => {
-      try {
-        setFileAttachState(FileAttachState.Uploading);
-        const data = await uploadFileToS3(file);
-        addFile(data);
-        setFileAttachState(FileAttachState.Uploaded);
-      } catch (err: unknown) {
-        setFileAttachState(FileAttachState.UploadFailed);
-      }
-    };
-
-    uploadFile();
-  }, [file]);
-
-  const fileUpload = (event: DragEvent<HTMLFormElement>) => {
-    event.preventDefault();
-
-    const target = event.target as HTMLInputElement;
-    const attachedFile = target.files?.[0] || event.dataTransfer?.files?.[0];
-    if (!attachedFile) {
-      return;
-    }
-
-    const fileExtension = attachedFile.name.split('.').pop()?.toLowerCase();
-
-    if (!fileExtension || !VALID_UPLOAD_FILE_FORMATS.includes(fileExtension)) {
-      setFileAttachState(FileAttachState.UnsupportedType);
-      return;
-    }
-
-    setFile(attachedFile);
-  };
-
-  const handleFormDragEnter = (event: DragEvent<HTMLFormElement>) => {
-    event.preventDefault();
-    setDragCounter((prev) => prev + 1);
-    setFileAttachState(FileAttachState.DragOver);
-  };
-
-  const handleFormDragLeave = (event: DragEvent<HTMLFormElement>) => {
-    event.preventDefault();
-    setDragCounter((prev) => Math.max(prev - 1, 0));
-
-    if (dragCounter === 1) {
-      setFileAttachState(FileAttachState.NoFile);
-    }
-  };
-
-  const handleFileChange = (e: ChangeEvent<HTMLInputElement>) => {
-    const selectedFile = e.target.files?.[0] ?? null;
-    if (selectedFile) {
-      setFile(selectedFile);
-    }
-  };
+  const {
+    file,
+    fileAttachState,
+    fileInputRef,
+    fileUpload,
+    handleFormDragEnter,
+    handleFormDragLeave,
+    handleFileChange,
+  } = useFileUpload({
+    validFileFormats,
+    onUploadSuccess: addFile,
+  });
 
   const getStyleProps = () => {
     switch (fileAttachState) {
@@ -114,24 +65,58 @@ export function UploadLocationByFile() {
 
   const isNoFileAttached = fileAttachState === FileAttachState.NoFile;
 
+  // Text content based on uploadType
+  const typeConfig = {
+    [UploadType.ByFile]: {
+      title: 'By Data File: Prepare & Upload Location Data',
+      helperText: 'How to format your location data for GFW Pro',
+      helperUrl: ExternalLinks.HowToFormatLocationData,
+      caption:
+        'First, prepare your data in a format accepted by GFW Pro. Then, upload your file(s).',
+      instructions:
+        'Before uploading your data, it must be formatted according to a GFW Pro template. Click on “Data Templates” to learn more about data formatting and download templates. If you already have your data formatted for GFW Pro, just upload it below.',
+      unsupportedTypeMsg: (
+        <>
+          It looks like the file you uploaded isn't one of GFW Pro's accepted file types. GFW Pro
+          supports <b>.csv</b>, <b>.xls</b>, <b>.kml</b>, <b>.kmz</b> and a <b>.zip</b> containing a{' '}
+          <b>shape file</b>. Please try again with a compatible file format.
+        </>
+      ),
+    },
+    [UploadType.ById]: {
+      title: 'By ID: Prepare & Upload Location Data',
+      helperText: 'How to format your location data for GFW Pro',
+      helperUrl: ExternalLinks.HowToFormatLocationData,
+      caption:
+        'Prepare your data in a format accepted by GFW Pro to upload your ID(s) system based.',
+      instructions:
+        'Before uploading your data, it must be formatted according to a GFW Pro template. Click on “Data Templates” to learn more about data formatting and download templates. If you already have your data formatted for GFW Pro, just upload it below.',
+      unsupportedTypeMsg: (
+        <>
+          It looks like the file you uploaded is not supported for ID-based upload. ID-based upload
+          requires a <b>.csv</b> or <b>.xls</b> file. Please try again with a compatible file
+          format.
+        </>
+      ),
+    },
+  };
+
+  const config = typeConfig[uploadType];
+
   return (
     <>
       <NavBar />
-      <Card sx={{ pt: 1.25, px: 2, pb: 2 }}>
+      <Card sx={{ pt: 1, px: 2, pb: 2 }}>
         <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
-          <Typography variant="h6">By Data File: Prepare & Upload Location Data</Typography>
-          <ExternalHelperResource
-            text="Step-by-step instructions"
-            url={ExternalLinks.UploadStepByStepInstructions}
-            color="info"
-          />
+          <Typography variant="h6">{config.title}</Typography>
+          <ExternalHelperResource text={config.helperText} url={config.helperUrl} color="info" />
         </Box>
         <Typography
           variant="caption"
           color={theme.palette.text.secondary}
           sx={{ display: 'inline-block', mt: 1.25, mx: 0, mb: 3 }}
         >
-          First, prepare your data in a format accepted by GFW Pro. Then, upload your file(s).
+          {config.caption}
         </Typography>
 
         <Typography variant="subtitle2">How to prepare your data</Typography>
@@ -140,9 +125,7 @@ export function UploadLocationByFile() {
           color={theme.palette.text.secondary}
           sx={{ display: 'block', my: 1.25, maxWidth: '530px' }}
         >
-          Before uploading your data, it must be formatted according to a GFW Pro template. Click
-          below to learn more about data formatting and download templates. If you already have your
-          data formatted for GFW Pro, just upload it below.
+          {config.instructions}
         </Typography>
 
         <PillButton
@@ -175,7 +158,6 @@ export function UploadLocationByFile() {
           }}
         >
           <UploadByFileFolderIcon fileAttachState={fileAttachState} />
-
           <UploadByFileInstructions fileAttachState={fileAttachState} />
           {(fileAttachState === FileAttachState.Uploading ||
             fileAttachState === FileAttachState.Uploaded) && (
@@ -188,9 +170,7 @@ export function UploadLocationByFile() {
               variant="body2"
               sx={{ color: 'text.secondary', maxWidth: '480px', textAlign: 'center', my: 1 }}
             >
-              It looks like the file you uploaded isn't one of GFW Pro's accepted file types. GFW
-              Pro supports <b>.csv</b>, <b>.xlsl</b>, <b>.kml</b>, <b>.kmz</b> and a <b>.zip</b>{' '}
-              containing a <b>shape file</b>. Please try again with a compatible file format.
+              {config.unsupportedTypeMsg}
             </Typography>
           )}
           {(fileAttachState === FileAttachState.UnsupportedType ||
@@ -235,17 +215,21 @@ export function UploadLocationByFile() {
                 <li>
                   <Typography variant="caption">CSV or Excel files</Typography>
                 </li>
-                <li>
-                  <Typography variant="caption">
-                    ZIP file containing a shape file (SHP, DBF, SHX, and PRJ)
-                  </Typography>
-                </li>
-                <li>
-                  <Typography variant="caption">KML or KMZ files</Typography>
-                </li>
-                <li>
-                  <Typography variant="caption">GeoJson files</Typography>
-                </li>
+                {uploadType === UploadType.ByFile && (
+                  <>
+                    <li>
+                      <Typography variant="caption">
+                        ZIP file containing a shape file (SHP, DBF, SHX, and PRJ)
+                      </Typography>
+                    </li>
+                    <li>
+                      <Typography variant="caption">KML or KMZ files</Typography>
+                    </li>
+                    <li>
+                      <Typography variant="caption">GeoJson files</Typography>
+                    </li>
+                  </>
+                )}
               </ul>
             </Box>
           )}
@@ -253,7 +237,7 @@ export function UploadLocationByFile() {
         <input
           type="file"
           ref={fileInputRef}
-          accept={VALID_UPLOAD_FILE_FORMATS.map((f) => `.${f}`).join(', ')}
+          accept={validFileFormats.map((f) => `.${f}`).join(', ')}
           style={{ display: 'none' }}
           onChange={handleFileChange}
           data-testid="file-input"
@@ -269,7 +253,7 @@ export function UploadLocationByFile() {
         >
           <PillButton
             variant="contained"
-            data-cy={DATA_CY.NEW_UPLOAD_WORKFLOW[UploadType.ByFile].LOCATION_CANCEL}
+            data-cy={DATA_CY.NEW_UPLOAD_WORKFLOW[uploadType].LOCATION_CANCEL}
             color="info"
             startIcon={<Close />}
             onClick={clearUploadType}
@@ -278,7 +262,7 @@ export function UploadLocationByFile() {
           </PillButton>
           <PillButton
             variant="contained"
-            data-cy={DATA_CY.NEW_UPLOAD_WORKFLOW[UploadType.ByFile].LOCATION_NEXT}
+            data-cy={DATA_CY.NEW_UPLOAD_WORKFLOW[uploadType].LOCATION_NEXT}
             startIcon={<ArrowForwardIos />}
             onClick={() => history.push('PREVIEW')}
             disabled={fileAttachState !== FileAttachState.Uploaded}

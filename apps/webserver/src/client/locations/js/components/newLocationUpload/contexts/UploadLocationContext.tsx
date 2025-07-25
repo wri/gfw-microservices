@@ -90,6 +90,12 @@ type UploadLocationAction =
       };
     }
   | {
+      type: 'ById';
+      payload: {
+        uploadedFile: PresignedUrl;
+      };
+    }
+  | {
       type: 'UpdateSaveMode';
       payload: {
         isDraft: boolean;

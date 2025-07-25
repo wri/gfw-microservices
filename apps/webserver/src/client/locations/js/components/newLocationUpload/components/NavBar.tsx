@@ -37,8 +37,8 @@ export function NavBar({ isComingFromMap }: NavBarProps) {
   const activeStep = () => getStepIndex(location.pathname);
 
   useEffect(() => {
-    const isUploadByFile = uploadType === UploadType.ByFile;
-    setSteps(isUploadByFile ? stepsForUploadByFile : stepsForUploadByLocation);
+    const isUploadByFileOrById = uploadType === UploadType.ByFile || uploadType === UploadType.ById;
+    setSteps(isUploadByFileOrById ? stepsForUploadByFile : stepsForUploadByLocation);
   }, [uploadType]);
 
   return (

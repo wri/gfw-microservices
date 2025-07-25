@@ -2,6 +2,7 @@ export enum UploadType {
   ByFile,
   ByPoint,
   ByPolygon,
+  ById,
 }
 
 export type MeasurementUnit = 'hectares' | 'kilometers';

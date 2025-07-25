@@ -1,8 +1,8 @@
 import { ArrowForwardIos, Close } from '@mui/icons-material';
 import { Box, Card, Typography, useTheme } from '@mui/material';
 import { useState } from 'react';
-import { PillButton } from '../../../../../components';
-import { DATA_CY } from '../../../../../utils/constants';
+import { ExternalHelperResource, PillButton } from '../../../../../components';
+import { DATA_CY, ExternalLinks } from '../../../../../utils/constants';
 import {
   DataTemplates,
   NavBar,
@@ -63,7 +63,14 @@ export function UploadLocationById() {
     <>
       <NavBar />
       <Card sx={{ pt: 1, px: 2, pb: 2 }}>
-        <Typography variant="h6">By ID: Prepare & Upload Location Data</Typography>
+        <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
+          <Typography variant="h6">By ID: Prepare & Upload Location Data</Typography>
+          <ExternalHelperResource
+            text="How to format your location data for GFW Pro"
+            url={ExternalLinks.HowToFormatLocationData}
+            color="info"
+          />
+        </Box>
         <Typography
           variant="caption"
           color={theme.palette.text.secondary}

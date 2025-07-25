@@ -3,7 +3,6 @@ import { Route, Switch } from 'react-router-dom';
 import { Box } from '@mui/material';
 
 import {
-  UploadLocationByFile,
   UploadLocationByPolygon,
   UploadLocationByPoint,
   UploadLocationOptions,
@@ -11,9 +10,9 @@ import {
   ConfigureList,
   SummaryAndSubmit,
   SubmissionSuccess,
-  UploadLocationById,
 } from './pages';
 import { PolygonFromMapPage, UserList } from './types';
+import { UploadLocationByType } from './pages/UploadLocationsByType';
 
 export const UploadLocationRoutes = {
   LOCATIONS: '/',
@@ -50,8 +49,8 @@ export function UploadLocationRouter({
         <Route path={UploadLocationRoutes.OPTIONS} exact>
           <UploadLocationOptions fromList={fromList} userLists={userLists} />
         </Route>
-        <Route path={UploadLocationRoutes.UPLOAD_BY_ID} component={UploadLocationById} />
-        <Route path={UploadLocationRoutes.UPLOAD_BY_FILE} component={UploadLocationByFile} />
+        <Route path={UploadLocationRoutes.UPLOAD_BY_ID} component={UploadLocationByType} />
+        <Route path={UploadLocationRoutes.UPLOAD_BY_FILE} component={UploadLocationByType} />
         <Route path={UploadLocationRoutes.UPLOAD_BY_POLYGON}>
           <UploadLocationByPolygon polygonFromMapPage={geoFromMap} />
         </Route>

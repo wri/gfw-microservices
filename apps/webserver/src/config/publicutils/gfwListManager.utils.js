@@ -475,20 +475,6 @@ export const getGFWListLocationsGlobalId = (req, list_id, global_ids = []) => {
 };
 
 /**
- * Get GFW List Schema
- *
- * @param {Object} req - Mandatory first parameter to pass the request object into the function in case session info is required.
- * @param {number} gfw_list_id - GFW list ID
- * @return {Promise<*>} - - GFW source list schema
- */
-export async function getGFWListSchema(req, gfw_list_id) {
-  const gwfLists = await getGFWLists(req);
-  const src_list = gwfLists.find((list) => list.id === gfw_list_id);
-  src_list.list_analysis_table_name = `gfwpro.dbo.[${src_list.list_analysis_table_name}]`;
-  return src_list;
-}
-
-/**
  * Get GFW Analysis Table Columns
  *
  * @param {Object} req - Mandatory first parameter to pass the request object into the function in case session info is required.
@@ -572,37 +558,6 @@ export const copyGFWSingleLocation = (
         reject(err);
       });
   });
-};
-
-/**
- * Copy GFW Locations to another list
- *
- * @param {Object} req - Mandatory first parameter to pass the request object into the function in case session info is required.
- * @param {Object} src_list - GFW source list schema
- * @param {Object} dest_list - Destination list schema
- * @param {number[]} src_location_ids - GFW source list IDs
- * @param {number[]} dest_location_ids - Destination list IDs
- * @return {Promise<void>}
- */
-export const copyGFWLocationsToList = async (
-  req,
-  src_list,
-  dest_list,
-  src_location_ids,
-  dest_location_ids
-) => {
-  const gfw_analysis_table_columns = await getGFWAnalysisTableColumns(req, src_list.id);
-
-  for (const [idx, src_location_id] of src_location_ids.entries()) {
-    await copyGFWSingleLocation(
-      req,
-      src_list,
-      dest_list,
-      src_location_id,
-      dest_location_ids[idx],
-      gfw_analysis_table_columns
-    );
-  }
 };
 
 /**

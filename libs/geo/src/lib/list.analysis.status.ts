@@ -94,10 +94,17 @@ export const setSelectedAnalyses = async (
   statusToApply = listStatus.Pending
 ) => {
   const currentAnalyses = await getListAnalysisStatusByListId(clientDatabase, listId);
-  const toUpsert = selectedAnalysisIds;
 
+  // Get only the currently existing analysis IDs in the list
+  const existingIds = new Set(currentAnalyses.map((a) => a.analysisId));
+
+  // Filter out which ones are actually new (not already selected in the list)
+  const toUpsert = selectedAnalysisIds.filter((id) => !existingIds.has(id));
+
+  // Delete the ones that are no longer selected
   await deleteListAnalyses(clientDatabase, listId, selectedAnalysisIds, currentAnalyses);
 
+  // Only insert/update the new ones
   if (toUpsert.length > 0) {
     await setListAnalysisStatus(clientDatabase, listId, toUpsert, statusToApply);
   }

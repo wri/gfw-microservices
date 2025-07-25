@@ -43,18 +43,14 @@ function ChangeTypeOfAnalysisModal({
   const initialAnalysisSelection = listAnalysesStatus.map(({ analysisId }) => analysisId);
   const [selectedAnalysis, setSelectedAnalysis] = useState(initialAnalysisSelection);
   const [isAddingAnalysis, setIsAddingAnalysis] = useState(false);
+  const [newAnalysesToRun, setNewAnalysesToRun] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
-    const isAddingElements = selectedAnalysis.some(
-      (item) => !initialAnalysisSelection.includes(item)
-    );
+    const newlyAdded = selectedAnalysis.filter((id) => !initialAnalysisSelection.includes(id));
 
-    if (isAddingElements) {
-      setIsAddingAnalysis(true);
-    } else if (initialAnalysisSelection.length > selectedAnalysis.length) {
-      setIsAddingAnalysis(false);
-    }
+    setNewAnalysesToRun(newlyAdded);
+    setIsAddingAnalysis(newlyAdded.length > 0);
   }, [selectedAnalysis]);
 
   const saveSelectedAnalysis = (saveAsDraft = false) => {
@@ -68,7 +64,7 @@ function ChangeTypeOfAnalysisModal({
 
   const requestAnalysisForSelectedTypes = () => {
     // Filter out GHG analysis before sending to GeoTrellis
-    const analysesForGeoTrellis = selectedAnalysis.filter(
+    const analysesForGeoTrellis = newAnalysesToRun.filter(
       (analysisId) => analysisId !== analysisTypes.GREENHOUSE_GAS_EMISSIONS
     );
 

@@ -2,7 +2,7 @@ import { isAnalyzingStatus, isFailedList } from '../../../../locations/js/utils/
 import { locationsPage } from '../../../../common/js/config';
 
 function LocationDataNotAvailableMessage({ list, isListSubmitedForAnalysis }) {
-  const { list_status_id, lock_status } = list;
+  const { list_status_id } = list;
   const isFailed = isFailedList(list);
   const isBeingAnalized = isListSubmitedForAnalysis || isAnalyzingStatus(list_status_id);
 

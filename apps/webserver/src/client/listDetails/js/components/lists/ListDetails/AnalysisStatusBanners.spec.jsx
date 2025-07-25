@@ -3,14 +3,6 @@ import userEvent from '@testing-library/user-event';
 
 import AnalysisStatusBanners from './AnalysisStatusBanners';
 
-jest.mock('../../../../js/components/lists/ListDetails/AlertBanner', () => (props) => (
-  <div data-testid="alert-banner">
-    <span>{props.title}</span>
-    <span>{props.message}</span>
-    <button onClick={props.onButtonClick}>{props.buttonText}</button>
-  </div>
-));
-
 describe('AnalysisStatusBanners', () => {
   const defaultProps = {
     isDiagnosticStatusDraft: false,
@@ -41,7 +33,13 @@ describe('AnalysisStatusBanners', () => {
   });
 
   it('renders a banner for failed analysis', () => {
-    render(<AnalysisStatusBanners {...defaultProps} isFailedAnalysis={true} />);
+    render(
+      <AnalysisStatusBanners
+        {...defaultProps}
+        isFailedAnalysis={true}
+        isAnalysisFailedByExceededAnalysisLimit={false}
+      />
+    );
 
     expect(screen.getByText('Analysis has failed')).toBeInTheDocument();
     expect(
@@ -50,11 +48,9 @@ describe('AnalysisStatusBanners', () => {
       )
     ).toBeInTheDocument();
 
-    expect(
-      screen.getByRole('link', {
-        name: /here/i,
-      })
-    ).toHaveAttribute(
+    const links = screen.getAllByRole('link', { name: 'here' });
+    expect(links.length).toBeGreaterThan(0);
+    expect(links[0]).toHaveAttribute(
       'href',
       'https://globalforestwatch.org/help/gfw-pro/guides/how-to-address-errors-in-your-uploads'
     );

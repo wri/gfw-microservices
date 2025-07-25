@@ -144,7 +144,7 @@ function ListPanel({
               />
             </span>
           )}
-          {(list.list_status_id === listStatus.Pending) && (
+          {list.list_status_id === listStatus.Pending && (
             <span className="my-lists-summary__icon-container">
               <InlineLoader />
             </span>

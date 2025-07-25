@@ -17,7 +17,7 @@ import Button from '../../../../common/js/components/Button';
 import { ExternalHelperResource, PillButton } from '../../../../components';
 import LinkButton from '../../../../common/js/components/LinkButton';
 import ModalLoader from '../../../../common/js/components/Loaders/ModalLoader';
-import { locationsPage, userAccessLevel } from '../../../../common/js/config';
+import { locationsPage } from '../../../../common/js/config';
 import IconButton from '../../../../common/js/components/IconButton';
 import {
   changeView,
@@ -51,7 +51,6 @@ import {
 } from './MyListsTabs/MyListsTabs.constants';
 import getCookie from '../../../../common/js/utils/getCookie';
 import getAccountUsagePercentage from './getAccountUsagePercentage';
-import featureFlags from '../../../../../utils/general.utils';
 import { DATA_CY, ExternalLinks, ReusableText } from '../../../../utils/constants';
 
 const EUDR_BANNER_KEY = 'GFW-is-landing-eudr-banner-dismissed';
@@ -266,14 +265,11 @@ class Landing extends Component {
       userFolders,
       gfwLists,
       view,
-      currentUser,
       language,
       B2BsharedListEnabled,
     } = this.props;
 
     const isPopoverOpen = !!this.state.anchorEl;
-
-    const { isUploadListUiAvailable } = featureFlags;
 
     let userListsFiltered;
 
@@ -379,59 +375,37 @@ class Landing extends Component {
 
         <ModalLoader open={isLoading} />
 
-        <section
-          className={`locations-body ${
-            isUploadListUiAvailable && 'locations-body--new-upload'
-          } flex-grid`}
-        >
-          {!isUploadListUiAvailable && (
-            <aside className="col side-panel">
-              {currentUser.access_level_id !== userAccessLevel.VIEWER && (
-                <>
-                  <Button
-                    className="side-panel__button"
-                    label={locationsPage.landing.addLocations}
-                    icon={<IconPlus height="10px" />}
-                    onClick={() => this.setState({ addLocationDialogOpen: true })}
-                    fullWidth
-                    variant="primary"
-                  />
-                </>
-              )}
-            </aside>
-          )}
+        <section className="locations-body locations-body--new-upload flex-grid">
           <section className="col main-panel">
             <section className="gfw-lists">
-              {isUploadListUiAvailable && (
-                <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 2 }}>
-                  <Typography variant="h5">Welcome!</Typography>
-                  <Box
-                    sx={{
-                      display: 'flex',
-                      flexDirection: 'column',
-                      alignItems: 'center',
-                      gap: 1.5,
+              <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 2 }}>
+                <Typography variant="h5">Welcome!</Typography>
+                <Box
+                  sx={{
+                    display: 'flex',
+                    flexDirection: 'column',
+                    alignItems: 'center',
+                    gap: 1.5,
+                  }}
+                >
+                  <PillButton
+                    variant="contained"
+                    startIcon={<IconPlus height="10px" />}
+                    data-cy={DATA_CY.NEW_UPLOAD_WORKFLOW.ADD}
+                    onClick={() => {
+                      const { history } = this.props;
+                      history.push('/upload-location');
                     }}
                   >
-                    <PillButton
-                      variant="contained"
-                      startIcon={<IconPlus height="10px" />}
-                      data-cy={DATA_CY.NEW_UPLOAD_WORKFLOW.ADD}
-                      onClick={() => {
-                        const { history } = this.props;
-                        history.push('/upload-location');
-                      }}
-                    >
-                      Add locations
-                    </PillButton>
-                    <ExternalHelperResource
-                      text="How to add your data"
-                      url={ExternalLinks.UploadListHelpCenter}
-                      color="info"
-                    />
-                  </Box>
+                    Add locations
+                  </PillButton>
+                  <ExternalHelperResource
+                    text="How to add your data"
+                    url={ExternalLinks.UploadListHelpCenter}
+                    color="info"
+                  />
                 </Box>
-              )}
+              </Box>
 
               {!this.state.isEudrBannerDismissed && (
                 <Alert
@@ -503,23 +477,15 @@ class Landing extends Component {
                 </Alert>
               )}
 
-              {isUploadListUiAvailable ? (
-                <Typography variant="h6" sx={{ mb: 1 }}>
-                  {locationsPage.landing.gfwLists}
-                </Typography>
-              ) : (
-                <h2 className="gfw-lists__title">{locationsPage.landing.gfwLists}</h2>
-              )}
+              <Typography variant="h6" sx={{ mb: 1 }}>
+                {locationsPage.landing.gfwLists}
+              </Typography>
 
               <div className="gfw-lists__inner">{gfwListsMapped}</div>
             </section>
             <section className="my-locations-section">
               <div className="my-locations__header">
-                {isUploadListUiAvailable ? (
-                  <Typography variant="h6">{locationsPage.landing.myLocations}</Typography>
-                ) : (
-                  <div className="my-locations__title">{locationsPage.landing.myLocations}</div>
-                )}
+                <Typography variant="h6">{locationsPage.landing.myLocations}</Typography>
 
                 <ListsFilter value={userListFilterText} onChange={onChangeListsFilter} />
               </div>
@@ -599,12 +565,8 @@ class Landing extends Component {
                     startIcon={<IconPlus height="10px" />}
                     sx={{ mx: 'auto' }}
                     onClick={() => {
-                      if (isUploadListUiAvailable) {
-                        const { history } = this.props;
-                        history.push('/upload-location');
-                      } else {
-                        this.setState({ addLocationDialogOpen: true });
-                      }
+                      const { history } = this.props;
+                      history.push('/upload-location');
                     }}
                   >
                     {locationsPage.landing.addLocations}

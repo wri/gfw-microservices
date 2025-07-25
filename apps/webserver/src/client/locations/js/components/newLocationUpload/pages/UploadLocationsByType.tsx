@@ -78,8 +78,8 @@ export function UploadLocationsByType() {
       unsupportedTypeMsg: (
         <>
           It looks like the file you uploaded isn't one of GFW Pro's accepted file types. GFW Pro
-          supports <b>.csv</b>, <b>.xlsl</b>, <b>.kml</b>, <b>.kmz</b> and a <b>.zip</b> containing
-          a <b>shape file</b>. Please try again with a compatible file format.
+          supports <b>.csv</b>, <b>.xls</b>, <b>.kml</b>, <b>.kmz</b> and a <b>.zip</b> containing a{' '}
+          <b>shape file</b>. Please try again with a compatible file format.
         </>
       ),
     },
@@ -94,7 +94,7 @@ export function UploadLocationsByType() {
       unsupportedTypeMsg: (
         <>
           It looks like the file you uploaded is not supported for ID-based upload. ID-based upload
-          requires a <b>.csv</b> or <b>.xlsl</b> file. Please try again with a compatible file
+          requires a <b>.csv</b> or <b>.xls</b> file. Please try again with a compatible file
           format.
         </>
       ),

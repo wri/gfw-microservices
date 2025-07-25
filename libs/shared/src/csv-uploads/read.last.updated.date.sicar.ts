@@ -16,7 +16,7 @@ export const readLastUpdatedDateSicar = async (): Promise<LastUpdatedDateSicarRe
       headers: {
         'x-api-key': process.env.GFW_DATA_API_KEY,
         'Content-Type': 'application/json',
-      }
+      },
     });
 
     if (response.data.status === 'success' && response.data.data) {

@@ -28,7 +28,6 @@ import { requestGeoTrellisAnalyzeList } from '../../../../../locations/js/utils/
 import { useTransifexTranslation } from '../../../../../hooks';
 import store from '../../../../../locations/js/store';
 import './ListActions.scss';
-import featureFlags from '../../../../../../utils/general.utils';
 import { gfwListNames } from '../../../../../common/js/constants/lists.constants';
 import { GFW_LISTS_NUMBER_CONSTANTS } from '../../../../../../config/env/gfwLists.constants';
 
@@ -90,10 +89,8 @@ const ListActions = ({
     },
   };
   const [isSearchBarOpen, setIsSearchBarOpen] = useState(false);
-  const { isUploadListUiAvailable } = featureFlags;
-  const redirectUploadLocationUrl = isUploadListUiAvailable
-    ? `upload-location&fromList=${selectedList?.id}`
-    : 'add';
+
+  const redirectUploadLocationUrl = `upload-location&fromList=${selectedList?.id}`;
 
   const closeSearchBarHandler = () => {
     setIsSearchBarOpen(false);

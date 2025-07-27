@@ -222,10 +222,6 @@ describe('ListCopyMoveService', () => {
     selectedListLocationClassification: '',
     customAttributesNames: [],
     addType: 'ADD',
-    activeTemplate: 'template1',
-    templateId: 'template1',
-    templateVersion: '1.0',
-    templateData: {},
     ...overrides,
   });
 
@@ -516,7 +512,7 @@ describe('ListCopyMoveService', () => {
     });
   });
 
-  describe.only('Common functionality', () => {
+  describe('Common functionality', () => {
     it('should handle invalid list names', async () => {
       const invalidNameRequest = createMockRequest({
         listName: 'Invalid Name',

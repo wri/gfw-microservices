@@ -1,44 +1,20 @@
-import { Injectable, Logger, forwardRef, Inject } from '@nestjs/common';
-import {
-  ClientStoreConnection,
-  Lists,
-  ListSchema,
-  ListSchemaType,
-  ListTemplate,
-} from '@wri-monorepos/sql';
-import { MAPSPAM_COMMODITY } from '@wri-monorepos/constants';
-import { EntitySchema, Raw, Repository, In } from 'typeorm';
+import { Injectable, Logger } from '@nestjs/common';
+import { ClientStoreConnection, Lists, ListSchema, ListSchemaType } from '@wri-monorepos/sql';
+import { EntitySchema, Raw } from 'typeorm';
 import { CommodityResponse, ListResponse } from './types';
 import { ConvertCommodityToMapSpamCode } from '../list-upload/chain/convert.commodity.mapspam';
-import { getRepositoryToken } from '@nestjs/typeorm';
-
-// Mapping of commodity names to their template IDs
-const COMMODITY_TEMPLATE_MAP = {
-  'palm oil': ['palm oil mill', 'palm oil plantation', 'palm smallholder farm', 'palm oil generic'],
-  soy: ['soy silo', 'soy farm', 'soy generic'],
-  gfwp_cattle: ['cattle ranch', 'cattle generic', 'beef slaughterhouse'],
-  cattle: ['cattle ranch', 'cattle generic', 'beef slaughterhouse'],
-  cocoa: ['cocoa farm', 'cocoa generic'],
-};
 
 @Injectable()
 export class CommodityService {
-  constructor(
-    @Inject(forwardRef(() => getRepositoryToken(ListTemplate, 'default')))
-    private readonly listTemplateRepository: Repository<ListTemplate>
-  ) {}
-
   async getCommodityFromExistingList(
     organizationDatabase: string,
     listId: number
   ): Promise<CommodityResponse> {
     try {
-      const listTemplate = await this.listTemplateRepository.find();
-      const {
-        commodity: commodityList,
-        listTableName,
-        templateId,
-      } = await this.getListCommodityAndTableName(organizationDatabase, listId);
+      const { commodity: commodityList, listTableName } = await this.getListCommodityAndTableName(
+        organizationDatabase,
+        listId
+      );
       if (commodityList && commodityList?.toLocaleLowerCase() !== 'other') {
         return {
           commodity: commodityList,
@@ -52,13 +28,6 @@ export class CommodityService {
       if (commodityLocation && commodityLocation?.toLocaleLowerCase() !== 'other') {
         return {
           commodity: commodityLocation,
-        };
-      }
-
-      const template = listTemplate.find((template) => template.id === templateId);
-      if (template) {
-        return {
-          commodity: template.templateName,
         };
       }
 
@@ -76,14 +45,14 @@ export class CommodityService {
   async getListCommodityAndTableName(
     organizationDatabase: string,
     listId: number
-  ): Promise<{ commodity: string; listTableName: string; templateId: number }> {
+  ): Promise<{ commodity: string; listTableName: string }> {
     const clientStoreConnection = new ClientStoreConnection();
     const connection = await clientStoreConnection.getConnection(organizationDatabase);
     const listRepository = connection.getRepository(Lists);
-    const { Commodity, listTableName, templateId } = await listRepository.findOne({
+    const { Commodity, listTableName } = await listRepository.findOne({
       where: { id: listId },
     });
-    return { commodity: Commodity, listTableName, templateId };
+    return { commodity: Commodity, listTableName };
   }
 
   async getCommodityFromLocation(organizationDatabase: string, listTableName: string) {
@@ -106,36 +75,16 @@ export class CommodityService {
 
   async getCommodityAndTemplates(commodity: string): Promise<{
     commodityName: string;
-    validTemplates: ListTemplate[];
   }> {
     const commodityLowerCase = commodity.toLowerCase();
-    let commodityName = this.getCommodityFromTemplate(commodityLowerCase);
-    let templateNames = COMMODITY_TEMPLATE_MAP[commodityName];
-    // If commodity is already MAPSAPM code, get all the templates for that commodity
-    if (MAPSPAM_COMMODITY[commodity] && !templateNames) {
-      templateNames = COMMODITY_TEMPLATE_MAP[MAPSPAM_COMMODITY[commodity].toLowerCase()] || [];
-    } else if (!templateNames) {
-      templateNames = [];
-    }
 
-    commodityName = ConvertCommodityToMapSpamCode.getCommoditySpamName(commodity);
+    let commodityName = ConvertCommodityToMapSpamCode.getCommoditySpamName(commodity);
     if (!commodityName) {
       commodityName = commodityLowerCase.startsWith('gfwp_') ? commodity : 'GFWP_' + commodity;
       commodityName = commodityName.replace(/\s+/g, '_');
     }
 
-    // Get all templates for the commodity if it's in our mapping
-    templateNames = [...templateNames, commodityName];
-    const templates = await this.listTemplateRepository.find({
-      where: {
-        templateName: In(templateNames),
-      },
-    });
-
-    return {
-      commodityName,
-      validTemplates: templates.filter(Boolean),
-    };
+    return { commodityName };
   }
 
   // frontend calls this with mapspam code for copy/move from new lists,
@@ -153,7 +102,7 @@ export class CommodityService {
       const connection = await clientStoreConnection.getConnection(organizationDatabase);
       const listRepository = connection.getRepository(Lists);
 
-      const { commodityName, validTemplates } = await this.getCommodityAndTemplates(commodity);
+      const { commodityName } = await this.getCommodityAndTemplates(commodity);
 
       const lists = await listRepository.find({
         where: [
@@ -164,7 +113,6 @@ export class CommodityService {
               { commodity: commodityName }
             ),
           },
-          ...validTemplates.map((template) => ({ templateId: template.id })),
         ].filter(Boolean),
         select: ['id', 'listName'],
         order: { listName: 'ASC' },
@@ -177,26 +125,6 @@ export class CommodityService {
     }
   }
 
-  async getAllTemplates(): Promise<ListTemplate[]> {
-    return await this.listTemplateRepository.find();
-  }
-
-  getCommodityFromTemplate(templateName: string): string {
-    if (!templateName) {
-      return templateName;
-    }
-
-    const normalizedTemplateName = templateName.toLowerCase();
-
-    for (const [commodity, templates] of Object.entries(COMMODITY_TEMPLATE_MAP)) {
-      if (templates.some((template) => template.toLowerCase() === normalizedTemplateName)) {
-        return commodity;
-      }
-    }
-
-    return templateName;
-  }
-
   async checkIfListExistAndCommodityIsTheSame(
     listId: number,
     commodity: string,
@@ -206,7 +134,7 @@ export class CommodityService {
     const connection = await clientStoreConnection.getConnection(clientDatabase);
     const listRepository = connection.getRepository(Lists);
 
-    const { commodityName, validTemplates } = await this.getCommodityAndTemplates(commodity);
+    const { commodityName } = await this.getCommodityAndTemplates(commodity);
 
     const lists = await listRepository.find({
       where: [
@@ -220,12 +148,6 @@ export class CommodityService {
             ),
           }),
         },
-        ...(validTemplates?.length > 0
-          ? validTemplates.map((template) => ({
-              id: listId,
-              templateId: template.id,
-            }))
-          : []),
       ].filter(Boolean),
       select: ['id', 'listName'],
       order: { listName: 'ASC' },

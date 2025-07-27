@@ -150,7 +150,6 @@ describe('CreateLargeListService', () => {
             listTable: 'Test List',
             gfwListId: null,
             user_id: 123,
-            template_id: 0,
             analysisIds: ['1', '2', '3'],
             commodity: 'Unknown',
             saveAsDraft: false,
@@ -168,7 +167,6 @@ describe('CreateLargeListService', () => {
     it('should successfully create a large list with all parameters provided', async () => {
       const fullParams = {
         ...baseParams,
-        templateId: 5,
         gfwListId: 789,
         commodity: 'Palm Oil',
         saveAsDraft: true,
@@ -185,7 +183,6 @@ describe('CreateLargeListService', () => {
             listTable: 'Test List',
             gfwListId: 789,
             user_id: 123,
-            template_id: 5,
             analysisIds: ['1', '2', '3'],
             commodity: 'Palm Oil',
             saveAsDraft: true,

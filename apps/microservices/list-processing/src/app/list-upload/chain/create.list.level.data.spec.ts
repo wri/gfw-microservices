@@ -101,7 +101,6 @@ describe('CreateListLevelData', () => {
       const result = await createListLevelData.insertListInListTable(
         mockConnection,
         1, // userId
-        2, // templateId
         'Test List', // listName
         'test_list_table', // listTable
         'test_analysis_table', // analysisTable
@@ -118,7 +117,6 @@ describe('CreateListLevelData', () => {
         'uspCreateList',
         expect.arrayContaining([
           expect.objectContaining({ field: 'user_id', value: 1 }),
-          expect.objectContaining({ field: 'template_id', value: 2 }),
           expect.objectContaining({ field: 'list_name', value: 'Test List' }),
           expect.objectContaining({ field: 'list_table_name', value: 'test_list_table' }),
           expect.objectContaining({
@@ -143,7 +141,6 @@ describe('CreateListLevelData', () => {
       const result = await createListLevelData.insertListInListTable(
         mockConnection,
         1, // userId
-        2, // templateId
         'Test List', // listName
         'test_list_table', // listTable
         'test_analysis_table', // analysisTable
@@ -171,7 +168,6 @@ describe('CreateListLevelData', () => {
       await expect(
         createListLevelData.insertListInListTable(
           mockConnection,
-          1,
           1,
           'Test List',
           'test_list_table',

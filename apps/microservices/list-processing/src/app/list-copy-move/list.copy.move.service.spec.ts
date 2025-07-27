@@ -226,7 +226,6 @@ describe('ListCopyMoveService', () => {
     templateId: 'template1',
     templateVersion: '1.0',
     templateData: {},
-    isUploadListLpEnabled: false,
     ...overrides,
   });
 

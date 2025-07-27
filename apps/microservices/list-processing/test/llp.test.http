@@ -13,7 +13,6 @@ Content-Type: application/json
    "organization_database": "clientstore-DevCo",
    "list_id":5408,
    "path":"teste",
-   "template_type":"cocoa_generic",
    "user_id":10048,
    "startAnalysis":"false",
    "isExternalAPIProcess":"false",

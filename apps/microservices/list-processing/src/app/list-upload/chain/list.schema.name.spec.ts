@@ -49,9 +49,8 @@ describe('ListSchema', () => {
       request: {
         user_id: 1,
         list_name: listName,
-        organization_database: 'test-db',
-        template_id: 1,
-        path: 'path',
+        organization_database: 'test_db',
+        path: 'test-path',
       },
     };
 
@@ -64,9 +63,8 @@ describe('ListSchema', () => {
       request: {
         user_id: 1,
         list_name: listName,
-        organization_database: 'test-db',
-        template_id: 1,
-        path: 'path',
+        organization_database: 'test_db',
+        path: 'test-path',
         commodity: 'COCO',
         saveAsDraft: false,
       },
@@ -87,9 +85,8 @@ describe('ListSchema', () => {
       request: {
         user_id: 1,
         list_name: listName,
-        organization_database: 'test-db',
-        template_id: 1,
-        path: 'path',
+        organization_database: 'test_db',
+        path: 'test-path',
         commodity: 'COCO',
         saveAsDraft: false,
       },
@@ -110,9 +107,8 @@ describe('ListSchema', () => {
       request: {
         user_id: 1,
         list_name: listName,
-        organization_database: 'test-db',
-        template_id: 1,
-        path: 'path',
+        organization_database: 'test_db',
+        path: 'test-path',
         commodity: 'COCO',
         saveAsDraft: false,
       },
@@ -133,9 +129,8 @@ describe('ListSchema', () => {
       request: {
         user_id: 1,
         list_name: listName,
-        organization_database: 'test-db',
-        template_id: 1,
-        path: 'path',
+        organization_database: 'test_db',
+        path: 'test-path',
         commodity: 'COCO',
         saveAsDraft: false,
       },
@@ -162,9 +157,8 @@ describe('ListSchema', () => {
       request: {
         user_id: 1,
         list_name: listName,
-        organization_database: 'test-db',
-        template_id: 1,
-        path: 'path',
+        organization_database: 'test_db',
+        path: 'test-path',
         commodity: 'COCO',
         saveAsDraft: false,
       },
@@ -186,9 +180,8 @@ describe('ListSchema', () => {
         listTable: 'list-newlist',
         list_name: 'NewList',
         locationClassification: 'Property',
-        organization_database: 'test-db',
-        path: 'path',
-        template_id: 1,
+        organization_database: 'test_db',
+        path: 'test-path',
         user_id: 1,
       },
     });

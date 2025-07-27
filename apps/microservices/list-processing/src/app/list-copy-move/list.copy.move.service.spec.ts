@@ -512,7 +512,7 @@ describe('ListCopyMoveService', () => {
     });
   });
 
-  describe.only('Common functionality', () => {
+  describe('Common functionality', () => {
     it('should handle invalid list names', async () => {
       const invalidNameRequest = createMockRequest({
         listName: 'Invalid Name',

@@ -5,6 +5,8 @@ const BASE_URL = process.env.HOST;
 const API_TOKEN = process.env.API_TOKEN;
 const email = process.env.USER_EMAIL;
 const list = process.env.TEST_LIST;
+const ghgList = process.env.TEST_GHG_LIST;
+
 describe('Validate CSV Files for FCD', () => {
   it(
     'should generate FCD analysis file',
@@ -214,10 +216,9 @@ describe('Validate CSV Files for GHG', () => {
   it(
     'should generate GHG download',
     async () => {
-      const listId = '8695';
       try {
         const res = await postRedirectHeaders(
-          `${BASE_URL}/api/v1/list/${listId}/analysis/GHG/generate`,
+          `${BASE_URL}/api/v1/list/${ghgList}/analysis/GHG/generate`,
           {
             userEmail: email,
             startDate: '01-01-2024',
@@ -243,11 +244,10 @@ describe('Validate CSV Files for GHG', () => {
   it(
     'should validate CSV bundle file has expected files',
     async () => {
-      const listId = '8695';
       const listName = 'GHG Analysis List';
       try {
         const { apiResponse, zipFileNames } = await pollApiUntilComplete(
-          `${BASE_URL}/api/v1/list/${listId}/analysis/GHG/status`,
+          `${BASE_URL}/api/v1/list/${ghgList}/analysis/GHG/status`,
           {
             method: 'GET',
             headers: {
@@ -260,7 +260,7 @@ describe('Validate CSV Files for GHG', () => {
         expect(apiResponse.status).toBe('Completed');
         expect(apiResponse).toHaveProperty('listId');
         expect(typeof apiResponse.listId).toBe('string');
-        expect(apiResponse.listId).toBe(listId);
+        expect(apiResponse.listId).toBe(ghgList);
 
         const expectedFileNames = [`${listName}_green_house_gas_emissions.csv`, 'README.csv'];
         expect(zipFileNames.sort()).toEqual(expectedFileNames.sort());

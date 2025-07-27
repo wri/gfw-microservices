@@ -9,7 +9,6 @@ export interface ListMetadata {
   version: number;
   commodity: string | null;
   listName: string;
-  locationClassification: string;
 }
 
 @Injectable()
@@ -52,7 +51,6 @@ export class ListMetadataService {
         version: list.version,
         commodity: list.Commodity,
         listName: list.listName,
-        locationClassification: list.locationClassification,
       };
     } catch (error) {
       this.logger.error(`Failed to fetch list metadata for listId ${listId}:`, error);

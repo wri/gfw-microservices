@@ -121,9 +121,6 @@ export class CreateListRequest {
   organization_id: number;
 
   @ApiProperty()
-  isUploadListLpEnabled: boolean;
-
-  @ApiProperty()
   saveAsDraft: boolean;
 }
 
@@ -168,9 +165,6 @@ export class CopyOrMoveLargeListRequestLLP {
   filters: ListFilters;
   @ApiProperty()
   srcListAnalysisTable: string;
-
-  @ApiProperty()
-  isUploadListLpEnabled?: boolean;
 }
 
 export class getPaginatedListDataRequest {

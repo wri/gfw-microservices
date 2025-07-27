@@ -20,7 +20,10 @@ describe('AnalysisFailedMessage', () => {
       /all your list's locations have failed analysis\. read more about how to avoid and address analysis failures \./i
     );
     expect(errorMessage).toBeInTheDocument();
-    expect(within(errorMessage).getByRole('link', { name: /here/i })).toHaveAttribute(
+
+    const linkByRole = within(errorMessage).getByRole('link', { name: 'here' });
+    expect(linkByRole).toBeInTheDocument();
+    expect(linkByRole).toHaveAttribute(
       'href',
       'https://globalforestwatch.org/help/gfw-pro/guides/how-to-address-errors-in-your-uploads'
     );

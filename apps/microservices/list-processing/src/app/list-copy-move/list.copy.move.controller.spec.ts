@@ -39,7 +39,6 @@ describe('ListCopyMoveController', () => {
     allLocationsSelected: false,
     filters: { country: 'US', state: 'CA' },
     srcListAnalysisTable: 'test-table',
-    isUploadListLpEnabled: true,
   };
 
   beforeEach(async () => {

@@ -100,6 +100,13 @@ export const LabelNameTable: {
   subState: 'Substate',
 };
 
+export const LabelNameTableIdType = {
+  IDType: 'ID Type',
+  LocationName: 'Location Name',
+  ID: 'ID',
+  'AnalysisRadius|AnalysisArea': 'Analysis Radius or Analysis Area',
+};
+
 export const LabelNameTableZip = {
   locationName: 'Location_N',
   analysisRadius: 'Analysis_R',

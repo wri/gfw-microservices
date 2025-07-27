@@ -20,7 +20,6 @@ export class CreateLargeListService {
     saveAsDraft = false,
   }: {
     gfwListId?: number | null;
-    isUploadListLpEnabled?: boolean;
     commodity?: string;
   } & Partial<CreateListRequest>): Promise<CreateListResult> {
     let chainType: ChainType = {

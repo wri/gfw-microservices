@@ -222,7 +222,6 @@ describe('ListCopyMoveService', () => {
     selectedListLocationClassification: '',
     customAttributesNames: [],
     addType: 'ADD',
-    isUploadListLpEnabled: false,
     ...overrides,
   });
 

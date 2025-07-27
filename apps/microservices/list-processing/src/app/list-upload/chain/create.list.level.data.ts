@@ -1,13 +1,11 @@
-import { FeatureFlag, SQLUtils } from '@wri-monorepos/sql';
+import { SQLUtils } from '@wri-monorepos/sql';
 import { AbstractHandler, ChainType, RequestNewList } from './types';
 import { CreateListResult } from '@wri-monorepos/geo';
 import * as sql from 'mssql';
-import { featureFlagsService } from '@wri-monorepos/shared';
 import { Logger } from '@nestjs/common';
 import { listStatus } from '@wri-monorepos/constants';
 
 const LIST_UPLOAD_VERSION = 2;
-const LIST_UPLOAD_LEGACY_VERSION = 0;
 
 export class CreateListLevelData extends AbstractHandler<ChainType> {
   private readonly logger = new Logger(CreateListLevelData.name);
@@ -46,7 +44,6 @@ export class CreateListLevelData extends AbstractHandler<ChainType> {
     customAttributeNames: string,
     customAttributeTypes: string,
     gfwListId: number = null,
-    isUploadListLpFlagEnabled: boolean,
     commodity: string = null
   ): Promise<CreateListResult> {
     const parameters = [
@@ -60,11 +57,7 @@ export class CreateListLevelData extends AbstractHandler<ChainType> {
       this.createSqlParameter('custom_attribute_types', sql.NVarChar(2000), customAttributeTypes),
       this.createSqlParameter('associated_gfwlist', sql.TinyInt, gfwListId),
       this.createSqlParameter('commodity', sql.NVarChar(150), commodity),
-      this.createSqlParameter(
-        'version',
-        sql.Int,
-        isUploadListLpFlagEnabled ? LIST_UPLOAD_VERSION : LIST_UPLOAD_LEGACY_VERSION
-      ),
+      this.createSqlParameter('version', sql.Int, LIST_UPLOAD_VERSION),
     ];
 
     const result = await this.executeQueryWithParams<CreateListResult>(
@@ -96,13 +89,6 @@ export class CreateListLevelData extends AbstractHandler<ChainType> {
       commodity = '',
     } = request.request as RequestNewList;
 
-    const { getFeatureFlagsForCurrentOrg, getClientIdByClientStoreDatabaseName } =
-      await featureFlagsService();
-    const orgId = await getClientIdByClientStoreDatabaseName(clientDatabase);
-    const flags = await getFeatureFlagsForCurrentOrg(orgId);
-
-    const uploadListLpFlag = flags.find((f) => f.flagId === 'UploadListLp') as FeatureFlag;
-
     const connection = new SQLUtils();
 
     const listStatusId = saveAsDraft ? listStatus.Draft : listStatus.Pending;
@@ -121,7 +107,6 @@ export class CreateListLevelData extends AbstractHandler<ChainType> {
         customAttributeNames,
         customAttributeTypes,
         gfwListId,
-        uploadListLpFlag?.flagState,
         commodity
       );
 

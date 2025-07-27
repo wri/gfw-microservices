@@ -1,5 +1,15 @@
 import { ElementType } from 'react';
-import { Typography, Box, Stepper, Step, StepLabel, StepIconProps, styled } from '@mui/material';
+import {
+  Typography,
+  Box,
+  Stepper,
+  Step,
+  StepLabel,
+  StepIconProps,
+  styled,
+  SxProps,
+  Theme,
+} from '@mui/material';
 import { Check, Email, Publish } from '@mui/icons-material';
 import { HelperTextWithPopover } from '../../../../../components';
 
@@ -37,7 +47,11 @@ function ColorStepIcon(props: StepIconProps, Icon: ElementType) {
   );
 }
 
-export function FileValidationHelper() {
+interface FileValidationHelperProps {
+  sx?: SxProps<Theme>;
+}
+
+export function FileValidationHelper({ sx }: FileValidationHelperProps) {
   return (
     <>
       <HelperTextWithPopover
@@ -53,7 +67,7 @@ export function FileValidationHelper() {
           width: 'fit-content',
           px: 1.5,
           py: 0.5,
-          my: 2,
+          ...sx,
         }}
       >
         <Box sx={{ width: '320px' }}>

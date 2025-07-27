@@ -21,7 +21,6 @@ const errorUtils = require(path.resolve('./config/privateutils/error.utils'));
 const { generateZipShapefile } = require('../../../config/publicutils/locationManager.utils');
 const shareManager = require('../../../config/publicutils/shareManager.utils');
 const { getLocationIdsFromGeoJSON } = require('../../../config/publicutils/listManager.utils');
-const { saveAsDraftListConfig } = require('../../../config/config/locations.config');
 const { removeExistingVectorTileFromS3 } = require('../../vectorTiles/utils/vectorTile.utils');
 const { validateAttributes } = require('../utils/validation.utils');
 const { mapCommodityRiskValuesToDatabaseValues } = require('../utils/locations.utils');
@@ -120,63 +119,6 @@ module.exports = (app, limiter) => {
       .catch((err) => {
         console.log('Reject', err);
         res.send('Location add failed');
-      });
-  });
-
-  app.post(saveAsDraftListConfig.route, (req, res) => {
-    console.log(`POST ${saveAsDraftListConfig.route}`);
-    const {
-      list_name,
-      template_id,
-      commodity,
-      geojson,
-      location_classification,
-      gfw_list_id,
-      selected_location_ids: src_location_ids,
-      original_gfw_list,
-      analysisIds,
-      attributes = null,
-    } = req.body;
-
-    const finalGeojson = LocationManager.getFinalGeojson(gfw_list_id, geojson);
-    const custom_attributes = req.body.custom_attributes ? req.body.custom_attributes : [];
-
-    ListManager.uploadToNewListAndSaveAsDraft(
-      req,
-      list_name,
-      template_id,
-      commodity,
-      location_classification,
-      custom_attributes,
-      finalGeojson,
-      gfw_list_id,
-      analysisIds,
-      attributes
-    )
-      .then(async ({ resultGeoJSON }) => {
-        if (original_gfw_list) {
-          // Copy GFW Locations to another list
-          const src_list = await GFWListManager.getGFWListSchema(req, gfw_list_id);
-          const dest_list = await ListManager.getListByListName(req, list_name);
-          const dest_location_ids = resultGeoJSON.features.map(
-            (feature) => feature.properties.location_id
-          );
-          dest_location_ids.sort((a, b) => a - b);
-
-          await GFWListManager.copyGFWLocationsToList(
-            req,
-            src_list,
-            dest_list,
-            src_location_ids,
-            dest_location_ids
-          );
-        }
-
-        res.send(saveAsDraftListConfig.success);
-      })
-      .catch((err) => {
-        console.log('Reject', err);
-        res.send(saveAsDraftListConfig.failed);
       });
   });
 

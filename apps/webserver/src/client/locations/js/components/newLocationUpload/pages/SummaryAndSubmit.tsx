@@ -14,7 +14,7 @@ import { ArrowBackIos, Close, EditNote, Publish } from '@mui/icons-material';
 import { useHistory } from '../hooks';
 import { LoadingModal, PillButton } from '../../../../../components';
 import { useUploadLocation } from '../contexts';
-import { NavBar } from '../components';
+import { FileValidationHelper, NavBar } from '../components';
 import {
   analysisTypes,
   analysisTypesOptionsNewNames,
@@ -23,7 +23,7 @@ import { commodities } from '../utils/constants';
 import { uploadFileToS3 } from '../utils/upload';
 import { uploadProcessByPrevUploadedFile } from '../../landing/uploadProcess';
 import { UploadType } from '../types';
-import { DATA_CY } from '../../../../../utils/constants';
+import { DATA_CY, ExternalLinks } from '../../../../../utils/constants';
 
 export function SummaryAndSubmit() {
   const history = useHistory();
@@ -142,60 +142,66 @@ export function SummaryAndSubmit() {
       <Card sx={{ height: '634px', display: 'flex', flexDirection: 'column', pt: 1, px: 2, pb: 2 }}>
         <Typography variant="h6">Summary & Submit</Typography>
 
-        <Box
-          sx={{
-            padding: 1.25,
-            borderRadius: 1,
-            width: '500px',
-            mt: 3,
-            mx: 'auto',
-            backgroundColor: 'background.default',
-          }}
-        >
-          <Typography variant="body2">
-            You are{' '}
-            {isAddingToNewList ? (
-              <>
-                creating a new <b>{commodity}</b> list named <b>{listName}</b>.
-              </>
-            ) : (
-              <>
-                adding <b>{commodity}</b> location(s) to the list named <b>{listName}</b>.
-              </>
-            )}
-          </Typography>
-          <Typography variant="body2">
-            {isAddingToNewList ? 'Your ' : 'The resulting '}list will be submitted for the following
-            analysis:
-          </Typography>
-          <Box component="ul" sx={{ color: 'text.secondary' }}>
-            {Object.entries(uploadLocationState.typeOfAnalysis)
-              .filter(([key, isChecked]) => isChecked && key !== analysisTypes.PALM_RISK)
-              .map(([key]) => {
-                const analysis = analysisTypesOptionsNewNames.find((x) => x.id === key);
+        <Box sx={{ mx: 'auto' }}>
+          <Box
+            sx={{
+              padding: 1.25,
+              borderRadius: 1,
+              width: '500px',
+              mt: 3,
+              backgroundColor: 'background.default',
+            }}
+          >
+            <Typography variant="body2">
+              You are{' '}
+              {isAddingToNewList ? (
+                <>
+                  creating a new <b>{commodity}</b> list named <b>{listName}</b>.
+                </>
+              ) : (
+                <>
+                  adding <b>{commodity}</b> location(s) to the list named <b>{listName}</b>.
+                </>
+              )}
+            </Typography>
+            <Typography variant="body2">
+              {isAddingToNewList ? 'Your ' : 'The resulting '}list will be submitted for the
+              following analysis:
+            </Typography>
+            <Box component="ul" sx={{ color: 'text.secondary' }}>
+              {Object.entries(uploadLocationState.typeOfAnalysis)
+                .filter(([key, isChecked]) => isChecked && key !== analysisTypes.PALM_RISK)
+                .map(([key]) => {
+                  const analysis = analysisTypesOptionsNewNames.find((x) => x.id === key);
 
-                const isPalmRiskIncluded =
-                  analysis?.id === 'FCD' && uploadLocationState.typeOfAnalysis.PalmRisk;
+                  const isPalmRiskIncluded =
+                    analysis?.id === 'FCD' && uploadLocationState.typeOfAnalysis.PalmRisk;
 
-                return (
-                  <li key={key}>
-                    <Typography variant="caption">{analysis?.label}</Typography>
-                    {isPalmRiskIncluded && (
-                      <Typography variant="caption"> (Includes Palm Risk Assessment)</Typography>
-                    )}
-                  </li>
-                );
-              })}
+                  return (
+                    <li key={key}>
+                      <Typography variant="caption">{analysis?.label}</Typography>
+                      {isPalmRiskIncluded && (
+                        <Typography variant="caption"> (Includes Palm Risk Assessment)</Typography>
+                      )}
+                    </li>
+                  );
+                })}
+            </Box>
+
+            <Typography variant="body2">
+              Please note that all analysis submission count towards your usage limits. See more
+              information{' '}
+              <Link
+                href={ExternalLinks.UploadFees}
+                sx={{ textDecoration: 'none', color: 'primary.main' }}
+                target="_blank"
+              >
+                here
+              </Link>
+              .
+            </Typography>
           </Box>
-
-          <Typography variant="body2">
-            Please note that all analysis submission count towards your usage limits. See more
-            information{' '}
-            <Link href="#" sx={{ textDecoration: 'none', color: 'primary.main' }}>
-              here
-            </Link>
-            .
-          </Typography>
+          <FileValidationHelper sx={{ mt: 1 }} />
         </Box>
 
         <Box
@@ -264,7 +270,11 @@ export function SummaryAndSubmit() {
               : 'Please confirm that you wish to submit this list to analysis'}
             . Note that running analysis counts towards your account usage limits. See more
             information{' '}
-            <Link href="#" sx={{ textDecoration: 'none', color: 'primary.main' }}>
+            <Link
+              href={ExternalLinks.UploadFees}
+              sx={{ textDecoration: 'none', color: 'primary.main' }}
+              target="_blank"
+            >
               here
             </Link>
             .

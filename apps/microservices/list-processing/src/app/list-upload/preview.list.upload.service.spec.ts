@@ -62,4 +62,172 @@ describe('ListUploadService', () => {
 
     expect(result).toEqual(mockFeatureCollection);
   });
+
+  it('should not throw exception when errors contain only UML lookup errors', async () => {
+    const path = 'test/path';
+    const mockFeatureCollection: FeatureCollection = {
+      type: 'FeatureCollection',
+      features: [
+        {
+          type: 'Feature',
+          geometry: { type: 'Point', coordinates: [0, 0] },
+          properties: {
+            errorDetails: ['UML LookUp: did not found lat/long for location1'],
+          },
+        },
+      ],
+    };
+
+    const mockChainType = {
+      request: {
+        path,
+        preview: true,
+      },
+      geojson: mockFeatureCollection,
+    };
+
+    (DownloadS3File as unknown as jest.Mock).mockImplementation(() => ({
+      setNext: jest.fn().mockReturnThis(),
+      handle: jest.fn().mockResolvedValue(mockChainType),
+    }));
+
+    const result = await service.previewData(path);
+
+    expect(result).toEqual(mockFeatureCollection);
+  });
+
+  it('should not throw exception when errors contain only CAR lookup errors', async () => {
+    const path = 'test/path';
+    const mockFeatureCollection: FeatureCollection = {
+      type: 'FeatureCollection',
+      features: [
+        {
+          type: 'Feature',
+          geometry: { type: 'Point', coordinates: [0, 0] },
+          properties: {
+            errorDetails: ['CAR LookUp: did not found lat/long for location2'],
+          },
+        },
+      ],
+    };
+
+    const mockChainType = {
+      request: {
+        path,
+        preview: true,
+      },
+      geojson: mockFeatureCollection,
+    };
+
+    (DownloadS3File as unknown as jest.Mock).mockImplementation(() => ({
+      setNext: jest.fn().mockReturnThis(),
+      handle: jest.fn().mockResolvedValue(mockChainType),
+    }));
+
+    const result = await service.previewData(path);
+
+    expect(result).toEqual(mockFeatureCollection);
+  });
+
+  it('should not throw exception when errors contain both UML and CAR lookup errors', async () => {
+    const path = 'test/path';
+    const mockFeatureCollection: FeatureCollection = {
+      type: 'FeatureCollection',
+      features: [
+        {
+          type: 'Feature',
+          geometry: { type: 'Point', coordinates: [0, 0] },
+          properties: {
+            errorDetails: [
+              'UML LookUp: did not found lat/long for location1',
+              'CAR LookUp: did not found lat/long for location2',
+            ],
+          },
+        },
+      ],
+    };
+
+    const mockChainType = {
+      request: {
+        path,
+        preview: true,
+      },
+      geojson: mockFeatureCollection,
+    };
+
+    (DownloadS3File as unknown as jest.Mock).mockImplementation(() => ({
+      setNext: jest.fn().mockReturnThis(),
+      handle: jest.fn().mockResolvedValue(mockChainType),
+    }));
+
+    const result = await service.previewData(path);
+
+    expect(result).toEqual(mockFeatureCollection);
+  });
+
+  it('should throw BadRequestException when errors contain significant validation errors', async () => {
+    const path = 'test/path';
+    const mockFeatureCollection: FeatureCollection = {
+      type: 'FeatureCollection',
+      features: [
+        {
+          type: 'Feature',
+          geometry: { type: 'Point', coordinates: [0, 0] },
+          properties: {
+            errorDetails: ['Invalid coordinate format', 'Missing required field'],
+          },
+        },
+      ],
+    };
+
+    const mockChainType = {
+      request: {
+        path,
+        preview: true,
+      },
+      geojson: mockFeatureCollection,
+    };
+
+    (DownloadS3File as unknown as jest.Mock).mockImplementation(() => ({
+      setNext: jest.fn().mockReturnThis(),
+      handle: jest.fn().mockResolvedValue(mockChainType),
+    }));
+
+    await expect(service.previewData(path)).rejects.toThrow('Validation errors found in the data');
+  });
+
+  it('should throw BadRequestException when errors contain mix of lookup errors and significant errors', async () => {
+    const path = 'test/path';
+    const mockFeatureCollection: FeatureCollection = {
+      type: 'FeatureCollection',
+      features: [
+        {
+          type: 'Feature',
+          geometry: { type: 'Point', coordinates: [0, 0] },
+          properties: {
+            errorDetails: [
+              'UML LookUp: did not found lat/long for location1',
+              'Invalid coordinate format',
+              'CAR LookUp: did not found lat/long for location2',
+            ],
+          },
+        },
+      ],
+    };
+
+    const mockChainType = {
+      request: {
+        path,
+        preview: true,
+      },
+      geojson: mockFeatureCollection,
+    };
+
+    (DownloadS3File as unknown as jest.Mock).mockImplementation(() => ({
+      setNext: jest.fn().mockReturnThis(),
+      handle: jest.fn().mockResolvedValue(mockChainType),
+    }));
+
+    await expect(service.previewData(path)).rejects.toThrow('Validation errors found in the data');
+  });
 });

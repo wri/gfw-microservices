@@ -1,6 +1,5 @@
 import _range from 'lodash/range';
 import { fillYears } from './utils/configPopulation';
-import { saveAsDraftListConfig } from '../../../config/config/locations.config';
 import { PLANET_BASEMAP } from '../../map/js/config/map.config';
 
 export const DATA_API_URL = location.origin;
@@ -310,7 +309,6 @@ export const locationsPage = {
         title: 'Done',
         message: 'You have successfully uploaded your locations to a list.',
       },
-      [saveAsDraftListConfig.success]: saveAsDraftListConfig.copyMoveMessagesLocationAddedAsDraft,
       LocationsCopied: {
         analytics: {
           title: 'create new list click',

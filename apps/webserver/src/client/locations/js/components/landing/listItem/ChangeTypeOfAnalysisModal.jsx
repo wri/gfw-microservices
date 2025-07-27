@@ -121,7 +121,7 @@ function ChangeTypeOfAnalysisModal({
     setSelectedAnalysis(initialAnalysisSelection);
   };
 
-  const isSelectionUnchanged = isEqual(selectedAnalysis, initialAnalysisSelection);
+  const isSelectionUnchanged = isEqual(selectedAnalysis.sort(), initialAnalysisSelection.sort());
 
   const hasDraftInSelection = selectedAnalysis.some((analysisId) => {
     const match = listAnalysesStatus.find((item) => item.analysisId === analysisId);

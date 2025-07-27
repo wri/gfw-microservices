@@ -36,8 +36,24 @@ export class ProcessUploadData extends AbstractHandler<ChainType> {
     // commenting this out for now because it is too verbose
     // this.logger.log(`Processing list-xxx.attributes. Excluding Columns: ${this.columnsToExclude}`);
 
-    const validAttrs = this.getValidAttributes(Object.keys(featurePayload.properties || {}));
+    let validAttrs = this.getValidAttributes(Object.keys(featurePayload.properties || {}));
     const attributesJson: AttributeType = {};
+
+    // if there are no extra columns, perhaps this is a move operation
+    if (
+      validAttrs.length < 1 &&
+      typeof featurePayload.properties.attributes === 'string' &&
+      featurePayload.properties.attributes
+    ) {
+      const parsedAttributes = JSON.parse(featurePayload.properties.attributes || '{}');
+
+      featurePayload.properties = {
+        ...featurePayload.properties,
+        ...parsedAttributes,
+      };
+
+      validAttrs = Object.keys(parsedAttributes);
+    }
 
     for (const attributeField of validAttrs) {
       const rawValue = featurePayload.properties[attributeField];
@@ -168,18 +184,18 @@ export class ProcessUploadData extends AbstractHandler<ChainType> {
 
   /**
    * @summary it should process parsed data into attributes
-   * @param request ChainType
+   * @param input ChainType
    * @returns request ChainType
    */
-  async handle(request: ChainType): Promise<ChainType> {
-    const { list_id, organization_database } = request.request as RequestNewList;
-    const { features: prevFeatures = [] } = request.geojson;
+  async handle(input: ChainType): Promise<ChainType> {
+    const { list_id, organization_database } = input.request as RequestNewList;
+    const { features: prevFeatures = [] } = input.geojson;
     this.logger.log(`Processing features: ${prevFeatures.length}`);
 
     await this.getExistingListAttributes(organization_database, list_id);
 
     const commodity = await this.getListCommodity(organization_database, list_id);
-    request.geojson.features = await this.getProcessedFeatures(prevFeatures, commodity, request);
+    input.geojson.features = await this.getProcessedFeatures(prevFeatures, commodity, input);
 
     const clientStoreConnection = new ClientStoreConnection();
     const connection = await clientStoreConnection.getConnection(organization_database);
@@ -190,9 +206,16 @@ export class ProcessUploadData extends AbstractHandler<ChainType> {
     try {
       if (this.listsAttributesRecords.size > 0) {
         await saveListAttributes(queryRunner, [...this.listsAttributesRecords.values()]);
+        input = {
+          ...input,
+          request: {
+            listAttributesRecords: this.listsAttributesRecords,
+            ...input.request,
+          },
+        };
       }
       await queryRunner.commitTransaction();
-      return request;
+      return input;
     } catch (error) {
       await queryRunner.rollbackTransaction();
       throw error;

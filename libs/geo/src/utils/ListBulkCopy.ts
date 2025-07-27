@@ -54,30 +54,31 @@ export class ListBulkCopy {
     await connection.connect();
     const list = CreateListNameSchema(list_name);
 
-    const { start_location_id, columnNamesArray, columnTypesArray, dataArray } =
-      await this.getColumnsWithTypesAndValues({
-        connection,
-        list_id,
-        geojson,
-        commodity,
-      });
+    const { columnsInfo, start_location_id, dataArray } = await this.getColumnsWithTypesAndValues({
+      connection,
+      list_id,
+      geojson,
+      commodity,
+    });
     const objTable = new sql.Table(list.list_table);
     objTable.create = createTable;
     // Add all columns to the table.
-    for (let nIndex = 0; nIndex < columnNamesArray.length; nIndex++) {
-      objTable.columns.add(columnNamesArray[nIndex], columnTypesArray[nIndex], {
-        nullable: columnNamesArray[nIndex] === 'location_id' ? false : true,
+    for (let nIndex = 0; nIndex < columnsInfo.length; nIndex++) {
+      const { name, type, isNullable } = columnsInfo[nIndex];
+
+      objTable.columns.add(name, type, {
+        nullable: isNullable, // fixes 'Invalid column type from bcp client for colid 12.'
       });
     }
 
     // Add all the rows to the table.
     for (let nIndex = 0; nIndex < dataArray.length; nIndex++) {
-      if (dataArray[nIndex].length === columnNamesArray.length) {
+      if (dataArray[nIndex].length === columnsInfo.length) {
         // Add data to the sql table
         objTable.rows.add(...dataArray[nIndex]);
       } else {
         throw new Error(
-          `Length columns and properties do not match! Expected: ${columnNamesArray.length} Received: ${dataArray[nIndex].length}`
+          `Length columns and properties do not match! Expected: ${columnsInfo.length} Received: ${dataArray[nIndex].length}`
         );
       }
     }
@@ -144,7 +145,7 @@ export class ListBulkCopy {
     return resultGeoJson;
   }
 
-  private async getColumnsWithTypesAndValues({
+  async getColumnsWithTypesAndValues({
     connection,
     list_id,
     geojson,
@@ -172,50 +173,79 @@ export class ListBulkCopy {
       sqlGetTableColumnsParameters
     );
 
-    const bulkUploadPayload = [];
     /**
      * TODO GPV-3786
      * duplicated code
+     * @note this code is ahead
      */
-    geojson.features.forEach((feature) => {
-      const row = [];
-      columns.forEach((column) => {
-        const col = {
-          field: column.COLUMN_NAME,
-          type: getDataType(column),
-          value: undefined,
-        };
-        if (Object.hasOwnProperty.call(feature.properties, column.COLUMN_NAME)) {
-          col.value = feature.properties[column.COLUMN_NAME];
 
-          if (column.COLUMN_NAME === 'Geometry') {
-            col.value = GetWKTGeometry(feature.geometry);
-          }
-        } else {
-          if (column.COLUMN_NAME === 'location_id') {
-            col.value = primary_key;
-          } else if (commodity && column.COLUMN_NAME === 'Commodity') {
-            col.value = commodity;
-          } else if (column.COLUMN_NAME === 'Geometry') {
-            col.value = GetWKTGeometry(feature.geometry);
-          } else if (column.COLUMN_NAME === 'attributes') {
-            col.type = sql.NVarChar(sql.MAX);
-            col.value = '';
-          } else if (column.COLUMN_NAME === 'ErrorDetails') {
-            col.type = sql.NVarChar(256);
-            col.value = '';
-          }
-        }
-        row.push(col);
-      });
-      bulkUploadPayload.push(row);
-      // Increment key for next feature
-      primary_key += 1;
-    });
-    const columnNamesArray = bulkUploadPayload[0].map((col) => col.field);
-    const columnTypesArray = bulkUploadPayload[0].map((col) => col.type);
-    const dataArray = bulkUploadPayload.map((row) => row.map((item) => item.value));
-
-    return { columnNamesArray, columnTypesArray, dataArray, start_location_id: max_id };
+    const { columnsInfo, columnNamesArray, columnTypesArray, dataArray } = PrepareBulkUpload(
+      geojson,
+      columns,
+      commodity,
+      primary_key
+    );
+    return {
+      columnsInfo,
+      columnNamesArray,
+      columnTypesArray,
+      dataArray,
+      start_location_id: max_id,
+    };
   }
+}
+export function PrepareBulkUpload(
+  geojson: { features: Feature[] },
+  columns: GetTableColumnsType[],
+  commodity: unknown,
+  primary_key = 1
+) {
+  const bulkUploadPayload = [];
+  geojson.features.forEach((feature) => {
+    const row = [];
+    columns.forEach((column) => {
+      const col = {
+        field: column.COLUMN_NAME,
+        type: getDataType(column),
+        value: undefined,
+        isNullable: column.IS_NULLABLE === 'YES',
+      };
+      if (Object.hasOwnProperty.call(feature.properties, column.COLUMN_NAME)) {
+        col.value = feature.properties[column.COLUMN_NAME];
+
+        if (column.COLUMN_NAME === 'Geometry') {
+          col.value = GetWKTGeometry(feature.geometry);
+        }
+      } else {
+        if (column.COLUMN_NAME === 'location_id') {
+          col.value = primary_key;
+        } else if (commodity && column.COLUMN_NAME === 'Commodity') {
+          col.value = commodity;
+        } else if (column.COLUMN_NAME === 'Geometry') {
+          col.value = GetWKTGeometry(feature.geometry);
+        } else if (column.COLUMN_NAME === 'attributes') {
+          col.type = sql.NVarChar(sql.MAX);
+          col.value = '';
+        } else if (column.COLUMN_NAME === 'ErrorDetails') {
+          col.type = sql.NVarChar(256);
+          col.value = '';
+        }
+      }
+      row.push(col);
+    });
+    bulkUploadPayload.push(row);
+    // Increment key for next feature
+    primary_key += 1;
+  });
+
+  const columnsInfo = bulkUploadPayload[0].map((col) => ({
+    name: col.field,
+    type: col.type,
+    isNullable: col.isNullable,
+  }));
+
+  const columnNamesArray = bulkUploadPayload[0].map((col) => col.field);
+  const columnTypesArray = bulkUploadPayload[0].map((col) => col.type);
+  const dataArray = bulkUploadPayload.map((row) => row.map((item) => item.value));
+  return { columnsInfo, columnNamesArray, columnTypesArray, dataArray };
 }

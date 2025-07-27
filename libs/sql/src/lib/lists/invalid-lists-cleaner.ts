@@ -113,6 +113,10 @@ export async function deleteListsPartlyUpgraded(params: InvalidListsCleanerArgs)
     logDeletionMessage(isDryRun, fullTableName, `template_id=${templateId}, version=${version}`);
 
     if (!isDryRun) {
+      // Delete dependent rows in FolderItems
+      await queryRunner.query(`DELETE FROM [FolderItems] WHERE list_id = @0`, [listId]);
+
+      // Delete the associated list table and then the list itself
       await queryRunner.query(`DROP TABLE [${listTableName}]`);
       await listsRepo.delete({ id: listId });
     }

@@ -49,7 +49,7 @@ describe('UploadLocationOptions', () => {
     expect(
       screen.getByText(/choose how you want to add your location data\./i)
     ).toBeInTheDocument();
-    expect(screen.getByText(/how to format your location data for gfw pro/i)).toBeInTheDocument();
+    expect(screen.getByText(/step-by-step instructions/i)).toBeInTheDocument();
     expect(screen.getByText(/choose your preferred method/i)).toBeInTheDocument();
     expect(screen.getByText(/for single or multiple locations upload a file/i)).toBeInTheDocument();
 

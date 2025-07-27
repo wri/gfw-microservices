@@ -1817,8 +1817,6 @@ export default class ListDetails extends Component {
       compareAnalysisStatus(analysisIdOfCurrentTab, listStatus.Pending) ||
       isListSubmittedForAnalysis;
 
-    const isListLocked = !!selectedList.lock_status && !!selectedList.lock_user_id;
-
     const isAnalysisFailedByExceededAnalysisLimit = listAnalysesStatus?.find(
       ({ analysisId, status, errorInfo }) =>
         analysisId === analysisIdOfCurrentTab &&
@@ -1830,7 +1828,7 @@ export default class ListDetails extends Component {
       compareAnalysisStatus(analysisIdOfCurrentTab, listStatus.Inactive) &&
       !isAnalysisFailedByExceededAnalysisLimit;
 
-    const locationDataIsNotAvailable = isListLocked || isFailedAnalysis;
+    const locationDataIsNotAvailable = isFailedAnalysis;
 
     const isInFolder = selectedList && !!currentFolder;
     if (selectedList && currentFolder) {

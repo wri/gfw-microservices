@@ -14,7 +14,6 @@
  * @function {getListLocationsNoGeom}
  * @function {getLocationsCount}
  * @function {uploadToExistingList}
- * @function {uploadToNewList}
  * @function {updateIndividualLocationsStatusID}
  * @function {deleteLocations}
  * @function {deleteFilteredLocations}
@@ -30,7 +29,6 @@
  * @function {resetListStatus}
  * @function {setListStatus}
  * @function {getListStatusCommonName}
- * @function {getLocationIdsFromGeoJSON}
  * @function {getPaginatedAnalysisDataForUserList}
  * @function {getNumberPagesForAnalysisDataUserList}
  * @function {getListLocationGeometry}
@@ -807,72 +805,6 @@ export const uploadToExistingList = (req, list_id, list_name, geojson, commodity
       })
       .catch((err) => {
         reject(err);
-      });
-  });
-};
-
-/** @function {uploadToNewList}
- *   @summary Creates new list and table, then performs uploadToExistingList
- *   @param  {Object}   req - Manadatory first parameter to pass the request object into the function in case session info is required.
- *   @param {String} list_name
- *   @param {Number} template_id
- *   @param {Object[]} custom_attributes - array of objects with custom_attributes (name and type)
- *   @param {Object} geojson
- *   @param {String} gfw_list_id - The ID of the GFW List that this new list is associated with
- *   @param {Boolean} is_edit - Boolean to check if this call has been initiated by an edit list function
- *   @return
- */
-export const uploadToNewList = (
-  req,
-  list_name,
-  template_id,
-  commodity,
-  location_classification,
-  organization_id,
-  custom_attributes,
-  geojson,
-  gfw_list_id,
-  is_edit = false,
-  analysisIds,
-  attributes
-) => {
-  const user_id = req.session.organization_user_id;
-  const list = listUtils.createListNameSchema(list_name);
-  let newListID;
-
-  return new Promise((resolve, reject) => {
-    createList(
-      req,
-      list_name,
-      template_id,
-      commodity,
-      location_classification,
-      user_id,
-      custom_attributes,
-      gfw_list_id,
-      is_edit,
-      analysisIds
-    )
-      .then((list_id) => {
-        newListID = list_id;
-        return uploadToExistingList(req, list_id, list_name, geojson, commodity, attributes);
-      })
-      .then((resultGeoJSON) => {
-        logger.logActivity(
-          req,
-          logger.listActivityTypes.List.ListUpdateNew,
-          `User ID ${req.session.organization_user_id} has uploaded to new list.`
-        );
-        resolve({ resultGeoJSON, newListID });
-      })
-      .catch((errorMessage) => {
-        const errorObject = errorUtils.createErrorMessage(
-          req,
-          errorUtils.ERROR_CODES.failedToUploadToNewList,
-          `Failed to append to upload new list ${list.list_name}.`,
-          errorMessage
-        );
-        reject(errorObject);
       });
   });
 };
@@ -1688,16 +1620,6 @@ export const getListStatusCommonName = (statusId) => {
 
   return listStatusCommonName;
 };
-
-/**
- * Get Location IDs from result GeoJSON from uploadToExistingList function
- *
- * @param {Object} GeoJSON - GeoJSON
- * @return {number[]} - List of IDs
- */
-export function getLocationIdsFromGeoJSON(GeoJSON) {
-  return GeoJSON.features.map((item) => item.properties.location_id);
-}
 
 /**
  * @description - Get List Location Geometry

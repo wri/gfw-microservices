@@ -20,11 +20,9 @@ const errorUtils = require(path.resolve('./config/privateutils/error.utils'));
 
 const { generateZipShapefile } = require('../../../config/publicutils/locationManager.utils');
 const shareManager = require('../../../config/publicutils/shareManager.utils');
-const { getLocationIdsFromGeoJSON } = require('../../../config/publicutils/listManager.utils');
 const { removeExistingVectorTileFromS3 } = require('../../vectorTiles/utils/vectorTile.utils');
 const { validateAttributes } = require('../utils/validation.utils');
 const { mapCommodityRiskValuesToDatabaseValues } = require('../utils/locations.utils');
-const { listStatus } = require(path.resolve('./config/env/listStatuses.constants'));
 import config from '../../../config/config';
 
 import { extractAnalysisTypes, getListAnalysisStatusByListId } from '@wri-monorepos/geo';
@@ -59,69 +57,6 @@ module.exports = (app, limiter) => {
   app.get('/api/locations', controller.locationsData);
   app.get('/getUserLists', controller.getUserLists);
 
-  app.post('/locations/addToNewList', (req, res) => {
-    console.log('POST /locations/addToNewList');
-    const {
-      list_name,
-      template_id,
-      commodity,
-      geojson,
-      location_classification,
-      gfw_list_id,
-      selected_location_ids: src_location_ids,
-      original_gfw_list,
-      analysisIds,
-      attributes,
-    } = req.body;
-    const finalGeojson = LocationManager.getFinalGeojson(gfw_list_id, geojson);
-    const custom_attributes = req.body.custom_attributes ? req.body.custom_attributes : [];
-
-    ListManager.uploadToNewList(
-      req,
-      list_name,
-      template_id,
-      commodity,
-      location_classification,
-      req.session.organization_id,
-      custom_attributes,
-      finalGeojson,
-      gfw_list_id,
-      false,
-      analysisIds,
-      attributes
-    )
-      .then(async ({ resultGeoJSON }) => {
-        const dest_list = await ListManager.getListByListName(req, list_name);
-
-        // Call Location Level Analysis
-        if (original_gfw_list) {
-          // Copy Locations Analysis if list created from original GFW list
-          const src_list = await GFWListManager.getGFWListSchema(req, gfw_list_id);
-          const dest_location_ids = resultGeoJSON.features.map(
-            (feature) => feature.properties.location_id
-          );
-          dest_location_ids.sort((a, b) => a - b);
-
-          await GFWListManager.copyGFWLocationsToList(
-            req,
-            src_list,
-            dest_list,
-            src_location_ids,
-            dest_location_ids
-          );
-        }
-
-        // Call List Level Analysis
-        await AnalysisManager.requestAnalysis(req, dest_list.list_name);
-
-        res.send('LocationAdded');
-      })
-      .catch((err) => {
-        console.log('Reject', err);
-        res.send('Location add failed');
-      });
-  });
-
   app.post('/locations/rerunExistingList', (req, res) => {
     console.log('POST /locations/rerunExistingList');
 
@@ -133,74 +68,6 @@ module.exports = (app, limiter) => {
         console.log('Error sending list for rerun');
         ListManager.setListUnlocked(req, req.body.list_id);
         res.send(err);
-      });
-  });
-
-  app.post('/locations/updateExistingList', (req, res) => {
-    console.log('POST /locations/updateExistingList');
-    const {
-      list_id,
-      table_name,
-      geojson,
-      gfw_list_id,
-      selected_location_ids: src_location_ids,
-      list_analysis_table_name,
-      original_gfw_list,
-      list_status_id,
-      attributes,
-    } = req.body;
-
-    // 1. Change list status
-    ListManager.resetListStatus(req, list_id, gfw_list_id, list_status_id)
-      .then(() => {
-        // 2. Upload location's to Existing List
-        return ListManager.uploadToExistingList(req, list_id, table_name, geojson, attributes);
-      })
-      .then(async (resultGeoJSON) => {
-        if (original_gfw_list) {
-          // Copy GFW Locations to another list
-          const src_list = await GFWListManager.getGFWListSchema(req, gfw_list_id);
-          const dest_list = await ListManager.getListByListName(req, table_name);
-          const dest_location_ids = resultGeoJSON.features.map(
-            (feature) => feature.properties.location_id
-          );
-          dest_location_ids.sort((a, b) => a - b);
-          await GFWListManager.copyGFWLocationsToList(
-            req,
-            src_list,
-            dest_list,
-            src_location_ids,
-            dest_location_ids
-          );
-        }
-
-        if (!original_gfw_list && list_status_id === listStatus.Draft) {
-          // 3.a Set newly added location's status to Draft if user selected Save As Draft button
-          const locationsIDs = getLocationIdsFromGeoJSON(resultGeoJSON);
-          await ListManager.updateIndividualLocationsStatusID(
-            req,
-            list_analysis_table_name,
-            locationsIDs,
-            listStatus.Draft
-          );
-
-          await ListManager.setListStatus(req, list_id, listStatus.Draft);
-        }
-
-        if (list_status_id === listStatus.Pending) {
-          // 3.b Run analysis on the updated list
-          await AnalysisManager.requestAnalysis(req, table_name);
-        }
-
-        // Respond to client
-        res.send('LocationAppended');
-      })
-      .catch((err) => {
-        console.log('Error /locations/updateExistingList', err);
-        // Set the list back to being active
-        ListManager.setListStatus(req, list_id, listStatus.Active);
-        ListManager.setListUnlocked(req, list_id);
-        res.send('Location add failed');
       });
   });
 

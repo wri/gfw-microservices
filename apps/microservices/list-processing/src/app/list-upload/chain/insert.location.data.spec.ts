@@ -2,7 +2,7 @@ import { InsertLocationData } from './insert.location.data';
 import { ClientStoreConnection, ListSchema, ListSchemaType } from '@wri-monorepos/sql';
 import { FeatureCollection } from '@wri-monorepos/geo';
 import { EntitySchema, DataSource } from 'typeorm';
-import { ChainType } from './types';
+import { ChainType, RequestNewList } from './types';
 
 const locationsDataMock = [
   {
@@ -64,13 +64,16 @@ describe('InsertLocationData', () => {
   it('should insert data into the database', async () => {
     const input: ChainType = {
       request: {
-        organization_database: ':memory:',
+        organization_database: 'test-org-db',
         listTable: 'list_test_table',
-        list_name: 'test_table',
-        template_id: 1,
-        path: 'path',
+        list_name: 'test-list',
+        path: 'test-path',
         user_id: 1,
-      },
+        isExternalAPIProcess: false,
+        organization_id: 1,
+        subscription_status_id: 1,
+        hasUnanalyzableError: false,
+      } as RequestNewList,
       geojson: {
         type: 'FeatureCollection',
         features: [
@@ -103,10 +106,13 @@ describe('InsertLocationData', () => {
         organization_database: 'test_db',
         listTable: 'list_test_table',
         list_name: 'test_table',
-        template_id: 1,
         path: 'path',
         user_id: 1,
-      },
+        isExternalAPIProcess: false,
+        organization_id: 1,
+        subscription_status_id: 1,
+        hasUnanalyzableError: false,
+      } as RequestNewList,
       geojson: {
         type: 'FeatureCollection',
         features: [
@@ -119,6 +125,7 @@ describe('InsertLocationData', () => {
               analysisRadius: '100',
               analysisArea: 'Area 1',
               commodity: 'Commodity 1',
+              attributes: '{}',
               locationClassification: 'Location Classification 1',
             },
             geometry: { type: 'Point', coordinates: [0, 0] },

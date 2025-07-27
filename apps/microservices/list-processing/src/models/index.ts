@@ -1,11 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { ListFilters } from '@wri-monorepos/geo';
-import {
-  ActionType,
-  CopyOrMoveLargeListRequest,
-  ListsType,
-  TargetListType,
-} from '@wri-monorepos/sql';
+import { ActionType, ListsType, TargetListType } from '@wri-monorepos/sql';
 export class GetObjectPresigned {
   @ApiProperty()
   key: string;
@@ -53,13 +48,13 @@ export class RequestLargeListProcess {
   @ApiProperty()
   organization_database: string;
   @ApiProperty()
-  list_id: number;
+  list_id?: number;
   @ApiProperty()
   path: string;
   @ApiProperty()
-  template_type: string;
+  template_type?: string; // Still used by deprecated code
   @ApiProperty()
-  user_id: number;
+  user_id?: number;
   @ApiProperty()
   startAnalysis: boolean;
   @ApiProperty()
@@ -70,9 +65,6 @@ export class RequestLargeListProcess {
 
   @ApiProperty()
   analysisIds?: Array<string>;
-
-  @ApiProperty()
-  template_id?: number;
 
   @ApiProperty()
   saveAsDraft: false;
@@ -129,13 +121,10 @@ export class CreateListRequest {
   organization_id: number;
 
   @ApiProperty()
-  isUploadListLpEnabled: boolean;
-
-  @ApiProperty()
   saveAsDraft: boolean;
 }
 
-export class CopyOrMoveLargeListRequestLLP implements CopyOrMoveLargeListRequest {
+export class CopyOrMoveLargeListRequestLLP {
   @ApiProperty()
   listId: number;
   @ApiProperty()
@@ -157,11 +146,7 @@ export class CopyOrMoveLargeListRequestLLP implements CopyOrMoveLargeListRequest
   @ApiProperty()
   addType: string;
   @ApiProperty()
-  activeTemplate: string;
-  @ApiProperty()
   commodityType?: string;
-  @ApiProperty()
-  templateData: unknown;
   @ApiProperty()
   saveAsDraft: boolean;
   @ApiProperty()
@@ -180,9 +165,6 @@ export class CopyOrMoveLargeListRequestLLP implements CopyOrMoveLargeListRequest
   filters: ListFilters;
   @ApiProperty()
   srcListAnalysisTable: string;
-
-  @ApiProperty()
-  isUploadListLpEnabled?: boolean;
 }
 
 export class getPaginatedListDataRequest {

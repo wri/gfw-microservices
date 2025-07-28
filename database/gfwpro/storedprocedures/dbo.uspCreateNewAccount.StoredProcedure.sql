@@ -23,8 +23,20 @@ CREATE PROCEDURE [dbo].[uspCreateNewAccount]
 	@isSubsidiary BIT = 0,
 	@orgParent NVARCHAR(200) = '',
 	@requestDate SMALLDATETIME
-
 AS
-	INSERT INTO PendingAccounts VALUES(@orgName, @orgAddress, @orgWebsite, @isSubsidiary, @orgParent, @requestDate)
+BEGIN
+	-- Validate requestDate is NOT NULL
+	IF @requestDate IS NULL
+	BEGIN
+		RAISERROR('organization_requested_time cannot be NULL', 16, 1);
+		RETURN;
+	END
+
+	-- Insert into PendingAccounts
+	INSERT INTO PendingAccounts 
+	VALUES(@orgName, @orgAddress, @orgWebsite, @isSubsidiary, @orgParent, @requestDate);
+
+	-- Return new organization_id
 	SELECT SCOPE_IDENTITY() AS [organization_id];
+END
 GO

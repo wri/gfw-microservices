@@ -22,6 +22,7 @@ axiosRetry(axios, {
 });
 
 // Rate limiter: 180 requests per minute
+// Ensure that will have less than 180 requests in the last minute
 const createRateLimiter = () => {
   const requests: number[] = [];
   const maxRequests = 180;
@@ -32,7 +33,7 @@ const createRateLimiter = () => {
 
     // Remove requests older than 1 minute
     requests.splice(0, requests.length, ...requests.filter((time) => now - time < timeWindow));
-
+    // This snippet calculates the current number of requests in the last minute, should be less than maxRequests
     if (requests.length >= maxRequests) {
       // Wait until the oldest request is more than 1 minute old
       const oldestRequest = requests[0];

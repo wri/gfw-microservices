@@ -63,10 +63,12 @@ export class ConvertersService {
    */
   async runConverter(id: number, organizationId?: number): Promise<void> {
     this.errors = [];
-    const { getConverterName, updateConverterStartTime } = this.converterRepository;
+    const { getConverterName, updateConverterStartTime, updateConverterStatus } =
+      this.converterRepository;
     const gfwProConnection = await this.getGfwProConnection();
 
     try {
+      await updateConverterStatus(gfwProConnection, id, ConverterStatus.RUNNING);
       await updateConverterStartTime(gfwProConnection, id);
     } catch (error) {
       const errorMessage = error?.response?.data || error?.message || error || 'Unknown error';
@@ -94,7 +96,7 @@ export class ConvertersService {
       await this.runConverterAcrossClientStores(converterContext, organizationId);
       this.logger.log(`Converter ${converterName} finished`);
     } catch (error) {
-      await this.converterRepository.updateConverterStatus(
+      await updateConverterStatus(
         gfwProConnection,
         id,
         ConverterStatus.FAILED,
@@ -116,6 +118,9 @@ export class ConvertersService {
     organizationId?: number
   ): Promise<void> {
     const { updateConverterStatus } = this.converterRepository;
+    const gfwProConnection = await this.getGfwProConnection();
+    const { id: converterId } = converterContext;
+
     let clientStoreFailureCount = 0;
     const clientStores: ClientStoreInfo[] = await this.getClientStoreInfo(organizationId);
 
@@ -131,6 +136,15 @@ export class ConvertersService {
 
         totalLists += successCount + failureCount;
         failedLists += failureCount;
+
+        const isStopped = await this.converterRepository.isConverterStopped(
+          gfwProConnection,
+          converterId
+        );
+        if (isStopped) {
+          this.logger.warn(`Converter ${converterId} was manually stopped. Halting.`);
+          break;
+        }
       } catch (error) {
         clientStoreFailureCount++;
 
@@ -194,20 +208,16 @@ export class ConvertersService {
     clientStore: ClientStoreInfo,
     converterContext: ConverterContext
   ): Promise<{ successCount: number; failureCount: number }> {
-    const gfwProConnection = await this.getGfwProConnection();
-    const { id: converterId, function: converterFunction } = converterContext;
+    const { function: converterFunction } = converterContext;
 
     const clientStoreConnection = await this.clientStoreConnection.getConnection(
       clientStore.organizationDb
     );
     const listsRepository = clientStoreConnection.getRepository(Lists);
-    const { updateConverterStatus } = this.converterRepository;
 
     this.logger.log(
       `Starting converter '${converterFunction.run.name}' for client store: ${clientStore.organizationDb}`
     );
-    await this.updateConverterStartTime(converterId);
-    await updateConverterStatus(gfwProConnection, converterId, ConverterStatus.RUNNING);
 
     const lists = await this.fetchListsToConvert(
       listsRepository,

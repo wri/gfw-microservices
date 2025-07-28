@@ -1,4 +1,4 @@
-import postRedirectHeaders from './postRedirectHeaders';
+import { postRedirectHeaders } from '../support/utils';
 import AdmZip from 'adm-zip';
 
 const BASE_URL = process.env.HOST;

@@ -7,53 +7,13 @@ import axiosRetry from 'axios-retry';
 
 axiosRetry(axios, {
   retries: 5,
-  retryDelay: (retryCount, error) => {
-    // Handle rate limiting (429) with longer delays
-    if (error.response?.status === 429) {
-      return Math.pow(2, retryCount) * 2000; // 2s, 4s, 8s, 16s, 32s
-    }
-    // axios-retry normally does not retry POSTs, so using a custom condition
-    return axiosRetry.exponentialDelay(retryCount, error);
-  },
+  retryDelay: axiosRetry.exponentialDelay,
   retryCondition: (error) => {
-    // Retry on rate limiting (429) and other retryable errors
-    return axiosRetry.isRetryableError(error) || error.response?.status === 429;
+    // axios-retry normally does not retry POSTs, so using a custom condition
+    return axiosRetry.isRetryableError(error);
   },
 });
 
-// Rate limiter: 180 requests per minute
-// Ensure that will have less than 180 requests in the last minute
-const createRateLimiter = () => {
-  const requests: number[] = [];
-  const maxRequests = 180;
-  const timeWindow = 60000; // 1 minute in milliseconds
-
-  return async function waitForSlot(): Promise<void> {
-    const now = Date.now();
-
-    // Remove requests older than 1 minute
-    requests.splice(0, requests.length, ...requests.filter((time) => now - time < timeWindow));
-    // This snippet calculates the current number of requests in the last minute, should be less than maxRequests
-    if (requests.length >= maxRequests) {
-      // Wait until the oldest request is more than 1 minute old
-      const oldestRequest = requests[0];
-      const SHORT_WAIT = 500; // 500ms short wait to avoid busy waiting
-      const BUFFER_TIME_MS = 100; // Buffer time to ensure we don't hit the limit
-      if (timeWindow - (now - oldestRequest) > SHORT_WAIT) {
-        await new Promise((resolve) => setTimeout(resolve, SHORT_WAIT));
-      } else {
-        await new Promise((resolve) =>
-          setTimeout(resolve, timeWindow - (now - oldestRequest) + BUFFER_TIME_MS)
-        );
-      }
-      return waitForSlot(); // Check again after waiting
-    }
-
-    requests.push(now);
-  };
-};
-
-const rateLimiter = createRateLimiter();
 const POOL_SIZE = 20; // Increased pool size since we have higher rate limit
 const DEFAULT_DELAY = 500;
 export class GADMService extends AbstractHandler<ChainType> {
@@ -77,9 +37,6 @@ export class GADMService extends AbstractHandler<ChainType> {
     const sql = "SELECT gid_1, gid_2, name_0, name_1, name_2 FROM mytable WHERE adm_level='2'";
 
     try {
-      // Wait for rate limiter before making request
-      await rateLimiter();
-
       const response = await axios.post(
         'https://data-api.globalforestwatch.org/dataset/gadm_administrative_boundaries/v4.1.64/query/json',
         { sql, geometry },
@@ -102,13 +59,12 @@ export class GADMService extends AbstractHandler<ChainType> {
         error.response?.data?.message || error.stack
       );
 
-      // If it's a rate limit error, the axios-retry will handle it
-      // For other errors, add a small delay before rethrowing
+      // Add a small delay before rethrowing
       if (error.response?.status !== 429) {
         await new Promise((resolve) => setTimeout(resolve, DEFAULT_DELAY));
       }
 
-      return null;
+      return { hasUnanalyzableError: true };
     }
   };
 

@@ -100,10 +100,17 @@ export class ListUploadService {
 
   async getFilenameForUser(): Promise<MyObject[]> {
     const queryRunner = this.dataSource.createQueryRunner();
-    await queryRunner.connect();
-    await queryRunner.startTransaction();
-    const result = await queryRunner.connection.getRepository(MyObject).find();
-    return result;
+    try {
+      await queryRunner.connect();
+      await queryRunner.startTransaction();
+      const result = await queryRunner.connection.getRepository(MyObject).find();
+      return result;
+    } catch (error) {
+      this.logger.error(error);
+      throw new InternalServerErrorException(error.message);
+    } finally {
+      await queryRunner.release();
+    }
   }
 
   async createNewList(createListRequest: CreateListRequest) {

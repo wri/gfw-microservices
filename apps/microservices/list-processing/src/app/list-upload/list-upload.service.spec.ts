@@ -41,6 +41,7 @@ describe('ListUploadService', () => {
     queryRunner = {
       connect: jest.fn(),
       startTransaction: jest.fn(),
+      release: jest.fn(),
       connection: {
         getRepository: jest.fn().mockReturnValue(mockRepository),
       },

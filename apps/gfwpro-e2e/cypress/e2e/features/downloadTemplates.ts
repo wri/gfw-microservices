@@ -13,7 +13,7 @@ describe('Downloading Templates', () => {
 
   When('I click on the Add Locations button and select the file upload option', () => {
     locationsPage.clickOnAddLocationsBtn();
-    locationsPage.clickOnfileUploadBtn();
+    locationsPage.clickOnDataFileUploadBtn();
   });
 
   When('I click on the Data Templates button', () => {

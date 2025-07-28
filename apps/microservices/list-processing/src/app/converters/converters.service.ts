@@ -126,6 +126,7 @@ export class ConvertersService {
 
     let totalLists = 0;
     let failedLists = 0;
+    let isStopped = false;
 
     for (const clientStoreInfo of clientStores) {
       try {
@@ -137,7 +138,7 @@ export class ConvertersService {
         totalLists += successCount + failureCount;
         failedLists += failureCount;
 
-        const isStopped = await this.converterRepository.isConverterStopped(
+        isStopped = await this.converterRepository.isConverterStopped(
           gfwProConnection,
           converterId
         );
@@ -179,7 +180,9 @@ export class ConvertersService {
 
     let status: ConverterStatus;
 
-    if (totalLists === 0 || failedLists === 0) {
+    if (isStopped) {
+      return;
+    } else if (totalLists === 0 || failedLists === 0) {
       // No lists to process or all succeeded
       status = ConverterStatus.COMPLETED;
     } else if (failedLists === totalLists) {

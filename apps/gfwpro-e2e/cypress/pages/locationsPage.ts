@@ -19,7 +19,7 @@ class LocationsPage {
     descriptionAddedLocation: (nameList) =>
       cy.contains(`You have successfully added location to ${nameList}`),
     addLocationsBtn: () => cy.get('[data-cy="nuw_add"]'),
-    dataFileUploadBtn: () => cy.get('[data-cy="nuw_add_file"]').first(),
+    dataFileUploadBtn: () => cy.get('[data-cy="nuw_add_file"]'),
     carIdFileUploadBtn: () => cy.get('[data-cy="nuw_add_file_byid"]'),
     dataTemplatesBtn: () => cy.get('.MuiPaper-root > :nth-child(5)'),
     shapefileOption: () => cy.get('[role="button"]').contains('Polygon Shapefile'),

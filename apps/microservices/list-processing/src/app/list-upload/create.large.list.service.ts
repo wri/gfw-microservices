@@ -15,14 +15,11 @@ export class CreateLargeListService {
     userId,
     clientDatabase,
     analysisIds,
-    templateId = 0,
     gfwListId = null,
     commodity = 'Unknown',
     saveAsDraft = false,
   }: {
-    templateId?: number;
     gfwListId?: number | null;
-    isUploadListLpEnabled?: boolean;
     commodity?: string;
   } & Partial<CreateListRequest>): Promise<CreateListResult> {
     let chainType: ChainType = {
@@ -32,7 +29,6 @@ export class CreateLargeListService {
         listTable: listName,
         gfwListId: gfwListId,
         user_id: userId,
-        template_id: templateId,
         analysisIds: analysisIds,
         commodity: commodity,
         saveAsDraft: saveAsDraft,

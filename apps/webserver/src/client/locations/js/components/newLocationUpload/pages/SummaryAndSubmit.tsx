@@ -189,7 +189,7 @@ export function SummaryAndSubmit() {
             </Box>
 
             <Typography variant="body2">
-              Please note that all analysis submission count towards your usage limits. See more
+              Please note that all analysis submissions count towards your usage limits. See more
               information{' '}
               <Link
                 href={ExternalLinks.UploadFees}

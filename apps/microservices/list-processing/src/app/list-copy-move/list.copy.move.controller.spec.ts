@@ -29,9 +29,7 @@ describe('ListCopyMoveController', () => {
     targetList: undefined,
     selectedLocations: [1, 2, 3],
     addType: 'add',
-    activeTemplate: 'template1',
     commodityType: 'test-commodity',
-    templateData: { template: 'data' },
     saveAsDraft: false,
     userId: 789,
     clientDatabase: 'test-db',
@@ -41,7 +39,6 @@ describe('ListCopyMoveController', () => {
     allLocationsSelected: false,
     filters: { country: 'US', state: 'CA' },
     srcListAnalysisTable: 'test-table',
-    isUploadListLpEnabled: true,
   };
 
   beforeEach(async () => {
@@ -89,6 +86,8 @@ describe('ListCopyMoveController', () => {
       expect(locationService.MoveLocations).toHaveBeenCalledTimes(1);
       expect(locationService.MoveLocations).toHaveBeenCalledWith({
         ...validRequest,
+        activeTemplate: '', // Controller adds these template defaults
+        templateData: {},
       });
       expect(result).toEqual(expectedResult);
     });
@@ -103,7 +102,11 @@ describe('ListCopyMoveController', () => {
       const result = await controller.CopyOrMoveLargeList(copyRequest);
 
       // Assert
-      expect(locationService.MoveLocations).toHaveBeenCalledWith(copyRequest);
+      expect(locationService.MoveLocations).toHaveBeenCalledWith({
+        ...copyRequest,
+        activeTemplate: '',
+        templateData: {},
+      });
       expect(result).toEqual(expectedResult);
     });
 
@@ -117,7 +120,11 @@ describe('ListCopyMoveController', () => {
       const result = await controller.CopyOrMoveLargeList(moveRequest);
 
       // Assert
-      expect(locationService.MoveLocations).toHaveBeenCalledWith(moveRequest);
+      expect(locationService.MoveLocations).toHaveBeenCalledWith({
+        ...moveRequest,
+        activeTemplate: '',
+        templateData: {},
+      });
       expect(result).toEqual(expectedResult);
     });
 
@@ -131,7 +138,11 @@ describe('ListCopyMoveController', () => {
       const result = await controller.CopyOrMoveLargeList(newListRequest);
 
       // Assert
-      expect(locationService.MoveLocations).toHaveBeenCalledWith(newListRequest);
+      expect(locationService.MoveLocations).toHaveBeenCalledWith({
+        ...newListRequest,
+        activeTemplate: '',
+        templateData: {},
+      });
       expect(result).toEqual(expectedResult);
     });
 
@@ -145,7 +156,11 @@ describe('ListCopyMoveController', () => {
       const result = await controller.CopyOrMoveLargeList(existingListRequest);
 
       // Assert
-      expect(locationService.MoveLocations).toHaveBeenCalledWith(existingListRequest);
+      expect(locationService.MoveLocations).toHaveBeenCalledWith({
+        ...existingListRequest,
+        activeTemplate: '',
+        templateData: {},
+      });
       expect(result).toEqual(expectedResult);
     });
 
@@ -156,7 +171,11 @@ describe('ListCopyMoveController', () => {
 
       // Act & Assert
       await expect(controller.CopyOrMoveLargeList(validRequest)).rejects.toThrow('Service error');
-      expect(locationService.MoveLocations).toHaveBeenCalledWith(validRequest);
+      expect(locationService.MoveLocations).toHaveBeenCalledWith({
+        ...validRequest,
+        activeTemplate: '',
+        templateData: {},
+      });
     });
 
     it('should handle service returning null/undefined', async () => {
@@ -168,7 +187,11 @@ describe('ListCopyMoveController', () => {
 
       // Assert
       expect(result).toBeNull();
-      expect(locationService.MoveLocations).toHaveBeenCalledWith(validRequest);
+      expect(locationService.MoveLocations).toHaveBeenCalledWith({
+        ...validRequest,
+        activeTemplate: '',
+        templateData: {},
+      });
     });
 
     it('should handle empty arrays in request', async () => {
@@ -186,7 +209,11 @@ describe('ListCopyMoveController', () => {
       const result = await controller.CopyOrMoveLargeList(requestWithEmptyArrays);
 
       // Assert
-      expect(locationService.MoveLocations).toHaveBeenCalledWith(requestWithEmptyArrays);
+      expect(locationService.MoveLocations).toHaveBeenCalledWith({
+        ...requestWithEmptyArrays,
+        activeTemplate: '',
+        templateData: {},
+      });
       expect(result).toEqual(expectedResult);
     });
 
@@ -201,7 +228,11 @@ describe('ListCopyMoveController', () => {
       const result = await controller.CopyOrMoveLargeList(requestWithoutCommodityType);
 
       // Assert
-      expect(locationService.MoveLocations).toHaveBeenCalledWith(requestWithoutCommodityType);
+      expect(locationService.MoveLocations).toHaveBeenCalledWith({
+        ...requestWithoutCommodityType,
+        activeTemplate: '',
+        templateData: {},
+      });
       expect(result).toEqual(expectedResult);
     });
   });

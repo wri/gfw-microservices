@@ -21,8 +21,6 @@ describe('handleNewListCreation', () => {
       getListCommodityAndTableName: jest.fn(),
       getCommodityFromLocation: jest.fn(),
       getListsByCommodity: jest.fn(),
-      getAllTemplates: jest.fn(),
-      getCommodityFromTemplate: jest.fn(),
       checkIfListExistAndCommodityIsTheSame: jest.fn(),
     };
 

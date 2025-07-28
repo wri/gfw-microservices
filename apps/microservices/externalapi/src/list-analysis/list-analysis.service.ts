@@ -12,7 +12,7 @@ import { UserService } from './user.service';
 
 import { ConfigService } from '@nestjs/config';
 import axios from 'axios';
-import { featureFlagsService, generateRandomFilename } from '@wri-monorepos/shared';
+import { generateRandomFilename } from '@wri-monorepos/shared';
 import { OrganizationService } from './organization.service';
 import { transformExternalUpload } from './transformers';
 import {
@@ -52,7 +52,6 @@ import {
   SQLUtils,
   GHGAnalysisDataByListId,
   getGHGLocationErrorsByListId,
-  FeatureFlag,
   Organization,
   Lists,
 } from '@wri-monorepos/sql';
@@ -369,12 +368,8 @@ export class ListAnalysisService {
     const externalUploadRepository = organizationConnection.getRepository(ExternalUpload);
 
     try {
-      if (await searchForFeatureFlag(organizationDetails.organizationDb, 'UploadListLp')) {
-        if (typeof newListDetails.commodity === 'undefined') {
-          throwCustomErrorResponse('Missing Commodity value', HttpStatus.BAD_REQUEST);
-        }
-      } else {
-        newListDetails.commodity = 'Unknown';
+      if (typeof newListDetails.commodity === 'undefined') {
+        throwCustomErrorResponse('Missing Commodity value', HttpStatus.BAD_REQUEST);
       }
     } catch (error) {
       return error;
@@ -666,13 +661,4 @@ export class ListAnalysisService {
       return [];
     }
   }
-}
-async function searchForFeatureFlag(clientDatabase: string, flagName: string): Promise<boolean> {
-  const { getFeatureFlagsForCurrentOrg, getClientIdByClientStoreDatabaseName } =
-    await featureFlagsService();
-  const orgId = await getClientIdByClientStoreDatabaseName(clientDatabase);
-  const flags = await getFeatureFlagsForCurrentOrg(orgId);
-
-  const uploadListLpFlag = flags.find((f) => f.flagId === flagName) as FeatureFlag;
-  return uploadListLpFlag?.flagState;
 }

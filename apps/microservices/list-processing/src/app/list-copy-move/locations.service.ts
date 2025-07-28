@@ -75,7 +75,6 @@ export class LocationService {
 
   handleNewListCreation = async ({
     newListName,
-    templateId,
     selectedListLocationClassification,
     userId,
     customAttributesNames,
@@ -99,7 +98,7 @@ export class LocationService {
     const listCreation = new SPSListCreation();
     const createdUserList = await listCreation.createNewList(
       newListName,
-      templateId,
+      0, // Templates are no longer used
       selectedListLocationClassification,
       userId,
       customAttributesNames,

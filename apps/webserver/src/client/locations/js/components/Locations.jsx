@@ -5,31 +5,25 @@ import Page from '../../../common/js/components/Page';
 import geojsonUtil from '../../../common/js/utils/arcgis-to-geojson';
 import httpRequest from '../../../common/js/utils/httpRequest';
 import { getGFWListNameFromMapLayerId } from '../../../common/js/utils/gfw.utils';
-import { proLayers } from '../../../common/js/proLayers.config';
 import ModalLoader from '../../../common/js/components/Loaders/ModalLoader';
 import Landing from './landing/Landing';
 import FolderDetail from './landing/FolderDetail';
 
 // Store
 import store from '../store';
-import { addList, changeView, changeAddType } from '../actions/locationActions';
+import { addList, changeView } from '../actions/locationActions';
 
 import { resetScroll } from '../utils/scroll.utils';
 
 import '../../css/locations.scss';
 import { UploadLocationRouter } from './newLocationUpload/UploadLocationRouter';
 import { UploadLocationProvider } from './newLocationUpload/contexts';
-import featureFlags from '../../../../utils/general.utils';
-
-const { universalMillList } = proLayers;
 
 const pageOptions = {
   links: {
     logout: true,
   },
 };
-
-const { isUploadListUiAvailable } = featureFlags;
 
 class Locations extends Component {
   unloadHistory = undefined;
@@ -93,9 +87,6 @@ class Locations extends Component {
         if (!isNaN(parsedFromList)) {
           this.setState({ fromList: parsedFromList });
         }
-      }
-      if (!isUploadListUiAvailable) {
-        store.dispatch(changeView(redirectTo));
       }
     }
   }
@@ -193,12 +184,7 @@ class Locations extends Component {
 
       this.setState({ drawnGeom: mapData, isLoading: false });
 
-      if (isUploadListUiAvailable) {
-        this.props.history.replace('/upload-location/by-polygon');
-      } else {
-        store.dispatch(changeView('add'));
-        this.props.history.push('/add');
-      }
+      this.props.history.replace('/upload-location/by-polygon');
     } else {
       console.warn('Did not get draw data to use on add location page');
       this.setState({ isLoading: false });
@@ -258,28 +244,12 @@ class Locations extends Component {
           gfwListID: gfwList.id,
         });
 
-        this.navigateToAddView(gfwInfoFromMap, gfwList);
+        this.props.history.replace('/upload-location/by-polygon');
       })
       .catch((err) => {
         console.warn('Error fetching GFW location geometry', err);
         this.setState({ isLoading: false });
       });
-  };
-
-  navigateToAddView = (gfwInfoFromMap, gfwList) => {
-    if (isUploadListUiAvailable) {
-      this.props.history.replace('/upload-location/by-polygon');
-    } else {
-      let addType = this.state.activeTemplate === 'investment' ? 'investment' : 'commodity';
-      if (gfwInfoFromMap.gfwData.listName === universalMillList) {
-        addType = 'commodity';
-      }
-
-      store.dispatch(changeAddType(addType));
-      store.dispatch(addList(gfwList));
-      store.dispatch(changeView('add'));
-      this.props.history.push('/add');
-    }
   };
 
   render() {

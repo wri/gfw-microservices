@@ -1,7 +1,7 @@
 import axios from 'axios';
 import fs from 'fs';
 import path from 'path';
-import postRedirectHeaders from './postRedirectHeaders';
+import { postRedirectHeaders } from '../support/utils';
 
 const BASE_URL = process.env.HOST;
 const API_TOKEN = process.env.API_TOKEN;

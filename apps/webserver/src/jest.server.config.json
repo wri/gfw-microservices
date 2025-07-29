@@ -1,8 +1,6 @@
 {
   "clearMocks": true,
   "collectCoverageFrom": ["<rootDir>/{config,server}/**/*.{js,ts}"],
-  "coverageDirectory": "../../../coverage/apps/webserver",
-  "coverageReporters": ["json", "text", "lcov", "clover", "cobertura"],
   "coverageThreshold": {
     "global": {
       "branches": 1,

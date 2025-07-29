@@ -106,6 +106,7 @@ export const requestNewAccount = (
       { field: 'isSubsidiary', type: sql.Bit, value: is_subsidiary },
       { field: 'orgParent', type: sql.NVarChar(200), value: parent_org_name },
       { field: 'requestDate', type: sql.SmallDateTime, value: new Date() },
+      { field: 'active', type: sql.Bit, value: true }, // default to active
     ];
     sqlUtils
       .executeSystemStoredProcedure(req, 'uspCreateNewAccount', params)

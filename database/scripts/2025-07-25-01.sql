@@ -14,9 +14,12 @@ WHERE organization_requested_time IS NULL;
 
 -- If it's not 0, we'll get an error when trying to make the column NOT NULL.
 
--- Therefore, we run this Before:
+-- Update records with NULL request date:
+-- Set a placeholder date and mark them as inactive
 UPDATE dbo.PendingAccounts
-SET organization_requested_time = '2000-01-01' -- this is a placeholder date
+SET 
+    organization_requested_time = '2000-01-01', -- Placeholder date for records without a request date.
+    organization_active = 0
 WHERE organization_requested_time IS NULL;
 
 -- Now we can safely alter the column to NOT NULL.

@@ -39,7 +39,7 @@ export const DATA_CY = {
       SUBMIT_DRAFT: 'nuw_add_polygon_submit_draft',
     },
     [UploadType.ById]: {
-      ADD: 'nuw_add_file',
+      ADD: 'nuw_add_file_byid',
       LOCATION_NEXT: 'nuw_add_file_byid_location_next',
       LOCATION_CANCEL: 'nuw_add_file_byid_location_cancel',
       PREVIEW_NEXT: 'nuw_add_file_byid_preview_next',

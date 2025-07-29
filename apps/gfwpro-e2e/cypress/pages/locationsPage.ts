@@ -19,7 +19,8 @@ class LocationsPage {
     descriptionAddedLocation: (nameList) =>
       cy.contains(`You have successfully added location to ${nameList}`),
     addLocationsBtn: () => cy.get('[data-cy="nuw_add"]'),
-    fileUploadBtn: () => cy.get('.upload-location-options__main-content__options > :nth-child(2)'),
+    dataFileUploadBtn: () => cy.get('[data-cy="nuw_add_file"]'),
+    carIdFileUploadBtn: () => cy.get('[data-cy="nuw_add_file_byid"]'),
     dataTemplatesBtn: () => cy.get('.MuiPaper-root > :nth-child(5)'),
     shapefileOption: () => cy.get('[role="button"]').contains('Polygon Shapefile'),
     kmlOption: () => cy.get('[role="button"]').contains('KML'),
@@ -250,8 +251,12 @@ class LocationsPage {
     this.elements.locationName().type(name);
   }
 
-  clickOnfileUploadBtn() {
-    this.elements.fileUploadBtn().click();
+  clickOnDataFileUploadBtn() {
+    this.elements.dataFileUploadBtn().click();
+  }
+
+  clickOnCarIdFileUploadBtn() {
+    this.elements.carIdFileUploadBtn().click();
   }
 
   clickOndataTemplatesBtn() {

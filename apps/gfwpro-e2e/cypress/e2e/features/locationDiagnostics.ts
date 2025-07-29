@@ -19,7 +19,8 @@ describe('Location diagnostics', () => {
 
   When('I click on location diagnostic button', () => {
     listDetailsPage.clickOnPost2000Tab();
-    listDetailsPage.clickOnLocationDiagnosticsBtn();
+    cy.waitForLoadingMessage();
+    listDetailsPage.clickOnLocationDiagnosticsBtnOnHover();
   });
 
   Then('I should be redirected to diagnostic view', () => {

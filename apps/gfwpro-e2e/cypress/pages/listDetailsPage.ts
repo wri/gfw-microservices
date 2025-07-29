@@ -1,9 +1,9 @@
 class ListDetailsPage {
   elements = {
     listDiagnosticsBtn: () => cy.get('[data-cy="list-diagnostics"]'),
-    locationDiagnosticsBtn: () => cy.get('[data-cy="location-diagnostics"]'),
+    locationDiagnosticsBtnOnHover: () => cy.get('[data-cy="location-diagnostics"]'),
     fullListMapBtn: () => cy.contains('List Map'),
-    mapBtn: () => cy.contains('Map'),
+    locationMapBtnOnHover: () => cy.get('[data-cy="locations-map"]'),
     locationMapBtn: () => cy.contains('Location(s) Map'),
     checkBoxSelectAll: () => cy.get('div.rt-table').find('label.column-checkbox:visible').eq(0),
     checkBoxSelectLocation: (name) => cy.contains(name),
@@ -178,19 +178,25 @@ class ListDetailsPage {
     this.elements.listDiagnosticsBtn().click();
   }
 
-  clickOnLocationDiagnosticsBtn() {
-    cy.get(':nth-child(1) > [data-testid="custom-row"] > :nth-child(5)').eq(1).trigger('mouseover');
-    this.elements.locationDiagnosticsBtn().click();
+  clickOnLocationDiagnosticsBtnOnHover() {
+    cy.get('[data-testid="custom-row"]')
+      .eq(2)
+      .children('[role="gridcell"]')
+      .eq(4)
+      .trigger('mouseover');
+    this.elements.locationDiagnosticsBtnOnHover().click();
   }
 
   clickOnFullListMapBtn() {
     this.elements.fullListMapBtn().click();
   }
-  clickOnMapBtn() {
-    cy.get(':nth-child(1) > [style="width: 100%; display: flex;"] > :nth-child(6) > span')
-      .eq(1)
+  clickOnLocationMapBtnOnHover() {
+    cy.get('[data-testid="custom-row"]')
+      .eq(2)
+      .children('[role="gridcell"]')
+      .eq(4)
       .trigger('mouseover');
-    this.elements.mapBtn().click();
+    this.elements.locationMapBtnOnHover().click();
   }
   clickOnLocationMapBtn() {
     this.elements.locationMapBtn().click();

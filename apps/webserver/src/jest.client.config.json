@@ -2,8 +2,6 @@
   "displayName": "client",
   "clearMocks": true,
   "collectCoverageFrom": ["<rootDir>/client/**/*.{js,jsx,ts,tsx}"],
-  "coverageDirectory": "../../../coverage/apps/webserver/client",
-  "coverageReporters": ["json", "text", "lcov", "clover", "cobertura"],
   "coverageThreshold": {
     "global": {
       "branches": 1,

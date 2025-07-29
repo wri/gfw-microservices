@@ -3,7 +3,7 @@
  * related to converters.
  */
 import { Injectable } from '@nestjs/common';
-import { DataSource } from 'typeorm';
+import { DataSource, MoreThanOrEqual } from 'typeorm';
 import { ConverterStatus } from '@wri-monorepos/constants';
 import { Organization } from '@wri-monorepos/sql';
 import { ConverterStatus as ConverterStatusEntity } from '@wri-monorepos/sql';
@@ -18,14 +18,21 @@ export class ConverterRepository {
    */
   async getClientStoresByOrgId(
     connection: DataSource,
-    organizationId?: number
+    { isContinueMode, organizationId }: { isContinueMode: boolean; organizationId?: number }
   ): Promise<{ id: number; organizationDb: string }[]> {
     const orgRepo = connection.getRepository(Organization);
-    const whereClause = organizationId ? { id: organizationId } : {};
+
+    let whereClause = {};
+    if (organizationId !== null && organizationId !== undefined) {
+      whereClause = isContinueMode
+        ? { id: MoreThanOrEqual(organizationId) } // For continue mode, fetch all orgs with ID >= organizationId
+        : { id: organizationId };
+    }
 
     const organizations = await orgRepo.find({
-      select: ['id', 'organizationDb'], // include 'id' here
+      select: ['id', 'organizationDb'],
       where: whereClause,
+      order: { id: 'ASC' },
     });
 
     return organizations.map((org) => ({

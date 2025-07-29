@@ -16,7 +16,8 @@ interface InsertConverterParams {
 
 export const startConverterJob = async (
   converterName: string,
-  organizationId: number | null = null
+  organizationId: number | null = null,
+  isContinueMode: boolean = false
 ): Promise<number> => {
   const connection = await getDbConnection();
   const repo: Repository<ConverterStatusEntity> = connection.getRepository(ConverterStatusEntity);
@@ -24,7 +25,7 @@ export const startConverterJob = async (
   const insertedId = await insertConverter(repo, { name: converterName, organizationId });
 
   // Start the long process asynchronously but don't await it
-  triggerConverter(insertedId, organizationId).catch(async (err) => {
+  triggerConverter(insertedId, organizationId, isContinueMode).catch(async (err) => {
     const errorMessage = err?.response?.data || err?.message || 'Unknown error';
     const errorMessageStr =
       typeof errorMessage === 'object' ? JSON.stringify(errorMessage) : errorMessage;
@@ -150,7 +151,8 @@ const insertConverter = async (
 
 const triggerConverter = async (
   converterJobId: number,
-  organizationId: number | null = null
+  organizationId: number | null = null,
+  isContinueMode: boolean = false
 ): Promise<void> => {
   const { LISTS_MICROSERVICE_URL } = process.env;
   if (!LISTS_MICROSERVICE_URL) {
@@ -158,6 +160,7 @@ const triggerConverter = async (
   }
   await axios.post(`${LISTS_MICROSERVICE_URL}/converters/${converterJobId}/start`, {
     organizationId,
+    isContinueMode,
   });
 };
 

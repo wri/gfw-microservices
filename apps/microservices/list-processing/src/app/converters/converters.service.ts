@@ -17,6 +17,11 @@ interface ConverterContext {
   function: ConverterFunction;
 }
 
+interface ConverterRunOptions {
+  organizationId: number | null;
+  isContinueMode: boolean;
+}
+
 @Injectable()
 export class ConvertersService {
   private readonly logger = new Logger(`List Processing: ${ConvertersService.name}`);
@@ -50,10 +55,10 @@ export class ConvertersService {
    * @returns A list of client store database names and ids.
    */
   async getClientStoreInfo(
-    organizationId?: number
+    options: ConverterRunOptions
   ): Promise<{ id: number; organizationDb: string }[]> {
     const gfwProConnection = await this.getGfwProConnection();
-    return this.converterRepository.getClientStoresByOrgId(gfwProConnection, organizationId);
+    return this.converterRepository.getClientStoresByOrgId(gfwProConnection, options);
   }
 
   /**
@@ -61,7 +66,7 @@ export class ConvertersService {
    * @param id The ID of the converter job being run.
    * @param organizationId The ID of the organization to filter by (optional).
    */
-  async runConverter(id: number, organizationId?: number): Promise<void> {
+  async runConverter(id: number, converterRunOptions: ConverterRunOptions): Promise<void> {
     this.errors = [];
     const { getConverterName, updateConverterStartTime, updateConverterStatus } =
       this.converterRepository;
@@ -93,7 +98,11 @@ export class ConvertersService {
         function: converterFunction,
       };
 
-      await this.runConverterAcrossClientStores(converterContext, organizationId);
+      this.logger.log(
+        `Converter '${converterFunction.run.name}' run requested, ID ${id}, Continue Mode: ${converterRunOptions.isContinueMode}, Organization ID: ${converterRunOptions.organizationId}`
+      );
+
+      await this.runConverterAcrossClientStores(converterContext, converterRunOptions);
       this.logger.log(`Converter ${converterName} finished`);
     } catch (error) {
       await updateConverterStatus(
@@ -115,14 +124,14 @@ export class ConvertersService {
    */
   private async runConverterAcrossClientStores(
     converterContext: ConverterContext,
-    organizationId?: number
+    converterRunOptions: ConverterRunOptions
   ): Promise<void> {
     const { updateConverterStatus } = this.converterRepository;
     const gfwProConnection = await this.getGfwProConnection();
     const { id: converterId } = converterContext;
 
     let clientStoreFailureCount = 0;
-    const clientStores: ClientStoreInfo[] = await this.getClientStoreInfo(organizationId);
+    const clientStores: ClientStoreInfo[] = await this.getClientStoreInfo(converterRunOptions);
 
     let totalLists = 0;
     let failedLists = 0;

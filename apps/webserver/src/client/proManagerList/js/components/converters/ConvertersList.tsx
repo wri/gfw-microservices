@@ -11,6 +11,9 @@ import {
   TextField,
   Typography,
   TableCell,
+  FormControl,
+  Select,
+  MenuItem,
 } from '@mui/material';
 
 import { StyledTableCell } from '../../common/styledTableCell';
@@ -23,6 +26,7 @@ import { ConvertersData } from './types/converters';
 
 export default function ConvertersList({ setIsLoading, onViewJobDetails }) {
   const [orgIdInputs, setOrgIdInputs] = useState<{ [key: string]: string }>({});
+  const [startMode, setStartMode] = useState<{ [key: string]: string }>({});
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const {
     data: convertersData,
@@ -42,18 +46,25 @@ export default function ConvertersList({ setIsLoading, onViewJobDetails }) {
     { error: string }
   >();
 
-  const handleStart = async (converterName: string) => {
-    const organizationId = orgIdInputs[converterName] || null;
-    // Mark as starting immediately
-    setStartingIds((prev) => new Set(prev).add(converterName));
+  const handleRun = async (converterId: string, mode: string, orgId?: string) => {
+    const organizationId = orgId || null;
+
+    setStartingIds((prev) => new Set(prev).add(converterId));
 
     try {
+      // Depending on mode, you could pass a flag or use different endpoints in the future
       // Fire off startConverter and fetchConverters concurrently
-      const startPromise = startConverter(startConverterRequest, converterName, organizationId);
-      await fetchConverters(fetchConvertersRequest); // Kick off fetchConverters but don't await immediately
+      const startPromise = startConverter(
+        startConverterRequest,
+        converterId,
+        organizationId,
+        mode === 'continue'
+      );
+      // Refresh converters list
+      await fetchConverters(fetchConvertersRequest);
       await startPromise;
     } catch (error) {
-      const message = `Failed to start converter: ${
+      const message = `Failed to ${mode === 'continue' ? 'continue' : 'start'} converter: ${
         error?.error || error?.message || 'Unknown error'
       }`;
       setErrorMessage(message);
@@ -61,7 +72,7 @@ export default function ConvertersList({ setIsLoading, onViewJobDetails }) {
       setTimeout(() => {
         setStartingIds((prev) => {
           const newSet = new Set(prev);
-          newSet.delete(converterName); // Remove the converter from startingIds after completion
+          newSet.delete(converterId); // Remove the converter from startingIds after completion
           return newSet;
         });
 
@@ -122,31 +133,55 @@ export default function ConvertersList({ setIsLoading, onViewJobDetails }) {
                           name={`organizationId-${converterId}`}
                           placeholder="Org. ID (optional)"
                           value={orgIdInputs[converterId] || ''}
-                          onChange={(e) =>
+                          onChange={(e) => {
+                            const newOrgId = e.target.value;
                             setOrgIdInputs((prev) => ({
                               ...prev,
-                              [converterId]: e.target.value,
-                            }))
-                          }
+                              [converterId]: newOrgId,
+                            }));
+
+                            if (!newOrgId.trim() && startMode[converterId] === 'continue') {
+                              setStartMode((prev) => ({
+                                ...prev,
+                                [converterId]: 'start',
+                              }));
+                            }
+                          }}
                           inputProps={{ 'data-testid': `org-id-${converterId}` }}
                           size="small"
                         />
+                        <FormControl size="small" sx={{ minWidth: 140 }}>
+                          <Select
+                            value={startMode[converterId] || 'start'}
+                            onChange={(e) =>
+                              setStartMode((prev) => ({
+                                ...prev,
+                                [converterId]: e.target.value,
+                              }))
+                            }
+                            displayEmpty
+                          >
+                            <MenuItem value="start">Full run</MenuItem>
+                            <MenuItem value="continue" disabled={!orgIdInputs[converterId]?.trim()}>
+                              Continue from Org ID
+                            </MenuItem>
+                          </Select>
+                        </FormControl>
+
                         <PillButton
                           variant="contained"
                           size="small"
-                          autoFocus
                           disabled={startingIds.has(converterId)}
-                          onClick={() => handleStart(converterId)}
+                          onClick={() =>
+                            handleRun(
+                              converterId,
+                              startMode[converterId] || 'start',
+                              orgIdInputs[converterId]
+                            )
+                          }
                         >
-                          {startingIds.has(converterId) ? 'Running...' : 'Start'}
+                          {startingIds.has(converterId) ? 'Running...' : 'Run'}
                         </PillButton>
-                        {startError && (
-                          <Typography variant="caption" color="error">
-                            {typeof startError.error === 'string'
-                              ? startError.error
-                              : JSON.stringify(startError.error)}
-                          </Typography>
-                        )}
                       </TableCell>
                     </TableRow>
                   ))}

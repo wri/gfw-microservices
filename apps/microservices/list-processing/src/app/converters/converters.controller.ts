@@ -11,10 +11,11 @@ export class ConvertersController {
   @Post('/:id/start')
   async startConverter(
     @Param('id') id: number,
+    @Body('isContinueMode') isContinueMode: boolean = false,
     @Body('organizationId') organizationId?: number
   ): Promise<string> {
     try {
-      await this.convertersService.runConverter(id, organizationId);
+      await this.convertersService.runConverter(id, { isContinueMode, organizationId });
     } catch (err) {
       this.logger.error(`Error processing Converter Job with ID: ${id}`, err.stack || err);
 

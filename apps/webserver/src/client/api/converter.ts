@@ -22,12 +22,17 @@ export const fetchConverterInfo = (
 export const startConverter = async (
   request: (config?: ExtendedAxiosRequestConfig) => Promise<any>,
   converterName: string,
-  organizationId: string | null
+  organizationId: string | null,
+  isContinueMode: boolean = false
 ): Promise<void> => {
   await request({
     url: '/converter/start',
     method: 'POST',
-    data: { converterName, organizationId },
+    data: {
+      converterName,
+      organizationId,
+      isContinueMode,
+    },
   });
 };
 

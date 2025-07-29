@@ -14,6 +14,7 @@ interface StartConverterBody {
   converterName: string;
   organizationId?: number | null;
   isContinueMode: boolean;
+  isDryRun?: boolean;
 }
 
 /**
@@ -37,7 +38,7 @@ export const startConverter = async (
   req: Request<unknown, unknown, StartConverterBody>,
   res: Response
 ): Promise<void> => {
-  const { converterName, organizationId = null, isContinueMode } = req.body;
+  const { converterName, organizationId = null, isContinueMode, isDryRun } = req.body;
 
   if (!(converterName in CONVERTER_NAMES)) {
     res.status(400).json({ error: 'Invalid converter name' });
@@ -45,7 +46,14 @@ export const startConverter = async (
   }
 
   try {
-    const converterJobId = await startConverterJob(converterName, organizationId, isContinueMode);
+    const converterJobId = await startConverterJob(
+      converterName,
+      {
+        organizationId,
+        isContinueMode,
+        isDryRun
+      }
+    );
     const userId = req.session?.user_id ?? -1;
     logger.info(`Converter ${converterName} started by user ID: ${userId}`);
 

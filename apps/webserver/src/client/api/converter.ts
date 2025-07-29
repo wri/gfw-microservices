@@ -23,7 +23,8 @@ export const startConverter = async (
   request: (config?: ExtendedAxiosRequestConfig) => Promise<any>,
   converterName: string,
   organizationId: string | null,
-  isContinueMode = false
+  isContinueMode = false,
+  isDryRun = false
 ): Promise<void> => {
   await request({
     url: '/converter/start',
@@ -32,6 +33,7 @@ export const startConverter = async (
       converterName,
       organizationId,
       isContinueMode,
+      isDryRun,
     },
   });
 };

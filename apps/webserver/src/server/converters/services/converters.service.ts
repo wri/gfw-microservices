@@ -14,18 +14,32 @@ interface InsertConverterParams {
   organizationId?: number | null;
 }
 
+interface ConverterRunOptions {
+  organizationId?: number | null;
+  isContinueMode: boolean;
+  isDryRun: boolean;
+}
+
+const defaultConverterRunOptions: ConverterRunOptions = {
+  organizationId: null,
+  isContinueMode: false,
+  isDryRun: false,
+};
+
 export const startConverterJob = async (
   converterName: string,
-  organizationId: number | null = null,
-  isContinueMode = false
+  converterRunOptions: ConverterRunOptions = defaultConverterRunOptions
 ): Promise<number> => {
+  const options = { ...defaultConverterRunOptions, ...converterRunOptions };
+  const { organizationId } = options;
+  
   const connection = await getDbConnection();
   const repo: Repository<ConverterStatusEntity> = connection.getRepository(ConverterStatusEntity);
 
   const insertedId = await insertConverter(repo, { name: converterName, organizationId });
 
   // Start the long process asynchronously but don't await it
-  triggerConverter(insertedId, organizationId, isContinueMode).catch(async (err) => {
+  triggerConverter(insertedId, converterRunOptions).catch(async (err) => {
     const errorMessage = err?.response?.data || err?.message || 'Unknown error';
     const errorMessageStr =
       typeof errorMessage === 'object' ? JSON.stringify(errorMessage) : errorMessage;
@@ -151,9 +165,10 @@ const insertConverter = async (
 
 const triggerConverter = async (
   converterJobId: number,
-  organizationId: number | null = null,
-  isContinueMode = false
+  converterRunOptions: ConverterRunOptions = defaultConverterRunOptions
 ): Promise<void> => {
+  const { organizationId, isContinueMode, isDryRun } = converterRunOptions;
+  
   const { LISTS_MICROSERVICE_URL } = process.env;
   if (!LISTS_MICROSERVICE_URL) {
     throw new Error('LISTS_MICROSERVICE_URL environment variable not set');
@@ -161,6 +176,7 @@ const triggerConverter = async (
   await axios.post(`${LISTS_MICROSERVICE_URL}/converters/${converterJobId}/start`, {
     organizationId,
     isContinueMode,
+    isDryRun,
   });
 };
 

@@ -18,8 +18,9 @@ interface ConverterContext {
 }
 
 interface ConverterRunOptions {
-  organizationId: number | null;
   isContinueMode: boolean;
+  organizationId?: number;
+  isDryRun?: boolean; // Optional, used for testing or dry runs
 }
 
 @Injectable()
@@ -129,6 +130,7 @@ export class ConvertersService {
     const { updateConverterStatus } = this.converterRepository;
     const gfwProConnection = await this.getGfwProConnection();
     const { id: converterId } = converterContext;
+    const { isDryRun } = converterRunOptions;
 
     let clientStoreFailureCount = 0;
     const clientStores: ClientStoreInfo[] = await this.getClientStoreInfo(converterRunOptions);
@@ -141,7 +143,8 @@ export class ConvertersService {
       try {
         const { successCount, failureCount } = await this.processListsInClientStore(
           clientStoreInfo,
-          converterContext
+          converterContext,
+          isDryRun
         );
 
         totalLists += successCount + failureCount;
@@ -218,7 +221,8 @@ export class ConvertersService {
    */
   private async processListsInClientStore(
     clientStore: ClientStoreInfo,
-    converterContext: ConverterContext
+    converterContext: ConverterContext,
+    isDryRun = false
   ): Promise<{ successCount: number; failureCount: number }> {
     const { function: converterFunction } = converterContext;
 
@@ -243,7 +247,8 @@ export class ConvertersService {
     const { successCount, failureCount } = await this.convertLists(
       lists,
       converterContext,
-      clientStore
+      clientStore,
+      isDryRun
     );
 
     return { successCount, failureCount };
@@ -252,7 +257,8 @@ export class ConvertersService {
   private async convertLists(
     lists: Lists[],
     converterContext: ConverterContext,
-    clientStore: ClientStoreInfo
+    clientStore: ClientStoreInfo,
+    isDryRun
   ): Promise<{ successCount: number; failureCount: number }> {
     let successCount = 0;
     let failureCount = 0;
@@ -267,6 +273,7 @@ export class ConvertersService {
           clientDb: organizationDb,
           listId: list.id,
           userId: null,
+          isDryRun, // Pass isDryRun to the converter function
         });
 
         successCount++;

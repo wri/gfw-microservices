@@ -1,7 +1,11 @@
 import { useEffect, useState } from 'react';
 import {
   Alert,
+  Checkbox,
+  FormControl,
+  FormControlLabel,
   Grid,
+  MenuItem,
   Snackbar,
   Table,
   TableHead,
@@ -11,9 +15,7 @@ import {
   TextField,
   Typography,
   TableCell,
-  FormControl,
   Select,
-  MenuItem,
 } from '@mui/material';
 
 import { StyledTableCell } from '../../common/styledTableCell';
@@ -24,9 +26,12 @@ import ConverterJobsTable from './ConverterJobsTable';
 import { fetchConverters, startConverter } from '../../../../api/converter';
 import { ConvertersData } from './types/converters';
 
+type RunMode = 'start' | 'continue';
+
 export default function ConvertersList({ setIsLoading, onViewJobDetails }) {
   const [orgIdInputs, setOrgIdInputs] = useState<{ [key: string]: string }>({});
-  const [startMode, setStartMode] = useState<{ [key: string]: string }>({});
+  const [dryRunIds, setDryRunIds] = useState<{ [key: string]: boolean }>({});
+  const [startMode, setStartMode] = useState<{ [key: string]: RunMode }>({});
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const {
     data: convertersData,
@@ -41,13 +46,29 @@ export default function ConvertersList({ setIsLoading, onViewJobDetails }) {
     setIsLoading(isLoadingConverters);
   }, []);
 
+  useEffect(() => {
+    if (convertersData) {
+      const initialModes = Object.keys(convertersData.convertersNames).reduce((acc, id) => {
+        acc[id] = 'start' as RunMode;
+        return acc;
+      }, {} as { [key: string]: RunMode });
+      setStartMode(initialModes);
+    }
+  }, [convertersData]);
+
   const { error: startError, request: startConverterRequest } = useFetch<
     { message: string; converterId: string },
     { error: string }
   >();
 
-  const handleRun = async (converterId: string, mode: string, orgId?: string) => {
-    const organizationId = orgId || null;
+  const handleRun = async (
+    converterId: string,
+    mode: RunMode,
+    orgIdInput?: string,
+    isDryRun: boolean = false
+  ) => {
+    const organizationId = orgIdInput || null;
+    const isContinueMode = mode === 'continue';
 
     setStartingIds((prev) => new Set(prev).add(converterId));
 
@@ -58,7 +79,8 @@ export default function ConvertersList({ setIsLoading, onViewJobDetails }) {
         startConverterRequest,
         converterId,
         organizationId,
-        mode === 'continue'
+        isContinueMode,
+        isDryRun
       );
       // Refresh converters list
       await fetchConverters(fetchConvertersRequest);
@@ -156,7 +178,7 @@ export default function ConvertersList({ setIsLoading, onViewJobDetails }) {
                             onChange={(e) =>
                               setStartMode((prev) => ({
                                 ...prev,
-                                [converterId]: e.target.value,
+                                [converterId]: e.target.value as RunMode,
                               }))
                             }
                             displayEmpty
@@ -168,6 +190,22 @@ export default function ConvertersList({ setIsLoading, onViewJobDetails }) {
                           </Select>
                         </FormControl>
 
+                        <FormControlLabel
+                          control={
+                            <Checkbox
+                              checked={dryRunIds[converterId] || false}
+                              onChange={(e) =>
+                                setDryRunIds((prev) => ({
+                                  ...prev,
+                                  [converterId]: e.target.checked,
+                                }))
+                              }
+                              size="small"
+                            />
+                          }
+                          label="Dry run"
+                        />
+
                         <PillButton
                           variant="contained"
                           size="small"
@@ -175,8 +213,9 @@ export default function ConvertersList({ setIsLoading, onViewJobDetails }) {
                           onClick={() =>
                             handleRun(
                               converterId,
-                              startMode[converterId] || 'start',
-                              orgIdInputs[converterId]
+                              startMode[converterId] ?? 'start',
+                              orgIdInputs[converterId],
+                              dryRunIds[converterId] || false
                             )
                           }
                         >

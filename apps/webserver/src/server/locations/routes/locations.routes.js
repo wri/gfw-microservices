@@ -20,7 +20,6 @@ const errorUtils = require(path.resolve('./config/privateutils/error.utils'));
 const { generateZipShapefile } = require('../../../config/publicutils/locationManager.utils');
 const shareManager = require('../../../config/publicutils/shareManager.utils');
 const { removeExistingVectorTileFromS3 } = require('../../vectorTiles/utils/vectorTile.utils');
-const { validateAttributes } = require('../utils/validation.utils');
 const { mapCommodityRiskValuesToDatabaseValues } = require('../utils/locations.utils');
 import config from '../../../config/config';
 

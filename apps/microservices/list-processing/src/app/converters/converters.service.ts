@@ -156,7 +156,7 @@ export class ConvertersService {
         );
         if (isStopped) {
           this.logger.warn(`Converter ${converterId} was manually stopped. Halting.`);
-          break;
+          return;
         }
       } catch (error) {
         clientStoreFailureCount++;
@@ -192,9 +192,7 @@ export class ConvertersService {
 
     let status: ConverterStatus;
 
-    if (isStopped) {
-      return;
-    } else if (totalLists === 0 || failedLists === 0) {
+    if (totalLists === 0 || failedLists === 0) {
       // No lists to process or all succeeded
       status = ConverterStatus.COMPLETED;
     } else if (failedLists === totalLists) {

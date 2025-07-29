@@ -50,6 +50,8 @@ export default defineConfig({
   video: true,
   viewportWidth: 1800,
   viewportHeight: 1080,
+  numTestsKeptInMemory: 100,
+  experimentalMemoryManagement: true,
   retries: {
     runMode: 0,
     openMode: 0,

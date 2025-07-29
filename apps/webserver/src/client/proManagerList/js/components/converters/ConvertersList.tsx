@@ -65,7 +65,7 @@ export default function ConvertersList({ setIsLoading, onViewJobDetails }) {
     converterId: string,
     mode: RunMode,
     orgIdInput?: string,
-    isDryRun: boolean = false
+    isDryRun = false
   ) => {
     const organizationId = orgIdInput || null;
     const isContinueMode = mode === 'continue';

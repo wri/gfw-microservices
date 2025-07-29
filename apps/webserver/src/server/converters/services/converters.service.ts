@@ -32,7 +32,7 @@ export const startConverterJob = async (
 ): Promise<number> => {
   const options = { ...defaultConverterRunOptions, ...converterRunOptions };
   const { organizationId } = options;
-  
+
   const connection = await getDbConnection();
   const repo: Repository<ConverterStatusEntity> = connection.getRepository(ConverterStatusEntity);
 
@@ -168,7 +168,7 @@ const triggerConverter = async (
   converterRunOptions: ConverterRunOptions = defaultConverterRunOptions
 ): Promise<void> => {
   const { organizationId, isContinueMode, isDryRun } = converterRunOptions;
-  
+
   const { LISTS_MICROSERVICE_URL } = process.env;
   if (!LISTS_MICROSERVICE_URL) {
     throw new Error('LISTS_MICROSERVICE_URL environment variable not set');

@@ -46,14 +46,11 @@ export const startConverter = async (
   }
 
   try {
-    const converterJobId = await startConverterJob(
-      converterName,
-      {
-        organizationId,
-        isContinueMode,
-        isDryRun
-      }
-    );
+    const converterJobId = await startConverterJob(converterName, {
+      organizationId,
+      isContinueMode,
+      isDryRun,
+    });
     const userId = req.session?.user_id ?? -1;
     logger.info(`Converter ${converterName} started by user ID: ${userId}`);
 

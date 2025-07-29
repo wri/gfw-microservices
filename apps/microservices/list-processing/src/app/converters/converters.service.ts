@@ -17,6 +17,12 @@ interface ConverterContext {
   function: ConverterFunction;
 }
 
+interface ConverterRunOptions {
+  isContinueMode: boolean;
+  organizationId?: number;
+  isDryRun?: boolean; // Optional, used for testing or dry runs
+}
+
 @Injectable()
 export class ConvertersService {
   private readonly logger = new Logger(`List Processing: ${ConvertersService.name}`);
@@ -50,10 +56,10 @@ export class ConvertersService {
    * @returns A list of client store database names and ids.
    */
   async getClientStoreInfo(
-    organizationId?: number
+    options: ConverterRunOptions
   ): Promise<{ id: number; organizationDb: string }[]> {
     const gfwProConnection = await this.getGfwProConnection();
-    return this.converterRepository.getClientStoresByOrgId(gfwProConnection, organizationId);
+    return this.converterRepository.getClientStoresByOrgId(gfwProConnection, options);
   }
 
   /**
@@ -61,12 +67,14 @@ export class ConvertersService {
    * @param id The ID of the converter job being run.
    * @param organizationId The ID of the organization to filter by (optional).
    */
-  async runConverter(id: number, organizationId?: number): Promise<void> {
+  async runConverter(id: number, converterRunOptions: ConverterRunOptions): Promise<void> {
     this.errors = [];
-    const { getConverterName, updateConverterStartTime } = this.converterRepository;
+    const { getConverterName, updateConverterStartTime, updateConverterStatus } =
+      this.converterRepository;
     const gfwProConnection = await this.getGfwProConnection();
 
     try {
+      await updateConverterStatus(gfwProConnection, id, ConverterStatus.RUNNING);
       await updateConverterStartTime(gfwProConnection, id);
     } catch (error) {
       const errorMessage = error?.response?.data || error?.message || error || 'Unknown error';
@@ -91,10 +99,14 @@ export class ConvertersService {
         function: converterFunction,
       };
 
-      await this.runConverterAcrossClientStores(converterContext, organizationId);
+      this.logger.log(
+        `Converter '${converterFunction.run.name}' run requested, ID ${id}, Continue Mode: ${converterRunOptions.isContinueMode}, Organization ID: ${converterRunOptions.organizationId}`
+      );
+
+      await this.runConverterAcrossClientStores(converterContext, converterRunOptions);
       this.logger.log(`Converter ${converterName} finished`);
     } catch (error) {
-      await this.converterRepository.updateConverterStatus(
+      await updateConverterStatus(
         gfwProConnection,
         id,
         ConverterStatus.FAILED,
@@ -113,24 +125,39 @@ export class ConvertersService {
    */
   private async runConverterAcrossClientStores(
     converterContext: ConverterContext,
-    organizationId?: number
+    converterRunOptions: ConverterRunOptions
   ): Promise<void> {
     const { updateConverterStatus } = this.converterRepository;
+    const gfwProConnection = await this.getGfwProConnection();
+    const { id: converterId } = converterContext;
+    const { isDryRun } = converterRunOptions;
+
     let clientStoreFailureCount = 0;
-    const clientStores: ClientStoreInfo[] = await this.getClientStoreInfo(organizationId);
+    const clientStores: ClientStoreInfo[] = await this.getClientStoreInfo(converterRunOptions);
 
     let totalLists = 0;
     let failedLists = 0;
+    let isStopped = false;
 
     for (const clientStoreInfo of clientStores) {
       try {
         const { successCount, failureCount } = await this.processListsInClientStore(
           clientStoreInfo,
-          converterContext
+          converterContext,
+          isDryRun
         );
 
         totalLists += successCount + failureCount;
         failedLists += failureCount;
+
+        isStopped = await this.converterRepository.isConverterStopped(
+          gfwProConnection,
+          converterId
+        );
+        if (isStopped) {
+          this.logger.warn(`Converter ${converterId} was manually stopped. Halting.`);
+          return;
+        }
       } catch (error) {
         clientStoreFailureCount++;
 
@@ -192,22 +219,19 @@ export class ConvertersService {
    */
   private async processListsInClientStore(
     clientStore: ClientStoreInfo,
-    converterContext: ConverterContext
+    converterContext: ConverterContext,
+    isDryRun = false
   ): Promise<{ successCount: number; failureCount: number }> {
-    const gfwProConnection = await this.getGfwProConnection();
-    const { id: converterId, function: converterFunction } = converterContext;
+    const { function: converterFunction } = converterContext;
 
     const clientStoreConnection = await this.clientStoreConnection.getConnection(
       clientStore.organizationDb
     );
     const listsRepository = clientStoreConnection.getRepository(Lists);
-    const { updateConverterStatus } = this.converterRepository;
 
     this.logger.log(
       `Starting converter '${converterFunction.run.name}' for client store: ${clientStore.organizationDb}`
     );
-    await this.updateConverterStartTime(converterId);
-    await updateConverterStatus(gfwProConnection, converterId, ConverterStatus.RUNNING);
 
     const lists = await this.fetchListsToConvert(
       listsRepository,
@@ -221,7 +245,8 @@ export class ConvertersService {
     const { successCount, failureCount } = await this.convertLists(
       lists,
       converterContext,
-      clientStore
+      clientStore,
+      isDryRun
     );
 
     return { successCount, failureCount };
@@ -230,7 +255,8 @@ export class ConvertersService {
   private async convertLists(
     lists: Lists[],
     converterContext: ConverterContext,
-    clientStore: ClientStoreInfo
+    clientStore: ClientStoreInfo,
+    isDryRun
   ): Promise<{ successCount: number; failureCount: number }> {
     let successCount = 0;
     let failureCount = 0;
@@ -245,6 +271,7 @@ export class ConvertersService {
           clientDb: organizationDb,
           listId: list.id,
           userId: null,
+          isDryRun, // Pass isDryRun to the converter function
         });
 
         successCount++;

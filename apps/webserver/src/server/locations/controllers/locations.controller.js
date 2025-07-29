@@ -16,7 +16,6 @@ const {
   findSharedListsInsideOrganization,
 } = require('../../../config/publicutils/shareManager.utils');
 const { formatListLocationDataForFilter } = require('../utils/locations.utils');
-const { getCurrentDateTimeFormatted } = require('../../vectorTiles/utils/vectorTile.utils');
 const sqlUtils = require('../../../config/privateutils/sql.utils');
 const sql = require('mssql');
 const { getFilterOptionsForUserLists } = require('@wri-monorepos/sql');

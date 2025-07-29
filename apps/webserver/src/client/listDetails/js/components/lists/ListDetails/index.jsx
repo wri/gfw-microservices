@@ -1082,8 +1082,8 @@ export default class ListDetails extends Component {
    * @param {Boolean} locationNameForGFW - Defines if parameter is coming from location name for GFW.
    * @param {Boolean} userLocation - Defines if parameter is locations in a user list coming from the Map.
    */
-  processListData = (listData, locationNameForGFW, userLocation) => {
-    const { selectedLists, listView, userListInfoFromMap } = this.props;
+  processListData = (listData) => {
+    const { selectedLists, listView } = this.props;
     const { isEveryRowSelected } = this.state;
     const { list_analysis, location_analyses } = listData;
 
@@ -1114,35 +1114,6 @@ export default class ListDetails extends Component {
           combinedColumns: columnNames.combinedColumns,
           isLoading: false,
         });
-
-        if (locationNameForGFW) {
-          if (typeof locationNameForGFW === 'string') {
-            data[0]['Investment Name'] = data[0]['Investment Name']
-              ? data[0]['Investment Name']
-              : locationNameForGFW;
-            data[0]['Location Name'] = data[0]['Location Name']
-              ? data[0]['Location Name']
-              : locationNameForGFW;
-          }
-
-          const { location_id } = data[0];
-          store.dispatch(updateSelectedLocations([location_id]));
-          store.dispatch(changeView('gfw'));
-        } else if (userLocation) {
-          const location_id = userListInfoFromMap.locationID;
-
-          const selectedFeat = data.filter((feat) => feat.location_id === location_id)[0];
-          if (selectedFeat) {
-            selectedFeat['Investment Name'] = selectedFeat['Investment Name']
-              ? selectedFeat['Investment Name']
-              : selectedFeat['Location Name'];
-            selectedFeat['Location Name'] = selectedFeat['Location Name']
-              ? selectedFeat['Location Name']
-              : selectedFeat['Investment Name'];
-          }
-
-          store.dispatch(updateSelectedLocations([location_id]));
-        }
       } else {
         store.dispatch(updateListData([]));
         this.setState({
@@ -1180,7 +1151,7 @@ export default class ListDetails extends Component {
         const locations = JSON.parse(response);
         if (locations) {
           const locationName = this.discernGFWName(locations);
-          this.processListData(locations, locationName);
+          this.processListData(locations);
         } else {
           this.setState({ isLoading: false });
           store.dispatch(updateListData([]));
@@ -1216,7 +1187,7 @@ export default class ListDetails extends Component {
   };
 
   getUserLocationData = (list_id, page = 0) => {
-    const { filters, userListInfoFromMap, stopLoading } = this.props;
+    const { filters, stopLoading } = this.props;
     const { tableSortedBy, tableSortedDesc, filterString } = this.state;
 
     this.setState({ page, isLoading: true });
@@ -1249,12 +1220,7 @@ export default class ListDetails extends Component {
           maximumAnalysisAreaInTheList,
         });
 
-        if (!userListInfoFromMap) {
-          this.processListData(listData, false);
-        } else {
-          this.processListData(listData, false, true);
-          stopLoading();
-        }
+        this.processListData(listData);
       })
       .catch((err) => {
         console.warn('err', err);
@@ -1563,9 +1529,8 @@ export default class ListDetails extends Component {
       });
   };
 
-  getAdministrativeAreasData = ({ filters, id, locationNameForGFW, page = 0 }) => {
+  getAdministrativeAreasData = ({ filters, id, page = 0 }) => {
     const { tableSortedBy, tableSortedDesc, filterString } = this.state;
-    // when coming from the Map, locationNameForGFW is either the locationName or true
     this.setState({ isLoading: true });
     httpRequest
       .fetchJSON('/locations/getAdministrativeAreasData', {
@@ -1581,7 +1546,7 @@ export default class ListDetails extends Component {
         const parsedResponse = JSON.parse(response);
         const { numberOfPages, numberOfResults } = parsedResponse;
         this.setState({ numberOfPages, numberOfResults });
-        this.processListData(parsedResponse, locationNameForGFW);
+        this.processListData(parsedResponse);
       })
       .catch((err) => {
         this.setState({ isLoading: false });
@@ -1589,7 +1554,7 @@ export default class ListDetails extends Component {
       });
   };
 
-  getProtectedAreasData = ({ filters, id, locationNameForGFW, page = 0 }) => {
+  getProtectedAreasData = ({ filters, id, page = 0 }) => {
     const { tableSortedBy, tableSortedDesc, filterString } = this.state;
     this.setState({ isLoading: true });
     httpRequest
@@ -1606,7 +1571,7 @@ export default class ListDetails extends Component {
         const parsedResponse = JSON.parse(response);
         const { numberOfPages, numberOfResults } = parsedResponse;
         this.setState({ numberOfPages, numberOfResults });
-        this.processListData(parsedResponse, locationNameForGFW);
+        this.processListData(parsedResponse);
       })
       .catch((err) => {
         this.setState({ isLoading: false });

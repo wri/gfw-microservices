@@ -69,7 +69,6 @@ export function UploadLocationsByType() {
   const typeConfig = {
     [UploadType.ByFile]: {
       title: 'By Data File: Prepare & Upload Location Data',
-      helperText: 'How to format your location data for GFW Pro',
       helperUrl: ExternalLinks.HowToFormatLocationData,
       caption:
         'First, prepare your data in a format accepted by GFW Pro. Then, upload your file(s).',
@@ -85,7 +84,6 @@ export function UploadLocationsByType() {
     },
     [UploadType.ById]: {
       title: 'By ID: Prepare & Upload Location Data',
-      helperText: 'How to format your location data for GFW Pro',
       helperUrl: ExternalLinks.HowToFormatLocationData,
       caption:
         'Prepare your data in a format accepted by GFW Pro to upload your ID(s) system based.',
@@ -109,7 +107,11 @@ export function UploadLocationsByType() {
       <Card sx={{ pt: 1, px: 2, pb: 2 }}>
         <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
           <Typography variant="h6">{config.title}</Typography>
-          <ExternalHelperResource text={config.helperText} url={config.helperUrl} color="info" />
+          <ExternalHelperResource
+            text="Step-by-step instructions"
+            url={config.helperUrl}
+            color="info"
+          />
         </Box>
         <Typography
           variant="caption"

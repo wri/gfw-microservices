@@ -11,7 +11,7 @@ export class ConvertersController {
   @Post('/:id/start')
   async startConverter(
     @Param('id') id: number,
-    @Body('isContinueMode') isContinueMode: boolean = false,
+    @Body('isContinueMode') isContinueMode = false,
     @Body('organizationId') organizationId?: number
   ): Promise<string> {
     try {

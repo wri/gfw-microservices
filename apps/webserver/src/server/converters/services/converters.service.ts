@@ -17,7 +17,7 @@ interface InsertConverterParams {
 export const startConverterJob = async (
   converterName: string,
   organizationId: number | null = null,
-  isContinueMode: boolean = false
+  isContinueMode = false
 ): Promise<number> => {
   const connection = await getDbConnection();
   const repo: Repository<ConverterStatusEntity> = connection.getRepository(ConverterStatusEntity);
@@ -152,7 +152,7 @@ const insertConverter = async (
 const triggerConverter = async (
   converterJobId: number,
   organizationId: number | null = null,
-  isContinueMode: boolean = false
+  isContinueMode = false
 ): Promise<void> => {
   const { LISTS_MICROSERVICE_URL } = process.env;
   if (!LISTS_MICROSERVICE_URL) {

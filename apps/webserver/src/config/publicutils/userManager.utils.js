@@ -232,7 +232,7 @@ export const activateUser = (
       })
       .then((recordSets) => {
         const [record] = recordSets;
-        organizationName = record.organization_name;
+        organizationName = record?.organization_name;
         // Create a new secret for the user in case it is needed. Default authentication preference to be 0 - email
         const secret = speakEasy.createSecret();
         const parameters = [
@@ -277,7 +277,7 @@ export const activateUser = (
         const errorObject = errorUtils.createErrorMessage(
           req,
           errorUtils.ERROR_CODES.failedToActivateUser,
-          'Failed to update activate user',
+          'Failed to activate user',
           errorMessage
         );
         reject(errorObject);
@@ -335,7 +335,7 @@ export const deactivateUser = (req, user_id) => {
         const errorObject = errorUtils.createErrorMessage(
           req,
           errorUtils.ERROR_CODES.failedToDeactiveUser,
-          'Failed to deactivate activate user',
+          'Failed to deactivate user',
           errorMessage
         );
         reject(errorObject);

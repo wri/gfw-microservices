@@ -1130,14 +1130,6 @@ export default class ListDetails extends Component {
     }
   };
 
-  discernGFWName = (locations) => {
-    let locationName = false;
-    const attrs = locations.location_analyses[0] ? locations.location_analyses[0][0] : null;
-    locationName = attrs ? attrs['Location Name'] : false;
-
-    return locationName;
-  };
-
   getGFWDataFromMap = (gfwList, globalIds) => {
     const { stopLoading } = this.props;
 
@@ -1150,7 +1142,6 @@ export default class ListDetails extends Component {
       .then((response) => {
         const locations = JSON.parse(response);
         if (locations) {
-          const locationName = this.discernGFWName(locations);
           this.processListData(locations);
         } else {
           this.setState({ isLoading: false });
@@ -1656,20 +1647,15 @@ export default class ListDetails extends Component {
   }
   render() {
     const {
-      activeTemplate,
-      addType,
       canopyModalVisible: isFilterModalVisible,
-      commodityType,
       currentUser,
       filterCount,
       filteredLocationData,
-      filters,
       listData,
       listView,
       selectedLists,
       selectedLocations,
       shareView,
-      templateData,
       userSharedLists,
       usersList,
     } = this.props;
@@ -1724,12 +1710,6 @@ export default class ListDetails extends Component {
 
     const listID = selectedList?.id;
     const countries = [...new Set(filteredLocationData.map((list) => list.Country))].sort();
-    const customAttributeNames =
-      selectedList &&
-      selectedList.custom_attribute_names &&
-      selectedList.custom_attribute_names.length > 0
-        ? selectedList.custom_attribute_names.split(',')
-        : [];
 
     const listName = selectedList ? selectedList.list_name : '';
     const listAnalysesStatus = selectedList?.listAnalysesStatus ?? [];

@@ -3,7 +3,6 @@
 const path = require('path');
 const archiver = require('archiver');
 import axios from 'axios';
-const _ = require('lodash');
 
 const controller = require('../controllers/locations.controller');
 const logger = require('../../../config/privateutils/logger.utils');

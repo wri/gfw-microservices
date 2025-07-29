@@ -6,14 +6,16 @@ import axios from 'axios';
 import axiosRetry from 'axios-retry';
 
 axiosRetry(axios, {
-  retries: 3,
+  retries: 5,
   retryDelay: axiosRetry.exponentialDelay,
   retryCondition: (error) => {
     // axios-retry normally does not retry POSTs, so using a custom condition
-    return axiosRetry.isRetryableError(error);
+    return axiosRetry.isRetryableError(error) || error.response?.status === 429;
   },
 });
-const POOL_SIZE = 20;
+
+const POOL_SIZE = 20; // Increased pool size since we have higher rate limit
+const DEFAULT_DELAY = 500;
 export class GADMService extends AbstractHandler<ChainType> {
   logger = new Logger(GADMService.name);
 
@@ -33,6 +35,7 @@ export class GADMService extends AbstractHandler<ChainType> {
       coordinates: [longitude, latitude],
     };
     const sql = "SELECT gid_1, gid_2, name_0, name_1, name_2 FROM mytable WHERE adm_level='2'";
+
     try {
       const response = await axios.post(
         'https://data-api.globalforestwatch.org/dataset/gadm_administrative_boundaries/v4.1.64/query/json',
@@ -51,8 +54,17 @@ export class GADMService extends AbstractHandler<ChainType> {
 
       return response.data?.data;
     } catch (error) {
-      this.logger.error(`Error fetching GADM data`, error.response?.data || error.stack);
-      return null;
+      this.logger.error(
+        `Error fetching GADM data for feature at ${latitude}, ${longitude}`,
+        error.response?.data?.message || error.stack
+      );
+
+      // Add a small delay before rethrowing
+      if (error.response?.status !== 429) {
+        await new Promise((resolve) => setTimeout(resolve, DEFAULT_DELAY));
+      }
+
+      return { hasUnanalyzableError: true };
     }
   };
 

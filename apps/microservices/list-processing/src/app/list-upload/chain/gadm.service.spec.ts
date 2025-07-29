@@ -55,7 +55,7 @@ describe('GADMService', () => {
       };
       (axios.post as jest.Mock).mockRejectedValue(new Error('Network error'));
       const result = await service.getGadmData(feature);
-      expect(result).toBeNull();
+      expect(result).toEqual({ hasUnanalyzableError: true });
     });
 
     it('should return data on successful fetch', async () => {

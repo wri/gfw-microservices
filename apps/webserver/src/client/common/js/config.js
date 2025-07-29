@@ -132,68 +132,6 @@ export const locationsPage = {
     'Indonesia-Land-Cover',
   ],
 
-  tableKeyArray: [
-    {
-      templateDataValue: 'Investment',
-      activeTemplate: 'investment',
-    },
-    {
-      templateDataValue: 'Palm Oil Mill',
-      activeTemplate: 'palmMill',
-    },
-    {
-      templateDataValue: 'Palm Oil Plantation',
-      activeTemplate: 'palmPlantation',
-    },
-    {
-      templateDataValue: 'Palm Smallholder Farm',
-      activeTemplate: 'palmFarm',
-    },
-    {
-      templateDataValue: 'Palm Oil Generic',
-      activeTemplate: 'palmGeneric',
-    },
-    {
-      templateDataValue: 'Soy Silo',
-      activeTemplate: 'soySilo',
-    },
-    {
-      templateDataValue: 'Soy Farm',
-      activeTemplate: 'soyFarm',
-    },
-    {
-      templateDataValue: 'Soy Generic',
-      activeTemplate: 'soyGeneric',
-    },
-    {
-      templateDataValue: 'Beef Slaughterhouse',
-      activeTemplate: 'beef',
-    },
-    {
-      templateDataValue: 'Cattle Ranch',
-      activeTemplate: 'cattle',
-    },
-    {
-      templateDataValue: 'Cattle Generic',
-      activeTemplate: 'cattleGeneric',
-    },
-    {
-      templateDataValue: 'Cocoa Farm',
-      activeTemplate: 'cocoa',
-    },
-    {
-      templateDataValue: 'Cocoa Generic',
-      activeTemplate: 'cocoaGeneric',
-    },
-    {
-      templateDataValue: 'Other',
-      activeTemplate: 'other',
-    },
-    {
-      templateDataValue: 'Other',
-      activeTemplate: 'generic',
-    },
-  ],
   lists: {
     confirmListUpdate: 'Confirm List Update',
     confirmListSubmission: 'Confirm Submission',
@@ -467,20 +405,6 @@ export const locationsPage = {
   },
   largeListEditing: {
     downloadProcessTitle: 'Upload process',
-    downloadFileInstructions:
-      'Your list is too large for in-app editing. Download here to make changes to the desired location fields and reupload with the changes applied.',
-    downloadFileTitle: 'Download to make changes to your list',
-    dragAndDropTitle: 'Apply edits to your list',
-    dragAndDropInstructions:
-      'Drop your file here or click to upload the applied changes then click "Update" to finalize edits to your list.',
-    wrongFormatMessage: 'Unsupported file type. File should be in csv format.',
-    successTitle: 'Success!',
-    successDescription: 'List updated successfully.',
-    errorTitle: 'Failed',
-    errorDescription: 'An error ocurred while updating the list.',
-    cancel: 'Cancel',
-    update: 'Update',
-    close: 'Close',
   },
   messageText: {
     investment: { text: 'Investment' },
@@ -503,7 +427,6 @@ export const locationsPage = {
     cocoaGeneric: { text: 'Cocoa Generic' },
     coffee: { text: 'Coffee' },
   },
-  oversizedUploadText,
   locationClassValues: {
     palmMill: { value: 'Supply Shed' },
     palmPlantation: { value: 'Property' },
@@ -843,9 +766,6 @@ export const locationsPage = {
     cancel: 'Cancel',
     continue: 'Continue',
     errors: {
-      cannotBeEditedInBrowser:
-        'This column cannot be edited in the browser. Download the file to fix these errors, then re-upload above.',
-
       fileExtensionNotSupported: {
         title: 'File extension not supported',
         message: 'The supported file extensions are: csv, xlx, zip, kml, and kmz.',
@@ -893,10 +813,6 @@ export const locationsPage = {
       csv: 'CSV or Excel file',
       zip: 'ZIP file containing a shapefile (SHP, DBF, SHX, and PRJ)',
       kml: 'KML or KMZ',
-    },
-
-    stepThree: {
-      download: 'Download',
     },
     submit: 'Submit Analysis',
     list: 'List',
@@ -1647,9 +1563,6 @@ export const locationsPage = {
     },
 
     show: 'Show',
-    showValidated: 'Validated',
-    showNotValidated: 'Locations with Errors',
-    showAllValidated: 'All',
   },
   columns: {
     notAnalyzedList: {

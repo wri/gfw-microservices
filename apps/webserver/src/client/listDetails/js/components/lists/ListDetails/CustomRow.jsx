@@ -4,7 +4,6 @@ import Menu from 'material-ui/Menu';
 import MenuItem from 'material-ui/MenuItem';
 import PublicIcon from '@mui/icons-material/Public';
 import DeleteIcon from '@mui/icons-material/Delete';
-import EditIcon from '@mui/icons-material/Edit';
 import DriveFileMoveIcon from '@mui/icons-material/DriveFileMove';
 import Button from '@mui/material/Button';
 import QueryStatsIcon from '@mui/icons-material/QueryStats';
@@ -33,8 +32,6 @@ const CustomRow = ({
   viewDiagnostic,
   isDeleteButtonAvailable,
   promptDeleteSelectedLocations,
-  isEditActionAvailable,
-  editList,
   copyMoveAction,
   isCopyMoveActionAvailable,
   selectedList,
@@ -134,16 +131,6 @@ const CustomRow = ({
                         isNewListNameDuplicate: null,
                         selectedNewOrExisting: null,
                       });
-                    }}
-                  />
-                )}
-                {isEditActionAvailable && (
-                  <MenuItem
-                    primaryText="EDIT"
-                    leftIcon={<EditIcon />}
-                    onClick={() => {
-                      store.dispatch(updateSelectedLocations([locationId]));
-                      editList();
                     }}
                   />
                 )}

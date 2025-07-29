@@ -66,7 +66,6 @@ import {
   updateGFWListActiveTemplate,
   updateRegularListActiveTemplate,
 } from '../../../utils/lists-redux.utils';
-import LargeListEditing from '../EditList/LargeListEditing/LargeListEditing';
 import ShareList from '../../../../../locations/js/components/ShareList/ShareList';
 import { FailedPopupDialog } from '../../../../../locations/js/components/landing/FailedPopupDialog';
 import {
@@ -174,7 +173,6 @@ export default class ListDetails extends Component {
       tableSortedBy: 'Location Name',
       tableSortedDesc: false,
       numberOfResults: undefined,
-      displayLargeListEditingModal: false,
       visibleColumns: [],
       isChangeTypeOfAnalysisModalOpen: false,
       isListSubmittedForAnalysis: false,
@@ -1144,7 +1142,6 @@ export default class ListDetails extends Component {
           }
 
           store.dispatch(updateSelectedLocations([location_id]));
-          this.editList();
         }
       } else {
         store.dispatch(updateListData([]));
@@ -1318,29 +1315,6 @@ export default class ListDetails extends Component {
     } else {
       const commodityType = updateGFWListActiveTemplate(selectedList);
       this.setState({ commodityType });
-    }
-  };
-
-  editList = () => {
-    const { isEveryRowSelected, numberOfPages } = this.state;
-    // if all locations where selected and there is more than one page
-    // follow large list editing workflow
-    if (isEveryRowSelected && numberOfPages > 1) {
-      this.setState({
-        displayLargeListEditingModal: true,
-      });
-    } else {
-      this.setState({
-        isLoading: true,
-      });
-
-      this.setAddTypeAndTemplate();
-      store.dispatch(changeView('edit'));
-
-      gtag('event', 'Edit button clicked', {
-        event_category: 'Lists Click',
-        event_label: 'user clicked to enter edit list workflow',
-      });
     }
   };
 
@@ -1769,7 +1743,6 @@ export default class ListDetails extends Component {
       tableSortedBy,
       tableSortedDesc,
       numberOfResults,
-      displayLargeListEditingModal,
       visibleColumns,
       isEveryRowSelected,
       isListSubmittedForAnalysis,
@@ -1853,9 +1826,6 @@ export default class ListDetails extends Component {
       selectedList &&
       currentUser.access_level_id !== userAccessLevel.VIEWER &&
       (currentUser.access_level_id === userAccessLevel.ADMIN || !selectedListIsShared);
-
-    const isEditActionAvailable =
-      !isGfwList && !selectedListIsShared && currentUser.access_level_id !== userAccessLevel.VIEWER;
 
     if (isFcdActive || isGfwList) {
       listViewOptions.push(FOREST_CHANGE_VIEW);
@@ -2135,8 +2105,6 @@ export default class ListDetails extends Component {
                       handleSearchInputKeyDown={this.handleSearchInputKeyDown}
                       handleSearchInputClick={this.handleSearchInputClick}
                       showMultipleSelectionBulkActions={showMultipleSelectionBulkActions}
-                      isEditActionAvailable={isEditActionAvailable}
-                      editList={this.editList}
                       canMove={canMove}
                       promptMoveSelectedLocations={this.promptMoveSelectedLocations}
                       canDelete={canDelete}
@@ -2347,8 +2315,6 @@ export default class ListDetails extends Component {
                                 viewDiagnostic={this.viewDiagnostic}
                                 isDeleteButtonAvailable={canDelete}
                                 promptDeleteSelectedLocations={this.promptDeleteSelectedLocations}
-                                isEditActionAvailable={isEditActionAvailable}
-                                editList={this.editList}
                                 copyMoveAction={this.promptMoveSelectedLocations}
                                 isCopyMoveActionAvailable={canMove}
                                 currentUser={currentUser}
@@ -2371,31 +2337,6 @@ export default class ListDetails extends Component {
               </section>
             </div>
           </section>
-
-          {displayLargeListEditingModal && (
-            <LargeListEditing
-              addType={addType}
-              activeTemplate={activeTemplate}
-              commodityType={commodityType}
-              templateData={templateData}
-              customAttributeNames={customAttributeNames}
-              listID={listID}
-              listName={listName}
-              filters={filters}
-              tableSortedBy={tableSortedBy}
-              tableSortedDesc={tableSortedDesc}
-              selectedLocations={selectedLocations}
-              onClose={(refreshTable) => {
-                this.setState({ displayLargeListEditingModal: false });
-                if (refreshTable) {
-                  this.getUserLocationData(listID);
-                }
-              }}
-              isLoading={(loading) => {
-                this.setState({ isLoading: loading });
-              }}
-            />
-          )}
         </div>
       </ThemeProvider>
     );

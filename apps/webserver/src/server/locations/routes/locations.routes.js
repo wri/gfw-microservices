@@ -106,92 +106,6 @@ module.exports = (app, limiter) => {
       });
   });
 
-  app.post('/locations/editLocations', (req, res) => {
-    logger.info('POST /locations/editLocations');
-    const { list_id, attributes, activeTemplate } = req.body;
-    let { location_ids } = req.body;
-
-    // When there is no location_ids, it means that the update is done by CSV file
-    if (!location_ids) {
-      // Check if all locations list IDs belong to the same list
-      const listIDs = _.uniq(
-        attributes.map((location) => {
-          return location.list_id;
-        })
-      );
-
-      const attributesListID = Number(listIDs[0]);
-      if (listIDs.length > 1 || attributesListID !== list_id) {
-        res.status(422).send({
-          message: `List ID [${listIDs.toString()}] in locations attributes does not match List ID [${list_id}] of list being selected for editing`,
-          success: false,
-        });
-
-        return;
-      }
-
-      // Check if number of locations_ids are matching number of locations in the list
-      const locationIDs = attributes.map((location) => {
-        return location.location_id;
-      });
-
-      location_ids = _.compact(locationIDs);
-
-      if (location_ids.length !== attributes.length) {
-        res.status(422).send({
-          message: 'Length of arguments and Location IDs do not match',
-          success: false,
-        });
-
-        return;
-      }
-    }
-
-    const errorList = validateAttributes(attributes, activeTemplate);
-    if (errorList.length > 0) {
-      res.status(422).send({
-        message: errorList.join(', '),
-        success: false,
-      });
-      return;
-    }
-
-    if (list_id && attributes) {
-      controller
-        .handleEditLocations(req, list_id, location_ids, attributes)
-        .then((response) => {
-          const { error, locationsEditedMessageFailed, locationsEditedMessageSuccessfully } =
-            response;
-          if (error) {
-            logger.error(locationsEditedMessageFailed);
-            logger.error(error);
-            res.status(422).send({
-              message: locationsEditedMessageFailed,
-              success: false,
-              error,
-            });
-          } else {
-            res.status(200).send({
-              message: locationsEditedMessageSuccessfully,
-              success: true,
-            });
-          }
-        })
-        .catch(({ error, locationsEditedMessageFailed }) => {
-          res.status(422).send({
-            message: locationsEditedMessageFailed,
-            success: false,
-            error,
-          });
-        });
-    } else {
-      res.send({
-        message: 'Missing required parameters',
-        success: false,
-      });
-    }
-  });
-
   app.post('/locations/deleteLocations', (req, res) => {
     console.log('POST /locations/deleteLocations');
     const { list_id, location_ids, gfw_list_id } = req.body;
@@ -535,13 +449,6 @@ module.exports = (app, limiter) => {
       res.status(err.status || 500).send({ msg: err.message });
     }
   });
-
-  app.post('/locations/downloadingSelectedLocations', controller.downloadingSelectedLocations);
-
-  app.post(
-    '/locations/downloadingSelectedLocations/json',
-    controller.downloadingSelectedLocationsJson
-  );
 
   // ********************************************************************************************************************
   // New method to delete locations from filtered list

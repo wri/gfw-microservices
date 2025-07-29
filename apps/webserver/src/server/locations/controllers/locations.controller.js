@@ -1,5 +1,4 @@
 const path = require('path');
-const Papa = require('papaparse');
 const { S3Client, GetObjectCommand } = require('@aws-sdk/client-s3');
 const { HttpStatus } = require('@nestjs/common');
 import config from '../../../config/config';
@@ -377,119 +376,6 @@ export const getListLocationGeometry = (req, res) => {
     });
 };
 
-/**
- * @description - Get CSV file based on filters for specific list.
- * @param {Object} request - Express request
- * @param {Object} response - Express response
- * @return {Promise<void>}
- */
-export const downloadingSelectedLocations = async (request, response) => {
-  logger.info('POST /locations/downloadingSelectedLocations');
-  const {
-    listID,
-    orderType,
-    sortByAttribute,
-    country,
-    state,
-    subState,
-    analysisAreaMin,
-    analysisAreaMax,
-    columnsToReturn,
-    LocationIds,
-    LocationLogic,
-  } = request.body;
-
-  const filters = {
-    orderType,
-    sortByAttribute,
-    country,
-    state,
-    subState,
-    analysisAreaMin,
-    analysisAreaMax,
-    columnsToReturn,
-    LocationIds,
-    LocationLogic,
-  };
-  try {
-    const selectedLocations = await ListManager.getPaginatedAnalysisDataForUserList(
-      request,
-      listID,
-      filters
-    );
-
-    // some templates use 'Investment Name' and others 'Location Name'
-    const locationNameKey =
-      'Investment Name' in selectedLocations[0] ? 'Investment Name' : 'Location Name';
-
-    const csv = Papa.unparse(selectedLocations, {
-      columns: ['list_id', 'location_id', locationNameKey, ...columnsToReturn.split(',')],
-    });
-
-    const currentDate = getCurrentDateTimeFormatted(); // 20221115_131020
-    const filename = `${listID}_${currentDate}.csv`;
-    response.attachment(filename);
-    response.status(200).send(csv);
-  } catch (err) {
-    logger.error(`Downloading Selected Locations Failed ${JSON.stringify(err)}`);
-    response.status(422).send({
-      error: err,
-      success: false,
-    });
-  }
-};
-
-/**
- * @description - Get JSON file based on filters for specific list.
- * @param {Object} request - Express request
- * @param {Object} response - Express response
- * @return {Promise<void>}
- */
-export const downloadingSelectedLocationsJson = async (request, response) => {
-  logger.info('POST /locations/downloadingSelectedLocations/json');
-  const {
-    listID,
-    orderType,
-    sortByAttribute,
-    country,
-    state,
-    subState,
-    analysisAreaMin,
-    analysisAreaMax,
-    columnsToReturn,
-    LocationIds,
-    LocationLogic,
-  } = request.body;
-
-  const filters = {
-    orderType,
-    sortByAttribute,
-    country,
-    state,
-    subState,
-    analysisAreaMin,
-    analysisAreaMax,
-    columnsToReturn,
-    LocationIds,
-    LocationLogic,
-  };
-
-  try {
-    const selectedLocations = await ListManager.getPaginatedAnalysisDataForUserList(
-      request,
-      listID,
-      filters
-    );
-    response.status(200).send(selectedLocations);
-  } catch (err) {
-    logger.error(`Downloading Selected Locations Failed ${JSON.stringify(err)}`);
-    response.status(422).send({
-      error: err,
-      success: false,
-    });
-  }
-};
-
 export const downloadErrorFile = async (req, res) => {
   try {
     const { fileKey } = req.query;
@@ -519,39 +405,6 @@ export const downloadErrorFile = async (req, res) => {
       error: err.message,
       success: false,
     });
-  }
-};
-
-/**
- * @description - Handle edit locations
- * @param {Object} req - Express request
- * @param {number} listID - List ID (e.g. 2038)
- * @param {[]} locationIDs - Location IDs (e.g. [1, 2, 3])
- * @param {[]} attributes - Attributes (e.g. [{'Investment Name': 'ID 30', ...}])
- * @return {Promise<>}
- */
-export const handleEditLocations = async (req, listID, locationIDs, attributes) => {
-  try {
-    const locationsEditedMessageSuccessfully = `List locations Edited for List ID ${listID}: Successfully`;
-
-    // Lock selected list
-    const listLockStatusRecord = await ListManager.getListLockStatus(req, listID);
-    await ListManager.checkListLockStatus(req, listID, listLockStatusRecord);
-
-    // Edit list locations
-    await ListManager.editLocations(req, listID, locationIDs, attributes);
-
-    // Un-Lock selected list
-    await ListManager.setListUnlocked(req, listID);
-    logger.info(locationsEditedMessageSuccessfully);
-    return { locationsEditedMessageSuccessfully };
-  } catch (editError) {
-    const locationsEditedMessageFailed = `Error editing list locations for List ID ${listID}: Failed`;
-    logger.error(locationsEditedMessageFailed, editError);
-
-    // Un-Lock selected list
-    await ListManager.setListUnlocked(req, listID);
-    return { error: editError, locationsEditedMessageFailed };
   }
 };
 

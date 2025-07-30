@@ -52,6 +52,13 @@ export const DATA_CY = {
       SUBMIT_DRAFT: 'nuw_add_file_byid_submit_draft',
     },
   },
+  LANDING: {
+    ADMINISTRATIVE_AREA: 'landing_gfw_administrative_areas',
+    OIL_PALM_CONCESSIONS: 'landing_gfw_oil_palm_concessions',
+    PALM_OIL_MILLS: 'landing_gfw_palm_oil_mills',
+    PROTECTED_AREAS: 'landing_gfw_protected_areas',
+    RSPO_PALM_CONCESSIONS: 'landing_gfw_rspo_palm_concessions',
+  },
 };
 
 export const ExternalLinks = {

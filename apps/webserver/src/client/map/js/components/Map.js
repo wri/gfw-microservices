@@ -1604,7 +1604,6 @@ class Map extends Component {
     const geoString = JSON.stringify(geometry);
 
     const requestObject = {
-      goToEditList: true,
       locationName: locationName,
     };
 

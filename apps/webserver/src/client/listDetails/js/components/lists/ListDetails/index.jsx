@@ -66,7 +66,6 @@ import {
   updateGFWListActiveTemplate,
   updateRegularListActiveTemplate,
 } from '../../../utils/lists-redux.utils';
-import LargeListEditing from '../EditList/LargeListEditing/LargeListEditing';
 import ShareList from '../../../../../locations/js/components/ShareList/ShareList';
 import { FailedPopupDialog } from '../../../../../locations/js/components/landing/FailedPopupDialog';
 import {
@@ -174,7 +173,6 @@ export default class ListDetails extends Component {
       tableSortedBy: 'Location Name',
       tableSortedDesc: false,
       numberOfResults: undefined,
-      displayLargeListEditingModal: false,
       visibleColumns: [],
       isChangeTypeOfAnalysisModalOpen: false,
       isListSubmittedForAnalysis: false,
@@ -1084,8 +1082,8 @@ export default class ListDetails extends Component {
    * @param {Boolean} locationNameForGFW - Defines if parameter is coming from location name for GFW.
    * @param {Boolean} userLocation - Defines if parameter is locations in a user list coming from the Map.
    */
-  processListData = (listData, locationNameForGFW, userLocation) => {
-    const { selectedLists, listView, userListInfoFromMap } = this.props;
+  processListData = (listData) => {
+    const { selectedLists, listView } = this.props;
     const { isEveryRowSelected } = this.state;
     const { list_analysis, location_analyses } = listData;
 
@@ -1116,36 +1114,6 @@ export default class ListDetails extends Component {
           combinedColumns: columnNames.combinedColumns,
           isLoading: false,
         });
-
-        if (locationNameForGFW) {
-          if (typeof locationNameForGFW === 'string') {
-            data[0]['Investment Name'] = data[0]['Investment Name']
-              ? data[0]['Investment Name']
-              : locationNameForGFW;
-            data[0]['Location Name'] = data[0]['Location Name']
-              ? data[0]['Location Name']
-              : locationNameForGFW;
-          }
-
-          const { location_id } = data[0];
-          store.dispatch(updateSelectedLocations([location_id]));
-          store.dispatch(changeView('gfw'));
-        } else if (userLocation) {
-          const location_id = userListInfoFromMap.locationID;
-
-          const selectedFeat = data.filter((feat) => feat.location_id === location_id)[0];
-          if (selectedFeat) {
-            selectedFeat['Investment Name'] = selectedFeat['Investment Name']
-              ? selectedFeat['Investment Name']
-              : selectedFeat['Location Name'];
-            selectedFeat['Location Name'] = selectedFeat['Location Name']
-              ? selectedFeat['Location Name']
-              : selectedFeat['Investment Name'];
-          }
-
-          store.dispatch(updateSelectedLocations([location_id]));
-          this.editList();
-        }
       } else {
         store.dispatch(updateListData([]));
         this.setState({
@@ -1162,14 +1130,6 @@ export default class ListDetails extends Component {
     }
   };
 
-  discernGFWName = (locations) => {
-    let locationName = false;
-    const attrs = locations.location_analyses[0] ? locations.location_analyses[0][0] : null;
-    locationName = attrs ? attrs['Location Name'] : false;
-
-    return locationName;
-  };
-
   getGFWDataFromMap = (gfwList, globalIds) => {
     const { stopLoading } = this.props;
 
@@ -1182,8 +1142,7 @@ export default class ListDetails extends Component {
       .then((response) => {
         const locations = JSON.parse(response);
         if (locations) {
-          const locationName = this.discernGFWName(locations);
-          this.processListData(locations, locationName);
+          this.processListData(locations);
         } else {
           this.setState({ isLoading: false });
           store.dispatch(updateListData([]));
@@ -1219,7 +1178,7 @@ export default class ListDetails extends Component {
   };
 
   getUserLocationData = (list_id, page = 0) => {
-    const { filters, userListInfoFromMap, stopLoading } = this.props;
+    const { filters, stopLoading } = this.props;
     const { tableSortedBy, tableSortedDesc, filterString } = this.state;
 
     this.setState({ page, isLoading: true });
@@ -1252,12 +1211,7 @@ export default class ListDetails extends Component {
           maximumAnalysisAreaInTheList,
         });
 
-        if (!userListInfoFromMap) {
-          this.processListData(listData, false);
-        } else {
-          this.processListData(listData, false, true);
-          stopLoading();
-        }
+        this.processListData(listData);
       })
       .catch((err) => {
         console.warn('err', err);
@@ -1318,29 +1272,6 @@ export default class ListDetails extends Component {
     } else {
       const commodityType = updateGFWListActiveTemplate(selectedList);
       this.setState({ commodityType });
-    }
-  };
-
-  editList = () => {
-    const { isEveryRowSelected, numberOfPages } = this.state;
-    // if all locations where selected and there is more than one page
-    // follow large list editing workflow
-    if (isEveryRowSelected && numberOfPages > 1) {
-      this.setState({
-        displayLargeListEditingModal: true,
-      });
-    } else {
-      this.setState({
-        isLoading: true,
-      });
-
-      this.setAddTypeAndTemplate();
-      store.dispatch(changeView('edit'));
-
-      gtag('event', 'Edit button clicked', {
-        event_category: 'Lists Click',
-        event_label: 'user clicked to enter edit list workflow',
-      });
     }
   };
 
@@ -1589,9 +1520,8 @@ export default class ListDetails extends Component {
       });
   };
 
-  getAdministrativeAreasData = ({ filters, id, locationNameForGFW, page = 0 }) => {
+  getAdministrativeAreasData = ({ filters, id, page = 0 }) => {
     const { tableSortedBy, tableSortedDesc, filterString } = this.state;
-    // when coming from the Map, locationNameForGFW is either the locationName or true
     this.setState({ isLoading: true });
     httpRequest
       .fetchJSON('/locations/getAdministrativeAreasData', {
@@ -1607,7 +1537,7 @@ export default class ListDetails extends Component {
         const parsedResponse = JSON.parse(response);
         const { numberOfPages, numberOfResults } = parsedResponse;
         this.setState({ numberOfPages, numberOfResults });
-        this.processListData(parsedResponse, locationNameForGFW);
+        this.processListData(parsedResponse);
       })
       .catch((err) => {
         this.setState({ isLoading: false });
@@ -1615,7 +1545,7 @@ export default class ListDetails extends Component {
       });
   };
 
-  getProtectedAreasData = ({ filters, id, locationNameForGFW, page = 0 }) => {
+  getProtectedAreasData = ({ filters, id, page = 0 }) => {
     const { tableSortedBy, tableSortedDesc, filterString } = this.state;
     this.setState({ isLoading: true });
     httpRequest
@@ -1632,7 +1562,7 @@ export default class ListDetails extends Component {
         const parsedResponse = JSON.parse(response);
         const { numberOfPages, numberOfResults } = parsedResponse;
         this.setState({ numberOfPages, numberOfResults });
-        this.processListData(parsedResponse, locationNameForGFW);
+        this.processListData(parsedResponse);
       })
       .catch((err) => {
         this.setState({ isLoading: false });
@@ -1717,20 +1647,15 @@ export default class ListDetails extends Component {
   }
   render() {
     const {
-      activeTemplate,
-      addType,
       canopyModalVisible: isFilterModalVisible,
-      commodityType,
       currentUser,
       filterCount,
       filteredLocationData,
-      filters,
       listData,
       listView,
       selectedLists,
       selectedLocations,
       shareView,
-      templateData,
       userSharedLists,
       usersList,
     } = this.props;
@@ -1769,7 +1694,6 @@ export default class ListDetails extends Component {
       tableSortedBy,
       tableSortedDesc,
       numberOfResults,
-      displayLargeListEditingModal,
       visibleColumns,
       isEveryRowSelected,
       isListSubmittedForAnalysis,
@@ -1786,12 +1710,6 @@ export default class ListDetails extends Component {
 
     const listID = selectedList?.id;
     const countries = [...new Set(filteredLocationData.map((list) => list.Country))].sort();
-    const customAttributeNames =
-      selectedList &&
-      selectedList.custom_attribute_names &&
-      selectedList.custom_attribute_names.length > 0
-        ? selectedList.custom_attribute_names.split(',')
-        : [];
 
     const listName = selectedList ? selectedList.list_name : '';
     const listAnalysesStatus = selectedList?.listAnalysesStatus ?? [];
@@ -1853,9 +1771,6 @@ export default class ListDetails extends Component {
       selectedList &&
       currentUser.access_level_id !== userAccessLevel.VIEWER &&
       (currentUser.access_level_id === userAccessLevel.ADMIN || !selectedListIsShared);
-
-    const isEditActionAvailable =
-      !isGfwList && !selectedListIsShared && currentUser.access_level_id !== userAccessLevel.VIEWER;
 
     if (isFcdActive || isGfwList) {
       listViewOptions.push(FOREST_CHANGE_VIEW);
@@ -2135,8 +2050,6 @@ export default class ListDetails extends Component {
                       handleSearchInputKeyDown={this.handleSearchInputKeyDown}
                       handleSearchInputClick={this.handleSearchInputClick}
                       showMultipleSelectionBulkActions={showMultipleSelectionBulkActions}
-                      isEditActionAvailable={isEditActionAvailable}
-                      editList={this.editList}
                       canMove={canMove}
                       promptMoveSelectedLocations={this.promptMoveSelectedLocations}
                       canDelete={canDelete}
@@ -2347,8 +2260,6 @@ export default class ListDetails extends Component {
                                 viewDiagnostic={this.viewDiagnostic}
                                 isDeleteButtonAvailable={canDelete}
                                 promptDeleteSelectedLocations={this.promptDeleteSelectedLocations}
-                                isEditActionAvailable={isEditActionAvailable}
-                                editList={this.editList}
                                 copyMoveAction={this.promptMoveSelectedLocations}
                                 isCopyMoveActionAvailable={canMove}
                                 currentUser={currentUser}
@@ -2371,31 +2282,6 @@ export default class ListDetails extends Component {
               </section>
             </div>
           </section>
-
-          {displayLargeListEditingModal && (
-            <LargeListEditing
-              addType={addType}
-              activeTemplate={activeTemplate}
-              commodityType={commodityType}
-              templateData={templateData}
-              customAttributeNames={customAttributeNames}
-              listID={listID}
-              listName={listName}
-              filters={filters}
-              tableSortedBy={tableSortedBy}
-              tableSortedDesc={tableSortedDesc}
-              selectedLocations={selectedLocations}
-              onClose={(refreshTable) => {
-                this.setState({ displayLargeListEditingModal: false });
-                if (refreshTable) {
-                  this.getUserLocationData(listID);
-                }
-              }}
-              isLoading={(loading) => {
-                this.setState({ isLoading: loading });
-              }}
-            />
-          )}
         </div>
       </ThemeProvider>
     );

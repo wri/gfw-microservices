@@ -59,41 +59,6 @@ const filterValidCustom = (userList, customFields) => {
   return validCustom;
 };
 
-const discernPropValue = (feature, prop) => {
-  let propValue = feature[prop];
-  if (prop === 'Accuracy Rating of Location Entered') {
-    if (typeof propValue !== 'undefined' && propValue?.toLowerCase) {
-      switch (propValue.toLowerCase()) {
-        case "don't know":
-          propValue = 0;
-          break;
-        case 'dont know':
-          propValue = 0;
-          break;
-        case 'not confident':
-          propValue = 1;
-          break;
-        case 'moderately confident':
-          propValue = 2;
-          break;
-        case 'very confident':
-          propValue = 3;
-          break;
-        default:
-          propValue = 0;
-      }
-    } else {
-      propValue = 0;
-    }
-  } else if (prop === 'Size of Investment') {
-    if (propValue === '') {
-      propValue = null;
-    }
-  }
-
-  return propValue;
-};
-
 const saveGfwListLocations = (
   selectedList,
   newListName,
@@ -231,7 +196,6 @@ const saveGfwListLocations = (
 };
 
 module.exports = {
-  discernPropValue,
   filterValidTemplates,
   saveGfwListLocations,
   filterValidCustom,

@@ -66,7 +66,6 @@ export const listDetails = (req, res, data) => {
         userLists,
         userSharedLists: isAdministrator ? [] : userSharedLists,
         userInfo,
-        organizationId: req.session.organization_id,
         locationCount,
         gfwLists,
         usersList: isAdministrator ? usersList : [],

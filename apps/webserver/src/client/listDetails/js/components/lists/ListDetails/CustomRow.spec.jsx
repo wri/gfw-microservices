@@ -34,7 +34,6 @@ const defaultProps = {
   isDeleteButtonAvailable: true,
   promptDeleteSelectedLocations: jest.fn(),
   isEditActionAvailable: true,
-  editList: jest.fn(),
   copyMoveAction: jest.fn(),
   isCopyMoveActionAvailable: true,
   selectedList: 'list1',

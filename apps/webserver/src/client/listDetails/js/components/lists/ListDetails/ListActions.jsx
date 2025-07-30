@@ -17,7 +17,6 @@ import {
 import redirectToMap from '../../../../../common/js/utils/redirect';
 
 import ListDownloadMenu from '../download/ListDownloadMenu';
-import { EditListBulkActionButton } from '../EditList/EditListBulkActionButton';
 import CustomDialog from 'common/js/components/CustomDialog/CustomDialog';
 import ManageListFolderDialog from 'locations/js/components/landing/ManageListFolderDialog';
 import { getIsDiagnosticStatusDraft } from '../../../utils/draft.utils';
@@ -55,8 +54,6 @@ const ListActions = ({
   handleSearchInputKeyDown,
   handleSearchInputClick,
   showMultipleSelectionBulkActions,
-  isEditActionAvailable,
-  editList,
   canMove,
   promptMoveSelectedLocations,
   canDelete,
@@ -341,10 +338,6 @@ const ListActions = ({
                 isLoading={isLoading}
                 isGfwList={isGfwList}
               />
-            )}
-
-            {isEditActionAvailable && showMultipleSelectionBulkActions && !isSearchBarOpen && (
-              <EditListBulkActionButton editList={editList} currentUser={currentUser} />
             )}
 
             {canDelete && showMultipleSelectionBulkActions && !isSearchBarOpen && (

@@ -62,7 +62,6 @@ describe('WrappedReactTable', () => {
     isDeleteButtonAvailable: false,
     promptDeleteSelectedLocations: jest.fn(),
     isEditActionAvailable: false,
-    editList: jest.fn(),
     copyMoveAction: jest.fn(),
     isCopyMoveActionAvailable: false,
     selectedList: null,

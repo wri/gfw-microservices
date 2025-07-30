@@ -29,8 +29,6 @@ const WrappedReactTable = ({
   viewDiagnostic,
   isDeleteButtonAvailable,
   promptDeleteSelectedLocations,
-  isEditActionAvailable,
-  editList,
   copyMoveAction,
   isCopyMoveActionAvailable,
   selectedList,
@@ -234,8 +232,6 @@ const WrappedReactTable = ({
             viewDiagnostic={viewDiagnostic}
             isDeleteButtonAvailable={isDeleteButtonAvailable}
             promptDeleteSelectedLocations={promptDeleteSelectedLocations}
-            isEditActionAvailable={isEditActionAvailable}
-            editList={editList}
             copyMoveAction={copyMoveAction}
             isCopyMoveActionAvailable={isCopyMoveActionAvailable}
             visibleColumns={visibleColumns}

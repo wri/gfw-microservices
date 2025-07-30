@@ -1,28 +1,3 @@
-export const deduceActiveName = (activeTemplate) => {
-  const templateNameMap = {
-    palmMill: 'Palm Oil Mill',
-    palmPlantation: 'Palm Oil Plantation',
-    palmFarm: 'Palm Smallholder Farm',
-    palmGeneric: 'Palm Oil Generic',
-    soySilo: 'Soy Silo',
-    soyFarm: 'Soy Farm',
-    soyGeneric: 'Soy Generic',
-    beef: 'Beef Slaughterhouse',
-    cattle: 'Cattle Ranch',
-    cattleGeneric: 'Cattle Generic',
-    cocoa: 'Cocoa Farm',
-    cocoaGeneric: 'Cocoa Generic',
-    coffee: 'Coffee',
-    rubber: 'Rubber',
-    pulp: 'Pulp and Paper',
-    soy: 'Soy',
-    sugarCane: 'Sugar Cane',
-    other: 'Other',
-  };
-
-  return templateNameMap[activeTemplate] || 'Other';
-};
-
 export const deduceActiveId = (activeTemplate) => {
   const templateMap = {
     investment: 1,

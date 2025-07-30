@@ -94,6 +94,7 @@ export function DataTemplates({ isOpen, onClose }: DataTemplatesProps) {
           minHeight: '540px',
         },
       }}
+      data-testid="data-templates"
     >
       <Box
         sx={{

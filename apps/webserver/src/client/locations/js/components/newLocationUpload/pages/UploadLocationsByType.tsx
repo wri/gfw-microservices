@@ -69,12 +69,8 @@ export function UploadLocationsByType() {
   const typeConfig = {
     [UploadType.ByFile]: {
       title: 'By Data File: Prepare & Upload Location Data',
-      helperText: 'How to format your location data for GFW Pro',
-      helperUrl: ExternalLinks.HowToFormatLocationData,
       caption:
         'First, prepare your data in a format accepted by GFW Pro. Then, upload your file(s).',
-      instructions:
-        'Before uploading your data, it must be formatted according to a GFW Pro template. Click on “Data Templates” to learn more about data formatting and download templates. If you already have your data formatted for GFW Pro, just upload it below.',
       unsupportedTypeMsg: (
         <>
           It looks like the file you uploaded isn't one of GFW Pro's accepted file types. GFW Pro
@@ -85,12 +81,8 @@ export function UploadLocationsByType() {
     },
     [UploadType.ById]: {
       title: 'By ID: Prepare & Upload Location Data',
-      helperText: 'How to format your location data for GFW Pro',
-      helperUrl: ExternalLinks.HowToFormatLocationData,
       caption:
         'Prepare your data in a format accepted by GFW Pro to upload your ID(s) system based.',
-      instructions:
-        'Before uploading your data, it must be formatted according to a GFW Pro template. Click on “Data Templates” to learn more about data formatting and download templates. If you already have your data formatted for GFW Pro, just upload it below.',
       unsupportedTypeMsg: (
         <>
           It looks like the file you uploaded is not supported for ID-based upload. ID-based upload
@@ -109,7 +101,11 @@ export function UploadLocationsByType() {
       <Card sx={{ pt: 1, px: 2, pb: 2 }}>
         <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
           <Typography variant="h6">{config.title}</Typography>
-          <ExternalHelperResource text={config.helperText} url={config.helperUrl} color="info" />
+          <ExternalHelperResource
+            text="Step-by-step instructions"
+            url={ExternalLinks.HowToFormatLocationData}
+            color="info"
+          />
         </Box>
         <Typography
           variant="caption"
@@ -125,7 +121,9 @@ export function UploadLocationsByType() {
           color={theme.palette.text.secondary}
           sx={{ display: 'block', my: 1.25, maxWidth: '530px' }}
         >
-          {config.instructions}
+          Before uploading your data, it must be formatted according to a GFW Pro template. Click on
+          “Data Templates” to learn more about data formatting and download templates. If you
+          already have your data formatted for GFW Pro, just upload it below.
         </Typography>
 
         <PillButton

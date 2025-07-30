@@ -1,24 +1,26 @@
 import { fireEvent, render, screen, waitFor } from '@testing-library/react';
+import userEvent, { UserEvent } from '@testing-library/user-event';
+
 import { UploadLocationsByType } from './UploadLocationsByType';
 import { useUploadLocation } from '../contexts';
-import { ThemeProvider } from '../../../../../styles/ThemeProvider';
-import { MemoryRouter, Route } from 'react-router-dom';
-import userEvent from '@testing-library/user-event';
 import { uploadFileToS3 } from '../utils/upload';
 import { UploadType } from '../types';
 
 jest.mock('../components', () => ({
-  DataTemplates: () => <span />,
+  ...jest.requireActual('../components'),
   NavBar: () => <span />,
   UploadByFileFolderIcon: () => <span />,
   UploadByFileInstructions: () => <span />,
 }));
 
+const externalHelperResourceMock = jest.fn();
 jest.mock('../../../../../components', () => {
-  const { PillButton } = jest.requireActual('../../../../../components');
   return {
-    PillButton,
-    ExternalHelperResource: () => <span data-testid="external-helper-resource-mock" />,
+    ...jest.requireActual('../../../../../components'),
+    ExternalHelperResource: (props) => {
+      externalHelperResourceMock(props);
+      return <span data-testid="external-helper-resource-mock" />;
+    },
   };
 });
 
@@ -41,19 +43,13 @@ jest.mock('../hooks', () => ({
   useFileUpload: jest.fn(),
 }));
 
-function renderWithRoute(route: string) {
-  return render(
-    <ThemeProvider>
-      <MemoryRouter initialEntries={[route]}>
-        <Route path={route}>
-          <UploadLocationsByType />
-        </Route>
-      </MemoryRouter>
-    </ThemeProvider>
-  );
-}
-
 describe('UploadLocationByType', () => {
+  let user: UserEvent;
+
+  beforeEach(() => {
+    user = userEvent.setup();
+  });
+
   describe('render /by-id', () => {
     const mockAddFile = jest.fn();
     const mockClearUploadType = jest.fn();
@@ -69,7 +65,7 @@ describe('UploadLocationByType', () => {
     });
 
     it('should render ById UI when route is /by-id', () => {
-      renderWithRoute('/by-id');
+      render(<UploadLocationsByType />);
       expect(
         screen.getByRole('heading', { name: /by id: prepare & upload location data/i })
       ).toBeInTheDocument();
@@ -109,16 +105,33 @@ describe('UploadLocationByType', () => {
       (useUploadLocation as jest.Mock).mockReturnValue(baseContext);
     });
 
-    it('should render ByFile UI when route is /by-file', () => {
-      renderWithRoute('/by-file');
+    it('should render correctly', () => {
+      render(<UploadLocationsByType />);
 
       expect(
         screen.getByRole('heading', { name: /by data file: prepare & upload location data/i })
       ).toBeInTheDocument();
-      expect(screen.getByTestId('external-helper-resource-mock')).toBeInTheDocument();
+      screen.getByText(
+        /first, prepare your data in a format accepted by gfw pro\. then, upload your file\(s\)\./i
+      );
+      screen.getByRole('heading', {
+        name: /how to prepare your data/i,
+      });
       expect(
         screen.getByText(/data files must be formatted according to gfw pro requirements/i)
       ).toBeInTheDocument();
+
+      screen.getByText(
+        /before uploading your data, it must be formatted according to a gfw pro template\. click on “data templates” to learn more about data formatting and download templates\. if you already have your data formatted for gfw pro, just upload it below\./i
+      );
+
+      expect(screen.getByTestId('external-helper-resource-mock')).toBeInTheDocument();
+
+      expect(externalHelperResourceMock).toHaveBeenCalledWith({
+        text: 'Step-by-step instructions',
+        url: 'https://globalforestwatch.org/help/gfw-pro/guides/complete-selected-template',
+        color: 'info',
+      });
     });
 
     it('should handle file upload success', async () => {
@@ -129,10 +142,8 @@ describe('UploadLocationByType', () => {
         url: 'url',
       });
 
-      const user = userEvent.setup();
-      renderWithRoute('/by-file');
+      render(<UploadLocationsByType />);
 
-      // Use userEvent to upload the file
       const input = screen.getByTestId('file-input') as HTMLInputElement;
       await user.upload(input, file);
 
@@ -149,7 +160,7 @@ describe('UploadLocationByType', () => {
     it('should display an error message for unsupported file types via drag and drop', async () => {
       const file = new File(['dummy content'], 'test.txt', { type: 'text/plain' });
 
-      renderWithRoute('/by-file');
+      render(<UploadLocationsByType />);
 
       const dropzone = screen.getByRole('form');
       fireEvent.drop(dropzone, {
@@ -170,21 +181,34 @@ describe('UploadLocationByType', () => {
       (uploadFileToS3 as jest.Mock).mockRejectedValue(new Error('Upload failed'));
       const file = new File(['dummy content'], 'test.csv', { type: 'text/csv' });
 
-      const user = userEvent.setup();
-      renderWithRoute('/by-file');
+      render(<UploadLocationsByType />);
 
-      // Use userEvent to upload the file
       const input = screen.getByTestId('file-input') as HTMLInputElement;
       await user.upload(input, file);
 
       await waitFor(() => {
         expect(screen.getByText('Upload again')).toBeInTheDocument();
-        expect(screen.getByText('Next')).toBeDisabled();
+        expect(screen.getByRole('button', { name: /next/i })).toBeDisabled();
       });
     });
 
+    it('should open data templates modal', async () => {
+      render(<UploadLocationsByType />);
+
+      expect(screen.queryByTestId('data-templates')).toBeNull();
+      await user.click(screen.getByRole('button', { name: /data templates/i }));
+      expect(screen.getByTestId('data-templates')).toBeInTheDocument();
+    });
+
+    it('should navigate back to options page when user clicks on cancel', async () => {
+      render(<UploadLocationsByType />);
+
+      expect(mockClearUploadType).not.toHaveBeenCalled();
+      await user.click(screen.getByRole('button', { name: /cancel/i }));
+      expect(mockClearUploadType).toHaveBeenCalledTimes(1);
+    });
+
     it('should navigate to preview page when file upload is successful', async () => {
-      const user = userEvent.setup();
       (uploadFileToS3 as jest.Mock).mockResolvedValue({
         keyFile: 'https://example.com/test.csv',
         fileS3Route: 'fileS3Route',
@@ -192,21 +216,21 @@ describe('UploadLocationByType', () => {
       });
       const file = new File(['dummy content'], 'test.csv', { type: 'text/csv' });
 
-      renderWithRoute('/by-file');
+      render(<UploadLocationsByType />);
 
-      const nextButton = screen.getByText('Next');
+      const nextButton = screen.getByRole('button', { name: /next/i });
       expect(nextButton).toBeDisabled();
 
       const dropzone = screen.getByRole('form');
-      fireEvent.drop(dropzone, {
-        dataTransfer: { files: [file] },
-      });
+      await waitFor(() =>
+        fireEvent.drop(dropzone, {
+          dataTransfer: { files: [file] },
+        })
+      );
 
-      await waitFor(async () => {
-        expect(nextButton).not.toBeDisabled();
-        await user.click(nextButton);
-        expect(mockHistoryPush).toHaveBeenCalledWith('PREVIEW');
-      });
+      expect(nextButton).not.toBeDisabled();
+      await user.click(nextButton);
+      expect(mockHistoryPush).toHaveBeenCalledWith('PREVIEW');
     });
   });
 });

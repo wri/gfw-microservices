@@ -119,11 +119,13 @@ export function UploadLocationByPolygon({
 
   useEffect(() => {
     // draw the map one time when it's redirected from the map page
-    if (mapView && polygonFromMapPage?.geometry) {
-      const coordinates = polygonFromMapPage.geometry?.rings?.[0]?.map((coord) => ({
+    const geometryRings = polygonFromMapPage?.geometry?.rings?.[0];
+    if (mapView && geometryRings) {
+      const coordinates = geometryRings?.map((coord) => ({
         longitude: coord[0].toString(),
         latitude: coord[1].toString(),
       }));
+
       const formattedCoordinates = coordinates.reduce((acc, coord, index) => {
         acc[index.toString()] = {
           latitude: coord.latitude,

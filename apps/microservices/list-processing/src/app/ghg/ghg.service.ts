@@ -4,10 +4,13 @@ import {
   GHGAnalyses,
   GHGAnalysisDataByListId,
   Lists,
+  ListSchema,
+  ListSchemaType,
   SQLUtils,
 } from '@wri-monorepos/sql';
 import { Injectable, Logger } from '@nestjs/common';
 import * as sql from 'mssql';
+import { EntitySchema } from 'typeorm';
 
 interface GHGAnalysisData {
   listId: number;
@@ -64,9 +67,17 @@ export class GHGService {
     const connection = await this.clientStoreConnection.getConnection(clientDatabase);
     try {
       const ListRepository = await connection.getRepository(Lists);
-      const { listName, Commodity } = await ListRepository.findOne({
+      const { listName, Commodity, listTableName } = await ListRepository.findOne({
         where: { id: listId },
       });
+      const ListEntity = new EntitySchema<ListSchemaType>({
+        ...ListSchema,
+        name: listTableName,
+      });
+      const listTableconnection = await this.clientStoreConnection.getConnection(clientDatabase, [
+        ListEntity,
+      ]);
+      const listLocationRepository = listTableconnection.getRepository(ListEntity);
 
       const parameters = [
         { field: 'listId', type: sql.Int, value: listId },
@@ -80,32 +91,41 @@ export class GHGService {
         parameters
       );
 
-      return data.map((item) => {
-        const {
-          listId,
-          totalAreaHa,
-          statusCode,
-          locationError,
-          emissionsFactorByYear,
-          efCo2ByYear,
-          efCh4ByYear,
-          efN2oByYear,
-          locationName,
-        } = item;
-        return {
-          listId,
-          listName,
-          locationName,
-          totalAreaHa,
-          statusCode,
-          locationError,
-          commodity: Commodity,
-          co2EmissionsFactor: efCo2ByYear,
-          ch4EmissionsFactor: efCh4ByYear,
-          n2oEmissionsFactor: efN2oByYear,
-          combinedEmissionsFactor: emissionsFactorByYear,
-        };
-      });
+      return await Promise.all(
+        data.map(async (item) => {
+          const {
+            listId,
+            totalAreaHa,
+            statusCode,
+            locationError,
+            emissionsFactorByYear,
+            efCo2ByYear,
+            efCh4ByYear,
+            efN2oByYear,
+            locationName,
+          } = item;
+          const result = await listLocationRepository.findOne({
+            where: { locationName: locationName },
+            select: ['country', 'state', 'subState'],
+          });
+          return {
+            listId,
+            listName,
+            country: result?.country || '',
+            state: result?.state || '',
+            subState: result?.subState || '',
+            locationName,
+            totalAreaHa,
+            statusCode,
+            locationError,
+            commodity: Commodity,
+            co2EmissionsFactor: efCo2ByYear,
+            ch4EmissionsFactor: efCh4ByYear,
+            n2oEmissionsFactor: efN2oByYear,
+            combinedEmissionsFactor: emissionsFactorByYear,
+          };
+        })
+      );
     } catch (e) {
       this.logger.error(`listId: ${listId} , pageNumber: ${pageNumber} error: ${e}`);
       return [];

@@ -146,7 +146,7 @@ export class ReadmeService {
           )
         : // Format GHG readme file
         type === 'ghg'
-        ? this.readmeMergeServices.processFiles(
+        ? await this.readmeMergeServices.processFiles(
             [this.getSourceDir(returnFileToCopy[type]())],
             null,
             this.getPathDir(key),

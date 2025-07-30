@@ -12,6 +12,9 @@ class OrganizeGreenHouseGasEmissionsResponse extends Transform {
     const {
       listName,
       locationName,
+      country,
+      state,
+      subState,
       totalAreaHa,
       commodity,
       co2EmissionsFactor,
@@ -30,7 +33,16 @@ class OrganizeGreenHouseGasEmissionsResponse extends Transform {
       : null;
 
     if (listName && locationName && totalAreaHa && commodity && combinedEmissionsFactor) {
-      const sharedInfo = [listName, locationName, totalAreaHa, commodityHumanReadable, 'dLUC'];
+      const sharedInfo = [
+        listName,
+        locationName,
+        country,
+        state,
+        subState,
+        totalAreaHa,
+        commodityHumanReadable,
+        'dLUC',
+      ];
 
       const co2Emissions = JSON.parse(co2EmissionsFactor || '{}');
       const ch4Emissions = JSON.parse(ch4EmissionsFactor || '{}');

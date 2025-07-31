@@ -233,8 +233,8 @@ describe('UploadLocationByPolygon', () => {
     const latitudeFields = screen.getAllByLabelText(/latitude/i);
     const longitudeFields = screen.getAllByLabelText(/longitude/i);
 
-    await user.type(latitudeFields[0], '90');
-    await user.type(longitudeFields[0], '180');
+    await user.type(latitudeFields[0], '90.01');
+    await user.type(longitudeFields[0], '180.01');
 
     await user.click(
       screen.getByRole('button', {

@@ -8,7 +8,7 @@ on:
 # nx cache intermittently fails with github actions, likely due to parallelism
 # so disabling the check for now
 env:
-  UNSTABLE: 'apps/gfwpro-e2e/cypress/e2e/features/InformationBubbles.feature,apps/gfwpro-e2e/cypress/e2e/features/editList.feature'
+  UNSTABLE: 'apps/gfwpro-e2e/cypress/e2e/features/InformationBubbles.feature'
   NX_REJECT_UNKNOWN_LOCAL_CACHE: 0
 
 jobs:

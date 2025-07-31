@@ -130,5 +130,5 @@ export const getAllAccountsList = `
 	CLOSE org_cursor;
 	DEALLOCATE org_cursor;
 
-	SELECT * FROM @CompiledPendingAccounts WHERE organization_active = 1; -- Only return active accounts
+	SELECT * FROM @CompiledPendingAccounts;
 `;

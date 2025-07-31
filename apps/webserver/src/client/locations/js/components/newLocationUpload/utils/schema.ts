@@ -16,7 +16,7 @@ export const extendedLocationNameSchema = buildTrimmedRegexStringSchema(
 export const coordinateSchema = z.object({
   latitude: z
     .string()
-    .nonempty()
+    .nonempty('Enter the latitude')
     .max(19)
     .refine(
       (value) => {
@@ -24,12 +24,12 @@ export const coordinateSchema = z.object({
         return Math.abs(Number(normalizedValue)) <= 90;
       },
       {
-        message: 'This latitude is invalid. Please ensure your it is in decimal degree notation',
+        message: 'This latitude is invalid',
       }
     ),
   longitude: z
     .string()
-    .nonempty()
+    .nonempty('Enter the longitude')
     .max(20)
     .refine(
       (value) => {
@@ -37,7 +37,7 @@ export const coordinateSchema = z.object({
         return Math.abs(Number(normalizedValue)) <= 180;
       },
       {
-        message: 'This longitude is invalid. Please ensure your it is in decimal degree notation',
+        message: 'This longitude is invalid.',
       }
     ),
 });

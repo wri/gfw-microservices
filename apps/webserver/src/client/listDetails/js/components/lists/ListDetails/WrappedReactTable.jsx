@@ -104,7 +104,9 @@ const WrappedReactTable = ({
     }
     // Only override show property if the column doesn't have its own show logic
     // and it's in the toggleable columns list
-    if (toggleableColumns.includes(col.accessor) && col.show === undefined) {
+    const hasGetter = !!Object.getOwnPropertyDescriptor(col, 'show')?.get;
+
+    if (toggleableColumns.includes(col.accessor) && !hasGetter) {
       col.show = visibleColumns.includes(col.accessor);
     }
 

@@ -2,6 +2,7 @@ import { styled } from '@mui/material/styles';
 import { Button } from '@mui/material';
 
 export const PillButton = styled(Button)(({ theme }) => ({
+  height: 'fit-content',
   borderRadius: 20,
   px: 0.75,
   py: 3,

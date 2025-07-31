@@ -39,15 +39,7 @@ export class ConvertersService {
    * Retrieves the GFW Pro connection, caching it for future use as Singleton.
    */
   private async getGfwProConnection(): Promise<DataSource> {
-    if (!this.gfwProConnection) {
-      try {
-        this.gfwProConnection = await this.clientStoreConnection.getConnection('gfwpro');
-      } catch (error) {
-        this.logger.error(`Failed to get gfwpro connection: ${error.message}`);
-        throw new Error('Could not establish gfwpro connection');
-      }
-    }
-    return this.gfwProConnection;
+    return await this.clientStoreConnection.getConnection('gfwpro');
   }
 
   /**
@@ -74,8 +66,8 @@ export class ConvertersService {
     const gfwProConnection = await this.getGfwProConnection();
 
     try {
-      await updateConverterStatus(gfwProConnection, id, ConverterStatus.RUNNING);
       await updateConverterStartTime(gfwProConnection, id);
+      await updateConverterStatus(gfwProConnection, id, ConverterStatus.RUNNING);
     } catch (error) {
       const errorMessage = error?.response?.data || error?.message || error || 'Unknown error';
       const errorLog = `Failed to update converter start time for ID: ${id}: ${

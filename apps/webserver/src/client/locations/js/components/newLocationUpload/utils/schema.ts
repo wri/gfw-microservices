@@ -16,7 +16,7 @@ export const extendedLocationNameSchema = buildTrimmedRegexStringSchema(
 export const coordinateSchema = z.object({
   latitude: z
     .string()
-    .nonempty('Enter the latitude')
+    .min(1, 'Enter the latitude')
     .max(19)
     .refine(
       (value) => {
@@ -29,7 +29,7 @@ export const coordinateSchema = z.object({
     ),
   longitude: z
     .string()
-    .nonempty('Enter the longitude')
+    .min(1, 'Enter the longitude')
     .max(20)
     .refine(
       (value) => {

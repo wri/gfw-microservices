@@ -242,8 +242,6 @@ describe('UploadLocationByPolygon', () => {
       })
     );
 
-    screen.logTestingPlaygroundURL();
-
     expect(screen.queryAllByText(/this latitude value is invalid/i)).toHaveLength(3);
     expect(screen.queryAllByText(/this longitude value is invalid/i)).toHaveLength(3);
   }, 10100);

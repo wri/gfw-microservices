@@ -16,19 +16,61 @@ axiosRetry(axios, {
 
 const POOL_SIZE = 20; // Increased pool size since we have higher rate limit
 const DEFAULT_DELAY = 500;
+const MAX_LIMIT = 180; // Maximum requests per second
+// Rate limiter implementation
+class RateLimiter {
+  private requestTimes: number[] = [];
+  private readonly maxRequestsPerSecond: number;
+
+  constructor(maxRequestsPerSecond: number = MAX_LIMIT) {
+    this.maxRequestsPerSecond = maxRequestsPerSecond;
+  }
+
+  async waitIfNeeded(): Promise<void> {
+    const now = Date.now();
+
+    // Remove requests older than 1 second
+    this.requestTimes = this.requestTimes.filter((time) => now - time < 1000);
+
+    // If we're at the limit, wait until we can make another request
+    if (this.requestTimes.length >= this.maxRequestsPerSecond) {
+      const oldestRequest = this.requestTimes[0];
+      const waitTime = 1000 - (now - oldestRequest) + 10; // Add 10ms buffer
+
+      if (waitTime > 0) {
+        await new Promise((resolve) => setTimeout(resolve, waitTime));
+        return this.waitIfNeeded(); // Recursively check again
+      }
+    }
+
+    // Record this request
+    this.requestTimes.push(now);
+  }
+
+  getCurrentRate(): number {
+    const now = Date.now();
+    this.requestTimes = this.requestTimes.filter((time) => now - time < 1000);
+    return this.requestTimes.length;
+  }
+}
+
 export class GADMService extends AbstractHandler<ChainType> {
   logger = new Logger(GADMService.name);
+  private rateLimiter = new RateLimiter(MAX_LIMIT);
 
   /**
    * Function to perform a GET request using axios.
    * @param {Feature} feature - The feature object containing properties and geometry.
    * @returns {Promise<IFeatureSet>} - A promise that resolves to the query result.
    */
-  getGadmData = async (feature: Feature) => {
+  getGadmData = async (feature: Feature, retryCount = 0) => {
     const { latitude, longitude, hasUnanalyzableError } = feature.properties;
     if (hasUnanalyzableError) {
       throw new Error('Feature does not have valid longitude/latitude or geometry.');
     }
+
+    // Apply rate limiting before making the request
+    await this.rateLimiter.waitIfNeeded();
 
     const geometry = {
       type: 'Point',
@@ -54,12 +96,25 @@ export class GADMService extends AbstractHandler<ChainType> {
 
       return response.data?.data;
     } catch (error) {
+      // Handle 429 (Too Many Requests) with specific retry logic
+      if (error.response?.status === 429 && retryCount < 3) {
+        const delayMs = DEFAULT_DELAY; // Fixed 500 ms delay for 429 errors
+        this.logger.warn(
+          `Rate limited (429) for GADM request at ${latitude}, ${longitude}. Current rate: ${this.rateLimiter.getCurrentRate()}/s. Retrying in ${delayMs}ms (attempt ${
+            retryCount + 1
+          }/3)`
+        );
+
+        await new Promise((resolve) => setTimeout(resolve, delayMs));
+        return this.getGadmData(feature, retryCount + 1);
+      }
+
       this.logger.error(
-        `Error fetching GADM data for feature at ${latitude}, ${longitude}`,
+        `Error fetching GADM data for feature at ${latitude}, ${longitude}. Current rate: ${this.rateLimiter.getCurrentRate()}/s`,
         error.response?.data?.message || error.stack
       );
 
-      // Add a small delay before rethrowing
+      // Add a small delay before rethrowing for non-429 errors
       if (error.response?.status !== 429) {
         await new Promise((resolve) => setTimeout(resolve, DEFAULT_DELAY));
       }

@@ -14,7 +14,6 @@ class ListDetailsPage {
     titleAlertDownloadList: () => cy.contains('List file Download'),
     copyMoveBtn: () => cy.contains('Copy/Move'),
     copyBtn: () => cy.get('.MuiButton-primary'),
-    editBtn: () => cy.contains('EDIT'),
     deleteBtn: () => cy.contains('Delete'),
     createNewListText: () => cy.contains('Create new'),
     createNewListOptionRadioBtn: () => cy.get('.move-or-copy__option').last().find('input'),
@@ -156,11 +155,6 @@ class ListDetailsPage {
   }
   clickOnCopyBtn() {
     this.elements.copyBtn().click();
-  }
-  clickOnEditBtn() {
-    this.elements.hiddenElement().trigger('mouseover');
-    this.elements.moreOptionsBtn().click();
-    this.elements.editBtn().click();
   }
   clickOnDeleteBtn() {
     this.elements.deleteBtn().click();

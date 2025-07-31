@@ -348,7 +348,7 @@ export default class Dashboard extends Component {
               <PillButton
                 startIcon={<Description />}
                 size="small"
-                color="info"
+                sx={{ color: 'info.main', mx: 1 }}
                 onClick={this.printReport}
               >
                 Report
@@ -357,7 +357,7 @@ export default class Dashboard extends Component {
                 startIcon={<FileDownload />}
                 size="small"
                 hidden={isEmpty(rawData)}
-                color="info"
+                sx={{ color: 'info.main' }}
                 onClick={() => {
                   downloadDashboard();
                   this.setState({ isLoading: true, isOpenDownloadDialog: true });

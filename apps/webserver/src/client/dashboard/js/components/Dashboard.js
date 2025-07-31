@@ -346,18 +346,21 @@ export default class Dashboard extends Component {
                 <span>{`Last updated: ${this.state.lastUpdatedDashboard} GMT`}</span>
               </div>
               <PillButton
-                startIcon={<Description />}
+                startIcon={<Description sx={{ mr: 0.5 }} />}
                 size="small"
-                sx={{ color: 'info.main', mx: 1 }}
+                variant="contained"
+                color="info"
+                sx={{ mx: 1 }}
                 onClick={this.printReport}
               >
                 Report
               </PillButton>
               <PillButton
-                startIcon={<FileDownload />}
+                startIcon={<FileDownload sx={{ mr: 0.5 }} />}
                 size="small"
+                variant="contained"
+                color="info"
                 hidden={isEmpty(rawData)}
-                sx={{ color: 'info.main' }}
                 onClick={() => {
                   downloadDashboard();
                   this.setState({ isLoading: true, isOpenDownloadDialog: true });

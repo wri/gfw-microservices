@@ -110,7 +110,13 @@ describe('GHG - service', () => {
     clientStoreConnection.getConnection = jest.fn().mockResolvedValue({
       getRepository: () => ({
         findAndCount: () => [mockData, mockData.length],
-        findOne: () => ({ listName: 'mockedListName', Commodity: 'COCOA' }),
+        findOne: () => ({
+          listName: 'mockedListName',
+          Commodity: 'COCOA',
+          country: 'Mock Country',
+          state: 'Mock State',
+          subState: 'Mock SubState',
+        }),
       }),
       options: {
         database: 'mock_db',
@@ -154,6 +160,9 @@ describe('GHG - service', () => {
       {
         listId: listId,
         listName: 'mockedListName',
+        country: 'Mock Country',
+        state: 'Mock State',
+        subState: 'Mock SubState',
         locationName: 'brazil2',
         totalAreaHa: 1.2921,
         statusCode: 2,
@@ -168,6 +177,9 @@ describe('GHG - service', () => {
         listId: 1,
         listName: 'mockedListName',
         locationName: 'arg3 landmark',
+        country: 'Mock Country',
+        state: 'Mock State',
+        subState: 'Mock SubState',
         totalAreaHa: 1.1921,
         statusCode: 2,
         locationError: null,

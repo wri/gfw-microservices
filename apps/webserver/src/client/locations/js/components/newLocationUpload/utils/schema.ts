@@ -1,7 +1,5 @@
 import { z } from 'zod';
 
-const validCoordinateFormat = /^-?\d+\.\d+$/;
-
 const buildTrimmedRegexStringSchema = (regex: RegExp, message: string) =>
   z
     .string()
@@ -18,12 +16,12 @@ export const extendedLocationNameSchema = buildTrimmedRegexStringSchema(
 export const coordinateSchema = z.object({
   latitude: z
     .string()
+    .nonempty()
     .max(19)
     .refine(
       (value) => {
         const normalizedValue = value.replace(',', '.');
-        const latitude = Math.abs(Number(normalizedValue));
-        return validCoordinateFormat.test(value) && latitude <= 90;
+        return Math.abs(Number(normalizedValue)) <= 90;
       },
       {
         message: 'This latitude is invalid. Please ensure your it is in decimal degree notation',
@@ -31,12 +29,12 @@ export const coordinateSchema = z.object({
     ),
   longitude: z
     .string()
+    .nonempty()
     .max(20)
     .refine(
       (value) => {
         const normalizedValue = value.replace(',', '.');
-        const longitude = Math.abs(Number(normalizedValue));
-        return validCoordinateFormat.test(value) && longitude <= 180;
+        return Math.abs(Number(normalizedValue)) <= 180;
       },
       {
         message: 'This longitude is invalid. Please ensure your it is in decimal degree notation',

@@ -34,7 +34,8 @@ export const updateInteractiveLayers = (map, prevState, state) => {
     treeCoverLossDateRange,
   } = state;
 
-  const { treeBiomassLossID, argentineanNativeForestsLoss, treeCoverLossID } = proLayers;
+  const { treeBiomassLossID, argentineanNativeForestsLoss, treeCoverLossID, treeCoverGainID } =
+    proLayers;
 
   // Update biomass layer
   if (
@@ -59,8 +60,8 @@ export const updateInteractiveLayers = (map, prevState, state) => {
     prevState.treeCoverLossDateRange?.startYear !== treeCoverLossDateRange?.startYear ||
     prevState.treeCoverLossDateRange?.endYear !== treeCoverLossDateRange?.endYear
   ) {
-    [argentineanNativeForestsLoss, treeCoverLossID].forEach((treeCoverLossLayer) => {
-      const mapLayer = map.findLayerById(treeCoverLossLayer);
+    [argentineanNativeForestsLoss, treeCoverLossID, treeCoverGainID].forEach((layerId) => {
+      const mapLayer = map.findLayerById(layerId);
       if (mapLayer) {
         mapLayer.minYear = treeCoverLossDateRange.startYear;
         mapLayer.maxYear = treeCoverLossDateRange.endYear;

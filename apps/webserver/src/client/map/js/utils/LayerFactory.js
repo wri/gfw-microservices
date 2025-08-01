@@ -7,7 +7,6 @@ import FeatureLayer from '@arcgis/core/layers/FeatureLayer';
 import MapImageLayer from '@arcgis/core/layers/MapImageLayer';
 import VectorTileLayer from '@arcgis/core/layers/VectorTileLayer';
 import RasterFunction from '@arcgis/core/layers/support/RasterFunction';
-
 import GladLayer from '../layers/GladLayer';
 import RaddLayer from '../layers/RaddLayer';
 import RaddCoverage from '../layers/RaddCoverage';
@@ -22,7 +21,6 @@ import LandCoverLayer from '../layers/LandCoverLayer';
 import WebTileLayer from '@arcgis/core/layers/WebTileLayer';
 import AboveGroundLayer from '../layers/AboveGroundLayer';
 import viirsLayer from '../layers/VIIRSLayerUtil';
-
 import { soyPlantedYearsRange } from '../../../common/js/config';
 import { proLayers } from '../../../common/js/proLayers.config';
 const { viirsActiveFiresID, granChacoDeforestationID } = proLayers;

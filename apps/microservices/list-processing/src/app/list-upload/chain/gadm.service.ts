@@ -39,12 +39,12 @@ class RateLimiter {
 
       if (waitTime > 0) {
         await new Promise((resolve) => setTimeout(resolve, waitTime));
+        this.requestTimes.push(now); // Record this request before recursive call
         return this.waitIfNeeded(); // Recursively check again
       }
     }
 
-    // Record this request
-    this.requestTimes.push(now);
+    this.requestTimes.push(now); // Record this request
   }
 
   getCurrentRate(): number {

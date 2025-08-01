@@ -138,6 +138,7 @@ const {
   rspoPalmOilMills,
   treeBiomassLossID,
   treeCoverLossID,
+  treeCoverGainID,
   treePlantationsSpecies,
   universalMillList,
   userLocations,
@@ -2560,7 +2561,8 @@ class Map extends Component {
           loaded={this.view && this.view.ready}
           visible={
             visibleLayers.includes(treeCoverLossID) ||
-            visibleLayers.includes(argentineanNativeForestsLoss)
+            visibleLayers.includes(argentineanNativeForestsLoss) ||
+            visibleLayers.includes(treeCoverGainID)
           }
           setLossTimeline={this.setLossTimeline}
         />

@@ -1,57 +1,60 @@
 import BaseTileLayer from '@arcgis/core/layers/BaseTileLayer';
-import esriRequest from '@arcgis/core/request';
+import PNG from 'png-ts';
 
 const TreeCoverGainLayer = BaseTileLayer.createSubclass({
-  getTileUrl: function (level, row, column) {
-    return this.urlTemplate
-      .replace('{z}', level)
-      .replace('{x}', column)
-      .replace('{y}', row)
-      .replace('{thresh}', this.threshold);
+  properties: {
+    minYear: 2001,
+    maxYear: new Date().getFullYear(),
   },
-  fetchTile: function (level, row, column) {
-    // call getTileUrl() method to construct the URL to tiles
-    // for a given level, row and col provided by the LayerView
+
+  getTileUrl(level, row, column) {
+    return this.urlTemplate.replace('{z}', level).replace('{x}', column).replace('{y}', row);
+  },
+
+  async fetchTile(level, row, column) {
     const url = this.getTileUrl(level, row, column);
-    // request for tiles based on the generated url
-    // set allowImageDataAccess to true to allow
-    // cross-domain access to create WebGL textures for 3D.
-    return esriRequest(url, {
-      responseType: 'image',
-      allowImageDataAccess: true,
-    }).then(
-      function (response) {
-        // We use a promise because we can't return an empty canvas before the image data has loaded, been filtered, and properly colored
-        const promise = new Promise((resolve) => {
-          // when esri request resolves successfully
-          // get the image from the response
-          const image = response.data;
-          const width = this.tileInfo.size[0];
-          const height = this.tileInfo.size[0];
+    const canvas = document.createElement('canvas');
 
-          // create a canvas with 2D rendering context
-          const canvas = document.createElement('canvas');
-          const context = canvas.getContext('2d');
-          canvas.width = width;
-          canvas.height = height;
+    const context = canvas.getContext('2d', { willReadFrequently: true });
+    context.imageSmoothingEnabled = false;
+    canvas.style.imageRendering = 'pixelated';
+    const width = this.tileInfo.size[0];
+    const height = this.tileInfo.size[1];
+    canvas.width = width;
+    canvas.height = height;
 
-          // Draw the blended image onto the canvas.
-          context.drawImage(image, 0, 0, width, height);
+    const response = await fetch(url);
+    const buffer = await response.arrayBuffer();
+    const png = new PNG(new Uint8Array(buffer));
+    const pngImage = PNG.load(png.data, canvas);
+    const iData = context.createImageData(width, height);
+    const pixels = pngImage.decodePixels();
 
-          const imageObject = new Image();
-          imageObject.crossOrigin = 'Anonymous';
+    iData.data.set(this.processData(pixels, level));
+    context.putImageData(iData, 0, 0);
+    return canvas;
+  },
 
-          imageObject.onload = () => {
-            context.drawImage(imageObject, 0, 0, width, height);
-            const imageData = context.getImageData(0, 0, width, height);
-            context.putImageData(imageData, 0, 0);
-            resolve(canvas);
-          };
-          imageObject.src = image.src;
-        });
-        return promise;
-      }.bind(this)
-    );
+  processData(data) {
+    for (let i = 0; i < data.length; i += 4) {
+      const r = data[i];
+      const b = data[i + 2];
+
+      const intensity = r;
+
+      const year = 1999.0 + b * 5.0;
+
+      if (year >= this.minYear && year <= this.maxYear && year >= 2001) {
+        data[i] = 63; // R
+        data[i + 1] = 7; // G
+        data[i + 2] = 245; // B
+        data[i + 3] = Math.min(Math.floor(8 * intensity), 255); // A
+      } else {
+        data[i + 3] = 0; // fully transparent
+      }
+    }
+
+    return data;
   },
 });
 

@@ -23,9 +23,6 @@ import {
   analysisTypes,
   analysisTypesOptionsNewNames,
   analysisIdsOptionsMap,
-  GADM_FEATURE_FLAG_NAME,
-  CURRENT_GADM_VALUE,
-  NEW_GADM_VALUE,
 } from '@wri-monorepos/constants';
 import { S3Service } from '@wri-monorepos/aws';
 import {
@@ -291,8 +288,8 @@ export const handleCreateAnalysis = async (
     // Add FeatureFlag to data
     data['expedited_analysis'] = await getExpeditedAnalysisFlag(organizationDb);
 
-    // Add GadmFeatureFlag to data
-    data['gadm'] = await getGadmFeatrueFlag(organizationDb);
+    // Add Gadm 4.1 to data
+    data['gadm'] = '4.1';
 
     const microserviceEnvironment = process.env.MICROSERVICES_ENV;
     const { listName, userEmail: testUserEmail } = await getTestFlowDetails(
@@ -572,22 +569,6 @@ const saveAnalysisStatusErrorInfo = async (
   const connection = await clientStoreConnection.getConnection(organizationDb);
   const listAnalysisStatusRepository = await connection.getRepository(ListsAnalysisStatus);
   await listAnalysisStatusRepository.update({ listId, analysisId }, { errorInfo, status });
-};
-
-export const getGadmFeatrueFlag = async (organizationDb: string): Promise<string> => {
-  let gadmResult = CURRENT_GADM_VALUE;
-  try {
-    const gadmFeatureFlagName = await searchForFeatureFlag(organizationDb, GADM_FEATURE_FLAG_NAME);
-
-    if (gadmFeatureFlagName?.flagState === true) {
-      gadmResult = NEW_GADM_VALUE;
-    }
-
-    return gadmResult;
-  } catch (error) {
-    Logger.error('getGadmFeatrueFlag', error.stack || error);
-    return gadmResult;
-  }
 };
 
 const getExpeditedAnalysisFlag = async (organizationDb: string): Promise<boolean> => {

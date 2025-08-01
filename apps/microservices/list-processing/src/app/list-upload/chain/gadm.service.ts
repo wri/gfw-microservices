@@ -115,9 +115,8 @@ export class GADMService extends AbstractHandler<ChainType> {
       );
 
       // Add a small delay before rethrowing for non-429 errors
-      if (error.response?.status !== 429) {
-        await new Promise((resolve) => setTimeout(resolve, DEFAULT_DELAY));
-      }
+      // Add a small delay before rethrowing for non-retryable errors
+      await new Promise((resolve) => setTimeout(resolve, DEFAULT_DELAY));
 
       return { hasUnanalyzableError: true };
     }

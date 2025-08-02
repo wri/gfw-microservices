@@ -70,17 +70,10 @@ export const applyLookUpByChunks = async (
 };
 
 export const resolveLatLongHandlerByIdType = async (
-  idType: string,
+  key: string,
   data: Record<string, unknown>[]
 ): Promise<Record<string, unknown>[]> => {
-  const key = idType.trim().toUpperCase();
-  if (!ID_TYPE_HANDLER[key]) {
-    logger.error(UNSUPPORTED_ID_TYPE_MESSAGE.replace('%ID%', key));
-    throw new Error(UNSUPPORTED_ID_TYPE_MESSAGE.replace(' %ID% ', ' '));
-  }
-
   const possibleUpdates = await applyLookUpByChunks(data, key, ID_TYPE_HANDLER[key]);
-
   data.forEach((row, i) => Object.assign(row, possibleUpdates[i]));
   return data;
 };
@@ -96,11 +89,6 @@ export const idBasedSystemHandler = async (
     if (!key) {
       // empty system will be skipped down the road
       key = '';
-
-      // what if this row has “ID” but we can't identify the ID Type column? ⇒ UML fallback (?)
-      if (row['ID'] !== undefined) {
-        key = 'UML';
-      }
     }
 
     (groups[key] ??= []).push(row);
@@ -108,9 +96,9 @@ export const idBasedSystemHandler = async (
 
   await Promise.all(
     Object.entries(groups).map(async ([key, rows]) => {
-      // skip empty system
-      if (key === '') {
-        return;
+      // empty or unsupported systems will be skipped
+      if (key === '' || !ID_TYPE_HANDLER[key]) {
+        return resolveFlaggedRowsByValueFound(key, rows);
       }
 
       await resolveLatLongHandlerByIdType(key, rows);
@@ -149,6 +137,7 @@ export const csvLatLongIdBasedTransformer = async (
  *
  * @param Object<unknown>
  * @returns string | boolean
+ * @throws Error unsupported_id_message
  */
 export const determineIdType = (firstRow: Record<string, unknown>) => {
   const templateColumns = Object.keys(firstRow);
@@ -166,7 +155,8 @@ export const determineIdType = (firstRow: Record<string, unknown>) => {
     const rawKey = String((firstRow['ID Type'] as string | undefined) ?? '')
       .trim()
       .toUpperCase() as CSV_ID_TYPES;
-    if (!ID_TYPE_HANDLER[rawKey]) {
+    // empty cells with ID Type column will be treated as unsupported
+    if (!rawKey || !ID_TYPE_HANDLER[rawKey]) {
       logger.log(UNSUPPORTED_ID_TYPE_MESSAGE.replace('%ID%', rawKey));
       throw new Error(UNSUPPORTED_ID_TYPE_MESSAGE.replace(' %ID% ', ' '));
     }
@@ -196,3 +186,20 @@ export const validateIdBased = (idType: string, firstRow: Record<string, unknown
     isValid: missingFields.length === 0,
   };
 };
+
+function resolveFlaggedRowsByValueFound(key: string, data: Record<string, unknown>[]) {
+  data.forEach((row) => {
+    const errorDetails = (row['errorDetails'] || []) as string[];
+    errorDetails.push(UNSUPPORTED_ID_TYPE_MESSAGE.replace('%ID%', key));
+    Object.assign(row, {
+      ...row,
+      errorDetails,
+      geometry: {
+        type: 'Point',
+        coordinates: [0, 0],
+      },
+    });
+  });
+
+  return data;
+}

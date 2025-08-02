@@ -174,8 +174,7 @@ export class ValidateMandatoryFields extends AbstractHandler<ChainType> {
     } else {
       let hasError = false;
       geojson.features.forEach((feature) => {
-        // because only CAR types
-        // don't analysisRadius or analysisArea
+        // only CAR lists don't require analysisRadius or analysisArea
         try {
           const idType = determineIdType(feature.properties);
 

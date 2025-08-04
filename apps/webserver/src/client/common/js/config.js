@@ -57,8 +57,9 @@ export const loaderMessages = {
 };
 
 export const nav = {
-  newsAndEnvents: 'News & Events',
+  newsAndEvents: 'News & Events',
   about: 'About',
+  users: 'Users',
   blog: 'Blog',
   selectLangageSpanish: 'Español',
   selectLangageEnglish: 'English',

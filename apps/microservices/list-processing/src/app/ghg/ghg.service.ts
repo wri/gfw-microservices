@@ -80,32 +80,40 @@ export class GHGService {
         parameters
       );
 
-      return data.map((item) => {
-        const {
-          listId,
-          totalAreaHa,
-          statusCode,
-          locationError,
-          emissionsFactorByYear,
-          efCo2ByYear,
-          efCh4ByYear,
-          efN2oByYear,
-          locationName,
-        } = item;
-        return {
-          listId,
-          listName,
-          locationName,
-          totalAreaHa,
-          statusCode,
-          locationError,
-          commodity: Commodity,
-          co2EmissionsFactor: efCo2ByYear,
-          ch4EmissionsFactor: efCh4ByYear,
-          n2oEmissionsFactor: efN2oByYear,
-          combinedEmissionsFactor: emissionsFactorByYear,
-        };
-      });
+      return await Promise.all(
+        data.map(async (item) => {
+          const {
+            listId,
+            totalAreaHa,
+            statusCode,
+            locationError,
+            emissionsFactorByYear,
+            efCo2ByYear,
+            efCh4ByYear,
+            efN2oByYear,
+            locationName,
+            country,
+            state,
+            subState,
+          } = item;
+          return {
+            listId,
+            listName,
+            country,
+            state,
+            subState,
+            locationName,
+            totalAreaHa,
+            statusCode,
+            locationError,
+            commodity: Commodity,
+            co2EmissionsFactor: efCo2ByYear,
+            ch4EmissionsFactor: efCh4ByYear,
+            n2oEmissionsFactor: efN2oByYear,
+            combinedEmissionsFactor: emissionsFactorByYear,
+          };
+        })
+      );
     } catch (e) {
       this.logger.error(`listId: ${listId} , pageNumber: ${pageNumber} error: ${e}`);
       return [];

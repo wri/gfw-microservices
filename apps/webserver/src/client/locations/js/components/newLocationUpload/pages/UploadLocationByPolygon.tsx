@@ -114,7 +114,13 @@ export function UploadLocationByPolygon({
     }
   }, []);
 
+  const hasAppliedPolygon = useRef(false);
+
   useEffect(() => {
+    if (hasAppliedPolygon.current) {
+      return;
+    }
+
     // draw the map one time when it's redirected from the map page
     const geometryRings = polygonFromMapPage?.geometry?.rings?.[0];
     if (mapView && geometryRings) {
@@ -140,9 +146,9 @@ export function UploadLocationByPolygon({
 
       onSubmitCoordinates({ coordinates: formattedCoordinates });
       locationNameRef?.current?.focus();
-      polygonFromMapPage = undefined;
+      hasAppliedPolygon.current = true;
     }
-  }, [mapView]);
+  }, [mapView, polygonFromMapPage]);
 
   useEffect(() => {
     resetCoordinates();
@@ -427,7 +433,7 @@ export function UploadLocationByPolygon({
                   sketchViewModel={sketchViewModel}
                   setSketchViewModel={setSketchViewModel}
                   updateGeometry={updateGeometry}
-                  isDrawButtonHidden
+                  isDrawButtonHidden={!areLocationTypesEnabled}
                 />
               </Box>
             )}

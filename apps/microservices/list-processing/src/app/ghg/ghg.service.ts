@@ -67,17 +67,9 @@ export class GHGService {
     const connection = await this.clientStoreConnection.getConnection(clientDatabase);
     try {
       const ListRepository = await connection.getRepository(Lists);
-      const { listName, Commodity, listTableName } = await ListRepository.findOne({
+      const { listName, Commodity } = await ListRepository.findOne({
         where: { id: listId },
       });
-      const ListEntity = new EntitySchema<ListSchemaType>({
-        ...ListSchema,
-        name: listTableName,
-      });
-      const listTableconnection = await this.clientStoreConnection.getConnection(clientDatabase, [
-        ListEntity,
-      ]);
-      const listLocationRepository = listTableconnection.getRepository(ListEntity);
 
       const parameters = [
         { field: 'listId', type: sql.Int, value: listId },
@@ -103,17 +95,16 @@ export class GHGService {
             efCh4ByYear,
             efN2oByYear,
             locationName,
+            country,
+            state,
+            subState,
           } = item;
-          const result = await listLocationRepository.findOne({
-            where: { locationName: locationName },
-            select: ['country', 'state', 'subState'],
-          });
           return {
             listId,
             listName,
-            country: result?.country || '',
-            state: result?.state || '',
-            subState: result?.subState || '',
+            country,
+            state,
+            subState,
             locationName,
             totalAreaHa,
             statusCode,

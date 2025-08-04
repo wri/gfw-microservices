@@ -16,6 +16,9 @@ SELECT @list_table = list_table_name , @listName = list_Name FROM [Lists] WHERE 
 SET @SQL = 'SELECT  ' +
 ' @listId as listId,' +
 ' @listName as listName,' +
+' lt.Country as country, ' +
+' lt.State as state, ' +
+' lt.[Sub State] as subState, ' +
 ' ghg.location_id as locationId, ' +
 ' ghg.total_area_ha as totalAreaHa, ' +
 ' ghg.status_code as statusCode, ' +
@@ -43,6 +46,9 @@ export class GHGAnalysisDataByListId {
   listId: number;
   listName: string;
   locationName: string;
+  country: string;
+  state: string;
+  subState: string;
   totalAreaHa: number;
   statusCode: number;
   locationError: string;

@@ -90,8 +90,8 @@ describe('UploadLocationByPolygon', () => {
     await user.type(longitudeFields[0], '179.99999');
     await user.type(latitudeFields[1], '-89.9999');
     await user.type(longitudeFields[1], '-179.99999');
-    await user.type(latitudeFields[2], '48.34233');
-    await user.type(longitudeFields[2], '-12.3456');
+    await user.type(latitudeFields[2], '48');
+    await user.type(longitudeFields[2], '-12');
 
     await user.click(
       screen.getByRole('button', {
@@ -125,11 +125,8 @@ describe('UploadLocationByPolygon', () => {
     await user.type(locationName, 'new location 123');
     expect(screen.queryByText(/enter location name/i)).not.toBeInTheDocument();
 
-    expect(
-      screen.queryAllByText(
-        /your coordinate value is invalid\. please ensure your data is in decimal degree notation/i
-      )
-    ).toHaveLength(0);
+    expect(screen.queryAllByText(/this latitude value is invalid/i)).toHaveLength(0);
+    expect(screen.queryAllByText(/this longitude value is invalid/i)).toHaveLength(0);
 
     await user.click(
       screen.getByRole('button', {
@@ -137,11 +134,8 @@ describe('UploadLocationByPolygon', () => {
       })
     );
 
-    expect(
-      screen.queryAllByText(
-        /your coordinate value is invalid\. please ensure your data is in decimal degree notation/i
-      )
-    ).toHaveLength(6);
+    expect(screen.queryAllByText(/this latitude value is invalid/i)).toHaveLength(3);
+    expect(screen.queryAllByText(/this longitude value is invalid/i)).toHaveLength(3);
   }, 15100);
 
   describe('location name validation', () => {
@@ -225,4 +219,30 @@ describe('UploadLocationByPolygon', () => {
     await user.click(screen.getByRole('button', { name: /cancel/i }));
     expect(mockClearUploadType).toHaveBeenCalled();
   });
+
+  it('should show error for invalid latitude and longitude values', async () => {
+    const locationName = screen.getByRole('textbox');
+    await user.type(locationName, 'invalid coords location');
+
+    await user.click(
+      screen.getByRole('button', {
+        name: /enter polygon coordinates/i,
+      })
+    );
+
+    const latitudeFields = screen.getAllByLabelText(/latitude/i);
+    const longitudeFields = screen.getAllByLabelText(/longitude/i);
+
+    await user.type(latitudeFields[0], '90.01');
+    await user.type(longitudeFields[0], '180.01');
+
+    await user.click(
+      screen.getByRole('button', {
+        name: /next/i,
+      })
+    );
+
+    expect(screen.queryAllByText(/this latitude value is invalid/i)).toHaveLength(3);
+    expect(screen.queryAllByText(/this longitude value is invalid/i)).toHaveLength(3);
+  }, 10100);
 });

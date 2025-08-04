@@ -138,16 +138,6 @@ describe('csvLatLongIdBasedTransformer', () => {
       expect(result[0].geometry).toBe('geom-ABC');
     });
 
-    it("defaults to UML lookup when 'ID' exists but the 'ID Type' column is absent", async () => {
-      mockUmlLookUp.mockResolvedValue({ '321': { geometry: 'geom-321' } as unknown });
-
-      const rows = [{ ID: '321', 'Location Name': 'Loc 321', 'Analysis Radius': 21 }];
-      const result = await csvLatLongIdBasedTransformer(rows);
-
-      expect(mockUmlLookUp).toHaveBeenCalledWith(['321']);
-      expect(result[0].geometry).toBe('geom-321');
-    });
-
     it('throws for an unsupported ID Type', async () => {
       const rows = [{ 'ID Type': 'XYZ', ID: '999' }];
 

@@ -31,6 +31,15 @@ jest.mock('../components', () => {
   };
 });
 
+const locationMapDrawerMock = jest.fn();
+jest.mock('../../adding/LocationMapDrawer', () => ({
+  __esModule: true,
+  default: (props) => {
+    locationMapDrawerMock(props);
+    return <span data-testid="location-map-drawer" />;
+  },
+}));
+
 describe('UploadLocationByPolygon', () => {
   let user: UserEvent;
   beforeEach(() => {
@@ -51,29 +60,36 @@ describe('UploadLocationByPolygon', () => {
         addGraphicToMap: jest.fn(),
       };
     });
-
-    render(<UploadLocationByPolygon />);
   });
 
   it('should render the component with form elements', async () => {
+    render(<UploadLocationByPolygon />);
+
     expect(
       screen.getByText(
         /gfw pro allows users to create polygon data for analysis view drawing a boundary on the map or defining a polygon via its coordinates vertices\./i
       )
     ).toBeInTheDocument();
-    expect(
-      screen.getByRole('button', {
-        name: /draw a shape/i,
-      })
-    ).toBeInTheDocument();
+    const drawAShapeButton = screen.getByRole('button', {
+      name: /draw a shape/i,
+    });
+    expect(drawAShapeButton).toBeInTheDocument();
     expect(
       screen.getByRole('button', {
         name: /enter polygon coordinates/i,
       })
     ).toBeInTheDocument();
+
+    await user.click(drawAShapeButton);
+
+    expect(locationMapDrawerMock).toHaveBeenCalledWith(
+      expect.objectContaining({ isDrawButtonHidden: false })
+    );
   });
 
   it('should go to next page if all fields are provided', async () => {
+    render(<UploadLocationByPolygon />);
+
     const locationName = screen.getByRole('textbox');
     await user.type(locationName, 'new location 123');
 
@@ -108,6 +124,8 @@ describe('UploadLocationByPolygon', () => {
   }, 50100);
 
   it('should show missing mandatory fields', async () => {
+    render(<UploadLocationByPolygon />);
+
     await user.click(
       screen.getByRole('button', {
         name: /enter polygon coordinates/i,
@@ -140,6 +158,8 @@ describe('UploadLocationByPolygon', () => {
 
   describe('location name validation', () => {
     beforeEach(async () => {
+      render(<UploadLocationByPolygon />);
+
       await user.click(
         screen.getByRole('button', {
           name: /enter polygon coordinates/i,
@@ -195,6 +215,8 @@ describe('UploadLocationByPolygon', () => {
   });
 
   it('should allow adding and removing coordinate fields', async () => {
+    render(<UploadLocationByPolygon />);
+
     await user.click(
       screen.getByRole('button', {
         name: /enter polygon coordinates/i,
@@ -216,11 +238,15 @@ describe('UploadLocationByPolygon', () => {
   }, 15100);
 
   it('should call clearUploadType on cancel', async () => {
+    render(<UploadLocationByPolygon />);
+
     await user.click(screen.getByRole('button', { name: /cancel/i }));
     expect(mockClearUploadType).toHaveBeenCalled();
   });
 
   it('should show error for invalid latitude and longitude values', async () => {
+    render(<UploadLocationByPolygon />);
+
     const locationName = screen.getByRole('textbox');
     await user.type(locationName, 'invalid coords location');
 
@@ -245,4 +271,54 @@ describe('UploadLocationByPolygon', () => {
     expect(screen.queryAllByText(/this latitude value is invalid/i)).toHaveLength(3);
     expect(screen.queryAllByText(/this longitude value is invalid/i)).toHaveLength(3);
   }, 10100);
+
+  it('should hide the location type buttons when it comes from map page and has more than 12 coordinates', async () => {
+    render(
+      <UploadLocationByPolygon
+        polygonFromMapPage={{
+          geometry: {
+            rings: [
+              [
+                [-60.9119, -26.674],
+                [-60.9121, -26.6744],
+                [-60.9389, -26.6652],
+                [-60.9395, -26.6481],
+                [-60.9915, -26.6477],
+                [-60.99998286911409, -26.647610706640904],
+                [-61.0485, -26.6471],
+                [-61.3263, -26.6442],
+                [-61.3389, -26.6441],
+                [-61.4365, -26.6429],
+                [-61.49998286901416, -26.642071662455777],
+                [-61.7124, -26.6393],
+                [-61.7121, -26.5762],
+              ],
+            ],
+          },
+        }}
+      />
+    );
+
+    expect(
+      screen.getByText(
+        /gfw pro allows users to create polygon data for analysis view drawing a boundary on the map or defining a polygon via its coordinates vertices\./i
+      )
+    ).toBeInTheDocument();
+
+    expect(
+      screen.queryByRole('button', {
+        name: /draw a shape/i,
+      })
+    ).not.toBeInTheDocument();
+
+    expect(
+      screen.queryByRole('button', {
+        name: /enter polygon coordinates/i,
+      })
+    ).not.toBeInTheDocument();
+
+    expect(locationMapDrawerMock).toHaveBeenCalledWith(
+      expect.objectContaining({ isDrawButtonHidden: true })
+    );
+  });
 });

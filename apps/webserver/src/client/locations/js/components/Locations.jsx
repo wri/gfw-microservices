@@ -11,7 +11,7 @@ import FolderDetail from './landing/FolderDetail';
 
 // Store
 import store from '../store';
-import { addList, changeView } from '../actions/locationActions';
+import { changeView } from '../actions/locationActions';
 
 import { resetScroll } from '../utils/scroll.utils';
 
@@ -142,10 +142,13 @@ class Locations extends Component {
     if (isAddingLocationFromMap) {
       const list = userLists?.find((ul) => ul.id === mapData.listID);
       if (list) {
-        this.handleDrawData(drawData, locationName);
-        store.dispatch(addList(list));
-        store.dispatch(changeView('add'));
-        history.push('/add');
+        const drawnGeom = JSON.parse(drawData);
+        const finalMapData = {
+          geometry: drawnGeom,
+          locationName,
+        };
+        this.setState({ drawnGeom: finalMapData, isLoading: false });
+        history.replace('/upload-location/by-polygon');
       } else {
         console.warn('Failed to find list to add to');
       }

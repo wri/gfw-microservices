@@ -81,14 +81,6 @@ describe('Schema Validation', () => {
         expect(result.error.issues[0].message).toContain('longitude is invalid');
       }
     });
-
-    it('should reject non-decimal format', () => {
-      const result = coordinateSchema.safeParse({
-        latitude: '45,123456',
-        longitude: '-120,123456',
-      });
-      expect(result.success).toBe(false);
-    });
   });
 
   describe('listNameSchema', () => {

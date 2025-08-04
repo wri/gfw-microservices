@@ -6,8 +6,6 @@ describe('FileValidationHelper', () => {
   it('should render correctly', () => {
     render(<FileValidationHelper />);
 
-    screen.logTestingPlaygroundURL();
-
     expect(screen.getByText(/how do we validate your file for upload\?/i)).toBeInTheDocument();
   });
 

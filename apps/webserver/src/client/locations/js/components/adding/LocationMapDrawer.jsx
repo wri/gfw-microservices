@@ -27,6 +27,7 @@ const LocationMapDrawer = ({
   sketchViewModel,
   setSketchViewModel,
   updateGeometry,
+  isDrawButtonHidden = false,
 }) => {
   const [mode, setMode] = useState(DrawShapeMode.Inactive);
   const modeRef = useRef(mode);
@@ -212,6 +213,10 @@ const LocationMapDrawer = ({
       break;
     default:
       buttonTitle = 'INVALID STATE';
+  }
+
+  if (isDrawButtonHidden) {
+    return <></>;
   }
 
   return (

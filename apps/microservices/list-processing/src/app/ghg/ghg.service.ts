@@ -4,13 +4,10 @@ import {
   GHGAnalyses,
   GHGAnalysisDataByListId,
   Lists,
-  ListSchema,
-  ListSchemaType,
   SQLUtils,
 } from '@wri-monorepos/sql';
 import { Injectable, Logger } from '@nestjs/common';
 import * as sql from 'mssql';
-import { EntitySchema } from 'typeorm';
 
 interface GHGAnalysisData {
   listId: number;

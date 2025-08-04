@@ -83,11 +83,15 @@ export const idBasedSystemHandler = async (
 ): Promise<Record<string, unknown>[]> => {
   const groups: Record<string, Record<string, unknown>[]> = {};
   data.forEach((row) => {
-    const rawKey = String((row['ID Type'] as string | undefined) ?? '');
-    let key = rawKey.trim().toUpperCase();
+    // empty system will be skipped down the road
+    let key;
+    try {
+      key = determineIdType(row);
+    } catch (error) {
+      logger.error(error);
+    }
 
     if (!key) {
-      // empty system will be skipped down the road
       key = '';
     }
 

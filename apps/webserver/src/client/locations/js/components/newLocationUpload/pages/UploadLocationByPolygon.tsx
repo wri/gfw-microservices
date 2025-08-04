@@ -217,6 +217,8 @@ export function UploadLocationByPolygon({
   const areLocationTypesEnabled =
     !polygonFromMapPage || coordinates.length <= MAX_AMOUNT_OF_COORDINATES;
 
+  const isDrawButtonVisible = mapView && isLocationFormatInDrawAShape && areLocationTypesEnabled;
+
   return (
     <>
       <NavBar isComingFromMap={!!polygonFromMapPage} />
@@ -415,7 +417,7 @@ export function UploadLocationByPolygon({
               height: { xs: '470px' },
             }}
           >
-            {mapView && isLocationFormatInDrawAShape && (
+            {isDrawButtonVisible && (
               <Box
                 sx={{
                   position: 'absolute',
@@ -433,7 +435,6 @@ export function UploadLocationByPolygon({
                   sketchViewModel={sketchViewModel}
                   setSketchViewModel={setSketchViewModel}
                   updateGeometry={updateGeometry}
-                  isDrawButtonHidden={!areLocationTypesEnabled}
                 />
               </Box>
             )}

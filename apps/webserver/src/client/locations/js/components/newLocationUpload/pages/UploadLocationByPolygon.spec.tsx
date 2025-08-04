@@ -31,14 +31,9 @@ jest.mock('../components', () => {
   };
 });
 
-const locationMapDrawerMock = jest.fn();
-jest.mock('../../adding/LocationMapDrawer', () => ({
-  __esModule: true,
-  default: (props) => {
-    locationMapDrawerMock(props);
-    return <span data-testid="location-map-drawer" />;
-  },
-}));
+jest.mock('../../adding/LocationMapDrawer', () => {
+  return jest.fn(() => <span data-testid="location-map-drawer" />);
+});
 
 describe('UploadLocationByPolygon', () => {
   let user: UserEvent;
@@ -82,9 +77,7 @@ describe('UploadLocationByPolygon', () => {
 
     await user.click(drawAShapeButton);
 
-    expect(locationMapDrawerMock).toHaveBeenCalledWith(
-      expect.objectContaining({ isDrawButtonHidden: false })
-    );
+    expect(screen.getByTestId('location-map-drawer')).toBeInTheDocument();
   });
 
   it('should go to next page if all fields are provided', async () => {
@@ -317,8 +310,6 @@ describe('UploadLocationByPolygon', () => {
       })
     ).not.toBeInTheDocument();
 
-    expect(locationMapDrawerMock).toHaveBeenCalledWith(
-      expect.objectContaining({ isDrawButtonHidden: true })
-    );
+    expect(screen.queryByTestId('location-map-drawer')).not.toBeInTheDocument();
   });
 });

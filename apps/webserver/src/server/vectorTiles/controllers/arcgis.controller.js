@@ -1,9 +1,11 @@
+const fs = require('fs');
 const path = require('path');
 const MBTiles = require('@mapbox/mbtiles');
 
 const { esriVectorTileRoot } = require('../templates/esri-vector-tile-root');
 const { esriVectorTileMetadata } = require('../templates/esri-vector-tile-metadata');
 const { VECTOR_TILES_LOCATION, MBTILE_EXTENSION } = require('../config/vectorTiles.config');
+const vectorTilesController = require('../controllers/vectorTiles.controller');
 
 /**
  * @description Get ESRI Vector Tile Root config
@@ -39,10 +41,15 @@ exports.handleVectorTilePbfRequest = async (req, res) => {
   const CACHE_PERIOD = 60 * 60 * 24;
 
   try {
-    const localMbtileFilePath = path.join(VECTOR_TILES_LOCATION, `${mbtile}${MBTILE_EXTENSION}`);
+    const mbtileFileName = `${mbtile}${MBTILE_EXTENSION}`;
+    const localMbtileFilePath = path.join(VECTOR_TILES_LOCATION, mbtileFileName);
 
-    new MBTiles(localMbtileFilePath, (err, mbtiles) => {
-      mbtiles.getTile(z, x, y, (error, data, headers) => {
+    if (!fs.existsSync(localMbtileFilePath)) {
+      await vectorTilesController.prepareMbtileFile(req, null, mbtileFileName);
+    }
+
+    new MBTiles(`${localMbtileFilePath}?mode=ro`, (err, mbtiles) => {
+      mbtiles?.getTile(z, x, y, (error, data, headers) => {
         // Request response
         // https://github.com/mapbox/mbview/blob/b1b6d6fa9fcb05d62f858def7dcf360a90c695cc/mbview.js#L82-L90
         if (error) {

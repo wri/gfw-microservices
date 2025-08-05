@@ -1,6 +1,7 @@
 export * from './getAdministrativeAreasInfo';
 export * from './getAnalysisDataCountForGFWList';
 export * from './getAnalysisLimits';
+export * from './getAllAccountsList';
 export * from './getConnectionRequest';
 export * from './getGfwLists';
 export * from './getGFWProRootUserInfo';

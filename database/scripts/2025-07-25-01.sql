@@ -13,6 +13,7 @@ FROM dbo.PendingAccounts
 WHERE organization_requested_time IS NULL;
 
 -- If it's not 0, we'll get an error when trying to make the column NOT NULL.
+-- If there are NULL values, we need to handle them before altering the column. (Then continue with the rest of the script.)
 
 -- Update records with NULL request date:
 -- Set a placeholder date and mark them as inactive

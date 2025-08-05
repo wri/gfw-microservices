@@ -3,6 +3,9 @@
 DB: Organization accounts: Troubleshoot missing account request dates
 ========================================================================================*/
 
+-- Before running the ALTER COLUMN ... NOT NULL part, we must first fix existing NULL values in the table.
+-- Run this first: 2025-07-25-01.sql
+
 USE [gfwpro]
 
 ALTER TABLE [dbo].[PendingAccounts]

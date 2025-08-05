@@ -29,8 +29,7 @@ export class GeometryService extends IPipeService {
   }
 
   async start(filters: ListFieldsFileRequest) {
-    const { listId, key, combinedColumnsSplitted, listName, organizationDatabase, isGFWList } =
-      filters;
+    const { listId, key, combinedColumnsSplitted, listName } = filters;
     this.logger.log(`(${listId}) - Starting shapefile stream to process data`);
     this.inputStream = new PassThrough({
       objectMode: true,
@@ -47,11 +46,7 @@ export class GeometryService extends IPipeService {
     );
 
     // Use the column resolver for commodity-based column resolution
-    const columnResolution = await this.columnResolverService.resolveColumns(
-      listId,
-      organizationDatabase,
-      isGFWList
-    );
+    const columnResolution = await this.columnResolverService.resolveColumns(listId);
 
     this.logger.log(
       `(${listId}) - Column resolution: ${columnResolution.resolvedFrom} (source: ${columnResolution.source})`

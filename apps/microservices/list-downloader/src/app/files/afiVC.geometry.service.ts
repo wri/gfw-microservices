@@ -28,8 +28,7 @@ export class AfiGeometryService extends IPipeService {
   }
 
   async start(filters: ListFieldsFileRequest) {
-    const { listId, key, combinedColumnsSplitted, listName, organizationDatabase, isGFWList } =
-      filters;
+    const { listId, key, combinedColumnsSplitted, listName } = filters;
     this.logger.log(`(${listId}) - Starting verifiable credentials stream to process data`);
     this.inputStream = new PassThrough({
       objectMode: true,
@@ -51,11 +50,7 @@ export class AfiGeometryService extends IPipeService {
     );
 
     // Use the column resolver for commodity-based column resolution
-    const columnResolution = await this.columnResolverService.resolveColumns(
-      listId,
-      organizationDatabase,
-      isGFWList
-    );
+    const columnResolution = await this.columnResolverService.resolveColumns(listId);
 
     this.logger.log(
       `(${listId}) - Column resolution: ${columnResolution.resolvedFrom} (source: ${columnResolution.source})`

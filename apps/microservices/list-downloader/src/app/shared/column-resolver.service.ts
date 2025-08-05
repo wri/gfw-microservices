@@ -21,22 +21,8 @@ export class ColumnResolverService {
    * @param isGFWList - Whether this is a GFW list
    * @returns Promise<ColumnResolution>
    */
-  async resolveColumns(
-    listId: number,
-    organizationDatabase?: string,
-    isGFWList = false
-  ): Promise<ColumnResolution> {
+  async resolveColumns(listId: number): Promise<ColumnResolution> {
     try {
-      const metadata = await this.listMetadataService.getListMetadata(
-        listId,
-        organizationDatabase,
-        isGFWList
-      );
-
-      if (!metadata) {
-        this.logger.warn(`Could not fetch metadata for list ${listId}, using generic fallback`);
-      }
-
       return {
         columns: templateColumns.COMMODITY_GENERIC,
         source: 'default',

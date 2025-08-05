@@ -3,6 +3,7 @@ import {
   Lists,
   deleteListsWithInvalidLocationId,
   deleteListsPartlyUpgraded,
+  deleteListsWithMissingTables,
   upgradeListSchema,
 } from '@wri-monorepos/sql';
 
@@ -21,6 +22,9 @@ const registry: Record<string, ConverterFunction> = {
   },
   DELETE_PARTLY_UPDATED_LISTS: {
     run: deleteListsPartlyUpgraded,
+  },
+  DELETE_LISTS_WITH_MISSING_TABLES: {
+    run: deleteListsWithMissingTables,
   },
   // GADM_VERSION: { run: () => {} },
 };

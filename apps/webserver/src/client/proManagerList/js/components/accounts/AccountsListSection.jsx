@@ -49,10 +49,12 @@ function AccountsListSection({ isLoading, setIsLoading }) {
   };
 
   const findStatusString = (account) => {
-    const statusString = statusData.find(
-      (status) => status.id === account.organization_status_id
-    ).status_name;
-    return statusString;
+    // PendingAccounts will have organization_status_id === 1, and also the new `organization_active` field
+    if (account.organization_status_id === 1 && account.organization_active === false) {
+      return 'Closed';
+    }
+    const statusEntry = statusData.find((status) => status.id === account.organization_status_id);
+    return statusEntry?.status_name || 'Unknown';
   };
 
   const findClassString = (account) => {
@@ -163,20 +165,24 @@ function AccountsListSection({ isLoading, setIsLoading }) {
     return false;
   };
 
-  const determineOrgStatus = (statusId) => {
+  const determineOrgStatus = (statusId, account) => {
     let status;
-    switch (statusId) {
-      case 1:
-        status = 'Pending';
-        break;
-      case 2:
-        status = 'Active';
-        break;
-      case 3:
-        status = 'Inactive';
-        break;
-      default:
-        break;
+    if (statusId === 1 && account.organization_active === false) {
+      status = 'Closed';
+    } else {
+      switch (statusId) {
+        case 1:
+          status = 'Pending';
+          break;
+        case 2:
+          status = 'Active';
+          break;
+        case 3:
+          status = 'Inactive';
+          break;
+        default:
+          status = 'Unknown';
+      }
     }
     return status.toLowerCase().includes(acctFilterStr.toLowerCase());
   };
@@ -203,8 +209,8 @@ function AccountsListSection({ isLoading, setIsLoading }) {
               aValue.classString = findClassString(aValue);
               bValue.classString = findClassString(bValue);
             } else if (accountSortingCategory === 'statusString') {
-              aValue.classString = findStatusString(aValue);
-              bValue.classString = findStatusString(bValue);
+              aValue.statusString = findStatusString(aValue);
+              bValue.statusString = findStatusString(bValue);
             }
             if (accountDir === 'asc') {
               if (aValue[accountSortingCategory] < bValue[accountSortingCategory]) {

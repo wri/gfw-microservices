@@ -2,7 +2,6 @@ import { Logger } from '@nestjs/common';
 import { AbstractHandler, ChainType, RequestNewList } from './types';
 import * as path from 'path';
 import { Feature, FeatureCollection } from '@wri-monorepos/geo';
-import { determineIdType } from '@wri-monorepos/shared';
 
 const expectedNumberFields = ['latitude', 'longitude', 'analysisArea', 'analysisRadius'];
 
@@ -174,15 +173,7 @@ export class ValidateMandatoryFields extends AbstractHandler<ChainType> {
     } else {
       let hasError = false;
       geojson.features.forEach((feature) => {
-        // only CAR lists don't require analysisRadius or analysisArea
-        try {
-          const idType = determineIdType(feature.properties);
-
-          if (idType !== 'CAR' && !this.validateFeature(feature, fieldsToCheck)) {
-            hasError = true;
-          }
-        } catch (error) {
-          this.logger.error(`IdType[${error.name}]: ${error.message}`);
+        if (!this.validateFeature(feature, fieldsToCheck)) {
           hasError = true;
         }
       });

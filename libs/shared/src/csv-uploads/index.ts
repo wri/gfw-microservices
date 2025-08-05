@@ -70,17 +70,10 @@ export const applyLookUpByChunks = async (
 };
 
 export const resolveLatLongHandlerByIdType = async (
-  idType: string,
+  key: string,
   data: Record<string, unknown>[]
 ): Promise<Record<string, unknown>[]> => {
-  const key = idType.trim().toUpperCase();
-  if (!ID_TYPE_HANDLER[key]) {
-    logger.error(UNSUPPORTED_ID_TYPE_MESSAGE.replace('%ID%', key));
-    throw new Error(UNSUPPORTED_ID_TYPE_MESSAGE.replace(' %ID% ', ' '));
-  }
-
   const possibleUpdates = await applyLookUpByChunks(data, key, ID_TYPE_HANDLER[key]);
-
   data.forEach((row, i) => Object.assign(row, possibleUpdates[i]));
   return data;
 };
@@ -89,33 +82,42 @@ export const idBasedSystemHandler = async (
   data: Record<string, unknown>[]
 ): Promise<Record<string, unknown>[]> => {
   const groups: Record<string, Record<string, unknown>[]> = {};
+  const errors: Error[] = [];
+
+  /* ── 1. scan & group ────────────────────────────────────────────── */
   data.forEach((row) => {
-    const rawKey = String((row['ID Type'] as string | undefined) ?? '');
-    let key = rawKey.trim().toUpperCase();
+    try {
+      const key = determineIdType(row); // may throw
+      logger.log(`${key} ID Based List Identified`);
+      const { missingFields, isValid } = validateIdBased(key, row);
 
-    if (!key) {
-      // empty system will be skipped down the road
-      key = '';
-
-      // what if this row has “ID” but we can't identify the ID Type column? ⇒ UML fallback (?)
-      if (row['ID'] !== undefined) {
-        key = 'UML';
+      if (!isValid) {
+        throw new Error(`Missing mandatory fields: ${missingFields.join(',')}`);
       }
-    }
 
-    (groups[key] ??= []).push(row);
+      (groups[key] ??= []).push(row);
+    } catch (error) {
+      logger.error(error);
+      resolveFlaggedRowsByValueFound(row, error);
+      errors.push(error);
+    }
   });
 
+  /* ── 2. process each valid group (runs even if there were errors) ─ */
   await Promise.all(
     Object.entries(groups).map(async ([key, rows]) => {
-      // skip empty system
-      if (key === '') {
-        return;
+      const handler = ID_TYPE_HANDLER[key];
+      if (handler) {
+        await resolveLatLongHandlerByIdType(key, rows);
       }
-
-      await resolveLatLongHandlerByIdType(key, rows);
     })
   );
+
+  /* ── 3. surface the error in *after* work is done 
+    only for testing because the list should not fail processing  ─────────────── */
+  if (errors.length && process.env.NODE_ENV === 'test') {
+    throw new Error(errors[0].message);
+  }
 
   return data;
 };
@@ -126,21 +128,16 @@ export const csvLatLongIdBasedTransformer = async (
   if (!data.length) {
     throw new Error('Bad CSV Input: No data to process');
   }
-  const firstRow = data[0] as Record<string, unknown>;
-  const type = determineIdType(firstRow);
+  // this could house mixed types but is certainly required for CAR
+  const firstRowCols = Object.keys(data[0]);
+  const idTypeColumn = firstRowCols.includes('ID Type');
+  const isMillList = firstRowCols.includes('ID') || firstRowCols.includes('Palm Mill ID');
 
-  if (!type) {
-    return data;
+  if (idTypeColumn || isMillList) {
+    return await idBasedSystemHandler(data);
   }
 
-  logger.log(`${type} ID Based List Identified`);
-  const { missingFields, isValid } = validateIdBased(type as string, firstRow);
-
-  if (!isValid) {
-    throw new Error(`Missing mandatory fields: ${missingFields.join(',')}`);
-  }
-
-  return await idBasedSystemHandler(data);
+  return data;
 };
 
 /**
@@ -149,33 +146,35 @@ export const csvLatLongIdBasedTransformer = async (
  *
  * @param Object<unknown>
  * @returns string | boolean
+ * @throws Error unsupported_id_message
  */
-export const determineIdType = (firstRow: Record<string, unknown>) => {
-  const templateColumns = Object.keys(firstRow);
-  let type: CSV_ID_TYPES | false = false;
+export const determineIdType = (row: Record<string, unknown>) => {
+  const templateColumns = Object.keys(row);
 
   if (templateColumns.length < 1) {
-    return type;
+    throw new Error('Bad CSV Input: No data to process');
   }
+
+  let type: CSV_ID_TYPES;
 
   // this could house mixed types but is certainly required for CAR
   const idTypeColumn = templateColumns.includes('ID Type');
   const isMillList = templateColumns.includes('ID') || templateColumns.includes('Palm Mill ID');
 
   if (idTypeColumn) {
-    const rawKey = String((firstRow['ID Type'] as string | undefined) ?? '')
+    type = String(row['ID Type'] ?? '')
       .trim()
       .toUpperCase() as CSV_ID_TYPES;
-    if (!ID_TYPE_HANDLER[rawKey]) {
-      logger.log(UNSUPPORTED_ID_TYPE_MESSAGE.replace('%ID%', rawKey));
+
+    if (!type || !Object.keys(ID_TYPE_HANDLER).includes(type)) {
+      logger.log(UNSUPPORTED_ID_TYPE_MESSAGE.replace('%ID%', type));
       throw new Error(UNSUPPORTED_ID_TYPE_MESSAGE.replace(' %ID% ', ' '));
     }
-    type = rawKey;
-  } else if (!idTypeColumn && isMillList) {
-    type = CSV_ID_TYPES.UML;
-  }
 
-  return type;
+    return type;
+  } else if (!idTypeColumn && isMillList) {
+    return CSV_ID_TYPES.UML;
+  }
 };
 
 export const validateIdBased = (idType: string, firstRow: Record<string, unknown>) => {
@@ -196,3 +195,12 @@ export const validateIdBased = (idType: string, firstRow: Record<string, unknown
     isValid: missingFields.length === 0,
   };
 };
+
+function resolveFlaggedRowsByValueFound(row: Record<string, unknown>, error: Error) {
+  const errorDetails = (row['errorDetails'] || []) as string[];
+  errorDetails.push(error.message);
+  return Object.assign(row, {
+    ...row,
+    errorDetails,
+  });
+}

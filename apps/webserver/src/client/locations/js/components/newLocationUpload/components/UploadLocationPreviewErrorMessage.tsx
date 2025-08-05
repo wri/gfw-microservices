@@ -93,14 +93,16 @@ const errorMessageBuilder = ({
   const firstError = error?.errors?.[0];
   const isIdBasedError = uploadType === UploadType.ById;
 
+  let missingFieldNames = getMissingFieldsNames(error.errors, fileExtension, isIdBasedError);
+
+  if (!isIdBasedError && missingFieldNames.length < 1) {
+    missingFieldNames = getMissingFieldsNames(error.errors, fileExtension, true);
+  }
+
   if (firstError?.startsWith('Missing mandatory fields:')) {
     return {
       title: 'Missing required fields',
-      body: `Your ${fileExtension} file is missing the following obligatory fields: ${getMissingFieldsNames(
-        error.errors,
-        fileExtension,
-        isIdBasedError
-      )}. Please check the required fields in the Data Templates and update your file before re-uploading it.`,
+      body: `Your ${fileExtension} file is missing the following obligatory fields: ${missingFieldNames}. Please check the required fields in the Data Templates and update your file before re-uploading it.`,
     };
   }
 

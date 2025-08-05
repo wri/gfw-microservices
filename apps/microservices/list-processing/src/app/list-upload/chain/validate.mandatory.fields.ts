@@ -174,9 +174,15 @@ export class ValidateMandatoryFields extends AbstractHandler<ChainType> {
     } else {
       let hasError = false;
       geojson.features.forEach((feature) => {
-        const idType = determineIdType(feature.properties);
+        // only CAR lists don't require analysisRadius or analysisArea
+        try {
+          const idType = determineIdType(feature.properties);
 
-        if (!idType && !this.validateFeature(feature, fieldsToCheck)) {
+          if (idType !== 'CAR' && !this.validateFeature(feature, fieldsToCheck)) {
+            hasError = true;
+          }
+        } catch (error) {
+          this.logger.error(`IdType[${error.name}]: ${error.message}`);
           hasError = true;
         }
       });

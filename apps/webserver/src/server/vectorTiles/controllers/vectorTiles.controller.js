@@ -86,24 +86,9 @@ exports.getListMbtileInfo = async (req, res) => {
   const { listID } = req.body;
 
   try {
-    let listVectorTileS3Path = await getListVectorTileS3PathDB(req, listID);
-
-    if (listVectorTileS3Path === null) {
-      const { path: tilePath } = await generateAndStoreVectorTiles(req, listID);
-      listVectorTileS3Path = tilePath;
-    }
-
-    const mbtileFileName = path.basename(listVectorTileS3Path);
-    const mbtileFileNameOnly = path.basename(mbtileFileName, MBTILE_EXTENSION);
-    const localMbtileFilePath = path.join(VECTOR_TILES_LOCATION, mbtileFileName);
-
-    if (!fs.existsSync(localMbtileFilePath)) {
-      await getMBTileFromS3Bucket(listVectorTileS3Path);
-    }
-
-    // check and wait for file to be ready
-    await waitForMbtileReady(localMbtileFilePath);
-
+    const localMbtileFilePath = await exports.prepareMbtileFile(req, listID);
+    const listMbtileFileName = path.basename(localMbtileFilePath);
+    const listMbtileFileNameOnly = path.basename(listMbtileFileName, MBTILE_EXTENSION);
     new MBTiles(`${localMbtileFilePath}?mode=ro`, (err, mbtiles) => {
       if (err) {
         logger.error(`new MBTiles Error on ${localMbtileFilePath}?mode=ro`, err);
@@ -118,8 +103,8 @@ exports.getListMbtileInfo = async (req, res) => {
           bounds: data?.bounds, // an empty array makes the map go blank
           maxZoom: data?.maxzoom || 0,
           minZoom: data?.minzoom || 0,
-          listMbtileFileName: mbtileFileName,
-          listMbtileFileNameOnly: mbtileFileNameOnly,
+          listMbtileFileName,
+          listMbtileFileNameOnly,
           success: data?.filesize,
           errors: {
             mbTileError: err,
@@ -128,17 +113,71 @@ exports.getListMbtileInfo = async (req, res) => {
         });
       });
     });
-  } catch (e) {
+  } catch (error) {
+    logger.error('Error getting list Mbtile Info:', error);
     res.status(422).json({
       message: 'Error getting list Mbtile Info',
       success: false,
+      error: error?.message,
     });
   }
 };
 
-async function waitForMbtileReady(filePath, retries = 5, delay = 500) {
+exports.prepareMbtileFile = async (req, listID, mbtileFileName = null) => {
+  let listVectorTileS3Path;
+
+  if (mbtileFileName) {
+    // Use the given mbtile file name as the S3 path
+    listVectorTileS3Path = mbtileFileName;
+  } else {
+    // If no mbtile file name is provided, fetch it from the database
+    listVectorTileS3Path = await getListVectorTileS3PathDB(req, listID);
+    if (listVectorTileS3Path === null) {
+      // If the S3 path is not found, generate and store the vector tiles
+      const { path: tilePath } = await generateAndStoreVectorTiles(req, listID);
+      listVectorTileS3Path = tilePath;
+    }
+  }
+  const mbtileName = path.basename(listVectorTileS3Path);
+  const localMbtileFilePath = path.join(VECTOR_TILES_LOCATION, mbtileName);
+
+  if (!fs.existsSync(localMbtileFilePath)) {
+    // If the file does not exist, download it
+    await getMBTileFromS3Bucket(listVectorTileS3Path);
+  }
+
+  try {
+    await waitForMbtileReady(localMbtileFilePath);
+  } catch (error) {
+    logger.warn(`First waitForMbtileReady failed: ${error.message}`);
+    logger.warn('Retrying download from S3...');
+
+    try {
+      await getMBTileFromS3Bucket(listVectorTileS3Path);
+      await waitForMbtileReady(localMbtileFilePath);
+    } catch (retryError) {
+      console.error('Retry also failed:', retryError);
+      throw retryError;
+    }
+  }
+
+  return localMbtileFilePath;
+};
+
+async function waitForMbtileReady(filePath, retries = 5, delay = 1000) {
   return new Promise((resolve, reject) => {
     if (retries <= 0) {
+      logger.error(
+        `MBTiles file still empty or incomplete after multiple retries. Deleting file: ${filePath}`
+      );
+      try {
+        if (fs.existsSync(filePath)) {
+          fs.unlinkSync(filePath);
+          logger.info(`Deleted zero-byte file: ${filePath}`);
+        }
+      } catch (err) {
+        logger.error(`Failed to delete zero-byte file: ${filePath}`, err);
+      }
       return reject(new Error('MBTiles file is still empty or incomplete after multiple checks.'));
     }
 
@@ -148,6 +187,7 @@ async function waitForMbtileReady(filePath, retries = 5, delay = 500) {
         if (fileStats.size > 0) {
           return resolve();
         } else {
+          logger.warn(`MBTiles file is still empty, retrying... (${retries - 1} retries left)`);
           resolve(waitForMbtileReady(filePath, retries - 1, delay));
         }
       } catch (error) {

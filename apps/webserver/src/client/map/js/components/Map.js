@@ -2015,17 +2015,26 @@ class Map extends Component {
             ];
             const { transitionListData } = this.state;
 
-            setVectorTileLayerForFilteredList(
-              selectedLocationsData,
-              transitionListData,
-              this.view
-            ).then((mapCenter) => {
-              this.setState({ mapCenter });
+            setVectorTileLayerForFilteredList(selectedLocationsData, transitionListData, this.view)
+              .then((mapCenter) => {
+                this.setState({ mapCenter });
 
-              this.safeGoTo(mapCenter);
-            });
+                this.safeGoTo(mapCenter);
+                store.dispatch(addList(userList));
+              })
+              .catch((error) => {
+                console.error('Error loading vector tile layer:', error);
 
-            store.dispatch(addList(userList));
+                const message =
+                  error?.response?.data?.message || error?.message || 'Error loading map data';
+
+                const details = {
+                  dialogTitle: 'Error',
+                  dialogMessage: message,
+                };
+                this.cancelAnalysis(details);
+              });
+
             return;
           }
           const { transitionListData } = this.state;

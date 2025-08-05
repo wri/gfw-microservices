@@ -5,8 +5,9 @@ import { carLookup } from './carid.lat.long.lookup';
 const logger = new Logger('csv.id.based.system');
 
 // @see {@link https://gfw.atlassian.net/browse/GPV-4541}
+// @see {@link https://gfw.atlassian.net/browse/GPV-4540}
 export const UNSUPPORTED_ID_TYPE_MESSAGE =
-  'The defined ID system %ID% is not recognized by GFW Pro. Please enter a recognized ID system value';
+  "You have entered an invalid ID not found in the system's database, please ensure you have entered the ID value correctly.";
 
 export enum CSV_ID_TYPES {
   UML = 'UML',
@@ -167,14 +168,16 @@ export const determineIdType = (row: Record<string, unknown>) => {
       .toUpperCase() as CSV_ID_TYPES;
 
     if (!type || !Object.keys(ID_TYPE_HANDLER).includes(type)) {
-      logger.log(UNSUPPORTED_ID_TYPE_MESSAGE.replace('%ID%', type));
-      throw new Error(UNSUPPORTED_ID_TYPE_MESSAGE.replace(' %ID% ', ' '));
+      logger.error(`InvalidTypeError: [${type}] ${UNSUPPORTED_ID_TYPE_MESSAGE}`);
+      throw new Error(UNSUPPORTED_ID_TYPE_MESSAGE);
     }
 
     return type;
   } else if (!idTypeColumn && isMillList) {
     return CSV_ID_TYPES.UML;
   }
+
+  throw new Error(UNSUPPORTED_ID_TYPE_MESSAGE);
 };
 
 export const validateIdBased = (idType: string, firstRow: Record<string, unknown>) => {

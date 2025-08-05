@@ -135,7 +135,7 @@ const errorMessageBuilder = ({
   }
 
   // @see {@link https://gfw.atlassian.net/browse/GPV-4541}
-  if (firstError?.startsWith('The defined ID system')) {
+  if (firstError?.startsWith('You have entered an invalid ID not found in the system')) {
     return {
       title: 'Invalid file',
       body: `The defined ID is not recognized by GFW Pro. Please enter a recognized ID system value.`,

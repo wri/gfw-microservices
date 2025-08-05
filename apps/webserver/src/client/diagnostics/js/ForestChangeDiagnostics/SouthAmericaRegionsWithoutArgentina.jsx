@@ -18,7 +18,6 @@ import infoBubbleConfig from '../../../common/js/infoBubbleConfig.constants';
 import '../../../common/css/_irsBase.scss';
 import '../../../common/css/_irsStyle.scss';
 
-const PRIMARY_FOREST_COLOR = '#818181';
 const PROTECTED_AREAS_COLOR = '#818181';
 
 const START_YEAR = 2001;
@@ -34,7 +33,6 @@ export default class SouthAmericaRegionsWithoutArgentina extends Component {
       soyChecked: true,
       prodesChecked: false,
       paChecked: false,
-      pfChecked: false,
       saTCLChecked: false,
       biomesChecked: false,
       startYear: START_YEAR,
@@ -94,7 +92,6 @@ export default class SouthAmericaRegionsWithoutArgentina extends Component {
       newState.soyChecked = true;
       newState.prodesChecked = false;
       newState.paChecked = false;
-      newState.pfChecked = false;
       newState.biomesChecked = false;
       newState.saTCLChecked = false;
     } else if (inLegalAmazon) {
@@ -108,14 +105,12 @@ export default class SouthAmericaRegionsWithoutArgentina extends Component {
       newState.soyChecked = false;
       newState.prodesChecked = false;
       newState.paChecked = false;
-      newState.pfChecked = false;
       newState.saTCLChecked = false;
     } else {
       newState.saTCLChecked = true;
       newState.soyChecked = false;
       newState.prodesChecked = false;
       newState.paChecked = false;
-      newState.pfChecked = false;
       newState.biomesChecked = false;
     }
 
@@ -142,7 +137,6 @@ export default class SouthAmericaRegionsWithoutArgentina extends Component {
       soyChecked,
       prodesChecked,
       paChecked,
-      pfChecked,
       saTCLChecked,
       biomesChecked,
       startYear,
@@ -155,7 +149,6 @@ export default class SouthAmericaRegionsWithoutArgentina extends Component {
       prevState.soyChecked !== soyChecked ||
       prevState.prodesChecked !== prodesChecked ||
       prevState.paChecked !== paChecked ||
-      prevState.pfChecked !== pfChecked ||
       prevState.saTCLChecked !== saTCLChecked ||
       prevState.biomesChecked !== biomesChecked ||
       prevState.startYear !== startYear ||
@@ -173,7 +166,6 @@ export default class SouthAmericaRegionsWithoutArgentina extends Component {
       !soyChecked &&
       !prodesChecked &&
       !paChecked &&
-      !pfChecked &&
       !saTCLChecked &&
       !biomesChecked &&
       isMounted
@@ -342,7 +334,6 @@ export default class SouthAmericaRegionsWithoutArgentina extends Component {
       soyChecked,
       prodesChecked,
       paChecked,
-      pfChecked,
       saTCLChecked,
       biomesChecked,
     } = this.state;
@@ -417,19 +408,6 @@ export default class SouthAmericaRegionsWithoutArgentina extends Component {
       });
     }
 
-    if (pfChecked) {
-      series.push({
-        name: 'Primary Forest',
-        data: getYearlyHighchartSeries(
-          getYearlyData('tree_cover_loss_prodes_primary_forest_yearly', startYear, endYear)
-        ),
-        color: PRIMARY_FOREST_COLOR,
-        groupPadding: 0,
-        stack: 'pf',
-        showInLegend: false,
-      });
-    }
-
     if (saTCLChecked) {
       series.push({
         name: 'Tree Cover Loss',
@@ -465,19 +443,6 @@ export default class SouthAmericaRegionsWithoutArgentina extends Component {
           color: PROTECTED_AREAS_COLOR,
           groupPadding: 0,
           stack: 'pa',
-          showInLegend: false,
-        });
-      }
-
-      if (pfChecked) {
-        filteredSeries.push({
-          name: 'Primary Forest',
-          data: getYearlyHighchartSeries(
-            getYearlyData('tree_cover_loss_prodes_primary_forest_yearly', startYear, endYear)
-          ),
-          color: PRIMARY_FOREST_COLOR,
-          groupPadding: 0,
-          stack: 'pf',
           showInLegend: false,
         });
       }
@@ -557,12 +522,9 @@ export default class SouthAmericaRegionsWithoutArgentina extends Component {
   };
 
   handlePrimaryForestCheck = () => {
-    const { pfChecked, paChecked } = this.state;
-    const nextPrimaryForestState = !pfChecked;
-    const nextProtectedAreaState = nextPrimaryForestState ? false : paChecked;
+    const { paChecked } = this.state;
     this.setState({
-      pfChecked: nextPrimaryForestState,
-      paChecked: nextProtectedAreaState,
+      paChecked: paChecked,
       soyChecked: false,
       saTCLChecked: false,
       biomesChecked: false,
@@ -570,11 +532,9 @@ export default class SouthAmericaRegionsWithoutArgentina extends Component {
   };
 
   handleProtectedAreaCheck = () => {
-    const { pfChecked, paChecked } = this.state;
+    const { paChecked } = this.state;
     const nextProtectedAreaState = !paChecked;
-    const nextPrimaryForestState = nextProtectedAreaState ? false : pfChecked;
     this.setState({
-      pfChecked: nextPrimaryForestState,
       paChecked: nextProtectedAreaState,
       soyChecked: false,
       saTCLChecked: false,
@@ -586,7 +546,6 @@ export default class SouthAmericaRegionsWithoutArgentina extends Component {
     const {
       prodesChecked,
       paChecked,
-      pfChecked,
       saTCLChecked,
       biomesChecked,
 
@@ -616,7 +575,6 @@ export default class SouthAmericaRegionsWithoutArgentina extends Component {
               soyChecked: !this.state.soyChecked,
               prodesChecked: false,
               paChecked: false,
-              pfChecked: false,
               saTCLChecked: false,
               biomesChecked: false,
             });
@@ -659,19 +617,6 @@ export default class SouthAmericaRegionsWithoutArgentina extends Component {
             });
           };
           break;
-        case 'totalPF':
-          label = 'Primary Forest';
-          checked = pfChecked;
-          child = true;
-          disabled = !(legalAmazon && value !== 0);
-          onChange = () => {
-            this.handlePrimaryForestCheck();
-            gtag('event', 'South America Asia checkbox clicked', {
-              event_category: 'Forest Change Diagnostics Click',
-              event_label: 'user checked primary forest',
-            });
-          };
-          break;
         case 'saTotalTCL':
           label = 'Tree Cover Loss';
           checked = saTCLChecked;
@@ -683,7 +628,6 @@ export default class SouthAmericaRegionsWithoutArgentina extends Component {
               soyChecked: false,
               prodesChecked: false,
               paChecked: false,
-              pfChecked: false,
               saTCLChecked: !this.state.saTCLChecked,
             });
             gtag('event', 'South America Asia checkbox clicked', {
@@ -704,7 +648,6 @@ export default class SouthAmericaRegionsWithoutArgentina extends Component {
               soyChecked: false,
               prodesChecked: false,
               paChecked: false,
-              pfChecked: false,
               biomesChecked: !this.state.biomesChecked,
             });
             gtag('event', 'South America Asia checkbox clicked', {
@@ -875,7 +818,6 @@ export default class SouthAmericaRegionsWithoutArgentina extends Component {
       totalSoy: parseYearlyData('tree_cover_loss_soy_yearly', startYear, endYear),
       totalProdes: parseYearlyData('tree_cover_loss_prodes_yearly', startYear, endYear),
       totalPA: parseYearlyData('tree_cover_loss_prodes_wdpa_yearly', startYear, endYear),
-      totalPF: parseYearlyData('tree_cover_loss_prodes_primary_forest_yearly', startYear, endYear),
       saTotalTCL: parseYearlyData('tree_cover_loss_total_yearly', startYear, endYear),
       totalBiomes: parseYearlyData('tree_cover_loss_brazil_biomes_yearly', startYear, endYear),
     };
@@ -906,8 +848,7 @@ export default class SouthAmericaRegionsWithoutArgentina extends Component {
   };
 
   render() {
-    const { prodesChecked, paChecked, pfChecked, saTCLChecked, biomesChecked, sliderActive } =
-      this.state;
+    const { prodesChecked, paChecked, saTCLChecked, biomesChecked, sliderActive } = this.state;
 
     const totals = this.processTotals();
     const totalsTable = this.renderSouthAmericaTable(totals);
@@ -922,7 +863,7 @@ export default class SouthAmericaRegionsWithoutArgentina extends Component {
 
     if (saTCLChecked || biomesChecked) {
       title = TREE_COVER_LOSS;
-    } else if (prodesChecked || paChecked || pfChecked) {
+    } else if (prodesChecked || paChecked) {
       title = PRODES_AMAZON;
     } else {
       title = SOY_ON_TREE_COVER_LOSS;
@@ -931,7 +872,7 @@ export default class SouthAmericaRegionsWithoutArgentina extends Component {
     const displayBrazilBiomeSection = this.checkBrazilBiome();
 
     let informationBubbleId;
-    if (prodesChecked || paChecked || pfChecked) {
+    if (prodesChecked || paChecked) {
       informationBubbleId = infoBubbleConfig.regionsProdesAnnual;
     } else if (saTCLChecked || biomesChecked) {
       informationBubbleId = infoBubbleConfig.regionsSaAnnual;

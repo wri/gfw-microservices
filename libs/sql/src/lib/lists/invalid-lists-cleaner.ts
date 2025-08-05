@@ -10,7 +10,7 @@ import { ClientStoreConnection } from '../util';
 import { Lists } from '../entity';
 import { Repository } from 'typeorm';
 
-const logger = new Logger('Malformed Lists Converter');
+const logger = new Logger('Invalid Lists Converter');
 
 interface InvalidListsCleanerArgs {
   clientDb: string;
@@ -138,7 +138,64 @@ export async function deleteListsPartlyUpgraded(params: InvalidListsCleanerArgs)
 }
 
 /**
- * Helper function to run both clean-up functions
+ * Deletes lists with missing list-xxxxx tables.
+ * If the list's table does not exist, the list is deleted from the Lists table.
+ */
+export async function deleteListsWithMissingTables(params: InvalidListsCleanerArgs): Promise<void> {
+  const { clientDb: organizationDbName, listId, isDryRun = false } = params;
+  const queryRunner = await createConnectedQueryRunner(organizationDbName);
+  let listTableName: string | undefined;
+
+  try {
+    const listsRepo = getListsRepo(queryRunner);
+    const list = await fetchList(listsRepo, ['listTableName'], listId);
+    listTableName = list.listTableName;
+    const fullTableName = `[${organizationDbName}].[${listTableName}]`;
+
+    if (!listTableName) {
+      logger.warn(`⚠️ List ID ${listId} has no listTableName. Skipping.`);
+      return;
+    }
+
+    // Check if the list table exists
+    const checkQuery = `SELECT OBJECT_ID('${listTableName}', 'U') AS object_id`;
+    const result = await queryRunner.query(checkQuery);
+    const objectId = result?.[0]?.object_id;
+
+    if (objectId) {
+      logger.log(`✅ Table ${fullTableName} exists; No action needed.`);
+      return;
+    }
+
+    logDeletionMessage(
+      isDryRun,
+      fullTableName,
+      `list ID ${listId} — table ${listTableName} does not exist in ${organizationDbName}`
+    );
+
+    if (!isDryRun) {
+      // If the table does not exist, delete the list from the Lists table
+      await listsRepo.delete({ id: listId });
+    }
+  } catch (error) {
+    logger.error(
+      `❌ Error processing missing list tables cleaner in ${organizationDbName}: ${
+        (error as Error).message
+      }`,
+      (error as Error).stack ?? String(error)
+    );
+    throw error;
+  } finally {
+    await queryRunner.release();
+  }
+}
+
+// Helper functions to run both clean-up functions
+
+/**
+ * Creates a connected query runner for the specified client database.
+ * @param clientDb - The name of the client database
+ * @returns A connected query runner
  */
 async function createConnectedQueryRunner(clientDb: string) {
   const conn = await new ClientStoreConnection().getConnection(clientDb);
@@ -147,10 +204,21 @@ async function createConnectedQueryRunner(clientDb: string) {
   return queryRunner;
 }
 
+/**
+ * Gets the Lists repository from the query runner.
+ * @param queryRunner
+ * @returns
+ */
 function getListsRepo(queryRunner: any): Repository<Lists> {
   return queryRunner.manager.getRepository(Lists);
 }
 
+/**
+ * Logs a deletion message with optional reason.
+ * @param isDryRun - Whether this is a dry run
+ * @param fullTableName - The full name of the table being deleted
+ * @param reason - Optional reason for deletion
+ */
 function logDeletionMessage(isDryRun: boolean, fullTableName: string, reason?: string) {
   const action = isDryRun ? '(Dry Run) Would delete' : 'Deleting';
   const msg = reason
@@ -159,6 +227,13 @@ function logDeletionMessage(isDryRun: boolean, fullTableName: string, reason?: s
   logger.warn(msg);
 }
 
+/**
+ * Fetches a list record from the Lists repository.
+ * @param listsRepo - The Lists repository
+ * @param fields - The fields to select
+ * @param listId - The ID of the list to fetch
+ * @returns The fetched list record
+ */
 async function fetchList(
   listsRepo: Repository<Lists>,
   fields: (keyof Lists)[],
@@ -171,6 +246,12 @@ async function fetchList(
   return record;
 }
 
+/**
+ * Determines if the error indicates a missing table.
+ * @param error - The error to check
+ * @param listTableName - The name of the list table
+ * @returns True if the error indicates a missing table, false otherwise
+ */
 function shouldSkipDueToMissingTable({
   error,
   listTableName,
@@ -186,6 +267,9 @@ function shouldSkipDueToMissingTable({
   );
 }
 
+/**
+ * Logs a warning for lists with missing tables.
+ */
 function logMissingTableWarning({
   listId,
   listTableName,
@@ -198,6 +282,9 @@ function logMissingTableWarning({
   logger.warn(`Skipping list ID ${listId} — table ${listTableName} does not exist in ${dbName}`);
 }
 
+/**
+ * Logs an error message for unhandled list errors.
+ */
 function logUnhandledListError({
   error,
   dbName,

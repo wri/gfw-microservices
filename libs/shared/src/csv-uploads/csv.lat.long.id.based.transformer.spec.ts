@@ -148,17 +148,27 @@ describe('csvLatLongIdBasedTransformer', () => {
       expect(mockCarLookUp).not.toHaveBeenCalled();
     });
 
-    it('throws for an unsupported ID Type with mixed values', async () => {
+    it('throws for list unsupported ID Type with mixed values', async () => {
       const rows = [
         { 'ID Type': 'CAR', ID: '999', 'Location Name': 'Locar' },
         { 'ID Type': 'XYZ', ID: '999', 'Location Name': 'Locar' },
       ];
 
+      mockCarLookUp.mockResolvedValue({
+        '999': {
+          geometry: {
+            type: 'Point',
+            coordinates: [0, 0],
+          },
+        },
+      } as any);
+
       await expect(csvLatLongIdBasedTransformer(rows)).rejects.toThrow(
         'The defined ID system is not recognized by GFW Pro. Please enter a recognized ID system value'
       );
+
+      expect(mockCarLookUp).toHaveBeenCalledWith(['999']);
       expect(mockUmlLookUp).not.toHaveBeenCalled();
-      expect(mockCarLookUp).toHaveBeenCalled();
     });
 
     it('processes records in the correct chunk size for UML (1 000 rows)', async () => {

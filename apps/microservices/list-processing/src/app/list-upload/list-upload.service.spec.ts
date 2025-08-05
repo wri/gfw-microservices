@@ -41,6 +41,8 @@ describe('ListUploadService', () => {
     queryRunner = {
       connect: jest.fn(),
       startTransaction: jest.fn(),
+      commitTransaction: jest.fn(),
+      release: jest.fn(),
       connection: {
         getRepository: jest.fn().mockReturnValue(mockRepository),
       },
@@ -59,6 +61,14 @@ describe('ListUploadService', () => {
           provide: DataSource,
           useValue: {
             createQueryRunner: jest.fn().mockReturnValue(queryRunner),
+            manager: {
+              transaction: jest.fn(async (callback) => {
+                const mockTransactionalEntityManager = {
+                  getRepository: jest.fn().mockReturnValue(mockRepository),
+                };
+                return await callback(mockTransactionalEntityManager);
+              }),
+            },
           },
         },
         {
@@ -158,8 +168,7 @@ describe('ListUploadService', () => {
       const result = await service.getFilenameForUser();
 
       expect(result).toEqual(mockData);
-      expect(queryRunner.connect).toHaveBeenCalled();
-      expect(queryRunner.startTransaction).toHaveBeenCalled();
+      expect(dataSource.manager.transaction).toHaveBeenCalled();
       expect(mockRepository.find).toHaveBeenCalled();
     });
 
@@ -168,9 +177,7 @@ describe('ListUploadService', () => {
 
       await service.getFilenameForUser();
 
-      expect(dataSource.createQueryRunner).toHaveBeenCalled();
-      expect(queryRunner.connect).toHaveBeenCalled();
-      expect(queryRunner.startTransaction).toHaveBeenCalled();
+      expect(dataSource.manager.transaction).toHaveBeenCalled();
     });
   });
 

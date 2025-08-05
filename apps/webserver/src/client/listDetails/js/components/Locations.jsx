@@ -4,7 +4,6 @@ import { connect } from 'react-redux';
 import Page from '../../../common/js/components/Page';
 import { userAccessLevel, locationsPage } from '../../../common/js/config';
 import ModalLoader from '../../../common/js/components/Loaders/ModalLoader';
-import EditList from './edit/EditList';
 import onListFromViewToList from '../utils/redirect';
 import ListDetails from './lists/ListDetails';
 import '../../../locations/css/locations.scss';
@@ -90,11 +89,9 @@ class Locations extends Component {
       templateData,
       userLists,
       userInfo,
-      organizationId,
       gfwLists,
       usersList,
       userSharedLists,
-      view,
       listView,
       addType,
       activeTemplate,
@@ -126,63 +123,37 @@ class Locations extends Component {
         };
       });
 
-    const selectedLocationData =
-      filteredLocationData.length > 0 && selectedLocations.length > 0
-        ? filteredLocationData.filter((feat) => selectedLocations.indexOf(feat.location_id) > -1)
-        : filteredLocationData;
-
     return (
       <Page links={pageOptions.links} active="locations">
         <ModalLoader open={isLoading} />
         {!isLoading && selectedList ? (
-          view === 'edit' ? (
-            <EditList
-              history={history}
-              organizationId={organizationId}
-              templateData={templateData}
-              userLists={userLists}
-              addType={addType}
-              activeTemplate={activeTemplate}
-              listData={listData}
-              selectedLists={selectedLists}
-              selectedLocationData={selectedLocationData}
-              selectedLocations={
-                selectedLocations.length && selectedAndVisibleLocations.length > 0
-                  ? selectedAndVisibleLocations
-                  : selectedLocations
-              }
-              filteredData={filteredData}
-              currentUser={userInfo}
-            />
-          ) : (
-            <ListDetails
-              activeTemplate={activeTemplate}
-              addType={addType}
-              gfwInfoFromMap={gfwInfoFromMap}
-              history={history}
-              userListInfoFromMap={userListInfoFromMap}
-              currentUser={userInfo}
-              selectedLists={selectedLists}
-              folders={userFolders}
-              userLists={userLists} // Contains all lists that users have created
-              listView={listView}
-              gfwLists={gfwLists}
-              canopyModalVisible={canopyModalVisible}
-              filters={filters}
-              filterCount={filterCount}
-              listData={listData}
-              filteredData={filteredData}
-              filteredLocationData={filteredLocationData}
-              selectedLocations={selectedLocations}
-              selectedAndVisibleLocations={selectedAndVisibleLocations}
-              templateData={templateData}
-              stopLoading={this.stopLoading}
-              usersList={usersList} // Contains all users
-              userSharedLists={userSharedLists}
-              shareView={shareView}
-              showShareList={this.showShareList}
-            />
-          )
+          <ListDetails
+            activeTemplate={activeTemplate}
+            addType={addType}
+            gfwInfoFromMap={gfwInfoFromMap}
+            history={history}
+            userListInfoFromMap={userListInfoFromMap}
+            currentUser={userInfo}
+            selectedLists={selectedLists}
+            folders={userFolders}
+            userLists={userLists} // Contains all lists that users have created
+            listView={listView}
+            gfwLists={gfwLists}
+            canopyModalVisible={canopyModalVisible}
+            filters={filters}
+            filterCount={filterCount}
+            listData={listData}
+            filteredData={filteredData}
+            filteredLocationData={filteredLocationData}
+            selectedLocations={selectedLocations}
+            selectedAndVisibleLocations={selectedAndVisibleLocations}
+            templateData={templateData}
+            stopLoading={this.stopLoading}
+            usersList={usersList} // Contains all users
+            userSharedLists={userSharedLists}
+            shareView={shareView}
+            showShareList={this.showShareList}
+          />
         ) : (
           <div
             style={{

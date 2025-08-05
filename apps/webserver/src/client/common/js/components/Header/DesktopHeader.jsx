@@ -34,9 +34,14 @@ function DesktopHeader({ isLoggedIn, active }) {
             <HeaderNavLink
               active={active}
               link="https://pro-news.globalforestwatch.org/"
-              label={nav.newsAndEnvents}
+              label={nav.newsAndEvents}
             />
             <HeaderNavLink active={active} link="/about" label="About" />
+            <HeaderNavLink
+              active={active}
+              link="https://pro-news.globalforestwatch.org/users"
+              label={nav.users}
+            />
             <HeaderNavLink
               active={active}
               link="https://www.globalforestwatch.org/blog/category-and-topics/?topic=commodities"

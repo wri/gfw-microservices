@@ -41,10 +41,7 @@ import { PolygonFromMapPage, UploadType } from '../types';
 import { DATA_CY, ExternalLinks } from '../../../../../utils/constants';
 
 const MIN_AMOUNT_OF_COORDINATES = 3;
-const MAX_AMOUNT_OF_COORDINATES = 10;
-
-const COORDINATE_ERROR_MESSAGE =
-  'Your coordinate value is invalid. Please ensure your data is in decimal degree notation';
+const MAX_AMOUNT_OF_COORDINATES = 12;
 
 enum LocationFormat {
   DrawAShape,
@@ -117,13 +114,21 @@ export function UploadLocationByPolygon({
     }
   }, []);
 
+  const hasAppliedPolygon = useRef(false);
+
   useEffect(() => {
+    if (hasAppliedPolygon.current) {
+      return;
+    }
+
     // draw the map one time when it's redirected from the map page
-    if (mapView && polygonFromMapPage?.geometry) {
-      const coordinates = polygonFromMapPage.geometry?.rings?.[0]?.map((coord) => ({
+    const geometryRings = polygonFromMapPage?.geometry?.rings?.[0];
+    if (mapView && geometryRings) {
+      const coordinates = geometryRings?.map((coord) => ({
         longitude: coord[0].toString(),
         latitude: coord[1].toString(),
       }));
+
       const formattedCoordinates = coordinates.reduce((acc, coord, index) => {
         acc[index.toString()] = {
           latitude: coord.latitude,
@@ -141,9 +146,9 @@ export function UploadLocationByPolygon({
 
       onSubmitCoordinates({ coordinates: formattedCoordinates });
       locationNameRef?.current?.focus();
-      polygonFromMapPage = undefined;
+      hasAppliedPolygon.current = true;
     }
-  }, [mapView]);
+  }, [mapView, polygonFromMapPage]);
 
   useEffect(() => {
     resetCoordinates();
@@ -209,6 +214,11 @@ export function UploadLocationByPolygon({
   const isLocationFormatInDrawAShape = locationFormat === LocationFormat.DrawAShape;
   const isLocationFormatInPolygonCoordinates = locationFormat === LocationFormat.PolygonCoordinates;
 
+  const areLocationTypesEnabled =
+    !polygonFromMapPage || coordinates.length <= MAX_AMOUNT_OF_COORDINATES;
+
+  const isDrawButtonVisible = mapView && isLocationFormatInDrawAShape && areLocationTypesEnabled;
+
   return (
     <>
       <NavBar isComingFromMap={!!polygonFromMapPage} />
@@ -250,149 +260,155 @@ export function UploadLocationByPolygon({
           {...registerLocationName('locationName')}
         />
 
-        <Typography variant="subtitle2" sx={{ mt: 2, fontWeight: '500' }}>
-          Choose your location type
-        </Typography>
-        <Typography variant="caption" sx={{ color: 'text.secondary' }}>
-          Select draw a shape and start drawing or you can enter coordinates.
-        </Typography>
+        {areLocationTypesEnabled && (
+          <>
+            <Typography variant="subtitle2" sx={{ mt: 2, fontWeight: '500' }}>
+              Choose your location type
+            </Typography>
+            <Typography variant="caption" sx={{ color: 'text.secondary' }}>
+              Select draw a shape and start drawing or you can enter coordinates.
+            </Typography>
+          </>
+        )}
 
         <Box
           sx={{ display: { sm: 'flex', xs: 'block' }, gap: 3, mt: 1.5, height: { sm: '470px' } }}
         >
-          <Box
-            sx={{
-              display: 'flex',
-              flexDirection: 'column',
-              gap: 1,
-              mb: { xs: 2 },
-            }}
-          >
-            <LocationTypeButton
-              variant="outlined"
-              color={isLocationFormatInDrawAShape ? 'primary' : 'info'}
-              onClick={() => handleChangeLocationFormat(LocationFormat.DrawAShape)}
-              sx={{ maxWidth: { sm: '274px' } }}
+          {areLocationTypesEnabled && (
+            <Box
+              sx={{
+                display: 'flex',
+                flexDirection: 'column',
+                gap: 1,
+                mb: { xs: 2 },
+              }}
             >
-              <Draw sx={{ fontSize: (theme) => theme.typography.h4 }} />
-              <Typography variant="body2">Draw a shape</Typography>
-            </LocationTypeButton>
-            {!isLocationFormatInPolygonCoordinates ? (
               <LocationTypeButton
                 variant="outlined"
-                color="info"
-                onClick={() => handleChangeLocationFormat(LocationFormat.PolygonCoordinates)}
+                color={isLocationFormatInDrawAShape ? 'primary' : 'info'}
+                onClick={() => handleChangeLocationFormat(LocationFormat.DrawAShape)}
+                sx={{ maxWidth: { sm: '274px' } }}
               >
-                <AddLocationAlt sx={{ fontSize: (theme) => theme.typography.h4 }} />
-                <Typography variant="body2">Enter polygon coordinates</Typography>
+                <Draw sx={{ fontSize: (theme) => theme.typography.h4 }} />
+                <Typography variant="body2">Draw a shape</Typography>
               </LocationTypeButton>
-            ) : (
-              <Box
-                component="form"
-                sx={{
-                  display: 'flex',
-                  flexDirection: 'column',
-                  alignItems: 'start',
-                  gap: '0.5rem',
-                  border: `2px solid ${theme.palette.primary.main}`,
-                  borderRadius: '3px',
-                  padding: '1.5rem 1rem',
-                  width: isRegularScreenSize ? '440px' : '100%',
-                  maxHeight: '430px',
-                  overflow: 'auto',
-                }}
-              >
-                <Box sx={{ display: 'flex', width: '100%', justifyContent: 'space-between' }}>
-                  <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                    <AddLocationAlt sx={{ fontSize: (theme) => theme.typography.h4 }} />
-                    <Typography variant="body2">Enter coordinates</Typography>
+              {!isLocationFormatInPolygonCoordinates ? (
+                <LocationTypeButton
+                  variant="outlined"
+                  color="info"
+                  onClick={() => handleChangeLocationFormat(LocationFormat.PolygonCoordinates)}
+                >
+                  <AddLocationAlt sx={{ fontSize: (theme) => theme.typography.h4 }} />
+                  <Typography variant="body2">Enter polygon coordinates</Typography>
+                </LocationTypeButton>
+              ) : (
+                <Box
+                  component="form"
+                  sx={{
+                    display: 'flex',
+                    flexDirection: 'column',
+                    alignItems: 'start',
+                    gap: '0.5rem',
+                    border: `2px solid ${theme.palette.primary.main}`,
+                    borderRadius: '3px',
+                    padding: '1.5rem 1rem',
+                    width: isRegularScreenSize ? '440px' : '100%',
+                    maxHeight: '430px',
+                    overflow: 'auto',
+                  }}
+                >
+                  <Box sx={{ display: 'flex', width: '100%', justifyContent: 'space-between' }}>
+                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                      <AddLocationAlt sx={{ fontSize: (theme) => theme.typography.h4 }} />
+                      <Typography variant="body2">Enter coordinates</Typography>
+                    </Box>
+                    <PillButton
+                      startIcon={<Add style={{ color: theme.palette.primary.main }} />}
+                      disabled={coordinates.length === MAX_AMOUNT_OF_COORDINATES}
+                      onClick={handleAddCoordinateField}
+                    >
+                      Add
+                    </PillButton>
                   </Box>
+
+                  <List>
+                    <TransitionGroup>
+                      {coordinates.map(({ id }, index) => {
+                        return (
+                          <Collapse key={id}>
+                            <ListItem
+                              sx={{ display: 'flex', alignItems: 'start', gap: 1 }}
+                              disableGutters
+                            >
+                              <Typography sx={{ minWidth: '1rem', marginTop: 1 }}>
+                                {index + 1}
+                              </Typography>
+                              <TextField
+                                label="Latitude"
+                                variant="outlined"
+                                type="number"
+                                size="small"
+                                data-testid="latitude-input"
+                                error={!!errorsCoordinates.coordinates?.[id]?.latitude}
+                                helperText={
+                                  errorsCoordinates.coordinates?.[id]?.latitude
+                                    ? 'This latitude value is invalid'
+                                    : ''
+                                }
+                                {...registerCoordinates(`coordinates.${id}.latitude`, {
+                                  required: true,
+                                  onChange: (e) =>
+                                    handleUpdateCoordinate(id, 'latitude', e.target.value),
+                                })}
+                              />
+                              <TextField
+                                label="Longitude"
+                                variant="outlined"
+                                type="number"
+                                size="small"
+                                data-testid="longitude-input"
+                                error={!!errorsCoordinates.coordinates?.[id]?.longitude}
+                                helperText={
+                                  errorsCoordinates.coordinates?.[id]?.longitude
+                                    ? 'This longitude value is invalid'
+                                    : ''
+                                }
+                                {...registerCoordinates(`coordinates.${id}.longitude`, {
+                                  required: true,
+                                  onChange: (e) =>
+                                    handleUpdateCoordinate(id, 'longitude', e.target.value),
+                                })}
+                              />
+                              {coordinates.length > MIN_AMOUNT_OF_COORDINATES ? (
+                                <IconButton
+                                  onClick={() => handleRemoveCoordinateField(id)}
+                                  disableRipple
+                                >
+                                  <Clear />
+                                </IconButton>
+                              ) : (
+                                <Box sx={{ width: 6, height: 6 }}></Box>
+                              )}
+                            </ListItem>
+                          </Collapse>
+                        );
+                      })}
+                    </TransitionGroup>
+                  </List>
+
                   <PillButton
-                    startIcon={<Add style={{ color: theme.palette.primary.main }} />}
-                    disabled={coordinates.length === MAX_AMOUNT_OF_COORDINATES}
-                    onClick={handleAddCoordinateField}
+                    type="button"
+                    variant="contained"
+                    sx={{ alignSelf: 'end', width: { sm: 'fit-content', xs: '100%' } }}
+                    startIcon={<Check />}
+                    onClick={handleSubmitCoordinates(onSubmitCoordinates)}
                   >
-                    Add
+                    Ok
                   </PillButton>
                 </Box>
-
-                <List>
-                  <TransitionGroup>
-                    {coordinates.map(({ id }, index) => {
-                      return (
-                        <Collapse key={id}>
-                          <ListItem
-                            sx={{ display: 'flex', alignItems: 'start', gap: 1 }}
-                            disableGutters
-                          >
-                            <Typography sx={{ minWidth: '1rem', marginTop: 1 }}>
-                              {index + 1}
-                            </Typography>
-                            <TextField
-                              label="Latitude"
-                              variant="outlined"
-                              type="number"
-                              size="small"
-                              data-testid="latitude-input"
-                              error={!!errorsCoordinates.coordinates?.[id]?.latitude}
-                              helperText={
-                                errorsCoordinates.coordinates?.[id]?.latitude
-                                  ? COORDINATE_ERROR_MESSAGE
-                                  : ''
-                              }
-                              {...registerCoordinates(`coordinates.${id}.latitude`, {
-                                required: true,
-                                onChange: (e) =>
-                                  handleUpdateCoordinate(id, 'latitude', e.target.value),
-                              })}
-                            />
-                            <TextField
-                              label="Longitude"
-                              variant="outlined"
-                              type="number"
-                              size="small"
-                              data-testid="longitude-input"
-                              error={!!errorsCoordinates.coordinates?.[id]?.longitude}
-                              helperText={
-                                errorsCoordinates.coordinates?.[id]?.longitude
-                                  ? COORDINATE_ERROR_MESSAGE
-                                  : ''
-                              }
-                              {...registerCoordinates(`coordinates.${id}.longitude`, {
-                                required: true,
-                                onChange: (e) =>
-                                  handleUpdateCoordinate(id, 'longitude', e.target.value),
-                              })}
-                            />
-                            {coordinates.length > MIN_AMOUNT_OF_COORDINATES ? (
-                              <IconButton
-                                onClick={() => handleRemoveCoordinateField(id)}
-                                disableRipple
-                              >
-                                <Clear />
-                              </IconButton>
-                            ) : (
-                              <Box sx={{ width: 6, height: 6 }}></Box>
-                            )}
-                          </ListItem>
-                        </Collapse>
-                      );
-                    })}
-                  </TransitionGroup>
-                </List>
-
-                <PillButton
-                  type="button"
-                  variant="contained"
-                  sx={{ alignSelf: 'end', width: { sm: 'fit-content', xs: '100%' } }}
-                  startIcon={<Check />}
-                  onClick={handleSubmitCoordinates(onSubmitCoordinates)}
-                >
-                  Ok
-                </PillButton>
-              </Box>
-            )}
-          </Box>
+              )}
+            </Box>
+          )}
 
           <Box
             sx={{
@@ -401,7 +417,7 @@ export function UploadLocationByPolygon({
               height: { xs: '470px' },
             }}
           >
-            {mapView && isLocationFormatInDrawAShape && (
+            {isDrawButtonVisible && (
               <Box
                 sx={{
                   position: 'absolute',
@@ -464,7 +480,7 @@ export function UploadLocationByPolygon({
           aria-labelledby="alert-dialog-title"
           aria-describedby="alert-dialog-description"
         >
-          <DialogTitle id="alert-dialog-title">Draw your location</DialogTitle>
+          <DialogTitle id="alert-dialog-title">Invalid polygon</DialogTitle>
           <DialogActions>
             <PillButton onClick={() => setIsDialogOpen(false)} autoFocus>
               Ok

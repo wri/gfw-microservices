@@ -99,11 +99,10 @@ export class ListUploadService {
   }
 
   async getFilenameForUser(): Promise<MyObject[]> {
-    const queryRunner = this.dataSource.createQueryRunner();
-    await queryRunner.connect();
-    await queryRunner.startTransaction();
-    const result = await queryRunner.connection.getRepository(MyObject).find();
-    return result;
+    return await this.dataSource.manager.transaction(async (transactionalEntityManager) => {
+      const result = await transactionalEntityManager.getRepository(MyObject).find();
+      return result;
+    });
   }
 
   async createNewList(createListRequest: CreateListRequest) {

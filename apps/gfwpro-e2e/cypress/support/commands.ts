@@ -16,6 +16,7 @@ declare namespace Cypress {
     login(email: string, password: string, verifyToken?: string): void;
     visitAndVerifyLoad(url: string, options?: Partial<Cypress.VisitOptions>): void;
     uploadFile(fileName: string): Chainable<void>;
+    waitForLoadingMessage(checkExist?: boolean, locator?: string): void;
   }
 }
 
@@ -81,6 +82,15 @@ Cypress.Commands.add('visitAndVerifyLoad', (url, options: Partial<Cypress.VisitO
         console.log(`Page loaded in ${loadTime} ms`);
       });
   });
+});
+
+Cypress.Commands.add('waitForLoadingMessage', (checkExist = true, locator = '.modal-loader') => {
+  if (!checkExist) {
+    cy.get(locator, { timeout: 60000 }).should('not.be.visible');
+  } else {
+    cy.get(locator, { timeout: 60000 }).should('be.visible');
+    cy.get(locator, { timeout: 60000 }).should('not.be.visible');
+  }
 });
 
 Cypress.on('uncaught:exception', (err) => {

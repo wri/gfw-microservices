@@ -48,7 +48,7 @@ function MobileHeader({ isLoggedIn }) {
               <ListItemText>
                 <HeaderNavLink
                   link="https://pro-news.globalforestwatch.org/"
-                  label={nav.newsAndEnvents}
+                  label={nav.newsAndEvents}
                 />
               </ListItemText>
             </MenuItem>
@@ -56,6 +56,15 @@ function MobileHeader({ isLoggedIn }) {
             <MenuItem>
               <ListItemText>
                 <HeaderNavLink link="/about" label="About" />
+              </ListItemText>
+            </MenuItem>
+            <Divider />
+            <MenuItem>
+              <ListItemText>
+                <HeaderNavLink
+                  link="https://pro-news.globalforestwatch.org/users"
+                  label={nav.users}
+                />
               </ListItemText>
             </MenuItem>
             <Divider />

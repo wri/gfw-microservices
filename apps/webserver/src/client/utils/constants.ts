@@ -39,7 +39,7 @@ export const DATA_CY = {
       SUBMIT_DRAFT: 'nuw_add_polygon_submit_draft',
     },
     [UploadType.ById]: {
-      ADD: 'nuw_add_file',
+      ADD: 'nuw_add_file_byid',
       LOCATION_NEXT: 'nuw_add_file_byid_location_next',
       LOCATION_CANCEL: 'nuw_add_file_byid_location_cancel',
       PREVIEW_NEXT: 'nuw_add_file_byid_preview_next',
@@ -51,6 +51,13 @@ export const DATA_CY = {
       SUBMIT_CANCEL: 'nuw_add_file_byid_submit_cancel',
       SUBMIT_DRAFT: 'nuw_add_file_byid_submit_draft',
     },
+  },
+  LANDING: {
+    ADMINISTRATIVE_AREA: 'landing_gfw_administrative_areas',
+    OIL_PALM_CONCESSIONS: 'landing_gfw_oil_palm_concessions',
+    PALM_OIL_MILLS: 'landing_gfw_palm_oil_mills',
+    PROTECTED_AREAS: 'landing_gfw_protected_areas',
+    RSPO_PALM_CONCESSIONS: 'landing_gfw_rspo_palm_concessions',
   },
 };
 

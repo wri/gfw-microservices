@@ -1711,7 +1711,7 @@ export const mapLayers = [
         },
         type: 'tileLayer',
         service: 'leaflet',
-        url: 'http://earthengine.google.org/static/hansen_2013/gain_alpha/{z}/{x}/{y}.png',
+        url: 'https://tiles.globalforestwatch.org/umd_tree_cover_gain_from_height/v20240126/default/{z}/{x}/{y}.png',
       },
       legendConfig: {
         type: 'basic',

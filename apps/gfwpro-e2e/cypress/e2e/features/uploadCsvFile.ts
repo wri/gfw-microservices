@@ -18,7 +18,7 @@ describe('Upload File Csv', () => {
     locationsPage.clickOnAddLocationsBtn();
   });
   When('I select the file upload option', () => {
-    locationsPage.clickOnfileUploadBtn();
+    locationsPage.clickOnDataFileUploadBtn();
   });
   When('I select the Polygon option', () => {
     locationsPage.clickOnPolygonBtn();

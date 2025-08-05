@@ -59,7 +59,7 @@ describe('SummaryAndSubmit', () => {
     expect(screen.getByText(/\(includes palm risk assessment\)/i)).toBeInTheDocument();
     expect(
       screen.getByText(
-        /please note that all analysis submission count towards your usage limits\. see more information \./i
+        /please note that all analysis submissions count towards your usage limits\. see more information \./i
       )
     ).toBeInTheDocument();
     expect(screen.getByTestId('file-validation-helper')).toBeInTheDocument();
@@ -109,7 +109,7 @@ describe('SummaryAndSubmit', () => {
     expect(screen.queryByText(/\(includes palm risk assessment\)/i)).not.toBeInTheDocument();
     expect(
       screen.getByText(
-        /please note that all analysis submission count towards your usage limits\. see more information \./i
+        /please note that all analysis submissions count towards your usage limits\. see more information \./i
       )
     ).toBeInTheDocument();
   });

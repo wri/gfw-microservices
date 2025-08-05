@@ -71,7 +71,7 @@ export = (app, limiter) => {
         });
 
         await slackUtils.sendNotification(slackMessage);
-        res.send(err);
+        res.status(500).send(err);
       });
   });
 
@@ -102,7 +102,7 @@ export = (app, limiter) => {
         });
 
         await slackUtils.sendNotification(slackMessage);
-        res.send(err);
+        res.status(500).send(err);
       });
   });
 

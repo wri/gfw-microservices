@@ -29,8 +29,6 @@ const WrappedReactTable = ({
   viewDiagnostic,
   isDeleteButtonAvailable,
   promptDeleteSelectedLocations,
-  isEditActionAvailable,
-  editList,
   copyMoveAction,
   isCopyMoveActionAvailable,
   selectedList,
@@ -104,7 +102,9 @@ const WrappedReactTable = ({
     }
     // Only override show property if the column doesn't have its own show logic
     // and it's in the toggleable columns list
-    if (toggleableColumns.includes(col.accessor) && col.show === undefined) {
+    const hasGetter = !!Object.getOwnPropertyDescriptor(col, 'show')?.get;
+
+    if (toggleableColumns.includes(col.accessor) && !hasGetter) {
       col.show = visibleColumns.includes(col.accessor);
     }
 
@@ -234,8 +234,6 @@ const WrappedReactTable = ({
             viewDiagnostic={viewDiagnostic}
             isDeleteButtonAvailable={isDeleteButtonAvailable}
             promptDeleteSelectedLocations={promptDeleteSelectedLocations}
-            isEditActionAvailable={isEditActionAvailable}
-            editList={editList}
             copyMoveAction={copyMoveAction}
             isCopyMoveActionAvailable={isCopyMoveActionAvailable}
             visibleColumns={visibleColumns}

@@ -44,11 +44,13 @@ interface SchemaUpgraderArgs {
   clientDb: string;
   listId: number;
   userId: number;
+  isDryRun?: boolean;
 }
 export async function upgradeListSchema(args: SchemaUpgraderArgs) {
-  const { clientDb, listId, userId } = args;
+  const { clientDb, listId, userId, isDryRun = false } = args;
   const logger = new Logger(`SchemaUpgrade for ListId: ${listId}`);
   let queryRunner: QueryRunner;
+  let success = false;
 
   try {
     const clientStoreConnection = new ClientStoreConnection();
@@ -58,17 +60,23 @@ export async function upgradeListSchema(args: SchemaUpgraderArgs) {
     await queryRunner.startTransaction();
 
     const listsRepository = queryRunner.manager.getRepository(Lists);
-    const list = await listsRepository.findOne({
-      where: { id: listId },
-    });
+    const list = await listsRepository.findOne({ where: { id: listId } });
 
     if (list.version === LIST_VERSION_POST_UPGRADE) {
-      logger.log('List already in version 2, no op.');
+      logActionMessage(logger, isDryRun, 'Skip upgrade', `List already in version 2`);
+      if (isDryRun) {
+        logger.log('(Dry Run) - Rolling back transaction.');
+        await queryRunner.rollbackTransaction();
+      } else {
+        await queryRunner.commitTransaction();
+      }
       return list;
     }
 
-    logger.log('Locking list');
-    await new UspSetListLocked().run(clientDb, list.id, userId);
+    logActionMessage(logger, isDryRun, 'Lock', `list ${list.id}`, `for user ${userId}`);
+    if (!isDryRun) {
+      await new UspSetListLocked().run(clientDb, list.id, userId);
+    }
 
     /**
      * @step 1
@@ -77,19 +85,19 @@ export async function upgradeListSchema(args: SchemaUpgraderArgs) {
      * Check if is Investment and needs adjustment
      */
     const columnsToExclude = getListsLocsColumnsToExclude();
-    logger.log(
-      `Writing list-xxx.attributes based on own list-xxx columns. Excluding Columns: ${columnsToExclude.join(
-        ', '
-      )}`
-    );
+    logger.log(`Excluding Columns: ${columnsToExclude.join(', ')}`);
+
     const columnsToDelete = await getListLocationsColumnsToDelete(
       clientDb,
       list.listTableName,
       columnsToExclude
     );
+
     if (columnsToDelete.includes('Investment Name')) {
-      logger.log('Setting [Location Name] for Investment List');
-      await setListLocationNameIfIsInvestment(queryRunner, list.listTableName);
+      logActionMessage(logger, isDryRun, 'Set', '[Location Name] for Investment List');
+      if (!isDryRun) {
+        await setListLocationNameIfIsInvestment(queryRunner, list.listTableName);
+      }
     }
 
     /**
@@ -97,23 +105,34 @@ export async function upgradeListSchema(args: SchemaUpgraderArgs) {
      * Handle list locations atts
      * Delete columns outside entity
      */
-    await handleListLocationAttributes(queryRunner, list, columnsToExclude);
+    logActionMessage(
+      logger,
+      isDryRun,
+      'Handle',
+      `list location attributes for ${list.listTableName}`
+    );
+    if (!isDryRun) {
+      await handleListLocationAttributes(queryRunner, list, columnsToExclude);
+    }
 
     if (columnsToDelete.length) {
-      logger.log(
-        `Dropping the following columns from [${list.listTableName}]: ${columnsToDelete.join(', ')}`
+      logActionMessage(
+        logger,
+        isDryRun,
+        'Drop columns',
+        `[${list.listTableName}]`,
+        columnsToDelete.join(', ')
       );
 
-      const dropStatement = `
-        ALTER TABLE [${list.listTableName}]
-        DROP COLUMN ${columnsToDelete.map((col) => `[${col}]`).join(', ')}
-      `;
-
-      await queryRunner.query(dropStatement);
+      if (!isDryRun) {
+        const dropStatement = `
+          ALTER TABLE [${list.listTableName}]
+          DROP COLUMN ${columnsToDelete.map((col) => `[${col}]`).join(', ')}
+        `;
+        await queryRunner.query(dropStatement);
+      }
     } else {
-      logger.log(
-        `No columns to drop in [${list.listTableName}]! Everything matches the entity definition.`
-      );
+      logger.log(`No columns to drop in [${list.listTableName}].`);
     }
 
     /**
@@ -127,21 +146,29 @@ export async function upgradeListSchema(args: SchemaUpgraderArgs) {
     const templateName = await getTemplateName(list.templateId);
     let listCommodity = getCommodityCodeFromTemplate(templateName, list.Commodity);
 
-    // Check if the list was uploaded by EAPI
     const wasUploadedByEAPI = await getListIfEAPIExportUpload(clientDb, list.id);
     if (templateName === 'Cocoa Generic' && wasUploadedByEAPI) {
       listCommodity = `${GHG_PREFIX}_Unknown`;
     }
-    logger.log(`Writing list.[Commodity] = ${listCommodity} from template: ${templateName}`);
-    logger.log(`Updating list version ${list.version} to ${LIST_VERSION_POST_UPGRADE}`);
-    await listsRepository.update(
-      { id: listId },
-      {
-        Commodity: listCommodity,
-        version: LIST_VERSION_POST_UPGRADE,
-        templateId: 0,
-      }
+
+    logActionMessage(
+      logger,
+      isDryRun,
+      'Update',
+      'Lists table',
+      `set Commodity = ${listCommodity}, version = ${LIST_VERSION_POST_UPGRADE}, templateId = 0`
     );
+
+    if (!isDryRun) {
+      await listsRepository.update(
+        { id: listId },
+        {
+          Commodity: listCommodity,
+          version: LIST_VERSION_POST_UPGRADE,
+          templateId: 0,
+        }
+      );
+    }
 
     /**
      * @step 5
@@ -150,24 +177,30 @@ export async function upgradeListSchema(args: SchemaUpgraderArgs) {
      */
     const lowerLocationClass = list.locationClassification?.toLowerCase();
     if (list.templateId === 2 || (list.templateId === 5 && lowerLocationClass === 'supply shed')) {
-      logger.log('Handling ListsAnalysisStatus.options for list.');
-      const listAnalysisStatusRepo = queryRunner.manager.getRepository(ListsAnalysisStatus);
-      await listAnalysisStatusRepo.update(
-        {
-          listId: list.id,
-          analysisId: 'FCD',
-        },
-        {
-          options: 'PalmRisk',
-        }
-      );
+      logActionMessage(logger, isDryRun, 'Update', 'ListsAnalysisStatus.options', `to PalmRisk`);
+      if (!isDryRun) {
+        const listAnalysisStatusRepo = queryRunner.manager.getRepository(ListsAnalysisStatus);
+        await listAnalysisStatusRepo.update(
+          {
+            listId: list.id,
+            analysisId: 'FCD',
+          },
+          {
+            options: 'PalmRisk',
+          }
+        );
+      }
     }
 
-    await queryRunner.commitTransaction();
+    if (isDryRun) {
+      logger.log('(Dry Run) - Rolling back transaction.');
+      await queryRunner.rollbackTransaction();
+    } else {
+      await queryRunner.commitTransaction();
+      success = true;
+    }
 
-    return await listsRepository.findOne({
-      where: { id: listId },
-    });
+    return await listsRepository.findOne({ where: { id: listId } });
   } catch (error) {
     await queryRunner?.rollbackTransaction();
     Logger.error('Schema Upgrader Failed', error.stack || error);
@@ -175,8 +208,37 @@ export async function upgradeListSchema(args: SchemaUpgraderArgs) {
   } finally {
     await queryRunner?.release();
 
-    logger.log('Unlocking list');
-    await new UspSetListUnlocked().run(clientDb, listId);
-    logger.log('Done.');
+    try {
+      if (!isDryRun && success) {
+        logActionMessage(logger, isDryRun, 'Unlock', `list ${listId}`);
+        await new UspSetListUnlocked().run(clientDb, listId);
+        logger.log('Done.');
+      } else if (isDryRun) {
+        logger.log('(Dry Run) - Complete. No unlocking necessary.');
+      } else {
+        logger.warn('Skipping unlock due to failed transaction');
+      }
+    } catch (unlockErr) {
+      logger.error('Failed to unlock list', unlockErr.stack || unlockErr);
+    }
   }
+}
+
+/**
+ * Logs an action message with optional reason and level.
+ */
+function logActionMessage(
+  logger: Logger,
+  isDryRun: boolean,
+  action: string,
+  target: string,
+  reason?: string,
+  level: 'log' | 'warn' | 'debug' = 'warn'
+) {
+  const prefix = isDryRun ? '(Dry Run) - Would' : '';
+  const message = reason?.trim()
+    ? `${prefix} ${action} ${target}: (${reason.trim()})`
+    : `${prefix} ${action} ${target}`;
+
+  logger[level](message);
 }

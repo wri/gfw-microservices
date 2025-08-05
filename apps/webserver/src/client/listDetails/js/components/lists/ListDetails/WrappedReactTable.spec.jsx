@@ -62,7 +62,6 @@ describe('WrappedReactTable', () => {
     isDeleteButtonAvailable: false,
     promptDeleteSelectedLocations: jest.fn(),
     isEditActionAvailable: false,
-    editList: jest.fn(),
     copyMoveAction: jest.fn(),
     isCopyMoveActionAvailable: false,
     selectedList: null,
@@ -123,5 +122,53 @@ describe('WrappedReactTable', () => {
 
     const landmarkPercentColumn = columns.find((col) => col.accessor === 'landmarkPercent');
     expect(landmarkPercentColumn.show).toBe(true);
+  });
+
+  // Only override show property if the column doesn't have its own show logic
+  // and it's in the toggleable columns list
+  it('does not change column.show if it has a getter and is in visibleColumns', () => {
+    // Create a column with a getter for 'show'
+    const columnWithGetter = {
+      accessor: 'custom_accessor',
+      get show() {
+        return 'getter-value';
+      },
+    };
+    const props = {
+      ...defaultProps,
+      listColumns: [columnWithGetter],
+      combinedColumns: [columnWithGetter],
+      visibleColumns: ['custom_accessor'],
+    };
+
+    render(<WrappedReactTable {...props} />);
+    const { columns } = ReactTable.mock.calls[0][0];
+
+    // The column should retain its getter value, not be overridden
+    const col = columns.find((c) => c.accessor === 'custom_accessor');
+    expect(Object.getOwnPropertyDescriptor(col, 'show')?.get).toBeDefined();
+    expect(col.show).toBe('getter-value');
+  });
+  // Only override show property if the column doesn't have its own show logic
+  // and it's in the toggleable columns list
+  it('only changes column.show if it does not have its own show logic and is in visibleColumns', () => {
+    const columnWithoutGetter = {
+      accessor: 'plain_accessor',
+      show: false,
+    };
+    const props = {
+      ...defaultProps,
+      listColumns: [columnWithoutGetter],
+      combinedColumns: [columnWithoutGetter],
+      visibleColumns: ['plain_accessor'],
+    };
+
+    render(<WrappedReactTable {...props} />);
+    const { columns } = ReactTable.mock.calls[0][0];
+
+    // The column.show should be overridden to true since it's in visibleColumns
+    const col = columns.find((c) => c.accessor === 'plain_accessor');
+    expect(Object.getOwnPropertyDescriptor(col, 'show')?.get).toBeUndefined();
+    expect(col.show).toBe(true);
   });
 });

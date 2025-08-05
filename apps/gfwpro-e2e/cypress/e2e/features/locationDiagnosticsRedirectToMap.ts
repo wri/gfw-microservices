@@ -19,9 +19,8 @@ describe('Location diagnostics', () => {
     locationsPage.clickOnLocationsList('Palm Oil Mills');
   });
 
-  When('I choose a location and press the Locations Map button', () => {
-    listDetailsPage.selectCheckBoxes([1]);
-    listDetailsPage.clickOnMapBtn();
+  When('I hover over a location and click the Locations Map button', () => {
+    listDetailsPage.clickOnLocationMapBtnOnHover();
   });
 
   When('I choose multiple locations and press the Locations Map button', () => {

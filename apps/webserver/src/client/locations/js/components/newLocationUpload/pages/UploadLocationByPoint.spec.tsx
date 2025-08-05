@@ -46,16 +46,8 @@ describe('UploadLocationByPoint', () => {
     );
 
     expect(screen.queryByText(/enter location name/i)).not.toBeInTheDocument();
-    expect(
-      screen.queryByText(
-        /this latitude is invalid\. please ensure your it is in decimal degree notation/i
-      )
-    ).not.toBeInTheDocument();
-    expect(
-      screen.queryByText(
-        /this longitude is invalid\. please ensure your it is in decimal degree notation/i
-      )
-    ).not.toBeInTheDocument();
+    expect(screen.queryByText(/enter the latitude/i)).not.toBeInTheDocument();
+    expect(screen.queryByText(/enter the longitude/i)).not.toBeInTheDocument();
     expect(screen.queryByText(/enter the area size/i)).not.toBeInTheDocument();
 
     await user.click(
@@ -65,16 +57,8 @@ describe('UploadLocationByPoint', () => {
     );
 
     expect(screen.getByText(/enter location name/i)).toBeInTheDocument();
-    expect(
-      screen.getByText(
-        /this latitude is invalid\. please ensure your it is in decimal degree notation/i
-      )
-    ).toBeInTheDocument();
-    expect(
-      screen.getByText(
-        /this longitude is invalid\. please ensure your it is in decimal degree notation/i
-      )
-    ).toBeInTheDocument();
+    expect(screen.getByText(/enter the latitude/i)).toBeInTheDocument();
+    expect(screen.getByText(/enter the longitude/i)).toBeInTheDocument();
     expect(screen.getByText(/enter the area size/i)).toBeInTheDocument();
 
     expect(mockHistoryPush).not.toHaveBeenCalled();

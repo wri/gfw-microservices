@@ -1,4 +1,4 @@
-/* global templateData, userLists, userSharedLists, userInfo, usersList, organizationId, locationCount, gfwLists, fromMap, listStatuses */
+/* global templateData, userLists, userSharedLists, userInfo, usersList, locationCount, gfwLists, fromMap, listStatuses */
 
 import { render } from 'react-dom';
 import { BrowserRouter } from 'react-router-dom';
@@ -88,7 +88,6 @@ const App = () => {
               locationCount={locationCount}
               userInfo={userInfo}
               usersList={usersList} //Contains all users
-              organizationId={organizationId}
               gfwLists={gfwLists}
               listStatuses={listStatuses}
               fromMap={fromMap}

@@ -12,6 +12,7 @@ import {
 import { ArrowBackIos, Close, EditNote, Publish } from '@mui/icons-material';
 
 import { useHistory } from '../hooks';
+import { useTransifexTranslation } from '../../../../../hooks';
 import { LoadingModal, PillButton } from '../../../../../components';
 import { useUploadLocation } from '../contexts';
 import { FileValidationHelper, NavBar } from '../components';
@@ -153,14 +154,28 @@ export function SummaryAndSubmit() {
             }}
           >
             <Typography variant="body2">
-              You are{' '}
+              <span>{useTransifexTranslation('You are')}</span>{' '}
               {isAddingToNewList ? (
                 <>
-                  creating a new <b>{commodity}</b> list named <b>{listName}</b>.
+                  <span>{useTransifexTranslation('creating a new')}</span>{' '}
+                  <span>
+                    <b>{commodity}</b>
+                  </span>{' '}
+                  <span>{useTransifexTranslation('list named')}</span>{' '}
+                  <span>
+                    <b>{listName}</b>.
+                  </span>
                 </>
               ) : (
                 <>
-                  adding <b>{commodity}</b> location(s) to the list named <b>{listName}</b>.
+                  <span>{useTransifexTranslation('adding')}</span>{' '}
+                  <span>
+                    <b>{commodity}</b>
+                  </span>{' '}
+                  <span>{useTransifexTranslation('location(s) to the list named')}</span>{' '}
+                  <span>
+                    <b>{listName}</b>.
+                  </span>
                 </>
               )}
             </Typography>
@@ -264,12 +279,25 @@ export function SummaryAndSubmit() {
         </DialogTitle>
         <DialogContent sx={{ textAlign: 'justify' }}>
           <Typography variant="body2">
-            You have added locations to <b>{listName}</b>.{' '}
-            {isDraftUpload.current
-              ? 'Click OK to save this updated list as draft. Your list will stay in draft state until you choose to run analysis on it'
-              : 'Please confirm that you wish to submit this list to analysis'}
-            . Note that running analysis counts towards your account usage limits. See more
-            information{' '}
+            <span>{useTransifexTranslation('You have added locations to')}</span>{' '}
+            <span>
+              <b>{listName}</b>.
+            </span>{' '}
+            <span>
+              {isDraftUpload.current
+                ? useTransifexTranslation(
+                    'Click OK to save this updated list as draft. Your list will stay in draft state until you choose to run analysis on it'
+                  )
+                : useTransifexTranslation(
+                    'Please confirm that you wish to submit this list to analysis'
+                  )}
+              .
+            </span>{' '}
+            <span>
+              {useTransifexTranslation(
+                'Note that running analysis counts towards your account usage limits. See more information'
+              )}
+            </span>{' '}
             <Link
               href={ExternalLinks.UploadFees}
               sx={{ textDecoration: 'none', color: 'primary.main' }}

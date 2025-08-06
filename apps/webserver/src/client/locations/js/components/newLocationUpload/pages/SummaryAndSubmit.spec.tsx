@@ -37,6 +37,10 @@ jest.mock('../hooks', () => ({
   useHistory: () => ({ goBack: mockGoBack }),
 }));
 
+jest.mock('../../../../../hooks', () => ({
+  useTransifexTranslation: jest.fn((key) => key),
+}));
+
 jest.mock('../components', () => ({
   FileValidationHelper: () => <span data-testid="file-validation-helper" />,
   NavBar: () => <span />,
@@ -46,7 +50,9 @@ describe('SummaryAndSubmit', () => {
   it('should render correct information when creating a new list with all analysis types selected', () => {
     render(<SummaryAndSubmit />);
 
-    expect(screen.getByText(/you are creating a new list named \./i)).toBeInTheDocument();
+    expect(screen.getByText(/you are/i)).toBeInTheDocument();
+    expect(screen.getByText(/creating a new/i)).toBeInTheDocument();
+    expect(screen.getByText(/list named/i)).toBeInTheDocument();
 
     expect(screen.getByText(/palm oil/i)).toBeInTheDocument();
     expect(screen.getByText(/random list name 123/i)).toBeInTheDocument();
@@ -94,9 +100,11 @@ describe('SummaryAndSubmit', () => {
 
     render(<SummaryAndSubmit />);
 
-    expect(
-      screen.getByText(/you are adding location\(s\) to the list named \./i)
-    ).toBeInTheDocument();
+    expect(screen.getByText(/you are/i)).toBeInTheDocument();
+
+    expect(screen.getByText(/adding/i)).toBeInTheDocument();
+
+    expect(screen.getByText(/location\(s\) to the list named/i)).toBeInTheDocument();
 
     expect(screen.getByText(/sugar cane/i)).toBeInTheDocument();
     expect(screen.getByText(/list created last year/i)).toBeInTheDocument();

@@ -17,7 +17,7 @@ axiosRetry(axios, {
 
 const POOL_SIZE = 20; // Increased pool size since we have higher rate limit
 const DEFAULT_DELAY = 200;
-const MAX_LIMIT = process.env.NODE_ENV.toLocaleLowerCase() === 'development' ? 5 : 100; // Maximum requests per second
+const MAX_LIMIT = process.env.NODE_ENV.toLocaleLowerCase() === 'development' ? 8 : 180; // Maximum requests per second
 
 export class GADMService extends AbstractHandler<ChainType> {
   logger = new Logger(GADMService.name);

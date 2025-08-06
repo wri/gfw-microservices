@@ -6,7 +6,7 @@ import { Logger, Injectable, Scope } from '@nestjs/common';
 
 import { ListFieldsFileRequest } from '@wri-monorepos/sql';
 import { IPipeService } from '../pipe/i.pipe.service';
-import { columnsListName, columnsTemplateId } from '../shared/constants';
+import { ColumnResolverService } from '../shared/column-resolver.service';
 import { FilterObject } from '../transform/filter.object';
 import { FilterSelection } from '../transform/filter.selection';
 import { ConvertObject2Geojson } from '../transform/convert.object.2.geojson';
@@ -22,8 +22,13 @@ export class AfiGeometryService extends IPipeService {
   private readonly logger = new Logger(AfiGeometryService.name);
   private inputStream: PassThrough;
   private fileStream: fs.WriteStream;
+
+  constructor(private readonly columnResolverService: ColumnResolverService) {
+    super();
+  }
+
   async start(filters: ListFieldsFileRequest) {
-    const { listId, key, templateId, combinedColumnsSplitted, listName } = filters;
+    const { listId, key, combinedColumnsSplitted, listName } = filters;
     this.logger.log(`(${listId}) - Starting verifiable credentials stream to process data`);
     this.inputStream = new PassThrough({
       objectMode: true,
@@ -44,9 +49,14 @@ export class AfiGeometryService extends IPipeService {
       })
     );
 
-    const fields =
-      columnsTemplateId[templateId] ?? columnsListName[templateId] ?? columnsTemplateId[14];
-    let allFields = [...fields, ...combinedColumnsSplitted];
+    // Use the column resolver for commodity-based column resolution
+    const columnResolution = await this.columnResolverService.resolveColumns(listId);
+
+    this.logger.log(
+      `(${listId}) - Column resolution: ${columnResolution.resolvedFrom} (source: ${columnResolution.source})`
+    );
+
+    let allFields = [...columnResolution.columns, ...combinedColumnsSplitted];
     allFields = [...new Set(allFields)];
 
     await this.organizeStream(filters, allFields);

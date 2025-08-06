@@ -17,8 +17,6 @@ export class ColumnResolverService {
   /**
    * Resolves columns for a list based on its metadata
    * @param listId - The list ID
-   * @param organizationDatabase - The organization database name
-   * @param isGFWList - Whether this is a GFW list
    * @returns Promise<ColumnResolution>
    */
   async resolveColumns(listId: number): Promise<ColumnResolution> {

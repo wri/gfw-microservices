@@ -12,9 +12,7 @@ const AuthManager = require('../../../config/publicutils/authenticationManager.u
 const AccountManager = require('../../../config/publicutils/accountManager.utils');
 const UserManager = require('../../../config/publicutils/userManager.utils');
 const ShareManager = require('../../../config/publicutils/shareManager.utils');
-const {
-  findSharedListsInsideOrganization,
-} = require('../../../config/publicutils/shareManager.utils');
+const { findSharedListsInsideOrganization } = ShareManager;
 const { formatListLocationDataForFilter } = require('../utils/locations.utils');
 const sqlUtils = require('../../../config/privateutils/sql.utils');
 const sql = require('mssql');
@@ -86,8 +84,8 @@ export const locationsData = async (req, res) => {
       GFWlistManager.getGFWLists(req),
       isAdministrator ? AccountManager.getUsersList(req) : () => Promise.resolve([]),
       isAdministrator
-        ? ShareManager.getUserInternalShareLists(req, req.session.organization_user_id)
-        : () => Promise.resolve([]),
+        ? () => Promise.resolve([])
+        : ShareManager.getUserInternalShareLists(req, req.session.organization_user_id),
     ];
 
     const [userLists, userInfo, locationCount, orgLists, gfwLists, usersList, sharedListsRecords] =
@@ -105,7 +103,7 @@ export const locationsData = async (req, res) => {
       CURRENT_ENVIRONMENT: process.env.NODE_ENV,
     });
   } catch (error) {
-    logger.error(`Locations data failed on the server:, ${error}`);
+    logger.error(`Locations data failed on the server:, ${error.stack || error}`);
 
     res.status(500).send({
       error: 'Failed loading locations page data',

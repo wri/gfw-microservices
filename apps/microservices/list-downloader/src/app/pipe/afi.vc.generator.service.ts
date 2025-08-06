@@ -111,7 +111,6 @@ export class AfiVcGeneratorService extends IFileGenerator {
 
     return {
       fields: Object.keys(element ?? {}),
-      templateId: element?.template_id,
     };
   }
 }

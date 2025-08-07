@@ -699,9 +699,14 @@ export default class Diagnostics extends Component {
 
     const filteredLocations = this.getFilteredLocations();
 
-    const hasArgentinaPresence = filteredLocations.some(
-      (location) => location.argentina_presence === 'true'
-    );
+    const hasArgentinaPresence = filteredLocations.some((location) => {
+      try {
+        const countryArea = JSON.parse(location.country_area || '{}');
+        return countryArea.ARG && countryArea.ARG > 0;
+      } catch (e) {
+        return false;
+      }
+    });
 
     const hasAmericaPresence = filteredLocations.some(
       (location) => location.south_america_presence === 'true'

@@ -1,7 +1,7 @@
 import { AbstractHandler, ChainType, RequestNewList } from './types';
 import { ClientStoreConnection, getMissingJsonPropertiesFromList } from '@wri-monorepos/sql';
 import { Logger } from '@nestjs/common';
-import { QueryRunner } from 'typeorm';
+import { EntityManager } from 'typeorm';
 import { ID_TYPE_HANDLER } from '@wri-monorepos/shared';
 
 const getIdColumnsWithValues = () => {
@@ -45,8 +45,8 @@ export class UpdateListAttributesRemoveIdColumns extends AbstractHandler<ChainTy
    * @param listAttributesAsJson json_string
    * @returns string[]
    */
-  async getEmptyJsonProperties(queryRunner: QueryRunner) {
-    const result = await queryRunner.query(getMissingJsonPropertiesFromList, [this.sourceListId]);
+  async getEmptyJsonProperties(transactionalEntityManager: EntityManager) {
+    const result = await transactionalEntityManager.query(getMissingJsonPropertiesFromList, [this.sourceListId]);
 
     if (!result) {
       return [];
@@ -66,18 +66,18 @@ export class UpdateListAttributesRemoveIdColumns extends AbstractHandler<ChainTy
 
     const { organization_database } = input.request as RequestNewList;
     const connection = await this.clientStoreConnection.getConnection(organization_database);
-    const queryRunner = connection.createQueryRunner();
 
     try {
       if (this.isNotDeletingTheSourceList) {
-        await queryRunner.connect();
-        await queryRunner.startTransaction();
 
         this.logger.log(
           `Checking if list still contains location data with moving attributes after move`
         );
 
-        const emptyJsonProperties = await this.getEmptyJsonProperties(queryRunner);
+        const emptyJsonProperties = await connection.manager.transaction(async (transactionalEntityManager) => {
+          return await this.getEmptyJsonProperties(transactionalEntityManager);
+        
+        });
 
         /**
          * If the source list have locations without these attributes,
@@ -87,17 +87,16 @@ export class UpdateListAttributesRemoveIdColumns extends AbstractHandler<ChainTy
           this.logger.log(`Attributes without data in source table: ${emptyJsonProperties}`);
           const attsIn = emptyJsonProperties.map((col) => `'${col}'`).join(',');
           const deleteQuery = `DELETE FROM [ListAttributes] WHERE [attribute_name] IN (${attsIn}) AND [list_id] = @0`;
-          await queryRunner.query(deleteQuery, [this.sourceListId]);
+          await connection.manager.transaction(async (transactionalEntityManager) => {
+            await transactionalEntityManager.query(deleteQuery, [this.sourceListId]);
+          });
         }
 
-        await queryRunner.commitTransaction();
       }
     } catch (error) {
       this.logger.log('Error hanlding UpdateListAttributesRemoveIdColumns', error.stack || error);
-      await queryRunner.rollbackTransaction();
       throw error;
     } finally {
-      await queryRunner.release();
     }
 
     return input;

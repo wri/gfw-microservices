@@ -199,13 +199,13 @@ export class ProcessUploadData extends AbstractHandler<ChainType> {
 
     const clientStoreConnection = new ClientStoreConnection();
     const connection = await clientStoreConnection.getConnection(organization_database);
-    const queryRunner = connection.createQueryRunner();
-    await queryRunner.connect();
-    await queryRunner.startTransaction();
+   
 
     try {
       if (this.listsAttributesRecords.size > 0) {
-        await saveListAttributes(queryRunner, [...this.listsAttributesRecords.values()]);
+         await connection.manager.transaction(async (transactionalEntityManager) => {
+        await saveListAttributes(transactionalEntityManager, [...this.listsAttributesRecords.values()]);
+         });
         input = {
           ...input,
           request: {
@@ -214,13 +214,10 @@ export class ProcessUploadData extends AbstractHandler<ChainType> {
           },
         };
       }
-      await queryRunner.commitTransaction();
       return input;
     } catch (error) {
-      await queryRunner.rollbackTransaction();
       throw error;
     } finally {
-      await queryRunner.release();
     }
   }
 }

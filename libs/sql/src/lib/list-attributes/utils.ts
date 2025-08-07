@@ -1,4 +1,4 @@
-import { EntitySchema, QueryRunner } from 'typeorm';
+import { EntitySchema, QueryRunner,EntityManager } from 'typeorm';
 import { Logger } from '@nestjs/common';
 import { ListAttributes, Lists, ListSchema, ListSchemaType, ListTemplate } from '../entity';
 import { ClientStoreConnection, SQLUtils } from '../util';
@@ -42,12 +42,12 @@ export interface ListAttributesRecord {
   attribute_type: number;
 }
 export async function saveListAttributes(
-  queryRunner: QueryRunner,
+  transactionalEntityManager: EntityManager ,
   attributes: ListAttributesRecord[]
 ) {
   try {
     // insert new attributes with Typeorm listAttributes entity
-    const listAttributesRepository = queryRunner.manager.getRepository(ListAttributes);
+    const listAttributesRepository = transactionalEntityManager.getRepository(ListAttributes);
     await listAttributesRepository.save(attributes);
   } catch (error) {
     // throwing errors for PrimaryKey constraints is likely more efficient than checking the db if they exists, less roundtrips
@@ -194,11 +194,11 @@ export async function getListLocationsColumnsToDelete(
  * @returns listLocations[]
  */
 export async function handleListLocationAttributes(
-  queryRunner: QueryRunner,
+  transactionalEntityManager: EntityManager,
   list: Lists,
   columnsToExclude: unknown[]
 ) {
-  const listLocations = await queryRunner.query(`SELECT * FROM [${list.listTableName}]`);
+  const listLocations = await transactionalEntityManager.query(`SELECT * FROM [${list.listTableName}]`);
   Logger.log(`List Locations found: ${listLocations.length}`);
 
   if (listLocations.length) {
@@ -223,7 +223,7 @@ export async function handleListLocationAttributes(
         SET [attributes] = ${attrValue}
         WHERE [location_id] = ${record['location_id']}`;
 
-      await queryRunner.query(updateQuery);
+      await transactionalEntityManager.query(updateQuery);
 
       const listAttrsToSave = validListAttrs.map((attributeField) =>
         getFormattedAttributes({
@@ -233,14 +233,14 @@ export async function handleListLocationAttributes(
         })
       );
 
-      await saveListAttributes(queryRunner, listAttrsToSave);
+      await saveListAttributes(transactionalEntityManager, listAttrsToSave);
     }
   }
   return listLocations;
 }
 
 export async function setListLocationNameIfIsInvestment(
-  queryRunner: QueryRunner,
+  transactionalEntityManager: EntityManager,
   listTableName: string
 ) {
   // the deletion of the 'Investment Name' field will occur in the next step of the main function according to 'columnsToDelete'
@@ -258,5 +258,5 @@ export async function setListLocationNameIfIsInvestment(
     SET @sql = 'UPDATE dbo.' + @tbl + ' SET [Location Name] = [Investment Name];';
     EXEC sp_executesql @sql;
   END`;
-  await queryRunner.query(sqlCmd);
+  await transactionalEntityManager.query(sqlCmd);
 }

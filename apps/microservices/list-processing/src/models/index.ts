@@ -122,6 +122,9 @@ export class CreateListRequest {
 
   @ApiProperty()
   saveAsDraft: boolean;
+
+  @ApiProperty()
+  isUploadListLpEnabled: boolean;
 }
 
 export class CopyOrMoveLargeListRequestLLP {

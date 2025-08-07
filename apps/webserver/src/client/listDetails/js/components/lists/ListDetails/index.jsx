@@ -56,16 +56,9 @@ import {
   checkColumnListPA,
   getListFilteredLocations,
   dataCleanup,
-  getTemplateData,
   containsPunctuation,
   checkValidViewCommodity,
 } from '../../../../../locations/js/utils/lists.utils';
-
-import {
-  updateAddType,
-  updateGFWListActiveTemplate,
-  updateRegularListActiveTemplate,
-} from '../../../utils/lists-redux.utils';
 import ShareList from '../../../../../locations/js/components/ShareList/ShareList';
 import { FailedPopupDialog } from '../../../../../locations/js/components/landing/FailedPopupDialog';
 import {
@@ -199,7 +192,6 @@ export default class ListDetails extends Component {
     });
 
     this.loadLocationView();
-    this.setAddTypeAndTemplate();
 
     filterListData(
       listData,
@@ -613,16 +605,8 @@ export default class ListDetails extends Component {
     this.handleDialogClose(false);
     // clear the custom dialog content
     this.setState({ dialogActions: null, dialogChildren: null, showSubmitModal: false });
-    const {
-      activeTemplate,
-      addType,
-      filteredLocationData,
-      selectedLists,
-      filters,
-      selectedLocations,
-      templateData,
-      userLists,
-    } = this.props;
+    const { addType, filteredLocationData, selectedLists, filters, selectedLocations, userLists } =
+      this.props;
     const {
       commodityType,
       newListName,
@@ -659,9 +643,6 @@ export default class ListDetails extends Component {
 
     const list_id = selectedList.id;
 
-    const listTemplateFields = templateData.filter(
-      (field) => field.template_id === selectedList.template_id
-    );
     const destinationListName = moveToList?.list_name || newListName;
 
     if (!selectedList.isGlobalForestWatchList) {
@@ -688,9 +669,7 @@ export default class ListDetails extends Component {
           targetList: moveToList,
           selectedLocations,
           addType,
-          activeTemplate,
           commodityType,
-          templateData: listTemplateFields,
           saveAsDraft: isSaveAsDraft,
           gfwListId: gfw_list_id,
           isEveryRowSelected,
@@ -735,12 +714,9 @@ export default class ListDetails extends Component {
         selectedList,
         newListName,
         userListNames,
-        userLists,
         selectedNewOrExisting,
         addType,
-        activeTemplate,
         commodityType,
-        templateData,
         locationData,
         selectedLists,
         moveToList,
@@ -1258,21 +1234,6 @@ export default class ListDetails extends Component {
         store.dispatch(updateListData([]));
         store.dispatch(updateFilteredData([]));
       });
-  };
-
-  setAddTypeAndTemplate = (currentSelectedList) => {
-    const { activeTemplate, selectedLists, templateData: allTemplatesData } = this.props;
-    const selectedList = currentSelectedList || selectedLists[0];
-
-    const templateData = getTemplateData(allTemplatesData, selectedList);
-    updateAddType(templateData, activeTemplate);
-
-    if (templateData) {
-      updateRegularListActiveTemplate(templateData);
-    } else {
-      const commodityType = updateGFWListActiveTemplate(selectedList);
-      this.setState({ commodityType });
-    }
   };
 
   viewDiagnostic = async (hoveredLocationId) => {

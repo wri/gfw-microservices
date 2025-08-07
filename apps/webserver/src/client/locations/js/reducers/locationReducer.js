@@ -83,10 +83,6 @@ export function changeListView(state = initialLocationState.listView, action) {
   return action.type !== CURRENT_LIST_VIEW ? state : action.data;
 }
 
-export function changeAddType(state = initialLocationState.addType, action) {
-  return action.type !== ADD_TYPE ? state : action.data;
-}
-
 export function selectFolder(state = initialLocationState.selectedFolder, action) {
   return action.type !== SELECT_FOLDER ? state : action.data;
 }

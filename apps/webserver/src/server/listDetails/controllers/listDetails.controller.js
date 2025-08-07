@@ -3,7 +3,6 @@ const { compiledAssets } = config;
 const { createElement } = require('react');
 const { renderToString } = require('react-dom/server');
 
-const LocationManager = require('../../../config/publicutils/locationManager.utils');
 const ListManager = require('../../../config/publicutils/listManager.utils');
 const GFWlistManager = require('../../../config/publicutils/gfwListManager.utils');
 const AuthManager = require('../../../config/publicutils/authenticationManager.utils');

@@ -9,35 +9,8 @@
 // Imports required for this module.
 const _ = require('lodash');
 const mapshaper = require('mapshaper');
-import * as sqlUtils from '../privateutils/sql.utils';
-import * as errorUtils from '../privateutils/error.utils';
 const ListManager = require('./listManager.utils');
 const ShareManager = require('./shareManager.utils');
-
-/** @function {getAllTemplateData}
- *   @summary Gets a list of all the latest template metadata
- *   @param  {Object}   req - Manadatory first parameter to pass the request object into the function in case session info is required.
- *   @return {Promise} Returns promise object. If successful, resolves to array of template metadata, error object otherwise
- */
-export const getAllTemplateData = (req) => {
-  return new Promise((resolve, reject) => {
-    // Get list of template metadata
-    sqlUtils
-      .executeSystemStoredProcedure(req, 'uspGetTemplateMetadata', null)
-      .then((recordsets) => {
-        resolve(recordsets);
-      })
-      .catch((errorMessage) => {
-        const errorObject = errorUtils.createErrorMessage(
-          req,
-          errorUtils.ERROR_CODES.failedToGetData,
-          'Failed to get Template Metadata',
-          errorMessage
-        );
-        reject(errorObject);
-      });
-  });
-};
 
 /**
  * Handling Certification column

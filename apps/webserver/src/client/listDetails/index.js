@@ -1,4 +1,4 @@
-/* global templateData, userLists, userSharedLists, userInfo, usersList, locationCount, gfwLists, fromMap, listStatuses */
+/* global userLists, userSharedLists, userInfo, usersList, locationCount, gfwLists, fromMap, listStatuses */
 
 import { render } from 'react-dom';
 import { BrowserRouter } from 'react-router-dom';
@@ -82,7 +82,6 @@ const App = () => {
         <AppErrorFallback>
           <BrowserRouter basename="/list-details">
             <Locations
-              templateData={templateData}
               userLists={userLists} //Contains all lists that users have created
               userSharedLists={userSharedLists}
               locationCount={locationCount}

@@ -1,7 +1,5 @@
 import {
   CURRENT_VIEW,
-  ADD_TYPE,
-  CHANGE_TEMPLATE,
   UPDATE_FOLDERS,
   SELECT_FOLDER,
   ADD_LIST,
@@ -34,18 +32,6 @@ export function changeView(data) {
 
 export function changeListView(data) {
   return { type: CURRENT_LIST_VIEW, data };
-}
-
-export function changeAddType(data) {
-  return { type: ADD_TYPE, data };
-}
-
-export function changeTemplate(data) {
-  gtag('event', 'Upload locations template radio button clicked', {
-    event_category: 'Upload Locations Select',
-    event_label: `user selected ${data} template for uploading locations`,
-  });
-  return { type: CHANGE_TEMPLATE, data };
 }
 
 export function updateFolders(data) {

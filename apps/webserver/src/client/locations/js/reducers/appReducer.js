@@ -1,8 +1,6 @@
 import {
   changeView,
   changeListView,
-  changeAddType,
-  changeTemplate,
   updateFolders,
   selectFolder,
   updateList,
@@ -27,8 +25,6 @@ const appReducer = combineReducers({
   view: changeView,
   language: setLanguage,
   listView: changeListView,
-  addType: changeAddType,
-  activeTemplate: changeTemplate,
   userFolders: updateFolders,
   selectedFolder: selectFolder,
   selectedLists: updateList,

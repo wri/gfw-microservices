@@ -1,8 +1,6 @@
 import {
   CURRENT_VIEW,
   CURRENT_LIST_VIEW,
-  ADD_TYPE,
-  CHANGE_TEMPLATE,
   SELECT_FOLDER,
   UPDATE_FOLDERS,
   ADD_LIST,
@@ -87,10 +85,6 @@ export function changeListView(state = initialLocationState.listView, action) {
 
 export function changeAddType(state = initialLocationState.addType, action) {
   return action.type !== ADD_TYPE ? state : action.data;
-}
-
-export function changeTemplate(state = initialLocationState.activeTemplate, action) {
-  return action.type !== CHANGE_TEMPLATE ? state : action.data;
 }
 
 export function selectFolder(state = initialLocationState.selectedFolder, action) {

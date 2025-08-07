@@ -36,8 +36,6 @@ export const listDetails = (req, res, data) => {
   const subscriptionStatus = data && data.subscriptionStatus ? data.subscriptionStatus : 1;
 
   const promises = [
-    LocationManager.getAllTemplateData(req),
-
     ListManager.getUserListsWithAnalysisId(req),
     AuthManager.getUserInfo(req),
     ListManager.getLocationsCount(req),
@@ -50,7 +48,6 @@ export const listDetails = (req, res, data) => {
   Promise.all(promises)
     .then((results) => {
       const [
-        templateData,
         userLists,
         userInfo,
         locationCount,
@@ -62,7 +59,6 @@ export const listDetails = (req, res, data) => {
       const listStatuses = UserManager.getStatuses();
       const userSharedLists = findSharedListsInsideOrganization(sharedListsRecords, orgLists);
       res.render('listDetails', {
-        templateData,
         userLists,
         userSharedLists: isAdministrator ? [] : userSharedLists,
         userInfo,

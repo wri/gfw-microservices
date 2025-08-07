@@ -16,3 +16,24 @@
 // Import commands.js using ES2015 syntax:
 import './commands';
 import 'cypress-file-upload';
+
+// Set language to English for all tests
+beforeEach(() => {
+  // Force English language settings
+  cy.forceEnglishLanguage();
+});
+
+// Set language properties before page loads (for Transifex detection)
+Cypress.on('window:before:load', (win) => {
+  Object.defineProperty(win.navigator, 'language', {
+    value: 'en-US',
+    writable: false,
+    configurable: true,
+  });
+
+  Object.defineProperty(win.navigator, 'languages', {
+    value: ['en-US', 'en'],
+    writable: false,
+    configurable: true,
+  });
+});

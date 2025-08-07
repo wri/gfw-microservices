@@ -4,7 +4,6 @@ import asyncPool from 'tiny-async-pool';
 import { Feature, FeatureCollection } from '@wri-monorepos/geo';
 import axios from 'axios';
 import axiosRetry from 'axios-retry';
-import Bottleneck from 'bottleneck';
 
 axiosRetry(axios, {
   retries: 5,
@@ -16,27 +15,16 @@ axiosRetry(axios, {
 });
 
 const POOL_SIZE = 20; // Increased pool size since we have higher rate limit
-const DEFAULT_DELAY = 200;
-const MAX_LIMIT = process.env.NODE_ENV.toLocaleLowerCase() === 'development' ? 8 : 180; // Maximum requests per second
-
+const DEFAULT_DELAY = 500;
 export class GADMService extends AbstractHandler<ChainType> {
   logger = new Logger(GADMService.name);
 
-  // Using Bottleneck for rate limiting
-  private limiter = new Bottleneck({
-    maxConcurrent: POOL_SIZE,
-    minTime: Math.floor(1000 / MAX_LIMIT), // Requests per second
-    reservoir: MAX_LIMIT, // Max requests per second
-    reservoirRefreshAmount: MAX_LIMIT,
-    reservoirRefreshInterval: 1000, // Refresh reservoir every second
-  });
-
   /**
-   * Function to perform a GET request using axios with Bottleneck rate limiting.
+   * Function to perform a GET request using axios.
    * @param {Feature} feature - The feature object containing properties and geometry.
    * @returns {Promise<IFeatureSet>} - A promise that resolves to the query result.
    */
-  getGadmData = async (feature: Feature, retryCount = 0) => {
+  getGadmData = async (feature: Feature) => {
     const { latitude, longitude, hasUnanalyzableError } = feature.properties;
     if (hasUnanalyzableError) {
       throw new Error('Feature does not have valid longitude/latitude or geometry.');
@@ -48,46 +36,36 @@ export class GADMService extends AbstractHandler<ChainType> {
     };
     const sql = "SELECT gid_1, gid_2, name_0, name_1, name_2 FROM mytable WHERE adm_level='2'";
 
-    // Using Bottleneck to limit the rate of requests
-    return this.limiter.schedule(async () => {
-      try {
-        const response = await axios.post(
-          'https://data-api.globalforestwatch.org/dataset/gadm_administrative_boundaries/v4.1.64/query/json',
-          { sql, geometry },
-          {
-            headers: {
-              'x-api-key': process.env.GFW_DATA_API_KEY,
-              'Content-Type': 'application/json',
-            },
-          }
-        );
-
-        if (response.status !== 200) {
-          throw new Error(`Failed to fetch data: ${response.statusText}`);
+    try {
+      const response = await axios.post(
+        'https://data-api.globalforestwatch.org/dataset/gadm_administrative_boundaries/v4.1.64/query/json',
+        { sql, geometry },
+        {
+          headers: {
+            'x-api-key': process.env.GFW_DATA_API_KEY,
+            'Content-Type': 'application/json',
+          },
         }
+      );
 
-        return response.data?.data;
-      } catch (error) {
-        // Handle 429 (Too Many Requests) with specific retry logic
-        if (error.response?.status === 429 && retryCount < 3) {
-          this.logger.warn(
-            `Rate limited (429) for GADM request at ${latitude}, ${longitude}. Retrying (attempt ${
-              retryCount + 1
-            }/3)`
-          );
-
-          await new Promise((resolve) => setTimeout(resolve, DEFAULT_DELAY));
-          return this.getGadmData(feature, retryCount + 1);
-        }
-
-        this.logger.error(
-          `Error fetching GADM data for feature at ${latitude}, ${longitude}`,
-          error.response?.data?.message || error.stack
-        );
-
-        return { hasUnanalyzableError: true };
+      if (response.status !== 200) {
+        throw new Error(`Failed to fetch data: ${response.statusText}`);
       }
-    });
+
+      return response.data?.data;
+    } catch (error) {
+      this.logger.error(
+        `Error fetching GADM data for feature at ${latitude}, ${longitude}`,
+        error.response?.data?.message || error.stack
+      );
+
+      // Add a small delay before rethrowing
+      if (error.response?.status !== 429) {
+        await new Promise((resolve) => setTimeout(resolve, DEFAULT_DELAY));
+      }
+
+      return { hasUnanalyzableError: true };
+    }
   };
 
   addGeoReferenceData = async (feature: Feature) => {

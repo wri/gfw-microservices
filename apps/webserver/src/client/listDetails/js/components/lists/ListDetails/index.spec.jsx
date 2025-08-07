@@ -48,7 +48,6 @@ jest.mock('material-ui/Toolbar', () => ({ Toolbar: () => <div />, ToolbarGroup: 
 
 describe('ListDetails', () => {
   const defaultProps = {
-    templateData: [],
     userLists: [],
     userSharedLists: [],
     userInfo: { id: 1, access_level_id: 1 },

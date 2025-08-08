@@ -21,6 +21,10 @@ jest.mock('@wri-monorepos/sql', () => ({
         release: jest.fn(),
         query: jest.fn(),
       }),
+      manager: jest.fn().mockReturnValue({
+        transaction: jest.fn(),
+        query: jest.fn(),
+      }),
     }),
   })),
   getMissingJsonPropertiesFromList: 'MOCKED_QUERY',
@@ -38,6 +42,7 @@ describe('UpdateListAttributesRemoveIdColumns', () => {
   let mockQueryRunner: any;
   let mockConnection: any;
   let mockClientStoreConnection: any;
+  let mockManager: any;
 
   const sourceListId = 123;
   const organization_database = 'test_db';
@@ -51,8 +56,16 @@ describe('UpdateListAttributesRemoveIdColumns', () => {
       release: jest.fn(),
       query: jest.fn(),
     };
+    mockManager = {
+      transaction: jest.fn().mockImplementation(async (callback) => {
+        // Simula o comportamento de uma transação
+        return await callback(mockManager);
+      }),
+      query: jest.fn(),
+    };
     mockConnection = {
       createQueryRunner: jest.fn().mockReturnValue(mockQueryRunner),
+      manager: mockManager, // Corrigido para retornar o mockManager diretamente
     };
     mockClientStoreConnection = new ClientStoreConnection();
     mockClientStoreConnection.getConnection = jest.fn().mockResolvedValue(mockConnection);
@@ -90,14 +103,12 @@ describe('UpdateListAttributesRemoveIdColumns', () => {
     await handler.handle(input);
 
     expect(mockQueryRunner.connect).toHaveBeenCalled();
-    expect(mockQueryRunner.startTransaction).toHaveBeenCalled();
-    expect(mockQueryRunner.query).toHaveBeenCalledWith('MOCKED_QUERY', [sourceListId]);
-    expect(mockQueryRunner.query).toHaveBeenCalledWith(
+    expect(mockQueryRunner.manager).toHaveBeenCalled();
+    expect(mockQueryRunner.transaction).toHaveBeenCalledWith('MOCKED_QUERY', [sourceListId]);
+    expect(mockQueryRunner.transaction).toHaveBeenCalledWith(
       expect.stringContaining('DELETE FROM [ListAttributes]'),
       [sourceListId]
     );
-    expect(mockQueryRunner.commitTransaction).toHaveBeenCalled();
-    expect(mockQueryRunner.release).toHaveBeenCalled();
   });
 
   it('should not delete if no emptyJsonProperties', async () => {

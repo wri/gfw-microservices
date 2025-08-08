@@ -44,9 +44,10 @@ export default function ConverterRunsTable({ convertersData, onViewJobDetails, f
         <Table>
           <TableHead>
             <TableRow>
-              <StyledTableCell>ID</StyledTableCell>
+              <StyledTableCell>Converter ID</StyledTableCell>
               <StyledTableCell>Type</StyledTableCell>
               <StyledTableCell>Status</StyledTableCell>
+              <StyledTableCell>Org. ID</StyledTableCell>
               <StyledTableCell>Run Mode</StyledTableCell>
               <StyledTableCell>Dry Run</StyledTableCell>
               <StyledTableCell>Action(s)</StyledTableCell>
@@ -81,6 +82,9 @@ export default function ConverterRunsTable({ convertersData, onViewJobDetails, f
                       color={STATUS_STYLE_MAP[job.status]}
                       variant="outlined"
                     />
+                  </TableCell>
+                  <TableCell size="small">
+                    {job.organizationId || '—'}
                   </TableCell>
                   <TableCell size="small">{job.mode || '—'}</TableCell>
                   <TableCell size="small">

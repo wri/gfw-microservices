@@ -65,6 +65,23 @@ export default function ConverterDetailsPage() {
           <Chip label={jobId} variant="outlined" />
         </LabelRow>
         <LabelRow label="Start Time:">{formatDate(converterJob?.startTime)}</LabelRow>
+        <LabelRow label="Finish Time:">{formatDate(converterJob?.finishTime)}</LabelRow>
+        <LabelRow label="Run Mode:">
+          <Chip label={converterJob?.mode || '—'} variant="outlined" size="small" />
+        </LabelRow>
+        <LabelRow label="Organization ID:">
+          <Chip label={converterJob?.organizationId ?? '—'} variant="outlined" size="small" />
+        </LabelRow>
+        <LabelRow label="Total Lists Swept:">
+          <Chip label={converterJob?.totalListsAffected ?? '—'} variant="outlined" size="small" />
+        </LabelRow>
+        <LabelRow label="Dry Run:">
+          {converterJob?.isDryRun ? (
+            <Chip label="Dry Run" color="primary" variant="outlined" size="small" />
+          ) : (
+            <Chip label="Live Run" color="secondary" variant="outlined" size="small" />
+          )}
+        </LabelRow>
       </Grid>
       <Grid container direction="column" sx={{ mt: '25px' }}>
         <Typography variant="h6">Failed Child Conversion Jobs</Typography>

@@ -26,7 +26,7 @@ import ConverterJobsTable from './ConverterJobsTable';
 import { fetchConverters, startConverter } from '../../../../api/converter';
 import { ConvertersData } from './types/converters';
 
-type RunMode = 'start' | 'continue';
+type RunMode = 'GLOBAL' | 'TARGETED' | 'CONTINUE';
 
 export default function ConvertersList({ setIsLoading, onViewJobDetails }) {
   const [orgIdInputs, setOrgIdInputs] = useState<{ [key: string]: string }>({});
@@ -49,7 +49,7 @@ export default function ConvertersList({ setIsLoading, onViewJobDetails }) {
   useEffect(() => {
     if (convertersData) {
       const initialModes = Object.keys(convertersData.convertersNames).reduce((acc, id) => {
-        acc[id] = 'start' as RunMode;
+        acc[id] = 'GLOBAL' as RunMode;
         return acc;
       }, {} as { [key: string]: RunMode });
       setStartMode(initialModes);
@@ -68,7 +68,6 @@ export default function ConvertersList({ setIsLoading, onViewJobDetails }) {
     isDryRun = false
   ) => {
     const organizationId = orgIdInput || null;
-    const isContinueMode = mode === 'continue';
 
     setStartingIds((prev) => new Set(prev).add(converterId));
 
@@ -79,14 +78,14 @@ export default function ConvertersList({ setIsLoading, onViewJobDetails }) {
         startConverterRequest,
         converterId,
         organizationId,
-        isContinueMode,
+        mode,
         isDryRun
       );
       // Refresh converters list
       await fetchConverters(fetchConvertersRequest);
       await startPromise;
     } catch (error) {
-      const message = `Failed to ${mode === 'continue' ? 'continue' : 'start'} converter: ${
+      const message = `Failed to run converter in mode: ${mode}: ${
         error?.error || error?.message || 'Unknown error'
       }`;
       setErrorMessage(message);
@@ -103,6 +102,8 @@ export default function ConvertersList({ setIsLoading, onViewJobDetails }) {
       }, 5000);
     }
   };
+
+  const shouldShowOrgIdInput = (mode: RunMode) => mode === 'TARGETED' || mode === 'CONTINUE';
 
   const noConvertersFound =
     !convertersData ||
@@ -149,32 +150,9 @@ export default function ConvertersList({ setIsLoading, onViewJobDetails }) {
                     >
                       <TableCell size="small">{converterLabel}</TableCell>
                       <TableCell size="small" sx={{ display: 'flex', gap: '5px', border: 'none' }}>
-                        <TextField
-                          sx={{ width: '155px', fontSize: '12px' }}
-                          type="number"
-                          name={`organizationId-${converterId}`}
-                          placeholder="Org. ID (optional)"
-                          value={orgIdInputs[converterId] || ''}
-                          onChange={(e) => {
-                            const newOrgId = e.target.value;
-                            setOrgIdInputs((prev) => ({
-                              ...prev,
-                              [converterId]: newOrgId,
-                            }));
-
-                            if (!newOrgId.trim() && startMode[converterId] === 'continue') {
-                              setStartMode((prev) => ({
-                                ...prev,
-                                [converterId]: 'start',
-                              }));
-                            }
-                          }}
-                          inputProps={{ 'data-testid': `org-id-${converterId}` }}
-                          size="small"
-                        />
                         <FormControl size="small" sx={{ minWidth: 140 }}>
                           <Select
-                            value={startMode[converterId] || 'start'}
+                            value={startMode[converterId] || 'GLOBAL'}
                             onChange={(e) =>
                               setStartMode((prev) => ({
                                 ...prev,
@@ -183,13 +161,30 @@ export default function ConvertersList({ setIsLoading, onViewJobDetails }) {
                             }
                             displayEmpty
                           >
-                            <MenuItem value="start">Full run</MenuItem>
-                            <MenuItem value="continue" disabled={!orgIdInputs[converterId]?.trim()}>
-                              Continue from Org ID
-                            </MenuItem>
+                            <MenuItem value="GLOBAL">Global</MenuItem>
+                            <MenuItem value="TARGETED">Targeted</MenuItem>
+                            <MenuItem value="CONTINUE">Continue from</MenuItem>
                           </Select>
                         </FormControl>
-
+                        {shouldShowOrgIdInput(startMode[converterId]) && (
+                          <TextField
+                            sx={{ width: '80px', fontSize: '12px' }}
+                            type="number"
+                            name={`organizationId-${converterId}`}
+                            placeholder="Org. ID"
+                            required={true}
+                            value={orgIdInputs[converterId] || ''}
+                            onChange={(e) => {
+                              const newOrgId = e.target.value;
+                              setOrgIdInputs((prev) => ({
+                                ...prev,
+                                [converterId]: newOrgId,
+                              }));
+                            }}
+                            inputProps={{ 'data-testid': `org-id-${converterId}` }}
+                            size="small"
+                          />
+                        )}
                         <FormControlLabel
                           control={
                             <Checkbox
@@ -213,13 +208,15 @@ export default function ConvertersList({ setIsLoading, onViewJobDetails }) {
                           onClick={() =>
                             handleRun(
                               converterId,
-                              startMode[converterId] ?? 'start',
+                              startMode[converterId],
                               orgIdInputs[converterId],
                               dryRunIds[converterId] || false
                             )
                           }
                         >
-                          {startingIds.has(converterId) ? 'Running...' : 'Run'}
+                          {startingIds.has(converterId)
+                            ? 'Running...'
+                            : `Run ${startMode[converterId]}`}
                         </PillButton>
                       </TableCell>
                     </TableRow>
@@ -230,6 +227,9 @@ export default function ConvertersList({ setIsLoading, onViewJobDetails }) {
             <ConverterJobsTable
               convertersData={convertersData}
               onViewJobDetails={onViewJobDetails}
+              fetchConverters={() => {
+                fetchConverters(fetchConvertersRequest);
+              }}
             />
           </>
         )}

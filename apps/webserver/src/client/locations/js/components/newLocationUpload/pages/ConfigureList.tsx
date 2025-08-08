@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useRef, useState, ChangeEvent } from 'react';
+import { useCallback, useEffect, useRef, useState, ChangeEvent, ReactNode } from 'react';
 import {
   Box,
   Card,
@@ -17,6 +17,7 @@ import {
   DialogTitle,
   DialogContent,
   DialogActions,
+  SxProps,
 } from '@mui/material';
 import { ArrowBackIos, ArrowForwardIos, Close } from '@mui/icons-material';
 import { useForm, Controller } from 'react-hook-form';
@@ -460,41 +461,60 @@ export function ConfigureList({ userLists }: { userLists: UserList[] }) {
                       label={
                         <Box
                           sx={{
+                            display: 'flex',
+                            alignItems: 'center',
+                            gap: 1,
                             lineHeight: 0,
                           }}
                           onClick={(e) => {
-                            e.stopPropagation();
-                            e.preventDefault();
+                            const tag = (e.target as HTMLElement).tagName;
+
+                            // dont disable propagation for link tags
+                            if (tag !== 'A') {
+                              e.stopPropagation();
+                              e.preventDefault();
+                            }
                           }}
                         >
-                          <Box sx={{ display: 'flex', mb: isAfi ? 0.5 : 0 }}>
-                            <Typography variant="body2">{label}</Typography>
-                            {isAfi && (
-                              <HelperTextWithPopover
-                                label={
-                                  <Typography variant="caption" sx={{ fontWeight: 'bold' }}>
-                                    Recommended to support EUDR compliance
-                                  </Typography>
-                                }
-                                sx={{
-                                  px: 1.5,
-                                  py: 0,
-                                  ml: 1,
-                                  borderRadius: 20,
-                                  backgroundColor: (theme) => theme.palette.secondary[200],
-                                }}
-                              >
-                                <Box sx={{ width: (theme) => theme.spacing(37), p: 1 }}>
-                                  <Typography variant="caption">
-                                    {ReusableText.EudrLegalDisclaimer}
-                                  </Typography>
-                                </Box>
-                              </HelperTextWithPopover>
-                            )}
+                          <Box>
+                            <Box sx={{ display: 'flex', mb: isAfi ? 0.5 : 0 }}>
+                              <Typography variant="body2">{label}</Typography>
+                              {isAfi && (
+                                <HelperTextWithPopover
+                                  label={
+                                    <Typography variant="caption" sx={{ fontWeight: 'bold' }}>
+                                      Recommended to support EUDR compliance
+                                    </Typography>
+                                  }
+                                  sx={{
+                                    px: 1.5,
+                                    py: 0,
+                                    ml: 1,
+                                    borderRadius: 20,
+                                    backgroundColor: (theme) => theme.palette.secondary[200],
+                                  }}
+                                  popoverMarginLeft={2}
+                                >
+                                  <Box sx={{ width: (theme) => theme.spacing(37), p: 1 }}>
+                                    <Typography variant="caption">
+                                      {ReusableText.EudrLegalDisclaimer}
+                                    </Typography>
+                                  </Box>
+                                </HelperTextWithPopover>
+                              )}
+                            </Box>
+
+                            <Typography variant="caption" color="text.secondary">
+                              {description}
+                            </Typography>
                           </Box>
-                          <Typography variant="caption" color="text.secondary">
-                            {description}
-                          </Typography>
+                          <HelperTextWithPopover>
+                            <Box sx={{ width: (theme) => theme.spacing(37), p: 1 }}>
+                              <Typography variant="caption">
+                                {listOfPopoverHelperText[id]}
+                              </Typography>
+                            </Box>
+                          </HelperTextWithPopover>
                         </Box>
                       }
                     ></FormControlLabel>
@@ -562,3 +582,72 @@ export function ConfigureList({ userLists }: { userLists: UserList[] }) {
     </>
   );
 }
+
+const popoverHelperTextStyle: SxProps = {
+  '& > a': {
+    color: '#00F',
+    textDecoration: 'underline',
+  },
+};
+
+const listOfPopoverHelperText: {
+  [analysisTypes.DEFORESTATION_KPIS]: ReactNode;
+  [analysisTypes.ALERTS]: ReactNode;
+  [analysisTypes.FOREST_CHANGE_DIAGNOSTICS]: ReactNode;
+  [analysisTypes.PALM_RISK]: ReactNode;
+} = {
+  AFI: (
+    <Typography variant="caption" sx={popoverHelperTextStyle}>
+      This analysis provides users with statistics on forest coverage and forest loss which occurred
+      after 2020. It differs from other analyses on GFW Pro in that it is based upon forest maps
+      aligned as closely as possible with the definition of forest adopted by the{' '}
+      <a href="https://www.fao.org/home/en/" target="_blank">
+        United Nations Food and Agriculture Organization
+      </a>
+      . The 2020 cut-off date used here aligns with requirements recently adopted by the European
+      Union, and the summary statistics may be referred to when conducting due diligence assessments
+      and disclosing deforestation within the supply chain. This analysis utilizes two maps of 2020
+      forest cover: the Natural Forest map, derived from the{' '}
+      <a href="https://wri-datalab.earthengine.app/view/sbtn-natural-lands" target="_blank">
+        Natural Lands Ecosystem Map
+      </a>{' '}
+      developed by the Science Based Targets Network (SBTN), and the{' '}
+      <a href="https://forest-observatory.ec.europa.eu/forest/gfc2020" target="_blank">
+        Global Map of Forest Cover
+      </a>
+      , developed by the Joint Research Centre.
+    </Typography>
+  ),
+  ALERTS: (
+    <Typography variant="caption">
+      This analysis collates recent deforestation and fire alerts on your locations. Updated on a
+      weekly basis, you can explore alerts from the VIIRS active fires satellite data as well as
+      GFW's integrated deforestation alerts.
+    </Typography>
+  ),
+  FCD: (
+    <Typography variant="caption" sx={popoverHelperTextStyle}>
+      This analysis breaks down annual{' '}
+      <a
+        href="https://data.globalforestwatch.org/maps/gfw::tree-cover-loss-1/about"
+        target="_blank"
+      >
+        tree cover loss
+      </a>{' '}
+      on your locations using the Hansen 2024 data. In addition to total tree cover loss, you can
+      explore tree cover loss on the most frequently referenced sensitive forest areas in
+      deforestation policies. These datasets can also help determine when sensitive areas were
+      cleared. Companies can connect this information with their deforestation policies to
+      demonstrate compliance.
+    </Typography>
+  ),
+  PalmRisk: (
+    <Typography variant="caption">
+      The PALM Risk Tool assesses the risk that a palm oil mill is associated with deforestation.
+      The analysis can be applied across an entire supply chain to generate a relative risk ranking
+      of multiple mills. This information can support decision-making by buyers and traders as they
+      prioritize engagement and interventions within their supply chain. This analysis should only
+      be applied to palm oil mills.
+    </Typography>
+  ),
+};

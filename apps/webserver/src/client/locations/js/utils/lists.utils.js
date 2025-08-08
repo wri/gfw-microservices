@@ -315,19 +315,6 @@ export function getListStatusId(isSaveAsDraft) {
   return isSaveAsDraft ? listStatus.Draft : listStatus.Pending;
 }
 
-/**
- * Get Template Data
- *
- * @param {Array} allTemplatesData - All Templates Data
- * @param {Object} selectedList - Selected List data
- * @return {Object} - Template data for selected list
- */
-function getTemplateData(allTemplatesData, selectedList) {
-  return allTemplatesData.find((v) => {
-    return v.template_id === selectedList.template_id;
-  });
-}
-
 export function getFilterCounter(filterValues) {
   let counter = 0;
   Object.keys(filterValues).forEach((key) => {
@@ -394,7 +381,6 @@ module.exports = {
   dataCleanup,
   getListValidStatus,
   getListStatusId,
-  getTemplateData,
   getFilterCounter,
   findArrIndex,
   isAnalyzingStatus,

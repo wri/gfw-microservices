@@ -86,7 +86,6 @@ class Locations extends Component {
 
     const {
       history,
-      templateData,
       userLists,
       userInfo,
       gfwLists,
@@ -147,7 +146,6 @@ class Locations extends Component {
             filteredLocationData={filteredLocationData}
             selectedLocations={selectedLocations}
             selectedAndVisibleLocations={selectedAndVisibleLocations}
-            templateData={templateData}
             stopLoading={this.stopLoading}
             usersList={usersList} // Contains all users
             userSharedLists={userSharedLists}

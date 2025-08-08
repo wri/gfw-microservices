@@ -17,7 +17,6 @@ const LocationsPage = ({ userInfo }) => {
       .then((res) => res.json())
       .then((data) => {
         const {
-          templateData,
           templateDropdowns,
           locationCount,
           gfwLists,
@@ -29,7 +28,6 @@ const LocationsPage = ({ userInfo }) => {
         } = data;
 
         setLocationsData({
-          templateData,
           templateDropdowns,
           locationCount,
           gfwLists,

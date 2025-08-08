@@ -3,7 +3,6 @@ const { compiledAssets } = config;
 const { createElement } = require('react');
 const { renderToString } = require('react-dom/server');
 
-const LocationManager = require('../../../config/publicutils/locationManager.utils');
 const ListManager = require('../../../config/publicutils/listManager.utils');
 const GFWlistManager = require('../../../config/publicutils/gfwListManager.utils');
 const AuthManager = require('../../../config/publicutils/authenticationManager.utils');
@@ -36,8 +35,6 @@ export const listDetails = (req, res, data) => {
   const subscriptionStatus = data && data.subscriptionStatus ? data.subscriptionStatus : 1;
 
   const promises = [
-    LocationManager.getAllTemplateData(req),
-
     ListManager.getUserListsWithAnalysisId(req),
     AuthManager.getUserInfo(req),
     ListManager.getLocationsCount(req),
@@ -50,7 +47,6 @@ export const listDetails = (req, res, data) => {
   Promise.all(promises)
     .then((results) => {
       const [
-        templateData,
         userLists,
         userInfo,
         locationCount,
@@ -62,7 +58,6 @@ export const listDetails = (req, res, data) => {
       const listStatuses = UserManager.getStatuses();
       const userSharedLists = findSharedListsInsideOrganization(sharedListsRecords, orgLists);
       res.render('listDetails', {
-        templateData,
         userLists,
         userSharedLists: isAdministrator ? [] : userSharedLists,
         userInfo,

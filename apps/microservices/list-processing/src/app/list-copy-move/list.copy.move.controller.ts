@@ -16,6 +16,7 @@ export class ListCopyMoveController {
   ) {
     return this.locationService.MoveLocations({
       ...request,
+
       activeTemplate: '', // Templates are deprecated, provide empty default
       templateData: {}, // Templates are deprecated, provide empty default
     });

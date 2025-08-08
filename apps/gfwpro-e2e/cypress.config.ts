@@ -60,6 +60,7 @@ export default defineConfig({
     env: {
       deployment: process.env.CYPRESS_ENV,
       waittime: parseInt(process.env['CYPRESS_TIMEOUT']) || 30000,
+      language: 'en-US',
     },
     ...nxE2EPreset(__dirname),
     setupNodeEvents,
@@ -72,5 +73,7 @@ export default defineConfig({
     specPattern: '**/*.feature',
     defaultCommandTimeout: parseInt(process.env['CYPRESS_TIMEOUT']) || DEFAULT_COMMAND_TIMEOUT,
     scrollBehavior: 'center',
+    chromeWebSecurity: false,
+    experimentalModifyObstructiveThirdPartyCode: true,
   },
 });

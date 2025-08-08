@@ -191,7 +191,7 @@ export class ConvertersService {
         }
       }
 
-      await this.randomDelay(200, 700);
+      await this.randomDelay(600, 975);
     }
 
     let status: ConverterStatus;
@@ -281,7 +281,7 @@ export class ConvertersService {
 
         successCount++;
 
-        await this.randomDelay(200, 700);
+        await this.randomDelay(600, 975);
 
         const isStopped = await this.converterRepository.isConverterStopped(
           gfwProConnection,

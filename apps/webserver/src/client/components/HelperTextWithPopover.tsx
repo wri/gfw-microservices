@@ -1,12 +1,13 @@
-import { useState, MouseEvent, ReactNode } from 'react';
+import { useState, ReactNode, useRef } from 'react';
 import { Popover, Box, IconButton, SxProps, Theme } from '@mui/material';
 import { Close, Info } from '@mui/icons-material';
 
 interface HelperTextWithPopoverProps {
-  label: ReactNode;
+  label?: ReactNode;
   children: ReactNode;
   sx?: SxProps<Theme>;
   isCloseButtonVisible?: boolean;
+  popoverMarginLeft?: number;
 }
 
 export function HelperTextWithPopover({
@@ -14,11 +15,15 @@ export function HelperTextWithPopover({
   sx,
   children,
   isCloseButtonVisible = false,
+  popoverMarginLeft = 1,
 }: HelperTextWithPopoverProps) {
+  const iconButtonRef = useRef<HTMLButtonElement | null>(null);
   const [anchorEl, setAnchorEl] = useState<HTMLButtonElement | null>(null);
 
-  const handlePopoverOpen = (event: MouseEvent<HTMLButtonElement>) => {
-    setAnchorEl(event.currentTarget);
+  const handlePopoverOpen = () => {
+    if (iconButtonRef.current) {
+      setAnchorEl(iconButtonRef.current);
+    }
   };
 
   const handlePopoverClose = () => setAnchorEl(null);
@@ -36,7 +41,12 @@ export function HelperTextWithPopover({
         }}
       >
         {label}
-        <IconButton onClick={handlePopoverOpen} sx={{ p: 0 }} aria-label="open popover">
+        <IconButton
+          ref={iconButtonRef}
+          onClick={handlePopoverOpen}
+          sx={{ p: 0 }}
+          aria-label="open popover"
+        >
           <Info fontSize="small" />
         </IconButton>
       </Box>
@@ -52,7 +62,7 @@ export function HelperTextWithPopover({
         slotProps={{
           paper: {
             sx: {
-              ml: 2,
+              ml: popoverMarginLeft,
             },
           },
         }}

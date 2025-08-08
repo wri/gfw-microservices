@@ -212,9 +212,6 @@ export class Analyses {
   @Column({ name: 'arg_otbn_area' })
   argOtbnArea: string;
 
-  @Column({ name: 'argentina_presence' })
-  argentinaPresence: string;
-
   @Column({ name: 'protected_areas_by_category_area' })
   protectedAreasByCategoryArea: string;
 

@@ -83,7 +83,6 @@ def create_table(conn, table_name):
                 [id] [int] NOT NULL,
                 [tree_cover_loss_arg_otbn_yearly] [nvarchar](max) NULL,
                 [arg_otbn_area] [nvarchar](max) NULL,
-                [argentina_presence] [nvarchar](50) NULL,
                 [protected_areas_by_category_area] [nvarchar](max) NOT NULL,
                 [landmark_by_category_area] [nvarchar](max) NOT NULL,
                 [country_specific_deforestation_yearly] [nvarchar](max) NULL,
@@ -155,9 +154,9 @@ if __name__ == "__main__":
     # Clean CSV data
     print("Cleaning CSV data")
     df = data_cleaning(df)
-    
+
     print(f"Creating {table_name}")
-    create_table(connection, table_name)        
+    create_table(connection, table_name)
 
     # Insert the data
     print("Inserting data")

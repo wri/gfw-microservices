@@ -138,7 +138,6 @@ const geoData = [
     dissolved_data_location_info: '{}',
     tree_cover_loss_arg_otbn_yearly: '{}',
     arg_otbn_area: '{}',
-    argentina_presence: 'false',
     landmark_by_category_area: null,
     protected_areas_by_category_area: '{}',
   },

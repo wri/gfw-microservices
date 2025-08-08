@@ -46,7 +46,9 @@ export class UpdateListAttributesRemoveIdColumns extends AbstractHandler<ChainTy
    * @returns string[]
    */
   async getEmptyJsonProperties(transactionalEntityManager: EntityManager) {
-    const result = await transactionalEntityManager.query(getMissingJsonPropertiesFromList, [this.sourceListId]);
+    const result = await transactionalEntityManager.query(getMissingJsonPropertiesFromList, [
+      this.sourceListId,
+    ]);
 
     if (!result) {
       return [];
@@ -69,15 +71,15 @@ export class UpdateListAttributesRemoveIdColumns extends AbstractHandler<ChainTy
 
     try {
       if (this.isNotDeletingTheSourceList) {
-
         this.logger.log(
           `Checking if list still contains location data with moving attributes after move`
         );
 
-        const emptyJsonProperties = await connection.manager.transaction(async (transactionalEntityManager) => {
-          return await this.getEmptyJsonProperties(transactionalEntityManager);
-        
-        });
+        const emptyJsonProperties = await connection.manager.transaction(
+          async (transactionalEntityManager) => {
+            return await this.getEmptyJsonProperties(transactionalEntityManager);
+          }
+        );
 
         /**
          * If the source list have locations without these attributes,
@@ -91,14 +93,11 @@ export class UpdateListAttributesRemoveIdColumns extends AbstractHandler<ChainTy
             await transactionalEntityManager.query(deleteQuery, [this.sourceListId]);
           });
         }
-
       }
     } catch (error) {
       this.logger.log('Error hanlding UpdateListAttributesRemoveIdColumns', error.stack || error);
       throw error;
-    } finally {
     }
-
     return input;
   }
 }

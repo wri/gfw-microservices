@@ -199,25 +199,21 @@ export class ProcessUploadData extends AbstractHandler<ChainType> {
 
     const clientStoreConnection = new ClientStoreConnection();
     const connection = await clientStoreConnection.getConnection(organization_database);
-   
 
-    try {
-      if (this.listsAttributesRecords.size > 0) {
-         await connection.manager.transaction(async (transactionalEntityManager) => {
-        await saveListAttributes(transactionalEntityManager, [...this.listsAttributesRecords.values()]);
-         });
-        input = {
-          ...input,
-          request: {
-            listAttributesRecords: this.listsAttributesRecords,
-            ...input.request,
-          },
-        };
-      }
-      return input;
-    } catch (error) {
-      throw error;
-    } finally {
+    if (this.listsAttributesRecords.size > 0) {
+      await connection.manager.transaction(async (transactionalEntityManager) => {
+        await saveListAttributes(transactionalEntityManager, [
+          ...this.listsAttributesRecords.values(),
+        ]);
+      });
+      input = {
+        ...input,
+        request: {
+          listAttributesRecords: this.listsAttributesRecords,
+          ...input.request,
+        },
+      };
     }
+    return input;
   }
 }

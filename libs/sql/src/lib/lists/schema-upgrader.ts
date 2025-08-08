@@ -36,7 +36,6 @@ import {
 } from '../list-attributes';
 import { getListIfEAPIExportUpload } from './getListIfEAPIExportUpload';
 import { GHG_PREFIX } from '../list-attributes/comMapSpam';
-import { QueryRunner } from 'typeorm';
 
 const LIST_VERSION_POST_UPGRADE = 2;
 
@@ -57,23 +56,22 @@ export async function upgradeListSchema(args: SchemaUpgraderArgs) {
     let list: Lists | undefined;
     let listsRepository;
     await connection.manager.transaction(async (transactionalEntityManager) => {
-       listsRepository = transactionalEntityManager.getRepository(Lists);
-       list = await listsRepository.findOne({ where: { id: listId } });
+      listsRepository = transactionalEntityManager.getRepository(Lists);
+      list = await listsRepository.findOne({ where: { id: listId } });
     });
     if (list.version === LIST_VERSION_POST_UPGRADE) {
       logActionMessage(logger, isDryRun, 'Skip upgrade', `List already in version 2`);
       if (isDryRun) {
         logger.log('(Dry Run) - Rolling back transaction.');
-      } else {
       }
       return list;
     }
-  
+
     logActionMessage(logger, isDryRun, 'Lock', `list ${list.id}`, `for user ${userId}`);
     if (!isDryRun) {
       await new UspSetListLocked().run(clientDb, list.id, userId);
     }
-  
+
     /**
      * @step 1
      * Get entity based columns definitions
@@ -182,17 +180,18 @@ export async function upgradeListSchema(args: SchemaUpgraderArgs) {
       logActionMessage(logger, isDryRun, 'Update', 'ListsAnalysisStatus.options', `to PalmRisk`);
       if (!isDryRun) {
         await connection.manager.transaction(async (transactionalEntityManager) => {
-        const listAnalysisStatusRepo = transactionalEntityManager.getRepository(ListsAnalysisStatus);
-        await listAnalysisStatusRepo.update(
-          {
-            listId: list.id,
-            analysisId: 'FCD',
-          },
-          {
-            options: 'PalmRisk',
-          }
-        );
-      })
+          const listAnalysisStatusRepo =
+            transactionalEntityManager.getRepository(ListsAnalysisStatus);
+          await listAnalysisStatusRepo.update(
+            {
+              listId: list.id,
+              analysisId: 'FCD',
+            },
+            {
+              options: 'PalmRisk',
+            }
+          );
+        });
       }
     }
 
@@ -207,7 +206,6 @@ export async function upgradeListSchema(args: SchemaUpgraderArgs) {
     Logger.error('Schema Upgrader Failed', error.stack || error);
     throw error;
   } finally {
-
     try {
       if (!isDryRun && success) {
         logActionMessage(logger, isDryRun, 'Unlock', `list ${listId}`);

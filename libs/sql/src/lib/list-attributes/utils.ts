@@ -1,4 +1,4 @@
-import { EntitySchema, QueryRunner,EntityManager } from 'typeorm';
+import { EntitySchema, EntityManager } from 'typeorm';
 import { Logger } from '@nestjs/common';
 import { ListAttributes, Lists, ListSchema, ListSchemaType, ListTemplate } from '../entity';
 import { ClientStoreConnection, SQLUtils } from '../util';
@@ -42,7 +42,7 @@ export interface ListAttributesRecord {
   attribute_type: number;
 }
 export async function saveListAttributes(
-  transactionalEntityManager: EntityManager ,
+  transactionalEntityManager: EntityManager,
   attributes: ListAttributesRecord[]
 ) {
   try {
@@ -198,7 +198,9 @@ export async function handleListLocationAttributes(
   list: Lists,
   columnsToExclude: unknown[]
 ) {
-  const listLocations = await transactionalEntityManager.query(`SELECT * FROM [${list.listTableName}]`);
+  const listLocations = await transactionalEntityManager.query(
+    `SELECT * FROM [${list.listTableName}]`
+  );
   Logger.log(`List Locations found: ${listLocations.length}`);
 
   if (listLocations.length) {

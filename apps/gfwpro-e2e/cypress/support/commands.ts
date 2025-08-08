@@ -17,6 +17,7 @@ declare namespace Cypress {
     visitAndVerifyLoad(url: string, options?: Partial<Cypress.VisitOptions>): void;
     uploadFile(fileName: string): Chainable<void>;
     waitForLoadingMessage(checkExist?: boolean, locator?: string): void;
+    forceEnglishLanguage(): void;
   }
 }
 
@@ -91,6 +92,25 @@ Cypress.Commands.add('waitForLoadingMessage', (checkExist = true, locator = '.mo
     cy.get(locator, { timeout: 60000 }).should('be.visible');
     cy.get(locator, { timeout: 60000 }).should('not.be.visible');
   }
+});
+
+Cypress.Commands.add('forceEnglishLanguage', () => {
+  cy.window().then((win) => {
+    // Override navigator language properties (used by Transifex)
+    Object.defineProperty(win.navigator, 'language', {
+      value: 'en-US',
+      writable: false,
+      configurable: true,
+    });
+
+    Object.defineProperty(win.navigator, 'languages', {
+      value: ['en-US', 'en'],
+      writable: false,
+      configurable: true,
+    });
+  });
+
+  cy.log('Forced English language settings applied');
 });
 
 Cypress.on('uncaught:exception', (err) => {

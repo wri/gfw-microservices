@@ -1914,5 +1914,5 @@ export const GREEN_HOUSE_GAS_EMISSIONS_HEADER = {
   ch4EmissionsFactor: 'CH4 Emissions Factor',
   n2oEmissionsFactor: 'N2O Emissions Factor',
   CombinedEmissionsFactor: 'Combined Emissions Factor',
-  year: 'Year',
+  year: 'Reporting Year',
 };

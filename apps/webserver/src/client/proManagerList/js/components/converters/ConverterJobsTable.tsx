@@ -83,9 +83,7 @@ export default function ConverterRunsTable({ convertersData, onViewJobDetails, f
                       variant="outlined"
                     />
                   </TableCell>
-                  <TableCell size="small">
-                    {job.organizationId || '—'}
-                  </TableCell>
+                  <TableCell size="small">{job.organizationId || '—'}</TableCell>
                   <TableCell size="small">{job.mode || '—'}</TableCell>
                   <TableCell size="small">
                     {job.isDryRun === null || job.isDryRun === undefined

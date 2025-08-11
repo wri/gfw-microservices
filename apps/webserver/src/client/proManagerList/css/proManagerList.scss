@@ -18,6 +18,11 @@
     margin-right: 5px;
   }
 
+  table a {
+    color: #007bff !important;
+    text-decoration: underline;
+  }
+
   .pro-manager-table-link {
     text-decoration: underline;
     cursor: pointer;
@@ -54,5 +59,14 @@
     width: 8px;
     margin-left: 3px;
     vertical-align: middle;
+  }
+
+  ::-webkit-scrollbar {
+    height: 8px;
+  }
+
+  ::-webkit-scrollbar-thumb {
+    background: #aaa;
+    border-radius: 4px;
   }
 }

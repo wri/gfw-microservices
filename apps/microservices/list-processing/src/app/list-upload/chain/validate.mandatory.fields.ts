@@ -177,7 +177,10 @@ export class ValidateMandatoryFields extends AbstractHandler<ChainType> {
         if (
           !isAnIdColumnPresent(feature.properties) &&
           !this.validateFeature(feature, fieldsToCheck)
-        ) {
+        if (isAnIdColumnPresent(feature.properties)) {
+          return;
+        }
+        if (!this.validateFeature(feature, fieldsToCheck)) {
           hasError = true;
         }
       });

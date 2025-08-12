@@ -23,11 +23,7 @@ import {
 } from './list-upload-new.dto';
 import { S3Client, GetObjectCommand } from '@aws-sdk/client-s3';
 import { throwCustomErrorResponse } from './utils/throw-custom-error-response';
-import {
-  getListStatusString,
-  ListActivityTypesEnum,
-  listStatus,
-} from '@wri-monorepos/constants';
+import { getListStatusString, ListActivityTypesEnum, listStatus } from '@wri-monorepos/constants';
 import {
   CREATE_ANALYSIS,
   DELETE_LIST,

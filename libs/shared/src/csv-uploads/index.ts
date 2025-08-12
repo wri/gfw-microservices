@@ -214,5 +214,5 @@ export function isAnIdColumnPresent(data: Record<string, unknown>) {
     return true;
   }
 
-  return false;
+  return idTypeColumn || isMillList;
 }

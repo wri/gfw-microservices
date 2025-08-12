@@ -52,8 +52,6 @@ export class RequestLargeListProcess {
   @ApiProperty()
   path: string;
   @ApiProperty()
-  template_type?: string; // Still used by deprecated code
-  @ApiProperty()
   user_id?: number;
   @ApiProperty()
   startAnalysis: boolean;

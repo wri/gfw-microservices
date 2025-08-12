@@ -446,10 +446,6 @@ export class ListAnalysisService {
         list_name: newListDetails.listName,
         analysisIds: newListDetails.analysisIDs,
         commodity: newListDetails.commodity || '', // commodity still not required in EAPI
-        // Forcing template_type because only cocoa_generic is supported
-        // LP verifies the field is a string
-        template_type: 'cocoa_generic',
-        template_id: deduceActiveId['cocoaGeneric'],
         user_id: externalUpload.userId,
         startAnalysis: true,
         isExternalAPIProcess: true,

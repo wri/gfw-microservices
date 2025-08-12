@@ -41,7 +41,7 @@ describe('Green House Gas Emissions Service - [Location level]', () => {
     const csvData = fs.readFileSync(filePath);
     const lines = csvData.toString().split('\n');
     const expectedResults = [
-      'List Name,Location Name,Country,State,Sub State,Location Size (Ha),Commodity,Data Layer Name,CO2 Emissions Factor,CH4 Emissions Factor,N2O Emissions Factor,Combined Emissions Factor,Year',
+      'List Name,Location Name,Country,State,Sub State,Location Size (Ha),Commodity,Data Layer Name,CO2 Emissions Factor,CH4 Emissions Factor,N2O Emissions Factor,Combined Emissions Factor,Reporting Year',
       '"kgTestCG3 927 all","location name 2","Country Name","State Name","Sub State Name",1256.1647,Soy,dLUC,20.8186,220.8186,320.8186,120.8186,2021',
       '"kgTestCG3 927 all","location name 2","Country Name","State Name","Sub State Name",1256.1647,Soy,dLUC,28.1142,228.1142,328.1142,228.1142,2022',
       '"kgTestCG3 927 all","location name 2","Country Name","State Name","Sub State Name",1256.1647,Soy,dLUC,10,20,3,0,2023',
@@ -64,7 +64,7 @@ describe('Green House Gas Emissions Service - [Location level]', () => {
     const csvData = fs.readFileSync(filePath, 'utf8');
     const lines = csvData.toString().split('\n');
     expect(lines).toStrictEqual([
-      'List Name,Location Name,Country,State,Sub State,Location Size (Ha),Commodity,Data Layer Name,CO2 Emissions Factor,CH4 Emissions Factor,N2O Emissions Factor,Combined Emissions Factor,Year',
+      'List Name,Location Name,Country,State,Sub State,Location Size (Ha),Commodity,Data Layer Name,CO2 Emissions Factor,CH4 Emissions Factor,N2O Emissions Factor,Combined Emissions Factor,Reporting Year',
       '',
     ]);
   });
@@ -78,7 +78,7 @@ describe('Green House Gas Emissions Service - [Location level]', () => {
     const lines = csvData.toString().split('\n');
 
     expect(lines).toStrictEqual([
-      'List Name,Location Name,Country,State,Sub State,Location Size (Ha),Commodity,Data Layer Name,CO2 Emissions Factor,CH4 Emissions Factor,N2O Emissions Factor,Combined Emissions Factor,Year',
+      'List Name,Location Name,Country,State,Sub State,Location Size (Ha),Commodity,Data Layer Name,CO2 Emissions Factor,CH4 Emissions Factor,N2O Emissions Factor,Combined Emissions Factor,Reporting Year',
       '',
     ]);
   });
@@ -90,7 +90,7 @@ describe('Green House Gas Emissions Service - [Location level]', () => {
     const csvData = fs.readFileSync(filePath, 'utf8');
     const lines = csvData.toString().split('\n');
     expect(lines).toStrictEqual([
-      'List Name,Location Name,Country,State,Sub State,Location Size (Ha),Commodity,Data Layer Name,CO2 Emissions Factor,CH4 Emissions Factor,N2O Emissions Factor,Combined Emissions Factor,Year',
+      'List Name,Location Name,Country,State,Sub State,Location Size (Ha),Commodity,Data Layer Name,CO2 Emissions Factor,CH4 Emissions Factor,N2O Emissions Factor,Combined Emissions Factor,Reporting Year',
       '"kgTestCG3 927 all","location name 2","Country Name","State Name","Sub State Name",1256.1647,Soy,dLUC,50.8186,520.8186,520.8186,120.8186,2021',
       '"kgTestCG3 927 all","location name 2","Country Name","State Name","Sub State Name",1256.1647,Soy,dLUC,58.1142,528.1142,528.1142,228.1142,2022',
       '"kgTestCG3 927 all","location name 2","Country Name","State Name","Sub State Name",1256.1647,Soy,dLUC,510,520,53,0,2023',

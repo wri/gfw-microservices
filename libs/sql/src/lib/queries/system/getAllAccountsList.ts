@@ -6,7 +6,6 @@
  * including the new 'organization_active' flag, returning only active accounts.
  */
 export const getAllAccountsList = `
-	-- Create a Table Variable to store the compiled pending accounts data in.
 	DECLARE @CompiledPendingAccounts TABLE
 	(
 		[organization_id] INT NOT NULL,
@@ -39,7 +38,8 @@ export const getAllAccountsList = `
 		id, organization_name, organization_address, organization_website,
 		organization_is_subsidiary, organization_parent, organization_requested_time,
 		organization_active
-	FROM dbo.PendingAccounts;
+	FROM dbo.PendingAccounts
+	WHERE id NOT IN (SELECT id FROM dbo.Organizations);
 
 	OPEN org_cursor;
 	FETCH NEXT FROM org_cursor
@@ -102,6 +102,20 @@ export const getAllAccountsList = `
 		SET @SQL = REPLACE(@SQL, '{ORGID}', @organization_id);
 		SET @SQL = REPLACE(@SQL, '{ORGSTATUSID}', @organization_status_id);
 
+		DECLARE @TempResult TABLE (
+			organization_id INT,
+			organization_name NVARCHAR(200),
+			organization_address NVARCHAR(200),
+			organization_website NVARCHAR(200),
+			organization_is_subsidiary BIT,
+			organization_parent NVARCHAR(200),
+			organization_classifications_ids NVARCHAR(100),
+			organization_status_id INT
+		);
+
+		INSERT INTO @TempResult
+		EXEC sp_executesql @SQL;
+
 		INSERT INTO @CompiledPendingAccounts (
 			organization_id,
 			organization_name,
@@ -115,14 +129,19 @@ export const getAllAccountsList = `
 			subscription_status_id,
 			organization_active
 		)
-		EXEC sp_executesql @SQL;
-
-		UPDATE @CompiledPendingAccounts
-		SET
-			organization_activated_time = @organization_activated_time,
-			subscription_status_id = @subscription_status_id,
-			organization_active = 1 -- Mark created organizations as active
-		WHERE organization_id = @organization_id;
+		SELECT
+			organization_id,
+			organization_name,
+			organization_address,
+			organization_website,
+			organization_is_subsidiary,
+			organization_parent,
+			organization_classifications_ids,
+			organization_status_id,
+			@organization_activated_time,
+			@subscription_status_id,
+			1
+		FROM @TempResult;
 
 		FETCH NEXT FROM org_cursor
 		INTO @organization_id, @organization_name, @organization_db, @organization_status_id, @organization_activated_time, @subscription_status_id;
@@ -130,5 +149,20 @@ export const getAllAccountsList = `
 	CLOSE org_cursor;
 	DEALLOCATE org_cursor;
 
-	SELECT * FROM @CompiledPendingAccounts;
+	/************************************************************
+	* DEDUPLICATE
+	************************************************************/
+	-- Step 1: Mark duplicates with a row number
+	;WITH NumberedRows AS (
+		SELECT *,
+			ROW_NUMBER() OVER (
+				PARTITION BY organization_id       -- group rows by org id
+				ORDER BY organization_status_id DESC  -- put highest status first
+			) AS RowNum
+		FROM @CompiledPendingAccounts
+	)
+
+	-- Step 2: Delete all but the first row per org
+	DELETE FROM NumberedRows
+	WHERE RowNum > 1;
 `;

@@ -24,7 +24,6 @@ import {
 import { S3Client, GetObjectCommand } from '@aws-sdk/client-s3';
 import { throwCustomErrorResponse } from './utils/throw-custom-error-response';
 import {
-  deduceActiveId,
   getListStatusString,
   ListActivityTypesEnum,
   listStatus,

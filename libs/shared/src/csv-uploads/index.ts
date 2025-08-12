@@ -210,9 +210,5 @@ export function isAnIdColumnPresent(data: Record<string, unknown>) {
   const idTypeColumn = firstRowCols.includes('ID Type');
   const isMillList = firstRowCols.includes('ID') || firstRowCols.includes('Palm Mill ID');
 
-  if (idTypeColumn || isMillList) {
-    return true;
-  }
-
   return idTypeColumn || isMillList;
 }

@@ -174,9 +174,6 @@ export class ValidateMandatoryFields extends AbstractHandler<ChainType> {
     } else {
       let hasError = false;
       geojson.features.forEach((feature) => {
-        if (
-          !isAnIdColumnPresent(feature.properties) &&
-          !this.validateFeature(feature, fieldsToCheck)
         if (isAnIdColumnPresent(feature.properties)) {
           return;
         }

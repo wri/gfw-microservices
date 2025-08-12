@@ -129,12 +129,8 @@ export const csvLatLongIdBasedTransformer = async (
   if (!data.length) {
     throw new Error('Bad CSV Input: No data to process');
   }
-  // this could house mixed types but is certainly required for CAR
-  const firstRowCols = Object.keys(data[0]);
-  const idTypeColumn = firstRowCols.includes('ID Type');
-  const isMillList = firstRowCols.includes('ID') || firstRowCols.includes('Palm Mill ID');
 
-  if (idTypeColumn || isMillList) {
+  if (isAnIdColumnPresent(data[0])) {
     return await idBasedSystemHandler(data);
   }
 
@@ -206,4 +202,17 @@ function resolveFlaggedRowsByValueFound(row: Record<string, unknown>, error: Err
     ...row,
     errorDetails,
   });
+}
+
+export function isAnIdColumnPresent(data: Record<string, unknown>) {
+  // this could house mixed types but is certainly required for CAR
+  const firstRowCols = Object.keys(data);
+  const idTypeColumn = firstRowCols.includes('ID Type');
+  const isMillList = firstRowCols.includes('ID') || firstRowCols.includes('Palm Mill ID');
+
+  if (idTypeColumn || isMillList) {
+    return true;
+  }
+
+  return false;
 }

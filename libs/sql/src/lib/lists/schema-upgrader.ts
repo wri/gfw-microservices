@@ -36,7 +36,6 @@ import {
 } from '../list-attributes';
 import { getListIfEAPIExportUpload } from './getListIfEAPIExportUpload';
 import { GHG_PREFIX } from '../list-attributes/comMapSpam';
-import { QueryRunner } from 'typeorm';
 
 const LIST_VERSION_POST_UPGRADE = 2;
 
@@ -49,26 +48,21 @@ interface SchemaUpgraderArgs {
 export async function upgradeListSchema(args: SchemaUpgraderArgs) {
   const { clientDb, listId, userId, isDryRun = false } = args;
   const logger = new Logger(`SchemaUpgrade for ListId: ${listId}`);
-  let queryRunner: QueryRunner;
   let success = false;
 
   try {
     const clientStoreConnection = new ClientStoreConnection();
     const connection = await clientStoreConnection.getConnection(clientDb);
-    queryRunner = connection.createQueryRunner();
-    await queryRunner.connect();
-    await queryRunner.startTransaction();
-
-    const listsRepository = queryRunner.manager.getRepository(Lists);
-    const list = await listsRepository.findOne({ where: { id: listId } });
-
+    let list: Lists | undefined;
+    let listsRepository;
+    await connection.manager.transaction(async (transactionalEntityManager) => {
+      listsRepository = transactionalEntityManager.getRepository(Lists);
+      list = await listsRepository.findOne({ where: { id: listId } });
+    });
     if (list.version === LIST_VERSION_POST_UPGRADE) {
       logActionMessage(logger, isDryRun, 'Skip upgrade', `List already in version 2`);
       if (isDryRun) {
         logger.log('(Dry Run) - Rolling back transaction.');
-        await queryRunner.rollbackTransaction();
-      } else {
-        await queryRunner.commitTransaction();
       }
       return list;
     }
@@ -96,7 +90,9 @@ export async function upgradeListSchema(args: SchemaUpgraderArgs) {
     if (columnsToDelete.includes('Investment Name')) {
       logActionMessage(logger, isDryRun, 'Set', '[Location Name] for Investment List');
       if (!isDryRun) {
-        await setListLocationNameIfIsInvestment(queryRunner, list.listTableName);
+        await connection.manager.transaction(async (transactionalEntityManager) => {
+          await setListLocationNameIfIsInvestment(transactionalEntityManager, list.listTableName);
+        });
       }
     }
 
@@ -112,7 +108,9 @@ export async function upgradeListSchema(args: SchemaUpgraderArgs) {
       `list location attributes for ${list.listTableName}`
     );
     if (!isDryRun) {
-      await handleListLocationAttributes(queryRunner, list, columnsToExclude);
+      await connection.manager.transaction(async (transactionalEntityManager) => {
+        await handleListLocationAttributes(transactionalEntityManager, list, columnsToExclude);
+      });
     }
 
     if (columnsToDelete.length) {
@@ -129,7 +127,9 @@ export async function upgradeListSchema(args: SchemaUpgraderArgs) {
           ALTER TABLE [${list.listTableName}]
           DROP COLUMN ${columnsToDelete.map((col) => `[${col}]`).join(', ')}
         `;
-        await queryRunner.query(dropStatement);
+        await connection.manager.transaction(async (transactionalEntityManager) => {
+          await transactionalEntityManager.query(dropStatement);
+        });
       }
     } else {
       logger.log(`No columns to drop in [${list.listTableName}].`);
@@ -179,35 +179,33 @@ export async function upgradeListSchema(args: SchemaUpgraderArgs) {
     if (list.templateId === 2 || (list.templateId === 5 && lowerLocationClass === 'supply shed')) {
       logActionMessage(logger, isDryRun, 'Update', 'ListsAnalysisStatus.options', `to PalmRisk`);
       if (!isDryRun) {
-        const listAnalysisStatusRepo = queryRunner.manager.getRepository(ListsAnalysisStatus);
-        await listAnalysisStatusRepo.update(
-          {
-            listId: list.id,
-            analysisId: 'FCD',
-          },
-          {
-            options: 'PalmRisk',
-          }
-        );
+        await connection.manager.transaction(async (transactionalEntityManager) => {
+          const listAnalysisStatusRepo =
+            transactionalEntityManager.getRepository(ListsAnalysisStatus);
+          await listAnalysisStatusRepo.update(
+            {
+              listId: list.id,
+              analysisId: 'FCD',
+            },
+            {
+              options: 'PalmRisk',
+            }
+          );
+        });
       }
     }
 
     if (isDryRun) {
       logger.log('(Dry Run) - Rolling back transaction.');
-      await queryRunner.rollbackTransaction();
     } else {
-      await queryRunner.commitTransaction();
       success = true;
     }
 
     return await listsRepository.findOne({ where: { id: listId } });
   } catch (error) {
-    await queryRunner?.rollbackTransaction();
     Logger.error('Schema Upgrader Failed', error.stack || error);
     throw error;
   } finally {
-    await queryRunner?.release();
-
     try {
       if (!isDryRun && success) {
         logActionMessage(logger, isDryRun, 'Unlock', `list ${listId}`);

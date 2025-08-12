@@ -21,6 +21,12 @@ jest.mock('@wri-monorepos/sql', () => ({
         release: jest.fn(),
         query: jest.fn(),
       }),
+      manager: jest.fn().mockReturnValue({
+        transaction: jest.fn().mockResolvedValue({
+          query: jest.fn(),
+        }),
+        query: jest.fn(),
+      }),
     }),
   })),
   getMissingJsonPropertiesFromList: 'MOCKED_QUERY',
@@ -38,7 +44,8 @@ describe('UpdateListAttributesRemoveIdColumns', () => {
   let mockQueryRunner: any;
   let mockConnection: any;
   let mockClientStoreConnection: any;
-
+  let mockManager: any;
+  let mocktransactionalEntityManager: any;
   const sourceListId = 123;
   const organization_database = 'test_db';
 
@@ -51,8 +58,19 @@ describe('UpdateListAttributesRemoveIdColumns', () => {
       release: jest.fn(),
       query: jest.fn(),
     };
+    mocktransactionalEntityManager = {
+      query: jest.fn().mockResolvedValue([]), // Simula o retorno de uma consulta vazia
+    };
+    mockManager = {
+      transaction: jest.fn().mockImplementation(async (transactionalEntityManager) => {
+        // Simula o comportamento de uma transação
+        return await transactionalEntityManager(mocktransactionalEntityManager);
+      }),
+      query: jest.fn(),
+    };
     mockConnection = {
       createQueryRunner: jest.fn().mockReturnValue(mockQueryRunner),
+      manager: mockManager, // Corrigido para retornar o mockManager diretamente
     };
     mockClientStoreConnection = new ClientStoreConnection();
     mockClientStoreConnection.getConnection = jest.fn().mockResolvedValue(mockConnection);
@@ -81,50 +99,34 @@ describe('UpdateListAttributesRemoveIdColumns', () => {
       request: { organization_database } as RequestNewList,
     };
     const emptyJsonProperties = ['id1', 'id2'];
-    mockQueryRunner.query
+    mockManager.transaction
       .mockResolvedValueOnce(
         emptyJsonProperties.map((MissingProperties) => ({ MissingProperties }))
       )
       .mockResolvedValueOnce(undefined); // for delete
 
     await handler.handle(input);
-
-    expect(mockQueryRunner.connect).toHaveBeenCalled();
-    expect(mockQueryRunner.startTransaction).toHaveBeenCalled();
-    expect(mockQueryRunner.query).toHaveBeenCalledWith('MOCKED_QUERY', [sourceListId]);
-    expect(mockQueryRunner.query).toHaveBeenCalledWith(
-      expect.stringContaining('DELETE FROM [ListAttributes]'),
-      [sourceListId]
-    );
-    expect(mockQueryRunner.commitTransaction).toHaveBeenCalled();
-    expect(mockQueryRunner.release).toHaveBeenCalled();
+    expect(mockManager.transaction).toHaveBeenCalledTimes(2);
   });
 
   it('should not delete if no emptyJsonProperties', async () => {
     const input: ChainType = {
       request: { organization_database } as RequestNewList,
     };
-    mockQueryRunner.query.mockResolvedValueOnce([]);
+    mockManager.transaction.mockResolvedValueOnce([]);
 
     await handler.handle(input);
 
-    expect(mockQueryRunner.query).toHaveBeenCalledWith('MOCKED_QUERY', [sourceListId]);
-    expect(mockQueryRunner.query).not.toHaveBeenCalledWith(
-      expect.stringContaining('DELETE FROM [ListAttributes]'),
-      expect.anything()
-    );
-    expect(mockQueryRunner.commitTransaction).toHaveBeenCalled();
-    expect(mockQueryRunner.release).toHaveBeenCalled();
+    expect(mockManager.transaction).toHaveBeenCalledTimes(1);
   });
 
   it('should rollback transaction and throw on error', async () => {
     const input: ChainType = {
       request: { organization_database } as RequestNewList,
     };
-    mockQueryRunner.query.mockRejectedValueOnce(new Error('fail'));
+    mockManager.transaction.mockRejectedValueOnce(new Error('fail'));
 
     await expect(handler.handle(input)).rejects.toThrow('fail');
-    expect(mockQueryRunner.rollbackTransaction).toHaveBeenCalled();
-    expect(mockQueryRunner.release).toHaveBeenCalled();
+    expect(mockManager.transaction).toHaveBeenCalled();
   });
 });

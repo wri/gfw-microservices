@@ -23,12 +23,7 @@ import {
 } from './list-upload-new.dto';
 import { S3Client, GetObjectCommand } from '@aws-sdk/client-s3';
 import { throwCustomErrorResponse } from './utils/throw-custom-error-response';
-import {
-  deduceActiveId,
-  getListStatusString,
-  ListActivityTypesEnum,
-  listStatus,
-} from '@wri-monorepos/constants';
+import { getListStatusString, ListActivityTypesEnum, listStatus } from '@wri-monorepos/constants';
 import {
   CREATE_ANALYSIS,
   DELETE_LIST,
@@ -446,10 +441,6 @@ export class ListAnalysisService {
         list_name: newListDetails.listName,
         analysisIds: newListDetails.analysisIDs,
         commodity: newListDetails.commodity || '', // commodity still not required in EAPI
-        // Forcing template_type because only cocoa_generic is supported
-        // LP verifies the field is a string
-        template_type: 'cocoa_generic',
-        template_id: deduceActiveId['cocoaGeneric'],
         user_id: externalUpload.userId,
         startAnalysis: true,
         isExternalAPIProcess: true,

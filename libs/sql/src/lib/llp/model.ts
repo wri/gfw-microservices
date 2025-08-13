@@ -110,7 +110,6 @@ export interface CopyOrMoveLargeListRequest {
   listName: string;
   targetList?: ListsType;
   selectedLocations: number[];
-  addType: string;
   activeTemplate: string;
   commodityType?: string;
   templateData: unknown;

@@ -66,7 +66,6 @@ export const copyOrMoveLargeListRequestSchema = z.object({
   listName: z.string(),
   targetList: z.any(),
   selectedLocations: z.array(z.coerce.number()),
-  addType: z.string(),
   commodityType: z.string().optional(),
   saveAsDraft: z.coerce.boolean(),
   userId: z.coerce.number(),

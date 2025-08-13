@@ -18,7 +18,7 @@ import { fetchConverterInfo } from '../../../../api/converter';
 import { useFetch } from '../../../../hooks';
 import { StyledTableCell } from '../../common/styledTableCell';
 import { LoadingModal } from '../../../../components';
-import { ConverterJob } from './types/converters';
+import { ConverterJob } from '../../../../types/converters';
 import { STATUS_STYLE_MAP } from './constants';
 
 export default function ConverterDetailsPage() {

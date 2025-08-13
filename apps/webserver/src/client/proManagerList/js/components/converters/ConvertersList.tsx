@@ -24,9 +24,7 @@ import { useFetch } from '../../../../hooks';
 
 import ConverterJobsTable from './ConverterJobsTable';
 import { fetchConverters, startConverter } from '../../../../api/converter';
-import { ConvertersData } from './types/converters';
-
-type RunMode = 'GLOBAL' | 'TARGETED' | 'CONTINUE';
+import { ConvertersData, RunMode } from '../../../../types/converters';
 
 export default function ConvertersList({ setIsLoading, onViewJobDetails }) {
   const [orgIdInputs, setOrgIdInputs] = useState<{ [key: string]: string }>({});

@@ -1,6 +1,5 @@
 import { ExtendedAxiosRequestConfig } from '../hooks/useFetch';
-
-type RunMode = 'GLOBAL' | 'TARGETED' | 'CONTINUE';
+import { RunMode } from '../types/converters';
 
 export const fetchConverters = (
   request: (config?: ExtendedAxiosRequestConfig) => Promise<void>

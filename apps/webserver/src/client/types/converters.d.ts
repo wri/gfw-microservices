@@ -1,4 +1,6 @@
-import { RunMode } from '@wri-monorepos/constants';
+import { RunMode } from '../../../../constants/converters-constants';
+
+export { RunMode };
 
 export interface ConverterJob {
   startTime: Date;

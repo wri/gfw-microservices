@@ -12,8 +12,7 @@ export class DeleteListService {
   async run(
     list_id: number,
     organizationDatabase: string,
-    organization_user_id: number,
-    userEmail: string
+    organization_user_id: number
   ): Promise<string> {
     const connection = await this.clientStoreConnection.getConnection(organizationDatabase);
     const activityLogRepository = connection.getRepository(ActivityLog);

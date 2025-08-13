@@ -13,7 +13,6 @@ describe('DeleteListService', () => {
   const mockListId = 123;
   const mockOrgDatabase = 'test-org-db';
   const mockOrgUserId = 456;
-  const mockUserEmail = 'test@example.com';
 
   beforeEach(async () => {
     // Mock ActivityLog repository
@@ -68,7 +67,7 @@ describe('DeleteListService', () => {
       const expectedMessage = `User '${mockOrgUserId}' has deleted list (${mockListId}).`;
 
       // Act
-      const result = await service.run(mockListId, mockOrgDatabase, mockOrgUserId, mockUserEmail);
+      const result = await service.run(mockListId, mockOrgDatabase, mockOrgUserId);
 
       // Assert
       expect(clientStoreConnection.getConnection).toHaveBeenCalledWith(mockOrgDatabase);
@@ -97,9 +96,7 @@ describe('DeleteListService', () => {
       const expectedErrorDescription = `User '${mockOrgUserId}' has tried to delete list (${mockListId}) but some error occurs Failed to delete list ${mockListId}.`;
 
       // Act & Assert
-      await expect(
-        service.run(mockListId, mockOrgDatabase, mockOrgUserId, mockUserEmail)
-      ).rejects.toThrow(
+      await expect(service.run(mockListId, mockOrgDatabase, mockOrgUserId)).rejects.toThrow(
         new InternalServerErrorException({
           message: expectedErrorDescription,
           code: 603,
@@ -130,9 +127,7 @@ describe('DeleteListService', () => {
       const expectedErrorDescription = `User '${mockOrgUserId}' has tried to delete list (${mockListId}) but some error occurs ${mockError.message}.`;
 
       // Act & Assert
-      await expect(
-        service.run(mockListId, mockOrgDatabase, mockOrgUserId, mockUserEmail)
-      ).rejects.toThrow(
+      await expect(service.run(mockListId, mockOrgDatabase, mockOrgUserId)).rejects.toThrow(
         new InternalServerErrorException({
           message: expectedErrorDescription,
           code: 603,
@@ -155,9 +150,9 @@ describe('DeleteListService', () => {
       clientStoreConnection.getConnection.mockRejectedValue(connectionError);
 
       // Act & Assert
-      await expect(
-        service.run(mockListId, mockOrgDatabase, mockOrgUserId, mockUserEmail)
-      ).rejects.toThrow(connectionError);
+      await expect(service.run(mockListId, mockOrgDatabase, mockOrgUserId)).rejects.toThrow(
+        connectionError
+      );
     });
 
     it('should handle activity log save errors during success path', async () => {
@@ -173,9 +168,7 @@ describe('DeleteListService', () => {
       const expectedErrorDescription = `User '${mockOrgUserId}' has tried to delete list (${mockListId}) but some error occurs ${saveError.message}.`;
 
       // Act & Assert
-      await expect(
-        service.run(mockListId, mockOrgDatabase, mockOrgUserId, mockUserEmail)
-      ).rejects.toThrow(
+      await expect(service.run(mockListId, mockOrgDatabase, mockOrgUserId)).rejects.toThrow(
         new InternalServerErrorException({
           message: expectedErrorDescription,
           code: 603,
@@ -197,7 +190,7 @@ describe('DeleteListService', () => {
       });
 
       // Act
-      await service.run(mockListId, mockOrgDatabase, mockOrgUserId, mockUserEmail);
+      await service.run(mockListId, mockOrgDatabase, mockOrgUserId);
 
       // Assert
       expect(savedActivityLog).toBeInstanceOf(ActivityLog);
@@ -220,7 +213,7 @@ describe('DeleteListService', () => {
 
       // Act
       try {
-        await service.run(mockListId, mockOrgDatabase, mockOrgUserId, mockUserEmail);
+        await service.run(mockListId, mockOrgDatabase, mockOrgUserId);
       } catch (error) {
         // Expected to throw
       }

@@ -393,8 +393,7 @@ describe('ListController', () => {
       expect(deleteListService.run).toHaveBeenCalledWith(
         mockListId,
         mockDeleteRequest.organizationDatabase,
-        mockDeleteRequest.organization_user_id,
-        mockDeleteRequest.userEmail
+        mockDeleteRequest.organization_user_id
       );
     });
 
@@ -408,8 +407,7 @@ describe('ListController', () => {
       expect(deleteListService.run).toHaveBeenCalledWith(
         mockListId,
         mockDeleteRequest.organizationDatabase,
-        mockDeleteRequest.organization_user_id,
-        mockDeleteRequest.userEmail
+        mockDeleteRequest.organization_user_id
       );
     });
 
@@ -426,8 +424,7 @@ describe('ListController', () => {
       expect(deleteListService.run).toHaveBeenCalledWith(
         mockListId,
         mockDeleteRequest.organizationDatabase,
-        mockDeleteRequest.organization_user_id,
-        mockDeleteRequest.userEmail
+        mockDeleteRequest.organization_user_id
       );
     });
   });

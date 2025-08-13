@@ -1,6 +1,65 @@
 ## GFW-PRO Microservices
 
-This is a monorepo project that contains all `GFW-PRO` microservices.
+This is a monorepo project that contains the web client (apps/webserver/client),
+web server (apps/webserver/server), and the three `GFW-PRO` microservices:
+EAPI (apps/microservices/externalapi),
+LP (apps/microservices/list-processing),
+and LD (apps/microservices/list-downloader).
+
+### Overall high-level architecture diagram
+
+```mermaid
+graph TD;
+    subgraph "Untrusted"
+      UC["UI Client / Web browser"]
+      AC["API Client"]
+      AA["AWS API Gateway (x-api-key auth)"]
+      WS["Web Server (cookie auth)"]
+    end
+    AC--/api/v1*-->AA
+    UC-->WS
+    AA-->EAPI
+    WS-->LP
+    WS-->LD
+    subgraph "Semi-trusted"
+      EAPI["External API (EAPI)"]
+    end
+    subgraph "Trusted (no auth)"
+      LP["List processing (LP)"]
+      LD["List downloader (LD)"]
+      AGS["Analysis (Geotrellis AWS Step functions)"]
+    end
+    EAPI-->LP
+    EAPI-->LD
+    LD-->LP
+    LP-->AGS
+```
+
+Each of the 3 microservices (EAPI, LP, LD) and the webserver also communicate with a SQL DB
+(running on an EC2 instance). DB schema for tables associated with lists is documented at
+https://gfw.atlassian.net/wiki/spaces/GPS/pages/1888944174/Database+schema+for+lists
+
+For more information on connections between services, see
+https://github.com/wri/gfwpro-infrastructure/blob/develop/README.md.
+
+There are three deployed environments on AWS (QA, staging, and production), with all the above
+mentioned pieces. The fourth environment (development) only has SQL DB and AWS Step functions
+deployed, but the other parts are run from local development environment.
+
+#### List analysis diagram
+
+```mermaid
+graph TD;
+    Pre["Pre-Geotrellis (UI or API)"]
+    PreAlerts["Pre-Geotrellis-Dashboard (weekend Alerts)"]
+    Geo["gfwpro-scheduler (Geotrellis)"]
+    Post["Post-Geotrellis"]
+    Pre-->Geo
+    PreAlerts-->Geo
+    Geo-->Post
+    EAPI["External API (EAPI)"]
+    Post-->EAPI
+```
 
 ### Install
 
@@ -124,14 +183,6 @@ nx serve microservices-list-downloader
 
 > Check the environment variable `AWS_TMP_QUEUE=` inside gfw-microservices **.secret** and microservices **.env** are pointing to the same queue.
 
-#### B2B
-
-The following command runs the b2b microservice; it allows organizations to share lists between them.
-
-```sh
-nx serve microservices-b2b
-```
-
 #### External API
 
 The following command runs the externalapi microservice; it allows organizations to interact with Pro using APIs.
@@ -190,37 +241,19 @@ If you want to run `lint`, you can use the following command;
 nx lint microservices-list-downloader
 ```
 
-### Overall high-level architecture diagram
-
-```mermaid
-graph TD;
-    WB[Web Browser]-->WS[Web Server]
-    WB[Web Browser]-->STS[Short-Term Storage S3]
-    AC[API Client]-->AA[AWS API Gateway]
-    AA[AWS API Gateway]-->ES[EAPI Service]
-    AC[API Client]-->STS[Short-Term Storage S3]
-    WS[Web Server]-->ES[EAPI Service]
-    WS[Web Server]-->LP[List Processing Service]
-    WS[Web Server]-->LD[List Downloader Service]
-    ES[EAPI Service]-->LP[List Processing Service]
-    ES[EAPI Service]-->LD[List Downloader Service]
-    WS[Web Server]-->DB[SQL Database]
-    ES[EAPI Service]-->DB[SQL Database]
-    LP[List Processing Service]-->DB[SQL Database]
-    LD[List Downloader Service]-->LP[List Processing Service]
-    WS[Web Server]-->LTS[Long-Term Storage S3]
-    LP[List Processing Service]-->LTS[Long-Term Storage S3]
-```
-
 ### Repository Directory Structure
 
 ```sh
 .
+├── .aws/              # AWS ECS task definitions for webserver and microservices
+├── .github/
+│   └── workflows/     # Github actions definitions
+├── .husky/            # Checks for git commit
 ├── apps/              # contains the application projects.
 │   ├── gfwpro-e2e/    # Cypress e2e tests for gfwpro (requires webserver and microservices to run)
 │   ├── webserver/     # gfwpro project contains our front-end and back-end
 │   └── microservices/
-│       ├── b2b/             # b2b microservice
+│       ├── b2b/             # b2b microservice (currently unused and partly bit-rotted)
 │       ├── externalapi/     # External API (EAPI) microservice
 │       ├── externalapi-e2e/ # EAPI e2e tests (requires EAPI, LP, and LD microservices)
 │       ├── list-downloader/ # list downloader (LD) microservice

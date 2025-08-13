@@ -65,7 +65,9 @@ export default function ConverterDetailsPage() {
           <Chip label={jobId} variant="outlined" />
         </LabelRow>
         <LabelRow label="Start Time:">{formatDate(converterJob?.startTime)}</LabelRow>
-        <LabelRow label="Finish Time:">{formatDate(converterJob?.finishTime)}</LabelRow>
+        <LabelRow label="Finish Time:">
+          {converterJob?.finishTime ? formatDate(converterJob.finishTime) : '—'}
+        </LabelRow>
         <LabelRow label="Run Mode:">
           <Chip label={converterJob?.mode || '—'} variant="outlined" size="small" />
         </LabelRow>

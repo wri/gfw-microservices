@@ -142,8 +142,6 @@ export class CopyOrMoveLargeListRequestLLP {
   @ApiProperty({ example: [1, 2, 3] })
   selectedLocations: number[];
   @ApiProperty()
-  addType: string;
-  @ApiProperty()
   commodityType?: string;
   @ApiProperty()
   saveAsDraft: boolean;

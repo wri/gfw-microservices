@@ -28,7 +28,6 @@ describe('ListCopyMoveController', () => {
     listName: 'Test List',
     targetList: undefined,
     selectedLocations: [1, 2, 3],
-    addType: 'add',
     commodityType: 'test-commodity',
     saveAsDraft: false,
     userId: 789,

@@ -18,15 +18,16 @@ export class ConverterRepository {
    */
   async getClientStoresByOrgId(
     connection: DataSource,
-    { isContinueMode, organizationId }: { isContinueMode: boolean; organizationId?: number }
+    { mode, organizationId }: { mode: string; organizationId?: number }
   ): Promise<{ id: number; organizationDb: string }[]> {
     const orgRepo = connection.getRepository(Organization);
 
     let whereClause = {};
     if (organizationId !== null && organizationId !== undefined) {
-      whereClause = isContinueMode
-        ? { id: MoreThanOrEqual(organizationId) } // For continue mode, fetch all orgs with ID >= organizationId
-        : { id: organizationId };
+      whereClause =
+        mode === 'CONTINUE'
+          ? { id: MoreThanOrEqual(organizationId) } // For continue mode, fetch all orgs with ID >= organizationId
+          : { id: organizationId };
     }
 
     const organizations = await orgRepo.find({
@@ -100,11 +101,13 @@ export class ConverterRepository {
     connection: DataSource,
     converterId: number,
     status: ConverterStatus,
-    errorDetails?: string
+    errorDetails?: string,
+    amountAffected?: number
   ): Promise<void> {
     await connection.getRepository(ConverterStatusEntity).update(converterId, {
       status,
       errorDetails: errorDetails ?? null,
+      totalListsAffected: amountAffected ?? null,
     });
   }
 
@@ -117,6 +120,17 @@ export class ConverterRepository {
     await connection
       .getRepository(ConverterStatusEntity)
       .update({ id: converterId }, { startTime: new Date() });
+  }
+
+  /**
+   * Updates the finish time of a converter.
+   * @param connection The database connection to use.
+   * @param converterId The ID of the converter to update.
+   */
+  async updateConverterFinishTime(connection: DataSource, converterId: number): Promise<void> {
+    await connection
+      .getRepository(ConverterStatusEntity)
+      .update({ id: converterId }, { finishTime: new Date() });
   }
 
   /**

@@ -1,5 +1,8 @@
 import {
+  Alert,
+  Box,
   Chip,
+  Snackbar,
   Table,
   TableHead,
   TableBody,
@@ -7,8 +10,6 @@ import {
   TableContainer,
   TableCell,
   Typography,
-  Snackbar,
-  Alert,
 } from '@mui/material';
 
 import { PillButton } from '../../../../components';
@@ -18,7 +19,7 @@ import { useFetch } from '../../../../hooks';
 import { STATUS_STYLE_MAP } from './constants';
 import { useState } from 'react';
 
-export default function ConverterRunsTable({ convertersData, onViewJobDetails }) {
+export default function ConverterRunsTable({ convertersData, onViewJobDetails, fetchConverters }) {
   const { request: stopConverterRequest } = useFetch<{ message: string }, { error: string }>();
   const [converterStoppedMsg, setConverterStoppedMsg] = useState<string | null>(null);
   const [converterStopError, setConverterStopError] = useState<string | null>(null);
@@ -29,6 +30,8 @@ export default function ConverterRunsTable({ convertersData, onViewJobDetails })
       setConverterStoppedMsg(`Stopped Converter Job ${jobId}`);
     } catch (error) {
       setConverterStopError(error?.error || error?.message || `Failed to stop job ${jobId}`);
+    } finally {
+      fetchConverters();
     }
   };
 
@@ -41,9 +44,12 @@ export default function ConverterRunsTable({ convertersData, onViewJobDetails })
         <Table>
           <TableHead>
             <TableRow>
-              <StyledTableCell>ID</StyledTableCell>
+              <StyledTableCell>Converter ID</StyledTableCell>
               <StyledTableCell>Type</StyledTableCell>
               <StyledTableCell>Status</StyledTableCell>
+              <StyledTableCell>Org. ID</StyledTableCell>
+              <StyledTableCell>Run Mode</StyledTableCell>
+              <StyledTableCell>Dry Run</StyledTableCell>
               <StyledTableCell>Action(s)</StyledTableCell>
             </TableRow>
           </TableHead>
@@ -67,7 +73,9 @@ export default function ConverterRunsTable({ convertersData, onViewJobDetails })
                   }}
                 >
                   <TableCell size="small">{job.id}</TableCell>
-                  <TableCell size="small">{job.name}</TableCell>
+                  <TableCell size="small">
+                    {convertersData.convertersNames[job.name] || job.name}
+                  </TableCell>
                   <TableCell size="small">
                     <Chip
                       label={job.status}
@@ -75,29 +83,40 @@ export default function ConverterRunsTable({ convertersData, onViewJobDetails })
                       variant="outlined"
                     />
                   </TableCell>
-                  <TableCell size="small" sx={{ display: 'flex', gap: '8px' }}>
-                    <PillButton
-                      size="small"
-                      variant="outlined"
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        onViewJobDetails(job.id);
-                      }}
-                    >
-                      View
-                    </PillButton>
-                    {job.status === 'RUNNING' && (
+                  <TableCell size="small">{job.organizationId || '—'}</TableCell>
+                  <TableCell size="small">{job.mode || '—'}</TableCell>
+                  <TableCell size="small">
+                    {job.isDryRun === null || job.isDryRun === undefined
+                      ? '—'
+                      : job.isDryRun
+                      ? 'Dry Run'
+                      : 'Live Run'}
+                  </TableCell>
+                  <TableCell size="small">
+                    <Box sx={{ display: 'flex', gap: '8px' }}>
                       <PillButton
                         size="small"
                         variant="outlined"
                         onClick={(e) => {
                           e.stopPropagation();
-                          handleStop(job.id);
+                          onViewJobDetails(job.id);
                         }}
                       >
-                        Stop
+                        View
                       </PillButton>
-                    )}
+                      {job.status === 'RUNNING' && (
+                        <PillButton
+                          size="small"
+                          variant="outlined"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            handleStop(job.id);
+                          }}
+                        >
+                          Stop
+                        </PillButton>
+                      )}
+                    </Box>
                   </TableCell>
                 </TableRow>
               ))

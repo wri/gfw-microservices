@@ -1,6 +1,7 @@
 import { Request, Response } from 'express';
 
-import { CONVERTER_NAMES } from '@wri-monorepos/constants';
+import { CONVERTER_NAMES, RunMode } from '@wri-monorepos/constants';
+
 import {
   startConverterJob,
   markConverterStopped,
@@ -13,7 +14,7 @@ import logger from '../../../config/privateutils/logger.utils';
 interface StartConverterBody {
   converterName: string;
   organizationId?: number | null;
-  isContinueMode: boolean;
+  mode: RunMode;
   isDryRun?: boolean;
 }
 
@@ -23,10 +24,16 @@ interface StartConverterBody {
  * @access Pro Manager only
  */
 export const getConverters = async (req: Request, res: Response): Promise<void> => {
-  res.status(200).json({
-    convertersNames: CONVERTER_NAMES,
-    converterJobs: await getConverterJobs(),
-  });
+  try {
+    logger.info('Fetching all available converters');
+    res.status(200).json({
+      convertersNames: CONVERTER_NAMES,
+      converterJobs: await getConverterJobs(),
+    });
+  } catch (err) {
+    logger.error('Failed to fetch converters:', err);
+    res.status(500).json({ error: 'Failed to fetch converters' });
+  }
 };
 
 /**
@@ -38,7 +45,7 @@ export const startConverter = async (
   req: Request<unknown, unknown, StartConverterBody>,
   res: Response
 ): Promise<void> => {
-  const { converterName, organizationId = null, isContinueMode, isDryRun } = req.body;
+  const { converterName, organizationId = null, mode, isDryRun } = req.body;
 
   if (!(converterName in CONVERTER_NAMES)) {
     res.status(400).json({ error: 'Invalid converter name' });
@@ -48,7 +55,7 @@ export const startConverter = async (
   try {
     const converterJobId = await startConverterJob(converterName, {
       organizationId,
-      isContinueMode,
+      mode,
       isDryRun,
     });
     const userId = req.session?.user_id ?? -1;

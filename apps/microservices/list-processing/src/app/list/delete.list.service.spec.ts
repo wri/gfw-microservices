@@ -65,7 +65,7 @@ describe('DeleteListService', () => {
     it('should successfully delete a list and log activity', async () => {
       // Arrange
       deleteListTypeOrm.delete.mockResolvedValue(true);
-      const expectedMessage = `User '${mockUserEmail}' has deleted list (${mockListId}).`;
+      const expectedMessage = `User '${mockOrgUserId}' has deleted list (${mockListId}).`;
 
       // Act
       const result = await service.run(mockListId, mockOrgDatabase, mockOrgUserId, mockUserEmail);
@@ -94,7 +94,7 @@ describe('DeleteListService', () => {
     it('should throw InternalServerErrorException when delete fails', async () => {
       // Arrange
       deleteListTypeOrm.delete.mockResolvedValue(false);
-      const expectedErrorDescription = `User '${mockUserEmail}' has tried to delete list (${mockListId}) but some error occurs Failed to delete list ${mockListId}.`;
+      const expectedErrorDescription = `User '${mockOrgUserId}' has tried to delete list (${mockListId}) but some error occurs Failed to delete list ${mockListId}.`;
 
       // Act & Assert
       await expect(
@@ -127,7 +127,7 @@ describe('DeleteListService', () => {
       // Arrange
       const mockError = new Error('Database connection failed');
       deleteListTypeOrm.delete.mockRejectedValue(mockError);
-      const expectedErrorDescription = `User '${mockUserEmail}' has tried to delete list (${mockListId}) but some error occurs ${mockError.message}.`;
+      const expectedErrorDescription = `User '${mockOrgUserId}' has tried to delete list (${mockListId}) but some error occurs ${mockError.message}.`;
 
       // Act & Assert
       await expect(
@@ -170,7 +170,7 @@ describe('DeleteListService', () => {
         .mockRejectedValueOnce(saveError)
         .mockResolvedValueOnce(undefined);
 
-      const expectedErrorDescription = `User '${mockUserEmail}' has tried to delete list (${mockListId}) but some error occurs ${saveError.message}.`;
+      const expectedErrorDescription = `User '${mockOrgUserId}' has tried to delete list (${mockListId}) but some error occurs ${saveError.message}.`;
 
       // Act & Assert
       await expect(
@@ -203,7 +203,7 @@ describe('DeleteListService', () => {
       expect(savedActivityLog).toBeInstanceOf(ActivityLog);
       expect(savedActivityLog.userId).toBe(mockOrgUserId);
       expect(savedActivityLog.activityTypeId).toBe(21);
-      expect(savedActivityLog.activityDescription).toContain(mockUserEmail);
+      expect(savedActivityLog.activityDescription).toContain(mockOrgUserId.toString());
       expect(savedActivityLog.activityDescription).toContain(mockListId.toString());
       expect(savedActivityLog.activityTime).toBeInstanceOf(Date);
     });
@@ -229,7 +229,7 @@ describe('DeleteListService', () => {
       expect(savedActivityLog).toBeInstanceOf(ActivityLog);
       expect(savedActivityLog.userId).toBe(mockOrgUserId);
       expect(savedActivityLog.activityTypeId).toBe(21);
-      expect(savedActivityLog.activityDescription).toContain(mockUserEmail);
+      expect(savedActivityLog.activityDescription).toContain(mockOrgUserId.toString());
       expect(savedActivityLog.activityDescription).toContain(mockListId.toString());
       expect(savedActivityLog.activityDescription).toContain('error occurs');
       expect(savedActivityLog.activityTime).toBeInstanceOf(Date);

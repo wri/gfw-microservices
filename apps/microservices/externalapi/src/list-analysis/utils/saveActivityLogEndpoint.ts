@@ -37,7 +37,7 @@ export class SaveActivityLogEndpoint {
       await activityLogRepository.save({
         userId: organization_user_id,
         activityTypeId: endpointActivityTypeId,
-        activityDescription: `The endpoint ${endpoint} was accessed by user ${userEmail}`,
+        activityDescription: `The endpoint ${endpoint} was accessed by user ${organization_user_id}`,
         activityTime: new Date(),
       });
     } catch (error) {

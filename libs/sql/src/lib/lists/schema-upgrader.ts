@@ -53,133 +53,127 @@ export async function upgradeListSchema(args: SchemaUpgraderArgs) {
   try {
     const clientStoreConnection = new ClientStoreConnection();
     const connection = await clientStoreConnection.getConnection(clientDb);
-    let list: Lists | undefined;
-    let listsRepository;
+
     await connection.manager.transaction(async (transactionalEntityManager) => {
-      listsRepository = transactionalEntityManager.getRepository(Lists);
-      list = await listsRepository.findOne({ where: { id: listId } });
-    });
-    if (list.version === LIST_VERSION_POST_UPGRADE) {
-      logActionMessage(logger, isDryRun, 'Skip upgrade', `List already in version 2`);
-      if (isDryRun) {
-        logger.log('(Dry Run) - Rolling back transaction.');
+      const listsRepository = transactionalEntityManager.getRepository(Lists);
+      const list = await listsRepository.findOne({ where: { id: listId } });
+      if (list.version === LIST_VERSION_POST_UPGRADE) {
+        logActionMessage(logger, isDryRun, 'Skip upgrade', `List already in version 2`);
+        if (isDryRun) {
+          logger.log('(Dry Run) - Rolling back transaction.');
+        }
+        return list;
       }
-      return list;
-    }
 
-    logActionMessage(logger, isDryRun, 'Lock', `list ${list.id}`, `for user ${userId}`);
-    if (!isDryRun) {
-      await new UspSetListLocked().run(clientDb, list.id, userId);
-    }
-
-    /**
-     * @step 1
-     * Get entity based columns definitions
-     * Get rest of current list-xxxx columns
-     * Check if is Investment and needs adjustment
-     */
-    const columnsToExclude = getListsLocsColumnsToExclude();
-    logger.log(`Excluding Columns: ${columnsToExclude.join(', ')}`);
-
-    const columnsToDelete = await getListLocationsColumnsToDelete(
-      clientDb,
-      list.listTableName,
-      columnsToExclude
-    );
-
-    if (columnsToDelete.includes('Investment Name')) {
-      logActionMessage(logger, isDryRun, 'Set', '[Location Name] for Investment List');
+      logActionMessage(logger, isDryRun, 'Lock', `list ${list.id}`, `for user ${userId}`);
       if (!isDryRun) {
-        await connection.manager.transaction(async (transactionalEntityManager) => {
-          await setListLocationNameIfIsInvestment(transactionalEntityManager, list.listTableName);
-        });
+        await new UspSetListLocked().run(clientDb, list.id, userId);
       }
-    }
 
-    /**
-     * @step 2
-     * Handle list locations atts
-     * Delete columns outside entity
-     */
-    logActionMessage(
-      logger,
-      isDryRun,
-      'Handle',
-      `list location attributes for ${list.listTableName}`
-    );
-    if (!isDryRun) {
-      await connection.manager.transaction(async (transactionalEntityManager) => {
-        await handleListLocationAttributes(transactionalEntityManager, list, columnsToExclude);
-      });
-    }
+      /**
+       * @step 1
+       * Get entity based columns definitions
+       * Get rest of current list-xxxx columns
+       * Check if is Investment and needs adjustment
+       */
+      const columnsToExclude = getListsLocsColumnsToExclude();
+      logger.log(`Excluding Columns: ${columnsToExclude.join(', ')}`);
 
-    if (columnsToDelete.length) {
+      const columnsToDelete = await getListLocationsColumnsToDelete(
+        clientDb,
+        list.listTableName,
+        columnsToExclude
+      );
+
+      if (columnsToDelete.includes('Investment Name')) {
+        logActionMessage(logger, isDryRun, 'Set', '[Location Name] for Investment List');
+        if (!isDryRun) {
+          await setListLocationNameIfIsInvestment(transactionalEntityManager, list.listTableName);
+        }
+      }
+
+      /**
+       * @step 2
+       * Handle list locations atts
+       * Delete columns outside entity
+       */
       logActionMessage(
         logger,
         isDryRun,
-        'Drop columns',
-        `[${list.listTableName}]`,
-        columnsToDelete.join(', ')
+        'Handle',
+        `list location attributes for ${list.listTableName}`
       );
-
       if (!isDryRun) {
-        const dropStatement = `
+        await handleListLocationAttributes(transactionalEntityManager, list, columnsToExclude);
+      }
+
+      if (columnsToDelete.length) {
+        logActionMessage(
+          logger,
+          isDryRun,
+          'Drop columns',
+          `[${list.listTableName}]`,
+          columnsToDelete.join(', ')
+        );
+
+        if (!isDryRun) {
+          const dropStatement = `
           ALTER TABLE [${list.listTableName}]
           DROP COLUMN ${columnsToDelete.map((col) => `[${col}]`).join(', ')}
         `;
-        await connection.manager.transaction(async (transactionalEntityManager) => {
           await transactionalEntityManager.query(dropStatement);
-        });
-      }
-    } else {
-      logger.log(`No columns to drop in [${list.listTableName}].`);
-    }
-
-    /**
-     * @step 3
-     * Write Lists.Commodity based on Lists.template_id for given list_id
-     * see {@link https://gfw.atlassian.net/browse/GPV-3983}
-     *
-     * @step 4
-     * Update Lists.version=2 for given list_id
-     */
-    const templateName = await getTemplateName(list.templateId);
-    let listCommodity = getCommodityCodeFromTemplate(templateName, list.Commodity);
-
-    const wasUploadedByEAPI = await getListIfEAPIExportUpload(clientDb, list.id);
-    if (templateName === 'Cocoa Generic' && wasUploadedByEAPI) {
-      listCommodity = `${GHG_PREFIX}_Unknown`;
-    }
-
-    logActionMessage(
-      logger,
-      isDryRun,
-      'Update',
-      'Lists table',
-      `set Commodity = ${listCommodity}, version = ${LIST_VERSION_POST_UPGRADE}, templateId = 0`
-    );
-
-    if (!isDryRun) {
-      await listsRepository.update(
-        { id: listId },
-        {
-          Commodity: listCommodity,
-          version: LIST_VERSION_POST_UPGRADE,
-          templateId: 0,
         }
-      );
-    }
+      } else {
+        logger.log(`No columns to drop in [${list.listTableName}].`);
+      }
 
-    /**
-     * @step 5
-     * Handle ListsAnalysisStatus.options given template_id and locationClassification
-     * see {@link https://gfw.atlassian.net/browse/GPV-4274}
-     */
-    const lowerLocationClass = list.locationClassification?.toLowerCase();
-    if (list.templateId === 2 || (list.templateId === 5 && lowerLocationClass === 'supply shed')) {
-      logActionMessage(logger, isDryRun, 'Update', 'ListsAnalysisStatus.options', `to PalmRisk`);
+      /**
+       * @step 3
+       * Write Lists.Commodity based on Lists.template_id for given list_id
+       * see {@link https://gfw.atlassian.net/browse/GPV-3983}
+       *
+       * @step 4
+       * Update Lists.version=2 for given list_id
+       */
+      const templateName = await getTemplateName(list.templateId);
+      let listCommodity = getCommodityCodeFromTemplate(templateName, list.Commodity);
+
+      const wasUploadedByEAPI = await getListIfEAPIExportUpload(clientDb, list.id);
+      if (templateName === 'Cocoa Generic' && wasUploadedByEAPI) {
+        listCommodity = `${GHG_PREFIX}_Unknown`;
+      }
+
+      logActionMessage(
+        logger,
+        isDryRun,
+        'Update',
+        'Lists table',
+        `set Commodity = ${listCommodity}, version = ${LIST_VERSION_POST_UPGRADE}, templateId = 0`
+      );
+
       if (!isDryRun) {
-        await connection.manager.transaction(async (transactionalEntityManager) => {
+        await listsRepository.update(
+          { id: listId },
+          {
+            Commodity: listCommodity,
+            version: LIST_VERSION_POST_UPGRADE,
+            templateId: 0,
+          }
+        );
+      }
+
+      /**
+       * @step 5
+       * Handle ListsAnalysisStatus.options given template_id and locationClassification
+       * see {@link https://gfw.atlassian.net/browse/GPV-4274}
+       */
+      const lowerLocationClass = list.locationClassification?.toLowerCase();
+      if (
+        list.templateId === 2 ||
+        (list.templateId === 5 && lowerLocationClass === 'supply shed')
+      ) {
+        logActionMessage(logger, isDryRun, 'Update', 'ListsAnalysisStatus.options', `to PalmRisk`);
+        if (!isDryRun) {
           const listAnalysisStatusRepo =
             transactionalEntityManager.getRepository(ListsAnalysisStatus);
           await listAnalysisStatusRepo.update(
@@ -191,17 +185,17 @@ export async function upgradeListSchema(args: SchemaUpgraderArgs) {
               options: 'PalmRisk',
             }
           );
-        });
+        }
       }
-    }
 
-    if (isDryRun) {
-      logger.log('(Dry Run) - Rolling back transaction.');
-    } else {
-      success = true;
-    }
+      if (isDryRun) {
+        logger.log('(Dry Run) - Rolling back transaction.');
+      } else {
+        success = true;
+      }
 
-    return await listsRepository.findOne({ where: { id: listId } });
+      return await listsRepository.findOne({ where: { id: listId } });
+    });
   } catch (error) {
     Logger.error('Schema Upgrader Failed', error.stack || error);
     throw error;

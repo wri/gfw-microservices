@@ -1,9 +1,9 @@
 import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
 
-@Entity({ name: 'list-administrativeAreas36' })
+@Entity({ name: 'list-administrativeAreas41' })
 export class ListAdministrativeAreas {
-  @PrimaryGeneratedColumn()
-  id: number;
+  @Column({ name: 'location_id' })
+  location_id: number;
 
   @Column({ name: 'Location Name' })
   LocationName: string;
@@ -35,6 +35,6 @@ export class ListAdministrativeAreas {
   @Column({ name: 'Geometry' })
   'Geometry': string;
 
-  @Column({ name: 'location_id' })
-  location_id: number;
+  @Column({ name: 'ErrorDetails' })
+  'ErrorDetails': string;
 }

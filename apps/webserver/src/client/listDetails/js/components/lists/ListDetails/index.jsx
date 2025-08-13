@@ -1,5 +1,8 @@
 import { Component } from 'react';
 import {
+  Accordion,
+  AccordionDetails,
+  AccordionSummary,
   Typography,
   Grid,
   Button as MaterialButton,
@@ -12,7 +15,14 @@ import {
   IconButton,
 } from '@mui/material';
 import Button from 'common/js/components/Button';
-import { ArrowBack, Close, NotListedLocation, QueryStats } from '@mui/icons-material';
+import {
+  ArrowBack,
+  DateRange,
+  ExpandMore,
+  Close,
+  NotListedLocation,
+  QueryStats,
+} from '@mui/icons-material';
 import CustomDialog from 'common/js/components/CustomDialog/CustomDialog';
 import { maxLocations } from 'locations/js/utils/upload.utils';
 import LinkButton from 'common/js/components/LinkButton';
@@ -1606,6 +1616,24 @@ export default class ListDetails extends Component {
       ''
     );
   }
+
+  formatDateToCarMessage = (carDateString) => {
+    try {
+      const [year, month, day] = carDateString.split('-').map(Number);
+      const carDate = new Date(year, month - 1, day);
+      const userLang = navigator.language || navigator.languages[0];
+      const formattedDate = new Date(carDate).toLocaleDateString(userLang, {
+        year: 'numeric',
+        month: 'long',
+        day: 'numeric',
+      });
+      return formattedDate;
+    } catch {
+      console.error('Error converting the date: ', carDateString);
+      return 'N/A';
+    }
+  };
+
   render() {
     const {
       canopyModalVisible: isFilterModalVisible,
@@ -1778,6 +1806,7 @@ export default class ListDetails extends Component {
       selectedLocations?.length < 2;
 
     const locationsWithError = listData?.filter((x) => x.ErrorDetails);
+    const carLastUpdateDate = JSON.parse(listData?.[0]?.attributes || '{}')?.['ID Updated Date'];
 
     const urlRegex = /^[^:]+:\/\/.+/;
     const isListWithErrors = urlRegex.test(selectedLists[0]?.error_file_storage_path);
@@ -2033,6 +2062,70 @@ export default class ListDetails extends Component {
                           isAnalysisFailedByExceededAnalysisLimit)
                       }
                     />
+                    {carLastUpdateDate && (
+                      <Accordion
+                        sx={{
+                          mb: 1.5,
+                          padding: 1.25,
+                          borderRadius: 1,
+                          boxShadow: 'none',
+                          border: (theme) => `1px solid ${theme.palette.secondary[300]}`,
+                          backgroundColor: (theme) => theme.palette.secondary[100],
+                          color: (theme) => theme.palette.secondary[900],
+                          '& .MuiBase-root, & .MuiButtonBase-root': {
+                            minHeight: 0,
+                            padding: 0,
+                          },
+                          '& .Mui-expanded': {
+                            mb: 0.5,
+                          },
+                          '& .MuiAccordionSummary-content': {
+                            margin: 0,
+                          },
+                          '& .MuiButtonBase-root.Mui-expanded .hide-when-expanded': {
+                            display: 'none',
+                          },
+                          '& .MuiAccordionDetails-root': {
+                            padding: 0,
+                            mx: 3,
+                            borderTop: (theme) => `1px solid ${theme.palette.secondary[300]}`,
+                          },
+                          '&::before': {
+                            display: 'none',
+                          },
+                        }}
+                      >
+                        <AccordionSummary
+                          expandIcon={
+                            <ExpandMore sx={{ color: (theme) => theme.palette.secondary[700] }} />
+                          }
+                          aria-controls="panel1-content"
+                          id="panel1-header"
+                        >
+                          <DateRange
+                            fontSize="small"
+                            sx={{ mr: 1, color: (theme) => theme.palette.secondary[700] }}
+                          />
+                          <Typography variant="body2">
+                            <b>CAR Data Recency</b>
+                            <span className="hide-when-expanded">
+                              <b>:</b> Expand to see instructions for assessing how up-to-date your
+                              CAR polygon boundaries are.
+                            </span>
+                          </Typography>
+                        </AccordionSummary>
+                        <AccordionDetails>
+                          <Typography variant="body2" sx={{ pt: 2 }}>
+                            The most recent CAR dataset available on Pro was retrieved from SICAR
+                            databases on {this.formatDateToCarMessage(carLastUpdateDate)}. If your
+                            list's CAR locations show an "ID Data Updated" date before{' '}
+                            {this.formatDateToCarMessage(carLastUpdateDate)}, you will need to
+                            re-upload these locations if you want to ensure that they are using the
+                            most up-to-date CAR polygon boundaries.
+                          </Typography>
+                        </AccordionDetails>
+                      </Accordion>
+                    )}
 
                     <div style={{ display: 'flex', justifyContent: 'space-between' }}>
                       {!this.areAllAnalysesDraft() && (

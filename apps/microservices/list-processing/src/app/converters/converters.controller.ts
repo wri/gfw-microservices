@@ -1,6 +1,7 @@
 import { Controller, Post, Param, Body, Logger } from '@nestjs/common';
 import { ConvertersService } from './converters.service';
 import { InternalServerErrorException } from '@nestjs/common';
+import { RunMode } from '@wri-monorepos/constants';
 
 @Controller('converters')
 export class ConvertersController {
@@ -11,12 +12,12 @@ export class ConvertersController {
   @Post('/:id/start')
   async startConverter(
     @Param('id') id: number,
-    @Body('isContinueMode') isContinueMode = false,
+    @Body('mode') mode: RunMode,
     @Body('organizationId') organizationId?: number,
     @Body('isDryRun') isDryRun = false
   ): Promise<string> {
     try {
-      await this.convertersService.runConverter(id, { isContinueMode, organizationId, isDryRun });
+      await this.convertersService.runConverter(id, { mode, organizationId, isDryRun });
     } catch (err) {
       this.logger.error(`Error processing Converter Job with ID: ${id}`, err.stack || err);
 

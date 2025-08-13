@@ -23,7 +23,7 @@ const registry: Record<string, ConverterFunction> = {
   DELETE_PARTLY_UPDATED_LISTS: {
     run: deleteListsPartlyUpgraded,
   },
-  DELETE_LISTS_WITH_MISSING_TABLES: {
+  DELETE_MISSING_TABLE_LISTS: {
     run: deleteListsWithMissingTables,
   },
   // GADM_VERSION: { run: () => {} },

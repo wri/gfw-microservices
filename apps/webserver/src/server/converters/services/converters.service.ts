@@ -4,7 +4,12 @@ import {
   ConverterStatus as ConverterStatusEntity,
 } from '@wri-monorepos/sql';
 
-import { ConverterStatus as ConverterStatusEnum, CONVERTER_NAMES } from '@wri-monorepos/constants';
+import {
+  ConverterStatus as ConverterStatusEnum,
+  CONVERTER_NAMES,
+  ConverterRunOptions,
+  RunMode,
+} from '@wri-monorepos/constants';
 
 import logger from '../../../config/privateutils/logger.utils';
 import { Repository, InsertResult, UpdateResult, IsNull } from 'typeorm';
@@ -12,17 +17,13 @@ import { Repository, InsertResult, UpdateResult, IsNull } from 'typeorm';
 interface InsertConverterParams {
   name: string;
   organizationId?: number | null;
-}
-
-interface ConverterRunOptions {
-  organizationId?: number | null;
-  isContinueMode: boolean;
-  isDryRun: boolean;
+  mode: RunMode;
+  isDryRun?: boolean;
 }
 
 const defaultConverterRunOptions: ConverterRunOptions = {
   organizationId: null,
-  isContinueMode: false,
+  mode: 'GLOBAL',
   isDryRun: false,
 };
 
@@ -31,12 +32,17 @@ export const startConverterJob = async (
   converterRunOptions: ConverterRunOptions = defaultConverterRunOptions
 ): Promise<number> => {
   const options = { ...defaultConverterRunOptions, ...converterRunOptions };
-  const { organizationId } = options;
+  const { organizationId, mode, isDryRun } = options;
 
   const connection = await getDbConnection();
   const repo: Repository<ConverterStatusEntity> = connection.getRepository(ConverterStatusEntity);
 
-  const insertedId = await insertConverter(repo, { name: converterName, organizationId });
+  const insertedId = await insertConverter(repo, {
+    name: converterName,
+    organizationId,
+    mode,
+    isDryRun,
+  });
 
   // Start the long process asynchronously but don't await it
   triggerConverter(insertedId, converterRunOptions).catch(async (err) => {
@@ -127,7 +133,7 @@ const insertConverter = async (
   repo: Repository<ConverterStatusEntity>,
   params: InsertConverterParams
 ): Promise<number> => {
-  const { name, organizationId = null } = params;
+  const { name, organizationId = null, mode, isDryRun } = params;
 
   const parsedOrganizationId =
     organizationId === undefined || organizationId === null ? null : Number(organizationId);
@@ -147,6 +153,8 @@ const insertConverter = async (
       listId: null,
       parentId: null,
       errorDetails: null,
+      mode,
+      isDryRun,
     });
   } catch (err) {
     const errorMessage = `Failed to insert converter: ${err instanceof Error ? err.message : err}`;
@@ -167,7 +175,7 @@ const triggerConverter = async (
   converterJobId: number,
   converterRunOptions: ConverterRunOptions = defaultConverterRunOptions
 ): Promise<void> => {
-  const { organizationId, isContinueMode, isDryRun } = converterRunOptions;
+  const { organizationId, mode, isDryRun } = converterRunOptions;
 
   const { LISTS_MICROSERVICE_URL } = process.env;
   if (!LISTS_MICROSERVICE_URL) {
@@ -175,7 +183,7 @@ const triggerConverter = async (
   }
   await axios.post(`${LISTS_MICROSERVICE_URL}/converters/${converterJobId}/start`, {
     organizationId,
-    isContinueMode,
+    mode,
     isDryRun,
   });
 };

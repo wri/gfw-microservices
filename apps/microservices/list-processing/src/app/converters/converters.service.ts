@@ -3,7 +3,7 @@ import { DataSource, Repository } from 'typeorm';
 
 import { ClientStoreConnection, Lists } from '@wri-monorepos/sql';
 import { ConverterManager, ConverterFunction } from './converter-manager';
-import { ConverterStatus } from '@wri-monorepos/constants';
+import { ConverterStatus, ConverterRunOptions } from '@wri-monorepos/constants';
 import { ConverterRepository } from './converter.repository';
 
 interface ClientStoreInfo {
@@ -15,12 +15,6 @@ interface ConverterContext {
   id: number;
   name: string;
   function: ConverterFunction;
-}
-
-interface ConverterRunOptions {
-  isContinueMode: boolean;
-  organizationId?: number;
-  isDryRun?: boolean; // Optional, used for testing or dry runs
 }
 
 @Injectable()
@@ -60,8 +54,12 @@ export class ConvertersService {
    */
   async runConverter(id: number, converterRunOptions: ConverterRunOptions): Promise<void> {
     this.errors = [];
-    const { getConverterName, updateConverterStartTime, updateConverterStatus } =
-      this.converterRepository;
+    const {
+      getConverterName,
+      updateConverterStartTime,
+      updateConverterFinishTime,
+      updateConverterStatus,
+    } = this.converterRepository;
     const gfwProConnection = await this.getGfwProConnection();
 
     try {
@@ -76,8 +74,10 @@ export class ConvertersService {
       throw error;
     }
 
+    let converterName: string;
+
     try {
-      const converterName = await getConverterName(gfwProConnection, id);
+      converterName = await getConverterName(gfwProConnection, id);
       const converterFunction = ConverterManager.get(converterName);
 
       if (!converterFunction) {
@@ -91,11 +91,13 @@ export class ConvertersService {
       };
 
       this.logger.log(
-        `Converter '${converterFunction.run.name}' run requested, ID ${id}, Continue Mode: ${converterRunOptions.isContinueMode}, Organization ID: ${converterRunOptions.organizationId}`
+        `${converterRunOptions.isDryRun ? '(Dry Run)' : ''} 
+        Converter "${converterFunction.run.name}" ID:${id} run requested, 
+        Run Mode: ${converterRunOptions.mode},
+        Organization ID: ${converterRunOptions.organizationId}`
       );
 
       await this.runConverterAcrossClientStores(converterContext, converterRunOptions);
-      this.logger.log(`Converter ${converterName} finished`);
     } catch (error) {
       await updateConverterStatus(
         gfwProConnection,
@@ -105,6 +107,17 @@ export class ConvertersService {
       );
       this.logger.error(`Converter job failed completely: ${(error.stack || error).toString()}`);
       throw error;
+    } finally {
+      try {
+        this.logger.log(`Converter ${converterName} finished`);
+        await updateConverterFinishTime(gfwProConnection, id);
+      } catch (error) {
+        this.logger.error(
+          `Failed to update finish time for converter job ID ${id}: ${(
+            error.stack || error
+          ).toString()}`
+        );
+      }
     }
   }
 
@@ -178,7 +191,7 @@ export class ConvertersService {
         }
       }
 
-      await this.randomDelay(200, 700);
+      await this.randomDelay(600, 975);
     }
 
     let status: ConverterStatus;
@@ -199,7 +212,8 @@ export class ConvertersService {
       status,
       this.errors.length > 0
         ? this.errors.map((e) => `Client: ${e.clientStore}\n${e.stack}`).join('\n\n')
-        : undefined
+        : undefined,
+      totalLists
     );
   }
 
@@ -267,7 +281,7 @@ export class ConvertersService {
 
         successCount++;
 
-        await this.randomDelay(200, 700);
+        await this.randomDelay(600, 975);
 
         const isStopped = await this.converterRepository.isConverterStopped(
           gfwProConnection,
@@ -317,11 +331,6 @@ export class ConvertersService {
       );
     }
     return lists;
-  }
-
-  async updateConverterStartTime(converterId: number): Promise<void> {
-    const gfwProConnection = await this.getGfwProConnection();
-    return this.converterRepository.updateConverterStartTime(gfwProConnection, converterId);
   }
 
   private async randomDelay(min, max) {

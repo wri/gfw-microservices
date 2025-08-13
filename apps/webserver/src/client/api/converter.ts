@@ -1,4 +1,5 @@
 import { ExtendedAxiosRequestConfig } from '../hooks/useFetch';
+import { RunMode } from '../types/converters';
 
 export const fetchConverters = (
   request: (config?: ExtendedAxiosRequestConfig) => Promise<void>
@@ -23,7 +24,7 @@ export const startConverter = async (
   request: (config?: ExtendedAxiosRequestConfig) => Promise<any>,
   converterName: string,
   organizationId: string | null,
-  isContinueMode = false,
+  mode: RunMode,
   isDryRun = false
 ): Promise<void> => {
   await request({
@@ -32,7 +33,7 @@ export const startConverter = async (
     data: {
       converterName,
       organizationId,
-      isContinueMode,
+      mode,
       isDryRun,
     },
   });

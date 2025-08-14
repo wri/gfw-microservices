@@ -376,7 +376,7 @@ export default class SouthAmericaRegionsWithoutArgentina extends Component {
       const highchartProdesData = {
         name: locationsPage.diagnosticsTitles.PRODES_AMAZON,
         data: getYearlyHighchartSeries(
-          getYearlyData('country_specific_deforestation_yearly', startYear, endYear, null, 'BRA')
+          getYearlyData('country_specific_deforestation_yearly', startYear, endYear, false, 'BRA')
         ),
         color: '#ef669a',
         groupPadding: 0,
@@ -694,7 +694,7 @@ export default class SouthAmericaRegionsWithoutArgentina extends Component {
                 'country_specific_deforestation_yearly',
                 startYear,
                 endYear,
-                null,
+                false,
                 'BRA'
               )}
             />

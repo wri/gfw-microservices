@@ -1,3 +1,10 @@
+// Set environment before any imports to ensure entity metadata is loaded correctly
+process.env.NODE_ENV = 'test';
+process.env.MSSQL_DATABASE = ':memory:';
+process.env.MSSQL_USERNAME = 'test';
+process.env.MSSQL_PASSWORD = 'test';
+process.env.MSSQL_HOSTNAME = 'localhost';
+
 import { featureFlagsService } from './feature.flag.service';
 import {
   ClientStoreConnection,
@@ -13,12 +20,6 @@ describe('Feature Flag Service', () => {
   let clientStoreConnection: ClientStoreConnection;
 
   beforeAll(async () => {
-    process.env.NODE_ENV = 'test';
-    process.env.MSSQL_DATABASE = ':memory:';
-    process.env.MSSQL_USERNAME = 'test';
-    process.env.MSSQL_PASSWORD = 'test';
-    process.env.MSSQL_HOSTNAME = 'localhost';
-
     clientStoreConnection = new ClientStoreConnection();
     const database = process.env.MSSQL_DATABASE || 'gfwpro';
     const connection = await clientStoreConnection.getConnection(database, systemEntities);
@@ -207,7 +208,7 @@ describe('Feature Flag Service', () => {
     ]);
   });
 
-  it('Should return existing feature flag for specific organization which id is 20', async () => {
+  it('', async () => {
     const { getFeatureFlagsForCurrentOrg, insertOrSaveFeatureFlag } = await featureFlagsService(
       clientStoreConnection
     );

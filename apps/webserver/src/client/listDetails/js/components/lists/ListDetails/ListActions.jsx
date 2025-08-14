@@ -415,7 +415,6 @@ const mapStateToProps = (state) => ({
 });
 
 const mapDispatchToProps = (dispatch) => ({
-  showShareList: (value) => dispatch({ type: 'SHOW_SHARE_LIST', payload: value }),
   updateSelectedLocations: (locations) =>
     dispatch({ type: 'UPDATE_SELECTED_LOCATIONS', payload: locations }),
 });

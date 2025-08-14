@@ -1647,6 +1647,7 @@ export default class ListDetails extends Component {
       shareView,
       userSharedLists,
       usersList,
+      showShareList,
     } = this.props;
 
     const {
@@ -2023,6 +2024,7 @@ export default class ListDetails extends Component {
                       setIsManageListFolderOpen={(value) => {
                         this.setState({ isManageListFolderOpen: value });
                       }}
+                      showShareList={showShareList}
                       handleDraftSubmit={(e) => this.handleDraftSubmit(e)}
                       draftSubmitDialogOpen={draftSubmitDialogOpen}
                       setDraftSubmitDialogOpen={(value) => {

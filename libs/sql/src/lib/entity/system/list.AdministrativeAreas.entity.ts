@@ -1,8 +1,8 @@
-import { Column, Entity } from 'typeorm';
+import { Column, Entity, PrimaryColumn } from 'typeorm';
 
 @Entity({ name: 'list-administrativeAreas41' })
 export class ListAdministrativeAreas {
-  @Column({ name: 'location_id' })
+  @PrimaryColumn({ name: 'location_id' })
   location_id: number;
 
   @Column({ name: 'Location Name' })

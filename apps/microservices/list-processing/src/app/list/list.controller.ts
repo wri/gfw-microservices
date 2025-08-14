@@ -66,13 +66,8 @@ export class ListController {
     @Param('listId') listId: number,
     @Body(new ZodValidationPipe(deleteListBodySchema)) deleteBodyList: DeleteListRequest
   ): Promise<string> {
-    const { organizationDatabase, organization_user_id, userEmail } = deleteBodyList;
-    return this.deleteListService.run(
-      listId,
-      organizationDatabase,
-      organization_user_id,
-      userEmail
-    );
+    const { organizationDatabase, organization_user_id } = deleteBodyList;
+    return this.deleteListService.run(listId, organizationDatabase, organization_user_id);
   }
 
   validatePaginatedRequest(queryParam: getPaginatedListDataRequest) {

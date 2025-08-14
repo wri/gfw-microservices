@@ -478,15 +478,20 @@ export default class Diagnostics extends Component {
     });
   };
 
-  getYearlyParsedDataWithCountry = (data, country) =>
-    country ? JSON.parse(data)?.[country] : JSON.parse(data);
+  getYearlyParsedData = (data, property) => {
+    if (property === 'prodes') {
+      return (
+        JSON.parse(data?.country_specific_deforestation_yearly || '{}')?.BRA ||
+        JSON.parse(data?.tree_cover_loss_prodes_yearly || '{}')
+      );
+    }
+    return JSON.parse(data[property]);
+  };
 
-  getYearlyData = (property, startYear, endYear, allowNullValues, country) => {
+  getYearlyData = (property, startYear, endYear, allowNullValues) => {
     const obj = {};
     const filteredLocations = this.getFilteredLocations();
-    const data = filteredLocations
-      .filter((l) => l[property])
-      .map((l) => this.getYearlyParsedDataWithCountry(l[property], country));
+    const data = filteredLocations.map((l) => this.getYearlyParsedData(l, property));
     data.forEach((location) => {
       Object.entries(location).forEach((pair) => {
         const [year, value] = pair;
@@ -510,12 +515,16 @@ export default class Diagnostics extends Component {
     return obj;
   };
 
-  parseYearlyData = (property, startYear, endYear, country) => {
+  parseYearlyData = (property, startYear, endYear) => {
     let total = 0;
 
     this.getFilteredLocations().forEach((loc) => {
-      if (loc[property]) {
-        const yearlyData = this.getYearlyParsedDataWithCountry(loc[property], country);
+      if (
+        loc[property] ||
+        (property === 'prodes' &&
+          (loc.country_specific_deforestation_yearly || loc.tree_cover_loss_prodes_yearly))
+      ) {
+        const yearlyData = this.getYearlyParsedData(loc, property);
 
         if (
           property === 'tree_cover_loss_brazil_biomes_yearly' ||

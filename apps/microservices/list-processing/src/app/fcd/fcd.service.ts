@@ -365,16 +365,16 @@ export class FCDService {
     try {
       countrySpecificDeforestation = this.parseJsonSafely(
         country_specific_deforestation_landmark_yearly
-      )[countryGadm][this.INDIGENOUS_LAND];
+      )[countryGadm]?.[this.INDIGENOUS_LAND];
     } catch (error) {
       this.logger.error(`error converting json object: ${error}`);
     }
 
     let treeCoverLoss = {};
     try {
-      treeCoverLoss = this.parseJsonSafely(tree_cover_loss_by_country_landmark_yearly)[countryGadm][
-        this.INDIGENOUS_LAND
-      ];
+      treeCoverLoss = this.parseJsonSafely(tree_cover_loss_by_country_landmark_yearly)[
+        countryGadm
+      ]?.[this.INDIGENOUS_LAND];
     } catch (error) {
       this.logger.error(`error converting json object: ${error}`);
     }

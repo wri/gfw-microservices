@@ -478,10 +478,15 @@ export default class Diagnostics extends Component {
     });
   };
 
-  getYearlyData = (property, startYear, endYear, allowNullValues) => {
+  getYearlyParsedDataWithCountry = (data, country) =>
+    country ? JSON.parse(data)?.[country] : JSON.parse(data);
+
+  getYearlyData = (property, startYear, endYear, allowNullValues, country) => {
     const obj = {};
     const filteredLocations = this.getFilteredLocations();
-    const data = filteredLocations.filter((l) => l[property]).map((l) => JSON.parse(l[property]));
+    const data = filteredLocations
+      .filter((l) => l[property])
+      .map((l) => this.getYearlyParsedDataWithCountry(l[property], country));
     data.forEach((location) => {
       Object.entries(location).forEach((pair) => {
         const [year, value] = pair;
@@ -505,12 +510,13 @@ export default class Diagnostics extends Component {
     return obj;
   };
 
-  parseYearlyData = (property, startYear, endYear) => {
+  parseYearlyData = (property, startYear, endYear, country) => {
     let total = 0;
 
     this.getFilteredLocations().forEach((loc) => {
       if (loc[property]) {
-        const yearlyData = JSON.parse(loc[property]);
+        const yearlyData = this.getYearlyParsedDataWithCountry(loc[property], country);
+
         if (
           property === 'tree_cover_loss_brazil_biomes_yearly' ||
           property === 'tree_cover_loss_sea_landcover_yearly' ||

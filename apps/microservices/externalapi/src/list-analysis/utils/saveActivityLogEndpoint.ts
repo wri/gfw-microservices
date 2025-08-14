@@ -30,14 +30,10 @@ export class SaveActivityLogEndpoint {
 
     const activityLogRepository = connection.getRepository(ActivityLog);
     try {
-      const { user_email: userEmail } = await this.userService.findUserByAttributes({
-        organization_id: organizationDetails.id,
-        organization_user_id,
-      });
       await activityLogRepository.save({
         userId: organization_user_id,
         activityTypeId: endpointActivityTypeId,
-        activityDescription: `The endpoint ${endpoint} was accessed by user ${userEmail}`,
+        activityDescription: `The endpoint ${endpoint} was accessed by user ${organization_user_id}`,
         activityTime: new Date(),
       });
     } catch (error) {

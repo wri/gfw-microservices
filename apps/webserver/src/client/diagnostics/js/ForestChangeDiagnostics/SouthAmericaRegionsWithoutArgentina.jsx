@@ -375,9 +375,7 @@ export default class SouthAmericaRegionsWithoutArgentina extends Component {
     if (prodesChecked) {
       const highchartProdesData = {
         name: locationsPage.diagnosticsTitles.PRODES_AMAZON,
-        data: getYearlyHighchartSeries(
-          getYearlyData('tree_cover_loss_prodes_yearly', startYear, endYear)
-        ),
+        data: getYearlyHighchartSeries(getYearlyData('prodes', startYear, endYear)),
         color: '#ef669a',
         groupPadding: 0,
         stack: 'prodes',
@@ -689,9 +687,7 @@ export default class SouthAmericaRegionsWithoutArgentina extends Component {
             )}
           </tr>
           {prodesChecked && label === 'PRODES' && (
-            <ProdesLegend
-              data={this.props.getYearlyData('tree_cover_loss_prodes_yearly', startYear, endYear)}
-            />
+            <ProdesLegend data={this.props.getYearlyData('prodes', startYear, endYear)} />
           )}
         </Fragment>
       );
@@ -816,7 +812,7 @@ export default class SouthAmericaRegionsWithoutArgentina extends Component {
 
     return {
       totalSoy: parseYearlyData('tree_cover_loss_soy_yearly', startYear, endYear),
-      totalProdes: parseYearlyData('tree_cover_loss_prodes_yearly', startYear, endYear),
+      totalProdes: parseYearlyData('prodes', startYear, endYear),
       totalPA: parseYearlyData('tree_cover_loss_prodes_wdpa_yearly', startYear, endYear),
       saTotalTCL: parseYearlyData('tree_cover_loss_total_yearly', startYear, endYear),
       totalBiomes: parseYearlyData('tree_cover_loss_brazil_biomes_yearly', startYear, endYear),

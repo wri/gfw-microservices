@@ -478,10 +478,20 @@ export default class Diagnostics extends Component {
     });
   };
 
+  getYearlyParsedData = (data, property) => {
+    if (property === 'prodes') {
+      return (
+        JSON.parse(data?.country_specific_deforestation_yearly || '{}')?.BRA ||
+        JSON.parse(data?.tree_cover_loss_prodes_yearly || '{}')
+      );
+    }
+    return JSON.parse(data[property] || '{}');
+  };
+
   getYearlyData = (property, startYear, endYear, allowNullValues) => {
     const obj = {};
     const filteredLocations = this.getFilteredLocations();
-    const data = filteredLocations.filter((l) => l[property]).map((l) => JSON.parse(l[property]));
+    const data = filteredLocations.map((l) => this.getYearlyParsedData(l, property));
     data.forEach((location) => {
       Object.entries(location).forEach((pair) => {
         const [year, value] = pair;
@@ -509,8 +519,13 @@ export default class Diagnostics extends Component {
     let total = 0;
 
     this.getFilteredLocations().forEach((loc) => {
-      if (loc[property]) {
-        const yearlyData = JSON.parse(loc[property]);
+      if (
+        loc[property] ||
+        (property === 'prodes' &&
+          (loc.country_specific_deforestation_yearly || loc.tree_cover_loss_prodes_yearly))
+      ) {
+        const yearlyData = this.getYearlyParsedData(loc, property);
+
         if (
           property === 'tree_cover_loss_brazil_biomes_yearly' ||
           property === 'tree_cover_loss_sea_landcover_yearly' ||

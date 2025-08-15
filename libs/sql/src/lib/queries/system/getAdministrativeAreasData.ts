@@ -9,9 +9,9 @@ DECLARE @SQL NVARCHAR(MAX)
 
 --Setup query to filter results by country/state/substate.
 SET @SQL = 'SELECT
-        [id],[Location Name],[Country],[State],[Sub State],[Latitude],[Longitude],[Location Classification],[Size],[gadmid],[location_id]
+        [Location Name],[Country],[State],[Sub State],[Latitude],[Longitude],[Location Classification],[Size],[gadmid],[location_id]
       FROM
-        [gfwpro].[dbo].[list-administrativeAreas36]
+        [gfwpro].[dbo].[list-administrativeAreas41]
       WHERE
       Country = @country'
 

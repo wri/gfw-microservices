@@ -2,7 +2,7 @@ const sqlUtils = require('../../config/privateutils/sql.utils');
 
 // SQL commands to create the tables in systemDB (copied from gfw-microservices/database/gfwpro/schema/...)
 const systemTableCreates = [
-  `CREATE TABLE [dbo].[list-administrativeAreas36](
+  `CREATE TABLE [dbo].[list-administrativeAreas41](
     [Location Name] [nvarchar](150) NULL,
     [Country] [nvarchar](150) NULL,
     [State] [nvarchar](150) NULL,

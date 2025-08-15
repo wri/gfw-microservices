@@ -165,5 +165,7 @@ export const getAllAccountsList = `
 	DELETE FROM NumberedRows
 	WHERE RowNum > 1;
 
+	-- Step 3: Select the remaining rows
+	-- CompiledPendingAccounts will now contain unique accounts
 	SELECT * FROM @CompiledPendingAccounts;
 `;

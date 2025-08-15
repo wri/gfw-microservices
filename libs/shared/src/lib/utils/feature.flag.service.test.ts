@@ -208,7 +208,7 @@ describe('Feature Flag Service', () => {
     ]);
   });
 
-  it('', async () => {
+  it('Should return existing feature flag for specific organization which id is 20', async () => {
     const { getFeatureFlagsForCurrentOrg, insertOrSaveFeatureFlag } = await featureFlagsService(
       clientStoreConnection
     );

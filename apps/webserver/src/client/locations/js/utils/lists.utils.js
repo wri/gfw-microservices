@@ -363,7 +363,17 @@ const isListFailedByAnalysisStatusLimit = ({ listAnalysesStatus }) => {
   });
 };
 
+const checkForIdTypeColumns = (column) => {
+  return (
+    column === 'ID Type' ||
+    column === 'ID' ||
+    column === 'ID Updated Time' ||
+    column === 'Palm Mill ID'
+  );
+};
+
 module.exports = {
+  checkForIdTypeColumns,
   checkValidViewCommodity,
   checkColumnListDraftList,
   isHiddenColumnInPost2020riskTable,

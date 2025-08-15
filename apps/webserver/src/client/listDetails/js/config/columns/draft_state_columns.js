@@ -4,16 +4,11 @@ import { renderCell } from './columns.utils';
 
 const draft_state_columns = [
   {
-    Header: () => <ColumnsHeader label="Location Name" />,
-    className: 'default-cell td-num',
-    id: 'Location Name',
-    Cell: ({ original }) => <span>{original?.locationName}</span>,
-  },
-  {
     Header: () => <ColumnsHeader label="Size (ha)" />,
     accessor: 'Analysis Area',
     className: 'default-cell td-num',
     id: 'total_area_ha',
+    show: false,
     Cell: (row) => {
       return renderCell(formatDigit(row.original?.['Analysis Area']));
     },
@@ -22,7 +17,7 @@ const draft_state_columns = [
     Header: () => <ColumnsHeader label="State" />,
     accessor: 'state',
     className: 'default-cell',
-    show: true,
+    show: false,
     width: 150,
     maxWidth: 150,
     Cell: (row) => (checkValid(row.value) ? <span>{row.value}</span> : '--'),
@@ -31,7 +26,7 @@ const draft_state_columns = [
     Header: () => <ColumnsHeader label="Sub State" />,
     accessor: 'subState',
     className: 'default-cell',
-    show: true,
+    show: false,
     width: 150,
     maxWidth: 150,
     Cell: (row) => (checkValid(row.value) ? <span>{row.value}</span> : '--'),

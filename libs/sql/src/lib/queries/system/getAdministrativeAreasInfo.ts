@@ -1,1 +1,1 @@
-export const getAdministrativeAreasInfo = `SELECT DISTINCT Country, State, [Sub State] FROM [list-administrativeAreas41]`;
+export const getAdministrativeAreasInfo = `SELECT DISTINCT Country, State, [Sub State] FROM [list-administrativeAreas36]`;

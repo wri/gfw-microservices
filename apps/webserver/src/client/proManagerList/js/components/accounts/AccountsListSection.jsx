@@ -233,22 +233,21 @@ function AccountsListSection({ isLoading, setIsLoading }) {
   };
 
   const getAccountsList = () => {
-    const filteredAccts = accounts.filter((e) => {
+    const filteredAccounts = (accounts || []).filter((e) => {
       return (
-        e.organization_name.toLowerCase().includes(acctFilterStr.toLowerCase()) ||
-        e.organization_parent.toLowerCase().includes(acctFilterStr.toLowerCase()) ||
-        e.organization_address.toLowerCase().includes(acctFilterStr.toLowerCase()) ||
-        e.organization_website.toLowerCase().includes(acctFilterStr.toLowerCase()) ||
+        e.organization_name?.toLowerCase().includes(acctFilterStr.toLowerCase()) ||
+        e.organization_parent?.toLowerCase().includes(acctFilterStr.toLowerCase()) ||
+        e.organization_address?.toLowerCase().includes(acctFilterStr.toLowerCase()) ||
+        e.organization_website?.toLowerCase().includes(acctFilterStr.toLowerCase()) ||
         determineOrgClass(e.organization_classifications_ids) ||
-        determineOrgStatus(e.organization_status_id) ||
-        e.organization_name.toLowerCase().includes(acctFilterStr.toLowerCase())
+        determineOrgStatus(e.organization_status_id)
       );
     });
-    const sortedFilteredAccounts = sortAccounts(filteredAccts);
 
-    const accountsList = sortedFilteredAccounts.map(createAccountsList);
-    return accountsList;
+    const sortedFilteredAccounts = sortAccounts(filteredAccounts);
+    return sortedFilteredAccounts.map(createAccountsList);
   };
+
   return (
     <>
       {!isLoading && (

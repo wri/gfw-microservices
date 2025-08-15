@@ -39,7 +39,6 @@ export const getAllAccountsList = `
 		organization_is_subsidiary, organization_parent, organization_requested_time,
 		organization_active
 	FROM dbo.PendingAccounts
-	WHERE id NOT IN (SELECT id FROM dbo.Organizations);
 
 	OPEN org_cursor;
 	FETCH NEXT FROM org_cursor
@@ -165,4 +164,6 @@ export const getAllAccountsList = `
 	-- Step 2: Delete all but the first row per org
 	DELETE FROM NumberedRows
 	WHERE RowNum > 1;
+
+	SELECT * FROM @CompiledPendingAccounts;
 `;

@@ -485,7 +485,7 @@ export default class Diagnostics extends Component {
         JSON.parse(data?.tree_cover_loss_prodes_yearly || '{}')
       );
     }
-    return JSON.parse(data[property]);
+    return JSON.parse(data[property] || '{}');
   };
 
   getYearlyData = (property, startYear, endYear, allowNullValues) => {

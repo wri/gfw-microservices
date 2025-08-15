@@ -43,7 +43,7 @@ const getUserFromQuery = (userId, organizationId, accounts, users) => {
   return selectedUser || null;
 };
 
-const getAccounFromQuery = (organizationId, accounts) => {
+const getAccountFromQuery = (organizationId, accounts) => {
   const selectedAccount =
     accounts.find((account) => account.organization_id === organizationId) ?? null;
   return selectedAccount;
@@ -88,7 +88,7 @@ export const proManagerListAccountDetailData = async (req, res) => {
     const [accounts, users, pendingPolicy, allPolicy] = await Promise.all(promises);
 
     const policyList = pendingPolicy.concat(allPolicy);
-    let selectedAccount = getAccounFromQuery(organizationId, accounts);
+    let selectedAccount = getAccountFromQuery(organizationId, accounts);
 
     /**
      * @update

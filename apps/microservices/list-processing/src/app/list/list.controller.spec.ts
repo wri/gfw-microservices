@@ -123,7 +123,6 @@ describe('ListController', () => {
       dissolved_data_location_info: 'test',
       tree_cover_loss_arg_otbn_yearly: 'test',
       arg_otbn_area: 'test',
-      argentina_presence: 'test',
     },
   ];
 

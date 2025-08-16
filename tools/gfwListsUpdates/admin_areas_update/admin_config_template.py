@@ -80,7 +80,6 @@ admin_areas_db_schema = {
     'dissolved_data_location_info'                       : sal.NVARCHAR(length=None),
     'tree_cover_loss_arg_otbn_yearly'                    : sal.NVARCHAR(length=None),
     'arg_otbn_area'                                      : sal.NVARCHAR(length=None),
-    'argentina_presence'                                 : sal.NVARCHAR(length=None),
     'protected_areas_by_category_area'                   : sal.NVARCHAR(length=None),
     'landmark_by_category_area'                          : sal.NVARCHAR(length=None),
     'country_specific_deforestation_yearly'              : sal.NVARCHAR(length=None),

@@ -189,7 +189,6 @@ describe('AfiVcGeneratorService', () => {
         dissolved_data_location_info: '',
         tree_cover_loss_arg_otbn_yearly: '',
         arg_otbn_area: '',
-        argentina_presence: '',
       },
     ]);
     mockUspGetListAnalysis.run.mockResolvedValue([{}]);
@@ -313,7 +312,6 @@ describe('AfiVcGeneratorService', () => {
         dissolved_data_location_info: '',
         tree_cover_loss_arg_otbn_yearly: '',
         arg_otbn_area: '',
-        argentina_presence: '',
       },
     ]);
 
@@ -429,7 +427,6 @@ describe('AfiVcGeneratorService', () => {
         'dissolved_data_location_info',
         'tree_cover_loss_arg_otbn_yearly',
         'arg_otbn_area',
-        'argentina_presence',
       ],
     });
   });

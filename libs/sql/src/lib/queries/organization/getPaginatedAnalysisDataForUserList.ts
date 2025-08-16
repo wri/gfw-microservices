@@ -474,5 +474,4 @@ export interface AnalysisDataType {
   dissolved_data_location_info: string;
   tree_cover_loss_arg_otbn_yearly: string;
   arg_otbn_area: string;
-  argentina_presence: string;
 }

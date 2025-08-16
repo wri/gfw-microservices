@@ -132,7 +132,6 @@ export const locationListData = [
     dissolved_data_location_info: '{}',
     tree_cover_loss_arg_otbn_yearly: '{}',
     arg_otbn_area: '{}',
-    argentina_presence: 'false',
     gadm_id: '{}',
     natural_land_area: 0,
     natural_land_deforested_area: 0,
@@ -272,7 +271,6 @@ export const locationListData = [
     dissolved_data_location_info: '{}',
     tree_cover_loss_arg_otbn_yearly: '{}',
     arg_otbn_area: '{}',
-    argentina_presence: 'false',
     gadm_id: '{}',
     natural_land_area: 0,
     natural_land_deforested_area: 0,
@@ -412,7 +410,6 @@ export const locationListData = [
     dissolved_data_location_info: '{}',
     tree_cover_loss_arg_otbn_yearly: '{}',
     arg_otbn_area: '{}',
-    argentina_presence: 'false',
     gadm_id: '{}',
     natural_land_area: 0,
     natural_land_deforested_area: 0,
@@ -666,7 +663,6 @@ export const argentinaLocationData = [
     tree_cover_loss_arg_otbn_yearly:
       '{"Category II": {"2008": 0.0, "2009": 0.0, "2010": 0.0, "2011": 0.0, "2012": 0.0, "2013": 0.6697, "2014": 0.0, "2015": 0.0, "2016": 0.0, "2017": 0.0, "2018": 0.0, "2019": 0.0, "2020": 0.0, "2021": 0.0, "2022": 0.0}}',
     arg_otbn_area: '{"Category II":32.8851, "Category I, Category IV":32.8851}',
-    argentina_presence: 'true',
     protected_areas_by_category_area: '{}',
     landmark_by_category_area: '{"Not Reported":313.0648}',
     country_specific_deforestation_classified_region_yearly: '{"ARG":{"Category II":{}}}',
@@ -801,7 +797,6 @@ export const argentinaLocationData = [
     tree_cover_loss_arg_otbn_yearly:
       '{"Category I": {"2008": 0.0, "2009": 0.0687, "2010": 0.0, "2011": 0.4809, "2012": 0.4123, "2013": 0.0687, "2014": 0.0, "2015": 0.0, "2016": 0.0, "2017": 0.3436, "2018": 0.0, "2019": 0.0, "2020": 0.0, "2021": 0.0, "2022": 0.0}}',
     arg_otbn_area: '{"Category I":1921.3536}',
-    argentina_presence: 'true',
     protected_areas_by_category_area:
       '{"Category Ia":1620.7222,"Category II":156.9743,"Category VI":0.2748}',
     landmark_by_category_area: '{"Not Reported":909.8068}',
@@ -938,7 +933,6 @@ export const argentinaLocationData = [
     tree_cover_loss_arg_otbn_yearly: '{"Category I": {}, "Category II": {}}',
     arg_otbn_area:
       '{"Category I":114.319,"Category II":98.4859, "Category III":98.4859, "Category IV":98.4859, "Category V":98.4859}',
-    argentina_presence: 'true',
     protected_areas_by_category_area: '{}',
     landmark_by_category_area: '{}',
     country_specific_deforestation_classified_region_yearly: '{"ARG":{"Category II":{}}}',
@@ -1074,7 +1068,6 @@ export const argentinaLocationData = [
     tree_cover_loss_arg_otbn_yearly:
       '{"Category I": {"2008": 0.9582, "2009": 0.2053, "2010": 0.4107, "2011": 0.2053, "2012": 0.0, "2013": 11.1552, "2014": 1.1635, "2015": 5.8868, "2016": 0.9583, "2017": 0.3423, "2018": 1.7108, "2019": 0.0, "2020": 0.0, "2021": 0.0, "2022": 0.0}, "Category II": {"2008": 0.2053, "2009": 0.0, "2010": 1.0949, "2011": 0.3422, "2012": 0.0, "2013": 67.2731, "2014": 4.3116, "2015": 0.1369, "2016": 0.8214, "2017": 0.3423, "2018": 7.6645, "2019": 0.0, "2020": 0.0, "2021": 0.0, "2022": 0.0}}',
     arg_otbn_area: '{"Category I":452.4914,"Category II":184.3696}',
-    argentina_presence: 'true',
     protected_areas_by_category_area: '{}',
     landmark_by_category_area: '{}',
     country_specific_deforestation_classified_region_yearly:
@@ -1215,7 +1208,6 @@ export const argentinaLocationData = [
     dissolved_data_location_info: '{}',
     tree_cover_loss_arg_otbn_yearly: '{}',
     arg_otbn_area: '{}',
-    argentina_presence: 'false',
     protected_areas_by_category_area: '{}',
     landmark_by_category_area: '{}',
     country_specific_deforestation_classified_region_yearly:
@@ -1355,7 +1347,6 @@ export const argentinaLocationData = [
     dissolved_data_location_info: '{}',
     tree_cover_loss_arg_otbn_yearly: '{}',
     arg_otbn_area: '{}',
-    argentina_presence: 'false',
     protected_areas_by_category_area: '{}',
     landmark_by_category_area: '{}',
     country_specific_deforestation_classified_region_yearly: '{"ARG":{"Category I":{}}}',
@@ -1454,7 +1445,6 @@ export const argentinaListLevelData = {
   tree_cover_loss_arg_otbn_yearly:
     '{"Category I": {"2008": 0.9582, "2009": 0.274, "2010": 0.4107, "2011": 0.6862, "2012": 0.4123, "2013": 11.2239, "2014": 1.1635, "2015": 5.8868, "2016": 0.9583, "2017": 0.6859, "2018": 1.7108, "2019": 0.0, "2020": 0.0, "2021": 0.0, "2022": 0.0}, "Category II": {"2008": 0.2053, "2009": 0.0, "2010": 1.0949, "2011": 0.3422, "2012": 0.0, "2013": 67.9428, "2014": 4.3116, "2015": 0.1369, "2016": 0.8214, "2017": 0.3423, "2018": 7.6645, "2019": 0.0, "2020": 0.0, "2021": 0.0, "2022": 0.0}}',
   arg_otbn_area: '{"Category I":2488.1641,"Category II":315.7406}',
-  argentina_presence: 'true',
   protected_areas_by_category_area:
     '{"Category Ia":1620.7222,"Category II":156.9743,"Category VI, Category V":0.2748}',
   landmark_by_category_area: '{"Not Reported":1222.8716}',
@@ -1605,7 +1595,6 @@ export const commodityRiskData = [
     dissolved_data_location_info: '{}',
     tree_cover_loss_arg_otbn_yearly: '{}',
     arg_otbn_area: '{}',
-    argentina_presence: 'false',
     protected_areas_by_category_area: null,
     landmark_category_area: null,
     landmark_by_category_area: '{}',
@@ -1752,7 +1741,6 @@ export const commodityRiskData = [
     dissolved_data_location_info: '{}',
     tree_cover_loss_arg_otbn_yearly: '{}',
     arg_otbn_area: '{}',
-    argentina_presence: 'false',
     protected_areas_by_category_area: null,
     landmark_category_area: null,
     landmark_by_category_area: '{}',
@@ -1893,7 +1881,6 @@ export const commodityRiskData = [
     dissolved_data_location_info: '{}',
     tree_cover_loss_arg_otbn_yearly: '{}',
     arg_otbn_area: '{}',
-    argentina_presence: 'false',
     protected_areas_by_category_area: null,
     landmark_category_area: null,
     landmark_by_category_area: '{}',
@@ -2034,7 +2021,6 @@ export const commodityRiskData = [
     dissolved_data_location_info: '{}',
     tree_cover_loss_arg_otbn_yearly: '{}',
     arg_otbn_area: '{}',
-    argentina_presence: 'false',
     protected_areas_by_category_area: null,
     landmark_category_area: null,
     landmark_by_category_area: '{}',

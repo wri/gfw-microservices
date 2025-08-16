@@ -344,11 +344,6 @@ export const AnalysisSchema = {
       name: 'arg_otbn_area',
       nullable: true,
     },
-    argentinaPresence: {
-      type: String,
-      name: 'argentina_presence',
-      nullable: true,
-    },
     protectedAreasByCategoryArea: {
       type: String,
       name: 'protected_areas_by_category_area',

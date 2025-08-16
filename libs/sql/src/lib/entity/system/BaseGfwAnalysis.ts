@@ -207,9 +207,6 @@ export abstract class BaseGfwAnalysis extends BaseEntity {
   @Column({ name: 'arg_otbn_area' })
   'arg_otbn_area': string;
 
-  @Column({ name: 'argentina_presence' })
-  'argentina_presence': string;
-
   @Column({ name: 'protected_areas_by_category_area' })
   'protected_areas_by_category_area': string;
 

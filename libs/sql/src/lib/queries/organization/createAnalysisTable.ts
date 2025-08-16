@@ -86,7 +86,6 @@ BEGIN
 
 			[tree_cover_loss_arg_otbn_yearly] NVARCHAR(MAX) DEFAULT ''{}'',
 			[arg_otbn_area] NVARCHAR(MAX) DEFAULT ''{}'',
-			[argentina_presence] NVARCHAR(50) DEFAULT ''false'',
 			[protected_areas_by_category_area] NVARCHAR(MAX) NOT NULL DEFAULT ''{}'',
 			[landmark_by_category_area] NVARCHAR(MAX) NOT NULL DEFAULT ''{}'',
 			[country_specific_deforestation_yearly] NVARCHAR(MAX),

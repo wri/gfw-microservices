@@ -337,7 +337,6 @@ export interface GetLocationsCopyMoveType {
   dissolved_data_location_info: string;
   tree_cover_loss_arg_otbn_yearly: string;
   arg_otbn_area: string;
-  argentina_presence: string;
   protected_areas_by_category_area: string;
   landmark_by_category_area: string;
   country_specific_deforestation_yearly: string;

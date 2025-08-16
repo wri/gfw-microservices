@@ -29,13 +29,20 @@ import { ExternalHelperResource, PillButton } from '../../../../../components';
 import { aws_templates } from '../../../../../common/js/config';
 import { ToggleButtonGroup } from '../../../../../components/ToggleButtonGroup';
 import { ExternalLinks } from '../../../../../utils/constants';
+import { UploadType } from '../types';
 
 type DataTemplatesProps = {
   isOpen: boolean;
   onClose: () => void;
+  workflowType: UploadType;
 };
 
-enum Template {
+enum TemplateById {
+  CAR,
+  UML,
+}
+
+enum TemplateByFile {
   PolygonShapeFile,
   PolygonGeoJson,
   PolygonKml,
@@ -48,23 +55,37 @@ const ImgIcon: FC<{ src: string; alt: string }> = ({ src, alt }) => (
   <img src={src} alt={alt} style={{ height: '28px', width: '28px', marginLeft: '2px' }} />
 );
 
-export function DataTemplates({ isOpen, onClose }: DataTemplatesProps) {
+export function DataTemplates({ isOpen, onClose, workflowType }: DataTemplatesProps) {
   const theme = useTheme();
-  const [selectedTemplate, setSelectedTemplate] = useState<Template | null>(null);
-  const [hoveredTemplate, setHoveredTemplate] = useState<Template | null>(null);
-  const [downloadedTemplates, setDownloadedTemplates] = useState<Template[]>([]);
+  const [selectedTemplate, setSelectedTemplate] = useState<TemplateByFile | null>(null);
+  const [hoveredTemplate, setHoveredTemplate] = useState<TemplateByFile | null>(null);
+  const [downloadedTemplates, setDownloadedTemplates] = useState<(TemplateByFile | TemplateById)[]>(
+    []
+  );
   const templateTypeOptions = ['All', 'Polygon', 'Point'];
   const [selectedTemplateType, setSelectedTemplateType] = useState(
     templateTypeOptions[0].toLocaleLowerCase()
   );
+  const isById = workflowType === UploadType.ById;
+  const infoBoxText = isById ? (
+    <>
+      Shapefiles or GeoJSON? Use the <b>By File</b> option on the upload page to access those
+      templates.
+    </>
+  ) : (
+    <>
+      IDs like CAR or Palm Oil Mills? Use the <b>By ID</b> option on the upload page to access those
+      templates.
+    </>
+  );
 
-  const handleSelectTemplate = (template: Template) => {
+  const handleSelectTemplate = (template: TemplateByFile) => {
     setSelectedTemplate((prev) => (prev === template ? null : template));
   };
 
   const handleDownloadTemplate = (
     e: MouseEvent<HTMLButtonElement>,
-    template: Template,
+    template: TemplateByFile,
     filename: string
   ) => {
     e.stopPropagation();
@@ -73,12 +94,13 @@ export function DataTemplates({ isOpen, onClose }: DataTemplatesProps) {
     setDownloadedTemplates((prev) => [...prev, template]);
   };
 
-  const filteredTemplateOptions =
-    selectedTemplateType === templateTypeOptions[0].toLocaleLowerCase()
-      ? templateOptions
-      : templateOptions.filter((x) =>
-          selectedTemplateType === 'polygon' ? x.isPolygon : !x.isPolygon
-        );
+  const filteredTemplateOptions = isById
+    ? templateOptionsById
+    : selectedTemplateType === templateTypeOptions[0].toLocaleLowerCase()
+    ? templateOptionsByFile
+    : templateOptionsByFile.filter((x) =>
+        selectedTemplateType === 'polygon' ? x.isPolygon : !x.isPolygon
+      );
 
   return (
     <Dialog
@@ -141,18 +163,17 @@ export function DataTemplates({ isOpen, onClose }: DataTemplatesProps) {
           }}
         >
           <Info fontSize="small" />
-          <Typography variant="caption">
-            Looking to upload locations using IDs like CAR or Palm Oil Mills? Use the <b>By ID</b>{' '}
-            option on the upload page to access those templates.
-          </Typography>
+          <Typography variant="caption">Looking to upload locations using {infoBoxText}</Typography>
         </Box>
-        <Box sx={{ mx: 'auto', mt: 3 }}>
-          <ToggleButtonGroup
-            options={templateTypeOptions}
-            selectedOption={selectedTemplateType}
-            onOptionChange={(v) => setSelectedTemplateType(v)}
-          />
-        </Box>
+        {workflowType === UploadType.ByFile && (
+          <Box sx={{ mx: 'auto', mt: 3 }}>
+            <ToggleButtonGroup
+              options={templateTypeOptions}
+              selectedOption={selectedTemplateType}
+              onOptionChange={(v) => setSelectedTemplateType(v)}
+            />
+          </Box>
+        )}
         <DialogContent
           sx={{
             display: 'flex',
@@ -342,8 +363,8 @@ export function DataTemplates({ isOpen, onClose }: DataTemplatesProps) {
   );
 }
 
-const templateOptions: {
-  template: Template;
+const templateOptionsByFile: {
+  template: TemplateByFile;
   Icon: ElementType;
   title: string;
   bestForText: string | ReactElement;
@@ -354,7 +375,7 @@ const templateOptions: {
   isPolygon: boolean;
 }[] = [
   {
-    template: Template.PolygonShapeFile,
+    template: TemplateByFile.PolygonShapeFile,
     Icon: () => <ImgIcon src={ShapeFileIcon} alt="Shapefile Icon" />,
     title: 'Polygon Shapefile',
     bestForText:
@@ -377,7 +398,7 @@ const templateOptions: {
     isPolygon: true,
   },
   {
-    template: Template.PolygonGeoJson,
+    template: TemplateByFile.PolygonGeoJson,
     Icon: () => <ImgIcon src={GeoJsonIcon} alt="GeoJson Icon" />,
     title: 'Polygon GeoJSON',
     bestForText:
@@ -399,7 +420,7 @@ const templateOptions: {
     isPolygon: true,
   },
   {
-    template: Template.PolygonKml,
+    template: TemplateByFile.PolygonKml,
     Icon: Public,
     title: 'Polygon KML',
     bestForText:
@@ -419,7 +440,7 @@ const templateOptions: {
     isPolygon: true,
   },
   {
-    template: Template.PointShapeFile,
+    template: TemplateByFile.PointShapeFile,
     Icon: () => <ImgIcon src={ShapeFileIcon} alt="Shapefile Icon" />,
     title: 'Point Shapefile',
     bestForText:
@@ -450,7 +471,7 @@ const templateOptions: {
     isPolygon: false,
   },
   {
-    template: Template.PointGeoJson,
+    template: TemplateByFile.PointGeoJson,
     Icon: () => <ImgIcon src={GeoJsonIcon} alt="GeoJson Icon" />,
     title: 'Point GeoJSON',
     bestForText:
@@ -480,7 +501,7 @@ const templateOptions: {
     isPolygon: false,
   },
   {
-    template: Template.PointSpreadsheet,
+    template: TemplateByFile.PointSpreadsheet,
     Icon: Description,
     title: 'Point Spreadsheet',
     bestForText:
@@ -510,6 +531,82 @@ const templateOptions: {
       </>
     ),
     filename: 'GFWPro-Spreadsheet.csv',
+    helpCenterLinkText: 'How to format spreadsheet data',
+    helpCenterLinkUrl:
+      'https://globalforestwatch.org/help/gfw-pro/guides/complete-selected-template',
+    isPolygon: false,
+  },
+];
+
+const templateOptionsById = [
+  {
+    template: TemplateById.CAR,
+    Icon: Description,
+    title: 'CAR ID Spreadsheet',
+    bestForText: (
+      <>
+        If you wish to upload a list of CAR IDs (as defined in{' '}
+        <a target="_window" href="https://www.car.gov.br/#/">
+          Cadastro Ambiental Rural database
+        </a>
+        ). Requires formatting in a spreadsheet editor.
+      </>
+    ),
+    requiredFieldsText: (
+      <>
+        <span>
+          The following fields must be present in your file:
+          <ul>
+            <li>Location Name (Name of your locations)</li>
+            <li>ID System (use value "CAR" for all locations)</li>
+            <li>ID (ID value as defined in Cadastro Ambiental Rural database).</li>
+          </ul>
+        </span>
+        <div>*Remember to include one location ID per row</div>
+      </>
+    ),
+    filename: 'GFWPro-CARIDs.xlsx',
+    helpCenterLinkText: 'How to format CAR IDs for upload into GFW Pro',
+    helpCenterLinkUrl:
+      'https://www.globalforestwatch.org/help/gfw-pro/guides/complete-selected-template',
+    isPolygon: false,
+  },
+  {
+    template: TemplateById.UML,
+    Icon: Description,
+    title: 'Palm Oil Mill ID Spreadsheet',
+    bestForText: (
+      <>
+        If you wish to upload a list of palm oil mills identified in the{' '}
+        <a
+          target="_window"
+          href="https://data.globalforestwatch.org/documents/gfw::universal-mill-list/about"
+        >
+          Universal Mill List
+        </a>
+        . Requires formatting in a spreadsheet editor.
+      </>
+    ),
+    requiredFieldsText: (
+      <>
+        <span>
+          The following fields must be present in your file:
+          <ul>
+            <li>Location Name (Name of your locations)</li>
+            <li>Palm Mill ID (Palm Mill ID as defined in the Universal Mill List)</li>
+            <li>
+              Analysis Radius (radius value (KM) that will be used to determine the area of analysis
+              around your coordinate. Only required if Analysis Area is not defined)
+            </li>
+            <li>
+              Analysis Area (area value (HA) that will be used to determine the area of analysis
+              around your coordinate. Only required if Analysis Radius is not defined)
+            </li>
+          </ul>
+        </span>
+      </>
+    ),
+    filename: 'GFWPro-PalmMillIDs.csv',
     helpCenterLinkText: 'How to format spreadsheet data',
     helpCenterLinkUrl:
       'https://globalforestwatch.org/help/gfw-pro/guides/complete-selected-template',

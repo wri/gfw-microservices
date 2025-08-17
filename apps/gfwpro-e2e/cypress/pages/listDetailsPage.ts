@@ -38,6 +38,10 @@ class ListDetailsPage {
     palmRiskAssessmentTab: () => cy.get('[data-cy="palm-risk-assessment-tab"]'),
     hiddenElement: () => cy.get('.rt-tr-group').eq(0).find('.rt-td.default-cell.td-num').last(),
     moreOptionsBtn: () => cy.get('[data-cy="row-more-options-button"]').eq(0),
+    moreOptionsTableColumnBtn: () => cy.get('[data-testid="MoreVertIcon"]'),
+    allColumnsCheckbox: () => cy.get('[data-cy="select-deselect-all-columns"]'),
+    columnAttributes: () => cy.get('[data-testid="CheckBoxIcon"]'),
+    columnHeaders: () => cy.get('.title-text'),
   };
   clickOnLocationsList(name: string) {
     cy.contains(name).click();
@@ -209,6 +213,21 @@ class ListDetailsPage {
   }
   clickCloseAlertDownload() {
     this.elements.closeAlertDownloadBtn().click();
+  }
+  clickMoreOptionsTableColumnBtn() {
+    this.elements.moreOptionsTableColumnBtn().click();
+  }
+  getAllOptions() {
+    return this.elements.columnAttributes().parent().invoke('text');
+  }
+  getAllOptionsCount() {
+    return this.elements.columnAttributes().its('length');
+  }
+  getAllColumnsHeadersCount() {
+    return this.elements.columnHeaders().its('length');
+  }
+  selectAllOptions() {
+    this.elements.allColumnsCheckbox().click();
   }
 }
 

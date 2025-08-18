@@ -69,12 +69,12 @@ export function DataTemplates({ isOpen, onClose, workflowType }: DataTemplatesPr
   const isById = workflowType === UploadType.ById;
   const infoBoxText = isById ? (
     <>
-      Shapefiles or GeoJSON? Use the <b>By File</b> option on the upload page to access those
+      Looking to upload locations using Shapefiles or GeoJSON? Use the <b>By File</b> option on the upload page to access those
       templates.
     </>
   ) : (
     <>
-      IDs like CAR or Palm Oil Mills? Use the <b>By ID</b> option on the upload page to access those
+      Looking to upload locations using IDs like CAR or Palm Oil Mills? Use the <b>By ID</b> option on the upload page to access those
       templates.
     </>
   );
@@ -163,7 +163,7 @@ export function DataTemplates({ isOpen, onClose, workflowType }: DataTemplatesPr
           }}
         >
           <Info fontSize="small" />
-          <Typography variant="caption">Looking to upload locations using {infoBoxText}</Typography>
+          <Typography variant="caption">{infoBoxText}</Typography>
         </Box>
         {workflowType === UploadType.ByFile && (
           <Box sx={{ mx: 'auto', mt: 3 }}>

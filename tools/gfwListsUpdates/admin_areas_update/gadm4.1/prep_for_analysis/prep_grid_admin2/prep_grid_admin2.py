@@ -87,7 +87,7 @@ def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--grid-step", type=float, default=1.0,
                     help="grid cell size in degrees (default 1.0)")
-    ap.add_argument("--out", default="gadm4_1_grided_shp",
+    ap.add_argument("--out", default="gadm4_1_gridded_shp",
                     help="output Shapefile directory name")
     args = ap.parse_args()
 

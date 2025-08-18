@@ -94,6 +94,8 @@ class LocationsPage {
     post2020Analysis: () => cy.get('[data-testid="checkbox-afi"]'),
     defReportAnalysis: () => cy.get('[data-testid="checkbox-alerts"]'),
     post2000Analysis: () => cy.get('[data-testid="checkbox-fcd"]'),
+    polygonGeoJsonOption: () => cy.get('[role="button"]').contains('Polygon GeoJSON'),
+    pointGeoJsonOption: () => cy.get('[role="button"]').contains('Point GeoJSON'),
   };
 
   verifyLists(lists: string[], exist: boolean) {
@@ -311,6 +313,12 @@ class LocationsPage {
     cy.contains('li.locations-list', list).within(() => {
       cy.get('button[title="More"]').click();
     });
+  }
+  clickOnPolygonGeoJsonOptionBtn() {
+    this.elements.polygonGeoJsonOption().click();
+  }
+  clickOnPointGeoJsonOptionBtn() {
+    this.elements.pointGeoJsonOption().click();
   }
 }
 

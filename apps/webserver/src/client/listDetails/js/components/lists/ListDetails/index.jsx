@@ -176,7 +176,7 @@ export default class ListDetails extends Component {
       tableSortedBy: 'Location Name',
       tableSortedDesc: false,
       numberOfResults: undefined,
-      visibleColumns: [],
+      visibleColumns: ['ID Type', 'ID', 'Palm Mill ID', 'ID Updated Date'],
       isChangeTypeOfAnalysisModalOpen: false,
       isListSubmittedForAnalysis: false,
       isFcdActive,
@@ -952,13 +952,12 @@ export default class ListDetails extends Component {
 
   showListColumn = (column) => {
     const { selectedLists, listView } = this.props;
-
     if (column.accessor === 'total_count') {
       return false;
     }
-    // Exclude columns if all analyses are drafts
+    // if all analyses are drafts, show only draft columns
     if (this.areAllAnalysesDraft()) {
-      return !checkColumnListDraftList(column.accessor); // Exclude draft columns
+      return !checkColumnListDraftList(column.accessor); // excludes all but draft columns
     }
 
     if (selectedLists.length > 0) {

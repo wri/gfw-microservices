@@ -1,8 +1,11 @@
+import infoBubbleConfig from '../../../../common/js/infoBubbleConfig.constants';
 import ColumnsHeader from '../../components/columns/ColumnsHeader';
 
 const id_type_columns = [
   {
-    Header: () => <ColumnsHeader label="ID Type" />,
+    Header: () => (
+      <ColumnsHeader label="ID Type" infoBubbleId={infoBubbleConfig.listDetailsIdType} />
+    ),
     accessor: 'ID Type',
     show: true,
     className: 'default-cell',
@@ -16,7 +19,7 @@ const id_type_columns = [
     },
   },
   {
-    Header: () => <ColumnsHeader label="ID" />,
+    Header: () => <ColumnsHeader label="ID" infoBubbleId={infoBubbleConfig.listDetailsIdValue} />,
     accessor: 'ID',
     show: true,
     className: 'default-cell',
@@ -30,7 +33,9 @@ const id_type_columns = [
     },
   },
   {
-    Header: () => <ColumnsHeader label="Palm Mill ID" />,
+    Header: () => (
+      <ColumnsHeader label="Palm Mill ID" infoBubbleId={infoBubbleConfig.listDetailsIdValue} />
+    ),
     accessor: 'Palm Mill ID',
     show: true,
     className: 'default-cell',

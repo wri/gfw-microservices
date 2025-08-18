@@ -140,17 +140,15 @@ export default function AccountStatusSetting() {
           title={isActive ? 'Account is already active' : ''}
           disableHoverListener={!isActive}
         >
-          <span>
-            <PillButton
-              variant="contained"
-              size="small"
-              disabled={isActive}
-              sx={disabledStyles}
-              onClick={activateAccount}
-            >
-              Activate
-            </PillButton>
-          </span>
+          <PillButton
+            variant="contained"
+            size="small"
+            disabled={isActive}
+            sx={disabledStyles}
+            onClick={activateAccount}
+          >
+            Activate
+          </PillButton>
         </Tooltip>
 
         {/* Deactivate */}
@@ -158,17 +156,15 @@ export default function AccountStatusSetting() {
           title={isInactive ? 'Account is already inactive' : ''}
           disableHoverListener={!isInactive}
         >
-          <span>
-            <PillButton
-              variant="contained"
-              size="small"
-              disabled={isInactive || isPending}
-              sx={disabledStyles}
-              onClick={deactivateAccount}
-            >
-              Deactivate
-            </PillButton>
-          </span>
+          <PillButton
+            variant="contained"
+            size="small"
+            disabled={isInactive || isPending}
+            sx={disabledStyles}
+            onClick={deactivateAccount}
+          >
+            Deactivate
+          </PillButton>
         </Tooltip>
 
         {/* Close */}
@@ -176,17 +172,15 @@ export default function AccountStatusSetting() {
           title={!isPending ? 'Only pending accounts can be closed' : ''}
           disableHoverListener={isPending}
         >
-          <span>
-            <PillButton
-              variant="contained"
-              size="small"
-              disabled={!isPending}
-              sx={disabledStyles}
-              onClick={deleteAccountRequest}
-            >
-              Close
-            </PillButton>
-          </span>
+          <PillButton
+            variant="contained"
+            size="small"
+            disabled={!isPending}
+            sx={disabledStyles}
+            onClick={deleteAccountRequest}
+          >
+            Close
+          </PillButton>
         </Tooltip>
       </Grid>
     </Grid>

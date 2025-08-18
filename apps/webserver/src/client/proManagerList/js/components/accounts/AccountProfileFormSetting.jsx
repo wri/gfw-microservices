@@ -18,13 +18,7 @@ import { ACCOUNT_ORG_STATUSES } from '../../../../common/js/constants/orgAccount
 import { accountProfileStrings, subscriptionStatusOptions } from '../../../../common/js/config';
 import { useAccountDetail } from './AccountDetailSection';
 import FieldLabel from './FieldLabel';
-
-const disabledStyles = {
-  '&.Mui-disabled': {
-    backgroundColor: 'rgb(0 0 0 / 4%)',
-    cursor: 'not-allowed',
-  },
-};
+import { disabledStyles } from '../../common/formStyles';
 
 /**
  * @Summary Displays and Manage Account Profile Form Settings

@@ -569,23 +569,55 @@ const reactivateAccount = (req, organization_id) => {
 
 /** @function {deactivateAccount}
  * @summary Deactivates account
- * @param {Object} request
+ * @param {Object} req
  * @param {number} organization_id
  */
-const deactivateAccount = (request, organization_id) => {
-  return new Promise((resolve, reject) => {
-    const parameters = [
-      { field: 'organization_id', type: sql.Int, value: organization_id },
-      {
-        field: 'organization_status_id',
-        type: sql.Int,
-        value: orgAccountStatus.Inactive,
-      },
-    ];
-    sqlUtils
-      .executeSystemStoredProcedure(request, 'uspSetOrganizationStatus', parameters)
-      .then(() => resolve(true))
-      .catch((err) => reject(err));
+const deactivateAccount = (req, organization_id) => {
+  return new Promise(async (resolve, reject) => {
+    try {
+      // 1. Fetch current organization status
+      const parameters = [{ field: 'organization_id', type: sql.Int, value: organization_id }];
+      const [org] = await sqlUtils.executeSystemStoredProcedure(
+        req,
+        'uspGetOrganizationById',
+        parameters
+      );
+
+      if (!org) {
+        return reject({
+          code: 'organizationNotFound',
+          userMessage: 'Organization not found',
+          systemMessage: `Organization ID ${organization_id} not found in DB`,
+        });
+      }
+
+      const currentStatus = org.organization_status_id;
+
+      // 2. Only allow Active → Inactive
+      if (currentStatus !== orgAccountStatus.Active) {
+        return reject({
+          code: errorUtils.ERROR_CODES.invalidStatusTransition,
+          userMessage: 'Only active accounts can be deactivated',
+          systemMessage: `Attempted to deactivate organization ${organization_id} with status ${currentStatus}`,
+        });
+      }
+
+      // 3. Update status to Inactive
+      const updateParams = [
+        { field: 'organization_id', type: sql.Int, value: organization_id },
+        { field: 'organization_status_id', type: sql.Int, value: orgAccountStatus.Inactive },
+      ];
+
+      await sqlUtils.executeSystemStoredProcedure(req, 'uspSetOrganizationStatus', updateParams);
+
+      resolve(true);
+    } catch (err) {
+      reject({
+        code: errorUtils.ERROR_CODES.failedToDeactivateAccount,
+        userMessage: 'Failed to deactivate account',
+        systemMessage: err,
+      });
+    }
   });
 };
 

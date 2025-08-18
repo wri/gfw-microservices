@@ -2,6 +2,7 @@
 /* eslint-disable import/no-dynamic-require */
 const path = require('path');
 const controller = require('../controllers/proManagerList.controller');
+const { ERROR_CODES } = require('apps/webserver/src/config/privateutils/error.utils');
 const logger = require(path.resolve('./config/privateutils/logger.utils'));
 const ProManager = require(path.resolve('./config/publicutils/proManager.utils'));
 const PolicyManager = require(path.resolve('./config/publicutils/policyManager.utils'));
@@ -61,17 +62,37 @@ module.exports = (app, limiter) => {
     controller.proManagerListUserDetailData
   );
 
-  app.post('/pro-manager/activateProAccount', (req, res) => {
+  app.post('/pro-manager/activateProAccount', async (req, res) => {
     logger.info('POST /pro-manager/activateProAccount');
     const { id } = req.body;
-    ProManager.activatePendingAccount(req, id)
-      .then(() => {
-        res.send({ redirect: '/pro-manager-list' });
-      })
-      .catch((error) => {
-        logger.info(`Error POST /pro-manager/activateProAccount`, error);
-        res.send(error);
-      });
+
+    try {
+      await ProManager.activatePendingAccount(req, id);
+      res.status(200).send({ redirect: '/pro-manager-list' });
+    } catch (error) {
+      logger.error(`Error POST /pro-manager/activateProAccount`, error);
+
+      // Use HTTP status codes based on error type
+      if (error.code === ERROR_CODES.failedToActivateAccount) {
+        res.status(400).send({
+          errorCode: error.code,
+          systemMessage: error.systemMessage,
+          userMessage: error.userMessage,
+        });
+      } else if (error.code === ERROR_CODES.userNotProManager) {
+        res.status(403).send({
+          errorCode: error.code,
+          systemMessage: error.systemMessage,
+          userMessage: error.userMessage,
+        });
+      } else {
+        res.status(500).send({
+          errorCode: 'internalServerError',
+          systemMessage: error,
+          userMessage: 'An unexpected error occurred. Please try again later.',
+        });
+      }
+    }
   });
 
   app.post('/pro-manager/activateProActiveAccount', (req, res) => {
@@ -87,17 +108,37 @@ module.exports = (app, limiter) => {
       });
   });
 
-  app.post('/pro-manager/deactivateProAccount', (req, res) => {
+  app.post('/pro-manager/deactivateProAccount', async (req, res) => {
     logger.info('POST /pro-manager/deactivateProAccount');
     const { id } = req.body;
-    ProManager.deactivateAccount(req, id)
-      .then(() => {
-        res.send({ redirect: '/pro-manager-list' });
-      })
-      .catch((error) => {
-        logger.info(`Error POST /pro-manager/deactivateProAccount`, error);
-        res.send(error);
-      });
+
+    try {
+      await ProManager.deactivateAccount(req, id);
+      res.status(200).send({ redirect: '/pro-manager-list' });
+    } catch (error) {
+      logger.error(`Error POST /pro-manager/deactivateProAccount`, error);
+
+      // Handle specific error codes
+      if (error.code === ERROR_CODES.invalidStatusTransition) {
+        res.status(400).send({
+          errorCode: error.code,
+          systemMessage: error.systemMessage,
+          userMessage: error.userMessage,
+        });
+      } else if (error.code === ERROR_CODES.userNotProManager) {
+        res.status(403).send({
+          errorCode: error.code,
+          systemMessage: error.systemMessage,
+          userMessage: error.userMessage,
+        });
+      } else {
+        res.status(500).send({
+          errorCode: 'internalServerError',
+          systemMessage: error,
+          userMessage: 'An unexpected error occurred. Please try again later.',
+        });
+      }
+    }
   });
 
   app.post('/pro-manager/deleteProAccountRequest', (req, res) => {

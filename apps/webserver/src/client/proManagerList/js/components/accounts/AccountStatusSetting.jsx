@@ -4,7 +4,7 @@ import { useDialog } from '../../../../common/js/components/Dialog';
 import { showSuccessBanner, showErrorBanner } from '../../../../common/js/utils/notifications'; // adjust import
 import { useAccountDetail } from './AccountDetailSection';
 
-export default function OrgNameEdit() {
+export default function AccountStatusSetting() {
   const dialog = useDialog();
   const { currentAccount, setCurrentAccount } = useAccountDetail();
   const { organization_id, organization_name } = currentAccount;

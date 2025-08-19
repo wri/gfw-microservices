@@ -36,31 +36,39 @@ export class SouthAmericaLossService extends DashboardHandleDownload {
       const { composites } = key;
       composites.forEach((field) => {
         const dataRow = [list_name];
-        const { attribute } = field;
+        const { attribute, label } = field;
 
-        let rowValue = 0;
-
-        if (!Object.prototype.hasOwnProperty.call(listLevelAnalysis ?? {}, attribute)) {
+        if (!listLevelAnalysis?.[attribute]) {
           return;
         }
 
-        const yearlyData = JSON.parse(
-          listLevelAnalysis[field.attribute] == null ? '{}' : listLevelAnalysis[field.attribute]
-        );
+        let rowValue = 0;
+        let yearlyData;
+
+        if (attribute === 'tree_cover_loss_prodes_yearly') {
+          yearlyData =
+            JSON.parse(listLevelAnalysis.country_specific_deforestation_yearly || '{}')?.BRA ||
+            null;
+        }
+
+        if (!yearlyData) {
+          yearlyData = JSON.parse(listLevelAnalysis[attribute] || '{}');
+        }
+
         let totalSubCategory = 0;
-        if (!Object.values(DATA_LAYER).some((dataLayer) => field.label == dataLayer)) {
+        if (!Object.values(DATA_LAYER).some((dataLayer) => label == dataLayer)) {
           Object.keys(yearlyData).forEach((yr) => {
             totalSubCategory += yearlyData[yr];
           });
         }
 
-        const handler = new SouthAmericaLossAggregateHandler(field.label);
+        const handler = new SouthAmericaLossAggregateHandler(label);
 
         Object.keys(yearlyData).forEach((year) => {
           const currentRow = cloneRow(dataRow);
           rowValue = yearlyData[year];
 
-          currentRow.push(field.label);
+          currentRow.push(label);
           handler.processLabel(field, rowValue, year, dataRow, csvData, totalSubCategory);
         });
       });

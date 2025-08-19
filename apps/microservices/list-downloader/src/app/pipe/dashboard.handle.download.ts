@@ -70,7 +70,7 @@ export class DashboardHandleDownload extends IPipeService {
     this.writeStream
       .pipe(new FilterSelection(selectedLocationsList))
       .pipe(new FilterLocationHaveStatus(2))
-      .pipe(new FilterObject(allFields))
+      .pipe(new FilterObject(allFields, table))
       .pipe(new ManipulateDataForDashboard(EXCEL_TEMPLATES[table], listLevelAnalysis))
       .pipe(new FormatNumber())
       .pipe(new TreatStringWithComma())

@@ -18,8 +18,10 @@ const retryOn429 = async (axiosCall, maxRetries = 3, baseDelay = 1000) => {
       // Check if it's a 429 error and we haven't exceeded max retries
       if (error.response?.status === 429 && attempt < maxRetries) {
         const delay = baseDelay * Math.pow(2, attempt - 1); // Exponential backoff
-        console.warn(`Rate limited (429) on attempt ${attempt}. Retrying in ${Math.round(delay / 1000)}s...`);
-        await new Promise(resolve => setTimeout(resolve, delay));
+        console.warn(
+          `Rate limited (429) on attempt ${attempt}. Retrying in ${Math.round(delay / 1000)}s...`
+        );
+        await new Promise((resolve) => setTimeout(resolve, delay));
         continue;
       }
 

@@ -272,6 +272,13 @@ BEGIN
          ORDER BY [key] COLLATE Latin1_General_CS_AS DESC
         ) AS ' + @aliasName;
 
+	-- append the parsed column with suffix '_parsed' to be displayed in the list-details table
+	SET @parsedColumn = @parsedColumn + ',
+		(SELECT TOP 1 CAST(value AS INT)
+		FROM OPENJSON(' + @columnName + ' COLLATE Latin1_General_CS_AS)
+		ORDER BY [key] COLLATE Latin1_General_CS_AS DESC
+		) AS ' + @columnName + '_parsed';
+
     -- Append to @parsedColumns
     IF @parsedColumns = ''
         SET @parsedColumns = @parsedColumn;

@@ -205,7 +205,7 @@ const WrappedReactTable = ({
     }
 
     if (errorDetails?.startsWith('The defined ID system')) {
-      return errorDetails;
+      return errorDetails.split(';')[0];
     }
 
     return errorsMap[errorDetails] || 'Server error';

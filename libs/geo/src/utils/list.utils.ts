@@ -226,6 +226,12 @@ export const ComposeCopyQueryStatement = async (
   const tableColumns = await GetTableAnalysisColumnsById(clientDatabase, selectedListId, isGFWList);
 
   const columns = tableColumns?.map((record: RecordType) => record.COLUMN_NAME) ?? [];
+  // Remover argentina_presence column
+  const index = columns.indexOf('argentina_presence');
+  if (index > -1) {
+    columns.splice(index, 1);
+  }
+
   const statement = columns
     .map((column) => `[${column}] = [${srcListAnalysisTable}].[${column}]`)
     .join(',');

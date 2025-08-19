@@ -9,7 +9,7 @@ const id_type_columns = [
     accessor: 'ID Type',
     show: true,
     className: 'default-cell',
-    id: 'id-type',
+    id: 'ID Type',
     Cell: ({ original }) => <span>{original?.['ID Type']}</span>,
     sortMethod: (l, r) => {
       if (l && r) {
@@ -23,7 +23,7 @@ const id_type_columns = [
     accessor: 'ID',
     show: true,
     className: 'default-cell',
-    id: 'id',
+    id: 'ID',
     Cell: ({ original }) => <span>{original?.['ID']}</span>,
     sortMethod: (l, r) => {
       if (l && r) {
@@ -39,7 +39,7 @@ const id_type_columns = [
     accessor: 'Palm Mill ID',
     show: true,
     className: 'default-cell',
-    id: 'palm-mill-id',
+    id: 'Palm Mill ID',
     Cell: ({ original }) => <span>{original?.['Palm Mill ID']}</span>,
     sortMethod: (l, r) => {
       if (l && r) {
@@ -53,7 +53,7 @@ const id_type_columns = [
     accessor: 'ID Updated Date',
     show: true,
     className: 'default-cell',
-    id: 'id-updated-date',
+    id: 'ID Updated Date',
     Cell: ({ original }) => <span>{original?.['ID Updated Date']}</span>,
     sortMethod: (l, r) => {
       if (l && r) {

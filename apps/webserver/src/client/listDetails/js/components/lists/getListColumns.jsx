@@ -122,7 +122,8 @@ export const getListColumns = (locationData, customAttributes, selectedLists) =>
       } else if (
         keyIndex === -1 &&
         key !== 'Size' &&
-        (key !== 'locationName' || key !== 'Location Name') &&
+        key !== 'locationName' &&
+        key !== 'Location Name' &&
         !key.includes('flag') &&
         !key.includes('_')
       ) {

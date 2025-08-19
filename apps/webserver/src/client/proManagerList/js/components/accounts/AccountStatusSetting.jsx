@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { Grid, TextField, Button } from '@mui/material';
 import { useDialog } from '../../../../common/js/components/Dialog';
-import { showSuccessBanner, showErrorBanner } from '../../../../common/js/utils/notifications'; // adjust import
+import { showSuccessBanner } from '../../../../common/js/utils/notifications'; // adjust import
 import { useAccountDetail } from './AccountDetailSection';
 
 export default function AccountStatusSetting() {
@@ -13,7 +13,9 @@ export default function AccountStatusSetting() {
   const [loading, setLoading] = useState(false);
 
   const handleSave = async () => {
-    if (!name.trim()) return;
+    if (!name.trim()) {
+      return;
+    }
 
     setLoading(true);
     dialog.openDialog('Please wait', 'Updating organization name...', true);

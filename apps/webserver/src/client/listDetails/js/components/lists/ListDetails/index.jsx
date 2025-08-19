@@ -955,9 +955,9 @@ export default class ListDetails extends Component {
     if (column.accessor === 'total_count') {
       return false;
     }
-    // if all analyses are drafts, show only draft columns
+    // Exclude columns if all analyses are drafts
     if (this.areAllAnalysesDraft()) {
-      return !checkColumnListDraftList(column.accessor); // excludes all but draft columns
+      return !checkColumnListDraftList(column.accessor); // Exclude draft columns
     }
 
     if (selectedLists.length > 0) {

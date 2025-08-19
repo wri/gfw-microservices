@@ -37,9 +37,9 @@ const getAllColumnNames = (
 
   const defaultShownColumns = [checkbox, location_name];
 
-  // Remove location_name from allListColumns (will be added explicitly)
+  // Remove location_name from allListColumns to avoid duplicates in column selector
   const filteredListColumns = cloneDeep(allListColumns).filter(
-    (column) => column.Header !== location_name.Header
+    (column) => column.accessor !== location_name.id
   );
 
   columnNames.list = [...filteredListColumns, site_id];

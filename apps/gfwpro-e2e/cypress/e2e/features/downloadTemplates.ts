@@ -36,6 +36,12 @@ describe('Downloading Templates', () => {
   Then('I should be able to download the List of Palm Mill template', () => {
     locationsPage.elements.listOfPalmMillIDsOption().should('be.visible');
   });
+  Then('I should be able to download the Polygon GeoJSON template', () => {
+    locationsPage.elements.polygonGeoJsonOption().should('be.visible');
+  });
+  Then('I should be able to download the Point GeoJSON template', () => {
+    locationsPage.elements.pointGeoJsonOption().should('be.visible');
+  });
   When('I click on the Polygon Shapefile option and click the Download button', () => {
     locationsPage.clickOnShapeFileOptionBtn();
     locationsPage.clickOnDownloadTemplateUploadLocationBtn();
@@ -54,6 +60,14 @@ describe('Downloading Templates', () => {
   });
   When('I click on the List of Palm Mill option and click the Download button', () => {
     locationsPage.clickOnListOfPalmMillIDsOptionBtn();
+    locationsPage.clickOnDownloadTemplateUploadLocationBtn();
+  });
+  When('I click on the Point GeoJSON option and click the Download button', () => {
+    locationsPage.clickOnPointGeoJsonOptionBtn();
+    locationsPage.clickOnDownloadTemplateUploadLocationBtn();
+  });
+  When('I click on the Polygon GeoJSON option and click the Download button', () => {
+    locationsPage.clickOnPolygonGeoJsonOptionBtn();
     locationsPage.clickOnDownloadTemplateUploadLocationBtn();
   });
 

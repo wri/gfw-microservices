@@ -20,6 +20,7 @@ export const ERROR_CODES = {
   userNotFound: 107,
   failedToSetPassword: 108,
   failedToResendVerifyToken: 110,
+  rateLimitExceeded: 109,
   // SQL Errors
   failedToCreateConnectionPool: 200,
   failedToExecuteSystemStoredProcedure: 201,

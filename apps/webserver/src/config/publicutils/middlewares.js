@@ -169,7 +169,7 @@ const checkRecognized = (request, response, next) => {
 
 const rateLimitAuthenticated = {
   windowMs: 1000, // 1 second
-  max: 20, // Limit each client to `max` requests per window
+  max: 50, // Limit each client to `max` requests per window
 };
 
 // max can't be one and best to match same number as authenticated case above

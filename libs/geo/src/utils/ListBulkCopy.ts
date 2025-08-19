@@ -128,13 +128,6 @@ export class ListBulkCopy {
       { field: 'start_location_id', type: sql.Int, value: start_location_id },
     ];
 
-    Logger.log(
-      `Add Location to Analysis table with configuration: ${JSON.stringify(
-        clientConnectionConfiguration
-      )}`,
-      'ListBulkCopy'
-    );
-
     const recorsets = await connection.runRawSingleQuery<Promise<unknown[]>>(
       'uspAddNewLocationToAnalysisTable',
       sqlAddNewLocationToAnalysisTableParameters

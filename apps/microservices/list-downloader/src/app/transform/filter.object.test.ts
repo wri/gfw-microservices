@@ -53,3 +53,20 @@ describe('FilterObject', () => {
     });
   });
 });
+
+test('Should add country_specific_deforestation_yearly.BRA data to tree_cover_loss_prodes_yearly field for south america loss when BRA data exists', () => {
+  const filterObject = new FilterObject(['name'], 'sAmericaLoss');
+  const chunk = {
+    name: 'Amazon',
+    country_specific_deforestation_yearly: JSON.stringify({
+      BRA: { 2001: 100, 2002: 200 },
+    }),
+  };
+
+  filterObject._transform(chunk, '', (err, data) => {
+    expect(data).toEqual({
+      name: 'Amazon',
+      tree_cover_loss_prodes_yearly: JSON.stringify({ 2001: 100, 2002: 200 }),
+    });
+  });
+});

@@ -123,7 +123,29 @@ class ListDetailsPage {
       }
       this.elements.createNewListText().should('be.visible');
       this.clickOnCreateNewListRadioBtn();
-      this.elements.inputCreateNewList().type(listName);
+      this.elements.inputCreateNewList().should('be.visible').type(listName);
+
+      // Verify the input has the correct value
+      this.elements.inputCreateNewList().should('have.value', listName);
+
+      // Debug: Log basic information
+      cy.log('Checking Save As Draft button state...');
+      cy.log(`List name entered: ${listName}`);
+
+      // Check if there are any validation error messages
+      cy.get('body').then(($body) => {
+        if ($body.find('.error-message, .validation-error, [role="alert"]').length > 0) {
+          cy.log('Found validation errors:');
+          cy.get('.error-message, .validation-error, [role="alert"]').each(($error) => {
+            cy.log(`Error: ${$error.text()}`);
+          });
+        }
+      });
+
+      // Wait for the Save As Draft button to be enabled
+      this.elements.saveAsDraftBtn().should('be.visible').should('not.be.disabled');
+
+      // Now try to click the Save As Draft button
       this.clickOnSaveAsDraftBtn();
 
       this.elements.confirmActionBtn().should('be.visible');
@@ -135,7 +157,8 @@ class ListDetailsPage {
     cy.get('div.move-to-list-select select').select(list);
   }
   clickOnSaveAsDraftBtn() {
-    this.elements.saveAsDraftBtn().should('be.visible').click();
+    // Wait for the button to be enabled before clicking
+    this.elements.saveAsDraftBtn().should('be.visible').should('not.be.disabled').click();
   }
   clickOnSubmitBtn() {
     this.elements.submitBtn().click();

@@ -7,11 +7,11 @@ describe('List Copy Feature', () => {
   const listDetailsPage = new ListDetailsPage();
   const timestamp = Date.now();
   const listsToCreate = {
-    'RSPO Palm Concessions': `testregressioncopylistGFW_RSPO_${timestamp}`,
-    'Oil Palm Concessions': `testregressioncopylistGFW_OilPalm_${timestamp}`,
-    'Administrative Areas': `testregressioncopylistGFW_Admin_${timestamp}`,
-    'Protected Areas': `testregressioncopylistGFW_Protected_${timestamp}`,
-    'Palm Oil Mills': `testregressioncopylistGFW_Mills_${timestamp}`,
+    'RSPO Palm Concessions': `testregressioncopylistGFW RSPO ${timestamp}`,
+    'Oil Palm Concessions': `testregressioncopylistGFW OilPalm ${timestamp}`,
+    'Administrative Areas': `testregressioncopylistGFW Admin ${timestamp}`,
+    'Protected Areas': `testregressioncopylistGFW Protected ${timestamp}`,
+    'Palm Oil Mills': `testregressioncopylistGFW Mills ${timestamp}`,
   };
   let currentListName = '';
   const checkboxLocations = [1, 2];

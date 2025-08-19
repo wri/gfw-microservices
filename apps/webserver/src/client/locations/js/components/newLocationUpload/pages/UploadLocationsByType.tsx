@@ -272,6 +272,7 @@ export function UploadLocationsByType() {
         <DataTemplates
           isOpen={isDataTemplateDialogOpen}
           onClose={() => setIsDataTemplateDialogOpen(false)}
+          workflowType={uploadType}
         />
       </Card>
     </>

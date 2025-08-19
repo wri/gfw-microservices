@@ -119,12 +119,12 @@ const getAllUsersList = (req) => {
 /** @function {activatePendingAccount}
  *   @summary Activates a Pending Account
  *   @param  {Object}  req - Mandatory first parameter to pass the request object into the function in case session info is required.
- *   @param  {number}  pendingaccount_id An integer specifying the pending account ID.
+ *   @param  {number}  pendingAccountId An integer specifying the pending account ID.
  *   @return {Promise} return a promise object. If successful,
  *                   the promise resolves to true, otherwise, an
  *                   an error object is returned in the reject.
  */
-const activatePendingAccount = (req, pendingaccount_id, unit_test = false) => {
+const activatePendingAccount = (req, pendingAccountId, unit_test = false) => {
   return new Promise((resolve, reject) => {
     let userID = 0;
     let userEmail = '';
@@ -143,7 +143,7 @@ const activatePendingAccount = (req, pendingaccount_id, unit_test = false) => {
       .then((recordsets) => {
         const pendingOrganization = recordsets.find(
           (org) =>
-            org.organization_id === pendingaccount_id &&
+            org.organization_id === pendingAccountId &&
             org.organization_status_id === orgAccountStatus.Pending
         );
         const nonPendingOrganizations = recordsets.filter(
@@ -168,9 +168,7 @@ const activatePendingAccount = (req, pendingaccount_id, unit_test = false) => {
           );
         }
 
-        const parameters = [
-          { field: 'pendingaccount_id', type: sql.Int, value: pendingaccount_id },
-        ];
+        const parameters = [{ field: 'pendingaccount_id', type: sql.Int, value: pendingAccountId }];
         return sqlUtils.executeSystemStoredProcedure(
           req,
           'uspGetPendingAccountInformation',
@@ -204,7 +202,7 @@ const activatePendingAccount = (req, pendingaccount_id, unit_test = false) => {
 
         const userParameters = [{ field: 'pending_user_id', type: sql.Int, value: userID }];
         const orgParameters = [
-          { field: 'pending_organization_id', type: sql.Int, value: pendingaccount_id },
+          { field: 'pending_organization_id', type: sql.Int, value: pendingAccountId },
         ];
         return Promise.all([
           sqlUtils.executeSystemStoredProcedure(
@@ -266,7 +264,7 @@ const activatePendingAccount = (req, pendingaccount_id, unit_test = false) => {
         const secret = speakEasy.createSecret(req);
         const timestamp = new Date();
         const params = [
-          { field: 'PendingAccountID', type: sql.Int, value: pendingaccount_id },
+          { field: 'PendingAccountID', type: sql.Int, value: pendingAccountId },
           { field: 'UserSecret', type: sql.VarChar(50), value: secret },
           { field: 'ActivatedTime', type: sql.SmallDateTime, value: timestamp },
         ];
@@ -275,7 +273,7 @@ const activatePendingAccount = (req, pendingaccount_id, unit_test = false) => {
           .then(async (recordsets) => {
             try {
               const renewalParams = [
-                { field: 'PendingAccountID', type: sql.Int, value: pendingaccount_id },
+                { field: 'PendingAccountID', type: sql.Int, value: pendingAccountId },
                 { field: 'RenewalTime', type: sql.DateTime, value: timestamp },
               ];
               await sqlUtils.executeSystemQuery(setOrganizationRenewalTime, renewalParams);
@@ -291,15 +289,13 @@ const activatePendingAccount = (req, pendingaccount_id, unit_test = false) => {
         userEmail = record.ManagerEmail;
         userExists = record.UserExists;
         orgID = record.orgID;
-        return PolicyManager.movePolicy(req, pendingaccount_id, orgID);
+        return PolicyManager.movePolicy(req, pendingAccountId, orgID);
       })
       .then(() => {
         return userExists === 0 ? awsCognito.createUser(req, userEmail, false, unit_test) : null;
       })
       .then(() => {
-        const parameters = [
-          { field: 'pendingaccount_id', type: sql.Int, value: pendingaccount_id },
-        ];
+        const parameters = [{ field: 'pendingaccount_id', type: sql.Int, value: pendingAccountId }];
         return sqlUtils.executeSystemStoredProcedure(
           req,
           'uspRemovePendingOrganization',
@@ -321,7 +317,7 @@ const activatePendingAccount = (req, pendingaccount_id, unit_test = false) => {
       })
       .catch((error) => {
         if (orgID) {
-          rollbackUtils.dropDatabase(req, pendingaccount_id);
+          rollbackUtils.dropDatabase(req, pendingAccountId);
           rollbackUtils.deleteSystemTableRow(req, 'Organizations', orgID, 'id');
           rollbackUtils.deleteSystemTableRow(req, 'UserRoutes', orgID, 'organization_id');
         }
@@ -400,13 +396,13 @@ const updatePendingAccountUser = (
 * @function deletePendingAccountRequest
 * @summary Deletes a Pending Account
 * @param  {Object}   req - Mandatory first parameter to pass the request object into the function in case session info is required.
-* @param {number}  pendingaccount_id An integer specifying the pending account ID.
+* @param {number}  pendingAccountId An integer specifying the pending account ID.
 * @return {Promise} return a promise object. If successful,
 
 *                   the promise resolves to true, otherwise, an
 *                   an error object is returned in the reject.
 */
-const deletePendingAccountRequest = (req, pendingaccount_id) => {
+const deletePendingAccountRequest = (req, pendingAccountId) => {
   return new Promise((resolve, reject) => {
     // Check to make sure the user is a proper pro manager.
     if (!UserManager.isProManager(req)) {
@@ -421,7 +417,7 @@ const deletePendingAccountRequest = (req, pendingaccount_id) => {
       reject(eo);
     }
     // Activate Pending Account.
-    const params = [{ field: 'PendingAccountID', type: sql.Int, value: pendingaccount_id }];
+    const params = [{ field: 'PendingAccountID', type: sql.Int, value: pendingAccountId }];
     sqlUtils
       .executeSystemStoredProcedure(req, 'uspDeletePendingAccountRequest', params)
       .then(() => {
@@ -516,32 +512,6 @@ const deleteUser = (req, email) => {
         reject(errorObject);
       });
   });
-};
-
-/** @function {deletePendingAccount}
- * @summary Deletes a pending account
- * @param {Object} req
- * @param {number} organization_id
- */
-const deletePendingAccount = (req, organization_id) => {
-  const promise = new Promise((resolve, reject) => {
-    const params = [{ field: 'PendingAccountID', type: sql.Int, value: organization_id }];
-    sqlUtils
-      .executeSystemStoredProcedure(req, 'uspDeletePendingAccountRequest', params)
-      .then(() => {
-        resolve(true);
-      })
-      .catch((err) => {
-        const errorObject = errorUtils.createErrorMessage(
-          req,
-          errorUtils.ERROR_CODES.failedToDeleteOrganization,
-          'Failed to delete pending account.',
-          err
-        );
-        reject(errorObject);
-      });
-  });
-  return promise;
 };
 
 /** @function {reactivateAccount}
@@ -754,7 +724,6 @@ module.exports = {
   deleteOrganization,
   deleteUser,
   deactivateAccount,
-  deletePendingAccount,
   reactivateAccount,
   getAccountSubscriptionStatus,
   updateAccountSubscriptionStatus,

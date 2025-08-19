@@ -145,7 +145,7 @@ module.exports = (app, limiter) => {
     logger.info('POST /pro-manager/deleteProAccountRequest');
     const { id } = req.body;
 
-    ProManager.deletePendingAccount(req, id)
+    ProManager.deletePendingAccountRequest(req, id)
       .then(() => {
         res.send({ redirect: '/pro-manager-list' });
       })

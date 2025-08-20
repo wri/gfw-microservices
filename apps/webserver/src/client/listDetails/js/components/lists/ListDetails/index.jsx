@@ -247,28 +247,6 @@ export default class ListDetails extends Component {
     }
   }
 
-  // When a list is selected update state
-  UNSAFE_componentWillReceiveProps(nextProps) {
-    const { gfwInfoFromMapNext, userListInfoFromMapNext } = nextProps;
-    const { gfwInfoFromMap, gfwLists, userListInfoFromMap, userLists } = this.props;
-
-    if (gfwInfoFromMapNext && !gfwInfoFromMap) {
-      /**
-       * @desc Executes when GFW list is selected
-       */
-      const gfwList = gfwLists.filter((list) => list.list_name === gfwInfoFromMapNext.listAlias)[0];
-      store.dispatch(addList(gfwList));
-      this.getGFWDataFromMap(gfwList, gfwInfoFromMapNext.gfwData.globalIds);
-    } else if (userListInfoFromMapNext && !userListInfoFromMap) {
-      /**
-       * @desc Executes when User list is selected
-       */
-      const userList = userLists.filter((item) => item.id === userListInfoFromMapNext.listID)[0];
-      store.dispatch(addList(userList));
-      this.getUserLocationData(userListInfoFromMapNext.listID);
-    }
-  }
-
   componentDidUpdate(prevProps) {
     const { listView, listData, selectedLists, filters } = this.props;
     if (listView !== prevProps.listView) {

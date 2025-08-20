@@ -19,9 +19,6 @@ class Locations extends Component {
     super(props);
     this.state = {
       isLoading: true,
-      gfwInfoFromMap: false, // will switch to an object if this is activated!
-      userListInfoFromMap: false, // same as above!
-      drawnGeom: false, // same as above!
       shareView: false,
     };
   }
@@ -82,13 +79,12 @@ class Locations extends Component {
   };
 
   render() {
-    const { gfwInfoFromMap, userListInfoFromMap, isLoading, shareView } = this.state;
+    const { isLoading, shareView } = this.state;
 
     const {
       history,
       userLists,
       userInfo,
-      gfwLists,
       usersList,
       userSharedLists,
       listView,
@@ -129,15 +125,12 @@ class Locations extends Component {
           <ListDetails
             activeTemplate={activeTemplate}
             addType={addType}
-            gfwInfoFromMap={gfwInfoFromMap}
             history={history}
-            userListInfoFromMap={userListInfoFromMap}
             currentUser={userInfo}
             selectedLists={selectedLists}
             folders={userFolders}
             userLists={userLists} // Contains all lists that users have created
             listView={listView}
-            gfwLists={gfwLists}
             canopyModalVisible={canopyModalVisible}
             filters={filters}
             filterCount={filterCount}

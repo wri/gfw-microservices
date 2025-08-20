@@ -32,21 +32,6 @@ module.exports = (app, limiter) => {
 
   app.get('/list-details', (req, res) => {
     console.log('/list-details');
-    const locationsData = {
-      gfwData: app.get('gfw-data'),
-      mapData: app.get('map-data'),
-      drawData: app.get('draw-data'),
-      locationName: app.get('location-name'),
-      fromMap: app.get('from-map'),
-      subscriptionStatus: req.session.subscription_status_id,
-    };
-
-    controller.listDetails(req, res, locationsData);
-
-    app.set('from-map', false);
-    app.set('gfw-data', '');
-    app.set('map-data', '');
-    app.set('draw-data', '');
-    app.set('location-name', '');
+    controller.listDetails(req, res);
   });
 };

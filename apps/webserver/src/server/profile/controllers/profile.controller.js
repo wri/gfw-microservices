@@ -49,7 +49,7 @@ export const profileInfo = (req, res) => {
         });
       })
       .catch((err) => {
-        console.log('Reject', err);
+        console.error('Error getting profile info:', err);
         res.status(500).json({ message: 'Error getting profile info' });
       });
   } else {
@@ -67,7 +67,8 @@ export const profileInfo = (req, res) => {
         });
       })
       .catch((err) => {
-        console.log('Reject', err);
+        console.error('Error getting user info:', err);
+        res.status(500).json({ message: 'Error getting user info' });
       });
   }
 };

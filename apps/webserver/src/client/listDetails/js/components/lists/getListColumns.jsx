@@ -8,6 +8,7 @@ import {
   isDownloadDisabledForThisList,
   findArrIndex,
 } from '../../../../locations/js/utils/lists.utils';
+import id_type_columns from '../../config/columns/id_type_columns';
 
 const transifex = Transifex.live.translateText;
 
@@ -19,8 +20,20 @@ export const getListColumns = (locationData, customAttributes, selectedLists) =>
   const isListExcluded = isDownloadDisabledForThisList(selectedLists[0]);
 
   if (locationData) {
-    Object.keys(locationData).forEach((key) => {
+    const columnData = Object.keys(locationData);
+    // preserves the order of the file
+    id_type_columns.forEach((col) => {
+      if (columnData.includes(col.accessor)) {
+        columnNames.push(col);
+      }
+    });
+
+    columnData.forEach((key) => {
       const keyIndex = findArrIndex(columnNames, 'accessor', key);
+      if (id_type_columns.map((col) => col.accessor).includes(key)) {
+        // Already handled above, skip to avoid duplicates
+        return;
+      }
       if (key === 'Risk Level') {
         columnNames.push({
           Header: (
@@ -74,7 +87,7 @@ export const getListColumns = (locationData, customAttributes, selectedLists) =>
             sortMethod: sortByNone,
           });
         }
-      } else if (key === 'Owner ID' || key === 'Company ID' || key === 'ID') {
+      } else if (key === 'Owner ID' || key === 'Company ID') {
         const index = columnNames.findIndex((v) => v.accessor === key);
         if (index === -1) {
           columnNames.push({

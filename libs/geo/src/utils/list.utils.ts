@@ -226,14 +226,12 @@ export const ComposeCopyQueryStatement = async (
 ) => {
   const tableColumns = await GetTableAnalysisColumnsById(clientDatabase, selectedListId, isGFWList);
 
-  // get valid columns from AnalysisSchema
-  const validColumns = Object.keys(AnalysisSchema.columns);
+  // get valid columns from AnalysisSchema by extracting the 'name' property values
+  const validColumns = Object.values(AnalysisSchema.columns).map((column: any) => column.name);
 
-  // Filter columns to include only valid ones
-  const filteredColumns =
-    tableColumns
-      ?.map((record: RecordType) => record.COLUMN_NAME)
-      .filter((column) => validColumns.includes(column)) ?? [];
+  // Extract column names and filter to include only valid ones
+  const columnNames = tableColumns?.map((record: RecordType) => record.COLUMN_NAME) ?? [];
+  const filteredColumns = columnNames.filter((column) => validColumns.includes(column));
 
   const statement = filteredColumns
     .map((column) => `[${column}] = [${srcListAnalysisTable}].[${column}]`)

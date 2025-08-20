@@ -40,15 +40,21 @@ describe('Profile Routes', () => {
 
   // Helper function to find route handler
   const findRouteHandler = (method, path) => {
-    const routeCall = mockApp[method].mock.calls.find(call => call[0] === path);
+    const routeCall = mockApp[method].mock.calls.find((call) => call[0] === path);
     return routeCall ? routeCall[1] : null;
   };
 
   // Helper function to create mock request
   const createMockReq = (overrides = {}) => ({
     body: {},
-    session: { user_id: '456', user_email: 'admin@example.com', organization_id: '789', user_first_name: 'Admin', user_last_name: 'User' },
-    ...overrides
+    session: {
+      user_id: '456',
+      user_email: 'admin@example.com',
+      organization_id: '789',
+      user_first_name: 'Admin',
+      user_last_name: 'User',
+    },
+    ...overrides,
   });
 
   // Helper function to create mock response
@@ -58,7 +64,7 @@ describe('Profile Routes', () => {
     json: jest.fn(),
     attachment: jest.fn(),
     pipe: jest.fn(),
-    ...overrides
+    ...overrides,
   });
 
   beforeEach(async () => {
@@ -68,7 +74,7 @@ describe('Profile Routes', () => {
     mockApp = {
       use: jest.fn(),
       get: jest.fn(),
-      post: jest.fn()
+      post: jest.fn(),
     };
 
     // Create mock limiter function
@@ -78,7 +84,7 @@ describe('Profile Routes', () => {
     mockEapiRoutes = {
       post: jest.fn(),
       get: jest.fn(),
-      delete: jest.fn()
+      delete: jest.fn(),
     };
 
     // Mock express.Router
@@ -87,40 +93,41 @@ describe('Profile Routes', () => {
     // Mock controller
     mockController = {
       profile: jest.fn(),
-      profileInfo: jest.fn()
+      profileInfo: jest.fn(),
     };
 
     // Mock dependencies
     mockSlackUtils = {
       buildSlackNotificationMessage: jest.fn(),
-      sendNotification: jest.fn()
+      sendNotification: jest.fn(),
     };
     mockUserManager = {
       activateUser: jest.fn(),
       deactivateUser: jest.fn(),
       createNewUser: jest.fn(),
       updateUserInfo: jest.fn(),
-      getUserSecret: jest.fn()
+      getUserSecret: jest.fn(),
     };
     mockAccountManager = {
-      updateAccountProfile: jest.fn()
+      updateAccountProfile: jest.fn(),
     };
     mockPolicyManager = {
       uploadPolicies: jest.fn(),
       deletePolicies: jest.fn(),
-      downloadPolicy: jest.fn()
+      downloadPolicy: jest.fn(),
     };
     mockRateLimiterUtil = {
-      useRateLimiter: jest.fn()
+      useRateLimiter: jest.fn(),
     };
     mockLogger = {
       info: jest.fn(),
-      error: jest.fn()
+      error: jest.fn(),
     };
     mockAxios = axios as jest.Mocked<typeof axios>;
 
     // Setup module mocks
-    jest.mocked(slackUtils).buildSlackNotificationMessage = mockSlackUtils.buildSlackNotificationMessage;
+    jest.mocked(slackUtils).buildSlackNotificationMessage =
+      mockSlackUtils.buildSlackNotificationMessage;
     jest.mocked(slackUtils).sendNotification = mockSlackUtils.sendNotification;
     jest.mocked(UserManager).activateUser = mockUserManager.activateUser;
     jest.mocked(UserManager).deactivateUser = mockUserManager.deactivateUser;
@@ -156,19 +163,25 @@ describe('Profile Routes', () => {
 
     it('should include rate limiter when enabled', () => {
       mockRateLimiterUtil.useRateLimiter.mockReturnValue(true);
-      expect(mockApp.use).toHaveBeenCalledWith('/profile', expect.arrayContaining(['rate-limiter-middleware']));
+      expect(mockApp.use).toHaveBeenCalledWith(
+        '/profile',
+        expect.arrayContaining(['rate-limiter-middleware'])
+      );
     });
 
     it('should not include rate limiter when disabled', () => {
       mockRateLimiterUtil.useRateLimiter.mockReturnValue(false);
-      expect(mockApp.use).toHaveBeenCalledWith('/profile', expect.not.arrayContaining(['rate-limiter-middleware']));
+      expect(mockApp.use).toHaveBeenCalledWith(
+        '/profile',
+        expect.not.arrayContaining(['rate-limiter-middleware'])
+      );
     });
   });
 
   describe('activateUser route', () => {
     it('should activate user successfully', async () => {
       const mockReq = createMockReq({
-        body: { id: '123', email: 'test@example.com', first_name: 'John', last_name: 'Doe' }
+        body: { id: '123', email: 'test@example.com', first_name: 'John', last_name: 'Doe' },
       });
       const mockRes = createMockRes();
 
@@ -178,13 +191,19 @@ describe('Profile Routes', () => {
       await activateUserHandler(mockReq, mockRes);
 
       expect(mockLogger.info).toHaveBeenCalledWith('POST /profile/activateUser');
-      expect(mockUserManager.activateUser).toHaveBeenCalledWith(mockReq, '123', 'test@example.com', 'John', 'Doe');
+      expect(mockUserManager.activateUser).toHaveBeenCalledWith(
+        mockReq,
+        '123',
+        'test@example.com',
+        'John',
+        'Doe'
+      );
       expect(mockRes.send).toHaveBeenCalledWith({ redirect: '/profile' });
     });
 
     it('should handle activation error and send slack notification', async () => {
       const mockReq = createMockReq({
-        body: { id: '123', email: 'test@example.com', first_name: 'John', last_name: 'Doe' }
+        body: { id: '123', email: 'test@example.com', first_name: 'John', last_name: 'Doe' },
       });
       const mockRes = createMockRes();
       const mockError = new Error('Activation failed');
@@ -205,9 +224,9 @@ describe('Profile Routes', () => {
           email: 'admin@example.com',
           OrgID: '789',
           first_name: 'Admin',
-          last_name: 'User'
+          last_name: 'User',
         },
-        browserInfo: ''
+        browserInfo: '',
       });
       expect(mockSlackUtils.sendNotification).toHaveBeenCalledWith('slack-message');
       expect(mockRes.status).toHaveBeenCalledWith(500);
@@ -218,7 +237,7 @@ describe('Profile Routes', () => {
   describe('deactivateUser route', () => {
     it('should deactivate user successfully', async () => {
       const mockReq = createMockReq({
-        body: { name: 'testuser' }
+        body: { name: 'testuser' },
       });
       const mockRes = createMockRes();
 
@@ -234,7 +253,7 @@ describe('Profile Routes', () => {
 
     it('should handle deactivation error and send slack notification', async () => {
       const mockReq = createMockReq({
-        body: { name: 'testuser' }
+        body: { name: 'testuser' },
       });
       const mockRes = createMockRes();
       const mockError = new Error('Deactivation failed');
@@ -253,20 +272,21 @@ describe('Profile Routes', () => {
   });
 
   describe('updateAccount route', () => {
-    const createUpdateAccountReq = (overrides = {}) => createMockReq({
-      body: {
-        org_name: 'Test Org',
-        org_address: '123 Test St',
-        org_website: 'test.com',
-        parent_org_name: 'Parent Org',
-        is_subsidiary: true,
-        arr_org_classification_ids: [1, 2],
-        policyUploadList: [],
-        policyNames: [],
-        overwrite: false,
-        ...overrides
-      }
-    });
+    const createUpdateAccountReq = (overrides = {}) =>
+      createMockReq({
+        body: {
+          org_name: 'Test Org',
+          org_address: '123 Test St',
+          org_website: 'test.com',
+          parent_org_name: 'Parent Org',
+          is_subsidiary: true,
+          arr_org_classification_ids: [1, 2],
+          policyUploadList: [],
+          policyNames: [],
+          overwrite: false,
+          ...overrides,
+        },
+      });
 
     it('should update account profile successfully without policies', async () => {
       const mockReq = createUpdateAccountReq();
@@ -279,7 +299,13 @@ describe('Profile Routes', () => {
 
       expect(mockLogger.info).toHaveBeenCalledWith('POST /profile/updateAccount');
       expect(mockAccountManager.updateAccountProfile).toHaveBeenCalledWith(
-        mockReq, 'Test Org', '123 Test St', 'test.com', 'Parent Org', true, [1, 2]
+        mockReq,
+        'Test Org',
+        '123 Test St',
+        'test.com',
+        'Parent Org',
+        true,
+        [1, 2]
       );
       expect(mockRes.send).toHaveBeenCalledWith({ redirect: '/profile', policyResult: [] });
     });
@@ -288,7 +314,7 @@ describe('Profile Routes', () => {
       const mockReq = createUpdateAccountReq({
         policyUploadList: ['policy1.pdf'],
         policyNames: ['Policy 1'],
-        overwrite: true
+        overwrite: true,
       });
       const mockRes = createMockRes();
 
@@ -298,8 +324,16 @@ describe('Profile Routes', () => {
       const updateAccountHandler = findRouteHandler('post', '/profile/updateAccount');
       await updateAccountHandler(mockReq, mockRes);
 
-      expect(mockPolicyManager.uploadPolicies).toHaveBeenCalledWith(mockReq, ['policy1.pdf'], ['Policy 1'], true);
-      expect(mockRes.send).toHaveBeenCalledWith({ redirect: '/profile', policyResult: ['policy1'] });
+      expect(mockPolicyManager.uploadPolicies).toHaveBeenCalledWith(
+        mockReq,
+        ['policy1.pdf'],
+        ['Policy 1'],
+        true
+      );
+      expect(mockRes.send).toHaveBeenCalledWith({
+        redirect: '/profile',
+        policyResult: ['policy1'],
+      });
     });
 
     it('should handle update account error', async () => {
@@ -312,28 +346,32 @@ describe('Profile Routes', () => {
       const updateAccountHandler = findRouteHandler('post', '/profile/updateAccount');
       await updateAccountHandler(mockReq, mockRes);
 
-      expect(mockLogger.error).toHaveBeenCalledWith('POST /profile/updateAccount [updateAccountProfile]', mockError);
+      expect(mockLogger.error).toHaveBeenCalledWith(
+        'POST /profile/updateAccount [updateAccountProfile]',
+        mockError
+      );
       expect(mockRes.send).toHaveBeenCalledWith(mockError);
     });
   });
 
   describe('createuser route', () => {
-    const createUserReq = (overrides = {}) => createMockReq({
-      body: {
-        first_name: 'John',
-        middle_initial: 'D',
-        last_name: 'Doe',
-        email: 'john@example.com',
-        phone: '123-456-7890',
-        title_id: 1,
-        other_title: '',
-        access_level_id: 2,
-        enableAlerts: true,
-        geographies: [1, 2],
-        commodities: [3, 4],
-        ...overrides
-      }
-    });
+    const createUserReq = (overrides = {}) =>
+      createMockReq({
+        body: {
+          first_name: 'John',
+          middle_initial: 'D',
+          last_name: 'Doe',
+          email: 'john@example.com',
+          phone: '123-456-7890',
+          title_id: 1,
+          other_title: '',
+          access_level_id: 2,
+          enableAlerts: true,
+          geographies: [1, 2],
+          commodities: [3, 4],
+          ...overrides,
+        },
+      });
 
     it('should create user successfully', async () => {
       const mockReq = createUserReq();
@@ -346,11 +384,22 @@ describe('Profile Routes', () => {
 
       expect(mockLogger.info).toHaveBeenCalledWith('POST /profile/createuser');
       expect(mockUserManager.createNewUser).toHaveBeenCalledWith(
-        mockReq, 'John', 'D', 'Doe', 'john@example.com', '123-456-7890', 1, '', 2, true, [1, 2], [3, 4]
+        mockReq,
+        'John',
+        'D',
+        'Doe',
+        'john@example.com',
+        '123-456-7890',
+        1,
+        '',
+        2,
+        true,
+        [1, 2],
+        [3, 4]
       );
       expect(mockRes.send).toHaveBeenCalledWith({
         redirect: '/profile',
-        user_id: 'new-user-id'
+        user_id: 'new-user-id',
       });
     });
 
@@ -370,25 +419,26 @@ describe('Profile Routes', () => {
   });
 
   describe('updateuser route', () => {
-    const createUpdateUserReq = (overrides = {}) => createMockReq({
-      body: {
-        id: '123',
-        first_name: 'John',
-        middle_initial: 'D',
-        last_name: 'Doe',
-        email: 'john@example.com',
-        phone: '123-456-7890',
-        title_id: 1,
-        other_title: '',
-        access_level_id: 2,
-        enableAlerts: true,
-        geographies: [1, 2],
-        commodities: [3, 4],
-        auth_preference_id: 1,
-        ...overrides
-      },
-      session: { user_access_level_id: 2 }
-    });
+    const createUpdateUserReq = (overrides = {}) =>
+      createMockReq({
+        body: {
+          id: '123',
+          first_name: 'John',
+          middle_initial: 'D',
+          last_name: 'Doe',
+          email: 'john@example.com',
+          phone: '123-456-7890',
+          title_id: 1,
+          other_title: '',
+          access_level_id: 2,
+          enableAlerts: true,
+          geographies: [1, 2],
+          commodities: [3, 4],
+          auth_preference_id: 1,
+          ...overrides,
+        },
+        session: { user_access_level_id: 2 },
+      });
 
     it('should update user successfully', async () => {
       const mockReq = createUpdateUserReq();
@@ -415,7 +465,7 @@ describe('Profile Routes', () => {
         arr_user_geography_ids: [1, 2],
         arr_user_commodity_ids: [3, 4],
         user_auth_preference_id: 1,
-        loggedUserAccessLevelId: 2
+        loggedUserAccessLevelId: 2,
       });
       expect(mockRes.send).toHaveBeenCalledWith('updated');
     });
@@ -436,9 +486,10 @@ describe('Profile Routes', () => {
   });
 
   describe('deletePolicy route', () => {
-    const createDeletePolicyReq = (overrides = {}) => createMockReq({
-      body: { policySelectedList: ['policy1', 'policy2'], ...overrides }
-    });
+    const createDeletePolicyReq = (overrides = {}) =>
+      createMockReq({
+        body: { policySelectedList: ['policy1', 'policy2'], ...overrides },
+      });
 
     it('should delete policies successfully', async () => {
       const mockReq = createDeletePolicyReq();
@@ -450,7 +501,10 @@ describe('Profile Routes', () => {
       await deletePolicyHandler(mockReq, mockRes);
 
       expect(mockLogger.info).toHaveBeenCalledWith('POST /profile/deletePolicy');
-      expect(mockPolicyManager.deletePolicies).toHaveBeenCalledWith(mockReq, ['policy1', 'policy2']);
+      expect(mockPolicyManager.deletePolicies).toHaveBeenCalledWith(mockReq, [
+        'policy1',
+        'policy2',
+      ]);
       expect(mockRes.send).toHaveBeenCalledWith('Success');
     });
 
@@ -482,11 +536,12 @@ describe('Profile Routes', () => {
   });
 
   describe('downloadPolicy route', () => {
-    const createDownloadPolicyReq = (overrides = {}) => createMockReq({
-      params: { policyList: 'policy1.pdf' },
-      session: { organization_id: 'org123' },
-      ...overrides
-    });
+    const createDownloadPolicyReq = (overrides = {}) =>
+      createMockReq({
+        params: { policyList: 'policy1.pdf' },
+        session: { organization_id: 'org123' },
+        ...overrides,
+      });
 
     it('should download policy successfully', async () => {
       const mockReq = createDownloadPolicyReq();
@@ -499,7 +554,11 @@ describe('Profile Routes', () => {
       await downloadPolicyHandler(mockReq, mockRes);
 
       expect(mockLogger.info).toHaveBeenCalledWith('GET /profile/downloadPolicy/:policyList');
-      expect(mockPolicyManager.downloadPolicy).toHaveBeenCalledWith(mockReq, 'policy1.pdf', 'org123');
+      expect(mockPolicyManager.downloadPolicy).toHaveBeenCalledWith(
+        mockReq,
+        'policy1.pdf',
+        'org123'
+      );
       expect(mockRes.attachment).toHaveBeenCalledWith('policy1.pdf');
       expect(mockFileStream.pipe).toHaveBeenCalledWith(mockRes);
     });
@@ -514,15 +573,19 @@ describe('Profile Routes', () => {
       const downloadPolicyHandler = findRouteHandler('get', '/profile/downloadPolicy/:policyList');
       await downloadPolicyHandler(mockReq, mockRes);
 
-      expect(mockLogger.error).toHaveBeenCalledWith('GET /profile/downloadPolicy/:policyList', mockError);
+      expect(mockLogger.error).toHaveBeenCalledWith(
+        'GET /profile/downloadPolicy/:policyList',
+        mockError
+      );
       expect(mockRes.send).toHaveBeenCalledWith(mockError);
     });
   });
 
   describe('userSecret route', () => {
-    const createUserSecretReq = (overrides = {}) => createMockReq({
-      body: { email: 'user@example.com', ...overrides }
-    });
+    const createUserSecretReq = (overrides = {}) =>
+      createMockReq({
+        body: { email: 'user@example.com', ...overrides },
+      });
 
     it('should get user secret successfully', async () => {
       const mockReq = createUserSecretReq();
@@ -553,12 +616,14 @@ describe('Profile Routes', () => {
 
   describe('EAPI Microservice routes', () => {
     it('should set up swagger route', () => {
-      const swaggerCall = mockApp.get.mock.calls.find(call => call[0] === '/api/profile/swagger');
+      const swaggerCall = mockApp.get.mock.calls.find((call) => call[0] === '/api/profile/swagger');
       expect(swaggerCall).toBeDefined();
     });
 
     it('should set up api-keys routes', () => {
-      const apiKeysCall = mockApp.use.mock.calls.find(call => call[0] === '/api/profile/api-keys');
+      const apiKeysCall = mockApp.use.mock.calls.find(
+        (call) => call[0] === '/api/profile/api-keys'
+      );
       expect(apiKeysCall).toBeDefined();
     });
 
@@ -570,14 +635,16 @@ describe('Profile Routes', () => {
       mockAxios.mockResolvedValue({ data: 'success' });
 
       // Get the runEAPIMicroserviceRequest function from the closure
-      const apiKeysCall = mockApp.use.mock.calls.find(call => call[0] === '/api/profile/api-keys');
+      const apiKeysCall = mockApp.use.mock.calls.find(
+        (call) => call[0] === '/api/profile/api-keys'
+      );
       const middlewareStack = apiKeysCall[1];
       const eapiMiddleware = middlewareStack[middlewareStack.length - 1];
 
       const requestData = {
         method: 'GET',
         url: '/test',
-        data: null
+        data: null,
       };
 
       await eapiMiddleware(requestData, mockReq, mockRes, mockNext);
@@ -586,7 +653,7 @@ describe('Profile Routes', () => {
         url: 'http://test-eapi.com/api/test',
         method: 'GET',
         headers: { 'Content-type': 'application/json' },
-        data: null
+        data: null,
       });
       expect(mockRes.status).toHaveBeenCalledWith(200);
       expect(mockRes.send).toHaveBeenCalledWith('success');
@@ -600,19 +667,21 @@ describe('Profile Routes', () => {
       const mockError = {
         response: {
           status: 404,
-          data: 'Not found'
-        }
+          data: 'Not found',
+        },
       };
       mockAxios.mockRejectedValue(mockError);
 
-      const apiKeysCall = mockApp.use.mock.calls.find(call => call[0] === '/api/profile/api-keys');
+      const apiKeysCall = mockApp.use.mock.calls.find(
+        (call) => call[0] === '/api/profile/api-keys'
+      );
       const middlewareStack = apiKeysCall[1];
       const eapiMiddleware = middlewareStack[middlewareStack.length - 1];
 
       const requestData = {
         method: 'GET',
         url: '/test',
-        data: null
+        data: null,
       };
 
       await eapiMiddleware(requestData, mockReq, mockRes, mockNext);
@@ -629,14 +698,16 @@ describe('Profile Routes', () => {
       const mockError = new Error('Network error');
       mockAxios.mockRejectedValue(mockError);
 
-      const apiKeysCall = mockApp.use.mock.calls.find(call => call[0] === '/api/profile/api-keys');
+      const apiKeysCall = mockApp.use.mock.calls.find(
+        (call) => call[0] === '/api/profile/api-keys'
+      );
       const middlewareStack = apiKeysCall[1];
       const eapiMiddleware = middlewareStack[middlewareStack.length - 1];
 
       const requestData = {
         method: 'GET',
         url: '/test',
-        data: null
+        data: null,
       };
 
       await eapiMiddleware(requestData, mockReq, mockRes, mockNext);
@@ -653,7 +724,7 @@ describe('Profile Routes', () => {
 
       mockAxios.mockResolvedValue({ data: 'swagger-data' });
 
-      const swaggerCall = mockApp.get.mock.calls.find(call => call[0] === '/api/profile/swagger');
+      const swaggerCall = mockApp.get.mock.calls.find((call) => call[0] === '/api/profile/swagger');
       const middlewareStack = swaggerCall[1];
       const swaggerMiddleware = middlewareStack[middlewareStack.length - 1];
 
@@ -662,7 +733,7 @@ describe('Profile Routes', () => {
       expect(mockAxios).toHaveBeenCalledWith({
         url: 'http://test-eapi.com/api/profile',
         method: 'GET',
-        headers: { 'Content-type': 'application/json' }
+        headers: { 'Content-type': 'application/json' },
       });
       expect(mockRes.status).toHaveBeenCalledWith(200);
       expect(mockRes.send).toHaveBeenCalledWith('swagger-data');
@@ -675,12 +746,12 @@ describe('Profile Routes', () => {
       const mockError = {
         response: {
           status: 500,
-          data: 'Internal error'
-        }
+          data: 'Internal error',
+        },
       };
       mockAxios.mockRejectedValue(mockError);
 
-      const swaggerCall = mockApp.get.mock.calls.find(call => call[0] === '/api/profile/swagger');
+      const swaggerCall = mockApp.get.mock.calls.find((call) => call[0] === '/api/profile/swagger');
       const middlewareStack = swaggerCall[1];
       const swaggerMiddleware = middlewareStack[middlewareStack.length - 1];
 
@@ -695,13 +766,13 @@ describe('Profile Routes', () => {
       const mockReq = createMockReq({
         session: {
           organization_id: 'org123',
-          organization_user_id: 'user456'
-        }
+          organization_user_id: 'user456',
+        },
       });
       const mockRes = {};
       const mockNext = jest.fn();
 
-      const postCall = mockEapiRoutes.post.mock.calls.find(call => call[0] === '');
+      const postCall = mockEapiRoutes.post.mock.calls.find((call) => call[0] === '');
       const postHandler = postCall[1];
 
       postHandler(mockReq, mockRes, mockNext);
@@ -711,45 +782,45 @@ describe('Profile Routes', () => {
         url: '/api-keys',
         data: {
           organizationId: 'org123',
-          userId: 'user456'
-        }
+          userId: 'user456',
+        },
       });
     });
 
     it('should handle GET api-keys route', () => {
       const mockReq = createMockReq({
-        session: { organization_id: 'org123' }
+        session: { organization_id: 'org123' },
       });
       const mockRes = {};
       const mockNext = jest.fn();
 
-      const getCall = mockEapiRoutes.get.mock.calls.find(call => call[0] === '');
+      const getCall = mockEapiRoutes.get.mock.calls.find((call) => call[0] === '');
       const getHandler = getCall[1];
 
       getHandler(mockReq, mockRes, mockNext);
 
       expect(mockNext).toHaveBeenCalledWith({
         method: 'GET',
-        url: '/api-keys/org123'
+        url: '/api-keys/org123',
       });
     });
 
     it('should handle DELETE api-keys route', () => {
       const mockReq = createMockReq({
         params: { tokenId: 'token123' },
-        session: { organization_id: 'org123' }
+        session: { organization_id: 'org123' },
       });
       const mockRes = {};
       const mockNext = jest.fn();
 
-      const deleteCall = mockEapiRoutes.delete.mock.calls.find(call => call[0] === '/:tokenId');
+      const deleteCall = mockEapiRoutes.delete.mock.calls.find((call) => call[0] === '/:tokenId');
       const deleteHandler = deleteCall[1];
 
       deleteHandler(mockReq, mockRes, mockNext);
 
       expect(mockNext).toHaveBeenCalledWith({
         method: 'DELETE',
-        url: '/api-keys/org123/token123'
+        url: '/api-keys/org123/token123',
       });
     });
   });

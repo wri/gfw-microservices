@@ -2,36 +2,36 @@
 jest.mock('../../../config/config', () => ({
   compiledAssets: {
     js: { common: 'common.js', profile: 'profile.js' },
-    css: { profile: 'profile.css' }
-  }
+    css: { profile: 'profile.css' },
+  },
 }));
 
 // Mock the require statements
 jest.mock('../../../config/publicutils/accountManager.utils', () => ({
   getClassifications: jest.fn(),
   getAccountProfile: jest.fn(),
-  getUsersList: jest.fn()
+  getUsersList: jest.fn(),
 }));
 
 jest.mock('../../../config/publicutils/userManager.utils', () => ({
-  isAdministrator: jest.fn()
+  isAdministrator: jest.fn(),
 }));
 
 jest.mock('../../../config/publicutils/authenticationManager.utils', () => ({
-  getUserInfo: jest.fn()
+  getUserInfo: jest.fn(),
 }));
 
 jest.mock('../../../config/publicutils/policyManager.utils', () => ({
-  getPolicyList: jest.fn()
+  getPolicyList: jest.fn(),
 }));
 
 jest.mock('@wri-monorepos/sql', () => ({
-  getAccountRenewalTime: jest.fn()
+  getAccountRenewalTime: jest.fn(),
 }));
 
 // Mock path.resolve to return the correct paths
 jest.mock('path', () => ({
-  resolve: jest.fn((path) => path.replace('./', '../../../'))
+  resolve: jest.fn((path) => path.replace('./', '../../../')),
 }));
 
 // Import the controller functions
@@ -53,14 +53,14 @@ describe('Profile Controller', () => {
     // Create mock request and response objects
     mockReq = {
       session: {
-        organization_id: 'test-org-id'
-      }
+        organization_id: 'test-org-id',
+      },
     };
 
     mockRes = {
       render: jest.fn(),
       status: jest.fn().mockReturnThis(),
-      json: jest.fn()
+      json: jest.fn(),
     };
 
     // Get references to mocked modules
@@ -78,7 +78,7 @@ describe('Profile Controller', () => {
       expect(mockRes.render).toHaveBeenCalledWith('profile', {
         common: 'common.js',
         profilejs: 'profile.js',
-        profilecss: 'profile.css'
+        profilecss: 'profile.css',
       });
     });
   });
@@ -126,7 +126,7 @@ describe('Profile Controller', () => {
           policyList: mockPolicyList,
           common: 'common.js',
           profilejs: 'profile.js',
-          profilecss: 'profile.css'
+          profilecss: 'profile.css',
         });
       });
 
@@ -138,7 +138,7 @@ describe('Profile Controller', () => {
 
         expect(mockRes.status).toHaveBeenCalledWith(500);
         expect(mockRes.json).toHaveBeenCalledWith({
-          message: 'Error getting profile info'
+          message: 'Error getting profile info',
         });
       });
     });
@@ -165,7 +165,7 @@ describe('Profile Controller', () => {
           policyList: '',
           common: 'common.js',
           profilejs: 'profile.js',
-          profilecss: 'profile.css'
+          profilecss: 'profile.css',
         });
       });
 
@@ -177,7 +177,7 @@ describe('Profile Controller', () => {
 
         expect(mockRes.status).toHaveBeenCalledWith(500);
         expect(mockRes.json).toHaveBeenCalledWith({
-          message: 'Error getting user info'
+          message: 'Error getting user info',
         });
       });
     });

@@ -6,6 +6,7 @@ const AccountManager = require(path.resolve('./config/publicutils/accountManager
 const UserManager = require(path.resolve('./config/publicutils/userManager.utils'));
 const AuthManager = require(path.resolve('./config/publicutils/authenticationManager.utils'));
 const PolicyManager = require(path.resolve('./config/publicutils/policyManager.utils'));
+// eslint-disable-next-line import/no-unresolved
 import { getAccountRenewalTime } from '@wri-monorepos/sql';
 /**
  * @function profile
@@ -49,7 +50,7 @@ export const profileInfo = (req, res) => {
         });
       })
       .catch((err) => {
-        console.error('Error getting profile info:', err);
+        console.log('Reject', err);
         res.status(500).json({ message: 'Error getting profile info' });
       });
   } else {
@@ -67,8 +68,7 @@ export const profileInfo = (req, res) => {
         });
       })
       .catch((err) => {
-        console.error('Error getting user info:', err);
-        res.status(500).json({ message: 'Error getting user info' });
+        console.log('Reject', err);
       });
   }
 };

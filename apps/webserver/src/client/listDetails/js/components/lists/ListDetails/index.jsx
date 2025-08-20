@@ -36,7 +36,6 @@ import LocationDataNotAvailableMessage from '../LocationDataNotAvailableMessage'
 import store from '../../../../../locations/js/store';
 import { locationsPage, userAccessLevel } from '../../../../../common/js/config';
 import {
-  addList,
   changeListView,
   changeView,
   clearFilters,

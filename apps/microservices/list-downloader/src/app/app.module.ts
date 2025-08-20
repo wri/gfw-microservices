@@ -1,6 +1,7 @@
 import { ConfigModule } from '@nestjs/config';
-import { Module } from '@nestjs/common';
+import { MiddlewareConsumer, Module } from '@nestjs/common';
 import { serverConfigSchema } from '../validators/server-config';
+import { TraceIdMiddleware } from '@wri-monorepos/shared';
 
 // This needs to be at the beginning of the file to ensure that the '.env' file
 // is loaded into process.env before any code reads process.env
@@ -18,4 +19,9 @@ import { VerifiableCredentialModule } from './verifiable-credentials/verifiable.
   controllers: [],
   providers: [],
 })
-export class AppModule {}
+export class AppModule {
+  configure(consumer: MiddlewareConsumer) {
+    // Apply trace ID middleware to all routes
+    consumer.apply(TraceIdMiddleware).forRoutes('*path');
+  }
+}

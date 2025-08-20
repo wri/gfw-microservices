@@ -5,6 +5,7 @@ import {
   UnlockList,
   ListsAnalysisStatus,
   ClientStoreConnection,
+  AnalysisSchema,
 } from '@wri-monorepos/sql';
 import { ListBulkCopy } from './ListBulkCopy';
 import * as sql from 'mssql';
@@ -225,9 +226,14 @@ export const ComposeCopyQueryStatement = async (
 ) => {
   const tableColumns = await GetTableAnalysisColumnsById(clientDatabase, selectedListId, isGFWList);
 
-  const columns = tableColumns?.map((record: RecordType) => record.COLUMN_NAME) ?? [];
-  // Removing argentina_presence column for old lists if it exists
-  const filteredColumns = columns.filter((column) => column !== 'argentina_presence');
+  // get valid columns from AnalysisSchema
+  const validColumns = Object.keys(AnalysisSchema.columns);
+
+  // Filter columns to include only valid ones
+  const filteredColumns =
+    tableColumns
+      ?.map((record: RecordType) => record.COLUMN_NAME)
+      .filter((column) => validColumns.includes(column)) ?? [];
 
   const statement = filteredColumns
     .map((column) => `[${column}] = [${srcListAnalysisTable}].[${column}]`)

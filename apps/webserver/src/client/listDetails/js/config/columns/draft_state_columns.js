@@ -4,16 +4,11 @@ import { renderCell } from './columns.utils';
 
 const draft_state_columns = [
   {
-    Header: () => <ColumnsHeader label="Location Name" />,
-    className: 'default-cell td-num',
-    id: 'Location Name',
-    Cell: ({ original }) => <span>{original?.locationName}</span>,
-  },
-  {
     Header: () => <ColumnsHeader label="Size (ha)" />,
     accessor: 'Analysis Area',
     className: 'default-cell td-num',
     id: 'total_area_ha',
+    show: true,
     Cell: (row) => {
       return renderCell(formatDigit(row.original?.['Analysis Area']));
     },

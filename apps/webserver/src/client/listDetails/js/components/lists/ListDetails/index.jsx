@@ -176,7 +176,7 @@ export default class ListDetails extends Component {
       tableSortedBy: 'Location Name',
       tableSortedDesc: false,
       numberOfResults: undefined,
-      visibleColumns: [],
+      visibleColumns: ['ID Type', 'ID', 'Palm Mill ID', 'ID Updated Date'],
       isChangeTypeOfAnalysisModalOpen: false,
       isListSubmittedForAnalysis: false,
       isFcdActive,
@@ -952,7 +952,6 @@ export default class ListDetails extends Component {
 
   showListColumn = (column) => {
     const { selectedLists, listView } = this.props;
-
     if (column.accessor === 'total_count') {
       return false;
     }

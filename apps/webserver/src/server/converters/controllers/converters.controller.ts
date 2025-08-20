@@ -32,13 +32,11 @@ export const getConverters = async (req: Request, res: Response): Promise<void> 
     });
   } catch (err) {
     logger.error('Failed to fetch converters:', err);
-    res
-      .status(500)
-      .json({
-        error: `Failed to fetch converters: ${
-          err instanceof Error ? err.message : JSON.stringify(err)
-        }`,
-      });
+    res.status(500).json({
+      error: `Failed to fetch converters: ${
+        err instanceof Error ? err.message : JSON.stringify(err)
+      }`,
+    });
   }
 };
 

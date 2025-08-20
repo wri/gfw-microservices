@@ -27,7 +27,22 @@ const getAllColumnNames = (
   const listId = selectedLists[0]?.id;
   const { custom_attribute_names, isGlobalForestWatchList } = selectedLists[0];
 
-  columnNames.list = getListColumns(locationData, custom_attribute_names, selectedLists);
+  // All existing columns for this list based on locationData
+  const allListColumns = getListColumns(locationData, custom_attribute_names, selectedLists);
+
+  // Always required
+  const checkbox = getCheckboxColumn();
+  const [site_id] = cloneDeep(columns.location_id);
+  const [location_name] = cloneDeep(columns.react_table__location_name);
+
+  const defaultShownColumns = [checkbox, location_name];
+
+  // Remove location_name from allListColumns to avoid duplicates in column selector
+  const filteredListColumns = cloneDeep(allListColumns).filter(
+    (column) => column.accessor !== location_name.id
+  );
+
+  columnNames.list = [...filteredListColumns, site_id];
 
   if (list_name === 'Palm Oil Mills') {
     if (listView === FOREST_CHANGE_VIEW) {
@@ -45,17 +60,12 @@ const getAllColumnNames = (
     gfwColumns.push(...columns.protected_area_fc.slice());
   }
 
-  const checkbox = getCheckboxColumn();
-  const [site_id] = cloneDeep(columns.location_id);
-  const [location_name] = cloneDeep(columns.react_table__location_name);
-  const columnNamesCloneFiltered = cloneDeep(columnNames.list).filter(
-    (column) => column.Header !== location_name.Header
-  );
-  columnNames.list = [...columnNamesCloneFiltered, site_id];
-
   if (areAllAnalysesDraft) {
-    const draftStateColumns = columns.draft_state_columns.slice();
-    columnNames.combinedColumns = [checkbox, ...draftStateColumns, ...columnNames.list];
+    columnNames.combinedColumns = [
+      ...defaultShownColumns,
+      ...columns.draft_state_columns.slice(),
+      ...columnNames.list,
+    ];
   } else if (listView === FOREST_CHANGE_VIEW) {
     const { columns: forestChangeAnalysisColumns, ...forestChangeAnalysisRestOfProperties } =
       columns.forest_change_analysis[1];
@@ -77,8 +87,7 @@ const getAllColumnNames = (
     ];
 
     columnNames.combinedColumns = [
-      checkbox,
-      location_name,
+      ...defaultShownColumns,
       ...(isGlobalForestWatchList ? gfwListsSizeColumn(listId) : []),
       ...analysis,
       ...gfwColumns,
@@ -87,8 +96,7 @@ const getAllColumnNames = (
   } else if (listView === COMMODITY_RISK_VIEW) {
     const analysis = columns.commodity_analysis.slice();
     columnNames.combinedColumns = [
-      checkbox,
-      location_name,
+      ...defaultShownColumns,
       ...analysis,
       ...gfwColumns,
       ...columnNames.list,

@@ -6,7 +6,14 @@ describe('List Copy Feature', () => {
   const locationsPage = new LocationsPage();
   const listDetailsPage = new ListDetailsPage();
   const timestamp = Date.now();
-  const listsToCreate = [`testregressioncopylistGFW${timestamp}`];
+  const listsToCreate = {
+    'RSPO Palm Concessions': `testregressioncopylistGFW RSPO ${timestamp}`,
+    'Oil Palm Concessions': `testregressioncopylistGFW OilPalm ${timestamp}`,
+    'Administrative Areas': `testregressioncopylistGFW Admin ${timestamp}`,
+    'Protected Areas': `testregressioncopylistGFW Protected ${timestamp}`,
+    'Palm Oil Mills': `testregressioncopylistGFW Mills ${timestamp}`,
+  };
+  let currentListName = '';
   const checkboxLocations = [1, 2];
   const isGFW = true;
   Given('I login in the landing page', () => {
@@ -15,23 +22,28 @@ describe('List Copy Feature', () => {
   });
 
   When('I navigate to the list details page for GFW Palm Oil Mills', () => {
-    locationsPage.clickOnLocationsList('Palm Oil Mills');
+    currentListName = 'Palm Oil Mills';
+    locationsPage.clickOnLocationsList(currentListName);
   });
 
   When('I navigate to the list details page for GFW RSPO Palm Concessions', () => {
-    locationsPage.clickOnLocationsList('RSPO Palm Concessions');
+    currentListName = 'RSPO Palm Concessions';
+    locationsPage.clickOnLocationsList(currentListName);
   });
 
   When('I navigate to the list details page for GFW Oil Palm Concessions', () => {
-    locationsPage.clickOnLocationsList('Oil Palm Concessions');
+    currentListName = 'Oil Palm Concessions';
+    locationsPage.clickOnLocationsList(currentListName);
   });
 
   When('I navigate to the list details page for GFW Protected Areas', () => {
-    locationsPage.clickOnLocationsList('Protected Areas');
+    currentListName = 'Protected Areas';
+    locationsPage.clickOnLocationsList(currentListName);
   });
 
   When('I navigate to the list details page for GFW Administrative Areas', () => {
-    locationsPage.clickOnLocationsList('Administrative Areas');
+    currentListName = 'Administrative Areas';
+    locationsPage.clickOnLocationsList(currentListName);
   });
 
   Then('I should be able to select the country for the Protected Areas list GFW', () => {
@@ -46,20 +58,24 @@ describe('List Copy Feature', () => {
 
   Then('I should be able to copy a GFW list and save it as a draft', () => {
     cy.url().should('include', '/list-details');
-    listDetailsPage.copyLists(listsToCreate, checkboxLocations, isGFW);
+    const listNameToUse = listsToCreate[currentListName];
+    listDetailsPage.copyLists([listNameToUse], checkboxLocations, isGFW);
   });
 
   Then('I should see the created list on the locations page', () => {
     cy.visit('/locations').reload();
-    locationsPage.verifyLists(listsToCreate, true);
+    const listNameToUse = listsToCreate[currentListName];
+    locationsPage.verifyLists([listNameToUse], true);
   });
 
   Then('I should be able to delete the list from the locations page', () => {
-    locationsPage.deleteLists(listsToCreate);
+    const listNameToUse = listsToCreate[currentListName];
+    locationsPage.deleteLists([listNameToUse]);
   });
 
   Then('I should verify the list has been deleted from the locations page', () => {
     cy.visit('/locations').reload();
-    locationsPage.verifyLists(listsToCreate, false);
+    const listNameToUse = listsToCreate[currentListName];
+    locationsPage.verifyLists([listNameToUse], false);
   });
 });

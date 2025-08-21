@@ -175,30 +175,27 @@ const containsPunctuation = (list_name) => {
  * @param {String} listFilterStr - List filter string
  * @returns {Array} - Filter results
  */
-export const getListFilteredLocations = (filteredLocationData, combinedColumns, listFilterStr) => {
+export const getListFilteredLocations = (
+  filteredLocationData,
+  combinedColumns,
+  listFilterStr = ''
+) => {
   const activeColumns = combinedColumns.filter(
     (v) => v.show && v.accessor !== 'checkbox' && v.accessor !== 'flags'
   );
-  return filteredLocationData.filter((e) => {
-    return (
-      activeColumns
-        .map((col) => {
-          const cellValue =
-            typeof col.accessor === 'function'
-              ? col.accessor(e)
-              : typeof col.accessor === 'string'
-              ? e[col.accessor]
-              : undefined;
-          return (
-            cellValue &&
-            cellValue.toString().toLowerCase().includes(listFilterStr.toString().toLowerCase())
-          );
-        })
-        .filter((v) => v).length > 0
-    );
-  });
-};
 
+  return filteredLocationData.filter((e) =>
+    activeColumns.some((col) => {
+      let cellValue = '';
+      if (typeof col.accessor === 'function') {
+        cellValue = col.accessor(e);
+      } else if (typeof col.accessor === 'string') {
+        cellValue = e[col.accessor];
+      }
+      return (cellValue ?? '').toString().toLowerCase().includes(listFilterStr.toLowerCase());
+    })
+  );
+};
 /**
  * Compare selected locations with filtered locations and update REDUX state accordingly
  * @param {Array} selectedLocations - Selected location IDs

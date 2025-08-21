@@ -181,7 +181,7 @@ export const getListFilteredLocations = (
   listFilterStr = ''
 ) => {
   const activeColumns = combinedColumns.filter(
-    (v) => v.show && v.accessor !== 'checkbox' && v.accessor !== 'flags'
+    (v) => v.show && v.accessor !== 'checkbox' && !v.accessor.includes('flag_')
   );
 
   return filteredLocationData.filter((e) =>

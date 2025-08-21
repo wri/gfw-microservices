@@ -1,4 +1,4 @@
-/* global userLists, locationCount, accessLevel, subscription_status_id, gfwLists, userSharedLists, fromMap, userInfo */
+/* global userLists, locationCount, accessLevel, subscription_status_id, gfwLists, userSharedLists, userInfo */
 
 import { render } from 'react-dom';
 import { Provider } from 'react-redux';
@@ -17,7 +17,6 @@ const App = () => (
         subscription_status_id={subscription_status_id}
         gfwLists={gfwLists}
         userSharedLists={userSharedLists}
-        fromMap={fromMap}
         userInfo={userInfo}
       />
     </Provider>

@@ -20,9 +20,6 @@ def prep_data(gdf):
         "IUCN_CAT": "IUCN CAT",
         "DESIG_TYPE": "Designation Type",
         "DESIG_ENG": "Designation",
-        "name_0": "Country",
-        "name_1": "State",
-        "name_2": "Sub State",
         "gfw_geostore_id": "globalid",
     }
     gdf = gdf.rename(columns=rename_dict)

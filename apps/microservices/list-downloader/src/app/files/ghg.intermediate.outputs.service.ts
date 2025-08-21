@@ -9,13 +9,13 @@ import { GHG_INTERMEDIATE_OUTPUTS_HEADER } from '../shared/constants';
 import { IPipeService } from '../pipe/i.pipe.service';
 import { FormatNumber } from '../transform/format.number';
 import { ConvertObject2CSV } from '../transform/convert.object.2.csv';
-import { OrganizeGreenHouseGasEmissionsResponse } from '../transform/organize.ghg.response';
+import { OrganizeGHGIntermediateOutputsResponse } from '../transform/organize.ghg.intermediate.outputs.response';
 
 @Injectable({
   scope: Scope.REQUEST,
 })
-export class ghg_intermediate_outputs extends IPipeService {
-  private readonly logger = new Logger(ghg_intermediate_outputs.name);
+export class GhgIntermediateOutputs extends IPipeService {
+  private readonly logger = new Logger(GhgIntermediateOutputs.name);
   private inputStream: PassThrough;
   private fileStream: fs.WriteStream;
 
@@ -47,7 +47,7 @@ export class ghg_intermediate_outputs extends IPipeService {
     });
 
     const pipeline: Array<Transform> = [
-      new OrganizeGreenHouseGasEmissionsResponse(),
+      new OrganizeGHGIntermediateOutputsResponse(),
       new FormatNumber(4),
       new ConvertObject2CSV(allFields),
     ];

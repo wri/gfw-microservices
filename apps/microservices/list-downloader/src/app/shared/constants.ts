@@ -1610,7 +1610,7 @@ export const GHG_INTERMEDIATE_OUTPUTS_HEADER = {
   locationSizeHa: 'Location Size (Ha)',
   commodity: 'Commodity',
   dataLayerName: 'Data Layer Name',
-  yield: 'Yield',
+  weightedAvgYield: 'Yield',
   production: 'Production',
   co2LinearDiscountedEmission: 'CO2 Linear Discounted Emission',
   ch4LinearDiscountedEmission: 'CH4 Linear Discounted Emission',

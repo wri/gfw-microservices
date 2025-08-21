@@ -1,7 +1,5 @@
 import { ConfigModule } from '@nestjs/config';
-import { MiddlewareConsumer, Module } from '@nestjs/common';
 import { serverConfigSchema } from '../validators/server-config';
-import { TraceIdMiddleware } from '@wri-monorepos/shared';
 
 // This needs to be at the beginning of the file to ensure that the '.env' file
 // is loaded into process.env before any code reads process.env
@@ -11,6 +9,8 @@ const envModule = ConfigModule.forRoot({
   isGlobal: true,
 });
 
+import { MiddlewareConsumer, Module } from '@nestjs/common';
+import { TraceIdMiddleware } from '@wri-monorepos/shared';
 import { HealthModule } from './health/health.module';
 import { ListModule } from './handler/list.module';
 import { VerifiableCredentialModule } from './verifiable-credentials/verifiable.credentials.module';

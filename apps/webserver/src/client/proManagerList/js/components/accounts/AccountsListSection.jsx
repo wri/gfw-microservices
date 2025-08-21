@@ -3,6 +3,8 @@ import * as _ from 'lodash';
 import AccountsListsTable from './AccountsListsTable';
 import '../../../css/proManagerList.scss';
 import { PRO_MANAGER_PATH } from '../../common/paths';
+import { AccountStatusChip } from './AccountStatusChip';
+import { getStatusString as findStatusString } from './AccountStatusChip';
 
 function AccountsListSection({ isLoading, setIsLoading }) {
   const [promanagerData, setPromanagerData] = useState({});
@@ -28,7 +30,7 @@ function AccountsListSection({ isLoading, setIsLoading }) {
       });
   }, []);
 
-  const { accounts, classes, statusData } = promanagerData;
+  const { accounts, classes } = promanagerData;
 
   const findPendingDateString = (account) => {
     let dateString = null;
@@ -46,15 +48,6 @@ function AccountsListSection({ isLoading, setIsLoading }) {
       dateString = `${date.toUTCString().replace(',', '')}`;
     }
     return dateString;
-  };
-
-  const findStatusString = (account) => {
-    // PendingAccounts will have organization_status_id === 1, and also the new `organization_active` field
-    if (account.organization_status_id === 1 && account.organization_active === false) {
-      return 'Closed';
-    }
-    const statusEntry = statusData.find((status) => status.id === account.organization_status_id);
-    return statusEntry?.status_name || 'Unknown';
   };
 
   const findClassString = (account) => {
@@ -79,7 +72,6 @@ function AccountsListSection({ isLoading, setIsLoading }) {
     const accountRows = [];
     const pendingDateString = findPendingDateString(account);
     const activeDateString = findActiveDateString(account);
-    const statusString = findStatusString(account);
     const classString = findClassString(account);
     if (account.organization_website.indexOf('http') === -1) {
       // eslint-disable-next-line no-param-reassign
@@ -96,16 +88,18 @@ function AccountsListSection({ isLoading, setIsLoading }) {
           {account.organization_name}
         </td>
         <td>{account.organization_parent}</td>
+        <td>{classString}</td>
+        <td>
+          <AccountStatusChip account={account} />
+        </td>
+        <td>{pendingDateString || '-'}</td>
+        <td>{activeDateString || '-'}</td>
         <td>{account.organization_address}</td>
         <td>
           <a href={account.organization_website} target="_blank" rel="noreferrer">
             {account.organization_website}
           </a>
         </td>
-        <td>{classString}</td>
-        <td>{statusString}</td>
-        <td>{pendingDateString}</td>
-        <td>{activeDateString}</td>
       </tr>
     );
     return accountRows;
@@ -168,7 +162,7 @@ function AccountsListSection({ isLoading, setIsLoading }) {
   const determineOrgStatus = (statusId, account) => {
     let status;
     if (statusId === 1 && account?.organization_active === false) {
-      status = 'Closed';
+      status = <b>EXAMPLE CLOSED</b>;
     } else {
       switch (statusId) {
         case 1:

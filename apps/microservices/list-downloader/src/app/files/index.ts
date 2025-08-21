@@ -30,4 +30,4 @@ export * from './colombia-deforestation.service';
 export * from './colombia-overlap.service';
 export * from './afiVC.geometry.service';
 export * from './greenhouse.gas.emissions.service';
-export * from './ghg.intermediate.output.service'
+export * from './ghg.intermediate.outputs.service';

@@ -4,7 +4,7 @@ import { AfiAnalysisByListId, BasicFieldsFileRequest } from '@wri-monorepos/sql'
 import { finished } from 'stream/promises';
 import * as fs from 'fs';
 import * as Chain from 'stream-chain';
-import { GREEN_HOUSE_GAS_EMISSIONS_HEADER } from '../shared/constants';
+import { GHG_INTERMEDIATE_OUTPUTS_HEADER } from '../shared/constants';
 
 import { IPipeService } from '../pipe/i.pipe.service';
 import { FormatNumber } from '../transform/format.number';
@@ -14,8 +14,8 @@ import { OrganizeGreenHouseGasEmissionsResponse } from '../transform/organize.gh
 @Injectable({
   scope: Scope.REQUEST,
 })
-export class GHGIntermediateOutput extends IPipeService {
-  private readonly logger = new Logger(GHGIntermediateOutput.name);
+export class ghg_intermediate_outputs extends IPipeService {
+  private readonly logger = new Logger(ghg_intermediate_outputs.name);
   private inputStream: PassThrough;
   private fileStream: fs.WriteStream;
 
@@ -24,7 +24,7 @@ export class GHGIntermediateOutput extends IPipeService {
     this.logger.log(`(${listId}) - Starting stream to process data`);
     this.inputStream = new PassThrough({ objectMode: true });
 
-    const [header, fileSuffix] = [GREEN_HOUSE_GAS_EMISSIONS_HEADER, 'green_house_gas_emissions'];
+    const [header, fileSuffix] = [GHG_INTERMEDIATE_OUTPUTS_HEADER, 'ghg_intermediate_outputs'];
 
     this.organizeStream(filters, Object.keys(header), fileSuffix);
     fs.writeFileSync(

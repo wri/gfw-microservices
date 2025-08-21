@@ -66,8 +66,10 @@ export default class Dashboard extends Component {
   }
 
   componentDidMount() {
+    const fromMap = new URLSearchParams(location.search).has('from_map');
+
     // Load the user's map options from local storage If they came directly from the map
-    if (this.props.fromMap && window.localStorage.getItem('GFW')) {
+    if (fromMap && window.localStorage.getItem('GFW')) {
       const cachedMap = JSON.parse(window.localStorage.getItem('GFW'));
 
       if (cachedMap) {

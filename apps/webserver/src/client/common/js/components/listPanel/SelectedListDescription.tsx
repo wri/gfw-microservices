@@ -53,21 +53,6 @@ const SelectedListDescription: FC<SelectedListDescriptionProps> = ({
     numberOfLocations = numberWithCommas(selectedList.list_locations_count);
     listName = selectedList?.list_name;
   }
-  const goToDashboard = () => {
-    // TODO: use get params
-    const request = new XMLHttpRequest();
-    request.open('POST', '/dashboard/map-locations', true);
-    request.setRequestHeader('Content-Type', 'application/json');
-    request.send();
-    request.onload = () => {
-      if (request.response === 'return') {
-        window.location.href = '/dashboard';
-      }
-    };
-    request.onerror = (err) => {
-      console.log(err);
-    };
-  };
 
   const goToList = () => {
     const { isGlobalForestWatchList, id } = selectedList;
@@ -89,7 +74,7 @@ const SelectedListDescription: FC<SelectedListDescriptionProps> = ({
       event_label: 'User click on a GO TO MAP link',
     });
     if (redirectToAlerts) {
-      goToDashboard();
+      window.location.href = '/dashboard?from_map';
     } else {
       goToList();
     }

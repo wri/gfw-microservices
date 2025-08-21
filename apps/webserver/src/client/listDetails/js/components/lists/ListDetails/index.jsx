@@ -36,7 +36,6 @@ import LocationDataNotAvailableMessage from '../LocationDataNotAvailableMessage'
 import store from '../../../../../locations/js/store';
 import { locationsPage, userAccessLevel } from '../../../../../common/js/config';
 import {
-  addList,
   changeListView,
   changeView,
   clearFilters,
@@ -244,28 +243,6 @@ export default class ListDetails extends Component {
 
     if ((!isPost2020RiskActive && isPost2000TreeCoverLossActive) || isGlobalForestWatchList) {
       store.dispatch(changeListView(FOREST_CHANGE_VIEW));
-    }
-  }
-
-  // When a list is selected update state
-  UNSAFE_componentWillReceiveProps(nextProps) {
-    const { gfwInfoFromMapNext, userListInfoFromMapNext } = nextProps;
-    const { gfwInfoFromMap, gfwLists, userListInfoFromMap, userLists } = this.props;
-
-    if (gfwInfoFromMapNext && !gfwInfoFromMap) {
-      /**
-       * @desc Executes when GFW list is selected
-       */
-      const gfwList = gfwLists.filter((list) => list.list_name === gfwInfoFromMapNext.listAlias)[0];
-      store.dispatch(addList(gfwList));
-      this.getGFWDataFromMap(gfwList, gfwInfoFromMapNext.gfwData.globalIds);
-    } else if (userListInfoFromMapNext && !userListInfoFromMap) {
-      /**
-       * @desc Executes when User list is selected
-       */
-      const userList = userLists.filter((item) => item.id === userListInfoFromMapNext.listID)[0];
-      store.dispatch(addList(userList));
-      this.getUserLocationData(userListInfoFromMapNext.listID);
     }
   }
 

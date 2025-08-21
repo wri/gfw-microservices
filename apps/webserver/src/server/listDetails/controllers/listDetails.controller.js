@@ -24,15 +24,9 @@ const logger = require('../../../config/privateutils/logger.utils');
  * @param req - Express request object
  * @param res - Express response object
  */
-export const listDetails = (req, res, data) => {
+export const listDetails = (req, res) => {
   const isAdministrator = UserManager.isAdministrator(req);
-
-  const mapData = data && data.mapData ? data.mapData : false;
-  const gfwData = data && data.gfwData ? data.gfwData : false;
-  const drawData = data && data.drawData ? data.drawData : false;
-  const locationName = data && data.locationName ? data.locationName : '';
-  const fromMap = data && data.fromMap ? data.fromMap : false;
-  const subscriptionStatus = data && data.subscriptionStatus ? data.subscriptionStatus : 1;
+  const subscriptionStatus = req.session?.subscription_status_id ?? 1;
 
   const promises = [
     ListManager.getUserListsWithAnalysisId(req),
@@ -67,11 +61,6 @@ export const listDetails = (req, res, data) => {
         common: compiledAssets.js.common,
         listDetailsjs: compiledAssets.js.listDetails,
         listDetailscss: compiledAssets.css.listDetails,
-        mapData,
-        gfwData,
-        drawData,
-        locationName,
-        fromMap,
         listStatuses,
         CURRENT_ENVIRONMENT: process.env.NODE_ENV,
         subscriptionStatus,

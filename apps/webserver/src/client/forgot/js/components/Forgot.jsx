@@ -13,7 +13,8 @@ const pageOptions = {
   },
 };
 
-const userNotFoundErrorCode = 108;
+const userNotFoundErrorCode = 107;
+const rateLimitErrorCode = 109;
 
 export default class Forgot extends Component {
   constructor(props) {
@@ -51,7 +52,7 @@ export default class Forgot extends Component {
           res = null;
         }
         if (res) {
-          if (res.systemMessage?.code === 'LimitExceededException') {
+          if (res.errorCode === rateLimitErrorCode) {
             this.handleDialog(forgotStrings.resetLimit.title, forgotStrings.resetLimit.message);
           } else if (res.errorCode === userNotFoundErrorCode) {
             this.handleDialog(forgotStrings.noUser.title, forgotStrings.noUser.message);

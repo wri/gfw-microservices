@@ -8,7 +8,7 @@ function BillingInfo() {
     <Card variant="outlined" sx={{ mt: 2.5 }}>
       <CardContent sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 1 }}>
         <p style={{ textAlign: 'center' }}>
-          Contact our sales team to purchase additional Usage units or other available services
+          Contact our sales team to purchase additional usage units or other available services.
         </p>
         <PillButton
           variant="contained"

@@ -167,7 +167,7 @@ function AccountsListSection({ isLoading, setIsLoading }) {
 
   const determineOrgStatus = (statusId, account) => {
     let status;
-    if (statusId === 1 && account.organization_active === false) {
+    if (statusId === 1 && account?.organization_active === false) {
       status = 'Closed';
     } else {
       switch (statusId) {

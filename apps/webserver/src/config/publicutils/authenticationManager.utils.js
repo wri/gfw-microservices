@@ -135,13 +135,37 @@ export const login = async (req, username, password, isProManagerLogin = false) 
   let userRecord;
 
   try {
-    const userInfo = await awsCognito.getUserInfo(normalizedUsername, USER_POOL_ID);
+    // Lightweight retry wrapper for Cognito calls
+    const withRetry = async (operation, maxRetries = 2) => {
+      for (let attempt = 1; attempt <= maxRetries; attempt++) {
+        try {
+          return await operation();
+        } catch (error) {
+          if (
+            attempt === maxRetries ||
+            ![
+              'LimitExceededException',
+              'TooManyRequestsException',
+              'ServiceUnavailableException',
+            ].includes(error.name)
+          ) {
+            throw error;
+          }
+          logger.warn(
+            `Cognito call failed (attempt ${attempt}/${maxRetries}), retrying...`,
+            error.message
+          );
+          await new Promise((resolve) => setTimeout(resolve, 1000 * attempt)); // Exponential backoff
+        }
+      }
+    };
 
-    const authenticationResponse = await awsCognito.authenticateUser(
-      req,
-      normalizedUsername,
-      password,
-      userInfo
+    const userInfo = await withRetry(() =>
+      awsCognito.getUserInfo(normalizedUsername, USER_POOL_ID)
+    );
+
+    const authenticationResponse = await withRetry(() =>
+      awsCognito.authenticateUser(req, normalizedUsername, password, userInfo)
     );
 
     const { authenticationStatus, email } = authenticationResponse;
@@ -161,10 +185,24 @@ export const login = async (req, username, password, isProManagerLogin = false) 
       );
     }
 
+    // Handle NEW_PASSWORD_REQUIRED challenge - user needs to set initial password
+    if (authenticationStatus === AUTH_STATUS.RequireNewPassword) {
+      logger.info(`User ${email} requires initial password setup`);
+      return {
+        ...authenticationResponse,
+        requiresInitialPassword: true,
+        message: 'Please set your initial password',
+      };
+    }
+
     if ([AUTH_STATUS.ResetRequired, AUTH_STATUS.ForceReset].includes(authenticationStatus)) {
       const userMessage =
-        authenticationStatus === AUTH_STATUS.ForceReset ? 'ForceReset' : 'ResetRequired';
-      const sysMessage = `Error during User Authentication: Account disabled for ${email}`;
+        authenticationStatus === AUTH_STATUS.ForceReset ? 'PasswordExpired' : 'ResetRequired';
+      const sysMessage = `Error during User Authentication: ${
+        authenticationStatus === AUTH_STATUS.ForceReset
+          ? 'Temporary password expired'
+          : 'Account disabled'
+      } for ${email}`;
       throw errorUtils.createErrorMessage(
         req,
         errorUtils.ERROR_CODES.failedToAuthenticate,
@@ -173,14 +211,28 @@ export const login = async (req, username, password, isProManagerLogin = false) 
       );
     }
 
-    if (new Date(authenticationResponse['custom:passwordUpdatedAt']) <= sixMonthsAgo) {
-      await awsCognito.adminResetUserPassword(req, normalizedUsername);
-      throw errorUtils.createErrorMessage(
-        req,
-        errorUtils.ERROR_CODES.failedToAuthenticate,
-        'PasswordExpired',
-        `Error during User Authentication: Password expired for ${email}`
-      );
+    // Check password expiration, but handle invalid dates gracefully
+    const passwordUpdatedAt = authenticationResponse['custom:passwordUpdatedAt'];
+    if (passwordUpdatedAt) {
+      try {
+        const passwordDate = new Date(passwordUpdatedAt);
+        if (passwordDate <= sixMonthsAgo) {
+          logger.info(`Password expired for user ${email}, resetting`);
+          await awsCognito.adminResetUserPassword(req, normalizedUsername);
+          throw errorUtils.createErrorMessage(
+            req,
+            errorUtils.ERROR_CODES.failedToAuthenticate,
+            'PasswordExpired',
+            `Error during User Authentication: Password expired for ${email}`
+          );
+        }
+      } catch (dateError) {
+        logger.warn(
+          `Invalid password update date for user ${email}: ${passwordUpdatedAt}`,
+          dateError
+        );
+        // Continue with login if we can't parse the date
+      }
     }
 
     authenticatedInformation = authenticationResponse;
@@ -249,6 +301,47 @@ export const login = async (req, username, password, isProManagerLogin = false) 
     return authenticatedInformation;
   } catch (err) {
     logger.error('Error in login:', err);
+
+    // If this is a password reset issue, try to handle it
+    if (
+      err.message?.includes('Temporary password has expired') ||
+      err.message?.includes('User password cannot be reset in the current state')
+    ) {
+      try {
+        logger.info(`Attempting to resolve password reset issue for user ${normalizedUsername}`);
+        await awsCognito.adminResetUserPassword(req, normalizedUsername);
+
+        // Return a clear message that the password was reset
+        return {
+          authenticationStatus: AUTH_STATUS.ResendPassword,
+          message: 'Password has been reset. Check your email for the new temporary password.',
+          requiresPasswordReset: true,
+        };
+      } catch (resetErr) {
+        logger.error('Failed to reset password for user:', resetErr);
+        // If we can't reset, return a helpful error
+        throw errorUtils.createErrorMessage(
+          req,
+          errorUtils.ERROR_CODES.failedToAuthenticate,
+          'PasswordResetRequired',
+          `Unable to reset expired password for ${normalizedUsername}. Please contact an administrator.`
+        );
+      }
+    }
+
+    // Handle rate limiting specifically
+    if (
+      err.message?.includes('Attempt limit exceeded') ||
+      err.message?.includes('Too many password reset attempts')
+    ) {
+      logger.warn(`Rate limit detected for user ${normalizedUsername}`);
+      throw errorUtils.createErrorMessage(
+        req,
+        errorUtils.ERROR_CODES.rateLimitExceeded,
+        'RateLimitExceeded',
+        'Too many attempts. Please wait 15-30 minutes before trying again.'
+      );
+    }
 
     try {
       await awsCognito.resendTemporaryPassword(req, normalizedUsername, err);
@@ -521,6 +614,12 @@ export const requestPasswordReset = async (req, userEmail) => {
     return result || true; // Return the result or default to true if undefined
   } catch (err) {
     console.log(err);
+
+    // If the error is already a formatted error message, don't wrap it again
+    if (err.errorCode && err.userMessage && err.systemMessage) {
+      throw err; // Already formatted, throw as-is
+    }
+
     const errorObject = errorUtils.createErrorMessage(
       req,
       errorUtils.ERROR_CODES.failedToSetPassword,
@@ -560,6 +659,11 @@ export const adminResetUserPassword = async (req, user_email) => {
 
     return true;
   } catch (err) {
+    // If the error is already a formatted error message, don't wrap it again
+    if (err.errorCode && err.userMessage && err.systemMessage) {
+      throw err; // Already formatted, throw as-is
+    }
+
     const errorObject = errorUtils.createErrorMessage(
       req,
       errorUtils.ERROR_CODES.failedToSetPassword,

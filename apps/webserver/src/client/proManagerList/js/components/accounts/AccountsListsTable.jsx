@@ -17,11 +17,9 @@ function AccountsListsTable({
           </Typography>
         </div>
         <input onChange={searchAccts} placeholder="Search for account" className="space-element" />
-        <Box
-          sx={scrollableBoxStyles}
-        >
-          <Table sx={{ minWidth: 1000, transform: 'rotateX(180deg)'}}> 
-            {/* flip content back */} 
+        <Box sx={scrollableBoxStyles}>
+          <Table sx={{ minWidth: 1000, transform: 'rotateX(180deg)' }}>
+            {/* flip content back */}
             <thead>
               <tr>
                 <th
@@ -180,7 +178,7 @@ function AccountsListsTable({
 
 export default AccountsListsTable;
 
-const scrollableBoxStyles = theme => ({
+const scrollableBoxStyles = () => ({
   position: 'relative',
   width: 'calc(100% + 2rem)', // add extra scrollable width
   maxWidth: 'calc(100vw + 2rem)',

@@ -20,7 +20,7 @@ const winston = require('winston');
 import config from '../config';
 import { getQueryStr } from '@wri-monorepos/sql';
 
-// basic logger without sql transport
+// Basic logger without sql transport
 const logger = winston.createLogger({ transports: [new winston.transports.Console()] });
 
 // Common configuration for creating database connections
@@ -36,9 +36,11 @@ const SQLSYSTEMCONFIG = {
   },
 };
 
-// cache of DB pools to improve performance
-// This object is a map from database name to connected pool object
-// For test environments, it also contains the sqliteDB
+/**
+ * Cache of DB pools to improve performance
+ * This object is a map from database name to connected pool object
+ * For test environments, it also contains the sqliteDB
+ */
 const cachedPools = {};
 
 /**
@@ -117,7 +119,9 @@ const regexReplaceCmd = (inputStr, regex, newCmd) => {
   return updatedStr;
 };
 
-// convert SQL statements from MS SQL server syntax to SQLite syntax
+/**
+ * Convert SQL statements from MS SQL server syntax to SQLite syntax
+ */
 const mssql2sqliteQuery = (mssqlQuery) => {
   let updatedQuery = mssqlQuery;
   updatedQuery = regexReplaceCmd(updatedQuery, /CONVERT\(VARCHAR\(\d+\),\s*(\w+)\)/g);
@@ -128,7 +132,10 @@ const mssql2sqliteQuery = (mssqlQuery) => {
   return updatedQuery;
 };
 
-// Replace MS SQL server syntax style query with '@variable' with values from params
+/**
+ * Replace MS SQL server syntax style query with '@variable' with values from params
+ * This is used to apply parameters to the query string
+ */
 const sqliteApplyParams = (databaseName, baseQuery, params = []) => {
   if (baseQuery.includes('Analyses-Dashboard')) {
     // let queryStr = baseQuery.replace('Analyses-Dashboard', `${databaseName}Analyses-Dashboard`);
@@ -170,8 +177,7 @@ const sqliteQuery = async (sqliteDB, connectConfig, mssqlQuery, namedQuery, para
   try {
     const baseQuery = mssql2sqliteQuery(mssqlQuery);
     queryStr = sqliteApplyParams(connectConfig.database, baseQuery, params);
-    // temporary debug log
-    console.log('sqlite query string', queryStr);
+    logger.debug('sqliteQuery', namedQuery, queryStr);
     const result = await sqliteDB.all(queryStr);
     return [result];
   } catch (err) {
@@ -198,20 +204,15 @@ const mssqlExecuteWithRetries = async (
 ) => {
   try {
     if (queryStrParam && storedProcedureName) {
-      throw new Error('Both query and stored procedure specified');
+      throw new Error('Cannot provide both query string and stored procedure');
     }
 
-    let baseQuery;
     // Some stored procedures have been converted to queries using storedProcedureName as the query identifier
     // Check for those before issue query instead of the stored procedure for those.
-    if (queryStrParam) {
-      baseQuery = queryStrParam;
-    } else {
-      const isSystemQuery = connectConfig.database === process.env.MSSQL_DATABASE;
-      baseQuery = getQueryStr(isSystemQuery, storedProcedureName);
-    }
-
+    const isSystemQuery = connectConfig.database === process.env.MSSQL_DATABASE;
+    const baseQuery = queryStrParam ?? getQueryStr(isSystemQuery, storedProcedureName);
     const pool = await getPool(connectConfig);
+
     if (cachedPools.sqliteDB) {
       return sqliteQuery(pool, connectConfig, baseQuery, storedProcedureName, params);
     }
@@ -226,11 +227,13 @@ const mssqlExecuteWithRetries = async (
 
     let rawResults;
     if (baseQuery) {
-      // add defaults for MSSQL
-      const queryStr = `SET ANSI_NULLS ON; SET QUOTED_IDENTIFIER ON; ${baseQuery}`;
+      const prefix = `SET ANSI_NULLS ON; SET QUOTED_IDENTIFIER ON;`;
+      const queryStr = `${prefix} ${baseQuery}`;
       rawResults = await request.query(queryStr);
-    } else {
+    } else if (storedProcedureName) {
       rawResults = await request.execute(storedProcedureName);
+    } else {
+      throw new Error('Neither query string nor stored procedure provided');
     }
     return rawResults.recordsets;
   } catch (err) {

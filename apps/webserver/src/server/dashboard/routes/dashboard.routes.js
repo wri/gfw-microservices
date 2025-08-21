@@ -29,14 +29,5 @@ module.exports = (app, limiter) => {
 
   app.use('/dashboard', routeMiddlewares);
 
-  app.get('/dashboard', (req, res) => {
-    const fromMap = app.get('from-map');
-    controller.dashboard(req, res, fromMap);
-    app.set('from-map', false);
-  });
-
-  app.post('/dashboard/map-locations', function (req, res) {
-    app.set('from-map', true);
-    res.send('return');
-  });
+  app.get('/dashboard', controller.dashboard);
 };

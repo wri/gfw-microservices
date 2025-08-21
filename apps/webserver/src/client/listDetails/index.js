@@ -1,4 +1,4 @@
-/* global userLists, userSharedLists, userInfo, usersList, locationCount, gfwLists, fromMap, listStatuses */
+/* global userLists, userSharedLists, userInfo, usersList, locationCount, gfwLists, listStatuses */
 
 import { render } from 'react-dom';
 import { BrowserRouter } from 'react-router-dom';
@@ -89,7 +89,6 @@ const App = () => {
               usersList={usersList} //Contains all users
               gfwLists={gfwLists}
               listStatuses={listStatuses}
-              fromMap={fromMap}
             />
           </BrowserRouter>
         </AppErrorFallback>

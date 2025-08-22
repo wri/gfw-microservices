@@ -56,7 +56,9 @@ export const getQueryStr = (isSystemQuery: boolean, storedProcedureName: string)
 const getQueryOrWarn = (queries, name, type) => {
   const query = queries?.[name];
   if (!query) {
-    console.warn(`${type} query "${name}" not found or invalid.`);
+    console.warn(
+      `${type} query "${name}" not found as a typescript file. Will use stored procedure if present in DB.`
+    );
     return null;
   }
 

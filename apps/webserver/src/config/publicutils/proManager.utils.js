@@ -393,46 +393,37 @@ const updatePendingAccountUser = (
 };
 
 /**
-* @function deletePendingAccountRequest
-* @summary Deletes a Pending Account
-* @param  {Object}   req - Mandatory first parameter to pass the request object into the function in case session info is required.
-* @param {number}  pendingAccountId An integer specifying the pending account ID.
-* @return {Promise} return a promise object. If successful,
+ * @function deletePendingAccountRequest
+ * @summary Deletes a Pending Account
+ * @param  {Object}   req - Mandatory first parameter to pass the request object into the function in case session info is required.
+ * @param {number}  pendingAccountId An integer specifying the pending account ID.
+ * @return {Promise<boolean>} resolves to true on success, otherwise throws an error object.
+ */
+const deletePendingAccountRequest = async (req, pendingAccountId) => {
+  // Check to make sure the user is a proper pro manager.
+  if (!UserManager.isProManager(req)) {
+    const userMessage = langResources.getResourceString('loginFailed');
+    const sysMessage = `UserEmail: ${req.session.user_email} is not a GFW Pro Root User.`;
+    throw errorUtils.createErrorMessage(
+      req,
+      errorUtils.ERROR_CODES.userNotProManager,
+      userMessage,
+      sysMessage
+    );
+  }
 
-*                   the promise resolves to true, otherwise, an
-*                   an error object is returned in the reject.
-*/
-const deletePendingAccountRequest = (req, pendingAccountId) => {
-  return new Promise((resolve, reject) => {
-    // Check to make sure the user is a proper pro manager.
-    if (!UserManager.isProManager(req)) {
-      const userMessage = langResources.getResourceString('loginFailed');
-      const sysMessage = `UserEmail: ${req.session.user_email} is not a GFW Pro Root User.`;
-      const eo = errorUtils.createErrorMessage(
-        req,
-        errorUtils.ERROR_CODES.userNotProManager,
-        userMessage,
-        sysMessage
-      );
-      reject(eo);
-    }
-    // Activate Pending Account.
+  try {
     const params = [{ field: 'PendingAccountID', type: sql.Int, value: pendingAccountId }];
-    sqlUtils
-      .executeSystemStoredProcedure(req, 'uspDeletePendingAccountRequest', params)
-      .then(() => {
-        resolve(true);
-      })
-      .catch((err) => {
-        const errorObject = errorUtils.createErrorMessage(
-          req,
-          errorUtils.ERROR_CODES.failedToDeletePendingAccountRequest,
-          'Failed to delete pending account request',
-          err
-        );
-        reject(errorObject);
-      });
-  });
+    await sqlUtils.executeSystemStoredProcedure(req, 'uspDeletePendingAccountRequest', params);
+    return true;
+  } catch (err) {
+    throw errorUtils.createErrorMessage(
+      req,
+      errorUtils.ERROR_CODES.failedToDeletePendingAccountRequest,
+      'Failed to delete pending account request',
+      err
+    );
+  }
 };
 
 /**
@@ -542,53 +533,49 @@ const reactivateAccount = (req, organization_id) => {
  * @param {Object} req
  * @param {number} organization_id
  */
-const deactivateAccount = (req, organization_id) => {
-  return new Promise(async (resolve, reject) => {
-    try {
-      // 1. Fetch current organization status
-      const parameters = [{ field: 'organization_id', type: sql.Int, value: organization_id }];
-      const [org] = await sqlUtils.executeSystemStoredProcedure(
-        req,
-        'uspGetOrganizationById',
-        parameters
-      );
+const deactivateAccount = async (req, organization_id) => {
+  try {
+    // 1. Fetch current organization status
+    const parameters = [{ field: 'organization_id', type: sql.Int, value: organization_id }];
+    const [org] = await sqlUtils.executeSystemStoredProcedure(
+      req,
+      'uspGetOrganizationById',
+      parameters
+    );
 
-      if (!org) {
-        return reject({
-          code: 'organizationNotFound',
-          userMessage: 'Organization not found',
-          systemMessage: `Organization ID ${organization_id} not found in DB`,
-        });
-      }
-
-      const currentStatus = org.organization_status_id;
-
-      // 2. Only allow Active → Inactive
-      if (currentStatus !== orgAccountStatus.Active) {
-        return reject({
-          code: errorUtils.ERROR_CODES.invalidStatusTransition,
-          userMessage: 'Only active accounts can be deactivated',
-          systemMessage: `Attempted to deactivate organization ${organization_id} with status ${currentStatus}`,
-        });
-      }
-
-      // 3. Update status to Inactive
-      const updateParams = [
-        { field: 'organization_id', type: sql.Int, value: organization_id },
-        { field: 'organization_status_id', type: sql.Int, value: orgAccountStatus.Inactive },
-      ];
-
-      await sqlUtils.executeSystemStoredProcedure(req, 'uspSetOrganizationStatus', updateParams);
-
-      resolve(true);
-    } catch (err) {
-      reject({
-        code: errorUtils.ERROR_CODES.failedToDeactivateAccount,
-        userMessage: 'Failed to deactivate account',
-        systemMessage: err,
-      });
+    if (!org) {
+      throw {
+        code: 'organizationNotFound',
+        userMessage: 'Organization not found',
+        systemMessage: `Organization ID ${organization_id} not found in DB`,
+      };
     }
-  });
+
+    const currentStatus = org.organization_status_id;
+    // 2. Only allow Active → Inactive
+    if (currentStatus !== orgAccountStatus.Active) {
+      throw {
+        code: errorUtils.ERROR_CODES.invalidStatusTransition,
+        userMessage: 'Only active accounts can be deactivated',
+        systemMessage: `Attempted to deactivate organization ${organization_id} with status ${currentStatus}`,
+      };
+    }
+
+    // 3. Update status to Inactive
+    const updateParams = [
+      { field: 'organization_id', type: sql.Int, value: organization_id },
+      { field: 'organization_status_id', type: sql.Int, value: orgAccountStatus.Inactive },
+    ];
+    await sqlUtils.executeSystemStoredProcedure(req, 'uspSetOrganizationStatus', updateParams);
+
+    return true;
+  } catch (err) {
+    throw {
+      code: errorUtils.ERROR_CODES.failedToDeactivateAccount,
+      userMessage: 'Failed to deactivate account',
+      systemMessage: err,
+    };
+  }
 };
 
 /** @function {getAccountSubscriptionStatus}

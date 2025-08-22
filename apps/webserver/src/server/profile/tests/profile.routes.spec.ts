@@ -1,9 +1,9 @@
-
-
 // Precompute paths
 const mockAccountManagerPath = require.resolve('../../../config/publicutils/accountManager.utils');
 const mockUserManagerPath = require.resolve('../../../config/publicutils/userManager.utils');
-const mockAuthManagerPath = require.resolve('../../../config/publicutils/authenticationManager.utils');
+const mockAuthManagerPath = require.resolve(
+  '../../../config/publicutils/authenticationManager.utils'
+);
 const mockPolicyManagerPath = require.resolve('../../../config/publicutils/policyManager.utils');
 const mockLimiterUtilPath = require.resolve('../../../config/lib/limiter-util');
 const mockLoggerPath = require.resolve('../../../config/privateutils/logger.utils');
@@ -11,9 +11,7 @@ const mockSlackUtilsPath = require.resolve('../../../config/privateutils/slackNo
 
 // Mock path to return these
 
-
 // Mock the modules with empty or minimal exports
-
 
 beforeAll(() => {
   jest.mock(mockAccountManagerPath, () => ({}));
@@ -22,7 +20,10 @@ beforeAll(() => {
   jest.mock(mockPolicyManagerPath, () => ({}));
   jest.mock(mockLimiterUtilPath, () => ({ useRateLimiter: jest.fn() }));
   jest.mock(mockLoggerPath, () => ({ info: jest.fn(), error: jest.fn() }));
-  jest.mock(mockSlackUtilsPath, () => ({ buildSlackNotificationMessage: jest.fn(), sendNotification: jest.fn() }));
+  jest.mock(mockSlackUtilsPath, () => ({
+    buildSlackNotificationMessage: jest.fn(),
+    sendNotification: jest.fn(),
+  }));
   jest.mock('axios', () => ({ default: jest.fn() }));
   jest.mock('express', () => ({
     Router: jest.fn(() => ({
@@ -32,7 +33,6 @@ beforeAll(() => {
     })),
   }));
 });
-
 
 describe('profile routes happy path', () => {
   it('registers routes without rate limiter', () => {
@@ -55,7 +55,9 @@ describe('profile routes happy path', () => {
       profileInfo: 'profileInfo',
     };
     const mockAxios = { default: jest.fn().mockResolvedValue({ data: 'data' }) };
-    const mockExpress = { Router: jest.fn(() => ({ post: jest.fn(), get: jest.fn(), delete: jest.fn() })) };
+    const mockExpress = {
+      Router: jest.fn(() => ({ post: jest.fn(), get: jest.fn(), delete: jest.fn() })),
+    };
 
     // Manual code from routes.ts
     const BASE_URL = '/profile'; // Used to compose API calls to EAPI Microservice
@@ -206,8 +208,15 @@ describe('profile routes happy path', () => {
     expect(mockApp.post).toHaveBeenCalledWith('/profile/createuser', expect.any(Function));
     expect(mockApp.post).toHaveBeenCalledWith('/profile/updateuser', expect.any(Function));
     expect(mockApp.post).toHaveBeenCalledWith('/profile/deletePolicy', expect.any(Function));
-    expect(mockApp.get).toHaveBeenCalledWith('/profile/downloadPolicy/:policyList', expect.any(Function));
-    expect(mockApp.post).toHaveBeenCalledWith('/userSecret', mockMiddlewares.checkAuthentication, expect.any(Function));
+    expect(mockApp.get).toHaveBeenCalledWith(
+      '/profile/downloadPolicy/:policyList',
+      expect.any(Function)
+    );
+    expect(mockApp.post).toHaveBeenCalledWith(
+      '/userSecret',
+      mockMiddlewares.checkAuthentication,
+      expect.any(Function)
+    );
     expect(mockApp.get).toHaveBeenCalledWith('/api/profile/swagger', expect.any(Array));
     expect(mockApp.use).toHaveBeenCalledWith('/api/profile/api-keys', expect.any(Array));
   });

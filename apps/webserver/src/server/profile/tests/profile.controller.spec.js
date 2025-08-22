@@ -7,16 +7,28 @@ const mockRealPath = require('path');
 const mockConfigPath = require.resolve('../../../config/config');
 const mockAccountManagerPath = require.resolve('../../../config/publicutils/accountManager.utils');
 const mockUserManagerPath = require.resolve('../../../config/publicutils/userManager.utils');
-const mockAuthManagerPath = require.resolve('../../../config/publicutils/authenticationManager.utils');
+const mockAuthManagerPath = require.resolve(
+  '../../../config/publicutils/authenticationManager.utils'
+);
 const mockPolicyManagerPath = require.resolve('../../../config/publicutils/policyManager.utils');
 
 jest.mock('path', () => ({
   resolve: jest.fn((arg) => {
-    if (arg === './config/config') { return mockConfigPath; }
-    if (arg === './config/publicutils/accountManager.utils') { return mockAccountManagerPath; }
-    if (arg === './config/publicutils/userManager.utils') { return mockUserManagerPath; }
-    if (arg === './config/publicutils/authenticationManager.utils') { return mockAuthManagerPath; }
-    if (arg === './config/publicutils/policyManager.utils') { return mockPolicyManagerPath; }
+    if (arg === './config/config') {
+      return mockConfigPath;
+    }
+    if (arg === './config/publicutils/accountManager.utils') {
+      return mockAccountManagerPath;
+    }
+    if (arg === './config/publicutils/userManager.utils') {
+      return mockUserManagerPath;
+    }
+    if (arg === './config/publicutils/authenticationManager.utils') {
+      return mockAuthManagerPath;
+    }
+    if (arg === './config/publicutils/policyManager.utils') {
+      return mockPolicyManagerPath;
+    }
     return mockRealPath.resolve(arg);
   }),
 }));
@@ -46,10 +58,13 @@ jest.mock('../../../config/publicutils/policyManager.utils', () => ({
   getPolicyList: jest.fn(),
 }));
 
-jest.mock('@wri-monorepos/sql', () => ({
-  getAccountRenewalTime: jest.fn(),
-}), { virtual: true });
-
+jest.mock(
+  '@wri-monorepos/sql',
+  () => ({
+    getAccountRenewalTime: jest.fn(),
+  }),
+  { virtual: true }
+);
 
 describe('profile controller happy path', () => {
   it('profile renders', () => {
@@ -99,7 +114,8 @@ describe('profile controller happy path', () => {
         Promise.resolve(mockRenewal),
       ];
 
-      const [accountProfile, usersList, policyList, userInfo, accountRenewalTime] = await Promise.all(promises);
+      const [accountProfile, usersList, policyList, userInfo, accountRenewalTime] =
+        await Promise.all(promises);
       mockRes.status(200).json({
         organization: accountProfile,
         accountRenewalTime,
@@ -114,13 +130,15 @@ describe('profile controller happy path', () => {
     }
 
     expect(mockRes.status).toHaveBeenCalledWith(200);
-    expect(mockRes.json).toHaveBeenCalledWith(expect.objectContaining({
-      organization: 'account',
-      users: 'users',
-      userInfo: 'user',
-      classifications: 'classes',
-      policyList: 'policies',
-    }));
+    expect(mockRes.json).toHaveBeenCalledWith(
+      expect.objectContaining({
+        organization: 'account',
+        users: 'users',
+        userInfo: 'user',
+        classifications: 'classes',
+        policyList: 'policies',
+      })
+    );
   });
 
   it('profileInfo for non-admin', async () => {
@@ -150,12 +168,14 @@ describe('profile controller happy path', () => {
     }
 
     expect(mockRes.status).toHaveBeenCalledWith(200);
-    expect(mockRes.json).toHaveBeenCalledWith(expect.objectContaining({
-      organization: '',
-      users: [],
-      userInfo: 'user',
-      classifications: 'classes',
-      policyList: '',
-    }));
+    expect(mockRes.json).toHaveBeenCalledWith(
+      expect.objectContaining({
+        organization: '',
+        users: [],
+        userInfo: 'user',
+        classifications: 'classes',
+        policyList: '',
+      })
+    );
   });
 });

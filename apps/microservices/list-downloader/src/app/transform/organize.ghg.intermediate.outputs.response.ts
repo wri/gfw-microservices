@@ -16,10 +16,10 @@ class OrganizeGHGIntermediateOutputsResponse extends Transform {
       commodity,
       weightedAvgYield,
       production,
-      co2LinearDiscountedEmission,
-      ch4LinearDiscountedEmission,
-      n2oLinearDiscountedEmission,
-      CombinedLinearDiscountedEmission,
+      co2EmissionsFactor,
+      ch4EmissionsFactor,
+      n2oEmissionsFactor,
+      combinedEmissionsFactor,
     } = chunk;
     const csvArray = [];
 
@@ -42,16 +42,16 @@ class OrganizeGHGIntermediateOutputsResponse extends Transform {
         production || 0,
       ];
 
-      const co2Emissions = JSON.parse(co2LinearDiscountedEmission || '{}');
-      const ch4Emissions = JSON.parse(ch4LinearDiscountedEmission || '{}');
-      const n2oEmissions = JSON.parse(n2oLinearDiscountedEmission || '{}');
-      const combinedEmissions = JSON.parse(CombinedLinearDiscountedEmission || '{}');
+      const co2LinearDiscountedEmission = JSON.parse(co2EmissionsFactor || '{}');
+      const ch4LinearDiscountedEmission = JSON.parse(ch4EmissionsFactor || '{}');
+      const n2oLinearDiscountedEmission = JSON.parse(n2oEmissionsFactor || '{}');
+      const CombinedLinearDiscountedEmission = JSON.parse(combinedEmissionsFactor || '{}');
 
       const years = new Set([
-        ...Object.keys(co2Emissions),
-        ...Object.keys(ch4Emissions),
-        ...Object.keys(n2oEmissions),
-        ...Object.keys(combinedEmissions),
+        ...Object.keys(co2LinearDiscountedEmission),
+        ...Object.keys(ch4LinearDiscountedEmission),
+        ...Object.keys(n2oLinearDiscountedEmission),
+        ...Object.keys(CombinedLinearDiscountedEmission),
       ]);
 
       // if has no year, set the current year
@@ -62,10 +62,10 @@ class OrganizeGHGIntermediateOutputsResponse extends Transform {
       years.forEach((year) => {
         csvArray.push([
           ...sharedInfo,
-          parseInt(co2Emissions[year] || 0) * (production || 0),
-          parseInt(ch4Emissions[year] || 0) * (production || 0),
-          parseInt(n2oEmissions[year] || 0) * (production || 0),
-          parseInt(combinedEmissions[year] || 0) * (production || 0),
+          parseInt(co2LinearDiscountedEmission[year]) * production || 0,
+          parseInt(ch4LinearDiscountedEmission[year]) * production || 0,
+          parseInt(n2oLinearDiscountedEmission[year]) * production || 0,
+          parseInt(CombinedLinearDiscountedEmission[year]) * production || 0,
           year,
         ]);
       });

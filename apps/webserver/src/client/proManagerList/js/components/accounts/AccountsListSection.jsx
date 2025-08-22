@@ -162,7 +162,7 @@ function AccountsListSection({ isLoading, setIsLoading }) {
   const determineOrgStatus = (statusId, account) => {
     let status;
     if (statusId === 1 && account?.organization_active === false) {
-      status = <b>EXAMPLE CLOSED</b>;
+      status = 'Closed';
     } else {
       switch (statusId) {
         case 1:
@@ -227,14 +227,14 @@ function AccountsListSection({ isLoading, setIsLoading }) {
   };
 
   const getAccountsList = () => {
-    const filteredAccounts = (accounts || []).filter((e) => {
+    const filteredAccounts = (accounts || []).filter((acct) => {
       return (
-        e.organization_name?.toLowerCase().includes(acctFilterStr.toLowerCase()) ||
-        e.organization_parent?.toLowerCase().includes(acctFilterStr.toLowerCase()) ||
-        e.organization_address?.toLowerCase().includes(acctFilterStr.toLowerCase()) ||
-        e.organization_website?.toLowerCase().includes(acctFilterStr.toLowerCase()) ||
-        determineOrgClass(e.organization_classifications_ids) ||
-        determineOrgStatus(e.organization_status_id)
+        acct.organization_name?.toLowerCase().includes(acctFilterStr.toLowerCase()) ||
+        acct.organization_parent?.toLowerCase().includes(acctFilterStr.toLowerCase()) ||
+        acct.organization_address?.toLowerCase().includes(acctFilterStr.toLowerCase()) ||
+        acct.organization_website?.toLowerCase().includes(acctFilterStr.toLowerCase()) ||
+        determineOrgClass(acct.organization_classifications_ids) ||
+        determineOrgStatus(acct.organization_status_id)
       );
     });
 

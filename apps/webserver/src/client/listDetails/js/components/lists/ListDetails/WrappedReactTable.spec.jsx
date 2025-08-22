@@ -171,4 +171,43 @@ describe('WrappedReactTable', () => {
     expect(Object.getOwnPropertyDescriptor(col, 'show')?.get).toBeUndefined();
     expect(col.show).toBe(true);
   });
+
+  it('should toggle on idType columns when visibleColumns is set for an idType list', () => {
+    const idTypeColumns = ['ID Type', 'ID', 'Palm Mill ID', 'ID Updated Date'];
+    render(
+      <WrappedReactTable
+        listId={1}
+        listView="someView"
+        isUserList={true}
+        page={0}
+        listColumns={[]} // can be empty for this test
+        combinedColumns={idTypeColumns.map((accessor) => ({ accessor, Header: accessor }))}
+        visibleColumns={idTypeColumns}
+        filteredLists={[]}
+        numberOfPages={1}
+        tableSortedBy="ID Type"
+        tableSortedDesc={false}
+        getUserLocationData={jest.fn()}
+        getFilteredGfwListData={jest.fn()}
+        setSortedBy={jest.fn()}
+        isGfwList={false}
+        isSharedList={false}
+        viewDiagnostic={jest.fn()}
+        isDeleteButtonAvailable={false}
+        promptDeleteSelectedLocations={jest.fn()}
+        copyMoveAction={jest.fn()}
+        isCopyMoveActionAvailable={false}
+        selectedList={{}}
+        setIsLoading={jest.fn()}
+        currentUser={{}}
+      />
+    );
+
+    const { columns } = ReactTable.mock.calls[0][0];
+
+    idTypeColumns.forEach((colAccessor) => {
+      const col = columns.find((c) => c.accessor === colAccessor);
+      expect(col).toBeDefined();
+    });
+  });
 });

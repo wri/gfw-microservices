@@ -5,9 +5,16 @@ import { NestExpressApplication } from '@nestjs/platform-express'; // 👈 add t
 import { AppModule } from './app/app.module';
 import { ConfigService } from '@nestjs/config';
 import { ServerConfigType } from './validators/server-config';
+import { ConsoleLog, initializeGlobalAxiosTracing } from '@wri-monorepos/shared';
 
 async function bootstrap() {
-  const app = await NestFactory.create<NestExpressApplication>(AppModule); // 👈 updated
+  // Initialize global axios tracing before creating the app
+  initializeGlobalAxiosTracing();
+  const app = await NestFactory.create<NestExpressApplication>(AppModule, {
+    logger: new ConsoleLog(),
+    bufferLogs: true, // Buffer logs until custom logger is initialized to prevent early messages from using default logger
+  });
+
   app.set('query parser', 'extended');
 
   const globalPrefix = 'api';

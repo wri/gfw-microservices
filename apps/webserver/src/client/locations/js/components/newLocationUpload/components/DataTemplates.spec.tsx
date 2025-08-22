@@ -1,6 +1,7 @@
 import { render, screen, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { DataTemplates } from './DataTemplates';
+import { UploadType } from '../types';
 
 jest.mock('@mui/icons-material', () => {
   const actualIcons = jest.requireActual('@mui/icons-material');
@@ -15,19 +16,25 @@ describe('DataTemplates', () => {
   const handleCloseMock = jest.fn();
 
   it('should render the component correctly', () => {
-    render(<DataTemplates onClose={handleCloseMock} isOpen={true} />);
+    render(
+      <DataTemplates workflowType={UploadType.ByFile} onClose={handleCloseMock} isOpen={true} />
+    );
     expect(screen.getByText('Download data templates')).toBeInTheDocument();
   });
 
   it('should close the modal when the done button is clicked', async () => {
-    render(<DataTemplates onClose={handleCloseMock} isOpen={true} />);
+    render(
+      <DataTemplates workflowType={UploadType.ByFile} onClose={handleCloseMock} isOpen={true} />
+    );
 
     await userEvent.click(screen.getByRole('button', { name: /done/i }));
     expect(handleCloseMock).toHaveBeenCalledTimes(1);
   }, 10100);
 
   it('should download a template when the download button is clicked', async () => {
-    render(<DataTemplates onClose={handleCloseMock} isOpen={true} />);
+    render(
+      <DataTemplates workflowType={UploadType.ByFile} onClose={handleCloseMock} isOpen={true} />
+    );
 
     const accordionItem = screen.getByText(/point spreadsheet/i);
     await userEvent.click(accordionItem);
@@ -42,7 +49,9 @@ describe('DataTemplates', () => {
   }, 10100);
 
   it('should show a check icon after downloading a template', async () => {
-    render(<DataTemplates onClose={handleCloseMock} isOpen={true} />);
+    render(
+      <DataTemplates workflowType={UploadType.ByFile} onClose={handleCloseMock} isOpen={true} />
+    );
 
     const accordionItem = screen.getByText(/polygon kml/i);
     await userEvent.click(accordionItem);
@@ -58,10 +67,21 @@ describe('DataTemplates', () => {
   }, 10100);
 
   it('should show "See more" when hovering over an accordion item', async () => {
-    render(<DataTemplates onClose={handleCloseMock} isOpen={true} />);
+    render(
+      <DataTemplates workflowType={UploadType.ByFile} onClose={handleCloseMock} isOpen={true} />
+    );
 
     expect(screen.queryByText('See more')).not.toBeInTheDocument();
     await userEvent.hover(screen.getByText('Point Shapefile'));
     expect(screen.getByText('See more')).toBeInTheDocument();
+  });
+
+  it('should show ById template options when workflowType is UploadType.ById', () => {
+    render(
+      <DataTemplates workflowType={UploadType.ById} onClose={handleCloseMock} isOpen={true} />
+    );
+
+    expect(screen.getByText(/car id spreadsheet/i)).toBeInTheDocument();
+    expect(screen.getByText(/palm oil mill id spreadsheet/i)).toBeInTheDocument();
   });
 });

@@ -4,7 +4,7 @@ import { AfiAnalysisByListId, BasicFieldsFileRequest } from '@wri-monorepos/sql'
 import { finished } from 'stream/promises';
 import * as fs from 'fs';
 import * as Chain from 'stream-chain';
-import { GHG_INTERMEDIATE_OUTPUTS_HEADER } from '../shared/constants';
+import { GHG_RAW_EMISSIONS_HEADER } from '../shared/constants';
 
 import { IPipeService } from '../pipe/i.pipe.service';
 import { FormatNumber } from '../transform/format.number';
@@ -24,7 +24,7 @@ export class GhgRawEmissions extends IPipeService {
     this.logger.log(`(${listId}) - Starting stream to process data`);
     this.inputStream = new PassThrough({ objectMode: true });
 
-    const [header, fileSuffix] = [GHG_INTERMEDIATE_OUTPUTS_HEADER, 'ghg_intermediate_outputs'];
+    const [header, fileSuffix] = [GHG_RAW_EMISSIONS_HEADER, 'ghg_raw_emissions'];
 
     this.organizeStream(filters, Object.keys(header), fileSuffix);
     fs.writeFileSync(

@@ -1604,17 +1604,15 @@ export const GREEN_HOUSE_GAS_EMISSIONS_HEADER = {
   year: 'Reporting Year',
 };
 
-export const GHG_INTERMEDIATE_OUTPUTS_HEADER = {
+export const GHG_RAW_EMISSIONS_HEADER = {
   listName: 'List Name',
   locationName: 'Location Name',
   locationSizeHa: 'Location Size (Ha)',
   commodity: 'Commodity',
   dataLayerName: 'Data Layer Name',
-  weightedAvgYield: 'Yield',
-  production: 'Production',
-  co2LinearDiscountedEmission: 'CO2 Linear Discounted Emission',
-  ch4LinearDiscountedEmission: 'CH4 Linear Discounted Emission',
-  n2oLinearDiscountedEmission: 'N2O Linear Discounted Emission',
-  CombinedLinearDiscountedEmission: 'Combined Linear Discounted Emission',
+  co2RawEmission: 'CO2 Raw Emission',
+  ch4RawEmission: 'CH4 Raw Emission',
+  n2oRawEmission: 'N2O Raw Emission',
+  CombinedRawEmission: 'Combined Raw Emission',
   year: 'Reporting Year',
 };

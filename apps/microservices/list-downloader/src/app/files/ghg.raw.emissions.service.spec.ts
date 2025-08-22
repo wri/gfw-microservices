@@ -3,10 +3,10 @@ import { ghgAnalysesData, ghgAnalysesDataIncompleteRow } from '../shared/mock.da
 
 import * as fs from 'fs';
 import { createDirectory } from '../shared/file.utils';
-import { GhgIntermediateOutputs } from './ghg.intermediate.outputs.service';
+import { GhgRawEmissions } from './ghg.raw.emissions.service';
 
 describe('Green House Gas Emissions Service - [Location level]', () => {
-  const ghgIntermediateOutputsService = new GhgIntermediateOutputs();
+  const ghgRawEmissionsService = new GhgRawEmissions();
 
   const filters = {
     listId: 5642,
@@ -18,15 +18,15 @@ describe('Green House Gas Emissions Service - [Location level]', () => {
   const filePath = `${dir}/${filters.listName}_ghg_intermediate_outputs.csv`;
 
   beforeAll(() => {
-    ghgIntermediateOutputsService.startEmail = jest.fn();
-    ghgIntermediateOutputsService.errorEmail = jest.fn();
-    ghgIntermediateOutputsService.finishedEmail = jest.fn();
+    ghgRawEmissionsService.startEmail = jest.fn();
+    ghgRawEmissionsService.errorEmail = jest.fn();
+    ghgRawEmissionsService.finishedEmail = jest.fn();
 
     createDirectory(dir);
   });
 
   beforeEach(() => {
-    ghgIntermediateOutputsService.start(filters);
+    ghgRawEmissionsService.start(filters);
   });
 
   afterEach(() => {
@@ -34,9 +34,9 @@ describe('Green House Gas Emissions Service - [Location level]', () => {
   });
 
   test('When the input data is ok', async () => {
-    ghgIntermediateOutputsService.process(ghgAnalysesData);
+    ghgRawEmissionsService.process(ghgAnalysesData);
 
-    await ghgIntermediateOutputsService.finish(filters);
+    await ghgRawEmissionsService.finish(filters);
 
     const csvData = fs.readFileSync(filePath);
     const lines = csvData.toString().split('\n');
@@ -51,9 +51,9 @@ describe('Green House Gas Emissions Service - [Location level]', () => {
   });
 
   test('When receive an empty input array', async () => {
-    ghgIntermediateOutputsService.process([]);
+    ghgRawEmissionsService.process([]);
 
-    await ghgIntermediateOutputsService.finish(filters);
+    await ghgRawEmissionsService.finish(filters);
 
     const csvData = fs.readFileSync(filePath, 'utf8');
     const lines = csvData.toString().split('\n');
@@ -64,9 +64,9 @@ describe('Green House Gas Emissions Service - [Location level]', () => {
   });
 
   test('When the input is undefined', async () => {
-    ghgIntermediateOutputsService.process(undefined);
+    ghgRawEmissionsService.process(undefined);
 
-    await ghgIntermediateOutputsService.finish(filters);
+    await ghgRawEmissionsService.finish(filters);
 
     const csvData = fs.readFileSync(filePath, 'utf8');
     const lines = csvData.toString().split('\n');
@@ -77,9 +77,9 @@ describe('Green House Gas Emissions Service - [Location level]', () => {
     ]);
   });
   test('When the input is incomplete rows', async () => {
-    ghgIntermediateOutputsService.process(ghgAnalysesDataIncompleteRow);
+    ghgRawEmissionsService.process(ghgAnalysesDataIncompleteRow);
 
-    await ghgIntermediateOutputsService.finish(filters);
+    await ghgRawEmissionsService.finish(filters);
 
     const csvData = fs.readFileSync(filePath, 'utf8');
     const lines = csvData.toString().split('\n');

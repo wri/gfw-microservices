@@ -1,6 +1,6 @@
 import { Transform } from 'stream';
 import { MAPSPAM_COMMODITY } from '@wri-monorepos/constants';
-class OrganizeGHGIntermediateOutputsResponse extends Transform {
+class OrganizeGHGRawEmissionsResponse extends Transform {
   constructor() {
     super({ objectMode: true });
   }
@@ -74,4 +74,4 @@ class OrganizeGHGIntermediateOutputsResponse extends Transform {
   }
 }
 
-export { OrganizeGHGIntermediateOutputsResponse };
+export { OrganizeGHGRawEmissionsResponse };

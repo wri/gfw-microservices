@@ -1,16 +1,16 @@
-import { OrganizeGHGIntermediateOutputsResponse } from './organize.ghg.intermediate.outputs.response';
+import { OrganizeGHGRawEmissionsResponse } from "./organize.ghg.raw.emissions.response";
 
-describe('OrganizeGHGIntermediateOutputsResponse', () => {
+describe('OrganizeGHGRawEmissionsResponse', () => {
   test('when receive an empty object', () => {
-    const organizeGHGIntermediateOutputsResponse = new OrganizeGHGIntermediateOutputsResponse();
-    organizeGHGIntermediateOutputsResponse._transform({}, '', (err, data) => {
+    const organizeGHGRawEmissionsResponse = new OrganizeGHGRawEmissionsResponse();
+    organizeGHGRawEmissionsResponse._transform({}, '', (err, data) => {
       expect(data).toEqual([]);
     });
   });
 
   test('When receive an analysis', () => {
-    const organizeGHGIntermediateOutputsResponse = new OrganizeGHGIntermediateOutputsResponse();
-    organizeGHGIntermediateOutputsResponse._transform(
+    const organizeGHGRawEmissionsResponse = new OrganizeGHGRawEmissionsResponse();
+    organizeGHGRawEmissionsResponse._transform(
       {
         listId: 5642,
         listName: 'kgTestCG3 927 all',
@@ -78,8 +78,8 @@ describe('OrganizeGHGIntermediateOutputsResponse', () => {
   });
 
   test('When dont receive all important fields', () => {
-    const organizeGHGIntermediateOutputsResponse = new OrganizeGHGIntermediateOutputsResponse();
-    organizeGHGIntermediateOutputsResponse._transform(
+    const organizeGHGRawEmissionsResponse = new OrganizeGHGRawEmissionsResponse();
+    organizeGHGRawEmissionsResponse._transform(
       {
         listId: 5642,
         listName: 'kgTestCG3 927 all',

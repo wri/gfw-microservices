@@ -35,7 +35,7 @@ import { ReadmeMergeServices } from '../shared/readme.merge.service';
 import { GreenHouseGasEmissionsService } from './greenhouse.gas.emissions.service';
 import { ListMetadataService } from '../shared/list-metadata.service';
 import { ColumnResolverService } from '../shared/column-resolver.service';
-import { GhgIntermediateOutputs } from './ghg.intermediate.outputs.service';
+import { GhgRawEmissions } from './ghg.raw.emissions.service';
 @Module({
   imports: [AwsModule, SqlModule],
   providers: [
@@ -73,7 +73,7 @@ import { GhgIntermediateOutputs } from './ghg.intermediate.outputs.service';
     GreenHouseGasEmissionsService,
     ListMetadataService,
     ColumnResolverService,
-    GhgIntermediateOutputs,
+    GhgRawEmissions,
   ],
   exports: [
     AlertsAdminAreasLevelService,
@@ -110,7 +110,7 @@ import { GhgIntermediateOutputs } from './ghg.intermediate.outputs.service';
     GreenHouseGasEmissionsService,
     ListMetadataService,
     ColumnResolverService,
-    GhgIntermediateOutputs,
+    GhgRawEmissions,
   ],
 })
 export class FilesModule {}

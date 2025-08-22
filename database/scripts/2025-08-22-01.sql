@@ -3,15 +3,6 @@
 Update GHGAnalyses table to have new columns
 ========================================================================================*/
 
--- Drop old columns first 
-ALTER TABLE [dbo].[GHGAnalyses]
-DROP COLUMN 
-    [emissions_factor_by_year],
-    [ef_co2_by_year],
-    [ef_ch4_by_year],
-    [ef_n2o_by_year];
-GO
-
 -- Add new columns
 ALTER TABLE [dbo].[GHGAnalyses]
 ADD 

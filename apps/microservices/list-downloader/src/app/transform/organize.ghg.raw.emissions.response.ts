@@ -14,12 +14,10 @@ class OrganizeGHGRawEmissionsResponse extends Transform {
       locationName,
       totalAreaHa,
       commodity,
-      weightedAvgYield,
-      production,
-      co2LinearDiscountedEmission,
-      ch4LinearDiscountedEmission,
-      n2oLinearDiscountedEmission,
-      CombinedLinearDiscountedEmission,
+      co2RawEmissions,
+      ch4RawEmissions,
+      n2oRawEmissions,
+      CombinedRawEmissions,
     } = chunk;
     const csvArray = [];
 
@@ -38,14 +36,12 @@ class OrganizeGHGRawEmissionsResponse extends Transform {
         totalAreaHa,
         commodityHumanReadable,
         'dLUC',
-        weightedAvgYield || 0,
-        production || 0,
       ];
 
-      const co2Emissions = JSON.parse(co2LinearDiscountedEmission || '{}');
-      const ch4Emissions = JSON.parse(ch4LinearDiscountedEmission || '{}');
-      const n2oEmissions = JSON.parse(n2oLinearDiscountedEmission || '{}');
-      const combinedEmissions = JSON.parse(CombinedLinearDiscountedEmission || '{}');
+      const co2Emissions = JSON.parse(co2RawEmissions || '{}');
+      const ch4Emissions = JSON.parse(ch4RawEmissions || '{}');
+      const n2oEmissions = JSON.parse(n2oRawEmissions || '{}');
+      const combinedEmissions = JSON.parse(CombinedRawEmissions || '{}');
 
       const years = new Set([
         ...Object.keys(co2Emissions),
@@ -62,10 +58,10 @@ class OrganizeGHGRawEmissionsResponse extends Transform {
       years.forEach((year) => {
         csvArray.push([
           ...sharedInfo,
-          parseInt(co2Emissions[year] || 0) * (production || 0),
-          parseInt(ch4Emissions[year] || 0) * (production || 0),
-          parseInt(n2oEmissions[year] || 0) * (production || 0),
-          parseInt(combinedEmissions[year] || 0) * (production || 0),
+          parseInt(co2Emissions[year] || 0) ,
+          parseInt(ch4Emissions[year] || 0) ,
+          parseInt(n2oEmissions[year] || 0) ,
+          parseInt(combinedEmissions[year] || 0) ,
           year,
         ]);
       });

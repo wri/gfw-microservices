@@ -41,7 +41,7 @@ describe('Green House Gas Emissions Service - [Location level]', () => {
     const csvData = fs.readFileSync(filePath);
     const lines = csvData.toString().split('\n');
     const expectedResults = [
-      'List Name,Location Name,Location Size (Ha),Commodity,Data Layer Name,Yield,Production,CO2 Linear Discounted Emission,CH4 Linear Discounted Emission,N2O Linear Discounted Emission,Combined Linear Discounted Emission,Reporting Year',
+      'List Name,Location Name,Location Size (Ha),Commodity,Data Layer Name,Yield,Production,CO2 Linear Discounted Emissions,CH4 Linear Discounted Emissions,N2O Linear Discounted Emissions,Combined Linear Discounted Emissions,Reporting Year',
       '"kgTestCG3 927 all","location name 2",1256.1647,Soy,dLUC,0,0,0,0,0,0,2021',
       '"kgTestCG3 927 all","location name 2",1256.1647,Soy,dLUC,0,0,0,0,0,0,2022',
       '"kgTestCG3 927 all","location name 2",1256.1647,Soy,dLUC,0,0,0,0,0,0,2023',
@@ -64,7 +64,7 @@ describe('Green House Gas Emissions Service - [Location level]', () => {
     const csvData = fs.readFileSync(filePath, 'utf8');
     const lines = csvData.toString().split('\n');
     expect(lines).toStrictEqual([
-      'List Name,Location Name,Location Size (Ha),Commodity,Data Layer Name,Yield,Production,CO2 Linear Discounted Emission,CH4 Linear Discounted Emission,N2O Linear Discounted Emission,Combined Linear Discounted Emission,Reporting Year',
+      'List Name,Location Name,Location Size (Ha),Commodity,Data Layer Name,Yield,Production,CO2 Linear Discounted Emissions,CH4 Linear Discounted Emissions,N2O Linear Discounted Emissions,Combined Linear Discounted Emissions,Reporting Year',
       '',
     ]);
   });
@@ -78,7 +78,7 @@ describe('Green House Gas Emissions Service - [Location level]', () => {
     const lines = csvData.toString().split('\n');
 
     expect(lines).toStrictEqual([
-      'List Name,Location Name,Location Size (Ha),Commodity,Data Layer Name,Yield,Production,CO2 Linear Discounted Emission,CH4 Linear Discounted Emission,N2O Linear Discounted Emission,Combined Linear Discounted Emission,Reporting Year',
+      'List Name,Location Name,Location Size (Ha),Commodity,Data Layer Name,Yield,Production,CO2 Linear Discounted Emissions,CH4 Linear Discounted Emissions,N2O Linear Discounted Emissions,Combined Linear Discounted Emissions,Reporting Year',
       '',
     ]);
   });
@@ -90,7 +90,7 @@ describe('Green House Gas Emissions Service - [Location level]', () => {
     const csvData = fs.readFileSync(filePath, 'utf8');
     const lines = csvData.toString().split('\n');
     expect(lines).toStrictEqual([
-      'List Name,Location Name,Location Size (Ha),Commodity,Data Layer Name,Yield,Production,CO2 Linear Discounted Emission,CH4 Linear Discounted Emission,N2O Linear Discounted Emission,Combined Linear Discounted Emission,Reporting Year',
+      'List Name,Location Name,Location Size (Ha),Commodity,Data Layer Name,Yield,Production,CO2 Linear Discounted Emissions,CH4 Linear Discounted Emissions,N2O Linear Discounted Emissions,Combined Linear Discounted Emissions,Reporting Year',
       '"kgTestCG3 927 all","location name 2",1256.1647,Soy,dLUC,0,0,0,0,0,0,2021',
       '"kgTestCG3 927 all","location name 2",1256.1647,Soy,dLUC,0,0,0,0,0,0,2022',
       '"kgTestCG3 927 all","location name 2",1256.1647,Soy,dLUC,0,0,0,0,0,0,2023',

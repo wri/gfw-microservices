@@ -30,13 +30,7 @@ class OrganizeGHGRawEmissionsResponse extends Transform {
       : null;
 
     if (listName && locationName && totalAreaHa && commodity) {
-      const sharedInfo = [
-        listName,
-        locationName,
-        totalAreaHa,
-        commodityHumanReadable,
-        'dLUC',
-      ];
+      const sharedInfo = [listName, locationName, totalAreaHa, commodityHumanReadable, 'dLUC'];
 
       const co2Emissions = JSON.parse(emissions_co2_yearly || '{}');
       const ch4Emissions = JSON.parse(emissions_ch4_yearly || '{}');
@@ -58,10 +52,10 @@ class OrganizeGHGRawEmissionsResponse extends Transform {
       years.forEach((year) => {
         csvArray.push([
           ...sharedInfo,
-          parseInt(co2Emissions[year] || 0) ,
-          parseInt(ch4Emissions[year] || 0) ,
-          parseInt(n2oEmissions[year] || 0) ,
-          parseInt(combinedEmissions[year] || 0) ,
+          parseInt(co2Emissions[year] || 0),
+          parseInt(ch4Emissions[year] || 0),
+          parseInt(n2oEmissions[year] || 0),
+          parseInt(combinedEmissions[year] || 0),
           year,
         ]);
       });

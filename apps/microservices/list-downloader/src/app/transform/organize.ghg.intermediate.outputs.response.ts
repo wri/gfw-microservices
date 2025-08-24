@@ -54,11 +54,6 @@ class OrganizeGHGIntermediateOutputsResponse extends Transform {
         ...Object.keys(CombinedLinearDiscountedEmission),
       ]);
 
-      // if has no year, set the current year
-      if (years.size === 0) {
-        years.add(new Date().getFullYear().toString());
-      }
-
       years.forEach((year) => {
         csvArray.push([
           ...sharedInfo,

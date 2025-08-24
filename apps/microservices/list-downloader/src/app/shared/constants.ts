@@ -1612,9 +1612,9 @@ export const GHG_INTERMEDIATE_OUTPUTS_HEADER = {
   dataLayerName: 'Data Layer Name',
   weightedAvgYield: 'Yield',
   production: 'Production',
-  co2LinearDiscountedEmission: 'CO2 Linear Discounted Emission',
-  ch4LinearDiscountedEmission: 'CH4 Linear Discounted Emission',
-  n2oLinearDiscountedEmission: 'N2O Linear Discounted Emission',
-  CombinedLinearDiscountedEmission: 'Combined Linear Discounted Emission',
+  co2LinearDiscountedEmission: 'CO2 Linear Discounted Emissions',
+  ch4LinearDiscountedEmission: 'CH4 Linear Discounted Emissions',
+  n2oLinearDiscountedEmission: 'N2O Linear Discounted Emissions',
+  CombinedLinearDiscountedEmission: 'Combined Linear Discounted Emissions',
   year: 'Reporting Year',
 };

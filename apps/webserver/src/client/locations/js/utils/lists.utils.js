@@ -22,10 +22,11 @@ const checkValidViewCommodity = (list, location) => {
 
   if (!list.isGlobalForestWatchList) {
     const { template_id, location_classification } = list;
-    const locationClassification =
-      location?.['Location Classification']?.toLowerCase() ??
-      location_classification?.toLowerCase();
-
+    let locationClassification = location?.['Location Classification'] ?? location_classification;
+    if (Array.isArray(locationClassification)) {
+      locationClassification = locationClassification[0];
+    }
+    locationClassification = locationClassification?.toLowerCase();
     return template_id === 2 || (template_id === 5 && locationClassification === 'supply shed');
   }
 

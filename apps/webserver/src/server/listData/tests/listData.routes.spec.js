@@ -78,7 +78,7 @@ const buildApp = () => {
     req.session = { organization_database: 'org', organization_id: 'id' };
     next();
   });
-  registerRoutes(app, () => (mw) => (_req, _res, next) => next());
+  registerRoutes(app, () => () => (_req, _res, next) => next());
   return app;
 };
 

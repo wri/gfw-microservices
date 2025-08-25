@@ -9,12 +9,12 @@ import {
 import { analysisTypes } from '../../../../../config/env/analysisTypes.constants';
 
 // axios client with retry for 429 + network/idempotent errors
-const axiosClient = axios.create();
+const axiosClient = typeof axios.create === 'function' ? axios.create() : axios;
 axiosRetry(axiosClient, {
   retries: 3,
   retryDelay: axiosRetry.exponentialDelay,
   retryCondition: (error) =>
-    (error.response?.status === 429) || axiosRetry.isNetworkOrIdempotentRequestError(error),
+    error.response?.status === 429 || axiosRetry.isNetworkOrIdempotentRequestError(error),
 });
 
 const getUserLocationDataFromAPI = (

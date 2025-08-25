@@ -216,10 +216,8 @@ describe('getUserLocationDataFromAPI', () => {
     const error = { response: { status: 500 } };
     axios.__instance.mockRejectedValueOnce(error);
 
-    await expect(
-      getUserLocationDataFromAPI({}, [1], '', 'id', false, 0, false)
-    ).rejects.toBe(error);
+    await expect(getUserLocationDataFromAPI({}, [1], '', 'id', false, 0, false)).rejects.toBe(
+      error
+    );
   });
 });
-
-

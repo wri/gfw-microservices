@@ -1,4 +1,5 @@
 import { useRef, useState } from 'react';
+import axios from 'axios';
 import {
   Box,
   Card,
@@ -130,12 +131,45 @@ export function SummaryAndSubmit() {
         commodity: uploadLocationState.commodity,
       });
       updateSaveMode(isDraftUpload.current);
+
+      const existingListId = uploadLocationState?.existingList?.id;
+      console.log('isAddingToExistingList', existingListId);
+      await new Promise((r) => setTimeout(r, 10000));
+
+      if (existingListId) {
+        console.log('Generating tiles for list ID:', existingListId);
+        const response = await axios
+          .post('/vectorTile/generateTiles', {
+            listID: existingListId,
+          })
+          .catch((error) => {
+            console.error('Error generating tiles:', error);
+          });
+        console.log('Tile deletion response:', response);
+      }
+
       history.push('SUBMISSION_SUCCESS');
     } catch (err) {
       setIsLoading(false);
       setIsErrorDialogOpen(true);
     }
   };
+
+  const addedLocationsText = useTransifexTranslation('You have added locations to');
+  const draftInstructionText = useTransifexTranslation(
+    'Click OK to save this updated list as draft.'
+  );
+  const draftNoteText = useTransifexTranslation(
+    'Your list will stay in draft state until you choose to run analysis on it.'
+  );
+  const submitConfirmationText = useTransifexTranslation(
+    'Please confirm that you wish to submit this list to analysis.'
+  );
+  const analysisUsageNoteText = useTransifexTranslation(
+    'Note that running analysis counts towards your account usage limits.'
+  );
+  const seeMoreInfoText = useTransifexTranslation('See more information');
+  const linkHereText = useTransifexTranslation('here');
 
   return (
     <>
@@ -279,35 +313,29 @@ export function SummaryAndSubmit() {
         </DialogTitle>
         <DialogContent sx={{ textAlign: 'justify' }}>
           <Typography variant="body2">
-            <span>{useTransifexTranslation('You have added locations to')}</span>{' '}
+            <span>{addedLocationsText}</span>{' '}
             <span>
               <b>{listName}</b>.
             </span>{' '}
-            <span>
-              {isDraftUpload.current
-                ? useTransifexTranslation(
-                    'Click OK to save this updated list as draft. Your list will stay in draft state until you choose to run analysis on it'
-                  )
-                : useTransifexTranslation(
-                    'Please confirm that you wish to submit this list to analysis'
-                  )}
-              .
-            </span>{' '}
-            <span>
-              {useTransifexTranslation(
-                'Note that running analysis counts towards your account usage limits. See more information'
-              )}
-            </span>{' '}
+            {isDraftUpload.current ? (
+              <>
+                <span>{draftInstructionText}</span> <span>{draftNoteText}</span>
+              </>
+            ) : (
+              <span>{submitConfirmationText}</span>
+            )}{' '}
+            <span>{analysisUsageNoteText}</span> <span>{seeMoreInfoText}</span>{' '}
             <Link
               href={ExternalLinks.UploadFees}
               sx={{ textDecoration: 'none', color: 'primary.main' }}
               target="_blank"
             >
-              here
+              {linkHereText}
             </Link>
             .
           </Typography>
         </DialogContent>
+
         <DialogActions sx={{ mr: 'auto', ml: 1.5, pb: 2 }}>
           <PillButton
             variant="contained"

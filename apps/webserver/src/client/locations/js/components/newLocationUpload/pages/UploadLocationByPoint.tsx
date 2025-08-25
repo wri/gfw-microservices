@@ -6,8 +6,7 @@ import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
 
 import { useHistory } from '../hooks';
-import { LocationTypeButton, NavBar, AddressSelector } from '../components';
-import { HectareKilometerSwitch } from '../components/HectareKilometerSwitch';
+import { LocationTypeButton, NavBar, AddressSelector, HectareKilometerSwitch } from '../components';
 import { ExternalHelperResource, PillButton } from '../../../../../components';
 import { MeasurementUnit, UploadType } from '../types';
 import { coordinateSchema, locationNameSchema } from '../utils/schema';

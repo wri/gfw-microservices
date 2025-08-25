@@ -1,4 +1,5 @@
 import axios from 'axios';
+import axiosRetry from 'axios-retry';
 import store from '../../../../locations/js/store';
 import {
   COMMODITY_RISK_VIEW,
@@ -7,29 +8,14 @@ import {
 } from './ListDetails/listViews.constants';
 import { analysisTypes } from '../../../../../config/env/analysisTypes.constants';
 
-/**
- * Retry utility for handling 429 errors
- */
-const retryOn429 = async (axiosCall, maxRetries = 3, baseDelay = 1000) => {
-  for (let attempt = 1; attempt <= maxRetries; attempt++) {
-    try {
-      return await axiosCall();
-    } catch (error) {
-      // Check if it's a 429 error and we haven't exceeded max retries
-      if (error.response?.status === 429 && attempt < maxRetries) {
-        const delay = baseDelay * Math.pow(2, attempt - 1); // Exponential backoff
-        console.warn(
-          `Rate limited (429) on attempt ${attempt}. Retrying in ${Math.round(delay / 1000)}s...`
-        );
-        await new Promise((resolve) => setTimeout(resolve, delay));
-        continue;
-      }
-
-      // If it's not a 429 error or we've exceeded retries, throw the error
-      throw error;
-    }
-  }
-};
+// axios client with retry for 429 + network/idempotent errors
+const axiosClient = axios.create();
+axiosRetry(axiosClient, {
+  retries: 3,
+  retryDelay: axiosRetry.exponentialDelay,
+  retryCondition: (error) =>
+    (error.response?.status === 429) || axiosRetry.isNetworkOrIdempotentRequestError(error),
+});
 
 const getUserLocationDataFromAPI = (
   filters,
@@ -93,18 +79,15 @@ const getUserLocationDataFromAPI = (
       : {}),
   };
 
-  // Use retry logic for 429 errors
-  return retryOn429(() =>
-    axios({
-      url: '/locations/getListsPaginated',
-      method: 'GET',
-      credentials: 'same-origin',
-      headers: {
-        'Content-type': 'application/json',
-      },
-      params: data,
-    })
-  ).then((response) => response.data);
+  return axiosClient({
+    url: '/locations/getListsPaginated',
+    method: 'GET',
+    credentials: 'same-origin',
+    headers: {
+      'Content-type': 'application/json',
+    },
+    params: data,
+  }).then((response) => response.data);
 };
 
 export default getUserLocationDataFromAPI;

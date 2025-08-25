@@ -67,9 +67,7 @@ describe('ManageListFolderDialog', () => {
     renderWithProps({ isOpen: true });
 
     // wait for the dialog content
-    await waitFor(() =>
-      expect(screen.getByText('Create New Folder')).toBeInTheDocument()
-    );
+    await waitFor(() => expect(screen.getByText('Create New Folder')).toBeInTheDocument());
   });
 
   test('selects "Add to Existing Folder" and chooses a folder', async () => {
@@ -79,9 +77,7 @@ describe('ManageListFolderDialog', () => {
     renderWithProps({ open: true, folders, list });
 
     // Wait for the dialog to appear
-    await waitFor(() =>
-      expect(screen.getByText('Create New Folder')).toBeInTheDocument()
-    );
+    await waitFor(() => expect(screen.getByText('Create New Folder')).toBeInTheDocument());
 
     // Click the radio button for "Add to Existing Folder"
     const addExistingRadio = screen.getByLabelText('Add to Existing Folder');
@@ -116,15 +112,16 @@ describe('ManageListFolderDialog', () => {
       expect(onComplete).toHaveBeenCalled();
       const callArg = onComplete.mock.calls[0][0];
       expect(callArg.props.children).toEqual(
-        expect.arrayContaining([
-          expect.objectContaining({ props: { children: 'New Folder' } })
-        ])
+        expect.arrayContaining([expect.objectContaining({ props: { children: 'New Folder' } })])
       );
     });
   });
 
   test('clicking confirm calls onComplete when moving list to existing folder', async () => {
-    const folders = [{ name: 'Folder A', id: 1 }, { name: 'Folder B', id: 2 }];
+    const folders = [
+      { name: 'Folder A', id: 1 },
+      { name: 'Folder B', id: 2 },
+    ];
     const list = { folder: null, list_name: 'My List', id: 10 };
 
     // Mock fetch to resolve to the folder

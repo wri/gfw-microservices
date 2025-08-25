@@ -150,4 +150,99 @@ describe('ManageListFolderDialog', () => {
       );
     });
   });
+
+  test('shows error message when fetch fails', async () => {
+    fetch.mockImplementation(() =>
+      Promise.resolve({ error: 'Error creating folder' })
+    );
+
+    renderWithProps({ isOpen: true });
+
+    // Type folder name to enable confirm
+    fireEvent.change(screen.getByDisplayValue(''), { target: { value: 'New Folder' } });
+
+    fireEvent.click(screen.getByText('Confirm'));
+
+    // Wait for the error message using its class
+    await waitFor(() => {
+      const errorNode = document.querySelector('.AddToFolder__dialog-error');
+      expect(errorNode).toBeInTheDocument();
+      expect(errorNode.textContent).toContain('Error creating folder');
+    });
+  });
+
+  test('clicking cancel calls onCancel', async () => {
+    renderWithProps({ isOpen: true });
+
+    // The cancel button is part of CustomDialog, usually has aria-label or text
+    const cancelButton = screen.getByRole('button', { name: /cancel/i });
+
+    fireEvent.click(cancelButton);
+
+    expect(defaultProps.onCancel).toHaveBeenCalledTimes(1);
+  });
+
+  test('switches between create and existing folder options', async () => {
+    const folders = [{ name: 'Folder A' }, { name: 'Folder B' }];
+    renderWithProps({ isOpen: true, folders });
+
+    // Initially, the option should be MOVE because folders exist
+    const createRadio = screen.getByLabelText('Create New Folder');
+    const moveRadio = screen.getByLabelText('Add to Existing Folder');
+
+    // Check initial state
+    expect(moveRadio.checked).toBe(true);
+    expect(createRadio.checked).toBe(false);
+
+    // Click "Create New Folder"
+    fireEvent.click(createRadio);
+    expect(createRadio.checked).toBe(true);
+    expect(moveRadio.checked).toBe(false);
+
+    // Click back to "Add to Existing Folder"
+    fireEvent.click(moveRadio);
+    expect(moveRadio.checked).toBe(true);
+    expect(createRadio.checked).toBe(false);
+  });
+
+  test('selecting a folder from the dropdown updates state', async () => {
+    const folders = [{ name: 'Folder A' }, { name: 'Folder B' }];
+    renderWithProps({ isOpen: true, folders });
+
+    const moveRadio = screen.getByLabelText('Add to Existing Folder');
+    fireEvent.click(moveRadio);
+
+    const select = screen.getByRole('combobox');
+    fireEvent.change(select, { target: { value: '1' } }); // select "Folder B"
+
+    // Check that the state now points to Folder B
+    expect(select.value).toBe('1');
+    expect(select.options[select.selectedIndex].text).toBe('Folder B');
+  });
+
+  test('switching between Create and Move updates inputs correctly', async () => {
+    const folders = [{ name: 'Folder A' }, { name: 'Folder B' }];
+    renderWithProps({ folders });
+
+    const createRadio = screen.getByLabelText('Create New Folder');
+    const moveRadio = screen.getByLabelText('Add to Existing Folder');
+    const select = screen.getByRole('combobox');
+
+    // Initially, MOVE should be selected because folders exist
+    expect(createRadio.checked).toBe(false);
+    expect(moveRadio.checked).toBe(true);
+
+    // Select a folder
+    fireEvent.change(select, { target: { value: '0' } });
+    expect(select.value).toBe('0');
+
+    // Switch to CREATE
+    fireEvent.click(createRadio);
+    expect(createRadio.checked).toBe(true);
+    expect(moveRadio.checked).toBe(false);
+
+    // Check that the CREATE input is shown and empty
+    const createInput = screen.getByDisplayValue('');
+    expect(createInput).toBeInTheDocument();
+  });
 });

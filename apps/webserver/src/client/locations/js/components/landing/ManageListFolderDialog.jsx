@@ -186,6 +186,7 @@ export default class ManageListFolderDialog extends Component {
         : this._removeFromFolder();
 
     promise.then((folder) => {
+      if (!folder) return; // stop if fetch failed
       const msg = (
         <>
           <b>{this.props.list.list_name}</b>

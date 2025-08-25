@@ -1,9 +1,11 @@
 import { When, Then } from '@badeball/cypress-cucumber-preprocessor';
 import BasePage from '../../pages/basePage';
+import LocationsPage from '../../pages/locationsPage';
 
 describe('Upload location', () => {
   const basePage = new BasePage();
-
+  const locationsPage = new LocationsPage();
+  const sharedList = ['AAT ADD LOCATION TEST'];
   const deployment = Cypress.env('deployment');
   const credentials = Cypress.env(deployment);
 
@@ -52,7 +54,37 @@ describe('Upload location', () => {
     basePage.clickOnVerifyBtn();
   });
 
+  When('I share a list with users', () => {
+    locationsPage.clickOnMoreOptionsList(sharedList[0]);
+    locationsPage.clickShareBtn();
+    locationsPage.selectUserToShareList(credentials.viewer);
+    locationsPage.selectUserToShareList(credentials.editor);
+  });
+
+  When('I stop sharing a list with users', () => {
+    locationsPage.clickOnMoreOptionsList(sharedList[0]);
+    locationsPage.clickShareBtn();
+    locationsPage.clickStopSharingBtn();
+    locationsPage.clickOnConfirmActionBtn();
+  });
+
   Then('I should be redirected to locations view', () => {
     cy.url().should('include', '/locations');
+  });
+
+  Then('I should see the users added to the shared list', () => {
+    cy.get('.gfw-button.btn-remove').should('have.length', 2);
+  });
+
+  Then('I should not see the users added to the shared list', () => {
+    cy.get('.gfw-button.btn-remove').should('have.length', 2);
+  });
+
+  Then('I should see the shared list in the locations page', () => {
+    locationsPage.verifyLists(sharedList, true);
+  });
+
+  Then('I should not see the shared list in the locations page', () => {
+    locationsPage.verifyLists(sharedList, false);
   });
 });

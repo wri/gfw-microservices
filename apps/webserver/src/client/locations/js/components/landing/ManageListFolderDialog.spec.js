@@ -152,9 +152,7 @@ describe('ManageListFolderDialog', () => {
   });
 
   test('shows error message when fetch fails', async () => {
-    fetch.mockImplementation(() =>
-      Promise.resolve({ error: 'Error creating folder' })
-    );
+    fetch.mockImplementation(() => Promise.resolve({ error: 'Error creating folder' }));
 
     renderWithProps({ isOpen: true });
 

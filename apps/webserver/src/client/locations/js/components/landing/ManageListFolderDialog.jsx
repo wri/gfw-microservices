@@ -43,7 +43,7 @@ export default class ManageListFolderDialog extends Component {
 
     const strings = locationsPage.lists.manageFolderDialog;
 
-    const isInFolder = !!list.folder;
+    const isInFolder = !!list?.folder;
     const confirmDisabled =
       (option === OPTIONS.CREATE && folderName === '') ||
       (option === OPTIONS.MOVE && existingFolder === undefined);

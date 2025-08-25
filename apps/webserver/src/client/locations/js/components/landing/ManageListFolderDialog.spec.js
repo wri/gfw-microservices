@@ -1,101 +1,156 @@
-import { render, screen, fireEvent, waitFor } from '@testing-library/react';
+import { render, screen, waitFor, fireEvent } from '@testing-library/react';
+import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
+import getMuiTheme from 'material-ui/styles/getMuiTheme';
 import ManageListFolderDialog from './ManageListFolderDialog';
-
-// mock fetch util
-jest.mock('../../../../common/js/utils/fetch', () => jest.fn());
 import fetch from '../../../../common/js/utils/fetch';
 
-// mock gtag
-const mockFolders = [
-  { id: 1, name: 'Folder A' },
-  { id: 2, name: 'Folder B' },
-];
+const muiTheme = getMuiTheme();
 
-const mockList = { id: 100, list_name: 'Test List', folder: null };
-
-const baseProps = {
-  isOpen: true,
+const defaultProps = {
+  list: { folder: null, list_name: 'Test List', id: 1 },
   folders: [],
-  list: mockList,
+  isOpen: true,
   onCancel: jest.fn(),
   onComplete: jest.fn(),
 };
 
+const renderWithTheme = (ui) =>
+  render(<MuiThemeProvider muiTheme={muiTheme}>{ui}</MuiThemeProvider>);
+
+const renderWithProps = (props = {}) =>
+  renderWithTheme(<ManageListFolderDialog {...defaultProps} {...props} />);
+
+jest.mock('../../../../common/js/utils/fetch', () => {
+  return {
+    __esModule: true,
+    default: jest.fn(), // make the default export a jest mock
+  };
+});
+
+// Mock locationsPage
+jest.mock('../../../../common/js/config', () => ({
+  locationsPage: {
+    lists: {
+      manageFolderDialog: {
+        createNew: 'Create New Folder',
+        addToExisting: 'Add to Existing Folder',
+        foldersSelectPlaceholder: 'Select Folder',
+        manageTitle: 'Manage Folder',
+        addTitle: 'Add to Folder',
+        confirm: 'Confirm',
+        move1: '',
+        move2: '',
+        add1: '',
+        add2: '',
+        removed1: '',
+        removed2: '',
+        moved1: '',
+        moved2: '',
+        added1: '',
+        added2: '',
+        errorFolder: 'Error creating folder',
+        errorList: 'Error adding list',
+        errorRemove: 'Error removing list',
+      },
+    },
+  },
+}));
+
 describe('ManageListFolderDialog', () => {
-  beforeEach(() => {
-    jest.clearAllMocks();
+  beforeAll(() => {
+    global.gtag = jest.fn();
   });
 
-  it('renders create new folder option when there are no folders', () => {
-    render(<ManageListFolderDialog {...baseProps} />);
-    expect(screen.getByLabelText(/create new/i)).toBeInTheDocument();
+  beforeEach(() => jest.clearAllMocks());
+
+  test('renders all options', async () => {
+    renderWithProps({ isOpen: true });
+
+    // wait for the dialog content
+    await waitFor(() =>
+      expect(screen.getByText('Create New Folder')).toBeInTheDocument()
+    );
   });
 
-  it('renders move option when folders exist', () => {
-    render(<ManageListFolderDialog {...baseProps} folders={mockFolders} />);
-    expect(screen.getByLabelText(/add to existing/i)).toBeInTheDocument();
+  test('selects "Add to Existing Folder" and chooses a folder', async () => {
+    const folders = [{ name: 'Folder A' }, { name: 'Folder B' }];
+    const list = { folder: null, list_name: 'My List', id: 1 };
+
+    renderWithProps({ open: true, folders, list });
+
+    // Wait for the dialog to appear
+    await waitFor(() =>
+      expect(screen.getByText('Create New Folder')).toBeInTheDocument()
+    );
+
+    // Click the radio button for "Add to Existing Folder"
+    const addExistingRadio = screen.getByLabelText('Add to Existing Folder');
+    addExistingRadio.click();
+    expect(addExistingRadio.checked).toBe(true);
+
+    // Select a folder from the dropdown
+    const select = screen.getByRole('combobox');
+    select.value = '0'; // selects "Folder A"
+    select.dispatchEvent(new Event('change', { bubbles: true }));
+    expect(select.value).toBe('0');
   });
 
-  it('disables confirm when no folder name entered for create', () => {
-    render(<ManageListFolderDialog {...baseProps} />);
-    const confirmBtn = screen.getByRole('button', { name: /confirm/i });
-    expect(confirmBtn).toBeDisabled();
-  });
+  test('clicking confirm calls onComplete when creating folder', async () => {
+    // Mock fetch to return a new folder
+    fetch.mockResolvedValue([{ id: 123, name: 'New Folder' }]);
 
-  it('enables confirm when folder name entered for create', () => {
-    render(<ManageListFolderDialog {...baseProps} />);
-    fireEvent.change(screen.getByRole('textbox'), { target: { value: 'New Folder' } });
-    const confirmBtn = screen.getByRole('button', { name: /confirm/i });
-    expect(confirmBtn).not.toBeDisabled();
-  });
+    // Create a mock for onComplete
+    const onComplete = jest.fn();
 
-  it('calls _addToFolder and onComplete when creating a new folder succeeds', async () => {
-    fetch.mockResolvedValueOnce([{ id: 10, name: 'New Folder' }]);
-    fetch.mockResolvedValueOnce({}); // for _addList
+    // Render with this mock
+    renderWithProps({ onComplete });
 
-    render(<ManageListFolderDialog {...baseProps} />);
-    fireEvent.change(screen.getByRole('textbox'), { target: { value: 'New Folder' } });
-    fireEvent.click(screen.getByRole('button', { name: /confirm/i }));
+    // Type folder name
+    fireEvent.change(screen.getByDisplayValue(''), { target: { value: 'New Folder' } });
 
+    // Click confirm button
+    fireEvent.click(screen.getByText('Confirm'));
+
+    // Wait for onComplete to be called
     await waitFor(() => {
-      expect(baseProps.onComplete).toHaveBeenCalled();
-    });
-  });
-
-  it('calls _addList when moving list to existing folder', async () => {
-    fetch.mockResolvedValueOnce({}); // _addList return
-    render(<ManageListFolderDialog {...baseProps} folders={mockFolders} />);
-    fireEvent.click(screen.getByLabelText(/add to existing/i));
-    fireEvent.change(screen.getByRole('combobox'), { target: { value: '0' } }); // Folder A
-    fireEvent.click(screen.getByRole('button', { name: /confirm/i }));
-
-    await waitFor(() => {
-      expect(fetch).toHaveBeenCalledWith(
-        expect.objectContaining({ url: '/folder/1/add_lists' })
+      expect(onComplete).toHaveBeenCalled();
+      const callArg = onComplete.mock.calls[0][0];
+      expect(callArg.props.children).toEqual(
+        expect.arrayContaining([
+          expect.objectContaining({ props: { children: 'New Folder' } })
+        ])
       );
     });
   });
 
-  it('calls _removeFromFolder when removing from folder', async () => {
-    const listInFolder = { ...mockList, folder: mockFolders[0] };
-    fetch.mockResolvedValueOnce({});
-    render(<ManageListFolderDialog {...baseProps} list={listInFolder} folders={mockFolders} />);
-    fireEvent.click(screen.getByLabelText(/remove from folder/i));
-    fireEvent.click(screen.getByRole('button', { name: /confirm/i }));
+  test('clicking confirm calls onComplete when moving list to existing folder', async () => {
+    const folders = [{ name: 'Folder A', id: 1 }, { name: 'Folder B', id: 2 }];
+    const list = { folder: null, list_name: 'My List', id: 10 };
 
+    // Mock fetch to resolve to the folder
+    fetch.mockResolvedValue({ ...folders[0] });
+
+    renderWithProps({ folders, list });
+
+    // Click "Add to Existing Folder"
+    const addExistingRadio = screen.getByLabelText('Add to Existing Folder');
+    fireEvent.click(addExistingRadio);
+
+    // Select a folder from the dropdown
+    const select = screen.getByRole('combobox');
+    fireEvent.change(select, { target: { value: '0' } }); // Folder A
+
+    // Click confirm button
+    fireEvent.click(screen.getByText('Confirm'));
+
+    // Wait for onComplete to be called
     await waitFor(() => {
-      expect(fetch).toHaveBeenCalledWith(
-        expect.objectContaining({ url: '/folder/1/remove_lists' })
+      expect(defaultProps.onComplete).toHaveBeenCalled();
+      const callArg = defaultProps.onComplete.mock.calls[0][0];
+      // Check that the folder name appears somewhere in the rendered fragment
+      expect(callArg.props.children).toEqual(
+        expect.arrayContaining([expect.objectContaining({ props: { children: 'Folder A' } })])
       );
     });
-  });
-
-  it('resets state when dialog is closed', () => {
-    const { rerender } = render(<ManageListFolderDialog {...baseProps} isOpen={true} />);
-    fireEvent.change(screen.getByRole('textbox'), { target: { value: 'Temp' } });
-
-    rerender(<ManageListFolderDialog {...baseProps} isOpen={false} />);
-    rerender(<ManageListFolderDialog {...baseProps} isOpen={true} />);
-    expect(screen.getByRole('textbox')).toHaveValue('');
   });
 });

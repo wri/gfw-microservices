@@ -1,5 +1,4 @@
 import { useRef, useState } from 'react';
-import axios from 'axios';
 import {
   Box,
   Card,
@@ -131,22 +130,6 @@ export function SummaryAndSubmit() {
         commodity: uploadLocationState.commodity,
       });
       updateSaveMode(isDraftUpload.current);
-
-      const existingListId = uploadLocationState?.existingList?.id;
-      console.log('isAddingToExistingList', existingListId);
-      await new Promise((r) => setTimeout(r, 10000));
-
-      if (existingListId) {
-        console.log('Generating tiles for list ID:', existingListId);
-        const response = await axios
-          .post('/vectorTile/generateTiles', {
-            listID: existingListId,
-          })
-          .catch((error) => {
-            console.error('Error generating tiles:', error);
-          });
-        console.log('Tile deletion response:', response);
-      }
 
       history.push('SUBMISSION_SUCCESS');
     } catch (err) {

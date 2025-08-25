@@ -6,7 +6,7 @@ import {
   isValidLongitude,
   createGeometryAndGraphic,
   extractCoordinates,
-} from './polygonCoordinates.utils';
+} from './polygonCoordinatesUtils';
 
 jest.mock('@arcgis/core/symbols/SimpleFillSymbol');
 jest.mock('@arcgis/core/Graphic');

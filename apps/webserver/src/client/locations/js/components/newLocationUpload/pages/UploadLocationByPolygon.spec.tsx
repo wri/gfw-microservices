@@ -3,7 +3,7 @@ import userEvent, { UserEvent } from '@testing-library/user-event';
 import { UploadLocationByPolygon } from './UploadLocationByPolygon';
 import { useMap } from '../hooks';
 
-jest.mock('../../adding/PolygonCoordinates/polygonCoordinates.utils', () => ({
+jest.mock('../../../utils/polygonCoordinatesUtils', () => ({
   createGeometryAndGraphic: () => ({ geometry: jest.fn(), graphic: jest.fn() }),
 }));
 

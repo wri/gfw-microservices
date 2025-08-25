@@ -1,20 +1,20 @@
-name: Unstable QA e2e Tests
+name: QA e2e Tests
 
 on:
   schedule:
     # Runs at 6 AM UTC (one hour after automatic-release.yml) every weekday
-    - cron: '0 8 * * 1-5'
+    - cron: '0 6 * * 1-5'
 
 # nx cache intermittently fails with github actions, likely due to parallelism
 # so disabling the check for now
 env:
-  UNSTABLE: 'apps/gfwpro-e2e/cypress/e2e/features/InformationBubbles.feature'
+  STABLE: 'apps/gfwpro-e2e/cypress/e2e/features/optionalAttributes.feature,apps/gfwpro-e2e/cypress/e2e/features/uploadSingleLocation.feature,apps/gfwpro-e2e/cypress/e2e/features/addLocationsToExistingList.feature,apps/gfwpro-e2e/cypress/e2e/features/apiMap.feature,apps/gfwpro-e2e/cypress/e2e/features/downloadTemplates.feature,apps/gfwpro-e2e/cypress/e2e/features/alertsRedirectToMap.feature,apps/gfwpro-e2e/cypress/e2e/features/CopyList.feature,apps/gfwpro-e2e/cypress/e2e/features/CopyListGFW.feature,apps/gfwpro-e2e/cypress/e2e/features/DeleteList.feature,apps/gfwpro-e2e/cypress/e2e/features/MoveList.feature,apps/gfwpro-e2e/cypress/e2e/features/Map.feature,apps/gfwpro-e2e/cypress/e2e/features/shareList.feature,apps/gfwpro-e2e/cypress/e2e/features/locationDiagnostics.feature,apps/gfwpro-e2e/cypress/e2e/features/listDiagnosticsRedirectToMap.feature,apps/gfwpro-e2e/cypress/e2e/features/listDiagnostics.feature,apps/gfwpro-e2e/cypress/e2e/features/DownloadList.feature,apps/gfwpro-e2e/cypress/e2e/abilities/list-owner/downloadDiagnostics.feature,apps/gfwpro-e2e/cypress/e2e/abilities/list-owner/regionDiagnostics.feature,apps/gfwpro-e2e/cypress/e2e/abilities/list-owner/treeCoverLossDiagnostics.feature,apps/gfwpro-e2e/cypress/e2e/features/locationDiagnosticsRedirectToMap.feature,apps/gfwpro-e2e/cypress/e2e/features/alerts.feature,apps/gfwpro-e2e/cypress/e2e/features/allDownloads.feature,apps/gfwpro-e2e/cypress/e2e/features/charts.feature,apps/gfwpro-e2e/cypress/e2e/features/uploadCsvFile.feature'
   NX_REJECT_UNKNOWN_LOCAL_CACHE: 0
 
 jobs:
   test_qa:
-    runs-on: ubuntu-latest
-    timeout-minutes: 60 # Timeout the workflow after 120 minutes = 2 hours
+    runs-on: ubuntu-4core-16gb
+    timeout-minutes: 90 # Timeout the workflow after 120 minutes = 2 hours
 
     strategy:
       matrix:
@@ -47,11 +47,28 @@ jobs:
 
       - name: Install settings
         run: |
+          echo "${{secrets.EAPI_E2E_SETTINGS}}" > ./apps/microservices/externalapi-e2e/jest.set.env.ts
           echo "${{secrets.CYPRESS_SETTINGS}}" | tr "'" '"' > ./apps/gfwpro-e2e/cypress.env.json
 
-      - name: Run unstable QA e2e tests for GFW Pro
+      - name: Run QA e2e tests for external API
         run: |
-          npx nx e2e gfwpro-e2e --configuration=qa --spec $UNSTABLE
+          npx nx e2e externalapi-e2e --configuration=qa
+        continue-on-error: true
+
+      - name: Run stable QA e2e tests for GFW Pro
+        run: |
+          npx nx e2e gfwpro-e2e --configuration=qa --spec $STABLE
+
+      - name: Send failure notifications to Slack
+        if: failure()
+        env:
+          SLACK_E2E_TEST_WEBHOOK_URL: ${{ secrets.SLACK_E2E_TEST_WEBHOOK_URL }}
+        run: |
+          curl -X POST -H 'Content-type: application/json' --data '{
+            "text": "QA e2e tests failed. Please check the logs ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}",
+            "username": "GitHub Actions",
+            "icon_emoji": ":octocat:"
+          }' $SLACK_E2E_TEST_WEBHOOK_URL
 
       - name: Upload videos of tests failed
         uses: actions/upload-artifact@v4

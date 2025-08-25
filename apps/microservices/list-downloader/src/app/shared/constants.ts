@@ -1603,3 +1603,18 @@ export const GREEN_HOUSE_GAS_EMISSIONS_HEADER = {
   CombinedEmissionsFactor: 'Combined Emissions Factor',
   year: 'Reporting Year',
 };
+
+export const GHG_INTERMEDIATE_OUTPUTS_HEADER = {
+  listName: 'List Name',
+  locationName: 'Location Name',
+  locationSizeHa: 'Location Size (Ha)',
+  commodity: 'Commodity',
+  dataLayerName: 'Data Layer Name',
+  weightedAvgYield: 'Yield',
+  production: 'Production',
+  co2LinearDiscountedEmission: 'CO2 Linear Discounted Emissions',
+  ch4LinearDiscountedEmission: 'CH4 Linear Discounted Emissions',
+  n2oLinearDiscountedEmission: 'N2O Linear Discounted Emissions',
+  CombinedLinearDiscountedEmission: 'Combined Linear Discounted Emissions',
+  year: 'Reporting Year',
+};

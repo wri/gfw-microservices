@@ -16,6 +16,7 @@
     "deactivateShareInternalList",
     "deleteList",
     "deleteListAnalysisStatusBy",
+    "deleteListVectorTilesPath",
     "deleteLocation",
     "deleteLocationIdsFilteredDataForUserList",
     "deleteOrganizationTableRow",
@@ -149,7 +150,8 @@
     "getListAnalysis",
     "getUserLists",
     "getAnalysisColumns",
-    "getMissingJsonPropertiesFromList"
+    "getMissingJsonPropertiesFromList",
+    "deleteListVectorTilesPath"
   ],
   "matchingFilesAndExports": true,
   "definitionsInActivatePendingAccount": [

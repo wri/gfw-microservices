@@ -1,5 +1,6 @@
-import { render, screen } from '@testing-library/react';
+import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
+import axios from 'axios';
 import { SummaryAndSubmit } from './SummaryAndSubmit';
 import { useUploadLocation } from '../contexts';
 import { UploadType } from '../types';
@@ -32,11 +33,6 @@ jest.mocked(useUploadLocation).mockReturnValue({
   selectUploadType: jest.fn(),
 });
 
-const mockGoBack = jest.fn();
-jest.mock('../hooks', () => ({
-  useHistory: () => ({ goBack: mockGoBack }),
-}));
-
 jest.mock('../../../../../hooks', () => ({
   useTransifexTranslation: jest.fn((key) => key),
 }));
@@ -45,6 +41,41 @@ jest.mock('../components', () => ({
   FileValidationHelper: () => <span data-testid="file-validation-helper" />,
   NavBar: () => <span />,
 }));
+
+jest.mock('axios');
+const mockAxios = jest.mocked(axios);
+
+jest.mock('../utils/upload', () => ({
+  uploadFileToS3: jest.fn(),
+}));
+
+const mockGtag = jest.fn();
+global.gtag = mockGtag;
+
+const mockGoBack = jest.fn();
+jest.mock('../hooks', () => ({
+  useHistory: () => ({
+    goBack: mockGoBack,
+  }),
+}));
+
+const mockUploadFileToS3 = jest.fn().mockResolvedValue({
+  fileS3Route: 's3://bucket/file.geojson',
+  keyFile: 'file.geojson',
+  url: 'https://s3.amazonaws.com/bucket/file.geojson',
+});
+
+const mockUploadProcessByPrevUploadedFile = jest.fn().mockResolvedValue({});
+
+jest.mock('../utils/upload', () => ({
+  uploadFileToS3: () => mockUploadFileToS3(),
+  uploadProcessByPrevUploadedFile: () => mockUploadProcessByPrevUploadedFile(),
+}));
+
+beforeEach(() => {
+  jest.clearAllMocks();
+  mockAxios.post.mockResolvedValue({ data: { success: true } });
+});
 
 describe('SummaryAndSubmit', () => {
   it('should render correct information when creating a new list with all analysis types selected', () => {
@@ -136,5 +167,58 @@ describe('SummaryAndSubmit', () => {
 
     await user.click(screen.getByRole('button', { name: /cancel/i }));
     expect(mockClearUploadType).toHaveBeenCalled();
+  });
+
+  it('should call /vectorTile/deleteTiles when updating an existing list', async () => {
+    const user = userEvent.setup();
+
+    jest.mocked(useUploadLocation).mockReturnValue({
+      clearUploadType: mockClearUploadType,
+      uploadLocationState: {
+        newListName: '',
+        existingList: { name: 'Existing List', id: 123, analysisIds: [] },
+        commodity: 'palm-oil',
+        typeOfAnalysis: {
+          AFI: true,
+          ALERTS: false,
+          FCD: false,
+          PalmRisk: false,
+        },
+        area: { measurementUnit: 'hectares', size: 0 },
+        coordinates: [{ latitude: 1.1, longitude: 1.1 }],
+        locationName: 'location name',
+        uploadedFile: {
+          fileS3Route: 'existing-route',
+          keyFile: 'existing-key',
+          url: '',
+        },
+        uploadType: UploadType.ByPoint,
+      },
+      setUploadLocationByPoint: jest.fn(),
+      setUploadLocationByPolygon: jest.fn(),
+      setUploadLocationConfigureList: jest.fn(),
+      addFile: jest.fn(),
+      updateSaveMode: jest.fn(),
+      selectUploadType: jest.fn(),
+    });
+
+    render(<SummaryAndSubmit />);
+
+    const submitButton = screen.getByRole('button', { name: /submit for analysis/i });
+    expect(submitButton).toBeInTheDocument();
+    await user.click(submitButton);
+
+    await waitFor(() => {
+      expect(screen.getByText('Are you sure?')).toBeInTheDocument();
+    });
+
+    const okButtons = screen.getAllByRole('button', { name: /ok/i });
+    await user.click(okButtons[0]);
+
+    await waitFor(() => {
+      expect(mockAxios.post).toHaveBeenCalledWith('/vectorTile/deleteTiles', {
+        listID: 123,
+      });
+    });
   });
 });

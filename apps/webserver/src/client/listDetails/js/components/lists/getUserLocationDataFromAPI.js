@@ -8,7 +8,7 @@ import {
 } from './ListDetails/listViews.constants';
 import { analysisTypes } from '../../../../../config/env/analysisTypes.constants';
 
-// axios client with retry for 429 + network/idempotent errors
+// we avoid using axios.create() because it's not supported in the browser
 const axiosClient = typeof axios.create === 'function' ? axios.create() : axios;
 axiosRetry(axiosClient, {
   retries: 3,

@@ -1,4 +1,5 @@
 import axios from 'axios';
+import axiosRetry from 'axios-retry';
 import store from '../../../../locations/js/store';
 import {
   COMMODITY_RISK_VIEW,
@@ -6,6 +7,15 @@ import {
   POST_2020_RISK_ASSESSMENT_VIEW,
 } from './ListDetails/listViews.constants';
 import { analysisTypes } from '../../../../../config/env/analysisTypes.constants';
+
+// we avoid using axios.create() because it's not supported in the browser
+const axiosClient = typeof axios.create === 'function' ? axios.create() : axios;
+axiosRetry(axiosClient, {
+  retries: 3,
+  retryDelay: axiosRetry.exponentialDelay,
+  retryCondition: (error) =>
+    error.response?.status === 429 || axiosRetry.isNetworkOrIdempotentRequestError(error),
+});
 
 const getUserLocationDataFromAPI = (
   filters,
@@ -69,7 +79,7 @@ const getUserLocationDataFromAPI = (
       : {}),
   };
 
-  return axios({
+  return axiosClient({
     url: '/locations/getListsPaginated',
     method: 'GET',
     credentials: 'same-origin',

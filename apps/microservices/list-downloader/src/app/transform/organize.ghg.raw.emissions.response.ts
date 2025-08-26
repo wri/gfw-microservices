@@ -14,10 +14,10 @@ class OrganizeGHGRawEmissionsResponse extends Transform {
       locationName,
       totalAreaHa,
       commodity,
-      emissions_co2_yearly,
-      emissions_ch4_yearly,
-      emissions_n2o_yearly,
-      emissions_yearly,
+      emissionsCh4Yearly,
+      emissionsCo2Yearly,
+      emissionsN2oYearly,
+      emissionsYearly,
     } = chunk;
     const csvArray = [];
 
@@ -32,10 +32,10 @@ class OrganizeGHGRawEmissionsResponse extends Transform {
     if (listName && locationName && totalAreaHa && commodity) {
       const sharedInfo = [listName, locationName, totalAreaHa, commodityHumanReadable, 'dLUC'];
 
-      const co2Emissions = JSON.parse(emissions_co2_yearly || '{}');
-      const ch4Emissions = JSON.parse(emissions_ch4_yearly || '{}');
-      const n2oEmissions = JSON.parse(emissions_n2o_yearly || '{}');
-      const combinedEmissions = JSON.parse(emissions_yearly || '{}');
+      const co2Emissions = JSON.parse(emissionsCo2Yearly || '{}');
+      const ch4Emissions = JSON.parse(emissionsCh4Yearly || '{}');
+      const n2oEmissions = JSON.parse(emissionsN2oYearly || '{}');
+      const combinedEmissions = JSON.parse(emissionsYearly || '{}');
 
       const years = new Set([
         ...Object.keys(co2Emissions),

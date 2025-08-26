@@ -95,11 +95,12 @@ export class GHGService {
             country,
             state,
             subState,
-            emissions_ch4_yearly,
-            emissions_n2o_yearly,
-            emissions_yearly,
+            emissionsCo2Yearly,
+            emissionsN2oYearly,
+            emissionsCh4Yearly,
+            emissionsYearly,
             production,
-            weighted_avg_yield,
+            weightedAvgYield,
           } = item;
           return {
             listId,
@@ -116,11 +117,12 @@ export class GHGService {
             ch4EmissionsFactor: efCh4ByYear,
             n2oEmissionsFactor: efN2oByYear,
             combinedEmissionsFactor: emissionsFactorByYear,
-            emissions_ch4_yearly,
-            emissions_n2o_yearly,
-            emissions_yearly,
+            emissionsCh4Yearly,
+            emissionsN2oYearly,
+            emissionsCo2Yearly,
+            emissionsYearly,
             production,
-            weighted_avg_yield,
+            weightedAvgYield,
           };
         })
       );

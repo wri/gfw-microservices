@@ -670,6 +670,8 @@ const authenticateUser = async (req, email, password, userInfoAttributes) => {
       authResult.session = response.Session;
 
       // Set password update date to now since this is first login
+      req.session.user_email = email;
+
       try {
         await handleUserOpeningPasswordDate(new Date(), email, USER_POOL_ID);
         logger.info(`Set password update date for first-time user ${hashedEmail}`);

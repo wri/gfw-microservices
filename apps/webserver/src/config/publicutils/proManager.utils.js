@@ -709,7 +709,7 @@ const updateAccountAnalysisLimits = async (request, payload) => {
  * @param  {Number} id - Organization ID
  * @param  {String} name - New organization name
  */
-const updateOrgNameFn = async (req, id, name) => {
+const updateOrgName = async (req, id, name) => {
   if (!UserManager.isProManager(req)) {
     const userMessage = langResources.getResourceString('loginFailed');
     const sysMessage = `UserEmail: ${req.session.user_email} is not authorized to update org names.`;
@@ -749,14 +749,11 @@ module.exports = {
   deactivateAccount,
   deletePendingAccountRequest,
   deleteOrganization,
-  deletePendingAccount,
   deleteUser,
-  deactivateAccount,
   reactivateAccount,
   getAccountSubscriptionStatus,
   getAllAccountsList,
   getAllUsersList,
-  reactivateAccount,
   updateAccountSubscriptionStatus,
   updateAccountAnalysisLimits,
   updateGlobalAnalysisLimits,

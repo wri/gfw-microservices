@@ -1996,7 +1996,6 @@ class Map extends Component {
 
       const request = new XMLHttpRequest();
       request.onload = () => {
-        store.dispatch(showMapLoader(false));
         if (request.responseText === '') {
           console.log('LIST DATA IS NOT AVAILABLE');
         } else {
@@ -2033,6 +2032,9 @@ class Map extends Component {
                   dialogMessage: message,
                 };
                 this.cancelAnalysis(details);
+              })
+              .finally(() => {
+                store.dispatch(showMapLoader(false));
               });
 
             return;
@@ -2044,6 +2046,7 @@ class Map extends Component {
               this.setState({ mapCenter });
 
               this.safeGoTo(mapCenter);
+              store.dispatch(showMapLoader(false));
             }
           );
 

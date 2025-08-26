@@ -26,6 +26,8 @@ module.exports = (app, limiter) => {
 
   app.post('/vectorTile/generateTiles', vectorTilesController.generateTiles);
 
+  app.post('/vectorTile/deleteTiles', vectorTilesController.deleteTiles);
+
   app.get('/vectorTile/:id', vectorTilesController.retrieveTiles);
 
   app.post('/vectorTile/getListMbtileInfo', vectorTilesController.getListMbtileInfo);

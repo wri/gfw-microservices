@@ -96,6 +96,10 @@ class LocationsPage {
     post2000Analysis: () => cy.get('[data-testid="checkbox-fcd"]'),
     polygonGeoJsonOption: () => cy.get('[role="button"]').contains('Polygon GeoJSON'),
     pointGeoJsonOption: () => cy.get('[role="button"]').contains('Point GeoJSON'),
+    moreOptionsBtn: () => cy.get('button[title="More"]'),
+    shareBtn: () => cy.get('[data-testid="ShareIcon"]'),
+    stopSharingBtn: () => cy.contains('button', 'STOP SHARING WITH ALL'),
+    userSelectInput: () => cy.get('#react-select-2-input'),
   };
 
   verifyLists(lists: string[], exist: boolean) {
@@ -113,8 +117,9 @@ class LocationsPage {
     lists.forEach((listName) => {
       cy.get('ul.my-lists-list')
         .contains('li', listName)
-        .find('button[title="More"].icon-button')
-        .click();
+        .within(() => {
+          this.elements.moreOptionsBtn().click();
+        });
       this.clickOnDeleteList();
       this.elements.confirmActionBtn().should('be.visible');
       this.clickOnConfirmActionBtn();
@@ -307,11 +312,13 @@ class LocationsPage {
     this.elements.optionListOK().click();
   }
   clickOnMoreOptionsListOK() {
-    this.elements.optionListOK().find('[title="More"]').click();
+    this.elements.optionListOK().within(() => {
+      this.elements.moreOptionsBtn().click();
+    });
   }
   clickOnMoreOptionsList(list: string) {
     cy.contains('li.locations-list', list).within(() => {
-      cy.get('button[title="More"]').click();
+      this.elements.moreOptionsBtn().click();
     });
   }
   clickOnPolygonGeoJsonOptionBtn() {
@@ -319,6 +326,18 @@ class LocationsPage {
   }
   clickOnPointGeoJsonOptionBtn() {
     this.elements.pointGeoJsonOption().click();
+  }
+  clickShareBtn() {
+    this.elements.shareBtn().click();
+  }
+  clickStopSharingBtn() {
+    this.elements.stopSharingBtn().click();
+  }
+  selectUserToShareList(user) {
+    this.elements.userSelectInput().clear({ force: true }).type(user, { force: true });
+    cy.contains('.react-select__menu', user).click();
+    cy.contains('Add user').click();
+    this.clickOnConfirmActionBtn();
   }
 }
 

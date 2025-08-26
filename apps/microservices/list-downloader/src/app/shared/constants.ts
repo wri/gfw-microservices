@@ -1616,3 +1616,17 @@ export const GHG_RAW_EMISSIONS_HEADER = {
   CombinedRawEmission: 'Combined Raw Emissions',
   year: 'Year',
 };
+export const GHG_INTERMEDIATE_OUTPUTS_HEADER = {
+  listName: 'List Name',
+  locationName: 'Location Name',
+  locationSizeHa: 'Location Size (Ha)',
+  commodity: 'Commodity',
+  dataLayerName: 'Data Layer Name',
+  weightedAvgYield: 'Yield',
+  production: 'Production',
+  co2LinearDiscountedEmission: 'CO2 Linear Discounted Emissions',
+  ch4LinearDiscountedEmission: 'CH4 Linear Discounted Emissions',
+  n2oLinearDiscountedEmission: 'N2O Linear Discounted Emissions',
+  CombinedLinearDiscountedEmission: 'Combined Linear Discounted Emissions',
+  year: 'Reporting Year',
+};

@@ -1,10 +1,11 @@
-import { Grid, Chip, Tooltip } from '@mui/material';
+import { Grid, Tooltip } from '@mui/material';
 import { PillButton } from '../../../../components';
 import { useDialog } from '../../../../common/js/components/Dialog';
 import { ACCOUNT_ORG_STATUSES } from '../../../../common/js/constants/orgAccountStatuses';
 import { useAccountDetail } from './AccountDetailSection';
 import { disabledStyles } from '../../common/formStyles';
 import FieldLabel from './FieldLabel';
+import { AccountStatusChip } from './AccountStatusChip';
 
 /**
  * @Summary Displays and manages the account status settings.
@@ -16,7 +17,22 @@ import FieldLabel from './FieldLabel';
 export default function AccountStatusSetting() {
   const dialog = useDialog();
   const { currentAccount } = useAccountDetail();
-  const { organization_id, organization_status_id } = currentAccount;
+  const { organization_id, organization_status_id, organization_active } = currentAccount;
+
+  const getAccountStatus = (statusId, active) => {
+    if (statusId === ACCOUNT_ORG_STATUSES.PENDING) {
+      return active ? 'PENDING' : 'CLOSED';
+    }
+    if (statusId === ACCOUNT_ORG_STATUSES.ACTIVE) {
+      return 'ACTIVE';
+    }
+    if (statusId === ACCOUNT_ORG_STATUSES.INACTIVE) {
+      return 'INACTIVE';
+    }
+    return 'UNKNOWN';
+  };
+
+  const status = getAccountStatus(organization_status_id, organization_active);
 
   const handleAccountAction = async ({
     route,
@@ -101,23 +117,6 @@ export default function AccountStatusSetting() {
     });
   };
 
-  const isPending = organization_status_id === ACCOUNT_ORG_STATUSES.PENDING;
-  const isActive = organization_status_id === ACCOUNT_ORG_STATUSES.ACTIVE;
-  const isInactive = organization_status_id === ACCOUNT_ORG_STATUSES.INACTIVE;
-
-  const getStatusLabel = (statusId) => {
-    switch (statusId) {
-      case ACCOUNT_ORG_STATUSES.PENDING:
-        return 'Pending';
-      case ACCOUNT_ORG_STATUSES.ACTIVE:
-        return 'Active';
-      case ACCOUNT_ORG_STATUSES.INACTIVE:
-        return 'Closed';
-      default:
-        return 'Unknown';
-    }
-  };
-
   return (
     <Grid
       container
@@ -127,60 +126,64 @@ export default function AccountStatusSetting() {
     >
       <Grid md={2} sm={6} xs={12}>
         <FieldLabel label="Account Status" />
-        <Chip
-          label={getStatusLabel(organization_status_id)}
-          variant="outlined"
-          color={isActive ? 'success' : isPending ? 'warning' : 'error'}
-        />
+        <AccountStatusChip account={currentAccount} />
       </Grid>
 
       <Grid sx={{ display: 'flex', alignItems: 'center', ml: 2, gap: 1 }}>
         {/* Activate */}
         <Tooltip
-          title={isActive ? 'Account is already active' : ''}
-          disableHoverListener={!isActive}
+          title={status === 'ACTIVE' ? 'Account is already active' : ''}
+          disableHoverListener={status !== 'ACTIVE'}
         >
-          <PillButton
-            variant="contained"
-            size="small"
-            disabled={isActive}
-            sx={disabledStyles}
-            onClick={activateAccount}
-          >
-            Activate
-          </PillButton>
+          <span>
+            {' '}
+            {/* wrap needed: disabled buttons block tooltips */}
+            <PillButton
+              variant="contained"
+              size="small"
+              disabled={status === 'ACTIVE' || status === 'CLOSED'}
+              sx={disabledStyles}
+              onClick={activateAccount}
+            >
+              Activate
+            </PillButton>
+          </span>
         </Tooltip>
 
         {/* Deactivate */}
         <Tooltip
-          title={isInactive ? 'Account is already inactive' : ''}
-          disableHoverListener={!isInactive}
+          title={status === 'INACTIVE' ? 'Account is already inactive' : ''}
+          disableHoverListener={status !== 'INACTIVE'}
         >
-          <PillButton
-            variant="contained"
-            size="small"
-            disabled={isInactive || isPending}
-            sx={disabledStyles}
-            onClick={deactivateAccount}
-          >
-            Deactivate
-          </PillButton>
+          <span>
+            <PillButton
+              variant="contained"
+              size="small"
+              disabled={status !== 'ACTIVE'}
+              sx={disabledStyles}
+              onClick={deactivateAccount}
+            >
+              Deactivate
+            </PillButton>
+          </span>
         </Tooltip>
 
         {/* Close */}
         <Tooltip
-          title={!isPending ? 'Only pending accounts can be closed' : ''}
-          disableHoverListener={isPending}
+          title={status !== 'PENDING' ? 'Only pending accounts can be closed' : ''}
+          disableHoverListener={status === 'PENDING'}
         >
-          <PillButton
-            variant="contained"
-            size="small"
-            disabled={!isPending}
-            sx={disabledStyles}
-            onClick={deleteAccountRequest}
-          >
-            Close
-          </PillButton>
+          <span>
+            <PillButton
+              variant="contained"
+              size="small"
+              disabled={status !== 'PENDING'}
+              sx={disabledStyles}
+              onClick={deleteAccountRequest}
+            >
+              Close
+            </PillButton>
+          </span>
         </Tooltip>
       </Grid>
     </Grid>

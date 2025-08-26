@@ -1,3 +1,34 @@
+// Mock common UI components to avoid deep dependencies
+jest.mock('common/js/components/Button', () => () => <div data-testid="button" />, {
+  virtual: true,
+});
+jest.mock(
+  'common/js/components/CustomDialog/CustomDialog',
+  () => () => <div data-testid="custom-dialog" />,
+  { virtual: true }
+);
+jest.mock('common/js/components/LinkButton', () => () => <div data-testid="link-button" />, {
+  virtual: true,
+});
+jest.mock(
+  'common/js/components/Loaders/ModalLoader',
+  () => () => <div data-testid="modal-loader" />,
+  { virtual: true }
+);
+jest.mock(
+  'common/js/components/Banners/Banner',
+  () => (props) => <div data-testid="banner" {...props} />,
+  { virtual: true }
+);
+jest.mock('common/js/components/InfoBubble', () => () => <div data-testid="info-bubble" />, {
+  virtual: true,
+});
+
+// Mock legacy material-ui dependency used by common Button
+jest.mock('material-ui/RaisedButton', () => () => <div data-testid="raised-button" />, {
+  virtual: true,
+});
+
 import { render, screen } from '@testing-library/react';
 
 import ListDetails from './index';
@@ -9,12 +40,19 @@ import store from '../../../../../locations/js/store';
 // Mock componentDidMount to prevent network requests
 ListDetails.prototype.componentDidMount = jest.fn();
 
-// Mock axios to prevent network requests
+// Mock axios to prevent network requests and support axios-retry initialization
 jest.mock('axios', () => {
   const mockAxios = jest.fn().mockResolvedValue({ data: {} });
+  mockAxios.request = mockAxios;
   mockAxios.post = jest.fn().mockResolvedValue({ data: {} });
   mockAxios.put = jest.fn().mockResolvedValue({});
   mockAxios.get = jest.fn().mockResolvedValue({ data: {} });
+  mockAxios.create = jest.fn(() => mockAxios);
+  mockAxios.defaults = {};
+  mockAxios.interceptors = {
+    request: { use: jest.fn(), eject: jest.fn() },
+    response: { use: jest.fn(), eject: jest.fn() },
+  };
   return mockAxios;
 });
 

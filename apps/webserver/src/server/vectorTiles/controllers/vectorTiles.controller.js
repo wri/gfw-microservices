@@ -1,6 +1,8 @@
 const fs = require('fs');
 const path = require('path');
 const MBTiles = require('@mapbox/mbtiles');
+const sql = require('mssql');
+const sqlUtils = require('../../../config/privateutils/sql.utils');
 
 // Logger
 const logger = require('../../../config/privateutils/logger.utils');
@@ -13,6 +15,34 @@ const { getMBTileFromS3Bucket } = require('../utils/vectorTileS3.utils');
 
 // Config
 const { VECTOR_TILES_LOCATION, MBTILE_EXTENSION } = require('../config/vectorTiles.config');
+
+exports.deleteTiles = async (req, res) => {
+  logger.info(`/vectorTile/deleteTiles - Request => Query PARAMS: ${JSON.stringify(req.body)}`);
+  const { listID } = req.body;
+  if (isNaN(listID)) {
+    return res.status(400).json({
+      success: false,
+      message: 'listID must be a number.',
+    });
+  }
+  try {
+    await sqlUtils.executeOrganizationStoredProcedure(req, 'uspDeleteListVectorTilesPath', [
+      { field: 'list_id', type: sql.Int, value: listID },
+    ]);
+    res.status(200).json({
+      success: true,
+      message: 'List vector tiles storage path deleted successfully.',
+    });
+  } catch (err) {
+    const errorMessage = 'Deleting List Vector Tiles Storage Path in DB failed';
+    logger.error(`${errorMessage}: ${err}`);
+    res.status(500).json({
+      success: false,
+      message: errorMessage,
+      error: err.message,
+    });
+  }
+};
 
 /**
  * @description - Generate MBTiles

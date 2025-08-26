@@ -19,6 +19,12 @@ const { VECTOR_TILES_LOCATION, MBTILE_EXTENSION } = require('../config/vectorTil
 exports.deleteTiles = async (req, res) => {
   logger.info(`/vectorTile/deleteTiles - Request => Query PARAMS: ${JSON.stringify(req.body)}`);
   const { listID } = req.body;
+  if (isNaN(listID)) {
+    return res.status(400).json({
+      success: false,
+      message: 'listID must be a number.',
+    });
+  }
   try {
     await sqlUtils.executeOrganizationStoredProcedure(req, 'uspDeleteListVectorTilesPath', [
       { field: 'list_id', type: sql.Int, value: listID },

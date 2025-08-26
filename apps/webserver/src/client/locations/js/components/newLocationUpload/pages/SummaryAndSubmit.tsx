@@ -135,7 +135,7 @@ export function SummaryAndSubmit() {
       const existingListId = uploadLocationState?.existingList?.id;
       if (existingListId) {
         // If updating an existing list, delete its vector tiles
-        // they will be regeneerated when the list is viewed on the map
+        // they will be regenerated when the list is viewed on the map
         const response = await axios
           .post('/vectorTile/deleteTiles', {
             listID: existingListId,

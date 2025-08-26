@@ -72,3 +72,4 @@ export * from './getListAnalysis';
 export * from './getUserLists';
 export * from './getAnalysisColumns';
 export * from './getMissingJsonPropertiesFromList';
+export * from './updateOrgName';

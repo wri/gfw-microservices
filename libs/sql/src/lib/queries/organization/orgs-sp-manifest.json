@@ -73,6 +73,7 @@
     "updateAccountClassifications",
     "updateAccountProfile",
     "updateListAnalysisStatus",
+    "updateOrgName",
     "updateUser"
   ],
   "spTsExports": [
@@ -149,7 +150,8 @@
     "getListAnalysis",
     "getUserLists",
     "getAnalysisColumns",
-    "getMissingJsonPropertiesFromList"
+    "getMissingJsonPropertiesFromList",
+    "updateOrgName"
   ],
   "matchingFilesAndExports": true,
   "definitionsInActivatePendingAccount": [

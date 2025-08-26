@@ -283,4 +283,20 @@ module.exports = (app, limiter) => {
       res.status(500).send(error);
     }
   });
+
+  app.post('/pro-manager/updateOrgName', async (req, res) => {
+    logger.info('POST /pro-manager/updateOrgName');
+    const { id, name } = req.body;
+
+    try {
+      const response = await ProManager.updateOrgName(req, id, name);
+      res.send({
+        status: 'success',
+        data: response,
+      });
+    } catch (error) {
+      logger.info(`Error POST /pro-manager/updateOrgName`, error);
+      res.status(500).send(error);
+    }
+  });
 };

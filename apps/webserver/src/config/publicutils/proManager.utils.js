@@ -713,19 +713,62 @@ const updateAccountAnalysisLimits = async (request, payload) => {
   }
 };
 
+/**
+ * @function updateOrgName
+ * @summary Updates the organization name
+ * @param  {Object} req - Request object (used for session/auth)
+ * @param  {Number} id - Organization ID
+ * @param  {String} name - New organization name
+ */
+const updateOrgNameFn = async (req, id, name) => {
+  if (!UserManager.isProManager(req)) {
+    const userMessage = langResources.getResourceString('loginFailed');
+    const sysMessage = `UserEmail: ${req.session.user_email} is not authorized to update org names.`;
+    throw errorUtils.createErrorMessage(
+      req,
+      errorUtils.ERROR_CODES.userNotProManager,
+      userMessage,
+      sysMessage
+    );
+  }
+
+  try {
+    const params = [
+      { name: 'OrganizationId', type: sql.Int, value: id },
+      { name: 'OrganizationName', type: sql.NVarChar, value: name },
+    ];
+
+    const [result] = await sqlUtils.executeOrganizationStoredProcedure(
+      req,
+      'uspUpdateOrgName', // alias for logging/tracking
+      params
+    );
+
+    return result;
+  } catch (err) {
+    throw errorUtils.createErrorMessage(
+      req,
+      errorUtils.ERROR_CODES.failedToUpdateOrganization,
+      'Failed to update organization name',
+      err
+    );
+  }
+};
+
 module.exports = {
-  getAllAccountsList,
-  getAllUsersList,
   activatePendingAccount,
-  updatePendingAccountUser,
+  deactivateAccount,
   deletePendingAccountRequest,
   deleteOrganization,
-  deleteUser,
-  deactivateAccount,
   deletePendingAccount,
-  reactivateAccount,
+  deleteUser,
   getAccountSubscriptionStatus,
+  getAllAccountsList,
+  getAllUsersList,
+  reactivateAccount,
   updateAccountSubscriptionStatus,
-  updateGlobalAnalysisLimits,
   updateAccountAnalysisLimits,
+  updateGlobalAnalysisLimits,
+  updateOrgName,
+  updatePendingAccountUser,
 };

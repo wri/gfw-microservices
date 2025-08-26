@@ -1,5 +1,4 @@
 import { ConfigModule } from '@nestjs/config';
-import { Module } from '@nestjs/common';
 import { serverConfigSchema } from '../validators/server-config';
 
 // This needs to be at the beginning of the file to ensure that the '.env' file
@@ -10,6 +9,8 @@ const envModule = ConfigModule.forRoot({
   isGlobal: true,
 });
 
+import { MiddlewareConsumer, Module } from '@nestjs/common';
+import { TraceIdMiddleware } from '@wri-monorepos/shared';
 import { HealthModule } from './health/health.module';
 import { ListModule } from './handler/list.module';
 import { VerifiableCredentialModule } from './verifiable-credentials/verifiable.credentials.module';
@@ -18,4 +19,9 @@ import { VerifiableCredentialModule } from './verifiable-credentials/verifiable.
   controllers: [],
   providers: [],
 })
-export class AppModule {}
+export class AppModule {
+  configure(consumer: MiddlewareConsumer) {
+    // Apply trace ID middleware to all routes
+    consumer.apply(TraceIdMiddleware).forRoutes('*path');
+  }
+}

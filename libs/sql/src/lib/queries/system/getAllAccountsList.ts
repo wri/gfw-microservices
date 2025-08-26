@@ -140,7 +140,8 @@ export const getAllAccountsList = `
 			@organization_activated_time,
 			@subscription_status_id,
 			1
-		FROM @TempResult;
+		FROM @TempResult
+		where organization_id = @organization_id;
 
 		FETCH NEXT FROM org_cursor
 		INTO @organization_id, @organization_name, @organization_db, @organization_status_id, @organization_activated_time, @subscription_status_id;

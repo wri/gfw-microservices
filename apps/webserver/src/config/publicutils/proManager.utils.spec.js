@@ -34,7 +34,6 @@ const {
   activatePendingAccount,
   deactivateAccount,
   deleteOrganization,
-  deletePendingAccount,
   deletePendingAccountRequest,
   deleteUser,
   getAccountSubscriptionStatus,
@@ -578,31 +577,6 @@ describe('Pro Manager Utils Tests', () => {
     });
   });
 
-  describe('deletePendingAccount', () => {
-    const mockReq = {};
-    const organization_id = 123;
-
-    it('should resolve successfully when the stored procedure executes without errors', async () => {
-      sqlUtils.executeSystemStoredProcedure.mockResolvedValueOnce(true);
-
-      await expect(deletePendingAccount(mockReq, organization_id)).resolves.toBe(true);
-    });
-
-    it('should reject with an error message when the stored procedure fails', async () => {
-      const error = new Error('Database error');
-      sqlUtils.executeSystemStoredProcedure.mockRejectedValueOnce(error);
-
-      const errorMessage = new errorUtils.createErrorMessage(
-        mockReq,
-        errorUtils.ERROR_CODES.failedToDeleteOrganization,
-        'Failed to delete pending account.',
-        error
-      );
-
-      await expect(deletePendingAccount(mockReq, organization_id)).rejects.toEqual(errorMessage);
-    });
-  });
-
   describe('reactivateAccount', () => {
     const mockReq = {};
     const organization_id = 123;
@@ -626,11 +600,18 @@ describe('Pro Manager Utils Tests', () => {
     const organization_id = 123;
 
     beforeEach(() => {
-      mockReq = { session: { user_email: 'test@example.com' } };
+      mockReq = { session: { user_email: 'admin@example.com' } };
+      jest.clearAllMocks();
     });
 
     it('should resolve successfully when the account is deactivated', async () => {
-      sqlUtils.executeSystemStoredProcedure.mockResolvedValue(true);
+      // Mock the function that returns currentStatus to return Active
+      sqlUtils.executeSystemStoredProcedure.mockResolvedValueOnce([
+        { organization_status_id: orgAccountStatus.Active },
+      ]);
+
+      // Mock the update call to succeed
+      sqlUtils.executeSystemStoredProcedure.mockResolvedValueOnce([{}]);
 
       await expect(deactivateAccount(mockReq, organization_id)).resolves.toBe(true);
     });
@@ -639,7 +620,11 @@ describe('Pro Manager Utils Tests', () => {
       const mockError = new Error('Database error');
       sqlUtils.executeSystemStoredProcedure.mockRejectedValue(mockError);
 
-      await expect(deactivateAccount(mockReq, organization_id)).rejects.toThrow(mockError);
+      await expect(deactivateAccount(mockReq, organization_id)).rejects.toMatchObject({
+        code: errorUtils.ERROR_CODES.failedToDeactivateAccount,
+        userMessage: 'Failed to deactivate account',
+        systemMessage: mockError,
+      });
     });
   });
 
@@ -652,12 +637,12 @@ describe('Pro Manager Utils Tests', () => {
     });
 
     it('should resolve with the subscription status when the database operation is successful', async () => {
-      const mockResult = { status: 'active' };
-      sqlUtils.executeSystemStoredProcedure.mockResolvedValue(mockResult); // Mock successful database operation
+      const mockResult = { status: 'active' }; // not 2
+      sqlUtils.executeSystemStoredProcedure.mockResolvedValue([mockResult]);
 
-      await expect(getAccountSubscriptionStatus(mockReq, organizationId)).resolves.toEqual(
-        mockResult
-      );
+      await expect(getAccountSubscriptionStatus(mockReq, organizationId)).resolves.toEqual([
+        mockResult,
+      ]);
     });
   });
 

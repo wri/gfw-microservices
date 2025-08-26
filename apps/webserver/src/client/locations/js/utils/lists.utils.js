@@ -22,10 +22,11 @@ const checkValidViewCommodity = (list, location) => {
 
   if (!list.isGlobalForestWatchList) {
     const { template_id, location_classification } = list;
-    const locationClassification =
-      location?.['Location Classification']?.toLowerCase() ??
-      location_classification?.toLowerCase();
-
+    let locationClassification = location?.['Location Classification'] ?? location_classification;
+    if (Array.isArray(locationClassification)) {
+      locationClassification = locationClassification[0];
+    }
+    locationClassification = locationClassification?.toLowerCase();
     return template_id === 2 || (template_id === 5 && locationClassification === 'supply shed');
   }
 
@@ -175,30 +176,27 @@ const containsPunctuation = (list_name) => {
  * @param {String} listFilterStr - List filter string
  * @returns {Array} - Filter results
  */
-export const getListFilteredLocations = (filteredLocationData, combinedColumns, listFilterStr) => {
+export const getListFilteredLocations = (
+  filteredLocationData,
+  combinedColumns,
+  listFilterStr = ''
+) => {
   const activeColumns = combinedColumns.filter(
-    (v) => v.show && v.accessor !== 'checkbox' && v.accessor !== 'flags'
+    (v) => v.show && v.accessor !== 'checkbox' && !v.accessor.includes('flag_')
   );
-  return filteredLocationData.filter((e) => {
-    return (
-      activeColumns
-        .map((col) => {
-          const cellValue =
-            typeof col.accessor === 'function'
-              ? col.accessor(e)
-              : typeof col.accessor === 'string'
-              ? e[col.accessor]
-              : undefined;
-          return (
-            cellValue &&
-            cellValue.toString().toLowerCase().includes(listFilterStr.toString().toLowerCase())
-          );
-        })
-        .filter((v) => v).length > 0
-    );
-  });
-};
 
+  return filteredLocationData.filter((e) =>
+    activeColumns.some((col) => {
+      let cellValue = '';
+      if (typeof col.accessor === 'function') {
+        cellValue = col.accessor(e);
+      } else if (typeof col.accessor === 'string') {
+        cellValue = e[col.accessor];
+      }
+      return (cellValue ?? '').toString().toLowerCase().includes(listFilterStr.toLowerCase());
+    })
+  );
+};
 /**
  * Compare selected locations with filtered locations and update REDUX state accordingly
  * @param {Array} selectedLocations - Selected location IDs

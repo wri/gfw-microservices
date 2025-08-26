@@ -18,10 +18,9 @@ const {
  * @param {Object} req - Express request object
  * @param {Object} res - Express response object
  */
-export const dashboard = (req, res, data) => {
+export const dashboard = (req, res) => {
   const isAdministrator = UserManager.isAdministrator(req);
   const { session } = req;
-  const fromMap = data ? true : false;
 
   const promises = [
     ListManager.getUserListsWithAnalysisId(req),
@@ -52,9 +51,8 @@ export const dashboard = (req, res, data) => {
         dashboardjs: compiledAssets.js.dashboard,
         dashboardcss: compiledAssets.css.dashboard,
         userSharedLists: isAdministrator ? [] : userSharedLists,
-        fromMap: fromMap,
-        listStatuses: listStatuses,
-        userInfo: userInfo,
+        listStatuses,
+        userInfo,
       });
     })
     .catch((error) => {

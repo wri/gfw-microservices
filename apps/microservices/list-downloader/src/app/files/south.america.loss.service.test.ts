@@ -110,4 +110,23 @@ describe('South America Loss Service', () => {
       ['List Name', 'Data Layer Name', 'Forest Loss (ha)', 'Year', 'Total Loss (ha)'],
     ]);
   });
+
+  test('Should use BRA data from country_specific_deforestation_yearly when attribute is tree_cover_loss_prodes_yearly', () => {
+    const returnData = southAmericaLossService.generateAggregate(
+      'sAmericaLossAggregate',
+      'south_america_loss_of_forests_aggregate',
+      {
+        country_specific_deforestation_yearly: JSON.stringify({
+          BRA: { 2017: 50, 2018: 70 },
+        }),
+        tree_cover_loss_prodes_yearly: '{}',
+      }
+    );
+
+    expect(returnData).toEqual([
+      ['List Name', 'Data Layer Name', 'Forest Loss (ha)', 'Year', 'Total Loss (ha)'],
+      ['south_america_loss_of_forests_aggregate', 'PRODES', 50, '2017', '120.00'],
+      ['south_america_loss_of_forests_aggregate', 'PRODES', 70, '2018', '120.00'],
+    ]);
+  });
 });

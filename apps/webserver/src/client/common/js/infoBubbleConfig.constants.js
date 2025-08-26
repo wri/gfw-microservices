@@ -49,6 +49,8 @@ const infoBubbleConfig = {
   post2000TreeCover: 'post-2000_tree_cover',
   post2000TreeCoverLoss: 'post-2000_tree_cover_loss',
   administrativeAreasProList: 'administrative_areas_pro_list',
+  listDetailsIdType: 'list_details_id_type',
+  listDetailsIdValue: 'list_details_id_value',
 };
 
 export default infoBubbleConfig;

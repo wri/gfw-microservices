@@ -1604,6 +1604,18 @@ export const GREEN_HOUSE_GAS_EMISSIONS_HEADER = {
   year: 'Reporting Year',
 };
 
+export const GHG_RAW_EMISSIONS_HEADER = {
+  listName: 'List Name',
+  locationName: 'Location Name',
+  locationSizeHa: 'Location Size (Ha)',
+  commodity: 'Commodity',
+  dataLayerName: 'Data Layer Name',
+  co2RawEmission: 'CO2 Raw Emissions',
+  ch4RawEmission: 'CH4 Raw Emissions',
+  n2oRawEmission: 'N2O Raw Emissions',
+  CombinedRawEmission: 'Combined Raw Emissions',
+  year: 'Year',
+};
 export const GHG_INTERMEDIATE_OUTPUTS_HEADER = {
   listName: 'List Name',
   locationName: 'Location Name',

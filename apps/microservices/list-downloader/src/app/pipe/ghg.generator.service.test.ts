@@ -5,6 +5,7 @@ import { AnalysisGhgDataService } from '../data/analysis.ghg.data.service';
 import { GreenHouseGasEmissionsService } from '../files/greenhouse.gas.emissions.service';
 import { getAllFilesAndZip } from '../shared/file.utils';
 import { BasicFieldsFileRequest } from '@wri-monorepos/sql';
+import { GhgRawEmissions } from '../files/ghg.raw.emissions.service';
 import { GhgIntermediateOutputs } from '../files/ghg.intermediate.outputs.service';
 
 jest.mock('../shared/file.utils', () => ({
@@ -15,6 +16,7 @@ describe('GreenHouseGasEmissionsGeneratorService', () => {
   let service: GreenHouseGasEmissionsGeneratorService;
   let mockAnalysisGhgDataService: jest.Mocked<AnalysisGhgDataService>;
   let mockGreenHouseGasEmissionsService: jest.Mocked<GreenHouseGasEmissionsService>;
+  let mockGhgRawEmissionsService: jest.Mocked<GhgRawEmissions>;
   let mockGhgIntermediateOutputsService: jest.Mocked<GhgIntermediateOutputs>;
 
   beforeEach(async () => {
@@ -31,6 +33,13 @@ describe('GreenHouseGasEmissionsGeneratorService', () => {
       finishProcess: jest.fn(),
     } as unknown as jest.Mocked<GreenHouseGasEmissionsService>;
 
+    mockGhgRawEmissionsService = {
+      startEmail: jest.fn(),
+      start: jest.fn(),
+      process: jest.fn(),
+      finish: jest.fn(),
+      finishProcess: jest.fn(),
+    } as unknown as jest.Mocked<GhgRawEmissions>;
     mockGhgIntermediateOutputsService = {
       startEmail: jest.fn(),
       start: jest.fn(),
@@ -44,6 +53,7 @@ describe('GreenHouseGasEmissionsGeneratorService', () => {
         GreenHouseGasEmissionsGeneratorService,
         { provide: AnalysisGhgDataService, useValue: mockAnalysisGhgDataService },
         { provide: GreenHouseGasEmissionsService, useValue: mockGreenHouseGasEmissionsService },
+        { provide: GhgRawEmissions, useValue: mockGhgRawEmissionsService },
         { provide: GhgIntermediateOutputs, useValue: mockGhgIntermediateOutputsService },
         { provide: Logger, useValue: new Logger() },
       ],

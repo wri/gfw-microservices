@@ -1,4 +1,5 @@
 import { useRef, useState } from 'react';
+import axios from 'axios';
 import {
   Box,
   Card,
@@ -130,6 +131,20 @@ export function SummaryAndSubmit() {
         commodity: uploadLocationState.commodity,
       });
       updateSaveMode(isDraftUpload.current);
+
+      const existingListId = uploadLocationState?.existingList?.id;
+      if (existingListId) {
+        // If updating an existing list, delete its vector tiles
+        // they will be regenerated when the list is viewed on the map
+        const response = await axios
+          .post('/vectorTile/deleteTiles', {
+            listID: existingListId,
+          })
+          .catch((error) => {
+            console.error('Error generating tiles:', error);
+          });
+        console.log('Tile deletion response:', response);
+      }
 
       history.push('SUBMISSION_SUCCESS');
     } catch (err) {

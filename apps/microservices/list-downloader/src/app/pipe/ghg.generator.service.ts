@@ -7,6 +7,7 @@ import { IFileGenerator } from './i.file.generator';
 import { POOL_SIZE } from '../shared/constants';
 import { GreenHouseGasEmissionsService } from '../files/greenhouse.gas.emissions.service';
 import { AnalysisGhgDataService } from '../data/analysis.ghg.data.service';
+import { GhgRawEmissions } from '../files/ghg.raw.emissions.service';
 import { GhgIntermediateOutputs } from '../files/ghg.intermediate.outputs.service';
 
 @Injectable()
@@ -16,6 +17,7 @@ export class GreenHouseGasEmissionsGeneratorService extends IFileGenerator {
   constructor(
     private readonly analysisGhgDataService: AnalysisGhgDataService,
     private readonly greenHouseGasEmissionsService: GreenHouseGasEmissionsService,
+    private readonly GhgRawEmissionsService: GhgRawEmissions,
     private readonly ghgIntermediateOutputsService: GhgIntermediateOutputs
   ) {
     super();
@@ -40,6 +42,7 @@ export class GreenHouseGasEmissionsGeneratorService extends IFileGenerator {
     const arrayOfPages = Array.from(Array(numberOfPages).keys());
 
     this.greenHouseGasEmissionsService.start(filters);
+    this.GhgRawEmissionsService.start(filters);
     this.ghgIntermediateOutputsService.start(filters);
 
     const composeResults = async (i: number) => {
@@ -49,6 +52,7 @@ export class GreenHouseGasEmissionsGeneratorService extends IFileGenerator {
         isListLevel
       );
       this.greenHouseGasEmissionsService.process(analysisData);
+      this.GhgRawEmissionsService.process(analysisData);
       this.ghgIntermediateOutputsService.process(analysisData);
       return i;
     };
@@ -58,6 +62,7 @@ export class GreenHouseGasEmissionsGeneratorService extends IFileGenerator {
     }
 
     await this.greenHouseGasEmissionsService.finish(filters);
+    await this.GhgRawEmissionsService.finish(filters);
     await this.ghgIntermediateOutputsService.finish(filters);
   }
 }

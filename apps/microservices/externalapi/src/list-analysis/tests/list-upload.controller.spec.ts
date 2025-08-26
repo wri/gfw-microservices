@@ -13,7 +13,7 @@ import { OrganizationService } from '../organization.service';
 import axios from 'axios';
 import AxiosMockAdapter from 'axios-mock-adapter';
 import { createRequest } from 'node-mocks-http';
-import { Request } from 'node-fetch';
+import { Request } from 'express';
 import * as sinon from 'sinon';
 import { DataSource } from 'typeorm';
 import * as request from 'supertest';
@@ -140,10 +140,13 @@ describe('ListUploadController', () => {
     headers: {
       'x-api-key': 'your-api-key',
     },
-    user: {
-      organizationId: 1,
-    },
   }) as Request;
+
+  requestMock.user = {
+    organizationId: 1,
+    organization_user_id: 1,
+    hasValidEmail: true,
+  };
 
   beforeAll(async () => {
     const module: TestingModule = await Test.createTestingModule({
@@ -529,4 +532,43 @@ describe('ListUploadController', () => {
       expect(statusCode).toBe(400);
     }
   );
+
+  it('should return 400 when LP returns 500 with duplicate name message', async () => {
+    axiosMock.onPost(/\/api\/create-large-list/).reply(500, {
+      message: 'List name already exists',
+    });
+
+    // No need to mock save-list-to-process or process-list since create-large-list fails first
+
+    userService.findUser = jest.fn().mockResolvedValue({
+      id: 123,
+      user_email: 'test@test.com',
+      organization_id: 1,
+      organization_user_id: 1,
+      organization_user_status_id: 1,
+      tokens: [],
+    });
+
+    organizationService.findOrganizationById = jest.fn().mockResolvedValue({
+      id: 1,
+      organizationName: 'ABC Corp',
+      organizationDb: ':memory:',
+      organizationStatusId: 1,
+      organizationActivatedTime: new Date(),
+      renewalTime: new Date(),
+      subscriptionStatusId: 1,
+    });
+
+    const requestBody = {
+      uploadId: '123',
+      listName: 'Duplicate Name',
+      analysisIDs: 'FCD',
+      commodity: 'Cocoa Generic',
+    };
+
+    await expect(controller.uploadNewList(requestBody, requestMock)).rejects.toMatchObject({
+      status: 400,
+      response: { errorDetails: 'List name already exists' },
+    });
+  });
 });

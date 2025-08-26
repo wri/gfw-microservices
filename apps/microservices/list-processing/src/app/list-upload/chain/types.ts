@@ -81,20 +81,39 @@ export abstract class AbstractHandler<T> implements Handler<T> {
       try {
         result = await nextJob.handle(result);
       } catch (error) {
-        Logger.error(
-          `Error in ${nextJob.constructor.name}: ${error.stack || error.message || error}`
-        );
+        const err: unknown = error;
+        const statusCode =
+          typeof err === 'object' &&
+          err !== null &&
+          'getStatus' in err &&
+          typeof (err as { getStatus?: () => number }).getStatus === 'function'
+            ? (err as { getStatus: () => number }).getStatus()
+            : typeof err === 'object' && err !== null && 'status' in err
+            ? (err as { status?: number }).status
+            : undefined;
+        if (statusCode === 400) {
+          throw error;
+        }
+        const stack =
+          typeof err === 'object' && err !== null && 'stack' in err
+            ? (err as { stack?: string }).stack
+            : undefined;
+        const message =
+          typeof err === 'object' && err !== null && 'message' in err
+            ? (err as { message?: string }).message || 'Unknown error'
+            : String(err);
+        Logger.error(`Error in ${nextJob.constructor.name}: ${stack || message}`);
         await AbstractHandler.updateListsUploadStatus(
           result as ChainType,
           `Error in ${nextJob.constructor.name}`,
-          error.message
+          message
         );
         const chainInput = (result as ChainType).request as RequestNewList;
         chainInput.hasUnanalyzableError = true;
         const geoJsonOut = (result as ChainType).geojson as FeatureCollection;
         const fakeErrFeature = {
-          properties: { errorDetails: error.message },
-          geometry: {} as any,
+          properties: { errorDetails: message },
+          geometry: {} as unknown,
           type: 'Feature',
         };
         geoJsonOut.features.push(fakeErrFeature as Feature);

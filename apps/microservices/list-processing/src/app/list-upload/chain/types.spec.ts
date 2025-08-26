@@ -1,4 +1,6 @@
 import { AbstractHandler } from './types'; // Adjust the import path as necessary
+import { Logger } from '@nestjs/common'; // Added for error logging
+import { ChainType } from './types'; // Added for ChainType
 
 jest.mock('./types', () => ({
   ...jest.requireActual('./types'),
@@ -56,5 +58,119 @@ describe('AbstractHandler', () => {
 
     const result = await AbstractHandler.runFullChain(handler1, request);
     expect(result).toEqual(request);
+  });
+
+  test('should handle errors in the chain and continue', async () => {
+    const request: ChainType = {
+      request: {
+        list_id: 1,
+        organization_database: 'test_db',
+        isExternalAPIProcess: false,
+        organization_id: 1,
+        subscription_status_id: 1,
+        hasUnanalyzableError: false,
+        path: '/test/path', // Added required fields
+      },
+      geojson: { type: 'FeatureCollection', features: [] },
+    };
+    const errorMessage = 'Test error';
+
+    // Create a handler that throws an error
+    class ErrorHandler extends AbstractHandler<unknown> {
+      public async handle(): Promise<unknown> {
+        throw new Error(errorMessage);
+      }
+    }
+
+    const errorHandler = new ErrorHandler();
+    const nextHandler = new ConcreteHandler();
+    errorHandler.setNext(nextHandler);
+
+    // Mock the updateListsUploadStatus function
+    const updateSpy = jest
+      .spyOn(AbstractHandler, 'updateListsUploadStatus')
+      .mockResolvedValue(undefined);
+
+    // Mock Logger.error
+    const loggerSpy = jest.spyOn(Logger, 'error').mockImplementation(jest.fn());
+
+    // Spy and mock to return request
+    jest.spyOn(nextHandler, 'handle').mockImplementation(async () => request);
+
+    const result = await AbstractHandler.runFullChain(errorHandler, request);
+
+    expect(loggerSpy).toHaveBeenCalledWith(
+      expect.stringContaining(`Error in ErrorHandler: Error: ${errorMessage}`)
+    );
+    expect(updateSpy).toHaveBeenCalledWith(
+      expect.anything(),
+      expect.stringContaining('Error in ErrorHandler'),
+      errorMessage
+    );
+    expect((result as any).request.hasUnanalyzableError).toBe(true); // Corrected path
+    // Check if chain continued to next handler
+    expect(nextHandler.handle).toHaveBeenCalled();
+  });
+
+  test('should handle status code 400 errors without continuing the chain', async () => {
+    const request: ChainType = {
+      request: {
+        list_id: 1,
+        organization_database: 'test_db',
+        isExternalAPIProcess: false,
+        organization_id: 1,
+        subscription_status_id: 1,
+        hasUnanalyzableError: false,
+        path: '/test/path', // Added required fields
+      },
+      geojson: { type: 'FeatureCollection', features: [] },
+    };
+
+    // Create a handler that throws a 400 error
+    class BadRequestHandler extends AbstractHandler<unknown> {
+      public async handle(): Promise<unknown> {
+        const error = new Error('Bad request');
+        (error as any).status = 400;
+        throw error;
+      }
+    }
+
+    const badRequestHandler = new BadRequestHandler();
+
+    await expect(AbstractHandler.runFullChain(badRequestHandler, request)).rejects.toThrow(
+      'Bad request'
+    );
+  });
+
+  test('should handle errors without stack', async () => {
+    const request: ChainType = {
+      request: {
+        list_id: 1,
+        organization_database: 'test_db',
+        isExternalAPIProcess: false,
+        organization_id: 1,
+        subscription_status_id: 1,
+        hasUnanalyzableError: false,
+        path: '/test/path', // Added required fields
+      },
+      geojson: { type: 'FeatureCollection', features: [] },
+    };
+    const errorMessage = 'Test error without stack';
+
+    class ErrorNoStackHandler extends AbstractHandler<unknown> {
+      public async handle(): Promise<unknown> {
+        throw { message: errorMessage }; // Error without stack
+      }
+    }
+
+    const errorNoStackHandler = new ErrorNoStackHandler();
+
+    const loggerSpy = jest.spyOn(Logger, 'error').mockImplementation(jest.fn());
+
+    await AbstractHandler.runFullChain(errorNoStackHandler, request);
+
+    expect(loggerSpy).toHaveBeenCalledWith(
+      expect.stringContaining(`Error in ErrorNoStackHandler: ${errorMessage}`)
+    );
   });
 });

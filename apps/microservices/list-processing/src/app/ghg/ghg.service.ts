@@ -95,6 +95,12 @@ export class GHGService {
             country,
             state,
             subState,
+            emissionsCo2Yearly,
+            emissionsN2oYearly,
+            emissionsCh4Yearly,
+            emissionsYearly,
+            production,
+            weightedAvgYield,
           } = item;
           return {
             listId,
@@ -111,6 +117,12 @@ export class GHGService {
             ch4EmissionsFactor: efCh4ByYear,
             n2oEmissionsFactor: efN2oByYear,
             combinedEmissionsFactor: emissionsFactorByYear,
+            emissionsCh4Yearly,
+            emissionsN2oYearly,
+            emissionsCo2Yearly,
+            emissionsYearly,
+            production,
+            weightedAvgYield,
           };
         })
       );

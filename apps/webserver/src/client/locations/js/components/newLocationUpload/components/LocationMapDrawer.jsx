@@ -6,12 +6,12 @@ import Polygon from '@arcgis/core/geometry/Polygon';
 import SimpleFillSymbol from '@arcgis/core/symbols/SimpleFillSymbol';
 import SpatialReference from '@arcgis/core/geometry/SpatialReference';
 import SketchViewModel from '@arcgis/core/widgets/Sketch/SketchViewModel';
-import { locationsPage } from '../../../../common/js/config';
+import { locationsPage } from '../../../../../common/js/config';
 import DrawIcon from '@mui/icons-material/Draw';
 import {
   addCoordinateTextFromPoint,
   addCoordinateTextFromPolygon,
-} from './PolygonCoordinates/polygonCoordinates.utils';
+} from '../../../utils/polygonCoordinatesUtils';
 import './LocationMapDrawer.scss';
 
 const DrawShapeMode = {
@@ -21,7 +21,7 @@ const DrawShapeMode = {
   Complete: 'complete',
 };
 
-const LocationMapDrawer = ({
+export const LocationMapDrawer = ({
   geomFromMap,
   mapView,
   sketchViewModel,
@@ -221,5 +221,3 @@ const LocationMapDrawer = ({
     </button>
   );
 };
-
-export default LocationMapDrawer;

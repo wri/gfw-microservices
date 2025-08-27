@@ -1,7 +1,7 @@
 import * as geometryEngine from '@arcgis/core/geometry/geometryEngine';
 import Point from '@arcgis/core/geometry/Point';
 import Polygon from '@arcgis/core/geometry/Polygon';
-import { NEW_LOCATION_AREA_OPTIONS } from '../areaOptions.constants';
+import { NEW_LOCATION_AREA_OPTIONS } from '../utils/areaOptionsConstants';
 
 const WGS_1984_SPATIAL_REFERENCE = 4326;
 

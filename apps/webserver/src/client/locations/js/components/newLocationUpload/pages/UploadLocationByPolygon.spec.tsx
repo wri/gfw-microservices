@@ -3,7 +3,7 @@ import userEvent, { UserEvent } from '@testing-library/user-event';
 import { UploadLocationByPolygon } from './UploadLocationByPolygon';
 import { useMap } from '../hooks';
 
-jest.mock('../../adding/PolygonCoordinates/polygonCoordinates.utils', () => ({
+jest.mock('../../../utils/polygonCoordinatesUtils', () => ({
   createGeometryAndGraphic: () => ({ geometry: jest.fn(), graphic: jest.fn() }),
 }));
 
@@ -22,18 +22,12 @@ jest.mock('../contexts', () => ({
   }),
 }));
 
-jest.mock('../components', () => {
-  const { LocationTypeButton } = jest.requireActual('../components');
-  return {
-    LocationTypeButton,
-    NavBar: () => <span />,
-    ExternalHelperResource: () => <span />,
-  };
-});
-
-jest.mock('../../adding/LocationMapDrawer', () => {
-  return jest.fn(() => <span data-testid="location-map-drawer" />);
-});
+jest.mock('../components', () => ({
+  ...jest.requireActual('../components'),
+  NavBar: () => <span />,
+  ExternalHelperResource: () => <span />,
+  LocationMapDrawer: () => <span data-testid="location-map-drawer" />,
+}));
 
 describe('UploadLocationByPolygon', () => {
   let user: UserEvent;

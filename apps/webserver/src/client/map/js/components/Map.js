@@ -197,7 +197,6 @@ class Map extends Component {
       globalIds: [],
       spinnerOn: false,
       listNotAccessible: false,
-      listVectorTileIsAvailable: false,
       popupSelectedFeature: null,
       treeCoverLossDateRange: {
         startYear: treeCoverLossYearsFC[0],
@@ -2157,7 +2156,6 @@ class Map extends Component {
     store.dispatch(selectList(list));
 
     this.setState({
-      listVectorTileIsAvailable: list?.vector_tiles_storage_path,
       selectedListFromDropdown: true,
       transitionListData: {},
       selectedList: list,
@@ -2235,13 +2233,13 @@ class Map extends Component {
     store.dispatch(showMapLoader(true));
     const request = new XMLHttpRequest();
     request.onload = () => {
-      store.dispatch(showMapLoader(false));
 
       const responseParsed = JSON.parse(request.response);
       if (responseParsed.errorCode && responseParsed.errorCode === 604) {
         this.setState({
           listNotAccessible: true,
         });
+        store.dispatch(showMapLoader(false));
         console.log('LIST DATA IS NOT AVAILABLE');
       } else {
         const listData = JSON.parse(request.responseText);
@@ -2250,6 +2248,7 @@ class Map extends Component {
         setVectorTileLayerForFullList(listData, transitionListData, this.view).then((mapCenter) => {
           this.setState({ mapCenter });
           this.safeGoTo(mapCenter);
+          store.dispatch(showMapLoader(false));
         });
       }
     };
@@ -2474,7 +2473,6 @@ class Map extends Component {
       transitionListData,
       isMapLoading,
       listNotAccessible,
-      listVectorTileIsAvailable,
       selectedList,
     } = this.state;
 
@@ -2483,28 +2481,7 @@ class Map extends Component {
     return (
       <Page links={pageOptions.links} active="map">
         <ModalLoader position="absolute" size={60} open={isMapLoading} />
-        {selectedList && !listVectorTileIsAvailable && !selectedList.isGlobalForestWatchList && (
-          <FailedPopupDialog
-            open={!listVectorTileIsAvailable}
-            title="Map view for your list is still in progress"
-            message={
-              <p>
-                Please check back in 2 hours to view your list on the map. If you are still unable
-                to load your list successfully, please contact{' '}
-                <a className="popup__link" href="mailto:GFWPROsupport@wri.org">
-                  GFWPROsupport@wri.org
-                </a>
-                .
-              </p>
-            }
-            onOkButtonPress={() =>
-              this.setState({ listVectorTileIsAvailable: !listVectorTileIsAvailable })
-            }
-            onRequestClose={() =>
-              this.setState({ listVectorTileIsAvailable: !listVectorTileIsAvailable })
-            }
-          />
-        )}
+
         <Warning visible={analysisWarning} />
         <CustomDialog
           open={dialogOpen}

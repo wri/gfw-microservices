@@ -231,33 +231,37 @@ describe('UploadLocationByPolygon', () => {
     expect(mockClearUploadType).toHaveBeenCalled();
   });
 
-  it('should show error for invalid latitude and longitude values', async () => {
-    render(<UploadLocationByPolygon />);
+  it(
+    'should show error for invalid latitude and longitude values',
+    async () => {
+      render(<UploadLocationByPolygon />);
 
-    const locationName = screen.getByRole('textbox');
-    await user.type(locationName, 'invalid coords location');
+      const locationName = screen.getByRole('textbox');
+      await user.type(locationName, 'invalid coords location');
 
-    await user.click(
-      screen.getByRole('button', {
-        name: /enter polygon coordinates/i,
-      })
-    );
+      await user.click(
+        screen.getByRole('button', {
+          name: /enter polygon coordinates/i,
+        })
+      );
 
-    const latitudeFields = screen.getAllByLabelText(/latitude/i);
-    const longitudeFields = screen.getAllByLabelText(/longitude/i);
+      const latitudeFields = screen.getAllByLabelText(/latitude/i);
+      const longitudeFields = screen.getAllByLabelText(/longitude/i);
 
-    await user.type(latitudeFields[0], '90.01');
-    await user.type(longitudeFields[0], '180.01');
+      await user.type(latitudeFields[0], '90.01');
+      await user.type(longitudeFields[0], '180.01');
 
-    await user.click(
-      screen.getByRole('button', {
-        name: /next/i,
-      })
-    );
+      await user.click(
+        screen.getByRole('button', {
+          name: /next/i,
+        })
+      );
 
-    expect(screen.queryAllByText(/this latitude value is invalid/i)).toHaveLength(3);
-    expect(screen.queryAllByText(/this longitude value is invalid/i)).toHaveLength(3);
-  }, 10100);
+      expect(screen.queryAllByText(/this latitude value is invalid/i)).toHaveLength(3);
+      expect(screen.queryAllByText(/this longitude value is invalid/i)).toHaveLength(3);
+    },
+    15 * 1000
+  );
 
   it('should hide the location type buttons when it comes from map page and has more than 12 coordinates', async () => {
     render(

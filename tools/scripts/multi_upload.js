@@ -197,6 +197,8 @@ async function runSingleUpload(processId) {
   const MAX_ATTEMPTS = 30; // Check every minute for up to 30 minutes
 
   while (status === 'Pending' && counter < MAX_ATTEMPTS) {
+    // 1 minute delay done at beginning of each loop because analysis will not be ready immediately
+    await new Promise((res) => setTimeout(res, 60 * 1000));
     colorLog(colors.BLUE, `[Process ${processId}] Checking status... (attempt ${counter + 1})`);
     let statusResp;
     try {
@@ -236,7 +238,6 @@ async function runSingleUpload(processId) {
       return false;
     }
     counter++;
-    await new Promise((res) => setTimeout(res, 60 * 1000)); // 1 minute delay
   }
 
   if (counter === MAX_ATTEMPTS) {

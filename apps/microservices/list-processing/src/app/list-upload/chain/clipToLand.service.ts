@@ -4,7 +4,23 @@ import { Feature, FeatureCollection } from '@wri-monorepos/geo';
 import { LambdaClient, InvokeCommand, InvocationType } from '@aws-sdk/client-lambda';
 import { NodeHttpHandler } from '@smithy/node-http-handler';
 import { S3Service } from '@wri-monorepos/aws';
+import axios from 'axios';
+import axiosRetry from 'axios-retry';
 
+axiosRetry(axios, {
+  retries: 5,
+  retryDelay: axiosRetry.exponentialDelay,
+  retryCondition: (error) => {
+    // axios-retry normally does not retry POSTs, so using a custom condition
+    return (
+      axiosRetry.isNetworkOrIdempotentRequestError(error) ||
+      error.response?.status === 429 ||
+      error.response?.status === 500 ||
+      error.response?.status === 502
+    );
+  },
+});
+const DEFAULT_DELAY = 500;
 export class ClipToLandService extends AbstractHandler<ChainType> {
   logger = new Logger(ClipToLandService.name);
 
@@ -61,6 +77,82 @@ export class ClipToLandService extends AbstractHandler<ChainType> {
     return { Payload: result };
   };
 
+  getClipToLandData = async (feature: Feature) => {
+    const requestData = {
+      geometry: feature.geometry,
+      sql: `SELECT ST_UNION(ST_Intersection(geom, ST_setSRID(ST_GeomFromGeoJSON('{"type": "${
+        feature.geometry.type
+      }", "coordinates": ${JSON.stringify(
+        feature.geometry.geometries[0].coordinates
+      )}}') , 4326 ) ) ) FROM mytable WHERE adm_level='2'`,
+    };
+
+    try {
+      const response = await axios.post(
+        'https://data-api.globalforestwatch.org/dataset/gadm_administrative_boundaries/v4.1.85/query/json',
+        requestData,
+        {
+          headers: {
+            'Content-Type': 'application/json',
+            'x-api-key': process.env.GFW_DATA_API_KEY,
+          },
+          timeout: 30000, // 30 second timeout
+        }
+      );
+
+      if (response.status !== 200) {
+        throw new Error(`Failed to fetch data: ${response.statusText}`);
+      }
+      // Check if response looks like HTML (common error response format)
+      if (
+        typeof response.data === 'string' &&
+        (response.data.trim().startsWith('<html') || response.data.trim().startsWith('<!DOCTYPE'))
+      ) {
+        throw new Error(
+          `Received HTML response instead of JSON (HTTP ${response.status}): ${response.data}`
+        );
+      }
+
+      // Check if the response has the expected structure
+      if (!response.data.data || !response.data.data[0] || !response.data.data[0].st_union) {
+        throw new Error(
+          `Unexpected response structure (HTTP ${response.status}): ${JSON.stringify(
+            response.data
+          )}`
+        );
+      }
+
+      return response.data?.data;
+    } catch (error) {
+      const statusCode = error.response?.status;
+
+      console.log(`ERROR in request (HTTP ${statusCode}):`, error.message);
+      console.log(
+        `Returning feature without geometry for feature ${
+          feature.properties?.locationName || 'unknown'
+        }`
+      );
+      const payload = {
+        body: {
+          features: {
+            properties: {
+              ...feature.properties,
+              errorDetails: `ERROR in request (HTTP ${statusCode}): ${error.message}`,
+            },
+            geometry: null,
+            type: 'FeatureCollection',
+          },
+        },
+      };
+      // Add a small delay before rethrowing
+      if (error.response?.status !== 429) {
+        await new Promise((resolve) => setTimeout(resolve, DEFAULT_DELAY));
+      }
+
+      return payload;
+    }
+  };
+
   private async processBatch(batch: Feature[], request: ChainType): Promise<Feature[]> {
     const s3ObjectsToDelete = [];
     const objectName = `gadm-${new Date().getTime()}-${Math.random().toString(36).substring(7)}`;
@@ -85,6 +177,8 @@ export class ClipToLandService extends AbstractHandler<ChainType> {
       };
       s3ObjectsToDelete.push(s3Info);
 
+     const result = await Promise.all(batch.map(feature => this.getClipToLandData(feature)));
+     console.log(result)
       const lambdaResult = await this.invokeLambda('controller-admin-areas', {
         receipt_handle: 'NOTARECEIPT',
         s3_location_info: s3Info,

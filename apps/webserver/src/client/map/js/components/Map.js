@@ -2233,7 +2233,6 @@ class Map extends Component {
     store.dispatch(showMapLoader(true));
     const request = new XMLHttpRequest();
     request.onload = () => {
-
       const responseParsed = JSON.parse(request.response);
       if (responseParsed.errorCode && responseParsed.errorCode === 604) {
         this.setState({

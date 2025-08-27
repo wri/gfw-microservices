@@ -100,6 +100,8 @@ class LocationsPage {
     shareBtn: () => cy.get('[data-testid="ShareIcon"]'),
     stopSharingBtn: () => cy.contains('button', 'STOP SHARING WITH ALL'),
     userSelectInput: () => cy.get('#react-select-2-input'),
+    dialogHeader: () => cy.get('.dialog__title'),
+    dialogBody: () => cy.get('.dialog__prompt'),
   };
 
   verifyLists(lists: string[], exist: boolean) {
@@ -121,6 +123,10 @@ class LocationsPage {
           this.elements.moreOptionsBtn().click();
         });
       this.clickOnDeleteList();
+      this.elements.dialogHeader().should('have.text', 'Confirm deletion');
+      this.elements
+        .dialogBody()
+        .should('have.text', `${listName} will be deleted. Please press ‘OK’ to confirm.`);
       this.elements.confirmActionBtn().should('be.visible');
       this.clickOnConfirmActionBtn();
     });

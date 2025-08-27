@@ -22,10 +22,7 @@ class ListDetailsPage {
     submitBtn: () => cy.contains('Submit Analysis'),
     saveAsDraftBtn: () => cy.contains('Save As Draft'),
     confirmActionBtn: () => cy.contains('button', 'OK'),
-    titleConfirmCopyList: () => cy.contains('h3', 'Locations Moved'),
     apply: () => cy.contains('Apply'),
-    descriptionConfirmCopyList: () =>
-      cy.contains('div', 'Location move process starts, this can take a while, please be patient.'),
     descriptionAlertDownloadList: () =>
       cy.contains(
         "You have selected a list file for download. Please check your email for your data's download link."
@@ -42,6 +39,7 @@ class ListDetailsPage {
     allColumnsCheckbox: () => cy.get('[data-cy="select-deselect-all-columns"]'),
     columnAttributes: () => cy.get('[data-testid="CheckBoxIcon"]'),
     columnHeaders: () => cy.get('.title-text'),
+    listActionDialog: () => cy.get('.list-diagnostics-dialog'),
   };
   clickOnLocationsList(name: string) {
     cy.contains(name).click();
@@ -88,8 +86,13 @@ class ListDetailsPage {
     this.clickOnMoveSectionRadioBtn();
     this.selectList(list);
     this.clickOnSaveAsDraftBtn();
-    this.elements.titleConfirmCopyList().should('be.visible');
-    this.elements.descriptionConfirmCopyList().should('be.visible');
+    this.elements.listActionDialog().should('contain.text', 'Locations Moved');
+    this.elements
+      .listActionDialog()
+      .should(
+        'contain.text',
+        'Location move process starts, this can take a while, please be patient.'
+      );
     this.elements.confirmActionBtn().should('be.visible');
     this.clickOnConfirmActionBtn();
   }
@@ -151,7 +154,23 @@ class ListDetailsPage {
 
       // Now try to click the Save As Draft button
       this.clickOnSaveAsDraftBtn();
-
+      if (isGFW) {
+        this.elements.listActionDialog().should('contain.text', 'Locations Added');
+        this.elements
+          .listActionDialog()
+          .should(
+            'contain.text',
+            `You have successfully added locations and saved ${listName} as a draft`
+          );
+      } else {
+        this.elements.listActionDialog().should('contain.text', 'Locations Moved');
+        this.elements
+          .listActionDialog()
+          .should(
+            'contain.text',
+            'Location move process starts, this can take a while, please be patient.'
+          );
+      }
       this.elements.confirmActionBtn().should('be.visible');
       this.clickOnConfirmActionBtn();
     });

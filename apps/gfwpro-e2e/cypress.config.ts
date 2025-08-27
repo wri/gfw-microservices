@@ -38,6 +38,12 @@ async function setupNodeEvents(
             },
           ],
         },
+        // Suppress warnings about module resolution
+        ignoreWarnings: [
+          /Module not found/,
+          /Can't resolve/,
+          /plausible module/, // Specifically ignore "plausible module" warnings
+        ],
       },
     })
   );

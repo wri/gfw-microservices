@@ -57,10 +57,10 @@ class OrganizeGHGIntermediateOutputsResponse extends Transform {
       years.forEach((year) => {
         csvArray.push([
           ...sharedInfo,
-          parseInt(co2LinearDiscountedEmission[year]) * production || 0,
-          parseInt(ch4LinearDiscountedEmission[year]) * production || 0,
-          parseInt(n2oLinearDiscountedEmission[year]) * production || 0,
-          parseInt(CombinedLinearDiscountedEmission[year]) * production || 0,
+          parseFloat(co2LinearDiscountedEmission[year]) * production || 0,
+          parseFloat(ch4LinearDiscountedEmission[year]) * production || 0,
+          parseFloat(n2oLinearDiscountedEmission[year]) * production || 0,
+          parseFloat(CombinedLinearDiscountedEmission[year]) * production || 0,
           year,
         ]);
       });

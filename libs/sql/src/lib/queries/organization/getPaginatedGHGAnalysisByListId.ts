@@ -26,7 +26,13 @@ SET @SQL = 'SELECT  ' +
 ' ghg.emissions_factor_by_year as emissionsFactorByYear, ' +
 ' ghg.ef_co2_by_year as efCo2ByYear, ' +
 ' ghg.ef_ch4_by_year as efCh4ByYear, ' +
-' lt.[Location Name] as locationName,  '+ 
+' ghg.emissions_co2_yearly as emissionsCo2Yearly, ' +
+' ghg.emissions_ch4_yearly as emissionsCh4Yearly, ' +
+' ghg.emissions_n2o_yearly as emissionsN2oYearly, ' +
+' ghg.emissions_yearly as emissionsYearly, ' +
+' ghg.production as production, ' +
+' ghg.weighted_avg_yield as weightedAvgYield, ' +
+' lt.[Location Name] as locationName,  ' +
 ' ghg.ef_n2o_by_year as efN2oByYear ' +
 
 
@@ -56,4 +62,10 @@ export class GHGAnalysisDataByListId {
   efCo2ByYear: string;
   efCh4ByYear: string;
   efN2oByYear: string;
+  emissionsCo2Yearly: string;
+  emissionsCh4Yearly: string;
+  emissionsN2oYearly: string;
+  emissionsYearly: string;
+  production: number;
+  weightedAvgYield: number;
 }

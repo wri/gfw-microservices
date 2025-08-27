@@ -12,15 +12,12 @@ jest.mock('../contexts', () => ({
   useUploadLocation: jest.fn(),
 }));
 
-jest.mock('../components', () => {
-  const { LocationTypeButton } = jest.requireActual('../components');
-  return {
-    LocationTypeButton,
-    NavBar: () => <span />,
-    ExternalHelperResource: () => <span />,
-    AddressSelector: () => <span />,
-  };
-});
+jest.mock('../components', () => ({
+  ...jest.requireActual('../components'),
+  NavBar: () => <span />,
+  ExternalHelperResource: () => <span />,
+  AddressSelector: () => <span />,
+}));
 
 describe('UploadLocationByPoint', () => {
   let user: UserEvent;

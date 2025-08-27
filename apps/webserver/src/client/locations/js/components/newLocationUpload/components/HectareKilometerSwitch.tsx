@@ -1,6 +1,6 @@
 import './HectareKilometerSwitch.scss';
 
-const HectareKilometerSwitch = ({ setMeasurementUnit, measurementUnit }) => {
+export const HectareKilometerSwitch = ({ setMeasurementUnit, measurementUnit }) => {
   const handleClick = () => {
     const newMeasurementUnit = measurementUnit === 'hectares' ? 'kilometers' : 'hectares';
     setMeasurementUnit(newMeasurementUnit);
@@ -31,5 +31,3 @@ const HectareKilometerSwitch = ({ setMeasurementUnit, measurementUnit }) => {
     </div>
   );
 };
-
-export default HectareKilometerSwitch;

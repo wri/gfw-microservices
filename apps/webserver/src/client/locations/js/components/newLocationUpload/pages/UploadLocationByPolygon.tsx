@@ -29,12 +29,11 @@ import {
 import useMediaQuery from '@mui/material/useMediaQuery';
 import { TransitionGroup } from 'react-transition-group';
 
-import { LocationTypeButton, NavBar } from '../components';
+import { LocationMapDrawer, LocationTypeButton, NavBar } from '../components';
 import { ExternalHelperResource, PillButton } from '../../../../../components';
 import { coordinateSchema, locationNameSchema } from '../utils/schema';
-import { createGeometryAndGraphic } from '../../adding/PolygonCoordinates/polygonCoordinates.utils';
+import { createGeometryAndGraphic } from '../../../utils/polygonCoordinatesUtils';
 import { useMap } from '../hooks';
-import LocationMapDrawer from '../../adding/LocationMapDrawer';
 import { useUploadLocation } from '../contexts';
 import { useHistory } from '../hooks';
 import { PolygonFromMapPage, UploadType } from '../types';

@@ -8,7 +8,7 @@ import Polygon from '@arcgis/core/geometry/Polygon';
 import {
   extractCoordinates,
   addCoordinateTextFromPolygon,
-} from '../../adding/PolygonCoordinates/polygonCoordinates.utils';
+} from '../../../utils/polygonCoordinatesUtils';
 
 type Coordinate = { longitude: string; latitude: string; id: string };
 

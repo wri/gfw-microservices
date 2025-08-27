@@ -19,7 +19,7 @@ import { webMercatorToGeographic } from '@arcgis/core/geometry/support/webMercat
 import SpatialReference from '@arcgis/core/geometry/SpatialReference';
 import CustomDialog from '../../../common/js/components/CustomDialog/CustomDialog';
 
-import { addCoordinateTextFromPoint } from '../../../locations/js/components/adding/PolygonCoordinates/polygonCoordinates.utils';
+import { addCoordinateTextFromPoint } from '../../../locations/js/utils/polygonCoordinatesUtils';
 
 import store from '../store';
 import {

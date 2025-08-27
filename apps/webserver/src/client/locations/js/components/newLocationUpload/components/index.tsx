@@ -6,3 +6,5 @@ export { UploadByFileInstructions } from './UploadByFileInstructions';
 export { AddressSelector } from './AddressSelector';
 export { UploadLocationPreviewErrorMessage } from './UploadLocationPreviewErrorMessage';
 export { FileValidationHelper } from './FileValidationHelper';
+export { LocationMapDrawer } from './LocationMapDrawer';
+export { HectareKilometerSwitch } from './HectareKilometerSwitch';

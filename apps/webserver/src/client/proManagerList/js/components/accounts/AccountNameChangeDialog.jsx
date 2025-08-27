@@ -35,7 +35,7 @@ export default function AccountNameChangeDialog({ open, initialValue = '', onClo
       if (!val.trim()) {
         return;
       }
-      
+
       try {
         const res = await fetch('/pro-manager/checkOrgName', {
           method: 'POST',

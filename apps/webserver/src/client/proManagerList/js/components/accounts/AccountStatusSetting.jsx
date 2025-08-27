@@ -124,7 +124,7 @@ export default function AccountStatusSetting() {
       rowSpacing={2}
       sx={{ display: 'flex', alignItems: 'center', ml: 2, gap: 1 }}
     >
-      <Grid md={2} sm={6} xs={12}>
+      <Grid item md={2} sm={6} xs={12}>
         <FieldLabel label="Account Status" />
         <AccountStatusChip account={currentAccount} />
       </Grid>

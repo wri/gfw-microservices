@@ -324,4 +324,41 @@ module.exports = (app, limiter) => {
       res.status(500).send(error);
     }
   });
+
+  app.post('/pro-manager/updateOrgName', async (req, res) => {
+    logger.info('POST /pro-manager/updateOrgName');
+    const { id, name } = req.body;
+
+    try {
+      const response = await ProManager.updateOrgName(req, id, name);
+      res.send({
+        status: 'success',
+        data: response,
+      });
+    } catch (error) {
+      const errorMessage = error.message || error.stack || error;
+      logger.error(`Error POST /pro-manager/checkOrgName`, { error });
+      res.status(500).json({
+        error: 'Something went wrong',
+        details: errorMessage,
+      });
+    }
+  });
+
+  app.post('/pro-manager/checkOrgName', async (req, res) => {
+    logger.info('POST /pro-manager/checkOrgName');
+    const { name } = req.body;
+
+    try {
+      const exists = await ProManager.checkOrgName(req, name);
+      res.send({ exists });
+    } catch (error) {
+      const errorMessage = error.message || error.stack || error;
+      logger.error(`Error POST /pro-manager/checkOrgName`, { error });
+      res.status(500).json({
+        error: 'Something went wrong',
+        details: errorMessage,
+      });
+    }
+  });
 };

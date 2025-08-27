@@ -8,6 +8,8 @@ import {
   FormControlLabel,
   Select as SelectMui,
   MenuItem,
+  Snackbar,
+  Alert,
 } from '@mui/material';
 
 import { PillButton } from '../../../../components';
@@ -16,9 +18,11 @@ import { fieldValidations } from '../../../../profile/js/utils/validations';
 import { useDialog } from '../../../../common/js/components/Dialog';
 import { ACCOUNT_ORG_STATUSES } from '../../../../common/js/constants/orgAccountStatuses';
 import { accountProfileStrings, subscriptionStatusOptions } from '../../../../common/js/config';
-import { useAccountDetail } from './AccountDetailSection';
-import FieldLabel from './FieldLabel';
 import { disabledStyles } from '../../common/formStyles';
+
+import { useAccountDetail } from './AccountDetailSection';
+import AccountNameChangeDialog from './AccountNameChangeDialog';
+import FieldLabel from './FieldLabel';
 
 /**
  * @Summary Displays and Manage Account Profile Form Settings
@@ -57,11 +61,22 @@ export default function AccountProfileFormSetting() {
   const [accountClassificationsFieldValue, setAccountClassificationsFieldValue] = useState(
     getClassificationsValuesFromArrId(accountFormData.arr_org_classification_ids)
   );
+  const [accountPolicySelectedList, setAccountPoliciesFieldValue] = useState([]);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [orgNameChangedMsg, setOrgNameChangedMsg] = useState(null);
+
+  // Determines if Edit button should be shown
+  // (only for Pending or Active accounts, not Closed (Pending not active) or Inactive)
+  const canEditOrgName =
+    (accountData.organization_status_id === ACCOUNT_ORG_STATUSES['PENDING'] &&
+      accountData.organization_active) ||
+    accountData.organization_status_id === ACCOUNT_ORG_STATUSES['ACTIVE'];
+
   const classificationFieldOptions = classificationsData.map(({ classification_name, id }) => ({
     label: classification_name,
     value: id,
   }));
-  const [accountPolicySelectedList, setAccountPoliciesFieldValue] = useState([]);
+
   const policyFieldOptions = policyList
     .filter((policy) => policy.organization_id === accountData.organization_id)
     .map(({ document_name }) => ({
@@ -130,6 +145,7 @@ export default function AccountProfileFormSetting() {
       missing,
     };
   };
+
   const updateProAccount = (payload) => {
     const { isFormDataValid, errors, missing } = validateAccountFormData(payload);
     dialog.openDialog('Updating Account', 'Please wait...', true);
@@ -180,25 +196,98 @@ export default function AccountProfileFormSetting() {
     dialog.setDialogMessage(dialogMessage);
   };
 
+  // Inside your component, but before the return statement
+  const handleSaveOrgName = async (newName, setDialogError) => {
+    if (!newName) {
+      return;
+    }
+
+    try {
+      if (accountData.organization_status_id === ACCOUNT_ORG_STATUSES['PENDING']) {
+        const payload = { ...accountFormData, org_name: newName };
+        updateProAccount(payload);
+        setIsModalOpen(false);
+        setOrgNameChangedMsg('Organization name has been updated successfully.');
+        return;
+      }
+
+      const response = await fetch('/pro-manager/updateOrgName', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'same-origin',
+        body: JSON.stringify({ id: accountFormData.id, name: newName }),
+      });
+
+      const data = await response.json();
+      if (data.status === 'success') {
+        setAccountFormData((prev) => ({ ...prev, org_name: newName }));
+        setIsModalOpen(false);
+        setOrgNameChangedMsg('Organization name has been updated successfully.');
+      } else {
+        setDialogError?.('Could not update organization name. Please try again.');
+      }
+    } catch (err) {
+      console.error(err);
+      setDialogError?.('Something went wrong. Please try again.');
+    }
+  };
+
   return (
     <Fragment>
+      <Snackbar
+        open={!!orgNameChangedMsg}
+        autoHideDuration={4000}
+        onClose={() => setOrgNameChangedMsg(null)}
+        anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
+        sx={{
+          mt: '70px',
+          zIndex: 1400, // ensure it's above navbar
+        }}
+      >
+        <Alert
+          onClose={() => setOrgNameChangedMsg(null)}
+          severity="success"
+          sx={{
+            backgroundColor: '#EDF7D7',
+            border: '1px solid #9FC642',
+            width: '100%',
+          }}
+        >
+          {orgNameChangedMsg}
+        </Alert>
+      </Snackbar>
       <Grid sx={{ marginBottom: '1.5rem' }} container spacing={2} rowSpacing={2}>
         <Grid item sm={6} xs={12}>
           <Grid container direction="column">
             <FieldLabel required aria-label={accountProfileStrings.accountFormLabels.org_name}>
               {accountProfileStrings.accountFormLabels.org_name}
             </FieldLabel>
-            <TextField
-              name="org_name"
-              id="org_name"
-              onChange={(e) => onChangeUpdateField('org_name', e.target.value)}
-              onBlur={(e) => onChangeUpdateField('org_name', e.target.value.trim())}
-              value={accountFormData.org_name}
-              disabled={isEditingDisabled}
-              required
-              size="small"
-              variant="outlined"
-            />
+            <Grid container alignItems="center" spacing={1}>
+              <Grid item xs>
+                <TextField
+                  fullWidth
+                  name="org_name"
+                  id="org_name"
+                  value={accountFormData.org_name}
+                  disabled // always disabled now; modal handles editing
+                  size="small"
+                  variant="outlined"
+                />
+              </Grid>
+              <Grid item>
+                {canEditOrgName && (
+                  <PillButton
+                    variant="outlined"
+                    size="small"
+                    onClick={() => {
+                      setIsModalOpen(true);
+                    }}
+                  >
+                    Edit
+                  </PillButton>
+                )}
+              </Grid>
+            </Grid>
           </Grid>
         </Grid>
         <Grid item sm={6} xs={12}>
@@ -381,6 +470,12 @@ export default function AccountProfileFormSetting() {
           </div>
         </Grid>
       </Grid>
+      <AccountNameChangeDialog
+        open={isModalOpen}
+        initialValue={accountFormData.org_name}
+        onClose={() => setIsModalOpen(false)}
+        onSave={handleSaveOrgName}
+      />
     </Fragment>
   );
 }

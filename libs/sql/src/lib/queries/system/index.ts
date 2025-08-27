@@ -1,5 +1,6 @@
 // Re-exporting system stored procedures
 export * from './createNewAccount';
+export * from './checkOrgName';
 export * from './getAdministrativeAreaAttributes';
 export * from './getAdministrativeAreasData';
 export * from './getAdministrativeAreasDataByLocation';
@@ -38,4 +39,5 @@ export * from './setGlobalAnalysisLimit';
 export * from './setOrganizationCustomAnalysisLimits';
 export * from './setOrganizationRenewalTime';
 export * from './setOrganizationSubscriptionStatus';
+export * from './updateOrgName';
 export * from './uspChangeConnectionRequestStatus';

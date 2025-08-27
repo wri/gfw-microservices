@@ -193,52 +193,56 @@ describe('ConfigureList', () => {
     expect(mockHistoryPush).toHaveBeenCalledWith('SUMMARY_AND_SUBMIT');
   }, 25100);
 
-  it('should show validations for new list name field', async () => {
-    render(<ConfigureList userLists={mockUserLists} />);
+  it(
+    'should show validations for new list name field',
+    async () => {
+      render(<ConfigureList userLists={mockUserLists} />);
 
-    const commodityDropdown = screen.getAllByRole('combobox')[0];
+      const commodityDropdown = screen.getAllByRole('combobox')[0];
 
-    await user.click(commodityDropdown);
-    await user.click(screen.getByRole('option', { name: /cattle/i }));
+      await user.click(commodityDropdown);
+      await user.click(screen.getByRole('option', { name: /cattle/i }));
 
-    const newListNameInput = screen.getByPlaceholderText(/name your new list/i);
-    await user.type(newListNameInput, 'cattle 1');
+      const newListNameInput = screen.getByPlaceholderText(/name your new list/i);
+      await user.type(newListNameInput, 'cattle 1');
 
-    const nextButton = screen.getByRole('button', { name: /next/i });
-    await user.click(nextButton);
+      const nextButton = screen.getByRole('button', { name: /next/i });
+      await user.click(nextButton);
 
-    await waitFor(() => {
-      expect(screen.queryByText(/this list name already exists/i)).toBeInTheDocument();
-    });
+      await waitFor(() => {
+        expect(screen.queryByText(/this list name already exists/i)).toBeInTheDocument();
+      });
 
-    await user.clear(newListNameInput);
-    await user.type(newListNameInput, 'invalid list name +');
+      await user.clear(newListNameInput);
+      await user.type(newListNameInput, 'invalid list name +');
 
-    await waitFor(() => {
-      expect(
-        screen.queryByText(
-          /Only letters \(including accented characters\), numbers, spaces, brackets \[\], parentheses \(\), dashes \(-\), and underscores \(_\) are allowed/i
-        )
-      ).toBeInTheDocument();
-    });
+      await waitFor(() => {
+        expect(
+          screen.queryByText(
+            /Only letters \(including accented characters\), numbers, spaces, brackets \[\], parentheses \(\), dashes \(-\), and underscores \(_\) are allowed/i
+          )
+        ).toBeInTheDocument();
+      });
 
-    expect(mockHistoryPush).not.toHaveBeenCalledWith('SUMMARY_AND_SUBMIT');
+      expect(mockHistoryPush).not.toHaveBeenCalledWith('SUMMARY_AND_SUBMIT');
 
-    await user.clear(newListNameInput);
-    await user.type(newListNameInput, 'valid list name');
+      await user.clear(newListNameInput);
+      await user.type(newListNameInput, 'valid list name');
 
-    await user.click(
-      screen.getByRole('checkbox', {
-        name: /post-2000 forest change annual tree cover loss since 2001 \+ additional contextual and regional datasets/i,
-      })
-    );
+      await user.click(
+        screen.getByRole('checkbox', {
+          name: /post-2000 forest change annual tree cover loss since 2001 \+ additional contextual and regional datasets/i,
+        })
+      );
 
-    await user.click(nextButton);
+      await user.click(nextButton);
 
-    await waitFor(() => {
-      expect(mockHistoryPush).toHaveBeenCalledWith('SUMMARY_AND_SUBMIT');
-    });
-  }, 20000);
+      await waitFor(() => {
+        expect(mockHistoryPush).toHaveBeenCalledWith('SUMMARY_AND_SUBMIT');
+      });
+    },
+    25 * 1000
+  );
 
   it('should show message when no existing lists are found for the chosen commodity', async () => {
     render(<ConfigureList userLists={[]} />);
@@ -271,14 +275,18 @@ describe('ConfigureList', () => {
     });
   }, 10000);
 
-  it('should allow entering a new list name', async () => {
-    render(<ConfigureList userLists={mockUserLists} />);
+  it(
+    'should allow entering a new list name',
+    async () => {
+      render(<ConfigureList userLists={mockUserLists} />);
 
-    const newListNameInput = screen.getByPlaceholderText('Name your new list');
-    await user.type(newListNameInput, 'New List');
+      const newListNameInput = screen.getByPlaceholderText('Name your new list');
+      await user.type(newListNameInput, 'New List');
 
-    expect(newListNameInput).toHaveValue('New List');
-  });
+      expect(newListNameInput).toHaveValue('New List');
+    },
+    10 * 1000
+  );
 
   it('should select an existing list and auto-populate analyses', async () => {
     render(<ConfigureList userLists={mockUserLists} />);

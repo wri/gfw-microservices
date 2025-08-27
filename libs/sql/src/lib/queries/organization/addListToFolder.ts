@@ -6,24 +6,28 @@
  */
 export const addListToFolder = `
 BEGIN
-	DECLARE @SQL NVARCHAR(MAX)
-	DECLARE @DELIMITER CHAR(1)
+    DECLARE @SQL NVARCHAR(MAX);
+    DECLARE @DELIMITER CHAR(1) = ',';
 
-	SET @DELIMITER = ','
-		
-	EXEC [dbo].[uspDoesFolderExist] @user_id = @user_id,
-									@folder_id = @folder_id
+    -- validate folder exists (safe call to existing proc)
+    EXEC [dbo].[uspDoesFolderExist] @user_id = @user_id,
+                                   @folder_id = @folder_id;
 
-	SET @SQL = 'INSERT INTO [dbo].[FolderItems] (list_id, folder_id) SELECT value, {FOLDER_ID}
-				FROM STRING_SPLIT(''{LISTS_IDS}'', ''{DELIMITER}'')
-				WHERE RTRIM(value) <> '''';
-				'
+    -- Use parameterized dynamic SQL to avoid injecting list values directly into the string.
+    SET @SQL = N'
+        INSERT INTO [dbo].[FolderItems] (list_id, folder_id)
+        SELECT TRY_CAST(value AS INT) AS list_id, @FolderID
+        FROM STRING_SPLIT(@Lists, @Delimiter)
+        WHERE TRY_CAST(value AS INT) IS NOT NULL;
+    ';
 
-	SET @SQL = REPLACE(@SQL, '{FOLDER_ID}', @folder_id)
-	SET @SQL = REPLACE(@SQL, '{LISTS_IDS}', @list_ids)
-	SET @SQL = REPLACE(@SQL, '{DELIMITER}', @DELIMITER)
-	EXEC sp_executesql @SQL
+    EXEC sp_executesql
+        @SQL,
+        N'@Lists NVARCHAR(MAX), @FolderID INT, @Delimiter CHAR(1)',
+        @Lists = @list_ids,
+        @FolderID = @folder_id,
+        @Delimiter = @DELIMITER;
 
-	SELECT @@ROWCOUNT AS affected_rows
+    SELECT @@ROWCOUNT AS affected_rows;
 END
 `;

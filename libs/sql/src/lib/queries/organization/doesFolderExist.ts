@@ -15,9 +15,7 @@ BEGIN
 
 	IF @rowcount = 0
 	BEGIN
-		;THROW 50005, N'The list does not exists...', 1;
+		;THROW 50005, N'The list does not exist...', 1;
 	END
 END
-
-
 `;

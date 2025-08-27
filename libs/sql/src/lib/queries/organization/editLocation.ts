@@ -24,5 +24,4 @@ SET @SQL = REPLACE(@TEMPLATE, '{TABLE}', @LIST_TABLE)
 SET @SQL = REPLACE(@SQL, '{STATEMENT}', @statement)
 SET @SQL = REPLACE(@SQL, '{LOCATION_ID}', @location_id)
 EXEC sp_executesql @SQL
-
 `;

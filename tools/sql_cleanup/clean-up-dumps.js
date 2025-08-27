@@ -5,7 +5,7 @@ const path = require('path');
 const glob = require('glob');
 
 // --- CONFIGURABLE FILTER ---
-const DUMPED_FILTER = 'uspGet*'; // Change this to 'uspAdd*', etc. for other batches
+const DUMPED_FILTER = 'uspD*'; // Change this to 'uspAdd*', etc. for other batches
 
 // --- PATHS ---
 const dumpedDir = path.resolve(process.cwd(), 'libs/sql/src/lib/queries/organization/dumped');

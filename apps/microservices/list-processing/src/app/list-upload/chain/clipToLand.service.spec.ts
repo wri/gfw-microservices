@@ -118,8 +118,6 @@ describe('ClipToLandService', () => {
         }),
       });
 
-      let batchCounter = 0;
-
       const result = await service.clipToLand(geojson, request);
 
       // Verify all features were processed

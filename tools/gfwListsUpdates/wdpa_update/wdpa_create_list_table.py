@@ -3,15 +3,14 @@ import pandas as pd
 import geopandas as gpd
 import fiona
 import wdpa_config as cfg
+from concurrent.futures import ThreadPoolExecutor
 
 
-def prep_data(gdf):
+def prep_data(gdf, globalid_df_expanded):
     """
     Perform required data transformations
     """
     # Join with GlobalID.
-    globalid_df = pd.read_json(cfg.json_path)
-    globalid_df_expanded = pd.json_normalize(globalid_df["data"])
     gdf = gdf.merge(globalid_df_expanded, how="left", left_on="WDPA_PID", right_on="wdpa_pid")
 
     # Rename cols to match schema
@@ -26,20 +25,24 @@ def prep_data(gdf):
 
     # Generate other required columns
     gdf["id"] = gdf["location_id"]
-    gdf["Longitude"] = gdf.centroid.x
-    gdf["Latitude"] = gdf.centroid.y
     gdf["Location Classification"] = ""
+    
+    # Use approximate centroid (minx+maxx)/2, (miny+maxy)/2
+    bounds = gdf.geometry.bounds
+    gdf["Longitude"] = (bounds.minx + bounds.maxx) / 2
+    gdf["Latitude"] = (bounds.miny + bounds.maxy) / 2
     
     # Convert from km^2 to hectares by multiplying by 100
     gdf["Size"] = (gdf["GIS_AREA"] * 100).round(6)
 
-    # Validate geometry then convert to WKT.
-    gdf.geometry = gdf.buffer(0)
-    gdf["Geometry"] = gdf.geometry.to_wkt(output_dimension=2)
+    # Validate geometry
+    if not gdf.is_valid.all():
+        gdf.loc[~gdf.is_valid, "geometry"] = gdf.loc[~gdf.is_valid, "geometry"].buffer(0)
+
+    gdf["Geometry"] = gdf["geometry"].apply(lambda geom: geom.wkt)
 
     # Remove NULL values
-    gdf = gdf[gdf["globalid"].notna()]
-    gdf = gdf[gdf["wdpa_pid"].notna()]
+    gdf = gdf[gdf["globalid"].notna() & gdf["wdpa_pid"].notna()]
 
     return gdf
 
@@ -69,15 +72,14 @@ def insert_geom(gdf, connection):
         "Geometry",
     ]
 
-    try:       
-        # select columns to keep (Geometry should be last in the list)
-        common_columns = list(
-            gdf.columns.intersection(set(columns))
-        )
-        # move Geometry to the end of the list
-        # https://stackoverflow.com/questions/20320702/how-do-i-move-an-element-in-my-list-to-the-end-in-python
-        common_columns.sort(key="Geometry".__eq__)
+    # select columns to keep (Geometry should be last in the list)
+    common_columns = list(
+        gdf.columns.intersection(set(columns))
+    )
+    # move Geometry to the end of the list
+    common_columns.sort(key="Geometry".__eq__)
 
+    try:       
         new_locations = list(gdf[common_columns].itertuples(index=False, name=None))
 
         with connection:
@@ -100,13 +102,13 @@ def insert_geom(gdf, connection):
         return [e]  
 
 
-def load_list(in_path, in_layer, start, end, connection):
+def load_list(in_path, in_layer, start, end, connection, globalid_df_expanded):
     """
     Loads and preps the geodataframe
     """
     gdf = gpd.read_file(in_path, driver="FileGDB", layer=in_layer, rows=slice(start, end))
 
-    gdf = prep_data(gdf)
+    gdf = prep_data(gdf, globalid_df_expanded)
     e = insert_geom(gdf, connection)
 
     if len(e) > 0:
@@ -125,27 +127,39 @@ if __name__ == "__main__":
     connection = pyodbc.connect(cfg.conn_string)
     print("Connected to DB")
 
+    # Load GlobalID JSON once globally
+    globalid_df = pd.read_json(cfg.json_path)
+    globalid_df_expanded = pd.json_normalize(globalid_df["data"])
+
     # Use Fiona to get the total number of features in the layer
     with fiona.open(in_gdb, layer=in_layer, driver="FileGDB") as src:
         total_rows = len(src)
 
     print(f"Total rows in the FileGDB: {total_rows}")
 
-    # Iteratively load data to DB
+    # Iteratively load data to DB in parallel
     error_ls = []
-    batch_size = 5000
-    for i in range(0, total_rows, batch_size):
+    batch_size = 10000
+
+    def process_batch(i):
         end_val = min(i + batch_size, total_rows)
-
         print(f"Loading {i} to {end_val}")
-        res, df = load_list(
-            in_gdb,
-            in_layer,
-            i,
-            end_val,
-            connection,
-        )
+        
+        # Open a new connection for this batch
+        with pyodbc.connect(cfg.conn_string) as conn:
+            res, df = load_list(
+                in_gdb,
+                in_layer,
+                i,
+                end_val,
+                conn,
+                globalid_df_expanded,
+            )
+        return res
 
-        # Halt on error
-        if res:
-            break
+    with ThreadPoolExecutor() as executor:
+        futures = [executor.submit(process_batch, i) for i in range(0, total_rows, batch_size)]
+        for future in futures:
+            res = future.result()
+            if res:
+                break

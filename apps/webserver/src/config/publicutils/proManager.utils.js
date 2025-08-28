@@ -38,6 +38,7 @@ import {
   setGlobalAnalysisLimit,
   setOrganizationRenewalTime,
 } from '@wri-monorepos/sql';
+import { getOrganizationStatus } from './authenticationManager.utils';
 const { orgAccountStatus } = require(path.resolve(__dirname, '../env/orgAccountStatus.constants'));
 const logger = require(path.resolve(__dirname, '../privateutils/logger.utils'));
 
@@ -563,14 +564,9 @@ const reactivateAccount = (req, organization_id) => {
 const deactivateAccount = async (req, organization_id) => {
   try {
     // 1. Fetch current organization status
-    const parameters = [{ field: 'organization_id', type: sql.Int, value: organization_id }];
-    const [org] = await sqlUtils.executeSystemStoredProcedure(
-      req,
-      'uspGetOrganizationById',
-      parameters
-    );
+    const orgStatusId = await getOrganizationStatus({ session: { organization_id }}); // pass minimal req object
 
-    if (!org) {
+    if (!orgStatusId) {
       throw {
         code: 'organizationNotFound',
         userMessage: 'Organization not found',
@@ -578,13 +574,12 @@ const deactivateAccount = async (req, organization_id) => {
       };
     }
 
-    const currentStatus = org.organization_status_id;
     // 2. Only allow Active → Inactive
-    if (currentStatus !== orgAccountStatus.Active) {
+    if (orgStatusId !== orgAccountStatus.Active) {
       throw {
         code: errorUtils.ERROR_CODES.invalidStatusTransition,
         userMessage: 'Only active accounts can be deactivated',
-        systemMessage: `Attempted to deactivate organization ${organization_id} with status ${currentStatus}`,
+        systemMessage: `Attempted to deactivate organization ${organization_id} with status ${orgStatusId}`,
       };
     }
 
@@ -594,7 +589,6 @@ const deactivateAccount = async (req, organization_id) => {
       { field: 'organization_status_id', type: sql.Int, value: orgAccountStatus.Inactive },
     ];
     await sqlUtils.executeSystemStoredProcedure(req, 'uspSetOrganizationStatus', updateParams);
-
     return true;
   } catch (err) {
     throw {

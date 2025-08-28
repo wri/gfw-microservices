@@ -4,11 +4,11 @@
  * @start_location_id INT
  */
 export const setAnalysisLocationPending = `
-DECLARE @analyisTableName NVARCHAR(150)
+DECLARE @analysisTableName NVARCHAR(150)
 DECLARE @TEMPLATE NVARCHAR(1000)
 DECLARE @SQL NVARCHAR(1000)
 
-SET @analyisTableName = (
+SET @analysisTableName = (
 	SELECT list_analysis_table_name
 	FROM Lists
 	WHERE id = @list_id
@@ -19,7 +19,7 @@ SET @TEMPLATE = '
 	SET location_status_id = 1
 	WHERE location_id > {START_LOCATION_ID}
 '
-SET @SQL = REPLACE(@TEMPLATE, '{ANALYSIS_TABLE}', @analyisTableName)
+SET @SQL = REPLACE(@TEMPLATE, '{ANALYSIS_TABLE}', @analysisTableName)
 SET @SQL = REPLACE(@SQL, '{START_LOCATION_ID}', @start_location_id)
 
 EXEC sp_executesql @SQL

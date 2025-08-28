@@ -11,7 +11,7 @@ SELECT @listID = id FROM Lists WHERE list_name = @list_name
 
 IF @listID IS NOT NULL
 BEGIN
-	-- Update Success Count.
+	-- Update Fail Count.
 	SET @TEMPLATE = '
 		BEGIN TRANSACTION
 			UPDATE [Analyses]

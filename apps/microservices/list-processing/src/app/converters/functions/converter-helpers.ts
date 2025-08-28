@@ -74,7 +74,7 @@ export const shouldSkipDueToMissingTable = ({
  * @param reason - Optional reason for deletion
  */
 export const logDeletionMessage = (isDryRun: boolean, fullTableName: string, reason?: string) => {
-  const action = isDryRun ? '(Dry Run) Would delete' : 'Deleting';
+  const action = `⚠️ ${isDryRun ? '(Dry Run) Would delete' : 'Deleting'}`;
   const msg = reason
     ? `${action} ${fullTableName}: (${reason.trim()})`
     : `${action} ${fullTableName}`;
@@ -96,7 +96,7 @@ export const logMissingTableWarning = ({
   listTableName?: string;
   dbName: string;
 }) => {
-  logger.warn(`Skipping list ID ${listId} — table ${listTableName} does not exist in ${dbName}`);
+  logger.warn(`⚠️ Skipping list ID ${listId} — table ${listTableName} does not exist in ${dbName}`);
 };
 
 /**
@@ -116,7 +116,7 @@ export const logUnhandledListError = ({
 }) => {
   const err = error as Error;
   logger.error(
-    `Error processing ${context} in ${dbName}: ${err.message}`,
+    `❌ Error processing ${context} in ${dbName}: ${err.message}`,
     err.stack ?? String(error)
   );
 };

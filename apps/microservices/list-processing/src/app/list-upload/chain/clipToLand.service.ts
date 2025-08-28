@@ -1,11 +1,10 @@
 import { Logger } from '@nestjs/common';
 import { AbstractHandler, ChainType, PreviewListRequest, RequestNewList } from './types';
 import { Feature, FeatureCollection } from '@wri-monorepos/geo';
-import { LambdaClient, InvokeCommand, InvocationType } from '@aws-sdk/client-lambda';
-import { NodeHttpHandler } from '@smithy/node-http-handler';
-import { S3Service } from '@wri-monorepos/aws';
 import axios from 'axios';
 import axiosRetry from 'axios-retry';
+// We're using wkx because wellknown only handles wkt instead of wkb
+const wkx = require('wkx');
 
 axiosRetry(axios, {
   retries: 5,
@@ -27,63 +26,13 @@ export class ClipToLandService extends AbstractHandler<ChainType> {
   LAMBDA_HTTP_TIMEOUT_MS = 5 * 60 * 1000; // 5 minutes
 
   private BATCH_SIZE = 200;
-
-  putObject = async (objectName, object) => {
-    const s3Service = new S3Service();
-
-    const filePath = `${process.env.NODE_ENV}/${objectName}.geojson`;
-
-    await s3Service.putObject(
-      filePath,
-      JSON.stringify(object),
-      process.env.AWS_ANALYSIS_BUCKET,
-      'application/json'
-    );
-    return filePath;
-  };
-
-  getObject = async (bucket, key) => {
-    const s3Service = new S3Service();
-    return await s3Service.getObjectAsJson(bucket, key);
-  };
-
-  delObject = async (bucket, key) => {
-    const s3Service = new S3Service();
-
-    await s3Service.deleteObject(key, bucket);
-  };
-
-  invokeLambda = async (FunctionName: string, payload: object = {}) => {
-    const client = new LambdaClient({
-      apiVersion: '2015-03-31',
-      region: 'us-east-1',
-      requestHandler: new NodeHttpHandler({
-        requestTimeout: this.LAMBDA_HTTP_TIMEOUT_MS,
-      }),
-    });
-
-    const functionName = `${FunctionName}-${process.env.NODE_ENV}`;
-    const payloadString = JSON.stringify(payload);
-    const parameters = {
-      FunctionName: functionName,
-      Payload: Buffer.from(payloadString), // Ensure payload is a Buffer
-      InvocationType: InvocationType.RequestResponse, // Explicitly use the enum
-    };
-    Logger.log('FunctionName', functionName);
-
-    const command = new InvokeCommand(parameters);
-    const { Payload: LambdaPayload } = await client.send(command);
-    const result = Buffer.from(LambdaPayload).toString();
-    return { Payload: result };
-  };
-
-  getClipToLandData = async (feature: Feature) => {
+  getClipToLandData = async (feature: any) => {
     const requestData = {
       geometry: feature.geometry,
       sql: `SELECT ST_UNION(ST_Intersection(geom, ST_setSRID(ST_GeomFromGeoJSON('{"type": "${
         feature.geometry.type
       }", "coordinates": ${JSON.stringify(
-        feature.geometry.geometries[0].coordinates
+        feature.geometry.coordinates
       )}}') , 4326 ) ) ) FROM mytable WHERE adm_level='2'`,
     };
 
@@ -121,8 +70,15 @@ export class ClipToLandService extends AbstractHandler<ChainType> {
           )}`
         );
       }
-
-      return response.data?.data;
+      const buffer = Buffer.from(response.data?.data[0].st_union, 'hex');
+      const geometry = wkx.Geometry.parse(buffer);
+      const geometryToGeoJson = geometry.toGeoJSON();
+      const payload = {
+        properties: feature.properties,
+        geometry: geometryToGeoJson,
+        type: 'FeatureCollection',
+      };
+      return payload;
     } catch (error) {
       const statusCode = error.response?.status;
 
@@ -133,16 +89,12 @@ export class ClipToLandService extends AbstractHandler<ChainType> {
         }`
       );
       const payload = {
-        body: {
-          features: {
-            properties: {
-              ...feature.properties,
-              errorDetails: `ERROR in request (HTTP ${statusCode}): ${error.message}`,
-            },
-            geometry: null,
-            type: 'FeatureCollection',
-          },
+        properties: {
+          ...feature.properties,
+          errorDetails: `ERROR in request (HTTP ${statusCode}): ${error.message}`,
         },
+        geometry: null,
+        type: 'FeatureCollection',
       };
       // Add a small delay before rethrowing
       if (error.response?.status !== 429) {
@@ -154,9 +106,6 @@ export class ClipToLandService extends AbstractHandler<ChainType> {
   };
 
   private async processBatch(batch: Feature[], request: ChainType): Promise<Feature[]> {
-    const s3ObjectsToDelete = [];
-    const objectName = `gadm-${new Date().getTime()}-${Math.random().toString(36).substring(7)}`;
-
     // remove extra geometry properties if they exist
     batch.forEach((feature) => {
       if (feature.properties && feature.properties.geometry) {
@@ -165,50 +114,8 @@ export class ClipToLandService extends AbstractHandler<ChainType> {
     });
 
     try {
-      const batchGeoJSON = {
-        type: 'FeatureCollection',
-        features: batch,
-      };
-
-      const location_info = await this.putObject(objectName, { geojson: batchGeoJSON });
-      const s3Info = {
-        bucket: process.env.AWS_ANALYSIS_BUCKET,
-        key: location_info,
-      };
-      s3ObjectsToDelete.push(s3Info);
-
-     const result = await Promise.all(batch.map(feature => this.getClipToLandData(feature)));
-     console.log(result)
-      const lambdaResult = await this.invokeLambda('controller-admin-areas', {
-        receipt_handle: 'NOTARECEIPT',
-        s3_location_info: s3Info,
-        layer: 'gadm',
-        dissolve_aoi: false,
-        post_process_aoi: false,
-        xApiKeyDataApi: process.env.GFW_DATA_API_KEY,
-      });
-
-      const { Payload } = lambdaResult;
-      const { bucket, key, errorMessageStr } = JSON.parse(Payload);
-      let errorMessage = errorMessageStr || '';
-
-      try {
-        errorMessage = JSON.parse(errorMessageStr);
-      } catch (e) {
-        void e; // ignore any JSON parsing errors
-      }
-
-      if (errorMessage.length || Object.keys(errorMessage).length) {
-        this.logger.log(errorMessage);
-        throw new Error('Has error property');
-      }
-
-      s3ObjectsToDelete.push({ bucket, key });
-      const s3Object = await this.getObject(bucket, key);
-
-      await Promise.all(s3ObjectsToDelete.map((obj) => this.delObject(obj.bucket, obj.key)));
-
-      return s3Object.geojson.features;
+      const result = await Promise.all(batch.map((feature) => this.getClipToLandData(feature)));
+      return result as Feature[];
     } catch (e) {
       (request.request as RequestNewList).hasUnanalyzableError = true;
       batch.forEach((feature) => {

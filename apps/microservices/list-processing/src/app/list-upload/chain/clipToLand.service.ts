@@ -23,8 +23,6 @@ const DEFAULT_DELAY = 500;
 export class ClipToLandService extends AbstractHandler<ChainType> {
   logger = new Logger(ClipToLandService.name);
 
-  LAMBDA_HTTP_TIMEOUT_MS = 5 * 60 * 1000; // 5 minutes
-
   private BATCH_SIZE = 200;
   getClipToLandData = async (feature: any) => {
     const requestData = {

@@ -45,7 +45,6 @@ export class GADMService extends AbstractHandler<ChainType> {
             'x-api-key': process.env.GFW_DATA_API_KEY,
             'Content-Type': 'application/json',
           },
-          timeout: 30000, // 30 second timeout
         }
       );
 

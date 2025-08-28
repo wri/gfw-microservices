@@ -40,3 +40,4 @@ export * from './setOrganizationCustomAnalysisLimits';
 export * from './setOrganizationRenewalTime';
 export * from './setOrganizationSubscriptionStatus';
 export * from './uspChangeConnectionRequestStatus';
+export * from './activatePendingAccount';

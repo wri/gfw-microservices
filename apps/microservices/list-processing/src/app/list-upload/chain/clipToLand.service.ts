@@ -8,14 +8,20 @@ import wkx from 'wkx';
 
 axiosRetry(axios, {
   retries: 6,
-  retryDelay: axiosRetry.exponentialDelay,
+  retryDelay: (retryCount) => {
+    const baseDelay = Math.min(1000 * Math.pow(2, retryCount - 1), 30000);
+    const jitter = Math.random() * 1000; // Add up to 1 second of random
+    return baseDelay + jitter;
+  },
   retryCondition: (error) => {
-    // axios-retry normally does not retry POSTs, so using a custom condition
-    return (
-      axiosRetry.isRetryableError(error) ||
-      error.response?.status === 429 ||
-      error.response?.status === 500 ||
-      error.response?.status === 502
+    // Retry on network errors, timeouts, and specific HTTP status codes
+    const isNetworkError = !error.response && !!error.code;
+    const isTimeout = error.code === 'ECONNABORTED' || error.code === 'ETIMEDOUT';
+    const isRetryableStatus =
+      error.response?.status && [429, 500, 502, 503, 504].includes(error.response.status);
+
+    return Boolean(
+      axiosRetry.isRetryableError(error) || isNetworkError || isTimeout || isRetryableStatus
     );
   },
 });

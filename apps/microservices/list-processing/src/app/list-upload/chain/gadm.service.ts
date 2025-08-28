@@ -6,19 +6,21 @@ import axios from 'axios';
 import axiosRetry from 'axios-retry';
 
 axiosRetry(axios, {
-  retries: 5,
+  retries: 6,
   retryDelay: axiosRetry.exponentialDelay,
   retryCondition: (error) => {
     // axios-retry normally does not retry POSTs, so using a custom condition
-    return axiosRetry.isRetryableError(error) || 
-    error.response?.status === 429 ||
-    error.response?.status === 500 ||
-    error.response?.status === 502
+    return (
+      axiosRetry.isRetryableError(error) ||
+      error.response?.status === 429 ||
+      error.response?.status === 500 ||
+      error.response?.status === 502
+    );
   },
 });
 
 const POOL_SIZE = 20; // Increased pool size since we have higher rate limit
-const DEFAULT_DELAY = 500;
+const DEFAULT_DELAY = 1000;
 export class GADMService extends AbstractHandler<ChainType> {
   logger = new Logger(GADMService.name);
 

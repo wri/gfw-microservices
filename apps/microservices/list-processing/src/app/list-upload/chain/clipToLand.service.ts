@@ -7,19 +7,19 @@ import axiosRetry from 'axios-retry';
 import wkx from 'wkx';
 
 axiosRetry(axios, {
-  retries: 5,
+  retries: 6,
   retryDelay: axiosRetry.exponentialDelay,
   retryCondition: (error) => {
     // axios-retry normally does not retry POSTs, so using a custom condition
     return (
-      axiosRetry.isNetworkOrIdempotentRequestError(error) ||
+      axiosRetry.isRetryableError(error) ||
       error.response?.status === 429 ||
       error.response?.status === 500 ||
       error.response?.status === 502
     );
   },
 });
-const DEFAULT_DELAY = 500;
+const DEFAULT_DELAY = 1000;
 export class ClipToLandService extends AbstractHandler<ChainType> {
   logger = new Logger(ClipToLandService.name);
 

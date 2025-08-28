@@ -6,27 +6,21 @@
  */
 export const addListToFolder = `
 BEGIN
-    DECLARE @SQL NVARCHAR(MAX);
-    DECLARE @DELIMITER CHAR(1) = ',';
+    -- Check if the folder exists and belongs to the user
+    IF NOT EXISTS (
+        SELECT 1 FROM [dbo].[Folders]
+        WHERE id = @folder_id AND user_id = @user_id
+    )
+    BEGIN
+        THROW 50005, N'The folder does not exist or does not belong to the user.', 1;
+        RETURN;
+    END
 
-    -- validate folder exists (safe call to existing proc)
-    EXEC [dbo].[uspDoesFolderExist] @user_id = @user_id,
-                                   @folder_id = @folder_id;
-
-    -- Use parameterized dynamic SQL to avoid injecting list values directly into the string.
-    SET @SQL = N'
-        INSERT INTO [dbo].[FolderItems] (list_id, folder_id)
-        SELECT TRY_CAST(value AS INT) AS list_id, @FolderID
-        FROM STRING_SPLIT(@Lists, @Delimiter)
-        WHERE TRY_CAST(value AS INT) IS NOT NULL;
-    ';
-
-    EXEC sp_executesql
-        @SQL,
-        N'@Lists NVARCHAR(MAX), @FolderID INT, @Delimiter CHAR(1)',
-        @Lists = @list_ids,
-        @FolderID = @folder_id,
-        @Delimiter = @DELIMITER;
+    -- Insert the lists into FolderItems
+    INSERT INTO [dbo].[FolderItems] (list_id, folder_id)
+    SELECT TRY_CAST([value] AS INT) AS list_id, @folder_id
+    FROM STRING_SPLIT(@list_ids, ',')
+    WHERE TRY_CAST([value] AS INT) IS NOT NULL;
 
     SELECT @@ROWCOUNT AS affected_rows;
 END

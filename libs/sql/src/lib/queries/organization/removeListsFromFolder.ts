@@ -5,19 +5,29 @@
  * @user_id INT
  */
 export const removeListsFromFolder = `
-DECLARE @SQL NVARCHAR(1000)
-
 BEGIN
+    -- Check if the folder exists and belongs to the user
+    IF NOT EXISTS (
+        SELECT 1 FROM [dbo].[Folders]
+        WHERE id = @folder_id AND user_id = @user_id
+    )
+    BEGIN
+        THROW 50005, N'The folder does not exist or does not belong to the user.', 1;
+        RETURN;
+    END
 
-	EXEC [dbo].[uspDoesFolderExist] @user_id = @user_id,
-									@folder_id = @folder_id
-	SET @SQL = 'DELETE [dbo].[FolderItems] FROM [dbo].[FolderItems] INNER JOIN [dbo].[Folders] F ON F.id = folder_id
-				WHERE list_id IN ({LIST_ID}) AND folder_id = {FOLDER_ID} AND F.user_id = {USER_ID}'
-	SET @SQL = REPLACE(@SQL, '{FOLDER_ID}', @folder_id)
-	SET @SQL = REPLACE(@SQL, '{USER_ID}', @user_id)
-	SET @SQL = REPLACE(@SQL, '{LIST_ID}', @list_ids)
-	EXEC sp_executesql @SQL
+    -- Delete the specified lists from FolderItems
+    DELETE FI
+    FROM [dbo].[FolderItems] FI
+    INNER JOIN [dbo].[Folders] F ON F.id = FI.folder_id
+    WHERE FI.list_id IN (
+        SELECT TRY_CAST([value] AS INT)
+        FROM STRING_SPLIT(@list_ids, ',')
+        WHERE TRY_CAST([value] AS INT) IS NOT NULL
+    )
+    AND FI.folder_id = @folder_id
+    AND F.user_id = @user_id;
 
-	SELECT @@ROWCOUNT AS affected_rows
+    SELECT @@ROWCOUNT AS affected_rows;
 END
 `;

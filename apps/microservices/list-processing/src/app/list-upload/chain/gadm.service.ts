@@ -68,7 +68,7 @@ export class GADMService extends AbstractHandler<ChainType> {
       );
       await new Promise((resolve) => setTimeout(resolve, 500));
       this.logger.error(`Error fetching GADM data`, error.response?.data || error.stack);
-      return null;
+      return { hasUnanalyzableError: true };
     }
   };
 

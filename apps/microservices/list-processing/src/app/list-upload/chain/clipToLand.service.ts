@@ -5,6 +5,7 @@ import axios from 'axios';
 import axiosRetry from 'axios-retry';
 // We're using wkx because wellknown only handles wkt instead of wkb
 import wkx from 'wkx';
+import { Position } from 'typeorm/driver/types/GeoJsonTypes';
 
 axiosRetry(axios, {
   retries: 6,
@@ -30,13 +31,18 @@ export class ClipToLandService extends AbstractHandler<ChainType> {
   logger = new Logger(ClipToLandService.name);
 
   private BATCH_SIZE = 200;
-  getClipToLandData = async (feature: any) => {
+  getClipToLandData = async (feature: Feature) => {
+    // Type assertion for geometry with coordinates property
+    const geometryWithCoords = feature.geometry as Feature['geometry'] & {
+      coordinates: Position[];
+    };
+
     const requestData = {
       geometry: feature.geometry,
       sql: `SELECT ST_UNION(ST_Intersection(geom, ST_setSRID(ST_GeomFromGeoJSON('{"type": "${
         feature.geometry.type
       }", "coordinates": ${JSON.stringify(
-        feature.geometry.coordinates
+        geometryWithCoords.coordinates
       )}}') , 4326 ) ) ) FROM mytable WHERE adm_level='2'`,
     };
 

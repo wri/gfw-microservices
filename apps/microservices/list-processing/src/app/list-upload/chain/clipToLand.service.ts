@@ -4,7 +4,7 @@ import { Feature, FeatureCollection } from '@wri-monorepos/geo';
 import axios from 'axios';
 import axiosRetry from 'axios-retry';
 // We're using wkx because wellknown only handles wkt instead of wkb
-const wkx = require('wkx');
+import wkx from 'wkx';
 
 axiosRetry(axios, {
   retries: 5,
@@ -80,8 +80,8 @@ export class ClipToLandService extends AbstractHandler<ChainType> {
     } catch (error) {
       const statusCode = error.response?.status;
 
-      console.log(`ERROR in request (HTTP ${statusCode}):`, error.message);
-      console.log(
+      this.logger.warn(`ERROR in request (HTTP ${statusCode}):`, error.message);
+      this.logger.warn(
         `Returning feature without geometry for feature ${
           feature.properties?.locationName || 'unknown'
         }`

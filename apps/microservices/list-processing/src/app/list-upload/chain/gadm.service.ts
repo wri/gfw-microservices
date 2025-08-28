@@ -10,7 +10,10 @@ axiosRetry(axios, {
   retryDelay: axiosRetry.exponentialDelay,
   retryCondition: (error) => {
     // axios-retry normally does not retry POSTs, so using a custom condition
-    return axiosRetry.isRetryableError(error) || error.response?.status === 429;
+    return axiosRetry.isRetryableError(error) || 
+    error.response?.status === 429 ||
+    error.response?.status === 500 ||
+    error.response?.status === 502
   },
 });
 

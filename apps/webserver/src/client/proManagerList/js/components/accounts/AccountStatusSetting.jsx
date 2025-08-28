@@ -78,9 +78,7 @@ export default function AccountStatusSetting() {
   const activateAccount = () => {
     const isPending = organization_status_id === ACCOUNT_ORG_STATUSES.PENDING;
     handleAccountAction({
-      route: isPending
-        ? '/pro-manager/activatePendingAccount'
-        : '/pro-manager/reactivateAccount',
+      route: isPending ? '/pro-manager/activatePendingAccount' : '/pro-manager/reactivateAccount',
       loadingTitle: 'Please wait',
       loadingMessage: 'Activating Account...',
       successTitle: 'Account Activated',

@@ -228,7 +228,7 @@ export const activatePendingAccount = async (req, res) => {
         });
     }
   }
-}
+};
 
 export const reactivateAccount = async (req, res) => {
   logger.info('POST /pro-manager/reactivateAccount');
@@ -239,12 +239,12 @@ export const reactivateAccount = async (req, res) => {
     res.send({ redirect: '/pro-manager-list' });
   } catch (error) {
     logger.error('Error in POST /pro-manager/reactivateAccount', error);
-    res.status(500).send({ 
+    res.status(500).send({
       error: 'Failed to reactivate account.',
-      details: error 
+      details: error,
     });
   }
-}
+};
 
 export const deactivateAccount = async (req, res) => {
   logger.info('POST /pro-manager/deactivateAccount');
@@ -277,7 +277,7 @@ export const deactivateAccount = async (req, res) => {
       });
     }
   }
-}
+};
 
 export const closePendingAccount = async (req, res) => {
   logger.info('POST /pro-manager/closePendingAccount');
@@ -291,7 +291,7 @@ export const closePendingAccount = async (req, res) => {
       logger.info(`Error POST /pro-manager/closePendingAccount`, error);
       res.send(error);
     });
-}
+};
 
 export const updateProAccount = async (req, res) => {
   logger.info('POST /pro-manager/updateProAccount');
@@ -324,11 +324,11 @@ export const updateProAccount = async (req, res) => {
     PolicyManager.uploadPendingPolicies(req, id, policyUploadList, policyName),
     ProManager.updateAccountSubscriptionStatus(req, id, subscription_status_id),
   ])
-  .then(() => {
-    res.send({ status: 'success' });
-  })
-  .catch((error) => {
-    logger.info(`Error POST /pro-manager/updateProAccount`, error);
-    res.status(500).send(error);
-  });
+    .then(() => {
+      res.send({ status: 'success' });
+    })
+    .catch((error) => {
+      logger.info(`Error POST /pro-manager/updateProAccount`, error);
+      res.status(500).send(error);
+    });
 };

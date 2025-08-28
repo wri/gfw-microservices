@@ -2,11 +2,9 @@
 /* eslint-disable import/no-dynamic-require */
 const path = require('path');
 const controller = require('../controllers/proManagerList.controller');
-const { ERROR_CODES } = require('../../../config/privateutils/error.utils');
 const logger = require(path.resolve('./config/privateutils/logger.utils'));
 const ProManager = require(path.resolve('./config/publicutils/proManager.utils'));
 const PolicyManager = require(path.resolve('./config/publicutils/policyManager.utils'));
-const AccountManager = require(path.resolve('./config/publicutils/accountManager.utils'));
 const UserManager = require(path.resolve('./config/publicutils/userManager.utils'));
 const GFWListManager = require(path.resolve('./config/publicutils/gfwListManager.utils'));
 const middlewares = require(path.resolve('./config/publicutils/middlewares'));

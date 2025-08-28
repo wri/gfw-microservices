@@ -412,7 +412,7 @@ const closePendingAccount = async (req, pendingAccountId) => {
       err
     );
   }
-}
+};
 
 /**
  * @function deletePendingAccountRequest

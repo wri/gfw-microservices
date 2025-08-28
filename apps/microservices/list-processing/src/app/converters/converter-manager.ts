@@ -1,11 +1,12 @@
 import { FindOptionsWhere } from 'typeorm';
+import { Lists, upgradeListSchema } from '@wri-monorepos/sql';
+
 import {
-  Lists,
+  addPrimaryKeyOnLocationId,
   deleteListsWithInvalidLocationId,
   deleteListsPartlyUpgraded,
   deleteListsWithMissingTables,
-  upgradeListSchema,
-} from '@wri-monorepos/sql';
+} from './functions';
 
 export type ConverterFunction = {
   where?: FindOptionsWhere<Lists>;
@@ -13,9 +14,8 @@ export type ConverterFunction = {
 };
 
 const registry: Record<string, ConverterFunction> = {
-  UPGRADE_LIST_SCHEMA: {
-    where: { version: 0 },
-    run: upgradeListSchema,
+  ADD_LOCATION_ID_PRIMARY_KEY: {
+    run: addPrimaryKeyOnLocationId,
   },
   DELETE_INVALID_LOCATION_LISTS: {
     run: deleteListsWithInvalidLocationId,
@@ -26,7 +26,10 @@ const registry: Record<string, ConverterFunction> = {
   DELETE_MISSING_TABLE_LISTS: {
     run: deleteListsWithMissingTables,
   },
-  // GADM_VERSION: { run: () => {} },
+  UPGRADE_LIST_SCHEMA: {
+    where: { version: 0 },
+    run: upgradeListSchema,
+  },
 };
 
 export class ConverterManager {

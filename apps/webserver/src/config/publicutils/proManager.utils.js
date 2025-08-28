@@ -393,6 +393,28 @@ const updatePendingAccountUser = (
 };
 
 /**
+ * @function closePendingAccount
+ * @summary Closes a Pending Account
+ * @param  {Object}   req - Mandatory first parameter to pass the request object into the function in case session info is required.
+ * @param {number}  pendingAccountId An integer specifying the pending account ID.
+ * @return {Promise<boolean>} resolves to true on success, otherwise throws an error object.
+ */
+const closePendingAccount = async (req, pendingAccountId) => {
+  try {
+    const params = [{ field: 'organizationId', type: sql.Int, value: pendingAccountId }];
+    await sqlUtils.executeSystemStoredProcedure(req, 'uspClosePendingAccount', params);
+    return true;
+  } catch (err) {
+    throw errorUtils.createErrorMessage(
+      req,
+      errorUtils.ERROR_CODES.failedToDeletePendingAccountRequest,
+      'Failed to delete pending account request',
+      err
+    );
+  }
+}
+
+/**
  * @function deletePendingAccountRequest
  * @summary Deletes a Pending Account
  * @param  {Object}   req - Mandatory first parameter to pass the request object into the function in case session info is required.
@@ -703,17 +725,18 @@ const updateAccountAnalysisLimits = async (request, payload) => {
 };
 
 module.exports = {
-  getAllAccountsList,
-  getAllUsersList,
   activatePendingAccount,
-  updatePendingAccountUser,
+  closePendingAccount,
+  deactivateAccount,
   deletePendingAccountRequest,
   deleteOrganization,
   deleteUser,
-  deactivateAccount,
-  reactivateAccount,
   getAccountSubscriptionStatus,
+  getAllAccountsList,
+  getAllUsersList,
+  reactivateAccount,
   updateAccountSubscriptionStatus,
-  updateGlobalAnalysisLimits,
   updateAccountAnalysisLimits,
+  updateGlobalAnalysisLimits,
+  updatePendingAccountUser,
 };

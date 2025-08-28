@@ -1,10 +1,15 @@
 const path = require('path');
 import config from '../../../config/config';
 const { compiledAssets } = config;
+
+// Utils
+const { ERROR_CODES } = require('../../../config/privateutils/error.utils');
 const AccountManager = require(path.resolve('./config/publicutils/accountManager.utils'));
 const ProManager = require(path.resolve('./config/publicutils/proManager.utils'));
 const UserManager = require(path.resolve('./config/publicutils/userManager.utils'));
 const PolicyManager = require(path.resolve('./config/publicutils/policyManager.utils'));
+const logger = require(path.resolve('./config/privateutils/logger.utils'));
+
 const { orgAccountStatus } = require(path.resolve('./config/env/orgAccountStatus.constants'));
 
 import {
@@ -186,4 +191,144 @@ export const proManagerListUserDetailData = (req, res) => {
       console.log('Pro-manager-list page failed on the server:', error);
       res.status(500).send(error);
     });
+};
+
+export const activatePendingAccount = async (req, res) => {
+  logger.info('POST /pro-manager/activatePendingAccount');
+  const { id } = req.body;
+
+  try {
+    await ProManager.activatePendingAccount(req, id);
+    res.status(200).send({ redirect: '/pro-manager-list' });
+  } catch (error) {
+    logger.error('Error POST /pro-manager/activatePendingAccount', error);
+
+    switch (error.code) {
+      case ERROR_CODES.failedToActivateAccount:
+        res.status(400).send({
+          errorCode: error.code,
+          systemMessage: error.systemMessage,
+          userMessage: error.userMessage,
+        });
+        break;
+
+      case ERROR_CODES.userNotProManager:
+        res.status(403).send({
+          errorCode: error.code,
+          systemMessage: error.systemMessage,
+          userMessage: error.userMessage,
+        });
+        break;
+
+      default:
+        res.status(500).send({
+          errorCode: 'internalServerError',
+          systemMessage: error,
+          userMessage: 'An unexpected error occurred. Please try again later.',
+        });
+    }
+  }
+}
+
+export const reactivateAccount = async (req, res) => {
+  logger.info('POST /pro-manager/reactivateAccount');
+  const { id } = req.body;
+
+  try {
+    await ProManager.reactivateAccount(req, id);
+    res.send({ redirect: '/pro-manager-list' });
+  } catch (error) {
+    logger.error('Error in POST /pro-manager/reactivateAccount', error);
+    res.status(500).send({ 
+      error: 'Failed to reactivate account.',
+      details: error 
+    });
+  }
+}
+
+export const deactivateAccount = async (req, res) => {
+  logger.info('POST /pro-manager/deactivateAccount');
+  const { id } = req.body;
+
+  try {
+    await ProManager.deactivateAccount(req, id);
+    res.status(200).send({ redirect: '/pro-manager-list' });
+  } catch (error) {
+    logger.error(`Error POST /pro-manager/deactivateAccount`, error);
+
+    // Handle specific error codes
+    if (error.code === ERROR_CODES.invalidStatusTransition) {
+      res.status(400).send({
+        errorCode: error.code,
+        systemMessage: error.systemMessage,
+        userMessage: error.userMessage,
+      });
+    } else if (error.code === ERROR_CODES.userNotProManager) {
+      res.status(403).send({
+        errorCode: error.code,
+        systemMessage: error.systemMessage,
+        userMessage: error.userMessage,
+      });
+    } else {
+      res.status(500).send({
+        errorCode: 'internalServerError',
+        systemMessage: error,
+        userMessage: 'An unexpected error occurred. Please try again later.',
+      });
+    }
+  }
+}
+
+export const closePendingAccount = async (req, res) => {
+  logger.info('POST /pro-manager/closePendingAccount');
+  const { id } = req.body;
+
+  ProManager.closePendingAccount(req, id)
+    .then(() => {
+      res.send({ redirect: '/pro-manager-list' });
+    })
+    .catch((error) => {
+      logger.info(`Error POST /pro-manager/closePendingAccount`, error);
+      res.send(error);
+    });
+}
+
+export const updateProAccount = async (req, res) => {
+  logger.info('POST /pro-manager/updateProAccount');
+  const {
+    id,
+    org_name,
+    org_address,
+    org_website,
+    parent_org_name,
+    is_subsidiary,
+    arr_org_classification_ids,
+    policyUploadList,
+    policyName,
+    subscription_status_id,
+  } = req.body;
+
+  Promise.all([
+    AccountManager.updatePendingAccount(
+      req,
+      id,
+      org_name,
+      org_address,
+      org_website,
+      parent_org_name,
+      is_subsidiary,
+      arr_org_classification_ids,
+      policyUploadList,
+      policyName
+    ),
+    PolicyManager.uploadPendingPolicies(req, id, policyUploadList, policyName),
+    ProManager.updateAccountSubscriptionStatus(req, id, subscription_status_id),
+  ])
+  .then(() => {
+    res.send({ status: 'success' });
+  })
+  .catch((error) => {
+    logger.info(`Error POST /pro-manager/updateProAccount`, error);
+    res.status(500).send(error);
+  });
 };

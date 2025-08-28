@@ -62,138 +62,35 @@ module.exports = (app, limiter) => {
     controller.proManagerListUserDetailData
   );
 
-  app.post('/pro-manager/activateProAccount', async (req, res) => {
-    logger.info('POST /pro-manager/activateProAccount');
-    const { id } = req.body;
+  app.post(
+    '/pro-manager/activatePendingAccount',
+    middlewares.checkProManagerAuthentication,
+    controller.activatePendingAccount
+  );
 
-    try {
-      await ProManager.activatePendingAccount(req, id);
-      res.status(200).send({ redirect: '/pro-manager-list' });
-    } catch (error) {
-      logger.error(`Error POST /pro-manager/activateProAccount`, error);
+  app.post(
+    '/pro-manager/reactivateAccount',
+    middlewares.checkProManagerAuthentication,
+    controller.reactivateAccount
+  );
 
-      // Use HTTP status codes based on error type
-      if (error.code === ERROR_CODES.failedToActivateAccount) {
-        res.status(400).send({
-          errorCode: error.code,
-          systemMessage: error.systemMessage,
-          userMessage: error.userMessage,
-        });
-      } else if (error.code === ERROR_CODES.userNotProManager) {
-        res.status(403).send({
-          errorCode: error.code,
-          systemMessage: error.systemMessage,
-          userMessage: error.userMessage,
-        });
-      } else {
-        res.status(500).send({
-          errorCode: 'internalServerError',
-          systemMessage: error,
-          userMessage: 'An unexpected error occurred. Please try again later.',
-        });
-      }
-    }
-  });
+  app.post(
+    '/pro-manager/deactivateAccount',
+    middlewares.checkProManagerAuthentication,
+    controller.deactivateAccount
+  );
 
-  app.post('/pro-manager/activateProActiveAccount', (req, res) => {
-    logger.info('POST /pro-manager/activateProActiveAccount');
-    const { id } = req.body;
-    ProManager.reactivateAccount(req, id)
-      .then(() => {
-        res.send({ redirect: '/pro-manager-list' });
-      })
-      .catch((error) => {
-        logger.info(`Error POST /pro-manager/activateProActiveAccount`, error);
-        res.send(error);
-      });
-  });
+  app.post(
+    '/pro-manager/closePendingAccount',
+    middlewares.checkProManagerAuthentication,
+    controller.closePendingAccount
+  );
 
-  app.post('/pro-manager/deactivateProAccount', async (req, res) => {
-    logger.info('POST /pro-manager/deactivateProAccount');
-    const { id } = req.body;
-
-    try {
-      await ProManager.deactivateAccount(req, id);
-      res.status(200).send({ redirect: '/pro-manager-list' });
-    } catch (error) {
-      logger.error(`Error POST /pro-manager/deactivateProAccount`, error);
-
-      // Handle specific error codes
-      if (error.code === ERROR_CODES.invalidStatusTransition) {
-        res.status(400).send({
-          errorCode: error.code,
-          systemMessage: error.systemMessage,
-          userMessage: error.userMessage,
-        });
-      } else if (error.code === ERROR_CODES.userNotProManager) {
-        res.status(403).send({
-          errorCode: error.code,
-          systemMessage: error.systemMessage,
-          userMessage: error.userMessage,
-        });
-      } else {
-        res.status(500).send({
-          errorCode: 'internalServerError',
-          systemMessage: error,
-          userMessage: 'An unexpected error occurred. Please try again later.',
-        });
-      }
-    }
-  });
-
-  app.post('/pro-manager/deleteProAccountRequest', (req, res) => {
-    logger.info('POST /pro-manager/deleteProAccountRequest');
-    const { id } = req.body;
-
-    ProManager.deletePendingAccountRequest(req, id)
-      .then(() => {
-        res.send({ redirect: '/pro-manager-list' });
-      })
-      .catch((error) => {
-        logger.info(`Error POST /pro-manager/deleteProAccountRequest`, error);
-        res.send(error);
-      });
-  });
-
-  app.post('/pro-manager/updateProAccount', (req, res) => {
-    logger.info('POST /pro-manager/updateProAccount');
-    const {
-      id,
-      org_name,
-      org_address,
-      org_website,
-      parent_org_name,
-      is_subsidiary,
-      arr_org_classification_ids,
-      policyUploadList,
-      policyName,
-      subscription_status_id,
-    } = req.body;
-
-    Promise.all([
-      AccountManager.updatePendingAccount(
-        req,
-        id,
-        org_name,
-        org_address,
-        org_website,
-        parent_org_name,
-        is_subsidiary,
-        arr_org_classification_ids,
-        policyUploadList,
-        policyName
-      ),
-      PolicyManager.uploadPendingPolicies(req, id, policyUploadList, policyName),
-      ProManager.updateAccountSubscriptionStatus(req, id, subscription_status_id),
-    ])
-      .then(() => {
-        res.send({ status: 'success' });
-      })
-      .catch((error) => {
-        logger.info(`Error POST /pro-manager/updateProAccount`, error);
-        res.status(500).send(error);
-      });
-  });
+  app.post(
+    '/pro-manager/updateProAccount',
+    middlewares.checkProManagerAuthentication,
+    controller.updateProAccount
+  );
 
   app.post('/pro-manager/updateProAccountUser', (req, res) => {
     logger.info('POST /pro-manager/updateProAccountUser');

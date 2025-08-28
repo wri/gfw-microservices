@@ -401,8 +401,13 @@ const updatePendingAccountUser = (
  */
 const closePendingAccount = async (req, pendingAccountId) => {
   try {
-    const params = [{ field: 'organizationId', type: sql.Int, value: pendingAccountId }];
-    await sqlUtils.executeSystemStoredProcedure(req, 'uspClosePendingAccount', params);
+    const params = [{ field: 'pendingAccountId', type: sql.Int, value: pendingAccountId }];
+    const result = await sqlUtils.executeSystemStoredProcedure(
+      req,
+      'uspClosePendingAccount',
+      params
+    );
+    logger.info(`Pending account ${pendingAccountId} closed. ${result}`);
     return true;
   } catch (err) {
     throw errorUtils.createErrorMessage(

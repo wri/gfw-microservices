@@ -1,6 +1,8 @@
 import { Component } from 'react';
 import store from '../../store';
 import _range from 'lodash/range';
+import { Box } from '@mui/material';
+import { Switch } from '../../../../components';
 import {
   toggleLayer,
   turnLayerOff,
@@ -12,6 +14,7 @@ import {
   toggleTreeCoverLossCanopyModal,
   updateGFWLocations,
   updateSoyYear,
+  updateTreeCoverLossCanopyDensity,
 } from '../../actions/mapActions';
 import { setBiomassMinRange, setBiomassMaxRange } from '../../actions/analysisActions';
 import { mapPage, soyPlantedYearsRange } from '../../../../common/js/config';
@@ -46,6 +49,7 @@ export default class LegendCheckbox extends Component {
     super(props);
     this.state = {
       layerHidden: false,
+      isChecked: false,
     };
   }
 
@@ -147,10 +151,10 @@ export default class LegendCheckbox extends Component {
       }
     } else if (layerId === clarkLabsAquacultureLandCover) {
       if (visibleLayers.includes(clarkLabsAquacultureLandCover)) {
-        await store.dispatch(toggleLayer(clarkLabsAquacultureLandCover));
+        this.props.toggleLayerVisibility(clarkLabsAquacultureLandCover);
       }
       if (visibleLayers.includes(clarkLabsAquacultureLandChange)) {
-        await store.dispatch(toggleLayer(clarkLabsAquacultureLandChange));
+        this.props.toggleLayerVisibility(clarkLabsAquacultureLandChange);
       }
     } else {
       this.props.toggleLayerVisibility(layerId);
@@ -335,14 +339,36 @@ export default class LegendCheckbox extends Component {
           </p>
         ) : null}
         {layer.id === treeCoverLossID ? (
-          <p className="layer-legend-message">
-            Displaying loss with
-            <span
-              onClick={this.handleToggleTreeCoverLossCanopyModal}
-              className="layer-legend-loss-display"
-            >{`>${this.props.treeCoverLossCanopyDensity}%`}</span>
-            {mapPage.densityLossEnd}
-          </p>
+          <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mt: 1 }}>
+            <Box
+              onClick={() => {
+                const isChecked = this.state.isChecked;
+                this.setState({ isChecked: !isChecked });
+                store.dispatch(updateTreeCoverLossCanopyDensity(isChecked ? 0 : 10));
+              }}
+              sx={{ '&:hover': { cursor: 'pointer' } }}
+            >
+              <Switch
+                id={`tree-cover-loss-switch-${layer.id}`}
+                name={`treeCoverLossCanopyDensity-${layer.id}`}
+                checked={this.state.isChecked}
+              />
+            </Box>
+            {!this.state.isChecked ? (
+              <p className="layer-legend-message layer-legend-message--tcl">
+                No canopy density filter applied.
+              </p>
+            ) : (
+              <p className="layer-legend-message layer-legend-message--tcl">
+                Displaying loss with
+                <span
+                  onClick={this.handleToggleTreeCoverLossCanopyModal}
+                  className="layer-legend-loss-display "
+                >{`>${this.props.treeCoverLossCanopyDensity}%`}</span>
+                {mapPage.densityLossEnd}
+              </p>
+            )}
+          </Box>
         ) : null}
         {layer.id === treeBiomassLossID ? (
           <div className="layer-details carbon-stocks">

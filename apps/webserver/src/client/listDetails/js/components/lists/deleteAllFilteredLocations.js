@@ -1,10 +1,6 @@
 import axios from 'axios';
 
 export const deleteAllFilteredLocations = (listID, filters, listFilterStr) => {
-  console.log(filters);
-  console.log(listFilterStr);
-  console.log('delete all locations or filtered locations in large lists');
-
   const params = {
     listID,
     searchString: listFilterStr,

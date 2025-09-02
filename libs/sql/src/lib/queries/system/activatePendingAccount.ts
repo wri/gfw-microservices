@@ -446,6 +446,35 @@ EXEC sp_executesql @SQL
     SET @SQL = REPLACE(@TEMPLATE, '{DATABASENAME}', @OrgdbName)
     EXEC sp_executesql @SQL
 
+    SET @TEMPLATE = 'USE [{DATABASENAME}]
+        EXEC(''CREATE TABLE [dbo].[Folders] (
+                [id] INT IDENTITY(1,1) NOT NULL UNIQUE,
+                [name] NVARCHAR(200) NOT NULL,
+                [user_id] INT NOT NULL,
+                [last_accessed_at] DATETIME NOT NULL,
+                [created_at] DATETIME NOT NULL,
+                CONSTRAINT [PK_Folders_ID] PRIMARY KEY CLUSTERED(id),
+                CONSTRAINT [FK_User_ID] FOREIGN KEY (user_id) REFERENCES [dbo].[Users](id),
+                CONSTRAINT [UQ_USERID_FOLDER_NAME] UNIQUE (user_id, name)
+            );
+        '')
+    '
+    SET @SQL = REPLACE(@TEMPLATE, '{DATABASENAME}', @OrgdbName)
+    EXEC sp_executesql @SQL
+
+    SET @TEMPLATE = 'USE [{DATABASENAME}]
+        EXEC(''CREATE TABLE [dbo].[FolderItems] (
+                [list_id] INT NOT NULL,
+                [folder_id] INT NOT NULL,
+                CONSTRAINT [FK_List_ID] FOREIGN KEY (list_id) REFERENCES [dbo].[Lists](id),
+                CONSTRAINT [FK_Folder_ID] FOREIGN KEY (folder_id) REFERENCES [dbo].[Folders](id) ON DELETE CASCADE ON UPDATE CASCADE,
+                CONSTRAINT [UQ_Folders_Lists] UNIQUE NONCLUSTERED ([list_id], [folder_id])
+            );
+        '')
+    '
+    SET @SQL = REPLACE(@TEMPLATE, '{DATABASENAME}', @OrgdbName)
+    EXEC sp_executesql @SQL
+
     /********************************************************
    * CREATE ALL THE TABLE TYPES.
    ********************************************************/

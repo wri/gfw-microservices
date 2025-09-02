@@ -4,10 +4,6 @@ const path = require('path');
 
 const orgQueriesDir = path.resolve(process.cwd(), 'libs/sql/src/lib/queries/organization');
 const manifestPath = path.join(orgQueriesDir, 'orgs-sp-manifest.json');
-const activateSqlPath = path.resolve(
-  process.cwd(),
-  'database/gfwpro/storedprocedures/dbo.uspActivatePendingAccount.StoredProcedure.sql'
-);
 
 // ---------- 1. .ts files ---------------------------------------------------
 const tsFiles = fs.readdirSync(orgQueriesDir).filter((f) => f.endsWith('.ts') && f !== 'index.ts');
@@ -20,39 +16,20 @@ const spTsExports = indexSrc
   .filter(Boolean)
   .map((line) => line.trim().replace(/export\s+\*\s+from\s+'\.\/(.*?)';?/, '$1'));
 
-// ---------- 3. CREATE PROCEDURE lines in ActivatePendingAccount ------------
-let definitionsInActivatePendingAccount = [];
-if (fs.existsSync(activateSqlPath)) {
-  const sql = fs.readFileSync(activateSqlPath, 'utf8');
-
-  //           ┌─────────────────────────────────────────────────────────────┐
-  //           │CREATE [OR ALTER] PROCEDURE  [dbo.]uspWhatever               │
-  //           └─────────────────────────────────────────────────────────────┘
-  const rx = /CREATE\s+(?:OR\s+ALTER\s+)?PROCEDURE\s+(?:\[\s*dbo\s*\]\.|dbo\.)?\[?(usp[\w$]+)\]?/gi;
-
-  const found = new Set();
-  let m;
-  while ((m = rx.exec(sql)) !== null) found.add(m[1]); // m[1] = 'uspSomething'
-  definitionsInActivatePendingAccount = [...found];
-} else {
-  console.warn(`⚠️  Could not read ${activateSqlPath} – activateSpDefs will be empty`);
-}
+// ---------- 3. (Removed) CREATE PROCEDURE lines in ActivatePendingAccount ------------
+// The stored procedure file is now gone, so this section is omitted.
 
 // ---------- 4. Write manifest ---------------------------------------------
-function findUndeletedSps(spTsArray, activatePendingSpArray) {
-  const revertedName = (spTsName) =>
-    `usp${spTsName.charAt(0).toUpperCase() + spTsName.slice(1, spTsName.length + 1)}`;
-  return spTsArray.filter((element) => activatePendingSpArray.includes(revertedName(element)));
+function arraysEqual(a, b) {
+  if (a.length !== b.length) return false;
+  return a.every((v, i) => v === b[i]);
 }
+
 const manifest = {
   spTsFiles,
-  spTsExports: spTsExports,
-  matchingFilesAndExports: spTsFiles.length === spTsExports.length,
-  definitionsInActivatePendingAccount: definitionsInActivatePendingAccount,
-  undeletedSpInActivatePendingAccountFile: findUndeletedSps(
-    spTsFiles,
-    definitionsInActivatePendingAccount
-  ),
+  spTsExports,
+  matchingFilesAndExports: arraysEqual(spTsFiles.sort(), spTsExports.sort()),
+  // No more stored procedure definitions to track
 };
 
 const json = JSON.stringify(manifest, null, 2) + '\n';
@@ -60,7 +37,7 @@ if (!fs.existsSync(manifestPath) || fs.readFileSync(manifestPath, 'utf8') !== js
   fs.writeFileSync(manifestPath, json);
   console.log(
     `✨  orgs-sp-manifest.json updated` +
-      ` (files ${spTsFiles.length}, exports ${spTsExports.length}, activateSpDefs ${definitionsInActivatePendingAccount.length})`
+      ` (files ${spTsFiles.length}, exports ${spTsExports.length})`
   );
 } else {
   console.log('↪︎  orgs-sp-manifest.json unchanged – skipped write');

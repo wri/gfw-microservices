@@ -1,5 +1,6 @@
 // Re-exporting system stored procedures
 export * from './createNewAccount';
+export * from './closePendingAccount';
 export * from './getAdministrativeAreaAttributes';
 export * from './getAdministrativeAreasData';
 export * from './getAdministrativeAreasDataByLocation';
@@ -23,11 +24,11 @@ export * from './getGFWProRootUserInfo';
 export * from './getInitialUserRouteInfo';
 export * from './getLocationsCount';
 export * from './getOrganizationAnalysisUsage';
+export * from './getOrganizationDb';
+export * from './getOrganizationRenewalTime';
 export * from './getOrganizationStatus';
 export * from './getPaginatedAnalysisDataForGFWList';
 export * from './getProtectedAreasInfo';
-export * from './getOrganizationRenewalTime';
-export * from './getOrganizationDb';
 export * from './getTableQueryString';
 export * from './getUserAdminOrganizations';
 export * from './getUserAuthenticationPreferences';

@@ -119,12 +119,16 @@ describe('ListAnalysisController', () => {
         organizationId: 1,
       },
     });
-    controller.getAnalysisStatus = jest.fn().mockResolvedValue({
-      ...expectedResult,
-    });
 
     const result = await controller.getAnalysisStatus(listId, analysisId, requestMock);
-    expect(result).toMatchObject(expectedResult);
+
+    // The controller combines getAnalysisStatusWithErrorFileStoragePath and getLocationsErrors
+    const expectedCombinedResult = {
+      ...expectedResultWithErroPath,
+      errorsDetails: [...mockLocationsWithErrors, ...expectedResultWithErroPath.errorsDetails],
+    };
+
+    expect(result).toMatchObject(expectedCombinedResult);
   });
   it('should return a successful response containing errorFileStoragePath', async () => {
     const listId = 123;

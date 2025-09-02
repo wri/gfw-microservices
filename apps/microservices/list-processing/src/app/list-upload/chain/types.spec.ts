@@ -2,11 +2,6 @@ import { AbstractHandler } from './types'; // Adjust the import path as necessar
 import { Logger } from '@nestjs/common'; // Added for error logging
 import { ChainType } from './types'; // Added for ChainType
 
-jest.mock('./types', () => ({
-  ...jest.requireActual('./types'),
-  updateListsUploadStatus: jest.fn(),
-}));
-
 // Create a concrete subclass for testing
 class ConcreteHandler extends AbstractHandler<unknown> {
   public async handle(request: unknown): Promise<unknown> {
@@ -172,5 +167,66 @@ describe('AbstractHandler', () => {
     expect(loggerSpy).toHaveBeenCalledWith(
       expect.stringContaining(`Error in ErrorNoStackHandler: ${errorMessage}`)
     );
+  });
+
+  test('should break chain execution when preview mode error occurs', async () => {
+    const request: ChainType = {
+      request: {
+        list_id: 1,
+        organization_database: 'test_db',
+        isExternalAPIProcess: false,
+        organization_id: 1,
+        subscription_status_id: 1,
+        hasUnanalyzableError: false,
+        path: '/test/path',
+        preview: true, // Enable preview mode
+      },
+      geojson: { type: 'FeatureCollection', features: [] },
+    };
+    const errorMessage = 'Preview error';
+
+    class PreviewErrorHandler extends AbstractHandler<unknown> {
+      public async handle(): Promise<unknown> {
+        throw new Error(errorMessage);
+      }
+    }
+
+    class SecondHandler extends AbstractHandler<unknown> {
+      public async handle(request: unknown): Promise<unknown> {
+        return super.handle(request);
+      }
+    }
+
+    const previewErrorHandler = new PreviewErrorHandler();
+    const secondHandler = new SecondHandler();
+    previewErrorHandler.setNext(secondHandler);
+
+    // Mock the updateListsUploadStatus function
+    const updateSpy = jest
+      .spyOn(AbstractHandler, 'updateListsUploadStatus')
+      .mockResolvedValue(undefined);
+
+    // Mock Logger.error
+    const loggerSpy = jest.spyOn(Logger, 'error').mockImplementation(jest.fn());
+
+    // Spy on second handler to ensure it's not called
+    const secondHandlerSpy = jest.spyOn(secondHandler, 'handle');
+
+    const result = await AbstractHandler.runFullChain(previewErrorHandler, request);
+
+    expect(loggerSpy).toHaveBeenCalledWith(
+      expect.stringContaining(`Error in PreviewErrorHandler: Error: ${errorMessage}`)
+    );
+    expect(updateSpy).toHaveBeenCalledWith(
+      expect.anything(),
+      expect.stringContaining('Error in PreviewErrorHandler'),
+      errorMessage
+    );
+    expect((result as any).request.hasUnanalyzableError).toBe(true);
+    // Ensure second handler was not called due to break in preview mode
+    expect(secondHandlerSpy).not.toHaveBeenCalled();
+    // Ensure the error feature was added to geojson
+    expect((result as any).geojson.features).toHaveLength(1);
+    expect((result as any).geojson.features[0].properties.errorDetails).toBe(errorMessage);
   });
 });

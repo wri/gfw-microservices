@@ -404,7 +404,7 @@ export class ListAnalysisService {
     } catch (error) {
       const errorMessage = (error?.response?.data?.message || error?.message || '').toString();
       if (errorMessage.toLowerCase().includes('already exists')) {
-        throwCustomErrorResponse(errorMessage, HttpStatus.BAD_REQUEST);
+        throwCustomErrorResponse(errorMessage, HttpStatus.CONFLICT);
       }
       if (error?.response?.status === HttpStatus.BAD_REQUEST) {
         throwCustomErrorResponse(error.response?.data?.message, HttpStatus.BAD_REQUEST);

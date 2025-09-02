@@ -82,26 +82,14 @@ export abstract class AbstractHandler<T> implements Handler<T> {
         result = await nextJob.handle(result);
       } catch (error) {
         const err: unknown = error;
-        const statusCode =
-          typeof err === 'object' &&
-          err !== null &&
-          'getStatus' in err &&
-          typeof (err as { getStatus?: () => number }).getStatus === 'function'
-            ? (err as { getStatus: () => number }).getStatus()
-            : typeof err === 'object' && err !== null && 'status' in err
-            ? (err as { status?: number }).status
-            : undefined;
-        if (statusCode === 400) {
+        const { statusCode, stack, message } = AbstractHandler.parseError(err);
+
+        if (statusCode && statusCode >= 400 && statusCode <= 499) {
+          Logger.error(
+            `Client error (${statusCode}) in ${nextJob.constructor.name}: ${stack || message}`
+          );
           throw error;
         }
-        const stack =
-          typeof err === 'object' && err !== null && 'stack' in err
-            ? (err as { stack?: string }).stack
-            : undefined;
-        const message =
-          typeof err === 'object' && err !== null && 'message' in err
-            ? (err as { message?: string }).message || 'Unknown error'
-            : String(err);
         Logger.error(`Error in ${nextJob.constructor.name}: ${stack || message}`);
         await AbstractHandler.updateListsUploadStatus(
           result as ChainType,
@@ -131,6 +119,30 @@ export abstract class AbstractHandler<T> implements Handler<T> {
       'Ending list upload process - ' + chain.constructor.name
     );
     return result;
+  }
+
+  static parseError(err: unknown): { statusCode?: number; stack?: string; message: string } {
+    const statusCode =
+      typeof err === 'object' &&
+      err !== null &&
+      'getStatus' in err &&
+      typeof (err as { getStatus?: () => number }).getStatus === 'function'
+        ? (err as { getStatus: () => number }).getStatus()
+        : typeof err === 'object' && err !== null && 'status' in err
+        ? (err as { status?: number }).status
+        : undefined;
+
+    const stack =
+      typeof err === 'object' && err !== null && 'stack' in err
+        ? (err as { stack?: string }).stack
+        : undefined;
+
+    const message =
+      typeof err === 'object' && err !== null && 'message' in err
+        ? (err as { message?: string }).message || 'Unknown error'
+        : String(err);
+
+    return { statusCode, stack, message };
   }
 
   static logExecutionTime(start, end, heapUsed, className) {

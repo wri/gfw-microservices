@@ -1,21 +1,24 @@
 import { Component } from 'react';
-import Grid from '@mui/material/Grid';
-import Page from '../../../common/js/components/Page';
 import Select from 'react-select';
 import Dialog from 'material-ui/Dialog';
+import { Box, Grid, Link, Typography } from '@mui/material';
+
+import Page from '../../../common/js/components/Page';
 import SubHeader from '../../../common/js/components/SubHeader';
 import Button from '../../../common/js/components/Button';
 import LinkButton from '../../../common/js/components/LinkButton';
 import GfwSelect from '../../../common/js/components/GfwSelect';
-import { fieldValidations } from '../../../profile/js/utils/validations';
+import countries from '../../../common/js/utils/countries.utils';
 import {
   termsOfServices,
   privacyPolicy,
   profilePage,
   licenseAgreement,
 } from '../../../common/js/config';
-import countries from '../../../common/js/utils/countries.utils';
+
 import '../../css/account.scss';
+import { fieldValidations } from '../../../profile/js/utils/validations';
+import requestAccountStrings from './requestAccountStrings';
 import LegalBanner from './LegalBanner';
 
 export default class Account extends Component {
@@ -388,21 +391,12 @@ export default class Account extends Component {
 
     return (
       <Page>
-        <Dialog
-          paperClassName="dialog-paper"
-          open={dialogOpen}
-          title={dialogTitle}
-          actions={defaultAction}
-          onRequestClose={action}
-        >
-          {dialogContent}
-        </Dialog>
         <SubHeader
-          header="Request New Account"
-          subHeader="Please complete all mandatory fields * below and submit."
+          header={requestAccountStrings.requestAccount.title}
+          subHeader={requestAccountStrings.requestAccount.subHeader}
         />
         <div className="account">
-          <Grid container spacing={2}>
+          <Grid container spacing={2} sx={{ paddingBottom: 2 }}>
             <Grid item xs={7}>
               <section>
                 <h2 className="section-title-large">Account Information</h2>
@@ -662,6 +656,19 @@ export default class Account extends Component {
                 </div>
 
                 <div className="input-field__block-container">
+                  <Typography variant="body2">
+                    <Box sx={{ fontWeight: 500 }}>
+                      {requestAccountStrings.helpTooltip.prefix}
+                      <Link href={requestAccountStrings.helpTooltip.link} target="_blank">
+                        {requestAccountStrings.helpTooltip.linkText}
+                      </Link>
+                      {requestAccountStrings.helpTooltip.suffix}
+                    </Box>
+                    {requestAccountStrings.helpTooltip.explanation}
+                  </Typography>
+                </div>
+
+                <div className="input-field__block-container">
                   <input
                     id="checkBox"
                     checked={this.state.checked}
@@ -686,25 +693,29 @@ export default class Account extends Component {
                 </div>
               </section>
               <section>
-                <div>
-                  <Button
-                    variant="primary"
-                    style={{ maringRight: '15px' }}
-                    onClick={this.submitOrg}
-                    label="Submit"
-                  />
+                <Box sx={{ display: 'flex', gap: 4 }}>
+                  <Button variant="primary" onClick={this.submitOrg} label="Submit" />
                   <LinkButton
                     onClick={() => {
                       window.location.href = '/';
                     }}
                     label="Cancel"
                   />
-                </div>
+                </Box>
               </section>
             </Grid>
             <Grid item xs={5}>
               <LegalBanner />
             </Grid>
+            <Dialog
+              paperClassName="dialog-paper"
+              open={dialogOpen}
+              title={dialogTitle}
+              actions={defaultAction}
+              onRequestClose={action}
+            >
+              {dialogContent}
+            </Dialog>
           </Grid>
         </div>
       </Page>

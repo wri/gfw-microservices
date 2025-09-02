@@ -403,7 +403,7 @@ export class ListAnalysisService {
       largeListCreated = await axios.post(`${this.LLP_BASE_URL}/api/create-large-list`, data);
     } catch (error) {
       const errorMessage = (error?.response?.data?.message || error?.message || '').toString();
-      if (errorMessage.toLowerCase().includes('already exists')) {
+      if (error?.response?.status === HttpStatus.CONFLICT) {
         throwCustomErrorResponse(errorMessage, HttpStatus.CONFLICT);
       }
       if (error?.response?.status === HttpStatus.BAD_REQUEST) {

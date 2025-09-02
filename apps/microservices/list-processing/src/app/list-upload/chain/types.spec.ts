@@ -1,6 +1,6 @@
-import { AbstractHandler } from './types'; // Adjust the import path as necessary
-import { Logger } from '@nestjs/common'; // Added for error logging
-import { ChainType } from './types'; // Added for ChainType
+import { AbstractHandler, RequestNewList } from './types';
+import { Logger } from '@nestjs/common';
+import { ChainType } from './types';
 
 // Create a concrete subclass for testing
 class ConcreteHandler extends AbstractHandler<unknown> {
@@ -125,7 +125,7 @@ describe('AbstractHandler', () => {
     class BadRequestHandler extends AbstractHandler<unknown> {
       public async handle(): Promise<unknown> {
         const error = new Error('Bad request');
-        (error as any).status = 400;
+        (error as unknown as { status: number }).status = 400;
         throw error;
       }
     }
@@ -212,7 +212,10 @@ describe('AbstractHandler', () => {
     // Spy on second handler to ensure it's not called
     const secondHandlerSpy = jest.spyOn(secondHandler, 'handle');
 
-    const result = await AbstractHandler.runFullChain(previewErrorHandler, request);
+    const { request: resultRequest, geojson } = (await AbstractHandler.runFullChain(
+      previewErrorHandler,
+      request
+    )) as ChainType;
 
     expect(loggerSpy).toHaveBeenCalledWith(
       expect.stringContaining(`Error in PreviewErrorHandler: Error: ${errorMessage}`)
@@ -222,11 +225,12 @@ describe('AbstractHandler', () => {
       expect.stringContaining('Error in PreviewErrorHandler'),
       errorMessage
     );
-    expect((result as any).request.hasUnanalyzableError).toBe(true);
+
+    expect((resultRequest as RequestNewList).hasUnanalyzableError).toBe(true);
     // Ensure second handler was not called due to break in preview mode
     expect(secondHandlerSpy).not.toHaveBeenCalled();
     // Ensure the error feature was added to geojson
-    expect((result as any).geojson.features).toHaveLength(1);
-    expect((result as any).geojson.features[0].properties.errorDetails).toBe(errorMessage);
+    expect(geojson.features).toHaveLength(1);
+    expect(geojson.features[0].properties.errorDetails).toBe(errorMessage);
   });
 });

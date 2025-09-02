@@ -241,9 +241,17 @@ export default class ListDetails extends Component {
       ({ analysisId }) => analysisId === analysisTypes.FOREST_CHANGE_DIAGNOSTICS
     );
 
-    if ((!isPost2020RiskActive && isPost2000TreeCoverLossActive) || isGlobalForestWatchList) {
-      store.dispatch(changeListView(FOREST_CHANGE_VIEW));
+    let defaultView = '';
+
+    if (isPost2020RiskActive) {
+      defaultView = POST_2020_RISK_ASSESSMENT_VIEW;
+    } else if (isPost2000TreeCoverLossActive || isGlobalForestWatchList) {
+      defaultView = FOREST_CHANGE_VIEW;
+    } else if (listAnalysesStatus.length) {
+      defaultView = listAnalysesStatus[0].analysisId;
     }
+
+    store.dispatch(changeListView(defaultView));
   }
 
   componentDidUpdate(prevProps) {
@@ -2110,7 +2118,7 @@ export default class ListDetails extends Component {
                     )}
 
                     <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                      {!this.areAllAnalysesDraft() && (
+                      {!this.areAllAnalysesDraft() && listView && (
                         <AnalysesTabs
                           listViewOptions={listViewOptions}
                           listView={listView}

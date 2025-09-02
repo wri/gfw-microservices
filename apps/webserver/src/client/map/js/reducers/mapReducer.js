@@ -56,7 +56,7 @@ const initialLocationState = {
   treeCoverLossCanopyModalVisible: false,
   drawShapeNoteDetailsModalVisible: false,
   canopyDensity: 10,
-  treeCoverLossCanopyDensity: 10,
+  treeCoverLossCanopyDensity: 0,
   analysisResults: {},
   selectedLists: [],
   fireDays: 7,

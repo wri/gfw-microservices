@@ -408,7 +408,7 @@ const closePendingAccount = async (req, pendingAccountId) => {
       'uspClosePendingAccount',
       params
     );
-    logger.info(`Pending account ${pendingAccountId} closed. ${result}`);
+    logger.info(`Pending account ${pendingAccountId} closed. ${JSON.stringify(result)}`);
     return true;
   } catch (err) {
     throw errorUtils.createErrorMessage(
@@ -564,7 +564,7 @@ const reactivateAccount = (req, organization_id) => {
 const deactivateAccount = async (req, organization_id) => {
   try {
     // 1. Fetch current organization status
-    const orgStatusId = await getOrganizationStatus({ session: { organization_id }}); // pass minimal req object
+    const orgStatusId = await getOrganizationStatus({ session: { organization_id } }); // pass minimal req object
 
     if (!orgStatusId) {
       throw {

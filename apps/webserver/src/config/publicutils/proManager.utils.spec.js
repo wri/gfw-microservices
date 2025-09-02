@@ -6,7 +6,6 @@ jest.mock('./policyManager.utils');
 jest.mock('./accountManager.utils');
 jest.mock('./userManager.utils');
 jest.mock('../langResources');
-
 jest.mock('../privateutils/speakeasy.utils');
 jest.mock('../privateutils/cognito.utils');
 jest.mock('../privateutils/ses.utils');

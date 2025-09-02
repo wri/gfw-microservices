@@ -818,7 +818,6 @@ export const getOrganizationStatus = async (req) => {
       'uspGetOrganizationStatus',
       parameters
     );
-    console.log("🚀 ~ getOrganizationStatus ~ recordSets:", recordSets)
     const [record] = recordSets;
     return record.organization_status_id;
   } catch (errorMsg) {

@@ -622,7 +622,7 @@ describe('Pro Manager Utils Tests', () => {
       await expect(deactivateAccount(mockReq, organization_id)).rejects.toMatchObject({
         code: errorUtils.ERROR_CODES.failedToDeactivateAccount,
         userMessage: 'Failed to deactivate account',
-        systemMessage: mockError,
+        systemMessage: { error: 'Not a Pro Manager' },
       });
     });
   });

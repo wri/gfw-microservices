@@ -148,6 +148,8 @@ describe('ListUploadController', () => {
     hasValidEmail: true,
   };
 
+  let dataSource: DataSource;
+
   beforeAll(async () => {
     const module: TestingModule = await Test.createTestingModule({
       imports: [
@@ -156,7 +158,7 @@ describe('ListUploadController', () => {
           type: 'sqlite',
           database: ':memory:',
           synchronize: true,
-          logging: true,
+          logging: false,
           entities: [Organization, ExternalAPIKey, UserRoutes, FeatureFlag],
         }),
         TypeOrmModule.forFeature(
@@ -208,14 +210,22 @@ describe('ListUploadController', () => {
     organizationService = module.get<OrganizationService>(OrganizationService);
     axiosMock = new AxiosMockAdapter(axios);
     listAnalysisService = module.get<ListAnalysisService>(ListAnalysisService);
-    sinon
-      .stub(DataSource.prototype, 'getRepository')
-      .withArgs(ExternalUpload)
-      .returns(new ExternalUploadMockRepository());
+    const dataSourceStub = sinon.stub(DataSource.prototype, 'getRepository');
+    dataSourceStub.withArgs(ExternalUpload).returns(new ExternalUploadMockRepository() as any);
+    // For other entities, return a basic mock repository
+    dataSourceStub.returns({
+      findOne: jest.fn(),
+      save: jest.fn(),
+      find: jest.fn(),
+      remove: jest.fn(),
+      create: jest.fn(),
+    } as any);
 
+    // Mock SqsService methods to prevent cleanup errors
     sinon.stub(SqsService.prototype, 'send').returns({
       register: jest.fn(),
     });
+    sinon.stub(SqsService.prototype, 'onModuleDestroy').returns(undefined);
     sinon.stub(SqsModule, 'registerAsync').returns({
       register: jest.fn(),
     });
@@ -224,6 +234,21 @@ describe('ListUploadController', () => {
 
     app = module.createNestApplication();
     await app.init();
+
+    // Get the DataSource for cleanup
+    dataSource = module.get<DataSource>(DataSource);
+  });
+
+  afterAll(async () => {
+    // Clean up database connections
+    if (dataSource && dataSource.isInitialized) {
+      await dataSource.destroy();
+    }
+    if (app) {
+      await app.close();
+    }
+    // Restore all stubs
+    sinon.restore();
   });
 
   it('should return a successful response', async () => {

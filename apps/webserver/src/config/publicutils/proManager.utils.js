@@ -44,8 +44,6 @@ import {
 } from '@wri-monorepos/sql';
 
 import { getOrganizationStatus } from './authenticationManager.utils';
-const { orgAccountStatus } = require(path.resolve(__dirname, '../env/orgAccountStatus.constants'));
-const logger = require(path.resolve(__dirname, '../privateutils/logger.utils'));
 
 /**
  * @function getAllAccountsList
@@ -801,5 +799,5 @@ module.exports = {
   updateAccountSubscriptionStatus,
   updateGlobalAnalysisLimits,
   updateOrgName,
-  updatePendingAccountUser
+  updatePendingAccountUser,
 };

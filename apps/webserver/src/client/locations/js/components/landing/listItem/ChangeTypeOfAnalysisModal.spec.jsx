@@ -75,7 +75,7 @@ describe('ChangeTypeOfAnalysisModal', () => {
     renderComponent();
     await userEvent.click(
       screen.getByRole('checkbox', {
-        name: /post\-2020 risk assessment recommended to support eudr compliance deforestation in natural forest since 2021 \+ additional contextual datasets/i,
+        name: /post-2020 risk assessment recommended to support eudr compliance deforestation in natural forest since 2021 \+ additional contextual datasets/i,
       })
     );
 
@@ -126,7 +126,7 @@ describe('ChangeTypeOfAnalysisModal', () => {
     renderComponent();
     await userEvent.click(
       screen.getByRole('checkbox', {
-        name: /post\-2000 forest change annual tree cover loss since 2001 \+ additional contextual and regional datasets/i,
+        name: /post-2000 forest change annual tree cover loss since 2001 \+ additional contextual and regional datasets/i,
       })
     );
     await userEvent.click(screen.getByRole('button', { name: 'Submit Analysis' }));

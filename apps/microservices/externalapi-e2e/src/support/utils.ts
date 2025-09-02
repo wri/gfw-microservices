@@ -51,22 +51,7 @@ export async function deleteListByName(keywords: string[]): Promise<void> {
 
     for (const list of recentLists) {
       try {
-        const listInfo = await fetch(`${BASE_URL}/api/v1/list/${list.listId}`, {
-          method: 'GET',
-          headers: {
-            'x-api-key': API_TOKEN,
-            'Content-Type': 'application/json',
-          },
-          redirect: 'follow',
-        });
-
-        const listData: ListApiResponse = await listInfo.json();
-
-        if (listData.error === 'Not Found') {
-          continue;
-        }
-
-        if (keywords.some((keyword) => listData.listName.includes(keyword))) {
+        if (keywords.some((keyword) => list.listName.includes(keyword))) {
           await postRedirectHeaders(
             `${BASE_URL}/api/v1/list/${list.listId}/delete`,
             {

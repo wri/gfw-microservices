@@ -4,6 +4,15 @@ import renderer from 'react-test-renderer';
 import { jest } from '@jest/globals';
 import { randomUUID } from 'crypto';
 
+// Polyfill TextEncoder/Decoder for Node test environment (needed by supertest deps)
+if (typeof global.TextEncoder === 'undefined') {
+  const util = require('util');
+  // @ts-ignore
+  global.TextEncoder = util.TextEncoder;
+  // @ts-ignore
+  global.TextDecoder = util.TextDecoder;
+}
+
 const isClient = !!global.window;
 
 if (isClient) {

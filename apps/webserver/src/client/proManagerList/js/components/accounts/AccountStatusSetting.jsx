@@ -78,12 +78,10 @@ export default function AccountStatusSetting() {
   const activateAccount = () => {
     const isPending = organization_status_id === ACCOUNT_ORG_STATUSES.PENDING;
     handleAccountAction({
-      route: isPending
-        ? '/pro-manager/activateProAccount'
-        : '/pro-manager/activateProActiveAccount',
+      route: isPending ? '/pro-manager/activatePendingAccount' : '/pro-manager/reactivateAccount',
       loadingTitle: 'Please wait',
       loadingMessage: 'Activating Account...',
-      successTitle: 'Success',
+      successTitle: 'Account Activated',
       successMessage: 'Redirecting...',
       errorTitle: 'Error Activating Account',
       body: { id: organization_id },
@@ -92,7 +90,7 @@ export default function AccountStatusSetting() {
 
   const deactivateAccount = () => {
     handleAccountAction({
-      route: '/pro-manager/deactivateProAccount',
+      route: '/pro-manager/deactivateAccount',
       loadingTitle: 'Please wait',
       loadingMessage: 'Deactivating...',
       successTitle: 'Account Deactivated',
@@ -102,15 +100,15 @@ export default function AccountStatusSetting() {
     });
   };
 
-  const deleteAccountRequest = () => {
+  const closePendingAccount = () => {
     if (organization_status_id !== ACCOUNT_ORG_STATUSES.PENDING) {
       return;
     }
     handleAccountAction({
-      route: '/pro-manager/deleteProAccountRequest',
+      route: '/pro-manager/closePendingAccount',
       loadingTitle: 'Please wait',
       loadingMessage: 'Deleting account...',
-      successTitle: 'Account Deleted',
+      successTitle: 'Pending Account Closed',
       successMessage: 'Redirecting...',
       errorTitle: 'Error deleting account',
       body: { id: organization_id },
@@ -132,16 +130,15 @@ export default function AccountStatusSetting() {
       <Grid sx={{ display: 'flex', alignItems: 'center', ml: 2, gap: 1 }}>
         {/* Activate */}
         <Tooltip
-          title={status === 'ACTIVE' ? 'Account is already active' : ''}
-          disableHoverListener={status !== 'ACTIVE'}
+          title={status !== 'PENDING' ? 'Only accounts that are Pending can be activated' : ''}
+          disableHoverListener={status === 'PENDING'}
         >
           <span>
-            {' '}
             {/* wrap needed: disabled buttons block tooltips */}
             <PillButton
               variant="contained"
               size="small"
-              disabled={status === 'ACTIVE' || status === 'CLOSED'}
+              disabled={status !== 'PENDING'}
               sx={disabledStyles}
               onClick={activateAccount}
             >
@@ -170,7 +167,7 @@ export default function AccountStatusSetting() {
 
         {/* Close */}
         <Tooltip
-          title={status !== 'PENDING' ? 'Only pending accounts can be closed' : ''}
+          title={status !== 'PENDING' ? 'Only accounts that are Pending can be closed' : ''}
           disableHoverListener={status === 'PENDING'}
         >
           <span>
@@ -179,7 +176,7 @@ export default function AccountStatusSetting() {
               size="small"
               disabled={status !== 'PENDING'}
               sx={disabledStyles}
-              onClick={deleteAccountRequest}
+              onClick={closePendingAccount}
             >
               Close
             </PillButton>

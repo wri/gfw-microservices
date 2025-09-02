@@ -43,6 +43,10 @@ import {
   setOrganizationRenewalTime,
 } from '@wri-monorepos/sql';
 
+import { getOrganizationStatus } from './authenticationManager.utils';
+const { orgAccountStatus } = require(path.resolve(__dirname, '../env/orgAccountStatus.constants'));
+const logger = require(path.resolve(__dirname, '../privateutils/logger.utils'));
+
 /**
  * @function getAllAccountsList
  * @summary Gets an array of All Accounts.
@@ -395,6 +399,33 @@ const updatePendingAccountUser = (
 };
 
 /**
+ * @function closePendingAccount
+ * @summary Closes a Pending Account
+ * @param  {Object}   req - Mandatory first parameter to pass the request object into the function in case session info is required.
+ * @param {number}  pendingAccountId An integer specifying the pending account ID.
+ * @return {Promise<boolean>} resolves to true on success, otherwise throws an error object.
+ */
+const closePendingAccount = async (req, pendingAccountId) => {
+  try {
+    const params = [{ field: 'pendingAccountId', type: sql.Int, value: pendingAccountId }];
+    const result = await sqlUtils.executeSystemStoredProcedure(
+      req,
+      'uspClosePendingAccount',
+      params
+    );
+    logger.info(`Pending account ${pendingAccountId} closed. ${JSON.stringify(result)}`);
+    return true;
+  } catch (err) {
+    throw errorUtils.createErrorMessage(
+      req,
+      errorUtils.ERROR_CODES.failedToDeletePendingAccountRequest,
+      'Failed to delete pending account request',
+      err
+    );
+  }
+};
+
+/**
  * @function deletePendingAccountRequest
  * @summary Deletes a Pending Account
  * @param  {Object}   req - Mandatory first parameter to pass the request object into the function in case session info is required.
@@ -538,14 +569,9 @@ const reactivateAccount = (req, organization_id) => {
 const deactivateAccount = async (req, organization_id) => {
   try {
     // 1. Fetch current organization status
-    const parameters = [{ field: 'organization_id', type: sql.Int, value: organization_id }];
-    const [org] = await sqlUtils.executeSystemStoredProcedure(
-      req,
-      'uspGetOrganizationById',
-      parameters
-    );
+    const orgStatusId = await getOrganizationStatus({ session: { organization_id } }); // pass minimal req object
 
-    if (!org) {
+    if (!orgStatusId) {
       throw {
         code: 'organizationNotFound',
         userMessage: 'Organization not found',
@@ -553,13 +579,12 @@ const deactivateAccount = async (req, organization_id) => {
       };
     }
 
-    const currentStatus = org.organization_status_id;
     // 2. Only allow Active → Inactive
-    if (currentStatus !== orgAccountStatus.Active) {
+    if (orgStatusId !== orgAccountStatus.Active) {
       throw {
         code: errorUtils.ERROR_CODES.invalidStatusTransition,
         userMessage: 'Only active accounts can be deactivated',
-        systemMessage: `Attempted to deactivate organization ${organization_id} with status ${currentStatus}`,
+        systemMessage: `Attempted to deactivate organization ${organization_id} with status ${orgStatusId}`,
       };
     }
 
@@ -569,7 +594,6 @@ const deactivateAccount = async (req, organization_id) => {
       { field: 'organization_status_id', type: sql.Int, value: orgAccountStatus.Inactive },
     ];
     await sqlUtils.executeSystemStoredProcedure(req, 'uspSetOrganizationStatus', updateParams);
-
     return true;
   } catch (err) {
     throw {
@@ -764,6 +788,7 @@ const checkOrgName = async (req, name) => {
 module.exports = {
   activatePendingAccount,
   checkOrgName,
+  closePendingAccount,
   deactivateAccount,
   deletePendingAccountRequest,
   deleteOrganization,
@@ -775,6 +800,6 @@ module.exports = {
   updateAccountAnalysisLimits,
   updateAccountSubscriptionStatus,
   updateGlobalAnalysisLimits,
-  updatePendingAccountUser,
   updateOrgName,
+  updatePendingAccountUser
 };

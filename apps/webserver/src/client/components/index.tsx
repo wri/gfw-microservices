@@ -3,3 +3,4 @@ export { PillButton } from './PillButton';
 export { LoadingModal } from './LoadingModal';
 export { Link } from './Link';
 export { HelperTextWithPopover } from './HelperTextWithPopover';
+export { Switch } from './Switch';

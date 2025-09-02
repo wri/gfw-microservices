@@ -17,7 +17,7 @@ export async function postRedirectHeaders(url, body, headers) {
   }
 }
 
-export async function deleteListByName(keywords) {
+export async function deleteListByName(keywords: string[]): Promise<void> {
   const BASE_URL = process.env.HOST;
   const API_TOKEN = process.env.API_TOKEN;
   const email = process.env.USER_EMAIL;
@@ -26,53 +26,63 @@ export async function deleteListByName(keywords) {
     listId: number;
     listName: string;
     locationCount: number;
-    error: string;
+    error?: string;
   }
 
-  for (let listId = 9680; listId <= 10000; listId++) {
-    try {
-      // GET request to check if list exists
-      const listInfo = await fetch(`${BASE_URL}/api/v1/list/${listId}`, {
-        method: 'GET',
-        headers: {
-          'x-api-key': API_TOKEN,
-          'Content-Type': 'application/json',
-        },
-        redirect: 'follow',
-      });
+  try {
+    const response = await fetch(`${BASE_URL}/api/v1/list?pageSize=100&pageNum=0`, {
+      method: 'GET',
+      headers: {
+        'x-api-key': API_TOKEN,
+        'Content-Type': 'application/json',
+      },
+      redirect: 'follow',
+    });
 
-      const listData: ListApiResponse = await listInfo.json();
-      console.log(`List ${listId} response:`, listData);
+    if (!response.ok) {
+      throw new Error(`Network response was not ok: ${response.status}`);
+    }
 
-      if (listData.error === 'Not Found') {
+    const recentLists: ListApiResponse[] = await response.json();
+
+    if (!Array.isArray(recentLists)) {
+      throw new Error('API response is not a valid array');
+    }
+
+    for (const list of recentLists) {
+      try {
+        if (keywords.some((keyword) => list.listName.includes(keyword))) {
+          await postRedirectHeaders(
+            `${BASE_URL}/api/v1/list/${list.listId}/delete`,
+            {
+              userEmail: email,
+            },
+            {
+              headers: {
+                'Content-Type': 'application/json',
+                'x-api-key': API_TOKEN,
+              },
+            }
+          );
+          console.log(`Deleted list ${list.listId}`);
+        }
+      } catch (error) {
+        console.error(`Error processing list ${list.listId}:`, {
+          message: error instanceof Error ? error.message : error,
+          stack: error instanceof Error ? error.stack : undefined,
+        });
         continue;
       }
-
-      // Deleting list if it matches any of the keywords
-      if (keywords.some((keyword) => listData.listName.includes(keyword))) {
-        await postRedirectHeaders(
-          `${BASE_URL}/api/v1/list/${listId}/delete`,
-          {
-            userEmail: email,
-          },
-          {
-            headers: {
-              'Content-Type': 'application/json',
-              'x-api-key': API_TOKEN,
-            },
-          }
-        );
-      }
-    } catch (error) {
-      console.error(`Error processing list ${listId}:`, {
-        message: error instanceof Error ? error.message : error,
-        stack: error instanceof Error ? error.stack : undefined,
-      });
-      throw new Error(
-        `Error processing list ${listId}: ${
-          error instanceof Error ? error.message : 'Unknown error'
-        }`
-      );
     }
+  } catch (error) {
+    console.error('Error fetching recent lists:', {
+      message: error instanceof Error ? error.message : error,
+      stack: error instanceof Error ? error.stack : undefined,
+    });
+    throw new Error(
+      `Failed to fetch or process lists: ${
+        error instanceof Error ? error.message : 'Unknown error'
+      }`
+    );
   }
 }

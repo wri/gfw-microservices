@@ -12,7 +12,7 @@ export const Switch = styled(SwitchMui)(({ theme }) => ({
       transform: 'translateX(14px)',
       color: '#fff',
       '& + .MuiSwitch-track': {
-        backgroundColor: '#65C466',
+        backgroundColor: '#9FC642', // replace with theme.palette.primary.main when the new theme is applied
         opacity: 1,
         border: 0,
       },
@@ -21,11 +21,8 @@ export const Switch = styled(SwitchMui)(({ theme }) => ({
       },
     },
     '&.Mui-focusVisible .MuiSwitch-thumb': {
-      color: '#33cf4d',
+      color: '#9FC642', // replace with theme.palette.primary.main when the new theme is applied
       border: '4px solid #fff',
-    },
-    '&.Mui-disabled .MuiSwitch-thumb': {
-      color: theme.palette.grey[100],
     },
     '&.Mui-disabled + .MuiSwitch-track': {
       opacity: 0.7,
@@ -38,7 +35,7 @@ export const Switch = styled(SwitchMui)(({ theme }) => ({
   },
   '& .MuiSwitch-track': {
     borderRadius: 20 / 2,
-    backgroundColor: '#E9E9EA',
+    backgroundColor: '#E0E0E0', // replace with theme.palette.info.main when the new theme is applied
     opacity: 1,
     transition: theme.transitions.create(['background-color'], {
       duration: 500,

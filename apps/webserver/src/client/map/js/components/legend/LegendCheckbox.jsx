@@ -1,8 +1,8 @@
 import { Component } from 'react';
 import store from '../../store';
 import _range from 'lodash/range';
-import { Box } from '@mui/material';
-import { Switch } from '../../../../components';
+import { Box, Typography } from '@mui/material';
+import { HelperTextWithPopover, Switch } from '../../../../components';
 import {
   toggleLayer,
   turnLayerOff,
@@ -49,7 +49,6 @@ export default class LegendCheckbox extends Component {
     super(props);
     this.state = {
       layerHidden: false,
-      isChecked: false,
     };
   }
 
@@ -131,6 +130,11 @@ export default class LegendCheckbox extends Component {
 
   handleToggleTreeCoverLossCanopyModal = () => {
     store.dispatch(toggleTreeCoverLossCanopyModal());
+  };
+
+  handleTclSwitchClick = () => {
+    const isTclSwitchOn = this.props.treeCoverLossCanopyDensity > 0;
+    store.dispatch(updateTreeCoverLossCanopyDensity(isTclSwitchOn ? 0 : 10));
   };
 
   toggleLayerVisibility = async () => {
@@ -237,6 +241,8 @@ export default class LegendCheckbox extends Component {
           : '';
     }
     const isInfoButtonVisible = !!layer.metadataId;
+    const isTclSwitchOn = this.props.treeCoverLossCanopyDensity > 0;
+
     return (
       <div
         className={`legend-list-item ${layer.group} ${grayed} ${hidden}`}
@@ -340,21 +346,14 @@ export default class LegendCheckbox extends Component {
         ) : null}
         {layer.id === treeCoverLossID ? (
           <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mt: 1 }}>
-            <Box
-              onClick={() => {
-                const isChecked = this.state.isChecked;
-                this.setState({ isChecked: !isChecked });
-                store.dispatch(updateTreeCoverLossCanopyDensity(isChecked ? 0 : 10));
-              }}
-              sx={{ '&:hover': { cursor: 'pointer' } }}
-            >
+            <Box onClick={this.handleTclSwitchClick} sx={{ '&:hover': { cursor: 'pointer' } }}>
               <Switch
                 id={`tree-cover-loss-switch-${layer.id}`}
                 name={`treeCoverLossCanopyDensity-${layer.id}`}
-                checked={this.state.isChecked}
+                checked={isTclSwitchOn}
               />
             </Box>
-            {!this.state.isChecked ? (
+            {!isTclSwitchOn ? (
               <p className="layer-legend-message layer-legend-message--tcl">
                 No canopy density filter applied.
               </p>
@@ -368,6 +367,11 @@ export default class LegendCheckbox extends Component {
                 {mapPage.densityLossEnd}
               </p>
             )}
+            <HelperTextWithPopover sx={{ svg: { fontSize: '0.875rem' } }}>
+              <Box sx={{ width: (theme) => theme.spacing(37), p: 1 }}>
+                <Typography variant="caption"></Typography>
+              </Box>
+            </HelperTextWithPopover>
           </Box>
         ) : null}
         {layer.id === treeBiomassLossID ? (

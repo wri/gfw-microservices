@@ -342,19 +342,7 @@ describe('LocationService', () => {
 
       await service.handleSourceListDeletion(partialParams);
 
-      expect(BulkDeleteLocations).toHaveBeenCalledWith(
-        'testdb',
-        100,
-        'user123',
-        'gfw123',
-        '1,2,3',
-        null,
-        null,
-        null,
-        undefined,
-        undefined,
-        undefined
-      );
+      expect(BulkDeleteLocations).toHaveBeenCalledWith('testdb', 100, 'user123', 'gfw123', '1,2,3');
       expect(SetListDrafStatus).toHaveBeenCalledWith('testdb', 100, 'gfw123');
       expect(DeleteList).not.toHaveBeenCalled();
     });

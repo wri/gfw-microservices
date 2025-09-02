@@ -48,13 +48,7 @@ export const handleSourceListDeletion = async ({
       selectedListId,
       userId,
       gfwListId,
-      allLocationsSelected ? null : selectedLocations.join(),
-      filters.country,
-      filters.state,
-      filters.subState,
-      filters.analysisAreaMin,
-      filters.analysisAreaMax,
-      filters.searchString
+      allLocationsSelected ? null : selectedLocations.join()
     );
     await putListAsDraft.putListAsDraft(clientDatabase, selectedListId, gfwListId);
   }

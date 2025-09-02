@@ -9,7 +9,7 @@ export * from './schema-upgrader';
 export * from './updateListsAnalysisStatus';
 export * from './uspGetListLocations';
 export * from './uspGetListLockStatus';
-export * from './uspDeleteLocationIdsFilteredDataForUserList';
+
 export * from './uspGetListAnalysis';
 export * from './uspGetLocationsFilteredToCopy';
 export * from './uspResetListStatus';

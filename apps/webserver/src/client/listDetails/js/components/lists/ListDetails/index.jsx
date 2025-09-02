@@ -78,7 +78,7 @@ import {
   getDialogContent,
   getDialogTitle,
 } from '../../../../../locations/js/utils/dialogMessage.utils';
-import { deleteAllFilteredLocations } from '../deleteAllFilteredLocations';
+
 import ChangeTypeOfAnalysisModal from '../../../../../locations/js/components/landing/listItem/ChangeTypeOfAnalysisModal';
 import getActiveAnalysisType from '../../../../../../utils/getActiveAnalysisType';
 import ListActions from './ListActions';
@@ -394,9 +394,6 @@ export default class ListDetails extends Component {
 
   // Whenever the user deletes all locations... delete the list
   deleteList = (selectedLists) => {
-    const { filters } = this.props;
-    const { filterString } = this.state;
-
     this.handleDialogClose(false);
     // clear the custom dialog buttons
     this.setState({
@@ -404,12 +401,19 @@ export default class ListDetails extends Component {
       isLoading: true,
     });
     const selectedList = selectedLists[0];
-    const { id: list_id, list_name: listName } = selectedList;
+    const { id: list_id, list_name: listName, associated_gfwlist: gwfListId } = selectedList;
 
     httpRequest
       .fetchJSON('/locations/lockList', { list_id })
       .then(() => {
-        deleteAllFilteredLocations(list_id, filters, filterString)
+        // Use the working deleteLocations endpoint instead of broken deleteAllFilteredLocations
+        const { selectedLocations } = this.props;
+        httpRequest
+          .fetchJSON('/locations/deleteLocations', {
+            list_id,
+            location_ids: selectedLocations,
+            gfw_list_id: gwfListId,
+          })
           .then((response) => {
             if (response.includes('Deleted')) {
               this.setState({

@@ -1,6 +1,5 @@
 export const CONVERTER_NAMES = {
-  // GADM_VERSION: 'GADM Version',
-  LIST_SCHEMA: 'List Schema',
+  ADD_LOCATION_ID_PRIMARY_KEY: 'Add Location ID Primary Key', // to "list-xxxxx" and "list-xxxxx-analysis" Tables
   UPGRADE_LIST_SCHEMA: 'Upgrade List Schema', // to Version 2
   DELETE_INVALID_LOCATION_LISTS: 'Delete Invalid Location Lists',
   DELETE_PARTLY_UPDATED_LISTS: 'Delete Partly Updated Lists', // Lists With Invalid Template/Commodity

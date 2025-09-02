@@ -4,7 +4,6 @@ export * from './gfwLists';
 export * from './getListLocationsCountById';
 export * from './getListByFilters';
 export * from './getListIfEAPIExportUpload';
-export * from './invalid-lists-cleaner';
 export * from './schema-upgrader';
 export * from './updateListsAnalysisStatus';
 export * from './uspGetListLocations';

@@ -1,6 +1,8 @@
 import { Component } from 'react';
 import store from '../../store';
 import _range from 'lodash/range';
+import { Box, Typography } from '@mui/material';
+import { HelperTextWithPopover, Switch } from '../../../../components';
 import {
   toggleLayer,
   turnLayerOff,
@@ -12,6 +14,7 @@ import {
   toggleTreeCoverLossCanopyModal,
   updateGFWLocations,
   updateSoyYear,
+  updateTreeCoverLossCanopyDensity,
 } from '../../actions/mapActions';
 import { setBiomassMinRange, setBiomassMaxRange } from '../../actions/analysisActions';
 import { mapPage, soyPlantedYearsRange } from '../../../../common/js/config';
@@ -129,6 +132,11 @@ export default class LegendCheckbox extends Component {
     store.dispatch(toggleTreeCoverLossCanopyModal());
   };
 
+  handleTclSwitchClick = () => {
+    const isTclSwitchOn = this.props.treeCoverLossCanopyDensity > 0;
+    store.dispatch(updateTreeCoverLossCanopyDensity(isTclSwitchOn ? 0 : 10));
+  };
+
   toggleLayerVisibility = async () => {
     const layerId = this.props.layer.id;
     const visibleLayers = this.props.visibleLayers;
@@ -147,10 +155,10 @@ export default class LegendCheckbox extends Component {
       }
     } else if (layerId === clarkLabsAquacultureLandCover) {
       if (visibleLayers.includes(clarkLabsAquacultureLandCover)) {
-        await store.dispatch(toggleLayer(clarkLabsAquacultureLandCover));
+        this.props.toggleLayerVisibility(clarkLabsAquacultureLandCover);
       }
       if (visibleLayers.includes(clarkLabsAquacultureLandChange)) {
-        await store.dispatch(toggleLayer(clarkLabsAquacultureLandChange));
+        this.props.toggleLayerVisibility(clarkLabsAquacultureLandChange);
       }
     } else {
       this.props.toggleLayerVisibility(layerId);
@@ -233,6 +241,8 @@ export default class LegendCheckbox extends Component {
           : '';
     }
     const isInfoButtonVisible = !!layer.metadataId;
+    const isTclSwitchOn = this.props.treeCoverLossCanopyDensity > 0;
+
     return (
       <div
         className={`legend-list-item ${layer.group} ${grayed} ${hidden}`}
@@ -335,14 +345,46 @@ export default class LegendCheckbox extends Component {
           </p>
         ) : null}
         {layer.id === treeCoverLossID ? (
-          <p className="layer-legend-message">
-            Displaying loss with
-            <span
-              onClick={this.handleToggleTreeCoverLossCanopyModal}
-              className="layer-legend-loss-display"
-            >{`>${this.props.treeCoverLossCanopyDensity}%`}</span>
-            {mapPage.densityLossEnd}
-          </p>
+          <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mt: 1 }}>
+            <Box onClick={this.handleTclSwitchClick} sx={{ '&:hover': { cursor: 'pointer' } }}>
+              <Switch
+                id={`tree-cover-loss-switch-${layer.id}`}
+                name={`treeCoverLossCanopyDensity-${layer.id}`}
+                checked={isTclSwitchOn}
+              />
+            </Box>
+            {!isTclSwitchOn ? (
+              <p className="layer-legend-message layer-legend-message--tcl">
+                No canopy density filter applied.
+              </p>
+            ) : (
+              <p className="layer-legend-message layer-legend-message--tcl">
+                Displaying loss with
+                <span
+                  onClick={this.handleToggleTreeCoverLossCanopyModal}
+                  className="layer-legend-loss-display "
+                >{`>${this.props.treeCoverLossCanopyDensity}%`}</span>
+                {mapPage.densityLossEnd}
+              </p>
+            )}
+            <HelperTextWithPopover sx={{ svg: { fontSize: '0.875rem' } }}>
+              <Box sx={{ width: (theme) => theme.spacing(37), p: 1 }}>
+                <Typography variant="caption">
+                  When comparing the map to the Post-2020 Risk Assessment, ensure that the canopy
+                  density filter for the Tree Cover Loss map layer is turned off and the date range
+                  is filtered to 2021 onward, then use either the SBTN Natural Forest Map or the JRC
+                  Global Map of Forest Cover to assess the overlap between layers. The canopy
+                  density filter is based on the 2000 tree cover layer used in the Post-2000 Forest
+                  Change analysis and allows for adjustments, while both the SBTN Natural Forest Map
+                  and JRC Global Map of Forest Cover already account for canopy density. Leaving
+                  this filter on may cause relevant loss to be excluded from the map view. When
+                  comparing the map to the Post-2000 Forest Change analysis, ensure that the canopy
+                  density filter is turned on at set to 30% to match the threshold used in that
+                  analysis.
+                </Typography>
+              </Box>
+            </HelperTextWithPopover>
+          </Box>
         ) : null}
         {layer.id === treeBiomassLossID ? (
           <div className="layer-details carbon-stocks">

@@ -671,7 +671,7 @@ $lightGray: rgba(158, 158, 158, 0.3);
   position: absolute;
   left: 20px;
   top: 230px;
-  width: 300px;
+  width: 350px;
   background-color: white;
   box-shadow: 2px 2px 2px rgba(0, 0, 0, 0.25);
   max-height: calc(100% - 400px);
@@ -1049,6 +1049,10 @@ $lightGray: rgba(158, 158, 158, 0.3);
   line-height: 14px;
   max-width: calc(100% - 20px);
   margin: 7px 0 0;
+
+  &--tcl {
+    margin: 0;
+  }
 }
 
 .layer-legend-message-country {

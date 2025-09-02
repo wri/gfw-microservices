@@ -13,13 +13,19 @@ const TreeCoverLossLayer = BaseTileLayer.createSubclass({
   },
 
   getTileUrl(level, row, column) {
-    return this.urlTemplate
+    let url = this.urlTemplate
       .replace('{z}', level)
       .replace('{x}', column)
       .replace('{y}', row)
       .replace('{thresh}', this.threshold)
       .replace('{start_year}', this.minYear)
       .replace('{end_year}', this.maxYear);
+
+    if (this.threshold === 0) {
+      url = url.replace('tree_cover_density_threshold=0&', '');
+    }
+
+    return url;
   },
 });
 

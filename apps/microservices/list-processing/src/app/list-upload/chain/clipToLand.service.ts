@@ -6,12 +6,14 @@ import axiosRetry from 'axios-retry';
 // We're using wkx because wellknown only handles wkt instead of wkb
 import wkx from 'wkx';
 import { Position } from 'typeorm/driver/types/GeoJsonTypes';
+import { HttpStatus } from '@nestjs/common';
 
+const DEFAULT_DELAY = 1000;
 axiosRetry(axios, {
   retries: 6,
   retryDelay: (retryCount) => {
     const baseDelay = Math.min(1000 * Math.pow(2, retryCount - 1), 30000);
-    const jitter = Math.random() * 1000; // Add up to 1 second of random
+    const jitter = Math.random() * DEFAULT_DELAY; // Add up to 1 second of random
     return baseDelay + jitter;
   },
   retryCondition: (error) => {
@@ -19,14 +21,20 @@ axiosRetry(axios, {
     const isNetworkError = !error.response && !!error.code;
     const isTimeout = error.code === 'ECONNABORTED' || error.code === 'ETIMEDOUT';
     const isRetryableStatus =
-      error.response?.status && [429, 500, 502, 503, 504].includes(error.response.status);
+      error.response?.status &&
+      [
+        HttpStatus.TOO_MANY_REQUESTS,
+        HttpStatus.INTERNAL_SERVER_ERROR,
+        HttpStatus.BAD_GATEWAY,
+        HttpStatus.SERVICE_UNAVAILABLE,
+        HttpStatus.GATEWAY_TIMEOUT,
+      ].includes(error.response.status);
 
     return Boolean(
       axiosRetry.isRetryableError(error) || isNetworkError || isTimeout || isRetryableStatus
     );
   },
 });
-const DEFAULT_DELAY = 1000;
 export class ClipToLandService extends AbstractHandler<ChainType> {
   logger = new Logger(ClipToLandService.name);
 

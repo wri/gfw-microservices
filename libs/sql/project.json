@@ -4,12 +4,6 @@
   "sourceRoot": "libs/sql/src",
   "projectType": "library",
   "targets": {
-    "prebuild": {
-      "executor": "nx:run-commands",
-      "options": {
-        "command": "node tools/sql_cleanup/generate-orgs-sp-manifest.js"
-      }
-    },
     "build": {
       "dependsOn": ["prebuild"],
       "executor": "@nrwl/js:tsc",

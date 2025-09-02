@@ -6,7 +6,6 @@ jest.mock('./policyManager.utils');
 jest.mock('./accountManager.utils');
 jest.mock('./userManager.utils');
 jest.mock('../langResources');
-
 jest.mock('../privateutils/speakeasy.utils');
 jest.mock('../privateutils/cognito.utils');
 jest.mock('../privateutils/ses.utils');
@@ -623,7 +622,7 @@ describe('Pro Manager Utils Tests', () => {
       await expect(deactivateAccount(mockReq, organization_id)).rejects.toMatchObject({
         code: errorUtils.ERROR_CODES.failedToDeactivateAccount,
         userMessage: 'Failed to deactivate account',
-        systemMessage: mockError,
+        systemMessage: { error: 'Not a Pro Manager' },
       });
     });
   });

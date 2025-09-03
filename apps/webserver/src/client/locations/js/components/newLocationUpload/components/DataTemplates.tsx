@@ -80,7 +80,10 @@ export function DataTemplates({ isOpen, onClose, workflowType }: DataTemplatesPr
         our guidance on formatting
       </Link>{' '}
       and{' '}
-      <Link target="_blank" href="https://drive.google.com/drive/folders/153I5e_SApqUNwFAiqLJPBh-P7v6194c3">
+      <Link
+        target="_blank"
+        href="https://drive.google.com/drive/folders/153I5e_SApqUNwFAiqLJPBh-P7v6194c3"
+      >
         download an example template
       </Link>
       on the upload page to access those templates.

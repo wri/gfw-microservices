@@ -232,7 +232,7 @@ module.exports = (app, limiter) => {
       });
     } catch (error) {
       const errorMessage = error.message || error.stack || error;
-      logger.error(`Error POST /pro-manager/checkOrgName`, { error });
+      logger.error(`Error POST /pro-manager/updateOrgName`, { error });
       res.status(500).json({
         error: 'Something went wrong',
         details: errorMessage,

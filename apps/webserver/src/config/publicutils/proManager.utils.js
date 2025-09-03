@@ -41,6 +41,8 @@ import {
   setOrganizationCustomAnalysisLimits,
   setGlobalAnalysisLimit,
   setOrganizationRenewalTime,
+  Organization,
+  ClientStoreConnection,
 } from '@wri-monorepos/sql';
 
 import { getOrganizationStatus } from './authenticationManager.utils';
@@ -764,15 +766,21 @@ const updateOrgName = async (req, id, name) => {
   }
 };
 
-const checkOrgName = async (req, name) => {
+/**
+ * Check if an organization name is available (not already taken)
+ * @returns boolean - true if org name is available, false if taken
+ */
+export const checkOrgName = async (req, name) => {
   try {
-    const params = [{ field: 'OrganizationName', type: sql.NVarChar, value: name }];
+    const clientStoreConnection = new ClientStoreConnection();
+    const connection = await clientStoreConnection.getConnection('gfwpro');
+    const orgRepo = connection.getRepository(Organization);
+    const organization = await orgRepo
+      .createQueryBuilder('org')
+      .where('LOWER(org.organization_name) = LOWER(:name)', { name })
+      .getOne();
 
-    const [result] = await sqlUtils.executeSystemStoredProcedure(req, 'uspCheckOrgName', params);
-
-    // Assume the SP returns a result with a count column
-    // e.g., [{ count: 0 }] if not exists, [{ count: 1 }] if exists
-    return result.count > 0;
+    return !!organization;
   } catch (err) {
     throw errorUtils.createErrorMessage(
       req,

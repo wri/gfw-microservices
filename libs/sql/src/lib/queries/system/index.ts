@@ -1,6 +1,5 @@
 // Re-exporting system stored procedures
 export * from './createNewAccount';
-export * from './checkOrgName';
 export * from './closePendingAccount';
 export * from './getAdministrativeAreaAttributes';
 export * from './getAdministrativeAreasData';

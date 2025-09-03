@@ -11,6 +11,7 @@ pd.options.mode.chained_assignment = None
 
 # IF YOU ARE CHANGING THE YEAR, CONSIDER SYNCING WITH GFWPRO-ANALSES lambdas/post-geotrellis/utils_commodity.py
 
+
 INDICATOR_LEVELS_THREAT_FOREST = {
     "2002": [0.0000, 0.0021, 0.0034],
     "2003": [0.0000, 0.0019, 0.0028],
@@ -34,6 +35,8 @@ INDICATOR_LEVELS_THREAT_FOREST = {
     "2021": [0.0000, 0.0029, 0.0056],
     "2022": [0.0000, 0.0026, 0.0057],
     "2023": [0.0000, 0.0034, 0.0068],
+    "2024": [0.0000, 0.0038, 0.0073],
+    
 }
 
 # Indicator Levels for Threat Peat [low, medium, high]
@@ -60,6 +63,8 @@ INDICATOR_LEVELS_THREAT_PEAT = {
     "2021": [0.0000, 0.0399, 0.1079],
     "2022": [0.0000, 0.0433, 0.1148],
     "2023": [0.0000, 0.0436, 0.1133],
+    "2024": [0.0000, 0.0436, 0.1140],
+
 }
 
 # Indicator Levels for Threat WDPA [low, medium, high]
@@ -86,6 +91,8 @@ INDICATOR_LEVELS_THREAT_WDPA = {
     "2021": [0.0000, 0.0007, 0.0047],
     "2022": [0.0000, 0.0016, 0.0072],
     "2023": [0.0000, 0.0016, 0.0071],
+    "2024": [0.0000, 0.0017, 0.0074],
+
 }
 
 # Indicator Levels for Threat Fires [low, medium, high]
@@ -112,6 +119,8 @@ INDICATOR_LEVELS_THREAT_FIRES = {
     "2021": [0.00000, 0.00006, 0.00012],
     "2022": [0.00000, 0.00005, 0.00011],
     "2023": [0.00000, 0.00009, 0.00020],
+    "2024": [0.00000, 0.00011, 0.00026],
+
 }
 
 INDICATOR_LEVELS_VALUE_FOREST = {
@@ -137,6 +146,8 @@ INDICATOR_LEVELS_VALUE_FOREST = {
     "2021": [0.0000, 0.1812, 0.3125],
     "2022": [0.0000, 0.1748, 0.3061],
     "2023": [0.0000, 0.1734, 0.3055],
+    "2024": [0.0000, 0.1707, 0.3033],
+
 }
 
 # indicator Levels for Value Peat [low, medium, high]
@@ -163,6 +174,8 @@ INDICATOR_LEVELS_VALUE_PEAT = {
     "2021": [0.0000, 0.1196, 0.2327],
     "2022": [0.0000, 0.1202, 0.2329],
     "2023": [0.0000, 0.1212, 0.2318],
+    "2023": [0.0000, 0.1211, 0.2318],
+
 }
 
 # Indicator Levels for Value WDPA [low, medium, high]
@@ -189,6 +202,8 @@ INDICATOR_LEVELS_VALUE_WDPA = {
     "2021": [0.0000, 0.0520, 0.1326],
     "2022": [0.0000, 0.0513, 0.1324],
     "2023": [0.0000, 0.0508, 0.1317],
+    "2023": [0.0000, 0.0519, 0.1337],
+
 }
 
 INDICATOR_LEVELS_THREAT_OVERALL = {

@@ -15,6 +15,7 @@ import {
   getAccountRenewalTime,
   getAccountAnalysisLimits,
   getAccountAnalysisUsage,
+  getAccountAnalysisUsageByAnalysisType
 } from '@wri-monorepos/sql';
 import { analysisTypes } from '@wri-monorepos/constants';
 const { sendMessageToQueue } = require('../../downloader');
@@ -58,7 +59,6 @@ const getAnalysisUsageData = async ({ startDate, endDate, organizationId }) => {
       endDate,
       organizationId,
     });
-
     return {
       status: 200,
       message: result,
@@ -116,6 +116,13 @@ export const getMyOrganizationUsersAnalysisUsage = async (req, res) => {
     endDate,
   });
 
+   const analysisByType = await getAccountAnalysisUsageByAnalysisType({
+     startDate,
+     endDate,
+     orgDbName,
+   });
+   console.log("analysisByType", analysisByType);
+   
   res.status(200).send({
     startDate,
     endDate,

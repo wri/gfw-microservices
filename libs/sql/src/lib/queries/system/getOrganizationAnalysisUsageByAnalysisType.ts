@@ -8,17 +8,16 @@
 
 export const getOrganizationAnalysisUsageByAnalysisType = `
 SELECT
-  user_id,
-  ISNULL(SUM(area_analyzed_locations_ha), 0) as total_area_analyzed,
-  ISNULL(MAX(area_analyzed_locations_ha), 0) as max_area_analyzed,
-  COUNT(DISTINCT list_id) as total_lists_analyzed,
-  ISNULL(SUM(locations_analyzed), 0) as total_locations_analyzed,
-  analysis_type
+  ISNULL(SUM(LP.area_analyzed_locations_ha), 0) as total_area_analyzed,
+  ISNULL(MAX(LP.area_analyzed_locations_ha), 0) as max_area_analyzed,
+  COUNT(DISTINCT LP.list_id) as number_of_lists_analyzed,
+  ISNULL(SUM(LP.locations_analyzed), 0) as total_locations_analyzed,
+  LP.analysis_type
 FROM
-  [dbo].[ListsProcessing]
+  [dbo].[ListsProcessing] LP
 WHERE
-  analysis_end_time >= @startDate
-  AND analysis_end_time <= @endDate
+  LP.analysis_end_time >= @startDate
+  AND LP.analysis_end_time <= @endDate
 GROUP BY
   analysis_type;
 `;

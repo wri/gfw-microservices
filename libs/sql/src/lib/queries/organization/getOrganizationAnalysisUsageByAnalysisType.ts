@@ -8,10 +8,10 @@
 
 export const getOrganizationAnalysisUsageByAnalysisType = `
 SELECT
-  ISNULL(SUM(LP.area_analyzed_locations_ha), 0) as total_area_analyzed,
+  ISNULL(SUM(LP.area_analyzed_locations_ha), 0) as hectares_analyzed,
   ISNULL(MAX(LP.area_analyzed_locations_ha), 0) as max_area_analyzed,
-  COUNT(DISTINCT LP.list_id) as number_of_lists_analyzed,
-  ISNULL(SUM(LP.locations_analyzed), 0) as total_locations_analyzed,
+  COUNT(DISTINCT LP.list_id) as lists_analyzed,
+  ISNULL(SUM(LP.locations_analyzed), 0) as locations_analyzed,
   LP.analysis_type
 FROM
   [dbo].[ListsProcessing] LP
@@ -23,9 +23,9 @@ GROUP BY
 `;
 
 export interface OrganizationAnalysisUsageByAnalysisType {
-  total_area_analyzed: number;
+  hectares_analyzed: number;
   max_area_analyzed: number;
-  number_of_lists_analyzed: number;
+  lists_analyzed: number;
   locations_analyzed: number;
   analysis_type: string;
 }

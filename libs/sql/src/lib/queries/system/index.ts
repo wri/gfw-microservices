@@ -43,4 +43,3 @@ export * from './uspChangeConnectionRequestStatus';
 export * from './activatePendingAccount';
 export * from './getAllUsersList';
 export * from './getAllPolicyList';
-export * from './getOrganizationAnalysisUsageByAnalysisType';

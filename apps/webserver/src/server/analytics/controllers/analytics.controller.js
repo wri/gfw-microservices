@@ -15,7 +15,7 @@ import {
   getAccountRenewalTime,
   getAccountAnalysisLimits,
   getAccountAnalysisUsage,
-  getAccountAnalysisUsageByAnalysisType
+  getAccountAnalysisUsageByAnalysisType,
 } from '@wri-monorepos/sql';
 import { analysisTypes } from '@wri-monorepos/constants';
 const { sendMessageToQueue } = require('../../downloader');
@@ -116,20 +116,45 @@ export const getMyOrganizationUsersAnalysisUsage = async (req, res) => {
     endDate,
   });
 
-   const analysisByType = await getAccountAnalysisUsageByAnalysisType({
-     startDate,
-     endDate,
-     orgDbName,
-   });
-   console.log("analysisByType", analysisByType);
-   
+  const analysisByType = await getAccountAnalysisUsageByAnalysisType({
+    startDate,
+    endDate,
+    orgDbName,
+  });
+  console.log('analysisByType', analysisByType);
+
   res.status(200).send({
     startDate,
     endDate,
     organizationUsersAnalysisUsage,
   });
 };
+export const getMyAccountAnalysisUsageByAnalysisType = async (req, res) => {
+  const { organization_database: orgDbName, organization_id } = req.session;
 
+  const orgActivatedTime = await getAccountRenewalTime(organization_id);
+  const todayAsEndDay = moment().add(1, 'day');
+  const accountActivationDate = moment(orgActivatedTime);
+  const accountLatestYearStartDate = todayAsEndDay
+    .clone()
+    .subtract(moment().diff(accountActivationDate, 'days') % 365, 'days');
+
+  const startDate = accountLatestYearStartDate.format('YYYY-MM-DD');
+  const endDate = todayAsEndDay.format('YYYY-MM-DD');
+
+  const analysisUsageByType = await getAccountAnalysisUsageByAnalysisType({
+    startDate,
+    endDate,
+    orgDbName,
+  });
+  console.log('analysisUsageByType', analysisUsageByType);
+
+  res.status(200).send({
+    startDate,
+    endDate,
+    analysisUsageByType,
+  });
+};
 export const getMyOrganizationAnalysisUsagePercentage = async (req, res) => {
   let { organization_id, subscription_status_id } = req.session;
 

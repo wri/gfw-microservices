@@ -133,3 +133,4 @@ export * from './updateLocationAnalysisStatus';
 export * from './updateLocationAnalysisStatusInBulk';
 export * from './updateLocationAnalysisStringResult';
 export * from './upsertAnalysesDashboard';
+export * from './getOrganizationAnalysisUsageByAnalysisType';

@@ -18,6 +18,7 @@ axiosRetry(axiosClient, {
 });
 
 const getUserLocationDataFromAPI = (
+  listView,
   filters,
   selectedLists,
   searchString,
@@ -26,8 +27,6 @@ const getUserLocationDataFromAPI = (
   page = 0,
   areAllAnalysesDraft = false
 ) => {
-  const { listView } = store.getState();
-
   let analysisId;
 
   switch (listView) {

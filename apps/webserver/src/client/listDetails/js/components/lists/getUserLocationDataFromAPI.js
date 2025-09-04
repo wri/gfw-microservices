@@ -1,6 +1,5 @@
 import axios from 'axios';
 import axiosRetry from 'axios-retry';
-import store from '../../../../locations/js/store';
 import {
   COMMODITY_RISK_VIEW,
   FOREST_CHANGE_VIEW,

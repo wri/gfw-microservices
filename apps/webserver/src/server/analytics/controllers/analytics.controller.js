@@ -116,13 +116,6 @@ export const getMyOrganizationUsersAnalysisUsage = async (req, res) => {
     endDate,
   });
 
-  const analysisByType = await getAccountAnalysisUsageByAnalysisType({
-    startDate,
-    endDate,
-    orgDbName,
-  });
-  console.log('analysisByType', analysisByType);
-
   res.status(200).send({
     startDate,
     endDate,
@@ -147,7 +140,6 @@ export const getMyAccountAnalysisUsageByAnalysisType = async (req, res) => {
     endDate,
     orgDbName,
   });
-  console.log('analysisUsageByType', analysisUsageByType);
 
   res.status(200).send({
     startDate,

@@ -1,7 +1,6 @@
 /**
- * This SP is used to get the analysis usage for an organization or a list
+ * This SP is used to get the analysis usage for an organization by analysis type.
  * The command requires the following parameters:
- * @organization INT,
  * @startDate DATETIME,
  * @endDate DATETIME
  */

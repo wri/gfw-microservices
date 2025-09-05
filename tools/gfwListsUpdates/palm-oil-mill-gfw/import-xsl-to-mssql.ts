@@ -5,6 +5,10 @@ import * as path from 'path';
 const dotenv = require('dotenv');
 dotenv.config({ path: path.resolve(__dirname, '../../../.env') });
 
+/** ****************************************************************************
+ * npx ts-node --compiler-options '{"module":"CommonJS"}' import-csv-to-mssql.ts
+ ******************************************************************************/
+
 interface RawPalmUMLXlsRow {
   uml_id: string;
   gfw_fid: string;

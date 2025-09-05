@@ -102,7 +102,6 @@ function transformXlsRow({
   uml_id,
   gfw_fid,
 }: RawPalmUMLXlsRow): ProcessedPalmOilMillsRow {
-
   // Determine certification logic based on 'rspo_type'
   let certification = 'None';
   if (rspo_type.toLowerCase().includes('rspo certified')) {

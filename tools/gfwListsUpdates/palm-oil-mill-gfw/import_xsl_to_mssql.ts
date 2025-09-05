@@ -6,7 +6,7 @@ const dotenv = require('dotenv');
 dotenv.config({ path: path.resolve(__dirname, '../../../.env') });
 
 /** ****************************************************************************
- * npx ts-node ./import-xsl-to-mssql.ts
+ * npx ts-node ./import_xsl_to_mssql.ts
  ******************************************************************************/
 
 interface RawPalmUMLXlsRow {
@@ -289,7 +289,6 @@ async function saveToDB(rows: RawPalmUMLXlsRow[]): Promise<void> {
 async function main() {
   const excelPath = 'gfw_universal_mill.xls';
   console.log('🚀 ~ main ~ excelPath:', excelPath);
-  console.log('process.env', process.env);
 
   try {
     const fileContents = await parseFile(excelPath);

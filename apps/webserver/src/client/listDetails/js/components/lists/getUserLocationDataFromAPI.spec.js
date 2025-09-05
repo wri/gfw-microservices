@@ -1,7 +1,3 @@
-jest.mock('../../../../locations/js/store', () => ({
-  getState: jest.fn(() => ({ listView: 'FOREST_CHANGE_VIEW' })),
-}));
-
 // Mock list view constants used by the module
 jest.mock('./ListDetails/listViews.constants', () => ({
   COMMODITY_RISK_VIEW: 'COMMODITY_RISK_VIEW',
@@ -40,9 +36,6 @@ describe('getUserLocationDataFromAPI', () => {
   beforeEach(() => {
     jest.clearAllMocks();
     jest.resetModules();
-    // default store value
-    const store = require('../../../../locations/js/store');
-    store.getState.mockReturnValue({ listView: 'FOREST_CHANGE_VIEW' });
   });
 
   const getModule = () => require('./getUserLocationDataFromAPI').default;
@@ -69,6 +62,7 @@ describe('getUserLocationDataFromAPI', () => {
     };
 
     const result = await getUserLocationDataFromAPI(
+      'FOREST_CHANGE_VIEW',
       filters,
       [10, 20],
       'search-term',
@@ -118,14 +112,20 @@ describe('getUserLocationDataFromAPI', () => {
   });
 
   it('uses DEFORESTATION_KPIS analysisId for POST_2020_RISK_ASSESSMENT_VIEW', async () => {
-    const store = require('../../../../locations/js/store');
-    store.getState.mockReturnValue({ listView: 'POST_2020_RISK_ASSESSMENT_VIEW' });
-
     const axios = require('axios');
     const getUserLocationDataFromAPI = getModule();
     axios.__instance.mockResolvedValueOnce({ data: { ok: true } });
 
-    await getUserLocationDataFromAPI({}, [1], '', 'id', false, 2, true);
+    await getUserLocationDataFromAPI(
+      'POST_2020_RISK_ASSESSMENT_VIEW',
+      {},
+      [1],
+      '',
+      'id',
+      false,
+      2,
+      true
+    );
 
     const axios2 = require('axios');
     const config = axios2.__instance.mock.calls[0][0];
@@ -157,14 +157,12 @@ describe('getUserLocationDataFromAPI', () => {
   });
 
   it('uses FCD for COMMODITY_RISK_VIEW and sets order asc when sortedDesc is false', async () => {
-    const store = require('../../../../locations/js/store');
-    store.getState.mockReturnValue({ listView: 'COMMODITY_RISK_VIEW' });
-
     const axios = require('axios');
     const getUserLocationDataFromAPI = getModule();
     axios.__instance.mockResolvedValueOnce({ data: { ok: true } });
 
     await getUserLocationDataFromAPI(
+      'COMMODITY_RISK_VIEW',
       { selectedAreaMax: 123 },
       [99],
       'q',
@@ -196,7 +194,7 @@ describe('getUserLocationDataFromAPI', () => {
       selectedMillPriority: [],
     };
 
-    await getUserLocationDataFromAPI(filters, [1], '', 'id', false, 0, false);
+    await getUserLocationDataFromAPI('FOREST_CHANGE_VIEW', filters, [1], '', 'id', false, 0, false);
 
     const cfg = axios.__instance.mock.calls[0][0];
     const p = cfg.params;
@@ -216,8 +214,8 @@ describe('getUserLocationDataFromAPI', () => {
     const error = { response: { status: 500 } };
     axios.__instance.mockRejectedValueOnce(error);
 
-    await expect(getUserLocationDataFromAPI({}, [1], '', 'id', false, 0, false)).rejects.toBe(
-      error
-    );
+    await expect(
+      getUserLocationDataFromAPI('FOREST_CHANGE_VIEW', {}, [1], '', 'id', false, 0, false)
+    ).rejects.toBe(error);
   });
 });

@@ -1,6 +1,5 @@
 import axios from 'axios';
 import axiosRetry from 'axios-retry';
-import store from '../../../../locations/js/store';
 import {
   COMMODITY_RISK_VIEW,
   FOREST_CHANGE_VIEW,
@@ -18,6 +17,7 @@ axiosRetry(axiosClient, {
 });
 
 const getUserLocationDataFromAPI = (
+  listView,
   filters,
   selectedLists,
   searchString,
@@ -26,8 +26,6 @@ const getUserLocationDataFromAPI = (
   page = 0,
   areAllAnalysesDraft = false
 ) => {
-  const { listView } = store.getState();
-
   let analysisId;
 
   switch (listView) {

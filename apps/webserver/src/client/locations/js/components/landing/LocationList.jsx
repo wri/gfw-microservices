@@ -6,9 +6,7 @@ import { checkValidViewCommodity } from '../../utils/lists.utils';
 import CustomDialog from '../../../../common/js/components/CustomDialog/CustomDialog';
 
 import fetch from '../../../../common/js/utils/fetch';
-import { changeView } from '../../actions/locationActions';
 import ManageListFolderDialog from './ManageListFolderDialog';
-import store from '../../store';
 import {
   isDownloadDisabledForThisList,
   isAnalyzingStatus,
@@ -87,11 +85,6 @@ export default class LocationList extends Component {
       e.stopPropagation();
     }
     this.setState({ rerunDialogState: !rerunDialogState });
-  };
-
-  redirectToList = (history) => {
-    store.dispatch(changeView('lists'));
-    history.push('/lists');
   };
 
   shareList = (e, list) => {

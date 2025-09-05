@@ -37,9 +37,7 @@ import store from '../../../../../locations/js/store';
 import { locationsPage, userAccessLevel } from '../../../../../common/js/config';
 import {
   changeListView,
-  changeView,
   clearFilters,
-  selectFolder,
   setFilterCount,
   toggleCanopyModal,
   updateFilteredData,
@@ -227,31 +225,6 @@ export default class ListDetails extends Component {
     );
 
     store.dispatch(updateSelectedLocations([]));
-
-    // post-2020 risk assesment tab is selected by default, but
-    // if that analysis is not active and post-2000 tree cover loss analysis is active,
-    // then select the tab and change the view to FOREST_CHANGE_VIEW
-    const listAnalysesStatus = selectedLists[0]?.listAnalysesStatus || [];
-
-    const isPost2020RiskActive = listAnalysesStatus?.some(
-      ({ analysisId }) => analysisId === analysisTypes.DEFORESTATION_KPIS
-    );
-
-    const isPost2000TreeCoverLossActive = listAnalysesStatus?.some(
-      ({ analysisId }) => analysisId === analysisTypes.FOREST_CHANGE_DIAGNOSTICS
-    );
-
-    let defaultView = '';
-
-    if (isPost2020RiskActive) {
-      defaultView = POST_2020_RISK_ASSESSMENT_VIEW;
-    } else if (isPost2000TreeCoverLossActive || isGlobalForestWatchList) {
-      defaultView = FOREST_CHANGE_VIEW;
-    } else if (listAnalysesStatus.length) {
-      defaultView = listAnalysesStatus[0].analysisId;
-    }
-
-    store.dispatch(changeListView(defaultView));
   }
 
   componentDidUpdate(prevProps) {
@@ -1152,12 +1125,13 @@ export default class ListDetails extends Component {
   };
 
   getUserLocationData = (list_id, page = 0) => {
-    const { filters, stopLoading } = this.props;
+    const { filters, stopLoading, listView } = this.props;
     const { tableSortedBy, tableSortedDesc, filterString } = this.state;
 
     this.setState({ page, isLoading: true });
 
     getUserLocationDataFromAPI(
+      listView,
       filters,
       list_id,
       filterString,
@@ -1559,13 +1533,6 @@ export default class ListDetails extends Component {
       });
     }
   };
-
-  changeFolderView(folder) {
-    const { showShareList } = this.props;
-    showShareList(false);
-    store.dispatch(selectFolder(folder));
-    store.dispatch(changeView('folders'));
-  }
 
   loadLocationView() {
     const { selectedLists } = this.props;
@@ -2273,7 +2240,7 @@ export default class ListDetails extends Component {
                                 </Typography>
                               </Grid>
                             )}
-                            {listView !== '' && filteredLocationData.length > 0 && (
+                            {listView !== '' && filteredLocationData.length > 0 && !isLoading && (
                               <WrappedReactTable
                                 listId={selectedLists[0].id}
                                 isGfwList={isGfwList}

@@ -6,7 +6,7 @@ const dotenv = require('dotenv');
 dotenv.config({ path: path.resolve(__dirname, '../../../.env') });
 
 /** ****************************************************************************
- * npx ts-node import-xsl-to-mssql.ts
+ * npx ts-node ./import-xsl-to-mssql.ts
  ******************************************************************************/
 
 interface RawPalmUMLXlsRow {

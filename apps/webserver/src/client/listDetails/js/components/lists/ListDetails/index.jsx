@@ -10,12 +10,7 @@ import {
   IconButton,
 } from '@mui/material';
 import Button from 'common/js/components/Button';
-import {
-  ArrowBack,
-  Close,
-  NotListedLocation,
-  QueryStats,
-} from '@mui/icons-material';
+import { ArrowBack, Close, NotListedLocation, QueryStats } from '@mui/icons-material';
 import CustomDialog from 'common/js/components/CustomDialog/CustomDialog';
 import { maxLocations } from 'locations/js/utils/upload.utils';
 import LinkButton from 'common/js/components/LinkButton';
@@ -2031,7 +2026,7 @@ export default class ListDetails extends Component {
                       }
                     />
 
-                    { /* Rendered only if there's a carLastUpdateDate */ }
+                    {/* Rendered only if there's a carLastUpdateDate */}
                     <CARAccordion carLastUpdateDate={carLastUpdateDate} />
 
                     <div style={{ display: 'flex', justifyContent: 'space-between' }}>
@@ -2097,8 +2092,8 @@ export default class ListDetails extends Component {
                               )}
                             </span>
                           </div>
-                          
-                          { /* Rendered only if there are locationsWithError */ }
+
+                          {/* Rendered only if there are locationsWithError */}
                           <LocationErrorsAlert
                             locationsWithError={locationsWithError}
                             onAddLocationsAgain={() =>

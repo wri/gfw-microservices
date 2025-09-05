@@ -1,6 +1,6 @@
 import { Accordion, AccordionSummary, AccordionDetails, Typography } from '@mui/material';
 import { ExpandMore, DateRange } from '@mui/icons-material';
-import { styled } from '@mui/material/styles'; 
+import { styled } from '@mui/material/styles';
 
 // STYLES
 const StyledAccordion = styled(Accordion)(({ theme }) => ({

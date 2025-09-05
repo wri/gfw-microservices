@@ -11,7 +11,6 @@ pd.options.mode.chained_assignment = None
 
 # IF YOU ARE CHANGING THE YEAR, CONSIDER SYNCING WITH GFWPRO-ANALSES lambdas/post-geotrellis/utils_commodity.py
 
-
 INDICATOR_LEVELS_THREAT_FOREST = {
     "2002": [0.0000, 0.0021, 0.0034],
     "2003": [0.0000, 0.0019, 0.0028],

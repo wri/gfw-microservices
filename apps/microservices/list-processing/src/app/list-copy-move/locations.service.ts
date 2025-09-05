@@ -229,13 +229,7 @@ export class LocationService {
         selectedListId,
         userId,
         gfwListId,
-        allLocationsSelected ? null : selectedLocations.join(),
-        filters.country,
-        filters.state,
-        filters.subState,
-        filters.analysisAreaMin,
-        filters.analysisAreaMax,
-        filters.searchString
+        allLocationsSelected ? null : selectedLocations.join()
       );
       await SetListDrafStatus(clientDatabase, selectedListId, gfwListId);
     }

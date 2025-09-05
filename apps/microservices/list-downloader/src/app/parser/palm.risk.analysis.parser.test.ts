@@ -1,3 +1,4 @@
+import { DIAGNOSTIC_ANALYSIS_PERIOD } from '@wri-monorepos/constants';
 import { palmRiskAnalysisParser } from './palm.risk.analysis.parser';
 
 describe('Palm Risk Analysis Parser', () => {
@@ -72,6 +73,11 @@ describe('Palm Risk Analysis Parser', () => {
   test('Receive[commodity_value_protected_areas_level, yearly, aggregate] and get [1047247.7874000005,]', () => {
     const csvData = [];
     const dataRow = [];
+    const data = {
+      commodity_value_protected_areas:
+        '{"2002":55118.3046,"2003":55118.3046,"2004":55118.3046,"2005":55118.3046,"2006":55118.3046,"2007":55118.3046,"2008":55118.3046,"2009":55118.3046,"2010":55118.3046,"2011":55118.3046,"2012":55118.3046,"2013":55118.3046,"2014":55118.3046,"2015":55118.3046,"2016":55118.3046,"2017":55118.3046,"2018":55118.3046,"2019":55118.3046,"2020":55118.3046,"2023":55118.3046,"2024":55118.3046}',
+    };
+
     palmRiskAnalysisParser({
       operation: {
         fields: [
@@ -82,15 +88,21 @@ describe('Palm Risk Analysis Parser', () => {
           },
         ],
       },
-      data: {
-        commodity_value_protected_areas:
-          '{"2002":55118.3046,"2003":55118.3046,"2004":55118.3046,"2005":55118.3046,"2006":55118.3046,"2007":55118.3046,"2008":55118.3046,"2009":55118.3046,"2010":55118.3046,"2011":55118.3046,"2012":55118.3046,"2013":55118.3046,"2014":55118.3046,"2015":55118.3046,"2016":55118.3046,"2017":55118.3046,"2018":55118.3046,"2019":55118.3046,"2020":55118.3046,"2023":55118.3046,"2024":55118.3046}',
-      },
+      data,
       dataRow,
       csvData,
     });
+
+    // compute expected from data + constant to avoid hard-coded mismatch when constants change
+    const obj = JSON.parse(data.commodity_value_protected_areas);
+    const expected = Object.entries(obj).reduce((sum, [year, val]) => {
+      return Number(year) <= DIAGNOSTIC_ANALYSIS_PERIOD.COMMODITY_RISK_END_YEAR
+        ? sum + Number(val)
+        : sum;
+    }, 0);
+
     expect(csvData.length).toEqual(1);
-    expect(csvData[0][0]).toBeCloseTo(1102366.0920000004);
+    expect(csvData[0][0]).toBeCloseTo(expected);
   });
 
   test('Receive[commodity_value_protected_areas_level, lastYear] and get ["High"]', () => {

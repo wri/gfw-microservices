@@ -42,10 +42,10 @@ const setVectorTileLayerForFilteredList = async (listData, transitionListData, v
       });
 
       const symbol = new SimpleFillSymbol({
-        color: [...POLYGON_FILL_COLOR, 0.4],
+        color: [...POLYGON_FILL_COLOR, 0], // initially transparent (0 alpha, change opacity as needed)
         outline: {
           color: [...POLYGON_OUTLINE_COLOR, 1],
-          width: 1,
+          width: 2,
         },
       });
 
@@ -66,6 +66,7 @@ const setVectorTileLayerForFilteredList = async (listData, transitionListData, v
   if (alertsMapExtent) {
     view.goTo(alertsMapExtent);
   } else if (locationData.length) {
+    userLayer.addMany([...fillGraphics]);
     return fillGraphics;
   }
 };

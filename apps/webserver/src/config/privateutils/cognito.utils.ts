@@ -1369,38 +1369,35 @@ const ensureRequiredAttributes = async (req, email, userPoolId, updatePasswordTi
       userInfo.map((attr) => attr.Name)
     );
 
-    const requiredAttributes = [{ Name: 'custom:fail_count', Value: '0' }];
+    const attributesToAdd = [];
 
-    // Only add passwordUpdatedAt if it doesn't exist or if we need to update it
+    // Check if fail_count exists, if not add it with value '0'
+    const failCountAttr = userInfo.find((attr) => attr.Name === 'custom:fail_count');
+    if (!failCountAttr) {
+      attributesToAdd.push({ Name: 'custom:fail_count', Value: '0' });
+      logger.debug(`Will add fail_count attribute for user ${hashedEmail}`);
+    } else {
+      logger.debug(
+        `Attribute custom:fail_count already exists for user ${hashedEmail} with value: ${failCountAttr.Value}`
+      );
+    }
+
+    // Check if passwordUpdatedAt exists or needs to be updated
     const passwordUpdatedAtAttr = userInfo.find((attr) => attr.Name === 'custom:passwordUpdatedAt');
     if (!passwordUpdatedAtAttr || updatePasswordTime) {
-      requiredAttributes.push({
+      attributesToAdd.push({
         Name: 'custom:passwordUpdatedAt',
         Value: new Date().toUTCString(),
       });
-    }
-
-    const attributesToAdd = [];
-
-    for (const requiredAttr of requiredAttributes) {
-      const existingAttr = userInfo.find((attr) => attr.Name === requiredAttr.Name);
-      if (
-        !existingAttr ||
-        (requiredAttr.Name === 'custom:passwordUpdatedAt' && updatePasswordTime)
-      ) {
-        attributesToAdd.push(requiredAttr);
-        logger.debug(`Will add/update attribute ${requiredAttr.Name} for user ${hashedEmail}`);
-      } else if (requiredAttr.Name === 'custom:fail_count' && existingAttr.Value !== '0') {
-        // If fail_count exists but is not 0, we should reset it to 0
-        attributesToAdd.push(requiredAttr);
-        logger.debug(
-          `Will reset fail_count from ${existingAttr.Value} to 0 for user ${hashedEmail}`
-        );
+      if (!passwordUpdatedAtAttr) {
+        logger.debug(`Will add passwordUpdatedAt attribute for user ${hashedEmail}`);
       } else {
-        logger.debug(
-          `Attribute ${requiredAttr.Name} already exists for user ${hashedEmail} with value: ${existingAttr.Value}`
-        );
+        logger.debug(`Will update passwordUpdatedAt attribute for user ${hashedEmail}`);
       }
+    } else {
+      logger.debug(
+        `Attribute custom:passwordUpdatedAt already exists for user ${hashedEmail} with value: ${passwordUpdatedAtAttr.Value}`
+      );
     }
 
     if (attributesToAdd.length > 0) {

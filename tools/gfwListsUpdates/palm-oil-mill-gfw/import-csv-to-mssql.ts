@@ -1,95 +1,107 @@
-import * as fs from 'fs';
-import Papa from 'papaparse';
+import * as XLSX from 'xlsx';
 import * as sql from 'mssql';
-import { SQL_CONFIG } from '../../../libs/sql/src/lib/config/config';
+import * as path from 'path';
 
-interface RawPalmUMLCsvRow {
-  OBJECTID: string;
+const dotenv = require('dotenv');
+dotenv.config({ path: path.resolve(__dirname, '../../../.env') });
+
+interface RawPalmUMLXlsRow {
   uml_id: string;
+  gfw_fid: string;
   group_name: string;
   parent_com: string;
   mill_name: string;
   rspo_type: string;
-  gps_coordi: string;
   country: string;
   province: string;
+  latitude: string;
+  longitude: string;
   district: string;
   alternativ: string;
   gfw_geosto: string;
   gadmid: string;
 }
 
-const sqlConfig = SQL_CONFIG as sql.config;
+const SQL_CONFIG = {
+  user: process.env.MSSQL_USERNAME,
+  password: process.env.MSSQL_PASSWORD,
+  database: process.env.MSSQL_DATABASE,
+  server: process.env.MSSQL_HOSTNAME,
+  port: parseInt(process.env.MSSQL_PORT || ''),
+  options: {
+    trustServerCertificate: true,
+  },
+  requestTimeout: 600000,
+} as sql.config;
 
 /**
- * parseFile: Reads a CSV file from disk using Papa.parse
- * and resolves with an array of RawPalmUMLCsvRow objects (header-based).
+ * parseFile: Reads a XLS file from disk using Papa.parse
+ * and resolves with an array of RawPalmUMLXlsRow objects (header-based).
  */
-async function parseFile(filePath: string): Promise<RawPalmUMLCsvRow[]> {
-  const csvData = fs.readFileSync(filePath, 'utf8');
+async function parseFile(filePath: string): Promise<RawPalmUMLXlsRow[]> {
+  const workbook = XLSX.readFile(filePath);
+  const sheetName = workbook.SheetNames[0]; // take the first sheet
+  const sheet = workbook.Sheets[sheetName];
 
-  return new Promise<RawPalmUMLCsvRow[]>((resolve, reject) => {
-    Papa.parse<RawPalmUMLCsvRow>(csvData, {
-      header: true,
-      skipEmptyLines: true,
-      complete: (results) => {
-        if (results.errors && results.errors.length > 0) {
-          return reject(results.errors);
-        }
+  const rows: RawPalmUMLXlsRow[] = XLSX.utils.sheet_to_json(sheet, {
+    defval: '', // default empty cells to ''
+  }) as RawPalmUMLXlsRow[];
 
-        resolve(results.data);
-      },
-    });
-  });
+  return rows;
 }
 
 /**
- * A helper function to parse latitude/longitude out of a "lat,long" string.
- * Expects something like "3.456,101.234".
- * Returns [lat, lon].
- */
-function parseCoordinates(gpsCoordi: string): [number, number] {
-  const [latStr, longStr] = gpsCoordi.split(',').map((s) => s.trim());
-  return [parseFloat(latStr), parseFloat(longStr)];
-}
-/**
- * transformCsvRow: Takes one CSV row (RawPalmUMLCsvRow) and returns
+ * transformXlsRow: Takes one XLs row (RawPalmUMLXlsRow) and returns
  * the final data shape (PalmOilMillsRow) to match [dbo].[list-palmOilMills].
  *
  * This is where you do your mapping & transformations, which is easy to change
- * if columns or logic differ for other CSV formats.
+ * if columns or logic differ for other XLs formats.
  */
 interface ProcessedPalmOilMillsRow {
-  locationName: string; // [Location Name]
-  analysisRadius: number; // [Analysis Radius]
-  size: number; // [Size]
-  parentCompany: string; // [Parent Company]
-  companyId: string; // [Company ID]
-  certification: string; // [Certification]
-  rspoModel: string; // [RSPO Model]
-  latitude: number; // [Latitude]
-  longitude: number; // [Longitude]
-  locationClassification: string; // [Location Classification]
-  commodity: string; // [Commodity]
-  country: string; // [Country]
-  state: string; // [State]
-  subState: string; // [Sub State]
-  gadmid: string; // [gadmid]
-  groupName: string; // [Group Name]
-  millId: string; // [Mill ID]
-  alternativeName: string; // [Alternative Name]
+  locationName: string;
+  analysisRadius: number;
+  size: number;
+  parentCompany: string;
+  companyId: string;
+  certification: string;
+  rspoModel: string;
+  latitude: number;
+  longitude: number;
+  locationClassification: string;
+  commodity: string;
+  country: string;
+  state: string;
+  subState: string;
+  gadmid: string;
+  groupName: string;
+  millId: string;
+  alternativeName: string;
   geometryWkt: string; // WKT for [Geometry]
   geometrySimplifiedWkt: string; // WKT for [Geometry Simplified]
-  globalid: string; // [globalid]
-  locationId: number; // [location_id]
-  id: number; // [id]
+  globalid: string;
+  locationId: number;
+  id: number;
 }
-function transformCsvRow(raw: RawPalmUMLCsvRow): ProcessedPalmOilMillsRow {
-  const [latitude, longitude] = parseCoordinates(raw.gps_coordi);
+function transformXlsRow({
+  mill_name: locationName,
+  longitude,
+  latitude,
+  parent_com,
+  rspo_type,
+  country,
+  province,
+  district,
+  alternativ,
+  gfw_geosto,
+  gadmid,
+  group_name,
+  uml_id,
+  gfw_fid,
+}: RawPalmUMLXlsRow): ProcessedPalmOilMillsRow {
 
   // Determine certification logic based on 'rspo_type'
   let certification = 'None';
-  if (raw.rspo_type.toLowerCase().includes('rspo certified')) {
+  if (rspo_type.toLowerCase().includes('rspo certified')) {
     certification = 'RSPO';
   }
 
@@ -98,49 +110,49 @@ function transformCsvRow(raw: RawPalmUMLCsvRow): ProcessedPalmOilMillsRow {
 
   // Return the final mapped + transformed object
   return {
-    locationName: raw.mill_name, // [Location Name]
-    analysisRadius: 50.0, // [Analysis Radius] = fixed
-    size: 785398.163, // [Size] = fixed
-    parentCompany: raw.parent_com, // [Parent Company]
-    companyId: 'n/a', // [Company ID] = fixed
-    certification, // [Certification] => 'RSPO' or 'None'
-    rspoModel: raw.rspo_type, // [RSPO Model]
-    latitude,
-    longitude,
-    locationClassification: 'Supply Shed', // [Location Classification] = fixed
-    commodity: 'Palm Oil', // [Commodity] = fixed
-    country: raw.country, // [Country]
-    state: raw.province, // [State]
-    subState: raw.district, // [Sub State]
-    gadmid: raw.gadmid, // [gadmid]
-    groupName: raw.group_name, // [Group Name]
-    millId: raw.uml_id, // [Mill ID]
-    alternativeName: raw.alternativ || '', // [Alternative Name] = fixed
+    locationName,
+    analysisRadius: 50.0,
+    size: 785398.163,
+    parentCompany: parent_com,
+    companyId: 'n/a',
+    certification,
+    rspoModel: rspo_type,
+    latitude: parseFloat(latitude),
+    longitude: parseFloat(longitude),
+    locationClassification: 'Supply Shed',
+    commodity: 'Palm Oil',
+    country: country,
+    state: province,
+    subState: district,
+    gadmid: gadmid,
+    groupName: group_name,
+    alternativeName: alternativ || '',
     geometryWkt,
-    geometrySimplifiedWkt: geometryWkt, // same geometry
-    globalid: raw.gfw_geosto, // [globalid]
-    locationId: parseInt(raw.OBJECTID, 10), // [location_id]
-    id: parseInt(raw.OBJECTID, 10), // [id]
+    geometrySimplifiedWkt: geometryWkt,
+    globalid: gfw_geosto,
+    millId: uml_id,
+    locationId: parseInt(gfw_fid, 10),
+    id: parseInt(gfw_fid, 10),
   };
 }
 
 /**
- * saveToDB: Receives an array of CSV rows, transforms each to
+ * saveToDB: Receives an array of XSL rows, transforms each to
  * the final table shape, and inserts into SQL Server.
  */
-async function saveToDB(rows: RawPalmUMLCsvRow[]): Promise<void> {
+async function saveToDB(rows: RawPalmUMLXlsRow[]): Promise<void> {
   console.log('🚀 ~ saveToDB ~ rows:', rows);
 
-  const pool = new sql.ConnectionPool(sqlConfig);
+  const pool = new sql.ConnectionPool(SQL_CONFIG);
   await pool.connect();
 
   debugger;
 
-  console.log(`Inserting ${rows.length} rows into [dbo].[list-palmOilMills_new]...`);
+  console.log(`Inserting ${rows.length} rows into [dbo].[list-palmOilMills_import]...`);
 
   // We'll prepare the insert statement once and reuse it.
   const insertStmt = `
-    INSERT INTO [dbo].[list-palmOilMills_new]
+    INSERT INTO [dbo].[list-palmOilMills_import]
     (
       [Location Name],
       [Analysis Radius],
@@ -198,34 +210,58 @@ async function saveToDB(rows: RawPalmUMLCsvRow[]): Promise<void> {
   // For ±2.2k rows, looping is probably fine.
   // (For bigger volumes, consider Bulk Insert or batched inserts.)
   for (const rawRow of rows) {
-    const rowData = transformCsvRow(rawRow);
+    const {
+      locationName,
+      analysisRadius,
+      size,
+      parentCompany,
+      companyId,
+      certification,
+      rspoModel,
+      latitude,
+      longitude,
+      locationClassification,
+      commodity,
+      country,
+      state,
+      subState,
+      gadmid,
+      groupName,
+      millId,
+      alternativeName,
+      geometryWkt,
+      geometrySimplifiedWkt,
+      globalid,
+      locationId,
+      id,
+    } = transformXlsRow(rawRow);
 
     try {
       await pool
         .request()
-        .input('locationName', sql.NVarChar(150), rowData.locationName)
-        .input('analysisRadius', sql.Decimal(18, 6), rowData.analysisRadius)
-        .input('size', sql.Decimal(18, 6), rowData.size)
-        .input('parentCompany', sql.NVarChar(150), rowData.parentCompany)
-        .input('companyId', sql.NVarChar(150), rowData.companyId)
-        .input('certification', sql.NVarChar(150), rowData.certification)
-        .input('rspoModel', sql.NVarChar(150), rowData.rspoModel)
-        .input('latitude', sql.Float, rowData.latitude)
-        .input('longitude', sql.Float, rowData.longitude)
-        .input('locationClassification', sql.NVarChar(150), rowData.locationClassification)
-        .input('commodity', sql.NVarChar(150), rowData.commodity)
-        .input('country', sql.NVarChar(150), rowData.country)
-        .input('state', sql.NVarChar(150), rowData.state)
-        .input('subState', sql.NVarChar(150), rowData.subState)
-        .input('gadmid', sql.NVarChar(50), rowData.gadmid)
-        .input('groupName', sql.NVarChar(150), rowData.groupName)
-        .input('millId', sql.NVarChar(150), rowData.millId)
-        .input('alternativeName', sql.NVarChar(150), rowData.alternativeName)
-        .input('geometryWkt', sql.NVarChar(sql.MAX), rowData.geometryWkt)
-        .input('geometrySimplifiedWkt', sql.NVarChar(sql.MAX), rowData.geometrySimplifiedWkt)
-        .input('globalid', sql.NVarChar(150), rowData.globalid)
-        .input('locationId', sql.Int, rowData.locationId)
-        .input('id', sql.Int, rowData.id)
+        .input('locationName', sql.NVarChar(150), locationName)
+        .input('analysisRadius', sql.Decimal(18, 6), analysisRadius)
+        .input('size', sql.Decimal(18, 6), size)
+        .input('parentCompany', sql.NVarChar(150), parentCompany)
+        .input('companyId', sql.NVarChar(150), companyId)
+        .input('certification', sql.NVarChar(150), certification)
+        .input('rspoModel', sql.NVarChar(150), rspoModel)
+        .input('latitude', sql.Float, latitude)
+        .input('longitude', sql.Float, longitude)
+        .input('locationClassification', sql.NVarChar(150), locationClassification)
+        .input('commodity', sql.NVarChar(150), commodity)
+        .input('country', sql.NVarChar(150), country)
+        .input('state', sql.NVarChar(150), state)
+        .input('subState', sql.NVarChar(150), subState)
+        .input('gadmid', sql.NVarChar(50), gadmid)
+        .input('groupName', sql.NVarChar(150), groupName)
+        .input('millId', sql.NVarChar(150), millId)
+        .input('alternativeName', sql.NVarChar(150), alternativeName)
+        .input('geometryWkt', sql.NVarChar(sql.MAX), geometryWkt)
+        .input('geometrySimplifiedWkt', sql.NVarChar(sql.MAX), geometrySimplifiedWkt)
+        .input('globalid', sql.NVarChar(150), globalid)
+        .input('locationId', sql.Int, locationId)
+        .input('id', sql.Int, id)
         .query(insertStmt);
 
       insertedCount++;
@@ -233,7 +269,7 @@ async function saveToDB(rows: RawPalmUMLCsvRow[]): Promise<void> {
         console.log(`Inserted ${insertedCount} rows...`);
       }
     } catch (err) {
-      console.error(`Failed to insert row (OBJECTID=${rawRow.OBJECTID}):`, err);
+      console.error(`Failed to insert row (OBJECTID=${id}):`, err);
     }
   }
 
@@ -243,17 +279,18 @@ async function saveToDB(rows: RawPalmUMLCsvRow[]): Promise<void> {
 
 /**
  * A main function to tie it together:
- *  1) Parse the CSV file
+ *  1) Parse the XLS file
  *  2) Save contents to DB
  */
 async function main() {
-  const csvPath = 'gfw_universal_mill_joined_gadm_gridded_final.csv';
-  console.log('🚀 ~ main ~ csvPath:', csvPath);
+  const excelPath = 'gfw_universal_mill.xls';
+  console.log('🚀 ~ main ~ excelPath:', excelPath);
+  console.log('process.env', process.env);
 
   try {
-    const csvContents = await parseFile(csvPath);
-    await saveToDB(csvContents);
-  } catch (error) {
+    const fileContents = await parseFile(excelPath);
+    await saveToDB(fileContents);
+  } catch (error: any) {
     console.error('Error during import:', error.stack || error);
     throw error;
   }

@@ -1,51 +1,22 @@
-
-/**
- * importCsvToMssql.ts
- */
-
 import * as fs from 'fs';
 import Papa from 'papaparse';
 import * as sql from 'mssql';
-import { SQL_CONFIG } from './libs/sql/src/lib/config/config';
-// import * as dotenv from 'dotenv';
-
-// dotenv.config(); // Load environment variables from .env file
-
-// console.log(process.env);
+import { SQL_CONFIG } from '../../../libs/sql/src/lib/config/config';
 
 interface RawPalmUMLCsvRow {
   OBJECTID: string;
-  Join_Count: string;
-  TARGET_FID: string;
-  gfw_fid: string;
   uml_id: string;
   group_name: string;
   parent_com: string;
   mill_name: string;
-  rspo_statu: string;
   rspo_type: string;
-  date_rspo_: string;
-  latitude: string;
-  longitude: string;
   gps_coordi: string;
-  iso: string;
   country: string;
   province: string;
   district: string;
-  confidence: string;
   alternativ: string;
-  gfw_area__: string;
   gfw_geosto: string;
-  iso_1: string;
-  name_0: string;
-  id_1: string;
-  name_1: string;
-  id_2: string;
-  name_2: string;
-  id_0: string;
-  name_all: string;
   gadmid: string;
-  Shape_Leng: string;
 }
 
 const sqlConfig = SQL_CONFIG as sql.config;
@@ -67,7 +38,7 @@ async function parseFile(filePath: string): Promise<RawPalmUMLCsvRow[]> {
         }
 
         resolve(results.data);
-      }
+      },
     });
   });
 }
@@ -78,40 +49,40 @@ async function parseFile(filePath: string): Promise<RawPalmUMLCsvRow[]> {
  * Returns [lat, lon].
  */
 function parseCoordinates(gpsCoordi: string): [number, number] {
-  const [latStr, longStr] = gpsCoordi.split(',').map(s => s.trim());
+  const [latStr, longStr] = gpsCoordi.split(',').map((s) => s.trim());
   return [parseFloat(latStr), parseFloat(longStr)];
 }
 /**
- * transformCsvRow: Takes one CSV row (RawPalmUMLCsvRow) and returns 
+ * transformCsvRow: Takes one CSV row (RawPalmUMLCsvRow) and returns
  * the final data shape (PalmOilMillsRow) to match [dbo].[list-palmOilMills].
  *
- * This is where you do your mapping & transformations, which is easy to change 
+ * This is where you do your mapping & transformations, which is easy to change
  * if columns or logic differ for other CSV formats.
  */
 interface ProcessedPalmOilMillsRow {
-  locationName: string;           // [Location Name]
-  analysisRadius: number;         // [Analysis Radius]
-  size: number;                   // [Size]
-  parentCompany: string;          // [Parent Company]
-  companyId: string;              // [Company ID]
-  certification: string;          // [Certification]
-  rspoModel: string;              // [RSPO Model]
-  latitude: number;               // [Latitude]
-  longitude: number;              // [Longitude]
+  locationName: string; // [Location Name]
+  analysisRadius: number; // [Analysis Radius]
+  size: number; // [Size]
+  parentCompany: string; // [Parent Company]
+  companyId: string; // [Company ID]
+  certification: string; // [Certification]
+  rspoModel: string; // [RSPO Model]
+  latitude: number; // [Latitude]
+  longitude: number; // [Longitude]
   locationClassification: string; // [Location Classification]
-  commodity: string;              // [Commodity]
-  country: string;                // [Country]
-  state: string;                  // [State]
-  subState: string;               // [Sub State]
-  gadmid: string;                 // [gadmid]
-  groupName: string;              // [Group Name]
-  millId: string;                 // [Mill ID]
-  alternativeName: string;        // [Alternative Name]
-  geometryWkt: string;            // WKT for [Geometry]
-  geometrySimplifiedWkt: string;  // WKT for [Geometry Simplified]
-  globalid: string;               // [globalid]
-  locationId: number;             // [location_id]
-  id: number;                     // [id]
+  commodity: string; // [Commodity]
+  country: string; // [Country]
+  state: string; // [State]
+  subState: string; // [Sub State]
+  gadmid: string; // [gadmid]
+  groupName: string; // [Group Name]
+  millId: string; // [Mill ID]
+  alternativeName: string; // [Alternative Name]
+  geometryWkt: string; // WKT for [Geometry]
+  geometrySimplifiedWkt: string; // WKT for [Geometry Simplified]
+  globalid: string; // [globalid]
+  locationId: number; // [location_id]
+  id: number; // [id]
 }
 function transformCsvRow(raw: RawPalmUMLCsvRow): ProcessedPalmOilMillsRow {
   const [latitude, longitude] = parseCoordinates(raw.gps_coordi);
@@ -127,39 +98,39 @@ function transformCsvRow(raw: RawPalmUMLCsvRow): ProcessedPalmOilMillsRow {
 
   // Return the final mapped + transformed object
   return {
-    locationName: raw.mill_name,    // [Location Name]
-    analysisRadius: 50.0,          // [Analysis Radius] = fixed
-    size: 785398.163,              // [Size] = fixed
-    parentCompany: raw.parent_com,  // [Parent Company]
-    companyId: 'n/a',               // [Company ID] = fixed
-    certification,                  // [Certification] => 'RSPO' or 'None'
-    rspoModel: raw.rspo_type,       // [RSPO Model]
+    locationName: raw.mill_name, // [Location Name]
+    analysisRadius: 50.0, // [Analysis Radius] = fixed
+    size: 785398.163, // [Size] = fixed
+    parentCompany: raw.parent_com, // [Parent Company]
+    companyId: 'n/a', // [Company ID] = fixed
+    certification, // [Certification] => 'RSPO' or 'None'
+    rspoModel: raw.rspo_type, // [RSPO Model]
     latitude,
     longitude,
     locationClassification: 'Supply Shed', // [Location Classification] = fixed
-    commodity: 'Palm Oil',                // [Commodity] = fixed
-    country: raw.name_0,                  // [Country]
-    state: raw.name_1,                    // [State]
-    subState: raw.name_1,                 // [Sub State]
-    gadmid: raw.gadmid,                   // [gadmid]
-    groupName: raw.group_name,            // [Group Name]
-    millId: raw.uml_id,                   // [Mill ID]
-    alternativeName: '',                  // [Alternative Name] = fixed
+    commodity: 'Palm Oil', // [Commodity] = fixed
+    country: raw.country, // [Country]
+    state: raw.province, // [State]
+    subState: raw.district, // [Sub State]
+    gadmid: raw.gadmid, // [gadmid]
+    groupName: raw.group_name, // [Group Name]
+    millId: raw.uml_id, // [Mill ID]
+    alternativeName: raw.alternativ || '', // [Alternative Name] = fixed
     geometryWkt,
-    geometrySimplifiedWkt: geometryWkt,   // same geometry
-    globalid: raw.gfw_geosto,             // [globalid]
+    geometrySimplifiedWkt: geometryWkt, // same geometry
+    globalid: raw.gfw_geosto, // [globalid]
     locationId: parseInt(raw.OBJECTID, 10), // [location_id]
-    id: parseInt(raw.OBJECTID, 10)          // [id]
+    id: parseInt(raw.OBJECTID, 10), // [id]
   };
 }
 
 /**
- * saveToDB: Receives an array of CSV rows, transforms each to 
+ * saveToDB: Receives an array of CSV rows, transforms each to
  * the final table shape, and inserts into SQL Server.
  */
 async function saveToDB(rows: RawPalmUMLCsvRow[]): Promise<void> {
-  console.log("🚀 ~ saveToDB ~ rows:", rows);
-  
+  console.log('🚀 ~ saveToDB ~ rows:', rows);
+
   const pool = new sql.ConnectionPool(sqlConfig);
   await pool.connect();
 
@@ -167,7 +138,7 @@ async function saveToDB(rows: RawPalmUMLCsvRow[]): Promise<void> {
 
   console.log(`Inserting ${rows.length} rows into [dbo].[list-palmOilMills_new]...`);
 
-  // We'll prepare the insert statement once and reuse it.  
+  // We'll prepare the insert statement once and reuse it.
   const insertStmt = `
     INSERT INTO [dbo].[list-palmOilMills_new]
     (
@@ -224,13 +195,14 @@ async function saveToDB(rows: RawPalmUMLCsvRow[]): Promise<void> {
 
   let insertedCount = 0;
 
-  // For ±2.2k rows, looping is probably fine. 
+  // For ±2.2k rows, looping is probably fine.
   // (For bigger volumes, consider Bulk Insert or batched inserts.)
   for (const rawRow of rows) {
     const rowData = transformCsvRow(rawRow);
 
     try {
-      await pool.request()
+      await pool
+        .request()
         .input('locationName', sql.NVarChar(150), rowData.locationName)
         .input('analysisRadius', sql.Decimal(18, 6), rowData.analysisRadius)
         .input('size', sql.Decimal(18, 6), rowData.size)
@@ -260,7 +232,6 @@ async function saveToDB(rows: RawPalmUMLCsvRow[]): Promise<void> {
       if (insertedCount % 500 === 0) {
         console.log(`Inserted ${insertedCount} rows...`);
       }
-
     } catch (err) {
       console.error(`Failed to insert row (OBJECTID=${rawRow.OBJECTID}):`, err);
     }
@@ -277,8 +248,8 @@ async function saveToDB(rows: RawPalmUMLCsvRow[]): Promise<void> {
  */
 async function main() {
   const csvPath = 'gfw_universal_mill_joined_gadm_gridded_final.csv';
-  console.log("🚀 ~ main ~ csvPath:", csvPath)
-  
+  console.log('🚀 ~ main ~ csvPath:', csvPath);
+
   try {
     const csvContents = await parseFile(csvPath);
     await saveToDB(csvContents);

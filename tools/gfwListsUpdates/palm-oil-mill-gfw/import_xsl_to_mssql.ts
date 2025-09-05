@@ -149,7 +149,8 @@ async function saveToDB(rows: RawPalmUMLXlsRow[]): Promise<void> {
   const pool = new sql.ConnectionPool(SQL_CONFIG);
   await pool.connect();
 
-  debugger;
+  await pool.request().query('DELETE FROM [dbo].[list-palmOilMills_import]');
+  console.log('Cleared existing rows from [dbo].[list-palmOilMills_import]');
 
   console.log(`Inserting ${rows.length} rows into [dbo].[list-palmOilMills_import]...`);
 

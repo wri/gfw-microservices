@@ -144,7 +144,6 @@ function transformXlsRow({
  * the final table shape, and inserts into SQL Server.
  */
 async function saveToDB(rows: RawPalmUMLXlsRow[]): Promise<void> {
-  // console.log('🚀 ~ saveToDB ~ rows:', rows);
 
   const pool = new sql.ConnectionPool(SQL_CONFIG);
   await pool.connect();

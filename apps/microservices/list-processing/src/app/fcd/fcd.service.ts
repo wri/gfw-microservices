@@ -105,7 +105,6 @@ export class FCDService {
 
     const {
       country_specific_deforestation_classified_region_yearly,
-      tree_cover_loss_arg_otbn_yearly,
       arg_otbn_area,
       tree_cover_loss_by_country_classified_region_yearly,
       classified_region_area,
@@ -115,7 +114,6 @@ export class FCDService {
       listId,
       sqlFields: [
         AnnualLossFcdFields.COUNTRY_SPECIFIC_DEFORESTATION_CLASSIFIED_REGION_YEARLY,
-        AnnualLossFcdFields.TREE_COVER_LOSS_ARG_OTBN_YEARLY,
         AnnualLossFcdFields.ARG_OTBN_AREA,
         AnnualLossFcdFields.TREE_COVER_LOSS_BY_COUNTRY_CLASSIFIED_REGION_YEARLY,
         AnnualLossFcdFields.CLASSIFIED_REGION_AREA,
@@ -154,16 +152,10 @@ export class FCDService {
     let tree_cover_loss = {};
     try {
       let treeCoverLoss = {};
-      if (!tree_cover_loss_by_country_classified_region_yearly) {
-        if (countryGadm === 'ARG') {
-          treeCoverLoss = this.parseJsonSafely(tree_cover_loss_arg_otbn_yearly);
-        }
-      } else {
-        treeCoverLoss =
-          this.parseJsonSafely(tree_cover_loss_by_country_classified_region_yearly)?.[
-            countryGadm
-          ] ?? {};
-      }
+      // Use the standardized country-classified region field for all countries including ARG
+      treeCoverLoss =
+        this.parseJsonSafely(tree_cover_loss_by_country_classified_region_yearly)?.[countryGadm] ??
+        {};
 
       if (countryGadm === 'COL') {
         tree_cover_loss = this.splitObjAndCreateNestedChildren(treeCoverLoss);

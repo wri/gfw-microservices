@@ -26,5 +26,3 @@ export class ArgentinaOTBNStrategy implements SouthAmericaLossAggregateStrategy 
     );
   }
 }
-
-//tree_cover_loss_arg_otbn_yearly

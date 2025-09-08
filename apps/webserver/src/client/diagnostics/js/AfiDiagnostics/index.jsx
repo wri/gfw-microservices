@@ -103,7 +103,7 @@ function AfiDiagnostics() {
       });
   }, [listId]);
 
-  const { list_name = '', list_status_id = null, listAnalysesStatus = null } = selectedList;
+  const { list_status_id = null, listAnalysesStatus = null } = selectedList;
 
   const { DiagnosticsStatusMessage, isListBeingAnalyzed } = getAnalysisAvailabilityMessage(
     list_status_id,

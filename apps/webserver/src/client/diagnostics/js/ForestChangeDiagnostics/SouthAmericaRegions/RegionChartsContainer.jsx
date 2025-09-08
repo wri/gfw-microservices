@@ -21,10 +21,8 @@ function RegionChartsContainer({
 }) {
   const [selectedTab, setSelectedTab] = useState(regionIds.REGIONAL);
 
-  const argOtbnArea = isGfwList ? {} : JSON.parse(data.arg_otbn_area || '{}');
-
-  const isArgentinaDataAvailable =
-    Object.entries(argOtbnArea).length > 0 || getTotalAreaPerCountry(data, 'ARG', isGfwList) > 0;
+  // Simplified Argentina availability check - use country_area.ARG instead of arg_otbn_area
+  const isArgentinaDataAvailable = getTotalAreaPerCountry(data, 'ARG', isGfwList) > 0;
 
   const isColombiaDataAvailable = getTotalAreaPerCountry(data, 'COL', isGfwList) > 0;
 

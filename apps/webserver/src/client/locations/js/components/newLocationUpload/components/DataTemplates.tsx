@@ -5,6 +5,7 @@ import {
   AccordionDetails,
   AccordionSummary,
   Box,
+  Link,
   Dialog,
   DialogActions,
   DialogContent,
@@ -74,7 +75,17 @@ export function DataTemplates({ isOpen, onClose, workflowType }: DataTemplatesPr
     </>
   ) : (
     <>
-      Looking to upload locations using IDs like CAR or Palm Oil Mills? Use the <b>By ID</b> option
+      Looking to upload locations using IDs such as Palm Oil Mills? Consult{' '}
+      <Link href="https://www.globalforestwatch.org/help/gfw-pro/guides/select-correct-template/">
+        our guidance on formatting
+      </Link>{' '}
+      and{' '}
+      <Link
+        target="_blank"
+        href="https://drive.google.com/drive/folders/153I5e_SApqUNwFAiqLJPBh-P7v6194c3"
+      >
+        download an example template
+      </Link>
       on the upload page to access those templates.
     </>
   );

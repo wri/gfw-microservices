@@ -39,18 +39,6 @@ export function SummaryAndSubmit() {
   const listName = uploadLocationState.newListName || uploadLocationState.existingList?.name;
   const commodity = commodities[uploadLocationState.commodity as keyof typeof commodities];
 
-  const handleOpenModal = (value) => {
-    setIsConfirmationDialogOpen(value);
-    console.log('Opening modal, isDraft:', value);
-    // Pequeño delay para que el modal se renderice primero
-    setTimeout(() => {
-      if (window.Transifex?.live?.translateTo) {
-        const currentLang = window.Transifex.live?.getSelectedLanguageCode();
-        window.Transifex.live?.translateTo(currentLang);
-      }
-    }, 50);
-  };
-
   // Function to convert coordinates to GeoJSON format respecting the right-hand rule
   const mountPolygon = (coordinates) => {
     // Function to calculate the signed area of the polygon
@@ -106,7 +94,7 @@ export function SummaryAndSubmit() {
       return;
     }
     try {
-      handleOpenModal(false);
+      setIsConfirmationDialogOpen(false);
       setIsLoading(true);
 
       if (uploadLocationState.typeOfAnalysis.AFI) {
@@ -298,7 +286,7 @@ export function SummaryAndSubmit() {
             startIcon={<EditNote />}
             onClick={() => {
               isDraftUpload.current = true;
-              handleOpenModal(true);
+              setIsConfirmationDialogOpen(true);
             }}
           >
             Save as draft
@@ -309,7 +297,7 @@ export function SummaryAndSubmit() {
             startIcon={<Publish />}
             onClick={() => {
               isDraftUpload.current = false;
-              handleOpenModal(true);
+              setIsConfirmationDialogOpen(true);
             }}
           >
             Submit for analysis
@@ -359,7 +347,7 @@ export function SummaryAndSubmit() {
           >
             Ok
           </PillButton>
-          <PillButton color="info" onClick={() => handleOpenModal(false)}>
+          <PillButton color="info" onClick={() => setIsConfirmationDialogOpen(false)}>
             Cancel
           </PillButton>
         </DialogActions>

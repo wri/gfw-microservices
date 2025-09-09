@@ -339,11 +339,6 @@ export const AnalysisSchema = {
       name: 'tree_cover_loss_arg_otbn_yearly',
       nullable: true,
     },
-    argOtbnArea: {
-      type: String,
-      name: 'arg_otbn_area',
-      nullable: true,
-    },
     protectedAreasByCategoryArea: {
       type: String,
       name: 'protected_areas_by_category_area',

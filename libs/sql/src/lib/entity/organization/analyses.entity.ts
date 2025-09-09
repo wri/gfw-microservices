@@ -209,9 +209,6 @@ export class Analyses {
   @Column({ name: 'tree_cover_loss_arg_otbn_yearly' })
   treeCoverLossArgOtbnYearly: string;
 
-  @Column({ name: 'arg_otbn_area' })
-  argOtbnArea: string;
-
   @Column({ name: 'protected_areas_by_category_area' })
   protectedAreasByCategoryArea: string;
 

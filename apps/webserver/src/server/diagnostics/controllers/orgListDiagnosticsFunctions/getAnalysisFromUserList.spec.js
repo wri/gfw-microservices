@@ -304,7 +304,7 @@ describe('getAnalysisFromUserList', () => {
         commodity_threat_fires: '{}',
         dissolved_data_location_info: '{}',
         tree_cover_loss_arg_otbn_yearly: '{}',
-        arg_otbn_area: '{}',
+        classified_region_area: '{"ARG":{"Category I":100,"Category II":200}}',
         protected_areas_by_category_area: '{}',
         landmark_by_category_area: '{}',
       },

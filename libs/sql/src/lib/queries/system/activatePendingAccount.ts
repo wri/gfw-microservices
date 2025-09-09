@@ -198,7 +198,7 @@ SET @TEMPLATE = 'CREATE TABLE [{DATABASENAME}].[dbo].[ListAttributes]
 )'
 SET @SQL = REPLACE(@TEMPLATE, '{DATABASENAME}', @OrgdbName)
     EXEC sp_executesql @SQL
-    
+
     SET @TEMPLATE = 'CREATE TABLE [{DATABASENAME}].[dbo].[LargeLists]
     (
         [large_list_id] INT IDENTITY(1,1) NOT NULL,
@@ -331,7 +331,6 @@ SET @SQL = REPLACE(@TEMPLATE, '{DATABASENAME}', @OrgdbName)
         [commodity_threat_fires] NVARCHAR(MAX) DEFAULT ''{}'',
         [dissolved_geom_object_key] NVARCHAR(300) DEFAULT ''{}'',
         [tree_cover_loss_arg_otbn_yearly] NVARCHAR(MAX) DEFAULT ''{}'',
-        [arg_otbn_area] NVARCHAR(MAX) DEFAULT ''{}'',
         [argentina_presence] NVARCHAR(50) DEFAULT ''false'',
 
         [protected_areas_by_category_area] NVARCHAR(MAX) DEFAULT ''{}'',
@@ -394,7 +393,7 @@ SET @SQL = REPLACE(@TEMPLATE, '{DATABASENAME}', @OrgdbName)
 
     SET @SQL = REPLACE(@TEMPLATE, '{DATABASENAME}', @OrgdbName)
     EXEC sp_executesql @SQL
-    
+
     SET @TEMPLATE = 'CREATE TABLE [{DATABASENAME}].[dbo].[AFIAnalysis](
         [list_id] [SMALLINT] NULL,
         [location_id] [INT] NULL,
@@ -479,7 +478,7 @@ EXEC sp_executesql @SQL
    * CREATE ALL THE TABLE TYPES.
    ********************************************************/
     SET @TEMPLATE = 'USE [{DATABASENAME}]
-        EXEC(''        
+        EXEC(''
             CREATE TYPE dbo.[TT-Analyses-Dashboard]
             AS TABLE
             (

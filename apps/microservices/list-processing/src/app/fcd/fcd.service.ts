@@ -106,7 +106,6 @@ export class FCDService {
     const {
       country_specific_deforestation_classified_region_yearly,
       tree_cover_loss_arg_otbn_yearly,
-      arg_otbn_area,
       tree_cover_loss_by_country_classified_region_yearly,
       classified_region_area,
     } = await this.getAnnualLossData({
@@ -116,7 +115,6 @@ export class FCDService {
       sqlFields: [
         AnnualLossFcdFields.COUNTRY_SPECIFIC_DEFORESTATION_CLASSIFIED_REGION_YEARLY,
         AnnualLossFcdFields.TREE_COVER_LOSS_ARG_OTBN_YEARLY,
-        AnnualLossFcdFields.ARG_OTBN_AREA,
         AnnualLossFcdFields.TREE_COVER_LOSS_BY_COUNTRY_CLASSIFIED_REGION_YEARLY,
         AnnualLossFcdFields.CLASSIFIED_REGION_AREA,
       ],
@@ -124,10 +122,8 @@ export class FCDService {
 
     let overlap = {};
     try {
-      const overlapTemp =
-        !classified_region_area && countryGadm === 'ARG'
-          ? this.parseJsonSafely(arg_otbn_area)
-          : this.parseJsonSafely(classified_region_area)?.[countryGadm] ?? {};
+      const parsedClassifiedRegionArea = this.parseJsonSafely(classified_region_area);
+      const overlapTemp = parsedClassifiedRegionArea?.[countryGadm] ?? {};
 
       overlap =
         countryGadm === 'COL'

@@ -7,8 +7,8 @@ import { isObjInCountryFormat, getTotalArea } from '../shared/functions';
  * @summary [landmark_by_category_area] uses total_area to calculate the percentage
  * can look like: '{"Not Reported":5021.8882}'
  *
- * @summary [arg_otbn_area] uses total_area
- * can look like: '{"Category II":1301.57,"Category I":639.0568}'
+ * @summary [classified_region_area] uses total_area
+ * can look like: '{"ARG":{"Category II":1301.57,"Category I":639.0568}}'
  *
  * @summary [protected_areas_by_category_area] uses total_area
  * can look like: '{"Ramsar Site, Wetland of International Importance":5021.8882}'
@@ -16,7 +16,7 @@ import { isObjInCountryFormat, getTotalArea } from '../shared/functions';
 
 enum LayersKeys {
   landmark_by_category_area = 'landmark_by_category_area',
-  arg_otbn_area = 'arg_otbn_area',
+  classified_region_area = 'classified_region_area',
   protected_areas_by_category_area = 'protected_areas_by_category_area',
 }
 // index position for value in entries

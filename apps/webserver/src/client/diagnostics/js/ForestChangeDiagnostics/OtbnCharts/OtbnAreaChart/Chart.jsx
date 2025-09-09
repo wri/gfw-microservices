@@ -6,7 +6,7 @@ const transifex = Transifex.live.translateText;
 
 function Chart({ data }) {
   const renderChart = (divRef) => {
-    const argentinaOtbnArea = JSON.parse(data?.arg_otbn_area);
+    const argentinaOtbnArea = JSON.parse(data?.classified_region_area?.ARG || '{}');
     const { argentinaOtbn } = chartDatasetConfigs;
     const chartData = argentinaOtbn.chartLabels.map(({ legend, color }) => ({
       legend: transifex(legend),

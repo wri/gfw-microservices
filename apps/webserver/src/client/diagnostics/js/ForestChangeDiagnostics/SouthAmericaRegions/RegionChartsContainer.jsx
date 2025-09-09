@@ -21,7 +21,7 @@ function RegionChartsContainer({
 }) {
   const [selectedTab, setSelectedTab] = useState(regionIds.REGIONAL);
 
-  // Simplified Argentina availability check - use country_area.ARG instead of arg_otbn_area
+  // Simplified Argentina availability check - use country_area.ARG
   const isArgentinaDataAvailable = getTotalAreaPerCountry(data, 'ARG', isGfwList) > 0;
 
   const isColombiaDataAvailable = getTotalAreaPerCountry(data, 'COL', isGfwList) > 0;

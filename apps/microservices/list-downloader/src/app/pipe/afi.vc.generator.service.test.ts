@@ -188,7 +188,7 @@ describe('AfiVcGeneratorService', () => {
         commodity_threat_fires: '',
         dissolved_data_location_info: '',
         tree_cover_loss_arg_otbn_yearly: '',
-        arg_otbn_area: '',
+        classified_region_area: '',
       },
     ]);
     mockUspGetListAnalysis.run.mockResolvedValue([{}]);
@@ -311,7 +311,7 @@ describe('AfiVcGeneratorService', () => {
         commodity_threat_fires: '',
         dissolved_data_location_info: '',
         tree_cover_loss_arg_otbn_yearly: '',
-        arg_otbn_area: '',
+        classified_region_area: '',
       },
     ]);
 
@@ -426,7 +426,7 @@ describe('AfiVcGeneratorService', () => {
         'commodity_threat_fires',
         'dissolved_data_location_info',
         'tree_cover_loss_arg_otbn_yearly',
-        'arg_otbn_area',
+        'classified_region_area',
       ],
     });
   });

@@ -157,6 +157,14 @@ export class FCDService {
         this.parseJsonSafely(tree_cover_loss_by_country_classified_region_yearly)?.[countryGadm] ??
         {};
 
+      if (countryGadm === 'ARG' && (!treeCoverLoss || Object.keys(treeCoverLoss).length === 0)) {
+        this.logger.warn(
+          'ARG data missing from tree_cover_loss_by_country_classified_region_yearly for listId: ' +
+            listId +
+            ', locationId: ' +
+            locationId
+        );
+      }
       if (countryGadm === 'COL') {
         tree_cover_loss = this.splitObjAndCreateNestedChildren(treeCoverLoss);
       } else {

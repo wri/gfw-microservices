@@ -67,6 +67,7 @@ export default defineConfig({
       deployment: process.env.CYPRESS_ENV,
       waittime: parseInt(process.env['CYPRESS_TIMEOUT']) || 30000,
       language: 'en-US',
+      hideThirdPartyRequests: true, // Set to false to disable third-party request filtering
     },
     ...nxE2EPreset(__dirname),
     setupNodeEvents,

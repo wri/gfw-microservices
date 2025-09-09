@@ -94,12 +94,12 @@ if (hideThirdPartyRequests) {
                           // - Hotjar
                           // - Zendesk
                           // - Any other external tracking services
-                          if (requestUrl && !requestUrl.startsWith('/')) {
-                            // Check if it's a full URL (contains protocol)
-                            if (requestUrl.includes('://') || requestUrl.startsWith('www.')) {
-                              node.style.display = 'none';
-                              console.log('Hidden third-party request:', requestUrl);
-                            }
+                          // Hide requests that are external/third-party:
+                          // - If the URL contains '://', it's absolute (external)
+                          // - If it doesn't start with '/', it's not a relative/internal request
+                          if (requestUrl && (requestUrl.includes('://') || !requestUrl.startsWith('/'))) {
+                            node.style.display = 'none';
+                            console.log('Hidden third-party request:', requestUrl);
                           }
                         }
                       }

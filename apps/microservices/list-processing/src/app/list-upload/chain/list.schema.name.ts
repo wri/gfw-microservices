@@ -1,4 +1,4 @@
-import { Logger } from '@nestjs/common';
+import { Logger, HttpException, HttpStatus } from '@nestjs/common';
 import { AbstractHandler, ChainType, RequestNewList } from './types';
 import { getListByFilters } from '@wri-monorepos/sql';
 
@@ -42,7 +42,7 @@ export class ListSchemaName extends AbstractHandler<ChainType> {
         clientDatabase
       );
       if (doesListNameAlreadyExist) {
-        throw Error(`List name ${listName} already exists.`);
+        throw new HttpException(`List name ${listName} already exists.`, HttpStatus.CONFLICT);
       }
     }
 

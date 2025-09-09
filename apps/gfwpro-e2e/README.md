@@ -46,6 +46,34 @@ mermaid diagrams of how our test code is structured (very similar to the Contino
 
 ...especially the difference between the `abilities` folder and the `features` folder
 
+## Third-Party Request Filtering
+
+To improve readability of Cypress logs, this project includes automatic filtering of third-party network requests (Google Analytics, Hotjar, Zendesk, Plausible, LinkedIn, etc.) from the command log.
+
+### Configuration
+
+The filtering is controlled by the `hideThirdPartyRequests` environment variable in `cypress.config.ts`:
+
+```typescript
+env: {
+  hideThirdPartyRequests: true, // Set to false to disable filtering
+}
+```
+
+### How It Works
+
+- Uses a MutationObserver to monitor the Cypress command log
+- Detects XHR/Fetch requests to external domains (URLs containing `://` or starting with `www.`)
+- Hides these requests from the visual log while preserving your application's API calls
+- Only affects the visual display - doesn't interfere with test functionality
+
+### Debugging
+
+If you need to see all network requests temporarily:
+
+1. Set `hideThirdPartyRequests: false` in `cypress.config.ts`, or
+2. Check the browser console for "Hidden third-party request:" messages
+
 ## Resources
 
 - Links to Specification By Example books

@@ -85,8 +85,9 @@ if (hideThirdPartyRequests) {
                         const commandMessageText = commandInfo.querySelector('.command-message-text');
 
                         if (commandMessageText) {
-                          const messageParts = commandMessageText.textContent.split(' ');
-                          const requestUrl = messageParts[messageParts.length - 1];
+                          // Use regex to robustly extract the first URL from the message text
+                          const urlMatch = commandMessageText.textContent.match(/https?:\/\/[^\s]+|\/\/[^\s]+|www\.[^\s]+/);
+                          const requestUrl = urlMatch ? urlMatch[0] : null;
 
                           // Hide requests that don't start with '/' (external/third-party requests)
                           // This includes requests to domains like:

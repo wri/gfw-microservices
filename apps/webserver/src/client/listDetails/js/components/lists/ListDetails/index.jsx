@@ -52,7 +52,6 @@ import {
   getListFilteredLocations,
   dataCleanup,
   containsPunctuation,
-  checkValidViewCommodity,
 } from '../../../../../locations/js/utils/lists.utils';
 import ShareList from '../../../../../locations/js/components/ShareList/ShareList';
 import { FailedPopupDialog } from '../../../../../locations/js/components/landing/FailedPopupDialog';
@@ -1697,8 +1696,7 @@ export default class ListDetails extends Component {
     if (isFcdActive || isGfwList) {
       listViewOptions.push(FOREST_CHANGE_VIEW);
     }
-    const isPalmOilBackwardComp = checkValidViewCommodity(selectedLists?.[0], listData?.[0]);
-    if (isPalmOilBackwardComp || isPalmRiskActive) {
+    if (isPalmRiskActive) {
       listViewOptions.push(COMMODITY_RISK_VIEW);
       if (!listAnalysesStatus?.some(({ analysisId }) => analysisId === 'PalmRisk')) {
         listAnalysesStatus.push({ analysisId: 'PalmRisk' });
@@ -1764,7 +1762,7 @@ export default class ListDetails extends Component {
                 }
                 isChangeTypeOfAnalysisModalOpen={this.state.isChangeTypeOfAnalysisModalOpen}
                 commodity={selectedList?.Commodity}
-                isPalmOilBackwardComp={isPalmOilBackwardComp}
+                isPalmRiskActive={isPalmRiskActive}
               />
 
               <AnalysisStatusBanners

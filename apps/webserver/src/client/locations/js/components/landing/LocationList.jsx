@@ -140,7 +140,7 @@ export default class LocationList extends Component {
 
     const showSharedColumn = list.sharedWith || list.sharedList;
 
-    const { isPalmRiskActive } = getActiveAnalysisFlags(list?.listAnalysesStatus);
+    const { isPalmRiskActive } = getActiveAnalysisFlags(list);
 
     const listStatusComponent = (list) => {
       if (isAnalyzingStatus(list.list_status_id)) {

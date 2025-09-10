@@ -3,9 +3,7 @@ import { getActiveAnalysisFlags } from '../../../listDetails/js/utils/listDetail
 const getAvailableDiagnostics = (selectedList) => {
   let availableDiagnostics = [];
 
-  const { isFcdActive, isPalmRiskActive } = getActiveAnalysisFlags(
-    selectedList?.listAnalysesStatus
-  );
+  const { isFcdActive, isPalmRiskActive } = getActiveAnalysisFlags(selectedList);
 
   if (isFcdActive) {
     availableDiagnostics.push({ value: 'forest_change', label: 'Forest change' });

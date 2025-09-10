@@ -86,7 +86,6 @@ export function DataTemplates({ isOpen, onClose, workflowType }: DataTemplatesPr
       >
         download an example template
       </Link>
-      on the upload page to access those templates.
     </>
   );
 

@@ -58,20 +58,16 @@ async function processShapefile() {
           return;
         }
 
-        if (props.hasOwnProperty('mill_name')) {
-          props['Location Name'] = props['mill_name'];
-          delete props['mill_name'];
-        }
-
-        if (props.hasOwnProperty('rspo_type')) {
-          props['Rspo Type'] = props['rspo_type'];
-          delete props['rspo_type'];
-        }
-
-        props['Analysis Radius'] = 50; // default value
+        const { mill_name, rspo_type, ...rest } = props;
+        const newProps = {
+          ...rest,
+          'Location Name': mill_name,
+          'Rspo Type': rspo_type,
+          'Analysis Radius': 50,
+        };
 
         featuresProcessed++;
-        return props; // Return the modified properties
+        return newProps; // Return the modified properties
       })
       .filter(Boolean); // Filter out any undefined/null entries
 

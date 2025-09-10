@@ -50,28 +50,30 @@ async function processShapefile() {
 
     // 3. Modify the properties of each feature
     let featuresProcessed = 0;
-    const records = geojson.features.map((feature) => {
-      const props = feature.properties;
+    const records = geojson.features
+      .map((feature) => {
+        const props = feature.properties;
 
-      if (!props) {
-        return;
-      }
+        if (!props) {
+          return;
+        }
 
-      if (props.hasOwnProperty('mill_name')) {
-        props['Location Name'] = props['mill_name'];
-        delete props['mill_name'];
-      }
+        if (props.hasOwnProperty('mill_name')) {
+          props['Location Name'] = props['mill_name'];
+          delete props['mill_name'];
+        }
 
-      if (props.hasOwnProperty('rspo_type')) {
-        props['Rspo Type'] = props['rspo_type'];
-        delete props['rspo_type'];
-      }
+        if (props.hasOwnProperty('rspo_type')) {
+          props['Rspo Type'] = props['rspo_type'];
+          delete props['rspo_type'];
+        }
 
-      props['Analysis Radius'] = 50; // default value
+        props['Analysis Radius'] = 50; // default value
 
-      featuresProcessed++;
-      return props; // Return the modified properties
-    }).filter(Boolean); // Filter out any undefined/null entries
+        featuresProcessed++;
+        return props; // Return the modified properties
+      })
+      .filter(Boolean); // Filter out any undefined/null entries
 
     console.log(`✔️ ${featuresProcessed} features were processed.`);
 

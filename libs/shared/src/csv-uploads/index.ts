@@ -86,23 +86,34 @@ export const idBasedSystemHandler = async (
   const errors: Error[] = [];
 
   /* ── 1. scan & group ────────────────────────────────────────────── */
-  data.forEach((row) => {
-    try {
-      const key = determineIdType(row); // may throw
-      logger.log(`${key} ID Based List Identified`);
-      const { missingFields, isValid } = validateIdBased(key, row);
+  // ✅ dataset-level validation (headers + content across all rows)
+  try {
+    const firstRow = data[0];
+    const key = determineIdType(firstRow);
 
-      if (!isValid) {
-        throw new Error(`Missing mandatory fields: ${missingFields.join(',')}`);
-      }
+    logger.log(`${key} ID Based List Identified`);
+    const { missingFields, isValid } = validateIdBased(key, data);
 
-      (groups[key] ??= []).push(row);
-    } catch (error) {
-      logger.error(error);
-      resolveFlaggedRowsByValueFound(row, error);
-      errors.push(error);
+    if (!isValid) {
+      throw new Error(`Missing mandatory fields: ${missingFields.join(',')}`);
     }
-  });
+
+    // ✅ row-level handling
+    data.forEach((row) => {
+      try {
+        // you still may want per-row validation or other checks here
+        const rowKey = determineIdType(row); // if this can vary
+        (groups[rowKey] ??= []).push(row);
+      } catch (error) {
+        logger.error(error);
+        resolveFlaggedRowsByValueFound(row, error);
+        errors.push(error);
+      }
+    });
+  } catch (error) {
+    logger.error(error);
+    errors.push(error);
+  }
 
   /* ── 2. process each valid group (runs even if there were errors) ─ */
   await Promise.all(
@@ -176,16 +187,25 @@ export const determineIdType = (row: Record<string, unknown>) => {
   throw new Error(UNSUPPORTED_ID_TYPE_MESSAGE);
 };
 
-export const validateIdBased = (idType: string, firstRow: Record<string, unknown>) => {
+export const validateIdBased = (idType: string, rows: Record<string, unknown>[]) => {
   const { validateColumns } = ID_TYPE_HANDLER[idType];
-  const dataColumns = Object.keys(firstRow);
+  const dataColumns = Object.keys(rows[0] || {}); // headers from first row
 
   const missingFields = validateColumns.filter((requiredColumn) => {
     // treat ' | ' like an OR
     if (requiredColumn.includes(' | ')) {
-      return !dataColumns.some((thisColumn) => requiredColumn.split(' | ').includes(thisColumn));
+      const options = requiredColumn.split(' | ');
+      const hasHeader = dataColumns.some((c) => options.includes(c));
+      const hasValues = hasHeader
+        ? rows.some((row) => options.some((c) => row[c] !== undefined && row[c] !== ''))
+        : false;
+      return !(hasHeader && hasValues);
     } else {
-      return !dataColumns.includes(requiredColumn);
+      const hasHeader = dataColumns.includes(requiredColumn);
+      const hasValues = hasHeader
+        ? rows.some((row) => row[requiredColumn] !== undefined && row[requiredColumn] !== '')
+        : false;
+      return !(hasHeader && hasValues);
     }
   });
 

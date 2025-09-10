@@ -57,7 +57,6 @@ async function processShapefile() {
         return;
       }
 
-      // Rename the "mill_name" field to "Location Name"
       if (props.hasOwnProperty('mill_name')) {
         props['Location Name'] = props['mill_name'];
         delete props['mill_name'];
@@ -68,9 +67,7 @@ async function processShapefile() {
         delete props['rspo_type'];
       }
 
-      // Add a new integer field "Analysis Radius" with a value of 50
-      props['Analysis Radius'] = 50;
-      props['Commodity'] = 'Supply Shed';
+      props['Analysis Radius'] = 50; // default value
 
       featuresProcessed++;
       return props; // Return the modified properties
@@ -100,5 +97,4 @@ async function processShapefile() {
   }
 }
 
-// Run the main function
 processShapefile();

@@ -131,7 +131,7 @@ export default class ListDetails extends Component {
       }
     });
     const { isFcdActive, isPalmRiskActive, isAfiActive, isGHGActive, isOnlyGHGActive } =
-      getActiveAnalysisFlags(listAnalysesStatus);
+      getActiveAnalysisFlags(selectedList);
 
     const isEudrBannerDismissed = !!localStorage.getItem(EUDR_BANNER_KEY);
 

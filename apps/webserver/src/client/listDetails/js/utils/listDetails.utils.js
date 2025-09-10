@@ -1,15 +1,25 @@
 import { analysisTypes } from '../../../../config/env/analysisTypes.constants';
+import { GFW_LISTS_NUMBER_CONSTANTS } from '../../../../config/env/gfwLists.constants';
 
-export const getActiveAnalysisFlags = (listAnalysesStatus = []) => {
-  const analysisIds = listAnalysesStatus?.map(({ analysisId }) => analysisId) || [];
-
-  const isFcdActive = analysisIds.includes(analysisTypes.FOREST_CHANGE_DIAGNOSTICS);
+export const getActiveAnalysisFlags = ({
+  listAnalysesStatus = [],
+  id,
+  isGlobalForestWatchList,
+}) => {
+  const analysisIds = listAnalysesStatus.map(({ analysisId }) => analysisId);
 
   const fcd = listAnalysesStatus.find(
     ({ analysisId }) => analysisId === analysisTypes.FOREST_CHANGE_DIAGNOSTICS
   );
+
+  const isGfwPalmOilMillsList =
+    isGlobalForestWatchList && id === GFW_LISTS_NUMBER_CONSTANTS.PALM_OIL_MILLS;
+
+  const isFcdActive = !!fcd || isGfwPalmOilMillsList;
   const isPalmRiskActive =
-    analysisIds.includes(analysisTypes.PALM_RISK) || fcd?.options === 'PalmRisk';
+    analysisIds.includes(analysisTypes.PALM_RISK) ||
+    isGfwPalmOilMillsList ||
+    fcd?.options === 'PalmRisk';
 
   const isAfiActive = analysisIds.includes(analysisTypes.DEFORESTATION_KPIS);
   const isGHGActive = analysisIds.includes(analysisTypes.GREENHOUSE_GAS_EMISSIONS);

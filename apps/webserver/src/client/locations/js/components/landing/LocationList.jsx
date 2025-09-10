@@ -1,8 +1,7 @@
 import { Component } from 'react';
 import { getIsDiagnosticStatusDraft } from '../../../../listDetails/js/utils/draft.utils';
 import { locationsPage, userAccessLevel, SAVED_LOCATIONS } from '../../../../common/js/config';
-import { checkValidViewCommodity } from '../../utils/lists.utils';
-
+import { getActiveAnalysisFlags } from '../../../../listDetails/js/utils/listDetails.utils';
 import CustomDialog from '../../../../common/js/components/CustomDialog/CustomDialog';
 
 import fetch from '../../../../common/js/utils/fetch';
@@ -140,7 +139,8 @@ export default class LocationList extends Component {
     const showNonOwnerDraft = !userIsAdmin && isShared;
 
     const showSharedColumn = list.sharedWith || list.sharedList;
-    const isPalmOilBackwardComp = checkValidViewCommodity(list);
+
+    const { isPalmRiskActive } = getActiveAnalysisFlags(list?.listAnalysesStatus);
 
     const listStatusComponent = (list) => {
       if (isAnalyzingStatus(list.list_status_id)) {
@@ -163,7 +163,7 @@ export default class LocationList extends Component {
             setManageListFolderOpen={() => this.setState({ isManageListFolderOpen: true })}
             setDeleteDialogOpen={() => this.setState({ isDeleteDialogOpen: true })}
             isFailedByUsageLimits={isListFailedByAnalysisStatusLimit(list)}
-            isPalmOilBackwardComp={isPalmOilBackwardComp}
+            isPalmRiskActive={isPalmRiskActive}
           />
         );
       } else if (getIsDiagnosticStatusDraft(list)) {
@@ -184,7 +184,7 @@ export default class LocationList extends Component {
             setDeleteDialogOpen={() => this.setState({ isDeleteDialogOpen: true })}
             userIsAdmin={userIsAdmin}
             B2BsharedListEnabled={B2BsharedListEnabled}
-            isPalmOilBackwardComp={isPalmOilBackwardComp}
+            isPalmRiskActive={isPalmRiskActive}
           />
         );
       } else {
@@ -206,7 +206,7 @@ export default class LocationList extends Component {
             userIsAdmin={userIsAdmin}
             handleRerunDialogState={this.handleRerunDialogState}
             history={history}
-            isPalmOilBackwardComp={isPalmOilBackwardComp}
+            isPalmRiskActive={isPalmRiskActive}
           />
         );
       }

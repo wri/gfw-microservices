@@ -29,7 +29,7 @@ function FailedList({
   setManageListFolderOpen,
   setDeleteDialogOpen,
   isFailedByUsageLimits,
-  isPalmOilBackwardComp,
+  isPalmRiskActive,
 }) {
   const [openDownloadLargeListFileDialog, setOpenDownloadLargeListFileDialog] = useState(false);
   const [menuAnchorEl, setMenuAnchorEl] = useState(null);
@@ -57,7 +57,7 @@ function FailedList({
         setIsChangeTypeOfAnalysisModalOpen={setIsChangeTypeOfAnalysisModalOpen}
         isChangeTypeOfAnalysisModalOpen={isChangeTypeOfAnalysisModalOpen}
         commodity={list?.Commodity}
-        isPalmOilBackwardComp={isPalmOilBackwardComp}
+        isPalmRiskActive={isPalmRiskActive}
       />
 
       <li className="locations-list locations-list--failed" onClick={goToListDetails}>

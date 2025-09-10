@@ -45,7 +45,7 @@ function ActiveList({
   setDeleteDialogOpen,
   userIsAdmin,
   handleRerunDialogState,
-  isPalmOilBackwardComp,
+  isPalmRiskActive,
 }) {
   const [menuAnchorEl, setMenuAnchorEl] = useState(null);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -117,7 +117,7 @@ function ActiveList({
         setIsChangeTypeOfAnalysisModalOpen={setIsChangeTypeOfAnalysisModalOpen}
         isChangeTypeOfAnalysisModalOpen={isChangeTypeOfAnalysisModalOpen}
         commodity={list?.Commodity}
-        isPalmOilBackwardComp={isPalmOilBackwardComp}
+        isPalmRiskActive={isPalmRiskActive}
       />
 
       <li className="locations-list" onClick={clickLocationRow}>

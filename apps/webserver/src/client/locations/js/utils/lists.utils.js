@@ -14,25 +14,6 @@ import { listStatus } from '../../../../config/env/listStatuses.constants';
 
 const PALM_OIL_MILLS = 'Palm Oil Mills';
 
-// Check to see which views should be enabled
-const checkValidViewCommodity = (list, location) => {
-  if (!list) {
-    return false;
-  }
-
-  if (!list.isGlobalForestWatchList) {
-    const { template_id, location_classification } = list;
-    let locationClassification = location?.['Location Classification'] ?? location_classification;
-    if (Array.isArray(locationClassification)) {
-      locationClassification = locationClassification[0];
-    }
-    locationClassification = locationClassification?.toLowerCase();
-    return template_id === 2 || (template_id === 5 && locationClassification === 'supply shed');
-  }
-
-  return list.list_name === PALM_OIL_MILLS;
-};
-
 const checkColumnListDraftList = (accessor) => {
   return (
     accessor === 'Analysis Area' ||
@@ -362,7 +343,6 @@ const isListFailedByAnalysisStatusLimit = ({ listAnalysesStatus }) => {
 };
 
 module.exports = {
-  checkValidViewCommodity,
   checkColumnListDraftList,
   isHiddenColumnInPost2020riskTable,
   checkColumnListFC,

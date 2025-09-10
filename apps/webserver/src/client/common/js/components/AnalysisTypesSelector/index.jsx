@@ -31,14 +31,14 @@ function AnalysisTypesSelector({
   selectedAnalyses,
   setSelectedAnalyses,
   commodity,
-  isPalmOilBackwardComp,
+  isPalmRiskActive,
 }) {
   const handleAnalyzesSelection = (selectedAnalysisId) => {
     setSelectedAnalyses(getUpdatedSelection(selectedAnalyses, selectedAnalysisId));
   };
 
   const analysisOptions =
-    commodity === 'OILP' || isPalmOilBackwardComp
+    commodity === 'OILP' || isPalmRiskActive
       ? [...analysisTypesForUI, palmRiskAnalysis]
       : analysisTypesForUI;
 

@@ -4,7 +4,13 @@ export const getActiveAnalysisFlags = (listAnalysesStatus = []) => {
   const analysisIds = listAnalysesStatus?.map(({ analysisId }) => analysisId) || [];
 
   const isFcdActive = analysisIds.includes(analysisTypes.FOREST_CHANGE_DIAGNOSTICS);
-  const isPalmRiskActive = analysisIds.includes(analysisTypes.PALM_RISK);
+
+  const fcd = listAnalysesStatus.find(
+    ({ analysisId }) => analysisId === analysisTypes.FOREST_CHANGE_DIAGNOSTICS
+  );
+  const isPalmRiskActive =
+    analysisIds.includes(analysisTypes.PALM_RISK) || fcd?.options === 'PalmRisk';
+
   const isAfiActive = analysisIds.includes(analysisTypes.DEFORESTATION_KPIS);
   const isGHGActive = analysisIds.includes(analysisTypes.GREENHOUSE_GAS_EMISSIONS);
 

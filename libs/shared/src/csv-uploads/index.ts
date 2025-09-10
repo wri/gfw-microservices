@@ -86,7 +86,7 @@ export const idBasedSystemHandler = async (
   const errors: Error[] = [];
 
   /* ── 1. scan & group ────────────────────────────────────────────── */
-  // dataset-level validation (headers + content across all rows)
+  // dataset-level validation (headers and content across all rows)
   try {
     const firstRow = data[0];
     const key = determineIdType(firstRow);
@@ -101,8 +101,7 @@ export const idBasedSystemHandler = async (
     // row-level handling
     data.forEach((row) => {
       try {
-        // you still may want per-row validation or other checks here
-        const rowKey = determineIdType(row); // if this can vary
+        const rowKey = determineIdType(row);
         (groups[rowKey] ??= []).push(row);
       } catch (error) {
         logger.error(error);

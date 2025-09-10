@@ -34,7 +34,6 @@ import {
   updateSelectedLocations,
 } from '../../../../../locations/js/actions/locationActions';
 import LocationsSummary from './LocationsSummary';
-import SaveAsDraftButton from '../../../../../common/js/components/SaveAsDraft/SaveAsDraftButton';
 import CopyMoveModal from '../../modals/CopyMoveModal';
 import fetch from '../../../../../common/js/utils/fetch';
 import httpRequest from '../../../../../common/js/utils/httpRequest';
@@ -111,6 +110,11 @@ const ACTIONS = {
 const LIST_TYPES = {
   EXISTING: 'existing',
   NEW: 'new',
+};
+
+// Utility function to get button label for copy/move actions
+const getButtonLabel = (selectedMoveOrCopy) => {
+  return selectedMoveOrCopy === ACTIONS.MOVE ? 'Move Location(s)' : 'Copy Location(s)';
 };
 
 const MODES = {
@@ -731,15 +735,66 @@ export default class ListDetails extends Component {
   };
 
   setMoveOrCopy = (evt) => {
-    const { selectedNewOrExisting } = this.state;
+    const {
+      selectedNewOrExisting,
+      newListName,
+      isNewListNameDuplicate,
+      isNewListNameValid,
+      isOnlyGHGActive,
+    } = this.state;
     const selectedMoveOrCopy = evt.target.value;
     // The API doesn't support moving to a new list, only copying, so we auto-select the 'existing' option if the user
     // chooses to move.
+
     this.setState({
       selectedMoveOrCopy,
       selectedNewOrExisting:
         selectedMoveOrCopy === ACTIONS.MOVE ? LIST_TYPES.EXISTING : selectedNewOrExisting,
       dialogChildren: true,
+      dialogTitle:
+        selectedMoveOrCopy === ACTIONS.MOVE
+          ? locationsPage.lists.moveLocationsDialogHeader
+          : locationsPage.lists.copyLocationsDialogHeader,
+      dialogActions: (
+        <>
+          <Button
+            className="dialog__primary-action"
+            variant="primary"
+            label={getButtonLabel(selectedMoveOrCopy)}
+            onClick={() => {
+              const trackCopyMove = (action, mode = MODES.DRAFT) => {
+                const capitalized = {
+                  [ACTIONS.COPY]: 'Copy',
+                  [ACTIONS.MOVE]: 'Move',
+                };
+
+                const event = `${capitalized[action]} List`;
+                const label =
+                  mode === MODES.DRAFT
+                    ? `User ${action === ACTIONS.COPY ? 'copies' : 'moves'} a list to draft`
+                    : `User ${action === ACTIONS.COPY ? 'copies' : 'moves'} a list and submits`;
+
+                gtag('event', event, {
+                  event_category: capitalized[action],
+                  event_label: label,
+                });
+              };
+
+              trackCopyMove(selectedMoveOrCopy, MODES.DRAFT);
+              this.setState({ isSaveAsDraft: true }, () => {
+                this.moveSelectedLocations();
+              });
+            }}
+            disabled={
+              isOnlyGHGActive &&
+              selectedNewOrExisting === LIST_TYPES.NEW &&
+              (!newListName || isNewListNameDuplicate || isNewListNameValid)
+            }
+          />
+
+          <LinkButton onClick={this.cancelDialogResetName} label={locationsPage.lists.cancel} />
+        </>
+      ),
     });
   };
 
@@ -783,10 +838,8 @@ export default class ListDetails extends Component {
     isNewListNameValid,
     selectedNewOrExisting,
   }) => {
-    const { selectedLocations, selectedMoveOrCopy, selectedLists } = this.props;
+    const { selectedLocations, selectedMoveOrCopy } = this.props;
     const { isOnlyGHGActive } = this.state;
-
-    const isGfwList = selectedLists[0]?.isGlobalForestWatchList;
     if (selectedLocations.length > maxLocations) {
       this.setState({
         dialogOpen: true,
@@ -819,25 +872,15 @@ export default class ListDetails extends Component {
       this.setState({
         dialogActions: (
           <>
-            <SaveAsDraftButton
-              onClick={() => {
-                this.setState({ isSaveAsDraft: true }, () => {
-                  trackCopyMove(selectedMoveOrCopy, MODES.DRAFT);
-                  this.moveSelectedLocations();
-                });
-              }}
-              disabled={
-                selectedNewOrExisting === LIST_TYPES.NEW &&
-                (!newListName || isNewListNameDuplicate || isNewListNameValid)
-              }
-            />
             <Button
               className="dialog__primary-action"
               variant="primary"
-              label={locationsPage.lists.submit}
+              label={getButtonLabel(selectedMoveOrCopy)}
               onClick={() => {
-                trackCopyMove(selectedMoveOrCopy, MODES.SUBMIT);
-                this.setState({ isSaveAsDraft: false, showSubmitModal: true });
+                trackCopyMove(selectedMoveOrCopy, MODES.DRAFT);
+                this.setState({ isSaveAsDraft: true }, () => {
+                  this.moveSelectedLocations();
+                });
               }}
               disabled={
                 isOnlyGHGActive &&
@@ -850,9 +893,10 @@ export default class ListDetails extends Component {
           </>
         ),
         dialogOpen: true,
-        dialogTitle: isGfwList
-          ? locationsPage.lists.copyLocationsDialogHeader
-          : locationsPage.lists.moveLocationsDialogHeader,
+        dialogTitle:
+          selectedMoveOrCopy === ACTIONS.MOVE
+            ? locationsPage.lists.moveLocationsDialogHeader
+            : locationsPage.lists.copyLocationsDialogHeader,
         dialogContent: '',
         dialogChildren: true,
       });

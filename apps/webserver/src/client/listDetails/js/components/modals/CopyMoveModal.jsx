@@ -6,7 +6,7 @@ import './CopyMoveModal.scss';
 
 import GfwSelect from '../../../../common/js/components/GfwSelect';
 import { locationsPage } from '../../../../common/js/config';
-import SaveAsDraftNote from '../../../../common/js/components/SaveAsDraft/SaveAsDraftNote';
+import CopyMoveNote from '../../../../common/js/components/SaveAsDraft/CopyMoveNote';
 import { buildDropdownOptions } from '../../../../common/js/utils/buildDropdownOptions';
 import { LoadingModal } from '../../../../components';
 import { templateList } from '../../../../common/js/utils/templateUtils';
@@ -221,7 +221,7 @@ export default function CopyMoveModal(props) {
       </div>
 
       <div className="CopyMoveModalFooter">
-        <SaveAsDraftNote />
+        <CopyMoveNote actionType={selectedMoveOrCopy} />
       </div>
       <LoadingModal isLoading={isLoading} />
     </div>

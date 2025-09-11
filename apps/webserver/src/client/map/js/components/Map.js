@@ -3,7 +3,6 @@ import moment from 'moment';
 import { withRouter } from 'react-router-dom';
 // ESRI Imports
 import EsriMap from '@arcgis/core/Map';
-import Extent from '@arcgis/core/geometry/Extent';
 import * as GeometryEngine from '@arcgis/core/geometry/geometryEngine';
 import Graphic from '@arcgis/core/Graphic';
 import Polygon from '@arcgis/core/geometry/Polygon';
@@ -16,7 +15,6 @@ import SketchViewModel from '@arcgis/core/widgets/Sketch/SketchViewModel';
 import VectorTileLayer from '@arcgis/core/layers/VectorTileLayer';
 import WebTileLayer from '@arcgis/core/layers/WebTileLayer';
 import { webMercatorToGeographic } from '@arcgis/core/geometry/support/webMercatorUtils';
-import SpatialReference from '@arcgis/core/geometry/SpatialReference';
 import CustomDialog from '../../../common/js/components/CustomDialog/CustomDialog';
 
 import { addCoordinateTextFromPoint } from '../../../locations/js/utils/polygonCoordinatesUtils';

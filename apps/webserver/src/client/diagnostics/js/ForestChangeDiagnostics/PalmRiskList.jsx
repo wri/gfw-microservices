@@ -54,7 +54,7 @@ export default class PalmRiskList extends Component {
   };
 
   filterUpToYear = (lastYear, ax) => {
-    const input = JSON.parse(ax) || {};
+    const input = ax ? JSON.parse(ax) : {};
     const output = Object.entries(input).reduce((acc, [key, value]) => {
       if (parseInt(key, 10) <= lastYear) {
         acc[key] = value;

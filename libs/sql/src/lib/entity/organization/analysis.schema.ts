@@ -334,11 +334,6 @@ export const AnalysisSchema = {
       name: 'dissolved_data_location_info',
       nullable: true,
     },
-    treeCoverLossArgOtbnYearly: {
-      type: String,
-      name: 'tree_cover_loss_arg_otbn_yearly',
-      nullable: true,
-    },
     argOtbnArea: {
       type: String,
       name: 'arg_otbn_area',

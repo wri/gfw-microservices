@@ -83,8 +83,6 @@ BEGIN
 			[commodity_threat_fires] NVARCHAR(MAX) DEFAULT ''{}'',
 			[commodity_threat_overall_score] NVARCHAR(MAX) DEFAULT ''{}'',
 			[dissolved_data_location_info] NVARCHAR(300) DEFAULT ''{}'',
-
-			[tree_cover_loss_arg_otbn_yearly] NVARCHAR(MAX) DEFAULT ''{}'',
 			[protected_areas_by_category_area] NVARCHAR(MAX) NOT NULL DEFAULT ''{}'',
 			[landmark_by_category_area] NVARCHAR(MAX) NOT NULL DEFAULT ''{}'',
 			[country_specific_deforestation_yearly] NVARCHAR(MAX),

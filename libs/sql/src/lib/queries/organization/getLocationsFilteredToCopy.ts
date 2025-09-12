@@ -335,7 +335,6 @@ export interface GetLocationsCopyMoveType {
   commodity_threat_fires: string;
   commodity_threat_overall_score: string;
   dissolved_data_location_info: string;
-  tree_cover_loss_arg_otbn_yearly: string;
   protected_areas_by_category_area: string;
   landmark_by_category_area: string;
   country_specific_deforestation_yearly: string;

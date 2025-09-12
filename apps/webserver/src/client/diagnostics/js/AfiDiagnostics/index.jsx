@@ -67,11 +67,13 @@ function AfiDiagnostics() {
     });
     Promise.all([getAfiAnalysisForListId(), getDiagnosticsData()])
       .then(([afiAnalysisData, diagnosticsData]) => {
-        const { regionalInfo, negligibleRiskStats } = afiAnalysisData;
-        const { selectedList } = diagnosticsData;
-        setTableData(regionalInfo);
-        setChartData(negligibleRiskStats);
-        setSelectedList(selectedList);
+        if (afiAnalysisData && diagnosticsData) {
+          const { regionalInfo, negligibleRiskStats } = afiAnalysisData;
+          const { selectedList } = diagnosticsData;
+          setTableData(regionalInfo || {});
+          setChartData(negligibleRiskStats || {});
+          setSelectedList(selectedList || {});
+        }
         setIsLoading(false);
       })
       .catch((error) => {
@@ -101,7 +103,7 @@ function AfiDiagnostics() {
       });
   }, [listId]);
 
-  const { list_name, list_status_id, listAnalysesStatus } = selectedList;
+  const { list_status_id = null, listAnalysesStatus = null } = selectedList;
 
   const { DiagnosticsStatusMessage, isListBeingAnalyzed } = getAnalysisAvailabilityMessage(
     list_status_id,
@@ -129,10 +131,12 @@ function AfiDiagnostics() {
               />
             )}
             <div className="locations-diagnostics__body">
-              <h2 className="locations-diagnostics__subtitle">
-                {list_name}
-                <InfoBubble infoBubbleId={infoBubbleConfig.analysisOverview} />
-              </h2>
+              {!isLoading && selectedList?.list_name && (
+                <h2 className="locations-diagnostics__subtitle">
+                  {selectedList.list_name}
+                  <InfoBubble infoBubbleId={infoBubbleConfig.analysisOverview} />
+                </h2>
+              )}
 
               <div style={{ display: 'flex', alignItems: 'center' }}>
                 <span style={{ marginRight: '10px' }}>Forest Loss Dataset:</span>

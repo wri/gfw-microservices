@@ -1,6 +1,5 @@
 export const enum AnnualLossFcdFields {
   COUNTRY_SPECIFIC_DEFORESTATION_CLASSIFIED_REGION_YEARLY = 'country_specific_deforestation_classified_region_yearly',
-  TREE_COVER_LOSS_ARG_OTBN_YEARLY = 'tree_cover_loss_arg_otbn_yearly',
   COUNTRY_SPECIFIC_DEFORESTATION_WDPA_YEARLY = 'country_specific_deforestation_wdpa_yearly',
   TREE_COVER_LOSS_BY_COUNTRY_WDPA_YEARLY = 'tree_cover_loss_by_country_wdpa_yearly',
   COUNTRY_SPECIFIC_DEFORESTATION_LANDMARK_YEARLY = 'country_specific_deforestation_landmark_yearly',

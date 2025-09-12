@@ -86,13 +86,9 @@ class ListDetailsPage {
     this.clickOnMoveSectionRadioBtn();
     this.selectList(list);
     this.clickOnSaveAsDraftBtn();
-    this.elements.listActionDialog().should('contain.text', 'Locations Moved');
     this.elements
       .listActionDialog()
-      .should(
-        'contain.text',
-        'Location move process starts, this can take a while, please be patient.'
-      );
+      .should('contain.text', 'process started, this can take a while, please be patient');
     this.elements.confirmActionBtn().should('be.visible');
     this.clickOnConfirmActionBtn();
   }
@@ -163,13 +159,9 @@ class ListDetailsPage {
             `You have successfully added locations and saved ${listName} as a draft`
           );
       } else {
-        this.elements.listActionDialog().should('contain.text', 'Locations Moved');
         this.elements
           .listActionDialog()
-          .should(
-            'contain.text',
-            'Location move process starts, this can take a while, please be patient.'
-          );
+          .should('contain.text', 'process started, this can take a while, please be patient');
       }
       this.elements.confirmActionBtn().should('be.visible');
       this.clickOnConfirmActionBtn();

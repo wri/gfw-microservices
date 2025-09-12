@@ -1058,7 +1058,7 @@ export const mapLayers = [
         body: {
           useCors: true,
           metadata: 'uml',
-          url: 'https://tiles.globalforestwatch.org/gfw_universal_mill_list/v202410/default/root.json',
+          url: 'https://tiles.globalforestwatch.org/gfw_universal_mill_list/v202508/default/root.json',
         },
       },
       legendConfig: {

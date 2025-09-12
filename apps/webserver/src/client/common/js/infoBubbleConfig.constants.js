@@ -35,7 +35,6 @@ const infoBubbleConfig = {
   threats: 'threats',
   values: 'values',
   threatsAndValues: 'threats_and_values',
-  treeCoverLossArgOtbnYearly: 'tree_cover_loss_arg_otbn_yearly',
   analysisOverview: 'deforestation_kpis_analysis_overview',
   landcoverCalc: 'deforestation_kpis_landcover_calc',
   naturalForestCoverage: 'deforestation_kpis_natural_forest_coverage',

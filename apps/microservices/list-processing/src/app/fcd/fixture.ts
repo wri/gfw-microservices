@@ -281,10 +281,8 @@ export const classifiedRegionDatabaseOutput = {
   arg_otbn_area: '{"Category I":2487.9471,"Category II":315.8723}',
   country_specific_deforestation_classified_region_yearly:
     '{"ARG":{"Category I":{"2014":1862.5321,"2015":1674.5525,"2016approx":575.1893,"2017":2158.1914,"2018":1818.3752,"2019":734.738,"2020":1352.6918,"2021":2363.4077,"2022":1660.059}, "Category III": {"2014": 1971.8851, "2015": 2480.3844, "2016": 1073.1832, "2017": 2739.4738, "2018approx": 1229.8696, "2019": 905.7677, "2020": 976.3013, "2021": 2390.0133, "2022": 2149.3627}},"COL":{"Category I":{"2020":500,"2021":0,"2022":200}, "Category III": {"2020": 100.29, "2021": 150, "2022": 10}}}',
-  tree_cover_loss_arg_otbn_yearly:
-    '{"Category III": {"2014": 1971.8851, "2015": 2480.3844, "2016": 1073.1832, "2017": 2739.4738, "2018approx": 1229.8696, "2019": 905.7677, "2020": 976.3013, "2021": 2390.0133, "2022": 2149.3627}}',
   tree_cover_loss_by_country_classified_region_yearly:
-    '{"ARG":{"Category II":{"2021":10.7804,"2022":409.5721,"2023":369.8632},"Category I":{"2021":0.0,"2022":0.0,"2023":0.0},"Category III":{"2021":0.5563,"2022":0.7651,"2023":0.0}},"COL":{"Restrictions;Zero Deforestation Agreement":{"2020":47.1544,"2021":72.5392,"2022":149.0017,"2023":99.0011},"Conditioned;Environmental/Ethno-Cultural":{"2021":11.5397,"2022":0.0,"2023":0.0},"Restrictions;Legal":{"2021":7.6162,"2022":0.3077,"2023":17.3095},"Restrictions;Technical (Non-agricultural areas)":{"2021":1.8462,"2022":1.2308,"2023":3.077},"Conditioned;Ethno-Cultural":{"2021":85.1546,"2022":102.1548,"2023":77.0777}}}',
+    '{"ARG":{"Category II":{"2021":10.7804,"2022":409.5721,"2023":369.8632},"Category I":{"2021":0.0,"2022":0.0,"2023":0.0},"Category III":{"2014": 1971.8851, "2015": 2480.3844, "2016": 1073.1832, "2017": 2739.4738, "2018approx": 1229.8696, "2019": 905.7677, "2020": 976.3013, "2021": 2390.0133, "2022": 2149.3627}},"COL":{"Restrictions;Zero Deforestation Agreement":{"2020":47.1544,"2021":72.5392,"2022":149.0017,"2023":99.0011},"Conditioned;Environmental/Ethno-Cultural":{"2021":11.5397,"2022":0.0,"2023":0.0},"Restrictions;Legal":{"2021":7.6162,"2022":0.3077,"2023":17.3095},"Restrictions;Technical (Non-agricultural areas)":{"2021":1.8462,"2022":1.2308,"2023":3.077},"Conditioned;Ethno-Cultural":{"2021":85.1546,"2022":102.1548,"2023":77.0777}}}',
   classified_region_area:
     '{"ARG":{ "Category I": 123.10, "Category II": 40.858 }, "COL": {"Restrictions;Legal": 56.10, "Restrictions;Technical (Non-agricultural areas)": 200, "Conditioned;Ethno-Cultural": 100}}',
 };
@@ -293,8 +291,8 @@ export const classifiedRegionDatabaseOutputWithoutNewTclData = {
   arg_otbn_area: '{"Category I":2487.9471,"Category II":315.8723}',
   country_specific_deforestation_classified_region_yearly:
     '{"ARG":{"Category I":{"2014":1862.5321,"2015":1674.5525,"2016approx":575.1893,"2017":2158.1914,"2018":1818.3752,"2019":734.738,"2020":1352.6918,"2021":2363.4077,"2022":1660.059}, "Category III": {"2014": 1971.8851, "2015": 2480.3844, "2016": 1073.1832, "2017": 2739.4738, "2018approx": 1229.8696, "2019": 905.7677, "2020": 976.3013, "2021": 2390.0133, "2022": 2149.3627}}}',
-  tree_cover_loss_arg_otbn_yearly:
-    '{"Category III": {"2014": 1971.8851, "2015": 2480.3844, "2016": 1073.1832, "2017": 2739.4738, "2018approx": 1229.8696, "2019": 905.7677, "2020": 976.3013, "2021": 2390.0133, "2022": 2149.3627}}',
+  tree_cover_loss_by_country_classified_region_yearly:
+    '{"ARG":{"Category III": {"2014": 1971.8851, "2015": 2480.3844, "2016": 1073.1832, "2017": 2739.4738, "2018approx": 1229.8696, "2019": 905.7677, "2020": 976.3013, "2021": 2390.0133, "2022": 2149.3627}}}',
 };
 
 export const classifiedAnnualLossProcessedValue = {
@@ -325,55 +323,25 @@ export const classifiedAnnualLossProcessedValue = {
     },
     tree_cover_loss: {
       'Category I': [
-        {
-          approximateValue: false,
-          value: 0,
-          year: 2021,
-        },
-        {
-          approximateValue: false,
-          value: 0,
-          year: 2022,
-        },
-        {
-          approximateValue: false,
-          value: 0,
-          year: 2023,
-        },
+        { year: 2021, value: 0.0, approximateValue: false },
+        { year: 2022, value: 0.0, approximateValue: false },
+        { year: 2023, value: 0.0, approximateValue: false },
       ],
       'Category II': [
-        {
-          approximateValue: false,
-          value: 10.7804,
-          year: 2021,
-        },
-        {
-          approximateValue: false,
-          value: 409.5721,
-          year: 2022,
-        },
-        {
-          approximateValue: false,
-          value: 369.8632,
-          year: 2023,
-        },
+        { year: 2021, value: 10.7804, approximateValue: false },
+        { year: 2022, value: 409.5721, approximateValue: false },
+        { year: 2023, value: 369.8632, approximateValue: false },
       ],
       'Category III': [
-        {
-          approximateValue: false,
-          value: 0.5563,
-          year: 2021,
-        },
-        {
-          approximateValue: false,
-          value: 0.7651,
-          year: 2022,
-        },
-        {
-          approximateValue: false,
-          value: 0,
-          year: 2023,
-        },
+        { year: 2014, value: 1971.8851, approximateValue: false },
+        { year: 2015, value: 2480.3844, approximateValue: false },
+        { year: 2016, value: 1073.1832, approximateValue: false },
+        { year: 2017, value: 2739.4738, approximateValue: false },
+        { year: 2018, value: 1229.8696, approximateValue: true },
+        { year: 2019, value: 905.7677, approximateValue: false },
+        { year: 2020, value: 976.3013, approximateValue: false },
+        { year: 2021, value: 2390.0133, approximateValue: false },
+        { year: 2022, value: 2149.3627, approximateValue: false },
       ],
     },
     overlap: { 'Category I': 123.1, 'Category II': 40.858 },

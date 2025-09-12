@@ -145,7 +145,7 @@ export function RegionChartByCountry({ listId, data, fireDownload, country, tota
   }
 
   const argentinaOtbnAreaData = formatDecimals(
-    JSON.parse(data?.classified_region_area?.ARG || '{}')
+    JSON.parse(data?.classified_region_area || '{}')?.ARG || {}
   );
 
   const argentinaPieChartData =

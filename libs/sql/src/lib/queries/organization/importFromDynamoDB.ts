@@ -79,7 +79,6 @@ SELECT
 	ISNULL([commodity_threat_protected_areas], '{}') AS [commodity_threat_protected_areas],
 	ISNULL([commodity_threat_fires], '{}') AS [commodity_threat_fires],
 	ISNULL([dissolved_geom_object_key], '{}') AS [dissolved_geom_object_key],
-							ISNULL([tree_cover_loss_arg_otbn_yearly], '{}') AS [tree_cover_loss_arg_otbn_yearly],
 							ISNULL([arg_otbn_area], '{}') AS [arg_otbn_area],
 							ISNULL([argentina_presence], 'false') AS [argentina_presence]
 INTO dbo.[temp_analysis_table]
@@ -149,7 +148,6 @@ WITH(
 	[commodity_threat_protected_areas] [nvarchar](max),
 	[commodity_threat_fires] [nvarchar](max),
 	[dissolved_geom_object_key] [nvarchar](300),
-							[tree_cover_loss_arg_otbn_yearly] [nvarchar](max),
 							[arg_otbn_area] [nvarchar](max),
 							[argentina_presence] [nvarchar](50)
 
@@ -224,11 +222,10 @@ SET @TEMPLATE = '
 		D.[commodity_threat_protected_areas],
 		D.[commodity_threat_fires],
 		D.[dissolved_geom_object_key],
-									D.[tree_cover_loss_arg_otbn_yearly],
 									D.[arg_otbn_area],
 									D.[argentina_presence]
 	INTO dbo.[temp_merged_analysis_table]
-	FROM [temp_analysis_table] AS D 
+	FROM [temp_analysis_table] AS D
 	RIGHT JOIN [{ANALYSIS_TABLE}] AS L ON D.location_id = L.location_id ORDER BY L.location_id ASC
 
 	TRUNCATE TABLE [{ANALYSIS_TABLE}]
@@ -310,11 +307,10 @@ SET @APPEND_LOCATION_TEMPLATE = '
 		D.[commodity_threat_protected_areas],
 		D.[commodity_threat_fires],
 		D.[dissolved_geom_object_key],
-									D.[tree_cover_loss_arg_otbn_yearly],
 									D.[arg_otbn_area],
 									D.[argentina_presence]
 	INTO dbo.[temp_merged_analysis_table]
-	FROM [temp_analysis_table] AS D 
+	FROM [temp_analysis_table] AS D
 	INNER JOIN [{ANALYSIS_TABLE}] AS L ON D.location_id = L.location_id ORDER BY L.location_id ASC
 
 	-- Deleting new locations from existing list
@@ -325,7 +321,7 @@ SET @APPEND_LOCATION_TEMPLATE = '
 
 	-- Append the new locations to the existing list
 	INSERT INTO [{ANALYSIS_TABLE}]
-	SELECT * FROM 
+	SELECT * FROM
 	dbo.[temp_merged_analysis_table]
 
 	-- Dropping the temporary analysis table

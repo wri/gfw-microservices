@@ -1,6 +1,5 @@
 export const enum AnnualLossFcdFields {
   COUNTRY_SPECIFIC_DEFORESTATION_CLASSIFIED_REGION_YEARLY = 'country_specific_deforestation_classified_region_yearly',
-  TREE_COVER_LOSS_ARG_OTBN_YEARLY = 'tree_cover_loss_arg_otbn_yearly',
   COUNTRY_SPECIFIC_DEFORESTATION_WDPA_YEARLY = 'country_specific_deforestation_wdpa_yearly',
   TREE_COVER_LOSS_BY_COUNTRY_WDPA_YEARLY = 'tree_cover_loss_by_country_wdpa_yearly',
   COUNTRY_SPECIFIC_DEFORESTATION_LANDMARK_YEARLY = 'country_specific_deforestation_landmark_yearly',
@@ -28,22 +27,22 @@ export const getAnnualLossFcdData = (fields: AnnualLossFcdFields[]) => `
   DECLARE @analysisTable NVARCHAR(150) = ''
   DECLARE @TEMPLATE NVARCHAR(MAX)
 
-  SELECT 
+  SELECT
     @listTable=l.list_table_name,
-    @analysisTable=l.list_analysis_table_name 
-  FROM 
-    [dbo].[Lists] l 
-  WHERE 
+    @analysisTable=l.list_analysis_table_name
+  FROM
+    [dbo].[Lists] l
+  WHERE
     l.id = @listID
 
   SET @TEMPLATE = '
   SELECT
     ${getFieldsSqlQueryWithinStringTemplate(fields)}
-  FROM 
-    dbo.[{LIST_TABLE_NAME}] lt 
-  JOIN 
-    dbo.[{ANALYSIS_TABLE_NAME}] an ON an.location_id = lt.location_id 
-  WHERE 
+  FROM
+    dbo.[{LIST_TABLE_NAME}] lt
+  JOIN
+    dbo.[{ANALYSIS_TABLE_NAME}] an ON an.location_id = lt.location_id
+  WHERE
     lt.location_id = @locationId'
 
   SET @TEMPLATE = REPLACE(@TEMPLATE, '{LIST_TABLE_NAME}', @listTable);
@@ -55,11 +54,11 @@ export const getAnnualLossFcdData = (fields: AnnualLossFcdFields[]) => `
 `;
 
 export const getAnnualLossFcdDataWithoutLocationIdFilter = (fields: AnnualLossFcdFields[]) => `
-  SELECT 
+  SELECT
     ${getFieldsSqlQuery(fields)}
-  FROM 
+  FROM
     dbo.Analyses an
-  WHERE 
+  WHERE
     list_id = @listID
 `;
 

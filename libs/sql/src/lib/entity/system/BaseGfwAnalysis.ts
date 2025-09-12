@@ -201,9 +201,6 @@ export abstract class BaseGfwAnalysis extends BaseEntity {
   @Column({ name: 'dissolved_data_location_info' })
   'dissolved_data_location_info': string;
 
-  @Column({ name: 'tree_cover_loss_arg_otbn_yearly' })
-  'tree_cover_loss_arg_otbn_yearly': string;
-
   @Column({ name: 'arg_otbn_area' })
   'arg_otbn_area': string;
 

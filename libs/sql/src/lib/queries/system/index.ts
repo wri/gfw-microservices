@@ -41,3 +41,6 @@ export * from './setOrganizationRenewalTime';
 export * from './setOrganizationSubscriptionStatus';
 export * from './updateOrgName';
 export * from './uspChangeConnectionRequestStatus';
+export * from './activatePendingAccount';
+export * from './getAllUsersList';
+export * from './getAllPolicyList';

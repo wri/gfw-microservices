@@ -11,7 +11,7 @@ import { UspSetListUnlocked } from './uspSetListUnlocked';
 import { UspResetListStatus } from './uspResetListStatus';
 import { UspDeleteList } from './uspDeleteList';
 import { InternalServerErrorException, Logger, NotFoundException } from '@nestjs/common';
-import { UspDeleteLocationIdsFilteredDataForUserList } from './uspDeleteLocationIdsFilteredDataForUserList';
+
 import { ActivityLog, GHGAnalyses, LargeLists, Lists } from '../entity';
 const logger = new Logger('ClientDatabaseOperationsManager');
 
@@ -160,33 +160,15 @@ export const DeleteLocations = (databaseName, listId, locationIds, userId, gfwLi
 };
 
 /** @function {BulkDeleteLocations}
- *   @summary Deletes locations from a list
+ *   @summary Deletes locations from a list (fixed to work properly)
  *   @param {String} databaseName
  *   @param {Number} listId
  *   @param {Number} userId
  *   @param {Number} gfwListId
- *   @param {Array} selectedLocations
- *   @param {String} country
- *   @param {String} state
- *   @param {String} subState
- *   @param {Number} analysisAreaMin
- *   @param {Number} analysisAreaMax
- *   @param {String} searchString
+ *   @param {String} selectedLocations - Comma-separated location IDs
  *   @return {Promise}
  */
-export const BulkDeleteLocations = (
-  databaseName,
-  listId,
-  userId,
-  gfwListId,
-  selectedLocations,
-  country,
-  state,
-  subState,
-  analysisAreaMin,
-  analysisAreaMax,
-  searchString
-) => {
+export const BulkDeleteLocations = (databaseName, listId, userId, gfwListId, selectedLocations) => {
   let promiseResolver = Promise.resolve();
   return new Promise((resolve, reject) => {
     // Important variables
@@ -214,20 +196,17 @@ export const BulkDeleteLocations = (
         }
       })
       .then((record) => {
-        // 2. Deleting list locations
+        // 2. Deleting list locations using working individual deletion approach
         list = record;
-        promiseResolver = promiseResolver.then(() => {
-          return new UspDeleteLocationIdsFilteredDataForUserList().run(databaseName, {
-            listID: list.id,
-            selectedLocations,
-            country,
-            state,
-            subState,
-            analysisAreaMin,
-            analysisAreaMax,
-            searchString,
+        if (selectedLocations && typeof selectedLocations === 'string') {
+          // Parse comma-separated location IDs and delete them individually
+          const locationIds = selectedLocations.split(',').map((id) => parseInt(id.trim()));
+          locationIds.forEach((locationId) => {
+            promiseResolver = promiseResolver.then(() => {
+              return new UspDeleteLocation().run(databaseName, list.id, locationId);
+            });
           });
-        });
+        }
         return promiseResolver;
       })
       .then(() => {

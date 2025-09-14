@@ -188,4 +188,31 @@ describe('ListSchema', () => {
 
     superHandleSpy.mockRestore();
   });
+
+  it('should not throw an error if validateList is false even if list name exists', async () => {
+    const listName = 'TestList';
+
+    await db.run(`INSERT INTO lists (list_name) VALUES (?)`, [listName]);
+
+    (getListByFilters as jest.Mock).mockResolvedValue(true);
+
+    const listSchemaNoValidate = new ListSchemaName(false);
+
+    const input: ChainType = {
+      request: {
+        user_id: 1,
+        list_name: listName,
+        organization_database: 'test_db',
+        path: 'test-path',
+        commodity: 'COCO',
+        saveAsDraft: false,
+      },
+    };
+
+    const response = await listSchemaNoValidate.handle(input);
+    const request = response.request as RequestNewList;
+
+    expect(request.listTable).toBe('list-testlist');
+    expect(request.analysisTable).toBe('analysis-testlist');
+  });
 });

@@ -206,9 +206,6 @@ export class Analyses {
   @Column({ name: 'dissolved_geom_object_key' })
   dissolvedGeomObjectKey: string;
 
-  @Column({ name: 'tree_cover_loss_arg_otbn_yearly' })
-  treeCoverLossArgOtbnYearly: string;
-
   @Column({ name: 'arg_otbn_area' })
   argOtbnArea: string;
 
@@ -238,4 +235,7 @@ export class Analyses {
 
   @Column({ name: 'tree_cover_loss_by_country_landmark_yearly' })
   treeCoverLossByCountryLandmarkYearly: string;
+
+  @Column({ name: 'tree_cover_loss_by_country_classified_region_yearly' })
+  treeCoverLossByCountryClassifiedRegionYearly: string;
 }

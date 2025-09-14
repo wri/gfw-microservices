@@ -92,41 +92,6 @@ const deleteSingleLocation = (req, list, location_id) => {
   });
 };
 
-/** @function {deleteFilteredLocations}
- *   @summary Delete locations from list and analysis tables filtered by query string
- *   @summary Get function to return json of paginated location metadata with geometry.
- *   @param  {Object} req - Manadatory first parameter to pass the request object into the function in case session info is required.
- *   @param  {Number} list_id - Unique list id of the list.
- *   @return {Promise} Returns promise object. If successful, recordsets, otherwise, error object
- */
-const deleteFilteredLocations = (req, list_id, filters) => {
-  const { country, state, subState, selectedAreaMin, selectedAreaMax, searchString } = filters;
-  return new Promise((resolve, reject) => {
-    const parameters = [
-      { field: 'listID', type: sql.Int, value: list_id },
-      { field: 'Country', type: sql.NVarChar(255), value: country ? country : null },
-      { field: 'State', type: sql.NVarChar(255), value: state ? state : null },
-      { field: 'SubState', type: sql.NVarChar(255), value: subState ? subState : null },
-      { field: 'AnalysisAreaMin', type: sql.Int, value: selectedAreaMin ? selectedAreaMin : null },
-      { field: 'AnalysisAreaMax', type: sql.Int, value: selectedAreaMax ? selectedAreaMax : null },
-      { field: 'SearchString', type: sql.NVarChar(255), value: searchString || null },
-    ];
-
-    sqlUtils
-      .executeOrganizationStoredProcedure(
-        req,
-        'uspDeleteLocationIdsFilteredDataForUserList',
-        parameters
-      )
-      .then(() => {
-        resolve(true);
-      })
-      .catch((err) => {
-        reject(err);
-      });
-  });
-};
-
 /** @function {editSingleLocation}
  *   @summary Edit a location from list
  *   @param  {Object} req - Manadatory first parameter to pass the request object into the function in case session info is required.
@@ -290,7 +255,6 @@ module.exports = {
   copySingleLocation,
   createListNameSchema,
   deleteSingleLocation,
-  deleteFilteredLocations,
   editSingleLocation,
   getListNameSchema,
   uploadBulkLocations,

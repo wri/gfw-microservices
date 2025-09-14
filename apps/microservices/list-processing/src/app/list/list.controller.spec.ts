@@ -121,7 +121,6 @@ describe('ListController', () => {
       commodity_threat_protected_areas: 'test',
       commodity_threat_fires: 'test',
       dissolved_data_location_info: 'test',
-      tree_cover_loss_arg_otbn_yearly: 'test',
       arg_otbn_area: 'test',
     },
   ];

@@ -153,21 +153,14 @@ export function SummaryAndSubmit() {
     }
   };
 
-  const addedLocationsText = useTransifexTranslation('You have added locations to');
-  const draftInstructionText = useTransifexTranslation(
-    'Click OK to save this updated list as draft.'
+  const draftLocationsToList = useTransifexTranslation(
+    'You are adding locations to an existing list. Click OK to save your updated list as a draft. It will remain in draft mode until you choose to run the analysis. Note that running the analysis will count toward your account usage limits. See more information'
   );
-  const draftNoteText = useTransifexTranslation(
-    'Your list will stay in draft state until you choose to run analysis on it.'
+  const submitLocationsToList = useTransifexTranslation(
+    'You are adding locations to an existing list. Please confirm that you want to submit this list for analysis. Note that running the analysis will count toward your account usage limits. See more information'
   );
-  const submitConfirmationText = useTransifexTranslation(
-    'Please confirm that you wish to submit this list to analysis.'
-  );
-  const analysisUsageNoteText = useTransifexTranslation(
-    'Note that running analysis counts towards your account usage limits.'
-  );
-  const seeMoreInfoText = useTransifexTranslation('See more information');
   const linkHereText = useTransifexTranslation('here');
+  const listNameText = useTransifexTranslation('List Name:');
 
   return (
     <>
@@ -311,26 +304,28 @@ export function SummaryAndSubmit() {
         </DialogTitle>
         <DialogContent sx={{ textAlign: 'justify' }}>
           <Typography variant="body2">
-            <span>{addedLocationsText}</span>{' '}
-            <span>
-              <b>{listName}</b>.
-            </span>{' '}
-            {isDraftUpload.current ? (
-              <>
-                <span>{draftInstructionText}</span> <span>{draftNoteText}</span>
-              </>
-            ) : (
-              <span>{submitConfirmationText}</span>
-            )}{' '}
-            <span>{analysisUsageNoteText}</span> <span>{seeMoreInfoText}</span>{' '}
-            <Link
-              href={ExternalLinks.UploadFees}
-              sx={{ textDecoration: 'none', color: 'primary.main' }}
-              target="_blank"
-            >
-              {linkHereText}
-            </Link>
-            .
+            <div>
+              {isDraftUpload.current ? (
+                <>
+                  <span>{draftLocationsToList}</span>
+                </>
+              ) : (
+                <span>{submitLocationsToList}</span>
+              )}{' '}
+              <Link
+                href={ExternalLinks.UploadFees}
+                sx={{ textDecoration: 'none', color: 'primary.main' }}
+                target="_blank"
+              >
+                {linkHereText}
+              </Link>
+              .
+            </div>
+            <br />
+            <div>{listNameText}</div>
+            <div>
+              <b>{listName}</b>
+            </div>
           </Typography>
         </DialogContent>
 

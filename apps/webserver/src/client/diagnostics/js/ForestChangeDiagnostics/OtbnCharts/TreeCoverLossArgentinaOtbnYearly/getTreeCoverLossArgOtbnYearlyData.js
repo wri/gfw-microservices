@@ -12,8 +12,8 @@ const getTreeCoverLossArgOtbnYearlyData = (
 ) => {
   const showTotal = !showCategoryI && !showCategoryII && !showCategoryIII;
 
-  const treeCoverLossArgOtbnYearly = data?.tree_cover_loss_arg_otbn_yearly
-    ? JSON.parse(data?.tree_cover_loss_arg_otbn_yearly)
+  const treeCoverLossArgOtbnYearly = data?.tree_cover_loss_by_country_classified_region_yearly
+    ? JSON.parse(data?.tree_cover_loss_by_country_classified_region_yearly)?.ARG || {}
     : {};
 
   if (Object.entries(treeCoverLossArgOtbnYearly).length === 0) {

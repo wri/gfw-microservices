@@ -1,7 +1,6 @@
 import store from '../../../locations/js/store';
 import {
   addList,
-  changeView,
   resetList,
   toggleCanopyModal,
   updateFilteredData,
@@ -35,7 +34,6 @@ const onListFromViewToList = (list, canopyModalVisible) => {
   ) {
     store.dispatch(addList(list));
   }
-  store.dispatch(changeView('lists'));
 };
 
 export default onListFromViewToList;

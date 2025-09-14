@@ -163,6 +163,8 @@ cython_debug/
 *_config.py
 *.csv
 *.ipynb
+*.xls
+*.shp
 
 # previous script versions
 _old/

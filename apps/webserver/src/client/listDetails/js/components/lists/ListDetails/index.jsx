@@ -1,8 +1,5 @@
 import { Component } from 'react';
 import {
-  Accordion,
-  AccordionDetails,
-  AccordionSummary,
   Typography,
   Grid,
   Button as MaterialButton,
@@ -10,19 +7,10 @@ import {
   Paper,
   Box,
   Alert,
-  AlertTitle,
-  Link,
   IconButton,
 } from '@mui/material';
 import Button from 'common/js/components/Button';
-import {
-  ArrowBack,
-  DateRange,
-  ExpandMore,
-  Close,
-  NotListedLocation,
-  QueryStats,
-} from '@mui/icons-material';
+import { ArrowBack, Close, NotListedLocation, QueryStats } from '@mui/icons-material';
 import CustomDialog from 'common/js/components/CustomDialog/CustomDialog';
 import { maxLocations } from 'locations/js/utils/upload.utils';
 import LinkButton from 'common/js/components/LinkButton';
@@ -37,9 +25,7 @@ import store from '../../../../../locations/js/store';
 import { locationsPage, userAccessLevel } from '../../../../../common/js/config';
 import {
   changeListView,
-  changeView,
   clearFilters,
-  selectFolder,
   setFilterCount,
   toggleCanopyModal,
   updateFilteredData,
@@ -48,7 +34,6 @@ import {
   updateSelectedLocations,
 } from '../../../../../locations/js/actions/locationActions';
 import LocationsSummary from './LocationsSummary';
-import SaveAsDraftButton from '../../../../../common/js/components/SaveAsDraft/SaveAsDraftButton';
 import CopyMoveModal from '../../modals/CopyMoveModal';
 import fetch from '../../../../../common/js/utils/fetch';
 import httpRequest from '../../../../../common/js/utils/httpRequest';
@@ -66,7 +51,6 @@ import {
   getListFilteredLocations,
   dataCleanup,
   containsPunctuation,
-  checkValidViewCommodity,
 } from '../../../../../locations/js/utils/lists.utils';
 import ShareList from '../../../../../locations/js/components/ShareList/ShareList';
 import { FailedPopupDialog } from '../../../../../locations/js/components/landing/FailedPopupDialog';
@@ -78,18 +62,26 @@ import {
   getDialogContent,
   getDialogTitle,
 } from '../../../../../locations/js/utils/dialogMessage.utils';
-import { deleteAllFilteredLocations } from '../deleteAllFilteredLocations';
+
 import ChangeTypeOfAnalysisModal from '../../../../../locations/js/components/landing/listItem/ChangeTypeOfAnalysisModal';
 import getActiveAnalysisType from '../../../../../../utils/getActiveAnalysisType';
 import ListActions from './ListActions';
 import { formatDateForCurrentBrowserLanguage } from '../../../../../common/js/utils/format';
 import WrappedReactTable from './WrappedReactTable';
+import { getActiveAnalysisFlags } from '../../../utils/listDetails.utils';
+import { ThemeProvider } from '../../../../../styles/ThemeProvider';
 import AnalysisStatusBanners from './AnalysisStatusBanners';
 import AnalysisFailedMessage from './AnalysisFailedMessage';
 import AnalysisInProgressMessage from './AnalysisInProgressMessage';
 import GHGBanner from './GHGBanner';
-import { getActiveAnalysisFlags } from '../../../utils/listDetails.utils';
-import { ThemeProvider } from '../../../../../styles/ThemeProvider';
+import CARAccordion from './CARAccordion';
+import LocationErrorsAlert from './LocationErrorsAlert';
+
+// STYLE
+import '../../../../../locations/css/lists.scss';
+import '../../../../../locations/css/locations.scss';
+import '../../../../../locations/css/react-table.scss';
+import './ListDetails.scss';
 
 // CONSTANTS
 import { defaultMaximumAreaSizeForLocationsFilter } from '../../../../../common/js/constants/lists.constants';
@@ -107,15 +99,28 @@ import {
   POST_2020_RISK_ASSESSMENT_VIEW,
 } from './listViews.constants';
 
-// STYLE
-import '../../../../../locations/css/lists.scss';
-import '../../../../../locations/css/locations.scss';
-import '../../../../../locations/css/react-table.scss';
-import './ListDetails.scss';
-import { PillButton } from '../../../../../components';
-import { ExternalLinks } from '../../../../../utils/constants';
-
 const EUDR_BANNER_KEY = 'GFW-is-eudr-banner-dismissed';
+
+const ACTIONS = {
+  COPY: 'copy',
+  MOVE: 'move',
+};
+
+const LIST_TYPES = {
+  EXISTING: 'existing',
+  NEW: 'new',
+};
+
+// Utility function to get button label for copy/move actions
+const getButtonLabel = (selectedMoveOrCopy) => {
+  return selectedMoveOrCopy === ACTIONS.MOVE ? 'Move Location(s)' : 'Copy Location(s)';
+};
+
+const MODES = {
+  DRAFT: 'draft',
+  SUBMIT: 'submit',
+};
+
 export default class ListDetails extends Component {
   constructor(props) {
     super(props);
@@ -130,7 +135,7 @@ export default class ListDetails extends Component {
       }
     });
     const { isFcdActive, isPalmRiskActive, isAfiActive, isGHGActive, isOnlyGHGActive } =
-      getActiveAnalysisFlags(listAnalysesStatus);
+      getActiveAnalysisFlags(selectedList);
 
     const isEudrBannerDismissed = !!localStorage.getItem(EUDR_BANNER_KEY);
 
@@ -155,8 +160,8 @@ export default class ListDetails extends Component {
       isLoading: !!selectedLists.length,
       isManageListFolderOpen: false,
       searchedLocations: [],
-      selectedMoveOrCopy: 'copy',
-      selectedNewOrExisting: 'existing',
+      selectedMoveOrCopy: ACTIONS.COPY,
+      selectedNewOrExisting: LIST_TYPES.EXISTING,
       newListName: '',
       isNewListNameDuplicate: false,
       isNewListNameValid: false,
@@ -227,31 +232,6 @@ export default class ListDetails extends Component {
     );
 
     store.dispatch(updateSelectedLocations([]));
-
-    // post-2020 risk assesment tab is selected by default, but
-    // if that analysis is not active and post-2000 tree cover loss analysis is active,
-    // then select the tab and change the view to FOREST_CHANGE_VIEW
-    const listAnalysesStatus = selectedLists[0]?.listAnalysesStatus || [];
-
-    const isPost2020RiskActive = listAnalysesStatus?.some(
-      ({ analysisId }) => analysisId === analysisTypes.DEFORESTATION_KPIS
-    );
-
-    const isPost2000TreeCoverLossActive = listAnalysesStatus?.some(
-      ({ analysisId }) => analysisId === analysisTypes.FOREST_CHANGE_DIAGNOSTICS
-    );
-
-    let defaultView = '';
-
-    if (isPost2020RiskActive) {
-      defaultView = POST_2020_RISK_ASSESSMENT_VIEW;
-    } else if (isPost2000TreeCoverLossActive || isGlobalForestWatchList) {
-      defaultView = FOREST_CHANGE_VIEW;
-    } else if (listAnalysesStatus.length) {
-      defaultView = listAnalysesStatus[0].analysisId;
-    }
-
-    store.dispatch(changeListView(defaultView));
   }
 
   componentDidUpdate(prevProps) {
@@ -402,9 +382,6 @@ export default class ListDetails extends Component {
 
   // Whenever the user deletes all locations... delete the list
   deleteList = (selectedLists) => {
-    const { filters } = this.props;
-    const { filterString } = this.state;
-
     this.handleDialogClose(false);
     // clear the custom dialog buttons
     this.setState({
@@ -412,12 +389,19 @@ export default class ListDetails extends Component {
       isLoading: true,
     });
     const selectedList = selectedLists[0];
-    const { id: list_id, list_name: listName } = selectedList;
+    const { id: list_id, list_name: listName, associated_gfwlist: gwfListId } = selectedList;
 
     httpRequest
       .fetchJSON('/locations/lockList', { list_id })
       .then(() => {
-        deleteAllFilteredLocations(list_id, filters, filterString)
+        // Use the working deleteLocations endpoint instead of broken deleteAllFilteredLocations
+        const { selectedLocations } = this.props;
+        httpRequest
+          .fetchJSON('/locations/deleteLocations', {
+            list_id,
+            location_ids: selectedLocations,
+            gfw_list_id: gwfListId,
+          })
           .then((response) => {
             if (response.includes('Deleted')) {
               this.setState({
@@ -596,12 +580,13 @@ export default class ListDetails extends Component {
   };
 
   // Move the selected locations after user has confirmed the action.
-  moveSelectedLocations = () => {
+  moveSelectedLocations = async () => {
     this.handleDialogClose(false);
-    // clear the custom dialog content
     this.setState({ dialogActions: null, dialogChildren: null, showSubmitModal: false });
+
     const { addType, filteredLocationData, selectedLists, filters, selectedLocations, userLists } =
       this.props;
+
     const {
       commodityType,
       newListName,
@@ -618,40 +603,55 @@ export default class ListDetails extends Component {
     }
 
     // Full location objects for selected locations
-    const locationData = filteredLocationData.filter((location) => {
-      return selectedLocations.indexOf(location.location_id) > -1;
-    });
+    const locationData = filteredLocationData
+      .filter((location) => selectedLocations.includes(location.location_id))
+      .sort((a, b) => a.location_id - b.location_id);
 
-    locationData.sort((a, b) => a.location_id - b.location_id);
-
-    const userListNames = userLists.map((userList) => userList.list_name.toLowerCase());
+    const userListNames = userLists.map((list) => list.list_name.toLowerCase());
     const selectedList = selectedLists[0];
-
     const moveToList =
-      selectedNewOrExisting === 'existing'
-        ? userLists.find((userList) => userList.list_name === selectedListMove)
+      selectedNewOrExisting === LIST_TYPES.EXISTING
+        ? userLists.find((list) => list.list_name === selectedListMove)
         : null;
 
     this.setState({
       isLoading: true,
     });
 
-    const list_id = selectedList.id;
-
     const destinationListName = moveToList?.list_name || newListName;
 
+    const getCopyMoveDialogContent = ({ type = 'success', action, selectedLocations = [] }) => {
+      if (type === 'error') {
+        return {
+          dialogTitle: 'Something Went Wrong',
+          dialogContent: 'An error occurred while processing your request.',
+        };
+      }
+      const noun = `Location${selectedLocations.length > 1 ? 's' : ''}`;
+
+      return {
+        dialogTitle: `${noun} ${action} initiated`,
+        dialogContent: `${noun} ${action} process started, this can take a while, please be patient.`,
+      };
+    };
+
     if (!selectedList.isGlobalForestWatchList) {
-      httpRequest.fetchJSON('/locations/lockList', { list_id }).then(() => {
-        const { associated_gfwlist } = moveToList || selectedList;
+      try {
+        await httpRequest.fetchJSON('/locations/lockList', { list_id: selectedList.id });
+
         const gfw_list_id =
-          associated_gfwlist === 'null' || !associated_gfwlist ? 0 : associated_gfwlist;
+          !moveToList?.associated_gfwlist || moveToList?.associated_gfwlist === 'null'
+            ? 0
+            : moveToList.associated_gfwlist;
+
         const myFilters = {
           analysisAreaMin: filters.selectedAreaMin || 0,
-          ...(filters.selectedAreaMax ? { analysisAreaMax: filters.selectedAreaMax } : {}),
-          ...(filters.selectedCountry ? { country: filters.selectedCountry } : {}),
-          ...(filters.selectedState ? { state: filters.selectedState } : {}),
-          ...(filters.selectedSubState ? { subState: filters.selectedSubState } : {}),
+          ...(filters.selectedAreaMax && { analysisAreaMax: filters.selectedAreaMax }),
+          ...(filters.selectedCountry && { country: filters.selectedCountry }),
+          ...(filters.selectedState && { state: filters.selectedState }),
+          ...(filters.selectedSubState && { subState: filters.selectedSubState }),
         };
+
         const copyLocationsRequestBody = {
           listId: selectedList.id,
           srcListAnalysisTable: selectedList.list_analysis_table_name,
@@ -671,30 +671,44 @@ export default class ListDetails extends Component {
           filters: myFilters,
         };
 
-        new Promise((resolve) => {
-          fetch({
-            url: `locations/cm-large-list`,
-            method: 'POST',
-            headers: {
-              'Content-type': 'application/json',
-            },
-            body: copyLocationsRequestBody,
-          })
-            .then(() => {
-              resolve({
-                dialogTitle: 'Locations Moved',
-                dialogContent:
-                  'Location move process starts, this can take a while, please be patient.',
-              });
-            })
-            .catch((error) => {
-              console.warn(`/locations/cm-large-list`, error);
-              resolve({
-                dialogTitle: 'Something Went Wrong',
-                dialogContent: 'An error ocurred while processing your request.',
-              });
-            });
-        }).then(({ dialogTitle, dialogContent }) => {
+        await fetch({
+          url: 'locations/cm-large-list',
+          method: 'POST',
+          headers: { 'Content-type': 'application/json' },
+          body: copyLocationsRequestBody,
+        });
+
+        const dialog = getCopyMoveDialogContent({ action: selectedMoveOrCopy, selectedLocations });
+        this.setState({ ...dialog, dialogOpen: true, refreshPage: true, isLoading: false });
+      } catch (error) {
+        console.warn('/locations/cm-large-list', error);
+        const dialog = getCopyMoveDialogContent({ type: 'error' });
+        this.setState({ ...dialog, dialogOpen: true, refreshPage: true, isLoading: false });
+      }
+    } else {
+      try {
+        const response = await saveGfwListLocations(
+          selectedList,
+          newListName,
+          userListNames,
+          selectedNewOrExisting,
+          addType,
+          commodityType,
+          locationData,
+          selectedLists,
+          moveToList,
+          isSaveAsDraft
+        );
+
+        // locations copy/move has finished
+        if (Object.prototype.hasOwnProperty.call(locationsPage.lists.copyMoveMessages, response)) {
+          const dialogTitle = getDialogTitle(response, locationData.length);
+          const dialogContent = getDialogContent(
+            response,
+            destinationListName,
+            isSaveAsDraft,
+            locationData.length
+          );
           this.setState({
             dialogOpen: true,
             refreshPage: true,
@@ -702,70 +716,84 @@ export default class ListDetails extends Component {
             dialogTitle,
             dialogContent,
           });
-        });
-      });
-    } else {
-      const result = saveGfwListLocations(
-        selectedList,
-        newListName,
-        userListNames,
-        selectedNewOrExisting,
-        addType,
-        commodityType,
-        locationData,
-        selectedLists,
-        moveToList,
-        isSaveAsDraft
-      );
-
-      result.then(
-        (response) => {
-          // locations copy/move has finished
-          if (
-            Object.prototype.hasOwnProperty.call(locationsPage.lists.copyMoveMessages, response)
-          ) {
-            const dialogTitle = getDialogTitle(response, locationData.length);
-            const dialogContent = getDialogContent(
-              response,
-              destinationListName,
-              isSaveAsDraft,
-              locationData.length
-            );
-
-            this.setState({
-              dialogOpen: true,
-              refreshPage: true,
-              isLoading: false,
-              dialogTitle,
-              dialogContent,
-            });
-          } else {
-            console.warn('locations move/copy completed with unrecognized response', response);
-            this.setState({
-              dialogOpen: true,
-              dialogTitle: locationsPage.lists.copyMoveMessages.serverError.title,
-              dialogContent: locationsPage.lists.copyMoveMessages.serverError.message,
-              refreshPage: true,
-              isLoading: false,
-            });
-          }
-        },
-        (moveError) => {
-          this.handleMoveError(moveError);
+        } else {
+          console.warn('Location(s) copy/move completed with unrecognized response', response);
+          const { title, message } = locationsPage.lists.copyMoveMessages.serverError;
+          this.setState({
+            dialogOpen: true,
+            dialogTitle: title,
+            dialogContent: message,
+            refreshPage: true,
+            isLoading: false,
+          });
         }
-      );
+      } catch (moveError) {
+        this.handleMoveError(moveError);
+      }
     }
   };
 
   setMoveOrCopy = (evt) => {
-    const { selectedNewOrExisting } = this.state;
+    const {
+      selectedNewOrExisting,
+      newListName,
+      isNewListNameDuplicate,
+      isNewListNameValid,
+      isOnlyGHGActive,
+    } = this.state;
     const selectedMoveOrCopy = evt.target.value;
     // The API doesn't support moving to a new list, only copying, so we auto-select the 'existing' option if the user
     // chooses to move.
+
     this.setState({
       selectedMoveOrCopy,
-      selectedNewOrExisting: selectedMoveOrCopy === 'move' ? 'existing' : selectedNewOrExisting,
+      selectedNewOrExisting:
+        selectedMoveOrCopy === ACTIONS.MOVE ? LIST_TYPES.EXISTING : selectedNewOrExisting,
       dialogChildren: true,
+      dialogTitle:
+        selectedMoveOrCopy === ACTIONS.MOVE
+          ? locationsPage.lists.moveLocationsDialogHeader
+          : locationsPage.lists.copyLocationsDialogHeader,
+      dialogActions: (
+        <>
+          <Button
+            className="dialog__primary-action"
+            variant="primary"
+            label={getButtonLabel(selectedMoveOrCopy)}
+            onClick={() => {
+              const trackCopyMove = (action, mode = MODES.DRAFT) => {
+                const capitalized = {
+                  [ACTIONS.COPY]: 'Copy',
+                  [ACTIONS.MOVE]: 'Move',
+                };
+
+                const event = `${capitalized[action]} List`;
+                const label =
+                  mode === MODES.DRAFT
+                    ? `User ${action === ACTIONS.COPY ? 'copies' : 'moves'} a list to draft`
+                    : `User ${action === ACTIONS.COPY ? 'copies' : 'moves'} a list and submits`;
+
+                gtag('event', event, {
+                  event_category: capitalized[action],
+                  event_label: label,
+                });
+              };
+
+              trackCopyMove(selectedMoveOrCopy, MODES.DRAFT);
+              this.setState({ isSaveAsDraft: true }, () => {
+                this.moveSelectedLocations();
+              });
+            }}
+            disabled={
+              isOnlyGHGActive &&
+              selectedNewOrExisting === LIST_TYPES.NEW &&
+              (!newListName || isNewListNameDuplicate || isNewListNameValid)
+            }
+          />
+
+          <LinkButton onClick={this.cancelDialogResetName} label={locationsPage.lists.cancel} />
+        </>
+      ),
     });
   };
 
@@ -809,10 +837,8 @@ export default class ListDetails extends Component {
     isNewListNameValid,
     selectedNewOrExisting,
   }) => {
-    const { selectedLocations, selectedMoveOrCopy, selectedLists } = this.props;
+    const { selectedLocations, selectedMoveOrCopy } = this.props;
     const { isOnlyGHGActive } = this.state;
-
-    const isGfwList = selectedLists[0]?.isGlobalForestWatchList;
     if (selectedLocations.length > maxLocations) {
       this.setState({
         dialogOpen: true,
@@ -824,52 +850,40 @@ export default class ListDetails extends Component {
         dialogActions: null,
       });
     } else {
+      const trackCopyMove = (action, mode = MODES.DRAFT) => {
+        const capitalized = {
+          [ACTIONS.COPY]: 'Copy',
+          [ACTIONS.MOVE]: 'Move',
+        };
+
+        const event = `${capitalized[action]} List`;
+        const label =
+          mode === MODES.DRAFT
+            ? `User ${action === ACTIONS.COPY ? 'copies' : 'moves'} a list to draft`
+            : `User ${action === ACTIONS.COPY ? 'copies' : 'moves'} a list and submits`;
+
+        gtag('event', event, {
+          event_category: capitalized[action],
+          event_label: label,
+        });
+      };
+
       this.setState({
         dialogActions: (
           <>
-            <SaveAsDraftButton
+            <Button
+              className="dialog__primary-action"
+              variant="primary"
+              label={getButtonLabel(selectedMoveOrCopy)}
               onClick={() => {
+                trackCopyMove(selectedMoveOrCopy, MODES.DRAFT);
                 this.setState({ isSaveAsDraft: true }, () => {
-                  if (selectedMoveOrCopy === 'copy') {
-                    gtag('event', 'Copy List', {
-                      event_category: 'Copy',
-                      event_label: 'User copies a list to draft',
-                    });
-                  } else {
-                    gtag('event', 'Move List', {
-                      event_category: 'Move',
-                      event_label: 'User moves a list to draft',
-                    });
-                  }
                   this.moveSelectedLocations();
                 });
               }}
               disabled={
-                selectedNewOrExisting === 'new' &&
-                (!newListName || isNewListNameDuplicate || isNewListNameValid)
-              }
-            />
-            <Button
-              className="dialog__primary-action"
-              variant="primary"
-              label={locationsPage.lists.submit}
-              onClick={() => {
-                if (selectedMoveOrCopy === 'copy') {
-                  gtag('event', 'Copy List', {
-                    event_category: 'Copy',
-                    event_label: 'User copies a list and submits',
-                  });
-                } else {
-                  gtag('event', 'Move List', {
-                    event_category: 'Move',
-                    event_label: 'User moves a list and submits',
-                  });
-                }
-                this.setState({ isSaveAsDraft: false, showSubmitModal: true });
-              }}
-              disabled={
                 isOnlyGHGActive &&
-                selectedNewOrExisting === 'new' &&
+                selectedNewOrExisting === LIST_TYPES.NEW &&
                 (!newListName || isNewListNameDuplicate || isNewListNameValid)
               }
             />
@@ -878,9 +892,10 @@ export default class ListDetails extends Component {
           </>
         ),
         dialogOpen: true,
-        dialogTitle: isGfwList
-          ? locationsPage.lists.copyLocationsDialogHeader
-          : locationsPage.lists.moveLocationsDialogHeader,
+        dialogTitle:
+          selectedMoveOrCopy === ACTIONS.MOVE
+            ? locationsPage.lists.moveLocationsDialogHeader
+            : locationsPage.lists.copyLocationsDialogHeader,
         dialogContent: '',
         dialogChildren: true,
       });
@@ -1134,7 +1149,6 @@ export default class ListDetails extends Component {
    * @param {String} list_id - ID of list.
    * @param {Integer} page - page number.
    */
-
   areAllAnalysesDraft = () => {
     const { selectedLists } = this.props;
     const { isOnlyGHGActive } = this.state;
@@ -1148,12 +1162,13 @@ export default class ListDetails extends Component {
   };
 
   getUserLocationData = (list_id, page = 0) => {
-    const { filters, stopLoading } = this.props;
+    const { filters, stopLoading, listView } = this.props;
     const { tableSortedBy, tableSortedDesc, filterString } = this.state;
 
     this.setState({ page, isLoading: true });
 
     getUserLocationDataFromAPI(
+      listView,
       filters,
       list_id,
       filterString,
@@ -1262,9 +1277,8 @@ export default class ListDetails extends Component {
 
     const isGfwList = selectedLists[0].isGlobalForestWatchList;
 
+    // if there was a filter string set and we cleared the input text
     if (newValue === '' && filterString !== '') {
-      // if there was a filter string set and we cleared the input text
-
       // user lists are paginated in the backend
       // so the search term is only set when pressing enter (see handleSearchInputKeyDown()) or when deleting the string
       this.setState(
@@ -1293,6 +1307,7 @@ export default class ListDetails extends Component {
       );
     }
   };
+
   handleSearchInputClick = () => {
     const { selectedLists, filterString } = this.props;
     const isGfwList = selectedLists[0].isGlobalForestWatchList;
@@ -1350,7 +1365,7 @@ export default class ListDetails extends Component {
       template_id,
       list_locations_count,
       id: list_id,
-    } = firstElem; // hard coding this will cause me trouble with Lucas
+    } = firstElem;
 
     this.setState({
       isLoading: true,
@@ -1496,7 +1511,7 @@ export default class ListDetails extends Component {
       })
       .catch((err) => {
         this.setState({ isLoading: false });
-        console.warn('error with grabbing admin areas data', err);
+        console.warn('Error fetching admin areas data', err);
       });
   };
 
@@ -1521,7 +1536,7 @@ export default class ListDetails extends Component {
       })
       .catch((err) => {
         this.setState({ isLoading: false });
-        console.warn('error with grabbing protected areas data', err);
+        console.warn('Error fetching protected areas data', err);
       });
   };
 
@@ -1555,13 +1570,6 @@ export default class ListDetails extends Component {
       });
     }
   };
-
-  changeFolderView(folder) {
-    const { showShareList } = this.props;
-    showShareList(false);
-    store.dispatch(selectFolder(folder));
-    store.dispatch(changeView('folders'));
-  }
 
   loadLocationView() {
     const { selectedLists } = this.props;
@@ -1600,23 +1608,6 @@ export default class ListDetails extends Component {
       ''
     );
   }
-
-  formatDateToCarMessage = (carDateString) => {
-    try {
-      const [year, month, day] = carDateString.split('-').map(Number);
-      const carDate = new Date(year, month - 1, day);
-      const userLang = navigator.language || navigator.languages[0];
-      const formattedDate = new Date(carDate).toLocaleDateString(userLang, {
-        year: 'numeric',
-        month: 'long',
-        day: 'numeric',
-      });
-      return formattedDate;
-    } catch {
-      console.error('Error converting the date: ', carDateString);
-      return 'N/A';
-    }
-  };
 
   render() {
     const {
@@ -1749,8 +1740,7 @@ export default class ListDetails extends Component {
     if (isFcdActive || isGfwList) {
       listViewOptions.push(FOREST_CHANGE_VIEW);
     }
-    const isPalmOilBackwardComp = checkValidViewCommodity(selectedLists?.[0], listData?.[0]);
-    if (isPalmOilBackwardComp || isPalmRiskActive) {
+    if (isPalmRiskActive) {
       listViewOptions.push(COMMODITY_RISK_VIEW);
       if (!listAnalysesStatus?.some(({ analysisId }) => analysisId === 'PalmRisk')) {
         listAnalysesStatus.push({ analysisId: 'PalmRisk' });
@@ -1816,7 +1806,7 @@ export default class ListDetails extends Component {
                 }
                 isChangeTypeOfAnalysisModalOpen={this.state.isChangeTypeOfAnalysisModalOpen}
                 commodity={selectedList?.Commodity}
-                isPalmOilBackwardComp={isPalmOilBackwardComp}
+                isPalmRiskActive={isPalmRiskActive}
               />
 
               <AnalysisStatusBanners
@@ -2048,70 +2038,9 @@ export default class ListDetails extends Component {
                           isAnalysisFailedByExceededAnalysisLimit)
                       }
                     />
-                    {carLastUpdateDate && (
-                      <Accordion
-                        sx={{
-                          mb: 1.5,
-                          padding: 1.25,
-                          borderRadius: 1,
-                          boxShadow: 'none',
-                          border: (theme) => `1px solid ${theme.palette.secondary[300]}`,
-                          backgroundColor: (theme) => theme.palette.secondary[100],
-                          color: (theme) => theme.palette.secondary[900],
-                          '& .MuiBase-root, & .MuiButtonBase-root': {
-                            minHeight: 0,
-                            padding: 0,
-                          },
-                          '& .Mui-expanded': {
-                            mb: 0.5,
-                          },
-                          '& .MuiAccordionSummary-content': {
-                            margin: 0,
-                          },
-                          '& .MuiButtonBase-root.Mui-expanded .hide-when-expanded': {
-                            display: 'none',
-                          },
-                          '& .MuiAccordionDetails-root': {
-                            padding: 0,
-                            mx: 3,
-                            borderTop: (theme) => `1px solid ${theme.palette.secondary[300]}`,
-                          },
-                          '&::before': {
-                            display: 'none',
-                          },
-                        }}
-                      >
-                        <AccordionSummary
-                          expandIcon={
-                            <ExpandMore sx={{ color: (theme) => theme.palette.secondary[700] }} />
-                          }
-                          aria-controls="panel1-content"
-                          id="panel1-header"
-                        >
-                          <DateRange
-                            fontSize="small"
-                            sx={{ mr: 1, color: (theme) => theme.palette.secondary[700] }}
-                          />
-                          <Typography variant="body2">
-                            <b>CAR Data Recency</b>
-                            <span className="hide-when-expanded">
-                              <b>:</b> Expand to see instructions for assessing how up-to-date your
-                              CAR polygon boundaries are.
-                            </span>
-                          </Typography>
-                        </AccordionSummary>
-                        <AccordionDetails>
-                          <Typography variant="body2" sx={{ pt: 2 }}>
-                            The most recent CAR dataset available on Pro was retrieved from SICAR
-                            databases on {this.formatDateToCarMessage(carLastUpdateDate)}. If your
-                            list's CAR locations show an "ID Data Updated" date before{' '}
-                            {this.formatDateToCarMessage(carLastUpdateDate)}, you will need to
-                            re-upload these locations if you want to ensure that they are using the
-                            most up-to-date CAR polygon boundaries.
-                          </Typography>
-                        </AccordionDetails>
-                      </Accordion>
-                    )}
+
+                    {/* Rendered only if there's a carLastUpdateDate */}
+                    <CARAccordion carLastUpdateDate={carLastUpdateDate} />
 
                     <div style={{ display: 'flex', justifyContent: 'space-between' }}>
                       {!this.areAllAnalysesDraft() && listView && (
@@ -2176,49 +2105,14 @@ export default class ListDetails extends Component {
                               )}
                             </span>
                           </div>
-                          {locationsWithError?.length > 0 && (
-                            <Alert
-                              variant="filled"
-                              severity="error"
-                              sx={{
-                                backgroundColor: (theme) => theme.palette.error[100],
-                                color: (theme) => theme.palette.error[700],
-                              }}
-                              action={
-                                <PillButton
-                                  variant="contained"
-                                  color="info"
-                                  sx={{ width: '240px', alignSelf: 'center' }}
-                                  onClick={() => this.setState({ draftSubmitDialogOpen: true })}
-                                >
-                                  Add Locations again
-                                </PillButton>
-                              }
-                            >
-                              <AlertTitle>Location Errors</AlertTitle>
-                              <Typography variant="body2">
-                                <strong>
-                                  {locationsWithError?.length}{' '}
-                                  {locationsWithError?.length === 1 ? ' location' : ' locations'}
-                                </strong>{' '}
-                                couldn't be analyzed due to invalid data (based on the first 50 rows
-                                in your list). Hover over each failed location in the table to view
-                                specific errors. Fix errors offline, re-add locations to your list,
-                                and resubmit for analysis. You can delete previously failed
-                                locations if desired.{' '}
-                                <Link
-                                  href={ExternalLinks.UploadListHelpCenter}
-                                  target="_blank"
-                                  sx={{
-                                    color: (theme) => theme.palette.error[700],
-                                    textDecoration: 'underline',
-                                  }}
-                                >
-                                  More details
-                                </Link>
-                              </Typography>
-                            </Alert>
-                          )}
+
+                          {/* Rendered only if there are locationsWithError */}
+                          <LocationErrorsAlert
+                            locationsWithError={locationsWithError}
+                            onAddLocationsAgain={() =>
+                              this.setState({ draftSubmitDialogOpen: true })
+                            }
+                          />
 
                           <Filter
                             filterCount={filterCount}
@@ -2269,7 +2163,7 @@ export default class ListDetails extends Component {
                                 </Typography>
                               </Grid>
                             )}
-                            {listView !== '' && filteredLocationData.length > 0 && (
+                            {listView !== '' && filteredLocationData.length > 0 && !isLoading && (
                               <WrappedReactTable
                                 listId={selectedLists[0].id}
                                 isGfwList={isGfwList}

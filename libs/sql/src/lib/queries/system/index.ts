@@ -39,6 +39,7 @@ export * from './setGlobalAnalysisLimit';
 export * from './setOrganizationCustomAnalysisLimits';
 export * from './setOrganizationRenewalTime';
 export * from './setOrganizationSubscriptionStatus';
+export * from './updateOrgName';
 export * from './uspChangeConnectionRequestStatus';
 export * from './activatePendingAccount';
 export * from './getAllUsersList';

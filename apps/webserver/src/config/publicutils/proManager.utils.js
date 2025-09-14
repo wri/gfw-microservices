@@ -21,26 +21,31 @@
 const path = require('path');
 const sql = require('mssql');
 import config from '../config';
-
-const langResources = require(path.resolve(__dirname, '../langResources'));
-const awsSes = require(path.resolve(__dirname, '../privateutils/ses.utils'));
-const sqlUtils = require(path.resolve(__dirname, '../privateutils/sql.utils'));
-const Helper = require(path.resolve(__dirname, '../publicutils/helper.utils'));
-const errorUtils = require(path.resolve(__dirname, '../privateutils/error.utils'));
+// Private Utils
 const awsCognito = require(path.resolve(__dirname, '../privateutils/cognito.utils'));
+const awsSes = require(path.resolve(__dirname, '../privateutils/ses.utils'));
+const errorUtils = require(path.resolve(__dirname, '../privateutils/error.utils'));
+const Helper = require(path.resolve(__dirname, '../publicutils/helper.utils'));
+const langResources = require(path.resolve(__dirname, '../langResources'));
+const logger = require(path.resolve(__dirname, '../privateutils/logger.utils'));
 const speakEasy = require(path.resolve(__dirname, '../privateutils/speakeasy.utils'));
+const sqlUtils = require(path.resolve(__dirname, '../privateutils/sql.utils'));
 const rollbackUtils = require(path.resolve(__dirname, '../privateutils/rollback.utils'));
+// Public Utils
 const UserManager = require(path.resolve(__dirname, '../publicutils/userManager.utils'));
 const PolicyManager = require(path.resolve(__dirname, '../publicutils/policyManager.utils'));
 const AccountManager = require(path.resolve(__dirname, '../publicutils/accountManager.utils'));
+const { orgAccountStatus } = require(path.resolve(__dirname, '../env/orgAccountStatus.constants'));
+// SQL Queries
 import {
   setOrganizationCustomAnalysisLimits,
   setGlobalAnalysisLimit,
   setOrganizationRenewalTime,
+  Organization,
+  ClientStoreConnection,
 } from '@wri-monorepos/sql';
+
 import { getOrganizationStatus } from './authenticationManager.utils';
-const { orgAccountStatus } = require(path.resolve(__dirname, '../env/orgAccountStatus.constants'));
-const logger = require(path.resolve(__dirname, '../privateutils/logger.utils'));
 
 /**
  * @function getAllAccountsList
@@ -723,19 +728,84 @@ const updateAccountAnalysisLimits = async (request, payload) => {
   }
 };
 
+/**
+ * @function updateOrgName
+ * @summary Updates the organization name
+ * @param  {Object} req - Request object (used for session/auth)
+ * @param  {Number} id - Organization ID
+ * @param  {String} name - New organization name
+ */
+const updateOrgName = async (req, id, name) => {
+  if (!UserManager.isProManager(req)) {
+    const userMessage = langResources.getResourceString('loginFailed');
+    const sysMessage = `UserEmail: ${req.session.user_email} is not authorized to update org names.`;
+    throw errorUtils.createErrorMessage(
+      req,
+      errorUtils.ERROR_CODES.userNotProManager,
+      userMessage,
+      sysMessage
+    );
+  }
+
+  try {
+    const params = [
+      { field: 'OrganizationId', type: sql.Int, value: id },
+      { field: 'OrganizationName', type: sql.NVarChar, value: name },
+    ];
+
+    const [result] = await sqlUtils.executeSystemStoredProcedure(req, 'uspUpdateOrgName', params);
+
+    return result;
+  } catch (err) {
+    throw errorUtils.createErrorMessage(
+      req,
+      errorUtils.ERROR_CODES.failedToUpdateOrganization,
+      'Failed to update organization name',
+      err
+    );
+  }
+};
+
+/**
+ * Check if an organization name is available (not already taken)
+ * @returns boolean - true if org name is available, false if taken
+ */
+export const checkOrgName = async (req, name) => {
+  try {
+    const clientStoreConnection = new ClientStoreConnection();
+    const connection = await clientStoreConnection.getConnection('gfwpro');
+    const orgRepo = connection.getRepository(Organization);
+    const organization = await orgRepo
+      .createQueryBuilder('org')
+      .where('LOWER(org.organization_name) = LOWER(:name)', { name })
+      .getOne();
+
+    return !!organization;
+  } catch (err) {
+    throw errorUtils.createErrorMessage(
+      req,
+      errorUtils.ERROR_CODES.failedToCheckOrganization,
+      'Failed to check organization name',
+      err
+    );
+  }
+};
+
 module.exports = {
   activatePendingAccount,
+  checkOrgName,
   closePendingAccount,
   deactivateAccount,
   deletePendingAccountRequest,
   deleteOrganization,
   deleteUser,
-  getAccountSubscriptionStatus,
   getAllAccountsList,
   getAllUsersList,
+  getAccountSubscriptionStatus,
   reactivateAccount,
-  updateAccountSubscriptionStatus,
   updateAccountAnalysisLimits,
+  updateAccountSubscriptionStatus,
   updateGlobalAnalysisLimits,
+  updateOrgName,
   updatePendingAccountUser,
 };

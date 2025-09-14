@@ -23,7 +23,7 @@ export default function AccountProfile() {
     <DialogProvider>
       <Grid container justifyContent="end" sx={{ marginBottom: '1.5rem' }}>
         <PillButton variant="contained" size="small" href={`${PRO_MANAGER_PATH}?tab=accounts`}>
-          Back to profile manager
+          Back to Account Profiles (List)
         </PillButton>
       </Grid>
       <SettingSection heading={accountProfileStrings.sectionTitles.profileForm}>

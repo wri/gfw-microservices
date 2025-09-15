@@ -114,14 +114,21 @@ def data_cleaning(df):
     """
     # Columns that will be calculated by addCommodityLevels
     commodity_cols = [
+        'commodity_threat_deforestation',
         'commodity_threat_deforestation_level',
+        'commodity_threat_peat',
         'commodity_threat_peat_level',
+        'commodity_threat_protected_areas',
         'commodity_threat_protected_areas_level',
+        'commodity_threat_fires',
         'commodity_threat_fires_level',
         'commodity_threat_overall_level',
         'commodity_threat_overall_score',
+        'commodity_value_forest_extent',
         'commodity_value_forest_extent_level',
+        'commodity_value_peat',
         'commodity_value_peat_level',
+        'commodity_value_protected_areas',
         'commodity_value_protected_areas_level',
         'commodity_value_overall_level',
         'commodity_value_overall_score',

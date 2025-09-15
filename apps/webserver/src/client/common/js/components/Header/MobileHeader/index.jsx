@@ -77,6 +77,19 @@ function MobileHeader({ isLoggedIn }) {
               </ListItemText>
             </MenuItem>
             <Divider />
+            <MenuItem>
+              <ListItemText>
+                <HeaderNavLink
+                  link={
+                    isLoggedIn
+                      ? 'https://www.globalforestwatch.org/help/gfw-pro/guides/'
+                      : 'https://www.globalforestwatch.org/help/gfw-pro/'
+                  }
+                  label="Help Center"
+                />
+              </ListItemText>
+            </MenuItem>
+            <Divider />
             <LanguageDropdownMenuMobile />
             <Divider />
             <OtherAppsAccordion />

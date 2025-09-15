@@ -379,7 +379,7 @@ export default class Dashboard extends Component {
             <DashboardSettings
               selectedAlert={selectedAlert}
               selectedList={selectedList}
-              selectedTimeframe={selectedTimeframe}
+              selectedTimeframe={store.getState().selectedTimeframe}
               locationFilters={locationFilters}
               geoJSON={rawData.geojson}
               failedGeoJSON={rawData.failedGeoJSON}

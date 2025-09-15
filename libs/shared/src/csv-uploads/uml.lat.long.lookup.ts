@@ -12,7 +12,7 @@ const DATA_API_URL = `${process.env.GFW_DATASET_API_URL}/gfw_universal_mill_list
  */
 const isValidUmlIdString = (id: string) => {
   return typeof id === 'string' && /^[a-zA-Z0-9]+$/.test(id);
-}
+};
 
 export const umlLookUp: IdLookupFn = async (ids) => {
   const result = {};
@@ -27,7 +27,7 @@ export const umlLookUp: IdLookupFn = async (ids) => {
         errorDetails: [`UML LookUp: invalid string format for ID ${id}`],
       };
     } else {
-      result[id] = {}; 
+      result[id] = {};
       formatValidatedIds.push(id);
     }
   });
@@ -64,12 +64,11 @@ export const umlLookUp: IdLookupFn = async (ids) => {
     // Mark valid IDs not returned as "not found"
     formatValidatedIds.forEach((id) => {
       if (!result[id] || result[id].latitude === undefined || result[id].longitude === undefined) {
-        result[id] = { 
-          errorDetails: [`UML LookUp: lat/long was not found for ${id}`] 
+        result[id] = {
+          errorDetails: [`UML LookUp: lat/long was not found for ${id}`],
         };
       }
     });
-
   } catch (error) {
     logger.error(`umlLookUp failed for ${sqlIds}`, error.stack || error);
     formatValidatedIds.forEach((id) => {

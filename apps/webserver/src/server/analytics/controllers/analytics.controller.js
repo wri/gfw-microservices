@@ -100,8 +100,17 @@ export const getMyOrganizationAnalysisUsage = async (req, res) => {
 
 export const getMyOrganizationUsersAnalysisUsage = async (req, res) => {
   const { organization_database: orgDbName, organization_id } = req.session;
-  let { startDate, endDate } = req.query;
- 
+
+  const orgActivatedTime = await getAccountRenewalTime(organization_id);
+  const todayAsEndDay = moment().add(1, 'day');
+  const accountActivationDate = moment(orgActivatedTime);
+  const accountLatestYearStartDate = todayAsEndDay
+    .clone()
+    .subtract(moment().diff(accountActivationDate, 'days') % 365, 'days');
+
+  const startDate = accountLatestYearStartDate.format('YYYY-MM-DD');
+  const endDate = todayAsEndDay.format('YYYY-MM-DD');
+
   const organizationUsersAnalysisUsage = await getAccountUsersAnalysisUsage(orgDbName, {
     startDate,
     endDate,
@@ -114,17 +123,8 @@ export const getMyOrganizationUsersAnalysisUsage = async (req, res) => {
   });
 };
 export const getMyAccountAnalysisUsageByAnalysisType = async (req, res) => {
-  const { organization_database: orgDbName, organization_id } = req.session;
-
-  const orgActivatedTime = await getAccountRenewalTime(organization_id);
-  const todayAsEndDay = moment().add(1, 'day');
-  const accountActivationDate = moment(orgActivatedTime);
-  const accountLatestYearStartDate = todayAsEndDay
-    .clone()
-    .subtract(moment().diff(accountActivationDate, 'days') % 365, 'days');
-
-  const startDate = accountLatestYearStartDate.format('YYYY-MM-DD');
-  const endDate = todayAsEndDay.format('YYYY-MM-DD');
+  const { organization_database: orgDbName } = req.session;
+  let { startDate, endDate } = req.query;
 
   const analysisUsageByType = await getAccountAnalysisUsageByAnalysisType({
     startDate,

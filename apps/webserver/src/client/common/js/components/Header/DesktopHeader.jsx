@@ -48,6 +48,15 @@ function DesktopHeader({ isLoggedIn, active }) {
               label="Blog"
             />
             <HeaderNavLink
+              active={active}
+              link={
+                isLoggedIn
+                  ? 'https://www.globalforestwatch.org/help/gfw-pro/guides/'
+                  : 'https://www.globalforestwatch.org/help/gfw-pro/'
+              }
+              label="Help Center"
+            />
+            <HeaderNavLink
               link="/account"
               label={nav.requestAccount}
               className="header__request-account-button"

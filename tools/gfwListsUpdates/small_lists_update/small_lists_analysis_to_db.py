@@ -112,11 +112,26 @@ def data_cleaning(df):
     Returns:
         Dataframe with cleaned values
     """
+    # Columns that will be calculated by addCommodityLevels
+    commodity_cols = [
+        'commodity_threat_deforestation_level',
+        'commodity_threat_peat_level',
+        'commodity_threat_protected_areas_level',
+        'commodity_threat_fires_level',
+        'commodity_threat_overall_level',
+        'commodity_threat_overall_score',
+        'commodity_value_forest_extent_level',
+        'commodity_value_peat_level',
+        'commodity_value_protected_areas_level',
+        'commodity_value_overall_level',
+        'commodity_value_overall_score',
+        'commodity_mill_priority_level',
+        'commodity_mill_priority_score'
+    ]
+
     # Add and remove columns
-    missing_cols = list(set(cfg.small_lists_columns) - set(df.columns))
-    for col in missing_cols:
-        df[col] = None
-    df = df[cfg.small_lists_columns]
+    all_cols = cfg.small_lists_columns + commodity_cols
+    df = df.reindex(columns=all_cols)
 
     # Convert booleans to text
     mask = df.applymap(type) != bool
@@ -163,11 +178,15 @@ if __name__ == "__main__":
     with connection:
         cursor = connection.cursor()
         updated_rows = 0
+        
+        # Combine columns for the INSERT statement
+        all_db_columns = cfg.small_lists_columns + [col for col in df.columns if col.startswith('commodity_')]
+        column_list_for_sql = ",".join(all_db_columns)
+        placeholders = ",".join(["?"] * len(all_db_columns))
+        sql_insert = f'INSERT INTO [dbo].[{table_name}]({column_list_for_sql}) VALUES ({placeholders})'
 
         for index, row in df.iterrows():
-            sql_insert = f'INSERT INTO [dbo].[{table_name}]({",".join(cfg.small_lists_columns)}​​​​​​​​​​​​​​​​) VALUES ({",".join(["?"] * len(cfg.small_lists_columns))})'
-
-            cursor.execute(sql_insert, row.values.tolist())
+            cursor.execute(sql_insert, row[all_db_columns].values.tolist())
             updated_rows += 1
 
     print(f"Finished. Rows updated: {updated_rows}")

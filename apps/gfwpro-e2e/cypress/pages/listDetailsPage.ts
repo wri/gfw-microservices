@@ -20,8 +20,8 @@ class ListDetailsPage {
     moveSectionOptionRadioBtn: () => cy.contains('label', 'Move'),
     inputCreateNewList: () => cy.get('[id="new-list-name"]'),
     submitBtn: () => cy.contains('Submit Analysis'),
-    copyLocationsBtn: () => cy.contains('COPY LOCATION(S)'),
-    moveLocationsBtn: () => cy.contains('MOVE LOCATION(S)'),
+    copyLocationsBtn: () => cy.contains('Copy Location(s)'),
+    moveLocationsBtn: () => cy.contains('Move Location(s)'),
     confirmActionBtn: () => cy.contains('button', 'OK'),
     apply: () => cy.contains('Apply'),
     descriptionAlertDownloadList: () =>
@@ -147,7 +147,7 @@ class ListDetailsPage {
       });
 
       // Now try to click the Save As Draft button
-      this.clickOnMoveLocationsBtn();
+      this.clickOnCopyLocationsBtn();
       if (isGFW) {
         this.elements.listActionDialog().should('contain.text', 'Locations Added');
         this.elements

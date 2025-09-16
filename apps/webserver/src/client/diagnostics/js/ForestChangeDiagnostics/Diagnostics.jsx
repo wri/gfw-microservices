@@ -485,6 +485,12 @@ export default class Diagnostics extends Component {
         JSON.parse(data?.tree_cover_loss_prodes_yearly || '{}')
       );
     }
+    if (property === 'prodes_wdpa') {
+      return (
+        JSON.parse(data?.country_specific_deforestation_wdpa_yearly || '{}')?.BRA ||
+        JSON.parse(data?.tree_cover_loss_prodes_wdpa_yearly || '{}')
+      );
+    }
     return JSON.parse(data[property] || '{}');
   };
 
@@ -522,7 +528,10 @@ export default class Diagnostics extends Component {
       if (
         loc[property] ||
         (property === 'prodes' &&
-          (loc.country_specific_deforestation_yearly || loc.tree_cover_loss_prodes_yearly))
+          (loc.country_specific_deforestation_yearly || loc.tree_cover_loss_prodes_yearly)) ||
+        (property === 'prodes_wdpa' &&
+          (loc.country_specific_deforestation_wdpa_yearly ||
+            loc.tree_cover_loss_prodes_wdpa_yearly))
       ) {
         const yearlyData = this.getYearlyParsedData(loc, property);
 

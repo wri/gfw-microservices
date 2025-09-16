@@ -24,6 +24,11 @@ function DesktopHeader({ isLoggedIn, active }) {
             <HeaderNavLink active={active} link="/locations" label="Locations" />
             <HeaderNavLink active={active} link="/map" label="Map" />
             <HeaderNavLink active={active} link="/dashboard" label="Alerts" />
+            <HeaderNavLink
+              active={active}
+              link="https://www.globalforestwatch.org/help/gfw-pro/guides/"
+              label="Help Center"
+            />
             <NewFeatureNotifications />
             <AccountDropDownMenu />
           </>
@@ -49,11 +54,7 @@ function DesktopHeader({ isLoggedIn, active }) {
             />
             <HeaderNavLink
               active={active}
-              link={
-                isLoggedIn
-                  ? 'https://www.globalforestwatch.org/help/gfw-pro/guides/'
-                  : 'https://www.globalforestwatch.org/help/gfw-pro/'
-              }
+              link="https://www.globalforestwatch.org/help/gfw-pro/"
               label="Help Center"
             />
             <HeaderNavLink

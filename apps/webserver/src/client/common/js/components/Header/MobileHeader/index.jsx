@@ -80,11 +80,7 @@ function MobileHeader({ isLoggedIn }) {
             <MenuItem>
               <ListItemText>
                 <HeaderNavLink
-                  link={
-                    isLoggedIn
-                      ? 'https://www.globalforestwatch.org/help/gfw-pro/guides/'
-                      : 'https://www.globalforestwatch.org/help/gfw-pro/'
-                  }
+                  link="https://www.globalforestwatch.org/help/gfw-pro/"
                   label="Help Center"
                 />
               </ListItemText>

@@ -521,14 +521,14 @@ export default class Diagnostics extends Component {
     return obj;
   };
 
-  hasProdesData = (loc) => {
+  hasProdesData = (property, loc) => {
     return (
       property === 'prodes' &&
       (loc.country_specific_deforestation_yearly || loc.tree_cover_loss_prodes_yearly)
     );
   };
 
-  hasProdesWdpaData = (loc) => {
+  hasProdesWdpaData = (property, loc) => {
     return (
       property === 'prodes_wdpa' &&
       (loc.country_specific_deforestation_wdpa_yearly || loc.tree_cover_loss_prodes_wdpa_yearly)
@@ -539,7 +539,7 @@ export default class Diagnostics extends Component {
     let total = 0;
 
     this.getFilteredLocations().forEach((loc) => {
-      if (loc[property] || hasProdesData(loc) || hasProdesWdpaData(loc)) {
+      if (loc[property] || hasProdesData(property, loc) || hasProdesWdpaData(property, loc)) {
         const yearlyData = this.getYearlyParsedData(loc, property);
 
         if (

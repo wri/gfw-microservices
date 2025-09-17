@@ -539,7 +539,11 @@ export default class Diagnostics extends Component {
     let total = 0;
 
     this.getFilteredLocations().forEach((loc) => {
-      if (loc[property] || hasProdesData(property, loc) || hasProdesWdpaData(property, loc)) {
+      if (
+        loc[property] ||
+        this.hasProdesData(property, loc) ||
+        this.hasProdesWdpaData(property, loc)
+      ) {
         const yearlyData = this.getYearlyParsedData(loc, property);
 
         if (

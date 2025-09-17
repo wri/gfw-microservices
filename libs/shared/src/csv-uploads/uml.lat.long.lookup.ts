@@ -22,7 +22,7 @@ export const umlLookUp: IdLookupFn = async (ids) => {
 
   ids.forEach((id) => {
     if (!isValidUmlIdString(id)) {
-      logger.error(`Invalid UML ID format: ${id}`);
+      logger.error(`❌ Invalid UML ID format: ${id}`);
       result[id] = {
         errorDetails: [`UML LookUp: invalid string format for ID ${id}`],
       };

@@ -396,9 +396,7 @@ export default class SouthAmericaRegionsWithoutArgentina extends Component {
     if (paChecked) {
       series.push({
         name: 'Protected Areas',
-        data: getYearlyHighchartSeries(
-          getYearlyData('prodes_wdpa', startYear, endYear)
-        ),
+        data: getYearlyHighchartSeries(getYearlyData('prodes_wdpa', startYear, endYear)),
         color: PROTECTED_AREAS_COLOR,
         groupPadding: 0,
         stack: 'pa',
@@ -435,9 +433,7 @@ export default class SouthAmericaRegionsWithoutArgentina extends Component {
       if (paChecked) {
         filteredSeries.push({
           name: 'Protected Areas',
-          data: getYearlyHighchartSeries(
-            getYearlyData('prodes_wdpa', startYear, endYear)
-          ),
+          data: getYearlyHighchartSeries(getYearlyData('prodes_wdpa', startYear, endYear)),
           color: PROTECTED_AREAS_COLOR,
           groupPadding: 0,
           stack: 'pa',

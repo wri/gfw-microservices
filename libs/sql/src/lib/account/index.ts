@@ -4,3 +4,4 @@ export * from './getAccountAnalysisUsage';
 export * from './getAccountUsersAnalysisUsage';
 export * from './getAccountUsersAnalysisUsageExport';
 export * from './getAccountYearlyUsageSinceActivation';
+export * from './getAccountAnalysisUsageByAnalysisType';

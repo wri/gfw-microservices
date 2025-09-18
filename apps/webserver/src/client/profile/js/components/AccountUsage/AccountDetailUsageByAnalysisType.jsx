@@ -51,7 +51,7 @@ function AccountDetailUsageByAnalysisType({
             <TableBody>
               {analysisUsageByType &&
                 analysisUsageByType.map((element) => (
-                  <TableRow>
+                  <TableRow key={element.analysis_type}>
                     <TableCell>
                       {NORMALIZING_ANALYSIS_NAMES[element.analysis_type] ||
                         element.analysis_type ||

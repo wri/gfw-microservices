@@ -132,7 +132,6 @@ export default function AccountUsageContainer() {
       .then((data) => {
         const { analysisUsageByType } = data;
         setAnalysisUsageByType(analysisUsageByType);
-        console.log('usage-by-analysis', analysisUsageByType, startDateAnalysis, endDateAnalysis);
       })
       .catch((error) => {
         console.log('Error on fetch usage-by-analysis:', error);

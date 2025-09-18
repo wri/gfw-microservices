@@ -10,7 +10,7 @@ interface LocationData {
 
 const logger = new Logger('CSV2GeoJSONParser');
 
-// fake geometry so followon chains can proceed.  This location is in the ocean, so not valid.
+// Fake geometry so following chains can proceed. This location is in the ocean, and therefore invalid.
 const fakeGeometry: Geometry = {
   type: 'Point',
   coordinates: [0, 0],
@@ -127,6 +127,13 @@ export const csv2geojson = async (
     // id based system
     try {
       data = await csvLatLongIdBasedTransformer(data);
+      const invalidRows = data.filter((row) => row.errorDetails?.length > 0);
+      if (invalidRows.length) {
+        // PutListAsDraft reads errors from request in the chain, but we just log here for visibility
+        logger.log(
+          `Found ${invalidRows.length} rows with invalid IDs, they will trigger Draft in the chain`
+        );
+      }
     } catch (error) {
       logger.error('Error looking up ID', error.stack || error);
       geoJson.features.push({
@@ -150,6 +157,7 @@ export const csv2geojson = async (
       if (row['errorDetails']) {
         logger.error(row['errorDetails']);
       }
+
       geoJson.features.push({
         type: 'Feature',
         properties: row,

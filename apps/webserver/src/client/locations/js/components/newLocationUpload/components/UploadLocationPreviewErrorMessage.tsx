@@ -121,8 +121,7 @@ const errorMessageBuilder = ({
   }
 
   if (
-    firstError?.startsWith('UML LookUp: did not found lat/long for') ||
-    firstError?.startsWith('UML LookUp: invalid string format')
+    firstError?.startsWith('UML LookUp: ')
   ) {
     return {
       title: 'Invalid file',

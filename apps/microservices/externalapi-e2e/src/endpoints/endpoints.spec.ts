@@ -231,7 +231,7 @@ describe('API Endpoints', () => {
         expect(res.data).toBeTruthy();
         expect(res.data).toHaveProperty('message');
         expect(typeof res.data.message).toBe('string');
-        expect(res.data.message).toMatch(email);
+        expect(res.data.message).toMatch('has deleted list');
       },
       30 * 1000
     );

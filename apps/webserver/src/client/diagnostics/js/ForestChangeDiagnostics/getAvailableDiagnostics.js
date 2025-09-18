@@ -1,13 +1,14 @@
-import { checkValidViewCommodity } from '../../../locations/js/utils/lists.utils';
+import { getActiveAnalysisFlags } from '../../../listDetails/js/utils/listDetails.utils';
 
-const getAvailableDiagnostics = (listData, selectedLists) => {
+const getAvailableDiagnostics = (selectedList) => {
   let availableDiagnostics = [];
-  const forestChangeDisabled = listData.length === 0;
-  if (!forestChangeDisabled) {
+
+  const { isFcdActive, isPalmRiskActive } = getActiveAnalysisFlags(selectedList);
+
+  if (isFcdActive) {
     availableDiagnostics.push({ value: 'forest_change', label: 'Forest change' });
   }
-  const commodityRiskDisabled = !checkValidViewCommodity(selectedLists?.[0], listData?.[0]);
-  if (!commodityRiskDisabled) {
+  if (isPalmRiskActive) {
     availableDiagnostics.push({
       value: 'commodity_risk',
       label: 'Palm Risk Assessment',

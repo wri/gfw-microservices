@@ -48,7 +48,9 @@ small_lists_columns = [
         "brazil_biomes_presence",
         "cerrado_biome_presence",
         "southeast_asia_presence",
-        "indonesia_presence"
+        "indonesia_presence",
+        "protected_areas_by_category_area",
+        "landmark_by_category_area"
         ]
 
 # specify column in database table (list_id must be last!!!!)

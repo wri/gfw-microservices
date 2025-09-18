@@ -106,15 +106,18 @@ class LocationsPage {
 
   verifyLists(lists: string[], exist: boolean) {
     lists.forEach((listName) => {
-      const element = this.elements.listByName(listName);
       if (exist) {
-        element.should('be.visible');
+        cy.get('[class*="locations-list__title"]').contains(listName).should('be.visible');
       } else {
-        element.should('not.exist');
+        // verify the list does not exist
+        cy.get('body').then(($body) => {
+          if ($body.find(`[class*="locations-list__title"]:contains("${listName}")`).length > 0) {
+            throw new Error(`List "${listName}" should not exist but was found`);
+          }
+        });
       }
     });
   }
-
   deleteLists(lists: string[]) {
     lists.forEach((listName) => {
       cy.get('ul.my-lists-list')

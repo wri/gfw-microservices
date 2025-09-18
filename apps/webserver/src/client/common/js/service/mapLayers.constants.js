@@ -1058,7 +1058,7 @@ export const mapLayers = [
         body: {
           useCors: true,
           metadata: 'uml',
-          url: 'https://tiles.globalforestwatch.org/gfw_universal_mill_list/v202410/default/root.json',
+          url: 'https://tiles.globalforestwatch.org/gfw_universal_mill_list/v202508/default/root.json',
         },
       },
       legendConfig: {
@@ -2134,7 +2134,7 @@ export const mapLayers = [
       layerConfig: {
         type: 'tileLayer',
         body: {
-          url: 'https://tiles.globalforestwatch.org/jrc_global_forest_cover/v2020/default2/{z}/{x}/{y}.png',
+          url: 'https://tiles.globalforestwatch.org/jrc_global_forest_cover/v2020.2/default/{z}/{x}/{y}.png',
           metadata: 'jrc_global_forest_cover',
         },
       },

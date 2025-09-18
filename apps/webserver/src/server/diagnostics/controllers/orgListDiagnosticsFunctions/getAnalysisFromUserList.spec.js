@@ -303,7 +303,6 @@ describe('getAnalysisFromUserList', () => {
           '{"2002":0.0,"2003":0.0,"2004":0.0,"2005":0.0,"2006":0.0,"2007":0.0,"2008":0.0,"2009":0.0,"2010":0.0,"2011":0.0,"2012":0.0,"2013":0.0,"2014":0.0,"2015":0.0,"2016":0.0,"2017":0.0,"2018":0.0,"2019":0.0,"2020":0.0,"2021":0.0}',
         commodity_threat_fires: '{}',
         dissolved_data_location_info: '{}',
-        tree_cover_loss_arg_otbn_yearly: '{}',
         arg_otbn_area: '{}',
         protected_areas_by_category_area: '{}',
         landmark_by_category_area: '{}',

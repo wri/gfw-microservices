@@ -20,6 +20,14 @@ describe('DataTemplates', () => {
       <DataTemplates workflowType={UploadType.ByFile} onClose={handleCloseMock} isOpen={true} />
     );
     expect(screen.getByText('Download data templates')).toBeInTheDocument();
+    expect(screen.getByRole('link', { name: /our guidance on formatting/i })).toHaveAttribute(
+      'href',
+      'https://www.globalforestwatch.org/help/gfw-pro/guides/select-correct-template/'
+    );
+    expect(screen.getByRole('link', { name: /download an example template/i })).toHaveAttribute(
+      'href',
+      'https://drive.google.com/drive/folders/153I5e_SApqUNwFAiqLJPBh-P7v6194c3'
+    );
   });
 
   it('should close the modal when the done button is clicked', async () => {

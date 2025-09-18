@@ -20,11 +20,10 @@ export default class DashboardSettings extends Component {
   };
 
   handleViewMap = () => {
-    const { selectedAlert, selectedList, selectedTimeframe, selectedAdmin, view } = this.props;
+    const { selectedAlert, selectedList, selectedTimeframe, selectedAdmin } = this.props;
     if (!selectedList || !selectedList.id) {
       return;
     }
-
     const visibleLayers =
       selectedAlert === 'GLAD'
         ? [proLayers.integratedDeforestationAlertsID]
@@ -35,11 +34,7 @@ export default class DashboardSettings extends Component {
       selectedTimeframe,
       visibleLayers,
       isGfwList: selectedList.isGlobalForestWatchList,
-      isSharedList: selectedList?.is_shared,
-      xmin: view.extent.xmin,
-      ymin: view.extent.ymin,
-      xmax: view.extent.xmax,
-      ymax: view.extent.ymax,
+      ...(selectedList?.is_shared ? { isSharedList: selectedList.is_shared } : {}),
     };
 
     if (selectedAdmin !== '') {

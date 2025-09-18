@@ -6,12 +6,16 @@ import { proLayers } from '../../../common/js/proLayers.config';
 
 // Function to remove and add a layer
 const removeAndAddLayer = (map, layer) => {
+  const userLayer = map.findLayerById('user-locations');
   const promise = new Promise((resolve) => {
     map.remove(layer);
+    map.removeAll(userLayer);
     resolve();
   });
+
   promise.then(() => {
     map.add(layer);
+    map.add(userLayer);
   });
 };
 

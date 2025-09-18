@@ -20,7 +20,8 @@ class ListDetailsPage {
     moveSectionOptionRadioBtn: () => cy.contains('label', 'Move'),
     inputCreateNewList: () => cy.get('[id="new-list-name"]'),
     submitBtn: () => cy.contains('Submit Analysis'),
-    saveAsDraftBtn: () => cy.contains('Save As Draft'),
+    copyLocationsBtn: () => cy.contains('Copy Location(s)'),
+    moveLocationsBtn: () => cy.contains('Move Location(s)'),
     confirmActionBtn: () => cy.contains('button', 'OK'),
     apply: () => cy.contains('Apply'),
     descriptionAlertDownloadList: () =>
@@ -85,14 +86,10 @@ class ListDetailsPage {
     this.clickOnCopyMoveBtn();
     this.clickOnMoveSectionRadioBtn();
     this.selectList(list);
-    this.clickOnSaveAsDraftBtn();
-    this.elements.listActionDialog().should('contain.text', 'Locations Moved');
+    this.clickOnMoveLocationsBtn();
     this.elements
       .listActionDialog()
-      .should(
-        'contain.text',
-        'Location move process starts, this can take a while, please be patient.'
-      );
+      .should('contain.text', 'process started, this can take a while, please be patient');
     this.elements.confirmActionBtn().should('be.visible');
     this.clickOnConfirmActionBtn();
   }
@@ -149,11 +146,8 @@ class ListDetailsPage {
         }
       });
 
-      // Wait for the Save As Draft button to be enabled
-      this.elements.saveAsDraftBtn().should('be.visible').should('not.be.disabled');
-
       // Now try to click the Save As Draft button
-      this.clickOnSaveAsDraftBtn();
+      this.clickOnCopyLocationsBtn();
       if (isGFW) {
         this.elements.listActionDialog().should('contain.text', 'Locations Added');
         this.elements
@@ -163,13 +157,9 @@ class ListDetailsPage {
             `You have successfully added locations and saved ${listName} as a draft`
           );
       } else {
-        this.elements.listActionDialog().should('contain.text', 'Locations Moved');
         this.elements
           .listActionDialog()
-          .should(
-            'contain.text',
-            'Location move process starts, this can take a while, please be patient.'
-          );
+          .should('contain.text', 'process started, this can take a while, please be patient');
       }
       this.elements.confirmActionBtn().should('be.visible');
       this.clickOnConfirmActionBtn();
@@ -179,9 +169,13 @@ class ListDetailsPage {
   selectList(list) {
     cy.get('div.move-to-list-select select').select(list);
   }
-  clickOnSaveAsDraftBtn() {
+  clickOnCopyLocationsBtn() {
     // Wait for the button to be enabled before clicking
-    this.elements.saveAsDraftBtn().should('be.visible').should('not.be.disabled').click();
+    this.elements.copyLocationsBtn().should('be.visible').should('not.be.disabled').click();
+  }
+  clickOnMoveLocationsBtn() {
+    // Wait for the button to be enabled before clicking
+    this.elements.moveLocationsBtn().should('be.visible').should('not.be.disabled').click();
   }
   clickOnSubmitBtn() {
     this.elements.submitBtn().click();

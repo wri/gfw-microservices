@@ -448,40 +448,6 @@ module.exports = (app, limiter) => {
     }
   });
 
-  // ********************************************************************************************************************
-  // New method to delete locations from filtered list
-  // Needs the following parameters: listID, gfw_list_id, country, state, subState, analysisArea, analysisAreaOperator
-  // in get request
-  // ********************************************************************************************************************
-  app.get('/locations/deleteAllFilteredLocations', (req, res) => {
-    console.log('GET /locations/deleteAllFilteredLocations');
-    const {
-      listID,
-      gfw_list_id,
-      country,
-      state,
-      subState,
-      selectedAreaMin,
-      selectedAreaMax,
-      searchString,
-    } = req.query;
-    const filters = { country, state, subState, selectedAreaMin, selectedAreaMax, searchString };
-
-    ListManager.deleteFilteredLocations(req, listID, filters, gfw_list_id)
-      .then(() => {
-        return ListManager.deleteListIfEmpty(req, listID);
-      })
-      .then((isListEmpty) => {
-        const result = isListEmpty ? 'AllLocationsDeleted' : 'LocationDeleted';
-        res.send(result);
-      })
-      .catch((err) => {
-        console.log('Error /locations/deleteFilteredLocations', err);
-        ListManager.setListUnlocked(req, listID);
-        res.send(err);
-      });
-  });
-
   app.post('/locations/getGFWListLocationData', (req, res) => {
     console.log('POST /locations/getGFWListLocationData');
     const { list_id, pageNum, pageSize, filters, filterString, tableSortedBy, tableSortedDesc } =

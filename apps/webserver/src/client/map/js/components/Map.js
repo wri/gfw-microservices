@@ -3,7 +3,6 @@ import moment from 'moment';
 import { withRouter } from 'react-router-dom';
 // ESRI Imports
 import EsriMap from '@arcgis/core/Map';
-import Extent from '@arcgis/core/geometry/Extent';
 import * as GeometryEngine from '@arcgis/core/geometry/geometryEngine';
 import Graphic from '@arcgis/core/Graphic';
 import Polygon from '@arcgis/core/geometry/Polygon';
@@ -16,7 +15,6 @@ import SketchViewModel from '@arcgis/core/widgets/Sketch/SketchViewModel';
 import VectorTileLayer from '@arcgis/core/layers/VectorTileLayer';
 import WebTileLayer from '@arcgis/core/layers/WebTileLayer';
 import { webMercatorToGeographic } from '@arcgis/core/geometry/support/webMercatorUtils';
-import SpatialReference from '@arcgis/core/geometry/SpatialReference';
 import CustomDialog from '../../../common/js/components/CustomDialog/CustomDialog';
 
 import { addCoordinateTextFromPoint } from '../../../locations/js/utils/polygonCoordinatesUtils';
@@ -1914,27 +1912,10 @@ class Map extends Component {
       latitude,
       longitude,
       zoom,
-      xmin,
-      ymin,
-      xmax,
-      ymax,
     } = queryParams;
 
     if (!listId) {
       return; // if there is no list id in the get params, exit this function
-    }
-
-    let alertsMapExtent;
-    if (xmin && ymin && xmax && ymax) {
-      alertsMapExtent = new Extent({
-        xmin,
-        ymin,
-        xmax,
-        ymax,
-        spatialReference: SpatialReference.WGS84,
-      });
-    } else {
-      alertsMapExtent = null; // Handle the case where extent cannot be calculated
     }
 
     const gfwListDefinitions = {};
@@ -1961,7 +1942,6 @@ class Map extends Component {
       const transitionListData = {
         id: listId,
         numLocations: selectedLocations?.length || listToSelect?.list_locations_count,
-        alertsMapExtent,
         name: listName,
         isGfwList: true,
       };
@@ -1989,7 +1969,6 @@ class Map extends Component {
           id: listId,
           numLocations: selectedLocations?.length || userList?.list_locations_count,
           name: userList.list_name,
-          alertsMapExtent,
         },
       });
 

@@ -7,6 +7,20 @@ import { ListService } from '../lists/lists.service';
 import { SaveActivityLogEndpoint } from './utils/saveActivityLogEndpoint';
 import { HttpException, HttpStatus } from '@nestjs/common';
 import { ClientStoreConnection } from '@wri-monorepos/sql';
+import * as sql from 'mssql';
+import { getGHGLocationErrorsByListId } from '@wri-monorepos/sql';
+import { SQLUtils } from '@wri-monorepos/sql';
+
+jest.mock('@wri-monorepos/sql', () => {
+  const actual = jest.requireActual('@wri-monorepos/sql');
+  return {
+    ...actual,
+    SQLUtils: {
+      ...actual.SQLUtils,
+      queryDB: jest.fn(),
+    },
+  };
+});
 
 describe('ListAnalysisService', () => {
   let service: ListAnalysisService;
@@ -194,6 +208,49 @@ describe('ListAnalysisService', () => {
       ).rejects.toThrow(
         new HttpException({ errorDetails: 'List not found' }, HttpStatus.NOT_FOUND)
       );
+    });
+  });
+
+  describe('getGhgLocationErrors', () => {
+    beforeEach(() => {
+      jest.clearAllMocks();
+    });
+
+    it('should return mapped errors when data has locationError', async () => {
+      const mockData = [
+        { locationName: 'Location 1', locationError: 'Error 1' },
+        { locationName: 'Location 2', locationError: null },
+        { locationName: 'Location 3', locationError: 'Error 3' },
+      ];
+      (SQLUtils.queryDB as jest.Mock).mockResolvedValue(mockData);
+
+      const result = await service.getGhgLocationErrors(1, 'test_db');
+
+      expect(result).toEqual([
+        { locationName: 'Location 1', errorDetails: 'Error 1' },
+        { locationName: 'Location 3', errorDetails: 'Error 3' },
+      ]);
+
+      expect(SQLUtils.queryDB).toHaveBeenCalledWith('test_db', getGHGLocationErrorsByListId, [
+        { field: 'listId', type: sql.Int, value: 1 },
+      ]);
+    });
+
+    it('should return empty array when no errors', async () => {
+      const mockData = [{ locationName: 'Location 1', locationError: null }];
+      (SQLUtils.queryDB as jest.Mock).mockResolvedValue(mockData);
+
+      const result = await service.getGhgLocationErrors(1, 'test_db');
+
+      expect(result).toEqual([]);
+    });
+
+    it('should return empty array when data is null', async () => {
+      (SQLUtils.queryDB as jest.Mock).mockResolvedValue(null);
+
+      const result = await service.getGhgLocationErrors(1, 'test_db');
+
+      expect(result).toEqual([]);
     });
   });
 });

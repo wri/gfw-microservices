@@ -5,7 +5,12 @@ import Page from '../../../common/js/components/Page';
 import { userAccessLevel, locationsPage } from '../../../common/js/config';
 import ModalLoader from '../../../common/js/components/Loaders/ModalLoader';
 import onListFromViewToList from '../utils/redirect';
+import { analysisTypes } from '../../../../config/env/analysisTypes.constants';
 import ListDetails from './lists/ListDetails';
+import {
+  FOREST_CHANGE_VIEW,
+  POST_2020_RISK_ASSESSMENT_VIEW,
+} from './lists/ListDetails/listViews.constants';
 import '../../../locations/css/locations.scss';
 
 const pageOptions = {
@@ -87,7 +92,7 @@ class Locations extends Component {
       userInfo,
       usersList,
       userSharedLists,
-      listView,
+      listView: listViewFromStore,
       addType,
       activeTemplate,
       userFolders,
@@ -103,12 +108,35 @@ class Locations extends Component {
 
     const selectedList = selectedLists.length > 0 ? selectedLists[0] : null;
     let draftNonOwner = false;
+    let defaultView = '';
     if (selectedList) {
       const userIsAdmin = userInfo.access_level_id === userAccessLevel.ADMIN;
       const userIsOwner = userInfo.id === selectedList.user_id;
       draftNonOwner = !userIsAdmin && !userIsOwner;
-    }
 
+      const { isGlobalForestWatchList } = selectedList;
+
+      // post-2020 risk assesment tab is selected by default, but
+      // if that analysis is not active and post-2000 tree cover loss analysis is active,
+      // then select the tab and change the view to FOREST_CHANGE_VIEW
+      const listAnalysesStatus = selectedList?.listAnalysesStatus || [];
+
+      const isPost2020RiskActive = listAnalysesStatus?.some(
+        ({ analysisId }) => analysisId === analysisTypes.DEFORESTATION_KPIS
+      );
+
+      const isPost2000TreeCoverLossActive = listAnalysesStatus?.some(
+        ({ analysisId }) => analysisId === analysisTypes.FOREST_CHANGE_DIAGNOSTICS
+      );
+
+      if (isPost2020RiskActive) {
+        defaultView = POST_2020_RISK_ASSESSMENT_VIEW;
+      } else if (isPost2000TreeCoverLossActive || isGlobalForestWatchList) {
+        defaultView = FOREST_CHANGE_VIEW;
+      } else if (listAnalysesStatus.length) {
+        defaultView = listAnalysesStatus[0].analysisId;
+      }
+    }
     const filteredLocationData = listData
       .filter((listD) => filteredData.indexOf(listD.location_id) > -1)
       .map((loc) => {
@@ -118,6 +146,7 @@ class Locations extends Component {
         };
       });
 
+    const listView = listViewFromStore || defaultView;
     return (
       <Page links={pageOptions.links} active="locations">
         <ModalLoader open={isLoading} />

@@ -78,13 +78,7 @@ describe('handleSourceListDeletion', () => {
       mockParams.selectedListId,
       mockParams.userId,
       mockParams.gfwListId,
-      mockParams.selectedLocations.join(),
-      mockParams.filters.country,
-      mockParams.filters.state,
-      mockParams.filters.subState,
-      mockParams.filters.analysisAreaMin,
-      mockParams.filters.analysisAreaMax,
-      mockParams.filters.searchString
+      mockParams.selectedLocations.join()
     );
     expect(mockPutListAsDraft.putListAsDraft).toHaveBeenCalledWith(
       mockParams.clientDatabase,
@@ -113,13 +107,7 @@ describe('handleSourceListDeletion', () => {
       mockParams.selectedListId,
       mockParams.userId,
       mockParams.gfwListId,
-      null,
-      mockParams.filters.country,
-      mockParams.filters.state,
-      mockParams.filters.subState,
-      mockParams.filters.analysisAreaMin,
-      mockParams.filters.analysisAreaMax,
-      mockParams.filters.searchString
+      null
     );
     expect(mockPutListAsDraft.putListAsDraft).toHaveBeenCalledWith(
       mockParams.clientDatabase,

@@ -735,10 +735,9 @@ export default class Diagnostics extends Component {
       ? ArgentinaDownloadConfirmationMessage
       : null;
 
-    // TODO: refactor all calls to getAvailableDiagnostics to use selectedList instead of the first element of its plural
-    const availableDiagnostics = getAvailableDiagnostics(listData, [selectedList]);
-
+    const availableDiagnostics = getAvailableDiagnostics(selectedList);
     const showListViewTabs = availableDiagnostics.length > 1;
+
     const listViewOptions = availableDiagnostics.map(({ label, value }) => (
       <Tab key={value} label={<span style={{ color: 'white' }}>{label}</span>} value={value} />
     ));

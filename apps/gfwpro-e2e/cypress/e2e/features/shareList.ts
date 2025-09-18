@@ -5,7 +5,7 @@ import LocationsPage from '../../pages/locationsPage';
 describe('Upload location', () => {
   const basePage = new BasePage();
   const locationsPage = new LocationsPage();
-  const sharedList = ['AAT ADD LOCATION TEST'];
+  const sharedList = ['AAT ShareList'];
   const deployment = Cypress.env('deployment');
   const credentials = Cypress.env(deployment);
 

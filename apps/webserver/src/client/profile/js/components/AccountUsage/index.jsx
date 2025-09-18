@@ -17,6 +17,7 @@ import { useProfileContext } from '../../ProfileStateContext';
 import AccountUsageDropMenu from './AccountUsageDropMenu';
 import { formatNumber } from '../../../../common/js/utils/format';
 import { calculateAccountSubscriptionDates } from '../../../../common/js/utils/accountSubscriptionDates';
+import AccountDetailUsageByAnalysisType from './AccountDetailUsageByAnalysisType';
 
 export default function AccountUsageContainer() {
   const { accountRenewalTime } = useProfileContext();
@@ -143,7 +144,8 @@ export default function AccountUsageContainer() {
         maxArea={usageLimitsData?.MaxAreaAnalyzeablePerYear}
         maxLocations={usageLimitsData?.max_locations_per_year}
       />
-
+       <h3 style={{ margin: '30px 0 20px 0', fontWeight: 'normal' }}>Usage Per Analysis Type</h3>
+      <AccountDetailUsageByAnalysisType />
       <h3 style={{ margin: '30px 0 20px 0', fontWeight: 'normal' }}>Usage Per User</h3>
       <TableContainer component={Paper}>
         <Table sx={{ minWidth: 650 }}>

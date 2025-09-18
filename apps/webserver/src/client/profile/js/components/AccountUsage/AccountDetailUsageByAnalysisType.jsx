@@ -14,6 +14,13 @@ import { numberWithCommas } from '../../../../locations/js/utils/locationsTableU
 import DateRangeSelector from '../../../../proManagerList/js/components/accounts/AccountUsage/DateRangeSelector.jsx';
 import { accountProfileStrings } from '../../../../common/js/config.js';
 
+const NORMALIZING_ANALYSIS_NAMES = {
+  AFI: 'Post-2020 Risk Assessment',
+  ALERTS: 'Recent Deforestation Alerts',
+  FCD: 'Post-2000 Forest Change',
+  GHG: 'GHG Emissions',
+};
+
 function AccountDetailUsageByAnalysisType({
   analysisUsageByType,
   setStartDateAnalysis,
@@ -45,7 +52,11 @@ function AccountDetailUsageByAnalysisType({
               {analysisUsageByType &&
                 analysisUsageByType.map((element) => (
                   <TableRow>
-                    <TableCell>{element.analysis_type || ''}</TableCell>
+                    <TableCell>
+                      {NORMALIZING_ANALYSIS_NAMES[element.analysis_type] ||
+                        element.analysis_type ||
+                        ''}
+                    </TableCell>
                     <TableCell>{numberWithCommas(element.locations_analyzed || 0)}</TableCell>
                     <TableCell>{numberWithCommas(element.hectares_analyzed || 0)}</TableCell>
                     <TableCell>{numberWithCommas(element.lists_analyzed || 0)}</TableCell>

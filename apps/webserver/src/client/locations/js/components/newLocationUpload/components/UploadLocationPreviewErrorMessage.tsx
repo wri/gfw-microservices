@@ -120,7 +120,7 @@ const errorMessageBuilder = ({
     };
   }
 
-  if (firstError?.startsWith('UML LookUp: did not found lat/long for')) {
+  if (firstError?.startsWith('UML LookUp: ')) {
     return {
       title: 'Invalid file',
       body: 'Your location does not have a valid UML ID. Please ensure the ID data you entered exists in the Universal Mill List.',

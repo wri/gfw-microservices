@@ -27,7 +27,6 @@ export async function getAccountAnalysisUsageByAnalysisType({
     .createQueryBuilder('lp')
     .select([
       'ISNULL(SUM(lp.areaAnalyzedLocationsHa), 0) as total_area_analyzed',
-      'ISNULL(MAX(lp.areaAnalyzedLocationsHa), 0) as max_area_analyzed',
       'COUNT(DISTINCT lp.listId) as total_lists_analyzed',
       'ISNULL(SUM(lp.locationsAnalyzed), 0) as total_locations_analyzed',
       'lp.analysisType as analysis_type',

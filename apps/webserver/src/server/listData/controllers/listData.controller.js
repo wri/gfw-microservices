@@ -213,7 +213,7 @@ export const getPreviewData = async (req, res) => {
   const { path } = req.query;
 
   try {
-    const url = `${process.env.LISTS_MICROSERVICE_URL}/list/upload/preview`;
+    const url = `${process.env.LISTS_MICROSERVICE_URL}/list/upload/preview`; // preview.list.upload.controller.ts
 
     const { data } = await axios.post(
       url,
@@ -228,7 +228,7 @@ export const getPreviewData = async (req, res) => {
     );
     res.status(200).json(data);
   } catch (error) {
-    logger.error('Error get the preview data:', error);
+    logger.error('❌ Error getting the preview data:', error);
     res
       .status(error.response?.status || 400)
       .json(error.response?.data || { message: 'Failed to fetch preview data' });

@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState, ChangeEvent } from 'react';
+import { useEffect, useRef, useState, ChangeEvent, useMemo } from 'react';
 import {
   Box,
   Card,
@@ -15,14 +15,14 @@ import { ArrowBackIos, ArrowForwardIos, Close, Replay } from '@mui/icons-materia
 
 import { LocationListType, UploadType } from '../types';
 import { LoadingModal, PillButton } from '../../../../../components';
-import { getTableColumns, LabelNameTable, uploadFileToS3 } from '../utils/upload';
-import { useUploadLocation } from '../contexts';
-import { useHistory } from '../hooks';
 import { NavBar, UploadLocationPreviewErrorMessage, FileValidationHelper } from '../components';
-import { useFetch } from '../../../../../hooks';
-import { VALID_UPLOAD_FILE_FORMATS } from '../utils/constants';
-import { fetchListPreview } from '../../../../../api/list';
 import { DATA_CY } from '../../../../../utils/constants';
+import { getTableColumns, LabelNameTable, uploadFileToS3 } from '../utils/upload';
+import { VALID_UPLOAD_FILE_FORMATS } from '../utils/constants';
+import { useUploadLocation } from '../contexts';
+import { useFetch } from '../../../../../hooks';
+import { useHistory } from '../hooks';
+import { fetchListPreview } from '../../../../../api/list';
 
 export function UploadLocationPreview() {
   const {
@@ -59,7 +59,7 @@ export function UploadLocationPreview() {
       const uploadedData = await uploadFileToS3(selectedFile);
       addFile(uploadedData);
     } catch (err) {
-      console.error('Upload error:', err);
+      console.error('❌ Upload error:', err);
       setApiRequestError({ errors: [''] });
     } finally {
       setIsLoadingFileUpload(false);
@@ -79,13 +79,16 @@ export function UploadLocationPreview() {
     }
   };
 
-  const columns = getTableColumns(data?.features);
+  const columns = useMemo(() => getTableColumns(data?.features), [data?.features]);
 
   useEffect(() => {
-    if (data?.features.length === 0) {
+    if (data?.features?.length === 0) {
       setApiRequestError({ errors: ['Empty data file'] });
     }
   }, [data]);
+
+  const normalizedError = normalizeError(error);
+  const errorToShow = normalizedError || apiRequestError;
 
   return (
     <Box sx={{ display: 'flex', flexDirection: 'column' }}>
@@ -135,15 +138,9 @@ export function UploadLocationPreview() {
 
         {isLoading ? (
           <Skeleton variant="rectangular" sx={{ flex: 1 }} />
-        ) : error ? (
+        ) : errorToShow ? (
           <UploadLocationPreviewErrorMessage
-            error={error}
-            onRetryUpload={() => fileInputRef.current?.click()}
-            onRetryPreviewData={getPreviewData}
-          />
-        ) : apiRequestError ? (
-          <UploadLocationPreviewErrorMessage
-            error={apiRequestError}
+            error={errorToShow}
             onRetryUpload={() => fileInputRef.current?.click()}
             onRetryPreviewData={getPreviewData}
           />
@@ -229,4 +226,22 @@ export function UploadLocationPreview() {
       </Card>
     </Box>
   );
+}
+
+function normalizeError(error: unknown): { errors: string[] } | null {
+  if (!error) {
+    return null;
+  }
+
+  if (typeof error === 'object' && error !== null) {
+    const e = error as any;
+    if (Array.isArray(e.errors)) {
+      return { errors: e.errors.map(String) };
+    }
+    if ('message' in e) {
+      return { errors: [String(e.message)] };
+    }
+  }
+
+  return { errors: ['An unknown error occurred'] };
 }

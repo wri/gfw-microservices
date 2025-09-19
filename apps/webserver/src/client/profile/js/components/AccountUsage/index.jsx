@@ -150,8 +150,8 @@ export default function AccountUsageContainer() {
           <TableHead>
             <TableRow>
               <HeaderTableCell>User</HeaderTableCell>
-              <HeaderTableCell align="right">Locations Analyzed)</HeaderTableCell>
-              <HeaderTableCell align="right">Hectares Analyzed</HeaderTableCell>
+              <HeaderTableCell align="right"># Analyses (% of Total used)</HeaderTableCell>
+              <HeaderTableCell align="right">Area (% of Total used)</HeaderTableCell>
             </TableRow>
           </TableHead>
           <TableBody>

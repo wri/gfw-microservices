@@ -209,7 +209,7 @@ AS
    )'
    SET @SQL = REPLACE(@TEMPLATE, '{DATABASENAME}', @OrgdbName)
        EXEC sp_executesql @SQL
-       
+
        SET @TEMPLATE = 'CREATE TABLE [{DATABASENAME}].[dbo].[LargeLists]
        (
            [large_list_id] INT IDENTITY(1,1) NOT NULL,
@@ -405,7 +405,7 @@ AS
 
        SET @SQL = REPLACE(@TEMPLATE, '{DATABASENAME}', @OrgdbName)
        EXEC sp_executesql @SQL
-       
+
        SET @TEMPLATE = 'CREATE TABLE [{DATABASENAME}].[dbo].[AFIAnalysis](
            [list_id] [SMALLINT] NULL,
            [location_id] [INT] NULL,
@@ -461,7 +461,7 @@ AS
        * CREATE ALL THE TABLE TYPES.
        ********************************************************/
        SET @TEMPLATE = 'USE [{DATABASENAME}]
-           EXEC(''        
+           EXEC(''
                CREATE TYPE dbo.[TT-Analyses-Dashboard]
                AS TABLE
                (
@@ -555,7 +555,7 @@ AS
                        SELECT error_file_storage_path
                        FROM dbo.Lists
                        WHERE error_file_storage_path IS NOT NULL AND id = @list_id
-           
+
                    ELSE
                        SELECT id, error_file_storage_path
                        FROM dbo.Lists
@@ -768,7 +768,7 @@ AS
        SET @TEMPLATE = 'USE [{DATABASENAME}]
                        EXEC(''CREATE PROCEDURE uspGetLocationsForBatchProcessing
                            @list_id INT
-                       AS                                                        
+                       AS
                            DECLARE    @list_table NVARCHAR(150)
                            DECLARE @analysis_table NVARCHAR(150)
 
@@ -818,7 +818,7 @@ AS
                            SET @SQL = REPLACE(@SQL, ''''{LOCATION_STATUS_ID}'''', @location_status_id)
                            SET @SQL = REPLACE(@SQL, ''''{LOCATION_IDS}'''', @location_ids_array)
                            EXEC sp_executesql @SQL
-                       END                    
+                       END
                        '')'
        SET @SQL = REPLACE(@TEMPLATE, '{DATABASENAME}', @OrgdbName)
        EXEC sp_executesql @SQL
@@ -889,7 +889,7 @@ AS
                    SET @SQL = REPLACE(@SQL, ''''{SRC_LOCATION_ID}'''', @src_location_id)
                    SET @SQL = REPLACE(@SQL, ''''{DEST_LOCATION_ID}'''', @dest_location_id)
                    EXEC sp_executesql @SQL
-           
+
                    SET @SQL = ''''
                        UPDATE [{DEST_TABLE}]
                        SET location_status_id = 3
@@ -901,7 +901,7 @@ AS
        '')'
        SET @SQL = REPLACE(@TEMPLATE, '{DATABASENAME}', @OrgdbName)
        EXEC sp_executesql @SQL
-       
+
        SET @TEMPLATE = '
            USE [{DATABASENAME}]
            EXEC(''
@@ -1649,7 +1649,7 @@ AS
                            [commodity_threat_protected_areas] NVARCHAR(MAX) DEFAULT ''''''''{}'''''''',
                            [commodity_threat_fires] NVARCHAR(MAX) DEFAULT ''''''''{}'''''''',
                            [dissolved_data_location_info] NVARCHAR(300) DEFAULT ''''''''{}'''''''',
-                           
+
                            [tree_cover_loss_arg_otbn_yearly] NVARCHAR(MAX) DEFAULT ''''''''{}'''''''',
                            [arg_otbn_area] NVARCHAR(MAX) DEFAULT ''''''''{}'''''''',
                            [argentina_presence] NVARCHAR(50) DEFAULT ''''''''false'''''''',
@@ -1773,7 +1773,7 @@ AS
 
                    DECLARE @TEMPLATE NVARCHAR(MAX)
                    DECLARE @SQL NVARCHAR(MAX)
-                   
+
                    IF @column_name IN (''''vector_tiles_storage_path'''', ''''error_file_storage_path'''')
 
                        BEGIN
@@ -2115,7 +2115,7 @@ AS
                            SET @SQL = REPLACE(@TEMPLATE, ''''{TABLE_NAME}'''', @analysis_table_name)
                            SET @SQL = REPLACE(@SQL, ''''{LOCATION_ID}'''', @location_id)
                            EXEC sp_executesql @SQL
-       
+
                            SET @TEMPLATE = ''''DELETE FROM [{TABLE_NAME}] WHERE list_id = {LIST_ID}
                                            AND (location_id = -1 OR location_id = {LOCATION_ID})''''
                            SET @SQL = REPLACE(@TEMPLATE, ''''{TABLE_NAME}'''', ''''Analyses-Dashboard'''')
@@ -2272,7 +2272,7 @@ AS
                DECLARE @DELIMITER CHAR(1)
 
                SET @DELIMITER = '''',''''
-                   
+
                EXEC [dbo].[uspDoesFolderExist] @user_id = @user_id,
                                                @folder_id = @folder_id
 
@@ -2585,7 +2585,7 @@ AS
                        ISNULL([commodity_threat_fires], ''''{}'''') AS [commodity_threat_fires],
                        ISNULL([dissolved_geom_object_key], ''''{}'''') AS [dissolved_geom_object_key],
                        ISNULL([tree_cover_loss_arg_otbn_yearly], ''''{}'''') AS [tree_cover_loss_arg_otbn_yearly],
-                       ISNULL([arg_otbn_area], ''''{}'''') AS [arg_otbn_area],
+                       ISNULL([classified_region_area], ''''{}'''') AS [classified_region_area],
                        ISNULL([argentina_presence], ''''false'''') AS [argentina_presence]
                    INTO dbo.[temp_analysis_table]
                    FROM OPENJSON (@json)
@@ -2655,11 +2655,11 @@ AS
                        [commodity_threat_fires] [nvarchar](max),
                        [dissolved_geom_object_key] [nvarchar](300),
                        [tree_cover_loss_arg_otbn_yearly] [nvarchar](max),
-                       [arg_otbn_area] [nvarchar](max),
+                       [classified_region_area] [nvarchar](max),
                        [argentina_presence] [nvarchar](50)
 
                    )
-                   
+
                    -- Create a temp table and join both the dynamodb data with the analysis table, making sure to include the location_status_id
                    -- Cleaning up and converting the JSON analysis data into the analysis table
                    SET @TEMPLATE = ''''
@@ -2730,7 +2730,7 @@ AS
                            D.[commodity_threat_fires],
                            D.[dissolved_geom_object_key],
                            D.[tree_cover_loss_arg_otbn_yearly],
-                           D.[arg_otbn_area],
+                           D.[classified_region_area],
                            D.[argentina_presence]
                        INTO dbo.[temp_merged_analysis_table]
                        FROM [temp_analysis_table] AS D
@@ -2816,7 +2816,7 @@ AS
                            D.[commodity_threat_fires],
                            D.[dissolved_geom_object_key],
                            D.[tree_cover_loss_arg_otbn_yearly],
-                           D.[arg_otbn_area],
+                           D.[classified_region_area],
                            D.[argentina_presence]
                        INTO dbo.[temp_merged_analysis_table]
                        FROM [temp_analysis_table] AS D
@@ -2902,7 +2902,7 @@ AS
                                    , TT.glad_alerts_monthly = SRC.glad_alerts_monthly
                                    , TT.viirs_alerts_daily = SRC.viirs_alerts_daily
                                    , TT.tree_cover_extent_total = SRC.tree_cover_extent_total
-                               FROM dbo.[Analyses-Dashboard] AS TT    
+                               FROM dbo.[Analyses-Dashboard] AS TT
                                INNER JOIN @DashboardUpdates AS SRC
                                ON TT.list_id = SRC.list_id
                                    AND TT.location_id = SRC.location_id
@@ -2924,7 +2924,7 @@ AS
                                        AND TT.gadm_id = SRC.gadm_id
                                );
 
-                           COMMIT TRANSACTION    
+                           COMMIT TRANSACTION
 
                            ALTER INDEX ALL ON dbo.[Analyses-Dashboard] REBUILD;
 
@@ -2954,7 +2954,7 @@ AS
                        @selectedOverallValues NVARCHAR(150) = NULL,
                        @selectedMillPriority NVARCHAR(150) = NULL
                    AS
-                       
+
                    DECLARE @listLocationTableName NVARCHAR(1000)
                    DECLARE @listAnalysisTableName NVARCHAR(1000)
                    DECLARE @CTE NVARCHAR(MAX)
@@ -2973,7 +2973,7 @@ AS
 
                            SET @CTE = ''''SELECT L.location_id FROM dbo.[{LIST_TABLE_NAME}] L''''
 
-                           --- SET FILTERS            
+                           --- SET FILTERS
                            IF @Country IS NOT NULL
                                SET @Filters = + @Filters + '''' AND Country = @Country''''
 
@@ -3027,7 +3027,7 @@ AS
                                SET @AnalysisFilters = REPLACE(@AnalysisFilters, ''''{ANALYSIS_AREA_MAX}'''', @AnalysisAreaMax);
                                SET @AnalysisFilters = REPLACE(@AnalysisFilters, ''''{LIST_ANALYSIS_TABLE_NAME}'''', @listAnalysisTableName)
                            END
-                           
+
                        IF @selectedOverallThreats IS NOT NULL
                        BEGIN
                            set @where_clauses = ''''(SELECT TOP 1 CAST(value AS INT) AS last_property
@@ -3132,7 +3132,7 @@ AS
                                    FOR XML PATH('''''''')
                            ),1,3,'''''''') + '''']'''';
 
-                       SET @SQL = N'''';WITH MyListTable AS (SELECT {LIST_ID} AS list_id, {LOCATION_COLUMNS} FROM [{LOCATION_TABLE}] L), '''';            
+                       SET @SQL = N'''';WITH MyListTable AS (SELECT {LIST_ID} AS list_id, {LOCATION_COLUMNS} FROM [{LOCATION_TABLE}] L), '''';
 
                        DECLARE @listAnalysisTableCols NVARCHAR(MAX)
 
@@ -3248,7 +3248,7 @@ AS
 
                            IF ISNUMERIC( @AnalysisAreaMin ) = 1 AND ISNUMERIC( @AnalysisAreaMax ) = 1
                            BEGIN
-                               
+
                                IF @AnalysisAreaMin < 0 AND @AnalysisAreaMin < @AnalysisAreaMax
                                    BEGIN
                                        RAISERROR (''''Invalid @AnalysisAreaMin'''', -1, 1);
@@ -3259,7 +3259,7 @@ AS
                                    END
                                SET @AnalysisFilters = ''''total_area BETWEEN {ANALYSIS_AREA_MIN} AND {ANALYSIS_AREA_MAX}'''';
                                SET @AnalysisFilters = REPLACE(@AnalysisFilters, ''''{ANALYSIS_AREA_MIN}'''', @AnalysisAreaMin);
-                               SET @AnalysisFilters = REPLACE(@AnalysisFilters, ''''{ANALYSIS_AREA_MAX}'''', @AnalysisAreaMax);    
+                               SET @AnalysisFilters = REPLACE(@AnalysisFilters, ''''{ANALYSIS_AREA_MAX}'''', @AnalysisAreaMax);
                            END
 
                            IF @SelectedLocations IS NOT NULL
@@ -3286,7 +3286,7 @@ AS
                            SET @TEMPLATE = ''''DELETE FROM [{TABLE_NAME}] WHERE location_id IN (SELECT * FROM @KeyValuesHoldingTable)
                            ''''
                            SET @SQL = @SQL + REPLACE(@TEMPLATE, ''''{TABLE_NAME}'''', @listAnalysisTableName)
-                           
+
                            SET @TEMPLATE = ''''DELETE FROM [{TABLE_NAME}] WHERE list_id = {LIST_ID}
                                            AND (location_id = -1 OR location_id IN (SELECT * FROM @KeyValuesHoldingTable))
                                            ''''
@@ -3302,7 +3302,7 @@ AS
                                            N''''@Country NVARCHAR(150), @State NVARCHAR(150), @SubState NVARCHAR(150), @AnalysisAreaMin INT, @AnalysisAreaMax INT'''',
                                            @Country=@Country, @State=@State, @SubState=@SubState, @AnalysisAreaMin=@AnalysisAreaMin, @AnalysisAreaMax=@AnalysisAreaMax;
                        ELSE
-                           print @SQL                                
+                           print @SQL
                        '')'
        SET @SQL = REPLACE(@TEMPLATE, '{DATABASENAME}', @OrgdbName)
        EXEC sp_executesql @SQL
@@ -3406,11 +3406,11 @@ AS
 
                        EXEC sp_executesql @PRESQL, @presql_list_params, @list_location_table_cols_query = @list_location_table_cols_output OUTPUT;
 
-                       SET @SQL = N''''; WITH MyListTable AS (SELECT {LIST_ID} AS list_id, {LOCATION_COLUMNS}, location_id AS list_location_id''''      
+                       SET @SQL = N''''; WITH MyListTable AS (SELECT {LIST_ID} AS list_id, {LOCATION_COLUMNS}, location_id AS list_location_id''''
                        IF @Geometry = 1
                        BEGIN
                          SET @SQL = @SQL + '''', Geometry.ToString() AS [WKTGeometry]''''
-                       END     
+                       END
 
                        SET @SQL = @SQL + '''' FROM [{LOCATION_TABLE}] L), '''';
 
@@ -3522,7 +3522,7 @@ AS
                        ORDER BY ''''+ @OrderByColumn + '''' ''''+ @Order
 
                        SET @SQL = REPLACE(@SQL, ''''{TEMPLATE_ID}'''', @template_id);
-                       SET @SQL = REPLACE(@SQL, ''''{LIST_ID}'''', @listID);    
+                       SET @SQL = REPLACE(@SQL, ''''{LIST_ID}'''', @listID);
                        SET @SQL = REPLACE(@SQL, ''''{LOCATION_COLUMNS}'''', @list_location_table_cols_output);
                        SET @SQL = REPLACE(@SQL, ''''{LOCATION_TABLE}'''', @listLocationTableName);
                        SET @SQL = REPLACE(@SQL, ''''{ANALYSIS_COLUMNS}'''', @analysis_location_table_cols_output);
@@ -3646,11 +3646,11 @@ AS
 
                            EXEC sp_executesql @PRESQL, @presql_list_params, @list_location_table_cols_query = @list_location_table_cols_output OUTPUT;
 
-                           SET @SQL = N''''; WITH MyListTable AS (SELECT {LIST_ID} As list_id, {LOCATION_COLUMNS}, location_id as list_location_id''''      
+                           SET @SQL = N''''; WITH MyListTable AS (SELECT {LIST_ID} As list_id, {LOCATION_COLUMNS}, location_id as list_location_id''''
                            IF @Geometry = 1
                            BEGIN
                            SET @SQL = @SQL + '''', Geometry.ToString() As [WKTGeometry]''''
-                           END     
+                           END
 
                            SET @SQL = @SQL + '''' FROM [{LOCATION_TABLE}] L), '''';
 
@@ -3738,7 +3738,7 @@ AS
 
                            IF ISNUMERIC( @AnalysisAreaMin ) = 1 AND ISNUMERIC( @AnalysisAreaMax ) = 1
                            BEGIN
-                               --PRINT ''''Analysis Filter'''';  
+                               --PRINT ''''Analysis Filter'''';
                                --PRINT ''''TEST-'''' + CONVERT(VARCHAR(50), @AnalysisAreaMin) + '''' TO '''' + CONVERT(VARCHAR(50), @AnalysisAreaMax);
                                IF @AnalysisAreaMin < 0 AND @AnalysisAreaMin < @AnalysisAreaMax
                                    BEGIN
@@ -3796,17 +3796,17 @@ AS
                                                ORDER BY ''''+ @OrderByColumn + '''' ''''+ @Order
                            IF @RowsOfPage > 0 AND @PageNumber > 0
                                SET @SQL = @SQL +'''' OFFSET (@PageNumber-1)*@RowsOfPage ROWS FETCH NEXT @RowsOfPage ROWS ONLY'''';
-                           --PRINT @SQL  
+                           --PRINT @SQL
                            -- MyListTable.[Location Name]
 
                            SET @SQL = REPLACE(@SQL, ''''{TEMPLATE_ID}'''', @template_id);
-                           SET @SQL = REPLACE(@SQL, ''''{LIST_ID}'''', @listID);    
+                           SET @SQL = REPLACE(@SQL, ''''{LIST_ID}'''', @listID);
                            SET @SQL = REPLACE(@SQL, ''''{LOCATION_COLUMNS}'''', @list_location_table_cols_output);
                            SET @SQL = REPLACE(@SQL, ''''{LOCATION_TABLE}'''', @listLocationTableName);
                            SET @SQL = REPLACE(@SQL, ''''{ANALYSIS_COLUMNS}'''', @analysis_location_table_cols_output);
                            SET @SQL = REPLACE(@SQL, ''''{ANALYSIS_TABLE}'''', @listAnalysisTableName);
 
-                           
+
                            EXEC sp_executesql @SQL,
                                    N''''@PageNumber INT, @RowsOfPage INT, @OrderByColumn NVARCHAR(MAX), @Order NVARCHAR(5), @Country NVARCHAR(150), @State NVARCHAR(150), @SubState NVARCHAR(150), @AnalysisAreaMin INT, @AnalysisAreaMax INT,@selectedSupplier NVARCHAR(150),@selectedSecondSupplier NVARCHAR(150),@selectedParentCompany NVARCHAR(150),@showRSPOCertified BIT,@selectedOverallThreats NVARCHAR(150),@selectedOverallValues NVARCHAR(150),@selectedMillPriority NVARCHAR(150)'''',
                                    @PageNumber=@PageNumber, @RowsOfPage=@RowsOfPage, @OrderByColumn=@OrderByColumn, @Order=@Order, @Country=@Country, @State=@State, @SubState=@SubState, @AnalysisAreaMin=@AnalysisAreaMin, @AnalysisAreaMax=@AnalysisAreaMax,@selectedSupplier=@selectedSupplier,@selectedSecondSupplier=@selectedSecondSupplier,@selectedParentCompany=@selectedParentCompany,@showRSPOCertified=@showRSPOCertified,@selectedOverallThreats=@selectedOverallThreats,@selectedOverallValues=@selectedOverallValues,@selectedMillPriority=@selectedMillPriority;

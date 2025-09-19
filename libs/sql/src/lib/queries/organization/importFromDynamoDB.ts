@@ -79,7 +79,7 @@ SELECT
 	ISNULL([commodity_threat_protected_areas], '{}') AS [commodity_threat_protected_areas],
 	ISNULL([commodity_threat_fires], '{}') AS [commodity_threat_fires],
 	ISNULL([dissolved_geom_object_key], '{}') AS [dissolved_geom_object_key],
-							ISNULL([arg_otbn_area], '{}') AS [arg_otbn_area],
+							ISNULL([classified_region_area], '{}') AS [classified_region_area],
 							ISNULL([argentina_presence], 'false') AS [argentina_presence]
 INTO dbo.[temp_analysis_table]
 FROM OPENJSON (@json)
@@ -148,7 +148,7 @@ WITH(
 	[commodity_threat_protected_areas] [nvarchar](max),
 	[commodity_threat_fires] [nvarchar](max),
 	[dissolved_geom_object_key] [nvarchar](300),
-							[arg_otbn_area] [nvarchar](max),
+							[classified_region_area] [nvarchar](max),
 							[argentina_presence] [nvarchar](50)
 
 )
@@ -222,7 +222,7 @@ SET @TEMPLATE = '
 		D.[commodity_threat_protected_areas],
 		D.[commodity_threat_fires],
 		D.[dissolved_geom_object_key],
-									D.[arg_otbn_area],
+									D.[classified_region_area],
 									D.[argentina_presence]
 	INTO dbo.[temp_merged_analysis_table]
 	FROM [temp_analysis_table] AS D
@@ -307,7 +307,7 @@ SET @APPEND_LOCATION_TEMPLATE = '
 		D.[commodity_threat_protected_areas],
 		D.[commodity_threat_fires],
 		D.[dissolved_geom_object_key],
-									D.[arg_otbn_area],
+									D.[classified_region_area],
 									D.[argentina_presence]
 	INTO dbo.[temp_merged_analysis_table]
 	FROM [temp_analysis_table] AS D

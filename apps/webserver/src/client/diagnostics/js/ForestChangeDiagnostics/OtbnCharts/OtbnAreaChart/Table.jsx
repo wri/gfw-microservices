@@ -9,7 +9,7 @@ import './OtbnTable.scss';
 function Table({ data }) {
   const { argentinaOtbn } = chartDatasetConfigs;
 
-  const argentinaOtbnArea = JSON.parse(data?.arg_otbn_area);
+  const argentinaOtbnArea = JSON.parse(data?.classified_region_area || '{}')?.ARG || {};
   const categoryIArea = argentinaOtbnArea['Category I'] || 0;
   const categoryIIArea = argentinaOtbnArea['Category II'] || 0;
   const categoryIIIArea = argentinaOtbnArea['Category III'] || 0;

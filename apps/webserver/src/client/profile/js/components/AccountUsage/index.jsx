@@ -28,7 +28,7 @@ export default function AccountUsageContainer() {
   const [messageType, setMessageType] = useState('');
   const [messageText, setMessageText] = useState('');
   const oneMonthAgoDate = moment().subtract(1, 'months').format('YYYY-MM-DD');
-  const endDayIncludingToday = moment().add(1, 'day').format('YYYY-MM-DD');
+  const endDayIncludingToday = moment().format('YYYY-MM-DD');
   const [startDateAnalysis, setStartDateAnalysis] = useState(oneMonthAgoDate);
   const [endDateAnalysis, setEndDateAnalysis] = useState(endDayIncludingToday);
   const [analysisUsageByType, setAnalysisUsageByType] = useState([]);
@@ -171,7 +171,6 @@ export default function AccountUsageContainer() {
         maxArea={usageLimitsData?.MaxAreaAnalyzeablePerYear}
         maxLocations={usageLimitsData?.max_locations_per_year}
       />
-      <h3 style={{ margin: '30px 0 20px 0', fontWeight: 'normal' }}>Usage Per Analysis Type</h3>
       <AccountDetailUsageByAnalysisType
         analysisUsageByType={analysisUsageByType}
         setStartDateAnalysis={setStartDateAnalysis}

@@ -121,10 +121,9 @@ export const shouldGenerateArgentinaCsv = ({
 }: ListFieldsFileRequest) => {
   const VALID_TYPES = ['argentina', 'everything'];
 
-  const { arg_otbn_area, country_area } = listLevelAnalysis;
-  const argOtbnArea = JSON.parse(arg_otbn_area || '{}');
+  const { country_area } = listLevelAnalysis;
   const totalArea = getTotalArea(listLevelAnalysis, 'ARG');
-  const isArgentinaDataAvailable = !isEmptyObject(argOtbnArea) || totalArea > 0;
+  const isArgentinaDataAvailable = totalArea > 0;
   const isAnalysisLegacy = country_area === null;
 
   return (

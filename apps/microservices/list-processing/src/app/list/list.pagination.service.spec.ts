@@ -144,7 +144,7 @@ describe('ListPaginationService', () => {
           commodity_threat_protected_areas: 'test',
           commodity_threat_fires: 'test',
           dissolved_data_location_info: 'test',
-          arg_otbn_area: 'test',
+          classified_region_area: '{"ARG":{"Category I":100,"Category II":200}}',
         },
       ];
       const queryParam: getPaginatedListDataRequest = {
@@ -385,7 +385,7 @@ describe('ListPaginationService', () => {
           commodity_threat_protected_areas: 'test',
           commodity_threat_fires: 'test',
           dissolved_data_location_info: 'test',
-          arg_otbn_area: 'test',
+          classified_region_area: '{"ARG":{"Category I":100,"Category II":200}}',
         },
       ];
       const queryParam: getPaginatedListDataRequest = {

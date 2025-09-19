@@ -334,11 +334,6 @@ export const AnalysisSchema = {
       name: 'dissolved_data_location_info',
       nullable: true,
     },
-    argOtbnArea: {
-      type: String,
-      name: 'arg_otbn_area',
-      nullable: true,
-    },
     protectedAreasByCategoryArea: {
       type: String,
       name: 'protected_areas_by_category_area',

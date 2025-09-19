@@ -479,5 +479,5 @@ export interface AnalysisDataType {
   commodity_threat_protected_areas: string;
   commodity_threat_fires: string;
   dissolved_data_location_info: string;
-  arg_otbn_area: string;
+  classified_region_area: string;
 }

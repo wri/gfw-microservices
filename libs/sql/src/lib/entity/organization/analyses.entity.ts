@@ -206,9 +206,6 @@ export class Analyses {
   @Column({ name: 'dissolved_geom_object_key' })
   dissolvedGeomObjectKey: string;
 
-  @Column({ name: 'arg_otbn_area' })
-  argOtbnArea: string;
-
   @Column({ name: 'protected_areas_by_category_area' })
   protectedAreasByCategoryArea: string;
 

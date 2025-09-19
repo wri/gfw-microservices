@@ -81,7 +81,8 @@ export const MOCK_COUNTRY_DATA = {
     '{"2002":0.0,"2003":0.0,"2004":0.0,"2005":0.0,"2006":0.0,"2007":0.0,"2008":0.0,"2009":0.0,"2010":0.0,"2011":0.0,"2012":0.0,"2013":0.0,"2014":0.0,"2015":0.0,"2016":0.0,"2017":0.0,"2018":0.0,"2019":225.5,"2020":731.5,"2021":506.0}',
   dissolved_geom_object_key:
     's3://gfwpro-geotrellis-pre-data/latest/dissolved/9eb5409ee4b943c6bcb88c29335bdaa4_20231009215758.geojson',
-  arg_otbn_area: '{"Category I":265097.1435,"Category II":664836.3815,"Category III":120445.5731}',
+  classified_region_area:
+    '{"ARG":{"Category I":265097.1435,"Category II":664836.3815,"Category III":120445.5731}}',
   protected_areas_by_category_area: '{}',
   landmark_by_category_area: '{}',
 };

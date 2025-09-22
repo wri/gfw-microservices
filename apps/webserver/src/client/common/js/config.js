@@ -1063,6 +1063,9 @@ export const accountProfileStrings = {
     maxAreaPerList: 'Max area per list',
     totalAreaAnalyzed: 'Total area analyzed',
     locationsAnalyzed: 'Locations analyzed',
+    hectaresAnalyzed: 'Hectares analyzed (HA)',
+    listsAnalyzed: 'Lists analyzed',
+    analysisType: 'Analysis type',
   },
   accountFormLabels: {
     org_name: 'Organization Name',

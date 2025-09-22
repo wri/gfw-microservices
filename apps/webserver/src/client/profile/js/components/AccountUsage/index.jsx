@@ -17,6 +17,8 @@ import { useProfileContext } from '../../ProfileStateContext';
 import AccountUsageDropMenu from './AccountUsageDropMenu';
 import { formatNumber } from '../../../../common/js/utils/format';
 import { calculateAccountSubscriptionDates } from '../../../../common/js/utils/accountSubscriptionDates';
+import AccountDetailUsageByAnalysisType from './AccountDetailUsageByAnalysisType';
+import moment from 'moment';
 
 export default function AccountUsageContainer() {
   const { accountRenewalTime } = useProfileContext();
@@ -25,6 +27,11 @@ export default function AccountUsageContainer() {
   const [usageDataperUser, setUsageDataperUser] = useState([]);
   const [messageType, setMessageType] = useState('');
   const [messageText, setMessageText] = useState('');
+  const oneMonthAgoDate = moment().subtract(1, 'months').format('YYYY-MM-DD');
+  const endDayIncludingToday = moment().format('YYYY-MM-DD');
+  const [startDateAnalysis, setStartDateAnalysis] = useState(oneMonthAgoDate);
+  const [endDateAnalysis, setEndDateAnalysis] = useState(endDayIncludingToday);
+  const [analysisUsageByType, setAnalysisUsageByType] = useState([]);
 
   const { startDate, endDate, subscriptionYearEnd } =
     calculateAccountSubscriptionDates(accountRenewalTime);
@@ -110,6 +117,27 @@ export default function AccountUsageContainer() {
       });
   };
 
+  useEffect(() => {
+    fetch(
+      `/analytics/myorg/usage/usage-by-analysis?startDate=${startDateAnalysis}&endDate=${endDateAnalysis}`,
+      {
+        method: 'GET',
+        credentials: 'same-origin',
+        headers: {
+          'Content-type': 'application/json',
+        },
+      }
+    )
+      .then((res) => res.json())
+      .then((data) => {
+        const { analysisUsageByType } = data;
+        setAnalysisUsageByType(analysisUsageByType);
+      })
+      .catch((error) => {
+        console.log('Error on fetch usage-by-analysis:', error);
+      });
+  }, [startDateAnalysis, endDateAnalysis]);
+
   const handleDownloadConfirmation = (type) => {
     setMessageType(type);
 
@@ -143,7 +171,13 @@ export default function AccountUsageContainer() {
         maxArea={usageLimitsData?.MaxAreaAnalyzeablePerYear}
         maxLocations={usageLimitsData?.max_locations_per_year}
       />
-
+      <AccountDetailUsageByAnalysisType
+        analysisUsageByType={analysisUsageByType}
+        setStartDateAnalysis={setStartDateAnalysis}
+        setEndDateAnalysis={setEndDateAnalysis}
+        startDateAnalysis={startDateAnalysis}
+        endDateAnalysis={endDateAnalysis}
+      />
       <h3 style={{ margin: '30px 0 20px 0', fontWeight: 'normal' }}>Usage Per User</h3>
       <TableContainer component={Paper}>
         <Table sx={{ minWidth: 650 }}>

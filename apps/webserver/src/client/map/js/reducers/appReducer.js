@@ -29,6 +29,7 @@ import {
   updatePlanetTileLayer,
   updatePlanetTileColor,
   toggleHighConfidenceAlertsForDeforestationAlertsLayers,
+  layerOpacity,
 } from './mapReducer';
 import * as analysisReducer from './analysisReducer';
 
@@ -68,6 +69,7 @@ const appReducer = combineReducers({
   sketchTool: saveSketchTool,
   showHighConfidenceAlertsOnDeforestationAlertsLayer:
     toggleHighConfidenceAlertsForDeforestationAlertsLayers,
+  layerOpacity: layerOpacity,
 });
 
 const rootReducer = (state, action) => {

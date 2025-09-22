@@ -99,7 +99,11 @@ export async function addPrimaryKeyOnLocationId({
           await queryRunner.query(alterSql);
           logger.log(`Added PK on location_id for ${fullTableName}`);
         } catch (err) {
-          logger.warn(`Failed to add PK on ${fullTableName}: ${(err as Error).message}`);
+          const msg = `Failed to add PK on ${fullTableName} using SQL "${alterSql}": ${
+            (err as Error).message
+          }`;
+          logger.error(msg);
+          throw err;
         }
       }
     }

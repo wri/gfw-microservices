@@ -53,7 +53,7 @@ import { getOrganizationStatus } from './authenticationManager.utils';
  * @param  {Object}   req - Mandatory first parameter to pass the request object into the function in case session info is required.
  * @returns returns an Array of objects, where each object is info on the accounts.
  */
-const getAllAccountsList = (req) => {
+export const getAllAccountsList = (req) => {
   return new Promise((resolve, reject) => {
     // Check to make sure the user is a proper pro manager.
     if (!UserManager.isProManager(req)) {
@@ -91,7 +91,7 @@ const getAllAccountsList = (req) => {
  * @param  {Object}   req - Mandatory first parameter to pass the request object into the function in case session info is required.
  * @returns returns an Array of objects, where each object is info on the accounts.
  */
-const getAllUsersList = (req) => {
+export const getAllUsersList = (req) => {
   return new Promise((resolve, reject) => {
     // Check to make sure the user is a proper pro manager.
     if (!UserManager.isProManager(req)) {
@@ -130,7 +130,7 @@ const getAllUsersList = (req) => {
  *                   the promise resolves to true, otherwise, an
  *                   an error object is returned in the reject.
  */
-const activatePendingAccount = (req, pendingAccountId, unit_test = false) => {
+export const activatePendingAccount = (req, pendingAccountId, unit_test = false) => {
   return new Promise((resolve, reject) => {
     let userID = 0;
     let userEmail = '';
@@ -354,7 +354,7 @@ const activatePendingAccount = (req, pendingAccountId, unit_test = false) => {
  * @param  {Array}   arr_user_commodity_ids - An array of commodities (ids) that the user in interested in.
  * @return {Promise<Boolean>} True if successful, false otherwise.
  */
-const updatePendingAccountUser = (
+export const updatePendingAccountUser = (
   req,
   user_id,
   user_first_name,
@@ -405,7 +405,7 @@ const updatePendingAccountUser = (
  * @param {number}  pendingAccountId An integer specifying the pending account ID.
  * @return {Promise<boolean>} resolves to true on success, otherwise throws an error object.
  */
-const closePendingAccount = async (req, pendingAccountId) => {
+export const closePendingAccount = async (req, pendingAccountId) => {
   try {
     const params = [{ field: 'pendingAccountId', type: sql.Int, value: pendingAccountId }];
     const result = await sqlUtils.executeSystemStoredProcedure(
@@ -432,7 +432,7 @@ const closePendingAccount = async (req, pendingAccountId) => {
  * @param {number}  pendingAccountId An integer specifying the pending account ID.
  * @return {Promise<boolean>} resolves to true on success, otherwise throws an error object.
  */
-const deletePendingAccountRequest = async (req, pendingAccountId) => {
+export const deletePendingAccountRequest = async (req, pendingAccountId) => {
   // Check to make sure the user is a proper pro manager.
   if (!UserManager.isProManager(req)) {
     const userMessage = langResources.getResourceString('loginFailed');
@@ -467,7 +467,7 @@ const deletePendingAccountRequest = async (req, pendingAccountId) => {
  *                   the promise resolves to true, otherwise, an
  *                   an error object is returned in the reject.
  */
-const deleteOrganization = (req, orgName) => {
+export const deleteOrganization = (req, orgName) => {
   return new Promise((resolve, reject) => {
     if (!UserManager.isProManager(req)) {
       const userMessage = langResources.getResourceString('loginFailed');
@@ -506,7 +506,7 @@ const deleteOrganization = (req, orgName) => {
  *                   the promise resolves to true, otherwise, an
  *                   an error object is returned in the reject.
  */
-const deleteUser = (req, email) => {
+export const deleteUser = (req, email) => {
   return new Promise((resolve, reject) => {
     // Check to make sure the user is a proper pro manager.
     if (!UserManager.isProManager(req)) {
@@ -543,7 +543,7 @@ const deleteUser = (req, email) => {
  * @param {Object} req
  * @param {number} organization_id
  */
-const reactivateAccount = (req, organization_id) => {
+export const reactivateAccount = (req, organization_id) => {
   return new Promise((resolve, reject) => {
     const organization_status_id = orgAccountStatus.Active;
     const params = [
@@ -566,7 +566,7 @@ const reactivateAccount = (req, organization_id) => {
  * @param {Object} req
  * @param {number} organization_id
  */
-const deactivateAccount = async (req, organization_id) => {
+export const deactivateAccount = async (req, organization_id) => {
   try {
     // 1. Fetch current organization status
     const orgStatusId = await getOrganizationStatus({ session: { organization_id } }); // pass minimal req object
@@ -610,7 +610,7 @@ const deactivateAccount = async (req, organization_id) => {
  * @param {Number} organizationId
  * @returns {Promise<number>}
  */
-const getAccountSubscriptionStatus = (request, organizationId) => {
+export const getAccountSubscriptionStatus = (request, organizationId) => {
   return new Promise((resolve, reject) => {
     const parameters = [{ field: 'organizationId', type: sql.Int, value: organizationId }];
     sqlUtils
@@ -635,7 +635,7 @@ const getAccountSubscriptionStatus = (request, organizationId) => {
  * @param {Number} newSubscriptionStatusId
  * @returns {Promise<boolean>}
  */
-const updateAccountSubscriptionStatus = async (
+export const updateAccountSubscriptionStatus = async (
   request,
   organizationId,
   newSubscriptionStatusId
@@ -667,7 +667,7 @@ const updateAccountSubscriptionStatus = async (
  * @param {Object} payload params to insert
  * @returns {Promise<payload>}
  */
-const updateGlobalAnalysisLimits = async (request, payload) => {
+export const updateGlobalAnalysisLimits = async (request, payload) => {
   const {
     subscriptionStatusId,
     MaxAreaPerList,
@@ -703,7 +703,7 @@ const updateGlobalAnalysisLimits = async (request, payload) => {
  * @param {Object} payload params to insert
  * @returns {Promise<payload>}
  */
-const updateAccountAnalysisLimits = async (request, payload) => {
+export const updateAccountAnalysisLimits = async (request, payload) => {
   const { organizationId, MaxAreaPerList, MaxAreaAnalyzeablePerYear, max_locations_per_year } =
     payload;
   const params = [
@@ -735,7 +735,7 @@ const updateAccountAnalysisLimits = async (request, payload) => {
  * @param  {Number} id - Organization ID
  * @param  {String} name - New organization name
  */
-const updateOrgName = async (req, id, name) => {
+export const updateOrgName = async (req, id, name) => {
   if (!UserManager.isProManager(req)) {
     const userMessage = langResources.getResourceString('loginFailed');
     const sysMessage = `UserEmail: ${req.session.user_email} is not authorized to update org names.`;
@@ -789,23 +789,4 @@ export const checkOrgName = async (req, name) => {
       err
     );
   }
-};
-
-module.exports = {
-  activatePendingAccount,
-  checkOrgName,
-  closePendingAccount,
-  deactivateAccount,
-  deletePendingAccountRequest,
-  deleteOrganization,
-  deleteUser,
-  getAllAccountsList,
-  getAllUsersList,
-  getAccountSubscriptionStatus,
-  reactivateAccount,
-  updateAccountAnalysisLimits,
-  updateAccountSubscriptionStatus,
-  updateGlobalAnalysisLimits,
-  updateOrgName,
-  updatePendingAccountUser,
 };

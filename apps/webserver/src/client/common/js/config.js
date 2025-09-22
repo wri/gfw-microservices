@@ -893,8 +893,8 @@ export const profilePage = {
   accountUsage: {
     title:
       'Analytics usage for subscription year ({subscriptionYearStart} to {subscriptionYearEnd})',
-    locationsAnalyzed: '# of Analyses',
-    areaAnalyzed: 'Area analyzed (HA)',
+    locationsAnalyzed: 'Locations Analyzed',
+    areaAnalyzed: 'Hectares Analyzed',
   },
 };
 

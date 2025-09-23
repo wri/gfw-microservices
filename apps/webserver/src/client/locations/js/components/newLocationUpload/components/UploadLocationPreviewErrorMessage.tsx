@@ -179,7 +179,7 @@ const getMissingFieldsNames = (errors: string[], fileExtension: string, isByIdWo
   if (!errors.length) {
     return '';
   }
-  
+
   // Choose the appropriate map
   const map =
     fileExtension === '.zip'

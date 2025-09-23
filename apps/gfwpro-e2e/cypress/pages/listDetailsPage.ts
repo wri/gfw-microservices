@@ -41,6 +41,8 @@ class ListDetailsPage {
     columnAttributes: () => cy.get('[data-testid="CheckBoxIcon"]'),
     columnHeaders: () => cy.get('.title-text'),
     listActionDialog: () => cy.get('.list-diagnostics-dialog'),
+    tableRow: () => cy.get('.rt-tbody').find('[data-testid="custom-row"]'),
+    gridCell: () => cy.get('[role="gridcell"]'),
   };
   clickOnLocationsList(name: string) {
     cy.contains(name).click();
@@ -264,6 +266,87 @@ class ListDetailsPage {
   }
   selectAllOptions() {
     this.elements.allColumnsCheckbox().click();
+  }
+  getTableRowCount() {
+    return this.elements.tableRow().its('length');
+  }
+  getDotsCount() {
+    return this.elements
+      .tableRow()
+      .get('[role="gridcell"]')
+      .find('svg[class="list-icons"]')
+      .its('length');
+  }
+  validateLocationColumn() {
+    this.elements.tableRow().each((row, index) => {
+      cy.wrap(row).within(() => {
+        this.elements
+          .gridCell()
+          .eq(1)
+          .invoke('text')
+          .then((text) => {
+            const trimmedText = text.trim();
+            expect(trimmedText, `Row ${index + 1}, column 2 should not be empty`).to.not.be.empty;
+            cy.log(`Row ${index + 1}: "${trimmedText}"`);
+          });
+      });
+    });
+  }
+  validateMillPriorityAndOverallThreatsAndValues() {
+    this.elements.tableRow().each(($row, index) => {
+      cy.wrap($row).within(() => {
+        this.elements
+          .gridCell()
+          .eq(2)
+          .find('.list-analysis-text')
+          .invoke('text')
+          .then((text) => {
+            const trimmedText = text.trim();
+            const validValues = ['Low', 'Med', 'High'];
+            expect(
+              validValues.includes(trimmedText),
+              `Row ${
+                index + 1
+              }, Mill Priority column should be Low, Med, or High, got "${trimmedText}"`
+            ).to.be.true;
+            cy.log(`Row ${index + 1}, Mill Priority Column: "${trimmedText}"`);
+          });
+
+        this.elements
+          .gridCell()
+          .eq(7)
+          .find('.list-analysis-text')
+          .invoke('text')
+          .then((text) => {
+            const trimmedText = text.trim();
+            const validValues = ['Low', 'Med', 'High'];
+            expect(
+              validValues.includes(trimmedText),
+              `Row ${
+                index + 1
+              }, Overal Threats column should be Low, Med, or High, got "${trimmedText}"`
+            ).to.be.true;
+            cy.log(`Row ${index + 1}, Overal Threats Column: "${trimmedText}"`);
+          });
+
+        this.elements
+          .gridCell()
+          .eq(11)
+          .find('.list-analysis-text')
+          .invoke('text')
+          .then((text) => {
+            const trimmedText = text.trim();
+            const validValues = ['Low', 'Med', 'High'];
+            expect(
+              validValues.includes(trimmedText),
+              `Row ${
+                index + 1
+              }, Overal Values column should be Low, Med, or High, got "${trimmedText}"`
+            ).to.be.true;
+            cy.log(`Row ${index + 1}, Overal Values Column: "${trimmedText}"`);
+          });
+      });
+    });
   }
 }
 

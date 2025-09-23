@@ -65,6 +65,42 @@ export async function addPrimaryKeyOnLocationId({
         continue;
       }
 
+      // 2b. Check schema-level nullability
+      const colInfo = await queryRunner.query(`
+        SELECT IS_NULLABLE
+        FROM INFORMATION_SCHEMA.COLUMNS
+        WHERE TABLE_NAME = '${tableName}' AND COLUMN_NAME = 'location_id'
+      `);
+
+      if (colInfo[0]?.IS_NULLABLE === 'YES') {
+        if (isDryRun) {
+          logger.warn(`[DryRun] Would alter ${fullTableName} to set location_id NOT NULL`);
+        } else {
+          try {
+            // Drop index if exists
+            await queryRunner.query(`
+              IF EXISTS (
+                SELECT name FROM sys.indexes
+                WHERE object_id = OBJECT_ID('[dbo].[${tableName}]')
+                AND name = 'IX_${tableName}'
+              )
+              DROP INDEX [IX_${tableName}] ON [dbo].[${tableName}]
+            `);
+            logger.log(`Dropped index IX_${tableName} on ${fullTableName} to allow column alter`);
+
+            // Alter column
+            logger.log(`Altering ${fullTableName}: setting location_id to NOT NULL`);
+            await queryRunner.query(`
+              ALTER TABLE [${tableName}]
+              ALTER COLUMN location_id INT NOT NULL;
+            `);
+          } catch (err) {
+            logger.error(`Failed to alter ${fullTableName} to NOT NULL: ${(err as Error).message}`);
+            continue;
+          }
+        }
+      }
+
       // 3. Check for duplicate location_id
       const dupCountRes = await queryRunner.query(`
         SELECT COUNT(*) AS count FROM (
@@ -79,7 +115,20 @@ export async function addPrimaryKeyOnLocationId({
         continue;
       }
 
-      // 4. Check if PK already exists
+      // 4. Check existing contraints
+      const existingConstraint = await queryRunner.query(`
+        SELECT CONSTRAINT_NAME
+        FROM INFORMATION_SCHEMA.CONSTRAINT_COLUMN_USAGE
+        WHERE TABLE_NAME = '${tableName}' AND COLUMN_NAME = 'location_id'
+      `);
+
+      if (existingConstraint.length > 0) {
+        logger.warn(
+          `Skipping ${fullTableName}: location_id is already used in constraint ${existingConstraint[0].CONSTRAINT_NAME}`
+        );
+        continue;
+      }
+
       const pkExistsRes = await queryRunner.query(`
         SELECT 1
         FROM INFORMATION_SCHEMA.TABLE_CONSTRAINTS
@@ -99,7 +148,14 @@ export async function addPrimaryKeyOnLocationId({
           await queryRunner.query(alterSql);
           logger.log(`Added PK on location_id for ${fullTableName}`);
         } catch (err) {
-          logger.warn(`Failed to add PK on ${fullTableName}: ${(err as Error).message}`);
+          const msg = `Failed to add PK on ${fullTableName} using SQL "${alterSql}": ${
+            (err as Error).message
+          }`;
+          logger.error(msg);
+
+          const driverError = (err as any).originalError || (err as any).cause || err;
+          logger.error('Detailed driver error:', driverError);
+          throw err;
         }
       }
     }

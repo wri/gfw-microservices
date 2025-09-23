@@ -95,6 +95,7 @@ export const idBasedSystemHandler = async (
     const { missingFields, isValid } = validateIdBased(key, data);
 
     if (!isValid) {
+      logger.error(`Missing mandatory fields: ${missingFields.join(',')}`);
       throw new Error(`Missing mandatory fields: ${missingFields.join(',')}`);
     }
 
@@ -217,7 +218,7 @@ export const validateIdBased = (idType: string, rows: Record<string, unknown>[])
 function resolveFlaggedRowsByValueFound(row: Record<string, unknown>, error: Error) {
   const errorDetails = (row['errorDetails'] || []) as string[];
   errorDetails.push(error.message);
-  return Object.assign(row, {
+  Object.assign(row, {
     ...row,
     errorDetails,
   });

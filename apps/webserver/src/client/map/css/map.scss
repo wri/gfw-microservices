@@ -695,30 +695,7 @@ $lightGray: rgba(158, 158, 158, 0.3);
   svg {
     fill: gray;
   }
-  &.icon-eye {
-    left: 10px;
-    display: block;
-    height: 15px;
-    width: 15px;
-    border: none;
-    svg {
-      height: 15px;
-      width: 15px;
-    }
-    &.grayed {
-      svg {
-        fill: #ccc;
-      }
-    }
-  }
-  &.gfw-filter {
-    right: 43px;
-    background-color: $gfw_brand-green;
-    border: none;
-    svg {
-      fill: white;
-    }
-  }
+
   &.metadata {
     right: 1rem;
     background-color: $gfw_brand-green;
@@ -760,45 +737,6 @@ $lightGray: rgba(158, 158, 158, 0.3);
   }
   &.metadata-layer-panel {
     right: 10px;
-    background-color: $gfw_brand-green;
-    border: none;
-    &.analysis-panel-metadata {
-      // margin-top: 15px;
-      top: 50%;
-      transform: translate(0, -50%);
-    }
-    svg {
-      fill: white;
-    }
-    &.instructions {
-      position: relative;
-      margin-left: 10px;
-    }
-    &.iconLoading {
-      font-size: 18px;
-      svg {
-        -webkit-animation-name: loader2;
-        -webkit-animation-duration: 1s;
-        -webkit-animation-iteration-count: infinite;
-        -webkit-animation-timing-function: cubic-bezier(0.645, 0.045, 0.355, 1);
-        -webkit-animation-direction: normal;
-        -webkit-animation-fill-mode: none;
-        -webkit-animation-delay: 0s;
-        -webkit-animation-play-state: running;
-        animation-name: loader2;
-        animation-duration: 1s;
-        animation-iteration-count: infinite;
-        animation-timing-function: cubic-bezier(0.645, 0.045, 0.355, 1);
-        animation-direction: normal;
-        animation-fill-mode: none;
-        animation-delay: 0s;
-        animation-play-state: running;
-        z-index: 11;
-      }
-    }
-  }
-  &.metadata-legend {
-    right: 25px;
     background-color: $gfw_brand-green;
     border: none;
     &.analysis-panel-metadata {

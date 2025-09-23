@@ -15,6 +15,7 @@ import {
   updateGFWLocations,
   updateSoyYear,
   updateTreeCoverLossCanopyDensity,
+  setLayerOpacity,
 } from '../../actions/mapActions';
 import { setBiomassMinRange, setBiomassMaxRange } from '../../actions/analysisActions';
 import { mapPage, soyPlantedYearsRange } from '../../../../common/js/config';
@@ -33,7 +34,7 @@ const {
   clarkLabsAquacultureLandChange,
 } = proLayers;
 import GfwSelect from '../../../../common/js/components/GfwSelect';
-
+import OpacitySlider from './OpacitySlider';
 import '../../../css/map.scss';
 import DeforestationAlertsLayerLegend from './DeforestationAlerts/DeforestationAlertsLayerLegend';
 import { toggleClarkLabsLayers } from '../../actions/analysisActions';
@@ -43,6 +44,7 @@ import {
   deforestationAlertsGeographicCoverageIds,
   deforestationAlertsLayerToCoverageMap,
 } from './DeforestationAlerts/deforestationAlerts.constants';
+import './LegendCheckbox.scss';
 
 export default class LegendCheckbox extends Component {
   constructor(props) {
@@ -136,6 +138,13 @@ export default class LegendCheckbox extends Component {
     const isTclSwitchOn = this.props.treeCoverLossCanopyDensity > 0;
     store.dispatch(updateTreeCoverLossCanopyDensity(isTclSwitchOn ? 0 : 10));
   };
+
+  handleOpacityChange(opacity) {
+    const { layer, dispatch } = this.props;
+    if (layer && layer.id) {
+      dispatch(setLayerOpacity({ layerId: layer.id, opacity }));
+    }
+  }
 
   toggleLayerVisibility = async () => {
     const layerId = this.props.layer.id;
@@ -242,57 +251,77 @@ export default class LegendCheckbox extends Component {
     }
     const isInfoButtonVisible = !!layer.metadataId;
     const isTclSwitchOn = this.props.treeCoverLossCanopyDensity > 0;
-
+    const opacity = this.props.layerOpacity?.[this.props.layer.id] ?? 1;
     return (
       <div
         className={`legend-list-item ${layer.group} ${grayed} ${hidden}`}
         id={layer.id + '-layer-checkbox'}
       >
-        <span
-          onClick={this.toggleLayerVisibility}
-          className={`info-icon icon-eye pointer ${grayed} ${
-            iconLoading === layer.id ? 'iconLoading' : ''
-          }`}
-        >
-          {grayed === 'grayed' ? (
-            <svg>
-              <use xlinkHref="#icon-hide-layer-map" />
-            </svg>
-          ) : (
-            <svg style={symbolStyle}>
-              <use xlinkHref="#icon-show-layer-map" />
-            </svg>
-          )}
-        </span>
-
-        <span className="layer-checkbox-label">{label}</span>
-        {gfwListDef &&
-        Object.keys(gfwListDef).length > 0 &&
-        Object.keys(gfwListDef)[0] === layer.id ? (
-          <span className="info-icon gfw-filter pointer" onClick={this.clearGFWFilter}>
-            <svg>
-              <use xlinkHref="#shape-close" />
-            </svg>
-          </span>
-        ) : null}
-        {isInfoButtonVisible && (
+        <div className="legend-item-content">
           <span
-            className={`info-icon metadata-legend pointer ${
+            onClick={this.toggleLayerVisibility}
+            className={`legend-checkbox-icon icon-eye pointer ${grayed} ${
               iconLoading === layer.id ? 'iconLoading' : ''
             }`}
-            onClick={this.showInfo}
           >
-            <svg>
-              <use xlinkHref="#shape-info" />
-            </svg>
+            {grayed === 'grayed' ? (
+              <svg>
+                <use xlinkHref="#icon-hide-layer-map" />
+              </svg>
+            ) : (
+              <svg style={symbolStyle}>
+                <use xlinkHref="#icon-show-layer-map" />
+              </svg>
+            )}
           </span>
-        )}
+          <span className="legend-layer-name">{layer.name}</span>
 
-        <span className="info-icon pointer" onClick={this.hideLayer}>
-          <svg>
-            <use xlinkHref="#shape-close" />
-          </svg>
-        </span>
+          <span className="layer-checkbox-label">{label}</span>
+        </div>
+
+        <div class="layer-actions">
+          <div class="layer-actions__action-button">
+            <OpacitySlider value={opacity} onChange={(value) => this.handleOpacityChange(value)} />
+          </div>
+
+          {gfwListDef &&
+            Object.keys(gfwListDef).length > 0 &&
+            Object.keys(gfwListDef)[0] === layer.id && (
+              <div class="layer-actions__action-button">
+                <span
+                  className="legend-checkbox-icon gfw-filter pointer"
+                  onClick={this.clearGFWFilter}
+                >
+                  <svg>
+                    <use xlinkHref="#shape-close" />
+                  </svg>
+                </span>
+              </div>
+            )}
+
+          {isInfoButtonVisible && (
+            <div class="layer-actions__action-button">
+              <span
+                className={`legend-checkbox-icon metadata-legend pointer ${
+                  iconLoading === layer.id ? 'iconLoading' : ''
+                }`}
+                onClick={this.showInfo}
+              >
+                <svg>
+                  <use xlinkHref="#shape-info" />
+                </svg>
+              </span>
+            </div>
+          )}
+
+          <div class="layer-actions__action-button">
+            <span className="legend-checkbox-icon pointer" onClick={this.hideLayer}>
+              <svg>
+                <use xlinkHref="#shape-close" />
+              </svg>
+            </span>
+          </div>
+        </div>
 
         {layer.id === soyPlantedArea ? this.soyPlantedYearPicker(layer) : null}
 

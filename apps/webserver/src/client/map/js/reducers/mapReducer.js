@@ -31,6 +31,7 @@ import {
   UPDATE_PLANET_TILE_COLOR,
   UPDATE_SOY_YEAR,
   TOGGLE_HIGH_CONFIDENCE_ALERTS_FOR_DEFORESTATION_ALERTS_LAYERS,
+  SET_LAYER_OPACITY,
 } from '../constants/actionTypes';
 import { PLANET_TILE_LAYER_INITIAL, soyPlantedYearsRange } from '../../../common/js/config';
 import { proLayers, exclusiveLayers, visibleLayers } from '../../../common/js/proLayers.config';
@@ -67,7 +68,17 @@ const initialLocationState = {
   planetTileLayer: PLANET_TILE_LAYER_INITIAL,
   planetTileColor: 'rgb',
   showHighConfidenceAlertsOnDeforestationAlertsLayer: false,
+  layerOpacity: {}, // stores layers opacity { layerId1: 0.5, layerId2: 0.8 }
 };
+
+export function layerOpacity(state = initialLocationState.layerOpacity, action) {
+  return action.type !== SET_LAYER_OPACITY
+    ? state
+    : {
+        ...state,
+        [action.data.layerId]: action.data.opacity,
+      };
+}
 
 export function populateLayers(state = initialLocationState.mapLayers, action) {
   return action.type !== POPULATE_LAYERS ? state : action.data;

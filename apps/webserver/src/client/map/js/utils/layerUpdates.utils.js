@@ -104,3 +104,25 @@ export const updateInteractiveLayers = (map, prevState, state) => {
     });
   }
 };
+
+/**
+ * Updates the opacity of layers on the map based on the current state
+ * @param {Object} map - ArcGIS map instance
+ * @param {Object} prevLayerOpacity - Previous state of layer opacities
+ * @param {Object} currentLayerOpacity - Current state of layer opacities
+ */
+export const updateLayerOpacity = (map, prevLayerOpacity, currentLayerOpacity) => {
+  // If there are no changes in opacities, do nothing
+  if (JSON.stringify(prevLayerOpacity) === JSON.stringify(currentLayerOpacity)) {
+    return;
+  }
+
+  Object.entries(currentLayerOpacity).forEach(([layerId, opacity]) => {
+    if (prevLayerOpacity[layerId] !== opacity) {
+      const layer = map.findLayerById(layerId);
+      if (layer) {
+        layer.opacity = opacity;
+      }
+    }
+  });
+};

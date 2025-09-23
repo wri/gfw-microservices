@@ -79,7 +79,7 @@ import setVectorTileLayerForFullList from '../utils/setVectorTileLayerForFullLis
 import { getLocationGeometry, getBasemapConfiguration } from '../utils/map.utils';
 import { constructLayerObject } from '../../../common/js/utils/layer.utils';
 import { getMapLayerIdFromGFWListName } from '../../../common/js/utils/gfw.utils';
-import { updateInteractiveLayers } from '../utils/layerUpdates.utils';
+import { updateInteractiveLayers, updateLayerOpacity } from '../utils/layerUpdates.utils';
 import sortMapArray from './sortMapArray';
 import { getQueryParams } from './getQueryParams';
 import AnalysisPanel from './analysisPanel/AnalysisPanel';
@@ -363,9 +363,11 @@ class Map extends Component {
       soyYear,
       planetTileLayer,
       planetTileColor,
+      layerOpacity,
     } = this.state;
 
     updateInteractiveLayers(this.view.map, prevState, this.state);
+    updateLayerOpacity(this.view.map, prevState.layerOpacity, layerOpacity);
 
     if (prevState.visibleLayers.length < visibleLayers.length) {
       this.view.popup.close();
@@ -2649,6 +2651,8 @@ class Map extends Component {
           biomassRange={biomassRange}
           toggleLayerVisibility={this.toggleLayerVisibility}
           selectedLists={selectedLists}
+          layerOpacity={this.state.layerOpacity}
+          dispatch={store.dispatch}
         />
 
         <div style={containerStyle} className="map-container">

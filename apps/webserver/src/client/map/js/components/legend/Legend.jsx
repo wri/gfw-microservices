@@ -48,6 +48,8 @@ export default class Legend extends Component {
       layer={layer}
       visibleLayers={this.props.visibleLayers}
       iconLoading={this.props.iconLoading}
+      layerOpacity={this.props.layerOpacity}
+      dispatch={this.props.dispatch}
       toggleLayerVisibility={this.props.toggleLayerVisibility}
       gfwListDef={this.props.gfwListDef}
       selectedLists={this.props.selectedLists}

@@ -31,6 +31,7 @@ import {
   UPDATE_PLANET_TILE_COLOR,
   UPDATE_SOY_YEAR,
   TOGGLE_HIGH_CONFIDENCE_ALERTS_FOR_DEFORESTATION_ALERTS_LAYERS,
+  SET_LAYER_OPACITY,
 } from '../constants/actionTypes';
 
 export function populateLayers(data) {
@@ -158,4 +159,8 @@ export function updatePlanetTileColor(data) {
 
 export function toggleHighConfidenceAlertsForDeforestationAlertsLayers(data) {
   return { type: TOGGLE_HIGH_CONFIDENCE_ALERTS_FOR_DEFORESTATION_ALERTS_LAYERS, data };
+}
+
+export function setLayerOpacity(data) {
+  return { type: SET_LAYER_OPACITY, data };
 }

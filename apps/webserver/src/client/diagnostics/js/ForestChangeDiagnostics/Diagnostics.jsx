@@ -485,6 +485,12 @@ export default class Diagnostics extends Component {
         JSON.parse(data?.tree_cover_loss_prodes_yearly || '{}')
       );
     }
+    if (property === 'prodes_wdpa') {
+      return (
+        JSON.parse(data?.country_specific_deforestation_wdpa_yearly || '{}')?.BRA ||
+        JSON.parse(data?.tree_cover_loss_prodes_wdpa_yearly || '{}')
+      );
+    }
     return JSON.parse(data[property] || '{}');
   };
 
@@ -515,14 +521,28 @@ export default class Diagnostics extends Component {
     return obj;
   };
 
+  hasProdesData = (property, loc) => {
+    return (
+      property === 'prodes' &&
+      (loc.country_specific_deforestation_yearly || loc.tree_cover_loss_prodes_yearly)
+    );
+  };
+
+  hasProdesWdpaData = (property, loc) => {
+    return (
+      property === 'prodes_wdpa' &&
+      (loc.country_specific_deforestation_wdpa_yearly || loc.tree_cover_loss_prodes_wdpa_yearly)
+    );
+  };
+
   parseYearlyData = (property, startYear, endYear) => {
     let total = 0;
 
     this.getFilteredLocations().forEach((loc) => {
       if (
         loc[property] ||
-        (property === 'prodes' &&
-          (loc.country_specific_deforestation_yearly || loc.tree_cover_loss_prodes_yearly))
+        this.hasProdesData(property, loc) ||
+        this.hasProdesWdpaData(property, loc)
       ) {
         const yearlyData = this.getYearlyParsedData(loc, property);
 

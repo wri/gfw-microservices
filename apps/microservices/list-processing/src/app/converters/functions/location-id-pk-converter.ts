@@ -123,7 +123,9 @@ export async function addPrimaryKeyOnLocationId({
       `);
 
       if (existingConstraint.length > 0) {
-        logger.warn(`Skipping ${fullTableName}: location_id is already used in constraint ${existingConstraint[0].CONSTRAINT_NAME}`);
+        logger.warn(
+          `Skipping ${fullTableName}: location_id is already used in constraint ${existingConstraint[0].CONSTRAINT_NAME}`
+        );
         continue;
       }
 

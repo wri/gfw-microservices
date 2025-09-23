@@ -396,9 +396,7 @@ export default class SouthAmericaRegionsWithoutArgentina extends Component {
     if (paChecked) {
       series.push({
         name: 'Protected Areas',
-        data: getYearlyHighchartSeries(
-          getYearlyData('tree_cover_loss_prodes_wdpa_yearly', startYear, endYear)
-        ),
+        data: getYearlyHighchartSeries(getYearlyData('prodes_wdpa', startYear, endYear)),
         color: PROTECTED_AREAS_COLOR,
         groupPadding: 0,
         stack: 'pa',
@@ -435,9 +433,7 @@ export default class SouthAmericaRegionsWithoutArgentina extends Component {
       if (paChecked) {
         filteredSeries.push({
           name: 'Protected Areas',
-          data: getYearlyHighchartSeries(
-            getYearlyData('tree_cover_loss_prodes_wdpa_yearly', startYear, endYear)
-          ),
+          data: getYearlyHighchartSeries(getYearlyData('prodes_wdpa', startYear, endYear)),
           color: PROTECTED_AREAS_COLOR,
           groupPadding: 0,
           stack: 'pa',
@@ -813,7 +809,7 @@ export default class SouthAmericaRegionsWithoutArgentina extends Component {
     return {
       totalSoy: parseYearlyData('tree_cover_loss_soy_yearly', startYear, endYear),
       totalProdes: parseYearlyData('prodes', startYear, endYear),
-      totalPA: parseYearlyData('tree_cover_loss_prodes_wdpa_yearly', startYear, endYear),
+      totalPA: parseYearlyData('prodes_wdpa', startYear, endYear),
       saTotalTCL: parseYearlyData('tree_cover_loss_total_yearly', startYear, endYear),
       totalBiomes: parseYearlyData('tree_cover_loss_brazil_biomes_yearly', startYear, endYear),
     };

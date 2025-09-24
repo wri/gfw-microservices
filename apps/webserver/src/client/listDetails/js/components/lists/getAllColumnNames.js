@@ -104,6 +104,9 @@ const getAllColumnNames = (
   } else if (listView === POST_2020_RISK_ASSESSMENT_VIEW) {
     const analysis = columns.post_2020_risk.slice();
     columnNames.combinedColumns = [checkbox, ...analysis, ...columnNames.list];
+  } else {
+    columnNames.combinedColumns = [...defaultShownColumns, ...columnNames.list];
+    console.log('🚀 ~ getAllColumnNames ~ locationData:', locationData);
   }
 
   return columnNames;

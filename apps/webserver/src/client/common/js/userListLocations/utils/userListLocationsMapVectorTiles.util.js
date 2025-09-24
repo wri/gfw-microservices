@@ -80,7 +80,7 @@ export function generateUserListLocationsVectorTileLayerStyle(mbtileLayerName, l
         'source-layer': mbtileLayerName,
         paint: {
           'fill-color': '#719223',
-          'fill-opacity': '1',
+          'fill-opacity': '0',
           'fill-outline-color': '#719223',
         },
         filter: getVectorTileLayerHighLightFilter(''),

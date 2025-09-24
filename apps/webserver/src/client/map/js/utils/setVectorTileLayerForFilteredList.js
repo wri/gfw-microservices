@@ -27,7 +27,7 @@ const setVectorTileLayerForFilteredList = async (listData, transitionListData, v
       centroidGraphics.push(listLocationCentroidGraphic);
     }
   });
-  userLayer.addMany([centroidGraphics]);
+  userLayer.addMany([...centroidGraphics]);
 
   const alertsMapExtent = transitionListData?.alertsMapExtent;
   return alertsMapExtent || mapCenter;

@@ -47,6 +47,22 @@ export function generateUserListLocationsVectorTileLayerStyle(mbtileLayerName, l
     capabilities: 'TilesOnly, TileInfo, FeatureInfo',
     layers: [
       {
+        id: `${USER_LIST_LOCATIONS_VECTOR_TILE_LAYER__LOCATIONS}_shadow`,
+        type: 'line',
+        source: 'local',
+        'source-layer': mbtileLayerName,
+
+        paint: {
+          'line-color': '#719223',
+          'line-opacity': '0.8',
+          'line-blur': 40,
+          'line-width': 15,
+          'line-offset': 1,
+        },
+        filter: getVectorTileLayerHighLightFilterMultipleLocations(locationIDs),
+      },
+
+      {
         id: USER_LIST_LOCATIONS_VECTOR_TILE_LAYER__LOCATIONS,
         type: 'fill',
         source: 'local',
@@ -64,7 +80,7 @@ export function generateUserListLocationsVectorTileLayerStyle(mbtileLayerName, l
         'source-layer': mbtileLayerName,
         paint: {
           'fill-color': '#719223',
-          'fill-opacity': '0',
+          'fill-opacity': '1',
           'fill-outline-color': '#719223',
         },
         filter: getVectorTileLayerHighLightFilter(''),
@@ -75,7 +91,7 @@ export function generateUserListLocationsVectorTileLayerStyle(mbtileLayerName, l
         source: 'local',
         'source-layer': mbtileLayerName,
         paint: {
-          'line-color': '#719223',
+          'line-color': '#1A210B',
           'line-width': 3,
         },
         filter: getVectorTileLayerHighLightFilterMultipleLocations(locationIDs),

@@ -20,7 +20,7 @@ export const centroidSymbol = {
   type: 'simple-marker',
   size: 5,
   style: 'circle',
-  color: 'rgba(139, 174, 59, 1)',
+  color: 'rgba(139, 174, 59, 0)',
   outline: {
     width: 0,
   },

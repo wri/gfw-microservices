@@ -109,8 +109,8 @@ export const csv2geojson = async (
 
     let { data } = results;
     const { errors } = results;
+
     if (errors.length > 0) {
-      logger.error(errors);
       errors.forEach((error) => {
         geoJson.features.push({
           type: 'Feature',

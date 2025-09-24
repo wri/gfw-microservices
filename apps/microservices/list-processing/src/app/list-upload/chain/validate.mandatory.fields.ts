@@ -162,6 +162,7 @@ export class ValidateMandatoryFields extends AbstractHandler<ChainType> {
     const fieldsToCheck = mandatoryFields[baseExtension];
 
     if (!fieldsToCheck) {
+      this.logger.error('❌ Invalid file extension');
       throw new Error(`Invalid file extension: ${fileExtension}`);
     }
 

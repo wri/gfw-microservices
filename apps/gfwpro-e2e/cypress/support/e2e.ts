@@ -96,9 +96,12 @@ if (hideThirdPartyRequests) {
                           // - Zendesk
                           // - Any other external tracking services
                           // Hide requests that are external/third-party:
-                          // - If the URL contains '://', it's absolute (external)
-                          // - If it doesn't start with '/', it's not a relative/internal request
-                          if (requestUrl && (requestUrl.includes('://') || !requestUrl.startsWith('/'))) {
+                          // - URLs containing '://' (absolute URLs) that don't match our domain
+                          // - URLs starting with 'www.' (external domains)
+                          if (requestUrl && (
+                            (requestUrl.includes('://') && !requestUrl.includes(window.location.hostname)) ||
+                            requestUrl.startsWith('www.')
+                          )) {
                             node.style.display = 'none';
                             console.log('Hidden third-party request:', requestUrl);
                           }

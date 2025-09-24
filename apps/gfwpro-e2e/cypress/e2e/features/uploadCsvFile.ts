@@ -20,12 +20,6 @@ describe('Upload File Csv', () => {
   When('I select the file upload option', () => {
     locationsPage.clickOnDataFileUploadBtn();
   });
-  When('I select the Polygon option', () => {
-    locationsPage.clickOnPolygonBtn();
-  });
-  When('I select the Point option', () => {
-    locationsPage.clickOnPointBtn();
-  });
 
   When('I click on the Drop file button and drag a CSV file', () => {
     cy.get('[data-testid="file-input"]').invoke('show').selectFile(filePath);

@@ -1,4 +1,4 @@
-Feature: user can log in with multiple roles
+Feature: user can share a list and log in with multiple roles to interact with the shared list
   Scenario: login as admin and share a list
     When I login as admin
     Then I should be redirected to locations view

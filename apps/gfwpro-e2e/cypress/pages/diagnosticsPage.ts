@@ -20,6 +20,8 @@ class DiagnosticsPage {
     closeButton: () => cy.get('.info-bubble-content__icon'),
     infoBubbleTitle: () => cy.get('.bubble-title'),
     selectDiagnostic: (name) => cy.get('#viewToggle').select(name),
+    palmRiskAssessmentTab: () => cy.contains('Palm Risk Assessment'),
+    chartTitle: () => cy.get('[data-testid="chart-header-title"]'),
   };
 
   changeDiagnostics(name) {
@@ -50,6 +52,10 @@ class DiagnosticsPage {
       .diagnosticsRegions()
       .contains(/^Colombia$/)
       .click();
+  }
+
+  clickOnPalmRiskAssessmentTab() {
+    this.elements.palmRiskAssessmentTab().click();
   }
 
   verifyPrincipalCharts() {
@@ -410,6 +416,10 @@ class DiagnosticsPage {
 
   verifyTclArgentinaOTBNInfoBubble() {
     this.elements.infoBubbleTitle().should('have.text', 'Deforestation in Argentina');
+  }
+
+  verifyChartVisibility(title) {
+    this.elements.chartTitle().contains(title).should('exist');
   }
 }
 

@@ -132,6 +132,20 @@ export const getMyAccountAnalysisUsageByAnalysisType = async (req, res) => {
   const { organization_database: orgDbName } = req.session;
   let { startDate, endDate } = req.query;
 
+  const { error } = validateQueryParams({
+    startDate,
+    endDate,
+  });
+  if (error) {
+    return res.status(400).send({
+      status: 400,
+      message: {
+        error,
+        success: false,
+      },
+    });
+  }
+
   const analysisUsageByType = await getAccountAnalysisUsageByAnalysisType({
     startDate,
     endDate,

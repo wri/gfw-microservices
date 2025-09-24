@@ -128,7 +128,7 @@ export const getMyOrganizationUsersAnalysisUsage = async (req, res) => {
       ? accountLatestYearStartDate.format('YYYY-MM-DD')
       : startDate;
   const userEndDate =
-    typeof startDate === 'undefined' || endDate == null || endDate === ''
+    typeof endDate === 'undefined' || endDate == null || endDate === ''
       ? todayAsEndDay.format('YYYY-MM-DD')
       : endDate;
 

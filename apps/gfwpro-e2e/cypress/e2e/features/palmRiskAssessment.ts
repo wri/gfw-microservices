@@ -25,7 +25,7 @@ describe('Palm Risk Assessmen', () => {
     }
   );
 
-  Then('I switch to the palm risk assessment tab', () => {
+  When('I switch to the palm risk assessment tab', () => {
     listDetailsPage.clickOnPalmRiskAssessmentTab();
   });
 

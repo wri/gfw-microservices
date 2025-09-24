@@ -81,6 +81,11 @@ export function UploadLocationPreviewErrorMessage({
   );
 }
 
+type ErrorMessage = {
+  title: string;
+  body: string;
+};
+
 const errorMessageBuilder = ({
   error,
   fileExtension,
@@ -89,63 +94,82 @@ const errorMessageBuilder = ({
   error: { errors: string[] };
   fileExtension: string;
   uploadType?: UploadType;
-}) => {
-  const firstError = error?.errors?.[0];
-  const isIdBasedError = uploadType === UploadType.ById;
+}): ErrorMessage | null => {
+  if (!error?.errors?.length) {
+    return null;
+  }
 
+  const isIdBasedError = uploadType === UploadType.ById;
+  let firstError = error?.errors[0];
+
+  // Handle missing mandatory fields
   let missingFieldNames = getMissingFieldsNames(error.errors, fileExtension, isIdBasedError);
 
   if (!isIdBasedError && missingFieldNames.length < 1) {
     missingFieldNames = getMissingFieldsNames(error.errors, fileExtension, true);
   }
 
-  if (firstError?.startsWith('Missing mandatory fields:')) {
-    return {
-      title: 'Missing required fields',
-      body: `Your ${fileExtension} file is missing the following obligatory fields: ${missingFieldNames}. Please check the required fields in the Data Templates and update your file before re-uploading it.`,
-    };
+  // Handle special case: delimiter detection
+  if (firstError?.startsWith('Unable to auto-detect delimiting character')) {
+    firstError = error.errors[1];
   }
 
-  if (firstError?.startsWith('Invalid latitude or longitude')) {
-    return {
-      title: 'Invalid file',
-      body: 'Invalid latitude or longitude.',
-    };
-  }
+  // Mapping of patterns to title/body
+  const errorPatterns: Array<{
+    match: (msg: string) => boolean;
+    message: ErrorMessage;
+  }> = [
+    {
+      match: (msg) => msg.startsWith('Missing mandatory fields:'),
+      message: {
+        title: 'Missing required fields',
+        body: `Your ${fileExtension} file is missing the following obligatory fields: ${missingFieldNames}. Please check the required fields in the Data Templates and update your file before re-uploading it.`,
+      },
+    },
+    {
+      match: (msg) => msg.startsWith('Invalid latitude or longitude'),
+      message: {
+        title: 'Invalid file',
+        body: 'Invalid latitude or longitude.',
+      },
+    },
+    {
+      match: (msg) => msg.startsWith('Error while parsing the data'),
+      message: {
+        title: 'Invalid file',
+        body: 'Your file is invalid. Please try another one.',
+      },
+    },
+    {
+      match: (msg) => msg.startsWith('UML LookUp: '),
+      message: {
+        title: 'Invalid file',
+        body: 'Your location does not have a valid UML ID. Please ensure the ID data you entered exists in the Universal Mill List.',
+      },
+    },
+    {
+      match: (msg) => msg === 'Empty data file',
+      message: {
+        title: 'Empty data file',
+        body: 'Your data file is empty. Please ensure your data file contains at least one location before re-uploading.',
+      },
+    },
+    {
+      // @see {@link https://gfw.atlassian.net/browse/GPV-4541}
+      match: (msg) =>
+        msg.startsWith('You have entered an invalid ID not found in the system') ||
+        msg.startsWith('CAR LookUp: did not found lat/long for'),
+      message: {
+        title: 'Invalid file',
+        body: 'The defined ID is not recognized by GFW Pro. Please enter a recognized ID system value.',
+      },
+    },
+  ];
 
-  if (firstError?.startsWith('Error while parsing the data')) {
-    return {
-      title: 'Invalid file',
-      body: 'Your file is invalid. Please try another one.',
-    };
-  }
-
-  if (firstError?.startsWith('UML LookUp: ')) {
-    return {
-      title: 'Invalid file',
-      body: 'Your location does not have a valid UML ID. Please ensure the ID data you entered exists in the Universal Mill List.',
-    };
-  }
-
-  if (firstError === 'Empty data file') {
-    return {
-      title: 'Empty data file',
-      body: 'Your data file is empty. Please ensure your data file contains at least one location before re-uploading.',
-    };
-  }
-
-  // @see {@link https://gfw.atlassian.net/browse/GPV-4541}
-  if (firstError?.startsWith('You have entered an invalid ID not found in the system')) {
-    return {
-      title: 'Invalid file',
-      body: `The defined ID is not recognized by GFW Pro. Please enter a recognized ID system value.`,
-    };
-  }
-  if (firstError?.startsWith('CAR LookUp: did not found lat/long for')) {
-    return {
-      title: 'Invalid file',
-      body: `The defined ID is not recognized by GFW Pro. Please enter a recognized ID system value.`,
-    };
+  for (const pattern of errorPatterns) {
+    if (firstError && pattern.match(firstError)) {
+      return pattern.message;
+    }
   }
 
   return null;
@@ -156,18 +180,33 @@ const getMissingFieldsNames = (errors: string[], fileExtension: string, isByIdWo
     return '';
   }
 
-  let fields: string[] | string = errors[0].split(':')?.[1];
-  if (!fields) {
-    return '';
+  // Choose the appropriate map
+  const map =
+    fileExtension === '.zip'
+      ? LabelNameTableZip
+      : isByIdWorkflow
+      ? LabelNameTableIdType
+      : LabelNameTable;
+
+  // Filter all missing-fields errors
+  const missingFieldsErrors = errors.filter((err) => err.startsWith('Missing mandatory fields'));
+
+  if (missingFieldsErrors.length > 0) {
+    // Combine all missing-fields errors into a single string
+    const fields = missingFieldsErrors
+      .map(
+        (err) =>
+          err
+            .split(':')?.[1]
+            ?.split(',')
+            .map((f) => f.trim())
+            .filter(Boolean) ?? []
+      )
+      .flat();
+
+    return fields.map((field) => map[field as keyof typeof map] || field).join(', ');
   }
 
-  fields = fields.replaceAll(' ', '').split(',');
-
-  if (fileExtension === '.zip') {
-    return fields.map((field) => LabelNameTableZip[field as keyof typeof map] || '').join(', ');
-  }
-
-  const map = isByIdWorkflow ? LabelNameTableIdType : LabelNameTable;
-
-  return fields.map((field) => map[field as keyof typeof map] || '').join(', ');
+  // Fallback: no missing-fields error, return first error as-is
+  return errors[0];
 };

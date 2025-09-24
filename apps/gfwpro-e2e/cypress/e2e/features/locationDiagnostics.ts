@@ -17,6 +17,13 @@ describe('Location diagnostics', () => {
     locationsPage.clickOnLocationsList('AAT Argentina Points Generic');
   });
 
+  When(
+    'I navigate to the details page of a user list that has palm risk assessment analysis',
+    () => {
+      locationsPage.clickOnLocationsList('AAT Indonesia Palm Oil Generic');
+    }
+  );
+
   When('I click on location diagnostic button', () => {
     listDetailsPage.clickOnPost2000Tab();
     cy.waitForLoadingMessage();
@@ -30,5 +37,18 @@ describe('Location diagnostics', () => {
     expect(diagnosticsPage.elements.downloadBtn().should('be.visible'));
     expect(diagnosticsPage.elements.diagnosticsMap().should('be.visible'));
     expect(diagnosticsPage.elements.headerInfo().invoke('text').should('include', 'a1'));
+  });
+
+  When('I switch to the palm risk assessment tab', () => {
+    listDetailsPage.clickOnPalmRiskAssessmentTab();
+  });
+
+  When('I click on the diagnostics palm risk assessment tab', () => {
+    diagnosticsPage.clickOnPalmRiskAssessmentTab();
+  });
+
+  Then('I should see the palm risk assessment data charts', () => {
+    diagnosticsPage.verifyChartVisibility('Trends in Deforestation');
+    diagnosticsPage.verifyChartVisibility('Palm Risk Analysis');
   });
 });

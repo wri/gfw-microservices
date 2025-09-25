@@ -175,9 +175,5 @@ export async function handleUserListLocationsVectorTileLayer(
     );
     userListLocationsVectorTileLayer.loadStyle(userListLocationsVectorTileStyle);
   }
-  if (!locationIDs.length) {
-    // if a location is selcted from the list, the zoom level will be handled in setVectorTileLayerForFilteredList()
-
-    return goToUserListLocations(bounds);
-  }
+  return goToUserListLocations(bounds);
 }

@@ -807,10 +807,8 @@ class Map extends Component {
         // Feature selected
         if (selectedFeature && popupSelectedFeature) {
           popupSelectedFeature.symbol = fillSymbolDefault;
-          selectedFeature.symbol = fillSymbolHighlight;
-        } else {
-          selectedFeature.symbol = fillSymbolHighlight;
         }
+        selectedFeature.symbol = fillSymbolHighlight;
 
         const popupLayer = selectedFeature.layer;
         if (popupLayer && popupLayer.graphics && selectedFeature.attributes) {

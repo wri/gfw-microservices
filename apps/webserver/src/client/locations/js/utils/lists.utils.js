@@ -147,6 +147,9 @@ const checkColumnListGFWCR = (list_name, accessor) => {
 };
 
 const containsPunctuation = (list_name) => {
+  if (!list_name) {
+    return false;
+  }
   return list_name.search(/[^A-Za-z0-9\s]/) > -1;
 };
 

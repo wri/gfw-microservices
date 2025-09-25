@@ -78,12 +78,14 @@ const saveGfwListLocations = (
     const checkForPunctuation = containsPunctuation(lowerListName);
 
     if (!listName) {
+      console.error(`invalidListName - listName: ${listName}`);
       reject('invalidListName');
       return;
     } else if (checkListExists && selectedNewOrExisting === 'new') {
       reject('listNameAlreadyExists');
       return;
     } else if (checkForPunctuation && selectedNewOrExisting === 'new') {
+      console.error(`invalidListName - checkForPunctuation: ${checkForPunctuation}`);
       reject('invalidListName');
       return;
     }

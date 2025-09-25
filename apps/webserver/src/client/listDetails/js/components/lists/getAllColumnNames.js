@@ -3,6 +3,7 @@ import columns from '../../config/columns';
 import gfwListsSizeColumn from './gfwListsSizeColumn';
 import { getListColumns } from './getListColumns';
 import {
+  ALERTS,
   COMMODITY_RISK_VIEW,
   FOREST_CHANGE_VIEW,
   POST_2020_RISK_ASSESSMENT_VIEW,
@@ -60,7 +61,7 @@ const getAllColumnNames = (
     gfwColumns.push(...columns.protected_area_fc.slice());
   }
 
-  if (areAllAnalysesDraft) {
+  if (areAllAnalysesDraft || listView === ALERTS) {
     columnNames.combinedColumns = [
       ...defaultShownColumns,
       ...columns.draft_state_columns.slice(),

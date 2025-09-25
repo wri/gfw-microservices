@@ -1,6 +1,7 @@
 import axios from 'axios';
 import axiosRetry from 'axios-retry';
 import {
+  ALERTS,
   COMMODITY_RISK_VIEW,
   FOREST_CHANGE_VIEW,
   POST_2020_RISK_ASSESSMENT_VIEW,
@@ -35,6 +36,9 @@ const getUserLocationDataFromAPI = (
       break;
     case POST_2020_RISK_ASSESSMENT_VIEW:
       analysisId = analysisTypes.DEFORESTATION_KPIS;
+      break;
+    case ALERTS:
+      analysisId = analysisTypes.ALERTS;
       break;
     default:
       analysisId = analysisTypes.FOREST_CHANGE_DIAGNOSTICS;

@@ -210,9 +210,7 @@ export default function CopyMoveModal(props) {
               id="new-list-name"
               ref={newListNameRef}
               defaultValue={newListName}
-              onChange={debounce(() => {
-                updateNewListName(newListNameRef.current.value);
-              }, 100)}
+              onChange={debounce((e) => updateNewListName(e.target.value), 100)}
             />
             {isNewListNameDuplicate && <div>{locationsPage.lists.moveToNewListDuplicate}</div>}
             {isNewListNameValid && <div>{locationsPage.lists.moveToNewListNameInvalid}</div>}

@@ -338,7 +338,7 @@ module.exports = (app, limiter) => {
         locationAttributeList;
       let location_analyses = [];
 
-      if (areAllAnalysesDraftBoolean) {
+      if (areAllAnalysesDraftBoolean || analysisId === 'ALERTS') {
         const analysisManagerResult = await AnalysisManager.getDraftListLocationData(
           listID,
           page,

@@ -26,6 +26,7 @@ GROUP BY
 
 export interface OrganizationUsersAnalysisUsage {
   total_area_analyzed: number;
+  total_locations_analyzed: number;
   max_area_analyzed: number;
   number_of_lists_analyzed: number;
   locations_analyzed: number;

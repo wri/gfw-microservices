@@ -69,13 +69,16 @@ export default function AccountUsageContainer() {
   }, []);
 
   useEffect(() => {
-    fetch(`/analytics/myorg/usage/users?startDate=${startDate}&endDate=${endDate}`, {
-      method: 'GET',
-      credentials: 'same-origin',
-      headers: {
-        'Content-type': 'application/json',
-      },
-    })
+    fetch(
+      `/analytics/myorg/usage/users?startDate=${startDateAnalysis}&endDate=${endDateAnalysis}`,
+      {
+        method: 'GET',
+        credentials: 'same-origin',
+        headers: {
+          'Content-type': 'application/json',
+        },
+      }
+    )
       .then((res) => res.json())
       .then((data) => {
         setUsageDataperUser(data.organizationUsersAnalysisUsage);
@@ -83,7 +86,7 @@ export default function AccountUsageContainer() {
       .catch((error) => {
         console.log(error);
       });
-  }, []);
+  }, [startDateAnalysis, endDateAnalysis]);
 
   useEffect(() => {
     fetch(`analytics/myorg/limits`, {

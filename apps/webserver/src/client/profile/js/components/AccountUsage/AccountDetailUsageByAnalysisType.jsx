@@ -75,12 +75,31 @@ function AccountDetailUsageByAnalysisType({
   return (
     <section>
       <Divider sx={{ margin: '1.5rem 0' }} />
-      <DateRangeSelector
-        startDate={startDateAnalysis}
-        setStartDate={setStartDateAnalysis}
-        endDate={endDateAnalysis}
-        setEndDate={setEndDateAnalysis}
-      />
+      <div style={{ display: 'flex', justifyContent: 'flex-end', marginBottom: '20px' }}>
+        <div
+          style={{ display: 'flex', alignItems: 'center', gap: '15px', justifyContent: 'flex-end' }}
+        >
+          <DateRangeSelector
+            startDate={startDateAnalysis}
+            setStartDate={setStartDateAnalysis}
+            endDate={endDateAnalysis}
+            setEndDate={setEndDateAnalysis}
+          />
+          <span
+            style={{
+              fontWeight: 'normal',
+              backgroundColor: '#f5f5f5',
+              padding: '8px 12px',
+              borderRadius: '4px',
+              fontSize: '14px',
+              whiteSpace: 'nowrap',
+              display: 'inline-block',
+            }}
+          >
+            Time Zone: UTC
+          </span>
+        </div>
+      </div>
       <h3 style={{ margin: '30px 0 20px 0', fontWeight: 'normal' }}>Detailed Usage</h3>
       <Grid container justifyContent="center" sx={{ marginTop: '1em' }}>
         <TableContainer component={Paper}>
@@ -187,7 +206,6 @@ function AccountDetailUsageByAnalysisType({
           </Table>
         </TableContainer>
       </Grid>
-      <Divider sx={{ margin: '1.5rem 0' }} />
     </section>
   );
 }

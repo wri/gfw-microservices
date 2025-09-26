@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useMemo } from 'react';
 import { Card, CardContent, MenuItem, FormControl, Select } from '@mui/material';
 import AfiDiagnosticsTable from './AfiDiagnosticsTable';
 import AfiPieChart from './AfiPieChart';
@@ -103,18 +103,19 @@ function AfiDiagnostics() {
       });
   }, [listId]);
 
-  const { list_status_id = null, listAnalysesStatus = null } = selectedList;
-
-  const { DiagnosticsStatusMessage, isListBeingAnalyzed } = getAnalysisAvailabilityMessage(
-    list_status_id,
-    listAnalysesStatus
-  );
+  const { DiagnosticsStatusMessage, isListBeingAnalyzed } = useMemo(() => {
+    if (!selectedList?.listAnalysesStatus) {
+      return { DiagnosticsStatusMessage: null, isListBeingAnalyzed: false };
+    }
+    const { listAnalysesStatus } = selectedList;
+    return getAnalysisAvailabilityMessage(listAnalysesStatus);
+  }, [selectedList?.listAnalysesStatus]);
 
   const isNegligibleRiskAvailable = forestLossDataset !== forestLossDatasetIds.JRC;
   return (
     <>
       <LoadingModal isLoading={isLoading} />
-      {!isLoading && DiagnosticsStatusMessage && DiagnosticsStatusMessage}
+      {!isLoading && DiagnosticsStatusMessage}
       {!isLoading && !isListBeingAnalyzed && (
         <div style={{ backgroundColor: 'rgb(250, 250, 250)' }}>
           <DiagnosticsMenuBar

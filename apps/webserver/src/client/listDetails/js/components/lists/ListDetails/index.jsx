@@ -20,7 +20,6 @@ import getUserLocationDataFromAPI from '../getUserLocationDataFromAPI';
 import filterListData from '../filterListData';
 import Filter from './Filter';
 import { saveGfwListLocations } from '../../../utils/moveLocations';
-import LocationDataNotAvailableMessage from '../LocationDataNotAvailableMessage';
 import store from '../../../../../locations/js/store';
 import { locationsPage, userAccessLevel } from '../../../../../common/js/config';
 import {
@@ -2203,10 +2202,6 @@ export default class ListDetails extends Component {
                                 }}
                               />
                             )}
-                            <LocationDataNotAvailableMessage
-                              list={selectedList}
-                              isListSubmittedForAnalysis={isListSubmittedForAnalysis}
-                            />
                           </section>
                         </>
                       )}

@@ -71,9 +71,6 @@ jest.mock('./GHGBanner', () => {
     default: GHGBanner,
   };
 });
-jest.mock('../LocationDataNotAvailableMessage', () => () => (
-  <div data-testid="location-data-not-available" />
-));
 jest.mock('./LocationsSummary', () => () => <div data-testid="locations-summary" />);
 jest.mock('../../../../../locations/js/components/ShareList/ShareList', () => () => (
   <div data-testid="share-list" />
@@ -125,28 +122,6 @@ describe('ListDetails', () => {
     isDiagnosticStatusDraft: false,
     isListWithErrors: false,
   };
-
-  it('renders LocationDataNotAvailableMessage when analysis is failed', () => {
-    const props = {
-      ...defaultProps,
-      selectedLists: [
-        {
-          id: 1,
-          list_name: 'Test List',
-          isGlobalForestWatchList: false,
-          user_id: 1,
-          listAnalysesStatus: [],
-          isFailed: true,
-        },
-      ],
-      isListSubmittedForAnalysis: true,
-    };
-
-    const { getByTestId } = render(<ListDetails {...props} />);
-
-    // Verify that LocationDataNotAvailableMessage is rendered
-    expect(getByTestId('location-data-not-available')).toBeInTheDocument();
-  });
 
   it('renders without crashing', () => {
     render(<ListDetails {...defaultProps} />);

@@ -82,14 +82,14 @@ function ForestChangeDiagnostics({ popover, infoBubbleCache }) {
   const { displayPopover, bubbleData, popoverLoading, anchorEl } = popover;
 
   const { DiagnosticsStatusMessage, isListBeingAnalyzed } = useMemo(() => {
-    if (!selectedList?.list_status_id) {
+    if (!selectedList?.listAnalysesStatus) {
       return { DiagnosticsStatusMessage: null, isListBeingAnalyzed: false };
     }
 
-    const { list_status_id, listAnalysesStatus } = selectedList;
+    const { listAnalysesStatus } = selectedList;
 
-    return getAnalysisAvailabilityMessage(list_status_id, listAnalysesStatus, isLegacyAnalysis);
-  }, [selectedList, isLegacyAnalysis]);
+    return getAnalysisAvailabilityMessage(listAnalysesStatus, isLegacyAnalysis);
+  }, [selectedList?.listAnalysesStatus, isLegacyAnalysis]);
 
   return (
     <>

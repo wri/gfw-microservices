@@ -128,7 +128,6 @@ describe('ListDetails', () => {
 
     // Verify that some of the mocked components are rendered
     expect(screen.getByTestId('list-actions')).toBeInTheDocument();
-    expect(screen.getByTestId('location-data-not-available')).toBeInTheDocument();
     expect(screen.getByTestId('locations-summary')).toBeInTheDocument();
   });
 

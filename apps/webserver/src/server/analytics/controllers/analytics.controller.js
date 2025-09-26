@@ -100,6 +100,21 @@ export const getMyOrganizationAnalysisUsage = async (req, res) => {
 
 export const getMyOrganizationUsersAnalysisUsage = async (req, res) => {
   const { organization_database: orgDbName, organization_id } = req.session;
+  const { startDate, endDate } = req.query;
+
+  const { error } = validateQueryParams({
+    startDate,
+    endDate,
+  });
+  if (error) {
+    return res.status(400).send({
+      status: 400,
+      message: {
+        error,
+        success: false,
+      },
+    });
+  }
 
   const orgActivatedTime = await getAccountRenewalTime(organization_id);
   const todayAsEndDay = moment().add(1, 'day');
@@ -108,17 +123,23 @@ export const getMyOrganizationUsersAnalysisUsage = async (req, res) => {
     .clone()
     .subtract(moment().diff(accountActivationDate, 'days') % 365, 'days');
 
-  const startDate = accountLatestYearStartDate.format('YYYY-MM-DD');
-  const endDate = todayAsEndDay.format('YYYY-MM-DD');
+  const userStartDate =
+    typeof startDate === 'undefined' || startDate == null || startDate === ''
+      ? accountLatestYearStartDate.format('YYYY-MM-DD')
+      : startDate;
+  const userEndDate =
+    typeof endDate === 'undefined' || endDate == null || endDate === ''
+      ? todayAsEndDay.format('YYYY-MM-DD')
+      : endDate;
 
   const organizationUsersAnalysisUsage = await getAccountUsersAnalysisUsage(orgDbName, {
-    startDate,
-    endDate,
+    startDate: userStartDate,
+    endDate: userEndDate,
   });
 
   res.status(200).send({
-    startDate,
-    endDate,
+    startDate: userStartDate,
+    endDate: userEndDate,
     organizationUsersAnalysisUsage,
   });
 };

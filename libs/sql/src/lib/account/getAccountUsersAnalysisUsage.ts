@@ -10,9 +10,13 @@ export async function getAccountUsersAnalysisUsage(
   { startDate, endDate }: GetAccountUsersAnalysisUsageParameters
 ) {
   try {
+    // Format dates to include full day range
+    const formattedStartDate = `${startDate}T00:00:00.000Z`;
+    const formattedEndDate = `${endDate}T23:59:59.997Z`;
+
     const parameters = [
-      { field: 'startDate', type: sql.NVarChar, value: startDate },
-      { field: 'endDate', type: sql.NVarChar, value: endDate },
+      { field: 'startDate', type: sql.NVarChar, value: formattedStartDate },
+      { field: 'endDate', type: sql.NVarChar, value: formattedEndDate },
     ];
 
     return await SQLUtils.queryDB<[OrganizationUsersAnalysisUsageResponse]>(

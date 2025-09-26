@@ -128,12 +128,20 @@ export default class ListDetails extends Component {
     const { selectedLists } = this.props;
     const selectedList = selectedLists.length > 0 ? selectedLists[0] : null;
     const listAnalysesStatus = selectedList ? selectedList.listAnalysesStatus : [];
-    // Adding PalmRisk analysis to pre selected analys
-    listAnalysesStatus?.forEach(({ analysisId, options }) => {
-      if (analysisId === 'FCD' && options === 'PalmRisk') {
-        listAnalysesStatus.push({ analysisId: 'PalmRisk' });
+    // Adding PalmRisk analysis to pre selected analysis
+    listAnalysesStatus?.forEach(({ analysisId, options, status }) => {
+      const isFCDWithPalmRisk =
+        analysisId === analysisTypes.FOREST_CHANGE_DIAGNOSTICS &&
+        options === analysisTypes.PALM_RISK;
+      // If the list has FCD with PalmRisk as option, we add PalmRisk as pre selected analysis - GPV-5016
+      if (isFCDWithPalmRisk) {
+        listAnalysesStatus.push({
+          analysisId: analysisTypes.PALM_RISK,
+          status, // same status as FCD analysis
+        });
       }
     });
+
     const { isFcdActive, isPalmRiskActive, isAfiActive, isGHGActive, isOnlyGHGActive } =
       getActiveAnalysisFlags(selectedList);
 
@@ -1145,20 +1153,23 @@ export default class ListDetails extends Component {
   };
 
   /**
-   * Send a request to the backend to grab selected user lists
-   * @param {String} list_id - ID of list.
-   * @param {Integer} page - page number.
+   * Determines whether all applicable analyses in the selected list are in Draft status,
+   * or if only GHG is active, and the list is not a Global Forest Watch list.
+   *
+   * @returns {Boolean} True if all applicable analyses are in Draft status (with sub-analyses excluded),
+   * or if only GHG is active, and the list is not a GFW list.
    */
   areAllAnalysesDraft = () => {
     const { selectedLists } = this.props;
     const { isOnlyGHGActive } = this.state;
     const listAnalysesStatus = selectedLists[0]?.listAnalysesStatus || [];
+    const isSelectedListNotGFW = !selectedLists[0].isGlobalForestWatchList;
 
     // also true if there are no analyses selected
     const areAllAnalysesDraft = listAnalysesStatus.every(
       (item) => item.status === listStatus.Draft
     );
-    return (isOnlyGHGActive || areAllAnalysesDraft) && !selectedLists[0].isGlobalForestWatchList;
+    return (isOnlyGHGActive || areAllAnalysesDraft) && isSelectedListNotGFW;
   };
 
   getUserLocationData = (list_id, page = 0) => {

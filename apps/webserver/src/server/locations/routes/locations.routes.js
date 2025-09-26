@@ -1038,24 +1038,24 @@ module.exports = (app, limiter) => {
    */
   app.post('/locations/save-list-to-process', (req, res) => {
     const { list_id, key, listName } = req.body;
-    const { organization_user_id } = req.session;
-
+    const { organization_user_id, organization_database } = req.session;
     const { LISTS_MICROSERVICE_URL } = process.env;
+    const url = `${LISTS_MICROSERVICE_URL}/save-list-to-process`;
 
     axios
-      .post(`${LISTS_MICROSERVICE_URL}/save-list-to-process`, {
+      .post(url, {
         userId: organization_user_id,
         list_id,
         key,
         listName,
-        client_database: req.session.organization_database,
+        client_database: organization_database,
       })
       .then((response) => {
-        logger.info('SaveListToPrcess LP response.data', response.data);
+        logger.info(`POST ${url} LP response.data`, response.data);
         res.send(response.data);
       })
       .catch((err) => {
-        logger.info(`Error ${LISTS_MICROSERVICE_URL}/save-list-to-process`, err);
+        logger.info(`Error ${url}`, err);
         res.status(500).send(err);
       });
   });

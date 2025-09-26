@@ -355,14 +355,6 @@ export const locationsPage = {
       removed1: ' has been removed from the ',
       removed2: ' folder',
     },
-    tooltips: {
-      working:
-        'This list is being processed. Reload the page once the analysis is finished to access the results.',
-      analyzing:
-        'List is analyzing. You will receive an email once analysis is complete and can reload the page to access the results.',
-      failed:
-        'Analysis for this list has failed. Please return to the Locations page to re-process this list.',
-    },
     selectedCountry: 'Country',
     selectedCommodity: 'Commodity',
     selectedState: 'State',

@@ -58,79 +58,162 @@ Cypress.on('window:before:load', (win) => {
 const hideThirdPartyRequests = Cypress.env('hideThirdPartyRequests');
 
 if (hideThirdPartyRequests) {
-  const app = window.top.document;
-  const script = app.createElement('script');
+  const resolveTopWindow = (): Window | null => {
+    try {
+      const candidate = window.top ?? window;
+      void candidate.document;
+      return candidate as Window;
+    } catch (error) {
+      console.warn('Third-party request filter not applied: unable to access top window.', error);
+      return null;
+    }
+  };
 
-  script.textContent = `
-    function setupThirdPartyRequestFilter() {
-      // Find the Cypress command log container
-      const commandLog = document.querySelector('.reporter .container');
+  const topWindow = resolveTopWindow();
 
-      if (commandLog) {
-        const observer = new MutationObserver((mutations) => {
-          mutations.forEach((mutation) => {
-            if (mutation.type === 'childList' && mutation.addedNodes.length > 0) {
-              mutation.addedNodes.forEach((node) => {
-                if (node instanceof Element) {
-                  const commandInfo = node.querySelector('.command-info');
+  if (topWindow) {
+    const topDocument = topWindow.document;
 
-                  if (commandInfo) {
-                    const commandMethodElement = commandInfo.querySelector('.command-method span');
+    if (!topDocument.head) {
+      console.warn('Third-party request filter not applied: top window has no <head> element.');
+    } else if (!topDocument.head.querySelector('script[data-third-party-request-filter]')) {
+      const script = topDocument.createElement('script');
+      script.setAttribute('data-third-party-request-filter', 'true');
+      script.textContent = String.raw`
+        (function () {
+          if (window.__thirdPartyRequestFilterApplied) {
+            return;
+          }
 
-                    if (commandMethodElement) {
-                      const commandType = commandMethodElement.textContent;
+          window.__thirdPartyRequestFilterApplied = true;
 
-                      // Check if this is a network request (xhr or fetch)
-                      if (commandType === '(xhr)' || commandType === '(fetch)') {
-                        const commandMessageText = commandInfo.querySelector('.command-message-text');
+          var HIDDEN_CLASS = 'third-party-request-hidden';
 
-                        if (commandMessageText) {
-                          // Use regex to robustly extract the first URL from the message text
-                          const urlMatch = commandMessageText.textContent.match(new RegExp('https?://[^\\s]+|//[^\\s]+|www\\.[^\\s]+'));
-                          const requestUrl = urlMatch ? urlMatch[0] : null;
-
-                          // Hide requests that don't start with '/' (external/third-party requests)
-                          // This includes requests to domains like:
-                          // - Google Analytics/Tag Manager
-                          // - Hotjar
-                          // - Zendesk
-                          // - Any other external tracking services
-                          // Hide requests that are external/third-party:
-                          // - URLs containing '://' (absolute URLs) that don't match our domain
-                          // - URLs starting with 'www.' (external domains)
-                          if (requestUrl && (
-                            (requestUrl.includes('://') && !requestUrl.includes(window.location.hostname)) ||
-                            requestUrl.startsWith('www.')
-                          )) {
-                            node.style.display = 'none';
-                            console.log('Hidden third-party request:', requestUrl);
-                          }
-                        }
-                      }
-                    }
-                  }
-                }
-              });
+          function ensureStyles() {
+            if (!document.querySelector('style[data-third-party-request-filter]')) {
+              var styleEl = document.createElement('style');
+              styleEl.setAttribute('data-third-party-request-filter', 'true');
+              styleEl.textContent = '.' + HIDDEN_CLASS + ' { display: none !important; }';
+              document.head.appendChild(styleEl);
             }
-          });
-        });
+          }
 
-        // Start observing the command log for changes
-        observer.observe(commandLog, { childList: true, subtree: true });
-        console.log('Third-party request filter initialized');
-      } else {
-        // Retry if command log not ready yet
-        setTimeout(setupThirdPartyRequestFilter, 100);
-      }
+          function getRequestUrlFromNode(node) {
+            if (!(node instanceof HTMLElement)) {
+              return null;
+            }
+
+            var selectors = [
+              '.command-message-url',
+              '.command-message-text',
+              '.command-message',
+              '.command-info'
+            ];
+            for (var i = 0; i < selectors.length; i++) {
+              var el = node.querySelector(selectors[i]);
+              if (el && el.textContent) {
+                var url = extractUrl(el.textContent);
+                if (url) {
+                  return url;
+                }
+              }
+            }
+
+            return extractUrl(node.textContent || '');
+          }
+
+          function extractUrl(textContent) {
+            if (!textContent) {
+              return null;
+            }
+
+            var normalization = String(textContent).replace(/\s+/g, ' ').trim();
+            if (!normalization) {
+              return null;
+            }
+
+            var urlPattern = /https?:\/\/[^\s]+|\/\/[^\s]+|www\.[^\s]+/i;
+            var match = normalization.match(urlPattern);
+            return match ? match[0] : null;
+          }
+
+          function isThirdPartyRequest(requestUrl) {
+            if (!requestUrl) {
+              return false;
+            }
+
+            var absoluteUrl = requestUrl;
+            if (requestUrl.indexOf('://') === -1) {
+              // Handle protocol-relative URLs (//example.com)
+              absoluteUrl = window.location.protocol + requestUrl;
+            }
+
+            try {
+              var url = new URL(absoluteUrl, window.location.origin);
+              return url.hostname !== window.location.hostname;
+            } catch (error) {
+              // If URL parsing fails, err on the side of hiding.
+              return true;
+            }
+          }
+
+          function processNode(node) {
+            if (!(node instanceof HTMLElement)) {
+              return;
+            }
+
+            node.classList.remove(HIDDEN_CLASS);
+            node.style.removeProperty('display');
+
+            var commandNameElement = node.querySelector('.command-name');
+            var commandName = commandNameElement ? String(commandNameElement.textContent || '').toLowerCase() : '';
+            if (commandName && commandName.indexOf('xhr') === -1 && commandName.indexOf('fetch') === -1) {
+              // Only hide network-related entries.
+              return;
+            }
+
+            var requestUrl = getRequestUrlFromNode(node);
+            if (isThirdPartyRequest(requestUrl)) {
+              node.classList.add(HIDDEN_CLASS);
+              console.log('Hidden third-party request:', requestUrl);
+            }
+          }
+
+          function initialize() {
+            ensureStyles();
+
+            var commandLog = document.querySelector('.reporter .container');
+            if (!commandLog) {
+              setTimeout(initialize, 100);
+              return;
+            }
+
+            Array.prototype.forEach.call(commandLog.children, processNode);
+
+            if (typeof MutationObserver === 'undefined') {
+              console.warn('Third-party request filter not applied: MutationObserver unavailable.');
+              return;
+            }
+
+            var observer = new MutationObserver(function (mutations) {
+              mutations.forEach(function (mutation) {
+                Array.prototype.forEach.call(mutation.addedNodes, processNode);
+              });
+            });
+
+            observer.observe(commandLog, { childList: true, subtree: true });
+            console.log('Third-party request filter initialized');
+          }
+
+          if (document.readyState === 'complete') {
+            initialize();
+          } else {
+            document.addEventListener('DOMContentLoaded', initialize, { once: true });
+          }
+        })();
+      `;
+
+      topDocument.head.appendChild(script);
     }
-
-    // Initialize the filter when the document is ready
-    if (document.readyState === 'complete') {
-      setupThirdPartyRequestFilter();
-    } else {
-      document.addEventListener('DOMContentLoaded', setupThirdPartyRequestFilter);
-    }
-  `;
-
-  app.head.appendChild(script);
+  }
 }

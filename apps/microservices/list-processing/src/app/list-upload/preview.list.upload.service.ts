@@ -57,7 +57,7 @@ export class PreviewListUploadService {
     const significantErrors = allErrors.filter(
       (error) =>
         typeof error === 'string' &&
-        !error.startsWith('UML LookUp: did not found lat/long for') &&
+        !error.startsWith('UML LookUp:') &&
         !error.startsWith('CAR LookUp: did not found lat/long for')
     );
 

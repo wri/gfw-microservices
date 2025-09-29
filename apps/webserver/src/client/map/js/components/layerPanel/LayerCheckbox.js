@@ -8,28 +8,25 @@ const { clarkLabsAquacultureLandCover, clarkLabsAquacultureLandChange } = proLay
 export default class LayerCheckbox extends Component {
   toggleLayer = () => {
     const { layer, visibleLayers } = this.props;
-
     const layerId = layer.id;
+    const state = store.getState();
+    const isClarkLabsLayer = layerId === clarkLabsAquacultureLandCover;
 
-    if (layerId === clarkLabsAquacultureLandCover) {
-      // hide clarkLabsAquacultureLandCover if hiding this layer
-      if (
-        store.getState().clarkLabsLayers &&
-        visibleLayers.includes(clarkLabsAquacultureLandCover)
-      ) {
+    if (isClarkLabsLayer) {
+      const clarkLayers = [clarkLabsAquacultureLandCover, clarkLabsAquacultureLandChange];
+      // Hide any visible Clark Labs layers if currently visible
+      if (state.clarkLabsLayers) {
+        clarkLayers.forEach((id) => {
+          if (visibleLayers.includes(id)) {
+            store.dispatch(toggleLayer(id));
+          }
+        });
+      }
+      // Show Clark Labs land cover if currently hidden
+      if (!state.clarkLabsLayers) {
         store.dispatch(toggleLayer(clarkLabsAquacultureLandCover));
       }
-      // hide clarkLabsAquacultureLandChange if hiding this layer
-      if (
-        store.getState().clarkLabsLayers &&
-        visibleLayers.includes(clarkLabsAquacultureLandChange)
-      ) {
-        store.dispatch(toggleLayer(clarkLabsAquacultureLandChange));
-      }
-      // show clarkLabsAquacultureLandCover if turning on this layer
-      if (!store.getState().clarkLabsLayers) {
-        store.dispatch(toggleLayer(clarkLabsAquacultureLandCover));
-      }
+
       store.dispatch(toggleClarkLabsLayers());
     } else {
       store.dispatch(toggleLayer(layerId));

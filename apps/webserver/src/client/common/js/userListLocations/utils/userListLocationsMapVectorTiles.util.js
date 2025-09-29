@@ -51,7 +51,6 @@ export function generateUserListLocationsVectorTileLayerStyle(mbtileLayerName, l
         type: 'line',
         source: 'local',
         'source-layer': mbtileLayerName,
-
         paint: {
           'line-color': '#719223',
           'line-opacity': '0.8',
@@ -61,7 +60,6 @@ export function generateUserListLocationsVectorTileLayerStyle(mbtileLayerName, l
         },
         filter: getVectorTileLayerHighLightFilterMultipleLocations(locationIDs),
       },
-
       {
         id: USER_LIST_LOCATIONS_VECTOR_TILE_LAYER__LOCATIONS,
         type: 'fill',

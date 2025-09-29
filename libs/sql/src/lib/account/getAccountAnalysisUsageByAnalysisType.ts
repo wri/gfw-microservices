@@ -15,8 +15,12 @@ export async function getAccountAnalysisUsageByAnalysisType({
 }: GetAccountAnalysisUsageByAnalysisType): Promise<
   OrganizationAnalysisUsageResponseByAnalysisType[]
 > {
+  let normalizedOrgDbName = orgDbName;
+  if (!orgDbName.startsWith('clientstore')) {
+    normalizedOrgDbName = `clientstore-${orgDbName}`;
+  }
   const clientStoreConnection = new ClientStoreConnection();
-  const connection = await clientStoreConnection.getConnection(orgDbName);
+  const connection = await clientStoreConnection.getConnection(normalizedOrgDbName);
   const listsProcessingRepository = connection.getRepository(ListsProcessing);
 
   const startDateTime = new Date(`${startDate}T00:00:00.000Z`);

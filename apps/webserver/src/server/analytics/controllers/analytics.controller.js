@@ -144,7 +144,11 @@ export const getMyOrganizationUsersAnalysisUsage = async (req, res) => {
   });
 };
 export const getMyAccountAnalysisUsageByAnalysisType = async (req, res) => {
-  const { organization_database: orgDbName } = req.session;
+  const { organization_database, organization_id } = req.session;
+  let orgDbName = organization_database;
+  if (orgDbName == null || orgDbName == '' || typeof orgDbName == 'undefined') {
+    orgDbName = organization_id;
+  }
   let { startDate, endDate } = req.query;
 
   const { error } = validateQueryParams({

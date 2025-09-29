@@ -391,10 +391,12 @@ export async function resolveListAnalysisStatuses(listAnalysisStatuses: ListsAna
       const { analysisId, options } = analysisStatus;
       const originalAnalysisIdLastModified = lastModifiedMap.get(analysisId);
 
-      const analysisIdsToPush =
-        analysisId === 'FCD' && options === analysisTypes.PALM_RISK
-          ? ['FCD', analysisTypes.PALM_RISK]
-          : [analysisId];
+      const isFCDWithPalmRisk =
+        analysisId === analysisTypes.FOREST_CHANGE_DIAGNOSTICS &&
+        options === analysisTypes.PALM_RISK;
+      const analysisIdsToPush = isFCDWithPalmRisk
+        ? [analysisId, analysisTypes.PALM_RISK] // FCD with PalmRisk sub-analysis
+        : [analysisId];
 
       for (const id of analysisIdsToPush) {
         results.push({

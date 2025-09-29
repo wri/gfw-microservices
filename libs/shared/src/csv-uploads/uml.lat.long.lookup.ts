@@ -65,7 +65,7 @@ export const umlLookUp: IdLookupFn = async (ids) => {
     formatValidatedIds.forEach((id) => {
       if (result[id].latitude === undefined || result[id].longitude === undefined) {
         result[id] = {
-          errorDetails: [`UML LookUp: lat/long was not found for ${id}`],
+          errorDetails: [`UML LookUp: did not found lat/long for ${id}`],
         };
       }
     });

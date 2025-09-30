@@ -9,10 +9,12 @@ import { columnHeaders } from '../../../listDetails/js/config/columns/columnHead
 
 const transifex = Transifex.live.translateText;
 
-export const getColorByLevelClass = {
-  0: 'yellow',
-  1: 'orange',
-  2: 'red',
+const getColorByLevelClass = (level) => {
+  if (level === null || level === undefined) {
+    return 'yellow';
+  }
+  const map = { 0: 'yellow', 1: 'orange', 2: 'red' };
+  return map[level];
 };
 
 export const sortOrderOption = {
@@ -296,7 +298,7 @@ export const sortByDate = (a, b) => {
 
 export const getAnalysisTextClasse = (level) => {
   return `list-analysis-text list-analysis-text--${
-    getColorByLevelClass[getLastValue(level)] || 'red'
+    getColorByLevelClass(getLastValue(level)) || 'red'
   }`;
 };
 
@@ -307,11 +309,11 @@ export const getAnalysisText = {
 };
 
 export const renderDataIcon = (level, row) => {
-  if (!locationIsActive(row) || level === null || level === undefined) {
+  if (!locationIsActive(row)) {
     return '--';
   } else {
     return (
-      <div className={`list-icons-container list-icons-container--${getColorByLevelClass[level]}`}>
+      <div className={`list-icons-container list-icons-container--${getColorByLevelClass(level)}`}>
         <svg className="list-icons">
           <use className="analysis-header-click" xlinkHref="#circle-list" />
         </svg>
@@ -321,12 +323,12 @@ export const renderDataIcon = (level, row) => {
 };
 
 export const renderDataLevelTag = (level, row) => {
-  if (!locationIsActive(row) || level === null || level === undefined) {
+  if (!locationIsActive(row)) {
     return '--';
   } else {
     return (
       <div
-        className={`list-analysis-text list-analysis-text--${getColorByLevelClass[level] || 'red'}`}
+        className={`list-analysis-text list-analysis-text--${getColorByLevelClass(level) || 'red'}`}
       >
         {getAnalysisText[level] || transifex(columnHeaders.high)}
       </div>

@@ -36,7 +36,7 @@ export const ID_TYPE_HANDLER: Record<string, IdTypeOptions> = {
   },
   [CSV_ID_TYPES.CAR]: {
     handler: carLookup,
-    chunkSize: 500,
+    chunkSize: 100,
     columnsWithIdValues: ['ID'],
     validateColumns: ['ID', 'ID Type', 'Location Name'],
   },

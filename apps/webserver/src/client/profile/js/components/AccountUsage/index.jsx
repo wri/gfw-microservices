@@ -152,20 +152,22 @@ export default function AccountUsageContainer() {
   };
 
   const getAreasPercentage = (area) => {
-    const totalUserAnalyses = usageDataperUser.reduce(
+    const totalAreaAnalyzed = usageDataperUser.reduce(
       (acc, user) => acc + user.total_area_analyzed,
       0
     );
-    return ((area / totalUserAnalyses) * 100).toFixed(2);
+    return totalAreaAnalyzed === 0 ? '0.00' : ((area / totalAreaAnalyzed) * 100).toFixed(2);
   };
 
   const getAnalysesPercentage = (locations) => {
     // the percentage denominator should be the sum of users analyses, not the max allowed
-    const totalUserAnalyses = usageDataperUser.reduce(
+    const totalLocationsAnalyzed = usageDataperUser.reduce(
       (acc, user) => acc + user.total_locations_analyzed,
       0
     );
-    return ((locations / totalUserAnalyses) * 100).toFixed(2);
+    return totalLocationsAnalyzed === 0
+      ? '0.00'
+      : ((locations / totalLocationsAnalyzed) * 100).toFixed(2);
   };
 
   return usageData === null || usageLimitsData === null ? (

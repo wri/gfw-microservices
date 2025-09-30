@@ -19,6 +19,7 @@ import { useAccountDetail } from '../AccountDetailSection';
 import AccountUsage from '../../../../../profile/js/components/AccountUsage/AccountUsage.jsx';
 import { LoadingModal } from '../../../../../components';
 import { calculateAccountSubscriptionDates } from '../../../../../common/js/utils/accountSubscriptionDates';
+import AccountDetailUsageByAnalysisType from '../../../../../profile/js/components/AccountUsage/AccountDetailUsageByAnalysisType.jsx';
 
 function AccountDetailUsage() {
   const { currentAccount } = useAccountDetail();
@@ -26,10 +27,10 @@ function AccountDetailUsage() {
   const [endDate, setEndDate] = useState(endDayIncludingToday);
   const [isLoading, setIsLoading] = useState(true);
   const [dateRangeAccountData, setDateRangeAccountData] = useState({});
+  const [analysisUsageByType, setAnalysisUsageByType] = useState([]);
 
-  const { organization_id: organizationId } = currentAccount;
+  const { organization_id: organizationId, organization_name } = currentAccount;
   const { number_of_lists_analyzed, max_area_analyzed, total_area_analyzed } = dateRangeAccountData;
-
   useEffect(() => {
     setIsLoading(true);
     fetch(
@@ -52,15 +53,36 @@ function AccountDetailUsage() {
       });
   }, [startDate, endDate]);
 
+  useEffect(() => {
+    fetch(
+      `analytics/usage/usage-by-analysis?startDate=${startDate}&endDate=${endDate}&organizationName=${organization_name}`,
+      {
+        method: 'GET',
+        credentials: 'same-origin',
+        headers: {
+          'Content-type': 'application/json',
+        },
+      }
+    )
+      .then((res) => res.json())
+      .then((data) => {
+        const { analysisUsageByType } = data;
+        setAnalysisUsageByType(analysisUsageByType);
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+  }, [startDate, endDate]);
+
   return (
     <section>
       <AccountUsageInfoBubbles />
-      <Divider sx={{ margin: '1.5rem 0' }} />
-      <DateRangeSelector
-        startDate={startDate}
-        setStartDate={setStartDate}
-        endDate={endDate}
-        setEndDate={setEndDate}
+      <AccountDetailUsageByAnalysisType
+        analysisUsageByType={analysisUsageByType}
+        setStartDateAnalysis={setStartDate}
+        setEndDateAnalysis={setEndDate}
+        startDateAnalysis={startDate}
+        endDateAnalysis={endDate}
       />
       {isLoading && <LoadingModal isLoading={true} />}
       {!isLoading && (

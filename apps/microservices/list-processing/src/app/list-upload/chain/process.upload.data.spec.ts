@@ -3,13 +3,17 @@ import { Feature } from '@wri-monorepos/geo';
 import { ChainType, RequestNewList } from './types';
 import { ClientStoreConnection } from '@wri-monorepos/sql';
 
-jest.mock('@nestjs/common', () => ({
-  Logger: jest.fn().mockImplementation(() => ({
-    log: jest.fn(),
-    error: jest.fn(),
-    debug: jest.fn(),
-  })),
-}));
+jest.mock('@nestjs/common', () => {
+  const actual = jest.requireActual('@nestjs/common');
+  return {
+    ...actual,
+    Logger: jest.fn().mockImplementation(() => ({
+      log: jest.fn(),
+      error: jest.fn(),
+      debug: jest.fn(),
+    })),
+  };
+});
 
 jest.mock('@wri-monorepos/sql', () => ({
   ClientStoreConnection: jest.fn().mockImplementation(() => ({

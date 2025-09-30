@@ -1,0 +1,1 @@
+export const MAX_LOCATIONS_PER_LIST = 150000;

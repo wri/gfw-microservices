@@ -79,16 +79,35 @@ export function UploadLocationPreview() {
     }
   };
 
-  const columns = useMemo(() => getTableColumns(data?.features), [data?.features]);
+  const displayedFeatures = useMemo(() => data?.features?.slice(0, 10) || [], [data?.features]);
+  const columns = useMemo(() => getTableColumns(displayedFeatures), [displayedFeatures]);
 
   useEffect(() => {
     if (data?.features?.length === 0) {
       setApiRequestError({ errors: ['Empty data file'] });
     }
+    // Block continue if file alone exceeds the per-list max locations
+    const MAX_LOCATIONS_PER_LIST = 150000;
+    if ((data?.features?.length || 0) > MAX_LOCATIONS_PER_LIST) {
+      setApiRequestError({
+        errors: [
+          `List exceeds the maximum allowed size of ${MAX_LOCATIONS_PER_LIST.toLocaleString()} locations.`,
+        ],
+      });
+    }
   }, [data]);
 
   const normalizedError = normalizeError(error);
-  const errorToShow = normalizedError || apiRequestError;
+  const MAX_LOCATIONS_PER_LIST = 150000;
+  const oversizedError =
+    (data?.features?.length || 0) > MAX_LOCATIONS_PER_LIST
+      ? {
+          errors: [
+            `List exceeds the maximum allowed size of ${MAX_LOCATIONS_PER_LIST.toLocaleString()} locations.`,
+          ],
+        }
+      : null;
+  const errorToShow = normalizedError || apiRequestError || oversizedError;
 
   return (
     <Box sx={{ display: 'flex', flexDirection: 'column' }}>
@@ -164,7 +183,7 @@ export function UploadLocationPreview() {
                 </TableRow>
               </TableHead>
               <TableBody>
-                {data?.features?.map((location) => (
+                {displayedFeatures.map((location) => (
                   <TableRow
                     key={location.properties?.Location_N ?? location.properties?.locationName}
                   >
@@ -217,7 +236,9 @@ export function UploadLocationPreview() {
             startIcon={<ArrowForwardIos />}
             data-cy={DATA_CY.NEW_UPLOAD_WORKFLOW[UploadType.ByFile].PREVIEW_NEXT}
             onClick={() => history.push('CONFIGURE_LIST')}
-            disabled={isLoading || !data?.features || !!error || !!apiRequestError}
+            disabled={
+              isLoading || !data?.features || !!error || !!apiRequestError || !!oversizedError
+            }
           >
             Next
           </PillButton>

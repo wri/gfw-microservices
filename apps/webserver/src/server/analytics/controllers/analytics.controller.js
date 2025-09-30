@@ -76,7 +76,19 @@ const getAnalysisUsageData = async ({ startDate, endDate, organizationId }) => {
 
 export const getOrganizationAnalysisUsage = async (req, res) => {
   let { startDate, endDate, organizationId } = req.query;
-
+  const { error } = validateQueryParams({
+    startDate,
+    endDate,
+  });
+  if (error) {
+    return res.status(400).send({
+      status: 400,
+      message: {
+        error,
+        success: false,
+      },
+    });
+  }
   const { status, message } = await getAnalysisUsageData({
     startDate,
     endDate,
@@ -88,7 +100,19 @@ export const getOrganizationAnalysisUsage = async (req, res) => {
 
 export const getMyOrganizationAnalysisUsage = async (req, res) => {
   let { startDate, endDate } = req.query;
-
+  const { error } = validateQueryParams({
+    startDate,
+    endDate,
+  });
+  if (error) {
+    return res.status(400).send({
+      status: 400,
+      message: {
+        error,
+        success: false,
+      },
+    });
+  }
   const { status, message } = await getAnalysisUsageData({
     startDate,
     endDate,

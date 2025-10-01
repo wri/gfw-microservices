@@ -1,6 +1,5 @@
 import { useState, useEffect } from 'react';
 import {
-  Divider,
   Table,
   TableBody,
   TableCell,
@@ -12,7 +11,6 @@ import {
 } from '@mui/material';
 
 import { numberWithCommas } from '../../../../../locations/js/utils/locationsTableUtils.js';
-import DateRangeSelector from './DateRangeSelector';
 import { oneMonthAgoDate, endDayIncludingToday } from './AccountUsage.utils';
 import { accountProfileStrings } from '../../../../../common/js/config';
 import { useAccountDetail } from '../AccountDetailSection';

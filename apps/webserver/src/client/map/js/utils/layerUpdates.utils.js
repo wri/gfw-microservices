@@ -5,26 +5,35 @@ import {
 import { proLayers } from '../../../common/js/proLayers.config';
 
 // Function to remove and add a layer
-const removeAndAddLayer = (map, layer) => {
+const redrawLayer = async (map, layer) => {
+  if (!layer) {
+    return; // safety check
+  }
   const userLayer = map.findLayerById('user-locations');
-  const promise = new Promise((resolve) => {
-    map.remove(layer);
-    map.removeAll(userLayer);
-    resolve();
-  });
 
-  promise.then(() => {
-    map.add(layer);
-    map.add(userLayer);
-  });
+  if (userLayer) {
+    await map.remove(userLayer); // Clear user layer graphics if it exists
+  }
+
+  // Replace the target layer
+  await map.remove(layer);
+  await map.add(layer);
+
+  // Re-add the user layer on top if it exists
+  if (userLayer) {
+    await map.add(userLayer);
+    userLayer.refresh?.();
+  }
 };
 
 const updateMapLayerAccordingToCanopy = (map, canopyDensity, layerId) => {
   const mapLayer = map.findLayerById(layerId);
-  if (mapLayer) {
-    mapLayer.threshold = canopyDensity;
-    removeAndAddLayer(map, mapLayer);
+  if (!mapLayer) {
+    // safety check
+    return;
   }
+  mapLayer.threshold = canopyDensity;
+  mapLayer.refresh?.();
 };
 
 export const updateInteractiveLayers = (map, prevState, state) => {
@@ -55,7 +64,7 @@ export const updateInteractiveLayers = (map, prevState, state) => {
       mapLayer.minYear = biomassLossDateRange.startYear;
       mapLayer.maxYear = biomassLossDateRange.endYear;
 
-      removeAndAddLayer(map, mapLayer);
+      redrawLayer(map, mapLayer);
     }
   }
 
@@ -69,7 +78,7 @@ export const updateInteractiveLayers = (map, prevState, state) => {
       if (mapLayer) {
         mapLayer.minYear = treeCoverLossDateRange.startYear;
         mapLayer.maxYear = treeCoverLossDateRange.endYear;
-        removeAndAddLayer(map, mapLayer);
+        redrawLayer(map, mapLayer);
       }
     });
   }
@@ -98,8 +107,7 @@ export const updateInteractiveLayers = (map, prevState, state) => {
         mapLayer.julianTo = julianTo;
         mapLayer.julianFrom = julianFrom;
         mapLayer.showHighConfidenceConfirmed = showHighConfidenceAlertsOnDeforestationAlertsLayer;
-
-        removeAndAddLayer(map, mapLayer);
+        redrawLayer(map, mapLayer);
       }
     });
   }

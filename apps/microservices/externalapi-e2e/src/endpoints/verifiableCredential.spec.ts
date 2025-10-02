@@ -19,7 +19,7 @@ describe('Alerts Analysis', () => {
         expect(res.status).toBe(200);
         expect(publicKey).toBeDefined();
       } catch (error) {
-        console.error('Issue retrieving public key', error.stack || error, error.response.data);
+        console.error('Issue retrieving public key', error.stack || error, error?.response?.data);
         throw error;
       }
     },

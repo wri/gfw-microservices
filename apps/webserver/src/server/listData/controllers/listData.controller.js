@@ -8,6 +8,11 @@ const logger = require('../../../config/privateutils/logger.utils');
 
 const { getListDataFiltered } = require('../utils/listData.utils');
 const listUtils = require(path.resolve('./config/privateutils/list.utils'));
+
+const { geoTrellisAnalyzeListController } = require(path.resolve(
+  'server/geotrellis/controllers/geoTrellis.controller'
+));
+
 import { analysisTypes, listStatus } from '@wri-monorepos/constants';
 import { getListAnalysisStatusByListId, setSelectedAnalyses } from '@wri-monorepos/geo';
 import axios from 'axios';
@@ -135,7 +140,7 @@ export const getSelectedAnalyses = async (req, res) => {
   const { listId } = req.params;
   try {
     const { organization_database } = req.session;
-    await listUtils.getListNameSchema(req, listId);
+
     const response = await getListAnalysisStatusByListId(organization_database, listId);
     return res.status(200).json(response);
   } catch (err) {
@@ -148,24 +153,48 @@ export const setSelectedAnalysesCtrl = async (req, res) => {
   const { listId } = req.params;
   const { organization_database } = req.session;
 
-  const { analysisIds, saveAsDraft } = req.body;
+  const { saveAsDraft, selectedAnalysis, isAddingAnalysis, newAnalysesToRun } = req.body;
 
   if (
-    (analysisIds === undefined || analysisIds === null || analysisIds.length === 0) &&
+    (selectedAnalysis === undefined ||
+      selectedAnalysis === null ||
+      selectedAnalysis.length === 0) &&
     !saveAsDraft
   ) {
     return res.status(400).json({ message: 'analysisIds is required' });
   }
 
-  if (analysisIds.some((analysisId) => !Object.values(analysisTypes).includes(analysisId))) {
+  if (selectedAnalysis.some((analysisId) => !Object.values(analysisTypes).includes(analysisId))) {
     return res.status(400).json({ message: 'analysisIds is not valid' });
   }
 
   try {
-    await listUtils.getListNameSchema(req, listId);
     const statusToApply = saveAsDraft ? listStatus.Draft : listStatus.Pending;
+    await setSelectedAnalyses(organization_database, listId, selectedAnalysis, statusToApply);
 
-    await setSelectedAnalyses(organization_database, listId, analysisIds, statusToApply);
+    if (isAddingAnalysis && !saveAsDraft) {
+      // Filter out GHG analysis before sending to GeoTrellis
+      const analysesForGeoTrellis = newAnalysesToRun.filter(
+        (analysisId) => analysisId !== analysisTypes.GREENHOUSE_GAS_EMISSIONS
+      );
+
+      if (analysesForGeoTrellis.length === 0) {
+        return res.status(201).json({
+          message: 'List analysis selection created successfully',
+        });
+      }
+
+      const list = await listUtils.getListNameSchema(req, listId);
+
+      req.body = {
+        list,
+        analysisTypes: analysesForGeoTrellis.join(','),
+        reanalyze: true,
+      };
+
+      // delegate to the geoTrellis controller
+      return await geoTrellisAnalyzeListController(req, res);
+    }
 
     return res.status(201).json({
       message: 'List analysis selection created successfully',

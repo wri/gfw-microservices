@@ -1,13 +1,12 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { Card, CardContent, CardActions, Modal } from '@mui/material';
 import isEqual from 'lodash/isEqual';
 import Button from '../../../../../common/js/components/Button';
 import AnalysisTypesSelector from '../../../../../common/js/components/AnalysisTypesSelector';
-import { requestGeoTrellisAnalyzeList } from '../../../utils/requestUtils';
 import { listStatus } from '../../../../../../config/env/listStatuses.constants';
-import { analysisTypes } from '../../../../../../config/env/analysisTypes.constants';
 import InlineLoader from '../../../../../common/js/components/Loaders/InlineLoader';
 import './ChangeTypeOfAnalysisModal.scss';
+
 const AddAnalysisTypeConfirmationMessage = () => {
   return (
     <>
@@ -33,7 +32,6 @@ const AddAnalysisTypeConfirmationMessage = () => {
 
 function ChangeTypeOfAnalysisModal({
   listId,
-  listName,
   setIsChangeTypeOfAnalysisModalOpen,
   isChangeTypeOfAnalysisModalOpen,
   listAnalysesStatus,
@@ -53,64 +51,44 @@ function ChangeTypeOfAnalysisModal({
     setIsAddingAnalysis(newlyAdded.length > 0);
   }, [selectedAnalysis]);
 
-  const saveSelectedAnalysis = (saveAsDraft = false) => {
-    return fetch(`/api/list/${listId}/selectedAnalyses`, {
-      method: 'POST',
-      credentials: 'same-origin',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ analysisIds: selectedAnalysis, saveAsDraft }),
-    });
-  };
-
-  const requestAnalysisForSelectedTypes = () => {
-    // Filter out GHG analysis before sending to GeoTrellis
-    const analysesForGeoTrellis = newAnalysesToRun.filter(
-      (analysisId) => analysisId !== analysisTypes.GREENHOUSE_GAS_EMISSIONS
-    );
-
-    if (analysesForGeoTrellis.length === 0) {
-      return Promise.resolve();
-    }
-
-    return requestGeoTrellisAnalyzeList(
-      {
-        id: listId,
-        list_name: listName,
-      },
-      analysesForGeoTrellis.join(','),
-      true
-    );
-  };
+  const saveAnalysisSelection = useCallback(
+    (saveAsDraft = false) =>
+      fetch(`/api/list/${listId}/selectedAnalyses`, {
+        method: 'POST',
+        credentials: 'same-origin',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          saveAsDraft,
+          selectedAnalysis,
+          isAddingAnalysis,
+          newAnalysesToRun,
+        }),
+      }),
+    [selectedAnalysis, isAddingAnalysis, newAnalysesToRun]
+  );
 
   const saveAsDraft = async () => {
-    setIsLoading(true);
-    await saveSelectedAnalysis(true);
-    window.location.reload();
+    try {
+      setIsLoading(true);
+      await saveAnalysisSelection(true);
+      setIsChangeTypeOfAnalysisModalOpen(false);
+      window.location.reload();
+    } catch (error) {
+      console.warn(error);
+      setIsLoading(false);
+    }
   };
 
-  const submitSelectedAnalysis = () => {
-    setIsLoading(true);
-
-    const promises = [saveSelectedAnalysis()];
-
-    if (isAddingAnalysis) {
-      promises.push(requestAnalysisForSelectedTypes());
+  const submitSelectedAnalysis = async () => {
+    try {
+      setIsLoading(true);
+      await saveAnalysisSelection();
+      setIsChangeTypeOfAnalysisModalOpen(false);
+      window.location.reload();
+    } catch (error) {
+      console.warn(error);
+      setIsLoading(false);
     }
-
-    Promise.all(promises)
-      .then((results) => {
-        console.log(`submitSelectedAnalysis results`, results);
-      })
-      .catch((error) => {
-        console.warn(error);
-        setIsLoading(false);
-      })
-      .finally(() => {
-        setIsLoading(false);
-        setIsChangeTypeOfAnalysisModalOpen(false);
-        // we don't have a way to reload the list of lists so we reload the page
-        window.location.reload();
-      });
   };
 
   const revertChanges = () => {

@@ -2393,15 +2393,22 @@ class Map extends Component {
 
   toggleLayerVisibility = (layerId) => {
     const mapLayer = this.view.map.findLayerById(layerId);
-    const previousVisibility = mapLayer.visible;
+    if (!mapLayer) {
+      return; // safety check
+    }
+
+    const newVisibility = !mapLayer?.visible;
+
     gtag('event', 'layer toggle', {
       event_category: 'Map Click',
-      event_label: `user turned the ${layerId} layer ${previousVisibility ? 'off' : 'on'}`,
+      event_label: `user turned the ${layerId} layer ${newVisibility ? 'on' : 'off'}`,
     });
-    mapLayer.visible = !mapLayer.visible;
+
+    mapLayer.visible = newVisibility;
+
+    // Hide/show Custom GFW Vector Tile depending on active GFW Layer
     if (this.customGfwVectorTileLayer && mapLayer.id === this.activeGFWLayer.id) {
-      // Hide/show Custom GFW Vector Tile depending on active GFW Layer
-      this.customGfwVectorTileLayer.visible = !this.customGfwVectorTileLayer.visible;
+      this.customGfwVectorTileLayer.visible = newVisibility;
     }
     this.view.popup.close();
   };

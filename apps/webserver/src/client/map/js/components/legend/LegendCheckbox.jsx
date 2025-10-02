@@ -89,7 +89,6 @@ export default class LegendCheckbox extends Component {
 
   hideLayer = () => {
     const { visibleLayers } = store.getState();
-
     const layerId = this.props.layer.id;
 
     if (deforestationAlertsIds.includes(layerId)) {
@@ -147,35 +146,30 @@ export default class LegendCheckbox extends Component {
   }
 
   toggleLayerVisibility = async () => {
-    const layerId = this.props.layer.id;
-    const visibleLayers = this.props.visibleLayers;
+    const { layer, visibleLayers, toggleLayerVisibility } = this.props;
+    const layerId = layer.id;
+    let layersToToggle = [layerId]; // Start with the main layer
 
     if (deforestationAlertsIds.includes(layerId)) {
-      // Toggle the layer visibility
-
-      this.props.toggleLayerVisibility(layerId);
-
       // Get the geographic coverage ID from the deforestation alerts map
       const coverageId = deforestationAlertsLayerToCoverageMap[layerId];
-
       // If there is a geographic coverage ID, toggle it
       if (coverageId && visibleLayers.includes(coverageId)) {
-        this.props.toggleLayerVisibility(coverageId);
+        layersToToggle.push(coverageId);
       }
     } else if (layerId === clarkLabsAquacultureLandCover) {
-      if (visibleLayers.includes(clarkLabsAquacultureLandCover)) {
-        this.props.toggleLayerVisibility(clarkLabsAquacultureLandCover);
-      }
-      if (visibleLayers.includes(clarkLabsAquacultureLandChange)) {
-        this.props.toggleLayerVisibility(clarkLabsAquacultureLandChange);
-      }
-    } else {
-      this.props.toggleLayerVisibility(layerId);
+      [clarkLabsAquacultureLandCover, clarkLabsAquacultureLandChange].forEach((id) => {
+        if (visibleLayers.includes(id) && !layersToToggle.includes(id)) {
+          layersToToggle.push(id);
+        }
+      });
     }
 
-    this.setState({
-      layerHidden: !this.state.layerHidden,
-    });
+    layersToToggle.forEach((id) => toggleLayerVisibility(id)); // Toggle all collected layers
+
+    this.setState((prev) => ({
+      layerHidden: !prev.layerHidden,
+    }));
   };
 
   layerLegendMap = (symbol, i) => {

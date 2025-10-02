@@ -117,7 +117,9 @@ export const createBodyContent = (req, type, content = {}, level = 'info') => {
       break;
     case config.platformVars.emailType.LIST_ANALYSIS_STARTED:
       title = "Now it's up to us";
-      msg = `${content.analysis_types} calculations are processing for <span style="font-weight: bold; color: rgba(0, 0, 0, 0.73);">${content.list_name}</span>. Analysis may take up to 24 hours. You will be notified by email when it's complete.`;
+      msg =
+        `${content.analysis_types} calculations are processing for <span style="font-weight: bold; color: rgba(0, 0, 0, 0.73);">${content.list_name}</span>. Analysis may take up to 24 hours. You will be notified by email when it's complete.` +
+        '<p>Please contact the GFW Pro support team for help and additional information by filling out this <a href="https://gfwpro.zendesk.com/hc/en-us/requests/new">support form</a>. </p>';
       hasClosing = false;
       break;
     case config.platformVars.emailType.LIST_ANALYSIS_RERUN_SUCCESS:
@@ -128,7 +130,7 @@ export const createBodyContent = (req, type, content = {}, level = 'info') => {
       title = 'Unable to process';
       msg =
         `<p>Diagnostic and List View calculations failed for the GFW Pro list <span style="font-weight: bold; color: rgba(0, 0, 0, 0.73);">${content.list_name}</span>.</p>` +
-        '<p>Try again and if the problem persists please contact GFW Pro support at <a href="mailto:gfwprosupport@wri.org">gfwprosupport@wri.org</a> for further information.</p>';
+        '<p>Please contact the GFW Pro support team for help and additional information by filling out this <a href="https://gfwpro.zendesk.com/hc/en-us/requests/new">support form</a>. </p>';
       hasClosing = false;
       break;
     case config.platformVars.emailType.ANALYSIS_LIMIT_REACHED:

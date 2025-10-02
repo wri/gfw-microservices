@@ -12,6 +12,8 @@ import {
   Alert,
 } from '@mui/material';
 
+import PencilIcon from '@mui/icons-material/EditOutlined';
+
 import { PillButton } from '../../../../components';
 import { profilePage } from '../../../../common/js/config';
 import { fieldValidations } from '../../../../profile/js/utils/validations';
@@ -276,15 +278,18 @@ export default function AccountProfileFormSetting() {
               </Grid>
               <Grid item>
                 {canEditOrgName && (
-                  <PillButton
-                    variant="outlined"
-                    size="small"
-                    onClick={() => {
-                      setIsModalOpen(true);
-                    }}
-                  >
-                    Edit
-                  </PillButton>
+                  <>
+                    <PillButton
+                      variant="outlined"
+                      size="small"
+                      onClick={() => {
+                        setIsModalOpen(true);
+                      }}
+                    >
+                      Edit
+                      <PencilIcon sx={{ fontSize: 18, marginLeft: '0.1rem' }} />
+                    </PillButton>
+                  </>
                 )}
               </Grid>
             </Grid>

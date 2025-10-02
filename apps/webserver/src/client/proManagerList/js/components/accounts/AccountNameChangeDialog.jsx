@@ -8,6 +8,7 @@ import {
   Divider,
   TextField,
 } from '@mui/material';
+
 import FieldLabel from './FieldLabel';
 
 export default function AccountNameChangeDialog({ open, initialValue = '', onClose, onSave }) {
@@ -45,12 +46,12 @@ export default function AccountNameChangeDialog({ open, initialValue = '', onClo
         });
         const data = await res.json();
         if (data.exists) {
-          setError('This name already exists. Please provide a new organization name.');
+          setError(`The name "${val}" already exists. Please provide a new organization name.`);
         }
       } catch (err) {
         console.error(err);
       }
-    }, 500);
+    }, 200);
 
     setTypingTimeout(timeout);
   };
@@ -70,20 +71,7 @@ export default function AccountNameChangeDialog({ open, initialValue = '', onClo
         }}
       >
         Organization Name Change
-        <Button
-          onClick={onClose}
-          sx={{
-            minWidth: 'auto',
-            padding: '3px 4px',
-            color: '#333333',
-            border: '1px solid lightgray',
-            borderRadius: '3px',
-            backgroundColor: 'lightgray',
-            fontWeight: 'bold',
-            lineHeight: 1,
-            '&:hover': { backgroundColor: 'white' },
-          }}
-        >
+        <Button onClick={onClose} sx={closeButtonStyles}>
           ✕
         </Button>
       </DialogTitle>
@@ -113,3 +101,15 @@ export default function AccountNameChangeDialog({ open, initialValue = '', onClo
     </Dialog>
   );
 }
+
+const closeButtonStyles = {
+  minWidth: 'auto',
+  padding: '3px 4px',
+  color: '#333333',
+  border: '1px solid lightgray',
+  borderRadius: '3px',
+  backgroundColor: 'lightgray',
+  fontWeight: 'bold',
+  lineHeight: 1,
+  '&:hover': { backgroundColor: 'white' },
+};

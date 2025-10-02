@@ -19,8 +19,11 @@ export default function SettingSection({
         <Grid
           item
           xs={12}
-          sm={3}
+          sm={2}
           sx={{
+            marginRight: {
+              sm: '2rem',
+            },
             marginBottom: {
               xs: '1.5rem',
             },

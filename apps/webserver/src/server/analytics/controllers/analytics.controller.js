@@ -171,7 +171,7 @@ export const getMyAccountAnalysisUsageByAnalysisType = async (req, res) => {
   const { organization_database } = req.session;
   const { startDate, endDate, organizationName } = req.query;
   let orgDbName = organization_database;
-  if (orgDbName == null || orgDbName == '' || typeof orgDbName == 'undefined') {
+  if (orgDbName === null || orgDbName === '' || typeof orgDbName === 'undefined') {
     orgDbName = `clientstore-${organizationName}`;
   }
 

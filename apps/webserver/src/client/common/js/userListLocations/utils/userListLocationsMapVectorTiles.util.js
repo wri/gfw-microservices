@@ -51,17 +51,15 @@ export function generateUserListLocationsVectorTileLayerStyle(mbtileLayerName, l
         type: 'line',
         source: 'local',
         'source-layer': mbtileLayerName,
-
         paint: {
-          'line-color': '#719223',
+          'line-color': '#c1ff27',
           'line-opacity': '0.8',
-          'line-blur': 40,
+          'line-blur': 20,
           'line-width': 15,
-          'line-offset': 1,
+          'line-offset': 2,
         },
         filter: getVectorTileLayerHighLightFilterMultipleLocations(locationIDs),
       },
-
       {
         id: USER_LIST_LOCATIONS_VECTOR_TILE_LAYER__LOCATIONS,
         type: 'fill',

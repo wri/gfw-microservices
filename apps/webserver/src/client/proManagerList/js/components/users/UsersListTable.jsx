@@ -1,4 +1,11 @@
 function UsersTable({ userSortingCategory, userDir, usersList, sortUserTable, searchUsers }) {
+  const getSortClass = (column) => {
+    if (userSortingCategory !== column) {
+      return '';
+    }
+    return userDir === 'asc' ? 'active-asc' : 'active-desc';
+  };
+
   return (
     <div>
       <section className="section-container">
@@ -15,15 +22,7 @@ function UsersTable({ userSortingCategory, userDir, usersList, sortUserTable, se
                 }}
               >
                 First Name
-                <div
-                  className={`sortable-carrot ${
-                    userSortingCategory === 'first_name' && userDir === 'asc'
-                      ? 'active-asc'
-                      : userSortingCategory === 'first_name' && userDir === 'des'
-                      ? 'active-des'
-                      : ''
-                  }`}
-                />
+                <div className={`sortable-carrot ${getSortClass('first_name')}`} />
               </th>
               <th
                 className="sortable-table-header"
@@ -33,15 +32,7 @@ function UsersTable({ userSortingCategory, userDir, usersList, sortUserTable, se
                 }}
               >
                 Last Name
-                <div
-                  className={`sortable-carrot ${
-                    userSortingCategory === 'last_name' && userDir === 'asc'
-                      ? 'active-asc'
-                      : userSortingCategory === 'last_name' && userDir === 'des'
-                      ? 'active-des'
-                      : ''
-                  }`}
-                />
+                <div className={`sortable-carrot ${getSortClass('last_name')}`} />
               </th>
               <th
                 className="sortable-table-header"
@@ -51,15 +42,7 @@ function UsersTable({ userSortingCategory, userDir, usersList, sortUserTable, se
                 }}
               >
                 Organization Name
-                <div
-                  className={`sortable-carrot ${
-                    userSortingCategory === 'organization_name' && userDir === 'asc'
-                      ? 'active-asc'
-                      : userSortingCategory === 'organization_name' && userDir === 'des'
-                      ? 'active-des'
-                      : ''
-                  }`}
-                />
+                <div className={`sortable-carrot ${getSortClass('organization_name')}`} />
               </th>
               <th
                 className="sortable-table-header"
@@ -70,13 +53,7 @@ function UsersTable({ userSortingCategory, userDir, usersList, sortUserTable, se
               >
                 Organization Classifications
                 <div
-                  className={`sortable-carrot ${
-                    userSortingCategory === 'organization_classifications' && userDir === 'asc'
-                      ? 'active-asc'
-                      : userSortingCategory === 'organization_classifications' && userDir === 'des'
-                      ? 'active-des'
-                      : ''
-                  }`}
+                  className={`sortable-carrot ${getSortClass('organization_classifications')}`}
                 />
               </th>
               <th
@@ -87,15 +64,7 @@ function UsersTable({ userSortingCategory, userDir, usersList, sortUserTable, se
                 }}
               >
                 E-mail
-                <div
-                  className={`sortable-carrot ${
-                    userSortingCategory === 'email' && userDir === 'asc'
-                      ? 'active-asc'
-                      : userSortingCategory === 'email' && userDir === 'des'
-                      ? 'active-des'
-                      : ''
-                  }`}
-                />
+                <div className={`sortable-carrot ${getSortClass('email')}`} />
               </th>
               <th
                 className="sortable-table-header"
@@ -105,15 +74,7 @@ function UsersTable({ userSortingCategory, userDir, usersList, sortUserTable, se
                 }}
               >
                 Sharing
-                <div
-                  className={`sortable-carrot ${
-                    userSortingCategory === 'sharing' && userDir === 'asc'
-                      ? 'active-asc'
-                      : userSortingCategory === 'sharing' && userDir === 'des'
-                      ? 'active-des'
-                      : ''
-                  }`}
-                />
+                <div className={`sortable-carrot ${getSortClass('sharing')}`} />
               </th>
               <th
                 className="sortable-table-header"
@@ -123,15 +84,7 @@ function UsersTable({ userSortingCategory, userDir, usersList, sortUserTable, se
                 }}
               >
                 Access Level
-                <div
-                  className={`sortable-carrot ${
-                    userSortingCategory === 'accesslevel_name' && userDir === 'asc'
-                      ? 'active-asc'
-                      : userSortingCategory === 'accesslevel_name' && userDir === 'des'
-                      ? 'active-des'
-                      : ''
-                  }`}
-                />
+                <div className={`sortable-carrot ${getSortClass('accesslevel_name')}`} />
               </th>
               <th
                 className="sortable-table-header"
@@ -141,15 +94,7 @@ function UsersTable({ userSortingCategory, userDir, usersList, sortUserTable, se
                 }}
               >
                 User Status
-                <div
-                  className={`sortable-carrot ${
-                    userSortingCategory === 'status_name' && userDir === 'asc'
-                      ? 'active-asc'
-                      : userSortingCategory === 'status_name' && userDir === 'des'
-                      ? 'active-des'
-                      : ''
-                  }`}
-                />
+                <div className={`sortable-carrot ${getSortClass('status_name')}`} />
               </th>
             </tr>
           </thead>

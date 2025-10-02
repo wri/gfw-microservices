@@ -1,108 +1,119 @@
+// External
 import { useEffect, useState } from 'react';
-import * as _ from 'lodash';
-import AccountsListsTable from './AccountsListsTable';
+
+// Styles
 import '../../../css/proManagerList.scss';
+
+// Constants / Config
 import { PRO_MANAGER_PATH } from '../../common/paths';
-import { AccountStatusChip } from './AccountStatusChip';
-import { getStatusString as findStatusString } from './AccountStatusChip';
+import { ACCOUNT_ORG_STATUSES } from '../../../../common/js/constants/orgAccountStatuses';
+import AccountsListsTable from './AccountsListsTable';
+
+// Components
+import { AccountStatusChip, getStatusString } from './AccountStatusChip';
 
 function AccountsListSection({ isLoading, setIsLoading }) {
   const [promanagerData, setPromanagerData] = useState({});
   const [acctFilterStr, setAcctFilterStr] = useState('');
-  const [accountSortingCategory, setAccountSortingCategory] = useState('organization_name');
-  const [accountDir, setAccountDir] = useState('des');
+  const [accountSortingCategory, setAccountSortingCategory] = useState('');
+  const [accountDir, setAccountDir] = useState('desc');
 
   useEffect(() => {
-    fetch(`/pro-manager-list/accounts`, {
-      method: 'GET',
-      credentials: 'same-origin',
-      headers: {
-        'Content-type': 'application/json',
-      },
-    })
-      .then((res) => res.json())
-      .then((data) => {
+    const fetchAccounts = async () => {
+      try {
+        const res = await fetch('/pro-manager-list/accounts', {
+          method: 'GET',
+          credentials: 'same-origin',
+          headers: { 'Content-Type': 'application/json' },
+        });
+
+        if (!res.ok) {
+          throw new Error(`HTTP error - status: ${res.status}`);
+        }
+
+        const data = await res.json();
         setPromanagerData(data);
+      } catch (error) {
+        console.error('❌ Failed to fetch accounts:', error);
+      } finally {
         setIsLoading(false);
-      })
-      .catch((error) => {
-        console.log(error);
-      });
+      }
+    };
+
+    fetchAccounts();
   }, []);
 
   const { accounts, classes } = promanagerData;
 
-  const findPendingDateString = (account) => {
-    let dateString = null;
-    if (account.organization_status_id === 1 && account.organization_activated_time) {
-      const date = new Date(account.organization_activated_time);
-      dateString = `${date.toUTCString().replace(',', '')}`;
+  const getDateString = (account, expectedStatus, timeField) => {
+    if (account.organization_status_id === expectedStatus && account[timeField]) {
+      const date = new Date(account[timeField]);
+      return date.toUTCString().replace(',', '');
     }
-    return dateString;
+    return null;
   };
 
-  const findActiveDateString = (account) => {
-    let dateString = null;
-    if (account.organization_status_id === 2 && account.organization_activated_time) {
-      const date = new Date(account.organization_activated_time);
-      dateString = `${date.toUTCString().replace(',', '')}`;
-    }
-    return dateString;
+  const getClassificationString = (account) => {
+    const ids = account.organization_classifications_ids || [];
+
+    return classes
+      .filter((classType) => ids.includes(classType.id))
+      .map((classType, i, arr) => (
+        <div key={`${account.organization_id}-${classType.id}`}>
+          {classType.classification_name}
+          {i < arr.length - 1 && ','}
+        </div>
+      ));
   };
 
-  const findClassString = (account) => {
-    const classString = [];
-    classes.forEach((classType) => {
-      if (account.organization_classifications_ids?.indexOf(classType.id) > -1) {
-        classString.push(classType.classification_name);
-      }
-    });
-    const classArray = [];
-    classString.forEach((string, i) => {
-      if (i === classString.length - 1) {
-        classArray.push(<div key={`${account.organization_id}-${string}`}>{string}</div>);
-      } else {
-        classArray.push(<div key={`${account.organization_id}-${string}`}>{string},</div>);
-      }
-    });
-    return classArray;
-  };
+  const createAccountRow = (account) => {
+    const requestedDateString = getDateString(
+      account,
+      ACCOUNT_ORG_STATUSES.PENDING,
+      'organization_requested_time'
+    );
+    const activeDateString = getDateString(
+      account,
+      ACCOUNT_ORG_STATUSES.ACTIVE,
+      'organization_activated_time'
+    );
+    const classificationString = getClassificationString(account);
 
-  const createAccountsList = (account) => {
-    const accountRows = [];
-    const pendingDateString = findPendingDateString(account);
-    const activeDateString = findActiveDateString(account);
-    const classString = findClassString(account);
-    if (account.organization_website.indexOf('http') === -1) {
-      // eslint-disable-next-line no-param-reassign
-      account.organization_website = `https://${account.organization_website}`;
-    }
-    accountRows.push(
+    const website = account.organization_website
+      ? account.organization_website.startsWith('http')
+        ? account.organization_website
+        : `https://${account.organization_website}`
+      : '—';
+
+    return (
       <tr key={account.organization_id}>
         <td
           className="pro-manager-table-link"
-          onClick={() => {
-            window.location.href = `${PRO_MANAGER_PATH}?tab=accounts&organizationId=${account.organization_id}&organizationName=${account.organization_name}`;
-          }}
+          onClick={() =>
+            (window.location.href = `${PRO_MANAGER_PATH}?tab=accounts&organizationId=${account.organization_id}&organizationName=${account.organization_name}`)
+          }
         >
           {account.organization_name}
         </td>
-        <td>{account.organization_parent}</td>
-        <td>{classString}</td>
+        <td>{account.organization_parent || '—'}</td>
+        <td>{classificationString}</td>
         <td>
           <AccountStatusChip account={account} />
         </td>
-        <td>{pendingDateString || '-'}</td>
-        <td>{activeDateString || '-'}</td>
-        <td>{account.organization_address}</td>
+        <td>{requestedDateString || 'N/A'}</td>
+        <td>{activeDateString || 'N/A'}</td>
+        <td>{account.organization_address || '—'}</td>
         <td>
-          <a href={account.organization_website} target="_blank" rel="noreferrer">
-            {account.organization_website}
-          </a>
+          {website !== '—' ? (
+            <a href={website} target="_blank" rel="noreferrer">
+              {website}
+            </a>
+          ) : (
+            '—'
+          )}
         </td>
       </tr>
     );
-    return accountRows;
   };
 
   const searchAccts = (evt) => {
@@ -110,120 +121,83 @@ function AccountsListSection({ isLoading, setIsLoading }) {
   };
 
   const determineOrgClass = (orgClasses) => {
-    if (orgClasses) {
-      let valid = false;
-      const classes = orgClasses.split(',');
-      classes.forEach((orgClass) => {
-        let classText;
-        switch (parseInt(orgClass, 10)) {
-          case 1:
-            classText = 'Commercial Bank';
-            break;
-          case 2:
-            classText = 'Consumer Goods Manufacturer';
-            break;
-          case 3:
-            classText = 'Development Finance Institution';
-            break;
-          case 4:
-            classText = 'Governmental Organization';
-            break;
-          case 5:
-            classText = 'Investment Fund';
-            break;
-          case 6:
-            classText = 'NGO';
-            break;
-          case 7:
-            classText = 'Producer';
-            break;
-          case 8:
-            classText = 'Retailer';
-            break;
-          case 9:
-            classText = 'Processor/Trader';
-            break;
-          case 10:
-            classText = 'Service Provider';
-            break;
-          default:
-            break;
-        }
+    const classMap = {
+      1: 'Commercial Bank',
+      2: 'Consumer Goods Manufacturer',
+      3: 'Development Finance Institution',
+      4: 'Governmental Organization',
+      5: 'Investment Fund',
+      6: 'NGO',
+      7: 'Producer',
+      8: 'Retailer',
+      9: 'Processor/Trader',
+      10: 'Service Provider',
+    };
 
-        if (classText.toLowerCase().includes(acctFilterStr.toLowerCase())) {
-          valid = true;
-        }
-      });
-      return valid;
+    if (!orgClasses) {
+      return false;
     }
-    return false;
+
+    const classes = orgClasses.split(',').map((c) => parseInt(c, 10));
+    const filter = acctFilterStr.toLowerCase();
+
+    return classes.some((c) => {
+      const classText = classMap[c];
+      return classText?.toLowerCase().includes(filter);
+    });
   };
 
-  const determineOrgStatus = (statusId, account) => {
-    let status;
-    if (statusId === 1 && account?.organization_active === false) {
-      status = 'Closed';
-    } else {
-      switch (statusId) {
-        case 1:
-          status = 'Pending';
-          break;
-        case 2:
-          status = 'Active';
-          break;
-        case 3:
-          status = 'Inactive';
-          break;
-        default:
-          status = 'Unknown';
-      }
-    }
+  const determineOrgStatusLabel = (statusId, account) => {
+    const statusMap = {
+      [ACCOUNT_ORG_STATUSES.PENDING]: 'Pending',
+      [ACCOUNT_ORG_STATUSES.ACTIVE]: 'Active',
+      [ACCOUNT_ORG_STATUSES.INACTIVE]: 'Inactive',
+    };
+
+    const isPendingButClosed =
+      statusId === ACCOUNT_ORG_STATUSES.PENDING && account?.organization_active === false;
+
+    let status = isPendingButClosed ? 'Closed' : statusMap[statusId] || 'Unknown';
+
     return status.toLowerCase().includes(acctFilterStr.toLowerCase());
   };
 
   const sortAcctTable = (evt) => {
-    const direction = accountDir === 'des' ? 'asc' : 'des';
+    const direction = accountDir === 'desc' ? 'asc' : 'desc';
     setAccountDir(direction);
     setAccountSortingCategory(evt.target.title);
   };
 
+  // Default: data already sorted by requested_date DESC from server
+  // UI sort will override if accountSortingCategory or accountDir changes
   const sortAccounts = (filteredAccts) => {
-    const sortedAccounts =
-      accountSortingCategory === 'pendingDateString' ||
-      accountSortingCategory === 'activeDateString'
-        ? _.orderBy(
-            filteredAccts,
-            (acct) => new Date(acct.organization_activated_time),
-            accountDir === 'asc' ? 'asc' : 'desc'
-          )
-        : filteredAccts.sort((a, b) => {
-            const aValue = a;
-            const bValue = b;
-            if (accountSortingCategory === 'classString') {
-              aValue.classString = findClassString(aValue);
-              bValue.classString = findClassString(bValue);
-            } else if (accountSortingCategory === 'statusString') {
-              aValue.statusString = findStatusString(aValue);
-              bValue.statusString = findStatusString(bValue);
-            }
-            if (accountDir === 'asc') {
-              if (aValue[accountSortingCategory] < bValue[accountSortingCategory]) {
-                return -1;
-              }
-              if (aValue[accountSortingCategory] > bValue[accountSortingCategory]) {
-                return 1;
-              }
-              return 0;
-            }
-            if (aValue[accountSortingCategory] < bValue[accountSortingCategory]) {
-              return 1;
-            }
-            if (aValue[accountSortingCategory] > bValue[accountSortingCategory]) {
-              return -1;
-            }
-            return 0;
-          });
-    return sortedAccounts;
+    if (!filteredAccts) {
+      return [];
+    }
+
+    if (accountSortingCategory === 'classString' || accountSortingCategory === 'statusString') {
+      return filteredAccts.sort((a, b) => {
+        const aValue = { ...a };
+        const bValue = { ...b };
+
+        if (accountSortingCategory === 'classString') {
+          aValue.classString = getClassificationString(aValue);
+          bValue.classString = getClassificationString(bValue);
+        } else {
+          aValue.statusString = getStatusString(aValue);
+          bValue.statusString = getStatusString(bValue);
+        }
+
+        if (accountDir === 'asc') {
+          return aValue[accountSortingCategory] < bValue[accountSortingCategory] ? -1 : 1;
+        } else {
+          return aValue[accountSortingCategory] < bValue[accountSortingCategory] ? 1 : -1;
+        }
+      });
+    }
+
+    // For other categories, UI will sort only if accountSortingCategory changes
+    return filteredAccts;
   };
 
   const getAccountsList = () => {
@@ -234,12 +208,12 @@ function AccountsListSection({ isLoading, setIsLoading }) {
         acct.organization_address?.toLowerCase().includes(acctFilterStr.toLowerCase()) ||
         acct.organization_website?.toLowerCase().includes(acctFilterStr.toLowerCase()) ||
         determineOrgClass(acct.organization_classifications_ids) ||
-        determineOrgStatus(acct.organization_status_id)
+        determineOrgStatusLabel(acct.organization_status_id)
       );
     });
 
     const sortedFilteredAccounts = sortAccounts(filteredAccounts);
-    return sortedFilteredAccounts.map(createAccountsList);
+    return sortedFilteredAccounts.map(createAccountRow);
   };
 
   return (

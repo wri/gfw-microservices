@@ -11,17 +11,20 @@ const statusColors: Record<string, 'success' | 'warning' | 'default' | 'error'> 
 
 export const getStatusString = (account) => {
   const { organization_status_id, organization_active } = account;
+  const isPendingButClosed =
+    organization_status_id === ACCOUNT_ORG_STATUSES.PENDING && !organization_active;
 
-  if (organization_status_id === ACCOUNT_ORG_STATUSES.PENDING) {
-    return organization_active ? 'Pending' : 'Closed';
+  if (isPendingButClosed) {
+    return 'Closed';
   }
-  if (organization_status_id === ACCOUNT_ORG_STATUSES.ACTIVE) {
-    return 'Active';
-  }
-  if (organization_status_id === ACCOUNT_ORG_STATUSES.INACTIVE) {
-    return 'Inactive';
-  }
-  return 'Unknown';
+
+  const statusMap = {
+    [ACCOUNT_ORG_STATUSES.PENDING]: 'Pending',
+    [ACCOUNT_ORG_STATUSES.ACTIVE]: 'Active',
+    [ACCOUNT_ORG_STATUSES.INACTIVE]: 'Inactive',
+  };
+
+  return statusMap[organization_status_id] || 'Unknown';
 };
 
 export function AccountStatusChip({ account }) {

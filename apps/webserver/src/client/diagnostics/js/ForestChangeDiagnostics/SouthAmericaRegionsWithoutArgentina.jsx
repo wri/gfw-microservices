@@ -38,14 +38,13 @@ export default class SouthAmericaRegionsWithoutArgentina extends Component {
       startYear: START_YEAR,
       endYear: END_YEAR,
       sliderActive: false,
-      legalAmazon: false,
       cerradoBiome: false,
       brazilianBiomes: false,
     };
   }
 
   componentDidMount() {
-    const { legalAmazon, brazilianBiomes, cerradoBiome } = this.state;
+    const { brazilianBiomes, cerradoBiome } = this.state;
     isMounted = true;
 
     if ($('#south-american-slider').ionRangeSlider) {
@@ -68,9 +67,6 @@ export default class SouthAmericaRegionsWithoutArgentina extends Component {
     let shouldSet = false;
     const newState = {};
     const filteredLocations = this.props.getFilteredLocations();
-    const inLegalAmazon = filteredLocations
-      .map((l) => JSON.parse(l.legal_amazon_presence))
-      .some((l) => l === true);
     const inCerradoBiome = filteredLocations
       .map((l) => JSON.parse(l.cerrado_biome_presence))
       .some((l) => l === true);
@@ -78,9 +74,6 @@ export default class SouthAmericaRegionsWithoutArgentina extends Component {
       .map((l) => JSON.parse(l.brazil_biomes_presence))
       .some((l) => l === true);
 
-    if (legalAmazon !== inLegalAmazon) {
-      newState.legalAmazon = inLegalAmazon;
-    }
     if (cerradoBiome !== inCerradoBiome) {
       newState.cerradoBiome = inCerradoBiome;
     }
@@ -92,11 +85,6 @@ export default class SouthAmericaRegionsWithoutArgentina extends Component {
       newState.soyChecked = true;
       newState.prodesChecked = false;
       newState.paChecked = false;
-      newState.biomesChecked = false;
-      newState.saTCLChecked = false;
-    } else if (inLegalAmazon) {
-      newState.prodesChecked = true;
-      newState.soyChecked = false;
       newState.biomesChecked = false;
       newState.saTCLChecked = false;
     } else if (inBrazilianBiomes) {
@@ -141,7 +129,6 @@ export default class SouthAmericaRegionsWithoutArgentina extends Component {
       biomesChecked,
       startYear,
       endYear,
-      legalAmazon,
       cerradoBiome,
       brazilianBiomes,
     } = this.state;
@@ -153,7 +140,6 @@ export default class SouthAmericaRegionsWithoutArgentina extends Component {
       prevState.biomesChecked !== biomesChecked ||
       prevState.startYear !== startYear ||
       prevState.endYear !== endYear ||
-      prevState.legalAmazon !== legalAmazon ||
       prevState.cerradoBiome !== cerradoBiome ||
       prevState.brazilianBiomes !== brazilianBiomes
     ) {
@@ -542,8 +528,6 @@ export default class SouthAmericaRegionsWithoutArgentina extends Component {
       paChecked,
       saTCLChecked,
       biomesChecked,
-
-      legalAmazon,
       brazilianBiomes,
       startYear,
       endYear,
@@ -601,7 +585,7 @@ export default class SouthAmericaRegionsWithoutArgentina extends Component {
           label = 'Protected Areas';
           checked = paChecked;
           child = true;
-          disabled = !(legalAmazon && value !== 0);
+          disabled = value === 0;
           dataCy = 'protected-areas';
           onChange = () => {
             this.handleProtectedAreaCheck();

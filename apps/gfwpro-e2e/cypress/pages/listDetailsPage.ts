@@ -43,6 +43,9 @@ class ListDetailsPage {
     listActionDialog: () => cy.get('.list-diagnostics-dialog'),
     tableRow: () => cy.get('.rt-tbody').find('[data-testid="custom-row"]'),
     gridCell: () => cy.get('[role="gridcell"]'),
+    draftAlert: () => cy.get('[role="alert"]').contains('DRAFT'),
+    submitAnalysisButton: () =>
+      cy.get('[aria-label="Submit for Analysis"]').contains('Submit for Analysis'),
   };
   clickOnLocationsList(name: string) {
     cy.contains(name).click();

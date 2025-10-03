@@ -102,6 +102,8 @@ class LocationsPage {
     userSelectInput: () => cy.get('#react-select-2-input'),
     dialogHeader: () => cy.get('.dialog__title'),
     dialogBody: () => cy.get('.dialog__prompt'),
+    listResultContainer: () => cy.get('.locations-list'),
+    draftCTA: () => cy.get('.DiagnosticStatusDraft__label'),
   };
 
   verifyLists(lists: string[], exist: boolean) {

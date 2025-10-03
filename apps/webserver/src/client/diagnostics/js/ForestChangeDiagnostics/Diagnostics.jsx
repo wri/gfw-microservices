@@ -486,10 +486,23 @@ export default class Diagnostics extends Component {
       );
     }
     if (property === 'prodes_wdpa') {
-      return (
-        JSON.parse(data?.country_specific_deforestation_wdpa_yearly || '{}')?.BRA ||
-        JSON.parse(data?.tree_cover_loss_prodes_wdpa_yearly || '{}')
-      );
+      const prodesWdpaData = JSON.parse(
+        data?.country_specific_deforestation_wdpa_yearly || '{}'
+      )?.BRA;
+
+      if (prodesWdpaData) {
+        const yearlyParsedData = {};
+
+        // Aggregate all categories while the ui is not ready to display them separately
+        for (const category in prodesWdpaData) {
+          for (const year in prodesWdpaData[category]) {
+            yearlyParsedData[year] = (yearlyParsedData[year] || 0) + prodesWdpaData[category][year];
+          }
+        }
+        return yearlyParsedData;
+      }
+
+      return JSON.parse(data?.tree_cover_loss_prodes_wdpa_yearly || '{}');
     }
     return JSON.parse(data[property] || '{}');
   };

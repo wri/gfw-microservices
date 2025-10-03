@@ -19,10 +19,6 @@ export const geoTrellisAnalyzeListController = async (req, res) => {
     if (!analysisTypes) {
       throw new Error(`Something went wrong. Missing analysisTypes`);
     }
-    // TODO: find call sites in this path, do we need to re-add it for [Analyses] table
-    // GPV-5001
-    // Set list status ID to be Pending
-    // await ListManager.setListStatus(req, listID, listStatus.Pending);
 
     // Send request to GeoTrellis step function
     const data = await handleGeoTrellisAnalyzeListRequest(req, list, analysisTypes);

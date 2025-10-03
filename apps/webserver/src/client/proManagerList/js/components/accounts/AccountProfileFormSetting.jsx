@@ -278,18 +278,16 @@ export default function AccountProfileFormSetting() {
               </Grid>
               <Grid item>
                 {canEditOrgName && (
-                  <>
-                    <PillButton
-                      variant="outlined"
-                      size="small"
-                      onClick={() => {
-                        setIsModalOpen(true);
-                      }}
-                    >
-                      Edit
-                      <PencilIcon sx={{ fontSize: 18, marginLeft: '0.1rem' }} />
-                    </PillButton>
-                  </>
+                  <PillButton
+                    variant="outlined"
+                    size="small"
+                    onClick={() => {
+                      setIsModalOpen(true);
+                    }}
+                  >
+                    Edit
+                    <PencilIcon sx={{ fontSize: 18, marginLeft: '0.1rem' }} />
+                  </PillButton>
                 )}
               </Grid>
             </Grid>

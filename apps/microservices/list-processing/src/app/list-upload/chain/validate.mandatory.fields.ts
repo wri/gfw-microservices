@@ -122,6 +122,10 @@ export class ValidateMandatoryFields extends AbstractHandler<ChainType> {
   }
 
   private validateFeature(feature: Feature, fieldsToCheck: string[]): boolean {
+    if (feature.properties.errorDetails?.[0].startsWith(`Missing mandatory fields`)) {
+      return false; // Skip if there are already mandatory field errors
+    }
+
     let missingOrInvalidFields = fieldsToCheck.filter(
       (field) => !this.isFieldValid(feature, field)
     );
@@ -139,7 +143,7 @@ export class ValidateMandatoryFields extends AbstractHandler<ChainType> {
       }
     }
 
-    if (missingOrInvalidFields.length > 0) {
+    if (missingOrInvalidFields.length) {
       feature.properties.errorDetails = feature.properties.errorDetails || [];
       (feature.properties.errorDetails as Array<string>).push(
         `Missing mandatory fields: ${missingOrInvalidFields.join(', ')}`

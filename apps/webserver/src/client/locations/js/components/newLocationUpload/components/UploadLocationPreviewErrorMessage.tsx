@@ -181,7 +181,7 @@ const getMissingFieldsNames = (errors: string[], fileExtension: string, isByIdWo
   }
 
   // Choose the appropriate map
-  const map =
+  const fieldNamesMap =
     fileExtension === '.zip'
       ? LabelNameTableZip
       : isByIdWorkflow
@@ -191,7 +191,7 @@ const getMissingFieldsNames = (errors: string[], fileExtension: string, isByIdWo
   // Filter all missing-fields errors
   const missingFieldsErrors = errors.filter((err) => err.startsWith('Missing mandatory fields'));
 
-  if (missingFieldsErrors.length > 0) {
+  if (missingFieldsErrors.length) {
     // Combine all missing-fields errors into a single string
     const fields = missingFieldsErrors
       .map(
@@ -203,8 +203,16 @@ const getMissingFieldsNames = (errors: string[], fileExtension: string, isByIdWo
             .filter(Boolean) ?? []
       )
       .flat();
-
-    return fields.map((field) => map[field as keyof typeof map] || field).join(', ');
+    
+    return fields
+    .map((field) => {
+      const cleanField = field.trim();
+      const normalizedKey = Object.keys(fieldNamesMap).find(
+        (key) => key.toLowerCase() === cleanField.toLowerCase()
+      );
+      return normalizedKey ? fieldNamesMap[normalizedKey as keyof typeof fieldNamesMap] : cleanField;
+    })
+    .join(', ');
   }
 
   // Fallback: no missing-fields error, return first error as-is

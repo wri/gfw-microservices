@@ -111,9 +111,9 @@ export const idBasedSystemHandler = async (
       }
     });
   } catch (error) {
-    logger.error(error);
+    logger.error(`❌ Error in idBasedSystemHandler: ${error}`);
     errors.push(error);
-    throw(error);
+    throw error;
   }
 
   /* ── 2. process each valid group (runs even if there were errors) ─ */
@@ -147,8 +147,8 @@ export const csvLatLongIdBasedTransformer = async (
       return await idBasedSystemHandler(data);
     }
     return data;
-  } catch(err) {
-    console.log("❌❌❌❌❌ csvLatLongIdBasedTransformer ~ err:", err)
+  } catch (err) {
+    logger.error('❌ Error in csvLatLongIdBasedTransformer:', err);
     throw err;
   }
 };

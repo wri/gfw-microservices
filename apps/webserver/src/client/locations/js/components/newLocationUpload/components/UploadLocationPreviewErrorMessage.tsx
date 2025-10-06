@@ -203,16 +203,18 @@ const getMissingFieldsNames = (errors: string[], fileExtension: string, isByIdWo
             .filter(Boolean) ?? []
       )
       .flat();
-    
+
     return fields
-    .map((field) => {
-      const cleanField = field.trim();
-      const normalizedKey = Object.keys(fieldNamesMap).find(
-        (key) => key.toLowerCase() === cleanField.toLowerCase()
-      );
-      return normalizedKey ? fieldNamesMap[normalizedKey as keyof typeof fieldNamesMap] : cleanField;
-    })
-    .join(', ');
+      .map((field) => {
+        const cleanField = field.trim();
+        const normalizedKey = Object.keys(fieldNamesMap).find(
+          (key) => key.toLowerCase() === cleanField.toLowerCase()
+        );
+        return normalizedKey
+          ? fieldNamesMap[normalizedKey as keyof typeof fieldNamesMap]
+          : cleanField;
+      })
+      .join(', ');
   }
 
   // Fallback: no missing-fields error, return first error as-is

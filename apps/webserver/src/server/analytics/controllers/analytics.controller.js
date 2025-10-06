@@ -168,8 +168,12 @@ export const getMyOrganizationUsersAnalysisUsage = async (req, res) => {
   });
 };
 export const getMyAccountAnalysisUsageByAnalysisType = async (req, res) => {
-  const { organization_database: orgDbName } = req.session;
-  let { startDate, endDate } = req.query;
+  const { organization_database } = req.session;
+  const { startDate, endDate, organizationName } = req.query;
+  let orgDbName = organization_database;
+  if (orgDbName === null || orgDbName === '' || typeof orgDbName === 'undefined') {
+    orgDbName = `clientstore-${organizationName}`;
+  }
 
   const { error } = validateQueryParams({
     startDate,

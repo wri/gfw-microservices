@@ -15,9 +15,9 @@ function BillingInfo() {
           size="small"
           fullWidth
           sx={{ mb: 2 }}
-          href="mailto:gfwprosales@wri.org"
+          href="https://gfwpro.zendesk.com/hc/en-us/requests/new"
         >
-          Email Sales
+          Support Form
         </PillButton>
         <Link
           target="_blank"

@@ -2481,11 +2481,9 @@ class Map extends Component {
             title={`${selectedLists[0].list_name} failed to load.`}
             message={
               <p>
-                Please select the list and try again. If list continues to fail, email{' '}
-                <a className="popup__link" href="mailto:GFWPROsupport@wri.org">
-                  GFWPROsupport@wri.org
-                </a>{' '}
-                for assistance.
+                Please contact the GFW Pro support team for help and additional information by
+                filling out this
+                <a href="https://gfwpro.zendesk.com/hc/en-us/requests/new">support form</a>
               </p>
             }
             onRequestClose={() => this.setState({ listNotAccessible: !listNotAccessible })}

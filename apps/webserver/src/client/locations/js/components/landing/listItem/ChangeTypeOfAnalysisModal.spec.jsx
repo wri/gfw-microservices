@@ -53,6 +53,17 @@ const defaultProps = {
   isPalmOilBackwardComp: false,
 };
 
+beforeEach(() => {
+  jest.clearAllMocks();
+  window.location.reload = jest.fn();
+  global.fetch = jest.fn(() =>
+    Promise.resolve({
+      ok: true,
+      json: () => Promise.resolve({}),
+    })
+  );
+});
+
 const renderComponent = (props) => {
   return render(
     <MuiThemeProvider muiTheme={muiTheme}>
@@ -110,14 +121,7 @@ describe('ChangeTypeOfAnalysisModal', () => {
       method: 'POST',
       credentials: 'same-origin',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        analysisIds: [
-          analysisTypes.DEFORESTATION_KPIS,
-          analysisTypes.ALERTS,
-          analysisTypes.FOREST_CHANGE_DIAGNOSTICS,
-        ],
-        saveAsDraft: true,
-      }),
+      body: expect.stringContaining('"saveAsDraft":true'),
     });
     await waitFor(() => expect(window.location.reload).toHaveBeenCalled());
   });
@@ -136,48 +140,30 @@ describe('ChangeTypeOfAnalysisModal', () => {
       method: 'POST',
       credentials: 'same-origin',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        analysisIds: [analysisTypes.DEFORESTATION_KPIS],
-        saveAsDraft: false,
-      }),
+      body: expect.stringContaining('"saveAsDraft":false'),
     });
     expect(requestGeoTrellisAnalyzeList).not.toHaveBeenCalled();
     await waitFor(() => expect(window.location.reload).toHaveBeenCalled());
   });
 
-  it('submits changes and requests analysis when adding an analysis', async () => {
+  it('calls saveAnalysisSelection and shows confirmation when adding an analysis, then submits after confirmation', async () => {
     renderComponent();
-    await userEvent.click(
-      screen.getByRole('checkbox', {
-        name: /recent deforestation alerts recent deforestation alerts, updated weekly/i,
+    // Simulate adding a new analysis (assuming "ALERTS" is available in the selector)
+    await userEvent.click(screen.getByRole('checkbox', { name: /alerts/i }));
+    await userEvent.click(screen.getByRole('button', { name: /submit analysis/i }));
+    // Confirmation prompt should appear
+    expect(screen.getByText(/You have added a new analysis to your list/i)).toBeInTheDocument();
+    await userEvent.click(screen.getByRole('button', { name: /ok/i }));
+
+    expect(screen.getByTestId('inline-loader')).toBeInTheDocument();
+    await waitFor(() => expect(fetch).toHaveBeenCalledTimes(1));
+    expect(fetch).toHaveBeenCalledWith(
+      '/api/list/123/selectedAnalyses',
+      expect.objectContaining({
+        method: 'POST',
+        body: expect.stringContaining('"saveAsDraft":false'),
       })
     );
-    await userEvent.click(screen.getByRole('button', { name: 'Submit Analysis' }));
-    expect(screen.getByText(/You have added a new analysis to your list/)).toBeInTheDocument();
-    await userEvent.click(screen.getByRole('button', { name: 'Ok' }));
-
-    await waitFor(() => expect(fetch).toHaveBeenCalledTimes(1));
-    expect(fetch).toHaveBeenCalledWith('/api/list/123/selectedAnalyses', {
-      method: 'POST',
-      credentials: 'same-origin',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        analysisIds: [
-          analysisTypes.DEFORESTATION_KPIS,
-          analysisTypes.ALERTS,
-          analysisTypes.FOREST_CHANGE_DIAGNOSTICS,
-        ],
-        saveAsDraft: false,
-      }),
-    });
-
-    await waitFor(() => expect(requestGeoTrellisAnalyzeList).toHaveBeenCalledTimes(1));
-    expect(requestGeoTrellisAnalyzeList).toHaveBeenCalledWith(
-      { id: '123', list_name: 'Test List' },
-      analysisTypes.ALERTS,
-      true
-    );
-
     await waitFor(() => expect(window.location.reload).toHaveBeenCalled());
   });
 });

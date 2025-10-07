@@ -1,8 +1,12 @@
+import { Typography } from '@mui/material';
+
 function UsersTable({ userSortingCategory, userDir, usersList, sortUserTable, searchUsers }) {
   return (
     <div>
       <section className="section-container">
-        <h2 className="section-title-normal">User Profiles</h2>
+        <Typography variant="h3" sx={{ mb: 2 }}>
+          User Profiles
+        </Typography>
         <input className="space-element" onChange={searchUsers} placeholder="Search for user" />
         <table>
           <thead>

@@ -11,7 +11,6 @@ import SettingSection from '../../../../common/js/components/SettingSection';
 
 import DialogProvider, { useDialog } from '../../../../common/js/components/Dialog';
 import FieldLabel from './FieldLabel';
-import { PRO_MANAGER_PATH } from '../../common/paths';
 
 /**
  * @summary {[subscription_status_id]: defaultFields}
@@ -143,11 +142,8 @@ function AccountLimitsGlobal({ setIsLoading }) {
     <>
       <Grid container justifyContent="space-between" sx={{ marginBottom: '1.5rem' }}>
         <Typography variant="h3">{accountLimitsStrings.pageHeading}</Typography>
-        <PillButton variant="contained" size="small" href={PRO_MANAGER_PATH}>
-          Back to Profile Manager
-        </PillButton>
       </Grid>
-      <SettingSection subHeading={accountLimitsStrings.stantardSubscriptionSection}>
+      <SettingSection heading={accountLimitsStrings.stantardSubscriptionSection}>
         <Grid sx={{ marginBottom: '1.5rem' }} container spacing={2}>
           <Grid item sm={6} xs={12}>
             <Grid container direction="column">
@@ -185,7 +181,7 @@ function AccountLimitsGlobal({ setIsLoading }) {
           </Grid>
         </Grid>
       </SettingSection>
-      <SettingSection subHeading={accountLimitsStrings.premiumSubscriptionSection} hiddenDivider>
+      <SettingSection heading={accountLimitsStrings.premiumSubscriptionSection} hiddenDivider>
         <Grid sx={{ marginBottom: '1.5rem' }} container spacing={2}>
           <Grid item sm={6} xs={12}>
             <Grid container direction="column">

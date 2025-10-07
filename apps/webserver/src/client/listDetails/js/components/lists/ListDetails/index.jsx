@@ -1883,12 +1883,15 @@ export default class ListDetails extends Component {
               title={`${listName} diagnostic failed to load.`}
               message={
                 <p>
-                  Please select the list to try loading the diagnostic again. If diagnostic continue
-                  to fail, email{' '}
-                  <a className="popup__link" href="mailto:GFWPROsupport@wri.org">
-                    GFWPROsupport@wri.org
-                  </a>{' '}
-                  for assistance.
+                  Please contact the GFW Pro support team for help and additional information by
+                  filling out this
+                  <a
+                    className="popup__link"
+                    href="https://gfwpro.zendesk.com/hc/en-us/requests/new"
+                  >
+                    support form
+                  </a>
+                  .
                 </p>
               }
               onRequestClose={() => this.setState({ listNotAccessible: !listNotAccessible })}

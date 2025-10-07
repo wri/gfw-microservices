@@ -27,6 +27,7 @@ export function createEmailContent<CustomFilter>(
       title: "Now it's up to us!",
       body: [
         `We’re preparing your data for download for <span style="color: rgb(69,69,69);">${listName}</span>. You will receive your download link and instructions via email within 24 hours.`,
+        `<p>Please contact the GFW Pro support team for help and additional information by filling out this <a href="https://gfwpro.zendesk.com/hc/en-us/requests/new">support form</a>. </p>`,
       ],
     },
     finish: {
@@ -65,7 +66,7 @@ export function createEmailContent<CustomFilter>(
       title: 'Unable to process',
       body: [
         `<p>Diagnostic and List View calculations failed for the GFW Pro list <span style="font-weight: bold; color: rgba(0, 0, 0, 0.73);">${listName}</span>.</p>`,
-        `<p>Try again and if the problem persists please contact GFW Pro support at <a href="mailto:gfwprosupport@wri.org">gfwprosupport@wri.org</a> for further information.</p>`,
+        `<p>Please contact the GFW Pro support team for help and additional information by filling out this <a href="https://gfwpro.zendesk.com/hc/en-us/requests/new">support form</a>. </p>`,
       ],
     },
   };

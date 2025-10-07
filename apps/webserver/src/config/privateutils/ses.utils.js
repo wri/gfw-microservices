@@ -128,12 +128,12 @@ export const createBodyContent = (req, type, content = {}, level = 'info') => {
       title = 'Unable to process';
       msg =
         `<p>Diagnostic and List View calculations failed for the GFW Pro list <span style="font-weight: bold; color: rgba(0, 0, 0, 0.73);">${content.list_name}</span>.</p>` +
-        '<p>Try again and if the problem persists please contact GFW Pro support at <a href="mailto:gfwprosupport@wri.org">gfwprosupport@wri.org</a> for further information.</p>';
+        '<p>Try again and if the problem persists please contact the GFW Pro support team for help and additional information by filling out this <a href="https://gfwpro.zendesk.com/hc/en-us/requests/new">support form</a>. </p>';
       hasClosing = false;
       break;
     case config.platformVars.emailType.ANALYSIS_LIMIT_REACHED:
       title = `Usage Limit Exceeded - Analysis for ${content.list_name} Not Completed`;
-      msg = `<p>You have reached your organization’s GFW Pro analysis limit. Please contact our sales team at <a href="mailto:gfwprosales@wri.org">gfwprosales@wri.org</a> to purchase additional usage. You can also refer to our <a href="https://www.globalforestwatch.org/help/guides/global-forest-watch-pro-price-sheet">price list</a> or <a href="https://www.globalforestwatch.org/help/gfw-pro/faq-subscription-fee-model-faq/">fee model FAQ page</a> for more information. Your list will appear saved in your account as a draft.</p>`;
+      msg = `<p>You have reached your organization’s GFW Pro analysis limit. Please contact the GFW Pro support team for help and additional information by filling out this <a href="https://gfwpro.zendesk.com/hc/en-us/requests/new">support form</a> to purchase additional usage. You can also refer to our <a href="https://www.globalforestwatch.org/help/guides/global-forest-watch-pro-price-sheet">price list</a> or <a href="https://www.globalforestwatch.org/help/gfw-pro/faq-subscription-fee-model-faq/">fee model FAQ page</a> for more information. Your list will appear saved in your account as a draft.</p>`;
       hasClosing = false;
       break;
     case config.platformVars.emailType.ORGANIZATION_APPROVED:

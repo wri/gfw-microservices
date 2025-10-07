@@ -111,7 +111,7 @@ export const idBasedSystemHandler = async (
       }
     });
   } catch (error) {
-    logger.error(`❌ Error in idBasedSystemHandler: ${error}`);
+    logger.error('❌ Error in idBasedSystemHandler', error);
     errors.push(error);
     throw error;
   }

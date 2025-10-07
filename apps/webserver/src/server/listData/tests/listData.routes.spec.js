@@ -139,7 +139,12 @@ describe('listData.routes', () => {
   it('POST /api/list/:listId/selectedAnalyses creates draft', async () => {
     const res = await request(app)
       .post('/api/list/42/selectedAnalyses')
-      .send({ analysisIds: [], saveAsDraft: true });
+      .send({
+        selectedAnalysis: [],
+        saveAsDraft: true,
+        isAddingAnalysis: false,
+        newAnalysesToRun: [],
+      });
     expect(setSelectedAnalyses).toHaveBeenCalled();
     expect(res.status).toBe(201);
   });

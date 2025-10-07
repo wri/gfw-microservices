@@ -9,9 +9,9 @@ const logger = require('../../../config/privateutils/logger.utils');
 const { getListDataFiltered } = require('../utils/listData.utils');
 const listUtils = require(path.resolve('./config/privateutils/list.utils'));
 
-const { geoTrellisAnalyzeListController } = require(path.resolve(
-  'server/geotrellis/controllers/geoTrellis.controller'
-));
+const {
+  geoTrellisAnalyzeListController,
+} = require('../../geoTrellis/controllers/geoTrellis.controller');
 
 import { analysisTypes, listStatus } from '@wri-monorepos/constants';
 import { getListAnalysisStatusByListId, setSelectedAnalyses } from '@wri-monorepos/geo';

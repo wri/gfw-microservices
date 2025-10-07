@@ -39,7 +39,7 @@ jest.mock('@wri-monorepos/geo', () => ({
   setSelectedAnalyses: jest.fn(),
 }));
 
-jest.mock('../../../server/geoTrellis/controllers/geoTrellis.controller', () => ({
+jest.mock('../../geoTrellis/controllers/geoTrellis.controller', () => ({
   geoTrellisAnalyzeListController: jest.fn(),
 }));
 
@@ -52,7 +52,7 @@ const { analysisTypes, listStatus } = require('@wri-monorepos/constants');
 const { getListAnalysisStatusByListId, setSelectedAnalyses } = require('@wri-monorepos/geo');
 const {
   geoTrellisAnalyzeListController,
-} = require('../../../server/geoTrellis/controllers/geoTrellis.controller');
+} = require('../../geoTrellis/controllers/geoTrellis.controller');
 
 const {
   listData,

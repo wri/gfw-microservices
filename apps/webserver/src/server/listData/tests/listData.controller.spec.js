@@ -29,12 +29,6 @@ jest.mock('../../../config/privateutils/list.utils', () => ({
   getListNameSchema: jest.fn().mockResolvedValue(undefined),
 }));
 
-// The controller resolves this via path.resolve('./config/privateutils/list.utils'),
-// which in Jest resolves to the monorepo root. Provide a virtual mock for that absolute path.
-jest.mock('path', () => ({
-  resolve: () => '../../../config/privateutils/list.utils',
-}));
-
 jest.mock('@wri-monorepos/constants', () => ({
   analysisTypes: { Loss: 'Loss', Density: 'Density' },
   listStatus: { Draft: 'Draft', Pending: 'Pending' },
@@ -45,6 +39,10 @@ jest.mock('@wri-monorepos/geo', () => ({
   setSelectedAnalyses: jest.fn(),
 }));
 
+jest.mock('../../../server/geoTrellis/controllers/geoTrellis.controller', () => ({
+  geoTrellisAnalyzeListController: jest.fn(),
+}));
+
 const ListManager = require('../../../config/publicutils/listManager.utils');
 const LocationManager = require('../../../config/publicutils/locationManager.utils');
 const AnalysisManager = require('../../../config/publicutils/analysisManager.utils');
@@ -52,6 +50,9 @@ const listUtils = require('../../../config/privateutils/list.utils');
 const { getListDataFiltered } = require('../utils/listData.utils');
 const { analysisTypes, listStatus } = require('@wri-monorepos/constants');
 const { getListAnalysisStatusByListId, setSelectedAnalyses } = require('@wri-monorepos/geo');
+const {
+  geoTrellisAnalyzeListController,
+} = require('../../../server/geoTrellis/controllers/geoTrellis.controller');
 
 const {
   listData,
@@ -152,7 +153,6 @@ describe('listData.controller', () => {
 
       await getSelectedAnalyses(req, res);
 
-      expect(listUtils.getListNameSchema).toHaveBeenCalledWith(req, '42');
       expect(getListAnalysisStatusByListId).toHaveBeenCalledWith('org', '42');
       expect(res.status).toHaveBeenCalledWith(200);
       expect(res.json).toHaveBeenCalledWith({ items: [1, 2] });
@@ -171,45 +171,46 @@ describe('listData.controller', () => {
   });
 
   describe('setSelectedAnalysesCtrl', () => {
+    let req, res;
+
+    beforeEach(() => {
+      req = {
+        params: { listId: '1' },
+        body: {},
+        session: { organization_database: 'org' },
+      };
+      res = createRes();
+      setSelectedAnalyses.mockClear();
+      geoTrellisAnalyzeListController.mockClear();
+      listUtils.getListNameSchema.mockClear();
+    });
+
     it('validates missing analysisIds when not saveAsDraft', async () => {
-      const req = { params: { listId: '1' }, body: {}, session: { organization_database: 'org' } };
-      const res = createRes();
+      req.body = {};
       await setSelectedAnalysesCtrl(req, res);
       expect(res.status).toHaveBeenCalledWith(400);
       expect(res.json).toHaveBeenCalledWith({ message: 'analysisIds is required' });
     });
 
     it('validates invalid analysisIds', async () => {
-      const req = {
-        params: { listId: '1' },
-        body: { analysisIds: ['Invalid'], saveAsDraft: false },
-        session: { organization_database: 'org' },
-      };
-      const res = createRes();
+      req.body = { selectedAnalysis: ['Invalid'], saveAsDraft: false };
       await setSelectedAnalysesCtrl(req, res);
       expect(res.status).toHaveBeenCalledWith(400);
       expect(res.json).toHaveBeenCalledWith({ message: 'analysisIds is not valid' });
     });
 
     it('creates selection as draft', async () => {
-      const req = {
-        params: { listId: '1' },
-        body: { analysisIds: [], saveAsDraft: true },
-        session: { organization_database: 'org' },
-      };
-      const res = createRes();
+      req.body = { selectedAnalysis: [], saveAsDraft: true };
       await setSelectedAnalysesCtrl(req, res);
       expect(setSelectedAnalyses).toHaveBeenCalledWith('org', '1', [], listStatus.Draft);
       expect(res.status).toHaveBeenCalledWith(201);
+      expect(res.json).toHaveBeenCalledWith({
+        message: 'List analysis selection created successfully',
+      });
     });
 
     it('creates selection as pending', async () => {
-      const req = {
-        params: { listId: '1' },
-        body: { analysisIds: [analysisTypes.Loss], saveAsDraft: false },
-        session: { organization_database: 'org' },
-      };
-      const res = createRes();
+      req.body = { selectedAnalysis: [analysisTypes.Loss], saveAsDraft: false };
       await setSelectedAnalysesCtrl(req, res);
       expect(setSelectedAnalyses).toHaveBeenCalledWith(
         'org',
@@ -218,15 +219,65 @@ describe('listData.controller', () => {
         listStatus.Pending
       );
       expect(res.status).toHaveBeenCalledWith(201);
+      expect(res.json).toHaveBeenCalledWith({
+        message: 'List analysis selection created successfully',
+      });
+    });
+
+    it('delegates to geoTrellisAnalyzeListController when isAddingAnalysis is true and newAnalysesToRun is provided', async () => {
+      req.body = {
+        selectedAnalysis: [analysisTypes.Loss, analysisTypes.Density],
+        saveAsDraft: false,
+        isAddingAnalysis: true,
+        newAnalysesToRun: [analysisTypes.Loss],
+      };
+      listUtils.getListNameSchema.mockResolvedValue({ id: '1', list_name: 'Test List' });
+      geoTrellisAnalyzeListController.mockResolvedValue(undefined);
+
+      await setSelectedAnalysesCtrl(req, res);
+
+      expect(setSelectedAnalyses).toHaveBeenCalledWith(
+        'org',
+        '1',
+        [analysisTypes.Loss, analysisTypes.Density],
+        listStatus.Pending
+      );
+      expect(listUtils.getListNameSchema).toHaveBeenCalledWith(req, '1');
+      expect(geoTrellisAnalyzeListController).toHaveBeenCalledWith(
+        expect.objectContaining({
+          body: expect.objectContaining({
+            list: expect.objectContaining({ id: '1', list_name: 'Test List' }),
+            analysisTypes: analysisTypes.Loss,
+            reanalyze: true,
+          }),
+        }),
+        res
+      );
+    });
+
+    it('returns 201 and does not call geoTrellisAnalyzeListController if newAnalysesToRun is empty', async () => {
+      req.body = {
+        selectedAnalysis: [analysisTypes.Loss],
+        saveAsDraft: false,
+        isAddingAnalysis: true,
+        newAnalysesToRun: [],
+      };
+      await setSelectedAnalysesCtrl(req, res);
+      expect(setSelectedAnalyses).toHaveBeenCalledWith(
+        'org',
+        '1',
+        [analysisTypes.Loss],
+        listStatus.Pending
+      );
+      expect(geoTrellisAnalyzeListController).not.toHaveBeenCalled();
+      expect(res.status).toHaveBeenCalledWith(201);
+      expect(res.json).toHaveBeenCalledWith({
+        message: 'List analysis selection created successfully',
+      });
     });
 
     it('handles error and returns 400', async () => {
-      const req = {
-        params: { listId: '1' },
-        body: { analysisIds: [analysisTypes.Loss] },
-        session: { organization_database: 'org' },
-      };
-      const res = createRes();
+      req.body = { selectedAnalysis: [analysisTypes.Loss] };
       setSelectedAnalyses.mockRejectedValue(new Error('fail'));
       await setSelectedAnalysesCtrl(req, res);
       expect(res.status).toHaveBeenCalledWith(400);

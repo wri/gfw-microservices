@@ -1,3 +1,4 @@
+import { Typography } from '@mui/material';
 import { useEffect, useState } from 'react';
 
 const defaultData = {
@@ -48,7 +49,9 @@ function LatestCommits({ setIsLoading }) {
 
   return (
     <>
-      <h3>Latest Commits</h3>
+      <Typography variant="h3" sx={{ mb: 2 }}>
+        Latest Commits
+      </Typography>
       <p>
         <label>API:</label> <br />
         {formatCommit(latestCommitsData['EAPI'])}

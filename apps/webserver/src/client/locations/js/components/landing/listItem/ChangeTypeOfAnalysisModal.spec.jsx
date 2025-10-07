@@ -4,7 +4,7 @@ import { ThemeProvider, createTheme } from '@mui/material/styles';
 import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
 import getMuiTheme from 'material-ui/styles/getMuiTheme';
 import ChangeTypeOfAnalysisModal from './ChangeTypeOfAnalysisModal';
-import { analysisTypes } from '../../../../../../config/env/analysisTypes.constants';
+
 import { requestGeoTrellisAnalyzeList } from '../../../utils/requestUtils';
 
 jest.mock('../../../utils/requestUtils', () => ({

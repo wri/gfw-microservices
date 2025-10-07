@@ -47,7 +47,7 @@ export function UploadLocationOptions({ fromList, userLists }: UploadLocationOpt
   };
 
   const { pageName, ...backButtonProps } = getRedirectLocation(fromList);
-  const { isBrazilCarFlagAvailable } = featureFlags;
+  const { isBrazilCarFlagAvailable = true } = featureFlags;
 
   return (
     <div className="upload-location-options">

@@ -25,7 +25,7 @@ export default function AccountNameChangeDialog({ open, initialValue = '', onClo
 
   const handleInputChange = (val) => {
     const TIMEOUT_DELAY = 200; // milliseconds
-    
+
     setInputValue(val);
     setIsSaveEnabled(val.trim().length > 0);
     setError('');

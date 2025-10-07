@@ -10,7 +10,7 @@ SELECT
     Org.organization_status_id,
     Org.organization_activated_time,
     Statuses.status_name AS org_status,
-    SubStatuses.name AS account_type
+    SubStatuses.status_name AS account_type
 FROM gfwpro.dbo.Organizations AS Org
 LEFT JOIN gfwpro.dbo.Statuses AS Statuses 
     ON Org.organization_status_id = Statuses.id

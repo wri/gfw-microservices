@@ -879,6 +879,6 @@ export const logout = (req) => {
     // Delete session variables immediately
     req.session.destroy();
   } catch (error) {
-    logger.error('Error during logout:', error);
+    logger.error('Error during logout:', error.stack || error);
   }
 };

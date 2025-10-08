@@ -173,7 +173,7 @@ export const setSelectedAnalysesCtrl = async (req, res) => {
     await setSelectedAnalyses(organization_database, listId, selectedAnalysis, statusToApply);
 
     if (isAddingAnalysis && !saveAsDraft) {
-      // Filter out GHG analysis before sending to GeoTrellis
+      // Because GHG analysis is only valid via EAPI
       const analysesForGeoTrellis = newAnalysesToRun.filter(
         (analysisId) => analysisId !== analysisTypes.GREENHOUSE_GAS_EMISSIONS
       );

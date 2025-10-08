@@ -26,7 +26,7 @@ export const carLookup: IdLookupFn = async (ids) => {
         'Content-Type': 'application/json',
       },
       params: {
-        sql: `SELECT cd_imovel,ST_AsText(geom) as geom,gfw_geojson FROM mytable WHERE cd_imovel IN (${sqlIds})`,
+        sql: `SELECT cd_imovel,ST_AsText(geom) as geom FROM mytable WHERE cd_imovel IN (${sqlIds})`,
       },
     });
 

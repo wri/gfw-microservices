@@ -863,18 +863,22 @@ export const resendVerifyToken = async (req) => {
  *   @param  {Object}   req - Mandatory first parameter to pass the request object into the function in case session info is required.
  */
 export const logout = (req) => {
-  const { ispromanager, organization_user_id } = req.session;
+  try {
+    const { ispromanager, organization_user_id } = req.session;
 
-  // Log activity if user is not a Pro Manager
-  if (!ispromanager) {
-    // Logging is async but won't block session destruction
-    logger.logActivity(
-      req,
-      logger.listActivityTypes.User.UserLogout,
-      `User ID ${organization_user_id} has logged out.`
-    );
+    // Log activity if user is not a Pro Manager
+    if (!ispromanager) {
+      // Logging is async but won't block session destruction
+      logger.logActivity(
+        req,
+        logger.listActivityTypes.User.UserLogout,
+        `User ID ${organization_user_id} has logged out.`
+      );
+    }
+
+    // Delete session variables immediately
+    req.session.destroy();
+  } catch (error) {
+    logger.error('Error during logout:', error);
   }
-
-  // Delete session variables immediately
-  req.session.destroy();
 };

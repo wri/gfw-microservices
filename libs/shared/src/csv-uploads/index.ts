@@ -54,11 +54,14 @@ export const applyLookUpByChunks = async (
   for (let i = 0; i < data.length; i += chunkSize) {
     const chunkMax = Math.min(data.length, i + chunkSize);
     const chunk = data.slice(i, chunkMax);
-    logger.log(`${idType} LookUp Chunk Size: ${chunk.length}`);
+    logger.log(`${idType} LookUp Chunk Size: ${chunk.length} (rows ${i} to ${chunkMax - 1})`);
 
     const chunkResp = await lookup(chunk.map((row) => row[column] as string));
 
-    chunk.forEach((row) => {
+    chunk.forEach((row, index) => {
+      const globalIdx = i + index;
+      logger.log(`Processing row index: ${globalIdx} (ID: ${row[column]})`);
+
       updates.push(
         Object.assign(row, {
           ...(chunkResp[row[column] as string] ?? {}),
@@ -100,12 +103,13 @@ export const idBasedSystemHandler = async (
     }
 
     // row-level handling
-    data.forEach((row) => {
+    data.forEach((row, index) => {
       try {
         const rowKey = determineIdType(row);
+        logger.log(`Grouping row index: ${index} under key: ${rowKey}`);
         (groups[rowKey] ??= []).push(row);
       } catch (error) {
-        logger.error(error);
+        logger.error(`Error at row index: ${index}`, error);
         resolveFlaggedRowsByValueFound(row, error);
         errors.push(error);
       }
@@ -121,6 +125,7 @@ export const idBasedSystemHandler = async (
     Object.entries(groups).map(async ([key, rows]) => {
       const handler = ID_TYPE_HANDLER[key];
       if (handler) {
+        logger.log(`Processing group: ${key} with ${rows.length} rows`);
         await resolveLatLongHandlerByIdType(key, rows);
       }
     })

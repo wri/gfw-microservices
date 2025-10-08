@@ -20,6 +20,7 @@ export const getAllAccountsList = `
 		[organization_classifications_ids] NVARCHAR(100) NULL,
 		[organization_status_id] INT NULL,
 		[organization_activated_time] SMALLDATETIME NULL,
+		[organization_requested_time] SMALLDATETIME NULL, -- from pending accounts
 		[subscription_status_id] SMALLINT NULL,
 		[organization_active] BIT NULL
 	);
@@ -67,7 +68,8 @@ export const getAllAccountsList = `
 			organization_classifications_ids,
 			organization_status_id,
 			organization_activated_time,
-			 subscription_status_id,
+			organization_requested_time,
+			subscription_status_id,
 			organization_active
 		)
 		VALUES
@@ -80,6 +82,7 @@ export const getAllAccountsList = `
 			@organization_parent,
 			@arrClassificationIds,
 			1, -- Pending accounts assumed status = 1
+			@organization_requested,
 			@organization_requested,
 			NULL,
 			@organization_active
@@ -164,6 +167,7 @@ FROM ' + QUOTENAME(@organization_db) + N'.dbo.AccountProfile AS ap;';
 			organization_classifications_ids,
 			organization_status_id,
 			organization_activated_time,
+			organization_requested_time,
 			subscription_status_id,
 			organization_active
 		)
@@ -177,6 +181,7 @@ FROM ' + QUOTENAME(@organization_db) + N'.dbo.AccountProfile AS ap;';
 			organization_classifications_ids,
 			organization_status_id,
 			@organization_activated_time,
+			NULL,  -- created accounts have no "requested" time
 			@subscription_status_id,
 			1
 		FROM @TempResult
@@ -203,5 +208,10 @@ FROM ' + QUOTENAME(@organization_db) + N'.dbo.AccountProfile AS ap;';
 	DELETE FROM NumberedRows WHERE RowNum > 1;
 
 	-- Final result
-	SELECT * FROM @CompiledPendingAccounts;
+	SELECT *
+	FROM @CompiledPendingAccounts
+	ORDER BY
+			COALESCE(organization_requested_time, '1900-01-01') DESC,  -- requested_date desc, NULLs treated as very old
+			CASE WHEN organization_status_id = 2 THEN 0 ELSE 1 END,    -- Active goes before Inactive
+			COALESCE(organization_activated_time, '1900-01-01') DESC;  -- activated_date desc, NULLs treated as very old
 `;

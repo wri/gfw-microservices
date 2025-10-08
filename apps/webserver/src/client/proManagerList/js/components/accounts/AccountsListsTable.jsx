@@ -8,6 +8,13 @@ function AccountsListsTable({
   searchAccts,
   sortAcctTable,
 }) {
+  const getSortClass = (column) => {
+    if (accountSortingCategory !== column) {
+      return '';
+    }
+    return accountDir === 'asc' ? 'active-asc' : 'active-desc';
+  };
+
   return (
     <Box>
       <section>
@@ -30,15 +37,7 @@ function AccountsListsTable({
                   }}
                 >
                   Organization Name
-                  <div
-                    className={`sortable-carrot ${
-                      accountSortingCategory === 'organization_name' && accountDir === 'asc'
-                        ? 'active-asc'
-                        : accountSortingCategory === 'organization_name' && accountDir === 'des'
-                        ? 'active-des'
-                        : ''
-                    }`}
-                  />
+                  <div className={`sortable-carrot ${getSortClass('organization_name')}`} />
                 </th>
                 <th
                   className="sortable-table-header"
@@ -48,15 +47,7 @@ function AccountsListsTable({
                   }}
                 >
                   Parent Organization Name
-                  <div
-                    className={`sortable-carrot ${
-                      accountSortingCategory === 'organization_parent' && accountDir === 'asc'
-                        ? 'active-asc'
-                        : accountSortingCategory === 'organization_parent' && accountDir === 'des'
-                        ? 'active-des'
-                        : ''
-                    }`}
-                  />
+                  <div className={`sortable-carrot ${getSortClass('organization_parent')}`} />
                 </th>
                 <th
                   className="sortable-table-header"
@@ -66,15 +57,7 @@ function AccountsListsTable({
                   }}
                 >
                   Organization Classification(s)
-                  <div
-                    className={`sortable-carrot ${
-                      accountSortingCategory === 'classString' && accountDir === 'asc'
-                        ? 'active-asc'
-                        : accountSortingCategory === 'classString' && accountDir === 'des'
-                        ? 'active-des'
-                        : ''
-                    }`}
-                  />
+                  <div className={`sortable-carrot ${getSortClass('classString')}`} />
                 </th>
                 <th
                   className="sortable-table-header"
@@ -84,33 +67,17 @@ function AccountsListsTable({
                   }}
                 >
                   Account Status
-                  <div
-                    className={`sortable-carrot ${
-                      accountSortingCategory === 'statusString' && accountDir === 'asc'
-                        ? 'active-asc'
-                        : accountSortingCategory === 'statusString' && accountDir === 'des'
-                        ? 'active-des'
-                        : ''
-                    }`}
-                  />
+                  <div className={`sortable-carrot ${getSortClass('statusString')}`} />
                 </th>
                 <th
                   className="sortable-table-header"
-                  title="pendingDateString"
+                  title="requestedDateString"
                   onClick={(evt) => {
                     sortAcctTable(evt);
                   }}
                 >
                   Date Requested
-                  <div
-                    className={`sortable-carrot ${
-                      accountSortingCategory === 'pendingDateString' && accountDir === 'asc'
-                        ? 'active-asc'
-                        : accountSortingCategory === 'pendingDateString' && accountDir === 'des'
-                        ? 'active-des'
-                        : ''
-                    }`}
-                  />
+                  <div className={`sortable-carrot ${getSortClass('requestedDateString')}`} />
                 </th>
                 <th
                   className="sortable-table-header"
@@ -120,15 +87,7 @@ function AccountsListsTable({
                   }}
                 >
                   Date Activated
-                  <div
-                    className={`sortable-carrot ${
-                      accountSortingCategory === 'activeDateString' && accountDir === 'asc'
-                        ? 'active-asc'
-                        : accountSortingCategory === 'activeDateString' && accountDir === 'desc'
-                        ? 'active-des'
-                        : ''
-                    }`}
-                  />
+                  <div className={`sortable-carrot ${getSortClass('activeDateString')}`} />
                 </th>
                 <th
                   className="sortable-table-header"
@@ -138,15 +97,7 @@ function AccountsListsTable({
                   }}
                 >
                   Organization Address
-                  <div
-                    className={`sortable-carrot ${
-                      accountSortingCategory === 'organization_address' && accountDir === 'asc'
-                        ? 'active-asc'
-                        : accountSortingCategory === 'organization_address' && accountDir === 'des'
-                        ? 'active-des'
-                        : ''
-                    }`}
-                  />
+                  <div className={`sortable-carrot ${getSortClass('organization_address')}`} />
                 </th>
                 <th
                   className="sortable-table-header"
@@ -156,15 +107,7 @@ function AccountsListsTable({
                   }}
                 >
                   Organization Website
-                  <div
-                    className={`sortable-carrot ${
-                      accountSortingCategory === 'organization_website' && accountDir === 'asc'
-                        ? 'active-asc'
-                        : accountSortingCategory === 'organization_website' && accountDir === 'des'
-                        ? 'active-des'
-                        : ''
-                    }`}
-                  />
+                  <div className={`sortable-carrot ${getSortClass('organization_website')}`} />
                 </th>
               </tr>
             </thead>
@@ -179,26 +122,26 @@ function AccountsListsTable({
 export default AccountsListsTable;
 
 const scrollableBoxStyles = () => ({
-  position: 'relative',
-  width: 'calc(100% + 2rem)', // add extra scrollable width
-  maxWidth: 'calc(100vw + 2rem)',
-  marginLeft: '-1rem', // pull it back to align with viewport edges
-  marginRight: '-1.5rem',
-  marginTop: '1rem',
-  overflowX: 'auto',
+  '&::before, &::after': {
+    bottom: 0,
+    content: '""',
+    pointerEvents: 'none',
+    position: 'absolute',
+    top: 0,
+    width: 24,
+  },
+  bgcolor: 'background.paper',
   border: '1px solid',
   borderColor: 'divider',
   borderRadius: 2,
-  bgcolor: 'background.paper',
-  p: 1,
-  transform: 'rotateX(180deg)', // flips scrollbar to top
   boxShadow: 'inset 0 1px 3px rgba(0,0,0,0.2)',
-  '&::before, &::after': {
-    content: '""',
-    position: 'absolute',
-    top: 0,
-    bottom: 0,
-    width: 24,
-    pointerEvents: 'none',
-  },
+  marginLeft: '-1rem', // pull it back to align with viewport edges
+  marginRight: '-1.5rem',
+  marginTop: '1rem',
+  maxWidth: 'calc(100vw + 2rem)',
+  overflowX: 'auto',
+  p: 1,
+  position: 'relative',
+  transform: 'rotateX(180deg)', // flips scrollbar to top
+  width: 'calc(100% + 2rem)', // add extra scrollable width
 });

@@ -8,7 +8,7 @@ export default class UserProfileManager extends Component {
       users: this.props.users,
       filterStr: '',
       userSortingCategory: 'first_name',
-      userDir: 'des',
+      userDir: 'desc',
     };
   }
 
@@ -176,7 +176,7 @@ export default class UserProfileManager extends Component {
   };
 
   sortUserTable = (evt) => {
-    const direction = this.state.userDir === 'des' ? 'asc' : 'des';
+    const direction = this.state.userDir === 'desc' ? 'asc' : 'desc';
     this.setState({
       userSortingCategory: evt.target.title,
       userDir: direction,
@@ -225,8 +225,8 @@ export default class UserProfileManager extends Component {
                     this.state.userSortingCategory === 'first_name' && this.state.userDir === 'asc'
                       ? 'active-asc'
                       : this.state.userSortingCategory === 'first_name' &&
-                        this.state.userDir === 'des'
-                      ? 'active-des'
+                        this.state.userDir === 'desc'
+                      ? 'active-desc'
                       : ''
                   }`}
                 ></div>
@@ -243,8 +243,8 @@ export default class UserProfileManager extends Component {
                   className={`sortable-carrot ${
                     this.state.userSortingCategory === 'email' && this.state.userDir === 'asc'
                       ? 'active-asc'
-                      : this.state.userSortingCategory === 'email' && this.state.userDir === 'des'
-                      ? 'active-des'
+                      : this.state.userSortingCategory === 'email' && this.state.userDir === 'desc'
+                      ? 'active-desc'
                       : ''
                   }`}
                 ></div>
@@ -261,8 +261,9 @@ export default class UserProfileManager extends Component {
                   className={`sortable-carrot ${
                     this.state.userSortingCategory === 'sharing' && this.state.userDir === 'asc'
                       ? 'active-asc'
-                      : this.state.userSortingCategory === 'sharing' && this.state.userDir === 'des'
-                      ? 'active-des'
+                      : this.state.userSortingCategory === 'sharing' &&
+                        this.state.userDir === 'desc'
+                      ? 'active-desc'
                       : ''
                   }`}
                 ></div>
@@ -281,8 +282,8 @@ export default class UserProfileManager extends Component {
                     this.state.userDir === 'asc'
                       ? 'active-asc'
                       : this.state.userSortingCategory === 'accesslevel_name' &&
-                        this.state.userDir === 'des'
-                      ? 'active-des'
+                        this.state.userDir === 'desc'
+                      ? 'active-desc'
                       : ''
                   }`}
                 ></div>
@@ -300,8 +301,8 @@ export default class UserProfileManager extends Component {
                     this.state.userSortingCategory === 'status_name' && this.state.userDir === 'asc'
                       ? 'active-asc'
                       : this.state.userSortingCategory === 'status_name' &&
-                        this.state.userDir === 'des'
-                      ? 'active-des'
+                        this.state.userDir === 'desc'
+                      ? 'active-desc'
                       : ''
                   }`}
                 ></div>

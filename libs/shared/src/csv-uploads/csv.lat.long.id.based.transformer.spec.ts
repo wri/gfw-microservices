@@ -76,7 +76,7 @@ describe('csvLatLongIdBasedTransformer', () => {
       it('has missing "Analysis Radius or Analysis Area" Missing', async () => {
         const idType = [{ 'ID Type': 'UML', some: 'data', ID: '123', 'Location Name': 'Loc 3' }];
         const idOnly = [{ ID: '123', 'Location Name': 'Loc 3' }];
-        const expectedMessage = 'Missing mandatory fields: Analysis Radius | Analysis Area';
+        const expectedMessage = 'Missing mandatory fields: Analysis Radius, Analysis Area';
 
         await expect(csvLatLongIdBasedTransformer(idType)).rejects.toThrow(expectedMessage);
         await expect(csvLatLongIdBasedTransformer(idOnly)).rejects.toThrow(expectedMessage);

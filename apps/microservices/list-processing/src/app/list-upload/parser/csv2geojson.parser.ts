@@ -110,7 +110,7 @@ export const csv2geojson = async (
     let { data } = results;
     const { errors } = results;
 
-    if (errors.length > 0) {
+    if (errors.length) {
       errors.forEach((error) => {
         geoJson.features.push({
           type: 'Feature',
@@ -135,7 +135,8 @@ export const csv2geojson = async (
         );
       }
     } catch (error) {
-      logger.error('Error looking up ID', error.stack || error);
+      logger.error('Error during ID based transformation', error.stack || error);
+
       geoJson.features.push({
         type: 'Feature',
         properties: {

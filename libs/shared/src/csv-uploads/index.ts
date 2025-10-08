@@ -96,7 +96,7 @@ export const idBasedSystemHandler = async (
 
     if (!isValid) {
       logger.error(`Missing mandatory fields: ${missingFields.join(',')}`);
-      throw new Error(`Missing mandatory fields: ${missingFields.join(',')}`);
+      throw new Error(`Missing mandatory fields: ${missingFields.join(', ')}`);
     }
 
     // row-level handling
@@ -111,8 +111,9 @@ export const idBasedSystemHandler = async (
       }
     });
   } catch (error) {
-    logger.error(error);
+    logger.error('❌ Error in idBasedSystemHandler', error);
     errors.push(error);
+    throw error;
   }
 
   /* ── 2. process each valid group (runs even if there were errors) ─ */
@@ -141,11 +142,15 @@ export const csvLatLongIdBasedTransformer = async (
     throw new Error('Bad CSV Input: No data to process');
   }
 
-  if (isAnIdColumnPresent(data[0])) {
-    return await idBasedSystemHandler(data);
+  try {
+    if (isAnIdColumnPresent(data[0])) {
+      return await idBasedSystemHandler(data);
+    }
+    return data;
+  } catch (err) {
+    logger.error('❌ Error in csvLatLongIdBasedTransformer:', err);
+    throw err;
   }
-
-  return data;
 };
 
 /**
@@ -191,22 +196,23 @@ export const validateIdBased = (idType: string, rows: Record<string, unknown>[])
   const { validateColumns } = ID_TYPE_HANDLER[idType];
   const dataColumns = Object.keys(rows[0] || {}); // headers from first row
 
-  const missingFields = validateColumns.filter((requiredColumn) => {
-    // treat ' | ' like an OR
-    if (requiredColumn.includes(' | ')) {
-      const options = requiredColumn.split(' | ');
-      const hasHeader = dataColumns.some((c) => options.includes(c));
-      const hasValues = hasHeader
-        ? rows.some((row) => options.some((c) => row[c] !== undefined && row[c] !== ''))
-        : false;
-      return !(hasHeader && hasValues);
-    } else {
-      const hasHeader = dataColumns.includes(requiredColumn);
-      const hasValues = hasHeader
-        ? rows.some((row) => row[requiredColumn] !== undefined && row[requiredColumn] !== '')
-        : false;
-      return !(hasHeader && hasValues);
-    }
+  const missingFields = validateColumns.flatMap((requiredColumn) => {
+    const options = requiredColumn.includes(' | ')
+      ? requiredColumn.split(' | ').map((s) => s.trim())
+      : [requiredColumn];
+
+    const hasHeader = options.some((c) => dataColumns.includes(c));
+    const hasValues = hasHeader
+      ? rows.some((row) =>
+          options.some((c) => {
+            const value = row[c];
+            return value !== undefined && value !== null && value !== '';
+          })
+        )
+      : false;
+
+    // If the entire group fails, list all columns in that group individually
+    return !(hasHeader && hasValues) ? options : [];
   });
 
   return {

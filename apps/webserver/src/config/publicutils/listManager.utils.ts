@@ -27,7 +27,6 @@
  * @function {checkListLockStatus}
  * @function {deleteList}
  * @function {resetListStatus}
- * @function {setListStatus}
  * @function {getListStatusCommonName}
  * @function {getPaginatedAnalysisDataForUserList}
  * @function {getNumberPagesForAnalysisDataUserList}
@@ -66,7 +65,7 @@ import {
   getAllLists as getAllListsSql,
   getUserLists as getUsersListSql,
 } from '@wri-monorepos/sql';
-import { getListAnalysisStatusByListId, setSelectedAnalyses } from '@wri-monorepos/geo';
+import { setSelectedAnalyses } from '@wri-monorepos/geo';
 import type { ListsAnalysisStatus } from '@wri-monorepos/sql';
 
 /** @function {createList}
@@ -1492,46 +1491,6 @@ export const deleteList = (req, list_id) => {
         reject(errorObject);
       });
   }); // end promisse
-};
-
-export const setListStatus = (req, list_id, newStatus) => {
-  return new Promise((resolve, reject) => {
-    const parameters = [{ field: 'list_id', type: sql.Int, value: list_id }];
-    switch (newStatus) {
-      case listStatus.Pending:
-        parameters.push({
-          field: 'status_id',
-          type: sql.Int,
-          value: listStatus.Pending,
-        });
-        break;
-      case listStatus.Active:
-        parameters.push({
-          field: 'status_id',
-          type: sql.Int,
-          value: listStatus.Active,
-        });
-        break;
-      case listStatus.Inactive:
-        parameters.push({
-          field: 'status_id',
-          type: sql.Int,
-          value: listStatus.Inactive,
-        });
-        break;
-      case listStatus.Draft:
-        parameters.push({
-          field: 'status_id',
-          type: sql.Int,
-          value: listStatus.Draft,
-        });
-        break;
-      default:
-        reject('incorrect status id');
-    }
-    sqlUtils.executeOrganizationStoredProcedure(req, 'uspSetListStatus', parameters);
-    resolve(true);
-  });
 };
 
 /**

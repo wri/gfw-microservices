@@ -6,7 +6,7 @@ import { PRO_MANAGER_PATH } from '../../common/paths';
 function UsersListSection({ isLoading, setIsLoading }) {
   const [userFilterStr, setUserFilterStr] = useState('');
   const [userSortingCategory, setUserSortingCategory] = useState('first_name');
-  const [userDir, setUserDir] = useState('des');
+  const [userDir, setUserDir] = useState('desc');
   const [promanagerData, setPromanagerData] = useState({});
 
   useEffect(() => {
@@ -108,7 +108,7 @@ function UsersListSection({ isLoading, setIsLoading }) {
   };
 
   const sortUserTable = (evt) => {
-    const direction = userDir === 'des' ? 'asc' : 'des';
+    const direction = userDir === 'desc' ? 'asc' : 'desc';
     setUserSortingCategory(evt.target.title);
     setUserDir(direction);
   };

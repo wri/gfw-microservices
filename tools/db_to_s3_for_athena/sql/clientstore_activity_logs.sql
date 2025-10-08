@@ -1,7 +1,6 @@
-
 -- set up temporary table to be used
 IF OBJECT_ID('tempdb..#activity_data') IS NOT NULL
-	DROP TABLE #activity_data
+	DROP TABLE #activity_data;
 
 -- create temporary table for storing user data from EACH organization
 CREATE TABLE #activity_data (
@@ -14,14 +13,14 @@ CREATE TABLE #activity_data (
 	activity_time DATETIME NOT NULL,
 	activity_type_id INT NOT NULL,
 	activity_type VARCHAR(MAX) NOT NULL,
-	activity_type_category VARCHAR(MAX) NOT NULL
+	activity_type_category VARCHAR(MAX) NOT NULL,
+	api_command VARCHAR(MAX) NULL   -- ✅ NEW COLUMN
 );
 
-DECLARE @org_id INT
-DECLARE @org_name NVARCHAR(MAX)
-DECLARE @db_name NVARCHAR(MAX)
-DECLARE @sql NVARCHAR(MAX)
---DECLARE @activity_count INT
+DECLARE @org_id INT;
+DECLARE @org_name NVARCHAR(MAX);
+DECLARE @db_name NVARCHAR(MAX);
+DECLARE @sql NVARCHAR(MAX);
 
 DECLARE db_cursor CURSOR FOR
 	SELECT Orgs.organization_db, Orgs.organization_name, Orgs.id
@@ -33,51 +32,70 @@ DECLARE db_cursor CURSOR FOR
 		AND Orgs.organization_name NOT LIKE '%WRI Engagement%'		
 	ORDER BY Orgs.organization_name;
 
-OPEN db_cursor
-FETCH NEXT FROM db_cursor INTO @db_name, @org_name, @org_id
+OPEN db_cursor;
+FETCH NEXT FROM db_cursor INTO @db_name, @org_name, @org_id;
 
 WHILE @@FETCH_STATUS = 0
 BEGIN
 	IF DB_ID(@db_name) IS NOT NULL
-	PRINT 'COLLECTING ACTIVITY LOGS FROM ' + @org_name + '(' + CAST(@org_id AS VARCHAR(25)) + ') - ' + @db_name;
-	BEGIN				
+		PRINT 'COLLECTING ACTIVITY LOGS FROM ' + @org_name + '(' + CAST(@org_id AS VARCHAR(25)) + ') - ' + @db_name;
 
+	BEGIN				
 		SET @sql = N' 			
-			INSERT INTO #activity_data ( org_id
-				, org_name
-				, org_database
-				, user_id, user_email
-				, activity_description
-				, activity_time, activity_type_id
-				, activity_type, activity_type_category
-			)			
-			SELECT {org_id} AS org_id
-				, ''{org_name}'' AS org_name
-				, ''{db_name_text}'' AS org_database
-				, AL.user_id, U.email 
-				, AL.activity_description
-				, AL.activity_time, AL.activity_type_id
-				, AT.activity_type_name AS activity_type
-				, ATC.activity_type_category_name AS activity_type_category
+			INSERT INTO #activity_data (
+				org_id, org_name, org_database,
+				user_id, user_email,
+				activity_description, activity_time,
+				activity_type_id, activity_type, activity_type_category, api_command
+			)
+			SELECT
+				{org_id} AS org_id,
+				N''{org_name}'' AS org_name,
+				N''{db_name_text}'' AS org_database,
+				AL.user_id,
+				U.email,
+				AL.activity_description,
+				AL.activity_time,
+				AL.activity_type_id,
+				AT.activity_type_name AS activity_type,
+				ATC.activity_type_category_name AS activity_type_category,
+				CASE AT.activity_type_name
+					WHEN ''ListCreated'' THEN ''POST /api/lists/create''
+					WHEN ''ListDeleted'' THEN ''DELETE /api/lists/:id''
+					WHEN ''ListUpdate'' THEN ''PUT /api/lists/:id''
+					WHEN ''ListUpdateNew'' THEN ''PUT /api/lists/:id''
+					WHEN ''ListAnalyzing'' THEN ''POST /api/analysis/start''
+					WHEN ''UserLogin'' THEN ''POST /api/auth/login''
+					WHEN ''UserLogout'' THEN ''POST /api/auth/logout''
+					WHEN ''LocationUploadedToList'' THEN ''POST /api/lists/upload''
+					WHEN ''LocationDeletedFromList'' THEN ''DELETE /api/lists/locations''
+					WHEN ''AccountRequested'' THEN ''POST /api/accounts/request''
+					WHEN ''AccountActivated'' THEN ''POST /api/accounts/activate''
+					WHEN ''AccountUpdated'' THEN ''PUT /api/accounts/:id''
+					ELSE NULL
+				END AS api_command
 			FROM [{db_name}].dbo.ActivityLog AL
 			LEFT JOIN [{db_name}].dbo.Users U ON U.id = AL.user_id
 			LEFT JOIN gfwpro.dbo.ActivityType AT ON AT.id = AL.activity_type_id
 			LEFT JOIN gfwpro.dbo.ActivityTypeCategory ATC ON ATC.id = AT.activity_type_category_id
-			WHERE U.email IS NOT NULL;' -- Temp fix, losing data due to null
-		
+			WHERE U.email IS NOT NULL;';
+
 		SET @sql = REPLACE(@sql, '{org_id}', @org_id);
 		SET @sql = REPLACE(@sql, '{org_name}', REPLACE(TRIM(@org_name), '''', ''''''));
 		SET @sql = REPLACE(@sql, '{db_name_text}', REPLACE(@db_name, '''', ''''''));
 		SET @sql = REPLACE(@sql, '{db_name}', @db_name);
-		--PRINT @sql;
+
 		EXEC sp_executesql @sql;
-		
-	END
+	END;
+
 	FETCH NEXT FROM db_cursor INTO @db_name, @org_name, @org_id;
+END;
 
-END
+CLOSE db_cursor;
+DEALLOCATE db_cursor;
 
-CLOSE db_cursor
-DEALLOCATE db_cursor
-
+-- ✅ Final result for Athena
 SELECT * FROM #activity_data;
+
+-- Clean up temp table
+DROP TABLE #activity_data;

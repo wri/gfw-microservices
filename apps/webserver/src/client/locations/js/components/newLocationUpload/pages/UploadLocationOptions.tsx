@@ -13,7 +13,6 @@ import DataFileIcon from '../../../../../assets/icons/data-file.svg';
 import ByIDIcon from '../../../../../assets/icons/id-card-icon.svg';
 import AddPointIcon from '../../../../../assets/icons/add-point.svg';
 import DrawPolygonIcon from '../../../../../assets/icons/draw-polygon.svg';
-import featureFlags from '../../../../../../utils/general.utils';
 
 const ImgIcon: React.FC<{ src: string; alt: string }> = ({ src, alt }) => (
   <img src={src} alt={alt} style={{ height: '48px', width: '48px', marginLeft: '2px' }} />
@@ -47,7 +46,6 @@ export function UploadLocationOptions({ fromList, userLists }: UploadLocationOpt
   };
 
   const { pageName, ...backButtonProps } = getRedirectLocation(fromList);
-  const { isBrazilCarFlagAvailable } = featureFlags;
 
   return (
     <div className="upload-location-options">
@@ -100,26 +98,24 @@ export function UploadLocationOptions({ fromList, userLists }: UploadLocationOpt
             </Button>
 
             {/* Upload.ById */}
-            {isBrazilCarFlagAvailable && (
-              <Button
-                className="upload-location-options__button"
-                data-cy={DATA_CY.NEW_UPLOAD_WORKFLOW[UploadType.ById].ADD}
-                onClick={() => {
-                  selectUploadType(UploadType.ById);
-                  history.push('UPLOAD_BY_ID');
-                }}
-                startIcon={<ImgIcon src={ByIDIcon} alt="Data file icon" />}
-                sx={{ mt: 2 }}
-              >
-                <Box sx={{ mt: 1, lineHeight: 1, textTransform: 'none' }}>
-                  <Typography variant="subtitle2">By ID</Typography>
-                  <Typography variant="caption">
-                    For regional and global ID systems such as Brazilian CAR or the Universal Mill
-                    List
-                  </Typography>
-                </Box>
-              </Button>
-            )}
+            <Button
+              className="upload-location-options__button"
+              data-cy={DATA_CY.NEW_UPLOAD_WORKFLOW[UploadType.ById].ADD}
+              onClick={() => {
+                selectUploadType(UploadType.ById);
+                history.push('UPLOAD_BY_ID');
+              }}
+              startIcon={<ImgIcon src={ByIDIcon} alt="Data file icon" />}
+              sx={{ mt: 2 }}
+            >
+              <Box sx={{ mt: 1, lineHeight: 1, textTransform: 'none' }}>
+                <Typography variant="subtitle2">By ID</Typography>
+                <Typography variant="caption">
+                  For regional and global ID systems such as Brazilian CAR or the Universal Mill
+                  List
+                </Typography>
+              </Box>
+            </Button>
           </Box>
         </div>
         <div className="upload-location-options__main-content__options__other-options">

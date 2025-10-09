@@ -270,6 +270,10 @@ export const handleCreateAnalysis = async (
         delete analysisTypes['GHG'];
       }
     }
+
+    // Check if any locations have ErrorDetails before sending to Geotrellis
+    await validateNoErrorDetails(listId, organizationDb);
+
     const data = {
       list_id: listId,
       user_id: organization_user_id,
@@ -555,6 +559,48 @@ const validateYields = (listAttributes: ListSchemaType[], nullIsAvailable: boole
     });
   } catch (error) {
     Logger.error('validateGHGCommodity', error.stack || error);
+    throw error;
+  }
+};
+
+// Validate that no locations have ErrorDetails
+const validateNoErrorDetails = async (listId: number, organizationDb: string): Promise<void> => {
+  try {
+    const clientStoreConnection = new ClientStoreConnection();
+    const organizationConnection = await clientStoreConnection.getConnection(organizationDb);
+    const listRepository = organizationConnection.getRepository(Lists);
+    const listData = await listRepository.findOne({
+      where: { id: listId },
+    });
+
+    if (!listData) {
+      Logger.error('validateNoErrorDetails', `List ${listId} not found`);
+      throw new BadRequestException(`List ${listId} not found`);
+    }
+
+    // Get list table repository
+    const ListEntity = new EntitySchema<ListSchemaType>({
+      ...ListSchema,
+      name: listData.listTableName,
+    });
+    const connection = await clientStoreConnection.getConnection(organizationDb, [ListEntity]);
+
+    // Check if any location has ErrorDetails - if one has a problem, all should have
+    const locationWithError = await connection
+      .getRepository(ListEntity)
+      .createQueryBuilder('location')
+      .select(['location.locationId'])
+      .where('location.errorDetails IS NOT NULL')
+      .andWhere("location.errorDetails != ''")
+      .getOne();
+
+    if (locationWithError) {
+      const errorMessage = `Cannot analyze list: locations have errors. Please fix the errors before re-analyzing.`;
+      Logger.error('validateNoErrorDetails', errorMessage);
+      throw new BadRequestException(errorMessage);
+    }
+  } catch (error) {
+    Logger.error('validateNoErrorDetails', error.stack || error);
     throw error;
   }
 };

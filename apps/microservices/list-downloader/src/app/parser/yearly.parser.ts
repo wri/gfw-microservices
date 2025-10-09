@@ -6,7 +6,16 @@ import { brazilBiomesYearlyTCLParser } from './south.america.parser';
 const yearlyParser = ({ operation, data, dataRow, csvData }) => {
   const { composites, following } = operation;
   composites?.forEach((field) => {
-    const yearlyData = data[field.attribute] ? JSON.parse(data[field.attribute]) : {};
+    let yearlyData = data[field.attribute] ? JSON.parse(data[field.attribute]) : {};
+
+    // Prefer country_specific_deforestation_wdpa_yearly.BRA for WDPA; fallback to
+    // tree_cover_loss_prodes_wdpa_yearly is kept for backward compatibility
+    if (field.attribute === 'tree_cover_loss_prodes_wdpa_yearly') {
+      const braWdpa = JSON.parse(data['country_specific_deforestation_wdpa_yearly'] || '{}')?.BRA;
+      if (braWdpa) {
+        yearlyData = braWdpa;
+      }
+    }
 
     let totalListLevelCount = 0;
 

@@ -243,4 +243,58 @@ describe('Yearly Parser.', () => {
     expect(csvData[5]).toEqual(['With Category - cat2', 1939.4091, '2019']);
     expect(csvData[7]).toEqual(['With Category - cat2', 1165.8674, '2021']);
   });
+
+  test('Uses country_specific_deforestation_wdpa_yearly.BRA when present (WDPA preference)', () => {
+    const dataRow = [];
+    const csvData = [];
+
+    yearlyParser({
+      operation: {
+        composites: [
+          {
+            attribute: 'tree_cover_loss_prodes_wdpa_yearly',
+            label: 'Protected Areas',
+          },
+        ],
+      },
+      data: {
+        country_specific_deforestation_wdpa_yearly: JSON.stringify({ BRA: { 2018: 10, 2019: 20 } }),
+        // Should be ignored because BRA-specific WDPA data exists
+        tree_cover_loss_prodes_wdpa_yearly: '{"2018": 999}',
+      },
+      dataRow,
+      csvData,
+    });
+
+    expect(csvData.length).toEqual(2);
+    expect(csvData[0]).toEqual(['Protected Areas', 10, '2018']);
+    expect(csvData[1]).toEqual(['Protected Areas', 20, '2019']);
+  });
+
+  test('Falls back to tree_cover_loss_prodes_wdpa_yearly when BRA-specific WDPA is absent', () => {
+    const dataRow = [];
+    const csvData = [];
+
+    yearlyParser({
+      operation: {
+        composites: [
+          {
+            attribute: 'tree_cover_loss_prodes_wdpa_yearly',
+            label: 'Protected Areas',
+          },
+        ],
+      },
+      data: {
+        // No BRA key provided -> should use legacy attribute
+        country_specific_deforestation_wdpa_yearly: '{}',
+        tree_cover_loss_prodes_wdpa_yearly: '{"2018": 5, "2019": 6}',
+      },
+      dataRow,
+      csvData,
+    });
+
+    expect(csvData.length).toEqual(2);
+    expect(csvData[0]).toEqual(['Protected Areas', 5, '2018']);
+    expect(csvData[1]).toEqual(['Protected Areas', 6, '2019']);
+  });
 });

@@ -7,6 +7,7 @@ import {
   UnlockLists,
 } from '@wri-monorepos/geo';
 import { UnlockListAndSaveAsDraft, UspSetListLocked } from '@wri-monorepos/sql';
+import { checkListSizeLimit } from '../../common/check.listSizelimit';
 
 const logger = new Logger(`handleExistingListUpdate`);
 
@@ -79,6 +80,10 @@ export const handleExistingListUpdate = async (params: ListUpdateParams) => {
     await lockLists(clientDatabase, listsToUnlock, userId);
 
     logger.log(`Performing ${action} for existing list`);
+    // Enforce per-list size limit before bulk copy
+
+    await checkListSizeLimit(clientDatabase, moveToList.id, finalGeojson);
+
     const destLocationIds = await PerformLocationsBulkCopy(
       moveToList.id,
       moveToList.list_name,

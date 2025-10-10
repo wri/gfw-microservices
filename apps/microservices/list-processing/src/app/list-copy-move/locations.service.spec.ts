@@ -27,6 +27,7 @@ import {
   UspSetListLocked,
   requestAnalysisProcess,
   updateListsAnalysisStatus,
+  getListLocationsCountById,
 } from '@wri-monorepos/sql';
 
 import { checkProcessingLimits } from '@wri-monorepos/shared';
@@ -54,6 +55,7 @@ jest.mock('@wri-monorepos/sql', () => ({
   UspSetListLocked: jest.fn(),
   requestAnalysisProcess: jest.fn(),
   updateListsAnalysisStatus: jest.fn(),
+  getListLocationsCountById: jest.fn(),
 }));
 
 jest.mock('@wri-monorepos/shared', () => ({
@@ -282,6 +284,7 @@ describe('LocationService', () => {
         isListLocationOverLimit: false,
         processingLimit: 1000,
       });
+      (getListLocationsCountById as jest.Mock).mockResolvedValue(0);
     });
 
     it('should handle existing list update successfully', async () => {
@@ -297,6 +300,21 @@ describe('LocationService', () => {
       );
       expect(PerformCopyAnalysis).toHaveBeenCalled();
       expect(UnlockLists).toHaveBeenCalledWith('testdb', [100, 300]);
+    });
+
+    it('should throw when per-list 150,000 limit would be exceeded', async () => {
+      (getListLocationsCountById as jest.Mock).mockResolvedValue(150000);
+      await expect(
+        service.handleExistingListUpdate({
+          ...mockParams,
+          finalGeojson: {
+            type: 'FeatureCollection',
+            features: [
+              { type: 'Feature', geometry: { type: 'Point', coordinates: [0, 0] }, properties: {} },
+            ],
+          } as any,
+        })
+      ).rejects.toThrow();
     });
 
     it('should save as draft when isSaveAsDraft is true', async () => {

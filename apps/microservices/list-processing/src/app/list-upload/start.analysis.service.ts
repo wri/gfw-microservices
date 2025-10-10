@@ -3,7 +3,7 @@ import { RequestLargeListProcess, ResponseLargeListProcess } from '../../models'
 import { ConfigService } from '@nestjs/config';
 import { ServerConfigType } from '../../validators/server-config';
 import { EmailService, S3Service } from '@wri-monorepos/aws';
-import { AbstractHandler, ChainType } from './chain/types';
+import { AbstractHandler, ChainType, RequestNewList } from './chain/types';
 import { DownloadS3File } from './chain/download.s3.file';
 import { ParserData } from './chain/parser.data';
 import { GADMService } from './chain/gadm.service';
@@ -29,6 +29,9 @@ import { PutListAsDraft } from './chain/put.list.as.draft';
 import { GenerateErrorFile } from './chain/generate.error.file';
 import { AdjustGeoData } from './chain/adjust.geo.data';
 import { CommodityService } from '../list/commodity.service';
+import { checkListSizeLimit } from '../common/check.listSizelimit';
+import { MAX_LOCATIONS_PER_LIST } from '../common/constants';
+import { ListSizeLimitException } from '../common/listSizeLimit.exception';
 
 type WorkerType = {
   request: RequestLargeListProcess;
@@ -37,6 +40,7 @@ type WorkerType = {
 };
 
 const LIST_UPLOAD_QUEUE_CONCURRENCY = 5;
+const workerLogger = new Logger('ListUploadWorker');
 
 export async function clearErrorFile(organizationDatabase: string, listId: number) {
   const connection = await new ClientStoreConnection().getConnection(organizationDatabase);
@@ -60,49 +64,107 @@ async function worker(input: WorkerType, cb: done) {
 
   const connection = new SQLUtils();
   const s3Service = new S3Service();
-  await connection.connect(organizationDatabase);
+  try {
+    await connection.connect(organizationDatabase);
 
-  const downloadS3File = new DownloadS3File(s3Service, input.config);
-  const parseData = new ParserData();
-  const processUploadData = new ProcessUploadData();
-  const gadmService = new GADMService();
-  const clipToLandService = new ClipToLandService();
-  const validateLatLongGeojson = new ValidateLatLongGeojson();
-  const insertLocationData = new InsertLocationData();
-  const writeLocationCount = new WriteLocationCount();
-  const listSchemaName = new ListSchemaName(false);
-  const startAnalysis = new StartAnalysis();
-  const convertPoint2Polygon = new ConvertPoint2Polygon();
-  const validateMandatoryFields = new ValidateMandatoryFields();
-  const validateLocationName = new ValidateLocationName();
-  const addNewLocationToAnalysisTable = new AddNewLocationToAnalysisTable();
-  const convertGeojsonProperties = new ConvertGeojsonProperties();
-  const putListAsDraft = new PutListAsDraft(input.config, input.emailService);
-  const generateErrorFile = new GenerateErrorFile(s3Service, input.config);
-  const adjustGeoData = new AdjustGeoData();
+    const downloadS3File = new DownloadS3File(s3Service, input.config);
+    const parseData = new ParserData();
+    const processUploadData = new ProcessUploadData();
+    const gadmService = new GADMService();
+    const clipToLandService = new ClipToLandService();
+    const validateLatLongGeojson = new ValidateLatLongGeojson();
+    const insertLocationData = new InsertLocationData();
+    const writeLocationCount = new WriteLocationCount();
+    const listSchemaName = new ListSchemaName(false);
+    const startAnalysis = new StartAnalysis();
+    const convertPoint2Polygon = new ConvertPoint2Polygon();
+    const validateMandatoryFields = new ValidateMandatoryFields();
+    const validateLocationName = new ValidateLocationName();
+    const addNewLocationToAnalysisTable = new AddNewLocationToAnalysisTable();
+    const convertGeojsonProperties = new ConvertGeojsonProperties();
+    const putListAsDraft = new PutListAsDraft(input.config, input.emailService);
+    const generateErrorFile = new GenerateErrorFile(s3Service, input.config);
+    const adjustGeoData = new AdjustGeoData();
+    class ListSizeLimitValidator extends AbstractHandler<ChainType> {
+      private lastLoggedAt = 0;
 
-  downloadS3File
-    .setNext(parseData)
-    .setNext(convertGeojsonProperties)
-    .setNext(listSchemaName)
-    .setNext(adjustGeoData)
-    .setNext(validateMandatoryFields) // depends on centroid calculation in adjustGeoData
-    .setNext(validateLocationName)
-    .setNext(convertPoint2Polygon)
-    .setNext(gadmService) // depends on convertPoint2Polygon
-    .setNext(validateLatLongGeojson) // depends on gadmService, must be before clipToLandService
-    .setNext(clipToLandService)
-    .setNext(processUploadData)
-    .setNext(putListAsDraft) // depends on gadmService and validateLatLongGeojson
-    .setNext(insertLocationData)
-    .setNext(writeLocationCount)
-    .setNext(generateErrorFile)
-    .setNext(addNewLocationToAnalysisTable)
-    .setNext(startAnalysis);
+      async handle(input: ChainType): Promise<ChainType> {
+        const req = input.request as RequestNewList | undefined;
+        const db = req?.organization_database;
+        const listId = req?.list_id as number | undefined;
+        const incomingFeaturesCount = Array.isArray(input.geojson)
+          ? input.geojson.length
+          : input.geojson?.features?.length ?? 0;
 
-  await AbstractHandler.runFullChain(downloadS3File, chainType);
-  await connection.disconnect();
-  cb(null);
+        if (db && listId && incomingFeaturesCount) {
+          if (incomingFeaturesCount > MAX_LOCATIONS_PER_LIST) {
+            const now = Date.now();
+            if (now - this.lastLoggedAt > 5000) {
+              workerLogger.warn(
+                `Upload for list ${listId} in database ${db} contains ${incomingFeaturesCount} features, exceeding the maximum allowed ${MAX_LOCATIONS_PER_LIST}. Rejecting batch.`
+              );
+              this.lastLoggedAt = now;
+            }
+            throw new ListSizeLimitException(MAX_LOCATIONS_PER_LIST);
+          }
+
+          await checkListSizeLimit(db, listId, input.geojson);
+        }
+        return super.handle(input);
+      }
+    }
+    const listSizeLimitValidator = new ListSizeLimitValidator();
+
+    downloadS3File
+      .setNext(parseData)
+      .setNext(convertGeojsonProperties)
+      .setNext(listSizeLimitValidator)
+      .setNext(listSchemaName)
+      .setNext(adjustGeoData)
+      .setNext(validateMandatoryFields) // depends on centroid calculation in adjustGeoData
+      .setNext(validateLocationName)
+      .setNext(convertPoint2Polygon)
+      .setNext(gadmService) // depends on convertPoint2Polygon
+      .setNext(validateLatLongGeojson) // depends on gadmService, must be before clipToLandService
+      .setNext(clipToLandService)
+      .setNext(processUploadData)
+      .setNext(putListAsDraft) // depends on gadmService and validateLatLongGeojson
+      .setNext(insertLocationData)
+      .setNext(writeLocationCount)
+      .setNext(generateErrorFile)
+      .setNext(addNewLocationToAnalysisTable)
+      .setNext(startAnalysis);
+
+    await AbstractHandler.runFullChain(downloadS3File, chainType);
+    cb(null);
+  } catch (error) {
+    if (error instanceof ListSizeLimitException) {
+      workerLogger.warn(
+        `List ${listId} in database ${organizationDatabase} exceeded size limit. ${error.message}`
+      );
+      await AbstractHandler.updateListsUploadStatus(
+        chainType,
+        'List size limit exceeded',
+        error.message
+      );
+      cb(null);
+    } else {
+      workerLogger.error(
+        `Error processing list ${listId} in database ${organizationDatabase}: ${error.message}`,
+        (error as Error)?.stack
+      );
+      cb(error as Error);
+    }
+  } finally {
+    try {
+      await connection.disconnect();
+    } catch (disconnectError) {
+      workerLogger.error(
+        `Failed to disconnect from database ${organizationDatabase}: ${disconnectError.message}`,
+        (disconnectError as Error)?.stack
+      );
+    }
+  }
 }
 
 @Injectable()

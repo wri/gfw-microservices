@@ -1,5 +1,5 @@
 import { handleExistingListUpdate } from './existing.list.update';
-import { UspSetListLocked } from '@wri-monorepos/sql';
+import { UspSetListLocked, getListLocationsCountById } from '@wri-monorepos/sql';
 import {
   FeatureCollection,
   handleCreateAnalysis,
@@ -8,14 +8,20 @@ import {
   UnlockLists,
 } from '@wri-monorepos/geo';
 import { UnlockListAndSaveAsDraft } from '@wri-monorepos/sql';
+import { ListSizeLimitException } from '../../common/listSizeLimit.exception';
 
 const mockRun = jest.fn();
-jest.mock('@wri-monorepos/sql', () => ({
-  UspSetListLocked: jest.fn().mockImplementation(() => ({
-    run: mockRun,
-  })),
-  UnlockListAndSaveAsDraft: jest.fn(),
-}));
+jest.mock('@wri-monorepos/sql', () => {
+  const actual = jest.requireActual('@wri-monorepos/sql');
+  return {
+    ...actual,
+    UspSetListLocked: jest.fn().mockImplementation(() => ({
+      run: mockRun,
+    })),
+    UnlockListAndSaveAsDraft: jest.fn(),
+    getListLocationsCountById: jest.fn(),
+  };
+});
 
 jest.mock('@wri-monorepos/geo', () => ({
   handleCreateAnalysis: jest.fn(),
@@ -44,6 +50,7 @@ describe('handleExistingListUpdate', () => {
 
   beforeEach(() => {
     jest.clearAllMocks();
+    (getListLocationsCountById as jest.Mock).mockResolvedValue(1000);
   });
 
   it('should handle list update with save as draft', async () => {
@@ -100,6 +107,39 @@ describe('handleExistingListUpdate', () => {
       mockSelectedListId,
       mockMoveToList.id,
     ]);
+  });
+
+  it('should throw ListSizeLimitException when incoming + existing exceed 150,000', async () => {
+    (getListLocationsCountById as jest.Mock).mockResolvedValue(150000);
+    const tooMany: FeatureCollection = {
+      type: 'FeatureCollection',
+      features: [
+        {
+          type: 'Feature',
+          geometry: { type: 'Point', coordinates: [0, 0] } as any,
+          properties: {},
+        },
+      ],
+    } as any;
+
+    await expect(
+      handleExistingListUpdate({
+        clientDatabase: mockClientDatabase,
+        selectedListId: mockSelectedListId,
+        moveToList: mockMoveToList,
+        userId: mockUserId,
+        action: mockAction,
+        isSaveAsDraft: true,
+        finalGeojson: tooMany,
+        commodityType: mockCommodityType,
+        srcListAnalysisTable: mockSrcListAnalysisTable,
+        selectedLocations: mockSelectedLocations,
+        gfwListId: mockGfwListId,
+        organizationId: mockOrganizationId,
+        analysisIds: mockAnalysisIds,
+        subscriptionStatusId: mockSubscriptionStatusId,
+      })
+    ).rejects.toBeInstanceOf(ListSizeLimitException);
   });
 
   it('should handle list update with analysis creation', async () => {

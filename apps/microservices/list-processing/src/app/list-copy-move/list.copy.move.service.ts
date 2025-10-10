@@ -27,6 +27,8 @@ import { ConvertGeojsonProperties } from '../list-upload/chain/convert.geojson.p
 import { AbstractHandler } from '../list-upload/chain/types';
 import { CommodityService } from '../list/commodity.service';
 import { UpdateListAttributesRemoveIdColumns } from '../list-upload/chain/update.list.attributes.remove.id.columns';
+import { MAX_LOCATIONS_PER_LIST } from '../common/constants';
+import { ListSizeLimitException } from '../common/listSizeLimit.exception';
 
 interface ProcessingChainParams {
   moveToList: { id: number; list_name: string };
@@ -217,6 +219,12 @@ export class ListCopyMoveService {
     const locationData = await this.getLocationData(clientDatabase, gfwListId, request, true);
     const geojson = await this.assembleCommonGeojson(locationData, clientDatabase, gfwListId);
 
+    // Enforce size limit before creating or updating the target list
+    const incomingCountGfw = geojson?.features?.length ?? 0;
+    if (incomingCountGfw > MAX_LOCATIONS_PER_LIST) {
+      throw new ListSizeLimitException(MAX_LOCATIONS_PER_LIST);
+    }
+
     const moveToList = await this.createOrUpdateTargetList(request, analysisIds, gfwListId);
 
     await this.updateExistingList(request, moveToList, geojson, analysisIds, gfwListId);
@@ -293,6 +301,12 @@ export class ListCopyMoveService {
         clientDatabase,
         selectedListId
       );
+
+      // Enforce size limit before creating or updating the target list
+      const incomingCount = geojson?.features?.length ?? 0;
+      if (incomingCount > MAX_LOCATIONS_PER_LIST) {
+        throw new ListSizeLimitException(MAX_LOCATIONS_PER_LIST);
+      }
 
       const moveToList = await this.createOrUpdateTargetList(request, analysisIds, selectedListId);
 

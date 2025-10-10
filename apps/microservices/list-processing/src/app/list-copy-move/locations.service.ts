@@ -27,6 +27,7 @@ import {
 import { ListCopyMoveService } from './list.copy.move.service';
 import { ServerConfigType } from '../../validators/server-config';
 import { ProcessingLimitException } from '../app.exceptions';
+import { checkListSizeLimit } from '../common/check.listSizelimit';
 
 @Injectable()
 export class LocationService {
@@ -164,6 +165,10 @@ export class LocationService {
     userId,
   }) => {
     this.logger.log(`Performing ${action} for existing list`);
+
+    // Enforce per-list location cap before copying/appending
+    await checkListSizeLimit(clientDatabase, moveToList.id, finalGeojson);
+
     const destLocationIds = await PerformLocationsBulkCopy(
       moveToList.id,
       moveToList.list_name,

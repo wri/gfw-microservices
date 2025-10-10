@@ -9,6 +9,7 @@ import { getRepositoryToken } from '@nestjs/typeorm';
 import sinon from 'sinon';
 import { AbstractHandler } from './chain/types';
 import { DataSource } from 'typeorm';
+import { checkListSizeLimit } from '../common/check.listSizelimit';
 
 // Mock the SQLUtils module
 jest.mock('@wri-monorepos/sql', () => {
@@ -22,6 +23,8 @@ jest.mock('@wri-monorepos/sql', () => {
     upgradeListSchema: jest.fn().mockResolvedValue(undefined),
   };
 });
+
+jest.mock('../common/check.listSizelimit');
 
 // Mock the fastq module
 jest.mock('fastq', () => {
@@ -61,6 +64,15 @@ describe('StartAnalysisService', () => {
 
   beforeEach(async () => {
     sandbox = sinon.createSandbox();
+    (checkListSizeLimit as jest.MockedFunction<typeof checkListSizeLimit>).mockImplementation(
+      async (clientDatabase, listId) => {
+        // Default test behaviour keeps counts below limit
+        if (clientDatabase === 'test-database' && listId === 1) {
+          return;
+        }
+        throw new Error('List exceeds limit');
+      }
+    );
 
     // Create chain stubs
     const chainStub = {

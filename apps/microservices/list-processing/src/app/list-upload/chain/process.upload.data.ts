@@ -14,6 +14,7 @@ import { Feature } from '@wri-monorepos/geo';
 import { GeoJSONGeometry, stringify } from 'wellknown';
 import { ConvertPoint2Polygon } from './convert.point.2.polygon';
 import { getMaxLocationId } from '../shared/list.utils';
+import { checkListSizeLimit } from '../../common/check.listSizelimit';
 
 export class ProcessUploadData extends AbstractHandler<ChainType> {
   private readonly logger = new Logger(ProcessUploadData.name);
@@ -132,6 +133,9 @@ export class ProcessUploadData extends AbstractHandler<ChainType> {
       request.request as RequestNewList;
 
     const clientStoreConnection = new ClientStoreConnection();
+    // Enforce per-list size limit prior to assigning new ids
+    await checkListSizeLimit(organizationDatabase, listId, features);
+
     const listLocationsCount =
       (await getMaxLocationId(clientStoreConnection, organizationDatabase, listId)) ?? 0;
 

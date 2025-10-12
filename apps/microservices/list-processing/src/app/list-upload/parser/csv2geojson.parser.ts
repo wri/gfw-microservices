@@ -22,7 +22,7 @@ export const csv2geojson = async (
   includeLatLon = true
 ): Promise<FeatureCollection> => {
   // remove UTF8 BOM if present
-  if (csvContent.charAt(0) === '\uFEFF') {
+  if (csvContent.startsWith('\uFEFF')) {
     csvContent = csvContent.slice(1);
   }
   const standardizeLocationData = (data: LocationData): LocationData => {

@@ -21,6 +21,10 @@ export const csv2geojson = async (
   preview = false,
   includeLatLon = true
 ): Promise<FeatureCollection> => {
+  // remove UTF8 BOM if present
+  if (csvContent.charAt(0) === '\uFEFF') {
+    csvContent = csvContent.slice(1);
+  }
   const standardizeLocationData = (data: LocationData): LocationData => {
     const latitudeKeys = ['Latitude', 'latitude', 'lat', 'Lat'];
     const longitudeKeys = ['Longitude', 'longitude', 'long', 'Lon', 'lng'];

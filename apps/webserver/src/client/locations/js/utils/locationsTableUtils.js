@@ -7,7 +7,34 @@ import {
 } from '../../../listDetails/js/components/lists/ListDetails/deforestationDisplayFormat.constants';
 import { columnHeaders } from '../../../listDetails/js/config/columns/columnHeaders.constants';
 
-const transifex = Transifex.live.translateText;
+let transifex = (function (t) {
+  if (t && t.live && typeof t.live.translateText === 'function') {
+    return t.live.translateText;
+  } else {
+    // Fallback: return the input string untranslated
+    return (str) => str;
+  }
+})(typeof Transifex !== 'undefined' ? Transifex : undefined);
+
+// Retry logic if Transifex is not ready at load time
+if (
+  typeof Transifex === 'undefined' ||
+  !Transifex.live ||
+  typeof Transifex.live.translateText !== 'function'
+) {
+  const retrySetTransifex = () => {
+    if (
+      typeof Transifex !== 'undefined' &&
+      Transifex.live &&
+      typeof Transifex.live.translateText === 'function'
+    ) {
+      transifex = Transifex.live.translateText;
+    } else {
+      setTimeout(retrySetTransifex, 200); // Retry every 200ms
+    }
+  };
+  setTimeout(retrySetTransifex, 200);
+}
 
 const getColorByLevelClass = (level) => {
   if (level === null || level === undefined) {

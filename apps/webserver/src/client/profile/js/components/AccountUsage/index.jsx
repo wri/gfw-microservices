@@ -81,7 +81,8 @@ export default function AccountUsageContainer() {
     )
       .then((res) => res.json())
       .then((data) => {
-        setUsageDataperUser(data.organizationUsersAnalysisUsage);
+        const { organizationUsersAnalysisUsage = [] } = data;
+        setUsageDataperUser(organizationUsersAnalysisUsage);
       })
       .catch((error) => {
         console.log(error);
@@ -191,39 +192,40 @@ export default function AccountUsageContainer() {
         setEndDateAnalysis={setEndDateAnalysis}
         startDateAnalysis={startDateAnalysis}
         endDateAnalysis={endDateAnalysis}
-      />
-      <h3 style={{ margin: '30px 0 20px 0', fontWeight: 'normal' }}>Usage Per User</h3>
-      <TableContainer component={Paper}>
-        <Table sx={{ minWidth: 650 }}>
-          <TableHead>
-            <TableRow>
-              <HeaderTableCell>User</HeaderTableCell>
-              <HeaderTableCell align="right"># Analyses (% of Total used)</HeaderTableCell>
-              <HeaderTableCell align="right">Area (% of Total used)</HeaderTableCell>
-            </TableRow>
-          </TableHead>
-          <TableBody>
-            {usageDataperUser.map((row) => (
-              <TableRow
-                key={row.user_id}
-                sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
-              >
-                <TableCell component="th" scope="row">
-                  {row.first_name} {row.last_name}
-                </TableCell>
-                <TableCell align="right">
-                  {formatNumber(row.total_locations_analyzed)} (
-                  {getAnalysesPercentage(row.total_locations_analyzed)}%)
-                </TableCell>
-                <TableCell align="right">
-                  {formatNumber(row.total_area_analyzed)} (
-                  {getAreasPercentage(row.total_area_analyzed)}%)
-                </TableCell>
+      >
+        <h3 style={{ margin: '30px 0 20px 0', fontWeight: 'normal' }}>Usage Per User</h3>
+        <TableContainer component={Paper}>
+          <Table sx={{ minWidth: 650 }}>
+            <TableHead>
+              <TableRow>
+                <HeaderTableCell>User</HeaderTableCell>
+                <HeaderTableCell align="right"># Analyses (% of Total used)</HeaderTableCell>
+                <HeaderTableCell align="right">Area (% of Total used)</HeaderTableCell>
               </TableRow>
-            ))}
-          </TableBody>
-        </Table>
-      </TableContainer>
+            </TableHead>
+            <TableBody>
+              {usageDataperUser.map((row) => (
+                <TableRow
+                  key={row.user_id}
+                  sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
+                >
+                  <TableCell component="th" scope="row">
+                    {row.first_name} {row.last_name}
+                  </TableCell>
+                  <TableCell align="right">
+                    {formatNumber(row.total_locations_analyzed)} (
+                    {getAnalysesPercentage(row.total_locations_analyzed)}%)
+                  </TableCell>
+                  <TableCell align="right">
+                    {formatNumber(row.total_area_analyzed)} (
+                    {getAreasPercentage(row.total_area_analyzed)}%)
+                  </TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        </TableContainer>
+      </AccountDetailUsageByAnalysisType>
     </>
   );
 }

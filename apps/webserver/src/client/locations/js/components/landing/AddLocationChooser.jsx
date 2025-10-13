@@ -207,7 +207,7 @@ function AddLocationChooser({ onCancel, onChoice, userLists }) {
   function alertPremiumFeature() {
     setDialogTitle('Upload Large List trial now available');
     setDialogMessage(
-      'Please contact the GFW Pro support team for help and additional information by filling out this <a href="https://gfwpro.zendesk.com/hc/en-us/requests/new" style="color:#97bd3d;">support form</a>.'
+      'Please contact the GFW Pro support team for help and additional information by filling out this <a href="https://gfwpro.zendesk.com/hc/en-us/requests/new?ticket_form_id=30920711977363" style="color:#97bd3d;">support form</a>.'
     );
     setDialogOpen(true);
   }

@@ -59,21 +59,7 @@ BEGIN
 				AL.activity_type_id,
 				AT.activity_type_name AS activity_type,
 				ATC.activity_type_category_name AS activity_type_category,
-				CASE AT.activity_type_name
-					WHEN ''ListCreated'' THEN ''POST /api/lists/create''
-					WHEN ''ListDeleted'' THEN ''DELETE /api/lists/:id''
-					WHEN ''ListUpdate'' THEN ''PUT /api/lists/:id''
-					WHEN ''ListUpdateNew'' THEN ''PUT /api/lists/:id''
-					WHEN ''ListAnalyzing'' THEN ''POST /api/analysis/start''
-					WHEN ''UserLogin'' THEN ''POST /api/auth/login''
-					WHEN ''UserLogout'' THEN ''POST /api/auth/logout''
-					WHEN ''LocationUploadedToList'' THEN ''POST /api/lists/upload''
-					WHEN ''LocationDeletedFromList'' THEN ''DELETE /api/lists/locations''
-					WHEN ''AccountRequested'' THEN ''POST /api/accounts/request''
-					WHEN ''AccountActivated'' THEN ''POST /api/accounts/activate''
-					WHEN ''AccountUpdated'' THEN ''PUT /api/accounts/:id''
-					ELSE NULL
-				END AS api_command
+				AT.activity_type_name AS api_command
 			FROM [{db_name}].dbo.ActivityLog AL
 			LEFT JOIN [{db_name}].dbo.Users U ON U.id = AL.user_id
 			LEFT JOIN gfwpro.dbo.ActivityType AT ON AT.id = AL.activity_type_id

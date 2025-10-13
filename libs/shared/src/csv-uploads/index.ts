@@ -106,7 +106,6 @@ export const idBasedSystemHandler = async (
     data.forEach((row, index) => {
       try {
         const rowKey = determineIdType(row);
-        logger.log(`Grouping row index: ${index} under key: ${rowKey}`);
         (groups[rowKey] ??= []).push(row);
       } catch (error) {
         logger.error(`Error at row index: ${index}`, error);
@@ -125,7 +124,6 @@ export const idBasedSystemHandler = async (
     Object.entries(groups).map(async ([key, rows]) => {
       const handler = ID_TYPE_HANDLER[key];
       if (handler) {
-        logger.log(`Processing group: ${key} with ${rows.length} rows`);
         await resolveLatLongHandlerByIdType(key, rows);
       }
     })

@@ -1,7 +1,7 @@
 import axios from 'axios';
 import { IdLookupFn } from '.';
 import { Logger } from '@nestjs/common';
-import { parse } from 'wellknown';
+import wkx from 'wkx';
 import { readLastUpdatedDateSicar } from './read.last.updated.date.sicar';
 
 const logger = new Logger('car.lat.long.lookup');
@@ -26,15 +26,17 @@ export const carLookup: IdLookupFn = async (ids) => {
         'Content-Type': 'application/json',
       },
       params: {
-        sql: `SELECT cd_imovel,ST_AsText(geom) as geom FROM mytable WHERE cd_imovel IN (${sqlIds})`,
+        sql: `SELECT cd_imovel,geom FROM mytable WHERE cd_imovel IN (${sqlIds})`,
       },
     });
 
     if (response.data.data.length > 0) {
       response.data.data.forEach((found) => {
         if (result[found.cd_imovel]) {
+          const buffer = Buffer.from(found.geom, 'hex');
+          const parsedBuffer = wkx.Geometry.parse(buffer);
           result[found.cd_imovel] = {
-            geometry: parse(found.geom),
+            geometry: parsedBuffer.toGeoJSON(),
           };
           if (sicarLastUpdated.idDataUpdated) {
             result[found.cd_imovel]['ID Updated Date'] = sicarLastUpdated.idDataUpdated;

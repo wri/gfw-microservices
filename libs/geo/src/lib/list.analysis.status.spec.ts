@@ -529,14 +529,23 @@ describe('list.analysis.status.ts', () => {
         },
       ]);
       (updateListsAnalysisStatus as jest.Mock).mockResolvedValue(true);
+
+      const mockQueryBuilder = {
+        select: jest.fn().mockReturnThis(),
+        where: jest.fn().mockReturnThis(),
+        andWhere: jest.fn().mockReturnThis(),
+        getOne: jest.fn().mockResolvedValue(null), // No error locations
+      };
+
       (ClientStoreConnection as unknown as jest.Mock).mockImplementation(() => {
         return {
           getConnection: jest.fn().mockResolvedValue({
             getRepository: jest.fn().mockReturnValue({
               findBy: jest.fn().mockResolvedValue([true]),
-              findOne: jest.fn().mockResolvedValue({ listName: 'test' }),
+              findOne: jest.fn().mockResolvedValue({ listName: 'test', listTableName: 'list_123' }),
               update: jest.fn(),
               save: jest.fn(),
+              createQueryBuilder: jest.fn().mockReturnValue(mockQueryBuilder),
             }),
           }),
         };
@@ -576,13 +585,23 @@ describe('list.analysis.status.ts', () => {
           options: '',
         },
       ]);
+
+      const mockQueryBuilder = {
+        select: jest.fn().mockReturnThis(),
+        where: jest.fn().mockReturnThis(),
+        andWhere: jest.fn().mockReturnThis(),
+        getOne: jest.fn().mockResolvedValue(null), // No error locations
+      };
+
       (ClientStoreConnection as unknown as jest.Mock).mockImplementation(() => {
         return {
           getConnection: jest.fn().mockResolvedValue({
             getRepository: jest.fn().mockReturnValue({
               findBy: jest.fn().mockResolvedValue([true]),
+              findOne: jest.fn().mockResolvedValue({ listName: 'test', listTableName: 'list_123' }),
               update: jest.fn(),
               save: jest.fn(),
+              createQueryBuilder: jest.fn().mockReturnValue(mockQueryBuilder),
             }),
           }),
         };
@@ -630,14 +649,23 @@ describe('list.analysis.status.ts', () => {
           options: '',
         },
       ]);
+
+      const mockQueryBuilder = {
+        select: jest.fn().mockReturnThis(),
+        where: jest.fn().mockReturnThis(),
+        andWhere: jest.fn().mockReturnThis(),
+        getOne: jest.fn().mockResolvedValue(null), // No error locations
+      };
+
       (ClientStoreConnection as unknown as jest.Mock).mockImplementation(() => {
         return {
           getConnection: jest.fn().mockResolvedValue({
             getRepository: jest.fn().mockReturnValue({
               findBy: jest.fn().mockResolvedValue([true]),
-              findOne: jest.fn().mockResolvedValue({ listName: 'test' }),
+              findOne: jest.fn().mockResolvedValue({ listName: 'test', listTableName: 'list_123' }),
               update: jest.fn(),
               save: jest.fn(),
+              createQueryBuilder: jest.fn().mockReturnValue(mockQueryBuilder),
             }),
           }),
         };
@@ -726,6 +754,14 @@ describe('list.analysis.status.ts', () => {
           errorDetails: null,
         },
       ];
+
+      const mockQueryBuilder = {
+        select: jest.fn().mockReturnThis(),
+        where: jest.fn().mockReturnThis(),
+        andWhere: jest.fn().mockReturnThis(),
+        getOne: jest.fn().mockResolvedValue(null), // No error locations
+      };
+
       (ClientStoreConnection as unknown as jest.Mock).mockImplementation(() => {
         return {
           getConnection: jest.fn().mockResolvedValue({
@@ -733,11 +769,13 @@ describe('list.analysis.status.ts', () => {
               findBy: jest.fn().mockResolvedValue(fakeLocation),
               findOne: jest.fn().mockResolvedValue({
                 listName: 'test',
+                listTableName: 'list_123',
                 Commodity: 'GFWP_fake_commodity',
                 version: 2,
               }),
               update: jest.fn(),
               save: jest.fn(),
+              createQueryBuilder: jest.fn().mockReturnValue(mockQueryBuilder),
             }),
           }),
         };
@@ -823,6 +861,14 @@ describe('list.analysis.status.ts', () => {
           errorDetails: null,
         },
       ];
+
+      const mockQueryBuilder = {
+        select: jest.fn().mockReturnThis(),
+        where: jest.fn().mockReturnThis(),
+        andWhere: jest.fn().mockReturnThis(),
+        getOne: jest.fn().mockResolvedValue(null), // No error locations
+      };
+
       (ClientStoreConnection as unknown as jest.Mock).mockImplementation(() => {
         return {
           getConnection: jest.fn().mockResolvedValue({
@@ -830,11 +876,13 @@ describe('list.analysis.status.ts', () => {
               findBy: jest.fn().mockResolvedValue(fakeLocation),
               findOne: jest.fn().mockResolvedValue({
                 listName: 'test',
+                listTableName: 'list_123',
                 Commodity: 'GFWP_fake_commodity',
                 version: 2,
               }),
               update: jest.fn(),
               save: jest.fn(),
+              createQueryBuilder: jest.fn().mockReturnValue(mockQueryBuilder),
             }),
           }),
         };
@@ -920,6 +968,14 @@ describe('list.analysis.status.ts', () => {
           errorDetails: null,
         },
       ];
+
+      const mockQueryBuilder = {
+        select: jest.fn().mockReturnThis(),
+        where: jest.fn().mockReturnThis(),
+        andWhere: jest.fn().mockReturnThis(),
+        getOne: jest.fn().mockResolvedValue(null), // No error locations
+      };
+
       (ClientStoreConnection as unknown as jest.Mock).mockImplementation(() => {
         return {
           getConnection: jest.fn().mockResolvedValue({
@@ -927,11 +983,13 @@ describe('list.analysis.status.ts', () => {
               findBy: jest.fn().mockResolvedValue(fakeLocation),
               findOne: jest.fn().mockResolvedValue({
                 listName: 'test',
+                listTableName: 'list_123',
                 Commodity: 'GFWP_fake_commodity',
                 version: 2,
               }),
               update: jest.fn(),
               save: jest.fn(),
+              createQueryBuilder: jest.fn().mockReturnValue(mockQueryBuilder),
             }),
           }),
         };
@@ -1016,6 +1074,14 @@ describe('list.analysis.status.ts', () => {
           errorDetails: null,
         },
       ];
+
+      const mockQueryBuilder = {
+        select: jest.fn().mockReturnThis(),
+        where: jest.fn().mockReturnThis(),
+        andWhere: jest.fn().mockReturnThis(),
+        getOne: jest.fn().mockResolvedValue(null), // No error locations
+      };
+
       (ClientStoreConnection as unknown as jest.Mock).mockImplementation(() => {
         return {
           getConnection: jest.fn().mockResolvedValue({
@@ -1023,11 +1089,13 @@ describe('list.analysis.status.ts', () => {
               findBy: jest.fn().mockResolvedValue(fakeLocation),
               findOne: jest.fn().mockResolvedValue({
                 listName: 'test',
+                listTableName: 'list_123',
                 Commodity: 'Other',
                 version: 2,
               }),
               update: jest.fn(),
               save: jest.fn(),
+              createQueryBuilder: jest.fn().mockReturnValue(mockQueryBuilder),
             }),
           }),
         };
@@ -1112,6 +1180,14 @@ describe('list.analysis.status.ts', () => {
           errorDetails: null,
         },
       ];
+
+      const mockQueryBuilder = {
+        select: jest.fn().mockReturnThis(),
+        where: jest.fn().mockReturnThis(),
+        andWhere: jest.fn().mockReturnThis(),
+        getOne: jest.fn().mockResolvedValue(null), // No error locations
+      };
+
       (ClientStoreConnection as unknown as jest.Mock).mockImplementation(() => {
         return {
           getConnection: jest.fn().mockResolvedValue({
@@ -1119,11 +1195,13 @@ describe('list.analysis.status.ts', () => {
               findBy: jest.fn().mockResolvedValue(fakeLocation),
               findOne: jest.fn().mockResolvedValue({
                 listName: 'test',
+                listTableName: 'list_123',
                 Commodity: 'GFWP_fake_commodity',
                 version: 2,
               }),
               update: jest.fn(),
               save: jest.fn(),
+              createQueryBuilder: jest.fn().mockReturnValue(mockQueryBuilder),
             }),
           }),
         };
@@ -1207,6 +1285,14 @@ describe('list.analysis.status.ts', () => {
           errorDetails: null,
         },
       ];
+
+      const mockQueryBuilder = {
+        select: jest.fn().mockReturnThis(),
+        where: jest.fn().mockReturnThis(),
+        andWhere: jest.fn().mockReturnThis(),
+        getOne: jest.fn().mockResolvedValue(null), // No error locations
+      };
+
       (ClientStoreConnection as unknown as jest.Mock).mockImplementation(() => {
         return {
           getConnection: jest.fn().mockResolvedValue({
@@ -1214,11 +1300,13 @@ describe('list.analysis.status.ts', () => {
               findBy: jest.fn().mockResolvedValue(fakeLocation),
               findOne: jest.fn().mockResolvedValue({
                 listName: 'test',
+                listTableName: 'list_123',
                 Commodity: 'GFWP_fake_commodity',
                 version: 1,
               }),
               update: jest.fn(),
               save: jest.fn(),
+              createQueryBuilder: jest.fn().mockReturnValue(mockQueryBuilder),
             }),
           }),
         };
@@ -1304,6 +1392,14 @@ describe('list.analysis.status.ts', () => {
           errorDetails: null,
         },
       ];
+
+      const mockQueryBuilder = {
+        select: jest.fn().mockReturnThis(),
+        where: jest.fn().mockReturnThis(),
+        andWhere: jest.fn().mockReturnThis(),
+        getOne: jest.fn().mockResolvedValue(null), // No error locations
+      };
+
       (ClientStoreConnection as unknown as jest.Mock).mockImplementation(() => {
         return {
           getConnection: jest.fn().mockResolvedValue({
@@ -1311,11 +1407,13 @@ describe('list.analysis.status.ts', () => {
               findBy: jest.fn().mockResolvedValue(fakeLocation),
               findOne: jest.fn().mockResolvedValue({
                 listName: 'test',
+                listTableName: 'list_123',
                 Commodity: 'GFWP_fake_commodity',
                 version: 1,
               }),
               update: jest.fn(),
               save: jest.fn(),
+              createQueryBuilder: jest.fn().mockReturnValue(mockQueryBuilder),
             }),
           }),
         };
@@ -1337,6 +1435,134 @@ describe('list.analysis.status.ts', () => {
           false
         )
       ).rejects.toThrow('Failed to upgrade list schema');
+    });
+
+    it('should throw error when list has locations with ErrorDetails', async () => {
+      const fakeClientDatabase = 'mockClientDB';
+      const fakeListId = 123;
+      const fakeAnalysisIds = 'FCD';
+
+      (checkProcessingLimits as jest.Mock).mockResolvedValue({
+        isListLocationOverLimit: false,
+        processingLimit: 1000,
+      });
+
+      (getListAnalysisStatus as jest.Mock).mockResolvedValue([
+        {
+          listId: 1,
+          analysisId: 'FCD',
+          status: 5,
+          options: '',
+        },
+      ]);
+
+      const mockQueryBuilder = {
+        select: jest.fn().mockReturnThis(),
+        where: jest.fn().mockReturnThis(),
+        andWhere: jest.fn().mockReturnThis(),
+        getOne: jest.fn().mockResolvedValue({
+          locationId: 1,
+        }),
+      };
+
+      (ClientStoreConnection as unknown as jest.Mock).mockImplementation(() => {
+        return {
+          getConnection: jest.fn().mockResolvedValue({
+            getRepository: jest.fn().mockReturnValue({
+              findOne: jest.fn().mockResolvedValue({
+                listName: 'test',
+                listTableName: 'list_123',
+                Commodity: 'Palm',
+                version: 2,
+              }),
+              createQueryBuilder: jest.fn().mockReturnValue(mockQueryBuilder),
+            }),
+          }),
+        };
+      });
+
+      await expect(
+        handleCreateAnalysis(
+          fakeAnalysisIds,
+          fakeListId,
+          123,
+          fakeClientDatabase,
+          false,
+          234,
+          99,
+          false
+        )
+      ).rejects.toThrow(
+        'Cannot analyze list: locations have errors. Please fix the errors before re-analyzing.'
+      );
+
+      expect(Logger.error).toHaveBeenCalledWith(
+        'validateNoErrorDetails',
+        'Cannot analyze list: locations have errors. Please fix the errors before re-analyzing.'
+      );
+    });
+
+    it('should proceed when list has no locations with ErrorDetails', async () => {
+      const fakeClientDatabase = 'mockClientDB';
+      const fakeListId = 123;
+      const fakeAnalysisIds = 'FCD';
+
+      (checkProcessingLimits as jest.Mock).mockResolvedValue({
+        isListLocationOverLimit: false,
+        processingLimit: 1000,
+      });
+
+      (getListAnalysisStatus as jest.Mock).mockResolvedValue([
+        {
+          listId: 1,
+          analysisId: 'FCD',
+          status: 5,
+          options: '',
+        },
+      ]);
+
+      const mockQueryBuilder = {
+        select: jest.fn().mockReturnThis(),
+        where: jest.fn().mockReturnThis(),
+        andWhere: jest.fn().mockReturnThis(),
+        getOne: jest.fn().mockResolvedValue(null), // No error locations found
+      };
+
+      (ClientStoreConnection as unknown as jest.Mock).mockImplementation(() => {
+        return {
+          getConnection: jest.fn().mockResolvedValue({
+            getRepository: jest.fn().mockReturnValue({
+              findOne: jest.fn().mockResolvedValue({
+                listName: 'test',
+                listTableName: 'list_123',
+                Commodity: 'Palm',
+                version: 2,
+              }),
+              save: jest.fn(),
+              createQueryBuilder: jest.fn().mockReturnValue(mockQueryBuilder),
+            }),
+          }),
+        };
+      });
+
+      // Mock axios post
+      (axios.post as jest.Mock).mockResolvedValue({ statusText: 'Ok' });
+
+      const result = await handleCreateAnalysis(
+        fakeAnalysisIds,
+        fakeListId,
+        123,
+        fakeClientDatabase,
+        false,
+        234,
+        99,
+        false
+      );
+
+      expect(result).toBe('Ok');
+      expect(mockQueryBuilder.getOne).toHaveBeenCalled();
+      expect(mockQueryBuilder.where).toHaveBeenCalledWith('location.errorDetails IS NOT NULL');
+      expect(mockQueryBuilder.andWhere).toHaveBeenCalledWith("location.errorDetails != ''");
     });
   });
 });

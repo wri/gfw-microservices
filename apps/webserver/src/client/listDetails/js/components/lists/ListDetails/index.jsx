@@ -1887,7 +1887,7 @@ export default class ListDetails extends Component {
                   filling out this
                   <a
                     className="popup__link"
-                    href="https://gfwpro.zendesk.com/hc/en-us/requests/new"
+                    href="https://gfwpro.zendesk.com/hc/en-us/requests/new?ticket_form_id=30920711977363"
                   >
                     support form
                   </a>

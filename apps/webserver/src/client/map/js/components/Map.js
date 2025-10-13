@@ -2483,7 +2483,9 @@ class Map extends Component {
               <p>
                 Please contact the GFW Pro support team for help and additional information by
                 filling out this
-                <a href="https://gfwpro.zendesk.com/hc/en-us/requests/new">support form</a>
+                <a href="https://gfwpro.zendesk.com/hc/en-us/requests/new?ticket_form_id=30920711977363">
+                  support form
+                </a>
               </p>
             }
             onRequestClose={() => this.setState({ listNotAccessible: !listNotAccessible })}

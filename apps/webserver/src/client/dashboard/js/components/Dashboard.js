@@ -253,7 +253,7 @@ export default class Dashboard extends Component {
         store.dispatch(
           toggleDialog({
             title: `${list_name} alerts failed to load `,
-            body: 'Please select the list to try loading alerts again. If alerts continue to fail, please contact the GFW Pro support team for help and additional information by filling out this <a href="https://gfwpro.zendesk.com/hc/en-us/requests/new">support form</a>.',
+            body: `Please select the list to try loading alerts again. If alerts continue to fail, please contact the GFW Pro support team for help and additional information by filling out this <a href="https://gfwpro.zendesk.com/hc/en-us/requests/new?ticket_form_id=30920711977363">support form</a>.`,
           })
         );
       }

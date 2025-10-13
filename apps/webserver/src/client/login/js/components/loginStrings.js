@@ -6,7 +6,7 @@ const loginStrings = {
     help: {
       paragraphText: 'Find out how GFW Pro can help you and your organization.',
       buttonText: 'Contact us',
-      link: 'https://gfwpro.zendesk.com/hc/en-us/requests/new',
+      link: 'https://gfwpro.zendesk.com/hc/en-us/requests/new?ticket_form_id=30920711977363',
     },
     subscribe: {
       paragraphText: 'Follow us on LinkedIn to see the latest news and updates from GFW Pro',

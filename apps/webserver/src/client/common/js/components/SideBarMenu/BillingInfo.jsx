@@ -15,7 +15,7 @@ function BillingInfo() {
           size="small"
           fullWidth
           sx={{ mb: 2 }}
-          href="https://gfwpro.zendesk.com/hc/en-us/requests/new?https://gfwpro.zendesk.com/hc/en-us/requests/new?ticket_form_id=30920711977363"
+          href="https://gfwpro.zendesk.com/hc/en-us/requests/new?ticket_form_id=30920711977363"
         >
           Support Form
         </PillButton>

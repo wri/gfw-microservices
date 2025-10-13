@@ -89,6 +89,8 @@ export function SummaryAndSubmit() {
     });
   };
 
+  const existingListId = uploadLocationState?.existingList?.id;
+
   const uploadList = async () => {
     if (uploadLocationState.uploadType === null) {
       return;
@@ -132,7 +134,6 @@ export function SummaryAndSubmit() {
       });
       updateSaveMode(isDraftUpload.current);
 
-      const existingListId = uploadLocationState?.existingList?.id;
       if (existingListId) {
         // If updating an existing list, delete its vector tiles
         // they will be regenerated when the list is viewed on the map
@@ -153,11 +154,15 @@ export function SummaryAndSubmit() {
     }
   };
 
+  const leadingText = existingListId
+    ? 'You are adding locations to an existing list'
+    : 'A new list will be created';
+
   const draftLocationsToList = useTransifexTranslation(
-    'You are adding locations to an existing list. Click OK to save your updated list as a draft. It will remain in draft mode until you choose to run the analysis. Note that running the analysis will count toward your account usage limits. See more information'
+    `${leadingText}. Click OK to save your updated list as a draft. It will remain in draft mode until you choose to run the analysis. Note that running the analysis will count toward your account usage limits. See more information`
   );
   const submitLocationsToList = useTransifexTranslation(
-    'You are adding locations to an existing list. Please confirm that you want to submit this list for analysis. Note that running the analysis will count toward your account usage limits. See more information'
+    `${leadingText}. Please confirm that you want to submit this list for analysis. Note that running the analysis will count toward your account usage limits. See more information`
   );
   const linkHereText = useTransifexTranslation('here');
   const listNameText = useTransifexTranslation('List Name:');

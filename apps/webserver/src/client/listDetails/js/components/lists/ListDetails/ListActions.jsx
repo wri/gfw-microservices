@@ -120,7 +120,11 @@ const ListActions = ({
     !showMultipleSelectionBulkActions &&
     !isSearchBarOpen;
 
+  const hasValidLocations =
+    (selectedList?.list_locations_count ?? 0) > 0 && !selectedList?.error_file_storage_path;
+
   const isSubmitOptionAvailable =
+    hasValidLocations &&
     (currentUser.access_level_id === userAccessLevel.ADMIN ||
       (currentUser.access_level_id !== userAccessLevel.ADMIN && userIsOwner)) &&
     selectedList?.list_status_id !== 1 &&
@@ -131,6 +135,7 @@ const ListActions = ({
     !isOnlyGHGActive;
 
   const isUpdateAnalysisAvailable =
+    hasValidLocations &&
     (currentUser.access_level_id === userAccessLevel.ADMIN ||
       (currentUser.id === selectedList.user_id &&
         currentUser.access_level_id !== userAccessLevel.VIEWER)) &&
@@ -241,7 +246,7 @@ const ListActions = ({
                 />
               </div>
             )}
-            {isSubmitOptionAvailable && (
+            {hasValidLocations && isSubmitOptionAvailable && (
               <div>
                 <Button
                   sx={blackButtonStyle}

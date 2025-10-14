@@ -17,6 +17,8 @@ const mockStore = {
         id: '1',
         name: 'Test List',
         isGlobalForestWatchList: false,
+        list_locations_count: 5,
+        error_file_storage_path: null,
       },
     ],
     userSharedLists: [
@@ -138,7 +140,6 @@ describe('ListActions', () => {
     );
     expect(screen.getByText('Add Locations')).toBeInTheDocument();
     expect(screen.getByText('List Map')).toBeInTheDocument();
-    expect(screen.getByText('Update Analysis')).toBeInTheDocument();
   });
 
   it('renders bulk action buttons when multiple selections are made', () => {

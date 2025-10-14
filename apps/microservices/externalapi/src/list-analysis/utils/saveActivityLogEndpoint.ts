@@ -33,7 +33,7 @@ export class SaveActivityLogEndpoint {
       await activityLogRepository.save({
         userId: organization_user_id,
         activityTypeId: endpointActivityTypeId,
-        activityDescription: `The endpoint ${endpoint} was accessed by user ${organization_user_id}`,
+        activityDescription: `The endpoint ${endpoint} was accessed by user ${organization_user_id}`, // string is referenced in tools/db_to_s3_for_athena/sql/clientstore_api_calls_volume.sql
         activityTime: new Date(),
       });
     } catch (error) {

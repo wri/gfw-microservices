@@ -8,7 +8,8 @@ CREATE TABLE #large_list_data (
     large_list_id INT,
     list_id INT,
     list_name NVARCHAR(MAX),
-    list_status NVARCHAR(25)
+    list_status NVARCHAR(25),
+    upload_format NVARCHAR(10)  -- NEW column for format
 );
 
 -- SETting up variables
@@ -37,15 +38,16 @@ BEGIN
     BEGIN
         -- dynamic sql to get list information from LargeLists
         SET @sql = N'
-            INSERT INTO #large_list_data (organization, large_list_id, list_id, list_name, list_status)
+            INSERT INTO #large_list_data (organization, large_list_id, list_id, list_name, list_status, upload_format)
             SELECT
                 N''' + REPLACE(@org_name, '''', '''''') + ''' AS organization,
                 LL.large_list_id,
                 LL.list_id,
                 LL.list_name,
-                LL.list_status
+                LL.list_status,
+                RIGHT(LL.s3_filename, CHARINDEX(''.'', REVERSE(LL.s3_filename)) - 1) AS upload_format
             FROM [' + @db_name + '].dbo.LargeLists LL';
-        
+        -- RIGHT(... extracts whatever comes after the last dot (.csv, .geojson, .xlsx, etc.).
         EXEC sp_executesql @sql;
     END
 

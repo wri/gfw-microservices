@@ -1,0 +1,10 @@
+{
+  "name": "load-testing",
+  "private": true,
+  "scripts": {
+    "smoke": "k6 run scripts/smoke.test.js",
+    "smoke:docker": "docker compose -f ../../docker-compose.k6.yml run --rm k6 run scripts/smoke.test.js"
+  },
+  "dependencies": {},
+  "devDependencies": {}
+}

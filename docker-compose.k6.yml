@@ -1,0 +1,17 @@
+version: '3.8'
+
+services:
+  k6:
+    image: grafana/k6:0.49.0
+    working_dir: /load-testing
+    command: ['run', 'scripts/smoke.test.js']
+    volumes:
+      - ./apps/load-testing:/load-testing
+    environment:
+      - PROJECT_ROOT=/load-testing
+      - LOADTEST_BASE_URL=http://host.docker.internal:3333/api
+    profiles:
+      - smoke
+      - load
+    entrypoint: ['k6']
+    # command argument appended from npm scripts (smoke/load)

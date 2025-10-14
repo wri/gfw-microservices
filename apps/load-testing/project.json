@@ -1,0 +1,91 @@
+{
+  "name": "load-testing",
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "apps/load-testing/src",
+  "projectType": "application",
+  "targets": {
+    "build": {
+      "executor": "@nx/esbuild:esbuild",
+      "outputs": ["{options.outputPath}"],
+      "defaultConfiguration": "production",
+      "options": {
+        "platform": "node",
+        "outputPath": "dist/apps/load-testing",
+        "format": ["cjs"],
+        "bundle": false,
+        "main": "apps/load-testing/src/main.ts",
+        "tsConfig": "apps/load-testing/tsconfig.app.json",
+        "assets": ["apps/load-testing/src/assets"],
+        "generatePackageJson": true,
+        "esbuildOptions": {
+          "sourcemap": true,
+          "outExtension": {
+            ".js": ".js"
+          }
+        }
+      },
+      "configurations": {
+        "development": {},
+        "production": {
+          "esbuildOptions": {
+            "sourcemap": false,
+            "outExtension": {
+              ".js": ".js"
+            }
+          }
+        }
+      }
+    },
+    "serve": {
+      "executor": "@nx/js:node",
+      "defaultConfiguration": "development",
+      "options": {
+        "buildTarget": "load-testing:build"
+      },
+      "configurations": {
+        "development": {
+          "buildTarget": "load-testing:build:development"
+        },
+        "production": {
+          "buildTarget": "load-testing:build:production"
+        }
+      }
+    },
+    "lint": {
+      "executor": "@nx/linter:eslint",
+      "outputs": ["{options.outputFile}"],
+      "options": {
+        "lintFilePatterns": ["apps/load-testing/**/*.ts"]
+      }
+    },
+    "smoke": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "npm run smoke",
+        "cwd": "apps/load-testing"
+      }
+    },
+    "smoke-docker": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "npm run smoke:docker",
+        "cwd": "apps/load-testing"
+      }
+    },
+    "load": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "npm run load",
+        "cwd": "apps/load-testing"
+      }
+    },
+    "load-docker": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "npm run load:docker",
+        "cwd": "apps/load-testing"
+      }
+    }
+  },
+  "tags": []
+}

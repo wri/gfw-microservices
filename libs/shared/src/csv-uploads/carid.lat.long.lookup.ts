@@ -1,7 +1,7 @@
 import axios from 'axios';
 import { IdLookupFn } from '.';
 import { Logger } from '@nestjs/common';
-import wkx from 'wkx';
+import * as wkx from 'wkx';
 import { readLastUpdatedDateSicar } from './read.last.updated.date.sicar';
 
 const logger = new Logger('car.lat.long.lookup');

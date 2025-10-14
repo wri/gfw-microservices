@@ -28,7 +28,7 @@ DECLARE db_cursor CURSOR FOR
 SELECT organization_db, organization_name, id
 FROM gfwpro.dbo.Organizations
 WHERE organization_db IS NOT NULL
-  AND organization_db LIKE 'clientstore-%';  -- only valid orgs
+  AND organization_db LIKE 'clientstore-%'  -- only valid orgs
   AND organization_name NOT LIKE '%Blue Raster%'				
   AND organization_name NOT LIKE '%World Resources Institute%'
   AND organization_name NOT LIKE '%WRI Engagement%'

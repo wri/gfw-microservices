@@ -53,6 +53,11 @@ class LocationsPage {
       cy
         .get('.my-lists-list li')
         .filter(':not(:has(.failed-tooltip.failed-tooltip--default))')
+        .filter(':has(button:contains("Update Analysis"))')
+        .filter((_, el) => {
+          const analysisChipText = Cypress.$(el).find('.analysis-chips').text().trim();
+          return analysisChipText.length > 0;
+        })
         .first(),
     optionListDraft: () =>
       cy.get('.my-lists-list li').filter(':has(.DiagnosticStatusDraft__label)').first(),

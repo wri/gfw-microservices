@@ -9,6 +9,7 @@ import {
   TableRow,
   Paper,
   Grid,
+  Box,
 } from '@mui/material';
 import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp';
 import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
@@ -30,6 +31,7 @@ function AccountDetailUsageByAnalysisType({
   setEndDateAnalysis,
   startDateAnalysis,
   endDateAnalysis,
+  children,
 }) {
   const [orderBy, setOrderBy] = React.useState('analysis_type');
   const [order, setOrder] = React.useState('asc');
@@ -75,9 +77,9 @@ function AccountDetailUsageByAnalysisType({
   return (
     <section>
       <Divider sx={{ margin: '1.5rem 0' }} />
-      <div style={{ display: 'flex', justifyContent: 'flex-end', marginBottom: '20px' }}>
-        <div
-          style={{ display: 'flex', alignItems: 'center', gap: '15px', justifyContent: 'flex-end' }}
+      <Box sx={{ display: 'flex', justifyContent: 'flex-end', marginBottom: '20px' }}>
+        <Box
+          sx={{ display: 'flex', alignItems: 'center', gap: '15px', justifyContent: 'flex-end' }}
         >
           <DateRangeSelector
             startDate={startDateAnalysis}
@@ -98,114 +100,152 @@ function AccountDetailUsageByAnalysisType({
           >
             Time Zone: UTC
           </span>
-        </div>
-      </div>
-      <h3 style={{ margin: '30px 0 20px 0', fontWeight: 'normal' }}>Detailed Usage</h3>
-      <Grid container justifyContent="center" sx={{ marginTop: '1em' }}>
-        <TableContainer component={Paper}>
-          <Table sx={{ minWidth: 650 }} aria-label="simple table">
-            <TableHead>
-              <TableRow sx={{ backgroundColor: '#f5f5f5' }}>
-                <TableCell>{accountProfileStrings.accountUsageLabels.analysisType}</TableCell>
-                <TableCell
-                  onClick={() => handleSort('locations_analyzed')}
-                  style={{ cursor: 'pointer', userSelect: 'none' }}
-                >
-                  <div style={{ display: 'flex', alignItems: 'center' }}>
-                    {accountProfileStrings.accountUsageLabels.locationsAnalyzed}
-                    <span
-                      style={{ display: 'inline-flex', flexDirection: 'column', marginLeft: 4 }}
-                    >
-                      <KeyboardArrowUpIcon
-                        fontSize="small"
-                        color={
-                          orderBy === 'locations_analyzed' && order === 'asc'
-                            ? 'primary'
-                            : 'disabled'
-                        }
-                      />
-                      <KeyboardArrowDownIcon
-                        fontSize="small"
-                        color={
-                          orderBy === 'locations_analyzed' && order === 'desc'
-                            ? 'primary'
-                            : 'disabled'
-                        }
-                      />
-                    </span>
-                  </div>
-                </TableCell>
-                <TableCell
-                  onClick={() => handleSort('hectares_analyzed')}
-                  style={{ cursor: 'pointer', userSelect: 'none' }}
-                >
-                  <div style={{ display: 'flex', alignItems: 'center' }}>
-                    {accountProfileStrings.accountUsageLabels.hectaresAnalyzed}
-                    <span
-                      style={{ display: 'inline-flex', flexDirection: 'column', marginLeft: 4 }}
-                    >
-                      <KeyboardArrowUpIcon
-                        fontSize="small"
-                        color={
-                          orderBy === 'hectares_analyzed' && order === 'asc'
-                            ? 'primary'
-                            : 'disabled'
-                        }
-                      />
-                      <KeyboardArrowDownIcon
-                        fontSize="small"
-                        color={
-                          orderBy === 'hectares_analyzed' && order === 'desc'
-                            ? 'primary'
-                            : 'disabled'
-                        }
-                      />
-                    </span>
-                  </div>
-                </TableCell>
-                <TableCell
-                  onClick={() => handleSort('lists_analyzed')}
-                  style={{ cursor: 'pointer', userSelect: 'none' }}
-                >
-                  <div style={{ display: 'flex', alignItems: 'center' }}>
-                    {accountProfileStrings.accountUsageLabels.listsAnalyzed}
-                    <span
-                      style={{ display: 'inline-flex', flexDirection: 'column', marginLeft: 4 }}
-                    >
-                      <KeyboardArrowUpIcon
-                        fontSize="small"
-                        color={
-                          orderBy === 'lists_analyzed' && order === 'asc' ? 'primary' : 'disabled'
-                        }
-                      />
-                      <KeyboardArrowDownIcon
-                        fontSize="small"
-                        color={
-                          orderBy === 'lists_analyzed' && order === 'desc' ? 'primary' : 'disabled'
-                        }
-                      />
-                    </span>
-                  </div>
-                </TableCell>
-              </TableRow>
-            </TableHead>
-            <TableBody>
-              {sortedData.map((element) => (
-                <TableRow key={element.analysis_type}>
-                  <TableCell>
-                    {NORMALIZING_ANALYSIS_NAMES[element.analysis_type] ||
-                      element.analysis_type ||
-                      ''}
+        </Box>
+      </Box>
+      <Box
+        sx={{
+          border: 'solid 1px #d3d3d3',
+          padding: '0 2em 2em',
+          borderRadius: '12px',
+          boxShadow:
+            '0px 2px 1px -1px rgba(0,0,0,0.2), 0px 1px 1px 0px rgba(0,0,0,0.14), 0px 1px 3px 0px rgba(0,0,0,0.12)',
+          marginBottom: '2em',
+        }}
+      >
+        <h3 style={{ margin: '30px 0 20px 0', fontWeight: 'normal' }}>Detailed Usage</h3>
+        <Grid container justifyContent="center" sx={{ marginTop: '1em' }}>
+          <TableContainer component={Paper}>
+            <Table sx={{ minWidth: 650 }} aria-label="simple table">
+              <TableHead>
+                <TableRow sx={{ backgroundColor: '#f5f5f5' }}>
+                  <TableCell>{accountProfileStrings.accountUsageLabels.analysisType}</TableCell>
+                  <TableCell
+                    onClick={() => handleSort('locations_analyzed')}
+                    style={{ cursor: 'pointer', userSelect: 'none' }}
+                  >
+                    <div style={{ display: 'flex', alignItems: 'center' }}>
+                      {accountProfileStrings.accountUsageLabels.locationsAnalyzed}
+                      <span
+                        style={{ display: 'inline-flex', flexDirection: 'column', marginLeft: 4 }}
+                      >
+                        <KeyboardArrowUpIcon
+                          fontSize="small"
+                          color={
+                            orderBy === 'locations_analyzed' && order === 'asc'
+                              ? 'primary'
+                              : 'disabled'
+                          }
+                        />
+                        <KeyboardArrowDownIcon
+                          fontSize="small"
+                          color={
+                            orderBy === 'locations_analyzed' && order === 'desc'
+                              ? 'primary'
+                              : 'disabled'
+                          }
+                        />
+                      </span>
+                    </div>
                   </TableCell>
-                  <TableCell>{formatDigit(element.locations_analyzed || 0)}</TableCell>
-                  <TableCell>{formatDigit(element.hectares_analyzed || 0)}</TableCell>
-                  <TableCell>{formatDigit(element.lists_analyzed || 0)}</TableCell>
+                  <TableCell
+                    onClick={() => handleSort('hectares_analyzed')}
+                    style={{ cursor: 'pointer', userSelect: 'none' }}
+                  >
+                    <div style={{ display: 'flex', alignItems: 'center' }}>
+                      {accountProfileStrings.accountUsageLabels.hectaresAnalyzed}
+                      <span
+                        style={{ display: 'inline-flex', flexDirection: 'column', marginLeft: 4 }}
+                      >
+                        <KeyboardArrowUpIcon
+                          fontSize="small"
+                          color={
+                            orderBy === 'hectares_analyzed' && order === 'asc'
+                              ? 'primary'
+                              : 'disabled'
+                          }
+                        />
+                        <KeyboardArrowDownIcon
+                          fontSize="small"
+                          color={
+                            orderBy === 'hectares_analyzed' && order === 'desc'
+                              ? 'primary'
+                              : 'disabled'
+                          }
+                        />
+                      </span>
+                    </div>
+                  </TableCell>
+                  <TableCell
+                    onClick={() => handleSort('lists_analyzed')}
+                    style={{ cursor: 'pointer', userSelect: 'none' }}
+                  >
+                    <div style={{ display: 'flex', alignItems: 'center' }}>
+                      {accountProfileStrings.accountUsageLabels.listsAnalyzed}
+                      <span
+                        style={{ display: 'inline-flex', flexDirection: 'column', marginLeft: 4 }}
+                      >
+                        <KeyboardArrowUpIcon
+                          fontSize="small"
+                          color={
+                            orderBy === 'lists_analyzed' && order === 'asc' ? 'primary' : 'disabled'
+                          }
+                        />
+                        <KeyboardArrowDownIcon
+                          fontSize="small"
+                          color={
+                            orderBy === 'lists_analyzed' && order === 'desc'
+                              ? 'primary'
+                              : 'disabled'
+                          }
+                        />
+                      </span>
+                    </div>
+                  </TableCell>
                 </TableRow>
-              ))}
-            </TableBody>
-          </Table>
-        </TableContainer>
-      </Grid>
+              </TableHead>
+              <TableBody>
+                {sortedData.map((element) => (
+                  <TableRow key={element.analysis_type}>
+                    <TableCell>
+                      {NORMALIZING_ANALYSIS_NAMES[element.analysis_type] ||
+                        element.analysis_type ||
+                        ''}
+                    </TableCell>
+                    <TableCell>{formatDigit(element.locations_analyzed || 0)}</TableCell>
+                    <TableCell>{formatDigit(element.hectares_analyzed || 0)}</TableCell>
+                    <TableCell>{formatDigit(element.lists_analyzed || 0)}</TableCell>
+                  </TableRow>
+                ))}
+                {sortedData.length === 0 && (!startDateAnalysis || !endDateAnalysis) ? (
+                  <TableRow key="no-data">
+                    <TableCell colSpan={4}>
+                      <div
+                        style={{
+                          display: 'flex',
+                          justifyContent: 'center',
+                          alignItems: 'center',
+                          minHeight: 'auto',
+                        }}
+                      >
+                        {!startDateAnalysis && !endDateAnalysis && (
+                          <>Please select both a start date and an end date to display data.</>
+                        )}
+                        {!startDateAnalysis && endDateAnalysis && (
+                          <>Please select a start date to display data.</>
+                        )}
+                        {startDateAnalysis && !endDateAnalysis && (
+                          <>Please select an end date to display data.</>
+                        )}
+                      </div>
+                    </TableCell>
+                  </TableRow>
+                ) : null}
+              </TableBody>
+            </Table>
+          </TableContainer>
+        </Grid>
+        {children ?? null}
+      </Box>
     </section>
   );
 }

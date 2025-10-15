@@ -1,3 +1,7 @@
+/**
+ * @jest-environment node
+ */
+
 const express = require('express');
 const request = require('supertest');
 
@@ -39,11 +43,6 @@ jest.mock('../../../config/publicutils/analysisManager.utils', () => ({
 
 jest.mock('../utils/listData.utils', () => ({
   getListDataFiltered: jest.fn((data) => data),
-}));
-
-// Mock path.resolve used by controller to load list.utils
-jest.mock('path', () => ({
-  resolve: () => '../../../config/privateutils/list.utils',
 }));
 
 jest.mock('../../../config/privateutils/list.utils', () => ({
@@ -137,9 +136,12 @@ describe('listData.routes', () => {
   });
 
   it('POST /api/list/:listId/selectedAnalyses creates draft', async () => {
-    const res = await request(app)
-      .post('/api/list/42/selectedAnalyses')
-      .send({ analysisIds: [], saveAsDraft: true });
+    const res = await request(app).post('/api/list/42/selectedAnalyses').send({
+      selectedAnalysis: [],
+      saveAsDraft: true,
+      isAddingAnalysis: false,
+      newAnalysesToRun: [],
+    });
     expect(setSelectedAnalyses).toHaveBeenCalled();
     expect(res.status).toBe(201);
   });

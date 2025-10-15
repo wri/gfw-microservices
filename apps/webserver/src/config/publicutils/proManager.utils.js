@@ -782,9 +782,10 @@ export const checkOrgName = async (req, name) => {
 
     return !!organization;
   } catch (err) {
+    logger.error(`checkOrgName error: ${err}`);
     throw errorUtils.createErrorMessage(
       req,
-      errorUtils.ERROR_CODES.failedToCheckOrganization,
+      errorUtils.ERROR_CODES.failedToCheckOrganizationName,
       'Failed to check organization name',
       err
     );

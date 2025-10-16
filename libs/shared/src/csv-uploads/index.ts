@@ -58,10 +58,7 @@ export const applyLookUpByChunks = async (
 
     const chunkResp = await lookup(chunk.map((row) => row[column] as string));
 
-    chunk.forEach((row, index) => {
-      const globalIdx = i + index;
-      logger.log(`Processing row index: ${globalIdx} (ID: ${row[column]})`);
-
+    chunk.forEach((row) => {
       updates.push(
         Object.assign(row, {
           ...(chunkResp[row[column] as string] ?? {}),

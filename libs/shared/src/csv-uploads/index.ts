@@ -108,7 +108,7 @@ export const idBasedSystemHandler = async (
         const rowKey = determineIdType(row);
         (groups[rowKey] ??= []).push(row);
       } catch (error) {
-        logger.error(`Error at row index: ${index}`, error);
+        logger.error(`Error at row index: ${index}: ${(error.stack || error).toString()}`);
         resolveFlaggedRowsByValueFound(row, error);
         errors.push(error);
       }

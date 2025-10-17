@@ -30,8 +30,6 @@ export default function UserProfile(props) {
   const { titlesData, currentUser, geographiesData, commoditiesData, userInfo, users, userOnly } =
     props;
 
-  console.log('USER_STATUS_LABELS', USER_STATUS_LABELS);
-
   // Helper to validate a single field
   const validateField = (fieldValue, { validations, mandatoryChecks, text }) => {
     const errors = validations.filter((v) => !v(fieldValue)).map(() => text);
@@ -39,7 +37,7 @@ export default function UserProfile(props) {
     return { errors, missing };
   };
 
-  // Helper transforms (kept similar to original)
+  // Helper transforms
   const dropdownTitleOptions = useCallback((titles) => {
     return (titles || []).map((data) => ({ value: data.id, label: data.title }));
   }, []);
@@ -73,7 +71,7 @@ export default function UserProfile(props) {
     });
   }, []);
 
-  // Initial derived values (mirrors constructor logic)
+  // Initial derived values
   const newUserInitial = !currentUser.email;
   const geographyArray = parseMultiIds(currentUser.user_geography_ids);
   const geographiesInitial =
@@ -87,7 +85,7 @@ export default function UserProfile(props) {
       ? buildSelectedMulti(commodityArray, commoditiesData, 'commmodity_name')
       : [];
 
-  // Helper getters (converted from class methods)
+  // Helper getters
   const getUserTitle = useCallback((titleId, titles) => {
     const parsed = parseInt(titleId, 10);
     if (parsed) {

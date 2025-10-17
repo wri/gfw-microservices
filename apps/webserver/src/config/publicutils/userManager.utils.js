@@ -43,6 +43,8 @@ const { listStatusDescriptions, listStatus } = require(path.resolve(
   '../env/listStatuses.constants'
 ));
 
+const { USER_STATUS } = require(path.resolve(__dirname, '../env/userStatuses.constants'));
+
 import { UserAccessLevel } from '@wri-monorepos/constants';
 
 const lstTitles = [
@@ -214,7 +216,7 @@ export const activateUser = (
     // Setup Parameters to pass to set status SP.
     const params = [
       { field: 'userID', type: sql.Int, value: user_id },
-      { field: 'statusID', type: sql.Int, value: listStatus.Active },
+      { field: 'statusID', type: sql.Int, value: USER_STATUS.Active },
       { field: 'activatedTime', type: sql.SmallDateTime, value: new Date() },
     ];
     // Set User Status in the organization database.
@@ -307,7 +309,7 @@ export const deactivateUser = (req, user_id) => {
     // Setup Parameters to pass to set status SP.
     const params = [
       { field: 'userID', type: sql.Int, value: user_id },
-      { field: 'statusID', type: sql.Int, value: listStatus.Inactive },
+      { field: 'statusID', type: sql.Int, value: USER_STATUS.Inactive },
       { field: 'activatedTime', type: sql.SmallDateTime, value: null },
     ];
     // Set User Status.
@@ -419,7 +421,7 @@ export const createNewUser = (
             { field: 'titleId', type: sql.Int, value: user_title_id },
             { field: 'other_title', type: sql.NVarChar(150), value: other_title },
             { field: 'accessLevelId', type: sql.Int, value: access_level_id },
-            { field: 'statusId', type: sql.Int, value: listStatus.Pending },
+            { field: 'statusId', type: sql.Int, value: USER_STATUS.Pending },
             { field: 'email_subscription', type: sql.Bit, value: email_subscription },
             {
               field: 'commodity_ids',

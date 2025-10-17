@@ -54,7 +54,7 @@ export const applyLookUpByChunks = async (
   for (let i = 0; i < data.length; i += chunkSize) {
     const chunkMax = Math.min(data.length, i + chunkSize);
     const chunk = data.slice(i, chunkMax);
-    logger.log(`${idType} LookUp Chunk Size: ${chunk.length}`);
+    logger.log(`${idType} LookUp Chunk Size: ${chunk.length} (rows ${i} to ${chunkMax - 1})`);
 
     const chunkResp = await lookup(chunk.map((row) => row[column] as string));
 
@@ -100,12 +100,12 @@ export const idBasedSystemHandler = async (
     }
 
     // row-level handling
-    data.forEach((row) => {
+    data.forEach((row, index) => {
       try {
         const rowKey = determineIdType(row);
         (groups[rowKey] ??= []).push(row);
       } catch (error) {
-        logger.error(error);
+        logger.error(`Error at row index: ${index}: ${(error.stack || error).toString()}`);
         resolveFlaggedRowsByValueFound(row, error);
         errors.push(error);
       }

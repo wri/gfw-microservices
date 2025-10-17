@@ -2,7 +2,7 @@ import { csv2geojson } from './csv2geojson.parser';
 import { FeatureCollection } from '@wri-monorepos/geo';
 import axios from 'axios';
 import carIdResponseMock from './carId-response-mock';
-import { parse } from 'wellknown';
+import * as wkx from 'wkx';
 
 jest.mock('axios');
 
@@ -372,7 +372,10 @@ describe('csv2geojson', () => {
     });
 
     csv2geojson(csvData).then((result) => {
-      const expectedGeom = parse(carIdResponseMock.geom);
+      const buffer = Buffer.from(carIdResponseMock.geom, 'hex');
+      const parsedBuffer = wkx.Geometry.parse(buffer);
+      const expectedGeom = parsedBuffer.toGeoJSON();
+
       expect(result).toStrictEqual({
         features: [
           {

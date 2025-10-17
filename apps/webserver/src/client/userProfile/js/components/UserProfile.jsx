@@ -11,7 +11,7 @@ import {
   changeUser,
   updateUser,
   updateCurrentUser,
-} from '../../../profile/js/actions/profileActions'; 
+} from '../../../profile/js/actions/profileActions';
 
 import { USER_STATUS, USER_STATUS_LABELS } from '../../../../config/env/userStatuses.constants';
 
@@ -184,13 +184,13 @@ export default function UserProfile(props) {
       if (parsed && parsed.url) {
         // qr.toDataURL returns a promise when not using callback
         qr.toDataURL(parsed.url)
-        .then((dataUrl) => {
-          updateState({ secret: parsed.secret, secret_url: dataUrl });
-        })
-        .catch(() => {
-          // fallback: still updateState secret if QR fails
-          updateState({ secret: parsed.secret, secret_url: '' });
-        });
+          .then((dataUrl) => {
+            updateState({ secret: parsed.secret, secret_url: dataUrl });
+          })
+          .catch(() => {
+            // fallback: still updateState secret if QR fails
+            updateState({ secret: parsed.secret, secret_url: '' });
+          });
       }
     } catch (err) {
       // swallow errors but leave state consistent

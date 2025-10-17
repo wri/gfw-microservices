@@ -146,12 +146,12 @@ describe('GADMService', () => {
         geometry: { type: 'Point', coordinates: [0, 0] },
       };
       jest.spyOn(service, 'addGeoReferenceData').mockResolvedValue({ hasUnanalyzableError: false });
-      await service.composeResultsWithGadmData(feature);
+      await service.addGeoReferenceData(feature);
       expect(service.addGeoReferenceData).toHaveBeenCalledWith(feature);
     });
   });
 
-  describe('composeResultsWithGadmData', () => {
+  describe('addGeoReferenceData', () => {
     it('should compose results with GADM data', async () => {
       const feature: Feature = {
         type: 'Feature',
@@ -159,8 +159,14 @@ describe('GADMService', () => {
         geometry: { type: 'Point', coordinates: [0, 0] },
       };
       jest.spyOn(service, 'addGeoReferenceData').mockResolvedValue({ hasUnanalyzableError: false });
-      await service.composeResultsWithGadmData(feature);
+      await service.addGeoReferenceData(feature);
       expect(service.addGeoReferenceData).toHaveBeenCalledWith(feature);
+    });
+
+    it('should handle errors from GADM data', async () => {
+      jest.spyOn(service, 'getGadmData').mockRejectedValue('Test error');
+      const result = await service.addGeoReferenceData(null);
+      expect(result).toStrictEqual({ hasUnanalyzableError: true });
     });
   });
 
@@ -194,9 +200,9 @@ describe('GADMService', () => {
         },
       };
 
-      jest.spyOn(service, 'composeResultsWithGadmData').mockResolvedValue(undefined);
+      jest.spyOn(service, 'addGeoReferenceData').mockResolvedValue(undefined);
       const result = await service.handle(input);
-      expect(service.composeResultsWithGadmData).toHaveBeenCalled();
+      expect(service.addGeoReferenceData).toHaveBeenCalled();
       expect(result).toEqual(input);
     });
 
@@ -220,9 +226,9 @@ describe('GADMService', () => {
         },
       };
 
-      jest.spyOn(service, 'composeResultsWithGadmData').mockResolvedValue(undefined);
+      jest.spyOn(service, 'addGeoReferenceData').mockResolvedValue(undefined);
       const result = await service.handle(input);
-      expect(service.composeResultsWithGadmData).toHaveBeenCalled();
+      expect(service.addGeoReferenceData).toHaveBeenCalled();
       expect(result).toEqual(input);
     });
 

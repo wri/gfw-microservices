@@ -24,7 +24,7 @@ axiosRetry(axios, {
     );
   },
 });
-const POOL_SIZE = 20;
+const POOL_SIZE = 50;
 export class GADMService extends AbstractHandler<ChainType> {
   logger = new Logger(GADMService.name);
 
@@ -72,7 +72,7 @@ export class GADMService extends AbstractHandler<ChainType> {
     }
   };
 
-  addGeoReferenceData = async (feature: Feature) => {
+  addGeoReferenceData = async (feature: Feature, features: Feature[]) => {
     try {
       const response = await this.getGadmData(feature);
 
@@ -86,6 +86,11 @@ export class GADMService extends AbstractHandler<ChainType> {
           country: response[0].name_0,
           gadmid: fullGid.split('_')[0],
         };
+        if (Math.random() < 0.001) {
+          // Log progress for approximately 0.1% of features
+          const done = features.filter((f) => f.properties.country).length;
+          this.logger.debug(`GADMService - progress: ${done} of ${features.length}`);
+        }
       }
     } catch (e) {
       this.logger.error('Error in queryGADM', e.stack || e.message);
@@ -93,10 +98,6 @@ export class GADMService extends AbstractHandler<ChainType> {
         hasUnanalyzableError: true,
       };
     }
-  };
-
-  composeResultsWithGadmData = async (feature: Feature) => {
-    await this.addGeoReferenceData(feature);
   };
 
   async asyncPoolAll(...args) {
@@ -118,7 +119,7 @@ export class GADMService extends AbstractHandler<ChainType> {
       return request;
     }
 
-    const method = this.composeResultsWithGadmData;
+    const method = this.addGeoReferenceData;
 
     const results = await this.asyncPoolAll(POOL_SIZE, features, method);
 

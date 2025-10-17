@@ -282,6 +282,7 @@ export function SummaryAndSubmit() {
             color="secondary"
             variant="contained"
             startIcon={<EditNote />}
+            data-cy={DATA_CY.NEW_UPLOAD_WORKFLOW[uploadLocationState.uploadType!].SUBMIT_DRAFT}
             onClick={() => {
               isDraftUpload.current = true;
               setIsConfirmationDialogOpen(true);
@@ -293,6 +294,7 @@ export function SummaryAndSubmit() {
             type="submit"
             variant="contained"
             startIcon={<Publish />}
+            data-cy={DATA_CY.NEW_UPLOAD_WORKFLOW[uploadLocationState.uploadType!].SUBMIT_ANALYSIS}
             onClick={() => {
               isDraftUpload.current = false;
               setIsConfirmationDialogOpen(true);

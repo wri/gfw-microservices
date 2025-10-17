@@ -72,7 +72,7 @@ export class GADMService extends AbstractHandler<ChainType> {
     }
   };
 
-  addGeoReferenceData = async (feature: Feature, features: Feature[]) => {
+  addGeoReferenceData = async (feature: Feature, features: Feature[] = []) => {
     try {
       const response = await this.getGadmData(feature);
 

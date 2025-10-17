@@ -77,7 +77,7 @@ describe('Upload location', () => {
   });
 
   Then('I should not see the users added to the shared list', () => {
-    cy.get('.gfw-button.btn-remove').should('have.length', 2);
+    cy.get('.gfw-button.btn-remove').should('have.length', 0);
   });
 
   Then('I should see the shared list in the locations page', () => {

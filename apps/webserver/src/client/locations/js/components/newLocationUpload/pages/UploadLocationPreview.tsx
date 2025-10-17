@@ -26,7 +26,7 @@ import { fetchListPreview } from '../../../../../api/list';
 
 export function UploadLocationPreview() {
   const {
-    uploadLocationState: { uploadedFile },
+    uploadLocationState: { uploadedFile, uploadType },
     clearUploadType,
     addFile,
   } = useUploadLocation();
@@ -108,6 +108,9 @@ export function UploadLocationPreview() {
         }
       : null;
   const errorToShow = normalizedError || apiRequestError || oversizedError;
+  const DATA_CY_NEW_UPLOAD_WORKFLOW = DATA_CY.NEW_UPLOAD_WORKFLOW[uploadType] as
+    | (typeof DATA_CY.NEW_UPLOAD_WORKFLOW)[UploadType.ByFile]
+    | (typeof DATA_CY.NEW_UPLOAD_WORKFLOW)[UploadType.ById];
 
   return (
     <Box sx={{ display: 'flex', flexDirection: 'column' }}>
@@ -140,7 +143,7 @@ export function UploadLocationPreview() {
             color="info"
             disabled={isLoading || iLoadingFileUpload}
             startIcon={<Replay />}
-            data-cy={DATA_CY.NEW_UPLOAD_WORKFLOW[UploadType.ByFile].PREVIEW_RETRY}
+            data-cy={DATA_CY_NEW_UPLOAD_WORKFLOW.PREVIEW_RETRY}
             onClick={() => fileInputRef.current?.click()}
           >
             Re-upload file
@@ -226,7 +229,7 @@ export function UploadLocationPreview() {
             variant="contained"
             color="info"
             startIcon={<Close />}
-            data-cy={DATA_CY.NEW_UPLOAD_WORKFLOW[UploadType.ByFile].PREVIEW_CANCEL}
+            data-cy={DATA_CY_NEW_UPLOAD_WORKFLOW.PREVIEW_CANCEL}
             onClick={clearUploadType}
           >
             Cancel
@@ -234,7 +237,7 @@ export function UploadLocationPreview() {
           <PillButton
             variant="contained"
             startIcon={<ArrowForwardIos />}
-            data-cy={DATA_CY.NEW_UPLOAD_WORKFLOW[UploadType.ByFile].PREVIEW_NEXT}
+            data-cy={DATA_CY_NEW_UPLOAD_WORKFLOW.PREVIEW_NEXT}
             onClick={() => history.push('CONFIGURE_LIST')}
             disabled={
               isLoading || !data?.features || !!error || !!apiRequestError || !!oversizedError

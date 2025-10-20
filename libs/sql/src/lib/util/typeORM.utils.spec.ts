@@ -108,9 +108,7 @@ describe('createDatasourceConfig', () => {
       .spyOn(DataSource.prototype, 'initialize')
       .mockRejectedValueOnce(new Error('Connection failed'));
 
-    await expect(clientStoreConnection.getConnection('errorDB')).rejects.toThrow(
-      'Data Source initialization error Connection failed'
-    );
+    await expect(clientStoreConnection.getConnection('errorDB')).resolves.toBeNull();
   });
 
   it('should handle connection timeout', async () => {

@@ -237,15 +237,16 @@ function ActiveList({
                 }}
               />
 
-              <MenuItem
-                primaryText={locationsPage.lists.changeTypeOfAnalysis}
-                leftIcon={<SettingsIcon />}
-                onClick={() => {
-                  setIsChangeTypeOfAnalysisModalOpen(true);
-                  setIsMenuOpen(false);
-                }}
-              />
-
+              {!isEmptyList && !hasErrorFile && (
+                <MenuItem
+                  primaryText={locationsPage.lists.changeTypeOfAnalysis}
+                  leftIcon={<SettingsIcon />}
+                  onClick={() => {
+                    setIsChangeTypeOfAnalysisModalOpen(true);
+                    setIsMenuOpen(false);
+                  }}
+                />
+              )}
               {showDelete && (
                 <>
                   <Divider />

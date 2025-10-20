@@ -30,7 +30,7 @@ export default function AccountUsage({ label, usedValue, maxValue, InfoBubbleCon
   }));
 
   const CardLabel = styled(Typography)(() => ({
-    color: 'rgba(0, 0, 0, 0.5)',
+    color: 'rgba(0, 0, 0, 0.73)',
     fontSize: '13px',
     fontWeight: 'bold',
   }));

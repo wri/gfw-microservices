@@ -1,6 +1,6 @@
 -- ==========================================
 --  Build combined dataset for Power BI
---  Lists Analyzed by Analysis Type / Commodity (all orgs)
+--  Lists by Analysis Type
 -- ==========================================
 
 DECLARE @orgDbName NVARCHAR(255);
@@ -15,7 +15,6 @@ CREATE TABLE #AllAnalyses (
     organization_id INT,
     organization_name NVARCHAR(255),
     list_id INT,
-    commodity NVARCHAR(255),
     analysis_status NVARCHAR(50),
     analysis_type NVARCHAR(50),
     analysis_label NVARCHAR(50),
@@ -44,7 +43,6 @@ BEGIN
             ' + CAST(@orgId AS NVARCHAR(10)) + N' AS organization_id,
             N''' + REPLACE(@orgName, '''', '''''') + N''' AS organization_name,
             L.id AS list_id,
-            L.Commodity AS commodity,
             S.status_name AS analysis_status,
             LAS.AnalysisID AS analysis_type,
             CASE LAS.AnalysisID

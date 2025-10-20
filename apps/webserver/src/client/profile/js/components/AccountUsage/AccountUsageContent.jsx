@@ -6,11 +6,11 @@ import InfoBubble from '../../../../common/js/components/InfoBubble';
 
 export default function AccountUsage({ label, usedValue, maxValue, InfoBubbleContent }) {
   const getProgressColor = () => {
-    if (calculatePercentage === 100) {
+    if (usagePercentage === 100) {
       return 'rgba(242, 78, 30, 0.73)';
     }
 
-    if (calculatePercentage > 90) {
+    if (usagePercentage > 90) {
       return 'rgba(255, 138, 0, 0.73)';
     }
 
@@ -31,7 +31,8 @@ export default function AccountUsage({ label, usedValue, maxValue, InfoBubbleCon
 
   const CardLabel = styled(Typography)(() => ({
     color: 'rgba(0, 0, 0, 0.5)',
-    fontSize: '12px',
+    fontSize: '13px',
+    fontWeight: 'bold',
   }));
 
   const ProgressLabel = styled(Typography)(() => ({
@@ -41,13 +42,7 @@ export default function AccountUsage({ label, usedValue, maxValue, InfoBubbleCon
     fontWeight: 'bold',
   }));
 
-  const ProgressMark = styled(Typography)(() => ({
-    color: 'rgba(0, 0, 0, 0.5)',
-    fontSize: '12px',
-    lineHeight: '36px',
-  }));
-
-  const calculatePercentage = maxValue > usedValue ? (usedValue / maxValue) * 100 : 100;
+  const usagePercentage = maxValue > usedValue ? (usedValue / maxValue) * 100 : 100;
 
   return (
     <Card sx={{ padding: '1rem' }}>
@@ -62,6 +57,13 @@ export default function AccountUsage({ label, usedValue, maxValue, InfoBubbleCon
         <Grid container direction="row" justifyContent="space-between" alignItems="baseline">
           <Grid item>
             <CardLabel variant="caption" display="block">
+              Allocated
+            </CardLabel>
+            <ProgressLabel variant="span">{formatNumber(maxValue)}</ProgressLabel>
+          </Grid>
+
+          <Grid item>
+            <CardLabel variant="caption" display="block">
               Used
             </CardLabel>
             <ProgressLabel variant="span">{formatNumber(usedValue)}</ProgressLabel>
@@ -69,14 +71,13 @@ export default function AccountUsage({ label, usedValue, maxValue, InfoBubbleCon
 
           <Grid item>
             <CardLabel variant="caption" display="block" style={{ textAlign: 'right' }}>
-              Available
+              Remaining
             </CardLabel>
             <ProgressLabel variant="span">{formatNumber(maxValue - usedValue)}</ProgressLabel>
-            <ProgressMark variant="span">/{formatNumber(maxValue)}</ProgressMark>
           </Grid>
         </Grid>
 
-        <BorderLinearProgress variant="determinate" value={calculatePercentage} />
+        <BorderLinearProgress variant="determinate" value={usagePercentage} />
       </CardContent>
     </Card>
   );

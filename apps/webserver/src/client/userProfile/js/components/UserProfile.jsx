@@ -404,7 +404,7 @@ export default function UserProfile(props) {
       }
 
       const userId = newUser ? response.user_id : id;
-      updateState({ id: userId, newUser, updating: true });
+      updateState({ id: userId, newUser: false, updating: true });
 
       // Construct user object
       const {

@@ -202,7 +202,9 @@ export const validateIdBased = (idType: string, rows: Record<string, unknown>[])
       : [requiredColumn];
 
     const hasHeader = options.some((c) => dataColumns.includes(c));
-    if (!hasHeader) return options; // missing column entirely
+    if (!hasHeader) {
+      return options; // missing column entirely
+    }
 
     // Now check: all rows must have some value for one of the options
     const allRowsHaveValue = rows.every((row) =>

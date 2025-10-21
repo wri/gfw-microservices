@@ -194,7 +194,7 @@ export const determineIdType = (row: Record<string, unknown>) => {
 
 export const validateIdBased = (idType: string, rows: Record<string, unknown>[]) => {
   const { validateColumns } = ID_TYPE_HANDLER[idType];
-  const dataColumns = Object.keys(rows[0] || {}); // still fine for headers
+  const dataColumns = Object.keys(rows[0] || {});
 
   const missingFields = validateColumns.flatMap((requiredColumn) => {
     const options = requiredColumn.includes(' | ')
@@ -206,7 +206,7 @@ export const validateIdBased = (idType: string, rows: Record<string, unknown>[])
       return options; // missing column entirely
     }
 
-    // Now check: all rows must have some value for one of the options
+    // All rows must have some value for one of the options
     // Guard against empty arrays - Array.every() returns true for empty arrays
     const allRowsHaveValue =
       rows.length > 0 &&

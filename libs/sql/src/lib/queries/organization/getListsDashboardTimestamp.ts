@@ -1,7 +1,7 @@
 /**
  * [dbo].[uspGetListsDashboardTimestamp]
 	@timestamp DATETIME2 NULL
- * @list_id SMALLINT NULL
+ * @list_id INT NULL
  */
 export const getListsDashboardTimestamp = `
 BEGIN

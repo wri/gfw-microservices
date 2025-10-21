@@ -406,7 +406,7 @@ SET @SQL = REPLACE(@TEMPLATE, '{DATABASENAME}', @OrgdbName)
     EXEC sp_executesql @SQL
 
     SET @TEMPLATE = 'CREATE TABLE [{DATABASENAME}].[dbo].[AFIAnalysis](
-        [list_id] [SMALLINT] NULL,
+        [list_id] [INT] NULL,
         [location_id] [INT] NULL,
         [gadm_id] [NVARCHAR](50) NULL,
         [natural_land_area] [FLOAT] NULL,

@@ -1,6 +1,6 @@
 /**
  * [dbo].[uspGetListsVectorTilesPath]
-	@list_id SMALLINT
+	@list_id INT
  */
 export const getListVectorTilesPath = `
 BEGIN

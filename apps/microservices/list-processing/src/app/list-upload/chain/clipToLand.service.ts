@@ -111,7 +111,7 @@ export class ClipToLandService extends AbstractHandler<ChainType> {
           ...feature.properties,
           errorDetails: `ERROR in request (HTTP ${statusCode}): ${error.message}`,
         },
-        geometry: null,
+        geometry: {},
         type: 'FeatureCollection',
       };
       // Add a small delay before rethrowing

@@ -207,7 +207,8 @@ export const validateIdBased = (idType: string, rows: Record<string, unknown>[])
     }
 
     // Now check: all rows must have some value for one of the options
-    const allRowsHaveValue = rows.every((row) =>
+    // Guard against empty arrays - Array.every() returns true for empty arrays
+    const allRowsHaveValue = rows.length > 0 && rows.every((row) =>
       options.some((c) => {
         const value = row[c];
         return value !== undefined && value !== null && value !== '';

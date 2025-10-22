@@ -138,7 +138,7 @@ export const proManagerListAccountDetailData = async (req, res) => {
       selectedAccount,
     });
   } catch (error) {
-    console.log('Pro-manager-list account-detail page failed on the server:', error);
+    logger.error('Pro-manager-list account-detail page failed on the server', { error });
     res.status(500).send(error);
   }
 };

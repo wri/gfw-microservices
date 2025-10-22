@@ -6,21 +6,23 @@
 }
 
 .pro-manager-panel {
-  table th,
-  table td {
-    white-space: normal !important;
-  }
+  table {
+    th,
+    td {
+      white-space: normal !important;
+    }
 
-  table th {
-    position: relative;
-    padding: 0.5em 1em 0;
-    vertical-align: bottom;
-    margin-right: 5px;
-  }
+    th {
+      position: relative;
+      padding: 0.5em 1em 0;
+      vertical-align: bottom;
+      margin-right: 5px;
+    }
 
-  table a {
-    color: #007bff !important;
-    text-decoration: underline;
+    a {
+      color: #007bff !important;
+      text-decoration: underline;
+    }
   }
 
   .pro-manager-table-link {
@@ -31,6 +33,10 @@
 
   .sortable-table-header {
     cursor: pointer;
+
+    &:hover {
+      background-color: rgba(0, 0, 0, 0.04);
+    }
   }
 
   .sortable-carrot {

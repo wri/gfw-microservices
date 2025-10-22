@@ -6,7 +6,10 @@ import '../../../css/proManagerList.scss';
 
 // Constants / Config
 import { PRO_MANAGER_PATH } from '../../common/paths';
-import { ACCOUNT_ORG_STATUSES } from '../../../../common/js/constants/orgAccountStatuses';
+import {
+  ACCOUNT_ORG_STATUSES,
+  ORG_CLASSIFICATIONS,
+} from '../../../../common/js/constants/orgAccountStatuses';
 import AccountsListsTable from './AccountsListsTable';
 
 // Components
@@ -51,6 +54,15 @@ function AccountsListSection({ isLoading, setIsLoading }) {
       return date.toUTCString().replace(',', '');
     }
     return null;
+  };
+
+  const getClassificationStringValue = (account) => {
+    const ids = account.organization_classifications_ids || [];
+
+    return (classes || [])
+      .filter((classType) => ids.includes(classType.id))
+      .map((classType) => classType.classification_name)
+      .join(', '); // plain string for sorting
   };
 
   const getClassificationString = (account) => {
@@ -121,19 +133,6 @@ function AccountsListSection({ isLoading, setIsLoading }) {
   };
 
   const determineOrgClass = (orgClasses) => {
-    const classMap = {
-      1: 'Commercial Bank',
-      2: 'Consumer Goods Manufacturer',
-      3: 'Development Finance Institution',
-      4: 'Governmental Organization',
-      5: 'Investment Fund',
-      6: 'NGO',
-      7: 'Producer',
-      8: 'Retailer',
-      9: 'Processor/Trader',
-      10: 'Service Provider',
-    };
-
     if (!orgClasses) {
       return false;
     }
@@ -142,7 +141,7 @@ function AccountsListSection({ isLoading, setIsLoading }) {
     const filter = acctFilterStr.toLowerCase();
 
     return classes.some((c) => {
-      const classText = classMap[c];
+      const classText = ORG_CLASSIFICATIONS[c];
       return classText?.toLowerCase().includes(filter);
     });
   };
@@ -163,9 +162,11 @@ function AccountsListSection({ isLoading, setIsLoading }) {
   };
 
   const sortAcctTable = (evt) => {
-    const direction = accountDir === 'desc' ? 'asc' : 'desc';
+    const column = evt.currentTarget.title;
+    const direction = accountSortingCategory === column && accountDir === 'asc' ? 'desc' : 'asc';
+
+    setAccountSortingCategory(column);
     setAccountDir(direction);
-    setAccountSortingCategory(evt.target.title);
   };
 
   // Default: data already sorted by requested_date DESC from server
@@ -175,29 +176,65 @@ function AccountsListSection({ isLoading, setIsLoading }) {
       return [];
     }
 
-    if (accountSortingCategory === 'classString' || accountSortingCategory === 'statusString') {
-      return filteredAccts.sort((a, b) => {
-        const aValue = { ...a };
-        const bValue = { ...b };
-
+    if (['classString', 'statusString'].includes(accountSortingCategory)) {
+      const getValue = (acct) => {
         if (accountSortingCategory === 'classString') {
-          aValue.classString = getClassificationString(aValue);
-          bValue.classString = getClassificationString(bValue);
-        } else {
-          aValue.statusString = getStatusString(aValue);
-          bValue.statusString = getStatusString(bValue);
+          return acct.classificationStringValue;
+        }
+        if (accountSortingCategory === 'statusString') {
+          return getStatusString(acct);
+        }
+        return '';
+      };
+
+      return filteredAccts.sort((a, b) => {
+        const aVal = getValue(a);
+        const bVal = getValue(b);
+
+        // Defensive fallback for nullish values
+        if (aVal == null && bVal == null) {
+          return 0;
+        }
+        if (aVal == null) {
+          return accountDir === 'asc' ? -1 : 1;
+        }
+        if (bVal == null) {
+          return accountDir === 'asc' ? 1 : -1;
         }
 
-        if (accountDir === 'asc') {
-          return aValue[accountSortingCategory] < bValue[accountSortingCategory] ? -1 : 1;
-        } else {
-          return aValue[accountSortingCategory] < bValue[accountSortingCategory] ? 1 : -1;
-        }
+        // Use localeCompare for string safety
+        const compare = String(aVal).localeCompare(String(bVal));
+        return accountDir === 'asc' ? compare : -compare;
       });
     }
 
     // For other categories, UI will sort only if accountSortingCategory changes
-    return filteredAccts;
+    return filteredAccts.sort((a, b) => {
+      const aVal = a[accountSortingCategory] ?? '';
+      const bVal = b[accountSortingCategory] ?? '';
+
+      if (accountSortingCategory.includes('Date')) {
+        const aTime = new Date(aVal).getTime() || 0;
+        const bTime = new Date(bVal).getTime() || 0;
+        return accountDir === 'asc' ? aTime - bTime : bTime - aTime;
+      }
+
+      if (typeof aVal === 'string' && typeof bVal === 'string') {
+        return accountDir === 'asc' ? aVal.localeCompare(bVal) : bVal.localeCompare(aVal);
+      }
+
+      // Explicit type checking for numbers; fallback to string comparison if not both numbers
+      const aNum = typeof aVal === 'number' ? aVal : Number(aVal);
+      const bNum = typeof bVal === 'number' ? bVal : Number(bVal);
+      const bothNumbers = !isNaN(aNum) && !isNaN(bNum);
+      if (bothNumbers) {
+        return accountDir === 'asc' ? aNum - bNum : bNum - aNum;
+      }
+      // Fallback to string comparison for non-numeric values
+      return accountDir === 'asc'
+        ? String(aVal).localeCompare(String(bVal))
+        : String(bVal).localeCompare(String(aVal));
+    });
   };
 
   const getAccountsList = () => {
@@ -212,7 +249,23 @@ function AccountsListSection({ isLoading, setIsLoading }) {
       );
     });
 
-    const sortedFilteredAccounts = sortAccounts(filteredAccounts);
+    // enrich accounts with derived fields used for sorting
+    const accountsWithDerivedFields = filteredAccounts.map((acct) => ({
+      ...acct,
+      requestedDateString: getDateString(
+        acct,
+        ACCOUNT_ORG_STATUSES.PENDING,
+        'organization_requested_time'
+      ),
+      activeDateString: getDateString(
+        acct,
+        ACCOUNT_ORG_STATUSES.ACTIVE,
+        'organization_activated_time'
+      ),
+      classificationStringValue: getClassificationStringValue(acct), // plain string for sorting
+    }));
+
+    const sortedFilteredAccounts = sortAccounts(accountsWithDerivedFields);
     return sortedFilteredAccounts.map(createAccountRow);
   };
 

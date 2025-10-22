@@ -14,7 +14,6 @@ CREATE TABLE #activity_data (
 	activity_type_id INT NOT NULL,
 	activity_type VARCHAR(MAX) NOT NULL,
 	activity_type_category VARCHAR(MAX) NOT NULL,
-	api_command VARCHAR(MAX) NULL   -- ✅ NEW COLUMN
 );
 
 DECLARE @org_id INT;
@@ -46,7 +45,7 @@ BEGIN
 				org_id, org_name, org_database,
 				user_id, user_email,
 				activity_description, activity_time,
-				activity_type_id, activity_type, activity_type_category, api_command
+				activity_type_id, activity_type, activity_type_category
 			)
 			SELECT
 				{org_id} AS org_id,
@@ -59,7 +58,6 @@ BEGIN
 				AL.activity_type_id,
 				AT.activity_type_name AS activity_type,
 				ATC.activity_type_category_name AS activity_type_category,
-				AT.activity_type_name AS api_command
 			FROM [{db_name}].dbo.ActivityLog AL
 			LEFT JOIN [{db_name}].dbo.Users U ON U.id = AL.user_id
 			LEFT JOIN gfwpro.dbo.ActivityType AT ON AT.id = AL.activity_type_id
@@ -80,7 +78,7 @@ END;
 CLOSE db_cursor;
 DEALLOCATE db_cursor;
 
--- ✅ Final result for Athena
+-- Final result for Athena
 SELECT * FROM #activity_data;
 
 -- Clean up temp table

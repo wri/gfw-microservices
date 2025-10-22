@@ -56,6 +56,15 @@ function AccountsListSection({ isLoading, setIsLoading }) {
     return null;
   };
 
+  const getClassificationStringValue = (account) => {
+    const ids = account.organization_classifications_ids || [];
+
+    return (classes || [])
+      .filter((classType) => ids.includes(classType.id))
+      .map((classType) => classType.classification_name)
+      .join(', '); // plain string for sorting
+  };
+
   const getClassificationString = (account) => {
     const ids = account.organization_classifications_ids || [];
 
@@ -170,7 +179,7 @@ function AccountsListSection({ isLoading, setIsLoading }) {
     if (['classString', 'statusString'].includes(accountSortingCategory)) {
       const getValue = (acct) => {
         if (accountSortingCategory === 'classString') {
-          return getClassificationString(acct);
+          return acct.classificationStringValue;
         }
         if (accountSortingCategory === 'statusString') {
           return getStatusString(acct);
@@ -253,6 +262,7 @@ function AccountsListSection({ isLoading, setIsLoading }) {
         ACCOUNT_ORG_STATUSES.ACTIVE,
         'organization_activated_time'
       ),
+      classificationStringValue: getClassificationStringValue(acct), // plain string for sorting
     }));
 
     const sortedFilteredAccounts = sortAccounts(accountsWithDerivedFields);

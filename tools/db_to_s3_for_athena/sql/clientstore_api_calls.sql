@@ -15,7 +15,7 @@ CREATE TABLE #ApiCalls (
     org_database NVARCHAR(255) NOT NULL,
     user_id INT NOT NULL,
     activity_time DATETIME NOT NULL,
-    activity_description NVARCHAR(MAX) NOT NULL
+    activity_type NVARCHAR(MAX) NOT NULL
 );
 
 DECLARE @orgId INT;
@@ -49,7 +49,7 @@ BEGIN
                 org_database,
                 user_id,
                 activity_time,
-                activity_description
+                activity_type
             )
             SELECT
                 ' + CAST(@orgId AS NVARCHAR(10)) + N' AS organization_id,
@@ -57,9 +57,45 @@ BEGIN
                 N''' + REPLACE(@dbName, '''', '''''') + N''' AS org_database,
                 AL.user_id,
                 AL.activity_time,
-                AL.activity_description
+                CASE AL.activity_type_id
+                    WHEN 1 THEN ''AccountRequested''
+                    WHEN 2 THEN ''AccountActivated''
+                    WHEN 3 THEN ''AccountDeactivated''
+                    WHEN 4 THEN ''AccountUpdated''
+                    WHEN 5 THEN ''UserCreated''
+                    WHEN 6 THEN ''UserUpdated''
+                    WHEN 7 THEN ''UserLogin''
+                    WHEN 8 THEN ''UserLogout''
+                    WHEN 9 THEN ''UserActivated''
+                    WHEN 10 THEN ''UserForgotPassword''
+                    WHEN 11 THEN ''UserResetPassword''
+                    WHEN 12 THEN ''UserDeactivated''
+                    WHEN 13 THEN ''LocationUploadedToList''
+                    WHEN 14 THEN ''LocationDeletedFromList''
+                    WHEN 15 THEN ''LocationCopiedToList''
+                    WHEN 16 THEN ''LocationUpdatedInList''
+                    WHEN 17 THEN ''LocationMovedFromList''
+                    WHEN 18 THEN ''ListCreated''
+                    WHEN 19 THEN ''ListUpdate''
+                    WHEN 20 THEN ''ListUpdateNew''
+                    WHEN 21 THEN ''ListDeleted''
+                    WHEN 22 THEN ''ListAnalyzing''
+                    WHEN 35 THEN ''ListShared''
+                    WHEN 36 THEN ''ListUnShared''
+                    WHEN 37 THEN ''ListUnSharedWithAll''
+                    WHEN 28 THEN ''ConnectionRequested''
+                    WHEN 29 THEN ''ConnectionAccepted''
+                    WHEN 30 THEN ''ConnectionRejected''
+                    WHEN 31 THEN ''ConnectionResent''
+                    WHEN 32 THEN ''ConnectionCancelled''
+                    WHEN 38 THEN ''ListGetPaginatedListInfo''
+                    WHEN 39 THEN ''ListInfo''
+                    WHEN 40 THEN ''ListPrepareUpload''
+                    WHEN 41 THEN ''ListGenerate''
+                    ELSE ''UnknownActivity''
+                END AS activity_type
             FROM [' + @dbName + N'].dbo.ActivityLog AL
-            WHERE AL.activity_description LIKE ''The endpoint % was accessed by user %''
+            WHERE AL.activity_description LIKE ''The endpoint % was accessed by user %'';
         ';
 
         EXEC sp_executesql @sql;

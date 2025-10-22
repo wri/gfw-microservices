@@ -61,13 +61,13 @@ const getAllColumnNames = (
     gfwColumns.push(...columns.protected_area_fc.slice());
   }
 
-  if (areAllAnalysesDraft || listView === ALERTS) {
+  if (areAllAnalysesDraft) {
     columnNames.combinedColumns = [
       ...defaultShownColumns,
       ...columns.draft_state_columns.slice(),
       ...columnNames.list,
     ];
-  } else if (listView === FOREST_CHANGE_VIEW) {
+  } else if (listView === FOREST_CHANGE_VIEW || listView === ALERTS) {
     const { columns: forestChangeAnalysisColumns, ...forestChangeAnalysisRestOfProperties } =
       columns.forest_change_analysis[1];
 

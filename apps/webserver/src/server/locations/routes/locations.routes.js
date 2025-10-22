@@ -24,6 +24,7 @@ const { mapCommodityRiskValuesToDatabaseValues } = require('../utils/locations.u
 import config from '../../../config/config';
 
 import { extractAnalysisTypes, getListAnalysisStatusByListId } from '@wri-monorepos/geo';
+import { mockAlertsAnalysisResponse } from '../utils/locations.utils';
 
 /**
  * @name exports
@@ -338,7 +339,7 @@ module.exports = (app, limiter) => {
         locationAttributeList;
       let location_analyses = [];
 
-      if (areAllAnalysesDraftBoolean || analysisId === 'ALERTS') {
+      if (areAllAnalysesDraftBoolean) {
         const analysisManagerResult = await AnalysisManager.getDraftListLocationData(
           listID,
           page,
@@ -381,22 +382,22 @@ module.exports = (app, limiter) => {
             break;
           }
           case 'ALERTS': {
-            // this code is currently not being reached, until we add an Alerts tab to /list-details
-            const analysisManagerResult = await AnalysisManager.getDashboardDataPaginatedByList(
-              listID,
-              page,
-              pageSize,
-              req.session.organization_database,
-              filters
-            );
-            listAnalyses = analysisManagerResult.listDashboardAnalyses;
-            numberOfResults = analysisManagerResult.numberOfResults.quantity;
-            numberOfPages = analysisManagerResult.numberOfPages;
-            maximumAnalysisAreaInTheList = 0;
-            if (listAnalyses.length > 0) {
-              location_analyses = listAnalyses.filter((analysis) => analysis.location_id > 1);
-            }
-            break;
+            return res.send(mockAlertsAnalysisResponse);
+            // const analysisManagerResult = await AnalysisManager.getDashboardDataPaginatedByList(
+            //   listID,
+            //   page,
+            //   pageSize,
+            //   req.session.organization_database,
+            //   filters
+            // );
+            // listAnalyses = analysisManagerResult.listDashboardAnalyses;
+            // numberOfResults = analysisManagerResult.numberOfResults.quantity;
+            // numberOfPages = analysisManagerResult.numberOfPages;
+            // maximumAnalysisAreaInTheList = 0;
+            // if (listAnalyses.length > 0) {
+            //   location_analyses = listAnalyses.filter((analysis) => analysis.location_id > 1);
+            // }
+            // break;
           }
           default:
           case 'FCD': {

@@ -67,7 +67,12 @@ BEGIN
                   OR AL.activity_description LIKE ''%viewed diagnostic%''
               )
         ) AS UserActivities
-        GROUP BY user_id, commodity;
+        GROUP BY 
+            organization_id, 
+            organization_name, 
+            is_api_org, 
+            user_id, 
+            commodity;
     ';
 
     PRINT 'Processing ' + @orgDbName;

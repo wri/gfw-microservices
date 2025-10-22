@@ -225,6 +225,7 @@ function AccountsListSection({ isLoading, setIsLoading }) {
       return accountDir === 'asc'
         ? String(aVal).localeCompare(String(bVal))
         : String(bVal).localeCompare(String(aVal));
+    });
   };
 
   const getAccountsList = () => {

@@ -214,8 +214,17 @@ function AccountsListSection({ isLoading, setIsLoading }) {
         return accountDir === 'asc' ? aVal.localeCompare(bVal) : bVal.localeCompare(aVal);
       }
 
-      return accountDir === 'asc' ? aVal - bVal : bVal - aVal;
-    });
+      // Explicit type checking for numbers; fallback to string comparison if not both numbers
+      const aNum = typeof aVal === 'number' ? aVal : Number(aVal);
+      const bNum = typeof bVal === 'number' ? bVal : Number(bVal);
+      const bothNumbers = !isNaN(aNum) && !isNaN(bNum);
+      if (bothNumbers) {
+        return accountDir === 'asc' ? aNum - bNum : bNum - aNum;
+      }
+      // Fallback to string comparison for non-numeric values
+      return accountDir === 'asc'
+        ? String(aVal).localeCompare(String(bVal))
+        : String(bVal).localeCompare(String(aVal));
   };
 
   const getAccountsList = () => {

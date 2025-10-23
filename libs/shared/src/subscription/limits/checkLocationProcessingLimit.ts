@@ -1,18 +1,39 @@
 import { getListLocationsCountById } from '@wri-monorepos/sql';
 import { getAccountSubscriptionData } from '../utils';
 
+// todo: fix import issue from constant
+export const analysisTypes = {
+  FOREST_CHANGE_DIAGNOSTICS: 'FCD',
+  DEFORESTATION_KPIS: 'AFI',
+  ALERTS: 'ALERTS',
+  GREENHOUSE_GAS_EMISSIONS: 'GHG',
+  PALM_RISK: 'PalmRisk',
+};
+
 export interface CheckAccountListLocationProcessingLimit {
   listId: number;
   orgDbName: string;
   organizationId: number;
   subscriptionStatusId: number;
+  analysisTypesToProcess?: Record<string, boolean>;
 }
+
 export async function checkLocationProcessingLimit({
   listId,
   orgDbName,
   organizationId,
   subscriptionStatusId,
-}) {
+  analysisTypesToProcess = {},
+}: CheckAccountListLocationProcessingLimit) {
+  // If only GHG analysis is being processed, skip location count check
+  const onlyGHG = Object.entries(analysisTypesToProcess).every(([key, value]) =>
+    key === analysisTypes.GREENHOUSE_GAS_EMISSIONS ? value : !value
+  );
+
+  if (onlyGHG) {
+    return false; // Don't block GHG-only analysis based on location limits
+  }
+
   const { accountUsage, accountLimits } = await getAccountSubscriptionData({
     organizationId,
     subscriptionStatusId,

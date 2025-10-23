@@ -1,5 +1,6 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { StartAnalysisService } from './start.analysis.service';
+import * as StartAnalysisModule from './start.analysis.service';
 import { S3Service, EmailService } from '@wri-monorepos/aws';
 import { ConfigService } from '@nestjs/config';
 import { RequestLargeListProcess } from '../../models';
@@ -10,10 +11,27 @@ import sinon from 'sinon';
 import { AbstractHandler } from './chain/types';
 import { DataSource } from 'typeorm';
 import { checkListSizeLimit } from '../common/check.listSizelimit';
+import { ListSizeLimitException } from '../common/listSizeLimit.exception';
+import { MAX_LOCATIONS_PER_LIST } from '../common/constants';
+import { ClientStoreConnection, updateListsAnalysisStatus } from '@wri-monorepos/sql';
+
+// Mock ConvertPoint2Polygon to avoid dynamic import requirements
+jest.mock('./chain/convert.point.2.polygon', () => {
+  const { AbstractHandler } = jest.requireActual('./chain/types');
+  return {
+    ConvertPoint2Polygon: class extends AbstractHandler<any> {},
+  };
+});
 
 // Mock the SQLUtils module
 jest.mock('@wri-monorepos/sql', () => {
   const originalModule = jest.requireActual('@wri-monorepos/sql');
+  const updateRepoMock = jest.fn().mockResolvedValue(undefined);
+  const getRepositoryMock = jest.fn().mockReturnValue({ update: updateRepoMock });
+  const getConnectionMock = jest.fn().mockResolvedValue({ getRepository: getRepositoryMock });
+  const ClientStoreConnection = jest.fn().mockImplementation(() => ({
+    getConnection: getConnectionMock,
+  }));
   return {
     ...originalModule,
     SQLUtils: jest.fn().mockImplementation(() => ({
@@ -21,26 +39,38 @@ jest.mock('@wri-monorepos/sql', () => {
       disconnect: jest.fn().mockResolvedValue(undefined),
     })),
     upgradeListSchema: jest.fn().mockResolvedValue(undefined),
+    updateListsAnalysisStatus: jest.fn().mockResolvedValue(undefined),
+    ClientStoreConnection,
+    Lists: class Lists {},
+    __testSqlMocks: {
+      updateRepoMock,
+      getRepositoryMock,
+      getConnectionMock,
+      ClientStoreConnection,
+    },
   };
 });
 
 jest.mock('../common/check.listSizelimit');
 
-// Mock the fastq module
+// Mock the fastq module to actually execute the provided worker
 jest.mock('fastq', () => {
-  return jest.fn().mockImplementation(() => ({
-    push: jest.fn().mockImplementation((data, callback) => {
-      if (callback) {
-        callback(null);
+  return jest.fn().mockImplementation((workerFn: any) => ({
+    push: jest.fn().mockImplementation((data: any, callback?: (err: Error | null) => void) => {
+      // Execute the worker synchronously so tests can observe side effects immediately
+      try {
+        workerFn(data, (err?: Error) => (callback ? callback(err || null) : undefined));
+      } catch (err) {
+        if (callback) callback(err as Error);
       }
       return Promise.resolve();
     }),
     unshift: jest.fn(),
     pause: jest.fn(),
     resume: jest.fn(),
-    running: jest.fn(),
+    running: jest.fn().mockReturnValue(0),
     idle: jest.fn(),
-    length: jest.fn(),
+    length: jest.fn().mockReturnValue(0),
     getQueue: jest.fn(),
     kill: jest.fn(),
     killAndDrain: jest.fn(),
@@ -61,6 +91,8 @@ describe('StartAnalysisService', () => {
   let configService: ConfigService;
   let listTemplateRepository: unknown;
   let mockDataSource: DataSource;
+  let uploadStatusSpy: jest.SpyInstance;
+  let runFullChainSpy: jest.SpyInstance;
 
   beforeEach(async () => {
     sandbox = sinon.createSandbox();
@@ -83,6 +115,15 @@ describe('StartAnalysisService', () => {
     // Stub all chain components
     sandbox.stub(AbstractHandler.prototype, 'setNext').returns(chainStub);
     sandbox.stub(AbstractHandler.prototype, 'handle').resolves({});
+    uploadStatusSpy = jest
+      .spyOn(
+        AbstractHandler as unknown as { updateListsUploadStatus: any },
+        'updateListsUploadStatus'
+      )
+      .mockResolvedValue(undefined);
+    runFullChainSpy = jest
+      .spyOn(AbstractHandler as unknown as { runFullChain: any }, 'runFullChain')
+      .mockResolvedValue(undefined);
 
     // Create service stubs
     s3Service = {
@@ -228,5 +269,97 @@ describe('StartAnalysisService', () => {
     expect(result).toHaveProperty('executionArn');
     expect(result).toHaveProperty('startDate');
     expect(result.startDate).toBeDefined();
+  });
+
+  it('should clear existing error file before processing the list', async () => {
+    const request: RequestLargeListProcess = {
+      organization_id: 1,
+      subscription_status_id: 1,
+      organization_database: 'test-database',
+      list_id: 123,
+      path: 's3://bucket/key.csv',
+      user_id: 99,
+      startAnalysis: true,
+      saveAsDraft: false,
+      commodity: 'cocoa',
+    };
+
+    (commodityService.checkIfListExistAndCommodityIsTheSame as sinon.SinonStub).resolves(true);
+
+    await service.run(request);
+    // allow worker microtasks to flush
+    await new Promise((r) => setImmediate(r));
+    await new Promise((r) => setImmediate(r));
+
+    const sql = require('@wri-monorepos/sql');
+    const updateRepoMock: jest.Mock = sql.__testSqlMocks.updateRepoMock;
+    expect(updateRepoMock).toHaveBeenCalledWith({ id: 123 }, { errorFileStoragePath: null });
+  });
+
+  it('should update statuses and not throw when size limit is exceeded', async () => {
+    const analysisIds = ['a-1', 'a-2'];
+    const request = {
+      organization_id: 1,
+      subscription_status_id: 1,
+      organization_database: 'test-database',
+      list_id: 10,
+      path: 's3://bucket/key.csv',
+      user_id: 77,
+      startAnalysis: true,
+      saveAsDraft: false,
+      commodity: 'cocoa',
+      analysisIds,
+    } as unknown as RequestLargeListProcess;
+
+    (commodityService.checkIfListExistAndCommodityIsTheSame as sinon.SinonStub).resolves(true);
+
+    // Simulate the chain throwing a ListSizeLimitException
+    runFullChainSpy.mockRejectedValueOnce(new ListSizeLimitException(MAX_LOCATIONS_PER_LIST));
+
+    const result = await service.run(request);
+    expect(result).toHaveProperty('startDate');
+
+    // allow worker microtasks to flush
+    await new Promise((r) => setImmediate(r));
+    await new Promise((r) => setImmediate(r));
+
+    // Upload status should be updated
+    expect(uploadStatusSpy).toHaveBeenCalled();
+
+    // Analysis status should be updated with provided analysis IDs
+    expect(updateListsAnalysisStatus as unknown as jest.Mock).toHaveBeenCalled();
+    const calls = (updateListsAnalysisStatus as unknown as jest.Mock).mock.calls;
+    const lastArgs = calls[calls.length - 1][1];
+    expect(lastArgs.analysisIds).toEqual(analysisIds);
+  });
+
+  it('should swallow analysis status update failures when size limit is exceeded', async () => {
+    const request = {
+      organization_id: 1,
+      subscription_status_id: 1,
+      organization_database: 'test-database',
+      list_id: 11,
+      path: 's3://bucket/key.csv',
+      user_id: 77,
+      startAnalysis: true,
+      saveAsDraft: false,
+      commodity: 'cocoa',
+      analysisIds: ['x-1'],
+    } as unknown as RequestLargeListProcess;
+
+    (commodityService.checkIfListExistAndCommodityIsTheSame as sinon.SinonStub).resolves(true);
+
+    runFullChainSpy.mockRejectedValueOnce(new ListSizeLimitException(MAX_LOCATIONS_PER_LIST));
+
+    // Force analysis status update to fail
+    (updateListsAnalysisStatus as unknown as jest.Mock).mockRejectedValueOnce(
+      new Error('update failed')
+    );
+
+    await expect(service.run(request)).resolves.toBeDefined();
+    // allow worker microtasks to flush
+    await new Promise((r) => setImmediate(r));
+    await new Promise((r) => setImmediate(r));
+    expect(uploadStatusSpy).toHaveBeenCalled();
   });
 });

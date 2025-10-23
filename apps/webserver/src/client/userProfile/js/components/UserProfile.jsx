@@ -260,7 +260,11 @@ export default function UserProfile(props) {
             status_id: USER_STATUS.Active,
           });
 
-          const userObject = { user_id: id, status_id: USER_STATUS.Active, activated_time: new Date() };
+          const userObject = {
+            user_id: id,
+            status_id: USER_STATUS.Active,
+            activated_time: new Date(),
+          };
           store.dispatch(updateUser(userObject));
         }
       } catch (err) {

@@ -122,7 +122,11 @@ export default function UserProfile(props) {
         };
       }
     }
-    return USER_STATUS_LABELS[USER_STATUS.Active];
+    return {
+      value: USER_STATUS.Active,
+      label: USER_STATUS_LABELS[USER_STATUS.Active],
+      name: USER_STATUS_LABELS[USER_STATUS.Active],
+    };
   }, []);
 
   const [state, setState] = useState(() => ({
@@ -253,10 +257,10 @@ export default function UserProfile(props) {
             dialogOpen: true,
             dialogTitle: 'User activated',
             dialogMessage: `The user ${first_name} ${last_name} has been successfully activated.`,
-            status_id: 2,
+            status_id: USER_STATUS.Active,
           });
 
-          const userObject = { user_id: id, status_id: 2, activated_time: new Date() };
+          const userObject = { user_id: id, status_id: USER_STATUS.Active, activated_time: new Date() };
           store.dispatch(updateUser(userObject));
         }
       } catch (err) {
@@ -316,13 +320,13 @@ export default function UserProfile(props) {
         } else {
           updateState({
             showModalLoader: false,
-            status_id: 3,
+            status_id: USER_STATUS.Inactive,
             dialogOpen: true,
             dialogTitle: 'User deactivated',
             dialogMessage: `The user ${first_name} ${last_name} has been successfully deactivated.`,
             updating: false,
           });
-          store.dispatch(updateUser({ user_id: id, status_id: 3 }));
+          store.dispatch(updateUser({ user_id: id, status_id: USER_STATUS.Inactive }));
         }
       })
       .catch(() => {

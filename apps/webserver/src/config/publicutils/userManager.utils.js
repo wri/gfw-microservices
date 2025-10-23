@@ -43,8 +43,7 @@ const { listStatusDescriptions, listStatus } = require(path.resolve(
   '../env/listStatuses.constants'
 ));
 
-const { USER_STATUS } = require(path.resolve(__dirname, '../env/userStatuses.constants'));
-
+import { USER_STATUS } from '../env/userStatuses.constants';
 import { UserAccessLevel } from '@wri-monorepos/constants';
 
 const lstTitles = [

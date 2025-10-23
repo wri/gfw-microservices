@@ -383,6 +383,8 @@ module.exports = (app, limiter) => {
           }
           case 'ALERTS': {
             return res.send(mockAlertsAnalysisResponse);
+            // TODO: Uncomment and restore the following code when real dashboard analysis data is available and mockAlertsAnalysisResponse is no longer needed for the 'ALERTS' case.
+
             // const analysisManagerResult = await AnalysisManager.getDashboardDataPaginatedByList(
             //   listID,
             //   page,

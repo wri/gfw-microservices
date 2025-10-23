@@ -38,7 +38,7 @@ export const alerts_analysis = {
       },
       className: 'default-cell td-num',
       show: true,
-      Cell: (_) => {
+      Cell: () => {
         return <span>#</span>;
       },
       sortMethod: (a, b) => {

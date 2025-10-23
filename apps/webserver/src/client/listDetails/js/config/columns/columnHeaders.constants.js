@@ -1,4 +1,7 @@
 export const columnHeaders = {
+  alertsInNaturalForest: 'Alerts in Natural Forest',
+  alertsInNonForest: 'Alerts in Non-Forest',
+  allAlerts: 'All Alerts',
   alternativeMill: 'Alternative Mill Name',
   certification: 'Certification',
   certified: 'Certified',
@@ -13,7 +16,7 @@ export const columnHeaders = {
   forest: 'Forest',
   high: 'High',
   id: 'ID',
-  indiginousPeoples: 'Indiginous Peoples',
+  indigenousPeoples: 'Indigenous Peoples',
   iucn: 'IUCN Category',
   locationName: 'Location',
   low: 'Low',

@@ -35,6 +35,7 @@ import '../../../../../../common/css/_irsBase.scss';
 import '../../../../../../common/css/_irsStyle.scss';
 import '../../../../../../common/css/filter-dialogs.scss';
 import {
+  ALERTS,
   COMMODITY_RISK_VIEW,
   FOREST_CHANGE_VIEW,
   POST_2020_RISK_ASSESSMENT_VIEW,
@@ -258,9 +259,13 @@ export default class Filter extends Component {
                     />
                   )}
                 </Grid>
-                <Grid item xs={shouldRenderLocationsWithErrorsCheckbox ? 5 : 7}>
+                <Grid
+                  item
+                  xs={shouldRenderLocationsWithErrorsCheckbox ? 5 : 7}
+                  sx={{ pl: listView === ALERTS ? 9 : 0 }}
+                >
                   {!isCommodityRiskFilterVisible && !areAllAnalysesDraft && (
-                    <DeforestationDisplayFormatToggleButtons />
+                    <DeforestationDisplayFormatToggleButtons listView={listView} />
                   )}
                 </Grid>
               </>

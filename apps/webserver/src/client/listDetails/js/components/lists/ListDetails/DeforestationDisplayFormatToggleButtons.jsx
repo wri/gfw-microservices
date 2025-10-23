@@ -6,8 +6,9 @@ import {
   DISPLAY_FORMAT_HECTARES,
   DISPLAY_FORMAT_PERCENTAGE,
 } from './deforestationDisplayFormat.constants';
+import { ALERTS } from './listViews.constants';
 
-function DeforestationDisplayFormatToggleButtons() {
+function DeforestationDisplayFormatToggleButtons({ listView }) {
   const { deforestationDisplayFormat } = store.getState();
 
   const getButtonStyles = (format) => ({
@@ -20,6 +21,7 @@ function DeforestationDisplayFormatToggleButtons() {
       backgroundColor: '#e0e0e0',
     },
   });
+  const isAlertsAnalysis = listView === ALERTS;
 
   return (
     <>
@@ -40,6 +42,8 @@ function DeforestationDisplayFormatToggleButtons() {
           ...getButtonStyles(DISPLAY_FORMAT_HECTARES),
           borderLeft: 'none',
           borderRadius: 0,
+          borderTopRightRadius: isAlertsAnalysis ? '50px' : '0px',
+          borderBottomRightRadius: isAlertsAnalysis ? '50px' : '0px',
         }}
         onClick={() => store.dispatch(toggleDeforestationDisplayFormat(DISPLAY_FORMAT_HECTARES))}
         data-cy="deforestation-display-hectares-format-button"
@@ -47,18 +51,22 @@ function DeforestationDisplayFormatToggleButtons() {
         HECTARES
       </Button>
 
-      <Button
-        sx={{
-          ...getButtonStyles(DISPLAY_FORMAT_PERCENTAGE),
-          borderLeft: 'none',
-          borderTopRightRadius: '50px',
-          borderBottomRightRadius: '50px',
-        }}
-        onClick={() => store.dispatch(toggleDeforestationDisplayFormat(DISPLAY_FORMAT_PERCENTAGE))}
-        data-cy="deforestation-display-percentage-format-button"
-      >
-        % OF LOCATION
-      </Button>
+      {!isAlertsAnalysis && (
+        <Button
+          sx={{
+            ...getButtonStyles(DISPLAY_FORMAT_PERCENTAGE),
+            borderLeft: 'none',
+            borderTopRightRadius: '50px',
+            borderBottomRightRadius: '50px',
+          }}
+          onClick={() =>
+            store.dispatch(toggleDeforestationDisplayFormat(DISPLAY_FORMAT_PERCENTAGE))
+          }
+          data-cy="deforestation-display-percentage-format-button"
+        >
+          % OF LOCATION
+        </Button>
+      )}
     </>
   );
 }

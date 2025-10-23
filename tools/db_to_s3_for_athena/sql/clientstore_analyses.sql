@@ -17,7 +17,7 @@ CREATE TABLE #AllAnalyses (
     list_id INT,
     analysis_label NVARCHAR(50),
     analysis_date_time DATETIME,
-    is_api_list BIT  -- API flag
+    is_api_org BIT  -- API flag
 );
 
 -- Cursor to iterate through all clientstores
@@ -49,7 +49,7 @@ BEGIN
                 ELSE ''Unknown''
             END AS analysis_label,
             LP.analysis_start_time AS analysis_date_time,
-            CASE WHEN E.organizationId IS NOT NULL THEN 1 ELSE 0 END AS is_api_list
+            CASE WHEN E.organizationId IS NOT NULL THEN 1 ELSE 0 END AS is_api_org
         FROM [' + @orgDbName + N'].dbo.ListsProcessing AS LP
         LEFT JOIN gfwpro.dbo.ExternalAPIKeys AS E
             ON E.organizationId = ' + CAST(@orgId AS NVARCHAR(10)) + N'

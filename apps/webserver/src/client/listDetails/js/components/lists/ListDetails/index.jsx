@@ -2119,7 +2119,7 @@ export default class ListDetails extends Component {
                                   data-cy="download-reports-button"
                                   startIcon={<Download />}
                                 >
-                                  Download Reports
+                                  {Transifex.live.translateText('Download Reports')}
                                 </MaterialButton>
                               )}
                               <span className="list-analysis-actions__analysis-date">

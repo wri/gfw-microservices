@@ -38,16 +38,8 @@ export const alerts_analysis = {
       },
       className: 'default-cell td-num',
       show: true,
-      Cell: (row) => {
-        const { tree_cover_loss_total_yearly, tree_cover_extent_total } = row.value;
-
-        const value = getValue(tree_cover_loss_total_yearly);
-        const formattedValue = calculateAndFormatTotalDeforestation(
-          tree_cover_extent_total,
-          tree_cover_loss_total_yearly
-        );
-
-        return <span title={value}>#</span>;
+      Cell: (_) => {
+        return <span>#</span>;
       },
       sortMethod: (a, b) => {
         const sortStatus = sortByStatus(a, b);

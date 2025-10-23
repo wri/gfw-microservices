@@ -655,61 +655,6 @@ export default class UserProfile extends Component {
           </section>
         </section>
 
-        <section className="section-container">
-          <h3 className="section-title-normal">Second Level Authentication Preferences</h3>
-          <span className="profile-label">
-            Select your preferred method for account verification
-          </span>
-          <div className="flex-grid space-element">
-            <input
-              id="secondLevelAuthenticationEmail"
-              type="radio"
-              name="second-level-authentication"
-              disabled={this.props.disable}
-              checked={this.state.auth_preference_id === 0}
-              onChange={this.updateAuthenticationPreference}
-              value={0}
-            />
-            <label
-              htmlFor="secondLevelAuthenticationEmail"
-              className={`profile-label ${this.props.disable ? 'disabled' : null}`}
-            >
-              Email
-            </label>
-            <input
-              type="radio"
-              id="secondLevelAuthenticationGoogle"
-              name="second-level-authentication"
-              disabled={this.props.disable}
-              checked={this.state.auth_preference_id === 1}
-              onChange={this.updateAuthenticationPreference}
-              value={1}
-            />
-            <label
-              htmlFor="secondLevelAuthenticationGoogle"
-              className={`profile-label ${this.props.disable ? 'disabled' : null}`}
-            >
-              Google Authenticator{' '}
-            </label>
-          </div>
-          <div className={this.state.auth_preference_id === 1 ? 'flex-grid' : 'hidden'}>
-            <div className="col">
-              <div className="flex-grid-column">
-                <div className="profile-label">
-                  Open your Google Authenticator App and scan the image!
-                </div>
-                <img width="196" height="196" src={this.state.secret_url} />
-              </div>
-            </div>
-            <div className="col">
-              <div className="flex-grid-column">
-                <div className="profile-label">Camera not working? Copy & paste the secret!</div>
-                <input value={this.state.secret} name="user_secret" />
-              </div>
-            </div>
-          </div>
-        </section>
-
         <div className="profile-button-container justify-end">
           {this.props.userOnly ? null : (
             <PillButton variant="contained" size="small" href={`${PRO_MANAGER_PATH}?tab=users`}>

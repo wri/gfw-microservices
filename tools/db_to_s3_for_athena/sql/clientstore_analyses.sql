@@ -15,8 +15,6 @@ CREATE TABLE #AllAnalyses (
     organization_id INT,
     organization_name NVARCHAR(255),
     list_id INT,
-    analysis_status NVARCHAR(50),
-    analysis_type NVARCHAR(50),
     analysis_label NVARCHAR(50),
     analysis_date_time DATETIME,
     is_api_list BIT  -- API flag
@@ -42,10 +40,8 @@ BEGIN
         SELECT
             ' + CAST(@orgId AS NVARCHAR(10)) + N' AS organization_id,
             N''' + REPLACE(@orgName, '''', '''''') + N''' AS organization_name,
-            L.id AS list_id,
-            S.status_name AS analysis_status,
-            LAS.AnalysisID AS analysis_type,
-            CASE LAS.AnalysisID
+            LP.list_id,
+            CASE LP.analysis_type
                 WHEN ''AFI'' THEN ''Post-2020''
                 WHEN ''FCD'' THEN ''Post-2000''
                 WHEN ''ALERTS'' THEN ''Alerts''
@@ -54,17 +50,10 @@ BEGIN
             END AS analysis_label,
             LP.analysis_start_time AS analysis_date_time,
             CASE WHEN E.organizationId IS NOT NULL THEN 1 ELSE 0 END AS is_api_list
-        FROM [' + @orgDbName + N'].dbo.Lists AS L
-        LEFT JOIN [' + @orgDbName + N'].dbo.ListsAnalysisStatus AS LAS
-            ON LAS.ListID = L.id
-        LEFT JOIN [' + @orgDbName + N'].dbo.ListsProcessing AS LP
-            ON LP.list_id = L.id
-            AND LP.analysis_type = LAS.AnalysisID
-        LEFT JOIN gfwpro.dbo.Statuses AS S
-            ON S.id = LAS.Status
+        FROM [' + @orgDbName + N'].dbo.ListsProcessing AS LP
         LEFT JOIN gfwpro.dbo.ExternalAPIKeys AS E
             ON E.organizationId = ' + CAST(@orgId AS NVARCHAR(10)) + N'
-        WHERE (L.list_status_id IS NULL OR L.list_status_id <> 3); -- exclude deleted lists
+        -- WHERE (L.list_status_id IS NULL OR L.list_status_id <> 3) -- To only keep active lists
     ';
 
     PRINT 'Processing ' + @orgDbName;

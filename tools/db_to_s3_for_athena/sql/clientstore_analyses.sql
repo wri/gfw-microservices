@@ -17,7 +17,7 @@ CREATE TABLE #AllAnalyses (
     list_id INT,
     analysis_label NVARCHAR(50),
     analysis_date_time DATETIME,
-    is_api_org BIT  -- API flag
+    is_api_list BIT  -- API flag (list-level)
 );
 
 -- Cursor to iterate through all clientstores
@@ -49,11 +49,14 @@ BEGIN
                 ELSE ''Unknown''
             END AS analysis_label,
             LP.analysis_start_time AS analysis_date_time,
-            CASE WHEN E.organizationId IS NOT NULL THEN 1 ELSE 0 END AS is_api_org
+            CASE WHEN EU.id IS NOT NULL THEN 1 ELSE 0 END AS is_api_list
         FROM [' + @orgDbName + N'].dbo.ListsProcessing AS LP
-        LEFT JOIN gfwpro.dbo.ExternalAPIKeys AS E
-            ON E.organizationId = ' + CAST(@orgId AS NVARCHAR(10)) + N'
-        -- WHERE (L.list_status_id IS NULL OR L.list_status_id <> 3) -- To only keep active lists
+        LEFT JOIN [' + @orgDbName + N'].dbo.LargeLists AS LL
+            ON LL.list_id = LP.list_id
+        LEFT JOIN [' + @orgDbName + N'].dbo.ExternalUploads AS EU
+            ON LL.s3_filename = EU.uploadKeyFile
+        -- Optional WHERE clause to filter active lists
+        -- WHERE LP.list_status_id IS NULL OR LP.list_status_id <> 3
     ';
 
     PRINT 'Processing ' + @orgDbName;

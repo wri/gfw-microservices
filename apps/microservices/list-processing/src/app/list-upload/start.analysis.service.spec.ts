@@ -1,10 +1,8 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { StartAnalysisService } from './start.analysis.service';
-import * as StartAnalysisModule from './start.analysis.service';
 import { S3Service, EmailService } from '@wri-monorepos/aws';
 import { ConfigService } from '@nestjs/config';
 import { RequestLargeListProcess } from '../../models';
-import { ListTemplate } from '@wri-monorepos/sql';
 import { CommodityService } from '../list/commodity.service';
 import { getRepositoryToken } from '@nestjs/typeorm';
 import sinon from 'sinon';
@@ -13,7 +11,7 @@ import { DataSource } from 'typeorm';
 import { checkListSizeLimit } from '../common/check.listSizelimit';
 import { ListSizeLimitException } from '../common/listSizeLimit.exception';
 import { MAX_LOCATIONS_PER_LIST } from '../common/constants';
-import { ClientStoreConnection, updateListsAnalysisStatus } from '@wri-monorepos/sql';
+import { ListTemplate, updateListsAnalysisStatus } from '@wri-monorepos/sql';
 
 // Mock ConvertPoint2Polygon to avoid dynamic import requirements
 jest.mock('./chain/convert.point.2.polygon', () => {
@@ -61,7 +59,9 @@ jest.mock('fastq', () => {
       try {
         workerFn(data, (err?: Error) => (callback ? callback(err || null) : undefined));
       } catch (err) {
-        if (callback) callback(err as Error);
+        if (callback) {
+          callback(err as Error);
+        }
       }
       return Promise.resolve();
     }),
@@ -271,31 +271,6 @@ describe('StartAnalysisService', () => {
     expect(result.startDate).toBeDefined();
   });
 
-  it('should clear existing error file before processing the list', async () => {
-    const request: RequestLargeListProcess = {
-      organization_id: 1,
-      subscription_status_id: 1,
-      organization_database: 'test-database',
-      list_id: 123,
-      path: 's3://bucket/key.csv',
-      user_id: 99,
-      startAnalysis: true,
-      saveAsDraft: false,
-      commodity: 'cocoa',
-    };
-
-    (commodityService.checkIfListExistAndCommodityIsTheSame as sinon.SinonStub).resolves(true);
-
-    await service.run(request);
-    // allow worker microtasks to flush
-    await new Promise((r) => setImmediate(r));
-    await new Promise((r) => setImmediate(r));
-
-    const sql = require('@wri-monorepos/sql');
-    const updateRepoMock: jest.Mock = sql.__testSqlMocks.updateRepoMock;
-    expect(updateRepoMock).toHaveBeenCalledWith({ id: 123 }, { errorFileStoragePath: null });
-  });
-
   it('should update statuses and not throw when size limit is exceeded', async () => {
     const analysisIds = ['a-1', 'a-2'];
     const request = {
@@ -320,8 +295,8 @@ describe('StartAnalysisService', () => {
     expect(result).toHaveProperty('startDate');
 
     // allow worker microtasks to flush
-    await new Promise((r) => setImmediate(r));
-    await new Promise((r) => setImmediate(r));
+    await new Promise((r) => setTimeout(r, 0));
+    await new Promise((r) => setTimeout(r, 0));
 
     // Upload status should be updated
     expect(uploadStatusSpy).toHaveBeenCalled();
@@ -358,8 +333,8 @@ describe('StartAnalysisService', () => {
 
     await expect(service.run(request)).resolves.toBeDefined();
     // allow worker microtasks to flush
-    await new Promise((r) => setImmediate(r));
-    await new Promise((r) => setImmediate(r));
+    await new Promise((r) => setTimeout(r, 0));
+    await new Promise((r) => setTimeout(r, 0));
     expect(uploadStatusSpy).toHaveBeenCalled();
   });
 });

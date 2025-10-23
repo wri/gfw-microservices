@@ -36,7 +36,7 @@ export const columnHeaders = {
   rspoModel: 'RSPO Model',
   siteId: 'Site ID',
   size: 'Size',
-  sizeInHa: 'Size in ha',
+  sizeInHa: 'Size (ha)',
   state: 'State',
   supplier: 'Supplier',
   supplierTwo: 'Supplier 2',

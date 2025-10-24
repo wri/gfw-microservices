@@ -119,14 +119,16 @@ function FailedList({
             targetOrigin={{ vertical: 'top', horizontal: 'right' }}
           >
             <Menu className="context-menu">
-              <MenuItem
-                primaryText={locationsPage.lists.changeTypeOfAnalysis}
-                leftIcon={<SettingsIcon />}
-                onClick={() => {
-                  setIsChangeTypeOfAnalysisModalOpen(true);
-                  setIsMenuOpen(false);
-                }}
-              />
+              {showRerun && (
+                <MenuItem
+                  primaryText={locationsPage.lists.changeTypeOfAnalysis}
+                  leftIcon={<SettingsIcon />}
+                  onClick={() => {
+                    setIsChangeTypeOfAnalysisModalOpen(true);
+                    setIsMenuOpen(false);
+                  }}
+                />
+              )}
               <MenuItem
                 primaryText={
                   isInFolder ? locationsPage.lists.manage : locationsPage.lists.addToFolder

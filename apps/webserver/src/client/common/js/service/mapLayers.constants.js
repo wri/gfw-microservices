@@ -1464,7 +1464,7 @@ export const mapLayers = [
             'https://github.com/Vizzuality/gfw/blob/develop/app/assets/javascripts/map/cartocss/style.cartocss',
           useCors: true,
           metadata: 'umd_soy_planted_area',
-          url: 'https://tiles.globalforestwatch.org/umd_soy_planted_area/v3/{year}/{z}/{x}/{y}.png',
+          url: 'https://tiles.globalforestwatch.org/umd_soy_planted_area/v4/{year}/{z}/{x}/{y}.png',
         },
       },
       legendConfig: {

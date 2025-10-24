@@ -61,7 +61,7 @@ const getAllColumnNames = (
     gfwColumns.push(...columns.protected_area_fc.slice());
   }
 
-  if (areAllAnalysesDraft || listView === ALERTS) {
+  if (areAllAnalysesDraft) {
     columnNames.combinedColumns = [
       ...defaultShownColumns,
       ...columns.draft_state_columns.slice(),
@@ -105,6 +105,32 @@ const getAllColumnNames = (
   } else if (listView === POST_2020_RISK_ASSESSMENT_VIEW) {
     const analysis = columns.post_2020_risk.slice();
     columnNames.combinedColumns = [checkbox, ...analysis, ...columnNames.list];
+  } else if (listView === ALERTS) {
+    const { columns: alertsAnalysisColumns, ...alertsAnalysisRestOfProperties } =
+      columns.alerts_analysis;
+
+    const notSortableColumns = alertsAnalysisColumns.map((col) => {
+      return {
+        ...col,
+        sortable: false,
+      };
+    });
+
+    const analysis = [
+      {
+        ...(notSortableColumns
+          ? { columns: notSortableColumns, ...alertsAnalysisRestOfProperties }
+          : columns.alerts_analysis),
+      },
+    ];
+
+    columnNames.combinedColumns = [
+      ...defaultShownColumns,
+      ...(isGlobalForestWatchList ? gfwListsSizeColumn(listId) : []),
+      ...analysis,
+      ...gfwColumns,
+      ...columnNames.list,
+    ];
   }
 
   return columnNames;

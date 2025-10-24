@@ -8,9 +8,13 @@ import {
   COMMODITY_RISK_VIEW,
   FOREST_CHANGE_VIEW,
   POST_2020_RISK_ASSESSMENT_VIEW,
+  ALERTS,
 } from './listViews.constants';
 import { HelperTextWithPopover } from '../../../../../components';
 import { ReusableText } from '../../../../../utils/constants';
+import featureFlags from '../../../../../../utils/general.utils';
+
+const { isDcfAvailable } = featureFlags;
 
 function AnalysesTabs({
   listView,
@@ -75,6 +79,26 @@ function AnalysesTabs({
           data-cy="post-2020-tab"
           sx={{
             backgroundColor: listView === POST_2020_RISK_ASSESSMENT_VIEW ? 'white' : '#e5e5e5',
+            color: 'black',
+            '&.Mui-selected': {
+              color: 'black',
+              backgroundColor: 'white',
+              borderTopLeftRadius: '4px',
+              borderTopRightRadius: '4px',
+            },
+          }}
+        />
+      )}
+
+      {isDcfAvailable && (
+        <Tab
+          icon={getStatusIcon(post2000TreeCoverLossAnalysisStatus)}
+          iconPosition="start"
+          label={`${getAnalysisLabel(analysisTypes.ALERTS)} *`}
+          value={ALERTS}
+          data-cy="alerts-tab"
+          sx={{
+            backgroundColor: listView === ALERTS ? 'white' : '#e5e5e5',
             color: 'black',
             '&.Mui-selected': {
               color: 'black',

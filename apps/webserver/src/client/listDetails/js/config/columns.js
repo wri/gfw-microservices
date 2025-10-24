@@ -10,10 +10,12 @@ import react_table__location_name from './columns/react_table__location_name';
 import getPost2020Risk from './columns/post_2020_risk';
 import draft_state_columns from './columns/draft_state_columns';
 import id_type_columns from './columns/id_type_columns.js';
+import alerts_analysis from './columns/alerts_analysis';
 
 const columns = {
   id_type_columns,
   forest_change_analysis,
+  alerts_analysis,
   commodity_locations,
   commodity_analysis,
   palm_oil_mill_fc,

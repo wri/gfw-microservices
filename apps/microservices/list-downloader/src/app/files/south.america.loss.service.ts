@@ -45,10 +45,15 @@ export class SouthAmericaLossService extends DashboardHandleDownload {
         let rowValue = 0;
         let yearlyData;
 
-        if (attribute === 'tree_cover_loss_prodes_yearly') {
-          yearlyData =
-            JSON.parse(listLevelAnalysis.country_specific_deforestation_yearly || '{}')?.BRA ||
+        // Prefer BRA-specific WDPA from country_specific_deforestation_wdpa_yearly when available;
+        // fallback to tree_cover_loss_prodes_wdpa_yearly for backward compatibility.
+        if (attribute === 'tree_cover_loss_prodes_wdpa_yearly' && !yearlyData) {
+          const braWdpa =
+            JSON.parse(listLevelAnalysis.country_specific_deforestation_wdpa_yearly || '{}')?.BRA ||
             null;
+          if (braWdpa) {
+            yearlyData = braWdpa;
+          }
         }
 
         if (!yearlyData) {

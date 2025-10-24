@@ -1,5 +1,6 @@
 const moment = require('moment');
 const logger = require('../../../config/privateutils/logger.utils');
+import * as sql from 'mssql';
 import config from '../../../config/config';
 const { compiledAssets } = config;
 const { getCurrentDateTimeFormatted } = require('../../vectorTiles/utils/vectorTile.utils');
@@ -16,6 +17,7 @@ import {
   getAccountAnalysisLimits,
   getAccountAnalysisUsage,
   getAccountAnalysisUsageByAnalysisType,
+  SQLUtils,
 } from '@wri-monorepos/sql';
 import { analysisTypes } from '@wri-monorepos/constants';
 const { sendMessageToQueue } = require('../../downloader');
@@ -168,38 +170,51 @@ export const getMyOrganizationUsersAnalysisUsage = async (req, res) => {
   });
 };
 export const getMyAccountAnalysisUsageByAnalysisType = async (req, res) => {
-  const { organization_database } = req.session;
-  const { startDate, endDate, organizationName } = req.query;
-  let orgDbName = organization_database;
-  if (orgDbName === null || orgDbName === '' || typeof orgDbName === 'undefined') {
-    orgDbName = `clientstore-${organizationName}`;
-  }
+  try {
+    const { organization_database } = req.session;
+    const { startDate, endDate, organizationId } = req.query;
+    let orgDbName = organization_database;
+    if (orgDbName === null || orgDbName === '' || typeof orgDbName === 'undefined') {
+      const { organizationDb } = await SQLUtils.queryDBFirstRow(
+        config.SQLConnection.database,
+        'getOrganizationDb',
+        [{ field: 'organizationId', type: sql.Int, value: organizationId }]
+      );
+      orgDbName = organizationDb;
+    }
 
-  const { error } = validateQueryParams({
-    startDate,
-    endDate,
-  });
-  if (error) {
-    return res.status(400).send({
-      status: 400,
-      message: {
-        error,
-        success: false,
-      },
+    const { error } = validateQueryParams({
+      startDate,
+      endDate,
+    });
+    if (error) {
+      return res.status(400).send({
+        status: 400,
+        message: {
+          error,
+          success: false,
+        },
+      });
+    }
+
+    const analysisUsageByType = await getAccountAnalysisUsageByAnalysisType({
+      startDate,
+      endDate,
+      orgDbName,
+    });
+
+    res.status(200).send({
+      startDate,
+      endDate,
+      analysisUsageByType,
+    });
+  } catch (error) {
+    logger.error('Error in getMyAccountAnalysisUsageByAnalysisType', error.stack || error);
+    res.status(500).send({
+      error: error.message,
+      success: false,
     });
   }
-
-  const analysisUsageByType = await getAccountAnalysisUsageByAnalysisType({
-    startDate,
-    endDate,
-    orgDbName,
-  });
-
-  res.status(200).send({
-    startDate,
-    endDate,
-    analysisUsageByType,
-  });
 };
 export const getMyOrganizationAnalysisUsagePercentage = async (req, res) => {
   let { organization_id, subscription_status_id } = req.session;

@@ -111,22 +111,39 @@ describe('South America Loss Service', () => {
     ]);
   });
 
-  test('Should use BRA data from country_specific_deforestation_yearly when attribute is tree_cover_loss_prodes_yearly', () => {
-    const returnData = southAmericaLossService.generateAggregate(
+  test('Uses BRA-specific WDPA when available, else falls back (backward compatibility)', () => {
+    // Prefer BRA WDPA from country_specific_deforestation_wdpa_yearly
+    let returnData = southAmericaLossService.generateAggregate(
       'sAmericaLossAggregate',
       'south_america_loss_of_forests_aggregate',
       {
-        country_specific_deforestation_yearly: JSON.stringify({
-          BRA: { 2017: 50, 2018: 70 },
-        }),
-        tree_cover_loss_prodes_yearly: '{}',
+        tree_cover_loss_total_yearly: JSON.stringify({ 2018: 100 }),
+        country_specific_deforestation_wdpa_yearly: JSON.stringify({ BRA: { 2018: 55 } }),
+        tree_cover_loss_prodes_wdpa_yearly: JSON.stringify({ 2018: 20 }),
       }
     );
 
     expect(returnData).toEqual([
       ['List Name', 'Data Layer Name', 'Forest Loss (ha)', 'Year', 'Total Loss (ha)'],
-      ['south_america_loss_of_forests_aggregate', 'PRODES', 50, '2017', '120.00'],
-      ['south_america_loss_of_forests_aggregate', 'PRODES', 70, '2018', '120.00'],
+      ['south_america_loss_of_forests_aggregate', 'Tree Cover Loss', 100, '2018', '100.00'],
+      ['south_america_loss_of_forests_aggregate', 'Protected Areas', 55, '2018', '55.00'],
+    ]);
+
+    // Fallback to tree_cover_loss_prodes_wdpa_yearly if BRA not present
+    returnData = southAmericaLossService.generateAggregate(
+      'sAmericaLossAggregate',
+      'south_america_loss_of_forests_aggregate',
+      {
+        tree_cover_loss_total_yearly: JSON.stringify({ 2018: 100 }),
+        country_specific_deforestation_wdpa_yearly: JSON.stringify({}),
+        tree_cover_loss_prodes_wdpa_yearly: JSON.stringify({ 2018: 20 }),
+      }
+    );
+
+    expect(returnData).toEqual([
+      ['List Name', 'Data Layer Name', 'Forest Loss (ha)', 'Year', 'Total Loss (ha)'],
+      ['south_america_loss_of_forests_aggregate', 'Tree Cover Loss', 100, '2018', '100.00'],
+      ['south_america_loss_of_forests_aggregate', 'Protected Areas', 20, '2018', '20.00'],
     ]);
   });
 });

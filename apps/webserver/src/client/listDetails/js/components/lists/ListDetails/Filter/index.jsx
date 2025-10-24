@@ -259,13 +259,9 @@ export default class Filter extends Component {
                     />
                   )}
                 </Grid>
-                <Grid
-                  item
-                  xs={shouldRenderLocationsWithErrorsCheckbox ? 5 : 7}
-                  sx={{ pl: listView === ALERTS ? 9 : 0 }}
-                >
+                <Grid item xs={shouldRenderLocationsWithErrorsCheckbox ? 5 : 7}>
                   {!isCommodityRiskFilterVisible && !areAllAnalysesDraft && (
-                    <DeforestationDisplayFormatToggleButtons listView={listView} />
+                    <DeforestationDisplayFormatToggleButtons />
                   )}
                 </Grid>
               </>

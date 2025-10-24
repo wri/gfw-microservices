@@ -1,7 +1,9 @@
-import { Component } from 'react';
+import { useState, useEffect, useCallback } from 'react';
+import Select from 'react-select';
 import qr from 'qrcode';
 import Dialog from 'material-ui/Dialog';
-import Select from 'react-select';
+import { Divider } from '@mui/material';
+
 import fetch from '../../../common/js/utils/fetch';
 import { fieldValidations } from '../../../profile/js/utils/validations';
 import {
@@ -10,7 +12,10 @@ import {
   updateUser,
   updateCurrentUser,
 } from '../../../profile/js/actions/profileActions';
-import { profilePage, authMessages } from '../../../common/js/config';
+
+import { USER_STATUS, USER_STATUS_LABELS } from '../../../../config/env/userStatuses.constants';
+
+import { profilePage } from '../../../common/js/config';
 import httpRequest from '../../../common/js/utils/httpRequest';
 import Button from '../../../common/js/components/Button';
 import GfwSelect from '../../../common/js/components/GfwSelect';
@@ -19,919 +24,935 @@ import IconArrowLeft from '../../../common/js/components/icon/IconArrowLeft';
 import LinkButton from '../../../common/js/components/LinkButton';
 import store from '../../../profile/js/store';
 import '../../css/userProfile.scss';
+import forgotStrings from '../../../forgot/js/components/forgotStrings';
 
-export default class UserProfile extends Component {
-  constructor(props) {
-    super(props);
+export default function UserProfile(props) {
+  const { titlesData, currentUser, geographiesData, commoditiesData, userInfo, users, userOnly } =
+    props;
 
-    const { titlesData, currentUser } = this.props;
+  // Helper to validate a single field
+  const validateField = (fieldValue, { validations, mandatoryChecks, text }) => {
+    const errors = validations.filter((v) => !v(fieldValue)).map(() => text);
+    const missing = mandatoryChecks.filter((m) => !m(fieldValue)).map(() => text);
+    return { errors, missing };
+  };
 
-    const dropdownTitleOptions = (titlesDataLocal) => {
-      return titlesDataLocal.map((data) => {
-        return {
-          value: data.id,
-          label: data.title,
-        };
-      });
-    };
+  // Helper transforms
+  const dropdownTitleOptions = useCallback((titles) => {
+    return (titles || []).map((data) => ({ value: data.id, label: data.title }));
+  }, []);
 
-    const dropdownAccessLevelOptions = (accessLevelDataLocal) => {
-      return accessLevelDataLocal.map((data) => {
-        return {
-          value: data.id,
-          label: data.name,
-        };
-      });
-    };
+  const buildAccessLevelOptions = useCallback((accessLevels) => {
+    return (accessLevels || []).map((data) => ({ value: data.id, label: data.name }));
+  }, []);
 
-    // status
-    const statusData = profilePage.userProfile.statusOptions;
+  const statusData = profilePage.userProfile.statusOptions;
+  const dropdownUserStatusOptions = useCallback((statusArr) => {
+    return (statusArr || []).map((s) => ({ value: s.id, label: s.name, name: s.name }));
+  }, []);
 
-    const dropdownUserStatusOptions = (statusDataLocal) => {
-      return statusDataLocal.map((data) => {
-        return {
-          value: data.id,
-          label: data.name,
-        };
-      });
-    };
+  const accessLevelData = profilePage.userProfile.accessOptions;
 
-    const newUser = !currentUser.email;
-    const accessLevelData = profilePage.userProfile.accessOptions;
+  // Convert comma-separated ids into Select values
+  const parseMultiIds = useCallback((csv) => {
+    if (!csv) {
+      return [];
+    }
+    return csv.split(',').map((v) => parseInt(v, 10));
+  }, []);
 
-    const geographyArray = props.currentUser.user_geography_ids
-      ? props.currentUser.user_geography_ids.split(',').map((geog) => {
-          return parseInt(geog, 10);
-        })
+  const buildSelectedMulti = useCallback((idsArray, sourceData, labelKey = 'geography_name') => {
+    if (!sourceData || !sourceData.length) {
+      return idsArray.map((id) => ({ label: '', value: id }));
+    }
+    return idsArray.map((id) => {
+      const datum = sourceData.find((d) => d.id === id);
+      return datum ? { label: datum[labelKey], value: datum.id } : { label: '', value: id };
+    });
+  }, []);
+
+  // Initial derived values
+  const newUserInitial = !currentUser.email;
+  const geographyArray = parseMultiIds(currentUser.user_geography_ids);
+  const geographiesInitial =
+    geographiesData && geographiesData.length
+      ? buildSelectedMulti(geographyArray, geographiesData, 'geography_name')
       : [];
 
-    const geographies =
-      props.geographiesData && props.geographiesData.length
-        ? geographyArray.map((g) => {
-            const datum = props.geographiesData.find((d) => d.id === g);
-            return datum
-              ? { label: datum.geography_name, value: datum.id }
-              : { label: '', value: g };
-          })
-        : [];
-
-    const commodityArray = props.currentUser.user_commodity_ids
-      ? props.currentUser.user_commodity_ids.split(',').map((comm) => {
-          return parseInt(comm, 10);
-        })
+  const commodityArray = parseMultiIds(currentUser.user_commodity_ids);
+  const commoditiesInitial =
+    commoditiesData && commoditiesData.length
+      ? buildSelectedMulti(commodityArray, commoditiesData, 'commmodity_name')
       : [];
 
-    const commodities =
-      props.commoditiesData && props.commoditiesData.length
-        ? commodityArray.map((c) => {
-            const datum = props.commoditiesData.find((d) => d.id === c);
-            // Note that 'commodity' is misspelled with 3 m's in the user profile data from the API
-            return datum
-              ? { label: datum.commmodity_name, value: datum.id }
-              : { label: '', value: c };
-          })
-        : [];
-
-    this.state = {
-      newUser,
-      // USER PROFILE STATE
-      id: currentUser.user_id ?? currentUser.id ?? '',
-      first_name: currentUser.first_name ? currentUser.first_name : '',
-      middle_initial: currentUser.middle_initial ? currentUser.middle_initial : '',
-      last_name: currentUser.last_name ? currentUser.last_name : '',
-      email: currentUser.email ? currentUser.email : '',
-      phone: currentUser.phone ? currentUser.phone : '',
-      title_id: currentUser.title_id ? currentUser.title_id : 1,
-      other_title: currentUser.other_title ? currentUser.other_title : '',
-      access_level_id: currentUser.access_level_id ? currentUser.access_level_id : 1,
-      status_id: currentUser.status_id ? currentUser.status_id : 1,
-      enableAlerts: false,
-      geographies,
-      commodities,
-      viirsAlerts: currentUser.viirs_email_frequency ? currentUser.viirs_email_frequency : 0,
-      gladAlerts: currentUser.glad_email_frequency ? currentUser.glad_email_frequency : 0,
-      granChacoAlerts: currentUser.gran_chaco_email_frequency
-        ? currentUser.gran_chaco_email_frequency
-        : 0,
-      auth_preference_id: currentUser.auth_preference_id ? currentUser.auth_preference_id : 0,
-      // UI STATE
-      dialogOpen: false,
-      dialogTitle: '',
-      dialogMessage: '',
-      sharingInternal: 0,
-      sharingExternal: 0,
-      showModalLoader: false,
-      dropdownTitleOptions: dropdownTitleOptions(titlesData),
-      dropdownAccessLevelOptions: dropdownAccessLevelOptions(accessLevelData),
-      dropdownUserStatusOptions: dropdownUserStatusOptions(statusData),
-      selectedDropdownTitleOption: this.getUserTitle(currentUser.title_id, this.props.titlesData),
-      selectedDropdownAccessLevelOption: this.getUserAccessLevel(
-        currentUser.access_level_id,
-        accessLevelData
-      ),
-      selectedDropdownUserStatusOption: this.getUserStatus(currentUser.status_id, statusData),
-    };
-
-    // Get the user QR Code
-    if (currentUser.email && newUser === false && currentUser.auth_preference_id === 1) {
-      this.getQRCode();
-    }
-  }
-
-  getUserTitle = (titleId, titlesData) => {
-    if (parseInt(titleId, 10)) {
-      const userTitle = titlesData.filter((title) => {
-        return parseInt(titleId, 10) === parseInt(title.id, 10);
-      })[0];
-      const userTitleObj = {
-        value: userTitle.id,
-        label: userTitle.title,
-      };
-      return userTitleObj;
-    }
-    return 'Select...';
-  };
-
-  getUserAccessLevel = (accessLevelId, accessLevelDataLocal) => {
-    if (parseInt(accessLevelId, 10)) {
-      const userAccessLevel = accessLevelDataLocal.filter((accessLevel) => {
-        return parseInt(accessLevelId, 10) === parseInt(accessLevel.id, 10);
-      })[0];
-      const userAccessLevelObj = {
-        value: userAccessLevel.id,
-        label: userAccessLevel.name,
-      };
-      return userAccessLevelObj;
-    }
-    return 'Select...';
-  };
-
-  getUserStatus = (statusId, statusDataLocal) => {
-    if (parseInt(statusId, 10)) {
-      const userStatus = statusDataLocal.filter((status) => {
-        return parseInt(statusId, 10) === parseInt(status.id, 10);
-      })[0];
-      const userStatusObj = {
-        value: userStatus.id,
-        label: userStatus.name,
-        name: userStatus.name,
-      };
-      return userStatusObj;
-    }
-    return 'Active';
-  };
-
-  getQRCode = () => {
-    const xmlhttp = new XMLHttpRequest();
-    xmlhttp.open('POST', '/userSecret');
-
-    xmlhttp.onreadystatechange = () => {
-      if (xmlhttp.readyState === 4 && xmlhttp.status === 200) {
-        const res = JSON.parse(xmlhttp.responseText);
-        qr.toDataURL(res.url, (err, url) => {
-          this.setState({
-            secret: res.secret,
-            secret_url: url,
-          });
-        });
+  // Helper getters
+  const getUserTitle = useCallback((titleId, titles) => {
+    const parsed = parseInt(titleId, 10);
+    if (parsed) {
+      const userTitle = (titles || []).find((t) => parsed === parseInt(t.id, 10));
+      if (userTitle) {
+        return { value: userTitle.id, label: userTitle.title };
       }
-    };
-    xmlhttp.setRequestHeader('Content-Type', 'application/json');
-    const { email } = this.state;
-    xmlhttp.send(JSON.stringify({ email }));
-  };
+    }
+    return 'Select...';
+  }, []);
 
-  activateUser = () => {
-    const { id, email, first_name, last_name } = this.state;
-    this.setState({ showModalLoader: true }, () => {
-      httpRequest
-        .fetchJSON('/profile/activateUser', {
+  const getUserAccessLevel = useCallback((accessLevelId, accessLevelDataLocal) => {
+    const parsed = parseInt(accessLevelId, 10);
+    if (parsed) {
+      const userAccessLevel = (accessLevelDataLocal || []).find(
+        (a) => parsed === parseInt(a.id, 10)
+      );
+      if (userAccessLevel) {
+        return { value: userAccessLevel.id, label: userAccessLevel.name };
+      }
+    }
+    return 'Select...';
+  }, []);
+
+  const getUserStatus = useCallback((statusId, statusDataLocal) => {
+    const parsed = parseInt(statusId, 10);
+    if (parsed) {
+      const userStatus = (statusDataLocal || []).find((s) => parsed === parseInt(s.id, 10));
+      if (userStatus) {
+        return {
+          value: userStatus.id,
+          label: userStatus.name,
+          name: userStatus.name,
+        };
+      }
+    }
+    return {
+      value: USER_STATUS.Active,
+      label: USER_STATUS_LABELS[USER_STATUS.Active],
+      name: USER_STATUS_LABELS[USER_STATUS.Active],
+    };
+  }, []);
+
+  const [state, setState] = useState(() => ({
+    newUser: newUserInitial,
+    id: currentUser.user_id ?? currentUser.id ?? '',
+    first_name: currentUser.first_name ?? '',
+    middle_initial: currentUser.middle_initial ?? '',
+    last_name: currentUser.last_name ?? '',
+    email: currentUser.email ?? '',
+    phone: currentUser.phone ?? '',
+    title_id: currentUser.title_id ?? 1,
+    other_title: currentUser.other_title ?? '',
+    access_level_id: currentUser.access_level_id ?? 1,
+    status_id: currentUser.status_id ?? USER_STATUS.Pending,
+    enableAlerts: false,
+    geographies: geographiesInitial,
+    commodities: commoditiesInitial,
+    viirsAlerts: currentUser.viirs_email_frequency ?? 0,
+    gladAlerts: currentUser.glad_email_frequency ?? 0,
+    granChacoAlerts: currentUser.gran_chaco_email_frequency ?? 0,
+    auth_preference_id: currentUser.auth_preference_id ?? 0,
+    dialogOpen: false,
+    dialogTitle: '',
+    dialogMessage: '',
+    sharingInternal: 0,
+    sharingExternal: 0,
+    showModalLoader: false,
+    dropdownTitleOptions: dropdownTitleOptions(titlesData),
+    dropdownAccessLevelOptions: buildAccessLevelOptions(accessLevelData),
+    dropdownUserStatusOptions: dropdownUserStatusOptions(statusData),
+    selectedDropdownTitleOption: getUserTitle(currentUser.title_id, titlesData),
+    selectedDropdownAccessLevelOption: getUserAccessLevel(
+      currentUser.access_level_id,
+      accessLevelData
+    ),
+    selectedDropdownUserStatusOption: getUserStatus(currentUser.status_id, statusData),
+    secret: '',
+    secret_url: '',
+    updating: false,
+  }));
+
+  // Small helper to update state
+  const updateState = useCallback((patch) => setState((s) => ({ ...s, ...patch })), []);
+
+  // QR Code fetch
+  const getQRCode = useCallback(async () => {
+    const { email } = state;
+    if (!email) {
+      return;
+    }
+    try {
+      const response = await httpRequest.fetchJSON('/userSecret', { email });
+      let parsed = null;
+      try {
+        parsed = JSON.parse(response);
+      } catch {
+        parsed = null;
+      }
+      if (parsed && parsed.url) {
+        // qr.toDataURL returns a promise when not using callback
+        qr.toDataURL(parsed.url)
+          .then((dataUrl) => {
+            updateState({ secret: parsed.secret, secret_url: dataUrl });
+          })
+          .catch(() => {
+            // fallback: still updateState secret if QR fails
+            updateState({ secret: parsed.secret, secret_url: '' });
+          });
+      }
+    } catch (err) {
+      // swallow errors but leave state consistent
+      console.error('getQRCode error', err);
+    }
+  }, [state.email, updateState]);
+
+  // If current user is not new and uses Google Auth (auth_preference_id === 1), get QR
+  useEffect(() => {
+    if (state.email && state.newUser === false && state.auth_preference_id === 1) {
+      getQRCode();
+    }
+  }, [state.email, state.newUser, state.auth_preference_id, getQRCode]);
+
+  // Activation
+  const activateUser = useCallback(
+    async (userId = null) => {
+      const { email, first_name, last_name } = state;
+      const id = userId || state.id;
+
+      updateState({ showModalLoader: true });
+
+      try {
+        const response = await httpRequest.fetchJSON('/profile/activateUser', {
           id,
           email,
           first_name,
           last_name,
-        })
-        .then((response) => {
-          const parsedResponse = JSON.parse(response);
-          const { errorCode, userMessage } = parsedResponse;
-
-          if (errorCode) {
-            this.setState({
-              showModalLoader: false,
-              dialogOpen: true,
-              dialogTitle: 'Error',
-              dialogMessage: userMessage,
-            });
-          } else {
-            this.setState({
-              showModalLoader: false,
-              dialogOpen: true,
-              dialogTitle: 'User activated',
-              dialogMessage: `The user ${first_name} ${last_name} has been successfully activated.`,
-              status_id: 2,
-            });
-            const userObject = {
-              user_id: id,
-              status_id: 2,
-              activated_time: new Date(),
-            };
-            store.dispatch(updateUser(userObject));
-          }
         });
-    });
-  };
 
-  deactivateUser = () => {
-    const { users, userInfo } = this.props;
-    const { access_level_id, id, email, first_name, last_name } = this.state;
-    // Determine if the current user is an admin
+        let parsedResponse;
+        try {
+          parsedResponse = JSON.parse(response);
+        } catch {
+          parsedResponse = null;
+        }
+
+        if (!parsedResponse) {
+          updateState({
+            showModalLoader: false,
+            dialogOpen: true,
+            dialogTitle: 'Error',
+            dialogMessage: 'Activation failed: invalid server response.',
+          });
+          return;
+        }
+
+        const { errorCode, userMessage } = parsedResponse;
+
+        if (errorCode) {
+          updateState({
+            showModalLoader: false,
+            dialogOpen: true,
+            dialogTitle: 'Error',
+            dialogMessage: userMessage,
+          });
+        } else {
+          updateState({
+            showModalLoader: false,
+            dialogOpen: true,
+            dialogTitle: 'User activated',
+            dialogMessage: `The user ${first_name} ${last_name} has been successfully activated.`,
+            status_id: USER_STATUS.Active,
+          });
+
+          const userObject = {
+            user_id: id,
+            status_id: USER_STATUS.Active,
+            activated_time: new Date(),
+          };
+          store.dispatch(updateUser(userObject));
+        }
+      } catch (err) {
+        updateState({
+          showModalLoader: false,
+          dialogOpen: true,
+          dialogTitle: 'Error',
+          dialogMessage: 'Activation failed.',
+        });
+      }
+    },
+    [state, updateState]
+  );
+
+  // Deactivation
+  const deactivateUser = useCallback(() => {
+    const { access_level_id, id, email, first_name, last_name } = state;
     const isAdmin = access_level_id === 1;
-    // Determine if the current logged user is attempting to deactivate themselves
     const isSelf = userInfo.id === id;
-    // Determine the number of admins in the organization
-    const numberOfOrgAdmins = users.filter(
+    const numberOfOrgAdmins = (users || []).filter(
       (user) => user.access_level_id === 1 && user.status_id === 2
     ).length;
 
     if (numberOfOrgAdmins <= 1 && isAdmin) {
-      this.setState({
+      updateState({
         dialogOpen: true,
         dialogTitle: 'Unable to deactivate user',
         dialogMessage:
           'Deactivating this user will leave the organization without an administrator.',
         updating: false,
       });
-    } else if (isSelf && isAdmin) {
-      this.setState({
+      return;
+    }
+    if (isSelf && isAdmin) {
+      updateState({
         dialogOpen: true,
         dialogTitle: 'Unable to deactivate user',
         dialogMessage: 'You are not allowed to deactivate yourself as an administrator.',
         updating: false,
       });
-    } else {
-      this.setState({ showModalLoader: true }, () => {
-        httpRequest
-          .fetchJSON('/profile/deactivateUser', {
-            name: id,
-            email,
-          })
-          .then((response) => {
-            const parsedResponse = JSON.parse(response);
-            const { errorCode, userMessage } = parsedResponse;
-
-            if (errorCode) {
-              this.setState({
-                showModalLoader: false,
-                dialogOpen: true,
-                dialogTitle: 'Error',
-                dialogMessage: userMessage,
-              });
-            } else {
-              this.setState({
-                showModalLoader: false,
-                status_id: 3,
-                dialogOpen: true,
-                dialogTitle: 'User deactivated',
-                dialogMessage: `The user ${first_name} ${last_name} has been successfully deactivated.`,
-                updating: false,
-              });
-              store.dispatch(
-                updateUser({
-                  user_id: id,
-                  status_id: 3,
-                })
-              );
-            }
-          });
-      });
+      return;
     }
-  };
 
-  updateUser = () => {
-    const errors = [];
-    const missing = [];
-    const { first_name, last_name, email, phone, newUser, id } = this.state;
-    fieldValidations.first_name.validations.forEach((validation) => {
-      if (validation(first_name) === false) {
-        errors.push(fieldValidations.first_name.text);
-      }
-    });
-    fieldValidations.first_name.mandatoryChecks.forEach((mandatoryCheck) => {
-      if (mandatoryCheck(first_name) === false) {
-        missing.push(fieldValidations.first_name.text);
-      }
-    });
-
-    fieldValidations.last_name.validations.forEach((validation) => {
-      if (validation(last_name) === false) {
-        errors.push(fieldValidations.last_name.text);
-      }
-    });
-    fieldValidations.last_name.mandatoryChecks.forEach((mandatoryCheck) => {
-      if (mandatoryCheck(last_name) === false) {
-        missing.push(fieldValidations.last_name.text);
-      }
-    });
-
-    fieldValidations.email.validations.forEach((validation) => {
-      if (validation(email) === false) {
-        errors.push(fieldValidations.email.text);
-      }
-    });
-    fieldValidations.email.mandatoryChecks.forEach((mandatoryCheck) => {
-      if (mandatoryCheck(email) === false) {
-        missing.push(fieldValidations.email.text);
-      }
-    });
-
-    fieldValidations.phone.validations.forEach((validation) => {
-      if (validation(phone) === false) {
-        errors.push(fieldValidations.phone.text);
-      }
-    });
-    fieldValidations.phone.mandatoryChecks.forEach((mandatoryCheck) => {
-      if (mandatoryCheck(phone) === false) {
-        missing.push(fieldValidations.phone.text);
-      }
-    });
-
-    if (errors.length === 0 && missing.length === 0) {
-      const url = newUser ? '/profile/createuser' : '/profile/updateuser';
-      const method = 'POST';
-      const headers = { 'Content-Type': 'application/json' };
-      const body = { ...this.state };
-      body.geographies = body.geographies.map((g) => g.value);
-      body.commodities = body.commodities.map((c) => c.value);
-      this.setState(
-        {
-          showModalLoader: true,
-          updating: true,
-        },
-        () => {
-          fetch({ url, method, headers, body }).then((response) => {
-            this.setState(
-              {
-                showModalLoader: false,
-              },
-              () => {
-                const { errorCode } = response;
-                if (errorCode) {
-                  this.setState({
-                    dialogOpen: true,
-                    dialogTitle: newUser ? 'User not added' : 'User not updated',
-                    dialogMessage: newUser
-                      ? response.userMessage
-                      : 'Please contact system administrator for more information.',
-                    updating: false,
-                  });
-                } else {
-                  this.setState(
-                    {
-                      id: url === '/profile/createuser' ? response.user_id : id,
-                      newUser: false,
-                      updating: true,
-                    },
-                    () => {
-                      const {
-                        geographies,
-                        commodities,
-                        access_level_id,
-                        activated_time,
-                        auth_preference_id,
-                        middle_initial,
-                        other_title,
-                        status_id,
-                        title_id,
-                      } = this.state;
-                      const geographyIds = geographies.map((g) => g.value).join(',');
-                      const commodityIds = commodities.map((g) => g.value).join(',');
-                      const userObject = {
-                        access_level_id,
-                        activated_time:
-                          typeof activated_time === 'object' ? activated_time : new Date(),
-                        auth_preference_id,
-                        email,
-                        email_subscription: false,
-                        first_name,
-                        forma_email_frequency: 0,
-                        glad_email_frequency: 0,
-                        gran_chaco_email_frequency: 0,
-                        last_name,
-                        middle_initial: middle_initial || '',
-                        other_title,
-                        phone,
-                        status_id: url === '/profile/createuser' ? 1 : status_id,
-                        title_id,
-                        user_commodity_ids: commodityIds,
-                        user_geography_ids: geographyIds,
-                        user_id: id === '' ? response.user_id : id,
-                        viirs_email_frequency: 0,
-                      };
-                      if (url === '/profile/createuser') {
-                        store.dispatch(addUser(userObject));
-                        store.dispatch(changeUser(userObject));
-                      } else {
-                        store.dispatch(updateUser(userObject));
-                        store.dispatch(updateCurrentUser(userObject));
-                      }
-                    }
-                  );
-                }
-              }
-            );
-          });
-        }
-      );
-    } else if (errors.length > 0 && missing.length > 0) {
-      errors.unshift('Please review for invalid characters:');
-      missing.unshift('Please enter:');
-      const errorsAndMissing = [...errors, ...missing];
-      this.setState({
-        dialogOpen: true,
-        dialogTitle: 'Invalid field entries & Mandatory fields missing',
-        dialogMessage: errorsAndMissing,
-        updating: false,
-      });
-    } else if (errors.length > 0) {
-      errors.unshift('Please review for invalid characters:');
-      this.setState({
-        dialogOpen: true,
-        dialogTitle: 'Invalid field entries',
-        dialogMessage: errors,
-        updating: false,
-      });
-    } else {
-      missing.unshift('Please enter:');
-      this.setState({
-        dialogOpen: true,
-        dialogTitle: 'Mandatory fields missing',
-        dialogMessage: missing,
-        updating: false,
-      });
-    }
-  };
-
-  // Function to request reset User's password via Admin role only
-  adminResetPassword = () => {
-    this.setState({ showModalLoader: true }, () => {
-      const { email } = this.state;
-      httpRequest.fetchJSON('/auth/admin-reset-user-password', { email }).then((response) => {
-        let res;
-        try {
-          res = JSON.parse(response);
-        } catch {
-          res = null;
-        }
-        if (res) {
-          if (
-            Object.prototype.hasOwnProperty.call(res, 'systemMessage') &&
-            res.systemMessage.code === 'LimitExceededException'
-          ) {
-            this.setState({
-              showModalLoader: false,
-              dialogOpen: true,
-              dialogTitle: authMessages.resetLimit.title,
-              dialogMessage: authMessages.resetLimit.message,
-            });
-          } else if (
-            Object.prototype.hasOwnProperty.call(res, 'message') &&
-            res.message === 'Success'
-          ) {
-            this.setState({
-              showModalLoader: false,
-              dialogOpen: true,
-              dialogTitle: authMessages.resetSuccess.title,
-              dialogMessage: authMessages.resetSuccess.message,
-            });
-          }
-        } else {
-          this.setState({
+    updateState({ showModalLoader: true });
+    httpRequest
+      .fetchJSON('/profile/deactivateUser', { name: id, email })
+      .then((response) => {
+        const parsedResponse = JSON.parse(response);
+        const { errorCode, userMessage } = parsedResponse;
+        if (errorCode) {
+          updateState({
+            showModalLoader: false,
             dialogOpen: true,
-            dialogTitle: authMessages.resetError.title,
-            dialogMessage: authMessages.resetError.message,
+            dialogTitle: 'Error',
+            dialogMessage: userMessage,
+          });
+        } else {
+          updateState({
+            showModalLoader: false,
+            status_id: USER_STATUS.Inactive,
+            dialogOpen: true,
+            dialogTitle: 'User deactivated',
+            dialogMessage: `The user ${first_name} ${last_name} has been successfully deactivated.`,
+            updating: false,
+          });
+          store.dispatch(updateUser({ user_id: id, status_id: USER_STATUS.Inactive }));
+        }
+      })
+      .catch(() => {
+        updateState({
+          showModalLoader: false,
+          dialogOpen: true,
+          dialogTitle: 'Error',
+          dialogMessage: 'Deactivation failed.',
+        });
+      });
+  }, [state, userInfo, users, updateState]);
+
+  // Update/Create user
+  const saveUser = useCallback(async () => {
+    // Validate all fields
+    const allErrors = [];
+    const allMissing = [];
+    ['first_name', 'last_name', 'email', 'phone'].forEach((key) => {
+      const { errors, missing } = validateField(state[key], fieldValidations[key]);
+      allErrors.push(...errors);
+      allMissing.push(...missing);
+    });
+
+    // Handle validation feedback
+    if (allErrors.length || allMissing.length) {
+      if (allErrors.length && allMissing.length) {
+        allErrors.unshift('Please review for invalid characters:');
+        allMissing.unshift('Please enter:');
+        updateState({
+          dialogOpen: true,
+          dialogTitle: 'Invalid field entries & Mandatory fields missing',
+          dialogMessage: [...allErrors, ...allMissing],
+          updating: false,
+        });
+      } else if (allErrors.length) {
+        allErrors.unshift('Please review for invalid characters:');
+        updateState({
+          dialogOpen: true,
+          dialogTitle: 'Invalid field entries',
+          dialogMessage: allErrors,
+          updating: false,
+        });
+      } else {
+        allMissing.unshift('Please enter:');
+        updateState({
+          dialogOpen: true,
+          dialogTitle: 'Mandatory fields missing',
+          dialogMessage: allMissing,
+          updating: false,
+        });
+      }
+      return;
+    }
+
+    const { newUser, id } = state;
+    const url = newUser ? '/profile/createuser' : '/profile/updateuser';
+    const body = {
+      ...state,
+      geographies: (state.geographies || []).map((g) => g.value),
+      commodities: (state.commodities || []).map((c) => c.value),
+    };
+    const headers = { 'Content-Type': 'application/json' };
+    updateState({ showModalLoader: true, updating: true });
+
+    try {
+      const response = await fetch({ url, method: 'POST', headers, body });
+      updateState({ showModalLoader: false });
+
+      if (response.errorCode) {
+        updateState({
+          dialogOpen: true,
+          dialogTitle: newUser ? 'User not added' : 'User not updated',
+          dialogMessage: newUser
+            ? response.userMessage
+            : 'Please contact system administrator for more information.',
+          updating: false,
+        });
+        return;
+      }
+
+      const userId = newUser ? response.user_id : id;
+      updateState({ id: userId, newUser: false, updating: true });
+
+      // Construct user object
+      const {
+        geographies,
+        commodities,
+        access_level_id,
+        activated_time,
+        auth_preference_id,
+        middle_initial,
+        other_title,
+        status_id,
+        title_id,
+      } = state;
+
+      const userObject = {
+        access_level_id,
+        activated_time: typeof activated_time === 'object' ? activated_time : new Date(),
+        auth_preference_id,
+        email: state.email,
+        email_subscription: false,
+        first_name: state.first_name,
+        forma_email_frequency: 0,
+        glad_email_frequency: 0,
+        gran_chaco_email_frequency: 0,
+        last_name: state.last_name,
+        middle_initial: middle_initial || '',
+        other_title,
+        phone: state.phone,
+        status_id: newUser ? USER_STATUS.Pending : status_id,
+        title_id,
+        user_commodity_ids: (commodities || []).map((c) => c.value).join(','),
+        user_geography_ids: (geographies || []).map((g) => g.value).join(','),
+        user_id: userId,
+        viirs_email_frequency: 0,
+      };
+
+      if (newUser) {
+        store.dispatch(addUser(userObject));
+        store.dispatch(changeUser(userObject));
+        await activateUser(userId);
+      } else {
+        store.dispatch(updateUser(userObject));
+        store.dispatch(updateCurrentUser(userObject));
+      }
+    } catch (err) {
+      updateState({
+        dialogOpen: true,
+        dialogTitle: 'Error',
+        dialogMessage: 'Request failed.',
+        showModalLoader: false,
+        updating: false,
+      });
+    }
+  }, [state, updateState, activateUser]);
+
+  const adminResetPassword = useCallback(async () => {
+    const { email } = state;
+    updateState({ showModalLoader: true });
+
+    try {
+      const response = await httpRequest.fetchJSON('/auth/admin-reset-user-password', { email });
+      let res;
+
+      try {
+        res = JSON.parse(response);
+      } catch {
+        res = null;
+      }
+
+      if (res) {
+        if (res.systemMessage?.code === 'LimitExceededException') {
+          updateState({
+            showModalLoader: false,
+            dialogOpen: true,
+            dialogTitle: forgotStrings.resetLimit.title,
+            dialogMessage: forgotStrings.resetLimit.message,
+          });
+        } else if (res.message === 'Success') {
+          updateState({
+            showModalLoader: false,
+            dialogOpen: true,
+            dialogTitle: forgotStrings.resetSuccess.title,
+            dialogMessage: forgotStrings.resetSuccess.message,
+          });
+        } else {
+          updateState({
+            showModalLoader: false,
+            dialogOpen: true,
+            dialogTitle: forgotStrings.resetError.title,
+            dialogMessage: forgotStrings.resetError.message,
           });
         }
+      } else {
+        updateState({
+          showModalLoader: false,
+          dialogOpen: true,
+          dialogTitle: forgotStrings.resetError.title,
+          dialogMessage: forgotStrings.resetError.message,
+        });
+      }
+    } catch {
+      updateState({
+        showModalLoader: false,
+        dialogOpen: true,
+        dialogTitle: forgotStrings.resetError.title,
+        dialogMessage: forgotStrings.resetError.message,
       });
-    });
-  };
+    }
+  }, [state.email, updateState]);
 
-  back = () => {
+  // Navigation back
+  const navigateBack = useCallback(() => {
     window.location.href = '/profile';
-  };
+  }, []);
 
-  generateMessages = (message, i) => {
-    return <p key={message + i}>{message}</p>;
-  };
+  // Messages array mapping for dialog
+  const generateMessages = useCallback(
+    (message, i) => <p key={`${message}-${i}`}>{message}</p>,
+    []
+  );
 
-  handleDropdownTitleSelection = (evt) => {
-    const { dropdownTitleOptions } = this.state;
-    const selectedDropdownTitleOption = dropdownTitleOptions.filter((option) => {
-      if (option.value === parseInt(evt.value, 10)) {
-        return option.label;
+  // Dropdown handlers
+  const handleDropdownTitleSelection = useCallback(
+    (evt) => {
+      const { dropdownTitleOptions } = state;
+      const selectedDropdownTitleOption = (dropdownTitleOptions || []).find(
+        (option) => option.value === parseInt(evt.value, 10)
+      );
+      updateState({ selectedDropdownTitleOption, title_id: parseInt(evt.value, 10) });
+    },
+    [state, updateState]
+  );
+
+  const handleDropdownAccessLevelSelection = useCallback(
+    (evt) => {
+      const { dropdownAccessLevelOptions } = state;
+      const selectedDropdownAccessLevelOption = (dropdownAccessLevelOptions || []).find(
+        (option) => option.value === parseInt(evt.value, 10)
+      );
+      updateState({ selectedDropdownAccessLevelOption, access_level_id: parseInt(evt.value, 10) });
+    },
+    [state, updateState]
+  );
+
+  // Authentication preference radio
+  const updateAuthenticationPreference = useCallback(
+    (evt) => {
+      const newPref = parseInt(evt.target.value, 10);
+      // set to new preference first, then if Google Authenticator call getQRCode
+      updateState({ auth_preference_id: newPref });
+      // If the preference is Google Authenticator - get secret information
+      if (newPref === 1) {
+        // call getQRCode with current email
+        getQRCode();
       }
-    })[0];
-    this.setState({
-      selectedDropdownTitleOption,
-      title_id: parseInt(evt.value, 10),
-    });
-  };
+    },
+    [getQRCode, updateState]
+  );
 
-  handleDropdownAccessLevelSelection = (evt) => {
-    const { dropdownAccessLevelOptions } = this.state;
-    const selectedDropdownAccessLevelOption = dropdownAccessLevelOptions.filter((option) => {
-      if (option.value === parseInt(evt.value, 10)) {
-        return option.label;
-      }
-    })[0];
+  // Multi select handlers
+  const handleGeographiesChange = useCallback(
+    (results) => updateState({ geographies: results }),
+    [updateState]
+  );
+  const handleCommoditiesChange = useCallback(
+    (results) => updateState({ commodities: results }),
+    [updateState]
+  );
 
-    this.setState({
-      selectedDropdownAccessLevelOption,
-      access_level_id: parseInt(evt.value, 10),
-    });
-  };
+  // Utility creators for options (for react-select)
+  const createGeogOptions = useCallback(
+    (option) => ({ label: option.geography_name, value: option.id }),
+    []
+  );
+  const createCommOptions = useCallback(
+    (option) => ({ label: option.commmodity_name, value: option.id }),
+    []
+  );
 
-  // Event handler for authentication preference radio inputs
-  updateAuthenticationPreference = (evt) => {
-    const { auth_preference_id } = this.state;
-    this.setState(
-      {
-        auth_preference_id: parseInt(evt.target.value, 10),
-      },
-      () => {
-        // If the preference is Google Authenticator - get secret information
-        if (auth_preference_id === 1) {
-          this.getQRCode();
-        }
-      }
-    );
-  };
+  // Dialog close
+  const closeDialog = useCallback(() => updateState({ dialogOpen: false }), [updateState]);
 
-  handleGeographiesChange = (results) => {
-    this.setState({ geographies: results });
-  };
+  // Unpack many state values for render
+  const {
+    newUser,
+    first_name,
+    last_name,
+    email,
+    phone,
+    title_id,
+    other_title,
+    status_id,
+    geographies,
+    commodities,
+    auth_preference_id,
+    dialogOpen,
+    dialogTitle,
+    dialogMessage,
+    secret,
+    secret_url,
+    showModalLoader,
+    updating,
+    selectedDropdownUserStatusOption,
+    selectedDropdownAccessLevelOption,
+    selectedDropdownTitleOption,
+    dropdownTitleOptions: dropdownTitleOptionsState,
+    dropdownAccessLevelOptions,
+  } = state;
 
-  handleCommoditiesChange = (results) => {
-    this.setState({ commodities: results });
-  };
+  const dialogContent =
+    typeof dialogMessage === 'string'
+      ? dialogMessage
+      : Array.isArray(dialogMessage)
+      ? dialogMessage.map(generateMessages)
+      : dialogMessage;
 
-  // STATUS_ID, ACCESS_LEVEL_ID
+  const geographyOptions = (geographiesData || []).map(createGeogOptions);
+  const commodityOptions = (commoditiesData || []).map(createCommOptions);
 
-  createGeogOptions = (option) => {
-    return { label: option.geography_name, value: option.id };
-  };
+  const defaultAction = updating
+    ? []
+    : [<Button key="ok" variant="primary" label="OK" keyboardFocused onClick={closeDialog} />];
 
-  createCommOptions = (option) => {
-    return { label: option.commmodity_name, value: option.id };
-  };
+  return (
+    <div id="Profile__UserProfile" className="user-profile-page">
+      <ModalLoader open={showModalLoader} />
 
-  closeDialog = () => {
-    this.setState({ dialogOpen: false });
-  };
+      <Dialog
+        paperClassName="dialog-paper"
+        open={dialogOpen}
+        title={dialogTitle}
+        actions={defaultAction}
+        onRequestClose={closeDialog}
+      >
+        {dialogContent}
+      </Dialog>
 
-  render() {
-    const { userOnly, commoditiesData, geographiesData, userInfo } = this.props;
+      <div className={`${userOnly ? 'hidden' : ''}`}>
+        <LinkButton
+          className="profile-page__back-button back-button"
+          onClick={navigateBack}
+          icon={<IconArrowLeft height="10px" />}
+          label={profilePage.profileManager.backButton}
+        />
+      </div>
 
-    const {
-      newUser,
-      // USER PROFILE STATE
-      first_name,
-      last_name,
-      email,
-      phone,
-      title_id,
-      other_title,
-      status_id,
-      geographies,
-      commodities,
-      auth_preference_id,
-      // UI STATE
-      dialogOpen,
-      dialogTitle,
-      dialogMessage,
-      // sharingInternal,
-      // sharingExternal,
-      secret,
-      secret_url,
-      showModalLoader,
-      updating,
-      selectedDropdownUserStatusOption,
-      selectedDropdownAccessLevelOption,
-      dropdownAccessLevelOptions,
-      selectedDropdownTitleOption,
-      dropdownTitleOptions,
-    } = this.state;
-    // Handle dialog content
-    const dialogContent =
-      typeof dialogMessage === 'string' ? dialogMessage : dialogMessage.map(this.generateMessages);
-    const geographyOptions = geographiesData.map(this.createGeogOptions);
-    const commodityOptions = commoditiesData.map(this.createCommOptions);
+      <h1 className="profile-page__title">{profilePage.profileManager.userProfileTitle}</h1>
 
-    const defaultAction = updating
-      ? []
-      : [<Button variant="primary" label="OK" keyboardFocused onClick={this.closeDialog} />];
+      <Divider sx={{ mb: '20px', mt: '20px' }} />
 
-    return (
-      <div id="Profile__UserProfile" className="user-profile-page">
-        <ModalLoader open={showModalLoader} />
+      <h2 className="profile-page__subheader">{profilePage.profileManager.userContactInfoTitle}</h2>
+      <p className={`${newUser ? '' : 'hidden'}`}>{profilePage.profileManager.userProfilePrompt}</p>
 
-        <Dialog
-          paperClassName="dialog-paper"
-          open={dialogOpen}
-          title={dialogTitle}
-          actions={defaultAction}
-          onRequestClose={this.closeDialog}
-        >
-          {dialogContent}
-        </Dialog>
-
-        <div className={`${userOnly ? 'hidden' : ''}`}>
-          <LinkButton
-            className="profile-page__back-button back-button"
-            onClick={this.back}
-            icon={<IconArrowLeft height="10px" />}
-            label={profilePage.profileManager.backButton}
+      <section className="section-container">
+        <div className="input-field__block-container">
+          <label htmlFor="user_first_name" className="block-label required-param">
+            {profilePage.profileManager.userContactFields[0]}
+          </label>
+          <input
+            id="user_first_name"
+            value={first_name}
+            required
+            name="user_first_name"
+            readOnly={userOnly}
+            onChange={(evt) => updateState({ first_name: evt.target.value })}
           />
         </div>
 
-        <h1 className="profile-page__title">{profilePage.profileManager.userProfileTitle}</h1>
+        <div className="input-field__block-container">
+          <label htmlFor="user_last_name" className="block-label required-param">
+            {profilePage.profileManager.userContactFields[1]}
+          </label>
+          <input
+            value={last_name}
+            required
+            id="user_last_name"
+            name="user_last_name"
+            readOnly={userOnly}
+            onChange={(evt) => updateState({ last_name: evt.target.value })}
+          />
+        </div>
 
+        <div className="input-field__block-container">
+          <label htmlFor="user_email" className="block-label required-param">
+            {profilePage.profileManager.userContactFields[2]}
+          </label>
+          <input
+            value={email}
+            required
+            id="user_email"
+            name="user_email"
+            readOnly={!newUser}
+            onChange={(evt) => updateState({ email: evt.target.value.toString().toLowerCase() })}
+          />
+        </div>
+
+        <div className="input-field__block-container">
+          <label htmlFor="current_user_status" className="block-label">
+            {profilePage.profileManager.userContactFields[3]}
+          </label>
+          <input
+            id="current_user_status"
+            name="current_user_status"
+            readOnly
+            value={
+              (selectedDropdownUserStatusOption && selectedDropdownUserStatusOption.name) ||
+              selectedDropdownUserStatusOption ||
+              USER_STATUS_LABELS[USER_STATUS.Active]
+            }
+          />
+        </div>
+
+        <div className="input-field__block-container">
+          <label htmlFor="user_phone" className="block-label required-param">
+            {profilePage.profileManager.userContactFields[4]}
+          </label>
+          <input
+            value={phone}
+            required
+            id="user_phone"
+            name="user_phone"
+            onChange={(evt) => updateState({ phone: evt.target.value })}
+          />
+        </div>
+      </section>
+
+      <Divider sx={{ mb: '20px', mt: '20px' }} />
+
+      <section className="section-container">
         <h2 className="profile-page__subheader">
-          {profilePage.profileManager.userContactInfoTitle}
+          {profilePage.profileManager.userProfileInfoTitle}
         </h2>
-        <p className={`${newUser ? '' : 'hidden'}`}>
-          {profilePage.profileManager.userProfilePrompt}
-        </p>
 
         <section className="section-container">
           <div className="input-field__block-container">
-            <label htmlFor="user_first_name" className="block-label required-param">
-              {profilePage.profileManager.userContactFields[0]}
-            </label>
-            <input
-              id="user_first_name"
-              value={first_name}
-              required
-              name="user_first_name"
-              readOnly={userOnly}
-              onChange={(evt) => this.setState({ first_name: evt.target.value })}
-            />
+            {userInfo.access_level_id === 1 ? (
+              <>
+                <label htmlFor="access-level-select" className="block-label required-param">
+                  {profilePage.profileManager.userProfileFields[0]}
+                </label>
+                <GfwSelect
+                  value={selectedDropdownAccessLevelOption}
+                  options={dropdownAccessLevelOptions || []}
+                  onChange={(evt) => handleDropdownAccessLevelSelection(evt)}
+                  id="access-level-select"
+                  required
+                />
+              </>
+            ) : (
+              <>
+                <label htmlFor="access_level" className="block-label required-param">
+                  {profilePage.profileManager.userProfileFields[0]}
+                </label>
+                <input
+                  id="access_level"
+                  name="access_level"
+                  readOnly={userOnly}
+                  value={
+                    (selectedDropdownAccessLevelOption &&
+                      selectedDropdownAccessLevelOption.label) ||
+                    selectedDropdownAccessLevelOption ||
+                    ''
+                  }
+                />
+              </>
+            )}
           </div>
 
           <div className="input-field__block-container">
-            <label htmlFor="user_last_name" className="block-label required-param">
-              {profilePage.profileManager.userContactFields[1]}
+            <label htmlFor="title-select" className="block-label required-param">
+              {profilePage.profileManager.userProfileFields[1]}
             </label>
-            <input
-              value={last_name}
+            <GfwSelect
+              value={selectedDropdownTitleOption}
+              options={dropdownTitleOptionsState}
+              onChange={(evt) => handleDropdownTitleSelection(evt)}
+              id="title-select"
               required
-              id="user_last_name"
-              name="user_last_name"
-              readOnly={userOnly}
-              onChange={(evt) => this.setState({ last_name: evt.target.value })}
             />
           </div>
 
-          <div className="input-field__block-container">
-            <label htmlFor="user_email" className="block-label required-param">
-              {profilePage.profileManager.userContactFields[2]}
+          <div className={`${title_id === 10 ? 'col flex-grid-column' : 'hidden'}`}>
+            <label className="profile-label" htmlFor="userPhone">
+              Alternative Title
             </label>
             <input
-              value={email}
+              value={other_title}
               required
-              id="user_email"
-              name="user_email"
-              readOnly={!newUser}
-              onChange={(evt) =>
-                this.setState({ email: evt.target.value.toString().toLowerCase() })
-              }
-            />
-          </div>
-
-          <div className="input-field__block-container">
-            <label htmlFor="current_user_status" className="block-label">
-              {profilePage.profileManager.userContactFields[3]}
-            </label>
-            <input
-              id="current_user_status"
-              name="current_user_status"
-              readOnly
-              value={selectedDropdownUserStatusOption.name}
-            />
-          </div>
-
-          <div className="input-field__block-container">
-            <label htmlFor="user_phone" className="block-label required-param">
-              {profilePage.profileManager.userContactFields[4]}
-            </label>
-            <input
-              value={phone}
-              required
-              id="user_phone"
               name="user_phone"
-              onChange={(evt) => this.setState({ phone: evt.target.value })}
+              onChange={(evt) => updateState({ other_title: evt.target.value })}
             />
           </div>
-        </section>
 
-        <section className="section-container">
-          <h2 className="profile-page__subheader">
-            {profilePage.profileManager.userProfileInfoTitle}
-          </h2>
-
-          <section className="section-container">
-            <div className="input-field__block-container">
-              {userInfo.access_level_id === 1 ? (
-                <>
-                  <label htmlFor="access-level-select" className="block-label required-param">
-                    {profilePage.profileManager.userProfileFields[0]}
-                  </label>
-                  <GfwSelect
-                    value={selectedDropdownAccessLevelOption}
-                    options={dropdownAccessLevelOptions}
-                    onChange={(evt) => this.handleDropdownAccessLevelSelection(evt)}
-                    id="access-level-select"
-                    required
-                  />
-                </>
-              ) : (
-                <>
-                  <label htmlFor="access_level" className="block-label required-param">
-                    {profilePage.profileManager.userProfileFields[0]}
-                  </label>
-                  <input
-                    id="access_level"
-                    name="access_level"
-                    readOnly={userOnly}
-                    value={
-                      selectedDropdownAccessLevelOption.label || selectedDropdownAccessLevelOption
-                    }
-                  />
-                </>
-              )}
-            </div>
-
-            <div className="input-field__block-container">
-              <label htmlFor="title-select" className="block-label required-param">
-                {profilePage.profileManager.userProfileFields[1]}
-              </label>
-              <GfwSelect
-                value={selectedDropdownTitleOption}
-                options={dropdownTitleOptions}
-                onChange={(evt) => this.handleDropdownTitleSelection(evt)}
-                id="title-select"
-                required
-              />
-            </div>
-
-            <div className={`${title_id === 10 ? 'col flex-grid-column' : 'hidden'}`}>
-              <label className="profile-label" htmlFor="userPhone">
-                Alternative Title
-              </label>
-              <input
-                value={other_title}
-                required
-                name="user_phone"
-                onChange={(evt) => this.setState({ other_title: evt.target.value })}
-              />
-            </div>
-
-            <div className="input-field__block-container">
-              <label htmlFor="geogSelect" className="block-label">
-                {profilePage.profileManager.userProfileFields[5]}
-              </label>
-              <Select
-                id="geogSelect"
-                name="arr_user_geography_ids"
-                options={geographyOptions}
-                maxMenuHeight={150}
-                onChange={this.handleGeographiesChange}
-                isMulti
-                isSearchable
-                placeholder={profilePage.profileManager.multiselectPrompt}
-                value={geographies}
-              />
-            </div>
-
-            <div className="input-field__block-container">
-              <label htmlFor="commSelect" className="block-label">
-                {profilePage.profileManager.userProfileFields[6]}
-              </label>
-              <Select
-                id="commSelect"
-                name="arr_user_commodity_ids"
-                options={commodityOptions}
-                maxMenuHeight={150}
-                onChange={this.handleCommoditiesChange}
-                isMulti
-                isSearchable
-                placeholder={profilePage.profileManager.multiselectPrompt}
-                value={commodities}
-              />
-            </div>
-          </section>
-        </section>
-
-        <section className="section-container">
-          <h2 className="profile-page__subheader">
-            {profilePage.profileManager.userSecondLevelTitle}
-          </h2>
-          <p className="profile-label">{profilePage.profileManager.userSecondLevelPrompt}</p>
-
-          <div className="flex-grid space-element">
-            <input
-              type="radio"
-              id="secondLevelAuthenticationEmail"
-              name="second-level-authentication"
-              checked={auth_preference_id === 0}
-              onChange={this.updateAuthenticationPreference}
-              value={0}
-            />
-            <label htmlFor="secondLevelAuthenticationEmail" className="block-label">
-              {profilePage.profileManager.secondLevelFields[0]}
+          <div className="input-field__block-container">
+            <label htmlFor="geogSelect" className="block-label">
+              {profilePage.profileManager.userProfileFields[5]}
             </label>
-            <input
-              type="radio"
-              id="secondLevelAuthenticationGoogle"
-              name="second-level-authentication"
-              checked={auth_preference_id === 1}
-              onChange={this.updateAuthenticationPreference}
-              value={1}
+            <Select
+              id="geogSelect"
+              name="arr_user_geography_ids"
+              options={geographyOptions}
+              maxMenuHeight={150}
+              onChange={handleGeographiesChange}
+              isMulti
+              isSearchable
+              placeholder={profilePage.profileManager.multiselectPrompt}
+              value={geographies}
             />
-            <label htmlFor="secondLevelAuthenticationGoogle" className="block-label">
-              {profilePage.profileManager.secondLevelFields[1]}
-            </label>
           </div>
-          <div className={auth_preference_id === 1 ? 'flex-grid' : 'hidden'}>
-            <div className="col">
-              <div className="flex-grid-column">
-                <label className="block-label" htmlFor="secretImage">
-                  {profilePage.profileManager.googleVerifyPrompt}
-                </label>
-                <img width="196" height="196" src={secret_url} />
-              </div>
-            </div>
-            <div className="col">
-              <div className="flex-grid-column">
-                <label htmlFor="user_secret" className="block-label">
-                  {profilePage.profileManager.googleSecretPrompt}
-                </label>
-                <input id="user_secret" value={secret} name="user_secret" />
-              </div>
-            </div>
+
+          <div className="input-field__block-container">
+            <label htmlFor="commSelect" className="block-label">
+              {profilePage.profileManager.userProfileFields[6]}
+            </label>
+            <Select
+              id="commSelect"
+              name="arr_user_commodity_ids"
+              options={commodityOptions}
+              maxMenuHeight={150}
+              onChange={handleCommoditiesChange}
+              isMulti
+              isSearchable
+              placeholder={profilePage.profileManager.multiselectPrompt}
+              value={commodities}
+            />
           </div>
         </section>
+      </section>
 
-        <div className="profile-button-container justify-end">
-          {/* status_id === 2 is active user */}
+      <Divider sx={{ mb: '20px', mt: '20px' }} />
 
+      <section className="section-container">
+        <h2 className="profile-page__subheader">
+          {profilePage.profileManager.userSecondLevelTitle}
+        </h2>
+        <p className="profile-label">{profilePage.profileManager.userSecondLevelPrompt}</p>
+
+        <div className="flex-grid space-element">
+          <input
+            type="radio"
+            id="secondLevelAuthenticationEmail"
+            name="second-level-authentication"
+            checked={auth_preference_id === 0}
+            onChange={updateAuthenticationPreference}
+            value={0}
+          />
+          <label htmlFor="secondLevelAuthenticationEmail" className="block-label">
+            {profilePage.profileManager.secondLevelFields[0]}
+          </label>
+          <input
+            type="radio"
+            id="secondLevelAuthenticationGoogle"
+            name="second-level-authentication"
+            checked={auth_preference_id === 1}
+            onChange={updateAuthenticationPreference}
+            value={1}
+          />
+          <label htmlFor="secondLevelAuthenticationGoogle" className="block-label">
+            {profilePage.profileManager.secondLevelFields[1]}
+          </label>
+        </div>
+        <div className={auth_preference_id === 1 ? 'flex-grid' : 'hidden'}>
+          <div className="col">
+            <div className="flex-grid-column">
+              <label className="block-label" htmlFor="secretImage">
+                {profilePage.profileManager.googleVerifyPrompt}
+              </label>
+              <img width="196" height="196" src={secret_url} alt="Google Auth QR" />
+            </div>
+          </div>
+          <div className="col">
+            <div className="flex-grid-column">
+              <label htmlFor="user_secret" className="block-label">
+                {profilePage.profileManager.googleSecretPrompt}
+              </label>
+              <input id="user_secret" value={secret} name="user_secret" readOnly />
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <Divider sx={{ mb: '20px', mt: '20px' }} />
+
+      <div className="profile-button-container justify-end">
+        <Button
+          variant="primary"
+          onClick={saveUser}
+          style={{ marginRight: '10px' }}
+          label={profilePage.profileManager.save}
+        />
+
+        {userOnly ? null : (
+          <Button
+            onClick={navigateBack}
+            style={{ marginRight: '10px' }}
+            label={profilePage.profileManager.cancel}
+          />
+        )}
+
+        {userOnly || newUser ? null : (
           <Button
             variant="primary"
-            onClick={this.updateUser}
-            label={profilePage.profileManager.save}
+            className={`${status_id === USER_STATUS.Active ? 'button-disabled' : ''}`}
+            disabled={status_id === USER_STATUS.Active}
+            onClick={activateUser}
+            style={{ marginRight: '10px' }}
+            label={profilePage.profileManager.activate}
           />
+        )}
 
-          {userOnly ? null : (
-            <Button onClick={this.back} label={profilePage.profileManager.cancel} />
-          )}
+        {(userOnly || userInfo.email === email) && !newUser ? (
+          <Button
+            onClick={() => (window.location.href = '/changeExist')}
+            style={{ marginRight: '10px' }}
+            label={profilePage.profileManager.changePassword}
+          />
+        ) : null}
 
-          {userOnly || newUser ? null : (
-            <Button
-              variant="primary"
-              className={`${status_id === 2 ? 'button-disabled' : ''}`}
-              disabled={status_id === 2}
-              onClick={this.activateUser}
-              label={profilePage.profileManager.activate}
-            />
-          )}
+        {userOnly ||
+        newUser ||
+        !(status_id === 2) ||
+        (userInfo.email === email && !newUser) ? null : (
+          <Button
+            onClick={adminResetPassword}
+            style={{ marginRight: '10px' }}
+            label={profilePage.profileManager.resetPassword}
+          />
+        )}
 
-          {(userOnly || userInfo.email === email) && !newUser ? (
-            <Button
-              onClick={() => (window.location.href = '/changeExist')}
-              label={profilePage.profileManager.changePassword}
-            />
-          ) : null}
-
-          {userOnly ||
-          newUser ||
-          !(status_id === 2) ||
-          (userInfo.email === email && !newUser) ? null : (
-            <Button
-              onClick={this.adminResetPassword}
-              label={profilePage.profileManager.resetPassword}
-            />
-          )}
-
-          {userOnly || newUser ? null : (
-            <Button
-              variant="danger"
-              className={`${status_id === 3 ? 'button-disabled' : ''}`}
-              disabled={status_id === 3}
-              onClick={this.deactivateUser}
-              label={profilePage.profileManager.deactivate}
-            />
-          )}
-        </div>
+        {userOnly || newUser ? null : (
+          <Button
+            variant="danger"
+            className={`${status_id === USER_STATUS.Inactive ? 'button-disabled' : ''}`}
+            disabled={status_id === USER_STATUS.Inactive}
+            onClick={deactivateUser}
+            style={{ marginRight: '10px' }}
+            label={profilePage.profileManager.deactivate}
+          />
+        )}
       </div>
-    );
-  }
+    </div>
+  );
 }

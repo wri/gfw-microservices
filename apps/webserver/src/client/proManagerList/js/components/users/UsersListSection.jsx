@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import UsersListTable from './UsersListTable';
 import '../../../css/proManagerList.scss';
 import { PRO_MANAGER_PATH } from '../../common/paths';
+import { USER_STATUS_LABELS } from '../../../../../config/env/userStatuses.constants';
 
 function UsersListSection({ isLoading, setIsLoading }) {
   const [userFilterStr, setUserFilterStr] = useState('');
@@ -86,12 +87,7 @@ function UsersListSection({ isLoading, setIsLoading }) {
   };
 
   const determineStatus = (statusId) => {
-    const status_type = {
-      1: 'Pending',
-      2: 'Active',
-      3: 'Inactive',
-    };
-    const status = status_type[statusId] || '';
+    const status = USER_STATUS_LABELS[statusId] || '';
 
     return status.toLowerCase().includes(userFilterStr.toLowerCase());
   };

@@ -11,11 +11,10 @@ import { ClipToLandService } from './chain/clipToLand.service';
 import { InsertLocationData } from './chain/insert.location.data';
 import { ValidateLatLongGeojson } from './chain/validate.lat.long.geojson';
 import { StartAnalysis } from './chain/start.analysis';
-import { SQLUtils, upgradeListSchema } from '@wri-monorepos/sql';
+import { SQLUtils, upgradeListSchema, ClientStoreConnection, Lists } from '@wri-monorepos/sql';
 import { logExecutionTime } from './chain/shared';
 import { WriteLocationCount } from './chain/write.location.count';
 import { ProcessUploadData } from './chain/process.upload.data';
-import { ClientStoreConnection, Lists } from '@wri-monorepos/sql';
 
 import fastq from 'fastq';
 import type { queue, done } from 'fastq';
@@ -32,6 +31,8 @@ import { CommodityService } from '../list/commodity.service';
 import { checkListSizeLimit } from '../common/check.listSizelimit';
 import { MAX_LOCATIONS_PER_LIST } from '../common/constants';
 import { ListSizeLimitException } from '../common/listSizeLimit.exception';
+import { updateListsAnalysisStatus } from '@wri-monorepos/sql';
+import { listStatus } from '@wri-monorepos/constants';
 
 type WorkerType = {
   request: RequestLargeListProcess;
@@ -46,6 +47,48 @@ export async function clearErrorFile(organizationDatabase: string, listId: numbe
   const connection = await new ClientStoreConnection().getConnection(organizationDatabase);
   const listRepository = connection.getRepository(Lists);
   await listRepository.update({ id: listId }, { errorFileStoragePath: null });
+}
+
+/**
+ * Updates ListsAnalysisStatus when a list size limit is exceeded
+ * @param organizationDatabase - Database name
+ * @param listId - List ID
+ * @param analysisIds - Array of analysis IDs to update
+ * @param errorMessage - The actual error message from the exception
+ */
+async function updateAnalysisStatusForSizeLimitError(
+  organizationDatabase: string,
+  listId: number,
+  analysisIds: string[],
+  errorMessage: string
+): Promise<void> {
+  if (!analysisIds || analysisIds.length === 0) {
+    workerLogger.warn(
+      `No analysis IDs provided for list ${listId}, cannot update ListsAnalysisStatus`
+    );
+    return;
+  }
+
+  try {
+    await updateListsAnalysisStatus(organizationDatabase, {
+      listId,
+      errorInfo: errorMessage,
+      status: listStatus.Inactive,
+      analysisIds,
+    });
+
+    workerLogger.log(
+      `Successfully updated ListsAnalysisStatus for list ${listId} with size limit error: "${errorMessage}" for analysis IDs: ${analysisIds.join(
+        ', '
+      )}`
+    );
+  } catch (updateError) {
+    workerLogger.error(
+      `Failed to update ListsAnalysisStatus for list ${listId}: ${updateError.message}`,
+      updateError.stack
+    );
+    // Don't re-throw - this is a secondary operation that shouldn't fail the main process
+  }
 }
 
 async function worker(input: WorkerType, cb: done) {
@@ -142,11 +185,23 @@ async function worker(input: WorkerType, cb: done) {
       workerLogger.warn(
         `List ${listId} in database ${organizationDatabase} exceeded size limit. ${error.message}`
       );
-      await AbstractHandler.updateListsUploadStatus(
-        chainType,
-        'List size limit exceeded',
-        error.message
-      );
+
+      // Update both upload status and analysis status in parallel
+      // Using Promise.allSettled to ensure both operations complete even if one fails
+      await Promise.allSettled([
+        AbstractHandler.updateListsUploadStatus(
+          chainType,
+          'List size limit exceeded',
+          error.message
+        ),
+        updateAnalysisStatusForSizeLimitError(
+          organizationDatabase,
+          listId,
+          input.request.analysisIds || [],
+          error.message
+        ),
+      ]);
+
       cb(null);
     } else {
       workerLogger.error(

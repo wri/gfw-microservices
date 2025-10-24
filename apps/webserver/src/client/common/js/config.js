@@ -809,7 +809,7 @@ export const profilePage = {
   },
   profileManager: {
     title: 'Profile manager',
-    userProfileTitle: 'User profile',
+    userProfileTitle: 'User Profile',
     accountProfiles: 'Account Profiles',
     searchAccounts: 'search accounts...',
     createNew: 'Create New',

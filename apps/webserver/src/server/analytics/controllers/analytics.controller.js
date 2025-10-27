@@ -32,10 +32,10 @@ const isValidDate = (dateString) => {
 };
 
 const validateQueryParams = ({ startDate, endDate }) => {
-  if (!startDate || startDate === '0') {
+  if (!startDate) {
     return { error: 'Start date is required and must be a valid date.' };
   }
-  if (!endDate || endDate === '0') {
+  if (!endDate) {
     return { error: 'End date is required and must be a valid date.' };
   }
   if (!isValidDate(startDate)) {

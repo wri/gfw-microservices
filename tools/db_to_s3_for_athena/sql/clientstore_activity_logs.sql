@@ -1,19 +1,19 @@
 -- Set up temporary table to be used
 IF OBJECT_ID('tempdb..#activity_data') IS NOT NULL
-    DROP TABLE #activity_data
+  DROP TABLE #activity_data
 
 -- Create temporary table for storing user data from EACH organization
 CREATE TABLE #activity_data (
   org_id INT NOT NULL,
   org_name NVARCHAR(MAX) NOT NULL,
   org_database NVARCHAR(MAX) NOT NULL,
-    user_id INT NOT NULL,
-    user_email NVARCHAR(MAX) NOT NULL,
-    activity_description VARCHAR(MAX) NOT NULL,
-    activity_time DATETIME NOT NULL,
-    activity_type_id INT NOT NULL,
-    activity_type VARCHAR(MAX) NOT NULL,
-    activity_type_category VARCHAR(MAX) NOT NULL
+  user_id INT NOT NULL,
+  user_email NVARCHAR(MAX) NOT NULL,
+  activity_description VARCHAR(MAX) NOT NULL,
+  activity_time DATETIME NOT NULL,
+  activity_type_id INT NOT NULL,
+  activity_type VARCHAR(MAX) NOT NULL,
+  activity_type_category VARCHAR(MAX) NOT NULL
 );
 
 DECLARE @org_id INT
@@ -30,6 +30,9 @@ DECLARE db_cursor CURSOR FOR
     AND Orgs.organization_name NOT LIKE '%Blue Raster%'
     AND Orgs.organization_name NOT LIKE '%World Resources Institute%'
     AND Orgs.organization_name NOT LIKE '%WRI Engagement%'
+    AND Orgs.organization_name NOT LIKE '%WRI Consultant%'
+    AND Orgs.organization_name NOT LIKE '%Pro Product Team%'
+    AND Orgs.organization_name NOT LIKE '%GFW Pro LATAM Engagement%'
   ORDER BY Orgs.organization_name;
 
 OPEN db_cursor

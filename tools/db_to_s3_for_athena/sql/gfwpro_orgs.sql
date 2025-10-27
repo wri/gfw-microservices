@@ -19,6 +19,9 @@ LEFT JOIN gfwpro.dbo.SubscriptionStatuses AS SubStatuses
 WHERE Org.organization_name NOT IN (
     'Blue Raster',
     'World Resources Institute',
-    'WRI Engagement'
+    'WRI Engagement',
+    'WRI Consultant',
+    'Pro Product Team',
+    'GFW Pro LATAM Engagement'
 )
 ORDER BY Org.organization_name;

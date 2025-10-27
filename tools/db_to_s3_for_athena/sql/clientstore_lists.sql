@@ -36,6 +36,9 @@ WHERE Orgs.organization_status_id = 2
   AND Orgs.organization_name NOT LIKE '%Blue Raster%'
   AND Orgs.organization_name NOT LIKE '%World Resources Institute%'
   AND Orgs.organization_name NOT LIKE '%WRI Engagement%'
+  AND Orgs.organization_name NOT LIKE '%WRI Consultant%'
+  AND Orgs.organization_name NOT LIKE '%Pro Product Team%'
+  AND Orgs.organization_name NOT LIKE '%GFW Pro LATAM Engagement%'
 ORDER BY Orgs.organization_name;
 
 OPEN db_cursor

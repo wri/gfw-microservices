@@ -27,7 +27,7 @@ function AccountDetailUsage() {
   const [dateRangeAccountData, setDateRangeAccountData] = useState({});
   const [analysisUsageByType, setAnalysisUsageByType] = useState([]);
 
-  const { organization_id: organizationId, organization_name } = currentAccount;
+  const { organization_id: organizationId } = currentAccount;
   const { number_of_lists_analyzed, max_area_analyzed, total_area_analyzed } = dateRangeAccountData;
 
   useEffect(() => {
@@ -54,7 +54,7 @@ function AccountDetailUsage() {
       });
 
     fetch(
-      `analytics/usage/usage-by-analysis?startDate=${startDate}&endDate=${endDate}&organizationName=${organization_name}`,
+      `analytics/usage/usage-by-analysis?startDate=${startDate}&endDate=${endDate}&organizationId=${organizationId}`,
       {
         method: 'GET',
         credentials: 'same-origin',

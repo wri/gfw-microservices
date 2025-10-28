@@ -50,6 +50,7 @@ import {
 export default class Filter extends Component {
   constructor(props) {
     super(props);
+    // NOTE: forestDataset is initialized here for future use in filtering logic, but is not currently used to filter or modify data.
     this.state = { ...defaultFilterValues, forestDataset: forestDataSet.NaturalForestMap };
     this.initialState = this.state;
   }

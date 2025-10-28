@@ -1,6 +1,5 @@
 const moment = require('moment');
 const logger = require('../../../config/privateutils/logger.utils');
-import * as sql from 'mssql';
 import config from '../../../config/config';
 const { compiledAssets } = config;
 const { getCurrentDateTimeFormatted } = require('../../vectorTiles/utils/vectorTile.utils');
@@ -17,7 +16,6 @@ import {
   getAccountAnalysisLimits,
   getAccountAnalysisUsage,
   getAccountAnalysisUsageByAnalysisType,
-  SQLUtils,
 } from '@wri-monorepos/sql';
 import { analysisTypes } from '@wri-monorepos/constants';
 const { sendMessageToQueue } = require('../../downloader');

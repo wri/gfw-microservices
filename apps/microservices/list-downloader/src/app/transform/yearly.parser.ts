@@ -7,12 +7,23 @@ const yearlyParser = (operation, dataRow, data, csvData) => {
 
     // Prefer country_specific_deforestation_wdpa_yearly.BRA for WDPA; fallback to
     // tree_cover_loss_prodes_wdpa_yearly is kept for backward compatibility
-    if (field.attribute === 'tree_cover_loss_prodes_wdpa_yearly') {
-      const braWdpa = JSON.parse(data['country_specific_deforestation_wdpa_yearly'] || '{}')?.BRA;
-      if (braWdpa) {
-        yearlyData = braWdpa;
+    if (field.attribut === 'tree_cover_loss_prodes_wdpa_yearly' && !yearlyData) {
+      const braWdpaRaw = JSON.parse(
+        data.country_specific_deforestation_wdpa_yearly || '{}'
+      )?.BRA;
+
+      if (braWdpaRaw && typeof braWdpaRaw === 'object') {
+        // Aggregate all categories (Category I, II, III, IV, V, VI, etc.)
+        yearlyData = {};
+        Object.values(braWdpaRaw).forEach((cat) => {
+          Object.entries(cat || {}).forEach(([year, val]) => {
+            yearlyData[year] = (yearlyData[year] || 0) + (val || 0);
+          });
+        });
       }
     }
+
+
 
     let totalListLevelCount = 0;
 

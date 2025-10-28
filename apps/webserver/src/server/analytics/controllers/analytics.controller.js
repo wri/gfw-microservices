@@ -1,5 +1,6 @@
 const moment = require('moment');
 const logger = require('../../../config/privateutils/logger.utils');
+import * as sql from 'mssql';
 import config from '../../../config/config';
 const { compiledAssets } = config;
 const { getCurrentDateTimeFormatted } = require('../../vectorTiles/utils/vectorTile.utils');
@@ -16,37 +17,10 @@ import {
   getAccountAnalysisLimits,
   getAccountAnalysisUsage,
   getAccountAnalysisUsageByAnalysisType,
+  SQLUtils,
 } from '@wri-monorepos/sql';
 import { analysisTypes } from '@wri-monorepos/constants';
 const { sendMessageToQueue } = require('../../downloader');
-
-const isValidDate = (dateString) => {
-  // A simple check to avoid creating a Date object for invalid inputs
-  if (!dateString || typeof dateString !== 'string' || dateString.length < 8) {
-    return false;
-  }
-  const date = new Date(dateString);
-  return date instanceof Date && !isNaN(date.valueOf());
-};
-
-const validateQueryParams = ({ startDate, endDate }) => {
-  if (!startDate) {
-    return { error: 'Start date is required and must be a valid date.' };
-  }
-  if (!endDate) {
-    return { error: 'End date is required and must be a valid date.' };
-  }
-  if (!isValidDate(startDate)) {
-    return { error: 'Start date is invalid.' };
-  }
-  if (!isValidDate(endDate)) {
-    return { error: 'End date is invalid.' };
-  }
-  if (new Date(startDate) > new Date(endDate)) {
-    return { error: 'Start date must be before or the same as the end date.' };
-  }
-  return {}; // No error
-};
 
 /**
  * @function analytics
@@ -60,6 +34,14 @@ export const analytics = (req, res) => {
     analyticsjs: compiledAssets.js.analytics,
     analyticscss: compiledAssets.css.analytics,
   });
+};
+
+const isValidDate = (dateString) => {
+  if (!dateString || typeof dateString !== 'string' || dateString.length < 8) {
+    return false;
+  }
+  const date = new Date(dateString);
+  return date instanceof Date && !isNaN(date.valueOf());
 };
 
 const getAnalysisUsageData = async ({ startDate, endDate, organizationId }) => {
@@ -147,23 +129,47 @@ export const getMyOrganizationAnalysisUsage = async (req, res) => {
 
 export const getMyOrganizationUsersAnalysisUsage = async (req, res) => {
   try {
-    const { organization_database: orgDbName } = req.session;
+    const { organization_database: orgDbName, organization_id } = req.session;
     const { startDate, endDate } = req.query;
 
-    // Validate required parameters
-    const { error } = validateQueryParams({ startDate, endDate });
-    if (error) {
-      return res.status(400).send({ success: false, error });
-    }
-
-    const organizationUsersAnalysisUsage = await getAccountUsersAnalysisUsage(orgDbName, {
+    const { error } = validateQueryParams({
       startDate,
       endDate,
     });
+    if (error) {
+      return res.status(400).send({
+        status: 400,
+        message: {
+          error,
+          success: false,
+        },
+      });
+    }
+
+    const orgActivatedTime = await getAccountRenewalTime(organization_id);
+    const todayAsEndDay = moment().add(1, 'day');
+    const accountActivationDate = moment(orgActivatedTime);
+    const accountLatestYearStartDate = todayAsEndDay
+      .clone()
+      .subtract(moment().diff(accountActivationDate, 'days') % 365, 'days');
+
+    const userStartDate =
+      typeof startDate === 'undefined' || startDate == null || startDate === ''
+        ? accountLatestYearStartDate.format('YYYY-MM-DD')
+        : startDate;
+    const userEndDate =
+      typeof endDate === 'undefined' || endDate == null || endDate === ''
+        ? todayAsEndDay.format('YYYY-MM-DD')
+        : endDate;
+
+    const organizationUsersAnalysisUsage = await getAccountUsersAnalysisUsage(orgDbName, {
+      startDate: userStartDate,
+      endDate: userEndDate,
+    });
 
     res.status(200).send({
-      startDate,
-      endDate,
+      startDate: userStartDate,
+      endDate: userEndDate,
       organizationUsersAnalysisUsage,
     });
   } catch (err) {
@@ -171,17 +177,32 @@ export const getMyOrganizationUsersAnalysisUsage = async (req, res) => {
     res.status(500).send({ success: false, error: 'Internal server error.' });
   }
 };
-
 export const getMyAccountAnalysisUsageByAnalysisType = async (req, res) => {
   try {
     const { organization_database } = req.session;
-    const { startDate, endDate, organizationName } = req.query;
+    const { startDate, endDate, organizationId } = req.query;
+    let orgDbName = organization_database;
+    if (orgDbName === null || orgDbName === '' || typeof orgDbName === 'undefined') {
+      const { organizationDb } = await SQLUtils.queryDBFirstRow(
+        config.SQLConnection.database,
+        'getOrganizationDb',
+        [{ field: 'organizationId', type: sql.Int, value: organizationId }]
+      );
+      orgDbName = organizationDb;
+    }
 
-    const orgDbName = organization_database || `clientstore-${organizationName}`;
-
-    const { error } = validateQueryParams({ startDate, endDate });
+    const { error } = validateQueryParams({
+      startDate,
+      endDate,
+    });
     if (error) {
-      return res.status(400).send({ success: false, error });
+      return res.status(400).send({
+        status: 400,
+        message: {
+          error,
+          success: false,
+        },
+      });
     }
 
     const analysisUsageByType = await getAccountAnalysisUsageByAnalysisType({
@@ -195,12 +216,14 @@ export const getMyAccountAnalysisUsageByAnalysisType = async (req, res) => {
       endDate,
       analysisUsageByType,
     });
-  } catch (err) {
-    logger.error('Error in getMyAccountAnalysisUsageByAnalysisType', err);
-    res.status(500).send({ success: false, error: 'Internal server error.' });
+  } catch (error) {
+    logger.error('Error in getMyAccountAnalysisUsageByAnalysisType', error.stack || error);
+    res.status(500).send({
+      error: error.message,
+      success: false,
+    });
   }
 };
-
 export const getMyOrganizationAnalysisUsagePercentage = async (req, res) => {
   let { organization_id, subscription_status_id } = req.session;
 
@@ -290,4 +313,23 @@ export const downladOrganizationUsersUsageExport = async (req, res) => {
     success: true,
     message: filters,
   });
+};
+
+const validateQueryParams = ({ startDate, endDate }) => {
+  if (!startDate) {
+    return { error: 'Start date is required and must be a valid date.' };
+  }
+  if (!endDate) {
+    return { error: 'End date is required and must be a valid date.' };
+  }
+  if (!isValidDate(startDate)) {
+    return { error: 'Start date is invalid.' };
+  }
+  if (!isValidDate(endDate)) {
+    return { error: 'End date is invalid.' };
+  }
+  if (new Date(startDate) > new Date(endDate)) {
+    return { error: 'Start date must be before or the same as the end date.' };
+  }
+  return {}; // No error
 };

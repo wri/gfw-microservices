@@ -1683,6 +1683,8 @@ export default class ListDetails extends Component {
     } = this.state;
 
     const selectedList = selectedLists.length > 0 ? selectedLists[0] : null;
+    const hasValidLocations =
+      (selectedList?.list_locations_count ?? 0) > 0 && !selectedList?.error_file_storage_path;
 
     const listID = selectedList?.id;
     const countries = [...new Set(filteredLocationData.map((list) => list.Country))].sort();
@@ -2067,7 +2069,7 @@ export default class ListDetails extends Component {
                         />
                       )}
 
-                      {!isGfwList && (
+                      {!isGfwList && hasValidLocations && (
                         <MaterialButton
                           style={{ color: '#97bd3d', fontSize: '12px' }}
                           onClick={() => {

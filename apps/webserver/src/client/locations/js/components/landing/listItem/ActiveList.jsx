@@ -237,7 +237,7 @@ function ActiveList({
                 }}
               />
 
-              {!isEmptyList && !hasErrorFile && (
+              {showDiagnosticOpt && (
                 <MenuItem
                   primaryText={locationsPage.lists.changeTypeOfAnalysis}
                   leftIcon={<SettingsIcon />}

@@ -63,8 +63,13 @@ BEGIN
     -- WHERE LP.list_status_id IS NULL OR LP.list_status_id <> 3
   ';
 
-  PRINT 'Processing ' + @orgDbName;
-  EXEC sp_executesql @sql;
+  BEGIN TRY
+    PRINT 'Processing ' + @orgDbName;
+    EXEC sp_executesql @sql;
+  END TRY
+  BEGIN CATCH
+    PRINT 'Error processing ' + @orgDbName + ': ' + ERROR_MESSAGE();
+  END CATCH
 
   FETCH NEXT FROM db_cursor INTO @orgDbName, @orgName, @orgId;
 END;

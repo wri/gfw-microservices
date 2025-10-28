@@ -37,6 +37,9 @@ export const analytics = (req, res) => {
 };
 
 const isValidDate = (dateString) => {
+  if (!dateString || typeof dateString !== 'string' || dateString.length < 8) {
+    return false;
+  }
   const date = new Date(dateString);
   return date instanceof Date && !isNaN(date.valueOf());
 };
@@ -125,49 +128,54 @@ export const getMyOrganizationAnalysisUsage = async (req, res) => {
 };
 
 export const getMyOrganizationUsersAnalysisUsage = async (req, res) => {
-  const { organization_database: orgDbName, organization_id } = req.session;
-  const { startDate, endDate } = req.query;
+  try {
+    const { organization_database: orgDbName, organization_id } = req.session;
+    const { startDate, endDate } = req.query;
 
-  const { error } = validateQueryParams({
-    startDate,
-    endDate,
-  });
-  if (error) {
-    return res.status(400).send({
-      status: 400,
-      message: {
-        error,
-        success: false,
-      },
+    const { error } = validateQueryParams({
+      startDate,
+      endDate,
     });
+    if (error) {
+      return res.status(400).send({
+        status: 400,
+        message: {
+          error,
+          success: false,
+        },
+      });
+    }
+
+    const orgActivatedTime = await getAccountRenewalTime(organization_id);
+    const todayAsEndDay = moment().add(1, 'day');
+    const accountActivationDate = moment(orgActivatedTime);
+    const accountLatestYearStartDate = todayAsEndDay
+      .clone()
+      .subtract(moment().diff(accountActivationDate, 'days') % 365, 'days');
+
+    const userStartDate =
+      typeof startDate === 'undefined' || startDate == null || startDate === ''
+        ? accountLatestYearStartDate.format('YYYY-MM-DD')
+        : startDate;
+    const userEndDate =
+      typeof endDate === 'undefined' || endDate == null || endDate === ''
+        ? todayAsEndDay.format('YYYY-MM-DD')
+        : endDate;
+
+    const organizationUsersAnalysisUsage = await getAccountUsersAnalysisUsage(orgDbName, {
+      startDate: userStartDate,
+      endDate: userEndDate,
+    });
+
+    res.status(200).send({
+      startDate: userStartDate,
+      endDate: userEndDate,
+      organizationUsersAnalysisUsage,
+    });
+  } catch (err) {
+    logger.error('Error in getMyOrganizationUsersAnalysisUsage', err);
+    res.status(500).send({ success: false, error: 'Internal server error.' });
   }
-
-  const orgActivatedTime = await getAccountRenewalTime(organization_id);
-  const todayAsEndDay = moment().add(1, 'day');
-  const accountActivationDate = moment(orgActivatedTime);
-  const accountLatestYearStartDate = todayAsEndDay
-    .clone()
-    .subtract(moment().diff(accountActivationDate, 'days') % 365, 'days');
-
-  const userStartDate =
-    typeof startDate === 'undefined' || startDate == null || startDate === ''
-      ? accountLatestYearStartDate.format('YYYY-MM-DD')
-      : startDate;
-  const userEndDate =
-    typeof endDate === 'undefined' || endDate == null || endDate === ''
-      ? todayAsEndDay.format('YYYY-MM-DD')
-      : endDate;
-
-  const organizationUsersAnalysisUsage = await getAccountUsersAnalysisUsage(orgDbName, {
-    startDate: userStartDate,
-    endDate: userEndDate,
-  });
-
-  res.status(200).send({
-    startDate: userStartDate,
-    endDate: userEndDate,
-    organizationUsersAnalysisUsage,
-  });
 };
 export const getMyAccountAnalysisUsageByAnalysisType = async (req, res) => {
   try {
@@ -308,9 +316,20 @@ export const downladOrganizationUsersUsageExport = async (req, res) => {
 };
 
 const validateQueryParams = ({ startDate, endDate }) => {
-  if (!isValidDate(startDate) || !isValidDate(endDate)) {
-    return { error: 'Invalid date' };
+  if (!startDate) {
+    return { error: 'Start date is required and must be a valid date.' };
   }
-
-  return {};
+  if (!endDate) {
+    return { error: 'End date is required and must be a valid date.' };
+  }
+  if (!isValidDate(startDate)) {
+    return { error: 'Start date is invalid.' };
+  }
+  if (!isValidDate(endDate)) {
+    return { error: 'End date is invalid.' };
+  }
+  if (new Date(startDate) > new Date(endDate)) {
+    return { error: 'Start date must be before or the same as the end date.' };
+  }
+  return {}; // No error
 };

@@ -8,6 +8,8 @@ import {
   TableRow,
   Paper,
   Grid,
+  Box,
+  styled,
 } from '@mui/material';
 
 import { numberWithCommas } from '../../../../../locations/js/utils/locationsTableUtils.js';
@@ -19,6 +21,14 @@ import { LoadingModal } from '../../../../../components';
 import { calculateAccountSubscriptionDates } from '../../../../../common/js/utils/accountSubscriptionDates';
 import AccountDetailUsageByAnalysisType from '../../../../../profile/js/components/AccountUsage/AccountDetailUsageByAnalysisType.jsx';
 
+const AccountRenewalText = styled('p')({
+  marginBottom: '1rem',
+  color: 'rgba(0, 0, 0, 0.5)',
+  fontSize: '12px',
+  textAlign: 'right',
+  borderRadius: '5px',
+});
+
 function AccountDetailUsage() {
   const { currentAccount } = useAccountDetail();
   const [startDate, setStartDate] = useState(oneMonthAgoDate);
@@ -27,8 +37,9 @@ function AccountDetailUsage() {
   const [dateRangeAccountData, setDateRangeAccountData] = useState({});
   const [analysisUsageByType, setAnalysisUsageByType] = useState([]);
 
-  const { organization_id: organizationId } = currentAccount;
+  const { organization_id: organizationId, renewal_time } = currentAccount;
   const { number_of_lists_analyzed, max_area_analyzed, total_area_analyzed } = dateRangeAccountData;
+  const { subscriptionYearEnd } = calculateAccountSubscriptionDates(renewal_time);
 
   useEffect(() => {
     setIsLoading(true);
@@ -81,7 +92,16 @@ function AccountDetailUsage() {
 
   return (
     <section>
-      <AccountUsageInfoBubbles />
+      <Box
+        sx={{
+          backgroundColor: '#f5f5f5',
+          padding: '1em',
+          borderRadius: '5px',
+        }}
+      >
+        <AccountRenewalText>Account renewal on {subscriptionYearEnd}</AccountRenewalText>
+        <AccountUsageInfoBubbles />
+      </Box>
       <AccountDetailUsageByAnalysisType
         analysisUsageByType={analysisUsageByType}
         setStartDateAnalysis={setStartDate}

@@ -109,17 +109,17 @@ const getAllColumnNames = (
     const { columns: alertsAnalysisColumns, ...alertsAnalysisRestOfProperties } =
       columns.alerts_analysis;
 
-    const notSortableColumns = alertsAnalysisColumns.map((col) => {
+    const sortableColumns = alertsAnalysisColumns.map((col) => {
       return {
         ...col,
-        sortable: false,
+        sortable: true,
       };
     });
 
     const analysis = [
       {
-        ...(notSortableColumns
-          ? { columns: notSortableColumns, ...alertsAnalysisRestOfProperties }
+        ...(sortableColumns
+          ? { columns: sortableColumns, ...alertsAnalysisRestOfProperties }
           : columns.alerts_analysis),
       },
     ];

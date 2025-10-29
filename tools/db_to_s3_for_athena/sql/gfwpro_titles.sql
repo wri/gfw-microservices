@@ -1,5 +1,4 @@
 USE gfwpro;
-
 GO
 
 SELECT id, title

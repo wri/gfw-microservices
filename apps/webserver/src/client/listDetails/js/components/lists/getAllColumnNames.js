@@ -116,17 +116,15 @@ const getAllColumnNames = (
       };
     });
 
-    const analysis = [
-      {
-        columns: sortableColumns,
-        ...alertsAnalysisRestOfProperties,
-      },
-    ];
+    const analysis = {
+      columns: sortableColumns,
+      ...alertsAnalysisRestOfProperties,
+    };
 
     columnNames.combinedColumns = [
       ...defaultShownColumns,
       ...(isGlobalForestWatchList ? gfwListsSizeColumn(listId) : []),
-      ...analysis,
+      analysis,
       ...gfwColumns,
       ...columnNames.list,
     ];

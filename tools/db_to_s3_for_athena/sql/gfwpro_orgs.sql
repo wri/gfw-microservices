@@ -18,10 +18,10 @@ SELECT
         ) THEN CAST(1 AS BIT)
         ELSE CAST(0 AS BIT)
     END AS is_api_capable
-FROM Organizations AS O
-LEFT JOIN Statuses AS S 
+FROM dbo.Organizations AS O
+LEFT JOIN dbo.Statuses AS S 
     ON O.organization_status_id = S.id
-LEFT JOIN SubscriptionStatuses AS SubS
+LEFT JOIN dbo.SubscriptionStatuses AS SubS
     ON O.subscription_status_id = SubS.id
 WHERE O.organization_name NOT IN (
     'Blue Raster',

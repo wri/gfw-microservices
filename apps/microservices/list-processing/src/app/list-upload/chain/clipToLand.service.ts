@@ -35,10 +35,14 @@ axiosRetry(axios, {
     );
   },
 });
+
 export class ClipToLandService extends AbstractHandler<ChainType> {
   logger = new Logger(ClipToLandService.name);
 
-  private BATCH_SIZE = 200;
+  // Batching value above 100 results in roughly same performance as 100, but may cause timeouts
+  // Value of 50 is 20% slower than 100, but may be more reliable
+  // using 100 for now to get best speed without overloading the service
+  private BATCH_SIZE = 100;
   getClipToLandData = async (feature: Feature) => {
     // Type assertion for geometry with coordinates property
     const geometryWithCoords = feature.geometry as Feature['geometry'] & {
@@ -100,7 +104,7 @@ export class ClipToLandService extends AbstractHandler<ChainType> {
     } catch (error) {
       const statusCode = error.response?.status;
 
-      this.logger.warn(`ERROR in request (HTTP ${statusCode}):`, error.message);
+      this.logger.warn(`ERROR in request (HTTP ${statusCode}):`, error.stack || error.message);
       this.logger.warn(
         `Returning feature without geometry for feature ${
           feature.properties?.locationName || 'unknown'

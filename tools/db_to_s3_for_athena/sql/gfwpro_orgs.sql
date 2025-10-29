@@ -13,7 +13,7 @@ SELECT
     CASE 
         WHEN EXISTS (
             SELECT 1 
-            FROM ExternalAPIKeys AS K
+            FROM dbo.ExternalAPIKeys AS K
             WHERE K.organizationId = O.id
         ) THEN CAST(1 AS BIT)
         ELSE CAST(0 AS BIT)

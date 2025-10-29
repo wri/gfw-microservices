@@ -557,21 +557,6 @@ export default function UserProfile(props) {
     [state, updateState]
   );
 
-  // Authentication preference radio
-  const updateAuthenticationPreference = useCallback(
-    (evt) => {
-      const newPref = parseInt(evt.target.value, 10);
-      // set to new preference first, then if Google Authenticator call getQRCode
-      updateState({ auth_preference_id: newPref });
-      // If the preference is Google Authenticator - get secret information
-      if (newPref === 1) {
-        // call getQRCode with current email
-        getQRCode();
-      }
-    },
-    [getQRCode, updateState]
-  );
-
   // Multi select handlers
   const handleGeographiesChange = useCallback(
     (results) => updateState({ geographies: results }),
@@ -607,12 +592,9 @@ export default function UserProfile(props) {
     status_id,
     geographies,
     commodities,
-    auth_preference_id,
     dialogOpen,
     dialogTitle,
     dialogMessage,
-    secret,
-    secret_url,
     showModalLoader,
     updating,
     selectedDropdownUserStatusOption,
@@ -840,58 +822,6 @@ export default function UserProfile(props) {
             />
           </div>
         </section>
-      </section>
-
-      <Divider sx={{ mb: '20px', mt: '20px' }} />
-
-      <section className="section-container">
-        <h2 className="profile-page__subheader">
-          {profilePage.profileManager.userSecondLevelTitle}
-        </h2>
-        <p className="profile-label">{profilePage.profileManager.userSecondLevelPrompt}</p>
-
-        <div className="flex-grid space-element">
-          <input
-            type="radio"
-            id="secondLevelAuthenticationEmail"
-            name="second-level-authentication"
-            checked={auth_preference_id === 0}
-            onChange={updateAuthenticationPreference}
-            value={0}
-          />
-          <label htmlFor="secondLevelAuthenticationEmail" className="block-label">
-            {profilePage.profileManager.secondLevelFields[0]}
-          </label>
-          <input
-            type="radio"
-            id="secondLevelAuthenticationGoogle"
-            name="second-level-authentication"
-            checked={auth_preference_id === 1}
-            onChange={updateAuthenticationPreference}
-            value={1}
-          />
-          <label htmlFor="secondLevelAuthenticationGoogle" className="block-label">
-            {profilePage.profileManager.secondLevelFields[1]}
-          </label>
-        </div>
-        <div className={auth_preference_id === 1 ? 'flex-grid' : 'hidden'}>
-          <div className="col">
-            <div className="flex-grid-column">
-              <label className="block-label" htmlFor="secretImage">
-                {profilePage.profileManager.googleVerifyPrompt}
-              </label>
-              <img width="196" height="196" src={secret_url} alt="Google Auth QR" />
-            </div>
-          </div>
-          <div className="col">
-            <div className="flex-grid-column">
-              <label htmlFor="user_secret" className="block-label">
-                {profilePage.profileManager.googleSecretPrompt}
-              </label>
-              <input id="user_secret" value={secret} name="user_secret" readOnly />
-            </div>
-          </div>
-        </div>
       </section>
 
       <Divider sx={{ mb: '20px', mt: '20px' }} />

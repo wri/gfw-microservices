@@ -118,9 +118,8 @@ const getAllColumnNames = (
 
     const analysis = [
       {
-        ...(sortableColumns
-          ? { columns: sortableColumns, ...alertsAnalysisRestOfProperties }
-          : columns.alerts_analysis),
+        columns: sortableColumns,
+        ...alertsAnalysisRestOfProperties,
       },
     ];
 

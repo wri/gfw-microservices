@@ -9,3 +9,4 @@ export * from './zod.middleware';
 export * from './feature.flag.service';
 export * from './read-last-modified-analyses';
 export * from './performance.decorator';
+export * from './register-process-event-handlers';

@@ -41,8 +41,7 @@ export class ClipToLandService extends AbstractHandler<ChainType> {
 
   // Batching value above 100 results in roughly same performance as 100, but may cause timeouts
   // Value of 50 is 20% slower than 100, but may be more reliable
-  // using 100 for now to get best speed without overloading the service
-  private BATCH_SIZE = 100;
+  private BATCH_SIZE = 50;
   getClipToLandData = async (feature: Feature) => {
     // Type assertion for geometry with coordinates property
     const geometryWithCoords = feature.geometry as Feature['geometry'] & {
@@ -67,7 +66,7 @@ export class ClipToLandService extends AbstractHandler<ChainType> {
             'Content-Type': 'application/json',
             'x-api-key': process.env.GFW_DATA_API_KEY,
           },
-          timeout: 30000, // 30 second timeout
+          timeout: 60000, // 60 second timeout
         }
       );
 

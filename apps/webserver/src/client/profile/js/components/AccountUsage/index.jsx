@@ -8,6 +8,7 @@ import {
   TableHead,
   TableRow,
   Paper,
+  Box,
   styled,
 } from '@mui/material';
 
@@ -19,6 +20,21 @@ import { formatNumber } from '../../../../common/js/utils/format';
 import { calculateAccountSubscriptionDates } from '../../../../common/js/utils/accountSubscriptionDates';
 import AccountDetailUsageByAnalysisType from './AccountDetailUsageByAnalysisType';
 import moment from 'moment';
+
+const HeaderTableCell = styled(TableCell)(() => ({
+  backgroundColor: 'rgba(0, 0, 0, 0.04)',
+  color: 'rgba(0, 0, 0, 0.73)',
+  fontSize: '15px',
+  fontWeight: 'bold',
+}));
+
+const AccountRenewalText = styled('p')({
+  marginBottom: '1rem',
+  color: 'rgba(0, 0, 0, 0.5)',
+  fontSize: '12px',
+  textAlign: 'right',
+  borderRadius: '5px',
+});
 
 export default function AccountUsageContainer() {
   const { accountRenewalTime } = useProfileContext();
@@ -35,20 +51,6 @@ export default function AccountUsageContainer() {
 
   const { startDate, endDate, subscriptionYearEnd } =
     calculateAccountSubscriptionDates(accountRenewalTime);
-
-  const HeaderTableCell = styled(TableCell)(() => ({
-    backgroundColor: 'rgba(0, 0, 0, 0.04)',
-    color: 'rgba(0, 0, 0, 0.73)',
-    fontSize: '15px',
-    fontWeight: 'bold',
-  }));
-
-  const renewalTextStyle = {
-    margin: '0px 0 30px 0',
-    color: 'rgba(0, 0, 0, 0.5)',
-    fontSize: '12px',
-    textAlign: 'right',
-  };
 
   useEffect(() => {
     fetch(`/analytics/myorg/usage?startDate=${startDate}&endDate=${endDate}`, {
@@ -176,16 +178,25 @@ export default function AccountUsageContainer() {
   ) : (
     <>
       {messageType !== '' && <Alert severity={messageType}>{messageText}</Alert>}
-      <p style={renewalTextStyle}>Account renewal on {subscriptionYearEnd}</p>
 
       <AccountUsageDropMenu export={exportUsage} />
       <h3 style={{ margin: '0px 0 30px 0', fontWeight: 'normal' }}>Summary</h3>
 
-      <AccountUsage
-        {...usageData}
-        maxArea={usageLimitsData?.MaxAreaAnalyzeablePerYear}
-        maxLocations={usageLimitsData?.max_locations_per_year}
-      />
+      <Box
+        sx={{
+          backgroundColor: '#f5f5f5',
+          padding: '1em',
+          borderRadius: '5px',
+        }}
+      >
+        <AccountRenewalText>Account renewal on {subscriptionYearEnd}</AccountRenewalText>
+        <AccountUsage
+          {...usageData}
+          maxArea={usageLimitsData?.MaxAreaAnalyzeablePerYear}
+          maxLocations={usageLimitsData?.max_locations_per_year}
+        />
+      </Box>
+
       <AccountDetailUsageByAnalysisType
         analysisUsageByType={analysisUsageByType}
         setStartDateAnalysis={setStartDateAnalysis}

@@ -94,7 +94,7 @@ export default function AccountUsage({ label, usedValue, maxValue, InfoBubbleCon
             >
               {formatNumber(maxValue - usedValue)}
             </CardValue>
-            <CardLabel variant="caption" display="block" style={{ textAlign: 'right' }}>
+            <CardLabel variant="caption" display="block" sx={{ textAlign: 'right' }}>
               Remaining
             </CardLabel>
           </Grid>

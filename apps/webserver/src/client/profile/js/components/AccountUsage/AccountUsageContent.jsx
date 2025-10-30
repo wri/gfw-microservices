@@ -49,7 +49,7 @@ export default function AccountUsage({ label, usedValue, maxValue, InfoBubbleCon
   return (
     <Card>
       <CardContent>
-        <CardLabel style={{ marginBottom: '30px' }} variant="span" display="block" gutterBottom>
+        <CardLabel sx={{ marginBottom: '30px' }} variant="span" display="block" gutterBottom>
           {label}
           <InfoBubble>
             <InfoBubbleContent />

@@ -6,23 +6,27 @@ interface CheckProcessingLimitsParameters {
   organizationId: number;
   subscriptionStatusId: number;
   listId: number;
+  analysisTypesToProcess?: Record<string, boolean>;
 }
+
 /**
  * @summary Checks account locations limits and returns list processing area limits for step function. Throws error if isListLocationOverLimit
  * @param {Object} CheckProcessingLimitsParameters
- * @returns {Number} processingLimit
+ * @returns {Object} { isListLocationOverLimit: boolean, processingLimit: number }
  */
 export async function checkProcessingLimits({
   organizationDb,
   organizationId,
   subscriptionStatusId,
   listId,
+  analysisTypesToProcess = {},
 }: CheckProcessingLimitsParameters) {
   const isListLocationOverLimit = await checkLocationProcessingLimit({
     listId,
     orgDbName: organizationDb,
     organizationId,
     subscriptionStatusId,
+    analysisTypesToProcess,
   });
 
   const processingLimit = await getListProcessingLimits({

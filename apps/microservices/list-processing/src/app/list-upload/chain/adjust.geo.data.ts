@@ -48,7 +48,9 @@ export class AdjustGeoData extends AbstractHandler<ChainType> {
     }
 
     try {
-      const centroid = turf.centerOfMass(feature.geometry as unknown as turf.AllGeoJSON);
+      // Use pointOnFeature instead of centerOfMass to ensure the point is always inside the polygon
+      // centerOfMass can return points outside the polygon for complex/concave shapes
+      const centroid = turf.pointOnFeature(feature.geometry as unknown as turf.AllGeoJSON);
       return {
         longitude: centroid.geometry.coordinates[0],
         latitude: centroid.geometry.coordinates[1],

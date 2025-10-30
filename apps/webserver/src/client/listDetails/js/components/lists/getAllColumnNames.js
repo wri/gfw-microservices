@@ -109,25 +109,22 @@ const getAllColumnNames = (
     const { columns: alertsAnalysisColumns, ...alertsAnalysisRestOfProperties } =
       columns.alerts_analysis;
 
-    const notSortableColumns = alertsAnalysisColumns.map((col) => {
+    const sortableColumns = alertsAnalysisColumns.map((col) => {
       return {
         ...col,
-        sortable: false,
+        sortable: true,
       };
     });
 
-    const analysis = [
-      {
-        ...(notSortableColumns
-          ? { columns: notSortableColumns, ...alertsAnalysisRestOfProperties }
-          : columns.alerts_analysis),
-      },
-    ];
+    const analysis = {
+      columns: sortableColumns,
+      ...alertsAnalysisRestOfProperties,
+    };
 
     columnNames.combinedColumns = [
       ...defaultShownColumns,
       ...(isGlobalForestWatchList ? gfwListsSizeColumn(listId) : []),
-      ...analysis,
+      analysis,
       ...gfwColumns,
       ...columnNames.list,
     ];

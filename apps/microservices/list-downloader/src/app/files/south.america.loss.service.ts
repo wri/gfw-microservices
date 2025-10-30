@@ -55,14 +55,15 @@ export class SouthAmericaLossService extends DashboardHandleDownload {
           if (braWdpaRaw && typeof braWdpaRaw === 'object') {
             // Check if braWdpaRaw has nested categories (objects) or is flat yearly data (numbers)
             const firstValue = Object.values(braWdpaRaw)[0];
-            const hasNestedCategories = firstValue && typeof firstValue === 'object' && !Array.isArray(firstValue);
+            const hasNestedCategories =
+              firstValue && typeof firstValue === 'object' && !Array.isArray(firstValue);
 
             if (hasNestedCategories) {
               // Aggregate all categories (Category I, II, III, IV, V, VI, etc.)
               yearlyData = {};
-              Object.values(braWdpaRaw).forEach((cat) => {
-                if (cat && typeof cat === 'object' && !Array.isArray(cat)) {
-                  Object.entries(cat).forEach(([year, val]) => {
+              Object.values(braWdpaRaw).forEach((category) => {
+                if (category && typeof category === 'object' && !Array.isArray(category)) {
+                  Object.entries(category).forEach(([year, val]) => {
                     yearlyData[year] = (yearlyData[year] || 0) + (val || 0);
                   });
                 }

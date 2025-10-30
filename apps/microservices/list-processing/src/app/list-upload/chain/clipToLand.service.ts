@@ -35,25 +35,15 @@ axiosRetry(axios, {
     );
   },
 });
+
 export class ClipToLandService extends AbstractHandler<ChainType> {
   logger = new Logger(ClipToLandService.name);
 
-  private BATCH_SIZE = 200;
-  getClipToLandData = async (feature: Feature) => {
-    // Type assertion for geometry with coordinates property
-    const geometryWithCoords = feature.geometry as Feature['geometry'] & {
-      coordinates: Position[];
-    };
+  // Batching value above 100 results in roughly same performance as 100, but may cause timeouts
+  // Value of 50 is 20% slower than 100, but may be more reliable
+  private BATCH_SIZE = 50;
 
-    const requestData = {
-      geometry: feature.geometry,
-      sql: `SELECT ST_UNION(ST_Intersection(geom, ST_setSRID(ST_GeomFromGeoJSON('{"type": "${
-        feature.geometry.type
-      }", "coordinates": ${JSON.stringify(
-        geometryWithCoords.coordinates
-      )}}') , 4326 ) ) ) FROM mytable WHERE adm_level='2'`,
-    };
-
+  private async retryDataAPI(retriesLeft: number, requestData: any, feature: Feature) {
     try {
       const response = await axios.post(
         'https://data-api.globalforestwatch.org/dataset/gadm_administrative_boundaries/v4.1.85/query/json',
@@ -98,9 +88,42 @@ export class ClipToLandService extends AbstractHandler<ChainType> {
       };
       return payload;
     } catch (error) {
-      const statusCode = error.response?.status;
+      const statusCode = error.response?.status || error.code;
+      if (
+        retriesLeft > 0 &&
+        (error.code === 'ECONNABORTED' || error.code === 'ETIMEDOUT') &&
+        error.message?.toLowerCase().includes('timeout')
+      ) {
+        this.logger.warn(
+          `Timeout error in request (${statusCode}). Retries left: ${retriesLeft}. Retrying...`
+        );
+        return this.retryDataAPI(retriesLeft - 1, requestData, feature);
+      }
+      throw error;
+    }
+  }
 
-      this.logger.warn(`ERROR in request (HTTP ${statusCode}):`, error.message);
+  getClipToLandData = async (feature: Feature) => {
+    // Type assertion for geometry with coordinates property
+    const geometryWithCoords = feature.geometry as Feature['geometry'] & {
+      coordinates: Position[];
+    };
+
+    const requestData = {
+      geometry: feature.geometry,
+      sql: `SELECT ST_UNION(ST_Intersection(geom, ST_setSRID(ST_GeomFromGeoJSON('{"type": "${
+        feature.geometry.type
+      }", "coordinates": ${JSON.stringify(
+        geometryWithCoords.coordinates
+      )}}') , 4326 ) ) ) FROM mytable WHERE adm_level='2'`,
+    };
+
+    try {
+      return await this.retryDataAPI(2, requestData, feature);
+    } catch (error) {
+      const statusCode = error.response?.status || error.code;
+
+      this.logger.warn(`ERROR in request (${statusCode}):`, error.stack || error.message);
       this.logger.warn(
         `Returning feature without geometry for feature ${
           feature.properties?.locationName || 'unknown'
@@ -109,7 +132,7 @@ export class ClipToLandService extends AbstractHandler<ChainType> {
       const payload = {
         properties: {
           ...feature.properties,
-          errorDetails: `ERROR in request (HTTP ${statusCode}): ${error.message}`,
+          errorDetails: `ERROR in request (${statusCode}): ${error.message}`,
         },
         geometry: {},
         type: 'Feature',

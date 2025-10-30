@@ -221,14 +221,16 @@ function DraftList({
               )}
               <Divider />
 
-              <MenuItem
-                primaryText={locationsPage.lists.changeTypeOfAnalysis}
-                leftIcon={<SettingsIcon />}
-                onClick={() => {
-                  setIsChangeTypeOfAnalysisModalOpen(true);
-                  setIsMenuOpen(false);
-                }}
-              />
+              {showRerunOpt && !hasErrorFile && (
+                <MenuItem
+                  primaryText={locationsPage.lists.changeTypeOfAnalysis}
+                  leftIcon={<SettingsIcon />}
+                  onClick={() => {
+                    setIsChangeTypeOfAnalysisModalOpen(true);
+                    setIsMenuOpen(false);
+                  }}
+                />
+              )}
 
               <MenuItem
                 primaryText={

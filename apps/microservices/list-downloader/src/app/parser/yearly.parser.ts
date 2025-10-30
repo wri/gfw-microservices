@@ -6,22 +6,37 @@ import { brazilBiomesYearlyTCLParser } from './south.america.parser';
 const yearlyParser = ({ operation, data, dataRow, csvData }) => {
   const { composites, following } = operation;
   composites?.forEach((field) => {
-    let yearlyData = data[field.attribute] ? JSON.parse(data[field.attribute]) : {};
+    let yearlyData = {};
 
-    if (field.attribut === 'tree_cover_loss_prodes_wdpa_yearly' && !yearlyData) {
-      const braWdpaRaw = JSON.parse(
-        data.country_specific_deforestation_wdpa_yearly || '{}'
-      )?.BRA;
+    if (field.attribute === 'tree_cover_loss_prodes_wdpa_yearly') {
+      const braWdpaRaw = JSON.parse(data.country_specific_deforestation_wdpa_yearly || '{}')?.BRA;
 
       if (braWdpaRaw && typeof braWdpaRaw === 'object') {
-        // Aggregate all categories (Category I, II, III, IV, V, VI, etc.)
-        yearlyData = {};
-        Object.values(braWdpaRaw).forEach((cat) => {
-          Object.entries(cat || {}).forEach(([year, val]) => {
-            yearlyData[year] = (yearlyData[year] || 0) + (val || 0);
+        // Check if BRA is directly year-keyed (e.g., { 2018: 10, 2019: 20 })
+        // or category-keyed (e.g., { "Category I": { 2018: 10, 2019: 20 } })
+        const firstKey = Object.keys(braWdpaRaw)[0];
+        const isYearKeyed =
+          firstKey && (/^\d{4}$/.test(firstKey) || typeof braWdpaRaw[firstKey] === 'number');
+
+        if (isYearKeyed) {
+          // Direct year-keyed structure: { 2018: 10, 2019: 20 }
+          Object.entries(braWdpaRaw).forEach(([year, val]) => {
+            yearlyData[year] = val;
           });
-        });
+        } else {
+          // Category-keyed structure: { "Category I": { 2018: 10, 2019: 20 }, ... }
+          Object.values(braWdpaRaw).forEach((category) => {
+            Object.entries(category || {}).forEach(([year, val]) => {
+              yearlyData[year] = (yearlyData[year] || 0) + (val || 0);
+            });
+          });
+        }
+      } else {
+        // Fallback to legacy attribute
+        yearlyData = data[field.attribute] ? JSON.parse(data[field.attribute]) : {};
       }
+    } else {
+      yearlyData = data[field.attribute] ? JSON.parse(data[field.attribute]) : {};
     }
 
     let totalListLevelCount = 0;

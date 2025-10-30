@@ -220,12 +220,6 @@ export const handleCreateAnalysis = async (
 ) => {
   try {
     const url = geoTrellisUrlsByEnv[process.env.NODE_ENV] || geoTrellisUrlsByEnv.default;
-    const { isListLocationOverLimit, processingLimit } = await checkProcessingLimits({
-      organizationDb,
-      organizationId,
-      subscriptionStatusId,
-      listId,
-    });
 
     // Update [Lists], [Analyses] and [ListsAnalysisStatus] statuses before geotrellis
     await SQLUtils.queryDB<ListsAnalysisStatus[]>(organizationDb, 'uspSetListStatus', [
@@ -249,6 +243,14 @@ export const handleCreateAnalysis = async (
           )
         : listAnalysisStatusData
     );
+
+    const { isListLocationOverLimit, processingLimit } = await checkProcessingLimits({
+      organizationDb,
+      organizationId,
+      subscriptionStatusId,
+      listId,
+      analysisTypesToProcess: analysisTypes,
+    });
 
     if (isListLocationOverLimit) {
       await updateListsAnalysisStatus(organizationDb, {

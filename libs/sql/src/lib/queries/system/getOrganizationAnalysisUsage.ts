@@ -35,8 +35,8 @@ BEGIN
   FETCH NEXT FROM @MyCursor
   INTO @DBName
 
-  SET @SQL = 'INSERT INTO {TABLE} SELECT {PARAM} FROM [{DB_NAME}].[dbo].[ListsProcessing] lp WHERE analysis_end_time >= ''{START_DATE}'' AND analysis_end_time <= ''{END_DATE}'' AND lp.user_id IS NOT NULL AND lp.analysis_type <> ''GHG'' ';  SET @TABLE = '#TotArea_org'
-  SET @PARAM = 'ISNULL(SUM(area_analyzed_locations_ha), 0) as total_area_analyzed, ISNULL(MAX(area_analyzed_locations_ha), 0) as max_area_analyzed, COUNT(Distinct list_id) as number_of_lists_analyzed, ISNULL(SUM(locations_analyzed), 0) as locations_analyzed, {organization} as organization_id';
+  SET @SQL = 'INSERT INTO {TABLE} SELECT {PARAM} FROM [{DB_NAME}].[dbo].[ListsProcessing] lp WHERE analysis_end_time >= ''{START_DATE}'' AND analysis_end_time <= ''{END_DATE}'' AND lp.user_id IS NOT NULL AND (lp.analysis_type <> ''GHG'' OR lp.analysis_end_time >= ''2025-11-22'') ';  SET @TABLE = '#TotArea_org'
+  SET @PARAM = 'ISNULL(SUM(CASE WHEN lp.analysis_type = ''GHG'' AND lp.analysis_end_time < ''2025-11-22'' THEN 0 ELSE lp.area_analyzed_locations_ha END), 0) as total_area_analyzed, ISNULL(MAX(CASE WHEN lp.analysis_type = ''GHG'' AND lp.analysis_end_time < ''2025-11-22'' THEN 0 ELSE lp.area_analyzed_locations_ha END), 0) as max_area_analyzed, COUNT(Distinct lp.list_id) as number_of_lists_analyzed, ISNULL(SUM(CASE WHEN lp.analysis_type = ''GHG'' THEN 0 ELSE lp.locations_analyzed END), 0) as locations_analyzed, {organization} as organization_id';
 
   PRINT @PARAM
   SET @SQL = REPLACE(@SQL, '{PARAM}', @PARAM)

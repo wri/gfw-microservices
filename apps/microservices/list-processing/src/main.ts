@@ -1,4 +1,3 @@
-import { Logger } from '@nestjs/common';
 import { NestFactory } from '@nestjs/core';
 import { NestExpressApplication } from '@nestjs/platform-express';
 import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
@@ -6,7 +5,11 @@ import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
 import { AppModule } from './app/app.module';
 import { ConfigService } from '@nestjs/config';
 import { ServerConfigType } from './validators/server-config';
-import { ConsoleLog, initializeGlobalAxiosTracing } from '@wri-monorepos/shared';
+import {
+  ConsoleLog,
+  initializeGlobalAxiosTracing,
+  registerProcessEventHandlers,
+} from '@wri-monorepos/shared';
 
 const SWAGGER_DISABLED_ENVS = ['staging', 'production'];
 
@@ -14,8 +17,12 @@ async function bootstrap() {
   // Initialize global axios tracing before creating the app
   initializeGlobalAxiosTracing();
 
+  const bootstrapLogger = new ConsoleLog();
+  bootstrapLogger.setContext('ListProcessingBootstrap');
+  registerProcessEventHandlers(bootstrapLogger, { serviceName: 'List Processing' });
+
   const app = await NestFactory.create<NestExpressApplication>(AppModule, {
-    logger: new ConsoleLog(),
+    logger: bootstrapLogger,
     bufferLogs: true, // Buffer logs until custom logger is initialized to prevent early messages from using default logger
   });
   app.set('query parser', 'extended');
@@ -27,7 +34,7 @@ async function bootstrap() {
   const port = config.get('PORT', { infer: true });
 
   if (!SWAGGER_DISABLED_ENVS.includes(config.get('NODE_ENV', { infer: true }))) {
-    Logger.log('Swagger enabled');
+    bootstrapLogger.log('Swagger enabled', 'List Processing');
     const swaggerConfig = new DocumentBuilder()
       .setTitle('List-Processing API')
       .setDescription('V1 for List-Processing API')
@@ -45,7 +52,10 @@ async function bootstrap() {
     const document = SwaggerModule.createDocument(app, swaggerConfig);
     SwaggerModule.setup('api', app, document);
   }
-  Logger.log(`🚀 Application is running on: http://localhost:${port}/${globalPrefix}`);
+  bootstrapLogger.log(
+    `🚀 Application is running on: http://localhost:${port}/${globalPrefix}`,
+    'List Processing'
+  );
   await app.listen(port);
 }
 

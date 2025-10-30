@@ -3,7 +3,6 @@
  * This is only a minimal backend to get started.
  */
 
-import { Logger } from '@nestjs/common';
 import { NestFactory } from '@nestjs/core';
 import { NestExpressApplication } from '@nestjs/platform-express';
 import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
@@ -11,14 +10,22 @@ import { AppModule } from './app/app.module';
 import { SecurityHeaderMiddleware } from './middleware/security-header.middleware';
 import { ConfigService } from '@nestjs/config';
 import { ServerConfigType } from './validators/server-config';
-import { ConsoleLog, initializeGlobalAxiosTracing } from '@wri-monorepos/shared';
+import {
+  ConsoleLog,
+  initializeGlobalAxiosTracing,
+  registerProcessEventHandlers,
+} from '@wri-monorepos/shared';
 
 async function bootstrap() {
   // Initialize global axios tracing before creating the app
   initializeGlobalAxiosTracing();
 
+  const bootstrapLogger = new ConsoleLog();
+  bootstrapLogger.setContext('ExternalApiBootstrap');
+  registerProcessEventHandlers(bootstrapLogger, { serviceName: 'External API' });
+
   const app = await NestFactory.create<NestExpressApplication>(AppModule, {
-    logger: new ConsoleLog(),
+    logger: bootstrapLogger,
     bufferLogs: true, // Buffer logs until custom logger is initialized to prevent early messages from using default logger
   });
   app.set('query parser', 'extended');
@@ -50,7 +57,10 @@ async function bootstrap() {
   });
 
   await app.listen(port);
-  Logger.log(`🚀 Application is running on: http://localhost:${port}/${globalPrefix}`);
+  bootstrapLogger.log(
+    `🚀 Application is running on: http://localhost:${port}/${globalPrefix}`,
+    'External API'
+  );
 
   // To prevent issues in the future, I want to add a test to ensure that the necessary variables are set in the environment and are not null or undefined.
   // This is a good practice to follow in general, but it is especially important when working with microservices.

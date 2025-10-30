@@ -89,10 +89,10 @@ export class ClipToLandService extends AbstractHandler<ChainType> {
       return payload;
     } catch (error) {
       const statusCode = error.response?.status || error.code;
+      // retry only for certain timeout/network errors
       if (
         retriesLeft > 0 &&
-        (error.code === 'ECONNABORTED' || error.code === 'ETIMEDOUT') &&
-        error.message?.toLowerCase().includes('timeout')
+        (error.code === 'ECONNABORTED' || error.code === 'ETIMEDOUT' || error.code === 'ECONNRESET')
       ) {
         this.logger.warn(
           `Timeout error in request (${statusCode}). Retries left: ${retriesLeft}. Retrying...`

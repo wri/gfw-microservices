@@ -12,7 +12,8 @@ CREATE TABLE #list_data
   commodity NVARCHAR(100),
   analysis_area FLOAT,
   locations_count INT,
-  list_status NVARCHAR(25)
+  list_status NVARCHAR(25),
+  is_api_list BIT
 );
 
 -- SETting up variables
@@ -25,6 +26,7 @@ DECLARE @list_status_id INT;
 DECLARE @analysis_area_sum FLOAT;
 DECLARE @sql NVARCHAR(MAX);
 DECLARE @status_params NVARCHAR(MAX);
+DECLARE @is_api_list BIT;
 
 SET @status_params = '@list_status_id_query INT OUTPUT';
 
@@ -89,13 +91,28 @@ BEGIN
           WHERE id2 = (@list_item)
 
           -- dynamic sql to find list status
-          SET @sql = N'SELECT @list_status_id_query = L.list_status_id
-                      FROM [{DB_NAME}].dbo.Lists L
-                      WHERE L.list_table_name = ''{LIST_TABLE_NAME}''';
+          SET @sql = N'
+            SELECT @list_status_id_query = L.list_status_id
+            FROM [{DB_NAME}].dbo.Lists L
+            WHERE L.list_table_name = ''{LIST_TABLE_NAME}''
+          ';
 
           SET @sql = REPLACE(@sql, '{DB_NAME}', @db_name);
           SET @sql = REPLACE(@sql, '{LIST_TABLE_NAME}', @list_table_name);
           EXEC sp_executesql @sql, @status_params, @list_status_id_query = @list_status_id OUTPUT;
+
+          -- dynamic sql to determine if list is an API list
+          SET @sql = N'
+            SELECT @is_api_list_query = CASE WHEN EU.id IS NOT NULL THEN 1 ELSE 0 END
+            FROM [{DB_NAME}].dbo.Lists L
+            LEFT JOIN [{DB_NAME}].dbo.LargeLists LL ON L.id = LL.list_id
+            LEFT JOIN gfwpro.dbo.ExternalUploads EU ON LL.s3_filename = EU.uploadKeyFile
+            WHERE L.id = {LIST_ID}
+          ';
+
+          SET @sql = REPLACE(@sql, '{DB_NAME}', @db_name);
+          SET @sql = REPLACE(@sql, '{LIST_ID}', @list_id);
+          EXEC sp_executesql @sql, N'@is_api_list_query BIT OUTPUT', @is_api_list_query = @is_api_list OUTPUT;
 
           BEGIN
             BEGIN TRY
@@ -193,7 +210,7 @@ BEGIN
                   
                 -- inserts the collected data into #list_data
                 INSERT into #list_data
-                (organization, list_name, country, commodity, analysis_area, locations_count, list_status)
+                (organization, list_name, country, commodity, analysis_area, locations_count, list_status, is_api_list)
                 SELECT @org_name		
                   , @list_table_name	
                   , gli.country					
@@ -205,6 +222,7 @@ BEGIN
                       WHEN @list_status_id = 3 THEN 'FAILED'
                       ELSE 'PENDING'
                     END
+                  , @is_api_list
                 FROM #temp_grouped_list_info gli
             END TRY
             BEGIN CATCH

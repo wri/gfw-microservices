@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 import {
   DashboardDataType,
   getDashboardData,
@@ -7,6 +7,7 @@ import {
   GFWList,
   ClientStoreConnection,
   Lists,
+  ListsAnalysisStatus,
   getDashboardDataPaginated,
   CountDashboardDataType,
   getCountDashboardData,
@@ -24,12 +25,30 @@ export class AlertsRepository {
   @InjectRepository(GFWList, 'default')
   private gfwListRepository: Repository<GFWList>;
 
+  private readonly logger = new Logger(AlertsRepository.name);
+
   constructor(
     private readonly clientStoreConnection: ClientStoreConnection,
     private readonly config: ConfigService<ServerConfigType, true>
   ) {}
 
+  // Log how long ago the list was last analyzed for alerts.
+  // This will help determine how often alerts are used and freshness/staleness of lists.
+  private async logAlertsList(listID: number, clientDatabase: string, paginated = false) {
+    const connection = await this.createOrganizationConnection(clientDatabase);
+    const listAnalysisStatusRepository = connection.getRepository(ListsAnalysisStatus);
+    const listAnalysisStatus = await listAnalysisStatusRepository.findOne({
+      where: { listId: listID, analysisId: 'Alerts' },
+    });
+    const lastAnalysisTime = listAnalysisStatus?.updateTime?.getTime() || -Infinity;
+    const daysAgo = Math.floor((Date.now() - lastAnalysisTime) / (1000 * 60 * 60 * 24));
+    this.logger.log(
+      `Fetch alerts for list ${listID} analyzed ${daysAgo} days ago.  LD: ${paginated}`
+    );
+  }
+
   async findDashboardDataByListId(listID: number, clientDatabase: string) {
+    await this.logAlertsList(listID, clientDatabase);
     const parameters = [{ field: 'listID', type: sql.Int, value: listID }];
 
     return await SQLUtils.queryDB<DashboardDataType[]>(
@@ -40,6 +59,7 @@ export class AlertsRepository {
   }
 
   async findGFWListDashboardDataByListId(listID: number) {
+    await this.logAlertsList(listID, this.config.get('MSSQL_DATABASE', { infer: true }));
     const parameters = [{ field: 'listID', type: sql.Int, value: listID }];
 
     return await SQLUtils.queryDB<DashboardDataType[]>(
@@ -87,6 +107,8 @@ export class AlertsRepository {
     pageNumber: number,
     rowsPerPage: number
   ) {
+    await this.logAlertsList(listID, clientDatabase, true);
+
     const parameters = [
       { field: 'listID', type: sql.Int, value: listID },
       { field: 'pageNumber', type: sql.Int, value: pageNumber },
@@ -115,6 +137,8 @@ export class AlertsRepository {
     pageNumber: number,
     rowsPerPage: number
   ) {
+    await this.logAlertsList(listID, this.config.get('MSSQL_DATABASE', { infer: true }), true);
+
     const parameters = [
       { field: 'listID', type: sql.Int, value: listID },
       { field: 'pageNumber', type: sql.Int, value: pageNumber },

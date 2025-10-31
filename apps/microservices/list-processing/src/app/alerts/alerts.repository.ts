@@ -35,16 +35,22 @@ export class AlertsRepository {
   // Log how long ago the list was last analyzed for alerts.
   // This will help determine how often alerts are used and freshness/staleness of lists.
   private async logAlertsList(listID: number, clientDatabase: string, paginated = false) {
-    const connection = await this.createOrganizationConnection(clientDatabase);
-    const listAnalysisStatusRepository = connection.getRepository(ListsAnalysisStatus);
-    const listAnalysisStatus = await listAnalysisStatusRepository.findOne({
-      where: { listId: listID, analysisId: 'Alerts' },
-    });
-    const lastAnalysisTime = listAnalysisStatus?.updateTime?.getTime() || -Infinity;
-    const daysAgo = Math.floor((Date.now() - lastAnalysisTime) / (1000 * 60 * 60 * 24));
-    this.logger.log(
-      `Fetch alerts for list ${listID} analyzed ${daysAgo} days ago.  LD: ${paginated}`
-    );
+    try {
+      const connection = await this.createOrganizationConnection(clientDatabase);
+      const listAnalysisStatusRepository = connection.getRepository(ListsAnalysisStatus);
+      const listAnalysisStatus = await listAnalysisStatusRepository.findOne({
+        where: { listId: listID, analysisId: 'Alerts' },
+      });
+      const lastAnalysisTime = listAnalysisStatus?.updateTime?.getTime() || -Infinity;
+      const MILLISECONDS_PER_DAY = 1000 * 60 * 60 * 24;
+      const daysAgo = Math.floor((Date.now() - lastAnalysisTime) / MILLISECONDS_PER_DAY);
+      this.logger.log(
+        `Fetch alerts for list ${listID} analyzed ${daysAgo} days ago.  LD: ${paginated}`
+      );
+    } catch (error) {
+      // log the error but do not fail the main query
+      this.logger.error(`Error logging alerts: ${error.stack || error.message || error}`);
+    }
   }
 
   async findDashboardDataByListId(listID: number, clientDatabase: string) {

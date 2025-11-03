@@ -1,26 +1,29 @@
 // health.controller.ts
-import { Controller, Get } from '@nestjs/common';
-import {
-  HealthCheck,
-  HealthCheckService,
-  MemoryHealthIndicator,
-  TypeOrmHealthIndicator,
-} from '@nestjs/terminus';
+import { Controller, Get, Logger } from '@nestjs/common';
+
+// Module-level counter to track across all instances
+let counter = 0;
+let firstTime = true;
 
 @Controller('HealthCheck')
 export class HealthController {
-  constructor(
-    private health: HealthCheckService,
-    private db: TypeOrmHealthIndicator,
-    private memory: MemoryHealthIndicator
-  ) {}
+  private readonly logger = new Logger(HealthController.name);
 
   @Get()
-  @HealthCheck()
   check() {
-    return this.health.check([
-      async () => this.db.pingCheck('database'),
-      () => this.memory.checkHeap('memory_heap', 4 * 1024 * 1024 * 1024), // 4GB
-    ]);
+    // Track Fargate health check calls
+    // intended for checking ECS fargate health check (task-definition-web-prod.json)
+    // https://gfw.atlassian.net/browse/GPV-4530
+    counter++;
+
+    if (firstTime) {
+      global.setInterval(() => {
+        this.logger.log(`Per minute health check counter: ${counter}`);
+        counter = 0;
+      }, 1000 * 60); // every minute
+      firstTime = false;
+    }
+
+    return { status: 'ok' };
   }
 }

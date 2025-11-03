@@ -180,6 +180,13 @@ export default class LegendCheckbox extends Component {
       <li key={`${i}${symbol.name}`}>
         <span className="layer-legend-symbol" style={symbolStyle}></span>
         <span className="layer-legend-label">{symbol.name}</span>
+        {symbol?.subCategories && (
+          <ul className="layer-legend__subcategory">
+            {symbol.subCategories.map((subCategory) => (
+              <li key={subCategory}>{subCategory}</li>
+            ))}
+          </ul>
+        )}
       </li>
     );
   };

@@ -44,7 +44,6 @@ const getUserLocationDataFromAPI = (
       analysisId = analysisTypes.FOREST_CHANGE_DIAGNOSTICS;
       break;
   }
-  console.log("🚀 ~ getUserLocationDataFromAPI ~ tableSortedBy:", tableSortedBy)
 
   const data = {
     pageSize: 50,

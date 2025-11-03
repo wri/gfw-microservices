@@ -927,6 +927,11 @@ $lightGray: rgba(158, 158, 158, 0.3);
 
 .layer-legend {
   padding-left: 10px;
+
+  &__subcategory {
+    font-size: 11px;
+    padding-left: 23px;
+  }
 }
 
 .layer-legend-symbol {

@@ -48,11 +48,30 @@ export class SouthAmericaLossService extends DashboardHandleDownload {
         // Prefer BRA-specific WDPA from country_specific_deforestation_wdpa_yearly when available;
         // fallback to tree_cover_loss_prodes_wdpa_yearly for backward compatibility.
         if (attribute === 'tree_cover_loss_prodes_wdpa_yearly' && !yearlyData) {
-          const braWdpa =
-            JSON.parse(listLevelAnalysis.country_specific_deforestation_wdpa_yearly || '{}')?.BRA ||
-            null;
-          if (braWdpa) {
-            yearlyData = braWdpa;
+          const braWdpaRaw = JSON.parse(
+            listLevelAnalysis.country_specific_deforestation_wdpa_yearly || '{}'
+          )?.BRA;
+
+          if (braWdpaRaw && typeof braWdpaRaw === 'object') {
+            // Check if braWdpaRaw has nested categories (objects) or is flat yearly data (numbers)
+            const firstValue = Object.values(braWdpaRaw)[0];
+            const hasNestedCategories =
+              firstValue && typeof firstValue === 'object' && !Array.isArray(firstValue);
+
+            if (hasNestedCategories) {
+              // Aggregate all categories (Category I, II, III, IV, V, VI, etc.)
+              yearlyData = {};
+              Object.values(braWdpaRaw).forEach((category) => {
+                if (category && typeof category === 'object' && !Array.isArray(category)) {
+                  Object.entries(category).forEach(([year, val]) => {
+                    yearlyData[year] = (yearlyData[year] || 0) + (val || 0);
+                  });
+                }
+              });
+            } else {
+              // Flat yearly data structure, use as-is
+              yearlyData = braWdpaRaw;
+            }
           }
         }
 

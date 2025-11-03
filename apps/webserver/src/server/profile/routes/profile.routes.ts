@@ -321,14 +321,10 @@ export = (app, limiter) => {
 
   app.get(`${API_BASE_URL}/swagger`, [...routeMiddlewares, runSwaggerRequest]);
 
-  app.use(`${API_BASE_URL}/api-keys`, [
-    ...routeMiddlewares,
-    eapiRoutes,
-    runEAPIMicroserviceRequest,
-  ]);
+  app.use(`${API_BASE_URL}/api-keys`, [...routeMiddlewares, eapiRoutes]);
 
+  // Update each route to call the middleware explicitly
   eapiRoutes.post('', (req, res, next) => {
-    // this route is used to create a new api key empty body due to the fact that the request body is not used
     const requestOrganizationId = req.session.organization_id;
     const requestUserId = req.session.organization_user_id;
     const request = {
@@ -340,18 +336,17 @@ export = (app, limiter) => {
       },
     };
 
-    next(request);
+    runEAPIMicroserviceRequest(request, req, res, next);
   });
 
   eapiRoutes.get('', (req, res, next) => {
     const requestOrganizationId = req.session.organization_id;
-
     const request = {
       method: 'GET',
       url: `/api-keys/${requestOrganizationId}`,
     };
 
-    next(request);
+    runEAPIMicroserviceRequest(request, req, res, next);
   });
 
   eapiRoutes.delete('/:tokenId', (req, res, next) => {
@@ -362,6 +357,6 @@ export = (app, limiter) => {
       url: `/api-keys/${requestOrganizationId}/${tokenId}`,
     };
 
-    next(request);
+    runEAPIMicroserviceRequest(request, req, res, next);
   });
 };

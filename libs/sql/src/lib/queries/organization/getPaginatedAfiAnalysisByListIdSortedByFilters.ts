@@ -16,6 +16,10 @@ DECLARE @where_clauses NVARCHAR(max) = '';
 DECLARE @listLocationTableCols NVARCHAR(MAX);
 DECLARE @listLocationTableName NVARCHAR(1000);
 
+DECLARE @afiColumns NVARCHAR(MAX) = 'location_id, gadm_id, natural_land_area, natural_land_deforested_area, total_area_ha, status_code, location_error, negligible_risk, jrc_land_area, jrc_land_deforested_area, jrc_forest_loss_by_year, natural_forest_loss_by_year, protected_areas_area, landmark_area';
+DECLARE @ltColumns NVARCHAR(MAX) = '[Location Name], Country, State, [Sub State]';
+DECLARE @calculatedColumns NVARCHAR(MAX) = 'protectedAreasPercent, landmarkPercent, naturalForestLossPercent, jrcNaturalForestLossPercent';
+
 SELECT
     @list_table = [list_table_name],
     @listName   = [list_Name],
@@ -23,38 +27,7 @@ SELECT
 FROM [Lists]
 WHERE id = @listId;
 
-DECLARE @ValidSortColumns TABLE (
-    ColumnName NVARCHAR(255) NOT NULL,
-    Source NVARCHAR(25) NOT NULL,
-    IsNumeric BIT NOT NULL DEFAULT 0
-);
-
-INSERT INTO @ValidSortColumns (ColumnName, Source) VALUES
-    ('location_id', 'afi'),
-    ('gadm_id', 'afi'),
-    ('natural_land_area', 'afi'),
-    ('natural_land_deforested_area', 'afi'),
-    ('total_area_ha', 'afi'),
-    ('status_code', 'afi'),
-    ('location_error', 'afi'),
-    ('negligible_risk', 'afi'),
-    ('jrc_land_area', 'afi'),
-    ('jrc_land_deforested_area', 'afi'),
-    ('jrc_forest_loss_by_year', 'afi'),
-    ('natural_forest_loss_by_year', 'afi'),
-    ('protected_areas_area', 'afi'),
-    ('landmark_area', 'afi');
-
-INSERT INTO @ValidSortColumns (ColumnName, Source) VALUES
-    ('Country', 'lt'),
-    ('State', 'lt'),
-    ('Sub State', 'lt');
-
-INSERT INTO @ValidSortColumns (ColumnName, Source, IsNumeric) VALUES
-    ('protectedAreasPercent', 'computed', 1),
-    ('landmarkPercent', 'computed', 1),
-    ('naturalForestLossPercent', 'computed', 1),
-    ('jrcNaturalForestLossPercent', 'computed', 1);
+DECLARE @locationColumns NVARCHAR(MAX) = '';
 
 DECLARE @OptionalColumns TABLE (ColumnName NVARCHAR(255));
 INSERT INTO @OptionalColumns (ColumnName)
@@ -76,24 +49,20 @@ VALUES
     ('Analysis Radius'),
     ('Analysis Area');
 
-DECLARE @locationColumns NVARCHAR(MAX) = '';
-
 SELECT @locationColumns +=
     CASE
         WHEN EXISTS (
             SELECT 1
             FROM INFORMATION_SCHEMA.COLUMNS
             WHERE TABLE_NAME = @list_table
-              AND COLUMN_NAME = oc.ColumnName
+              AND COLUMN_NAME = ColumnName
         )
-            THEN ' lt.' + QUOTENAME(oc.ColumnName) + ' AS ' + QUOTENAME(oc.ColumnName) + ', '
+        THEN ' lt.' + QUOTENAME(ColumnName) + ' AS ' + QUOTENAME(ColumnName) + ', '
         ELSE ''
     END
-FROM @OptionalColumns oc;
+FROM @OptionalColumns;
 
 DECLARE @LocationNameColumn NVARCHAR(MAX) = '';
-DECLARE @LocationNameDbColumn NVARCHAR(255) = NULL;
-
 SET @LocationNameColumn =
     CASE
         WHEN EXISTS (
@@ -102,45 +71,16 @@ SET @LocationNameColumn =
             WHERE TABLE_NAME = @list_table
               AND COLUMN_NAME = 'Location Name'
         )
-        BEGIN
-            SET @LocationNameDbColumn = '[Location Name]';
-            INSERT INTO @ValidSortColumns (ColumnName, Source) VALUES ('Location Name', 'ltLocationName'), ('locationName', 'ltLocationName');
-            SELECT 'lt.[Location Name] as locationName, lt.[Location Name] as [Location Name], '
-        END
+          THEN 'lt.[Location Name] as locationName, lt.[Location Name] as [Location Name], '
         WHEN EXISTS (
             SELECT 1
             FROM INFORMATION_SCHEMA.COLUMNS
             WHERE TABLE_NAME = @list_table
               AND COLUMN_NAME = 'Investment Name'
         )
-        BEGIN
-            SET @LocationNameDbColumn = '[Investment Name]';
-            INSERT INTO @ValidSortColumns (ColumnName, Source) VALUES ('Investment Name', 'ltLocationName'), ('locationName', 'ltLocationName');
-            SELECT 'lt.[Investment Name] as locationName, lt.[Investment Name] as [Location Name], '
-        END
+          THEN 'lt.[Investment Name] as locationName, lt.[Investment Name] as [Location Name], '
         ELSE ''
     END;
-
-DECLARE @JsonAttributeColumns NVARCHAR(MAX) = '';
-DECLARE @JsonAttributes TABLE (
-    attribute_name NVARCHAR(255),
-    attribute_type INT
-);
-
-INSERT INTO @JsonAttributes (attribute_name, attribute_type)
-SELECT attribute_name, attribute_type
-FROM ListAttributes
-WHERE list_id = @listId;
-
-SELECT @JsonAttributeColumns +=
-    ' JSON_VALUE(lt.attributes, ''$."' + REPLACE(ja.attribute_name, '''', '''''') + '"'' ) AS [' + ja.attribute_name + '],'
-FROM @JsonAttributes ja;
-
-INSERT INTO @ValidSortColumns (ColumnName, Source, IsNumeric)
-SELECT ja.attribute_name,
-       'json',
-       CASE WHEN ja.attribute_type = 1 THEN 1 ELSE 0 END
-FROM @JsonAttributes ja;
 
 SET @SQL = N'
 SELECT
@@ -188,15 +128,15 @@ SELECT
     END AS jrcNaturalForestLossPercent,
 
     ' +
-    CASE
-        WHEN @JsonAttributeColumns IS NOT NULL AND LEN(@JsonAttributeColumns) > 0
-            THEN @JsonAttributeColumns
-        ELSE ''
-    END + N'
+    N' ' + CASE WHEN @JsonAttributeColumns IS NOT NULL AND LEN(@JsonAttributeColumns) > 0
+                THEN @JsonAttributeColumns + ','
+                ELSE ''
+           END + N'
+
     COUNT(*) OVER () AS totalRows
 
 FROM AFIAnalysis afi
-JOIN dbo.' + QUOTENAME(@list_table) + N' lt ON lt.location_id = afi.location_id
+JOIN dbo.[' + @list_table + N'] lt ON lt.location_id = afi.location_id
 WHERE afi.location_id > 0
   AND afi.list_id = @listId
 ';
@@ -235,55 +175,43 @@ IF (@SearchString IS NOT NULL)
 IF (@Filters IS NOT NULL)
     SET @SQL += @Filters;
 
-DECLARE @orderDirection NVARCHAR(4) = NULL;
+DECLARE @isValidSortColumn BIT = 0;
+
+IF CHARINDEX(@sortByAttribute, @afiColumns) > 0
+   OR CHARINDEX(@sortByAttribute, @ltColumns) > 0
+   OR CHARINDEX(@sortByAttribute, @calculatedColumns) > 0
+   OR (@JsonAttributeColumns IS NOT NULL AND CHARINDEX('AS [' + @sortByAttribute + ']', @JsonAttributeColumns) > 0)
+BEGIN
+    SET @isValidSortColumn = 1;
+END;
 
 IF @orderType IS NOT NULL
-BEGIN
-    SET @orderDirection =
-        CASE WHEN UPPER(@orderType) = 'DESC' THEN 'DESC'
-             WHEN UPPER(@orderType) = 'ASC'  THEN 'ASC'
-        END;
-END;
-
-DECLARE @sortSource NVARCHAR(25) = NULL;
-DECLARE @sortIsNumeric BIT = 0;
-DECLARE @quotedSortByAttribute NVARCHAR(260) = NULL;
-DECLARE @sortByAttributeForJson NVARCHAR(255) = NULL;
-
-IF @sortByAttribute IS NOT NULL
-BEGIN
-    SELECT TOP (1)
-        @sortSource = Source,
-        @sortIsNumeric = IsNumeric
-    FROM @ValidSortColumns
-    WHERE ColumnName = @sortByAttribute;
-
-    IF @sortSource IS NOT NULL
-    BEGIN
-        SET @quotedSortByAttribute = QUOTENAME(@sortByAttribute);
-        SET @sortByAttributeForJson = REPLACE(@sortByAttribute, '''', '''''');
-    END;
-END;
-
-IF @orderDirection IS NOT NULL
-   AND @sortSource IS NOT NULL
+   AND @sortByAttribute IS NOT NULL
+   AND @isValidSortColumn = 1
 BEGIN
     SET @SQL += ' ORDER BY ' +
-        CASE @sortSource
-            WHEN 'afi' THEN 'afi.' + @quotedSortByAttribute
-            WHEN 'lt' THEN 'lt.' + @quotedSortByAttribute
-            WHEN 'ltLocationName' THEN
-                CASE
-                    WHEN @LocationNameDbColumn IS NOT NULL THEN 'lt.' + @LocationNameDbColumn
-                    ELSE 'lt.[Location Name]'
-                END
-            WHEN 'computed' THEN @quotedSortByAttribute
-            WHEN 'json' THEN
-                CASE WHEN @sortIsNumeric = 1
-                     THEN 'TRY_CAST(JSON_VALUE(lt.attributes, ''$."' + @sortByAttributeForJson + '"'' ) AS DECIMAL(18,6))'
-                     ELSE 'JSON_VALUE(lt.attributes, ''$."' + @sortByAttributeForJson + '"'' )'
-                END
-        END + ' ' + @orderDirection;
+            CASE
+                WHEN ',' + @afiColumns + ',' LIKE '%,' + @sortByAttribute + ',%'
+                     THEN 'afi.' + QUOTENAME(@sortByAttribute)
+                WHEN ',' + @ltColumns + ',' LIKE '%,' + @sortByAttribute + ',%'
+                     THEN 'lt.' + QUOTENAME(@sortByAttribute)
+                WHEN ',' + @calculatedColumns + ',' LIKE '%,' + @sortByAttribute + ',%'
+                     THEN QUOTENAME(@sortByAttribute)
+                WHEN @JsonAttributeColumns IS NOT NULL 
+                     AND CHARINDEX('AS [' + @sortByAttribute + ']', @JsonAttributeColumns) > 0
+                     THEN CASE
+                          WHEN (
+                              SELECT attribute_type
+                              FROM ListAttributes
+                              WHERE list_id = @listId
+                              AND attribute_name = @sortByAttribute
+                          ) = 1
+                          THEN 'CAST(JSON_VALUE(lt.attributes, ''$."' + @sortByAttribute + '"'') AS DECIMAL(18,6))'
+                          ELSE 'CAST(JSON_VALUE(lt.attributes, ''$."' + @sortByAttribute + '"'') AS NVARCHAR(MAX))'
+                     END
+                ELSE QUOTENAME(@sortByAttribute)
+            END
+            + ' ' + @orderType;
 END
 ELSE
 BEGIN
@@ -308,7 +236,8 @@ N'@listId INT,
   @showRSPOCertified BIT,
   @SearchString NVARCHAR(255),
   @orderType NVARCHAR(255),
-  @sortByAttribute NVARCHAR(255)',
+  @sortByAttribute NVARCHAR(255),
+  @JsonAttributeColumns NVARCHAR(MAX)',
 @listId               = @listId,
 @listName             = @listName,
 @rowsOfPage           = @rowsOfPage,
@@ -323,7 +252,8 @@ N'@listId INT,
 @showRSPOCertified    = @showRSPOCertified,
 @SearchString         = @SearchString,
 @orderType            = @orderType,
-@sortByAttribute      = @sortByAttribute;`;
+@sortByAttribute      = @sortByAttribute,
+@JsonAttributeColumns = @JsonAttributeColumns;`;
 
 export class PaginatedAfiAnalysisByListIdSortedByFilters {
   listId: number;

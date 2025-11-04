@@ -10,13 +10,20 @@ export class AdjustGeoData extends AbstractHandler<ChainType> {
     const { geojson } = request;
     const { features } = geojson as FeatureCollection;
 
-    for (const feature of features) {
+    for (let index = 0; index < features.length; index++) {
+      const feature = features[index];
       const { properties } = feature;
       const { latitude, longitude } = this.getLatLngFromFeature(feature);
       const hectares = this.getHectaresFromFeature(feature);
       properties.latitude = latitude;
       properties.longitude = longitude;
       properties.analysisArea = hectares;
+
+      // Yield to event loop every 100 features to allow health checks to respond
+      // and avoid CPU overload that may trigger AWS ECS health check failure
+      if (index > 0 && index % 100 === 0) {
+        await new Promise((resolve) => global.setImmediate(resolve));
+      }
     }
 
     return request;

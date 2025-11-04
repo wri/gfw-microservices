@@ -139,25 +139,40 @@ export class ProcessUploadData extends AbstractHandler<ChainType> {
     const listLocationsCount =
       (await getMaxLocationId(clientStoreConnection, organizationDatabase, listId)) ?? 0;
 
-    return await Promise.all(
-      features.map(async (feature, index) => {
-        try {
-          const processedFeature = await this.processFeature(
-            feature,
-            listLocationsCount + index + 1,
-            commodity,
-            request
-          );
+    const BATCH_SIZE = 50;
+    const processedFeatures: Feature[] = [];
 
-          // Calculate area for polygon features
-          return processedFeature;
-        } catch (error) {
-          this.logger.error(`Error processing feature`, error.stack || error);
-          this.logger.debug(feature);
-          throw error;
-        }
-      })
-    );
+    // Process features in batches instead of Promise.all on all features
+    // to avoid overwhelming the event loop and allow health checks to respond
+    for (let i = 0; i < features.length; i += BATCH_SIZE) {
+      const batch = features.slice(i, i + BATCH_SIZE);
+      const batchResults = await Promise.all(
+        batch.map(async (feature, batchIndex) => {
+          try {
+            const processedFeature = await this.processFeature(
+              feature,
+              listLocationsCount + i + batchIndex + 1,
+              commodity,
+              request
+            );
+
+            // Calculate area for polygon features
+            return processedFeature;
+          } catch (error) {
+            this.logger.error(`Error processing feature`, error.stack || error);
+            this.logger.debug(feature);
+            throw error;
+          }
+        })
+      );
+      processedFeatures.push(...batchResults);
+
+      // Yield to event loop after each batch to allow health checks to respond
+      // and avoid CPU overload that may trigger AWS ECS health check failure
+      await new Promise((resolve) => global.setImmediate(resolve));
+    }
+
+    return processedFeatures;
   }
 
   getFeatPropAttrs(request: ChainType) {

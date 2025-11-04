@@ -80,6 +80,9 @@ export abstract class AbstractHandler<T> implements Handler<T> {
       const start = performance.now();
       try {
         result = await nextJob.handle(result);
+        // Yield to event loop after each job to allow health checks to respond
+        // and avoid CPU overload that may trigger AWS ECS health check failure
+        await new Promise((resolve) => global.setImmediate(resolve));
       } catch (error) {
         const err: unknown = error;
         const { statusCode, stack, message } = AbstractHandler.parseError(err);

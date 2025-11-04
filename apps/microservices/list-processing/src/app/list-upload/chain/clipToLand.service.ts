@@ -155,7 +155,15 @@ export class ClipToLandService extends AbstractHandler<ChainType> {
     });
 
     try {
-      const result = await Promise.all(batch.map((feature) => this.getClipToLandData(feature)));
+      const result = await Promise.all(
+        batch.map((feature, index) => {
+          return (async () => {
+            return new Promise((resolve) => setTimeout(resolve, index * 20)).then(() =>
+              this.getClipToLandData(feature)
+            );
+          })();
+        })
+      );
       return result as Feature[];
     } catch (e) {
       (request.request as RequestNewList).hasUnanalyzableError = true;

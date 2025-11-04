@@ -47,7 +47,7 @@ const forestChangeLayers = [
     order: 107,
   },
   {
-    id: proLayers.driversOfDisturbanceAlerts,
+    id: proLayers.driversOfDisturbanceAlertsID,
     group: 'forest-change',
     subGroup: 'deforestation-alerts',
     order: 108,

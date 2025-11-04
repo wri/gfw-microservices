@@ -2485,10 +2485,10 @@ export const mapLayers = [
     id: 'b696ec7a-2852-468a-a907-b2cf4f584b95',
     type: 'layer',
     attributes: {
-      name: proLayers.driversOfDisturbanceAlerts,
+      name: proLayers.driversOfDisturbanceAlertsID,
       slug: 'Drivers-of-disturbance-alerts',
       dataset: '7b5c2316-8f97-41de-a268-06dc735cc8e9',
-      description: proLayers.driversOfDisturbanceAlerts,
+      description: proLayers.driversOfDisturbanceAlertsID,
       application: ['gfw-pro'],
       iso: [],
       provider: 'leaflet',
@@ -2504,7 +2504,7 @@ export const mapLayers = [
         body: {
           useCors: true,
           metadata: 'gfw_integrated_alerts_drivers_metadata',
-          url: 'https://tiles.globalforestwatch.org/gfw_integrated_alerts_drivers/v20250925/dynamic/{z}/{x}/{y}.png?render_type=true_color&start_date=2022-01-01&end_date=2024-12-31',
+          url: 'https://tiles.globalforestwatch.org/gfw_integrated_alerts_drivers/v20250925/dynamic/{z}/{x}/{y}.png?render_type=true_color',
         },
       },
       legendConfig: {

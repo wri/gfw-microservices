@@ -144,6 +144,7 @@ const {
   soyPlantedArea,
   argentineanNativeForestsLoss,
   integratedDeforestationAlertsID,
+  driversOfDisturbanceAlertsID,
 } = proLayers;
 
 let layersToAdd;
@@ -364,6 +365,7 @@ class Map extends Component {
       planetTileLayer,
       planetTileColor,
       layerOpacity,
+      driverOfDisturbanceAlertsFilter,
     } = this.state;
 
     updateInteractiveLayers(this.view.map, prevState, this.state);
@@ -632,6 +634,35 @@ class Map extends Component {
 
       const promise = new Promise((resolve) => {
         this.view.map.remove(soyLayer);
+        setTimeout(() => {
+          resolve();
+        }, 100);
+      });
+      promise.then(() => {
+        this.view.map.add(duplicate);
+        duplicate.visible = true;
+        this.view.map.layers.reorder(duplicate, index);
+      });
+    }
+
+    if (
+      prevState.driverOfDisturbanceAlertsFilter.startDate !==
+        driverOfDisturbanceAlertsFilter.startDate ||
+      prevState.driverOfDisturbanceAlertsFilter.endDate !== driverOfDisturbanceAlertsFilter.endDate
+    ) {
+      const driversOfDisturbanceAlertsLayer = this.view.map.findLayerById(
+        driversOfDisturbanceAlertsID
+      );
+      const index = this.view.map.layers.findIndex((l) => l.id === driversOfDisturbanceAlertsID);
+      const duplicate = driversOfDisturbanceAlertsLayer;
+      const soyConfig = this.state.mapLayers.find((l) => l.id === driversOfDisturbanceAlertsID);
+      const newURL = soyConfig.layerConfig.body.url.concat(
+        `&start_date=${driverOfDisturbanceAlertsFilter.startDate}&end_date=${driverOfDisturbanceAlertsFilter.endDate}`
+      );
+      duplicate.urlTemplate = newURL;
+
+      const promise = new Promise((resolve) => {
+        this.view.map.remove(driversOfDisturbanceAlertsLayer);
         setTimeout(() => {
           resolve();
         }, 100);

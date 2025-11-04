@@ -21,9 +21,12 @@ import LandCoverLayer from '../layers/LandCoverLayer';
 import WebTileLayer from '@arcgis/core/layers/WebTileLayer';
 import AboveGroundLayer from '../layers/AboveGroundLayer';
 import viirsLayer from '../layers/VIIRSLayerUtil';
-import { soyPlantedYearsRange } from '../../../common/js/config';
+import {
+  soyPlantedYearsRange,
+  driverOfDisturbanceAlertsDateRange,
+} from '../../../common/js/config';
 import { proLayers } from '../../../common/js/proLayers.config';
-const { viirsActiveFiresID, granChacoDeforestationID } = proLayers;
+const { viirsActiveFiresID, granChacoDeforestationID, driversOfDisturbanceAlertsID } = proLayers;
 
 /**
  * Map Function that gets called for each entry in the provided layers config and returns an array of ArcGIS Layers
@@ -104,9 +107,15 @@ export const layerFactory = function LayersFactory(layersArray, view) {
         layers.push(new TiledLayer(options));
         break;
       case 'tileLayer':
+        let urlTemplate = layer.layerConfig.body.url;
+        if (layer.id === driversOfDisturbanceAlertsID) {
+          urlTemplate = layer.layerConfig.body.url.concat(
+            `&start_date=${driverOfDisturbanceAlertsDateRange[0]}&end_date=${driverOfDisturbanceAlertsDateRange[1]}`
+          );
+        }
         layers.push(
           new WebTileLayer({
-            urlTemplate: layer.layerConfig.body.url,
+            urlTemplate,
             id: layer.id,
             visible: false,
             order: layer.order || undefined,

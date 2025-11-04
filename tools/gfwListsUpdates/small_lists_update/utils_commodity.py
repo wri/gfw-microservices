@@ -168,7 +168,6 @@ INDICATOR_LEVELS_VALUE_PEAT = {
     "2021": [0.0000, 0.1196, 0.2327],
     "2022": [0.0000, 0.1202, 0.2329],
     "2023": [0.0000, 0.1212, 0.2318],
-    "2024": [0.0000, 0.1212, 0.2318],
 }
 
 # Indicator Levels for Value WDPA [low, medium, high]

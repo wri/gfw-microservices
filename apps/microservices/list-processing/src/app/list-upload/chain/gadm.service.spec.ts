@@ -1,7 +1,7 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import axios from 'axios';
 import { GADMService } from './gadm.service';
-import { Feature } from '@wri-monorepos/geo';
+import { Feature, FeatureCollection } from '@wri-monorepos/geo';
 import { ChainType, RequestNewList } from './types';
 import { featureFlagsService } from '@wri-monorepos/shared';
 
@@ -47,15 +47,14 @@ describe('GADMService', () => {
       );
     });
 
-    it('should return null on fetch error', async () => {
+    it('should throw error on fetch error', async () => {
       const feature: Feature = {
         type: 'Feature',
         properties: { longitude: 0, latitude: 0 },
         geometry: { type: 'Point', coordinates: [0, 0] },
       };
       (axios.post as jest.Mock).mockRejectedValue(new Error('Network error'));
-      const result = await service.getGadmData(feature);
-      expect(result).toEqual({ hasUnanalyzableError: true });
+      await expect(service.getGadmData(feature)).rejects.toThrow('Network error');
     });
 
     it('should return data on successful fetch', async () => {
@@ -95,30 +94,24 @@ describe('GADMService', () => {
       });
     });
 
-    it('should handle error and return hasUnanalyzableError', async () => {
+    it('should handle error and set hasUnanalyzableError on feature', async () => {
       const feature: Feature = {
         type: 'Feature',
         properties: { longitude: 0, latitude: 0 },
         geometry: { type: 'Point', coordinates: [0, 0] },
       };
       jest.spyOn(service, 'getGadmData').mockRejectedValue(new Error('Test error'));
-      const result = await service.addGeoReferenceData(feature);
-      expect(result).toEqual({ hasUnanalyzableError: true });
+      await service.addGeoReferenceData(feature);
+      expect(feature.properties.hasUnanalyzableError).toBe(true);
     });
-  });
 
-  describe('addGeoReferenceData', () => {
-    it('should get geo reference data', async () => {
+    it('should handle empty response array', async () => {
       const feature: Feature = {
         type: 'Feature',
         properties: { longitude: 0, latitude: 0 },
         geometry: { type: 'Point', coordinates: [0, 0] },
       };
-      jest.spyOn(service, 'getGadmData').mockResolvedValue({
-        features: [
-          { attributes: { name_0: 'Country', name_1: 'State', name_2: 'Substate', gadmid: '123' } },
-        ],
-      });
+      jest.spyOn(service, 'getGadmData').mockResolvedValue([]);
       await service.addGeoReferenceData(feature);
       expect(feature.properties).toEqual({
         longitude: 0,
@@ -126,61 +119,52 @@ describe('GADMService', () => {
       });
     });
 
-    it('should handle error and return hasUnanalyzableError', async () => {
+    it('should handle gid_2 missing and use gid_1', async () => {
       const feature: Feature = {
         type: 'Feature',
         properties: { longitude: 0, latitude: 0 },
         geometry: { type: 'Point', coordinates: [0, 0] },
       };
-      jest.spyOn(service, 'getGadmData').mockRejectedValue(new Error('Test error'));
-      const result = await service.addGeoReferenceData(feature);
-      expect(result).toEqual({ hasUnanalyzableError: true });
+      const mockData = [
+        { gid_1: '123_ABC', name_0: 'Country', name_1: 'State', name_2: 'Substate' },
+      ];
+      jest.spyOn(service, 'getGadmData').mockResolvedValue(mockData);
+      await service.addGeoReferenceData(feature);
+      expect(feature.properties.gadmid).toBe('123');
     });
   });
 
-  describe('composeResults', () => {
-    it('should compose results', async () => {
-      const feature: Feature = {
-        type: 'Feature',
-        properties: { longitude: 0, latitude: 0 },
-        geometry: { type: 'Point', coordinates: [0, 0] },
+  describe('addGeoReferenceDataToFeatures', () => {
+    it('should process features in batches', async () => {
+      const geojson: FeatureCollection = {
+        type: 'FeatureCollection',
+        features: [
+          {
+            type: 'Feature',
+            properties: { longitude: 0, latitude: 0 },
+            geometry: { type: 'Point', coordinates: [0, 0] },
+          },
+        ],
       };
-      jest.spyOn(service, 'addGeoReferenceData').mockResolvedValue({ hasUnanalyzableError: false });
-      await service.addGeoReferenceData(feature);
-      expect(service.addGeoReferenceData).toHaveBeenCalledWith(feature);
-    });
-  });
-
-  describe('addGeoReferenceData', () => {
-    it('should compose results with GADM data', async () => {
-      const feature: Feature = {
-        type: 'Feature',
-        properties: { longitude: 0, latitude: 0 },
-        geometry: { type: 'Point', coordinates: [0, 0] },
+      const request: ChainType = {
+        geojson,
+        request: {
+          list_id: 1,
+          organization_database: 'test',
+          path: 'test',
+          organization_id: 123,
+        } as RequestNewList,
       };
-      jest.spyOn(service, 'addGeoReferenceData').mockResolvedValue({ hasUnanalyzableError: false });
-      await service.addGeoReferenceData(feature);
-      expect(service.addGeoReferenceData).toHaveBeenCalledWith(feature);
-    });
 
-    it('should handle errors from GADM data', async () => {
-      jest.spyOn(service, 'getGadmData').mockRejectedValue('Test error');
-      const result = await service.addGeoReferenceData(null);
-      expect(result).toStrictEqual({ hasUnanalyzableError: true });
+      jest.spyOn(service, 'addGeoReferenceData').mockResolvedValue();
+      const result = await service.addGeoReferenceDataToFeatures(geojson, request);
+      expect(service.addGeoReferenceData).toHaveBeenCalled();
+      expect(result.type).toBe('FeatureCollection');
     });
   });
 
   describe('handle', () => {
-    it('should handle the input with GADM 4.1 feature flag enabled', async () => {
-      (featureFlagsService as jest.Mock).mockResolvedValue({
-        getFeatureFlagsForCurrentOrg: jest.fn().mockResolvedValue([
-          {
-            flagId: 'gadm41',
-            flagState: true,
-          },
-        ]),
-      });
-
+    it('should handle the input with features', async () => {
       const input: ChainType = {
         geojson: {
           type: 'FeatureCollection',
@@ -197,38 +181,13 @@ describe('GADMService', () => {
           organization_database: 'test',
           path: 'test',
           organization_id: 123,
-        },
+          hasUnanalyzableError: false,
+        } as RequestNewList,
       };
 
-      jest.spyOn(service, 'addGeoReferenceData').mockResolvedValue(undefined);
+      jest.spyOn(service, 'addGeoReferenceDataToFeatures').mockResolvedValue(input.geojson!);
       const result = await service.handle(input);
-      expect(service.addGeoReferenceData).toHaveBeenCalled();
-      expect(result).toEqual(input);
-    });
-
-    it('should handle the input with GADM 4.1 feature flag disabled', async () => {
-      const input: ChainType = {
-        geojson: {
-          type: 'FeatureCollection',
-          features: [
-            {
-              type: 'Feature',
-              properties: { longitude: 0, latitude: 0 },
-              geometry: { type: 'Point', coordinates: [0, 0] },
-            },
-          ],
-        },
-        request: {
-          list_id: 1,
-          organization_database: 'test',
-          path: 'test',
-          organization_id: 123,
-        },
-      };
-
-      jest.spyOn(service, 'addGeoReferenceData').mockResolvedValue(undefined);
-      const result = await service.handle(input);
-      expect(service.addGeoReferenceData).toHaveBeenCalled();
+      expect(service.addGeoReferenceDataToFeatures).toHaveBeenCalled();
       expect(result).toEqual(input);
     });
 
@@ -244,8 +203,86 @@ describe('GADMService', () => {
         } as RequestNewList,
       };
 
+      jest.spyOn(service, 'addGeoReferenceDataToFeatures');
       const result = await service.handle(input);
+      expect(service.addGeoReferenceDataToFeatures).not.toHaveBeenCalled();
       expect(result).toEqual(input);
+    });
+
+    it('should set hasUnanalyzableError on request if any feature has error', async () => {
+      const input: ChainType = {
+        geojson: {
+          type: 'FeatureCollection',
+          features: [
+            {
+              type: 'Feature',
+              properties: { longitude: 0, latitude: 0 },
+              geometry: { type: 'Point', coordinates: [0, 0] },
+            },
+          ],
+        },
+        request: {
+          list_id: 1,
+          organization_database: 'test',
+          path: 'test',
+          organization_id: 123,
+          hasUnanalyzableError: false,
+        } as RequestNewList,
+      };
+
+      const processedGeoJson: FeatureCollection = {
+        type: 'FeatureCollection',
+        features: [
+          {
+            type: 'Feature',
+            properties: { longitude: 0, latitude: 0, hasUnanalyzableError: true },
+            geometry: { type: 'Point', coordinates: [0, 0] },
+          },
+        ],
+      };
+
+      jest.spyOn(service, 'addGeoReferenceDataToFeatures').mockResolvedValue(processedGeoJson);
+      const result = await service.handle(input);
+      expect(service.addGeoReferenceDataToFeatures).toHaveBeenCalled();
+      expect((result.request as RequestNewList).hasUnanalyzableError).toBe(true);
+    });
+
+    it('should not set hasUnanalyzableError on request if no feature has error', async () => {
+      const input: ChainType = {
+        geojson: {
+          type: 'FeatureCollection',
+          features: [
+            {
+              type: 'Feature',
+              properties: { longitude: 0, latitude: 0 },
+              geometry: { type: 'Point', coordinates: [0, 0] },
+            },
+          ],
+        },
+        request: {
+          list_id: 1,
+          organization_database: 'test',
+          path: 'test',
+          organization_id: 123,
+          hasUnanalyzableError: false,
+        } as RequestNewList,
+      };
+
+      const processedGeoJson: FeatureCollection = {
+        type: 'FeatureCollection',
+        features: [
+          {
+            type: 'Feature',
+            properties: { longitude: 0, latitude: 0, country: 'Country', state: 'State' },
+            geometry: { type: 'Point', coordinates: [0, 0] },
+          },
+        ],
+      };
+
+      jest.spyOn(service, 'addGeoReferenceDataToFeatures').mockResolvedValue(processedGeoJson);
+      const result = await service.handle(input);
+      expect(service.addGeoReferenceDataToFeatures).toHaveBeenCalled();
+      expect((result.request as RequestNewList).hasUnanalyzableError).toBe(false);
     });
   });
 });

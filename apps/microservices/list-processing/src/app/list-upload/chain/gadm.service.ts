@@ -1,15 +1,16 @@
 import { Logger } from '@nestjs/common';
 import { AbstractHandler, ChainType, PreviewListRequest, RequestNewList } from './types';
-import asyncPool from 'tiny-async-pool';
 import { Feature, FeatureCollection } from '@wri-monorepos/geo';
 import axios from 'axios';
 import axiosRetry from 'axios-retry';
+
+const DEFAULT_DELAY = 1000;
 
 axiosRetry(axios, {
   retries: 6,
   retryDelay: (retryCount) => {
     const baseDelay = Math.min(1000 * Math.pow(2, retryCount - 1), 30000);
-    const jitter = Math.random() * 1000; // Add up to 1 second of random
+    const jitter = Math.random() * DEFAULT_DELAY;
     return baseDelay + jitter;
   },
   retryCondition: (error) => {
@@ -24,9 +25,11 @@ axiosRetry(axios, {
     );
   },
 });
-const POOL_SIZE = 50;
+
 export class GADMService extends AbstractHandler<ChainType> {
   logger = new Logger(GADMService.name);
+
+  private BATCH_SIZE = 50;
 
   /**
    * Function to perform a GET request using axios.
@@ -44,39 +47,30 @@ export class GADMService extends AbstractHandler<ChainType> {
       coordinates: [longitude, latitude],
     };
     const sql = "SELECT gid_1, gid_2, name_0, name_1, name_2 FROM mytable WHERE adm_level='2'";
-    try {
-      const response = await axios.post(
-        'https://data-api.globalforestwatch.org/dataset/gadm_administrative_boundaries/v4.1.64/query/json',
-        { sql, geometry },
-        {
-          headers: {
-            'x-api-key': process.env.GFW_DATA_API_KEY,
-            'Content-Type': 'application/json',
-          },
-        }
-      );
 
-      if (response.status !== 200) {
-        throw new Error(`Failed to fetch data: ${response.statusText}`);
+    const response = await axios.post(
+      'https://data-api.globalforestwatch.org/dataset/gadm_administrative_boundaries/v4.1.64/query/json',
+      { sql, geometry },
+      {
+        headers: {
+          'x-api-key': process.env.GFW_DATA_API_KEY,
+          'Content-Type': 'application/json',
+        },
       }
+    );
 
-      return response.data?.data;
-    } catch (error) {
-      this.logger.error(
-        `Error fetching GADM data for feature at ${latitude}, ${longitude}`,
-        error.response?.data?.message || error.stack
-      );
-      await new Promise((resolve) => setTimeout(resolve, 500));
-      this.logger.error(`Error fetching GADM data`, error.response?.data || error.stack);
-      return { hasUnanalyzableError: true };
+    if (response.status !== 200) {
+      throw new Error(`Failed to fetch data: ${response.statusText}`);
     }
+
+    return response.data?.data;
   };
 
-  addGeoReferenceData = async (feature: Feature, features: Feature[] = []) => {
+  addGeoReferenceData = async (feature: Feature): Promise<void> => {
     try {
       const response = await this.getGadmData(feature);
 
-      if (response.length) {
+      if (Array.isArray(response) && response.length > 0) {
         // some locations (e.g. Libya) don't have gid_2, so use gid_1 instead
         const fullGid = response[0].gid_2 || response[0].gid_1 || '';
         feature.properties = {
@@ -86,44 +80,75 @@ export class GADMService extends AbstractHandler<ChainType> {
           country: response[0].name_0,
           gadmid: fullGid.split('_')[0],
         };
-        if (Math.random() < 0.001) {
-          // Log progress for approximately 0.1% of features
-          const done = features.filter((f) => f.properties.country).length;
-          this.logger.debug(`GADMService - progress: ${done} of ${features.length}`);
-        }
       }
-    } catch (e) {
-      this.logger.error('Error in queryGADM', e.stack || e.message);
-      return {
-        hasUnanalyzableError: true,
-      };
+    } catch (error) {
+      const { latitude, longitude } = feature.properties;
+      this.logger.error(
+        `Error fetching GADM data for feature at ${latitude}, ${longitude}`,
+        error.response?.data?.message || error.stack
+      );
+      feature.properties.hasUnanalyzableError = true;
     }
   };
 
-  async asyncPoolAll(...args) {
-    const results = [];
-    for await (const undefRet of asyncPool(...args)) {
-      results.push(undefRet);
+  async processBatch(batch: Feature[], request: ChainType): Promise<Feature[]> {
+    try {
+      await Promise.all(batch.map((feature) => this.addGeoReferenceData(feature)));
+      return batch;
+    } catch (e) {
+      (request.request as RequestNewList).hasUnanalyzableError = true;
+      this.logger.warn('Error in processBatch:', e.stack || e);
+      return batch;
     }
-    return results;
   }
+
+  addGeoReferenceDataToFeatures = async (
+    geojson: FeatureCollection,
+    request: ChainType
+  ): Promise<FeatureCollection> => {
+    const { features } = geojson;
+    const processedFeatures: Feature[] = [];
+
+    // Process features in batches
+    for (let i = 0; i < features.length; i += this.BATCH_SIZE) {
+      const batch = features.slice(i, i + this.BATCH_SIZE);
+      try {
+        const processedBatch = await this.processBatch(batch, request);
+        processedFeatures.push(...processedBatch);
+      } catch (e) {
+        this.logger.warn('Error processing batch:', e);
+        processedFeatures.push(...batch);
+      }
+      if (Math.random() < 0.1) {
+        // Log progress for approximately 10% of batches
+        this.logger.debug(`GADMService - progress: ${i} of ${features.length}`);
+      }
+      // sleep a bit after each batch to avoid CPU overload that may trigger AWS ECS health check failure
+      await new Promise((resolve) => setTimeout(resolve, 30));
+    }
+
+    return {
+      type: 'FeatureCollection',
+      features: processedFeatures,
+    };
+  };
 
   async handle(request: ChainType): Promise<ChainType> {
     const { geojson } = request;
-
     const { path } = request.request as PreviewListRequest;
-    const { features } = geojson as FeatureCollection;
 
     if ((request.request as RequestNewList).hasUnanalyzableError) {
       // Skip GADM if there is already an error in the request
       return request;
     }
 
-    const method = this.addGeoReferenceData;
+    const processedGeoJson = await this.addGeoReferenceDataToFeatures(
+      geojson as FeatureCollection,
+      request
+    );
+    request.geojson = processedGeoJson;
 
-    const results = await this.asyncPoolAll(POOL_SIZE, features, method);
-
-    if (results.some((result) => result?.hasUnanalyzableError)) {
+    if (processedGeoJson.features.some((feature) => feature.properties?.hasUnanalyzableError)) {
       (request.request as RequestNewList).hasUnanalyzableError = true;
     }
 

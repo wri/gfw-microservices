@@ -32,11 +32,13 @@ const {
   soyPlantedArea,
   clarkLabsAquacultureLandCover,
   clarkLabsAquacultureLandChange,
+  driversOfDisturbanceAlerts,
 } = proLayers;
 import GfwSelect from '../../../../common/js/components/GfwSelect';
 import OpacitySlider from './OpacitySlider';
 import '../../../css/map.scss';
 import DeforestationAlertsLayerLegend from './DeforestationAlerts/DeforestationAlertsLayerLegend';
+import { DriverOfDisturbanceAlertsLayerLegend } from './custom/DriverOfDisturbanceAlertsLayerLegend';
 import { toggleClarkLabsLayers } from '../../actions/analysisActions';
 import ClarkLabsLayerLeyend from './ClarkLabsLayerLeyend';
 import {
@@ -342,6 +344,10 @@ export default class LegendCheckbox extends Component {
 
         {deforestationAlertsIds.includes(layer.id) && (
           <DeforestationAlertsLayerLegend disabled={grayed} layerId={layer.id} />
+        )}
+
+        {driversOfDisturbanceAlerts.includes(layer.id) && (
+          <DriverOfDisturbanceAlertsLayerLegend disabled={grayed} layerId={layer.id} />
         )}
 
         {symbolsLength === 1 &&

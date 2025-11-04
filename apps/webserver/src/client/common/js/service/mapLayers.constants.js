@@ -2482,6 +2482,49 @@ export const mapLayers = [
     },
   },
   {
+    id: 'b696ec7a-2852-468a-a907-b2cf4f584b95',
+    type: 'layer',
+    attributes: {
+      name: proLayers.driversOfDisturbanceAlerts,
+      slug: 'Drivers-of-disturbance-alerts',
+      dataset: '7b5c2316-8f97-41de-a268-06dc735cc8e9',
+      description: proLayers.driversOfDisturbanceAlerts,
+      application: ['gfw-pro'],
+      iso: [],
+      provider: 'leaflet',
+      userId: '596cde70824315350dd0f116',
+      default: true,
+      protected: false,
+      published: true,
+      thumbnailUrl:
+        'https://s3.amazonaws.com/wri-api-backups/resourcewatch/prod/thumbnails/b696ec7a-2852-468a-a907-b2cf4f584b97-1686786379679.png',
+      env: 'production',
+      layerConfig: {
+        type: 'tileLayer',
+        body: {
+          useCors: true,
+          metadata: 'gfw_integrated_alerts_drivers_metadata',
+          url: 'https://tiles.globalforestwatch.org/gfw_integrated_alerts_drivers/v20250925/dynamic/{z}/{x}/{y}.png?render_type=true_color&start_date=2022-01-01&end_date=2024-12-31',
+        },
+      },
+      legendConfig: {
+        type: 'basic',
+        items: [
+          {
+            color: '#c6a541',
+            categories: [],
+            name: 'Drivers of disturbance alerts',
+          },
+        ],
+      },
+      interactionConfig: {},
+      applicationConfig: {},
+      staticImageConfig: {},
+      createdAt: '2021-12-06T22:12:06.352Z',
+      updatedAt: '2023-06-14T23:46:19.625Z',
+    },
+  },
+  {
     id: 'e045c55c-3455-4a19-8ee8-e0cbe9926085',
     type: 'layer',
     attributes: {

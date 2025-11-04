@@ -42,6 +42,7 @@ export const proLayers = {
   indonesiaLandCover: 'Indonesia Land Cover',
   colombiaFronteraAgricola: 'Colombia - Frontera Agrícola',
   rspoPalmOilMills: 'rspo-palm-oil-mills',
+  driversOfDisturbanceAlerts: 'Drivers of Disturbance Alerts',
 
   rspoConcessions: 'RSPO Concessions', // GFW list
   oilPalmConcessions: 'Oil Palm Concessions', // GFW list

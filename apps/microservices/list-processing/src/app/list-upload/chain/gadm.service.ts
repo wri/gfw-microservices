@@ -93,13 +93,7 @@ export class GADMService extends AbstractHandler<ChainType> {
 
   async processBatch(batch: Feature[], request: ChainType): Promise<Feature[]> {
     try {
-      await Promise.all(
-        batch.map((feature, index) =>
-          new Promise((resolve) => setTimeout(resolve, index * 20)).then(() =>
-            this.addGeoReferenceData(feature)
-          )
-        )
-      );
+      await Promise.all(batch.map((feature) => this.addGeoReferenceData(feature)));
       return batch;
     } catch (e) {
       (request.request as RequestNewList).hasUnanalyzableError = true;
@@ -125,6 +119,12 @@ export class GADMService extends AbstractHandler<ChainType> {
         this.logger.warn('Error processing batch:', e);
         processedFeatures.push(...batch);
       }
+      if (Math.random() < 0.1) {
+        // Log progress for approximately 10% of batches
+        this.logger.debug(`GADMService - progress: ${i} of ${features.length}`);
+      }
+      // sleep a bit after each batch to avoid CPU overload that may trigger AWS ECS health check failure
+      await new Promise((resolve) => setTimeout(resolve, 30));
     }
 
     return {

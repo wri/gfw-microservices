@@ -155,15 +155,7 @@ export class ClipToLandService extends AbstractHandler<ChainType> {
     });
 
     try {
-      const result = await Promise.all(
-        batch.map((feature, index) => {
-          return (async () => {
-            return new Promise((resolve) => setTimeout(resolve, index * 20)).then(() =>
-              this.getClipToLandData(feature)
-            );
-          })();
-        })
-      );
+      const result = await Promise.all(batch.map((feature) => this.getClipToLandData(feature)));
       return result as Feature[];
     } catch (e) {
       (request.request as RequestNewList).hasUnanalyzableError = true;
@@ -192,6 +184,12 @@ export class ClipToLandService extends AbstractHandler<ChainType> {
         this.logger.warn('Error processing batch:', e);
         processedFeatures.push(...batch); // Add original features if processing fails
       }
+      if (Math.random() < 0.1) {
+        // Log progress for approximately 10% of batches
+        this.logger.debug(`clipToLand - progress: ${i} of ${features.length}`);
+      }
+      // sleep a bit after each batch to avoid CPU overload that may trigger AWS ECS health check failure
+      await new Promise((resolve) => setTimeout(resolve, 30));
     }
 
     return {

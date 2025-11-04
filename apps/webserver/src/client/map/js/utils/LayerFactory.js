@@ -107,22 +107,24 @@ export const layerFactory = function LayersFactory(layersArray, view) {
         layers.push(new TiledLayer(options));
         break;
       case 'tileLayer':
-        let urlTemplate = layer.layerConfig.body.url;
-        if (layer.id === driversOfDisturbanceAlertsID) {
-          urlTemplate = layer.layerConfig.body.url.concat(
-            `&start_date=${driverOfDisturbanceAlertsDateRange[0]}&end_date=${driverOfDisturbanceAlertsDateRange[1]}`
+        {
+          let urlTemplate = layer.layerConfig.body.url;
+          if (layer.id === driversOfDisturbanceAlertsID) {
+            urlTemplate = layer.layerConfig.body.url.concat(
+              `&start_date=${driverOfDisturbanceAlertsDateRange[0]}&end_date=${driverOfDisturbanceAlertsDateRange[1]}`
+            );
+          }
+          layers.push(
+            new WebTileLayer({
+              urlTemplate,
+              id: layer.id,
+              visible: false,
+              order: layer.order || undefined,
+              view: view,
+              opacity: 1,
+            })
           );
         }
-        layers.push(
-          new WebTileLayer({
-            urlTemplate,
-            id: layer.id,
-            visible: false,
-            order: layer.order || undefined,
-            view: view,
-            opacity: 1,
-          })
-        );
         break;
       case 'image': {
         options.id = layer.id;

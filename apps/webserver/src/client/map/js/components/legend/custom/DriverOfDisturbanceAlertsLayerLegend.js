@@ -5,7 +5,7 @@ import { driverOfDisturbanceAlertsDateRange } from '../../../../../common/js/con
 
 import './DriverOfDisturbanceAlertsLayerLegend.scss';
 
-export const DriverOfDisturbanceAlertsLayerLegend = ({ disabled, layerId }) => {
+export const DriverOfDisturbanceAlertsLayerLegend = ({ disabled }) => {
   const { driverOfDisturbanceAlertsFilter } = store.getState();
 
   const initialStartDate = new Date(driverOfDisturbanceAlertsFilter.startDate).getTime();

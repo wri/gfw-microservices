@@ -124,7 +124,7 @@ export class GADMService extends AbstractHandler<ChainType> {
         this.logger.debug(`GADMService - progress: ${i} of ${features.length}`);
       }
       // sleep a bit after each batch to avoid CPU overload that may trigger AWS ECS health check failure
-      await new Promise((resolve) => setTimeout(resolve, 75));
+      await new Promise((resolve) => setTimeout(resolve, 100));
     }
 
     return {

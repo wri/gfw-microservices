@@ -189,7 +189,7 @@ export class ClipToLandService extends AbstractHandler<ChainType> {
         this.logger.debug(`clipToLand - progress: ${i} of ${features.length}`);
       }
       // sleep a bit after each batch to avoid CPU overload that may trigger AWS ECS health check failure
-      await new Promise((resolve) => setTimeout(resolve, 50));
+      await new Promise((resolve) => setTimeout(resolve, 75));
     }
 
     return {

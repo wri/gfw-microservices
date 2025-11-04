@@ -39,7 +39,7 @@ type WorkerType = {
   emailService: EmailService;
 };
 
-const LIST_UPLOAD_QUEUE_CONCURRENCY = 2;
+const LIST_UPLOAD_QUEUE_CONCURRENCY = 1;
 const workerLogger = new Logger('ListUploadWorker');
 
 export async function clearErrorFile(organizationDatabase: string, listId: number) {

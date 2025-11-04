@@ -2,6 +2,8 @@ import store from '../../../store';
 import { useState } from 'react';
 import { Slider, Typography, Box } from '@mui/material';
 import { driverOfDisturbanceAlertsDateRange } from '../../../../../common/js/config';
+import { UPDATE_DRIVER_OF_DISTURBANCE_ALERTS_FILTER } from '../../../constants/actionTypes';
+('../constants/actionTypes');
 
 import './DriverOfDisturbanceAlertsLayerLegend.scss';
 
@@ -39,7 +41,7 @@ export const DriverOfDisturbanceAlertsLayerLegend = ({ disabled }) => {
     const newEndDate = formatDate(newEndTimestamp);
 
     store.dispatch({
-      type: 'UPDATE_DRIVER_OF_DISTURBANCE_ALERTS_FILTER',
+      type: UPDATE_DRIVER_OF_DISTURBANCE_ALERTS_FILTER,
       payload: {
         startDate: newStartDate,
         endDate: newEndDate,

@@ -10,6 +10,7 @@ import { AlertsPrioritiesLocationsLevelService } from './alerts.priorities.locat
 import { AlertsSummaryService } from './alerts.summary.service';
 import { getAllFilesAndZip } from '../shared/file.utils';
 import { AlertsIntegratedNaturalForestService } from './alerts.integrated.natural.forest.service';
+import { AlertsGlobalIntegratedDisturbanceDailyService } from './alerts.global.integrated.disturbance.daily.service';
 
 @Injectable({
   scope: Scope.REQUEST,
@@ -23,7 +24,8 @@ export class AlertsFileService extends IPipeService {
     private readonly alertsPrioritiesAdminAreasLevelService: AlertsPrioritiesAdminAreasLevelService,
     private readonly alertsPrioritiesLocationsLevelService: AlertsPrioritiesLocationsLevelService,
     private readonly alertsSummaryService: AlertsSummaryService,
-    private readonly alertsIntegratedNaturalForestService: AlertsIntegratedNaturalForestService
+    private readonly alertsIntegratedNaturalForestService: AlertsIntegratedNaturalForestService,
+    private readonly alertsGlobalIntegratedDisturbanceDailyService: AlertsGlobalIntegratedDisturbanceDailyService
   ) {
     super();
   }
@@ -33,6 +35,7 @@ export class AlertsFileService extends IPipeService {
     await this.startEmail(filters);
     if (selectedTimeframe === AlertsTimeframes.DAY) {
       this.alertsIntegratedNaturalForestService.start(filters);
+      this.alertsGlobalIntegratedDisturbanceDailyService.start(filters);
     } else {
       await this.alertsLocationsLevelService.start(filters);
       await this.alertsPrioritiesLocationsLevelService.start(filters);
@@ -47,6 +50,7 @@ export class AlertsFileService extends IPipeService {
     const { selectedTimeframe } = filters;
     if (selectedTimeframe === AlertsTimeframes.DAY) {
       this.alertsIntegratedNaturalForestService.process(analysisData);
+      this.alertsGlobalIntegratedDisturbanceDailyService.process(analysisData);
     } else {
       this.alertsLocationsLevelService.process(analysisData);
       this.alertsAdminAreasLevelService.process(analysisData);
@@ -61,6 +65,7 @@ export class AlertsFileService extends IPipeService {
     const { key, selectedTimeframe } = filters;
     if (selectedTimeframe === AlertsTimeframes.DAY) {
       await this.alertsIntegratedNaturalForestService.finish(filters);
+      await this.alertsGlobalIntegratedDisturbanceDailyService.finish(filters);
     } else {
       await this.alertsLocationsLevelService.finish(filters);
       await this.alertsAdminAreasLevelService.finish(filters);

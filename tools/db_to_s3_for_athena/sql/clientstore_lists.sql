@@ -106,7 +106,7 @@ BEGIN
             SELECT @is_api_list_query = CASE WHEN EU.id IS NOT NULL THEN 1 ELSE 0 END
             FROM [{DB_NAME}].dbo.Lists L
             LEFT JOIN [{DB_NAME}].dbo.LargeLists LL ON L.id = LL.list_id
-            LEFT JOIN gfwpro.dbo.ExternalUploads EU ON LL.s3_filename = EU.uploadKeyFile
+            LEFT JOIN [' + QUOTENAME(@db_name) + '].dbo.ExternalUploads EU ON LL.s3_filename = EU.uploadKeyFile
             WHERE L.id = {LIST_ID}
           ';
 

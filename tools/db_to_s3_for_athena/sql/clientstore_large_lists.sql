@@ -65,7 +65,7 @@ BEGIN
         RIGHT(LL.s3_filename, CHARINDEX(''.'', REVERSE(LL.s3_filename)) - 1) AS upload_format,
         CASE WHEN EU.id IS NOT NULL THEN 1 ELSE 0 END AS is_api_list
       FROM [' + @db_name + '].dbo.LargeLists LL
-      LEFT JOIN gfwpro.dbo.ExternalUploads EU
+      LEFT JOIN [' + @db_name + '].dbo.ExternalUploads EU
         ON LL.s3_filename = EU.uploadKeyFile;';
     -- RIGHT(...) extracts the file extension as upload format
     -- The CASE checks if the list exists in ExternalUploads (i.e., uploaded via API)

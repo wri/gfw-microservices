@@ -1914,7 +1914,7 @@ export const mapLayers = [
     id: '7c43084e-3687-4c2d-9705-c566759273ad',
     type: 'layer',
     attributes: {
-      name: 'RADD Coverage',
+      name: proLayers.raddCoverageID,
       slug: 'RADD-Coverage',
       dataset: 'e663eb09-04de-4f39-b871-35c6c2ed10b5',
       description: 'Geographic Coverage',
@@ -2482,6 +2482,49 @@ export const mapLayers = [
     },
   },
   {
+    id: 'b696ec7a-2852-468a-a907-b2cf4f584b95',
+    type: 'layer',
+    attributes: {
+      name: proLayers.disturbanceAlertsDriversId,
+      slug: 'Drivers-of-disturbance-alerts',
+      dataset: '7b5c2316-8f97-41de-a268-06dc735cc8e9',
+      description: proLayers.disturbanceAlertsDriversId,
+      application: ['gfw-pro'],
+      iso: [],
+      provider: 'leaflet',
+      userId: '596cde70824315350dd0f116',
+      default: true,
+      protected: false,
+      published: true,
+      thumbnailUrl:
+        'https://s3.amazonaws.com/wri-api-backups/resourcewatch/prod/thumbnails/b696ec7a-2852-468a-a907-b2cf4f584b97-1686786379679.png',
+      env: 'production',
+      layerConfig: {
+        type: 'tileLayer',
+        body: {
+          useCors: true,
+          metadata: 'gfw_integrated_alerts_drivers_metadata',
+          url: 'https://tiles.globalforestwatch.org/gfw_integrated_alerts_drivers/v20250925/dynamic/{z}/{x}/{y}.png?render_type=true_color',
+        },
+      },
+      legendConfig: {
+        type: 'basic',
+        items: [
+          {
+            color: '#c6a541',
+            categories: [],
+            name: 'Disturbance Alerts Drivers',
+          },
+        ],
+      },
+      interactionConfig: {},
+      applicationConfig: {},
+      staticImageConfig: {},
+      createdAt: '2021-12-06T22:12:06.352Z',
+      updatedAt: '2023-06-14T23:46:19.625Z',
+    },
+  },
+  {
     id: 'e045c55c-3455-4a19-8ee8-e0cbe9926085',
     type: 'layer',
     attributes: {
@@ -2588,6 +2631,63 @@ export const mapLayers = [
       staticImageConfig: {},
       createdAt: '2021-01-06T15:11:38.457Z',
       updatedAt: '2021-03-29T14:58:45.072Z',
+    },
+  },
+
+  {
+    id: '7c43084e-3687-4c2d-9705-c56675927392',
+    type: 'layer',
+    attributes: {
+      name: proLayers.disturbanceAlertsDriversGeographicCoverageId,
+      slug: 'Alerts-Drivers-Coverage',
+      dataset: 'e663eb09-04de-4f39-b871-35c6c2ed10b5',
+      description: 'Geographic Coverage',
+      application: ['gfw-pro'],
+      iso: [],
+      provider: 'esrivectorservice',
+      userId: '5c533e5cc3b3242d2ed73bc7',
+      default: true,
+      protected: false,
+      published: true,
+      env: 'production',
+      layerConfig: {
+        type: 'tileLayer',
+        body: {
+          options: {
+            color: [252, 204, 220],
+          },
+          'coverage-options': {
+            opacity: 0.3,
+            color: '#f69',
+          },
+          'css-url':
+            'https://github.com/Vizzuality/gfw/blob/develop/app/assets/javascripts/map/cartocss/style.cartocss',
+          url: 'https://tiles.globalforestwatch.org/wur_alert_drivers_coverage/v20251007.1/default/{z}/{x}/{y}.png',
+          useCors: true,
+          metadata: 'wur_alert_drivers',
+        },
+      },
+      legendConfig: {
+        items: [
+          {
+            categories: [
+              {
+                name: 'Geographic Coverage',
+                color: '#dc6699',
+              },
+            ],
+            name: 'Geographic Coverage',
+            source: '(every 6-12 days, 10m, select countries, WUR)',
+            color: '#dc6699',
+          },
+        ],
+        type: 'disabled',
+      },
+      interactionConfig: {},
+      applicationConfig: {},
+      staticImageConfig: {},
+      createdAt: '2021-04-16T08:25:16.353Z',
+      updatedAt: '2021-12-14T18:24:42.065Z',
     },
   },
 ];

@@ -24,6 +24,7 @@ export const earliestTreeCoverLossYearCommodityRisk = 2002;
 export const latestTreeCoverLossYearForTclDataInAnalyses = 2024;
 
 export const soyPlantedYearsRange = [2001, 2024];
+export const driverOfDisturbanceAlertsDateRange = ['2022-01-01', '2024-12-31'];
 
 export const GFW_PRO_USER_GUIDE = 'https://www.globalforestwatch.org/help/gfw-pro/';
 export const GFW_PRO_HELP_CENTER__LINK = 'https://www.globalforestwatch.org/help/pro-login/';

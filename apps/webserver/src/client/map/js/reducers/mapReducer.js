@@ -32,8 +32,13 @@ import {
   UPDATE_SOY_YEAR,
   TOGGLE_HIGH_CONFIDENCE_ALERTS_FOR_DEFORESTATION_ALERTS_LAYERS,
   SET_LAYER_OPACITY,
+  UPDATE_DRIVER_OF_DISTURBANCE_ALERTS_FILTER,
 } from '../constants/actionTypes';
-import { PLANET_TILE_LAYER_INITIAL, soyPlantedYearsRange } from '../../../common/js/config';
+import {
+  PLANET_TILE_LAYER_INITIAL,
+  soyPlantedYearsRange,
+  driverOfDisturbanceAlertsDateRange,
+} from '../../../common/js/config';
 import { proLayers, exclusiveLayers, visibleLayers } from '../../../common/js/proLayers.config';
 
 const initialLocationState = {
@@ -69,6 +74,10 @@ const initialLocationState = {
   planetTileColor: 'rgb',
   showHighConfidenceAlertsOnDeforestationAlertsLayer: false,
   layerOpacity: {}, // stores layers opacity { layerId1: 0.5, layerId2: 0.8 }
+  driverOfDisturbanceAlertsFilter: {
+    startDate: driverOfDisturbanceAlertsDateRange[0],
+    endDate: driverOfDisturbanceAlertsDateRange[1],
+  },
 };
 
 export function layerOpacity(state = initialLocationState.layerOpacity, action) {
@@ -249,6 +258,13 @@ export function updateList(state = initialLocationState.selectedLists, action) {
 
 export function saveSketchTool(state = initialLocationState.sketchTool, action) {
   return action.type !== SAVE_SKETCH_TOOL ? state : action.sketchTool;
+}
+
+export function updateDriverOfDisturbanceAlertsFilter(
+  state = initialLocationState.driverOfDisturbanceAlertsFilter,
+  action
+) {
+  return action.type !== UPDATE_DRIVER_OF_DISTURBANCE_ALERTS_FILTER ? state : action.payload;
 }
 
 export function toggleHighConfidenceAlertsForDeforestationAlertsLayers(

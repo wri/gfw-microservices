@@ -1,0 +1,13 @@
+.legend-list-of-driver-of-disturbance-alerts {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+
+  & > span {
+    font-weight: bold;
+
+    &:not(:first-child) {
+      margin-top: 8px;
+    }
+  }
+}

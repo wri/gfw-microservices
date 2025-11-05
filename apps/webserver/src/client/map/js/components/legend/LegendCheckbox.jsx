@@ -32,7 +32,7 @@ const {
   soyPlantedArea,
   clarkLabsAquacultureLandCover,
   clarkLabsAquacultureLandChange,
-  driversOfDisturbanceAlertsID,
+  disturbanceAlertsDriversId,
 } = proLayers;
 import GfwSelect from '../../../../common/js/components/GfwSelect';
 import OpacitySlider from './OpacitySlider';
@@ -351,7 +351,7 @@ export default class LegendCheckbox extends Component {
           <DeforestationAlertsLayerLegend disabled={grayed} layerId={layer.id} />
         )}
 
-        {driversOfDisturbanceAlertsID.includes(layer.id) && (
+        {disturbanceAlertsDriversId.includes(layer.id) && (
           <DriverOfDisturbanceAlertsLayerLegend disabled={grayed} layerId={layer.id} />
         )}
 

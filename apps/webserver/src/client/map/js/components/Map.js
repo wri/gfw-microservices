@@ -144,7 +144,7 @@ const {
   soyPlantedArea,
   argentineanNativeForestsLoss,
   integratedDeforestationAlertsID,
-  driversOfDisturbanceAlertsID,
+  disturbanceAlertsDriversId,
 } = proLayers;
 
 let layersToAdd;
@@ -651,11 +651,11 @@ class Map extends Component {
       prevState.driverOfDisturbanceAlertsFilter.endDate !== driverOfDisturbanceAlertsFilter.endDate
     ) {
       const driversOfDisturbanceAlertsLayer = this.view.map.findLayerById(
-        driversOfDisturbanceAlertsID
+        disturbanceAlertsDriversId
       );
-      const index = this.view.map.layers.findIndex((l) => l.id === driversOfDisturbanceAlertsID);
+      const index = this.view.map.layers.findIndex((l) => l.id === disturbanceAlertsDriversId);
       const duplicate = driversOfDisturbanceAlertsLayer;
-      const soyConfig = this.state.mapLayers.find((l) => l.id === driversOfDisturbanceAlertsID);
+      const soyConfig = this.state.mapLayers.find((l) => l.id === disturbanceAlertsDriversId);
       const newURL = soyConfig.layerConfig.body.url.concat(
         `&start_date=${driverOfDisturbanceAlertsFilter.startDate}&end_date=${driverOfDisturbanceAlertsFilter.endDate}`
       );

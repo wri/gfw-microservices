@@ -4,11 +4,13 @@ import { Slider, Typography, Box } from '@mui/material';
 import { driverOfDisturbanceAlertsDateRange } from '../../../../../common/js/config';
 import { UPDATE_DRIVER_OF_DISTURBANCE_ALERTS_FILTER } from '../../../constants/actionTypes';
 ('../constants/actionTypes');
+import { proLayers } from '../../../../../common/js/proLayers.config';
+import { toggleLayer } from '../../../actions/mapActions';
 
 import './DriverOfDisturbanceAlertsLayerLegend.scss';
 
 export const DriverOfDisturbanceAlertsLayerLegend = ({ disabled }) => {
-  const { driverOfDisturbanceAlertsFilter } = store.getState();
+  const { driverOfDisturbanceAlertsFilter, visibleLayers } = store.getState();
 
   const initialStartDate = new Date(driverOfDisturbanceAlertsFilter.startDate).getTime();
   const initialEndDate = new Date(driverOfDisturbanceAlertsFilter.endDate).getTime();
@@ -19,7 +21,7 @@ export const DriverOfDisturbanceAlertsLayerLegend = ({ disabled }) => {
 
   const formatDate = (timestamp) => {
     const date = new Date(timestamp);
-    return date.toISOString().split('T')[0]; // Returns YYYY-MM-DD format
+    return date.toISOString().split('T')[0];
   };
 
   const formatDisplayDate = (timestamp) => {
@@ -33,6 +35,12 @@ export const DriverOfDisturbanceAlertsLayerLegend = ({ disabled }) => {
 
   const handleDateChange = (event, newValue) => {
     setDateRange(newValue);
+  };
+
+  const toggleGeographicCoverageLayer = () => {
+    if (!disabled) {
+      store.dispatch(toggleLayer(proLayers.disturbanceAlertsDriversGeographicCoverageId));
+    }
   };
 
   const handleDateChangeCommitted = (event, newValue) => {
@@ -179,7 +187,7 @@ export const DriverOfDisturbanceAlertsLayerLegend = ({ disabled }) => {
           </li>
         </div>
       </ul>
-      <Box sx={{ px: 2, py: 2 }}>
+      <Box sx={{ pl: 2, pr: 5, py: 2 }}>
         <Typography variant="body2" gutterBottom>
           From {formatDisplayDate(dateRange[0])} to {formatDisplayDate(dateRange[1])}
         </Typography>
@@ -215,7 +223,15 @@ export const DriverOfDisturbanceAlertsLayerLegend = ({ disabled }) => {
           }}
         />
       </Box>
-      <div style={{ marginTop: '10px' }}>
+      <div
+        style={{ padding: 0, marginTop: 0 }}
+        onClick={toggleGeographicCoverageLayer}
+        className={`layer-checkbox ${
+          visibleLayers.includes(proLayers.disturbanceAlertsDriversGeographicCoverageId)
+            ? 'active'
+            : ''
+        }`}
+      >
         <span className="toggle-switch pointer">
           <span />
         </span>

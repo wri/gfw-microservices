@@ -42,8 +42,8 @@ export const proLayers = {
   indonesiaLandCover: 'Indonesia Land Cover',
   colombiaFronteraAgricola: 'Colombia - Frontera Agrícola',
   rspoPalmOilMills: 'rspo-palm-oil-mills',
-  driversOfDisturbanceAlertsID: 'Drivers of Disturbance Alerts',
-
+  disturbanceAlertsDriversId: 'Disturbance Alerts Drivers',
+  disturbanceAlertsDriversGeographicCoverageId: 'Disturbance Alerts Drivers Geographic Coverage',
   rspoConcessions: 'RSPO Concessions', // GFW list
   oilPalmConcessions: 'Oil Palm Concessions', // GFW list
   protectedAreas: 'WDPA Esri', // GFW list

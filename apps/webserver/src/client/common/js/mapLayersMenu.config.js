@@ -47,7 +47,7 @@ const forestChangeLayers = [
     order: 107,
   },
   {
-    id: proLayers.driversOfDisturbanceAlertsID,
+    id: proLayers.disturbanceAlertsDriversId,
     group: 'forest-change',
     subGroup: 'deforestation-alerts',
     order: 108,
@@ -116,6 +116,13 @@ const forestChangeLayers = [
       { id: 'BRIGHT_TI5', text: 'Bright TI5' },
       { id: 'CONFIDENCE', text: 'Confidence' },
     ],
+  },
+  {
+    id: proLayers.disturbanceAlertsDriversGeographicCoverageId,
+    group: 'forest-change',
+    subGroup: 'deforestation-alerts',
+    ignored: true,
+    order: 117,
   },
 ];
 

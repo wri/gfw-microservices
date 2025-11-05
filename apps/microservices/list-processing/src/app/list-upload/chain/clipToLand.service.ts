@@ -115,7 +115,7 @@ export class ClipToLandService extends AbstractHandler<ChainType> {
         feature.geometry.type
       }", "coordinates": ${JSON.stringify(
         geometryWithCoords.coordinates
-      )}}') , 4326 ) ) ) FROM mytable WHERE adm_level='2'`,
+      )}}') , 4326 ) ) ) FROM mytable WHERE adm_level='1'`,
     };
 
     try {

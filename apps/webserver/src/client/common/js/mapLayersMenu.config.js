@@ -41,60 +41,67 @@ const forestChangeLayers = [
     order: 106,
   },
   {
-    id: proLayers.gladAlertsID,
+    id: proLayers.integratedDeforestationAlertsID,
     group: 'forest-change',
     subGroup: 'deforestation-alerts',
     order: 107,
   },
   {
+    id: proLayers.disturbanceAlertsDriversId,
+    group: 'forest-change',
+    subGroup: 'deforestation-alerts',
+    order: 108,
+  },
+  {
     id: proLayers.gladLGeographicCoverageID,
     group: 'forest-change',
     subGroup: 'deforestation-alerts',
-    order: 108,
+    order: 109,
   },
+
   {
-    id: proLayers.gladS2AlertsID,
-    group: 'forest-change',
-    subGroup: 'deforestation-alerts',
-    order: 108,
-  },
-  {
-    id: proLayers.gladS2GeographicCoverageID,
+    id: proLayers.gladAlertsID,
     group: 'forest-change',
     subGroup: 'deforestation-alerts',
     order: 110,
   },
   {
-    id: proLayers.raddAlertsID,
+    id: proLayers.gladS2GeographicCoverageID,
     group: 'forest-change',
     subGroup: 'deforestation-alerts',
     order: 111,
+  },
+  {
+    id: proLayers.gladS2AlertsID,
+    group: 'forest-change',
+    subGroup: 'deforestation-alerts',
+    order: 112,
+  },
+  {
+    id: proLayers.raddAlertsID,
+    group: 'forest-change',
+    subGroup: 'deforestation-alerts',
+    order: 113,
   },
   {
     id: proLayers.raddCoverageID,
     group: 'forest-change',
     subGroup: 'deforestation-alerts',
     ignored: true,
-    order: 112,
-  },
-  {
-    id: proLayers.integratedDeforestationAlertsID,
-    group: 'forest-change',
-    subGroup: 'deforestation-alerts',
-    order: 113,
+    order: 114,
   },
   {
     id: proLayers.integratedAlertsGeographicCoverageID,
     group: 'forest-change',
     subGroup: 'deforestation-alerts',
-    order: 114,
+    order: 115,
     ignored: true,
   },
   {
     id: proLayers.viirsActiveFiresID,
     group: 'forest-change',
     subGroup: 'fire-alerts',
-    order: 115,
+    order: 116,
     popupTemplate: {
       title: null,
       content:
@@ -109,6 +116,13 @@ const forestChangeLayers = [
       { id: 'BRIGHT_TI5', text: 'Bright TI5' },
       { id: 'CONFIDENCE', text: 'Confidence' },
     ],
+  },
+  {
+    id: proLayers.disturbanceAlertsDriversGeographicCoverageId,
+    group: 'forest-change',
+    subGroup: 'deforestation-alerts',
+    ignored: true,
+    order: 117,
   },
 ];
 

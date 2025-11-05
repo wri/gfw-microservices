@@ -32,11 +32,13 @@ const {
   soyPlantedArea,
   clarkLabsAquacultureLandCover,
   clarkLabsAquacultureLandChange,
+  disturbanceAlertsDriversId,
 } = proLayers;
 import GfwSelect from '../../../../common/js/components/GfwSelect';
 import OpacitySlider from './OpacitySlider';
 import '../../../css/map.scss';
 import DeforestationAlertsLayerLegend from './DeforestationAlerts/DeforestationAlertsLayerLegend';
+import { DriverOfDisturbanceAlertsLayerLegend } from './custom/DriverOfDisturbanceAlertsLayerLegend';
 import { toggleClarkLabsLayers } from '../../actions/analysisActions';
 import ClarkLabsLayerLeyend from './ClarkLabsLayerLeyend';
 import {
@@ -258,69 +260,74 @@ export default class LegendCheckbox extends Component {
         className={`legend-list-item ${layer.group} ${grayed} ${hidden}`}
         id={layer.id + '-layer-checkbox'}
       >
-        <div className="legend-item-content">
-          <span
-            onClick={this.toggleLayerVisibility}
-            className={`legend-checkbox-icon icon-eye pointer ${grayed} ${
-              iconLoading === layer.id ? 'iconLoading' : ''
-            }`}
-          >
-            {grayed === 'grayed' ? (
-              <svg>
-                <use xlinkHref="#icon-hide-layer-map" />
-              </svg>
-            ) : (
-              <svg style={symbolStyle}>
-                <use xlinkHref="#icon-show-layer-map" />
-              </svg>
-            )}
-          </span>
-          <span className="legend-layer-name">{layer.name}</span>
+        <div style={{ display: 'flex', marginBottom: '10px' }}>
+          <div style={{ flex: 1 }}>
+            <span
+              onClick={this.toggleLayerVisibility}
+              className={`legend-checkbox-icon icon-eye pointer ${grayed} ${
+                iconLoading === layer.id ? 'iconLoading' : ''
+              }`}
+            >
+              {grayed === 'grayed' ? (
+                <svg>
+                  <use xlinkHref="#icon-hide-layer-map" />
+                </svg>
+              ) : (
+                <svg style={symbolStyle}>
+                  <use xlinkHref="#icon-show-layer-map" />
+                </svg>
+              )}
+            </span>
+            <span className="legend-layer-name">{layer.name}</span>
 
-          <span className="layer-checkbox-label">{label}</span>
-        </div>
-
-        <div class="layer-actions">
-          <div class="layer-actions__action-button">
-            <OpacitySlider value={opacity} onChange={(value) => this.handleOpacityChange(value)} />
+            <span className="layer-checkbox-label">{label}</span>
           </div>
 
-          {gfwListDef &&
-            Object.keys(gfwListDef).length > 0 &&
-            Object.keys(gfwListDef)[0] === layer.id && (
-              <div class="layer-actions__action-button">
+          <div className="layer-actions">
+            <div className="layer-actions__action-button">
+              <OpacitySlider
+                value={opacity}
+                onChange={(value) => this.handleOpacityChange(value)}
+              />
+            </div>
+
+            {gfwListDef &&
+              Object.keys(gfwListDef).length > 0 &&
+              Object.keys(gfwListDef)[0] === layer.id && (
+                <div className="layer-actions__action-button">
+                  <span
+                    className="legend-checkbox-icon gfw-filter pointer"
+                    onClick={this.clearGFWFilter}
+                  >
+                    <svg>
+                      <use xlinkHref="#shape-close" />
+                    </svg>
+                  </span>
+                </div>
+              )}
+
+            {isInfoButtonVisible && (
+              <div className="layer-actions__action-button">
                 <span
-                  className="legend-checkbox-icon gfw-filter pointer"
-                  onClick={this.clearGFWFilter}
+                  className={`legend-checkbox-icon metadata-legend pointer ${
+                    iconLoading === layer.id ? 'iconLoading' : ''
+                  }`}
+                  onClick={this.showInfo}
                 >
                   <svg>
-                    <use xlinkHref="#shape-close" />
+                    <use xlinkHref="#shape-info" />
                   </svg>
                 </span>
               </div>
             )}
 
-          {isInfoButtonVisible && (
-            <div class="layer-actions__action-button">
-              <span
-                className={`legend-checkbox-icon metadata-legend pointer ${
-                  iconLoading === layer.id ? 'iconLoading' : ''
-                }`}
-                onClick={this.showInfo}
-              >
+            <div className="layer-actions__action-button">
+              <span className="legend-checkbox-icon pointer" onClick={this.hideLayer}>
                 <svg>
-                  <use xlinkHref="#shape-info" />
+                  <use xlinkHref="#shape-close" />
                 </svg>
               </span>
             </div>
-          )}
-
-          <div class="layer-actions__action-button">
-            <span className="legend-checkbox-icon pointer" onClick={this.hideLayer}>
-              <svg>
-                <use xlinkHref="#shape-close" />
-              </svg>
-            </span>
           </div>
         </div>
 
@@ -342,6 +349,10 @@ export default class LegendCheckbox extends Component {
 
         {deforestationAlertsIds.includes(layer.id) && (
           <DeforestationAlertsLayerLegend disabled={grayed} layerId={layer.id} />
+        )}
+
+        {disturbanceAlertsDriversId.includes(layer.id) && (
+          <DriverOfDisturbanceAlertsLayerLegend disabled={grayed} layerId={layer.id} />
         )}
 
         {symbolsLength === 1 &&

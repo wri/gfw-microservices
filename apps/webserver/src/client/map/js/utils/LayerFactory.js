@@ -26,7 +26,12 @@ import {
   driverOfDisturbanceAlertsDateRange,
 } from '../../../common/js/config';
 import { proLayers } from '../../../common/js/proLayers.config';
-const { viirsActiveFiresID, granChacoDeforestationID, disturbanceAlertsDriversId } = proLayers;
+const {
+  viirsActiveFiresID,
+  granChacoDeforestationID,
+  disturbanceAlertsDriversId,
+  disturbanceAlertsDriversGeographicCoverageId,
+} = proLayers;
 
 /**
  * Map Function that gets called for each entry in the provided layers config and returns an array of ArcGIS Layers
@@ -381,6 +386,20 @@ export const layerFactory = function LayersFactory(layersArray, view) {
             },
           })
         );
+        break;
+
+      case disturbanceAlertsDriversGeographicCoverageId:
+        layers.push(
+          new RaddCoverage({
+            id: layer.id,
+            visible: layer.visible || false,
+            order: layer.order || undefined,
+            urlTemplate: layer.url,
+            opacity: layer.layerConfig.body['coverage-options']?.opacity || 1,
+            view: view,
+          })
+        );
+
         break;
 
       default:

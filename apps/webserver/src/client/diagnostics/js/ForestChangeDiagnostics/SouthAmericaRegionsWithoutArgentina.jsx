@@ -22,6 +22,7 @@ const PROTECTED_AREAS_COLOR = '#818181';
 
 const START_YEAR = 2001;
 const END_YEAR = latestTreeCoverLossYearForTclDataInMap;
+const END_YEAR_SOY_PLANTED = 2023; // This is a workaround for soy planted data end year to be different from the others; revert this commit once this validation is no longer needed.
 const HARVEST_YEAR = END_YEAR - 1;
 const YEARS_RANGE = _range(START_YEAR, END_YEAR + 1);
 let isMounted = false;
@@ -333,7 +334,7 @@ export default class SouthAmericaRegionsWithoutArgentina extends Component {
         name: 'Soy on Tree Cover Loss',
         data: getYearlyHighchartSeries(
           getYearlyData('tree_cover_loss_soy_yearly', startYear, endYear)
-        ),
+        ).map((point) => (point.x > END_YEAR_SOY_PLANTED ? { ...point, y: 0 } : point)),
         color: '#ef669a',
         stack: 'soy',
         groupPadding: 0,
@@ -791,7 +792,7 @@ export default class SouthAmericaRegionsWithoutArgentina extends Component {
     const { startYear, endYear } = this.state;
 
     return {
-      totalSoy: parseYearlyData('tree_cover_loss_soy_yearly', startYear, endYear),
+      totalSoy: parseYearlyData('tree_cover_loss_soy_yearly', startYear, END_YEAR_SOY_PLANTED),
       totalProdes: parseYearlyData('prodes', startYear, endYear),
       totalPA: parseYearlyData('prodes_wdpa', startYear, endYear),
       saTotalTCL: parseYearlyData('tree_cover_loss_total_yearly', startYear, endYear),

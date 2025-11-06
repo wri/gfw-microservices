@@ -20,7 +20,10 @@ export class SouthAmericaBiomesService extends DashboardHandleDownload {
 
   process(data, filters: ListFieldsFileRequest) {
     if (this.isSouthAmericaBiomesFile(filters)) {
-      const locations = data.filter((location) => location.south_america_presence === 'true');
+      const locations = data.filter(
+        (location) =>
+          location.south_america_presence === 'true' || location.south_america_presence === '1'
+      );
       if (locations && locations.length > 0) {
         this.existSouthLocation = true;
         super.process(locations, filters);

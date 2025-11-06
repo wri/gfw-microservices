@@ -333,8 +333,8 @@ export default class SouthAmericaRegionsWithoutArgentina extends Component {
       series.push({
         name: 'Soy on Tree Cover Loss',
         data: getYearlyHighchartSeries(
-          getYearlyData('tree_cover_loss_soy_yearly', startYear, endYear)
-        ).map((point) => (point.x > END_YEAR_SOY_PLANTED ? { ...point, y: 0 } : point)),
+          getYearlyData('tree_cover_loss_soy_yearly', startYear, END_YEAR_SOY_PLANTED)
+        ),
         color: '#ef669a',
         stack: 'soy',
         groupPadding: 0,

@@ -2,6 +2,7 @@ import { NESTED_JSON_ATTRIBUTES } from '../shared/constants';
 import { cloneRow, formatPct, validatePct } from '../shared/functions';
 import { commodityMillPriorityLevelYearly } from './mill.priority.parser';
 import { brazilBiomesYearlyTCLParser } from './south.america.parser';
+import { DIAGNOSTIC_ANALYSIS_PERIOD } from '@wri-monorepos/constants';
 
 const yearlyParser = ({ operation, data, dataRow, csvData }) => {
   const { composites, following } = operation;
@@ -18,6 +19,14 @@ const yearlyParser = ({ operation, data, dataRow, csvData }) => {
     }
 
     let totalListLevelCount = 0;
+
+    if (field.attribute === 'tree_cover_loss_soy_yearly') {
+      Object.keys(yearlyData).forEach((year) => {
+        if (parseInt(year, 10) > DIAGNOSTIC_ANALYSIS_PERIOD.END_YEAR_SOY_PLANTED) {
+          yearlyData[year] = 0;
+        }
+      });
+    }
 
     if (NESTED_JSON_ATTRIBUTES.indexOf(field.attribute) === -1) {
       if (typeof yearlyData === 'object') {

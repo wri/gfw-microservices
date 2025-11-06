@@ -45,7 +45,7 @@ const yearlyParser = ({ operation, data, dataRow, csvData }) => {
     if (field.attribute === 'tree_cover_loss_soy_yearly') {
       Object.keys(yearlyData).forEach((year) => {
         if (parseInt(year, 10) > DIAGNOSTIC_ANALYSIS_PERIOD.END_YEAR_SOY_PLANTED) {
-          yearlyData[year] = 0;
+          delete yearlyData[year];
         }
       });
     }

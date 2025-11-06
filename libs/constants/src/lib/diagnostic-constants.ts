@@ -6,4 +6,5 @@ export const DIAGNOSTIC_ANALYSIS_PERIOD = {
   END_YEAR: 2024,
   COMMODITY_RISK_END_YEAR: 2024,
   ARGENTINA_START_YEAR: 2008, // IMPORTANT: If modifying, sync with constant in: apps/webserver/src/client/diagnostics/js/ForestChangeDiagnostics/SouthAmericaRegions/regions-constants.js
+  END_YEAR_SOY_PLANTED: 2023, // This is a workaround for soy planted data end year to be different from the others; revert the code that uses this constant once this validation is no longer needed.
 };

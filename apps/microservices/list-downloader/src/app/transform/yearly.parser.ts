@@ -120,7 +120,9 @@ const yearlyParser = (operation, dataRow, data, csvData) => {
 
           if (
             totalSubCategory > 0 &&
-            (data.south_america_presence === true || data.south_america_presence === 'true') &&
+            (data.south_america_presence === true ||
+              data.south_america_presence === 'true' ||
+              data.south_america_presence === '1') &&
             data.Country === 'Brazil'
           ) {
             csvData.push(currentRow);

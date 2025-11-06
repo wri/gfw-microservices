@@ -22,7 +22,7 @@ const PROTECTED_AREAS_COLOR = '#818181';
 
 const START_YEAR = 2001;
 const END_YEAR = latestTreeCoverLossYearForTclDataInMap;
-const END_YEAR_SOY_PLANTED = 2023; // This is a workaround for soy planted data end year to be different from the others; revert this commit once this validation is no longer needed.
+const END_YEAR_SOY_PLANTED = 2023; // This is a workaround for soy planted data end year to be different from the others; revert the code that uses this constant once this validation is no longer needed.
 const HARVEST_YEAR = END_YEAR - 1;
 const YEARS_RANGE = _range(START_YEAR, END_YEAR + 1);
 let isMounted = false;
@@ -525,6 +525,7 @@ export default class SouthAmericaRegionsWithoutArgentina extends Component {
 
   renderSouthAmericaTable = (totals) => {
     const {
+      soyChecked,
       prodesChecked,
       paChecked,
       saTCLChecked,
@@ -546,6 +547,7 @@ export default class SouthAmericaRegionsWithoutArgentina extends Component {
       switch (category) {
         case 'totalSoy':
           label = 'Soy on Tree Cover Loss';
+          checked = soyChecked;
           child = false;
           disabled = !value;
           dataCy = 'soy-cover-loss';
@@ -637,7 +639,7 @@ export default class SouthAmericaRegionsWithoutArgentina extends Component {
           break;
       }
       const totalLoss = value;
-      const formatedTotalLoss = prettifyNum(formatNum(totalLoss));
+      const formattedTotalLoss = prettifyNum(formatNum(totalLoss));
       return (
         <Fragment key={crypto.randomUUID()}>
           <tr
@@ -662,9 +664,9 @@ export default class SouthAmericaRegionsWithoutArgentina extends Component {
             </th>
 
             {child && !['totalBiomes', 'totalProdes'].includes(category) ? (
-              <td className="right">{disabled ? '--' : formatedTotalLoss}</td>
+              <td className="right">{disabled ? '--' : formattedTotalLoss}</td>
             ) : (
-              <th className="right">{disabled ? '--' : formatedTotalLoss}</th>
+              <th className="right">{disabled ? '--' : formattedTotalLoss}</th>
             )}
           </tr>
           {prodesChecked && label === 'PRODES' && (

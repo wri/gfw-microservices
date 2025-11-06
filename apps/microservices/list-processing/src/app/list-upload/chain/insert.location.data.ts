@@ -63,6 +63,8 @@ export class InsertLocationData extends AbstractHandler<ChainType> {
         const batch = values.slice(i, i + BATCH_SIZE);
 
         await this.insertBatch(connection, ListEntity, batch);
+        // sleep a bit after each batch to avoid CPU overload that may trigger AWS ECS health check failure
+        await new Promise((resolve) => setTimeout(resolve, 100));
       }
 
       return request;

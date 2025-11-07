@@ -29,6 +29,7 @@ export function UploadLocationPreview() {
     uploadLocationState: { uploadedFile, uploadType },
     clearUploadType,
     addFile,
+    setIsUmlFile,
   } = useUploadLocation();
   const history = useHistory();
   const theme = useTheme();
@@ -94,6 +95,20 @@ export function UploadLocationPreview() {
           `List exceeds the maximum allowed size of ${MAX_LOCATIONS_PER_LIST.toLocaleString()} locations.`,
         ],
       });
+    }
+
+    // const firstFeature = data.features[0];
+    console.log('🚀 ~ UploadLocationPreview ~ firstFeature:', data?.features);
+    if (data && data.features) {
+      const firstFeature = data.features[0];
+      if (firstFeature?.properties) {
+        const props = firstFeature.properties;
+        const hasIdColumns = 'ID' in props || 'ID Type' in props;
+        const hasCoordinates = 'Latitude' in props && 'Longitude' in props;
+        const isUml = hasIdColumns && hasCoordinates;
+
+        setIsUmlFile(isUml);
+      }
     }
   }, [data]);
 

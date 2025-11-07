@@ -28,7 +28,7 @@ import { useHistory } from '../hooks';
 import { PillButton, HelperTextWithPopover } from '../../../../../components';
 import { useUploadLocation } from '../contexts';
 import { NavBar } from '../components';
-import { UserList } from '../types';
+import { UploadType, UserList } from '../types';
 import { typeOfAnalysisMap, commodities, customCommodities } from '../utils/constants';
 import { useFetch } from '../../../../../hooks';
 import debounce from 'lodash/debounce';
@@ -124,8 +124,9 @@ export function ConfigureList({ userLists }: { userLists: UserList[] }) {
   const {
     clearUploadType,
     setUploadLocationConfigureList,
-    uploadLocationState: { uploadType },
+    uploadLocationState: { uploadType, isUmlFile },
   } = useUploadLocation();
+  console.log('🚀 ~ ConfigureList ~ uploadType:', uploadType);
 
   const existingList = useRef<{ id: number; analysisIds: string[] }>({ id: 0, analysisIds: [] });
   const [isConfirmationDialogOpen, setIsConfirmationDialogOpen] = useState(false);
@@ -139,6 +140,19 @@ export function ConfigureList({ userLists }: { userLists: UserList[] }) {
   });
 
   const { data: validLists, isLoading, request } = useFetch<{ id: number; name: string }[]>();
+
+  useEffect(() => {
+    console.log('🚀 ~ ConfigureList ~ uploadType:', uploadType);
+    console.log('🚀 ~ ConfigureList ~ isUmlFile:', isUmlFile);
+    if (uploadType === UploadType.ById && isUmlFile) {
+      // Set commodity to Palm oil
+      setValue('commodity', 'Palm oil');
+
+      // Set FCD and PalmRisk to true
+      setValue('FCD', true);
+      setValue('PalmRisk', true);
+    }
+  }, [uploadType, isUmlFile, setValue]);
 
   const selectedCommodity = watch('commodity') as CommoditiesType;
   useEffect(() => {

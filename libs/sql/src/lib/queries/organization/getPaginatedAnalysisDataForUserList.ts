@@ -71,8 +71,7 @@ BEGIN
 		SELECT @columnsList = CONCAT('''', STRING_AGG(cols, ''', '''), '''')
 		FROM ColumnsCTE;
 
-		SET @ListColumnsWhereclause = CONCAT(@ListColumnsWhereclause, ' ', 'AND [name] IN (''Location Name'', ''Investment Name'', ''Country'', ''State'', ''Sub State'', ', @columnsList, ')')
-
+		SET @ListColumnsWhereclause = CONCAT(@ListColumnsWhereclause, ' ', 'AND [name] IN (''Location Name'', ''Investment Name'', ''Country'', ''State'', ''Sub State'', ''Latitude'', ''Longitude'',  ''Analysis Radius'', ''Analysis Area'', ', @columnsList, ')')
 
 	END
 

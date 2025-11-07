@@ -542,8 +542,7 @@ describe('List Utils', () => {
         'clientDatabase',
         1,
         [analysisTypes.FOREST_CHANGE_DIAGNOSTICS, analysisTypes.DEFORESTATION_KPIS],
-        listStatus.Pending,
-        true
+        listStatus.Pending
       );
       // Verify deleteListAnalyses was called
       expect(deleteListAnalyses).not.toHaveBeenCalled();
@@ -605,13 +604,7 @@ describe('List Utils', () => {
       const mockDeleteListAnalyses = deleteListAnalyses as jest.Mock;
       mockDeleteListAnalyses.mockImplementation(jest.fn());
 
-      await setListAnalysisStatus(
-        'clientDatabase',
-        1,
-        ['FCD'],
-        listStatus.Pending,
-        true // isFromEAPI
-      );
+      await setListAnalysisStatus('clientDatabase', 1, ['FCD'], listStatus.Pending);
 
       expect(deleteListAnalyses).not.toHaveBeenCalled();
     });
@@ -639,13 +632,7 @@ describe('List Utils', () => {
         () => mockClientStoreConnection
       );
 
-      await setListAnalysisStatus(
-        'clientDatabase',
-        1,
-        ['GHG'],
-        listStatus.Pending,
-        false // isFromEAPI
-      );
+      await setListAnalysisStatus('clientDatabase', 1, ['GHG'], listStatus.Pending);
 
       // Should not call update or save for GREENHOUSE_GAS_EMISSIONS
       expect(mockRepository.save).not.toHaveBeenCalled();
@@ -679,13 +666,7 @@ describe('List Utils', () => {
         () => mockClientStoreConnection
       );
 
-      await setListAnalysisStatus(
-        'clientDatabase',
-        1,
-        ['GHG'],
-        listStatus.Pending,
-        true // isFromEAPI
-      );
+      await setListAnalysisStatus('clientDatabase', 1, ['GHG'], listStatus.Pending);
 
       expect(mockRepository.update).toHaveBeenCalledWith(
         { listId: 1, analysisId: 'GHG' },

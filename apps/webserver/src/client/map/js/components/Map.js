@@ -1028,10 +1028,12 @@ class Map extends Component {
         this.analyzeCustom(graphic);
         store.dispatch(toggleDrawing());
 
-        this.state.drawnCoordinates.forEach((coordinate) => {
-          const textGraphic = addCoordinateTextFromPoint(view, coordinate);
-          this.state.coordinateTextGraphics.push(textGraphic);
+        const newTextGraphics = this.state.drawnCoordinates.map((coordinate) => {
+          return addCoordinateTextFromPoint(view, coordinate);
         });
+        this.setState((prevState) => ({
+          coordinateTextGraphics: [...prevState.coordinateTextGraphics, ...newTextGraphics],
+        }));
       }
     });
     store.dispatch(saveSketchTool(sketchViewModel));
@@ -1072,9 +1074,11 @@ class Map extends Component {
       }
 
       if (this.state.drawingActive) {
-        this.state.drawnCoordinates.push(evt.mapPoint);
         const textGraphic = addCoordinateTextFromPoint(this.mapView, evt.mapPoint);
-        this.state.coordinateTextGraphics.push(textGraphic);
+        this.setState({
+          drawnCoordinates: [...this.state.drawnCoordinates, evt.mapPoint],
+          coordinateTextGraphics: [...this.state.coordinateTextGraphics, textGraphic],
+        });
       }
     });
   };

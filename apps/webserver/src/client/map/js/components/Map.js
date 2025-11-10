@@ -373,11 +373,6 @@ class Map extends Component {
     const characterWidth = 0.6;
     const minDistance = newFontSize * characterWidth * avgTextLength * 0.65; // 0.65 = moderate tolerance
 
-    console.log(
-      `Zoom: ${zoom.toFixed(1)}, Font: ${newFontSize}px, MinDist: ${minDistance.toFixed(
-        0
-      )}px, Precision: ${precision}`
-    );
 
     // First pass: check if ALL labels have enough space
     // If any label would be hidden, hide them all to avoid inconsistency
@@ -814,8 +809,10 @@ class Map extends Component {
     }
 
     if (!prevState.drawingActive && this.state.drawingActive) {
-      this.state.drawnCoordinates = [];
-      this.state.coordinateTextGraphics = [];
+      this.setState({
+        drawnCoordinates: [],
+        coordinateTextGraphics: [],
+      });
     }
   }
 

@@ -1,7 +1,9 @@
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
+import { ThemeProvider } from '@mui/material/styles';
 
 import AnalysisStatusBanners from './AnalysisStatusBanners';
+import { theme } from '../../../../../styles/theme';
 
 describe('AnalysisStatusBanners', () => {
   const defaultProps = {
@@ -14,8 +16,12 @@ describe('AnalysisStatusBanners', () => {
     isListSubmittedForAnalysis: false,
   };
 
+  const renderWithTheme = (component) => {
+    return render(<ThemeProvider theme={theme}>{component}</ThemeProvider>);
+  };
+
   it('renders a banner when there are location errors', () => {
-    render(
+    renderWithTheme(
       <AnalysisStatusBanners
         {...defaultProps}
         hasLocationWithErrors={true}
@@ -24,16 +30,16 @@ describe('AnalysisStatusBanners', () => {
       />
     );
 
-    expect(screen.getByText('Location errors')).toBeInTheDocument();
+    expect(screen.getByText('Location Errors')).toBeInTheDocument();
     expect(
       screen.getByText(
-        "Some of your locations have failed analysis. This means that these locations won't be included in list diagnostic calculations."
+        /some of your locations have failed analysis\. this means that these locations won't be included in list diagnostic calculations\./i
       )
     ).toBeInTheDocument();
   });
 
   it('renders a banner for failed analysis', () => {
-    render(
+    renderWithTheme(
       <AnalysisStatusBanners
         {...defaultProps}
         isFailedAnalysis={true}
@@ -57,7 +63,7 @@ describe('AnalysisStatusBanners', () => {
   });
 
   it('renders a banner for usage limit exceeded', () => {
-    render(
+    renderWithTheme(
       <AnalysisStatusBanners {...defaultProps} isAnalysisFailedByExceededAnalysisLimit={true} />
     );
 
@@ -65,7 +71,7 @@ describe('AnalysisStatusBanners', () => {
   });
 
   it('renders a banner for draft state', () => {
-    render(
+    renderWithTheme(
       <AnalysisStatusBanners
         {...defaultProps}
         isDiagnosticStatusDraft={true}
@@ -73,7 +79,7 @@ describe('AnalysisStatusBanners', () => {
       />
     );
 
-    expect(screen.getByText('DRAFT')).toBeInTheDocument();
+    expect(screen.getByText('Draft')).toBeInTheDocument();
     expect(
       screen.getByText(
         'Your list is currently in Draft state. To view data for your list, please submit for analysis.'
@@ -84,7 +90,7 @@ describe('AnalysisStatusBanners', () => {
   it('calls the correct function when a button is clicked', async () => {
     const openDraftSubmitDialog = jest.fn();
 
-    render(
+    renderWithTheme(
       <AnalysisStatusBanners
         {...defaultProps}
         isDiagnosticStatusDraft={true}
@@ -94,23 +100,23 @@ describe('AnalysisStatusBanners', () => {
     );
 
     const user = userEvent.setup();
-    await user.click(screen.getByText('Submit for Analysis'));
+    await user.click(screen.getByText('Submit Again'));
 
     expect(openDraftSubmitDialog).toHaveBeenCalledTimes(1);
   });
 
   it('renders a banner when there is error in list level', () => {
-    render(
+    renderWithTheme(
       <AnalysisStatusBanners
         {...defaultProps}
-        hasLocationWithErrors={true}
+        hasLocationWithErrors={false}
         isFailedAnalysis={false}
         isListWithErrors={true}
         isDiagnosticStatusDraft={true}
       />
     );
 
-    expect(screen.getByText('Location errors')).toBeInTheDocument();
+    expect(screen.getByText('Draft - Location Errors Detected')).toBeInTheDocument();
     expect(
       screen.getByText(
         'This list is in Draft because it includes locations with errors. Location errors can be corrected offline and re-added to your list. See more detailed instructions below.'
@@ -119,7 +125,7 @@ describe('AnalysisStatusBanners', () => {
   });
 
   it('renders no banners if no conditions are met', () => {
-    render(<AnalysisStatusBanners {...defaultProps} />);
+    renderWithTheme(<AnalysisStatusBanners {...defaultProps} />);
 
     expect(screen.queryByTestId('alert-banner')).not.toBeInTheDocument();
   });

@@ -91,10 +91,10 @@ async function pollApiUntilComplete(
         try {
           const zip = new AdmZip(Buffer.from(arrayBuffer));
           const zipEntries = zip.getEntries();
-          
+
           // Find the JSON file containing the verifiable credential
           const jsonEntry = zipEntries.find((entry) => entry.entryName.endsWith('.json'));
-          
+
           if (!jsonEntry) {
             throw new Error('No JSON file found in ZIP');
           }
@@ -186,7 +186,11 @@ describe('Verifiable Credential Verification', () => {
         expect(res.data).toBe('');
         console.log('DefReport analysis generation initiated');
       } catch (error) {
-        console.error('Error generating DefReport analysis', error.stack || error, error?.response?.data);
+        console.error(
+          'Error generating DefReport analysis',
+          error.stack || error,
+          error?.response?.data
+        );
         throw error;
       }
     },
@@ -211,10 +215,10 @@ describe('Verifiable Credential Verification', () => {
 
         expect(apiResponse.status).toBe('Completed');
         expect(apiResponse.listId).toBe(list);
-        
+
         // Store the VC for the verification test
         verifiableCredential = vc;
-        
+
         // Validate VC structure
         expect(verifiableCredential).toBeDefined();
         expect(verifiableCredential['@context']).toBeDefined();
@@ -223,7 +227,7 @@ describe('Verifiable Credential Verification', () => {
         expect(verifiableCredential.proof).toBeDefined();
         expect(verifiableCredential.proof.type).toBe('Ed25519Signature2018');
         expect(verifiableCredential.proof.jws).toBeDefined();
-        
+
         console.log('Successfully extracted Verifiable Credential');
         console.log('VC ID:', verifiableCredential.id);
         console.log('VC Proof type:', verifiableCredential.proof.type);
@@ -245,7 +249,9 @@ describe('Verifiable Credential Verification', () => {
         // @ts-ignore - ESM module without TypeScript declarations
         const { Ed25519Signature2018 } = await import('@digitalbazaar/ed25519-signature-2018');
         // @ts-ignore - ESM module without TypeScript declarations
-        const { Ed25519VerificationKey2018 } = await import('@digitalbazaar/ed25519-verification-key-2018');
+        const { Ed25519VerificationKey2018 } = await import(
+          '@digitalbazaar/ed25519-verification-key-2018'
+        );
 
         // Ensure we have both the public key and the verifiable credential
         expect(publicKey).toBeDefined();
@@ -266,7 +272,7 @@ describe('Verifiable Credential Verification', () => {
 
         // Set up document loader for resolving contexts
         const customLoader = jsonld.documentLoaders.node({ strictSSL: false, safe: false });
-        
+
         const combinedDocumentLoader = async (url: string) => {
           const cachedDocument = cache.get(url);
           if (cachedDocument) {
@@ -287,18 +293,21 @@ describe('Verifiable Credential Verification', () => {
         // Check verification results
         expect(result).toBeDefined();
         expect(result.verified).toBe(true);
-        
+
         // Log detailed verification results
         console.log('Verification successful!');
         console.log('Verified:', result.verified);
-        
+
         if (result.results && result.results.length > 0) {
-          console.log('Proof verification results:', result.results.map((r: any) => ({
-            verified: r.verified,
-            proof: r.proof?.type
-          })));
+          console.log(
+            'Proof verification results:',
+            result.results.map((r: any) => ({
+              verified: r.verified,
+              proof: r.proof?.type,
+            }))
+          );
         }
-        
+
         if (!result.verified) {
           console.error('Verification failed!');
           console.error('Verification error:', result.error);
@@ -313,7 +322,6 @@ describe('Verifiable Credential Verification', () => {
 
         // Ensure there are no verification errors
         expect(result.error).toBeUndefined();
-        
       } catch (error) {
         console.error('Verification failed with error:', error);
         if (error instanceof Error) {

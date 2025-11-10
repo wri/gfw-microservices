@@ -4,6 +4,7 @@ import { ghgAnalysesData, ghgAnalysesDataIncompleteRow } from '../shared/mock.da
 import * as fs from 'fs';
 import { createDirectory } from '../shared/file.utils';
 import { GreenHouseGasEmissionsService } from './greenhouse.gas.emissions.service';
+import { GHGAnalysisDataByListId } from '@wri-monorepos/sql';
 
 describe('Green House Gas Emissions Service - [Location level]', () => {
   const greenHouseGasEmissionsGeneratorService = new GreenHouseGasEmissionsService();
@@ -34,7 +35,9 @@ describe('Green House Gas Emissions Service - [Location level]', () => {
   });
 
   test('When the input data is ok', async () => {
-    greenHouseGasEmissionsGeneratorService.process(ghgAnalysesData);
+    greenHouseGasEmissionsGeneratorService.process(
+      ghgAnalysesData as unknown as GHGAnalysisDataByListId[]
+    );
 
     await greenHouseGasEmissionsGeneratorService.finish(filters);
 
@@ -83,7 +86,9 @@ describe('Green House Gas Emissions Service - [Location level]', () => {
     ]);
   });
   test('When the input is incomplete rows', async () => {
-    greenHouseGasEmissionsGeneratorService.process(ghgAnalysesDataIncompleteRow);
+    greenHouseGasEmissionsGeneratorService.process(
+      ghgAnalysesDataIncompleteRow as unknown as GHGAnalysisDataByListId[]
+    );
 
     await greenHouseGasEmissionsGeneratorService.finish(filters);
 

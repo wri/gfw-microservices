@@ -2,7 +2,7 @@ import { Injectable, Logger } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import axios from 'axios';
 
-import { AfiAnalysisByListId, BasicFieldsFileRequest } from '@wri-monorepos/sql';
+import { BasicFieldsFileRequest, GHGAnalysisDataByListId } from '@wri-monorepos/sql';
 import { IInputData } from './i.input.data';
 import { ServerConfigType } from '../../validators/server-config';
 
@@ -38,7 +38,7 @@ export class AnalysisGhgDataService extends IInputData {
   async getDataPaginated(
     filter: BasicFieldsFileRequest,
     isListLevel: number
-  ): Promise<AfiAnalysisByListId[]> {
+  ): Promise<GHGAnalysisDataByListId[]> {
     const { organizationDatabase, rowsPerPage, page, listId, isGFWList } = filter;
 
     const dbName = isGFWList
@@ -52,7 +52,7 @@ export class AnalysisGhgDataService extends IInputData {
 
     try {
       const { data } = await axios.get(encodeURI(url));
-      return data as AfiAnalysisByListId[];
+      return data as GHGAnalysisDataByListId[];
     } catch (error) {
       this.logger.error(`listId: ${listId} , pageNumber: ${page} error: ${error}`);
       return [];

@@ -10,55 +10,64 @@ export default function AlertBanner({
   message,
   buttonText,
   buttonTextColor,
+  borderColor,
   onButtonClick,
 }) {
-  return (
-    <Alert
+  const alertStyles = {
+    backgroundColor,
+    color,
+    display: 'flex',
+    alignItems: 'center',
+    py: 1,
+    m: 1,
+    border: `1px solid ${borderColor || darkenColor(backgroundColor)}`,
+    '& .MuiAlert-message': {
+      maxWidth: '1200px',
+      margin: 'auto',
+    },
+    '& .MuiAlert-action': {
+      marginRight: 'auto',
+    },
+  };
+
+  const alertTitleStyles = {
+    color,
+    textTransform: 'none',
+    display: 'flex',
+    alignItems: 'center',
+    gap: 1,
+  };
+
+  const action = onButtonClick ? (
+    <PillButton
       sx={{
-        backgroundColor,
-        color,
-        display: 'flex',
-        alignItems: 'center',
-        py: 1,
-        m: 1,
-        border: `1px solid ${darkenColor(backgroundColor)}`,
-        '& .MuiAlert-message': {
-          maxWidth: '1200px',
-          margin: 'auto',
-        },
-        '& .MuiAlert-action': {
-          marginRight: 'auto',
+        backgroundColor: (theme) => theme.palette.background.default,
+        color: buttonTextColor,
+        textTransform: 'none',
+        borderRadius: '5px',
+        letterSpacing: 0,
+        minWidth: 125,
+        border: `1px solid ${darkenColor('#FFFFFF')}`,
+        '&:hover': {
+          backgroundColor: darkenColor('#FFFFFF', 6),
         },
       }}
-      icon={false}
-      action={
-        onButtonClick && (
-          <PillButton
-            style={{
-              background: 'white',
-              color: buttonTextColor,
-              borderRadius: '20px',
-              padding: '10px 20px',
-              width: '220px',
-            }}
-            size="small"
-            onClick={onButtonClick}
-            aria-label={buttonText}
-          >
-            {buttonText}
-          </PillButton>
-        )
-      }
+      size="small"
+      onClick={onButtonClick}
+      aria-label={buttonText}
     >
-      <AlertTitle
-        sx={{ color, textTransform: 'none', display: 'flex', alignItems: 'center', gap: 1 }}
-      >
+      {buttonText}
+    </PillButton>
+  ) : null;
+
+  return (
+    <Alert sx={alertStyles} icon={false} action={action}>
+      <AlertTitle sx={alertTitleStyles}>
         {icon}
         {title}
       </AlertTitle>
-      <Typography variant="body2" sx={{ fontWeight: 'medium' }}>
-        {message}
-      </Typography>
+
+      <Typography variant="body2">{message}</Typography>
     </Alert>
   );
 }

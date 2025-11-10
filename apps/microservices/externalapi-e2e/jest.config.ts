@@ -14,6 +14,9 @@ export default {
       },
     ],
   },
+  transformIgnorePatterns: [
+    'node_modules/(?!(@digitalbazaar)/)',
+  ],
   moduleFileExtensions: ['ts', 'js', 'html'],
   coverageDirectory: '../../../coverage/externalapi-e2e',
 };

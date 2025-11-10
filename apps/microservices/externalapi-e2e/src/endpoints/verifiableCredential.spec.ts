@@ -244,14 +244,12 @@ describe('Verifiable Credential Verification', () => {
     async () => {
       try {
         // Dynamically import the verification libraries (ESM modules)
-        // @ts-ignore - ESM module without TypeScript declarations
+        // @ts-expect-error - ESM module without TypeScript declarations
         const { verifyCredential } = await import('@digitalbazaar/vc');
-        // @ts-ignore - ESM module without TypeScript declarations
+        // @ts-expect-error - ESM module without TypeScript declarations
         const { Ed25519Signature2018 } = await import('@digitalbazaar/ed25519-signature-2018');
-        // @ts-ignore - ESM module without TypeScript declarations
-        const { Ed25519VerificationKey2018 } = await import(
-          '@digitalbazaar/ed25519-verification-key-2018'
-        );
+        // @ts-expect-error - ESM module without TypeScript declarations
+        const { Ed25519VerificationKey2018 } = await import('@digitalbazaar/ed25519-verification-key-2018');
 
         // Ensure we have both the public key and the verifiable credential
         expect(publicKey).toBeDefined();

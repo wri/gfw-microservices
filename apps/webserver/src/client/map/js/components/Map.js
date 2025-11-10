@@ -373,7 +373,6 @@ class Map extends Component {
     const characterWidth = 0.6;
     const minDistance = newFontSize * characterWidth * avgTextLength * 0.65; // 0.65 = moderate tolerance
 
-
     // First pass: check if ALL labels have enough space
     // If any label would be hidden, hide them all to avoid inconsistency
     let allLabelsHaveSpace = shouldShowAtZoom;

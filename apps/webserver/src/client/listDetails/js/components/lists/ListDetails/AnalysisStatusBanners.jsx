@@ -62,9 +62,9 @@ export default function AnalysisStatusBanners(props) {
           <a
             href={ExternalLinks.HowToAddressErrorsInUpload}
             target="_blank"
-            style={{ 
+            style={{
               textDecoration: 'underline',
-              color: COLORS.errorContrastText
+              color: COLORS.errorContrastText,
             }}
           >
             here

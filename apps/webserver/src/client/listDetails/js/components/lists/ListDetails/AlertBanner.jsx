@@ -50,7 +50,7 @@ export default function AlertBanner({
         border: `1px solid ${darkenColor('#FFFFFF')}`,
         '&:hover': {
           backgroundColor: darkenColor('#FFFFFF', 6),
-        }
+        },
       }}
       size="small"
       onClick={onButtonClick}

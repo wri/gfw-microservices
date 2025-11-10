@@ -1,5 +1,5 @@
 import { useTheme } from '@mui/material';
-import { EditNote, Report, Warning } from '@mui/icons-material';
+import { EditNote, Report, Warning, Error } from '@mui/icons-material';
 import AlertBanner from './AlertBanner';
 import { ExternalLinks } from '../../../../../utils/constants';
 
@@ -38,7 +38,7 @@ export default function AnalysisStatusBanners(props) {
       title: 'Location Errors',
       backgroundColor: COLORS.errorLight,
       color: COLORS.errorContrastText,
-      icon: <Report fontSize="inherit" />,
+      icon: <Error fontSize="inherit" />,
       message: (
         <>
           Some of your locations have failed analysis. <br />
@@ -62,7 +62,10 @@ export default function AnalysisStatusBanners(props) {
           <a
             href={ExternalLinks.HowToAddressErrorsInUpload}
             target="_blank"
-            style={{ textDecoration: 'underline' }}
+            style={{ 
+              textDecoration: 'underline',
+              color: COLORS.errorContrastText
+            }}
           >
             here
           </a>
@@ -155,5 +158,5 @@ export default function AnalysisStatusBanners(props) {
     return null;
   }
 
-  return <AlertBanner {...ALERT_DEFS['draftWithErrors']} />;
+  return <AlertBanner {...ALERT_DEFS[alertKey]} />;
 }

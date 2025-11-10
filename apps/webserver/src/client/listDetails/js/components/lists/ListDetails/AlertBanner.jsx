@@ -41,12 +41,16 @@ export default function AlertBanner({
   const action = onButtonClick ? (
     <PillButton
       sx={{
-        background: 'white',
+        backgroundColor: (theme) => theme.palette.background.default,
         color: buttonTextColor,
-        borderRadius: '20px',
-        px: 2.5,
-        py: 1.25,
-        width: 220,
+        textTransform: 'none',
+        borderRadius: '5px',
+        letterSpacing: 0,
+        minWidth: 125,
+        border: `1px solid ${darkenColor('#FFFFFF')}`,
+        '&:hover': {
+          backgroundColor: darkenColor('#FFFFFF', 6),
+        }
       }}
       size="small"
       onClick={onButtonClick}

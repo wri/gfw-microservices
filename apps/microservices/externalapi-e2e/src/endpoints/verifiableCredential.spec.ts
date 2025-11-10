@@ -249,7 +249,9 @@ describe('Verifiable Credential Verification', () => {
         // @ts-expect-error - ESM module without TypeScript declarations
         const { Ed25519Signature2018 } = await import('@digitalbazaar/ed25519-signature-2018');
         // @ts-expect-error - ESM module without TypeScript declarations
-        const { Ed25519VerificationKey2018 } = await import('@digitalbazaar/ed25519-verification-key-2018');
+        const { Ed25519VerificationKey2018 } = await import(
+          '@digitalbazaar/ed25519-verification-key-2018'
+        );
 
         // Ensure we have both the public key and the verifiable credential
         expect(publicKey).toBeDefined();

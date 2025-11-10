@@ -52,10 +52,10 @@ class OrganizeGHGRawEmissionsResponse extends Transform {
       years.forEach((year) => {
         csvArray.push([
           ...sharedInfo,
-          parseInt(co2Emissions[year] || 0),
-          parseInt(ch4Emissions[year] || 0),
-          parseInt(n2oEmissions[year] || 0),
-          parseInt(combinedEmissions[year] || 0),
+          parseFloat(co2Emissions[year] || 0),
+          parseFloat(ch4Emissions[year] || 0),
+          parseFloat(n2oEmissions[year] || 0),
+          parseFloat(combinedEmissions[year] || 0),
           year,
         ]);
       });

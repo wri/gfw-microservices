@@ -1,6 +1,6 @@
 import { Injectable, Logger, Scope } from '@nestjs/common';
 import { PassThrough, Transform } from 'stream';
-import { AfiAnalysisByListId, BasicFieldsFileRequest } from '@wri-monorepos/sql';
+import { GHGAnalysisDataByListId, BasicFieldsFileRequest } from '@wri-monorepos/sql';
 import { finished } from 'stream/promises';
 import * as fs from 'fs';
 import * as Chain from 'stream-chain';
@@ -55,7 +55,7 @@ export class GhgIntermediateOutputs extends IPipeService {
     this.inputStream.pipe(new Chain(pipeline)).pipe(this.fileStream);
   }
 
-  process(analysisData: AfiAnalysisByListId[]) {
+  process(analysisData: GHGAnalysisDataByListId[]) {
     analysisData?.forEach((data) => this.inputStream.write(data));
   }
 

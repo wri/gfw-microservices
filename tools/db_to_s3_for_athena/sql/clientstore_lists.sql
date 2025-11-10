@@ -8,6 +8,7 @@ CREATE TABLE #list_data
 (
   organization NVARCHAR(MAX),
   list_name NVARCHAR(MAX),
+  list_id INT,
   country NVARCHAR(50),
   commodity NVARCHAR(100),
   analysis_area FLOAT,
@@ -210,9 +211,10 @@ BEGIN
                   
                 -- inserts the collected data into #list_data
                 INSERT into #list_data
-                (organization, list_name, country, commodity, analysis_area, locations_count, list_status, is_api_list)
+                (organization, list_name, list_id, country, commodity, analysis_area, locations_count, list_status, is_api_list)
                 SELECT @org_name		
-                  , @list_table_name	
+                  , @list_table_name
+                  , gli.list_id
                   , gli.country					
                   , gli.commodity					
                   , gli.analysis_area

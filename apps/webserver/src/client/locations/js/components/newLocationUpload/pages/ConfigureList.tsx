@@ -175,8 +175,6 @@ export function ConfigureList({ userLists }: { userLists: UserList[] }) {
   useEffect(() => {
     if (isUmlFile && !commodity) {
       setValue('commodity', 'Palm oil');
-      setValue('FCD', true);
-      setValue('PalmRisk', true);
     }
   }, [uploadType, isUmlFile, setValue, commodity]);
 
@@ -244,16 +242,9 @@ export function ConfigureList({ userLists }: { userLists: UserList[] }) {
     e: ChangeEvent<HTMLInputElement>,
     field: {
       onChange: (value: boolean) => void;
-    },
-    id: (typeof typeOfAnalysisMap)[number]['id']
+    }
   ) => {
     field.onChange(e.target.checked);
-
-    if (id === analysisTypes.PALM_RISK && e.target.checked) {
-      setValue('FCD', true);
-    } else if (id === 'FCD' && !e.target.checked) {
-      setValue(analysisTypes.PALM_RISK, false);
-    }
   };
 
   const onSubmit = (data: FormFields) => {
@@ -486,7 +477,7 @@ export function ConfigureList({ userLists }: { userLists: UserList[] }) {
                             py: 0,
                           }}
                           checked={!!field.value}
-                          onChange={(e) => handleAnalysisChange(e, field, id)}
+                          onChange={(e) => handleAnalysisChange(e, field)}
                           inputRef={field.ref}
                           data-testid={`checkbox-${id.toLowerCase()}`}
                         />

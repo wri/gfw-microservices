@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, ChangeEvent } from 'react';
 import { Slider, Box, TextField, Typography, SxProps, Theme } from '@mui/material';
 import { theme } from '../styles/theme';
 
@@ -79,8 +79,12 @@ export const DateRangeSlider = ({
 
   useEffect(() => {
     return () => {
-      if (startDateTimeoutRef.current) clearTimeout(startDateTimeoutRef.current);
-      if (endDateTimeoutRef.current) clearTimeout(endDateTimeoutRef.current);
+      if (startDateTimeoutRef.current) {
+        clearTimeout(startDateTimeoutRef.current);
+      }
+      if (endDateTimeoutRef.current) {
+        clearTimeout(endDateTimeoutRef.current);
+      }
     };
   }, []);
 
@@ -97,11 +101,13 @@ export const DateRangeSlider = ({
     onDateChange(newStartDate, newEndDate);
   };
 
-  const handleStartDateChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+  const handleStartDateChange = (event: ChangeEvent<HTMLInputElement>) => {
     const newValue = event.target.value;
     setStartDateInput(newValue);
 
-    if (!newValue) return;
+    if (!newValue) {
+      return;
+    }
 
     const newStartDate = new Date(newValue).getTime();
     if (newStartDate >= minDateTimestamp && newStartDate <= dateRange[1] && !isNaN(newStartDate)) {
@@ -118,11 +124,13 @@ export const DateRangeSlider = ({
     }
   };
 
-  const handleEndDateChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+  const handleEndDateChange = (event: ChangeEvent<HTMLInputElement>) => {
     const newValue = event.target.value;
     setEndDateInput(newValue);
 
-    if (!newValue) return;
+    if (!newValue) {
+      return;
+    }
 
     const newEndDate = new Date(newValue).getTime();
     if (newEndDate <= maxDateTimestamp && newEndDate >= dateRange[0] && !isNaN(newEndDate)) {

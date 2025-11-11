@@ -1,13 +1,10 @@
-import { useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
-import { Slider, Typography, Box } from '@mui/material';
 import { driverOfDisturbanceAlertsDateRange } from '../../../../../common/js/config';
 import { UPDATE_DRIVER_OF_DISTURBANCE_ALERTS_FILTER } from '../../../constants/actionTypes';
 import { proLayers } from '../../../../../common/js/proLayers.config';
 import { toggleLayer } from '../../../actions/mapActions';
-import { formatDate, formatDisplayDate, MILLISECONDS_PER_DAY } from './legendDateUtils';
-import { theme } from '../../../../../styles/theme';
 import { type MapReducerRootState } from '../../../reducers/mapReducerTypes';
+import { DateRangeSlider } from '../../../../../components';
 
 import './DriverOfDisturbanceAlertsLayerLegend.scss';
 
@@ -22,28 +19,13 @@ export const DriverOfDisturbanceAlertsLayerLegend = ({ disabled }) => {
 
   const { startDate, endDate } = driverOfDisturbanceAlertsFilter;
 
-  const initialStartDate = new Date(startDate).getTime();
-  const initialEndDate = new Date(endDate).getTime();
-  const minDate = new Date(driverOfDisturbanceAlertsDateRange[0]).getTime();
-  const maxDate = new Date(driverOfDisturbanceAlertsDateRange[1]).getTime();
-
-  const [dateRange, setDateRange] = useState([initialStartDate, initialEndDate]);
-
-  const handleDateChange = (_, newValue) => {
-    setDateRange(newValue);
-  };
-
   const toggleGeographicCoverageLayer = () => {
     if (!disabled) {
       dispatch(toggleLayer(proLayers.disturbanceAlertsDriversGeographicCoverageId));
     }
   };
 
-  const handleDateChangeCommitted = (_, newValue) => {
-    const [newStartTimestamp, newEndTimestamp] = newValue;
-    const newStartDate = formatDate(newStartTimestamp);
-    const newEndDate = formatDate(newEndTimestamp);
-
+  const handleDateChange = (newStartDate: string, newEndDate: string) => {
     dispatch({
       type: UPDATE_DRIVER_OF_DISTURBANCE_ALERTS_FILTER,
       payload: {
@@ -183,40 +165,14 @@ export const DriverOfDisturbanceAlertsLayerLegend = ({ disabled }) => {
           </li>
         </div>
       </ul>
-      <Box sx={{ mr: 2.5, my: 2 }}>
-        <Typography variant="body2" gutterBottom sx={{ textAlign: 'center' }}>
-          From {formatDisplayDate(dateRange[0])} to {formatDisplayDate(dateRange[1])}
-        </Typography>
-        <Slider
-          value={dateRange}
-          onChange={handleDateChange}
-          onChangeCommitted={handleDateChangeCommitted}
-          min={minDate}
-          max={maxDate}
-          step={MILLISECONDS_PER_DAY}
-          marks={[
-            { value: minDate, label: formatDisplayDate(minDate) },
-            { value: maxDate, label: formatDisplayDate(maxDate) },
-          ]}
-          disabled={disabled}
-          sx={{
-            color: theme.palette.primary.main,
-            '& .MuiSlider-thumb': {
-              width: 16,
-              height: 16,
-            },
-            '& .MuiSlider-markLabel': {
-              fontSize: '0.75rem',
-            },
-            '& .MuiSlider-markLabel[data-index="0"]': {
-              left: '9% !important',
-            },
-            '& .MuiSlider-markLabel[data-index="1"]': {
-              left: '90% !important',
-            },
-          }}
-        />
-      </Box>
+      <DateRangeSlider
+        startDate={startDate}
+        endDate={endDate}
+        minDate={driverOfDisturbanceAlertsDateRange[0]}
+        maxDate={driverOfDisturbanceAlertsDateRange[1]}
+        disabled={disabled}
+        onDateChange={handleDateChange}
+      />
       <div
         style={{ padding: 0, marginTop: 0 }}
         onClick={toggleGeographicCoverageLayer}

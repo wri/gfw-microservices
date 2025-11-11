@@ -1,14 +1,13 @@
 import { useEffect, useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
-import { Slider, Typography, Box, Select, MenuItem, InputLabel } from '@mui/material';
+import { Box, Select, MenuItem, InputLabel } from '@mui/material';
 import { UPDATE_GLOBAL_VEGETATION_DISTURBANCE_ALERTS_FILTER } from '../../../constants/actionTypes';
 import {
   globalVegetationDisturbanceAlertsDateRange,
   globalVegetationDisturbanceAlertsVegetationTypes,
 } from '../../../../../common/js/config';
-import { formatDate, formatDisplayDate, MILLISECONDS_PER_DAY } from './legendDateUtils';
-import { theme } from '../../../../../styles/theme';
 import { type MapReducerRootState } from '../../../reducers/mapReducerTypes';
+import { DateRangeSlider } from '../../../../../components';
 
 import './GlobalVegetationDisturbanceAlertsLayerLegend.scss';
 
@@ -24,19 +23,9 @@ export const GlobalVegetationDisturbanceAlertsLayerLegend = ({
     (state: MapReducerRootState) => state.globalVegetationDisturbanceAlertsFilter
   );
 
-  const initialStartDate = new Date(globalVegetationDisturbanceAlertsFilter.startDate).getTime();
-  const initialEndDate = new Date(globalVegetationDisturbanceAlertsFilter.endDate).getTime();
-  const minDate = new Date(globalVegetationDisturbanceAlertsDateRange[0]).getTime();
-  const maxDate = new Date(globalVegetationDisturbanceAlertsDateRange[1]).getTime();
-
-  const [dateRange, setDateRange] = useState([initialStartDate, initialEndDate]);
   const [vegetationType, setVegetationType] = useState(
     globalVegetationDisturbanceAlertsFilter.vegetationType
   );
-
-  const handleDateChange = (_, newValue) => {
-    setDateRange(newValue);
-  };
 
   useEffect(() => {
     dispatch({
@@ -48,11 +37,7 @@ export const GlobalVegetationDisturbanceAlertsLayerLegend = ({
     });
   }, [vegetationType]);
 
-  const handleDateChangeCommitted = (_, newValue) => {
-    const [newStartTimestamp, newEndTimestamp] = newValue;
-    const newStartDate = formatDate(newStartTimestamp);
-    const newEndDate = formatDate(newEndTimestamp);
-
+  const handleDateChange = (newStartDate: string, newEndDate: string) => {
     dispatch({
       type: UPDATE_GLOBAL_VEGETATION_DISTURBANCE_ALERTS_FILTER,
       payload: {
@@ -114,41 +99,14 @@ export const GlobalVegetationDisturbanceAlertsLayerLegend = ({
           </MenuItem>
         </Select>
       </Box>
-      <Box sx={{ mr: 2.5, mt: 2 }}>
-        <Typography variant="body2" gutterBottom sx={{ textAlign: 'center' }}>
-          From {formatDisplayDate(dateRange[0])} to {formatDisplayDate(dateRange[1])}
-        </Typography>
-        <Slider
-          value={dateRange}
-          onChange={handleDateChange}
-          onChangeCommitted={handleDateChangeCommitted}
-          valueLabelDisplay="off"
-          min={minDate}
-          max={maxDate}
-          step={MILLISECONDS_PER_DAY}
-          marks={[
-            { value: minDate, label: formatDisplayDate(minDate) },
-            { value: maxDate, label: formatDisplayDate(maxDate) },
-          ]}
-          disabled={disabled}
-          sx={{
-            color: theme.palette.primary.main,
-            '& .MuiSlider-thumb': {
-              width: 16,
-              height: 16,
-            },
-            '& .MuiSlider-markLabel': {
-              fontSize: '0.75rem',
-            },
-            '& .MuiSlider-markLabel[data-index="0"]': {
-              left: '9% !important',
-            },
-            '& .MuiSlider-markLabel[data-index="1"]': {
-              left: '90% !important',
-            },
-          }}
-        />
-      </Box>
+      <DateRangeSlider
+        startDate={globalVegetationDisturbanceAlertsFilter.startDate}
+        endDate={globalVegetationDisturbanceAlertsFilter.endDate}
+        minDate={globalVegetationDisturbanceAlertsDateRange[0]}
+        maxDate={globalVegetationDisturbanceAlertsDateRange[1]}
+        disabled={disabled}
+        onDateChange={handleDateChange}
+      />
     </Box>
   );
 };

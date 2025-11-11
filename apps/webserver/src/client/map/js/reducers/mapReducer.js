@@ -147,6 +147,13 @@ export function toggleLayer(state = initialLocationState.visibleLayers, action) 
         });
         if (state.length === newLayers.length) {
           newLayers.push(action.data);
+        } else {
+          // If removing disturbanceAlertsDriversId, also remove its geographic coverage layer
+          if (action.data === proLayers.disturbanceAlertsDriversId) {
+            return newLayers.filter(
+              (layer) => layer !== proLayers.disturbanceAlertsDriversGeographicCoverageId
+            );
+          }
         }
       }
       return newLayers;

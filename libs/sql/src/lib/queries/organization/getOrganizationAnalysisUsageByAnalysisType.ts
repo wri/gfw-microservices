@@ -22,6 +22,7 @@ GROUP BY
 
 export interface OrganizationAnalysisUsageByAnalysisType {
   hectares_analyzed: number;
+  max_area_analyzed: number;
   lists_analyzed: number;
   locations_analyzed: number;
   analysis_type: string;

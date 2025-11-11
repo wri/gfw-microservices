@@ -48,7 +48,6 @@ export class StartAnalysis extends AbstractHandler<ChainType> {
       organization_database: organizationDatabase,
       user_id,
       list_id: listId,
-      isExternalAPIProcess,
       organization_id: organizationId,
       subscription_status_id: subscriptionStatusId,
       saveAsDraft,

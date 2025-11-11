@@ -1,19 +1,22 @@
-import store from '../../../store';
 import { useEffect, useState } from 'react';
+import store from '../../../store';
+import { useSelector } from 'react-redux';
 import { Slider, Typography, Box, Select, MenuItem, InputLabel } from '@mui/material';
 import { UPDATE_GLOBAL_VEGETATION_DISTURBANCE_ALERTS_FILTER } from '../../../constants/actionTypes';
-('../constants/actionTypes');
 import {
   globalVegetationDisturbanceAlertsDateRange,
   globalVegetationDisturbanceAlertsVegetationTypes,
 } from '../../../../../common/js/config';
 import { formatDate, formatDisplayDate, MILLISECONDS_PER_DAY } from './legendDateUtils';
 import { theme } from '../../../../../styles/theme';
+import { type MapReducerRootState } from '../../../reducers/mapReducerTypes';
 
 import './GlobalVegetationDisturbanceAlertsLayerLegend.scss';
 
 export const GlobalVegetationDisturbanceAlertsLayerLegend = ({ disabled }) => {
-  const { globalVegetationDisturbanceAlertsFilter } = store.getState();
+  const globalVegetationDisturbanceAlertsFilter = useSelector(
+    (state: MapReducerRootState) => state.globalVegetationDisturbanceAlertsFilter
+  );
 
   const initialStartDate = new Date(globalVegetationDisturbanceAlertsFilter.startDate).getTime();
   const initialEndDate = new Date(globalVegetationDisturbanceAlertsFilter.endDate).getTime();
@@ -25,7 +28,7 @@ export const GlobalVegetationDisturbanceAlertsLayerLegend = ({ disabled }) => {
     globalVegetationDisturbanceAlertsFilter.vegetationType
   );
 
-  const handleDateChange = (event, newValue) => {
+  const handleDateChange = (_, newValue) => {
     setDateRange(newValue);
   };
 
@@ -39,7 +42,7 @@ export const GlobalVegetationDisturbanceAlertsLayerLegend = ({ disabled }) => {
     });
   }, [vegetationType]);
 
-  const handleDateChangeCommitted = (event, newValue) => {
+  const handleDateChangeCommitted = (_, newValue) => {
     const [newStartTimestamp, newEndTimestamp] = newValue;
     const newStartDate = formatDate(newStartTimestamp);
     const newEndDate = formatDate(newEndTimestamp);

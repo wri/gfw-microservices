@@ -1,27 +1,36 @@
-import store from '../../../store';
 import { useState } from 'react';
+import { useSelector } from 'react-redux';
+import store from '../../../store';
 import { Slider, Typography, Box } from '@mui/material';
 import { driverOfDisturbanceAlertsDateRange } from '../../../../../common/js/config';
 import { UPDATE_DRIVER_OF_DISTURBANCE_ALERTS_FILTER } from '../../../constants/actionTypes';
-('../constants/actionTypes');
 import { proLayers } from '../../../../../common/js/proLayers.config';
 import { toggleLayer } from '../../../actions/mapActions';
 import { formatDate, formatDisplayDate, MILLISECONDS_PER_DAY } from './legendDateUtils';
 import { theme } from '../../../../../styles/theme';
+import { type MapReducerRootState } from '../../../reducers/mapReducerTypes';
 
 import './DriverOfDisturbanceAlertsLayerLegend.scss';
 
 export const DriverOfDisturbanceAlertsLayerLegend = ({ disabled }) => {
-  const { driverOfDisturbanceAlertsFilter, visibleLayers } = store.getState();
+  const { driverOfDisturbanceAlertsFilter, visibleLayers } = useSelector(
+    (state: MapReducerRootState) => ({
+      driverOfDisturbanceAlertsFilter: state.driverOfDisturbanceAlertsFilter,
+      visibleLayers: state.visibleLayers,
+    })
+  );
 
-  const initialStartDate = new Date(driverOfDisturbanceAlertsFilter.startDate).getTime();
-  const initialEndDate = new Date(driverOfDisturbanceAlertsFilter.endDate).getTime();
+  const { startDate, endDate } = driverOfDisturbanceAlertsFilter;
+  console.log({ visibleLayers });
+
+  const initialStartDate = new Date(startDate).getTime();
+  const initialEndDate = new Date(endDate).getTime();
   const minDate = new Date(driverOfDisturbanceAlertsDateRange[0]).getTime();
   const maxDate = new Date(driverOfDisturbanceAlertsDateRange[1]).getTime();
 
   const [dateRange, setDateRange] = useState([initialStartDate, initialEndDate]);
 
-  const handleDateChange = (event, newValue) => {
+  const handleDateChange = (_, newValue) => {
     setDateRange(newValue);
   };
 
@@ -31,7 +40,7 @@ export const DriverOfDisturbanceAlertsLayerLegend = ({ disabled }) => {
     }
   };
 
-  const handleDateChangeCommitted = (event, newValue) => {
+  const handleDateChangeCommitted = (_, newValue) => {
     const [newStartTimestamp, newEndTimestamp] = newValue;
     const newStartDate = formatDate(newStartTimestamp);
     const newEndDate = formatDate(newEndTimestamp);

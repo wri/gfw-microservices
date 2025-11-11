@@ -29,9 +29,12 @@ jest.mock('@mui/material', () => ({
 jest.mock('../contexts');
 const mockSetUploadLocationConfigureList = jest.fn();
 const mockClearUploadType = jest.fn();
+const mockSetIsUmlFile = jest.fn();
+
 jest.mocked(useUploadLocation).mockReturnValue({
   setUploadLocationConfigureList: mockSetUploadLocationConfigureList,
   clearUploadType: mockClearUploadType,
+  setIsUmlFile: mockSetIsUmlFile,
   uploadLocationState: {
     newListName: 'Random list name 123',
     existingList: null,
@@ -47,6 +50,7 @@ jest.mocked(useUploadLocation).mockReturnValue({
     locationName: 'location name',
     uploadedFile: { fileS3Route: '', keyFile: '', url: '' },
     uploadType: UploadType.ByPolygon,
+    isUmlFile: false,
   },
   setUploadLocationByPoint: jest.fn(),
   setUploadLocationByPolygon: jest.fn(),
@@ -489,5 +493,61 @@ describe('ConfigureList', () => {
     const amountOfTypesOfAnalysis = screen.getAllByRole('checkbox');
 
     expect(amountOfTypesOfAnalysis.length).toBe(3);
+  });
+
+  it('should auto-populate commodity and analysis types for UML files', async () => {
+    // Create a custom mock for this test with proper types
+    const umlMockContext = {
+      setUploadLocationConfigureList: mockSetUploadLocationConfigureList,
+      clearUploadType: mockClearUploadType,
+      setIsUmlFile: mockSetIsUmlFile,
+      uploadLocationState: {
+        newListName: null,
+        existingList: null,
+        commodity: '',
+        typeOfAnalysis: {
+          AFI: false,
+          ALERTS: false,
+          FCD: false,
+          PalmRisk: false,
+        },
+        area: { measurementUnit: 'hectares' as const, size: 0 }, // Fix: use 'as const'
+        coordinates: [],
+        locationName: '',
+        uploadedFile: { fileS3Route: '', keyFile: '', url: '' },
+        uploadType: UploadType.ByFile,
+        isUmlFile: true,
+        isDraft: undefined,
+      },
+      setUploadLocationByPoint: jest.fn(),
+      setUploadLocationByPolygon: jest.fn(),
+      addFile: jest.fn(),
+      updateSaveMode: jest.fn(),
+      selectUploadType: jest.fn(),
+    };
+
+    jest.mocked(useUploadLocation).mockReturnValue(umlMockContext);
+
+    render(<ConfigureList userLists={mockUserLists} />);
+
+    // Wait for the useEffect to run and update the form
+    await waitFor(
+      () => {
+        const commodityInput = screen.getAllByRole('combobox')[0];
+        expect(commodityInput).toHaveTextContent(/palm oil/i);
+      },
+      { timeout: 3000 }
+    );
+
+    // Check that FCD and PalmRisk are auto-checked
+    const fcdCheckbox = screen.getByRole('checkbox', {
+      name: /post-2000 forest change annual tree cover loss since 2001 \+ additional contextual and regional datasets/i,
+    });
+    const palmRiskCheckbox = screen.getByRole('checkbox', {
+      name: /palm risk assessment/i,
+    });
+
+    expect(fcdCheckbox).toBeChecked();
+    expect(palmRiskCheckbox).toBeChecked();
   });
 });

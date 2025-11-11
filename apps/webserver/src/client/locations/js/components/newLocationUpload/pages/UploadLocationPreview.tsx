@@ -97,16 +97,23 @@ export function UploadLocationPreview() {
       });
     }
 
-    // const firstFeature = data.features[0];
-    console.log('🚀 ~ UploadLocationPreview ~ firstFeature:', data?.features);
     if (data && data.features) {
       const firstFeature = data.features[0];
       if (firstFeature?.properties) {
         const props = firstFeature.properties;
-        const hasIdColumns = 'ID' in props || 'ID Type' in props;
-        const hasCoordinates = 'Latitude' in props && 'Longitude' in props;
-        const isUml = hasIdColumns && hasCoordinates;
 
+        // Check for ID columns (case-insensitive)
+        const hasIdColumns = 'ID' in props || 'ID Type' in props;
+
+        // Check for coordinates (case-insensitive)
+        const hasCoordinates =
+          ('Latitude' in props && 'Longitude' in props) ||
+          ('latitude' in props && 'longitude' in props);
+
+        // Check for UML-specific fields (analysisRadius or analysisArea)
+        const hasAnalysisField = 'analysisRadius' in props || 'analysisArea' in props;
+
+        const isUml = hasIdColumns && hasCoordinates && hasAnalysisField;
         setIsUmlFile(isUml);
       }
     }

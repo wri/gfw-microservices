@@ -28,7 +28,7 @@ import { useHistory } from '../hooks';
 import { PillButton, HelperTextWithPopover } from '../../../../../components';
 import { useUploadLocation } from '../contexts';
 import { NavBar } from '../components';
-import { UploadType, UserList } from '../types';
+import { UserList } from '../types';
 import { typeOfAnalysisMap, commodities, customCommodities } from '../utils/constants';
 import { useFetch } from '../../../../../hooks';
 import debounce from 'lodash/debounce';
@@ -96,9 +96,23 @@ export function ConfigureList({ userLists }: { userLists: UserList[] }) {
         });
       }
     });
-
   type FormFields = z.infer<typeof schema>;
+
   const history = useHistory();
+  const {
+    clearUploadType,
+    setUploadLocationConfigureList,
+    uploadLocationState: {
+      uploadType,
+      isUmlFile,
+      commodity,
+      newListName,
+      existingList,
+      typeOfAnalysis,
+    },
+  } = useUploadLocation();
+
+  // Initialize form with values from context
   const {
     handleSubmit,
     control,
@@ -111,48 +125,60 @@ export function ConfigureList({ userLists }: { userLists: UserList[] }) {
   } = useForm<FormFields>({
     resolver: zodResolver(schema),
     defaultValues: {
-      commodity: '' as CommoditiesType,
-      newListName: '',
-      existingListName: '',
-      PalmRisk: false,
-      FCD: false,
-      ALERTS: false,
-      AFI: false,
+      commodity: (commodity as CommoditiesType) || ('' as CommoditiesType),
+      newListName: newListName || '',
+      existingListName: existingList?.name || '',
+      PalmRisk: typeOfAnalysis.PalmRisk || false,
+      FCD: typeOfAnalysis.FCD || false,
+      ALERTS: typeOfAnalysis.ALERTS || false,
+      AFI: typeOfAnalysis.AFI || false,
       customCommodity: '',
     },
   });
-  const {
-    clearUploadType,
-    setUploadLocationConfigureList,
-    uploadLocationState: { uploadType, isUmlFile },
-  } = useUploadLocation();
-  console.log('🚀 ~ ConfigureList ~ uploadType:', uploadType);
 
-  const existingList = useRef<{ id: number; analysisIds: string[] }>({ id: 0, analysisIds: [] });
+  const existingListRef = useRef<{ id: number; analysisIds: string[] }>({
+    id: existingList?.id || 0,
+    analysisIds: existingList?.analysisIds || [],
+  });
+
   const [isConfirmationDialogOpen, setIsConfirmationDialogOpen] = useState(false);
 
   const [formFields, setFormFields] = useState<{
     newListName: string;
     existingListName: string;
   }>({
-    newListName: '',
-    existingListName: '',
+    newListName: newListName || '',
+    existingListName: existingList?.name || '',
   });
 
   const { data: validLists, isLoading, request } = useFetch<{ id: number; name: string }[]>();
 
+  // Restore form state from context when component mounts
   useEffect(() => {
-    console.log('🚀 ~ ConfigureList ~ uploadType:', uploadType);
-    console.log('🚀 ~ ConfigureList ~ isUmlFile:', isUmlFile);
-    if (uploadType === UploadType.ById && isUmlFile) {
-      // Set commodity to Palm oil
-      setValue('commodity', 'Palm oil');
+    if (commodity) {
+      setValue('commodity', commodity as CommoditiesType);
+      setFormFields({
+        newListName: newListName || '',
+        existingListName: existingList?.name || '',
+      });
+    }
 
-      // Set FCD and PalmRisk to true
+    if (existingList) {
+      existingListRef.current = {
+        id: existingList.id,
+        analysisIds: existingList.analysisIds,
+      };
+    }
+  }, []);
+
+  // UML auto-population effect (only runs once when isUmlFile is true and form is empty)
+  useEffect(() => {
+    if (isUmlFile && !commodity) {
+      setValue('commodity', 'Palm oil');
       setValue('FCD', true);
       setValue('PalmRisk', true);
     }
-  }, [uploadType, isUmlFile, setValue]);
+  }, [uploadType, isUmlFile, setValue, commodity]);
 
   const selectedCommodity = watch('commodity') as CommoditiesType;
   useEffect(() => {
@@ -194,7 +220,7 @@ export function ConfigureList({ userLists }: { userLists: UserList[] }) {
 
     const template = userLists.find((list) => list.list_name === value);
     if (template?.id) {
-      existingList.current = {
+      existingListRef.current = {
         id: template.id,
         analysisIds: template?.listAnalysesStatus.map((x) => x.analysisId) || [],
       };
@@ -231,7 +257,6 @@ export function ConfigureList({ userLists }: { userLists: UserList[] }) {
   };
 
   const onSubmit = (data: FormFields) => {
-    // this should never happen due to form validation, but just in case...
     if (data.commodity === 'Other' && !data.customCommodity) {
       setError('customCommodity', { message: 'Invalid custom commodity' });
       return;
@@ -241,7 +266,7 @@ export function ConfigureList({ userLists }: { userLists: UserList[] }) {
       commodity: (data.commodity === 'Other' ? data.customCommodity : data.commodity) as string,
       newListName: data.newListName ?? '',
       existingList: data.existingListName
-        ? { name: data.existingListName ?? '', ...existingList.current }
+        ? { name: data.existingListName ?? '', ...existingListRef.current }
         : null,
       typeOfAnalysis: {
         PalmRisk: data.PalmRisk,
@@ -253,6 +278,7 @@ export function ConfigureList({ userLists }: { userLists: UserList[] }) {
 
     history.push('SUMMARY_AND_SUBMIT');
   };
+
   const noAnalysisSelectedError = 'noAnalysisSelected' in errors ? errors.noAnalysisSelected : null;
 
   useEffect(() => {

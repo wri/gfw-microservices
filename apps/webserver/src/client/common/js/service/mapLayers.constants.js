@@ -2706,13 +2706,13 @@ export const mapLayers = [
       protected: false,
       published: true,
       thumbnailUrl:
-        'https://s3.amazonaws.com/wri-api-backups/resourcewatch/prod/thumbnails/b696ec7a-2852-468a-a907-b2cf4f584b97-1686786379679.png',
+        'https://s3.amazonaws.com/wri-api-backups/resourcewatch/prod/thumbnails/b696ec7a-2852-468a-a907-b2cf4f584b91-1686786379679.png',
       env: 'production',
       layerConfig: {
         type: 'tileLayer',
         body: {
           useCors: true,
-          metadata: 'gfw_integrated_alerts_drivers_metadata',
+          metadata: 'gfw_global_vegetation_disturbance_alerts_metadata',
           url: 'https://tiles.globalforestwatch.org/umd_glad_dist_alerts/v20251108/dynamic/{z}/{x}/{y}.png?render_type=true_color',
         },
       },

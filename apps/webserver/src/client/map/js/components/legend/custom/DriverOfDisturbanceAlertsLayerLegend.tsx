@@ -1,6 +1,5 @@
 import { useState } from 'react';
-import { useSelector } from 'react-redux';
-import store from '../../../store';
+import { useSelector, useDispatch } from 'react-redux';
 import { Slider, Typography, Box } from '@mui/material';
 import { driverOfDisturbanceAlertsDateRange } from '../../../../../common/js/config';
 import { UPDATE_DRIVER_OF_DISTURBANCE_ALERTS_FILTER } from '../../../constants/actionTypes';
@@ -13,6 +12,7 @@ import { type MapReducerRootState } from '../../../reducers/mapReducerTypes';
 import './DriverOfDisturbanceAlertsLayerLegend.scss';
 
 export const DriverOfDisturbanceAlertsLayerLegend = ({ disabled }) => {
+  const dispatch = useDispatch();
   const { driverOfDisturbanceAlertsFilter, visibleLayers } = useSelector(
     (state: MapReducerRootState) => ({
       driverOfDisturbanceAlertsFilter: state.driverOfDisturbanceAlertsFilter,
@@ -35,7 +35,7 @@ export const DriverOfDisturbanceAlertsLayerLegend = ({ disabled }) => {
 
   const toggleGeographicCoverageLayer = () => {
     if (!disabled) {
-      store.dispatch(toggleLayer(proLayers.disturbanceAlertsDriversGeographicCoverageId));
+      dispatch(toggleLayer(proLayers.disturbanceAlertsDriversGeographicCoverageId));
     }
   };
 
@@ -44,7 +44,7 @@ export const DriverOfDisturbanceAlertsLayerLegend = ({ disabled }) => {
     const newStartDate = formatDate(newStartTimestamp);
     const newEndDate = formatDate(newEndTimestamp);
 
-    store.dispatch({
+    dispatch({
       type: UPDATE_DRIVER_OF_DISTURBANCE_ALERTS_FILTER,
       payload: {
         startDate: newStartDate,

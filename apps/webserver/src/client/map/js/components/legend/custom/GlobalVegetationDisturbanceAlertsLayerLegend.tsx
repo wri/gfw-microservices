@@ -1,6 +1,5 @@
 import { useEffect, useState } from 'react';
-import store from '../../../store';
-import { useSelector } from 'react-redux';
+import { useSelector, useDispatch } from 'react-redux';
 import { Slider, Typography, Box, Select, MenuItem, InputLabel } from '@mui/material';
 import { UPDATE_GLOBAL_VEGETATION_DISTURBANCE_ALERTS_FILTER } from '../../../constants/actionTypes';
 import {
@@ -13,7 +12,14 @@ import { type MapReducerRootState } from '../../../reducers/mapReducerTypes';
 
 import './GlobalVegetationDisturbanceAlertsLayerLegend.scss';
 
-export const GlobalVegetationDisturbanceAlertsLayerLegend = ({ disabled }) => {
+interface GlobalVegetationDisturbanceAlertsLayerLegendProps {
+  disabled: boolean;
+}
+
+export const GlobalVegetationDisturbanceAlertsLayerLegend = ({
+  disabled,
+}: GlobalVegetationDisturbanceAlertsLayerLegendProps) => {
+  const dispatch = useDispatch();
   const globalVegetationDisturbanceAlertsFilter = useSelector(
     (state: MapReducerRootState) => state.globalVegetationDisturbanceAlertsFilter
   );
@@ -33,7 +39,7 @@ export const GlobalVegetationDisturbanceAlertsLayerLegend = ({ disabled }) => {
   };
 
   useEffect(() => {
-    store.dispatch({
+    dispatch({
       type: UPDATE_GLOBAL_VEGETATION_DISTURBANCE_ALERTS_FILTER,
       payload: {
         ...globalVegetationDisturbanceAlertsFilter,
@@ -47,7 +53,7 @@ export const GlobalVegetationDisturbanceAlertsLayerLegend = ({ disabled }) => {
     const newStartDate = formatDate(newStartTimestamp);
     const newEndDate = formatDate(newEndTimestamp);
 
-    store.dispatch({
+    dispatch({
       type: UPDATE_GLOBAL_VEGETATION_DISTURBANCE_ALERTS_FILTER,
       payload: {
         ...globalVegetationDisturbanceAlertsFilter,

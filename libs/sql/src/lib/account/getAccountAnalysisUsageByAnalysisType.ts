@@ -1,3 +1,4 @@
+import { Brackets } from 'typeorm';
 import { ClientStoreConnection } from '../util';
 import { ListsProcessing } from '../entity/organization';
 import { OrganizationAnalysisUsageByAnalysisType as OrganizationAnalysisUsageResponseByAnalysisType } from '../queries/organization/getOrganizationAnalysisUsageByAnalysisType';
@@ -15,6 +16,9 @@ export async function getAccountAnalysisUsageByAnalysisType({
 }: GetAccountAnalysisUsageByAnalysisType): Promise<
   OrganizationAnalysisUsageResponseByAnalysisType[]
 > {
+  const GHG_ANALYSIS_TYPE = 'GHG';
+  const GHG_CHARGING_START_DATE = new Date('2025-11-22T00:00:00.000Z');
+
   const clientStoreConnection = new ClientStoreConnection();
   const connection = await clientStoreConnection.getConnection(orgDbName);
   const listsProcessingRepository = connection.getRepository(ListsProcessing);
@@ -25,14 +29,34 @@ export async function getAccountAnalysisUsageByAnalysisType({
   // Use TypeORM query builder to match the exact SQL query structure
   const results = await listsProcessingRepository
     .createQueryBuilder('lp')
-    .select([
-      'ISNULL(SUM(lp.areaAnalyzedLocationsHa), 0) as total_area_analyzed',
-      'COUNT(DISTINCT lp.listId) as total_lists_analyzed',
-      'ISNULL(SUM(lp.locationsAnalyzed), 0) as total_locations_analyzed',
-      'lp.analysisType as analysis_type',
-    ])
+    .select(
+      `ISNULL(SUM(CASE WHEN lp.analysisType = :ghgAnalysisType AND lp.analysisEndTime < :ghgChargingStartDate THEN 0 ELSE lp.areaAnalyzedLocationsHa END), 0)`,
+      'total_area_analyzed'
+    )
+    .addSelect(
+      `ISNULL(MAX(CASE WHEN lp.analysisType = :ghgAnalysisType AND lp.analysisEndTime < :ghgChargingStartDate THEN 0 ELSE lp.areaAnalyzedLocationsHa END), 0)`,
+      'max_area_analyzed'
+    )
+    .addSelect('COUNT(DISTINCT lp.listId)', 'total_lists_analyzed')
+    .addSelect(
+      `ISNULL(SUM(CASE WHEN lp.analysisType = :ghgAnalysisType THEN 0 ELSE lp.locationsAnalyzed END), 0)`,
+      'total_locations_analyzed'
+    )
+    .addSelect('lp.analysisType', 'analysis_type')
     .where('lp.analysisEndTime >= :startDateTime', { startDateTime })
     .andWhere('lp.analysisEndTime <= :endDateTime', { endDateTime })
+    .andWhere('lp.userId IS NOT NULL')
+    .andWhere(
+      new Brackets((qb) =>
+        qb
+          .where('lp.analysisType <> :ghgAnalysisType')
+          .orWhere('lp.analysisEndTime >= :ghgChargingStartDate')
+      )
+    )
+    .setParameters({
+      ghgAnalysisType: GHG_ANALYSIS_TYPE,
+      ghgChargingStartDate: GHG_CHARGING_START_DATE,
+    })
     .groupBy('lp.analysisType')
     .getRawMany();
 

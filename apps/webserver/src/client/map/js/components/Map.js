@@ -17,7 +17,13 @@ import WebTileLayer from '@arcgis/core/layers/WebTileLayer';
 import { webMercatorToGeographic } from '@arcgis/core/geometry/support/webMercatorUtils';
 import CustomDialog from '../../../common/js/components/CustomDialog/CustomDialog';
 
-import { addCoordinateTextFromPoint } from '../../../locations/js/utils/polygonCoordinatesUtils';
+import {
+  addCoordinateTextFromPoint,
+  calculateFontSizeForZoom,
+  getDecimalPrecisionForZoom,
+  shouldShowCoordinatesAtZoom,
+  shouldShowLabelBasedOnDistance,
+} from '../../../locations/js/utils/polygonCoordinatesUtils';
 
 import store from '../store';
 import {
@@ -219,6 +225,7 @@ class Map extends Component {
       sketchEventListener: null,
 
       drawnCoordinates: [],
+      coordinateTextGraphics: [],
       isMapCentered: true,
       mapCenter: {
         center: DEFAULT_MAPVIEW_CENTER,
@@ -227,6 +234,7 @@ class Map extends Component {
     });
     this.eventHandlers = [];
     this.sketchViewModel = null;
+    this.zoomUpdateTimeout = null;
   }
 
   componentWillUnmount() {
@@ -319,6 +327,17 @@ class Map extends Component {
     this.eventHandlers.push(this.mapView.on('mouse-wheel', this.startInteraction));
     this.eventHandlers.push(this.mapView.on('keyboard', this.startInteraction));
 
+    // Watch for zoom changes to update coordinate text font sizes
+    // Debounce to avoid too many calculations during smooth zoom animations
+    this.mapView.watch('zoom', (newZoom) => {
+      if (this.zoomUpdateTimeout) {
+        clearTimeout(this.zoomUpdateTimeout);
+      }
+      this.zoomUpdateTimeout = setTimeout(() => {
+        this.updateCoordinateTextFontSizes(newZoom);
+      }, 100); // Wait 100ms after zoom stops changing
+    });
+
     mapView.when(this.mapLoaded);
   }
 
@@ -339,6 +358,63 @@ class Map extends Component {
     if (isStationary) {
       this.setState({ isMapMoving: false });
     }
+  };
+
+  updateCoordinateTextFontSizes = (zoom) => {
+    const { coordinateTextGraphics, drawnCoordinates } = this.state;
+    const newFontSize = calculateFontSizeForZoom(zoom);
+    const precision = getDecimalPrecisionForZoom(zoom);
+    const shouldShowAtZoom = shouldShowCoordinatesAtZoom(zoom);
+
+    // Calculate minimum distance based on font size and text length
+    // Text length varies with precision - less decimals = shorter text
+    // Average character width in pixels ≈ 0.6 * fontSize for most fonts
+    const avgTextLength = 14 - (3 - precision) * 3.5; // Shorter text at lower precision
+    const characterWidth = 0.6;
+    const minDistance = newFontSize * characterWidth * avgTextLength * 0.65; // 0.65 = moderate tolerance
+
+    // First pass: check if ALL labels have enough space
+    // If any label would be hidden, hide them all to avoid inconsistency
+    let allLabelsHaveSpace = shouldShowAtZoom;
+
+    if (shouldShowAtZoom) {
+      for (let i = 0; i < drawnCoordinates.length; i++) {
+        const point = drawnCoordinates[i];
+        const hasEnoughSpace = shouldShowLabelBasedOnDistance(
+          this.mapView,
+          point,
+          drawnCoordinates,
+          minDistance
+        );
+
+        if (!hasEnoughSpace) {
+          allLabelsHaveSpace = false;
+          break; // One label doesn't fit, hide all
+        }
+      }
+    }
+
+    // Second pass: update all labels with the same visibility
+    coordinateTextGraphics.forEach((textGraphic, index) => {
+      if (textGraphic && textGraphic.symbol && drawnCoordinates[index]) {
+        // Clone the symbol and update the font size and text precision
+        const newSymbol = textGraphic.symbol.clone();
+        const point = drawnCoordinates[index];
+
+        newSymbol.text = `${point.latitude.toFixed(precision)}, ${point.longitude.toFixed(
+          precision
+        )}`;
+        newSymbol.font = {
+          ...newSymbol.font,
+          size: newFontSize,
+        };
+
+        textGraphic.symbol = newSymbol;
+
+        // All labels share the same visibility - either all shown or all hidden
+        textGraphic.visible = allLabelsHaveSpace;
+      }
+    });
   };
 
   safeGoTo = async (target, options = { animate: true }) => {
@@ -732,7 +808,10 @@ class Map extends Component {
     }
 
     if (!prevState.drawingActive && this.state.drawingActive) {
-      this.state.drawnCoordinates = [];
+      this.setState({
+        drawnCoordinates: [],
+        coordinateTextGraphics: [],
+      });
     }
   }
 
@@ -948,9 +1027,12 @@ class Map extends Component {
         this.analyzeCustom(graphic);
         store.dispatch(toggleDrawing());
 
-        this.state.drawnCoordinates.forEach((coordinate) =>
-          addCoordinateTextFromPoint(view, coordinate)
-        );
+        const newTextGraphics = this.state.drawnCoordinates.map((coordinate) => {
+          return addCoordinateTextFromPoint(view, coordinate);
+        });
+        this.setState((prevState) => ({
+          coordinateTextGraphics: [...prevState.coordinateTextGraphics, ...newTextGraphics],
+        }));
       }
     });
     store.dispatch(saveSketchTool(sketchViewModel));
@@ -991,8 +1073,11 @@ class Map extends Component {
       }
 
       if (this.state.drawingActive) {
-        this.state.drawnCoordinates.push(evt.mapPoint);
-        addCoordinateTextFromPoint(this.mapView, evt.mapPoint);
+        const textGraphic = addCoordinateTextFromPoint(this.mapView, evt.mapPoint);
+        this.setState({
+          drawnCoordinates: [...this.state.drawnCoordinates, evt.mapPoint],
+          coordinateTextGraphics: [...this.state.coordinateTextGraphics, textGraphic],
+        });
       }
     });
   };
@@ -2319,6 +2404,7 @@ class Map extends Component {
     }
     store.dispatch(updateAnalysis({}));
     this.view.graphics.removeAll();
+    this.setState({ coordinateTextGraphics: [] });
   };
 
   setLossTimeline = (startYear, endYear) => {

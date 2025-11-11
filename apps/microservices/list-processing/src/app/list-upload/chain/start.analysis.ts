@@ -52,6 +52,7 @@ export class StartAnalysis extends AbstractHandler<ChainType> {
       subscription_status_id: subscriptionStatusId,
       saveAsDraft,
       analysisIds,
+      isExternalAPIProcess,
     } = request.request as RequestNewList;
 
     const analysisTypesToProcess = analysisIds.join(',');
@@ -75,7 +76,7 @@ export class StartAnalysis extends AbstractHandler<ChainType> {
       listId,
       organizationId,
       organizationDatabase,
-      false, // don't send email?
+      !isExternalAPIProcess,
       user_id,
       subscriptionStatusId,
       false

@@ -701,7 +701,6 @@ export class ListAnalysisService {
       LIST_ANALISYS_ENDPOINT_NAMES[CREATE_ANALYSIS],
       ListActivityTypesEnum.ListAnalyzing
     );
-    const isFromEAPI = true;
     try {
       const response = await handleCreateAnalysis(
         analysisId.toUpperCase(),
@@ -711,10 +710,8 @@ export class ListAnalysisService {
         userEmail ? true : false,
         organization_user_id,
         organizationDetails.subscriptionStatusId,
-        true,
-        isFromEAPI
+        true
       );
-
       return response;
     } catch (error) {
       if (this.isAnalysisLimitError(error)) {

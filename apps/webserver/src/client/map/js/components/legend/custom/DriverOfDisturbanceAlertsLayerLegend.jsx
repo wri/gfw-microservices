@@ -6,6 +6,8 @@ import { UPDATE_DRIVER_OF_DISTURBANCE_ALERTS_FILTER } from '../../../constants/a
 ('../constants/actionTypes');
 import { proLayers } from '../../../../../common/js/proLayers.config';
 import { toggleLayer } from '../../../actions/mapActions';
+import { formatDate, formatDisplayDate, MILLISECONDS_PER_DAY } from './legendDateUtils';
+import { theme } from '../../../../../styles/theme';
 
 import './DriverOfDisturbanceAlertsLayerLegend.scss';
 
@@ -18,20 +20,6 @@ export const DriverOfDisturbanceAlertsLayerLegend = ({ disabled }) => {
   const maxDate = new Date(driverOfDisturbanceAlertsDateRange[1]).getTime();
 
   const [dateRange, setDateRange] = useState([initialStartDate, initialEndDate]);
-
-  const formatDate = (timestamp) => {
-    const date = new Date(timestamp);
-    return date.toISOString().split('T')[0];
-  };
-
-  const formatDisplayDate = (timestamp) => {
-    const date = new Date(timestamp);
-    return date.toLocaleDateString(undefined, {
-      year: 'numeric',
-      month: '2-digit',
-      day: '2-digit',
-    });
-  };
 
   const handleDateChange = (event, newValue) => {
     setDateRange(newValue);
@@ -187,26 +175,24 @@ export const DriverOfDisturbanceAlertsLayerLegend = ({ disabled }) => {
           </li>
         </div>
       </ul>
-      <Box sx={{ pl: 2, pr: 5, py: 2 }}>
-        <Typography variant="body2" gutterBottom>
+      <Box sx={{ mr: 2.5, my: 2 }}>
+        <Typography variant="body2" gutterBottom sx={{ textAlign: 'center' }}>
           From {formatDisplayDate(dateRange[0])} to {formatDisplayDate(dateRange[1])}
         </Typography>
         <Slider
           value={dateRange}
           onChange={handleDateChange}
           onChangeCommitted={handleDateChangeCommitted}
-          valueLabelDisplay="auto"
-          valueLabelFormat={(value) => formatDisplayDate(value)}
           min={minDate}
           max={maxDate}
-          step={86400000}
+          step={MILLISECONDS_PER_DAY}
           marks={[
             { value: minDate, label: formatDisplayDate(minDate) },
             { value: maxDate, label: formatDisplayDate(maxDate) },
           ]}
           disabled={disabled}
           sx={{
-            color: '#97bd3d',
+            color: theme.palette.primary.main,
             '& .MuiSlider-thumb': {
               width: 16,
               height: 16,
@@ -215,7 +201,7 @@ export const DriverOfDisturbanceAlertsLayerLegend = ({ disabled }) => {
               fontSize: '0.75rem',
             },
             '& .MuiSlider-markLabel[data-index="0"]': {
-              left: '5% !important',
+              left: '9% !important',
             },
             '& .MuiSlider-markLabel[data-index="1"]': {
               left: '90% !important',

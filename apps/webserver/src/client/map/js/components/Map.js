@@ -44,7 +44,12 @@ import {
 } from '../actions/mapActions';
 import * as analysisActions from '../actions/analysisActions';
 
-import { DATA_API_URL, mapPage, supportedGeostoreAnalysis } from '../../../common/js/config';
+import {
+  DATA_API_URL,
+  globalVegetationDisturbanceAlertsVegetationTypes,
+  mapPage,
+  supportedGeostoreAnalysis,
+} from '../../../common/js/config';
 import {
   proLayers,
   vectorEnabledLayers,
@@ -145,6 +150,7 @@ const {
   argentineanNativeForestsLoss,
   integratedDeforestationAlertsID,
   disturbanceAlertsDriversId,
+  globalVegetationDisturbanceAlertsId,
 } = proLayers;
 
 let layersToAdd;
@@ -366,6 +372,7 @@ class Map extends Component {
       planetTileColor,
       layerOpacity,
       driverOfDisturbanceAlertsFilter,
+      globalVegetationDisturbanceAlertsFilter,
     } = this.state;
 
     updateInteractiveLayers(this.view.map, prevState, this.state);
@@ -663,6 +670,51 @@ class Map extends Component {
 
       const promise = new Promise((resolve) => {
         this.view.map.remove(driversOfDisturbanceAlertsLayer);
+        setTimeout(() => {
+          resolve();
+        }, 100);
+      });
+      promise.then(() => {
+        this.view.map.add(duplicate);
+        duplicate.visible = true;
+        this.view.map.layers.reorder(duplicate, index);
+      });
+    }
+
+    if (
+      prevState.globalVegetationDisturbanceAlertsFilter.startDate !==
+        globalVegetationDisturbanceAlertsFilter.startDate ||
+      prevState.globalVegetationDisturbanceAlertsFilter.endDate !==
+        globalVegetationDisturbanceAlertsFilter.endDate ||
+      prevState.globalVegetationDisturbanceAlertsFilter.vegetationType !==
+        globalVegetationDisturbanceAlertsFilter.vegetationType
+    ) {
+      const globalVegetationDisturbanceAlertsLayer = this.view.map.findLayerById(
+        globalVegetationDisturbanceAlertsId
+      );
+      const index = this.view.map.layers.findIndex(
+        (l) => l.id === globalVegetationDisturbanceAlertsId
+      );
+      const duplicate = globalVegetationDisturbanceAlertsLayer;
+      const soyConfig = this.state.mapLayers.find(
+        (l) => l.id === globalVegetationDisturbanceAlertsId
+      );
+      let newURL = soyConfig.layerConfig.body.url.concat(
+        `&start_date=${globalVegetationDisturbanceAlertsFilter.startDate}&end_date=${globalVegetationDisturbanceAlertsFilter.endDate}`
+      );
+      if (
+        globalVegetationDisturbanceAlertsFilter.vegetationType ===
+        globalVegetationDisturbanceAlertsVegetationTypes.TreeCover
+      ) {
+        newURL = newURL.concat(
+          '&tree_cover_density_threshold=30&tree_cover_height_threshold=3&tree_cover_loss_threshold=2021'
+        );
+      }
+
+      duplicate.urlTemplate = newURL;
+
+      const promise = new Promise((resolve) => {
+        this.view.map.remove(globalVegetationDisturbanceAlertsLayer);
         setTimeout(() => {
           resolve();
         }, 100);

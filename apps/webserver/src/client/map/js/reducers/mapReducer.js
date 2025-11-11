@@ -33,11 +33,13 @@ import {
   TOGGLE_HIGH_CONFIDENCE_ALERTS_FOR_DEFORESTATION_ALERTS_LAYERS,
   SET_LAYER_OPACITY,
   UPDATE_DRIVER_OF_DISTURBANCE_ALERTS_FILTER,
+  UPDATE_GLOBAL_VEGETATION_DISTURBANCE_ALERTS_FILTER,
 } from '../constants/actionTypes';
 import {
   PLANET_TILE_LAYER_INITIAL,
   soyPlantedYearsRange,
   driverOfDisturbanceAlertsDateRange,
+  globalVegetationDisturbanceAlertsDateRange,
 } from '../../../common/js/config';
 import { proLayers, exclusiveLayers, visibleLayers } from '../../../common/js/proLayers.config';
 
@@ -77,6 +79,11 @@ const initialLocationState = {
   driverOfDisturbanceAlertsFilter: {
     startDate: driverOfDisturbanceAlertsDateRange[0],
     endDate: driverOfDisturbanceAlertsDateRange[1],
+  },
+  globalVegetationDisturbanceAlertsFilter: {
+    startDate: globalVegetationDisturbanceAlertsDateRange[0],
+    endDate: globalVegetationDisturbanceAlertsDateRange[1],
+    vegetationType: 'all-vegetation',
   },
 };
 
@@ -265,6 +272,14 @@ export function updateDriverOfDisturbanceAlertsFilter(
   action
 ) {
   return action.type !== UPDATE_DRIVER_OF_DISTURBANCE_ALERTS_FILTER ? state : action.payload;
+}
+export function updateGlobalVegetationDisturbanceAlertsFilter(
+  state = initialLocationState.globalVegetationDisturbanceAlertsFilter,
+  action
+) {
+  return action.type !== UPDATE_GLOBAL_VEGETATION_DISTURBANCE_ALERTS_FILTER
+    ? state
+    : action.payload;
 }
 
 export function toggleHighConfidenceAlertsForDeforestationAlertsLayers(

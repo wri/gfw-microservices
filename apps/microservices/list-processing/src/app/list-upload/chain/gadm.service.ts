@@ -49,7 +49,7 @@ export class GADMService extends AbstractHandler<ChainType> {
     const sql = "SELECT gid_1, gid_2, name_0, name_1, name_2 FROM mytable WHERE adm_level='2'";
 
     const response = await axios.post(
-      'https://data-api.globalforestwatch.org/dataset/gadm_administrative_boundaries/v4.1.64/query/json',
+      'https://data-api.globalforestwatch.org/dataset/gadm_administrative_boundaries/v4.1.85/query/json',
       { sql, geometry },
       {
         headers: {

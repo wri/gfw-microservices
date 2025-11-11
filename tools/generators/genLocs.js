@@ -61,9 +61,26 @@ function outputHeader(fileName) {
   fs.writeFileSync(fileName, headerString);
 }
 
+function genPolygonCoords(lat, lon, numPoints) {
+  const outerRadius = 0.004;
+  const innerRadius = 0.001;
+  const coordinates = [];
+
+  for (let i = 0; i <= numPoints; i++) {
+    const angle = (i * 2 * Math.PI) / numPoints;
+    const r = i % 2 === 0 ? outerRadius : innerRadius;
+    const pointLon = lon + r * Math.cos(angle);
+    const pointLat = lat + r * Math.sin(angle);
+    coordinates.push([pointLon, pointLat]);
+  }
+
+  return coordinates;
+}
+
 function outputLocation(fileName, locName, lat, lon) {
   let locString = '';
   try {
+    const coordinates = genPolygonCoords(lat, lon, 100);
     const randomAttr = `A${Math.random().toString().slice(2, 5)}`;
     if (format === 'CSV') {
       locString = `${locName},${lat},${lon},${radius},`;
@@ -83,12 +100,8 @@ function outputLocation(fileName, locName, lat, lon) {
       locString += '</SchemaData></ExtendedData>\n';
       if (polygon) {
         locString += `<Polygon><outerBoundaryIs><LinearRing><coordinates>
-        ${lon - 0.01},${lat - 0.01},0
-        ${lon - 0.01},${lat + 0.01},0
-        ${lon + 0.01},${lat + 0.01},0
-        ${lon + 0.01},${lat - 0.01},0
-        ${lon - 0.01},${lat - 0.01},0
-        </coordinates></LinearRing></outerBoundaryIs></Polygon>`;
+          ${coordinates.map((coord) => coord.join(',')).join(',0 ')}
+          </coordinates></LinearRing></outerBoundaryIs></Polygon>`;
       } else {
         locString += `<Point><coordinates>${lon},${lat},0</coordinates></Point>`;
       }
@@ -100,7 +113,7 @@ function outputLocation(fileName, locName, lat, lon) {
       locString += `      {
         "type": "Feature",
         "properties": {"Location Name": "${locName}"`;
-      locString += polygon ? '},\n' : `,"Analysis Radius": ${radius},"Analysis Area": 0`;
+      locString += polygon ? '' : `,"Analysis Radius": ${radius},"Analysis Area": 0`;
       if (attributes) {
         locString += `,"Attr bC 1": "${randomAttr}"`;
       }
@@ -109,11 +122,7 @@ function outputLocation(fileName, locName, lat, lon) {
         locString += `        "geometry": {
           "type": "Polygon",
           "coordinates": [[
-            [${lon - 0.01},${lat - 0.01}],
-            [${lon - 0.01},${lat + 0.01}],
-            [${lon + 0.01},${lat + 0.01}],
-            [${lon + 0.01},${lat - 0.01}],
-            [${lon - 0.01},${lat - 0.01}]
+            [${coordinates.map((coord) => coord.join(',')).join('], [')}]
           ]]
         }`;
       } else {

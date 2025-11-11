@@ -399,6 +399,75 @@ describe('ListAnalysisService', () => {
     });
   });
 
+  describe('uploadNewList', () => {
+    const organizationId = 1;
+    const mockUploadRequest = {
+      uploadId: '123',
+      listName: 'Example List',
+      analysisIDs: 'FCD',
+      commodity: 'Cocoa Generic',
+    };
+
+    let axiosPostSpy: jest.SpyInstance;
+    let checkIfS3FileExistsSpy: jest.SpyInstance;
+
+    beforeEach(() => {
+      clientStoreConnection.getConnection = jest.fn().mockResolvedValue({
+        getRepository: () => ({
+          findOne: jest.fn().mockResolvedValue({
+            id: 99,
+            userId: 7,
+            uploadKeyFile: 'mock-key.csv',
+          }),
+        }),
+      });
+
+      saveActivityLogEndpoint.saveActivityLogEndpoint = jest.fn().mockResolvedValue(true);
+
+      checkIfS3FileExistsSpy = jest
+        .spyOn(service as any, 'checkIfS3FileExists')
+        .mockResolvedValue(undefined);
+
+      axiosPostSpy = jest.spyOn(axios, 'post');
+    });
+
+    afterEach(() => {
+      checkIfS3FileExistsSpy.mockRestore();
+      axiosPostSpy.mockRestore();
+    });
+
+    it('should return 402 when analysis limit is reached while processing the list', async () => {
+      axiosPostSpy.mockImplementation((url: string) => {
+        if (url.includes('/api/create-large-list')) {
+          return Promise.resolve({ data: { list_id: 456 } });
+        }
+
+        if (url.includes('/api/save-list-to-process')) {
+          return Promise.resolve({ data: { list_id: 456, s3_location: 's3://bucket/key' } });
+        }
+
+        if (url.includes('/api/process-list')) {
+          const error: Error & { response?: { data?: { message?: string }; status?: number } } =
+            new Error('Analysis limit reached');
+          error.response = {
+            data: { message: 'Analysis limit reached' },
+            status: 500,
+          };
+          return Promise.reject(error);
+        }
+
+        return Promise.resolve({});
+      });
+
+      await expect(
+        service.uploadNewList(mockUploadRequest as any, organizationId)
+      ).rejects.toMatchObject({
+        status: HttpStatus.PAYMENT_REQUIRED,
+        response: { errorDetails: 'Analysis limit reached' },
+      });
+    });
+  });
+
   describe('createAnalysis', () => {
     it('Should Create an Analysis', async () => {
       const analysisTypesToProcess = 'FCD';
@@ -483,6 +552,32 @@ describe('ListAnalysisService', () => {
           organization_user_id
         )
       ).rejects.toThrow(new Error('Failed to send email'));
+    });
+
+    it('should throw 402 when analysis limit is reached', async () => {
+      const analysisTypesToProcess = 'FCD';
+      const listId = 123;
+      const organizationId = 1;
+      const organization_user_id = 1;
+
+      saveActivityLogEndpoint.saveActivityLogEndpoint = jest.fn().mockResolvedValue(true);
+
+      (handleCreateAnalysis as jest.Mock).mockRejectedValueOnce(
+        new Error('Analysis limit reached')
+      );
+
+      await expect(
+        service.createAnalysis(
+          analysisTypesToProcess,
+          listId,
+          organizationId,
+          USER_EMAIL,
+          organization_user_id
+        )
+      ).rejects.toMatchObject({
+        status: HttpStatus.PAYMENT_REQUIRED,
+        response: { errorDetails: 'Analysis limit reached' },
+      });
     });
   });
 

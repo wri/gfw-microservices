@@ -61,6 +61,14 @@ function outputHeader(fileName) {
   fs.writeFileSync(fileName, headerString);
 }
 
+/**
+ * Generates coordinates for a star-shaped polygon with alternating inner and outer radii.
+ *
+ * @param {number} lat - Latitude of the polygon center.
+ * @param {number} lon - Longitude of the polygon center.
+ * @param {number} numPoints - Number of points (vertices) for the polygon.
+ * @returns {Array<Array<number>>} Array of [lon, lat] coordinates representing the polygon vertices.
+ */
 function genPolygonCoords(lat, lon, numPoints) {
   const outerRadius = 0.004;
   const innerRadius = 0.001;

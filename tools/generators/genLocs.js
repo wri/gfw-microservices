@@ -88,7 +88,6 @@ function genPolygonCoords(lat, lon, numPoints) {
 function outputLocation(fileName, locName, lat, lon) {
   let locString = '';
   try {
-    const coordinates = genPolygonCoords(lat, lon, 100);
     const randomAttr = `A${Math.random().toString().slice(2, 5)}`;
     if (format === 'CSV') {
       locString = `${locName},${lat},${lon},${radius},`;
@@ -107,6 +106,7 @@ function outputLocation(fileName, locName, lat, lon) {
       }
       locString += '</SchemaData></ExtendedData>\n';
       if (polygon) {
+        const coordinates = genPolygonCoords(lat, lon, 100);
         locString += `<Polygon><outerBoundaryIs><LinearRing><coordinates>
           ${coordinates.map((coord) => coord.join(',') + ',0').join(' ')}
           </coordinates></LinearRing></outerBoundaryIs></Polygon>`;
@@ -127,6 +127,7 @@ function outputLocation(fileName, locName, lat, lon) {
       }
       locString += '},\n';
       if (polygon) {
+        const coordinates = genPolygonCoords(lat, lon, 100);
         locString += `        "geometry": {
           "type": "Polygon",
           "coordinates": [[

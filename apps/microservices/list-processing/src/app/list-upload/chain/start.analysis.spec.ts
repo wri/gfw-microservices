@@ -97,10 +97,10 @@ describe('StartAnalysis', () => {
         123, // listId
         456, // organizationId
         'test_db', // organizationDatabase
-        false, // don't send email (changed from true to false)
+        true, // !isExternalAPIProcess (false becomes true via negation)
         1, // user_id
         1, // subscriptionStatusId
-        false // last parameter (removed the extra 'false')
+        false // sendEmail parameter
       );
       expect(result).toBe(mockRequest);
     });

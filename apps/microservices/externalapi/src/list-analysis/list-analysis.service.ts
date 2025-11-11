@@ -701,19 +701,16 @@ export class ListAnalysisService {
       LIST_ANALISYS_ENDPOINT_NAMES[CREATE_ANALYSIS],
       ListActivityTypesEnum.ListAnalyzing
     );
-    const isFromEAPI = true;
-    try {
-      const response = await handleCreateAnalysis(
-        analysisId.toUpperCase(),
-        listId,
-        organizationId,
-        organizationDetails.organizationDb,
-        userEmail ? true : false,
-        organization_user_id,
-        organizationDetails.subscriptionStatusId,
-        true,
-        isFromEAPI
-      );
+    const response = await handleCreateAnalysis(
+      analysisId.toUpperCase(),
+      listId,
+      organizationId,
+      organizationDetails.organizationDb,
+      userEmail ? true : false,
+      organization_user_id,
+      organizationDetails.subscriptionStatusId,
+      true
+    );
 
       return response;
     } catch (error) {

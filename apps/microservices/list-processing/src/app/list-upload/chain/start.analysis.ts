@@ -76,11 +76,10 @@ export class StartAnalysis extends AbstractHandler<ChainType> {
       listId,
       organizationId,
       organizationDatabase,
-      !isExternalAPIProcess,
+      false, // don't send email?
       user_id,
       subscriptionStatusId,
-      false,
-      isExternalAPIProcess
+      false
     );
 
     if (result !== 'OK' && result !== 'Created') {

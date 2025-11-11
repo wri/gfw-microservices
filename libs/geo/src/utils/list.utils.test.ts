@@ -609,37 +609,7 @@ describe('List Utils', () => {
       expect(deleteListAnalyses).not.toHaveBeenCalled();
     });
 
-    it('should skip GREENHOUSE_GAS_EMISSIONS if not isFromEAPI', async () => {
-      const currentAnalysisStatuses = [
-        { listId: 1, analysisId: 'GHG', status: listStatus.Active } as ListsAnalysisStatus,
-      ];
-
-      const mockRepository = {
-        findBy: jest.fn().mockResolvedValue(currentAnalysisStatuses),
-        save: jest.fn(),
-        update: jest.fn(),
-        findOne: jest.fn().mockResolvedValue(null),
-      };
-
-      const mockConnection = {
-        getRepository: jest.fn().mockReturnValue(mockRepository),
-      };
-
-      const mockClientStoreConnection = {
-        getConnection: jest.fn().mockResolvedValue(mockConnection),
-      };
-      (ClientStoreConnection as unknown as jest.Mock).mockImplementation(
-        () => mockClientStoreConnection
-      );
-
-      await setListAnalysisStatus('clientDatabase', 1, ['GHG'], listStatus.Pending);
-
-      // Should not call update or save for GREENHOUSE_GAS_EMISSIONS
-      expect(mockRepository.save).not.toHaveBeenCalled();
-      expect(mockRepository.update).not.toHaveBeenCalled();
-    });
-
-    it('should update GREENHOUSE_GAS_EMISSIONS if isFromEAPI', async () => {
+    it('should update GREENHOUSE_GAS_EMISSIONS status when requested', async () => {
       const currentAnalysisStatuses = [
         { listId: 1, analysisId: 'GHG', status: listStatus.Active } as ListsAnalysisStatus,
       ];
@@ -668,10 +638,54 @@ describe('List Utils', () => {
 
       await setListAnalysisStatus('clientDatabase', 1, ['GHG'], listStatus.Pending);
 
+      // GHG should now be updated like any other analysis type
       expect(mockRepository.update).toHaveBeenCalledWith(
         { listId: 1, analysisId: 'GHG' },
         expect.objectContaining({
           status: listStatus.Pending,
+          errorInfo: null,
+          updateTime: expect.any(String),
+          s3URL: null,
+          expirationTime: null,
+          bundleCreationTime: null,
+          options: null,
+        })
+      );
+    });
+
+    it('should create new GREENHOUSE_GAS_EMISSIONS record if it does not exist', async () => {
+      const mockRepository = {
+        findBy: jest.fn().mockResolvedValue([]),
+        save: jest.fn(),
+        update: jest.fn(),
+        findOne: jest.fn().mockResolvedValue(null), // No existing record
+      };
+
+      const mockConnection = {
+        getRepository: jest.fn().mockReturnValue(mockRepository),
+      };
+
+      const mockClientStoreConnection = {
+        getConnection: jest.fn().mockResolvedValue(mockConnection),
+      };
+      (ClientStoreConnection as unknown as jest.Mock).mockImplementation(
+        () => mockClientStoreConnection
+      );
+
+      await setListAnalysisStatus('clientDatabase', 1, ['GHG'], listStatus.Pending);
+
+      // Should create a new record for GHG
+      expect(mockRepository.save).toHaveBeenCalledWith(
+        expect.objectContaining({
+          listId: 1,
+          analysisId: 'GHG',
+          status: listStatus.Pending,
+          errorInfo: null,
+          updateTime: expect.any(String),
+          s3URL: null,
+          expirationTime: null,
+          bundleCreationTime: null,
+          options: null,
         })
       );
     });

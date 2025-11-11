@@ -100,7 +100,7 @@ function outputLocation(fileName, locName, lat, lon) {
       locString += '</SchemaData></ExtendedData>\n';
       if (polygon) {
         locString += `<Polygon><outerBoundaryIs><LinearRing><coordinates>
-          ${coordinates.map((coord) => coord.join(',')).join(',0 ')}
+          ${coordinates.map((coord) => coord.join(',') + ',0').join(' ')}
           </coordinates></LinearRing></outerBoundaryIs></Polygon>`;
       } else {
         locString += `<Point><coordinates>${lon},${lat},0</coordinates></Point>`;

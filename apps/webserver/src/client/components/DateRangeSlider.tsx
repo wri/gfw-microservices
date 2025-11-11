@@ -157,7 +157,7 @@ export const DateRangeSlider = ({
           sx={dateInputStyles}
         />
         <Typography variant="body2" sx={{ fontSize: '0.8125rem' }}>
-          To
+          to
         </Typography>
         <TextField
           type="date"

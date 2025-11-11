@@ -179,6 +179,140 @@ describe('ListPaginationService', () => {
 
       expect(result).toEqual([]);
     });
+
+    it('should return base required columns when combinedColumns filter is provided', async () => {
+      const mockData: AnalysisDataType[] = [
+        {
+          list_id: 258,
+          'Location Name': 'Loc 1',
+          'Analysis Area': 3.5910376862581375,
+          'Analysis Radius': null,
+          Country: 'Dominican Republic',
+          Latitude: 18.800929058787943, // Required column that was previously missing
+          Longitude: -69.77648215366527, // Required column that was previously missing
+          State: 'Monte Plata',
+          'Sub State': 'Monte Plata',
+          list_location_id: 1,
+          analysis_list_id: 258,
+          template_id: 0,
+          location_id: 1,
+          location_status_id: 2,
+          tree_cover_loss_total_yearly: '{"2001":0.0,"2002":0.0,"2010":0.1459}',
+          tree_cover_loss_primary_forest_yearly: '{}',
+          tree_cover_loss_peat_yearly: '{}',
+          tree_cover_loss_intact_forest_yearly: '{}',
+          tree_cover_loss_protected_areas_yearly: '{}',
+          tree_cover_loss_sea_landcover_yearly: '{}',
+          tree_cover_loss_idn_landcover_yearly: '{}',
+          tree_cover_loss_idn_primary_forest_yearly: '{}',
+          tree_cover_loss_soy_yearly: '{}',
+          tree_cover_loss_idn_legal_yearly: '{}',
+          tree_cover_loss_idn_forest_moratorium_yearly: '{}',
+          tree_cover_loss_prodes_yearly: '{}',
+          tree_cover_loss_prodes_wdpa_yearly: '{}',
+          tree_cover_loss_prodes_primary_forest_yearly: '{}',
+          tree_cover_loss_brazil_biomes_yearly: '{}',
+          tree_cover_extent_total: 0.1459,
+          tree_cover_extent_primary_forest: 0,
+          tree_cover_extent_protected_areas: 0,
+          tree_cover_extent_peat: 0,
+          tree_cover_extent_intact_forest: 0,
+          natural_habitat_primary: 0,
+          natural_habitat_intact_forest: 0,
+          natural_habitat_global_land_cover: '{}',
+          total_area: 3.6464,
+          protected_areas_area: 0,
+          critical_habitat_alliance_zero: 0,
+          indigenous_people_land_rights: 0,
+          peat_area: 0,
+          fires_counts_monthly: '',
+          soy_total_area: '{}',
+          soy_pre2001_nonforest_area: 0,
+          brazil_biomes: '{}',
+          idn_legal_area: '{}',
+          sea_landcover_area: '{}',
+          idn_landcover_area: '{}',
+          idn_forest_moratorium_area: 0,
+          south_america_presence: 'false',
+          legal_amazon_presence: 'false',
+          brazil_biomes_presence: 'false',
+          cerrado_biome_presence: 'false',
+          southeast_asia_presence: 'false',
+          indonesia_presence: 'false',
+          commodity_threat_deforestation_level: '{"2010": 2, "2011": 2}',
+          commodity_threat_peat_level: '{"2010": 0}',
+          commodity_threat_protected_areas_level: '{"2010": 0}',
+          commodity_threat_fires_level: '{}',
+          commodity_threat_overall_level: '{"2010": 1, "2011": 1}',
+          commodity_value_forest_extent_level: '{"2010": 0}',
+          commodity_value_peat_level: '{"2010": 0}',
+          commodity_value_protected_areas_level: '{"2010": 0}',
+          commodity_value_overall_level: '{"2010": 0}',
+          commodity_value_forest_extent: '{"2010":0.1459}',
+          commodity_value_peat: '{"2010":0.0}',
+          commodity_value_protected_areas: '{"2010":0.0}',
+          commodity_mill_priority_level: '{"2010": 0}',
+          commodity_mill_priority_score: '{"2010": 1, "2011": 1}',
+          commodity_value_overall_score: '{"2010": 0}',
+          commodity_threat_deforestation: '{"2010":0.1459,"2011":0.1459}',
+          commodity_threat_peat: '{"2010":0.0}',
+          commodity_threat_protected_areas: '{"2010":0.0}',
+          commodity_threat_fires: '{}',
+          commodity_threat_overall_score: '{"2010": 1, "2011": 1}',
+          dissolved_data_location_info: '{}',
+          classified_region_area: '{}',
+          Commodity: 'test',
+          'Location Classification': 'test',
+          'Company ID': 'test-company',
+          Volume: 100,
+          'Owner Name': 'Test Owner',
+          'Owner ID': 'owner-1',
+          'Company Name': 'Test Company',
+          'Supplier Name': 'Test Supplier',
+          'Facility Name': 'Test Facility',
+          'Refinery Name': 'Test Refinery',
+          Certification: 'test',
+          'Start Date': '2024-01-01',
+          'End Date': '2024-12-31',
+          'Time Horizon': 'test',
+          'Accuracy Rating of Location Entered': 'test',
+          attributes: 'test',
+          'Wind Barrier': 'test',
+          'Riparian Buffers': 'test',
+          'Buffers Zones': 'test',
+          gadmid: 'test',
+          flag_general: 'test',
+          flag_gran_chaco: 'test',
+          flag_glad: 'test',
+          flag_forma: 'test',
+          flag_viirs: 'test',
+          flag_terrai: 'test',
+          id: 1,
+        },
+      ];
+
+      const queryParam: getPaginatedListDataRequest = {
+        listId: 258,
+        organizationDatabase: 'clientstore-test',
+        page: 1,
+        rowsPerPage: 100,
+        combinedColumns: 'Volume,Certification,Company ID', // Custom columns requested
+      };
+
+      uspGetPaginatedAnalysisDataForUserList.run.mockResolvedValue(mockData);
+
+      const result = await service.getPaginatedListData(queryParam);
+
+      expect(result).toEqual(mockData);
+      expect(result[0]).toHaveProperty('Latitude');
+      expect(result[0]).toHaveProperty('Longitude');
+      expect(result[0].Latitude).toBe(18.800929058787943);
+      expect(result[0].Longitude).toBe(-69.77648215366527);
+      expect(uspGetPaginatedAnalysisDataForUserList.run).toHaveBeenCalledWith(
+        queryParam.organizationDatabase,
+        queryParam
+      );
+    });
   });
 
   describe('getNumberOfPagesPaginatedListData', () => {

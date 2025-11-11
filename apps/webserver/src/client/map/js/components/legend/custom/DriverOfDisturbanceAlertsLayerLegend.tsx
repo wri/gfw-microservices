@@ -21,7 +21,6 @@ export const DriverOfDisturbanceAlertsLayerLegend = ({ disabled }) => {
   );
 
   const { startDate, endDate } = driverOfDisturbanceAlertsFilter;
-  console.log({ visibleLayers });
 
   const initialStartDate = new Date(startDate).getTime();
   const initialEndDate = new Date(endDate).getTime();

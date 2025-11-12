@@ -2,8 +2,8 @@ name: QA e2e Tests
 
 on:
   schedule:
-    # Runs at 6 AM UTC (one hour after automatic-release.yml) every weekday
-    - cron: '0 6 * * 1-5'
+    # Runs at 7 AM UTC (one hour after EAPI-e2e tests) every weekday
+    - cron: '0 7 * * 1-5'
 
 # nx cache intermittently fails with github actions, likely due to parallelism
 # so disabling the check for now
@@ -47,13 +47,7 @@ jobs:
 
       - name: Install settings
         run: |
-          echo "${{secrets.EAPI_E2E_SETTINGS}}" > ./apps/microservices/externalapi-e2e/jest.set.env.ts
           echo "${{secrets.CYPRESS_SETTINGS}}" | tr "'" '"' > ./apps/gfwpro-e2e/cypress.env.json
-
-      - name: Run QA e2e tests for external API
-        run: |
-          npx nx e2e externalapi-e2e --configuration=qa
-        continue-on-error: true
 
       - name: Run stable QA e2e tests for GFW Pro
         run: |

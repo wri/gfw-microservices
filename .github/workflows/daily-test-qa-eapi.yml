@@ -1,0 +1,64 @@
+name: QA eapi-e2e Tests
+
+on:
+  schedule:
+    # Runs at 6 AM UTC (one hour after automatic-release.yml) every weekday
+    - cron: '0 6 * * 1-5'
+
+# nx cache intermittently fails with github actions, likely due to parallelism
+# so disabling the check for now
+env:
+  NX_REJECT_UNKNOWN_LOCAL_CACHE: 0
+
+jobs:
+  test_qa:
+    runs-on: ubuntu-4core-16gb
+    timeout-minutes: 90 # Timeout the workflow after 120 minutes = 2 hours
+
+    strategy:
+      matrix:
+        node-version: [20.11.1]
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          ssh-key: '${{ secrets.DEPLOY_KEY }}'
+
+      - name: Use Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.node-version }}
+
+      - name: Cache node modules
+        uses: actions/cache@v4
+        with:
+          path: node_modules
+          key: ${{ runner.OS }}-build-${{ hashFiles('**/package-lock.json') }}
+          restore-keys: |
+            ${{ runner.OS }}-build-${{ env.cache-name }}-
+            ${{ runner.OS }}-build-
+            ${{ runner.OS }}-
+
+      - name: Install dependencies
+        run: npm ci --legacy-peer-deps
+
+      - name: Install settings
+        run: |
+          echo "${{secrets.EAPI_E2E_SETTINGS}}" > ./apps/microservices/externalapi-e2e/jest.set.env.ts
+
+      - name: Run QA e2e tests for external API
+        run: |
+          npx nx e2e externalapi-e2e --configuration=qa
+
+      - name: Send failure notifications to Slack
+        if: failure()
+        env:
+          SLACK_E2E_TEST_WEBHOOK_URL: ${{ secrets.SLACK_E2E_TEST_WEBHOOK_URL }}
+        run: |
+          curl -X POST -H 'Content-type: application/json' --data '{
+            "text": "QA eapi-e2e tests failed. Please check the logs ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}",
+            "username": "GitHub Actions",
+            "icon_emoji": ":octocat:"
+          }' $SLACK_E2E_TEST_WEBHOOK_URL

@@ -33,6 +33,8 @@ const {
   clarkLabsAquacultureLandCover,
   clarkLabsAquacultureLandChange,
   disturbanceAlertsDriversId,
+  disturbanceAlertsDriversGeographicCoverageId,
+  globalVegetationDisturbanceAlertsId,
 } = proLayers;
 import GfwSelect from '../../../../common/js/components/GfwSelect';
 import OpacitySlider from './OpacitySlider';
@@ -47,6 +49,7 @@ import {
   deforestationAlertsLayerToCoverageMap,
 } from './DeforestationAlerts/deforestationAlerts.constants';
 import './LegendCheckbox.scss';
+import { GlobalVegetationDisturbanceAlertsLayerLegend } from './custom/GlobalVegetationDisturbanceAlertsLayerLegend';
 
 export default class LegendCheckbox extends Component {
   constructor(props) {
@@ -165,6 +168,13 @@ export default class LegendCheckbox extends Component {
           layersToToggle.push(id);
         }
       });
+    } else if (layerId === disturbanceAlertsDriversId) {
+      if (
+        disturbanceAlertsDriversGeographicCoverageId &&
+        visibleLayers.includes(disturbanceAlertsDriversGeographicCoverageId)
+      ) {
+        layersToToggle.push(disturbanceAlertsDriversGeographicCoverageId);
+      }
     }
 
     layersToToggle.forEach((id) => toggleLayerVisibility(id)); // Toggle all collected layers
@@ -352,7 +362,11 @@ export default class LegendCheckbox extends Component {
         )}
 
         {disturbanceAlertsDriversId.includes(layer.id) && (
-          <DriverOfDisturbanceAlertsLayerLegend disabled={grayed} layerId={layer.id} />
+          <DriverOfDisturbanceAlertsLayerLegend disabled={grayed} />
+        )}
+
+        {globalVegetationDisturbanceAlertsId.includes(layer.id) && (
+          <GlobalVegetationDisturbanceAlertsLayerLegend disabled={grayed} />
         )}
 
         {symbolsLength === 1 &&

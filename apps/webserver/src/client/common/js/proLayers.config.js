@@ -48,6 +48,7 @@ export const proLayers = {
   oilPalmConcessions: 'Oil Palm Concessions', // GFW list
   protectedAreas: 'WDPA Esri', // GFW list
   universalMillList: 'Universal Mill List', // GFW list: Palm Oil Mills
+  globalVegetationDisturbanceAlertsId: 'Global vegetation disturbance alerts (DIST-ALERT)',
 
   // the next are not layers present in the map layer API as the previous ones
   // but they are constants that we use through the application

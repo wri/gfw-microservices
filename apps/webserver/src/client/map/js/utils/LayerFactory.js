@@ -31,6 +31,7 @@ const {
   granChacoDeforestationID,
   disturbanceAlertsDriversId,
   disturbanceAlertsDriversGeographicCoverageId,
+  globalVegetationDisturbanceAlertsId,
 } = proLayers;
 
 /**
@@ -114,7 +115,10 @@ export const layerFactory = function LayersFactory(layersArray, view) {
       case 'tileLayer':
         {
           let urlTemplate = layer.layerConfig.body.url;
-          if (layer.id === disturbanceAlertsDriversId) {
+          if (
+            layer.id === disturbanceAlertsDriversId ||
+            layer.id === globalVegetationDisturbanceAlertsId
+          ) {
             urlTemplate = layer.layerConfig.body.url.concat(
               `&start_date=${driverOfDisturbanceAlertsDateRange[0]}&end_date=${driverOfDisturbanceAlertsDateRange[1]}`
             );

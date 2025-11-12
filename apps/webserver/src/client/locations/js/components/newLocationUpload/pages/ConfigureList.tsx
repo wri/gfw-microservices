@@ -242,9 +242,20 @@ export function ConfigureList({ userLists }: { userLists: UserList[] }) {
     e: ChangeEvent<HTMLInputElement>,
     field: {
       onChange: (value: boolean) => void;
-    }
+    },
+    id: (typeof typeOfAnalysisMap)[number]['id']
   ) => {
     field.onChange(e.target.checked);
+
+    // Palm Risk requires FCD to be selected (it's a child analysis of FCD)
+    if (id === analysisTypes.PALM_RISK && e.target.checked) {
+      setValue('FCD', true);
+    }
+
+    // If FCD is unchecked, also uncheck Palm Risk (parent-child relationship)
+    if (id === 'FCD' && !e.target.checked) {
+      setValue(analysisTypes.PALM_RISK, false);
+    }
   };
 
   const onSubmit = (data: FormFields) => {
@@ -477,7 +488,7 @@ export function ConfigureList({ userLists }: { userLists: UserList[] }) {
                             py: 0,
                           }}
                           checked={!!field.value}
-                          onChange={(e) => handleAnalysisChange(e, field)}
+                          onChange={(e) => handleAnalysisChange(e, field, id)}
                           inputRef={field.ref}
                           data-testid={`checkbox-${id.toLowerCase()}`}
                         />

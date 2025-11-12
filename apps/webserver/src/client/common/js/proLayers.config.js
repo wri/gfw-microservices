@@ -20,7 +20,7 @@ export const proLayers = {
   gladS2GeographicCoverageID: 'GLAD-S2 alerts geographic coverage',
   raddAlertsID: 'RADD alerts',
   raddCoverageID: 'RADD Coverage',
-  integratedDeforestationAlertsID: 'Integrated Deforestation Alerts',
+  integratedDeforestationAlertsID: 'Global Integrated Disturbance Alerts',
   integratedAlertsGeographicCoverageID: 'integrated alerts geographic coverage',
   viirsActiveFiresID: 'VIIRS Global Fires',
   treeCoverID: 'Tree cover 2000',

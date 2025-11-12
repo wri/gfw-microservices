@@ -1,6 +1,7 @@
 name: QA eapi-e2e Tests
 
 on:
+  workflow_dispatch:
   schedule:
     # Runs at 6 AM UTC (one hour after automatic-release.yml) every weekday
     - cron: '0 6 * * 1-5'

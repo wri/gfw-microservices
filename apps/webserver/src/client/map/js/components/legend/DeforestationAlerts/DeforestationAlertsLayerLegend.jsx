@@ -7,7 +7,7 @@ import IntegratedAlertsMapLegends from './IntegratedAlertsMapLegends';
 import DeforestationAlertsMapLegends from './DeforestationAlertsMapLegends';
 import { proLayers } from '../../../../../common/js/proLayers.config';
 import { deforestationAlertsLayerToCoverageMap } from './deforestationAlerts.constants';
-const { integratedDeforestationAlertsID } = proLayers;
+const { globalIntegratedDisturbanceAlertsId } = proLayers;
 
 const DeforestationAlertsLayerLegend = ({ disabled, layerId }) => {
   const { visibleLayers, showHighConfidenceAlertsOnDeforestationAlertsLayer } = store.getState();
@@ -28,7 +28,7 @@ const DeforestationAlertsLayerLegend = ({ disabled, layerId }) => {
   // legends are different for the integratedDeforestationAlerts layer as it has a different color system
   const LegendSwitcher = ({ layerId }) => {
     switch (layerId) {
-      case integratedDeforestationAlertsID:
+      case globalIntegratedDisturbanceAlertsId:
         return <IntegratedAlertsMapLegends />;
       default:
         return <DeforestationAlertsMapLegends alertsName={layerId} />;

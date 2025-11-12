@@ -73,7 +73,7 @@ export const constructLayerObject = (visibleLayers, layer) => {
       primaryForest,
       raddAlertsID,
       raddCoverageID,
-      integratedDeforestationAlertsID,
+      globalIntegratedDisturbanceAlertsId,
       soyPlantedArea,
       treeBiomassLossID,
       treeCoverGainID,
@@ -114,7 +114,7 @@ export const constructLayerObject = (visibleLayers, layer) => {
       case raddCoverageID:
         type = 'radd-coverage';
         break;
-      case integratedDeforestationAlertsID:
+      case globalIntegratedDisturbanceAlertsId:
         type = 'integraded-deforestation-alerts';
         break;
       case soyPlantedArea:

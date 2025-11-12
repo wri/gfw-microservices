@@ -154,7 +154,7 @@ const {
   viirsActiveFiresID,
   soyPlantedArea,
   argentineanNativeForestsLoss,
-  integratedDeforestationAlertsID,
+  globalIntegratedDisturbanceAlertsId,
   disturbanceAlertsDriversId,
   globalVegetationDisturbanceAlertsId,
 } = proLayers;
@@ -2219,7 +2219,7 @@ class Map extends Component {
     if (selectedTimeframe) {
       if (
         visibleLayers?.includes(gladAlertsID) ||
-        visibleLayers?.includes(integratedDeforestationAlertsID)
+        visibleLayers?.includes(globalIntegratedDisturbanceAlertsId)
       ) {
         const startDate = new Date();
         const firstDayOfThisMonth = new Date(startDate.getFullYear(), startDate.getMonth(), 1);

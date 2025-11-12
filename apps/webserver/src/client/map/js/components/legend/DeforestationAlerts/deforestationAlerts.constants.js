@@ -1,6 +1,6 @@
 import { proLayers } from '../../../../../common/js/proLayers.config';
 const {
-  integratedDeforestationAlertsID,
+  globalIntegratedDisturbanceAlertsId,
   raddAlertsID,
   gladAlertsID,
   gladLGeographicCoverageID,
@@ -20,7 +20,7 @@ export const layersWithCanopyDensityThresholdControl = [
 ];
 
 export const deforestationAlertsIds = [
-  integratedDeforestationAlertsID,
+  globalIntegratedDisturbanceAlertsId,
   raddAlertsID,
   gladAlertsID,
   gladS2AlertsID,
@@ -34,7 +34,7 @@ export const deforestationAlertsGeographicCoverageIds = [
 ];
 
 export const deforestationAlertsLayerToCoverageMap = {
-  [integratedDeforestationAlertsID]: integratedAlertsGeographicCoverageID,
+  [globalIntegratedDisturbanceAlertsId]: integratedAlertsGeographicCoverageID,
   [raddAlertsID]: raddCoverageID,
   [gladAlertsID]: gladLGeographicCoverageID,
   [gladS2AlertsID]: gladS2GeographicCoverageID,

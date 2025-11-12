@@ -20,7 +20,7 @@ export const proLayers = {
   gladS2GeographicCoverageID: 'GLAD-S2 alerts geographic coverage',
   raddAlertsID: 'RADD alerts',
   raddCoverageID: 'RADD Coverage',
-  integratedDeforestationAlertsID: 'Global Integrated Disturbance Alerts',
+  globalIntegratedDisturbanceAlertsId: 'Global Integrated Disturbance Alerts',
   integratedAlertsGeographicCoverageID: 'integrated alerts geographic coverage',
   viirsActiveFiresID: 'VIIRS Global Fires',
   treeCoverID: 'Tree cover 2000',
@@ -89,7 +89,7 @@ export const exclusiveLayers = [
   proLayers.gladAlertsID,
   proLayers.gladS2AlertsID,
   proLayers.raddAlertsID,
-  proLayers.integratedDeforestationAlertsID,
+  proLayers.globalIntegratedDisturbanceAlertsId,
   proLayers.viirsActiveFiresID,
 ];
 

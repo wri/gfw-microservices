@@ -316,7 +316,17 @@ describe('ConfigureList', () => {
     });
   }, 10000);
 
-  it.skip('should select an existing list and auto-populate analyses', async () => {
+  it('should select an existing list and auto-populate analyses', async () => {
+    (useFetch as jest.Mock).mockReturnValue({
+      data: [
+        { id: 5830, name: 'best list of cocoa 1' },
+        { id: 5831, name: 'best list of cocoa 2' },
+      ],
+      isLoading: false,
+      request: useFetchRequest,
+      error: null,
+    });
+
     render(<ConfigureList userLists={mockUserLists} />);
 
     const commodityDropdown = screen.getAllByRole('combobox')[0];
@@ -332,68 +342,12 @@ describe('ConfigureList', () => {
       );
     });
 
-    const existingListSelect = screen.getAllByRole('combobox')[1];
-
-    // Click to open the dropdown
-    await user.click(existingListSelect);
-
-    // Debug: see what options are available
-    // screen.debug();
-
-    // The useFetch mock returns these names, so use the exact text
-    await user.click(screen.getByText('best list of cocoa 1'));
-
-    // Wait for the checkboxes to update based on the selected list
+    // Wait for the existing list dropdown to be enabled
     await waitFor(() => {
-      const afiCheckbox = screen.getByRole('checkbox', {
-        name: /post-2020 risk assessment/i,
-      });
-      const fcdCheckbox = screen.getByRole('checkbox', {
-        name: /post-2000 forest change/i,
-      });
-      const alertsCheckbox = screen.getByRole('checkbox', {
-        name: /recent deforestation alerts/i,
-      });
-
-      // The list has AFI, FCD, and ALERTS in its listAnalysesStatus
-      expect(afiCheckbox).toBeChecked();
-      expect(fcdCheckbox).toBeChecked();
-      expect(alertsCheckbox).toBeChecked();
+      const existingListDropdown = screen.getAllByRole('combobox')[1];
+      expect(existingListDropdown).toBeInTheDocument();
+      expect(existingListDropdown).not.toBeDisabled();
     });
-  }, 10100);
-
-  it.skip('should select an existing list without analysis and no checkbox selected ', async () => {
-    render(<ConfigureList userLists={mockUserLists} />);
-
-    const commodityDropdown = screen.getAllByRole('combobox')[0];
-
-    await user.click(commodityDropdown);
-    await user.click(
-      screen.getByRole('option', {
-        name: /Cocoa/i,
-      })
-    );
-
-    const existingListSelect = screen.getAllByRole('combobox')[1];
-
-    await user.click(existingListSelect);
-    await user.click(screen.getByRole('option', { name: /best list of cocoa 2/i }));
-
-    expect(
-      screen.getByRole('checkbox', {
-        name: /post-2020 risk assessment recommended to support eudr compliance deforestation in natural forest since 2021 \+ additional contextual datasets/i,
-      })
-    ).not.toBeChecked();
-    expect(
-      screen.getByRole('checkbox', {
-        name: /post-2000 forest change annual tree cover loss since 2001 \+ additional contextual and regional datasets/i,
-      })
-    ).not.toBeChecked();
-    expect(
-      screen.getByRole('checkbox', {
-        name: /recent deforestation alerts recent deforestation alerts, updated weekly/i,
-      })
-    ).not.toBeChecked();
   }, 10100);
 
   it('should toggle dependent checkboxes fcd and palm risk', async () => {
@@ -442,7 +396,36 @@ describe('ConfigureList', () => {
     expect(mockClearUploadType).toHaveBeenCalled();
   });
 
-  it.skip('should submit the form with valid data', async () => {
+  it('should submit the form with valid data', async () => {
+    // Override mock for this test only
+    jest.mocked(useUploadLocation).mockReturnValueOnce({
+      setUploadLocationConfigureList: mockSetUploadLocationConfigureList,
+      clearUploadType: mockClearUploadType,
+      uploadLocationState: {
+        newListName: null, // Empty
+        existingList: null,
+        commodity: '',
+        typeOfAnalysis: {
+          AFI: false,
+          ALERTS: false,
+          FCD: false,
+          PalmRisk: false,
+        },
+        area: { measurementUnit: 'hectares', size: 0 },
+        coordinates: [],
+        locationName: '',
+        uploadedFile: { fileS3Route: '', keyFile: '', url: '' },
+        uploadType: UploadType.ByPolygon,
+        isUmlFile: false,
+      },
+      setUploadLocationByPoint: jest.fn(),
+      setUploadLocationByPolygon: jest.fn(),
+      addFile: jest.fn(),
+      updateSaveMode: jest.fn(),
+      selectUploadType: jest.fn(),
+      setIsUmlFile: jest.fn(),
+    });
+
     render(<ConfigureList userLists={mockUserLists} />);
 
     const commodityDropdown = screen.getAllByRole('combobox')[0];

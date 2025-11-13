@@ -427,15 +427,15 @@ export default class LegendCheckbox extends Component {
                 <Typography variant="caption">
                   When comparing the map to the Post-2020 Risk Assessment, ensure that the canopy
                   density filter for the Tree Cover Loss map layer is turned off and the date range
-                  is filtered to 2021 onward, then use either the SBTN Natural Forest Map or the JRC
-                  Global Map of Forest Cover to assess the overlap between layers. The canopy
-                  density filter is based on the 2000 tree cover layer used in the Post-2000 Forest
-                  Change analysis and allows for adjustments, while both the SBTN Natural Forest Map
-                  and JRC Global Map of Forest Cover already account for canopy density. Leaving
-                  this filter on may cause relevant loss to be excluded from the map view. When
-                  comparing the map to the Post-2000 Forest Change analysis, ensure that the canopy
-                  density filter is turned on at set to 30% to match the threshold used in that
-                  analysis.
+                  is filtered to 2021 onward, then use either the {proLayers.sbtnNaturalLands} Map
+                  or the JRC Global Map of Forest Cover to assess the overlap between layers. The
+                  canopy density filter is based on the 2000 tree cover layer used in the Post-2000
+                  Forest Change analysis and allows for adjustments, while both the{' '}
+                  {proLayers.sbtnNaturalLands} Map and JRC Global Map of Forest Cover already
+                  account for canopy density. Leaving this filter on may cause relevant loss to be
+                  excluded from the map view. When comparing the map to the Post-2000 Forest Change
+                  analysis, ensure that the canopy density filter is turned on at set to 30% to
+                  match the threshold used in that analysis.
                 </Typography>
               </Box>
             </HelperTextWithPopover>

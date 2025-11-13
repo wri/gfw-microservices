@@ -4,7 +4,7 @@
 export const proLayers = {
   argentineanNativeForestsLoss: 'argentinean-native-forests-loss',
   jrcGlobalForestCover: 'jrc_global_forest_cover',
-  sBTNNaturalForest: 'SBTN Natural Forest',
+  sbtnNaturalLands: 'SBTN Natural Lands',
   negligibleRisk: 'Negligible Risk',
   cocoaDeforestationRisk: 'cocoa_deforestation_risk',
   otbn: 'Land Planning Classification of Native Forests',

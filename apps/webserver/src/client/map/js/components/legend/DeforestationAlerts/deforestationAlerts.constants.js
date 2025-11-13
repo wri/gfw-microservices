@@ -19,12 +19,7 @@ export const layersWithCanopyDensityThresholdControl = [
   treeCoverID,
 ];
 
-export const deforestationAlertsIds = [
-  globalIntegratedDisturbanceAlertsId,
-  raddAlertsID,
-  gladAlertsID,
-  gladS2AlertsID,
-];
+export const deforestationAlertsIds = [raddAlertsID, gladAlertsID, gladS2AlertsID];
 
 export const deforestationAlertsGeographicCoverageIds = [
   integratedAlertsGeographicCoverageID,

@@ -26,7 +26,8 @@ export const latestTreeCoverLossYearForTclDataInAnalyses = 2024;
 export const soyPlantedYearsRange = [2001, 2024];
 export const driverOfDisturbanceAlertsDateRange = ['2022-01-01', '2024-12-31'];
 export const globalVegetationDisturbanceAlertsDateRange = ['2022-01-01', '2024-12-31'];
-export const globalVegetationDisturbanceAlertsVegetationTypes = {
+export const globalIntegratedDisturbanceAlertsDateRange = ['2022-01-01', '2024-12-31'];
+export const disturbanceAlertsVegetationTypes = {
   AllVegetation: 'all-vegetation',
   TreeCover: 'tree-cover',
 };

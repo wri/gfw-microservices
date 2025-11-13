@@ -35,6 +35,7 @@ const {
   disturbanceAlertsDriversId,
   disturbanceAlertsDriversGeographicCoverageId,
   globalVegetationDisturbanceAlertsId,
+  globalIntegratedDisturbanceAlertsId,
 } = proLayers;
 import GfwSelect from '../../../../common/js/components/GfwSelect';
 import OpacitySlider from './OpacitySlider';
@@ -50,6 +51,7 @@ import {
 } from './DeforestationAlerts/deforestationAlerts.constants';
 import './LegendCheckbox.scss';
 import { GlobalVegetationDisturbanceAlertsLayerLegend } from './custom/GlobalVegetationDisturbanceAlertsLayerLegend';
+import { GlobalIntegratedDisturbanceAlertsLayerLegend } from './custom/GlobalIntegratedDisturbanceAlertsLayerLegend';
 
 export default class LegendCheckbox extends Component {
   constructor(props) {
@@ -367,6 +369,10 @@ export default class LegendCheckbox extends Component {
 
         {globalVegetationDisturbanceAlertsId.includes(layer.id) && (
           <GlobalVegetationDisturbanceAlertsLayerLegend disabled={grayed} />
+        )}
+
+        {layer.id === globalIntegratedDisturbanceAlertsId && (
+          <GlobalIntegratedDisturbanceAlertsLayerLegend disabled={grayed} />
         )}
 
         {symbolsLength === 1 &&

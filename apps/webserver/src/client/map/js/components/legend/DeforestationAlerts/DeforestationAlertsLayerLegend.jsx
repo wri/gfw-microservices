@@ -3,11 +3,7 @@ import {
   toggleHighConfidenceAlertsForDeforestationAlertsLayers,
   toggleLayer,
 } from '../../../actions/mapActions';
-import IntegratedAlertsMapLegends from './IntegratedAlertsMapLegends';
-import DeforestationAlertsMapLegends from './DeforestationAlertsMapLegends';
-import { proLayers } from '../../../../../common/js/proLayers.config';
 import { deforestationAlertsLayerToCoverageMap } from './deforestationAlerts.constants';
-const { globalIntegratedDisturbanceAlertsId } = proLayers;
 
 const DeforestationAlertsLayerLegend = ({ disabled, layerId }) => {
   const { visibleLayers, showHighConfidenceAlertsOnDeforestationAlertsLayer } = store.getState();
@@ -25,19 +21,30 @@ const DeforestationAlertsLayerLegend = ({ disabled, layerId }) => {
     }
   };
 
-  // legends are different for the integratedDeforestationAlerts layer as it has a different color system
-  const LegendSwitcher = ({ layerId }) => {
-    switch (layerId) {
-      case globalIntegratedDisturbanceAlertsId:
-        return <IntegratedAlertsMapLegends />;
-      default:
-        return <DeforestationAlertsMapLegends alertsName={layerId} />;
-    }
-  };
-
   return (
     <ul className="layer-legend">
-      <LegendSwitcher layerId={layerId} />
+      <li style={{ paddingTop: '6px' }}>
+        <div>
+          <span
+            className="layer-legend-symbol"
+            style={{
+              background: 'rgb(224, 190, 7)',
+            }}
+          />
+          <span className="layer-legend-label">Recent Alerts</span>
+        </div>
+      </li>
+      <li>
+        <div>
+          <span
+            className="layer-legend-symbol"
+            style={{
+              background: 'rgb(220, 102, 153)',
+            }}
+          />
+          <span className="layer-legend-label">{layerId}</span>
+        </div>
+      </li>
       <li
         className={`layer-checkbox ${
           visibleLayers.includes(geographicCoverageLayer) ? 'active' : ''

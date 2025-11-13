@@ -52,7 +52,7 @@ import * as analysisActions from '../actions/analysisActions';
 
 import {
   DATA_API_URL,
-  globalVegetationDisturbanceAlertsVegetationTypes,
+  disturbanceAlertsVegetationTypes,
   mapPage,
   supportedGeostoreAnalysis,
 } from '../../../common/js/config';
@@ -780,7 +780,7 @@ class Map extends Component {
       );
       if (
         globalVegetationDisturbanceAlertsFilter.vegetationType ===
-        globalVegetationDisturbanceAlertsVegetationTypes.TreeCover
+        disturbanceAlertsVegetationTypes.TreeCover
       ) {
         newURL = newURL.concat(
           '&tree_cover_density_threshold=30&tree_cover_height_threshold=3&tree_cover_loss_threshold=2021'

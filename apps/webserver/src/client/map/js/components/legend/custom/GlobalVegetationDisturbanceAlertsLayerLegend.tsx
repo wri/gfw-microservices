@@ -4,7 +4,7 @@ import { Box, Select, MenuItem, InputLabel } from '@mui/material';
 import { UPDATE_GLOBAL_VEGETATION_DISTURBANCE_ALERTS_FILTER } from '../../../constants/actionTypes';
 import {
   globalVegetationDisturbanceAlertsDateRange,
-  globalVegetationDisturbanceAlertsVegetationTypes,
+  disturbanceAlertsVegetationTypes,
 } from '../../../../../common/js/config';
 import { type MapReducerRootState } from '../../../reducers/mapReducerTypes';
 import { DateRangeSlider } from '../../../../../components';
@@ -91,12 +91,8 @@ export const GlobalVegetationDisturbanceAlertsLayerLegend = ({
           onChange={handleVegetationTypeChange}
           disabled={disabled}
         >
-          <MenuItem value={globalVegetationDisturbanceAlertsVegetationTypes.AllVegetation}>
-            All vegetation
-          </MenuItem>
-          <MenuItem value={globalVegetationDisturbanceAlertsVegetationTypes.TreeCover}>
-            Tree cover
-          </MenuItem>
+          <MenuItem value={disturbanceAlertsVegetationTypes.AllVegetation}>All vegetation</MenuItem>
+          <MenuItem value={disturbanceAlertsVegetationTypes.TreeCover}>Tree cover</MenuItem>
         </Select>
       </Box>
       <DateRangeSlider

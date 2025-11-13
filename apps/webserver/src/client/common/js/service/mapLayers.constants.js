@@ -671,7 +671,7 @@ export const mapLayers = [
           },
           'css-url':
             'https://github.com/Vizzuality/gfw/blob/develop/app/assets/javascripts/map/cartocss/style.cartocss',
-          url: 'https://tiles.globalforestwatch.org/gfw_integrated_dist_alerts/v20251001/dynamic/{z}/{x}/{y}.png',
+          url: 'https://tiles.globalforestwatch.org/gfw_integrated_alerts/latest/dynamic/{z}/{x}/{y}.png',
           useCors: true,
           metadata: 'gfw_integrated_alerts',
         },
@@ -679,20 +679,7 @@ export const mapLayers = [
       legendConfig: {
         items: [
           {
-            categories: [
-              {
-                name: 'Recent alerts',
-                color: '#e4c600',
-              },
-              {
-                name: 'Show only confirmed alerts',
-                color: '#d7668f',
-              },
-              {
-                name: 'Geographic coverage',
-                color: '#f69',
-              },
-            ],
+            categories: [],
             name: proLayers.globalIntegratedDisturbanceAlertsId,
             source: '(weekly, 10m, select countries, UMD/GLAD)',
             color: '#dc6699',

@@ -1210,7 +1210,7 @@ export const mapLayers = [
     id: 'aafb62d4-2040-4a07-9d4d-f6e17270243d',
     type: 'layer',
     attributes: {
-      name: 'SBTN Natural Forest',
+      name: proLayers.sbtnNaturalLands,
       slug: 'SBTN-Natural-Forest',
       dataset: 'e663eb09-04de-4f39-b871-35c6c2ed10b5',
       description: 'Science Based Targets Network Natural Forest',
@@ -1273,7 +1273,7 @@ export const mapLayers = [
               },
             ],
             source: 'Science Based Targets Network',
-            name: 'SBTN Natural Forest',
+            name: proLayers.sbtnNaturalLands,
           },
         ],
         type: 'basic',

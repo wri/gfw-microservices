@@ -79,6 +79,7 @@ function ListDownloadMenu({
         allLocationsSelected,
         listView,
         isGfwList,
+        source: 'listDetails',
       });
       isLoading(false);
     } catch (err) {

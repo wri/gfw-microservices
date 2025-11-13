@@ -9,6 +9,7 @@ import { ReadmeService } from '../files/readme.service';
 import { createDirectory } from '../shared/file.utils';
 import { AfiVcGeneratorService } from './afi.vc.generator.service';
 import { GreenHouseGasEmissionsGeneratorService } from './ghg.generator.service';
+import { DownloadActivityLogService } from '../services/download-activity-log.service';
 
 @Injectable({
   scope: Scope.REQUEST,
@@ -24,11 +25,12 @@ export class PipeService {
     private readonly clientStoreConnection: ClientStoreConnection,
     private readonly readmeService: ReadmeService,
     private readonly afiVcGeneratorService: AfiVcGeneratorService,
-    private readonly greenHouseGasEmissionsGeneratorService: GreenHouseGasEmissionsGeneratorService
+    private readonly greenHouseGasEmissionsGeneratorService: GreenHouseGasEmissionsGeneratorService,
+    private readonly downloadActivityLogService: DownloadActivityLogService
   ) {}
 
   public async makeFile(filters: BasicFieldsFileRequest) {
-    const { type, listId } = filters;
+    const { type, listId, file, userEmail, organizationDatabase } = filters;
 
     const pipeHandler = this.getGeneratorBaseOnType()[type];
 
@@ -43,6 +45,20 @@ export class PipeService {
       };
       this.createDirectory(filters);
       await this.readmeService.write(filters);
+
+      // Log download activity to ActivityLog table
+      if (file && userEmail && organizationDatabase && listId) {
+        await this.downloadActivityLogService.logDownloadActivity({
+          organizationDatabase,
+          userEmail,
+          listId,
+          listName,
+          fileType: file as 'csv' | 'shapefile',
+          downloadType: type,
+          analysisType: this.getAnalysisType(type),
+          source: filters.source,
+        });
+      }
     }
 
     pipeHandler.makeFile(filters);
@@ -102,4 +118,17 @@ export class PipeService {
     this.logger.log(`(${listId}) - Create directory: ${dir}`);
     createDirectory(dir);
   };
+
+  private getAnalysisType(type: string): string | undefined {
+    // Map download types to more descriptive analysis types for diagnostics
+    const analysisTypeMap: Record<string, string> = {
+      commodityRiskDiagnosticLocationSummary: 'Commodity Risk Diagnostic',
+      forestChangeDiagnosticListSummary: 'Forest Change Diagnostic - List',
+      forestChangeDiagnosticLocationSummary: 'Forest Change Diagnostic - Location',
+      deforestationTrends: 'Deforestation Trends',
+      palmRiskAnalysis: 'Palm Risk Analysis',
+    };
+
+    return analysisTypeMap[type];
+  }
 }

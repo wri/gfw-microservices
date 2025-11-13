@@ -13,6 +13,7 @@ export interface BasicFieldsFileRequest {
   organizationDatabase?: string;
   isGFWList?: boolean;
   listView?: string;
+  source?: 'listDetails' | 'landing' | 'dashboard' | 'diagnostics';
 }
 
 export interface ListFieldsFileRequest extends BasicFieldsFileRequest {

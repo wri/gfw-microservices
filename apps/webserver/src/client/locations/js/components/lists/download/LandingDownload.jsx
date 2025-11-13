@@ -22,7 +22,7 @@ function LandingDownload({
     closeMenu();
     setConfirmDialog(true);
 
-    downloadRequest({ listID, format, type }).catch((err) => {
+    downloadRequest({ listID, format, type, source: 'landing' }).catch((err) => {
       console.warn('err', err);
     });
 

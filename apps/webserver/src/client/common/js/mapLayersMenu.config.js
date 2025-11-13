@@ -191,7 +191,7 @@ const landCoverLayers = [
     order: 209,
   },
   {
-    id: proLayers.sBTNNaturalForest,
+    id: proLayers.sbtnNaturalLands,
     group: 'land-cover',
     order: 211,
   },

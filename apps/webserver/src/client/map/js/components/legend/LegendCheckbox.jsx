@@ -434,7 +434,7 @@ export default class LegendCheckbox extends Component {
                   {proLayers.sbtnNaturalLands} Map and JRC Global Map of Forest Cover already
                   account for canopy density. Leaving this filter on may cause relevant loss to be
                   excluded from the map view. When comparing the map to the Post-2000 Forest Change
-                  analysis, ensure that the canopy density filter is turned on at set to 30% to
+                  analysis, ensure that the canopy density filter is turned on and set to 30% to
                   match the threshold used in that analysis.
                 </Typography>
               </Box>

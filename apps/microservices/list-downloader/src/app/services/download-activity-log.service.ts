@@ -112,7 +112,8 @@ export class DownloadActivityLogService {
     analysisType?: string,
     source?: 'listDetails' | 'landing' | 'dashboard' | 'diagnostics'
   ): string {
-    const fileTypeDisplay = fileType === 'csv' ? 'CSV' : fileType === 'shapefile' ? 'Shapefile' : 'JSON';
+    const fileTypeDisplay =
+      fileType === 'csv' ? 'CSV' : fileType === 'shapefile' ? 'Shapefile' : 'JSON';
     const sourceDisplay = source ? ` from ${this.getSourceDisplayName(source)}` : '';
 
     let description = `List Download${sourceDisplay}: ${fileTypeDisplay} for list "${listName}" (ID: ${listId})`;

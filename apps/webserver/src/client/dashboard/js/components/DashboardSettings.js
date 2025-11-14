@@ -26,7 +26,7 @@ export default class DashboardSettings extends Component {
     }
     const visibleLayers =
       selectedAlert === 'GLAD'
-        ? [proLayers.globalIntegratedDisturbanceAlertsId]
+        ? [proLayers.integratedDeforestationAlertsID]
         : [proLayers.viirsActiveFiresID];
 
     const sendData = {

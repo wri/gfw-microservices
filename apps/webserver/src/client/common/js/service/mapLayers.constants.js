@@ -81,10 +81,10 @@ export const mapLayers = [
     id: 'b0b0b73a-1d9e-4259-9dec-8fb1b0f207e0',
     type: 'layer',
     attributes: {
-      name: 'integrated alerts geographic coverage',
+      name: proLayers.integratedAlertsGeographicCoverageID,
       slug: 'umd-glad-landsat-alerts-coverage',
       dataset: 'e663eb09-04de-4f39-b871-35c6c2ed10b5',
-      description: 'Integrated Alerts Geographic Coverage',
+      description: proLayers.integratedAlertsGeographicCoverageID,
       application: ['gfw-pro'],
       iso: [],
       provider: 'leaflet',

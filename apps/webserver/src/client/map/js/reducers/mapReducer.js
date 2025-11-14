@@ -91,6 +91,7 @@ const initialLocationState = {
     startDate: globalIntegratedDisturbanceAlertsDateRange[0],
     endDate: globalIntegratedDisturbanceAlertsDateRange[1],
     vegetationType: 'all-vegetation',
+    onlyHighConfidenceAlerts: false,
   },
 };
 

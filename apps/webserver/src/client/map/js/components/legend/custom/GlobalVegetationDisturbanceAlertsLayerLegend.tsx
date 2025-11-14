@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
-import { Box, Select, MenuItem, InputLabel } from '@mui/material';
+import { Box, Select, MenuItem, InputLabel, SelectChangeEvent } from '@mui/material';
 import { UPDATE_GLOBAL_VEGETATION_DISTURBANCE_ALERTS_FILTER } from '../../../constants/actionTypes';
 import {
   globalVegetationDisturbanceAlertsDateRange,
@@ -48,7 +48,7 @@ export const GlobalVegetationDisturbanceAlertsLayerLegend = ({
     });
   };
 
-  const handleVegetationTypeChange = (event) => {
+  const handleVegetationTypeChange = (event: SelectChangeEvent<string>) => {
     setVegetationType(event.target.value);
   };
 

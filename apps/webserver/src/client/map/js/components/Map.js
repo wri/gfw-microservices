@@ -832,6 +832,10 @@ class Map extends Component {
         );
       }
 
+      if (globalIntegratedDisturbanceAlertsFilter.onlyHighConfidenceAlerts) {
+        newURL = newURL.concat('&alert_confidence=high');
+      }
+
       duplicate.urlTemplate = newURL;
 
       const promise = new Promise((resolve) => {

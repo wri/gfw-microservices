@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
-import { Box, Select, MenuItem, InputLabel, Typography } from '@mui/material';
+import { Box, Select, MenuItem, InputLabel, Typography, SelectChangeEvent } from '@mui/material';
 import { UPDATE_GLOBAL_INTEGRATED_DISTURBANCE_ALERTS_FILTER } from '../../../constants/actionTypes';
 import { proLayers } from '../../../../../common/js/proLayers.config';
 import { toggleLayer } from '../../../actions/mapActions';
@@ -31,6 +31,10 @@ export const GlobalIntegratedDisturbanceAlertsLayerLegend = ({
     globalIntegratedDisturbanceAlertsFilter.vegetationType
   );
 
+  const [onlyHighConfidenceAlerts, setOnlyHighConfidenceAlerts] = useState(
+    globalIntegratedDisturbanceAlertsFilter.onlyHighConfidenceAlerts
+  );
+
   useEffect(() => {
     dispatch({
       type: UPDATE_GLOBAL_INTEGRATED_DISTURBANCE_ALERTS_FILTER,
@@ -40,6 +44,22 @@ export const GlobalIntegratedDisturbanceAlertsLayerLegend = ({
       },
     });
   }, [vegetationType]);
+
+  useEffect(() => {
+    dispatch({
+      type: UPDATE_GLOBAL_INTEGRATED_DISTURBANCE_ALERTS_FILTER,
+      payload: {
+        ...globalIntegratedDisturbanceAlertsFilter,
+        onlyHighConfidenceAlerts,
+      },
+    });
+  }, [onlyHighConfidenceAlerts]);
+
+  const toggleHighConfidenceAlerts = () => {
+    if (!disabled) {
+      setOnlyHighConfidenceAlerts(!onlyHighConfidenceAlerts);
+    }
+  };
 
   const toggleGeographicCoverageLayer = () => {
     if (!disabled) {
@@ -58,7 +78,7 @@ export const GlobalIntegratedDisturbanceAlertsLayerLegend = ({
     });
   };
 
-  const handleVegetationTypeChange = (event) => {
+  const handleVegetationTypeChange = (event: SelectChangeEvent<string>) => {
     setVegetationType(event.target.value);
   };
 
@@ -109,11 +129,9 @@ export const GlobalIntegratedDisturbanceAlertsLayerLegend = ({
       </ul>
       <div
         style={{ padding: 0, marginTop: '4px', marginLeft: '16px' }}
-        onClick={toggleGeographicCoverageLayer}
+        onClick={toggleHighConfidenceAlerts}
         className={`layer-checkbox ${
-          visibleLayers.includes(proLayers.disturbanceAlertsDriversGeographicCoverageId)
-            ? 'active'
-            : ''
+          globalIntegratedDisturbanceAlertsFilter.onlyHighConfidenceAlerts ? 'active' : ''
         }`}
       >
         <span className="toggle-switch pointer">

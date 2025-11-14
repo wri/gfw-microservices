@@ -662,16 +662,9 @@ export const mapLayers = [
       layerConfig: {
         type: 'tileLayer',
         body: {
-          options: {
-            color: [220, 102, 153],
-          },
-          'coverage-options': {
-            opacity: 0.3,
-            color: '#f69',
-          },
-          'css-url':
-            'https://github.com/Vizzuality/gfw/blob/develop/app/assets/javascripts/map/cartocss/style.cartocss',
-          url: 'https://tiles.globalforestwatch.org/gfw_integrated_dist_alerts/v20251001/dynamic/{z}/{x}/{y}.png?render_type=true_color',
+          useCors: true,
+          metadata: 'gfw_global_integrated_disturbance_alerts_metadata',
+          url: 'https://tiles.globalforestwatch.org/gfw_integrated_dist_alerts/latest/dynamic/{z}/{x}/{y}.png?render_type=true_color',
           useCors: true,
           metadata: 'gfw_integrated_alerts',
         },
@@ -681,8 +674,6 @@ export const mapLayers = [
           {
             categories: [],
             name: proLayers.globalIntegratedDisturbanceAlertsId,
-            source: '(weekly, 10m, select countries, UMD/GLAD)',
-            color: '#dc6699',
           },
         ],
         type: 'basic',

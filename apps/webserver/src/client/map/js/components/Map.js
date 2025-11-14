@@ -729,10 +729,13 @@ class Map extends Component {
       });
     }
 
+    // Helper function to check if any filter properties changed
+    const hasFilterChanged = (prevFilter, currentFilter) => {
+      return Object.keys(currentFilter).some((key) => prevFilter[key] !== currentFilter[key]);
+    };
+
     if (
-      prevState.driverOfDisturbanceAlertsFilter.startDate !==
-        driverOfDisturbanceAlertsFilter.startDate ||
-      prevState.driverOfDisturbanceAlertsFilter.endDate !== driverOfDisturbanceAlertsFilter.endDate
+      hasFilterChanged(prevState.driverOfDisturbanceAlertsFilter, driverOfDisturbanceAlertsFilter)
     ) {
       const driversOfDisturbanceAlertsLayer = this.view.map.findLayerById(
         disturbanceAlertsDriversId
@@ -759,12 +762,10 @@ class Map extends Component {
     }
 
     if (
-      prevState.globalVegetationDisturbanceAlertsFilter.startDate !==
-        globalVegetationDisturbanceAlertsFilter.startDate ||
-      prevState.globalVegetationDisturbanceAlertsFilter.endDate !==
-        globalVegetationDisturbanceAlertsFilter.endDate ||
-      prevState.globalVegetationDisturbanceAlertsFilter.vegetationType !==
-        globalVegetationDisturbanceAlertsFilter.vegetationType
+      hasFilterChanged(
+        prevState.globalVegetationDisturbanceAlertsFilter,
+        globalVegetationDisturbanceAlertsFilter
+      )
     ) {
       const globalVegetationDisturbanceAlertsLayer = this.view.map.findLayerById(
         globalVegetationDisturbanceAlertsId
@@ -804,12 +805,10 @@ class Map extends Component {
     }
 
     if (
-      prevState.globalIntegratedDisturbanceAlertsFilter.startDate !==
-        globalIntegratedDisturbanceAlertsFilter.startDate ||
-      prevState.globalIntegratedDisturbanceAlertsFilter.endDate !==
-        globalIntegratedDisturbanceAlertsFilter.endDate ||
-      prevState.globalIntegratedDisturbanceAlertsFilter.vegetationType !==
-        globalIntegratedDisturbanceAlertsFilter.vegetationType
+      hasFilterChanged(
+        prevState.globalIntegratedDisturbanceAlertsFilter,
+        globalIntegratedDisturbanceAlertsFilter
+      )
     ) {
       const globalIntegratedDisturbanceAlertsLayer = this.view.map.findLayerById(
         globalIntegratedDisturbanceAlertsId

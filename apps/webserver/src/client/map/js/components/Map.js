@@ -449,6 +449,7 @@ class Map extends Component {
       layerOpacity,
       driverOfDisturbanceAlertsFilter,
       globalVegetationDisturbanceAlertsFilter,
+      globalIntegratedDisturbanceAlertsFilter,
     } = this.state;
 
     updateInteractiveLayers(this.view.map, prevState, this.state);
@@ -791,6 +792,51 @@ class Map extends Component {
 
       const promise = new Promise((resolve) => {
         this.view.map.remove(globalVegetationDisturbanceAlertsLayer);
+        setTimeout(() => {
+          resolve();
+        }, 100);
+      });
+      promise.then(() => {
+        this.view.map.add(duplicate);
+        duplicate.visible = true;
+        this.view.map.layers.reorder(duplicate, index);
+      });
+    }
+
+    if (
+      prevState.globalIntegratedDisturbanceAlertsFilter.startDate !==
+        globalIntegratedDisturbanceAlertsFilter.startDate ||
+      prevState.globalIntegratedDisturbanceAlertsFilter.endDate !==
+        globalIntegratedDisturbanceAlertsFilter.endDate ||
+      prevState.globalIntegratedDisturbanceAlertsFilter.vegetationType !==
+        globalIntegratedDisturbanceAlertsFilter.vegetationType
+    ) {
+      const globalIntegratedDisturbanceAlertsLayer = this.view.map.findLayerById(
+        globalIntegratedDisturbanceAlertsId
+      );
+      const index = this.view.map.layers.findIndex(
+        (l) => l.id === globalIntegratedDisturbanceAlertsId
+      );
+      const duplicate = globalIntegratedDisturbanceAlertsLayer;
+      const soyConfig = this.state.mapLayers.find(
+        (l) => l.id === globalIntegratedDisturbanceAlertsId
+      );
+      let newURL = soyConfig.layerConfig.body.url.concat(
+        `&start_date=${globalIntegratedDisturbanceAlertsFilter.startDate}&end_date=${globalIntegratedDisturbanceAlertsFilter.endDate}`
+      );
+      if (
+        globalIntegratedDisturbanceAlertsFilter.vegetationType ===
+        disturbanceAlertsVegetationTypes.TreeCover
+      ) {
+        newURL = newURL.concat(
+          '&tree_cover_density_threshold=30&tree_cover_height_threshold=3&tree_cover_loss_threshold=2021'
+        );
+      }
+
+      duplicate.urlTemplate = newURL;
+
+      const promise = new Promise((resolve) => {
+        this.view.map.remove(globalIntegratedDisturbanceAlertsLayer);
         setTimeout(() => {
           resolve();
         }, 100);

@@ -21,7 +21,7 @@ export const proLayers = {
   raddAlertsID: 'RADD alerts',
   raddCoverageID: 'RADD Coverage',
   globalIntegratedDisturbanceAlertsId: 'Global Integrated Disturbance Alerts',
-  integratedAlertsGeographicCoverageID: 'integrated alerts geographic coverage',
+  integratedAlertsGeographicCoverageID: 'Integrated alerts geographic coverage',
   viirsActiveFiresID: 'VIIRS Global Fires',
   treeCoverID: 'Tree cover 2000',
   cameroonAgroIndustrialZonesID: 'Cameroon agro-industrial zones',

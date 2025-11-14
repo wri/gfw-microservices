@@ -34,12 +34,14 @@ import {
   SET_LAYER_OPACITY,
   UPDATE_DRIVER_OF_DISTURBANCE_ALERTS_FILTER,
   UPDATE_GLOBAL_VEGETATION_DISTURBANCE_ALERTS_FILTER,
+  UPDATE_GLOBAL_INTEGRATED_DISTURBANCE_ALERTS_FILTER,
 } from '../constants/actionTypes';
 import {
   PLANET_TILE_LAYER_INITIAL,
   soyPlantedYearsRange,
   driverOfDisturbanceAlertsDateRange,
   globalVegetationDisturbanceAlertsDateRange,
+  globalIntegratedDisturbanceAlertsDateRange,
 } from '../../../common/js/config';
 import { proLayers, exclusiveLayers, visibleLayers } from '../../../common/js/proLayers.config';
 
@@ -83,6 +85,11 @@ const initialLocationState = {
   globalVegetationDisturbanceAlertsFilter: {
     startDate: globalVegetationDisturbanceAlertsDateRange[0],
     endDate: globalVegetationDisturbanceAlertsDateRange[1],
+    vegetationType: 'all-vegetation',
+  },
+  globalIntegratedDisturbanceAlertsFilter: {
+    startDate: globalIntegratedDisturbanceAlertsDateRange[0],
+    endDate: globalIntegratedDisturbanceAlertsDateRange[1],
     vegetationType: 'all-vegetation',
   },
 };
@@ -285,6 +292,14 @@ export function updateGlobalVegetationDisturbanceAlertsFilter(
   action
 ) {
   return action.type !== UPDATE_GLOBAL_VEGETATION_DISTURBANCE_ALERTS_FILTER
+    ? state
+    : action.payload;
+}
+export function updateGlobalIntegratedDisturbanceAlertsFilter(
+  state = initialLocationState.globalIntegratedDisturbanceAlertsFilter,
+  action
+) {
+  return action.type !== UPDATE_GLOBAL_INTEGRATED_DISTURBANCE_ALERTS_FILTER
     ? state
     : action.payload;
 }

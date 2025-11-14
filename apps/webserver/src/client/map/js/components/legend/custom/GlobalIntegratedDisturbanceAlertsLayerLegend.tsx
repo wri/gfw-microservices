@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { Box, Select, MenuItem, InputLabel, Typography } from '@mui/material';
-import { UPDATE_GLOBAL_VEGETATION_DISTURBANCE_ALERTS_FILTER } from '../../../constants/actionTypes';
+import { UPDATE_GLOBAL_INTEGRATED_DISTURBANCE_ALERTS_FILTER } from '../../../constants/actionTypes';
 import { proLayers } from '../../../../../common/js/proLayers.config';
 import { toggleLayer } from '../../../actions/mapActions';
 import {
@@ -20,22 +20,22 @@ export const GlobalIntegratedDisturbanceAlertsLayerLegend = ({
 }: GlobalIntegratedDisturbanceAlertsLayerLegendProps) => {
   const dispatch = useDispatch();
 
-  const { globalVegetationDisturbanceAlertsFilter, visibleLayers } = useSelector(
+  const { globalIntegratedDisturbanceAlertsFilter, visibleLayers } = useSelector(
     (state: MapReducerRootState) => ({
-      globalVegetationDisturbanceAlertsFilter: state.globalVegetationDisturbanceAlertsFilter,
+      globalIntegratedDisturbanceAlertsFilter: state.globalIntegratedDisturbanceAlertsFilter,
       visibleLayers: state.visibleLayers,
     })
   );
 
   const [vegetationType, setVegetationType] = useState(
-    globalVegetationDisturbanceAlertsFilter.vegetationType
+    globalIntegratedDisturbanceAlertsFilter.vegetationType
   );
 
   useEffect(() => {
     dispatch({
-      type: UPDATE_GLOBAL_VEGETATION_DISTURBANCE_ALERTS_FILTER,
+      type: UPDATE_GLOBAL_INTEGRATED_DISTURBANCE_ALERTS_FILTER,
       payload: {
-        ...globalVegetationDisturbanceAlertsFilter,
+        ...globalIntegratedDisturbanceAlertsFilter,
         vegetationType,
       },
     });
@@ -49,9 +49,9 @@ export const GlobalIntegratedDisturbanceAlertsLayerLegend = ({
 
   const handleDateChange = (newStartDate: string, newEndDate: string) => {
     dispatch({
-      type: UPDATE_GLOBAL_VEGETATION_DISTURBANCE_ALERTS_FILTER,
+      type: UPDATE_GLOBAL_INTEGRATED_DISTURBANCE_ALERTS_FILTER,
       payload: {
-        ...globalVegetationDisturbanceAlertsFilter,
+        ...globalIntegratedDisturbanceAlertsFilter,
         startDate: newStartDate,
         endDate: newEndDate,
       },
@@ -164,8 +164,8 @@ export const GlobalIntegratedDisturbanceAlertsLayerLegend = ({
         </Box>
       </Box>
       <DateRangeSlider
-        startDate={globalVegetationDisturbanceAlertsFilter.startDate}
-        endDate={globalVegetationDisturbanceAlertsFilter.endDate}
+        startDate={globalIntegratedDisturbanceAlertsFilter.startDate}
+        endDate={globalIntegratedDisturbanceAlertsFilter.endDate}
         minDate={globalIntegratedDisturbanceAlertsDateRange[0]}
         maxDate={globalIntegratedDisturbanceAlertsDateRange[1]}
         disabled={disabled}

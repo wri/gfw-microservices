@@ -64,6 +64,8 @@ BEGIN
         ISNULL(ATC.activity_type_category_name, ''Unknown'') AS activity_type_category,
         -- Extract file type from download activity descriptions
         CASE
+          -- Activity types 42-45 correspond to ListDetailsDownload, ListLandingDownload, 
+          -- ListDashboardDownload, ListDiagnosticsDownload from listActivityTypesEnum.ts
           WHEN AL.activity_type_id IN (42, 43, 44, 45) AND AL.activity_description LIKE ''%: CSV %'' THEN ''csv''
           WHEN AL.activity_type_id IN (42, 43, 44, 45) AND AL.activity_description LIKE ''%: Shapefile %'' THEN ''shapefile''
           ELSE NULL

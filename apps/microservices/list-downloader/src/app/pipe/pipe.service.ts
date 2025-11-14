@@ -45,23 +45,27 @@ export class PipeService {
       };
       this.createDirectory(filters);
       await this.readmeService.write(filters);
-
-      // Log download activity to ActivityLog table
-      if (file && userEmail && organizationDatabase && listId) {
-        await this.downloadActivityLogService.logDownloadActivity({
-          organizationDatabase,
-          userEmail,
-          listId,
-          listName,
-          fileType: file as 'csv' | 'shapefile',
-          downloadType: type,
-          analysisType: this.getAnalysisType(type),
-          source: filters.source,
-        });
-      }
     }
 
-    pipeHandler.makeFile(filters);
+    await pipeHandler.makeFile(filters);
+
+    // Log download activity to ActivityLog table
+    if (file && userEmail && organizationDatabase) {
+      // listName may not be defined here if listId is not provided, so we need to get it again if necessary
+      let listNameToLog = filters.listName;
+      if (!listNameToLog && listId) {
+        listNameToLog = await this.getListName(filters);
+      }
+      await this.downloadActivityLogService.logDownloadActivity({
+        organizationDatabase,
+        userEmail,
+        listId,
+        listName: listNameToLog,
+        fileType: file as 'csv' | 'shapefile' | 'json',
+        downloadType: type,
+        source: filters.source,
+      });
+    }
   }
 
   private async getListName(filters: BasicFieldsFileRequest) {
@@ -118,17 +122,4 @@ export class PipeService {
     this.logger.log(`(${listId}) - Create directory: ${dir}`);
     createDirectory(dir);
   };
-
-  private getAnalysisType(type: string): string | undefined {
-    // Map download types to more descriptive analysis types for diagnostics
-    const analysisTypeMap: Record<string, string> = {
-      commodityRiskDiagnosticLocationSummary: 'Commodity Risk Diagnostic',
-      forestChangeDiagnosticListSummary: 'Forest Change Diagnostic - List',
-      forestChangeDiagnosticLocationSummary: 'Forest Change Diagnostic - Location',
-      deforestationTrends: 'Deforestation Trends',
-      palmRiskAnalysis: 'Palm Risk Analysis',
-    };
-
-    return analysisTypeMap[type];
-  }
 }

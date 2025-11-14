@@ -7,7 +7,7 @@ export interface DownloadActivityLogData {
   userEmail: string;
   listId: number;
   listName: string;
-  fileType: 'csv' | 'shapefile';
+  fileType: 'csv' | 'shapefile' | 'json';
   downloadType: string; // e.g., 'input', 'results', 'afi', 'alerts', etc.
   analysisType?: string; // for diagnostics, e.g., 'commodityRiskDiagnosticLocationSummary'
   source?: 'listDetails' | 'landing' | 'dashboard' | 'diagnostics'; // Where the download was triggered from
@@ -94,18 +94,25 @@ export class DownloadActivityLogService {
       diagnostics: ListActivityTypesEnum.ListDiagnosticsDownload,
     };
 
-    return sourceToActivityTypeMap[source] || ListActivityTypesEnum.ListDetailsDownload;
+    if (source in sourceToActivityTypeMap) {
+      return sourceToActivityTypeMap[source];
+    } else {
+      this.logger.warn(
+        `Unknown or undefined download source "${source}", defaulting to ListDetailsDownload (activity type ${ListActivityTypesEnum.ListDetailsDownload}).`
+      );
+      return ListActivityTypesEnum.ListDetailsDownload;
+    }
   }
 
   private buildActivityDescription(
     listId: number,
     listName: string,
-    fileType: 'csv' | 'shapefile',
+    fileType: 'csv' | 'shapefile' | 'json',
     downloadType: string,
     analysisType?: string,
     source?: 'listDetails' | 'landing' | 'dashboard' | 'diagnostics'
   ): string {
-    const fileTypeDisplay = fileType === 'csv' ? 'CSV' : 'Shapefile';
+    const fileTypeDisplay = fileType === 'csv' ? 'CSV' : fileType === 'shapefile' ? 'Shapefile' : 'JSON';
     const sourceDisplay = source ? ` from ${this.getSourceDisplayName(source)}` : '';
 
     let description = `List Download${sourceDisplay}: ${fileTypeDisplay} for list "${listName}" (ID: ${listId})`;

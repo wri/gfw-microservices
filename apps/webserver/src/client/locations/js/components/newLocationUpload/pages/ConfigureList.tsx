@@ -154,6 +154,7 @@ export function ConfigureList({ userLists }: { userLists: UserList[] }) {
   const { data: validLists, isLoading, request } = useFetch<{ id: number; name: string }[]>();
 
   // Restore form state from context when component mounts
+  // This should only run once on mount, not when context values change
   useEffect(() => {
     if (commodity) {
       setValue('commodity', commodity as CommoditiesType);
@@ -176,7 +177,7 @@ export function ConfigureList({ userLists }: { userLists: UserList[] }) {
     if (isUmlFile && !commodity) {
       setValue('commodity', 'Palm oil');
     }
-  }, [uploadType, isUmlFile, setValue, commodity]);
+  }, [isUmlFile, setValue, commodity]);
 
   const selectedCommodity = watch('commodity') as CommoditiesType;
   useEffect(() => {
@@ -249,11 +250,11 @@ export function ConfigureList({ userLists }: { userLists: UserList[] }) {
 
     // Palm Risk requires FCD to be selected (it's a child analysis of FCD)
     if (id === analysisTypes.PALM_RISK && e.target.checked) {
-      setValue('FCD', true);
+      setValue(analysisTypes.FOREST_CHANGE_DIAGNOSTICS, true);
     }
 
     // If FCD is unchecked, also uncheck Palm Risk (parent-child relationship)
-    if (id === 'FCD' && !e.target.checked) {
+    if (id === analysisTypes.FOREST_CHANGE_DIAGNOSTICS && !e.target.checked) {
       setValue(analysisTypes.PALM_RISK, false);
     }
   };

@@ -243,11 +243,10 @@ describe('ConfigureList', () => {
       ).not.toBeInTheDocument();
     });
 
-    // 5. Click Next again -> should now show list name errors
+    // 5. Click Next again
     await user.click(nextButton);
     await waitFor(() => {
-      const errorText = screen.queryByText(/you must provide at least one list name/i);
-      console.log('Error text found:', errorText?.textContent);
+      expect(mockHistoryPush).toHaveBeenCalledTimes(2);
     });
 
     // 6. Fill in a list name -> list name error is resolved

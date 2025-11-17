@@ -38,7 +38,7 @@ export default function AccountProfileFormSetting() {
     policyList,
     refreshAccountData,
   } = useAccountDetail();
-  const isEditingDisabled = accountData.organization_status_id !== ACCOUNT_ORG_STATUSES['PENDING'];
+  const isEditingDisabled = accountData.organization_status_id !== ACCOUNT_ORG_STATUSES['PENDING']; // only editable when Pending
   const getClassificationsValuesFromArrId = (orgClassificationsArrId) => {
     return orgClassificationsArrId.map((classification) => {
       const classId = parseInt(classification, 10);
@@ -463,6 +463,7 @@ export default function AccountProfileFormSetting() {
         <Grid item sm={6} xs={12}>
           <div className="account-profile-submit-button-container">
             <PillButton
+              disabled={isEditingDisabled}
               variant="contained"
               size="small"
               classNames={`${isEditingDisabled ? 'hide' : ''}`}

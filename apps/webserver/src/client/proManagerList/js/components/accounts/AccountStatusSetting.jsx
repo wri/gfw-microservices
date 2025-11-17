@@ -122,18 +122,18 @@ export default function AccountStatusSetting() {
       rowSpacing={2}
       sx={{ display: 'flex', alignItems: 'center', ml: 2, gap: 1 }}
     >
-      <Grid item md={2} sm={6} xs={12}>
+      <Grid item md={2} sm={6} xs={12} sx={{ display: 'flex', flexDirection: 'column' }}>
         <FieldLabel label="Account Status" />
         <AccountStatusChip account={currentAccount} />
       </Grid>
 
-      <Grid sx={{ display: 'flex', alignItems: 'center', ml: 2, gap: 1 }}>
+      <Grid item sx={{ display: 'flex', alignItems: 'center', gap: 1, mt: 1 }}>
         {/* Activate */}
         <Tooltip
           title={status !== 'PENDING' ? 'Only accounts that are Pending can be activated' : ''}
           disableHoverListener={status === 'PENDING'}
         >
-          <span>
+          <span style={{ cursor: status !== 'PENDING' ? 'help' : 'default' }}>
             {/* wrap needed: disabled buttons block tooltips */}
             <PillButton
               variant="contained"
@@ -152,7 +152,7 @@ export default function AccountStatusSetting() {
           title={status === 'INACTIVE' ? 'Account is already inactive' : ''}
           disableHoverListener={status !== 'INACTIVE'}
         >
-          <span>
+          <span style={{ cursor: status === 'INACTIVE' ? 'help' : 'default' }}>
             <PillButton
               variant="contained"
               size="small"
@@ -170,7 +170,7 @@ export default function AccountStatusSetting() {
           title={status !== 'PENDING' ? 'Only accounts that are Pending can be closed' : ''}
           disableHoverListener={status === 'PENDING'}
         >
-          <span>
+          <span style={{ cursor: status !== 'PENDING' ? 'help' : 'default' }}>
             <PillButton
               variant="contained"
               size="small"

@@ -1070,7 +1070,7 @@ export const accountProfileStrings = {
     org_address: 'Organization Address',
     org_website: 'Organization Website',
     parent_org_name: 'Parent Organization',
-    is_subsidiary: 'Is Subsidiary ?',
+    is_subsidiary: 'Is Subsidiary?',
     arr_org_classification: 'Account Classifications',
     arr_org_policy: 'Organization Policy',
     subscription_status_id: 'Subscription Status',

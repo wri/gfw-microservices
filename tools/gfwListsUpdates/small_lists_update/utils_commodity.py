@@ -168,6 +168,7 @@ INDICATOR_LEVELS_VALUE_PEAT = {
     "2021": [0.0000, 0.1196, 0.2327],
     "2022": [0.0000, 0.1202, 0.2329],
     "2023": [0.0000, 0.1212, 0.2318],
+    "2024": [0.0000, 0.1212, 0.2318],
 }
 
 # Indicator Levels for Value WDPA [low, medium, high]
@@ -197,91 +198,47 @@ INDICATOR_LEVELS_VALUE_WDPA = {
     "2024": [0.0000, 0.0520, 0.1337],
 }
 
-INDICATOR_LEVELS_THREAT_OVERALL = {
-    "2002": [0.0000, 0.9999, 1.5999],
-    "2003": [0.0000, 0.9999, 1.5999],
-    "2004": [0.0000, 0.9999, 1.5999],
-    "2005": [0.0000, 0.9999, 1.5999],
-    "2006": [0.0000, 0.9999, 1.5999],
-    "2007": [0.0000, 0.9999, 1.5999],
-    "2008": [0.0000, 0.9999, 1.5999],
-    "2009": [0.0000, 0.9999, 1.5999],
-    "2010": [0.0000, 0.9999, 1.5999],
-    "2011": [0.0000, 0.9999, 1.5999],
-    "2012": [0.0000, 0.9999, 1.5999],
-    "2013": [0.0000, 0.9999, 1.5999],
-    "2014": [0.0000, 0.9999, 1.5999],
-    "2015": [0.0000, 0.9999, 1.5999],
-    "2016": [0.0000, 0.9999, 1.5999],
-    "2017": [0.0000, 0.9999, 1.5999],
-    "2018": [0.0000, 0.9999, 1.5999],
-    "2019": [0.0000, 0.9999, 1.5999],
-    "2020": [0.0000, 0.9999, 1.5999],
-    "2021": [0.0000, 0.9999, 1.5999],
-    "2022": [0.0000, 0.9999, 1.5999],
-    "2023": [0.0000, 0.9999, 1.5999],
-    "2024": [0.0000, 0.9999, 1.5999],
-}
+# Overall indicators have constant thresholds across all years
+# These define the cutoff points for [low, medium, high] levels
+INDICATOR_LEVELS_THREAT_OVERALL_CONSTANT = [0.0000, 0.9999, 1.5999]
+INDICATOR_LEVELS_VALUE_OVERALL_CONSTANT = [0.0000, 0.9999, 1.5999]
+INDICATOR_LEVELS_MILL_PRIORITY_CONSTANT = [0.0000, 1.9999, 3.0999]
 
-INDICATOR_LEVELS_VALUE_OVERALL = {
-    "2002": [0.0000, 0.9999, 1.5999],
-    "2003": [0.0000, 0.9999, 1.5999],
-    "2004": [0.0000, 0.9999, 1.5999],
-    "2005": [0.0000, 0.9999, 1.5999],
-    "2006": [0.0000, 0.9999, 1.5999],
-    "2007": [0.0000, 0.9999, 1.5999],
-    "2008": [0.0000, 0.9999, 1.5999],
-    "2009": [0.0000, 0.9999, 1.5999],
-    "2010": [0.0000, 0.9999, 1.5999],
-    "2011": [0.0000, 0.9999, 1.5999],
-    "2012": [0.0000, 0.9999, 1.5999],
-    "2013": [0.0000, 0.9999, 1.5999],
-    "2014": [0.0000, 0.9999, 1.5999],
-    "2015": [0.0000, 0.9999, 1.5999],
-    "2016": [0.0000, 0.9999, 1.5999],
-    "2017": [0.0000, 0.9999, 1.5999],
-    "2018": [0.0000, 0.9999, 1.5999],
-    "2019": [0.0000, 0.9999, 1.5999],
-    "2020": [0.0000, 0.9999, 1.5999],
-    "2021": [0.0000, 0.9999, 1.5999],
-    "2022": [0.0000, 0.9999, 1.5999],
-    "2023": [0.0000, 0.9999, 1.5999],
-    "2024": [0.0000, 0.9999, 1.5999],
-}
+# These define the year range for data processing
+MIN_YEAR = 2002
+MAX_YEAR = 2024  # Update this when adding new years of data
 
-INDICATOR_LEVELS_MILL_PRIORITY = {
-    "2002": [0.0000, 1.9999, 3.0999],
-    "2003": [0.0000, 1.9999, 3.0999],
-    "2004": [0.0000, 1.9999, 3.0999],
-    "2005": [0.0000, 1.9999, 3.0999],
-    "2006": [0.0000, 1.9999, 3.0999],
-    "2007": [0.0000, 1.9999, 3.0999],
-    "2008": [0.0000, 1.9999, 3.0999],
-    "2009": [0.0000, 1.9999, 3.0999],
-    "2010": [0.0000, 1.9999, 3.0999],
-    "2011": [0.0000, 1.9999, 3.0999],
-    "2012": [0.0000, 1.9999, 3.0999],
-    "2013": [0.0000, 1.9999, 3.0999],
-    "2014": [0.0000, 1.9999, 3.0999],
-    "2015": [0.0000, 1.9999, 3.0999],
-    "2016": [0.0000, 1.9999, 3.0999],
-    "2017": [0.0000, 1.9999, 3.0999],
-    "2018": [0.0000, 1.9999, 3.0999],
-    "2019": [0.0000, 1.9999, 3.0999],
-    "2020": [0.0000, 1.9999, 3.0999],
-    "2021": [0.0000, 1.9999, 3.0999],
-    "2022": [0.0000, 1.9999, 3.0999],
-    "2023": [0.0000, 1.9999, 3.0999],
-    "2024": [0.0000, 1.9999, 3.0999],
-}
+def get_constant_levels_for_year_range(constant_levels, min_year=MIN_YEAR, max_year=MAX_YEAR):
+    """
+    Generate a dictionary of constant levels for a given year range.
+    
+    :param constant_levels: List of [low, medium, high] threshold values
+    :param min_year: Starting year (inclusive)
+    :param max_year: Ending year (inclusive)
+    :return: Dictionary with years as string keys and constant levels as values
+    """
+    return {str(year): constant_levels for year in range(min_year, max_year + 1)}
 
+
+# Generate the full dictionaries for backward compatibility
+INDICATOR_LEVELS_THREAT_OVERALL = get_constant_levels_for_year_range(
+    INDICATOR_LEVELS_THREAT_OVERALL_CONSTANT
+)
+
+INDICATOR_LEVELS_VALUE_OVERALL = get_constant_levels_for_year_range(
+    INDICATOR_LEVELS_VALUE_OVERALL_CONSTANT
+)
+
+INDICATOR_LEVELS_MILL_PRIORITY = get_constant_levels_for_year_range(
+    INDICATOR_LEVELS_MILL_PRIORITY_CONSTANT
+)
 
 def calculateLevels(obj_year_vals, land_cover_area, obj_levels):
     """
     Function to pass in values for years with the array of levels to check against to return levels for each year.
     :param obj_year_vals: dictionary of years and their values
     :param land_cover_area: land cover total area to standardize/normalize
-    :param obj_levels: the levels to compare values against
+    :param obj_levels: the levels to compare values against (can be dict or list)
     :return: Returns a new object with the correct level identified for each year
     """
 
@@ -289,16 +246,27 @@ def calculateLevels(obj_year_vals, land_cover_area, obj_levels):
         obj_year_vals = json.loads(obj_year_vals)
 
     objCalculatedLevels = dict()
+    
+    # Check if obj_levels is a constant list (same for all years)
+    is_constant_levels = isinstance(obj_levels, list)
+    
     # k=year, v=value
     for k, v in obj_year_vals.items():
+        # Skip years outside our data range
+        if int(k) < MIN_YEAR or int(k) > MAX_YEAR:
+            continue
 
         # obtain the value to compare
         nVal = v / land_cover_area
 
-        # Obtain the levels for the particular property/year from the dictionary
-        arrLevels = obj_levels.get(
-            k, None
-        )  # if the key for the year doesn't exist then skip it
+        # Obtain the levels for the particular property/year
+        if is_constant_levels:
+            # Use the constant levels directly
+            arrLevels = obj_levels
+        else:
+            # Get year-specific levels from dictionary
+            arrLevels = obj_levels.get(k, None)
+            
         if arrLevels is not None:
             curLevel = 0
             for i in range(len(arrLevels) - 1, -1, -1):
@@ -306,6 +274,7 @@ def calculateLevels(obj_year_vals, land_cover_area, obj_levels):
                     curLevel = i
                     break
             objCalculatedLevels[k] = curLevel
+            
     return objCalculatedLevels
 
 
@@ -314,7 +283,7 @@ def applyCalcLevels(inputColumn, division, indicator_levels):
     Apply calculation for levels on a pandas dataframe
     :param inputColumn: input column with yearly values as string or dict
     :param division: column or constant with the total area to standardize
-    :param indicator_levels: variable indicator levels for low, medium, high breaks
+    :param indicator_levels: variable indicator levels for low, medium, high breaks (dict or list)
     :return: yearly dictionary of the calculated levels as JSON string
     """
     if type(inputColumn) == str:
@@ -494,30 +463,38 @@ def addOverallScoresLevels(df):
         axis=1,
     )
 
+    # Use constant levels directly instead of year-specific dictionaries
     df["commodity_threat_overall_level"] = df.apply(
         lambda x: applyCalcLevels(
-            x["commodity_threat_overall_score"], 1, INDICATOR_LEVELS_THREAT_OVERALL
+            x["commodity_threat_overall_score"], 
+            1, 
+            INDICATOR_LEVELS_THREAT_OVERALL_CONSTANT  # Use constant instead of dict
         ),
         axis=1,
     )
 
     df["commodity_value_overall_level"] = df.apply(
         lambda x: applyCalcLevels(
-            x["commodity_value_overall_score"], 1, INDICATOR_LEVELS_VALUE_OVERALL
+            x["commodity_value_overall_score"], 
+            1, 
+            INDICATOR_LEVELS_VALUE_OVERALL_CONSTANT  # Use constant instead of dict
         ),
         axis=1,
     )
 
     df["commodity_mill_priority_score"] = df.apply(
         lambda x: millPriorityScores(
-            x["commodity_threat_overall_score"], x["commodity_value_overall_score"]
+            x["commodity_threat_overall_score"], 
+            x["commodity_value_overall_score"]
         ),
         axis=1,
     )
 
     df["commodity_mill_priority_level"] = df.apply(
         lambda x: applyCalcLevels(
-            x["commodity_mill_priority_score"], 1, INDICATOR_LEVELS_MILL_PRIORITY
+            x["commodity_mill_priority_score"], 
+            1, 
+            INDICATOR_LEVELS_MILL_PRIORITY_CONSTANT  # Use constant instead of dict
         ),
         axis=1,
     )

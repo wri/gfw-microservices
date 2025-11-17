@@ -63,7 +63,7 @@ export const GlobalIntegratedDisturbanceAlertsLayerLegend = ({
 
   const toggleGeographicCoverageLayer = () => {
     if (!disabled) {
-      dispatch(toggleLayer(proLayers.disturbanceAlertsDriversGeographicCoverageId));
+      dispatch(toggleLayer(proLayers.integratedAlertsGeographicCoverageID));
     }
   };
 
@@ -140,17 +140,13 @@ export const GlobalIntegratedDisturbanceAlertsLayerLegend = ({
         <span className="layer-checkbox-label pointer">Show only high confidence alerts</span>
       </div>
       <Typography sx={{ fontSize: '0.875rem', marginTop: '10px' }}>Geographic coverage</Typography>
-      <Box
-        style={{ padding: 0, marginTop: 0 }}
-        onClick={toggleGeographicCoverageLayer}
-        className={`layer-checkbox ${
-          visibleLayers.includes(proLayers.disturbanceAlertsDriversGeographicCoverageId)
-            ? 'active'
-            : ''
-        }`}
-        sx={{ ml: 2 }}
-      >
-        <Box>
+      <Box style={{ padding: 0, marginTop: 0 }}>
+        <Box
+          onClick={toggleGeographicCoverageLayer}
+          className={`layer-checkbox ${
+            visibleLayers.includes(proLayers.integratedAlertsGeographicCoverageID) ? 'active' : ''
+          }`}
+        >
           <span className="toggle-switch pointer">
             <span />
           </span>
@@ -165,7 +161,7 @@ export const GlobalIntegratedDisturbanceAlertsLayerLegend = ({
             GLAD-L, GLAD-S2 and/or RADD alerts (tropics)
           </span>
         </Box>
-        <Box>
+        <Box className={`layer-checkbox`}>
           <span className="toggle-switch pointer">
             <span />
           </span>

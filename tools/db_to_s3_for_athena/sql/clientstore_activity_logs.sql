@@ -68,6 +68,7 @@ BEGIN
           -- ListDashboardDownload, ListDiagnosticsDownload from listActivityTypesEnum.ts
           WHEN AL.activity_type_id IN (42, 43, 44, 45) AND AL.activity_description LIKE ''%: CSV %'' THEN ''csv''
           WHEN AL.activity_type_id IN (42, 43, 44, 45) AND AL.activity_description LIKE ''%: Shapefile %'' THEN ''shapefile''
+          WHEN AL.activity_type_id IN (42, 43, 44, 45) AND AL.activity_description LIKE ''%: json %'' THEN ''json''
           ELSE NULL
         END AS download_file_type
       FROM [' + @db_name + '].dbo.ActivityLog AL

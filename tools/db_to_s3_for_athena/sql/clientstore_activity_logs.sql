@@ -63,12 +63,16 @@ BEGIN
         ISNULL(AT.activity_type_name, ''Unknown'') AS activity_type,
         ISNULL(ATC.activity_type_category_name, ''Unknown'') AS activity_type_category,
         -- Extract file type from download activity descriptions
+        -- Activity types 42-45 correspond to ListDetailsDownload, ListLandingDownload, 
+        -- ListDashboardDownload, ListDiagnosticsDownload from listActivityTypesEnum.ts
+        -- Pattern: "List Download: <FileType> for list..." so we extract what comes after the colon and before " for"
         CASE
-          -- Activity types 42-45 correspond to ListDetailsDownload, ListLandingDownload, 
-          -- ListDashboardDownload, ListDiagnosticsDownload from listActivityTypesEnum.ts
-          WHEN AL.activity_type_id IN (42, 43, 44, 45) AND AL.activity_description LIKE ''%: CSV %'' THEN ''csv''
-          WHEN AL.activity_type_id IN (42, 43, 44, 45) AND AL.activity_description LIKE ''%: Shapefile %'' THEN ''shapefile''
-          WHEN AL.activity_type_id IN (42, 43, 44, 45) AND AL.activity_description LIKE ''%: json %'' THEN ''json''
+          WHEN AL.activity_type_id IN (42, 43, 44, 45) AND AL.activity_description LIKE ''%: % for list%'' 
+          THEN LOWER(LTRIM(RTRIM(SUBSTRING(
+            AL.activity_description,
+            CHARINDEX('':'', AL.activity_description) + 1,
+            CHARINDEX('' for list'', AL.activity_description) - CHARINDEX('':'', AL.activity_description) - 1
+          ))))
           ELSE NULL
         END AS download_file_type
       FROM [' + @db_name + '].dbo.ActivityLog AL

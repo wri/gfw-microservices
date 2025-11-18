@@ -275,7 +275,7 @@ module.exports = (app, limiter) => {
       const sql = `SELECT * FROM data WHERE name ILIKE '%${searchInput}%' LIMIT 4;`;
 
       const response = await fetch(
-        'https://data-api.globalforestwatch.org/dataset/wdpa_licensed_protected_areas/v202502/query/json',
+        'https://data-api.globalforestwatch.org/dataset/wdpa_licensed_protected_areas/v202511/query/json',
 
         {
           method: 'POST',

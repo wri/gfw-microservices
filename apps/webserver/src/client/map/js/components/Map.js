@@ -52,7 +52,7 @@ import * as analysisActions from '../actions/analysisActions';
 
 import {
   DATA_API_URL,
-  globalVegetationDisturbanceAlertsVegetationTypes,
+  disturbanceAlertsVegetationTypes,
   mapPage,
   supportedGeostoreAnalysis,
 } from '../../../common/js/config';
@@ -155,6 +155,7 @@ const {
   soyPlantedArea,
   argentineanNativeForestsLoss,
   integratedDeforestationAlertsID,
+  globalIntegratedDisturbanceAlertsId,
   disturbanceAlertsDriversId,
   globalVegetationDisturbanceAlertsId,
 } = proLayers;
@@ -449,6 +450,7 @@ class Map extends Component {
       layerOpacity,
       driverOfDisturbanceAlertsFilter,
       globalVegetationDisturbanceAlertsFilter,
+      globalIntegratedDisturbanceAlertsFilter,
     } = this.state;
 
     updateInteractiveLayers(this.view.map, prevState, this.state);
@@ -728,10 +730,13 @@ class Map extends Component {
       });
     }
 
+    // Helper function to check if any filter properties changed
+    const hasFilterChanged = (prevFilter, currentFilter) => {
+      return Object.keys(currentFilter).some((key) => prevFilter[key] !== currentFilter[key]);
+    };
+
     if (
-      prevState.driverOfDisturbanceAlertsFilter.startDate !==
-        driverOfDisturbanceAlertsFilter.startDate ||
-      prevState.driverOfDisturbanceAlertsFilter.endDate !== driverOfDisturbanceAlertsFilter.endDate
+      hasFilterChanged(prevState.driverOfDisturbanceAlertsFilter, driverOfDisturbanceAlertsFilter)
     ) {
       const driversOfDisturbanceAlertsLayer = this.view.map.findLayerById(
         disturbanceAlertsDriversId
@@ -758,12 +763,10 @@ class Map extends Component {
     }
 
     if (
-      prevState.globalVegetationDisturbanceAlertsFilter.startDate !==
-        globalVegetationDisturbanceAlertsFilter.startDate ||
-      prevState.globalVegetationDisturbanceAlertsFilter.endDate !==
-        globalVegetationDisturbanceAlertsFilter.endDate ||
-      prevState.globalVegetationDisturbanceAlertsFilter.vegetationType !==
-        globalVegetationDisturbanceAlertsFilter.vegetationType
+      hasFilterChanged(
+        prevState.globalVegetationDisturbanceAlertsFilter,
+        globalVegetationDisturbanceAlertsFilter
+      )
     ) {
       const globalVegetationDisturbanceAlertsLayer = this.view.map.findLayerById(
         globalVegetationDisturbanceAlertsId
@@ -780,7 +783,7 @@ class Map extends Component {
       );
       if (
         globalVegetationDisturbanceAlertsFilter.vegetationType ===
-        globalVegetationDisturbanceAlertsVegetationTypes.TreeCover
+        disturbanceAlertsVegetationTypes.TreeCover
       ) {
         newURL = newURL.concat(
           '&tree_cover_density_threshold=30&tree_cover_height_threshold=3&tree_cover_loss_threshold=2021'
@@ -791,6 +794,53 @@ class Map extends Component {
 
       const promise = new Promise((resolve) => {
         this.view.map.remove(globalVegetationDisturbanceAlertsLayer);
+        setTimeout(() => {
+          resolve();
+        }, 100);
+      });
+      promise.then(() => {
+        this.view.map.add(duplicate);
+        duplicate.visible = true;
+        this.view.map.layers.reorder(duplicate, index);
+      });
+    }
+
+    if (
+      hasFilterChanged(
+        prevState.globalIntegratedDisturbanceAlertsFilter,
+        globalIntegratedDisturbanceAlertsFilter
+      )
+    ) {
+      const globalIntegratedDisturbanceAlertsLayer = this.view.map.findLayerById(
+        globalIntegratedDisturbanceAlertsId
+      );
+      const index = this.view.map.layers.findIndex(
+        (l) => l.id === globalIntegratedDisturbanceAlertsId
+      );
+      const duplicate = globalIntegratedDisturbanceAlertsLayer;
+      const soyConfig = this.state.mapLayers.find(
+        (l) => l.id === globalIntegratedDisturbanceAlertsId
+      );
+      let newURL = soyConfig.layerConfig.body.url.concat(
+        `&start_date=${globalIntegratedDisturbanceAlertsFilter.startDate}&end_date=${globalIntegratedDisturbanceAlertsFilter.endDate}`
+      );
+      if (
+        globalIntegratedDisturbanceAlertsFilter.vegetationType ===
+        disturbanceAlertsVegetationTypes.TreeCover
+      ) {
+        newURL = newURL.concat(
+          '&tree_cover_density_threshold=30&tree_cover_height_threshold=3&tree_cover_loss_threshold=2021'
+        );
+      }
+
+      if (globalIntegratedDisturbanceAlertsFilter.onlyHighConfidenceAlerts) {
+        newURL = newURL.concat('&alert_confidence=high');
+      }
+
+      duplicate.urlTemplate = newURL;
+
+      const promise = new Promise((resolve) => {
+        this.view.map.remove(globalIntegratedDisturbanceAlertsLayer);
         setTimeout(() => {
           resolve();
         }, 100);

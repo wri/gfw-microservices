@@ -9,4 +9,10 @@ export interface MapReducerRootState {
     endDate: string;
     vegetationType: string;
   };
+  globalIntegratedDisturbanceAlertsFilter: {
+    startDate: string;
+    endDate: string;
+    onlyHighConfidenceAlerts: boolean;
+    vegetationType: string;
+  };
 }

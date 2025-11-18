@@ -41,11 +41,18 @@ const forestChangeLayers = [
     order: 106,
   },
   {
+    id: proLayers.globalIntegratedDisturbanceAlertsId,
+    group: 'forest-change',
+    subGroup: 'deforestation-alerts',
+    order: 107,
+  },
+  {
     id: proLayers.integratedDeforestationAlertsID,
     group: 'forest-change',
     subGroup: 'deforestation-alerts',
     order: 107,
   },
+
   {
     id: proLayers.disturbanceAlertsDriversId,
     group: 'forest-change',
@@ -129,6 +136,13 @@ const forestChangeLayers = [
     subGroup: 'deforestation-alerts',
     ignored: true,
     order: 118,
+  },
+  {
+    id: proLayers.globalVegetationDisturbanceAlertsGeographicCoverageId,
+    group: 'forest-change',
+    subGroup: 'deforestation-alerts',
+    ignored: true,
+    order: 119,
   },
 ];
 

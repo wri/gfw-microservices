@@ -1,5 +1,11 @@
 import { Injectable, Logger, Scope } from '@nestjs/common';
-import { AlertFieldsFileRequest, AlertsTimeframes, DashboardDataType } from '@wri-monorepos/sql';
+import {
+  AlertFieldsFileRequest,
+  AlertsTimeframes,
+  ClientStoreConnection,
+  DashboardDataType,
+} from '@wri-monorepos/sql';
+import { featureFlagsService } from '@wri-monorepos/shared';
 
 import { IPipeService } from '../pipe/i.pipe.service';
 import { AlertsAdminAreasLevelService } from './alerts.admin.areas.level.service';
@@ -17,6 +23,8 @@ import { AlertsGlobalIntegratedDisturbanceDailyService } from './alerts.global.i
 })
 export class AlertsFileService extends IPipeService {
   private readonly logger = new Logger(AlertsFileService.name);
+  private shouldGenerateGlobalIntegratedDisturbanceDaily: boolean | null = null;
+
   constructor(
     private readonly alertsAdminAreasLevelService: AlertsAdminAreasLevelService,
     private readonly alertsHistoryService: AlertsHistoryService,
@@ -25,7 +33,8 @@ export class AlertsFileService extends IPipeService {
     private readonly alertsPrioritiesLocationsLevelService: AlertsPrioritiesLocationsLevelService,
     private readonly alertsSummaryService: AlertsSummaryService,
     private readonly alertsIntegratedNaturalForestService: AlertsIntegratedNaturalForestService,
-    private readonly alertsGlobalIntegratedDisturbanceDailyService: AlertsGlobalIntegratedDisturbanceDailyService
+    private readonly alertsGlobalIntegratedDisturbanceDailyService: AlertsGlobalIntegratedDisturbanceDailyService,
+    private readonly clientStoreConnection: ClientStoreConnection
   ) {
     super();
   }
@@ -35,7 +44,11 @@ export class AlertsFileService extends IPipeService {
     await this.startEmail(filters);
     if (selectedTimeframe === AlertsTimeframes.DAY) {
       this.alertsIntegratedNaturalForestService.start(filters);
-      this.alertsGlobalIntegratedDisturbanceDailyService.start(filters);
+      const dcfEnabled = await this.ensureDcfEnabled(filters);
+      this.shouldGenerateGlobalIntegratedDisturbanceDaily = dcfEnabled ? true : false;
+      if (this.shouldGenerateGlobalIntegratedDisturbanceDaily) {
+        this.alertsGlobalIntegratedDisturbanceDailyService.start(filters);
+      }
     } else {
       await this.alertsLocationsLevelService.start(filters);
       await this.alertsPrioritiesLocationsLevelService.start(filters);
@@ -50,7 +63,9 @@ export class AlertsFileService extends IPipeService {
     const { selectedTimeframe } = filters;
     if (selectedTimeframe === AlertsTimeframes.DAY) {
       this.alertsIntegratedNaturalForestService.process(analysisData);
-      this.alertsGlobalIntegratedDisturbanceDailyService.process(analysisData);
+      if (this.shouldGenerateGlobalIntegratedDisturbanceDaily) {
+        this.alertsGlobalIntegratedDisturbanceDailyService.process(analysisData);
+      }
     } else {
       this.alertsLocationsLevelService.process(analysisData);
       this.alertsAdminAreasLevelService.process(analysisData);
@@ -65,7 +80,9 @@ export class AlertsFileService extends IPipeService {
     const { key, selectedTimeframe } = filters;
     if (selectedTimeframe === AlertsTimeframes.DAY) {
       await this.alertsIntegratedNaturalForestService.finish(filters);
-      await this.alertsGlobalIntegratedDisturbanceDailyService.finish(filters);
+      if (this.shouldGenerateGlobalIntegratedDisturbanceDaily) {
+        await this.alertsGlobalIntegratedDisturbanceDailyService.finish(filters);
+      }
     } else {
       await this.alertsLocationsLevelService.finish(filters);
       await this.alertsAdminAreasLevelService.finish(filters);
@@ -77,5 +94,44 @@ export class AlertsFileService extends IPipeService {
     this.logger.log(`(${key}) - Zipping files`);
     await getAllFilesAndZip(filters);
     await this.finishProcess(filters);
+  }
+
+  private async ensureDcfEnabled(filters: AlertFieldsFileRequest): Promise<boolean> {
+    if (this.shouldGenerateGlobalIntegratedDisturbanceDaily !== null) {
+      return this.shouldGenerateGlobalIntegratedDisturbanceDaily;
+    }
+
+    const { organizationDatabase } = filters;
+
+    if (!organizationDatabase) {
+      this.logger.warn(
+        'Organization database not provided; skipping Global Integrated Disturbance Alerts Daily generation.'
+      );
+      this.shouldGenerateGlobalIntegratedDisturbanceDaily = false;
+      return false;
+    }
+
+    try {
+      const {
+        getFeatureFlagsForCurrentOrg,
+        getClientIdByClientStoreDatabaseName,
+      } = await featureFlagsService(this.clientStoreConnection);
+
+      const organizationId = await getClientIdByClientStoreDatabaseName(organizationDatabase);
+      const featureFlags = await getFeatureFlagsForCurrentOrg(organizationId);
+
+      this.shouldGenerateGlobalIntegratedDisturbanceDaily = featureFlags.some(
+        (flag) => flag.flagId === 'Dcf' && flag.flagState === true
+      );
+    } catch (error) {
+      this.logger.warn(
+        `Unable to determine Dcf feature flag state for organization ${organizationDatabase}: ${
+          error?.message || error
+        }`
+      );
+      this.shouldGenerateGlobalIntegratedDisturbanceDaily = false;
+    }
+
+    return this.shouldGenerateGlobalIntegratedDisturbanceDaily;
   }
 }

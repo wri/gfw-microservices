@@ -13,9 +13,11 @@ export async function fetchGfwProLayers() {
 
   const shouldHideLayer = (layerName) => hideRules[layerName] ?? false;
 
+  const mapLayersByName = Object.fromEntries(mapLayers.map((l) => [l.attributes.name, l]));
+
   const layersData = Object.values(proLayers)
-    .map((layerName) => mapLayers.find((mapLayer) => mapLayer.attributes.name === layerName))
-    .filter((layerConfig) => layerConfig && !shouldHideLayer(layerConfig.attributes.name));
+    .map((name) => mapLayersByName[name])
+    .filter((layer) => layer && !shouldHideLayer(layer.attributes.name));
 
   return layersData;
 }
